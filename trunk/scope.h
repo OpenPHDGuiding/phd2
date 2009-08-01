@@ -29,13 +29,13 @@
 #define GUIDE_PARALLEL
 #define GUIDE_VOYAGER
 #define GUIDE_NEB
-#elsif defined (__APPLE__)
+#elif defined (__APPLE__)
 #define GUIDE_GPUSB
 #define GUIDE GCUSBST4
 #define GUIDE_EQUINOX
 #define GUIDE_VOYAGER
 #define GUIDE_NEB
-#elsif defined (__WXGTK__)
+#elif defined (__WXGTK__)
 #endif
 #define GUIDE_ONBOARD
 
