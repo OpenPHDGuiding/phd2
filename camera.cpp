@@ -117,6 +117,11 @@ Camera_SSAGClass Camera_SSAG;
  Camera_ASCOMClass Camera_ASCOM;
 #endif
 
+#if defined (INDI)
+#include "cam_indi.h"
+Camera_INDIClass Camera_INDI;
+#endif
+
 void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 // Throws up a dialog and trys to connect to that camera
 	if (CaptureActive) return;  // Looping an exposure already
@@ -185,6 +190,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 #if defined (ASCOM_CAMERA)
 	Cameras.Add(_T("ASCOM v5 Camera"));
 #endif
+#if defined (INDI)
+    Cameras.Add(_T("INDI Camera"));
+#endif
 #if defined (NEB_SBIG)
 	Cameras.Add(_T("Guide chip on SBIG cam in Nebulosity"));
 #endif
@@ -198,100 +206,104 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 	if (Choice.Find(_T("Simulator")) + 1)
 		CurrentGuideCamera = &Camera_Simulator;
 #if defined (SAC42)
-	else if (Choice.Find("SAC4-2") + 1)
+	else if (Choice.Find(_T("SAC4-2")) + 1)
 		CurrentGuideCamera = &Camera_SAC42;
 #endif
 #if defined (ATIK16)
-	else if (Choice.Find("Atik 16 series") + 1) {
+	else if (Choice.Find_T(("Atik 16 series")) + 1) {
 		CurrentGuideCamera = &Camera_Atik16;
 		Camera_Atik16.HSModel = false;
-		if (Choice.Find("color"))
+		if (Choice.Find(_T("color")))
 			Camera_Atik16.Color = true;
 		else
 			Camera_Atik16.Color = false;
 	}
 #endif
 #if defined (ATIK_GEN3)
-	else if (Choice.Find("Atik Gen3") + 1) {
+	else if (Choice.Find(_T("Atik Gen3")) + 1) {
 		CurrentGuideCamera = &Camera_Atik16;
 		Camera_Atik16.HSModel = true;
-		if (Choice.Find("color"))
+		if (Choice.Find(_T("color")))
 			Camera_Atik16.Color = true;
 		else
 			Camera_Atik16.Color = false;
 	}
 #endif
 #if defined (QGUIDE)
-	else if (Choice.Find("CCD Labs Q-Guider") + 1) {
+	else if (Choice.Find(_T("CCD Labs Q-Guider")) + 1) {
 		CurrentGuideCamera = &Camera_QGuider;
 		Camera_QGuider.Name = _T("Q-Guider");
 	}
-	else if (Choice.Find("MagZero MZ-5") + 1) {
+	else if (Choice.Find(_T("MagZero MZ-5")) + 1) {
 		CurrentGuideCamera = &Camera_QGuider;
 		Camera_QGuider.Name = _T("MagZero MZ-5");
 	}
 #endif
 #if defined (SSAG)
-	else if (Choice.Find("StarShoot Autoguider") + 1)
+	else if (Choice.Find(_T("StarShoot Autoguider")) + 1)
 		CurrentGuideCamera = &Camera_SSAG;
 #endif
 #if defined (ORION_DSCI)
-	else if (Choice.Find("Orion StarShoot DSCI") + 1)
+	else if (Choice.Find(_T("Orion StarShoot DSCI")) + 1)
 		CurrentGuideCamera = &Camera_StarShoot;
 #endif
 #if defined (WDM_CAMERA)
-	else if (Choice.Find("Windows WDM") + 1)
+	else if (Choice.Find(_T("Windows WDM")) + 1)
 		CurrentGuideCamera = &Camera_WDM;
 #endif
 #if defined (VFW_CAMERA)
-	else if (Choice.Find("Windows VFW") + 1)
+	else if (Choice.Find(_T("Windows VFW")) + 1)
 		CurrentGuideCamera = &Camera_VFW;
 #endif
 #if defined (LE_LXUSB_CAMERA)
-	else if (Choice.Find("Long exposure webcam + LXUSB") + 1)
+	else if (Choice.Find(_T("Long exposure webcam + LXUSB")) + 1)
 		CurrentGuideCamera = &Camera_LEwebcamLXUSB;
 #endif
 #if defined (LE_PARALLEL_CAMERA)
-	else if (Choice.Find("Long exposure webcam + Parallel/Serial") + 1)
+	else if (Choice.Find(_T("Long exposure webcam + Parallel/Serial")) + 1)
 		CurrentGuideCamera = &Camera_LEwebcamParallel;
 #endif
 #if defined (MEADE_DSI)
-	else if (Choice.Find("Meade DSI I, II, or III") + 1)
+	else if (Choice.Find(_T("Meade DSI I, II, or III")) + 1)
 		CurrentGuideCamera = &Camera_MeadeDSI;
 #endif
 #if defined (STARFISH)
-	else if (Choice.Find("Fishcamp Starfish") + 1)
+	else if (Choice.Find(_T("Fishcamp Starfish")) + 1)
 		CurrentGuideCamera = &Camera_Starfish;
 #endif
 #if defined (SXV)
-	else if (Choice.Find("Starlight Xpress SXV") + 1)
+	else if (Choice.Find(_T("Starlight Xpress SXV")) + 1)
 		CurrentGuideCamera = &Camera_SXV;
 #endif
 #if defined (OS_PL130)
-	else if (Choice.Find("Opticstar PL-130M") + 1) {
+	else if (Choice.Find(_T("Opticstar PL-130M")) + 1) {
 		Camera_OSPL130.Color=false;
 		CurrentGuideCamera = &Camera_OSPL130;
 	}
-	else if (Choice.Find("Opticstar PL-130C") + 1) {
+	else if (Choice.Find(_T("Opticstar PL-130C")) + 1) {
 		Camera_OSPL130.Color=true;
 		CurrentGuideCamera = &Camera_OSPL130;
 	}
 #endif
 #if defined (NEB_SBIG)
-	else if (Choice.Find("Nebulosity") + 1)
+	else if (Choice.Find(_T("Nebulosity")) + 1)
 		CurrentGuideCamera = &Camera_NebSBIG;
 #endif
 #if defined (SBIG)
-	else if (Choice.Find("SBIG") + 1)
+	else if (Choice.Find(_T("SBIG")) + 1)
 		CurrentGuideCamera = &Camera_SBIG;
 #endif
 #if defined (FIREWIRE)
-	else if (Choice.Find("The Imaging Source (DCAM Firewire)") + 1)
+	else if (Choice.Find(_T("The Imaging Source (DCAM Firewire)")) + 1)
 		CurrentGuideCamera = &Camera_Firewire;
 #endif
 #if defined (ASCOM_CAMERA)
-	else if (Choice.Find("ASCOM v5 Camera") + 1)
+	else if (Choice.Find(_T("ASCOM v5 Camera"_) + 1)
 		CurrentGuideCamera = &Camera_ASCOM;
+#endif
+#if defined (INDI)
+	else if (Choice.Find(_T("INDI Camera")) + 1)
+		CurrentGuideCamera = &Camera_INDI;
 #endif
 	else {
 		CurrentGuideCamera = NULL;
