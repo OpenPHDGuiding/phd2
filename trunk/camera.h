@@ -60,6 +60,7 @@
 // #define NEB_SBIG
 #else // Linux
  #define SIMULATOR
+ #define INDI
 #endif
 
 

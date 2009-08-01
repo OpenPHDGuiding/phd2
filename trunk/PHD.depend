@@ -2089,3 +2089,180 @@
 1245542434 source:/home/user/dev/PHD/usImage.cpp
 	"phd.h"
 
+1249083244 source:/home/user/dev/open-phd-guiding/cam_SBIG.cpp
+	"phd.h"
+	"camera.h"
+	"time.h"
+	"image_math.h"
+	<wx/textdlg.h>
+	"Cam_SBIG.h"
+
+1249083244 /home/user/dev/open-phd-guiding/phd.h
+	<wx/wx.h>
+	<wx/image.h>
+	<wx/string.h>
+	<wx/html/helpctrl.h>
+	<wx/utils.h>
+	<wx/textfile.h>
+	<wx/socket.h>
+	"usImage.h"
+	"graph.h"
+
+1249083244 /home/user/dev/open-phd-guiding/usImage.h
+
+1249083244 /home/user/dev/open-phd-guiding/graph.h
+	<wx/minifram.h>
+
+1249143929 /home/user/dev/open-phd-guiding/camera.h
+
+1249083244 /home/user/dev/open-phd-guiding/image_math.h
+
+1249083244 source:/home/user/dev/open-phd-guiding/cam_simulator.cpp
+	"phd.h"
+	"camera.h"
+	"time.h"
+	"image_math.h"
+	"cam_simulator.h"
+	"../fits/fitsio.h"
+	"../cfitsio/fitsio.h"
+	<fitsio.h>
+
+1249083244 /home/user/dev/open-phd-guiding/cam_simulator.h
+
+1249145764 source:/home/user/dev/open-phd-guiding/camera.cpp
+	"phd.h"
+	"camera.h"
+	<wx/stdpaths.h>
+	"cam_ATIK16.h"
+	"cam_LEwebcam.h"
+	"cam_LEwebcam.h"
+	"cam_SAC42.h"
+	"cam_QGuide.h"
+	"cam_StarShootDSCI.h"
+	"cam_OSPL130.h"
+	"cam_VFW.h"
+	"cam_WDM.h"
+	"cam_Starfish.h"
+	"cam_SXV.h"
+	"cam_SBIG.h"
+	"cam_NebSBIG.h"
+	"cam_Firewire.h"
+	"cam_simulator.h"
+	"cam_MeadeDSI.h"
+	"cam_SSAG.h"
+	"cam_ascom.h"
+	"cam_indi.h"
+
+1249083244 /home/user/dev/open-phd-guiding/cam_SBIG.h
+	<SBIGUDrv/sbigudrv.h>
+	"cameras/Sbigudrv.h"
+
+1249144991 /home/user/dev/open-phd-guiding/cam_indi.h
+
+1249083244 source:/home/user/dev/open-phd-guiding/canvas.cpp
+	"phd.h"
+	"image_math.h"
+	<wx/bitmap.h>
+
+1249083244 source:/home/user/dev/open-phd-guiding/eegg.cpp
+	"phd.h"
+	"scope.h"
+
+1249083244 /home/user/dev/open-phd-guiding/scope.h
+
+1249083244 source:/home/user/dev/open-phd-guiding/frame_events.cpp
+	"phd.h"
+	<wx/spinctrl.h>
+	<wx/textfile.h>
+	"image_math.h"
+	"scope.h"
+	"camera.h"
+	<wx/wfstream.h>
+	<wx/txtstrm.h>
+	<wx/stdpaths.h>
+	<wx/utils.h>
+	"../fits/fitsio.h"
+	"../cfitsio/fitsio.h"
+	<fitsio.h>
+	"cam_LEwebcam.h"
+
+1249083244 source:/home/user/dev/open-phd-guiding/graph.cpp
+	"phd.h"
+	"graph.h"
+	<wx/dcbuffer.h>
+
+1249083244 source:/home/user/dev/open-phd-guiding/guide_routines.cpp
+	"phd.h"
+	"scope.h"
+	"camera.h"
+	"image_math.h"
+	<wx/wfstream.h>
+	<wx/txtstrm.h>
+	<wx/stdpaths.h>
+	<wx/utils.h>
+
+1249083244 source:/home/user/dev/open-phd-guiding/image_math.cpp
+	"phd.h"
+	"image_math.h"
+
+1249083244 source:/home/user/dev/open-phd-guiding/phd.cpp
+	"phd.h"
+	"scope.h"
+	"camera.h"
+	"graph.h"
+	<wx/config.h>
+	<wx/statline.h>
+	<wx/bmpbuttn.h>
+	<wx/spinctrl.h>
+	<wx/filesys.h>
+	<wx/fs_zip.h>
+	<wx/stdpaths.h>
+	<wx/splash.h>
+	"icons/sm_PHD.xpm"
+	"icons/stop1.xpm"
+	"icons/scope1.xpm"
+	"icons/measure.xpm"
+	"icons/loop3.xpm"
+	"icons/cam2.xpm"
+	"icons/brain1.xpm"
+
+1249083244 /home/user/dev/open-phd-guiding/icons/sm_PHD.xpm
+
+1249083244 /home/user/dev/open-phd-guiding/icons/stop1.xpm
+
+1249083244 /home/user/dev/open-phd-guiding/icons/scope1.xpm
+
+1249083244 /home/user/dev/open-phd-guiding/icons/measure.xpm
+
+1249083244 /home/user/dev/open-phd-guiding/icons/loop3.xpm
+
+1249083244 /home/user/dev/open-phd-guiding/icons/cam2.xpm
+
+1249083244 /home/user/dev/open-phd-guiding/icons/brain1.xpm
+
+1249083244 source:/home/user/dev/open-phd-guiding/prefs.cpp
+	"phd.h"
+	"camera.h"
+	<wx/config.h>
+	"cam_LEwebcam.h"
+
+1249083244 source:/home/user/dev/open-phd-guiding/scope.cpp
+	"phd.h"
+	"ascom.h"
+	"GC_USBST4.h"
+	"image_math.h"
+	"wx/textfile.h"
+	"camera.h"
+	"scope.h"
+	"socket_server.h"
+	"ShoeString.h"
+
+1249083244 /home/user/dev/open-phd-guiding/socket_server.h
+
+1249083244 source:/home/user/dev/open-phd-guiding/socket_server.cpp
+	"phd.h"
+	<wx/log.h>
+
+1249083244 source:/home/user/dev/open-phd-guiding/usImage.cpp
+	"phd.h"
+
