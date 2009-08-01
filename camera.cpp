@@ -210,7 +210,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 		CurrentGuideCamera = &Camera_SAC42;
 #endif
 #if defined (ATIK16)
-	else if (Choice.Find_T(("Atik 16 series")) + 1) {
+	else if (Choice.Find(_T("Atik 16 series")) + 1) {
 		CurrentGuideCamera = &Camera_Atik16;
 		Camera_Atik16.HSModel = false;
 		if (Choice.Find(_T("color")))
@@ -298,7 +298,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 		CurrentGuideCamera = &Camera_Firewire;
 #endif
 #if defined (ASCOM_CAMERA)
-	else if (Choice.Find(_T("ASCOM v5 Camera"_) + 1)
+	else if (Choice.Find(_T("ASCOM v5 Camera")) + 1)
 		CurrentGuideCamera = &Camera_ASCOM;
 #endif
 #if defined (INDI)

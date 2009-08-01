@@ -42,7 +42,7 @@
 #if defined RAWSAVE
  #if defined (__WINDOWS__)
   #include "../fits/fitsio.h"
- #elsif defined (__APPLE__)
+ #elif defined (__APPLE__)
   #include "../cfitsio/fitsio.h"
  #else
   #include <fitsio.h>
