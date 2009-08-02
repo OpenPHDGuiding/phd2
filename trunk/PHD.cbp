@@ -34,12 +34,15 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="`wx-config --cflags`" />
 			<Add option="-Wall" />
+			<Add option="`wx-config --cflags`" />
+			<Add option="`pkg-config --cflags gtk+-2.0 glib-2.0`" />
 		</Compiler>
 		<Linker>
 			<Add option="`wx-config --libs`" />
 		</Linker>
+		<Unit filename="cam_INDI.cpp" />
+		<Unit filename="cam_INDI.h" />
 		<Unit filename="cam_SBIG.cpp" />
 		<Unit filename="cam_SBIG.h" />
 		<Unit filename="cam_simulator.cpp" />
@@ -54,6 +57,22 @@
 		<Unit filename="guide_routines.cpp" />
 		<Unit filename="image_math.cpp" />
 		<Unit filename="image_math.h" />
+		<Unit filename="libindi/base64.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libindi/base64.h" />
+		<Unit filename="libindi/indi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libindi/indi.h" />
+		<Unit filename="libindi/indigui.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libindi/indigui.h" />
+		<Unit filename="libindi/lilxml.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libindi/lilxml.h" />
 		<Unit filename="phd.cpp" />
 		<Unit filename="phd.h" />
 		<Unit filename="prefs.cpp" />
@@ -66,7 +85,10 @@
 		<Extensions>
 			<envvars />
 			<code_completion />
-			<lib_finder disable_auto="1" />
+			<lib_finder disable_auto="1">
+				<lib name="gtk+-2.0" />
+				<lib name="glib-2.0" />
+			</lib_finder>
 			<debugger />
 		</Extensions>
 	</Project>

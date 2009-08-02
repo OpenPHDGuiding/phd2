@@ -1,5 +1,5 @@
 /*
- *  cam_indi.cpp
+ *  cam_template.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -16,7 +16,7 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, TemplateRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
  *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -26,11 +26,11 @@
 #include "phd.h"
 #include "camera.h"
 #include "image_math.h"
-#include "cam_indi.h"
+#include "cam_template.h"
 
-Camera_INDIClass::Camera_INDIClass() {
+Camera_TemplateClass::Camera_TemplateClass() {
 	Connected = FALSE;
-	Name=_T("INDI Camera");
+	Name=_T("Template Camera");
 	FullSize = wxSize(1280,1024);  // Current size of a full frame
 	HasGuiderOutput = true;  // Do we have an ST4 port?
 	HasGainControl = true;  // Can we adjust gain?
@@ -38,7 +38,7 @@ Camera_INDIClass::Camera_INDIClass() {
 
 
 
-bool Camera_INDIClass::Connect() {
+bool Camera_TemplateClass::Connect() {
 // Connect to camera -- returns true on error
 	if (frame->mount_menu->IsChecked(MOUNT_CAMERA)) {  // User wants to use an onboard guide port - connect.  (Should be smarter - does cam have one?)
 		ScopeConnected = MOUNT_CAMERA;
@@ -59,7 +59,7 @@ bool Camera_INDIClass::Connect() {
 	return false;
 }
 
-bool Camera_INDIClass::PulseGuideScope(int direction, int duration) {
+bool Camera_TemplateClass::PulseGuideScope(int direction, int duration) {
     // Guide cam in a direction for a given duration (msec)
 	switch (direction) {
 		case WEST:  break;
@@ -76,18 +76,18 @@ bool Camera_INDIClass::PulseGuideScope(int direction, int duration) {
 	return false;
 }
 
-/*void Camera_INDIClass::ClearGuidePort() {
+/*void Camera_TemplateClass::ClearGuidePort() {
 }
 */
 
-/*void Camera_INDIClass::InitCapture() {
+/*void Camera_TemplateClass::InitCapture() {
 // This gets called when you change parameters (gain, exp. duration etc).  Do any cam re-programming needed.  This isn't
 // always needed as some cams have you program everything each time.  Define here and undefine in .h file if needed.
 
 }
 */
 
-bool Camera_INDIClass::Disconnect() {
+bool Camera_TemplateClass::Disconnect() {
 
     // Cam disconnect routine
 
@@ -98,7 +98,7 @@ bool Camera_INDIClass::Disconnect() {
 	return false;
 }
 
-bool Camera_INDIClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_TemplateClass::CaptureFull(int duration, usImage& img, bool recon) {
 // Capture a full frame and stick it into img -- if recon is true, do any frame recon needed.
 	int xsize = FullSize.GetWidth();
 	int ysize = FullSize.GetHeight();
