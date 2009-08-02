@@ -1,9 +1,9 @@
 /*
- *  cam_indi.h
+ *  cam_INDI.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2009 Craig Stark.
+ *  Created by Geoffrey Hausheer.
+ *  Copyright (c) 2009 Geoffrey Hausheer.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
@@ -23,21 +23,29 @@
  *
  */
 
+#ifndef _CAM_INDI_H_
+#define _CAM_INDI_H_
 
-#ifndef CAM_INDI_H_INCLUDED
-#define CAM_INDI_H_INCLUDED
+struct indi_t;
+struct indi_prop_t;
+
 class Camera_INDIClass : public GuideCamera {
+private:
+    struct indi_t    *indi;
+    struct indi_prop_t *expose_prop;
+    int connect_count;
+    int modal;
+    int img_count;
 public:
+    struct  indi_elem_t *blob_elem;
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
 	bool	Connect();		// Opens up and connects to cameras
 	bool	Disconnect();
 	void	InitCapture() { return; }
-	bool    PulseGuideScope(int direction, int duration);
+	void	ShowPropertyDialog();
+	int     TryConnect();
 	Camera_INDIClass();
-/*private:
-	unsigned char *buffer; // Many cams need a buffer for the image -- might as well keep it around
-	*/
 };
+#endif
 
 
-#endif // CAM_INDI_H_INCLUDED

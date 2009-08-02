@@ -117,9 +117,9 @@ Camera_SSAGClass Camera_SSAG;
  Camera_ASCOMClass Camera_ASCOM;
 #endif
 
-#if defined (INDI)
-#include "cam_indi.h"
-Camera_INDIClass Camera_INDI;
+#if defined (INDI_CAMERA)
+ #include "cam_INDI.h"
+ Camera_INDIClass Camera_INDI;
 #endif
 
 void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
@@ -195,6 +195,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 #endif
 #if defined (NEB_SBIG)
 	Cameras.Add(_T("Guide chip on SBIG cam in Nebulosity"));
+#endif
+#if defined (INDI_CAMERA)
+	Cameras.Add(_T("INDI Camera"));
 #endif
 	if (GuideCameraConnected) {
 		SetStatusText(CurrentGuideCamera->Name + _T(" disconnected"));
@@ -301,10 +304,11 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 	else if (Choice.Find(_T("ASCOM v5 Camera")) + 1)
 		CurrentGuideCamera = &Camera_ASCOM;
 #endif
-#if defined (INDI)
+#if defined (INDI_CAMERA)
 	else if (Choice.Find(_T("INDI Camera")) + 1)
 		CurrentGuideCamera = &Camera_INDI;
 #endif
+
 	else {
 		CurrentGuideCamera = NULL;
 		GuideCameraConnected = false;
