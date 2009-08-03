@@ -35,7 +35,7 @@
 #include <wx/socket.h>
 #include "usImage.h"
 #include "graph.h"
-#define VERSION _T("1.10.7")
+#define VERSION _T("1.10.8")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
@@ -240,6 +240,7 @@ enum {
 	BUTTON_GRAPH_HIDE,
 	BUTTON_GRAPH_CLEAR,
 //	EEGG_FITSSAVE,
+	EEGG_MANUALCAL,
 	EEGG_TESTGUIDEDIR,
 	EEGG_RANDOMMOTION
 };

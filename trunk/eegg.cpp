@@ -43,6 +43,23 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 		RandomMotionMode = !RandomMotionMode;
 		wxMessageBox(wxString::Format(_T("Random motion mode set to %d"),(int) RandomMotionMode));
 	}
+		else if (evt.GetId() == EEGG_MANUALCAL) {
+		wxString tmpstr;
+		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("RA rate"));
+		if (tmpstr.IsEmpty()) return;
+		tmpstr.ToDouble(&RA_rate); // = 0.0035;
+		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("Dec rate"));
+		if (tmpstr.IsEmpty()) return;
+		tmpstr.ToDouble(&Dec_rate); // = 0.0035;
+		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.5)"), _T("RA angle"));
+		if (tmpstr.IsEmpty()) return;
+		tmpstr.ToDouble(&RA_angle); // = 0.0035;
+		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 2.1)"), _T("Dec angle"));
+		if (tmpstr.IsEmpty()) return;
+		tmpstr.ToDouble(&Dec_angle); // = 0.0035;
+		Calibrated = true;
+		SetStatusText(_T("Cal"),5);
+	}
 	else evt.Skip();
 
 }

@@ -115,6 +115,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
    EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
    EVT_MENU(EEGG_TESTGUIDEDIR, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
    EVT_MENU(EEGG_RANDOMMOTION, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
+	EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
 //   EVT_MENU(EEGG_FITSSAVE, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
    EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
    EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
@@ -236,6 +237,7 @@ MyFrame::MyFrame(const wxString& title)
 	tools_menu->Append(MENU_MANGUIDE, _T("&Manual Guide"), _T("Manual / test guide dialog"));
 	tools_menu->Append(MENU_CLEARDARK, _T("&Erase Dark Frame"), _T("Erase / clear out dark frame"));
 	tools_menu->Append(MENU_AUTOSTAR, _T("Auto-select &Star\tAlt-S"), _T("Automatically select star"));
+	tools_menu->Append(EEGG_MANUALCAL, _T("Enter calibration data"), _T("Manually calibrate"));
 //	tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));
 	tools_menu->AppendSeparator();
 	tools_menu->AppendRadioItem(MENU_XHAIR0, _T("No overlay"),_T("No additional crosshairs"));
@@ -429,10 +431,11 @@ wxString filename =  wxTheApp->argv[0];
 //	wxImage::AddHandler( new wxJPEGHandler );  //wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib
 
 // Setup some keyboard shortcuts
-	wxAcceleratorEntry entries[2];
+	wxAcceleratorEntry entries[3];
 	entries[0].Set(wxACCEL_CTRL,  (int) 'T', EEGG_TESTGUIDEDIR);
 	entries[1].Set(wxACCEL_CTRL,  (int) 'R', EEGG_RANDOMMOTION);
-	wxAcceleratorTable accel(2, entries);
+	entries[1].Set(wxACCEL_CTRL,  (int) 'M', EEGG_MANUALCAL);
+	wxAcceleratorTable accel(3, entries);
 	SetAcceleratorTable(accel);
 
 	InitCameraParams();
