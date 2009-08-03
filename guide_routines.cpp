@@ -187,14 +187,14 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 			if ((fabs(RA_dist) > MinMotion) && FoundStar){ // not worth <0.25 pixel moves
 				if (debuglog) { debug << _T("- Guiding RA ");  debugstr.Sync(); }
 				if (RA_dist > 0.0) {
-					SetStatusText(wxString::Format(_T("E dx=%.2f dy=%.2f dur=%.1f dist=%.2f"),dX,dY,RA_dur,RA_dist),1);
+					SetStatusText(wxString::Format(_T("E dur=%.1f dist=%.2f"),RA_dur,RA_dist),1);
 					GuideScope(EAST,(int) RA_dur);	// So, guide in the RA- direction;
 					if (Log_Data) {
 						logline = wxString::Format(_T("%d,%.3f,%.2f,%.2f,%.1f,%.1f,%.2f"),frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
 					}
 				}
 				else {
-					SetStatusText(wxString::Format(_T("W dx=%.2f dy=%.2f dur=%.1f dist=%.2f"),dX,dY,RA_dur,RA_dist),1);
+					SetStatusText(wxString::Format(_T("W dur=%.1f dist=%.2f"),RA_dur,RA_dist),1);
 					GuideScope(WEST,(int) RA_dur);
 					if (Log_Data) {
 						logline = wxString::Format(_T("%d,%.3f,%.2f,%.2f,%.1f,%.1f,%.2f"),frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
