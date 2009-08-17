@@ -232,6 +232,9 @@ MyFrame::MyFrame(const wxString& title)
 	mount_menu->FindItem(MOUNT_GPUSB)->Enable(false);
 	mount_menu->FindItem(MOUNT_CAMERA)->Check(true); // set this as the default
 #endif
+#ifdef GUIDE_INDI
+	mount_menu->AppendRadioItem(MOUNT_INDI,_T("INDI"),_T("INDI"));
+#endif
 	wxMenu *tools_menu = new wxMenu;
 	//mount_menu->AppendSeparator();
 	tools_menu->Append(MENU_MANGUIDE, _T("&Manual Guide"), _T("Manual / test guide dialog"));

@@ -31,19 +31,25 @@ struct indi_prop_t;
 
 class Camera_INDIClass : public GuideCamera {
 private:
-    struct indi_t    *indi;
-    struct indi_prop_t *expose_prop;
-    int connect_count;
-    int modal;
-    int img_count;
+	struct indi_prop_t *expose_prop;
+	struct indi_prop_t *frame_prop;
+	struct indi_prop_t *frame_type_prop;
+	struct indi_prop_t *binning_prop;
+	int     img_count;
+	bool    ready;
+	bool    has_blob;
 public:
+	bool    modal;
+    wxString indi_name;
+	bool    is_connected;
     struct  indi_elem_t *blob_elem;
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
 	bool	Connect();		// Opens up and connects to cameras
 	bool	Disconnect();
 	void	InitCapture() { return; }
 	void	ShowPropertyDialog();
-	int     TryConnect();
+	void    CheckState();
+	void    NewProp(struct indi_prop_t *iprop);
 	Camera_INDIClass();
 };
 #endif

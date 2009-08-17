@@ -25,6 +25,7 @@
 
 #include "phd.h"
 #include "camera.h"
+#include "scope.h"
 #include <wx/config.h>
 
 // Some specific camera includes
@@ -32,6 +33,16 @@
 #include "cam_LEwebcam.h"
 extern Camera_LEwebcamClass Camera_LEwebcamParallel;
 extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
+#endif
+
+#if defined (INDI_CAMERA)
+#include "cam_INDI.h"
+extern Camera_INDIClass Camera_INDI;
+#endif
+
+#if defined (GUIDE_INDI)
+#include "tele_INDI.h"
+extern Telescope_INDIClass INDIScope;
 #endif
 
 void MyFrame::ReadPreferences() {
@@ -55,6 +66,7 @@ void MyFrame::ReadPreferences() {
 		case 6: mount_menu->Check(MOUNT_VOYAGER,true); break;
 		case 7: mount_menu->Check(MOUNT_EQUINOX,true); break;
 		case 8: mount_menu->Check(MOUNT_GCUSBST4,true); break;
+		case 9: mount_menu->Check(MOUNT_INDI,true); break;
 //		default: mount_menu->Check(MOUNT_ASCOM,true);
 	}
 	config->Read(_T("RA Aggressiveness"),&RA_aggr);
@@ -97,6 +109,13 @@ void MyFrame::ReadPreferences() {
 	lval = (long) Camera_LEwebcamLXUSB.Delay;
 	config->Read(_T("LEwebLXUSB delay"),&lval);
 	Camera_LEwebcamLXUSB.Delay = (short) lval;
+#endif
+#if defined INDI_CAMERA
+    config->Read(_T("INDIcam"), Camera_INDI.indi_name);
+#endif
+#if defined GUIDE_INDI
+    config->Read(_T("INDImount"), INDIScope.indi_name);
+    config->Read(_T("INDImount_port"), INDIScope.serial_port);
 #endif
 	lval = (long) ServerMode;
 	config->Read(_T("Enable Server"),&lval);
