@@ -18,7 +18,6 @@
   
   Contact Information: gcx@phracturedblue.com <Geoffrey Hausheer>
 *******************************************************************************/
-//gcc -Wall -g -I. -o inditest indi.c indigui.c indi/base64.c indi/lilxml.c `pkg-config --cflags --libs gtk+-2.0 glib-2.0` -lz
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,10 +66,24 @@ static const char indi_prop_type[6][8] = {
 	"BLOB",
 };
 
+static struct indi_dev_cb_t *indi_find_dev_cb(struct indi_t *indi, const char *devname)
+{
+	GSList *gsl;
+
+	for (gsl = indi->dev_cb_list; gsl; gsl = g_slist_next(gsl)) {
+		struct indi_dev_cb_t *cb = (struct indi_dev_cb_t *)gsl->data;
+		if (strncmp(cb->devname, devname, sizeof(cb->devname)) == 0) {
+			return cb;
+		}
+	}
+	return NULL;
+}
+
 struct indi_device_t *indi_find_device(struct indi_t *indi, const char *dev)
 {
 	GSList *gsl;
 	struct indi_device_t *idev;
+	struct indi_dev_cb_t *cb;
 
 	for (gsl = indi->devices; gsl; gsl = g_slist_next(gsl)) {
 		idev = (struct indi_device_t *)gsl->data;
@@ -81,6 +94,14 @@ struct indi_device_t *indi_find_device(struct indi_t *indi, const char *dev)
 	idev = g_new0(struct indi_device_t, 1);
 	strncpy(idev->name, dev, sizeof(idev->name));
 	idev->indi = indi;
+
+	if ((cb = indi_find_dev_cb(indi, dev))) {
+		idev->new_prop_cb = cb->new_prop_cb;
+		idev->callback_data = cb->callback_data;
+		indi->dev_cb_list = g_slist_remove(indi->dev_cb_list, cb);
+		g_free(cb);
+	}
+
 	indigui_make_device_page(idev);
 	indi->devices = g_slist_prepend(indi->devices, idev);
 	return idev;
@@ -114,6 +135,15 @@ struct indi_elem_t *indi_find_elem(struct indi_prop_t *iprop, const char *name)
 	return NULL;
 }
 
+struct indi_elem_t *indi_find_first_elem(struct indi_prop_t *iprop)
+{
+	struct indi_elem_t *ielem = NULL;
+
+	if (iprop->elems)
+		ielem = (struct indi_elem_t *)iprop->elems->data;
+	return ielem;
+}
+
 double indi_prop_get_number(struct indi_prop_t *iprop, const char *elemname) {
 	struct indi_elem_t *ielem;
 	ielem = indi_find_elem(iprop, elemname);
@@ -130,6 +160,16 @@ struct indi_elem_t *indi_prop_set_number(struct indi_prop_t *iprop, const char *
 		return NULL;
 	}
 	ielem->value.num.value = value;
+	return ielem;
+}
+
+struct indi_elem_t *indi_prop_set_string(struct indi_prop_t *iprop, const char *elemname, const char *value) {
+	struct indi_elem_t *ielem;
+	ielem = indi_find_elem(iprop, elemname);
+	if(! ielem) {
+		return NULL;
+	}
+	strncpy(ielem->value.str, value, sizeof(ielem->value.str));
 	return ielem;
 }
 
@@ -472,7 +512,7 @@ static struct indi_prop_t *indi_new_prop(XMLEle *root, struct indi_device_t *ide
 		ielem = g_new0(struct indi_elem_t, 1);
 		ielem->iprop = iprop;
 		strncpy(ielem->name, findXMLAttValu(ep, "name"), sizeof(ielem->name));
-		label = findXMLAttValu(root, "label");
+		label = findXMLAttValu(ep, "label");
 		if (label) {
 			strncpy(ielem->label, label, sizeof(ielem->label));
 		} else {
@@ -502,6 +542,36 @@ static struct indi_prop_t *indi_new_prop(XMLEle *root, struct indi_device_t *ide
 	return iprop;
 }
 
+void indi_device_add_cb(struct indi_t *indi, const char *devname,
+                     void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data),
+                     void *callback_data)
+{
+	struct indi_device_t *idev;
+	struct indi_prop_t *iprop;
+	GSList *gsl;
+
+	idev = indi_find_device(indi, devname);
+	if (idev) {
+		idev->new_prop_cb = new_prop_cb;
+		idev->callback_data = callback_data;
+
+		// Execute the callback for all existing properties
+		for (gsl = idev->props; gsl; gsl = g_slist_next(gsl)) {
+			iprop = (struct indi_prop_t *)gsl->data;
+			new_prop_cb(iprop, callback_data);
+		}
+	} else {
+		// Device doesn't exist yet, so save this callback for the future
+		struct indi_dev_cb_t *cb = indi_find_dev_cb(indi, devname);
+		if (! cb) {
+			cb = g_new0(struct indi_dev_cb_t, 1);
+			strncpy(cb->devname, devname, sizeof(cb->devname));
+		}
+		cb->new_prop_cb = new_prop_cb;
+		cb->callback_data = callback_data;
+	}
+}
+
 void indi_prop_add_cb(struct indi_prop_t *iprop,
                       void (* prop_update_cb)(struct indi_prop_t *iprop, void *callback_data),
                       void *callback_data)
@@ -516,7 +586,7 @@ static void indi_camera_capture_cb(struct indi_prop_t *iprop, void *data)
 	FILE *fh;
 	char str[80];
 	static int img_count;
-	struct indi_elem_t *ielem = indi_find_elem(iprop, "CCD1");
+	struct indi_elem_t *ielem = indi_find_first_elem(iprop);
 
 	sprintf(str, "test%03d.fits", img_count++);
 	printf("Writing: %s\n", str);
@@ -564,8 +634,8 @@ static void indi_handle_message(struct indi_device_t *idev, XMLEle *root)
 		}
 		indigui_add_prop(idev, groupname, iprop);
 		delXMLEle (root);
-		if (idev->indi->new_prop_cb) {
-			idev->indi->new_prop_cb(iprop, idev->indi->callback_data);
+		if (idev->new_prop_cb) {
+			idev->new_prop_cb(iprop, idev->callback_data);
 		}
 	}
 }
@@ -635,7 +705,7 @@ static GIOChannel *openINDIServer (char *host, int port)
 	return fh;
 }
 
-struct indi_t *indi_init(void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data), void *callback_data)
+struct indi_t *indi_init()
 {
 	struct indi_t *indi;
 
@@ -648,10 +718,7 @@ struct indi_t *indi_init(void (* new_prop_cb)(struct indi_prop_t *iprop, void *c
 
 	indi->xml_parser = (void *)newLilXML();
 	indi->fh = openINDIServer("localhost", 7624);
-	if (new_prop_cb) {
-		indi->new_prop_cb = new_prop_cb;
-		indi->callback_data = callback_data;
-	}
+
 	g_io_add_watch(indi->fh, G_IO_IN, (GIOFunc) indi_read_cb, indi);
 	sprintf(msg, "<getProperties version='%g'/>\n", INDIV);
 	g_io_channel_write_chars(indi->fh, msg, strlen(msg), &len, NULL);

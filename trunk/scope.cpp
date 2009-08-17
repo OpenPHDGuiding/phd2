@@ -42,6 +42,10 @@
 #include "ShoeString.h"
 #endif
 
+#ifdef GUIDE_INDI
+#include "tele_INDI.h"
+#endif
+
 void GuideScope(int direction, int duration) {
 	if (DisableGuideOutput && (frame->canvas->State >= STATE_GUIDING_LOCKED))  // Let you not actually send the commands during guiding
 		return;
@@ -79,6 +83,10 @@ void GuideScope(int direction, int duration) {
     #ifdef GUIDE_EQUINIOX
 		else if (ScopeConnected == MOUNT_EQUINOX)
 			Equinox_PulseGuideScope(direction,duration);
+    #endif
+    #ifdef GUIDE_INDI
+        else if (ScopeConnected == MOUNT_INDI)
+            INDI_PulseGuideScope(direction, duration);
     #endif
 	}
 	catch (...) {
@@ -204,6 +212,16 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 			SetStatusText(_T("Equinox mount failed"));
 		}
 	}
+    #endif
+    #ifdef GUIDE_INDI
+    else if (mount_menu->IsChecked(MOUNT_INDI)) {
+        if (!INDI_ScopeConnect()) {
+            ScopeConnected = MOUNT_INDI;
+        } else {
+            ScopeConnected = 0;
+            SetStatusText(_T("INDI mount failed"));
+        }
+    }
     #endif
 	if (ScopeConnected) {
 		SetStatusText(_T("Scope"),4);

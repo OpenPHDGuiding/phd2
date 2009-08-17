@@ -91,20 +91,29 @@ struct indi_device_t {
 	unsigned int capabilities;
 	GSList *props;
 	void *window;
+	void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data);
+	void *callback_data;
 };
+
+struct indi_dev_cb_t {
+	char devname[80];
+	void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data);
+	void *callback_data;
+};
+
 
 struct indi_t {
 	void *xml_parser;
 	GIOChannel *fh;
 	GSList *devices;
+	GSList *dev_cb_list;
 	void *window;
-	void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data);
-	void *callback_data;
 };
 
 extern struct indi_device_t *indi_find_device(struct indi_t *indi, const char *dev);
 extern struct indi_prop_t *indi_find_prop(struct indi_device_t *idev, const char *name);
 extern struct indi_elem_t *indi_find_elem(struct indi_prop_t *iprop, const char *name);
+extern struct indi_elem_t *indi_find_first_elem(struct indi_prop_t *iprop);
 
 extern const char *indi_get_string_from_state(int state);
 
@@ -116,7 +125,9 @@ extern void indi_send(struct indi_prop_t *iprop, struct indi_elem_t *ielem );
 extern void indi_prop_add_cb(struct indi_prop_t *iprop,
                       void (* prop_update_cb)(struct indi_prop_t *iprop, void *callback_data),
                       void *callback_data);
-extern struct indi_t *indi_init(
+extern struct indi_t *indi_init();
+
+extern void indi_device_add_cb(struct indi_t *indi, const char *devname,
              void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data),
              void *callback_data);
 
@@ -125,6 +136,8 @@ extern struct indi_elem_t *indi_prop_set_switch(struct indi_prop_t *iprop, const
 
 extern double indi_prop_get_number(struct indi_prop_t *iprop, const char *elemname);
 extern struct indi_elem_t *indi_prop_set_number(struct indi_prop_t *iprop, const char *elemname, double value);
+
+extern struct indi_elem_t *indi_prop_set_string(struct indi_prop_t *iprop, const char *elemname, const char *value);
 
 extern struct indi_elem_t *indi_dev_set_string(struct indi_device_t *idev, const char *propname, const char *elemname, const char *value);
 extern struct indi_elem_t *indi_dev_set_switch(struct indi_device_t *idev, const char *propname, const char *elemname, int state);

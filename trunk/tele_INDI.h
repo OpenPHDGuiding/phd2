@@ -1,9 +1,9 @@
 /*
- *  scope.h
+ *  tele_INDI.h
  *  PHD Guiding
  *
- *  Created by Craig Stark
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Created by Geoffrey Hausheer.
+ *  Copyright (c) 2009 Geoffrey Hausheer.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
@@ -23,24 +23,41 @@
  *
  */
 
-#if defined (__WINDOWS__)
-#define GUIDE_ASCOM
-#define GUIDE_GPUSB
-#define GUIDE_PARALLEL
-#define GUIDE_VOYAGER
-#define GUIDE_NEB
-#elif defined (__APPLE__)
-#define GUIDE_GPUSB
-#define GUIDE GCUSBST4
-#define GUIDE_EQUINOX
-#define GUIDE_VOYAGER
-#define GUIDE_NEB
-#elif defined (__WXGTK__)
-#define GUIDE_INDI
+#ifndef _TELE_INDI_H_
+#define _TELE_INDI_H_
+
+struct indi_t;
+struct indi_prop_t;
+
+class Telescope_INDIClass {
+private:
+	struct indi_prop_t *coord_set_prop;
+	struct indi_prop_t *abort_prop;
+	struct indi_prop_t *moveNS;
+	struct indi_prop_t *moveEW;
+	struct indi_prop_t *pulseGuideNS;
+	struct indi_prop_t *pulseGuideEW;
+	bool    ready;
+public:
+	bool     modal;
+    wxString indi_name;
+    wxString serial_port;
+	bool     is_connected;
+	bool     CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
+	bool     Connect();		// Opens up and connects to cameras
+	bool     Disconnect();
+	void     InitCapture() { return; }
+	void     ShowPropertyDialog();
+	void     CheckState();
+	void     NewProp(struct indi_prop_t *iprop);
+    void     StartMove(int direction);
+    void     StopMove(int direction);
+	void     PulseGuide(int direction, int duration);
+	bool     IsReady() {return ready;};
+	bool     CanPulseGuide() { return pulseGuideNS && pulseGuideEW;};
+	void     DoGuiding(int direction, int duration_msec);
+	Telescope_INDIClass() {};
+};
+void INDI_PulseGuideScope(int direction, int duration);
+bool INDI_ScopeConnect();
 #endif
-#define GUIDE_ONBOARD
-
-
-extern void GuideScope(int direction, int duration);
-extern void CalibrateScope();
-extern void DisconnectScope();

@@ -35,91 +35,110 @@ extern "C" {
 #include "libindi/indigui.h"
 }
 
-struct indi_t *indi_object = NULL;
+struct indi_t *INDIClient = NULL;
 
 void camera_capture_cb(struct indi_prop_t *iprop, void *data)
 {
     Camera_INDIClass *cb = (Camera_INDIClass *)(data);
-    cb->blob_elem = indi_find_elem(iprop, "CCD1");
+    cb->blob_elem = indi_find_first_elem(iprop);
     printf("Got camera callback\n");
     gtk_main_quit();
 }
 
 Camera_INDIClass::Camera_INDIClass() {
 	Connected = FALSE;
-//	HaveBPMap = FALSE;
-//	NBadPixels=-1;
-//	ConnectedModel = 1;
 	Name=_T("INDI Camera");
 	HasPropertyDialog = true;
 	FullSize = wxSize(640,480);
-//	FullSize = wxSize(1360,1024);
 }
 
-int try_camera_connect_wrapper(void *data)
+static int modal_timeout_cb(void * data)
 {
     Camera_INDIClass *cb = (Camera_INDIClass *)(data);
-    return cb->TryConnect();
-}
-int Camera_INDIClass::TryConnect(void)
-{
-    struct indi_device_t *idev;
-    struct indi_prop_t *iprop;
-    char name[] = "CCD Simulator";
-
-    if(--connect_count == 0) {
-        if(modal)
-            gtk_main_quit();
-        return FALSE;
-    }
-
-    idev = indi_find_device(indi, name);
-    if (! idev) {
-        printf("Couldn't locate INDI camera device %s\n", name);
-        return TRUE;
-    }
-
-    /* property to set exposure */
-    if (! (expose_prop = indi_find_prop(idev, "EXPOSE_DURATION"))) {
-        printf("Couldn't locate INDI property 'EXPOSE_DURATION'\n");
-        return TRUE;
-    }
-
-    if (! (iprop = indi_find_prop(idev, "Video"))) {
-        printf("Couldn't locate INDI property 'Video'\n");
-        return TRUE;
-    } else {
-        indi_prop_add_cb(iprop, camera_capture_cb, this);
-    }
-    if (! (iprop = indi_find_prop(idev, "CONNECTION"))) {
-        printf("Couldn't find camera property 'CONNECT'\n");
-        return TRUE;
-    }
-    //indi_prop_add_cb(iprop, connect_cb, camera);
-    indi_dev_set_switch(idev, "CONNECTION", "CONNECT", TRUE);
-    if(modal)
+    if(cb->modal) {
+        cb->modal = false;
         gtk_main_quit();
+    }
     return FALSE;
+}
+static void connect_cb(struct indi_prop_t *iprop, void *data)
+{
+	Camera_INDIClass *cb = (Camera_INDIClass *)(data);
+	cb->is_connected = (iprop->state == INDI_STATE_IDLE || iprop->state == INDI_STATE_OK) && indi_prop_get_switch(iprop, "CONNECT");
+	printf("Camera connected state: %d\n", cb->is_connected);
+	cb->CheckState();
+}
+
+static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data)
+{
+	Camera_INDIClass *cb = (Camera_INDIClass *)(callback_data);
+	return cb->NewProp(iprop);
+}
+
+void Camera_INDIClass::CheckState()
+{
+	if(has_blob && is_connected && expose_prop) {
+	    if (! ready) {
+            printf("Camera is ready\n");
+            ready = true;
+            if (modal) {
+                modal = false;
+                gtk_main_quit();
+            }
+	    }
+	}
+}
+
+void Camera_INDIClass::NewProp(struct indi_prop_t *iprop)
+{
+	/* property to set exposure */
+	if (iprop->type == INDI_PROP_BLOB) {
+		printf("Found BLOB property for camera %s\n", iprop->idev->name);
+		has_blob = 1;
+		indi_prop_add_cb(iprop, camera_capture_cb, this);
+	}
+	else if (strcmp(iprop->name, "CCD_EXPOSURE") == 0) {
+		printf("Found CCD_EXPOSURE for camera %s\n", iprop->idev->name);
+		expose_prop = iprop;
+	}
+	else if (strcmp(iprop->name, "CCD_FRAME") == 0) {
+		printf("Found CCD_FRAME for camera %s\n", iprop->idev->name);
+		frame_prop = iprop;
+	}
+	else if (strcmp(iprop->name, "CCD_FRAME_TYPE") == 0) {
+		printf("Found CCD_FRAME_TYPE for camera %s\n", iprop->idev->name);
+		frame_type_prop = iprop;
+	}
+	else if (strcmp(iprop->name, "CCD_BINNING") == 0) {
+		printf("Found CCD_BINNING for camera %s\n", iprop->idev->name);
+		binning_prop = iprop;
+	}
+	else if (strcmp(iprop->name, "CONNECTION") == 0) {
+		printf("Found CONNECTION for camera %s\n", iprop->idev->name);
+		indi_send(iprop, indi_prop_set_switch(iprop, "CONNECT", TRUE));
+		indi_prop_add_cb(iprop, connect_cb, this);
+	}
+	CheckState();
 }
 
 bool Camera_INDIClass::Connect() {
-    connect_count = 5;
-    modal = 0;
 
-    if (! indi_object) {
-        indi_object = indi_init(NULL, NULL);
-        if (! indi_object) {
+    if (! INDIClient) {
+        INDIClient = indi_init();
+        if (! INDIClient) {
             return true;
         }
     }
-
-    indi = indi_object;
-    if(TryConnect()) {
-        modal = 1;
-        g_timeout_add_seconds(1, (GSourceFunc)try_camera_connect_wrapper, this);
-        gtk_main();
+    if (indi_name.IsEmpty()) {
+        printf("No INDI camera is set.  Please set INDIcam in the preferences file\n");
+        return true;
     }
-    if(! connect_count)
+    indi_device_add_cb(INDIClient, indi_name.ToAscii(), new_prop_cb, this);
+    g_timeout_add_seconds(10, (GSourceFunc)modal_timeout_cb, this);
+    modal = true;
+    gtk_main();
+
+    if(! ready)
         return true;
     return false;
 
@@ -133,7 +152,7 @@ bool Camera_INDIClass::Disconnect() {
 }
 
 void Camera_INDIClass::ShowPropertyDialog() {
-    indigui_show_dialog(indi, 0);
+    indigui_show_dialog(INDIClient, 0);
 }
 
 #if defined (__WINDOWS__)
@@ -157,7 +176,7 @@ bool Camera_INDIClass::CaptureFull(int duration, usImage& img, bool recon) {
 
     indi_dev_enable_blob(expose_prop->idev, TRUE);
     printf("Exposing for %d(ms)\n", duration);
-    indi_prop_set_number(expose_prop, "EXPOSE_S", duration / 1000.0);
+    indi_prop_set_number(expose_prop, "CCD_EXPOSURE_VALUE", duration / 1000.0);
     indi_send(expose_prop, NULL);
     gtk_main();
 

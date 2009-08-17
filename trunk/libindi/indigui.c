@@ -17,7 +17,7 @@
   
   Contact Information: gcx@phracturedblue.com <Geoffrey Hausheer>
 *******************************************************************************/
-//gcc -Wall -g -I. -o inditest indi.c indigui.c indi/base64.c indi/lilxml.c `pkg-config --cflags --libs gtk+-2.0 glib-2.0` -lz -DINDIMAIN
+//gcc -Wall -g -I. -o inditest indi.c indigui.c base64.c lilxml.c `pkg-config --cflags --libs gtk+-2.0 glib-2.0` -lz -DINDIMAIN
 #include "indi.h"
 #include "indigui.h"
 
@@ -145,7 +145,7 @@ static void indigui_create_text_widget(struct indi_prop_t *iprop, int num_props)
 		struct indi_elem_t *elem = (struct indi_elem_t *)gsl->data;
 
 		gtk_table_attach(GTK_TABLE (iprop->widget),
-			gtk_label_new(elem->name),
+			gtk_label_new(elem->label),
 			0, 1, pos, pos + 1,
 			GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
 
@@ -190,7 +190,7 @@ static void indigui_create_switch_widget(struct indi_prop_t *iprop, int num_prop
 		struct indi_elem_t *elem = (struct indi_elem_t *)gsl->data;
 
 		gtk_table_attach(GTK_TABLE (iprop->widget),
-			gtk_label_new(elem->name),
+			gtk_label_new(elem->label),
 			0, 1, pos, pos + 1,
 			GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
 		button = gtk_check_button_new();
@@ -225,7 +225,7 @@ static void indigui_create_number_widget(struct indi_prop_t *iprop, int num_prop
 		struct indi_elem_t *elem = (struct indi_elem_t *)gsl->data;
 
 		gtk_table_attach(GTK_TABLE (iprop->widget),
-			gtk_label_new(elem->name),
+			gtk_label_new(elem->label),
 			0, 1, pos, pos + 1,
 			GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
 
