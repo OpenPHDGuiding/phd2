@@ -156,24 +156,25 @@ bool Telescope_INDIClass::Connect() {
 
 }
 
-void Telescope_INDIClass::PulseGuide(int direction, int duration)
+void Telescope_INDIClass::PulseGuide(int direction, int duration_msec)
 {
+    double duration = duration_msec / 1000.0;
     switch (direction) {
         case EAST:
 			indi_send(pulseGuideEW,
-                      indi_prop_set_number(pulseGuideEW, "MOTION_EAST", duration));
+                      indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_E", duration));
             break;
         case WEST:
 			indi_send(pulseGuideEW,
-                      indi_prop_set_number(pulseGuideEW, "MOTION_WEST", duration));
+                      indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_W", duration));
             break;
         case NORTH:
 			indi_send(pulseGuideNS,
-                      indi_prop_set_number(pulseGuideNS, "MOTION_NORTH", duration));
+                      indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_N", duration));
             break;
         case SOUTH:
 			indi_send(pulseGuideNS,
-                      indi_prop_set_number(pulseGuideNS, "MOTION_SOUTH", duration));
+                      indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_S", duration));
             break;
     }
 }
@@ -223,7 +224,7 @@ void Telescope_INDIClass::DoGuiding(int direction, int duration_msec)
 	if (! ready)
 		return;
 
-	printf("Timed move: %d %d\n", direction, duration_msec);
+	printf("Timed move: %d %d %d\n", direction, duration_msec, CanPulseGuide());
 
 	if (CanPulseGuide()) {
 		// We can submit a timed guide, and let the mount take care of it

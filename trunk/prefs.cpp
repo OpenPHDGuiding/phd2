@@ -111,11 +111,11 @@ void MyFrame::ReadPreferences() {
 	Camera_LEwebcamLXUSB.Delay = (short) lval;
 #endif
 #if defined INDI_CAMERA
-    config->Read(_T("INDIcam"), Camera_INDI.indi_name);
+    config->Read(_T("INDIcam"), &Camera_INDI.indi_name);
 #endif
 #if defined GUIDE_INDI
-    config->Read(_T("INDImount"), INDIScope.indi_name);
-    config->Read(_T("INDImount_port"), INDIScope.serial_port);
+    config->Read(_T("INDImount"), &INDIScope.indi_name);
+    config->Read(_T("INDImount_port"), &INDIScope.serial_port);
 #endif
 	lval = (long) ServerMode;
 	config->Read(_T("Enable Server"),&lval);
@@ -157,6 +157,13 @@ void MyFrame::WritePreferences() {
 	config->Write(_T("LEwebP port"),(long) Camera_LEwebcamParallel.Port);
 	config->Write(_T("LEwebP delay"),(long) Camera_LEwebcamParallel.Delay);
 	config->Write(_T("LEwebLXUSB delay"),(long) Camera_LEwebcamLXUSB.Delay);
+#endif
+#if defined INDI_CAMERA
+    config->Write(_T("INDIcam"), Camera_INDI.indi_name);
+#endif
+#if defined GUIDE_INDI
+    config->Write(_T("INDImount"), INDIScope.indi_name);
+    config->Write(_T("INDImount_port"), INDIScope.serial_port);
 #endif
 	config->Write(_T("Gamma"),Stretch_gamma);
 	config->Write(_T("Enable Server"),(long) ServerMode);
