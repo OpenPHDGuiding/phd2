@@ -513,7 +513,7 @@ static struct indi_prop_t *indi_new_prop(XMLEle *root, struct indi_device_t *ide
 		ielem->iprop = iprop;
 		strncpy(ielem->name, findXMLAttValu(ep, "name"), sizeof(ielem->name));
 		label = findXMLAttValu(ep, "label");
-		if (label) {
+		if (label && strlen(label)) {
 			strncpy(ielem->label, label, sizeof(ielem->label));
 		} else {
 			strncpy(ielem->label, ielem->name, sizeof(ielem->label));
