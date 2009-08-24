@@ -1,0 +1,14 @@
+In order to build openPHD, you must have:
+wxWidgets w/ GTK installed (both libraries and headers)
+   In Ubuntu this is a package like:
+     * libwxgtk2.8-dev
+
+libcftsio libraries and headers installed
+
+cmake 2.6 (or newer) installed
+
+Run:
+cmake .
+make
+
+Installation doesn't work properly yet
