@@ -96,6 +96,7 @@ public:
 
 	void MakeDevicePage(struct indi_device_t *idev);
         void UpdateWidget(struct indi_prop_t *iprop);
+	void ShowMessage(const char *message);
 	void AddProp(struct indi_device_t *idev, const wxString groupname, struct indi_prop_t *iprop);
 	bool child_window;
 private:
@@ -217,7 +218,18 @@ void IndiGui::UpdateWidget(struct indi_prop_t *iprop)
 	((IndiProp *)iprop->widget)->state->SetState(iprop->state);
 
 	//Display any message
-	if (strlen(iprop->message) > 0) {
+	ShowMessage(iprop->message);
+	iprop->message[0] = 0;
+}
+
+void indigui_show_message(const char *message)
+{
+	indiGui->ShowMessage(message);
+}
+
+void IndiGui::ShowMessage(const char *message)
+{
+	if (message && strlen(message) > 0) {
 		time_t curtime;
 		char timestr[30];
 		struct tm time_loc;
@@ -227,11 +239,9 @@ void IndiGui::UpdateWidget(struct indi_prop_t *iprop)
 		strftime(timestr, sizeof(timestr), "%b %d %T: ", &time_loc);
 		textbuffer->SetInsertionPoint(0);
 		textbuffer->WriteText(wxString::FromAscii(timestr));
-		textbuffer->WriteText(wxString::FromAscii(iprop->message));
+		textbuffer->WriteText(wxString::FromAscii(message));
 		textbuffer->WriteText(_T("\n"));
-		iprop->message[0] = 0;
 	}
-	//indi_prop_set_signals(iprop, 1);
 }
 
 void IndiGui::SetButtonEvent(wxCommandEvent & event)
@@ -576,7 +586,7 @@ void IndiGui::OnQuit(wxCloseEvent& WXUNUSED(event))
 	if (child_window) {
 		Show(false);
 	} else {
-		Close(true);
+		Destroy();
 	}
 }
 		

@@ -617,6 +617,10 @@ static void indi_handle_message(struct indi_device_t *idev, XMLEle *root)
 		if (idev->new_prop_cb) {
 			idev->new_prop_cb(iprop, idev->callback_data);
 		}
+	} else if (strncmp(proptype, "message", 7) == 0) {
+		// Display message
+		indigui_show_message(findXMLAttValu(root, "message"));
+		delXMLEle (root);
 	}
 }
 
@@ -637,8 +641,13 @@ void indi_read_cb (void *fd, void *opaque)
 			root = readXMLEle(lillp, buf[i], errmsg);
 		        if (root) {
 				const char *dev = findXMLAttValu (root, "device");
-				if (! dev)
+				if (! dev) {
+					const char *proptype = tagXMLEle(root);
+					if (strncmp(proptype, "message", 7) == 0) {
+						indigui_show_message(findXMLAttValu(root, "message"));
+					}
 					continue;
+				}
 				idev = indi_find_device(indi, dev);
 				indi_handle_message(idev, root);
 			}
