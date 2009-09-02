@@ -45,10 +45,12 @@ set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/socket_server.cpp
    ${CMAKE_SOURCE_DIR}/tele_INDI.cpp
    ${CMAKE_SOURCE_DIR}/usImage.cpp
-   ${CMAKE_SOURCE_DIR}/libindi/indi.c
-   ${CMAKE_SOURCE_DIR}/libindi/indigui.c
-   ${CMAKE_SOURCE_DIR}/libindi/base64.c
-   ${CMAKE_SOURCE_DIR}/libindi/lilxml.c
+   ${CMAKE_SOURCE_DIR}/libindiclient/indi.c
+   ${CMAKE_SOURCE_DIR}/libindiclient/wx/indigui.cpp
+   ${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_io.cpp
+   ${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_list.cpp
+   ${CMAKE_SOURCE_DIR}/libindiclient/base64.c
+   ${CMAKE_SOURCE_DIR}/libindiclient/lilxml.c
    )
 
 #Suppress some warnings
