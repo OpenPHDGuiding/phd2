@@ -1,3 +1,7 @@
 #summary Screenshots of OpenPHD on Linux
+r14: new native wxWidgets controls
+http://open-phd-guiding.googlecode.com/files/indi-wx.jpg
+
+
 r11: First fully operational build of openPHD with INDI drivers
 http://open-phd-guiding.googlecode.com/files/PHD_Linux.jpg
