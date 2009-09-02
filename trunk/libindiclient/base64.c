@@ -247,4 +247,4 @@ main (int ac, char *av[])
 }
 #endif
 /* For RCS Only -- Do Not Edit */
-static char *rcsid[2] = {(char *)rcsid, "@(#) $RCSfile: base64.c,v $ $Date: 2009/08/02 04:40:04 $ $Revision: 1.1 $ $Name:  $"};
+//static char *rcsid[2] = {(char *)rcsid, "@(#) $RCSfile: base64.c,v $ $Date: 2009/08/02 04:40:04 $ $Revision: 1.1 $ $Name:  $"};

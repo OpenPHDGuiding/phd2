@@ -607,7 +607,7 @@ entityXML (char *s)
 
 	    /* found another entity, copy preceding to malloced buffer */
 	    int nnew = ep - s;			/* all but entity itself */
-	    sret = malbuf = moremem (malbuf, nmalbuf + nnew + 10);
+	    sret = malbuf = (char *)moremem (malbuf, nmalbuf + nnew + 10);
 	    memcpy (malbuf+nmalbuf, s, nnew);
 	    nmalbuf += nnew;
 
@@ -643,7 +643,7 @@ entityXML (char *s)
 	} else {
 	    /* put remaining part of s into malbuf */
 	    int nleft = strlen (s) + 1;		/* include \0 */
-	    sret = malbuf = moremem (malbuf, nmalbuf + nleft);
+	    sret = malbuf = (char *)moremem (malbuf, nmalbuf + nleft);
 	    memcpy (malbuf+nmalbuf, s, nleft);
 	}
 

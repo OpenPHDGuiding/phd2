@@ -1,7 +1,11 @@
 #ifndef _INDI_H_
 #define _INDI_H_
 
-#include <glib.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "indi_list.h"
 
 enum INDI_PERMISSIONS {
 	INDI_RO,
@@ -73,9 +77,10 @@ struct indi_prop_t {
 	struct indi_device_t *idev;
 	void *root;
 	char name[80];
+	char message[256];
 	void *widget;
-	GSList *elems;
-	GSList *signals;
+	indi_list *elems;
+	indi_list *signals;
 	int permission;
 	int state;
 	int type;
@@ -89,7 +94,7 @@ struct indi_device_t {
 	char name[80];
 	unsigned int type;
 	unsigned int capabilities;
-	GSList *props;
+	indi_list *props;
 	void *window;
 	void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data);
 	void *callback_data;
@@ -104,9 +109,9 @@ struct indi_dev_cb_t {
 
 struct indi_t {
 	void *xml_parser;
-	GIOChannel *fh;
-	GSList *devices;
-	GSList *dev_cb_list;
+	void *fh;
+	indi_list *devices;
+	indi_list *dev_cb_list;
 	void *window;
 };
 
@@ -142,4 +147,8 @@ extern struct indi_elem_t *indi_prop_set_string(struct indi_prop_t *iprop, const
 extern struct indi_elem_t *indi_dev_set_string(struct indi_device_t *idev, const char *propname, const char *elemname, const char *value);
 extern struct indi_elem_t *indi_dev_set_switch(struct indi_device_t *idev, const char *propname, const char *elemname, int state);
 extern void indi_dev_enable_blob(struct indi_device_t *idev, int state);
+
+#ifdef __cplusplus
+}
 #endif
+#endif //_INDI_H_

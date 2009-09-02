@@ -30,10 +30,9 @@
 #include "phd.h"
 #include "tele_INDI.h"
 
-#include <gtk/gtk.h>
 extern "C" {
-#include "libindi/indi.h"
-#include "libindi/indigui.h"
+#include "libindiclient/indi.h"
+#include "libindiclient/indigui.h"
 }
 
 extern struct indi_t *INDIClient;
@@ -41,7 +40,7 @@ Telescope_INDIClass INDIScope;
 
 void INDI_PulseGuideScope (int direction, int duration)
 {
-	INDIScope.DoGuiding(direction, duration);
+    INDIScope.DoGuiding(direction, duration);
 }
 
 bool INDI_ScopeConnect()
@@ -54,101 +53,106 @@ static int modal_timeout_cb(void * data)
     Telescope_INDIClass *cb = (Telescope_INDIClass *)(data);
     if(cb->modal) {
         cb->modal = false;
-        gtk_main_quit();
     }
     return FALSE;
 }
 
 static void connect_cb(struct indi_prop_t *iprop, void *data)
 {
-	Telescope_INDIClass *cb = (Telescope_INDIClass *)(data);
-	cb->is_connected = (iprop->state == INDI_STATE_IDLE || iprop->state == INDI_STATE_OK) && indi_prop_get_switch(iprop, "CONNECT");
-	printf("Telescope connected state: %d\n", cb->is_connected);
-	cb->CheckState();
+    Telescope_INDIClass *cb = (Telescope_INDIClass *)(data);
+    cb->is_connected = (iprop->state == INDI_STATE_IDLE || iprop->state == INDI_STATE_OK) && indi_prop_get_switch(iprop, "CONNECT");
+    printf("Telescope connected state: %d\n", cb->is_connected);
+    cb->CheckState();
 }
 
 static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data)
 {
-	Telescope_INDIClass *cb = (Telescope_INDIClass *)(callback_data);
-	cb->NewProp(iprop);
+    Telescope_INDIClass *cb = (Telescope_INDIClass *)(callback_data);
+    cb->NewProp(iprop);
 }
 
 static void tele_move_cb(struct indi_prop_t *iprop, void *callback_data)
 {
     //We don't actually need to keep track of movement at the moment
-	Telescope_INDIClass *cb = (Telescope_INDIClass *)(callback_data);
-	(void)(cb);
+    Telescope_INDIClass *cb = (Telescope_INDIClass *)(callback_data);
+    (void)(cb);
 }
 
 
 void Telescope_INDIClass::CheckState()
 {
-	if(is_connected && (
-		(moveNS && moveEW) ||
-		(pulseGuideNS && pulseGuideEW)))
-	{
-	    if (! ready) {
+    if(is_connected && (
+        (moveNS && moveEW) ||
+        (pulseGuideNS && pulseGuideEW)))
+    {
+        if (! ready) {
             printf("Telescope is ready\n");
             ready = true;
             if (modal) {
                 modal = false;
-                gtk_main_quit();
             }
-	    }
-	}
+        }
+    }
 }
 
 void Telescope_INDIClass::NewProp(struct indi_prop_t *iprop)
 {
-	if (strcmp(iprop->name, "EQUATORIAL_EOD_COORD_REQUEST") == 0) {
-		coord_set_prop = iprop;
-	}
-	else if (strcmp(iprop->name, "EQUATORIAL_EOD_COORD") == 0) {
-		//indi_prop_add_cb(iprop, tele_new_coords_cb, this);
-	}
-	else if (strcmp(iprop->name, "ABORT") == 0) {
-		abort_prop = iprop;
-	}
-	else if (strcmp(iprop->name, "TELESCOPE_MOTION_NS") == 0) {
-		moveNS = iprop;
-		indi_prop_add_cb(iprop, tele_move_cb, this);
-	}
-	else if (strcmp(iprop->name, "TELESCOPE_MOTION_WE") == 0) {
-		moveEW = iprop;
-		indi_prop_add_cb(iprop, tele_move_cb, this);
-	}
-	else if (strcmp(iprop->name, "TELESCOPE_TIMED_GUIDE_NS") == 0) {
-		pulseGuideNS = iprop;
-		indi_prop_add_cb(iprop, tele_move_cb, this);
-	}
-	else if (strcmp(iprop->name, "TELESCOPE_TIMED_GUIDE_WE") == 0) {
-		pulseGuideEW = iprop;
-		indi_prop_add_cb(iprop, tele_move_cb, this);
-	}
-	else if (strcmp(iprop->name, "DEVICE_PORT") == 0) {
-		indi_send(iprop, indi_prop_set_string(iprop, "PORT", serial_port.ToAscii()));
-		indi_dev_set_switch(iprop->idev, "CONNECTION", "CONNECT", TRUE);
-	}
-	else if (strcmp(iprop->name, "CONNECTION") == 0) {
-		indi_prop_add_cb(iprop, connect_cb, this);
-		indi_send(iprop, indi_prop_set_switch(iprop, "CONNECT", TRUE));
-	}
-	CheckState();
+    if (strcmp(iprop->name, "EQUATORIAL_EOD_COORD_REQUEST") == 0) {
+        coord_set_prop = iprop;
+    }
+    else if (strcmp(iprop->name, "EQUATORIAL_EOD_COORD") == 0) {
+        //indi_prop_add_cb(iprop, tele_new_coords_cb, this);
+    }
+    else if (strcmp(iprop->name, "ABORT") == 0) {
+        abort_prop = iprop;
+    }
+    else if (strcmp(iprop->name, "TELESCOPE_MOTION_NS") == 0) {
+        moveNS = iprop;
+        indi_prop_add_cb(iprop, tele_move_cb, this);
+    }
+    else if (strcmp(iprop->name, "TELESCOPE_MOTION_WE") == 0) {
+        moveEW = iprop;
+        indi_prop_add_cb(iprop, tele_move_cb, this);
+    }
+    else if (strcmp(iprop->name, "TELESCOPE_TIMED_GUIDE_NS") == 0) {
+        pulseGuideNS = iprop;
+        indi_prop_add_cb(iprop, tele_move_cb, this);
+    }
+    else if (strcmp(iprop->name, "TELESCOPE_TIMED_GUIDE_WE") == 0) {
+        pulseGuideEW = iprop;
+        indi_prop_add_cb(iprop, tele_move_cb, this);
+    }
+    else if (strcmp(iprop->name, "DEVICE_PORT") == 0) {
+        indi_send(iprop, indi_prop_set_string(iprop, "PORT", serial_port.ToAscii()));
+        indi_dev_set_switch(iprop->idev, "CONNECTION", "CONNECT", TRUE);
+    }
+    else if (strcmp(iprop->name, "CONNECTION") == 0) {
+        indi_prop_add_cb(iprop, connect_cb, this);
+        indi_send(iprop, indi_prop_set_switch(iprop, "CONNECT", TRUE));
+    }
+    CheckState();
 }
 
 bool Telescope_INDIClass::Connect() {
-
+    wxLongLong msec;
     if (! INDIClient) {
         INDIClient = indi_init();
         if (! INDIClient) {
             return true;
         }
     }
-
+    if (indi_name.IsEmpty()) {
+        printf("No INDI telescope is set.  Please set INDImount in the preferences file\n");
+        return true;
+    }
     indi_device_add_cb(INDIClient, indi_name.ToAscii(), new_prop_cb, this);
-    g_timeout_add_seconds(10, (GSourceFunc)modal_timeout_cb, this);
+
     modal = true;
-    gtk_main();
+    msec = wxGetLocalTimeMillis();
+    while(modal && wxGetLocalTimeMillis() - msec < 10 * 1000) {
+        ::wxSafeYield();
+    }
+    modal = false;
 
     if(! ready)
         return true;
@@ -161,19 +165,19 @@ void Telescope_INDIClass::PulseGuide(int direction, int duration_msec)
     double duration = duration_msec / 1000.0;
     switch (direction) {
         case EAST:
-			indi_send(pulseGuideEW,
+            indi_send(pulseGuideEW,
                       indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_E", duration));
             break;
         case WEST:
-			indi_send(pulseGuideEW,
+            indi_send(pulseGuideEW,
                       indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_W", duration));
             break;
         case NORTH:
-			indi_send(pulseGuideNS,
+            indi_send(pulseGuideNS,
                       indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_N", duration));
             break;
         case SOUTH:
-			indi_send(pulseGuideNS,
+            indi_send(pulseGuideNS,
                       indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_S", duration));
             break;
     }
@@ -183,19 +187,19 @@ void Telescope_INDIClass::StartMove(int direction)
 {
     switch (direction) {
         case EAST:
-			indi_send(moveEW,
+            indi_send(moveEW,
                       indi_prop_set_switch(moveEW, "MOTION_EAST", TRUE));
             break;
         case WEST:
-			indi_send(moveEW,
+            indi_send(moveEW,
                       indi_prop_set_switch(moveEW, "MOTION_WEST", TRUE));
             break;
         case NORTH:
-			indi_send(moveNS,
+            indi_send(moveNS,
                       indi_prop_set_switch(moveNS, "MOTION_NORTH", TRUE));
             break;
         case SOUTH:
-			indi_send(moveNS,
+            indi_send(moveNS,
                       indi_prop_set_switch(moveNS, "MOTION_SOUTH", TRUE));
             break;
     }
@@ -208,36 +212,41 @@ void Telescope_INDIClass::StopMove(int direction)
         case WEST:
             indi_prop_set_switch(moveEW, "MOTION_EAST", FALSE);
             indi_prop_set_switch(moveEW, "MOTION_WEST", FALSE);
-			indi_send(moveEW, NULL);
+            indi_send(moveEW, NULL);
             break;
         case NORTH:
         case SOUTH:
             indi_prop_set_switch(moveNS, "MOTION_NORTH", FALSE);
             indi_prop_set_switch(moveNS, "MOTION_SOUTH", FALSE);
-			indi_send(moveNS, NULL);
+            indi_send(moveNS, NULL);
             break;
     }
 }
 
 void Telescope_INDIClass::DoGuiding(int direction, int duration_msec)
 {
-	if (! ready)
-		return;
+    wxLongLong msec;
+    if (! ready)
+        return;
 
-	printf("Timed move: %d %d %d\n", direction, duration_msec, CanPulseGuide());
+    printf("Timed move: %d %d %d\n", direction, duration_msec, CanPulseGuide());
 
-	if (CanPulseGuide()) {
-		// We can submit a timed guide, and let the mount take care of it
+    if (CanPulseGuide()) {
+        // We can submit a timed guide, and let the mount take care of it
         PulseGuide(direction, duration_msec);
-        g_timeout_add(duration_msec, (GSourceFunc)modal_timeout_cb, this);
-        modal = true;
-        gtk_main();
-		return;
-	}
-	StartMove(direction);
-	// We should probably use an event or something here, as this method means
+        msec = wxGetLocalTimeMillis();
+        while(wxGetLocalTimeMillis() - msec < duration_msec) {
+            wxTheApp->Yield();
+        }
+        return;
+    }
+    StartMove(direction);
+    // We should probably use an event or something here, as this method means
     // PHD will be unresponsive during a move
-	wxMilliSleep(duration_msec);
-	StopMove(direction);
+    msec = wxGetLocalTimeMillis();
+    while(wxGetLocalTimeMillis() - msec < duration_msec) {
+        wxTheApp->Yield();
+    }
+    StopMove(direction);
 }
 
