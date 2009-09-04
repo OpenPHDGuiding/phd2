@@ -215,7 +215,7 @@ void IndiGui::UpdateWidget(struct indi_prop_t *iprop)
 			case SWITCH_COMBOBOX:
 				{
 				if (elem->value.set) {
-					int choice = (int)value;
+					int choice = (long)value;
 					wxChoice *combo = (wxChoice *)((IndiProp *)iprop->widget)->gbs->FindItemAtPosition(POS(0,0))->GetWindow();
 					combo->SetSelection(choice);
 				}
@@ -291,7 +291,7 @@ void IndiGui::SetComboboxEvent(wxCommandEvent & event)
 
 	for (isl = il_iter(iprop->elems); ! il_is_last(isl); isl = il_next(isl)) {
 		struct indi_elem_t *elem = (struct indi_elem_t *)il_item(isl);
-		int value = (int)((IndiProp *)iprop->widget)->ctrl[wxString::FromAscii(elem->name)];
+		int value = (long)((IndiProp *)iprop->widget)->ctrl[wxString::FromAscii(elem->name)];
 		if (value == choice) {
 			if (! elem->value.set) {
 				elem->value.set = 1;
