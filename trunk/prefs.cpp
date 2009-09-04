@@ -37,12 +37,10 @@ extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
 
 #if defined (INDI_CAMERA)
 #include "cam_INDI.h"
-extern Camera_INDIClass Camera_INDI;
 #endif
 
 #if defined (GUIDE_INDI)
 #include "tele_INDI.h"
-extern Telescope_INDIClass INDIScope;
 #endif
 
 void MyFrame::ReadPreferences() {

@@ -85,6 +85,7 @@ struct indi_prop_t {
 	int state;
 	int type;
 	int rule;
+	int save;
 	void (* prop_update_cb)(struct indi_prop_t *iprop, void *callback_data);
 	void *callback_data;
 };
@@ -113,6 +114,7 @@ struct indi_t {
 	indi_list *devices;
 	indi_list *dev_cb_list;
 	void *window;
+	void *config;
 };
 
 extern struct indi_device_t *indi_find_device(struct indi_t *indi, const char *dev);
@@ -130,7 +132,7 @@ extern void indi_send(struct indi_prop_t *iprop, struct indi_elem_t *ielem );
 extern void indi_prop_add_cb(struct indi_prop_t *iprop,
                       void (* prop_update_cb)(struct indi_prop_t *iprop, void *callback_data),
                       void *callback_data);
-extern struct indi_t *indi_init();
+extern struct indi_t *indi_init(const char *hostname, int port, const char *config);
 
 extern void indi_device_add_cb(struct indi_t *indi, const char *devname,
              void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data),

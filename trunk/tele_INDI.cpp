@@ -36,6 +36,8 @@ extern "C" {
 }
 
 extern struct indi_t *INDIClient;
+extern long INDIport;
+extern wxString INDIhost;
 Telescope_INDIClass INDIScope;
 
 void INDI_PulseGuideScope (int direction, int duration)
@@ -136,7 +138,7 @@ void Telescope_INDIClass::NewProp(struct indi_prop_t *iprop)
 bool Telescope_INDIClass::Connect() {
     wxLongLong msec;
     if (! INDIClient) {
-        INDIClient = indi_init();
+        INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
         if (! INDIClient) {
             return true;
         }

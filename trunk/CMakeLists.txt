@@ -34,6 +34,7 @@ set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/cam_SBIG.cpp
    ${CMAKE_SOURCE_DIR}/cam_simulator.cpp
    ${CMAKE_SOURCE_DIR}/canvas.cpp
+   ${CMAKE_SOURCE_DIR}/config_INDI.cpp
    ${CMAKE_SOURCE_DIR}/eegg.cpp
    ${CMAKE_SOURCE_DIR}/frame_events.cpp
    ${CMAKE_SOURCE_DIR}/graph.cpp
@@ -49,6 +50,10 @@ set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/libindiclient/wx/indigui.cpp
    ${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_io.cpp
    ${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_list.cpp
+   ${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_config.cpp
+   ${CMAKE_SOURCE_DIR}/libindiclient/wx/indisave.cpp
+   ${CMAKE_SOURCE_DIR}/libindiclient/wx/wxled.cpp
+   ${CMAKE_SOURCE_DIR}/libindiclient/wx/wxchecktreectrl.cpp
    ${CMAKE_SOURCE_DIR}/libindiclient/base64.c
    ${CMAKE_SOURCE_DIR}/libindiclient/lilxml.c
    )

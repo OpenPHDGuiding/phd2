@@ -126,6 +126,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
 	EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
 	EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
+EVT_MENU(MENU_INDICONFIG,MyFrame::OnINDIConfig)
+EVT_MENU(MENU_INDIDIALOG,MyFrame::OnINDIDialog)
 EVT_MENU(MENU_CLEARDARK,MyFrame::OnClearDark)
 EVT_MENU(MENU_LOG,MyFrame::OnLog)
 EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
@@ -255,6 +257,11 @@ MyFrame::MyFrame(const wxString& title)
 	tools_menu->AppendCheckItem(MENU_GRAPH,_T("Enable Graph"),_T("Enable / disable graph"));
 	tools_menu->AppendCheckItem(MENU_STARPROFILE,_T("Enable Star profile"),_T("Enable / disable star profile view"));
 
+#if defined GUIDE_INDI || defined INDI_CAMERA
+	wxMenu *indi_menu = new wxMenu;
+	indi_menu->Append(MENU_INDICONFIG, _T("&Configure..."), _T("Configure INDI settings"));
+	indi_menu->Append(MENU_INDIDIALOG, _T("&Controls..."), _T("Show INDI controls for available devices"));
+#endif
 
 	wxMenu *help_menu = new wxMenu;
 	help_menu->Append(wxID_ABOUT, _T("&About...\tF1"), _T("About PHD Guiding"));
@@ -265,6 +272,9 @@ MyFrame::MyFrame(const wxString& title)
 	Menubar = new wxMenuBar();
 	Menubar->Append(file_menu, _T("&File"));
 	Menubar->Append(mount_menu, _T("&Mount"));
+#if defined GUIDE_INDI || defined INDI_CAMERA
+	Menubar->Append(indi_menu, _T("&INDI"));
+#endif
 	Menubar->Append(tools_menu, _T("&Tools"));
 	Menubar->Append(help_menu, _T("&Help"));
 	SetMenuBar(Menubar);

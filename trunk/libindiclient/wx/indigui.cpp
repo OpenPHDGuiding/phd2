@@ -20,8 +20,9 @@
 
 #include "../indi.h"
 #include "../indigui.h"
+#include "../indi_config.h"
 
-#include "wxled.cpp"
+#include "wxled.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,6 +40,9 @@
 #include <wx/checkbox.h>
 #include <wx/tglbtn.h>
 #include <wx/choice.h>
+#include <wx/menu.h>
+
+#include "indisave.h"
 
 #define POS(r, c)        wxGBPosition(r,c)
 #define SPAN(r, c)       wxGBSpan(r,c)
@@ -88,10 +92,13 @@ enum {
 	SWITCH_COMBOBOX,
 };
 
+enum {
+	ID_Save = 1,
+};
 class IndiGui : public wxFrame
 {
 public:
-	IndiGui();
+	IndiGui(struct indi_t *_indi);
 	//~IndiGui();
 
 	void MakeDevicePage(struct indi_device_t *idev);
@@ -119,17 +126,20 @@ private:
 	void SetToggleButtonEvent(wxCommandEvent & event);
 	void SetCheckboxEvent(wxCommandEvent & event);
 	void OnQuit(wxCloseEvent& WXUNUSED(event));
+	void SaveDialog(wxCommandEvent& WXUNUSED(event));
 
 	wxPanel *panel;
 	wxBoxSizer *sizer;
 	wxNotebook *parent_notebook;
 	wxTextCtrl *textbuffer;
 
+	struct indi_t *indi;
 	DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE(IndiGui, wxFrame)
 EVT_CLOSE(IndiGui::OnQuit)
+EVT_MENU(ID_Save, IndiGui::SaveDialog)
 END_EVENT_TABLE()
 
 static IndiGui *indiGui;
@@ -222,7 +232,7 @@ void IndiGui::UpdateWidget(struct indi_prop_t *iprop)
 	iprop->message[0] = 0;
 }
 
-void indigui_show_message(const char *message)
+void indigui_show_message(struct indi_t *indi, const char *message)
 {
 	indiGui->ShowMessage(message);
 }
@@ -562,16 +572,24 @@ void IndiGui::AddProp(struct indi_device_t *idev, const wxString groupname, stru
 	indiDev->page->Show();
 }
 
-void *indigui_create_window(void)
+void *indigui_create_window(struct indi_t *indi)
 {
-	indiGui = new IndiGui();
+	indiGui = new IndiGui(indi);
 	return indiGui;
 }
 
-IndiGui::IndiGui() : wxFrame((wxFrame *)NULL, wxID_ANY,
+IndiGui::IndiGui(struct indi_t *_indi) : wxFrame((wxFrame *)NULL, wxID_ANY,
                              _("INDI Options"),
                              wxDefaultPosition, wxSize(640, 400))
 {
+	indi = _indi;
+	wxMenu *menuFile = new wxMenu;
+
+	menuFile->Append( ID_Save, _T("&Save Settings...") );
+	wxMenuBar *menuBar = new wxMenuBar;
+	menuBar->Append( menuFile, _T("&File") );
+	SetMenuBar( menuBar );
+
 	panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE | wxTAB_TRAVERSAL);
 	sizer = new wxBoxSizer(wxVERTICAL);
 	panel->SetSizer(sizer);
@@ -579,6 +597,16 @@ IndiGui::IndiGui() : wxFrame((wxFrame *)NULL, wxID_ANY,
 	sizer->Add(parent_notebook, 0, wxEXPAND | wxALL);
 	textbuffer = new wxTextCtrl(panel, wxID_ANY, _T("This Is A Test\nTwo Lines"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
 	sizer->Add(textbuffer, 1, wxEXPAND | wxALL);
+}
+
+void IndiGui::SaveDialog(wxCommandEvent& WXUNUSED(event))
+{
+	IndiSave *saveDlg = new IndiSave(this, _T("Save Options"), indi);
+	if (saveDlg->ShowModal() == wxID_OK) {
+		saveDlg->SetSave();
+		ic_update_props(indi->config);
+	}
+	saveDlg->Destroy();
 }
 
 void IndiGui::OnQuit(wxCloseEvent& WXUNUSED(event))
@@ -608,7 +636,7 @@ IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
-	indi = indi_init();
+	indi = indi_init("localhost", 7624, "INDI_wx");
 	indiGui->Show(true);
 	//SetTopWindow(indiGui);
 	return true;
