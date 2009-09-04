@@ -52,6 +52,8 @@ public:
 	void    NewProp(struct indi_prop_t *iprop);
 	Camera_INDIClass();
 };
+
+extern Camera_INDIClass Camera_INDI;
 #endif
 
 

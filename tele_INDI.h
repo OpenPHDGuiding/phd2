@@ -60,4 +60,6 @@ public:
 };
 void INDI_PulseGuideScope(int direction, int duration);
 bool INDI_ScopeConnect();
+
+extern Telescope_INDIClass INDIScope;
 #endif

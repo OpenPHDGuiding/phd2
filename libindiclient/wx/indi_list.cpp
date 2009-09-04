@@ -10,6 +10,13 @@ public:
 	list<void *>::iterator iter;
 };
 
+void il_free(indi_list *l)
+{
+	IndiList *il = (IndiList *)l;
+	if (il)
+		delete il;
+}
+
 indi_list *il_iter(indi_list *l)
 {
 	IndiList *il = (IndiList *)l;
@@ -52,8 +59,14 @@ indi_list *il_append(indi_list *l, void *data)
 	return il;
 }
 
-
 indi_list *il_remove(indi_list *l, void *data)
+{
+	IndiList *il = (IndiList *)l;
+	if (il)
+		il->l.remove(data);
+	return l;
+}
+indi_list *il_remove_first(indi_list *l)
 {
 	IndiList *il = (IndiList *)l;
 	if (il)

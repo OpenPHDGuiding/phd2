@@ -143,6 +143,8 @@ public:
 	void OnServerEvent(wxSocketEvent& evt);
 	void OnSocketEvent(wxSocketEvent& evt);
 	void OnServerMenu(wxCommandEvent& evt);
+	void OnINDIConfig(wxCommandEvent& evt);
+	void OnINDIDialog(wxCommandEvent& evt);
 	bool StartServer(bool state);
 	void OnGraph(wxCommandEvent& evt);
 	void OnStarProfile(wxCommandEvent& evt);
@@ -236,6 +238,8 @@ enum {
 	MENU_GRAPH,
 	MENU_STARPROFILE,
 	MENU_AUTOSTAR,
+	MENU_INDICONFIG,
+	MENU_INDIDIALOG,
 	BUTTON_GRAPH_LENGTH,
 	BUTTON_GRAPH_MODE,
 	BUTTON_GRAPH_HIDE,

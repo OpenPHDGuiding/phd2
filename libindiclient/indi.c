@@ -36,6 +36,7 @@
 #include "indi.h"
 #include "indigui.h"
 #include "indi_io.h"
+#include "indi_config.h"
 
 #ifndef INDI_DEBUG
   #define INDI_DEBUG 0
@@ -595,6 +596,7 @@ static void indi_handle_message(struct indi_device_t *idev, XMLEle *root)
 			// BLOB callbacks are handled after decoding
 			iprop->prop_update_cb(iprop, iprop->callback_data);
 		}
+		ic_prop_set(idev->indi->config, iprop);
 	} else if (strncmp(proptype, "def", 3) == 0) {
 		// Exit if this property is already known
 		if (indi_find_prop(idev, propname)) {
@@ -617,9 +619,10 @@ static void indi_handle_message(struct indi_device_t *idev, XMLEle *root)
 		if (idev->new_prop_cb) {
 			idev->new_prop_cb(iprop, idev->callback_data);
 		}
+		ic_prop_set(idev->indi->config, iprop);
 	} else if (strncmp(proptype, "message", 7) == 0) {
 		// Display message
-		indigui_show_message(findXMLAttValu(root, "message"));
+		indigui_show_message(idev->indi, findXMLAttValu(root, "message"));
 		delXMLEle (root);
 	}
 }
@@ -644,7 +647,7 @@ void indi_read_cb (void *fd, void *opaque)
 				if (! dev) {
 					const char *proptype = tagXMLEle(root);
 					if (strncmp(proptype, "message", 7) == 0) {
-						indigui_show_message(findXMLAttValu(root, "message"));
+						indigui_show_message(indi, findXMLAttValu(root, "message"));
 					}
 					continue;
 				}
@@ -655,7 +658,7 @@ void indi_read_cb (void *fd, void *opaque)
 	}
 }
 
-struct indi_t *indi_init()
+struct indi_t *indi_init(const char *hostname, int port, const char *config)
 {
 	struct indi_t *indi;
 
@@ -663,10 +666,11 @@ struct indi_t *indi_init()
 
 	indi = (struct indi_t *)calloc(1, sizeof(struct indi_t));
 
-	indi->window = indigui_create_window();
+	indi->window = indigui_create_window(indi);
+	indi->config = ic_init(indi, config);
 
 	indi->xml_parser = (void *)newLilXML();
-	indi->fh = io_indi_open_server("localhost", 7624, indi_read_cb, indi);
+	indi->fh = io_indi_open_server(hostname, port, indi_read_cb, indi);
 	if (! indi->fh) {
 		fprintf(stderr, "Failed to connect to INDI server\n");
 		free(indi);

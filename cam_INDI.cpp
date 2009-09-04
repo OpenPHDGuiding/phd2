@@ -29,12 +29,12 @@
 #include "image_math.h"
 #include "cam_INDI.h"
 
-extern "C" {
-  #include "libindiclient/indi.h"
-  #include "libindiclient/indigui.h"
-}
+#include "libindiclient/indi.h"
+#include "libindiclient/indigui.h"
 
-struct indi_t *INDIClient = NULL;
+extern long INDIport;
+extern wxString INDIhost;
+extern struct indi_t *INDIClient;
 
 void camera_capture_cb(struct indi_prop_t *iprop, void *data)
 {
@@ -121,7 +121,7 @@ void Camera_INDIClass::NewProp(struct indi_prop_t *iprop)
 bool Camera_INDIClass::Connect() {
     wxLongLong msec;
     if (! INDIClient) {
-        INDIClient = indi_init();
+        INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
         if (! INDIClient) {
             return true;
         }
