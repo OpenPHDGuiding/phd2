@@ -248,7 +248,7 @@ void indi_dev_enable_blob(struct indi_device_t *idev, int state)
 
 	if (idev) {
 		sprintf(msg, "<enableBLOB device=\"%s\">%s</enableBLOB>\n", idev->name, state ? "Also" : "Never");
-		dbg_printf("sending (%d):\n%s", strlen(msg), msg);
+		dbg_printf("sending (%lu):\n%s", (unsigned long)strlen(msg), msg);
 		io_indi_sock_write(idev->indi->fh, msg, strlen(msg));
 	}
 
@@ -324,7 +324,7 @@ void indi_send(struct indi_prop_t *iprop, struct indi_elem_t *ielem )
 	}
 	ptr += sprintf(ptr, "</new%sVector>\n", type);
 	iprop->state = INDI_STATE_BUSY;
-	dbg_printf("sending %s(%d):\n%s", type, strlen(msg), msg);
+	dbg_printf("sending %s(%lu):\n%s", type, (unsigned long)strlen(msg), msg);
 	indigui_update_widget(iprop);
 	io_indi_sock_write(iprop->idev->indi->fh, msg, strlen(msg));
 }
@@ -437,7 +437,7 @@ static int indi_convert_data(struct indi_elem_t *ielem, int type, const char *da
 		ielem->value.blob.ptr = ielem->value.blob.data;
 		ielem->value.blob.orig_data = data;
 		ielem->value.blob.orig_size = data_size;
-		printf("Found blob type: %s size: %d\n", ielem->value.blob.fmt, ielem->value.blob.size);
+		printf("Found blob type: %s size: %lu\n", ielem->value.blob.fmt, (unsigned long)ielem->value.blob.size);
 		ielem->value.blob.compressed = (ielem->value.blob.fmt[strlen(ielem->value.blob.fmt)-2] == '.'
 			 && ielem->value.blob.fmt[strlen(ielem->value.blob.fmt)-1] == 'z')
 			 ? 1 : 0;

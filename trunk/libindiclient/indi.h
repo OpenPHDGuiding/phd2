@@ -56,7 +56,7 @@ struct indi_elem_t {
 		struct {
 			char *data;
 			char *ptr;
-			unsigned int size;
+			size_t size;
 			size_t data_size;
 			unsigned int compressed;
 			const char *orig_data;
