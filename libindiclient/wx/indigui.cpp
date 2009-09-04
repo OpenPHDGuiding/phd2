@@ -18,15 +18,16 @@
   Contact Information: gcx@phracturedblue.com <Geoffrey Hausheer>
 *******************************************************************************/
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "../indi.h"
 #include "../indigui.h"
 #include "../indi_config.h"
 
 #include "wxled.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
 #include <wx/wx.h>
 #include <wx/frame.h>
