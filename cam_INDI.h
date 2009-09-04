@@ -35,12 +35,14 @@ private:
 	struct indi_prop_t *frame_prop;
 	struct indi_prop_t *frame_type_prop;
 	struct indi_prop_t *binning_prop;
+	struct indi_prop_t *video_prop;
 	int     img_count;
 	bool    ready;
 	bool    has_blob;
 public:
 	bool    modal;
     wxString indi_name;
+    wxString indi_port;
 	bool    is_connected;
     struct  indi_elem_t *blob_elem;
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot

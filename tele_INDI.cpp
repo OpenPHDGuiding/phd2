@@ -124,7 +124,7 @@ void Telescope_INDIClass::NewProp(struct indi_prop_t *iprop)
         pulseGuideEW = iprop;
         indi_prop_add_cb(iprop, tele_move_cb, this);
     }
-    else if (strcmp(iprop->name, "DEVICE_PORT") == 0) {
+    else if (strcmp(iprop->name, "DEVICE_PORT") == 0 && serial_port.Length()) {
         indi_send(iprop, indi_prop_set_string(iprop, "PORT", serial_port.ToAscii()));
         indi_dev_set_switch(iprop->idev, "CONNECTION", "CONNECT", TRUE);
     }

@@ -40,6 +40,7 @@ void camera_capture_cb(struct indi_prop_t *iprop, void *data)
 {
     Camera_INDIClass *cb = (Camera_INDIClass *)(data);
     cb->blob_elem = indi_find_first_elem(iprop);
+    indi_dev_enable_blob(iprop->idev, FALSE);
     printf("Got camera callback\n");
     cb->modal = false;
 }
@@ -110,6 +111,14 @@ void Camera_INDIClass::NewProp(struct indi_prop_t *iprop)
         printf("Found CCD_BINNING for camera %s\n", iprop->idev->name);
         binning_prop = iprop;
     }
+    else if (strcmp(iprop->name, "VIDEO_STREAM") == 0) {
+        printf("Found Video Camera %s\n", iprop->idev->name);
+        video_prop = iprop;
+    }
+    else if (strcmp(iprop->name, "DEVICE_PORT") == 0 && indi_port.Length()) {
+        indi_send(iprop, indi_prop_set_string(iprop, "PORT", indi_port.ToAscii()));
+        indi_dev_set_switch(iprop->idev, "CONNECTION", "CONNECT", TRUE);
+    }
     else if (strcmp(iprop->name, "CONNECTION") == 0) {
         printf("Found CONNECTION for camera %s\n", iprop->idev->name);
         indi_send(iprop, indi_prop_set_switch(iprop, "CONNECT", TRUE));
@@ -176,12 +185,20 @@ bool Camera_INDIClass::CaptureFull(int duration, usImage& img, bool recon) {
     long fpixel[3] = {1,1,1};
 
     indi_dev_enable_blob(expose_prop->idev, TRUE);
-    printf("Exposing for %d(ms)\n", duration);
-    indi_prop_set_number(expose_prop, "CCD_EXPOSURE_VALUE", duration / 1000.0);
-    indi_send(expose_prop, NULL);
+    if (video_prop) {
+        printf("Enabling video capture\n");
+        indi_send(video_prop, indi_prop_set_switch(video_prop, "ON", TRUE));
+    } else {
+        printf("Exposing for %d(ms)\n", duration);
+        indi_prop_set_number(expose_prop, "CCD_EXPOSURE_VALUE", duration / 1000.0);
+        indi_send(expose_prop, NULL);
+    }
     modal = true;
     while (modal) {
 	wxTheApp->Yield();
+    }
+    if (video_prop) {
+        indi_send(video_prop, indi_prop_set_switch(video_prop, "OFF", TRUE));
     }
 
     if (!fits_open_memfile(&fptr,

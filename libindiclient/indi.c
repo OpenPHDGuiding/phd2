@@ -77,7 +77,7 @@ static struct indi_dev_cb_t *indi_find_dev_cb(struct indi_t *indi, const char *d
 
 	for (isl = il_iter(indi->dev_cb_list); ! il_is_last(isl); isl = il_next(isl)) {
 		struct indi_dev_cb_t *cb = (struct indi_dev_cb_t *)il_item(isl);
-		if (strncmp(cb->devname, devname, sizeof(cb->devname)) == 0) {
+		if (strlen(cb->devname) == 0 || strncmp(cb->devname, devname, sizeof(cb->devname)) == 0) {
 			return cb;
 		}
 	}
@@ -88,14 +88,26 @@ struct indi_device_t *indi_find_device(struct indi_t *indi, const char *dev)
 {
 	indi_list *isl;
 	struct indi_device_t *idev;
-	struct indi_dev_cb_t *cb;
 
+	if(! indi)
+		return NULL;
 	for (isl = il_iter(indi->devices); ! il_is_last(isl); isl = il_next(isl)) {
 		idev = (struct indi_device_t *)il_item(isl);
-		if (strncmp(idev->name, dev, sizeof(idev->name)) == 0) {
+		if (strlen(dev) == 0 || strncmp(idev->name, dev, sizeof(idev->name)) == 0) {
 			return idev;
 		}
 	}
+	return NULL;
+}
+
+static struct indi_device_t *indi_new_device(struct indi_t *indi, const char *dev)
+{
+	struct indi_device_t *idev;
+	struct indi_dev_cb_t *cb;
+
+	idev = indi_find_device(indi, dev);
+	if (idev)
+		return idev;
 	idev = (struct indi_device_t *)calloc(1, sizeof(struct indi_device_t));
 	strncpy(idev->name, dev, sizeof(idev->name));
 	idev->indi = indi;
@@ -103,7 +115,8 @@ struct indi_device_t *indi_find_device(struct indi_t *indi, const char *dev)
 	if ((cb = indi_find_dev_cb(indi, dev))) {
 		idev->new_prop_cb = cb->new_prop_cb;
 		idev->callback_data = cb->callback_data;
-		indi->dev_cb_list = il_remove(indi->dev_cb_list, cb);
+		if (strlen(cb->devname))
+			indi->dev_cb_list = il_remove(indi->dev_cb_list, cb);
 		free(cb);
 	}
 
@@ -547,6 +560,7 @@ void indi_device_add_cb(struct indi_t *indi, const char *devname,
 		if (! cb) {
 			cb = (struct indi_dev_cb_t *)calloc(1, sizeof(struct indi_dev_cb_t));
 			strncpy(cb->devname, devname, sizeof(cb->devname));
+			indi->dev_cb_list = il_append(indi->dev_cb_list, cb);
 		}
 		cb->new_prop_cb = new_prop_cb;
 		cb->callback_data = callback_data;
@@ -561,21 +575,6 @@ void indi_prop_add_cb(struct indi_prop_t *iprop,
 	iprop->callback_data = callback_data;
 }
 
-#ifdef INDI_TEST_BLOB
-static void indi_camera_capture_cb(struct indi_prop_t *iprop, void *data)
-{
-	FILE *fh;
-	char str[80];
-	static int img_count;
-	struct indi_elem_t *ielem = indi_find_first_elem(iprop);
-
-	sprintf(str, "test%03d.fits", img_count++);
-	printf("Writing: %s\n", str);
-	fh = fopen(str, "w+");
-	fwrite(ielem->value.blob.data, ielem->value.blob.size, 1, fh);
-	fclose(fh);
-}
-#endif
 
 static void indi_handle_message(struct indi_device_t *idev, XMLEle *root)
 {
@@ -603,12 +602,6 @@ static void indi_handle_message(struct indi_device_t *idev, XMLEle *root)
 			return;
 		}
 		iprop = indi_new_prop(root, idev);
-#ifdef INDI_TEST_BLOB
-		if (iprop->type == INDI_PROP_BLOB) {
-			indi_dev_enable_blob(iprop->idev, 1);
-		        indi_prop_add_cb(iprop, indi_camera_capture_cb, NULL);
-		}
-#endif
 		// We need to build GUI elements here
 		groupname = findXMLAttValu(root, "group");
 		if (! groupname) {
@@ -619,7 +612,7 @@ static void indi_handle_message(struct indi_device_t *idev, XMLEle *root)
 		if (idev->new_prop_cb) {
 			idev->new_prop_cb(iprop, idev->callback_data);
 		}
-		ic_prop_set(idev->indi->config, iprop);
+		ic_prop_def(idev->indi->config, iprop);
 	} else if (strncmp(proptype, "message", 7) == 0) {
 		// Display message
 		indigui_show_message(idev->indi, findXMLAttValu(root, "message"));
@@ -651,7 +644,7 @@ void indi_read_cb (void *fd, void *opaque)
 					}
 					continue;
 				}
-				idev = indi_find_device(indi, dev);
+				idev = indi_new_device(indi, dev);
 				indi_handle_message(idev, root);
 			}
 		}

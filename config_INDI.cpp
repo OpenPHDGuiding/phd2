@@ -54,6 +54,7 @@ private:
     wxTextCtrl *host;
     wxTextCtrl *port;
     wxComboBox *cam;
+    wxTextCtrl *camport;
     wxComboBox *mount;
     wxTextCtrl *mountport;
 };
@@ -97,15 +98,20 @@ INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, _T("INDI C
     cam = GetDevices(config->Read(_T("INDIcam"), _T("")));
     gbs->Add(cam, POS(2, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Telescope Driver:")),
+    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Camera Port:")),
              POS(3, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+    camport = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDIcam_port"), _T("")));
+    gbs->Add(camport, POS(3, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+
+    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Telescope Driver:")),
+             POS(4, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
     mount = GetDevices(config->Read(_T("INDImount"), _T("")));
-    gbs->Add(mount, POS(3, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    gbs->Add(mount, POS(4, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Telescope Port:")),
-             POS(4, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+             POS(5, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
     mountport = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDImount_port"), _T("")));
-    gbs->Add(mountport, POS(4, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    gbs->Add(mountport, POS(5, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 
     sizer = new wxBoxSizer(wxVERTICAL) ;
     sizer->Add(gbs);
@@ -127,6 +133,9 @@ void INDIConfig::SaveSettings()
 
     Camera_INDI.indi_name = cam->GetValue();
     config->Write(_T("INDIcam"), Camera_INDI.indi_name);
+
+    Camera_INDI.indi_port = camport->GetValue();
+    config->Write(_T("INDIcami_port"), Camera_INDI.indi_port);
 
     INDIScope.indi_name = mount->GetValue();
     config->Write(_T("INDImount"), INDIScope.indi_name);

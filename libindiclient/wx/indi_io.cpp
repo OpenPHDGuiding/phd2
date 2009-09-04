@@ -2,6 +2,9 @@
 #include <wx/socket.h>
 #include <wx/listimpl.cpp>
 #include <wx/app.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
+
 
 #include "../indi_io.h"
 
@@ -15,11 +18,12 @@ WX_DECLARE_LIST(IndiCB, cbList);
 WX_DEFINE_LIST(cbList);
 static cbList idle;
 enum {
-	IDLE_ID   = 9998,
-	SOCKET_ID = 9999,
+	SOCKET_ID = 1,
 };
 
-class IndiIO : public wxEvtHandler
+//wxWidgets doesn't have a non-gui class that will receive idle events
+//so we use a wxFrame which will never be shown
+class IndiIO : public wxFrame
 { 
 public:
 	IndiIO();
@@ -35,11 +39,18 @@ public:
 
 	wxSocketClient *m_sock;
 
+	DECLARE_EVENT_TABLE()
 };
+
+BEGIN_EVENT_TABLE(IndiIO, wxFrame)
+	EVT_SOCKET(SOCKET_ID, IndiIO::OnSocketEvent)
+	EVT_IDLE(IndiIO::OnIdleEvent)
+END_EVENT_TABLE()
+
 
 //static IndiIO *indiIO;
 
-IndiIO::IndiIO() : wxEvtHandler()
+IndiIO::IndiIO() : wxFrame(wxTheApp->GetTopWindow(), wxID_ANY, _T("Socket"))
 {
 	//indiIO = this;
 	m_sock = new wxSocketClient();
@@ -48,8 +59,6 @@ IndiIO::IndiIO() : wxEvtHandler()
 	                  wxSOCKET_INPUT_FLAG |
 	                  wxSOCKET_LOST_FLAG);
 	m_sock->Notify(true);
-	Connect(IDLE_ID, wxEVT_IDLE, wxIdleEventHandler(IndiIO::OnIdleEvent));
-	Connect(SOCKET_ID, wxEVT_SOCKET, wxSocketEventHandler(IndiIO::OnSocketEvent));
 }
 
 IndiIO::~IndiIO()
@@ -69,6 +78,7 @@ void IndiIO::OnSocketEvent(wxSocketEvent& event)
 void IndiIO::OnIdleEvent(wxIdleEvent& event)
 {
 	IndiCB *cb;
+
 	if(idle.IsEmpty())
 		return;
 	cb = idle.front();

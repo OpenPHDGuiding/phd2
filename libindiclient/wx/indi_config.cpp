@@ -9,7 +9,7 @@ public:
 	~IndiConfig();
 	IndiConfig();
 	bool LoadINI(const char *cfg);
-	void SetDefault(indi_prop_t *iprop);
+	void SetDefault(indi_prop_t *iprop, bool define = false);
 	void UpdateProps();
 
 private:
@@ -36,6 +36,15 @@ void ic_prop_set(void *c, struct indi_prop_t *iprop)
 	cfg->SetDefault(iprop);
 }
 
+void ic_prop_def(void *c, struct indi_prop_t *iprop)
+{
+	IndiConfig *cfg = (IndiConfig *)c;
+	if (! c)
+		return;
+	cfg->SetDefault(iprop, true);
+}
+
+
 void ic_update_props(void *c)
 {
 	IndiConfig *cfg = (IndiConfig *)c;
@@ -44,14 +53,19 @@ void ic_update_props(void *c)
 	cfg->UpdateProps();
 }
 
-void IndiConfig::SetDefault(indi_prop_t *iprop)
+void IndiConfig::SetDefault(indi_prop_t *iprop, bool define)
 {
 	indi_list *isl;
 
 	if (iprop->state == INDI_RO)
 		return;
 	if (connected) {
-		SendElems(iprop);
+		if (strcmp(iprop->name, "CONNECTION") == 0 && ! indi_prop_get_switch(iprop, "CONNECT")) {
+			connected = false;
+			return;
+		}
+		if (define)
+			SendElems(iprop);
 	} else {
 		if (strcmp(iprop->name, "CONNECTION") != 0 || ! indi_prop_get_switch(iprop, "CONNECT")) {
 			return;
