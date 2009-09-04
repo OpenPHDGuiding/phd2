@@ -57,10 +57,10 @@ struct indi_elem_t {
 			char *data;
 			char *ptr;
 			unsigned int size;
-			unsigned int data_size;
+			size_t data_size;
 			unsigned int compressed;
 			const char *orig_data;
-			unsigned int orig_size;
+			size_t orig_size;
 			char *tmp_data;
 			void *zstrm;
 			char fmt[40];
