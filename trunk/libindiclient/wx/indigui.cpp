@@ -595,7 +595,7 @@ IndiGui::IndiGui(struct indi_t *_indi) : wxFrame((wxFrame *)NULL, wxID_ANY,
 	panel->SetSizer(sizer);
 	parent_notebook = new wxNotebook(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP);
 	sizer->Add(parent_notebook, 0, wxEXPAND | wxALL);
-	textbuffer = new wxTextCtrl(panel, wxID_ANY, _T("This Is A Test\nTwo Lines"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+	textbuffer = new wxTextCtrl(panel, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
 	sizer->Add(textbuffer, 1, wxEXPAND | wxALL);
 }
 
@@ -624,21 +624,3 @@ void indigui_show_dialog(void *data)
 	indiGui->Show(true);
 }
 
-#ifdef INDIMAIN
-static struct indi_t *indi;
-class MyApp : public wxApp
-{
-public:
-	virtual bool OnInit();
-};
-
-IMPLEMENT_APP(MyApp)
-
-bool MyApp::OnInit()
-{
-	indi = indi_init("localhost", 7624, "INDI_wx");
-	indiGui->Show(true);
-	//SetTopWindow(indiGui);
-	return true;
-}
-#endif
