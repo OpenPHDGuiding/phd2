@@ -128,7 +128,7 @@ void INDIConfig::SaveSettings()
     INDIhost = host->GetLineText(0);
     config->Write(_T("INDIhost"), INDIhost);
 
-    INDIport = port->GetLineText(0).ToLong(&INDIport);
+    port->GetLineText(0).ToLong(&INDIport);
     config->Write(_T("INDIport"), INDIport);
 
     Camera_INDI.indi_name = cam->GetValue();
