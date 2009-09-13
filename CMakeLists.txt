@@ -18,12 +18,7 @@ INCLUDE(UsewxWidgets)
 find_package(CFITSIO REQUIRED)
 include_directories( ${CFITSIO_INCLUDE_DIR})
 
-#gtk
-find_package(PkgConfig REQUIRED)
-pkg_check_modules (GTK REQUIRED gtk+-2.0)
-
 include_directories( ${CMAKE_SOURCE_DIR})
-include_directories( ${GTK_INCLUDE_DIRS})
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_WXWINDOWS_CXX_FLAGS}")
 

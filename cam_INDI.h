@@ -44,6 +44,9 @@ public:
     wxString indi_name;
     wxString indi_port;
 	bool    is_connected;
+
+	bool    ReadFITS(usImage& img);
+	bool    ReadStream(usImage& img);
     struct  indi_elem_t *blob_elem;
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
 	bool	Connect();		// Opens up and connects to cameras
