@@ -76,7 +76,7 @@ static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data)
 
 void Camera_INDIClass::CheckState()
 {
-    if(has_blob && is_connected && expose_prop) {
+    if(has_blob && is_connected && (expose_prop || video_prop)) {
         if (! ready) {
             printf("Camera is ready\n");
             ready = true;
@@ -256,20 +256,21 @@ bool Camera_INDIClass::CaptureFull(int duration, usImage& img, bool recon) {
 //    unsigned short *dataptr;
 //    int i;
 
-    indi_dev_enable_blob(expose_prop->idev, TRUE);
-    if (video_prop) {
-        printf("Enabling video capture\n");
-        indi_send(video_prop, indi_prop_set_switch(video_prop, "ON", TRUE));
-    } else {
+    if (expose_prop) {
         printf("Exposing for %d(ms)\n", duration);
+        indi_dev_enable_blob(expose_prop->idev, TRUE);
         indi_prop_set_number(expose_prop, "CCD_EXPOSURE_VALUE", duration / 1000.0);
         indi_send(expose_prop, NULL);
+    } else {
+        printf("Enabling video capture\n");
+        indi_dev_enable_blob(expose_prop->idev, TRUE);
+        indi_send(video_prop, indi_prop_set_switch(video_prop, "ON", TRUE));
     }
     modal = true;
     while (modal) {
 	wxTheApp->Yield();
     }
-    if (video_prop) {
+    if (! expose_prop) {
         indi_send(video_prop, indi_prop_set_switch(video_prop, "OFF", TRUE));
     }
 
