@@ -125,7 +125,7 @@ Camera_SSPIAGClass Camera_SSPIAG;
 #endif
 
 #if defined (INDI)
-#include "cam_indi.h"
+#include "cam_INDI.h"
 Camera_INDIClass Camera_INDI;
 #endif
 
@@ -213,7 +213,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 	Choice = Cameras[0];
 	wxConfig *config = new wxConfig(_T("PHDGuiding"));
 	if (wxGetKeyState(WXK_SHIFT)) { // use the last camera chosen and bypass the dialog
-		if (!config->Read("LastCameraChoice",&Choice)) { // Read from the Prefs and if not there, put up the dialog anyway
+		if (!config->Read(_T("LastCameraChoice"),&Choice)) { // Read from the Prefs and if not there, put up the dialog anyway
 			Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras);
 		}
 	}
@@ -347,7 +347,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 	SetStatusText(_T("Camera"),3);
 	Loop_Button->Enable(true);
 	Guide_Button->Enable(ScopeConnected > 0);
-	config->Write("LastCameraChoice",Choice);
+	config->Write(_T("LastCameraChoice"),Choice);
 	delete config;
 	if (CurrentGuideCamera->HasPropertyDialog)
 		Setup_Button->Enable(true);

@@ -166,7 +166,9 @@ bool MyApp::OnInit() {
 	locale.Init(wxLANGUAGE_ENGLISH_US, wxLOCALE_CONV_ENCODING);
 //	wxMessageBox(wxString::Format("%f",1.23));
 #ifndef DEBUG
-	wxDisableAsserts();
+	#if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
+		wxDisableAsserts();
+	#endif
 #endif
 #ifdef ORION
 	frame = new MyFrame(wxString::Format(_T("PHD Guiding for Orion v%s"),VERSION));

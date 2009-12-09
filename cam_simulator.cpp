@@ -199,7 +199,7 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 
 	for (i=0; i<20; i++) {
 		newval = inten[i] * exptime * gain + (int) ((float) gain/10.0 * (float) offset * (float) exptime/100.0 + (rand() % (gain * 100)));
-		if (newval > 65535) newval = 65535;
+		//if (newval > 65535) newval = 65535;  //newval is a unsigned short so it can never be larger than 65535
 		*(dataptr + star_y[i]*xsize + star_x[i]) = newval;
 		*(dataptr + (star_y[i]+1)*xsize + star_x[i]) = newval * 0.5;
 		*(dataptr + (star_y[i]-1)*xsize + star_x[i]) = newval * 0.5;
@@ -282,4 +282,4 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 	
 }
 #endif
-	
+
