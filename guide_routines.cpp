@@ -71,6 +71,11 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 	if (!Calibrated) // still not calibrated
 		return;
 
+	if (!ManualLock) { // Not in the manually-specified lock position -- resync lock pos
+		LockX=StarX;
+		LockY=StarY;
+		dX = dY = 0;
+	}
 	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 	wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_Debug_log") + _T(".txt")), _T("a+t"));
 	wxTextOutputStream debug (debugstr);

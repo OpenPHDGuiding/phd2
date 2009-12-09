@@ -26,8 +26,9 @@
 #include "phd.h"
 #include "image_math.h"
 #include <wx/bitmap.h>
+#include <wx/dcbuffer.h>
 
-#define SCALE_UP_SMALL
+//#define SCALE_UP_SMALL  // Currently problematic as the box for the star is drawn in the wrong spot.
 
 BEGIN_EVENT_TABLE(MyCanvas, wxWindow)
    EVT_PAINT(MyCanvas::OnPaint)
@@ -47,6 +48,7 @@ MyCanvas::MyCanvas(wxWindow *parent):
 	State = STATE_NONE;
 	ScaleFactor = 1.0;
 	Displayed_Image = new wxImage(XWinSize,YWinSize,true);
+	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 	SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
 }
 
@@ -55,7 +57,7 @@ MyCanvas::~MyCanvas() {
 }
 
 void MyCanvas::OnErase(wxEraseEvent &evt) {
-	if (CaptureActive) return;
+	//if (CaptureActive) return;
 	evt.Skip();
  }
 void MyCanvas::OnLClick(wxMouseEvent &mevent) {
@@ -86,7 +88,7 @@ void MyCanvas::OnLClick(wxMouseEvent &mevent) {
 		FindStar(CurrentFullFrame);
 		LockX = StarX;
 		LockY = StarY;
-		frame->SetStatusText(wxString::Format(_T("Star %.2f %.2f"),StarX,StarY));
+		frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
 		//Targ_x = (int) StarX;
 		//Targ_y = (int) StarY;
 		//Origin_x = Targ_x;
@@ -173,7 +175,7 @@ void MyCanvas::FullFrameToDisplay() {
 
 // Define the repainting behaviour
 void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
-	wxPaintDC dc(this);
+	wxAutoBufferedPaintDC dc(this);
 	wxBitmap* DisplayedBitmap = NULL;
 	wxMemoryDC memDC;
 

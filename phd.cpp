@@ -35,9 +35,10 @@
 #include <wx/fs_zip.h>
 #include <wx/stdpaths.h>
 #include <wx/splash.h>
+#include <wx/intl.h>
+#include <wx/socket.h>
 
-
-
+#define SUBVER _T("")
 //#define DEVBUILD
 
 // Globals
@@ -64,6 +65,7 @@ double dX = 0.0;
 double dY = 0.0;
 double LockX = 0.0;
 double LockY = 0.0;
+bool ManualLock = false;
 double MinMotion = 0.15;
 int SearchRegion = 15;
 int	CropX = 0;
@@ -97,6 +99,7 @@ int Time_lapse = 0;
 //double Dec_aggr = 0.7;
 int OverlayMode = 0;
 double StarMass = 0.0;
+double StarSNR = 0.0;
 int	Abort = 0;
 bool Paused = false;
 bool ServerMode = false;  // don't start server
@@ -126,8 +129,10 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
 	EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
 	EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
+#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 EVT_MENU(MENU_INDICONFIG,MyFrame::OnINDIConfig)
 EVT_MENU(MENU_INDIDIALOG,MyFrame::OnINDIDialog)
+#endif
 EVT_MENU(MENU_CLEARDARK,MyFrame::OnClearDark)
 EVT_MENU(MENU_LOG,MyFrame::OnLog)
 EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
@@ -157,8 +162,17 @@ IMPLEMENT_APP(MyApp)
 // ------------------------  My App stuff -----------------------------
 bool MyApp::OnInit() {
 	SetVendorName(_T("StarkLabs"));
-
+	wxLocale locale;
+	locale.Init(wxLANGUAGE_ENGLISH_US, wxLOCALE_CONV_ENCODING);
+//	wxMessageBox(wxString::Format("%f",1.23));
+#ifndef DEBUG
+	wxDisableAsserts();
+#endif
+#ifdef ORION
+	frame = new MyFrame(wxString::Format(_T("PHD Guiding for Orion v%s"),VERSION));
+#else
 	frame = new MyFrame(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
+#endif
 	wxImage::AddHandler(new wxJPEGHandler);
 #ifdef ORION
 	wxBitmap bitmap;
@@ -214,7 +228,7 @@ MyFrame::MyFrame(const wxString& title)
 #ifdef GUIDE_EQUINOX
 	mount_menu->AppendRadioItem(MOUNT_EQUINOX,_T("Equinox 6"),_T("Mount connected in Equinox 6"));
 #endif
-#ifdef GUIDE_GSUSBST4
+#ifdef GUIDE_GCUSBST4
 	mount_menu->AppendRadioItem(MOUNT_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
 #endif
 //	mount_menu->AppendRadioItem(MOUNT_NEB,_T("Nebulosity"),_T("Guider port on Nebulosity's camera"));
@@ -257,7 +271,7 @@ MyFrame::MyFrame(const wxString& title)
 	tools_menu->AppendCheckItem(MENU_GRAPH,_T("Enable Graph"),_T("Enable / disable graph"));
 	tools_menu->AppendCheckItem(MENU_STARPROFILE,_T("Enable Star profile"),_T("Enable / disable star profile view"));
 
-#if defined GUIDE_INDI || defined INDI_CAMERA
+#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 	wxMenu *indi_menu = new wxMenu;
 	indi_menu->Append(MENU_INDICONFIG, _T("&Configure..."), _T("Configure INDI settings"));
 	indi_menu->Append(MENU_INDIDIALOG, _T("&Controls..."), _T("Show INDI controls for available devices"));
@@ -272,7 +286,7 @@ MyFrame::MyFrame(const wxString& title)
 	Menubar = new wxMenuBar();
 	Menubar->Append(file_menu, _T("&File"));
 	Menubar->Append(mount_menu, _T("&Mount"));
-#if defined GUIDE_INDI || defined INDI_CAMERA
+#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 	Menubar->Append(indi_menu, _T("&INDI"));
 #endif
 	Menubar->Append(tools_menu, _T("&Tools"));
@@ -462,11 +476,19 @@ wxString filename =  wxTheApp->argv[0];
 	LogFName = wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log") + now.Format(_T("_%d%b%y")) + _T(".txt"));
 	LogFile = new wxTextFile(LogFName);
 	if (Log_Data) {
-		this->SetTitle(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com (Log active)"),VERSION));
+#ifdef ORION
+		this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s (Log active)"),VERSION,SUBVER));
+#else
+		this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com (Log active)"),VERSION,SUBVER));
+#endif
 		tools_menu->Check(MENU_LOG,true);
 	}
 	else {
-		this->SetTitle(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
+#ifdef ORION
+		this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s"),VERSION,SUBVER));
+#else
+		this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"),VERSION,SUBVER));
+#endif
 		tools_menu->Check(MENU_LOG,false);
 	}
 	//mount_menu->Check(MOUNT_GPUSB,true);
@@ -482,6 +504,11 @@ wxString filename =  wxTheApp->argv[0];
 	GraphLog = new GraphLogWindow(this);
 	Profile = new ProfileWindow(this);
 
+	#include "xhair.xpm"
+	wxImage Cursor = wxImage(mac_xhair);
+	Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X,8);
+	Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y,8);
+	canvas->SetCursor(wxCursor(Cursor));	
 
 
 //	wxStartTimer();

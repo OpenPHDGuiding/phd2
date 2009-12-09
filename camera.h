@@ -29,6 +29,7 @@
 #if defined (ORION)
  #define ORION_DSCI
  #define SSAG
+ #define SSPIAG
  //#define WDM_CAMERA
 #elif defined (__WINDOWS__)  // Windows cameras
  #define QGUIDE
@@ -40,6 +41,7 @@
  #define SAC42
  #define ATIK16
  #define SSAG
+ #define SSPIAG
  #define FIREWIRE
  #define SBIG
  #define MEADE_DSI
@@ -60,7 +62,7 @@
 // #define NEB_SBIG
 #else // Linux
  #define SIMULATOR
- #define INDI_CAMERA
+ #define INDI
 #endif
 
 

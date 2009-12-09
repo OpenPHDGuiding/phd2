@@ -28,6 +28,7 @@
 #include "phd.h"
 #include "camera.h"
 #include <wx/stdpaths.h>
+#include <wx/config.h>
 
 #if defined (ATIK16)
  #include "cam_ATIK16.h"
@@ -112,23 +113,29 @@ Camera_DSIClass Camera_MeadeDSI;
 Camera_SSAGClass Camera_SSAG;
 #endif
 
+#if defined (SSPIAG)
+#include "cam_SSPIAG.h"
+Camera_SSPIAGClass Camera_SSPIAG;
+#endif
+
+
 #if defined (ASCOM_CAMERA)
  #include "cam_ascom.h"
  Camera_ASCOMClass Camera_ASCOM;
 #endif
 
-#if defined (INDI_CAMERA)
- #include "cam_INDI.h"
- Camera_INDIClass Camera_INDI;
+#if defined (INDI)
+#include "cam_indi.h"
+Camera_INDIClass Camera_INDI;
 #endif
 
-void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
+void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 // Throws up a dialog and trys to connect to that camera
 	if (CaptureActive) return;  // Looping an exposure already
 
 	wxArrayString Cameras;
 	wxString Choice;
-
+	
 #if defined (SIMULATOR)
 	Cameras.Add(_T("Simulator"));
 #endif
@@ -148,6 +155,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 #endif
 #if defined (SSAG)
 	Cameras.Add(_T("StarShoot Autoguider"));
+#endif
+#if defined (SSPIAG)
+	Cameras.Add(_T("StarShoot Planetary Imager & Autoguider"));
 #endif
 #if defined (OS_PL130)
 	Cameras.Add(_T("Opticstar PL-130M"));
@@ -196,15 +206,19 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 #if defined (NEB_SBIG)
 	Cameras.Add(_T("Guide chip on SBIG cam in Nebulosity"));
 #endif
-#if defined (INDI_CAMERA)
-	Cameras.Add(_T("INDI Camera"));
-#endif
 	if (GuideCameraConnected) {
 		SetStatusText(CurrentGuideCamera->Name + _T(" disconnected"));
 		CurrentGuideCamera->Disconnect();
 	}
 	Choice = Cameras[0];
-	Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras);
+	wxConfig *config = new wxConfig(_T("PHDGuiding"));
+	if (wxGetKeyState(WXK_SHIFT)) { // use the last camera chosen and bypass the dialog
+		if (!config->Read("LastCameraChoice",&Choice)) { // Read from the Prefs and if not there, put up the dialog anyway
+			Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras);
+		}
+	}
+	else
+		Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras);
 
 	if (Choice.Find(_T("Simulator")) + 1)
 		CurrentGuideCamera = &Camera_Simulator;
@@ -245,6 +259,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 #if defined (SSAG)
 	else if (Choice.Find(_T("StarShoot Autoguider")) + 1)
 		CurrentGuideCamera = &Camera_SSAG;
+#endif
+#if defined (SSPIAG)
+	else if (Choice.Find(_T("StarShoot Planetary Imager & Autoguider")) + 1)
+		CurrentGuideCamera = &Camera_SSPIAG;
 #endif
 #if defined (ORION_DSCI)
 	else if (Choice.Find(_T("Orion StarShoot DSCI")) + 1)
@@ -304,11 +322,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 	else if (Choice.Find(_T("ASCOM v5 Camera")) + 1)
 		CurrentGuideCamera = &Camera_ASCOM;
 #endif
-#if defined (INDI_CAMERA)
+#if defined (INDI)
 	else if (Choice.Find(_T("INDI Camera")) + 1)
 		CurrentGuideCamera = &Camera_INDI;
 #endif
-
 	else {
 		CurrentGuideCamera = NULL;
 		GuideCameraConnected = false;
@@ -330,6 +347,8 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(event)) {
 	SetStatusText(_T("Camera"),3);
 	Loop_Button->Enable(true);
 	Guide_Button->Enable(ScopeConnected > 0);
+	config->Write("LastCameraChoice",Choice);
+	delete config;
 	if (CurrentGuideCamera->HasPropertyDialog)
 		Setup_Button->Enable(true);
 	else

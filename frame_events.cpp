@@ -64,10 +64,10 @@ void MyFrame::SetExpDuration() { // Sets the global duration variable based on p
 
 	durtext = frame->Dur_Choice->GetStringSelection();
 	durtext = durtext.BeforeFirst(' '); // remove the " s" bit
-#if wxMINOR_VERSION < 9
-	durtext.ToDouble(&tmpval);
-#else
+#if wxUSE_XLOCALE
 	durtext.ToCDouble(&tmpval);
+#else
+	durtext.ToDouble(&tmpval);
 #endif
 	ExpDur = (int) (tmpval * 1000);
 	if (HaveDark) {
@@ -108,7 +108,11 @@ void MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event)) {
 }
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
 	if (CaptureActive) return;  // Looping an exposure already
+#ifdef ORION
+	wxMessageBox(wxString::Format(_T("PHD Guiding for Orion v%s\n\nCopyright 2006-2009 Craig Stark, Stark Labs"),VERSION),_T("About PHD Guiding"), wxOK);
+#else
 	wxMessageBox(wxString::Format(_T("PHD Guiding v%s\n\nwww.stark-labs.com\n\nCopyright 2006-2009 Craig Stark\n\nSpecial Thanks to:\n  Sean Prange"),VERSION),_T("About PHD Guiding"), wxOK);
+#endif
 }
 
 void MyFrame::OnOverlay(wxCommandEvent &evt) {
@@ -250,7 +254,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 			FindStar(CurrentFullFrame); // track it
 			if (debuglog) { debug << _T("Done (") << FoundStar << _T(")\n"); debugstr.Sync(); }
 			if (FoundStar)
-				SetStatusText(wxString::Format(_T("Star %.1f %.1f"),StarX,StarY));
+				SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
 			else {
 				SetStatusText(_T("Star lost"));
 			/*	SetBackgroundColour(wxColour(255,0,0));
