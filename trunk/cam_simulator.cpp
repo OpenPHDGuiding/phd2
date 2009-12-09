@@ -39,6 +39,8 @@ Camera_SimClass::Camera_SimClass() {
 //	ConnectedModel = 1;
 	Name=_T("Simulator");
 	FullSize = wxSize(640,480);
+	HasGuiderOutput = true;
+
 //	FullSize = wxSize(1360,1024);
 }
 
@@ -78,7 +80,7 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 //	char keystrval[80];
 
 #if defined (__APPLE__)
-	if ( !fits_open_file(&fptr, "/Users/stark/Downloads/nostar.fit", READONLY, &status) ) {
+	if ( !fits_open_file(&fptr, "/Users/stark/dev/PHD/image_02.fit", READONLY, &status) ) {
 #else
 	if ( !fits_open_file(&fptr, "./simimage.fit", READONLY, &status) ) {
 #endif
@@ -222,3 +224,62 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 	return false;
 }
 #endif
+
+#if SIMMODE == 4
+bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
+	int xsize, ysize;
+	//	unsigned short *dataptr;
+	//	int i;
+	fitsfile *fptr;  // FITS file pointer
+	int status = 0;  // CFITSIO status value MUST be initialized to zero!
+	int hdutype, naxis;
+	int nhdus=0;
+	long fits_size[2];
+	long fpixel[3] = {1,1,1};
+	//	char keyname[15];
+	//	char keystrval[80];
+	static int frame = 0;
+	static int step = 1;
+	char fname[256];
+	sprintf(fname,"/Users/stark/dev/PHD/simimg/DriftSim_%d.fit",frame);
+	if ( !fits_open_file(&fptr, fname, READONLY, &status) ) {
+		if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
+			(void) wxMessageBox(wxT("FITS file is not of an image"),wxT("Error"),wxOK | wxICON_ERROR);
+			return true;
+		}
+		
+		// Get HDUs and size
+		fits_get_img_dim(fptr, &naxis, &status);
+		fits_get_img_size(fptr, 2, fits_size, &status);
+		xsize = (int) fits_size[0];
+		ysize = (int) fits_size[1];
+		fits_get_num_hdus(fptr,&nhdus,&status);
+		if ((nhdus != 1) || (naxis != 2)) {
+			(void) wxMessageBox(wxString::Format("Unsupported type or read error loading FITS file %d %d",nhdus,naxis),wxT("Error"),wxOK | wxICON_ERROR);
+			return true;
+		}
+		if (img.Init(xsize,ysize)) {
+			wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+			return true;
+		}
+		if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { // Read image
+			(void) wxMessageBox(_T("Error reading data"),wxT("Error"),wxOK | wxICON_ERROR);
+			return true;
+		}
+		fits_close_file(fptr,&status);
+		frame = frame + step;
+		if (frame > 440) {
+			step = -1;
+			frame = 439;
+		}
+		else if (frame < 0) {
+			step = 1;
+			frame = 1;
+		}
+
+	}
+	return false;
+	
+}
+#endif
+	

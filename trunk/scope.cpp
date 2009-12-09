@@ -101,7 +101,7 @@ void DisconnectScope() {
 		ScopeDriverDisplay = NULL;
 	}
 #endif
-#if defined (GUIDE_GCSUBST4)
+#if defined (GUIDE_GCUSBST4)
 	if (ScopeConnected == MOUNT_GCUSBST4)
 		GCUSBST4_Disconnect();
 #endif

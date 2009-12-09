@@ -222,18 +222,62 @@ void FindStar(usImage& img) {
 	// should be close now, hone in
 	//start_x = base_x - 5; // u-left corner of local area
 	//start_y = base_y - 5;
-	int ft_range = 15; // must be odd	int hft_range = ft_range / 2;	//double threshold = localmean;	double threshold = localmean + ((double) max + localmin - localmean) / 10.0;  // Note: max already has localmin pulled from it	//double threshold = localmin + ((double) max - localmin) / 10.0;	//frame->SetStatusText(wxString::Format("%.1f",threshold),1);	for (y=0; y<ft_range; y++) {		for (x=0; x<ft_range; x++) {			val = (double) (*(dataptr + (base_x + (x-hft_range)) + rowsize*(base_y + (y-hft_range))) - 0) - threshold;			if (val < 0.0) val=0.0;			mx = mx + (double) (base_x + x-hft_range) * val;			my = my + (double) (base_y + y-hft_range) * val;			mass = mass + val;		}	}	double SNR = (double) max / (double) mean;
+	int ft_range = 15; // must be odd
+	int hft_range = ft_range / 2;
+	mass = mx = my = 0.000001;
+	//double threshold = localmean;
+	double threshold = localmean + ((double) max + localmin - localmean) / 10.0;  // Note: max already has localmin pulled from it
+	//double threshold = localmin + ((double) max - localmin) / 10.0;
+	//frame->SetStatusText(wxString::Format("%.1f",threshold),1);
+	for (y=0; y<ft_range; y++) {
+		for (x=0; x<ft_range; x++) {
+			val = (double) *(dataptr + (base_x + (x-hft_range)) + rowsize*(base_y + (y-hft_range))) - threshold;
+			if (val < 0.0) val=0.0;
+			mx = mx + (double) (base_x + x-hft_range) * val;
+			my = my + (double) (base_y + y-hft_range) * val;
+			mass = mass + val;
+		}
+	}
+	if (mass < 10.0) { // We've over-subtracted here - try again
+		mass = mx = my = 0.000001;
+		threshold = localmean;
+		for (y=0; y<ft_range; y++) {
+			for (x=0; x<ft_range; x++) {
+				val = (double) *(dataptr + (base_x + (x-hft_range)) + rowsize*(base_y + (y-hft_range))) - threshold;
+				if (val < 0.0) val=0.0;
+				mx = mx + (double) (base_x + x-hft_range) * val;
+				my = my + (double) (base_y + y-hft_range) * val;
+				mass = mass + val;
+			}
+		}
+	}
+	if (mass < 10.0) { // We've over-subtracted here yet again
+		mass = mx = my = 0.000001;
+		threshold = localmin;
+		for (y=0; y<ft_range; y++) {
+			for (x=0; x<ft_range; x++) {
+				val = (double) *(dataptr + (base_x + (x-hft_range)) + rowsize*(base_y + (y-hft_range))) - threshold;
+				if (val < 0.0) val=0.0;
+				mx = mx + (double) (base_x + x-hft_range) * val;
+				my = my + (double) (base_y + y-hft_range) * val;
+				mass = mass + val;
+			}
+		}
+	}
+	
+
+	StarSNR = (double) max / (double) mean;
 	StarMass = mass;
-	if ((mass < 50.0) || // this is ~1 at each pixel -- likely dropped frame
+	if ((mass < 10.0) || // so faint -- likely dropped frame
 //		(max > (5*nearmax1)) || // likely hot pixel
-		(SNR < 3.0) ) { // maxlval is already the sum of 6 pixels around hottest so this is the
+		(StarSNR < 3.0) ) { // maxlval is already the sum of 6 pixels around hottest so this is the
 		dX = 0.0;
 		dY = 0.0;
 		FoundStar=false;
 //		frame->SetStatusText(_T("NO STAR"),1);
-		if (mass < 50) frame->SetStatusText(wxString::Format(_T("NO STAR: %.1f"),mass),1);
+		if (mass < 10.0) frame->SetStatusText(wxString::Format(_T("NO STAR: %.1f"),mass),1);
 //		else if (max > (5*nearmax1)) frame->SetStatusText(wxString::Format("HOT PIXEL: %u, %u",max, nearmax1),1);
-		else if (SNR < 3.0) frame->SetStatusText(wxString::Format(_T("LOW SNR: %.1f"),SNR),1);
+		else if (StarSNR < 3.0) frame->SetStatusText(wxString::Format(_T("LOW SNR: %.1f"),StarSNR),1);
 	}
 	else {
 		StarX = mx / mass;

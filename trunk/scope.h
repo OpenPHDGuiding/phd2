@@ -31,7 +31,7 @@
 #define GUIDE_NEB
 #elif defined (__APPLE__)
 #define GUIDE_GPUSB
-#define GUIDE GCUSBST4
+#define GUIDE_GCUSBST4
 #define GUIDE_EQUINOX
 #define GUIDE_VOYAGER
 #define GUIDE_NEB

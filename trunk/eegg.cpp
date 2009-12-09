@@ -43,7 +43,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 		RandomMotionMode = !RandomMotionMode;
 		wxMessageBox(wxString::Format(_T("Random motion mode set to %d"),(int) RandomMotionMode));
 	}
-		else if (evt.GetId() == EEGG_MANUALCAL) {
+	else if (evt.GetId() == EEGG_MANUALCAL) {
 		wxString tmpstr;
 		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("RA rate"));
 		if (tmpstr.IsEmpty()) return;

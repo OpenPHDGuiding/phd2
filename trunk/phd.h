@@ -35,7 +35,7 @@
 #include <wx/socket.h>
 #include "usImage.h"
 #include "graph.h"
-#define VERSION _T("1.10.8")
+#define VERSION _T("1.11.1")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
@@ -143,8 +143,10 @@ public:
 	void OnServerEvent(wxSocketEvent& evt);
 	void OnSocketEvent(wxSocketEvent& evt);
 	void OnServerMenu(wxCommandEvent& evt);
+#if defined (__WXGTK__)  // a bit lame, but we don't have GUIDE_INDI or INDI_CAMERA defined yet
 	void OnINDIConfig(wxCommandEvent& evt);
 	void OnINDIDialog(wxCommandEvent& evt);
+#endif
 	bool StartServer(bool state);
 	void OnGraph(wxCommandEvent& evt);
 	void OnStarProfile(wxCommandEvent& evt);
@@ -245,8 +247,8 @@ enum {
 	BUTTON_GRAPH_HIDE,
 	BUTTON_GRAPH_CLEAR,
 //	EEGG_FITSSAVE,
-	EEGG_MANUALCAL,
 	EEGG_TESTGUIDEDIR,
+	EEGG_MANUALCAL,
 	EEGG_RANDOMMOTION
 };
 
@@ -296,6 +298,7 @@ extern bool Calibrated;	// Do we know cal parameters?
 extern bool	CaptureActive; // Is camera looping captures?
 extern bool UseSubframes; // Use subframes if possible from camera
 extern double StarMass;
+extern double StarSNR;
 extern double RA_rate;
 extern double RA_angle;	// direction of positive (west) RA engagement
 extern double Dec_rate;
@@ -327,6 +330,7 @@ extern double dX;		// Delta between current and locked star position
 extern double dY;
 extern double LockX;	// Place where we should be locked to -- star's starting point
 extern double LockY;
+extern bool ManualLock;	// In manual lock position mode?  (If so, don't re-lock on start of guide)
 extern double MinMotion; // Minimum star motion to trigger a pulse
 extern int SearchRegion; // how far u/d/l/r do we do the initial search
 extern bool FoundStar;	// Do we think we have a star?
