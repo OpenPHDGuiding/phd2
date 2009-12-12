@@ -60,6 +60,10 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 		Calibrated = true;
 		SetStatusText(_T("Cal"),5);
 	}
+	else if (evt.GetId() == EEGG_CLEARCAL) {
+		Calibrated=false; // clear calibration
+		SetStatusText(_T("No cal"),5);
+	}
 	else evt.Skip();
 
 }

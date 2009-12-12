@@ -255,12 +255,13 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 	sep.openShutter  = TRUE;
 
 	// init memory
-	if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
- 		wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
-		Disconnect();
-		return true;
+	if (img.NPixels != (FullSize.GetWidth()*FullSize.GetHeight())) {
+		if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
+			wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+			Disconnect();
+			return true;
+		}
 	}
-
 
 	// Start exposure
 	err = SBIGUnivDrvCommand(CC_START_EXPOSURE, &sep, NULL);

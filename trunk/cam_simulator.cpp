@@ -30,7 +30,7 @@
 #include "image_math.h"
 #include "cam_simulator.h"
 
-#define SIMMODE 3   // 1=FITS, 2=BMP, 3=Generate
+#define SIMMODE 1   // 1=FITS, 2=BMP, 3=Generate
 
 Camera_SimClass::Camera_SimClass() {
 	Connected = FALSE;
@@ -45,6 +45,7 @@ Camera_SimClass::Camera_SimClass() {
 }
 
 bool Camera_SimClass::Connect() {
+//	wxMessageBox(wxGetCwd());
 	Connected = TRUE;
 	return false;
 }
@@ -82,7 +83,7 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 #if defined (__APPLE__)
 	if ( !fits_open_file(&fptr, "/Users/stark/dev/PHD/image_02.fit", READONLY, &status) ) {
 #else
-	if ( !fits_open_file(&fptr, "./simimage.fit", READONLY, &status) ) {
+	if ( !fits_open_diskfile(&fptr, "simimage.fit", READONLY, &status) ) {
 #endif
 		if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
 			(void) wxMessageBox(wxT("FITS file is not of an image"),wxT("Error"),wxOK | wxICON_ERROR);
@@ -188,9 +189,11 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 		star_y[i] = star_y[i] + r2 + (int) (sin((double) start_time / 47750.0 + 100.0) * yPE);
 	}
 //	frame->SetStatusText(wxString::Format(_T("%d,%d,%d   %d,%d,%d"),star_x[0],star_y[0],inten[0],star_x[1],star_y[1],inten[1]));
-	if (img.Init(xsize,ysize)) {
- 		wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
-		return true;
+	if (img.NPixels != (xsize*ysize) ) {
+		if (img.Init(xsize,ysize)) {
+			wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+			return true;
+		}
 	}
 	dataptr = img.ImageData;
 	for (i=0; i<img.NPixels; i++, dataptr++)  // put in base noise
@@ -199,7 +202,6 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 
 	for (i=0; i<20; i++) {
 		newval = inten[i] * exptime * gain + (int) ((float) gain/10.0 * (float) offset * (float) exptime/100.0 + (rand() % (gain * 100)));
-		//if (newval > 65535) newval = 65535;  //newval is a unsigned short so it can never be larger than 65535
 		*(dataptr + star_y[i]*xsize + star_x[i]) = newval;
 		*(dataptr + (star_y[i]+1)*xsize + star_x[i]) = newval * 0.5;
 		*(dataptr + (star_y[i]-1)*xsize + star_x[i]) = newval * 0.5;
@@ -282,4 +284,4 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 	
 }
 #endif
-
+	
