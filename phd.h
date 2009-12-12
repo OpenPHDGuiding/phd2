@@ -35,7 +35,7 @@
 #include <wx/socket.h>
 #include "usImage.h"
 #include "graph.h"
-#define VERSION _T("1.11.1")
+#define VERSION _T("1.11.2")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
@@ -249,6 +249,7 @@ enum {
 //	EEGG_FITSSAVE,
 	EEGG_TESTGUIDEDIR,
 	EEGG_MANUALCAL,
+	EEGG_CLEARCAL,
 	EEGG_RANDOMMOTION
 };
 

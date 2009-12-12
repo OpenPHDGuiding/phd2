@@ -114,21 +114,20 @@ int XWinSize = 640;
 int YWinSize = 512;
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-   EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
-   EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
-   EVT_MENU(EEGG_TESTGUIDEDIR, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
-   EVT_MENU(EEGG_RANDOMMOTION, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
-	EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
-//   EVT_MENU(EEGG_FITSSAVE, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
-   EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
-   EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
-   EVT_MENU(wxID_SAVE, MyFrame::OnSave)
-//   EVT_MENU(wxID_PREFERENCES,MyFrame::OnPreferences)
-	EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
-	EVT_MENU(MENU_XHAIR0,MyFrame::OnOverlay)
-	EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
-	EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
-	EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
+EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
+EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
+EVT_MENU(EEGG_TESTGUIDEDIR, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
+EVT_MENU(EEGG_RANDOMMOTION, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
+EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
+EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
+EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
+EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
+EVT_MENU(wxID_SAVE, MyFrame::OnSave)
+EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
+EVT_MENU(MENU_XHAIR0,MyFrame::OnOverlay)
+EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
+EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
+EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 EVT_MENU(MENU_INDICONFIG,MyFrame::OnINDIConfig)
 EVT_MENU(MENU_INDIDIALOG,MyFrame::OnINDIDialog)
@@ -140,21 +139,21 @@ EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
 EVT_MENU(MENU_SERVER, MyFrame::OnServerMenu)
 EVT_MENU(MENU_STARPROFILE, MyFrame::OnStarProfile)
 EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
-	EVT_BUTTON(BUTTON_CAMERA,MyFrame::OnConnectCamera)
-	EVT_BUTTON(BUTTON_SCOPE, MyFrame::OnConnectScope)
-	EVT_BUTTON(BUTTON_LOOP, MyFrame::OnLoopExposure)
-	EVT_BUTTON(BUTTON_STOP, MyFrame::OnButtonStop)
-	EVT_BUTTON(BUTTON_DETAILS, MyFrame::OnAdvanced)
-	EVT_BUTTON(BUTTON_DARK, MyFrame::OnDark)
-//	EVT_CHECKBOX(BUTTON_CAL,MyFrame::OnCalCheckbox)
-	EVT_BUTTON(BUTTON_GUIDE,MyFrame::OnGuide)
-	EVT_BUTTON(wxID_PROPERTIES,MyFrame::OnSetupCamera)
-	EVT_COMMAND_SCROLL(CTRL_GAMMA,MyFrame::OnGammaSlider)
-	EVT_SOCKET(SERVER_ID,  MyFrame::OnServerEvent)
-	EVT_SOCKET(SOCKET_ID,  MyFrame::OnSocketEvent)
-//	EVT_KEY_DOWN(EEGG_TESTGUIDEDIR,MyFrame::OnEEGG)
-//	EVT_IDLE(MyFrame::OnIdle)
-   EVT_CLOSE(MyFrame::OnClose)
+EVT_BUTTON(BUTTON_CAMERA,MyFrame::OnConnectCamera)
+EVT_BUTTON(BUTTON_SCOPE, MyFrame::OnConnectScope)
+EVT_BUTTON(BUTTON_LOOP, MyFrame::OnLoopExposure)
+EVT_MENU(BUTTON_LOOP, MyFrame::OnLoopExposure) // Bit of a hack -- not actually on the menu but need an event to accelerate
+EVT_BUTTON(BUTTON_STOP, MyFrame::OnButtonStop)
+EVT_MENU(BUTTON_STOP, MyFrame::OnButtonStop) // Bit of a hack -- not actually on the menu but need an event to accelerate
+EVT_BUTTON(BUTTON_DETAILS, MyFrame::OnAdvanced)
+EVT_BUTTON(BUTTON_DARK, MyFrame::OnDark)
+EVT_BUTTON(BUTTON_GUIDE,MyFrame::OnGuide)
+EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
+EVT_BUTTON(wxID_PROPERTIES,MyFrame::OnSetupCamera)
+EVT_COMMAND_SCROLL(CTRL_GAMMA,MyFrame::OnGammaSlider)
+EVT_SOCKET(SERVER_ID,  MyFrame::OnServerEvent)
+EVT_SOCKET(SOCKET_ID,  MyFrame::OnSocketEvent)
+EVT_CLOSE(MyFrame::OnClose)
 END_EVENT_TABLE()
 
 IMPLEMENT_APP(MyApp)
@@ -167,7 +166,7 @@ bool MyApp::OnInit() {
 //	wxMessageBox(wxString::Format("%f",1.23));
 #ifndef DEBUG
 	#if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
-		wxDisableAsserts();
+	wxDisableAsserts();
 	#endif
 #endif
 #ifdef ORION
@@ -460,11 +459,15 @@ wxString filename =  wxTheApp->argv[0];
 //	wxImage::AddHandler( new wxJPEGHandler );  //wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib
 
 // Setup some keyboard shortcuts
-	wxAcceleratorEntry entries[3];
+	wxAcceleratorEntry entries[7];
 	entries[0].Set(wxACCEL_CTRL,  (int) 'T', EEGG_TESTGUIDEDIR);
 	entries[1].Set(wxACCEL_CTRL,  (int) 'R', EEGG_RANDOMMOTION);
-	entries[1].Set(wxACCEL_CTRL,  (int) 'M', EEGG_MANUALCAL);
-	wxAcceleratorTable accel(3, entries);
+	entries[2].Set(wxACCEL_CTRL,  (int) 'M', EEGG_MANUALCAL);
+	entries[3].Set(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP);
+	entries[4].Set(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP);
+	entries[5].Set(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE);
+	entries[6].Set(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL);
+	wxAcceleratorTable accel(7, entries);
 	SetAcceleratorTable(accel);
 
 	InitCameraParams();
