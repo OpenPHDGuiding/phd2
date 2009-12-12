@@ -97,7 +97,7 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 		ysize = (int) fits_size[1];
 		fits_get_num_hdus(fptr,&nhdus,&status);
 		if ((nhdus != 1) || (naxis != 2)) {
-		   (void) wxMessageBox("Unsupported type or read error loading FITS file",wxT("Error"),wxOK | wxICON_ERROR);
+		   (void) wxMessageBox(_T("Unsupported type or read error loading FITS file"),wxT("Error"),wxOK | wxICON_ERROR);
 		   return true;
 		}
 		if (img.Init(xsize,ysize)) {
@@ -284,4 +284,4 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 	
 }
 #endif
-	
+
