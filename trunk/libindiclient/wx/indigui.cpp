@@ -268,8 +268,8 @@ void IndiGui::SetButtonEvent(wxCommandEvent & event)
 		entry = (wxTextCtrl *)((IndiProp *)iprop->widget)->entry[wxString::FromAscii(elem->name)];
 		switch (iprop->type) {
 		case INDI_PROP_TEXT:
-			valstr = entry->GetLineText(0).ToAscii();
-			strncpy(elem->value.str, valstr, sizeof(elem->value.str));
+			strncpy(elem->value.str, entry->GetLineText(0).mb_str(wxConvUTF8), sizeof(elem->value.str));
+			printf("Text: %s\n", elem->value.str);
 			entry->Clear();
 			break;
 		case INDI_PROP_NUMBER:
