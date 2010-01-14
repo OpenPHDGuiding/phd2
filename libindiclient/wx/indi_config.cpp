@@ -91,7 +91,7 @@ void IndiConfig::SendElems(indi_prop_t *iprop)
 			// Found a match...
 			switch(iprop->type) {
 			case INDI_PROP_TEXT:
-				strncpy(ielem->value.str, value.ToAscii(), sizeof(ielem->value.str));
+				strncpy(ielem->value.str, value.mb_str(wxConvUTF8), sizeof(ielem->value.str));
 				break;
 			case INDI_PROP_NUMBER:
 				value.ToDouble(&ielem->value.num.value);
