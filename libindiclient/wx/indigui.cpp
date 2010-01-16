@@ -579,7 +579,7 @@ void *indigui_create_window(struct indi_t *indi)
 	return indiGui;
 }
 
-IndiGui::IndiGui(struct indi_t *_indi) : wxFrame((wxFrame *)NULL, wxID_ANY,
+IndiGui::IndiGui(struct indi_t *_indi) : wxFrame((wxFrame *)wxTheApp->GetTopWindow(), wxID_ANY,
                              _("INDI Options"),
                              wxDefaultPosition, wxSize(640, 400))
 {
