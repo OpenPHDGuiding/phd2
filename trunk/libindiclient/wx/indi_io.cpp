@@ -96,6 +96,9 @@ int io_indi_sock_read(void *fh, void *data, int len)
 {
 	wxSocketBase *m_sock = (wxSocketBase *)fh;
 
+	if(! fh)
+		return 0;
+
 	m_sock->Read(data, len);
 	if (m_sock->Error()) {
 		return -1;
@@ -106,6 +109,9 @@ int io_indi_sock_read(void *fh, void *data, int len)
 int io_indi_sock_write(void *fh, void *data, int len)
 {
 	wxSocketBase *m_sock = (wxSocketBase *)fh;
+
+	if(! fh)
+		return len;
 
 	m_sock->Write(data, len);
 	if (m_sock->Error()) {
