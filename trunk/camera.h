@@ -63,7 +63,6 @@
 #else // Linux
  #define SIMULATOR
  #define INDI 
- #define VIDEODEVICE
 #endif
 
 extern void InitCameraParams();
