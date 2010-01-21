@@ -268,7 +268,7 @@ bool Camera_INDIClass::CaptureFull(int duration, usImage& img, bool recon) {
     }
     modal = true;
     while (modal) {
-	wxTheApp->Yield();
+        wxTheApp->Yield();
     }
     if (! expose_prop) {
         indi_send(video_prop, indi_prop_set_switch(video_prop, "OFF", TRUE));

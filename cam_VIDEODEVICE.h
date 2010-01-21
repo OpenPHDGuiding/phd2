@@ -1,9 +1,9 @@
 /*
- *  camera.h
+ *  cam_template.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2009 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
@@ -16,56 +16,37 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, TemplateRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
  *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
+#ifndef CAM_VIDEODEVICE_H_INCLUDED
+#define CAM_VIDEODEVICE_H_INCLUDED
 
-// Defines to define specific camera availability
+#include "cameras/linuxvideodevice.h"
 
-#if defined (ORION)
- #define ORION_DSCI
- #define SSAG
- #define SSPIAG
- //#define WDM_CAMERA
-#elif defined (__WINDOWS__)  // Windows cameras
- #define QGUIDE
- #define VFW_CAMERA
- #define LE_PARALLEL_CAMERA
- #define LE_LXUSB_CAMERA
- #define ORION_DSCI
- #define WDM_CAMERA
- #define SAC42
- #define ATIK16
- #define SSAG
- #define SSPIAG
- #define FIREWIRE
- #define SBIG
- #define MEADE_DSI
- #define STARFISH
- #define OS_PL130
- #define SIMULATOR
- #define SXV
- #define ASCOM_CAMERA
- #define ATIK_GEN3
-// #define NEB_SBIG
-#elif defined (__APPLE__)  // Mac cameras
- #define FIREWIRE
- #define SBIG
- #define MEADE_DSI
- #define STARFISH
- #define SIMULATOR
- #define SXV
-// #define NEB_SBIG
-#else // Linux
- #define SIMULATOR
- #define INDI 
- #define VIDEODEVICE
-#endif
+#include <wx/arrstr.h>
 
-extern void InitCameraParams();
-extern bool DLLExists (wxString DLLName);
 
+class Camera_VIDEODEVICEClass : public GuideCamera {
+public:
+	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
+	bool	Connect();		// Opens up and connects to cameras
+	bool	Disconnect();
+	void	InitCapture() { return; }
+	bool    PulseGuideScope(int direction, int duration);
+	Camera_VIDEODEVICEClass();
+private:
+	bool	ProbeDevices(wxArrayString*);
+
+	linuxvideodevice *dummycam;
+//	int width;
+//	int height;
+
+	wxArrayString devicearray;
+};
+
+#endif // CAM_TEMPLATE_H_INCLUDED

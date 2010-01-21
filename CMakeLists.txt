@@ -8,7 +8,15 @@ set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 Include (CheckCXXSourceCompiles)
 include (CheckIncludeFiles)
 
-#see /usr/local/share/cmake-2.6/Modules/Find*.cmake for more examples
+include(FindPkgConfig)
+
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+pkg_check_modules(HAL REQUIRED hal)
+pkg_check_modules(V4L2 REQUIRED libv4l2)
+
+include_directories(${HAL_INCLUDE_DIRS})
+include_directories(${GLIB_INCLUDE_DIRS})
+include_directories(${V4L2_INCLUDE_DIRS})
 
 #wxWidgets
 FIND_PACKAGE(wxWidgets REQUIRED)
@@ -16,9 +24,9 @@ INCLUDE(UsewxWidgets)
 
 #cfitsio
 find_package(CFITSIO REQUIRED)
-include_directories( ${CFITSIO_INCLUDE_DIR})
+include_directories(${CFITSIO_INCLUDE_DIR})
 
-include_directories( ${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR})
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_WXWINDOWS_CXX_FLAGS}")
 
@@ -28,6 +36,7 @@ set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/cam_INDI.cpp
    ${CMAKE_SOURCE_DIR}/cam_SBIG.cpp
    ${CMAKE_SOURCE_DIR}/cam_simulator.cpp
+   ${CMAKE_SOURCE_DIR}/cam_VIDEODEVICE.cpp
    ${CMAKE_SOURCE_DIR}/canvas.cpp
    ${CMAKE_SOURCE_DIR}/config_INDI.cpp
    ${CMAKE_SOURCE_DIR}/eegg.cpp
@@ -41,6 +50,7 @@ set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/socket_server.cpp
    ${CMAKE_SOURCE_DIR}/tele_INDI.cpp
    ${CMAKE_SOURCE_DIR}/usImage.cpp
+   ${CMAKE_SOURCE_DIR}/cameras/linuxvideodevice.cpp
    ${CMAKE_SOURCE_DIR}/libindiclient/indi.c
    ${CMAKE_SOURCE_DIR}/libindiclient/wx/indigui.cpp
    ${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_io.cpp
@@ -58,10 +68,12 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-
 add_executable(PHD ${phd_SRCS})
 target_link_libraries(PHD ${CFITSIO_LIBRARIES})
 target_link_libraries(PHD ${wxWidgets_LIBRARIES})
+target_link_libraries(PHD ${GLIB_LIBRARIES})
+target_link_libraries(PHD ${HAL_LIBRARIES})
+target_link_libraries(PHD ${V4L2_LIBRARIES})
 #set(phd_LIBS "${phd_LIBS} ${GTK_LIBRARIES}")
 target_link_libraries(PHD ${phd_LIBS})
 

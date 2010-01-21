@@ -129,6 +129,12 @@ Camera_SSPIAGClass Camera_SSPIAG;
 Camera_INDIClass Camera_INDI;
 #endif
 
+#if defined (VIDEODEVICE)
+#include "cam_VIDEODEVICE.h"
+Camera_VIDEODEVICEClass Camera_VIDEODEVICE;
+#endif
+
+
 void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 // Throws up a dialog and trys to connect to that camera
 	if (CaptureActive) return;  // Looping an exposure already
@@ -203,6 +209,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 #if defined (INDI)
     Cameras.Add(_T("INDI Camera"));
 #endif
+#if defined (VIDEODEVICE)
+    Cameras.Add(_T("Linux V4L2 Camera"));
+#endif
+
 #if defined (NEB_SBIG)
 	Cameras.Add(_T("Guide chip on SBIG cam in Nebulosity"));
 #endif
@@ -326,6 +336,12 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 	else if (Choice.Find(_T("INDI Camera")) + 1)
 		CurrentGuideCamera = &Camera_INDI;
 #endif
+
+#if defined (VIDEODEVICE)
+	else if (Choice.Find(_T("Linux V4L2 Camera")) + 1)
+		CurrentGuideCamera = &Camera_VIDEODEVICE;
+#endif
+
 	else {
 		CurrentGuideCamera = NULL;
 		GuideCameraConnected = false;
