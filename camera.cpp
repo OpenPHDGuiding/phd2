@@ -131,6 +131,9 @@ Camera_INDIClass Camera_INDI;
 
 #if defined (VIDEODEVICE)
 #include "cam_VIDEODEVICE.h"
+extern "C" {
+#include <libudev.h>
+}
 Camera_VIDEODEVICEClass Camera_VIDEODEVICE;
 #endif
 
@@ -210,7 +213,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
     Cameras.Add(_T("INDI Camera"));
 #endif
 #if defined (VIDEODEVICE)
-    Cameras.Add(_T("Linux V4L2 Camera"));
+    if (true == Camera_VIDEODEVICE.ProbeDevices()) {
+        Cameras.Add(_T("V4L(2) Camera"));
+    }
 #endif
 
 #if defined (NEB_SBIG)
@@ -338,8 +343,34 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 #endif
 
 #if defined (VIDEODEVICE)
-	else if (Choice.Find(_T("Linux V4L2 Camera")) + 1)
+	else if (Choice.Find(_T("V4L(2) Camera")) + 1) {
+		// There is at least ONE V4L(2) device ... let's find out exactly
+		DeviceInfo *deviceInfo = NULL;
+
+		if (1 == Camera_VIDEODEVICE.NumberOfDevices()) {
+			deviceInfo = Camera_VIDEODEVICE.GetDeviceAtIndex(0);
+
+			Camera_VIDEODEVICE.SetDevice(deviceInfo->getDeviceName());
+			Camera_VIDEODEVICE.Name = deviceInfo->getProduct();
+		} else {
+			wxArrayString choices;
+			int choice = 0;
+
+			if (-1 != (choice = wxGetSingleChoiceIndex(_T("Select your camera"), _T("V4L(2) devices"), Camera_VIDEODEVICE.GetProductArray(choices)))) {
+				deviceInfo = Camera_VIDEODEVICE.GetDeviceAtIndex(choice);
+
+				Camera_VIDEODEVICE.SetDevice(deviceInfo->getDeviceName());
+				Camera_VIDEODEVICE.Name = deviceInfo->getProduct();
+			} else {
+				CurrentGuideCamera = NULL;
+				GuideCameraConnected = false;
+				SetStatusText(_T("No cam"),3);
+				return;
+			}
+		}
+
 		CurrentGuideCamera = &Camera_VIDEODEVICE;
+	}
 #endif
 
 	else {

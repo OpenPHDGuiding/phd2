@@ -11,21 +11,19 @@ include (CheckIncludeFiles)
 #v4l
 include(FindPkgConfig)
 
-pkg_check_modules(GLIB glib-2.0)
-pkg_check_modules(HAL hal)
+pkg_check_modules(LIBUDEV libudev)
 pkg_check_modules(V4L2 libv4l2)
 
-IF(GLIB_FOUND AND HAL_FOUND AND V4L2_FOUND)
+IF(LIBUDEV_FOUND AND V4L2_FOUND)
     set(V4L_OK 1)
-ELSE (GLIB_FOUND AND HAL_FOUND AND V4L2_FOUND)
+ELSE (LIBUDEV_FOUND AND V4L2_FOUND)
     message("\n"
             "WARNING: Missing dependencies for V4L\n"
             "WARNING: V4L cameras will not be supported\n")
-ENDIF (GLIB_FOUND AND HAL_FOUND AND V4L2_FOUND)
+ENDIF (LIBUDEV_FOUND AND V4L2_FOUND)
 
 if(V4L_OK)
-    include_directories(${HAL_INCLUDE_DIRS})
-    include_directories(${GLIB_INCLUDE_DIRS})
+    include_directories(${LIBUDEV_INCLUDE_DIRS})
     include_directories(${V4L2_INCLUDE_DIRS})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVIDEODEVICE")
 endif(V4L_OK)
@@ -76,6 +74,8 @@ set(phd_SRCS
 if(V4L_OK)
    set(phd_SRCS ${phd_SRCS} 
       ${CMAKE_SOURCE_DIR}/cam_VIDEODEVICE.cpp
+      ${CMAKE_SOURCE_DIR}/config_VIDEODEVICE.cpp
+      ${CMAKE_SOURCE_DIR}/v4lcontrol.cpp
       ${CMAKE_SOURCE_DIR}/cameras/linuxvideodevice.cpp
       )
 endif(V4L_OK)
@@ -89,8 +89,7 @@ add_executable(PHD ${phd_SRCS})
 target_link_libraries(PHD ${CFITSIO_LIBRARIES})
 target_link_libraries(PHD ${wxWidgets_LIBRARIES})
 if(V4L_OK)
-    target_link_libraries(PHD ${GLIB_LIBRARIES})
-    target_link_libraries(PHD ${HAL_LIBRARIES})
+    target_link_libraries(PHD ${LIBUDEV_LIBRARIES})
     target_link_libraries(PHD ${V4L2_LIBRARIES})
 endif(V4L_OK)
 #set(phd_LIBS "${phd_LIBS} ${GTK_LIBRARIES}")

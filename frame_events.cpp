@@ -828,7 +828,3 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
 	TestGuideDialog* dlog = new TestGuideDialog();
 	dlog->Show();
 }
-
-
-
-

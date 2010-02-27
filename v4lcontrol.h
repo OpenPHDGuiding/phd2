@@ -1,9 +1,9 @@
 /*
- *  cam_INDI.h
+ *  v4lcontrol.h
  *  PHD Guiding
  *
- *  Created by Geoffrey Hausheer.
- *  Copyright (c) 2009 Geoffrey Hausheer.
+ *  Created by Steffen Elste
+ *  Copyright (c) 2010 Steffen Elste.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -23,42 +23,40 @@
  *
  */
 
-#ifndef _CAM_INDI_H_
-#define _CAM_INDI_H_
+#ifndef V4LCONTROL_H_INCLUDED
+#define V4LCONTROL_H_INCLUDED
 
-struct indi_t;
-struct indi_prop_t;
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/time.h>
+#include <linux/types.h>          /* for videodev2.h */
+#include <linux/videodev2.h>
+#include <libv4l2.h>
+#include <libv4lconvert.h>
 
-class Camera_INDIClass : public GuideCamera {
-private:
-	struct indi_prop_t *expose_prop;
-	struct indi_prop_t *frame_prop;
-	struct indi_prop_t *frame_type_prop;
-	struct indi_prop_t *binning_prop;
-	struct indi_prop_t *video_prop;
-	int     img_count;
-	bool    ready;
-	bool    has_blob;
+
+#define MAXSIZE 32
+
+
+class V4LControl {
 public:
-	bool    modal;
-    wxString indi_name;
-    wxString indi_port;
-	bool    is_connected;
+    V4LControl(int fd, const struct v4l2_queryctrl &ctrl);
+    // ~V4LControl();
 
-	bool    ReadFITS(usImage& img);
-	bool    ReadStream(usImage& img);
-    struct  indi_elem_t *blob_elem;
-	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();		// Opens up and connects to cameras
-	bool	Disconnect();
-	void	InitCapture() { return; }
-	void	ShowPropertyDialog();
-	void    CheckState();
-	void    NewProp(struct indi_prop_t *iprop);
-	Camera_INDIClass();
+    bool update();
+    bool reset();
+
+    int fd;
+    int cid;
+    int type;
+    int defaultValue;
+    int value;
+    char name[MAXSIZE];
+    char *menu;
+    int min, max, step;
+
+private:
+    void enumerateMenuControls(const struct v4l2_queryctrl &ctrl);
 };
 
-extern Camera_INDIClass Camera_INDI;
-#endif
-
-
+#endif // V4LCONTROL_H_INCLUDED

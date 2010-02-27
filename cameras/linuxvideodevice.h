@@ -45,6 +45,8 @@ public:
 	unsigned char getPixel(int);
 	int getFrameDims(short);
 
+	int get_fd() { return fd; }
+
 private:
 	char *devicename;
 	int io;
