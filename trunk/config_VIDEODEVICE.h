@@ -1,9 +1,9 @@
 /*
- *  cam_INDI.h
+ *  config_VIDEODEVICE.cpp
  *  PHD Guiding
  *
- *  Created by Geoffrey Hausheer.
- *  Copyright (c) 2009 Geoffrey Hausheer.
+ *  Created by Steffen Elste
+ *  Copyright (c) 2010 Steffen Elste.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -23,42 +23,37 @@
  *
  */
 
-#ifndef _CAM_INDI_H_
-#define _CAM_INDI_H_
+#ifndef CONFIG_VIDEODEVICE_H_INCLUDED
+#define CONFIG_VIDEODEVICE_H_INCLUDED
 
-struct indi_t;
-struct indi_prop_t;
+#include <wx/hashmap.h>
+#include <wx/control.h>
+#include <wx/dialog.h>
+#include <wx/checkbox.h>
+#include <wx/spinctrl.h>
+#include <wx/choice.h>
 
-class Camera_INDIClass : public GuideCamera {
-private:
-	struct indi_prop_t *expose_prop;
-	struct indi_prop_t *frame_prop;
-	struct indi_prop_t *frame_type_prop;
-	struct indi_prop_t *binning_prop;
-	struct indi_prop_t *video_prop;
-	int     img_count;
-	bool    ready;
-	bool    has_blob;
+
+WX_DECLARE_HASH_MAP(int, wxCheckBox*, wxIntegerHash, wxIntegerEqual, CheckboxMap);
+WX_DECLARE_HASH_MAP(int, wxSpinCtrl*, wxIntegerHash, wxIntegerEqual, SpinctrlMap);
+WX_DECLARE_HASH_MAP(int, wxChoice*, wxIntegerHash, wxIntegerEqual, ChoiceMap);
+
+
+class V4LPropertiesDialog: public wxDialog {
 public:
-	bool    modal;
-    wxString indi_name;
-    wxString indi_port;
-	bool    is_connected;
+	V4LPropertiesDialog(V4LControlMap*);
+	~V4LPropertiesDialog() {};
 
-	bool    ReadFITS(usImage& img);
-	bool    ReadStream(usImage& img);
-    struct  indi_elem_t *blob_elem;
-	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();		// Opens up and connects to cameras
-	bool	Disconnect();
-	void	InitCapture() { return; }
-	void	ShowPropertyDialog();
-	void    CheckState();
-	void    NewProp(struct indi_prop_t *iprop);
-	Camera_INDIClass();
+protected:
+	void onUpdate(wxCommandEvent& event);
+	void onReset(wxCommandEvent& event);
+
+private:
+	V4LControlMap *controlMap;
+
+	CheckboxMap checkboxMap;
+	SpinctrlMap spinctrlMap;
+	ChoiceMap choiceMap;
 };
 
-extern Camera_INDIClass Camera_INDI;
-#endif
-
-
+#endif // CONFIG_VIDEODEVICE_H_INCLUDED

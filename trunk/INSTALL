@@ -5,6 +5,10 @@ wxWidgets w/ GTK installed (both libraries and headers)
 
 libcftsio libraries and headers installed
 
+Support for Video4Linux devices is built-in now and requires (Debian/Ubuntu package names given)
+	* libudev-dev (for device detection)
+	* libv4l-dev
+
 cmake 2.6 (or newer) installed
 
 Run:

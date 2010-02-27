@@ -13,9 +13,6 @@ linuxvideodevice::linuxvideodevice(const char *device) {
 			frameHeight = FRAMEHEIGHT;
 			io = V4L2_MEMORY_MMAP;
 			fd = -1;
-//			open_device();
-//			init_device(&frameWidth, &frameHeight);
-//			start_capturing();
 		}
 	}
 }

@@ -23,7 +23,6 @@
  *
  */
 
-
 // Defines to define specific camera availability
 
 #if defined (ORION)
@@ -67,4 +66,3 @@
 
 extern void InitCameraParams();
 extern bool DLLExists (wxString DLLName);
-

@@ -1,9 +1,9 @@
 /*
- *  cam_template.h
+ *  cam_VIDEODEVICE.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2009 Craig Stark.
+ *  Created by Wolfgang Birkfellner, Steffen Elste.
+ *  Copyright (c) 2009, 2010 Wolfgang Birkfellner, Steffen Elste.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
@@ -26,9 +26,62 @@
 #ifndef CAM_VIDEODEVICE_H_INCLUDED
 #define CAM_VIDEODEVICE_H_INCLUDED
 
+#include "v4lcontrol.h"
 #include "cameras/linuxvideodevice.h"
 
-#include <wx/arrstr.h>
+/*
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/time.h>
+#include <linux/types.h>          // for videodev2.h
+#include <linux/videodev2.h>
+*/
+#include <wx/dynarray.h>
+#include <wx/hashmap.h>
+
+
+class DeviceInfo;
+
+
+WX_DECLARE_OBJARRAY(DeviceInfo, DeviceInfoArray);
+WX_DECLARE_HASH_MAP(int, V4LControl*, wxIntegerHash, wxIntegerEqual, V4LControlMap);
+
+
+// ToDo - Refactor into separate header and source file maybe
+class DeviceInfo {
+public:
+	DeviceInfo() {}
+
+	wxString getProduct() { return product; }
+	void setProduct(const char* string) { product = wxString(string, *wxConvCurrent); }
+	void setProduct(wxString string) { product = string; }
+
+	wxString getDeviceName() { return deviceName; }
+	void setDeviceName(const char* string) { deviceName = wxString(string, *wxConvCurrent); }
+	void setDeviceName(wxString string) { deviceName = string; }
+
+	wxString getBus() { return bus; }
+	void setBus(const char* string) { bus = wxString(string, *wxConvCurrent); }
+	void setBus(wxString string) { bus = string; }
+
+	wxString getDriver() { return driver; }
+	void setDriver(const char* string) { driver = wxString(string, *wxConvCurrent); }
+	void setDriver(wxString string) { driver = string; }
+
+	wxString getVendorId() { return vendorId; }
+	void setVendorId(const char* string) { vendorId = wxString(string, *wxConvCurrent); }
+	void setVendorId(wxString string) { vendorId = string; }
+
+	wxString getModelId() { return modelId; }
+	void setModelId(const char* string) { modelId = wxString(string, *wxConvCurrent); }
+	void setModelId(wxString string) { modelId = string; }
+
+private:
+	wxString product;
+	wxString deviceName;
+	wxString bus, driver;
+	wxString vendorId, modelId;
+};
 
 
 class Camera_VIDEODEVICEClass : public GuideCamera {
@@ -38,15 +91,32 @@ public:
 	bool	Disconnect();
 	void	InitCapture() { return; }
 	bool    PulseGuideScope(int direction, int duration);
+
+	void	ShowPropertyDialog();
+
+	bool	ProbeDevices();
+	size_t	NumberOfDevices() { return deviceInfoArray.GetCount(); }
+	DeviceInfo*	GetDeviceAtIndex(int index);
+	wxArrayString& GetProductArray(wxArrayString& devices);
+
+	wxString GetDevice() { return device; }
+	void	SetDevice(wxString string) { device = string; }
+
+	const linuxvideodevice* getCamera() { return camera; }
+
 	Camera_VIDEODEVICEClass();
+
 private:
-	bool	ProbeDevices(wxArrayString*);
+	int queryCameraControls();
+	void addControl(struct v4l2_queryctrl &ctrl);
 
-	linuxvideodevice *dummycam;
-//	int width;
-//	int height;
+	linuxvideodevice *camera;
 
-	wxArrayString devicearray;
+	wxString device;
+	DeviceInfoArray deviceInfoArray;
+	V4LControlMap controlMap;
+
+	int fd;
 };
 
-#endif // CAM_TEMPLATE_H_INCLUDED
+#endif // CAM_VIDEODEVICE_H_INCLUDED
