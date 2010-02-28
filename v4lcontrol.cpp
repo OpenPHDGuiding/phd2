@@ -56,12 +56,7 @@ V4LControl::V4LControl(int fd, const struct v4l2_queryctrl &ctrl)
 			break;
 	}
 }
-/*
-V4LControl::~V4LControl() {
-	if (NULL != this->menu)
-		delete [] this->menu;
-}
-*/
+
 bool V4LControl::update() {
 	bool result = false;
     struct v4l2_control c;
@@ -85,6 +80,12 @@ bool V4LControl::update() {
 			break;
 		case V4L2_CTRL_TYPE_BOOLEAN:
 		    break;
+		case V4L2_CTRL_TYPE_MENU:
+			if (value < min)
+				value = min;
+			if (value > max)
+				value = max;
+			break;
 		default:
 			break;
     }
@@ -92,7 +93,12 @@ bool V4LControl::update() {
     c.value = value;
 
     if (-1 != v4l2_ioctl(fd, VIDIOC_S_CTRL, &c)) {
-        result = true;
+    	// Check the current settings ...
+    	memset(&c, 0, sizeof(c));
+
+    	c.id = this->cid;
+    	if (0 == v4l2_ioctl(fd, VIDIOC_G_CTRL, &c) && c.value == this->value)
+    		result = true;
     }
 
     return result;
@@ -100,7 +106,24 @@ bool V4LControl::update() {
 
 bool V4LControl::reset() {
 	bool result = false;
+    struct v4l2_control c;
 
+    c.id = this->cid;
+    c.value = defaultValue;
+
+    if (-1 != v4l2_ioctl(fd, VIDIOC_S_CTRL, &c)) {
+    	// Check the current settings ...
+    	memset(&c, 0, sizeof(c));
+
+    	c.id = this->cid;
+    	if (0 == v4l2_ioctl(fd, VIDIOC_G_CTRL, &c)) {
+    		this->value = this->defaultValue;
+
+        	result = true;
+    	}
+    }
+
+    return result;
 }
 
 void V4LControl::enumerateMenuControls(const struct v4l2_queryctrl &ctrl) {

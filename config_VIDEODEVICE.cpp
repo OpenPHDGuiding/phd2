@@ -65,12 +65,13 @@ V4LPropertiesDialog::V4LPropertiesDialog(V4LControlMap *controlMap)
 
 		switch (control->type) {
 			case V4L2_CTRL_TYPE_INTEGER:
-				spinctrl = new wxSpinCtrl(this, id, _T("foo"), wxPoint(-1,-1), wxSize(75,-1), wxSP_ARROW_KEYS, control->min, control->max, control->defaultValue);
+				spinctrl = new wxSpinCtrl(this, id, _T("foo"), wxPoint(-1,-1), wxSize(75,-1), wxSP_ARROW_KEYS, control->min, control->max, control->value);
 				spinctrlMap[id] = spinctrl;
 				gridSizer->Add(spinctrl, wxSizerFlags().Proportion(1).Border(wxALL, 3));
 				break;
 			case V4L2_CTRL_TYPE_BOOLEAN:
 				checkbox = new wxCheckBox(this, id, _T(""));
+				checkbox->SetValue(0 != control->value);
 				checkboxMap[id] = checkbox;
 				gridSizer->Add(checkbox, wxSizerFlags().Proportion(1).Border(wxALL, 3));
 				break;
@@ -81,9 +82,7 @@ V4LPropertiesDialog::V4LPropertiesDialog(V4LControlMap *controlMap)
 				}
 
 				choice = new wxChoice(this, id, wxPoint(-1,-1), wxSize(75,-1), items);
-
-				// FIXME
-				choice->Enable(false);
+				choice->SetSelection(control->value - control->min);
 				choiceMap[id] = choice;
 				gridSizer->Add(choice, wxSizerFlags().Proportion(1).Border(wxALL, 3));
 				break;
@@ -114,9 +113,11 @@ void V4LPropertiesDialog::onUpdate(wxCommandEvent& event) {
 
 	wxCheckBox *checkbox;
 	wxSpinCtrl *spinctrl;
+	wxChoice *choice;
 
 	CheckboxMap::iterator checkboxIt;
 	SpinctrlMap::iterator spinctrlIt;
+	ChoiceMap::iterator choiceIt;
 
 	for (it=controlMap->begin(); it!=controlMap->end(); ++it) {
 		int id = it->first;
@@ -135,6 +136,14 @@ void V4LPropertiesDialog::onUpdate(wxCommandEvent& event) {
 					checkbox = checkboxIt->second;
 
 					control->value = checkbox->GetValue();
+				}
+				break;
+			case V4L2_CTRL_TYPE_MENU:
+				if (choiceMap.end() != (choiceIt = choiceMap.find(id))) {
+					choice = choiceIt->second;
+
+					// Entries for 'MENU'-type controls don't necessarily start at index '0'
+					control->value = choice->GetSelection() + control->min;
 				}
 				break;
 			default:
@@ -156,31 +165,46 @@ void V4LPropertiesDialog::onReset(wxCommandEvent& event) {
 
 	wxCheckBox *checkbox;
 	wxSpinCtrl *spinctrl;
+	wxChoice *choice;
 
 	CheckboxMap::iterator checkboxIt;
 	SpinctrlMap::iterator spinctrlIt;
+	ChoiceMap::iterator choiceIt;
 
 	for (it=controlMap->begin(); it!=controlMap->end(); ++it) {
 		int id = it->first;
 		V4LControl *control = (V4LControl*)it->second;
 
-		switch (control->type) {
-			case V4L2_CTRL_TYPE_INTEGER:
-				if (spinctrlMap.end() != (spinctrlIt = spinctrlMap.find(id))) {
-					spinctrl = spinctrlIt->second;
+		if (false == control->reset()) {
+			wxMessageDialog *dialog =
+					new wxMessageDialog(NULL, wxString::Format(_T("Could not reset '%s'!"), control->name), _T("Warning"), wxOK | wxICON_EXCLAMATION);
 
-					spinctrl->SetValue(control->defaultValue);
-				}
-				break;
-			case V4L2_CTRL_TYPE_BOOLEAN:
-				if (checkboxMap.end() != (checkboxIt = checkboxMap.find(id))) {
-					checkbox = checkboxIt->second;
+			dialog->Show();
+		} else {
+			switch (control->type) {
+				case V4L2_CTRL_TYPE_INTEGER:
+					if (spinctrlMap.end() != (spinctrlIt = spinctrlMap.find(id))) {
+						spinctrl = spinctrlIt->second;
 
-					checkbox->SetValue(control->defaultValue);
-				}
-				break;
-			default:
-				break;
+						spinctrl->SetValue(control->defaultValue);
+					}
+					break;
+				case V4L2_CTRL_TYPE_BOOLEAN:
+					if (checkboxMap.end() != (checkboxIt = checkboxMap.find(id))) {
+						checkbox = checkboxIt->second;
+
+						checkbox->SetValue(0 != control->defaultValue);
+					}
+					break;
+				case V4L2_CTRL_TYPE_MENU:
+					if (choiceMap.end() != (choiceIt = choiceMap.find(id))) {
+						choice = choiceIt->second;
+
+						choice->SetSelection(control->defaultValue - control->min);
+					}
+				default:
+					break;
+			}
 		}
 	}
 }
