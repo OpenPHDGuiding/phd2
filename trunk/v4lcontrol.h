@@ -41,7 +41,6 @@
 class V4LControl {
 public:
     V4LControl(int fd, const struct v4l2_queryctrl &ctrl);
-    // ~V4LControl();
 
     bool update();
     bool reset();
