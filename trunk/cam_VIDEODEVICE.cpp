@@ -322,3 +322,55 @@ void Camera_VIDEODEVICEClass::addControl(struct v4l2_queryctrl &ctrl) {
 	    }
 	}
 }
+
+bool Camera_VIDEODEVICEClass::saveSettings(wxConfig *config) {
+	bool result = false;
+
+	if (NULL != config) {
+		V4LControlMap::iterator it;
+		V4LControl *control;
+
+
+		config->Write(_T("camera"), Name);
+		config->Write(_T("vendorid"), vendor);
+		config->Write(_T("modelid"), model);
+
+		for (it=controlMap.begin(); it!=controlMap.end(); ++it) {
+			int id = it->first;
+			V4LControl *control = (V4LControl*)it->second;
+
+			config->Write(wxString::Format(wxT("%i"), id), control->value);
+		}
+
+		// FIXME - prevent these settings from being ignored on program exit
+		config->Flush();
+
+		result = true;
+	}
+
+	return result;
+}
+
+bool Camera_VIDEODEVICEClass::restoreSettings(wxConfig *config) {
+	bool result = false;
+
+	if (NULL != config) {
+		V4LControlMap::iterator it;
+		V4LControl *control;
+
+		for (it=controlMap.begin(); it!=controlMap.end(); ++it) {
+			int id = it->first;
+			V4LControl *control = (V4LControl*)it->second;
+
+			if (true == config->Exists(wxString::Format(wxT("%i"), id))) {
+				config->Read(wxString::Format(wxT("%i"), id), &(control->value));
+
+				// 'result' is true if all controls could be restored
+				if (false == (result = control->update()))
+					break;
+			}
+		}
+	}
+
+	return result;
+}

@@ -86,6 +86,8 @@ private:
 
 class Camera_VIDEODEVICEClass : public GuideCamera {
 public:
+	Camera_VIDEODEVICEClass();
+
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
 	bool	Connect();		// Opens up and connects to cameras
 	bool	Disconnect();
@@ -102,9 +104,16 @@ public:
 	wxString GetDevice() { return device; }
 	void	SetDevice(wxString string) { device = string; }
 
+	wxString GetVendor() { return vendor; }
+	void	SetVendor(wxString string) { vendor = string; }
+
+	wxString GetModel() { return model; }
+	void	SetModel(wxString string) { model = string; }
+
 	const linuxvideodevice* getCamera() { return camera; }
 
-	Camera_VIDEODEVICEClass();
+	bool saveSettings(wxConfig *config);
+	bool restoreSettings(wxConfig *config);
 
 private:
 	int queryCameraControls();
@@ -113,10 +122,13 @@ private:
 	linuxvideodevice *camera;
 
 	wxString device;
+	wxString vendor, model;
 	DeviceInfoArray deviceInfoArray;
 	V4LControlMap controlMap;
 
 	int fd;
 };
+
+extern Camera_VIDEODEVICEClass Camera_VIDEODEVICE;
 
 #endif // CAM_VIDEODEVICE_H_INCLUDED

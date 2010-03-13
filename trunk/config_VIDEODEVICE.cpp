@@ -37,6 +37,10 @@
 #include <wx/arrstr.h>
 #include <wx/string.h>
 #include <wx/button.h>
+#include <wx/config.h>
+
+
+#define PHDGUIDING "PHDGuiding"
 
 
 V4LPropertiesDialog::V4LPropertiesDialog(V4LControlMap *controlMap)
@@ -207,4 +211,62 @@ void V4LPropertiesDialog::onReset(wxCommandEvent& event) {
 			}
 		}
 	}
+}
+
+void MyFrame::OnSaveSettings(wxCommandEvent& event) {
+	wxMessageDialog *dialog = NULL;
+	wxConfig *config = NULL;
+
+	if (NULL != (config = new wxConfig(_T(PHDGUIDING)))) {
+		if (true == Camera_VIDEODEVICE.saveSettings(config)) {
+			dialog = new wxMessageDialog(frame, _T("Settings successfully saved"), _T("Save Settings"), wxOK | wxICON_INFORMATION);
+		} else {
+			dialog = new wxMessageDialog(frame, _T("Error saving settings"), _T("Save Settings"), wxOK | wxICON_ERROR);
+		}
+	} else {
+		dialog = new wxMessageDialog(frame, _T("Error creating/opening settings"), _T("Save Settings"), wxOK | wxICON_ERROR);
+	}
+
+	dialog->ShowModal();
+
+	if (NULL != dialog)
+		dialog->Destroy();
+}
+
+void MyFrame::OnRestoreSettings(wxCommandEvent& event) {
+	wxMessageDialog *dialog = NULL;
+	wxConfig *config = NULL;
+
+	if (NULL != (config = new wxConfig(_T(PHDGUIDING)))) {
+		if (false == config->Exists(_T("camera")) || false == config->Exists(_T("vendorid")) || false == config->Exists(_T("modelid"))) {
+			dialog = new wxMessageDialog(frame, _T("Cannot restore from incomplete settings"), _T("Restore Settings"), wxOK | wxICON_ERROR);
+		} else {
+			wxString cameraFromConfig, vendorFromConfig, modelFromConfig;
+
+			config->Read(_T("camera"), &cameraFromConfig);
+			config->Read(_T("vendorid"), &vendorFromConfig);
+			config->Read(_T("modelid"), &modelFromConfig);
+
+			// This is not completely fool-proof ...
+			if (0 == Camera_VIDEODEVICE.Name.CmpNoCase(cameraFromConfig) && 0 == Camera_VIDEODEVICE.GetVendor().CmpNoCase(vendorFromConfig) && 0 == Camera_VIDEODEVICE.GetModel().CmpNoCase(modelFromConfig)) {
+				if (true == Camera_VIDEODEVICE.restoreSettings(config)) {
+					dialog = new wxMessageDialog(frame, _T("Settings successfully restored"), _T("Restore Settings"), wxOK | wxICON_INFORMATION);
+				} else {
+					dialog = new wxMessageDialog(frame, _T("Error restoring settings"), _T("Restore Settings"), wxOK | wxICON_INFORMATION);
+				}
+			} else {
+				wxString message = _T("Cannot restore settings\n");
+
+				message += _T("Device currently in use: ") + Camera_VIDEODEVICE.Name + _T(" - ") + Camera_VIDEODEVICE.GetVendor() + _T(":") + Camera_VIDEODEVICE.GetModel() + _T("\n");
+				message += _T("Device from settings: ") + cameraFromConfig + _T(" - ") + vendorFromConfig + _T(":") + modelFromConfig;
+
+				dialog = new wxMessageDialog(frame, message, _T("Restore Settings"), wxOK | wxICON_INFORMATION);
+			}
+		}
+	}
+
+	dialog->ShowModal();
+
+	if (NULL != dialog)
+		dialog->Destroy();
 }

@@ -147,6 +147,12 @@ public:
 	void OnINDIConfig(wxCommandEvent& evt);
 	void OnINDIDialog(wxCommandEvent& evt);
 #endif
+
+#if defined (VIDEODEVICE)
+	 void OnSaveSettings(wxCommandEvent& evt);
+	 void OnRestoreSettings(wxCommandEvent& evt);
+#endif
+
 	bool StartServer(bool state);
 	void OnGraph(wxCommandEvent& evt);
 	void OnStarProfile(wxCommandEvent& evt);
@@ -242,6 +248,8 @@ enum {
 	MENU_AUTOSTAR,
 	MENU_INDICONFIG,
 	MENU_INDIDIALOG,
+	MENU_V4LSAVESETTINGS,
+	MENU_V4LRESTORESETTINGS,
 	BUTTON_GRAPH_LENGTH,
 	BUTTON_GRAPH_MODE,
 	BUTTON_GRAPH_HIDE,
