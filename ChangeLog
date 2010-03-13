@@ -1,3 +1,7 @@
+2010-03-13 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* Code to save and restore camera settings, new menu entry 'V4L'
+
 2010-02-28 steffen elste <steffen.elste@max-ulmschneider.de>
 
 	* 'Menu', 'BOOLEAN' and 'INTEGER'-type controls now working

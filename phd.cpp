@@ -128,10 +128,17 @@ EVT_MENU(MENU_XHAIR0,MyFrame::OnOverlay)
 EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
 EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
 EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
+
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 EVT_MENU(MENU_INDICONFIG,MyFrame::OnINDIConfig)
 EVT_MENU(MENU_INDIDIALOG,MyFrame::OnINDIDialog)
 #endif
+
+#if defined (VIDEODEVICE)
+EVT_MENU(MENU_V4LSAVESETTINGS, MyFrame::OnSaveSettings)
+EVT_MENU(MENU_V4LRESTORESETTINGS, MyFrame::OnRestoreSettings)
+#endif
+
 EVT_MENU(MENU_CLEARDARK,MyFrame::OnClearDark)
 EVT_MENU(MENU_LOG,MyFrame::OnLog)
 EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
@@ -151,8 +158,8 @@ EVT_BUTTON(BUTTON_GUIDE,MyFrame::OnGuide)
 EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
 EVT_BUTTON(wxID_PROPERTIES,MyFrame::OnSetupCamera)
 EVT_COMMAND_SCROLL(CTRL_GAMMA,MyFrame::OnGammaSlider)
-EVT_SOCKET(SERVER_ID,  MyFrame::OnServerEvent)
-EVT_SOCKET(SOCKET_ID,  MyFrame::OnSocketEvent)
+EVT_SOCKET(SERVER_ID, MyFrame::OnServerEvent)
+EVT_SOCKET(SOCKET_ID, MyFrame::OnSocketEvent)
 EVT_CLOSE(MyFrame::OnClose)
 END_EVENT_TABLE()
 
@@ -278,6 +285,13 @@ MyFrame::MyFrame(const wxString& title)
 	indi_menu->Append(MENU_INDIDIALOG, _T("&Controls..."), _T("Show INDI controls for available devices"));
 #endif
 
+#if defined (VIDEODEVICE)
+	wxMenu *v4l_menu = new wxMenu();
+
+	v4l_menu->Append(MENU_V4LSAVESETTINGS, _T("&Save settings"), _T("Save current camera settings"));
+	v4l_menu->Append(MENU_V4LRESTORESETTINGS, _T("&Restore settings"), _T("Restore camera settings"));
+#endif
+
 	wxMenu *help_menu = new wxMenu;
 	help_menu->Append(wxID_ABOUT, _T("&About...\tF1"), _T("About PHD Guiding"));
 	help_menu->Append(wxID_HELP_CONTENTS,_T("Contents"),_T("Full help"));
@@ -287,9 +301,18 @@ MyFrame::MyFrame(const wxString& title)
 	Menubar = new wxMenuBar();
 	Menubar->Append(file_menu, _T("&File"));
 	Menubar->Append(mount_menu, _T("&Mount"));
+
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 	Menubar->Append(indi_menu, _T("&INDI"));
 #endif
+
+#if defined (VIDEODEVICE)
+	Menubar->Append(v4l_menu, _T("&V4L"));
+
+	Menubar->Enable(MENU_V4LSAVESETTINGS, false);
+	Menubar->Enable(MENU_V4LRESTORESETTINGS, false);
+#endif
+
 	Menubar->Append(tools_menu, _T("&Tools"));
 	Menubar->Append(help_menu, _T("&Help"));
 	SetMenuBar(Menubar);

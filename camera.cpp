@@ -351,6 +351,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 			deviceInfo = Camera_VIDEODEVICE.GetDeviceAtIndex(0);
 
 			Camera_VIDEODEVICE.SetDevice(deviceInfo->getDeviceName());
+			Camera_VIDEODEVICE.SetVendor(deviceInfo->getVendorId());
+			Camera_VIDEODEVICE.SetModel(deviceInfo->getModelId());
+
 			Camera_VIDEODEVICE.Name = deviceInfo->getProduct();
 		} else {
 			wxArrayString choices;
@@ -360,6 +363,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 				deviceInfo = Camera_VIDEODEVICE.GetDeviceAtIndex(choice);
 
 				Camera_VIDEODEVICE.SetDevice(deviceInfo->getDeviceName());
+				Camera_VIDEODEVICE.SetVendor(deviceInfo->getVendorId());
+				Camera_VIDEODEVICE.SetModel(deviceInfo->getModelId());
+
 				Camera_VIDEODEVICE.Name = deviceInfo->getProduct();
 			} else {
 				CurrentGuideCamera = NULL;
@@ -370,6 +376,11 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 		}
 
 		CurrentGuideCamera = &Camera_VIDEODEVICE;
+
+		// FIXME - enabling the menu items is a bit premature; there could still be problems
+		// connecting the device
+		Menubar->Enable(MENU_V4LSAVESETTINGS, true);
+		Menubar->Enable(MENU_V4LRESTORESETTINGS, true);
 	}
 #endif
 
