@@ -1,3 +1,5 @@
+#include "v4lcontrol.h"
+
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
@@ -20,6 +22,7 @@
 #ifdef WITH_V4L2_LIB
 #include <libv4lconvert.h>
 #endif
+
 struct buffer {
 	void *start;
 	size_t length;
@@ -46,6 +49,8 @@ public:
 	int getFrameDims(short);
 
 	int get_fd() { return fd; }
+
+	void queryV4LControls(V4LControlMap &controlMap);
 
 private:
 	char *devicename;
@@ -77,6 +82,8 @@ private:
 	void init_read(unsigned int);
 	void init_mmap(void);
 	void init_userp(unsigned int);
+
+	void addControl(V4LControlMap &controlMap, struct v4l2_queryctrl &ctrl);
 };
 
 /*------------------------------------------------------------*/

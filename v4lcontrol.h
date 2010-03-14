@@ -34,6 +34,8 @@
 #include <libv4l2.h>
 #include <libv4lconvert.h>
 
+#include <wx/hashmap.h>
+
 
 #define MAXSIZE 32
 
@@ -57,5 +59,8 @@ public:
 private:
     void enumerateMenuControls(const struct v4l2_queryctrl &ctrl);
 };
+
+
+WX_DECLARE_HASH_MAP(int, V4LControl*, wxIntegerHash, wxIntegerEqual, V4LControlMap);
 
 #endif // V4LCONTROL_H_INCLUDED

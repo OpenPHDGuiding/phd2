@@ -538,7 +538,6 @@ int linuxvideodevice::openvideodevice(int *width, int *height) {
 		exit(EXIT_FAILURE);
 	}
 
-	// ToDo
 	init_device(width, height);
 	start_capturing();
 
@@ -547,3 +546,52 @@ int linuxvideodevice::openvideodevice(int *width, int *height) {
 
 /*--------------------------------------------------------------------------------------*/
 
+void linuxvideodevice::queryV4LControls(V4LControlMap &controlMap) {
+	struct v4l2_queryctrl ctrl;
+
+	// Check all the standard controls
+	for (int i=V4L2_CID_BASE; i<V4L2_CID_LASTP1; i++) {
+		ctrl.id = i;
+		if (0 == v4l2_ioctl(fd, VIDIOC_QUERYCTRL, &ctrl)) {
+	    	if (ctrl.flags & V4L2_CTRL_FLAG_DISABLED)
+	    		continue;
+
+	    	addControl(controlMap, ctrl);
+		}
+	}
+
+	// Check any custom controls
+	for (int i=V4L2_CID_PRIVATE_BASE; ; i++) {
+		ctrl.id = i;
+		if (0 == v4l2_ioctl(fd, VIDIOC_QUERYCTRL, &ctrl)) {
+	    	if (ctrl.flags & V4L2_CTRL_FLAG_DISABLED)
+	    		continue;
+
+			addControl(controlMap, ctrl);
+		} else {
+			break;
+		}
+	}
+}
+
+/*--------------------------------------------------------------------------------------*/
+
+void linuxvideodevice::addControl(V4LControlMap &controlMap, struct v4l2_queryctrl &ctrl) {
+	if (controlMap.find(ctrl.id) == controlMap.end()) {
+		// No element with that key exists in the map ...
+	    switch(ctrl.type) {
+	        case V4L2_CTRL_TYPE_INTEGER:
+	        case V4L2_CTRL_TYPE_BOOLEAN:
+	        case V4L2_CTRL_TYPE_MENU:
+	        	controlMap[ctrl.id] = new V4LControl(fd, ctrl);
+	            break;
+	        case V4L2_CTRL_TYPE_BUTTON:
+	        case V4L2_CTRL_TYPE_INTEGER64:
+	        case V4L2_CTRL_TYPE_CTRL_CLASS:
+	        default:
+	            break;
+	    }
+	}
+}
+
+/*--------------------------------------------------------------------------------------*/

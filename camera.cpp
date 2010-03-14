@@ -376,11 +376,6 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 		}
 
 		CurrentGuideCamera = &Camera_VIDEODEVICE;
-
-		// FIXME - enabling the menu items is a bit premature; there could still be problems
-		// connecting the device
-		Menubar->Enable(MENU_V4LSAVESETTINGS, true);
-		Menubar->Enable(MENU_V4LRESTORESETTINGS, true);
 	}
 #endif
 

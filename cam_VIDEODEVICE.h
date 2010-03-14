@@ -26,25 +26,15 @@
 #ifndef CAM_VIDEODEVICE_H_INCLUDED
 #define CAM_VIDEODEVICE_H_INCLUDED
 
-#include "v4lcontrol.h"
 #include "cameras/linuxvideodevice.h"
 
-/*
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <sys/time.h>
-#include <linux/types.h>          // for videodev2.h
-#include <linux/videodev2.h>
-*/
 #include <wx/dynarray.h>
-#include <wx/hashmap.h>
 
 
 class DeviceInfo;
 
 
 WX_DECLARE_OBJARRAY(DeviceInfo, DeviceInfoArray);
-WX_DECLARE_HASH_MAP(int, V4LControl*, wxIntegerHash, wxIntegerEqual, V4LControlMap);
 
 
 // ToDo - Refactor into separate header and source file maybe
@@ -116,17 +106,12 @@ public:
 	bool restoreSettings(wxConfig *config);
 
 private:
-	int queryCameraControls();
-	void addControl(struct v4l2_queryctrl &ctrl);
-
 	linuxvideodevice *camera;
 
 	wxString device;
 	wxString vendor, model;
 	DeviceInfoArray deviceInfoArray;
 	V4LControlMap controlMap;
-
-	int fd;
 };
 
 extern Camera_VIDEODEVICEClass Camera_VIDEODEVICE;
