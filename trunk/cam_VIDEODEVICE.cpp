@@ -61,13 +61,20 @@ bool Camera_VIDEODEVICEClass::Connect() {
 	int width = 0;
 	int height = 0;
 
-	if (0 < queryCameraControls())
-		HasPropertyDialog = true;
-
 	camera = new linuxvideodevice((const char*)device.mb_str());
 	if (NULL == camera || 0 == camera->openvideodevice(&width, &height)) {
 		// If connection failed return true
 		return true;
+	}
+
+	// Camera settings ...
+	camera->queryV4LControls(controlMap);
+	if (0 < controlMap.size()) {
+		HasPropertyDialog = true;
+
+		// FIXME - accessing the main application frame from here is a hack
+		frame->Menubar->Enable(MENU_V4LSAVESETTINGS, true);
+		frame->Menubar->Enable(MENU_V4LRESTORESETTINGS, true);
 	}
 
 	if (frame->mount_menu->IsChecked(MOUNT_CAMERA)) {
@@ -126,10 +133,12 @@ bool Camera_VIDEODEVICEClass::Disconnect() {
 	CurrentGuideCamera = NULL;
 	GuideCameraConnected = false;
 
-    if (fd >= 0)
-        v4l2_close(fd);
-
     HasPropertyDialog = false;
+
+	// FIXME - accessing the main application frame from here is a hack
+	frame->Menubar->Enable(MENU_V4LSAVESETTINGS, false);
+	frame->Menubar->Enable(MENU_V4LRESTORESETTINGS, false);
+	frame->Setup_Button->Enable(false);
 
 	return false;
 }		
@@ -259,69 +268,7 @@ wxArrayString& Camera_VIDEODEVICEClass::GetProductArray(wxArrayString& devices) 
 	return devices;
 }
 
-int Camera_VIDEODEVICEClass::queryCameraControls() {
-	struct v4l2_capability cap;
-	struct v4l2_queryctrl ctrl;
-
-	// Shouldn't happen ...
-    if (0 > (fd = v4l2_open((const char*)device.mb_str(), O_RDWR, 0))) {
-    	fprintf(stderr, "Error opening %s\n", (const char*)device.mb_str());
-    	return -1;
-    }
-
-    // This is rather unlikely as well ...
-    if (v4l2_ioctl(fd, VIDIOC_QUERYCAP, &cap) == -1) {
-    	fprintf(stderr, "Not a V4L(2) device: %s\n", (const char*)device.mb_str());
-    	return -1;
-    }
-
-	// Check all the standard controls
-	for (int i=V4L2_CID_BASE; i<V4L2_CID_LASTP1; i++) {
-		ctrl.id = i;
-		if (0 == v4l2_ioctl(fd, VIDIOC_QUERYCTRL, &ctrl)) {
-	    	if (ctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-	    		continue;
-
-	    	addControl(ctrl);
-		}
-	}
-
-	// Check any custom controls
-	for (int i=V4L2_CID_PRIVATE_BASE; ; i++) {
-		ctrl.id = i;
-		if (0 == v4l2_ioctl(fd, VIDIOC_QUERYCTRL, &ctrl)) {
-	    	if (ctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-	    		continue;
-
-			addControl(ctrl);
-		} else {
-			break;
-		}
-	}
-
-    return controlMap.size();
-}
-
 /*------------------------------------------------------------------------------*/
-
-void Camera_VIDEODEVICEClass::addControl(struct v4l2_queryctrl &ctrl) {
-
-	if (controlMap.find(ctrl.id) == controlMap.end()) {
-		// No element with that key exists in the map ...
-	    switch(ctrl.type) {
-	        case V4L2_CTRL_TYPE_INTEGER:
-	        case V4L2_CTRL_TYPE_BOOLEAN:
-	        case V4L2_CTRL_TYPE_MENU:
-	        	controlMap[ctrl.id] = new V4LControl(fd, ctrl);
-	            break;
-	        case V4L2_CTRL_TYPE_BUTTON:
-	        case V4L2_CTRL_TYPE_INTEGER64:
-	        case V4L2_CTRL_TYPE_CTRL_CLASS:
-	        default:
-	            break;
-	    }
-	}
-}
 
 bool Camera_VIDEODEVICEClass::saveSettings(wxConfig *config) {
 	bool result = false;
@@ -342,7 +289,6 @@ bool Camera_VIDEODEVICEClass::saveSettings(wxConfig *config) {
 			config->Write(wxString::Format(wxT("%i"), id), control->value);
 		}
 
-		// FIXME - prevent these settings from being ignored on program exit
 		config->Flush();
 
 		result = true;
