@@ -233,6 +233,9 @@ int linuxvideodevice::get_frame(int etime) {
 void linuxvideodevice::stop_capturing(void) {
 	enum v4l2_buf_type type;
 
+	// Get rid of the controls first
+	controlMap.clear();
+
 	switch (io) {
 	case IO_METHOD_READ:
 		break;
@@ -316,6 +319,7 @@ void linuxvideodevice::uninit_device(void) {
 			free(buffers[i].start);
 		break;
 	}
+
 	free(buffers);
 }
 
@@ -546,7 +550,7 @@ int linuxvideodevice::openvideodevice(int *width, int *height) {
 
 /*--------------------------------------------------------------------------------------*/
 
-void linuxvideodevice::queryV4LControls(V4LControlMap &controlMap) {
+int linuxvideodevice::queryV4LControls() {
 	struct v4l2_queryctrl ctrl;
 
 	// Check all the standard controls
@@ -556,7 +560,7 @@ void linuxvideodevice::queryV4LControls(V4LControlMap &controlMap) {
 	    	if (ctrl.flags & V4L2_CTRL_FLAG_DISABLED)
 	    		continue;
 
-	    	addControl(controlMap, ctrl);
+	    	addControl(ctrl);
 		}
 	}
 
@@ -567,24 +571,26 @@ void linuxvideodevice::queryV4LControls(V4LControlMap &controlMap) {
 	    	if (ctrl.flags & V4L2_CTRL_FLAG_DISABLED)
 	    		continue;
 
-			addControl(controlMap, ctrl);
+			addControl(ctrl);
 		} else {
 			break;
 		}
 	}
+
+	return controlMap.size();
 }
 
 /*--------------------------------------------------------------------------------------*/
 
-void linuxvideodevice::addControl(V4LControlMap &controlMap, struct v4l2_queryctrl &ctrl) {
+void linuxvideodevice::addControl(struct v4l2_queryctrl &ctrl) {
 	if (controlMap.find(ctrl.id) == controlMap.end()) {
 		// No element with that key exists in the map ...
 	    switch(ctrl.type) {
+			case V4L2_CTRL_TYPE_BOOLEAN:
 	        case V4L2_CTRL_TYPE_INTEGER:
-	        case V4L2_CTRL_TYPE_BOOLEAN:
 	        case V4L2_CTRL_TYPE_MENU:
-	        	controlMap[ctrl.id] = new V4LControl(fd, ctrl);
-	            break;
+				controlMap[ctrl.id] = new V4LControl(fd, ctrl);
+				break;
 	        case V4L2_CTRL_TYPE_BUTTON:
 	        case V4L2_CTRL_TYPE_INTEGER64:
 	        case V4L2_CTRL_TYPE_CTRL_CLASS:
@@ -595,3 +601,13 @@ void linuxvideodevice::addControl(V4LControlMap &controlMap, struct v4l2_queryct
 }
 
 /*--------------------------------------------------------------------------------------*/
+
+const V4LControl* linuxvideodevice::getV4LControl(int id) {
+	V4LControlMap::iterator it;
+
+	if (controlMap.end() != (it = controlMap.find(id))) {
+		return (V4LControl*)it->second;
+	}
+
+	return NULL;
+}

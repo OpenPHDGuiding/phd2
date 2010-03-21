@@ -35,14 +35,12 @@
 #include <libv4lconvert.h>
 
 #include <wx/hashmap.h>
-
-
-#define MAXSIZE 32
+#include <wx/arrstr.h>
 
 
 class V4LControl {
 public:
-    V4LControl(int fd, const struct v4l2_queryctrl &ctrl);
+	V4LControl(int fd, const struct v4l2_queryctrl &ctrl);
 
     bool update();
     bool reset();
@@ -52,9 +50,10 @@ public:
     int type;
     int defaultValue;
     int value;
-    char name[MAXSIZE];
-    char *menu;
     int min, max, step;
+
+    wxString name;
+    wxArrayString choices;
 
 private:
     void enumerateMenuControls(const struct v4l2_queryctrl &ctrl);
@@ -62,5 +61,6 @@ private:
 
 
 WX_DECLARE_HASH_MAP(int, V4LControl*, wxIntegerHash, wxIntegerEqual, V4LControlMap);
+
 
 #endif // V4LCONTROL_H_INCLUDED
