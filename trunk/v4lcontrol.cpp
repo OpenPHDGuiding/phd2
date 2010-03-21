@@ -25,36 +25,21 @@
 
 #include "v4lcontrol.h"
 
-#include <cstring>
-
 
 V4LControl::V4LControl(int fd, const struct v4l2_queryctrl &ctrl)
-	: cid(ctrl.id),
-	  defaultValue(ctrl.default_value) {
+	: fd(fd),
+	  cid(ctrl.id),
+	  type(ctrl.type),
+	  defaultValue(ctrl.default_value),
+	  min(ctrl.minimum),
+	  max(ctrl.maximum),
+	  step(ctrl.step) {
 
-	this->fd = fd;
-	this->type = ctrl.type;
-    strncpy(name, (const char *)ctrl.name, sizeof(name));
-    name[sizeof(name)-1] = '\0';
+	value = defaultValue;
+	name = wxString((const char*)ctrl.name, *wxConvCurrent);
 
-    this->menu = NULL;
-    this->value = ctrl.default_value;
-    this->min = this->max = this->step = 0;
-
-    switch (this->type) {
-		case V4L2_CTRL_TYPE_INTEGER:
-			this->min = ctrl.minimum;
-			this->max = ctrl.maximum;
-			this->step = ctrl.step;
-			break;
-		case V4L2_CTRL_TYPE_MENU:
-			this->min = ctrl.minimum;
-			this->max = ctrl.maximum;
-			enumerateMenuControls(ctrl);
-			break;
-		default:
-			break;
-	}
+	if (V4L2_CTRL_TYPE_MENU == type)
+		enumerateMenuControls(ctrl);
 }
 
 bool V4LControl::update() {
@@ -127,20 +112,12 @@ bool V4LControl::reset() {
 }
 
 void V4LControl::enumerateMenuControls(const struct v4l2_queryctrl &ctrl) {
-	struct v4l2_querymenu menu;
-	int size = this->max - this->min;
+	struct v4l2_querymenu menu = {0};
 
-    memset(&menu, 0, sizeof(menu));
     menu.id = ctrl.id;
-    if (NULL == (this->menu = new char[size*MAXSIZE]))
-    	return;
-
-    memset(this->menu, 0, sizeof(this->menu));
-
     for (menu.index = ctrl.minimum; menu.index <= ctrl.maximum; menu.index++) {
     	if (0 == ioctl(fd, VIDIOC_QUERYMENU, &menu)) {
-    		strncpy(this->menu+MAXSIZE*menu.index, (const char *)menu.name, sizeof(menu.name));
-    		this->menu[MAXSIZE*menu.index-1] = '\0';
+    		choices.Add(wxString((const char *)menu.name, *wxConvCurrent));
     	}
     }
 }

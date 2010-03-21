@@ -26,22 +26,19 @@
 #ifndef CONFIG_VIDEODEVICE_H_INCLUDED
 #define CONFIG_VIDEODEVICE_H_INCLUDED
 
-#include <wx/hashmap.h>
-#include <wx/control.h>
-#include <wx/dialog.h>
+#include "v4lcontrol.h"
+
+#include <wx/string.h>
 #include <wx/checkbox.h>
 #include <wx/spinctrl.h>
 #include <wx/choice.h>
-
-
-WX_DECLARE_HASH_MAP(int, wxCheckBox*, wxIntegerHash, wxIntegerEqual, CheckboxMap);
-WX_DECLARE_HASH_MAP(int, wxSpinCtrl*, wxIntegerHash, wxIntegerEqual, SpinctrlMap);
-WX_DECLARE_HASH_MAP(int, wxChoice*, wxIntegerHash, wxIntegerEqual, ChoiceMap);
+#include <wx/control.h>
+#include <wx/dialog.h>
 
 
 class V4LPropertiesDialog: public wxDialog {
 public:
-	V4LPropertiesDialog(V4LControlMap*);
+	V4LPropertiesDialog(V4LControlMap &map);
 	~V4LPropertiesDialog() {};
 
 protected:
@@ -49,11 +46,31 @@ protected:
 	void onReset(wxCommandEvent& event);
 
 private:
-	V4LControlMap *controlMap;
+	V4LControlMap controlMap;
+};
 
-	CheckboxMap checkboxMap;
-	SpinctrlMap spinctrlMap;
-	ChoiceMap choiceMap;
+class BooleanControl : public wxCheckBox {
+public:
+	BooleanControl(wxWindow* parent, wxWindowID id, const wxString& label);
+
+	void onUpdate(wxCommandEvent& event);
+	void onReset(wxCommandEvent& event);
+};
+
+class IntegerControl : public wxSpinCtrl {
+public:
+	IntegerControl(wxWindow* parent, wxWindowID id);
+
+	void onUpdate(wxCommandEvent& event);
+	void onReset(wxCommandEvent& event);
+};
+
+class MenueControl : public wxChoice {
+public:
+	MenueControl(wxWindow *parent, wxWindowID id, const wxPoint& pos, const wxSize& size, const wxArrayString& choices);
+
+	void onUpdate(wxCommandEvent& event);
+	void onReset(wxCommandEvent& event);
 };
 
 #endif // CONFIG_VIDEODEVICE_H_INCLUDED

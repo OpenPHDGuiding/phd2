@@ -51,7 +51,6 @@ Camera_VIDEODEVICEClass::Camera_VIDEODEVICEClass() {
 	HasPropertyDialog = false;	// Configuration dialog
 
 	deviceInfoArray.Clear();
-	controlMap.clear();
 }
 
 /*------------------------------------------------------------------------------*/
@@ -68,8 +67,7 @@ bool Camera_VIDEODEVICEClass::Connect() {
 	}
 
 	// Camera settings ...
-	camera->queryV4LControls(controlMap);
-	if (0 < controlMap.size()) {
+	if (0 < camera->queryV4LControls()) {
 		HasPropertyDialog = true;
 
 		// FIXME - accessing the main application frame from here is a hack
@@ -86,8 +84,6 @@ bool Camera_VIDEODEVICEClass::Connect() {
 
    	// Take care of resetting FullSize if needed
 	FullSize = wxSize(width, height);
-
-	fprintf(stderr, "Frame: %dx%d\n", FullSize.GetWidth(), FullSize.GetHeight());
 
 	Connected = true;  // Set global flag for being connected
 	return false;
@@ -126,21 +122,25 @@ bool Camera_VIDEODEVICEClass::PulseGuideScope(int direction, int duration) {
 /*------------------------------------------------------------------------------*/
 
 bool Camera_VIDEODEVICEClass::Disconnect() {
+	// Better safe than sorry ...
+	if (NULL != camera && true == Connected) {
+	    //  Cam disconnect routine
+		camera->shutdownvideodevice();
+		Connected = false;
 
-    //  Cam disconnect routine
-	camera->shutdownvideodevice();
-	Connected = false;
-	CurrentGuideCamera = NULL;
-	GuideCameraConnected = false;
+	    HasPropertyDialog = false;
 
-    HasPropertyDialog = false;
+		// FIXME - accessing the main application frame from here is a hack
+		frame->Menubar->Enable(MENU_V4LSAVESETTINGS, false);
+		frame->Menubar->Enable(MENU_V4LRESTORESETTINGS, false);
+		frame->Setup_Button->Enable(false);
 
-	// FIXME - accessing the main application frame from here is a hack
-	frame->Menubar->Enable(MENU_V4LSAVESETTINGS, false);
-	frame->Menubar->Enable(MENU_V4LRESTORESETTINGS, false);
-	frame->Setup_Button->Enable(false);
+		delete camera;
 
-	return false;
+		return false;
+	}
+
+	return true;
 }		
 
 /*------------------------------------------------------------------------------*/
@@ -174,9 +174,11 @@ bool Camera_VIDEODEVICEClass::CaptureFull(int duration, usImage& img, bool recon
 }
 
 void Camera_VIDEODEVICEClass::ShowPropertyDialog() {
-	V4LPropertiesDialog* propertiesDialog = new V4LPropertiesDialog(&controlMap);
+	V4LPropertiesDialog* propertiesDialog = new V4LPropertiesDialog(camera->getV4LControlMap());
 
-	propertiesDialog->Show();
+	propertiesDialog->ShowModal();
+
+	propertiesDialog->Destroy();
 }
 
 bool Camera_VIDEODEVICEClass::ProbeDevices() {
@@ -268,15 +270,19 @@ wxArrayString& Camera_VIDEODEVICEClass::GetProductArray(wxArrayString& devices) 
 	return devices;
 }
 
+const V4LControl* Camera_VIDEODEVICEClass::getV4LControl(int id) {
+	return (NULL != camera ? camera->getV4LControl(id) : NULL);
+}
+
 /*------------------------------------------------------------------------------*/
 
 bool Camera_VIDEODEVICEClass::saveSettings(wxConfig *config) {
 	bool result = false;
 
 	if (NULL != config) {
+		V4LControlMap controlMap = camera->getV4LControlMap();
 		V4LControlMap::iterator it;
 		V4LControl *control;
-
 
 		config->Write(_T("camera"), Name);
 		config->Write(_T("vendorid"), vendor);
@@ -301,6 +307,7 @@ bool Camera_VIDEODEVICEClass::restoreSettings(wxConfig *config) {
 	bool result = false;
 
 	if (NULL != config) {
+		V4LControlMap controlMap = camera->getV4LControlMap();
 		V4LControlMap::iterator it;
 		V4LControl *control;
 

@@ -1,3 +1,8 @@
+2010-03-21 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* Fixed segmentation fault with v4l controls for - some?!? - netbooks
+	* Simplified code for v4l controls
+
 2010-03-14 steffen elste <steffen.elste@max-ulmschneider.de>
 
 	* Code changes to prevent multiple opens on a device - some V4L drivers don't support this

@@ -50,7 +50,9 @@ public:
 
 	int get_fd() { return fd; }
 
-	void queryV4LControls(V4LControlMap &controlMap);
+	int queryV4LControls();
+	const V4LControl* getV4LControl(int id);
+	V4LControlMap& getV4LControlMap() { return controlMap; }
 
 private:
 	char *devicename;
@@ -70,6 +72,8 @@ private:
 	unsigned char *dst_buf;
 #endif
 
+	V4LControlMap controlMap;
+
 	void init_device(int*, int*);
 	void start_capturing(void);
 	void stop_capturing(void);
@@ -83,7 +87,7 @@ private:
 	void init_mmap(void);
 	void init_userp(unsigned int);
 
-	void addControl(V4LControlMap &controlMap, struct v4l2_queryctrl &ctrl);
+	void addControl(struct v4l2_queryctrl &ctrl);
 };
 
 /*------------------------------------------------------------*/

@@ -34,7 +34,6 @@
 #include <libv4lconvert.h>
 
 #include <wx/sizer.h>
-#include <wx/arrstr.h>
 #include <wx/string.h>
 #include <wx/button.h>
 #include <wx/config.h>
@@ -43,52 +42,60 @@
 #define PHDGUIDING "PHDGuiding"
 
 
-V4LPropertiesDialog::V4LPropertiesDialog(V4LControlMap *controlMap)
-	: wxDialog(frame, wxID_ANY, _T("Device Properties"), wxPoint(-1,-1), wxSize(500,300)) {
+DECLARE_EVENT_TYPE(wxEVT_V4L_UPDATE, wxID_ANY)
+DECLARE_EVENT_TYPE(wxEVT_V4L_RESET, wxID_ANY)
+
+DEFINE_EVENT_TYPE(wxEVT_V4L_UPDATE)
+DEFINE_EVENT_TYPE(wxEVT_V4L_RESET)
+
+
+V4LPropertiesDialog::V4LPropertiesDialog(V4LControlMap &map)
+	: wxDialog(frame, wxID_ANY, _T("Device Properties"), wxPoint(-1,-1), wxSize(500,300)),
+	  controlMap(map) {
 
 	wxStaticText *text;
-	wxSpinCtrl *spinctrl;
-	wxCheckBox *checkbox;
-	wxChoice *choice;
-	wxArrayString items;
 	wxButton *button;
+	BooleanControl *booleanControl;
+	IntegerControl *integerControl;
+	MenueControl *menueControl;
 
 	wxBoxSizer *vbox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
 	wxFlexGridSizer *gridSizer = new wxFlexGridSizer(2);
 
-	this->controlMap = controlMap;
-
 	V4LControlMap::iterator it;
-	for (it=controlMap->begin(); it!=controlMap->end(); ++it) {
+	for (it=controlMap.begin(); it!=controlMap.end(); ++it) {
 		int id = it->first;
 		V4LControl *control = (V4LControl*)it->second;
 
-		text = new wxStaticText(this, wxID_ANY, wxString(control->name, *wxConvCurrent));
+		text = new wxStaticText(this, wxID_ANY, control->name);
 		gridSizer->Add(text, wxSizerFlags().Expand().Proportion(2).Border(wxALL, 3));
 
 		switch (control->type) {
-			case V4L2_CTRL_TYPE_INTEGER:
-				spinctrl = new wxSpinCtrl(this, id, _T("foo"), wxPoint(-1,-1), wxSize(75,-1), wxSP_ARROW_KEYS, control->min, control->max, control->value);
-				spinctrlMap[id] = spinctrl;
-				gridSizer->Add(spinctrl, wxSizerFlags().Proportion(1).Border(wxALL, 3));
-				break;
 			case V4L2_CTRL_TYPE_BOOLEAN:
-				checkbox = new wxCheckBox(this, id, _T(""));
-				checkbox->SetValue(0 != control->value);
-				checkboxMap[id] = checkbox;
-				gridSizer->Add(checkbox, wxSizerFlags().Proportion(1).Border(wxALL, 3));
+				booleanControl = new BooleanControl(this, id, _T(""));
+				booleanControl->SetValue(0 != control->value);
+
+				gridSizer->Add(booleanControl, wxSizerFlags().Proportion(1).Border(wxALL, 3));
+				Connect(id, wxEVT_V4L_UPDATE, wxCommandEventHandler(BooleanControl::onUpdate), NULL, booleanControl);
+				Connect(id, wxEVT_V4L_RESET, wxCommandEventHandler(BooleanControl::onReset), NULL, booleanControl);
+				break;
+			case V4L2_CTRL_TYPE_INTEGER:
+				integerControl = new IntegerControl(this, id);
+				integerControl->SetSize(wxSize(75,-1));
+				integerControl->SetRange(control->min, control->max);
+				integerControl->SetValue(control->value);
+
+				gridSizer->Add(integerControl, wxSizerFlags().Proportion(1).Border(wxALL, 3));
+				Connect(id, wxEVT_V4L_UPDATE, wxCommandEventHandler(IntegerControl::onUpdate), NULL, integerControl);
+				Connect(id, wxEVT_V4L_RESET, wxCommandEventHandler(IntegerControl::onReset), NULL, integerControl);
 				break;
 			case V4L2_CTRL_TYPE_MENU:
-				items.Clear();
-				for (int i=0; i<(control->max - control->min); i++) {
-					items.Add(wxString(control->menu+MAXSIZE*i, *wxConvCurrent));
-				}
+				menueControl = new MenueControl(this, id, wxPoint(-1,-1), wxSize(75,-1), control->choices);
 
-				choice = new wxChoice(this, id, wxPoint(-1,-1), wxSize(75,-1), items);
-				choice->SetSelection(control->value - control->min);
-				choiceMap[id] = choice;
-				gridSizer->Add(choice, wxSizerFlags().Proportion(1).Border(wxALL, 3));
+				gridSizer->Add(menueControl, wxSizerFlags().Proportion(1).Border(wxALL, 3));
+				Connect(id, wxEVT_V4L_UPDATE, wxCommandEventHandler(MenueControl::onUpdate), NULL, menueControl);
+				Connect(id, wxEVT_V4L_RESET, wxCommandEventHandler(MenueControl::onReset), NULL, menueControl);
 				break;
 			default:
 				break;
@@ -113,104 +120,24 @@ V4LPropertiesDialog::V4LPropertiesDialog(V4LControlMap *controlMap)
 
 void V4LPropertiesDialog::onUpdate(wxCommandEvent& event) {
 	V4LControlMap::iterator it;
-	V4LControl *control;
-
-	wxCheckBox *checkbox;
-	wxSpinCtrl *spinctrl;
-	wxChoice *choice;
-
-	CheckboxMap::iterator checkboxIt;
-	SpinctrlMap::iterator spinctrlIt;
-	ChoiceMap::iterator choiceIt;
-
-	for (it=controlMap->begin(); it!=controlMap->end(); ++it) {
+	for (it=controlMap.begin(); it!=controlMap.end(); ++it) {
 		int id = it->first;
-		V4LControl *control = (V4LControl*)it->second;
 
-		switch (control->type) {
-			case V4L2_CTRL_TYPE_INTEGER:
-				if (spinctrlMap.end() != (spinctrlIt = spinctrlMap.find(id))) {
-					spinctrl = spinctrlIt->second;
-
-					control->value = spinctrl->GetValue();
-				}
-				break;
-			case V4L2_CTRL_TYPE_BOOLEAN:
-				if (checkboxMap.end() != (checkboxIt = checkboxMap.find(id))) {
-					checkbox = checkboxIt->second;
-
-					control->value = checkbox->GetValue();
-				}
-				break;
-			case V4L2_CTRL_TYPE_MENU:
-				if (choiceMap.end() != (choiceIt = choiceMap.find(id))) {
-					choice = choiceIt->second;
-
-					// Entries for 'MENU'-type controls don't necessarily start at index '0'
-					control->value = choice->GetSelection() + control->min;
-				}
-				break;
-			default:
-				return;
-		}
-
-		if (false == control->update()) {
-			wxMessageDialog *dialog =
-					new wxMessageDialog(NULL, wxString::Format(_T("Could not update '%s'!"), control->name), _T("Warning"), wxOK | wxICON_EXCLAMATION);
-
-			dialog->Show();
-		}
+		wxCommandEvent customEvent(wxEVT_V4L_UPDATE, id);
+		GetEventHandler()->ProcessEvent(customEvent);
 	}
+
 }
 
 void V4LPropertiesDialog::onReset(wxCommandEvent& event) {
 	V4LControlMap::iterator it;
-	V4LControl *control;
-
-	wxCheckBox *checkbox;
-	wxSpinCtrl *spinctrl;
-	wxChoice *choice;
-
-	CheckboxMap::iterator checkboxIt;
-	SpinctrlMap::iterator spinctrlIt;
-	ChoiceMap::iterator choiceIt;
-
-	for (it=controlMap->begin(); it!=controlMap->end(); ++it) {
+	for (it=controlMap.begin(); it!=controlMap.end(); ++it) {
 		int id = it->first;
-		V4LControl *control = (V4LControl*)it->second;
 
-		if (false == control->reset()) {
-			wxMessageDialog *dialog =
-					new wxMessageDialog(NULL, wxString::Format(_T("Could not reset '%s'!"), control->name), _T("Warning"), wxOK | wxICON_EXCLAMATION);
-
-			dialog->Show();
-		} else {
-			switch (control->type) {
-				case V4L2_CTRL_TYPE_INTEGER:
-					if (spinctrlMap.end() != (spinctrlIt = spinctrlMap.find(id))) {
-						spinctrl = spinctrlIt->second;
-
-						spinctrl->SetValue(control->defaultValue);
-					}
-					break;
-				case V4L2_CTRL_TYPE_BOOLEAN:
-					if (checkboxMap.end() != (checkboxIt = checkboxMap.find(id))) {
-						checkbox = checkboxIt->second;
-
-						checkbox->SetValue(0 != control->defaultValue);
-					}
-					break;
-				case V4L2_CTRL_TYPE_MENU:
-					if (choiceMap.end() != (choiceIt = choiceMap.find(id))) {
-						choice = choiceIt->second;
-
-						choice->SetSelection(control->defaultValue - control->min);
-					}
-				default:
-					break;
-			}
-		}
+		wxCommandEvent customEvent(wxEVT_V4L_RESET, id);
+		GetEventHandler()->ProcessEvent(customEvent);
 	}
+
 }
 
 void MyFrame::OnSaveSettings(wxCommandEvent& event) {
@@ -269,4 +196,115 @@ void MyFrame::OnRestoreSettings(wxCommandEvent& event) {
 
 	if (NULL != dialog)
 		dialog->Destroy();
+}
+
+
+BooleanControl::BooleanControl(wxWindow* parent, wxWindowID id, const wxString& label)
+	: wxCheckBox(parent, id, label) {
+
+	// Empty
+}
+
+void BooleanControl::onUpdate(wxCommandEvent& event) {
+	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
+
+	if (NULL != control) {
+		control->value = GetValue();
+
+		if (false == control->update()) {
+			wxMessageDialog *dialog =
+					new wxMessageDialog(NULL, _T("Could not update ") + control->name, _T("Warning"), wxOK | wxICON_EXCLAMATION);
+
+			dialog->Show();
+		}
+	}
+}
+
+void BooleanControl::onReset(wxCommandEvent& event) {
+	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
+
+	if (NULL != control) {
+		if (false == control->reset()) {
+			wxMessageDialog *dialog =
+					new wxMessageDialog(NULL, _T("Could not reset ") + control->name, _T("Warning"), wxOK | wxICON_EXCLAMATION);
+
+			dialog->Show();
+		} else {
+			SetValue(0 != control->defaultValue);
+		}
+	}
+}
+
+
+IntegerControl::IntegerControl(wxWindow* parent, wxWindowID id)
+	: wxSpinCtrl(parent, id) {
+
+	// Empty
+}
+
+void IntegerControl::onUpdate(wxCommandEvent& event) {
+	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
+
+	if (NULL != control) {
+		control->value = GetValue();
+
+		if (false == control->update()) {
+			wxMessageDialog *dialog =
+					new wxMessageDialog(NULL, _T("Could not update ") + control->name, _T("Warning"), wxOK | wxICON_EXCLAMATION);
+
+			dialog->Show();
+		}
+	}
+}
+
+void IntegerControl::onReset(wxCommandEvent& event) {
+	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
+
+	if (NULL != control) {
+		if (false == control->reset()) {
+			wxMessageDialog *dialog =
+					new wxMessageDialog(NULL, _T("Could not reset ") + control->name, _T("Warning"), wxOK | wxICON_EXCLAMATION);
+
+			dialog->Show();
+		} else {
+			SetValue(control->defaultValue);
+		}
+	}
+}
+
+MenueControl::MenueControl(wxWindow *parent, wxWindowID id, const wxPoint& pos, const wxSize& size, const wxArrayString& choices)
+	: wxChoice(parent, id, pos, size, choices) {
+
+	// Empty
+}
+
+void MenueControl::onUpdate(wxCommandEvent& event) {
+	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
+
+	if (NULL != control) {
+		// Entries for 'MENU'-type controls don't necessarily start at index '0'
+		control->value = GetSelection() + control->min;
+
+		if (false == control->update()) {
+			wxMessageDialog *dialog =
+					new wxMessageDialog(NULL, _T("Could not update ") + control->name, _T("Warning"), wxOK | wxICON_EXCLAMATION);
+
+			dialog->Show();
+		}
+	}
+}
+
+void MenueControl::onReset(wxCommandEvent& event) {
+	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
+
+	if (NULL != control) {
+		if (false == control->reset()) {
+			wxMessageDialog *dialog =
+					new wxMessageDialog(NULL, _T("Could not reset ") + control->name, _T("Warning"), wxOK | wxICON_EXCLAMATION);
+
+			dialog->Show();
+		} else {
+			SetSelection(control->defaultValue - control->min);
+		}
+	}
 }

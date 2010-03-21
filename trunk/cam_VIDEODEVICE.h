@@ -102,6 +102,8 @@ public:
 
 	const linuxvideodevice* getCamera() { return camera; }
 
+	const V4LControl* getV4LControl(int id);
+
 	bool saveSettings(wxConfig *config);
 	bool restoreSettings(wxConfig *config);
 
@@ -111,7 +113,6 @@ private:
 	wxString device;
 	wxString vendor, model;
 	DeviceInfoArray deviceInfoArray;
-	V4LControlMap controlMap;
 };
 
 extern Camera_VIDEODEVICEClass Camera_VIDEODEVICE;
