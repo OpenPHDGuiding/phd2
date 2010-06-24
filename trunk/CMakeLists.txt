@@ -41,6 +41,9 @@ include_directories(${CMAKE_SOURCE_DIR})
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_WXWINDOWS_CXX_FLAGS}")
 
 # set(CMAKE_CXX_FLAGS "-g -Wall")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGUIDE_GCUSBST4")
+
 set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/camera.cpp
    ${CMAKE_SOURCE_DIR}/cam_INDI.cpp
@@ -59,6 +62,7 @@ set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/socket_server.cpp
    ${CMAKE_SOURCE_DIR}/tele_INDI.cpp
    ${CMAKE_SOURCE_DIR}/usImage.cpp
+   ${CMAKE_SOURCE_DIR}/GC_USBST4.cpp
    ${CMAKE_SOURCE_DIR}/libindiclient/indi.c
    ${CMAKE_SOURCE_DIR}/libindiclient/wx/indigui.cpp
    ${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_io.cpp
@@ -69,6 +73,7 @@ set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/libindiclient/wx/wxchecktreectrl.cpp
    ${CMAKE_SOURCE_DIR}/libindiclient/base64.c
    ${CMAKE_SOURCE_DIR}/libindiclient/lilxml.c
+
    )
 
 if(V4L_OK)

@@ -28,7 +28,7 @@
 #include "ascom.h"
 #endif
 
-#if defined (__APPLE__)
+#if defined (GUIDE_GCUSBST4)
 #include "GC_USBST4.h"
 #endif
 
@@ -174,7 +174,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 		}
 		else {
 			ScopeConnected = 0;
-			SetStatusText("USB ST4 failed");
+			SetStatusText(_T("USB ST4 failed"));
 		}
 	}
     #endif

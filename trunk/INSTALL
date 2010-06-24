@@ -9,6 +9,11 @@ Support for Video4Linux devices is built-in now and requires (Debian/Ubuntu pack
 	* libudev-dev (for device detection)
 	* libv4l-dev
 
+Some more libraries:
+       * zlib1g-dev 
+       * libfitsio3-dev
+
+
 cmake 2.6 (or newer) installed
 
 Run:
