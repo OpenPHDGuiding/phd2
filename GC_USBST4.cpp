@@ -11,11 +11,22 @@
 #include "GC_USBST4.h"
 #include	<sys/ioctl.h>
 #include <termios.h>
+
+#ifdef __LINUX__
+#include <errno.h>
+#endif
+
+
+#define _U(String)  wxString(String, wxConvUTF8).c_str()
+
+
+int portFID;
+
+#ifdef __APPLE__
 #include	<IOKit/serial/IOSerialKeys.h>
 
 #define IOSSDATALAT    _IOW('T', 0, unsigned long)
 
-int portFID;
 
 kern_return_t createSerialIterator(io_iterator_t *serialIterator)
 {
@@ -61,6 +72,7 @@ char * getRegistryString(io_object_t sObj, char *propName)
     return resultStr;
 }
 
+#endif
 
 
 
@@ -83,7 +95,7 @@ void GCUSBST4_PulseGuideScope(int direction, int duration) {
 //	wxMessageBox(wxString::Format("Sending -%s-",buf));
 	int num_bytes = write(portFID,buf,strlen(buf));
 	if (num_bytes == -1) {
-		wxMessageBox(wxString::Format("Error writing to GC USB ST4: %s(%d)",strerror(errno),errno));
+		wxMessageBox(wxString::Format(_T("Error writing to GC USB ST4: %s(%d)"),_U(strerror(errno)),errno));
 //		close(portFID);
 //		return false;
 	}
@@ -92,6 +104,8 @@ void GCUSBST4_PulseGuideScope(int direction, int duration) {
 }
 
 bool GCUSBST4_Connect() {
+
+#ifdef __APPLE__
 	wxArrayString DeviceNames;
 	wxArrayString PortNames;
 	char tempstr[256];
@@ -118,10 +132,18 @@ bool GCUSBST4_Connect() {
 		wxMessageBox("Could not find device - searched for usbmodem* to no avail...");
 		return false;
 	}
+
+#endif   //__APPLE__
+
+
+#ifdef  __LINUX__
+       char tempstr[256] = "/dev/ttyACM0";
+#endif
+
 	portFID = open(tempstr, O_RDWR | O_NOCTTY | O_NONBLOCK);
 	if (portFID == -1) { // error on opening
-		wxMessageBox(wxString::Format("Error opening serial port %s",
-										tempstr,_T("Error")));
+		wxMessageBox(wxString::Format(_T("Error opening serial port %s: %s(%d)"),
+										_U(tempstr), _U(strerror(errno)), errno));
 		return false;
 	}
 	ioctl(portFID, TIOCEXCL);
@@ -131,7 +153,7 @@ bool GCUSBST4_Connect() {
 	struct termios	options;
 	//options = gOriginalTTYAttrs;
 	if (tcgetattr(portFID, &options) == -1) {
-		wxMessageBox("Error getting port options");
+		wxMessageBox(_T("Error getting port options"));
 		close(portFID);
 		return false;
 	}
@@ -152,7 +174,7 @@ bool GCUSBST4_Connect() {
 		   options.c_lflag,
 		   options.c_ispeed));*/
 	if (tcsetattr(portFID, TCSANOW, &options) == -1) {
-		wxMessageBox("Error setting port options");
+		wxMessageBox(_T("Error setting port options"));
 		close(portFID);
 		return false;
 	}
@@ -180,7 +202,7 @@ bool GCUSBST4_Connect() {
 	buf[1]=0;
 	num_bytes = write(portFID,buf,1);
 	if (num_bytes == -1) {
-		wxMessageBox(wxString::Format("Error during initial kickstart: %s(%d)",strerror(errno),errno));
+		wxMessageBox(wxString::Format(_T("Error during initial kickstart: %s(%d)"),_U(strerror(errno)),errno));
 		close(portFID);
 		return false;
 	}
@@ -190,18 +212,18 @@ bool GCUSBST4_Connect() {
 	buf[1]=0;
 	num_bytes = write(portFID,buf,1);
 	if (num_bytes == -1) {
-		wxMessageBox(wxString::Format("Error during test polling of device: %s(%d)",strerror(errno),errno));
+		wxMessageBox(wxString::Format(_T("Error during test polling of device: %s(%d)"),_U(strerror(errno)),errno));
 		close(portFID);
 		return false;
 	}
 	num_bytes = read(portFID,buf,1);
 	if (num_bytes == -1) {
-		wxMessageBox("Error during test read of device");
+		wxMessageBox(_T("Error during test read of device"));
 		close(portFID);
 		return false;
 	}
 	if (buf[0] != 'A') {
-		wxMessageBox(wxString::Format("Device returned %x instead of %x on test poll",buf[0],'A'));
+		wxMessageBox(wxString::Format(_T("Device returned %x instead of %x on test poll"),buf[0],'A'));
 		close(portFID);
 		return false;
 	}
