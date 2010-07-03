@@ -213,7 +213,12 @@ MyFrame::MyFrame(const wxString& title)
 		SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 	}
 
+/*#if defined (__WINDOWS__)
 	SetIcon(wxIcon(_T("progicon")));
+#else */
+	#include "icons/phd.xpm"
+	SetIcon(wxIcon(prog_icon));
+//#endif
 	SetBackgroundColour(*wxLIGHT_GREY);
 
 

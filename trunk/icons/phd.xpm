@@ -1,5 +1,5 @@
 /* XPM */
-static char *phd_icon[] = {
+static const char *prog_icon[] = {
 /* width height ncolors chars_per_pixel */
 "55 55 326 2",
 /* colors */
