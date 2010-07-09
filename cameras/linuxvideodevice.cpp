@@ -462,6 +462,20 @@ void linuxvideodevice::init_device(int* width, int *height) {
 		}
 		break;
 	}
+
+	// What is the (maximum) supported frame size
+	CLEAR(fmt);
+	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+	if (0 == v4l2_ioctl(fd, VIDIOC_G_FMT, &fmt)) {
+		struct v4l2_pix_format pix;
+
+		pix = fmt.fmt.pix;
+
+		frameWidth = *width = pix.width;
+		frameHeight = *height = pix.height;
+	}
+
 	CLEAR(fmt);
 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	fmt.fmt.pix.width = frameWidth;
@@ -485,7 +499,7 @@ void linuxvideodevice::init_device(int* width, int *height) {
 	frameWidth = *width = src_fmt.fmt.pix.width;
 	frameHeight = *height = src_fmt.fmt.pix.height;
 
-	printf("raw pixfmt: %c%c%c%c %dx%d\n",
+	fprintf(stderr, "raw pixfmt: %c%c%c%c %dx%d\n",
 		src_fmt.fmt.pix.pixelformat & 0xff,
 	       (src_fmt.fmt.pix.pixelformat >> 8) & 0xff,
 	       (src_fmt.fmt.pix.pixelformat >> 16) & 0xff,
@@ -497,7 +511,8 @@ void linuxvideodevice::init_device(int* width, int *height) {
 #endif
 	if (ret < 0)
 		errno_exit("VIDIOC_S_FMT");
-	printf("pixfmt: %c%c%c%c %dx%d\n",
+
+	fprintf(stderr, "pixfmt: %c%c%c%c %dx%d\n",
 		fmt.fmt.pix.pixelformat & 0xff,
 	       (fmt.fmt.pix.pixelformat >> 8) & 0xff,
 	       (fmt.fmt.pix.pixelformat >> 16) & 0xff,
