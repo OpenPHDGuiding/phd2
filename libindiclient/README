@@ -4,13 +4,13 @@ It is designed as a C/C++ library to provide an interface to INDI, with pluggabl
 
 Currently there are 2 GUI toolkits supported:
 
-* wxWidgets:
-	g++ -Wall -g -I. -o inditest indi.c base64.c lilxml.c wx/indi_io.cpp wx/indigui.cpp wx/indi_list.cpp `wx-config --cppflags --libs` -lz -DINDIMAIN
-
+* wxWidgets
 * gtk
-	gcc -Wall -g -I. -o inditest indi.c gtk/indigui.c gtk/indi_io.c gtk/indi_list.c base64.c lilxml.c `pkg-config --cflags --libs gtk+-2.0 glib-2.0` -lz -DINDIMAIN
 
-examples of an interface to libindiclient:
+Build relies on CMake:
+
+cmake .
+make
 
 * openPHD
 	http://code.google.com/p/open-phd-guiding/

@@ -106,6 +106,7 @@ public:
         void UpdateWidget(struct indi_prop_t *iprop);
 	void ShowMessage(const char *message);
 	void AddProp(struct indi_device_t *idev, const wxString groupname, struct indi_prop_t *iprop);
+	void DeleteProp(struct indi_prop_t *iprop);
 	bool child_window;
 private:
 	void CreateTextWidget(struct indi_prop_t *iprop, int num_props);
@@ -257,7 +258,6 @@ void IndiGui::ShowMessage(const char *message)
 
 void IndiGui::SetButtonEvent(wxCommandEvent & event)
 {
-	const char *valstr;
 	indi_list *isl;
 	wxTextCtrl *entry;
 	wxButton *button = (wxButton *)event.GetEventObject();
@@ -350,16 +350,20 @@ void IndiGui::CreateSwitchCombobox(struct indi_prop_t *iprop, int num_props)
 	wxGridBagSizer *gbs;
 	wxString choices[num_props];
 	int i = 0;
+	int idx = 0;
 	indi_list *isl;
 
 	p = ((IndiProp *)iprop->widget)->page;
 	gbs = ((IndiProp *)iprop->widget)->gbs;
 	for (isl = il_iter(iprop->elems); ! il_is_last(isl); isl = il_next(isl)) {
 		struct indi_elem_t *elem = (struct indi_elem_t *)il_item(isl);
+		if(elem->value.set)
+			idx = i;
 		((IndiProp *)iprop->widget)->ctrl[wxString::FromAscii(elem->name)] = (void *)i;
 		choices[i++] = wxString::FromAscii(elem->label);
 	}
 	combo = new wxChoice(p, wxID_ANY, wxDefaultPosition, wxDefaultSize, num_props, choices);
+	combo->SetSelection(idx);
 	combo->SetClientData(iprop);
 	Connect(combo->GetId(), wxEVT_COMMAND_CHOICE_SELECTED,
 		        wxCommandEventHandler(IndiGui::SetComboboxEvent));
@@ -571,6 +575,39 @@ void IndiGui::AddProp(struct indi_device_t *idev, const wxString groupname, stru
 	indiDev->page->Fit();
 	indiDev->page->Layout();
 	indiDev->page->Show();
+}
+
+void indigui_delete_prop(struct indi_prop_t *iprop)
+{
+	indiGui->DeleteProp(iprop);
+}
+
+void IndiGui::DeleteProp(struct indi_prop_t *iprop)
+{
+	IndiProp *prop = (IndiProp*)iprop->widget;
+	IndiDev *indiDev = (IndiDev *)iprop->idev->window;
+
+	for (int y = 0; y < prop->gbs->GetRows(); y++) {
+		for (int x = 0; x < prop->gbs->GetCols(); x++) {
+			wxGBSizerItem *item = prop->gbs->FindItemAtPosition(POS(y, x));
+			if (item)
+				item->GetWindow()->Destroy();
+		}
+	}
+	if (prop->name)
+		prop->name->Destroy();
+	if (prop->state)
+		prop->state->Destroy();
+	if (prop->page->GetChildren().GetCount() == 0) {
+		for (unsigned int i = 0; i < indiDev->page->GetPageCount(); i++) {
+			if (prop->page == indiDev->page->GetPage(i)) {
+				indiDev->group.erase(indiDev->page->GetPageText(i));
+				indiDev->page->DeletePage(i);
+				break;
+			}
+		}
+	}
+	delete prop;
 }
 
 void *indigui_create_window(struct indi_t *indi)

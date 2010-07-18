@@ -110,26 +110,26 @@ void Telescope_INDIClass::NewProp(struct indi_prop_t *iprop)
     }
     else if (strcmp(iprop->name, "TELESCOPE_MOTION_NS") == 0) {
         moveNS = iprop;
-        indi_prop_add_cb(iprop, tele_move_cb, this);
+        indi_prop_add_cb(iprop, (IndiPropCB)tele_move_cb, this);
     }
     else if (strcmp(iprop->name, "TELESCOPE_MOTION_WE") == 0) {
         moveEW = iprop;
-        indi_prop_add_cb(iprop, tele_move_cb, this);
+        indi_prop_add_cb(iprop, (IndiPropCB)tele_move_cb, this);
     }
     else if (strcmp(iprop->name, "TELESCOPE_TIMED_GUIDE_NS") == 0) {
         pulseGuideNS = iprop;
-        indi_prop_add_cb(iprop, tele_move_cb, this);
+        indi_prop_add_cb(iprop, (IndiPropCB)tele_move_cb, this);
     }
     else if (strcmp(iprop->name, "TELESCOPE_TIMED_GUIDE_WE") == 0) {
         pulseGuideEW = iprop;
-        indi_prop_add_cb(iprop, tele_move_cb, this);
+        indi_prop_add_cb(iprop, (IndiPropCB)tele_move_cb, this);
     }
     else if (strcmp(iprop->name, "DEVICE_PORT") == 0 && serial_port.Length()) {
         indi_send(iprop, indi_prop_set_string(iprop, "PORT", serial_port.ToAscii()));
         indi_dev_set_switch(iprop->idev, "CONNECTION", "CONNECT", TRUE);
     }
     else if (strcmp(iprop->name, "CONNECTION") == 0) {
-        indi_prop_add_cb(iprop, connect_cb, this);
+        indi_prop_add_cb(iprop, (IndiPropCB)connect_cb, this);
         indi_send(iprop, indi_prop_set_switch(iprop, "CONNECT", TRUE));
     }
     CheckState();
@@ -147,7 +147,7 @@ bool Telescope_INDIClass::Connect() {
         printf("No INDI telescope is set.  Please set INDImount in the preferences file\n");
         return true;
     }
-    indi_device_add_cb(INDIClient, indi_name.ToAscii(), new_prop_cb, this);
+    indi_device_add_cb(INDIClient, indi_name.ToAscii(), (IndiDevCB)new_prop_cb, this);
 
     modal = true;
     msec = wxGetLocalTimeMillis();
