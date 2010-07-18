@@ -5,8 +5,11 @@
 extern "C" {
 #endif
 
+#include <stdlib.h>
 #include "indi_list.h"
 
+typedef void (*IndiDevCB) (void *iprop, void *cb_data);
+typedef void (*IndiPropCB) (void *iprop, void *cb_data);
 enum INDI_PERMISSIONS {
 	INDI_RO,
 	INDI_WO,
@@ -73,6 +76,12 @@ struct indi_signals_t {
 	unsigned long signal;
 };
 
+struct indi_cb_t {
+	void (* func)(void *idata, void *callback_data);
+	void *data;
+};
+
+
 struct indi_prop_t {
 	struct indi_device_t *idev;
 	void *root;
@@ -86,8 +95,7 @@ struct indi_prop_t {
 	int type;
 	int rule;
 	int save;
-	void (* prop_update_cb)(struct indi_prop_t *iprop, void *callback_data);
-	void *callback_data;
+	indi_list *prop_update_cb;
 };
 
 struct indi_device_t {
@@ -97,14 +105,12 @@ struct indi_device_t {
 	unsigned int capabilities;
 	indi_list *props;
 	void *window;
-	void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data);
-	void *callback_data;
+	indi_list *new_prop_cb;
 };
 
 struct indi_dev_cb_t {
 	char devname[80];
-	void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data);
-	void *callback_data;
+	struct indi_cb_t cb;
 };
 
 
@@ -130,13 +136,13 @@ extern void indi_prop_set_signals(struct indi_prop_t *iprop, int active);
 extern void indi_send(struct indi_prop_t *iprop, struct indi_elem_t *ielem );
 
 extern void indi_prop_add_cb(struct indi_prop_t *iprop,
-                      void (* prop_update_cb)(struct indi_prop_t *iprop, void *callback_data),
+                      void (* cb_func)(void *iprop, void *callback_data),
                       void *callback_data);
 extern struct indi_t *indi_init(const char *hostname, int port, const char *config);
 
-extern void indi_device_add_cb(struct indi_t *indi, const char *devname,
-             void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data),
-             void *callback_data);
+void indi_device_add_cb(struct indi_t *indi, const char *devname,
+                     void (* cb_func)(void *iprop, void *cb_data),
+                     void *cb_data);
 
 extern int indi_prop_get_switch(struct indi_prop_t *iprop, const char *elemname);
 extern struct indi_elem_t *indi_prop_set_switch(struct indi_prop_t *iprop, const char *elemname, int state);

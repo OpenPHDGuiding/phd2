@@ -100,24 +100,38 @@ struct indi_device_t *indi_find_device(struct indi_t *indi, const char *dev)
 	return NULL;
 }
 
-static struct indi_device_t *indi_new_device(struct indi_t *indi, const char *dev)
+static struct indi_cb_t *indi_create_cb(void (* cb_func)(void *, void *), void *cb_data)
+{
+	struct indi_cb_t *cb = (struct indi_cb_t *)calloc(sizeof(struct indi_cb_t), 1);
+	cb->func = cb_func;
+	cb->data = cb_data;
+	return cb;
+}
+
+static struct indi_device_t *indi_new_device(struct indi_t *indi, const char *devname)
 {
 	struct indi_device_t *idev;
-	struct indi_dev_cb_t *cb;
+	struct indi_dev_cb_t *cb, *first_cb = NULL;
 
-	idev = indi_find_device(indi, dev);
+	idev = indi_find_device(indi, devname);
 	if (idev)
 		return idev;
 	idev = (struct indi_device_t *)calloc(1, sizeof(struct indi_device_t));
-	strncpy(idev->name, dev, sizeof(idev->name));
+	strncpy(idev->name, devname, sizeof(idev->name));
 	idev->indi = indi;
 
-	if ((cb = indi_find_dev_cb(indi, dev))) {
-		idev->new_prop_cb = cb->new_prop_cb;
-		idev->callback_data = cb->callback_data;
-		if (strlen(cb->devname))
-			indi->dev_cb_list = il_remove(indi->dev_cb_list, cb);
-		free(cb);
+	while ((cb = indi_find_dev_cb(indi, devname)) && cb != first_cb) {
+		if (!first_cb) 
+			first_cb = cb;
+		idev->new_prop_cb = il_append(idev->new_prop_cb, indi_create_cb(cb->cb.func, cb->cb.data));
+
+		indi->dev_cb_list = il_remove(indi->dev_cb_list, cb);
+		if (strlen(cb->devname)) {
+			free(cb);
+		} else {
+			//push this property onto the end of the list
+			il_append(indi->dev_cb_list, cb);
+		}
 	}
 
 	indigui_make_device_page(idev);
@@ -329,6 +343,18 @@ void indi_send(struct indi_prop_t *iprop, struct indi_elem_t *ielem )
 	io_indi_sock_write(iprop->idev->indi->fh, msg, strlen(msg));
 }
 
+static void indi_exec_cb(void *cb_list, void *idata)
+{
+	indi_list *isl;
+
+	if (! cb_list)
+		return;
+	for (isl = il_iter(cb_list); ! il_is_last(isl); isl = il_next(isl)) {
+		struct indi_cb_t *cb = ( struct indi_cb_t *)il_item(isl);
+		cb->func(idata, cb->data);
+	}
+}
+
 #define INDI_CHUNK_SIZE 65536
 static int indi_blob_decode(void *data)
 {
@@ -390,9 +416,7 @@ static int indi_blob_decode(void *data)
 			inflateEnd((z_stream *)ielem->value.blob.zstrm);
 		}
 		delXMLEle((XMLEle *)ielem->iprop->root);
-		if (ielem->iprop->prop_update_cb) {
-			ielem->iprop->prop_update_cb(ielem->iprop, ielem->iprop->callback_data);
-		}
+		indi_exec_cb(ielem->iprop->prop_update_cb, ielem->iprop);
 		return FALSE;
 	}
 	return TRUE;
@@ -535,10 +559,40 @@ static struct indi_prop_t *indi_new_prop(XMLEle *root, struct indi_device_t *ide
 	idev->props = il_append(idev->props, iprop);
 	return iprop;
 }
+static void indi_delete_elem(struct indi_elem_t *ielem)
+{
+	if(ielem->iprop->type == INDI_PROP_BLOB) {
+		if(ielem->value.blob.data)
+			free(ielem->value.blob.data);
+		if(ielem->value.blob.tmp_data)
+			free(ielem->value.blob.tmp_data);
+		if(ielem->value.blob.zstrm)
+			free(ielem->value.blob.zstrm);
+	}
+	free(ielem);
+}
+
+static void indi_delete_prop(struct indi_prop_t *iprop)
+{
+	indi_list *isl;
+	struct indi_elem_t *ielem;
+
+	indigui_delete_prop(iprop);
+
+	while((isl = il_iter(iprop->elems)) && ! il_is_last(isl)) {
+                ielem = (struct indi_elem_t *)il_item(isl);
+		iprop->elems = il_remove_first(iprop->elems);
+		indi_delete_elem(ielem);
+	}
+	if(iprop->root)
+		delXMLEle((XMLEle *)iprop->root);
+	iprop->idev->props = il_remove(iprop->idev->props, iprop);
+	free(iprop);
+}
 
 void indi_device_add_cb(struct indi_t *indi, const char *devname,
-                     void (* new_prop_cb)(struct indi_prop_t *iprop, void *callback_data),
-                     void *callback_data)
+                     void (* cb_func)(void *iprop, void *cb_data),
+                     void *cb_data)
 {
 	struct indi_device_t *idev;
 	struct indi_prop_t *iprop;
@@ -546,33 +600,28 @@ void indi_device_add_cb(struct indi_t *indi, const char *devname,
 
 	idev = indi_find_device(indi, devname);
 	if (idev) {
-		idev->new_prop_cb = new_prop_cb;
-		idev->callback_data = callback_data;
+		idev->new_prop_cb = il_append(idev->new_prop_cb, indi_create_cb(cb_func, cb_data));
 
 		// Execute the callback for all existing properties
 		for (isl = il_iter(idev->props); ! il_is_last(isl); isl = il_next(isl)) {
 			iprop = (struct indi_prop_t *)il_item(isl);
-			new_prop_cb(iprop, callback_data);
+			cb_func(iprop, cb_data);
 		}
 	} else {
 		// Device doesn't exist yet, so save this callback for the future
-		struct indi_dev_cb_t *cb = indi_find_dev_cb(indi, devname);
-		if (! cb) {
-			cb = (struct indi_dev_cb_t *)calloc(1, sizeof(struct indi_dev_cb_t));
-			strncpy(cb->devname, devname, sizeof(cb->devname));
-			indi->dev_cb_list = il_append(indi->dev_cb_list, cb);
-		}
-		cb->new_prop_cb = new_prop_cb;
-		cb->callback_data = callback_data;
+		struct indi_dev_cb_t *cb = (struct indi_dev_cb_t *)calloc(1, sizeof(struct indi_dev_cb_t));
+		strncpy(cb->devname, devname, sizeof(cb->devname));
+		cb->cb.func = cb_func;
+		cb->cb.data = cb_data;
+		indi->dev_cb_list = il_append(indi->dev_cb_list, cb);
 	}
 }
 
 void indi_prop_add_cb(struct indi_prop_t *iprop,
-                      void (* prop_update_cb)(struct indi_prop_t *iprop, void *callback_data),
-                      void *callback_data)
+                      void (* cb_func)(void *iprop, void *cb_data),
+                      void *cb_data)
 {
-	iprop->prop_update_cb = prop_update_cb;
-	iprop->callback_data = callback_data;
+	iprop->prop_update_cb = il_append(iprop->prop_update_cb, indi_create_cb(cb_func, cb_data));
 }
 
 
@@ -591,9 +640,9 @@ static void indi_handle_message(struct indi_device_t *idev, XMLEle *root)
 			return;
 		}
 		indi_update_prop(root, iprop);
-		if (iprop->prop_update_cb && iprop->type != INDI_PROP_BLOB) {
+		if (iprop->type != INDI_PROP_BLOB) {
 			// BLOB callbacks are handled after decoding
-			iprop->prop_update_cb(iprop, iprop->callback_data);
+			indi_exec_cb(iprop->prop_update_cb, iprop);
 		}
 		ic_prop_set(idev->indi->config, iprop);
 	} else if (strncmp(proptype, "def", 3) == 0) {
@@ -609,14 +658,27 @@ static void indi_handle_message(struct indi_device_t *idev, XMLEle *root)
 		}
 		indigui_add_prop(idev, groupname, iprop);
 		delXMLEle (root);
-		if (idev->new_prop_cb) {
-			idev->new_prop_cb(iprop, idev->callback_data);
-		}
+		indi_exec_cb(idev->new_prop_cb, iprop);
 		ic_prop_def(idev->indi->config, iprop);
+	} else if (strncmp(proptype, "del", 3) == 0) {
+		//Delete property or device
+		if(propname) {
+			iprop = indi_find_prop(idev, propname);
+			if (! iprop) {
+				return;
+			}
+			indi_delete_prop(iprop);
+		} else {
+			//indi_delete_device(idev);
+		}
 	} else if (strncmp(proptype, "message", 7) == 0) {
 		// Display message
 		indigui_show_message(idev->indi, findXMLAttValu(root, "message"));
 		delXMLEle (root);
+	} else {
+		char str[256] = {0};
+		snprintf(str, sizeof(str)-1, "Unknown property recieved: %s\n", proptype);
+		indigui_show_message(idev->indi, str);
 	}
 }
 

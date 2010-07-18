@@ -93,7 +93,7 @@ void Camera_INDIClass::NewProp(struct indi_prop_t *iprop)
     if (iprop->type == INDI_PROP_BLOB) {
         printf("Found BLOB property for camera %s\n", iprop->idev->name);
         has_blob = 1;
-        indi_prop_add_cb(iprop, camera_capture_cb, this);
+        indi_prop_add_cb(iprop, (IndiPropCB)camera_capture_cb, this);
     }
     else if (strcmp(iprop->name, "CCD_EXPOSURE") == 0) {
         printf("Found CCD_EXPOSURE for camera %s\n", iprop->idev->name);
@@ -122,7 +122,7 @@ void Camera_INDIClass::NewProp(struct indi_prop_t *iprop)
     else if (strcmp(iprop->name, "CONNECTION") == 0) {
         printf("Found CONNECTION for camera %s\n", iprop->idev->name);
         indi_send(iprop, indi_prop_set_switch(iprop, "CONNECT", TRUE));
-        indi_prop_add_cb(iprop, connect_cb, this);
+        indi_prop_add_cb(iprop, (IndiPropCB)connect_cb, this);
     }
     CheckState();
 }
@@ -139,7 +139,7 @@ bool Camera_INDIClass::Connect() {
         printf("No INDI camera is set.  Please set INDIcam in the preferences file\n");
         return true;
     }
-    indi_device_add_cb(INDIClient, indi_name.ToAscii(), new_prop_cb, this);
+    indi_device_add_cb(INDIClient, indi_name.ToAscii(), (IndiDevCB)new_prop_cb, this);
 
     modal = true;
     msec = wxGetLocalTimeMillis();
