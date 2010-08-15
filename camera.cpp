@@ -124,7 +124,7 @@ Camera_SSPIAGClass Camera_SSPIAG;
  Camera_ASCOMClass Camera_ASCOM;
 #endif
 
-#if defined (INDI)
+#if defined (INDI_CAMERA)
 #include "cam_INDI.h"
 Camera_INDIClass Camera_INDI;
 #endif
@@ -209,7 +209,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 #if defined (ASCOM_CAMERA)
 	Cameras.Add(_T("ASCOM v5 Camera"));
 #endif
-#if defined (INDI)
+#if defined (INDI_CAMERA)
     Cameras.Add(_T("INDI Camera"));
 #endif
 #if defined (VIDEODEVICE)
@@ -337,7 +337,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 	else if (Choice.Find(_T("ASCOM v5 Camera")) + 1)
 		CurrentGuideCamera = &Camera_ASCOM;
 #endif
-#if defined (INDI)
+#if defined (INDI_CAMERA)
 	else if (Choice.Find(_T("INDI Camera")) + 1)
 		CurrentGuideCamera = &Camera_INDI;
 #endif
