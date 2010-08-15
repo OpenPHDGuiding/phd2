@@ -137,6 +137,7 @@ void MyFrame::WritePreferences() {
 	else if (mount_menu->IsChecked(MOUNT_VOYAGER)) mount = 6;
 	else if (mount_menu->IsChecked(MOUNT_EQUINOX)) mount = 7;
 	else if (mount_menu->IsChecked(MOUNT_GCUSBST4)) mount = 8;
+	else if (mount_menu->IsChecked(MOUNT_INDI)) mount = 9;
 	config->Write(_T("Mount"),mount);
 	config->Write(_T("RA Aggressiveness"),RA_aggr);
 	config->Write(_T("RA Hysteresis"),RA_hysteresis);

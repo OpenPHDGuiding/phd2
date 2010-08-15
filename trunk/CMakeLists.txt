@@ -36,6 +36,9 @@ INCLUDE(UsewxWidgets)
 find_package(CFITSIO REQUIRED)
 include_directories(${CFITSIO_INCLUDE_DIR})
 
+#zlib
+find_package(ZLIB REQUIRED)
+
 include_directories(${CMAKE_SOURCE_DIR})
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_WXWINDOWS_CXX_FLAGS}")

@@ -61,7 +61,7 @@
 // #define NEB_SBIG
 #else // Linux
  #define SIMULATOR
- #define INDI 
+ #define INDI_CAMERA
 #endif
 
 extern void InitCameraParams();
