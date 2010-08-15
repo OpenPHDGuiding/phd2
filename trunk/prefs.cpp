@@ -115,6 +115,8 @@ void MyFrame::ReadPreferences() {
     config->Read(_T("INDImount"), &INDIScope.indi_name);
     config->Read(_T("INDImount_port"), &INDIScope.serial_port);
 #endif
+	config->Read(_T("Advanced Dialog Fontsize"),&lval);
+	AdvDlg_fontsize = (int) lval;
 	lval = (long) ServerMode;
 	config->Read(_T("Enable Server"),&lval);
 	ServerMode = lval > 0;
@@ -164,6 +166,7 @@ void MyFrame::WritePreferences() {
     config->Write(_T("INDImount"), INDIScope.indi_name);
     config->Write(_T("INDImount_port"), INDIScope.serial_port);
 #endif
+	config->Write(_T("Advanced Dialog Fontsize"),(long)AdvDlg_fontsize);
 	config->Write(_T("Gamma"),Stretch_gamma);
 	config->Write(_T("Enable Server"),(long) ServerMode);
 	delete config;

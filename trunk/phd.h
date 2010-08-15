@@ -320,6 +320,7 @@ extern int	Cal_duration;
 extern int Dec_guide;
 extern int Dec_algo;
 extern int NR_mode;
+extern int AdvDlg_fontsize;
 extern bool DisableGuideOutput;
 extern bool Log_Data;
 extern bool Log_Images;
