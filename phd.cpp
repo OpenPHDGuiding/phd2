@@ -89,6 +89,7 @@ int Dec_algo = DEC_RESISTSWITCH;
 double Dec_slopeweight = 5.0;
 int Max_Dec_Dur = 150;
 int NR_mode = NR_NONE;
+int AdvDlg_fontsize = 0;
 bool Log_Data = false;
 bool Log_Images = false;
 wxTextFile *LogFile;

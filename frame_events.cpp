@@ -474,6 +474,8 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(210,350),
 wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
 #endif
 {
+	if (AdvDlg_fontsize > 0)
+		SetFont(wxFont(AdvDlg_fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 	wxFlexGridSizer *sizer = new wxFlexGridSizer(2);
 
 	wxStaticText *RAA_Text = new wxStaticText(this,wxID_ANY,_T("RA Aggressiveness"),wxPoint(-1,-1),wxSize(-1,-1));
