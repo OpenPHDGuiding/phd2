@@ -47,6 +47,7 @@ MyCanvas::MyCanvas(wxWindow *parent):
 //	Origin_x = Origin_y = Targ_x = Targ_y = 0;
 	State = STATE_NONE;
 	ScaleFactor = 1.0;
+	binned = false;
 	Displayed_Image = new wxImage(XWinSize,YWinSize,true);
 	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 	SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
