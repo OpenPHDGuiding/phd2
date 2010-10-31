@@ -89,7 +89,7 @@ class MyCanvas: public wxWindow {
 	int State;  // see STATE enum
 	wxImage	*Displayed_Image;
 	double	ScaleFactor;
-	float binned;
+	bool binned;
 
    MyCanvas(wxWindow *parent);
     ~MyCanvas(void);
