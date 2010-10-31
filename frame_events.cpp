@@ -204,6 +204,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 	Cam_Button->Enable(false);
 	Scope_Button->Enable(false);
 	Brain_Button->Enable(false);
+	Dark_Button->Enable(false);
 
 	bool debuglog = this->Menubar->IsChecked(MENU_DEBUG);
 	if (debuglog) {
@@ -291,6 +292,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 	Cam_Button->Enable(true);
 	Scope_Button->Enable(true);
 	Brain_Button->Enable(true);
+	Dark_Button->Enable(true);
 	CaptureActive = false;
 	SetStatusText(_T(""));
 	if (Abort == 2) {
