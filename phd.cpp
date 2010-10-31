@@ -464,22 +464,9 @@ MyFrame::MyFrame(const wxString& title)
 	// Setup  Help file
 	wxFileSystem::AddHandler(new wxZipFSHandler);
 	bool retval;
-wxString filename =  wxTheApp->argv[0];
-#if defined (__WINDOWS__)
-	filename = filename.BeforeLast(PATHSEPCH);
-	filename += _T("\\PHDGuideHelp.zip");
-#endif
-#if defined (__APPLE__)
-	//filename = filename.Left(filename.Find(_T("PHD.app")));
-	//filename = filename.BeforeLast('/');
-	//filename += _T("/PHDGuideHelp.zip");
-	filename = filename.Left(filename.Find(_T("MacOS")));
-	filename += _T("Resources/PHDGuideHelp.zip");
-#endif
-#if defined (__WXGTK__)   // GTK
-	filename = filename.BeforeLast(PATHSEPCH);
-	filename += _T("/PHDGuideHelp.zip");
-#endif
+	wxString filename = wxStandardPaths::Get().GetResourcesDir()
+		+ wxFILE_SEP_PATH
+		+ _T("PHDGuideHelp.zip");
 	help = new wxHtmlHelpController;
 	retval = help->AddBook(filename);
 	if (!retval) {
