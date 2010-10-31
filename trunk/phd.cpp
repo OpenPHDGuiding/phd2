@@ -265,10 +265,11 @@ MyFrame::MyFrame(const wxString& title)
 #ifdef GUIDE_INDI
 	mount_menu->AppendRadioItem(MOUNT_INDI,_T("INDI"),_T("INDI"));
 #endif
-	wxMenu *tools_menu = new wxMenu;
+	tools_menu = new wxMenu;
 	//mount_menu->AppendSeparator();
 	tools_menu->Append(MENU_MANGUIDE, _T("&Manual Guide"), _T("Manual / test guide dialog"));
 	tools_menu->Append(MENU_CLEARDARK, _T("&Erase Dark Frame"), _T("Erase / clear out dark frame"));
+	tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
 	tools_menu->Append(MENU_AUTOSTAR, _T("Auto-select &Star\tAlt-S"), _T("Automatically select star"));
 	tools_menu->Append(EEGG_MANUALCAL, _T("Enter calibration data"), _T("Manually calibrate"));
 //	tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));

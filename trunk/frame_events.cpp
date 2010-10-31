@@ -315,13 +315,13 @@ void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event)) {
 }
 
 void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
-	Dark_Button->SetForegroundColour(wxColour(200,0,0));
 	if (canvas->State > STATE_SELECTED) return;
 	if (!GuideCameraConnected) {
 		wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
 		return;
 	}
 	if (CaptureActive) return;  // Looping an exposure already
+	Dark_Button->SetForegroundColour(wxColour(200,0,0));
 	int NDarks = 5;
 
 	SetStatusText(_T("Capturing dark"));
@@ -362,15 +362,15 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
 	}
 	SetStatusText(_T("Darks done"));
 	wxMessageBox(_T("Uncover guide scope"));
+	tools_menu->FindItem(MENU_CLEARDARK)->Enable(HaveDark);
 }
 
 void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt)) {
-//	int i;
-//	unsigned short *ptr;
-
 	if (!HaveDark) return;
 	Dark_Button->SetLabel(_T("Take Dark"));
+	Dark_Button->SetForegroundColour(wxColour(0,0,0));
 	HaveDark = false;
+	tools_menu->FindItem(MENU_CLEARDARK)->Enable(HaveDark);
 }
 
 void MyFrame::OnGraph(wxCommandEvent &evt) {

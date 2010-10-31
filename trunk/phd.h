@@ -109,7 +109,7 @@ public:
 
 	MyCanvas *canvas;
 	wxMenuBar *Menubar;
-	wxMenu	*mount_menu; // need access to this...
+	wxMenu	*mount_menu, *tools_menu; // need access to this...
 	wxChoice	*Dur_Choice;
 	wxCheckBox *HotPixel_Checkbox;
 	wxButton	*Setup_Button, *Dark_Button;
