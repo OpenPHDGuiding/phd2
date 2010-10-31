@@ -129,7 +129,7 @@ Camera_SSPIAGClass Camera_SSPIAG;
 Camera_INDIClass Camera_INDI;
 #endif
 
-#if defined (VIDEODEVICE)
+#if defined (V4L_CAMERA)
 #include "cam_VIDEODEVICE.h"
 extern "C" {
 #include <libudev.h>
@@ -212,7 +212,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 #if defined (INDI_CAMERA)
     Cameras.Add(_T("INDI Camera"));
 #endif
-#if defined (VIDEODEVICE)
+#if defined (V4L_CAMERA)
     if (true == Camera_VIDEODEVICE.ProbeDevices()) {
         Cameras.Add(_T("V4L(2) Camera"));
     }
@@ -342,7 +342,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
 		CurrentGuideCamera = &Camera_INDI;
 #endif
 
-#if defined (VIDEODEVICE)
+#if defined (V4L_CAMERA)
 	else if (Choice.Find(_T("V4L(2) Camera")) + 1) {
 		// There is at least ONE V4L(2) device ... let's find out exactly
 		DeviceInfo *deviceInfo = NULL;

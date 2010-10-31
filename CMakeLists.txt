@@ -25,7 +25,7 @@ ENDIF (LIBUDEV_FOUND AND V4L2_FOUND)
 if(V4L_OK)
     include_directories(${LIBUDEV_INCLUDE_DIRS})
     include_directories(${V4L2_INCLUDE_DIRS})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVIDEODEVICE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DV4L_CAMERA")
 endif(V4L_OK)
 
 #wxWidgets

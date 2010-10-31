@@ -38,7 +38,9 @@
 #include <wx/intl.h>
 #include <wx/socket.h>
 
+#ifndef SUBVER
 #define SUBVER _T("")
+#endif
 //#define DEVBUILD
 
 // Globals
@@ -135,7 +137,7 @@ EVT_MENU(MENU_INDICONFIG,MyFrame::OnINDIConfig)
 EVT_MENU(MENU_INDIDIALOG,MyFrame::OnINDIDialog)
 #endif
 
-#if defined (VIDEODEVICE)
+#if defined (V4L_CAMERA)
 EVT_MENU(MENU_V4LSAVESETTINGS, MyFrame::OnSaveSettings)
 EVT_MENU(MENU_V4LRESTORESETTINGS, MyFrame::OnRestoreSettings)
 #endif
@@ -292,7 +294,7 @@ MyFrame::MyFrame(const wxString& title)
 	indi_menu->Append(MENU_INDIDIALOG, _T("&Controls..."), _T("Show INDI controls for available devices"));
 #endif
 
-#if defined (VIDEODEVICE)
+#if defined (V4L_CAMERA)
 	wxMenu *v4l_menu = new wxMenu();
 
 	v4l_menu->Append(MENU_V4LSAVESETTINGS, _T("&Save settings"), _T("Save current camera settings"));
@@ -313,7 +315,7 @@ MyFrame::MyFrame(const wxString& title)
 	Menubar->Append(indi_menu, _T("&INDI"));
 #endif
 
-#if defined (VIDEODEVICE)
+#if defined (V4L_CAMERA)
 	Menubar->Append(v4l_menu, _T("&V4L"));
 
 	Menubar->Enable(MENU_V4LSAVESETTINGS, false);

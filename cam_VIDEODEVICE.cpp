@@ -23,6 +23,8 @@
 
 #include "phd.h"
 #include "camera.h"
+
+#ifdef V4L_CAMERA
 #include "image_math.h"
 #include "cam_VIDEODEVICE.h"
 #include "config_VIDEODEVICE.h"
@@ -327,3 +329,5 @@ bool Camera_VIDEODEVICEClass::restoreSettings(wxConfig *config) {
 
 	return result;
 }
+
+#endif

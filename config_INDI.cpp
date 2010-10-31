@@ -24,6 +24,11 @@
  */
 
 #include "phd.h"
+#include "camera.h"
+#include "scope.h"
+
+#if defined (INDI_CAMERA) || defined (GUIDE_INDI)
+
 #include "cam_INDI.h"
 #include "tele_INDI.h"
 
@@ -164,3 +169,4 @@ void MyFrame::OnINDIDialog(wxCommandEvent& WXUNUSED(event))
     indigui_show_dialog(INDIClient);
 }
 
+#endif

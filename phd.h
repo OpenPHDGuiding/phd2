@@ -35,6 +35,8 @@
 #include <wx/socket.h>
 #include "usImage.h"
 #include "graph.h"
+#include "camera.h"
+#include "scope.h"
 #define VERSION _T("1.11.2")
 
 #if defined (__WINDOWS__)
@@ -143,12 +145,12 @@ public:
 	void OnServerEvent(wxSocketEvent& evt);
 	void OnSocketEvent(wxSocketEvent& evt);
 	void OnServerMenu(wxCommandEvent& evt);
-#if defined (__WXGTK__)  // a bit lame, but we don't have GUIDE_INDI or INDI_CAMERA defined yet
+#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 	void OnINDIConfig(wxCommandEvent& evt);
 	void OnINDIDialog(wxCommandEvent& evt);
 #endif
 
-#if defined (VIDEODEVICE)
+#if defined (V4L_CAMERA)
 	 void OnSaveSettings(wxCommandEvent& evt);
 	 void OnRestoreSettings(wxCommandEvent& evt);
 #endif
