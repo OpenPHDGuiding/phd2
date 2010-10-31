@@ -25,6 +25,8 @@
 
 #include "phd.h"
 #include "camera.h"
+
+#ifdef INDI_CAMERA
 #include "time.h"
 #include "image_math.h"
 #include "cam_INDI.h"
@@ -286,3 +288,4 @@ bool Camera_INDIClass::CaptureFull(int duration, usImage& img, bool recon) {
     }
 }
 
+#endif

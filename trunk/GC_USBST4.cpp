@@ -6,6 +6,9 @@
  *  Copyright 2009 Craig Stark, Stark Labs. All rights reserved.
  *
  */
+
+#ifdef GUIDE_GCUSBST4
+
 #include "phd.h"
 #include "scope.h"
 #include "GC_USBST4.h"
@@ -239,3 +242,5 @@ void GCUSBST4_Disconnect() {
 		portFID = 0;
 	}		
 }
+
+#endif

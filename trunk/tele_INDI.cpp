@@ -23,6 +23,10 @@
  *
  */
 
+#include "scope.h"
+
+#ifdef GUIDE_INDI
+
 #include <stdio.h>
 #include <string.h>
 
@@ -252,3 +256,4 @@ void Telescope_INDIClass::DoGuiding(int direction, int duration_msec)
     StopMove(direction);
 }
 
+#endif

@@ -50,7 +50,7 @@
 #endif
 
 // Some specific camera includes
-#if defined (__WINDOWS__)
+#if defined (__WINDOWS__) && defined (LE_PARALLEL_CAMERA)
 #include "cam_LEwebcam.h"
 extern Camera_LEwebcamClass Camera_LEwebcamParallel;
 extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
