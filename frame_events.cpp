@@ -476,19 +476,20 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 {
 	if (AdvDlg_fontsize > 0)
 		SetFont(wxFont(AdvDlg_fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	wxFlexGridSizer *sizer = new wxFlexGridSizer(2);
+	wxGridSizer *sizer = new wxGridSizer(2);
+	wxFlexGridSizer *left = new wxFlexGridSizer(2);
 
 	wxStaticText *RAA_Text = new wxStaticText(this,wxID_ANY,_T("RA Aggressiveness"),wxPoint(-1,-1),wxSize(-1,-1));
 	RA_Aggr_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,120,100,_T("RA_Aggr"));
 	RA_Aggr_Ctrl->SetToolTip(_T("What percent of the measured error should be applied? Default = 100%, adjust if responding too much or too slowly?"));
-	sizer->Add(RAA_Text,wxSizerFlags().Expand().Proportion(2).Border(wxALL,3));
-	sizer->Add(RA_Aggr_Ctrl,wxSizerFlags().Border(wxALL,3));
+	left->Add(RAA_Text,wxSizerFlags().Expand().Proportion(2).Border(wxALL,3));
+	left->Add(RA_Aggr_Ctrl,wxSizerFlags().Border(wxALL,3));
 
 	wxStaticText *RAH_Text =new wxStaticText(this,wxID_ANY,_T("RA Hysteresis"),wxPoint(-1,-1),wxSize(-1,-1));
 	RA_Hyst_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,50,100,_T("RA_Hyst"));
 	RA_Hyst_Ctrl->SetToolTip(_T("How much history of previous guide pulses should be applied\nDefault = 10%, increase to smooth out guiding commands"));
-	sizer->Add(RAH_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(RA_Hyst_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	left->Add(RAH_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	left->Add(RA_Hyst_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	//UseDec_Box = new wxCheckBox(this,wxID_ANY,_T("Dec guide"),wxPoint(10,70),wxSize(-1,-1));
 	//UseDec_Box->SetToolTip(_T("Guide in declination as well?"));
@@ -498,8 +499,8 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 	};
 	Dec_Mode= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(dec_choices), dec_choices );
 	Dec_Mode->SetToolTip(_T("Guide in declination as well?"));
-	sizer->Add(DM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Dec_Mode,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	left->Add(DM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	left->Add(Dec_Mode,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *DAlgo_Text = new wxStaticText(this,wxID_ANY,_T("Dec Algorithm"),wxPoint(-1,-1),wxSize(-1,-1));
 	wxString decalgo_choices[] = {
@@ -507,60 +508,61 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 	};	// ,_T("Lowpass-2")
 	Dec_AlgoCtrl= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(decalgo_choices), decalgo_choices );
 	Dec_AlgoCtrl->SetToolTip(_T("Declination guide algorithm"));
-	sizer->Add(DAlgo_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Dec_AlgoCtrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	left->Add(DAlgo_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	left->Add(Dec_AlgoCtrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *MDD_Text =new wxStaticText(this,wxID_ANY,_T("Max Dec duration (ms)"),wxPoint(-1,-1),wxSize(-1,-1));
 	MaxDecDur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,2000,150,_T("MaxDec_Dur"));
 	MaxDecDur_Ctrl->SetToolTip(_T("Longest length of pulse to send in declination\nDefault = 100 ms.  Increase if drift is fast."));
-	sizer->Add(MDD_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(MaxDecDur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	left->Add(MDD_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	left->Add(MaxDecDur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *DSR_Text = new wxStaticText(this,wxID_ANY,_T("Dec slope weight"));
-	DecSlopeWeight_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),Dec_slopeweight),wxPoint(-1,-1),wxSize(75,-1));
+	DecSlopeWeight_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(wxT("%.2f"),Dec_slopeweight),wxPoint(-1,-1),wxSize(75,-1));
 	DecSlopeWeight_Ctrl->SetToolTip(_T("Weighting of slope parameter in lowpass auto-dec"));
-	sizer->Add(DSR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(DecSlopeWeight_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	left->Add(DSR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	left->Add(DecSlopeWeight_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *CS_Text = new wxStaticText(this,wxID_ANY,_T("Calibration step (ms)"));
 	Cal_Dur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,10000,1000,_T("Cal_Dur"));
 	Cal_Dur_Ctrl->SetToolTip(_T("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"));
-	sizer->Add(CS_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Cal_Dur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	left->Add(CS_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	left->Add(Cal_Dur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *MM_Text = new wxStaticText(this,wxID_ANY,_T("Min. motion (pixels)"));
-	MinMotion_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),MinMotion),wxPoint(-1,-1),wxSize(75,-1));
+	MinMotion_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(wxT("%.2f"),MinMotion),wxPoint(-1,-1),wxSize(75,-1));
 	MinMotion_Ctrl->SetToolTip(_T("How many pixels (fractional pixels) must the star move to trigger a guide pulse? Default = 0.15"));
-	sizer->Add(MM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(MinMotion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	left->Add(MM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	left->Add(MinMotion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *SR_Text = new wxStaticText(this,wxID_ANY,_T("Search region (pixels)"));
 	SearchRegion_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,10,50,15,_T("Search"));
 	SearchRegion_Ctrl->SetToolTip(_T("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
-	sizer->Add(SR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(SearchRegion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	left->Add(SR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	left->Add(SearchRegion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
+	wxFlexGridSizer *right = new wxFlexGridSizer(2);
 	wxStaticText *NR_Text = new wxStaticText(this,wxID_ANY,_T("Noise Reduction"));
 	wxString nralgo_choices[] = {
 		_T("None"),_T("2x2 mean"),_T("3x3 median")
 	};
 	NR_Ctrl= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(nralgo_choices), nralgo_choices );
 	NR_Ctrl->SetToolTip(_T("Technique to reduce noise in images"));
-	sizer->Add(NR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(NR_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	right->Add(NR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	right->Add(NR_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *TL_Text = new wxStaticText(this,wxID_ANY,_T("Time lapse (ms)"));
 	Time_Lapse_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,10000,0,_T("Time_lapse"));
 	Time_Lapse_Ctrl->SetToolTip(_T("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
-	sizer->Add(TL_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Time_Lapse_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	right->Add(TL_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	right->Add(Time_Lapse_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *CG_Text = new wxStaticText(this,wxID_ANY,_T("Camera gain (%)"));
 	Gain_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,100,100,_T("Cam_Gain"));
 	Gain_Ctrl->SetToolTip(_T("Camera gain boost? Default = 95%, lower if you experience noise or wish to guide on a very bright star). Not available on all cameras."));
 	Gain_Ctrl->Enable(false);
-	sizer->Add(CG_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Gain_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	right->Add(CG_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	right->Add(Gain_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 
 //	Setup_Button = new wxButton(this,wxID_PROPERTIES,_T("Camera Setup"),wxPoint(100,217),wxSize(-1,-1));
@@ -578,48 +580,52 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 	Port_Choice->SetSelection(0);
 	//Port_Choice->Enable(false);
 	Port_Text = new wxStaticText(this,wxID_ANY,_T("LE Port"),wxPoint(-1,1),wxSize(-1,-1));
-	sizer->Add(Port_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Port_Choice,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	right->Add(Port_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	right->Add(Port_Choice,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 
-	Delay_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T(""),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,50,0,_T("Delay"));
+	Delay_Ctrl = new wxSpinCtrl(this,wxID_ANY,wxT(""),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,50,0,_T("Delay"));
 	Delay_Ctrl->SetToolTip(_T("Adjust if you get dropped frames"));
 	Delay_Ctrl->Enable(false);
 	Delay_Text = new wxStaticText(this,wxID_ANY,_T("LE Read Delay"),wxPoint(-1,-1),wxSize(-1,-1));
-	sizer->Add(Delay_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Delay_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	right->Add(Delay_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	right->Add(Delay_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	Cal_Box = new wxCheckBox(this,wxID_ANY,_T("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
 	Cal_Box->SetToolTip(_T("Check to clear any previous calibration and force PHD to recalibrate"));
-	wxStaticText *TmpText = new wxStaticText(this,wxID_ANY,_T(""));
-	sizer->Add(Cal_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(TmpText,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	wxStaticText *TmpText = new wxStaticText(this,wxID_ANY,wxT(""));
+	right->Add(Cal_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	right->Add(TmpText,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	Subframe_Box = new wxCheckBox(this,wxID_ANY,_T("Use subframes"),wxPoint(-1,-1),wxSize(75,-1));
 	Subframe_Box->SetToolTip(_T("Check to only download subframes (ROIs) if your camera supports it"));
-	wxStaticText *TmpText4 = new wxStaticText(this,wxID_ANY,_T(""));
-	sizer->Add(Subframe_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(TmpText4,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	wxStaticText *TmpText4 = new wxStaticText(this,wxID_ANY,wxT(""));
+	right->Add(Subframe_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	right->Add(TmpText4,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	Log_Box = new wxCheckBox(this,wxID_ANY,_T("Log info"),wxPoint(-1,-1),wxSize(-1,-1));
 	Log_Box->SetToolTip(_T("Save guide commands and info to a file?"));
 	Log_Box->Enable(true);
-	wxStaticText *TmpText2 = new wxStaticText(this,wxID_ANY,_T(""));
-	sizer->Add(Log_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(TmpText2,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	wxStaticText *TmpText2 = new wxStaticText(this,wxID_ANY,wxT(""));
+	right->Add(Log_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	right->Add(TmpText2,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	Disable_Box = new wxCheckBox(this,wxID_ANY,_T("Disable guide output"),wxPoint(-1,-1),wxSize(-1,-1));
 	Disable_Box->SetToolTip(_T("Don't actually send guide commands, just log"));
 	Disable_Box->Enable(true);
-	wxStaticText *TmpText3 = new wxStaticText(this,wxID_ANY,_T(""));
-	sizer->Add(Disable_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(TmpText3,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	wxStaticText *TmpText3 = new wxStaticText(this,wxID_ANY,wxT(""));
+	right->Add(Disable_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	right->Add(TmpText3,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
+	sizer->Add(left, wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(right, wxSizerFlags().Proportion(1).Border(wxALL,3));
 	OK_Button = new wxButton(this, wxID_OK, _T("&Done"),wxPoint(15,290),wxSize(-1,-1));
 	Cancel_Button = new wxButton(this, wxID_CANCEL, _T("&Cancel"),wxPoint(110,290),wxSize(-1,-1));
 
-	sizer->Add(OK_Button,wxSizerFlags().Expand().Border(wxALL,6));
-	sizer->Add(Cancel_Button,wxSizerFlags().Border(wxALL,6));
+	wxFlexGridSizer *bottom = new wxFlexGridSizer(2);
+	bottom->Add(OK_Button,wxSizerFlags().Border(wxALL,6));
+	bottom->Add(Cancel_Button,wxSizerFlags().Border(wxALL,6));
+	right->Add(bottom,wxSizerFlags().Border(wxALL,6));
 
 	SetSizer(sizer);
 	sizer->SetSizeHints(this);
