@@ -318,7 +318,7 @@ void indi_send(struct indi_prop_t *iprop, struct indi_elem_t *ielem )
 {
 	char msg[4096], *ptr = msg;
 	char val[80];
-	const char *valstr;
+	const char *valstr = NULL;
 	const char *type;
 	struct indi_device_t *idev = iprop->idev;
 	indi_list *isl;
@@ -343,8 +343,13 @@ void indi_send(struct indi_prop_t *iprop, struct indi_elem_t *ielem )
 			valstr = val;
 			break;
 
-		}			
-		ptr += sprintf(ptr, "  <one%s name=\"%s\">%s</one%s>\n", type, elem->name, valstr, type);
+		}
+		/* do not send uninitialized data to the server */
+		if (valstr) {
+			ptr += sprintf(ptr, "  <one%s name=\"%s\">%s</one%s>\n", type, elem->name, valstr, type);
+		} else {
+			dbg_printf("WARNING: unhandled iprop type %d for elem '%s'", iprop->type, elem->name);
+		}
 	}
 	ptr += sprintf(ptr, "</new%sVector>\n", type);
 	iprop->state = INDI_STATE_BUSY;
