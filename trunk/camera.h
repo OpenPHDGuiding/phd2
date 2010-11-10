@@ -50,7 +50,8 @@
  //#define SXV
  #define ASCOM_CAMERA
  //#define ATIK_GEN3
-// #define NEB_SBIG
+ // #define NEB_SBIG
+ #define INDI_CAMERA
 #elif defined (__APPLE__)  // Mac cameras
  #define FIREWIRE
  #define SBIG

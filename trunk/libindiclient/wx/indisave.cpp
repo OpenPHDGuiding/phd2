@@ -39,7 +39,7 @@ void IndiSave::FillTree()
 		dev_tree = tree->AppendItem(top, wxString::FromAscii(dev->name));
 		for (isl_p = il_iter(dev->props); ! il_is_last(isl_p); isl_p = il_next(isl_p)) {
 			struct indi_prop_t *iprop = (struct indi_prop_t *)il_item(isl_p);
-			id = tree->AddCheckedItem(dev_tree, wxString::FromAscii(iprop->name), iprop->save);
+			id = tree->AddCheckedItem(dev_tree, wxString::FromAscii(iprop->name), iprop->save != 0);
 			props = il_append(props, new propList(iprop, id));
 		}
 	}

@@ -18,6 +18,10 @@
   Contact Information: gcx@phracturedblue.com <Geoffrey Hausheer>
 *******************************************************************************/
 
+#ifdef _WIN32
+#pragma warning(disable: 4996)
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -247,7 +251,11 @@ void IndiGui::ShowMessage(const char *message)
 		struct tm time_loc;
 
 		curtime = time(NULL);
+#ifdef _WIN32
+		localtime_s(&time_loc, &curtime);
+#else
 		localtime_r(&curtime, &time_loc);
+#endif
 		strftime(timestr, sizeof(timestr), "%b %d %T: ", &time_loc);
 		textbuffer->SetInsertionPoint(0);
 		textbuffer->WriteText(wxString::FromAscii(timestr));
@@ -348,7 +356,7 @@ void IndiGui::CreateSwitchCombobox(struct indi_prop_t *iprop, int num_props)
 	wxChoice *combo;
 	wxPanel *p;
 	wxGridBagSizer *gbs;
-	wxString choices[num_props];
+	wxString *choices = new wxString[num_props];
 	int i = 0;
 	int idx = 0;
 	indi_list *isl;
@@ -368,6 +376,8 @@ void IndiGui::CreateSwitchCombobox(struct indi_prop_t *iprop, int num_props)
 	Connect(combo->GetId(), wxEVT_COMMAND_CHOICE_SELECTED,
 		        wxCommandEventHandler(IndiGui::SetComboboxEvent));
 	gbs->Add(combo, POS(0, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+
+	delete [] choices;
 }
 
 void IndiGui::CreateSwitchCheckbox(struct indi_prop_t *iprop, int num_props)
