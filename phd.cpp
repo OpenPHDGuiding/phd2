@@ -62,7 +62,6 @@ bool GuideCameraConnected = false;
 int GuideCameraGain = 95;
 bool CaptureActive = false;
 usImage CurrentFullFrame;
-usImage CurrentCropFrame;
 usImage CurrentDarkFrame;
 double StarX = 0.0;
 double StarY = 0.0;

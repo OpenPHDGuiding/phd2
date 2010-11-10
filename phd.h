@@ -328,7 +328,6 @@ extern bool Log_Data;
 extern bool Log_Images;
 extern GuideCamera *CurrentGuideCamera;
 extern usImage CurrentFullFrame;
-extern usImage CurrentCropFrame;
 extern usImage CurrentDarkFrame;
 extern bool HaveDark;
 extern int	DarkDur;
