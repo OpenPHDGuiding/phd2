@@ -115,7 +115,7 @@ void V4LControl::enumerateMenuControls(const struct v4l2_queryctrl &ctrl) {
 	struct v4l2_querymenu menu = {0};
 
     menu.id = ctrl.id;
-    for (menu.index = ctrl.minimum; menu.index <= ctrl.maximum; menu.index++) {
+    for (menu.index = ctrl.minimum; menu.index <= (unsigned)ctrl.maximum; menu.index++) {
     	if (0 == ioctl(fd, VIDIOC_QUERYMENU, &menu)) {
     		choices.Add(wxString((const char *)menu.name, *wxConvCurrent));
     	}
