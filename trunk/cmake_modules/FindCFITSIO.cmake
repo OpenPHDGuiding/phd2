@@ -16,10 +16,8 @@
 
 if (CFITSIO_INCLUDE_DIR AND CFITSIO_LIBRARIES)
 
-  # in cache already
-  set(CFITSIO_FOUND TRUE)
-  message(STATUS "Found CFITSIO: ${CFITSIO_LIBRARIES}")
-
+  # in cache already, be quiet
+  set(CFITSIO_FIND_QUIETLY TRUE)
 
 else (CFITSIO_INCLUDE_DIR AND CFITSIO_LIBRARIES)
 
