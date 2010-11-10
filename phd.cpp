@@ -38,9 +38,14 @@
 #include <wx/intl.h>
 #include <wx/socket.h>
 
-#ifndef SUBVER
-#define SUBVER _T("")
+#if defined(__WINDOWS__)
+// SUBVER is already defined on WIN32, clear it - seems like a lot of work for null string, but...
+#ifdef SUBVER
+#undef SUBVER
+#endif 
 #endif
+#define SUBVER _T("")
+
 //#define DEVBUILD
 
 // Globals

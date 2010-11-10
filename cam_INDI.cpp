@@ -167,9 +167,7 @@ void Camera_INDIClass::ShowPropertyDialog() {
     indigui_show_dialog(INDIClient);
 }
 
-#if defined (__WINDOWS__)
-#include "../fits/fitsio.h"
-#elsif defined (__APPLE__)
+#if defined (__APPLE__)
 #include "../cfitsio/fitsio.h"
 #else
 #include <fitsio.h>

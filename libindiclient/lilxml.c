@@ -18,6 +18,10 @@
 
 #endif
 
+#ifdef _WIN32
+#pragma warning(disable: 4996)
+#endif
+
 /* little DOM-style XML parser.
  * only handles elements, attributes and pcdata content.
  * <! ... > and <? ... > are silently ignored.

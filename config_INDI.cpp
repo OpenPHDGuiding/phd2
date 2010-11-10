@@ -29,8 +29,13 @@
 
 #if defined (INDI_CAMERA) || defined (GUIDE_INDI)
 
+#if defined (INDI_CAMERA)
 #include "cam_INDI.h"
+#endif
+
+#if defined (GUIDE_INDI)
 #include "tele_INDI.h"
+#endif
 
 #include "libindiclient/indi.h"
 #include "libindiclient/indigui.h"
@@ -58,10 +63,14 @@ private:
     wxComboBox *GetDevices(wxString str);
     wxTextCtrl *host;
     wxTextCtrl *port;
+#if defined (INDI_CAMERA)
     wxComboBox *cam;
     wxTextCtrl *camport;
+#endif
+#if defined (GUIDE_INDI)
     wxComboBox *mount;
     wxTextCtrl *mountport;
+#endif
 };
 
 wxComboBox *INDIConfig::GetDevices(wxString str)
@@ -82,7 +91,7 @@ wxComboBox *INDIConfig::GetDevices(wxString str)
     return combo;
 }
 
-INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, _T("INDI Configuration"))
+INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, (const wxString)_T("INDI Configuration"))
 {
     wxConfig *config = new wxConfig(_T("PHDGuiding"));
     wxGridBagSizer *gbs = new wxGridBagSizer(0, 20);
@@ -98,6 +107,7 @@ INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, _T("INDI C
     port = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDIport"), _T("7624")));
     gbs->Add(port, POS(1, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 
+#if defined (INDI_CAMERA)
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Camera Driver:")),
              POS(2, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
     cam = GetDevices(config->Read(_T("INDIcam"), _T("")));
@@ -107,7 +117,9 @@ INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, _T("INDI C
              POS(3, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
     camport = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDIcam_port"), _T("")));
     gbs->Add(camport, POS(3, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+#endif
 
+#if defined (GUIDE_INDI)
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Telescope Driver:")),
              POS(4, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
     mount = GetDevices(config->Read(_T("INDImount"), _T("")));
@@ -117,6 +129,7 @@ INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, _T("INDI C
              POS(5, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
     mountport = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDImount_port"), _T("")));
     gbs->Add(mountport, POS(5, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+#endif
 
     sizer = new wxBoxSizer(wxVERTICAL) ;
     sizer->Add(gbs);
@@ -136,17 +149,21 @@ void INDIConfig::SaveSettings()
     port->GetLineText(0).ToLong(&INDIport);
     config->Write(_T("INDIport"), INDIport);
 
+#if defined (INDI_CAMERA)
     Camera_INDI.indi_name = cam->GetValue();
     config->Write(_T("INDIcam"), Camera_INDI.indi_name);
 
     Camera_INDI.indi_port = camport->GetValue();
     config->Write(_T("INDIcami_port"), Camera_INDI.indi_port);
+#endif
 
+#if defined (GUIDE_INDI)
     INDIScope.indi_name = mount->GetValue();
     config->Write(_T("INDImount"), INDIScope.indi_name);
 
     INDIScope.serial_port = mountport->GetLineText(0);
     config->Write(_T("INDImount_port"), INDIScope.serial_port);
+#endif
 }
 
 void MyFrame::OnINDIConfig(wxCommandEvent& WXUNUSED(event))

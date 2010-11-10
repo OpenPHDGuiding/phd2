@@ -23,12 +23,22 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+
+#ifndef _WIN32
 #include <unistd.h>
+#include <netinet/in.h>
+#else
+#include <stdlib.h>
+#include <string.h>
+#pragma warning(disable: 4996)
+#define strcasecmp(s1, s2) _stricmp(s1, s2)
+#define snprintf _snprintf
+#endif
 
 #include <sys/types.h>
-#include <netinet/in.h>
 
-#include <zlib.h>
+
+#include "zlib.h"
 
 #include "lilxml.h"
 #include "base64.h"

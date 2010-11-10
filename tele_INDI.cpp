@@ -23,6 +23,7 @@
  *
  */
 
+#include "phd.h"
 #include "scope.h"
 
 #ifdef GUIDE_INDI
@@ -30,8 +31,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
-#include "phd.h"
 #include "tele_INDI.h"
 
 extern "C" {

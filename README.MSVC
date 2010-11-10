@@ -1,0 +1,10 @@
+Notes for MSVC/Windows users:
+
+The CMake routines that automatically find the cfitsio and zlib libraries
+don't work well under Windows, partially because there is no "standard"
+place to install them.  I installed both of them in directories that are
+siblings of the phd directory, and then ran cmake with:
+
+cmake -D CFITSIO_INCLUDE_DIR=../cfitsio -D CFITSIO_LIBRARIES=../cfitsio/cfitsio -D ZLIB_INCLUDE_DIR=../zlib/include -D ZLIB_LIBRARY=../zlib/lib/ .
+
+This isn't very pretty, but it works

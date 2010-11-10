@@ -29,7 +29,7 @@ if(V4L_OK)
 endif(V4L_OK)
 
 #wxWidgets
-FIND_PACKAGE(wxWidgets REQUIRED)
+FIND_PACKAGE(wxWidgets COMPONENTS base core net html REQUIRED)
 INCLUDE(UsewxWidgets)
 
 #cfitsio
@@ -38,6 +38,7 @@ include_directories(${CFITSIO_INCLUDE_DIR})
 
 #zlib
 find_package(ZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR})
 
@@ -45,7 +46,9 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 # set(CMAKE_CXX_FLAGS "-g -Wall")
 
+IF(UNIX)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGUIDE_GCUSBST4")
+ENDIF(UNIX)
 
 set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/camera.cpp
@@ -79,6 +82,17 @@ set(phd_SRCS
 
    )
 
+if (MSVC)
+# make the headers show up in MSVC along with the source
+file(GLOB_RECURSE HEADERS "*.h")
+
+set(phd_SRCS ${phd_SRCS}
+   ${HEADERS}
+   ${CMAKE_SOURCE_DIR}/cam_ascom.cpp
+   ${CMAKE_SOURCE_DIR}/ascom.cpp
+   )
+ENDIF(MSVC)
+
 if(V4L_OK)
    set(phd_SRCS ${phd_SRCS} 
       ${CMAKE_SOURCE_DIR}/cam_VIDEODEVICE.cpp
@@ -93,7 +107,12 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
+if (MSVC)
+add_executable(PHD WIN32 ${phd_SRCS})
+else (MSVC)
 add_executable(PHD ${phd_SRCS})
+endif (MSVC)
+
 target_link_libraries(PHD ${CFITSIO_LIBRARIES})
 target_link_libraries(PHD ${wxWidgets_LIBRARIES})
 if(V4L_OK)
@@ -105,3 +124,10 @@ target_link_libraries(PHD ${phd_LIBS})
 
 install (TARGETS PHD RUNTIME DESTINATION bin)
 install (FILES "${PROJECT_SOURCE_DIR}/PHDGuideHelp.zip" DESTINATION  "${CMAKE_INSTALL_PREFIX}/share/PHD/" )
+
+if (MSVC)
+file(TO_NATIVE_PATH "${CFITSIO_LIBRARIES}.dll" CFITSIO_NATIVE_PATH)
+file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/PHDGuideHelp.zip" HELP_NATIVE_PATH)
+add_custom_command(TARGET PHD POST_BUILD COMMAND copy ${CFITSIO_NATIVE_PATH} ${CMAKE_CFG_INTDIR} )
+add_custom_command(TARGET PHD POST_BUILD COMMAND copy ${HELP_NATIVE_PATH} ${CMAKE_CFG_INTDIR} )
+endif(MSVC)
