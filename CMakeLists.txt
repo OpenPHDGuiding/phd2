@@ -12,7 +12,7 @@ include (CheckIncludeFiles)
 include(FindPkgConfig)
 
 pkg_check_modules(LIBUDEV libudev)
-pkg_check_modules(V4L2 libv4l2)
+pkg_check_modules(V4L2 libv4l2 libv4lconvert)
 
 IF(LIBUDEV_FOUND AND V4L2_FOUND)
     set(V4L_OK 1)
