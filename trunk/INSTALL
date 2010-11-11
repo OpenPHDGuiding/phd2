@@ -11,7 +11,7 @@ Support for Video4Linux devices is built-in now and requires (Debian/Ubuntu pack
 
 Some more libraries:
        * zlib1g-dev 
-       * libfitsio3-dev
+       * libfitsio3-dev (libcfitsio3-dev on debian)
 
 
 cmake 2.6 (or newer) installed
@@ -19,5 +19,9 @@ cmake 2.6 (or newer) installed
 Run:
 cmake .
 make
+make install
 
-Installation doesn't work properly yet
+If you want to install to a different directory, run e.g.
+$ cmake -DCMAKE_INSTALL_PREFIX:PATH=/opt/open-phd-guiding \
+	/path/to/open-phd-guiding-read-only
+	
