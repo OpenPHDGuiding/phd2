@@ -278,7 +278,7 @@ bool Camera_INDIClass::CaptureFull(int duration, usImage& img, bool recon) {
         printf("Processing fits file\n");
         return ReadFITS(img);
     } else if (strncmp(".stream", blob_elem->value.blob.fmt, 7) == 0) {
-        printf("Processing strean file\n");
+        printf("Processing stream file\n");
         return ReadStream(img);
     } else {
         wxMessageBox(wxT("Unknown image format: ") + wxString::FromAscii(blob_elem->value.blob.fmt),wxT("Error"),wxOK | wxICON_ERROR);
