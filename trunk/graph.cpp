@@ -40,7 +40,7 @@ EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
 END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
-wxMiniFrame(parent,NULL,_T("History"),wxDefaultPosition,wxSize(610,230),wxCAPTION & ~wxSTAY_ON_TOP) {
+wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,230),wxCAPTION & ~wxSTAY_ON_TOP) {
 
 	this->visible = false;
 	this->n_items = 0;
@@ -260,9 +260,9 @@ END_EVENT_TABLE()
 
 ProfileWindow::ProfileWindow(wxWindow *parent):
 #if defined (__APPLE__)
-wxMiniFrame(parent,NULL,_T("Profile"),wxDefaultPosition,wxSize(50,77),wxCAPTION & ~wxSTAY_ON_TOP) {
+wxMiniFrame(parent,wxID_ANY,_T("Profile"),wxDefaultPosition,wxSize(50,77),wxCAPTION & ~wxSTAY_ON_TOP) {
 #else
-wxMiniFrame(parent,NULL,_T("Profile"),wxDefaultPosition,wxSize(55,90),wxCAPTION & ~wxSTAY_ON_TOP) {
+wxMiniFrame(parent,wxID_ANY,_T("Profile"),wxDefaultPosition,wxSize(55,90),wxCAPTION & ~wxSTAY_ON_TOP) {
 #endif
 
 	this->visible = false;
@@ -280,7 +280,7 @@ ProfileWindow::~ProfileWindow() {
 	}
 }
 
-void ProfileWindow::OnLClick(wxMouseEvent &mevent) {
+void ProfileWindow::OnLClick(wxMouseEvent& WXUNUSED(mevent)) {
 	this->mode = this->mode + 1;
 	if (this->mode > 2) this->mode = 0;
 	Refresh();
