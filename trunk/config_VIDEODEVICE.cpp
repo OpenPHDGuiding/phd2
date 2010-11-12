@@ -54,7 +54,6 @@ V4LPropertiesDialog::V4LPropertiesDialog(V4LControlMap &map)
 	  controlMap(map) {
 
 	wxStaticText *text;
-	wxButton *button;
 	BooleanControl *booleanControl;
 	IntegerControl *integerControl;
 	MenueControl *menueControl;
@@ -118,7 +117,7 @@ V4LPropertiesDialog::V4LPropertiesDialog(V4LControlMap &map)
 	vbox->SetSizeHints(this);
 }
 
-void V4LPropertiesDialog::onUpdate(wxCommandEvent& event) {
+void V4LPropertiesDialog::onUpdate(wxCommandEvent& WXUNUSED(event)) {
 	V4LControlMap::iterator it;
 	for (it=controlMap.begin(); it!=controlMap.end(); ++it) {
 		int id = it->first;
@@ -129,7 +128,7 @@ void V4LPropertiesDialog::onUpdate(wxCommandEvent& event) {
 
 }
 
-void V4LPropertiesDialog::onReset(wxCommandEvent& event) {
+void V4LPropertiesDialog::onReset(wxCommandEvent& WXUNUSED(event)) {
 	V4LControlMap::iterator it;
 	for (it=controlMap.begin(); it!=controlMap.end(); ++it) {
 		int id = it->first;
@@ -140,7 +139,7 @@ void V4LPropertiesDialog::onReset(wxCommandEvent& event) {
 
 }
 
-void MyFrame::OnSaveSettings(wxCommandEvent& event) {
+void MyFrame::OnSaveSettings(wxCommandEvent& WXUNUSED(event)) {
 	wxMessageDialog *dialog = NULL;
 	wxConfig *config = NULL;
 
@@ -160,7 +159,7 @@ void MyFrame::OnSaveSettings(wxCommandEvent& event) {
 		dialog->Destroy();
 }
 
-void MyFrame::OnRestoreSettings(wxCommandEvent& event) {
+void MyFrame::OnRestoreSettings(wxCommandEvent& WXUNUSED(event)) {
 	wxMessageDialog *dialog = NULL;
 	wxConfig *config = NULL;
 
@@ -205,7 +204,7 @@ BooleanControl::BooleanControl(wxWindow* parent, wxWindowID id, const wxString& 
 	// Empty
 }
 
-void BooleanControl::onUpdate(wxCommandEvent& event) {
+void BooleanControl::onUpdate(wxCommandEvent& WXUNUSED(event)) {
 	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
 
 	if (NULL != control) {
@@ -220,7 +219,7 @@ void BooleanControl::onUpdate(wxCommandEvent& event) {
 	}
 }
 
-void BooleanControl::onReset(wxCommandEvent& event) {
+void BooleanControl::onReset(wxCommandEvent& WXUNUSED(event)) {
 	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
 
 	if (NULL != control) {
@@ -242,7 +241,7 @@ IntegerControl::IntegerControl(wxWindow* parent, wxWindowID id)
 	// Empty
 }
 
-void IntegerControl::onUpdate(wxCommandEvent& event) {
+void IntegerControl::onUpdate(wxCommandEvent& WXUNUSED(event)) {
 	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
 
 	if (NULL != control) {
@@ -257,7 +256,7 @@ void IntegerControl::onUpdate(wxCommandEvent& event) {
 	}
 }
 
-void IntegerControl::onReset(wxCommandEvent& event) {
+void IntegerControl::onReset(wxCommandEvent& WXUNUSED(event)) {
 	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
 
 	if (NULL != control) {
@@ -278,7 +277,7 @@ MenueControl::MenueControl(wxWindow *parent, wxWindowID id, const wxPoint& pos, 
 	// Empty
 }
 
-void MenueControl::onUpdate(wxCommandEvent& event) {
+void MenueControl::onUpdate(wxCommandEvent& WXUNUSED(event)) {
 	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
 
 	if (NULL != control) {
@@ -294,7 +293,7 @@ void MenueControl::onUpdate(wxCommandEvent& event) {
 	}
 }
 
-void MenueControl::onReset(wxCommandEvent& event) {
+void MenueControl::onReset(wxCommandEvent& WXUNUSED(event)) {
 	V4LControl *control = (V4LControl*)Camera_VIDEODEVICE.getV4LControl(GetId());
 
 	if (NULL != control) {

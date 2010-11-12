@@ -65,7 +65,7 @@ bool Camera_SimClass::Disconnect() {
 #endif
 
 #if SIMMODE==1
-bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool recon) {
 	int xsize, ysize;
 //	unsigned short *dataptr;
 //	int i;
@@ -114,7 +114,7 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 #endif
 
 #if SIMMODE==2
-bool Camera_SimClass::CaptureFull(int duration, usImage& img) {
+bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img) {
 	int xsize, ysize;
 	wxImage disk_image;
 	unsigned short *dataptr;
@@ -226,7 +226,7 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 #endif
 
 #if SIMMODE == 4
-bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool recon) {
 	int xsize, ysize;
 	//	unsigned short *dataptr;
 	//	int i;
