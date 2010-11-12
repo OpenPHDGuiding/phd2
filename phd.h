@@ -183,13 +183,13 @@ public:
 	short			Port;
 	int				Delay;
 
-	virtual bool	CaptureFull(int duration, usImage& img, bool recon) { return true; }
+	virtual bool	CaptureFull(int WXUNUSED(duration), usImage& WXUNUSED(img), bool WXUNUSED(recon)) { return true; }
 	virtual bool	CaptureFull(int duration, usImage& img) { return CaptureFull(duration, img, true); }	// Captures a full-res shot
 //	virtual bool	CaptureCrop(int duration, usImage& img) { return true; }	// Captures a 160 x 120 cropped portion
 	virtual bool	Connect() { return true; }		// Opens up and connects to camera
 	virtual bool	Disconnect() { return true; }	// Disconnects, unloading any DLLs loaded by Connect
 	virtual void	InitCapture() { return; }		// Gets run at the start of any loop (e.g., reset stream, set gain, etc).
-	virtual bool	PulseGuideScope (int direction, int duration) { return true; }
+	virtual bool	PulseGuideScope (int WXUNUSED(direction), int WXUNUSED(duration)) { return true; }
 	virtual void	ShowPropertyDialog() { return; }
 	GuideCamera() { Connected = FALSE;  Name=_T("");
 		HasGuiderOutput = false; HasPropertyDialog = false; HasPortNum = false; HasDelayParam = false;

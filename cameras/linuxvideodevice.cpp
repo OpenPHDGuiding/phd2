@@ -66,7 +66,6 @@ void linuxvideodevice::errno_exit(const char *s) {
 /*--------------------------------------------------------------------------------------*/
 
 void linuxvideodevice::process_image(unsigned char *p, int len) {
-	FILE *fp;
 	long pixls,pos;
 	unsigned char grayval;
 
@@ -168,7 +167,7 @@ int linuxvideodevice::get_frame(int etime) {
 	fd_set fds;
 	struct timeval tv;
 	int r,res;
-	float timeTaken,chmax;
+	float timeTaken;
 	clock_t start, end;
 	long count,exposures;;
 	unsigned int sumGrayVal, imin, imax;

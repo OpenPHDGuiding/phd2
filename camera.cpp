@@ -138,7 +138,7 @@ Camera_VIDEODEVICEClass Camera_VIDEODEVICE;
 #endif
 
 
-void MyFrame::OnConnectCamera(wxCommandEvent &evt) {
+void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 // Throws up a dialog and trys to connect to that camera
 	if (CaptureActive) return;  // Looping an exposure already
 

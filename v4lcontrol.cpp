@@ -112,7 +112,7 @@ bool V4LControl::reset() {
 }
 
 void V4LControl::enumerateMenuControls(const struct v4l2_queryctrl &ctrl) {
-	struct v4l2_querymenu menu = {0};
+    struct v4l2_querymenu menu;
 
     menu.id = ctrl.id;
     for (menu.index = ctrl.minimum; menu.index <= (unsigned)ctrl.maximum; menu.index++) {

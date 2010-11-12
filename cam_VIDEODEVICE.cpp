@@ -166,7 +166,7 @@ bool Camera_VIDEODEVICEClass::CaptureFull(int duration, usImage& img, bool recon
 		img.ImageData[pixls]=camera->getPixel(pixls);
 	}
 
-	unsigned short *dptr = img.ImageData;  // Pointer to data block PHD is expecting
+	//unsigned short *dptr = img.ImageData;  // Pointer to data block PHD is expecting
 
 	// DownloadImage(dptr,img.Npixels);
 	if (HaveDark && recon)
@@ -292,7 +292,7 @@ bool Camera_VIDEODEVICEClass::saveSettings(wxConfig *config) {
 
 		for (it=controlMap.begin(); it!=controlMap.end(); ++it) {
 			int id = it->first;
-			V4LControl *control = (V4LControl*)it->second;
+			control = (V4LControl*)it->second;
 
 			config->Write(wxString::Format(wxT("%i"), id), control->value);
 		}
@@ -315,7 +315,7 @@ bool Camera_VIDEODEVICEClass::restoreSettings(wxConfig *config) {
 
 		for (it=controlMap.begin(); it!=controlMap.end(); ++it) {
 			int id = it->first;
-			V4LControl *control = (V4LControl*)it->second;
+			control = (V4LControl*)it->second;
 
 			if (true == config->Exists(wxString::Format(wxT("%i"), id))) {
 				config->Read(wxString::Format(wxT("%i"), id), &(control->value));
