@@ -54,14 +54,6 @@ Camera_INDIClass::Camera_INDIClass() {
     FullSize = wxSize(640,480);
 }
 
-static int modal_timeout_cb(void * data)
-{
-    Camera_INDIClass *cb = (Camera_INDIClass *)(data);
-    if(cb->modal) {
-        cb->modal = false;
-    }
-    return FALSE;
-}
 static void connect_cb(struct indi_prop_t *iprop, void *data)
 {
     Camera_INDIClass *cb = (Camera_INDIClass *)(data);
