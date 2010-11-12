@@ -53,15 +53,6 @@ bool INDI_ScopeConnect()
     return INDIScope.Connect();
 }
 
-static int modal_timeout_cb(void * data)
-{
-    Telescope_INDIClass *cb = (Telescope_INDIClass *)(data);
-    if(cb->modal) {
-        cb->modal = false;
-    }
-    return FALSE;
-}
-
 static void connect_cb(struct indi_prop_t *iprop, void *data)
 {
     Telescope_INDIClass *cb = (Telescope_INDIClass *)(data);
