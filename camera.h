@@ -67,4 +67,6 @@
 #endif
 
 extern void InitCameraParams();
+#if 0 /* not used in open-phd */
 extern bool DLLExists (wxString DLLName);
+#endif

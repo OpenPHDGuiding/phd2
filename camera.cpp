@@ -424,6 +424,7 @@ void InitCameraParams() {
 #endif
 }
 
+#if 0 /* not used in open-phd */
 bool DLLExists (wxString DLLName) {
 #ifdef __WINDOWS__
 	wxStandardPathsBase& StdPaths = wxStandardPaths::Get();
@@ -439,3 +440,4 @@ bool DLLExists (wxString DLLName) {
 
 	return false;
 }
+#endif
