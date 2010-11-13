@@ -4,6 +4,7 @@ project(OPENPHD)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
 set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
 set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin")
+set(CMAKE_CXX_FLAGS "-DOPENPHD")
 
 Include (CheckCXXSourceCompiles)
 include (CheckIncludeFiles)
@@ -25,7 +26,6 @@ ENDIF (LIBUDEV_FOUND AND V4L2_FOUND)
 if(V4L_OK)
     include_directories(${LIBUDEV_INCLUDE_DIRS})
     include_directories(${V4L2_INCLUDE_DIRS})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DV4L_CAMERA")
 endif(V4L_OK)
 
 #wxWidgets
@@ -44,11 +44,19 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_WXWINDOWS_CXX_FLAGS}")
 
-# set(CMAKE_CXX_FLAGS "-g -Wall")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra")
 
-IF(UNIX)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGUIDE_GCUSBST4")
-ENDIF(UNIX)
+#Scopes to use with openPHD
+set(phd_SCOPES
+   GUIDE_INDI
+   #GUIDE_ONBOARD
+   )
+#Cameras to use with openPHD
+set(phd_CAMERAS
+   SIMULATOR
+   INDI_CAMERA
+   GUIDE_GCUSBST4
+   ) 
 
 set(phd_SRCS
    ${CMAKE_SOURCE_DIR}/camera.cpp
@@ -82,6 +90,7 @@ set(phd_SRCS
 
    )
 
+
 if (MSVC)
 # make the headers show up in MSVC along with the source
 file(GLOB_RECURSE HEADERS "*.h")
@@ -91,6 +100,9 @@ set(phd_SRCS ${phd_SRCS}
    ${CMAKE_SOURCE_DIR}/cam_ascom.cpp
    ${CMAKE_SOURCE_DIR}/ascom.cpp
    )
+   set(phd_SCOPES ${phd_SCOPES}
+      GUIDE_ASCOM
+      )
 ENDIF(MSVC)
 
 if(V4L_OK)
@@ -100,7 +112,18 @@ if(V4L_OK)
       ${CMAKE_SOURCE_DIR}/v4lcontrol.cpp
       ${CMAKE_SOURCE_DIR}/cameras/linuxvideodevice.cpp
       )
+    set(phd_CAMERAS ${phd_CAMERAS}
+        V4L_CAMERA
+        )
 endif(V4L_OK)
+
+foreach(cam ${phd_CAMERAS})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${cam}")
+endforeach(cam ${phd_CAMERAS})
+
+foreach(scope ${phd_SCOPES})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${scope}")
+endforeach(scope ${phd_SCOPES})
 
 #Suppress some warnings
 if(COMMAND cmake_policy)
@@ -108,9 +131,9 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 if (MSVC)
-add_executable(PHD WIN32 ${phd_SRCS})
+    add_executable(PHD WIN32 ${phd_SRCS})
 else (MSVC)
-add_executable(PHD ${phd_SRCS})
+    add_executable(PHD ${phd_SRCS})
 endif (MSVC)
 
 target_link_libraries(PHD ${CFITSIO_LIBRARIES})
@@ -126,8 +149,8 @@ install (TARGETS PHD RUNTIME DESTINATION bin)
 install (FILES "${PROJECT_SOURCE_DIR}/PHDGuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/PHD/" )
 
 if (MSVC)
-file(TO_NATIVE_PATH "${CFITSIO_LIBRARIES}.dll" CFITSIO_NATIVE_PATH)
-file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/PHDGuideHelp.zip" HELP_NATIVE_PATH)
-add_custom_command(TARGET PHD POST_BUILD COMMAND copy ${CFITSIO_NATIVE_PATH} ${CMAKE_CFG_INTDIR} )
-add_custom_command(TARGET PHD POST_BUILD COMMAND copy ${HELP_NATIVE_PATH} ${CMAKE_CFG_INTDIR} )
+    file(TO_NATIVE_PATH "${CFITSIO_LIBRARIES}.dll" CFITSIO_NATIVE_PATH)
+    file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/PHDGuideHelp.zip" HELP_NATIVE_PATH)
+    add_custom_command(TARGET PHD POST_BUILD COMMAND copy ${CFITSIO_NATIVE_PATH} ${CMAKE_CFG_INTDIR} )
+    add_custom_command(TARGET PHD POST_BUILD COMMAND copy ${HELP_NATIVE_PATH} ${CMAKE_CFG_INTDIR} )
 endif(MSVC)

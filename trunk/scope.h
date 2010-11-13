@@ -31,26 +31,27 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifndef OPENPHD
+/* Open PHD defines the available drivers in CMakeLists.txt rather than
+   statically here
+ */
 
 #if defined (__WINDOWS__)
 #define GUIDE_ASCOM
-#define GUIDE_INDI
-//#define GUIDE_GPUSB
-//#define GUIDE_PARALLEL
-//#define GUIDE_VOYAGER
-//#define GUIDE_NEB
+#define GUIDE_GPUSB
+#define GUIDE_PARALLEL
+#define GUIDE_VOYAGER
+#define GUIDE_NEB
 #elif defined (__APPLE__)
 #define GUIDE_GPUSB
 #define GUIDE_GCUSBST4
 #define GUIDE_EQUINOX
 #define GUIDE_VOYAGER
 #define GUIDE_NEB
-#define GUIDE_INDI
-#elif defined (__WXGTK__)
-#define GUIDE_INDI
 #endif
 #define GUIDE_ONBOARD
 
+#endif /* OPENPHD */
 
 extern void GuideScope(int direction, int duration);
 extern void CalibrateScope();

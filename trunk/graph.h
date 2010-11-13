@@ -57,6 +57,8 @@ public:
 	wxColour RA_Color, DEC_Color;
 #if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
 	wxSpinCtrlDouble *MM_Ctrl, *DSW_Ctrl;
+#else
+	wxTextCtrl *MM_Ctrl, *DSW_Ctrl;
 #endif
 	wxSpinCtrl *RAA_Ctrl, *RAH_Ctrl, *MDD_Ctrl, *MRAD_Ctrl;
 	wxChoice *DM_Ctrl;

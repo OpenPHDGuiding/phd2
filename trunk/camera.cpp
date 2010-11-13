@@ -444,7 +444,7 @@ void InitCameraParams() {
 #endif
 }
 
-#ifdef __WINDOWS__
+#ifndef OPENPHD
 bool DLLExists (wxString DLLName) {
 	wxStandardPathsBase& StdPaths = wxStandardPaths::Get();
 	if (wxFileExists(StdPaths.GetExecutablePath().BeforeLast(PATHSEPCH) + PATHSEPSTR + DLLName))

@@ -33,6 +33,11 @@
  */
 
 
+#ifndef OPENPHD
+/* Open PHD defines the available drivers in CMakeLists.txt rather than
+   statically here
+ */
+
 // Defines to define specific camera availability
 
 #if defined (ORION)
@@ -41,27 +46,27 @@
  #define SSPIAG
  //#define WDM_CAMERA
 #elif defined (__WINDOWS__)  // Windows cameras
- //#define QGUIDE
- //#define VFW_CAMERA
- //#define LE_PARALLEL_CAMERA
- //#define LE_LXUSB_CAMERA
- //#define ORION_DSCI
- //#define WDM_CAMERA
- //#define SAC42
- //#define ATIK16
- //#define SSAG
- //#define SSPIAG
- //#define FIREWIRE
- //#define SBIG
- //#define MEADE_DSI
- //#define STARFISH
- //#define OS_PL130
+ #define QGUIDE
+ #define VFW_CAMERA
+ #define LE_PARALLEL_CAMERA
+ #define LE_LXUSB_CAMERA
+ #define ORION_DSCI
+ #define WDM_CAMERA
+ #define SAC42
+ #define ATIK16
+ #define SSAG
+ #define SSPIAG
+ #define FIREWIRE
+ #define SBIG
+ #define MEADE_DSI
+ #define STARFISH
+ #define OS_PL130
  #define SIMULATOR
- //#define SXV
+ #define SXV
  #define ASCOM_CAMERA
- //#define ATIK_GEN3
- // #define NEB_SBIG
- #define INDI_CAMERA
+ #define ASCOM_LATECAMERA
+ #define ATIK_GEN3
+// #define NEB_SBIG
 #elif defined (__APPLE__)  // Mac cameras
  #define FIREWIRE
  #define SBIG
@@ -69,14 +74,11 @@
  #define STARFISH
  #define SIMULATOR
  #define SXV
- #define INDI_CAMERA
 // #define NEB_SBIG
-#else // Linux
- #define SIMULATOR
- #define INDI_CAMERA
 #endif
 
-extern void InitCameraParams();
-#if 0 /* not used in open-phd */
+
 extern bool DLLExists (wxString DLLName);
-#endif
+#endif /* OPENPHD */
+
+extern void InitCameraParams();
