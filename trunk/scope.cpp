@@ -3,23 +3,32 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -80,7 +89,7 @@ void GuideScope(int direction, int duration) {
 		else if (ScopeConnected == MOUNT_VOYAGER)
 			Voyager_PulseGuideScope(direction,duration);
     #endif
-    #ifdef GUIDE_EQUINIOX
+    #ifdef GUIDE_EQUINOX
 		else if (ScopeConnected == MOUNT_EQUINOX)
 			Equinox_PulseGuideScope(direction,duration);
     #endif
@@ -281,6 +290,7 @@ void CalibrateScope () {
 		LogFile->AddLine(wxString::Format(_T("PHD Guide %s  -- "),VERSION) + now.FormatDate() + _T(" ") + now.FormatTime());
 		LogFile->AddLine(_T("Calibration begun"));
 		LogFile->AddLine(wxString::Format(_T("lock %.1f %.1f, star %.1f %.1f"),LockX,LockY,StarX,StarY));
+		LogFile->AddLine(_T("Direction,Step,dx,dy,x,y"));
 		LogFile->Write();
 	}
 
@@ -305,7 +315,8 @@ void CalibrateScope () {
 		dist = sqrt(dX*dX+dY*dY);
 		iterations++;
 		frame->SetStatusText(wxString::Format(_T("dx=%.1f dy=%.1f dist=%.1f (%.1f)"),dX,dY,dist,dist_crit),1);
-		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA+ (west) %d, dx= %.1f dy= %.1f x=%.1f y=%.1f"),iterations, dX,dY,StarX,StarY));
+		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA+ (west),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
+//		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA+ (west) %d, dx= %.1f dy= %.1f x=%.1f y=%.1f"),iterations, dX,dY,StarX,StarY));
 		if (iterations > 60) {
 			wxMessageBox(_T("RA Calibration failed - Star did not move enough"),_T("Alert"),wxOK | wxICON_ERROR);
 			frame->canvas->State = STATE_NONE;
@@ -337,7 +348,8 @@ void CalibrateScope () {
 			Median3(CurrentFullFrame);
 		wxTheApp->Yield();
 		FindStar(CurrentFullFrame);
-		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east) %d, x=%.1f y=%.1f"),iterations, StarX,StarY));
+		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
+//		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east) %d, x=%.1f y=%.1f"),iterations, StarX,StarY));
 		frame->canvas->FullFrameToDisplay();
 	}
 	if (Log_Data) LogFile->Write();
@@ -395,7 +407,8 @@ void CalibrateScope () {
 			dist = sqrt(dX*dX+dY*dY);
 			iterations++;
 			frame->SetStatusText(wxString::Format(_T("dx=%.1f dy=%.1f dist=%.1f (%.1f)"),dX,dY,dist,dist_crit),1);
-			if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec+ (north) %d, dx= %.1f dy= %.1f x=%.1f y=%.1f"),iterations, dX,dY,StarX,StarY));
+//			if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec+ (north) %d, dx= %.1f dy= %.1f x=%.1f y=%.1f"),iterations, dX,dY,StarX,StarY));
+			if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec+ (north),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
 			if (iterations > 60) {
 				wxMessageBox(_T("Dec Calibration failed - turning off Dec guiding"),_T("Alert"),wxOK | wxICON_ERROR);
 				still_going = false;
@@ -431,7 +444,8 @@ void CalibrateScope () {
 					Median3(CurrentFullFrame);
 				wxTheApp->Yield();
 				FindStar(CurrentFullFrame);
-				if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec- (south) %d, x=%.1f y=%.1f"),iterations, StarX,StarY));
+//				if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec- (south) %d, x=%.1f y=%.1f"),iterations, StarX,StarY));
+				if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec- (south),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
 				frame->canvas->FullFrameToDisplay();
 			}
 		}

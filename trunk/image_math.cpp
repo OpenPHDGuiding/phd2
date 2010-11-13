@@ -3,23 +3,32 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -144,7 +153,7 @@ bool Median3(usImage& img) {
 	return false;
 }
 
-void FindStar(usImage& img) {
+int FindStar(usImage& img) {
 
 	// ADD BIT ABOUT USING PREVIOUS DELTA TO FIGURE NEW STARTING SPOT TO LOOK - -maybe have this be an option
 	unsigned short *dataptr;
@@ -154,11 +163,15 @@ void FindStar(usImage& img) {
 	int start_x, start_y, rowsize;
 	unsigned long lval, maxlval, mean;
 	unsigned short max, nearmax1, nearmax2, sval, localmin;
+	int retval = STAR_OK;
+//	static double LastMass1 = 0.0;
+//	static double LastMass2 = 0.0;
+	static int BadMassCount = 0;
 
 	if ((StarX <= SearchRegion) || (StarY <= SearchRegion) ||
 		(StarX >= (img.Size.GetWidth() - SearchRegion)) || (StarY >= (img.Size.GetHeight() - SearchRegion))) {
 		FoundStar = false;
-		return;
+		return STAR_LARGEMOTION;
 	}
 
 	LastdX = dX; // Save the previous motion
@@ -178,6 +191,7 @@ void FindStar(usImage& img) {
 	// figure the local offset
 	localmin = 65535;
 //	localmin = 0;
+	if (start_y == 0) start_y = 1;
 	double localmean = 0.0;
 	for (y=0; y<searchsize; y++) {
 		for (x=0; x<searchsize; x++) {
@@ -265,28 +279,56 @@ void FindStar(usImage& img) {
 		}
 	}
 	
-
+/*	double AvgMass;
+	if (LastMass2 < 1.0) LastMass2 = StarMass;
+	if (LastMass1 < 1.0) LastMass1 = StarMass;
+	AvgMass = (StarMass + LastMass1 + LastMass2) / 3.0;*/
+	double MassRatio = mass / StarMass;
+	if (MassRatio > 1.0)
+		MassRatio = 1.0/MassRatio;
+	MassRatio = 1.0 - MassRatio;
 	StarSNR = (double) max / (double) mean;
-	StarMass = mass;
-	if ((mass < 10.0) || // so faint -- likely dropped frame
-//		(max > (5*nearmax1)) || // likely hot pixel
-		(StarSNR < 3.0) ) { // maxlval is already the sum of 6 pixels around hottest so this is the
+	if ((frame->canvas->State > STATE_CALIBRATING) && 
+		(MassRatio > StarMassChangeRejectThreshold) &&
+		(StarMassChangeRejectThreshold < 0.99) && (BadMassCount < 2) ) { 
+		// we're guiding and big change in mass
 		dX = 0.0;
 		dY = 0.0;
 		FoundStar=false;
-//		frame->SetStatusText(_T("NO STAR"),1);
-		if (mass < 10.0) frame->SetStatusText(wxString::Format(_T("NO STAR: %.1f"),mass),1);
-//		else if (max > (5*nearmax1)) frame->SetStatusText(wxString::Format("HOT PIXEL: %u, %u",max, nearmax1),1);
-		else if (StarSNR < 3.0) frame->SetStatusText(wxString::Format(_T("LOW SNR: %.1f"),StarSNR),1);
+		frame->SetStatusText(wxString::Format(_T("Mass: %.0f vs %.0f"),mass,StarMass),1);
+	StarMass = mass;
+		retval = STAR_MASSCHANGE;
+		BadMassCount++;
+	}
+	else if ((mass < 10.0) || // so faint -- likely dropped frame
+		(StarSNR < 3.0) ) {
+		dX = 0.0;
+		dY = 0.0;
+		FoundStar=false;
+		StarMass = mass;
+		if (mass < 10.0) {
+			frame->SetStatusText(wxString::Format(_T("NO STAR: %.1f"),mass),1);
+			retval = STAR_LOWMASS;
+		}
+		else if (StarSNR < 3.0) {
+			frame->SetStatusText(wxString::Format(_T("LOW SNR: %.1f"),StarSNR),1);
+			retval = STAR_LOWSNR;
+		}
 	}
 	else {
+		BadMassCount = 0;
+//		LastMass1 = LastMass2;
+//s		LastMass2 = StarMass;
+		StarMass = mass;
 		StarX = mx / mass;
 		StarY = my / mass;
 		dX = StarX - LockX;
 		dY = StarY - LockY;
 		FoundStar=true;
-		if (max == nearmax2)
+		if (max == nearmax2) {
 			frame->SetStatusText(_T("Star saturated"));
+			retval = STAR_SATURATED;
+		}
 		else
 			frame->SetStatusText(_T(""),1);
 	}
@@ -298,6 +340,7 @@ void FindStar(usImage& img) {
 	if (CropY < 0) CropY = 0;
 	else if ((CropY + CROPYSIZE) >= CurrentFullFrame.Size.GetHeight()) CropY = CurrentFullFrame.Size.GetHeight() - (CROPYSIZE + 1);
 
+	return retval;
 }
 
 bool SquarePixels(usImage& img, float xsize, float ysize) {

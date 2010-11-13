@@ -3,29 +3,40 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
 #include "phd.h"
 #include "graph.h"
 #include <wx/dcbuffer.h>
+#include <wx/utils.h>
+#include <wx/colordlg.h>
 
 // ADD SOMETHING ON THE GRAPH TO SHOW THE DEC DIRECTION YOU COULD SET TO.
 // IF DRIFT IS POSITIVE, GUIDE IN SOUTH.  IF DRIFT IS NEGATIVE, GUIDE IN NORTH
@@ -37,10 +48,18 @@ EVT_BUTTON(BUTTON_GRAPH_HIDE,GraphLogWindow::OnButtonHide)
 EVT_BUTTON(BUTTON_GRAPH_MODE,GraphLogWindow::OnButtonMode)
 EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphLogWindow::OnButtonLength)
 EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
+EVT_SPINCTRL(GRAPH_RAA,GraphLogWindow::OnUpdateSpinGuideParams)
+EVT_SPINCTRL(GRAPH_RAH,GraphLogWindow::OnUpdateSpinGuideParams)
+#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
+EVT_SPINCTRLDOUBLE(GRAPH_MM,GraphLogWindow::OnUpdateSpinDGuideParams)
+#endif
+EVT_SPINCTRL(GRAPH_MRAD,GraphLogWindow::OnUpdateSpinGuideParams)
+EVT_SPINCTRL(GRAPH_MDD,GraphLogWindow::OnUpdateSpinGuideParams)
+EVT_CHOICE(GRAPH_DM,GraphLogWindow::OnUpdateCommandGuideParams)
 END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
-wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,230),wxCAPTION & ~wxSTAY_ON_TOP) {
+wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,252),wxCAPTION & ~wxSTAY_ON_TOP) {  // was 230
 
 	this->visible = false;
 	this->n_items = 0;
@@ -52,15 +71,97 @@ wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,230),wxCA
 	this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 
 	this->LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("100"),wxPoint(10,10),wxSize(-1,-1));
+	this->LengthButton->SetToolTip(_T("# of frames of history to display"));
 	this->ModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"),wxPoint(10,40),wxSize(-1,-1));
+	this->ModeButton->SetToolTip(_T("Toggle RA/Dec vs dx/dy.  Shift-click to change RA/dx color.  Ctrl-click to change Dec/dy color"));
 	this->HideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_T("Hide"),wxPoint(10,70),wxSize(-1,-1));
-	this->HideButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_T("Clear"),wxPoint(10,100),wxSize(-1,-1));
+	this->HideButton->SetToolTip(_T("Hide graph"));
+	this->ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_T("Clear"),wxPoint(10,100),wxSize(-1,-1));
+	this->ClearButton->SetToolTip(_T("Clear graph data"));
+	
+	RA_Color=wxColour(100,100,255);
+	DEC_Color = wxColour(255,0,0);
+	
+	//SetForegroundColour(* wxWHITE);
+#ifdef __WINDOWS__
+	int ctl_size = 45;
+	int extra_offset = -5;
+#else
+	int ctl_size = 60;
+	int extra_offset = 0;
+#endif
+	wxStaticText *raa_label = new wxStaticText(this,wxID_ANY,_T("RA agr"),wxPoint(10,210),wxSize(60,-1));
+	raa_label->SetOwnForegroundColour(* wxWHITE);
+#ifdef __WINDOWS__
+	raa_label->SetOwnBackgroundColour(* wxBLACK);
+#endif
+	this->RAA_Ctrl = new wxSpinCtrl(this,GRAPH_RAA,wxString::Format(_T("%d"),(int) (RA_aggr * 100)),
+									wxPoint(50,205),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
+									0,120,(int) (RA_aggr * 100));
+	wxStaticText *rah_label = new wxStaticText(this,wxID_ANY,_T("RA hys"),wxPoint(110,210),wxSize(60,-1));
+	rah_label->SetOwnForegroundColour(* wxWHITE);
+#ifdef __WINDOWS__
+	rah_label->SetOwnBackgroundColour(* wxBLACK);
+#endif
+	this->RAH_Ctrl = new wxSpinCtrl(this,GRAPH_RAH,wxString::Format(_T("%d"),(int) (RA_hysteresis * 100)),
+									wxPoint(150,205),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
+									0,50,(int) (RA_hysteresis * 100));
+	wxStaticText *mm_label = new wxStaticText(this,wxID_ANY,_T("Mn mo"),wxPoint(210,210),wxSize(60,-1));
+	mm_label->SetOwnForegroundColour(* wxWHITE);
+#ifdef __WINDOWS__
+	mm_label->SetOwnBackgroundColour(* wxBLACK);
+#endif
+#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
+	this->MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM,wxString::Format(_T("%.2f"),MinMotion),
+									wxPoint(255,210+extra_offset),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
+									0,5,MinMotion,0.05);
+#endif
+//	wxStaticText *DM_Text = new wxStaticText(this,wxID_ANY,_T("Dec guide mode"),wxPoint(400,210),wxSize(-1,-1));
+	wxStaticText *mrad_label = new wxStaticText(this,wxID_ANY,_T("Mx RA"),wxPoint(315,210),wxSize(ctl_size+10,-1));
+	mrad_label->SetOwnForegroundColour(* wxWHITE);
+#ifdef __WINDOWS__
+	mrad_label->SetOwnBackgroundColour(* wxBLACK);
+#endif
+	this->MRAD_Ctrl = new wxSpinCtrl(this,GRAPH_MRAD,wxString::Format(_T("%d"),Max_RA_Dur),
+									wxPoint(360,205),wxSize(ctl_size+10,-1),wxSP_ARROW_KEYS,
+									0,2000,Max_RA_Dur);
+	wxStaticText *mdd_label = new wxStaticText(this,wxID_ANY,_T("Mx dec"),wxPoint(425,210),wxSize(ctl_size+10,-1));
+	mdd_label->SetOwnForegroundColour(* wxWHITE);
+#ifdef __WINDOWS__
+	mdd_label->SetOwnBackgroundColour(* wxBLACK);
+#endif
+	this->MDD_Ctrl = new wxSpinCtrl(this,GRAPH_MDD,wxString::Format(_T("%d"),Max_Dec_Dur),
+									wxPoint(470,205),wxSize(ctl_size+10,-1),wxSP_ARROW_KEYS,
+									0,2000,Max_Dec_Dur);
+	wxString dec_choices[] = {
+		_T("Off"),_T("Auto"),_T("North"),_T("South")
+	};
+	this->DM_Ctrl= new wxChoice(this,GRAPH_DM,wxPoint(535,210+extra_offset),wxSize(ctl_size+15,-1),WXSIZEOF(dec_choices), dec_choices );
+	DM_Ctrl->SetSelection(Dec_guide);
 
 }
 
 GraphLogWindow::~GraphLogWindow() {
 
 }
+void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
+	RA_aggr = (float) this->RAA_Ctrl->GetValue() / 100.0;
+	RA_hysteresis = (float) this->RAH_Ctrl->GetValue() / 100.0;
+	Max_Dec_Dur = this->MDD_Ctrl->GetValue();
+	Max_RA_Dur = this->MRAD_Ctrl->GetValue();
+#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
+	MinMotion = this->MM_Ctrl->GetValue();
+#endif
+}
+void GraphLogWindow::OnUpdateCommandGuideParams(wxCommandEvent& WXUNUSED(evt)) {
+	Dec_guide = this->DM_Ctrl->GetSelection();	
+}
+
+#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
+void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) {
+	MinMotion = this->MM_Ctrl->GetValue();
+}
+#endif
 
 void GraphLogWindow::OnButtonHide(wxCommandEvent& WXUNUSED(evt)) {
 	this->visible = false;
@@ -69,6 +170,23 @@ void GraphLogWindow::OnButtonHide(wxCommandEvent& WXUNUSED(evt)) {
 }
 
 void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt)) {
+//	bool foo1 = wxGetMouseState::ShiftDown();
+//	bool foo2 = wxGetKeyState(WXK_SHIFT);
+	wxMouseState mstate = wxGetMouseState();
+//	bool foo1 = mstate.ShiftDown();
+	
+	
+	if (wxGetKeyState(WXK_SHIFT)) {
+		wxColourData cdata;
+		cdata.SetColour(RA_Color);
+		wxColourDialog cdialog(this, &cdata);
+		if (cdialog.ShowModal() == wxID_OK) {
+			cdata = cdialog.GetColourData();
+			RA_Color = cdata.GetColour();
+		}
+	}
+		
+		
 	this->mode = 1 - this->mode;
 	if (this->mode)
 		this->ModeButton->SetLabel(_T("dx/dy"));
@@ -105,8 +223,15 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt)) {
 void GraphLogWindow::SetState(bool is_active) {
 	this->visible = is_active;
 	this->Show(is_active);
-	if (is_active)
+	if (is_active) {
+		this->RAA_Ctrl->SetValue((int) (RA_aggr * 100));  
+		this->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
+//Geoff		this->MM_Ctrl->SetValue(MinMotion);
+		this->MDD_Ctrl->SetValue(Max_Dec_Dur);
+		this->MRAD_Ctrl->SetValue(Max_RA_Dur);
+		this->DM_Ctrl->SetSelection(Dec_guide);
 		Refresh();
+	}
 }
 
 void GraphLogWindow::AppendData(float dx, float dy, float RA, float Dec) {
@@ -153,8 +278,8 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
 	wxPen GreyDashPen, BluePen, RedPen;
 	GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
 //	BluePen = wxPen(wxColour(0,0,255));
-	BluePen = wxPen(wxColour(100,100,255));
-	RedPen = wxPen(wxColour(255,0,0));
+	BluePen = wxPen(RA_Color);
+	RedPen = wxPen(DEC_Color);
 
 	// Draw axes
 	dc.SetPen(* wxGREY_PEN);
@@ -177,15 +302,15 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
 		dc.DrawLine(xorig+(i*xmag),yorig-100,xorig+(i*xmag),yorig+100);
 
 	if (this->mode) {
-		dc.SetTextForeground(wxColour(100,100,255));
+		dc.SetTextForeground(RA_Color);
 		dc.DrawText(_T("dx"),10,125);
-		dc.SetTextForeground(wxColour(255,0,0));
+		dc.SetTextForeground(DEC_Color);
 		dc.DrawText(_T("dy"),60,125);
 	}
 	else {
-		dc.SetTextForeground(wxColour(100,100,255));
+		dc.SetTextForeground(RA_Color);
 		dc.DrawText(_T("RA"),10,125);
-		dc.SetTextForeground(wxColour(255,0,0));
+		dc.SetTextForeground(DEC_Color);
 		dc.DrawText(_T("Dec"),60,125);
 	}
 

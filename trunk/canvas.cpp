@@ -3,23 +3,32 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -27,8 +36,9 @@
 #include "image_math.h"
 #include <wx/bitmap.h>
 #include <wx/dcbuffer.h>
+#include <wx/graphics.h>
 
-//#define SCALE_UP_SMALL  // Currently problematic as the box for the star is drawn in the wrong spot.
+#define SCALE_UP_SMALL  // Currently problematic as the box for the star is drawn in the wrong spot.
 
 BEGIN_EVENT_TABLE(MyCanvas, wxWindow)
    EVT_PAINT(MyCanvas::OnPaint)
@@ -87,8 +97,8 @@ void MyCanvas::OnLClick(wxMouseEvent &mevent) {
 		//Abort = true;  // If looping now, stop
 		dX = dY = 0.0;
 		FindStar(CurrentFullFrame);
-		LockX = StarX;
-		LockY = StarY;
+		//LockX = StarX;
+		//LockY = StarY;
 		frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
 		//Targ_x = (int) StarX;
 		//Targ_y = (int) StarY;
@@ -267,6 +277,62 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 					dc.DrawLine(i,0,i,YWinSize);
 				for (i=size; i<YWinSize; i+=size)
 					dc.DrawLine(0,i,XWinSize,i);
+
+			}
+			else if (OverlayMode == 4) { // RA and Dec
+				double r=30.0;
+				double cos_angle = cos(RA_angle);
+				double sin_angle = sin(RA_angle);
+				dc.SetPen(wxPen(frame->GraphLog->RA_Color,2,wxDOT));
+			/*	dc.DrawLine(ROUND(LockX*ScaleFactor+r*cos_angle),ROUND(LockY*ScaleFactor+r*sin_angle),
+					ROUND(LockX*ScaleFactor-r*cos_angle),ROUND(LockY*ScaleFactor-r*sin_angle));
+				dc.SetPen(wxPen(frame->GraphLog->RA_Color,1,wxPENSTYLE_SOLID ));*/
+				r=15.0;
+				dc.DrawLine(ROUND(StarX*ScaleFactor+r*cos_angle),ROUND(StarY*ScaleFactor+r*sin_angle),
+					ROUND(StarX*ScaleFactor-r*cos_angle),ROUND(StarY*ScaleFactor-r*sin_angle));
+				dc.SetPen(wxPen(frame->GraphLog->DEC_Color,2,wxDOT));
+				cos_angle = cos(Dec_angle);
+				sin_angle = sin(Dec_angle);
+				dc.DrawLine(ROUND(StarX*ScaleFactor+r*cos_angle),ROUND(StarY*ScaleFactor+r*sin_angle),
+					ROUND(StarX*ScaleFactor-r*cos_angle),ROUND(StarY*ScaleFactor-r*sin_angle));
+
+				wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
+				gc->SetPen(wxPen(frame->GraphLog->RA_Color,1,wxDOT ));
+				wxGraphicsPath path = gc->CreatePath();
+//				wxGraphicsMatrix mat = gc->CreateMatrix();
+				int i;
+				double step = (double) YWinSize / 10.0;
+
+				double MidX = (double) XWinSize / 2.0;
+				double MidY = (double) YWinSize / 2.0;
+				gc->Rotate(RA_angle);
+				gc->GetTransform().TransformPoint(&MidX, &MidY);
+				gc->Rotate(-RA_angle);
+				gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
+				gc->Rotate(RA_angle);
+				for (i=-2; i<12; i++) {
+//					gc->StrokeLine((double) XWinSize / (double) (i-1),0.0,
+//						(double) XWinSize / (double) (i-1), (double) YWinSize);
+					gc->StrokeLine(0.0,step * (double) i,
+						(double) XWinSize, step * (double) i);
+				}
+
+				MidX = (double) XWinSize / 2.0;
+				MidY = (double) YWinSize / 2.0;
+				gc->Rotate(-RA_angle);
+				gc->Rotate(Dec_angle);
+				gc->GetTransform().TransformPoint(&MidX, &MidY);
+				gc->Rotate(-Dec_angle);
+				gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
+				gc->Rotate(Dec_angle);
+				gc->SetPen(wxPen(frame->GraphLog->DEC_Color,1,wxDOT ));
+				for (i=-2; i<12; i++) {
+					gc->StrokeLine(0.0,step * (double) i,
+						(double) XWinSize, step * (double) i);
+				}
+
+
+				delete gc;
 
 			}
 		}

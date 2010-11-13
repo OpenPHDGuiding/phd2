@@ -3,23 +3,32 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -45,6 +54,7 @@ extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
 
 void MyFrame::ReadPreferences() {
 	long lval;
+	wxString sval;
 	//bool bval = false;
 	//double dval;
 	wxConfig *config = new wxConfig(_T("PHDGuiding"));
@@ -76,7 +86,9 @@ void MyFrame::ReadPreferences() {
 	config->Read(_T("Search Region"), &lval);
 	SearchRegion = (int) lval;
 	config->Read(_T("Min Motion"),&MinMotion);
+	config->Read(_T("Star Mass Tolerance"),&StarMassChangeRejectThreshold);
 	config->Read(_T("Log"),&Log_Data);
+	config->Read(_T("Dither RA Only"),&DitherRAOnly);
 	config->Read(_T("Subframes"),&UseSubframes);
 	lval = (long) Dec_guide;
 	config->Read(_T("Dec guide mode"),&lval);
@@ -87,6 +99,9 @@ void MyFrame::ReadPreferences() {
 	lval = (long) Max_Dec_Dur;
 	config->Read(_T("Max Dec Dur"),&lval);
 	Max_Dec_Dur = (int) lval;
+	lval = (long) Max_RA_Dur;
+	config->Read(_T("Max RA Dur"),&lval);
+	Max_RA_Dur = (int) lval;
 	lval = (long) Time_lapse;
 	config->Read(_T("Time Lapse"),&lval);
 	Time_lapse = (int) lval;
@@ -120,6 +135,12 @@ void MyFrame::ReadPreferences() {
 	lval = (long) ServerMode;
 	config->Read(_T("Enable Server"),&lval);
 	ServerMode = lval > 0;
+	sval = GraphLog->RA_Color.GetAsString();
+	config->Read(_T("RAColor"),&sval);
+	if (!sval.IsEmpty()) GraphLog->RA_Color.Set(sval);
+	sval = GraphLog->DEC_Color.GetAsString();
+	config->Read(_T("DECColor"),&sval);
+	if (!sval.IsEmpty()) GraphLog->DEC_Color.Set(sval);
 
 	delete config;
 	return;
@@ -145,14 +166,17 @@ void MyFrame::WritePreferences() {
 	config->Write(_T("RA Hysteresis"),RA_hysteresis);
 	config->Write(_T("Cal Duration"),(long) Cal_duration);
 	config->Write(_T("Min Motion"),MinMotion);
+	config->Write(_T("Star Mass Tolerance"),StarMassChangeRejectThreshold);
 	config->Write(_T("Search Region"),(long) SearchRegion);
 	config->Write(_T("Time Lapse"),(long) Time_lapse);
 	config->Write(_T("Gain"),(long) GuideCameraGain);
 	config->Write(_T("NRMode"),(long) NR_mode);
 	config->Write(_T("Log"),Log_Data);
+	config->Write(_T("Dither RA Only"),DitherRAOnly);
 	config->Write(_T("Dec guide mode"),(long) Dec_guide);
 	config->Write(_T("Dec algorithm"),(long) Dec_algo);
 	config->Write(_T("Max Dec Dur"), (long) Max_Dec_Dur);
+	config->Write(_T("Max RA Dur"), (long) Max_RA_Dur);
 	config->Write(_T("Subframes"),UseSubframes);
 #if defined (LE_PARALLEL_CAMERA)
 	config->Write(_T("LEwebP port"),(long) Camera_LEwebcamParallel.Port);
@@ -169,6 +193,9 @@ void MyFrame::WritePreferences() {
 	config->Write(_T("Advanced Dialog Fontsize"),(long)AdvDlg_fontsize);
 	config->Write(_T("Gamma"),Stretch_gamma);
 	config->Write(_T("Enable Server"),(long) ServerMode);
+	config->Write(_T("RAColor"),GraphLog->RA_Color.GetAsString());
+	config->Write(_T("DECColor"),GraphLog->DEC_Color.GetAsString());
+	
 	delete config;
 }
 

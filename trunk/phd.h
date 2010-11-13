@@ -2,24 +2,33 @@
  *  phd.h
  *  PHD Guiding
  *
- *  Created by Craig Stark
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Created by Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -37,7 +46,7 @@
 #include "graph.h"
 #include "camera.h"
 #include "scope.h"
-#define VERSION _T("1.11.2")
+#define VERSION _T("1.12.4")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
@@ -111,7 +120,7 @@ public:
 
 	MyCanvas *canvas;
 	wxMenuBar *Menubar;
-	wxMenu	*mount_menu, *tools_menu; // need access to this...
+	wxMenu	*tools_menu, *mount_menu; // need access to this...
 	wxChoice	*Dur_Choice;
 	wxCheckBox *HotPixel_Checkbox;
 	wxButton	*Setup_Button, *Dark_Button;
@@ -208,6 +217,15 @@ enum {
 };
 
 enum {
+	STAR_OK = 0,
+	STAR_SATURATED,
+	STAR_LOWSNR,
+	STAR_LOWMASS,
+	STAR_MASSCHANGE,
+	STAR_LARGEMOTION
+};
+
+enum {
 	MENU_SHOWHELP = 101,
 	MOUNT_ASCOM,
 	MOUNT_CAMERA,
@@ -240,6 +258,8 @@ enum {
 	MENU_XHAIR1,
 	MENU_XHAIR2,
 	MENU_XHAIR3,
+	MENU_XHAIR4,
+	MENU_XHAIR5,
 	MENU_CLEARDARK,
 	MENU_LOG,
 	MENU_LOGIMAGES,
@@ -256,10 +276,19 @@ enum {
 	BUTTON_GRAPH_MODE,
 	BUTTON_GRAPH_HIDE,
 	BUTTON_GRAPH_CLEAR,
+	GRAPH_RAA,
+	GRAPH_RAH,
+	GRAPH_MM,
+	GRAPH_DSW,
+	GRAPH_MDD,
+	GRAPH_MRAD,
+	GRAPH_DM,
 //	EEGG_FITSSAVE,
 	EEGG_TESTGUIDEDIR,
 	EEGG_MANUALCAL,
 	EEGG_CLEARCAL,
+	EEGG_MANUALLOCK,
+	EEGG_FLIPRACAL,
 	EEGG_RANDOMMOTION
 };
 
@@ -310,6 +339,7 @@ extern bool	CaptureActive; // Is camera looping captures?
 extern bool UseSubframes; // Use subframes if possible from camera
 extern double StarMass;
 extern double StarSNR;
+extern double StarMassChangeRejectThreshold;
 extern double RA_rate;
 extern double RA_angle;	// direction of positive (west) RA engagement
 extern double Dec_rate;
@@ -317,6 +347,7 @@ extern double Dec_angle;
 extern double RA_hysteresis;
 extern double Dec_slopeweight;
 extern int Max_Dec_Dur;
+extern int Max_RA_Dur;
 extern double RA_aggr;
 extern int	Cal_duration;
 extern int Dec_guide;
@@ -324,6 +355,7 @@ extern int Dec_algo;
 extern int NR_mode;
 extern int AdvDlg_fontsize;
 extern bool DisableGuideOutput;
+extern bool DitherRAOnly;
 extern bool Log_Data;
 extern bool Log_Images;
 extern GuideCamera *CurrentGuideCamera;

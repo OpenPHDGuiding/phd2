@@ -3,23 +3,32 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -447,13 +456,16 @@ public:
 	wxSpinCtrl *Gain_Ctrl;
 	wxSpinCtrl *SearchRegion_Ctrl;
 	wxTextCtrl *MinMotion_Ctrl;
+	wxTextCtrl *MassDelta_Ctrl;
 	wxSpinCtrl *MaxDecDur_Ctrl;
+	wxSpinCtrl *MaxRADur_Ctrl;
 	wxChoice	*NR_Ctrl;
 //	wxButton	*Setup_Button;
 	wxCheckBox *Log_Box;
 	wxCheckBox *Disable_Box;
-	wxButton	*OK_Button;
-	wxButton	*Cancel_Button;
+	wxCheckBox *RADither_Box;
+//	wxButton	*OK_Button;
+//	wxButton	*Cancel_Button;
 	wxSpinCtrl	*Delay_Ctrl;
 	wxChoice	*Port_Choice;
 	wxStaticText *Delay_Text, *Port_Text;
@@ -474,33 +486,30 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(210,350),
 wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
 #endif
 {
-	if (AdvDlg_fontsize > 0)
+	if (AdvDlg_fontsize > 0)  // From Open-PHD -- not sure the point of this line
 		SetFont(wxFont(AdvDlg_fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	wxGridSizer *sizer = new wxGridSizer(2);
-	wxFlexGridSizer *left = new wxFlexGridSizer(2);
+	wxFlexGridSizer *sizer = new wxFlexGridSizer(4);
 
 	wxStaticText *RAA_Text = new wxStaticText(this,wxID_ANY,_T("RA Aggressiveness"),wxPoint(-1,-1),wxSize(-1,-1));
 	RA_Aggr_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,120,100,_T("RA_Aggr"));
 	RA_Aggr_Ctrl->SetToolTip(_T("What percent of the measured error should be applied? Default = 100%, adjust if responding too much or too slowly?"));
-	left->Add(RAA_Text,wxSizerFlags().Expand().Proportion(2).Border(wxALL,3));
-	left->Add(RA_Aggr_Ctrl,wxSizerFlags().Border(wxALL,3));
+	sizer->Add(RAA_Text,wxSizerFlags().Expand().Proportion(2).Border(wxALL,3));
+	sizer->Add(RA_Aggr_Ctrl,wxSizerFlags().Border(wxALL,3));
 
-	wxStaticText *RAH_Text =new wxStaticText(this,wxID_ANY,_T("RA Hysteresis"),wxPoint(-1,-1),wxSize(-1,-1));
-	RA_Hyst_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,50,100,_T("RA_Hyst"));
-	RA_Hyst_Ctrl->SetToolTip(_T("How much history of previous guide pulses should be applied\nDefault = 10%, increase to smooth out guiding commands"));
-	left->Add(RAH_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	left->Add(RA_Hyst_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	//UseDec_Box = new wxCheckBox(this,wxID_ANY,_T("Dec guide"),wxPoint(10,70),wxSize(-1,-1));
-	//UseDec_Box->SetToolTip(_T("Guide in declination as well?"));
 	wxStaticText *DM_Text = new wxStaticText(this,wxID_ANY,_T("Dec guide mode"),wxPoint(-1,-1),wxSize(-1,-1));
 	wxString dec_choices[] = {
 		_T("Off"),_T("Auto"),_T("North"),_T("South")
 	};
 	Dec_Mode= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(dec_choices), dec_choices );
 	Dec_Mode->SetToolTip(_T("Guide in declination as well?"));
-	left->Add(DM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	left->Add(Dec_Mode,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	sizer->Add(DM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(Dec_Mode,wxSizerFlags().Proportion(1).Border(wxALL,3));
+
+	wxStaticText *RAH_Text =new wxStaticText(this,wxID_ANY,_T("RA Hysteresis"),wxPoint(-1,-1),wxSize(-1,-1));
+	RA_Hyst_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,50,10,_T("RA_Hyst"));
+	RA_Hyst_Ctrl->SetToolTip(_T("How much history of previous guide pulses should be applied\nDefault = 10%, increase to smooth out guiding commands"));
+	sizer->Add(RAH_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(RA_Hyst_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *DAlgo_Text = new wxStaticText(this,wxID_ANY,_T("Dec Algorithm"),wxPoint(-1,-1),wxSize(-1,-1));
 	wxString decalgo_choices[] = {
@@ -508,61 +517,72 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 	};	// ,_T("Lowpass-2")
 	Dec_AlgoCtrl= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(decalgo_choices), decalgo_choices );
 	Dec_AlgoCtrl->SetToolTip(_T("Declination guide algorithm"));
-	left->Add(DAlgo_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	left->Add(Dec_AlgoCtrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	sizer->Add(DAlgo_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(Dec_AlgoCtrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
-	wxStaticText *MDD_Text =new wxStaticText(this,wxID_ANY,_T("Max Dec duration (ms)"),wxPoint(-1,-1),wxSize(-1,-1));
-	MaxDecDur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,2000,150,_T("MaxDec_Dur"));
-	MaxDecDur_Ctrl->SetToolTip(_T("Longest length of pulse to send in declination\nDefault = 100 ms.  Increase if drift is fast."));
-	left->Add(MDD_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	left->Add(MaxDecDur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	wxStaticText *MRAD_Text =new wxStaticText(this,wxID_ANY,_T("Max RA duration (ms)"),wxPoint(-1,-1),wxSize(-1,-1));
+	MaxRADur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,2000,1000,_T("MaxRA_Dur"));
+	MaxRADur_Ctrl->SetToolTip(_T("Longest length of pulse to send in RA\nDefault = 1000 ms. "));
+	sizer->Add(MRAD_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(MaxRADur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *DSR_Text = new wxStaticText(this,wxID_ANY,_T("Dec slope weight"));
-	DecSlopeWeight_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(wxT("%.2f"),Dec_slopeweight),wxPoint(-1,-1),wxSize(75,-1));
+	DecSlopeWeight_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),Dec_slopeweight),wxPoint(-1,-1),wxSize(75,-1));
 	DecSlopeWeight_Ctrl->SetToolTip(_T("Weighting of slope parameter in lowpass auto-dec"));
-	left->Add(DSR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	left->Add(DecSlopeWeight_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	wxStaticText *CS_Text = new wxStaticText(this,wxID_ANY,_T("Calibration step (ms)"));
-	Cal_Dur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,10000,1000,_T("Cal_Dur"));
-	Cal_Dur_Ctrl->SetToolTip(_T("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"));
-	left->Add(CS_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	left->Add(Cal_Dur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	wxStaticText *MM_Text = new wxStaticText(this,wxID_ANY,_T("Min. motion (pixels)"));
-	MinMotion_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(wxT("%.2f"),MinMotion),wxPoint(-1,-1),wxSize(75,-1));
-	MinMotion_Ctrl->SetToolTip(_T("How many pixels (fractional pixels) must the star move to trigger a guide pulse? Default = 0.15"));
-	left->Add(MM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	left->Add(MinMotion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	sizer->Add(DSR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(DecSlopeWeight_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *SR_Text = new wxStaticText(this,wxID_ANY,_T("Search region (pixels)"));
 	SearchRegion_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,10,50,15,_T("Search"));
 	SearchRegion_Ctrl->SetToolTip(_T("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
-	left->Add(SR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	left->Add(SearchRegion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	sizer->Add(SR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(SearchRegion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
-	wxFlexGridSizer *right = new wxFlexGridSizer(2);
+	wxStaticText *MDD_Text =new wxStaticText(this,wxID_ANY,_T("Max Dec duration (ms)"),wxPoint(-1,-1),wxSize(-1,-1));
+	MaxDecDur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,2000,150,_T("MaxDec_Dur"));
+	MaxDecDur_Ctrl->SetToolTip(_T("Longest length of pulse to send in declination\nDefault = 100 ms.  Increase if drift is fast."));
+	sizer->Add(MDD_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(MaxDecDur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+
+	wxStaticText *MM_Text = new wxStaticText(this,wxID_ANY,_T("Min. motion (pixels)"));
+	MinMotion_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),MinMotion),wxPoint(-1,-1),wxSize(75,-1));
+	MinMotion_Ctrl->SetToolTip(_T("How many pixels (fractional pixels) must the star move to trigger a guide pulse? Default = 0.15"));
+	sizer->Add(MM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(MinMotion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+
+	wxStaticText *MDelta_Text = new wxStaticText(this,wxID_ANY,_T("Star mass tolerance"));
+	MassDelta_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),StarMassChangeRejectThreshold),wxPoint(-1,-1),wxSize(75,-1));
+	MassDelta_Ctrl->SetToolTip(_T("Tolerance for change in star mass b/n frames. Default = 0.3 (0.1-1.0)"));
+	sizer->Add(MDelta_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(MassDelta_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+
+	wxStaticText *CS_Text = new wxStaticText(this,wxID_ANY,_T("Calibration step (ms)"));
+	Cal_Dur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,10000,1000,_T("Cal_Dur"));
+	Cal_Dur_Ctrl->SetToolTip(_T("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"));
+	sizer->Add(CS_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(Cal_Dur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+
 	wxStaticText *NR_Text = new wxStaticText(this,wxID_ANY,_T("Noise Reduction"));
 	wxString nralgo_choices[] = {
 		_T("None"),_T("2x2 mean"),_T("3x3 median")
 	};
 	NR_Ctrl= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(nralgo_choices), nralgo_choices );
 	NR_Ctrl->SetToolTip(_T("Technique to reduce noise in images"));
-	right->Add(NR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	right->Add(NR_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	sizer->Add(NR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(NR_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *TL_Text = new wxStaticText(this,wxID_ANY,_T("Time lapse (ms)"));
 	Time_Lapse_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,10000,0,_T("Time_lapse"));
 	Time_Lapse_Ctrl->SetToolTip(_T("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
-	right->Add(TL_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	right->Add(Time_Lapse_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	sizer->Add(TL_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(Time_Lapse_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	wxStaticText *CG_Text = new wxStaticText(this,wxID_ANY,_T("Camera gain (%)"));
 	Gain_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,100,100,_T("Cam_Gain"));
 	Gain_Ctrl->SetToolTip(_T("Camera gain boost? Default = 95%, lower if you experience noise or wish to guide on a very bright star). Not available on all cameras."));
 	Gain_Ctrl->Enable(false);
-	right->Add(CG_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	right->Add(Gain_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	sizer->Add(CG_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(Gain_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 
 //	Setup_Button = new wxButton(this,wxID_PROPERTIES,_T("Camera Setup"),wxPoint(100,217),wxSize(-1,-1));
@@ -580,55 +600,64 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 	Port_Choice->SetSelection(0);
 	//Port_Choice->Enable(false);
 	Port_Text = new wxStaticText(this,wxID_ANY,_T("LE Port"),wxPoint(-1,1),wxSize(-1,-1));
-	right->Add(Port_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	right->Add(Port_Choice,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	sizer->Add(Port_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(Port_Choice,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 
-	Delay_Ctrl = new wxSpinCtrl(this,wxID_ANY,wxT(""),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,50,0,_T("Delay"));
+	Delay_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T(""),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,50,0,_T("Delay"));
 	Delay_Ctrl->SetToolTip(_T("Adjust if you get dropped frames"));
 	Delay_Ctrl->Enable(false);
 	Delay_Text = new wxStaticText(this,wxID_ANY,_T("LE Read Delay"),wxPoint(-1,-1),wxSize(-1,-1));
-	right->Add(Delay_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	right->Add(Delay_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	sizer->Add(Delay_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(Delay_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	Cal_Box = new wxCheckBox(this,wxID_ANY,_T("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
 	Cal_Box->SetToolTip(_T("Check to clear any previous calibration and force PHD to recalibrate"));
-	wxStaticText *TmpText = new wxStaticText(this,wxID_ANY,wxT(""));
-	right->Add(Cal_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	right->Add(TmpText,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	wxStaticText *TmpText = new wxStaticText(this,wxID_ANY,_T(""));
+	sizer->Add(Cal_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(TmpText,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	Subframe_Box = new wxCheckBox(this,wxID_ANY,_T("Use subframes"),wxPoint(-1,-1),wxSize(75,-1));
 	Subframe_Box->SetToolTip(_T("Check to only download subframes (ROIs) if your camera supports it"));
-	wxStaticText *TmpText4 = new wxStaticText(this,wxID_ANY,wxT(""));
-	right->Add(Subframe_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	right->Add(TmpText4,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	wxStaticText *TmpText4 = new wxStaticText(this,wxID_ANY,_T(""));
+	sizer->Add(Subframe_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(TmpText4,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	Log_Box = new wxCheckBox(this,wxID_ANY,_T("Log info"),wxPoint(-1,-1),wxSize(-1,-1));
 	Log_Box->SetToolTip(_T("Save guide commands and info to a file?"));
 	Log_Box->Enable(true);
-	wxStaticText *TmpText2 = new wxStaticText(this,wxID_ANY,wxT(""));
-	right->Add(Log_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	right->Add(TmpText2,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	wxStaticText *TmpText2 = new wxStaticText(this,wxID_ANY,_T(""));
+	sizer->Add(Log_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(TmpText2,wxSizerFlags().Proportion(1).Border(wxALL,3));
+
+	RADither_Box = new wxCheckBox(this,wxID_ANY,_T("RA-only dither"),wxPoint(-1,-1),wxSize(-1,-1));
+	RADither_Box->SetToolTip(_T("Constrain dither to RA only?"));
+	RADither_Box->Enable(true);
+	//wxStaticText *TmpText4 = new wxStaticText(this,wxID_ANY,_T(""));
+	sizer->Add(RADither_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->AddStretchSpacer(); //(TmpText2,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
 	Disable_Box = new wxCheckBox(this,wxID_ANY,_T("Disable guide output"),wxPoint(-1,-1),wxSize(-1,-1));
 	Disable_Box->SetToolTip(_T("Don't actually send guide commands, just log"));
 	Disable_Box->Enable(true);
-	wxStaticText *TmpText3 = new wxStaticText(this,wxID_ANY,wxT(""));
-	right->Add(Disable_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	right->Add(TmpText3,wxSizerFlags().Proportion(1).Border(wxALL,3));
+	wxStaticText *TmpText3 = new wxStaticText(this,wxID_ANY,_T(""));
+	sizer->Add(Disable_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
+	sizer->Add(TmpText3,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
-	sizer->Add(left, wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(right, wxSizerFlags().Proportion(1).Border(wxALL,3));
-	OK_Button = new wxButton(this, wxID_OK, _T("&Done"),wxPoint(15,290),wxSize(-1,-1));
+	wxBoxSizer *sizer2 = new wxBoxSizer(wxVERTICAL);
+	sizer2->Add(sizer);
+	wxSizer *button_sizer = CreateButtonSizer(wxOK | wxCANCEL);
+	sizer2->Add(button_sizer,wxSizerFlags().Center().Border(wxALL,8));
+
+/*	OK_Button = new wxButton(this, wxID_OK, _T("&Done"),wxPoint(15,290),wxSize(-1,-1));
 	Cancel_Button = new wxButton(this, wxID_CANCEL, _T("&Cancel"),wxPoint(110,290),wxSize(-1,-1));
 
-	wxFlexGridSizer *bottom = new wxFlexGridSizer(2);
-	bottom->Add(OK_Button,wxSizerFlags().Border(wxALL,6));
-	bottom->Add(Cancel_Button,wxSizerFlags().Border(wxALL,6));
-	right->Add(bottom,wxSizerFlags().Border(wxALL,6));
-
-	SetSizer(sizer);
-	sizer->SetSizeHints(this);
+	sizer->Add(OK_Button,wxSizerFlags().Expand().Border(wxALL,6));
+	sizer->AddStretchSpacer(1);
+	sizer->Add(Cancel_Button,wxSizerFlags().Border(wxALL,6));
+*/
+	SetSizer(sizer2);
+	sizer2->SetSizeHints(this);
  }
 
 BEGIN_EVENT_TABLE(AdvancedDialog, wxDialog)
@@ -664,14 +693,17 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	//dlog->UseDec_Box->SetValue(Dec_guide);
 	dlog->Cal_Dur_Ctrl->SetValue(Cal_duration);
 	dlog->MinMotion_Ctrl->SetValue(wxString::Format(_T("%.2f"),MinMotion));
+	dlog->MassDelta_Ctrl->SetValue(wxString::Format(_T("%.2f"),StarMassChangeRejectThreshold));
 	dlog->DecSlopeWeight_Ctrl->SetValue(wxString::Format(_T("%.2f"),Dec_slopeweight));
 	dlog->SearchRegion_Ctrl->SetValue(SearchRegion);
 	dlog->Time_Lapse_Ctrl->SetValue(Time_lapse);
 	dlog->Gain_Ctrl->SetValue(GuideCameraGain);
 	dlog->Log_Box->SetValue(Log_Data);
+	dlog->RADither_Box->SetValue(DitherRAOnly);
 	dlog->Disable_Box->SetValue(DisableGuideOutput);
 	dlog->Dec_Mode->SetSelection(Dec_guide);
 	dlog->MaxDecDur_Ctrl->SetValue(Max_Dec_Dur);
+	dlog->MaxRADur_Ctrl->SetValue(Max_RA_Dur);
 	dlog->Dec_AlgoCtrl->SetSelection(Dec_algo);
 	dlog->NR_Ctrl->SetSelection(NR_mode);
 	if (Calibrated) dlog->Cal_Box->SetValue(false);
@@ -741,14 +773,20 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	Cal_duration = dlog->Cal_Dur_Ctrl->GetValue();
 	SearchRegion = dlog->SearchRegion_Ctrl->GetValue();
 	dlog->MinMotion_Ctrl->GetValue().ToDouble(&MinMotion);
+	if (MinMotion < 0.001) MinMotion = 0.0;
+	dlog->MassDelta_Ctrl->GetValue().ToDouble(&StarMassChangeRejectThreshold);
+	if (StarMassChangeRejectThreshold < 0.1) StarMassChangeRejectThreshold = 0.1;
+	else if (StarMassChangeRejectThreshold > 1.0) StarMassChangeRejectThreshold = 1.0;
 	Dec_guide = dlog->Dec_Mode->GetSelection();
 	Dec_algo = dlog->Dec_AlgoCtrl->GetSelection();
 	dlog->DecSlopeWeight_Ctrl->GetValue().ToDouble(&Dec_slopeweight);
 	Max_Dec_Dur = dlog->MaxDecDur_Ctrl->GetValue();
+	Max_RA_Dur = dlog->MaxRADur_Ctrl->GetValue();
 	Time_lapse = dlog->Time_Lapse_Ctrl->GetValue();
 	GuideCameraGain = dlog->Gain_Ctrl->GetValue();
 	NR_mode = dlog->NR_Ctrl->GetSelection();
 	Log_Data = dlog->Log_Box->GetValue();
+	DitherRAOnly = dlog->RADither_Box->GetValue();
 	DisableGuideOutput = dlog->Disable_Box->GetValue();
 	UseSubframes = dlog->Subframe_Box->GetValue();
 	if (CurrentGuideCamera && CurrentGuideCamera->HasPortNum) {
@@ -769,6 +807,12 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 		CurrentGuideCamera->Delay = dlog->Delay_Ctrl->GetValue();
 	}
 
+	frame->GraphLog->RAA_Ctrl->SetValue((int) (RA_aggr * 100));
+	frame->GraphLog->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
+//Geoff	frame->GraphLog->MM_Ctrl->SetValue(MinMotion);
+	frame->GraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
+	frame->GraphLog->DM_Ctrl->SetSelection(Dec_guide);
+	
 	//Dec_backlash = (double) dlog->Dec_Backlash_Ctrl->GetValue();
 }
 
@@ -813,7 +857,8 @@ END_EVENT_TABLE()
 
 
 void TestGuideDialog::OnButton(wxCommandEvent &evt) {
-	if ((frame->canvas->State > STATE_SELECTED) || !(ScopeConnected)) return;
+//	if ((frame->canvas->State > STATE_SELECTED) || !(ScopeConnected)) return;
+	if (!(ScopeConnected)) return;
 	switch (evt.GetId()) {
 		case MGUIDE_N:
 			GuideScope(NORTH,Cal_duration);

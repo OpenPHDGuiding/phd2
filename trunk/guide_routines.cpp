@@ -3,23 +3,32 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -45,6 +54,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 	double Dec_dist, Curr_Dec_dist, Curr_Dec_Side, Dec_History;
 	bool Allow_Dec_Move = false;
 	int frame_index = 1;
+	int StarErrorCode = 0;
 	wxString logline;
 	float elapsed_time;
 	wxColor DefaultColor = GetBackgroundColour();
@@ -101,9 +111,10 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 		LogFile->AddLine(wxString::Format(_T("PHD Guide %s  -- "),VERSION) + now.FormatDate()  + _T(" ") + now.FormatTime());
 		LogFile->AddLine(_T("Guiding begun"));
 		LogFile->AddLine(wxString::Format(_T("lock %.1f %.1f, star %.1f %.1f, Min Motion %.2f"),LockX,LockY,StarX,StarY, MinMotion));
+		LogFile->AddLine(wxString::Format(_T("Max RA dur %d, Max DEC dur %d, Star Mass delta thresh %.2f"),Max_RA_Dur, Max_Dec_Dur, StarMassChangeRejectThreshold));
 		LogFile->AddLine(wxString::Format(_T("RA angle %.2f, rate %.4f, aggr %.2f, hyst=%0.2f"),RA_angle, RA_rate, RA_aggr, RA_hysteresis));
 		LogFile->AddLine(wxString::Format(_T("DEC angle %.2f, rate %.4f, Dec mode %d, Algo %d, slopewt = %.2f"),Dec_angle, Dec_rate, Dec_guide, Dec_algo, Dec_slopeweight));
-		LogFile->AddLine(_T("Frame,Time,dx,dy,Theta,RADuration,RADistance,DECDuration,DECDistance,StarMass"));
+		LogFile->AddLine(_T("Frame,Time,dx,dy,Theta,RADuration,RADistance,DECDuration,DECDistance,StarMass,ErrorCode"));
 		LogFile->Write();
 	}
 	last_guide = 0.0;
@@ -115,6 +126,8 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 	Scope_Button->Enable(false);
 	Brain_Button->Enable(false);
 
+	Dec_dist = 0.0;
+	RA_dist = 0.0;
 	for (i=0; i<10; i++)  // set dec guide list to "no guide" by default
 		Dec_dist_list.Add(0.0);
 	Curr_Dec_Side = 0.0;  // not on either side of the gear
@@ -152,15 +165,16 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 			SetStatusText(_T(""),1);
 			logline = _T("");
 			if (debuglog) { debug << _T("Finding star - "); debugstr.Sync(); }
-			FindStar(CurrentFullFrame); // track it
+			StarErrorCode = FindStar(CurrentFullFrame); // track it
 			if (debuglog) { debug << _T("Done (") << FoundStar << _T(")\n"); debugstr.Sync(); }
 			elapsed_time = (float) swatch.Time() / 1000.0;
-			if ((fabs(dX) > SearchRegion) || (fabs(dY)>SearchRegion)) { // likely lost lock -- stay here
+			if ( ((fabs(dX) > SearchRegion) || (fabs(dY)>SearchRegion)) && !DisableGuideOutput && !ManualLock) { // likely lost lock -- stay here
 				StarX = LockX;
 				StarY = LockY;
 				dX = 0.0;
 				dY = 0.0;
 				FoundStar = false;
+				StarErrorCode = STAR_LARGEMOTION;
 				// sound the alarm and wait here
 			}
 			if (!FoundStar) {
@@ -186,7 +200,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 				CurrentError = hyp;
 			else
 				CurrentError = fabs(RA_dist);
-			if (RA_dur > 1000.0) RA_dur = 1000.0;  // cap pulse length
+			if (RA_dur > (double) Max_RA_Dur) RA_dur = (double) Max_RA_Dur;  // cap pulse length
 			//			if ((theta * RA_angle) > 0.0) { // Star moved as if we had done RA+
 			if (debuglog) debug << _T("Frame: ") << frame_index << _T("\n");
 			if ((fabs(RA_dist) > MinMotion) && FoundStar){ // not worth <0.25 pixel moves
@@ -377,7 +391,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 			else // no DEC guide
 				logline = logline + _T(",0,0");
 			if (Log_Data) {
-				logline = logline + wxString::Format(_T(",%.2f"),StarMass);
+				logline = logline + wxString::Format(_T(",%.2f,%d"),StarMass,StarErrorCode);
 				LogFile->AddLine(logline);
 				LogFile->Write();
 			}
