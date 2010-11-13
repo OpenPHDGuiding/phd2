@@ -50,9 +50,11 @@ EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphLogWindow::OnButtonLength)
 EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
 EVT_SPINCTRL(GRAPH_RAA,GraphLogWindow::OnUpdateSpinGuideParams)
 EVT_SPINCTRL(GRAPH_RAH,GraphLogWindow::OnUpdateSpinGuideParams)
+
 #if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
 EVT_SPINCTRLDOUBLE(GRAPH_MM,GraphLogWindow::OnUpdateSpinDGuideParams)
 #endif
+
 EVT_SPINCTRL(GRAPH_MRAD,GraphLogWindow::OnUpdateSpinGuideParams)
 EVT_SPINCTRL(GRAPH_MDD,GraphLogWindow::OnUpdateSpinGuideParams)
 EVT_CHOICE(GRAPH_DM,GraphLogWindow::OnUpdateCommandGuideParams)
@@ -115,6 +117,9 @@ wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,252),wxCA
 	this->MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM,wxString::Format(_T("%.2f"),MinMotion),
 									wxPoint(255,210+extra_offset),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
 									0,5,MinMotion,0.05);
+#else
+	this->MM_Ctrl = new wxTextCtrl(this,GRAPH_MM,wxString::Format(_T("%.2f"),MinMotion),
+									wxPoint(255,210+extra_offset),wxSize(ctl_size,-1));
 #endif
 //	wxStaticText *DM_Text = new wxStaticText(this,wxID_ANY,_T("Dec guide mode"),wxPoint(400,210),wxSize(-1,-1));
 	wxStaticText *mrad_label = new wxStaticText(this,wxID_ANY,_T("Mx RA"),wxPoint(315,210),wxSize(ctl_size+10,-1));
@@ -151,6 +156,8 @@ void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
 	Max_RA_Dur = this->MRAD_Ctrl->GetValue();
 #if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
 	MinMotion = this->MM_Ctrl->GetValue();
+#else
+	this->MM_Ctrl->GetValue().ToDouble(&MinMotion);
 #endif
 }
 void GraphLogWindow::OnUpdateCommandGuideParams(wxCommandEvent& WXUNUSED(evt)) {
