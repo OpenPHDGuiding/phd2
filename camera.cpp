@@ -3,23 +3,32 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -122,6 +131,7 @@ Camera_SSPIAGClass Camera_SSPIAG;
 #if defined (ASCOM_CAMERA)
  #include "cam_ascom.h"
  Camera_ASCOMClass Camera_ASCOM;
+ Camera_ASCOMLateClass Camera_ASCOMLate;
 #endif
 
 #if defined (INDI_CAMERA)
@@ -208,6 +218,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #endif
 #if defined (ASCOM_CAMERA)
 	Cameras.Add(_T("ASCOM v5 Camera"));
+	Cameras.Add(_T("ASCOM (Late) Camera"));
 #endif
 #if defined (INDI_CAMERA)
     Cameras.Add(_T("INDI Camera"));
@@ -233,7 +244,8 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		}
 	}
 	else
-		Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras);
+		Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras,
+			this,-1,-1,true,300,500);
 
 	if (Choice.Find(_T("Simulator")) + 1)
 		CurrentGuideCamera = &Camera_Simulator;
@@ -314,10 +326,12 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #if defined (OS_PL130)
 	else if (Choice.Find(_T("Opticstar PL-130M")) + 1) {
 		Camera_OSPL130.Color=false;
+		Camera_OSPL130.Name=_T("Opticstar PL-130M");
 		CurrentGuideCamera = &Camera_OSPL130;
 	}
 	else if (Choice.Find(_T("Opticstar PL-130C")) + 1) {
 		Camera_OSPL130.Color=true;
+		Camera_OSPL130.Name=_T("Opticstar PL-130C");
 		CurrentGuideCamera = &Camera_OSPL130;
 	}
 #endif
@@ -336,6 +350,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #if defined (ASCOM_CAMERA)
 	else if (Choice.Find(_T("ASCOM v5 Camera")) + 1)
 		CurrentGuideCamera = &Camera_ASCOM;
+#endif
+#if defined (ASCOM_LATECAMERA)
+	else if (Choice.Find(_T("ASCOM (Late) Camera")) + 1)
+		CurrentGuideCamera = &Camera_ASCOMLate;
 #endif
 #if defined (INDI_CAMERA)
 	else if (Choice.Find(_T("INDI Camera")) + 1)
@@ -383,6 +401,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		CurrentGuideCamera = NULL;
 		GuideCameraConnected = false;
 		SetStatusText(_T("No cam"),3);
+		if (config) delete config;
 		return;
 	}
 
@@ -393,6 +412,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		SetStatusText(_T("No cam"),3);
 		Guide_Button->Enable(false);
 		Loop_Button->Enable(false);
+		if (config) delete config;
 		return;
 	}
 	SetStatusText(CurrentGuideCamera->Name + _T(" connected"));
@@ -401,7 +421,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	Loop_Button->Enable(true);
 	Guide_Button->Enable(ScopeConnected > 0);
 	config->Write(_T("LastCameraChoice"),Choice);
-	delete config;
+	if (config) delete config;
 	if (CurrentGuideCamera->HasPropertyDialog)
 		Setup_Button->Enable(true);
 	else
@@ -424,9 +444,8 @@ void InitCameraParams() {
 #endif
 }
 
-#if 0 /* not used in open-phd */
-bool DLLExists (wxString DLLName) {
 #ifdef __WINDOWS__
+bool DLLExists (wxString DLLName) {
 	wxStandardPathsBase& StdPaths = wxStandardPaths::Get();
 	if (wxFileExists(StdPaths.GetExecutablePath().BeforeLast(PATHSEPCH) + PATHSEPSTR + DLLName))
 		return true;
@@ -436,8 +455,6 @@ bool DLLExists (wxString DLLName) {
 		return true;
 	if (wxFileExists(wxGetOSDirectory() + PATHSEPSTR + "system32" + PATHSEPSTR + DLLName))
 		return true;
-#endif
-
 	return false;
 }
 #endif

@@ -3,23 +3,32 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distrubted under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its contributors may be used to endorse or promote products derived from this
- *     software without specific prior written permission.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -38,15 +47,12 @@
 #include <wx/intl.h>
 #include <wx/socket.h>
 
-#if defined(__WINDOWS__)
-// SUBVER is already defined on WIN32, clear it - seems like a lot of work for null string, but...
-#ifdef SUBVER
-#undef SUBVER
-#endif 
-#endif
-#define SUBVER _T("")
-
+#define PHDSUBVER _T("")
 //#define DEVBUILD
+
+#if defined(__WINDOWS__)
+ #include <vld.h>
+#endif 
 
 // Globals
 wxString ScopeName;
@@ -81,6 +87,7 @@ bool FoundStar = false;
 //wxString LogFName;
 bool Calibrated = false;
 bool DisableGuideOutput = false;
+bool DitherRAOnly = false;
 bool UseSubframes = false;
 bool HaveDark = false;
 int DarkDur = 0;
@@ -94,6 +101,7 @@ int Dec_guide = DEC_AUTO;
 int Dec_algo = DEC_RESISTSWITCH;
 double Dec_slopeweight = 5.0;
 int Max_Dec_Dur = 150;
+int Max_RA_Dur = 1000;
 int NR_mode = NR_NONE;
 int AdvDlg_fontsize = 0;
 bool Log_Data = false;
@@ -107,6 +115,7 @@ int Time_lapse = 0;
 int OverlayMode = 0;
 double StarMass = 0.0;
 double StarSNR = 0.0;
+double StarMassChangeRejectThreshold = 0.5;
 int	Abort = 0;
 bool Paused = false;
 bool ServerMode = false;  // don't start server
@@ -124,9 +133,11 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
 EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
 EVT_MENU(EEGG_TESTGUIDEDIR, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
-EVT_MENU(EEGG_RANDOMMOTION, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
-EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
-EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
+EVT_MENU(EEGG_RANDOMMOTION, MyFrame::OnEEGG)  
+EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)  
+EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)  
+EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG) 
+EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
 EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
 EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
 EVT_MENU(wxID_SAVE, MyFrame::OnSave)
@@ -135,7 +146,8 @@ EVT_MENU(MENU_XHAIR0,MyFrame::OnOverlay)
 EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
 EVT_MENU(MENU_XHAIR2,MyFrame::OnOverlay)
 EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
-
+EVT_MENU(MENU_XHAIR4,MyFrame::OnOverlay)
+EVT_MENU(MENU_XHAIR5,MyFrame::OnOverlay)
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 EVT_MENU(MENU_INDICONFIG,MyFrame::OnINDIConfig)
 EVT_MENU(MENU_INDIDIALOG,MyFrame::OnINDIDialog)
@@ -176,13 +188,13 @@ IMPLEMENT_APP(MyApp)
 bool MyApp::OnInit() {
 	SetVendorName(_T("StarkLabs"));
 	wxLocale locale;
-	locale.Init(wxLANGUAGE_ENGLISH_US, wxLOCALE_CONV_ENCODING);
-//	wxMessageBox(wxString::Format("%f",1.23));
 #ifndef DEBUG
 	#if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
 	wxDisableAsserts();
 	#endif
 #endif
+	locale.Init(wxLANGUAGE_ENGLISH_US);
+//	wxMessageBox(wxString::Format("%f",1.23));
 #ifdef ORION
 	frame = new MyFrame(wxString::Format(_T("PHD Guiding for Orion v%s"),VERSION));
 #else
@@ -278,12 +290,14 @@ MyFrame::MyFrame(const wxString& title)
 	tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
 	tools_menu->Append(MENU_AUTOSTAR, _T("Auto-select &Star\tAlt-S"), _T("Automatically select star"));
 	tools_menu->Append(EEGG_MANUALCAL, _T("Enter calibration data"), _T("Manually calibrate"));
+	tools_menu->Append(EEGG_FLIPRACAL, _T("Flip calibration data"), _T("Flip RA calibration vector"));
 //	tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));
 	tools_menu->AppendSeparator();
 	tools_menu->AppendRadioItem(MENU_XHAIR0, _T("No overlay"),_T("No additional crosshairs"));
 	tools_menu->AppendRadioItem(MENU_XHAIR1, _T("Bullseye"),_T("Centered bullseye overlay"));
 	tools_menu->AppendRadioItem(MENU_XHAIR2, _T("Fine Grid"),_T("Grid overlay"));
 	tools_menu->AppendRadioItem(MENU_XHAIR3, _T("Coarse Grid"),_T("Grid overlay"));
+	tools_menu->AppendRadioItem(MENU_XHAIR4, _T("RA/Dec"),_T("RA and Dec overlay"));
 	tools_menu->AppendSeparator();
 	tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));
 	tools_menu->AppendCheckItem(MENU_LOGIMAGES,_T("Enable Star Image logging"),_T("Enable / disable logging of star images"));
@@ -291,6 +305,7 @@ MyFrame::MyFrame(const wxString& title)
 	tools_menu->AppendCheckItem(MENU_DEBUG,_T("Enable Debug logging"),_T("Enable / disable debug log file"));
 	tools_menu->AppendCheckItem(MENU_GRAPH,_T("Enable Graph"),_T("Enable / disable graph"));
 	tools_menu->AppendCheckItem(MENU_STARPROFILE,_T("Enable Star profile"),_T("Enable / disable star profile view"));
+	tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _T("Enable manual lock position"), _T("Give manual lock position"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 	wxMenu *indi_menu = new wxMenu;
@@ -495,6 +510,9 @@ MyFrame::MyFrame(const wxString& title)
 
 	InitCameraParams();
 
+	GraphLog = new GraphLogWindow(this);
+	Profile = new ProfileWindow(this);
+
 	// Get defaults from Registry
 	ReadPreferences();
 	Gamma_Slider->SetValue((int) (Stretch_gamma * 100.0));
@@ -505,17 +523,17 @@ MyFrame::MyFrame(const wxString& title)
 	LogFile = new wxTextFile(LogFName);
 	if (Log_Data) {
 #ifdef ORION
-		this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s (Log active)"),VERSION,SUBVER));
+		this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s (Log active)"),VERSION,PHDSUBVER));
 #else
-		this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com (Log active)"),VERSION,SUBVER));
+		this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com (Log active)"),VERSION,PHDSUBVER));
 #endif
 		tools_menu->Check(MENU_LOG,true);
 	}
 	else {
 #ifdef ORION
-		this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s"),VERSION,SUBVER));
+		this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s"),VERSION,PHDSUBVER));
 #else
-		this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"),VERSION,SUBVER));
+		this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"),VERSION,PHDSUBVER));
 #endif
 		tools_menu->Check(MENU_LOG,false);
 	}
@@ -529,8 +547,6 @@ MyFrame::MyFrame(const wxString& title)
 		else
 			wxLogStatus(_T("Server started"));
 	}
-	GraphLog = new GraphLogWindow(this);
-	Profile = new ProfileWindow(this);
 
 	#include "xhair.xpm"
 	wxImage Cursor = wxImage(mac_xhair);
@@ -571,6 +587,12 @@ void MyFrame::OnClose(wxCloseEvent &event) {
 
 	if (GuideCameraConnected)
 		CurrentGuideCamera->Disconnect();
+
+	if (SocketServer)
+		delete SocketServer;
+
+	if (LogFile)
+		delete LogFile;
 
 	//delete CurrentGuideCamera;
 	help->Quit();
