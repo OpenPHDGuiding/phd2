@@ -1,5 +1,5 @@
 /*
- *  cam_simulator.h
+ *  ShoeString.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -31,17 +31,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-
-#ifndef SIMDEF
-#define SIMDEF
-class Camera_SimClass : public GuideCamera {
-public:
-	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();		// Opens up and connects to cameras
-	bool	Disconnect();
-	void	InitCapture() { return; }
-	Camera_SimClass();
-};
-#endif
-
+extern void GPUSB_PulseGuideScope(int direction, int duration);
+extern bool GPUSB_Connect();
+extern void GPUSB_Disconnect();
+extern void GPINT_PulseGuideScope(int direction, int duration, short port);
+extern bool GPINT_Connect(short port);
+//extern bool GPINT_Disconnect();

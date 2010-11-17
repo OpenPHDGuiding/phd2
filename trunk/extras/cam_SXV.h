@@ -1,9 +1,9 @@
 /*
- *  cam_simulator.h
+ *  cam_SXV.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2008-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -33,15 +33,41 @@
  */
 
 
-#ifndef SIMDEF
-#define SIMDEF
-class Camera_SimClass : public GuideCamera {
+#ifndef SXVDEF
+#define SXVDEF
+#if defined (__WINDOWS__)
+#include "cameras/SXUSB.h"
+#else
+#include "cameras/SXMacLib.h"
+#endif
+class Camera_SXVClass : public GuideCamera {
 public:
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();		// Opens up and connects to cameras
+																	//	bool	CaptureCrop(int duration, usImage& img);	// Captures a cropped portion
+	bool	Connect();
 	bool	Disconnect();
-	void	InitCapture() { return; }
-	Camera_SimClass();
-};
-#endif
+	void	InitCapture();
+	
+	//	bool	SetGlobalGain(unsigned char gain);
+	bool	PulseGuideScope(int direction, int duration);
+	//	void	ClearGuidePort();
+#if defined (__WINDOWS__)
+	HANDLE hCam;
+#else
+	void      *hCam;
+#endif	
+	Camera_SXVClass(); 
 
+private:
+#if defined (__WINDOWS__)
+	struct t_sxccd_params CCDParams;
+#else
+	struct sxccd_params_t CCDParams;
+#endif
+	unsigned short CameraModel;
+	unsigned short *RawData;
+	unsigned short SubType;
+	bool Interlaced;
+	bool ColorSensor;
+};
+#endif  //SXVDEF

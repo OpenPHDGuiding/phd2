@@ -1,9 +1,9 @@
 /*
- *  cam_simulator.h
+ *  cam_firewire.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2007-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -33,15 +33,38 @@
  */
 
 
-#ifndef SIMDEF
-#define SIMDEF
-class Camera_SimClass : public GuideCamera {
-public:
-	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();		// Opens up and connects to cameras
-	bool	Disconnect();
-	void	InitCapture() { return; }
-	Camera_SimClass();
-};
+#ifndef FIREWIREDEF
+#define FIREWIREDEF
+
+#if defined (__APPLE__)
+#include <dc1394/control.h>
+#include <dc1394/utils.h>
+#else
+#include "tisudshl.h" 
 #endif
 
+class Camera_FirewireClass : public GuideCamera {
+public:
+	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
+//	bool	CaptureCrop(int duration, usImage& img);	// Captures a cropped portion
+	bool	Connect();
+	bool	Disconnect();
+	void	InitCapture();
+//	bool	PulseGuideScope(int direction, int duration);
+	
+	
+	Camera_FirewireClass(); 
+//	~Camera_FirewireClass(); 
+private:
+//	bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+#if defined (__APPLE__)
+	dc1394camera_t *camera;
+#else
+	DShowLib::Grabber* m_pGrabber;
+	DShowLib::tFrameHandlerSinkPtr pSink;
+	DShowLib::tIVCDAbsoluteValuePropertyPtr  m_pExposureAbs;
+	DShowLib::tIVCDRangePropertyPtr  m_pGain;
+	long GainMax;
+#endif
+};
+#endif

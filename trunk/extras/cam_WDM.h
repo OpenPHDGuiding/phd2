@@ -1,5 +1,5 @@
 /*
- *  cam_simulator.h
+ *  cam_WDM.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -31,17 +31,33 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef WDM_CAMERA
 
+#ifndef WDMDEF
+#define WDMDEF
+#define CVRES_VIDCAP_OFFSET wxID_HIGHEST+1
+#include "VidCapture.h"  // For DirectShow
 
-#ifndef SIMDEF
-#define SIMDEF
-class Camera_SimClass : public GuideCamera {
+class Camera_WDMClass : public GuideCamera {
 public:
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();		// Opens up and connects to cameras
+//	bool	CaptureCrop(int duration, usImage& img);	// Captures a cropped portion
+	bool	Connect();
 	bool	Disconnect();
+	void	ShowPropertyDialog();
 	void	InitCapture() { return; }
-	Camera_SimClass();
+	Camera_WDMClass(); 
+private:
+	//HANDLE hDriver;
+	int DeviceNum;
+	CVVidCapture* VidCap;
+//	bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+protected:
+	static bool CaptureCallback( CVRES status, CVImage* imagePtr, void* userParam);
+	int	NFrames;
+	int NAttempts;
+	unsigned short *stackptr;
 };
 #endif
 
+#endif // WDM_CAMERA

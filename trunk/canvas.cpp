@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -39,6 +39,9 @@
 #include <wx/graphics.h>
 
 #define SCALE_UP_SMALL  // Currently problematic as the box for the star is drawn in the wrong spot.
+#if ((wxMAJOR_VERSION < 3) && (wxMINOR_VERSION < 9))
+#define wxPENSTYLE_DOT wxDOT
+#endif
 
 BEGIN_EVENT_TABLE(MyCanvas, wxWindow)
    EVT_PAINT(MyCanvas::OnPaint)
@@ -283,21 +286,21 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 				double r=30.0;
 				double cos_angle = cos(RA_angle);
 				double sin_angle = sin(RA_angle);
-				dc.SetPen(wxPen(frame->GraphLog->RA_Color,2,wxDOT));
+				dc.SetPen(wxPen(frame->GraphLog->RA_Color,2,wxPENSTYLE_DOT));
 			/*	dc.DrawLine(ROUND(LockX*ScaleFactor+r*cos_angle),ROUND(LockY*ScaleFactor+r*sin_angle),
 					ROUND(LockX*ScaleFactor-r*cos_angle),ROUND(LockY*ScaleFactor-r*sin_angle));
 				dc.SetPen(wxPen(frame->GraphLog->RA_Color,1,wxPENSTYLE_SOLID ));*/
 				r=15.0;
 				dc.DrawLine(ROUND(StarX*ScaleFactor+r*cos_angle),ROUND(StarY*ScaleFactor+r*sin_angle),
 					ROUND(StarX*ScaleFactor-r*cos_angle),ROUND(StarY*ScaleFactor-r*sin_angle));
-				dc.SetPen(wxPen(frame->GraphLog->DEC_Color,2,wxDOT));
+				dc.SetPen(wxPen(frame->GraphLog->DEC_Color,2,wxPENSTYLE_DOT));
 				cos_angle = cos(Dec_angle);
 				sin_angle = sin(Dec_angle);
 				dc.DrawLine(ROUND(StarX*ScaleFactor+r*cos_angle),ROUND(StarY*ScaleFactor+r*sin_angle),
 					ROUND(StarX*ScaleFactor-r*cos_angle),ROUND(StarY*ScaleFactor-r*sin_angle));
 
 				wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
-				gc->SetPen(wxPen(frame->GraphLog->RA_Color,1,wxDOT ));
+				gc->SetPen(wxPen(frame->GraphLog->RA_Color,1,wxPENSTYLE_DOT ));
 				wxGraphicsPath path = gc->CreatePath();
 //				wxGraphicsMatrix mat = gc->CreateMatrix();
 				int i;
@@ -325,7 +328,7 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 				gc->Rotate(-Dec_angle);
 				gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
 				gc->Rotate(Dec_angle);
-				gc->SetPen(wxPen(frame->GraphLog->DEC_Color,1,wxDOT ));
+				gc->SetPen(wxPen(frame->GraphLog->DEC_Color,1,wxPENSTYLE_DOT ));
 				for (i=-2; i<12; i++) {
 					gc->StrokeLine(0.0,step * (double) i,
 						(double) XWinSize, step * (double) i);

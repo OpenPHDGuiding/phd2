@@ -1,5 +1,5 @@
 /*
- *  cam_simulator.h
+ *  cam_VFW.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -31,17 +31,23 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-
-#ifndef SIMDEF
-#define SIMDEF
-class Camera_SimClass : public GuideCamera {
+#ifndef VFWDEF
+#define VFWDEF
+#include "vcapwin.h"
+#include <wx/splitter.h>
+class Camera_VFWClass : public GuideCamera {
 public:
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();		// Opens up and connects to cameras
+//	bool	CaptureCrop(int duration, usImage& img);	// Captures a cropped portion
+	bool	Connect();
 	bool	Disconnect();
+	void	ShowPropertyDialog();
 	void	InitCapture() { return; }
-	Camera_SimClass();
+	Camera_VFWClass(); 
+private:
+	wxVideoCaptureWindow *VFW_Window;
+	wxSplitterWindow	*Extra_Window;
+
+//	bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
 };
 #endif
-
