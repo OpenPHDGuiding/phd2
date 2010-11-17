@@ -76,7 +76,7 @@ static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data)
     cb->NewProp(iprop);
 }
 
-static void tele_move_cb(struct indi_prop_t *iprop, void *callback_data)
+static void tele_move_cb(struct indi_prop_t * /*iprop*/, void *callback_data)
 {
     //We don't actually need to keep track of movement at the moment
     Telescope_INDIClass *cb = (Telescope_INDIClass *)(callback_data);

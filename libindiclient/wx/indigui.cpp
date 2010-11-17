@@ -238,7 +238,7 @@ void IndiGui::UpdateWidget(struct indi_prop_t *iprop)
 	iprop->message[0] = 0;
 }
 
-void indigui_show_message(struct indi_t *indi, const char *message)
+void indigui_show_message(struct indi_t * /*indi*/, const char *message)
 {
 	indiGui->ShowMessage(message);
 }
@@ -380,7 +380,7 @@ void IndiGui::CreateSwitchCombobox(struct indi_prop_t *iprop, int num_props)
 	delete [] choices;
 }
 
-void IndiGui::CreateSwitchCheckbox(struct indi_prop_t *iprop, int num_props)
+void IndiGui::CreateSwitchCheckbox(struct indi_prop_t *iprop, int /*num_props*/)
 {
 	wxPanel *p;
 	wxGridBagSizer *gbs;
@@ -402,7 +402,7 @@ void IndiGui::CreateSwitchCheckbox(struct indi_prop_t *iprop, int num_props)
 	}
 }
 
-void IndiGui::CreateSwitchButton(struct indi_prop_t *iprop, int num_props)
+void IndiGui::CreateSwitchButton(struct indi_prop_t *iprop, int /*num_props*/)
 {
 	wxPanel *p;
 	wxGridBagSizer *gbs;
@@ -425,7 +425,7 @@ void IndiGui::CreateSwitchButton(struct indi_prop_t *iprop, int num_props)
 	}
 }
 
-void IndiGui::CreateTextWidget(struct indi_prop_t *iprop, int num_props)
+void IndiGui::CreateTextWidget(struct indi_prop_t *iprop, int /*num_props*/)
 {
 	int pos = 0;
 	wxStaticText *value;
@@ -464,7 +464,7 @@ void IndiGui::CreateTextWidget(struct indi_prop_t *iprop, int num_props)
 	}
 }
 
-void IndiGui::CreateNumberWidget(struct indi_prop_t *iprop, int num_props)
+void IndiGui::CreateNumberWidget(struct indi_prop_t *iprop, int /*num_props*/)
 {
 	int pos = 0;
 	wxStaticText *value;
@@ -504,11 +504,11 @@ void IndiGui::CreateNumberWidget(struct indi_prop_t *iprop, int num_props)
 	}
 }
 
-void IndiGui::CreateLightWidget(struct indi_prop_t *iprop, int num_props)
+void IndiGui::CreateLightWidget(struct indi_prop_t * /*iprop*/, int /*num_props*/)
 {
 }
 
-void IndiGui::CreateBlobWidget(struct indi_prop_t *iprop, int num_props)
+void IndiGui::CreateBlobWidget(struct indi_prop_t * /*iprop*/, int /*num_props*/)
 {
 }
 
@@ -666,7 +666,7 @@ void IndiGui::OnQuit(wxCloseEvent& WXUNUSED(event))
 	}
 }
 		
-void indigui_show_dialog(void *data)
+void indigui_show_dialog(void * /*data*/)
 {
 	indiGui->child_window = true;
 	indiGui->Show(true);

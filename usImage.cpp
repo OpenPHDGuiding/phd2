@@ -93,7 +93,7 @@ bool usImage::Clean() {
 	return false;
 }
 
-bool usImage::CopyToImage(wxImage **rawimg, int min, int max, double power) {
+bool usImage::CopyToImage(wxImage **rawimg, int /*min*/, int /*max*/, double power) {
 	wxImage	*img;
 	unsigned char *ImgPtr;
 	unsigned short *RawPtr;
@@ -148,7 +148,7 @@ bool usImage::CopyToImage(wxImage **rawimg, int min, int max, double power) {
 	return false;
 }
 
-bool usImage::BinnedCopyToImage(wxImage **rawimg, int min, int max, double power) {
+bool usImage::BinnedCopyToImage(wxImage **rawimg, int /*min*/, int /*max*/, double power) {
 	wxImage	*img;
 	unsigned char *ImgPtr;
 	unsigned short *RawPtr;

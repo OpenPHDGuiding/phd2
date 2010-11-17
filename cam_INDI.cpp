@@ -253,7 +253,7 @@ bool Camera_INDIClass::ReadStream(usImage& img) {
     return false;
 }
 
-bool Camera_INDIClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_INDIClass::CaptureFull(int duration, usImage& img, bool /*recon*/) {
 //    unsigned short *dataptr;
 //    int i;
 

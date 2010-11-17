@@ -29,7 +29,6 @@ struct buffer {
 };
 
 #define IO_METHOD_READ 7	/* !! must be != V4L2_MEMORY_MMAP / USERPTR */
-static struct v4l2_format fmt;		/* gtk pormat */
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 #define NFRAMES 30
 
@@ -65,6 +64,7 @@ private:
 	int expDuration;
 	unsigned int simg[16581184];
 	unsigned char img[16581184];
+	struct v4l2_format fmt;		/* gtk pormat */
 
 #ifdef WITH_V4L2_LIB
 	struct v4lconvert_data *v4lconvert_data;
