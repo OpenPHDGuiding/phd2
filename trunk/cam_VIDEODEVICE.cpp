@@ -268,14 +268,14 @@ bool Camera_VIDEODEVICEClass::ProbeDevices() {
 
 DeviceInfo* Camera_VIDEODEVICEClass::GetDeviceAtIndex(int index) {
 
-	if (0 > index || deviceInfoArray.GetCount() <= index)
+	if (0 > index || deviceInfoArray.GetCount() <= (unsigned int)index)
 		return NULL;
 
 	return &(deviceInfoArray.Item(index));
 }
 
 wxArrayString& Camera_VIDEODEVICEClass::GetProductArray(wxArrayString& devices) {
-	for (int i=0; i<deviceInfoArray.GetCount(); i++) {
+	for (unsigned int i=0; i<deviceInfoArray.GetCount(); i++) {
 		devices.Add(deviceInfoArray.Item(i).getProduct());
 	}
 

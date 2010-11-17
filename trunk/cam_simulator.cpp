@@ -75,7 +75,7 @@ bool Camera_SimClass::Disconnect() {
 #endif
 
 #if SIMMODE==1
-bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool recon) {
+bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool /*recon*/) {
 	int xsize, ysize;
 //	unsigned short *dataptr;
 //	int i;
