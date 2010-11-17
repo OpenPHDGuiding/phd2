@@ -1,9 +1,9 @@
 /*
- *  cam_simulator.h
+ *  cam_Atik16.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2007-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,17 +31,24 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-
-#ifndef SIMDEF
-#define SIMDEF
-class Camera_SimClass : public GuideCamera {
+#ifndef ATIK16DEF
+#define ATIK16DEF
+#include "ArtemisCCDAPI.h"
+class Camera_Atik16Class : public GuideCamera {
 public:
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();		// Opens up and connects to cameras
+//	bool	CaptureCrop(int duration, usImage& img);	// Captures a cropped portion
+	bool	Connect();
 	bool	Disconnect();
-	void	InitCapture() { return; }
-	Camera_SimClass();
-};
-#endif
+//	void	InitCapture();
 
+	bool	PulseGuideScope(int direction, int duration);
+	void	ClearGuidePort();
+	bool	Color;
+	bool	HSModel;
+	Camera_Atik16Class(); 
+private:
+//	bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+	ArtemisHandle Cam_Handle;
+};
+#endif  //ATIK16DEF

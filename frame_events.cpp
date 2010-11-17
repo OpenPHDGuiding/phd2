@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -809,7 +809,9 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 
 	frame->GraphLog->RAA_Ctrl->SetValue((int) (RA_aggr * 100));
 	frame->GraphLog->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
-//Geoff	frame->GraphLog->MM_Ctrl->SetValue(MinMotion);
+#if ((wxMAJOR_VERSION > 2) || (wxMINOR_VERSION > 8))
+	frame->GraphLog->MM_Ctrl->SetValue(MinMotion);
+#endif
 	frame->GraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
 	frame->GraphLog->DM_Ctrl->SetSelection(Dec_guide);
 	

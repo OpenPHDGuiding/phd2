@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2009 Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,6 +31,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include "phd.h"
 #include "ascom.h"
 #include <wx/config.h>

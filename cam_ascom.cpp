@@ -3,10 +3,10 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2009 Craig Stark.
+ *  Copyright (c) 2009-2010 Craig Stark.
  *  All rights reserved.
  *
- *  This source code is distributed under the following "BSD" license
+ *  This source code is distrubted under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without 
  *  modification, are permitted provided that the following conditions are met:
  *    Redistributions of source code must retain the above copyright notice, 
@@ -31,6 +31,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include "phd.h"
 #include "camera.h"
 #include "time.h"
@@ -44,6 +45,7 @@
 #if defined (ASCOM_CAMERA)
 #include "cam_ascom.h"
 #include <wx/msw/ole/oleutils.h>
+extern char *uni_to_ansi(OLECHAR *os);
 
 Camera_ASCOMClass::Camera_ASCOMClass() {
 	Connected = FALSE;
@@ -66,20 +68,39 @@ bool Camera_ASCOMClass::Connect() {
 	_ChooserPtr C = NULL;
 	C.CreateInstance("DriverHelper.Chooser");
 	C->DeviceTypeV = "Camera";
-	_bstr_t  drvrId = C->Choose("");
+
+	// Look in Registry to see if there is a default
+	wxConfig *config = new wxConfig("PHD");
+	wxString wx_ProgID;
+	BSTR bstr_ProgID=NULL;
+	config->Read("ASCOMCamID",&wx_ProgID);
+	bstr_ProgID = wxBasicString(wx_ProgID).Get();
+
+	_bstr_t  drvrId = C->Choose(bstr_ProgID);
 	if(C != NULL) {
 		C.Release();
 //		ICameraPtr pCam = NULL;
 		pCam.CreateInstance((LPCSTR)drvrId);
 		if(pCam == NULL)  {
 			wxMessageBox(wxString::Format("Cannot load driver %s\n", (char *)drvrId));
+			if (config) delete config;
 			return true;
 		}
 	}
 	else {
 		wxMessageBox("Cannot launch ASCOM Chooser");
+		if (config) delete config;
 		return true;
 	}
+	// Save name of cam
+	char *cp = NULL;
+	cp = uni_to_ansi(drvrId);	// Get ProgID in ANSI
+	config->Write("ASCOMCamID",wxString(cp));  // Save it in Registry
+//	wx_ProgID = wxString::Format("%s",cp);
+	delete[] cp;
+	if (config) delete config;
+
+
 
     try {
 		pCam->Connected = true;

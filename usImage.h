@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark on 9/20/08.
- *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
+ *  Copyright (c) 2006-2009 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license

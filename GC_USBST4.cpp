@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
+ *  Copyright (c) 2009-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,10 +31,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifdef GUIDE_GCUSBST4
 
 #include "phd.h"
 #include "scope.h"
+#ifdef GUIDE_GCUSBST4
 #include "GC_USBST4.h"
 #include	<sys/ioctl.h>
 #include <termios.h>
@@ -45,7 +45,6 @@
 
 
 #define _U(String)  wxString(String, wxConvUTF8).c_str()
-
 
 int portFID;
 

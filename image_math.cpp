@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -296,7 +296,7 @@ int FindStar(usImage& img) {
 		dY = 0.0;
 		FoundStar=false;
 		frame->SetStatusText(wxString::Format(_T("Mass: %.0f vs %.0f"),mass,StarMass),1);
-	StarMass = mass;
+		StarMass = mass;
 		retval = STAR_MASSCHANGE;
 		BadMassCount++;
 	}

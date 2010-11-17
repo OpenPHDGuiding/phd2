@@ -1,5 +1,5 @@
 /*
- *  cam_simulator.h
+ *  cam_SAC42.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -31,17 +31,23 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-
-#ifndef SIMDEF
-#define SIMDEF
-class Camera_SimClass : public GuideCamera {
+#ifndef SAC42DEF
+#define SAC42DEF
+#include "FcApiUser.h"
+class Camera_SAC42Class : public GuideCamera {
 public:
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();		// Opens up and connects to cameras
+//	bool	CaptureCrop(int duration, usImage& img);	// Captures a cropped portion
+	bool	Connect();
 	bool	Disconnect();
-	void	InitCapture() { return; }
-	Camera_SimClass();
+	void	InitCapture();
+	Camera_SAC42Class(); 
+protected:
+	HANDLE hDriver;
+	struct CapInfoStruct CapInfo;
+	int	Index;		
+	bool	ColorArray;
+//	bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+	int MaxExposure;
 };
 #endif
-

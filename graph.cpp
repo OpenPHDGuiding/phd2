@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
+ *  Copyright (c) 2008-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -233,7 +233,9 @@ void GraphLogWindow::SetState(bool is_active) {
 	if (is_active) {
 		this->RAA_Ctrl->SetValue((int) (RA_aggr * 100));  
 		this->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
-//Geoff		this->MM_Ctrl->SetValue(MinMotion);
+#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
+		this->MM_Ctrl->SetValue(MinMotion);
+#endif
 		this->MDD_Ctrl->SetValue(Max_Dec_Dur);
 		this->MRAD_Ctrl->SetValue(Max_RA_Dur);
 		this->DM_Ctrl->SetSelection(Dec_guide);
