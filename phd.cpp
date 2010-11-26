@@ -50,9 +50,11 @@
 #define PHDSUBVER _T("")
 //#define DEVBUILD
 
+#if !defined(OPENPHD)
 #if defined(__WINDOWS__)
  #include <vld.h>
 #endif 
+#endif
 
 // Globals
 wxString ScopeName;
@@ -272,12 +274,18 @@ MyFrame::MyFrame(const wxString& title)
 	mount_menu->FindItem(MOUNT_GPINT278)->Enable(false);
 	mount_menu->FindItem(MOUNT_GPUSB)->Check(true); // set this as the default
 #endif
-#if defined (__WXGTK__)
+#if !defined (GUIDE_ASCOM)
 	mount_menu->FindItem(MOUNT_ASCOM)->Enable(false);
+#endif
+#if !defined (GUIDE_PARALLEL)
 	mount_menu->FindItem(MOUNT_GPINT3BC)->Enable(false);
 	mount_menu->FindItem(MOUNT_GPINT378)->Enable(false);
 	mount_menu->FindItem(MOUNT_GPINT278)->Enable(false);
+#endif
+#if !defined (GUIDE_GPUSB)
 	mount_menu->FindItem(MOUNT_GPUSB)->Enable(false);
+#endif
+#if defined (__WXGTK__)
 	mount_menu->FindItem(MOUNT_CAMERA)->Check(true); // set this as the default
 #endif
 #ifdef GUIDE_INDI

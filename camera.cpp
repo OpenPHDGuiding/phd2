@@ -131,6 +131,10 @@ Camera_SSPIAGClass Camera_SSPIAG;
 #if defined (ASCOM_CAMERA)
  #include "cam_ascom.h"
  Camera_ASCOMClass Camera_ASCOM;
+#endif
+
+ #if defined (ASCOM_LATECAMERA)
+  #include "cam_ascom.h"
  Camera_ASCOMLateClass Camera_ASCOMLate;
 #endif
 
@@ -218,6 +222,8 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #endif
 #if defined (ASCOM_CAMERA)
 	Cameras.Add(_T("ASCOM v5 Camera"));
+#endif
+#if defined (ASCOM_LATECAMERA)
 	Cameras.Add(_T("ASCOM (Late) Camera"));
 #endif
 #if defined (INDI_CAMERA)
