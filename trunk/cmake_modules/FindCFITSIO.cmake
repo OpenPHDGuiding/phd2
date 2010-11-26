@@ -24,12 +24,15 @@ else (CFITSIO_INCLUDE_DIR AND CFITSIO_LIBRARIES)
   # JM: Packages from different distributions have different suffixes
   find_path(CFITSIO_INCLUDE_DIR fitsio.h
     PATH_SUFFIXES libcfitsio3 libcfitsio0 cfitsio
+    PATHS
+    $ENV{CFITSIO}
     ${_obIncDir}
     ${GNUWIN32_DIR}/include
   )
 
   find_library(CFITSIO_LIBRARIES NAMES cfitsio
     PATHS
+    $ENV{CFITSIO}
     ${_obLinkDir}
     ${GNUWIN32_DIR}/lib
   )
@@ -44,14 +47,14 @@ else (CFITSIO_INCLUDE_DIR AND CFITSIO_LIBRARIES)
   if (CFITSIO_FOUND)
 
     # Find the version of the cfitsio header
-    execute_process(COMMAND egrep CFITSIO_VERSION ${CFITSIO_INCLUDE_DIR}/fitsio.h
-                    OUTPUT_VARIABLE CFITSIO_VERSION_STRING)
-    STRING(REGEX REPLACE "[^0-9.]" "" CFITSIO_VERSION_STRING ${CFITSIO_VERSION_STRING})
+    FILE(READ "${CFITSIO_INCLUDE_DIR}/fitsio.h" FITSIO_H)
+    STRING(REGEX REPLACE ".*#define CFITSIO_VERSION[^0-9]*([0-9]+)\\.([0-9]+).*" "\\1.\\2" CFITSIO_VERSION_STRING "${FITSIO_H}")
     STRING(REGEX REPLACE "^([0-9]+)[.]([0-9]+)" "\\1" CFITSIO_VERSION_MAJOR ${CFITSIO_VERSION_STRING})
     STRING(REGEX REPLACE "^([0-9]+)[.]([0-9]+)" "\\2" CFITSIO_VERSION_MINOR ${CFITSIO_VERSION_STRING})
+    message(STATUS "found version string ${CFITSIO_VERSION_STRING}")
 
     if (NOT CFITSIO_FIND_QUIETLY)
-      message(STATUS "Found CFITSIO ${CFITSIO_VERSION_STRING}: ${CFITSIO_LIBRARIES}")
+      message(STATUS "Found CFITSIO ${CFITSIO_VERSION_MAJOR}.${CFITSIO_VERSION_MINOR}: ${CFITSIO_LIBRARIES}")
     endif (NOT CFITSIO_FIND_QUIETLY)
   else (CFITSIO_FOUND)
     if (CFITSIO_FIND_REQUIRED)

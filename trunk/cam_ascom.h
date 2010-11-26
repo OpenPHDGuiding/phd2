@@ -35,11 +35,16 @@
 #define ASCOMCAMDEF
 
 #ifdef __WINDOWS__
+#if !defined(OPENPHD)
 #ifdef _WIN7
 #import "file:c:\Program Files (x86)\Common Files\ASCOM\Interface\AscomMasterInterfaces.tlb"
 #else
 #import "file:c:\Program Files\Common Files\ASCOM\Interface\AscomMasterInterfaces.tlb"
 #endif
+#else // !defined(OPENPHD)
+// CMake adds both the possible paths to the include path
+#import "file:AscomMasterInterfaces.tlb"
+#endif // !defined(OPENPHD)
 #import "file:C:\\Windows\\System32\\ScrRun.dll" \
 	no_namespace \
 	rename("DeleteFile","DeleteFileItem") \
@@ -80,6 +85,7 @@ private:
 #endif
 };
 
+#if defined (ASCOM_LATECAMERA)
 class Camera_ASCOMLateClass : public GuideCamera {
 public:
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
@@ -110,5 +116,6 @@ private:
 
 #endif
 };
+#endif
 
 #endif  //ASCOMCAMDEF
