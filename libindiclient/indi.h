@@ -118,6 +118,7 @@ struct indi_t {
 	void *xml_parser;
 	void *fh;
 	indi_list *devices;
+	indi_list *newdev_cb_list;
 	indi_list *dev_cb_list;
 	void *window;
 	void *config;
@@ -140,9 +141,13 @@ extern void indi_prop_add_cb(struct indi_prop_t *iprop,
                       void *callback_data);
 extern struct indi_t *indi_init(const char *hostname, int port, const char *config);
 
-void indi_device_add_cb(struct indi_t *indi, const char *devname,
+extern void indi_new_device_cb(struct indi_t *indi,
+                     void (* cb_func)(void *idev, void *cb_data),
+                     void *cb_data);
+extern void indi_device_add_cb(struct indi_t *indi, const char *devname,
                      void (* cb_func)(void *iprop, void *cb_data),
                      void *cb_data);
+extern void indi_remove_cb(struct indi_t *indi, void (* cb_func)(void *idev, void *cb_data));
 
 extern int indi_prop_get_switch(struct indi_prop_t *iprop, const char *elemname);
 extern struct indi_elem_t *indi_prop_set_switch(struct indi_prop_t *iprop, const char *elemname, int state);
