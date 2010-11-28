@@ -122,6 +122,7 @@ static struct indi_device_t *indi_new_device(struct indi_t *indi, const char *de
 {
 	struct indi_device_t *idev;
 	struct indi_dev_cb_t *cb, *first_cb = NULL;
+	indi_list *isl;
 
 	idev = indi_find_device(indi, devname);
 	if (idev)
@@ -146,6 +147,10 @@ static struct indi_device_t *indi_new_device(struct indi_t *indi, const char *de
 
 	indigui_make_device_page(idev);
 	indi->devices = il_append(indi->devices, idev);
+	for (isl = il_iter(indi->newdev_cb_list); ! il_is_last(isl); isl = il_next(isl)) {
+		struct indi_cb_t *cb = (struct indi_cb_t *)il_item(isl);
+		cb->func(idev, cb->data);
+	}
 	return idev;
 }
 
@@ -603,6 +608,63 @@ static void indi_delete_prop(struct indi_prop_t *iprop)
 		delXMLEle((XMLEle *)iprop->root);
 	iprop->idev->props = il_remove(iprop->idev->props, iprop);
 	free(iprop);
+}
+
+void indi_new_device_cb(struct indi_t *indi,
+                     void (* cb_func)(void *idev, void *cb_data),
+                     void *cb_data)
+{
+	struct indi_cb_t *cb = indi_create_cb(cb_func, cb_data);
+	indi->newdev_cb_list = il_append(indi->newdev_cb_list, cb);
+}
+
+void indi_remove_cb(struct indi_t *indi, void (* cb_func)(void *idev, void *cb_data))
+{
+	indi_list *isl;
+	/* New device callbacks */
+	for (isl = il_iter(indi->newdev_cb_list); ! il_is_last(isl); isl = il_next(isl)) {
+		struct indi_cb_t *cb = (struct indi_cb_t *)il_item(isl);
+		if (cb->func == cb_func) {
+			indi->newdev_cb_list = il_remove(indi->newdev_cb_list, cb);
+			free(cb);
+			break;
+		}
+	}
+	/* Unapplied device callbacks */
+	for (isl = il_iter(indi->dev_cb_list); ! il_is_last(isl); isl = il_next(isl)) {
+		struct indi_dev_cb_t *cb = (struct indi_dev_cb_t *)il_item(isl);
+		if (cb->cb.func == cb_func) {
+			indi->dev_cb_list = il_remove(indi->dev_cb_list, cb);
+			free(cb);
+			break;
+		}
+	}
+	/* Applied device callbacks */
+	for (isl = il_iter(indi->devices); ! il_is_last(isl); isl = il_next(isl)) {
+		indi_list *isl1;
+		struct indi_device_t *idev = (struct indi_device_t *)il_item(isl);
+		for (isl1 = il_iter(idev->new_prop_cb); ! il_is_last(isl1); isl1 = il_next(isl1)) {
+			struct indi_dev_cb_t *cb = (struct indi_dev_cb_t *)il_item(isl1);
+			if (cb->cb.func == cb_func) {
+				idev->new_prop_cb = il_remove(idev->new_prop_cb, cb);
+				free(cb);
+				break;
+			}
+		}
+		/* Applied prop update callbacks */
+		for (isl1 = il_iter(idev->props); ! il_is_last(isl1); isl1 = il_next(isl1)) {
+			indi_list *isl2;
+			struct indi_prop_t *iprop = (struct indi_prop_t *)il_item(isl1);
+			for (isl2 = il_iter(iprop->prop_update_cb); ! il_is_last(isl2); isl2 = il_next(isl2)) {
+				struct indi_cb_t *cb = (struct indi_cb_t *)il_item(isl2);
+				if (cb->func == cb_func) {
+					iprop->prop_update_cb = il_remove(iprop->prop_update_cb, cb);
+					free(cb);
+					break;
+				}
+			}
+		}
+	}
 }
 
 void indi_device_add_cb(struct indi_t *indi, const char *devname,
