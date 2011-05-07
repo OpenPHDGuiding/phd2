@@ -38,7 +38,14 @@
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
+
+// V4L Version 1 is not present anymore in Kernel 2.6.38
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
+#include <linux/videodev2.h>
+#else
 #include <linux/videodev.h>
+#endif
 #include <libv4l2.h>
 #include <libv4lconvert.h>
 
