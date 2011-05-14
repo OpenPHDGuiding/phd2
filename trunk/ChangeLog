@@ -1,3 +1,7 @@
+2011-05-07 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* Kernel version check to include only V4L Version 2 header
+
 2010-03-21 steffen elste <steffen.elste@max-ulmschneider.de>
 
 	* Fixed segmentation fault with v4l controls for - some?!? - netbooks
