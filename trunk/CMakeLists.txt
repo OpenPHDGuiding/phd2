@@ -192,7 +192,7 @@ if(V4L_OK)
     target_link_libraries(PHD ${V4L2_LIBRARIES})
 endif(V4L_OK)
 #set(phd_LIBS "${phd_LIBS} ${GTK_LIBRARIES}")
-target_link_libraries(PHD ${phd_LIBS})
+target_link_libraries(PHD ${phd_LIBS} z )
 
 install (TARGETS PHD RUNTIME DESTINATION bin)
 install (FILES "${PROJECT_SOURCE_DIR}/PHDGuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/PHD/" )
