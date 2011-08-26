@@ -98,7 +98,7 @@ void Camera_INDIClass::NewProp(struct indi_prop_t *iprop)
         has_blob = 1;
         indi_prop_add_cb(iprop, (IndiPropCB)camera_capture_cb, this);
     }
-    else if (strcmp(iprop->name, "CCD_EXPOSURE") == 0) {
+    else if (strcmp(iprop->name, "CCD_EXPOSURE") == 0 || strcmp(iprop->name, "CCD_EXPOSURE_REQUEST") == 0) {
         printf("Found CCD_EXPOSURE for camera %s\n", iprop->idev->name);
         expose_prop = iprop;
     }
