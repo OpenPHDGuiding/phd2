@@ -1,5 +1,6 @@
 #include "../indi_list.h"
 
+#include <cstring>
 #include <list>
 using namespace std;
 
