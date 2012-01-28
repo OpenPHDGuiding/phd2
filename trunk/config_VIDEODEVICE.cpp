@@ -119,11 +119,13 @@ V4LPropertiesDialog::V4LPropertiesDialog(V4LControlMap &map)
 
 	wxButton *applyButton = new wxButton(this, wxID_APPLY);
 	wxButton *resetButton = new wxButton(this, wxID_RESET, _T("Reset"));
+	wxButton *cancelButton = new wxButton(this, wxID_CANCEL);
 
 	Connect(wxID_APPLY, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(V4LPropertiesDialog::onUpdate));
 	Connect(wxID_RESET, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(V4LPropertiesDialog::onReset));
 
-	hbox->Add(resetButton, 1);
+	hbox->Add(cancelButton, 1);
+	hbox->Add(resetButton, 1, wxLEFT, 20);
 	hbox->Add(applyButton, 1, wxLEFT, 5);
 
 	vbox->Add(gridSizer, 1);
@@ -141,7 +143,6 @@ void V4LPropertiesDialog::onUpdate(wxCommandEvent& WXUNUSED(event)) {
 		wxCommandEvent customEvent(wxEVT_V4L_UPDATE, id);
 		GetEventHandler()->ProcessEvent(customEvent);
 	}
-
 }
 
 void V4LPropertiesDialog::onReset(wxCommandEvent& WXUNUSED(event)) {
@@ -152,7 +153,6 @@ void V4LPropertiesDialog::onReset(wxCommandEvent& WXUNUSED(event)) {
 		wxCommandEvent customEvent(wxEVT_V4L_RESET, id);
 		GetEventHandler()->ProcessEvent(customEvent);
 	}
-
 }
 
 void MyFrame::OnSaveSettings(wxCommandEvent& WXUNUSED(event)) {
