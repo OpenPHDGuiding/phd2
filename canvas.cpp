@@ -38,6 +38,12 @@
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
 
+#if defined (__APPLE__)
+#include "../cfitsio/fitsio.h"
+#else
+#include <fitsio.h>
+#endif
+
 #define SCALE_UP_SMALL  // Currently problematic as the box for the star is drawn in the wrong spot.
 #if ((wxMAJOR_VERSION < 3) && (wxMINOR_VERSION < 9))
 #define wxPENSTYLE_DOT wxDOT
@@ -55,7 +61,7 @@ END_EVENT_TABLE()
 
 // Define a constructor for my canvas
 MyCanvas::MyCanvas(wxWindow *parent):
- wxWindow(parent, wxID_ANY,wxPoint(0,0),wxSize(XWinSize,YWinSize)) {
+ wxWindow(parent, wxID_ANY,wxPoint(0,0),wxSize(XWinSize,YWinSize))  {
 
 //	Origin_x = Origin_y = Targ_x = Targ_y = 0;
 	State = STATE_NONE;
@@ -199,12 +205,16 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 		if ((Displayed_Image->GetWidth() != XWinSize) || (Displayed_Image->GetHeight() != YWinSize)) {
 #if defined  SCALE_UP_SMALL
 			if (Displayed_Image->GetWidth() != XWinSize) { // must get x-size to 640 -- have room in the 512 ysize for 640x480 - 640x512 already
-				DisplayedBitmap = new wxBitmap(Displayed_Image->Scale(XWinSize,Displayed_Image->GetHeight() * XWinSize/Displayed_Image->GetWidth()));
 				ScaleFactor = ScaleFactor * (double) XWinSize / (double) Displayed_Image->GetWidth();
+				int orig_size = Displayed_Image->GetHeight();
+				if (binned) orig_size *= 2;
+				int new_size = (int) ((float) orig_size * ScaleFactor);
+				DisplayedBitmap = new wxBitmap(Displayed_Image->Scale(XWinSize,new_size));
 			}
 			else  // x-dim OK, just pad / crop y (should just pad)
 #endif
 				DisplayedBitmap = new wxBitmap(Displayed_Image->Size(wxSize(XWinSize,YWinSize),wxPoint(0,0)));
+			
 			memDC.SelectObject(*DisplayedBitmap);
 //			frame->SetStatusText(wxString::Format("scaled %d %d %.2f",Displayed_Image->GetWidth(),Displayed_Image->GetHeight(),ScaleFactor),1);
 		}
@@ -218,7 +228,8 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 			return;
 		}
 		try {
-			dc.Blit(0, 0, XWinSize,YWinSize, & memDC, 0, 0, wxCOPY, false);
+			dc.Blit(0, 0, DisplayedBitmap->GetWidth(),DisplayedBitmap->GetHeight(), & memDC, 0, 0, wxCOPY, false);
+//			dc.Blit(0, 0, XWinSize,YWinSize, & memDC, 0, 0, wxCOPY, false);
 		}
 		catch (...) {
 			wxMessageBox(wxString::Format(_T("hmmm2 %d %d %f"),Displayed_Image->GetWidth(),Displayed_Image->GetHeight(),ScaleFactor));
@@ -284,8 +295,8 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 			}
 			else if (OverlayMode == 4) { // RA and Dec
 				double r=30.0;
-				double cos_angle = cos(RA_angle);
-				double sin_angle = sin(RA_angle);
+				double cos_angle = cos(pScope->RaAngle());
+				double sin_angle = sin(pScope->RaAngle());
 				dc.SetPen(wxPen(frame->GraphLog->RA_Color,2,wxPENSTYLE_DOT));
 			/*	dc.DrawLine(ROUND(LockX*ScaleFactor+r*cos_angle),ROUND(LockY*ScaleFactor+r*sin_angle),
 					ROUND(LockX*ScaleFactor-r*cos_angle),ROUND(LockY*ScaleFactor-r*sin_angle));
@@ -294,8 +305,8 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 				dc.DrawLine(ROUND(StarX*ScaleFactor+r*cos_angle),ROUND(StarY*ScaleFactor+r*sin_angle),
 					ROUND(StarX*ScaleFactor-r*cos_angle),ROUND(StarY*ScaleFactor-r*sin_angle));
 				dc.SetPen(wxPen(frame->GraphLog->DEC_Color,2,wxPENSTYLE_DOT));
-				cos_angle = cos(Dec_angle);
-				sin_angle = sin(Dec_angle);
+				cos_angle = cos(pScope->DecAngle());
+				sin_angle = sin(pScope->DecAngle());
 				dc.DrawLine(ROUND(StarX*ScaleFactor+r*cos_angle),ROUND(StarY*ScaleFactor+r*sin_angle),
 					ROUND(StarX*ScaleFactor-r*cos_angle),ROUND(StarY*ScaleFactor-r*sin_angle));
 
@@ -308,11 +319,11 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
 				double MidX = (double) XWinSize / 2.0;
 				double MidY = (double) YWinSize / 2.0;
-				gc->Rotate(RA_angle);
+				gc->Rotate(pScope->RaAngle());
 				gc->GetTransform().TransformPoint(&MidX, &MidY);
-				gc->Rotate(-RA_angle);
+				gc->Rotate(-pScope->RaAngle());
 				gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
-				gc->Rotate(RA_angle);
+				gc->Rotate(pScope->RaAngle());
 				for (i=-2; i<12; i++) {
 //					gc->StrokeLine((double) XWinSize / (double) (i-1),0.0,
 //						(double) XWinSize / (double) (i-1), (double) YWinSize);
@@ -322,12 +333,12 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
 				MidX = (double) XWinSize / 2.0;
 				MidY = (double) YWinSize / 2.0;
-				gc->Rotate(-RA_angle);
-				gc->Rotate(Dec_angle);
+				gc->Rotate(-pScope->RaAngle());
+				gc->Rotate(pScope->DecAngle());
 				gc->GetTransform().TransformPoint(&MidX, &MidY);
-				gc->Rotate(-Dec_angle);
+				gc->Rotate(-pScope->DecAngle());
 				gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
-				gc->Rotate(Dec_angle);
+				gc->Rotate(pScope->DecAngle());
 				gc->SetPen(wxPen(frame->GraphLog->DEC_Color,1,wxPENSTYLE_DOT ));
 				for (i=-2; i<12; i++) {
 					gc->StrokeLine(0.0,step * (double) i,
@@ -339,15 +350,13 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
 			}
 		}
-		if (Log_Images && (State >= STATE_SELECTED)) {
+		if ((Log_Images==1) && (State >= STATE_SELECTED)) {  // Save star image as a JPEG
 			wxBitmap SubBmp(60,60,-1);
 			wxMemoryDC tmpMdc;
-			//wxClientDC Cdc(canvas);
 			tmpMdc.SelectObject(SubBmp);
 			memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
 			memDC.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
-			//			tmpMdc.Blit(0,0,60,60,&dc,ROUND(LockX*ScaleFactor)-30,ROUND(LockY*ScaleFactor)-30);
-	#ifdef __APPLE__
+	#ifdef __APPLEX__
 			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*ScaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*ScaleFactor)-30,wxCOPY,false);
 	#else
 			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*ScaleFactor)-30,ROUND(StarY*ScaleFactor)-30,wxCOPY,false);
@@ -362,7 +371,10 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 			SubBmp.SaveFile(fname,wxBITMAP_TYPE_JPEG);
 			tmpMdc.SelectObject(wxNullBitmap);
 		}
-
+		else if ((Log_Images==2) && (State >= STATE_SELECTED)) { // Save star image as a FITS
+			SaveStarFITS();
+		}
+		
 
 
 /*		if (Log_Images && (State >= STATE_SELECTED) ) {  //GUIDING_LOCKED
@@ -386,3 +398,82 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
 
 
+void MyCanvas::SaveStarFITS() {
+	usImage tmpimg;
+	tmpimg.Init(60,60);
+	int start_x = ROUND(StarX)-30;
+	int start_y = ROUND(StarY)-30;
+	if ((start_x + 60) > CurrentFullFrame.Size.GetWidth())
+		start_x = CurrentFullFrame.Size.GetWidth() - 60;
+	if ((start_y + 60) > CurrentFullFrame.Size.GetHeight())
+		start_y = CurrentFullFrame.Size.GetHeight() - 60;
+	int x,y, width;
+	width = CurrentFullFrame.Size.GetWidth();
+	unsigned short *usptr = tmpimg.ImageData;
+	for (y=0; y<60; y++)
+		for (x=0; x<60; x++, usptr++)
+			*usptr = *(CurrentFullFrame.ImageData + (y+start_y)*width + (x+start_x));
+	wxString fname = LogFile->GetName();
+	wxDateTime CapTime;
+	CapTime=wxDateTime::Now();
+	fname = fname.BeforeLast('.') + CapTime.Format(_T("_%j_%H%M%S")) + _T(".fit");
+
+	fitsfile *fptr;  // FITS file pointer
+	int status = 0;  // CFITSIO status value MUST be initialized to zero!
+	long fpixel[3] = {1,1,1};
+	long fsize[3];
+	char keyname[9]; // was 9
+	char keycomment[100];
+	char keystring[100];
+	int output_format=USHORT_IMG;
+
+	fsize[0] = 60;
+	fsize[1] = 60;
+	fsize[2] = 0;
+	fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
+	if (!status) {
+		fits_create_img(fptr,output_format, 2, fsize, &status);
+
+		time_t now;
+		struct tm *timestruct;
+		time(&now);
+		timestruct=gmtime(&now);
+		sprintf(keyname,"DATE");
+		sprintf(keycomment,"UTC date that FITS file was created");
+		sprintf(keystring,"%.4d-%.2d-%.2d %.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
+		if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
+
+		sprintf(keyname,"DATE-OBS");
+		sprintf(keycomment,"YYYY-MM-DDThh:mm:ss observation start, UT");
+		sprintf(keystring,"%s",(const char*) CurrentFullFrame.ImgStartDate.c_str());
+		if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
+
+		sprintf(keyname,"EXPOSURE");
+		sprintf(keycomment,"Exposure time [s]");
+		float dur = (float) CurrentFullFrame.ImgExpDur / 1000.0;
+		if (!status) fits_write_key(fptr, TFLOAT, keyname, &dur, keycomment, &status);
+
+		unsigned int tmp = 1;
+		sprintf(keyname,"XBINNING");
+		sprintf(keycomment,"Camera binning mode");
+		fits_write_key(fptr, TUINT, keyname, &tmp, keycomment, &status);
+		sprintf(keyname,"YBINNING");
+		sprintf(keycomment,"Camera binning mode");
+		fits_write_key(fptr, TUINT, keyname, &tmp, keycomment, &status);
+		
+		sprintf(keyname,"XORGSUB");
+		sprintf(keycomment,"Subframe x position in binned pixels");
+		tmp = start_x;
+		fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
+		sprintf(keyname,"YORGSUB");
+		sprintf(keycomment,"Subframe y position in binned pixels");
+		tmp = start_y;
+		fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
+		
+		
+		if (!status) fits_write_pix(fptr,TUSHORT,fpixel,tmpimg.NPixels,tmpimg.ImageData,&status);
+
+	}
+	fits_close_file(fptr,&status);
+
+}

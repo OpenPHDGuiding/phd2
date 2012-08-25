@@ -33,9 +33,8 @@
  */
 
 #include "phd.h"
-#include "camera.h"
-#include "scope.h"
 #include <wx/config.h>
+#include <wx/fileconf.h>
 
 // Some specific camera includes
 #if defined (LE_PARALLEL_CAMERA)
@@ -52,16 +51,26 @@ extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
 #include "tele_INDI.h"
 #endif
 
-void MyFrame::ReadPreferences() {
+void MyFrame::ReadPreferences(wxString fname) {
 	long lval;
 	wxString sval;
 	//bool bval = false;
 	//double dval;
-	wxConfig *config = new wxConfig(_T("PHDGuiding"));
+	wxConfig *config;
+	
+	if (fname.IsEmpty()) 
+		config = new wxConfig(_T("PHDGuiding"));
+	else {
+		config = (wxConfig*) new wxFileConfig(_T("PHDGuiding"),"",fname);
+	}
+//	wxConfig *config = new wxConfig(_T("PHDGuiding"));
 
 	// Current mount
 	lval=0;
-	config->Read(_T("Mount"),&lval);
+	if (!config->Read(_T("Mount"),&lval)) {
+		wxMessageBox("This does not appear to be a valid PHD Settings file");
+		return;
+	}
 	switch (lval) {
 		case 0:
 			mount_menu->Check(MOUNT_ASCOM,true);
@@ -75,6 +84,7 @@ void MyFrame::ReadPreferences() {
 		case 7: mount_menu->Check(MOUNT_EQUINOX,true); break;
 		case 8: mount_menu->Check(MOUNT_GCUSBST4,true); break;
 		case 9: mount_menu->Check(MOUNT_INDI,true); break;
+		case 10: mount_menu->Check(MOUNT_EQMAC,true); break;
 //		default: mount_menu->Check(MOUNT_ASCOM,true);
 	}
 	config->Read(_T("RA Aggressiveness"),&RA_aggr);
@@ -89,6 +99,7 @@ void MyFrame::ReadPreferences() {
 	config->Read(_T("Star Mass Tolerance"),&StarMassChangeRejectThreshold);
 	config->Read(_T("Log"),&Log_Data);
 	config->Read(_T("Dither RA Only"),&DitherRAOnly);
+	config->Read(_T("Dither Scale Factor"),&DitherScaleFactor);
 	config->Read(_T("Subframes"),&UseSubframes);
 	lval = (long) Dec_guide;
 	config->Read(_T("Dec guide mode"),&lval);
@@ -97,6 +108,7 @@ void MyFrame::ReadPreferences() {
 	config->Read(_T("Dec algorithm"),&lval);
 	Dec_algo = (int) lval;
 	lval = (long) Max_Dec_Dur;
+	config->Read(_T("Dec slope weight"),&Dec_slopeweight);
 	config->Read(_T("Max Dec Dur"),&lval);
 	Max_Dec_Dur = (int) lval;
 	lval = (long) Max_RA_Dur;
@@ -130,6 +142,7 @@ void MyFrame::ReadPreferences() {
     config->Read(_T("INDImount"), &INDIScope.indi_name);
     config->Read(_T("INDImount_port"), &INDIScope.serial_port);
 #endif
+	lval = AdvDlg_fontsize;
 	config->Read(_T("Advanced Dialog Fontsize"),&lval);
 	AdvDlg_fontsize = (int) lval;
 	lval = (long) ServerMode;
@@ -146,8 +159,15 @@ void MyFrame::ReadPreferences() {
 	return;
 }
 
-void MyFrame::WritePreferences() {
-	wxConfig *config = new wxConfig(_T("PHDGuiding"));
+void MyFrame::WritePreferences(wxString fname) {
+	wxConfig *config;
+	
+	if (fname.IsEmpty()) 
+		config = new wxConfig(_T("PHDGuiding"));
+	else {
+		config = (wxConfig* ) new wxFileConfig(_T("PHDGuiding"),"",fname);
+	}
+
 
 	// Current mount
 	long mount=0;
@@ -161,6 +181,7 @@ void MyFrame::WritePreferences() {
 	else if (mount_menu->IsChecked(MOUNT_EQUINOX)) mount = 7;
 	else if (mount_menu->IsChecked(MOUNT_GCUSBST4)) mount = 8;
 	else if (mount_menu->IsChecked(MOUNT_INDI)) mount = 9;
+	else if (mount_menu->IsChecked(MOUNT_EQMAC)) mount = 10;
 	config->Write(_T("Mount"),mount);
 	config->Write(_T("RA Aggressiveness"),RA_aggr);
 	config->Write(_T("RA Hysteresis"),RA_hysteresis);
@@ -173,8 +194,10 @@ void MyFrame::WritePreferences() {
 	config->Write(_T("NRMode"),(long) NR_mode);
 	config->Write(_T("Log"),Log_Data);
 	config->Write(_T("Dither RA Only"),DitherRAOnly);
+	config->Write(_T("Dither Scale Factor"),DitherScaleFactor);
 	config->Write(_T("Dec guide mode"),(long) Dec_guide);
 	config->Write(_T("Dec algorithm"),(long) Dec_algo);
+	config->Write(_T("Dec slope weight"),Dec_slopeweight);
 	config->Write(_T("Max Dec Dur"), (long) Max_Dec_Dur);
 	config->Write(_T("Max RA Dur"), (long) Max_RA_Dur);
 	config->Write(_T("Subframes"),UseSubframes);
@@ -199,3 +222,25 @@ void MyFrame::WritePreferences() {
 	delete config;
 }
 
+void MyFrame::OnSettings(wxCommandEvent &evt) {
+	wxString fname;
+	if (evt.GetId() == MENU_SAVESETTINGS) {
+		fname = wxFileSelector(_T("Save settings file"),wxEmptyString, wxEmptyString,
+							   _T("txt"), wxT("Text settings files (*.txt)|*.txt"),
+							   wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		if (fname.IsEmpty()) return;  // Check for canceled dialog
+		if (!fname.EndsWith(_T(".txt")))
+			fname = fname + _T(".txt");
+		WritePreferences(fname);
+	}
+	else if (evt.GetId() == MENU_LOADSETTINGS) {
+		fname = wxFileSelector(_T("Load settings file"),wxEmptyString, wxEmptyString,
+							   _T("txt"), wxT("Text settings files (*.txt)|*.txt"),
+							   wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+		if (fname.IsEmpty()) return;  // Check for canceled dialog
+		//if (~fname.EndsWith(_T(".txt")))
+		//	fname = fname + _T(".txt");
+		ReadPreferences(fname);
+	}
+	
+}

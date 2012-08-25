@@ -51,6 +51,7 @@ Camera_SBIGClass::Camera_SBIGClass() {
 	//HasGainControl = true;
 	HasGuiderOutput = true;
 	UseTrackingCCD = false;
+	HasShutter = true;
 }
 
 bool Camera_SBIGClass::LoadDriver() {
@@ -239,7 +240,8 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 	short  err;
 	unsigned short *dataptr;
 
-	StartExposureParams sep;
+//	StartExposureParams sep;
+	StartExposureParams2 sep;
 	EndExposureParams eep;
 	QueryCommandStatusParams qcsp;
 	QueryCommandStatusResults qcsr;
@@ -262,7 +264,27 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 	}
 	// set duration
 	sep.exposureTime = (unsigned long) duration / 10;
-	sep.openShutter  = TRUE;
+	if (ShutterState == false) 
+		sep.openShutter  = SC_OPEN_SHUTTER;
+	else
+		sep.openShutter = SC_CLOSE_SHUTTER;
+
+	// Setup readout mode (now needed by StartExposure 2)
+	sep.readoutMode = RM_1X1;
+	if (UseSubframes && (frame->canvas->State > STATE_NONE)) {
+		sep.top = CropX;
+		sep.width = CROPXSIZE;
+		sep.left = CropY;
+		sep.height = CROPYSIZE;
+	}
+	else {
+		sep.top=0;
+		sep.left=0;
+		sep.width=(unsigned short) FullSize.GetWidth();
+		sep.height=(unsigned short) FullSize.GetHeight();
+	}
+
+
 
 	// init memory
 	if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
@@ -273,7 +295,9 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 
 
 	// Start exposure
-	err = SBIGUnivDrvCommand(CC_START_EXPOSURE, &sep, NULL);
+
+	
+	err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
 	if (err != CE_NO_ERROR) {
 		wxMessageBox(_T("Cannot start exposure"));
 		Disconnect();

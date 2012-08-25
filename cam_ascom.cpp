@@ -103,7 +103,7 @@ bool Camera_ASCOMClass::Connect() {
 
 
     try {
-		pCam->Connected = true;
+		pCam->Connected = VARIANT_TRUE;
 //		Cap_TECControl = (pCam->CanSetCCDTemperature ? true : false);
 		HasGuiderOutput = (pCam->CanPulseGuide ? true : false);
 		Name = (char *) pCam->Description; 
@@ -139,7 +139,7 @@ bool Camera_ASCOMClass::Disconnect() {
 	if (pCam==NULL)
 		return false;
 	try {
-		pCam->Connected = false;
+		pCam->Connected = VARIANT_FALSE;
 		pCam.Release();
     }
 	catch (...) {}
@@ -171,7 +171,7 @@ bool Camera_ASCOMClass::CaptureFull(int duration, usImage& img, bool recon) {
 	}
 
 	try {
-		pCam->StartExposure((double) duration / 1000.0, true);
+		pCam->StartExposure((double) duration / 1000.0, VARIANT_TRUE);
 	}
 	catch (...) {
 		wxMessageBox(_T("Cannot start exposure: ") + wxConvertStringFromOle(pCam->LastError), _T("Error"), wxOK | wxICON_ERROR);

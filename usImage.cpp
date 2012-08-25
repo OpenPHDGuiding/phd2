@@ -50,6 +50,8 @@ bool usImage::Init(int xsize, int ysize) {
 		ImageData = new unsigned short[NPixels];
 		if (!ImageData) return true;
 	}
+//	ImgStartDate = _T("");
+//	ImgExpDur = 0.0;
 	return false;
 }
 
@@ -93,7 +95,7 @@ bool usImage::Clean() {
 	return false;
 }
 
-bool usImage::CopyToImage(wxImage **rawimg, int /*min*/, int /*max*/, double power) {
+bool usImage::CopyToImage(wxImage **rawimg, int min, int max, double power) {
 	wxImage	*img;
 	unsigned char *ImgPtr;
 	unsigned short *RawPtr;
@@ -148,7 +150,7 @@ bool usImage::CopyToImage(wxImage **rawimg, int /*min*/, int /*max*/, double pow
 	return false;
 }
 
-bool usImage::BinnedCopyToImage(wxImage **rawimg, int /*min*/, int /*max*/, double power) {
+bool usImage::BinnedCopyToImage(wxImage **rawimg, int min, int max, double power) {
 	wxImage	*img;
 	unsigned char *ImgPtr;
 	unsigned short *RawPtr;
@@ -215,4 +217,14 @@ bool usImage::BinnedCopyToImage(wxImage **rawimg, int /*min*/, int /*max*/, doub
 	}
 	*rawimg = img;
 	return false;
+}
+
+void usImage::InitDate() {
+	time_t now;
+	struct tm *timestruct;
+	time(&now);
+	timestruct=gmtime(&now);		
+	ImgStartDate=wxString::Format("%.4d-%.2d-%.2dT%.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,
+		timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
+
 }

@@ -2,8 +2,8 @@
  *  scope.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created by Bret McKee
+ *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,8 @@
  *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *    Neither the name of Bret McKee, Dad Dog Development,
+ *     Craig Stark, Stark Labs nor the names of its 
  *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
  *
@@ -31,28 +32,16 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef OPENPHD
-/* Open PHD defines the available drivers in CMakeLists.txt rather than
-   statically here
- */
 
-#if defined (__WINDOWS__)
-#define GUIDE_ASCOM
-#define GUIDE_GPUSB
-#define GUIDE_PARALLEL
-#define GUIDE_VOYAGER
-#define GUIDE_NEB
-#elif defined (__APPLE__)
-#define GUIDE_GPUSB
-#define GUIDE_GCUSBST4
-#define GUIDE_EQUINOX
-#define GUIDE_VOYAGER
-#define GUIDE_NEB
-#endif
-#define GUIDE_ONBOARD
+#ifndef SCOPE_H_INCLUDED
+#define SCOPE_H_INCLUDED
 
-#endif /* OPENPHD */
+class Scope:public Mount
+{
+public:
+    virtual bool Calibrate(void);
+    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
+    virtual bool IsGuiding()=0;
+};
 
-extern void GuideScope(int direction, int duration);
-extern void CalibrateScope();
-extern void DisconnectScope();
+#endif /* SCOPE_H_INCLUDED */

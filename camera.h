@@ -32,53 +32,39 @@
  *
  */
 
+#ifndef CAMERA_H_INCLUDED
+#define CAMERA_H_INCLUDED
 
-#ifndef OPENPHD
-/* Open PHD defines the available drivers in CMakeLists.txt rather than
-   statically here
- */
+class GuideCamera {
+public:
+	wxString			Name;					// User-friendly name
+	wxSize			FullSize;			// Size of current image
+	bool				Connected;
+	bool			HasGuiderOutput;
+	bool			HasPropertyDialog;
+	bool			HasPortNum;
+	bool			HasDelayParam;
+	bool			HasGainControl;
+	bool			HasShutter;
+	short			Port;
+	int				Delay;
+	bool			ShutterState;  // false=light, true=dark
 
-// Defines to define specific camera availability
+	virtual bool	CaptureFull(int WXUNUSED(duration), usImage& WXUNUSED(img), bool WXUNUSED(recon)) { return true; }
+	virtual bool	CaptureFull(int duration, usImage& img) { return CaptureFull(duration, img, true); }	// Captures a full-res shot
+//	virtual bool	CaptureCrop(int duration, usImage& img) { return true; }	// Captures a 160 x 120 cropped portion
+	virtual bool	Connect() { return true; }		// Opens up and connects to camera
+	virtual bool	Disconnect() { return true; }	// Disconnects, unloading any DLLs loaded by Connect
+	virtual void	InitCapture() { return; }		// Gets run at the start of any loop (e.g., reset stream, set gain, etc).
+	virtual bool	PulseGuideScope (int WXUNUSED(direction), int WXUNUSED(duration)) { return true; }
+	virtual void	ShowPropertyDialog() { return; }
+	GuideCamera() { Connected = FALSE;  Name=_T("");
+		HasGuiderOutput = false; HasPropertyDialog = false; HasPortNum = false; HasDelayParam = false;
+		HasGainControl = false; HasShutter=false; ShutterState=false; }
+	~GuideCamera(void) {};
+};
 
-#if defined (ORION)
- #define ORION_DSCI
- #define SSAG
- #define SSPIAG
- //#define WDM_CAMERA
-#elif defined (__WINDOWS__)  // Windows cameras
- #define QGUIDE
- #define VFW_CAMERA
- #define LE_PARALLEL_CAMERA
- #define LE_LXUSB_CAMERA
- #define ORION_DSCI
- #define WDM_CAMERA
- #define SAC42
- #define ATIK16
- #define SSAG
- #define SSPIAG
- #define FIREWIRE
- #define SBIG
- #define MEADE_DSI
- #define STARFISH
- #define OS_PL130
- #define SIMULATOR
- #define SXV
- #define ASCOM_CAMERA
- #define ASCOM_LATECAMERA
- #define ATIK_GEN3
-// #define NEB_SBIG
-#elif defined (__APPLE__)  // Mac cameras
- #define FIREWIRE
- #define SBIG
- #define MEADE_DSI
- #define STARFISH
- #define SIMULATOR
- #define SXV
-// #define NEB_SBIG
-#endif
+#endif /* CAMERA_H_INCLUDED */
 
-
-extern bool DLLExists (wxString DLLName);
-#endif /* OPENPHD */
-
-extern void InitCameraParams();
+extern bool GuideCameraConnected;
+extern GuideCamera *CurrentGuideCamera;

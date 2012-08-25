@@ -219,7 +219,7 @@ int FindStar(usImage& img) {
 				maxlval = lval;
 			}
 			sval = *(dataptr + (start_x + x) + rowsize * (start_y + y)) -localmin;
-			if ( sval > max) {
+			if ( sval >= max) {
 				nearmax2 = nearmax1;
 				nearmax1 = max;
 				max = sval;
@@ -229,7 +229,7 @@ int FindStar(usImage& img) {
 	}
 	mean = mean / (searchsize * searchsize);
 	frame->SetStatusText(_T(""),1);
-	if ((frame->canvas->State == STATE_SELECTED) && (nearmax1 == nearmax2) && (nearmax1 == maxlval)) { // alert user that this is not the best star
+	if ((frame->canvas->State == STATE_SELECTED) && (nearmax1 == nearmax2) && (nearmax1 == max)) { // alert user that this is not the best star
 //		wxMessageBox(wxString::Format("This star appears to be saturated and will lead to sub-optimal\nguiding results.  You may wish to select another star, decrease\nexposure duration or decrease camera gain"));
 		frame->SetStatusText(_T("SATURATED STAR"),1);
 	}
@@ -403,13 +403,28 @@ bool Subtract(usImage& light, usImage& dark) {
 
 	lptr = light.ImageData;
 	dptr = dark.ImageData;
-
+    int mindiff = 0;
+    int diff;
+    
+	for (i=0; i<light.NPixels; i++, lptr++, dptr++) {
+        diff = (int) *lptr - (int) *dptr;
+        if (diff < mindiff)
+            mindiff = diff;
+    }
+    lptr = light.ImageData;
+	dptr = dark.ImageData;
+    int offset = 0;
+    if (mindiff < 0) // dark was lighter than light
+        offset = -mindiff;
+    
 	for (i=0; i<light.NPixels; i++, lptr++, dptr++)
+        *lptr = (unsigned short) ((int) *lptr - (int) *dptr + offset);
+        /*
 		if ((*lptr + 100) > *dptr)
 			*lptr = *lptr + 100 - *dptr;
 		else
 			*lptr = 0;
-
+*/
 	return false;
 }
 

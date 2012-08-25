@@ -51,7 +51,6 @@ Camera_SimClass::Camera_SimClass() {
 	FullSize = wxSize(640,480);
 	HasGuiderOutput = true;
 
-//	FullSize = wxSize(1360,1024);
 }
 
 bool Camera_SimClass::Connect() {
@@ -68,14 +67,10 @@ bool Camera_SimClass::Disconnect() {
 }
 
 
-#if defined (__APPLE__)
-#include "../cfitsio/fitsio.h"
-#else
 #include <fitsio.h>
-#endif
 
 #if SIMMODE==1
-bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool /*recon*/) {
+bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool recon) {
 	int xsize, ysize;
 //	unsigned short *dataptr;
 //	int i;
@@ -89,9 +84,9 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool /*r
 //	char keystrval[80];
 
 #if defined (__APPLE__)
-	if ( !fits_open_file(&fptr, "/Users/stark/dev/PHD/image_02.fit", READONLY, &status) ) {
+	if ( !fits_open_file(&fptr, "/Users/stark/dev/PHD/simimage.fit", READONLY, &status) ) {
 #else
-	if ( !fits_open_diskfile(&fptr, "simimage.fit", READONLY, &status) ) {
+	if ( !fits_open_diskfile(&fptr, "phd011412.fit", READONLY, &status) ) {
 #endif
 		if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
 			(void) wxMessageBox(wxT("FITS file is not of an image"),wxT("Error"),wxOK | wxICON_ERROR);
@@ -170,10 +165,12 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 	int xsize, ysize;
 
 
+	FullSize = wxSize(640,480);
+	FullSize = wxSize(1280,800);
 	exptime = duration;
 	gain = 30;
 	offset = 100;
-   start_time = clock();
+	start_time = clock();
 	srand(2);
 	xsize = FullSize.GetWidth();
 	ysize = FullSize.GetHeight();

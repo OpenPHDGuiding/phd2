@@ -42,11 +42,8 @@
 #include <wx/utils.h>
 #include <wx/textfile.h>
 #include <wx/socket.h>
-#include "usImage.h"
-#include "graph.h"
-#include "camera.h"
-#include "scope.h"
-#define VERSION _T("1.12.4")
+
+#define VERSION _T("1.13.6")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
@@ -79,13 +76,23 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define PI 3.1415926
 #endif
 
-
 #define CROPXSIZE 100
 #define CROPYSIZE 100
 
-
 #define ROUND(x) (int) floor(x + 0.5)
 
+// these two macros are used for throwing exceptions
+#define ERROR_STR(x) #x
+#define ERROR_INFO(s) ("Error in " __FILE__ " line " ERROR_STR(__LINE__) ":" s)
+
+#include "phdlog.h"
+#include "usImage.h"
+#include "graph.h"
+#include "cameras.h"
+#include "scopes.h"
+
+#if 1
+// these seem to be the windowing/display related globals
 
 class MyApp: public wxApp
 {
@@ -102,14 +109,15 @@ class MyCanvas: public wxWindow {
 	double	ScaleFactor;
 	bool binned;
 
-   MyCanvas(wxWindow *parent);
+	MyCanvas(wxWindow *parent);
     ~MyCanvas(void);
 
-   void OnPaint(wxPaintEvent& evt);
+	void OnPaint(wxPaintEvent& evt);
 	void FullFrameToDisplay();
   private:
 	void OnLClick(wxMouseEvent& evt);
 	void OnErase(wxEraseEvent& evt);
+	void SaveStarFITS();
 	DECLARE_EVENT_TABLE()
 };
 
@@ -137,6 +145,7 @@ public:
 	void OnOverlay(wxCommandEvent& evt);
 	void OnInstructions(wxCommandEvent& evt);
 	void OnSave(wxCommandEvent& evt);
+	void OnSettings(wxCommandEvent& evt);
 	void OnLog(wxCommandEvent& evt);
 	void OnConnectScope(wxCommandEvent& evt);
 	void OnConnectCamera(wxCommandEvent& evt);
@@ -144,11 +153,13 @@ public:
 	void OnButtonStop(wxCommandEvent& evt);
 	void OnDark(wxCommandEvent& evt);
 	void OnClearDark(wxCommandEvent& evt);
+    void OnLoadSaveDark(wxCommandEvent& evt);
 	void OnGuide(wxCommandEvent& evt);
 	void OnAdvanced(wxCommandEvent& evt);
 	void OnIdle(wxIdleEvent& evt);
 	void OnTestGuide(wxCommandEvent& evt);
 	void OnEEGG(wxCommandEvent& evt);
+	void OnDriftTool(wxCommandEvent& evt);
 	void OnSetupCamera(wxCommandEvent& evt);
 	void OnGammaSlider(wxScrollEvent& evt);
 	void OnServerEvent(wxSocketEvent& evt);
@@ -169,61 +180,17 @@ public:
 	void OnStarProfile(wxCommandEvent& evt);
 	void OnAutoStar(wxCommandEvent& evt);
 	void SetExpDuration();
-	void ReadPreferences();
-	void WritePreferences();
+	void ReadPreferences(wxString fname);
+	void WritePreferences(wxString fname);
 	bool Voyager_Connect();
-	void OnVoyagerEvent(wxSocketEvent& evt);
+#ifndef __WXGTK__
+	void OnDonateMenu(wxCommandEvent& evt);
+#endif
 private:
 
 	DECLARE_EVENT_TABLE()
 };
 
-
-class GuideCamera {
-public:
-	wxString			Name;					// User-friendly name
-	wxSize			FullSize;			// Size of current image
-	bool				Connected;
-	bool			HasGuiderOutput;
-	bool			HasPropertyDialog;
-	bool			HasPortNum;
-	bool			HasDelayParam;
-	bool			HasGainControl;
-	short			Port;
-	int				Delay;
-
-	virtual bool	CaptureFull(int WXUNUSED(duration), usImage& WXUNUSED(img), bool WXUNUSED(recon)) { return true; }
-	virtual bool	CaptureFull(int duration, usImage& img) { return CaptureFull(duration, img, true); }	// Captures a full-res shot
-//	virtual bool	CaptureCrop(int duration, usImage& img) { return true; }	// Captures a 160 x 120 cropped portion
-	virtual bool	Connect() { return true; }		// Opens up and connects to camera
-	virtual bool	Disconnect() { return true; }	// Disconnects, unloading any DLLs loaded by Connect
-	virtual void	InitCapture() { return; }		// Gets run at the start of any loop (e.g., reset stream, set gain, etc).
-	virtual bool	PulseGuideScope (int WXUNUSED(direction), int WXUNUSED(duration)) { return true; }
-	virtual void	ShowPropertyDialog() { return; }
-	GuideCamera() { Connected = FALSE;  Name=_T("");
-		HasGuiderOutput = false; HasPropertyDialog = false; HasPortNum = false; HasDelayParam = false;
-		HasGainControl = false; }
-	~GuideCamera(void) {};
-
-
-};
-
-enum {
-	STATE_NONE = 0,
-	STATE_SELECTED,
-	STATE_CALIBRATING,
-	STATE_GUIDING_LOCKED,
-	STATE_GUIDING_LOST
-};
-
-enum {
-	STAR_OK = 0,
-	STAR_SATURATED,
-	STAR_LOWSNR,
-	STAR_LOWMASS,
-	STAR_MASSCHANGE,
-	STAR_LARGEMOTION
-};
 
 enum {
 	MENU_SHOWHELP = 101,
@@ -236,6 +203,7 @@ enum {
 	MOUNT_NEB,
 	MOUNT_VOYAGER,
 	MOUNT_EQUINOX,
+	MOUNT_EQMAC,
 	MOUNT_GCUSBST4,
 	MOUNT_INDI,
 	BUTTON_SCOPE,
@@ -268,6 +236,11 @@ enum {
 	MENU_GRAPH,
 	MENU_STARPROFILE,
 	MENU_AUTOSTAR,
+	MENU_DRIFTTOOL,
+	MENU_SAVESETTINGS,
+	MENU_LOADSETTINGS,
+    MENU_LOADDARK,
+    MENU_SAVEDARK,
 	MENU_INDICONFIG,
 	MENU_INDIDIALOG,
 	MENU_V4LSAVESETTINGS,
@@ -284,6 +257,10 @@ enum {
 	GRAPH_MRAD,
 	GRAPH_DM,
 //	EEGG_FITSSAVE,
+	DONATE1,
+	DONATE2,
+	DONATE3,
+	DONATE4,
 	EEGG_TESTGUIDEDIR,
 	EEGG_MANUALCAL,
 	EEGG_CLEARCAL,
@@ -292,11 +269,93 @@ enum {
 	EEGG_RANDOMMOTION
 };
 
+extern MyFrame *frame;
+
+extern int AdvDlg_fontsize;
+extern int XWinSize;
+extern int YWinSize;
+extern int OverlayMode;
+#endif
+
+#if 0
+// these seem like the scope related globals
+extern wxString ScopeName;
+extern int ScopeConnected;
+extern bool ScopeCanPulseGuide;
+extern bool CheckPulseGuideMotion;
+extern bool Calibrated;	// Do we know cal parameters?
+extern double RA_rate;
+extern double RA_angle;	// direction of positive (west) RA engagement
+extern double Dec_rate;
+extern double Dec_angle;
+#else
+extern Scope *pScope;
+#endif
+
+#if 1
+// these seem like the logging related globals
+extern wxTextFile *LogFile;
+extern bool Log_Data;
+extern int Log_Images;
+#endif
+
+#if 1
+// these seem like the camera related globals
 enum {
-	NORTH = 0,	// Dec+  RA+(W), Dec+(N), Dec-(S), RA-(E)
-	SOUTH,		// Dec-
-	EAST,		// RA-
-	WEST		// RA+
+	NR_NONE,
+	NR_2x2MEAN,
+	NR_3x3MEDIAN
+};
+
+extern bool	CaptureActive; // Is camera looping captures?
+extern bool UseSubframes; // Use subframes if possible from camera
+extern int NR_mode;
+extern bool HaveDark;
+extern int	DarkDur;
+extern int CropX;		// U-left corner of crop position
+extern int CropY;
+extern int	ExpDur; // exposure duration
+extern int  Time_lapse;		// Delay between frames (useful for vid cameras)
+extern int	GuideCameraGain;
+extern usImage CurrentFullFrame;
+extern usImage CurrentDarkFrame;
+extern double Stretch_gamma;
+#endif
+
+#if 1
+// Thse seem like the lock point releated globals
+
+enum {
+	STAR_OK = 0,
+	STAR_SATURATED,
+	STAR_LOWSNR,
+	STAR_LOWMASS,
+	STAR_MASSCHANGE,
+	STAR_LARGEMOTION
+};
+
+extern double StarMass;
+extern double StarSNR;
+extern double StarMassChangeRejectThreshold;
+extern double StarX;	// Where the star is in full-res coords
+extern double StarY;
+extern double LastdX;	// Star movement on last frame
+extern double LastdY;
+extern double dX;		// Delta between current and locked star position
+extern double dY;
+extern double LockX;	// Place where we should be locked to -- star's starting point
+extern double LockY;
+extern bool FoundStar;	// Do we think we have a star?
+#endif
+
+#if 1
+// Thse seem like the guide releated globals
+enum {
+	STATE_NONE = 0,
+	STATE_SELECTED,
+	STATE_CALIBRATING,
+	STATE_GUIDING_LOCKED,
+	STATE_GUIDING_LOST
 };
 
 enum {
@@ -312,83 +371,35 @@ enum {
 	DEC_LOWPASS2
 };
 
-enum {
-	NR_NONE,
-	NR_2x2MEAN,
-	NR_3x3MEDIAN
-};
-
-enum {
-	SERVER_ID = 100,
-	SOCKET_ID,
-	VOYAGER_ID
-};
-
-extern MyFrame *frame;
-#if defined (__WINDOWS__)
-extern IDispatch *ScopeDriverDisplay;
-#endif
-extern wxString ScopeName;
-extern wxTextFile *LogFile;
-extern int ScopeConnected;
-extern bool ScopeCanPulseGuide;
-extern bool CheckPulseGuideMotion;
-extern bool GuideCameraConnected;
-extern bool Calibrated;	// Do we know cal parameters?
-extern bool	CaptureActive; // Is camera looping captures?
-extern bool UseSubframes; // Use subframes if possible from camera
-extern double StarMass;
-extern double StarSNR;
-extern double StarMassChangeRejectThreshold;
-extern double RA_rate;
-extern double RA_angle;	// direction of positive (west) RA engagement
-extern double Dec_rate;
-extern double Dec_angle;
+extern int	Cal_duration;
 extern double RA_hysteresis;
 extern double Dec_slopeweight;
 extern int Max_Dec_Dur;
 extern int Max_RA_Dur;
 extern double RA_aggr;
-extern int	Cal_duration;
 extern int Dec_guide;
 extern int Dec_algo;
-extern int NR_mode;
-extern int AdvDlg_fontsize;
-extern bool DisableGuideOutput;
 extern bool DitherRAOnly;
-extern bool Log_Data;
-extern bool Log_Images;
-extern GuideCamera *CurrentGuideCamera;
-extern usImage CurrentFullFrame;
-extern usImage CurrentDarkFrame;
-extern bool HaveDark;
-extern int	DarkDur;
-extern int CropX;		// U-left corner of crop position
-extern int CropY;
-extern double StarX;	// Where the star is in full-res coords
-extern double StarY;
-extern double LastdX;	// Star movement on last frame
-extern double LastdY;
-extern double dX;		// Delta between current and locked star position
-extern double dY;
-extern double LockX;	// Place where we should be locked to -- star's starting point
-extern double LockY;
-extern bool ManualLock;	// In manual lock position mode?  (If so, don't re-lock on start of guide)
 extern double MinMotion; // Minimum star motion to trigger a pulse
 extern int SearchRegion; // how far u/d/l/r do we do the initial search
-extern bool FoundStar;	// Do we think we have a star?
+extern bool DisableGuideOutput;
+extern bool ManualLock;	// In manual lock position mode?  (If so, don't re-lock on start of guide)
+extern double CurrentError;
 extern int Abort;		// Flag turned true when Abort button hit.  1=Abort, 2=Abort Loop and start guiding
-extern int	ExpDur; // exposure duration
-extern int  Time_lapse;		// Delay between frames (useful for vid cameras)
-extern int	GuideCameraGain;
-extern double Stretch_gamma;
-extern int XWinSize;
-extern int YWinSize;
-extern int OverlayMode;
 extern bool Paused;	// has PHD been told to pause guiding?
+#endif
+
+#if 1
+// these seem like the server related globals
+enum {
+	SERVER_ID = 100,
+	SOCKET_ID,
+};
+
+extern double DitherScaleFactor;	// How much to scale the dither commands
 extern bool ServerMode;
 extern bool RandomMotionMode;
 extern wxSocketServer *SocketServer;
 extern int SocketConnections;
-extern double CurrentError;
+#endif
 
