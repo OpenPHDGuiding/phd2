@@ -122,19 +122,24 @@ Camera_DSIClass Camera_MeadeDSI;
 Camera_SSAGClass Camera_SSAG;
 #endif
 
+#if defined (OPENSSAG)
+#include "cam_openssag.h"
+Camera_OpenSSAGClass Camera_OpenSSAG;
+#endif
+
 #if defined (SSPIAG)
 #include "cam_SSPIAG.h"
 Camera_SSPIAGClass Camera_SSPIAG;
 #endif
 
-
-#if defined (ASCOM_CAMERA)
- #include "cam_ascom.h"
- Camera_ASCOMClass Camera_ASCOM;
+#if defined (INOVA_PLC)
+#include "cam_INovaPLC.h"
+Camera_INovaPLCClass Camera_INovaPLC;
 #endif
 
- #if defined (ASCOM_LATECAMERA)
-  #include "cam_ascom.h"
+#if defined (ASCOM_LATECAMERA)
+ #include "cam_ascom.h"
+// Camera_ASCOMClass Camera_ASCOM;
  Camera_ASCOMLateClass Camera_ASCOMLate;
 #endif
 
@@ -159,8 +164,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	wxArrayString Cameras;
 	wxString Choice;
 	
-#if defined (SIMULATOR)
-	Cameras.Add(_T("Simulator"));
+	Cameras.Add(_T("None"));
+#if defined (ASCOM_LATECAMERA)
+	Cameras.Add(_T("ASCOM (Late) Camera"));
 #endif
 #if defined (ATIK16)
 	Cameras.Add(_T("Atik 16 series, mono"));
@@ -176,6 +182,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #if defined (STARFISH)
 	Cameras.Add(_T("Fishcamp Starfish"));
 #endif
+#if defined (INOVA_PLC)
+	Cameras.Add(_T("i-Nova PLC-M"));
+#endif
 #if defined (SSAG)
 	Cameras.Add(_T("StarShoot Autoguider"));
 #endif
@@ -188,6 +197,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #endif
 #if defined (ORION_DSCI)
 	Cameras.Add(_T("Orion StarShoot DSCI"));
+#endif
+#if defined (OPENSSAG)
+	Cameras.Add(_T("Orion StarShoot Autoguider"));
 #endif
 #if defined (QGUIDE)
 	Cameras.Add(_T("MagZero MZ-5"));
@@ -223,9 +235,6 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #if defined (ASCOM_CAMERA)
 	Cameras.Add(_T("ASCOM v5 Camera"));
 #endif
-#if defined (ASCOM_LATECAMERA)
-	Cameras.Add(_T("ASCOM (Late) Camera"));
-#endif
 #if defined (INDI_CAMERA)
     Cameras.Add(_T("INDI Camera"));
 #endif
@@ -234,14 +243,13 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
         Cameras.Add(_T("V4L(2) Camera"));
     }
 #endif
+#if defined (SIMULATOR)
+	Cameras.Add(_T("Simulator"));
+#endif
 
 #if defined (NEB_SBIG)
 	Cameras.Add(_T("Guide chip on SBIG cam in Nebulosity"));
 #endif
-	if (GuideCameraConnected) {
-		SetStatusText(CurrentGuideCamera->Name + _T(" disconnected"));
-		CurrentGuideCamera->Disconnect();
-	}
 	Choice = Cameras[0];
 	wxConfig *config = new wxConfig(_T("PHDGuiding"));
 	if (wxGetKeyState(WXK_SHIFT)) { // use the last camera chosen and bypass the dialog
@@ -252,9 +260,25 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	else
 		Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras,
 			this,-1,-1,true,300,500);
+	if (Choice.IsEmpty()) {
+		if (config) delete config;
+		return;
+	}
+	// Disconnect current camera
+	if (GuideCameraConnected) {
+		SetStatusText(CurrentGuideCamera->Name + _T(" disconnected"));
+		CurrentGuideCamera->Disconnect();
+	}
 
 	if (Choice.Find(_T("Simulator")) + 1)
 		CurrentGuideCamera = &Camera_Simulator;
+	else if (Choice.Find(_T("None")) + 1) {
+		CurrentGuideCamera = NULL;
+		GuideCameraConnected = false;
+		SetStatusText(_T("No cam"),3);
+		if (config) delete config;
+		return;
+	}
 #if defined (SAC42)
 	else if (Choice.Find(_T("SAC4-2")) + 1)
 		CurrentGuideCamera = &Camera_SAC42;
@@ -288,6 +312,14 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		CurrentGuideCamera = &Camera_QGuider;
 		Camera_QGuider.Name = _T("MagZero MZ-5");
 	}
+#endif
+/*#if defined (OPENSSAG)
+	else if (Choice.Find(_T("Open StarShoot AutoGuider")) + 1)
+		CurrentGuideCamera = &Camera_OpenSSAG;
+#endif*/
+#if defined (OPENSSAG)
+	else if (Choice.Find(_T("Orion StarShoot Autoguider")) + 1)
+		CurrentGuideCamera = &Camera_OpenSSAG;
 #endif
 #if defined (SSAG)
 	else if (Choice.Find(_T("StarShoot Autoguider")) + 1)
@@ -361,6 +393,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	else if (Choice.Find(_T("ASCOM (Late) Camera")) + 1)
 		CurrentGuideCamera = &Camera_ASCOMLate;
 #endif
+#if defined (ASCOM_LATECAMERA)
+	else if (Choice.Find(_T("i-Nova PLC-M")) + 1)
+		CurrentGuideCamera = &Camera_INovaPLC;
+#endif
 #if defined (INDI_CAMERA)
 	else if (Choice.Find(_T("INDI Camera")) + 1)
 		CurrentGuideCamera = &Camera_INDI;
@@ -407,6 +443,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		CurrentGuideCamera = NULL;
 		GuideCameraConnected = false;
 		SetStatusText(_T("No cam"),3);
+		wxMessageBox(_T("Unknown camera choice"));
 		if (config) delete config;
 		return;
 	}
@@ -425,7 +462,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	GuideCameraConnected = true;
 	SetStatusText(_T("Camera"),3);
 	Loop_Button->Enable(true);
-	Guide_Button->Enable(ScopeConnected > 0);
+	Guide_Button->Enable(pScope->IsConnected());
 	config->Write(_T("LastCameraChoice"),Choice);
 	if (config) delete config;
 	if (CurrentGuideCamera->HasPropertyDialog)
@@ -433,7 +470,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	else
 		Setup_Button->Enable(false);
 	if (frame->mount_menu->IsChecked(MOUNT_CAMERA) && CurrentGuideCamera->HasGuiderOutput) {
-		ScopeConnected = MOUNT_CAMERA;
+        if (!pScope->IsConnected())
+        {
+            pScope->Connect();
+        }
 		frame->SetStatusText(_T("Scope"),4);
 	}
 

@@ -35,9 +35,12 @@
 
 #include "phd.h"
 #include <wx/log.h>
+#include "socket_server.h"
 
 wxSocketBase *ServerEndpoint;
 wxLogWindow *SocketLog = NULL;
+
+extern int FindStar(usImage& img);
 
 enum {
 	MSG_PAUSE = 1,
@@ -52,7 +55,9 @@ enum {
 	MSG_REQDIST,
 	MSG_REQFRAME,
 	MSG_MOVE4,
-	MSG_MOVE5
+	MSG_MOVE5,
+	MSG_AUTOFINDSTAR,
+    MSG_SETLOCKPOSITION
 };
 
 void MyFrame::OnServerMenu(wxCommandEvent &evt) {
@@ -112,8 +117,9 @@ void MyFrame::OnServerEvent(wxSocketEvent& event) {
 	ServerEndpoint = SocketServer->Accept(false);
 
 	if (ServerEndpoint) {
+        frame->SetStatusText("New connection");
 		wxLogStatus(_T("New cnxn"));
-	}
+ 	}
 	else {
 		wxLogStatus(_T("Cnxn error"));
 		return;
@@ -128,7 +134,7 @@ void MyFrame::OnServerEvent(wxSocketEvent& event) {
 
 void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 	wxSocketBase *sock = event.GetSocket();
-
+	int ival;
 	if (SocketServer == NULL) return;
 //	sock = SocketServer;
 	// First, print a message
@@ -153,10 +159,14 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 			float rx, ry;
 			float size = 1.0;
 			switch (c) {
-				case MSG_PAUSE: Paused = true;
+				case MSG_PAUSE: 
+				case 'p':
+					Paused = true;
 					wxLogStatus(_T("Paused"));
 					break;
-				case MSG_RESUME: Paused = false;
+				case MSG_RESUME:
+				case 'r':
+					Paused = false;
 					wxLogStatus (_T("Resumed"));
 					break;
 				case MSG_MOVE1:  // +/- 0.5
@@ -176,13 +186,14 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 						size = 4.0;
 					else if (c==MSG_MOVE5)
 						size = 5.0;
+					size = size * DitherScaleFactor;
 					rx = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
 					ry = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
 					if (DitherRAOnly) {
-						if (fabs(tan(RA_angle)) > 1) 
-							rx = ry / tan(RA_angle);
+						if (fabs(tan(pScope->RaAngle())) > 1) 
+							rx = ry / tan(pScope->RaAngle());
 						else	
-							ry = tan(RA_angle) * rx;
+							ry = tan(pScope->RaAngle()) * rx;
 					}
 					LockX = LockX + rx;
 					LockY = LockY + ry;
@@ -202,6 +213,35 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 						rval = (unsigned char) (CurrentError * 100);
 					if (canvas->State == STATE_NONE) rval = 0; // Idle -- let Neb free up
 					wxLogStatus(_T("Sending pixel error of %.2f"),(float) rval / 100.0);
+					break;
+				case MSG_AUTOFINDSTAR:
+//				case 'f':
+					wxCommandEvent *tmp_evt;
+					tmp_evt = new wxCommandEvent(0,wxID_EXECUTE);
+					ival = canvas->State; // save state going in
+					canvas->State = STATE_NONE;
+					OnAutoStar(*tmp_evt);
+					if (StarX + StarY)  // found a star, so reset the state
+						canvas->State = ival;
+					delete tmp_evt;
+					break;
+				case MSG_SETLOCKPOSITION:
+                case 's':
+                    // Sets LockX and LockY to be user-specified
+                    unsigned short x,y;
+                    Paused = true;
+                    sock->Read(&x, 2);
+                    sock->Read(&y, 2);
+                    wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
+                    sock->Discard();  // Clean out anything else
+                    StarX=x;
+                    StarY=y;
+                    dX = dY = 0.0;
+                    canvas->State=STATE_SELECTED;
+                    FindStar(CurrentFullFrame);
+                    LockX = StarX;
+                    LockY = StarY;
+                    Paused = false;
 					break;
 				default:
 					wxLogStatus(_T("Unknown test id received from client: %d"),(int) c);
@@ -359,287 +399,3 @@ bool ServerReqFrame(int duration, usImage& img) {
 
 	return false;
 }
-
-
-wxSocketClient *VoyagerClient;
-
-bool MyFrame::Voyager_Connect() {
-	wxIPV4address addr;
-
-	addr.Hostname(_T("localhost"));
-	addr.Service(4030);
-
-	VoyagerClient = new wxSocketClient();
-	// Setup the event handler and subscribe to most events
-	VoyagerClient->SetEventHandler(*this, VOYAGER_ID);
-	VoyagerClient->SetNotify(wxSOCKET_CONNECTION_FLAG |
-							wxSOCKET_INPUT_FLAG |
-							wxSOCKET_LOST_FLAG);
-	VoyagerClient->Notify(true);
-
-	VoyagerClient->Connect(addr, false);
-	VoyagerClient->WaitOnConnect(5);
-	//	SocketClient->SetFlags(wxSOCKET_BLOCK);
-
-	if (VoyagerClient->IsConnected()) {
-		if (!SocketLog) {
-			SocketLog = new wxLogWindow(this,wxT("Server log"));
-			SocketLog->SetVerbose(true);
-			wxLog::SetActiveTarget(SocketLog);
-		}
-		wxMessageBox(_T("Connection established"));
-//		StatusText->SetLabel("Connection OK");
-		wxLogStatus(_T("Connection to Voyager OK"));
-		return false;
-	}
-	else {
-		// Localhost failed, try asking for IP
-		VoyagerClient->Close();
-		wxString IPstr = wxGetTextFromUser(_T("Enter IP address"),_T("Voyager not found on localhost"));
-		addr.Hostname(IPstr);
-		addr.Service(4030);
-		VoyagerClient->Connect(addr,false);
-		VoyagerClient->WaitOnConnect(5);
-		if (VoyagerClient->IsConnected()) {
-			if (!SocketLog) {
-				SocketLog = new wxLogWindow(this,wxT("Server log"));
-				SocketLog->SetVerbose(true);
-				wxLog::SetActiveTarget(SocketLog);
-			}
-			wxMessageBox(_T("Connection established"));
-			//		StatusText->SetLabel("Connection OK");
-			wxLogStatus(_T("Connection to Voyager OK"));
-			return false;
-		}
-		else {
-			VoyagerClient->Close();
-			wxLogStatus(_T("Failed to connect to Voyager"));
-			delete VoyagerClient;
-			VoyagerClient = NULL;
-	//		StatusText->SetLabel("Connection failed");
-			wxMessageBox(_T("Can't connect to the specified host"), _T("Alert !"));
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void MyFrame::OnVoyagerEvent(wxSocketEvent& event) {
-	// may not need this since we never get direct input from Voyager -- here as a placeholder
-
-	switch(event.GetSocketEvent())	{
-		case wxSOCKET_INPUT      :
-			VoyagerClient->SetNotify(wxSOCKET_LOST_FLAG);  // Disable input for now
-
-/*			// Which command is coming in?
-			unsigned char cmd, rval;
-			SocketClient->Read(&cmd, 1);
-			wxLogStatus(wxString::Format("Msg %d",(int) cmd));
-			SocketLog->FlushActive();
-			rval = 1; // assume error
-			switch (cmd) {
-				default:
-					wxLogStatus("Unknown msg %d", (int) cmd);
-					SocketClient->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
-			}
-*/
-				// Enable input events again.
-			VoyagerClient->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
-			break;
-		case wxSOCKET_LOST       :
-			wxLogStatus(_T("Lost link"));
-//			StatusText->SetLabel("No connection");
-			break;
-		case wxSOCKET_CONNECTION : wxLogStatus(_T("Connect evt")); break;
-		default                  : wxLogStatus(_T("Unexpected even")); break;
-	}
-
-}
-
-void Voyager_PulseGuideScope (int direction, int duration) {
-	if (!VoyagerClient) return;
-	if (!VoyagerClient->IsConnected())
-		return;
-	// Disable input notification
-	VoyagerClient->SetNotify(wxSOCKET_LOST_FLAG);  // Disable input for now
-	VoyagerClient->SetTimeout(2); // set to 2s timeout
-	char msg[64], dir;
-//	int bytes_xfered;
-	sprintf(msg,"RATE 100\n\n");
-	VoyagerClient->Write(msg,strlen(msg));
-	wxLogStatus(wxString(msg, wxConvUTF8));
-	VoyagerClient->Read(&msg,10);
-	wxLogStatus(wxString(msg, wxConvUTF8));
-	if (strstr(msg,"ERROR"))
-		return;
-	switch (direction) {
-		case NORTH:
-			dir = 'N';
-			break;
-		case SOUTH:
-			dir = 'S';
-			break;
-		case EAST:
-			dir = 'E';
-			break;
-		case WEST:
-			dir = 'W';
-			break;
-	}
-	sprintf(msg,"MOVE %c\n\n",dir);
-	VoyagerClient->Write(msg,strlen(msg));
-	wxLogStatus(wxString(msg, wxConvUTF8));
-	VoyagerClient->Read(&msg,10);
-	wxLogStatus(wxString(msg, wxConvUTF8));
-	wxMilliSleep(duration);
-	sprintf(msg,"STOP %c\n\n",dir);
-	VoyagerClient->Write(msg,strlen(msg));
-	wxLogStatus(wxString(msg, wxConvUTF8));
-	VoyagerClient->Read(&msg,10);
-	wxLogStatus(wxString(msg, wxConvUTF8));
-
-	// Re-enable input
-	VoyagerClient->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
-
-}
-
-
-#ifdef __APPLE__
-//#include <AppleEvents.h>
-//#include <AEDataModel.h>
-
-// Code originally from Darryl @ Equinox
-AppleEvent E6Return;
-AppleEvent E6Event;
-SInt16 E6ReturnCode;
-
-OSErr E6AESendRoutine(double ewCorrection, double nsCorrection) {
-// correction values (+- seconds) to send to E6
-
-	OSErr err;
-	FourCharCode E6Sig = 'MPj6';  // the Equinox 6 creator signature
-	FourCharCode phdSig = 'PhDG';  // ***** you need to fill in your app signature here ******
-	AEAddressDesc addDesc;
-
-	AEEventClass evClass = 'phdG';  // the phd guide class.
-	AEEventID evID = 'evGD';  // the phd guide event.
-	AEKeyword  keyObject;
-	AESendMode mode = kAEWaitReply;  //  you want something back
-
-	// create Apple Event with Equinox 6 signature
-
-	err = AECreateDesc( typeApplSignature, (Ptr) &E6Sig, sizeof(FourCharCode), &addDesc );  // make a description
-	if( err != noErr ) return err;
-
-	err = AECreateAppleEvent( evClass, evID, &addDesc, kAutoGenerateReturnID, kAnyTransactionID, &E6Event );  // create the AE
-	if( err != noErr ) {
-		AEDisposeDesc( &addDesc );
-		return err;
-	}
-
-	// create the return Apple Event with your signature (so I know where to send it)
-
-	err = AECreateDesc( typeApplSignature, (Ptr) &phdSig, sizeof(FourCharCode), &addDesc );
-	if( err != noErr ) {
-		AEDisposeDesc( &E6Event );
-		return err;
-	}
-
-	err = AECreateAppleEvent( evClass, evID, &addDesc, kAutoGenerateReturnID, kAnyTransactionID, &E6Return );
-	if( err != noErr ) {
-		AEDisposeDesc( &E6Event );
-		AEDisposeDesc( &addDesc );
-		return err;
-	}
-
-	// put the correction values into parameters - I have used doubles for a ew and ns seconds correction
-
-	keyObject = 'prEW';  // EW correction AE parameter (+ = east, - = west)
-	err = AEPutParamPtr( &E6Event, keyObject, typeIEEE64BitFloatingPoint,  &ewCorrection, sizeof(double) );
-	if( err != noErr ) {
-		AEDisposeDesc( &E6Event );
-		AEDisposeDesc( &addDesc );
-		return err;
-	}
-
-	keyObject = 'prNS';  // NS correction AE parameter (+ = north, - = south)
-	err = AEPutParamPtr( &E6Event, keyObject, typeIEEE64BitFloatingPoint, &nsCorrection, sizeof(double) );
-	if( err != noErr ) {
-		AEDisposeDesc( &E6Event );
-		AEDisposeDesc( &addDesc );
-		return err;
-	}
-
-	// you now have the send AE, the return AE and the correction values in AE parameters - so send it!
-
-	err = AESendMessage( &E6Event, &E6Return, mode, kAEDefaultTimeout );  // you can specify a wait time (in ticks)
-	if( err != noErr ) {  // Note: an error of -600 means E6 is not currently running
-		AEDisposeDesc( &E6Event );
-		AEDisposeDesc( &addDesc );
-		return err;
-	}
-
-	// at this point you have received the return AE from E6, so go read the return code (what do you want returned ??)
-	// the return code could indicate that E6 got the AE, can do it, or can't for some reason. You do NOT want to wait
-	// until the corrections have been applied - you should time that on your own.
-
-	keyObject = 'prRC';  // get return code
-	Size returnSize;
-	DescType returnType;
-	err = AEGetParamPtr( &E6Return, keyObject, typeSInt16, &returnType, &E6ReturnCode, sizeof(SInt16), &returnSize );
-
-	AEDisposeDesc( &E6Event );
-	AEDisposeDesc( &addDesc );
-	return 0;
-}
-
-bool Equinox_Connect() {
-	// Check the E6 connection by sending 0,0 to it and checking E6Return
-	OSErr err = E6AESendRoutine(0.0,0.0);
-	if (E6ReturnCode == -1) {
-		wxMessageBox ("E6 responded it's not connected to a mount");
-		return true;
-	}
-	else if (err == -600) {
-		wxMessageBox ("E6 not running");
-		return true;
-	}
-
-
-	return false;
-}
-
-void Equinox_PulseGuideScope (int direction, int duration) {
-
-	double NSTime = 0.0;
-	double EWTime = 0.0;
-
-	switch (direction) {
-		case NORTH:
-			NSTime = (double) duration / 1000.0;
-			break;
-		case SOUTH:
-			NSTime = (double) duration / -1000.0;
-			break;
-		case EAST:
-			EWTime = (double) duration / 1000.0;
-			break;
-		case WEST:
-			EWTime = (double) duration / -1000.0;
-			break;
-	}
-	OSErr err = E6AESendRoutine(EWTime, NSTime);
-	if (E6ReturnCode == -1) {
-		wxMessageBox ("E6 responded it's not connected to a mount");
-		return;
-	}
-	else if (err == -600) {
-		wxMessageBox ("E6 not running");
-		return;
-	}
-	wxMilliSleep(duration);
-}
-
-#endif
-

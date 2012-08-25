@@ -38,7 +38,8 @@ extern bool ServerSendCamDisconnect();
 extern bool ServerReqFrame(int duration, usImage& img);
 extern void Voyager_PulseGuideScope(int direction, int duration);
 #ifdef __APPLE__
-extern OSErr E6AESendRoutine(double ewCorrection, double nsCorrection);
-extern bool Equinox_Connect();
-extern void Equinox_PulseGuideScope(int direction, int duration);
+#include <CoreFoundation/CoreFoundation.h>
+extern OSErr E6AESendRoutine(double ewCorrection, double nsCorrection, int mountcode);
+extern bool Equinox_Connect(int mountcode);
+extern void Equinox_PulseGuideScope(int direction, int duration, int mountcode);
 #endif

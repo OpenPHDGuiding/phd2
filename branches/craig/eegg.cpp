@@ -33,20 +33,19 @@
  */
 
 #include "phd.h"
-#include "scope.h"
 
 void TestGuide() {
 
-	wxMessageBox(_T("W RA+")); wxTheApp->Yield(); GuideScope(WEST,2000); wxTheApp->Yield();
-	wxMessageBox(_T("N Dec+"));  wxTheApp->Yield(); GuideScope(NORTH,2000);wxTheApp->Yield();
-	wxMessageBox(_T("E RA-"));  wxTheApp->Yield(); GuideScope(EAST,2000);wxTheApp->Yield();
-	wxMessageBox(_T("S Dec-"));  wxTheApp->Yield(); GuideScope(SOUTH,2000);wxTheApp->Yield();
+	wxMessageBox(_T("W RA+")); wxTheApp->Yield(); pScope->Guide(WEST,2000); wxTheApp->Yield();
+	wxMessageBox(_T("N Dec+"));  wxTheApp->Yield(); pScope->Guide(NORTH,2000);wxTheApp->Yield();
+	wxMessageBox(_T("E RA-"));  wxTheApp->Yield(); pScope->Guide(EAST,2000);wxTheApp->Yield();
+	wxMessageBox(_T("S Dec-"));  wxTheApp->Yield(); pScope->Guide(SOUTH,2000);wxTheApp->Yield();
 	wxMessageBox(_T("Done"));
 }
 
 void MyFrame::OnEEGG(wxCommandEvent &evt) {
 
-	if ((evt.GetId() == EEGG_TESTGUIDEDIR) && (ScopeConnected))
+	if ((evt.GetId() == EEGG_TESTGUIDEDIR) && (pScope->IsConnected()))
 		TestGuide();
 	else if (evt.GetId() == EEGG_RANDOMMOTION) {
 		RandomMotionMode = !RandomMotionMode;
@@ -54,36 +53,48 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 	}
 	else if (evt.GetId() == EEGG_MANUALCAL) {
 		wxString tmpstr;
-		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("RA rate"), wxString::Format(_T("%.4f"),RA_rate));
+        double RaRate   = pScope->RaRate();
+        double DecRate  = pScope->DecRate();
+        double RaAngle  = pScope->RaAngle();
+        double DecAngle = pScope->DecAngle();
+
+		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("RA rate"), wxString::Format(_T("%.4f"),RaRate));
 		if (tmpstr.IsEmpty()) return;
-		tmpstr.ToDouble(&RA_rate); // = 0.0035;
-		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("Dec rate"), wxString::Format(_T("%.4f"),Dec_rate));
+		tmpstr.ToDouble(&RaRate); // = 0.0035;
+
+		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("Dec rate"), wxString::Format(_T("%.4f"),DecRate));
 		if (tmpstr.IsEmpty()) return;
-		tmpstr.ToDouble(&Dec_rate); // = 0.0035;
-		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.5)"), _T("RA angle"), wxString::Format(_T("%.3f"),RA_angle));
+		tmpstr.ToDouble(&DecRate); // = 0.0035;
+
+		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.5)"), _T("RA angle"), wxString::Format(_T("%.3f"),RaAngle));
 		if (tmpstr.IsEmpty()) return;
-		tmpstr.ToDouble(&RA_angle); // = 0.0035;
-		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 2.1)"), _T("Dec angle"), wxString::Format(_T("%.3f"),Dec_angle));
+		tmpstr.ToDouble(&RaAngle); // = 0.0035;
+
+		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 2.1)"), _T("Dec angle"), wxString::Format(_T("%.3f"),DecAngle));
 		if (tmpstr.IsEmpty()) return;
-		tmpstr.ToDouble(&Dec_angle); // = 0.0035;
-		Calibrated = true;
+		tmpstr.ToDouble(&DecAngle); // = 0.0035;
+
+		pScope->SetCalibration(RaAngle, DecAngle, RaRate, DecRate);
 		SetStatusText(_T("Cal"),5);
 	}
 	else if (evt.GetId() == EEGG_CLEARCAL) {
-		Calibrated=false; // clear calibration
+		pScope->ClearCalibration(); // clear calibration
 		SetStatusText(_T("No cal"),5);
 	}
 	else if (evt.GetId() == EEGG_FLIPRACAL) {
-		if (!Calibrated) 
+		if (!pScope->IsCalibrated())
 			return;
-		double orig=RA_angle;
-		RA_angle = RA_angle + 3.14;
-		if (RA_angle > 3.14)
-			RA_angle = RA_angle - 6.28;
-		wxMessageBox(wxString::Format(_T("RA calibration angle flipped: %.2f to %.2f"),orig,RA_angle));
+        double RaAngle  = pScope->RaAngle();
+
+		double orig=pScope->RaAngle();
+		RaAngle += 3.14;
+		if (RaAngle > 3.14)
+			RaAngle -= 6.28;
+		pScope->SetCalibration(RaAngle, pScope->DecAngle(), pScope->RaRate(), pScope->DecRate());
+		wxMessageBox(wxString::Format(_T("RA calibration angle flipped: %.2f to %.2f"),orig,pScope->RaAngle()));
 	}
 	else if (evt.GetId() == EEGG_MANUALLOCK) {
-		if (!ScopeConnected || !GuideCameraConnected || !Calibrated)
+		if (!pScope->IsConnected() || !GuideCameraConnected || !pScope->IsCalibrated())
 			return;
 		if (canvas->State > STATE_SELECTED) return;  // must not be calibrating or guiding already
 		
@@ -111,4 +122,10 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 	}	
 	else evt.Skip();
 
+}
+
+
+
+void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(ect)) {
+	
 }

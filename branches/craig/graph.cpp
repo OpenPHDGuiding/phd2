@@ -61,7 +61,7 @@ EVT_CHOICE(GRAPH_DM,GraphLogWindow::OnUpdateCommandGuideParams)
 END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
-wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,252),wxCAPTION & ~wxSTAY_ON_TOP) {  // was 230
+wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCAPTION & ~wxSTAY_ON_TOP) {  // was 230
 
 	this->visible = false;
 	this->n_items = 0;
@@ -72,13 +72,13 @@ wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,252),wxCA
 //	bmp = new wxBitmap(520,200,24);
 	this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 
-	this->LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("100"),wxPoint(10,10),wxSize(-1,-1));
+	this->LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("100"),wxPoint(10,10),wxSize(80,-1));
 	this->LengthButton->SetToolTip(_T("# of frames of history to display"));
-	this->ModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"),wxPoint(10,40),wxSize(-1,-1));
+	this->ModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"),wxPoint(10,40),wxSize(80,-1));
 	this->ModeButton->SetToolTip(_T("Toggle RA/Dec vs dx/dy.  Shift-click to change RA/dx color.  Ctrl-click to change Dec/dy color"));
-	this->HideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_T("Hide"),wxPoint(10,70),wxSize(-1,-1));
+	this->HideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_T("Hide"),wxPoint(10,70),wxSize(80,-1));
 	this->HideButton->SetToolTip(_T("Hide graph"));
-	this->ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_T("Clear"),wxPoint(10,100),wxSize(-1,-1));
+	this->ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_T("Clear"),wxPoint(10,100),wxSize(80,-1));
 	this->ClearButton->SetToolTip(_T("Clear graph data"));
 	
 	RA_Color=wxColour(100,100,255);
@@ -192,7 +192,15 @@ void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt)) {
 			RA_Color = cdata.GetColour();
 		}
 	}
-		
+	if (wxGetKeyState(WXK_CONTROL)) {
+		wxColourData cdata;
+		cdata.SetColour(DEC_Color);
+		wxColourDialog cdialog(this, &cdata);
+		if (cdialog.ShowModal() == wxID_OK) {
+			cdata = cdialog.GetColourData();
+			DEC_Color = cdata.GetColour();
+		}
+	}	
 		
 	this->mode = 1 - this->mode;
 	if (this->mode)
@@ -381,7 +389,7 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
 			osc_index= 1.0 - (float) same_sides / (float) (this->n_items - (start_item));
 		if ((osc_index > 0.6) || (osc_index < 0.15))
 			dc.SetTextForeground(wxColour(185,20,0));
-		dc.DrawText(wxString::Format(_T("%.2f"),osc_index),10,160);
+		dc.DrawText(wxString::Format(_T("%.2f"),osc_index),40,160);  // was 10,160
 	}
 
 }

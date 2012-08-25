@@ -33,8 +33,6 @@
  */
 
 #include "phd.h"
-#include "scope.h"
-#include "camera.h"
 #include "graph.h"
 #include <wx/config.h>
 #include <wx/statline.h>
@@ -48,21 +46,31 @@
 #include <wx/socket.h>
 
 #define PHDSUBVER _T("")
+
+//#define WINICONS
+
 //#define DEVBUILD
 
-#if !defined(OPENPHD)
 #if defined(__WINDOWS__)
  #include <vld.h>
 #endif 
-#endif
 
-// Globals
+// Globals`
+#if defined (__WINDOWS__)
+IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
+#endif
+#if 0
 wxString ScopeName;
 int ScopeConnected = 0;
 bool ScopeCanPulseGuide = false;
 bool CheckPulseGuideMotion = true;  // Check the IsPulsGuiding
-#if defined (__WINDOWS__)
-IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
+bool Calibrated = false;
+double RA_rate = 0.0;
+double RA_angle = 0.0;
+double Dec_rate = 0.0;
+double Dec_angle = 0.0;
+#else
+Scope *pScope = new ScopeNone();
 #endif
 MyFrame *frame;
 GuideCamera *CurrentGuideCamera;
@@ -87,16 +95,11 @@ int	CropY = 0;
 bool FoundStar = false;
 
 //wxString LogFName;
-bool Calibrated = false;
 bool DisableGuideOutput = false;
 bool DitherRAOnly = false;
 bool UseSubframes = false;
 bool HaveDark = false;
 int DarkDur = 0;
-double RA_rate = 0.0;
-double RA_angle = 0.0;
-double Dec_rate = 0.0;
-double Dec_angle = 0.0;
 double RA_hysteresis = 0.1;
 double Stretch_gamma = 0.4;
 int Dec_guide = DEC_AUTO;
@@ -107,7 +110,7 @@ int Max_RA_Dur = 1000;
 int NR_mode = NR_NONE;
 int AdvDlg_fontsize = 0;
 bool Log_Data = false;
-bool Log_Images = false;
+int Log_Images = 0;
 wxTextFile *LogFile;
 //double Dec_backlash = 0.0;
 double RA_aggr = 1.0;
@@ -125,6 +128,7 @@ bool RandomMotionMode = false;
 wxSocketServer *SocketServer;
 int SocketConnections;
 double CurrentError = 0.0;
+double DitherScaleFactor = 1.0;
 
 
 int	ExpDur = 200; // Exposure duration in msec
@@ -143,6 +147,10 @@ EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
 EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
 EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
 EVT_MENU(wxID_SAVE, MyFrame::OnSave)
+EVT_MENU(MENU_LOADSETTINGS, MyFrame::OnSettings)
+EVT_MENU(MENU_SAVESETTINGS, MyFrame::OnSettings)
+EVT_MENU(MENU_LOADDARK,MyFrame::OnLoadSaveDark)
+EVT_MENU(MENU_SAVEDARK,MyFrame::OnLoadSaveDark)
 EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
 EVT_MENU(MENU_XHAIR0,MyFrame::OnOverlay)
 EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
@@ -181,6 +189,12 @@ EVT_BUTTON(wxID_PROPERTIES,MyFrame::OnSetupCamera)
 EVT_COMMAND_SCROLL(CTRL_GAMMA,MyFrame::OnGammaSlider)
 EVT_SOCKET(SERVER_ID, MyFrame::OnServerEvent)
 EVT_SOCKET(SOCKET_ID, MyFrame::OnSocketEvent)
+#ifndef __WXGTK__
+EVT_MENU(DONATE1,MyFrame::OnDonateMenu) 
+EVT_MENU(DONATE2,MyFrame::OnDonateMenu) 
+EVT_MENU(DONATE3,MyFrame::OnDonateMenu) 
+EVT_MENU(DONATE4,MyFrame::OnDonateMenu) 
+#endif
 EVT_CLOSE(MyFrame::OnClose)
 END_EVENT_TABLE()
 
@@ -221,11 +235,11 @@ bool MyApp::OnInit() {
 	return true;
 }
 
-
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
-MyFrame::MyFrame(const wxString& title)
-       : wxFrame(NULL, wxID_ANY, title, wxPoint(-1,-1),wxSize(-1,-1),wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxCLIP_CHILDREN) {
+MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title, 
+												  wxPoint(-1,-1),wxSize(-1,-1),
+												  wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxBORDER_THEME) {
 
 	int fontsize = 11;
 	SetFont(wxFont(11,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
@@ -234,19 +248,26 @@ MyFrame::MyFrame(const wxString& title)
 		SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 	}
 
-/*#if defined (__WINDOWS__)
+/*#if defined (WINICONS)
 	SetIcon(wxIcon(_T("progicon")));
-#else */
+#else 
 	#include "icons/phd.xpm"
 	SetIcon(wxIcon(prog_icon));
-//#endif
+#endif*/
+	SetIcon(wxIcon(_T("progicon")));
+
 	SetBackgroundColour(*wxLIGHT_GREY);
 
 
 	// Setup menus
 	wxMenu *file_menu = new wxMenu;
-	file_menu->Append(wxID_SAVE, _T("Save"), _T("Save current image"));
 	file_menu->Append(wxID_EXIT, _T("E&xit\tAlt-X"), _T("Quit this program"));
+	file_menu->Append(MENU_LOADSETTINGS, _T("Load settings"), _T("Load advanced settings file"));
+	file_menu->Append(MENU_SAVESETTINGS, _T("Save settings"), _T("Save advanced settings file"));
+    file_menu->AppendSeparator();
+	file_menu->Append(MENU_LOADDARK, _T("Load dark"), _T("Load dark frame"));
+    file_menu->Append(MENU_SAVEDARK, _T("Save dark"), _T("Save dark frame"));
+	file_menu->Append(wxID_SAVE, _T("Save image"), _T("Save current image"));
 //	file_menu->Append(wxID_PREFERENCES, _T("&Preferences"), _T("Preferences"));
 
 	mount_menu = new wxMenu;
@@ -256,11 +277,14 @@ MyFrame::MyFrame(const wxString& title)
 	mount_menu->AppendRadioItem(MOUNT_GPINT378,_T("GPINT 378"),_T("ShoeString GPINT parallel port 378"));
 	mount_menu->AppendRadioItem(MOUNT_GPINT278,_T("GPINT 278"),_T("ShoeString GPINT parallel port 278"));
 	mount_menu->AppendRadioItem(MOUNT_CAMERA,_T("On-camera"),_T("Camera Onboard ST-4"));
-#ifdef DEVBUILD
+#ifdef GUIDE_VOYAGER
 	mount_menu->AppendRadioItem(MOUNT_VOYAGER,_T("Voyager"),_T("Mount connected in Voyager"));
 #endif
 #ifdef GUIDE_EQUINOX
 	mount_menu->AppendRadioItem(MOUNT_EQUINOX,_T("Equinox 6"),_T("Mount connected in Equinox 6"));
+#endif
+#ifdef GUIDE_EQUINOX
+	mount_menu->AppendRadioItem(MOUNT_EQMAC,_T("EQMAC"),_T("Mount connected in EQMAC"));
 #endif
 #ifdef GUIDE_GCUSBST4
 	mount_menu->AppendRadioItem(MOUNT_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
@@ -274,18 +298,12 @@ MyFrame::MyFrame(const wxString& title)
 	mount_menu->FindItem(MOUNT_GPINT278)->Enable(false);
 	mount_menu->FindItem(MOUNT_GPUSB)->Check(true); // set this as the default
 #endif
-#if !defined (GUIDE_ASCOM)
+#if defined (__WXGTK__)
 	mount_menu->FindItem(MOUNT_ASCOM)->Enable(false);
-#endif
-#if !defined (GUIDE_PARALLEL)
 	mount_menu->FindItem(MOUNT_GPINT3BC)->Enable(false);
 	mount_menu->FindItem(MOUNT_GPINT378)->Enable(false);
 	mount_menu->FindItem(MOUNT_GPINT278)->Enable(false);
-#endif
-#if !defined (GUIDE_GPUSB)
 	mount_menu->FindItem(MOUNT_GPUSB)->Enable(false);
-#endif
-#if defined (__WXGTK__)
 	mount_menu->FindItem(MOUNT_CAMERA)->Check(true); // set this as the default
 #endif
 #ifdef GUIDE_INDI
@@ -351,6 +369,14 @@ MyFrame::MyFrame(const wxString& title)
 
 	Menubar->Append(tools_menu, _T("&Tools"));
 	Menubar->Append(help_menu, _T("&Help"));
+#ifndef __WXGTK__
+	wxMenu *donate_menu = new wxMenu;
+	donate_menu->Append(DONATE1, _T("Donate $10"), _T("Donate $10 for PHD Guiding"));
+	donate_menu->Append(DONATE2, _T("Donate $25"), _T("Donate $25 for PHD Guiding"));
+	donate_menu->Append(DONATE3, _T("Donate $50"), _T("Donate $50 for PHD Guiding"));
+	donate_menu->Append(DONATE4, _T("Donate other"), _T("Donate a value of your own choosing for PHD Guiding"));
+	Menubar->Append(donate_menu, _T("   &Donate!   "));
+#endif
 	SetMenuBar(Menubar);
 
 	// Setup Status bar
@@ -369,14 +395,14 @@ MyFrame::MyFrame(const wxString& title)
 
 	// Setup button panel
 	wxBitmap camera_bmp, scope_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
-/*#if defined (__WINDOWS__)
+#if defined (WINICONS)
 	camera_bmp.CopyFromIcon(wxIcon(_T("camera_icon")));
 	scope_bmp.CopyFromIcon(wxIcon(_T("scope_icon")));
 	loop_bmp.CopyFromIcon(wxIcon(_T("loop_icon")));
 	cal_bmp.CopyFromIcon(wxIcon(_T("cal_icon")));
 	guide_bmp.CopyFromIcon(wxIcon(_T("phd_icon")));
 	stop_bmp.CopyFromIcon(wxIcon(_T("stop_icon")));
-#else*/
+#else
 	#include "icons/sm_PHD.xpm"  // defines phd_icon[]
 	#include "icons/stop1.xpm" // defines stop_icon[]
 	#include "icons/scope1.xpm" // defines scope_icon[]
@@ -391,10 +417,12 @@ MyFrame::MyFrame(const wxString& title)
 	guide_bmp = wxBitmap(phd_icon);
 	stop_bmp = wxBitmap(stop_icon);
 	camera_bmp = wxBitmap(cam_icon);
-//	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+//	SetBackgroundStyle(wxBG_STYLE_SYSTEM);
 //	SetBackgroundColour(wxColour(10,0,0));
-//#endif
+#endif
+
 	Cam_Button = new wxBitmapButton( this, BUTTON_CAMERA, camera_bmp );
+//	Cam_Button = new wxBitmapButton( this, BUTTON_CAMERA, camera_bmp,wxPoint(50,50),wxDefaultSize );
 	Cam_Button->SetToolTip(_T("Connect to camera"));
 	Scope_Button = new wxBitmapButton( this, BUTTON_SCOPE,scope_bmp);
 	Scope_Button->SetToolTip(_T("Connect to telescope"));
@@ -424,14 +452,15 @@ MyFrame::MyFrame(const wxString& title)
 	Dur_Choice->SetSelection(4);
 	Dur_Choice->SetToolTip(_T("Camera exposure duration"));
 	Dur_Choice->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	ctrl_sizer->Add(Dur_Choice,wxSizerFlags(0).Border(wxALL,10));
+	ctrl_sizer->Add(Dur_Choice,wxSizerFlags(1).Border(wxALL,10));
 /*	Recal_Checkbox = new wxCheckBox(this,BUTTON_CAL,_T("Calibrate"),wxPoint(-1,-1),wxSize(-1,-1));
 	Recal_Checkbox->SetValue(true);
 	Recal_Checkbox->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 	ctrl_sizer->Add(Recal_Checkbox,wxSizerFlags(0).Border(wxTOP,15));*/
 
+	wxSize szfoo;
 	Gamma_Slider = new wxSlider(this,CTRL_GAMMA,40,10,90,wxPoint(-1,-1),wxSize(100,-1));
-	ctrl_sizer->Add(Gamma_Slider,wxSizerFlags(0).Border(wxTOP,15));
+	ctrl_sizer->Add(Gamma_Slider,wxSizerFlags(0).FixedMinSize().Border(wxTOP,15));
 	Gamma_Slider->SetToolTip(_T("Screen gamma (brightness)"));
 
 /*	HotPixel_Checkbox = new wxCheckBox(this,BUTTON_HOTPIXEL,_T("Fix Hot Pixels"),wxPoint(-1,-1),wxSize(-1,-1));
@@ -441,14 +470,14 @@ MyFrame::MyFrame(const wxString& title)
 	ctrl_sizer->Add(HotPixel_Checkbox,wxSizerFlags(0).Border(wxTOP,15));
 */
 	wxBitmap brain_bmp;
-//#if defined (__WINDOWS__)
-//	brain_bmp.CopyFromIcon(wxIcon(_T("brain_icon")));
-//#else
+#if defined (WINICONS)
+	brain_bmp.CopyFromIcon(wxIcon(_T("brain_icon")));
+#else
 	brain_bmp = wxBitmap(brain_icon);
-//#endif
+#endif
 	Brain_Button = new wxBitmapButton( this, BUTTON_DETAILS, brain_bmp );
 	Brain_Button->SetToolTip(_T("Advanced parameters"));
-	ctrl_sizer->Add(Brain_Button,wxSizerFlags(1).Border(wxALL, 3).Right());
+	ctrl_sizer->Add(Brain_Button,wxSizerFlags(0).Border(wxALL, 3).Right());
 
 	wxBoxSizer *extra_sizer1 = new wxBoxSizer(wxHORIZONTAL);
 	Setup_Button = new wxButton(this,wxID_PROPERTIES,_T("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
@@ -473,23 +502,35 @@ MyFrame::MyFrame(const wxString& title)
 	// Do the main sizer
 	wxBoxSizer *lowersizer = new wxBoxSizer(wxHORIZONTAL);
 	lowersizer->Add(button_sizer,wxSizerFlags(0));
-	lowersizer->Add(ctrl_sizer,wxSizerFlags(1).Right());
+	lowersizer->Add(ctrl_sizer,wxSizerFlags(0).Right());
+//	lowersizer->Fit(this);
+//	szfoo = Gamma_Slider->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
 	wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
 	wxSize DisplaySize = wxGetDisplaySize();
+	int foo = DisplaySize.GetHeight();
 	if (DisplaySize.GetHeight() <= 600) {
 		XWinSize = 600;
 		YWinSize = DisplaySize.GetHeight() - 150;
+//		YWinSize = 600 - 150;
+	//	wxMessageBox(wxString::Format("Shrinking PHD window to %d x %d",XWinSize,YWinSize));
 	}
 	canvas->SetMinSize(wxSize(XWinSize,YWinSize));
 	canvas->SetSize(wxSize(XWinSize,YWinSize));
 
 	topsizer->Add(canvas,wxSizerFlags(0));
 	topsizer->Add(lowersizer,wxSizerFlags(0));
-
+	//szfoo = this->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
+	
+	//this->SetMinSize(640,590);
+//#ifdef __APPLE__
+//	this->SetSize(640,590);
+//	SetSizer( topsizer );      // use the sizer for layout
+//#else
 	SetSizer( topsizer );      // use the sizer for layout
-
-  topsizer->SetSizeHints( this );
-
+	topsizer->SetSizeHints( this );
+//#endif
+	//szfoo = this->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
+	
 	// Setup  Help file
 	wxFileSystem::AddHandler(new wxZipFSHandler);
 	bool retval;
@@ -522,7 +563,7 @@ MyFrame::MyFrame(const wxString& title)
 	Profile = new ProfileWindow(this);
 
 	// Get defaults from Registry
-	ReadPreferences();
+	ReadPreferences(_T(""));
 	Gamma_Slider->SetValue((int) (Stretch_gamma * 100.0));
 	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 	wxDateTime now = wxDateTime::Now();
@@ -562,6 +603,9 @@ MyFrame::MyFrame(const wxString& title)
 	Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y,8);
 	canvas->SetCursor(wxCursor(Cursor));	
 
+#ifndef __WXGTK__
+	SetStatusText(_T("Like PHD? Consider donating"),1);
+#endif
 
 //	wxStartTimer();
 }
@@ -569,29 +613,25 @@ MyFrame::MyFrame(const wxString& title)
 
 // frame destructor
 MyFrame::~MyFrame() {
-#if defined (__WINDOWS__)
-	if (ScopeConnected || ScopeDriverDisplay) // Release the ASCOM driver / disconnect
-#else
-	if (ScopeConnected) // Disconnect
-#endif
-		DisconnectScope();
+	if (pScope->IsConnected()) { // Disconnect
+		pScope->Disconnect();
+    }
+
+    delete pScope;
+
 	if (GuideCameraConnected)
 		CurrentGuideCamera->Disconnect();
 }
-
 
 void MyFrame::OnClose(wxCloseEvent &event) {
 	if (CaptureActive) {
 		if (event.CanVeto()) event.Veto();
 		return;
 	}
-	WritePreferences();
-#if defined (__WINDOWS__)
-	if (ScopeConnected || ScopeDriverDisplay) // Release the ASCOM driver / disconnect
-#else
-	if (ScopeConnected) // Disconnect
-#endif
-		DisconnectScope();
+	WritePreferences(_T(""));
+	if (pScope->IsConnected()) { // Disconnect
+		pScope->Disconnect();
+    }
 
 	if (GuideCameraConnected)
 		CurrentGuideCamera->Disconnect();
