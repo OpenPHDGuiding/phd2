@@ -1,5 +1,5 @@
 /*
- *  scope_ascom.h
+ *  ascom.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -33,51 +33,55 @@
  *
  */
 
-#ifdef GUIDE_ASCOM
 
-#include "ascom_common.h"
+#ifndef ASCOM_COMMON_H_INCLUDED
+#define ASCOM_COMMON_H_INCLUDED
 
-class ScopeASCOM:public Scope, private ASCOM_COMMON
+/* provides common ASCOM functionality */
+
+class ASCOM_COMMON
 {
-
-    // The CLSID and dispatch instance of the scope
-    CLSID CLSID_driver;
-    IDispatch *ScopeDriverDisplay;
-
-    // DISPIDs we reuse
-    DISPID dispid_connected;
-    DISPID dispid_name;
-    DISPID dispid_canpulseguide;
-    DISPID dispid_ispulseguiding;
-    DISPID dispid_isslewing;
-    DISPID dispid_pulseguide;
-
-    // other private varialbles
-    bool m_bCanCheckGuiding;
-    bool m_bCanCheckPulseGuiding;
-
-    // private functions
-    bool Choose(wxString &wx_ProgID);
-
-public:
-    ScopeASCOM(void)
+    // Lifted from the ASCOM sample Utilities.cpp
+    // -------------
+    // uni_to_ansi() - Convert unicode to ANSI, return pointer to new[]'ed string
+    // -------------
+    //
+protected:
+    char * 
+    uni_to_ansi(OLECHAR *os)
     {
-        ScopeDriverDisplay = NULL;
-    }
+        char *cp;
 
-    virtual ~ScopeASCOM(void)
-    {
-        if (ScopeDriverDisplay)
+        // Is this the right way??? (it works)
+        int len = WideCharToMultiByte(CP_ACP,
+                                    0,
+                                    os, 
+                                    -1, 
+                                    NULL, 
+                                    0, 
+                                    NULL, 
+                                    NULL); 
+        cp = new char[len + 5];
+        if(cp == NULL)
+            return NULL;
+
+        if (0 == WideCharToMultiByte(CP_ACP, 
+                                        0, 
+                                        os, 
+                                        -1, 
+                                        cp, 
+                                        len, 
+                                        NULL, 
+                                        NULL)) 
         {
-            ScopeDriverDisplay->Release();
+            delete [] cp;
+            return NULL;
         }
-    }
 
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
-    virtual bool IsGuiding();
+        cp[len] = '\0';
+        return(cp);
+    }
 
 };
 
-#endif /* GUIDE_ASCOM */
+#endif /* ASCOM_COMMON_H_INCLUDED */

@@ -341,7 +341,7 @@ bool Scope::Calibrate(void) {
         // Clear out any previous values
         m_bCalibrated = false;
 
-        frame->SetExpDuration();
+        double ExpDur = frame->RequestedExposureDuration();
         frame->canvas->State = STATE_CALIBRATING;
 
         // Get starting point / frame
@@ -349,9 +349,9 @@ bool Scope::Calibrate(void) {
             Abort = 1;
             throw ERROR_INFO("CaptureFull failed above loop");
         }
-        if (NR_mode == NR_2x2MEAN)
+        if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
             QuickLRecon(CurrentFullFrame);
-        else if (NR_mode == NR_3x3MEDIAN)
+        else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
             Median3(CurrentFullFrame);
         FindStar(CurrentFullFrame); // Get starting position
         LockX = StarX;
@@ -389,9 +389,9 @@ bool Scope::Calibrate(void) {
                 Median3(CurrentFullFrame);
             wxTheApp->Yield();
 #endif
-            if (NR_mode == NR_2x2MEAN)
+            if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
                 QuickLRecon(CurrentFullFrame);
-            else if (NR_mode == NR_3x3MEDIAN)
+            else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                 Median3(CurrentFullFrame);
             FindStar(CurrentFullFrame);
             frame->canvas->FullFrameToDisplay();
@@ -423,9 +423,9 @@ bool Scope::Calibrate(void) {
                 Abort = 1;
                 throw ERROR_INFO("CaptureFull failed in E calibration");
             }
-            if (NR_mode == NR_2x2MEAN)
+            if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
                 QuickLRecon(CurrentFullFrame);
-            else if (NR_mode == NR_3x3MEDIAN)
+            else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                 Median3(CurrentFullFrame);
             wxTheApp->Yield();
             FindStar(CurrentFullFrame);
@@ -449,9 +449,9 @@ bool Scope::Calibrate(void) {
                     Abort = 1;
                     throw ERROR_INFO("CaptureFull failed clearing Dec backlasth");
                 }
-                if (NR_mode == NR_2x2MEAN)
+                if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
                     QuickLRecon(CurrentFullFrame);
-                else if (NR_mode == NR_3x3MEDIAN)
+                else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                     Median3(CurrentFullFrame);
                 wxTheApp->Yield();
                 FindStar(CurrentFullFrame);
@@ -479,9 +479,9 @@ bool Scope::Calibrate(void) {
                     Abort = 1;
                     throw ERROR_INFO("CaptureFull failed calibrating N");
                 }
-                if (NR_mode == NR_2x2MEAN)
+                if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
                     QuickLRecon(CurrentFullFrame);
-                else if (NR_mode == NR_3x3MEDIAN)
+                else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                     Median3(CurrentFullFrame);
                 wxTheApp->Yield();
                 FindStar(CurrentFullFrame);
@@ -515,9 +515,9 @@ bool Scope::Calibrate(void) {
                         Abort = 1;
                         throw ERROR_INFO("CaptureFull failed calibrating S");
                     }
-                    if (NR_mode == NR_2x2MEAN)
+                    if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
                         QuickLRecon(CurrentFullFrame);
-                    else if (NR_mode == NR_3x3MEDIAN)
+                    else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                         Median3(CurrentFullFrame);
                     wxTheApp->Yield();
                     FindStar(CurrentFullFrame);

@@ -137,6 +137,8 @@ public:
 	wxSlider *Gamma_Slider;
 	GraphLogWindow *GraphLog;
 	ProfileWindow *Profile;
+    bool CaptureActive; // Is camera looping captures?
+    double Stretch_gamma;
 
 	void OnQuit(wxCommandEvent& evt);
 	void OnClose(wxCloseEvent& evt);
@@ -179,7 +181,7 @@ public:
 	void OnGraph(wxCommandEvent& evt);
 	void OnStarProfile(wxCommandEvent& evt);
 	void OnAutoStar(wxCommandEvent& evt);
-	void SetExpDuration();
+	double RequestedExposureDuration();
 	void ReadPreferences(wxString fname);
 	void WritePreferences(wxString fname);
 	bool Voyager_Connect();
@@ -277,20 +279,7 @@ extern int YWinSize;
 extern int OverlayMode;
 #endif
 
-#if 0
-// these seem like the scope related globals
-extern wxString ScopeName;
-extern int ScopeConnected;
-extern bool ScopeCanPulseGuide;
-extern bool CheckPulseGuideMotion;
-extern bool Calibrated;	// Do we know cal parameters?
-extern double RA_rate;
-extern double RA_angle;	// direction of positive (west) RA engagement
-extern double Dec_rate;
-extern double Dec_angle;
-#else
 extern Scope *pScope;
-#endif
 
 #if 1
 // these seem like the logging related globals
@@ -301,25 +290,9 @@ extern int Log_Images;
 
 #if 1
 // these seem like the camera related globals
-enum {
-	NR_NONE,
-	NR_2x2MEAN,
-	NR_3x3MEDIAN
-};
-
-extern bool	CaptureActive; // Is camera looping captures?
-extern bool UseSubframes; // Use subframes if possible from camera
-extern int NR_mode;
-extern bool HaveDark;
-extern int	DarkDur;
-extern int CropX;		// U-left corner of crop position
-extern int CropY;
-extern int	ExpDur; // exposure duration
-extern int  Time_lapse;		// Delay between frames (useful for vid cameras)
-extern int	GuideCameraGain;
 extern usImage CurrentFullFrame;
-extern usImage CurrentDarkFrame;
-extern double Stretch_gamma;
+extern    int  CropX;		// U-left corner of crop position
+extern    int  CropY;
 #endif
 
 #if 1
@@ -371,6 +344,7 @@ enum {
 	DEC_LOWPASS2
 };
 
+extern int  Time_lapse;		// Delay between frames (useful for vid cameras)
 extern int	Cal_duration;
 extern double RA_hysteresis;
 extern double Dec_slopeweight;

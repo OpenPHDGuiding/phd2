@@ -35,7 +35,20 @@
 #ifndef CAMERA_H_INCLUDED
 #define CAMERA_H_INCLUDED
 
-class GuideCamera {
+enum NOISE_REDUCTION_METHOD {
+	NR_NONE,
+	NR_2x2MEAN,
+	NR_3x3MEDIAN
+};
+
+class GuideCameraPrefs {
+public:
+    static bool            UseSubframes; // Use subframes if possible from camera
+    static int             GuideCameraGain;
+    static int             NR_mode;
+};
+
+class GuideCamera : public GuideCameraPrefs {
 public:
 	wxString			Name;					// User-friendly name
 	wxSize			FullSize;			// Size of current image
@@ -50,6 +63,10 @@ public:
 	int				Delay;
 	bool			ShutterState;  // false=light, true=dark
 
+    bool            HaveDark;
+    int             DarkDur;
+    usImage         CurrentDarkFrame;
+
 	virtual bool	CaptureFull(int WXUNUSED(duration), usImage& WXUNUSED(img), bool WXUNUSED(recon)) { return true; }
 	virtual bool	CaptureFull(int duration, usImage& img) { return CaptureFull(duration, img, true); }	// Captures a full-res shot
 //	virtual bool	CaptureCrop(int duration, usImage& img) { return true; }	// Captures a 160 x 120 cropped portion
@@ -58,9 +75,20 @@ public:
 	virtual void	InitCapture() { return; }		// Gets run at the start of any loop (e.g., reset stream, set gain, etc).
 	virtual bool	PulseGuideScope (int WXUNUSED(direction), int WXUNUSED(duration)) { return true; }
 	virtual void	ShowPropertyDialog() { return; }
-	GuideCamera() { Connected = FALSE;  Name=_T("");
-		HasGuiderOutput = false; HasPropertyDialog = false; HasPortNum = false; HasDelayParam = false;
-		HasGainControl = false; HasShutter=false; ShutterState=false; }
+	GuideCamera() { 
+        Connected = FALSE;  
+        Name=_T("");
+		HasGuiderOutput = false; 
+        HasPropertyDialog = false; 
+        HasPortNum = false; 
+        HasDelayParam = false;
+		HasGainControl = false; 
+        HasShutter=false; 
+        ShutterState=false; 
+
+        HaveDark = false;
+        DarkDur = 0;
+    }
 	~GuideCamera(void) {};
 };
 

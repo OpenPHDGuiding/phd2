@@ -198,10 +198,9 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					LockX = LockX + rx;
 					LockY = LockY + ry;
 					wxLogStatus(_T("Moving by %.2f,%.2f"),rx,ry);
-					if (ExpDur < 1000)
+                    rval = RequestedExposureDuration() / 1000;
+					if (rval < 1)
 						rval = 1;
-					else
-						rval = ExpDur / 1000;
 					break;
 				case MSG_REQDIST:
 					if ((canvas->State != STATE_GUIDING_LOCKED)  && (canvas->State != STATE_NONE)) {

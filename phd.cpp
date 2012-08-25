@@ -53,32 +53,21 @@
 
 #if defined(__WINDOWS__)
  #include <vld.h>
+IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
 #endif 
 
 // Globals`
-#if defined (__WINDOWS__)
-IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
-#endif
-#if 0
-wxString ScopeName;
-int ScopeConnected = 0;
-bool ScopeCanPulseGuide = false;
-bool CheckPulseGuideMotion = true;  // Check the IsPulsGuiding
-bool Calibrated = false;
-double RA_rate = 0.0;
-double RA_angle = 0.0;
-double Dec_rate = 0.0;
-double Dec_angle = 0.0;
-#else
+//
 Scope *pScope = new ScopeNone();
-#endif
-MyFrame *frame;
-GuideCamera *CurrentGuideCamera;
+MyFrame *frame = NULL;
+GuideCamera *CurrentGuideCamera = NULL;
+
 bool GuideCameraConnected = false;
-int GuideCameraGain = 95;
-bool CaptureActive = false;
+int Time_lapse = 0;
 usImage CurrentFullFrame;
 usImage CurrentDarkFrame;
+int CropX=0;		// U-left corner of crop position
+int CropY=0;
 double StarX = 0.0;
 double StarY = 0.0;
 double LastdX = 0.0;
@@ -90,18 +79,13 @@ double LockY = 0.0;
 bool ManualLock = false;
 double MinMotion = 0.15;
 int SearchRegion = 15;
-int	CropX = 0;
-int	CropY = 0;
 bool FoundStar = false;
 
 //wxString LogFName;
 bool DisableGuideOutput = false;
 bool DitherRAOnly = false;
-bool UseSubframes = false;
 bool HaveDark = false;
-int DarkDur = 0;
 double RA_hysteresis = 0.1;
-double Stretch_gamma = 0.4;
 int Dec_guide = DEC_AUTO;
 int Dec_algo = DEC_RESISTSWITCH;
 double Dec_slopeweight = 5.0;
@@ -115,7 +99,6 @@ wxTextFile *LogFile;
 //double Dec_backlash = 0.0;
 double RA_aggr = 1.0;
 int	Cal_duration = 750;
-int Time_lapse = 0;
 //double Dec_aggr = 0.7;
 int OverlayMode = 0;
 double StarMass = 0.0;
@@ -131,7 +114,6 @@ double CurrentError = 0.0;
 double DitherScaleFactor = 1.0;
 
 
-int	ExpDur = 200; // Exposure duration in msec
 int XWinSize = 640;
 int YWinSize = 512;
 
@@ -247,6 +229,8 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 		fontsize--;
 		SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 	}
+
+    // 
 
 /*#if defined (WINICONS)
 	SetIcon(wxIcon(_T("progicon")));
@@ -562,6 +546,8 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	GraphLog = new GraphLogWindow(this);
 	Profile = new ProfileWindow(this);
 
+    Stretch_gamma = 0.4;
+
 	// Get defaults from Registry
 	ReadPreferences(_T(""));
 	Gamma_Slider->SetValue((int) (Stretch_gamma * 100.0));
@@ -606,6 +592,8 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 #ifndef __WXGTK__
 	SetStatusText(_T("Like PHD? Consider donating"),1);
 #endif
+
+    CaptureActive = false;
 
 //	wxStartTimer();
 }

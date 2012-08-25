@@ -156,6 +156,10 @@ extern "C" {
 Camera_VIDEODEVICEClass Camera_VIDEODEVICE;
 #endif
 
+// initialize camera prefs
+bool GuideCameraPrefs::UseSubframes = false;
+int GuideCameraPrefs::GuideCameraGain = 95;
+int GuideCameraPrefs::NR_mode = NR_NONE;
 
 void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 // Throws up a dialog and trys to connect to that camera
@@ -393,7 +397,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	else if (Choice.Find(_T("ASCOM (Late) Camera")) + 1)
 		CurrentGuideCamera = &Camera_ASCOMLate;
 #endif
-#if defined (ASCOM_LATECAMERA)
+#if defined (INOVA_PLC)
 	else if (Choice.Find(_T("i-Nova PLC-M")) + 1)
 		CurrentGuideCamera = &Camera_INovaPLC;
 #endif
