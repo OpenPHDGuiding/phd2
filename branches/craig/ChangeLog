@@ -1,0 +1,59 @@
+2011-05-07 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* Kernel version check to include only V4L Version 2 header
+
+2010-03-21 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* Fixed segmentation fault with v4l controls for - some?!? - netbooks
+	* Simplified code for v4l controls
+
+2010-03-14 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* Code changes to prevent multiple opens on a device - some V4L drivers don't support this
+	* Camera controls query code moved to 'linuxvideodevice' class
+	* 'Cam Dialog' button enable/disable through Connect()/Disconnect() methods
+
+2010-03-13 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* Code to save and restore camera settings, new menu entry 'V4L'
+
+2010-02-28 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* 'Menu', 'BOOLEAN' and 'INTEGER'-type controls now working
+	* 'reset' and 'update' query the settings to make sure the changes were applied
+
+2010-02-27 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* 'Menu'-type controls for V4L2 devices - not yet finished
+	* cleanups and some typos corrected
+
+2010-02-21 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* Properties dialog for V4L2 devices, so far only 'Boolean' and 'Integer'
+
+2010-02-02 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* V4L2 device detection now uses libudev
+	* libhal and glib stuff removed
+
+2010-01-18 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* rename open_device -> openvideodevice, make it a public method
+	* openvideodevice takes two pointers representing framesize
+
+2010-01-18 steffen elste <steffen.elste@max-ulmschneider.de>
+
+	* add this changelog
+	* cmake library detection
+	* V4L2 device detection via libhal
+	* device selection dialog
+	* move linuxvideodevice source and header to cameras
+	* change linuxvideodevice constructor
+	* private copy and assignment operator for linuxvideodevice 
+
+2010-01-09 wolfgang birkfellner <wolfgang.birkfellner@meduniwien.ac.at>
+
+	* libcfitsio3 and libcfitsio3-dev, v. 3.140-2
+	* zlib1g and zlib1g-dbg, 1:1.2.3.4dfsg-13ubuntu3
+	* libwxgtk2.8-0
+	* V4L2 support via configuration file 
