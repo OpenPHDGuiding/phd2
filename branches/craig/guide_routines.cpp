@@ -63,6 +63,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         int i;
         static int run=0;
         wxStopWatch swatch;
+        double ExpDur = RequestedExposureDuration();
 
         if (!pScope->IsConnected() || !GuideCameraConnected) { // must be connected to both
             wxMessageBox(_T("Both camera and mount must be connected before you attempt to guide"));
@@ -102,10 +103,9 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         Debug << _T("\n\nDebug PHD Guide ") << VERSION << _T(" ") <<  now.FormatDate() << _T(" ") <<  now.FormatTime() << _T("\n");
         Debug << _T("Machine: ") << wxGetOsDescription() << _T(" ") << wxGetUserName() << _T("\n");
         Debug << _T("Camera: ") << CurrentGuideCamera->Name << _T("\n");
-        Debug << _T("Dur: ") << ExpDur << _T(" NR: ") << NR_mode << _T(" Dark: ") << HaveDark << _T("\n");
+        Debug << _T("Dur: ") << ExpDur << _T(" NR: ") << GuideCameraPrefs::NR_mode << _T(" Dark: ") << CurrentGuideCamera->HaveDark << _T("\n");
         Debug << _T("Guiding entered\n");
 
-        SetExpDuration();
         CaptureActive = true;
         canvas->State = STATE_GUIDING_LOCKED;
         SetStatusText(_T("Guiding"));
@@ -123,7 +123,6 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
             LogFile->Write();
         }
         last_guide = 0.0;
-        SetExpDuration();
         CurrentGuideCamera->InitCapture();
         Loop_Button->Enable(false);
         Guide_Button->Enable(false);
@@ -141,13 +140,13 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         while (!Abort) {
             run++;
             Debug.Flush();
-            SetExpDuration();
             while (Paused) {
                 wxMilliSleep(250);
                 wxTheApp->Yield();
             }
             Debug << _T("Capturing - ");
             try {
+                ExpDur = RequestedExposureDuration();
                 CurrentFullFrame.InitDate();
                 CurrentFullFrame.ImgExpDur = ExpDur;
                 if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
@@ -164,11 +163,11 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 
             if (!Abort) {
                 Debug << _T("Done\n");
-                if  (NR_mode) {
+                if  (GuideCameraPrefs::NR_mode) {
                     Debug << _T("Calling NR - ");
-                    if (NR_mode == NR_2x2MEAN)
+                    if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
                         QuickLRecon(CurrentFullFrame);
-                    else if (NR_mode == NR_3x3MEDIAN)
+                    else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                         Median3(CurrentFullFrame);
                     Debug << _T("Done\n");
                 }

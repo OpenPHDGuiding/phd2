@@ -100,7 +100,7 @@ void MyFrame::ReadPreferences(wxString fname) {
 	config->Read(_T("Log"),&Log_Data);
 	config->Read(_T("Dither RA Only"),&DitherRAOnly);
 	config->Read(_T("Dither Scale Factor"),&DitherScaleFactor);
-	config->Read(_T("Subframes"),&UseSubframes);
+	config->Read(_T("Subframes"),&GuideCameraPrefs::UseSubframes);
 	lval = (long) Dec_guide;
 	config->Read(_T("Dec guide mode"),&lval);
 	Dec_guide = (int) lval;
@@ -116,13 +116,13 @@ void MyFrame::ReadPreferences(wxString fname) {
 	Max_RA_Dur = (int) lval;
 	lval = (long) Time_lapse;
 	config->Read(_T("Time Lapse"),&lval);
-	Time_lapse = (int) lval;
-	lval = (long) GuideCameraGain;
+    Time_lapse = (int) lval;
+	lval = (long) GuideCameraPrefs::GuideCameraGain;
 	config->Read(_T("Gain"),&lval);
-	GuideCameraGain = (int) lval;
-	lval = (long) NR_mode;
+    GuideCameraPrefs::GuideCameraGain = (int) lval;
+	lval = (long) GuideCameraPrefs::NR_mode;
 	config->Read(_T("NRMode"),&lval);
-	NR_mode = (int) lval;
+    GuideCameraPrefs::NR_mode = (int) lval;
 	config->Read(_T("Gamma"),&Stretch_gamma);
 #if defined (LE_PARALLEL_CAMERA)
 	lval = (long) Camera_LEwebcamParallel.Port;
@@ -190,8 +190,8 @@ void MyFrame::WritePreferences(wxString fname) {
 	config->Write(_T("Star Mass Tolerance"),StarMassChangeRejectThreshold);
 	config->Write(_T("Search Region"),(long) SearchRegion);
 	config->Write(_T("Time Lapse"),(long) Time_lapse);
-	config->Write(_T("Gain"),(long) GuideCameraGain);
-	config->Write(_T("NRMode"),(long) NR_mode);
+	config->Write(_T("Gain"),(long) GuideCameraPrefs::GuideCameraGain);
+	config->Write(_T("NRMode"),(long) GuideCameraPrefs::NR_mode);
 	config->Write(_T("Log"),Log_Data);
 	config->Write(_T("Dither RA Only"),DitherRAOnly);
 	config->Write(_T("Dither Scale Factor"),DitherScaleFactor);
@@ -200,7 +200,7 @@ void MyFrame::WritePreferences(wxString fname) {
 	config->Write(_T("Dec slope weight"),Dec_slopeweight);
 	config->Write(_T("Max Dec Dur"), (long) Max_Dec_Dur);
 	config->Write(_T("Max RA Dur"), (long) Max_RA_Dur);
-	config->Write(_T("Subframes"),UseSubframes);
+	config->Write(_T("Subframes"),GuideCameraPrefs::UseSubframes);
 #if defined (LE_PARALLEL_CAMERA)
 	config->Write(_T("LEwebP port"),(long) Camera_LEwebcamParallel.Port);
 	config->Write(_T("LEwebP delay"),(long) Camera_LEwebcamParallel.Delay);

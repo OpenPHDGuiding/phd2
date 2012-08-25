@@ -64,11 +64,11 @@
  #define SIMULATOR
  #define SXV
 // #define ASCOM_CAMERA
- #define ASCOM_LATECAMERA
  #define ATIK_GEN3
  #define INOVA_PLC
 // #define NEB_SBIG
 #endif
+ #define ASCOM_LATECAMERA
  #define SBIG
 #elif defined (__APPLE__)  // Mac cameras
  #define FIREWIRE

@@ -31,9 +31,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifdef GUIDE_ASCOM
 
 #include "phd.h"
+
+#ifdef GUIDE_ASCOM
+
 #include <wx/config.h>
 #include <wx/msw/ole/oleutils.h>
 #include <objbase.h>
@@ -42,8 +44,6 @@
 #include <wx/textfile.h>
 #include <wx/stdpaths.h>
 #include <wx/stopwatch.h>
-
-
 
 bool ScopeASCOM::Choose(wxString &wx_ProgID) {
     bool bError = false;
@@ -429,46 +429,6 @@ bool ScopeASCOM::IsGuiding()
     }
 
     return bReturn;
-}
-
-// Lifted from the ASCOM sample Utilities.cpp
-// -------------
-// uni_to_ansi() - Convert unicode to ANSI, return pointer to new[]'ed string
-// -------------
-//
-char * 
-ScopeASCOM::uni_to_ansi(OLECHAR *os)
-{
-	char *cp;
-
-	// Is this the right way??? (it works)
-	int len = WideCharToMultiByte(CP_ACP,
-								0,
-								os, 
-								-1, 
-								NULL, 
-								0, 
-								NULL, 
-								NULL); 
-	cp = new char[len + 5];
-	if(cp == NULL)
-		return NULL;
-
-	if (0 == WideCharToMultiByte(CP_ACP, 
-									0, 
-									os, 
-									-1, 
-									cp, 
-									len, 
-									NULL, 
-									NULL)) 
-	{
-		delete [] cp;
-		return NULL;
-	}
-
-	cp[len] = '\0';
-	return(cp);
 }
 
 #endif /* GUIDE_ASCOM */

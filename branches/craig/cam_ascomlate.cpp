@@ -733,7 +733,7 @@ bool Camera_ASCOMLateClass::ASCOM_IsMoving() {
 	EXCEPINFO excep;
 	VARIANT vRes;
 	
-	if (!pScope->Connected()) return false;
+	if (!pScope->IsConnected()) return false;
 	dispParms.cArgs = 0;
 	dispParms.rgvarg = NULL;
 	dispParms.cNamedArgs = 0;

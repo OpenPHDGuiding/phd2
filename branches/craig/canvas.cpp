@@ -179,12 +179,12 @@ void MyCanvas::FullFrameToDisplay() {
 	wlevel = CurrentFullFrame.Max / 2;
 
 	if (CurrentFullFrame.Size.GetWidth() >= 1280) {
-		CurrentFullFrame.BinnedCopyToImage(&Displayed_Image,blevel,wlevel,Stretch_gamma);
+		CurrentFullFrame.BinnedCopyToImage(&Displayed_Image,blevel,wlevel,frame->Stretch_gamma);
 		binned = true;
 //		ScaleFactor = 0.5;
 	}
 	else {
-		CurrentFullFrame.CopyToImage(&Displayed_Image,blevel,wlevel,Stretch_gamma);
+		CurrentFullFrame.CopyToImage(&Displayed_Image,blevel,wlevel,frame->Stretch_gamma);
 		binned = false;
 //		ScaleFactor = 1.0;
 	}

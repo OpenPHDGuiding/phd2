@@ -65,7 +65,7 @@ using namespace DriverHelper;
 
 #endif
 
-class Camera_ASCOMClass : public GuideCamera {
+class Camera_ASCOMClass : public GuideCamera, protected ASCOM_COMMON {
 public:
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
 	bool	Connect();
@@ -80,7 +80,7 @@ private:
 #endif
 };
 
-class Camera_ASCOMLateClass : public GuideCamera {
+class Camera_ASCOMLateClass : public GuideCamera, protected ASCOM_COMMON {
 public:
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
 	bool	Connect();
