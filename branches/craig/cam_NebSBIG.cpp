@@ -32,7 +32,9 @@
  *
  */
 
+
 #include "phd.h"
+#ifdef NEB_SBIG
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -78,3 +80,5 @@ bool Camera_NebSBIGClass::PulseGuideScope(int direction, int duration) {
 	bool retval = ServerSendGuideCommand(direction, duration);
 	return retval;
 }
+
+#endif

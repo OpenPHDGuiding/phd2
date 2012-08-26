@@ -32,6 +32,7 @@
  *
  */
 #include "phd.h"
+#if defined (SSAG)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -41,7 +42,6 @@ extern void TestGuide();
 #include <wx/textfile.h>
 //wxTextFile *qglogfile;
 
-#if defined (SSAG)
 #include "cam_SSAG.h"
 // QHY CMOS guide camera version
 // Tom's driver
@@ -62,10 +62,6 @@ Camera_SSAGClass::Camera_SSAGClass() {
 
 bool Camera_SSAGClass::Connect() {
 // returns true on error
-	if (frame->mount_menu->IsChecked(MOUNT_CAMERA)) {
-		ScopeConnected = MOUNT_CAMERA;
-		frame->SetStatusText(_T("Scope"),4);
-	}
 //	CameraReset();
 	if (!_SSAG_openUSB()) {
 		wxMessageBox(_T("No camera"));

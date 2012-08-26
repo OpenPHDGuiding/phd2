@@ -32,6 +32,7 @@
  *
  */
 #include "phd.h"
+#if defined (SSPIAG)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -42,7 +43,6 @@
 
 */
 
-#if defined (SSPIAG)
 #include "cam_SSPIAG.h"
 // Orion SS PI AG camera (aka QHY5V)
 //extern "C" __declspec(dllexport) __stdcall void setDevName(PCHAR i);
@@ -289,10 +289,6 @@ bool Camera_SSPIAGClass::Connect() {
 	Q5V_GetFullSizeImage(RawBuffer);
 	Q5V_SetQHY5VGlobalGain(60);
 	Q5V_GetFullSizeImage(RawBuffer);
-	if (frame->mount_menu->IsChecked(MOUNT_CAMERA)) {
-		ScopeConnected = MOUNT_CAMERA;
-		frame->SetStatusText(_T("Scope"),4);
-	}
 
 	return false;
 }

@@ -32,11 +32,11 @@
  *
  */
 #include "phd.h"
+#if defined (STARFISH)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
 
-#if defined (STARFISH)
 #include "Cam_Starfish.h"
 
 #if defined (__WINDOWS__)

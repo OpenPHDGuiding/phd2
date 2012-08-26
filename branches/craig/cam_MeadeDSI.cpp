@@ -33,7 +33,10 @@
  */
 
 //#pragma unmanaged
+
+
 #include "phd.h"
+#ifdef MEADE_DSI
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -149,127 +152,4 @@ bool Camera_DSIClass::CaptureFull(int duration, usImage& img, bool recon) {
 }
 
 
-
-/*
-
-
-#pragma managed
-
-
-using namespace System;
-using namespace System::Windows::Forms;
-
-DSI_Class::DSI_Class() {  // constructor - set up some default values
-//	imager = gcnew DSI(); //initialize driver
-	DSI_Index = 0;
-}
-
-bool DSI_Class::DSI_Connect() {
-	try {
-		imager = gcnew DSI(); //initialize driver
-		array<System::String^>^ dsidevicelist;
-		dsidevicelist = imager->ImagerList(); //returns a list of DSI devices.  The code link you provided shows how to select LPIs versus DSIs, etc
-		imager->InitImager(dsidevicelist[DSI_Index]); // I hate managed strings.  This will throw an exception if no DSIs installed
-	}
-	catch (...) { return true; }
-
-	return false;		// Should actually error-check and return true on error
-}
-
-void DSI_Class::TakeExposure(unsigned int expdur, unsigned int gain, unsigned int offset) {
-
-	System::IntPtr even;
-	System::IntPtr odd;
-	
-	try {
-		//imager->dsi->ResetDevice();
-		imager->dsi->ReadoutMode = Dsi::DsiReadoutMode::SingleExposure;
-		imager->dsi->NormalModeReadoutDelay = 20;
-		imager->dsi->VddMode = Dsi::DsiVddMode::Automatic;
-		imager->dsi->FlushMode = Dsi::DsiFlushMode::Continuous;
-		imager->dsi->ReadoutSpeed = Dsi::DsiReadoutSpeed::Normal;
-		imager->dsi->ExposureMode = Dsi::DsiExposureMode::Single;
-		//imager->dsi->ResetAverageFramerate();
-		//imager->dsi->SetTransferTimeout(0,5000);
-		imager->dsi->ExposureTime = (unsigned int) (expdur * 10);  // units are 0.1 msec
-		//imager->ExposureTime = (double) expdur / 1000.0;
-		imager->dsi->Gain = gain;
-		imager->dsi->Offset = offset;
-	}
-	catch (...) {
-		wxMessageBox(_T("Error setting DSI exposure parameters"));
-		RawEvenPtr = RawOddPtr = NULL;
-		return;
-	}
-	try {
-		imager->dsi->GetImage(even,odd,RawWidth,RawHeightEven, RawHeightOdd, RawHeight, RawBpp,ImageWidth,ImageHeight, ImageXOffset, ImageYOffset);
-		RawEvenPtr = (unsigned short *)even.ToPointer();
-		RawOddPtr = (unsigned short *)odd.ToPointer();
-	}
-	catch( Exception ^e ) {
-		if (expdur >= 2000) 
-			wxMessageBox(wxString::Format("Error in DSI exposure routine\n\n.Odds are this is related to a Meade bug. For now, use exposures\n under 2s.  Update Autostar Suite to fix this.\n When you do, have the DSI unplugged."));
-		else
-			wxMessageBox(_T("Error during DSI exposure"));
-		RawEvenPtr = RawOddPtr = NULL;
-		return;
-	}
-	
-}
-
-bool Camera_DSIClass::Connect() {
-	bool retval;
-	MeadeCam = gcnew DSI_Class;
-	Name=_T("Meade DSI");
-	FullSize = wxSize(768,505);	// CURRENTLY ULTRA-RAW
-	retval = MeadeCam->DSI_Connect();
-	//if (!retval)
-	HasGainControl = true;
-	return retval;
-}
-
-
-bool Camera_DSIClass::CaptureFull(int duration, usImage& img) {
-
-	MeadeCam->TakeExposure((unsigned int) duration, (GuideCameraGain * 63 / 100), 30);
-
-	if (img.Init(MeadeCam->ImageWidth,MeadeCam->ImageHeight)) {
- 		wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
-		Disconnect();
-		return true;
-	}
-	unsigned short *evenptr, *oddptr;
-	unsigned short *rawptr;
-	int y,x,EOL_size;
-	rawptr = img.ImageData;
-	evenptr = MeadeCam->RawEvenPtr;
-	oddptr = MeadeCam->RawOddPtr;
-	EOL_size = MeadeCam->RawWidth - MeadeCam->ImageWidth - MeadeCam->ImageXOffset;
-	
-	if (evenptr == NULL) // threw an exception on read
-		return true;
-
-	// Get to the first line in each buffer
-	evenptr += 5 * MeadeCam->RawWidth;
-	oddptr += 6 * MeadeCam->RawWidth;
-
-	for (y=0; y<MeadeCam->ImageHeight; y++) {
-		if ((y % 2)) {// odd line
-			oddptr += MeadeCam->ImageXOffset;
-			for (x=0; x<MeadeCam->ImageWidth; x++, rawptr++, oddptr++)
-				*rawptr = (*oddptr << 8) | (*oddptr >> 8);
-			oddptr += EOL_size;
-		}
-		else {
-			evenptr += MeadeCam->ImageXOffset;
-			for (x=0; x<MeadeCam->ImageWidth; x++, rawptr++, evenptr++)
-				*rawptr = (*evenptr << 8) | (*evenptr >> 8);
-			evenptr += EOL_size;
-		}
-	}
-	QuickLRecon(img);
-	SquarePixels(img,9.6,7.5);
-
-	return false;
-}
-*/
+#endif

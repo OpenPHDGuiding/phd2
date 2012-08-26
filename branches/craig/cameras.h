@@ -32,6 +32,11 @@
  *
  */
 
+/* Current issues:
+- Need to fix the LE webcams to either not need wxVidCapLib or need a good way
+  to detect or package this
+  */
+
 
 #ifndef OPENPHD
 /* Open PHD defines the available drivers in CMakeLists.txt rather than
@@ -44,32 +49,36 @@
  #define ORION_DSCI
  #define SSAG
  #define SSPIAG
- //#define WDM_CAMERA
+
 #elif defined (__WINDOWS__)  // Windows cameras
-#if 0
  #define QGUIDE
- #define VFW_CAMERA
- #define LE_PARALLEL_CAMERA
- #define LE_LXUSB_CAMERA
  #define ORION_DSCI
  #define WDM_CAMERA
  #define SAC42
  #define ATIK16
  #define SSAG
  #define SSPIAG
- #define FIREWIRE
  #define MEADE_DSI
  #define STARFISH
- #define OS_PL130
  #define SIMULATOR
  #define SXV
-// #define ASCOM_CAMERA
  #define ATIK_GEN3
  #define INOVA_PLC
-// #define NEB_SBIG
-#endif
  #define ASCOM_LATECAMERA
  #define SBIG
+
+#ifdef CLOSED_SOURCE
+ #define OS_PL130  // Opticstar's library is closed
+#define FIREWIRE // This uses the The Imaging Source library, which is closed
+#endif
+
+
+#if 0   // These need wxVidCapLib, which needs to be built-up separately.  The LE-webcams could go to WDM.
+ #define VFW_CAMERA
+ #define LE_PARALLEL_CAMERA
+ #define LE_LXUSB_CAMERA
+#endif
+
 #elif defined (__APPLE__)  // Mac cameras
  #define FIREWIRE
  #define SBIG
@@ -78,8 +87,11 @@
  #define SIMULATOR
  #define SXV
  #define OPENSSAG
-// #define NEB_SBIG
 #endif
+
+// Currently unused
+// #define NEB_SBIG   // This is for an on-hold project that would get the guide chip data from an SBIG connected in Neb
+// #define ASCOM_CAMERA  // This is for the old "early binding" that was allowed for a bit in ASCOM but is now gone
 
 
 extern bool DLLExists (wxString DLLName);

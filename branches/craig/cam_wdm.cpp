@@ -32,10 +32,10 @@
  *
  */
 #include "phd.h"
+#ifdef WDM_CAMERA
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
-#ifdef WDM_CAMERA
 #include <Dshow.h>         // DirectShow (using DirectX 9.0 for dev)
 #include "cam_WDM.h"
 

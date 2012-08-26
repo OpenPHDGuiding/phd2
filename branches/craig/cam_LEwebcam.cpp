@@ -31,7 +31,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include "phd.h"
+#if defined (LE_PARALLEL_CAMERA) || defined (LE_LXUSB_CAMERA)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -403,3 +405,6 @@ bool Camera_LEwebcamClass::CaptureFull(int duration, usImage& img, bool recon) {
 void Camera_LEwebcamClass::ShowPropertyDialog() {
 	if (VFW_Window->HasVideoSourceDialog()) VFW_Window->VideoSourceDialog();
 }
+
+
+#endif

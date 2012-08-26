@@ -35,6 +35,7 @@
 
 
 #include "phd.h"
+#ifdef SIMULATOR
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -290,3 +291,5 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
 }
 #endif
 	
+
+#endif

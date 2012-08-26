@@ -31,7 +31,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+
 #include "phd.h"
+#if defined (QGUIDE)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -48,7 +51,6 @@ int ushort_compare (const void * a, const void * b) {
   return 0;
 }
 
-#if defined (QGUIDE)
 #define QGDEBUG 0
 #include "cam_QGuide.h"
 // QHY CMOS guide camera version
@@ -70,10 +72,6 @@ Camera_QGuiderClass::Camera_QGuiderClass() {
 
 bool Camera_QGuiderClass::Connect() {
 // returns true on error
-	if (frame->mount_menu->IsChecked(MOUNT_CAMERA)) {
-		ScopeConnected = MOUNT_CAMERA;
-		frame->SetStatusText(_T("Scope"),4);
-	}
 //	CameraReset();
 	if (!openUSB(0)) {
 		wxMessageBox(_T("No camera"));

@@ -33,9 +33,9 @@
  */
 
 #include "phd.h"
+#ifdef INDI_CAMERA
 #include "camera.h"
 
-#ifdef INDI_CAMERA
 #include "time.h"
 #include "image_math.h"
 #include "cam_INDI.h"
