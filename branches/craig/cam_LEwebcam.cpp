@@ -374,6 +374,7 @@ bool Camera_LEwebcamClass::CaptureFull(int duration, usImage& img, bool recon) {
 		sum2 += *ptr2;
 		sum3 += *ptr3;
 	}
+	imgdata = cap_img1.GetData();
 	if ((sum1 >= sum2) && (sum1 >= sum3))
 		imgdata = cap_img1.GetData();
 	else if ((sum2 >= sum1) && (sum2>=sum3)) 

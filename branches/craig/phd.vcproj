@@ -78,11 +78,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw29ud_core.lib wxbase29ud.lib wxexpatd.lib wxzlibd.lib wxmsw29ud_html.lib wxpngd.lib wxjpegd.lib wxbase29ud_net.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib oleacc.lib odbc32.lib FcApi.lib VidCapLib.lib wxVidCapLib_wx29.lib vfw32.lib DsiDevice.lib setupapi.lib SBIGUDrv.lib CMOSDll.lib SSAGIF.lib FCLib.lib OSPL130RT.lib SXUSB.lib Strmiids.lib Quartz.lib ShoestringGPUSB_DLL.lib ShoestringLXUSB_DLL.lib inpout32.lib wxmsw29ud_propgrid.lib ../fits/cfitsio.lib TIS_UDSHL09_vc9d.lib DICAMSDK.lib"
+				AdditionalDependencies="wxmsw29ud_core.lib wxbase29ud.lib wxexpatd.lib wxzlibd.lib wxmsw29ud_html.lib wxpngd.lib wxjpegd.lib wxbase29ud_net.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib oleacc.lib odbc32.lib FcApi.lib VidCapLib.lib wxVidCapLib_wx29.lib vfw32.lib DsiDevice.lib setupapi.lib SBIGUDrv.lib CMOSDll.lib SSAGIF.lib FCLib.lib SXUSB.lib Strmiids.lib Quartz.lib ShoestringGPUSB_DLL.lib ShoestringLXUSB_DLL.lib inpout32.lib wxmsw29ud_propgrid.lib cfitsio.lib DICAMSDK.lib"
 				OutputFile=".\Debug/phd.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="cameras;cameras\VidCapture;cameras\TIS\debug"
+				AdditionalLibraryDirectories="cameras;cameras\VidCapture"
 				IgnoreDefaultLibraryNames="LIBCMTD;LIBCMT;msvcrt"
 				DelayLoadDLLs="sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll"
 				GenerateDebugInformation="true"
@@ -180,11 +180,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw29u_core.lib wxbase29u.lib wxexpat.lib wxzlib.lib wxjpeg.lib wxpng.lib wxmsw29u_html.lib wxbase29u_net.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib oleacc.lib odbc32.lib FcApi.lib VidCapLib.lib wxVidCapLib_wx29.lib vfw32.lib DsiDevice.lib setupapi.lib SBIGUDrv.lib CMOSDll.lib SSAGIF.lib FCLib.lib OSPL130RT.lib SXUSB.lib TIS_UDSHL09_vc9.lib Strmiids.lib Quartz.lib ShoestringGPUSB_DLL.lib ShoestringLXUSB_DLL.lib inpout32.lib wxmsw29u_propgrid.lib ../fits/cfitsio.lib DICAMSDK.lib"
+				AdditionalDependencies="wxmsw29u_core.lib wxbase29u.lib wxexpat.lib wxzlib.lib wxjpeg.lib wxpng.lib wxmsw29u_html.lib wxbase29u_net.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib oleacc.lib odbc32.lib FcApi.lib VidCapLib.lib wxVidCapLib_wx29.lib vfw32.lib DsiDevice.lib setupapi.lib SBIGUDrv.lib CMOSDll.lib SSAGIF.lib FCLib.lib SXUSB.lib Strmiids.lib Quartz.lib ShoestringGPUSB_DLL.lib ShoestringLXUSB_DLL.lib inpout32.lib wxmsw29u_propgrid.lib cfitsio.lib DICAMSDK.lib"
 				OutputFile=".\Release/phd.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="cameras;cameras\VidCapture;cameras\TIS\release"
+				AdditionalLibraryDirectories="cameras;cameras\VidCapture"
 				IgnoreDefaultLibraryNames="LIBCMTD;LIBCMT"
 				DelayLoadDLLs="sbigudrv.dll;ArtemisCCD.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;FCApi.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SSAGIF.dll;SXUSB.dll"
 				ProgramDatabaseFile=".\Release/phd.pdb"
@@ -338,34 +338,6 @@
 				>
 			</File>
 			<File
-				RelativePath="ascom.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\cam_ascom.cpp"
 				>
 			</File>
@@ -382,6 +354,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cam_indi.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\cam_INovaPLC.cpp"
 				>
 			</File>
@@ -392,25 +368,13 @@
 			<File
 				RelativePath=".\cam_MeadeDSI.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						CompileAsManaged="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						CompileAsManaged="0"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\cam_OSPL130.cpp"
+				RelativePath=".\cam_NebSBIG.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cam_openssag.cpp"
 				>
 			</File>
 			<File
@@ -418,64 +382,20 @@
 				>
 			</File>
 			<File
-				RelativePath="cam_SAC42.cpp"
+				RelativePath=".\cam_SAC42.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH"
-					/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\cam_SACGuide.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\cam_SBIG.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cam_simulator.cpp"
+				RelativePath=".\cam_simulator.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\cam_SSAG.cpp"
@@ -490,32 +410,8 @@
 				>
 			</File>
 			<File
-				RelativePath="cam_StarShootDSCI.cpp"
+				RelativePath=".\cam_StarShootDSCI.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\cam_SXV.cpp"
@@ -530,94 +426,20 @@
 				>
 			</File>
 			<File
-				RelativePath="camera.cpp"
+				RelativePath=".\camera.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH"
-						CompileAsManaged="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH"
-						CompileAsManaged="0"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="canvas.cpp"
+				RelativePath=".\canvas.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\eegg.cpp"
 				>
 			</File>
 			<File
-				RelativePath="frame_events.cpp"
+				RelativePath=".\frame_events.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\graph.cpp"
@@ -628,60 +450,12 @@
 				>
 			</File>
 			<File
-				RelativePath="image_math.cpp"
+				RelativePath=".\image_math.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="phd.cpp"
+				RelativePath=".\phd.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="phd.rc"
@@ -712,39 +486,43 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\phdlog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\prefs.cpp"
 				>
 			</File>
 			<File
-				RelativePath="scope.cpp"
+				RelativePath=".\scope.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\ShoeString.cpp"
+				RelativePath=".\scope_ascom.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_eqmac.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_equinox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_GC_USBST4.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_gpint.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_gpusb.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_voyager.cpp"
 				>
 			</File>
 			<File
@@ -752,32 +530,8 @@
 				>
 			</File>
 			<File
-				RelativePath="usImage.cpp"
+				RelativePath=".\usImage.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Orion|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;$(NoInherit)"
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -785,7 +539,7 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
-				RelativePath="ascom.h"
+				RelativePath=".\ascom_common.h"
 				>
 			</File>
 			<File
@@ -801,6 +555,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cam_indi.h"
+				>
+			</File>
+			<File
 				RelativePath=".\cam_INovaPLC.h"
 				>
 			</File>
@@ -813,7 +571,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cam_OSPL130.h"
+				RelativePath=".\cam_NebSBIG.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cam_openssag.h"
 				>
 			</File>
 			<File
@@ -822,6 +584,10 @@
 			</File>
 			<File
 				RelativePath=".\cam_SAC42.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cam_SACGuide.h"
 				>
 			</File>
 			<File
@@ -861,7 +627,11 @@
 				>
 			</File>
 			<File
-				RelativePath="camera.h"
+				RelativePath=".\camera.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cameras.h"
 				>
 			</File>
 			<File
@@ -869,19 +639,67 @@
 				>
 			</File>
 			<File
-				RelativePath="image_math.h"
+				RelativePath=".\image_math.h"
 				>
 			</File>
 			<File
-				RelativePath="phd.h"
+				RelativePath=".\mount.h"
 				>
 			</File>
 			<File
-				RelativePath="scope.h"
+				RelativePath=".\phd.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ShoeString.h"
+				RelativePath=".\phdlog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_ascom.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_eqmac.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_equinox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_GC_USBST4.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_gpint.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_gpusb.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_none.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_onboard.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scope_voyager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scopes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\socket_server.h"
 				>
 			</File>
 			<File
