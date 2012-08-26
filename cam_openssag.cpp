@@ -32,6 +32,9 @@
  *
  */
 
+
+#ifdef __APPLE__
+
 #include "phd.h"
 #include "camera.h"
 #include "image_math.h"
@@ -120,3 +123,5 @@ bool Camera_OpenSSAGClass::CaptureFull(int duration, usImage& img, bool recon) {
 	
     return false;
 }
+
+#endif // Apple-only

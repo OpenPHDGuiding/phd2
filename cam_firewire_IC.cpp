@@ -47,8 +47,10 @@
 // Start stream in InitCapture()?
 
 
+#if defined (__WINDOWS__) && defined (CLOSED_SOURCE)
 #include "cam_firewire.h"
 using namespace _DSHOWLIB_NAMESPACE;
+
 
 Camera_FirewireClass::Camera_FirewireClass() {
 	Connected = false;
@@ -337,3 +339,5 @@ bool Camera_FirewireClass::CaptureFull(int duration, usImage& img, bool recon) {
 	return false;
 
 }
+
+#endif

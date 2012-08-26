@@ -32,6 +32,8 @@
  *
  */
 
+#if defined (ASCOM_LATECAMERA)
+
 #include "phd.h"
 #include "camera.h"
 #include "time.h"
@@ -42,7 +44,6 @@
 #include <wx/stdpaths.h>
 #include <wx/config.h>
 
-#if defined (ASCOM_LATECAMERA)
 #include "cam_ascom.h"
 #include <wx/msw/ole/oleutils.h>
 extern char *uni_to_ansi(OLECHAR *os);

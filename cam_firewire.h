@@ -39,7 +39,7 @@
 #if defined (__APPLE__)
 #include <dc1394/control.h>
 #include <dc1394/utils.h>
-#else
+#elif defined (CLOSED_SOURCE)
 #include "tisudshl.h" 
 #endif
 
@@ -59,7 +59,7 @@ private:
 //	bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
 #if defined (__APPLE__)
 	dc1394camera_t *camera;
-#else
+#elif defined (CLOSED_SOURCE)
 	DShowLib::Grabber* m_pGrabber;
 	DShowLib::tFrameHandlerSinkPtr pSink;
 	DShowLib::tIVCDAbsoluteValuePropertyPtr  m_pExposureAbs;
