@@ -34,12 +34,12 @@
 
 
 #include "phd.h"
+#if defined (SBIG)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
 #include <wx/textdlg.h>
 
-#if defined (SBIG)
 #include "Cam_SBIG.h"
 
 Camera_SBIGClass::Camera_SBIGClass() {

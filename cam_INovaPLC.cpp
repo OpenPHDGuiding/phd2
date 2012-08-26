@@ -33,12 +33,12 @@
  */
 
 #include "phd.h"
+#if defined (INOVA_PLC)
 #include "camera.h"
 #include "image_math.h"
 #include "cam_INovaPLC.h"
 #include "DSCAMAPI.h"
 
-#if defined (INOVA_PLC)
 Camera_INovaPLCClass::Camera_INovaPLCClass() {
     Connected = FALSE;
     Name=_T("i-Nova PLC-M");
@@ -49,10 +49,6 @@ Camera_INovaPLCClass::Camera_INovaPLCClass() {
 }
 
 bool Camera_INovaPLCClass::Connect() {
-    if (frame->mount_menu->IsChecked(MOUNT_CAMERA)) {
-        ScopeConnected = MOUNT_CAMERA;
-        frame->SetStatusText(_T("Scope"),4);
-    }
 	DS_CAMERA_STATUS rval;
 	rval = DSCameraInit(R_FULL);
 	if (rval != STATUS_OK) {
@@ -72,8 +68,8 @@ bool Camera_INovaPLCClass::Connect() {
 void Camera_INovaPLCClass::InitCapture() {
 	// Run after any exp change / at the start of a loop
 	DS_CAMERA_STATUS rval;
-
-	int exp_lines = ExpDur * 1000 / RowTime;
+	double ExpDur = frame->RequestedExposureDuration();
+	int exp_lines = (int) ExpDur * 1000 / RowTime;
 	rval = DSCameraSetExposureTime(exp_lines);
 	wxMilliSleep(100);
 	if (rval != STATUS_OK)
@@ -133,7 +129,8 @@ bool Camera_INovaPLCClass::CaptureFull(int duration, usImage& img, bool recon) {
         Disconnect();
         return true;
     }
-	
+	int ExpDur = (int) frame-> RequestedExposureDuration();
+
 	if (duration != ExpDur) { // reset the exp time - and pause -- we have had a change here from the current value
 		rval = DSCameraSetExposureTime(ExpDur * 1000 / RowTime);
 		wxMilliSleep(100);

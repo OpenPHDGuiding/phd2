@@ -32,6 +32,7 @@
  *
  */
 #include "phd.h"
+#if defined (ATIK16)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -39,7 +40,6 @@
 
 extern void TestGuide();
 
-#if defined (ATIK16)
 #include "cam_Atik16.h"
 //#define ARTEMISDLLNAME "ArtemisCCD.dll"
 
@@ -60,10 +60,6 @@ Camera_Atik16Class::Camera_Atik16Class() {
 
 bool Camera_Atik16Class::Connect() {
 // returns true on error
-	if (frame->mount_menu->IsChecked(MOUNT_CAMERA)) {
-		ScopeConnected = MOUNT_CAMERA;
-		frame->SetStatusText(_T("Scope"),4);
-	}
 
 	if (Cam_Handle) {
 		wxMessageBox(_T("But I'm already connected..."));

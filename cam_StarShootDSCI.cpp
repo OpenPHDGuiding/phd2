@@ -34,6 +34,7 @@
  */
  
 #include "phd.h"
+#ifdef ORION_DSCI
 #include "camera.h"
 #include "image_math.h"
 #include "cam_StarShootDSCI.h"
@@ -183,3 +184,4 @@ bool Camera_StarShootDSCIClass::CaptureFull(int duration, usImage &img, bool rec
 
 }
 
+#endif

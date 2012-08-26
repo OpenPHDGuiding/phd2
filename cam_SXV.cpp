@@ -34,12 +34,12 @@
 
 
 #include "phd.h"
+#if defined (SXV)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
 #include <wx/choicdlg.h>
 
-#if defined (SXV)
 #include "cam_SXV.h"
 extern Camera_SXVClass Camera_SXV;
 

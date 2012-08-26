@@ -32,6 +32,7 @@
  *
  */
 #include "phd.h"
+#ifdef SAC42
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -169,3 +170,5 @@ bool Camera_SAC42Class::CaptureFull(int duration, usImage& img) {
 
 	return false;
 }*/
+
+#endif

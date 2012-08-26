@@ -32,9 +32,9 @@
  *
  */
 
-#if defined (ASCOM_LATECAMERA)
 
 #include "phd.h"
+#if defined (ASCOM_LATECAMERA)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"

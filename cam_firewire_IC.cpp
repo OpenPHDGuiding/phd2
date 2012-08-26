@@ -33,6 +33,7 @@
  */
 
 #include "phd.h"
+#if defined (__WINDOWS__) && defined (FIREWIRE)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -47,7 +48,6 @@
 // Start stream in InitCapture()?
 
 
-#if defined (__WINDOWS__) && defined (CLOSED_SOURCE)
 #include "cam_firewire.h"
 using namespace _DSHOWLIB_NAMESPACE;
 

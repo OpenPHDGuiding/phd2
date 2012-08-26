@@ -33,9 +33,9 @@
  */
 
 
-#ifdef __APPLE__
 
 #include "phd.h"
+#ifdef OPENSSAG
 #include "camera.h"
 #include "image_math.h"
 #include "cam_openssag.h"

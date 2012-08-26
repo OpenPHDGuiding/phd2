@@ -31,13 +31,13 @@
  *
  */
 #include "phd.h"
+#if defined (SAC_FCLAB_GUIDE)
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
 #include "cam_SACGuide.h"
 
 extern void TestGuide();
-#if defined (SAC_FCLAB_GUIDE)
 // FC Labs version -- draws from SAC4-2 for all
 Camera_SACGuiderClass::Camera_SACGuiderClass() {
 	Connected = FALSE;

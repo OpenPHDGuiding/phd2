@@ -32,6 +32,7 @@
  *
  */
 #include "phd.h"
+#ifdef VFW_CAMERA
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -175,3 +176,5 @@ void Camera_VFWClass::ShowPropertyDialog() {
 //	}
 
 }
+
+#endif
