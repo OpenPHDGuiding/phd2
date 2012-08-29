@@ -12,8 +12,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Debug|Win32.ActiveCfg = Debug|Win32
 		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Debug|Win32.Build.0 = Debug|Win32
-		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Orion|Win32.ActiveCfg = Orion|Win32
-		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Orion|Win32.Build.0 = Orion|Win32
+		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Orion|Win32.ActiveCfg = Release|Win32
+		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Orion|Win32.Build.0 = Release|Win32
 		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Release|Win32.ActiveCfg = Release|Win32
 		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
