@@ -110,9 +110,9 @@ void MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event)) {
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
 	if (CaptureActive) return;  // Looping an exposure already
 #ifdef ORION
-	wxMessageBox(wxString::Format(_T("PHD Guiding for Orion v%s\n\nCopyright 2006-2011 Craig Stark, Stark Labs"),VERSION),_T("About PHD Guiding"), wxOK);
+	wxMessageBox(wxString::Format(_T("PHD Guiding for Orion v%s\n\nCopyright 2006-2012 Craig Stark, Stark Labs"),VERSION),_T("About PHD Guiding"), wxOK);
 #else
-	wxMessageBox(wxString::Format(_T("PHD Guiding v%s\n\nwww.stark-labs.com\n\nCopyright 2006-2011 Craig Stark\n\nSpecial Thanks to:\n  Sean Prange"),VERSION),_T("About PHD Guiding"), wxOK);
+	wxMessageBox(wxString::Format(_T("PHD Guiding v%s\n\nwww.stark-labs.com\n\nCopyright 2006-2011 Craig Stark\n\nSpecial Thanks to:\n  Sean Prange\n  Bret McKee\n  Jared Wellman"),VERSION),_T("About PHD Guiding"), wxOK);
 #endif
 }
 
