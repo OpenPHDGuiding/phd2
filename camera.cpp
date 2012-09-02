@@ -262,8 +262,15 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		}
 	}
 	else
+	{
+		int selectedItem = 0;
+		if( config->Read(_T("LastCameraChoice"),&Choice) )
+		{
+				selectedItem = Cameras.Index(Choice);			
+		}
 		Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras,
-			this,-1,-1,true,300,500);
+			this,-1,-1,true,300,500, selectedItem);
+	}
 	if (Choice.IsEmpty()) {
 		if (config) delete config;
 		return;

@@ -181,6 +181,7 @@ public:
 	void OnGraph(wxCommandEvent& evt);
 	void OnStarProfile(wxCommandEvent& evt);
 	void OnAutoStar(wxCommandEvent& evt);
+	bool FlipRACal(wxCommandEvent& evt);
 	double RequestedExposureDuration();
 	void ReadPreferences(wxString fname);
 	void WritePreferences(wxString fname);
