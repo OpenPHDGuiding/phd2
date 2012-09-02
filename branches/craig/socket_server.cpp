@@ -57,7 +57,12 @@ enum {
 	MSG_MOVE4,
 	MSG_MOVE5,
 	MSG_AUTOFINDSTAR,
-    MSG_SETLOCKPOSITION
+    MSG_SETLOCKPOSITION,	//15
+	MSG_FLIPRACAL,			//16
+	MSG_GETSTATUS,			//17
+	MSG_STOP,				//18
+	MSG_LOOP,				//19
+	MSG_STARTGUIDING    	//20
 };
 
 void MyFrame::OnServerMenu(wxCommandEvent &evt) {
@@ -221,7 +226,13 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					canvas->State = STATE_NONE;
 					OnAutoStar(*tmp_evt);
 					if (StarX + StarY)  // found a star, so reset the state
-						canvas->State = ival;
+					{
+						if( ival == STATE_NONE )
+							canvas->State = STATE_SELECTED;
+						else
+							canvas->State = ival;
+						rval = 1;
+					}
 					delete tmp_evt;
 					break;
 				case MSG_SETLOCKPOSITION:
@@ -241,6 +252,41 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                     LockX = StarX;
                     LockY = StarY;
                     Paused = false;
+					break;
+				case MSG_FLIPRACAL:
+					{
+						wxCommandEvent *tmp_evt;
+						tmp_evt = new wxCommandEvent(0,wxID_EXECUTE);
+						ival = canvas->State; // save state going in
+						canvas->State = STATE_NONE;
+						// return 1 for success, 0 for failure
+						rval = FlipRACal(*tmp_evt) ? 1 : 0;
+						canvas->State = ival;
+						delete tmp_evt;
+					}
+					break;
+				case MSG_GETSTATUS:
+					if( Paused )
+						rval = 100;
+					else
+						rval = canvas->State;
+					break;
+				case MSG_LOOP:
+					{
+						wxCommandEvent *tmp_evt;
+						tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_LOOP);
+						QueueEvent(tmp_evt);
+					}
+					break;
+				case MSG_STOP:
+					Abort = 1;
+					break;
+				case MSG_STARTGUIDING:
+					{
+						wxCommandEvent *tmp_evt;
+						tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_GUIDE);
+						QueueEvent(tmp_evt);
+					}
 					break;
 				default:
 					wxLogStatus(_T("Unknown test id received from client: %d"),(int) c);

@@ -375,6 +375,9 @@ bool Scope::Calibrate(void) {
         }
 
         while (still_going) {
+			if( Abort != 0 )
+				return false;
+
             frame->SetStatusText(wxString::Format(_T("W calibration: %d"),iterations+1));
             Guide(WEST,Cal_duration);
             if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
@@ -417,7 +420,11 @@ bool Scope::Calibrate(void) {
         frame->SetStatusText(wxString::Format(_T("rate=%.2f angle=%.2f"),m_dRaRate*1000,m_dRaAngle),1);
         // Try to return back to the origin
         for (i=0; i<iterations; i++) {
-            frame->SetStatusText(wxString::Format(_T("E calibration: %d"),i+1));
+			
+			if( Abort != 0 )
+				return false;
+            
+			frame->SetStatusText(wxString::Format(_T("E calibration: %d"),i+1));
             Guide(EAST,Cal_duration);
             if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
                 Abort = 1;
@@ -443,6 +450,8 @@ bool Scope::Calibrate(void) {
             bool in_backlash = true;
             iterations = 0;
             while (in_backlash) {
+				if( Abort != 0 )
+					return false;
                 frame->SetStatusText(wxString::Format(_T("Clearing Dec backlash: %d"),iterations+1));
                 Guide(NORTH,Cal_duration);
                 if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)){
@@ -472,6 +481,8 @@ bool Scope::Calibrate(void) {
             LockY = StarY;
             iterations = 0;
             while (still_going && Dec_guide) { // do Dec +
+				if( Abort != 0 )
+					return false;
                 frame->SetStatusText(wxString::Format(_T("N calibration: %d"),iterations+1));
                 Guide(NORTH,Cal_duration);
                 if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame))
@@ -509,6 +520,8 @@ bool Scope::Calibrate(void) {
             // Return (or nearly so) if we've not turned it off...
             if (Dec_guide) {
                 for (i=0; i<iterations; i++) {
+					if( Abort != 0 )
+						return false;
                     frame->SetStatusText(wxString::Format(_T("S calibration: %d"),i+1));
                     Guide(SOUTH,Cal_duration);
                     if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {

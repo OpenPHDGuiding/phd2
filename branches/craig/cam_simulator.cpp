@@ -41,7 +41,7 @@
 #include "image_math.h"
 #include "cam_simulator.h"
 
-#define SIMMODE 1   // 1=FITS, 2=BMP, 3=Generate
+#define SIMMODE 3   // 1=FITS, 2=BMP, 3=Generate
 
 Camera_SimClass::Camera_SimClass() {
 	Connected = FALSE;

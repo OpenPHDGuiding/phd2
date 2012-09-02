@@ -527,6 +527,24 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 	}
 }
 
+bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))
+{
+	if (!pScope->IsCalibrated())
+	{
+		SetStatusText(_T("No CAL"));
+		return false;
+	}
+    double RaAngle  = pScope->RaAngle();
+
+	double orig=pScope->RaAngle();
+	RaAngle += 3.14;
+	if (RaAngle > 3.14)
+		RaAngle -= 6.28;
+	pScope->SetCalibration(RaAngle, pScope->DecAngle(), pScope->RaRate(), pScope->DecRate());
+	SetStatusText(wxString::Format(_T("CAL: %.2f -> %.2f"),orig,pScope->RaAngle()),0);
+	return true;
+}
+
 void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {
 	int x,y;
 	bool WasPaused = Paused;
