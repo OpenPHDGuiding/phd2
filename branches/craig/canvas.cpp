@@ -259,7 +259,9 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
 			dc.DrawRectangle(ROUND(StarX*ScaleFactor)-SearchRegion,ROUND(StarY*ScaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
 			dc.SetPen(wxPen(wxColor(255,255,0),1,wxDOT));
-			dc.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
+			//dc.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
+			dc.DrawLine(0, LockY*ScaleFactor, XWinSize, LockY*ScaleFactor);
+			dc.DrawLine(LockX*ScaleFactor, 0, LockX*ScaleFactor, YWinSize);
 
 		}
 		else if (State == STATE_GUIDING_LOCKED) { // locked and guiding
@@ -270,7 +272,9 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
 			dc.DrawRectangle(ROUND(StarX*ScaleFactor)-SearchRegion,ROUND(StarY*ScaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
 			dc.SetPen(wxPen(wxColor(0,255,0)));
-			dc.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
+			//dc.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
+			dc.DrawLine(0, LockY*ScaleFactor, XWinSize, LockY*ScaleFactor);
+			dc.DrawLine(LockX*ScaleFactor, 0, LockX*ScaleFactor, YWinSize);
 
 		}
 		if (OverlayMode) {
@@ -282,7 +286,9 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 				dc.DrawCircle(cx,cy,25);
 				dc.DrawCircle(cx,cy,50);
 				dc.DrawCircle(cx,cy,100);
-				dc.CrossHair(cx,cy);
+				dc.DrawLine(0, cy, XWinSize, cy);
+				dc.DrawLine(cx, 0, cx, YWinSize);
+				//dc.CrossHair(cx,cy);
 			}
 			else if ((OverlayMode == 2) || (OverlayMode == 3)){
 				int i;
@@ -355,7 +361,9 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 			wxMemoryDC tmpMdc;
 			tmpMdc.SelectObject(SubBmp);
 			memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
-			memDC.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
+			//memDC.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
+			memDC.DrawLine(0, LockY*ScaleFactor, XWinSize, LockY*ScaleFactor);
+			memDC.DrawLine(LockX*ScaleFactor, 0, LockX*ScaleFactor, YWinSize);
 	#ifdef __APPLEX__
 			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*ScaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*ScaleFactor)-30,wxCOPY,false);
 	#else
