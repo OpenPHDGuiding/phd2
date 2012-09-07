@@ -177,7 +177,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                 StarErrorCode = FindStar(CurrentFullFrame); // track it
                 Debug << _T("Done (") << FoundStar << _T(")\n");
                 elapsed_time = (float) swatch.Time() / 1000.0;
-                if ( ((fabs(dX) > SearchRegion) || (fabs(dY)>SearchRegion)) && !DisableGuideOutput && !ManualLock) { // likely lost lock -- stay here
+                if ( ((fabs(dX) > SearchRegion) || (fabs(dY)>SearchRegion)) && !DisableGuideOutput && !ManualLock && Dec_guide) { // likely lost lock -- stay here
                     StarX = LockX;
                     StarY = LockY;
                     dX = 0.0;
