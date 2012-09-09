@@ -78,11 +78,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "image_math.cpp"
-         timestampString = "354592117.187766"
+         timestampString = "368922349.880068"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "175"
-         endingLineNumber = "175"
+         startingLineNumber = "214"
+         endingLineNumber = "214"
          landmarkName = "FindStar(usImage&amp; img)"
          landmarkType = "7">
       </FileBreakpoint>
@@ -135,11 +135,13 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "canvas.cpp"
-         timestampString = "354592117.188122"
+         timestampString = "368919921.875216"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "256"
-         endingLineNumber = "256">
+         startingLineNumber = "259"
+         endingLineNumber = "259"
+         landmarkName = "MyCanvas::OnPaint(wxPaintEvent&amp; WXUNUSED(event))"
+         landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
@@ -296,44 +298,52 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "canvas.cpp"
-         timestampString = "354592117.189683"
+         timestampString = "368919921.875216"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "356"
-         endingLineNumber = "356">
+         startingLineNumber = "359"
+         endingLineNumber = "359"
+         landmarkName = "MyCanvas::OnPaint(wxPaintEvent&amp; WXUNUSED(event))"
+         landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "canvas.cpp"
-         timestampString = "354592117.189729"
+         timestampString = "368919921.875216"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "381"
-         endingLineNumber = "381">
+         startingLineNumber = "384"
+         endingLineNumber = "384"
+         landmarkName = "MyCanvas::OnPaint(wxPaintEvent&amp; WXUNUSED(event))"
+         landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "canvas.cpp"
-         timestampString = "354592117.189776"
+         timestampString = "368919921.875216"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "383"
-         endingLineNumber = "383">
+         startingLineNumber = "386"
+         endingLineNumber = "386"
+         landmarkName = "MyCanvas::OnPaint(wxPaintEvent&amp; WXUNUSED(event))"
+         landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "canvas.cpp"
-         timestampString = "354592117.18982"
+         timestampString = "368919921.875216"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "208"
-         endingLineNumber = "208">
+         startingLineNumber = "211"
+         endingLineNumber = "211"
+         landmarkName = "MyCanvas::OnPaint(wxPaintEvent&amp; WXUNUSED(event))"
+         landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"

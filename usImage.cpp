@@ -33,7 +33,7 @@
  */
 
 #include "phd.h"
-
+#include "image_math.h"
 
 bool usImage::Init(int xsize, int ysize) {
 // Allocates space for image and sets params up
@@ -45,7 +45,7 @@ bool usImage::Init(int xsize, int ysize) {
 	NPixels = xsize * ysize;
 	Size = wxSize(xsize,ysize);
 	Origin = wxPoint(0,0);
-	Min = Max = Mean = 0;
+	Min = Max = 0;
 	if (NPixels) {
 		ImageData = new unsigned short[NPixels];
 		if (!ImageData) return true;
@@ -57,25 +57,32 @@ bool usImage::Init(int xsize, int ysize) {
 
 void usImage::CalcStats() {
 	int i, d;
-	unsigned short *ptr;
+	unsigned short *ptr, *tmpdata;
 	float f_mean;
 
 	if ((!ImageData) || (!NPixels))
 		return;
 
-	ptr = ImageData;
-	Min = 65535; Max = 0;
-	f_mean = 0.0;
-	if (Origin == wxPoint(0,0)) { // Full frame
-		for (i=0; i<NPixels; i++, ptr++) {
-			d = (int) ( *ptr);
+    tmpdata = new unsigned short[NPixels];  
+    
+ 	Min = 65535; Max = 0;
+    FiltMin = 65535; FiltMax = 0;
+    if (Origin == wxPoint(0,0)) { // Full frame
+        for (i=0, ptr=ImageData; i<NPixels; i++, ptr++) {
+ 			d = (int) ( *ptr);
 			if (d < Min) Min = d;
 			if (d > Max) Max = d;
-			f_mean = f_mean + (float) d;
-		}
-		Mean = (int) (f_mean / (float) NPixels);
-	}
-	else { // Subframe
+            tmpdata[i]=d;
+        }
+        Median3(tmpdata,Size.GetWidth(),Size.GetHeight());
+        for (i=0, ptr=tmpdata; i<NPixels; i++, ptr++) {
+ 			d = (int) ( *ptr);
+			if (d < FiltMin) FiltMin = d;
+			if (d > FiltMax) FiltMax = d;
+        }
+
+    }
+    else {  // Subframe
 		int x, y;
 		for (y=0; y<CROPYSIZE; y++) {
 			ptr = ImageData + Origin.x + (Origin.y + y)*Size.GetWidth();
@@ -83,11 +90,18 @@ void usImage::CalcStats() {
 				d = (int) ( *ptr);
 				if (d < Min) Min = d;
 				if (d > Max) Max = d;
-				f_mean = f_mean + (float) d;
+                tmpdata[i]=d;
 			}
 		}
-		Mean = (int) (f_mean / (float) (CROPXSIZE * CROPYSIZE));
-	}
+        Median3(tmpdata,CROPXSIZE,CROPYSIZE);
+        for (i=0, ptr=tmpdata; i<(CROPXSIZE*CROPYSIZE); i++, ptr++) {
+ 			d = (int) ( *ptr);
+			if (d < FiltMin) FiltMin = d;
+			if (d > FiltMax) FiltMax = d;
+        }
+
+    }
+    delete [] tmpdata;
 }
 
 bool usImage::Clean() {
@@ -95,7 +109,7 @@ bool usImage::Clean() {
 	return false;
 }
 
-bool usImage::CopyToImage(wxImage **rawimg, int min, int max, double power) {
+bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power) {
 	wxImage	*img;
 	unsigned char *ImgPtr;
 	unsigned short *RawPtr;
@@ -114,10 +128,11 @@ bool usImage::CopyToImage(wxImage **rawimg, int min, int max, double power) {
 	ImgPtr = img->GetData();
 	RawPtr = ImageData;
 //	s_factor = (((float) Max - (float) Min) / 255.0);
-	float range = (float) (Max - Min);
+    
+	float range = (float) (wlevel - blevel);
 
-	if ((power == 1.0) || (range == 0.0)) {
-		range = Max;  // Go 0-max
+ 	if ((power == 1.0) || (range == 0.0)) {
+		range = wlevel;  // Go 0-max
 		for (i=0; i<NPixels; i++, RawPtr++ ) {
 			d = ((float) (*RawPtr) / range) * 255.0;
 			if (d < 0.0) d = 0.0;
@@ -133,10 +148,10 @@ bool usImage::CopyToImage(wxImage **rawimg, int min, int max, double power) {
 	}
 	else {
 		for (i=0; i<NPixels; i++, RawPtr++ ) {
-			d = (float) (*RawPtr);
-			d = pow((d - (float) Min) / range, (float) power) * 255.0;
-			if (d < 0.0) d = 0.0;
-			else if (d > 255.0) d = 255.0;
+			d = ((float) (*RawPtr) - (float) blevel) / range;
+            if (d < 0.0) d= 0.0;
+            else if (d > 1.0) d = 1.0;
+			d = pow(d, (float) power) * 255.0;
 			*ImgPtr = (unsigned char) d;
 			ImgPtr++;
 			*ImgPtr = (unsigned char) d;
@@ -150,7 +165,7 @@ bool usImage::CopyToImage(wxImage **rawimg, int min, int max, double power) {
 	return false;
 }
 
-bool usImage::BinnedCopyToImage(wxImage **rawimg, int min, int max, double power) {
+bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double power) {
 	wxImage	*img;
 	unsigned char *ImgPtr;
 	unsigned short *RawPtr;
@@ -179,16 +194,18 @@ bool usImage::BinnedCopyToImage(wxImage **rawimg, int min, int max, double power
 	ImgPtr = img->GetData();
 	RawPtr = ImageData;
 //	s_factor = (((float) Max - (float) Min) / 255.0);
-	float range = (float) (Max - Min);
+	float range = (float) (wlevel - blevel);
 
 	if ((power == 1.0) || (range == 0.0)) {
-		range = Max;  // Go 0-max
+		range = wlevel;  // Go 0-max
 		if (range == 0.0) range = 0.001;
 		for (y=0; y<use_ysize; y+=2) {
 			for (x=0; x<use_xsize; x+=2) {
 				RawPtr = ImageData + x + y*full_xsize;
 				d = (float) (*RawPtr + *(RawPtr+1) + *(RawPtr+full_xsize) + *(RawPtr+1+full_xsize)) / 4.0;
 				d = (d / range) * 255.0;
+				if (d < 0.0) d = 0.0;
+				else if (d > 255.0) d = 255.0;
 				*ImgPtr = (unsigned char) d;
 				ImgPtr++;
 				*ImgPtr = (unsigned char) d;
@@ -203,9 +220,10 @@ bool usImage::BinnedCopyToImage(wxImage **rawimg, int min, int max, double power
 			for (x=0; x<use_xsize; x+=2) {
 				RawPtr = ImageData + x + y*full_xsize;
 				d = (float) (*RawPtr + *(RawPtr+1) + *(RawPtr+full_xsize) + *(RawPtr+1+full_xsize)) / 4.0;
-				d = pow((d - (float) Min) / range, (float) power) * 255.0;
-				if (d < 0.0) d = 0.0;
-				else if (d > 255.0) d = 255.0;
+                d = (d - (float) blevel) / range ;
+                if (d < 0.0) d= 0.0;
+                else if (d > 1.0) d = 1.0;
+                d = pow(d, (float) power) * 255.0;
 				*ImgPtr = (unsigned char) d;
 				ImgPtr++;
 				*ImgPtr = (unsigned char) d;

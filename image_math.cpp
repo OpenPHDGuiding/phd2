@@ -153,6 +153,45 @@ bool Median3(usImage& img) {
 	return false;
 }
 
+bool Median3(unsigned short ImageData [], int xsize, int ysize) {
+	unsigned short *tmpimg;
+	int x, y;
+	unsigned short *ptr0, *ptr1;
+	unsigned short array[9];
+    int NPixels = xsize * ysize;
+    
+	tmpimg = new unsigned short[NPixels];
+
+	for (y=1; y<ysize-1; y++) {
+		for (x=1; x<xsize-1; x++) {
+			array[0] = ImageData[(x-1)+(y-1)*xsize];
+			array[1] = ImageData[(x)+(y-1)*xsize];
+			array[2] = ImageData[(x+1)+(y-1)*xsize];
+			array[3] = ImageData[(x-1)+(y)*xsize];
+			array[4] = ImageData[(x)+(y)*xsize];
+			array[5] = ImageData[(x+1)+(y)*xsize];
+			array[6] = ImageData[(x-1)+(y+1)*xsize];
+			array[7] = ImageData[(x)+(y+1)*xsize];
+			array[8] = ImageData[(x+1)+(y+1)*xsize];
+			qsort(array,9,sizeof(unsigned short),us_sort_func);
+			tmpimg[x+y*xsize] = array[4];
+		}
+		tmpimg[(xsize-1)+y*xsize]=ImageData[(xsize-1)+y*xsize];  // 1st & Last one in this row -- just grab from orig
+		tmpimg[y*xsize]=ImageData[y*xsize];
+	}
+	for (x=0; x<xsize; x++) {
+		tmpimg[x+(ysize-1)*xsize]=ImageData[x+(ysize-1)*xsize];  // Last row -- just duplicate
+		tmpimg[x]=ImageData[x];  // First row
+	}
+	ptr0=ImageData;
+	ptr1=tmpimg;
+	for (x=0; x<NPixels; x++, ptr0++, ptr1++)
+		*ptr0=(*ptr1);
+	delete [] tmpimg;
+    
+	return false;
+}
+
 int FindStar(usImage& img) {
 
 	// ADD BIT ABOUT USING PREVIOUS DELTA TO FIGURE NEW STARTING SPOT TO LOOK - -maybe have this be an option
@@ -403,7 +442,7 @@ bool Subtract(usImage& light, usImage& dark) {
 
 	lptr = light.ImageData;
 	dptr = dark.ImageData;
-    int mindiff = 0;
+    int mindiff = 65535;
     int diff;
     
 	for (i=0; i<light.NPixels; i++, lptr++, dptr++) {
@@ -417,15 +456,14 @@ bool Subtract(usImage& light, usImage& dark) {
     if (mindiff < 0) // dark was lighter than light
         offset = -mindiff;
     
-	for (i=0; i<light.NPixels; i++, lptr++, dptr++)
-        *lptr = (unsigned short) ((int) *lptr - (int) *dptr + offset);
-        /*
-		if ((*lptr + 100) > *dptr)
-			*lptr = *lptr + 100 - *dptr;
-		else
-			*lptr = 0;
-*/
-	return false;
+    int newval;
+	for (i=0; i<light.NPixels; i++, lptr++, dptr++) {
+        newval = (int) *lptr - (int) *dptr + offset;
+        if (newval < 0) newval = 0; // shouldn't hit this...
+        else if (newval > 65535) newval = 65535;
+        *lptr = (unsigned short) newval;
+    }
+ 	return false;
 }
 
 void AutoFindStar(usImage& img, int& xpos, int& ypos) {
