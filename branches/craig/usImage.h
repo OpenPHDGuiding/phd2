@@ -42,17 +42,17 @@ public:
 	int					NPixels;
 	int					Min;
 	int					Max;
-	int					Mean;
+    int                 FiltMin, FiltMax;
 	wxString			ImgStartDate;
 	int					ImgExpDur;
 	//	int					Binsize;
 	bool				Init(int xsize, int ysize);
 	void				CalcStats();
 	void				InitDate();					
-	bool				CopyToImage(wxImage **img, int min, int max, double power);
-	bool				BinnedCopyToImage(wxImage **img, int min, int max, double power); // Does 2x2 bin during copy
+	bool				CopyToImage(wxImage **img, int blevel, int wlevel, double power);
+	bool				BinnedCopyToImage(wxImage **img, int blevel, int wlevel, double power); // Does 2x2 bin during copy
 	bool				Clean();
-	usImage() { Min=Max=Mean= 0; NPixels = 0; ImageData = NULL; ImgStartDate=_T(""); ImgExpDur = 0.0;}
+	usImage() { Min=Max=FiltMin=FiltMax= 0; NPixels = 0; ImageData = NULL; ImgStartDate=_T(""); ImgExpDur = 0.0;}
 	~usImage() {delete[] ImageData; }
 };
 

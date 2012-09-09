@@ -175,8 +175,11 @@ void MyCanvas::FullFrameToDisplay() {
 	int blevel, wlevel;
 
 	CurrentFullFrame.CalcStats();
-	blevel = CurrentFullFrame.Min;
-	wlevel = CurrentFullFrame.Max / 2;
+	blevel = CurrentFullFrame.Min; //CurrentFullFrame.Min;
+	wlevel = CurrentFullFrame.FiltMax ;  //CurrentFullFrame.Max / 2;
+//	blevel = CurrentFullFrame.Min;
+//	wlevel = CurrentFullFrame.Max / 2;
+    
 
 	if (CurrentFullFrame.Size.GetWidth() >= 1280) {
 		CurrentFullFrame.BinnedCopyToImage(&Displayed_Image,blevel,wlevel,frame->Stretch_gamma);
@@ -188,7 +191,7 @@ void MyCanvas::FullFrameToDisplay() {
 		binned = false;
 //		ScaleFactor = 1.0;
 	}
-//	frame->SetStatusText(wxString::Format("%d, %d, %d: %d %d",CurrentFullFrame.Min,CurrentFullFrame.Max,CurrentFullFrame.Mean,blevel,wlevel),1);
+//	frame->SetStatusText(wxString::Format("%d, %d: %d, %d",CurrentFullFrame.Min,CurrentFullFrame.Max,CurrentFullFrame.FiltMin,CurrentFullFrame.FiltMax),1);
 	Refresh();
 }
 
