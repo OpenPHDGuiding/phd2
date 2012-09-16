@@ -73,7 +73,7 @@
 #endif
 
 
-#if 0   // These need wxVidCapLib, which needs to be built-up separately.  The LE-webcams could go to WDM.
+#ifdef HAVE_WXVIDCAP   // These need wxVidCapLib, which needs to be built-up separately.  The LE-webcams could go to WDM
  #define VFW_CAMERA
  #define LE_PARALLEL_CAMERA
  #define LE_LXUSB_CAMERA
