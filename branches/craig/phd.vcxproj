@@ -303,13 +303,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Reference Include="interop.qsicameralib">
-      <HintPath>..\..\program files\qsi\qsi api csharp sample release\qsi api csharp sample\obj\release\interop.qsicameralib.dll</HintPath>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="cameras\ArtemisHSCAPI.cpp" />
     <ClCompile Include="cam_ascom.cpp" />
     <ClCompile Include="cam_ascomlate.cpp" />

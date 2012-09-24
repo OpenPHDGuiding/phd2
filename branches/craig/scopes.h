@@ -45,14 +45,14 @@
 #define GUIDE_ASCOM
 #define GUIDE_GPUSB
 #define GUIDE_GPINT
-#define GUIDE_VOYAGER
+//#define GUIDE_VOYAGER
 
 
 #elif defined (__APPLE__)
 #define GUIDE_GPUSB
 #define GUIDE_GCUSBST4
 #define GUIDE_EQUINOX
-#define GUIDE_VOYAGER
+//#define GUIDE_VOYAGER
 //#define GUIDE_NEB
 #define GUIDE_EQMAC
 #endif /* apple */
