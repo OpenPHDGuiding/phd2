@@ -84,9 +84,10 @@ void usImage::CalcStats() {
     }
     else {  // Subframe
 		int x, y;
+		i=0;
 		for (y=0; y<CROPYSIZE; y++) {
 			ptr = ImageData + Origin.x + (Origin.y + y)*Size.GetWidth();
-			for (x=0; x<CROPXSIZE; x++, ptr++) {
+			for (x=0; x<CROPXSIZE; x++, ptr++, i++) {
 				d = (int) ( *ptr);
 				if (d < Min) Min = d;
 				if (d > Max) Max = d;
