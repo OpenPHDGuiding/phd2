@@ -101,13 +101,15 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
             throw ERROR_INFO("ASCOM Scope: Could not get invoke Choose");
         }
 
-        if(SysStringLen(vRes.bstrVal) <= 0) {
-            throw ERROR_INFO("ASCOM Scope: Chooser returned 0 lenght string");
+        if(SysStringLen(vRes.bstrVal) <= 0) {  // Happens if the user hits Cancel
+            bError = true;
+			//throw ERROR_INFO("ASCOM Scope: Chooser returned 0 lenght string");
         }
-
-        cp = uni_to_ansi(vRes.bstrVal);	// Get ProgID in ANSI
-        config->Write("ScopeID",wxString(cp));  // Save it in Registry
-        wx_ProgID = wxString::Format("%s",cp);
+		else {
+			cp = uni_to_ansi(vRes.bstrVal);	// Get ProgID in ANSI
+			config->Write("ScopeID",wxString(cp));  // Save it in Registry
+			wx_ProgID = wxString::Format("%s",cp);
+		}
     }
     catch (char WXUNUSED(*ErrorMsg))
     {
@@ -147,14 +149,17 @@ bool ScopeASCOM::Connect(void) {
         
         if (IsConnected())
         {
-            throw ERROR_INFO("ASCOM Scope: Connected - Already Connected");
+//            throw ERROR_INFO("ASCOM Scope: Connected - Already Connected");
+			wxMessageBox("Scope already connected");
+			return false;
         }
 
         if (ScopeDriverDisplay == NULL)
         {
             if (Choose(wx_ProgID))
             {
-                throw ERROR_INFO("ASCOM Scope: Chooser returned an error");
+                //throw ERROR_INFO("ASCOM Scope: Chooser returned an error");
+				return true;
             }
 
             // get the program ID
@@ -265,7 +270,7 @@ bool ScopeASCOM::Connect(void) {
         }
 
         frame->SetStatusText(Name()+_T(" connected"));
-        m_bConnected = true;
+        Scope::Connect();
     }
     catch (char WXUNUSED(*ErrorMsg))
     {
@@ -289,7 +294,8 @@ bool ScopeASCOM::Disconnect(void) {
 
         if (!IsConnected())
         {
-            throw ERROR_INFO("ASCOM Scope: attempt to disconnect when not connected");
+            //throw ERROR_INFO("ASCOM Scope: attempt to disconnect when not connected");
+			return false;
         }
 
         // ... set the Connected property to false....
@@ -309,7 +315,7 @@ bool ScopeASCOM::Disconnect(void) {
         bError = true;
     }
 
-    m_bConnected = false;
+    Scope::Disconnect();
 
     return bError;
 }

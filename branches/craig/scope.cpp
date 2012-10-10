@@ -142,7 +142,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("ASCOM connection failed");
+            SetStatusText("FAIL: ASCOM connection");
         }
         else
         {
@@ -156,7 +156,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pNewScope = new ScopeGpUsb();
 
 		if (pNewScope->Connect()) {
-			SetStatusText(_T("GPUSB failed"));
+			SetStatusText(_T("FAIL: GPUSB"));
 		}
 		else {
 			SetStatusText(_T("GPUSB connected"));
@@ -170,7 +170,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("GPINT 3BC connection failed");
+            SetStatusText("FAIL: GPINT 3BC connection");
         }
         else
         {
@@ -182,7 +182,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("GPINT 378 connection failed");
+            SetStatusText("FAIL: GPINT 378 connection");
         }
         else
         {
@@ -194,7 +194,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("GPINT 278 connection failed");
+            SetStatusText("FAIL: GPINT 278 connection");
         }
         else
         {
@@ -209,7 +209,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pNewScope = pGCUSBST4;
         if (pNewScope->Connect())
         {
-            SetStatusText("GCUSB-ST4 connection failed");
+            SetStatusText("FAIL: GCUSB-ST4 connection");
         }
         else
         {
@@ -223,7 +223,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pNewScope = new ScopeOnCamera();
         if (pNewScope->Connect())
         {
-            SetStatusText("OnCamera connection failed");
+            SetStatusText("FAIL: OnCamera connection");
         }
         else
         {
@@ -234,7 +234,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	#ifdef GUIDE_NEB
 	else if (mount_menu->IsChecked(MOUNT_NEB)) {
 		if (SocketServer)
-			pScope->IsConnected() = true;
+			pScope->IsConnected() = MOUNT_NEB;
 		else
 			SetStatusText("Server not running");
 	}
@@ -246,7 +246,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("Voyager localhost failed");
+            SetStatusText("FAIL: Voyager localhost");
 
             wxString IPstr = wxGetTextFromUser(_T("Enter IP address"),_T("Voyager not found on localhost"));
 
@@ -269,7 +269,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("Equinox mount failed");
+            SetStatusText("FAIL: Equinox mount");
         }
         else
         {
@@ -285,7 +285,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         // must use pEquinox to pass an arument to connect
         if (pEQMac->Connect())
         {
-            SetStatusText("EQMac mount failed");
+            SetStatusText("FAIL: EQMac mount");
         }
         else
         {
@@ -296,10 +296,10 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	#ifdef GUIDE_INDI
     else if (mount_menu->IsChecked(MOUNT_INDI)) {
         if (!INDI_ScopeConnect()) {
-            pScope->IsConnected() = true;
+            pScope->IsConnected() = MOUNT_INDI;
         } else {
-            pScope->IsConnected() = false;
-            SetStatusText(_T("INDI mount failed"));
+            pScope->IsConnected() = 0;
+            SetStatusText(_T("FAIL: INDI mount"));
         }
     }
     #endif
