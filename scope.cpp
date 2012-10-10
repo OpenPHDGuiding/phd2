@@ -234,7 +234,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	#ifdef GUIDE_NEB
 	else if (mount_menu->IsChecked(MOUNT_NEB)) {
 		if (SocketServer)
-			pScope->IsConnected() = MOUNT_NEB;
+			pScope->IsConnected() = true;
 		else
 			SetStatusText("Server not running");
 	}
@@ -296,9 +296,9 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	#ifdef GUIDE_INDI
     else if (mount_menu->IsChecked(MOUNT_INDI)) {
         if (!INDI_ScopeConnect()) {
-            pScope->IsConnected() = MOUNT_INDI;
+            pScope->IsConnected() = true;
         } else {
-            pScope->IsConnected() = 0;
+            pScope->IsConnected() = false;
             SetStatusText(_T("INDI mount failed"));
         }
     }
