@@ -251,7 +251,7 @@ bool ScopeGCUSBST4::Connect() {
 		return true;
 	}
 	
-
+	Scope::Connect();
 
 	return false;
 }
@@ -261,6 +261,8 @@ bool ScopeGCUSBST4::Disconnect() {
 		close(portFID);
 		portFID = 0;
 	}	
+
+	Scope::Disconnect();
 	return false;
 }
 

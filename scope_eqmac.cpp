@@ -140,6 +140,7 @@ bool ScopeEQMac::Connect() {
 		return true;
 	}
 
+	Scope::Connect();
 
 	return false;
 }

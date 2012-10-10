@@ -55,21 +55,25 @@ bool ScopeVoyager::Connect(wxString hostname)
 		bError = false;
 	}
 
-    m_bConnected = !bError;
-    return bError;
+	if (!bError)
+	{
+		Scope::Connect();
+	}
+
+	return bError;
 }
 
 bool ScopeVoyager::Connect(void)
 {
-    return Connect(_T("localhost"));
+	return Connect(_T("localhost"));
 }
 
 bool ScopeVoyager::Disconnect(void)
 {
-    VoyagerClient.Close();
-    m_bConnected = false;
+	VoyagerClient.Close();
+	Scope::DisConnect();
 
-    return false;
+	return false;
 }
 
 bool ScopeVoyager::Guide(const GUIDE_DIRECTION direction, int duration) 

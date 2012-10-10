@@ -141,6 +141,7 @@ bool ScopeEquinox::Connect() {
 		return true;
 	}
 
+	Scope::Connect();
 
 	return false;
 }
