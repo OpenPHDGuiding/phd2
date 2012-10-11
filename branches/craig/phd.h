@@ -81,9 +81,15 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 
 #define ROUND(x) (int) floor(x + 0.5)
 
-// these two macros are used for throwing exceptions
-#define ERROR_STR(x) #x
-#define ERROR_INFO(s) ("Error in " __FILE__ " line " ERROR_STR(__LINE__) ":" s)
+/* eliminate warnings for unused variables */
+#define POSSIBLY_UNUSED(x) (void)(x)
+
+// these macros are used for building error messages for thrown exceptions
+// It is surprisingly hard to get the line number into a string...
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define ERROR_INFO_BASE(file, line) "Error in " file ":" TOSTRING(line)
+#define ERROR_INFO(s) (ERROR_INFO_BASE(__FILE__, __LINE__) "->" s)
 
 #include "phdlog.h"
 #include "usImage.h"
