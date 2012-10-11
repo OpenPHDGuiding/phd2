@@ -550,8 +550,9 @@ bool Scope::Calibrate(void) {
         m_bCalibrated = true;
         frame->SetStatusText(_T("Cal"),5);
     }
-    catch (char WXUNUSED(*ErrorMsg))
+    catch (char *ErrorMsg)
     {
+        POSSIBLY_UNUSED(ErrorMsg);
         if (Abort == 1) {
             frame->canvas->State = STATE_NONE;
             frame->canvas->Refresh(); 
