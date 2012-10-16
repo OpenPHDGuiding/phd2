@@ -215,14 +215,16 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                     Debug << _T("- Guiding RA ");
                     if (RA_dist > 0.0) {
                         SetStatusText(wxString::Format(_T("E dur=%.1f dist=%.2f"),RA_dur,RA_dist),1);
-                        pScope->Guide(EAST,(int) RA_dur);	// So, guide in the RA- direction;
+                        if (!DisableGuideOutput)
+							pScope->Guide(EAST,(int) RA_dur);	// So, guide in the RA- direction;
                         if (Log_Data) {
                             logline = wxString::Format(_T("%d,%.3f,%.2f,%.2f,%.1f,%.1f,%.2f"),frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
                         }
                     }
                     else {
                         SetStatusText(wxString::Format(_T("W dur=%.1f dist=%.2f"),RA_dur,RA_dist),1);
-                        pScope->Guide(WEST,(int) RA_dur);
+                        if (!DisableGuideOutput)
+							pScope->Guide(WEST,(int) RA_dur);
                         if (Log_Data) {
                             logline = wxString::Format(_T("%d,%.3f,%.2f,%.2f,%.1f,%.1f,%.2f"),frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
                         }
@@ -296,14 +298,16 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                         }
                         if ((Dec_dist > 0.0) && ((Dec_guide == DEC_AUTO) || (Dec_guide == DEC_SOUTH))) {
                             SetStatusText(wxString::Format(_T("S dur=%.1f dist=%.2f"),Dec_dur,Dec_dist),1);
-                            pScope->Guide(SOUTH,(int) Dec_dur);	// So, guide in the Dec- direction;
+							if (!DisableGuideOutput)
+								pScope->Guide(SOUTH,(int) Dec_dur);	// So, guide in the Dec- direction;
                             if (Log_Data) {
                                 logline = logline + wxString::Format(_T(",%.1f,%.2f"),Dec_dur,Dec_dist);
                             }
                         }
                         else if ((Dec_dist < 0.0) && ((Dec_guide == DEC_AUTO) || (Dec_guide == DEC_NORTH))){
                             SetStatusText(wxString::Format(_T("N dur=%.1f dist=%.2f"),Dec_dur,Dec_dist),1);
-                            pScope->Guide(NORTH,(int) Dec_dur);	// So, guide in the Dec- direction;
+							if (!DisableGuideOutput)
+	                            pScope->Guide(NORTH,(int) Dec_dur);	// So, guide in the Dec- direction;
                             if (Log_Data) {
                                 logline = logline + wxString::Format(_T(",%.1f,%.2f"),Dec_dur,Dec_dist);
                             }
@@ -367,14 +371,16 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 
                             if ((Dec_dist > 0.0) && ((Dec_guide == DEC_AUTO) || (Dec_guide == DEC_SOUTH))) {
                                 SetStatusText(wxString::Format(_T("S dur=%.1f dist=%.2f cdist=%.2f"),Dec_dur,Dec_dist,Curr_Dec_dist),1);
-                                pScope->Guide(SOUTH,(int) Dec_dur);	// So, guide in the Dec- direction;
+								if (!DisableGuideOutput)
+		                            pScope->Guide(SOUTH,(int) Dec_dur);	// So, guide in the Dec- direction;
                                 if (Log_Data) {
                                     logline = logline + wxString::Format(_T(",%.1f,%.2f"),Dec_dur,Dec_dist);
                                 }
                             }
                             else if ((Dec_dist < 0.0) && ((Dec_guide == DEC_AUTO) || (Dec_guide == DEC_NORTH))){
                                 SetStatusText(wxString::Format(_T("N dur=%.1f dist=%.2f cdist=%.2f"),Dec_dur,Dec_dist,Curr_Dec_dist),1);
-                                pScope->Guide(NORTH,(int) Dec_dur);	// So, guide in the Dec- direction;
+								if (!DisableGuideOutput)
+		                            pScope->Guide(NORTH,(int) Dec_dur);	// So, guide in the Dec- direction;
                                 if (Log_Data) {
                                     logline = logline + wxString::Format(_T(",%.1f,%.2f"),Dec_dur,Dec_dist);
                                 }
