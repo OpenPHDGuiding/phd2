@@ -198,9 +198,9 @@ int FindStar(usImage& img) {
 	unsigned short *dataptr;
 	int x, y, searchsize;
 	int base_x, base_y;  // expected position in image (potentially cropped) coordinates
-	double mass, mx, my, val;
+	double mass, mx, my, val, mean;
 	int start_x, start_y, rowsize;
-	unsigned long lval, maxlval, mean;
+	unsigned long lval, maxlval;
 	unsigned short max, nearmax1, nearmax2, sval, localmin;
 	int retval = STAR_OK;
 //	static double LastMass1 = 0.0;
@@ -225,7 +225,7 @@ int FindStar(usImage& img) {
 	maxlval = nearmax1 = nearmax2 = max = 0;
 	start_x = base_x - SearchRegion; // u-left corner of local area
 	start_y = base_y - SearchRegion;
-	mean=0;
+	mean=0.0;
 
 	// figure the local offset
 	localmin = 65535;
@@ -263,10 +263,10 @@ int FindStar(usImage& img) {
 				nearmax1 = max;
 				max = sval;
 			}
-			mean = mean + sval;
+			mean = mean + (double) sval;
 		}
 	}
-	mean = mean / (searchsize * searchsize);
+	mean = mean / (double) (searchsize * searchsize);
 	frame->SetStatusText(_T(""),1);
 	if ((frame->canvas->State == STATE_SELECTED) && (nearmax1 == nearmax2) && (nearmax1 == max)) { // alert user that this is not the best star
 //		wxMessageBox(wxString::Format("This star appears to be saturated and will lead to sub-optimal\nguiding results.  You may wish to select another star, decrease\nexposure duration or decrease camera gain"));
@@ -326,7 +326,7 @@ int FindStar(usImage& img) {
 	if (MassRatio > 1.0)
 		MassRatio = 1.0/MassRatio;
 	MassRatio = 1.0 - MassRatio;
-	StarSNR = (double) max / (double) mean;
+	StarSNR = (double) max / mean;
 	if ((frame->canvas->State > STATE_CALIBRATING) && 
 		(MassRatio > StarMassChangeRejectThreshold) &&
 		(StarMassChangeRejectThreshold < 0.99) && (BadMassCount < 2) ) { 
@@ -364,7 +364,7 @@ int FindStar(usImage& img) {
 		dX = StarX - LockX;
 		dY = StarY - LockY;
 		FoundStar=true;
-		if (max == nearmax2) {
+		if ((max == nearmax2) && (max == img.Max) ) {
 			frame->SetStatusText(_T("Star saturated"));
 			retval = STAR_SATURATED;
 		}
