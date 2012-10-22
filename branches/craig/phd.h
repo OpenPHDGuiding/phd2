@@ -43,7 +43,7 @@
 #include <wx/textfile.h>
 #include <wx/socket.h>
 
-#define VERSION _T("1.13.6")
+#define VERSION _T("1.13.7")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
