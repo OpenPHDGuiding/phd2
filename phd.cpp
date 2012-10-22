@@ -245,13 +245,13 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
 	// Setup menus
 	wxMenu *file_menu = new wxMenu;
-	file_menu->Append(wxID_EXIT, _T("E&xit\tAlt-X"), _T("Quit this program"));
 	file_menu->Append(MENU_LOADSETTINGS, _T("Load settings"), _T("Load advanced settings file"));
 	file_menu->Append(MENU_SAVESETTINGS, _T("Save settings"), _T("Save advanced settings file"));
     file_menu->AppendSeparator();
 	file_menu->Append(MENU_LOADDARK, _T("Load dark"), _T("Load dark frame"));
     file_menu->Append(MENU_SAVEDARK, _T("Save dark"), _T("Save dark frame"));
 	file_menu->Append(wxID_SAVE, _T("Save image"), _T("Save current image"));
+	file_menu->Append(wxID_EXIT, _T("E&xit\tAlt-X"), _T("Quit this program"));
 //	file_menu->Append(wxID_PREFERENCES, _T("&Preferences"), _T("Preferences"));
 
 	mount_menu = new wxMenu;

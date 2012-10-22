@@ -398,10 +398,12 @@ bool ScopeASCOM::IsGuiding()
         VARIANT vRes;
         
         if (!IsConnected()) {
-            throw ERROR_INFO("ASCOM Scope: IsGuidiing - scope is not connected");
+            throw ERROR_INFO("ASCOM Scope: IsGuiding - scope is not connected");
         }
         if (!m_bCanCheckPulseGuiding){
-            throw ERROR_INFO("ASCOM Scope: IsGuidiing - cannot check pulse guiding");
+            //throw ERROR_INFO("ASCOM Scope: IsGuiding - cannot check pulse guiding");
+			return false; // Assume all is good - best we can do as this is really a fail-safe check.  If we can't call this property (lame driver) guides will have to 
+			              // enforce the wait.  But, enough don't support this that we can't throw an error.
         }
         // First, check to see if already moving
         dispParms.cArgs = 0;
@@ -410,7 +412,7 @@ bool ScopeASCOM::IsGuiding()
         dispParms.rgdispidNamedArgs = NULL;
         if(FAILED(hr = ScopeDriverDisplay->Invoke(dispid_ispulseguiding,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispParms,&vRes,&excep, NULL))) {
             wxMessageBox(_T("ASCOM driver failed checking IsPulseGuiding"),_T("Error"), wxOK | wxICON_ERROR);
-            throw ERROR_INFO("ASCOM Scope: IsGuidiing - IsPulseGuiding failed");
+            throw ERROR_INFO("ASCOM Scope: IsGuiding - IsPulseGuiding failed");
         }
 
         // if we were not guiding, see if we are slewing
@@ -421,7 +423,7 @@ bool ScopeASCOM::IsGuiding()
             dispParms.rgdispidNamedArgs = NULL;
             if(FAILED(hr = ScopeDriverDisplay->Invoke(dispid_isslewing,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispParms,&vRes,&excep, NULL))) {
                 wxMessageBox(_T("ASCOM driver failed checking Slewing"),_T("Error"), wxOK | wxICON_ERROR);
-                throw ERROR_INFO("ASCOM Scope: IsGuidiing - failed to check slewing");
+                throw ERROR_INFO("ASCOM Scope: IsGuiding - failed to check slewing");
             }
             if (vRes.boolVal != VARIANT_TRUE) {
                 bReturn = false;
