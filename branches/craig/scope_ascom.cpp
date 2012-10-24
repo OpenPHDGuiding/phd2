@@ -201,8 +201,8 @@ bool ScopeASCOM::Connect(void) {
             // ... get the dispatch ID for the "IsPulseGuiding" property ....
             name = L"IsPulseGuiding";
             if(FAILED(ScopeDriverDisplay->GetIDsOfNames(IID_NULL,&name,1,LOCALE_USER_DEFAULT,&dispid_ispulseguiding)))  {
-                m_bCanCheckGuiding = false;
-                // don't fail if we can't get it
+                m_bCanCheckPulseGuiding = false;
+                // don't fail if we can't get the status on this - can live without it as it's really a safety net for us
             }
 
             // ... get the dispatch ID for the "Slewing" property ....
@@ -256,15 +256,15 @@ bool ScopeASCOM::Connect(void) {
         dispParms.rgdispidNamedArgs = NULL;
         if(FAILED(hr = ScopeDriverDisplay->Invoke(dispid_canpulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
             &dispParms,&vRes,&excep, NULL))) {
-            wxMessageBox(_T("ASCOM driver failed when checking Pulse Guiding"),_T("Error"), wxOK | wxICON_ERROR);
-            throw ERROR_INFO("ASCOM Scope: Could not check pulseguiding");
+            wxMessageBox(_T("ASCOM driver does not support the needed Pulse Guide method."),_T("Error"), wxOK | wxICON_ERROR);
+            throw ERROR_INFO("ASCOM Scope: Cannot pulseguide");
         }
-        m_bCanCheckPulseGuiding = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
+     /*   m_bCanCheckPulseGuiding = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
 
         if (!m_bCanCheckPulseGuiding) {
             wxMessageBox(_T("Scope does not support Pulse Guide mode"),_T("Error"));
             throw ERROR_INFO("ASCOM Scope: scope does not support pulseguiding");
-        }
+        }*/
 
         frame->SetStatusText(Name()+_T(" connected"));
         Scope::Connect();

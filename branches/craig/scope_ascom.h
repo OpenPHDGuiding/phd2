@@ -53,7 +53,7 @@ class ScopeASCOM:public Scope, private ASCOM_COMMON
     DISPID dispid_pulseguide;
 
     // other private varialbles
-    bool m_bCanCheckGuiding;
+ //   bool m_bCanCheckGuiding;
     bool m_bCanCheckPulseGuiding;
 
     // private functions

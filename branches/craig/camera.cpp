@@ -63,6 +63,11 @@
  Camera_QGuiderClass Camera_QGuider;
 #endif
 
+#if defined (QHY5II)
+ #include "cam_QHY5II.h"
+ Camera_QHY5IIClass Camera_QHY5II;
+#endif
+
 #if defined (ORION_DSCI)
  #include "cam_StarShootDSCI.h"
  Camera_StarShootDSCIClass Camera_StarShoot;
@@ -211,6 +216,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #if defined (MEADE_DSI)
 	Cameras.Add(_T("Meade DSI I, II, or III"));
 #endif
+#if defined (QHY5II)
+	Cameras.Add(_T("QHY 5-II"));
+#endif
 #if defined (SAC42)
 	Cameras.Add(_T("SAC4-2"));
 #endif
@@ -323,6 +331,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		CurrentGuideCamera = &Camera_QGuider;
 		Camera_QGuider.Name = _T("MagZero MZ-5");
 	}
+#endif
+#if defined (QHY5II)
+	else if (Choice.Find(_T("QHY 5-II")) + 1)
+		CurrentGuideCamera = &Camera_QHY5II;
 #endif
 /*#if defined (OPENSSAG)
 	else if (Choice.Find(_T("Open StarShoot AutoGuider")) + 1)
