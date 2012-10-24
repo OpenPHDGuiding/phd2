@@ -316,6 +316,7 @@
     <ClCompile Include="cam_openssag.cpp" />
     <ClCompile Include="cam_OSPL130.cpp" />
     <ClCompile Include="cam_QGuide.cpp" />
+    <ClCompile Include="cam_QHY5II.cpp" />
     <ClCompile Include="cam_SAC42.cpp" />
     <ClCompile Include="cam_SACGuide.cpp" />
     <ClCompile Include="cam_SBIG.cpp" />
@@ -369,6 +370,7 @@
     <ClInclude Include="cam_openssag.h" />
     <ClInclude Include="cam_OSPL130.h" />
     <ClInclude Include="cam_QGuide.h" />
+    <ClInclude Include="cam_QHY5II.h" />
     <ClInclude Include="cam_SAC42.h" />
     <ClInclude Include="cam_SACGuide.h" />
     <ClInclude Include="cam_SBIG.h" />
