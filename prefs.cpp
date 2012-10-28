@@ -35,6 +35,7 @@
 #include "phd.h"
 #include <wx/config.h>
 #include <wx/fileconf.h>
+#include <wx/display.h>
 
 // Some specific camera includes
 #if defined (LE_PARALLEL_CAMERA)
@@ -155,6 +156,22 @@ void MyFrame::ReadPreferences(wxString fname) {
 	config->Read(_T("DECColor"),&sval);
 	if (!sval.IsEmpty()) GraphLog->DEC_Color.Set(sval);
 
+	wxRect rect;
+	rect = GetRect();  // If not in the settings, these values will remain
+	lval = (long) rect.x;
+	config->Read(_T("XWinPos"),&lval);
+	rect.x = (int) lval;
+	lval = (long) rect.y;
+	config->Read(_T("YWinPos"),&lval);
+	rect.y = (int) lval;
+
+	for(int i=0; i<wxDisplay::GetCount(); i++) {
+      wxDisplay display(i);
+      if( display.GetGeometry().Contains(rect) ) 
+		  	SetPosition(wxPoint(rect.x,rect.y));
+	}
+	
+	
 	delete config;
 	return;
 }
@@ -218,6 +235,10 @@ void MyFrame::WritePreferences(wxString fname) {
 	config->Write(_T("Enable Server"),(long) ServerMode);
 	config->Write(_T("RAColor"),GraphLog->RA_Color.GetAsString());
 	config->Write(_T("DECColor"),GraphLog->DEC_Color.GetAsString());
+
+	wxPoint pos = this->GetPosition();
+	config->Write(_T("XWinPos"),(long) pos.x);
+	config->Write(_T("YWinPos"),(long) pos.y);
 	
 	delete config;
 }
