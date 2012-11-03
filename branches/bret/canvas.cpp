@@ -87,7 +87,8 @@ void MyCanvas::OnLClick(wxMouseEvent &mevent) {
 	}
 	if (mevent.m_shiftDown) {  // clear them out
 //		Origin_x = Origin_y = Targ_x = Targ_y = 0;
-		StarX = StarY = LockX = LockY = 0.0;
+        GuideStar.Set(0.0, 0.0);
+        UpdateLockPoint(GuideStar.pCenter);
 		State = STATE_NONE;
 	}
 	else if ((mevent.m_x <= SearchRegion) || (mevent.m_x >= (XWinSize+SearchRegion)) || (mevent.m_y <= SearchRegion) || (mevent.m_y >= (XWinSize+SearchRegion))) {
@@ -100,17 +101,15 @@ void MyCanvas::OnLClick(wxMouseEvent &mevent) {
 	}
 
 	else {
-		StarX = (double) mevent.m_x / ScaleFactor;
-		StarY = (double) mevent.m_y / ScaleFactor;
+		double x = (double) mevent.m_x / ScaleFactor;
+		double y = (double) mevent.m_y / ScaleFactor;
 		State = STATE_SELECTED;
 		//Abort = true;  // If looping now, stop
-		dX = dY = 0.0;
-		FindStar(CurrentFullFrame);
-		//LockX = StarX;
-		//LockY = StarY;
-		frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
-		//Targ_x = (int) StarX;
-		//Targ_y = (int) StarY;
+		GuideStar.Find(CurrentFullFrame, x, y);
+        UpdateLockPoint(GuideStar.pCenter);
+		frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"), GuideStar.Mass,GuideStar.SNR));
+		//Targ_x = (int) GuideStar.pCenter->X;
+		//Targ_y = (int) GuideStar.pCenter->Y;
 		//Origin_x = Targ_x;
 		//Origin_y = Targ_y;
 	}
@@ -241,43 +240,43 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
 		}
 		if (State == STATE_SELECTED) {
-//			int xorig = ROUND(StarX);
-//			int yorig = ROUND(StarY);
-			if (FoundStar)
+//			int xorig = ROUND(GuideStar.pCenter->X);
+//			int yorig = ROUND(GuideStar.pCenter->Y);
+			if (GuideStar.WasFound())
 //				dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
 				dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
 			else
 				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
 			//dc.SetPen(* wxGREEN_PEN);
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*ScaleFactor)-SearchRegion,ROUND(StarY*ScaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
+			dc.DrawRectangle(ROUND(GuideStar.pCenter->X*ScaleFactor)-SearchRegion,ROUND(GuideStar.pCenter->Y*ScaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
 			//dc.DrawLine(xorig-12,yorig,xorig-6,yorig);
 			//dc.DrawLine(xorig+11,yorig,xorig+6,yorig);
 			//dc.DrawLine(xorig,yorig-12,xorig,yorig-6);
 			//dc.DrawLine(xorig,yorig+11,xorig,yorig+6);
-		//	frame->SetStatusText(wxString::Format("%.1f %.1f %d %d",StarX,StarY,xorig,yorig));
+		//	frame->SetStatusText(wxString::Format("%.1f %.1f %d %d",GuideStar.pCenter->X,GuideStar.pCenter->Y,xorig,yorig));
 		}
 		else if (State == STATE_CALIBRATING) {  // in the cal process
 			dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*ScaleFactor)-SearchRegion,ROUND(StarY*ScaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
+			dc.DrawRectangle(ROUND(GuideStar.pCenter->X*ScaleFactor)-SearchRegion,ROUND(GuideStar.pCenter->Y*ScaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
 			dc.SetPen(wxPen(wxColor(255,255,0),1,wxDOT));
-			//dc.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
-			dc.DrawLine(0, LockY*ScaleFactor, XWinSize, LockY*ScaleFactor);
-			dc.DrawLine(LockX*ScaleFactor, 0, LockX*ScaleFactor, YWinSize);
+			//dc.CrossHair(ROUND(pLockPoint->X*ScaleFactor),ROUND(pLockPoint->Y*ScaleFactor));  // Draw the cross-hair on the origin
+			dc.DrawLine(0, pLockPoint->Y*ScaleFactor, XWinSize, pLockPoint->Y*ScaleFactor);
+			dc.DrawLine(pLockPoint->X*ScaleFactor, 0, pLockPoint->X*ScaleFactor, YWinSize);
 
 		}
 		else if (State == STATE_GUIDING_LOCKED) { // locked and guiding
-			if (FoundStar)
+			if (GuideStar.WasFound())
 				dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
 			else
 				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*ScaleFactor)-SearchRegion,ROUND(StarY*ScaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
+			dc.DrawRectangle(ROUND(GuideStar.pCenter->X*ScaleFactor)-SearchRegion,ROUND(GuideStar.pCenter->Y*ScaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
 			dc.SetPen(wxPen(wxColor(0,255,0)));
-			//dc.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
-			dc.DrawLine(0, LockY*ScaleFactor, XWinSize, LockY*ScaleFactor);
-			dc.DrawLine(LockX*ScaleFactor, 0, LockX*ScaleFactor, YWinSize);
+			//dc.CrossHair(ROUND(pLockPoint->X*ScaleFactor),ROUND(pLockPoint->Y*ScaleFactor));  // Draw the cross-hair on the origin
+			dc.DrawLine(0, pLockPoint->Y*ScaleFactor, XWinSize, pLockPoint->Y*ScaleFactor);
+			dc.DrawLine(pLockPoint->X*ScaleFactor, 0, pLockPoint->X*ScaleFactor, YWinSize);
 
 		}
 		if (OverlayMode) {
@@ -307,17 +306,17 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 				double cos_angle = cos(pScope->RaAngle());
 				double sin_angle = sin(pScope->RaAngle());
 				dc.SetPen(wxPen(frame->GraphLog->RA_Color,2,wxPENSTYLE_DOT));
-			/*	dc.DrawLine(ROUND(LockX*ScaleFactor+r*cos_angle),ROUND(LockY*ScaleFactor+r*sin_angle),
-					ROUND(LockX*ScaleFactor-r*cos_angle),ROUND(LockY*ScaleFactor-r*sin_angle));
+			/*	dc.DrawLine(ROUND(pLockPoint->X*ScaleFactor+r*cos_angle),ROUND(pLockPoint->Y*ScaleFactor+r*sin_angle),
+					ROUND(pLockPoint->X*ScaleFactor-r*cos_angle),ROUND(pLockPoint->Y*ScaleFactor-r*sin_angle));
 				dc.SetPen(wxPen(frame->GraphLog->RA_Color,1,wxPENSTYLE_SOLID ));*/
 				r=15.0;
-				dc.DrawLine(ROUND(StarX*ScaleFactor+r*cos_angle),ROUND(StarY*ScaleFactor+r*sin_angle),
-					ROUND(StarX*ScaleFactor-r*cos_angle),ROUND(StarY*ScaleFactor-r*sin_angle));
+				dc.DrawLine(ROUND(GuideStar.pCenter->X*ScaleFactor+r*cos_angle),ROUND(GuideStar.pCenter->Y*ScaleFactor+r*sin_angle),
+					ROUND(GuideStar.pCenter->X*ScaleFactor-r*cos_angle),ROUND(GuideStar.pCenter->Y*ScaleFactor-r*sin_angle));
 				dc.SetPen(wxPen(frame->GraphLog->DEC_Color,2,wxPENSTYLE_DOT));
 				cos_angle = cos(pScope->DecAngle());
 				sin_angle = sin(pScope->DecAngle());
-				dc.DrawLine(ROUND(StarX*ScaleFactor+r*cos_angle),ROUND(StarY*ScaleFactor+r*sin_angle),
-					ROUND(StarX*ScaleFactor-r*cos_angle),ROUND(StarY*ScaleFactor-r*sin_angle));
+				dc.DrawLine(ROUND(GuideStar.pCenter->X*ScaleFactor+r*cos_angle),ROUND(GuideStar.pCenter->Y*ScaleFactor+r*sin_angle),
+					ROUND(GuideStar.pCenter->X*ScaleFactor-r*cos_angle),ROUND(GuideStar.pCenter->Y*ScaleFactor-r*sin_angle));
 
 				wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
 				gc->SetPen(wxPen(frame->GraphLog->RA_Color,1,wxPENSTYLE_DOT ));
@@ -364,13 +363,13 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 			wxMemoryDC tmpMdc;
 			tmpMdc.SelectObject(SubBmp);
 			memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
-			//memDC.CrossHair(ROUND(LockX*ScaleFactor),ROUND(LockY*ScaleFactor));  // Draw the cross-hair on the origin
-			memDC.DrawLine(0, LockY*ScaleFactor, XWinSize, LockY*ScaleFactor);
-			memDC.DrawLine(LockX*ScaleFactor, 0, LockX*ScaleFactor, YWinSize);
+			//memDC.CrossHair(ROUND(pLockPoint->X*ScaleFactor),ROUND(pLockPoint->Y*ScaleFactor));  // Draw the cross-hair on the origin
+			memDC.DrawLine(0, pLockPoint->Y*ScaleFactor, XWinSize, pLockPoint->Y*ScaleFactor);
+			memDC.DrawLine(pLockPoint->X*ScaleFactor, 0, pLockPoint->X*ScaleFactor, YWinSize);
 	#ifdef __APPLEX__
-			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*ScaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*ScaleFactor)-30,wxCOPY,false);
+			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(GuideStar.pCenter->X*ScaleFactor)-30,Displayed_Image->GetHeight() - ROUND(GuideStar.pCenter->Y*ScaleFactor)-30,wxCOPY,false);
 	#else
-			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*ScaleFactor)-30,ROUND(StarY*ScaleFactor)-30,wxCOPY,false);
+			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(GuideStar.pCenter->X*ScaleFactor)-30,ROUND(GuideStar.pCenter->Y*ScaleFactor)-30,wxCOPY,false);
 	#endif
 
 			//			tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
@@ -389,12 +388,12 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
 
 /*		if (Log_Images && (State >= STATE_SELECTED) ) {  //GUIDING_LOCKED
-			//wxBitmap SubBmp = DisplayedBitmap->GetSubBitmap(wxRect(ROUND(LockX*ScaleFactor)-20,ROUND(LockY*ScaleFactor)-20,40,40));
+			//wxBitmap SubBmp = DisplayedBitmap->GetSubBitmap(wxRect(ROUND(pLockPoint->X*ScaleFactor)-20,ROUND(pLockPoint->Y*ScaleFactor)-20,40,40));
 			wxBitmap SubBmp(60,60);
 			wxMemoryDC tmpMdc;
 			tmpMdc.SelectObject(SubBmp);
-//			tmpMdc.Blit(0,0,60,60,&dc,ROUND(LockX*ScaleFactor)-30,ROUND(LockY*ScaleFactor)-30);
-//			tmpMdc.Blit(0,0,60,60,&dc,ROUND(StarX*ScaleFactor)-30,ROUND(StarY*ScaleFactor)-30,wxCOPY);
+//			tmpMdc.Blit(0,0,60,60,&dc,ROUND(pLockPoint->X*ScaleFactor)-30,ROUND(pLockPoint->Y*ScaleFactor)-30);
+//			tmpMdc.Blit(0,0,60,60,&dc,ROUND(GuideStar.pCenter->X*ScaleFactor)-30,ROUND(GuideStar.pCenter->Y*ScaleFactor)-30,wxCOPY);
 			tmpMdc.Blit(0,0,60,60,&dc,0,0,wxCOPY);
 			wxString fname = LogFile->GetName();
 			fname = fname.BeforeLast('.') + wxString::Format("_Star_%d.jpg",FrameTime);
@@ -412,8 +411,8 @@ void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 void MyCanvas::SaveStarFITS() {
 	usImage tmpimg;
 	tmpimg.Init(60,60);
-	int start_x = ROUND(StarX)-30;
-	int start_y = ROUND(StarY)-30;
+	int start_x = ROUND(GuideStar.pCenter->X)-30;
+	int start_y = ROUND(GuideStar.pCenter->Y)-30;
 	if ((start_x + 60) > CurrentFullFrame.Size.GetWidth())
 		start_x = CurrentFullFrame.Size.GetWidth() - 60;
 	if ((start_y + 60) > CurrentFullFrame.Size.GetHeight())

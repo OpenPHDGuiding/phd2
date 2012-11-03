@@ -64,13 +64,15 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         static int run=0;
         wxStopWatch swatch;
         double ExpDur = RequestedExposureDuration();
+        double dX = 0.0;
+        double dY = 0.0;
 
         if (!pScope->IsConnected() || !GuideCameraConnected) { // must be connected to both
             wxMessageBox(_T("Both camera and mount must be connected before you attempt to guide"));
             throw ERROR_INFO("Both camera and mount must be connected before you attempt to guide");
         }
 
-        if (!FoundStar) {
+        if (!GuideStar.WasFound()) {
             wxMessageBox(_T("Please select a guide star before attempting to guide"));
             throw ERROR_INFO("Please select a guide star before attempting to guide");
         }
@@ -94,9 +96,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         }
 
         if (!ManualLock) { // Not in the manually-specified lock position -- resync lock pos
-            LockX=StarX;
-            LockY=StarY;
-            dX = dY = 0;
+            UpdateLockPoint(GuideStar.pCenter);
         }
 
         wxDateTime now = wxDateTime::Now();
@@ -115,7 +115,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
             wxDateTime now = wxDateTime::Now();
             LogFile->AddLine(wxString::Format(_T("PHD Guide %s  -- "),VERSION) + now.FormatDate()  + _T(" ") + now.FormatTime());
             LogFile->AddLine(_T("Guiding begun"));
-            LogFile->AddLine(wxString::Format(_T("lock %.1f %.1f, star %.1f %.1f, Min Motion %.2f"),LockX,LockY,StarX,StarY, MinMotion));
+            LogFile->AddLine(wxString::Format(_T("lock %.1f %.1f, star %.1f %.1f, Min Motion %.2f"),pLockPoint->X,pLockPoint->Y,GuideStar.pCenter->X,GuideStar.pCenter->Y, MinMotion));
             LogFile->AddLine(wxString::Format(_T("Max RA dur %d, Max DEC dur %d, Star Mass delta thresh %.2f"),Max_RA_Dur, Max_Dec_Dur, StarMassChangeRejectThreshold));
             LogFile->AddLine(wxString::Format(_T("RA angle %.2f, rate %.4f, aggr %.2f, hyst=%0.2f"),pScope->RaAngle(), pScope->RaRate(), RA_aggr, RA_hysteresis));
             LogFile->AddLine(wxString::Format(_T("DEC angle %.2f, rate %.4f, Dec mode %d, Algo %d, slopewt = %.2f"),pScope->DecAngle(), pScope->DecRate(), Dec_guide, Dec_algo, Dec_slopeweight));
@@ -174,19 +174,18 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                 SetStatusText(_T(""),1);
                 logline = _T("");
                 Debug << _T("Finding star - ");
-                StarErrorCode = FindStar(CurrentFullFrame); // track it
-                Debug << _T("Done (") << FoundStar << _T(")\n");
+                StarErrorCode = GuideStar.Find(CurrentFullFrame); // track it
+                Debug << _T("Done (") << GuideStar.WasFound() << _T(")\n");
+                dX = pLockPoint->dx(GuideStar.pCenter);
+                dY = pLockPoint->dy(GuideStar.pCenter);
                 elapsed_time = (float) swatch.Time() / 1000.0;
                 if ( ((fabs(dX) > SearchRegion) || (fabs(dY)>SearchRegion)) && !DisableGuideOutput && !ManualLock && Dec_guide) { // likely lost lock -- stay here
-                    StarX = LockX;
-                    StarY = LockY;
                     dX = 0.0;
                     dY = 0.0;
-                    FoundStar = false;
-                    StarErrorCode = STAR_LARGEMOTION;
+                    StarErrorCode = Star::STAR_LARGEMOTION;
                     // sound the alarm and wait here
                 }
-                if (!FoundStar) {
+                if (!GuideStar.WasFound()) {
                     SetBackgroundColour(wxColour(64,0,0));
                     Refresh();
                     wxTheApp->Yield();
@@ -211,7 +210,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                     CurrentError = fabs(RA_dist);
                 if (RA_dur > (double) Max_RA_Dur) RA_dur = (double) Max_RA_Dur;  // cap pulse length
                 Debug << _T("Frame: ") << frame_index << _T("\n");
-                if ((fabs(RA_dist) > MinMotion) && FoundStar){ // not worth <0.25 pixel moves
+                if ((fabs(RA_dist) > MinMotion) && GuideStar.WasFound()){ // not worth <0.25 pixel moves
                     Debug << _T("- Guiding RA ");
                     if (RA_dist > 0.0) {
                         SetStatusText(wxString::Format(_T("E dur=%.1f dist=%.2f"),RA_dur,RA_dist),1);
@@ -237,7 +236,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                 }
                 last_guide  = RA_dist;
                 Debug << _T("Done\n");
-                if ((Dec_guide) && (Dec_algo == DEC_RESISTSWITCH) && FoundStar) { // Do Dec guide using the newer resist-switch algo
+                if ((Dec_guide) && (Dec_algo == DEC_RESISTSWITCH) && GuideStar.WasFound()) { // Do Dec guide using the newer resist-switch algo
                     Debug << _T("Dec resist switch - \n");
                     Dec_dist = cos(pScope->DecAngle() - theta)*hyp;	// dist in Dec star needs to move
                     Dec_dur = fabs(Dec_dist)/pScope->DecRate();
@@ -323,7 +322,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                     }
                     Debug << _T("Done\n");
                 }
-                else if (Dec_guide && FoundStar && ((Dec_algo == DEC_LOWPASS) || (Dec_algo == DEC_LOWPASS2))) {// version 1, lowpass filter
+                else if (Dec_guide && GuideStar.WasFound() && ((Dec_algo == DEC_LOWPASS) || (Dec_algo == DEC_LOWPASS2))) {// version 1, lowpass filter
                     Debug << _T("Dec lowpass - ");
                     Dec_dist = cos(pScope->DecAngle() - theta)*hyp;	// dist in Dec star needs to move
                     Dec_dist_list.Add(Dec_dist);
@@ -400,7 +399,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                 else // no DEC guide
                     logline = logline + _T(",0,0");
                 if (Log_Data) {
-                    logline = logline + wxString::Format(_T(",%.2f,%d"),StarMass,StarErrorCode);
+                    logline = logline + wxString::Format(_T(",%.2f,%d"),GuideStar.Mass,StarErrorCode);
                     LogFile->AddLine(logline);
                     LogFile->Write();
                 }

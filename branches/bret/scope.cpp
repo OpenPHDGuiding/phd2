@@ -308,7 +308,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pScope = pNewScope;
 		SetStatusText(_T("Mount connected"));
 		SetStatusText(_T("Scope"),4);
-		if (FoundStar) Guide_Button->Enable(true);
+		if (GuideStar.WasFound()) Guide_Button->Enable(true);
 	}
 	else {
 		SetStatusText(_T("No scope"),4);
@@ -325,6 +325,8 @@ bool Scope::Calibrate(void) {
         bool still_going;
         int iterations, i;
         double dist_crit;
+        double dX=0.0;
+        double dY=0.0;
 
         if (!pScope->IsConnected() || !GuideCameraConnected) {
             throw ERROR_INFO("Both camera and mount must be connected before you attempt to calibrate");
@@ -332,10 +334,6 @@ bool Scope::Calibrate(void) {
 
         if (frame->canvas->State != STATE_SELECTED) { // must have a star selected
             throw ERROR_INFO("Must have star selected");
-        }
-
-        if (!FoundStar) {// Must have a star
-            throw ERROR_INFO("Must have star found");
         }
 
         // Clear out any previous values
@@ -353,9 +351,14 @@ bool Scope::Calibrate(void) {
             QuickLRecon(CurrentFullFrame);
         else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
             Median3(CurrentFullFrame);
-        FindStar(CurrentFullFrame); // Get starting position
-        LockX = StarX;
-        LockY = StarY;
+
+        GuideStar.Find(CurrentFullFrame); // Get starting position
+
+        if (!GuideStar.WasFound()) {// Must have a star
+            throw ERROR_INFO("Must have star found");
+        }
+
+        UpdateLockPoint(GuideStar.pCenter);
         frame->canvas->FullFrameToDisplay();
 
         still_going = true;
@@ -369,7 +372,8 @@ bool Scope::Calibrate(void) {
             wxDateTime now = wxDateTime::Now();
             LogFile->AddLine(wxString::Format(_T("PHD Guide %s  -- "),VERSION) + now.FormatDate() + _T(" ") + now.FormatTime());
             LogFile->AddLine(_T("Calibration begun"));
-            LogFile->AddLine(wxString::Format(_T("lock %.1f %.1f, star %.1f %.1f"),LockX,LockY,StarX,StarY));
+            LogFile->AddLine(wxString::Format(_T("lock %.1f %.1f, star %.1f %.1f"),pLockPoint->X,pLockPoint->Y,
+                        GuideStar.pCenter->X, GuideStar.pCenter->Y));
             LogFile->AddLine(_T("Direction,Step,dx,dy,x,y"));
             LogFile->Write();
         }
@@ -385,7 +389,7 @@ bool Scope::Calibrate(void) {
                 throw ERROR_INFO("CaptureFull failed in W calibration");
             }
 #if 0
-            // Bret TODO: Understand why there were executed after a capture failed
+            // Bret TODO: Understand why these were executed after a capture failed
             if (NR_mode == NR_2x2MEAN)
                 QuickLRecon(CurrentFullFrame);
             else if (NR_mode == NR_3x3MEDIAN)
@@ -396,12 +400,17 @@ bool Scope::Calibrate(void) {
                 QuickLRecon(CurrentFullFrame);
             else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                 Median3(CurrentFullFrame);
-            FindStar(CurrentFullFrame);
+
             frame->canvas->FullFrameToDisplay();
+
+            GuideStar.Find(CurrentFullFrame);
+            dX = pLockPoint->dx(GuideStar.pCenter);
+            dY = pLockPoint->dy(GuideStar.pCenter);
+
             dist = sqrt(dX*dX+dY*dY);
             iterations++;
             frame->SetStatusText(wxString::Format(_T("dx=%.1f dy=%.1f dist=%.1f (%.1f)"),dX,dY,dist,dist_crit),1);
-            if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA+ (west),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
+            if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA+ (west),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,GuideStar.pCenter->X,GuideStar.pCenter->Y));
             if (iterations > 60) {
                 wxMessageBox(_T("RA Calibration failed - Star did not move enough"),_T("Alert"),wxOK | wxICON_ERROR);
                 frame->canvas->State = STATE_NONE;
@@ -435,14 +444,17 @@ bool Scope::Calibrate(void) {
             else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                 Median3(CurrentFullFrame);
             wxTheApp->Yield();
-            FindStar(CurrentFullFrame);
-            if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
-    //		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east) %d, x=%.1f y=%.1f"),iterations, StarX,StarY));
+
+            GuideStar.Find(CurrentFullFrame);
+            dX = pLockPoint->dx(GuideStar.pCenter);
+            dY = pLockPoint->dy(GuideStar.pCenter);
+
+            if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,GuideStar.pCenter->X,GuideStar.pCenter->Y));
+    //		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east) %d, x=%.1f y=%.1f"),iterations, GuideStar.pCenter->X,GuideStar.pCenter->y));
             frame->canvas->FullFrameToDisplay();
         }
         if (Log_Data) LogFile->Write();
-        LockX = StarX;  // re-sync star position
-        LockY = StarY;
+        UpdateLockPoint(GuideStar.pCenter); // re-sync star position
 
         // Do DEC if pref is set for it
         if (Dec_guide) {
@@ -463,7 +475,11 @@ bool Scope::Calibrate(void) {
                 else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                     Median3(CurrentFullFrame);
                 wxTheApp->Yield();
-                FindStar(CurrentFullFrame);
+
+                GuideStar.Find(CurrentFullFrame);
+                dX = pLockPoint->dx(GuideStar.pCenter);
+                dY = pLockPoint->dy(GuideStar.pCenter);
+
                 frame->canvas->FullFrameToDisplay();
                 dist = sqrt(dX*dX+dY*dY);
                 iterations++;
@@ -477,8 +493,8 @@ bool Scope::Calibrate(void) {
                 }
 
             }
-            LockX = StarX;  // re-sync star position
-            LockY = StarY;
+
+            UpdateLockPoint(GuideStar.pCenter);
             iterations = 0;
             while (still_going && Dec_guide) { // do Dec +
 				if( Abort != 0 )
@@ -495,12 +511,16 @@ bool Scope::Calibrate(void) {
                 else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                     Median3(CurrentFullFrame);
                 wxTheApp->Yield();
-                FindStar(CurrentFullFrame);
+
+                GuideStar.Find(CurrentFullFrame);
+                dX = pLockPoint->dx(GuideStar.pCenter);
+                dY = pLockPoint->dy(GuideStar.pCenter);
+
                 frame->canvas->FullFrameToDisplay();
                 dist = sqrt(dX*dX+dY*dY);
                 iterations++;
                 frame->SetStatusText(wxString::Format(_T("dx=%.1f dy=%.1f dist=%.1f (%.1f)"),dX,dY,dist,dist_crit),1);
-                if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec+ (north),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
+                if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec+ (north),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,GuideStar.pCenter->X,GuideStar.pCenter->Y));
                 if (iterations > 60) {
                     wxMessageBox(_T("Dec Calibration failed - turning off Dec guiding"),_T("Alert"),wxOK | wxICON_ERROR);
                     still_going = false;
@@ -533,14 +553,17 @@ bool Scope::Calibrate(void) {
                     else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                         Median3(CurrentFullFrame);
                     wxTheApp->Yield();
-                    FindStar(CurrentFullFrame);
-                    if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec- (south),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
+
+                    GuideStar.Find(CurrentFullFrame);
+                    dX = pLockPoint->dx(GuideStar.pCenter);
+                    dY = pLockPoint->dy(GuideStar.pCenter);
+
+                    if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec- (south),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,GuideStar.pCenter->X,GuideStar.pCenter->Y));
                     frame->canvas->FullFrameToDisplay();
                 }
             }
             if (Log_Data) LogFile->Write();
-            LockX = StarX;  // re-sync star position
-            LockY = StarY;
+            UpdateLockPoint(GuideStar.pCenter); // re-sync star position
 
         }
         if (Log_Data) LogFile->Close();

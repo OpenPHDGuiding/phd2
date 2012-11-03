@@ -103,17 +103,19 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 			tmpstr = wxGetTextFromUser(_T("Enter x-lock position (or 0 for center)"), _T("X-lock position"));
 			if (tmpstr.IsEmpty()) return;
 			ManualLock = true;
-			tmpstr.ToDouble(&LockX); 
-			LockX = fabs(LockX);
-			if (LockX < 0.0001) {
-				LockX = CurrentGuideCamera->FullSize.GetWidth() / 2;
-				LockY = CurrentGuideCamera->FullSize.GetHeight() / 2;
+            double x;
+			tmpstr.ToDouble(&x); 
+			x = fabs(pLockPoint->X);
+			if (x < 0.0001) {
+                UpdateLockPoint(CurrentGuideCamera->FullSize.GetWidth() / 2, CurrentGuideCamera->FullSize.GetHeight() / 2);
 			}
 			else {
 				tmpstr = wxGetTextFromUser(_T("Enter y-lock position"), _T("Y-lock position"));
 				if (tmpstr.IsEmpty()) return;
-				tmpstr.ToDouble(&LockY); 
-				LockY = fabs(LockY);
+                double y;
+				tmpstr.ToDouble(&y); 
+				y = fabs(pLockPoint->Y);
+                UpdateLockPoint(x, y);
 			}
 		}
 		else {

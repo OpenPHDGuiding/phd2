@@ -93,6 +93,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 
 #include "phdlog.h"
 #include "usImage.h"
+#include "star.h"
 #include "graph.h"
 #include "cameras.h"
 #include "scopes.h"
@@ -303,29 +304,13 @@ extern    int  CropY;
 #endif
 
 #if 1
-// Thse seem like the lock point releated globals
+// These seem like the lock point releated globals
 
-enum {
-	STAR_OK = 0,
-	STAR_SATURATED,
-	STAR_LOWSNR,
-	STAR_LOWMASS,
-	STAR_MASSCHANGE,
-	STAR_LARGEMOTION
-};
-
-extern double StarMass;
-extern double StarSNR;
 extern double StarMassChangeRejectThreshold;
-extern double StarX;	// Where the star is in full-res coords
-extern double StarY;
 extern double LastdX;	// Star movement on last frame
 extern double LastdY;
-extern double dX;		// Delta between current and locked star position
-extern double dY;
-extern double LockX;	// Place where we should be locked to -- star's starting point
-extern double LockY;
-extern bool FoundStar;	// Do we think we have a star?
+extern Star  GuideStar;
+extern Point *pLockPoint; // Place where we should be locked to -- star's starting point
 #endif
 
 #if 1
@@ -382,5 +367,9 @@ extern bool ServerMode;
 extern bool RandomMotionMode;
 extern wxSocketServer *SocketServer;
 extern int SocketConnections;
+
+void UpdateLockPoint(double x, double y);
+void UpdateLockPoint(Point *p);
+
 #endif
 

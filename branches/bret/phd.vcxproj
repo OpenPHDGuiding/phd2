@@ -347,6 +347,7 @@
     <ClCompile Include="scope_gpusb.cpp" />
     <ClCompile Include="scope_voyager.cpp" />
     <ClCompile Include="socket_server.cpp" />
+    <ClCompile Include="star.cpp" />
     <ClCompile Include="usImage.cpp" />
   </ItemGroup>
   <ItemGroup>

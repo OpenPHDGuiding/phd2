@@ -179,6 +179,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 				case MSG_MOVE3:  // +/- 2.0
 				case MSG_MOVE4:  // +/- 3.0
 				case MSG_MOVE5:  // +/- 5.0
+                {
 					if (canvas->State != STATE_GUIDING_LOCKED) {
 						break;
 					}
@@ -200,12 +201,13 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 						else	
 							ry = tan(pScope->RaAngle()) * rx;
 					}
-					LockX = LockX + rx;
-					LockY = LockY + ry;
+
+                    UpdateLockPoint(pLockPoint->X+rx, pLockPoint->Y+ry);
 					wxLogStatus(_T("Moving by %.2f,%.2f"),rx,ry);
                     rval = RequestedExposureDuration() / 1000;
 					if (rval < 1)
 						rval = 1;
+                }
 					break;
 				case MSG_REQDIST:
 					if ((canvas->State != STATE_GUIDING_LOCKED)  && (canvas->State != STATE_NONE)) {
@@ -225,7 +227,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					ival = canvas->State; // save state going in
 					canvas->State = STATE_NONE;
 					OnAutoStar(*tmp_evt);
-					if (StarX + StarY)  // found a star, so reset the state
+					if (GuideStar.WasFound())  // found a star, so reset the state
 					{
 						if( ival == STATE_NONE )
 							canvas->State = STATE_SELECTED;
@@ -237,6 +239,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					break;
 				case MSG_SETLOCKPOSITION:
                 case 's':
+                {
                     // Sets LockX and LockY to be user-specified
                     unsigned short x,y;
                     Paused = true;
@@ -244,14 +247,15 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                     sock->Read(&y, 2);
                     wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
                     sock->Discard();  // Clean out anything else
-                    StarX=x;
-                    StarY=y;
-                    dX = dY = 0.0;
-                    canvas->State=STATE_SELECTED;
-                    FindStar(CurrentFullFrame);
-                    LockX = StarX;
-                    LockY = StarY;
+                    GuideStar.Find(CurrentFullFrame, x, y);
+                    if (GuideStar.WasFound())
+                    {
+                        UpdateLockPoint(GuideStar.pCenter);
+                        canvas->State=STATE_SELECTED;
+                    }
+
                     Paused = false;
+                }
 					break;
 				case MSG_FLIPRACAL:
 					{
@@ -439,7 +443,6 @@ bool ServerReqFrame(int duration, usImage& img) {
 
 //		ServerEndpoint->ReadMsg(img.ImageData,(xsize * ysize * 2));
 		wxLogStatus(_T("Frame read"));
-		return false;
 	}
 
 	return false;

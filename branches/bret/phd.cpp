@@ -68,14 +68,10 @@ usImage CurrentFullFrame;
 usImage CurrentDarkFrame;
 int CropX=0;		// U-left corner of crop position
 int CropY=0;
-double StarX = 0.0;
-double StarY = 0.0;
 double LastdX = 0.0;
 double LastdY = 0.0;
-double dX = 0.0;
-double dY = 0.0;
-double LockX = 0.0;
-double LockY = 0.0;
+Star  GuideStar;
+Point *pLockPoint = new Point();
 bool ManualLock = false;
 double MinMotion = 0.15;
 int SearchRegion = 15;
@@ -637,3 +633,13 @@ void MyFrame::OnClose(wxCloseEvent &event) {
 //	Close(true);
 }
 
+void UpdateLockPoint(double x, double y)
+{
+    delete pLockPoint;
+    pLockPoint = new Point(x,y);
+}
+
+void UpdateLockPoint(Point *p)
+{
+    UpdateLockPoint(p->X, p->Y);
+}

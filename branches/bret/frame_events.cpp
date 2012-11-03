@@ -332,10 +332,10 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 
 		if (canvas->State == STATE_SELECTED) {  // May take this out
 			if (debuglog) { debug << _T("Finding star - "); debugstr.Sync(); }
-			FindStar(CurrentFullFrame); // track it
-			if (debuglog) { debug << _T("Done (") << FoundStar << _T(")\n"); debugstr.Sync(); }
-			if (FoundStar)
-				SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
+			GuideStar.Find(CurrentFullFrame); // track it
+			if (debuglog) { debug << _T("Done (") << GuideStar.WasFound() << _T(")\n"); debugstr.Sync(); }
+			if (GuideStar.WasFound())
+				SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),GuideStar.Mass,GuideStar.SNR));
 			else {
 				SetStatusText(_T("Star lost"));
 			/*	SetBackgroundColour(wxColour(255,0,0));
@@ -345,8 +345,8 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 				SetBackgroundColour(DefaultColor);
 				Refresh();*/
 			}
-			this->Profile->UpdateData(CurrentFullFrame,StarX,StarY);
-			Guide_Button->Enable(FoundStar && pScope->IsConnected());
+			this->Profile->UpdateData(CurrentFullFrame,GuideStar.pCenter->X,GuideStar.pCenter->Y);
+			Guide_Button->Enable(GuideStar.WasFound() && pScope->IsConnected());
 		}
 //		wxTheApp->Yield();
 		if (debuglog) { debug << _T("Calling display - "); debugstr.Sync(); }
@@ -557,14 +557,10 @@ void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {
 	Paused = false;
 	if ((x+y) == 0) // if it failed to find a star x=y=0
 		return;
-	StarX=x;
-	StarY=y;
-	dX = dY = 0.0;
 	canvas->State=STATE_SELECTED;
-	FindStar(CurrentFullFrame);
-	LockX = StarX;
-	LockY = StarY;
-	SetStatusText(wxString::Format(_T("Star %.2f %.2f"),StarX,StarY));
+	GuideStar.Find(CurrentFullFrame, x, y);
+    UpdateLockPoint(GuideStar.pCenter);
+	SetStatusText(wxString::Format(_T("Star %.2f %.2f"),GuideStar.pCenter->X,GuideStar.pCenter->Y));
 	canvas->Refresh();
 	Paused = WasPaused;
 }
