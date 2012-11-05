@@ -1,5 +1,5 @@
 /*
- *  scope.h
+ *  step_guider.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -33,16 +33,88 @@
  *
  */
 
-#ifndef SCOPE_H_INCLUDED
-#define SCOPE_H_INCLUDED
+#ifndef STEPGUIDER_H_INCLUDED
+#define STEPGUIDER_H_INCLUDED
 
-class Scope:public Mount
+class StepGuider:public Mount
 {
-public:
+    int m_RaPos;
+    int m_DecPos;
 
-    virtual bool Calibrate(void);
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
-    virtual bool IsGuiding()=0;
+public:
+    StepGuider(void)
+    {
+        Connect();
+        Center();
+    }
+
+    ~StepGuider(void)
+    {
+        Disconnect();
+    }
+
+    virtual bool Step(const GUIDE_DIRECTION direction, const int steps)
+    {
+        switch (direction)
+        {
+            case EAST:
+                m_RaPos += steps;
+                break;
+            case WEST:
+                m_RaPos -= steps;
+                break;
+            case NORTH:
+                m_DecPos += steps;
+                break;
+            case SOUTH:
+                m_DecPos -= steps;
+                break;
+        }
+    }
+
+    virtual int Position(const GUIDE_DIRECTION direction)
+    {
+        int ret = 0;
+
+        switch (direction)
+        {
+            case EAST:
+                ret = m_RaPos;
+                break;
+            case WEST:
+                ret = -m_RaPos;
+                break;
+            case NORTH:
+                ret = -m_DecPos;
+                break;
+            case SOUTH:
+                ret = m_DecPos;
+                break;
+        }
+
+        return ret;
+    }
+
+    virtual unsigned MaxStep(const GUIDE_DIRECTION direction)
+    {
+        return StepLimit(direction) - Position(direction);
+    }
+
+    virtual bool Center(void)
+    {
+        m_RaPos = 0;
+        m_DecPos = 0;
+    }
+
+    virtual bool IsStepping()
+    {
+        // default StepGuider is synchronous, so we are never
+        // stepping
+        return false;
+    }
+
+    virtual bool Calibrate(void)=0;
+    virtual unsigned StepLimit(const GUIDE_DIRECTION direction)=0;
 };
 
-#endif /* SCOPE_H_INCLUDED */
+#endif /* STEPGUIDER_H_INCLUDED */

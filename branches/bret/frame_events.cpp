@@ -860,8 +860,8 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	dlog->DitherScale_Ctrl->SetValue(wxString::Format(_T("%.2f"),DitherScaleFactor));
 	dlog->Disable_Box->SetValue(DisableGuideOutput);
 	dlog->Dec_Mode->SetSelection(Dec_guide);
-	dlog->MaxDecDur_Ctrl->SetValue(Max_Dec_Dur);
-	dlog->MaxRADur_Ctrl->SetValue(Max_RA_Dur);
+	dlog->MaxDecDur_Ctrl->SetValue(ScopeMaxDecDur);
+	dlog->MaxRADur_Ctrl->SetValue(ScopeMaxRaDur);
 	dlog->Dec_AlgoCtrl->SetSelection(Dec_algo);
 	dlog->NR_Ctrl->SetSelection(GuideCameraPrefs::NR_mode);
 	if (pScope->IsCalibrated()) dlog->Cal_Box->SetValue(false);
@@ -980,8 +980,8 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	Dec_guide = dlog->Dec_Mode->GetSelection();
 	Dec_algo = dlog->Dec_AlgoCtrl->GetSelection();
 	dlog->DecSlopeWeight_Ctrl->GetValue().ToDouble(&Dec_slopeweight);
-	Max_Dec_Dur = dlog->MaxDecDur_Ctrl->GetValue();
-	Max_RA_Dur = dlog->MaxRADur_Ctrl->GetValue();
+	ScopeMaxDecDur = dlog->MaxDecDur_Ctrl->GetValue();
+	ScopeMaxRaDur = dlog->MaxRADur_Ctrl->GetValue();
 	Time_lapse = dlog->Time_Lapse_Ctrl->GetValue();
     GuideCameraPrefs::GuideCameraGain = dlog->Gain_Ctrl->GetValue();
 	GuideCameraPrefs::NR_mode = dlog->NR_Ctrl->GetSelection();
@@ -1029,7 +1029,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 #if ((wxMAJOR_VERSION > 2) || (wxMINOR_VERSION > 8))
 	frame->GraphLog->MM_Ctrl->SetValue(MinMotion);
 #endif
-	frame->GraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
+	frame->GraphLog->MDD_Ctrl->SetValue(ScopeMaxDecDur);
 	frame->GraphLog->DM_Ctrl->SetSelection(Dec_guide);
 	
 	//Dec_backlash = (double) dlog->Dec_Backlash_Ctrl->GetValue();

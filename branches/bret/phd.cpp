@@ -59,6 +59,8 @@ IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
 // Globals`
 //
 Scope *pScope = new ScopeNone();
+StepGuider *pStepGuider = NULL;
+
 MyFrame *frame = NULL;
 GuideCamera *CurrentGuideCamera = NULL;
 
@@ -85,8 +87,8 @@ double RA_hysteresis = 0.1;
 int Dec_guide = DEC_AUTO;
 int Dec_algo = DEC_RESISTSWITCH;
 double Dec_slopeweight = 5.0;
-int Max_Dec_Dur = 150;
-int Max_RA_Dur = 1000;
+int ScopeMaxDecDur = 150;
+int ScopeMaxRaDur = 1000;
 int NR_mode = NR_NONE;
 int AdvDlg_fontsize = 0;
 bool Log_Data = false;

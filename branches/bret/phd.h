@@ -79,7 +79,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define CROPXSIZE 100
 #define CROPYSIZE 100
 
-#define ROUND(x) (int) floor(x + 0.5)
+#define ROUND(x) (int) (((x)<0)?ceil((x)-0.5):floor((x) + 0.5))
 
 /* eliminate warnings for unused variables */
 #define POSSIBLY_UNUSED(x) (void)(x)
@@ -97,6 +97,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "graph.h"
 #include "cameras.h"
 #include "scopes.h"
+#include "step_guiders.h"
 
 #if 1
 // these seem to be the windowing/display related globals
@@ -164,6 +165,10 @@ public:
 	void OnClearDark(wxCommandEvent& evt);
     void OnLoadSaveDark(wxCommandEvent& evt);
 	void OnGuide(wxCommandEvent& evt);
+	void GuidestarLost(void);
+    bool GuideCapture(LOG &Debug);
+    void StepGuide(LOG &Debug);
+    void ScopeGuide(LOG &Debug);
 	void OnAdvanced(wxCommandEvent& evt);
 	void OnIdle(wxIdleEvent& evt);
 	void OnTestGuide(wxCommandEvent& evt);
@@ -287,6 +292,7 @@ extern int YWinSize;
 extern int OverlayMode;
 #endif
 
+extern StepGuider *pStepGuider;
 extern Scope *pScope;
 
 #if 1
@@ -340,8 +346,8 @@ extern int  Time_lapse;		// Delay between frames (useful for vid cameras)
 extern int	Cal_duration;
 extern double RA_hysteresis;
 extern double Dec_slopeweight;
-extern int Max_Dec_Dur;
-extern int Max_RA_Dur;
+extern int ScopeMaxDecDur;
+extern int ScopeMaxRaDur;
 extern double RA_aggr;
 extern int Dec_guide;
 extern int Dec_algo;

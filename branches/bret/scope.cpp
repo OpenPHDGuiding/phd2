@@ -388,24 +388,18 @@ bool Scope::Calibrate(void) {
                 Abort = 1;
                 throw ERROR_INFO("CaptureFull failed in W calibration");
             }
-#if 0
-            // Bret TODO: Understand why these were executed after a capture failed
-            if (NR_mode == NR_2x2MEAN)
-                QuickLRecon(CurrentFullFrame);
-            else if (NR_mode == NR_3x3MEDIAN)
-                Median3(CurrentFullFrame);
-            wxTheApp->Yield();
-#endif
+
             if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
                 QuickLRecon(CurrentFullFrame);
             else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                 Median3(CurrentFullFrame);
-
-            frame->canvas->FullFrameToDisplay();
+            wxTheApp->Yield();
 
             GuideStar.Find(CurrentFullFrame);
             dX = pLockPoint->dx(GuideStar.pCenter);
             dY = pLockPoint->dy(GuideStar.pCenter);
+
+            frame->canvas->FullFrameToDisplay();
 
             dist = sqrt(dX*dX+dY*dY);
             iterations++;

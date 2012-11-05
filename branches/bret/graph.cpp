@@ -127,17 +127,17 @@ wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCA
 #ifdef __WINDOWS__
 	mrad_label->SetOwnBackgroundColour(* wxBLACK);
 #endif
-	this->MRAD_Ctrl = new wxSpinCtrl(this,GRAPH_MRAD,wxString::Format(_T("%d"),Max_RA_Dur),
+	this->MRAD_Ctrl = new wxSpinCtrl(this,GRAPH_MRAD,wxString::Format(_T("%d"),ScopeMaxRaDur),
 									wxPoint(360,205),wxSize(ctl_size+10,-1),wxSP_ARROW_KEYS,
-									0,2000,Max_RA_Dur);
+									0,2000,ScopeMaxRaDur);
 	wxStaticText *mdd_label = new wxStaticText(this,wxID_ANY,_T("Mx dec"),wxPoint(425,210),wxSize(ctl_size+10,-1));
 	mdd_label->SetOwnForegroundColour(* wxWHITE);
 #ifdef __WINDOWS__
 	mdd_label->SetOwnBackgroundColour(* wxBLACK);
 #endif
-	this->MDD_Ctrl = new wxSpinCtrl(this,GRAPH_MDD,wxString::Format(_T("%d"),Max_Dec_Dur),
+	this->MDD_Ctrl = new wxSpinCtrl(this,GRAPH_MDD,wxString::Format(_T("%d"),ScopeMaxDecDur),
 									wxPoint(470,205),wxSize(ctl_size+10,-1),wxSP_ARROW_KEYS,
-									0,2000,Max_Dec_Dur);
+									0,2000,ScopeMaxDecDur);
 	wxString dec_choices[] = {
 		_T("Off"),_T("Auto"),_T("North"),_T("South")
 	};
@@ -152,8 +152,8 @@ GraphLogWindow::~GraphLogWindow() {
 void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
 	RA_aggr = (float) this->RAA_Ctrl->GetValue() / 100.0;
 	RA_hysteresis = (float) this->RAH_Ctrl->GetValue() / 100.0;
-	Max_Dec_Dur = this->MDD_Ctrl->GetValue();
-	Max_RA_Dur = this->MRAD_Ctrl->GetValue();
+	ScopeMaxDecDur = this->MDD_Ctrl->GetValue();
+	ScopeMaxRaDur = this->MRAD_Ctrl->GetValue();
 #if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
 	MinMotion = this->MM_Ctrl->GetValue();
 #else
@@ -244,8 +244,8 @@ void GraphLogWindow::SetState(bool is_active) {
 #if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
 		this->MM_Ctrl->SetValue(MinMotion);
 #endif
-		this->MDD_Ctrl->SetValue(Max_Dec_Dur);
-		this->MRAD_Ctrl->SetValue(Max_RA_Dur);
+		this->MDD_Ctrl->SetValue(ScopeMaxDecDur);
+		this->MRAD_Ctrl->SetValue(ScopeMaxRaDur);
 		this->DM_Ctrl->SetSelection(Dec_guide);
 		Refresh();
 	}

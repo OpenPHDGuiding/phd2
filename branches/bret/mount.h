@@ -36,11 +36,12 @@
 #ifndef MOUNT_H_INCLUDED
 #define MOUNT_H_INCLUDED
 
-enum GUIDE_DIRECTION {
-	NORTH = 0,	// Dec+
-	SOUTH,		// Dec-
-	EAST,		// RA-
-	WEST		// RA+
+enum GUIDE_DIRECTION 
+{
+    NORTH,	// Dec+
+    SOUTH,	// Dec-
+    EAST,	// RA-
+    WEST	// RA+
 };
 
 class Mount
@@ -71,8 +72,6 @@ public:
 
     // these MUST be supplied by a subclass
     virtual bool Calibrate(void) = 0;
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs) = 0;
-    virtual bool IsGuiding() = 0;
 
     // These CAN be supplied by a subclass
 	virtual wxString &Name(void)

@@ -108,13 +108,13 @@ void MyFrame::ReadPreferences(wxString fname) {
 	lval = (long) Dec_algo;
 	config->Read(_T("Dec algorithm"),&lval);
 	Dec_algo = (int) lval;
-	lval = (long) Max_Dec_Dur;
+	lval = (long) ScopeMaxDecDur;
 	config->Read(_T("Dec slope weight"),&Dec_slopeweight);
 	config->Read(_T("Max Dec Dur"),&lval);
-	Max_Dec_Dur = (int) lval;
-	lval = (long) Max_RA_Dur;
+	ScopeMaxDecDur = (int) lval;
+	lval = (long) ScopeMaxRaDur;
 	config->Read(_T("Max RA Dur"),&lval);
-	Max_RA_Dur = (int) lval;
+	ScopeMaxRaDur = (int) lval;
 	lval = (long) Time_lapse;
 	config->Read(_T("Time Lapse"),&lval);
     Time_lapse = (int) lval;
@@ -215,8 +215,8 @@ void MyFrame::WritePreferences(wxString fname) {
 	config->Write(_T("Dec guide mode"),(long) Dec_guide);
 	config->Write(_T("Dec algorithm"),(long) Dec_algo);
 	config->Write(_T("Dec slope weight"),Dec_slopeweight);
-	config->Write(_T("Max Dec Dur"), (long) Max_Dec_Dur);
-	config->Write(_T("Max RA Dur"), (long) Max_RA_Dur);
+	config->Write(_T("Max Dec Dur"), (long) ScopeMaxDecDur);
+	config->Write(_T("Max RA Dur"), (long) ScopeMaxRaDur);
 	config->Write(_T("Subframes"),GuideCameraPrefs::UseSubframes);
 #if defined (LE_PARALLEL_CAMERA)
 	config->Write(_T("LEwebP port"),(long) Camera_LEwebcamParallel.Port);
