@@ -143,6 +143,7 @@ public:
 	wxSlider *Gamma_Slider;
 	GraphLogWindow *GraphLog;
 	ProfileWindow *Profile;
+	unsigned char LoopFrameCount;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
 
@@ -335,7 +336,8 @@ enum {
 	STATE_SELECTED,
 	STATE_CALIBRATING,
 	STATE_GUIDING_LOCKED,
-	STATE_GUIDING_LOST
+	STATE_GUIDING_LOST, 
+	STATE_LOOPING
 };
 
 enum {
