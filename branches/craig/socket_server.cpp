@@ -62,7 +62,8 @@ enum {
 	MSG_GETSTATUS,			//17
 	MSG_STOP,				//18
 	MSG_LOOP,				//19
-	MSG_STARTGUIDING    	//20
+	MSG_STARTGUIDING,    	//20
+	MSG_LOOPFRAMECOUNT		//21
 };
 
 void MyFrame::OnServerMenu(wxCommandEvent &evt) {
@@ -286,6 +287,11 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 						wxCommandEvent *tmp_evt;
 						tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_GUIDE);
 						QueueEvent(tmp_evt);
+					}
+					break;
+				case MSG_LOOPFRAMECOUNT:
+					{
+						rval = LoopFrameCount;
 					}
 					break;
 				default:

@@ -271,7 +271,8 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 	wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_Debug_log") + _T(".txt")), _T("a+t"));
 	wxTextOutputStream debug (debugstr);
 //	wxString debug_fname = 	stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_Debug_log") + _T(".txt");
-
+	canvas->State = STATE_LOOPING;
+	LoopFrameCount = 0;
 	Abort = 0;
 	CaptureActive = true;
 	int i=0;
@@ -373,7 +374,9 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 				pScope->Guide(dir,dur);
 			}
 		}
+		++LoopFrameCount;
 	}
+	LoopFrameCount = 0;
 	if (debuglog) { debug << _T("Looping exited\n"); debugstr.Sync(); }
 	Loop_Button->Enable(true);
 	Guide_Button->Enable(pScope->IsConnected());
@@ -389,7 +392,11 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 		//wxPostEvent(wxTheApp,event);
 		OnGuide(*evt);
 	}
-	else Abort = 0;
+	else{
+		Abort = 0;
+		canvas->State = STATE_NONE;
+	}
+
 }
 
 void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event)) {
