@@ -144,6 +144,7 @@ public:
 	GraphLogWindow *GraphLog;
 	ProfileWindow *Profile;
 	unsigned char LoopFrameCount;
+	bool looping;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
 
@@ -337,7 +338,11 @@ enum {
 	STATE_CALIBRATING,
 	STATE_GUIDING_LOCKED,
 	STATE_GUIDING_LOST, 
-	STATE_LOOPING
+	// these aren't actual canvas states below
+	// mainly used for getting the status on the server
+	STATE_PAUSED = 100,
+	STATE_LOOPING,
+	STATE_LOOPING_SELECTED 
 };
 
 enum {

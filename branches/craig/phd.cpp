@@ -231,7 +231,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	}
 
     // 
-
+	looping = false;
 /*#if defined (WINICONS)
 	SetIcon(wxIcon(_T("progicon")));
 #else 

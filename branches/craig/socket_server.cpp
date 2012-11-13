@@ -268,7 +268,14 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					break;
 				case MSG_GETSTATUS:
 					if( Paused )
-						rval = 100;
+						rval = STATE_PAUSED;
+					else if( looping )
+					{
+						if( canvas->State == STATE_SELECTED)
+							rval = STATE_LOOPING_SELECTED;
+						else
+							rval = STATE_LOOPING;
+					}
 					else
 						rval = canvas->State;
 					break;
