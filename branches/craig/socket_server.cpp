@@ -63,7 +63,8 @@ enum {
 	MSG_STOP,				//18
 	MSG_LOOP,				//19
 	MSG_STARTGUIDING,    	//20
-	MSG_LOOPFRAMECOUNT		//21
+	MSG_LOOPFRAMECOUNT,		//21
+	MSG_CLEARCAL            //22
 };
 
 void MyFrame::OnServerMenu(wxCommandEvent &evt) {
@@ -301,6 +302,13 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 						rval = LoopFrameCount;
 					}
 					break;
+				case MSG_CLEARCAL:
+					{
+						if( pScope && 
+							pScope->IsConnected() && 
+							pScope->IsCalibrated())
+							pScope->ClearCalibration();
+					}
 				default:
 					wxLogStatus(_T("Unknown test id received from client: %d"),(int) c);
 					rval = 1;
