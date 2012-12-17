@@ -43,7 +43,7 @@
 #include <wx/textfile.h>
 #include <wx/socket.h>
 
-#define VERSION _T("1.13.7")
+#define VERSION _T("1.14.0")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
@@ -143,9 +143,8 @@ public:
 	wxSlider *Gamma_Slider;
 	GraphLogWindow *GraphLog;
 	ProfileWindow *Profile;
-	unsigned char LoopFrameCount;
-	bool looping;
-    bool CaptureActive; // Is camera looping captures?
+	int LoopFrameCount; // # of frames we've been looping for (just during loop) -1 if not active
+    bool CaptureActive; // Is camera performing captures (looping or guiding)?
     double Stretch_gamma;
 
 	void OnQuit(wxCommandEvent& evt);

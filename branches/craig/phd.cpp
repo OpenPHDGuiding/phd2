@@ -45,7 +45,7 @@
 #include <wx/intl.h>
 #include <wx/socket.h>
 
-#define PHDSUBVER _T("b")
+#define PHDSUBVER _T("a")
 
 //#define WINICONS
 
@@ -231,7 +231,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	}
 
     // 
-	looping = false;
+	LoopFrameCount = -1; // Not looping at all
 /*#if defined (WINICONS)
 	SetIcon(wxIcon(_T("progicon")));
 #else 
