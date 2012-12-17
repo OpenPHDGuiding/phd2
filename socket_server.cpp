@@ -270,7 +270,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 				case MSG_GETSTATUS:
 					if( Paused )
 						rval = STATE_PAUSED;
-					else if( looping )
+					else if( LoopFrameCount >= 0 )
 					{
 						if( canvas->State == STATE_SELECTED)
 							rval = STATE_LOOPING_SELECTED;
@@ -299,7 +299,12 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					break;
 				case MSG_LOOPFRAMECOUNT:
 					{
-						rval = LoopFrameCount;
+						if (LoopFrameCount < 0)
+							rval = 0;
+						else if (LoopFrameCount > 255)
+							rval = 255;
+						else
+							rval = (unsigned char) LoopFrameCount;
 					}
 					break;
 				case MSG_CLEARCAL:
