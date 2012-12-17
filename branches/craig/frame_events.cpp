@@ -62,6 +62,7 @@ double MyFrame::RequestedExposureDuration() { // Sets the global duration variab
 	double dReturn;
 //	if (CaptureActive) return;  // Looping an exposure already
 
+	if (!GuideCameraConnected) return 0.0;
 	durtext = frame->Dur_Choice->GetStringSelection();
 	durtext = durtext.BeforeFirst(' '); // remove the " s" bit
 #if wxUSE_XLOCALE
