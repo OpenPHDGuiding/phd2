@@ -106,7 +106,7 @@ double GuideAlgorithmResistSwitch::result(double input)
             }
         }
 
-        if (sign(m_currentSide) != sign(decHistory))
+        if (m_currentSide == 0 || sign(m_currentSide) == -1*sign(decHistory))
         {
             double oldest=0;
             double newest=0;

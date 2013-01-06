@@ -81,7 +81,7 @@ double GuideAlgorithmLowpass::result(double input)
 
     double median = sortedHistory[sortedHistory.GetCount()/2];
     double slope = CalcSlope(m_history);
-    double dReturn = input + m_slopeWeight*slope;
+    double dReturn = median + m_slopeWeight*slope;
 
     if (fabs(dReturn) > fabs(input))
     {
