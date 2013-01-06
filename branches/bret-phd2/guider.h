@@ -40,9 +40,6 @@
 #ifndef GUIDER_H_INCLUDED
 #define GUIDER_H_INCLUDED
 
-#include <wx/bitmap.h>
-#include <wx/dcbuffer.h>
-#include <wx/graphics.h>
 
 enum GUIDER_STATE
 {
@@ -52,6 +49,7 @@ enum GUIDER_STATE
 	STATE_CALIBRATING,
 	STATE_CALIBRATED,
 	STATE_GUIDING,
+    STATE_STOP, // This is a pseudo state
 	// these aren't actual canvas states below
 	// mainly used for getting the status on the server
 	STATE_PAUSED = 100,
@@ -59,7 +57,7 @@ enum GUIDER_STATE
 	STATE_LOOPING_SELECTED 
 };
 
-enum DEC_GUIDE_OPTION
+enum DEC_GUIDE_MODE
 {
 	DEC_NONE = 0,
 	DEC_AUTO,
@@ -74,6 +72,15 @@ enum DEC_GUDING_ALGORITHM
 	DEC_LOWPASS2
 };
 
+enum OVERLAY_MODE
+{
+    OVERLAY_NONE = 0,
+    OVERLAY_BULLSEYE,
+    OVERLAY_GRID_FINE,
+    OVERLAY_GRID_COARSE,
+    OVERLAY_RADEC
+};
+
 /*
  * The Guider class is responsible for running the state machine
  * associated with the GUIDER_STATES enumerated type.
@@ -86,42 +93,77 @@ enum DEC_GUDING_ALGORITHM
 class Guider: public wxWindow
 {
 protected:
+    class GuiderConfigDialogPane : public ConfigDialogPane
+    {
+        Guider *m_pGuider;
+        wxCheckBox *m_pEnableGuide;
+        wxChoice   *m_pRaGuideAlgorithm;
+        wxChoice   *m_pDecGuideAlgorithm;
+
+        ConfigDialogPane *m_pRaGuideAlgorithmConfigDialogPane;
+        ConfigDialogPane *m_pDecGuideAlgorithmConfigDialogPane;
+    public:
+        GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider);
+        virtual ~GuiderConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
+
     Point m_lockPosition;
     GUIDER_STATE m_state;
 	double	m_scaleFactor;
 	wxImage	*m_displayedImage;
     GuideAlgorithm *m_pRaGuideAlgorithm;
     GuideAlgorithm *m_pDecGuideAlgorithm;
-    bool m_paused;
     bool m_guidingEnabled;
-    int  m_timeLapse;		// Delay between frames (useful for vid cameras)
     int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
+    OVERLAY_MODE m_overlayMode;
+    bool m_paused;
 
 public:
     // functions with a implemenation in Guider
     virtual bool IsPaused(void);
-    virtual bool Pause(void);
-    virtual bool Unpause(void);
+    virtual bool SetPaused(bool paused);
     virtual double CurrentError(void);
     virtual GUIDER_STATE GetState(void);
-    virtual bool SetState(GUIDER_STATE newState);
 	virtual void OnClose(wxCloseEvent& evt);
 	virtual void OnErase(wxEraseEvent& evt);
     virtual void UpdateImageDisplay(usImage *pImage);
-    virtual void SetRaGuideAlgorithm(GuideAlgorithm *pAlgorithm);
-    virtual void SetDecGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     virtual Point &LockPosition();
-    virtual bool DisableGuiding(void);
-    virtual bool EnableGuiding(void);
+    virtual bool DoGuide(void);
+
+    virtual GUIDE_ALGORITHM GetRaGuideAlgorithm(void);
+    virtual bool SetRaGuideAlgorithm(int raGuideAlgorithm);
+
+    virtual GUIDE_ALGORITHM GetDecGuideAlgorithm(void);
+    virtual bool SetDecGuideAlgorithm(int decGuideAlgorithm);
+
+    virtual bool GetGuidingEnabled(void);
+    virtual bool SetGuidingEnabled(bool guidingEnabled);
+    virtual OVERLAY_MODE GetOverlayMode(void);
+    virtual bool SetOverlayMode(int newMode);
+
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
 
     // pure virutal functions
 	virtual void OnPaint(wxPaintEvent& evt) = 0;
-    virtual bool UpdateGuideState(usImage *pImage, bool bUpdateStatus) = 0;
+    virtual bool UpdateGuideState(usImage *pImage, bool bStopping=false) = 0;
+    virtual void StartGuiding(void) = 0;
+    virtual void ResetGuideState(void) = 0;
+
     virtual bool IsLocked(void) = 0;
+    virtual bool SetLockPosition(double x, double y, bool bExact=false)=0;
+    virtual bool AutoSelect(usImage *pImage)=0;
+
     virtual Point &CurrentPosition(void) = 0;
+private:
+    virtual GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
+    virtual bool SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm **ppAlgorithm);
 
 protected:
     virtual bool PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC);
+    virtual bool SetState(GUIDER_STATE newState);
 
 	Guider(wxWindow *parent, int xSize, int ySize);
     virtual ~Guider(void);

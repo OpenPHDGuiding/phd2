@@ -35,23 +35,25 @@
 #ifndef CAMERA_H_INCLUDED
 #define CAMERA_H_INCLUDED
 
-enum NOISE_REDUCTION_METHOD
-{
-	NR_NONE,
-	NR_2x2MEAN,
-	NR_3x3MEDIAN
-};
+class GuideCamera {
+protected:
+    class CameraConfigDialogPane : public ConfigDialogPane
+    {
+        GuideCamera *m_pCamera;
+        wxCheckBox *m_pUseSubframes;
+        wxSpinCtrl *m_pCameraGain;
+        wxChoice   *m_pPortNum;
+        wxSpinCtrl *m_pDelay;
+    public:
+        CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
+        virtual ~CameraConfigDialogPane(void);
 
-class GuideCameraPrefs
-{
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
 public:
-    static bool            UseSubframes; // Use subframes if possible from camera
-    static int             GuideCameraGain;
-    static int             NR_mode;
-};
-
-class GuideCamera : public GuideCameraPrefs {
-public:
+    bool            UseSubframes; // Use subframes if possible from camera
+    int             GuideCameraGain;
 	wxString			Name;					// User-friendly name
 	wxSize			FullSize;			// Size of current image
 	bool				Connected;
@@ -84,26 +86,18 @@ public:
     virtual bool    HasNonGUIPulseGuideScope(void) { return false; }
 	virtual bool	NonGUIPulseGuideScope (int WXUNUSED(direction), int WXUNUSED(duration)) { assert(false); return false;}
 
+    virtual bool GetUseSubframes(void);
+    virtual bool SetUseSubframes(bool useSubFrames);
+
+    virtual double GetCameraGain(void);
+    virtual bool SetCameraGain(double cameraGain);
+
+    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
 	virtual void	ShowPropertyDialog() { return; }
 
-	GuideCamera() { 
-        Connected = FALSE;  
-        Name=_T("");
-		HasGuiderOutput = false; 
-        HasPropertyDialog = false; 
-        HasPortNum = false; 
-        HasDelayParam = false;
-		HasGainControl = false; 
-        HasShutter=false; 
-        ShutterState=false; 
-
-        HaveDark = false;
-        DarkDur = 0;
-    }
+	GuideCamera(void);
 	~GuideCamera(void) {};
 };
 
 #endif /* CAMERA_H_INCLUDED */
-
-extern bool GuideCameraConnected;
-extern GuideCamera *CurrentGuideCamera;

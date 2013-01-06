@@ -32,8 +32,9 @@
  *
  */
 
+#ifndef PHD_H_INCLUDED
+#define PHD_H_INCLUDED
  //#define ORION
-
 
 #include <wx/wx.h>
 #include <wx/image.h>
@@ -43,6 +44,28 @@
 #include <wx/textfile.h>
 #include <wx/socket.h>
 #include <wx/thread.h>
+
+#include <wx/config.h>
+#include <wx/fileconf.h>
+#include <wx/display.h>
+#include <wx/statline.h>
+#include <wx/bmpbuttn.h>
+#include <wx/spinctrl.h>
+#include <wx/stdpaths.h>
+#include <wx/splash.h>
+#include <wx/intl.h>
+
+#include <wx/minifram.h>
+#include <wx/stdpaths.h>
+#include <wx/ffile.h>
+
+#include <wx/bitmap.h>
+#include <wx/dcbuffer.h>
+#include <wx/graphics.h>
+
+#include <wx/msgqueue.h>
+
+#include <math.h>
 
 #define VERSION _T("2.0.1")
 #define PHDSUBVER _T("b")
@@ -94,6 +117,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 
 #include "phdlog.h"
 #include "config.h"
+#include "configdialog.h"
 #include "usImage.h"
 #include "point.h"
 #include "star.h."
@@ -107,26 +131,28 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "myapp.h"
 #include "myframe.h"
 
-#if 1
-// these seem to be the windowing/display related globals
-
-extern int AdvDlg_fontsize;
-extern int XWinSize;
-extern int YWinSize;
-extern int OverlayMode;
-#endif
+extern Config *pConfig;
 
 extern MyFrame *frame;
 extern Scope *pScope;
-extern Config *pConfig;
+extern GuideCamera *CurrentGuideCamera;
+extern bool GuideCameraConnected;
 
-extern bool DitherRAOnly;
+extern LOG Debug;
 
 #if 1
 // these seem like the logging related globals
 extern wxTextFile *LogFile;
 extern bool Log_Data;
 extern int Log_Images;
+#endif
+
+#if 1
+// these seem to be the windowing/display related globals
+
+extern int AdvDlg_fontsize;
+extern int XWinSize;
+extern int YWinSize;
 #endif
 
 #if 1
@@ -137,33 +163,15 @@ extern    int  CropY;
 #endif
 
 #if 1
-// These seem like the lock point related globals
-
-extern double StarMassChangeRejectThreshold;
-#endif
-
-#if 1
-// The debug log related globals
-
-extern LOG Debug;
-#endif
-
-#if 1
-
-extern bool Paused;	// has PHD been told to pause guiding?
-#endif
-
-#if 1
 // these seem like the server related globals
 enum {
 	SERVER_ID = 100,
 	SOCKET_ID,
 };
 
-extern double DitherScaleFactor;	// How much to scale the dither commands
-extern bool ServerMode;
 extern bool RandomMotionMode;
 extern wxSocketServer *SocketServer;
 extern int SocketConnections;
 #endif
 
+#endif // PHD_H_INCLUDED

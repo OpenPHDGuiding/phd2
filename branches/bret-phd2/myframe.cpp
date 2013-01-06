@@ -39,6 +39,12 @@
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
 
+static const int DefaultNoiseReductionMethod = 0;
+static const double DefaultDitherScaleFactor = 1.00;
+static const bool DefaultDitherRaOnly = false;
+static const bool DefaultServerMode = false;
+static const int DefaultTimelapse = 0;
+
 wxDEFINE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(PHD_GUIDE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(WORKER_THREAD_SET_STATUS_TEXT_EVENT, wxThreadEvent);
@@ -55,10 +61,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
-#ifdef BRET
-    EVT_MENU(MENU_LOADSETTINGS, MyFrame::OnSettings)
-    EVT_MENU(MENU_SAVESETTINGS, MyFrame::OnSettings)
-#endif
     EVT_MENU(MENU_LOADDARK,MyFrame::OnLoadSaveDark)
     EVT_MENU(MENU_SAVEDARK,MyFrame::OnLoadSaveDark)
     EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
@@ -88,8 +90,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
     EVT_BUTTON(BUTTON_CAMERA,MyFrame::OnConnectCamera)
     EVT_BUTTON(BUTTON_SCOPE, MyFrame::OnConnectScope)
-    EVT_BUTTON(BUTTON_LOOP, MyFrame::OnSelect)
-    EVT_MENU(BUTTON_LOOP, MyFrame::OnSelect) // Bit of a hack -- not actually on the menu but need an event to accelerate
+    EVT_BUTTON(BUTTON_LOOP, MyFrame::OnLoopExposure)
+    EVT_MENU(BUTTON_LOOP, MyFrame::OnLoopExposure) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_STOP, MyFrame::OnButtonStop)
     EVT_MENU(BUTTON_STOP, MyFrame::OnButtonStop) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_DETAILS, MyFrame::OnAdvanced)
@@ -131,8 +133,22 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     m_pWorkerThread = NULL;
     StartWorkerThread();
 
+    int noiseReductionMethod = pConfig->GetInt("/NoiseReductionMethod", DefaultNoiseReductionMethod);
+    SetNoiseReductionMethod(noiseReductionMethod);
+
+    double ditherScaleFactor = pConfig->GetDouble("/DitherScaleFactor", DefaultDitherScaleFactor);
+    SetDitherScaleFactor(ditherScaleFactor);
+
+    bool ditherRaOnly = pConfig->GetBoolean("/DitherRaOnly", DefaultDitherRaOnly);
+    SetDitherScaleFactor(ditherScaleFactor);
+
+    bool serverMode = pConfig->GetBoolean("/ServerMode", DefaultServerMode);
+    SetServerMode(serverMode);
+
+    int timeLapse   = pConfig->GetInt("/frame/TimeLapse", DefaultTimelapse);
+    SetTimeLapse(timeLapse);
+
     // 
-	looping = false;
 /*#if defined (WINICONS)
 	SetIcon(wxIcon(_T("progicon")));
 #else 
@@ -146,8 +162,6 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
 	// Setup menus
 	wxMenu *file_menu = new wxMenu;
-	file_menu->Append(MENU_LOADSETTINGS, _T("Load settings"), _T("Load advanced settings file"));
-	file_menu->Append(MENU_SAVESETTINGS, _T("Save settings"), _T("Save advanced settings file"));
     file_menu->AppendSeparator();
 	file_menu->Append(MENU_LOADDARK, _T("Load dark"), _T("Load dark frame"));
     file_menu->Append(MENU_SAVEDARK, _T("Save dark"), _T("Save dark frame"));
@@ -482,7 +496,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	}
 	//mount_menu->Check(MOUNT_GPUSB,true);
 
-	if (ServerMode) {
+	if (m_serverMode) {
 		tools_menu->Check(MENU_SERVER,true);
 		if (StartServer(true)) {
 			wxLogStatus(_T("Server start failed"));
@@ -565,9 +579,9 @@ bool MyFrame::StartWorkerThread(void)
             }
         }
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
         delete m_pWorkerThread;
         m_pWorkerThread = NULL;
         bError = true;
@@ -604,7 +618,7 @@ void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
 
     if (!bError)
     {
-		switch (GuideCameraPrefs::NR_mode)
+		switch (m_noiseReductionMethod)
         {
             case NR_NONE:
                 break;
@@ -651,6 +665,8 @@ void MyFrame::ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration
 
 void MyFrame::StartCapturing()
 {
+    Debug.Write(wxString::Format("StartCapture with old=%d\n", CaptureActive));
+
     if (!CaptureActive)
     {
         CaptureActive = true;
@@ -663,9 +679,8 @@ void MyFrame::StartCapturing()
 
 void MyFrame::StopCapturing(void)
 {
+    Debug.Write(wxString::Format("StopCapture with old=%d\n", CaptureActive));
     CaptureActive = false;
-
-    UpdateButtonsStatus();
 }
 
 void MyFrame::OnClose(wxCloseEvent &event) {
@@ -696,3 +711,195 @@ void MyFrame::OnClose(wxCloseEvent &event) {
 //	Close(true);
 }
 
+NOISE_REDUCTION_METHOD MyFrame::GetNoiseReductionMethod(void)
+{
+    return m_noiseReductionMethod;
+}
+
+bool MyFrame::SetNoiseReductionMethod(int noiseReductionMethod)
+{
+    bool bError = false;
+
+    try
+    {
+        switch (noiseReductionMethod)
+        {
+            case NR_NONE:
+            case NR_2x2MEAN:
+            case NR_3x3MEDIAN:
+                break;
+            default:
+                throw ERROR_INFO("invalid noiseReductionMethod");
+        }
+        m_noiseReductionMethod = (NOISE_REDUCTION_METHOD)noiseReductionMethod;
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+
+        bError = true;
+        m_noiseReductionMethod = (NOISE_REDUCTION_METHOD)DefaultNoiseReductionMethod;
+    }
+
+    pConfig->SetInt("/NoiseReductionMethod", m_noiseReductionMethod);
+
+    return bError;
+}
+
+
+double MyFrame::GetDitherScaleFactor(void)
+{
+    return m_ditherScaleFactor;
+}
+
+bool MyFrame::SetDitherScaleFactor(double ditherScaleFactor)
+{
+    bool bError = false;
+
+    try
+    {
+        if (ditherScaleFactor <= 0)
+        {
+            throw ERROR_INFO("ditherScaleFactor <= 0");
+        }
+        m_ditherScaleFactor = ditherScaleFactor;
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        m_ditherScaleFactor = DefaultDitherScaleFactor;
+    }
+
+    pConfig->SetInt("/DitherScaleFactor", m_ditherScaleFactor);
+
+    return bError;
+}
+
+bool MyFrame::GetDitherRaOnly(void)
+{
+    return m_ditherRaOnly;
+}
+
+bool MyFrame::SetDitherRaOnly(bool ditherRaOnly)
+{
+    bool bError = false;
+
+    m_ditherRaOnly = ditherRaOnly;
+
+    pConfig->SetBoolean("/DitherRaOnly", m_ditherRaOnly);
+
+    return bError;
+}
+
+bool MyFrame::GetServerMode(void)
+{
+    return m_serverMode;
+}
+
+bool MyFrame::SetServerMode(bool serverMode)
+{
+    bool bError = false;
+
+    m_serverMode = serverMode;
+
+    pConfig->SetBoolean("/ServerMode", m_ditherRaOnly);
+
+    return bError;
+}
+
+int MyFrame::GetTimeLapse(void)
+{
+    return m_timeLapse;
+}
+
+bool MyFrame::SetTimeLapse(int timeLapse)
+{
+    bool bError = false;
+
+    try
+    {
+        if (timeLapse < 0)
+        {
+            throw ERROR_INFO("timeLapse < 0");
+        }
+
+        m_timeLapse = timeLapse;
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        m_timeLapse = DefaultTimelapse;
+    }
+
+    pConfig->SetInt("/frame/timeLapse", m_timeLapse);
+
+    return bError;
+}
+
+ConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new MyFrameConfigDialogPane(pParent, this);
+}
+
+MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame)
+    : ConfigDialogPane(_T("Global Settings"), pParent)
+{
+    int width;
+    m_pFrame = pFrame;
+
+    m_pEnableLogging = new wxCheckBox(pParent, wxID_ANY,_T("Enable Logging"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pEnableLogging, _T("Save guide commands and info to a file?"));
+
+    m_pDitherRaOnly = new wxCheckBox(pParent, wxID_ANY,_T("Dither RA only"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pDitherRaOnly, _T("Constrain dither to RA only?"));
+    
+    width = StringWidth(_T("000.00"));
+    m_pDitherScaleFactor = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("DitherScaleFactor"));
+    m_pDitherScaleFactor->SetDigits(1);
+    DoAdd(_T("Dither scale"), m_pDitherScaleFactor,
+	      _T("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
+
+	wxString nralgo_choices[] = 
+    {
+		_T("None"),_T("2x2 mean"),_T("3x3 median")
+	};
+
+    width = StringArrayWidth(nralgo_choices, WXSIZEOF(nralgo_choices));
+	m_pNoiseReduction = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
+            wxSize(width+35, -1), WXSIZEOF(nralgo_choices), nralgo_choices );
+    DoAdd(_T("Noise Reduction"), m_pNoiseReduction, 
+	      _T("Technique to reduce noise in images"));
+
+    width = StringWidth(_T("00000"));
+	m_pTimeLapse = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 0,_T("TimeLapse"));
+	DoAdd(_T("Time Lapse (ms)"), m_pTimeLapse,
+	      _T("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
+}
+
+MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
+{
+}
+
+void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
+{
+    m_pEnableLogging->SetValue(Log_Data); // Note: This is a global
+
+    m_pNoiseReduction->SetSelection(m_pFrame->GetNoiseReductionMethod());
+    m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
+    m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
+    m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
+}
+
+void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
+{
+    Log_Data = m_pEnableLogging->GetValue(); // Note: This is a global
+
+    m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
+    m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
+    m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
+    m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
+}

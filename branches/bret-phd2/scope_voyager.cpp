@@ -123,9 +123,9 @@ bool ScopeVoyager::Guide(const GUIDE_DIRECTION direction, int duration)
         VoyagerClient.Write(msg,strlen(msg));
         VoyagerClient.Read(&msg,10);
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
         bError = true;
     }
 

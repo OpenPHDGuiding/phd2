@@ -44,28 +44,53 @@
 class GuiderOneStar: public Guider
 {
 protected:
+    class GuiderOneStarConfigDialogPane : public GuiderConfigDialogPane
+    {
+        GuiderOneStar *m_pGuiderOneStar;
+        wxSpinCtrl *m_pSearchRegion;
+        wxSpinCtrlDouble *m_pMassChangeThreshold;
+
+        public:
+        GuiderOneStarConfigDialogPane(wxWindow *pParent, GuiderOneStar *pGuider);
+        ~GuiderOneStarConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
+
     Star m_star;
 
     // parameters
-    int m_maxDecDuration;
-    int m_maxRaDuration;
     double m_raAggression;
-    DEC_GUIDE_OPTION m_decGuideOption;
+    double m_massChangeThreshold;
+    int m_badMassCount;
+    int m_autoSelectTries;
 public:
 	GuiderOneStar(wxWindow *parent);
     virtual ~GuiderOneStar(void);
 
-    virtual bool SetState(GUIDER_STATE newState);
-
-    virtual bool SetParms(int maxDecDuration, int maxRaDuration, DEC_GUIDE_OPTION decGuide);
 	virtual void OnPaint(wxPaintEvent& evt);
-    virtual bool UpdateGuideState(usImage *pImage, bool bUpdateStatus);
+    virtual bool UpdateGuideState(usImage *pImage, bool bStopping=false);
+    virtual void ResetGuideState(void);
+    virtual void StartGuiding(void);
+
     virtual bool IsLocked(void);
+    virtual bool SetLockPosition(double x, double y, bool bExact=false);
+    virtual bool AutoSelect(usImage *pImage);
     virtual Point &CurrentPosition(void);
+
+    virtual bool SetRaGuideAlgorithm(int raGuideAlgorithm);
+    virtual bool SetDecGuideAlgorithm(int decGuideAlgorithm);
+
+    virtual double GetMassChangeThreshold(void);
+    virtual bool SetMassChangeThreshold(double starMassChangeThreshold);
+    virtual int GetSearchRegion(void);
+    virtual bool SetSearchRegion(int searchRegion);
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
 protected:
     void OnLClick(wxMouseEvent& evt);
-    bool DoGuide(void);
+    virtual bool SetState(GUIDER_STATE newState);
 
     void SaveStarFITS();
 

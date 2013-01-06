@@ -33,9 +33,6 @@
  *
  */
 
-#include <wx/stdpaths.h>
-#include <wx/ffile.h>
-
 class LOG:wxFFile
 {
 private:

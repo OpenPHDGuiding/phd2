@@ -34,30 +34,8 @@
  *
  */
 
-#ifndef PREFS_H_INCLUDED
-#define PREFS_H_INCLUDED
-
-#include <wx/config.h>
-#include <wx/fileconf.h>
-#include <wx/display.h>
-
-#ifdef BRET
-why were these here????
-// Some specific camera includes
-#if defined (LE_PARALLEL_CAMERA)
-#include "cam_LEwebcam.h"
-extern Camera_LEwebcamClass Camera_LEwebcamParallel;
-extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
-#endif
-
-#if defined (INDI_CAMERA)
-#include "cam_INDI.h"
-#endif
-
-#if defined (GUIDE_INDI)
-#include "tele_INDI.h"
-#endif
-#endif
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
 
 /*
  * The way configuration varialbes are handled has been 
@@ -111,4 +89,4 @@ public:
     void SetInt(char *pName, int value);
 };
 
-#endif /* PREFS_H_INCLUDED */
+#endif /* CONFIG_H_INCLUDED */

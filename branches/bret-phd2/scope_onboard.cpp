@@ -1,5 +1,5 @@
 /*
- *  point.h
+ *  scope_oncamera.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -33,109 +33,83 @@
  *
  */
 
-#ifndef POINT_H_INCLUDED
-#define POINT_H_INCLUDED
+#include "phd.h"
 
-class Point
+ScopeOnCamera::ScopeOnCamera(void)
 {
-public:
-    double X;
-    double Y;
+    m_Name =  "OnCamera";
+}
 
-    Point(const double x, const double y)
+bool ScopeOnCamera::Connect(void)
+{
+    bool bError = false;
+
+    try
     {
-        SetXY(x,y);
-    }
-
-    Point(Point const * const p)
-    {
-        SetXY(p->X, p->Y);
-    }
-
-    Point(const Point &p)
-    {
-        SetXY(p.X, p.Y);
-    }
-
-    Point(void)
-    {
-        Invalidate();
-    }
-
-    bool IsValid(void) const
-    {
-        return (X >= 0) && (Y >=0);
-    }
-
-    void Invalidate(void)
-    {
-        SetXY(-1.0, -1.0);
-    }
-
-    void SetXY(const double x, const double y)
-    {
-        X = x;
-        Y = y;
-    }
-
-    double dX(Point p) const
-    {
-        double dRet = X-p.X;
-
-        return dRet;
-    }
-
-    double dX(Point *pPoint) const
-    {
-        return this->dX(*pPoint);
-    }
-
-    double dY(Point p) const
-    {
-        double dRet = Y-p.Y;
-
-        return dRet;
-    }
-
-    double dY(Point *pPoint) const
-    {
-        return this->dY(*pPoint);
-    }
-
-    double Distance(Point p) const
-    {
-        double dX = this->dX(p);
-        double dY = this->dY(p);
-        double dRet = sqrt(dX*dX + dY*dY);
-
-        return dRet;
-    }
-
-    double Distance(Point *pPoint) const
-    {
-        return Distance(*pPoint);
-    }
-
-    double Angle(Point p) const
-    {
-        double dX = this->dX(p);
-        double dY = this->dY(p);
-        double dRet = 0.0;
-
-        // man pages vary on whether atan2 deals well with dx == 0 && dy == 0,
-        // so I handle it explictly
-        if (dX != 0 || dY != 0)
+        if (!GuideCameraConnected)
         {
-            dRet = atan2(dY, dX);
+            throw ERROR_INFO("Attempt to Connect onboard when camera is not connected");
+        }
+        if (!CurrentGuideCamera->HasGuiderOutput)
+        {
+            throw ERROR_INFO("Attempt to Connect onboard when camera does not have guide output");
         }
 
-        return dRet;
+        if (!IsConnected())
+        {
+            Scope::Connect();
+        }
     }
-
-    double Angle(Point *pPoint) const
+    catch (...)
     {
-        return Angle(*pPoint);
+        bError = true;
     }
-};
 
-#endif /* POINT_H_INCLUDED */
+    return bError;
+}
+
+bool ScopeOnCamera::Disconnect(void)
+{
+    bool bError = false;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Attempt to Disconnect onboard when not connected");
+        }
+
+        Scope::Disconnect();
+    }
+    catch (...)
+    {
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool ScopeOnCamera::Guide(const GUIDE_DIRECTION direction, const int duration)
+{
+    bool bError = false;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Attempt to Guide while not connected");
+        }
+        CurrentGuideCamera->PulseGuideScope(direction,duration);
+    }
+    catch (...)
+    {
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool ScopeOnCamera::IsGuiding()
+{
+    return false;
+}

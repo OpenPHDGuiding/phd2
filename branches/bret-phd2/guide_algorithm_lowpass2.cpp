@@ -39,8 +39,7 @@
 
 #include "phd.h"
 
-GuideAlgorithmLowpass2::GuideAlgorithmLowpass2(GuideAlgorithm *pChained)
-    :GuideAlgorithm(pChained)
+GuideAlgorithmLowpass2::GuideAlgorithmLowpass2(void)
 {
     while (m_history.GetCount() < HISTORY_SIZE)
     {
@@ -52,20 +51,25 @@ GuideAlgorithmLowpass2::~GuideAlgorithmLowpass2(void)
 {
 }
 
+GUIDE_ALGORITHM GuideAlgorithmLowpass2::Algorithm(void)
+{
+    return GUIDE_ALGORITHM_LOWPASS2;
+}
+
+bool GuideAlgorithmLowpass2::reset(void)
+{
+    return true;
+}
+
 double GuideAlgorithmLowpass2::result(double input)
 {
-    if (m_pChained)
-    {
-        input = m_pChained->result(input);
-    }
-
     m_history.Add(input);
 
     double dReturn = CalcSlope(m_history);
 
     m_history.RemoveAt(0);
 
-    if (dReturn > input)
+    if (fabs(dReturn) > fabs(input))
     {
         Debug.Write(wxString::Format("GuideAlgorithmLowpass2::Result() input %.2f is > calculated value %.2f, using input\n", input, dReturn));
         dReturn = input;
@@ -74,4 +78,36 @@ double GuideAlgorithmLowpass2::result(double input)
     Debug.Write(wxString::Format("GuideAlgorithmLowpassa::Result() returns %.2f from input %.2f\n", dReturn, input));
 
     return dReturn;
+}
+
+ConfigDialogPane *GuideAlgorithmLowpass2::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new GuideAlgorithmLowpass2ConfigDialogPane(pParent, this);
+}
+
+GuideAlgorithmLowpass2::
+GuideAlgorithmLowpass2ConfigDialogPane::
+GuideAlgorithmLowpass2ConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass2 *pGuideAlgorithm)
+    :ConfigDialogPane(_T("Lowpass2 Guide Algorithm"), pParent)
+{
+    m_pGuideAlgorithm = pGuideAlgorithm;
+	DoAdd(new wxStaticText(pParent, wxID_ANY, _T("Nothing to Configure"),wxPoint(-1,-1),wxSize(-1,-1)));
+}
+
+GuideAlgorithmLowpass2::
+GuideAlgorithmLowpass2ConfigDialogPane::
+~GuideAlgorithmLowpass2ConfigDialogPane(void)
+{
+}
+
+void GuideAlgorithmLowpass2::
+GuideAlgorithmLowpass2ConfigDialogPane::
+LoadValues(void)
+{
+}
+
+void GuideAlgorithmLowpass2::
+GuideAlgorithmLowpass2ConfigDialogPane::
+UnloadValues(void)
+{
 }

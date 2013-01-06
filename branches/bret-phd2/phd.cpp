@@ -34,14 +34,7 @@
 
 #include "phd.h"
 #include "graph.h"
-#include <wx/config.h>
-#include <wx/statline.h>
-#include <wx/bmpbuttn.h>
-#include <wx/spinctrl.h>
-#include <wx/stdpaths.h>
-#include <wx/splash.h>
-#include <wx/intl.h>
-#include <wx/socket.h>
+
 
 //#define WINICONS
 
@@ -53,56 +46,28 @@ IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
 #endif 
 
 // Globals`
-//
+
 Config *pConfig = new Config();
 Scope *pScope = new ScopeNone();
 MyFrame *frame = NULL;
+
 GuideCamera *CurrentGuideCamera = NULL;
-bool DitherRAOnly = false;
-
 bool GuideCameraConnected = false;
-usImage *pCurrentFullFrame = new usImage();
-usImage *pCurrentDarkFrame = new usImage();
-int CropX=0;		// U-left corner of crop position
-int CropY=0;
-
-#if 0
-int Time_lapse = 0;
-int	Cal_duration = 750;
-double RA_hysteresis = 0.1;
-double Dec_slopeweight = 5.0;
-int Max_Dec_Dur = 150;
-int Max_RA_Dur = 1000;
-double RA_aggr = 1.0;
-//double Dec_aggr = 0.7;
-int Dec_guide = DEC_AUTO;
-int Dec_algo = DEC_RESISTSWITCH;
-bool DitherRAOnly = false;
-double MinMotion = 0.15;
-int SearchRegion = 15;
-bool DisableGuideOutput = false;
-bool ManualLock = false;
-double CurrentError = 0.0;
-#endif
 
 LOG Debug;
 
-//wxString LogFName;
-bool HaveDark = false;
-int NR_mode = NR_NONE;
-int AdvDlg_fontsize = 0;
+wxTextFile *LogFile;
 bool Log_Data = false;
 int Log_Images = 0;
-wxTextFile *LogFile;
-int OverlayMode = 0;
-double StarMassChangeRejectThreshold = 0.5;
-int	Abort = 0;
-bool ServerMode = false;  // don't start server
+
+int AdvDlg_fontsize = 0;
+int XWinSize = 640;
+int YWinSize = 512;
+
+usImage *pCurrentFullFrame = new usImage();
+int CropX=0;		// U-left corner of crop position
+int CropY=0;
+
 bool RandomMotionMode = false;
 wxSocketServer *SocketServer;
 int SocketConnections;
-double DitherScaleFactor = 1.0;
-
-
-int XWinSize = 640;
-int YWinSize = 512;

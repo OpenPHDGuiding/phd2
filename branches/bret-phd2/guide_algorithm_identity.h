@@ -1,5 +1,5 @@
 /*
- *  guide_algorithm.h
+ *  guide_algorithm_identity.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -37,33 +37,31 @@
  *
  */
 
-#ifndef GUIDE_ALGORITHM_H_INCLUDED
-#define GUIDE_ALGORITHM_H_INCLUDED
+#ifndef GUIDE_ALGORITHM_IDENTITY_H_INCLUDED
+#define GUIDE_ALGORITHM_IDENTITY_H_INCLUDED
 
-/*
- * The Guide Algorithm class is responsible for providing a
- * mechanism insert various algorithms into the guiding
- * loop
- *
- * It provides a method:
- *
- * double result(double input)
- *
- * that returns the result of whatever processing it does on input.
- * 
- */
-
-class GuideAlgorithm
+class GuideAlgorithmIdentity:GuideAlgorithm
 {
+protected:
+    class GuideAlgorithmIdentityConfigDialogPane : public ConfigDialogPane
+    {
+        GuideAlgorithmIdentity *m_pGuideAlgorithm;
+    public:
+        GuideAlgorithmIdentityConfigDialogPane(wxWindow *pParent, GuideAlgorithmIdentity *pGuideAlgorithm);
+        virtual ~GuideAlgorithmIdentityConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
+
 public:
-    GuideAlgorithm(void) {};
-    virtual ~GuideAlgorithm(void) {};
-    virtual GUIDE_ALGORITHM Algorithm(void) = 0;
+    GuideAlgorithmIdentity(void);
+    virtual ~GuideAlgorithmIdentity(void);
+    virtual GUIDE_ALGORITHM Algorithm(void);
 
-    virtual bool reset(void) = 0;
-    virtual double result(double input) = 0;
-
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
+    virtual bool reset(void);
+    virtual double result(double input);
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 };
 
-#endif /* GUIDE_ALGORITHM_H_INCLUDED */
+#endif /* GUIDE_ALGORITHM_IDENTITY_H_INCLUDED */

@@ -1,5 +1,5 @@
 /*
- *  guider_config.h
+ *  guide_algorithm_resistswitch.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -37,21 +37,39 @@
  *
  */
 
-#ifndef GUIDER_CONFIG_H_INCLUDED
-#define GUIDER_CONFIG_H_INCLUDED
+#ifndef GUIDE_ALGORITHM_RESISTSWITCH_H_INCLUDED
+#define GUIDE_ALGORITHM_RESISTSWITCH_H_INCLUDED
 
-class GuiderConfig
+class GuideAlgorithmResistSwitch:GuideAlgorithm
 {
+    static const int HISTORY_SIZE=10;
+    ArrayOfDbl m_history;
+    double m_minMove;
+    int    m_currentSide;
 protected:
-    //double RA_hysteresis;
-    //double Dec_slopeweight;
-    //int Dec_algo;
-    //bool ManualLock;	// In manual lock position mode?  (If so, don't re-lock on start of guide)
+    class GuideAlgorithmResistSwitchConfigDialogPane : public ConfigDialogPane
+    {
+        GuideAlgorithmResistSwitch *m_pGuideAlgorithm;
+        wxSpinCtrlDouble *m_pMinMove;
 
-    GuiderConfig(void);
-    ~GuiderConfig(void);
-    void LoadConfig(void);
-    void SaveConfig(void);
+    public:
+        GuideAlgorithmResistSwitchConfigDialogPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm);
+        virtual ~GuideAlgorithmResistSwitchConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
+public:
+    GuideAlgorithmResistSwitch(void);
+    virtual ~GuideAlgorithmResistSwitch(void);
+    virtual GUIDE_ALGORITHM Algorithm(void);
+
+    virtual bool reset(void);
+    virtual double result(double input);
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
+    virtual double GetMinMove(void);
+    virtual bool SetMinMove(double minMove);
 };
 
-#endif /* GUIDER_CONFIG_H_INCLUDED */
+#endif /* GUIDE_ALGORITHM_RESISTSWITCH_H_INCLUDED */

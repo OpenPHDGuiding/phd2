@@ -36,10 +36,6 @@
 #ifndef SCOPE_H_INCLUDED
 #define SCOPE_H_INCLUDED
 
-static const int MAX_CALIBRATION_STEPS = 60;
-static const double MAX_CALIBRATION_DISTANCE = 25.0;
-static const double DEC_BACKLASH_DISTANCE = 3.0;
-
 class Scope:public Mount
 {
     int m_calibrationDuration;
@@ -47,15 +43,54 @@ class Scope:public Mount
     int m_backlashSteps;
     Point m_calibrationStartingLocation;
     GUIDE_DIRECTION m_calibrationDirection;
+    int m_maxDecDuration;
+    int m_maxRaDuration;
+    DEC_GUIDE_MODE m_decGuideMode;
+protected:
+    class ScopeConfigDialogPane : public MountConfigDialogPane
+    {
+        Scope *m_pScope;
+        wxSpinCtrl *m_pCalibrationDuration;
+        wxSpinCtrl *m_pMaxRaDuration;
+        wxSpinCtrl *m_pMaxDecDuration;
+        wxChoice   *m_pDecMode;
+
+        public:
+        ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
+        ~ScopeConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
 
 public:
     Scope(void);
     virtual ~Scope(void);
-    virtual bool SetParms(int calibrationDuration);
-    virtual bool BeginCalibration(Guider *pGuider);
-    virtual bool UpdateCalibrationState(Guider *pGuider);
+
+    // these MUST be supplied by a subclass
     virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
     virtual bool IsGuiding()=0;
+
+    // these CAN be supplied by a subclass
+    virtual bool BeginCalibration(const Point &currentPosition);
+    virtual bool UpdateCalibrationState(const Point &currentPosition);
+    virtual double LimitGuide(const GUIDE_DIRECTION direction, double durationMs);
+
+    virtual bool HasNonGUIGuide(void) {return false;}
+    virtual bool NonGUIGuide(const GUIDE_DIRECTION direction, const int durationMs) { assert(false); return false; }
+
+    virtual int GetCalibrationDuration(void);
+    virtual bool SetCalibrationDuration(int calibrationDuration);
+    virtual int GetMaxDecDuration(void);
+    virtual bool SetMaxDecDuration(int maxDecDuration);
+    virtual int GetMaxRaDuration(void);
+    virtual bool SetMaxRaDuration(double maxRaDuration);
+    virtual DEC_GUIDE_MODE GetDecGuideMode(void);
+    virtual bool SetDecGuideMode(int decGuideMode);
+
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
+
 private:
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 };

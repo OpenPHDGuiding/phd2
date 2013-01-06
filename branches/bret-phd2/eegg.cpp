@@ -97,13 +97,12 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 		if (!pScope->IsConnected() || !GuideCameraConnected || !pScope->IsCalibrated())
 			return;
 		if (pGuider->GetState() > STATE_SELECTED) return;  // must not be calibrating or guiding already
-        //TODO: Bret Fix this
-#if 0	
 		if (evt.IsChecked()) {
+            double LockX, LockY;
 			wxString tmpstr;
 			tmpstr = wxGetTextFromUser(_T("Enter x-lock position (or 0 for center)"), _T("X-lock position"));
 			if (tmpstr.IsEmpty()) return;
-			ManualLock = true;
+			//ManualLock = true;
 			tmpstr.ToDouble(&LockX); 
 			LockX = fabs(LockX);
 			if (LockX < 0.0001) {
@@ -116,11 +115,11 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 				tmpstr.ToDouble(&LockY); 
 				LockY = fabs(LockY);
 			}
+            frame->pGuider->SetLockPosition(LockX, LockY, true);
 		}
 		else {
-			ManualLock = false;
+			//ManualLock = false;
 		}
-#endif
 	}	
 	else evt.Skip();
 

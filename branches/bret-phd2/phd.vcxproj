@@ -105,7 +105,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(CFITSIO);$(WXWIN)\lib\vc_lib\mswud;cameras\VidCapture;cameras;cameras\TIS\include;C:\dev\fits;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_WIN7;NOPCH;__WINDOWS__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -118,6 +118,9 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile>phd.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -210,7 +213,7 @@
       <AdditionalOptions>/D "_CRT_SECURE_NO_DEPRECATE" /D "_CRT_NONSTDC_NO_DEPRECATE" %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(WXWIN)\lib\vc_lib\mswu;cameras\VidCapture;cameras;cameras\TIS\include;C:\dev\fits;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CFITSIO);$(WXWIN)\lib\vc_lib\mswud;cameras\VidCapture;cameras;cameras\TIS\include;C:\dev\fits;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;__WXMSW__;_WINDOWS;NOPCH;__WINDOWS__;_WIN7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -224,6 +227,8 @@
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>phd.h</PrecompiledHeaderFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>__WXMSW__;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -233,7 +238,7 @@
       <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw29u_html.lib;wxbase29u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Release/phd.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>sbigudrv.dll;ArtemisCCD.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;FCApi.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SSAGIF.dll;SXUSB.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ProgramDatabaseFile>.\Release/phd.pdb</ProgramDatabaseFile>
@@ -303,7 +308,10 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cameras\ArtemisHSCAPI.cpp" />
+    <ClCompile Include="cameras\ArtemisHSCAPI.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="cam_ascom.cpp" />
     <ClCompile Include="cam_ascomlate.cpp" />
     <ClCompile Include="cam_Atik16.cpp" />
@@ -330,21 +338,31 @@
     <ClCompile Include="cam_wdm.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="configdialog.cpp" />
     <ClCompile Include="eegg.cpp" />
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="guider.cpp" />
     <ClCompile Include="guider_onestar.cpp" />
     <ClCompile Include="guide_algorithm_hysteresis.cpp" />
+    <ClCompile Include="guide_algorithm_identity.cpp" />
     <ClCompile Include="guide_algorithm_lowpass.cpp" />
     <ClCompile Include="guide_algorithm_lowpass2.cpp" />
+    <ClCompile Include="guide_algorithm_resistswitch.cpp" />
     <ClCompile Include="guide_routines.cpp" />
     <ClCompile Include="image_math.cpp" />
     <ClCompile Include="mount.cpp" />
     <ClCompile Include="myapp.cpp" />
     <ClCompile Include="myframe.cpp" />
     <ClCompile Include="myframe_events.cpp" />
-    <ClCompile Include="phd.cpp" />
+    <ClCompile Include="phd.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="phdlog.cpp" />
+    <ClCompile Include="precompiled_header.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">phd.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="scope.cpp" />
     <ClCompile Include="scope_ascom.cpp" />
     <ClCompile Include="scope_eqmac.cpp" />
@@ -352,6 +370,7 @@
     <ClCompile Include="scope_GC_USBST4.cpp" />
     <ClCompile Include="scope_gpint.cpp" />
     <ClCompile Include="scope_gpusb.cpp" />
+    <ClCompile Include="scope_onboard.cpp" />
     <ClCompile Include="scope_voyager.cpp" />
     <ClCompile Include="socket_server.cpp" />
     <ClCompile Include="star.cpp" />
@@ -394,6 +413,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="cameras.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="configdialog.h" />
     <ClInclude Include="graph.h" />
     <ClInclude Include="guiders.h" />
     <ClInclude Include="guider_canvas.h" />
@@ -401,8 +421,10 @@
     <ClInclude Include="guide_algorithm.h" />
     <ClInclude Include="guide_algorithms.h" />
     <ClInclude Include="guide_algorithm_hysteresis.h" />
+    <ClInclude Include="guide_algorithm_identity.h" />
     <ClInclude Include="guide_algorithm_lowpass.h" />
     <ClInclude Include="guide_algorithm_lowpass2.h" />
+    <ClInclude Include="guide_algorithm_resistswitch.h" />
     <ClInclude Include="image_math.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="myapp.h" />

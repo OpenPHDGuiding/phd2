@@ -208,9 +208,9 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
         else if ((CropY + CROPYSIZE) >= pImg->Size.GetHeight()) CropY = pImg->Size.GetHeight() - (CROPYSIZE + 1);
 
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
 
         if (Result == STAR_OK)
         {
@@ -222,10 +222,121 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
     SetXY(X, Y);
     m_lastFindResult = Result;
 
-    return WasFound(Result);
+    bool bReturn = WasFound(Result);
+
+    if (!bReturn)
+    {
+        Mass = 0.0;
+        SNR = 0.0;
+    }
+
+    return bReturn;
 }
 
 bool Star::Find(usImage *pImg, int searchRegion)
 {
-    return Find(pImg, searchRegion, X, Y);
+    bool bReturn = false;
+
+    if (IsValid())
+    {
+        bReturn = Find(pImg, searchRegion, X, Y);
+    }
+
+    return bReturn;
+}
+
+bool Star::AutoFind(usImage *pImg)
+{
+    bool bFound = false;
+    int xpos=0, ypos=0;
+
+	float A, B1, B2, C1, C2, C3, D1, D2, D3;
+	int x, y, i, linesize;
+	unsigned short *uptr;
+
+	linesize = pImg->Size.GetWidth();
+	double PSF[14] = { 0.906, 0.584, 0.365, .117, .049, -0.05, -.064, -.074, -.094 };
+	double mean;
+	double PSF_fit;
+	double BestPSF_fit = 0.0;
+
+	// OK, do seem to need to run 3x3 median first
+	Median3(*pImg);
+
+	/* PSF Grid is:
+		D3 D3 D3 D3 D3 D3 D3 D3 D3
+		D3 D3 D3 D2 D1 D2 D3 D3 D3
+		D3 D3 C3 C2 C1 C2 C3 D3 D3
+		D3 D2 C2 B2 B1 B2 C2 D3 D3
+		D3 D1 C1 B1 A  B1 C1 D1 D3
+		D3 D2 C2 B2 B1 B2 C2 D3 D3
+		D3 D3 C3 C2 C1 C2 C3 D3 D3
+		D3 D3 D3 D2 D1 D2 D3 D3 D3
+		D3 D3 D3 D3 D3 D3 D3 D3 D3
+
+		1@A
+		4@B1, B2, C1, and C3
+		8@C2, D2
+		48 * D3
+		*/
+	for (y=40; y<(pImg->Size.GetHeight()-40); y++) 
+    {
+		for (x=40; x<(linesize-40); x++) 
+        {
+			A =  (float) *(pImg->ImageData + linesize * y + x);
+			B1 = (float) *(pImg->ImageData + linesize * (y-1) + x) + (float) *(pImg->ImageData + linesize * (y+1) + x) + (float) *(pImg->ImageData + linesize * y + (x + 1)) + (float) *(pImg->ImageData + linesize * y + (x-1));
+			B2 = (float) *(pImg->ImageData + linesize * (y-1) + (x-1)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+1)) + (float) *(pImg->ImageData + linesize * (y+1) + (x + 1)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-1));
+			C1 = (float) *(pImg->ImageData + linesize * (y-2) + x) + (float) *(pImg->ImageData + linesize * (y+2) + x) + (float) *(pImg->ImageData + linesize * y + (x + 2)) + (float) *(pImg->ImageData + linesize * y + (x-2));
+			C2 = (float) *(pImg->ImageData + linesize * (y-2) + (x-1)) + (float) *(pImg->ImageData + linesize * (y-2) + (x+1)) + (float) *(pImg->ImageData + linesize * (y+2) + (x + 1)) + (float) *(pImg->ImageData + linesize * (y+2) + (x-1)) +
+				(float) *(pImg->ImageData + linesize * (y-1) + (x-2)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+2)) + (float) *(pImg->ImageData + linesize * (y+1) + (x + 2)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-2));
+			C3 = (float) *(pImg->ImageData + linesize * (y-2) + (x-2)) + (float) *(pImg->ImageData + linesize * (y-2) + (x+2)) + (float) *(pImg->ImageData + linesize * (y+2) + (x + 2)) + (float) *(pImg->ImageData + linesize * (y+2) + (x-2));
+			D1 = (float) *(pImg->ImageData + linesize * (y-3) + x) + (float) *(pImg->ImageData + linesize * (y+3) + x) + (float) *(pImg->ImageData + linesize * y + (x + 3)) + (float) *(pImg->ImageData + linesize * y + (x-3));
+			D2 = (float) *(pImg->ImageData + linesize * (y-3) + (x-1)) + (float) *(pImg->ImageData + linesize * (y-3) + (x+1)) + (float) *(pImg->ImageData + linesize * (y+3) + (x + 1)) + (float) *(pImg->ImageData + linesize * (y+3) + (x-1)) +
+				(float) *(pImg->ImageData + linesize * (y-1) + (x-3)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+3)) + (float) *(pImg->ImageData + linesize * (y+1) + (x + 3)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-3));
+			D3 = 0.0;
+			uptr = pImg->ImageData + linesize * (y-4) + (x-4);
+			for (i=0; i<9; i++, uptr++)
+				D3 = D3 + *uptr;
+			uptr = pImg->ImageData + linesize * (y-3) + (x-4);
+			for (i=0; i<3; i++, uptr++)
+				D3 = D3 + *uptr;
+			uptr = uptr + 2;
+			for (i=0; i<3; i++, uptr++)
+				D3 = D3 + *uptr;
+			D3 = D3 + (float) *(pImg->ImageData + linesize * (y-2) + (x-4)) + (float) *(pImg->ImageData + linesize * (y-2) + (x+4)) + (float) *(pImg->ImageData + linesize * (y-2) + (x-3)) + (float) *(pImg->ImageData + linesize * (y-2) + (x-3)) +
+				(float) *(pImg->ImageData + linesize * (y+2) + (x-4)) + (float) *(pImg->ImageData + linesize * (y+2) + (x+4)) + (float) *(pImg->ImageData + linesize * (y+2) + (x - 3)) + (float) *(pImg->ImageData + linesize * (y+2) + (x-3)) +
+				(float) *(pImg->ImageData + linesize * y + (x + 4)) + (float) *(pImg->ImageData + linesize * y + (x-4));
+
+			uptr = pImg->ImageData + linesize * (y+4) + (x-4);
+			for (i=0; i<9; i++, uptr++)
+				D3 = D3 + *uptr;
+			uptr = pImg->ImageData + linesize * (y+3) + (x-4);
+			for (i=0; i<3; i++, uptr++)
+				D3 = D3 + *uptr;
+			uptr = uptr + 2;
+			for (i=0; i<3; i++, uptr++)
+				D3 = D3 + *uptr;
+
+			mean = (A+B1+B2+C1+C2+C3+D1+D2+D3)/85.0;
+			PSF_fit = PSF[0] * (A-mean) + PSF[1] * (B1 - 4.0*mean) + PSF[2] * (B2 - 4.0 * mean) +
+				PSF[3] * (C1 - 4.0*mean) + PSF[4] * (C2 - 8.0*mean) + PSF[5] * (C3 - 4.0 * mean) +
+				PSF[6] * (D1 - 4.0*mean) + PSF[7] * (D2 - 8.0*mean) + PSF[8] * (D3 - 48.0 * mean);
+
+
+			if (PSF_fit > BestPSF_fit) 
+            {
+				BestPSF_fit = PSF_fit;
+				xpos = x;
+				ypos = y;
+			}
+		}
+	}
+
+    if (xpos != 0 && ypos != 0)
+    {
+        bFound = true;
+        SetXY(xpos, ypos);
+    }
+
+    return bFound;
 }

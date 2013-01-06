@@ -39,70 +39,38 @@
 
 #include "phd.h"
 
-GuideAlgorithmHysteresis::GuideAlgorithmHysteresis(GuideAlgorithm *pChained)
-    :GuideAlgorithm(pChained)
-{
-    double minMove    = pConfig->GetDouble("/GuideAlgorithm/DefaultRa/minMove", 0.2);
-    double hysteresis = pConfig->GetDouble("/GuideAlgorithm/DefaultRa/hysteresis", 0.0);
-    double aggression   = pConfig->GetDouble("/GuideAlgorithm/DefaultRa/RaAggression", 1.00);
+static const double DefaultMinMove      = 0.2;
+static const double DefaultHysteresis   = 0.1;
+static const double DefaultAggression = 1.00;
 
-    SetParms(minMove, hysteresis, aggression);
+GuideAlgorithmHysteresis::GuideAlgorithmHysteresis(void)
+{
+    double minMove    = pConfig->GetDouble("/GuideAlgorithm/Hysteresis/minMove", DefaultMinMove);
+    SetMinMove(minMove);
+
+    double hysteresis = pConfig->GetDouble("/GuideAlgorithm/Hysteresis/hysteresis", DefaultHysteresis);
+    SetHysteresis(hysteresis);
+
+    double aggression   = pConfig->GetDouble("/GuideAlgorithm/Hysteresis/aggression", DefaultAggression);
+    SetAggression(aggression);
 }
 
 GuideAlgorithmHysteresis::~GuideAlgorithmHysteresis(void)
 {
 }
 
-bool GuideAlgorithmHysteresis::SetParms(double minMove, double hysteresis, double aggression)
+GUIDE_ALGORITHM GuideAlgorithmHysteresis::Algorithm(void)
 {
-    bool bError = false;
+    return GUIDE_ALGORITHM_HYSTERESIS;
+}
 
-    try
-    {
-        if (minMove < 0)
-        {
-            throw ERROR_INFO("invalid minMove");
-        }
-
-        if (hysteresis < 0 || hysteresis > 1.0)
-        {
-            throw ERROR_INFO("invalid hysteresis");
-        }
-
-        if (aggression <= 0.0 || aggression > 1.0)
-        {
-            throw ERROR_INFO("invalid aggression");
-        }
-
-        m_minMove = minMove;
-        m_hysteresis = hysteresis;
-        m_aggression = aggression;
-
-        m_lastMove = 0.0;
-
-        pConfig->SetDouble("/GuideAlgorithm/DefaultRa/minMove", m_minMove);
-        pConfig->SetDouble("/GuideAlgorithm/DefaultRa/hysteresis", m_hysteresis);
-        pConfig->SetDouble("/GuideAlgorithm/DefaultRa/RaAggression", m_aggression);
-    }
-    catch (char *pErrorMsg)
-    {
-        POSSIBLY_UNUSED(pErrorMsg);
-        bError = true;
-
-        Debug.Write(wxString::Format("GuideAlgorithRa::SetPArms() caught exception: %s\n", pErrorMsg));
-    }
-
-    Debug.Write(wxString::Format("GuideAlgorithmHysteresis::SetParms() returns %d, m_minMove=%.2f m_hysteresis=%.2f m_aggression=%.2f\n", bError, m_minMove, m_hysteresis, m_aggression));
-    return bError;
+bool GuideAlgorithmHysteresis::reset(void)
+{
+    return true;
 }
 
 double GuideAlgorithmHysteresis::result(double input)
 {
-    if (m_pChained)
-    {
-        input = m_pChained->result(input);
-    }
-
     double dReturn = (1.0-m_hysteresis)*input + m_hysteresis * m_lastMove;
 
     dReturn *= m_aggression;
@@ -117,4 +85,160 @@ double GuideAlgorithmHysteresis::result(double input)
     Debug.Write(wxString::Format("GuideAlgorithmHysteresis::Result() returns %.2f from input %.2f\n", dReturn, input));
 
     return dReturn;
+}
+
+double GuideAlgorithmHysteresis::GetMinMove(void)
+{
+    return m_minMove;
+}
+
+bool GuideAlgorithmHysteresis::SetMinMove(double minMove)
+{
+    bool bError = false;
+
+    try
+    {
+        if (minMove < 0)
+        {
+            throw ERROR_INFO("invalid minMove");
+        }
+
+        m_minMove = minMove;
+
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        m_minMove = DefaultMinMove;
+    }
+
+    pConfig->SetDouble("/GuideAlgorithm/Hysteresis/minMove", m_minMove);
+
+    return bError;
+}
+
+double GuideAlgorithmHysteresis::GetHysteresis(void)
+{
+    return m_hysteresis;
+}
+
+bool GuideAlgorithmHysteresis::SetHysteresis(double hysteresis)
+{
+    bool bError = false;
+
+    try
+    {
+        if (hysteresis < 0 || hysteresis > 1.0)
+        {
+            throw ERROR_INFO("invalid hysteresis");
+        }
+
+        m_hysteresis = hysteresis;
+
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        m_hysteresis = DefaultHysteresis;
+    }
+
+    pConfig->SetDouble("/GuideAlgorithm/Hysteresis/hysteresis", m_hysteresis);
+
+    return bError;
+}
+
+double GuideAlgorithmHysteresis::GetAggression(void)
+{
+    return m_aggression;
+}
+
+bool GuideAlgorithmHysteresis::SetAggression(double aggression)
+{
+    bool bError = false;
+
+    try
+    {
+        if (aggression <= 0.0 || aggression > 1.0)
+        {
+            throw ERROR_INFO("invalid aggression");
+        }
+
+        m_aggression = aggression;
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        m_aggression = DefaultAggression;
+    }
+
+    m_lastMove = 0.0;
+    pConfig->SetDouble("/GuideAlgorithm/Hysteresis/aggression", m_aggression);
+
+    return bError;
+}
+
+ConfigDialogPane *GuideAlgorithmHysteresis::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new GuideAlgorithmHysteresisConfigDialogPane(pParent, this);
+}
+
+GuideAlgorithmHysteresis::
+GuideAlgorithmHysteresisConfigDialogPane::
+GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm)
+    :ConfigDialogPane(_T("Hysteresis Guide Algorithm"), pParent)
+{
+    int width;
+
+    m_pGuideAlgorithm = pGuideAlgorithm;
+
+    width = StringWidth(_T("000.00"));
+	m_pHysteresis = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 0.05,_T("Hysteresis"));
+    m_pHysteresis->SetDigits(2);
+
+	DoAdd(_T("Hysteresis"), m_pHysteresis,
+	       _T("How much history of previous guide pulses should be applied\nDefault = 10%, increase to smooth out guiding commands"));
+
+    width = StringWidth(_T("000.00"));
+	m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 1.0,_T("Hysteresis"));
+    m_pAggression->SetDigits(1);
+
+	DoAdd(_T("Aggression"), m_pAggression,
+	      _T("What percent of the measured error should be applied? Default = 100%, adjust if responding too much or too slowly?"));
+
+    width = StringWidth(_T("000.00"));
+	m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
+    m_pMinMove->SetDigits(2);
+
+	DoAdd(_T("Minimum Move (pixels)"), m_pMinMove,
+	      _T("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
+}
+
+GuideAlgorithmHysteresis::
+GuideAlgorithmHysteresisConfigDialogPane::
+~GuideAlgorithmHysteresisConfigDialogPane(void)
+{
+}
+
+void GuideAlgorithmHysteresis::
+GuideAlgorithmHysteresisConfigDialogPane::
+LoadValues(void)
+{
+    m_pHysteresis->SetValue(100.0*m_pGuideAlgorithm->GetHysteresis());
+    m_pAggression->SetValue(100.0*m_pGuideAlgorithm->GetAggression());
+    m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+}
+
+void GuideAlgorithmHysteresis::
+GuideAlgorithmHysteresisConfigDialogPane::
+UnloadValues(void)
+{
+    m_pGuideAlgorithm->SetHysteresis(m_pHysteresis->GetValue()/100.0);
+    m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue()/100.0);
+    m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 }

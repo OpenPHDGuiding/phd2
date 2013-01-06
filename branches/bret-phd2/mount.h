@@ -57,20 +57,29 @@ protected:
     double m_dRaRate;
 
 	wxString m_Name;
+protected:
+    class MountConfigDialogPane : public ConfigDialogPane
+    {
+        Mount *m_pMount;
+        wxCheckBox *m_pRecalibrate;
+
+        public:
+        MountConfigDialogPane(wxWindow *pParent, Mount *pMount);
+        ~MountConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
 
 public:
     Mount();
     virtual ~Mount();
 
     // these MUST be supplied by a subclass
-    virtual bool BeginCalibration(Guider *pGuider)=0;
-    virtual bool UpdateCalibrationState(Guider *pGuider)=0;
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs) = 0;
-    virtual bool IsGuiding(void) = 0;
+    virtual bool BeginCalibration(const Point &currentPosition)=0;
+    virtual bool UpdateCalibrationState(const Point &currentPosition)=0;
 
     // these CAN be supplied by a subclass
-    virtual bool HasNonGUIGuide(void) {return false;}
-    virtual bool NonGUIGuide(const GUIDE_DIRECTION direction, const int durationMs) { assert(false); return false; }
 	virtual wxString &Name(void);
     virtual bool IsConnected(void);
     virtual bool IsCalibrated(void);
@@ -82,6 +91,7 @@ public:
     virtual bool Connect(void);
 	virtual bool Disconnect(void);
     virtual bool SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 };
 
 #endif /* MOUNT_H_INCLUDED */

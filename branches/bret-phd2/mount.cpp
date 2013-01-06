@@ -148,3 +148,36 @@ bool Mount::SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, do
 
     return true;
 }
+
+ConfigDialogPane *Mount::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new MountConfigDialogPane(pParent, this);
+}
+
+
+Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, Mount *pMount)
+    : ConfigDialogPane(_T("Mount Settings"), pParent)
+{
+    m_pMount = pMount;
+
+	m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_T("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
+
+	DoAdd(m_pRecalibrate, _T("Check to clear any previous calibration and force PHD to recalibrate"));
+}
+
+Mount::MountConfigDialogPane::~MountConfigDialogPane(void)
+{
+}
+
+void Mount::MountConfigDialogPane::LoadValues(void)
+{
+    m_pRecalibrate->SetValue(!m_pMount->IsCalibrated());
+}
+
+void Mount::MountConfigDialogPane::UnloadValues(void)
+{
+    if (m_pRecalibrate->GetValue())
+    {
+        m_pMount->ClearCalibration();
+    }
+}

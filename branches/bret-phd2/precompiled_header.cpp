@@ -1,5 +1,5 @@
 /*
- *  scope_oncamera.h
+ *  precompiled_header.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -14,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
  *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
  *
@@ -33,16 +32,11 @@
  *
  */
 
-#ifdef GUIDE_ONBOARD
+/*
+ * this file's only purpose is for use with MSCV precompiled headers.  I don't generally like precompiled
+ * headers, but for PHD is speeds up compile times by more that 5X on my machine, so here it is.
+ *
+ * If you are not using MSVC, you don't need to include this file in your build
+ */
 
-class ScopeOnCamera:public Scope
-{
-public:
-    ScopeOnCamera(void);
-	virtual bool Connect(void);
-	virtual bool Disconnect(void);
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int duration);
-    virtual bool IsGuiding(void);
-};
-
-#endif /* GUIDE_ONBOARD */
+#include "phd.h"

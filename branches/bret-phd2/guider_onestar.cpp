@@ -1,5 +1,5 @@
 /*
- *  guide_onestar.cpp
+ *  guider_onestar.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -49,6 +49,11 @@
 #define wxPENSTYLE_DOT wxDOT
 #endif
 
+static const double DefaultMassChangeThreshold = 0.5;
+static const int DefaultSearchRegion = 15;
+static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
+static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_RESIST_SWITCH;
+
 BEGIN_EVENT_TABLE(GuiderOneStar, Guider)
     EVT_PAINT(GuiderOneStar::OnPaint)
  	EVT_LEFT_DOWN(GuiderOneStar::OnLClick)
@@ -58,65 +63,180 @@ END_EVENT_TABLE()
 GuiderOneStar::GuiderOneStar(wxWindow *parent):
     Guider(parent, XWinSize, YWinSize)
 {
-    int maxDecDuration = pConfig->GetInt("/guider/onestar/MaxDecDuration", 1000);
-    int maxRaDuration  = pConfig->GetInt("/guider/onestar/MaxRaDuration", 1000);
-    DEC_GUIDE_OPTION decGuide = (DEC_GUIDE_OPTION)pConfig->GetInt("/guider/onestar/DecGuideOption", true);
+    double massChangeThreshold  = pConfig->GetDouble("/guider/onestar/MassChangeThreshold", 
+            DefaultMassChangeThreshold);
+    SetMassChangeThreshold(massChangeThreshold);
 
-    SetParms(maxDecDuration, maxRaDuration, decGuide);
+    int searchRegion = pConfig->GetInt("/guider/onestar/SearchRegion", DefaultSearchRegion);
+    SetSearchRegion(searchRegion);
 
+    int raGuideAlgorithm = pConfig->GetInt("/guider/onestar/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
+    SetRaGuideAlgorithm(raGuideAlgorithm);
 
-    delete m_pRaGuideAlgorithm;
-    m_pRaGuideAlgorithm = (GuideAlgorithm *)new GuideAlgorithmHysteresis();
+    int decGuideAlgorithm = pConfig->GetInt("/guider/onestar/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
+    SetDecGuideAlgorithm(decGuideAlgorithm);
+
+    SetState(STATE_UNINITIALIZED);
 }
 
 GuiderOneStar::~GuiderOneStar() 
 {
 }
 
-bool GuiderOneStar::SetParms(int maxDecDuration, int maxRaDuration, DEC_GUIDE_OPTION decGuideOption)
+bool GuiderOneStar::SetDecGuideAlgorithm(int decGuideAlgorithm)
+{
+
+    bool bError = Guider::SetDecGuideAlgorithm(decGuideAlgorithm);
+
+    if (bError)
+    {
+        Guider::SetDecGuideAlgorithm(DefaultDecGuideAlgorithm);
+    }
+    pConfig->SetInt("/guider/onestar/DecGuideAlgorithm", GetDecGuideAlgorithm());
+
+    return bError;
+}
+
+bool GuiderOneStar::SetRaGuideAlgorithm(int raGuideAlgorithm)
+{
+
+    bool bError = Guider::SetRaGuideAlgorithm(raGuideAlgorithm);
+
+    if (bError)
+    {
+        Guider::SetRaGuideAlgorithm(DefaultRaGuideAlgorithm);
+    }
+    pConfig->SetInt("/guider/onestar/RaGuideAlgorithm", GetRaGuideAlgorithm());
+
+    return bError;
+}
+
+double GuiderOneStar::GetMassChangeThreshold(void)
+{
+    return m_massChangeThreshold;
+}
+
+bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
 {
     bool bError = false;
 
     try
     {
-        if (maxDecDuration < 0)
+        if (massChangeThreshold < 0)
         {
-            throw ERROR_INFO("maxDecDuration < 0");
+            throw ERROR_INFO("massChangeThreshold < 0");
         }
+        
+        m_massChangeThreshold = massChangeThreshold;
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
 
-        if (maxRaDuration < 0)
+        bError = true;
+        m_massChangeThreshold = DefaultMassChangeThreshold;
+    }
+
+    m_badMassCount = 0;
+    pConfig->SetDouble("/guider/onestar/MassChangeThreshold", m_massChangeThreshold);
+
+    return bError;
+}
+
+int GuiderOneStar::GetSearchRegion(void)
+{
+    return m_searchRegion;
+}
+
+bool GuiderOneStar::SetSearchRegion(int searchRegion)
+{
+    bool bError = false;
+
+    try
+    {
+        if (searchRegion <= 0)
         {
-            throw ERROR_INFO("maxRaDuration < 0");
+            throw ERROR_INFO("searchRegion <= 0");
         }
-
-        switch (decGuideOption)
-        {
-            case DEC_NONE:
-            case DEC_AUTO:
-            case DEC_NORTH:
-            case DEC_SOUTH:
-                break;
-            default:
-                throw ERROR_INFO("invalid decGuideOption");
-                break;
-        }
-
-        m_maxDecDuration = maxDecDuration;
-        m_maxRaDuration =  maxRaDuration;
-        m_decGuideOption = decGuideOption;
-
-        pConfig->SetInt("/guider/onestar/MaxDecDuration", m_maxDecDuration);
-        pConfig->SetInt("/guider/onestar/MaxRaDuration", m_maxRaDuration);
-        pConfig->SetInt("/guider/onestar/DecGuideOption", m_decGuideOption);
+        m_searchRegion = searchRegion;
     }
     catch (char *pErrorMsg)
     {
         POSSIBLY_UNUSED(pErrorMsg);
         bError = true;
-        Debug.Write(wxString::Format("GuiderOneStar::SetParms() threw an exeception: %s\n", pErrorMsg));
+        m_searchRegion = DefaultSearchRegion;
     }
 
-    Debug.Write(wxString::Format("GuiderOneStar::SetParms() returns %d, m_maxDecDuration=%d m_maxRaDuration=%d m_decGuide=%d\n", bError, m_maxDecDuration, m_maxRaDuration, m_decGuideOption));
+    pConfig->SetInt("/guider/onestar/SearchRegion", m_searchRegion);
+
+    return bError;
+}
+
+bool GuiderOneStar::SetLockPosition(double x, double y, bool bExact)
+{
+    bool bError = false;
+
+    try
+    {
+        if ((x <= 0) || (x >= pCurrentFullFrame->Size.x))
+        {
+            throw ERROR_INFO("invalid y value");
+        }
+
+        if ((y <= 0) || (y >= pCurrentFullFrame->Size.x))
+        {
+            throw ERROR_INFO("invalid x value");
+        }
+
+        if (SetState(STATE_SELECTING))
+        {
+            throw ERROR_INFO("unable to set state to STATE_SELECTING");
+        }
+
+        if (bExact)
+        {
+            m_lockPosition = Point(x,y);
+        }
+        else
+        {
+            m_star.Find(pCurrentFullFrame, m_searchRegion, x, y);
+            // if the find was successful, the next state machine update will 
+            // move our state to STATE_SELECTED
+        }
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuiderOneStar::AutoSelect(usImage *pImage)
+{
+    bool bError = false;
+
+    try
+    {
+        Star newStar;
+
+        if (!newStar.AutoFind(pImage))
+        {
+            throw ERROR_INFO("Uable to AutoFind");
+        }
+
+        if (!SetLockPosition(newStar.X, newStar.Y))
+        {
+            throw ERROR_INFO("Uable to set Lock Position");
+        }
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+    }
+
     return bError;
 }
 
@@ -137,9 +257,31 @@ bool GuiderOneStar::SetState(GUIDER_STATE newState)
     try
     {
         Debug.Write(wxString::Format("Changing from state %d to %d\n", m_state, newState));
+
+        if (newState == STATE_STOP)
+        {
+            // we are going to stop looping exposures.  We should put 
+            // ourselves into a good state to restart looping later
+            switch(m_state)
+            {
+                case STATE_UNINITIALIZED:
+                case STATE_SELECTING:
+                case STATE_SELECTED:
+                    break;
+                case STATE_CALIBRATING:
+                    // because we have done some moving here, we need to just 
+                    // start over...
+                    newState = STATE_UNINITIALIZED;
+                    break;
+                case STATE_CALIBRATED:
+                case STATE_GUIDING:
+                    newState = STATE_SELECTED;
+                    break;
+            }
+        }
+
         if (newState > m_state + 1)
         {
-            assert(false);
             throw ERROR_INFO("Illegal state transition");
         }
 
@@ -148,104 +290,36 @@ bool GuiderOneStar::SetState(GUIDER_STATE newState)
             case STATE_UNINITIALIZED:
                 m_lockPosition.Invalidate();
                 m_star.Invalidate();
-                break;
-            case STATE_SELECTING:
-                break;
-            case STATE_SELECTED:
-                m_lockPosition = m_star;
+                m_autoSelectTries = 0;
+                newState = STATE_SELECTING;
                 break;
             case STATE_CALIBRATING:
-                pScope->BeginCalibration(this);
+                if (pScope->IsCalibrated())
+                {
+                    newState = STATE_CALIBRATED;
+                }
+                else
+                {
+                    if (pScope->BeginCalibration(m_star))
+                    {
+                        newState = STATE_UNINITIALIZED;
+                        Debug.Write(ERROR_INFO("pScope->BeginCalibration failed"));
+                    }
+                }
                 break;
-            case STATE_CALIBRATED:
-                // for onestar guiders, we move immediately from STATE_CALIBRATED 
-                // to STATE_GUIDING
-                newState = STATE_GUIDING;
-                // fall through
             case STATE_GUIDING:
                 m_lockPosition = m_star;
                 break;
         }
 
-        bError = Guider::SetState(newState);
-
-        frame->StartCapturing();
-
-        frame->UpdateButtonsStatus();
-    }
-    catch (char *ErrorMsg)
-    {
-        POSSIBLY_UNUSED(ErrorMsg);
-        bError = true;
-    }
-
-    return bError;
-}
-
-/*************  Do the actual guiding ***********************/
-bool GuiderOneStar::DoGuide(void)
-{
-    bool bError = false;
-
-    try
-    {
-        double theta = m_lockPosition.Angle(m_star);
-        double hyp   = m_lockPosition.Distance(m_star);
-
-        // Convert theta and hyp into RA and DEC
-
-        double raDistance  = cos(pScope->RaAngle() - theta) * hyp;
-        double decDistance = cos(pScope->DecAngle() - theta) * hyp;
-
-        // Feed the raw distances to the guide algorithms
-        
-        raDistance = m_pRaGuideAlgorithm->result(raDistance);
-        decDistance = m_pDecGuideAlgorithm->result(decDistance);
-
-        // Figure out the guide directions based on the (possibly) updated distances
-        GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
-        GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
-
-        // Compute the required guide durations
-        double raDuration = fabs(raDistance/pScope->RaRate());
-        double decDuration = fabs(decDistance/pScope->DecRate());
-
-        // Enforce max durations
-        if (raDuration > m_maxRaDuration)
+        if (Guider::SetState(newState))
         {
-            raDuration = m_maxRaDuration;
-        }
-
-        if (decDuration > m_maxDecDuration)
-        {
-            decDuration = m_maxDecDuration;
-        }
-
-        // and the dec guiding option
-        if ((m_decGuideOption == DEC_NONE) ||
-            (direction == SOUTH && m_decGuideOption == DEC_NORTH) || 
-            (direction == NORTH && m_decGuideOption == DEC_SOUTH))
-        {
-            decDuration = 0.0;
-        }
-
-        // We are now ready to actuallly guide
-        assert(raDuration >= 0);
-        if (raDuration > 0.0)
-        {
-            frame->ScheduleGuide(raDirection, raDuration, wxString::Format("%c dur=%.1f dist=%.2f", (direction==EAST)?'E':'W', raDuration, raDistance));
-        }
-
-        assert(decDuration >= 0);
-        if (decDuration > 0.0)
-        {
-
-            frame->ScheduleGuide(direction, decDuration, wxString::Format("%c dur=%.1f dist=%.2f", (direction==SOUTH)?'S':'N', raDuration, decDistance));
+            throw ERROR_INFO("Guider::SetState() failed");
         }
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
         bError = true;
     }
 
@@ -254,57 +328,167 @@ bool GuiderOneStar::DoGuide(void)
 
 /*************  A new image is ready ************************/
 
-bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bUpdateStatus)
+bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
 {
     bool bError = false;
+    bool updateStatus = true;
+    wxString statusMessage;
 
     try
     {
-        if (m_state < STATE_SELECTED)
+        Debug.Write(wxString::Format("UpdateGuideState(): m_state=%d\n", m_state));
+
+        if (bStopping)
         {
-            // there isn't much to do since we don't have a star yet
-            if (bUpdateStatus)
-            {
-                frame->SetStatusText(_T("No Star found"));
-            }
+            SetState(STATE_STOP);
+            statusMessage = _T("Stopped Exposing");
+            throw ERROR_INFO("Stopped Exposing");
         }
-        else
+
+        if (IsPaused())
         {
-            // update the star position
-            m_star.Find(pImage, m_searchRegion);
-            
-            if (m_star.WasFound())
+            statusMessage = _T("Paused");
+            throw ERROR_INFO("Skipping frame - guider is paused");
+        }
+
+        if (m_state == STATE_SELECTING && m_autoSelectTries++ == 0)
+        {
+            Debug.Write("UpdateGuideState(): Autoselecting\n");
+            if (AutoSelect(pImage))
             {
-                if (bUpdateStatus)
-                {
-                    frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR));
-                }
-                if (m_state == STATE_GUIDING)
-                {
-                    bError = DoGuide();
-                }
+                frame->SetStatusText(wxString::Format(_T("Auto Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
             }
             else
             {
-                if (bUpdateStatus)
-                {
-                    frame->SetStatusText(_T("No Star found"));
-                }
+                statusMessage = _T("No Star selected");
+                throw ERROR_INFO("No Star selected");
             }
         }
 
-        if (!bError)
+        Star newStar(m_star);
+        
+        if (!newStar.Find(pImage, m_searchRegion))
         {
-            UpdateImageDisplay(pImage);
+            Debug.Write("UpdateGuideState():newStar not found\n");
+            statusMessage = _T("No Star found");
+        }
+
+        if (m_massChangeThreshold < 0.99 &&
+            m_star.Mass > 0.0 &&  
+            newStar.Mass > 0.0 && 
+            m_badMassCount++ < 2)
+        {
+            // check to see if it seems like the star we just found was the
+            // same as the orignial star.  We do this by comparing the 
+            // mass
+            double massRatio;
+
+            if (newStar.Mass > m_star.Mass)
+            {
+                massRatio = m_star.Mass/newStar.Mass;
+            }
+            else
+            {
+                massRatio = newStar.Mass/m_star.Mass;
+            }
+
+            massRatio = 1.0 - massRatio;
+
+            assert(massRatio >= 0 && massRatio < 1.0);
+
+            if (massRatio > m_massChangeThreshold)
+            {
+                m_star.SetError(Star::STAR_MASSCHANGE);
+                frame->SetStatusText(wxString::Format(_T("Mass: %.0f vs %.0f"), newStar.Mass, m_star.Mass), 1);
+                Debug.Write(wxString::Format("UpdateGuideState(): star mass ratio=%.1f, thresh=%.1f new=%.1f, old=%.1f\n", massRatio, m_massChangeThreshold, newStar.Mass, m_star.Mass));
+                throw ERROR_INFO("massChangeThreshold error");
+            }
+        }
+
+        // update the star position, mass, etc.
+        m_star = newStar;
+        m_badMassCount = 0;
+
+        statusMessage.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
+
+        switch(m_state)
+        {
+            case STATE_SELECTING:
+                if (m_star.IsValid())
+                {
+                    m_lockPosition = m_star;
+                    SetState(STATE_SELECTED);
+                }
+                break;
+            case STATE_SELECTED:
+                if (!m_star.IsValid())
+                {
+                     SetState(STATE_UNINITIALIZED);
+                }
+                break;
+            case STATE_CALIBRATING:
+                updateStatus = false;
+
+                if (pScope->IsCalibrated())
+                {
+                    SetState(STATE_CALIBRATED);
+                }
+                else if (pScope->UpdateCalibrationState(m_star))
+                {
+                    SetState(STATE_UNINITIALIZED);
+                    throw ERROR_INFO("Calibration failed");
+                }
+                break;
+            case STATE_CALIBRATED:
+                SetState(STATE_GUIDING);
+                break;
+            case STATE_GUIDING:
+                if (DoGuide())
+                {
+                    Debug.Write("UpdateGuideState(): DoGuide returned an error\n");
+
+                    wxColor prevColor = GetBackgroundColour();
+                    SetBackgroundColour(wxColour(64,0,0));
+                    ClearBackground();
+                    wxBell();
+                    wxMilliSleep(100);
+                    SetBackgroundColour(prevColor);
+
+                    throw ERROR_INFO("DoGuide returned an error");
+                }
+                break;
         }
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
         bError = true;
     }
 
+    if (updateStatus)
+    {
+        frame->SetStatusText(statusMessage);
+    }
+
+    frame->UpdateButtonsStatus();
+
+    Debug.Write("UpdateGuideState exits:" + statusMessage + "\n");
+
+    UpdateImageDisplay(pImage);
+
     return bError;
+}
+
+void GuiderOneStar::ResetGuideState(void)
+{
+    SetState(STATE_UNINITIALIZED);
+}
+
+void GuiderOneStar::StartGuiding(void)
+{
+    // we set the state to calibrating.  The state machine will
+    // automatically move from calibrating->calibrated->guiding 
+    SetState(STATE_CALIBRATING);
 }
 
 void GuiderOneStar::OnLClick(wxMouseEvent &mevent) 
@@ -339,26 +523,23 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             double StarX = (double) mevent.m_x / m_scaleFactor;
             double StarY = (double) mevent.m_y / m_scaleFactor;
 
-            m_star.Find(pCurrentFullFrame, m_searchRegion, StarX, StarY);
-
-            if (m_star.WasFound())
+            if (SetLockPosition(StarX, StarY))
             {
-                SetState(STATE_SELECTED);
-                frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),m_star.Mass,m_star.SNR));
+                frame->SetStatusText(wxString::Format(_T("No star found")));
             }
             else
             {
-                m_star.Invalidate();
-                frame->SetStatusText(wxString::Format(_T("No star found")));
+                frame->SetStatusText(wxString::Format(_T("Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
+                frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),m_star.Mass,m_star.SNR));
             }
 
             Refresh();
             Update();
         }
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
     }
 }
 
@@ -380,7 +561,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         double LockX = m_lockPosition.X;
         double LockY = m_lockPosition.Y;
         
-		if (m_state == STATE_SELECTED) {
+		if (m_state == STATE_SELECTED || IsPaused()) {
 
 			if (FoundStar)
 				dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
@@ -520,4 +701,49 @@ void GuiderOneStar::SaveStarFITS() {
 
 	}
 	fits_close_file(fptr,&status);
+}
+
+ConfigDialogPane *GuiderOneStar::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new GuiderOneStarConfigDialogPane(pParent, this);
+}
+
+GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWindow *pParent, GuiderOneStar *pGuider)
+    : GuiderConfigDialogPane(pParent, pGuider)
+{
+    int width;
+
+    m_pGuiderOneStar = pGuider;
+
+    width = StringWidth(_T("0000"));
+	m_pSearchRegion = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 10, 50, 15, _T("Search"));
+    DoAdd(_T("Search region (pixels)"), m_pSearchRegion,
+	      _T("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
+
+    width = StringWidth(_T("0000"));
+	m_pMassChangeThreshold = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("MassChangeThreshold"));
+    m_pMassChangeThreshold->SetDigits(1);
+	DoAdd(_T("Star mass tolerance"), m_pMassChangeThreshold,
+	      _T("Tolerance for change in star mass b/n frames. Default = 0.3 (0.1-1.0)"));
+}
+
+GuiderOneStar::GuiderOneStarConfigDialogPane::~GuiderOneStarConfigDialogPane(void)
+{
+}
+
+void GuiderOneStar::GuiderOneStarConfigDialogPane::LoadValues(void)
+{
+    GuiderConfigDialogPane::LoadValues();
+    m_pMassChangeThreshold->SetValue(100.0*m_pGuiderOneStar->GetMassChangeThreshold());
+    m_pSearchRegion->SetValue(m_pGuiderOneStar->GetSearchRegion());
+}
+
+void GuiderOneStar::GuiderOneStarConfigDialogPane::UnloadValues(void)
+{
+    m_pGuiderOneStar->SetMassChangeThreshold(m_pMassChangeThreshold->GetValue()/100.0);
+
+    m_pGuiderOneStar->SetSearchRegion(m_pSearchRegion->GetValue());
+    GuiderConfigDialogPane::UnloadValues();
 }

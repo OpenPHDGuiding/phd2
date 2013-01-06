@@ -116,8 +116,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MyFrame::OnOverlay(wxCommandEvent &evt) {
-	OverlayMode = evt.GetId() - MENU_XHAIR0;
-	pGuider->Refresh();
+	pGuider->SetOverlayMode(evt.GetId() - MENU_XHAIR0);
 }
 
 void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
@@ -256,7 +255,7 @@ void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event)) {
 		SetStatusText(_T("Still"),2);*/
 }
 
-void MyFrame::OnSelect(wxCommandEvent& WXUNUSED(event)) 
+void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) 
 {
     try
     {
@@ -268,122 +267,13 @@ void MyFrame::OnSelect(wxCommandEvent& WXUNUSED(event))
 
         assert(!CaptureActive);
 
-        if (pGuider->SetState(STATE_SELECTING))
-        {
-            throw ERROR_INFO("Unable to set state to STATE_SELECTING");
-        }
+        frame->StartCapturing();
 
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
     }
-#if 0
-	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-	wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_Debug_log") + _T(".txt")), _T("a+t"));
-	wxTextOutputStream debug (debugstr);
-
-	LoopFrameCount = 0;
-	looping = true;
-	Abort = 0;
-	CaptureActive = true;
-	int i=0;
-	bool debuglog = this->Menubar->IsChecked(MENU_DEBUG);
-	if (debuglog) {
-		wxDateTime now = wxDateTime::Now();
-//		debugfile->AddLine(wxString::Format("DEBUG PHD Guide %s  -- ",VERSION) + now.FormatDate() + now.FormatTime());
-		debug << _T("\n\nDEBUG PHD Guide ") << VERSION << _T(" ") <<  now.FormatDate() << _T(" ") <<  now.FormatTime() << endl;
-		debug << _T("Machine: ") << wxGetOsDescription() << _T(" ") << wxGetUserName() << endl;
-		debug << _T("Camera: ") << CurrentGuideCamera->Name << endl;
-		debug << _T("Dur: ") << ExpDur << _T(" NR: ") << GuideCameraPrefs::NR_mode << _T(" Dark: ") << CurrentGuideCamera->HaveDark << endl;
-		debug << _T("Looping entered\n");
-		debugstr.Sync();
-	}
-
-//	wxStatusBar *StatBar = GetStatusBar();
-	//wxColor DefaultColor = GetBackgroundColour();
-
-	while (!Abort) {
-		i++;
-	//	SetStatusText(wxString::Format("Frame %d %dms",i,ExpDur));
-		if (debuglog) { debug << _T("Capturing - "); debugstr.Sync(); }
-		try {
-            ExpDur = RequestedExposureDuration();
-			CurrentFullFrame.InitDate();
-			CurrentFullFrame.ImgExpDur = ExpDur;
-			if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
-				Abort = 1;
-				break;
-			}
-		}
-		catch (...) {
-			wxMessageBox(_T("Exception thrown during image capture - bailing"));
-			if (debuglog) { debug << _T("Camera threw an exception during capture\n"); debugstr.Sync(); }
-			Abort = 1;
-			break;
-		}
-		if (debuglog) { debug << _T("Done\n"); debugstr.Sync(); }
-		if (debuglog && GuideCameraPrefs::NR_mode) debug << _T("Calling NR - ");
-		if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
-			QuickLRecon(CurrentFullFrame);
-		else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
-			Median3(CurrentFullFrame);
-		if (debuglog && GuideCameraPrefs::NR_mode) { debug << _T("Done\n"); debugstr.Sync(); }
-
-		if (pGuider->GetState() == STATE_SELECTED) {  // May take this out
-			if (debuglog) { debug << _T("Finding star - "); debugstr.Sync(); }
-			FindStar(CurrentFullFrame); // track it
-			if (debuglog) { debug << _T("Done (") << FoundStar << _T(")\n"); debugstr.Sync(); }
-			if (FoundStar)
-				SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
-			else {
-				SetStatusText(_T("Star lost"));
-			}
-			this->Profile->UpdateData(CurrentFullFrame,StarX,StarY);
-			Guide_Button->Enable(FoundStar && pScope->IsConnected());
-		}
-		if (debuglog) { debug << _T("Calling display - "); debugstr.Sync(); }
-		pGuider->FullFrameToDisplay();
-		if (debuglog) { debug << _T("Done\n"); debugstr.Sync(); }
-		wxTheApp->Yield(true);
-		if (RandomMotionMode) {
-			GUIDE_DIRECTION dir;
-            
-            if (rand() % 2)
-                dir = EAST;
-            else
-                dir = WEST;
-			int dur = rand() % 1000;
-			SetStatusText(wxString::Format(_T("Random motion: %d %d"),dir,dur),1);
-			pScope->Guide(dir,dur);
-			if ((rand() % 5) == 0) {  // Occasional Dec
-                if (rand() % 2)
-                    dir = NORTH;
-                else
-                    dir = SOUTH;
-				dur = rand() % 1000;
-				SetStatusText(wxString::Format(_T("Random motion: %d %d"),dir,dur),1);
-				pScope->Guide(dir,dur);
-			}
-		}
-		++LoopFrameCount;
-	}
-	looping = false;
-	LoopFrameCount = 0;
-	if (debuglog) { debug << _T("Looping exited\n"); debugstr.Sync(); }
-	CaptureActive = false;
-	SetStatusText(_T(""));
-	if (Abort == 2) {
-		Abort = 0;
-		wxCommandEvent *evt = new wxCommandEvent(BUTTON_GUIDE, 100);
-		//wxPostEvent(wxTheApp,event);
-		OnGuide(*evt);
-	}
-	else{
-		Abort = 0;
-		pGuider->GetState() = STATE_NONE;
-	}
-#endif
 }
 
 /*
@@ -402,14 +292,18 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 {
     try
     {
-        usImage *pNextFullFrame = event.GetPayload<usImage *>();
+        Debug.Write("Processing an image\n");
 
+        usImage *pNextFullFrame = event.GetPayload<usImage *>();
+        
         if (event.GetInt())
         {
             delete pNextFullFrame;
 
             StopCapturing();
-            pGuider->SetState(STATE_UNINITIALIZED);
+            pGuider->ResetGuideState();
+
+            Debug.Write("OnExposureComplete(): Capture Error reported\n");
 
             throw ERROR_INFO("Error reported capturing image");
         }
@@ -418,33 +312,40 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         delete pCurrentFullFrame;
         pCurrentFullFrame = pNextFullFrame;
 
-        switch (pGuider->GetState())
-        {
-            case STATE_UNINITIALIZED:
-            case STATE_SELECTING:
-            case STATE_SELECTED:
-            case STATE_CALIBRATED:
-            case STATE_GUIDING:
-                pGuider->UpdateGuideState(pCurrentFullFrame, true);
-                // nothing else to do for these states
-                break;
-            case STATE_CALIBRATING:
-                pGuider->UpdateGuideState(pCurrentFullFrame, false);
-                pScope->UpdateCalibrationState(pGuider);
-                break;
-        }
+        pGuider->UpdateGuideState(pCurrentFullFrame, !CaptureActive);
+        
+        this->Profile->UpdateData(pCurrentFullFrame, pGuider->CurrentPosition().X, pGuider->CurrentPosition().Y);
 
-        // TODO: Implement Random motion if desired
-        //TODO: deal with pausing
+        if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING)
+        {
+			GUIDE_DIRECTION dir;
+            
+            if (rand() % 2)
+                dir = EAST;
+            else
+                dir = WEST;
+			int dur = rand() % 1000;
+            ScheduleGuide(dir, dur, wxString::Format(_T("Random motion: %d %d"),dir,dur));
+
+			if ((rand() % 5) == 0) {  // Occasional Dec
+                if (rand() % 2)
+                    dir = NORTH;
+                else
+                    dir = SOUTH;
+				dur = rand() % 1000;
+				pScope->Guide(dir,dur);
+                ScheduleGuide(dir, dur, wxString::Format(_T("Random motion: %d %d"),dir,dur));
+			}
+        }
         
         if (CaptureActive)
         {
             frame->ScheduleExposure(RequestedExposureDuration());
         }
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
     }
 }
 
@@ -457,152 +358,15 @@ void MyFrame::OnGuideComplete(wxThreadEvent& event)
             throw ERROR_INFO("Error reported guiding");
         }
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
     }
 }
-
-#if 0
-void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
-    double ExpDur = RequestedExposureDuration();
-
-	if (pGuider->GetState() > STATE_SELECTED) return;
-	if (!GuideCameraConnected) {
-		wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
-		return;
-	}
-	if (CaptureActive) return;  // Looping an exposure already
-	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-	wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_Debug_log") + _T(".txt")), _T("a+t"));
-	wxTextOutputStream debug (debugstr);
-	LoopFrameCount = 0;
-	looping = true;
-	Abort = 0;
-	CaptureActive = true;
-	int i=0;
-	SetStatusText (_T("Capturing"),0);
-	CurrentGuideCamera->InitCapture();
-	Loop_Button->Enable(false);
-	Guide_Button->Enable(false);
-	Cam_Button->Enable(false);
-	Scope_Button->Enable(false);
-	Brain_Button->Enable(false);
-	Dark_Button->Enable(false);
-
-	bool debuglog = this->Menubar->IsChecked(MENU_DEBUG);
-	if (debuglog) {
-		wxDateTime now = wxDateTime::Now();
-//		debugfile->AddLine(wxString::Format("DEBUG PHD Guide %s  -- ",VERSION) + now.FormatDate() + now.FormatTime());
-		debug << _T("\n\nDEBUG PHD Guide ") << VERSION << _T(" ") <<  now.FormatDate() << _T(" ") <<  now.FormatTime() << endl;
-		debug << _T("Machine: ") << wxGetOsDescription() << _T(" ") << wxGetUserName() << endl;
-		debug << _T("Camera: ") << CurrentGuideCamera->Name << endl;
-		debug << _T("Dur: ") << ExpDur << _T(" NR: ") << GuideCameraPrefs::NR_mode << _T(" Dark: ") << CurrentGuideCamera->HaveDark << endl;
-		debug << _T("Looping entered\n");
-		debugstr.Sync();
-	}
-
-//	wxStatusBar *StatBar = GetStatusBar();
-	//wxColor DefaultColor = GetBackgroundColour();
-
-	while (!Abort) {
-		i++;
-	//	SetStatusText(wxString::Format("Frame %d %dms",i,ExpDur));
-		while (Paused) {
-			wxMilliSleep(250);
-			wxTheApp->Yield();
-		}
-		if (debuglog) { debug << _T("Capturing - "); debugstr.Sync(); }
-		try {
-            ExpDur = RequestedExposureDuration();
-			CurrentFullFrame.InitDate();
-			CurrentFullFrame.ImgExpDur = ExpDur;
-			if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
-				Abort = 1;
-				break;
-			}
-		}
-		catch (...) {
-			wxMessageBox(_T("Exception thrown during image capture - bailing"));
-			if (debuglog) { debug << _T("Camera threw an exception during capture\n"); debugstr.Sync(); }
-			Abort = 1;
-			break;
-		}
-		if (debuglog) { debug << _T("Done\n"); debugstr.Sync(); }
-		if (debuglog && GuideCameraPrefs::NR_mode) debug << _T("Calling NR - ");
-		if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
-			QuickLRecon(CurrentFullFrame);
-		else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
-			Median3(CurrentFullFrame);
-		if (debuglog && GuideCameraPrefs::NR_mode) { debug << _T("Done\n"); debugstr.Sync(); }
-
-		if (pGuider->GetState() == STATE_SELECTED) {  // May take this out
-			if (debuglog) { debug << _T("Finding star - "); debugstr.Sync(); }
-			FindStar(CurrentFullFrame); // track it
-			if (debuglog) { debug << _T("Done (") << FoundStar << _T(")\n"); debugstr.Sync(); }
-			if (FoundStar)
-				SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
-			else {
-				SetStatusText(_T("Star lost"));
-			}
-			this->Profile->UpdateData(CurrentFullFrame,StarX,StarY);
-			Guide_Button->Enable(FoundStar && pScope->IsConnected());
-		}
-		if (debuglog) { debug << _T("Calling display - "); debugstr.Sync(); }
-		pGuider->FullFrameToDisplay();
-		if (debuglog) { debug << _T("Done\n"); debugstr.Sync(); }
-		wxTheApp->Yield(true);
-		if (RandomMotionMode) {
-			GUIDE_DIRECTION dir;
-            
-            if (rand() % 2)
-                dir = EAST;
-            else
-                dir = WEST;
-			int dur = rand() % 1000;
-			SetStatusText(wxString::Format(_T("Random motion: %d %d"),dir,dur),1);
-			pScope->Guide(dir,dur);
-			if ((rand() % 5) == 0) {  // Occasional Dec
-                if (rand() % 2)
-                    dir = NORTH;
-                else
-                    dir = SOUTH;
-				dur = rand() % 1000;
-				SetStatusText(wxString::Format(_T("Random motion: %d %d"),dir,dur),1);
-				pScope->Guide(dir,dur);
-			}
-		}
-		++LoopFrameCount;
-	}
-	looping = false;
-	LoopFrameCount = 0;
-	if (debuglog) { debug << _T("Looping exited\n"); debugstr.Sync(); }
-	Loop_Button->Enable(true);
-	Guide_Button->Enable(pScope->IsConnected());
-	Cam_Button->Enable(true);
-	Scope_Button->Enable(true);
-	Brain_Button->Enable(true);
-	Dark_Button->Enable(true);
-	CaptureActive = false;
-	SetStatusText(_T(""));
-	if (Abort == 2) {
-		Abort = 0;
-		wxCommandEvent *evt = new wxCommandEvent(BUTTON_GUIDE, 100);
-		//wxPostEvent(wxTheApp,event);
-		OnGuide(*evt);
-	}
-	else{
-		Abort = 0;
-		pGuider->GetState() = STATE_NONE;
-	}
-
-}
-#endif
 
 void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event)) 
 {
     StopCapturing();
-    UpdateButtonsStatus();
 }
 
 void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event)) {
@@ -758,30 +522,7 @@ bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))
 }
 
 void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {
-    //TODO: Fix this
-#if 0
-	int x,y;
-	bool WasPaused = Paused;
-	if (!CurrentFullFrame.NPixels) // Need to have an image
-		return;
-	if ((pGuider->GetState() == STATE_CALIBRATING) || (pGuider->GetState() == STATE_GUIDING_LOCKED))
-		return;
-	Paused = true;
-	AutoFindStar(CurrentFullFrame,x,y);
-	Paused = false;
-	if ((x+y) == 0) // if it failed to find a star x=y=0
-		return;
-	StarX=x;
-	StarY=y;
-	dX = dY = 0.0;
-	pGuider->SetState(STATE_SELECTED);
-	FindStar(CurrentFullFrame);
-	LockX = StarX;
-	LockY = StarY;
-	SetStatusText(wxString::Format(_T("Star %.2f %.2f"),StarX,StarY));
-	pGuider->Refresh();
-	Paused = WasPaused;
-#endif
+    frame->pGuider->AutoSelect(pCurrentFullFrame);
 }
 
 #ifndef __WXGTK__
@@ -806,38 +547,16 @@ void MyFrame::OnDonateMenu(wxCommandEvent &evt) {
 #endif
 
 class AdvancedDialog: public wxDialog {
+    ConfigDialogPane *m_pFramePane;
+    ConfigDialogPane *m_pMountPane;
+    ConfigDialogPane *m_pCameraPane;
+    ConfigDialogPane *m_pGuiderPane;
 public:
-	wxSpinCtrl *RA_Aggr_Ctrl;
-	wxSpinCtrl *RA_Hyst_Ctrl;
-//	wxSpinCtrl *Dec_Aggr_Ctrl;
-	wxChoice	*Dec_Mode;
-	wxChoice	*Dec_AlgoCtrl;
-	wxTextCtrl *DecSlopeWeight_Ctrl;
-	wxCheckBox *Cal_Box;
-	wxCheckBox *Subframe_Box;
-//	wxSpinCtrl	*Dec_Backlash_Ctrl;
-	wxSpinCtrl	*Cal_Dur_Ctrl;
-	wxSpinCtrl *Time_Lapse_Ctrl;
-	wxSpinCtrl *Gain_Ctrl;
-	wxSpinCtrl *SearchRegion_Ctrl;
-	wxTextCtrl *MinMotion_Ctrl;
-	wxTextCtrl *MassDelta_Ctrl;
-	wxTextCtrl *DitherScale_Ctrl;
-	wxSpinCtrl *MaxDecDur_Ctrl;
-	wxSpinCtrl *MaxRADur_Ctrl;
-	wxChoice	*NR_Ctrl;
-//	wxButton	*Setup_Button;
-	wxCheckBox *Log_Box;
-	wxCheckBox *Disable_Box;
-	wxCheckBox *RADither_Box;
-//	wxButton	*OK_Button;
-//	wxButton	*Cancel_Button;
-	wxSpinCtrl	*Delay_Ctrl;
-	wxChoice	*Port_Choice;
-	wxStaticText *Delay_Text, *Port_Text;
-
 	AdvancedDialog();
 	~AdvancedDialog(void) {};
+
+    void LoadValues(void);
+    void UnloadValues(void);
 private:
 	void OnSetupCamera(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
@@ -850,193 +569,99 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(210,350),
 wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
 #endif
 {
-	if (AdvDlg_fontsize > 0)  // From Open-PHD -- not sure the point of this line
-		SetFont(wxFont(AdvDlg_fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	wxFlexGridSizer *sizer = new wxFlexGridSizer(4);
+    /*
+     * the advanced dialog is made up of a number of "on the fly" generate slices that configure different things.
+     *
+     * pTopLevelSizer is a top level Box Sizer in wxVERTICAL mode that contains a pair of sizers, 
+     * pConfigSizer to hold all the configuration panes and an unamed Button sizer and the OK and CANCEL buttons.
+     *
+     * pConfigSizer is a Horizontal Box Sizer which contains two Vertical Box sizers, one
+     * for each column of panes
+     *
+     * +------------------------------------+------------------------------------+
+     * |    General (Frame) Settings        |   Guider Base Class Settings       |
+     * +------------------------------------|                                    |
+     * |    Mount  Base Class Settings      |   Ra Guide Algorithm Settings      |
+     * |                                    |                                    |
+     * |    Mount  Sub Class Settings       |   Dec Guide Alogrithm Settings     |
+     * +------------------------------------|                                    |
+     * |    Camera Base Class Settings      |   Guider Sub Class Settings        |
+     * |                                    |------------------------------------+
+     * |    Camera Sub  Calss Settings      |                                    |
+     * +------------------------------------|                                    |
+     * |    Camera Base Class Settings      |                                    |
+     * +-------------------------------------------------------------------------|
+     * |                              OK and Cancel Buttons                      |
+     * +-------------------------------------------------------------------------+
+     *
+     */
 
-	wxStaticText *RAA_Text = new wxStaticText(this,wxID_ANY,_T("RA Aggressiveness"),wxPoint(-1,-1),wxSize(-1,-1));
-	RA_Aggr_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,120,100,_T("RA_Aggr"));
-	RA_Aggr_Ctrl->SetToolTip(_T("What percent of the measured error should be applied? Default = 100%, adjust if responding too much or too slowly?"));
-	sizer->Add(RAA_Text,wxSizerFlags().Expand().Proportion(2).Border(wxALL,3));
-	sizer->Add(RA_Aggr_Ctrl,wxSizerFlags().Border(wxALL,3));
+    // build all the empty sizer
+    wxBoxSizer *pConfigSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *pLeftSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *pRightSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxStaticText *DM_Text = new wxStaticText(this,wxID_ANY,_T("Dec guide mode"),wxPoint(-1,-1),wxSize(-1,-1));
-	wxString dec_choices[] = {
-		_T("Off"),_T("Auto"),_T("North"),_T("South")
-	};
-	Dec_Mode= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(dec_choices), dec_choices );
-	Dec_Mode->SetToolTip(_T("Guide in declination as well?"));
-	sizer->Add(DM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Dec_Mode,wxSizerFlags().Proportion(1).Border(wxALL,3));
+    pConfigSizer->Add(pLeftSizer, 0, wxALIGN_CENTER | wxGROW);
+    pConfigSizer->Add(pRightSizer, 0, wxALIGN_CENTER | wxGROW);
 
-	wxStaticText *RAH_Text =new wxStaticText(this,wxID_ANY,_T("RA Hysteresis"),wxPoint(-1,-1),wxSize(-1,-1));
-	RA_Hyst_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,50,10,_T("RA_Hyst"));
-	RA_Hyst_Ctrl->SetToolTip(_T("How much history of previous guide pulses should be applied\nDefault = 10%, increase to smooth out guiding commands"));
-	sizer->Add(RAH_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(RA_Hyst_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+    wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
+    pTopLevelSizer->Add(pConfigSizer, 0, wxALIGN_CENTER | wxGROW);
+    pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), 0, wxALIGN_CENTER | wxGROW);
 
-	wxStaticText *DAlgo_Text = new wxStaticText(this,wxID_ANY,_T("Dec Algorithm"),wxPoint(-1,-1),wxSize(-1,-1));
-	wxString decalgo_choices[] = {
-		_T("Lowpass filter"),_T("Resist switching")
-	};	// ,_T("Lowpass-2")
-	Dec_AlgoCtrl= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(decalgo_choices), decalgo_choices );
-	Dec_AlgoCtrl->SetToolTip(_T("Declination guide algorithm"));
-	sizer->Add(DAlgo_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Dec_AlgoCtrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+    // Build the left column of panes
 
-	wxStaticText *MRAD_Text =new wxStaticText(this,wxID_ANY,_T("Max RA duration (ms)"),wxPoint(-1,-1),wxSize(-1,-1));
-	MaxRADur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,2000,1000,_T("MaxRA_Dur"));
-	MaxRADur_Ctrl->SetToolTip(_T("Longest length of pulse to send in RA\nDefault = 1000 ms. "));
-	sizer->Add(MRAD_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(MaxRADur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+    m_pFramePane = frame->GetConfigDialogPane(this);
+    pLeftSizer->Add(m_pFramePane, 0, wxALIGN_CENTER | wxGROW);
 
-#ifdef PREFS
-	wxStaticText *DSR_Text = new wxStaticText(this,wxID_ANY,_T("Dec slope weight"));
-	DecSlopeWeight_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),Dec_slopeweight),wxPoint(-1,-1),wxSize(75,-1));
-	DecSlopeWeight_Ctrl->SetToolTip(_T("Weighting of slope parameter in lowpass auto-dec"));
-	sizer->Add(DSR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(DecSlopeWeight_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-#endif
+    m_pMountPane = pScope->GetConfigDialogPane(this);
+    pLeftSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
 
-	wxStaticText *SR_Text = new wxStaticText(this,wxID_ANY,_T("Search region (pixels)"));
-	SearchRegion_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,10,50,15,_T("Search"));
-	SearchRegion_Ctrl->SetToolTip(_T("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
-	sizer->Add(SR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(SearchRegion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+    if (CurrentGuideCamera)
+    {
+        m_pCameraPane = CurrentGuideCamera->GetConfigDialogPane(this);
+        pLeftSizer->Add(m_pCameraPane, 0, wxALIGN_CENTER | wxGROW);
+    }
+    else
+    {
+        m_pCameraPane=NULL;
+        wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Settings")), wxVERTICAL);
+        wxStaticText *pText = new wxStaticText(this, wxID_ANY, _T("No Camera Connected"),wxPoint(-1,-1),wxSize(-1,-1));
+        pBox->Add(pText);
+        pLeftSizer->Add(pBox, 0, wxALIGN_CENTER | wxGROW);
+    }
 
-	wxStaticText *MDD_Text =new wxStaticText(this,wxID_ANY,_T("Max Dec duration (ms)"),wxPoint(-1,-1),wxSize(-1,-1));
-	MaxDecDur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,2000,150,_T("MaxDec_Dur"));
-	MaxDecDur_Ctrl->SetToolTip(_T("Longest length of pulse to send in declination\nDefault = 100 ms.  Increase if drift is fast."));
-	sizer->Add(MDD_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(MaxDecDur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+    // Build the right column of panes
 
-#ifdef PREFS
-	wxStaticText *MM_Text = new wxStaticText(this,wxID_ANY,_T("Min. motion (pixels)"));
-	MinMotion_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),MinMotion),wxPoint(-1,-1),wxSize(75,-1));
-	MinMotion_Ctrl->SetToolTip(_T("How many pixels (fractional pixels) must the star move to trigger a guide pulse? Default = 0.15"));
-	sizer->Add(MM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(MinMotion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-#endif
+    m_pGuiderPane = frame->pGuider->GetConfigDialogPane(this);
+    pRightSizer->Add(m_pGuiderPane, 0, wxALIGN_CENTER | wxGROW);
 
-	wxStaticText *MDelta_Text = new wxStaticText(this,wxID_ANY,_T("Star mass tolerance"));
-	MassDelta_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),StarMassChangeRejectThreshold),wxPoint(-1,-1),wxSize(75,-1));
-	MassDelta_Ctrl->SetToolTip(_T("Tolerance for change in star mass b/n frames. Default = 0.3 (0.1-1.0)"));
-	sizer->Add(MDelta_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(MassDelta_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	wxStaticText *CS_Text = new wxStaticText(this,wxID_ANY,_T("Calibration step (ms)"));
-	Cal_Dur_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,10000,1000,_T("Cal_Dur"));
-	Cal_Dur_Ctrl->SetToolTip(_T("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"));
-	sizer->Add(CS_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Cal_Dur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	wxStaticText *NR_Text = new wxStaticText(this,wxID_ANY,_T("Noise Reduction"));
-	wxString nralgo_choices[] = {
-		_T("None"),_T("2x2 mean"),_T("3x3 median")
-	};
-	NR_Ctrl= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(nralgo_choices), nralgo_choices );
-	NR_Ctrl->SetToolTip(_T("Technique to reduce noise in images"));
-	sizer->Add(NR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(NR_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	wxStaticText *TL_Text = new wxStaticText(this,wxID_ANY,_T("Time lapse (ms)"));
-	Time_Lapse_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,10000,0,_T("Time_lapse"));
-	Time_Lapse_Ctrl->SetToolTip(_T("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
-	sizer->Add(TL_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Time_Lapse_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	wxStaticText *CG_Text = new wxStaticText(this,wxID_ANY,_T("Camera gain (%)"));
-	Gain_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,100,100,_T("Cam_Gain"));
-	Gain_Ctrl->SetToolTip(_T("Camera gain boost? Default = 95%, lower if you experience noise or wish to guide on a very bright star). Not available on all cameras."));
-	Gain_Ctrl->Enable(false);
-	sizer->Add(CG_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Gain_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+    SetSizerAndFit(pTopLevelSizer);
+}
 
 
-//	Setup_Button = new wxButton(this,wxID_PROPERTIES,_T("Camera Setup"),wxPoint(100,217),wxSize(-1,-1));
-//	new wxStaticText(this,wxID_ANY,_T("Dec Aggressiveness"),wxPoint(10,102),wxSize(-1,-1));
-//	Dec_Aggr_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(120,100),wxSize(60,-1),wxSP_ARROW_KEYS,0,200,100,_T("Dec_Aggr"));
+void AdvancedDialog::LoadValues(void)
+{
+    m_pFramePane->LoadValues();
+    m_pMountPane->LoadValues();
+    m_pGuiderPane->LoadValues();
 
-	//new wxStaticText(this,wxID_ANY,_T("Dec Backlash"),wxPoint(10,102),wxSize(-1,-1));
-	//Dec_Backlash_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo3"),wxPoint(120,100),wxSize(60,-1),wxSP_ARROW_KEYS,0,3000,0,_T("Dec_Backlash"));
+    if (m_pCameraPane)
+    {
+        m_pCameraPane->LoadValues();
+    }
+}
 
-	wxString port_choices[] = {
-		_T("Port 378"),_T("Port 3BC"),_T("Port 278"),_T("COM1"),_T("COM2"),_T("COM3"),_T("COM4"),
-		_T("COM5"),_T("COM6"),_T("COM7"),_T("COM8"),_T("COM9"),_T("COM10"),_T("COM11"),_T("COM12"),
-		_T("COM13"),_T("COM14"),_T("COM15"),_T("COM16"),
-	};
-	Port_Choice= new wxChoice(this,wxID_ANY,wxPoint(-1,-1),wxSize(75,-1),WXSIZEOF(port_choices), port_choices );
-	Port_Choice->SetToolTip(_T("Port number for long-exposure control"));
-	Port_Choice->SetSelection(0);
-//	delete [] port_choices;
+void AdvancedDialog::UnloadValues(void)
+{
+    m_pFramePane->UnloadValues();
+    m_pMountPane->UnloadValues();
+    m_pGuiderPane->UnloadValues();
 
-	//Port_Choice->Enable(false);
-	Port_Text = new wxStaticText(this,wxID_ANY,_T("LE Port"),wxPoint(-1,1),wxSize(-1,-1));
-	sizer->Add(Port_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Port_Choice,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-
-	Delay_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T(""),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,0,50,0,_T("Delay"));
-	Delay_Ctrl->SetToolTip(_T("Adjust if you get dropped frames"));
-	Delay_Ctrl->Enable(false);
-	Delay_Text = new wxStaticText(this,wxID_ANY,_T("LE Read Delay"),wxPoint(-1,-1),wxSize(-1,-1));
-	sizer->Add(Delay_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(Delay_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	Cal_Box = new wxCheckBox(this,wxID_ANY,_T("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
-	Cal_Box->SetToolTip(_T("Check to clear any previous calibration and force PHD to recalibrate"));
-	wxStaticText *TmpText = new wxStaticText(this,wxID_ANY,_T(""));
-	sizer->Add(Cal_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(TmpText,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	wxStaticText *MDitherScale_Text = new wxStaticText(this,wxID_ANY,_T("Dither scale"));
-	DitherScale_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),DitherScaleFactor),wxPoint(-1,-1),wxSize(75,-1));
-	DitherScale_Ctrl->SetToolTip(_T("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
-	sizer->Add(MDitherScale_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(DitherScale_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	Log_Box = new wxCheckBox(this,wxID_ANY,_T("Log info"),wxPoint(-1,-1),wxSize(-1,-1));
-	Log_Box->SetToolTip(_T("Save guide commands and info to a file?"));
-	Log_Box->Enable(true);
-	wxStaticText *TmpText2 = new wxStaticText(this,wxID_ANY,_T(""));
-	sizer->Add(Log_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(TmpText2,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	RADither_Box = new wxCheckBox(this,wxID_ANY,_T("RA-only dither"),wxPoint(-1,-1),wxSize(-1,-1));
-	RADither_Box->SetToolTip(_T("Constrain dither to RA only?"));
-	RADither_Box->Enable(true);
-	//wxStaticText *TmpText4 = new wxStaticText(this,wxID_ANY,_T(""));
-	sizer->Add(RADither_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->AddStretchSpacer(); //(TmpText2,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	Disable_Box = new wxCheckBox(this,wxID_ANY,_T("Disable guide output"),wxPoint(-1,-1),wxSize(-1,-1));
-	Disable_Box->SetToolTip(_T("Don't actually send guide commands, just log"));
-	Disable_Box->Enable(true);
-	wxStaticText *TmpText3 = new wxStaticText(this,wxID_ANY,_T(""));
-	sizer->Add(Disable_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(TmpText3,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	Subframe_Box = new wxCheckBox(this,wxID_ANY,_T("Use subframes"),wxPoint(-1,-1),wxSize(75,-1));
-	Subframe_Box->SetToolTip(_T("Check to only download subframes (ROIs) if your camera supports it"));
-	wxStaticText *TmpText4 = new wxStaticText(this,wxID_ANY,_T(""));
-	sizer->Add(Subframe_Box,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
-	sizer->Add(TmpText4,wxSizerFlags().Proportion(1).Border(wxALL,3));
-
-	wxBoxSizer *sizer2 = new wxBoxSizer(wxVERTICAL);
-	sizer2->Add(sizer);
-	wxSizer *button_sizer = CreateButtonSizer(wxOK | wxCANCEL);
-	sizer2->Add(button_sizer,wxSizerFlags().Center().Border(wxALL,8));
-
-/*	OK_Button = new wxButton(this, wxID_OK, _T("&Done"),wxPoint(15,290),wxSize(-1,-1));
-	Cancel_Button = new wxButton(this, wxID_CANCEL, _T("&Cancel"),wxPoint(110,290),wxSize(-1,-1));
-
-	sizer->Add(OK_Button,wxSizerFlags().Expand().Border(wxALL,6));
-	sizer->AddStretchSpacer(1);
-	sizer->Add(Cancel_Button,wxSizerFlags().Border(wxALL,6));
-*/
-	SetSizer(sizer2);
-	sizer2->SetSizeHints(this);
- }
+    if (m_pCameraPane)
+    {
+        m_pCameraPane->UnloadValues();
+    }
+}
 
 BEGIN_EVENT_TABLE(AdvancedDialog, wxDialog)
 	EVT_BUTTON(wxID_PROPERTIES,AdvancedDialog::OnSetupCamera)
@@ -1065,195 +690,12 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	if (CaptureActive) return;  // Looping an exposure already
 	AdvancedDialog* dlog = new AdvancedDialog();
 
-#ifdef PREFS
-	dlog->RA_Aggr_Ctrl->SetValue((int) (RA_aggr * 100.0));
-//	dlog->Dec_Aggr_Ctrl->SetValue((int) (Dec_aggr * 100.0));
-	dlog->RA_Hyst_Ctrl->SetValue((int) (RA_hysteresis * 100.0));
-	//dlog->UseDec_Box->SetValue(Dec_guide);
-	dlog->Cal_Dur_Ctrl->SetValue(Cal_duration);
-	dlog->MinMotion_Ctrl->SetValue(wxString::Format(_T("%.2f"),MinMotion));
-	dlog->MassDelta_Ctrl->SetValue(wxString::Format(_T("%.2f"),StarMassChangeRejectThreshold));
-	dlog->DecSlopeWeight_Ctrl->SetValue(wxString::Format(_T("%.2f"),Dec_slopeweight));
-	dlog->SearchRegion_Ctrl->SetValue(SearchRegion);
-	dlog->Time_Lapse_Ctrl->SetValue(Time_lapse);
-	dlog->Gain_Ctrl->SetValue(CurrentGuideCamera->GuideCameraGain);
-	dlog->Log_Box->SetValue(Log_Data);
-	dlog->RADither_Box->SetValue(DitherRAOnly);
-	dlog->DitherScale_Ctrl->SetValue(wxString::Format(_T("%.2f"),DitherScaleFactor));
-	dlog->Disable_Box->SetValue(DisableGuideOutput);
-	dlog->Dec_Mode->SetSelection(Dec_guide);
-	dlog->MaxDecDur_Ctrl->SetValue(Max_Dec_Dur);
-	dlog->MaxRADur_Ctrl->SetValue(Max_RA_Dur);
-	dlog->Dec_AlgoCtrl->SetSelection(Dec_algo);
-	dlog->NR_Ctrl->SetSelection(GuideCameraPrefs::NR_mode);
-	if (pScope->IsCalibrated()) dlog->Cal_Box->SetValue(false);
-	else dlog->Cal_Box->SetValue(true);
-	dlog->Subframe_Box->SetValue(GuideCameraPrefs::UseSubframes);
-#endif
+    dlog->LoadValues();
 
-	// Turn off things that vary by camera by default
-	dlog->Gain_Ctrl->Enable(false);
-//	dlog->Setup_Button->Enable(false);
-
-#if defined (LE_PARALLEL_CAMERA)
-	switch (Camera_LEwebcamParallel.Port) {
-		case 0x3BC:
-			dlog->Port_Choice->SetSelection(1);
-			break;
-		case 0x278:
-			dlog->Port_Choice->SetSelection(2);
-			break;
-		case 1:  // COM1
-			dlog->Port_Choice->SetSelection(3);
-			break;
-		case 2:  // COM2
-			dlog->Port_Choice->SetSelection(4);
-			break;
-		case 3:  // COM3
-			dlog->Port_Choice->SetSelection(5);
-			break;
-		case 4:  // COM4
-			dlog->Port_Choice->SetSelection(6);
-			break;
-		case 5:  // COM5
-			dlog->Port_Choice->SetSelection(7);
-			break;
-		case 6:  // COM6
-			dlog->Port_Choice->SetSelection(8);
-			break;
-		case 7:  // COM7
-			dlog->Port_Choice->SetSelection(9);
-			break;
-		case 8:  // COM8
-			dlog->Port_Choice->SetSelection(10);
-			break;
-		case 9:  // COM9
-			dlog->Port_Choice->SetSelection(11);
-			break;
-		case 10:  // COM10
-			dlog->Port_Choice->SetSelection(12);
-			break;
-		case 11:  // COM11
-			dlog->Port_Choice->SetSelection(13);
-			break;
-		case 12:  // COM12
-			dlog->Port_Choice->SetSelection(14);
-			break;
-		case 13:  // COM13
-			dlog->Port_Choice->SetSelection(15);
-			break;
-		case 14:  // COM14
-			dlog->Port_Choice->SetSelection(16);
-			break;
-		case 15:  // COM15
-			dlog->Port_Choice->SetSelection(17);
-			break;
-		case 16:  // COM16
-			dlog->Port_Choice->SetSelection(18);
-			break;
-		default:
-			dlog->Port_Choice->SetSelection(0);
-			break;
-	}
-#endif
-
-
-//	if ((CurrentGuideCamera == &Camera_WDM) || (CurrentGuideCamera == &Camera_VFW)){
-	if (GuideCameraConnected) { // Take care of specifics based on current camera
-		if (CurrentGuideCamera->HasGainControl)
-			dlog->Gain_Ctrl->Enable(true);
-//		if (CurrentGuideCamera->HasPropertyDialog)
-//			dlog->Setup_Button->Enable(true);
-
-		if (CurrentGuideCamera->HasDelayParam) {
-			dlog->Delay_Ctrl->Enable(true);
-			dlog->Delay_Ctrl->SetValue(CurrentGuideCamera->Delay);
-	//		dlog->Delay_Text->Enable(true);
-		}
-	//	if (CurrentGuideCamera->HasPortNum) {
-
-		//	dlog->Port_Choice->Enable(true);
-	//	}
-	}
-//	dlog->Dec_Backlash_Ctrl->SetValue((int) Dec_backlash);
-
-//	dlog->UseDec_Box->Enable(false);
-//	dlog->Dec_Aggr_Ctrl->Enable(false);
-//	dlog->Dec_Backlash_Ctrl->Enable(false);
-
-	if (dlog->ShowModal() != wxID_OK)  // Decided to cancel
-		return;
-	if (dlog->Cal_Box->GetValue()) pScope->ClearCalibration(); // clear calibration
-#ifdef PREFS
-	if (!Dec_guide && dlog->Dec_Mode->GetSelection()) pScope->ClearCalibration(); // added dec guiding -- recal
-#endif
-	if (!pScope->IsCalibrated()) SetStatusText(_T("No cal"),5);
-
-#ifdef PREFS
-	RA_aggr = (double) dlog->RA_Aggr_Ctrl->GetValue() / 100.0;
-//	Dec_aggr = (double) dlog->Dec_Aggr_Ctrl->GetValue() / 100.0;
-	RA_hysteresis = (double) dlog->RA_Hyst_Ctrl->GetValue() / 100.0;
-	Cal_duration = dlog->Cal_Dur_Ctrl->GetValue();
-	SearchRegion = dlog->SearchRegion_Ctrl->GetValue();
-	dlog->MinMotion_Ctrl->GetValue().ToDouble(&MinMotion);
-	if (MinMotion < 0.001) MinMotion = 0.0;
-#endif
-	dlog->MassDelta_Ctrl->GetValue().ToDouble(&StarMassChangeRejectThreshold);
-	if (StarMassChangeRejectThreshold < 0.1) StarMassChangeRejectThreshold = 0.1;
-	else if (StarMassChangeRejectThreshold > 1.0) StarMassChangeRejectThreshold = 1.0;
-	dlog->DitherScale_Ctrl->GetValue().ToDouble(&DitherScaleFactor);
-	if (DitherScaleFactor < 0.01) DitherScaleFactor = 0.01;
-	else if (DitherScaleFactor > 100.0) DitherScaleFactor = 100.0;
-#ifdef PREFS
-	Dec_guide = dlog->Dec_Mode->GetSelection();
-	Dec_algo = dlog->Dec_AlgoCtrl->GetSelection();
-	dlog->DecSlopeWeight_Ctrl->GetValue().ToDouble(&Dec_slopeweight);
-	Max_Dec_Dur = dlog->MaxDecDur_Ctrl->GetValue();
-	Max_RA_Dur = dlog->MaxRADur_Ctrl->GetValue();
-	Time_lapse = dlog->Time_Lapse_Ctrl->GetValue();
-    GuideCameraPrefs::GuideCameraGain = dlog->Gain_Ctrl->GetValue();
-	GuideCameraPrefs::NR_mode = dlog->NR_Ctrl->GetSelection();
-	Log_Data = dlog->Log_Box->GetValue();
-	DitherRAOnly = dlog->RADither_Box->GetValue();
-	DisableGuideOutput = dlog->Disable_Box->GetValue();
-#endif
-    GuideCameraPrefs::UseSubframes = dlog->Subframe_Box->GetValue();
-
-	if (CurrentGuideCamera && CurrentGuideCamera->HasPortNum) {
-		switch (dlog->Port_Choice->GetSelection()) {
-			case 0:
-				CurrentGuideCamera->Port = 0x378; break;
-			case 1:
-				CurrentGuideCamera->Port = 0x3BC; break;
-			case 2:
-				CurrentGuideCamera->Port = 0x278; break;
-			case 3: CurrentGuideCamera->Port = 1; break;
-			case 4: CurrentGuideCamera->Port = 2; break;
-			case 5: CurrentGuideCamera->Port = 3; break;
-			case 6: CurrentGuideCamera->Port = 4; break;
-		}
-	}
-#if defined (LE_PARALLEL_CAMERA)
-	else {
-		switch (dlog->Port_Choice->GetSelection()) {
-			case 0:
-				Camera_LEwebcamParallel.Port = 0x378; break;
-			case 1:
-				Camera_LEwebcamParallel.Port = 0x3BC; break;
-			case 2:
-				Camera_LEwebcamParallel.Port = 0x278; break;
-			case 3: Camera_LEwebcamParallel.Port = 1; break;
-			case 4: Camera_LEwebcamParallel.Port = 2; break;
-			case 5: Camera_LEwebcamParallel.Port = 3; break;
-			case 6: Camera_LEwebcamParallel.Port = 4; break;
-		}
-	}
-#endif
-	if (CurrentGuideCamera && CurrentGuideCamera->HasDelayParam) {
-		CurrentGuideCamera->Delay = dlog->Delay_Ctrl->GetValue();
-	}
-
-#ifdef PREFS
+	if (dlog->ShowModal() == wxID_OK) 
+    {
+        dlog->UnloadValues();
+#ifdef BRET_TODO
 	frame->GraphLog->RAA_Ctrl->SetValue((int) (RA_aggr * 100));
 	frame->GraphLog->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
 #if ((wxMAJOR_VERSION > 2) || (wxMINOR_VERSION > 8))
@@ -1261,9 +703,8 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 #endif
 	frame->GraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
 	frame->GraphLog->DM_Ctrl->SetSelection(Dec_guide);
-#endif
-	
-	//Dec_backlash = (double) dlog->Dec_Backlash_Ctrl->GetValue();
+#endif // BRET_TODO
+    }
 }
 
 
@@ -1309,22 +750,20 @@ END_EVENT_TABLE()
 void TestGuideDialog::OnButton(wxCommandEvent &evt) {
 //	if ((frame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
 	if (!(pScope->IsConnected())) return;
-#ifdef BRET
 	switch (evt.GetId()) {
 		case MGUIDE_N:
-			pScope->Guide(NORTH,Cal_duration);
+			pScope->Guide(NORTH, pScope->GetCalibrationDuration());
 			break;
 		case MGUIDE_S:
-			pScope->Guide(SOUTH,Cal_duration);
+			pScope->Guide(SOUTH, pScope->GetCalibrationDuration());
 			break;
 		case MGUIDE_E:
-			pScope->Guide(EAST,Cal_duration);
+			pScope->Guide(EAST, pScope->GetCalibrationDuration());
 			break;
 		case MGUIDE_W:
-			pScope->Guide(WEST,Cal_duration);
+			pScope->Guide(WEST, pScope->GetCalibrationDuration());
 			break;
 	}
-#endif
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
@@ -1332,5 +771,3 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
 	TestGuideDialog* dlog = new TestGuideDialog();
 	dlog->Show();
 }
-
-

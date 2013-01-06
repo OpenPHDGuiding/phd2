@@ -66,9 +66,8 @@ enum {
 };
 
 void MyFrame::OnServerMenu(wxCommandEvent &evt) {
-	ServerMode = evt.IsChecked();
-	StartServer(ServerMode);
-
+	SetServerMode(evt.IsChecked());
+	StartServer(GetServerMode());
 }
 
 bool MyFrame::StartServer(bool state) {
@@ -139,7 +138,6 @@ void MyFrame::OnServerEvent(wxSocketEvent& event) {
 
 void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 	wxSocketBase *sock = event.GetSocket();
-    GUIDER_STATE origState = STATE_UNINITIALIZED;
 	if (SocketServer == NULL) return;
 //	sock = SocketServer;
 	// First, print a message
@@ -166,12 +164,12 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 			switch (c) {
 				case MSG_PAUSE: 
 				case 'p':
-                    pGuider->Pause();
+                    pGuider->SetPaused(true);
 					wxLogStatus(_T("Paused"));
 					break;
 				case MSG_RESUME:
 				case 'r':
-                    pGuider->Unpause();
+                    pGuider->SetPaused(false);
 					wxLogStatus (_T("Resumed"));
 					break;
 				case MSG_MOVE1:  // +/- 0.5
@@ -191,20 +189,19 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 						size = 4.0;
 					else if (c==MSG_MOVE5)
 						size = 5.0;
-					size = size * DitherScaleFactor;
+					size = size * m_ditherScaleFactor;
 					rx = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
 					ry = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
-					if (DitherRAOnly) {
+					if (m_ditherRaOnly) {
 						if (fabs(tan(pScope->RaAngle())) > 1) 
 							rx = ry / tan(pScope->RaAngle());
 						else	
 							ry = tan(pScope->RaAngle()) * rx;
 					}
-                    //TODO: Bret fix this
-#if 0
-					LockX = LockX + rx;
-					LockY = LockY + ry;
-#endif
+
+                    pGuider->SetLockPosition(pGuider->LockPosition().Y + rx, 
+                                             pGuider->LockPosition().Y + ry);
+
 					wxLogStatus(_T("Moving by %.2f,%.2f"),rx,ry);
                     rval = RequestedExposureDuration() / 1000;
 					if (rval < 1)
@@ -223,67 +220,35 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					break;
 				case MSG_AUTOFINDSTAR:
 //				case 'f':
-                    //TODO: Bret fix this
-#if 0
-					wxCommandEvent *tmp_evt;
-					tmp_evt = new wxCommandEvent(0,wxID_EXECUTE);
-					origState = pGuider->GetState(); // save state going in
-					pGuider->SetState(STATE_UNINITIALIZED);
-					OnAutoStar(*tmp_evt);
-					if (StarX + StarY)  // found a star, so reset the state
-					{
-						if( origState == STATE_UNINITIALIZED )
-							pGuider->SetState(STATE_SELECTED);
-						else
-							pGuider->SetState(origState);
-						rval = 1;
-					}
-					delete tmp_evt;
-#endif
+                    frame->pGuider->AutoSelect(pCurrentFullFrame);
 					break;
 				case MSG_SETLOCKPOSITION:
                 case 's':
-                    //TODO: Bret fix this
-#if 0
                     // Sets LockX and LockY to be user-specified
                     unsigned short x,y;
-                    Paused = true;
                     sock->Read(&x, 2);
                     sock->Read(&y, 2);
-                    wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
                     sock->Discard();  // Clean out anything else
-                    StarX=x;
-                    StarY=y;
-                    dX = dY = 0.0;
-                    pGuider->SetState(STATE_SELECTED);
-                    FindStar(CurrentFullFrame);
-                    LockX = StarX;
-                    LockY = StarY;
-                    Paused = false;
-#endif
+
+                    if (frame->pGuider->SetLockPosition(x,y))
+                    {
+                        wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
+                    }
 					break;
 				case MSG_FLIPRACAL:
 					{
 						wxCommandEvent *tmp_evt;
 						tmp_evt = new wxCommandEvent(0,wxID_EXECUTE);
-						origState = pGuider->GetState(); // save state going in
-						pGuider->SetState(STATE_UNINITIALIZED);
+                        bool wasPaused = pGuider->SetPaused(true);
 						// return 1 for success, 0 for failure
 						rval = FlipRACal(*tmp_evt) ? 1 : 0;
-						pGuider->SetState(origState);
+						pGuider->SetPaused(wasPaused);
 						delete tmp_evt;
 					}
 					break;
 				case MSG_GETSTATUS:
 					if( pGuider->IsPaused() )
 						rval = STATE_PAUSED;
-					else if( looping )
-					{
-						if( pGuider->GetState() == STATE_SELECTED)
-							rval = STATE_LOOPING_SELECTED;
-						else
-							rval = STATE_LOOPING;
-					}
 					else
 						rval = pGuider->GetState();
 					break;

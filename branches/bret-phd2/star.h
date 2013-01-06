@@ -51,6 +51,7 @@ public:
         STAR_LOWMASS,
         STAR_TOO_NEAR_EDGE,
         STAR_LARGEMOTION,
+        STAR_MASSCHANGE,
         STAR_ERROR,
     };
 
@@ -62,6 +63,7 @@ public:
 
     bool Find(usImage *pImg, int searchRegion);
     bool Find(usImage *pImg, int searchRegion, int X, int Y);
+    bool AutoFind(usImage *pImg);
 
     bool WasFound(FindResult result);
     bool WasFound(void);

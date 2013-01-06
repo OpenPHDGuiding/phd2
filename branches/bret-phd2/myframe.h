@@ -48,8 +48,33 @@ wxDECLARE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(PHD_GUIDE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(WORKER_THREAD_SET_STATUS_TEXT_EVENT, wxThreadEvent);
 
+enum NOISE_REDUCTION_METHOD
+{
+    NR_NONE,
+    NR_2x2MEAN,
+    NR_3x3MEDIAN
+};
+
 class MyFrame: public wxFrame
 {
+protected:
+    class MyFrameConfigDialogPane : public ConfigDialogPane
+    {
+        MyFrame *m_pFrame;
+        wxCheckBox *m_pEnableLogging;
+        wxCheckBox *m_pUseSubframes;
+        wxCheckBox *m_pDitherRaOnly;
+        wxSpinCtrlDouble *m_pDitherScaleFactor;
+        wxChoice *m_pNoiseReduction;
+        wxSpinCtrl *m_pTimeLapse;
+    public:
+        MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
+        virtual ~MyFrameConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
+
 public:
 	MyFrame(const wxString& title);
 	virtual ~MyFrame();
@@ -66,9 +91,13 @@ public:
 	GraphLogWindow *GraphLog;
 	ProfileWindow *Profile;
 	unsigned char LoopFrameCount;
-	bool looping;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
+    NOISE_REDUCTION_METHOD m_noiseReductionMethod;
+    double m_ditherScaleFactor;
+    bool m_ditherRaOnly;
+    bool m_serverMode;
+    int  m_timeLapse;		// Delay between frames (useful for vid cameras)
 
 	void OnQuit(wxCommandEvent& evt);
 	void OnClose(wxCloseEvent& evt);
@@ -81,7 +110,7 @@ public:
 	void OnLog(wxCommandEvent& evt);
 	void OnConnectScope(wxCommandEvent& evt);
 	void OnConnectCamera(wxCommandEvent& evt);
-	void OnSelect(wxCommandEvent& evt);
+	void OnLoopExposure(wxCommandEvent& evt);
 	void OnButtonStop(wxCommandEvent& evt);
 	void OnDark(wxCommandEvent& evt);
 	void OnClearDark(wxCommandEvent& evt);
@@ -120,6 +149,8 @@ public:
 	void OnExposeComplete(wxThreadEvent& evt);
 	void OnGuideComplete(wxThreadEvent& evt);
 
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
     struct PHD_EXPOSE_REQUEST
     {
         usImage          *pImage;
@@ -146,6 +177,20 @@ public:
 
     void UpdateButtonsStatus(void);
 
+    NOISE_REDUCTION_METHOD GetNoiseReductionMethod(void);
+    bool SetNoiseReductionMethod(int noiseReductionMethod);
+
+    double GetDitherScaleFactor(void);
+    bool SetDitherScaleFactor(double ditherScaleFactor);
+
+    bool GetDitherRaOnly(void);
+    bool SetDitherRaOnly(bool ditherRaOnly);
+
+    bool GetServerMode(void);
+    bool SetServerMode(bool ditherRaOnly);
+
+    virtual int GetTimeLapse(void);
+    virtual bool SetTimeLapse(int timeLapse);
 private:
     wxCriticalSection m_CSpWorkerThread;
     WorkerThread *m_pWorkerThread;

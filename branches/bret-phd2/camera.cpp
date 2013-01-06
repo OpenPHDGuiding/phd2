@@ -38,118 +38,99 @@
 #include "camera.h"
 #include <wx/stdpaths.h>
 
+static const bool DefaultUseSubframes = false;
+static const int DefaultGuideCameraGain = 95;
+
 #if defined (ATIK16)
  #include "cam_ATIK16.h"
- Camera_Atik16Class Camera_Atik16;
 #endif
 
 #if defined (LE_PARALLEL_CAMERA)
  #include "cam_LEwebcam.h"
- Camera_LEwebcamClass Camera_LEwebcamParallel;
 #endif
+
 #if defined (LE_LXUSB_CAMERA)
  #include "cam_LEwebcam.h"
- Camera_LEwebcamClass Camera_LEwebcamLXUSB;
 #endif
 
 #if defined (SAC42)
  #include "cam_SAC42.h"
- Camera_SAC42Class	Camera_SAC42;
 #endif
 
 #if defined (QGUIDE)
  #include "cam_QGuide.h"
- Camera_QGuiderClass Camera_QGuider;
 #endif
 
 #if defined (QHY5II)
  #include "cam_QHY5II.h"
- Camera_QHY5IIClass Camera_QHY5II;
 #endif
 
 #if defined (ORION_DSCI)
  #include "cam_StarShootDSCI.h"
- Camera_StarShootDSCIClass Camera_StarShoot;
 #endif
 
 #if defined (OS_PL130)
 #include "cam_OSPL130.h"
- Camera_OpticstarPL130Class Camera_OSPL130;
 #endif
 
 #if defined (VFW_CAMERA)
  #include "cam_VFW.h"
- Camera_VFWClass Camera_VFW;
 #endif
+
 #if defined (WDM_CAMERA)
  #include "cam_WDM.h"
- Camera_WDMClass Camera_WDM;
 #endif
 
 #if defined (STARFISH)
  #include "cam_Starfish.h"
- Camera_StarfishClass Camera_Starfish;
 #endif
 
 #if defined (SXV)
 #include "cam_SXV.h"
-Camera_SXVClass Camera_SXV;
 #endif
 
 #if defined (SBIG)
  #include "cam_SBIG.h"
- Camera_SBIGClass Camera_SBIG;
 #endif
 
 #if defined (NEB_SBIG)
 #include "cam_NebSBIG.h"
-Camera_NebSBIGClass Camera_NebSBIG;
 #endif
 
 #if defined (FIREWIRE)
 #include "cam_Firewire.h"
-Camera_FirewireClass Camera_Firewire;
 #endif
 
 //#if defined (SIMULATOR)
 #include "cam_simulator.h"
-Camera_SimClass Camera_Simulator;
 //#endif
 
 #if defined (MEADE_DSI)
 #include "cam_MeadeDSI.h"
-Camera_DSIClass Camera_MeadeDSI;
 #endif
 
 #if defined (SSAG)
 #include "cam_SSAG.h"
-Camera_SSAGClass Camera_SSAG;
 #endif
 
 #if defined (OPENSSAG)
 #include "cam_openssag.h"
-Camera_OpenSSAGClass Camera_OpenSSAG;
 #endif
 
 #if defined (SSPIAG)
 #include "cam_SSPIAG.h"
-Camera_SSPIAGClass Camera_SSPIAG;
 #endif
 
 #if defined (INOVA_PLC)
 #include "cam_INovaPLC.h"
-Camera_INovaPLCClass Camera_INovaPLC;
 #endif
 
 #if defined (ASCOM_LATECAMERA)
  #include "cam_ascom.h"
-// Camera_ASCOMClass Camera_ASCOM;
- Camera_ASCOMLateClass Camera_ASCOMLate;
 #endif
 
 #if defined (INDI_CAMERA)
 #include "cam_INDI.h"
-Camera_INDIClass Camera_INDI;
 #endif
 
 #if defined (V4L_CAMERA)
@@ -157,13 +138,29 @@ Camera_INDIClass Camera_INDI;
 extern "C" {
 #include <libudev.h>
 }
-Camera_VIDEODEVICEClass Camera_VIDEODEVICE;
 #endif
 
-// initialize camera prefs
-bool GuideCameraPrefs::UseSubframes = false;
-int GuideCameraPrefs::GuideCameraGain = 95;
-int GuideCameraPrefs::NR_mode = NR_NONE;
+GuideCamera::GuideCamera(void) 
+{ 
+    Connected = FALSE;  
+    Name=_T("");
+    HasGuiderOutput = false; 
+    HasPropertyDialog = false; 
+    HasPortNum = false; 
+    HasDelayParam = false;
+    HasGainControl = false; 
+    HasShutter=false; 
+    ShutterState=false; 
+
+    HaveDark = false;
+    DarkDur = 0;
+
+    bool useSubframes = pConfig->GetBoolean("/camera/UseSubFrames", DefaultUseSubframes);
+    SetUseSubframes(useSubframes);
+
+    double cameraGain = pConfig->GetDouble("/camera/gain", DefaultGuideCameraGain);
+    SetCameraGain(cameraGain);
+}
 
 void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 // Throws up a dialog and trys to connect to that camera
@@ -293,8 +290,12 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		CurrentGuideCamera->Disconnect();
 	}
 
+    delete CurrentGuideCamera;
+    CurrentGuideCamera = NULL;
+    GuideCameraConnected = false;
+
 	if (Choice.Find(_T("Simulator")) + 1)
-		CurrentGuideCamera = &Camera_Simulator;
+		CurrentGuideCamera = new Camera_SimClass();
 	else if (Choice.Find(_T("None")) + 1) {
 		CurrentGuideCamera = NULL;
 		GuideCameraConnected = false;
@@ -303,129 +304,127 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	}
 #if defined (SAC42)
 	else if (Choice.Find(_T("SAC4-2")) + 1)
-		CurrentGuideCamera = &Camera_SAC42;
+		CurrentGuideCamera = new Camera_SAC42Class();
 #endif
 #if defined (ATIK16)
 	else if (Choice.Find(_T("Atik 16 series")) + 1) {
-		CurrentGuideCamera = &Camera_Atik16;
-		Camera_Atik16.HSModel = false;
+		Camera_Atik16Class *pNewGuideCamera = new Camera_Atik16Class();
+		pNewGuideCamera->HSModel = false;
 		if (Choice.Find(_T("color")))
-			Camera_Atik16.Color = true;
+			pNewGuideCamera->Color = true;
 		else
-			Camera_Atik16.Color = false;
+			pNewGuideCamera->Color = false;
+		CurrentGuideCamera = pNewGuideCamera;
 	}
 #endif
 #if defined (ATIK_GEN3)
 	else if (Choice.Find(_T("Atik Gen3")) + 1) {
-		CurrentGuideCamera = &Camera_Atik16;
-		Camera_Atik16.HSModel = true;
+		Camera_Atik16Class *pNewGuideCamera = new Camera_Atik16Class();
+		pNewGuideCamera->HSModel = true;
 		if (Choice.Find(_T("color")))
-			Camera_Atik16.Color = true;
+			pNewGuideCamera->Color = true;
 		else
-			Camera_Atik16.Color = false;
+			pNewGuideCamera->Color = false;
+		CurrentGuideCamera = pNewGuideCamera;
 	}
 #endif
 #if defined (QGUIDE)
 	else if (Choice.Find(_T("CCD Labs Q-Guider")) + 1) {
-		CurrentGuideCamera = &Camera_QGuider;
-		Camera_QGuider.Name = _T("Q-Guider");
+		CurrentGuideCamera = new Camera_QGuiderClass();
+		CurrentGuideCamera->Name = _T("Q-Guider");
 	}
 	else if (Choice.Find(_T("MagZero MZ-5")) + 1) {
-		CurrentGuideCamera = &Camera_QGuider;
-		Camera_QGuider.Name = _T("MagZero MZ-5");
+		CurrentGuideCamera = new Camera_QGuiderClass();
+		CurrentGuideCamera->Name = _T("MagZero MZ-5");
 	}
 #endif
 #if defined (QHY5II)
 	else if (Choice.Find(_T("QHY 5-II")) + 1)
-		CurrentGuideCamera = &Camera_QHY5II;
+		CurrentGuideCamera = new Camera_QHY5IIClass();
 #endif
 /*#if defined (OPENSSAG)
 	else if (Choice.Find(_T("Open StarShoot AutoGuider")) + 1)
-		CurrentGuideCamera = &Camera_OpenSSAG;
+		CurrentGuideCamera = new Camera_OpenSSAGClass();
 #endif*/
 #if defined (OPENSSAG)
 	else if (Choice.Find(_T("Orion StarShoot Autoguider")) + 1)
-		CurrentGuideCamera = &Camera_OpenSSAG;
+		CurrentGuideCamera = new Camera_OpenSSAGClass();
 #endif
 #if defined (SSAG)
 	else if (Choice.Find(_T("StarShoot Autoguider")) + 1)
-		CurrentGuideCamera = &Camera_SSAG;
+		CurrentGuideCamera = new Camera_SSAGClass();
 #endif
 #if defined (SSPIAG)
 	else if (Choice.Find(_T("StarShoot Planetary Imager & Autoguider")) + 1)
-		CurrentGuideCamera = &Camera_SSPIAG;
+		CurrentGuideCamera = new Camera_SSPIAGClass();
 #endif
 #if defined (ORION_DSCI)
 	else if (Choice.Find(_T("Orion StarShoot DSCI")) + 1)
-		CurrentGuideCamera = &Camera_StarShoot;
+		CurrentGuideCamera = new Camera_StarShootDSCIClass();
 #endif
 #if defined (WDM_CAMERA)
 	else if (Choice.Find(_T("Windows WDM")) + 1)
-		CurrentGuideCamera = &Camera_WDM;
+		CurrentGuideCamera = new Camera_WDMClass();
 #endif
 #if defined (VFW_CAMERA)
 	else if (Choice.Find(_T("Windows VFW")) + 1)
-		CurrentGuideCamera = &Camera_VFW;
+		CurrentGuideCamera = new Camera_VFWClass();
 #endif
 #if defined (LE_LXUSB_CAMERA)
 	else if (Choice.Find(_T("Long exposure webcam + LXUSB")) + 1)
-		CurrentGuideCamera = &Camera_LEwebcamLXUSB;
+		CurrentGuideCamera = new Camera_LEwebcamClass();
 #endif
 #if defined (LE_PARALLEL_CAMERA)
 	else if (Choice.Find(_T("Long exposure webcam + Parallel/Serial")) + 1)
-		CurrentGuideCamera = &Camera_LEwebcamParallel;
+		CurrentGuideCamera = new Camera_LEwebcamClass();
 #endif
 #if defined (MEADE_DSI)
 	else if (Choice.Find(_T("Meade DSI I, II, or III")) + 1)
-		CurrentGuideCamera = &Camera_MeadeDSI;
+		CurrentGuideCamera = new Camera_DSIClass();
 #endif
 #if defined (STARFISH)
 	else if (Choice.Find(_T("Fishcamp Starfish")) + 1)
-		CurrentGuideCamera = &Camera_Starfish;
+		CurrentGuideCamera = new Camera_StarfishClass();
 #endif
 #if defined (SXV)
 	else if (Choice.Find(_T("Starlight Xpress SXV")) + 1)
-		CurrentGuideCamera = &Camera_SXV;
+		CurrentGuideCamera = new Camera_SXVClass();
 #endif
 #if defined (OS_PL130)
 	else if (Choice.Find(_T("Opticstar PL-130M")) + 1) {
 		Camera_OSPL130.Color=false;
 		Camera_OSPL130.Name=_T("Opticstar PL-130M");
-		CurrentGuideCamera = &Camera_OSPL130;
+		CurrentGuideCamera = new Camera_OSPL130Class();
 	}
 	else if (Choice.Find(_T("Opticstar PL-130C")) + 1) {
 		Camera_OSPL130.Color=true;
 		Camera_OSPL130.Name=_T("Opticstar PL-130C");
-		CurrentGuideCamera = &Camera_OSPL130;
+		CurrentGuideCamera = new Camera_OSPL130Class();
 	}
 #endif
 #if defined (NEB_SBIG)
 	else if (Choice.Find(_T("Nebulosity")) + 1)
-		CurrentGuideCamera = &Camera_NebSBIG;
+		CurrentGuideCamera = new Camera_NebSBIGClass();
 #endif
 #if defined (SBIG)
 	else if (Choice.Find(_T("SBIG")) + 1)
-		CurrentGuideCamera = &Camera_SBIG;
+		CurrentGuideCamera = new Camera_SBIGClass();
 #endif
 #if defined (FIREWIRE)
 	else if (Choice.Find(_T("The Imaging Source (DCAM Firewire)")) + 1)
-		CurrentGuideCamera = &Camera_Firewire;
-#endif
-#if defined (ASCOM_CAMERA)
-	else if (Choice.Find(_T("ASCOM v5 Camera")) + 1)
-		CurrentGuideCamera = &Camera_ASCOM;
+		CurrentGuideCamera = new Camera_FirewireClass();
 #endif
 #if defined (ASCOM_LATECAMERA)
 	else if (Choice.Find(_T("ASCOM (Late) Camera")) + 1)
-		CurrentGuideCamera = &Camera_ASCOMLate;
+		CurrentGuideCamera = new Camera_ASCOMLateClass();
 #endif
 #if defined (INOVA_PLC)
 	else if (Choice.Find(_T("i-Nova PLC-M")) + 1)
-		CurrentGuideCamera = &Camera_INovaPLC;
+		CurrentGuideCamera = new Camera_INovaPLCClass();
 #endif
 #if defined (INDI_CAMERA)
 	else if (Choice.Find(_T("INDI Camera")) + 1)
-		CurrentGuideCamera = &Camera_INDI;
+		CurrentGuideCamera = new Camera_INDIClass();
 #endif
 
 #if defined (V4L_CAMERA)
@@ -461,7 +460,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 			}
 		}
 
-		CurrentGuideCamera = &Camera_VIDEODEVICE;
+		CurrentGuideCamera = new Camera_VIDEODEVICEClass();
 	}
 #endif
 
@@ -504,6 +503,231 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	}
 
 }
+
+bool GuideCamera::GetUseSubframes(void)
+{
+    return UseSubframes;
+}
+
+bool GuideCamera::SetUseSubframes(bool useSubframes)
+{
+    bool bError = false;
+
+    UseSubframes = useSubframes;
+    pConfig->SetBoolean("/camera/UseSubFrames", UseSubframes);
+
+    return bError;
+}
+
+double GuideCamera::GetCameraGain(void)
+{
+    return GuideCameraGain;
+}
+
+bool GuideCamera::SetCameraGain(double cameraGain)
+{
+    bool bError = false;
+
+    try
+    {
+        if (cameraGain <= 0)
+        {
+            throw ERROR_INFO("cameraGain <= 0");
+        }
+        GuideCameraGain = cameraGain;
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        GuideCameraGain = DefaultGuideCameraGain;
+    }
+
+    pConfig->SetDouble("/camera/gain", GuideCameraGain);
+
+    return bError;
+}
+
+ConfigDialogPane * GuideCamera::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new CameraConfigDialogPane(pParent, this);
+}
+
+GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera)
+    : ConfigDialogPane(_T("Camera Settings"), pParent)
+{
+
+    assert(pCamera);
+
+    m_pCamera = pCamera;
+
+    m_pUseSubframes = new wxCheckBox(pParent, wxID_ANY,_T("UseSubframes"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pUseSubframes, _T("Check to only download subframes (ROIs) if your camera supports it"));
+
+    if (m_pCamera->HasGainControl)
+    {
+        int width = StringWidth(_T("0000"));
+        m_pCameraGain = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+                wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 100, 100,_T("CameraGain"));
+        DoAdd(_T("Camera Gain"), m_pCameraGain,
+              _T("Camera gain boost? Default = 95%, lower if you experience noise or wish to guide on a very bright star). Not available on all cameras."));
+    }
+
+    if (m_pCamera->HasDelayParam)
+    {
+        int width = StringWidth(_T("0000"));
+        m_pDelay = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+                wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 100, 100,_T("Delay"));
+        DoAdd(_T("LE Read Delay"), m_pDelay,
+	          _T("Adjust if you get dropped frames"));
+    }
+
+    if (m_pCamera->HasPortNum)
+    {
+        wxString port_choices[] = {
+            _T("Port 378"),_T("Port 3BC"),_T("Port 278"),_T("COM1"),_T("COM2"),_T("COM3"),_T("COM4"),
+            _T("COM5"),_T("COM6"),_T("COM7"),_T("COM8"),_T("COM9"),_T("COM10"),_T("COM11"),_T("COM12"),
+            _T("COM13"),_T("COM14"),_T("COM15"),_T("COM16"),
+        };
+
+        int width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
+        m_pPortNum = new wxChoice(pParent, wxID_ANY,wxPoint(-1,-1),
+                wxSize(width+35,-1), WXSIZEOF(port_choices), port_choices );
+        DoAdd(_T("LE Port"), m_pPortNum, 
+               _T("Port number for long-exposure control"));
+    }
+}
+
+GuideCamera::CameraConfigDialogPane::~CameraConfigDialogPane(void)
+{
+}
+
+void GuideCamera::CameraConfigDialogPane::LoadValues(void)
+{
+    assert(m_pCamera);
+
+    m_pUseSubframes->SetValue(m_pCamera->GetUseSubframes());
+
+    if (m_pCamera->HasGainControl)
+    {
+        m_pCameraGain->SetValue(100*m_pCamera->GetCameraGain());
+    }
+
+    if (m_pCamera->HasDelayParam)
+    {
+        m_pDelay->SetValue(m_pCamera->Delay);
+    }
+
+    if (m_pCamera->HasPortNum)
+    {
+        switch (m_pCamera->Port) 
+        {
+            case 0x3BC:
+                m_pPortNum->SetSelection(1);
+                break;
+            case 0x278:
+                m_pPortNum->SetSelection(2);
+                break;
+            case 1:  // COM1
+                m_pPortNum->SetSelection(3);
+                break;
+            case 2:  // COM2
+                m_pPortNum->SetSelection(4);
+                break;
+            case 3:  // COM3
+                m_pPortNum->SetSelection(5);
+                break;
+            case 4:  // COM4
+                m_pPortNum->SetSelection(6);
+                break;
+            case 5:  // COM5
+                m_pPortNum->SetSelection(7);
+                break;
+            case 6:  // COM6
+                m_pPortNum->SetSelection(8);
+                break;
+            case 7:  // COM7
+                m_pPortNum->SetSelection(9);
+                break;
+            case 8:  // COM8
+                m_pPortNum->SetSelection(10);
+                break;
+            case 9:  // COM9
+                m_pPortNum->SetSelection(11);
+                break;
+            case 10:  // COM10
+                m_pPortNum->SetSelection(12);
+                break;
+            case 11:  // COM11
+                m_pPortNum->SetSelection(13);
+                break;
+            case 12:  // COM12
+                m_pPortNum->SetSelection(14);
+                break;
+            case 13:  // COM13
+                m_pPortNum->SetSelection(15);
+                break;
+            case 14:  // COM14
+                m_pPortNum->SetSelection(16);
+                break;
+            case 15:  // COM15
+                m_pPortNum->SetSelection(17);
+                break;
+            case 16:  // COM16
+                m_pPortNum->SetSelection(18);
+                break;
+            default:
+                m_pPortNum->SetSelection(0);
+                break;
+        }
+    }
+}
+
+void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
+{
+    assert(m_pCamera);
+
+    m_pCamera->SetUseSubframes(m_pUseSubframes->GetValue());
+
+    if (m_pCamera->HasGainControl)
+    {
+        m_pCamera->SetCameraGain(m_pCameraGain->GetValue()/100);
+    }
+
+    if (m_pCamera->HasDelayParam)
+    {
+        m_pCamera->Delay = m_pDelay->GetValue();
+    }
+
+    if (m_pCamera->HasPortNum)
+    {
+        switch (m_pPortNum->GetSelection()) 
+        {
+            case 0:
+                m_pCamera->Port = 0x378;
+                break;
+            case 1:
+                m_pCamera->Port = 0x3BC;
+                break;
+            case 2:
+                m_pCamera->Port = 0x278;
+                break;
+            case 3: 
+                m_pCamera->Port = 1;
+                break;
+            case 4:
+                m_pCamera->Port = 2;
+                break;
+            case 5:
+                m_pCamera->Port = 3;
+                break;
+            case 6:
+                m_pCamera->Port = 4;
+                break;
+        }
+    }
+}
+
 //#pragma unmanaged
 void InitCameraParams() {
 #if defined (LE_PARALLEL_CAMERA)

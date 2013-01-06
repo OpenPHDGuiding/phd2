@@ -62,8 +62,6 @@ END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
 wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCAPTION & ~wxSTAY_ON_TOP) {  // was 230
-#ifdef PREFS
-
 	this->visible = false;
 	this->n_items = 0;
 	this->mode = 0; // RA/Dec
@@ -93,90 +91,88 @@ wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCA
 	int ctl_size = 60;
 	int extra_offset = 0;
 #endif
-	wxStaticText *raa_label = new wxStaticText(this,wxID_ANY,_T("RA agr"),wxPoint(10,210),wxSize(60,-1));
-	raa_label->SetOwnForegroundColour(* wxWHITE);
+
+    // Ra Aggression
+    wxStaticText *raa_label = new wxStaticText(this,wxID_ANY,_T("RA agr"),wxPoint(10,210),wxSize(60,-1));
+    raa_label->SetOwnForegroundColour(* wxWHITE);
 #ifdef __WINDOWS__
-	raa_label->SetOwnBackgroundColour(* wxBLACK);
+    raa_label->SetOwnBackgroundColour(* wxBLACK);
 #endif
-	this->RAA_Ctrl = new wxSpinCtrl(this,GRAPH_RAA,wxString::Format(_T("%d"),(int) (RA_aggr * 100)),
-									wxPoint(50,205),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
-									0,120,(int) (RA_aggr * 100));
-	wxStaticText *rah_label = new wxStaticText(this,wxID_ANY,_T("RA hys"),wxPoint(110,210),wxSize(60,-1));
-	rah_label->SetOwnForegroundColour(* wxWHITE);
+    this->RAA_Ctrl = new wxSpinCtrl(this,GRAPH_RAA, _T(""),
+                                    wxPoint(50,205),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
+                                    0, 120, 0);
+    // Hysteresis
+    wxStaticText *rah_label = new wxStaticText(this,wxID_ANY,_T("RA hys"),wxPoint(110,210),wxSize(60,-1));
+    rah_label->SetOwnForegroundColour(* wxWHITE);
 #ifdef __WINDOWS__
-	rah_label->SetOwnBackgroundColour(* wxBLACK);
+    rah_label->SetOwnBackgroundColour(* wxBLACK);
 #endif
-	this->RAH_Ctrl = new wxSpinCtrl(this,GRAPH_RAH,wxString::Format(_T("%d"),(int) (RA_hysteresis * 100)),
-									wxPoint(150,205),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
-									0,50,(int) (RA_hysteresis * 100));
-	wxStaticText *mm_label = new wxStaticText(this,wxID_ANY,_T("Mn mo"),wxPoint(210,210),wxSize(60,-1));
-	mm_label->SetOwnForegroundColour(* wxWHITE);
+    this->RAH_Ctrl = new wxSpinCtrl(this,GRAPH_RAH, _T(""),
+                                    wxPoint(150,205),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
+                                    0, 50, 0);
+// Min Motion
+wxStaticText *mm_label = new wxStaticText(this,wxID_ANY,_T("Mn mo"),wxPoint(210,210),wxSize(60,-1));
+mm_label->SetOwnForegroundColour(* wxWHITE);
 #ifdef __WINDOWS__
-	mm_label->SetOwnBackgroundColour(* wxBLACK);
+mm_label->SetOwnBackgroundColour(* wxBLACK);
 #endif
-#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
-	this->MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM,wxString::Format(_T("%.2f"),MinMotion),
-									wxPoint(255,210+extra_offset),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
-									0,5,MinMotion,0.05);
-#else
-	this->MM_Ctrl = new wxTextCtrl(this,GRAPH_MM,wxString::Format(_T("%.2f"),MinMotion),
-									wxPoint(255,210+extra_offset),wxSize(ctl_size,-1));
-#endif
-//	wxStaticText *DM_Text = new wxStaticText(this,wxID_ANY,_T("Dec guide mode"),wxPoint(400,210),wxSize(-1,-1));
+this->MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM, _T(""),
+                                wxPoint(255,210+extra_offset),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
+                                0,5,0,0.05);
+    // Max RA Dur
 	wxStaticText *mrad_label = new wxStaticText(this,wxID_ANY,_T("Mx RA"),wxPoint(315,210),wxSize(ctl_size+10,-1));
 	mrad_label->SetOwnForegroundColour(* wxWHITE);
 #ifdef __WINDOWS__
 	mrad_label->SetOwnBackgroundColour(* wxBLACK);
 #endif
-	this->MRAD_Ctrl = new wxSpinCtrl(this,GRAPH_MRAD,wxString::Format(_T("%d"),Max_RA_Dur),
+	this->MRAD_Ctrl = new wxSpinCtrl(this,GRAPH_MRAD, _T(""),
 									wxPoint(360,205),wxSize(ctl_size+10,-1),wxSP_ARROW_KEYS,
-									0,2000,Max_RA_Dur);
+									0,2000,0);
+    // Max Dec Dur
 	wxStaticText *mdd_label = new wxStaticText(this,wxID_ANY,_T("Mx dec"),wxPoint(425,210),wxSize(ctl_size+10,-1));
 	mdd_label->SetOwnForegroundColour(* wxWHITE);
 #ifdef __WINDOWS__
 	mdd_label->SetOwnBackgroundColour(* wxBLACK);
 #endif
-	this->MDD_Ctrl = new wxSpinCtrl(this,GRAPH_MDD,wxString::Format(_T("%d"),Max_Dec_Dur),
+    double Max_Dec_Dur = 0;
+	this->MDD_Ctrl = new wxSpinCtrl(this,GRAPH_MDD, _T(""),
 									wxPoint(470,205),wxSize(ctl_size+10,-1),wxSP_ARROW_KEYS,
-									0,2000,Max_Dec_Dur);
+									0,2000, 0);
+    // Dec Guide mode
 	wxString dec_choices[] = {
 		_T("Off"),_T("Auto"),_T("North"),_T("South")
 	};
 	this->DM_Ctrl= new wxChoice(this,GRAPH_DM,wxPoint(535,210+extra_offset),wxSize(ctl_size+15,-1),WXSIZEOF(dec_choices), dec_choices );
-	DM_Ctrl->SetSelection(Dec_guide);
-
-#endif
+	//DM_Ctrl->SetSelection(pScope->GetDecGuideMode());
 }
 
 GraphLogWindow::~GraphLogWindow() {
 
 }
 void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
-#ifdef PREFS
-	RA_aggr = (float) this->RAA_Ctrl->GetValue() / 100.0;
-	RA_hysteresis = (float) this->RAH_Ctrl->GetValue() / 100.0;
-	Max_Dec_Dur = this->MDD_Ctrl->GetValue();
-	Max_RA_Dur = this->MRAD_Ctrl->GetValue();
-#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
-	MinMotion = this->MM_Ctrl->GetValue();
-#else
-	this->MM_Ctrl->GetValue().ToDouble(&MinMotion);
-#endif
-#endif
-}
-void GraphLogWindow::OnUpdateCommandGuideParams(wxCommandEvent& WXUNUSED(evt)) {
-#ifdef PREFS
-	Dec_guide = this->DM_Ctrl->GetSelection();	
-#endif
+    if (frame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+    {
+        GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)frame->pGuider;
+
+        pHyst->SetAggression((float) this->RAA_Ctrl->GetValue() / 100.0);
+        pHyst->SetHysteresis((float) this->RAH_Ctrl->GetValue() / 100.0);
+    }
+	pScope->SetMaxDecDuration(this->MDD_Ctrl->GetValue());
+	pScope->SetMaxRaDuration(this->MRAD_Ctrl->GetValue());
 }
 
-#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
-void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) {
-#ifdef PREFS
-	MinMotion = this->MM_Ctrl->GetValue();
-#endif
+void GraphLogWindow::OnUpdateCommandGuideParams(wxCommandEvent& WXUNUSED(evt)) {
+    pScope->SetDecGuideMode(this->DM_Ctrl->GetSelection());
 }
-#endif
+
+void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) {
+    if (frame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+    {
+        GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)frame->pGuider;
+
+        pHyst->SetMinMove(this->MM_Ctrl->GetValue());
+    }
+}
 
 void GraphLogWindow::OnButtonHide(wxCommandEvent& WXUNUSED(evt)) {
 	this->visible = false;
@@ -189,7 +185,6 @@ void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt)) {
 //	bool foo2 = wxGetKeyState(WXK_SHIFT);
 	wxMouseState mstate = wxGetMouseState();
 //	bool foo1 = mstate.ShiftDown();
-	
 	
 	if (wxGetKeyState(WXK_SHIFT)) {
 		wxColourData cdata;
@@ -244,21 +239,22 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt)) {
 */
 
 void GraphLogWindow::SetState(bool is_active) {
-#ifdef PREFS
 	this->visible = is_active;
 	this->Show(is_active);
-	if (is_active) {
-		this->RAA_Ctrl->SetValue((int) (RA_aggr * 100));  
-		this->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
-#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
-		this->MM_Ctrl->SetValue(MinMotion);
-#endif
-		this->MDD_Ctrl->SetValue(Max_Dec_Dur);
-		this->MRAD_Ctrl->SetValue(Max_RA_Dur);
-		this->DM_Ctrl->SetSelection(Dec_guide);
+	if (is_active) 
+    {
+        if (frame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+        {
+            GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)frame->pGuider;
+            this->RAA_Ctrl->SetValue((int) (pHyst->GetAggression() * 100));  
+            this->RAH_Ctrl->SetValue((int) (pHyst->GetHysteresis() * 100));
+            this->MM_Ctrl->SetValue(pHyst->GetMinMove());
+        }
+		this->MDD_Ctrl->SetValue(pScope->GetMaxDecDuration());
+		this->MRAD_Ctrl->SetValue(pScope->GetMaxRaDuration());
+		this->DM_Ctrl->SetSelection(pScope->GetDecGuideMode());
 		Refresh();
 	}
-#endif
 }
 
 void GraphLogWindow::AppendData(float dx, float dy, float RA, float Dec) {
@@ -445,25 +441,25 @@ void ProfileWindow::SetState(bool is_active) {
 		Refresh();
 }
 
-void ProfileWindow::UpdateData(usImage& img, float xpos, float ypos) {
+void ProfileWindow::UpdateData(usImage *pImg, float xpos, float ypos) {
 	if (this->data == NULL) return;
 	int xstart = ROUND(xpos) - 10;
 	int ystart = ROUND(ypos) - 10;
 	if (xstart < 0) xstart = 0;
-	else if (xstart > (img.Size.GetWidth() - 22))
-		xstart = img.Size.GetWidth() - 22;
+	else if (xstart > (pImg->Size.GetWidth() - 22))
+		xstart = pImg->Size.GetWidth() - 22;
 	if (ystart < 0) ystart = 0;
-	else if (ystart > (img.Size.GetHeight() - 22))
-	ystart = img.Size.GetHeight() - 22;
+	else if (ystart > (pImg->Size.GetHeight() - 22))
+	ystart = pImg->Size.GetHeight() - 22;
 
 	int x,y;
 	unsigned short *uptr = this->data;
-	const int xrowsize = img.Size.GetWidth();
+	const int xrowsize = pImg->Size.GetWidth();
 	for (x=0; x<21; x++)
 		horiz_profile[x] = vert_profile[x] = midrow_profile[x] = 0;
 	for (y=0; y<21; y++) {
 		for (x=0; x<21; x++, uptr++) {
-			*uptr = *(img.ImageData + xstart + x + (ystart + y) * xrowsize);
+			*uptr = *(pImg->ImageData + xstart + x + (ystart + y) * xrowsize);
 			horiz_profile[x] += (int) *uptr;
 			vert_profile[y] += (int) *uptr;
 		}

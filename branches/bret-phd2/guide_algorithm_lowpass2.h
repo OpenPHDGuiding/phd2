@@ -44,10 +44,26 @@ class GuideAlgorithmLowpass2:GuideAlgorithm
 {
     static const int HISTORY_SIZE=10;
     ArrayOfDbl m_history;
+protected:
+    class GuideAlgorithmLowpass2ConfigDialogPane : public ConfigDialogPane
+    {
+        GuideAlgorithmLowpass2 *m_pGuideAlgorithm;
+    public:
+        GuideAlgorithmLowpass2ConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass2 *pGuideAlgorithm);
+        virtual ~GuideAlgorithmLowpass2ConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
+
 public:
-    GuideAlgorithmLowpass2(GuideAlgorithm *pChained=NULL);
+    GuideAlgorithmLowpass2(void);
     virtual ~GuideAlgorithmLowpass2(void);
+    virtual GUIDE_ALGORITHM Algorithm(void);
+
+    virtual bool reset(void);
     virtual double result(double input);
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 };
 
 #endif /* GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED */

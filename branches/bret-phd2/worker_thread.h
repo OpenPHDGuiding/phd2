@@ -36,8 +36,6 @@
 #ifndef WORKER_THREAD_H_INCLUDED
 #define WORKER_THREAD_H_INCLUDED
 
-#include <wx/msgqueue.h>
-
 class MyFrame;
 
 class WorkerThread: public wxThread

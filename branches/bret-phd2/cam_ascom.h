@@ -33,6 +33,7 @@
  */
 #ifndef ASCOMCAMDEF
 #define ASCOMCAMDEF
+#if defined (ASCOM_CAMERA)
 
 #ifdef __WINDOWS__
 #ifdef _WIN7
@@ -79,7 +80,9 @@ private:
 	ICameraPtr pCam;
 #endif
 };
+#endif //defined (ASCOM_CAMERA)
 
+#if defined (ASCOM_LATECAMERA)
 class Camera_ASCOMLateClass : public GuideCamera, protected ASCOM_COMMON {
 public:
 	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
@@ -111,5 +114,6 @@ private:
 
 #endif
 };
+#endif // defined (ASCOM_LATECAMERA)
 
 #endif  //ASCOMCAMDEF

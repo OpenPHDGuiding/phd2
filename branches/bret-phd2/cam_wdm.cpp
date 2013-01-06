@@ -39,8 +39,6 @@
 #include <Dshow.h>         // DirectShow (using DirectX 9.0 for dev)
 #include "cam_WDM.h"
 
-extern Camera_WDMClass Camera_WDM;
-
 //int gNumFrames;
 bool WDM_Stack_Mode = false;
 
@@ -253,6 +251,6 @@ bool Camera_WDMClass::CaptureFull(int duration, usImage& img, bool recon) {
 
 
 void Camera_WDMClass::ShowPropertyDialog() {
-	Camera_WDM.VidCap->ShowPropertyDialog((HWND) frame->GetHandle());
+	VidCap->ShowPropertyDialog((HWND) frame->GetHandle());
 }
 #endif // WDM_CAMERA defined

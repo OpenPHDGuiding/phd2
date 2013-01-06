@@ -1,5 +1,5 @@
 /*
- *  scope_oncamera.h
+ *  configdialog.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -14,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
  *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
  *
@@ -33,16 +32,28 @@
  *
  */
 
-#ifdef GUIDE_ONBOARD
+#ifndef CONFIG_DIALOG_H_INCLUDED
+#define CONFIG_DIALOG_H_INCLUDED
 
-class ScopeOnCamera:public Scope
+class ConfigDialogPane : public wxStaticBoxSizer
 {
+    wxWindow *m_pParent;
 public:
-    ScopeOnCamera(void);
-	virtual bool Connect(void);
-	virtual bool Disconnect(void);
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int duration);
-    virtual bool IsGuiding(void);
+    ConfigDialogPane(wxString heading, wxWindow *pParent);
+    virtual ~ConfigDialogPane(void);
+
+    virtual void LoadValues(void) = 0;
+    virtual void UnloadValues(void) = 0;
+
+protected:
+    void DoAdd(wxSizer *pSizer);
+    void DoAdd(wxWindow *pWindow);
+    void DoAdd(wxWindow *pWindow, wxString toolTip);
+    void DoAdd(wxWindow *pWindow1, wxWindow *pWindow2);
+    void DoAdd(wxString Label, wxWindow *pControl, wxString toolTip);
+
+    int StringWidth(wxString string);
+    int StringArrayWidth(wxString string[], int nElements);
 };
 
-#endif /* GUIDE_ONBOARD */
+#endif // CONFIG_DIALOG_H_INCLUDED

@@ -99,7 +99,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
                 throw ERROR_INFO("CaptureFull failed");
             }
 
-            switch (GuideCameraPrefs::NR_mode)
+            switch (frame->GetNoiseReductionMethod())
             {
                 case NR_NONE:
                     break;
@@ -130,9 +130,9 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
         }
         Debug.Write(wxString::Format("Exposure complete\n"));
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
         bError = true;
     }
 
@@ -203,9 +203,9 @@ bool WorkerThread::HandleGuide(ARGS_GUIDE *pArgs)
             Debug.Write(wxString::Format("Guide complete\n"));
         }
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
         bError = true;
     }
 

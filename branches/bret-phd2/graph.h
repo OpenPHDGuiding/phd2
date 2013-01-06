@@ -32,9 +32,6 @@
  *
  */
 
-#include <wx/minifram.h>
-#include <wx/spinctrl.h>
-
 #ifndef GRAPHCLASS
 #define GRAPHCLASS
 
@@ -50,16 +47,10 @@ public:
 	void OnButtonHide(wxCommandEvent& evt);
 	void OnButtonClear(wxCommandEvent& evt);
 	void OnUpdateSpinGuideParams(wxSpinEvent& evt);
-#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
 	void OnUpdateSpinDGuideParams(wxSpinDoubleEvent& evt);
-#endif
 	void OnUpdateCommandGuideParams(wxCommandEvent& evt);
 	wxColour RA_Color, DEC_Color;
-#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
 	wxSpinCtrlDouble *MM_Ctrl, *DSW_Ctrl;
-#else
-	wxTextCtrl *MM_Ctrl, *DSW_Ctrl;
-#endif
 	wxSpinCtrl *RAA_Ctrl, *RAH_Ctrl, *MDD_Ctrl, *MRAD_Ctrl;
 	wxChoice *DM_Ctrl;
 
@@ -93,7 +84,7 @@ class ProfileWindow : public wxMiniFrame {
 public:
 	ProfileWindow(wxWindow *parent);
 	~ProfileWindow(void);
-	void UpdateData(usImage& img, float xpos, float ypos);
+	void UpdateData(usImage *pImg, float xpos, float ypos);
 	void OnPaint(wxPaintEvent& evt);
 	void SetState(bool is_active);
 	void OnLClick(wxMouseEvent& evt);

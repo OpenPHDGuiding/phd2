@@ -1,0 +1,12 @@
+bin
+obj
+*.exe*
+*.suo
+*.user
+*.swp
+*sdf
+*~
+tags
+cscope.out
+Debug
+Release

@@ -1,13 +1,9 @@
 /*
- *  guider_config.cpp
+ *  configdialog.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
  *  Copyright (c) 2012 Bret McKee
- *  All rights reserved.
- *
- *  Based upon work by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -18,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
  *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
  *
@@ -39,29 +34,71 @@
 
 #include "phd.h"
 
-GuiderConfig::GuiderConfig(void)
+ConfigDialogPane::ConfigDialogPane(wxString heading, wxWindow *pParent)
+    : wxStaticBoxSizer(new wxStaticBox(pParent, wxID_ANY, heading), wxVERTICAL)
 {
-    LoadConfig();
+    m_pParent = pParent;
 }
 
-GuiderConfig::~GuiderConfig(void)
+ConfigDialogPane::~ConfigDialogPane(void)
 {
-    SaveConfig();
 }
 
-void GuiderConfig::LoadConfig(void)
+void ConfigDialogPane::DoAdd(wxSizer *pSizer)
 {
-#ifdef BRET
-    RA_hysteresis = pConfig->GetDouble("/guider/RaHysteresis");
-    Dec_slopeweight = pConfig->GetDouble("/guider/DecSlopeWeight");
-    Dec_algo = pConfig->
-#endif
+    this->Add(pSizer, wxSizerFlags().Expand().Border(wxALL,3));
 }
 
-void GuiderConfig::SaveConfig(void)
+void ConfigDialogPane::DoAdd(wxWindow *pWindow)
 {
-    //Dec_slopeweight = pConfig->GetDouble("/guider/DecSlopeWeight");
-    //RA_hysteresis = pConfig->GetDouble("/guider/RaHysteresis");
-    //Dec_algo = pConfig->
+    this->Add(pWindow, wxSizerFlags().Expand().Border(wxALL,3));
+}
+
+void ConfigDialogPane::DoAdd(wxWindow *pWindow, wxString toolTip)
+{
+    pWindow->SetToolTip(toolTip);
+    DoAdd(pWindow);
+}
+
+void ConfigDialogPane::DoAdd(wxWindow *pWindow1, wxWindow *pWindow2)
+{
+    wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
+    pSizer->Add(pWindow1);
+    pSizer->Add(pWindow2);
+    DoAdd(pSizer);
+}
+
+void ConfigDialogPane::DoAdd(wxString label, wxWindow *pControl, wxString toolTip)
+{
+	wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, label + _T(": "),wxPoint(-1,-1),wxSize(-1,-1));
+    pControl->SetToolTip(toolTip);
+
+    DoAdd(pLabel, pControl);
+}
+
+int ConfigDialogPane::StringWidth(wxString string)
+{
+    int width, height;
+
+    m_pParent->GetTextExtent(string, &width, &height);
+
+    return width;
+}
+
+int ConfigDialogPane::StringArrayWidth(wxString string[], int nElements)
+{
+    int width = 0;
+
+    for(int i=0;i<nElements;i++)
+    {
+        int thisWidth = StringWidth(string[i]);
+        
+        if (thisWidth > width)
+        {
+            width = thisWidth;
+        }
+    }
+
+    return width;
 }
 

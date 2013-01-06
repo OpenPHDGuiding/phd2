@@ -46,11 +46,37 @@ class GuideAlgorithmHysteresis:GuideAlgorithm
     double m_hysteresis;
     double m_aggression;
     double m_lastMove;
+protected:
+    class GuideAlgorithmHysteresisConfigDialogPane : public ConfigDialogPane
+    {
+        GuideAlgorithmHysteresis *m_pGuideAlgorithm;
+        wxSpinCtrlDouble *m_pHysteresis;
+        wxSpinCtrlDouble *m_pAggression;
+        wxSpinCtrlDouble *m_pMinMove;
+
+    public:
+        GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm);
+        virtual ~GuideAlgorithmHysteresisConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
 public:
-    GuideAlgorithmHysteresis(GuideAlgorithm *pChained=NULL);
+    GuideAlgorithmHysteresis(void);
     virtual ~GuideAlgorithmHysteresis(void);
-    virtual bool SetParms(double minMove, double hysteresis, double aggression);
+
+    virtual GUIDE_ALGORITHM Algorithm(void);
+
+    virtual bool reset(void);
     virtual double result(double input);
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
+    virtual double GetMinMove(void);
+    virtual bool SetMinMove(double minMove);
+    virtual double GetHysteresis(void);
+    virtual bool SetHysteresis(double minMove);
+    virtual double GetAggression(void);
+    virtual bool SetAggression(double minMove);
 };
 
 #endif /* GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED */

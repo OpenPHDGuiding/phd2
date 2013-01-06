@@ -46,11 +46,34 @@ class GuideAlgorithmLowpass:GuideAlgorithm
     ArrayOfDbl m_history;
     double m_slopeWeight;
     double m_minMove;
+protected:
+    class GuideAlgorithmLowpassConfigDialogPane : public ConfigDialogPane
+    {
+        GuideAlgorithmLowpass *m_pGuideAlgorithm;
+        wxSpinCtrlDouble *m_pSlopeWeight;
+        wxSpinCtrlDouble *m_pMinMove;
+
+    public:
+        GuideAlgorithmLowpassConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm);
+        virtual ~GuideAlgorithmLowpassConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
 public:
-    GuideAlgorithmLowpass(GuideAlgorithm *pChained=NULL);
+    GuideAlgorithmLowpass(void);
     virtual ~GuideAlgorithmLowpass(void);
-    virtual bool SetParms(double minMove, double slopeWeight);
+    virtual GUIDE_ALGORITHM Algorithm(void);
+
+    virtual bool reset(void);
     virtual double result(double input);
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
+    virtual double GetMinMove(void);
+    virtual bool SetMinMove(double minMove);
+    virtual double GetSlopeWeight(void);
+    virtual bool SetSlopeWeight(double SlopeWeight);
+
 };
 
 #endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */

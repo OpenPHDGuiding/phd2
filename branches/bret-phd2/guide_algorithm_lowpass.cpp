@@ -39,13 +39,16 @@
 
 #include "phd.h"
 
-GuideAlgorithmLowpass::GuideAlgorithmLowpass(GuideAlgorithm *pChained)
-    :GuideAlgorithm(pChained)
-{
-    double minMove    = pConfig->GetDouble("/GuideAlgorithm/Lowpass/minMove", 0.2);
-    double slopeWeight    = pConfig->GetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", 5.0);
+static const double DefaultMinMove     = 0.2;
+static const double DefaultSlopeWeight = 5.0;
 
-    SetParms(minMove, slopeWeight);
+GuideAlgorithmLowpass::GuideAlgorithmLowpass(void)
+{
+    double minMove    = pConfig->GetDouble("/GuideAlgorithm/Lowpass/minMove", DefaultMinMove);
+    SetMinMove(minMove);
+
+    double slopeWeight    = pConfig->GetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", DefaultSlopeWeight);
+    SetSlopeWeight(slopeWeight);
 
     while (m_history.GetCount() < HISTORY_SIZE)
     {
@@ -57,47 +60,18 @@ GuideAlgorithmLowpass::~GuideAlgorithmLowpass(void)
 {
 }
 
-bool GuideAlgorithmLowpass::SetParms(double minMove, double slopeWeight)
+GUIDE_ALGORITHM GuideAlgorithmLowpass::Algorithm(void)
 {
-    bool bError = false;
+    return GUIDE_ALGORITHM_LOWPASS;
+}
 
-    try
-    {
-        if (minMove <= 0)
-        {
-            throw ERROR_INFO("invalid minMove");
-        }
-
-        if (slopeWeight < 0.0)
-        {
-            throw ERROR_INFO("invalid slopeWeight");
-        }
-
-        m_slopeWeight = slopeWeight;
-
-        pConfig->GetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", m_slopeWeight);
-        pConfig->GetDouble("/GuideAlgorithm/Lowpass/minMove", m_minMove);
-    }
-    catch (char *pErrorMsg)
-    {
-        POSSIBLY_UNUSED(pErrorMsg);
-        bError = true;
-
-        Debug.Write(wxString::Format("GuideAlgorithLowpass::SetPArms() caught exception: %s\n", pErrorMsg));
-    }
-
-    Debug.Write(wxString::Format("GuideAlgorithmLowpass::SetParms() returns %d, m_slopeWeight=%.2f\n", bError, m_slopeWeight));
-
-    return bError;
+bool GuideAlgorithmLowpass::reset(void)
+{
+    return true;
 }
 
 double GuideAlgorithmLowpass::result(double input)
 {
-    if (m_pChained)
-    {
-        input = m_pChained->result(input);
-    }
-
     m_history.Add(input);
 
     ArrayOfDbl sortedHistory(m_history);
@@ -109,9 +83,9 @@ double GuideAlgorithmLowpass::result(double input)
     double slope = CalcSlope(m_history);
     double dReturn = input + m_slopeWeight*slope;
 
-    if (dReturn > input)
+    if (fabs(dReturn) > fabs(input))
     {
-        Debug.Write(wxString::Format("GuideAlgorithmLowpassa::Result() input %.2f is > calculated value %.2f, using input\n", input, dReturn));
+        Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() input %.2f is > calculated value %.2f, using input\n", input, dReturn));
         dReturn = input;
     }
 
@@ -123,4 +97,118 @@ double GuideAlgorithmLowpass::result(double input)
     Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() returns %.2f from input %.2f\n", dReturn, input));
 
     return dReturn;
+}
+
+double GuideAlgorithmLowpass::GetMinMove(void)
+{
+    return m_minMove;
+}
+
+bool GuideAlgorithmLowpass::SetMinMove(double minMove)
+{
+    bool bError = false;
+
+    try
+    {
+        if (minMove < 0)
+        {
+            throw ERROR_INFO("invalid minMove");
+        }
+
+        m_minMove = minMove;
+
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        m_minMove = DefaultMinMove;
+    }
+
+    pConfig->SetDouble("/GuideAlgorithm/Lowpass/minMove", m_minMove);
+
+    return bError;
+}
+
+double GuideAlgorithmLowpass::GetSlopeWeight(void)
+{
+    return m_slopeWeight;
+}
+
+bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
+{    bool bError = false;
+
+    try
+    {
+        if (slopeWeight < 0.0)
+        {
+            throw ERROR_INFO("invalid slopeWeight");
+        }
+
+        m_slopeWeight = slopeWeight;
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        m_slopeWeight = DefaultSlopeWeight;
+    }
+
+    pConfig->SetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", m_slopeWeight);
+
+    return bError;
+}
+
+ConfigDialogPane *GuideAlgorithmLowpass::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new GuideAlgorithmLowpassConfigDialogPane(pParent, this);
+}
+
+GuideAlgorithmLowpass::
+GuideAlgorithmLowpassConfigDialogPane::
+GuideAlgorithmLowpassConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm)
+    :ConfigDialogPane(_T("Lowpass Guide Algorithm"), pParent)
+{
+    int width;
+
+    m_pGuideAlgorithm = pGuideAlgorithm;
+
+    width = StringWidth(_T("000.00"));
+	m_pSlopeWeight = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5,_T("SlopeWeight"));
+    m_pSlopeWeight->SetDigits(2);
+
+	DoAdd(_T("Slope Weight"), m_pSlopeWeight,
+	      _T("Weighting of slope parameter in lowpass auto-dec"));
+
+    width = StringWidth(_T("000.00"));
+	m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
+    m_pMinMove->SetDigits(2);
+
+	DoAdd(_T("Minimum Move (pixels)"), m_pMinMove,
+	      _T("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
+
+}
+
+GuideAlgorithmLowpass::
+GuideAlgorithmLowpassConfigDialogPane::
+~GuideAlgorithmLowpassConfigDialogPane(void)
+{
+}
+
+void GuideAlgorithmLowpass::
+GuideAlgorithmLowpassConfigDialogPane::
+LoadValues(void)
+{
+    m_pSlopeWeight->SetValue(m_pGuideAlgorithm->GetSlopeWeight());
+    m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+}
+
+void GuideAlgorithmLowpass::
+GuideAlgorithmLowpassConfigDialogPane::
+UnloadValues(void)
+{
+    m_pGuideAlgorithm->SetSlopeWeight(m_pSlopeWeight->GetValue());
+    m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 }
