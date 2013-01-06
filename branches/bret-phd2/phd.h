@@ -108,12 +108,14 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 /* eliminate warnings for unused variables */
 #define POSSIBLY_UNUSED(x) (void)(x)
 
-// these macros are used for building error messages for thrown exceptions
+// these macros are used for building messages for thrown exceptions
 // It is surprisingly hard to get the line number into a string...
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
-#define ERROR_INFO_BASE(file, line) "Error in " file ":" TOSTRING(line)
-#define ERROR_INFO(s) (ERROR_INFO_BASE(__FILE__, __LINE__) "->" s)
+
+#define THROW_INFO_BASE(type, file, line) type " in " file ":" TOSTRING(line)
+#define THROW_INFO(s) (THROW_INFO_BASE("Throw", __FILE__, __LINE__) "->" s)
+#define ERROR_INFO(s) (THROW_INFO_BASE("Error", __FILE__, __LINE__) "->" s)
 
 #include "phdlog.h"
 #include "config.h"

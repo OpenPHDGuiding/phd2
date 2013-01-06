@@ -342,13 +342,13 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
         {
             SetState(STATE_STOP);
             statusMessage = _T("Stopped Exposing");
-            throw ERROR_INFO("Stopped Exposing");
+            throw THROW_INFO("Stopped Exposing");
         }
 
         if (IsPaused())
         {
             statusMessage = _T("Paused");
-            throw ERROR_INFO("Skipping frame - guider is paused");
+            throw THROW_INFO("Skipping frame - guider is paused");
         }
 
         if (m_state == STATE_SELECTING && m_autoSelectTries++ == 0)
@@ -361,7 +361,7 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
             else
             {
                 statusMessage = _T("No Star selected");
-                throw ERROR_INFO("No Star selected");
+                throw THROW_INFO("No Star Autoselected");
             }
         }
 
@@ -401,7 +401,7 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
                 m_star.SetError(Star::STAR_MASSCHANGE);
                 pFrame->SetStatusText(wxString::Format(_T("Mass: %.0f vs %.0f"), newStar.Mass, m_star.Mass), 1);
                 Debug.Write(wxString::Format("UpdateGuideState(): star mass ratio=%.1f, thresh=%.1f new=%.1f, old=%.1f\n", massRatio, m_massChangeThreshold, newStar.Mass, m_star.Mass));
-                throw ERROR_INFO("massChangeThreshold error");
+                throw THROW_INFO("massChangeThreshold error");
             }
         }
 
@@ -498,7 +498,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
         if (m_state > STATE_SELECTED) 
         {
             mevent.Skip();
-            throw ERROR_INFO("Skipping event because state > STATE_SELECTED");
+            throw THROW_INFO("Skipping event because state > STATE_SELECTED");
         }
 
         if (mevent.m_shiftDown) 
@@ -511,7 +511,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             if ((mevent.m_x <= m_searchRegion) || (mevent.m_x >= (XWinSize+m_searchRegion)) || (mevent.m_y <= m_searchRegion) || (mevent.m_y >= (XWinSize+m_searchRegion))) 
             {
                 mevent.Skip();
-                throw ERROR_INFO("Skipping event because click outside of search region");
+                throw THROW_INFO("Skipping event because click outside of search region");
             }
 
             if (pCurrentFullFrame->NPixels == 0)

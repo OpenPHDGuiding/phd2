@@ -407,14 +407,14 @@ bool Guider::DoGuide(void)
 
     try
     {
+        if (!CurrentPosition().IsValid())
+        {
+            throw THROW_INFO("invalid CurrentPosition");
+        }
+
         if (!LockPosition().IsValid())
         {
             throw ERROR_INFO("invalid LockPosition");
-        }
-
-        if (!CurrentPosition().IsValid())
-        {
-            throw ERROR_INFO("invalid CurrentPosition");
         }
 
         double theta = LockPosition().Angle(CurrentPosition());

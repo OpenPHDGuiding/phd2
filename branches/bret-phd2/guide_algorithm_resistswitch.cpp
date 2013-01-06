@@ -113,7 +113,7 @@ double GuideAlgorithmResistSwitch::result(double input)
 
             if (abs(decHistory) < 3)
             {
-                throw ERROR_INFO("not compelling enough");
+                throw THROW_INFO("not compelling enough");
             }
 
             for(int i=0;i<3;i++)
@@ -124,7 +124,7 @@ double GuideAlgorithmResistSwitch::result(double input)
 
             if (fabs(newest) <= fabs(oldest))
             {
-                throw ERROR_INFO("Not getting worse");
+                throw THROW_INFO("Not getting worse");
             }
 
             Debug.Write(wxString::Format("switching direction from %d to %d - decHistory=%d oldest=%.2f newest=%.2f\n", m_currentSide, sign(decHistory), decHistory, oldest, newest));
@@ -134,7 +134,7 @@ double GuideAlgorithmResistSwitch::result(double input)
 
         if (m_currentSide != sign(input))
         {
-            throw ERROR_INFO("must have overshot -- vetoing move");
+            throw THROW_INFO("must have overshot -- vetoing move");
         }
     }
     catch (char *pErrorMsg)
