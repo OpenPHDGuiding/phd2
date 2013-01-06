@@ -128,7 +128,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "scopes.h"
 #include "image_math.h"
 #include "worker_thread.h"
-#include "myapp.h"
 #include "myframe.h"
 
 extern Config *pConfig;
@@ -169,9 +168,17 @@ enum {
 	SOCKET_ID,
 };
 
+extern bool ServerMode;
 extern bool RandomMotionMode;
 extern wxSocketServer *SocketServer;
 extern int SocketConnections;
 #endif
+
+class PhdApp: public wxApp
+{
+  public:
+    PhdApp(void){};
+    bool OnInit(void);
+};
 
 #endif // PHD_H_INCLUDED

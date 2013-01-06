@@ -351,7 +351,6 @@
     <ClCompile Include="guide_routines.cpp" />
     <ClCompile Include="image_math.cpp" />
     <ClCompile Include="mount.cpp" />
-    <ClCompile Include="myapp.cpp" />
     <ClCompile Include="myframe.cpp" />
     <ClCompile Include="myframe_events.cpp" />
     <ClCompile Include="phd.cpp">
@@ -427,7 +426,6 @@
     <ClInclude Include="guide_algorithm_resistswitch.h" />
     <ClInclude Include="image_math.h" />
     <ClInclude Include="mount.h" />
-    <ClInclude Include="myapp.h" />
     <ClInclude Include="myframe.h" />
     <ClInclude Include="phd.h" />
     <ClInclude Include="phdlog.h" />

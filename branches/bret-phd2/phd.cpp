@@ -71,3 +71,46 @@ int CropY=0;
 bool RandomMotionMode = false;
 wxSocketServer *SocketServer;
 int SocketConnections;
+
+IMPLEMENT_APP(PhdApp)
+
+// ------------------------  Phd App stuff -----------------------------
+bool PhdApp::OnInit() {
+
+#ifndef DEBUG
+	#if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
+	wxDisableAsserts();
+	#endif
+#endif
+
+    Debug.Init("debug", true);
+	SetVendorName(_T("StarkLabs"));
+    pConfig->Initialize(_T("PHDGuidingV2"));
+
+	wxLocale locale;
+
+	locale.Init(wxLANGUAGE_ENGLISH_US);
+//	wxMessageBox(wxString::Format("%f",1.23));
+#ifdef ORION
+	frame = new MyFrame(wxString::Format(_T("PHD Guiding for Orion v%s"),VERSION));
+#else
+	frame = new MyFrame(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
+#endif
+	wxImage::AddHandler(new wxJPEGHandler);
+#ifdef ORION
+	wxBitmap bitmap;
+	wxSplashScreen* splash;
+	if (bitmap.LoadFile(_T("OrionSplash.jpg"), wxBITMAP_TYPE_JPEG)) {
+		splash = new wxSplashScreen(bitmap,
+          wxSPLASH_CENTRE_ON_SCREEN|wxSPLASH_NO_TIMEOUT,
+          2000, NULL, -1, wxDefaultPosition, wxDefaultSize,
+          wxSIMPLE_BORDER|wxSTAY_ON_TOP);
+	}
+	wxYield();
+	wxMilliSleep(2000);
+	delete splash;
+#endif
+	frame->Show(true);
+
+	return true;
+}
