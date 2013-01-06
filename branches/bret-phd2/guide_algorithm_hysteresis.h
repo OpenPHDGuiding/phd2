@@ -61,6 +61,16 @@ protected:
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
     };
+
+    virtual double GetMinMove(void);
+    virtual bool SetMinMove(double minMove);
+    virtual double GetHysteresis(void);
+    virtual bool SetHysteresis(double minMove);
+    virtual double GetAggression(void);
+    virtual bool SetAggression(double minMove);
+
+    friend class GuideAlgorithmHysteresisConfigDialogPane;
+    friend class GraphLogWindow;
 public:
     GuideAlgorithmHysteresis(void);
     virtual ~GuideAlgorithmHysteresis(void);
@@ -71,12 +81,6 @@ public:
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
-    virtual double GetMinMove(void);
-    virtual bool SetMinMove(double minMove);
-    virtual double GetHysteresis(void);
-    virtual bool SetHysteresis(double minMove);
-    virtual double GetAggression(void);
-    virtual bool SetAggression(double minMove);
 };
 
 #endif /* GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED */

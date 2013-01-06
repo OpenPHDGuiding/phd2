@@ -75,6 +75,24 @@ protected:
         virtual void UnloadValues(void);
     };
 
+    NOISE_REDUCTION_METHOD GetNoiseReductionMethod(void);
+    bool SetNoiseReductionMethod(int noiseReductionMethod);
+
+    double GetDitherScaleFactor(void);
+    bool SetDitherScaleFactor(double ditherScaleFactor);
+
+    bool GetDitherRaOnly(void);
+    bool SetDitherRaOnly(bool ditherRaOnly);
+
+    bool GetServerMode(void);
+    bool SetServerMode(bool ditherRaOnly);
+
+    bool SetTimeLapse(int timeLapse);
+    int GetTimeLapse(void);
+
+    friend class MyFrameConfigDialogPane;
+    friend class WorkerThread;
+
 public:
 	MyFrame(const wxString& title);
 	virtual ~MyFrame();
@@ -177,20 +195,7 @@ public:
 
     void UpdateButtonsStatus(void);
 
-    NOISE_REDUCTION_METHOD GetNoiseReductionMethod(void);
-    bool SetNoiseReductionMethod(int noiseReductionMethod);
 
-    double GetDitherScaleFactor(void);
-    bool SetDitherScaleFactor(double ditherScaleFactor);
-
-    bool GetDitherRaOnly(void);
-    bool SetDitherRaOnly(bool ditherRaOnly);
-
-    bool GetServerMode(void);
-    bool SetServerMode(bool ditherRaOnly);
-
-    virtual int GetTimeLapse(void);
-    virtual bool SetTimeLapse(int timeLapse);
 private:
     wxCriticalSection m_CSpWorkerThread;
     WorkerThread *m_pWorkerThread;

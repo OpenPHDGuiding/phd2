@@ -58,6 +58,14 @@ protected:
         virtual void UnloadValues(void);
     };
 
+    virtual double GetMassChangeThreshold(void);
+    virtual bool SetMassChangeThreshold(double starMassChangeThreshold);
+    virtual int GetSearchRegion(void);
+    virtual bool SetSearchRegion(int searchRegion);
+
+    friend class GuiderOneStarConfigDialogPane;
+
+private:
     Star m_star;
 
     // parameters
@@ -65,6 +73,7 @@ protected:
     double m_massChangeThreshold;
     int m_badMassCount;
     int m_autoSelectTries;
+
 public:
 	GuiderOneStar(wxWindow *parent);
     virtual ~GuiderOneStar(void);
@@ -82,10 +91,6 @@ public:
     virtual bool SetRaGuideAlgorithm(int raGuideAlgorithm);
     virtual bool SetDecGuideAlgorithm(int decGuideAlgorithm);
 
-    virtual double GetMassChangeThreshold(void);
-    virtual bool SetMassChangeThreshold(double starMassChangeThreshold);
-    virtual int GetSearchRegion(void);
-    virtual bool SetSearchRegion(int searchRegion);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
 protected:

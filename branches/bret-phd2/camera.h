@@ -51,6 +51,15 @@ protected:
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
     };
+
+    virtual bool GetUseSubframes(void);
+    virtual bool SetUseSubframes(bool useSubFrames);
+
+    virtual double GetCameraGain(void);
+    virtual bool SetCameraGain(double cameraGain);
+    
+    friend class CameraConfigDialogPane;
+
 public:
     bool            UseSubframes; // Use subframes if possible from camera
     int             GuideCameraGain;
@@ -85,12 +94,6 @@ public:
 
     virtual bool    HasNonGUIPulseGuideScope(void) { return false; }
 	virtual bool	NonGUIPulseGuideScope (int WXUNUSED(direction), int WXUNUSED(duration)) { assert(false); return false;}
-
-    virtual bool GetUseSubframes(void);
-    virtual bool SetUseSubframes(bool useSubFrames);
-
-    virtual double GetCameraGain(void);
-    virtual bool SetCameraGain(double cameraGain);
 
     ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 

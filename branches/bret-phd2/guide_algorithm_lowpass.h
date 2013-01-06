@@ -60,6 +60,14 @@ protected:
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
     };
+
+    virtual double GetMinMove(void);
+    virtual bool SetMinMove(double minMove);
+    virtual double GetSlopeWeight(void);
+    virtual bool SetSlopeWeight(double SlopeWeight);
+
+    friend class GuideAlgorithmLowpassConfigDialogPane;
+
 public:
     GuideAlgorithmLowpass(void);
     virtual ~GuideAlgorithmLowpass(void);
@@ -68,12 +76,6 @@ public:
     virtual bool reset(void);
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-
-    virtual double GetMinMove(void);
-    virtual bool SetMinMove(double minMove);
-    virtual double GetSlopeWeight(void);
-    virtual bool SetSlopeWeight(double SlopeWeight);
-
 };
 
 #endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */

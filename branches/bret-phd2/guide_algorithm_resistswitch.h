@@ -59,6 +59,11 @@ protected:
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
     };
+
+    virtual double GetMinMove(void);
+    virtual bool SetMinMove(double minMove);
+
+    friend class GuideAlgorithmResistSwitchConfigDialogPane;
 public:
     GuideAlgorithmResistSwitch(void);
     virtual ~GuideAlgorithmResistSwitch(void);
@@ -67,9 +72,6 @@ public:
     virtual bool reset(void);
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-
-    virtual double GetMinMove(void);
-    virtual bool SetMinMove(double minMove);
 };
 
 #endif /* GUIDE_ALGORITHM_RESISTSWITCH_H_INCLUDED */
