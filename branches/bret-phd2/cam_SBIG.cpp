@@ -226,7 +226,7 @@ bool Camera_SBIGClass::Disconnect() {
 	SBIGUnivDrvCommand(CC_CLOSE_DEVICE, NULL, NULL);
 	SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	return false;
 }

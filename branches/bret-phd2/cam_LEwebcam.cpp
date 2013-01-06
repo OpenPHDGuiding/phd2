@@ -173,7 +173,7 @@ bool Camera_LEwebcamClass::Disconnect() {
 		VFW_Window->DeviceDisconnect();
 	}
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	if (Port == 0) {
 		LXUSB_Reset();

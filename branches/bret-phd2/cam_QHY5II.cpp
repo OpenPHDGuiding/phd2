@@ -241,7 +241,7 @@ bool Camera_QHY5IIClass::Disconnect() {
 	RawBuffer = NULL;
 	FreeLibrary(CameraDLL);
 
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	return false;
 

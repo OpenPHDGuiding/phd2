@@ -249,7 +249,7 @@ bool Camera_FirewireClass::Disconnect() {
 	m_pGrabber->stopLive();
 	m_pGrabber->closeDev();
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	delete m_pGrabber;
 	return false;

@@ -523,7 +523,7 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
         double dX = m_calibrationStartingLocation.dX(currentPosition);
         double dY = m_calibrationStartingLocation.dY(currentPosition);
         double dist = m_calibrationStartingLocation.Distance(currentPosition);
-        double dist_crit = wxMin(CurrentGuideCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
+        double dist_crit = wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
 
         wxString statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
 

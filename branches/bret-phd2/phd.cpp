@@ -51,7 +51,7 @@ Config *pConfig = new Config();
 Scope *pScope = new ScopeNone();
 MyFrame *pFrame = NULL;
 
-GuideCamera *CurrentGuideCamera = NULL;
+GuideCamera *pCamera = NULL;
 bool GuideCameraConnected = false;
 
 LOG Debug;

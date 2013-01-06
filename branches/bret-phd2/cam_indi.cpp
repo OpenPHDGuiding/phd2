@@ -159,7 +159,7 @@ bool Camera_INDIClass::Connect() {
 
 bool Camera_INDIClass::Disconnect() {
     Connected = FALSE;
-    CurrentGuideCamera = NULL;
+    pCamera = NULL;
     GuideCameraConnected = false;
     return false;
 }

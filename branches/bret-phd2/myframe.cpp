@@ -532,7 +532,7 @@ MyFrame::~MyFrame() {
 
 	if (GuideCameraConnected)
     {
-		CurrentGuideCamera->Disconnect();
+		pCamera->Disconnect();
     }
 }
 
@@ -614,7 +614,7 @@ void MyFrame::StopWorkerThread(void)
 void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
 {
     PHD_EXPOSE_REQUEST *pRequest = (PHD_EXPOSE_REQUEST *)evt.GetClientData();
-    bool bError = CurrentGuideCamera->CaptureFull(pRequest->exposureDuration, *pRequest->pImage);
+    bool bError = pCamera->CaptureFull(pRequest->exposureDuration, *pRequest->pImage);
 
     if (!bError)
     {
@@ -696,7 +696,7 @@ void MyFrame::OnClose(wxCloseEvent &event) {
     }
 
 	if (GuideCameraConnected)
-		CurrentGuideCamera->Disconnect();
+		pCamera->Disconnect();
 
 	if (SocketServer)
 		delete SocketServer;
@@ -704,7 +704,7 @@ void MyFrame::OnClose(wxCloseEvent &event) {
 	if (LogFile)
 		delete LogFile;
 
-	//delete CurrentGuideCamera;
+	//delete pCamera;
 	help->Quit();
 	delete help;
 	Destroy();

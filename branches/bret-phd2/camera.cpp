@@ -286,25 +286,25 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	}
 	// Disconnect current camera
 	if (GuideCameraConnected) {
-		SetStatusText(CurrentGuideCamera->Name + _T(" disconnected"));
-		CurrentGuideCamera->Disconnect();
+		SetStatusText(pCamera->Name + _T(" disconnected"));
+		pCamera->Disconnect();
 	}
 
-    delete CurrentGuideCamera;
-    CurrentGuideCamera = NULL;
+    delete pCamera;
+    pCamera = NULL;
     GuideCameraConnected = false;
 
 	if (Choice.Find(_T("Simulator")) + 1)
-		CurrentGuideCamera = new Camera_SimClass();
+		pCamera = new Camera_SimClass();
 	else if (Choice.Find(_T("None")) + 1) {
-		CurrentGuideCamera = NULL;
+		pCamera = NULL;
 		GuideCameraConnected = false;
 		SetStatusText(_T("No cam"),3);
 		return;
 	}
 #if defined (SAC42)
 	else if (Choice.Find(_T("SAC4-2")) + 1)
-		CurrentGuideCamera = new Camera_SAC42Class();
+		pCamera = new Camera_SAC42Class();
 #endif
 #if defined (ATIK16)
 	else if (Choice.Find(_T("Atik 16 series")) + 1) {
@@ -314,7 +314,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 			pNewGuideCamera->Color = true;
 		else
 			pNewGuideCamera->Color = false;
-		CurrentGuideCamera = pNewGuideCamera;
+		pCamera = pNewGuideCamera;
 	}
 #endif
 #if defined (ATIK_GEN3)
@@ -325,106 +325,106 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 			pNewGuideCamera->Color = true;
 		else
 			pNewGuideCamera->Color = false;
-		CurrentGuideCamera = pNewGuideCamera;
+		pCamera = pNewGuideCamera;
 	}
 #endif
 #if defined (QGUIDE)
 	else if (Choice.Find(_T("CCD Labs Q-Guider")) + 1) {
-		CurrentGuideCamera = new Camera_QGuiderClass();
-		CurrentGuideCamera->Name = _T("Q-Guider");
+		pCamera = new Camera_QGuiderClass();
+		pCamera->Name = _T("Q-Guider");
 	}
 	else if (Choice.Find(_T("MagZero MZ-5")) + 1) {
-		CurrentGuideCamera = new Camera_QGuiderClass();
-		CurrentGuideCamera->Name = _T("MagZero MZ-5");
+		pCamera = new Camera_QGuiderClass();
+		pCamera->Name = _T("MagZero MZ-5");
 	}
 #endif
 #if defined (QHY5II)
 	else if (Choice.Find(_T("QHY 5-II")) + 1)
-		CurrentGuideCamera = new Camera_QHY5IIClass();
+		pCamera = new Camera_QHY5IIClass();
 #endif
 /*#if defined (OPENSSAG)
 	else if (Choice.Find(_T("Open StarShoot AutoGuider")) + 1)
-		CurrentGuideCamera = new Camera_OpenSSAGClass();
+		pCamera = new Camera_OpenSSAGClass();
 #endif*/
 #if defined (OPENSSAG)
 	else if (Choice.Find(_T("Orion StarShoot Autoguider")) + 1)
-		CurrentGuideCamera = new Camera_OpenSSAGClass();
+		pCamera = new Camera_OpenSSAGClass();
 #endif
 #if defined (SSAG)
 	else if (Choice.Find(_T("StarShoot Autoguider")) + 1)
-		CurrentGuideCamera = new Camera_SSAGClass();
+		pCamera = new Camera_SSAGClass();
 #endif
 #if defined (SSPIAG)
 	else if (Choice.Find(_T("StarShoot Planetary Imager & Autoguider")) + 1)
-		CurrentGuideCamera = new Camera_SSPIAGClass();
+		pCamera = new Camera_SSPIAGClass();
 #endif
 #if defined (ORION_DSCI)
 	else if (Choice.Find(_T("Orion StarShoot DSCI")) + 1)
-		CurrentGuideCamera = new Camera_StarShootDSCIClass();
+		pCamera = new Camera_StarShootDSCIClass();
 #endif
 #if defined (WDM_CAMERA)
 	else if (Choice.Find(_T("Windows WDM")) + 1)
-		CurrentGuideCamera = new Camera_WDMClass();
+		pCamera = new Camera_WDMClass();
 #endif
 #if defined (VFW_CAMERA)
 	else if (Choice.Find(_T("Windows VFW")) + 1)
-		CurrentGuideCamera = new Camera_VFWClass();
+		pCamera = new Camera_VFWClass();
 #endif
 #if defined (LE_LXUSB_CAMERA)
 	else if (Choice.Find(_T("Long exposure webcam + LXUSB")) + 1)
-		CurrentGuideCamera = new Camera_LEwebcamClass();
+		pCamera = new Camera_LEwebcamClass();
 #endif
 #if defined (LE_PARALLEL_CAMERA)
 	else if (Choice.Find(_T("Long exposure webcam + Parallel/Serial")) + 1)
-		CurrentGuideCamera = new Camera_LEwebcamClass();
+		pCamera = new Camera_LEwebcamClass();
 #endif
 #if defined (MEADE_DSI)
 	else if (Choice.Find(_T("Meade DSI I, II, or III")) + 1)
-		CurrentGuideCamera = new Camera_DSIClass();
+		pCamera = new Camera_DSIClass();
 #endif
 #if defined (STARFISH)
 	else if (Choice.Find(_T("Fishcamp Starfish")) + 1)
-		CurrentGuideCamera = new Camera_StarfishClass();
+		pCamera = new Camera_StarfishClass();
 #endif
 #if defined (SXV)
 	else if (Choice.Find(_T("Starlight Xpress SXV")) + 1)
-		CurrentGuideCamera = new Camera_SXVClass();
+		pCamera = new Camera_SXVClass();
 #endif
 #if defined (OS_PL130)
 	else if (Choice.Find(_T("Opticstar PL-130M")) + 1) {
 		Camera_OSPL130.Color=false;
 		Camera_OSPL130.Name=_T("Opticstar PL-130M");
-		CurrentGuideCamera = new Camera_OSPL130Class();
+		pCamera = new Camera_OSPL130Class();
 	}
 	else if (Choice.Find(_T("Opticstar PL-130C")) + 1) {
 		Camera_OSPL130.Color=true;
 		Camera_OSPL130.Name=_T("Opticstar PL-130C");
-		CurrentGuideCamera = new Camera_OSPL130Class();
+		pCamera = new Camera_OSPL130Class();
 	}
 #endif
 #if defined (NEB_SBIG)
 	else if (Choice.Find(_T("Nebulosity")) + 1)
-		CurrentGuideCamera = new Camera_NebSBIGClass();
+		pCamera = new Camera_NebSBIGClass();
 #endif
 #if defined (SBIG)
 	else if (Choice.Find(_T("SBIG")) + 1)
-		CurrentGuideCamera = new Camera_SBIGClass();
+		pCamera = new Camera_SBIGClass();
 #endif
 #if defined (FIREWIRE)
 	else if (Choice.Find(_T("The Imaging Source (DCAM Firewire)")) + 1)
-		CurrentGuideCamera = new Camera_FirewireClass();
+		pCamera = new Camera_FirewireClass();
 #endif
 #if defined (ASCOM_LATECAMERA)
 	else if (Choice.Find(_T("ASCOM (Late) Camera")) + 1)
-		CurrentGuideCamera = new Camera_ASCOMLateClass();
+		pCamera = new Camera_ASCOMLateClass();
 #endif
 #if defined (INOVA_PLC)
 	else if (Choice.Find(_T("i-Nova PLC-M")) + 1)
-		CurrentGuideCamera = new Camera_INovaPLCClass();
+		pCamera = new Camera_INovaPLCClass();
 #endif
 #if defined (INDI_CAMERA)
 	else if (Choice.Find(_T("INDI Camera")) + 1)
-		CurrentGuideCamera = new Camera_INDIClass();
+		pCamera = new Camera_INDIClass();
 #endif
 
 #if defined (V4L_CAMERA)
@@ -453,45 +453,45 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 
 				Camera_VIDEODEVICE.Name = deviceInfo->getProduct();
 			} else {
-				CurrentGuideCamera = NULL;
+				pCamera = NULL;
 				GuideCameraConnected = false;
 				SetStatusText(_T("No cam"),3);
 				return;
 			}
 		}
 
-		CurrentGuideCamera = new Camera_VIDEODEVICEClass();
+		pCamera = new Camera_VIDEODEVICEClass();
 	}
 #endif
 
 	else {
-		CurrentGuideCamera = NULL;
+		pCamera = NULL;
 		GuideCameraConnected = false;
 		SetStatusText(_T("No cam"),3);
 		wxMessageBox(_T("Unknown camera choice"));
 		return;
 	}
 
-	if (CurrentGuideCamera->Connect()) {
+	if (pCamera->Connect()) {
 		wxMessageBox(_T("Problem connecting to camera"),_T("Error"),wxOK);
-		CurrentGuideCamera = NULL;
+		pCamera = NULL;
 		GuideCameraConnected = false;
 		SetStatusText(_T("No cam"),3);
 		Guide_Button->Enable(false);
 		Loop_Button->Enable(false);
 		return;
 	}
-	SetStatusText(CurrentGuideCamera->Name + _T(" connected"));
+	SetStatusText(pCamera->Name + _T(" connected"));
 	GuideCameraConnected = true;
 	SetStatusText(_T("Camera"),3);
 	Loop_Button->Enable(true);
 	Guide_Button->Enable(pScope->IsConnected());
     pConfig->SetString("/camera/LastMenuChoice", Choice);
-	if (CurrentGuideCamera->HasPropertyDialog)
+	if (pCamera->HasPropertyDialog)
 		Setup_Button->Enable(true);
 	else
 		Setup_Button->Enable(false);
-	if (pFrame->mount_menu->IsChecked(MOUNT_CAMERA) && CurrentGuideCamera->HasGuiderOutput) {
+	if (pFrame->mount_menu->IsChecked(MOUNT_CAMERA) && pCamera->HasGuiderOutput) {
 		if (pScope)
 			delete pScope;
 		pScope = new ScopeOnCamera();

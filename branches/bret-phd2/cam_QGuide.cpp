@@ -120,7 +120,7 @@ bool Camera_QGuiderClass::Disconnect() {
 	closeUSB();
 //	delete [] buffer;
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	//qglogfile->AddLine(wxNow() + ": Disconnecting"); //qglogfile->Write(); //qglogfile->Close();
 	return false;

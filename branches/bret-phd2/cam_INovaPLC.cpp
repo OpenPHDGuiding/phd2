@@ -112,7 +112,7 @@ bool Camera_INovaPLCClass::PulseGuideScope(int direction, int duration) {
 
 bool Camera_INovaPLCClass::Disconnect() {
     Connected = false;
-    CurrentGuideCamera = NULL;
+    pCamera = NULL;
     GuideCameraConnected = false;
 	DSCameraUnInit();
 	delete [] RawData;

@@ -257,7 +257,7 @@ bool Camera_SXVClass::Disconnect() {
 		delete [] RawData;
 	RawData = NULL;
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	sxReset(hCam);
 #ifdef __APPLE__

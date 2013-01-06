@@ -113,7 +113,7 @@ bool Camera_VFWClass::Disconnect() {
 		VFW_Window->DeviceDisconnect();
 	}
 		Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	VFW_Window = NULL;
 //	Extra_Window = NULL;

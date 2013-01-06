@@ -328,7 +328,7 @@ bool Camera_SSPIAGClass::Disconnect() {
 	FreeLibrary(CameraDLL);
 	FreeLibrary(GenericDLL);
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	return false;
 

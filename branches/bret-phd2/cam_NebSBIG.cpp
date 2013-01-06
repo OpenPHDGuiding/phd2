@@ -57,7 +57,7 @@ bool Camera_NebSBIGClass::Connect() {
 
 bool Camera_NebSBIGClass::Disconnect() {
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	ServerSendCamDisconnect();
 	return false;

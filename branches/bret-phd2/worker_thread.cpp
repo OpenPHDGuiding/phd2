@@ -89,13 +89,13 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
     {
         wxMilliSleep(pFrame->GetTimeLapse());
 
-        if (CurrentGuideCamera->HasNonGUICaptureFull())
+        if (pCamera->HasNonGUICaptureFull())
         {
             Debug.Write(wxString::Format("Handling exposure in thread\n"));
 
             pArgs->pImage->InitDate();
 
-            if (CurrentGuideCamera->CaptureFull(pArgs->exposureDuration, *pArgs->pImage))
+            if (pCamera->CaptureFull(pArgs->exposureDuration, *pArgs->pImage))
             {
                 throw ERROR_INFO("CaptureFull failed");
             }

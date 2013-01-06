@@ -106,8 +106,8 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 			tmpstr.ToDouble(&LockX); 
 			LockX = fabs(LockX);
 			if (LockX < 0.0001) {
-				LockX = CurrentGuideCamera->FullSize.GetWidth() / 2;
-				LockY = CurrentGuideCamera->FullSize.GetHeight() / 2;
+				LockX = pCamera->FullSize.GetWidth() / 2;
+				LockY = pCamera->FullSize.GetHeight() / 2;
 			}
 			else {
 				tmpstr = wxGetTextFromUser(_T("Enter y-lock position"), _T("Y-lock position"));

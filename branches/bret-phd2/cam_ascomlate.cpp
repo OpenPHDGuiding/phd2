@@ -394,7 +394,7 @@ bool Camera_ASCOMLateClass::Disconnect() {
 		this->ASCOMDriver = NULL;
 	}
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	return false;
 }

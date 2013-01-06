@@ -69,8 +69,8 @@ double MyFrame::RequestedExposureDuration() { // Sets the global duration variab
 	durtext.ToDouble(&dReturn);
 #endif
     dReturn *= 1000;
-	if (CurrentGuideCamera->HaveDark) {
-		if (CurrentGuideCamera->DarkDur != dReturn)
+	if (pCamera->HaveDark) {
+		if (pCamera->DarkDur != dReturn)
 			Dark_Button->SetBackgroundColour(wxColor(255,0,0));
 		else
 			Dark_Button->SetBackgroundColour(wxNullColour);
@@ -184,7 +184,7 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
 	int output_format=USHORT_IMG;
 
 	if (evt.GetId() == MENU_SAVEDARK) {
-		if (!CurrentGuideCamera->HaveDark) {
+		if (!pCamera->HaveDark) {
 			wxMessageBox("You haven't captured a dark frame - nothing to save");
 			return;
 		}
@@ -195,12 +195,12 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
 		if (!fname.EndsWith(_T(".fit"))) fname.Append(_T(".fit"));
 		if (wxFileExists(fname))
 			fname = _T("!") + fname;
-		fsize[0] = (long) CurrentGuideCamera->CurrentDarkFrame.Size.GetWidth();
-		fsize[1] = (long) CurrentGuideCamera->CurrentDarkFrame.Size.GetHeight();
+		fsize[0] = (long) pCamera->CurrentDarkFrame.Size.GetWidth();
+		fsize[1] = (long) pCamera->CurrentDarkFrame.Size.GetHeight();
 		fsize[2] = 0;
 		fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
 		if (!status) fits_create_img(fptr,output_format, 2, fsize, &status);
-		if (!status) fits_write_pix(fptr,TUSHORT,fpixel,CurrentGuideCamera->CurrentDarkFrame.NPixels,CurrentGuideCamera->CurrentDarkFrame.ImageData,&status);
+		if (!status) fits_write_pix(fptr,TUSHORT,fpixel,pCamera->CurrentDarkFrame.NPixels,pCamera->CurrentDarkFrame.ImageData,&status);
 		fits_close_file(fptr,&status);
 		if (status) wxMessageBox (_T("Error saving FITS file"));
 		else SetStatusText ("Dark loaded");
@@ -228,17 +228,17 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
 				(void) wxMessageBox(_T("Unsupported type or read error loading FITS file"),wxT("Error"),wxOK | wxICON_ERROR);
 				return;
 			}
-			if (CurrentGuideCamera->CurrentDarkFrame.Init((int) fsize[0],(int) fsize[1])) {
+			if (pCamera->CurrentDarkFrame.Init((int) fsize[0],(int) fsize[1])) {
 				wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
 				return;
 			}
-			if (fits_read_pix(fptr, TUSHORT, fpixel, (int) fsize[0]*(int) fsize[1], NULL, CurrentGuideCamera->CurrentDarkFrame.ImageData, NULL, &status) ) { // Read image
+			if (fits_read_pix(fptr, TUSHORT, fpixel, (int) fsize[0]*(int) fsize[1], NULL, pCamera->CurrentDarkFrame.ImageData, NULL, &status) ) { // Read image
 				(void) wxMessageBox(_T("Error reading data"),wxT("Error"),wxOK | wxICON_ERROR);
 				return;
 			}
 			fits_close_file(fptr,&status);
-			CurrentGuideCamera->HaveDark = true;
-			tools_menu->FindItem(MENU_CLEARDARK)->Enable(CurrentGuideCamera->HaveDark);
+			pCamera->HaveDark = true;
+			tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
 			Dark_Button->SetLabel(_T("Redo Dark"));
 			SetStatusText("Dark loaded");
 		}
@@ -386,58 +386,58 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
 	int NDarks = 5;
 
 	SetStatusText(_T("Capturing dark"));
-	if (CurrentGuideCamera->HasShutter) 
-		CurrentGuideCamera->ShutterState=true; // dark
+	if (pCamera->HasShutter) 
+		pCamera->ShutterState=true; // dark
 	else
 		wxMessageBox(_T("Cover guide scope"));
-	CurrentGuideCamera->InitCapture();
-  	if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentGuideCamera->CurrentDarkFrame, false)) {
+	pCamera->InitCapture();
+  	if (pCamera->CaptureFull(ExpDur, pCamera->CurrentDarkFrame, false)) {
 		wxMessageBox(_T("Error capturing dark frame"));
-		CurrentGuideCamera->HaveDark = false;
+		pCamera->HaveDark = false;
 		SetStatusText(wxString::Format(_T("%.1f s dark FAILED"),(float) ExpDur / 1000.0));
 		Dark_Button->SetLabel(_T("Take Dark"));
-		CurrentGuideCamera->ShutterState=false;
+		pCamera->ShutterState=false;
 	}
 	else {
 		SetStatusText(wxString::Format(_T("%.1f s dark #1 captured"),(float) ExpDur / 1000.0));
-		int *avgimg = new int[CurrentGuideCamera->CurrentDarkFrame.NPixels];
+		int *avgimg = new int[pCamera->CurrentDarkFrame.NPixels];
 		int i, j;
 		int *iptr = avgimg;
-		unsigned short *usptr = CurrentGuideCamera->CurrentDarkFrame.ImageData;
-		for (i=0; i<CurrentGuideCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
+		unsigned short *usptr = pCamera->CurrentDarkFrame.ImageData;
+		for (i=0; i<pCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
 			*iptr = (int) *usptr;
 		for (j=1; j<NDarks; j++) {
-			CurrentGuideCamera->CaptureFull(ExpDur, CurrentGuideCamera->CurrentDarkFrame, false);
+			pCamera->CaptureFull(ExpDur, pCamera->CurrentDarkFrame, false);
 			iptr = avgimg;
-			usptr = CurrentGuideCamera->CurrentDarkFrame.ImageData;
-			for (i=0; i<CurrentGuideCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
+			usptr = pCamera->CurrentDarkFrame.ImageData;
+			for (i=0; i<pCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
 				*iptr = *iptr + (int) *usptr;
 			SetStatusText(wxString::Format(_T("%.1f s dark #%d captured"),(float) ExpDur / 1000.0,j+1));
 		}
 		iptr = avgimg;
-		usptr = CurrentGuideCamera->CurrentDarkFrame.ImageData;
-		for (i=0; i<CurrentGuideCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
+		usptr = pCamera->CurrentDarkFrame.ImageData;
+		for (i=0; i<pCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
 			*usptr = (unsigned short) (*iptr / NDarks);
 
 
 		Dark_Button->SetLabel(_T("Redo Dark"));
-		CurrentGuideCamera->HaveDark = true;
-		CurrentGuideCamera->DarkDur = ExpDur;
+		pCamera->HaveDark = true;
+		pCamera->DarkDur = ExpDur;
 	}
 	SetStatusText(_T("Darks done"));
-	if (CurrentGuideCamera->HasShutter)
-		CurrentGuideCamera->ShutterState=false; // Lights
+	if (pCamera->HasShutter)
+		pCamera->ShutterState=false; // Lights
 	else 
 		wxMessageBox(_T("Uncover guide scope"));
-	tools_menu->FindItem(MENU_CLEARDARK)->Enable(CurrentGuideCamera->HaveDark);
+	tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
 }
 
 void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt)) {
-	if (!CurrentGuideCamera->HaveDark) return;
+	if (!pCamera->HaveDark) return;
 	Dark_Button->SetLabel(_T("Take Dark"));
 	Dark_Button->SetForegroundColour(wxColour(0,0,0));
-	CurrentGuideCamera->HaveDark = false;
-	tools_menu->FindItem(MENU_CLEARDARK)->Enable(CurrentGuideCamera->HaveDark);
+	pCamera->HaveDark = false;
+	tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
 }
 
 void MyFrame::OnGraph(wxCommandEvent &evt) {
@@ -616,9 +616,9 @@ wxDialog(pFrame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350)
     m_pMountPane = pScope->GetConfigDialogPane(this);
     pLeftSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
 
-    if (CurrentGuideCamera)
+    if (pCamera)
     {
-        m_pCameraPane = CurrentGuideCamera->GetConfigDialogPane(this);
+        m_pCameraPane = pCamera->GetConfigDialogPane(this);
         pLeftSizer->Add(m_pCameraPane, 0, wxALIGN_CENTER | wxGROW);
     }
     else
@@ -670,19 +670,19 @@ END_EVENT_TABLE()
 void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
 	// Prior to this we check to make sure the current camera is a WDM camera (main dialog) but...
 
-	if (pFrame->CaptureActive || !GuideCameraConnected || !CurrentGuideCamera->HasPropertyDialog) return;  // One more safety check
-	/*if (CurrentGuideCamera == &Camera_WDM)
+	if (pFrame->CaptureActive || !GuideCameraConnected || !pCamera->HasPropertyDialog) return;  // One more safety check
+	/*if (pCamera == &Camera_WDM)
 		Camera_WDM.ShowPropertyDialog();
-	else if (CurrentGuideCamera == &Camera_VFW)
+	else if (pCamera == &Camera_VFW)
 		Camera_VFW.ShowPropertyDialog();*/
-	CurrentGuideCamera->ShowPropertyDialog();
+	pCamera->ShowPropertyDialog();
 
 }
 
 void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
-	if (!GuideCameraConnected || !CurrentGuideCamera->HasPropertyDialog) return;  // One more safety check
+	if (!GuideCameraConnected || !pCamera->HasPropertyDialog) return;  // One more safety check
 
-	CurrentGuideCamera->ShowPropertyDialog();
+	pCamera->ShowPropertyDialog();
 
 }
 void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {

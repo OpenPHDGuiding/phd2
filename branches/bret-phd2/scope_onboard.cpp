@@ -50,7 +50,7 @@ bool ScopeOnCamera::Connect(void)
         {
             throw ERROR_INFO("Attempt to Connect onboard when camera is not connected");
         }
-        if (!CurrentGuideCamera->HasGuiderOutput)
+        if (!pCamera->HasGuiderOutput)
         {
             throw ERROR_INFO("Attempt to Connect onboard when camera does not have guide output");
         }
@@ -99,7 +99,7 @@ bool ScopeOnCamera::Guide(const GUIDE_DIRECTION direction, const int duration)
         {
             throw ERROR_INFO("Attempt to Guide while not connected");
         }
-        CurrentGuideCamera->PulseGuideScope(direction,duration);
+        pCamera->PulseGuideScope(direction,duration);
     }
     catch (...)
     {

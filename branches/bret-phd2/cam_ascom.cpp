@@ -135,7 +135,7 @@ bool Camera_ASCOMClass::Disconnect() {
 
 
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 //	if (RawData) delete [] RawData;
 //	RawData = NULL;

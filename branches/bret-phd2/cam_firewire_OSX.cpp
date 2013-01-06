@@ -225,7 +225,7 @@ bool Camera_FirewireClass::Disconnect() {
 		dc1394_free_camera(camera);
 	}
 	Connected = false;
-	CurrentGuideCamera = NULL;
+	pCamera = NULL;
 	GuideCameraConnected = false;
 	return false;
 }
