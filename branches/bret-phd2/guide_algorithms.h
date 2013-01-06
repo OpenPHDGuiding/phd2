@@ -41,5 +41,6 @@
 #define GUIDE_ALGORITHMS_H_INCLUDED
 
 #include "guide_algorithm.h"
+#include "guide_algorithm_ra.h"
 
 #endif /* GUIDE_ALGORITHMS_H_INCLUDED */

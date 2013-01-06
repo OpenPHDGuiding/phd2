@@ -1,9 +1,13 @@
 /*
- *  scope.h
+ *  guider_config.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
  *  Copyright (c) 2012 Bret McKee
+ *  All rights reserved.
+ *
+ *  Based upon work by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -33,31 +37,31 @@
  *
  */
 
-#ifndef SCOPE_H_INCLUDED
-#define SCOPE_H_INCLUDED
+#include "phd.h"
 
-static const int MAX_CALIBRATION_STEPS = 60;
-static const double MAX_CALIBRATION_DISTANCE = 25.0;
-static const double DEC_BACKLASH_DISTANCE = 3.0;
-
-class Scope:public Mount
+GuiderConfig::GuiderConfig(void)
 {
-    int m_calibrationDuration;
-    int m_calibrationSteps;
-    int m_backlashSteps;
-    Point m_calibrationStartingLocation;
-    GUIDE_DIRECTION m_calibrationDirection;
+    LoadConfig();
+}
 
-public:
-    Scope(void);
-    virtual ~Scope(void);
-    virtual bool SetParms(int calibrationDuration);
-    virtual bool BeginCalibration(Guider *pGuider);
-    virtual bool UpdateCalibrationState(Guider *pGuider);
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
-    virtual bool IsGuiding()=0;
-private:
-    void DisplayCalibrationStatus(double dX, double dY, double dist, double dist_crit);
-};
+GuiderConfig::~GuiderConfig(void)
+{
+    SaveConfig();
+}
 
-#endif /* SCOPE_H_INCLUDED */
+void GuiderConfig::LoadConfig(void)
+{
+#ifdef BRET
+    RA_hysteresis = pConfig->GetDouble("/guider/RaHysteresis");
+    Dec_slopeweight = pConfig->GetDouble("/guider/DecSlopeWeight");
+    Dec_algo = pConfig->
+#endif
+}
+
+void GuiderConfig::SaveConfig(void)
+{
+    //Dec_slopeweight = pConfig->GetDouble("/guider/DecSlopeWeight");
+    //RA_hysteresis = pConfig->GetDouble("/guider/RaHysteresis");
+    //Dec_algo = pConfig->
+}
+

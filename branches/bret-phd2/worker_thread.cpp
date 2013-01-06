@@ -35,6 +35,18 @@
 
 #include "phd.h"
 
+WorkerThread::WorkerThread(MyFrame *pFrame)
+    :wxThread(wxTHREAD_JOINABLE)
+{
+    m_pFrame = pFrame;
+    Debug.Write("WorkerThread constructor called\n");
+}
+
+WorkerThread::~WorkerThread(void)
+{
+    Debug.Write("WorkerThread destructor called\n");
+}
+
 /*************      Terminate      **************************/
 
 void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
@@ -53,6 +65,8 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, double expo
     S_WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
+    Debug.Write("Enqueuing Expose request\n");
+
     message.request = REQUEST_EXPOSE;
     message.args.expose.pImage = pImage;
     message.args.expose.exposureDuration = exposureDuration;
@@ -65,8 +79,11 @@ bool WorkerThread::HandleExpose(S_ARGS_EXPOSE *pArgs)
     
     try
     {
+
         if (CurrentGuideCamera->HasNonGUICaptureFull())
         {
+            Debug.Write(wxString::Format("Handling exposure in thread\n"));
+
             pArgs->pImage->InitDate();
 
             if (CurrentGuideCamera->CaptureFull(pArgs->exposureDuration, *pArgs->pImage))
@@ -88,6 +105,8 @@ bool WorkerThread::HandleExpose(S_ARGS_EXPOSE *pArgs)
         }
         else
         {
+            Debug.Write(wxString::Format("Handling exposure in myFrame\n"));
+
             MyFrame::S_EXPOSE_REQUEST request;
             request.pImage = pArgs->pImage;
             request.exposureDuration = pArgs->exposureDuration;
@@ -101,6 +120,7 @@ bool WorkerThread::HandleExpose(S_ARGS_EXPOSE *pArgs)
 
             bError = request.bError;
         }
+        Debug.Write(wxString::Format("Exposure complete\n"));
     }
     catch (char *ErrorMsg)
     {
@@ -126,6 +146,8 @@ void WorkerThread::EnqueueWorkerThreadGuideRequest(GUIDE_DIRECTION guideDirectio
     S_WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
+    Debug.Write(wxString::Format("Enqueuing Guide request for direction %d\n", message.args.guide.guideDirection));
+
     message.request = REQUEST_GUIDE;
     message.args.guide.guideDirection = guideDirection;
     message.args.guide.guideDuration  = guideDuration;
@@ -143,10 +165,13 @@ bool WorkerThread::HandleGuide(S_ARGS_GUIDE *pArgs)
         {
             if (pScope->HasNonGUIGuide())
             {
+                Debug.Write(wxString::Format("Handling %d guide in thread\n", pArgs->guideDirection));
                 bError = pScope->NonGUIGuide(pArgs->guideDirection, pArgs->guideDuration);
             }
             else
             {
+                Debug.Write(wxString::Format("Handling %d guide in myFrame\n", pArgs->guideDirection));
+
                 // we don't have a non-gui guide function, wo we send this to the 
                 // main frame routine that handles guides requests
                 MyFrame::S_GUIDE_REQUEST request;
@@ -160,8 +185,11 @@ bool WorkerThread::HandleGuide(S_ARGS_GUIDE *pArgs)
                 // wait for the request to complete
                 request.semaphore.Wait();
 
+
                 bError = request.bError;
             }
+
+            Debug.Write(wxString::Format("Guide complete\n"));
         }
     }
     catch (char *ErrorMsg)
@@ -187,6 +215,8 @@ wxThread::ExitCode WorkerThread::Entry()
 {
     bool bDone = TestDestroy();
 
+    Debug.Write("WorkerThread::Entry() begins\n");
+
     while (!bDone)
     {
         S_WORKER_THREAD_REQUEST message;
@@ -197,6 +227,8 @@ wxThread::ExitCode WorkerThread::Entry()
             wxLogError("Worker thread message queue receive failed");
             break;
         }
+
+        Debug.Write(wxString::Format("worker thread servicing request %d\n", message.request));
 
         switch(message.request)
         {
@@ -217,8 +249,12 @@ wxThread::ExitCode WorkerThread::Entry()
                 break;
         }
 
+        Debug.Write(wxString::Format("worker thread done servicing request %d\n", message.request));
         bDone |= TestDestroy();
     }
+
+    Debug.Write("WorkerThread::Entry() ends\n");
+    Debug.Flush();
 
     return (wxThread::ExitCode)0;
 }

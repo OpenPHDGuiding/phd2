@@ -1,0 +1,114 @@
+/*
+ *  config.h
+ *  PHD Guiding
+ *
+ *  Created by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
+ *  Refactored by Bret McKee
+ *  Copyright (c) 2012 Bret McKee
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice, 
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice, 
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#ifndef PREFS_H_INCLUDED
+#define PREFS_H_INCLUDED
+
+#include <wx/config.h>
+#include <wx/fileconf.h>
+#include <wx/display.h>
+
+#ifdef BRET
+why were these here????
+// Some specific camera includes
+#if defined (LE_PARALLEL_CAMERA)
+#include "cam_LEwebcam.h"
+extern Camera_LEwebcamClass Camera_LEwebcamParallel;
+extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
+#endif
+
+#if defined (INDI_CAMERA)
+#include "cam_INDI.h"
+#endif
+
+#if defined (GUIDE_INDI)
+#include "tele_INDI.h"
+#endif
+#endif
+
+/*
+ * The way configuration varialbes are handled has been 
+ * fundamentally changed from the way PHD 1.X handled them
+ * because they are no longer all stored in global variables.
+ *
+ * The wxConfig routines allow for hierarchical configuration data, and
+ * we now use it because it much more closesly matches the movement of
+ * the data that was done to remove global variables.
+ *
+ * The hiearchy looks like:
+ *
+ * / program globals - logging, debug
+ *   guider - guider globals if there are any
+ *     onestar
+ *     algorithms
+ *     hysteresis
+ *   mount - mount globals if there are any
+ *     scope - default choice
+ *       ascomlate
+ *   camera - default choice
+ *     ascom
+ *
+ * There is no separete "load" or "save" steps.  Constructors request
+ * the configuration values for thier classes, and dialogs that modify them 
+ * write the values immediately.
+ *
+ */
+
+class Config
+{
+    static const long CURRENT_CONFIG_VERSION=2001;
+    long m_configVersion;
+
+    wxConfig *m_pConfig;
+public:
+    Config(void);
+    ~Config(void);
+    void Initialize(wxString baseConfigName);
+
+    bool     GetBoolean(char *pName, bool defaultValue);
+    wxString GetString(char *pName, wxString defaultValue);
+    double   GetDouble(char *pName, double defaultValue);
+    long     GetLong(char *pName, long defaultValue);
+    int      GetInt(char *pName, int defaultValue);
+
+    void SetBoolean(char *pName, bool value);
+    void SetString(char *pName, wxString value);
+    void SetDouble(char *pName, double value);
+    void SetLong(char *pName, long value);
+    void SetInt(char *pName, int value);
+};
+
+#endif /* PREFS_H_INCLUDED */

@@ -329,10 +329,12 @@
     <ClCompile Include="cam_VFW.cpp" />
     <ClCompile Include="cam_wdm.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="config.cpp" />
     <ClCompile Include="eegg.cpp" />
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="guider.cpp" />
     <ClCompile Include="guider_onestar.cpp" />
+    <ClCompile Include="guide_algorithm_ra.cpp" />
     <ClCompile Include="guide_routines.cpp" />
     <ClCompile Include="image_math.cpp" />
     <ClCompile Include="mount.cpp" />
@@ -341,7 +343,6 @@
     <ClCompile Include="myframe_events.cpp" />
     <ClCompile Include="phd.cpp" />
     <ClCompile Include="phdlog.cpp" />
-    <ClCompile Include="prefs.cpp" />
     <ClCompile Include="scope.cpp" />
     <ClCompile Include="scope_ascom.cpp" />
     <ClCompile Include="scope_eqmac.cpp" />
@@ -390,12 +391,14 @@
     <ClInclude Include="cam_WDM.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cameras.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="graph.h" />
     <ClInclude Include="guiders.h" />
     <ClInclude Include="guider_canvas.h" />
     <ClInclude Include="guider_onestar.h" />
     <ClInclude Include="guide_algorithm.h" />
     <ClInclude Include="guide_algorithms.h" />
+    <ClInclude Include="guide_algorithm_ra.h" />
     <ClInclude Include="image_math.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="myapp.h" />

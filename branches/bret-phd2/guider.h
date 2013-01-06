@@ -76,45 +76,6 @@ enum E_DEC_GUDING_ALGORITHMS
 	DEC_LOWPASS2
 };
 
-class GuiderPrefs
-{
-protected:
-    int  Time_lapse;		// Delay between frames (useful for vid cameras)
-    int	Cal_duration;
-    double RA_hysteresis;
-    double Dec_slopeweight;
-    int Max_Dec_Dur;
-    int Max_RA_Dur;
-    double RA_aggr;
-    int Dec_guide;
-    int Dec_algo;
-    bool DitherRAOnly;
-    double MinMotion; // Minimum star motion to trigger a pulse
-    int SearchRegion; // how far u/d/l/r do we do the initial search
-    bool DisableGuideOutput;
-    bool ManualLock;	// In manual lock position mode?  (If so, don't re-lock on start of guide)
-
-    GuiderPrefs(void)
-    {
-        // set defaults
-        Time_lapse = 0;
-        Cal_duration = 750;
-        RA_hysteresis = 0.1;
-        Dec_slopeweight = 5.0;
-        Max_Dec_Dur = 150;
-        Max_RA_Dur = 1000;
-        RA_aggr = 1.0;
-        Dec_guide = DEC_AUTO;
-        Dec_algo = DEC_RESISTSWITCH;
-        DitherRAOnly = false;
-        MinMotion = 0.15;
-        SearchRegion = 15;
-        DisableGuideOutput = false;
-        ManualLock = false;
-    }
-
-};
-
 /*
  * The Guider class is responsible for running the state machine
  * associated with the E_GUIDER_STATES enumerated type.
@@ -124,7 +85,7 @@ protected:
  *
  */
 
-class Guider: public GuiderPrefs, public wxWindow
+class Guider: public wxWindow
 {
 protected:
     Point m_lockPosition;
@@ -134,13 +95,17 @@ protected:
     GuideAlgorithm *m_pRaGuideAlgorithm;
     GuideAlgorithm *m_pDecGuideAlgorithm;
     bool m_paused;
+    bool m_guidingEnabled;
+    int  m_timeLapse;		// Delay between frames (useful for vid cameras)
+    double m_minMotion; // Minimum star motion to trigger a pulse
+    int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
 
 public:
     // functions with a implemenation in Guider
     virtual bool IsPaused(void);
     virtual bool Pause(void);
     virtual bool Unpause(void);
-    virtual double GetCurrentError(void);
+    virtual double CurrentError(void);
     virtual E_GUIDER_STATES GetState(void);
     virtual bool SetState(E_GUIDER_STATES newState);
 	virtual void OnClose(wxCloseEvent& evt);
@@ -149,6 +114,8 @@ public:
     virtual void SetRaGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     virtual void SetDecGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     virtual Point &LockPosition();
+    virtual bool DisableGuiding(void);
+    virtual bool EnableGuiding(void);
 
     // pure virutal functions
 	virtual void OnPaint(wxPaintEvent& evt) = 0;

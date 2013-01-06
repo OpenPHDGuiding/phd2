@@ -91,12 +91,6 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                 throw ERROR_INFO("Unable to set state to STATE_GUIDING_LOCKED");
             }
         }
-
-        Loop_Button->Enable(false);
-        Guide_Button->Enable(false);
-        Cam_Button->Enable(false);
-        Scope_Button->Enable(false);
-        Brain_Button->Enable(false);
     }
     catch (char *ErrorMsg)
     {
@@ -292,16 +286,10 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                     }
                 }
                 last_guide  = RA_dist;
-                Debug << _T("Done\n");
                 if ((Dec_guide) && (Dec_algo == DEC_RESISTSWITCH) && FoundStar) { // Do Dec guide using the newer resist-switch algo
-                    Debug << _T("Dec resist switch - \n");
                     Dec_dist = cos(pScope->DecAngle() - theta)*hyp;	// dist in Dec star needs to move
                     Dec_dur = fabs(Dec_dist)/pScope->DecRate();
-    //				if (fabs(Dec_dist) < 0.5)   // if drift is small, assume noisy and don't include in history - set to 0
-    //					Dec_dist_list.Add(0.0);
-    //				else
-                        Dec_dist_list.Add(Dec_dist);
-    //					Dec_dist_list.Add(SIGN(Dec_dist));
+                    Dec_dist_list.Add(Dec_dist);
                     Dec_dist_list.RemoveAt(0);
                     if (fabs(Dec_dist) < MinMotion)
                         Allow_Dec_Move = false;
@@ -312,8 +300,6 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                         if (fabs(Dec_dist_list.Item(i)) > MinMotion) // only count decent-size errors
                             Dec_History += SIGN(Dec_dist_list.Item(i));
                     }
-    //					Dec_History += Dec_dist_list.Item(i);
-                    Debug << Curr_Dec_Side << _T(" ") << Dec_dist << _T(" ") << Dec_dur << _T(" ") << (int) Allow_Dec_Move << _T(" ") << Dec_History << _T("\n");
                     // see if on same side of Dec and if we have enough evidence to switch
                     if ( ((Curr_Dec_Side == 0) || (Curr_Dec_Side == (-1.0 * SIGN(Dec_History)))) &&
                         Allow_Dec_Move && (Dec_guide == DEC_AUTO)) { // think about switching

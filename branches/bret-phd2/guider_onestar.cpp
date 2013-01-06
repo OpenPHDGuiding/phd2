@@ -58,10 +58,54 @@ END_EVENT_TABLE()
 GuiderOneStar::GuiderOneStar(wxWindow *parent):
     Guider(parent, XWinSize, YWinSize)
 {
+    int maxDecDuration = pConfig->GetInt("/guider/onestar/MaxDecDuration", 1000);
+    int maxRaDuration  = pConfig->GetInt("/guider/onestar/MaxRaDuration", 1000);
+    bool decGuide       = pConfig->GetBoolean("/guider/onestar/DecGuidingEnabled", true);
+
+    SetParms(maxDecDuration, maxRaDuration, decGuide);
+
+
+    delete m_pRaGuideAlgorithm;
+    m_pRaGuideAlgorithm = new GuideAlgorithmRa();
 }
 
 GuiderOneStar::~GuiderOneStar() 
 {
+}
+
+bool GuiderOneStar::SetParms(int maxDecDuration, int maxRaDuration, bool decGuide)
+{
+    bool bError = false;
+
+    try
+    {
+        if (maxDecDuration < 0)
+        {
+            throw ERROR_INFO("maxDecDuration < 0");
+        }
+
+        if (maxRaDuration < 0)
+        {
+            throw ERROR_INFO("maxRaDuration < 0");
+        }
+
+        m_maxDecDuration = maxDecDuration;
+        m_maxRaDuration =  maxRaDuration;
+        m_decGuide = decGuide;
+
+        pConfig->SetInt("/guider/onestar/MaxDecDuration", m_maxDecDuration);
+        pConfig->SetInt("/guider/onestar/MaxRaDuration", m_maxRaDuration);
+        pConfig->SetBoolean("/guider/onestar/DecGuidingEnabled", m_decGuide);
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        Debug.Write(wxString::Format("GuiderOneStar::SetParms() threw an exeception: %s\n", pErrorMsg));
+    }
+
+    Debug.Write(wxString::Format("GuiderOneStar::SetParms() returns %d, m_maxDecDuration=%d m_maxRaDuration=%d m_decGuide=%d\n", bError, m_maxDecDuration, m_maxRaDuration, m_decGuide));
+    return bError;
 }
 
 Point &GuiderOneStar::CurrentPosition()
@@ -75,6 +119,7 @@ bool GuiderOneStar::SetState(E_GUIDER_STATES newState)
 
     try
     {
+        Debug.Write(wxString::Format("Changing from state %d to %d\n", m_state, newState));
         if (newState > m_state + 1)
         {
             assert(false);
@@ -86,10 +131,8 @@ bool GuiderOneStar::SetState(E_GUIDER_STATES newState)
             case STATE_UNINITIALIZED:
                 m_lockPosition.Invalidate();
                 m_star.Invalidate();
-
-                // for onestar guiders, we move immediately from STATE_UNINITIALIZED
-                // to STATE_SELECTING
-                newState = STATE_SELECTING;
+                break;
+            case STATE_SELECTING:
                 break;
             case STATE_SELECTED:
                 m_lockPosition = m_star;
@@ -107,6 +150,8 @@ bool GuiderOneStar::SetState(E_GUIDER_STATES newState)
         }
 
         bError = Guider::SetState(newState);
+
+        frame->StartCapturing();
 
         frame->UpdateButtonsStatus();
     }
@@ -136,10 +181,22 @@ bool GuiderOneStar::DoGuide(void)
         assert(m_pRaGuideAlgorithm);
         raDistance = m_pRaGuideAlgorithm->result(raDistance);
 
+        if (fabs(raDistance) >= m_minMotion)
+        {
+            GUIDE_DIRECTION direction = raDistance > 0 ? EAST : WEST;
+            double duration = fabs(raDistance/pScope->RaRate());
+            frame->ScheduleGuide(direction, duration);
+        }
+
         assert(m_pDecGuideAlgorithm);
-        decDistance = m_pDecGuideAlgorithm->result(raDistance);
+        decDistance = m_pDecGuideAlgorithm->result(decDistance);
 
-
+        if (fabs(decDistance) >= m_minMotion)
+        {
+            GUIDE_DIRECTION direction = decDistance > 0 ? SOUTH : NORTH;
+            double duration = fabs(decDistance/pScope->DecRate());
+            frame->ScheduleGuide(direction, duration);
+        }
     }
     catch (char *ErrorMsg)
     {
@@ -169,7 +226,7 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bUpdateStatus)
         else
         {
             // update the star position
-            m_star.Find(pImage, SearchRegion);
+            m_star.Find(pImage, m_searchRegion);
             
             if (m_star.WasFound())
             {
@@ -222,7 +279,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
         }
         else
         {
-            if ((mevent.m_x <= SearchRegion) || (mevent.m_x >= (XWinSize+SearchRegion)) || (mevent.m_y <= SearchRegion) || (mevent.m_y >= (XWinSize+SearchRegion))) 
+            if ((mevent.m_x <= m_searchRegion) || (mevent.m_x >= (XWinSize+m_searchRegion)) || (mevent.m_y <= m_searchRegion) || (mevent.m_y >= (XWinSize+m_searchRegion))) 
             {
                 mevent.Skip();
                 throw ERROR_INFO("Skipping event because click outside of search region");
@@ -237,7 +294,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             double StarX = (double) mevent.m_x / m_scaleFactor;
             double StarY = (double) mevent.m_y / m_scaleFactor;
 
-            m_star.Find(pCurrentFullFrame, SearchRegion, StarX, StarY);
+            m_star.Find(pCurrentFullFrame, m_searchRegion, StarX, StarY);
 
             if (m_star.WasFound())
             {
@@ -285,12 +342,12 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
 			else
 				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-SearchRegion,ROUND(StarY*m_scaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
+			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 		}
 		else if (m_state == STATE_CALIBRATING) {  // in the cal process
 			dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-SearchRegion,ROUND(StarY*m_scaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
+			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 			dc.SetPen(wxPen(wxColor(255,255,0),1,wxDOT));
 			dc.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
 			dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
@@ -302,7 +359,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
 			else
 				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-SearchRegion,ROUND(StarY*m_scaleFactor)-SearchRegion,SearchRegion*2+1,SearchRegion*2+1);
+			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 			dc.SetPen(wxPen(wxColor(0,255,0)));
 			dc.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
 			dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);

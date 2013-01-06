@@ -48,8 +48,11 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 	m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_pRaGuideAlgorithm = new GuideAlgorithm();
     m_pDecGuideAlgorithm = new GuideAlgorithm();
-    m_currentError = 0.0;
     m_paused = false;
+    m_guidingEnabled = true;
+    m_timeLapse   = pConfig->GetInt("/guider/TimeLapse", 0);
+    m_minMotion    = pConfig->GetDouble("/guider/MinMotion", 0.2);
+    m_searchRegion = pConfig->GetInt("/guider/SearchRegion", 15);
 
 	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 	SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
@@ -57,6 +60,10 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 
 Guider::~Guider(void)
 {
+    pConfig->SetInt("/guider/TimeLapse", m_timeLapse);
+    pConfig->SetDouble("/guider/MinMotion", m_minMotion);
+    pConfig->SetInt("/guider/SearchRegion", m_searchRegion);
+
 	delete m_displayedImage;
     delete m_pRaGuideAlgorithm;
     delete m_pDecGuideAlgorithm;
@@ -70,18 +77,28 @@ bool Guider::IsPaused(void)
 bool Guider::Pause(void)
 {
     bool bReturn = m_paused;
-    
     m_paused = true;
-
     return bReturn;
 }
 
 bool Guider::Unpause(void)
 {
     bool bReturn = m_paused;
-    
     m_paused = false;
+    return bReturn;
+}
 
+bool Guider::DisableGuiding(void)
+{
+    bool bReturn = m_guidingEnabled;
+    m_guidingEnabled = false;
+    return bReturn;
+}
+
+bool Guider::EnableGuiding(void)
+{
+    bool bReturn = m_guidingEnabled;
+    m_guidingEnabled = true;
     return bReturn;
 }
 
@@ -92,7 +109,7 @@ Point &Guider::LockPosition()
 
 double Guider::CurrentError(void)
 {
-    return m_lockPostion.distance(CurrentPosition());
+    return m_lockPosition.Distance(CurrentPosition());
 }
 
 

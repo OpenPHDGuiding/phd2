@@ -131,10 +131,42 @@ void DisconnectScope() {
 Scope::Scope(void)
 {
     m_calibrationSteps = 0;
+
+    int calDuration = pConfig->GetInt("/scope/CalibrationDuration", 750);
+
+    SetParms(calDuration);
 }
 
 Scope::~Scope(void)
 {
+}
+
+
+bool Scope::SetParms(int calibrationDuration)
+{
+    bool bError = false;
+
+    try
+    {
+        if (calibrationDuration <= 0.0)
+        {
+            throw ERROR_INFO("invalid calibrationDuration");
+        }
+
+        m_calibrationDuration = calibrationDuration;
+
+        pConfig->SetInt("/scope/CalibrationDuration", m_calibrationDuration);
+    }
+    catch (char *pErrorMsg)
+    {
+        POSSIBLY_UNUSED(pErrorMsg);
+        bError = true;
+        Debug.Write(wxString::Format("Scope::SetParms() caught an exception: %s\n", pErrorMsg));
+    }
+
+    Debug.Write(wxString::Format("Scope::SetParms() returns %d, m_calibrationDuration=%d\n", bError, m_calibrationDuration));
+
+    return bError;
 }
 
 void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
@@ -146,8 +178,17 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	if (CaptureActive) return;  // Looping an exposure already
 	if (pScope->IsConnected()) pScope->Disconnect();
 
+    if (false)
+    {
+        // this dummy if is here because otherwise we can't have the 
+        // else if construct below, since we don't know which camera
+        // will be first.
+        //
+        // With this here and always false, the rest can safely begin with
+        // else if 
+    }
 #ifdef GUIDE_ASCOM
-	else if (mount_menu->IsChecked(MOUNT_ASCOM)) {
+    else if (mount_menu->IsChecked(MOUNT_ASCOM)) {
         pNewScope = new ScopeASCOM();
 
         if (pNewScope->Connect())
@@ -162,7 +203,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	#endif
 
 	#ifdef GUIDE_GPUSB
-	if (mount_menu->IsChecked(MOUNT_GPUSB)) {
+    else if (mount_menu->IsChecked(MOUNT_GPUSB)) {
         pNewScope = new ScopeGpUsb();
 
 		if (pNewScope->Connect()) {
@@ -318,10 +359,26 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pScope = pNewScope;
 		SetStatusText(_T("Mount connected"));
 		SetStatusText(_T("Scope"),4);
+        // now store the scope we selected so we can use it as the default next time.
+        wxMenuItemList items = mount_menu->GetMenuItems();
+        wxMenuItemList::iterator iter;
+
+        for(iter = items.begin(); iter != items.end(); iter++)
+        {
+            wxMenuItem *pItem = *iter;
+
+            if (pItem->IsChecked())
+            {
+                wxString value = pItem->GetItemLabelText();
+                pConfig->SetString("/scope/LastMenuChoice", pItem->GetItemLabelText());
+            }
+        }
 	}
-	else {
+	else
+    {
 		SetStatusText(_T("No scope"),4);
 	}
+
     UpdateButtonsStatus();
 }
 
@@ -354,9 +411,9 @@ bool Scope::BeginCalibration(Guider *pGuider)
         m_calibrationStartingLocation = pGuider->CurrentPosition();
         m_calibrationDirection = NONE;
     }
-    catch (char *ErrorMsg)
+    catch (char *pErrorMsg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(pErrorMsg);
         bError = true;
     }
 
@@ -394,6 +451,7 @@ void Scope::DisplayCalibrationStatus(double dX, double dY, double dist, double d
             frame->SetStatusText(wxString::Format(_T("%c calibration: %2d"), directionName, m_calibrationSteps));
         }
         frame->SetStatusText(wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)"),dX,dY,dist,dist_crit),1);
+        Debug.Write(wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)\n"),dX,dY,dist,dist_crit));
     }
 }
 
@@ -437,7 +495,9 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
             else if (--m_backlashSteps <= 0)
             {
                 wxMessageBox(_T("Unable to clear DEC backlash -- turning off Dec guiding"), _T("Alert"), wxOK | wxICON_ERROR);
+#ifdef PREFS
                 Dec_guide = DEC_OFF;
+#endif
                 m_calibrationDirection = NONE;
             }
         }
@@ -450,15 +510,19 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
                 if (m_calibrationDirection == WEST)
                 {
                     m_dRaAngle = m_calibrationStartingLocation.Angle(pGuider->CurrentPosition());
-                    m_dRaRate = dist/(m_calibrationSteps*Cal_duration);
+                    m_dRaRate = dist/(m_calibrationSteps*m_calibrationDuration);
                     m_calibrationDirection = EAST;
+
+                    Debug.Write(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f\n", m_dRaAngle, m_dRaRate));
                 }
                 else
                 {
                     assert(m_calibrationDirection == NORTH);
                     m_dDecAngle = m_calibrationStartingLocation.Angle(pGuider->CurrentPosition());
-                    m_dDecRate = dist/(m_calibrationSteps*Cal_duration);
+                    m_dDecRate = dist/(m_calibrationSteps*m_calibrationDuration);
                     m_calibrationDirection = SOUTH;
+
+                    Debug.Write(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f\n", m_dDecAngle, m_dDecRate));
                 }
             }
             else if (m_calibrationSteps++ >= MAX_CALIBRATION_STEPS)
@@ -482,6 +546,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
                 {
                     m_calibrationDirection = NORTH;
                     dX = dY = dist = 0.0;
+                    DisplayCalibrationStatus(dX, dY, dist, dist_crit);
                 }
                 else
                 {
@@ -499,8 +564,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
         }
         else
         {
-            DisplayCalibrationStatus(dX, dY, dist, dist_crit);
-            frame->ScheduleGuide(m_calibrationDirection, Cal_duration);
+            frame->ScheduleGuide(m_calibrationDirection, m_calibrationDuration);
         }
     }
     catch (char *ErrorMsg)
@@ -562,7 +626,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
 				return false;
 
             frame->SetStatusText(wxString::Format(_T("W calibration: %d"),iterations+1));
-            Guide(WEST,Cal_duration);
+            Guide(WEST,m_calibrationDuration);
             if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
                 Abort = 1;
                 throw ERROR_INFO("CaptureFull failed in W calibration");
@@ -592,7 +656,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
                 throw ERROR_INFO("RA calibration failed because star did not move enough");
             }
             if (dist > dist_crit) {
-                m_dRaRate = dist / (double) (iterations * Cal_duration);
+                m_dRaRate = dist / (double) (iterations * m_calibrationDuration);
                 if (dX == 0.0) dX = 0.00001;
                 if (dX > 0.0) m_dRaAngle = atan(dY/dX);
                 else if (dY >= 0.0) m_dRaAngle = atan(dY/dX) + PI;
@@ -608,7 +672,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
 				return false;
             
 			frame->SetStatusText(wxString::Format(_T("E calibration: %d"),i+1));
-            Guide(EAST,Cal_duration);
+            Guide(EAST,m_calibrationDuration);
             if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
                 Abort = 1;
                 throw ERROR_INFO("CaptureFull failed in E calibration");
@@ -636,7 +700,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
 				if( Abort != 0 )
 					return false;
                 frame->SetStatusText(wxString::Format(_T("Clearing Dec backlash: %d"),iterations+1));
-                Guide(NORTH,Cal_duration);
+                Guide(NORTH,m_calibrationDuration);
                 if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)){
                     Abort = 1;
                     throw ERROR_INFO("CaptureFull failed clearing Dec backlasth");
@@ -667,7 +731,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
 				if( Abort != 0 )
 					return false;
                 frame->SetStatusText(wxString::Format(_T("N calibration: %d"),iterations+1));
-                Guide(NORTH,Cal_duration);
+                Guide(NORTH,m_calibrationDuration);
                 if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame))
                 {
                     Abort = 1;
@@ -692,7 +756,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
                     break;
                 }
                 if (dist > dist_crit) {
-                    m_dDecRate = dist / (double) (iterations * Cal_duration);
+                    m_dDecRate = dist / (double) (iterations * m_calibrationDuration);
                     if (dX == 0.0) dX = 0.00001;
                     if (dX > 0.0) m_dDecAngle = atan(dY/dX);
                     else if (dY >= 0.0) m_dDecAngle = atan(dY/dX) + PI;
@@ -706,7 +770,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
 					if( Abort != 0 )
 						return false;
                     frame->SetStatusText(wxString::Format(_T("S calibration: %d"),i+1));
-                    Guide(SOUTH,Cal_duration);
+                    Guide(SOUTH,m_calibrationDuration);
                     if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
                         Abort = 1;
                         throw ERROR_INFO("CaptureFull failed calibrating S");

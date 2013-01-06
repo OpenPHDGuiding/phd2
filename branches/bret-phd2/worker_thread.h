@@ -52,14 +52,8 @@ class WorkerThread: public wxThread
 {
     MyFrame *m_pFrame;
 public:
-    WorkerThread(MyFrame *pFrame)
-    {
-        m_pFrame = pFrame;
-    }
-
-    ~WorkerThread(void)
-    {
-    }
+    WorkerThread(MyFrame *pFrame);
+    ~WorkerThread(void);
 
 private:
     wxThread::ExitCode Entry();

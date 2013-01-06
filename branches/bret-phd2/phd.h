@@ -44,7 +44,7 @@
 #include <wx/socket.h>
 #include <wx/thread.h>
 
-#define VERSION _T("1.13.7")
+#define VERSION _T("2.0.1")
 #define PHDSUBVER _T("b")
 
 #if defined (__WINDOWS__)
@@ -93,6 +93,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define ERROR_INFO(s) (ERROR_INFO_BASE(__FILE__, __LINE__) "->" s)
 
 #include "phdlog.h"
+#include "config.h"
 #include "usImage.h"
 #include "point.h"
 #include "star.h."
@@ -109,15 +110,17 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #if 1
 // these seem to be the windowing/display related globals
 
-extern MyFrame *frame;
-
 extern int AdvDlg_fontsize;
 extern int XWinSize;
 extern int YWinSize;
 extern int OverlayMode;
 #endif
 
+extern MyFrame *frame;
 extern Scope *pScope;
+extern Config *pConfig;
+
+extern bool DitherRAOnly;
 
 #if 1
 // these seem like the logging related globals

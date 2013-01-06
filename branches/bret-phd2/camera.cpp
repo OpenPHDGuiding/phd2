@@ -37,7 +37,6 @@
 #include "phd.h"
 #include "camera.h"
 #include <wx/stdpaths.h>
-#include <wx/config.h>
 
 #if defined (ATIK16)
  #include "cam_ATIK16.h"
@@ -263,24 +262,29 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	Cameras.Add(_T("Guide chip on SBIG cam in Nebulosity"));
 #endif
 	Choice = Cameras[0];
-	wxConfig *config = new wxConfig(_T("PHDGuiding"));
+    wxString lastChoice = pConfig->GetString("/camera/LastMenuChoice", _T(""));
+    int selectedItem = Cameras.Index(lastChoice);			
+
 	if (wxGetKeyState(WXK_SHIFT)) { // use the last camera chosen and bypass the dialog
-		if (!config->Read(_T("LastCameraChoice"),&Choice)) { // Read from the Prefs and if not there, put up the dialog anyway
+        if (selectedItem == wxNOT_FOUND)
+        {
 			Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras);
-		}
+        }
+        else
+        {
+            Choice = lastChoice;
+        }
 	}
 	else
 	{
-		int selectedItem = 0;
-		if( config->Read(_T("LastCameraChoice"),&Choice) )
-		{
-				selectedItem = Cameras.Index(Choice);			
-		}
+		if (selectedItem == wxNOT_FOUND)
+        {
+            selectedItem = 0;
+        }
 		Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras,
 			this,-1,-1,true,300,500, selectedItem);
 	}
 	if (Choice.IsEmpty()) {
-		if (config) delete config;
 		return;
 	}
 	// Disconnect current camera
@@ -295,7 +299,6 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		CurrentGuideCamera = NULL;
 		GuideCameraConnected = false;
 		SetStatusText(_T("No cam"),3);
-		if (config) delete config;
 		return;
 	}
 #if defined (SAC42)
@@ -467,7 +470,6 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		GuideCameraConnected = false;
 		SetStatusText(_T("No cam"),3);
 		wxMessageBox(_T("Unknown camera choice"));
-		if (config) delete config;
 		return;
 	}
 
@@ -478,7 +480,6 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		SetStatusText(_T("No cam"),3);
 		Guide_Button->Enable(false);
 		Loop_Button->Enable(false);
-		if (config) delete config;
 		return;
 	}
 	SetStatusText(CurrentGuideCamera->Name + _T(" connected"));
@@ -486,8 +487,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	SetStatusText(_T("Camera"),3);
 	Loop_Button->Enable(true);
 	Guide_Button->Enable(pScope->IsConnected());
-	config->Write(_T("LastCameraChoice"),Choice);
-	if (config) delete config;
+    pConfig->SetString("/camera/LastMenuChoice", Choice);
 	if (CurrentGuideCamera->HasPropertyDialog)
 		Setup_Button->Enable(true);
 	else

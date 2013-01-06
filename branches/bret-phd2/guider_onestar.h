@@ -45,15 +45,21 @@ class GuiderOneStar: public Guider
 {
 protected:
     Star m_star;
+
+    // parameters
+    int m_maxDecDuration;
+    int m_maxRaDuration;
+    double m_raAggression;
+    bool m_decGuide;
 public:
 	GuiderOneStar(wxWindow *parent);
     virtual ~GuiderOneStar(void);
 
     virtual bool SetState(E_GUIDER_STATES newState);
 
+    virtual bool SetParms(int maxDecDuration, int maxRaDuration, bool decGuide);
 	virtual void OnPaint(wxPaintEvent& evt);
     virtual bool UpdateGuideState(usImage *pImage, bool bUpdateStatus);
-    virtual Point &LockPosition();
     virtual Point &CurrentPosition();
 
 protected:

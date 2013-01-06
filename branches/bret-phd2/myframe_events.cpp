@@ -273,7 +273,6 @@ void MyFrame::OnSelect(wxCommandEvent& WXUNUSED(event))
             throw ERROR_INFO("Unable to set state to STATE_SELECTING");
         }
 
-        StartCapturing(RequestedExposureDuration());
     }
     catch (char *ErrorMsg)
     {
@@ -606,13 +605,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event)) 
 {
     StopCapturing();
-
-	Loop_Button->Enable(true);
-	Guide_Button->Enable(pGuider->GetState() >= STATE_SELECTED && pScope->IsConnected());
-	Cam_Button->Enable(true);
-	Scope_Button->Enable(true);
-	Brain_Button->Enable(true);
-	Dark_Button->Enable(true);
+    UpdateButtonsStatus();
 }
 
 void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event)) {
@@ -900,11 +893,13 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 	sizer->Add(MRAD_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
 	sizer->Add(MaxRADur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
+#ifdef PREFS
 	wxStaticText *DSR_Text = new wxStaticText(this,wxID_ANY,_T("Dec slope weight"));
 	DecSlopeWeight_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),Dec_slopeweight),wxPoint(-1,-1),wxSize(75,-1));
 	DecSlopeWeight_Ctrl->SetToolTip(_T("Weighting of slope parameter in lowpass auto-dec"));
 	sizer->Add(DSR_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
 	sizer->Add(DecSlopeWeight_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+#endif
 
 	wxStaticText *SR_Text = new wxStaticText(this,wxID_ANY,_T("Search region (pixels)"));
 	SearchRegion_Ctrl = new wxSpinCtrl(this,wxID_ANY,_T("foo2"),wxPoint(-1,-1),wxSize(75,-1),wxSP_ARROW_KEYS,10,50,15,_T("Search"));
@@ -918,11 +913,13 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 	sizer->Add(MDD_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
 	sizer->Add(MaxDecDur_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
 
+#ifdef PREFS
 	wxStaticText *MM_Text = new wxStaticText(this,wxID_ANY,_T("Min. motion (pixels)"));
 	MinMotion_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),MinMotion),wxPoint(-1,-1),wxSize(75,-1));
 	MinMotion_Ctrl->SetToolTip(_T("How many pixels (fractional pixels) must the star move to trigger a guide pulse? Default = 0.15"));
 	sizer->Add(MM_Text,wxSizerFlags().Proportion(2).Expand().Border(wxALL,3));
 	sizer->Add(MinMotion_Ctrl,wxSizerFlags().Proportion(1).Border(wxALL,3));
+#endif
 
 	wxStaticText *MDelta_Text = new wxStaticText(this,wxID_ANY,_T("Star mass tolerance"));
 	MassDelta_Ctrl = new wxTextCtrl(this,wxID_ANY,wxString::Format(_T("%.2f"),StarMassChangeRejectThreshold),wxPoint(-1,-1),wxSize(75,-1));
@@ -1071,6 +1068,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	if (CaptureActive) return;  // Looping an exposure already
 	AdvancedDialog* dlog = new AdvancedDialog();
 
+#ifdef PREFS
 	dlog->RA_Aggr_Ctrl->SetValue((int) (RA_aggr * 100.0));
 //	dlog->Dec_Aggr_Ctrl->SetValue((int) (Dec_aggr * 100.0));
 	dlog->RA_Hyst_Ctrl->SetValue((int) (RA_hysteresis * 100.0));
@@ -1094,6 +1092,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	if (pScope->IsCalibrated()) dlog->Cal_Box->SetValue(false);
 	else dlog->Cal_Box->SetValue(true);
 	dlog->Subframe_Box->SetValue(GuideCameraPrefs::UseSubframes);
+#endif
 
 	// Turn off things that vary by camera by default
 	dlog->Gain_Ctrl->Enable(false);
@@ -1188,9 +1187,12 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	if (dlog->ShowModal() != wxID_OK)  // Decided to cancel
 		return;
 	if (dlog->Cal_Box->GetValue()) pScope->ClearCalibration(); // clear calibration
+#ifdef PREFS
 	if (!Dec_guide && dlog->Dec_Mode->GetSelection()) pScope->ClearCalibration(); // added dec guiding -- recal
+#endif
 	if (!pScope->IsCalibrated()) SetStatusText(_T("No cal"),5);
 
+#ifdef PREFS
 	RA_aggr = (double) dlog->RA_Aggr_Ctrl->GetValue() / 100.0;
 //	Dec_aggr = (double) dlog->Dec_Aggr_Ctrl->GetValue() / 100.0;
 	RA_hysteresis = (double) dlog->RA_Hyst_Ctrl->GetValue() / 100.0;
@@ -1198,12 +1200,14 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	SearchRegion = dlog->SearchRegion_Ctrl->GetValue();
 	dlog->MinMotion_Ctrl->GetValue().ToDouble(&MinMotion);
 	if (MinMotion < 0.001) MinMotion = 0.0;
+#endif
 	dlog->MassDelta_Ctrl->GetValue().ToDouble(&StarMassChangeRejectThreshold);
 	if (StarMassChangeRejectThreshold < 0.1) StarMassChangeRejectThreshold = 0.1;
 	else if (StarMassChangeRejectThreshold > 1.0) StarMassChangeRejectThreshold = 1.0;
 	dlog->DitherScale_Ctrl->GetValue().ToDouble(&DitherScaleFactor);
 	if (DitherScaleFactor < 0.01) DitherScaleFactor = 0.01;
 	else if (DitherScaleFactor > 100.0) DitherScaleFactor = 100.0;
+#ifdef PREFS
 	Dec_guide = dlog->Dec_Mode->GetSelection();
 	Dec_algo = dlog->Dec_AlgoCtrl->GetSelection();
 	dlog->DecSlopeWeight_Ctrl->GetValue().ToDouble(&Dec_slopeweight);
@@ -1215,6 +1219,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 	Log_Data = dlog->Log_Box->GetValue();
 	DitherRAOnly = dlog->RADither_Box->GetValue();
 	DisableGuideOutput = dlog->Disable_Box->GetValue();
+#endif
     GuideCameraPrefs::UseSubframes = dlog->Subframe_Box->GetValue();
 
 	if (CurrentGuideCamera && CurrentGuideCamera->HasPortNum) {
@@ -1251,6 +1256,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 		CurrentGuideCamera->Delay = dlog->Delay_Ctrl->GetValue();
 	}
 
+#ifdef PREFS
 	frame->GraphLog->RAA_Ctrl->SetValue((int) (RA_aggr * 100));
 	frame->GraphLog->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
 #if ((wxMAJOR_VERSION > 2) || (wxMINOR_VERSION > 8))
@@ -1258,6 +1264,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 #endif
 	frame->GraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
 	frame->GraphLog->DM_Ctrl->SetSelection(Dec_guide);
+#endif
 	
 	//Dec_backlash = (double) dlog->Dec_Backlash_Ctrl->GetValue();
 }
@@ -1305,6 +1312,7 @@ END_EVENT_TABLE()
 void TestGuideDialog::OnButton(wxCommandEvent &evt) {
 //	if ((frame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
 	if (!(pScope->IsConnected())) return;
+#ifdef BRET
 	switch (evt.GetId()) {
 		case MGUIDE_N:
 			pScope->Guide(NORTH,Cal_duration);
@@ -1319,7 +1327,7 @@ void TestGuideDialog::OnButton(wxCommandEvent &evt) {
 			pScope->Guide(WEST,Cal_duration);
 			break;
 	}
-
+#endif
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {

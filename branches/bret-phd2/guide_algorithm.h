@@ -55,20 +55,16 @@
 
 class GuideAlgorithm
 {
+protected:
     GuideAlgorithm *m_pChained;
 
 public:
-    GuideAlgorithm(void)
-    {
-        m_pChained = NULL;
-    }
-
     /*
      * if we are passed a pointer to chain to, this transfers
      * ownership of the pointer to us, so we are resposnible
      * for freeing it, which we do in the destructor.
      */
-    GuideAlgorithm(GuideAlgorithm *pChained)
+    GuideAlgorithm(GuideAlgorithm *pChained = NULL)
     {
         m_pChained = pChained;
     }
@@ -78,23 +74,32 @@ public:
         delete m_pChained;
     }
 
-    void reset(void)
+    virtual bool reset(void)
     {
+        bool bError = false;
+
+        try
+        {
+        }
+        catch (char *ErrorMsg)
+        {
+            POSSIBLY_UNUSED(ErrorMsg);
+            bError = true;
+        }
+
+        return bError;
     }
 
     // the default algorithm simply returns its input
-    double result(double input)
+    virtual double result(double input)
     {
-        double dReturn;
 
         if (m_pChained)
         {
-            dReturn = m_pChained->result(input);
+            input = m_pChained->result(input);
         }
-        else
-        {
-            dReturn = input;
-        }
+
+        double dReturn = input;
 
         return dReturn;
     }

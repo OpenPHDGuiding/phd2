@@ -1,9 +1,13 @@
 /*
- *  scope.h
+ *  guider_config.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
  *  Copyright (c) 2012 Bret McKee
+ *  All rights reserved.
+ *
+ *  Based upon work by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -33,31 +37,21 @@
  *
  */
 
-#ifndef SCOPE_H_INCLUDED
-#define SCOPE_H_INCLUDED
+#ifndef GUIDER_CONFIG_H_INCLUDED
+#define GUIDER_CONFIG_H_INCLUDED
 
-static const int MAX_CALIBRATION_STEPS = 60;
-static const double MAX_CALIBRATION_DISTANCE = 25.0;
-static const double DEC_BACKLASH_DISTANCE = 3.0;
-
-class Scope:public Mount
+class GuiderConfig
 {
-    int m_calibrationDuration;
-    int m_calibrationSteps;
-    int m_backlashSteps;
-    Point m_calibrationStartingLocation;
-    GUIDE_DIRECTION m_calibrationDirection;
+protected:
+    //double RA_hysteresis;
+    //double Dec_slopeweight;
+    //int Dec_algo;
+    //bool ManualLock;	// In manual lock position mode?  (If so, don't re-lock on start of guide)
 
-public:
-    Scope(void);
-    virtual ~Scope(void);
-    virtual bool SetParms(int calibrationDuration);
-    virtual bool BeginCalibration(Guider *pGuider);
-    virtual bool UpdateCalibrationState(Guider *pGuider);
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
-    virtual bool IsGuiding()=0;
-private:
-    void DisplayCalibrationStatus(double dX, double dY, double dist, double dist_crit);
+    GuiderConfig(void);
+    ~GuiderConfig(void);
+    void LoadConfig(void);
+    void SaveConfig(void);
 };
 
-#endif /* SCOPE_H_INCLUDED */
+#endif /* GUIDER_CONFIG_H_INCLUDED */

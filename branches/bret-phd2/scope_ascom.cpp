@@ -36,7 +36,6 @@
 
 #ifdef GUIDE_ASCOM
 
-#include <wx/config.h>
 #include <wx/msw/ole/oleutils.h>
 #include <objbase.h>
 #include <ole2ver.h>
@@ -50,7 +49,6 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
 
     IDispatch *pChooserDisplay = NULL;	// Pointer to the Chooser
     BSTR bstr_ProgID = NULL;				
-    wxConfig *config = NULL;
     char *cp = NULL;
 
     try
@@ -85,8 +83,7 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
         }
 
         // Look in Registry to see if there is a default
-        config = new wxConfig("PHD");
-        config->Read("ScopeID",&wx_ProgID);
+        wx_ProgID = pConfig->GetString("/scope/ascom/ScopeID", _T(""));
         bstr_ProgID = wxBasicString(wx_ProgID).Get();
         
         // Next, try to open it
@@ -106,8 +103,8 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
         }
 
         cp = uni_to_ansi(vRes.bstrVal);	// Get ProgID in ANSI
-        config->Write("ScopeID",wxString(cp));  // Save it in Registry
         wx_ProgID = wxString::Format("%s",cp);
+        pConfig->SetString("/scope/ascom/ScopeID", wx_ProgID);
     }
     catch (char *ErrorMsg)
     {
@@ -125,7 +122,6 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
         SysFreeString(bstr_ProgID);
     }
 
-    delete config;
     delete[] cp;
 
     return bError;

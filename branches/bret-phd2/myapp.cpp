@@ -39,7 +39,7 @@ IMPLEMENT_APP(MyApp)
 // ------------------------  My App stuff -----------------------------
 bool MyApp::OnInit() {
 
-#ifdef DEBUG
+#ifndef DEBUG
 	#if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
 	wxDisableAsserts();
 	#endif
@@ -47,6 +47,8 @@ bool MyApp::OnInit() {
 
     Debug.Init("debug", true);
 	SetVendorName(_T("StarkLabs"));
+    pConfig->Initialize(_T("PHDGuidingV2"));
+
 	wxLocale locale;
 
 	locale.Init(wxLANGUAGE_ENGLISH_US);

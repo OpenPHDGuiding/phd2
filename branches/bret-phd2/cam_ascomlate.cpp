@@ -42,7 +42,6 @@
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include <wx/stdpaths.h>
-#include <wx/config.h>
 
 #include "cam_ascom.h"
 #include <wx/msw/ole/oleutils.h>
@@ -117,10 +116,8 @@ bool Camera_ASCOMLateClass::Connect() {
 	SysFreeString(bsDeviceType);
 
 	// Look in Registry to see if there is a default
-	wxConfig *config = new wxConfig("PHD");
-	wxString wx_ProgID;
+	wxString wx_ProgID = pConfig->GetString("/camera/ASCOMlate/camera_id", _T(""));
 	BSTR bstr_ProgID=NULL;
-	config->Read("ASCOMCamID",&wx_ProgID);
 	bstr_ProgID = wxBasicString(wx_ProgID).Get();
 	
 
@@ -133,21 +130,14 @@ bool Camera_ASCOMLateClass::Connect() {
 	dispParms.rgdispidNamedArgs = NULL;
 	if(FAILED(hr = pChooserDisplay->Invoke(dispid_choose,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,&dispParms,&vRes,&excep, NULL))) {
 		wxMessageBox (_T("Failed to run the Scope Chooser.  Something is wrong with ASCOM"),_T("Error"),wxOK | wxICON_ERROR);
-		if (config) delete config;
 		return true;
 	}
 	pChooserDisplay->Release();
 	if(SysStringLen(vRes.bstrVal) == 0) { // They hit cancel - bail
-		if (config) delete config;
 		return true;
 	}
 	// Save name of cam
-	char *cp = NULL;
-	cp = uni_to_ansi(vRes.bstrVal);	// Get ProgID in ANSI
-	config->Write("ASCOMCamID",wxString(cp));  // Save it in Registry
-//	wx_ProgID = wxString::Format("%s",cp);
-	delete[] cp;
-	delete config;
+	pConfig->SetString("/camera/ASCOMlate/camera_id", vRes.bstrVal);
 
 	// Now, try to attach to the driver
 	if (FAILED(CLSIDFromProgID(vRes.bstrVal, &CLSID_driver))) {

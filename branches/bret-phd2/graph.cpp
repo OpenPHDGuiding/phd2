@@ -62,6 +62,7 @@ END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
 wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCAPTION & ~wxSTAY_ON_TOP) {  // was 230
+#ifdef PREFS
 
 	this->visible = false;
 	this->n_items = 0;
@@ -144,12 +145,14 @@ wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCA
 	this->DM_Ctrl= new wxChoice(this,GRAPH_DM,wxPoint(535,210+extra_offset),wxSize(ctl_size+15,-1),WXSIZEOF(dec_choices), dec_choices );
 	DM_Ctrl->SetSelection(Dec_guide);
 
+#endif
 }
 
 GraphLogWindow::~GraphLogWindow() {
 
 }
 void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
+#ifdef PREFS
 	RA_aggr = (float) this->RAA_Ctrl->GetValue() / 100.0;
 	RA_hysteresis = (float) this->RAH_Ctrl->GetValue() / 100.0;
 	Max_Dec_Dur = this->MDD_Ctrl->GetValue();
@@ -159,14 +162,19 @@ void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
 #else
 	this->MM_Ctrl->GetValue().ToDouble(&MinMotion);
 #endif
+#endif
 }
 void GraphLogWindow::OnUpdateCommandGuideParams(wxCommandEvent& WXUNUSED(evt)) {
+#ifdef PREFS
 	Dec_guide = this->DM_Ctrl->GetSelection();	
+#endif
 }
 
 #if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
 void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) {
+#ifdef PREFS
 	MinMotion = this->MM_Ctrl->GetValue();
+#endif
 }
 #endif
 
@@ -236,6 +244,7 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt)) {
 */
 
 void GraphLogWindow::SetState(bool is_active) {
+#ifdef PREFS
 	this->visible = is_active;
 	this->Show(is_active);
 	if (is_active) {
@@ -249,6 +258,7 @@ void GraphLogWindow::SetState(bool is_active) {
 		this->DM_Ctrl->SetSelection(Dec_guide);
 		Refresh();
 	}
+#endif
 }
 
 void GraphLogWindow::AppendData(float dx, float dy, float RA, float Dec) {

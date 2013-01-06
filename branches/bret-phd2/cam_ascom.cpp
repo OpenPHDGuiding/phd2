@@ -71,10 +71,7 @@ bool Camera_ASCOMClass::Connect() {
 	C->DeviceTypeV = "Camera";
 
 	// Look in Registry to see if there is a default
-	wxConfig *config = new wxConfig("PHD");
-	wxString wx_ProgID;
-	BSTR bstr_ProgID=NULL;
-	config->Read("ASCOMCamID",&wx_ProgID);
+	wxString wx_ProgID = pConfig->GetString("/camera/ASCOM/camera_id", _T(""));
 	bstr_ProgID = wxBasicString(wx_ProgID).Get();
 
 	_bstr_t  drvrId = C->Choose(bstr_ProgID);
@@ -84,24 +81,15 @@ bool Camera_ASCOMClass::Connect() {
 		pCam.CreateInstance((LPCSTR)drvrId);
 		if(pCam == NULL)  {
 			wxMessageBox(wxString::Format("Cannot load driver %s\n", (char *)drvrId));
-			if (config) delete config;
 			return true;
 		}
 	}
 	else {
 		wxMessageBox("Cannot launch ASCOM Chooser");
-		if (config) delete config;
 		return true;
 	}
 	// Save name of cam
-	char *cp = NULL;
-	cp = uni_to_ansi(drvrId);	// Get ProgID in ANSI
-	config->Write("ASCOMCamID",wxString(cp));  // Save it in Registry
-//	wx_ProgID = wxString::Format("%s",cp);
-	delete[] cp;
-	if (config) delete config;
-
-
+	pConfig->SetString("/camera/ASCOM/camera_id", drvrId);
 
     try {
 		pCam->Connected = VARIANT_TRUE;

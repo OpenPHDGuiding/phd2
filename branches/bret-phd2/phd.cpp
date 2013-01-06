@@ -54,9 +54,11 @@ IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
 
 // Globals`
 //
+Config *pConfig = new Config();
 Scope *pScope = new ScopeNone();
 MyFrame *frame = NULL;
 GuideCamera *CurrentGuideCamera = NULL;
+bool DitherRAOnly = false;
 
 bool GuideCameraConnected = false;
 usImage *pCurrentFullFrame = new usImage();

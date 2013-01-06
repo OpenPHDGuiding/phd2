@@ -214,10 +214,10 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					if ((pGuider->GetState() != STATE_GUIDING_LOCKED)  && (pGuider->GetState() != STATE_UNINITIALIZED)) {
 						break;
 					}
-					if (CurrentError > 2.55)
+					if (pGuider->CurrentError() > 2.55)
 						rval = 255;
 					else
-						rval = (unsigned char) (CurrentError * 100);
+						rval = (unsigned char) (pGuider->CurrentError() * 100);
 					if (pGuider->GetState() == STATE_UNINITIALIZED) rval = 0; // Idle -- let Neb free up
 					wxLogStatus(_T("Sending pixel error of %.2f"),(float) rval / 100.0);
 					break;

@@ -54,8 +54,10 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
+#ifdef BRET
     EVT_MENU(MENU_LOADSETTINGS, MyFrame::OnSettings)
     EVT_MENU(MENU_SAVESETTINGS, MyFrame::OnSettings)
+#endif
     EVT_MENU(MENU_LOADDARK,MyFrame::OnLoadSaveDark)
     EVT_MENU(MENU_SAVEDARK,MyFrame::OnLoadSaveDark)
     EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
@@ -190,6 +192,15 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 #ifdef GUIDE_INDI
 	mount_menu->AppendRadioItem(MOUNT_INDI,_T("INDI"),_T("INDI"));
 #endif
+    // try to get the last value from the config store
+    wxString lastChoice = pConfig->GetString("/scope/LastMenuChoice", _T(""));
+    int lastId = mount_menu->FindItem(lastChoice);
+
+    if (lastId != wxNOT_FOUND)
+    {
+	    mount_menu->FindItem(lastId)->Check(true);
+    }
+
 	tools_menu = new wxMenu;
 	//mount_menu->AppendSeparator();
 	tools_menu->Append(MENU_MANGUIDE, _T("&Manual Guide"), _T("Manual / test guide dialog"));
@@ -445,8 +456,6 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
     Stretch_gamma = 0.4;
 
-	// Get defaults from Registry
-	ReadPreferences(_T(""));
 	Gamma_Slider->SetValue((int) (Stretch_gamma * 100.0));
 	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 	wxDateTime now = wxDateTime::Now();
@@ -498,14 +507,17 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
 // frame destructor
 MyFrame::~MyFrame() {
-	if (pScope->IsConnected()) { // Disconnect
+	if (pScope->IsConnected()) 
+    {
 		pScope->Disconnect();
     }
 
     delete pScope;
 
 	if (GuideCameraConnected)
+    {
 		CurrentGuideCamera->Disconnect();
+    }
 }
 
 void MyFrame::UpdateButtonsStatus(void)
@@ -528,27 +540,30 @@ bool MyFrame::StartWorkerThread(void)
     bool bError = false;
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    if (!m_pWorkerThread || !m_pWorkerThread->IsRunning())
+    try
     {
-        delete m_pWorkerThread;
-        m_pWorkerThread = new WorkerThread(this);
+        if (!m_pWorkerThread || !m_pWorkerThread->IsRunning())
+        {
+            delete m_pWorkerThread;
+            m_pWorkerThread = new WorkerThread(this);
 
-        if (m_pWorkerThread->Create(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
-        {
-            bError = true;
-            wxLogError("Could not create the worker thread!");
-        }
-        else if (m_pWorkerThread->Run() != wxTHREAD_NO_ERROR)
-        {
-            bError = true;
-            wxLogError("Could not run the worker thread!");
+            if (m_pWorkerThread->Create() != wxTHREAD_NO_ERROR)
+            {
+                throw("Could not Create() the worker thread!");
+            }
+
+            if (m_pWorkerThread->Run() != wxTHREAD_NO_ERROR)
+            {
+                throw("Could not Run() the worker thread!");
+            }
         }
     }
-
-    if (bError)
+    catch (char *ErrorMsg)
     {
+        POSSIBLY_UNUSED(ErrorMsg);
         delete m_pWorkerThread;
         m_pWorkerThread = NULL;
+        bError = true;
     }
 
     return bError;
@@ -558,10 +573,18 @@ void MyFrame::StopWorkerThread(void)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
+    Debug.Write("StopWorkerThread() begins\n");
+
+    StopCapturing();
+
     if (m_pWorkerThread && m_pWorkerThread->IsRunning())
     {
-        m_pWorkerThread->Wait();
+        m_pWorkerThread->EnqueueWorkerThreadTerminateRequest();
+        wxThread::ExitCode threadExitCode = m_pWorkerThread->Wait();
+        Debug.Write(wxString::Format("StopWorkerThread() threadExitCode=%d\n", threadExitCode));
     }
+
+    Debug.Write("StopWorkerThread() exits\n");
 
     delete m_pWorkerThread;
     m_pWorkerThread = NULL;
@@ -619,13 +642,16 @@ void MyFrame::ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration
     m_pWorkerThread->EnqueueWorkerThreadGuideRequest(guideDirection, guideDuration);
 }
 
-void MyFrame::StartCapturing(double exposureDuration)
+void MyFrame::StartCapturing()
 {
-    CaptureActive = true;
+    if (!CaptureActive)
+    {
+        CaptureActive = true;
 
-    UpdateButtonsStatus();
+        UpdateButtonsStatus();
 
-    ScheduleExposure(exposureDuration);
+        ScheduleExposure(RequestedExposureDuration());
+    }
 }
 
 void MyFrame::StopCapturing(void)
@@ -642,8 +668,6 @@ void MyFrame::OnClose(wxCloseEvent &event) {
 	}
 
     StopWorkerThread();
-
-	WritePreferences(_T(""));
 
 	if (pScope->IsConnected()) { // Disconnect
 		pScope->Disconnect();

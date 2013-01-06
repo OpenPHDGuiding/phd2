@@ -111,8 +111,6 @@ public:
 	void OnAutoStar(wxCommandEvent& evt);
 	bool FlipRACal(wxCommandEvent& evt);
 	double RequestedExposureDuration();
-	void ReadPreferences(wxString fname);
-	void WritePreferences(wxString fname);
 	bool Voyager_Connect();
 #ifndef __WXGTK__
 	void OnDonateMenu(wxCommandEvent& evt);
@@ -141,7 +139,7 @@ public:
     void ScheduleExposure(double exposureDuration);
     void ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration);
 
-    void StartCapturing(double exposureDuration);
+    void StartCapturing(void);
     void StopCapturing(void);
 
     void UpdateButtonsStatus(void);
