@@ -220,7 +220,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					break;
 				case MSG_AUTOFINDSTAR:
 //				case 'f':
-                    pFrame->pGuider->AutoSelect(pCurrentFullFrame);
+                    pFrame->pGuider->AutoSelect();
 					break;
 				case MSG_SETLOCKPOSITION:
                 case 's':

@@ -52,6 +52,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_pDecGuideAlgorithm = NULL;
     m_pRaGuideAlgorithm = NULL;
     m_paused = false;
+    m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);
 
@@ -384,6 +385,11 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
 void Guider::UpdateImageDisplay(usImage *pImage) {
 	int blevel, wlevel;
 
+    if (pImage==NULL)
+    {
+        pImage = m_pCurrentImage;
+    }
+
 	pImage->CalcStats();
 	blevel = pImage->Min;
 	wlevel = pImage->FiltMax;
@@ -397,6 +403,11 @@ void Guider::UpdateImageDisplay(usImage *pImage) {
 
     Refresh();
     Update();
+}
+
+bool Guider::SaveCurrentImage(const wxString& fileName)
+{
+    return m_pCurrentImage->Save(fileName);
 }
 
 

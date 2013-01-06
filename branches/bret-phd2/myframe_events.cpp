@@ -41,14 +41,6 @@
 #include <wx/stdpaths.h>
 #include <wx/utils.h>
 
-//#ifndef __WXGTK__
-#define RAWSAVE
-//#endif
-
-#if defined RAWSAVE
-  #include <fitsio.h>
-#endif
-
 // Some specific camera includes
 #if defined (__WINDOWS__) && defined (LE_PARALLEL_CAMERA)
 #include "cam_LEwebcam.h"
@@ -120,71 +112,27 @@ void MyFrame::OnOverlay(wxCommandEvent &evt) {
 }
 
 void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
-//	int retval;
 	if (CaptureActive) return;  // Looping an exposure already
-#if defined (RAWSAVE)
 	wxString fname = wxFileSelector( wxT("Save FITS Image"), (const wxChar *)NULL,
                           (const wxChar *)NULL,
                            wxT("fit"), wxT("FITS files (*.fit)|*.fit"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-	if (fname.IsEmpty()) return;  // Check for canceled dialog
+
+	if (fname.IsEmpty())
+        return;  // Check for canceled dialog
 	if (wxFileExists(fname))
 		fname = _T("!") + fname;
-	fitsfile *fptr;  // FITS file pointer
-    int status = 0;  // CFITSIO status value MUST be initialized to zero!
-	long fpixel[3] = {1,1,1};
-	long fsize[3];
-	int output_format=USHORT_IMG;
-	fsize[0] = (long) pCurrentFullFrame->Size.GetWidth();
-	fsize[1] = (long) pCurrentFullFrame->Size.GetHeight();
-	fsize[2] = 0;
-	fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
-	if (!status) fits_create_img(fptr,output_format, 2, fsize, &status);
-	if (!status) fits_write_pix(fptr,TUSHORT,fpixel,pCurrentFullFrame->NPixels,pCurrentFullFrame->ImageData,&status);
-	fits_close_file(fptr,&status);
-	if (status) wxMessageBox (_T("Error saving FITS file"));
-/*	wxImage *Temp_Image;
-	CurrentFullFrame.CopyToImage(&Temp_Image,0,255,1.0);
-	wxString fname = wxFileSelector( wxT("Save BMP Image"), (const wxChar *)NULL,
-                          (const wxChar *)NULL,
-                           wxT("bmp"), wxT("BMP files (*.bmp)|*.bmp"),wxSAVE | wxOVERWRITE_PROMPT);
-		if (fname.IsEmpty()) return;  // Check for canceled dialog
-		wxBitmap* DisplayedBitmap = new wxBitmap(Temp_Image,24);
-		retval = DisplayedBitmap->SaveFile(fname, wxBITMAP_TYPE_BMP);
-		if (!retval)
-			(void) wxMessageBox(_T("Error"),wxT("Your data were not saved"),wxOK | wxICON_ERROR);
-		else
-			SetStatusText(fname + _T(" saved"));
-		delete DisplayedBitmap;*/
-#else
-	if ( (pGuider->Displayed_Image->Ok()) && (pGuider->Displayed_Image->GetWidth()) ) {
-		wxString fname = wxFileSelector( wxT("Save BMP Image"), (const wxChar *)NULL,
-                          (const wxChar *)NULL,
-                           wxT("bmp"), wxT("BMP files (*.bmp)|*.bmp"),wxSAVE | wxOVERWRITE_PROMPT);
-		if (fname.IsEmpty()) return;  // Check for canceled dialog
-//		wxBitmap* DisplayedBitmap = new wxBitmap(pGuider->Displayed_Image,24);
-		bool retval = pGuider->Displayed_Image->SaveFile(fname, wxBITMAP_TYPE_BMP);
-		if (!retval)
-			(void) wxMessageBox(_T("Error"),wxT("Your data were not saved"),wxOK | wxICON_ERROR);
-		else
-			SetStatusText(fname + _T(" saved"));
-		//delete DisplayedBitmap;
-	}
-#endif
+
+    if (pGuider->SaveCurrentImage(fname))
+    {
+        (void) wxMessageBox(_T("Error"),wxT("Your data were not saved"),wxOK | wxICON_ERROR);
+    }
 }
 
 void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
 	wxString fname;
-	fitsfile *fptr;  // FITS file pointer
-    int status = 0;  // CFITSIO status value MUST be initialized to zero!
-	long fpixel[3] = {1,1,1};
-	long fsize[3];
-	int hdutype, naxis;
-	int nhdus=0;
-
-	int output_format=USHORT_IMG;
 
 	if (evt.GetId() == MENU_SAVEDARK) {
-		if (!pCamera->HaveDark) {
+		if (!pCamera || !pCamera->HaveDark) {
 			wxMessageBox("You haven't captured a dark frame - nothing to save");
 			return;
 		}
@@ -195,57 +143,28 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
 		if (!fname.EndsWith(_T(".fit"))) fname.Append(_T(".fit"));
 		if (wxFileExists(fname))
 			fname = _T("!") + fname;
-		fsize[0] = (long) pCamera->CurrentDarkFrame.Size.GetWidth();
-		fsize[1] = (long) pCamera->CurrentDarkFrame.Size.GetHeight();
-		fsize[2] = 0;
-		fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
-		if (!status) fits_create_img(fptr,output_format, 2, fsize, &status);
-		if (!status) fits_write_pix(fptr,TUSHORT,fpixel,pCamera->CurrentDarkFrame.NPixels,pCamera->CurrentDarkFrame.ImageData,&status);
-		fits_close_file(fptr,&status);
-		if (status) wxMessageBox (_T("Error saving FITS file"));
-		else SetStatusText ("Dark loaded");
+		if (pCamera->CurrentDarkFrame.Save(fname))
+        {
+		    wxMessageBox (_T("Error saving FITS file"));
+        }
     }
 	else if (evt.GetId() == MENU_LOADDARK) {
 		fname = wxFileSelector( wxT("Load dark (FITS Image)"), (const wxChar *)NULL,
 							   (const wxChar *)NULL,
 							   wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_CHANGE_DIR);
 		if (fname.IsEmpty()) return;  // Check for canceled dialog
-		if (!wxFileExists(fname)) {
-			wxMessageBox("File does not exist - cannot load");
-			return;
-		}
-		if ( !fits_open_diskfile(&fptr, (const char*) fname.c_str(), READONLY, &status) ) {
-			if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-				(void) wxMessageBox(wxT("FITS file is not of an image"),wxT("Error"),wxOK | wxICON_ERROR);
-				return;
-			}
-			
-			// Get HDUs and size
-			fits_get_img_dim(fptr, &naxis, &status);
-			fits_get_img_size(fptr, 2, fsize, &status);
-			fits_get_num_hdus(fptr,&nhdus,&status);
-			if ((nhdus != 1) || (naxis != 2)) {
-				(void) wxMessageBox(_T("Unsupported type or read error loading FITS file"),wxT("Error"),wxOK | wxICON_ERROR);
-				return;
-			}
-			if (pCamera->CurrentDarkFrame.Init((int) fsize[0],(int) fsize[1])) {
-				wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
-				return;
-			}
-			if (fits_read_pix(fptr, TUSHORT, fpixel, (int) fsize[0]*(int) fsize[1], NULL, pCamera->CurrentDarkFrame.ImageData, NULL, &status) ) { // Read image
-				(void) wxMessageBox(_T("Error reading data"),wxT("Error"),wxOK | wxICON_ERROR);
-				return;
-			}
-			fits_close_file(fptr,&status);
+    
+        if (pCamera->CurrentDarkFrame.Load(fname))
+        {
+			SetStatusText("Dark not loaded");
+        }
+        else
+        {
 			pCamera->HaveDark = true;
 			tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
 			Dark_Button->SetLabel(_T("Redo Dark"));
 			SetStatusText("Dark loaded");
-		}
-		else {
-			wxMessageBox("Error opening FITS file");
-			return;
-		}
+        }
 	}
 }
 void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event)) {
@@ -294,11 +213,11 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
     {
         Debug.Write("Processing an image\n");
 
-        usImage *pNextFullFrame = event.GetPayload<usImage *>();
+        usImage *pNewFrame = event.GetPayload<usImage *>();
         
         if (event.GetInt())
         {
-            delete pNextFullFrame;
+            delete pNewFrame;
 
             StopCapturing();
             pGuider->ResetGuideState();
@@ -308,13 +227,8 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             throw ERROR_INFO("Error reported capturing image");
         }
 
-        // the capture was OK - switch in the new image
-        delete pCurrentFullFrame;
-        pCurrentFullFrame = pNextFullFrame;
-
-        pGuider->UpdateGuideState(pCurrentFullFrame, !CaptureActive);
-        
-        this->Profile->UpdateData(pCurrentFullFrame, pGuider->CurrentPosition().X, pGuider->CurrentPosition().Y);
+        pGuider->UpdateGuideState(pNewFrame, !CaptureActive);
+        pNewFrame = NULL; // the guider owns in now
 
         if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING)
         {
@@ -371,7 +285,7 @@ void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event)) {
 	Stretch_gamma = (double) Gamma_Slider->GetValue() / 100.0;
-	pGuider->UpdateImageDisplay(pCurrentFullFrame);
+	pGuider->UpdateImageDisplay();
 }
 
 void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
@@ -522,7 +436,7 @@ bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))
 }
 
 void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {
-    pFrame->pGuider->AutoSelect(pCurrentFullFrame);
+    pFrame->pGuider->AutoSelect();
 }
 
 #ifndef __WXGTK__

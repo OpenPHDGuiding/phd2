@@ -34,6 +34,7 @@
 
 #include "phd.h"
 #include "image_math.h"
+#include <fitsio.h>
 
 bool usImage::Init(int xsize, int ysize) {
 // Allocates space for image and sets params up
@@ -228,3 +229,95 @@ void usImage::InitDate() {
 		timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
 
 }
+
+bool usImage::Save(const wxString& fname)
+{
+    bool bError = false;
+
+    try
+    {
+        fitsfile *fptr;  // FITS file pointer 
+        int status = 0;  // CFITSIO status value MUST be initialized to zero!
+        long fpixel[3] = {1,1,1};
+        long fsize[3];
+        int output_format=USHORT_IMG;
+        fsize[0] = (long) Size.GetWidth();
+        fsize[1] = (long) Size.GetHeight();
+        fsize[2] = 0;
+        fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
+        if (!status) fits_create_img(fptr,output_format, 2, fsize, &status);
+        if (!status) fits_write_pix(fptr,TUSHORT,fpixel,NPixels,ImageData,&status);
+        fits_close_file(fptr,&status);
+        bError = status?true:false;
+
+        if (bError)
+            pFrame->SetStatusText(fname + _T(" Not saved"));
+        else
+            pFrame->SetStatusText(fname + _T(" saved"));
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool usImage::Load(const wxString& fname)
+{
+    bool bError = false;
+
+    try
+    {
+        fitsfile *fptr;  // FITS file pointer
+        int status = 0;  // CFITSIO status value MUST be initialized to zero!
+        long fpixel[3] = {1,1,1};
+        long fsize[3];
+        int hdutype, naxis;
+        int nhdus=0;
+
+		if (!wxFileExists(fname)) {
+			wxMessageBox(_T("File does not exist - cannot load"));
+			throw ERROR_INFO("File does not exist");
+		}
+		if ( !fits_open_diskfile(&fptr, (const char*) fname.c_str(), READONLY, &status) ) {
+			if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
+				(void) wxMessageBox(wxT("FITS file is not of an image"), wxT("Error"),wxOK | wxICON_ERROR);
+                throw ERROR_INFO("Fits file is not an image");
+			}
+			
+			// Get HDUs and size
+			fits_get_img_dim(fptr, &naxis, &status);
+			fits_get_img_size(fptr, 2, fsize, &status);
+			fits_get_num_hdus(fptr,&nhdus,&status);
+			if ((nhdus != 1) || (naxis != 2)) {
+				(void) wxMessageBox( _T("Unsupported type or read error loading FITS file") ,wxT("Error"),wxOK | wxICON_ERROR);
+				throw ERROR_INFO("unsupported type");
+			}
+			if (Init((int) fsize[0],(int) fsize[1])) 
+            {
+				wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+				throw ERROR_INFO("Memory Allocation failure");
+			}
+			if (fits_read_pix(fptr, TUSHORT, fpixel, (int) fsize[0]*(int) fsize[1], NULL, pCamera->CurrentDarkFrame.ImageData, NULL, &status) ) { // Read image
+				(void) wxMessageBox(_T("Error reading data"), wxT("Error"),wxOK | wxICON_ERROR);
+				throw ERROR_INFO("Error reading");
+			}
+			fits_close_file(fptr,&status);
+		}
+		else 
+        {
+			wxMessageBox(_T("Error opening FITS file"));
+            throw ERROR_INFO("error opening file");
+		}
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+

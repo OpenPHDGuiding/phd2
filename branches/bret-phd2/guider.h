@@ -132,6 +132,7 @@ protected:
     Point m_lockPosition;
     GUIDER_STATE m_state;
 	double	m_scaleFactor;
+    usImage *m_pCurrentImage;
 
 public:
     // functions with a implemenation in Guider
@@ -141,7 +142,7 @@ public:
     virtual GUIDER_STATE GetState(void);
 	virtual void OnClose(wxCloseEvent& evt);
 	virtual void OnErase(wxEraseEvent& evt);
-    virtual void UpdateImageDisplay(usImage *pImage);
+    virtual void UpdateImageDisplay(usImage *pImage=NULL);
     virtual Point &LockPosition();
     virtual bool DoGuide(void);
     virtual bool SetOverlayMode(int newMode);
@@ -156,10 +157,11 @@ public:
 
     virtual bool IsLocked(void) = 0;
     virtual bool SetLockPosition(double x, double y, bool bExact=false)=0;
-    virtual bool AutoSelect(usImage *pImage)=0;
+    virtual bool AutoSelect(usImage *pImage=NULL)=0;
 
     virtual Point &CurrentPosition(void) = 0;
     virtual wxRect GetBoundingBox(bool useSubframe) = 0;
+    virtual bool SaveCurrentImage(const wxString& fileName);
 
 private:
     virtual GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);

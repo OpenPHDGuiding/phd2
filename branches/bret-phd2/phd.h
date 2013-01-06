@@ -157,11 +157,6 @@ extern int YWinSize;
 #endif
 
 #if 1
-// these seem like the camera related globals
-extern usImage *pCurrentFullFrame;
-#endif
-
-#if 1
 // these seem like the server related globals
 enum {
 	SERVER_ID = 100,

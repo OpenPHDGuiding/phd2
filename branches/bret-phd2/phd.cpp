@@ -62,7 +62,6 @@ int AdvDlg_fontsize = 0;
 int XWinSize = 640;
 int YWinSize = 512;
 
-usImage *pCurrentFullFrame = new usImage();
 int CropX=0;		// U-left corner of crop position
 int CropY=0;
 

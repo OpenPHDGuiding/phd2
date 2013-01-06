@@ -178,12 +178,12 @@ bool GuiderOneStar::SetLockPosition(double x, double y, bool bExact)
 
     try
     {
-        if ((x <= 0) || (x >= pCurrentFullFrame->Size.x))
+        if ((x <= 0) || (x >= m_pCurrentImage->Size.x))
         {
             throw ERROR_INFO("invalid y value");
         }
 
-        if ((y <= 0) || (y >= pCurrentFullFrame->Size.x))
+        if ((y <= 0) || (y >= m_pCurrentImage->Size.x))
         {
             throw ERROR_INFO("invalid x value");
         }
@@ -199,7 +199,7 @@ bool GuiderOneStar::SetLockPosition(double x, double y, bool bExact)
         }
         else
         {
-            m_star.Find(pCurrentFullFrame, m_searchRegion, x, y);
+            m_star.Find(m_pCurrentImage, m_searchRegion, x, y);
             // if the find was successful, the next state machine update will 
             // move our state to STATE_SELECTED
         }
@@ -220,6 +220,11 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
     try
     {
         Star newStar;
+
+        if (pImage == NULL)
+        {
+            pImage = m_pCurrentImage;
+        }
 
         if (!newStar.AutoFind(pImage))
         {
@@ -351,6 +356,11 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
     try
     {
         Debug.Write(wxString::Format("UpdateGuideState(): m_state=%d\n", m_state));
+
+        // switch in the new image
+        
+        delete m_pCurrentImage;
+        m_pCurrentImage = pImage;
 
         if (bStopping)
         {
@@ -484,6 +494,7 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
         pFrame->SetStatusText(statusMessage);
     }
 
+    pFrame->Profile->UpdateData(m_pCurrentImage, CurrentPosition().X, CurrentPosition().Y);
     pFrame->UpdateButtonsStatus();
 
     Debug.Write("UpdateGuideState exits:" + statusMessage + "\n");
@@ -528,10 +539,10 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
                 throw THROW_INFO("Skipping event because click outside of search region");
             }
 
-            if (pCurrentFullFrame->NPixels == 0)
+            if (m_pCurrentImage->NPixels == 0)
             {
                 mevent.Skip();
-                throw ERROR_INFO("Skipping event pCurrentFullFrame->NPixels == 0");
+                throw ERROR_INFO("Skipping event m_pCurrentImage->NPixels == 0");
             }
 
             double StarX = (double) mevent.m_x / m_scaleFactor;
@@ -643,16 +654,16 @@ void GuiderOneStar::SaveStarFITS() {
 	tmpimg.Init(60,60);
 	int start_x = ROUND(StarX)-30;
 	int start_y = ROUND(StarY)-30;
-	if ((start_x + 60) > pCurrentFullFrame->Size.GetWidth())
-		start_x = pCurrentFullFrame->Size.GetWidth() - 60;
-	if ((start_y + 60) > pCurrentFullFrame->Size.GetHeight())
-		start_y = pCurrentFullFrame->Size.GetHeight() - 60;
+	if ((start_x + 60) > m_pCurrentImage->Size.GetWidth())
+		start_x = m_pCurrentImage->Size.GetWidth() - 60;
+	if ((start_y + 60) > m_pCurrentImage->Size.GetHeight())
+		start_y = m_pCurrentImage->Size.GetHeight() - 60;
 	int x,y, width;
-	width = pCurrentFullFrame->Size.GetWidth();
+	width = m_pCurrentImage->Size.GetWidth();
 	unsigned short *usptr = tmpimg.ImageData;
 	for (y=0; y<60; y++)
 		for (x=0; x<60; x++, usptr++)
-			*usptr = *(pCurrentFullFrame->ImageData + (y+start_y)*width + (x+start_x));
+			*usptr = *(m_pCurrentImage->ImageData + (y+start_y)*width + (x+start_x));
 	wxString fname = LogFile->GetName();
 	wxDateTime CapTime;
 	CapTime=wxDateTime::Now();
@@ -685,12 +696,12 @@ void GuiderOneStar::SaveStarFITS() {
 
 		sprintf(keyname,"DATE-OBS");
 		sprintf(keycomment,"YYYY-MM-DDThh:mm:ss observation start, UT");
-		sprintf(keystring,"%s",(const char*) pCurrentFullFrame->ImgStartDate.c_str());
+		sprintf(keystring,"%s",(const char*) m_pCurrentImage->ImgStartDate.c_str());
 		if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
 
 		sprintf(keyname,"EXPOSURE");
 		sprintf(keycomment,"Exposure time [s]");
-		float dur = (float) pCurrentFullFrame->ImgExpDur / 1000.0;
+		float dur = (float) m_pCurrentImage->ImgExpDur / 1000.0;
 		if (!status) fits_write_key(fptr, TFLOAT, keyname, &dur, keycomment, &status);
 
 		unsigned int tmp = 1;

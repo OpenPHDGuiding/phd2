@@ -54,6 +54,8 @@ public:
 	bool				Clean();
 	usImage() { Min=Max=FiltMin=FiltMax= 0; NPixels = 0; ImageData = NULL; ImgStartDate=_T(""); ImgExpDur = 0.0;}
 	~usImage() {delete[] ImageData; }
+    bool                Load(const wxString& fname);
+    bool                Save(const wxString& fname);
 };
 
 #endif

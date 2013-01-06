@@ -86,7 +86,7 @@ public:
 
     virtual bool IsLocked(void);
     virtual bool SetLockPosition(double x, double y, bool bExact=false);
-    virtual bool AutoSelect(usImage *pImage);
+    virtual bool AutoSelect(usImage *pImage=NULL);
     virtual Point &CurrentPosition(void);
     virtual wxRect GetBoundingBox(bool useSubframe);
 
