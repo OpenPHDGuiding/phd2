@@ -51,7 +51,6 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_paused = false;
     m_guidingEnabled = true;
     m_timeLapse   = pConfig->GetInt("/guider/TimeLapse", 0);
-    m_minMotion    = pConfig->GetDouble("/guider/MinMotion", 0.2);
     m_searchRegion = pConfig->GetInt("/guider/SearchRegion", 15);
 
 	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
@@ -61,7 +60,6 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 Guider::~Guider(void)
 {
     pConfig->SetInt("/guider/TimeLapse", m_timeLapse);
-    pConfig->SetDouble("/guider/MinMotion", m_minMotion);
     pConfig->SetInt("/guider/SearchRegion", m_searchRegion);
 
 	delete m_displayedImage;
@@ -113,12 +111,12 @@ double Guider::CurrentError(void)
 }
 
 
-E_GUIDER_STATES Guider::GetState(void)
+GUIDER_STATE Guider::GetState(void)
 {
     return m_state;
 }
 
-bool Guider::SetState(E_GUIDER_STATES newState)
+bool Guider::SetState(GUIDER_STATE newState)
 {
     bool bError = false;
 

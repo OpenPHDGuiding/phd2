@@ -1,5 +1,5 @@
 /*
- *  guide_algorithms.h
+ *  guide_algorithm_hysteresis.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -37,12 +37,20 @@
  *
  */
 
-#ifndef GUIDE_ALGORITHMS_H_INCLUDED
-#define GUIDE_ALGORITHMS_H_INCLUDED
+#ifndef GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED
+#define GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED
 
-#include "guide_algorithm.h"
-#include "guide_algorithm_hysteresis.h"
-#include "guide_algorithm_lowpass.h"
-#include "guide_algorithm_lowpass2.h"
+class GuideAlgorithmHysteresis:GuideAlgorithm
+{
+    double m_minMove;
+    double m_hysteresis;
+    double m_aggression;
+    double m_lastMove;
+public:
+    GuideAlgorithmHysteresis(GuideAlgorithm *pChained=NULL);
+    virtual ~GuideAlgorithmHysteresis(void);
+    virtual bool SetParms(double minMove, double hysteresis, double aggression);
+    virtual double result(double input);
+};
 
-#endif /* GUIDE_ALGORITHMS_H_INCLUDED */
+#endif /* GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED */

@@ -60,20 +60,20 @@ GuiderOneStar::GuiderOneStar(wxWindow *parent):
 {
     int maxDecDuration = pConfig->GetInt("/guider/onestar/MaxDecDuration", 1000);
     int maxRaDuration  = pConfig->GetInt("/guider/onestar/MaxRaDuration", 1000);
-    bool decGuide       = pConfig->GetBoolean("/guider/onestar/DecGuidingEnabled", true);
+    DEC_GUIDE_OPTION decGuide = (DEC_GUIDE_OPTION)pConfig->GetInt("/guider/onestar/DecGuideOption", true);
 
     SetParms(maxDecDuration, maxRaDuration, decGuide);
 
 
     delete m_pRaGuideAlgorithm;
-    m_pRaGuideAlgorithm = new GuideAlgorithmRa();
+    m_pRaGuideAlgorithm = (GuideAlgorithm *)new GuideAlgorithmHysteresis();
 }
 
 GuiderOneStar::~GuiderOneStar() 
 {
 }
 
-bool GuiderOneStar::SetParms(int maxDecDuration, int maxRaDuration, bool decGuide)
+bool GuiderOneStar::SetParms(int maxDecDuration, int maxRaDuration, DEC_GUIDE_OPTION decGuideOption)
 {
     bool bError = false;
 
@@ -89,13 +89,25 @@ bool GuiderOneStar::SetParms(int maxDecDuration, int maxRaDuration, bool decGuid
             throw ERROR_INFO("maxRaDuration < 0");
         }
 
+        switch (decGuideOption)
+        {
+            case DEC_NONE:
+            case DEC_AUTO:
+            case DEC_NORTH:
+            case DEC_SOUTH:
+                break;
+            default:
+                throw ERROR_INFO("invalid decGuideOption");
+                break;
+        }
+
         m_maxDecDuration = maxDecDuration;
         m_maxRaDuration =  maxRaDuration;
-        m_decGuide = decGuide;
+        m_decGuideOption = decGuideOption;
 
         pConfig->SetInt("/guider/onestar/MaxDecDuration", m_maxDecDuration);
         pConfig->SetInt("/guider/onestar/MaxRaDuration", m_maxRaDuration);
-        pConfig->SetBoolean("/guider/onestar/DecGuidingEnabled", m_decGuide);
+        pConfig->SetInt("/guider/onestar/DecGuideOption", m_decGuideOption);
     }
     catch (char *pErrorMsg)
     {
@@ -104,16 +116,21 @@ bool GuiderOneStar::SetParms(int maxDecDuration, int maxRaDuration, bool decGuid
         Debug.Write(wxString::Format("GuiderOneStar::SetParms() threw an exeception: %s\n", pErrorMsg));
     }
 
-    Debug.Write(wxString::Format("GuiderOneStar::SetParms() returns %d, m_maxDecDuration=%d m_maxRaDuration=%d m_decGuide=%d\n", bError, m_maxDecDuration, m_maxRaDuration, m_decGuide));
+    Debug.Write(wxString::Format("GuiderOneStar::SetParms() returns %d, m_maxDecDuration=%d m_maxRaDuration=%d m_decGuide=%d\n", bError, m_maxDecDuration, m_maxRaDuration, m_decGuideOption));
     return bError;
 }
 
-Point &GuiderOneStar::CurrentPosition()
+bool GuiderOneStar::IsLocked(void)
+{
+    return m_star.WasFound();
+}
+
+Point &GuiderOneStar::CurrentPosition(void)
 {
     return m_star;
 }
 
-bool GuiderOneStar::SetState(E_GUIDER_STATES newState)
+bool GuiderOneStar::SetState(GUIDER_STATE newState)
 {
     bool bError = false;
 
@@ -141,11 +158,12 @@ bool GuiderOneStar::SetState(E_GUIDER_STATES newState)
                 pScope->BeginCalibration(this);
                 break;
             case STATE_CALIBRATED:
+                // for onestar guiders, we move immediately from STATE_CALIBRATED 
+                // to STATE_GUIDING
+                newState = STATE_GUIDING;
+                // fall through
             case STATE_GUIDING:
                 m_lockPosition = m_star;
-                // for onestar guiders, we move immediately from STATE_CALIBRATED and 
-                // STATE_GUIDING to STATE_GUIDING_LOCKED
-                newState = STATE_GUIDING_LOCKED;
                 break;
         }
 
@@ -173,29 +191,43 @@ bool GuiderOneStar::DoGuide(void)
     {
         double theta = m_lockPosition.Angle(m_star);
         double hyp   = m_lockPosition.Distance(m_star);
+
         double raDistance  = cos(pScope->RaAngle() - theta) * hyp;
-        double decDistance = cos(pScope->DecAngle() - theta) * hyp;
-
-        frame->SetStatusText(wxString::Format(_T("t=%.2f h=%.2f ra=%.2f dec=%.2f"), theta, hyp, raDistance, decDistance),1);
-
-        assert(m_pRaGuideAlgorithm);
         raDistance = m_pRaGuideAlgorithm->result(raDistance);
 
-        if (fabs(raDistance) >= m_minMotion)
+        double raDuration = fabs(raDistance/pScope->RaRate());
+        if (raDuration > m_maxRaDuration)
+        {
+            raDuration = m_maxRaDuration;
+        }
+        assert(raDuration >= 0);
+
+        if (raDuration > 0.0)
         {
             GUIDE_DIRECTION direction = raDistance > 0 ? EAST : WEST;
-            double duration = fabs(raDistance/pScope->RaRate());
-            frame->ScheduleGuide(direction, duration);
+            frame->ScheduleGuide(direction, raDuration, wxString::Format("%c dur=%.1f dist=%.2f", (direction==EAST)?'E':'W', raDuration, raDistance));
         }
 
-        assert(m_pDecGuideAlgorithm);
+        double decDistance = cos(pScope->DecAngle() - theta) * hyp;
         decDistance = m_pDecGuideAlgorithm->result(decDistance);
 
-        if (fabs(decDistance) >= m_minMotion)
+        double decDuration = fabs(decDistance/pScope->DecRate());
+        if (decDuration > m_maxDecDuration)
+        {
+            decDuration = m_maxDecDuration;
+        }
+        assert(decDuration >= 0);
+
+        if (decDuration > 0.0)
         {
             GUIDE_DIRECTION direction = decDistance > 0 ? SOUTH : NORTH;
-            double duration = fabs(decDistance/pScope->DecRate());
-            frame->ScheduleGuide(direction, duration);
+
+            if ((m_decGuideOption == DEC_AUTO) ||
+                (direction == SOUTH && m_decGuideOption == DEC_SOUTH) || 
+                (direction == NORTH && m_decGuideOption == DEC_NORTH))
+            {
+                frame->ScheduleGuide(direction, decDuration, wxString::Format("%c dur=%.1f dist=%.2f", (direction==SOUTH)?'S':'N', raDuration, decDistance));
+            }
         }
     }
     catch (char *ErrorMsg)
@@ -234,7 +266,7 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bUpdateStatus)
                 {
                     frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR));
                 }
-                if (m_state >= STATE_GUIDING)
+                if (m_state == STATE_GUIDING)
                 {
                     bError = DoGuide();
                 }
@@ -353,7 +385,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
 			dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
 
 		}
-		else if (m_state == STATE_GUIDING_LOCKED) { // locked and guiding
+		else if (m_state == STATE_GUIDING) { // locked and guiding
 			if (FoundStar)
 				dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
 			else

@@ -38,14 +38,6 @@
 
 #include <wx/msgqueue.h>
 
-enum E_WORKER_THREAD_REQUEST_TYPE
-{
-    WORKER_THREAD_REQUEST_NONE,       // not used
-    WORKER_THREAD_REQUEST_TERMINATE,
-    WORKER_THREAD_REQUEST_EXPOSE,
-    WORKER_THREAD_REQUEST_GUIDE,
-};
-
 class MyFrame;
 
 class WorkerThread: public wxThread
@@ -58,9 +50,14 @@ public:
 private:
     wxThread::ExitCode Entry();
 
+    // a helper routine to set the status by sending a message
+    // to m_pFrame
+    void SetStatusText(const wxString& statusMessage, int field);
+
     /*
      * A worker thread is used only for long running tasks:
-     * - take an image
+     *   - take an image
+     *   - guide
      * 
      */
 
@@ -69,7 +66,7 @@ private:
      * These are the routines for processing requests on the worker 
      * thread.  For most requests there are 4 routines:
      * - a routine to post a request on the worker thread queue (EnqueueWorkerThread...)
-     *      - arguments are passed in a struct for S_ARGS_....
+     *      - arguments are passed in a struct for ARGS_....
      * - a routine called from Guider::Entry() which does the work Handle...)
      * - a routine called when the work is done that enqueues an event (SendWorkerThread...)
      * - the routine that is called in response to the receipt of that event (OnWorkerThread...)
@@ -80,8 +77,8 @@ private:
 public:
     void EnqueueWorkerThreadTerminateRequest(void);
 protected:
-    // there is no struct S_ARGS_TERMINATE
-    // there is no HandleTerminate(S_ARGS_TERMINATE *pArgs) routine
+    // there is no struct ARGS_TERMINATE
+    // there is no HandleTerminate(ARGS_TERMINATE *pArgs) routine
     // there is no void SendWorkerTerminiateComplete(bool bError);
     // there is no void OnWorkerThreadTerminateComplete(wxThreadEvent& event);
 
@@ -89,31 +86,32 @@ protected:
 public:
     void EnqueueWorkerThreadExposeRequest(usImage *pImage, double exposureDuration);
 protected:
-    struct S_ARGS_EXPOSE
+    struct ARGS_EXPOSE
     {
         usImage *pImage;
         double exposureDuration;
     };
-    bool HandleExpose(S_ARGS_EXPOSE *pArgs);
+    bool HandleExpose(ARGS_EXPOSE *pArgs);
     void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadExposeComplete(wxThreadEvent& event);
 
     /*************      Guide       **************************/
 public:
-    void EnqueueWorkerThreadGuideRequest(GUIDE_DIRECTION direction, double exposureDuration);
+    void EnqueueWorkerThreadGuideRequest(GUIDE_DIRECTION direction, double exposureDuration, const wxString& statusMessage);
 protected:
-    struct S_ARGS_GUIDE
+    struct ARGS_GUIDE
     {
         GUIDE_DIRECTION guideDirection;
         double          guideDuration;
+        wxString        statusMessage;
     };
-    bool HandleGuide(S_ARGS_GUIDE *pArgs);
+    bool HandleGuide(ARGS_GUIDE *pArgs);
     void SendWorkerThreadGuideComplete(bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadGuideComplete(wxThreadEvent& event);
 
     // types and routines for the server->worker message queue
 
-    enum E_WORKER_REQUEST_TYPE
+    enum WORKER_REQUEST_TYPE
     {
         REQUEST_NONE,       // not used
         REQUEST_TERMINATE,
@@ -125,11 +123,11 @@ protected:
      * a union containing all the possible argument types for thread work
      * requests
      */
-    union U_WORKER_REQUEST_ARGS
+    struct WORKER_REQUEST_ARGS
     {
-        // there is no S_ARGS_TERMINATE terminate;
-        S_ARGS_EXPOSE expose;
-        S_ARGS_GUIDE  guide;
+        // there is no ARGS_TERMINATE terminate;
+        ARGS_EXPOSE expose;
+        ARGS_GUIDE  guide;
     };
 
     /*
@@ -137,13 +135,13 @@ protected:
      * to request work
      */
 
-    struct S_WORKER_THREAD_REQUEST
+    struct WORKER_THREAD_REQUEST
     {
-        E_WORKER_REQUEST_TYPE request;
-        U_WORKER_REQUEST_ARGS args;
+        WORKER_REQUEST_TYPE request;
+        WORKER_REQUEST_ARGS args;
     };
 
-    wxMessageQueue<S_WORKER_THREAD_REQUEST> m_workerQueue;
+    wxMessageQueue<WORKER_THREAD_REQUEST> m_workerQueue;
 };
 
 #endif /* WORKER_THREAD_H_INCLUDED */

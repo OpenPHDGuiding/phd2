@@ -334,7 +334,9 @@
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="guider.cpp" />
     <ClCompile Include="guider_onestar.cpp" />
-    <ClCompile Include="guide_algorithm_ra.cpp" />
+    <ClCompile Include="guide_algorithm_hysteresis.cpp" />
+    <ClCompile Include="guide_algorithm_lowpass.cpp" />
+    <ClCompile Include="guide_algorithm_lowpass2.cpp" />
     <ClCompile Include="guide_routines.cpp" />
     <ClCompile Include="image_math.cpp" />
     <ClCompile Include="mount.cpp" />
@@ -398,7 +400,9 @@
     <ClInclude Include="guider_onestar.h" />
     <ClInclude Include="guide_algorithm.h" />
     <ClInclude Include="guide_algorithms.h" />
-    <ClInclude Include="guide_algorithm_ra.h" />
+    <ClInclude Include="guide_algorithm_hysteresis.h" />
+    <ClInclude Include="guide_algorithm_lowpass.h" />
+    <ClInclude Include="guide_algorithm_lowpass2.h" />
     <ClInclude Include="image_math.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="myapp.h" />

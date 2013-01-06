@@ -1,5 +1,5 @@
 /*
- *  guide_algorithms.h
+ *  guide_algorithm_lowpass2.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -37,12 +37,41 @@
  *
  */
 
-#ifndef GUIDE_ALGORITHMS_H_INCLUDED
-#define GUIDE_ALGORITHMS_H_INCLUDED
+#include "phd.h"
 
-#include "guide_algorithm.h"
-#include "guide_algorithm_hysteresis.h"
-#include "guide_algorithm_lowpass.h"
-#include "guide_algorithm_lowpass2.h"
+GuideAlgorithmLowpass2::GuideAlgorithmLowpass2(GuideAlgorithm *pChained)
+    :GuideAlgorithm(pChained)
+{
+    while (m_history.GetCount() < HISTORY_SIZE)
+    {
+        m_history.Add(0.0);
+    }
+}
 
-#endif /* GUIDE_ALGORITHMS_H_INCLUDED */
+GuideAlgorithmLowpass2::~GuideAlgorithmLowpass2(void)
+{
+}
+
+double GuideAlgorithmLowpass2::result(double input)
+{
+    if (m_pChained)
+    {
+        input = m_pChained->result(input);
+    }
+
+    m_history.Add(input);
+
+    double dReturn = CalcSlope(m_history);
+
+    m_history.RemoveAt(0);
+
+    if (dReturn > input)
+    {
+        Debug.Write(wxString::Format("GuideAlgorithmLowpass2::Result() input %.2f is > calculated value %.2f, using input\n", input, dReturn));
+        dReturn = input;
+    }
+
+    Debug.Write(wxString::Format("GuideAlgorithmLowpassa::Result() returns %.2f from input %.2f\n", dReturn, input));
+
+    return dReturn;
+}

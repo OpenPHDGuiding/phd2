@@ -47,11 +47,19 @@ WorkerThread::~WorkerThread(void)
     Debug.Write("WorkerThread destructor called\n");
 }
 
+void WorkerThread::SetStatusText(const wxString& statusMessage, int field)
+{
+    wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_SET_STATUS_TEXT);
+    event.SetString(statusMessage);
+    event.SetInt(field);
+    wxQueueEvent(m_pFrame, event.Clone());
+}
+
 /*************      Terminate      **************************/
 
 void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
 {
-    S_WORKER_THREAD_REQUEST message;
+    WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
     message.request = REQUEST_TERMINATE;
@@ -62,7 +70,7 @@ void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
 
 void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, double exposureDuration)
 {
-    S_WORKER_THREAD_REQUEST message;
+    WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
     Debug.Write("Enqueuing Expose request\n");
@@ -73,7 +81,7 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, double expo
     wxMessageQueueError queueError = m_workerQueue.Post(message);
 }
 
-bool WorkerThread::HandleExpose(S_ARGS_EXPOSE *pArgs)
+bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
 {
     bool bError = false;
     
@@ -107,7 +115,7 @@ bool WorkerThread::HandleExpose(S_ARGS_EXPOSE *pArgs)
         {
             Debug.Write(wxString::Format("Handling exposure in myFrame\n"));
 
-            MyFrame::S_EXPOSE_REQUEST request;
+            MyFrame::PHD_EXPOSE_REQUEST request;
             request.pImage = pArgs->pImage;
             request.exposureDuration = pArgs->exposureDuration;
 
@@ -141,9 +149,9 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 
 /*************      Guide       **************************/
 
-void WorkerThread::EnqueueWorkerThreadGuideRequest(GUIDE_DIRECTION guideDirection, double guideDuration)
+void WorkerThread::EnqueueWorkerThreadGuideRequest(GUIDE_DIRECTION guideDirection, double guideDuration, const wxString &statusMessage)
 {
-    S_WORKER_THREAD_REQUEST message;
+    WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
     Debug.Write(wxString::Format("Enqueuing Guide request for direction %d\n", message.args.guide.guideDirection));
@@ -151,11 +159,12 @@ void WorkerThread::EnqueueWorkerThreadGuideRequest(GUIDE_DIRECTION guideDirectio
     message.request = REQUEST_GUIDE;
     message.args.guide.guideDirection = guideDirection;
     message.args.guide.guideDuration  = guideDuration;
+    message.args.guide.statusMessage  = statusMessage;
     wxMessageQueueError queueError    = m_workerQueue.Post(message);
 }
 
 
-bool WorkerThread::HandleGuide(S_ARGS_GUIDE *pArgs)
+bool WorkerThread::HandleGuide(ARGS_GUIDE *pArgs)
 {
     bool bError = false;
     
@@ -163,6 +172,8 @@ bool WorkerThread::HandleGuide(S_ARGS_GUIDE *pArgs)
     {
         if (pArgs->guideDirection != NONE && pArgs->guideDuration > 0)
         {
+            SetStatusText(pArgs->statusMessage, 1);
+
             if (pScope->HasNonGUIGuide())
             {
                 Debug.Write(wxString::Format("Handling %d guide in thread\n", pArgs->guideDirection));
@@ -174,7 +185,7 @@ bool WorkerThread::HandleGuide(S_ARGS_GUIDE *pArgs)
 
                 // we don't have a non-gui guide function, wo we send this to the 
                 // main frame routine that handles guides requests
-                MyFrame::S_GUIDE_REQUEST request;
+                MyFrame::PHD_GUIDE_REQUEST request;
                 request.guideDirection = pArgs->guideDirection;
                 request.guideDuration  = pArgs->guideDuration;
 
@@ -219,7 +230,7 @@ wxThread::ExitCode WorkerThread::Entry()
 
     while (!bDone)
     {
-        S_WORKER_THREAD_REQUEST message;
+        WORKER_THREAD_REQUEST message;
         wxMessageQueueError queueError = m_workerQueue.Receive(message);
 
         if (queueError != wxMSGQUEUE_NO_ERROR)
@@ -234,16 +245,16 @@ wxThread::ExitCode WorkerThread::Entry()
         {
             bool bError;
 
-            case WORKER_THREAD_REQUEST_NONE:
+            case REQUEST_NONE:
                 break;
-            case WORKER_THREAD_REQUEST_TERMINATE:
+            case REQUEST_TERMINATE:
                 bDone = true;
                 break;
-            case WORKER_THREAD_REQUEST_EXPOSE:
+            case REQUEST_EXPOSE:
                 bError = HandleExpose(&message.args.expose);
                 SendWorkerThreadExposeComplete(message.args.expose.pImage, bError);
                 break;
-            case WORKER_THREAD_REQUEST_GUIDE:
+            case REQUEST_GUIDE:
                 bError = HandleGuide(&message.args.guide);
                 SendWorkerThreadGuideComplete(bError);
                 break;

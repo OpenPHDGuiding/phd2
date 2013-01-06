@@ -37,7 +37,6 @@
 #define GUIDERS_H_INCLUDED
 
 #include "guider.h"
-
 #include "guider_onestar.h"
 
 #endif /* GUIDERS_H_INCLUDED */

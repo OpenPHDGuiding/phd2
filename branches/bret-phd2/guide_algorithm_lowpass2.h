@@ -1,5 +1,5 @@
 /*
- *  guide_algorithms.h
+ *  guide_algorithm_lowpass2.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -37,12 +37,17 @@
  *
  */
 
-#ifndef GUIDE_ALGORITHMS_H_INCLUDED
-#define GUIDE_ALGORITHMS_H_INCLUDED
+#ifndef GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED
+#define GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED
 
-#include "guide_algorithm.h"
-#include "guide_algorithm_hysteresis.h"
-#include "guide_algorithm_lowpass.h"
-#include "guide_algorithm_lowpass2.h"
+class GuideAlgorithmLowpass2:GuideAlgorithm
+{
+    static const int HISTORY_SIZE=10;
+    ArrayOfDbl m_history;
+public:
+    GuideAlgorithmLowpass2(GuideAlgorithm *pChained=NULL);
+    virtual ~GuideAlgorithmLowpass2(void);
+    virtual double result(double input);
+};
 
-#endif /* GUIDE_ALGORITHMS_H_INCLUDED */
+#endif /* GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED */

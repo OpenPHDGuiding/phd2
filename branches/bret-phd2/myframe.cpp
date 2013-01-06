@@ -41,6 +41,7 @@
 
 wxDEFINE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(PHD_GUIDE_EVENT, wxCommandEvent);
+wxDEFINE_EVENT(WORKER_THREAD_SET_STATUS_TEXT_EVENT, wxThreadEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
@@ -108,6 +109,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_CLOSE(MyFrame::OnClose)
     EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
     EVT_THREAD(MYFRAME_WORKER_THREAD_GUIDE_COMPLETE, MyFrame::OnGuideComplete)
+    EVT_THREAD(MYFRAME_WORKER_THREAD_SET_STATUS_TEXT, MyFrame::OnWorkerThreadSetStatusText)
 
     EVT_COMMAND(wxID_ANY, PHD_EXPOSE_EVENT, MyFrame::OnPhdExposeEvent)
     EVT_COMMAND(wxID_ANY, PHD_GUIDE_EVENT, MyFrame::OnPhdGuideEvent)
@@ -529,10 +531,15 @@ void MyFrame::UpdateButtonsStatus(void)
         Dark_Button->Enable(!CaptureActive);
 
         bool bGuideable = pGuider->GetState() >= STATE_SELECTED &&
-                          pGuider->GetState() < STATE_GUIDING_LOCKED &&
+                          pGuider->GetState() < STATE_GUIDING &&
                           pScope->IsConnected();
 
         Guide_Button->Enable(bGuideable);
+}
+
+void MyFrame::OnWorkerThreadSetStatusText(wxThreadEvent& event)
+{
+    frame->SetStatusText(event.GetString(), event.GetInt());
 }
 
 bool MyFrame::StartWorkerThread(void)
@@ -592,7 +599,7 @@ void MyFrame::StopWorkerThread(void)
 
 void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
 {
-    S_EXPOSE_REQUEST *pRequest = (S_EXPOSE_REQUEST *)evt.GetClientData();
+    PHD_EXPOSE_REQUEST *pRequest = (PHD_EXPOSE_REQUEST *)evt.GetClientData();
     bool bError = CurrentGuideCamera->CaptureFull(pRequest->exposureDuration, *pRequest->pImage);
 
     if (!bError)
@@ -617,7 +624,7 @@ void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
 
 void MyFrame::OnPhdGuideEvent(wxCommandEvent& evt)
 {
-    S_GUIDE_REQUEST *pRequest = (S_GUIDE_REQUEST *)evt.GetClientData();
+    PHD_GUIDE_REQUEST *pRequest = (PHD_GUIDE_REQUEST *)evt.GetClientData();
 
     pRequest->bError = pScope->Guide(pRequest->guideDirection, pRequest->guideDuration);
 
@@ -633,13 +640,13 @@ void MyFrame::ScheduleExposure(double exposureDuration)
     m_pWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration);
 }
 
-void MyFrame::ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration)
+void MyFrame::ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration, const wxString& statusMessage)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     assert(m_pWorkerThread);
     
-    m_pWorkerThread->EnqueueWorkerThreadGuideRequest(guideDirection, guideDuration);
+    m_pWorkerThread->EnqueueWorkerThreadGuideRequest(guideDirection, guideDuration, statusMessage);
 }
 
 void MyFrame::StartCapturing()

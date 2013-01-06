@@ -139,7 +139,7 @@ void MyFrame::OnServerEvent(wxSocketEvent& event) {
 
 void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 	wxSocketBase *sock = event.GetSocket();
-    E_GUIDER_STATES origState = STATE_UNINITIALIZED;
+    GUIDER_STATE origState = STATE_UNINITIALIZED;
 	if (SocketServer == NULL) return;
 //	sock = SocketServer;
 	// First, print a message
@@ -179,7 +179,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 				case MSG_MOVE3:  // +/- 2.0
 				case MSG_MOVE4:  // +/- 3.0
 				case MSG_MOVE5:  // +/- 5.0
-					if (pGuider->GetState() != STATE_GUIDING_LOCKED) {
+					if (pGuider->GetState() != STATE_GUIDING) {
 						break;
 					}
 
@@ -211,7 +211,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 						rval = 1;
 					break;
 				case MSG_REQDIST:
-					if ((pGuider->GetState() != STATE_GUIDING_LOCKED)  && (pGuider->GetState() != STATE_UNINITIALIZED)) {
+					if ((pGuider->GetState() != STATE_GUIDING)  && (pGuider->GetState() != STATE_UNINITIALIZED)) {
 						break;
 					}
 					if (pGuider->CurrentError() > 2.55)

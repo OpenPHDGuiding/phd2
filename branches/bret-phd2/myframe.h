@@ -41,10 +41,12 @@ enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
     MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE = wxID_HIGHEST+1,
     MYFRAME_WORKER_THREAD_GUIDE_COMPLETE,
+    MYFRAME_WORKER_THREAD_SET_STATUS_TEXT,
 };
 
 wxDECLARE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(PHD_GUIDE_EVENT, wxCommandEvent);
+wxDECLARE_EVENT(WORKER_THREAD_SET_STATUS_TEXT_EVENT, wxThreadEvent);
 
 class MyFrame: public wxFrame
 {
@@ -118,7 +120,7 @@ public:
 	void OnExposeComplete(wxThreadEvent& evt);
 	void OnGuideComplete(wxThreadEvent& evt);
 
-    struct S_EXPOSE_REQUEST
+    struct PHD_EXPOSE_REQUEST
     {
         usImage          *pImage;
         double           exposureDuration;
@@ -127,7 +129,7 @@ public:
     };
     void OnPhdExposeEvent(wxCommandEvent &evt);
 
-    struct S_GUIDE_REQUEST
+    struct PHD_GUIDE_REQUEST
     {
         GUIDE_DIRECTION  guideDirection;
         double           guideDuration;
@@ -137,7 +139,7 @@ public:
     void OnPhdGuideEvent(wxCommandEvent &evt);
 
     void ScheduleExposure(double exposureDuration);
-    void ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration);
+    void ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration, const wxString& statusMessage);
 
     void StartCapturing(void);
     void StopCapturing(void);
@@ -149,6 +151,7 @@ private:
     WorkerThread *m_pWorkerThread;
     bool StartWorkerThread(void);
     void StopWorkerThread(void);
+    virtual void OnWorkerThreadSetStatusText(wxThreadEvent& event);
 
     // and of course, an event table
 	DECLARE_EVENT_TABLE()

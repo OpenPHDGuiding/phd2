@@ -423,17 +423,14 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             case STATE_UNINITIALIZED:
             case STATE_SELECTING:
             case STATE_SELECTED:
+            case STATE_CALIBRATED:
+            case STATE_GUIDING:
                 pGuider->UpdateGuideState(pCurrentFullFrame, true);
                 // nothing else to do for these states
                 break;
             case STATE_CALIBRATING:
                 pGuider->UpdateGuideState(pCurrentFullFrame, false);
                 pScope->UpdateCalibrationState(pGuider);
-                break;
-            case STATE_CALIBRATED:
-            case STATE_GUIDING_LOCKED:
-            case STATE_GUIDING_LOST:
-                pGuider->UpdateGuideState(pCurrentFullFrame, true);
                 break;
         }
 

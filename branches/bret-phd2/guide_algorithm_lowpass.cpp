@@ -1,5 +1,5 @@
 /*
- *  guide_algorithm_ra.cpp
+ *  guide_algorithm_lowpass.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -39,84 +39,88 @@
 
 #include "phd.h"
 
-GuideAlgorithmRa::GuideAlgorithmRa(GuideAlgorithm *pChained)
+GuideAlgorithmLowpass::GuideAlgorithmLowpass(GuideAlgorithm *pChained)
     :GuideAlgorithm(pChained)
 {
-    double minMove, hysteresis, raAggression;
+    double minMove    = pConfig->GetDouble("/GuideAlgorithm/Lowpass/minMove", 0.2);
+    double slopeWeight    = pConfig->GetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", 5.0);
 
-    minMove    = pConfig->GetDouble("/GuideAlgorithm/DefaultRa/minMove", 0.2);
-    hysteresis = pConfig->GetDouble("/GuideAlgorithm/DefaultRa/hysteresis", 0.0);
-    raAggression   = pConfig->GetDouble("/GuideAlgorithm/DefaultRa/RaAggression", 1.00);
+    SetParms(minMove, slopeWeight);
 
-    SetParms(minMove, hysteresis, raAggression);
+    while (m_history.GetCount() < HISTORY_SIZE)
+    {
+        m_history.Add(0.0);
+    }
 }
 
-GuideAlgorithmRa::~GuideAlgorithmRa(void)
+GuideAlgorithmLowpass::~GuideAlgorithmLowpass(void)
 {
 }
 
-bool GuideAlgorithmRa::SetParms(double minMove, double hysteresis, double raAggression)
+bool GuideAlgorithmLowpass::SetParms(double minMove, double slopeWeight)
 {
     bool bError = false;
 
     try
     {
-        if (minMove < 0)
+        if (minMove <= 0)
         {
             throw ERROR_INFO("invalid minMove");
         }
 
-        if (hysteresis < 0 || hysteresis > 1.0)
+        if (slopeWeight < 0.0)
         {
-            throw ERROR_INFO("invalid hysteresis");
+            throw ERROR_INFO("invalid slopeWeight");
         }
 
-        if (raAggression <= 0.0 || raAggression > 1.0)
-        {
-            throw ERROR_INFO("invalid raAggression");
-        }
+        m_slopeWeight = slopeWeight;
 
-        m_minMove = minMove;
-        m_hysteresis = hysteresis;
-        m_raAggression = raAggression;
-
-        m_lastMove = 0.0;
-
-        pConfig->GetDouble("/GuideAlgorithm/DefaultRa/minMove", m_minMove);
-        pConfig->GetDouble("/GuideAlgorithm/DefaultRa/hysteresis", m_hysteresis);
-        pConfig->SetDouble("/GuideAlgorithm/DefaultRa/RaAggression", m_raAggression);
+        pConfig->GetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", m_slopeWeight);
+        pConfig->GetDouble("/GuideAlgorithm/Lowpass/minMove", m_minMove);
     }
     catch (char *pErrorMsg)
     {
         POSSIBLY_UNUSED(pErrorMsg);
         bError = true;
 
-        Debug.Write(wxString::Format("GuideAlgorithRa::SetPArms() caught exception: %s\n", pErrorMsg));
+        Debug.Write(wxString::Format("GuideAlgorithLowpass::SetPArms() caught exception: %s\n", pErrorMsg));
     }
 
-    Debug.Write(wxString::Format("GuideAlgorithmRa::SetParms() returns %d, m_minMove=%.2f m_hysteresis=%.2f m_raAggression=%.2f\n", bError, m_minMove, m_hysteresis, m_raAggression));
+    Debug.Write(wxString::Format("GuideAlgorithmLowpass::SetParms() returns %d, m_slopeWeight=%.2f\n", bError, m_slopeWeight));
+
     return bError;
 }
 
-double GuideAlgorithmRa::result(double input)
+double GuideAlgorithmLowpass::result(double input)
 {
     if (m_pChained)
     {
         input = m_pChained->result(input);
     }
 
-    double dReturn = (1.0-m_hysteresis)*input + m_hysteresis * m_lastMove;
+    m_history.Add(input);
 
-    dReturn *= m_raAggression;
+    ArrayOfDbl sortedHistory(m_history);
+    sortedHistory.Sort(dbl_sort_func);
 
-    if (input < m_minMove)
+    m_history.RemoveAt(0);
+
+    double median = sortedHistory[sortedHistory.GetCount()/2];
+    double slope = CalcSlope(m_history);
+    double dReturn = input + m_slopeWeight*slope;
+
+    if (dReturn > input)
+    {
+        Debug.Write(wxString::Format("GuideAlgorithmLowpassa::Result() input %.2f is > calculated value %.2f, using input\n", input, dReturn));
+        dReturn = input;
+    }
+
+    if (fabs(input) < m_minMove)
     {
         dReturn = 0.0;
     }
 
-    m_lastMove = dReturn;
-
-    Debug.Write(wxString::Format("GuideAlgorithmRa::Result() returns %.2f from input %.2f\n", dReturn, input));
+    Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() returns %.2f from input %.2f\n", dReturn, input));
 
     return dReturn;
 }

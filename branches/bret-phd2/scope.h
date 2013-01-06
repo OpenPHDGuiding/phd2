@@ -57,7 +57,7 @@ public:
     virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
     virtual bool IsGuiding()=0;
 private:
-    void DisplayCalibrationStatus(double dX, double dY, double dist, double dist_crit);
+    wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 };
 
 #endif /* SCOPE_H_INCLUDED */

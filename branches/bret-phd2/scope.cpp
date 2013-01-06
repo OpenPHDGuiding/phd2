@@ -420,9 +420,10 @@ bool Scope::BeginCalibration(Guider *pGuider)
     return bError;
 }
 
-void Scope::DisplayCalibrationStatus(double dX, double dY, double dist, double dist_crit)
+wxString Scope::GetCalibrationStatus(double dX, double dY, double dist, double dist_crit)
 {
     char directionName = '?';
+    wxString sReturn;
 
     switch (m_calibrationDirection)
     {
@@ -450,9 +451,11 @@ void Scope::DisplayCalibrationStatus(double dX, double dY, double dist, double d
         {
             frame->SetStatusText(wxString::Format(_T("%c calibration: %2d"), directionName, m_calibrationSteps));
         }
-        frame->SetStatusText(wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)"),dX,dY,dist,dist_crit),1);
+        sReturn = wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)"),dX,dY,dist,dist_crit);
         Debug.Write(wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)\n"),dX,dY,dist,dist_crit));
     }
+
+    return sReturn;
 }
 
 bool Scope::UpdateCalibrationState(Guider *pGuider)
@@ -472,7 +475,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
         double dist = m_calibrationStartingLocation.Distance(pGuider->CurrentPosition());
         double dist_crit = wxMax(CurrentGuideCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
 
-        DisplayCalibrationStatus(dX, dY, dist, dist_crit);
+        wxString statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
 
         /*
          * There are 3 sorts of motion that can happen during calibration. We can be:
@@ -546,7 +549,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
                 {
                     m_calibrationDirection = NORTH;
                     dX = dY = dist = 0.0;
-                    DisplayCalibrationStatus(dX, dY, dist, dist_crit);
+                    statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
                 }
                 else
                 {
@@ -564,7 +567,7 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
         }
         else
         {
-            frame->ScheduleGuide(m_calibrationDirection, m_calibrationDuration);
+            frame->ScheduleGuide(m_calibrationDirection, m_calibrationDuration, statusMessage);
         }
     }
     catch (char *ErrorMsg)

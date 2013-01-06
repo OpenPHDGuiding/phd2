@@ -50,17 +50,18 @@ protected:
     int m_maxDecDuration;
     int m_maxRaDuration;
     double m_raAggression;
-    bool m_decGuide;
+    DEC_GUIDE_OPTION m_decGuideOption;
 public:
 	GuiderOneStar(wxWindow *parent);
     virtual ~GuiderOneStar(void);
 
-    virtual bool SetState(E_GUIDER_STATES newState);
+    virtual bool SetState(GUIDER_STATE newState);
 
-    virtual bool SetParms(int maxDecDuration, int maxRaDuration, bool decGuide);
+    virtual bool SetParms(int maxDecDuration, int maxRaDuration, DEC_GUIDE_OPTION decGuide);
 	virtual void OnPaint(wxPaintEvent& evt);
     virtual bool UpdateGuideState(usImage *pImage, bool bUpdateStatus);
-    virtual Point &CurrentPosition();
+    virtual bool IsLocked(void);
+    virtual Point &CurrentPosition(void);
 
 protected:
     void OnLClick(wxMouseEvent& evt);

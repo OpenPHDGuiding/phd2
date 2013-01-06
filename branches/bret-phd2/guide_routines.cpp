@@ -81,14 +81,14 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         {
             if (pGuider->SetState(STATE_CALIBRATING))
             {
-                throw ERROR_INFO("Unable to set state to STATE_GUIDING_LOCKED");
+                throw ERROR_INFO("Unable to set state to STATE_CALIBRATING");
             }
         }
         else
         {
-            if (pGuider->SetState(STATE_GUIDING_LOCKED))
+            if (pGuider->SetState(STATE_GUIDING))
             {
-                throw ERROR_INFO("Unable to set state to STATE_GUIDING_LOCKED");
+                throw ERROR_INFO("Unable to set state to STATE_GUIDING");
             }
         }
     }

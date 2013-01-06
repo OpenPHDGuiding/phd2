@@ -44,7 +44,7 @@
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
 
-enum E_GUIDER_STATES
+enum GUIDER_STATE
 {
 	STATE_UNINITIALIZED = 0,
 	STATE_SELECTING,
@@ -52,8 +52,6 @@ enum E_GUIDER_STATES
 	STATE_CALIBRATING,
 	STATE_CALIBRATED,
 	STATE_GUIDING,
-	STATE_GUIDING_LOCKED,
-	STATE_GUIDING_LOST, 
 	// these aren't actual canvas states below
 	// mainly used for getting the status on the server
 	STATE_PAUSED = 100,
@@ -61,15 +59,15 @@ enum E_GUIDER_STATES
 	STATE_LOOPING_SELECTED 
 };
 
-enum E_DEC_GUIDING_OPTIONS
+enum DEC_GUIDE_OPTION
 {
-	DEC_OFF = 0,
+	DEC_NONE = 0,
 	DEC_AUTO,
 	DEC_NORTH,
 	DEC_SOUTH
 };
 
-enum E_DEC_GUDING_ALGORITHMS
+enum DEC_GUDING_ALGORITHM
 {
 	DEC_LOWPASS = 0,
 	DEC_RESISTSWITCH,
@@ -78,7 +76,7 @@ enum E_DEC_GUDING_ALGORITHMS
 
 /*
  * The Guider class is responsible for running the state machine
- * associated with the E_GUIDER_STATES enumerated type.
+ * associated with the GUIDER_STATES enumerated type.
  *
  * It is also responsible for drawing and decorating the acquired
  * image in a way that makes sense for its type.
@@ -89,7 +87,7 @@ class Guider: public wxWindow
 {
 protected:
     Point m_lockPosition;
-    E_GUIDER_STATES m_state;
+    GUIDER_STATE m_state;
 	double	m_scaleFactor;
 	wxImage	*m_displayedImage;
     GuideAlgorithm *m_pRaGuideAlgorithm;
@@ -97,7 +95,6 @@ protected:
     bool m_paused;
     bool m_guidingEnabled;
     int  m_timeLapse;		// Delay between frames (useful for vid cameras)
-    double m_minMotion; // Minimum star motion to trigger a pulse
     int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
 
 public:
@@ -106,8 +103,8 @@ public:
     virtual bool Pause(void);
     virtual bool Unpause(void);
     virtual double CurrentError(void);
-    virtual E_GUIDER_STATES GetState(void);
-    virtual bool SetState(E_GUIDER_STATES newState);
+    virtual GUIDER_STATE GetState(void);
+    virtual bool SetState(GUIDER_STATE newState);
 	virtual void OnClose(wxCloseEvent& evt);
 	virtual void OnErase(wxEraseEvent& evt);
     virtual void UpdateImageDisplay(usImage *pImage);
@@ -120,7 +117,8 @@ public:
     // pure virutal functions
 	virtual void OnPaint(wxPaintEvent& evt) = 0;
     virtual bool UpdateGuideState(usImage *pImage, bool bUpdateStatus) = 0;
-    virtual Point &CurrentPosition() = 0;
+    virtual bool IsLocked(void) = 0;
+    virtual Point &CurrentPosition(void) = 0;
 
 protected:
     virtual bool PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC);

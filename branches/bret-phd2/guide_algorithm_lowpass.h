@@ -1,5 +1,5 @@
 /*
- *  guide_algorithm_ra.h
+ *  guide_algorithm_lowpass.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -37,20 +37,20 @@
  *
  */
 
-#ifndef GUIDE_ALGORITHM_RA_H_INCLUDED
-#define GUIDE_ALGORITHM_RA_H_INCLUDED
+#ifndef GUIDE_ALGORITHM_LOWPASS_H_INCLUDED
+#define GUIDE_ALGORITHM_LOWPASS_H_INCLUDED
 
-class GuideAlgorithmRa:GuideAlgorithm
+class GuideAlgorithmLowpass:GuideAlgorithm
 {
+    static const int HISTORY_SIZE=10;
+    ArrayOfDbl m_history;
+    double m_slopeWeight;
     double m_minMove;
-    double m_hysteresis;
-    double m_raAggression;
-    double m_lastMove;
 public:
-    GuideAlgorithmRa(GuideAlgorithm *pChained=NULL);
-    virtual ~GuideAlgorithmRa(void);
-    virtual bool SetParms(double minMove, double hysteresis, double raAggression);
+    GuideAlgorithmLowpass(GuideAlgorithm *pChained=NULL);
+    virtual ~GuideAlgorithmLowpass(void);
+    virtual bool SetParms(double minMove, double slopeWeight);
     virtual double result(double input);
 };
 
-#endif /* GUIDE_ALGORITHM_RA_H_INCLUDED */
+#endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */
