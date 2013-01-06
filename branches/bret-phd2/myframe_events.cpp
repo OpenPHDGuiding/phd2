@@ -48,7 +48,7 @@ extern Camera_LEwebcamClass Camera_LEwebcamParallel;
 extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
 #endif
 
-double MyFrame::RequestedExposureDuration() { // Sets the global duration variable based on pull-down
+double MyFrame::RequestedExposureDuration() { // returns the duration based on pull-down
 	wxString durtext;
 	double dReturn;
 //	if (CaptureActive) return;  // Looping an exposure already
@@ -604,6 +604,7 @@ void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
 	pCamera->ShowPropertyDialog();
 
 }
+
 void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 
 	if (CaptureActive) return;  // Looping an exposure already
@@ -626,63 +627,39 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
     }
 }
 
+void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
+    try
+    {
+        if (pScope == NULL) 
+        {
+            // no mount selected -- should never happen
+            throw ERROR_INFO("pScope == NULL");
+        }
 
-class TestGuideDialog: public wxDialog {
-public:
-	TestGuideDialog();
-	~TestGuideDialog(void) {};
-private:
-		void OnButton(wxCommandEvent& evt);
-	wxButton *NButton, *SButton, *EButton, *WButton;
-	DECLARE_EVENT_TABLE()
-};
+        if (!pScope->IsConnected())
+        {
+            throw ERROR_INFO("Unable to guide with no scope Connected");
+        }
 
-TestGuideDialog::TestGuideDialog():
-wxDialog(pFrame, wxID_ANY, _T("Manual Output"), wxPoint(-1,-1), wxSize(300,300)) {
-	wxGridSizer *sizer = new wxGridSizer(3,3,0,0);
+        if (!pCamera || !pCamera->Connected)
+        {
+            throw ERROR_INFO("Unable to guide with no camera Connected");
+        }
 
-	NButton = new wxButton(this,MGUIDE_N,_T("North"),wxPoint(-1,-1),wxSize(-1,-1));
-	SButton = new wxButton(this,MGUIDE_S,_T("South"),wxPoint(-1,-1),wxSize(-1,-1));
-	EButton = new wxButton(this,MGUIDE_E,_T("East"),wxPoint(-1,-1),wxSize(-1,-1));
-	WButton = new wxButton(this,MGUIDE_W,_T("West"),wxPoint(-1,-1),wxSize(-1,-1));
-	sizer->AddStretchSpacer();
-	sizer->Add(NButton,wxSizerFlags().Expand().Border(wxALL,6));
-	sizer->AddStretchSpacer();
-	sizer->Add(WButton,wxSizerFlags().Expand().Border(wxALL,6));
-	sizer->AddStretchSpacer();
-	sizer->Add(EButton,wxSizerFlags().Expand().Border(wxALL,6));
-	sizer->AddStretchSpacer();
-	sizer->Add(SButton,wxSizerFlags().Expand().Border(wxALL,6));
+        if (pGuider->GetState() < STATE_SELECTED)
+        {
+            wxMessageBox(_T("Please select a guide star before attempting to guide"));
+            throw ERROR_INFO("Unable to guide with state < STATE_SELECTED");
+        }
 
-	SetSizer(sizer);
-	sizer->SetSizeHints(this);
-}
-
-BEGIN_EVENT_TABLE(TestGuideDialog, wxDialog)
-EVT_BUTTON(MGUIDE_N,TestGuideDialog::OnButton)
-EVT_BUTTON(MGUIDE_S,TestGuideDialog::OnButton)
-EVT_BUTTON(MGUIDE_E,TestGuideDialog::OnButton)
-EVT_BUTTON(MGUIDE_W,TestGuideDialog::OnButton)
-END_EVENT_TABLE()
-
-
-void TestGuideDialog::OnButton(wxCommandEvent &evt) {
-//	if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
-	if (!(pScope->IsConnected())) return;
-	switch (evt.GetId()) {
-		case MGUIDE_N:
-			pScope->Guide(NORTH, pScope->GetCalibrationDuration());
-			break;
-		case MGUIDE_S:
-			pScope->Guide(SOUTH, pScope->GetCalibrationDuration());
-			break;
-		case MGUIDE_E:
-			pScope->Guide(EAST, pScope->GetCalibrationDuration());
-			break;
-		case MGUIDE_W:
-			pScope->Guide(WEST, pScope->GetCalibrationDuration());
-			break;
-	}
+        pGuider->StartGuiding();
+        StartCapturing();
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+    return;
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
@@ -690,3 +667,4 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
 	TestGuideDialog* dlog = new TestGuideDialog();
 	dlog->Show();
 }
+

@@ -348,7 +348,6 @@
     <ClCompile Include="guide_algorithm_lowpass.cpp" />
     <ClCompile Include="guide_algorithm_lowpass2.cpp" />
     <ClCompile Include="guide_algorithm_resistswitch.cpp" />
-    <ClCompile Include="guide_routines.cpp" />
     <ClCompile Include="image_math.cpp" />
     <ClCompile Include="mount.cpp" />
     <ClCompile Include="myframe.cpp" />
@@ -373,6 +372,7 @@
     <ClCompile Include="scope_voyager.cpp" />
     <ClCompile Include="socket_server.cpp" />
     <ClCompile Include="star.cpp" />
+    <ClCompile Include="testguide.cpp" />
     <ClCompile Include="usImage.cpp" />
     <ClCompile Include="worker_thread.cpp" />
   </ItemGroup>
@@ -443,6 +443,7 @@
     <ClInclude Include="scopes.h" />
     <ClInclude Include="socket_server.h" />
     <ClInclude Include="star.h" />
+    <ClInclude Include="testguide.h" />
     <ClInclude Include="usImage.h" />
     <ClInclude Include="worker_thread.h" />
   </ItemGroup>

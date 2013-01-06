@@ -1,5 +1,5 @@
 /*
- *  guide_routines.cpp
+ *  testguide.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -32,50 +32,17 @@
  *
  */
 
-#include "phd.h"
-#include "image_math.h"
-#include <wx/wfstream.h>
-#include <wx/txtstrm.h>
-#include <wx/stdpaths.h>
-#include <wx/utils.h>
+#ifndef TESTGUIDE_H_INCLUDED
+#define TESTGUIDE_H_INCLUDED
 
-float SIGN(float x) {
-	if (x > 0.0) return 1.0;
-	else if (x < 0.0) return -1.0;
-	else return 0.0;
-}
+class TestGuideDialog: public wxDialog {
+public:
+	TestGuideDialog();
+	~TestGuideDialog(void) {};
+private:
+		void OnButton(wxCommandEvent& evt);
+	wxButton *NButton, *SButton, *EButton, *WButton;
+	DECLARE_EVENT_TABLE()
+};
 
-void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
-    try
-    {
-        if (pScope == NULL) 
-        {
-            // no mount selected -- should never happen
-            throw ERROR_INFO("pScope == NULL");
-        }
-
-        if (!pScope->IsConnected())
-        {
-            throw ERROR_INFO("Unable to guide with no scope Connected");
-        }
-
-        if (!pCamera || !pCamera->Connected)
-        {
-            throw ERROR_INFO("Unable to guide with no camera Connected");
-        }
-
-        if (pGuider->GetState() < STATE_SELECTED)
-        {
-            wxMessageBox(_T("Please select a guide star before attempting to guide"));
-            throw ERROR_INFO("Unable to guide with state < STATE_SELECTED");
-        }
-
-        pGuider->StartGuiding();
-        StartCapturing();
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-    }
-    return;
-}
+#endif //TESTGUIDE_H_INCLUDED
