@@ -208,6 +208,7 @@ private:
     bool StartWorkerThread(void);
     void StopWorkerThread(void);
     virtual void OnWorkerThreadSetStatusText(wxThreadEvent& event);
+    wxSocketServer *SocketServer;
 
     // and of course, an event table
 	DECLARE_EVENT_TABLE()
@@ -221,7 +222,6 @@ enum {
 	MOUNT_GPINT3BC,
 	MOUNT_GPINT378,
 	MOUNT_GPINT278,
-	MOUNT_NEB,
 	MOUNT_VOYAGER,
 	MOUNT_EQUINOX,
 	MOUNT_EQMAC,
@@ -288,6 +288,11 @@ enum {
 	EEGG_MANUALLOCK,
 	EEGG_FLIPRACAL,
 	EEGG_RANDOMMOTION
+};
+
+enum {
+	SERVER_ID = 100,
+	SOCKET_ID,
 };
 
 #endif /* MYFRAME_H_INCLUDED */

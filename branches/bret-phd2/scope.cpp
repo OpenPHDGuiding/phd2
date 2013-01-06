@@ -309,14 +309,6 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         }
 	}
 	#endif
-	#ifdef GUIDE_NEB
-	else if (mount_menu->IsChecked(MOUNT_NEB)) {
-		if (SocketServer)
-			pScope->IsConnected() = MOUNT_NEB;
-		else
-			SetStatusText("Server not running");
-	}
-	#endif
 	#ifdef GUIDE_VOYAGER
 	else if (mount_menu->IsChecked(MOUNT_VOYAGER)) {
         ScopeVoyager *pVoyager = new ScopeVoyager();

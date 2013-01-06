@@ -37,8 +37,10 @@
 #include <wx/log.h>
 #include "socket_server.h"
 
-wxSocketBase *ServerEndpoint;
-wxLogWindow *SocketLog = NULL;
+static int SocketConnections;
+static wxSocketServer *SocketServer;
+static wxSocketBase *ServerEndpoint;
+static wxLogWindow *SocketLog = NULL;
 
 enum {
 	MSG_PAUSE = 1,
@@ -302,7 +304,6 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 		}
 		default: ;
 	}
-
 }
 
 bool ServerSendGuideCommand (int direction, int duration) {

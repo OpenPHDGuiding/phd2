@@ -142,7 +142,7 @@ extern GuideCamera *pCamera;
 extern LOG Debug;
 
 #if 1
-// these seem like the logging related globals
+// these seem like logging related globals
 extern wxTextFile *LogFile;
 extern bool Log_Data;
 extern int Log_Images;
@@ -157,16 +157,10 @@ extern int YWinSize;
 #endif
 
 #if 1
-// these seem like the server related globals
-enum {
-	SERVER_ID = 100,
-	SOCKET_ID,
-};
+// This is used by eegg.  It could go into guider, but that seem like more trouble than
+// it is worth
 
-extern bool ServerMode;
 extern bool RandomMotionMode;
-extern wxSocketServer *SocketServer;
-extern int SocketConnections;
 #endif
 
 class PhdApp: public wxApp

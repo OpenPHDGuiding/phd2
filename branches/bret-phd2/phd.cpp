@@ -62,12 +62,7 @@ int AdvDlg_fontsize = 0;
 int XWinSize = 640;
 int YWinSize = 512;
 
-int CropX=0;		// U-left corner of crop position
-int CropY=0;
-
 bool RandomMotionMode = false;
-wxSocketServer *SocketServer;
-int SocketConnections;
 
 IMPLEMENT_APP(PhdApp)
 

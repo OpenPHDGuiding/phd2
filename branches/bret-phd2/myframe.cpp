@@ -134,6 +134,8 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     m_pWorkerThread = NULL;
     StartWorkerThread();
 
+    SocketServer = NULL;
+
     int noiseReductionMethod = pConfig->GetInt("/NoiseReductionMethod", DefaultNoiseReductionMethod);
     SetNoiseReductionMethod(noiseReductionMethod);
 
@@ -193,7 +195,6 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 #ifdef GUIDE_GCUSBST4
 	mount_menu->AppendRadioItem(MOUNT_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
 #endif
-//	mount_menu->AppendRadioItem(MOUNT_NEB,_T("Nebulosity"),_T("Guider port on Nebulosity's camera"));
 	mount_menu->FindItem(MOUNT_ASCOM)->Check(true); // set this as the default
 #if defined (__APPLE__)  // bit of a kludge here to deal with a fixed ordering elsewhere
 	mount_menu->FindItem(MOUNT_ASCOM)->Enable(false);
