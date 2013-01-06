@@ -149,6 +149,11 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
         }
     }
 	else if (evt.GetId() == MENU_LOADDARK) {
+		if (!pCamera || !pCamera->Connected)
+        {
+			wxMessageBox("You must connect a camera before loading a dark");
+			return;
+        }
 		fname = wxFileSelector( wxT("Load dark (FITS Image)"), (const wxChar *)NULL,
 							   (const wxChar *)NULL,
 							   wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_CHANGE_DIR);
@@ -291,7 +296,7 @@ void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event)) {
 void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
     double ExpDur = RequestedExposureDuration();
 	if (pGuider->GetState() > STATE_SELECTED) return;
-	if (!pCamera || pCamera->Connected) {
+	if (!pCamera || !pCamera->Connected) {
 		wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
 		return;
 	}

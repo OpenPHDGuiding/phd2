@@ -272,7 +272,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subFrame, bool
 
 	// Setup readout mode (now needed by StartExposure 2)
 	sep.readoutMode = RM_1X1;
-	if (UsesubFrame && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
+	if (UsesubFrame) {
 		sep.top = subFrame.x;
 		sep.width = subFrame.width;
 		sep.left = subFrame.y;
@@ -284,7 +284,6 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subFrame, bool
 		sep.width=(unsigned short) FullSize.GetWidth();
 		sep.height=(unsigned short) FullSize.GetHeight();
 	}
-
 
 
 	// init memory
@@ -362,7 +361,6 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subFrame, bool
 		}
 	}
 	else {
-		img.SubFrame=wxRect(0,0, FullSize.GetWidth(), FullSize.GetHeight());
 		rlp.pixelStart  = 0;
 		rlp.pixelLength = (unsigned short) FullSize.GetWidth();
 		for (y=0; y<FullSize.GetHeight(); y++) {

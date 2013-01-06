@@ -463,8 +463,6 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subFrame,
 		return true;
 	}
 
-    img.SubFrame = subFrame;
-
 	if (debuglog) {
 		debug << _T(" - Doing recon\n");
 		debugstr.Sync();
@@ -692,6 +690,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool useSubFrame, wxRect
 	unsigned short *dataptr;
 	if (useSubFrame) {
 		dataptr = Image.ImageData;
+		Image.SubFrame=subFrame;
 		int x, y, i;
 		for (x=0; x<Image.NPixels; x++, dataptr++) // Clear out the image
 			*dataptr = 0;

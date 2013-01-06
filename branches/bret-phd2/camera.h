@@ -37,7 +37,7 @@
 
 class GuideCamera {
 protected:
-    class CameraConfigDialogPane : public ConfigDialogPane
+    class CameraConfigDialogPane : public ConfigDialogPane 
     {
         GuideCamera *m_pCamera;
         wxSpinCtrl *m_pCameraGain;

@@ -679,7 +679,7 @@ void MyFrame::StartCapturing()
 
         UpdateButtonsStatus();
 
-        wxRect subFrame(0,0,0,0);
+        pCamera->InitCapture();
 
         ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox(m_useSubFrames));
     }

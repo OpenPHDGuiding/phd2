@@ -191,13 +191,13 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subFrame, bo
 
 	if (HasShutter)
 		ArtemisSetDarkMode(Cam_Handle,ShutterState);
-	if (UseSubframe && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
+	if (UseSubframe) {
 		ArtemisSubframe(Cam_Handle, subFrame.x,subFrame.y,subFrame.width,subFrame.height);
 		img.SubFrame = subFrame;
 	}
 	else {
 		ArtemisSubframe(Cam_Handle, 0,0,FullSize.GetWidth(),FullSize.GetHeight());
-		img.SubFrame=wxRect(0,0, FullSize.GetWidth(), FullSize.GetHeight());
+		img.SubFrame=wxRect(0,0, 0, 0);
 	}
 	if (duration > 2500)
 		ArtemisSetAmplifierSwitched(Cam_Handle,true); // Set the amp-off parameter
@@ -229,6 +229,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subFrame, bo
 
 	if (UseSubframe) {
 		dptr = img.ImageData;
+        img.SubFrame = subFrame;
 		for (i=0; i<img.NPixels; i++, dptr++)
 			*dptr = 0;
 		int x, y;
@@ -254,19 +255,6 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subFrame, bo
 //	RemoveLines(img);
 	return false;
 }
-
-/*
-bool Camera_Atik16Class::CaptureCrop(int duration, usImage& img) {
-	GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_Atik16Class::CaptureFull(int duration, usImage& img) {
-	GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
-	return false;
-}*/
 
 /*void Camera_Atik16Class::RemoveLines(usImage& img) {
 	int i, j, val;
