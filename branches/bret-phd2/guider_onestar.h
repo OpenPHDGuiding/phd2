@@ -43,6 +43,16 @@
 // Canvas area for image -- can take events
 class GuiderOneStar: public Guider
 {
+private:
+    Star m_star;
+
+    // parameters
+    double m_raAggression;
+    double m_massChangeThreshold;
+    int m_badMassCount;
+    int m_autoSelectTries;
+    int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
+
 protected:
     class GuiderOneStarConfigDialogPane : public GuiderConfigDialogPane
     {
@@ -65,15 +75,6 @@ protected:
 
     friend class GuiderOneStarConfigDialogPane;
 
-private:
-    Star m_star;
-
-    // parameters
-    double m_raAggression;
-    double m_massChangeThreshold;
-    int m_badMassCount;
-    int m_autoSelectTries;
-
 public:
 	GuiderOneStar(wxWindow *parent);
     virtual ~GuiderOneStar(void);
@@ -87,6 +88,7 @@ public:
     virtual bool SetLockPosition(double x, double y, bool bExact=false);
     virtual bool AutoSelect(usImage *pImage);
     virtual Point &CurrentPosition(void);
+    virtual wxRect GetBoundingBox(bool useSubframe);
 
     virtual bool SetRaGuideAlgorithm(int raGuideAlgorithm);
     virtual bool SetDecGuideAlgorithm(int decGuideAlgorithm);

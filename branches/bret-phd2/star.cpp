@@ -200,13 +200,6 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
                 Result = STAR_SATURATED;
             }
         }
-        CropX = X - (CROPXSIZE/2);
-        CropY = Y - (CROPYSIZE/2);
-        if (CropX < 0) CropX = 0;
-        else if ((CropX + CROPXSIZE) >= pImg->Size.GetWidth()) CropX = pImg->Size.GetWidth() - (CROPXSIZE + 1);
-        if (CropY < 0) CropY = 0;
-        else if ((CropY + CROPYSIZE) >= pImg->Size.GetHeight()) CropY = pImg->Size.GetHeight() - (CROPYSIZE + 1);
-
     }
     catch (wxString Msg)
     {

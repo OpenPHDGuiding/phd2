@@ -37,7 +37,7 @@
 #define SIMDEF
 class Camera_SimClass : public GuideCamera {
 public:
-	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
+	virtual bool	Capture(int duration, usImage& img, wxRect subFrame = wxRect(0,0,0,0), bool recon=false);
 	bool	Connect();		// Opens up and connects to cameras
 	bool	Disconnect();
 	void	InitCapture() { return; }

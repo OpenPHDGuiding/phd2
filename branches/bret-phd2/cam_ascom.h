@@ -31,8 +31,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef ASCOMCAMDEF
-#define ASCOMCAMDEF
+
+#ifndef CAM_ASCOM_H_INCLUDED
+#define CAM_ASCOM_H_INCLUDED
+
 #if defined (ASCOM_CAMERA)
 
 #ifdef __WINDOWS__
@@ -68,7 +70,7 @@ using namespace DriverHelper;
 
 class Camera_ASCOMClass : public GuideCamera, protected ASCOM_COMMON {
 public:
-	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
+	virtual bool	Capture(int duration, usImage& img, wxRect subFrame = wxRect(0,0,0,0), bool recon=false);
 	bool	Connect();
 	bool	Disconnect();
 
@@ -82,38 +84,4 @@ private:
 };
 #endif //defined (ASCOM_CAMERA)
 
-#if defined (ASCOM_LATECAMERA)
-class Camera_ASCOMLateClass : public GuideCamera, protected ASCOM_COMMON {
-public:
-	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	bool	Connect();
-	bool	Disconnect();
-
-	bool	PulseGuideScope(int direction, int duration);
-	bool	Color;
-	Camera_ASCOMLateClass(); 
-private:
-#ifdef __WINDOWS__
-	IDispatch *ASCOMDriver;
-	DISPID dispid_setxbin, dispid_setybin;  // Frequently used IDs
-	DISPID dispid_startx, dispid_starty;
-	DISPID dispid_numx, dispid_numy;
-	DISPID dispid_startexposure, dispid_stopexposure;
-	DISPID dispid_imageready, dispid_imagearray;
-	DISPID dispid_setupdialog, dispid_camerastate;
-	DISPID dispid_ispulseguiding, dispid_pulseguide;
-	DISPID dispid_cooleron,dispid_setccdtemperature;
-	bool ASCOM_SetBin(int mode);
-	bool ASCOM_SetROI(int startx, int starty, int numx, int numy);
-	bool ASCOM_StartExposure(double duration, bool light);
-	bool ASCOM_StopExposure();
-	bool ASCOM_ImageReady(bool& ready);
-	bool ASCOM_Image(usImage& Image, bool subframe);
-	bool ASCOM_IsMoving();
-	int DriverVersion;
-
-#endif
-};
-#endif // defined (ASCOM_LATECAMERA)
-
-#endif  //ASCOMCAMDEF
+#endif // CAM_ASCOM_H_INCLUDED

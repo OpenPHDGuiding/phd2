@@ -250,6 +250,20 @@ Point &GuiderOneStar::CurrentPosition(void)
     return m_star;
 }
 
+wxRect GuiderOneStar::GetBoundingBox(bool useSubframe)
+{
+    wxRect box(0, 0, 0, 0);
+
+    if (useSubframe && m_state == STATE_GUIDING)
+    {
+        box = wxRect(m_lockPosition.X - 2*m_searchRegion, m_lockPosition.Y - 2*m_searchRegion,
+                4*m_searchRegion, 4*m_searchRegion);
+        box.Intersect(wxRect(0, 0, pCamera->FullSize.x, pCamera->FullSize.y));
+    }
+
+    return box;
+}
+
 bool GuiderOneStar::SetState(GUIDER_STATE newState)
 {
     bool bError = false;

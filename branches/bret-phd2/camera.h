@@ -40,7 +40,6 @@ protected:
     class CameraConfigDialogPane : public ConfigDialogPane
     {
         GuideCamera *m_pCamera;
-        wxCheckBox *m_pUseSubframes;
         wxSpinCtrl *m_pCameraGain;
         wxChoice   *m_pPortNum;
         wxSpinCtrl *m_pDelay;
@@ -52,16 +51,12 @@ protected:
         virtual void UnloadValues(void);
     };
 
-    virtual bool GetUseSubframes(void);
-    virtual bool SetUseSubframes(bool useSubFrames);
-
     virtual double GetCameraGain(void);
     virtual bool SetCameraGain(double cameraGain);
     
     friend class CameraConfigDialogPane;
 
 public:
-    bool            UseSubframes; // Use subframes if possible from camera
     int             GuideCameraGain;
 	wxString			Name;					// User-friendly name
 	wxSize			FullSize;			// Size of current image
@@ -80,13 +75,11 @@ public:
     int             DarkDur;
     usImage         CurrentDarkFrame;
 
-    virtual bool HasNonGUICaptureFull(void) { return false; }
-    virtual bool    CaptureFullNonGUI(int duration, usImage& image, bool recon) { assert(false); return true;}
-    virtual bool    CaptureFullNonGUI(int duration, usImage& image) { return CaptureFullNonGUI(duration, image, true); }
+    virtual bool HasNonGUICapture(void) { return false; }
 
-	virtual bool	CaptureFull(int WXUNUSED(duration), usImage& WXUNUSED(img), bool WXUNUSED(recon)) { return true; }
-	virtual bool	CaptureFull(int duration, usImage& img) { return CaptureFull(duration, img, true); }	// Captures a full-res shot
-//	virtual bool	CaptureCrop(int duration, usImage& img) { return true; }	// Captures a 160 x 120 cropped portion
+	virtual bool	Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false) = 0;
+	virtual bool	Capture(int duration, usImage& img, bool recon) { return Capture(duration, img, wxRect(0, 0, 0, 0), recon); }
+
 	virtual bool	Connect() { return true; }		// Opens up and connects to camera
 	virtual bool	Disconnect() { return true; }	// Disconnects, unloading any DLLs loaded by Connect
 	virtual void	InitCapture() { return; }		// Gets run at the start of any loop (e.g., reset stream, set gain, etc).

@@ -210,7 +210,7 @@ bool Camera_WDMClass::Disconnect() {
 }
 
 
-bool Camera_WDMClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 	int xsize,ysize, i;
 	NFrames = NAttempts = 0;
 	xsize = FullSize.GetWidth();

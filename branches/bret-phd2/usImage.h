@@ -38,7 +38,7 @@ class usImage {
 public:
 	unsigned short		*ImageData;		// Pointer to raw data
 	wxSize				Size;				// Dimensions of image
-	wxPoint				Origin;			// Data origin - if not 0,0, subframed
+    wxRect              SubFrame;       // were the valid data is
 	int					NPixels;
 	int					Min;
 	int					Max;

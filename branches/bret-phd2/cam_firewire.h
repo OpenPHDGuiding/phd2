@@ -45,8 +45,7 @@
 
 class Camera_FirewireClass : public GuideCamera {
 public:
-	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-//	bool	CaptureCrop(int duration, usImage& img);	// Captures a cropped portion
+	virtual bool	Capture(int duration, usImage& img, wxRect subFrame = wxRect(0,0,0,0), bool recon=false);
 	bool	Connect();
 	bool	Disconnect();
 	void	InitCapture();

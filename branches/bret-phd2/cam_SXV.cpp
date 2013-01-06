@@ -274,7 +274,8 @@ void Camera_SXVClass::InitCapture() {
 
 	
 }
-bool Camera_SXVClass::CaptureFull(int duration, usImage& img, bool recon) {
+
+bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 	bool UseInternalTimer = false;
 	unsigned int i;
 	//	unsigned short ExpFlags;

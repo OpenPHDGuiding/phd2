@@ -340,7 +340,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         
         if (CaptureActive)
         {
-            pFrame->ScheduleExposure(RequestedExposureDuration());
+            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox(m_useSubFrames));
         }
     }
     catch (wxString Msg)
@@ -391,7 +391,7 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
 	else
 		wxMessageBox(_T("Cover guide scope"));
 	pCamera->InitCapture();
-  	if (pCamera->CaptureFull(ExpDur, pCamera->CurrentDarkFrame, false)) {
+  	if (pCamera->Capture(ExpDur, pCamera->CurrentDarkFrame, false)) {
 		wxMessageBox(_T("Error capturing dark frame"));
 		pCamera->HaveDark = false;
 		SetStatusText(wxString::Format(_T("%.1f s dark FAILED"),(float) ExpDur / 1000.0));
@@ -407,7 +407,7 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
 		for (i=0; i<pCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
 			*iptr = (int) *usptr;
 		for (j=1; j<NDarks; j++) {
-			pCamera->CaptureFull(ExpDur, pCamera->CurrentDarkFrame, false);
+			pCamera->Capture(ExpDur, pCamera->CurrentDarkFrame, false);
 			iptr = avgimg;
 			usptr = pCamera->CurrentDarkFrame.ImageData;
 			for (i=0; i<pCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)

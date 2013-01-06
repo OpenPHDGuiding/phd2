@@ -236,7 +236,7 @@ bool Camera_SACGuiderClass::GenericCapture(int duration, usImage& img, int xsize
 }
 
 bool Camera_SACGuiderClass::CaptureCrop(int duration, usImage& img) {
-	GenericCapture(duration, img, CROPXSIZE,CROPYSIZE,CropX,CropY);
+	GenericCapture(duration, img, width,height,startX,startY);
 
 return false;
 }

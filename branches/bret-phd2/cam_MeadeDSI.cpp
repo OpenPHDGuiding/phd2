@@ -113,7 +113,7 @@ bool Camera_DSIClass::Disconnect() {
 	return false;
 }
 
-bool Camera_DSIClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 	bool retval;
 	bool still_going = true;
 #ifdef MEADE_DSI	

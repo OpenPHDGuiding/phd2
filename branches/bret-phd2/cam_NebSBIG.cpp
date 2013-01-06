@@ -62,7 +62,7 @@ bool Camera_NebSBIGClass::Disconnect() {
 	return false;
 }
 
-bool Camera_NebSBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_NebSBIGClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 	if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
 		wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
 		Disconnect();

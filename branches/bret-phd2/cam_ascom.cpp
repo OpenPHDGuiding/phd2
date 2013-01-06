@@ -141,7 +141,7 @@ bool Camera_ASCOMClass::Disconnect() {
 	return false;
 }
 
-bool Camera_ASCOMClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_ASCOMClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 	bool retval = false;
 	bool still_going = true;
 	wxString msg = "Retvals: ";

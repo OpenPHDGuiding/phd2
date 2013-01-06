@@ -92,6 +92,15 @@ enum OVERLAY_MODE
 
 class Guider: public wxWindow
 {
+	wxImage	*m_displayedImage;
+    GuideAlgorithm *m_pRaGuideAlgorithm;
+    GuideAlgorithm *m_pDecGuideAlgorithm;
+    bool m_guidingEnabled;
+    OVERLAY_MODE m_overlayMode;
+    bool m_paused;
+
+    friend class GraphLogWindow;
+
 protected:
     class GuiderConfigDialogPane : public ConfigDialogPane
     {
@@ -110,16 +119,19 @@ protected:
         virtual void UnloadValues(void);
     };
 
+    virtual GUIDE_ALGORITHM GetRaGuideAlgorithm(void);
+    virtual bool SetRaGuideAlgorithm(int raGuideAlgorithm);
+
+    virtual GUIDE_ALGORITHM GetDecGuideAlgorithm(void);
+    virtual bool SetDecGuideAlgorithm(int decGuideAlgorithm);
+
+    virtual bool GetGuidingEnabled(void);
+    virtual bool SetGuidingEnabled(bool guidingEnabled);
+    virtual OVERLAY_MODE GetOverlayMode(void);
+
     Point m_lockPosition;
     GUIDER_STATE m_state;
 	double	m_scaleFactor;
-	wxImage	*m_displayedImage;
-    GuideAlgorithm *m_pRaGuideAlgorithm;
-    GuideAlgorithm *m_pDecGuideAlgorithm;
-    bool m_guidingEnabled;
-    int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
-    OVERLAY_MODE m_overlayMode;
-    bool m_paused;
 
 public:
     // functions with a implemenation in Guider
@@ -132,16 +144,6 @@ public:
     virtual void UpdateImageDisplay(usImage *pImage);
     virtual Point &LockPosition();
     virtual bool DoGuide(void);
-
-    virtual GUIDE_ALGORITHM GetRaGuideAlgorithm(void);
-    virtual bool SetRaGuideAlgorithm(int raGuideAlgorithm);
-
-    virtual GUIDE_ALGORITHM GetDecGuideAlgorithm(void);
-    virtual bool SetDecGuideAlgorithm(int decGuideAlgorithm);
-
-    virtual bool GetGuidingEnabled(void);
-    virtual bool SetGuidingEnabled(bool guidingEnabled);
-    virtual OVERLAY_MODE GetOverlayMode(void);
     virtual bool SetOverlayMode(int newMode);
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
@@ -157,6 +159,8 @@ public:
     virtual bool AutoSelect(usImage *pImage)=0;
 
     virtual Point &CurrentPosition(void) = 0;
+    virtual wxRect GetBoundingBox(bool useSubframe) = 0;
+
 private:
     virtual GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     virtual bool SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm **ppAlgorithm);

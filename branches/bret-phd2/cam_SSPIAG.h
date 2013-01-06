@@ -36,7 +36,7 @@
 #define SSPIAGDEF
 class Camera_SSPIAGClass : public GuideCamera {
 public:
-	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
+	virtual bool	Capture(int duration, usImage& img, wxRect subFrame = wxRect(0,0,0,0), bool recon=false);
 	bool	Connect();
 	bool	Disconnect();
 	void	InitCapture();

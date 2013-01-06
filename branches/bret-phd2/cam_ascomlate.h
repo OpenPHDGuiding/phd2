@@ -1,9 +1,9 @@
 /*
- *  cam_openssag.h
+ *  cam_ascom.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2009 Craig Stark.
+ *  Copyright (c) 2009-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -32,22 +32,41 @@
  *
  */
 
+#ifndef CAM_ASCOMLATE_H_INCLUDED
+#define CAM_ASCOMLATE_H_INCLUDED
 
-#ifndef CAM_OPENSSAG_H_INCLUDED
-#define CAM_OPENSSAG_H_INCLUDED
-
-#include <openssag.h>
-
-class Camera_OpenSSAGClass : public GuideCamera {
+#if defined (ASCOM_LATECAMERA)
+class Camera_ASCOMLateClass : public GuideCamera, protected ASCOM_COMMON {
 public:
 	virtual bool	Capture(int duration, usImage& img, wxRect subFrame = wxRect(0,0,0,0), bool recon=false);
-	bool Connect();
-	bool Disconnect();
-	bool PulseGuideScope(int direction, int duration);
-	Camera_OpenSSAGClass();
+	bool	Connect();
+	bool	Disconnect();
+
+	bool	PulseGuideScope(int direction, int duration);
+	bool	Color;
+	Camera_ASCOMLateClass(); 
 private:
-    OpenSSAG::SSAG *ssag;
+#ifdef __WINDOWS__
+	IDispatch *ASCOMDriver;
+	DISPID dispid_setxbin, dispid_setybin;  // Frequently used IDs
+	DISPID dispid_startx, dispid_starty;
+	DISPID dispid_numx, dispid_numy;
+	DISPID dispid_startexposure, dispid_stopexposure;
+	DISPID dispid_imageready, dispid_imagearray;
+	DISPID dispid_setupdialog, dispid_camerastate;
+	DISPID dispid_ispulseguiding, dispid_pulseguide;
+	DISPID dispid_cooleron,dispid_setccdtemperature;
+	bool ASCOM_SetBin(int mode);
+	bool ASCOM_SetROI(int startx, int starty, int numx, int numy);
+	bool ASCOM_StartExposure(double duration, bool light);
+	bool ASCOM_StopExposure();
+	bool ASCOM_ImageReady(bool& ready);
+	bool ASCOM_Image(usImage& Image, bool useSubFrame, wxRect subFrame);
+	bool ASCOM_IsMoving();
+	int DriverVersion;
+
+#endif
 };
+#endif // defined (ASCOM_LATECAMERA)
 
-
-#endif // CAM_OPENSSAG_H_INCLUDED
+#endif //CAM_ASCOMLATE_H_INCLUDED

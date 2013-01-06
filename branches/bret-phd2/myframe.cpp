@@ -44,6 +44,7 @@ static const double DefaultDitherScaleFactor = 1.00;
 static const bool DefaultDitherRaOnly = false;
 static const bool DefaultServerMode = false;
 static const int DefaultTimelapse = 0;
+static const bool DefaultUseSubframes = false;
 
 wxDEFINE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(PHD_GUIDE_EVENT, wxCommandEvent);
@@ -147,6 +148,10 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
     int timeLapse   = pConfig->GetInt("/frame/TimeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
+
+    bool useSubframes = pConfig->GetBoolean("/frame/UseSubFrames", DefaultUseSubframes);
+    SetUseSubFrames(useSubframes);
+
 
     // 
 /*#if defined (WINICONS)
@@ -614,7 +619,7 @@ void MyFrame::StopWorkerThread(void)
 void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
 {
     PHD_EXPOSE_REQUEST *pRequest = (PHD_EXPOSE_REQUEST *)evt.GetClientData();
-    bool bError = pCamera->CaptureFull(pRequest->exposureDuration, *pRequest->pImage);
+    bool bError = pCamera->Capture(pRequest->exposureDuration, *pRequest->pImage, pRequest->subFrame);
 
     if (!bError)
     {
@@ -645,13 +650,13 @@ void MyFrame::OnPhdGuideEvent(wxCommandEvent& evt)
     pRequest->semaphore.Post();
 }
 
-void MyFrame::ScheduleExposure(double exposureDuration)
+void MyFrame::ScheduleExposure(double exposureDuration, wxRect subFrame)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     assert(m_pWorkerThread);
     
-    m_pWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration);
+    m_pWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subFrame);
 }
 
 void MyFrame::ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration, const wxString& statusMessage)
@@ -673,7 +678,9 @@ void MyFrame::StartCapturing()
 
         UpdateButtonsStatus();
 
-        ScheduleExposure(RequestedExposureDuration());
+        wxRect subFrame(0,0,0,0);
+
+        ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox(m_useSubFrames));
     }
 }
 
@@ -838,6 +845,21 @@ bool MyFrame::SetTimeLapse(int timeLapse)
     return bError;
 }
 
+bool MyFrame::GetUseSubFrames(void)
+{
+    return m_useSubFrames;
+}
+
+bool MyFrame::SetUseSubFrames(bool useSubframes)
+{
+    bool bError = false;
+
+    m_useSubFrames = useSubframes;
+    pConfig->SetBoolean("/frame/UseSubFrames", m_useSubFrames);
+
+    return bError;
+}
+
 ConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 {
     return new MyFrameConfigDialogPane(pParent, this);
@@ -878,6 +900,10 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 0,_T("TimeLapse"));
 	DoAdd(_T("Time Lapse (ms)"), m_pTimeLapse,
 	      _T("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
+
+    m_pUseSubFrames = new wxCheckBox(pParent, wxID_ANY,_T("UseSubframes"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pUseSubFrames, _T("Check to only download subframes (ROIs) if your camera supports it"));
+
 }
 
 MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
@@ -892,6 +918,8 @@ void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
     m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
     m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
+    m_pUseSubFrames->SetValue(m_pFrame->GetUseSubFrames());
+
 }
 
 void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
@@ -902,4 +930,6 @@ void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
     m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
     m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
     m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
+    m_pFrame->SetUseSubFrames(m_pUseSubFrames->GetValue());
+
 }

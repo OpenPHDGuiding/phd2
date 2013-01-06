@@ -235,10 +235,11 @@ void Camera_SBIGClass::InitCapture() {
 
 
 }
-bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 	bool still_going=true;
 	short  err;
 	unsigned short *dataptr;
+    bool UsesubFrame = (subFrame.width > 0 && subFrame.height > 0);
 
 //	StartExposureParams sep;
 	StartExposureParams2 sep;
@@ -271,11 +272,11 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 
 	// Setup readout mode (now needed by StartExposure 2)
 	sep.readoutMode = RM_1X1;
-	if (UseSubframes && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
-		sep.top = CropX;
-		sep.width = CROPXSIZE;
-		sep.left = CropY;
-		sep.height = CROPYSIZE;
+	if (UsesubFrame && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
+		sep.top = subFrame.x;
+		sep.width = subFrame.width;
+		sep.left = subFrame.y;
+		sep.height = subFrame.height;
 	}
 	else {
 		sep.top=0;
@@ -334,19 +335,24 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 	dataptr = img.ImageData;
 	int y;
 	rlp.readoutMode = 0;
-	if (UseSubframes && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
-		img.Origin=wxPoint(CropX,CropY);
-		rlp.pixelStart  = CropX;
-		rlp.pixelLength = CROPXSIZE;
-		dlp.lineLength = CropY;
+	if (UsesubFrame) {
+        img.SubFrame=subFrame;
+		
+		// dump the lines above the one we want
+		dlp.lineLength = subFrame.y;
 		dlp.readoutMode = 0;
 		SBIGUnivDrvCommand(CC_DUMP_LINES, &dlp, NULL);
+
+		// set up to read the part of the lines we do want
+		rlp.pixelStart  = subFrame.x;
+		rlp.pixelLength = subFrame.width;
+
 		dataptr = img.ImageData;
 		for (y=0; y<img.NPixels; y++, dataptr++)
 			*dataptr = 0;
 
-		for (y=0; y<CROPYSIZE; y++) {
-			dataptr = img.ImageData + CropX + (y+CropY)*FullSize.GetWidth();
+		for (y=0; y<subFrame.height; y++) {
+			dataptr = img.ImageData + subFrame.x + (y+subFrame.y)*FullSize.GetWidth();
 			err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
 			if (err != CE_NO_ERROR) {
 				wxMessageBox(_T("Error downloading data"));
@@ -356,7 +362,7 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 		}
 	}
 	else {
-		img.Origin=wxPoint(0,0);
+		img.SubFrame=wxRect(0,0, FullSize.GetWidth(), FullSize.GetHeight());
 		rlp.pixelStart  = 0;
 		rlp.pixelLength = (unsigned short) FullSize.GetWidth();
 		for (y=0; y<FullSize.GetHeight(); y++) {
@@ -379,7 +385,7 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 }
 
 /*bool Camera_SBIGClass::CaptureCrop(int duration, usImage& img) {
-	GenericCapture(duration, img, CROPXSIZE,CROPYSIZE,CropX,CropY);
+	GenericCapture(duration, img, width,height,startX,startY);
 
 return false;
 }

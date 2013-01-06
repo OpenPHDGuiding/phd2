@@ -44,14 +44,12 @@ bool usImage::Init(int xsize, int ysize) {
 	}
 	NPixels = xsize * ysize;
 	Size = wxSize(xsize,ysize);
-	Origin = wxPoint(0,0);
+    SubFrame = wxRect(0, 0, xsize, ysize);
 	Min = Max = 0;
 	if (NPixels) {
 		ImageData = new unsigned short[NPixels];
 		if (!ImageData) return true;
 	}
-//	ImgStartDate = _T("");
-//	ImgExpDur = 0.0;
 	return false;
 }
 
@@ -66,41 +64,25 @@ void usImage::CalcStats() {
     
  	Min = 65535; Max = 0;
     FiltMin = 65535; FiltMax = 0;
-    if (Origin == wxPoint(0,0)) { // Full frame
-        for (i=0, ptr=ImageData; i<NPixels; i++, ptr++) {
- 			d = (int) ( *ptr);
-			if (d < Min) Min = d;
-			if (d > Max) Max = d;
+
+    int x, y;
+    i=0;
+    for (y=0; y<SubFrame.height; y++) {
+        ptr = ImageData + SubFrame.x + (SubFrame.y + y)*Size.GetWidth();
+        for (x=0; x<SubFrame.width; x++, ptr++, i++) {
+            d = (int) ( *ptr);
+            if (d < Min) Min = d;
+            if (d > Max) Max = d;
             tmpdata[i]=d;
         }
-        Median3(tmpdata,Size.GetWidth(),Size.GetHeight());
-        for (i=0, ptr=tmpdata; i<NPixels; i++, ptr++) {
- 			d = (int) ( *ptr);
-			if (d < FiltMin) FiltMin = d;
-			if (d > FiltMax) FiltMax = d;
-        }
-
     }
-    else {  // Subframe
-		int x, y;
-		i=0;
-		for (y=0; y<CROPYSIZE; y++) {
-			ptr = ImageData + Origin.x + (Origin.y + y)*Size.GetWidth();
-			for (x=0; x<CROPXSIZE; x++, ptr++, i++) {
-				d = (int) ( *ptr);
-				if (d < Min) Min = d;
-				if (d > Max) Max = d;
-                tmpdata[i]=d;
-			}
-		}
-        Median3(tmpdata,CROPXSIZE,CROPYSIZE);
-        for (i=0, ptr=tmpdata; i<(CROPXSIZE*CROPYSIZE); i++, ptr++) {
- 			d = (int) ( *ptr);
-			if (d < FiltMin) FiltMin = d;
-			if (d > FiltMax) FiltMax = d;
-        }
-
+    Median3(tmpdata, SubFrame.width, SubFrame.height);
+    for (i=0, ptr=tmpdata; i<(SubFrame.width*SubFrame.height); i++, ptr++) {
+        d = (int) ( *ptr);
+        if (d < FiltMin) FiltMin = d;
+        if (d > FiltMax) FiltMax = d;
     }
+
     delete [] tmpdata;
 }
 

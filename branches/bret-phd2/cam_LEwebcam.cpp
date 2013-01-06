@@ -239,7 +239,7 @@ bool Camera_LEwebcamClass::ChangePorts() {
 	return false;  // all OK
 }
 
-bool Camera_LEwebcamClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_LEwebcamClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 	int xsize,ysize, i;
 //	int NFrames = 0;
 	xsize = FullSize.GetWidth();

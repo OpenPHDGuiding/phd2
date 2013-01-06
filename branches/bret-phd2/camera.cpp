@@ -38,7 +38,6 @@
 #include "camera.h"
 #include <wx/stdpaths.h>
 
-static const bool DefaultUseSubframes = false;
 static const int DefaultGuideCameraGain = 95;
 
 #if defined (ATIK16)
@@ -126,7 +125,7 @@ static const int DefaultGuideCameraGain = 95;
 #endif
 
 #if defined (ASCOM_LATECAMERA)
- #include "cam_ascom.h"
+ #include "cam_ascomlate.h"
 #endif
 
 #if defined (INDI_CAMERA)
@@ -154,9 +153,6 @@ GuideCamera::GuideCamera(void)
 
     HaveDark = false;
     DarkDur = 0;
-
-    bool useSubframes = pConfig->GetBoolean("/camera/UseSubFrames", DefaultUseSubframes);
-    SetUseSubframes(useSubframes);
 
     double cameraGain = pConfig->GetDouble("/camera/gain", DefaultGuideCameraGain);
     SetCameraGain(cameraGain);
@@ -499,21 +495,6 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 
 }
 
-bool GuideCamera::GetUseSubframes(void)
-{
-    return UseSubframes;
-}
-
-bool GuideCamera::SetUseSubframes(bool useSubframes)
-{
-    bool bError = false;
-
-    UseSubframes = useSubframes;
-    pConfig->SetBoolean("/camera/UseSubFrames", UseSubframes);
-
-    return bError;
-}
-
 double GuideCamera::GetCameraGain(void)
 {
     return GuideCameraGain;
@@ -556,9 +537,6 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
 
     m_pCamera = pCamera;
 
-    m_pUseSubframes = new wxCheckBox(pParent, wxID_ANY,_T("UseSubframes"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pUseSubframes, _T("Check to only download subframes (ROIs) if your camera supports it"));
-
     if (m_pCamera->HasGainControl)
     {
         int width = StringWidth(_T("0000"));
@@ -600,8 +578,6 @@ GuideCamera::CameraConfigDialogPane::~CameraConfigDialogPane(void)
 void GuideCamera::CameraConfigDialogPane::LoadValues(void)
 {
     assert(m_pCamera);
-
-    m_pUseSubframes->SetValue(m_pCamera->GetUseSubframes());
 
     if (m_pCamera->HasGainControl)
     {
@@ -681,8 +657,6 @@ void GuideCamera::CameraConfigDialogPane::LoadValues(void)
 void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
 {
     assert(m_pCamera);
-
-    m_pCamera->SetUseSubframes(m_pUseSubframes->GetValue());
 
     if (m_pCamera->HasGainControl)
     {

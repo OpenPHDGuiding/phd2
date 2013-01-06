@@ -82,12 +82,13 @@ protected:
 
     /*************      Expose      **************************/
 public:
-    void EnqueueWorkerThreadExposeRequest(usImage *pImage, double exposureDuration);
+    void EnqueueWorkerThreadExposeRequest(usImage *pImage, double exposureDuration, const wxRect& subframe);
 protected:
     struct ARGS_EXPOSE
     {
         usImage *pImage;
         double exposureDuration;
+        wxRect subFrame;
     };
     bool HandleExpose(ARGS_EXPOSE *pArgs);
     void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);

@@ -117,7 +117,7 @@ bool Camera_INovaPLCClass::Disconnect() {
     return false;
 }
 
-bool Camera_INovaPLCClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
 	DS_CAMERA_STATUS rval;

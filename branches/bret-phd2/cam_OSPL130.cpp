@@ -60,7 +60,7 @@ bool Camera_OpticstarPL130Class::Disconnect() {
 	return false;
 }
 
-bool Camera_OpticstarPL130Class::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 //	bool retval;
 	bool still_going = true;
 

@@ -334,7 +334,7 @@ bool Camera_SSPIAGClass::Disconnect() {
 
 }
 
-bool Camera_SSPIAGClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_SSPIAGClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 // Only does full frames still
 	static int last_dur = 0;
 	static int last_gain = 60;
@@ -382,7 +382,7 @@ bool Camera_SSPIAGClass::CaptureFull(int duration, usImage& img, bool recon) {
 }
 
 /*bool Camera_SSPIAGClass::CaptureCrop(int duration, usImage& img) {
-	GenericCapture(duration, img, CROPXSIZE,CROPYSIZE,CropX,CropY);
+	GenericCapture(duration, img, width,height,startX,startY);
 
 return false;
 }

@@ -182,26 +182,22 @@ bool Camera_Atik16Class::Disconnect() {
 	return false;
 }
 
-bool Camera_Atik16Class::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 // Only does full frames still
-	bool subframe;
 	unsigned short *rawptr;
 	unsigned short *dptr;
 	int  i;
-//	int xsize = FullSize.GetWidth();
-//	int ysize = FullSize.GetHeight();
+    bool UseSubframe = (subFrame.width > 0 && subFrame.height > 0);
 
 	if (HasShutter)
 		ArtemisSetDarkMode(Cam_Handle,ShutterState);
-	if (UseSubframes && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
-		subframe = true;
-		ArtemisSubframe(Cam_Handle, CropX,CropY,CROPXSIZE,CROPYSIZE);
-		img.Origin=wxPoint(CropX,CropY);
+	if (UseSubframe && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
+		ArtemisSubframe(Cam_Handle, subFrame.x,subFrame.y,subFrame.width,subFrame.height);
+		img.SubFrame = subFrame;
 	}
 	else {
-		subframe = false;
 		ArtemisSubframe(Cam_Handle, 0,0,FullSize.GetWidth(),FullSize.GetHeight());
-		img.Origin=wxPoint(0,0);
+		img.SubFrame=wxRect(0,0, FullSize.GetWidth(), FullSize.GetHeight());
 	}
 	if (duration > 2500)
 		ArtemisSetAmplifierSwitched(Cam_Handle,true); // Set the amp-off parameter
@@ -231,15 +227,15 @@ bool Camera_Atik16Class::CaptureFull(int duration, usImage& img, bool recon) {
 		}
 	}
 
-	if (subframe) {
+	if (UseSubframe) {
 		dptr = img.ImageData;
 		for (i=0; i<img.NPixels; i++, dptr++)
 			*dptr = 0;
 		int x, y;
 		rawptr = (unsigned short*)ArtemisImageBuffer(Cam_Handle);
-		for (y=0; y<CROPYSIZE; y++) {
-			dptr = img.ImageData + (y+CropY)*FullSize.GetWidth() + CropX;
-			for (x=0; x<CROPXSIZE; x++, dptr++, rawptr++)
+		for (y=0; y<subFrame.height; y++) {
+			dptr = img.ImageData + (y+subFrame.y)*FullSize.GetWidth() + subFrame.x;
+			for (x=0; x<subFrame.width; x++, dptr++, rawptr++)
 				*dptr = *rawptr;
 		}
 	}
@@ -261,7 +257,7 @@ bool Camera_Atik16Class::CaptureFull(int duration, usImage& img, bool recon) {
 
 /*
 bool Camera_Atik16Class::CaptureCrop(int duration, usImage& img) {
-	GenericCapture(duration, img, CROPXSIZE,CROPYSIZE,CropX,CropY);
+	GenericCapture(duration, img, width,height,startX,startY);
 
 return false;
 }

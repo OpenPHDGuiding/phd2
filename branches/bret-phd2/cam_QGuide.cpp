@@ -126,7 +126,7 @@ bool Camera_QGuiderClass::Disconnect() {
 
 }
 
-bool Camera_QGuiderClass::CaptureFull(int duration, usImage& img, bool recon) {
+bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
 // Only does full frames still
 
 //	unsigned char *bptr;
@@ -203,7 +203,7 @@ bool Camera_QGuiderClass::CaptureFull(int duration, usImage& img, bool recon) {
 }
 
 /*bool Camera_QGuiderClass::CaptureCrop(int duration, usImage& img) {
-	GenericCapture(duration, img, CROPXSIZE,CROPYSIZE,CropX,CropY);
+	GenericCapture(duration, img, width,height,startX,startY);
 
 return false;
 }
