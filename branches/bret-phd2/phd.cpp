@@ -49,7 +49,7 @@ IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
 
 Config *pConfig = new Config();
 Scope *pScope = new ScopeNone();
-MyFrame *frame = NULL;
+MyFrame *pFrame = NULL;
 
 GuideCamera *CurrentGuideCamera = NULL;
 bool GuideCameraConnected = false;
@@ -92,9 +92,9 @@ bool PhdApp::OnInit() {
 	locale.Init(wxLANGUAGE_ENGLISH_US);
 //	wxMessageBox(wxString::Format("%f",1.23));
 #ifdef ORION
-	frame = new MyFrame(wxString::Format(_T("PHD Guiding for Orion v%s"),VERSION));
+	pFrame = new MyFrame(wxString::Format(_T("PHD Guiding for Orion v%s"),VERSION));
 #else
-	frame = new MyFrame(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
+	pFrame = new MyFrame(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
 #endif
 	wxImage::AddHandler(new wxJPEGHandler);
 #ifdef ORION
@@ -110,7 +110,7 @@ bool PhdApp::OnInit() {
 	wxMilliSleep(2000);
 	delete splash;
 #endif
-	frame->Show(true);
+	pFrame->Show(true);
 
 	return true;
 }

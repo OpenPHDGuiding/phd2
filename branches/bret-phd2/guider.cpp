@@ -320,21 +320,21 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     double r=30.0;
                     double cos_angle = cos(pScope->RaAngle());
                     double sin_angle = sin(pScope->RaAngle());
-                    double StarX = frame->pGuider->CurrentPosition().X;
-                    double StarY = frame->pGuider->CurrentPosition().Y;
+                    double StarX = pFrame->pGuider->CurrentPosition().X;
+                    double StarY = pFrame->pGuider->CurrentPosition().Y;
 
-                    dc.SetPen(wxPen(frame->GraphLog->RA_Color,2,wxPENSTYLE_DOT));
+                    dc.SetPen(wxPen(pFrame->GraphLog->RA_Color,2,wxPENSTYLE_DOT));
                     r=15.0;
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
-                    dc.SetPen(wxPen(frame->GraphLog->DEC_Color,2,wxPENSTYLE_DOT));
+                    dc.SetPen(wxPen(pFrame->GraphLog->DEC_Color,2,wxPENSTYLE_DOT));
                     cos_angle = cos(pScope->DecAngle());
                     sin_angle = sin(pScope->DecAngle());
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
 
                     wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
-                    gc->SetPen(wxPen(frame->GraphLog->RA_Color,1,wxPENSTYLE_DOT ));
+                    gc->SetPen(wxPen(pFrame->GraphLog->RA_Color,1,wxPENSTYLE_DOT ));
                     wxGraphicsPath path = gc->CreatePath();
                     int i;
                     double step = (double) YWinSize / 10.0;
@@ -359,7 +359,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     gc->Rotate(-pScope->DecAngle());
                     gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
                     gc->Rotate(pScope->DecAngle());
-                    gc->SetPen(wxPen(frame->GraphLog->DEC_Color,1,wxPENSTYLE_DOT ));
+                    gc->SetPen(wxPen(pFrame->GraphLog->DEC_Color,1,wxPENSTYLE_DOT ));
                     for (i=-2; i<12; i++) {
                         gc->StrokeLine(0.0,step * (double) i,
                             (double) XWinSize, step * (double) i);
@@ -389,10 +389,10 @@ void Guider::UpdateImageDisplay(usImage *pImage) {
 	wlevel = pImage->FiltMax;
     
 	if (pImage->Size.GetWidth() >= 1280) {
-		pImage->BinnedCopyToImage(&m_displayedImage,blevel,wlevel,frame->Stretch_gamma);
+		pImage->BinnedCopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
 	}
 	else {
-		pImage->CopyToImage(&m_displayedImage,blevel,wlevel,frame->Stretch_gamma);
+		pImage->CopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
 	}
 
     Refresh();
@@ -425,7 +425,7 @@ bool Guider::DoGuide(void)
         double raDistance  = cos(pScope->RaAngle() - theta) * hyp;
         double decDistance = cos(pScope->DecAngle() - theta) * hyp;
 
-        frame->GraphLog->AppendData(LockPosition().dX(CurrentPosition()), LockPosition().dY(CurrentPosition()),
+        pFrame->GraphLog->AppendData(LockPosition().dX(CurrentPosition()), LockPosition().dY(CurrentPosition()),
                 raDistance, decDistance);
 
         // Feed the raw distances to the guide algorithms
@@ -452,7 +452,7 @@ bool Guider::DoGuide(void)
             decDuration = 0.0;
         }
 
-        frame->SetStatusText("",1);
+        pFrame->SetStatusText("",1);
 
         // We are now ready to actuallly guide
         assert(raDuration >= 0);
@@ -460,7 +460,7 @@ bool Guider::DoGuide(void)
         {
             wxString msg;
             msg.Printf("%c dur=%.1f dist=%.2f", (raDirection==EAST)?'E':'W', raDuration, raDistance);
-            frame->ScheduleGuide(raDirection, raDuration, msg);
+            pFrame->ScheduleGuide(raDirection, raDuration, msg);
         }
 
         assert(decDuration >= 0);
@@ -468,7 +468,7 @@ bool Guider::DoGuide(void)
         {
             wxString msg;
             msg.Printf("%c dur=%.1f dist=%.2f", (decDirection==SOUTH)?'S':'N', decDuration, decDistance);
-            frame->ScheduleGuide(decDirection, decDuration, msg);
+            pFrame->ScheduleGuide(decDirection, decDuration, msg);
         }
     }
     catch (char *pErrorMsg)

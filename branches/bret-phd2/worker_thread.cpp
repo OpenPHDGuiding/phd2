@@ -87,7 +87,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
     
     try
     {
-        wxMilliSleep(frame->GetTimeLapse());
+        wxMilliSleep(pFrame->GetTimeLapse());
 
         if (CurrentGuideCamera->HasNonGUICaptureFull())
         {
@@ -100,7 +100,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
                 throw ERROR_INFO("CaptureFull failed");
             }
 
-            switch (frame->GetNoiseReductionMethod())
+            switch (pFrame->GetNoiseReductionMethod())
             {
                 case NR_NONE:
                     break;
@@ -122,7 +122,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
 
             wxCommandEvent evt(PHD_EXPOSE_EVENT, GetId());
             evt.SetClientData(&request);
-            wxQueueEvent(frame, evt.Clone());
+            wxQueueEvent(pFrame, evt.Clone());
 
             // wait for the request to complete
             request.semaphore.Wait();
@@ -192,7 +192,7 @@ bool WorkerThread::HandleGuide(ARGS_GUIDE *pArgs)
 
                 wxCommandEvent evt(PHD_GUIDE_EVENT, GetId());
                 evt.SetClientData(&request);
-                wxQueueEvent(frame, evt.Clone());
+                wxQueueEvent(pFrame, evt.Clone());
 
                 // wait for the request to complete
                 request.semaphore.Wait();

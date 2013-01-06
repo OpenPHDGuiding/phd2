@@ -153,7 +153,7 @@ bool Camera_ASCOMClass::CaptureFull(int duration, usImage& img, bool recon) {
 	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 	wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_ASCOM_Debug_log") + _T(".txt")), _T("a+t"));
 	wxTextOutputStream debug (debugstr);
-	bool debuglog = frame->Menubar->IsChecked(MENU_DEBUG);
+	bool debuglog = pFrame->Menubar->IsChecked(MENU_DEBUG);
 	if (debuglog) {
 		debug << _T("ASCOM capture entered - programming exposure\n");
 		debugstr.Sync();

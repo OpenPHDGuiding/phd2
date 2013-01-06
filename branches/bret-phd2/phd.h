@@ -132,7 +132,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 
 extern Config *pConfig;
 
-extern MyFrame *frame;
+extern MyFrame *pFrame;
 extern Scope *pScope;
 extern GuideCamera *CurrentGuideCamera;
 extern bool GuideCameraConnected;

@@ -150,9 +150,9 @@ GraphLogWindow::~GraphLogWindow() {
 
 }
 void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
-    if (frame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+    if (pFrame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
     {
-        GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)frame->pGuider;
+        GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
 
         pHyst->SetAggression((float) this->RAA_Ctrl->GetValue() / 100.0);
         pHyst->SetHysteresis((float) this->RAH_Ctrl->GetValue() / 100.0);
@@ -166,9 +166,9 @@ void GraphLogWindow::OnUpdateCommandGuideParams(wxCommandEvent& WXUNUSED(evt)) {
 }
 
 void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) {
-    if (frame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+    if (pFrame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
     {
-        GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)frame->pGuider;
+        GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
 
         pHyst->SetMinMove(this->MM_Ctrl->GetValue());
     }
@@ -176,7 +176,7 @@ void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) 
 
 void GraphLogWindow::OnButtonHide(wxCommandEvent& WXUNUSED(evt)) {
 	this->visible = false;
-	frame->Menubar->Check(MENU_GRAPH,false);
+	pFrame->Menubar->Check(MENU_GRAPH,false);
 	this->Show(false);
 }
 
@@ -243,9 +243,9 @@ void GraphLogWindow::SetState(bool is_active) {
 	this->Show(is_active);
 	if (is_active) 
     {
-        if (frame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+        if (pFrame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
         {
-            GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)frame->pGuider;
+            GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
             this->RAA_Ctrl->SetValue((int) (pHyst->GetAggression() * 100));  
             this->RAH_Ctrl->SetValue((int) (pHyst->GetHysteresis() * 100));
             this->MM_Ctrl->SetValue(pHyst->GetMinMove());
@@ -479,7 +479,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
 	dc.SetBackground(* wxBLACK_BRUSH);
 	dc.SetBackground(wxColour(10,30,30));
 	dc.Clear();
-	if (frame->pGuider->GetState() == STATE_UNINITIALIZED) return;
+	if (pFrame->pGuider->GetState() == STATE_UNINITIALIZED) return;
 	wxPen RedPen;
 //	GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
 //	BluePen = wxPen(wxColour(100,100,255));

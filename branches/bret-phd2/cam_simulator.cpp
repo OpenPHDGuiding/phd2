@@ -189,12 +189,12 @@ bool Camera_SimClass::CaptureFull(int duration, usImage& img, bool recon) {
 	// OK, now move the stars by some random bit
 	r1 = rand() % Noise - Noise / 2; r1 = 0;
 	r2 = rand() % Noise - Noise / 2; r2 = 0;
-//	frame->SetStatusText(wxString::Format ("%d %.2f",start_time,sin((double) start_time / 47750.0)));
+//	pFrame->SetStatusText(wxString::Format ("%d %.2f",start_time,sin((double) start_time / 47750.0)));
 	for (i=0; i<20; i++) {
 		star_x[i] = star_x[i] + r1 + (int) (sin((double) start_time / 47750.0) * xPE);
 		star_y[i] = star_y[i] + r2 + (int) (sin((double) start_time / 47750.0 + 100.0) * yPE);
 	}
-//	frame->SetStatusText(wxString::Format(_T("%d,%d,%d   %d,%d,%d"),star_x[0],star_y[0],inten[0],star_x[1],star_y[1],inten[1]));
+//	pFrame->SetStatusText(wxString::Format(_T("%d,%d,%d   %d,%d,%d"),star_x[0],star_y[0],inten[0],star_x[1],star_y[1],inten[1]));
 	if (img.NPixels != (xsize*ysize) ) {
 		if (img.Init(xsize,ysize)) {
 			wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);

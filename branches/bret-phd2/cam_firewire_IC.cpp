@@ -327,7 +327,7 @@ bool Camera_FirewireClass::CaptureFull(int duration, usImage& img, bool recon) {
 		Disconnect();
 		return true;
 	}
-	imgptr = vframe->image;
+	imgptr = vpFrame->image;
 	for (i=0; i<img.NPixels; i++, dataptr++, imgptr++)
 		*dataptr = (unsigned short) *imgptr;
 	dc1394_capture_enqueue(camera, vframe);  // release this frame

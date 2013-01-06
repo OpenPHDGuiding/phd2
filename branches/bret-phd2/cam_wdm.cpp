@@ -187,7 +187,7 @@ bool Camera_WDMClass::Connect() {
       return true;
 	}
 	FullSize=wxSize(modeInfo.XRes, modeInfo.YRes);   
-	frame->SetStatusText(wxString::Format("%d x %d mode activated",modeInfo.XRes, modeInfo.YRes),1);
+	pFrame->SetStatusText(wxString::Format("%d x %d mode activated",modeInfo.XRes, modeInfo.YRes),1);
 
 	Connected = true;
 	return false;
@@ -244,13 +244,13 @@ bool Camera_WDMClass::CaptureFull(int duration, usImage& img, bool recon) {
 		Sleep(50);
 	 WDM_Stack_Mode = false;
   //  VidCap->Stop();		// Stop it
-	frame->SetStatusText(wxString::Format("%d frames",NFrames),1);
+	pFrame->SetStatusText(wxString::Format("%d frames",NFrames),1);
 	if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
 	return false;
 }
 
 
 void Camera_WDMClass::ShowPropertyDialog() {
-	VidCap->ShowPropertyDialog((HWND) frame->GetHandle());
+	VidCap->ShowPropertyDialog((HWND) pFrame->GetHandle());
 }
 #endif // WDM_CAMERA defined

@@ -62,7 +62,7 @@ bool Camera_VFWClass::Connect() {
 	wxVideoCaptureWindow* capwin;
 
 	if (!Extra_Window) {
-		dispwin = new wxSplitterWindow(frame->guider,-1);
+		dispwin = new wxSplitterWindow(pFrame->guider,-1);
 		Extra_Window = dispwin;
 	}
 	else dispwin = Extra_Window;
@@ -103,7 +103,7 @@ bool Camera_VFWClass::Connect() {
 	capwin->GetVideoFormat( &w,&h, &bpp, &fourcc );
 //	capwin->SetVideoFormat(640,480,-1,-1);
 	FullSize=wxSize(w,h);   
-	frame->SetStatusText(wxString::Format("%d x %d mode activated",w,h),1);
+	pFrame->SetStatusText(wxString::Format("%d x %d mode activated",w,h),1);
 	Connected = true;
 	return false;
 }
@@ -156,7 +156,7 @@ bool Camera_VFWClass::CaptureFull(int duration, usImage& img, bool recon) {
 		NFrames++;
 		if ((swatch.Time() >= duration) && (NFrames > 2)) still_going=false;
 	}
-	frame->SetStatusText(wxString::Format("%d frames",NFrames),1);
+	pFrame->SetStatusText(wxString::Format("%d frames",NFrames),1);
 	if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
 	return false;
 }

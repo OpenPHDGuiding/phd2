@@ -76,7 +76,7 @@ bool Camera_LEwebcamClass::Connect() {
 	wxVideoCaptureWindow* capwin;
 
 	if (!Extra_Window) {
-		dispwin = new wxSplitterWindow(frame->guider,-1);
+		dispwin = new wxSplitterWindow(pFrame->guider,-1);
 		Extra_Window = dispwin;
 	}
 	else dispwin = Extra_Window;
@@ -117,7 +117,7 @@ bool Camera_LEwebcamClass::Connect() {
 	capwin->GetVideoFormat( &w,&h, &bpp, &fourcc );
 //	capwin->SetVideoFormat(640,480,-1,-1);
 	FullSize=wxSize(w,h);   
-	frame->SetStatusText(wxString::Format("%d x %d mode activated",w,h),1);
+	pFrame->SetStatusText(wxString::Format("%d x %d mode activated",w,h),1);
 	LastPort = Port; // This needed to detect changes to/from the serial port
 	if (Port == 0) {  // LXUSB
 		if (!LXUSB_Open()) {
@@ -307,7 +307,7 @@ bool Camera_LEwebcamClass::CaptureFull(int duration, usImage& img, bool recon) {
 		}
 	}
 
-//	frame->SetStatusText(wxString::Format("%d %d %d",bulk_delay,final_delay,amp_lead),1);
+//	pFrame->SetStatusText(wxString::Format("%d %d %d",bulk_delay,final_delay,amp_lead),1);
 //	wxTheApp->Yield();
 
 	if (bulk_delay) {
@@ -319,7 +319,7 @@ bool Camera_LEwebcamClass::CaptureFull(int duration, usImage& img, bool recon) {
 		}
 		SleepEx(bulk_delay,false);
 	}
-//	frame->SetStatusText(wxString::Format("%d %d %d",bulk_delay,final_delay,amp_lead),1);
+//	pFrame->SetStatusText(wxString::Format("%d %d %d",bulk_delay,final_delay,amp_lead),1);
 //	wxTheApp->Yield();
 	SleepEx(final_delay - amp_lead,true);  // wait for last bit (or only bit) of exposure duration
 
@@ -383,7 +383,7 @@ bool Camera_LEwebcamClass::CaptureFull(int duration, usImage& img, bool recon) {
 		imgdata = cap_img2.GetData();
 	else if ((sum3 >= sum1) && (sum3>=sum2)) 
 		imgdata = cap_img3.GetData();
-	//frame->SetStatusText(wxString::Format("%d %d %d",sum1/10000,sum2/10000,sum3/10000),1);
+	//pFrame->SetStatusText(wxString::Format("%d %d %d",sum1/10000,sum2/10000,sum3/10000),1);
 	
 
 	//imgdata = cap_img.GetData();

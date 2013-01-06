@@ -119,7 +119,7 @@ bool Camera_DSIClass::CaptureFull(int duration, usImage& img, bool recon) {
 #ifdef MEADE_DSI	
 	MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
 	MeadeCam->SetExposureTime(duration);
-//	frame->SetStatusText(wxString::Format("%u %d",(unsigned int) (GuideCameraGain * 63 / 100),duration));
+//	pFrame->SetStatusText(wxString::Format("%u %d",(unsigned int) (GuideCameraGain * 63 / 100),duration));
 	if ((unsigned)img.NPixels != MeadeCam->GetWidth() * MeadeCam->GetHeight()) {
 		if (img.Init(MeadeCam->GetWidth(),MeadeCam->GetHeight())) {
 			wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);

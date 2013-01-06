@@ -262,7 +262,7 @@ bool ScopeASCOM::Connect(void) {
             throw ERROR_INFO("ASCOM Scope: scope does not support pulseguiding");
         }*/
 
-        frame->SetStatusText(Name()+_T(" connected"));
+        pFrame->SetStatusText(Name()+_T(" connected"));
         Scope::Connect();
     }
     catch (char *pErrorMsg)

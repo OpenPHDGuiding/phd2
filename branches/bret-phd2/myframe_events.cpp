@@ -61,7 +61,7 @@ double MyFrame::RequestedExposureDuration() { // Sets the global duration variab
 	double dReturn;
 //	if (CaptureActive) return;  // Looping an exposure already
 
-	durtext = frame->Dur_Choice->GetStringSelection();
+	durtext = pFrame->Dur_Choice->GetStringSelection();
 	durtext = durtext.BeforeFirst(' '); // remove the " s" bit
 #if wxUSE_XLOCALE
 	durtext.ToCDouble(&dReturn);
@@ -267,7 +267,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
 
         assert(!CaptureActive);
 
-        frame->StartCapturing();
+        pFrame->StartCapturing();
 
     }
     catch (char *pErrorMsg)
@@ -340,7 +340,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         
         if (CaptureActive)
         {
-            frame->ScheduleExposure(RequestedExposureDuration());
+            pFrame->ScheduleExposure(RequestedExposureDuration());
         }
     }
     catch (char *pErrorMsg)
@@ -522,7 +522,7 @@ bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))
 }
 
 void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {
-    frame->pGuider->AutoSelect(pCurrentFullFrame);
+    pFrame->pGuider->AutoSelect(pCurrentFullFrame);
 }
 
 #ifndef __WXGTK__
@@ -564,9 +564,9 @@ private:
 
 AdvancedDialog::AdvancedDialog():
 #if defined (__WINDOWS__)
-wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(210,350), wxCAPTION | wxCLOSE_BOX)
+wxDialog(pFrame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(210,350), wxCAPTION | wxCLOSE_BOX)
 #else
-wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
+wxDialog(pFrame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
 #endif
 {
     /*
@@ -610,7 +610,7 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 
     // Build the left column of panes
 
-    m_pFramePane = frame->GetConfigDialogPane(this);
+    m_pFramePane = pFrame->GetConfigDialogPane(this);
     pLeftSizer->Add(m_pFramePane, 0, wxALIGN_CENTER | wxGROW);
 
     m_pMountPane = pScope->GetConfigDialogPane(this);
@@ -632,7 +632,7 @@ wxDialog(frame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
 
     // Build the right column of panes
 
-    m_pGuiderPane = frame->pGuider->GetConfigDialogPane(this);
+    m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(this);
     pRightSizer->Add(m_pGuiderPane, 0, wxALIGN_CENTER | wxGROW);
 
     SetSizerAndFit(pTopLevelSizer);
@@ -670,7 +670,7 @@ END_EVENT_TABLE()
 void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
 	// Prior to this we check to make sure the current camera is a WDM camera (main dialog) but...
 
-	if (frame->CaptureActive || !GuideCameraConnected || !CurrentGuideCamera->HasPropertyDialog) return;  // One more safety check
+	if (pFrame->CaptureActive || !GuideCameraConnected || !CurrentGuideCamera->HasPropertyDialog) return;  // One more safety check
 	/*if (CurrentGuideCamera == &Camera_WDM)
 		Camera_WDM.ShowPropertyDialog();
 	else if (CurrentGuideCamera == &Camera_VFW)
@@ -696,13 +696,13 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
     {
         dlog->UnloadValues();
 #ifdef BRET_TODO
-	frame->GraphLog->RAA_Ctrl->SetValue((int) (RA_aggr * 100));
-	frame->GraphLog->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
+	pFrame->GraphLog->RAA_Ctrl->SetValue((int) (RA_aggr * 100));
+	pFrame->GraphLog->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
 #if ((wxMAJOR_VERSION > 2) || (wxMINOR_VERSION > 8))
-	frame->GraphLog->MM_Ctrl->SetValue(MinMotion);
+	pFrame->GraphLog->MM_Ctrl->SetValue(MinMotion);
 #endif
-	frame->GraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
-	frame->GraphLog->DM_Ctrl->SetSelection(Dec_guide);
+	pFrame->GraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
+	pFrame->GraphLog->DM_Ctrl->SetSelection(Dec_guide);
 #endif // BRET_TODO
     }
 }
@@ -719,7 +719,7 @@ private:
 };
 
 TestGuideDialog::TestGuideDialog():
-wxDialog(frame, wxID_ANY, _T("Manual Output"), wxPoint(-1,-1), wxSize(300,300)) {
+wxDialog(pFrame, wxID_ANY, _T("Manual Output"), wxPoint(-1,-1), wxSize(300,300)) {
 	wxGridSizer *sizer = new wxGridSizer(3,3,0,0);
 
 	NButton = new wxButton(this,MGUIDE_N,_T("North"),wxPoint(-1,-1),wxSize(-1,-1));
@@ -748,7 +748,7 @@ END_EVENT_TABLE()
 
 
 void TestGuideDialog::OnButton(wxCommandEvent &evt) {
-//	if ((frame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
+//	if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
 	if (!(pScope->IsConnected())) return;
 	switch (evt.GetId()) {
 		case MGUIDE_N:
@@ -767,7 +767,7 @@ void TestGuideDialog::OnButton(wxCommandEvent &evt) {
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
-	if ((frame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
+	if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
 	TestGuideDialog* dlog = new TestGuideDialog();
 	dlog->Show();
 }

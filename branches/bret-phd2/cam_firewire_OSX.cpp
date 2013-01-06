@@ -264,8 +264,8 @@ bool Camera_FirewireClass::CaptureFull(int duration, usImage& img, bool recon) {
 	// Dequeue any existing
 /*	dc1394_video_set_transmission(camera,DC1394_OFF);
 	dc1394_capture_dequeue(camera,DC1394_CAPTURE_POLICY_POLL, &frame);
-	if (frame->frames_behind) dc1394_capture_enqueue(camera, frame);
-	while (frame->frames_behind) {
+	if (pFrame->frames_behind) dc1394_capture_enqueue(camera, frame);
+	while (pFrame->frames_behind) {
 		dc1394_capture_dequeue(camera,DC1394_CAPTURE_POLICY_POLL, &frame);
 		dc1394_capture_enqueue(camera, frame);
 	}*/
@@ -289,8 +289,8 @@ bool Camera_FirewireClass::CaptureFull(int duration, usImage& img, bool recon) {
 	}
 	
 	/*
-	while (vframe && vframe->frames_behind) {
-		frame->SetStatusText(wxString::Format("%d %d %d", (int) vframe->size[0], (int) vframe->image_bytes, (int) vframe->frames_behind));
+	while (vframe && vpFrame->frames_behind) {
+		pFrame->SetStatusText(wxString::Format("%d %d %d", (int) vpFrame->size[0], (int) vpFrame->image_bytes, (int) vpFrame->frames_behind));
 		dc1394_capture_enqueue(camera, vframe);
 		dc1394_capture_dequeue(camera,DC1394_CAPTURE_POLICY_POLL, &vframe);
 	}*/
@@ -332,12 +332,12 @@ bool Camera_FirewireClass::CaptureFull(int duration, usImage& img, bool recon) {
 		Disconnect();
 		return true;
 	}
-	imgptr = vframe->image;
-//	frame->SetStatusText(wxString::Format("%d %d %d",(int) vframe->frames_behind, (int) vframe->size[0], (int) vframe->size[1]));
+	imgptr = vpFrame->image;
+//	pFrame->SetStatusText(wxString::Format("%d %d %d",(int) vpFrame->frames_behind, (int) vpFrame->size[0], (int) vpFrame->size[1]));
 	for (i=0; i<img.NPixels; i++, dataptr++, imgptr++)
 		*dataptr = (unsigned short) *imgptr;
 	dc1394_capture_enqueue(camera, vframe);  // release this frame
-//	frame->SetStatusText(wxString::Format("Behind: %lu Pos: %lu",vframe->frames_behind,vframe->id));
+//	pFrame->SetStatusText(wxString::Format("Behind: %lu Pos: %lu",vpFrame->frames_behind,vpFrame->id));
 	if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
 
 	if (DCAM_start_stop_mode)

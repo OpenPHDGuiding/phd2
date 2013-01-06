@@ -121,7 +121,7 @@ void MyFrame::OnServerEvent(wxSocketEvent& event) {
 	ServerEndpoint = SocketServer->Accept(false);
 
 	if (ServerEndpoint) {
-        frame->SetStatusText("New connection");
+        pFrame->SetStatusText("New connection");
 		wxLogStatus(_T("New cnxn"));
  	}
 	else {
@@ -220,7 +220,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					break;
 				case MSG_AUTOFINDSTAR:
 //				case 'f':
-                    frame->pGuider->AutoSelect(pCurrentFullFrame);
+                    pFrame->pGuider->AutoSelect(pCurrentFullFrame);
 					break;
 				case MSG_SETLOCKPOSITION:
                 case 's':
@@ -230,7 +230,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                     sock->Read(&y, 2);
                     sock->Discard();  // Clean out anything else
 
-                    if (frame->pGuider->SetLockPosition(x,y))
+                    if (pFrame->pGuider->SetLockPosition(x,y))
                     {
                         wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
                     }

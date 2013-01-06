@@ -495,11 +495,11 @@ wxString Scope::GetCalibrationStatus(double dX, double dY, double dist, double d
     {
         if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
         {
-            frame->SetStatusText(wxString::Format(_T("Clear Backlash: %2d"), MAX_CALIBRATION_STEPS - m_calibrationSteps));
+            pFrame->SetStatusText(wxString::Format(_T("Clear Backlash: %2d"), MAX_CALIBRATION_STEPS - m_calibrationSteps));
         }
         else
         {
-            frame->SetStatusText(wxString::Format(_T("%c calibration: %2d"), directionName, m_calibrationSteps));
+            pFrame->SetStatusText(wxString::Format(_T("%c calibration: %2d"), directionName, m_calibrationSteps));
         }
         sReturn = wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)"),dX,dY,dist,dist_crit);
         Debug.Write(wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)\n"),dX,dY,dist,dist_crit));
@@ -607,12 +607,12 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
         if (m_calibrationDirection == NONE)
         {
             m_bCalibrated = true;
-            frame->SetStatusText(_T("calibration complete"),1);
-            frame->SetStatusText(_T("Cal"),5);
+            pFrame->SetStatusText(_T("calibration complete"),1);
+            pFrame->SetStatusText(_T("Cal"),5);
         }
         else
         {
-            frame->ScheduleGuide(m_calibrationDirection, m_calibrationDuration, statusMessage);
+            pFrame->ScheduleGuide(m_calibrationDirection, m_calibrationDuration, statusMessage);
         }
     }
     catch (char *pErrorMsg)

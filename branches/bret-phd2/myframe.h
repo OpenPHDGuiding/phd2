@@ -284,6 +284,4 @@ enum {
 	EEGG_RANDOMMOTION
 };
 
-extern MyFrame *frame;
-
 #endif /* MYFRAME_H_INCLUDED */

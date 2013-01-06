@@ -68,7 +68,7 @@ bool Camera_INovaPLCClass::Connect() {
 void Camera_INovaPLCClass::InitCapture() {
 	// Run after any exp change / at the start of a loop
 	DS_CAMERA_STATUS rval;
-	double ExpDur = frame->RequestedExposureDuration();
+	double ExpDur = pFrame->RequestedExposureDuration();
 	int exp_lines = (int) ExpDur * 1000 / RowTime;
 	rval = DSCameraSetExposureTime(exp_lines);
 	wxMilliSleep(100);
@@ -129,7 +129,7 @@ bool Camera_INovaPLCClass::CaptureFull(int duration, usImage& img, bool recon) {
         Disconnect();
         return true;
     }
-	int ExpDur = (int) frame-> RequestedExposureDuration();
+	int ExpDur = (int) pFrame-> RequestedExposureDuration();
 
 	if (duration != ExpDur) { // reset the exp time - and pause -- we have had a change here from the current value
 		rval = DSCameraSetExposureTime(ExpDur * 1000 / RowTime);
@@ -140,7 +140,7 @@ bool Camera_INovaPLCClass::CaptureFull(int duration, usImage& img, bool recon) {
 	while (rval != STATUS_OK) {
 		ntries++;
 		rval = DSCameraGrabFrame((BYTE *) RawData);
-		//frame->SetStatusText(wxString::Format("%d %d",ntries,rval));
+		//pFrame->SetStatusText(wxString::Format("%d %d",ntries,rval));
 		if (ntries > 30) {
 			wxMessageBox("Timeout capturing frames - >30 bad in a row");
 			return true;

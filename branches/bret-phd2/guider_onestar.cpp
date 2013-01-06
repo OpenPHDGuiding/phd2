@@ -356,7 +356,7 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
             Debug.Write("UpdateGuideState(): Autoselecting\n");
             if (AutoSelect(pImage))
             {
-                frame->SetStatusText(wxString::Format(_T("Auto Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
+                pFrame->SetStatusText(wxString::Format(_T("Auto Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
             }
             else
             {
@@ -399,7 +399,7 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
             if (massRatio > m_massChangeThreshold)
             {
                 m_star.SetError(Star::STAR_MASSCHANGE);
-                frame->SetStatusText(wxString::Format(_T("Mass: %.0f vs %.0f"), newStar.Mass, m_star.Mass), 1);
+                pFrame->SetStatusText(wxString::Format(_T("Mass: %.0f vs %.0f"), newStar.Mass, m_star.Mass), 1);
                 Debug.Write(wxString::Format("UpdateGuideState(): star mass ratio=%.1f, thresh=%.1f new=%.1f, old=%.1f\n", massRatio, m_massChangeThreshold, newStar.Mass, m_star.Mass));
                 throw ERROR_INFO("massChangeThreshold error");
             }
@@ -467,10 +467,10 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
 
     if (updateStatus)
     {
-        frame->SetStatusText(statusMessage);
+        pFrame->SetStatusText(statusMessage);
     }
 
-    frame->UpdateButtonsStatus();
+    pFrame->UpdateButtonsStatus();
 
     Debug.Write("UpdateGuideState exits:" + statusMessage + "\n");
 
@@ -525,12 +525,12 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 
             if (SetLockPosition(StarX, StarY))
             {
-                frame->SetStatusText(wxString::Format(_T("No star found")));
+                pFrame->SetStatusText(wxString::Format(_T("No star found")));
             }
             else
             {
-                frame->SetStatusText(wxString::Format(_T("Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
-                frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),m_star.Mass,m_star.SNR));
+                pFrame->SetStatusText(wxString::Format(_T("Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
+                pFrame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),m_star.Mass,m_star.SNR));
             }
 
             Refresh();

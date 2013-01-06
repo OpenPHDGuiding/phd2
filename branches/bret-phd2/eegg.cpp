@@ -115,7 +115,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 				tmpstr.ToDouble(&LockY); 
 				LockY = fabs(LockY);
 			}
-            frame->pGuider->SetLockPosition(LockX, LockY, true);
+            pFrame->pGuider->SetLockPosition(LockX, LockY, true);
 		}
 		else {
 			//ManualLock = false;

@@ -553,7 +553,7 @@ void MyFrame::UpdateButtonsStatus(void)
 
 void MyFrame::OnWorkerThreadSetStatusText(wxThreadEvent& event)
 {
-    frame->SetStatusText(event.GetString(), event.GetInt());
+    pFrame->SetStatusText(event.GetString(), event.GetInt());
 }
 
 bool MyFrame::StartWorkerThread(void)

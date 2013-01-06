@@ -194,7 +194,7 @@ bool Camera_Atik16Class::CaptureFull(int duration, usImage& img, bool recon) {
 
 	if (HasShutter)
 		ArtemisSetDarkMode(Cam_Handle,ShutterState);
-	if (UseSubframes && (frame->pGuider->GetState() > STATE_UNINITIALIZED)) {
+	if (UseSubframes && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
 		subframe = true;
 		ArtemisSubframe(Cam_Handle, CropX,CropY,CROPXSIZE,CROPYSIZE);
 		img.Origin=wxPoint(CropX,CropY);

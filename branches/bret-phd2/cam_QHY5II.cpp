@@ -278,7 +278,7 @@ bool Camera_QHY5IIClass::CaptureFull(int duration, usImage& img, bool recon) {
 	wxMilliSleep(duration);
 	//int foo = 0;
 	while (Q5II_IsExposing()) {
-		//frame->SetStatusText(wxString::Format("%d",foo));
+		//pFrame->SetStatusText(wxString::Format("%d",foo));
 		wxMilliSleep(100);
 		//foo++;
 	}

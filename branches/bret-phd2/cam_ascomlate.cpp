@@ -409,14 +409,14 @@ bool Camera_ASCOMLateClass::CaptureFull(int duration, usImage& img, bool recon) 
 	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 	wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_ASCOM_Debug_log") + _T(".txt")), _T("a+t"));
 	wxTextOutputStream debug (debugstr);
-	bool debuglog = frame->Menubar->IsChecked(MENU_DEBUG);
+	bool debuglog = pFrame->Menubar->IsChecked(MENU_DEBUG);
 	if (debuglog) {
 		debug << _T("ASCOM Late capture entered - programming exposure\n");
 		debugstr.Sync();
 	}
 
 	// Program the size
-	if (UseSubframes && (frame->pGuider->GetState() > STATE_UNINITIALIZED)) {
+	if (UseSubframes && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
 		subframe = true;
 		this->ASCOM_SetROI(CropX,CropY,CROPXSIZE,CROPYSIZE);
 		img.Origin=wxPoint(CropX,CropY);

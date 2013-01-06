@@ -271,7 +271,7 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 
 	// Setup readout mode (now needed by StartExposure 2)
 	sep.readoutMode = RM_1X1;
-	if (UseSubframes && (frame->pGuider->GetState() > STATE_UNINITIALIZED)) {
+	if (UseSubframes && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
 		sep.top = CropX;
 		sep.width = CROPXSIZE;
 		sep.left = CropY;
@@ -334,7 +334,7 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img, bool recon) {
 	dataptr = img.ImageData;
 	int y;
 	rlp.readoutMode = 0;
-	if (UseSubframes && (frame->pGuider->GetState() > STATE_UNINITIALIZED)) {
+	if (UseSubframes && (pFrame->pGuider->GetState() > STATE_UNINITIALIZED)) {
 		img.Origin=wxPoint(CropX,CropY);
 		rlp.pixelStart  = CropX;
 		rlp.pixelLength = CROPXSIZE;
