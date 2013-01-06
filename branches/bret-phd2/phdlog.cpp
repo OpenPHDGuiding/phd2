@@ -99,7 +99,7 @@ bool LOG::Init(char *pName, bool bEnable=true)
     return m_bEnabled;
 }
 
-bool LOG::AddLine(const wxString& str)
+wxString LOG::AddLine(const wxString& str)
 {
     return Write(str + "\n");
 }
@@ -118,10 +118,8 @@ bool LOG::Flush(void)
     return bReturn;
 }
 
-bool LOG::Write(const wxString& str)
+wxString LOG::Write(const wxString& str)
 {
-    bool bReturn = true;
-
     if (m_bEnabled)
     {
         wxCriticalSectionLocker lock(m_criticalSection);
@@ -132,10 +130,10 @@ bool LOG::Write(const wxString& str)
 
         m_lastWriteTime = now;
 
-        bReturn = wxFFile::Write(now.Format("%H:%M:%S.%l") + wxString::Format(" %d.%.6d ", milliSeconds/1000, milliSeconds%1000) + str);
+        wxFFile::Write(now.Format("%H:%M:%S.%l") + wxString::Format(" %d.%.6d ", milliSeconds/1000, milliSeconds%1000) + str);
     }
 
-    return bReturn;
+    return str;
 }
 
 LOG& operator<< (LOG& out, const wxString &str)

@@ -118,9 +118,9 @@ bool GuideAlgorithmLowpass::SetMinMove(double minMove)
         m_minMove = minMove;
 
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_minMove = DefaultMinMove;
     }
@@ -147,9 +147,9 @@ bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
 
         m_slopeWeight = slopeWeight;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_slopeWeight = DefaultSlopeWeight;
     }

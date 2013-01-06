@@ -119,9 +119,9 @@ bool Guider::SetOverlayMode(int overlayMode)
 
         m_overlayMode = (OVERLAY_MODE)overlayMode;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         m_overlayMode = OVERLAY_NONE;
         bError = true;
     }
@@ -187,9 +187,9 @@ bool Guider::SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm** ppAlgorithm)
                 break;
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         guideAlgorithm = GUIDE_ALGORITHM_IDENTITY;
     }
@@ -370,9 +370,9 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
             }
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -471,9 +471,9 @@ bool Guider::DoGuide(void)
             pFrame->ScheduleGuide(decDirection, decDuration, msg);
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 

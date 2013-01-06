@@ -113,9 +113,9 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-#define THROW_INFO_BASE(type, file, line) type " in " file ":" TOSTRING(line)
-#define THROW_INFO(s) (THROW_INFO_BASE("Throw", __FILE__, __LINE__) "->" s)
-#define ERROR_INFO(s) (THROW_INFO_BASE("Error", __FILE__, __LINE__) "->" s)
+#define THROW_INFO_BASE(intro, file, line) intro " " file ":" TOSTRING(line)
+#define THROW_INFO(s) (Debug.AddLine(wxString(THROW_INFO_BASE("Throw from", __FILE__, __LINE__) "->" s)))
+#define ERROR_INFO(s) (Debug.AddLine(wxString(THROW_INFO_BASE("Error thrown from", __FILE__, __LINE__) "->" s)))
 
 #include "phdlog.h"
 #include "config.h"

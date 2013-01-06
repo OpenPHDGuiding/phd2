@@ -59,9 +59,9 @@ bool GuideAlgorithmIdentity::reset(void)
     try
     {
     }
-    catch (char *ErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(ErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 

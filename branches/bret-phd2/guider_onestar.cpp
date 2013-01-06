@@ -129,9 +129,9 @@ bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
         
         m_massChangeThreshold = massChangeThreshold;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
 
         bError = true;
         m_massChangeThreshold = DefaultMassChangeThreshold;
@@ -160,9 +160,9 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
         }
         m_searchRegion = searchRegion;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_searchRegion = DefaultSearchRegion;
     }
@@ -204,9 +204,9 @@ bool GuiderOneStar::SetLockPosition(double x, double y, bool bExact)
             // move our state to STATE_SELECTED
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -231,9 +231,9 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
             throw ERROR_INFO("Uable to set Lock Position");
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -317,9 +317,9 @@ bool GuiderOneStar::SetState(GUIDER_STATE newState)
             throw ERROR_INFO("Guider::SetState() failed");
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -459,9 +459,9 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
                 break;
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -537,9 +537,9 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             Update();
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
     }
 }
 

@@ -106,9 +106,9 @@ bool GuideAlgorithmHysteresis::SetMinMove(double minMove)
         m_minMove = minMove;
 
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_minMove = DefaultMinMove;
     }
@@ -137,9 +137,9 @@ bool GuideAlgorithmHysteresis::SetHysteresis(double hysteresis)
         m_hysteresis = hysteresis;
 
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_hysteresis = DefaultHysteresis;
     }
@@ -167,9 +167,9 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
 
         m_aggression = aggression;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_aggression = DefaultAggression;
     }

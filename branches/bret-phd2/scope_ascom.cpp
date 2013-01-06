@@ -106,9 +106,9 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
         wx_ProgID = wxString::Format("%s",cp);
         pConfig->SetString("/scope/ascom/ScopeID", wx_ProgID);
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -265,9 +265,9 @@ bool ScopeASCOM::Connect(void) {
         pFrame->SetStatusText(Name()+_T(" connected"));
         Scope::Connect();
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -303,9 +303,9 @@ bool ScopeASCOM::Disconnect(void) {
             throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false");
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -373,9 +373,9 @@ bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration) {
             Debug.AddLine(_T("waiting 50ms"));
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -426,9 +426,9 @@ bool ScopeASCOM::IsGuiding()
             }
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bReturn = false;
     }
 

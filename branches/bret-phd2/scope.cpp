@@ -87,9 +87,9 @@ bool Scope::SetCalibrationDuration(int calibrationDuration)
         m_calibrationDuration = calibrationDuration;
 
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_calibrationDuration = DefaultCalibrationDuration;
     }
@@ -117,9 +117,9 @@ bool Scope::SetMaxDecDuration(int maxDecDuration)
 
         m_maxDecDuration = maxDecDuration;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_maxDecDuration = DefaultMaxDecDuration;
     }
@@ -147,9 +147,9 @@ bool Scope::SetMaxRaDuration(double maxRaDuration)
 
         m_maxRaDuration =  maxRaDuration;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_maxRaDuration = DefaultMaxRaDuration;
     }
@@ -184,9 +184,9 @@ bool Scope::SetDecGuideMode(int decGuideMode)
 
         m_decGuideMode = (DEC_GUIDE_MODE)decGuideMode;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_decGuideMode = (DEC_GUIDE_MODE)DefaultDecGuideMode;
     }
@@ -461,9 +461,9 @@ bool Scope::BeginCalibration(const Point& currentPosition)
         m_calibrationDirection = NONE;
         Mount::ClearCalibration();
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -615,9 +615,9 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
             pFrame->ScheduleGuide(m_calibrationDirection, m_calibrationDuration, statusMessage);
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
 
         m_calibrationDirection = NONE;
         bError = true;

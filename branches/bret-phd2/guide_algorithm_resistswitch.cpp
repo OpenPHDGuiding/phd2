@@ -137,13 +137,13 @@ double GuideAlgorithmResistSwitch::result(double input)
             throw THROW_INFO("must have overshot -- vetoing move");
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        Debug.Write(wxString::Format("GuideAlgorithResistSwitch::result() not allowing move: %s\n", pErrorMsg));
+        Debug.AddLine("GuideAlgorithResistSwitch::result() not allowing move: " + Msg);
         dReturn = 0.0;
     }
 
-    Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::Result() returns %.2f from input %.2f\n", dReturn, input));
+    Debug.AddLine(wxString::Format("GuideAlgorithmResistSwitch::Result() returns %.2f from input %.2f", dReturn, input));
 
     return dReturn;
 }
@@ -168,9 +168,9 @@ bool GuideAlgorithmResistSwitch::SetMinMove(double minMove)
         m_currentSide = 0;
 
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_minMove = DefaultMinMove;
     }

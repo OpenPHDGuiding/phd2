@@ -131,9 +131,9 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
         }
         Debug.Write(wxString::Format("Exposure complete\n"));
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -204,9 +204,9 @@ bool WorkerThread::HandleGuide(ARGS_GUIDE *pArgs)
             Debug.Write(wxString::Format("Guide complete\n"));
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 

@@ -579,9 +579,9 @@ bool MyFrame::StartWorkerThread(void)
             }
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         delete m_pWorkerThread;
         m_pWorkerThread = NULL;
         bError = true;
@@ -733,9 +733,9 @@ bool MyFrame::SetNoiseReductionMethod(int noiseReductionMethod)
         }
         m_noiseReductionMethod = (NOISE_REDUCTION_METHOD)noiseReductionMethod;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
 
         bError = true;
         m_noiseReductionMethod = (NOISE_REDUCTION_METHOD)DefaultNoiseReductionMethod;
@@ -764,9 +764,9 @@ bool MyFrame::SetDitherScaleFactor(double ditherScaleFactor)
         }
         m_ditherScaleFactor = ditherScaleFactor;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_ditherScaleFactor = DefaultDitherScaleFactor;
     }
@@ -826,9 +826,9 @@ bool MyFrame::SetTimeLapse(int timeLapse)
 
         m_timeLapse = timeLapse;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         m_timeLapse = DefaultTimelapse;
     }

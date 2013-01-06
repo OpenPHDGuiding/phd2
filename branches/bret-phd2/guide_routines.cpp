@@ -73,9 +73,9 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         pGuider->StartGuiding();
         StartCapturing();
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
     }
     return;
 }

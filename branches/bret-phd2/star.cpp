@@ -208,9 +208,9 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
         else if ((CropY + CROPYSIZE) >= pImg->Size.GetHeight()) CropY = pImg->Size.GetHeight() - (CROPYSIZE + 1);
 
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
 
         if (Result == STAR_OK)
         {

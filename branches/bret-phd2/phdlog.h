@@ -50,8 +50,8 @@ public:
 
     bool SetState(bool bEnabled);
     bool Init(char *pName, bool bEnable);
-    bool AddLine(const wxString& str); // adds a newline
-    bool Write(const wxString& str);
+    wxString AddLine(const wxString& str); // adds a newline
+    wxString Write(const wxString& str);
     bool Flush(void);
 };
 

@@ -531,9 +531,9 @@ bool GuideCamera::SetCameraGain(double cameraGain)
         }
         GuideCameraGain = cameraGain;
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
         bError = true;
         GuideCameraGain = DefaultGuideCameraGain;
     }

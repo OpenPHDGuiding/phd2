@@ -270,9 +270,9 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
         pFrame->StartCapturing();
 
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
     }
 }
 
@@ -343,9 +343,9 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             pFrame->ScheduleExposure(RequestedExposureDuration());
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
     }
 }
 
@@ -358,9 +358,9 @@ void MyFrame::OnGuideComplete(wxThreadEvent& event)
             throw ERROR_INFO("Error reported guiding");
         }
     }
-    catch (char *pErrorMsg)
+    catch (wxString Msg)
     {
-        POSSIBLY_UNUSED(pErrorMsg);
+        POSSIBLY_UNUSED(Msg);
     }
 }
 
