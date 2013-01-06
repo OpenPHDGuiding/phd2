@@ -132,6 +132,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "image_math.h"
 #include "worker_thread.h"
 #include "testguide.h"
+#include "advanced_dialog.h"
 #include "myframe.h"
 
 extern Config *pConfig;
