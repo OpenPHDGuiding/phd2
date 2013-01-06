@@ -36,12 +36,25 @@
 #ifndef SCOPE_H_INCLUDED
 #define SCOPE_H_INCLUDED
 
+static const int MAX_CALIBRATION_STEPS = 60;
+static const double MAX_CALIBRATION_DISTANCE = 25.0;
+static const double DEC_BACKLASH_DISTANCE = 3.0;
+
 class Scope:public Mount
 {
+    int m_calibrationSteps;
+    int m_backlashSteps;
+    Point m_calibrationStartingLocation;
+    GUIDE_DIRECTION m_calibrationDirection;
 public:
-    virtual bool Calibrate(void);
+    Scope(void);
+    virtual ~Scope(void);
+    virtual bool BeginCalibration(Guider *pGuider);
+    virtual bool UpdateCalibrationState(Guider *pGuider);
     virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
     virtual bool IsGuiding()=0;
+private:
+    void DisplayCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 };
 
 #endif /* SCOPE_H_INCLUDED */

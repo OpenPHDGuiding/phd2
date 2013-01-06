@@ -37,7 +37,8 @@
 #include "wx/textfile.h"
 #include "socket_server.h"
 
-/*#if 0
+/*
+#if 0
 #if defined (GUIDE_GCUSBST4)
 #include "scope_GC_USBST4.h"
 #endif
@@ -51,27 +52,27 @@
 #endif
 
 void GuideScope(int direction, int duration) {
-	if (DisableGuideOutput && (frame->canvas->State >= STATE_GUIDING_LOCKED))  // Let you not actually send the commands during guiding
+	if (DisableGuideOutput && (frame->pGuider->State >= STATE_GUIDING_LOCKED))  // Let you not actually send the commands during guiding
 		return;
 	try {
         if ((pScope->IsConnected() == MOUNT_CAMERA) && GuideCameraConnected && (CurrentGuideCamera->HasGuiderOutput))
 			CurrentGuideCamera->PulseGuideScope(direction,duration);
-    #ifdef GUIDE_GPUSB
+#ifdef GUIDE_GPUSB
 		else if (pScope->IsConnected() == MOUNT_GPUSB)
 			GPUSB_PulseGuideScope(direction,duration);
-    #endif
+#endif
 	#ifdef GUIDE_ASCOM
 		else if (pScope->IsConnected() == MOUNT_ASCOM)
 			ASCOM_PulseGuideScope(direction,duration);
-    #endif
-    #ifdef GUIDE_GPINT
+#endif
+#ifdef GUIDE_GPINT
 		else if (pScope->IsConnected() == MOUNT_GPINT3BC)
 			GPINT_PulseGuideScope(direction, duration, (short) 0x3BC);
 		else if (pScope->IsConnected() == MOUNT_GPINT378)
 			GPINT_PulseGuideScope(direction, duration, (short) 0x378);
 		else if (pScope->IsConnected() == MOUNT_GPINT278)
 			GPINT_PulseGuideScope(direction, duration, (short) 0x278);
-    #endif
+#endif
 	#ifdef GUIDE_GCUSBST4
 		else if (pScope->IsConnected() == MOUNT_GCUSBST4)
 			GCUSBST4_PulseGuideScope(direction,duration);
@@ -79,15 +80,15 @@ void GuideScope(int direction, int duration) {
 	#ifdef GUIDE_NEB
 		else if (pScope->IsConnected() == MOUNT_NEB)
 			ServerSendGuideCommand(direction,duration);
-    #endif
-    #ifdef GUIDE_VOYAGER
+#endif
+#ifdef GUIDE_VOYAGER
 		else if (pScope->IsConnected() == MOUNT_VOYAGER)
 			Voyager_PulseGuideScope(direction,duration);
-    #endif
-    #ifdef GUIDE_EQUINOX
+#endif
+#ifdef GUIDE_EQUINOX
 		else if (pScope->IsConnected() == MOUNT_EQUINOX)
 			Equinox_PulseGuideScope(direction,duration, MOUNT_EQUINOX);
-    #endif
+#endif
 	#ifdef GUIDE_EQUINOX
 		else if (pScope->IsConnected() == MOUNT_EQMAC)
 			Equinox_PulseGuideScope(direction,duration, MOUNT_EQMAC);
@@ -95,7 +96,7 @@ void GuideScope(int direction, int duration) {
 	#ifdef GUIDE_INDI
         else if (pScope->IsConnected() == MOUNT_INDI)
             INDI_PulseGuideScope(direction, duration);
-    #endif
+#endif
 	}
 	catch (...) {
 		wxMessageBox(_T("Exception thrown while trying to send guide command"));
@@ -127,16 +128,25 @@ void DisconnectScope() {
 #endif
 */
 
+Scope::Scope(void)
+{
+    m_calibrationSteps = 0;
+}
+
+Scope::~Scope(void)
+{
+}
+
 void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 //	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 //	wxMessageBox(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log.txt"));
     Scope *pNewScope = NULL;
 
-	if (canvas->State > STATE_SELECTED) return;
+	if (pGuider->GetState() > STATE_SELECTED) return;
 	if (CaptureActive) return;  // Looping an exposure already
 	if (pScope->IsConnected()) pScope->Disconnect();
 
-    #ifdef GUIDE_ASCOM
+#ifdef GUIDE_ASCOM
 	else if (mount_menu->IsChecked(MOUNT_ASCOM)) {
         pNewScope = new ScopeASCOM();
 
@@ -201,9 +211,9 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText(_T("GPINT 278 selected"));
         }
 	}
-    #endif
+#endif
 
-    #ifdef GUIDE_GCUSBST4
+#ifdef GUIDE_GCUSBST4
 	else if (mount_menu->IsChecked(MOUNT_GCUSBST4)) {
         ScopeGCUSBST4 *pGCUSBST4 = new ScopeGCUSBST4();
         pNewScope = pGCUSBST4;
@@ -216,9 +226,9 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText(_T("GCUSB-ST4 selected"));
         }
 	}
-    #endif
+#endif
 
-    #ifdef GUIDE_ONBOARD
+#ifdef GUIDE_ONBOARD
 	else if (mount_menu->IsChecked(MOUNT_CAMERA)) {
         pNewScope = new ScopeOnCamera();
         if (pNewScope->Connect())
@@ -263,7 +273,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         }
 	}
 	#endif
-    #ifdef GUIDE_EQUINOX
+#ifdef GUIDE_EQUINOX
 	else if (mount_menu->IsChecked(MOUNT_EQUINOX)) {
         pNewScope = new ScopeEquinox();
 
@@ -276,7 +286,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText(_T("Equinox connected"));
         }
 	}
-    #endif
+#endif
 	#ifdef GUIDE_EQMAC
 	else if (mount_menu->IsChecked(MOUNT_EQMAC)) {
         ScopeEQMac *pEQMac = new ScopeEQMac();
@@ -302,22 +312,209 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText(_T("FAIL: INDI mount"));
         }
     }
-    #endif
+#endif
 	if (pNewScope && pNewScope->IsConnected()) {
         delete pScope;
         pScope = pNewScope;
 		SetStatusText(_T("Mount connected"));
 		SetStatusText(_T("Scope"),4);
-		if (FoundStar) Guide_Button->Enable(true);
 	}
 	else {
 		SetStatusText(_T("No scope"),4);
-		Guide_Button->Enable(false);
 	}
+    UpdateButtonsStatus();
 }
 
-bool Scope::Calibrate(void) {
+bool Scope::BeginCalibration(Guider *pGuider)
+{
     bool bError = false;
+
+    try
+    {
+
+        if (!pScope->IsConnected() || !GuideCameraConnected) 
+        {
+            throw ERROR_INFO("Both camera and mount must be connected before you attempt to calibrate");
+        }
+
+        if (pGuider->GetState() != STATE_SELECTED) 
+        { 
+            // must have a star selected
+            throw ERROR_INFO("Must have star selected");
+        }
+
+        if (!pGuider->LockPosition().IsValid()) 
+        {
+            throw ERROR_INFO("Must have a valid lock position");
+        }
+
+        m_bCalibrated = false;
+        m_calibrationSteps = 0;
+        m_backlashSteps = MAX_CALIBRATION_STEPS;
+        m_calibrationStartingLocation = pGuider->CurrentPosition();
+        m_calibrationDirection = NONE;
+    }
+    catch (char *ErrorMsg)
+    {
+        POSSIBLY_UNUSED(ErrorMsg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+void Scope::DisplayCalibrationStatus(double dX, double dY, double dist, double dist_crit)
+{
+    char directionName = '?';
+
+    switch (m_calibrationDirection)
+    {
+        case NORTH:
+            directionName = 'N';
+            break;
+        case SOUTH:
+            directionName = 'S';
+            break;
+        case EAST:
+            directionName = 'E';
+            break;
+        case WEST:
+            directionName = 'W';
+            break;
+    }
+
+    if (m_calibrationDirection != NONE)
+    {
+        if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
+        {
+            frame->SetStatusText(wxString::Format(_T("Clear Backlash: %2d"), MAX_CALIBRATION_STEPS - m_calibrationSteps));
+        }
+        else
+        {
+            frame->SetStatusText(wxString::Format(_T("%c calibration: %2d"), directionName, m_calibrationSteps));
+        }
+        frame->SetStatusText(wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)"),dX,dY,dist,dist_crit),1);
+    }
+}
+
+bool Scope::UpdateCalibrationState(Guider *pGuider)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_calibrationDirection == NONE)
+        {
+            m_calibrationDirection = WEST;
+            m_calibrationStartingLocation = pGuider->CurrentPosition();
+        }
+
+        double dX = m_calibrationStartingLocation.dX(pGuider->CurrentPosition());
+        double dY = m_calibrationStartingLocation.dY(pGuider->CurrentPosition());
+        double dist = m_calibrationStartingLocation.Distance(pGuider->CurrentPosition());
+        double dist_crit = wxMax(CurrentGuideCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
+
+        DisplayCalibrationStatus(dX, dY, dist, dist_crit);
+
+        /*
+         * There are 3 sorts of motion that can happen during calibration. We can be:
+         *   1. computing calibration data when moving WEST or NORTH
+         *   2. returning to center after one of thoese moves (moving EAST or SOUTH)
+         *   3. clearing dec backlash (before the NORTH move)
+         *
+         */
+
+        if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
+        {
+            // this is the "clearing dec backlash" case
+            if (--m_backlashSteps <= 0)
+            {
+                wxMessageBox(_T("Unable to clear DEC backlash -- turning off Dec guiding"), _T("Alert"), wxOK | wxICON_ERROR);
+                Dec_guide = DEC_OFF;
+                m_calibrationDirection = NONE;
+                pGuider->SetState(STATE_CALIBRATED);
+
+                throw ERROR_INFO("Calibrate failed");
+            }
+
+            if (dist >= DEC_BACKLASH_DISTANCE)
+            {
+                assert(m_calibrationSteps == 0);
+                m_backlashSteps = 0;
+                m_calibrationStartingLocation = pGuider->CurrentPosition();
+            }
+        }
+        else if (m_calibrationDirection == WEST || m_calibrationDirection == NORTH)
+        {
+            // this is the moving over in WEST or NORTH case
+            //
+            if (dist >= dist_crit) // have we moved far enough yet?
+            {
+                if (m_calibrationDirection == WEST)
+                {
+                    m_dRaAngle = m_calibrationStartingLocation.Angle(pGuider->CurrentPosition());
+                    m_dRaRate = dist/(m_calibrationSteps*Cal_duration);
+                    m_calibrationDirection = EAST;
+                }
+                else
+                {
+                    assert(m_calibrationDirection == NORTH);
+                    m_dDecAngle = m_calibrationStartingLocation.Angle(pGuider->CurrentPosition());
+                    m_dDecRate = dist/(m_calibrationSteps*Cal_duration);
+                    m_calibrationDirection = SOUTH;
+                }
+            }
+            else if (m_calibrationSteps++ >= MAX_CALIBRATION_STEPS)
+            {
+                wchar_t *pDirection = m_calibrationDirection == NORTH ? pDirection = _T("Dec"): _T("RA");
+
+                wxMessageBox(wxString::Format(_T("%s Calibration failed - Star did not move enough"), pDirection), _T("Alert"), wxOK | wxICON_ERROR);
+
+                pGuider->SetState(STATE_UNINITIALIZED);
+
+                throw ERROR_INFO("Calibrate failed");
+            }
+        }
+        else
+        {
+            // this is the moving back in EAST or SOUTH case
+
+            if(--m_calibrationSteps == 0)
+            {
+                if (m_calibrationDirection == EAST)
+                {
+                    m_calibrationDirection = NORTH;
+                    dX = dY = dist = 0.0;
+                }
+                else
+                {
+                    assert(m_calibrationDirection == SOUTH);
+                    m_calibrationDirection = NONE;
+                    pGuider->SetState(STATE_CALIBRATED);
+                }
+            }
+        }
+
+        if (m_calibrationDirection == NONE)
+        {
+            frame->SetStatusText(_T("calibration complete"),1);
+        }
+        else
+        {
+            DisplayCalibrationStatus(dX, dY, dist, dist_crit);
+            frame->StartGuiding(m_calibrationDirection, Cal_duration);
+        }
+    }
+    catch (char *ErrorMsg)
+    {
+        POSSIBLY_UNUSED(ErrorMsg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+#if 0
 
     try
     {
@@ -326,23 +523,11 @@ bool Scope::Calibrate(void) {
         int iterations, i;
         double dist_crit;
 
-        if (!pScope->IsConnected() || !GuideCameraConnected) {
-            throw ERROR_INFO("Both camera and mount must be connected before you attempt to calibrate");
-        }
-
-        if (frame->canvas->State != STATE_SELECTED) { // must have a star selected
-            throw ERROR_INFO("Must have star selected");
-        }
-
-        if (!FoundStar) {// Must have a star
-            throw ERROR_INFO("Must have star found");
-        }
-
         // Clear out any previous values
         m_bCalibrated = false;
 
         double ExpDur = frame->RequestedExposureDuration();
-        frame->canvas->State = STATE_CALIBRATING;
+        frame->pGuider->SetState(STATE_CALIBRATING);
 
         // Get starting point / frame
         if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
@@ -356,7 +541,7 @@ bool Scope::Calibrate(void) {
         FindStar(CurrentFullFrame); // Get starting position
         LockX = StarX;
         LockY = StarY;
-        frame->canvas->FullFrameToDisplay();
+        frame->pGuider->FullFrameToDisplay();
 
         still_going = true;
         iterations = 0;
@@ -397,15 +582,15 @@ bool Scope::Calibrate(void) {
             else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
                 Median3(CurrentFullFrame);
             FindStar(CurrentFullFrame);
-            frame->canvas->FullFrameToDisplay();
+            frame->pGuider->FullFrameToDisplay();
             dist = sqrt(dX*dX+dY*dY);
             iterations++;
             frame->SetStatusText(wxString::Format(_T("dx=%.1f dy=%.1f dist=%.1f (%.1f)"),dX,dY,dist,dist_crit),1);
             if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA+ (west),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
             if (iterations > 60) {
                 wxMessageBox(_T("RA Calibration failed - Star did not move enough"),_T("Alert"),wxOK | wxICON_ERROR);
-                frame->canvas->State = STATE_NONE;
-                frame->canvas->Refresh();
+                frame->pGuider->SetState(STATE_UNINITIALIZED);
+                frame->pGuider->Refresh();
                 throw ERROR_INFO("RA calibration failed because star did not move enough");
             }
             if (dist > dist_crit) {
@@ -438,7 +623,7 @@ bool Scope::Calibrate(void) {
             FindStar(CurrentFullFrame);
             if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
     //		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east) %d, x=%.1f y=%.1f"),iterations, StarX,StarY));
-            frame->canvas->FullFrameToDisplay();
+            frame->pGuider->FullFrameToDisplay();
         }
         if (Log_Data) LogFile->Write();
         LockX = StarX;  // re-sync star position
@@ -464,7 +649,7 @@ bool Scope::Calibrate(void) {
                     Median3(CurrentFullFrame);
                 wxTheApp->Yield();
                 FindStar(CurrentFullFrame);
-                frame->canvas->FullFrameToDisplay();
+                frame->pGuider->FullFrameToDisplay();
                 dist = sqrt(dX*dX+dY*dY);
                 iterations++;
                 if (abs(dist) >= 3.0) in_backlash = false;
@@ -496,7 +681,7 @@ bool Scope::Calibrate(void) {
                     Median3(CurrentFullFrame);
                 wxTheApp->Yield();
                 FindStar(CurrentFullFrame);
-                frame->canvas->FullFrameToDisplay();
+                frame->pGuider->FullFrameToDisplay();
                 dist = sqrt(dX*dX+dY*dY);
                 iterations++;
                 frame->SetStatusText(wxString::Format(_T("dx=%.1f dy=%.1f dist=%.1f (%.1f)"),dX,dY,dist,dist_crit),1);
@@ -535,7 +720,7 @@ bool Scope::Calibrate(void) {
                     wxTheApp->Yield();
                     FindStar(CurrentFullFrame);
                     if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec- (south),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
-                    frame->canvas->FullFrameToDisplay();
+                    frame->pGuider->FullFrameToDisplay();
                 }
             }
             if (Log_Data) LogFile->Write();
@@ -546,7 +731,7 @@ bool Scope::Calibrate(void) {
         if (Log_Data) LogFile->Close();
         frame->SetStatusText(_T("Calibrated"));
         frame->SetStatusText(_T(""),1);
-        frame->canvas->State = STATE_SELECTED;
+        frame->pGuider->SetState(STATE_CALIBRATED);
         m_bCalibrated = true;
         frame->SetStatusText(_T("Cal"),5);
     }
@@ -554,12 +739,10 @@ bool Scope::Calibrate(void) {
     {
         POSSIBLY_UNUSED(ErrorMsg);
         if (Abort == 1) {
-            frame->canvas->State = STATE_NONE;
-            frame->canvas->Refresh(); 
+            frame->pGuider->SetState(STATE_UNINITIALIZED);
+            frame->pGuider->Refresh(); 
         }
         bError = true;
     }
 
-    return bError;
-}
-
+#endif

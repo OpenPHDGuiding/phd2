@@ -96,8 +96,9 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 	else if (evt.GetId() == EEGG_MANUALLOCK) {
 		if (!pScope->IsConnected() || !GuideCameraConnected || !pScope->IsCalibrated())
 			return;
-		if (canvas->State > STATE_SELECTED) return;  // must not be calibrating or guiding already
-		
+		if (pGuider->GetState() > STATE_SELECTED) return;  // must not be calibrating or guiding already
+        //TODO: Bret Fix this
+#if 0	
 		if (evt.IsChecked()) {
 			wxString tmpstr;
 			tmpstr = wxGetTextFromUser(_T("Enter x-lock position (or 0 for center)"), _T("X-lock position"));
@@ -119,6 +120,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 		else {
 			ManualLock = false;
 		}
+#endif
 	}	
 	else evt.Skip();
 

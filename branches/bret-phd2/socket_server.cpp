@@ -40,8 +40,6 @@
 wxSocketBase *ServerEndpoint;
 wxLogWindow *SocketLog = NULL;
 
-extern int FindStar(usImage& img);
-
 enum {
 	MSG_PAUSE = 1,
 	MSG_RESUME,
@@ -141,7 +139,7 @@ void MyFrame::OnServerEvent(wxSocketEvent& event) {
 
 void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 	wxSocketBase *sock = event.GetSocket();
-	int ival;
+    E_GUIDER_STATES origState = STATE_UNINITIALIZED;
 	if (SocketServer == NULL) return;
 //	sock = SocketServer;
 	// First, print a message
@@ -181,7 +179,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 				case MSG_MOVE3:  // +/- 2.0
 				case MSG_MOVE4:  // +/- 3.0
 				case MSG_MOVE5:  // +/- 5.0
-					if (canvas->State != STATE_GUIDING_LOCKED) {
+					if (pGuider->GetState() != STATE_GUIDING_LOCKED) {
 						break;
 					}
 
@@ -202,43 +200,51 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 						else	
 							ry = tan(pScope->RaAngle()) * rx;
 					}
+                    //TODO: Bret fix this
+#if 0
 					LockX = LockX + rx;
 					LockY = LockY + ry;
+#endif
 					wxLogStatus(_T("Moving by %.2f,%.2f"),rx,ry);
                     rval = RequestedExposureDuration() / 1000;
 					if (rval < 1)
 						rval = 1;
 					break;
 				case MSG_REQDIST:
-					if ((canvas->State != STATE_GUIDING_LOCKED)  && (canvas->State != STATE_NONE)) {
+					if ((pGuider->GetState() != STATE_GUIDING_LOCKED)  && (pGuider->GetState() != STATE_UNINITIALIZED)) {
 						break;
 					}
 					if (CurrentError > 2.55)
 						rval = 255;
 					else
 						rval = (unsigned char) (CurrentError * 100);
-					if (canvas->State == STATE_NONE) rval = 0; // Idle -- let Neb free up
+					if (pGuider->GetState() == STATE_UNINITIALIZED) rval = 0; // Idle -- let Neb free up
 					wxLogStatus(_T("Sending pixel error of %.2f"),(float) rval / 100.0);
 					break;
 				case MSG_AUTOFINDSTAR:
 //				case 'f':
+                    //TODO: Bret fix this
+#if 0
 					wxCommandEvent *tmp_evt;
 					tmp_evt = new wxCommandEvent(0,wxID_EXECUTE);
-					ival = canvas->State; // save state going in
-					canvas->State = STATE_NONE;
+					origState = pGuider->GetState(); // save state going in
+					pGuider->SetState(STATE_UNINITIALIZED);
 					OnAutoStar(*tmp_evt);
 					if (StarX + StarY)  // found a star, so reset the state
 					{
-						if( ival == STATE_NONE )
-							canvas->State = STATE_SELECTED;
+						if( origState == STATE_UNINITIALIZED )
+							pGuider->SetState(STATE_SELECTED);
 						else
-							canvas->State = ival;
+							pGuider->SetState(origState);
 						rval = 1;
 					}
 					delete tmp_evt;
+#endif
 					break;
 				case MSG_SETLOCKPOSITION:
                 case 's':
+                    //TODO: Bret fix this
+#if 0
                     // Sets LockX and LockY to be user-specified
                     unsigned short x,y;
                     Paused = true;
@@ -249,21 +255,22 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                     StarX=x;
                     StarY=y;
                     dX = dY = 0.0;
-                    canvas->State=STATE_SELECTED;
+                    pGuider->SetState(STATE_SELECTED);
                     FindStar(CurrentFullFrame);
                     LockX = StarX;
                     LockY = StarY;
                     Paused = false;
+#endif
 					break;
 				case MSG_FLIPRACAL:
 					{
 						wxCommandEvent *tmp_evt;
 						tmp_evt = new wxCommandEvent(0,wxID_EXECUTE);
-						ival = canvas->State; // save state going in
-						canvas->State = STATE_NONE;
+						origState = pGuider->GetState(); // save state going in
+						pGuider->SetState(STATE_UNINITIALIZED);
 						// return 1 for success, 0 for failure
 						rval = FlipRACal(*tmp_evt) ? 1 : 0;
-						canvas->State = ival;
+						pGuider->SetState(origState);
 						delete tmp_evt;
 					}
 					break;
@@ -272,13 +279,13 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 						rval = STATE_PAUSED;
 					else if( looping )
 					{
-						if( canvas->State == STATE_SELECTED)
+						if( pGuider->GetState() == STATE_SELECTED)
 							rval = STATE_LOOPING_SELECTED;
 						else
 							rval = STATE_LOOPING;
 					}
 					else
-						rval = canvas->State;
+						rval = pGuider->GetState();
 					break;
 				case MSG_LOOP:
 					{
@@ -288,7 +295,11 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					}
 					break;
 				case MSG_STOP:
-					Abort = 1;
+					{
+						wxCommandEvent *tmp_evt;
+						tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_STOP);
+						QueueEvent(tmp_evt);
+					}
 					break;
 				case MSG_STARTGUIDING:
 					{
@@ -460,7 +471,6 @@ bool ServerReqFrame(int duration, usImage& img) {
 
 //		ServerEndpoint->ReadMsg(img.ImageData,(xsize * ysize * 2));
 		wxLogStatus(_T("Frame read"));
-		return false;
 	}
 
 	return false;

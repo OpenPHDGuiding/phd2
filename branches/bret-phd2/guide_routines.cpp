@@ -46,7 +46,63 @@ float SIGN(float x) {
 }
 
 void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
+    try
+    {
+        if (pScope == NULL) 
+        {
+            // no mount selected -- should never happen
+            throw ERROR_INFO("pScope == NULL");
+        }
 
+        if (!pScope->IsConnected())
+        {
+            throw ERROR_INFO("Unable to guide with no scope Connected");
+        }
+
+        if (!GuideCameraConnected)
+        {
+            throw ERROR_INFO("Unable to guide with no camera Connected");
+        }
+
+        if (pGuider->GetState() < STATE_SELECTED)
+        {
+            throw ERROR_INFO("Unable to guide with state < STATE_SELECTED");
+        }
+
+        if (!pGuider->LockPosition().IsValid())
+        {
+            wxMessageBox(_T("Please select a guide star before attempting to guide"));
+            throw ERROR_INFO("Please select a guide star before attempting to guide");
+        }
+
+        // if we haven't already calibrated, we need to do it before we can start
+        // guiding
+        if (pGuider->GetState() < STATE_CALIBRATED)
+        {
+            if (pGuider->SetState(STATE_CALIBRATING))
+            {
+                throw ERROR_INFO("Unable to set state to STATE_GUIDING_LOCKED");
+            }
+        }
+        else
+        {
+            if (pGuider->SetState(STATE_GUIDING_LOCKED))
+            {
+                throw ERROR_INFO("Unable to set state to STATE_GUIDING_LOCKED");
+            }
+        }
+
+        Loop_Button->Enable(false);
+        Guide_Button->Enable(false);
+        Cam_Button->Enable(false);
+        Scope_Button->Enable(false);
+        Brain_Button->Enable(false);
+    }
+    catch (char *ErrorMsg)
+    {
+        POSSIBLY_UNUSED(ErrorMsg);
+    }
+#if 0
     LOG Debug((char *) "guide", this->Menubar->IsChecked(MENU_DEBUG));
 
     try
@@ -75,8 +131,8 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
             throw ERROR_INFO("Please select a guide star before attempting to guide");
         }
 
-        if (canvas->State != STATE_SELECTED)  // must have a star selected and not doing something
-            throw ERROR_INFO("canvas->State != STATE_SELECTED");
+        if (pGuider->GetState() != STATE_SELECTED)  // must have a star selected and not doing something
+            throw ERROR_INFO("pGuider->State != STATE_SELECTED");
 
         if (CaptureActive) { // Looping an exposure already
             Abort = 2;
@@ -107,7 +163,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         Debug << _T("Guiding entered\n");
 
         CaptureActive = true;
-        canvas->State = STATE_GUIDING_LOCKED;
+        pGuider->SetState(STATE_GUIDING_LOCKED);
         SetStatusText(_T("Guiding"));
         if (Log_Data) {
             if (LogFile->Exists()) LogFile->Open();
@@ -405,7 +461,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                     LogFile->Write();
                 }
                 this->GraphLog->AppendData(dX,dY,RA_dist,Dec_dist);
-                canvas->FullFrameToDisplay();
+                pGuider->FullFrameToDisplay();
 
                 wxTheApp->Yield();
                 if (Time_lapse) wxMilliSleep(Time_lapse);
@@ -421,8 +477,8 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 
         CaptureActive = false;
         Abort = 0;
-        canvas->State = STATE_NONE;
-        canvas->Refresh();
+        pGuider->SetState(STATE_UNINITIALIZED);
+        pGuider->Refresh();
         SetStatusText(_T("Guiding stopped"));
         SetStatusText(_T(""),1);
         if (Log_Data) LogFile->Write();
@@ -434,5 +490,6 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         Debug << "OnGuide caught an exception " << ErrorMsg << _T("\n");
     }
 
+#endif
     return;
 }

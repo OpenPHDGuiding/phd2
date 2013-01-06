@@ -426,7 +426,7 @@ bool Camera_ASCOMLateClass::CaptureFull(int duration, usImage& img, bool recon) 
 	}
 
 	// Program the size
-	if (UseSubframes && (frame->canvas->State > STATE_NONE)) {
+	if (UseSubframes && (frame->pGuider->GetState() > STATE_UNINITIALIZED)) {
 		subframe = true;
 		this->ASCOM_SetROI(CropX,CropY,CROPXSIZE,CROPYSIZE);
 		img.Origin=wxPoint(CropX,CropY);

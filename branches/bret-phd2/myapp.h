@@ -1,8 +1,10 @@
 /*
- *  mount.h
+ *  myapp.h
  *  PHD Guiding
  *
- *  Created by Bret McKee
+ *  Created by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
+ *  Refactored by Bret McKee
  *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
@@ -14,8 +16,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
  *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
  *
@@ -33,55 +34,14 @@
  *
  */
 
-#ifndef MOUNT_H_INCLUDED
-#define MOUNT_H_INCLUDED
+#ifndef MYAPP_H_INCLUDED
+#define MYAPP_H_INCLUDED
 
-enum GUIDE_DIRECTION {
-	NONE  = -1,
-	NORTH = 0,	// Dec+
-	SOUTH,		// Dec-
-	EAST,		// RA-
-	WEST		// RA+
-};
-
-class Mount
+class MyApp: public wxApp
 {
-protected:
-    bool m_bConnected;
-    bool m_bGuiding;
-    bool m_bCalibrated;
-
-    double m_dDecAngle;
-    double m_dRaAngle;
-    double m_dDecRate;
-    double m_dRaRate;
-
-	wxString m_Name;
-
-public:
-    Mount();
-    virtual ~Mount();
-
-    // these MUST be supplied by a subclass
-    virtual bool BeginCalibration(Guider *pGuider)=0;
-    virtual bool UpdateCalibrationState(Guider *pGuider)=0;
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs) = 0;
-    virtual bool IsGuiding(void) = 0;
-
-    // these CAN be supplied by a subclass
-    virtual bool HasNonGUIGuide(void) {return false;}
-    virtual bool NonGUIGuide(const GUIDE_DIRECTION direction, const int durationMs) { assert(false); return false; }
-	virtual wxString &Name(void);
-    virtual bool IsConnected(void);
-    virtual bool IsCalibrated(void);
-    virtual void ClearCalibration(void);
-    virtual double DecAngle(void);
-    virtual double RaAngle(void);
-    virtual double DecRate(void);
-    virtual double RaRate(void);
-    virtual bool Connect(void);
-	virtual bool Disconnect(void);
-    virtual bool SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
+  public:
+    MyApp(void){};
+    bool OnInit(void);
 };
 
-#endif /* MOUNT_H_INCLUDED */
+#endif /* MYAPP_H_INCLUDED */

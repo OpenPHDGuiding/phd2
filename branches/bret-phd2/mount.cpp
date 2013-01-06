@@ -1,5 +1,5 @@
 /*
- *  mount.h
+ *  mount.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -33,55 +33,118 @@
  *
  */
 
-#ifndef MOUNT_H_INCLUDED
-#define MOUNT_H_INCLUDED
+#include "phd.h"
 
-enum GUIDE_DIRECTION {
-	NONE  = -1,
-	NORTH = 0,	// Dec+
-	SOUTH,		// Dec-
-	EAST,		// RA-
-	WEST		// RA+
-};
-
-class Mount
+Mount::Mount()
 {
-protected:
-    bool m_bConnected;
-    bool m_bGuiding;
-    bool m_bCalibrated;
+    m_bConnected = false;
+    m_bGuiding = false;
 
-    double m_dDecAngle;
-    double m_dRaAngle;
-    double m_dDecRate;
-    double m_dRaRate;
+    m_bCalibrated = false;
+}
 
-	wxString m_Name;
+Mount::~Mount()
+{
+}
 
-public:
-    Mount();
-    virtual ~Mount();
+wxString &Mount::Name(void)
+{
+    return m_Name;
+}
 
-    // these MUST be supplied by a subclass
-    virtual bool BeginCalibration(Guider *pGuider)=0;
-    virtual bool UpdateCalibrationState(Guider *pGuider)=0;
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs) = 0;
-    virtual bool IsGuiding(void) = 0;
+bool Mount::IsConnected()
+{
+    bool bReturn = m_bConnected;
 
-    // these CAN be supplied by a subclass
-    virtual bool HasNonGUIGuide(void) {return false;}
-    virtual bool NonGUIGuide(const GUIDE_DIRECTION direction, const int durationMs) { assert(false); return false; }
-	virtual wxString &Name(void);
-    virtual bool IsConnected(void);
-    virtual bool IsCalibrated(void);
-    virtual void ClearCalibration(void);
-    virtual double DecAngle(void);
-    virtual double RaAngle(void);
-    virtual double DecRate(void);
-    virtual double RaRate(void);
-    virtual bool Connect(void);
-	virtual bool Disconnect(void);
-    virtual bool SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
-};
+    return bReturn;
+}
 
-#endif /* MOUNT_H_INCLUDED */
+bool Mount::IsCalibrated()
+{
+    bool bReturn = false;
+
+    if (IsConnected())
+    {
+        bReturn = m_bCalibrated;
+    }
+
+    return bReturn;
+}
+
+void Mount::ClearCalibration(void)
+{
+    m_bCalibrated = false;
+}
+
+double Mount::DecAngle()
+{
+    double dReturn = 0;
+
+    if (IsCalibrated())
+    {
+        dReturn = m_dDecAngle;
+    }
+
+    return dReturn;
+}
+
+double Mount::RaAngle()
+{
+    double dReturn = 0;
+
+    if (IsCalibrated())
+    {
+        dReturn = m_dRaAngle;
+    }
+
+    return dReturn;
+}
+
+double Mount::DecRate()
+{
+    double dReturn = 0;
+
+    if (IsCalibrated())
+    {
+        dReturn = m_dDecRate;
+    }
+
+    return dReturn;
+}
+
+double Mount::RaRate()
+{
+    double dReturn = 0;
+
+    if (IsCalibrated())
+    {
+        dReturn = m_dRaRate;
+    }
+
+    return dReturn;
+}
+
+bool Mount::Connect(void)
+{
+    m_bConnected = true;
+
+    return false;
+}
+
+bool Mount::Disconnect(void)
+{
+    m_bConnected = false;
+
+    return false;
+}
+
+bool Mount::SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate)
+{
+    m_dDecAngle = dDecAngle;
+    m_dRaAngle  = dRaAngle;
+    m_dDecRate  = dDecRate;
+    m_dRaRate   = dRaRate;
+    m_bCalibrated = true;
+
+    return true;
+}

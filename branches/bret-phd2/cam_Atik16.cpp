@@ -106,7 +106,7 @@ bool Camera_Atik16Class::Connect() {
 	//	PixelSize[0]=pProp.PixelMicronsX;
 		ArtemisBin(Cam_Handle,1,1);
 		ArtemisSubframe(Cam_Handle, 0,0,pProp.nPixelsX,pProp.nPixelsY);
-		HasShutter = (bool) (pProp.cameraflags & 0x10);
+		HasShutter = (pProp.cameraflags & 0x10)?true:false;
 	}
 	Name = USBNames[i];
 	if (HSModel) { // Set TEC if avail
@@ -194,7 +194,7 @@ bool Camera_Atik16Class::CaptureFull(int duration, usImage& img, bool recon) {
 
 	if (HasShutter)
 		ArtemisSetDarkMode(Cam_Handle,ShutterState);
-	if (UseSubframes && (frame->canvas->State > STATE_NONE)) {
+	if (UseSubframes && (frame->pGuider->GetState() > STATE_UNINITIALIZED)) {
 		subframe = true;
 		ArtemisSubframe(Cam_Handle, CropX,CropY,CROPXSIZE,CROPYSIZE);
 		img.Origin=wxPoint(CropX,CropY);

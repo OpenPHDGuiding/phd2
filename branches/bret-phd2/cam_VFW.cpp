@@ -62,7 +62,7 @@ bool Camera_VFWClass::Connect() {
 	wxVideoCaptureWindow* capwin;
 
 	if (!Extra_Window) {
-		dispwin = new wxSplitterWindow(frame->canvas,-1);
+		dispwin = new wxSplitterWindow(frame->guider,-1);
 		Extra_Window = dispwin;
 	}
 	else dispwin = Extra_Window;

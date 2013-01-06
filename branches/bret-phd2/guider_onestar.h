@@ -1,9 +1,13 @@
 /*
- *  image_math.h
+ *  guider_onestar.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2006-2010 Craig Stark.
+ *  All rights reserved.
+ *
+ *  Refactored by Bret McKee
+ *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +18,8 @@
  *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *    Neither the name of Bret McKee, Dad Dog Development,
+ *     Craig Stark, Stark Labs nor the names of its 
  *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
  *
@@ -32,12 +37,32 @@
  *
  */
 
-extern bool QuickLRecon(usImage& img);
-extern bool Median3(unsigned short ImageData [], int xsize, int ysize);
-extern bool Median3(usImage& img);
-extern bool SquarePixels(usImage& img, float xsize, float ysize);
-extern int dbl_sort_func(double *first, double *second);
-extern int us_sort_func (const void *first, const void *second);
-extern bool Subtract(usImage& light, usImage& dark);
-extern void AutoFindStar(usImage&, int& x, int&y);
-extern float CalcSlope(ArrayOfDbl& y);
+#ifndef GUIDER_ONESTAR_H_INCLUDED
+#define GUIDER_ONESTAR_H_INCLUDED
+
+// Canvas area for image -- can take events
+class GuiderOneStar: public Guider
+{
+protected:
+    Point m_lockPosition;
+    Star m_star;
+public:
+	GuiderOneStar(wxWindow *parent);
+    virtual ~GuiderOneStar(void);
+
+    virtual bool SetState(E_GUIDER_STATES newState);
+
+	virtual void OnPaint(wxPaintEvent& evt);
+    virtual void UpdateGuideState(usImage *pImage, bool bUpdateStatus);
+    virtual Point &LockPosition();
+    virtual Point &CurrentPosition();
+
+protected:
+    void OnLClick(wxMouseEvent& evt);
+
+    void SaveStarFITS();
+
+	DECLARE_EVENT_TABLE()
+};
+
+#endif /* GUIDER_ONESTAR_H_INCLUDED */

@@ -1,8 +1,10 @@
 /*
- *  mount.h
+ *  star.h
  *  PHD Guiding
  *
- *  Created by Bret McKee
+ *  Created by Craig Stark.
+ *  Refactored by Bret McKee
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
@@ -33,55 +35,71 @@
  *
  */
 
-#ifndef MOUNT_H_INCLUDED
-#define MOUNT_H_INCLUDED
+#ifndef STAR_H_INCLUDED
+#define STAR_H_INCLUDED
 
-enum GUIDE_DIRECTION {
-	NONE  = -1,
-	NORTH = 0,	// Dec+
-	SOUTH,		// Dec-
-	EAST,		// RA-
-	WEST		// RA+
-};
+#include "point.h"
 
-class Mount
+class Star:public Point
 {
-protected:
-    bool m_bConnected;
-    bool m_bGuiding;
-    bool m_bCalibrated;
-
-    double m_dDecAngle;
-    double m_dRaAngle;
-    double m_dDecRate;
-    double m_dRaRate;
-
-	wxString m_Name;
 
 public:
-    Mount();
-    virtual ~Mount();
+    enum FindResult
+    {
+        STAR_OK=0,
+        STAR_SATURATED,
+        STAR_LOWSNR,
+        STAR_LOWMASS,
+        STAR_TOO_NEAR_EDGE,
+        STAR_LARGEMOTION,
+        STAR_ERROR,
+    };
 
-    // these MUST be supplied by a subclass
-    virtual bool BeginCalibration(Guider *pGuider)=0;
-    virtual bool UpdateCalibrationState(Guider *pGuider)=0;
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs) = 0;
-    virtual bool IsGuiding(void) = 0;
+    double Mass;
+    double SNR;
+    FindResult LastFindResult;
 
-    // these CAN be supplied by a subclass
-    virtual bool HasNonGUIGuide(void) {return false;}
-    virtual bool NonGUIGuide(const GUIDE_DIRECTION direction, const int durationMs) { assert(false); return false; }
-	virtual wxString &Name(void);
-    virtual bool IsConnected(void);
-    virtual bool IsCalibrated(void);
-    virtual void ClearCalibration(void);
-    virtual double DecAngle(void);
-    virtual double RaAngle(void);
-    virtual double DecRate(void);
-    virtual double RaRate(void);
-    virtual bool Connect(void);
-	virtual bool Disconnect(void);
-    virtual bool SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
+    Star(void)
+    {
+        Invalidate();
+    }
+
+    ~Star()
+    {
+    }
+
+    bool Find(usImage *pImg);
+    bool Find(usImage *pImg, int X, int Y);
+
+    bool WasFound(FindResult result)
+    {
+        bool bReturn = false;
+
+        if (result == STAR_OK || result == STAR_SATURATED)
+        {
+            bReturn = true;
+        }
+
+        return bReturn;
+    }
+
+    bool WasFound(void)
+    {
+        return WasFound(LastFindResult);
+    }
+
+    virtual void Invalidate(void)
+    {
+        Mass = 0.0;
+        SNR = 0.0;
+        LastFindResult = STAR_ERROR;
+        Point::Invalidate();
+    }
+
+    void SetError(FindResult error=STAR_ERROR)
+    {
+        LastFindResult = error;
+    }
 };
 
-#endif /* MOUNT_H_INCLUDED */
+#endif /* STAR_H_INCLUDED */

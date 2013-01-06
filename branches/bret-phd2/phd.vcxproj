@@ -329,12 +329,16 @@
     <ClCompile Include="cam_VFW.cpp" />
     <ClCompile Include="cam_wdm.cpp" />
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="canvas.cpp" />
     <ClCompile Include="eegg.cpp" />
     <ClCompile Include="frame_events.cpp" />
     <ClCompile Include="graph.cpp" />
+    <ClCompile Include="guider.cpp" />
+    <ClCompile Include="guider_onestar.cpp" />
     <ClCompile Include="guide_routines.cpp" />
     <ClCompile Include="image_math.cpp" />
+    <ClCompile Include="mount.cpp" />
+    <ClCompile Include="myapp.cpp" />
+    <ClCompile Include="myframe.cpp" />
     <ClCompile Include="phd.cpp" />
     <ClCompile Include="phdlog.cpp" />
     <ClCompile Include="prefs.cpp" />
@@ -347,7 +351,9 @@
     <ClCompile Include="scope_gpusb.cpp" />
     <ClCompile Include="scope_voyager.cpp" />
     <ClCompile Include="socket_server.cpp" />
+    <ClCompile Include="star.cpp" />
     <ClCompile Include="usImage.cpp" />
+    <ClCompile Include="worker_thread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="phd.rc">
@@ -385,10 +391,16 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="cameras.h" />
     <ClInclude Include="graph.h" />
+    <ClInclude Include="guiders.h" />
+    <ClInclude Include="guider_canvas.h" />
+    <ClInclude Include="guider_onestar.h" />
     <ClInclude Include="image_math.h" />
     <ClInclude Include="mount.h" />
+    <ClInclude Include="myapp.h" />
+    <ClInclude Include="myframe.h" />
     <ClInclude Include="phd.h" />
     <ClInclude Include="phdlog.h" />
+    <ClInclude Include="point.h" />
     <ClInclude Include="scope.h" />
     <ClInclude Include="scope_ascom.h" />
     <ClInclude Include="scope_eqmac.h" />
@@ -401,7 +413,9 @@
     <ClInclude Include="scope_voyager.h" />
     <ClInclude Include="scopes.h" />
     <ClInclude Include="socket_server.h" />
+    <ClInclude Include="star.h" />
     <ClInclude Include="usImage.h" />
+    <ClInclude Include="worker_thread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

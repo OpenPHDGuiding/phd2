@@ -56,7 +56,6 @@ extern Camera_LEwebcamClass Camera_LEwebcamParallel;
 extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
 #endif
 
-
 double MyFrame::RequestedExposureDuration() { // Sets the global duration variable based on pull-down
 	wxString durtext;
 	double dReturn;
@@ -118,7 +117,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
 
 void MyFrame::OnOverlay(wxCommandEvent &evt) {
 	OverlayMode = evt.GetId() - MENU_XHAIR0;
-	canvas->Refresh();
+	pGuider->Refresh();
 }
 
 void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
@@ -136,12 +135,12 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
 	long fpixel[3] = {1,1,1};
 	long fsize[3];
 	int output_format=USHORT_IMG;
-	fsize[0] = (long) CurrentFullFrame.Size.GetWidth();
-	fsize[1] = (long) CurrentFullFrame.Size.GetHeight();
+	fsize[0] = (long) pCurrentFullFrame->Size.GetWidth();
+	fsize[1] = (long) pCurrentFullFrame->Size.GetHeight();
 	fsize[2] = 0;
 	fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
 	if (!status) fits_create_img(fptr,output_format, 2, fsize, &status);
-	if (!status) fits_write_pix(fptr,TUSHORT,fpixel,CurrentFullFrame.NPixels,CurrentFullFrame.ImageData,&status);
+	if (!status) fits_write_pix(fptr,TUSHORT,fpixel,pCurrentFullFrame->NPixels,pCurrentFullFrame->ImageData,&status);
 	fits_close_file(fptr,&status);
 	if (status) wxMessageBox (_T("Error saving FITS file"));
 /*	wxImage *Temp_Image;
@@ -158,13 +157,13 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
 			SetStatusText(fname + _T(" saved"));
 		delete DisplayedBitmap;*/
 #else
-	if ( (canvas->Displayed_Image->Ok()) && (canvas->Displayed_Image->GetWidth()) ) {
+	if ( (pGuider->Displayed_Image->Ok()) && (pGuider->Displayed_Image->GetWidth()) ) {
 		wxString fname = wxFileSelector( wxT("Save BMP Image"), (const wxChar *)NULL,
                           (const wxChar *)NULL,
                            wxT("bmp"), wxT("BMP files (*.bmp)|*.bmp"),wxSAVE | wxOVERWRITE_PROMPT);
 		if (fname.IsEmpty()) return;  // Check for canceled dialog
-//		wxBitmap* DisplayedBitmap = new wxBitmap(canvas->Displayed_Image,24);
-		bool retval = canvas->Displayed_Image->SaveFile(fname, wxBITMAP_TYPE_BMP);
+//		wxBitmap* DisplayedBitmap = new wxBitmap(pGuider->Displayed_Image,24);
+		bool retval = pGuider->Displayed_Image->SaveFile(fname, wxBITMAP_TYPE_BMP);
 		if (!retval)
 			(void) wxMessageBox(_T("Error"),wxT("Your data were not saved"),wxOK | wxICON_ERROR);
 		else
@@ -257,20 +256,231 @@ void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event)) {
 		SetStatusText(_T("Still"),2);*/
 }
 
+void MyFrame::OnSelect(wxCommandEvent& WXUNUSED(event)) 
+{
+    try
+    {
+        if (!GuideCameraConnected)
+        {
+            wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
+            throw ERROR_INFO("Camera not connected");
+        }
+
+        assert(!CaptureActive);
+
+        if (pGuider->SetState(STATE_SELECTING))
+        {
+            throw ERROR_INFO("Unable to set state to STATE_SELECTING");
+        }
+
+        StartCapturing();
+    }
+    catch (char *ErrorMsg)
+    {
+        POSSIBLY_UNUSED(ErrorMsg);
+    }
+#if 0
+	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+	wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_Debug_log") + _T(".txt")), _T("a+t"));
+	wxTextOutputStream debug (debugstr);
+
+	LoopFrameCount = 0;
+	looping = true;
+	Abort = 0;
+	CaptureActive = true;
+	int i=0;
+	bool debuglog = this->Menubar->IsChecked(MENU_DEBUG);
+	if (debuglog) {
+		wxDateTime now = wxDateTime::Now();
+//		debugfile->AddLine(wxString::Format("DEBUG PHD Guide %s  -- ",VERSION) + now.FormatDate() + now.FormatTime());
+		debug << _T("\n\nDEBUG PHD Guide ") << VERSION << _T(" ") <<  now.FormatDate() << _T(" ") <<  now.FormatTime() << endl;
+		debug << _T("Machine: ") << wxGetOsDescription() << _T(" ") << wxGetUserName() << endl;
+		debug << _T("Camera: ") << CurrentGuideCamera->Name << endl;
+		debug << _T("Dur: ") << ExpDur << _T(" NR: ") << GuideCameraPrefs::NR_mode << _T(" Dark: ") << CurrentGuideCamera->HaveDark << endl;
+		debug << _T("Looping entered\n");
+		debugstr.Sync();
+	}
+
+//	wxStatusBar *StatBar = GetStatusBar();
+	//wxColor DefaultColor = GetBackgroundColour();
+
+	while (!Abort) {
+		i++;
+	//	SetStatusText(wxString::Format("Frame %d %dms",i,ExpDur));
+		if (debuglog) { debug << _T("Capturing - "); debugstr.Sync(); }
+		try {
+            ExpDur = RequestedExposureDuration();
+			CurrentFullFrame.InitDate();
+			CurrentFullFrame.ImgExpDur = ExpDur;
+			if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame)) {
+				Abort = 1;
+				break;
+			}
+		}
+		catch (...) {
+			wxMessageBox(_T("Exception thrown during image capture - bailing"));
+			if (debuglog) { debug << _T("Camera threw an exception during capture\n"); debugstr.Sync(); }
+			Abort = 1;
+			break;
+		}
+		if (debuglog) { debug << _T("Done\n"); debugstr.Sync(); }
+		if (debuglog && GuideCameraPrefs::NR_mode) debug << _T("Calling NR - ");
+		if (GuideCameraPrefs::NR_mode == NR_2x2MEAN)
+			QuickLRecon(CurrentFullFrame);
+		else if (GuideCameraPrefs::NR_mode == NR_3x3MEDIAN)
+			Median3(CurrentFullFrame);
+		if (debuglog && GuideCameraPrefs::NR_mode) { debug << _T("Done\n"); debugstr.Sync(); }
+
+		if (pGuider->GetState() == STATE_SELECTED) {  // May take this out
+			if (debuglog) { debug << _T("Finding star - "); debugstr.Sync(); }
+			FindStar(CurrentFullFrame); // track it
+			if (debuglog) { debug << _T("Done (") << FoundStar << _T(")\n"); debugstr.Sync(); }
+			if (FoundStar)
+				SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
+			else {
+				SetStatusText(_T("Star lost"));
+			}
+			this->Profile->UpdateData(CurrentFullFrame,StarX,StarY);
+			Guide_Button->Enable(FoundStar && pScope->IsConnected());
+		}
+		if (debuglog) { debug << _T("Calling display - "); debugstr.Sync(); }
+		pGuider->FullFrameToDisplay();
+		if (debuglog) { debug << _T("Done\n"); debugstr.Sync(); }
+		wxTheApp->Yield(true);
+		if (RandomMotionMode) {
+			GUIDE_DIRECTION dir;
+            
+            if (rand() % 2)
+                dir = EAST;
+            else
+                dir = WEST;
+			int dur = rand() % 1000;
+			SetStatusText(wxString::Format(_T("Random motion: %d %d"),dir,dur),1);
+			pScope->Guide(dir,dur);
+			if ((rand() % 5) == 0) {  // Occasional Dec
+                if (rand() % 2)
+                    dir = NORTH;
+                else
+                    dir = SOUTH;
+				dur = rand() % 1000;
+				SetStatusText(wxString::Format(_T("Random motion: %d %d"),dir,dur),1);
+				pScope->Guide(dir,dur);
+			}
+		}
+		++LoopFrameCount;
+	}
+	looping = false;
+	LoopFrameCount = 0;
+	if (debuglog) { debug << _T("Looping exited\n"); debugstr.Sync(); }
+	CaptureActive = false;
+	SetStatusText(_T(""));
+	if (Abort == 2) {
+		Abort = 0;
+		wxCommandEvent *evt = new wxCommandEvent(BUTTON_GUIDE, 100);
+		//wxPostEvent(wxTheApp,event);
+		OnGuide(*evt);
+	}
+	else{
+		Abort = 0;
+		pGuider->GetState() = STATE_NONE;
+	}
+#endif
+}
+
+/*
+ * OnExposeComplete is the dispatch routine that is called when an image has been taken
+ * by the background thread.
+ *
+ * It:
+ * - causes the image to be redrawn by calling pGuider->UpateImageDisplay()
+ * - calls the routine to update the guider state (which may do nothing)
+ * - calls any other appropriate state update routine depending upon the current state
+ * - updates button state based on appropriate state variables
+ * - schedules another exposure if CaptureActive is stil true
+ *
+ */
+void MyFrame::OnExposeComplete(wxThreadEvent& event)
+{
+    try
+    {
+        if (event.GetInt())
+        {
+            delete m_pNextFullFrame;
+            m_pNextFullFrame = NULL;
+
+            StopCapturing();
+            pGuider->SetState(STATE_UNINITIALIZED);
+
+            throw ERROR_INFO("Error reported capturing image");
+        }
+
+        // the capture was OK - switch in the new image
+        delete pCurrentFullFrame;
+        pCurrentFullFrame = m_pNextFullFrame;
+        m_pNextFullFrame = NULL;
+
+
+        switch (pGuider->GetState())
+        {
+            case STATE_UNINITIALIZED:
+            case STATE_SELECTING:
+            case STATE_SELECTED:
+                pGuider->UpdateGuideState(pCurrentFullFrame, true);
+                // nothing else to do for these states
+                break;
+            case STATE_CALIBRATING:
+                pGuider->UpdateGuideState(pCurrentFullFrame, false);
+                pScope->UpdateCalibrationState(pGuider);
+                break;
+            case STATE_CALIBRATED:
+            case STATE_GUIDING_LOCKED:
+            case STATE_GUIDING_LOST:
+                pGuider->UpdateGuideState(pCurrentFullFrame, true);
+                break;
+        }
+
+        // TODO: Implement Random motion if desired
+        //TODO: deal with pausing
+        
+        if (CaptureActive)
+        {
+            frame->StartExposure();
+        }
+    }
+    catch (char *ErrorMsg)
+    {
+        POSSIBLY_UNUSED(ErrorMsg);
+    }
+}
+
+void MyFrame::OnGuideComplete(wxThreadEvent& event)
+{
+    try
+    {
+        if (event.GetInt())
+        {
+            throw ERROR_INFO("Error reported guiding");
+        }
+    }
+    catch (char *ErrorMsg)
+    {
+        POSSIBLY_UNUSED(ErrorMsg);
+    }
+}
+
+#if 0
 void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
     double ExpDur = RequestedExposureDuration();
 
-	if (canvas->State > STATE_SELECTED) return;
+	if (pGuider->GetState() > STATE_SELECTED) return;
 	if (!GuideCameraConnected) {
 		wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
 		return;
 	}
 	if (CaptureActive) return;  // Looping an exposure already
 	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-//	wxFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_Debug_log") + _T(".txt")));
 	wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_Debug_log") + _T(".txt")), _T("a+t"));
 	wxTextOutputStream debug (debugstr);
-//	wxString debug_fname = 	stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_Debug_log") + _T(".txt");
 	LoopFrameCount = 0;
 	looping = true;
 	Abort = 0;
@@ -331,7 +541,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 			Median3(CurrentFullFrame);
 		if (debuglog && GuideCameraPrefs::NR_mode) { debug << _T("Done\n"); debugstr.Sync(); }
 
-		if (canvas->State == STATE_SELECTED) {  // May take this out
+		if (pGuider->GetState() == STATE_SELECTED) {  // May take this out
 			if (debuglog) { debug << _T("Finding star - "); debugstr.Sync(); }
 			FindStar(CurrentFullFrame); // track it
 			if (debuglog) { debug << _T("Done (") << FoundStar << _T(")\n"); debugstr.Sync(); }
@@ -339,19 +549,12 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 				SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
 			else {
 				SetStatusText(_T("Star lost"));
-			/*	SetBackgroundColour(wxColour(255,0,0));
-				Refresh();
-				wxTheApp->Yield();
-				wxMilliSleep(100);
-				SetBackgroundColour(DefaultColor);
-				Refresh();*/
 			}
 			this->Profile->UpdateData(CurrentFullFrame,StarX,StarY);
 			Guide_Button->Enable(FoundStar && pScope->IsConnected());
 		}
-//		wxTheApp->Yield();
 		if (debuglog) { debug << _T("Calling display - "); debugstr.Sync(); }
-		canvas->FullFrameToDisplay();
+		pGuider->FullFrameToDisplay();
 		if (debuglog) { debug << _T("Done\n"); debugstr.Sync(); }
 		wxTheApp->Yield(true);
 		if (RandomMotionMode) {
@@ -395,24 +598,32 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 	}
 	else{
 		Abort = 0;
-		canvas->State = STATE_NONE;
+		pGuider->GetState() = STATE_NONE;
 	}
 
 }
+#endif
 
-void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event)) {
-	Abort = 1;
+void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event)) 
+{
+    StopCapturing();
 
+	Loop_Button->Enable(true);
+	Guide_Button->Enable(pGuider->GetState() >= STATE_SELECTED && pScope->IsConnected());
+	Cam_Button->Enable(true);
+	Scope_Button->Enable(true);
+	Brain_Button->Enable(true);
+	Dark_Button->Enable(true);
 }
 
 void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event)) {
 	Stretch_gamma = (double) Gamma_Slider->GetValue() / 100.0;
-	canvas->FullFrameToDisplay();
+	pGuider->UpdateImageDisplay(pCurrentFullFrame);
 }
 
 void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
     double ExpDur = RequestedExposureDuration();
-	if (canvas->State > STATE_SELECTED) return;
+	if (pGuider->GetState() > STATE_SELECTED) return;
 	if (!GuideCameraConnected) {
 		wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
 		return;
@@ -554,11 +765,13 @@ bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))
 }
 
 void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {
+    //TODO: Fix this
+#if 0
 	int x,y;
 	bool WasPaused = Paused;
 	if (!CurrentFullFrame.NPixels) // Need to have an image
 		return;
-	if ((canvas->State == STATE_CALIBRATING) || (canvas->State == STATE_GUIDING_LOCKED))
+	if ((pGuider->GetState() == STATE_CALIBRATING) || (pGuider->GetState() == STATE_GUIDING_LOCKED))
 		return;
 	Paused = true;
 	AutoFindStar(CurrentFullFrame,x,y);
@@ -568,13 +781,14 @@ void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {
 	StarX=x;
 	StarY=y;
 	dX = dY = 0.0;
-	canvas->State=STATE_SELECTED;
+	pGuider->SetState(STATE_SELECTED);
 	FindStar(CurrentFullFrame);
 	LockX = StarX;
 	LockY = StarY;
 	SetStatusText(wxString::Format(_T("Star %.2f %.2f"),StarX,StarY));
-	canvas->Refresh();
+	pGuider->Refresh();
 	Paused = WasPaused;
+#endif
 }
 
 #ifndef __WXGTK__
@@ -635,8 +849,6 @@ private:
 	void OnSetupCamera(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 };
-
-
 
 AdvancedDialog::AdvancedDialog():
 #if defined (__WINDOWS__)
@@ -1088,7 +1300,7 @@ END_EVENT_TABLE()
 
 
 void TestGuideDialog::OnButton(wxCommandEvent &evt) {
-//	if ((frame->canvas->State > STATE_SELECTED) || !(pScope->IsConnected())) return;
+//	if ((frame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
 	if (!(pScope->IsConnected())) return;
 	switch (evt.GetId()) {
 		case MGUIDE_N:
@@ -1108,7 +1320,7 @@ void TestGuideDialog::OnButton(wxCommandEvent &evt) {
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
-	if ((frame->canvas->State > STATE_SELECTED) || !(pScope->IsConnected())) return;
+	if ((frame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
 	TestGuideDialog* dlog = new TestGuideDialog();
 	dlog->Show();
 }

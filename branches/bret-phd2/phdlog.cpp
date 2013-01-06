@@ -35,6 +35,26 @@
 
 #include "phd.h"
 
+bool LOG::Write(const wxString& str)
+{
+    bool bReturn = true;
+
+    if (m_bEnabled)
+    {
+        wxCriticalSectionLocker lock(m_criticalSection);
+
+        wxDateTime now = wxDateTime::Now();
+        wxTimeSpan deltaTime = now - m_lastWriteTime;
+        wxLongLong milliSeconds = deltaTime.GetMilliseconds();
+
+        m_lastWriteTime = now;
+
+        bReturn = wxFFile::Write(now.Format("%H:%M:%S.%l") + wxString::Format(" %d.%.6d ", milliSeconds/1000, milliSeconds%1000) + str);
+    }
+
+    return bReturn;
+}
+
 LOG& operator<< (LOG& out, const wxString &str)
 {
     out.Write(str);

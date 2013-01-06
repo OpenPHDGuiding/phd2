@@ -58,7 +58,6 @@ bool usImage::Init(int xsize, int ysize) {
 void usImage::CalcStats() {
 	int i, d;
 	unsigned short *ptr, *tmpdata;
-	float f_mean;
 
 	if ((!ImageData) || (!NPixels))
 		return;

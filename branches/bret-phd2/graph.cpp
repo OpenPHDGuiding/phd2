@@ -473,7 +473,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
 	dc.SetBackground(* wxBLACK_BRUSH);
 	dc.SetBackground(wxColour(10,30,30));
 	dc.Clear();
-	if (frame->canvas->State == STATE_NONE) return;
+	if (frame->pGuider->GetState() == STATE_UNINITIALIZED) return;
 	wxPen RedPen;
 //	GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
 //	BluePen = wxPen(wxColour(100,100,255));

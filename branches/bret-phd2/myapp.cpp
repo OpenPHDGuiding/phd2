@@ -1,8 +1,10 @@
 /*
- *  mount.h
+ *  myapp.cpp
  *  PHD Guiding
  *
- *  Created by Bret McKee
+ *  Created by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
+ *  Refactored by Bret McKee
  *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
@@ -14,8 +16,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
  *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
  *
@@ -33,55 +34,41 @@
  *
  */
 
-#ifndef MOUNT_H_INCLUDED
-#define MOUNT_H_INCLUDED
+#include "phd.h"
 
-enum GUIDE_DIRECTION {
-	NONE  = -1,
-	NORTH = 0,	// Dec+
-	SOUTH,		// Dec-
-	EAST,		// RA-
-	WEST		// RA+
-};
+IMPLEMENT_APP(MyApp)
 
-class Mount
-{
-protected:
-    bool m_bConnected;
-    bool m_bGuiding;
-    bool m_bCalibrated;
+// ------------------------  My App stuff -----------------------------
+bool MyApp::OnInit() {
+	SetVendorName(_T("StarkLabs"));
+	wxLocale locale;
+#ifndef DEBUG
+	#if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
+	wxDisableAsserts();
+	#endif
+#endif
+	locale.Init(wxLANGUAGE_ENGLISH_US);
+//	wxMessageBox(wxString::Format("%f",1.23));
+#ifdef ORION
+	frame = new MyFrame(wxString::Format(_T("PHD Guiding for Orion v%s"),VERSION));
+#else
+	frame = new MyFrame(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
+#endif
+	wxImage::AddHandler(new wxJPEGHandler);
+#ifdef ORION
+	wxBitmap bitmap;
+	wxSplashScreen* splash;
+	if (bitmap.LoadFile(_T("OrionSplash.jpg"), wxBITMAP_TYPE_JPEG)) {
+		splash = new wxSplashScreen(bitmap,
+          wxSPLASH_CENTRE_ON_SCREEN|wxSPLASH_NO_TIMEOUT,
+          2000, NULL, -1, wxDefaultPosition, wxDefaultSize,
+          wxSIMPLE_BORDER|wxSTAY_ON_TOP);
+	}
+	wxYield();
+	wxMilliSleep(2000);
+	delete splash;
+#endif
+	frame->Show(true);
 
-    double m_dDecAngle;
-    double m_dRaAngle;
-    double m_dDecRate;
-    double m_dRaRate;
-
-	wxString m_Name;
-
-public:
-    Mount();
-    virtual ~Mount();
-
-    // these MUST be supplied by a subclass
-    virtual bool BeginCalibration(Guider *pGuider)=0;
-    virtual bool UpdateCalibrationState(Guider *pGuider)=0;
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs) = 0;
-    virtual bool IsGuiding(void) = 0;
-
-    // these CAN be supplied by a subclass
-    virtual bool HasNonGUIGuide(void) {return false;}
-    virtual bool NonGUIGuide(const GUIDE_DIRECTION direction, const int durationMs) { assert(false); return false; }
-	virtual wxString &Name(void);
-    virtual bool IsConnected(void);
-    virtual bool IsCalibrated(void);
-    virtual void ClearCalibration(void);
-    virtual double DecAngle(void);
-    virtual double RaAngle(void);
-    virtual double DecRate(void);
-    virtual double RaRate(void);
-    virtual bool Connect(void);
-	virtual bool Disconnect(void);
-    virtual bool SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
-};
-
-#endif /* MOUNT_H_INCLUDED */
+	return true;
+}

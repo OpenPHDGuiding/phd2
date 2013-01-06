@@ -132,7 +132,7 @@ bool Camera_QGuiderClass::CaptureFull(int duration, usImage& img, bool recon) {
 
 //	unsigned char *bptr;
 	unsigned short *dptr;
-	int  i;
+	//int  i;
 	int xsize = FullSize.GetWidth();
 	int ysize = FullSize.GetHeight();
 	bool firstimg = true;
