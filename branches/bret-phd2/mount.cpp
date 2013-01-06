@@ -486,6 +486,12 @@ bool Mount::FlipCalibration(void)
     return bError;
 }
 
+void Mount::ClearHistory(void)
+{
+
+    m_pRaGuideAlgorithm->reset();
+    m_pDecGuideAlgorithm->reset();
+}
 
 ConfigDialogPane *Mount::GetConfigDialogPane(wxWindow *pParent)
 {

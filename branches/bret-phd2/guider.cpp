@@ -385,6 +385,9 @@ void Guider::SetState(GUIDER_STATE newState)
                 InvalidateCurrentPosition();
                 newState = STATE_SELECTING;
                 break;
+            case STATE_SELECTED:
+                pMount->ClearHistory();
+                break;
             case STATE_CALIBRATING:
                 if (pMount->IsCalibrated())
                 {

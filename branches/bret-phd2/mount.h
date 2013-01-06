@@ -144,6 +144,7 @@ public:
     virtual bool BeginCalibration(const Point &currentPosition);
     virtual void ClearCalibration(void);
     virtual void SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
+    virtual void ClearHistory(void);
 };
 
 #endif /* MOUNT_H_INCLUDED */

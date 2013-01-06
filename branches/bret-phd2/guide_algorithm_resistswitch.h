@@ -69,7 +69,7 @@ public:
     virtual ~GuideAlgorithmResistSwitch(void);
     virtual GUIDE_ALGORITHM Algorithm(void);
 
-    virtual bool reset(void);
+    virtual void reset(void);
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 };

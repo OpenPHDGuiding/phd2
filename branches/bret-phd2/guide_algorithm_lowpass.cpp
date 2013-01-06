@@ -50,10 +50,7 @@ GuideAlgorithmLowpass::GuideAlgorithmLowpass(void)
     double slopeWeight    = pConfig->GetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", DefaultSlopeWeight);
     SetSlopeWeight(slopeWeight);
 
-    while (m_history.GetCount() < HISTORY_SIZE)
-    {
-        m_history.Add(0.0);
-    }
+    reset();
 }
 
 GuideAlgorithmLowpass::~GuideAlgorithmLowpass(void)
@@ -65,9 +62,14 @@ GUIDE_ALGORITHM GuideAlgorithmLowpass::Algorithm(void)
     return GUIDE_ALGORITHM_LOWPASS;
 }
 
-bool GuideAlgorithmLowpass::reset(void)
+void GuideAlgorithmLowpass::reset(void)
 {
-    return true;
+    m_history.Empty();
+
+    while (m_history.GetCount() < HISTORY_SIZE)
+    {
+        m_history.Add(0.0);
+    }
 }
 
 double GuideAlgorithmLowpass::result(double input)
@@ -88,6 +90,12 @@ double GuideAlgorithmLowpass::result(double input)
         Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() input %.2f is > calculated value %.2f, using input\n", input, dReturn));
         dReturn = input;
     }
+
+    //TODO: Undertand this. I think this is wrong, since it divides the orignial input '
+    //      by 11 if it was less than the computed value.  And since the computed 
+    //      value is median + slope, I'm not sure that it should be divided by 11 
+    //      either.  But the goal of this exercise is to be bug for bug compatible 
+    //      with PHD 1.x
 
     if (fabs(input) < m_minMove)
     {

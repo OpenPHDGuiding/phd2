@@ -53,6 +53,8 @@ GuideAlgorithmHysteresis::GuideAlgorithmHysteresis(void)
 
     double aggression   = pConfig->GetDouble("/GuideAlgorithm/Hysteresis/aggression", DefaultAggression);
     SetAggression(aggression);
+
+    reset();
 }
 
 GuideAlgorithmHysteresis::~GuideAlgorithmHysteresis(void)
@@ -64,9 +66,9 @@ GUIDE_ALGORITHM GuideAlgorithmHysteresis::Algorithm(void)
     return GUIDE_ALGORITHM_HYSTERESIS;
 }
 
-bool GuideAlgorithmHysteresis::reset(void)
+void GuideAlgorithmHysteresis::reset(void)
 {
-    return true;
+    m_lastMove = 0;
 }
 
 double GuideAlgorithmHysteresis::result(double input)

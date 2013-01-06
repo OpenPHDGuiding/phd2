@@ -60,7 +60,7 @@ public:
     virtual ~GuideAlgorithm(void) {};
     virtual GUIDE_ALGORITHM Algorithm(void) = 0;
 
-    virtual bool reset(void) = 0;
+    virtual void reset(void) = 0;
     virtual double result(double input) = 0;
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;

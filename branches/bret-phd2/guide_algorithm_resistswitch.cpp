@@ -46,10 +46,7 @@ GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitch(void)
     double minMove  = pConfig->GetDouble("/GuideAlgorithm/ResistSwitch/minMove", DefaultMinMove);
     SetMinMove(minMove);
 
-    while (m_history.GetCount() < HISTORY_SIZE)
-    {
-        m_history.Add(0.0);
-    }
+    reset();
 }
 
 GuideAlgorithmResistSwitch::~GuideAlgorithmResistSwitch(void)
@@ -61,9 +58,16 @@ GUIDE_ALGORITHM GuideAlgorithmResistSwitch::Algorithm(void)
     return GUIDE_ALGORITHM_RESIST_SWITCH;
 }
 
-bool GuideAlgorithmResistSwitch::reset(void)
+void GuideAlgorithmResistSwitch::reset(void)
 {
-    return true;
+    m_history.Empty();
+
+    while (m_history.GetCount() < HISTORY_SIZE)
+    {
+        m_history.Add(0.0);
+    }
+
+    m_currentSide = 0;
 }
 
 static int sign(double x)

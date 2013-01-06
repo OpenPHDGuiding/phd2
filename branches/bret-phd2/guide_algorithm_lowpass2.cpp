@@ -41,10 +41,7 @@
 
 GuideAlgorithmLowpass2::GuideAlgorithmLowpass2(void)
 {
-    while (m_history.GetCount() < HISTORY_SIZE)
-    {
-        m_history.Add(0.0);
-    }
+    reset();
 }
 
 GuideAlgorithmLowpass2::~GuideAlgorithmLowpass2(void)
@@ -56,9 +53,14 @@ GUIDE_ALGORITHM GuideAlgorithmLowpass2::Algorithm(void)
     return GUIDE_ALGORITHM_LOWPASS2;
 }
 
-bool GuideAlgorithmLowpass2::reset(void)
+void GuideAlgorithmLowpass2::reset(void)
 {
-    return true;
+    m_history.Empty();
+
+    while (m_history.GetCount() < HISTORY_SIZE)
+    {
+        m_history.Add(0.0);
+    }
 }
 
 double GuideAlgorithmLowpass2::result(double input)

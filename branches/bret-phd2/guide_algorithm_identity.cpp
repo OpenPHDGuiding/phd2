@@ -41,6 +41,7 @@
 
 GuideAlgorithmIdentity::GuideAlgorithmIdentity(void)
 {
+    reset();
 }
 
 GuideAlgorithmIdentity::~GuideAlgorithmIdentity(void)
@@ -52,20 +53,8 @@ GUIDE_ALGORITHM GuideAlgorithmIdentity::Algorithm(void)
     return GUIDE_ALGORITHM_IDENTITY;
 }
 
-bool GuideAlgorithmIdentity::reset(void)
+void GuideAlgorithmIdentity::reset(void)
 {
-    bool bError = false;
-
-    try
-    {
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
 }
 
 // the default algorithm simply returns its input
