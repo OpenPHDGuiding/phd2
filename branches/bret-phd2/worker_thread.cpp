@@ -87,6 +87,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
     
     try
     {
+        wxMilliSleep(frame->GetTimeLapse());
 
         if (CurrentGuideCamera->HasNonGUICaptureFull())
         {
