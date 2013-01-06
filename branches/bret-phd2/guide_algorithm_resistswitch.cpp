@@ -95,7 +95,7 @@ double GuideAlgorithmResistSwitch::result(double input)
     {
         if (fabs(input) < m_minMove)
         {
-            throw ERROR_INFO("input < m_minMove");
+            throw THROW_INFO("input < m_minMove");
         }
 
         for(int i=0; i<m_history.GetCount(); i++)
