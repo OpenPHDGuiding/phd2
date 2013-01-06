@@ -80,24 +80,19 @@ public:
     virtual ~GuiderOneStar(void);
 
 	virtual void OnPaint(wxPaintEvent& evt);
-    virtual bool UpdateGuideState(usImage *pImage, bool bStopping=false);
-    virtual void ResetGuideState(void);
-    virtual void StartGuiding(void);
 
     virtual bool IsLocked(void);
-    virtual bool SetLockPosition(double x, double y, bool bExact=false);
     virtual bool AutoSelect(usImage *pImage=NULL);
     virtual Point &CurrentPosition(void);
     virtual wxRect GetBoundingBox(void);
 
-    virtual bool SetRaGuideAlgorithm(int raGuideAlgorithm);
-    virtual bool SetDecGuideAlgorithm(int decGuideAlgorithm);
-
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+private:
+    virtual void InvalidateCurrentPosition(void);
+    virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage);
+    virtual bool SetCurrentPosition(usImage *pImage, const Point& position);
 
-protected:
     void OnLClick(wxMouseEvent& evt);
-    virtual bool SetState(GUIDER_STATE newState);
 
     void SaveStarFITS();
 

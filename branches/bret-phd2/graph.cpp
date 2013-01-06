@@ -119,6 +119,7 @@ mm_label->SetOwnBackgroundColour(* wxBLACK);
 this->MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM, _T(""),
                                 wxPoint(255,210+extra_offset),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
                                 0,5,0,0.05);
+#ifdef BRET_TODO
     // Max RA Dur
 	wxStaticText *mrad_label = new wxStaticText(this,wxID_ANY,_T("Mx RA"),wxPoint(315,210),wxSize(ctl_size+10,-1));
 	mrad_label->SetOwnForegroundColour(* wxWHITE);
@@ -143,30 +144,35 @@ this->MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM, _T(""),
 		_T("Off"),_T("Auto"),_T("North"),_T("South")
 	};
 	this->DM_Ctrl= new wxChoice(this,GRAPH_DM,wxPoint(535,210+extra_offset),wxSize(ctl_size+15,-1),WXSIZEOF(dec_choices), dec_choices );
-	//DM_Ctrl->SetSelection(pScope->GetDecGuideMode());
+	//DM_Ctrl->SetSelection(pMount->GetDecGuideMode());
+#endif
 }
 
 GraphLogWindow::~GraphLogWindow() {
 
 }
 void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
-    if (pFrame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+    if (pMount->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
     {
         GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
 
         pHyst->SetAggression((float) this->RAA_Ctrl->GetValue() / 100.0);
         pHyst->SetHysteresis((float) this->RAH_Ctrl->GetValue() / 100.0);
     }
-	pScope->SetMaxDecDuration(this->MDD_Ctrl->GetValue());
-	pScope->SetMaxRaDuration(this->MRAD_Ctrl->GetValue());
+#ifdef BRET_TODO
+	pMount->SetMaxDecDuration(this->MDD_Ctrl->GetValue());
+	pMount->SetMaxRaDuration(this->MRAD_Ctrl->GetValue());
+#endif
 }
 
 void GraphLogWindow::OnUpdateCommandGuideParams(wxCommandEvent& WXUNUSED(evt)) {
-    pScope->SetDecGuideMode(this->DM_Ctrl->GetSelection());
+#ifdef BRET_TODO
+    pMount->SetDecGuideMode(this->DM_Ctrl->GetSelection());
+#endif
 }
 
 void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) {
-    if (pFrame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+    if (pMount->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
     {
         GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
 
@@ -243,16 +249,18 @@ void GraphLogWindow::SetState(bool is_active) {
 	this->Show(is_active);
 	if (is_active) 
     {
-        if (pFrame->pGuider->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+        if (pMount->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
         {
             GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
             this->RAA_Ctrl->SetValue((int) (pHyst->GetAggression() * 100));  
             this->RAH_Ctrl->SetValue((int) (pHyst->GetHysteresis() * 100));
             this->MM_Ctrl->SetValue(pHyst->GetMinMove());
         }
-		this->MDD_Ctrl->SetValue(pScope->GetMaxDecDuration());
-		this->MRAD_Ctrl->SetValue(pScope->GetMaxRaDuration());
-		this->DM_Ctrl->SetSelection(pScope->GetDecGuideMode());
+#ifdef BRET_TODO
+		this->MDD_Ctrl->SetValue(pMount->GetMaxDecDuration());
+		this->MRAD_Ctrl->SetValue(pMount->GetMaxRaDuration());
+		this->DM_Ctrl->SetSelection(pMount->GetDecGuideMode());
+#endif
 		Refresh();
 	}
 }

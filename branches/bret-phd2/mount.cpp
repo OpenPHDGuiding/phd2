@@ -35,16 +35,139 @@
 
 #include "phd.h"
 
+static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
+static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_RESIST_SWITCH;
+
+static const int MAX_CALIBRATION_STEPS = 60;
+static const double MAX_CALIBRATION_DISTANCE = 25.0;
+static const double DEC_BACKLASH_DISTANCE = 3.0;
+
 Mount::Mount()
 {
-    m_bConnected = false;
-    m_bGuiding = false;
+    m_connected = false;
 
-    m_bCalibrated = false;
+    m_calibrated = false;
+    m_pDecGuideAlgorithm = NULL;
+    m_pRaGuideAlgorithm = NULL;
+    m_guidingEnabled = true;
+
+    int raGuideAlgorithm = pConfig->GetInt("/mount/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
+    SetRaGuideAlgorithm(raGuideAlgorithm);
+
+    int decGuideAlgorithm = pConfig->GetInt("/mount/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
+    SetDecGuideAlgorithm(decGuideAlgorithm);
 }
 
 Mount::~Mount()
 {
+    delete m_pRaGuideAlgorithm;
+    delete m_pDecGuideAlgorithm;
+}
+
+bool Mount::GetGuidingEnabled(void)
+{
+    return m_guidingEnabled;
+}
+
+void Mount::SetGuidingEnabled(bool guidingEnabled)
+{
+    m_guidingEnabled = guidingEnabled;
+}
+
+GUIDE_ALGORITHM Mount::GetGuideAlgorithm(GuideAlgorithm *pAlgorithm)
+{
+    GUIDE_ALGORITHM ret = GUIDE_ALGORITHM_NONE;
+
+    if (pAlgorithm)
+    {
+        ret = pAlgorithm->Algorithm();
+    }
+    return ret;
+}
+
+bool Mount::SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm** ppAlgorithm)
+{
+    bool bError = false;
+
+    try
+    {
+        switch (guideAlgorithm)
+        {
+            case GUIDE_ALGORITHM_IDENTITY:
+            case GUIDE_ALGORITHM_HYSTERESIS:
+            case GUIDE_ALGORITHM_LOWPASS:
+            case GUIDE_ALGORITHM_LOWPASS2:
+            case GUIDE_ALGORITHM_RESIST_SWITCH:
+                break;
+            case GUIDE_ALGORITHM_NONE:
+            default:
+                throw ERROR_INFO("invalid guideAlgorithm");
+                break;
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        guideAlgorithm = GUIDE_ALGORITHM_IDENTITY;
+    }
+
+    switch (guideAlgorithm)
+    {
+        case GUIDE_ALGORITHM_IDENTITY:
+            *ppAlgorithm = (GuideAlgorithm *) new GuideAlgorithmIdentity();
+            break;
+        case GUIDE_ALGORITHM_HYSTERESIS:
+            *ppAlgorithm = (GuideAlgorithm *) new GuideAlgorithmHysteresis();
+            break;
+        case GUIDE_ALGORITHM_LOWPASS:
+            *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmLowpass();
+            break;
+        case GUIDE_ALGORITHM_LOWPASS2:
+            *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmLowpass2();
+            break;
+        case GUIDE_ALGORITHM_RESIST_SWITCH:
+            *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmResistSwitch();
+            break;
+        case GUIDE_ALGORITHM_NONE:
+        default:
+            assert(false);
+            break;
+    }
+
+    return bError;
+}
+
+GUIDE_ALGORITHM Mount::GetRaGuideAlgorithm(void)
+{
+    return GetGuideAlgorithm(m_pRaGuideAlgorithm);
+}
+
+void Mount::SetRaGuideAlgorithm(int raGuideAlgorithm)
+{
+    delete m_pRaGuideAlgorithm;
+
+    if (SetGuideAlgorithm(raGuideAlgorithm, &m_pRaGuideAlgorithm))
+    {
+        SetRaGuideAlgorithm(DefaultRaGuideAlgorithm);
+    }
+    pConfig->SetInt("/mount/RaGuideAlgorithm", GetRaGuideAlgorithm());
+}
+
+GUIDE_ALGORITHM Mount::GetDecGuideAlgorithm(void)
+{
+    return GetGuideAlgorithm(m_pDecGuideAlgorithm);
+}
+
+void Mount::SetDecGuideAlgorithm(int decGuideAlgorithm)
+{
+    delete m_pDecGuideAlgorithm;
+
+    if (SetGuideAlgorithm(decGuideAlgorithm, &m_pDecGuideAlgorithm))
+    {
+        SetRaGuideAlgorithm(DefaultRaGuideAlgorithm);
+    }
+    pConfig->SetInt("/guider/onestar/DecGuideAlgorithm", GetDecGuideAlgorithm());
 }
 
 wxString &Mount::Name(void)
@@ -54,7 +177,7 @@ wxString &Mount::Name(void)
 
 bool Mount::IsConnected()
 {
-    bool bReturn = m_bConnected;
+    bool bReturn = m_connected;
 
     return bReturn;
 }
@@ -65,7 +188,7 @@ bool Mount::IsCalibrated()
 
     if (IsConnected())
     {
-        bReturn = m_bCalibrated;
+        bReturn = m_calibrated;
     }
 
     return bReturn;
@@ -73,7 +196,9 @@ bool Mount::IsCalibrated()
 
 void Mount::ClearCalibration(void)
 {
-    m_bCalibrated = false;
+    m_calibrated = false;
+    m_calibrationSteps = 0;
+    m_calibrationDirection = NONE;
 }
 
 double Mount::DecAngle()
@@ -82,7 +207,7 @@ double Mount::DecAngle()
 
     if (IsCalibrated())
     {
-        dReturn = m_dDecAngle;
+        dReturn = m_decAngle;
     }
 
     return dReturn;
@@ -94,7 +219,7 @@ double Mount::RaAngle()
 
     if (IsCalibrated())
     {
-        dReturn = m_dRaAngle;
+        dReturn = m_raAngle;
     }
 
     return dReturn;
@@ -106,7 +231,7 @@ double Mount::DecRate()
 
     if (IsCalibrated())
     {
-        dReturn = m_dDecRate;
+        dReturn = m_decRate;
     }
 
     return dReturn;
@@ -118,7 +243,7 @@ double Mount::RaRate()
 
     if (IsCalibrated())
     {
-        dReturn = m_dRaRate;
+        dReturn = m_raRate;
     }
 
     return dReturn;
@@ -126,28 +251,241 @@ double Mount::RaRate()
 
 bool Mount::Connect(void)
 {
-    m_bConnected = true;
+    m_connected = true;
 
     return false;
 }
 
 bool Mount::Disconnect(void)
 {
-    m_bConnected = false;
+    m_connected = false;
 
     return false;
 }
 
-bool Mount::SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate)
+wxString Mount::GetCalibrationStatus(double dX, double dY, double dist, double dist_crit)
 {
-    m_dDecAngle = dDecAngle;
-    m_dRaAngle  = dRaAngle;
-    m_dDecRate  = dDecRate;
-    m_dRaRate   = dRaRate;
-    m_bCalibrated = true;
+    char directionName = '?';
+    wxString sReturn;
 
-    return true;
+    switch (m_calibrationDirection)
+    {
+        case NORTH:
+            directionName = 'N';
+            break;
+        case SOUTH:
+            directionName = 'S';
+            break;
+        case EAST:
+            directionName = 'E';
+            break;
+        case WEST:
+            directionName = 'W';
+            break;
+    }
+
+    if (m_calibrationDirection != NONE)
+    {
+        if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
+        {
+            pFrame->SetStatusText(wxString::Format(_T("Clear Backlash: %2d"), MAX_CALIBRATION_STEPS - m_calibrationSteps));
+        }
+        else
+        {
+            pFrame->SetStatusText(wxString::Format(_T("%c calibration: %2d"), directionName, m_calibrationSteps));
+        }
+        sReturn = wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)"),dX,dY,dist,dist_crit);
+        Debug.Write(wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)\n"),dX,dY,dist,dist_crit));
+    }
+
+    return sReturn;
 }
+
+bool Mount::UpdateCalibrationState(const Point &currentPosition)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_calibrationDirection == NONE)
+        {
+            m_calibrationDirection = WEST;
+            m_calibrationStartingLocation = currentPosition;
+        }
+
+        double dX = m_calibrationStartingLocation.dX(currentPosition);
+        double dY = m_calibrationStartingLocation.dY(currentPosition);
+        double dist = m_calibrationStartingLocation.Distance(currentPosition);
+        double dist_crit = wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
+
+        wxString statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
+
+        /*
+         * There are 3 sorts of motion that can happen during calibration. We can be:
+         *   1. computing calibration data when moving WEST or NORTH
+         *   2. returning to center after one of thoese moves (moving EAST or SOUTH)
+         *   3. clearing dec backlash (before the NORTH move)
+         *
+         */
+
+        if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
+        {
+            // this is the "clearing dec backlash" case
+            if (dist >= DEC_BACKLASH_DISTANCE)
+            {
+                assert(m_calibrationSteps == 0);
+                m_calibrationSteps = 1;
+                m_backlashSteps = 0;
+                m_calibrationStartingLocation = currentPosition;
+            }
+            else if (--m_backlashSteps <= 0)
+            {
+                if (BacklashClearingFailed())
+                {
+                    wxMessageBox(_T("Unable to clear DEC backlash, and unable to cope -- aborting calibration"), _T("Alert"), wxOK | wxICON_ERROR);
+                    throw ERROR_INFO("Unable to clear DEC backlash and unable to cope");
+                }
+            }
+        }
+        else if (m_calibrationDirection == WEST || m_calibrationDirection == NORTH)
+        {
+            // this is the moving over in WEST or NORTH case
+            //
+            if (dist >= dist_crit) // have we moved far enough yet?
+            {
+                if (m_calibrationDirection == WEST)
+                {
+                    m_raAngle = m_calibrationStartingLocation.Angle(currentPosition);
+                    m_raRate = dist/CalibrationTime(m_calibrationSteps);
+                    m_calibrationDirection = EAST;
+
+                    Debug.Write(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f\n", m_raAngle, m_raRate));
+                }
+                else
+                {
+                    assert(m_calibrationDirection == NORTH);
+                    m_decAngle = m_calibrationStartingLocation.Angle(currentPosition);
+                    m_decRate = dist/CalibrationTime(m_calibrationSteps);
+                    m_calibrationDirection = SOUTH;
+
+                    Debug.Write(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f\n", m_decAngle, m_decRate));
+                }
+            }
+            else if (m_calibrationSteps++ >= MAX_CALIBRATION_STEPS)
+            {
+                wchar_t *pDirection = m_calibrationDirection == NORTH ? pDirection = _T("Dec"): _T("RA");
+
+                wxMessageBox(wxString::Format(_T("%s Calibration failed - Star did not move enough"), pDirection), _T("Alert"), wxOK | wxICON_ERROR);
+
+                throw ERROR_INFO("Calibrate failed");
+            }
+        }
+        else
+        {
+            // this is the moving back in EAST or SOUTH case
+
+            if(--m_calibrationSteps == 0)
+            {
+                if (m_calibrationDirection == EAST)
+                {
+                    m_calibrationDirection = NORTH;
+                    dX = dY = dist = 0.0;
+                    statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
+                }
+                else
+                {
+                    assert(m_calibrationDirection == SOUTH);
+                    m_calibrationDirection = NONE;
+                }
+            }
+        }
+
+        if (m_calibrationDirection == NONE)
+        {
+            m_calibrated = true;
+            pFrame->SetStatusText(_T("calibration complete"),1);
+            pFrame->SetStatusText(_T("Cal"),5);
+        }
+        else
+        {
+            pFrame->SetStatusText(statusMessage, 1);
+            pFrame->ScheduleMove(this, m_calibrationDirection);
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+
+        ClearCalibration();
+
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool Mount::BeginCalibration(const Point& currentPosition)
+{
+    bool bError = false;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Not connected");
+        }
+
+        if (!currentPosition.IsValid()) 
+        {
+            throw ERROR_INFO("Must have a valid lock position");
+        }
+
+        m_calibrationStartingLocation = currentPosition;
+        ClearCalibration();
+
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+void Mount::SetCalibration(double raAngle, double decAngle, double raRate, double decRate)
+{
+    m_decAngle = decAngle;
+    m_raAngle  = raAngle;
+    m_decRate  = decRate;
+    m_raRate   = raRate;
+    m_calibrated = true;
+}
+
+bool Mount::FlipCalibration(void)
+{
+    bool bError = false;
+
+    if (!IsCalibrated())
+    {
+		pFrame->SetStatusText(_T("No CAL"));
+        bError = true;
+    }
+    else
+    {
+        double orig = m_raAngle;
+
+        m_raAngle += PI;
+        if (m_raAngle > PI)
+        {
+            m_raAngle -= 2*PI;
+        }
+        pFrame->SetStatusText(wxString::Format(_T("CAL: %.2f -> %.2f"), orig, m_raAngle),0);
+    }
+
+    return bError;
+}
+
 
 ConfigDialogPane *Mount::GetConfigDialogPane(wxWindow *pParent)
 {
@@ -158,11 +496,42 @@ ConfigDialogPane *Mount::GetConfigDialogPane(wxWindow *pParent)
 Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, Mount *pMount)
     : ConfigDialogPane(_T("Mount Settings"), pParent)
 {
+    int width;
     m_pMount = pMount;
 
 	m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_T("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
 
 	DoAdd(m_pRecalibrate, _T("Check to clear any previous calibration and force PHD to recalibrate"));
+
+
+    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_T("Enable Guide Output"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pEnableGuide, _T("Should mount guide commands be issued"));
+
+	wxString raAlgorithms[] = {
+		_T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+	};
+
+    width = StringArrayWidth(raAlgorithms, WXSIZEOF(raAlgorithms));
+	m_pRaGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1), 
+                                    wxSize(width+35, -1), WXSIZEOF(raAlgorithms), raAlgorithms);
+    DoAdd(_T("RA Algorithm"), m_pRaGuideAlgorithm, 
+	      _T("Which Guide Algorithm to use for Right Ascention"));
+
+    m_pRaGuideAlgorithmConfigDialogPane  = m_pMount->m_pRaGuideAlgorithm->GetConfigDialogPane(pParent);
+    DoAdd(m_pRaGuideAlgorithmConfigDialogPane);
+
+	wxString decAlgorithms[] = {
+		_T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+	};
+
+    width = StringArrayWidth(decAlgorithms, WXSIZEOF(decAlgorithms));
+	m_pDecGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1), 
+                                    wxSize(width+35, -1), WXSIZEOF(decAlgorithms), decAlgorithms);
+    DoAdd(_T("Declination Algorithm"), m_pDecGuideAlgorithm, 
+	      _T("Which Guide Algorithm to use for Declination"));
+
+    m_pDecGuideAlgorithmConfigDialogPane  = pMount->m_pDecGuideAlgorithm->GetConfigDialogPane(pParent);
+    DoAdd(m_pDecGuideAlgorithmConfigDialogPane);
 }
 
 Mount::MountConfigDialogPane::~MountConfigDialogPane(void)
@@ -172,6 +541,13 @@ Mount::MountConfigDialogPane::~MountConfigDialogPane(void)
 void Mount::MountConfigDialogPane::LoadValues(void)
 {
     m_pRecalibrate->SetValue(!m_pMount->IsCalibrated());
+
+	m_pRaGuideAlgorithm->SetSelection(m_pMount->GetRaGuideAlgorithm());
+	m_pDecGuideAlgorithm->SetSelection(m_pMount->GetDecGuideAlgorithm());
+    m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
+
+    m_pRaGuideAlgorithmConfigDialogPane->LoadValues();
+    m_pDecGuideAlgorithmConfigDialogPane->LoadValues();
 }
 
 void Mount::MountConfigDialogPane::UnloadValues(void)
@@ -180,4 +556,15 @@ void Mount::MountConfigDialogPane::UnloadValues(void)
     {
         m_pMount->ClearCalibration();
     }
+
+    m_pMount->SetGuidingEnabled(m_pEnableGuide->GetValue());
+
+    // note these two have to be before the SetXxxAlgorithm calls, because if we
+    // changed the algorithm, the current one will get freed, and if we make
+    // these two calls after that, bad things happen
+    m_pRaGuideAlgorithmConfigDialogPane->UnloadValues();
+    m_pDecGuideAlgorithmConfigDialogPane->UnloadValues();
+
+    m_pMount->SetRaGuideAlgorithm(m_pRaGuideAlgorithm->GetSelection());
+    m_pMount->SetDecGuideAlgorithm(m_pDecGuideAlgorithm->GetSelection());
 }

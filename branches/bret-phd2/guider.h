@@ -92,89 +92,90 @@ enum OVERLAY_MODE
 
 class Guider: public wxWindow
 {
+    // Private member data. 
+    
 	wxImage	*m_displayedImage;
-    GuideAlgorithm *m_pRaGuideAlgorithm;
-    GuideAlgorithm *m_pDecGuideAlgorithm;
-    bool m_guidingEnabled;
     OVERLAY_MODE m_overlayMode;
     bool m_paused;
-
-    friend class GraphLogWindow;
-
-protected:
-    class GuiderConfigDialogPane : public ConfigDialogPane
-    {
-        Guider *m_pGuider;
-        wxCheckBox *m_pEnableGuide;
-        wxChoice   *m_pRaGuideAlgorithm;
-        wxChoice   *m_pDecGuideAlgorithm;
-
-        ConfigDialogPane *m_pRaGuideAlgorithmConfigDialogPane;
-        ConfigDialogPane *m_pDecGuideAlgorithmConfigDialogPane;
-    public:
-        GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider);
-        virtual ~GuiderConfigDialogPane(void);
-
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-    };
-
-    virtual GUIDE_ALGORITHM GetRaGuideAlgorithm(void);
-    virtual bool SetRaGuideAlgorithm(int raGuideAlgorithm);
-
-    virtual GUIDE_ALGORITHM GetDecGuideAlgorithm(void);
-    virtual bool SetDecGuideAlgorithm(int decGuideAlgorithm);
-
-    virtual bool GetGuidingEnabled(void);
-    virtual bool SetGuidingEnabled(bool guidingEnabled);
-    virtual OVERLAY_MODE GetOverlayMode(void);
-
     Point m_lockPosition;
     GUIDER_STATE m_state;
 	double	m_scaleFactor;
     usImage *m_pCurrentImage;
 
-public:
-    // functions with a implemenation in Guider
-    virtual bool IsPaused(void);
-    virtual bool SetPaused(bool paused);
-    virtual double CurrentError(void);
-    virtual GUIDER_STATE GetState(void);
-	virtual void OnClose(wxCloseEvent& evt);
-	virtual void OnErase(wxEraseEvent& evt);
-    virtual void UpdateImageDisplay(usImage *pImage=NULL);
-    virtual Point &LockPosition();
-    virtual bool DoGuide(void);
-    virtual bool SetOverlayMode(int newMode);
+    // Things related to the Advanced Config Dialog
+protected:
+    class GuiderConfigDialogPane : public ConfigDialogPane
+    {
+        Guider *m_pGuider;
 
+    public:
+        GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider);
+        ~GuiderConfigDialogPane(void);
+
+        void LoadValues(void);
+        void UnloadValues(void);
+    };
+
+    OVERLAY_MODE GetOverlayMode(void);
+
+public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
 
-    // pure virutal functions
+protected:
+	Guider(wxWindow *parent, int xSize, int ySize);
+    virtual ~Guider(void);
+
+    bool PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC);
+    void SetState(GUIDER_STATE newState);
+    usImage *CurrentImage(void);
+    double ScaleFactor(void);
+
+public:
+    bool IsPaused(void);
+    bool SetPaused(bool paused);
+    double CurrentError(void);
+    GUIDER_STATE GetState(void);
+	void OnClose(wxCloseEvent& evt);
+	void OnErase(wxEraseEvent& evt);
+    void UpdateImageDisplay(usImage *pImage=NULL);
+    bool DoGuide(void);
+
+    bool SetLockPosition(const Point& position, bool bExact=true);
+    Point &LockPosition();
+
+    bool SetOverlayMode(int newMode);
+    bool SaveCurrentImage(const wxString& fileName);
+
+    void StartGuiding(void);
+    void UpdateGuideState(usImage *pImage, bool bStopping=false);
+
+    void Reset(void);
+
+    // virtual functions -- these CAN be overridden by a subclass, which should
+    // consider whether they need to call the base class functions as part of 
+    // their operation
+private: 
+    virtual void InvalidateLockPosition(void);
+    virtual void UpdateLockPosition(void);
+    
+    // pure virutal functions -- these MUST be overridden by a subclass
+private:
+    virtual void InvalidateCurrentPosition(void) = 0;
+    virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage) = 0;
+    virtual bool SetCurrentPosition(usImage *pImage, const Point& position)=0;
+
+public:
 	virtual void OnPaint(wxPaintEvent& evt) = 0;
-    virtual bool UpdateGuideState(usImage *pImage, bool bStopping=false) = 0;
-    virtual void StartGuiding(void) = 0;
-    virtual void ResetGuideState(void) = 0;
 
     virtual bool IsLocked(void) = 0;
-    virtual bool SetLockPosition(double x, double y, bool bExact=false)=0;
     virtual bool AutoSelect(usImage *pImage=NULL)=0;
 
     virtual Point &CurrentPosition(void) = 0;
     virtual wxRect GetBoundingBox(void) = 0;
-    virtual bool SaveCurrentImage(const wxString& fileName);
 
+
+    // wxWindows Event table
 private:
-    virtual GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
-    virtual bool SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm **ppAlgorithm);
-
-protected:
-    virtual bool PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC);
-    virtual bool SetState(GUIDER_STATE newState);
-
-	Guider(wxWindow *parent, int xSize, int ySize);
-    virtual ~Guider(void);
-
-    // Event table
 	DECLARE_EVENT_TABLE()
 };
 

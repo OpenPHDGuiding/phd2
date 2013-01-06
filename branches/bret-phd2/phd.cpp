@@ -48,7 +48,7 @@ IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
 // Globals`
 
 Config *pConfig = new Config();
-Scope *pScope = new ScopeNone();
+Mount *pMount = new ScopeNone();
 MyFrame *pFrame = NULL;
 GuideCamera *pCamera = NULL;
 

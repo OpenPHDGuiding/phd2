@@ -48,9 +48,6 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
 	m_displayedImage = new wxImage(XWinSize,YWinSize,true);
-    m_guidingEnabled = true;
-    m_pDecGuideAlgorithm = NULL;
-    m_pRaGuideAlgorithm = NULL;
     m_paused = false;
     m_pCurrentImage = new usImage(); // so we always have one
 
@@ -63,8 +60,6 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 Guider::~Guider(void)
 {
 	delete m_displayedImage;
-    delete m_pRaGuideAlgorithm;
-    delete m_pDecGuideAlgorithm;
 }
 
 bool Guider::IsPaused()
@@ -79,20 +74,6 @@ bool Guider::SetPaused(bool state)
     m_paused = state;
 
     return bReturn;
-}
-
-bool Guider::GetGuidingEnabled(void)
-{
-    return m_guidingEnabled;
-}
-
-bool Guider::SetGuidingEnabled(bool guidingEnabled)
-{
-    bool bError = false;
-
-    m_guidingEnabled = guidingEnabled;
-
-    return bError;
 }
 
 OVERLAY_MODE Guider::GetOverlayMode(void)
@@ -146,103 +127,6 @@ double Guider::CurrentError(void)
 GUIDER_STATE Guider::GetState(void)
 {
     return m_state;
-}
-
-bool Guider::SetState(GUIDER_STATE newState)
-{
-    bool bError = false;
-
-    m_state = newState;
-
-    return bError;
-}
-
-GUIDE_ALGORITHM Guider::GetGuideAlgorithm(GuideAlgorithm *pAlgorithm)
-{
-    GUIDE_ALGORITHM ret = GUIDE_ALGORITHM_NONE;
-
-    if (pAlgorithm)
-    {
-        ret = pAlgorithm->Algorithm();
-    }
-    return ret;
-}
-
-bool Guider::SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm** ppAlgorithm)
-{
-    bool bError = false;
-
-    try
-    {
-        switch (guideAlgorithm)
-        {
-            case GUIDE_ALGORITHM_IDENTITY:
-            case GUIDE_ALGORITHM_HYSTERESIS:
-            case GUIDE_ALGORITHM_LOWPASS:
-            case GUIDE_ALGORITHM_LOWPASS2:
-            case GUIDE_ALGORITHM_RESIST_SWITCH:
-                break;
-            case GUIDE_ALGORITHM_NONE:
-            default:
-                throw ERROR_INFO("invalid guideAlgorithm");
-                break;
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-        guideAlgorithm = GUIDE_ALGORITHM_IDENTITY;
-    }
-
-    switch (guideAlgorithm)
-    {
-        case GUIDE_ALGORITHM_IDENTITY:
-            *ppAlgorithm = (GuideAlgorithm *) new GuideAlgorithmIdentity();
-            break;
-        case GUIDE_ALGORITHM_HYSTERESIS:
-            *ppAlgorithm = (GuideAlgorithm *) new GuideAlgorithmHysteresis();
-            break;
-        case GUIDE_ALGORITHM_LOWPASS:
-            *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmLowpass();
-            break;
-        case GUIDE_ALGORITHM_LOWPASS2:
-            *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmLowpass2();
-            break;
-        case GUIDE_ALGORITHM_RESIST_SWITCH:
-            *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmResistSwitch();
-            break;
-        case GUIDE_ALGORITHM_NONE:
-        default:
-            assert(false);
-            break;
-    }
-
-    return bError;
-}
-
-GUIDE_ALGORITHM Guider::GetRaGuideAlgorithm(void)
-{
-    return GetGuideAlgorithm(m_pRaGuideAlgorithm);
-}
-
-bool Guider::SetRaGuideAlgorithm(int raGuideAlgorithm)
-{
-    delete m_pRaGuideAlgorithm;
-
-    return SetGuideAlgorithm(raGuideAlgorithm, &m_pRaGuideAlgorithm);
-}
-
-GUIDE_ALGORITHM Guider::GetDecGuideAlgorithm(void)
-{
-    return GetGuideAlgorithm(m_pDecGuideAlgorithm);
-}
-
-bool Guider::SetDecGuideAlgorithm(int decGuideAlgorithm)
-{
-    delete m_pDecGuideAlgorithm;
-
-    return SetGuideAlgorithm(decGuideAlgorithm, &m_pDecGuideAlgorithm);
 }
 
 void Guider::OnErase(wxEraseEvent &evt)
@@ -319,8 +203,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                 case OVERLAY_RADEC:
                 {
                     double r=30.0;
-                    double cos_angle = cos(pScope->RaAngle());
-                    double sin_angle = sin(pScope->RaAngle());
+                    double cos_angle = cos(pMount->RaAngle());
+                    double sin_angle = sin(pMount->RaAngle());
                     double StarX = pFrame->pGuider->CurrentPosition().X;
                     double StarY = pFrame->pGuider->CurrentPosition().Y;
 
@@ -329,8 +213,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
                     dc.SetPen(wxPen(pFrame->GraphLog->DEC_Color,2,wxPENSTYLE_DOT));
-                    cos_angle = cos(pScope->DecAngle());
-                    sin_angle = sin(pScope->DecAngle());
+                    cos_angle = cos(pMount->DecAngle());
+                    sin_angle = sin(pMount->DecAngle());
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
 
@@ -342,11 +226,11 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
 
                     double MidX = (double) XWinSize / 2.0;
                     double MidY = (double) YWinSize / 2.0;
-                    gc->Rotate(pScope->RaAngle());
+                    gc->Rotate(pMount->RaAngle());
                     gc->GetTransform().TransformPoint(&MidX, &MidY);
-                    gc->Rotate(-pScope->RaAngle());
+                    gc->Rotate(-pMount->RaAngle());
                     gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
-                    gc->Rotate(pScope->RaAngle());
+                    gc->Rotate(pMount->RaAngle());
                     for (i=-2; i<12; i++) {
                         gc->StrokeLine(0.0,step * (double) i,
                             (double) XWinSize, step * (double) i);
@@ -354,12 +238,12 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
 
                     MidX = (double) XWinSize / 2.0;
                     MidY = (double) YWinSize / 2.0;
-                    gc->Rotate(-pScope->RaAngle());
-                    gc->Rotate(pScope->DecAngle());
+                    gc->Rotate(-pMount->RaAngle());
+                    gc->Rotate(pMount->DecAngle());
                     gc->GetTransform().TransformPoint(&MidX, &MidY);
-                    gc->Rotate(-pScope->DecAngle());
+                    gc->Rotate(-pMount->DecAngle());
                     gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
-                    gc->Rotate(pScope->DecAngle());
+                    gc->Rotate(pMount->DecAngle());
                     gc->SetPen(wxPen(pFrame->GraphLog->DEC_Color,1,wxPENSTYLE_DOT ));
                     for (i=-2; i<12; i++) {
                         gc->StrokeLine(0.0,step * (double) i,
@@ -410,76 +294,46 @@ bool Guider::SaveCurrentImage(const wxString& fileName)
     return m_pCurrentImage->Save(fileName);
 }
 
+void Guider::InvalidateLockPosition(void)
+{
+    m_lockPosition.Invalidate();
+}
 
-/*************  Do the actual guiding ***********************/
-bool Guider::DoGuide(void)
+void Guider::UpdateLockPosition(void)
+{
+    SetLockPosition(CurrentPosition(), true);
+}
+
+bool Guider::SetLockPosition(const Point& position, bool bExact)
 {
     bool bError = false;
+    double x=position.X;
+    double y=position.Y;
 
     try
     {
-        if (!CurrentPosition().IsValid())
+        if ((x <= 0) || (x >= m_pCurrentImage->Size.x))
         {
-            throw THROW_INFO("invalid CurrentPosition");
+            throw ERROR_INFO("invalid y value");
         }
 
-        if (!LockPosition().IsValid())
+        if ((y <= 0) || (y >= m_pCurrentImage->Size.x))
         {
-            throw ERROR_INFO("invalid LockPosition");
+            throw ERROR_INFO("invalid x value");
         }
 
-        double theta = LockPosition().Angle(CurrentPosition());
-        double hyp   = LockPosition().Distance(CurrentPosition());
-
-        // Convert theta and hyp into RA and DEC
-
-        double raDistance  = cos(pScope->RaAngle() - theta) * hyp;
-        double decDistance = cos(pScope->DecAngle() - theta) * hyp;
-
-        pFrame->GraphLog->AppendData(LockPosition().dX(CurrentPosition()), LockPosition().dY(CurrentPosition()),
-                raDistance, decDistance);
-
-        // Feed the raw distances to the guide algorithms
-        
-        raDistance = m_pRaGuideAlgorithm->result(raDistance);
-        decDistance = m_pDecGuideAlgorithm->result(decDistance);
-
-        // Figure out the guide directions based on the (possibly) updated distances
-        GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
-        GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
-
-        // Compute the required guide durations
-        double raDuration = fabs(raDistance/pScope->RaRate());
-        double decDuration = fabs(decDistance/pScope->DecRate());
-
-        if (m_guidingEnabled)
+        if (bExact)
         {
-            raDuration = pScope->LimitGuide(raDirection, raDuration);
-            decDuration = pScope->LimitGuide(decDirection, decDuration);
+            m_lockPosition.SetXY(x,y);
         }
         else
         {
-            raDuration = 0.0;
-            decDuration = 0.0;
-        }
+            SetCurrentPosition(m_pCurrentImage, Point(x, y));
 
-        pFrame->SetStatusText("",1);
-
-        // We are now ready to actuallly guide
-        assert(raDuration >= 0);
-        if (raDuration > 0.0)
-        {
-            wxString msg;
-            msg.Printf("%c dur=%.1f dist=%.2f", (raDirection==EAST)?'E':'W', raDuration, raDistance);
-            pFrame->ScheduleGuide(raDirection, raDuration, msg);
-        }
-
-        assert(decDuration >= 0);
-        if (decDuration > 0.0)
-        {
-            wxString msg;
-            msg.Printf("%c dur=%.1f dist=%.2f", (decDirection==SOUTH)?'S':'N', decDuration, decDistance);
-            pFrame->ScheduleGuide(decDirection, decDuration, msg);
+            if (CurrentPosition().IsValid())
+            {
+                SetLockPosition(CurrentPosition());
+            }
         }
     }
     catch (wxString Msg)
@@ -491,40 +345,198 @@ bool Guider::DoGuide(void)
     return bError;
 }
 
+void Guider::SetState(GUIDER_STATE newState)
+{
+    try
+    {
+        Debug.Write(wxString::Format("Changing from state %d to %d\n", m_state, newState));
+
+        if (newState == STATE_STOP)
+        {
+            // we are going to stop looping exposures.  We should put 
+            // ourselves into a good state to restart looping later
+            switch(m_state)
+            {
+                case STATE_UNINITIALIZED:
+                case STATE_SELECTING:
+                case STATE_SELECTED:
+                    break;
+                case STATE_CALIBRATING:
+                    // because we have done some moving here, we need to just 
+                    // start over...
+                    newState = STATE_UNINITIALIZED;
+                    break;
+                case STATE_CALIBRATED:
+                case STATE_GUIDING:
+                    newState = STATE_SELECTED;
+                    break;
+            }
+        }
+
+        if (newState > m_state + 1)
+        {
+            throw ERROR_INFO("Illegal state transition");
+        }
+
+        switch(newState)
+        {
+            case STATE_UNINITIALIZED:
+                InvalidateLockPosition();
+                InvalidateCurrentPosition();
+                newState = STATE_SELECTING;
+                break;
+            case STATE_CALIBRATING:
+                if (pMount->IsCalibrated())
+                {
+                    newState = STATE_CALIBRATED;
+                }
+                else if (pMount->BeginCalibration(CurrentPosition()))
+                {
+                    newState = STATE_UNINITIALIZED;
+                    Debug.Write(ERROR_INFO("pMount->BeginCalibration failed"));
+                }
+                // else we are now in STATE_CALIBRATING
+                break;
+            case STATE_GUIDING:
+                //TODO: Deal with manual lock position
+                m_lockPosition = CurrentPosition();
+                break;
+        }
+
+        m_state = newState;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+}
+
+usImage *Guider::CurrentImage(void)
+{
+    return m_pCurrentImage;
+}
+
+double Guider::ScaleFactor(void)
+{
+    return m_scaleFactor;
+}
+
+void Guider::StartGuiding(void)
+{
+    // we set the state to calibrating.  The state machine will
+    // automatically move from calibrating->calibrated->guiding 
+    // when it can
+    SetState(STATE_CALIBRATING);
+}
+
+void Guider::Reset(void)
+{
+    SetState(STATE_UNINITIALIZED);
+}
+
+/*************  A new image is ready ************************/
+
+void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
+{
+    bool updateStatus = true;
+    wxString statusMessage;
+
+    try
+    {
+        Debug.Write(wxString::Format("UpdateGuideState(): m_state=%d\n", m_state));
+
+        // switch in the new image
+        
+        usImage *pPrevImage = m_pCurrentImage;
+        m_pCurrentImage = pImage;
+        delete pPrevImage;
+
+        if (bStopping)
+        {
+            SetState(STATE_STOP);
+            statusMessage = _T("Stopped Guiding");
+            throw THROW_INFO("Stopped Guiding");
+        }
+
+        if (IsPaused())
+        {
+            statusMessage = _T("Paused");
+            throw THROW_INFO("Skipping frame - guider is paused");
+        }
+
+        if (UpdateCurrentPosition(pImage, statusMessage))
+        {
+            if (m_state == STATE_GUIDING)
+            {
+                wxColor prevColor = GetBackgroundColour();
+                SetBackgroundColour(wxColour(64,0,0));
+                ClearBackground();
+                wxBell();
+                wxMilliSleep(100);
+                SetBackgroundColour(prevColor);
+            }
+
+            throw THROW_INFO("unable to update current position");
+        }
+
+        switch(m_state)
+        {
+            case STATE_SELECTING:
+                if (CurrentPosition().IsValid())
+                {
+                    m_lockPosition = CurrentPosition();
+                    SetState(STATE_SELECTED);
+                }
+                break;
+            case STATE_SELECTED:
+                if (!CurrentPosition().IsValid())
+                {
+                    // we had a current position and lost it
+                     SetState(STATE_UNINITIALIZED);
+                }
+                break;
+            case STATE_CALIBRATING:
+
+                if (pMount->IsCalibrated())
+                {
+                    SetState(STATE_CALIBRATED);
+                }
+                else if (pMount->UpdateCalibrationState(CurrentPosition()))
+                {
+                    SetState(STATE_UNINITIALIZED);
+                    throw ERROR_INFO("Calibration failed");
+                }
+                break;
+            case STATE_CALIBRATED:
+                SetState(STATE_GUIDING);
+                break;
+            case STATE_GUIDING:
+                pFrame->ScheduleMove(pMount, CurrentPosition(), LockPosition());
+                break;
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+
+    // during calibration, the mount is responsible for updating the status message
+    if (m_state != STATE_CALIBRATING)
+    {
+        pFrame->SetStatusText(statusMessage);
+    }
+
+    pFrame->UpdateButtonsStatus();
+
+    Debug.Write("UpdateGuideState exits:" + statusMessage + "\n");
+
+    UpdateImageDisplay(pImage);
+}
+
+
 Guider::GuiderConfigDialogPane::GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider)
     : ConfigDialogPane(_T("Guider Settings"), pParent)
 {
-    m_pGuider = pGuider;
-    int width;
-
-    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_T("Enable Guide Output"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pEnableGuide, _T("Should mount guide commands be issued"));
-
-	wxString raAlgorithms[] = {
-		_T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
-	};
-
-    width = StringArrayWidth(raAlgorithms, WXSIZEOF(raAlgorithms));
-	m_pRaGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1), 
-                                    wxSize(width+35, -1), WXSIZEOF(raAlgorithms), raAlgorithms);
-    DoAdd(_T("RA Algorithm"), m_pRaGuideAlgorithm, 
-	      _T("Which Guide Algorithm to use for Right Ascention"));
-
-    m_pRaGuideAlgorithmConfigDialogPane  = m_pGuider->m_pRaGuideAlgorithm->GetConfigDialogPane(pParent);
-    DoAdd(m_pRaGuideAlgorithmConfigDialogPane);
-
-	wxString decAlgorithms[] = {
-		_T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
-	};
-
-    width = StringArrayWidth(decAlgorithms, WXSIZEOF(decAlgorithms));
-	m_pDecGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1), 
-                                    wxSize(width+35, -1), WXSIZEOF(decAlgorithms), decAlgorithms);
-    DoAdd(_T("Declination Algorithm"), m_pDecGuideAlgorithm, 
-	      _T("Which Guide Algorithm to use for Declination"));
-
-    m_pDecGuideAlgorithmConfigDialogPane  = pGuider->m_pDecGuideAlgorithm->GetConfigDialogPane(pParent);
-    DoAdd(m_pDecGuideAlgorithmConfigDialogPane);
 }
 
 Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
@@ -533,24 +545,9 @@ Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
 
 void Guider::GuiderConfigDialogPane::LoadValues(void)
 {
-	m_pRaGuideAlgorithm->SetSelection(m_pGuider->GetRaGuideAlgorithm());
-	m_pDecGuideAlgorithm->SetSelection(m_pGuider->GetDecGuideAlgorithm());
-    m_pEnableGuide->SetValue(m_pGuider->GetGuidingEnabled());
-
-    m_pRaGuideAlgorithmConfigDialogPane->LoadValues();
-    m_pDecGuideAlgorithmConfigDialogPane->LoadValues();
 }
 
 void Guider::GuiderConfigDialogPane::UnloadValues(void)
 {
-    m_pGuider->SetGuidingEnabled(m_pEnableGuide->GetValue());
 
-    // note these two have to be before the SetXxxAlgorithm calls, because if we
-    // changed the algorithm, the current one will get freed, and if we make
-    // these two calls after that, bad things happen
-    m_pRaGuideAlgorithmConfigDialogPane->UnloadValues();
-    m_pDecGuideAlgorithmConfigDialogPane->UnloadValues();
-
-    m_pGuider->SetRaGuideAlgorithm(m_pRaGuideAlgorithm->GetSelection());
-    m_pGuider->SetDecGuideAlgorithm(m_pDecGuideAlgorithm->GetSelection());
 }

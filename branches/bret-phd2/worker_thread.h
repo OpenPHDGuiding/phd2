@@ -77,6 +77,7 @@ public:
 protected:
     // there is no struct ARGS_TERMINATE
     // there is no HandleTerminate(ARGS_TERMINATE *pArgs) routine
+    // there is no HandleTerminate(ARGS_TERMINATE *pArgs) routine
     // there is no void SendWorkerTerminiateComplete(bool bError);
     // there is no void OnWorkerThreadTerminateComplete(wxThreadEvent& event);
 
@@ -96,16 +97,19 @@ protected:
 
     /*************      Guide       **************************/
 public:
-    void EnqueueWorkerThreadGuideRequest(GUIDE_DIRECTION direction, double exposureDuration, const wxString& statusMessage);
+    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& currentLocation, const Point& desiredLocation);
+    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction);
 protected:
-    struct ARGS_GUIDE
+    struct ARGS_MOVE
     {
-        GUIDE_DIRECTION guideDirection;
-        double          guideDuration;
-        wxString        statusMessage;
+        Mount           *pMount;
+        bool            calibrationMove;
+        GUIDE_DIRECTION direction;
+        Point           currentLocation;
+        Point           desiredLocation;
     };
-    bool HandleGuide(ARGS_GUIDE *pArgs);
-    void SendWorkerThreadGuideComplete(bool bError);
+    bool HandleMove(ARGS_MOVE *pArgs);
+    void SendWorkerThreadMoveComplete(bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadGuideComplete(wxThreadEvent& event);
 
     // types and routines for the server->worker message queue
@@ -115,7 +119,7 @@ protected:
         REQUEST_NONE,       // not used
         REQUEST_TERMINATE,
         REQUEST_EXPOSE,
-        REQUEST_GUIDE,
+        REQUEST_MOVE,
     };
 
     /*
@@ -126,7 +130,7 @@ protected:
     {
         // there is no ARGS_TERMINATE terminate;
         ARGS_EXPOSE expose;
-        ARGS_GUIDE  guide;
+        ARGS_MOVE  move;
     };
 
     /*

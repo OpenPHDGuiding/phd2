@@ -47,21 +47,36 @@ enum GUIDE_DIRECTION {
 class Mount
 {
 protected:
-    bool m_bConnected;
-    bool m_bGuiding;
-    bool m_bCalibrated;
+    bool m_connected;
+    bool m_calibrated;
 
-    double m_dDecAngle;
-    double m_dRaAngle;
-    double m_dDecRate;
-    double m_dRaRate;
+    double m_decAngle;
+    double m_raAngle;
+    double m_decRate;
+    double m_raRate;
+
+    int m_calibrationSteps;
+    int m_backlashSteps;
+    Point m_calibrationStartingLocation;
+    GUIDE_DIRECTION m_calibrationDirection;
+    bool m_guidingEnabled;
+
+    GuideAlgorithm *m_pRaGuideAlgorithm;
+    GuideAlgorithm *m_pDecGuideAlgorithm;
 
 	wxString m_Name;
+
+    // Things related to the Advanced Config Dialog
 protected:
     class MountConfigDialogPane : public ConfigDialogPane
     {
         Mount *m_pMount;
         wxCheckBox *m_pRecalibrate;
+        wxCheckBox *m_pEnableGuide;
+        wxChoice   *m_pRaGuideAlgorithm;
+        wxChoice   *m_pDecGuideAlgorithm;
+        ConfigDialogPane *m_pRaGuideAlgorithmConfigDialogPane;
+        ConfigDialogPane *m_pDecGuideAlgorithmConfigDialogPane;
 
         public:
         MountConfigDialogPane(wxWindow *pParent, Mount *pMount);
@@ -71,27 +86,64 @@ protected:
         virtual void UnloadValues(void);
     };
 
+    GUIDE_ALGORITHM GetRaGuideAlgorithm(void);
+    void SetRaGuideAlgorithm(int raGuideAlgorithm);
+
+    GUIDE_ALGORITHM GetDecGuideAlgorithm(void);
+    void SetDecGuideAlgorithm(int decGuideAlgorithm);
+
+    bool GetGuidingEnabled(void);
+    void SetGuidingEnabled(bool guidingEnabled);
+
+    friend class GraphLogWindow;
+
+public:
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
+    // functions with an implemenation in Guider that cannot be over-ridden
+    // by a subclass
+private:
+    GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
+    bool SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm **ppAlgorithm);
+
 public:
     Mount();
     virtual ~Mount();
 
-    // these MUST be supplied by a subclass
-    virtual bool BeginCalibration(const Point &currentPosition)=0;
-    virtual bool UpdateCalibrationState(const Point &currentPosition)=0;
+    double DecAngle(void);
+    double DecRate(void);
+    double RaAngle(void);
+    double RaRate(void);
 
-    // these CAN be supplied by a subclass
+    bool UpdateCalibrationState(const Point &currentPosition);
+    bool FlipCalibration(void);
+private:
+    wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
+
+    // pure virutal functions -- these MUST be overridden by a subclass
+public: 
+    virtual bool Move(const Point& currentLocation, const Point& desiredLocation)=0;
+    virtual bool Move(GUIDE_DIRECTION direction) = 0;
+
+private:
+    virtual double CalibrationTime(int nCalibrationSteps) = 0;
+    virtual bool BacklashClearingFailed(void) = 0;
+
+    // virtual functions -- these CAN be overridden by a subclass, which should
+    // consider whether they need to call the base class functions as part of 
+    // their operation
+public:
+    virtual bool HasNonGuiMove(void) {return false;}
+
 	virtual wxString &Name(void);
     virtual bool IsConnected(void);
     virtual bool IsCalibrated(void);
-    virtual void ClearCalibration(void);
-    virtual double DecAngle(void);
-    virtual double RaAngle(void);
-    virtual double DecRate(void);
-    virtual double RaRate(void);
     virtual bool Connect(void);
 	virtual bool Disconnect(void);
-    virtual bool SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
+    virtual bool BeginCalibration(const Point &currentPosition);
+    virtual void ClearCalibration(void);
+    virtual void SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
 };
 
 #endif /* MOUNT_H_INCLUDED */

@@ -195,14 +195,13 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					rx = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
 					ry = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
 					if (m_ditherRaOnly) {
-						if (fabs(tan(pScope->RaAngle())) > 1) 
-							rx = ry / tan(pScope->RaAngle());
+						if (fabs(tan(pMount->RaAngle())) > 1) 
+							rx = ry / tan(pMount->RaAngle());
 						else	
-							ry = tan(pScope->RaAngle()) * rx;
+							ry = tan(pMount->RaAngle()) * rx;
 					}
 
-                    pGuider->SetLockPosition(pGuider->LockPosition().Y + rx, 
-                                             pGuider->LockPosition().Y + ry);
+                    pGuider->SetLockPosition(Point(pGuider->LockPosition().Y + rx, pGuider->LockPosition().Y + ry));
 
 					wxLogStatus(_T("Moving by %.2f,%.2f"),rx,ry);
                     rval = RequestedExposureDuration() / 1000;
@@ -232,7 +231,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                     sock->Read(&y, 2);
                     sock->Discard();  // Clean out anything else
 
-                    if (pFrame->pGuider->SetLockPosition(x,y))
+                    if (pFrame->pGuider->SetLockPosition(Point(x,y), false))
                     {
                         wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
                     }
@@ -282,10 +281,10 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					break;
 				case MSG_CLEARCAL:
 					{
-						if( pScope && 
-							pScope->IsConnected() && 
-							pScope->IsCalibrated())
-							pScope->ClearCalibration();
+						if( pMount && 
+							pMount->IsConnected() && 
+							pMount->IsCalibrated())
+							pMount->ClearCalibration();
 					}
 				default:
 					wxLogStatus(_T("Unknown test id received from client: %d"),(int) c);

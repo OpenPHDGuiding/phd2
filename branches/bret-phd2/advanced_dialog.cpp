@@ -84,8 +84,8 @@ wxDialog(pFrame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350)
     m_pFramePane = pFrame->GetConfigDialogPane(this);
     pLeftSizer->Add(m_pFramePane, 0, wxALIGN_CENTER | wxGROW);
 
-    m_pMountPane = pScope->GetConfigDialogPane(this);
-    pLeftSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
+    m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(this);
+    pLeftSizer->Add(m_pGuiderPane, 0, wxALIGN_CENTER | wxGROW);
 
     if (pCamera)
     {
@@ -102,9 +102,9 @@ wxDialog(pFrame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350)
     }
 
     // Build the right column of panes
-
-    m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(this);
-    pRightSizer->Add(m_pGuiderPane, 0, wxALIGN_CENTER | wxGROW);
+    //
+    m_pMountPane = pMount->GetConfigDialogPane(this);
+    pRightSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
 
     SetSizerAndFit(pTopLevelSizer);
 }

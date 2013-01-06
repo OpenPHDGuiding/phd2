@@ -46,7 +46,7 @@ static const bool DefaultServerMode = false;
 static const int DefaultTimelapse = 0;
 
 wxDEFINE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
-wxDEFINE_EVENT(PHD_GUIDE_EVENT, wxCommandEvent);
+wxDEFINE_EVENT(PHD_MOVE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(WORKER_THREAD_SET_STATUS_TEXT_EVENT, wxThreadEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
@@ -110,11 +110,11 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 #endif
     EVT_CLOSE(MyFrame::OnClose)
     EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
-    EVT_THREAD(MYFRAME_WORKER_THREAD_GUIDE_COMPLETE, MyFrame::OnGuideComplete)
+    EVT_THREAD(MYFRAME_WORKER_THREAD_MOVE_COMPLETE, MyFrame::OnMoveComplete)
     EVT_THREAD(MYFRAME_WORKER_THREAD_SET_STATUS_TEXT, MyFrame::OnWorkerThreadSetStatusText)
 
     EVT_COMMAND(wxID_ANY, PHD_EXPOSE_EVENT, MyFrame::OnPhdExposeEvent)
-    EVT_COMMAND(wxID_ANY, PHD_GUIDE_EVENT, MyFrame::OnPhdGuideEvent)
+    EVT_COMMAND(wxID_ANY, PHD_MOVE_EVENT, MyFrame::OnPhdMoveEvent)
 END_EVENT_TABLE()
 
 // ---------------------- Main Frame -------------------------------------
@@ -524,12 +524,12 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
 // frame destructor
 MyFrame::~MyFrame() {
-	if (pScope->IsConnected()) 
+	if (pMount->IsConnected()) 
     {
-		pScope->Disconnect();
+		pMount->Disconnect();
     }
 
-    delete pScope;
+    delete pMount;
 
 	if (pCamera && pCamera->Connected)
     {
@@ -547,7 +547,7 @@ void MyFrame::UpdateButtonsStatus(void)
 
         bool bGuideable = pGuider->GetState() >= STATE_SELECTED &&
                           pGuider->GetState() < STATE_GUIDING &&
-                          pScope->IsConnected();
+                          pMount->IsConnected();
 
         Guide_Button->Enable(bGuideable);
 }
@@ -637,11 +637,18 @@ void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
     pRequest->semaphore.Post();
 }
 
-void MyFrame::OnPhdGuideEvent(wxCommandEvent& evt)
+void MyFrame::OnPhdMoveEvent(wxCommandEvent& evt)
 {
-    PHD_GUIDE_REQUEST *pRequest = (PHD_GUIDE_REQUEST *)evt.GetClientData();
+    PHD_MOVE_REQUEST *pRequest = (PHD_MOVE_REQUEST *)evt.GetClientData();
 
-    pRequest->bError = pScope->Guide(pRequest->guideDirection, pRequest->guideDuration);
+    if (pRequest->calibrationMove)
+    {
+        pRequest->bError = pRequest->pMount->Move(pRequest->direction);
+    }
+    else
+    {
+        pRequest->bError = pRequest->pMount->Move(pRequest->currentLocation, pRequest->desiredLocation);
+    }
 
     pRequest->semaphore.Post();
 }
@@ -655,13 +662,22 @@ void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
     m_pWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
 }
 
-void MyFrame::ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration, const wxString& statusMessage)
+void MyFrame::ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     assert(m_pWorkerThread);
     
-    m_pWorkerThread->EnqueueWorkerThreadGuideRequest(guideDirection, guideDuration, statusMessage);
+    m_pWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, currentLocation, desiredLocation);
+}
+
+void MyFrame::ScheduleMove(Mount *pMount, const GUIDE_DIRECTION direction)
+{
+    wxCriticalSectionLocker lock(m_CSpWorkerThread);
+
+    assert(m_pWorkerThread);
+    
+    m_pWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);
 }
 
 void MyFrame::StartCapturing()
@@ -694,8 +710,8 @@ void MyFrame::OnClose(wxCloseEvent &event) {
 
     StopWorkerThread();
 
-	if (pScope->IsConnected()) { // Disconnect
-		pScope->Disconnect();
+	if (pMount->IsConnected()) { // Disconnect
+		pMount->Disconnect();
     }
 
 	if (pCamera && pCamera->Connected)

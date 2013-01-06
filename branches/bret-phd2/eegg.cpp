@@ -36,16 +36,18 @@
 
 void TestGuide() {
 
-	wxMessageBox(_T("W RA+")); wxTheApp->Yield(); pScope->Guide(WEST,2000); wxTheApp->Yield();
-	wxMessageBox(_T("N Dec+"));  wxTheApp->Yield(); pScope->Guide(NORTH,2000);wxTheApp->Yield();
-	wxMessageBox(_T("E RA-"));  wxTheApp->Yield(); pScope->Guide(EAST,2000);wxTheApp->Yield();
-	wxMessageBox(_T("S Dec-"));  wxTheApp->Yield(); pScope->Guide(SOUTH,2000);wxTheApp->Yield();
+#ifdef BRET_TODO
+	wxMessageBox(_T("W RA+")); wxTheApp->Yield(); pMount->Guide(WEST,2000); wxTheApp->Yield();
+	wxMessageBox(_T("N Dec+"));  wxTheApp->Yield(); pMount->Guide(NORTH,2000);wxTheApp->Yield();
+	wxMessageBox(_T("E RA-"));  wxTheApp->Yield(); pMount->Guide(EAST,2000);wxTheApp->Yield();
+	wxMessageBox(_T("S Dec-"));  wxTheApp->Yield(); pMount->Guide(SOUTH,2000);wxTheApp->Yield();
 	wxMessageBox(_T("Done"));
+#endif
 }
 
 void MyFrame::OnEEGG(wxCommandEvent &evt) {
 
-	if ((evt.GetId() == EEGG_TESTGUIDEDIR) && (pScope->IsConnected()))
+	if ((evt.GetId() == EEGG_TESTGUIDEDIR) && (pMount->IsConnected()))
 		TestGuide();
 	else if (evt.GetId() == EEGG_RANDOMMOTION) {
 		RandomMotionMode = !RandomMotionMode;
@@ -53,10 +55,10 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 	}
 	else if (evt.GetId() == EEGG_MANUALCAL) {
 		wxString tmpstr;
-        double RaRate   = pScope->RaRate();
-        double DecRate  = pScope->DecRate();
-        double RaAngle  = pScope->RaAngle();
-        double DecAngle = pScope->DecAngle();
+        double RaRate   = pMount->RaRate();
+        double DecRate  = pMount->DecRate();
+        double RaAngle  = pMount->RaAngle();
+        double DecAngle = pMount->DecAngle();
 
 		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("RA rate"), wxString::Format(_T("%.4f"),RaRate));
 		if (tmpstr.IsEmpty()) return;
@@ -74,27 +76,24 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 		if (tmpstr.IsEmpty()) return;
 		tmpstr.ToDouble(&DecAngle); // = 0.0035;
 
-		pScope->SetCalibration(RaAngle, DecAngle, RaRate, DecRate);
+		pMount->SetCalibration(RaAngle, DecAngle, RaRate, DecRate);
 		SetStatusText(_T("Cal"),5);
 	}
 	else if (evt.GetId() == EEGG_CLEARCAL) {
-		pScope->ClearCalibration(); // clear calibration
+		pMount->ClearCalibration(); // clear calibration
 		SetStatusText(_T("No cal"),5);
 	}
 	else if (evt.GetId() == EEGG_FLIPRACAL) {
-		if (!pScope->IsCalibrated())
+		if (!pMount->IsCalibrated())
 			return;
-        double RaAngle  = pScope->RaAngle();
 
-		double orig=pScope->RaAngle();
-		RaAngle += 3.14;
-		if (RaAngle > 3.14)
-			RaAngle -= 6.28;
-		pScope->SetCalibration(RaAngle, pScope->DecAngle(), pScope->RaRate(), pScope->DecRate());
-		wxMessageBox(wxString::Format(_T("RA calibration angle flipped: %.2f to %.2f"),orig,pScope->RaAngle()));
+		double orig=pMount->RaAngle();
+        pMount->FlipCalibration();
+        double RaAngle  = pMount->RaAngle();
+		wxMessageBox(wxString::Format(_T("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->RaAngle()));
 	}
 	else if (evt.GetId() == EEGG_MANUALLOCK) {
-		if (!pScope->IsConnected() || !pCamera && !pCamera->Connected || !pScope->IsCalibrated())
+		if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
 			return;
 		if (pGuider->GetState() > STATE_SELECTED) return;  // must not be calibrating or guiding already
 		if (evt.IsChecked()) {
@@ -115,7 +114,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 				tmpstr.ToDouble(&LockY); 
 				LockY = fabs(LockY);
 			}
-            pFrame->pGuider->SetLockPosition(LockX, LockY, true);
+            pFrame->pGuider->SetLockPosition(Point(LockX, LockY));
 		}
 		else {
 			//ManualLock = false;

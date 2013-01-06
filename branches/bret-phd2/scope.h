@@ -39,13 +39,11 @@
 class Scope:public Mount
 {
     int m_calibrationDuration;
-    int m_calibrationSteps;
-    int m_backlashSteps;
-    Point m_calibrationStartingLocation;
-    GUIDE_DIRECTION m_calibrationDirection;
     int m_maxDecDuration;
     int m_maxRaDuration;
     DEC_GUIDE_MODE m_decGuideMode;
+
+    // Things related to the Advanced Config Dialog
 protected:
     class ScopeConfigDialogPane : public MountConfigDialogPane
     {
@@ -63,21 +61,6 @@ protected:
         virtual void UnloadValues(void);
     };
 
-public:
-    Scope(void);
-    virtual ~Scope(void);
-
-    // these MUST be supplied by a subclass
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
-    virtual bool IsGuiding()=0;
-
-    // these CAN be supplied by a subclass
-    virtual bool BeginCalibration(const Point &currentPosition);
-    virtual bool UpdateCalibrationState(const Point &currentPosition);
-    virtual double LimitGuide(const GUIDE_DIRECTION direction, double durationMs);
-
-    virtual bool HasNonGUIGuide(void) {return false;}
-
     virtual int GetCalibrationDuration(void);
     virtual bool SetCalibrationDuration(int calibrationDuration);
     virtual int GetMaxDecDuration(void);
@@ -87,11 +70,28 @@ public:
     virtual DEC_GUIDE_MODE GetDecGuideMode(void);
     virtual bool SetDecGuideMode(int decGuideMode);
 
+    friend class GraphLogWindow;
+
+public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
+    // functions with an implemenation in Scope that cannot be over-ridden
+    // by a subclass
+public:
+    Scope(void);
+    virtual ~Scope(void);
 
+public:
+    bool Move(const Point& currentLocation, const Point& desiredLocation);
 private:
-    wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
+    bool Move(GUIDE_DIRECTION direction);
+    double CalibrationTime(int nCalibrationSteps);
+    bool BacklashClearingFailed(void);
+
+// these MUST be supplied by a subclass
+private:
+    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
+    virtual bool IsGuiding()=0;
 };
 
 #endif /* SCOPE_H_INCLUDED */

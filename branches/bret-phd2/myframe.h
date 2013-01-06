@@ -40,12 +40,12 @@
 enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
     MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE = wxID_HIGHEST+1,
-    MYFRAME_WORKER_THREAD_GUIDE_COMPLETE,
+    MYFRAME_WORKER_THREAD_MOVE_COMPLETE,
     MYFRAME_WORKER_THREAD_SET_STATUS_TEXT,
 };
 
 wxDECLARE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
-wxDECLARE_EVENT(PHD_GUIDE_EVENT, wxCommandEvent);
+wxDECLARE_EVENT(PHD_MOVE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(WORKER_THREAD_SET_STATUS_TEXT_EVENT, wxThreadEvent);
 
 enum NOISE_REDUCTION_METHOD
@@ -165,7 +165,7 @@ public:
 	void OnDonateMenu(wxCommandEvent& evt);
 #endif
 	void OnExposeComplete(wxThreadEvent& evt);
-	void OnGuideComplete(wxThreadEvent& evt);
+	void OnMoveComplete(wxThreadEvent& evt);
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
@@ -179,17 +179,21 @@ public:
     };
     void OnPhdExposeEvent(wxCommandEvent &evt);
 
-    struct PHD_GUIDE_REQUEST
+    struct PHD_MOVE_REQUEST
     {
-        GUIDE_DIRECTION  guideDirection;
-        double           guideDuration;
+        Mount           *pMount;
+        bool            calibrationMove;
+        GUIDE_DIRECTION direction;
+        Point           currentLocation;
+        Point           desiredLocation;
         bool             bError;
         wxSemaphore      semaphore;
     };
-    void OnPhdGuideEvent(wxCommandEvent &evt);
+    void OnPhdMoveEvent(wxCommandEvent &evt);
 
     void ScheduleExposure(double exposureDuration, wxRect subframe);
-    void ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration, const wxString& statusMessage);
+    void ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation);
+    void ScheduleMove(Mount *pMount, const GUIDE_DIRECTION direction);
 
     void StartCapturing(void);
     void StopCapturing(void);

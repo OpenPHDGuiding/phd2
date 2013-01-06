@@ -225,7 +225,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             delete pNewFrame;
 
             StopCapturing();
-            pGuider->ResetGuideState();
+            pGuider->Reset();
 
             Debug.Write("OnExposureComplete(): Capture Error reported\n");
 
@@ -235,6 +235,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         pGuider->UpdateGuideState(pNewFrame, !CaptureActive);
         pNewFrame = NULL; // the guider owns in now
 
+#ifdef BRET_DODO
         if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING)
         {
 			GUIDE_DIRECTION dir;
@@ -252,10 +253,11 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
                 else
                     dir = SOUTH;
 				dur = rand() % 1000;
-				pScope->Guide(dir,dur);
+				pMount->Guide(dir,dur);
                 ScheduleGuide(dir, dur, wxString::Format(_T("Random motion: %d %d"),dir,dur));
 			}
         }
+#endif
         
         if (CaptureActive)
         {
@@ -268,13 +270,13 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
     }
 }
 
-void MyFrame::OnGuideComplete(wxThreadEvent& event)
+void MyFrame::OnMoveComplete(wxThreadEvent& event)
 {
     try
     {
         if (event.GetInt())
         {
-            throw ERROR_INFO("Error reported guiding");
+            throw ERROR_INFO("Error reported moving");
         }
     }
     catch (wxString Msg)
@@ -424,20 +426,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 
 bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))
 {
-	if (!pScope->IsCalibrated())
-	{
-		SetStatusText(_T("No CAL"));
-		return false;
-	}
-    double RaAngle  = pScope->RaAngle();
-
-	double orig=pScope->RaAngle();
-	RaAngle += 3.14;
-	if (RaAngle > 3.14)
-		RaAngle -= 6.28;
-	pScope->SetCalibration(RaAngle, pScope->DecAngle(), pScope->RaRate(), pScope->DecRate());
-	SetStatusText(wxString::Format(_T("CAL: %.2f -> %.2f"),orig,pScope->RaAngle()),0);
-	return true;
+	return !pMount->FlipCalibration();
 }
 
 void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {
@@ -497,13 +486,13 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
     try
     {
-        if (pScope == NULL) 
+        if (pMount == NULL) 
         {
             // no mount selected -- should never happen
-            throw ERROR_INFO("pScope == NULL");
+            throw ERROR_INFO("pMount == NULL");
         }
 
-        if (!pScope->IsConnected())
+        if (!pMount->IsConnected())
         {
             throw ERROR_INFO("Unable to guide with no scope Connected");
         }
@@ -520,17 +509,19 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
         }
 
         pGuider->StartGuiding();
+
         StartCapturing();
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
+        pGuider->Reset();
     }
     return;
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
-	if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
+	if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pMount->IsConnected())) return;
 	TestGuideDialog* dlog = new TestGuideDialog();
 	dlog->Show();
 }

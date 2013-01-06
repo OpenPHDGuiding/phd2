@@ -51,8 +51,6 @@
 
 static const double DefaultMassChangeThreshold = 0.5;
 static const int DefaultSearchRegion = 15;
-static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
-static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_RESIST_SWITCH;
 
 BEGIN_EVENT_TABLE(GuiderOneStar, Guider)
     EVT_PAINT(GuiderOneStar::OnPaint)
@@ -70,45 +68,11 @@ GuiderOneStar::GuiderOneStar(wxWindow *parent):
     int searchRegion = pConfig->GetInt("/guider/onestar/SearchRegion", DefaultSearchRegion);
     SetSearchRegion(searchRegion);
 
-    int raGuideAlgorithm = pConfig->GetInt("/guider/onestar/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
-    SetRaGuideAlgorithm(raGuideAlgorithm);
-
-    int decGuideAlgorithm = pConfig->GetInt("/guider/onestar/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
-    SetDecGuideAlgorithm(decGuideAlgorithm);
-
     SetState(STATE_UNINITIALIZED);
 }
 
 GuiderOneStar::~GuiderOneStar() 
 {
-}
-
-bool GuiderOneStar::SetDecGuideAlgorithm(int decGuideAlgorithm)
-{
-
-    bool bError = Guider::SetDecGuideAlgorithm(decGuideAlgorithm);
-
-    if (bError)
-    {
-        Guider::SetDecGuideAlgorithm(DefaultDecGuideAlgorithm);
-    }
-    pConfig->SetInt("/guider/onestar/DecGuideAlgorithm", GetDecGuideAlgorithm());
-
-    return bError;
-}
-
-bool GuiderOneStar::SetRaGuideAlgorithm(int raGuideAlgorithm)
-{
-
-    bool bError = Guider::SetRaGuideAlgorithm(raGuideAlgorithm);
-
-    if (bError)
-    {
-        Guider::SetRaGuideAlgorithm(DefaultRaGuideAlgorithm);
-    }
-    pConfig->SetInt("/guider/onestar/RaGuideAlgorithm", GetRaGuideAlgorithm());
-
-    return bError;
 }
 
 double GuiderOneStar::GetMassChangeThreshold(void)
@@ -172,42 +136,31 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
     return bError;
 }
 
-bool GuiderOneStar::SetLockPosition(double x, double y, bool bExact)
+
+bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const Point& position)
 {
-    bool bError = false;
+    bool bError = true;
 
     try
     {
-        if ((x <= 0) || (x >= m_pCurrentImage->Size.x))
+        double x = position.X;
+        double y = position.Y;
+
+        if ((x <= 0) || (x >= pImage->Size.x))
         {
             throw ERROR_INFO("invalid y value");
         }
 
-        if ((y <= 0) || (y >= m_pCurrentImage->Size.x))
+        if ((y <= 0) || (y >= pImage->Size.x))
         {
             throw ERROR_INFO("invalid x value");
         }
 
-        if (SetState(STATE_SELECTING))
-        {
-            throw ERROR_INFO("unable to set state to STATE_SELECTING");
-        }
-
-        if (bExact)
-        {
-            m_lockPosition = Point(x,y);
-        }
-        else
-        {
-            m_star.Find(m_pCurrentImage, m_searchRegion, x, y);
-            // if the find was successful, the next state machine update will 
-            // move our state to STATE_SELECTED
-        }
+        bError = m_star.Find(pImage, m_searchRegion, x, y);
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
     }
 
     return bError;
@@ -223,7 +176,7 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
 
         if (pImage == NULL)
         {
-            pImage = m_pCurrentImage;
+            pImage = CurrentImage();
         }
 
         if (!newStar.AutoFind(pImage))
@@ -231,7 +184,9 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
             throw ERROR_INFO("Uable to AutoFind");
         }
 
-        if (!SetLockPosition(newStar.X, newStar.Y))
+        m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y);
+
+        if (!SetLockPosition(m_star , true))
         {
             throw ERROR_INFO("Uable to set Lock Position");
         }
@@ -259,9 +214,9 @@ wxRect GuiderOneStar::GetBoundingBox(void)
 {
     wxRect box(0, 0, 0, 0);
 
-    if (m_state == STATE_GUIDING)
+    if (GetState() == STATE_GUIDING)
     {
-        box = wxRect(m_lockPosition.X - 2*m_searchRegion, m_lockPosition.Y - 2*m_searchRegion,
+        box = wxRect(LockPosition().X - 2*m_searchRegion, LockPosition().Y - 2*m_searchRegion,
                 4*m_searchRegion, 4*m_searchRegion);
         box.Intersect(wxRect(0, 0, pCamera->FullSize.x, pCamera->FullSize.y));
     }
@@ -269,113 +224,21 @@ wxRect GuiderOneStar::GetBoundingBox(void)
     return box;
 }
 
-bool GuiderOneStar::SetState(GUIDER_STATE newState)
+void GuiderOneStar::InvalidateCurrentPosition(void)
 {
-    bool bError = false;
-
-    try
-    {
-        Debug.Write(wxString::Format("Changing from state %d to %d\n", m_state, newState));
-
-        if (newState == STATE_STOP)
-        {
-            // we are going to stop looping exposures.  We should put 
-            // ourselves into a good state to restart looping later
-            switch(m_state)
-            {
-                case STATE_UNINITIALIZED:
-                case STATE_SELECTING:
-                case STATE_SELECTED:
-                    break;
-                case STATE_CALIBRATING:
-                    // because we have done some moving here, we need to just 
-                    // start over...
-                    newState = STATE_UNINITIALIZED;
-                    break;
-                case STATE_CALIBRATED:
-                case STATE_GUIDING:
-                    newState = STATE_SELECTED;
-                    break;
-            }
-        }
-
-        if (newState > m_state + 1)
-        {
-            throw ERROR_INFO("Illegal state transition");
-        }
-
-        switch(newState)
-        {
-            case STATE_UNINITIALIZED:
-                m_lockPosition.Invalidate();
-                m_star.Invalidate();
-                m_autoSelectTries = 0;
-                newState = STATE_SELECTING;
-                break;
-            case STATE_CALIBRATING:
-                if (pScope->IsCalibrated())
-                {
-                    newState = STATE_CALIBRATED;
-                }
-                else
-                {
-                    if (pScope->BeginCalibration(m_star))
-                    {
-                        newState = STATE_UNINITIALIZED;
-                        Debug.Write(ERROR_INFO("pScope->BeginCalibration failed"));
-                    }
-                }
-                break;
-            case STATE_GUIDING:
-                m_lockPosition = m_star;
-                break;
-        }
-
-        if (Guider::SetState(newState))
-        {
-            throw ERROR_INFO("Guider::SetState() failed");
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
+    m_star.Invalidate();
+    m_autoSelectTries = 0;
 }
 
-/*************  A new image is ready ************************/
-
-bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
+bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessage)
 {
-    bool bError = false;
-    bool updateStatus = true;
-    wxString statusMessage;
+    bool bError = true;
 
     try
     {
-        Debug.Write(wxString::Format("UpdateGuideState(): m_state=%d\n", m_state));
+        GUIDER_STATE state = GetState();
 
-        // switch in the new image
-        
-        delete m_pCurrentImage;
-        m_pCurrentImage = pImage;
-
-        if (bStopping)
-        {
-            SetState(STATE_STOP);
-            statusMessage = _T("Stopped Exposing");
-            throw THROW_INFO("Stopped Exposing");
-        }
-
-        if (IsPaused())
-        {
-            statusMessage = _T("Paused");
-            throw THROW_INFO("Skipping frame - guider is paused");
-        }
-
-        if (m_state == STATE_SELECTING && m_autoSelectTries++ == 0)
+        if (state == STATE_SELECTING && m_autoSelectTries++ == 0)
         {
             Debug.Write("UpdateGuideState(): Autoselecting\n");
             if (AutoSelect(pImage))
@@ -432,95 +295,24 @@ bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bStopping)
         // update the star position, mass, etc.
         m_star = newStar;
         m_badMassCount = 0;
+        bError = false;
 
+        pFrame->Profile->UpdateData(pImage, m_star.X, m_star.Y);
         statusMessage.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
-
-        switch(m_state)
-        {
-            case STATE_SELECTING:
-                if (m_star.IsValid())
-                {
-                    m_lockPosition = m_star;
-                    SetState(STATE_SELECTED);
-                }
-                break;
-            case STATE_SELECTED:
-                if (!m_star.IsValid())
-                {
-                     SetState(STATE_UNINITIALIZED);
-                }
-                break;
-            case STATE_CALIBRATING:
-                updateStatus = false;
-
-                if (pScope->IsCalibrated())
-                {
-                    SetState(STATE_CALIBRATED);
-                }
-                else if (pScope->UpdateCalibrationState(m_star))
-                {
-                    SetState(STATE_UNINITIALIZED);
-                    throw ERROR_INFO("Calibration failed");
-                }
-                break;
-            case STATE_CALIBRATED:
-                SetState(STATE_GUIDING);
-                break;
-            case STATE_GUIDING:
-                if (DoGuide())
-                {
-                    Debug.Write("UpdateGuideState(): DoGuide returned an error\n");
-
-                    wxColor prevColor = GetBackgroundColour();
-                    SetBackgroundColour(wxColour(64,0,0));
-                    ClearBackground();
-                    wxBell();
-                    wxMilliSleep(100);
-                    SetBackgroundColour(prevColor);
-
-                    throw ERROR_INFO("DoGuide returned an error");
-                }
-                break;
-        }
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
     }
-
-    if (updateStatus)
-    {
-        pFrame->SetStatusText(statusMessage);
-    }
-
-    pFrame->Profile->UpdateData(m_pCurrentImage, CurrentPosition().X, CurrentPosition().Y);
-    pFrame->UpdateButtonsStatus();
-
-    Debug.Write("UpdateGuideState exits:" + statusMessage + "\n");
-
-    UpdateImageDisplay(pImage);
 
     return bError;
-}
-
-void GuiderOneStar::ResetGuideState(void)
-{
-    SetState(STATE_UNINITIALIZED);
-}
-
-void GuiderOneStar::StartGuiding(void)
-{
-    // we set the state to calibrating.  The state machine will
-    // automatically move from calibrating->calibrated->guiding 
-    SetState(STATE_CALIBRATING);
 }
 
 void GuiderOneStar::OnLClick(wxMouseEvent &mevent) 
 {
     try
     {
-        if (m_state > STATE_SELECTED) 
+        if (GetState() > STATE_SELECTED) 
         {
             mevent.Skip();
             throw THROW_INFO("Skipping event because state > STATE_SELECTED");
@@ -539,21 +331,27 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
                 throw THROW_INFO("Skipping event because click outside of search region");
             }
 
-            if (m_pCurrentImage->NPixels == 0)
+            usImage *pImage = CurrentImage();
+
+            if (pImage->NPixels == 0)
             {
                 mevent.Skip();
                 throw ERROR_INFO("Skipping event m_pCurrentImage->NPixels == 0");
             }
 
-            double StarX = (double) mevent.m_x / m_scaleFactor;
-            double StarY = (double) mevent.m_y / m_scaleFactor;
+            double scaleFactor = ScaleFactor();
+            double StarX = (double) mevent.m_x / scaleFactor;
+            double StarY = (double) mevent.m_y / scaleFactor;
 
-            if (SetLockPosition(StarX, StarY))
+            SetCurrentPosition(pImage, Point(StarX, StarY));
+
+            if (!m_star.IsValid())
             {
                 pFrame->SetStatusText(wxString::Format(_T("No star found")));
             }
             else
             {
+                SetLockPosition(m_star, true);
                 pFrame->SetStatusText(wxString::Format(_T("Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
                 pFrame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),m_star.Mass,m_star.SNR));
             }
@@ -579,55 +377,58 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         // PaintHelper drew the image and any overlays
         // now decorate the image to show the selection
         
+        GUIDER_STATE state = GetState();
+        double scaleFactor = ScaleFactor();
         bool FoundStar = m_star.WasFound();
         double StarX = m_star.X;
         double StarY = m_star.Y;
 
-        double LockX = m_lockPosition.X;
-        double LockY = m_lockPosition.Y;
+        double LockX = LockPosition().X;
+        double LockY = LockPosition().Y;
         
-		if (m_state == STATE_SELECTED || IsPaused()) {
+		if (state == STATE_SELECTED || IsPaused()) {
 
 			if (FoundStar)
 				dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
 			else
 				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
+			dc.DrawRectangle(ROUND(StarX*scaleFactor)-m_searchRegion,ROUND(StarY*scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 		}
-		else if (m_state == STATE_CALIBRATING) {  // in the cal process
+		else if (state == STATE_CALIBRATING) {  // in the cal process
 			dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
+			dc.DrawRectangle(ROUND(StarX*scaleFactor)-m_searchRegion,ROUND(StarY*scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 			dc.SetPen(wxPen(wxColor(255,255,0),1,wxDOT));
-			dc.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
-			dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
+			dc.DrawLine(0, LockY*scaleFactor, XWinSize, LockY*scaleFactor);
+			dc.DrawLine(LockX*scaleFactor, 0, LockX*scaleFactor, YWinSize);
 
 		}
-		else if (m_state == STATE_GUIDING) { // locked and guiding
+		else if (state == STATE_GUIDING) { // locked and guiding
 			if (FoundStar)
 				dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
 			else
 				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
+			dc.DrawRectangle(ROUND(StarX*scaleFactor)-m_searchRegion,ROUND(StarY*scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 			dc.SetPen(wxPen(wxColor(0,255,0)));
-			dc.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
-			dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
+			dc.DrawLine(0, LockY*scaleFactor, XWinSize, LockY*scaleFactor);
+			dc.DrawLine(LockX*scaleFactor, 0, LockX*scaleFactor, YWinSize);
 
 		}
-		if ((Log_Images==1) && (m_state >= STATE_SELECTED)) {  // Save star image as a JPEG
+
+		if ((Log_Images==1) && (state >= STATE_SELECTED)) {  // Save star image as a JPEG
 			wxBitmap SubBmp(60,60,-1);
 			wxMemoryDC tmpMdc;
 			tmpMdc.SelectObject(SubBmp);
 			memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
-			//memDC.CrossHair(ROUND(LockX*m_scaleFactor),ROUND(LockY*m_scaleFactor));  // Draw the cross-hair on the origin
-			memDC.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
-			memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
+			//memDC.CrossHair(ROUND(LockX*scaleFactor),ROUND(LockY*scaleFactor));  // Draw the cross-hair on the origin
+			memDC.DrawLine(0, LockY*scaleFactor, XWinSize, LockY*scaleFactor);
+			memDC.DrawLine(LockX*scaleFactor, 0, LockX*scaleFactor, YWinSize);
 #ifdef __APPLEX__
-			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
+			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*scaleFactor)-30,wxCOPY,false);
 #else
-			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
+			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*scaleFactor)-30,ROUND(StarY*scaleFactor)-30,wxCOPY,false);
 #endif
 
 			//			tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
@@ -639,7 +440,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
 			SubBmp.SaveFile(fname,wxBITMAP_TYPE_JPEG);
 			tmpMdc.SelectObject(wxNullBitmap);
 		}
-		else if ((Log_Images==2) && (m_state >= STATE_SELECTED)) { // Save star image as a FITS
+		else if ((Log_Images==2) && (state >= STATE_SELECTED)) { // Save star image as a FITS
 			SaveStarFITS();
 		}
 		memDC.SelectObject(wxNullBitmap);
@@ -649,21 +450,22 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
 void GuiderOneStar::SaveStarFITS() {
     double StarX = m_star.X;
     double StarY = m_star.Y;
-
+    usImage *pImage = CurrentImage();
 	usImage tmpimg;
+
 	tmpimg.Init(60,60);
 	int start_x = ROUND(StarX)-30;
 	int start_y = ROUND(StarY)-30;
-	if ((start_x + 60) > m_pCurrentImage->Size.GetWidth())
-		start_x = m_pCurrentImage->Size.GetWidth() - 60;
-	if ((start_y + 60) > m_pCurrentImage->Size.GetHeight())
-		start_y = m_pCurrentImage->Size.GetHeight() - 60;
+	if ((start_x + 60) > pImage->Size.GetWidth())
+		start_x = pImage->Size.GetWidth() - 60;
+	if ((start_y + 60) > pImage->Size.GetHeight())
+		start_y = pImage->Size.GetHeight() - 60;
 	int x,y, width;
-	width = m_pCurrentImage->Size.GetWidth();
+	width = pImage->Size.GetWidth();
 	unsigned short *usptr = tmpimg.ImageData;
 	for (y=0; y<60; y++)
 		for (x=0; x<60; x++, usptr++)
-			*usptr = *(m_pCurrentImage->ImageData + (y+start_y)*width + (x+start_x));
+			*usptr = *(pImage->ImageData + (y+start_y)*width + (x+start_x));
 	wxString fname = LogFile->GetName();
 	wxDateTime CapTime;
 	CapTime=wxDateTime::Now();
@@ -696,12 +498,12 @@ void GuiderOneStar::SaveStarFITS() {
 
 		sprintf(keyname,"DATE-OBS");
 		sprintf(keycomment,"YYYY-MM-DDThh:mm:ss observation start, UT");
-		sprintf(keystring,"%s",(const char*) m_pCurrentImage->ImgStartDate.c_str());
+		sprintf(keystring,"%s",(const char*) pImage->ImgStartDate.c_str());
 		if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
 
 		sprintf(keyname,"EXPOSURE");
 		sprintf(keycomment,"Exposure time [s]");
-		float dur = (float) m_pCurrentImage->ImgExpDur / 1000.0;
+		float dur = (float) pImage->ImgExpDur / 1000.0;
 		if (!status) fits_write_key(fptr, TFLOAT, keyname, &dur, keycomment, &status);
 
 		unsigned int tmp = 1;

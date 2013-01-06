@@ -42,10 +42,6 @@ static const int DefaultMaxDecDuration  = 1000;
 static const int DefaultMaxRaDuration  = 1000;
 static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
 
-static const int MAX_CALIBRATION_STEPS = 60;
-static const double MAX_CALIBRATION_DISTANCE = 25.0;
-static const double DEC_BACKLASH_DISTANCE = 3.0;
-
 Scope::Scope(void)
 {
     m_calibrationSteps = 0;
@@ -71,6 +67,16 @@ Scope::~Scope(void)
 int Scope::GetCalibrationDuration(void)
 {
     return m_calibrationDuration;
+}
+
+bool Scope::BacklashClearingFailed(void)
+{
+    bool bError = false;
+
+    wxMessageBox(_T("Unable to clear DEC backlash -- turning off Dec guiding"), _T("Alert"), wxOK | wxICON_ERROR);
+    SetDecGuideMode(DEC_NONE);
+
+    return bError;
 }
 
 bool Scope::SetCalibrationDuration(int calibrationDuration)
@@ -203,7 +209,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
 	if (pGuider->GetState() > STATE_SELECTED) return;
 	if (CaptureActive) return;  // Looping an exposure already
-	if (pScope->IsConnected()) pScope->Disconnect();
+	if (pMount->IsConnected()) pMount->Disconnect();
 
     if (false)
     {
@@ -366,16 +372,16 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	#ifdef GUIDE_INDI
     else if (mount_menu->IsChecked(MOUNT_INDI)) {
         if (!INDI_ScopeConnect()) {
-            pScope->IsConnected() = MOUNT_INDI;
+            pMount->IsConnected() = MOUNT_INDI;
         } else {
-            pScope->IsConnected() = 0;
+            pMount->IsConnected() = 0;
             SetStatusText(_T("FAIL: INDI mount"));
         }
     }
 #endif
 	if (pNewScope && pNewScope->IsConnected()) {
-        delete pScope;
-        pScope = pNewScope;
+        delete pMount;
+        pMount = pNewScope;
 		SetStatusText(_T("Mount connected"));
 		SetStatusText(_T("Scope"),4);
         // now store the scope we selected so we can use it as the default next time.
@@ -401,57 +407,102 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     UpdateButtonsStatus();
 }
 
-double Scope::LimitGuide(const GUIDE_DIRECTION direction, double durationMs)
+bool Scope::Move(GUIDE_DIRECTION direction)
 {
-    // Enforce max durations
-    switch(direction)
+    return Guide(direction, m_calibrationDuration);
+}
+
+bool Scope::Move(const Point& currentLocation, const Point& desiredLocation)
+{
+    bool bError = false;
+
+    try
     {
-        case NORTH:
-        case SOUTH:
-            if (durationMs > m_maxDecDuration)
+        if (!currentLocation.IsValid())
+        {
+            throw THROW_INFO("invalid CurrentPosition");
+        }
+
+        if (!desiredLocation.IsValid())
+        {
+            throw ERROR_INFO("invalid LockPosition");
+        }
+
+        double theta = desiredLocation.Angle(currentLocation);
+        double hyp   = desiredLocation.Distance(currentLocation);
+
+        // Convert theta and hyp into RA and DEC
+
+        double raDistance  = cos(pMount->RaAngle() - theta) * hyp;
+        double decDistance = cos(pMount->DecAngle() - theta) * hyp;
+
+        pFrame->GraphLog->AppendData(desiredLocation.dX(currentLocation), desiredLocation.dY(currentLocation),
+                raDistance, decDistance);
+
+        // Feed the raw distances to the guide algorithms
+
+        raDistance = m_pRaGuideAlgorithm->result(raDistance);
+        decDistance = m_pDecGuideAlgorithm->result(decDistance);
+
+        // Figure out the guide directions based on the (possibly) updated distances
+        GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
+        GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
+
+        // Compute the required guide durations
+        double raDuration = fabs(raDistance/RaRate());
+        double decDuration = fabs(decDistance/DecRate());
+
+        if (m_guidingEnabled)
+        {
+            // enforce max RA duration
+            if (raDuration > m_maxRaDuration)
             {
-                durationMs = m_maxDecDuration;
+                raDuration = m_maxRaDuration;
             }
 
-            // and the dec guiding Mode
+            // and the dec guiding mode
             if ((m_decGuideMode == DEC_NONE) ||
-                (direction == SOUTH && m_decGuideMode == DEC_NORTH) || 
-                (direction == NORTH && m_decGuideMode == DEC_SOUTH))
+                (decDirection == SOUTH && m_decGuideMode == DEC_NORTH) ||
+                (decDirection == NORTH && m_decGuideMode == DEC_SOUTH))
             {
-                durationMs = 0.0;
+                decDuration = 0.0;
             }
-            break;
-        case EAST:
-        case WEST:
-            if (durationMs > m_maxRaDuration)
+
+            // and the max dec duration
+            if  (decDuration > m_maxDecDuration)
             {
-                durationMs = m_maxRaDuration;
+                decDuration = m_maxDecDuration;
             }
-            break;
-    }
 
-    return durationMs;
-}
-
-bool Scope::BeginCalibration(const Point& currentPosition)
-{
-    bool bError = false;
-
-    try
-    {
-        assert(pScope->IsConnected());
-        assert(pCamera && pCamera->Connected); 
-
-        if (!currentPosition.IsValid()) 
+        }
+        else
         {
-            throw ERROR_INFO("Must have a valid lock position");
+            raDuration = 0.0;
+            decDuration = 0.0;
         }
 
-        m_calibrationSteps = 0;
-        m_backlashSteps = MAX_CALIBRATION_STEPS;
-        m_calibrationStartingLocation = currentPosition;
-        m_calibrationDirection = NONE;
-        Mount::ClearCalibration();
+        pFrame->SetStatusText("",1);
+
+        // We are now ready to actually guide
+        assert(raDuration >= 0);
+        if (raDuration > 0.0)
+        {
+            pFrame->SetStatusText(wxString::Format("%c dur=%.1f dist=%.2f", (raDirection==EAST)?'E':'W', raDuration, raDistance),1);
+            if (Guide(raDirection, raDuration))
+            {
+                throw ERROR_INFO("ra guide failed");
+            }
+        }
+
+        assert(decDuration >= 0);
+        if (decDuration > 0.0)
+        {
+            pFrame->SetStatusText(wxString::Format("%c dur=%.1f dist=%.2f", (decDirection==SOUTH)?'S':'N', decDuration, decDistance),1);
+            if (Guide(decDirection, decDuration))
+            {
+                throw ERROR_INFO("dec guide failed");
+            }
+        }
     }
     catch (wxString Msg)
     {
@@ -461,161 +512,10 @@ bool Scope::BeginCalibration(const Point& currentPosition)
 
     return bError;
 }
-
-wxString Scope::GetCalibrationStatus(double dX, double dY, double dist, double dist_crit)
+    
+double Scope::CalibrationTime(int nCalibrationSteps)
 {
-    char directionName = '?';
-    wxString sReturn;
-
-    switch (m_calibrationDirection)
-    {
-        case NORTH:
-            directionName = 'N';
-            break;
-        case SOUTH:
-            directionName = 'S';
-            break;
-        case EAST:
-            directionName = 'E';
-            break;
-        case WEST:
-            directionName = 'W';
-            break;
-    }
-
-    if (m_calibrationDirection != NONE)
-    {
-        if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
-        {
-            pFrame->SetStatusText(wxString::Format(_T("Clear Backlash: %2d"), MAX_CALIBRATION_STEPS - m_calibrationSteps));
-        }
-        else
-        {
-            pFrame->SetStatusText(wxString::Format(_T("%c calibration: %2d"), directionName, m_calibrationSteps));
-        }
-        sReturn = wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)"),dX,dY,dist,dist_crit);
-        Debug.Write(wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)\n"),dX,dY,dist,dist_crit));
-    }
-
-    return sReturn;
-}
-
-bool Scope::UpdateCalibrationState(const Point &currentPosition)
-{
-    bool bError = false;
-
-    try
-    {
-        if (m_calibrationDirection == NONE)
-        {
-            m_calibrationDirection = WEST;
-            m_calibrationStartingLocation = currentPosition;
-        }
-
-        double dX = m_calibrationStartingLocation.dX(currentPosition);
-        double dY = m_calibrationStartingLocation.dY(currentPosition);
-        double dist = m_calibrationStartingLocation.Distance(currentPosition);
-        double dist_crit = wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
-
-        wxString statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
-
-        /*
-         * There are 3 sorts of motion that can happen during calibration. We can be:
-         *   1. computing calibration data when moving WEST or NORTH
-         *   2. returning to center after one of thoese moves (moving EAST or SOUTH)
-         *   3. clearing dec backlash (before the NORTH move)
-         *
-         */
-
-        if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
-        {
-            // this is the "clearing dec backlash" case
-            if (dist >= DEC_BACKLASH_DISTANCE)
-            {
-                assert(m_calibrationSteps == 0);
-                m_calibrationSteps = 1;
-                m_backlashSteps = 0;
-                m_calibrationStartingLocation = currentPosition;
-            }
-            else if (--m_backlashSteps <= 0)
-            {
-                wxMessageBox(_T("Unable to clear DEC backlash -- turning off Dec guiding"), _T("Alert"), wxOK | wxICON_ERROR);
-                SetDecGuideMode(DEC_NONE);
-            }
-        }
-        else if (m_calibrationDirection == WEST || m_calibrationDirection == NORTH)
-        {
-            // this is the moving over in WEST or NORTH case
-            //
-            if (dist >= dist_crit) // have we moved far enough yet?
-            {
-                if (m_calibrationDirection == WEST)
-                {
-                    m_dRaAngle = m_calibrationStartingLocation.Angle(currentPosition);
-                    m_dRaRate = dist/(m_calibrationSteps*m_calibrationDuration);
-                    m_calibrationDirection = EAST;
-
-                    Debug.Write(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f\n", m_dRaAngle, m_dRaRate));
-                }
-                else
-                {
-                    assert(m_calibrationDirection == NORTH);
-                    m_dDecAngle = m_calibrationStartingLocation.Angle(currentPosition);
-                    m_dDecRate = dist/(m_calibrationSteps*m_calibrationDuration);
-                    m_calibrationDirection = SOUTH;
-
-                    Debug.Write(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f\n", m_dDecAngle, m_dDecRate));
-                }
-            }
-            else if (m_calibrationSteps++ >= MAX_CALIBRATION_STEPS)
-            {
-                wchar_t *pDirection = m_calibrationDirection == NORTH ? pDirection = _T("Dec"): _T("RA");
-
-                wxMessageBox(wxString::Format(_T("%s Calibration failed - Star did not move enough"), pDirection), _T("Alert"), wxOK | wxICON_ERROR);
-
-                throw ERROR_INFO("Calibrate failed");
-            }
-        }
-        else
-        {
-            // this is the moving back in EAST or SOUTH case
-
-            if(--m_calibrationSteps == 0)
-            {
-                if (m_calibrationDirection == EAST)
-                {
-                    m_calibrationDirection = NORTH;
-                    dX = dY = dist = 0.0;
-                    statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
-                }
-                else
-                {
-                    assert(m_calibrationDirection == SOUTH);
-                    m_calibrationDirection = NONE;
-                }
-            }
-        }
-
-        if (m_calibrationDirection == NONE)
-        {
-            m_bCalibrated = true;
-            pFrame->SetStatusText(_T("calibration complete"),1);
-            pFrame->SetStatusText(_T("Cal"),5);
-        }
-        else
-        {
-            pFrame->ScheduleGuide(m_calibrationDirection, m_calibrationDuration, statusMessage);
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-
-        m_calibrationDirection = NONE;
-        bError = true;
-    }
-
-    return bError;
+    return nCalibrationSteps * m_calibrationDuration;
 }
 
 ConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)
@@ -670,6 +570,7 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
     m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
     m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
     m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
+
 }
 
 void Scope::ScopeConfigDialogPane::UnloadValues(void)

@@ -150,61 +150,83 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
     wxQueueEvent(m_pFrame, event.Clone());
 }
 
-/*************      Guide       **************************/
+/*************      Move       **************************/
 
-void WorkerThread::EnqueueWorkerThreadGuideRequest(GUIDE_DIRECTION guideDirection, double guideDuration, const wxString &statusMessage)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& currentLocation, const Point& desiredLocation)
 {
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
-    Debug.Write(wxString::Format("Enqueuing Guide request for direction %d\n", message.args.guide.guideDirection));
+    Debug.Write(wxString::Format("Enqueuing Move request from (%.1f, %.1f) to (%.1f, %.1f)\n", 
+                currentLocation.X, currentLocation.Y, desiredLocation.X, desiredLocation.Y));
 
-    message.request = REQUEST_GUIDE;
-    message.args.guide.guideDirection = guideDirection;
-    message.args.guide.guideDuration  = guideDuration;
-    message.args.guide.statusMessage  = statusMessage;
-    wxMessageQueueError queueError    = m_workerQueue.Post(message);
+    message.request = REQUEST_MOVE;
+    message.args.move.pMount          = pMount;
+    message.args.move.calibrationMove = false;
+    message.args.move.currentLocation = currentLocation;
+    message.args.move.desiredLocation = desiredLocation;
+
+    wxMessageQueueError queueError = m_workerQueue.Post(message);
+}
+
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction)
+{
+    WORKER_THREAD_REQUEST message;
+    memset(&message, 0, sizeof(message));
+
+    Debug.Write(wxString::Format("Enqueuing Calibration Move request for direction %d\n", direction));
+
+    message.request = REQUEST_MOVE;
+    message.args.move.pMount          = pMount;
+    message.args.move.calibrationMove = true;
+    message.args.move.direction       = direction;
+
+    wxMessageQueueError queueError = m_workerQueue.Post(message);
 }
 
 
-bool WorkerThread::HandleGuide(ARGS_GUIDE *pArgs)
+bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
 {
     bool bError = false;
     
     try
     {
-        if (pArgs->guideDirection != NONE && pArgs->guideDuration > 0)
+        if (pArgs->pMount->HasNonGuiMove())
         {
-            SetStatusText(pArgs->statusMessage, 1);
-
-            if (pScope->HasNonGUIGuide())
+            Debug.Write("Handling move in thread\n");
+            if (pArgs->calibrationMove)
             {
-                Debug.Write(wxString::Format("Handling %d guide in thread\n", pArgs->guideDirection));
-                bError = pScope->Guide(pArgs->guideDirection, pArgs->guideDuration);
+                bError = pArgs->pMount->Move(pArgs->direction);
             }
             else
             {
-                Debug.Write(wxString::Format("Handling %d guide in myFrame\n", pArgs->guideDirection));
-
-                // we don't have a non-gui guide function, wo we send this to the 
-                // main frame routine that handles guides requests
-                MyFrame::PHD_GUIDE_REQUEST request;
-                request.guideDirection = pArgs->guideDirection;
-                request.guideDuration  = pArgs->guideDuration;
-
-                wxCommandEvent evt(PHD_GUIDE_EVENT, GetId());
-                evt.SetClientData(&request);
-                wxQueueEvent(pFrame, evt.Clone());
-
-                // wait for the request to complete
-                request.semaphore.Wait();
-
-
-                bError = request.bError;
+                bError = pArgs->pMount->Move(pArgs->currentLocation, pArgs->desiredLocation);
             }
-
-            Debug.Write(wxString::Format("Guide complete\n"));
         }
+        else
+        {
+            // we don't have a non-gui guide function, wo we send this to the 
+            // main frame routine that handles guides requests
+            
+            Debug.Write("Handling guide in myFrame\n");
+            MyFrame::PHD_MOVE_REQUEST request;
+            request.pMount          = pArgs->pMount;
+            request.calibrationMove = pArgs->calibrationMove;
+            request.direction       = pArgs->direction;
+            request.currentLocation = pArgs->currentLocation;
+            request.desiredLocation = pArgs->desiredLocation;
+
+            wxCommandEvent evt(PHD_MOVE_EVENT, GetId());
+            evt.SetClientData(&request);
+            wxQueueEvent(pFrame, evt.Clone());
+
+            // wait for the request to complete
+            request.semaphore.Wait();
+
+            bError = request.bError;
+        }
+
+        Debug.Write(wxString::Format("Guide complete\n"));
     }
     catch (wxString Msg)
     {
@@ -215,9 +237,9 @@ bool WorkerThread::HandleGuide(ARGS_GUIDE *pArgs)
     return  bError;
 }
 
-void WorkerThread::SendWorkerThreadGuideComplete(bool bError)
+void WorkerThread::SendWorkerThreadMoveComplete(bool bError)
 {
-    wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_GUIDE_COMPLETE);
+    wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_MOVE_COMPLETE);
     event.SetInt(bError);
     wxQueueEvent(m_pFrame, event.Clone());
 }
@@ -257,9 +279,9 @@ wxThread::ExitCode WorkerThread::Entry()
                 bError = HandleExpose(&message.args.expose);
                 SendWorkerThreadExposeComplete(message.args.expose.pImage, bError);
                 break;
-            case REQUEST_GUIDE:
-                bError = HandleGuide(&message.args.guide);
-                SendWorkerThreadGuideComplete(bError);
+            case REQUEST_MOVE:
+                bError = HandleMove(&message.args.move);
+                SendWorkerThreadMoveComplete(bError);
                 break;
         }
 

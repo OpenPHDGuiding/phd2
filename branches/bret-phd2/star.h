@@ -61,6 +61,11 @@ public:
     Star(void);
     ~Star();
 
+    /*
+     * Note: contrary to most boolean PHD functions, the star find functions return
+     *       a boolean indicating success instead of a boolean indicating an
+     *       error
+     */
     bool Find(usImage *pImg, int searchRegion);
     bool Find(usImage *pImg, int searchRegion, int X, int Y);
     bool AutoFind(usImage *pImg);

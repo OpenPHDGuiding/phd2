@@ -64,20 +64,20 @@ END_EVENT_TABLE()
 
 
 void TestGuideDialog::OnButton(wxCommandEvent &evt) {
-//	if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pScope->IsConnected())) return;
-	if (!(pScope->IsConnected())) return;
+//	if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pMount->IsConnected())) return;
+	if (!(pMount->IsConnected())) return;
 	switch (evt.GetId()) {
 		case MGUIDE_N:
-			pScope->Guide(NORTH, pScope->GetCalibrationDuration());
+			pMount->Move(NORTH);
 			break;
 		case MGUIDE_S:
-			pScope->Guide(SOUTH, pScope->GetCalibrationDuration());
+			pMount->Move(SOUTH);
 			break;
 		case MGUIDE_E:
-			pScope->Guide(EAST, pScope->GetCalibrationDuration());
+			pMount->Move(EAST);
 			break;
 		case MGUIDE_W:
-			pScope->Guide(WEST, pScope->GetCalibrationDuration());
+			pMount->Move(WEST);
 			break;
 	}
 }

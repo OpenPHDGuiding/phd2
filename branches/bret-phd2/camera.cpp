@@ -486,12 +486,12 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	else
 		Setup_Button->Enable(false);
 	if (pFrame->mount_menu->IsChecked(MOUNT_CAMERA) && pCamera->HasGuiderOutput) {
-		if (pScope)
-			delete pScope;
-		pScope = new ScopeOnCamera();
-        if (!pScope->IsConnected())
+		if (pMount)
+			delete pMount;
+		pMount = new ScopeOnCamera();
+        if (!pMount->IsConnected())
         {
-            pScope->Connect();
+            pMount->Connect();
         }
 		pFrame->SetStatusText(_T("Scope"),4);
 	}
