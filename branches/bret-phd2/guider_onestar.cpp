@@ -192,42 +192,55 @@ bool GuiderOneStar::DoGuide(void)
         double theta = m_lockPosition.Angle(m_star);
         double hyp   = m_lockPosition.Distance(m_star);
 
-        double raDistance  = cos(pScope->RaAngle() - theta) * hyp;
-        raDistance = m_pRaGuideAlgorithm->result(raDistance);
+        // Convert theta and hyp into RA and DEC
 
+        double raDistance  = cos(pScope->RaAngle() - theta) * hyp;
+        double decDistance = cos(pScope->DecAngle() - theta) * hyp;
+
+        // Feed the raw distances to the guide algorithms
+        
+        raDistance = m_pRaGuideAlgorithm->result(raDistance);
+        decDistance = m_pDecGuideAlgorithm->result(decDistance);
+
+        // Figure out the guide directions based on the (possibly) updated distances
+        GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
+        GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
+
+        // Compute the required guide durations
         double raDuration = fabs(raDistance/pScope->RaRate());
+        double decDuration = fabs(decDistance/pScope->DecRate());
+
+        // Enforce max durations
         if (raDuration > m_maxRaDuration)
         {
             raDuration = m_maxRaDuration;
         }
-        assert(raDuration >= 0);
 
-        if (raDuration > 0.0)
-        {
-            GUIDE_DIRECTION direction = raDistance > 0 ? EAST : WEST;
-            frame->ScheduleGuide(direction, raDuration, wxString::Format("%c dur=%.1f dist=%.2f", (direction==EAST)?'E':'W', raDuration, raDistance));
-        }
-
-        double decDistance = cos(pScope->DecAngle() - theta) * hyp;
-        decDistance = m_pDecGuideAlgorithm->result(decDistance);
-
-        double decDuration = fabs(decDistance/pScope->DecRate());
         if (decDuration > m_maxDecDuration)
         {
             decDuration = m_maxDecDuration;
         }
-        assert(decDuration >= 0);
 
+        // and the dec guiding option
+        if ((m_decGuideOption == DEC_NONE) ||
+            (direction == SOUTH && m_decGuideOption == DEC_NORTH) || 
+            (direction == NORTH && m_decGuideOption == DEC_SOUTH))
+        {
+            decDuration = 0.0;
+        }
+
+        // We are now ready to actuallly guide
+        assert(raDuration >= 0);
+        if (raDuration > 0.0)
+        {
+            frame->ScheduleGuide(raDirection, raDuration, wxString::Format("%c dur=%.1f dist=%.2f", (direction==EAST)?'E':'W', raDuration, raDistance));
+        }
+
+        assert(decDuration >= 0);
         if (decDuration > 0.0)
         {
-            GUIDE_DIRECTION direction = decDistance > 0 ? SOUTH : NORTH;
 
-            if ((m_decGuideOption == DEC_AUTO) ||
-                (direction == SOUTH && m_decGuideOption == DEC_SOUTH) || 
-                (direction == NORTH && m_decGuideOption == DEC_NORTH))
-            {
-                frame->ScheduleGuide(direction, decDuration, wxString::Format("%c dur=%.1f dist=%.2f", (direction==SOUTH)?'S':'N', raDuration, decDistance));
-            }
+            frame->ScheduleGuide(direction, decDuration, wxString::Format("%c dur=%.1f dist=%.2f", (direction==SOUTH)?'S':'N', raDuration, decDistance));
         }
     }
     catch (char *ErrorMsg)
