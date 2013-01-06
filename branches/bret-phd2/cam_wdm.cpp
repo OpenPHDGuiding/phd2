@@ -205,7 +205,6 @@ bool Camera_WDMClass::Disconnect() {
 //	delete VidCap;
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 
 	return false;
 }

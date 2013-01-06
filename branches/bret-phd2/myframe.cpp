@@ -530,7 +530,7 @@ MyFrame::~MyFrame() {
 
     delete pScope;
 
-	if (GuideCameraConnected)
+	if (pCamera && pCamera->Connected)
     {
 		pCamera->Disconnect();
     }
@@ -695,7 +695,7 @@ void MyFrame::OnClose(wxCloseEvent &event) {
 		pScope->Disconnect();
     }
 
-	if (GuideCameraConnected)
+	if (pCamera && pCamera->Connected)
 		pCamera->Disconnect();
 
 	if (SocketServer)

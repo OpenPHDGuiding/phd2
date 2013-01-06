@@ -46,7 +46,7 @@ bool ScopeOnCamera::Connect(void)
 
     try
     {
-        if (!GuideCameraConnected)
+        if (!pCamera || !pCamera->Connected)
         {
             throw ERROR_INFO("Attempt to Connect onboard when camera is not connected");
         }

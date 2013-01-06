@@ -94,7 +94,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 		wxMessageBox(wxString::Format(_T("RA calibration angle flipped: %.2f to %.2f"),orig,pScope->RaAngle()));
 	}
 	else if (evt.GetId() == EEGG_MANUALLOCK) {
-		if (!pScope->IsConnected() || !GuideCameraConnected || !pScope->IsCalibrated())
+		if (!pScope->IsConnected() || !pCamera && !pCamera->Connected || !pScope->IsCalibrated())
 			return;
 		if (pGuider->GetState() > STATE_SELECTED) return;  // must not be calibrating or guiding already
 		if (evt.IsChecked()) {

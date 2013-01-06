@@ -50,9 +50,7 @@ IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
 Config *pConfig = new Config();
 Scope *pScope = new ScopeNone();
 MyFrame *pFrame = NULL;
-
 GuideCamera *pCamera = NULL;
-bool GuideCameraConnected = false;
 
 LOG Debug;
 

@@ -59,7 +59,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
             throw ERROR_INFO("Unable to guide with no scope Connected");
         }
 
-        if (!GuideCameraConnected)
+        if (!pCamera || !pCamera->Connected)
         {
             throw ERROR_INFO("Unable to guide with no camera Connected");
         }

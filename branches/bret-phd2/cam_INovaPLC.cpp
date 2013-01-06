@@ -45,7 +45,6 @@ Camera_INovaPLCClass::Camera_INovaPLCClass() {
     FullSize = wxSize(1280,1024);  // Current size of a full frame
     HasGuiderOutput = true;  // Do we have an ST4 port?
     HasGainControl = true;  // Can we adjust gain?
-	
 }
 
 bool Camera_INovaPLCClass::Connect() {
@@ -113,7 +112,6 @@ bool Camera_INovaPLCClass::PulseGuideScope(int direction, int duration) {
 bool Camera_INovaPLCClass::Disconnect() {
     Connected = false;
     pCamera = NULL;
-    GuideCameraConnected = false;
 	DSCameraUnInit();
 	delete [] RawData;
     return false;

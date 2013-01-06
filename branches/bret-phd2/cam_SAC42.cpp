@@ -81,7 +81,6 @@ bool Camera_SAC42Class::Disconnect() {
 	FclUninitialize(&hDriver);
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 #endif
 	return false;
 }

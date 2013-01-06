@@ -259,7 +259,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
 {
     try
     {
-        if (!GuideCameraConnected)
+        if (!pCamera || !pCamera->Connected)
         {
             wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
             throw ERROR_INFO("Camera not connected");
@@ -377,7 +377,7 @@ void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event)) {
 void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
     double ExpDur = RequestedExposureDuration();
 	if (pGuider->GetState() > STATE_SELECTED) return;
-	if (!GuideCameraConnected) {
+	if (!pCamera || pCamera->Connected) {
 		wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
 		return;
 	}
@@ -670,7 +670,7 @@ END_EVENT_TABLE()
 void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
 	// Prior to this we check to make sure the current camera is a WDM camera (main dialog) but...
 
-	if (pFrame->CaptureActive || !GuideCameraConnected || !pCamera->HasPropertyDialog) return;  // One more safety check
+	if (pFrame->CaptureActive || !pCamera || !pCamera->Connected || !pCamera->HasPropertyDialog) return;  // One more safety check
 	/*if (pCamera == &Camera_WDM)
 		Camera_WDM.ShowPropertyDialog();
 	else if (pCamera == &Camera_VFW)
@@ -680,7 +680,7 @@ void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
-	if (!GuideCameraConnected || !pCamera->HasPropertyDialog) return;  // One more safety check
+	if (!pCamera || !pCamera->Connected || !pCamera->HasPropertyDialog) return;  // One more safety check
 
 	pCamera->ShowPropertyDialog();
 

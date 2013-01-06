@@ -290,6 +290,7 @@ bool Camera_SSPIAGClass::Connect() {
 	Q5V_SetQHY5VGlobalGain(60);
 	Q5V_GetFullSizeImage(RawBuffer);
 
+    Connected = true;
 	return false;
 }
 
@@ -329,7 +330,6 @@ bool Camera_SSPIAGClass::Disconnect() {
 	FreeLibrary(GenericDLL);
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	return false;
 
 }

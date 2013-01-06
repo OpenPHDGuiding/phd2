@@ -63,7 +63,6 @@ bool Camera_SimClass::Connect() {
 bool Camera_SimClass::Disconnect() {
 	Connected = FALSE;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	return false;
 }
 

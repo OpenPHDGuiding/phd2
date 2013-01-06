@@ -249,6 +249,8 @@ bool Camera_SXVClass::Connect() {
 			CCDParams.extra_caps)+Name);
 */	
 
+    if (!retval)
+        Connected = true;
 	return retval;
 }
 
@@ -258,7 +260,6 @@ bool Camera_SXVClass::Disconnect() {
 	RawData = NULL;
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	sxReset(hCam);
 #ifdef __APPLE__
 	sx2Close(hCam);

@@ -135,7 +135,6 @@ extern Config *pConfig;
 extern MyFrame *pFrame;
 extern Scope *pScope;
 extern GuideCamera *pCamera;
-extern bool GuideCameraConnected;
 
 extern LOG Debug;
 

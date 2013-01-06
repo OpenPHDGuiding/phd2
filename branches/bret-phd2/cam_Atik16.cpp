@@ -179,7 +179,6 @@ bool Camera_Atik16Class::Disconnect() {
 	Sleep(100);
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	return false;
 }
 

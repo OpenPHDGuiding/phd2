@@ -121,7 +121,6 @@ bool Camera_QGuiderClass::Disconnect() {
 //	delete [] buffer;
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	//qglogfile->AddLine(wxNow() + ": Disconnecting"); //qglogfile->Write(); //qglogfile->Close();
 	return false;
 

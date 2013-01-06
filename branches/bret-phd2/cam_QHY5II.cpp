@@ -242,7 +242,6 @@ bool Camera_QHY5IIClass::Disconnect() {
 	FreeLibrary(CameraDLL);
 
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	return false;
 
 }

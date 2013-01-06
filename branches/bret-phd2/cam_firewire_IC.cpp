@@ -242,6 +242,7 @@ bool Camera_FirewireClass::Connect() {
 		return true;
 	}
 	if (debug) {debugfile->Write(); debugfile->Close(); delete debugfile; }
+    Connected=true;
 	return false;
 }
 
@@ -250,7 +251,6 @@ bool Camera_FirewireClass::Disconnect() {
 	m_pGrabber->closeDev();
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	delete m_pGrabber;
 	return false;
 }

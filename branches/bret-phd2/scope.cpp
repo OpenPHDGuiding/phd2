@@ -448,7 +448,7 @@ bool Scope::BeginCalibration(const Point& currentPosition)
     try
     {
         assert(pScope->IsConnected());
-        assert(GuideCameraConnected); 
+        assert(pCamera && pCamera->Connected); 
 
         if (!currentPosition.IsValid()) 
         {

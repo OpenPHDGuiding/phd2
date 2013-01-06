@@ -219,6 +219,7 @@ bool Camera_SBIGClass::Connect() {
 //	wxMessageBox(wxString::Format("%s (%u): %dx%d (%d)",gcir0.name,gcir0.cameraType, FullSize.GetWidth(),
 //		FullSize.GetHeight(),(int) UseTrackingCCD));
 	Name = wxString(gcir0.name);
+    Connected = true;
 	return false;
 }
 
@@ -227,7 +228,6 @@ bool Camera_SBIGClass::Disconnect() {
 	SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	return false;
 }
 void Camera_SBIGClass::InitCapture() {

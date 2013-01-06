@@ -58,6 +58,7 @@ Camera_StarShootDSCIClass::Camera_StarShootDSCIClass() {
 
 bool Camera_StarShootDSCIClass::Disconnect() {
 	FreeLibrary(CameraDLL);
+    Connected = false;
 	return false;
 }
 bool Camera_StarShootDSCIClass::Connect() {
@@ -121,6 +122,7 @@ bool Camera_StarShootDSCIClass::Connect() {
 	USB2 = OCP_isUSB2();
 	RawX = OCP_Width();
 	RawY = OCP_Height();
+    Connected = true;
 	return false;
 }
 

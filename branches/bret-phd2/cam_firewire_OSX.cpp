@@ -205,6 +205,7 @@ bool Camera_FirewireClass::Connect() {
 	else
 		DCAM_flush_mode = false;
 */	
+    Connected = true;
 	return false;
 }
 
@@ -226,7 +227,6 @@ bool Camera_FirewireClass::Disconnect() {
 	}
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	return false;
 }
 

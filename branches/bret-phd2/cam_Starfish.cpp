@@ -99,6 +99,7 @@ bool Camera_StarfishClass::Connect() {
 		if (fcUsb_cmd_getTECInPowerOK(CamNum))
 			fcUsb_cmd_setTemperature(CamNum,10);
 	}
+    Connected = true;
 	return false;
 }
 
@@ -107,7 +108,6 @@ bool Camera_StarfishClass::Disconnect() {
 		fcUsb_CloseCameraDriver();
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	return false;
 }
 void Camera_StarfishClass::InitCapture() {

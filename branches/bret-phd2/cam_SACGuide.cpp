@@ -188,7 +188,6 @@ bool Camera_SACGuiderClass::Disconnect() {
 	FreeLibrary(CameraDLL);   
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	return false;
 }
 

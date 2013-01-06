@@ -98,6 +98,7 @@ bool Camera_DSIClass::Connect() {
 
 		MeadeCam->SetOffset(255);
 		MeadeCam->SetFastReadoutSpeed(true);
+        Connected = true;
 	}
 #endif
 	return retval;
@@ -107,7 +108,6 @@ bool Camera_DSIClass::Disconnect() {
 	MeadeCam->Close();
 	Connected = false;
 	pCamera = NULL;
-	GuideCameraConnected = false;
 	delete MeadeCam;
 #endif
 	return false;
