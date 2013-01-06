@@ -40,7 +40,7 @@
 
 class Camera_OpenSSAGClass : public GuideCamera {
 public:
-	virtual bool	Capture(int duration, usImage& img, wxRect subFrame = wxRect(0,0,0,0), bool recon=false);
+	virtual bool	Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
 	bool Connect();
 	bool Disconnect();
 	bool PulseGuideScope(int direction, int duration);

@@ -230,7 +230,7 @@ bool Camera_FirewireClass::Disconnect() {
 	return false;
 }
 
-bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 	int xsize, ysize, i;
 	unsigned short *dataptr;
 	unsigned char *imgptr;

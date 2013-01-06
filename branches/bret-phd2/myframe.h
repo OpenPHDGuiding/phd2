@@ -62,7 +62,6 @@ protected:
     {
         MyFrame *m_pFrame;
         wxCheckBox *m_pEnableLogging;
-        wxCheckBox *m_pUseSubFrames;
         wxCheckBox *m_pDitherRaOnly;
         wxSpinCtrlDouble *m_pDitherScaleFactor;
         wxChoice *m_pNoiseReduction;
@@ -90,9 +89,6 @@ protected:
     bool SetTimeLapse(int timeLapse);
     int GetTimeLapse(void);
 
-    virtual bool GetUseSubFrames(void);
-    virtual bool SetUseSubFrames(bool UseSubFrames);
-
     friend class MyFrameConfigDialogPane;
     friend class WorkerThread;
 
@@ -102,7 +98,6 @@ private:
     bool m_ditherRaOnly;
     bool m_serverMode;
     int  m_timeLapse;		// Delay between frames (useful for vid cameras)
-    bool m_useSubFrames;
 
 public:
 	MyFrame(const wxString& title);
@@ -178,7 +173,7 @@ public:
     {
         usImage          *pImage;
         double           exposureDuration;
-        wxRect           subFrame;
+        wxRect           subframe;
         bool             bError;
         wxSemaphore      semaphore;
     };
@@ -193,7 +188,7 @@ public:
     };
     void OnPhdGuideEvent(wxCommandEvent &evt);
 
-    void ScheduleExposure(double exposureDuration, wxRect subFrame);
+    void ScheduleExposure(double exposureDuration, wxRect subframe);
     void ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration, const wxString& statusMessage);
 
     void StartCapturing(void);

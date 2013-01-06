@@ -68,7 +68,7 @@ void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
 
 /*************      Expose      **************************/
 
-void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, double exposureDuration, const wxRect& subFrame)
+void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, double exposureDuration, const wxRect& subframe)
 {
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
@@ -78,7 +78,7 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, double expo
     message.request = REQUEST_EXPOSE;
     message.args.expose.pImage = pImage;
     message.args.expose.exposureDuration = exposureDuration;
-    message.args.expose.subFrame = subFrame;
+    message.args.expose.subframe = subframe;
     wxMessageQueueError queueError = m_workerQueue.Post(message);
 }
 
@@ -96,7 +96,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
 
             pArgs->pImage->InitDate();
 
-            if (pCamera->Capture(pArgs->exposureDuration, *pArgs->pImage, pArgs->subFrame))
+            if (pCamera->Capture(pArgs->exposureDuration, *pArgs->pImage, pArgs->subframe))
             {
                 throw ERROR_INFO("CaptureFull failed");
             }
@@ -120,7 +120,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
             MyFrame::PHD_EXPOSE_REQUEST request;
             request.pImage = pArgs->pImage;
             request.exposureDuration = pArgs->exposureDuration;
-            request.subFrame = pArgs->subFrame;
+            request.subframe = pArgs->subframe;
 
             wxCommandEvent evt(PHD_EXPOSE_EVENT, GetId());
             evt.SetClientData(&request);
@@ -180,7 +180,7 @@ bool WorkerThread::HandleGuide(ARGS_GUIDE *pArgs)
             if (pScope->HasNonGUIGuide())
             {
                 Debug.Write(wxString::Format("Handling %d guide in thread\n", pArgs->guideDirection));
-                bError = pScope->NonGUIGuide(pArgs->guideDirection, pArgs->guideDuration);
+                bError = pScope->Guide(pArgs->guideDirection, pArgs->guideDuration);
             }
             else
             {

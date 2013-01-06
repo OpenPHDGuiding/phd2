@@ -46,7 +46,7 @@ private:
 //	gcroot<DSI_Class^> MeadeCam;
 	DsiDevice *MeadeCam;
 public:
-	virtual bool	Capture(int duration, usImage& img, wxRect subFrame = wxRect(0,0,0,0), bool recon=false);
+	virtual bool	Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
 	bool	Connect();		// Opens up and connects to cameras
 	bool	Disconnect();
 	//bool	IsSeries2;

@@ -54,8 +54,8 @@ Camera_Atik16Class::Camera_Atik16Class() {
 	Color = false;
 	Cam_Handle = NULL;
 	HSModel = false;
+    HasSubframes = true;
 }
-
 
 
 bool Camera_Atik16Class::Connect() {
@@ -182,22 +182,27 @@ bool Camera_Atik16Class::Disconnect() {
 	return false;
 }
 
-bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 // Only does full frames still
 	unsigned short *rawptr;
 	unsigned short *dptr;
 	int  i;
-    bool UseSubframe = (subFrame.width > 0 && subFrame.height > 0);
+    bool TakeSubframe = UseSubframes;
+
+    if (subframe.width <= 0 || subframe.height <= 0)
+    {
+        TakeSubframe = false;
+    }
 
 	if (HasShutter)
 		ArtemisSetDarkMode(Cam_Handle,ShutterState);
-	if (UseSubframe) {
-		ArtemisSubframe(Cam_Handle, subFrame.x,subFrame.y,subFrame.width,subFrame.height);
-		img.SubFrame = subFrame;
+	if (TakeSubframe) {
+		ArtemisSubframe(Cam_Handle, subframe.x,subframe.y,subframe.width,subframe.height);
+		img.Subframe = subframe;
 	}
 	else {
 		ArtemisSubframe(Cam_Handle, 0,0,FullSize.GetWidth(),FullSize.GetHeight());
-		img.SubFrame=wxRect(0,0, 0, 0);
+		img.Subframe=wxRect(0,0, 0, 0);
 	}
 	if (duration > 2500)
 		ArtemisSetAmplifierSwitched(Cam_Handle,true); // Set the amp-off parameter
@@ -227,16 +232,16 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subFrame, bo
 		}
 	}
 
-	if (UseSubframe) {
+	if (TakeSubframe) {
 		dptr = img.ImageData;
-        img.SubFrame = subFrame;
+        img.Subframe = subframe;
 		for (i=0; i<img.NPixels; i++, dptr++)
 			*dptr = 0;
 		int x, y;
 		rawptr = (unsigned short*)ArtemisImageBuffer(Cam_Handle);
-		for (y=0; y<subFrame.height; y++) {
-			dptr = img.ImageData + (y+subFrame.y)*FullSize.GetWidth() + subFrame.x;
-			for (x=0; x<subFrame.width; x++, dptr++, rawptr++)
+		for (y=0; y<subframe.height; y++) {
+			dptr = img.ImageData + (y+subframe.y)*FullSize.GetWidth() + subframe.x;
+			for (x=0; x<subframe.width; x++, dptr++, rawptr++)
 				*dptr = *rawptr;
 		}
 	}

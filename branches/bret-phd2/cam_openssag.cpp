@@ -99,7 +99,7 @@ bool Camera_OpenSSAGClass::Disconnect() {
     return false;
 }
 
-bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
 	

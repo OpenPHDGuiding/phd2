@@ -255,11 +255,11 @@ Point &GuiderOneStar::CurrentPosition(void)
     return m_star;
 }
 
-wxRect GuiderOneStar::GetBoundingBox(bool useSubframe)
+wxRect GuiderOneStar::GetBoundingBox(void)
 {
     wxRect box(0, 0, 0, 0);
 
-    if (useSubframe && m_state == STATE_GUIDING)
+    if (m_state == STATE_GUIDING)
     {
         box = wxRect(m_lockPosition.X - 2*m_searchRegion, m_lockPosition.Y - 2*m_searchRegion,
                 4*m_searchRegion, 4*m_searchRegion);

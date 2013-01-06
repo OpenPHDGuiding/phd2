@@ -119,7 +119,7 @@ bool Camera_VFWClass::Disconnect() {
 	return false;
 }
 
-bool Camera_VFWClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_VFWClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 	int xsize,ysize, i;
 	int NFrames = 0;
 	xsize = FullSize.GetWidth();

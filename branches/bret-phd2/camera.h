@@ -40,6 +40,7 @@ protected:
     class CameraConfigDialogPane : public ConfigDialogPane 
     {
         GuideCamera *m_pCamera;
+        wxCheckBox *m_pUseSubframes;
         wxSpinCtrl *m_pCameraGain;
         wxChoice   *m_pPortNum;
         wxSpinCtrl *m_pDelay;
@@ -67,9 +68,11 @@ public:
 	bool			HasDelayParam;
 	bool			HasGainControl;
 	bool			HasShutter;
+    bool            HasSubframes;
 	short			Port;
 	int				Delay;
 	bool			ShutterState;  // false=light, true=dark
+    bool            UseSubframes;
 
     bool            HaveDark;
     int             DarkDur;
@@ -86,7 +89,6 @@ public:
 	virtual bool	PulseGuideScope (int WXUNUSED(direction), int WXUNUSED(duration)) { return true; }
 
     virtual bool    HasNonGUIPulseGuideScope(void) { return false; }
-	virtual bool	NonGUIPulseGuideScope (int WXUNUSED(direction), int WXUNUSED(duration)) { assert(false); return false;}
 
     ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 

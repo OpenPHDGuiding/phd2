@@ -151,7 +151,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img) {
 #endif
 
 #if SIMMODE==3
-bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 	int xPE = 4;
 	int yPE = 2;
 	int Noise = 4;

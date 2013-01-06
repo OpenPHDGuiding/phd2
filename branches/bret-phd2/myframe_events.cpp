@@ -259,7 +259,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         
         if (CaptureActive)
         {
-            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox(m_useSubFrames));
+            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
         }
     }
     catch (wxString Msg)

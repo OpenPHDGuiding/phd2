@@ -88,7 +88,7 @@ public:
     virtual bool SetLockPosition(double x, double y, bool bExact=false);
     virtual bool AutoSelect(usImage *pImage=NULL);
     virtual Point &CurrentPosition(void);
-    virtual wxRect GetBoundingBox(bool useSubframe);
+    virtual wxRect GetBoundingBox(void);
 
     virtual bool SetRaGuideAlgorithm(int raGuideAlgorithm);
     virtual bool SetDecGuideAlgorithm(int decGuideAlgorithm);

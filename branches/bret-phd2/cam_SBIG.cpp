@@ -52,6 +52,7 @@ Camera_SBIGClass::Camera_SBIGClass() {
 	HasGuiderOutput = true;
 	UseTrackingCCD = false;
 	HasShutter = true;
+    HasSubframes = true;
 }
 
 bool Camera_SBIGClass::LoadDriver() {
@@ -235,11 +236,16 @@ void Camera_SBIGClass::InitCapture() {
 
 
 }
-bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 	bool still_going=true;
 	short  err;
 	unsigned short *dataptr;
-    bool UsesubFrame = (subFrame.width > 0 && subFrame.height > 0);
+    bool TakeSubframe = UseSubframes;
+
+    if (subframe.width <= 0 || subframe.height <= 0)
+    {
+        TakeSubframe = false;
+    }
 
 //	StartExposureParams sep;
 	StartExposureParams2 sep;
@@ -272,11 +278,11 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subFrame, bool
 
 	// Setup readout mode (now needed by StartExposure 2)
 	sep.readoutMode = RM_1X1;
-	if (UsesubFrame) {
-		sep.top = subFrame.x;
-		sep.width = subFrame.width;
-		sep.left = subFrame.y;
-		sep.height = subFrame.height;
+	if (TakeSubframe) {
+		sep.top = subframe.x;
+		sep.width = subframe.width;
+		sep.left = subframe.y;
+		sep.height = subframe.height;
 	}
 	else {
 		sep.top=0;
@@ -334,24 +340,24 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subFrame, bool
 	dataptr = img.ImageData;
 	int y;
 	rlp.readoutMode = 0;
-	if (UsesubFrame) {
-        img.SubFrame=subFrame;
+	if (TakeSubframe) {
+        img.Subframe=subframe;
 		
 		// dump the lines above the one we want
-		dlp.lineLength = subFrame.y;
+		dlp.lineLength = subframe.y;
 		dlp.readoutMode = 0;
 		SBIGUnivDrvCommand(CC_DUMP_LINES, &dlp, NULL);
 
 		// set up to read the part of the lines we do want
-		rlp.pixelStart  = subFrame.x;
-		rlp.pixelLength = subFrame.width;
+		rlp.pixelStart  = subframe.x;
+		rlp.pixelLength = subframe.width;
 
 		dataptr = img.ImageData;
 		for (y=0; y<img.NPixels; y++, dataptr++)
 			*dataptr = 0;
 
-		for (y=0; y<subFrame.height; y++) {
-			dataptr = img.ImageData + subFrame.x + (y+subFrame.y)*FullSize.GetWidth();
+		for (y=0; y<subframe.height; y++) {
+			dataptr = img.ImageData + subframe.x + (y+subframe.y)*FullSize.GetWidth();
 			err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
 			if (err != CE_NO_ERROR) {
 				wxMessageBox(_T("Error downloading data"));

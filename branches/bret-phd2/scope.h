@@ -77,7 +77,6 @@ public:
     virtual double LimitGuide(const GUIDE_DIRECTION direction, double durationMs);
 
     virtual bool HasNonGUIGuide(void) {return false;}
-    virtual bool NonGUIGuide(const GUIDE_DIRECTION direction, const int durationMs) { assert(false); return false; }
 
     virtual int GetCalibrationDuration(void);
     virtual bool SetCalibrationDuration(int calibrationDuration);

@@ -116,7 +116,7 @@ bool Camera_SSAGClass::Disconnect() {
 
 }
 
-bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 // Only does full frames still
 
 //	unsigned char *bptr;

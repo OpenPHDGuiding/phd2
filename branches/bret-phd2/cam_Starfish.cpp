@@ -126,7 +126,7 @@ void Camera_StarfishClass::InitCapture() {
 	fcUsb_cmd_setRegister(CamNum,0x35,Gain);
 
 }
-bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 	bool still_going=true;
 	bool debug = true;
 	IOReturn rval;

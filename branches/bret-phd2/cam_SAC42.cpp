@@ -88,7 +88,7 @@ void Camera_SAC42Class::InitCapture() {
 	CapInfo.Gain[0] = CapInfo.Gain[1] = CapInfo.Gain[2] = (unsigned char) (GuideCameraGain * 63 / 100);
 
 }
-bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 	// Recode to allow ROIs
 #ifdef SAC42
 	unsigned char *bptr;

@@ -246,7 +246,7 @@ bool Camera_QHY5IIClass::Disconnect() {
 
 }
 
-bool Camera_QHY5IIClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_QHY5IIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 // Only does full frames still
 	static int last_dur = 0;
 	static int last_gain = 60;

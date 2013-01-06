@@ -88,7 +88,7 @@ protected:
     {
         usImage *pImage;
         double exposureDuration;
-        wxRect subFrame;
+        wxRect subframe;
     };
     bool HandleExpose(ARGS_EXPOSE *pArgs);
     void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);

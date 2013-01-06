@@ -42,7 +42,7 @@
 #endif
 class Camera_SXVClass : public GuideCamera {
 public:
-	virtual bool	Capture(int duration, usImage& img, wxRect subFrame = wxRect(0,0,0,0), bool recon=false);
+	virtual bool	Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
 	bool	Connect();
 	bool	Disconnect();
 	void	InitCapture();

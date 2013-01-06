@@ -55,6 +55,7 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass() {
 	FullSize = wxSize(100,100);
 	HasGuiderOutput = false;
 	HasGainControl = false;
+    HasSubframes = true;
 	Color = false;
 	DriverVersion = 1;
 }
@@ -398,12 +399,16 @@ bool Camera_ASCOMLateClass::Disconnect() {
 	return false;
 }
 
-bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 	bool retval = false;
 	bool still_going = true;
 	wxString msg = "Retvals: ";
-    bool UseSubframe = (subFrame.width > 0 && subFrame.height > 0);
-//	static bool first_time = true;
+    bool TakeSubframe = UseSubframes;
+
+    if (subframe.width <= 0 || subframe.height <= 0)
+    {
+        TakeSubframe = false;
+    }
 
 	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 	wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_ASCOM_Debug_log") + _T(".txt")), _T("a+t"));
@@ -415,11 +420,11 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subFrame,
 	}
 
 	// Program the size
-	if (!UseSubframe) {
-		subFrame=wxRect(0,0,FullSize.GetWidth(),FullSize.GetHeight());
+	if (!TakeSubframe) {
+		subframe=wxRect(0,0,FullSize.GetWidth(),FullSize.GetHeight());
 	}
 
-    this->ASCOM_SetROI(subFrame.x, subFrame.y, subFrame.width, subFrame.height);
+    this->ASCOM_SetROI(subframe.x, subframe.y, subframe.width, subframe.height);
 
 	bool TakeDark = false;
 	if (HasShutter && ShutterState) TakeDark=true;
@@ -458,7 +463,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subFrame,
 	}
 
 	// Get the image
-	if (ASCOM_Image(img, UseSubframe, subFrame)) {
+	if (ASCOM_Image(img, TakeSubframe, subframe)) {
 		wxMessageBox(_T("Error reading image"));
 		return true;
 	}
@@ -644,7 +649,7 @@ bool Camera_ASCOMLateClass::ASCOM_ImageReady(bool& ready) {
 }
 
 
-bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool useSubFrame, wxRect subFrame) {
+bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRect subframe) {
 	// Assumes the dispid values needed are already set
 	// returns true on error, false if OK
 	DISPPARAMS dispParms;
@@ -688,16 +693,16 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool useSubFrame, wxRect
 		return true;
 	}
 	unsigned short *dataptr;
-	if (useSubFrame) {
+	if (takeSubframe) {
 		dataptr = Image.ImageData;
-		Image.SubFrame=subFrame;
+		Image.Subframe=subframe;
 		int x, y, i;
 		for (x=0; x<Image.NPixels; x++, dataptr++) // Clear out the image
 			*dataptr = 0;
 		i=0;
-		for (y=0; y<subFrame.height; y++) {
-			dataptr = Image.ImageData + (y+subFrame.y)*FullSize.GetWidth() + subFrame.x;
-			for (x=0; x<subFrame.width; x++, dataptr++, i++)
+		for (y=0; y<subframe.height; y++) {
+			dataptr = Image.ImageData + (y+subframe.y)*FullSize.GetWidth() + subframe.x;
+			for (x=0; x<subframe.width; x++, dataptr++, i++)
 				*dataptr = (unsigned short) rawdata[i];
 		}
 	}

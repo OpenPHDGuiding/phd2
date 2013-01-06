@@ -39,6 +39,7 @@
 #include <wx/stdpaths.h>
 
 static const int DefaultGuideCameraGain = 95;
+static const bool DefaultUseSubframes = false;
 
 #if defined (ATIK16)
  #include "cam_ATIK16.h"
@@ -150,6 +151,8 @@ GuideCamera::GuideCamera(void)
     HasGainControl = false; 
     HasShutter=false; 
     ShutterState=false; 
+    HasSubframes=false;
+    UseSubframes = DefaultUseSubframes;
 
     HaveDark = false;
     DarkDur = 0;
@@ -537,6 +540,12 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
 
     m_pCamera = pCamera;
 
+    if (m_pCamera->HasSubframes)
+    {
+        m_pUseSubframes = new wxCheckBox(pParent, wxID_ANY,_T("UseSubframes"), wxPoint(-1,-1), wxSize(75,-1));
+        DoAdd(m_pUseSubframes, _T("Check to only download subframes (ROIs) if your camera supports it"));
+    }
+
     if (m_pCamera->HasGainControl)
     {
         int width = StringWidth(_T("0000"));
@@ -578,6 +587,11 @@ GuideCamera::CameraConfigDialogPane::~CameraConfigDialogPane(void)
 void GuideCamera::CameraConfigDialogPane::LoadValues(void)
 {
     assert(m_pCamera);
+
+    if (m_pCamera->HasSubframes)
+    {
+        m_pUseSubframes->SetValue(m_pCamera->UseSubframes);
+    }
 
     if (m_pCamera->HasGainControl)
     {
@@ -657,6 +671,11 @@ void GuideCamera::CameraConfigDialogPane::LoadValues(void)
 void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
 {
     assert(m_pCamera);
+
+    if (m_pCamera->HasSubframes)
+    {
+        m_pCamera->UseSubframes = m_pUseSubframes->GetValue();
+    }
 
     if (m_pCamera->HasGainControl)
     {

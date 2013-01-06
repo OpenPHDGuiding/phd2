@@ -160,7 +160,7 @@ public:
     virtual bool AutoSelect(usImage *pImage=NULL)=0;
 
     virtual Point &CurrentPosition(void) = 0;
-    virtual wxRect GetBoundingBox(bool useSubframe) = 0;
+    virtual wxRect GetBoundingBox(void) = 0;
     virtual bool SaveCurrentImage(const wxString& fileName);
 
 private:

@@ -45,7 +45,7 @@ bool usImage::Init(int xsize, int ysize) {
 	}
 	NPixels = xsize * ysize;
 	Size = wxSize(xsize,ysize);
-    SubFrame = wxRect(0, 0, 0, 0);
+    Subframe = wxRect(0, 0, 0, 0);
 	Min = Max = 0;
 	if (NPixels) {
 		ImageData = new unsigned short[NPixels];
@@ -66,7 +66,7 @@ void usImage::CalcStats() {
  	Min = 65535; Max = 0;
     FiltMin = 65535; FiltMax = 0;
 
-    if (SubFrame.width <= 0 || SubFrame.height <= 0)
+    if (Subframe.width <= 0 || Subframe.height <= 0)
     {
         for (i=0, ptr=ImageData; i<NPixels; i++, ptr++) {
             d = (int) ( *ptr);
@@ -86,9 +86,9 @@ void usImage::CalcStats() {
     {  // Subframe
         int x, y;
         i=0;
-        for (y=0; y<SubFrame.height; y++) {
-            ptr = ImageData + SubFrame.x + (SubFrame.y + y)*Size.GetWidth();
-            for (x=0; x<SubFrame.width; x++, ptr++, i++) {
+        for (y=0; y<Subframe.height; y++) {
+            ptr = ImageData + Subframe.x + (Subframe.y + y)*Size.GetWidth();
+            for (x=0; x<Subframe.width; x++, ptr++, i++) {
                d = (int) ( *ptr);
                if (d < Min) Min = d;
                if (d > Max) Max = d;
@@ -96,8 +96,8 @@ void usImage::CalcStats() {
            }
         }
 
-        Median3(tmpdata, SubFrame.width, SubFrame.height);
-        for (i=0, ptr=tmpdata; i<(SubFrame.width*SubFrame.height); i++, ptr++) {
+        Median3(tmpdata, Subframe.width, Subframe.height);
+        for (i=0, ptr=tmpdata; i<(Subframe.width*Subframe.height); i++, ptr++) {
             d = (int) ( *ptr);
             if (d < FiltMin) FiltMin = d;
             if (d > FiltMax) FiltMax = d;

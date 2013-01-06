@@ -126,7 +126,7 @@ bool Camera_QGuiderClass::Disconnect() {
 
 }
 
-bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subFrame, bool recon) {
+bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 // Only does full frames still
 
 //	unsigned char *bptr;
