@@ -46,6 +46,10 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
 	m_displayedImage = new wxImage(XWinSize,YWinSize,true);
+    m_pRaGuideAlgorithm = new GuideAlgorithm();
+    m_pDecGuideAlgorithm = new GuideAlgorithm();
+    m_currentError = 0.0;
+    m_paused = false;
 
 	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 	SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
@@ -54,7 +58,43 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 Guider::~Guider(void)
 {
 	delete m_displayedImage;
+    delete m_pRaGuideAlgorithm;
+    delete m_pDecGuideAlgorithm;
 }
+
+bool Guider::IsPaused(void)
+{
+    return m_paused;
+}
+
+bool Guider::Pause(void)
+{
+    bool bReturn = m_paused;
+    
+    m_paused = true;
+
+    return bReturn;
+}
+
+bool Guider::Unpause(void)
+{
+    bool bReturn = m_paused;
+    
+    m_paused = false;
+
+    return bReturn;
+}
+
+Point &Guider::LockPosition()
+{
+    return m_lockPosition;
+}
+
+double Guider::CurrentError(void)
+{
+    return m_lockPostion.distance(CurrentPosition());
+}
+
 
 E_GUIDER_STATES Guider::GetState(void)
 {
@@ -68,6 +108,19 @@ bool Guider::SetState(E_GUIDER_STATES newState)
     m_state = newState;
 
     return bError;
+}
+
+void Guider::SetRaGuideAlgorithm(GuideAlgorithm *pAlgorithm)
+{
+    delete m_pRaGuideAlgorithm;
+    m_pRaGuideAlgorithm = pAlgorithm;
+
+}
+
+void Guider::SetDecGuideAlgorithm(GuideAlgorithm *pAlgorithm)
+{
+    delete m_pDecGuideAlgorithm;
+    m_pDecGuideAlgorithm = pAlgorithm;
 }
 
 void Guider::OnErase(wxEraseEvent &evt)

@@ -1,13 +1,13 @@
 /*
- *  guider_onestar.h
+ *  guide_algorithm.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created by Bret McKee
+ *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
- *  Refactored by Bret McKee
- *  Copyright (c) 2012 Bret McKee
+ *  Based upon work by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -37,32 +37,67 @@
  *
  */
 
-#ifndef GUIDER_ONESTAR_H_INCLUDED
-#define GUIDER_ONESTAR_H_INCLUDED
+#ifndef GUIDE_ALGORITHM_H_INCLUDED
+#define GUIDE_ALGORITHM_H_INCLUDED
 
-// Canvas area for image -- can take events
-class GuiderOneStar: public Guider
+/*
+ * The Guide Algorithm class is responsible for providing a
+ * mechanism insert various algorithms into the guiding
+ * loop
+ *
+ * It provides a method:
+ *
+ * double result(double input)
+ *
+ * that returns the result of whatever processing it does on input.
+ * 
+ */
+
+class GuideAlgorithm
 {
-protected:
-    Star m_star;
+    GuideAlgorithm *m_pChained;
+
 public:
-	GuiderOneStar(wxWindow *parent);
-    virtual ~GuiderOneStar(void);
+    GuideAlgorithm(void)
+    {
+        m_pChained = NULL;
+    }
 
-    virtual bool SetState(E_GUIDER_STATES newState);
+    /*
+     * if we are passed a pointer to chain to, this transfers
+     * ownership of the pointer to us, so we are resposnible
+     * for freeing it, which we do in the destructor.
+     */
+    GuideAlgorithm(GuideAlgorithm *pChained)
+    {
+        m_pChained = pChained;
+    }
 
-	virtual void OnPaint(wxPaintEvent& evt);
-    virtual bool UpdateGuideState(usImage *pImage, bool bUpdateStatus);
-    virtual Point &LockPosition();
-    virtual Point &CurrentPosition();
+    virtual ~GuideAlgorithm(void)
+    {
+        delete m_pChained;
+    }
 
-protected:
-    void OnLClick(wxMouseEvent& evt);
-    bool DoGuide(void);
+    void reset(void)
+    {
+    }
 
-    void SaveStarFITS();
+    // the default algorithm simply returns its input
+    double result(double input)
+    {
+        double dReturn;
 
-	DECLARE_EVENT_TABLE()
+        if (m_pChained)
+        {
+            dReturn = m_pChained->result(input);
+        }
+        else
+        {
+            dReturn = input;
+        }
+
+        return dReturn;
+    }
 };
 
-#endif /* GUIDER_ONESTAR_H_INCLUDED */
+#endif /* GUIDE_ALGORITHM_H_INCLUDED */

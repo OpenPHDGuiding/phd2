@@ -273,7 +273,7 @@ void MyFrame::OnSelect(wxCommandEvent& WXUNUSED(event))
             throw ERROR_INFO("Unable to set state to STATE_SELECTING");
         }
 
-        StartCapturing();
+        StartCapturing(RequestedExposureDuration());
     }
     catch (char *ErrorMsg)
     {
@@ -403,10 +403,11 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 {
     try
     {
+        usImage *pNextFullFrame = event.GetPayload<usImage *>();
+
         if (event.GetInt())
         {
-            delete m_pNextFullFrame;
-            m_pNextFullFrame = NULL;
+            delete pNextFullFrame;
 
             StopCapturing();
             pGuider->SetState(STATE_UNINITIALIZED);
@@ -416,9 +417,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 
         // the capture was OK - switch in the new image
         delete pCurrentFullFrame;
-        pCurrentFullFrame = m_pNextFullFrame;
-        m_pNextFullFrame = NULL;
-
+        pCurrentFullFrame = pNextFullFrame;
 
         switch (pGuider->GetState())
         {
@@ -444,7 +443,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         
         if (CaptureActive)
         {
-            frame->StartExposure();
+            frame->ScheduleExposure(RequestedExposureDuration());
         }
     }
     catch (char *ErrorMsg)
@@ -744,6 +743,10 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 		}
 		Menubar->Refresh();
 	}
+	else if (evt.GetId() == MENU_DEBUG)
+    {
+        Debug.SetState(evt.IsChecked()); 
+    }
 }
 
 bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))

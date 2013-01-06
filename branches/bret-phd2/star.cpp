@@ -37,7 +37,46 @@
 
 #include "phd.h"
 
-bool Star::Find(usImage *pImg, int base_x, int base_y)
+Star::Star(void)
+{
+    Invalidate();
+}
+
+Star::~Star(void)
+{
+}
+
+bool Star::WasFound(FindResult result)
+{
+    bool bReturn = false;
+
+    if (result == STAR_OK || result == STAR_SATURATED)
+    {
+        bReturn = true;
+    }
+
+    return bReturn;
+}
+
+bool Star::WasFound(void)
+{
+    return WasFound(m_lastFindResult);
+}
+
+void Star::Invalidate(void)
+{
+    Mass = 0.0;
+    SNR = 0.0;
+    m_lastFindResult = STAR_ERROR;
+    Point::Invalidate();
+}
+
+void Star::SetError(FindResult error=STAR_ERROR)
+{
+    m_lastFindResult = error;
+}
+
+bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
 {
     FindResult Result = STAR_OK;
     double X = base_x;
@@ -58,11 +97,11 @@ bool Star::Find(usImage *pImg, int base_x, int base_y)
 
         unsigned short *dataptr = pImg->ImageData;
         int rowsize = pImg->Size.GetWidth();
-        int searchsize = SearchRegion * 2 + 1;
+        int searchsize = searchRegion * 2 + 1;
 
         // u-left corner of local area
-        int start_x = base_x - SearchRegion; 
-        int start_y = base_y - SearchRegion;
+        int start_x = base_x - searchRegion; 
+        int start_y = base_y - searchRegion;
 
         int x, y;
 
@@ -71,8 +110,8 @@ bool Star::Find(usImage *pImg, int base_x, int base_y)
         unsigned sval;
 
         // make sure the star is not too near the edge
-        if (start_x < 0 || start_x + SearchRegion >= pImg->Size.GetWidth() ||
-            start_y < 0 || start_y + SearchRegion >= pImg->Size.GetHeight())
+        if (start_x < 0 || start_x + searchRegion >= pImg->Size.GetWidth() ||
+            start_y < 0 || start_y + searchRegion >= pImg->Size.GetHeight())
         {
             Result = STAR_TOO_NEAR_EDGE;
             throw ERROR_INFO("Star too near edge");
@@ -181,12 +220,12 @@ bool Star::Find(usImage *pImg, int base_x, int base_y)
 
     // update state
     SetXY(X, Y);
-    LastFindResult = Result;
+    m_lastFindResult = Result;
 
     return WasFound(Result);
 }
 
-bool Star::Find(usImage *pImg)
+bool Star::Find(usImage *pImg, int searchRegion)
 {
-    return Find(pImg, X, Y);
+    return Find(pImg, searchRegion, X, Y);
 }

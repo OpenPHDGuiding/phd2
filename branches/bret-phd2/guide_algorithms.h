@@ -1,13 +1,13 @@
 /*
- *  guider_onestar.h
+ *  guide_algorithms.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created by Bret McKee
+ *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
- *  Refactored by Bret McKee
- *  Copyright (c) 2012 Bret McKee
+ *  Based upon work by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -37,32 +37,9 @@
  *
  */
 
-#ifndef GUIDER_ONESTAR_H_INCLUDED
-#define GUIDER_ONESTAR_H_INCLUDED
+#ifndef GUIDE_ALGORITHMS_H_INCLUDED
+#define GUIDE_ALGORITHMS_H_INCLUDED
 
-// Canvas area for image -- can take events
-class GuiderOneStar: public Guider
-{
-protected:
-    Star m_star;
-public:
-	GuiderOneStar(wxWindow *parent);
-    virtual ~GuiderOneStar(void);
+#include "guide_algorithm.h"
 
-    virtual bool SetState(E_GUIDER_STATES newState);
-
-	virtual void OnPaint(wxPaintEvent& evt);
-    virtual bool UpdateGuideState(usImage *pImage, bool bUpdateStatus);
-    virtual Point &LockPosition();
-    virtual Point &CurrentPosition();
-
-protected:
-    void OnLClick(wxMouseEvent& evt);
-    bool DoGuide(void);
-
-    void SaveStarFITS();
-
-	DECLARE_EVENT_TABLE()
-};
-
-#endif /* GUIDER_ONESTAR_H_INCLUDED */
+#endif /* GUIDE_ALGORITHMS_H_INCLUDED */

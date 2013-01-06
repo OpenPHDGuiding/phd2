@@ -166,12 +166,12 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 			switch (c) {
 				case MSG_PAUSE: 
 				case 'p':
-					Paused = true;
+                    pGuider->Pause();
 					wxLogStatus(_T("Paused"));
 					break;
 				case MSG_RESUME:
 				case 'r':
-					Paused = false;
+                    pGuider->Unpause();
 					wxLogStatus (_T("Resumed"));
 					break;
 				case MSG_MOVE1:  // +/- 0.5
@@ -275,7 +275,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					}
 					break;
 				case MSG_GETSTATUS:
-					if( Paused )
+					if( pGuider->IsPaused() )
 						rval = STATE_PAUSED;
 					else if( looping )
 					{

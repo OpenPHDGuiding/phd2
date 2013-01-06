@@ -427,21 +427,18 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
         if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
         {
             // this is the "clearing dec backlash" case
-            if (--m_backlashSteps <= 0)
+            if (dist >= DEC_BACKLASH_DISTANCE)
+            {
+                assert(m_calibrationSteps == 0);
+                m_calibrationSteps = 1;
+                m_backlashSteps = 0;
+                m_calibrationStartingLocation = pGuider->CurrentPosition();
+            }
+            else if (--m_backlashSteps <= 0)
             {
                 wxMessageBox(_T("Unable to clear DEC backlash -- turning off Dec guiding"), _T("Alert"), wxOK | wxICON_ERROR);
                 Dec_guide = DEC_OFF;
                 m_calibrationDirection = NONE;
-                pGuider->SetState(STATE_CALIBRATED);
-
-                throw ERROR_INFO("Calibrate failed");
-            }
-
-            if (dist >= DEC_BACKLASH_DISTANCE)
-            {
-                assert(m_calibrationSteps == 0);
-                m_backlashSteps = 0;
-                m_calibrationStartingLocation = pGuider->CurrentPosition();
             }
         }
         else if (m_calibrationDirection == WEST || m_calibrationDirection == NORTH)
@@ -490,19 +487,20 @@ bool Scope::UpdateCalibrationState(Guider *pGuider)
                 {
                     assert(m_calibrationDirection == SOUTH);
                     m_calibrationDirection = NONE;
-                    pGuider->SetState(STATE_CALIBRATED);
                 }
             }
         }
 
         if (m_calibrationDirection == NONE)
         {
+            m_bCalibrated = true;
+            pGuider->SetState(STATE_CALIBRATED);
             frame->SetStatusText(_T("calibration complete"),1);
         }
         else
         {
             DisplayCalibrationStatus(dX, dY, dist, dist_crit);
-            frame->StartGuiding(m_calibrationDirection, Cal_duration);
+            frame->ScheduleGuide(m_calibrationDirection, Cal_duration);
         }
     }
     catch (char *ErrorMsg)

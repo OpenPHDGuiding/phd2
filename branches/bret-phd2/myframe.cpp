@@ -78,6 +78,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_CLEARDARK,MyFrame::OnClearDark)
     EVT_MENU(MENU_LOG,MyFrame::OnLog)
     EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
+    EVT_MENU(MENU_DEBUG,MyFrame::OnLog)
     EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
     EVT_MENU(MENU_SERVER, MyFrame::OnServerMenu)
     EVT_MENU(MENU_STARPROFILE, MyFrame::OnStarProfile)
@@ -123,7 +124,6 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 		SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 	}
 
-    m_pNextFullFrame = NULL;
     m_pWorkerThread = NULL;
     StartWorkerThread();
 
@@ -503,7 +503,6 @@ MyFrame::~MyFrame() {
     }
 
     delete pScope;
-    delete m_pNextFullFrame;
 
 	if (GuideCameraConnected)
 		CurrentGuideCamera->Disconnect();
@@ -531,11 +530,7 @@ bool MyFrame::StartWorkerThread(void)
 
     if (!m_pWorkerThread || !m_pWorkerThread->IsRunning())
     {
-        if (m_pWorkerThread)
-        {
-            delete m_pWorkerThread;
-        }
-
+        delete m_pWorkerThread;
         m_pWorkerThread = new WorkerThread(this);
 
         if (m_pWorkerThread->Create(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
@@ -574,9 +569,8 @@ void MyFrame::StopWorkerThread(void)
 
 void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
 {
-    double msDuration = (double)evt.GetInt();
-    usImage *pThisFrame = (usImage *)evt.GetClientData();
-    bool bError = CurrentGuideCamera->CaptureFull(msDuration, *pThisFrame);
+    S_EXPOSE_REQUEST *pRequest = (S_EXPOSE_REQUEST *)evt.GetClientData();
+    bool bError = CurrentGuideCamera->CaptureFull(pRequest->exposureDuration, *pRequest->pImage);
 
     if (!bError)
     {
@@ -585,81 +579,53 @@ void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
             case NR_NONE:
                 break;
             case NR_2x2MEAN:
-                QuickLRecon(*pThisFrame);
+                QuickLRecon(*pRequest->pImage);
                 break;
             case NR_3x3MEDIAN:
-                Median3(*pThisFrame);
+                Median3(*pRequest->pImage);
                 break;
         }
     }
 
-    wxThreadEvent event(wxEVT_THREAD, MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE);
-    event.SetInt(bError);
-    wxQueueEvent(this, event.Clone());
+    pRequest->bError = bError;
+
+    pRequest->semaphore.Post();
 }
 
 void MyFrame::OnPhdGuideEvent(wxCommandEvent& evt)
 {
-    GUIDE_DIRECTION direction = (GUIDE_DIRECTION)evt.GetInt();
-    double msDuration = (double)evt.GetExtraLong();
+    S_GUIDE_REQUEST *pRequest = (S_GUIDE_REQUEST *)evt.GetClientData();
 
-    bool bError = pScope->Guide(direction, msDuration);
+    pRequest->bError = pScope->Guide(pRequest->guideDirection, pRequest->guideDuration);
 
-    wxThreadEvent event(wxEVT_THREAD, MYFRAME_WORKER_THREAD_GUIDE_COMPLETE);
-    event.SetInt(bError);
-    wxQueueEvent(this, event.Clone());
+    pRequest->semaphore.Post();
 }
 
-void MyFrame::StartExposure(void)
-{
-    /*
-     * if there is no worker thread, or the camera expsoure request is not GUI free
-     * (which means it can't be called by a worker thread), then we just queue the request
-     * and handle it ourselves.  If there is a worker thread and a non-gui capture
-     * function, we call it from the worker thread
-     */
-    assert(m_pNextFullFrame == NULL);
-    m_pNextFullFrame = new usImage();
-
-    wxCriticalSectionLocker lock(m_CSpWorkerThread);
-
-    if (m_pWorkerThread && CurrentGuideCamera->HasNonGUICaptureFull())
-    {
-        m_pWorkerThread->EnqueueWorkerThreadExposeRequest(m_pNextFullFrame, RequestedExposureDuration());
-    }
-    else
-    {
-        wxCommandEvent evt(PHD_EXPOSE_EVENT, GetId());
-        evt.SetInt((int)RequestedExposureDuration());
-        evt.SetClientData(m_pNextFullFrame);
-        wxQueueEvent(this, evt.Clone());
-    }
-}
-
-void MyFrame::StartGuiding(GUIDE_DIRECTION guideDirection, double guideDuration)
+void MyFrame::ScheduleExposure(double exposureDuration)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
-    if (m_pWorkerThread && pScope->HasNonGUIGuide())
-    {
-        m_pWorkerThread->EnqueueWorkerThreadGuideRequest(guideDirection, guideDuration);
-    }
-    else
-    {
-        wxCommandEvent evt(PHD_GUIDE_EVENT, GetId());
-        evt.SetInt(guideDirection);
-        evt.SetExtraLong((int)guideDuration);
-        wxQueueEvent(this, evt.Clone());
-    }
 
+    assert(m_pWorkerThread);
+    
+    m_pWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration);
 }
 
-void MyFrame::StartCapturing(void)
+void MyFrame::ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration)
+{
+    wxCriticalSectionLocker lock(m_CSpWorkerThread);
+
+    assert(m_pWorkerThread);
+    
+    m_pWorkerThread->EnqueueWorkerThreadGuideRequest(guideDirection, guideDuration);
+}
+
+void MyFrame::StartCapturing(double exposureDuration)
 {
     CaptureActive = true;
 
     UpdateButtonsStatus();
 
-    StartExposure();
+    ScheduleExposure(exposureDuration);
 }
 
 void MyFrame::StopCapturing(void)

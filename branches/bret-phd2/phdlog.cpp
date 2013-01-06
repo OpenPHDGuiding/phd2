@@ -35,6 +35,89 @@
 
 #include "phd.h"
 
+void LOG::InitVars(void)
+{
+    m_bEnabled = false;
+    m_lastWriteTime = wxDateTime::Now();
+    m_pPathName = NULL;
+}
+
+LOG::LOG(void)
+{
+    InitVars();
+}
+
+LOG::LOG(char *pName, bool bEnabled = true)
+{
+    InitVars();
+
+    Init(pName, bEnabled);
+}
+
+LOG::~LOG(void)
+{
+    wxFFile::Flush();
+    wxFFile::Close();
+
+    delete m_pPathName;
+}
+
+bool LOG::SetState(bool bEnabled)
+{
+    bool prevState = m_bEnabled;
+
+    m_bEnabled = bEnabled;
+
+    return prevState;
+}
+
+bool LOG::Init(char *pName, bool bEnable=true)
+{
+    wxCriticalSectionLocker lock(m_criticalSection);
+
+    if (m_pPathName == NULL)
+    {
+        wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+        wxString strFileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_" + (pName?pName:"debug") + ".log";
+
+        m_pPathName = new wxString(strFileName);
+    }
+
+    if (m_bEnabled)
+    {
+        wxFFile::Flush();
+        wxFFile::Close();
+
+        m_bEnabled = false;
+    }
+        
+    if (bEnable && m_pPathName)
+    {
+        m_bEnabled = wxFFile::Open(*m_pPathName, "a");
+    }
+
+    return m_bEnabled;
+}
+
+bool LOG::AddLine(const wxString& str)
+{
+    return Write(str + "\n");
+}
+
+bool LOG::Flush(void)
+{
+    bool bReturn = true;
+
+    if (m_bEnabled)
+    {
+        wxCriticalSectionLocker lock(m_criticalSection);
+
+        bReturn = wxFFile::Flush();
+    }
+
+    return bReturn;
+}
+
 bool LOG::Write(const wxString& str)
 {
     bool bReturn = true;

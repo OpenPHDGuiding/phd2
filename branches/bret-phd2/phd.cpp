@@ -59,43 +59,46 @@ MyFrame *frame = NULL;
 GuideCamera *CurrentGuideCamera = NULL;
 
 bool GuideCameraConnected = false;
-int Time_lapse = 0;
 usImage *pCurrentFullFrame = new usImage();
 usImage *pCurrentDarkFrame = new usImage();
 int CropX=0;		// U-left corner of crop position
 int CropY=0;
-bool ManualLock = false;
-double MinMotion = 0.15;
-int SearchRegion = 15;
 
-//wxString LogFName;
-bool DisableGuideOutput = false;
-bool DitherRAOnly = false;
-bool HaveDark = false;
+#if 0
+int Time_lapse = 0;
+int	Cal_duration = 750;
 double RA_hysteresis = 0.1;
-int Dec_guide = DEC_AUTO;
-int Dec_algo = DEC_RESISTSWITCH;
 double Dec_slopeweight = 5.0;
 int Max_Dec_Dur = 150;
 int Max_RA_Dur = 1000;
+double RA_aggr = 1.0;
+//double Dec_aggr = 0.7;
+int Dec_guide = DEC_AUTO;
+int Dec_algo = DEC_RESISTSWITCH;
+bool DitherRAOnly = false;
+double MinMotion = 0.15;
+int SearchRegion = 15;
+bool DisableGuideOutput = false;
+bool ManualLock = false;
+double CurrentError = 0.0;
+#endif
+
+LOG Debug;
+
+//wxString LogFName;
+bool HaveDark = false;
 int NR_mode = NR_NONE;
 int AdvDlg_fontsize = 0;
 bool Log_Data = false;
 int Log_Images = 0;
 wxTextFile *LogFile;
-//double Dec_backlash = 0.0;
-double RA_aggr = 1.0;
-int	Cal_duration = 750;
-//double Dec_aggr = 0.7;
 int OverlayMode = 0;
 double StarMassChangeRejectThreshold = 0.5;
 int	Abort = 0;
-bool Paused = false;
 bool ServerMode = false;  // don't start server
 bool RandomMotionMode = false;
 wxSocketServer *SocketServer;
 int SocketConnections;
-double CurrentError = 0.0;
 double DitherScaleFactor = 1.0;
 
 

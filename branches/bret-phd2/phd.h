@@ -97,6 +97,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "point.h"
 #include "star.h."
 #include "graph.h"
+#include "guide_algorithms.h"
 #include "guiders.h"
 #include "cameras.h"
 #include "scopes.h"
@@ -139,35 +140,13 @@ extern double StarMassChangeRejectThreshold;
 #endif
 
 #if 1
+// The debug log related globals
 
-enum {
-	DEC_OFF = 0,
-	DEC_AUTO,
-	DEC_NORTH,
-	DEC_SOUTH
-};
+extern LOG Debug;
+#endif
 
-enum {
-	DEC_LOWPASS = 0,
-	DEC_RESISTSWITCH,
-	DEC_LOWPASS2
-};
+#if 1
 
-extern int  Time_lapse;		// Delay between frames (useful for vid cameras)
-extern int	Cal_duration;
-extern double RA_hysteresis;
-extern double Dec_slopeweight;
-extern int Max_Dec_Dur;
-extern int Max_RA_Dur;
-extern double RA_aggr;
-extern int Dec_guide;
-extern int Dec_algo;
-extern bool DitherRAOnly;
-extern double MinMotion; // Minimum star motion to trigger a pulse
-extern int SearchRegion; // how far u/d/l/r do we do the initial search
-extern bool DisableGuideOutput;
-extern bool ManualLock;	// In manual lock position mode?  (If so, don't re-lock on start of guide)
-extern double CurrentError;
 extern bool Paused;	// has PHD been told to pause guiding?
 #endif
 

@@ -64,11 +64,6 @@ GuiderOneStar::~GuiderOneStar()
 {
 }
 
-Point &GuiderOneStar::LockPosition()
-{
-    return m_lockPosition;
-}
-
 Point &GuiderOneStar::CurrentPosition()
 {
     return m_star;
@@ -92,9 +87,8 @@ bool GuiderOneStar::SetState(E_GUIDER_STATES newState)
                 m_lockPosition.Invalidate();
                 m_star.Invalidate();
 
-                // for onestar guiders, we fall immediately from STATE_UNINITIALIZED
+                // for onestar guiders, we move immediately from STATE_UNINITIALIZED
                 // to STATE_SELECTING
-
                 newState = STATE_SELECTING;
                 break;
             case STATE_SELECTED:
@@ -104,7 +98,10 @@ bool GuiderOneStar::SetState(E_GUIDER_STATES newState)
                 pScope->BeginCalibration(this);
                 break;
             case STATE_CALIBRATED:
+            case STATE_GUIDING:
                 m_lockPosition = m_star;
+                // for onestar guiders, we move immediately from STATE_CALIBRATED and 
+                // STATE_GUIDING to STATE_GUIDING_LOCKED
                 newState = STATE_GUIDING_LOCKED;
                 break;
         }
@@ -122,40 +119,94 @@ bool GuiderOneStar::SetState(E_GUIDER_STATES newState)
     return bError;
 }
 
+/*************  Do the actual guiding ***********************/
+bool GuiderOneStar::DoGuide(void)
+{
+    bool bError = false;
+
+    try
+    {
+        double theta = m_lockPosition.Angle(m_star);
+        double hyp   = m_lockPosition.Distance(m_star);
+        double raDistance  = cos(pScope->RaAngle() - theta) * hyp;
+        double decDistance = cos(pScope->DecAngle() - theta) * hyp;
+
+        frame->SetStatusText(wxString::Format(_T("t=%.2f h=%.2f ra=%.2f dec=%.2f"), theta, hyp, raDistance, decDistance),1);
+
+        assert(m_pRaGuideAlgorithm);
+        raDistance = m_pRaGuideAlgorithm->result(raDistance);
+
+        assert(m_pDecGuideAlgorithm);
+        decDistance = m_pDecGuideAlgorithm->result(raDistance);
+
+
+    }
+    catch (char *ErrorMsg)
+    {
+        POSSIBLY_UNUSED(ErrorMsg);
+        bError = true;
+    }
+
+    return bError;
+}
+
 /*************  A new image is ready ************************/
 
-void GuiderOneStar::UpdateGuideState(usImage *pImage, bool bUpdateStatus)
+bool GuiderOneStar::UpdateGuideState(usImage *pImage, bool bUpdateStatus)
 {
-    switch (m_state)
+    bool bError = false;
+
+    try
     {
-        case STATE_UNINITIALIZED:
-        case STATE_SELECTING:
+        if (m_state < STATE_SELECTED)
+        {
+            // there isn't much to do since we don't have a star yet
             if (bUpdateStatus)
             {
                 frame->SetStatusText(_T("No Star found"));
             }
-            break;
-        default:
-            m_star.Find(pImage);
+        }
+        else
+        {
+            // update the star position
+            m_star.Find(pImage, SearchRegion);
             
-            if (bUpdateStatus)
+            if (m_star.WasFound())
             {
-                if (m_star.WasFound())
+                if (bUpdateStatus)
                 {
                     frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR));
                 }
-                else
+                if (m_state >= STATE_GUIDING)
+                {
+                    bError = DoGuide();
+                }
+            }
+            else
+            {
+                if (bUpdateStatus)
                 {
                     frame->SetStatusText(_T("No Star found"));
                 }
             }
-            break;
+        }
+
+        if (!bError)
+        {
+            UpdateImageDisplay(pImage);
+        }
+    }
+    catch (char *ErrorMsg)
+    {
+        POSSIBLY_UNUSED(ErrorMsg);
+        bError = true;
     }
 
-    UpdateImageDisplay(pCurrentFullFrame);
+    return bError;
 }
 
-void GuiderOneStar::OnLClick(wxMouseEvent &mevent) {
+void GuiderOneStar::OnLClick(wxMouseEvent &mevent) 
+{
     try
     {
         if (m_state > STATE_SELECTED) 
@@ -186,12 +237,8 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent) {
             double StarX = (double) mevent.m_x / m_scaleFactor;
             double StarY = (double) mevent.m_y / m_scaleFactor;
 
-            m_star.Find(pCurrentFullFrame, StarX, StarY);
+            m_star.Find(pCurrentFullFrame, SearchRegion, StarX, StarY);
 
-#if 0
-            SetState(STATE_SELECTED);
-            frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),m_star.Mass,m_star.SNR));
-#else
             if (m_star.WasFound())
             {
                 SetState(STATE_SELECTED);
@@ -202,9 +249,9 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent) {
                 m_star.Invalidate();
                 frame->SetStatusText(wxString::Format(_T("No star found")));
             }
-#endif
 
             Refresh();
+            Update();
         }
     }
     catch (char *ErrorMsg)

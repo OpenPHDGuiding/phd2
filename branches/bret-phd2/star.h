@@ -42,7 +42,6 @@
 
 class Star:public Point
 {
-
 public:
     enum FindResult
     {
@@ -57,49 +56,19 @@ public:
 
     double Mass;
     double SNR;
-    FindResult LastFindResult;
 
-    Star(void)
-    {
-        Invalidate();
-    }
+    Star(void);
+    ~Star();
 
-    ~Star()
-    {
-    }
+    bool Find(usImage *pImg, int searchRegion);
+    bool Find(usImage *pImg, int searchRegion, int X, int Y);
 
-    bool Find(usImage *pImg);
-    bool Find(usImage *pImg, int X, int Y);
-
-    bool WasFound(FindResult result)
-    {
-        bool bReturn = false;
-
-        if (result == STAR_OK || result == STAR_SATURATED)
-        {
-            bReturn = true;
-        }
-
-        return bReturn;
-    }
-
-    bool WasFound(void)
-    {
-        return WasFound(LastFindResult);
-    }
-
-    virtual void Invalidate(void)
-    {
-        Mass = 0.0;
-        SNR = 0.0;
-        LastFindResult = STAR_ERROR;
-        Point::Invalidate();
-    }
-
-    void SetError(FindResult error=STAR_ERROR)
-    {
-        LastFindResult = error;
-    }
+    bool WasFound(FindResult result);
+    bool WasFound(void);
+    void Invalidate(void);
+    void SetError(FindResult error);
+private:
+    FindResult m_lastFindResult;
 };
 
 #endif /* STAR_H_INCLUDED */

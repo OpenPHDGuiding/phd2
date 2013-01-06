@@ -330,7 +330,6 @@
     <ClCompile Include="cam_wdm.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="eegg.cpp" />
-    <ClCompile Include="frame_events.cpp" />
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="guider.cpp" />
     <ClCompile Include="guider_onestar.cpp" />
@@ -339,6 +338,7 @@
     <ClCompile Include="mount.cpp" />
     <ClCompile Include="myapp.cpp" />
     <ClCompile Include="myframe.cpp" />
+    <ClCompile Include="myframe_events.cpp" />
     <ClCompile Include="phd.cpp" />
     <ClCompile Include="phdlog.cpp" />
     <ClCompile Include="prefs.cpp" />
@@ -394,6 +394,8 @@
     <ClInclude Include="guiders.h" />
     <ClInclude Include="guider_canvas.h" />
     <ClInclude Include="guider_onestar.h" />
+    <ClInclude Include="guide_algorithm.h" />
+    <ClInclude Include="guide_algorithms.h" />
     <ClInclude Include="image_math.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="myapp.h" />

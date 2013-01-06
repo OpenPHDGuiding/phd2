@@ -65,23 +65,41 @@ bool WorkerThread::HandleExpose(S_ARGS_EXPOSE *pArgs)
     
     try
     {
-        pArgs->pImage->InitDate();
-
-        if (CurrentGuideCamera->CaptureFull(pArgs->exposureDuration, *pArgs->pImage))
+        if (CurrentGuideCamera->HasNonGUICaptureFull())
         {
-            throw ERROR_INFO("CaptureFull failed");
+            pArgs->pImage->InitDate();
+
+            if (CurrentGuideCamera->CaptureFull(pArgs->exposureDuration, *pArgs->pImage))
+            {
+                throw ERROR_INFO("CaptureFull failed");
+            }
+
+            switch (GuideCameraPrefs::NR_mode)
+            {
+                case NR_NONE:
+                    break;
+                case NR_2x2MEAN:
+                    QuickLRecon(*pArgs->pImage);
+                    break;
+                case NR_3x3MEDIAN:
+                    Median3(*pArgs->pImage);
+                    break;
+            }
         }
-
-		switch (GuideCameraPrefs::NR_mode)
+        else
         {
-            case NR_NONE:
-                break;
-            case NR_2x2MEAN:
-                QuickLRecon(*pArgs->pImage);
-                break;
-            case NR_3x3MEDIAN:
-                Median3(*pArgs->pImage);
-                break;
+            MyFrame::S_EXPOSE_REQUEST request;
+            request.pImage = pArgs->pImage;
+            request.exposureDuration = pArgs->exposureDuration;
+
+            wxCommandEvent evt(PHD_EXPOSE_EVENT, GetId());
+            evt.SetClientData(&request);
+            wxQueueEvent(frame, evt.Clone());
+
+            // wait for the request to complete
+            request.semaphore.Wait();
+
+            bError = request.bError;
         }
     }
     catch (char *ErrorMsg)
@@ -93,9 +111,10 @@ bool WorkerThread::HandleExpose(S_ARGS_EXPOSE *pArgs)
     return  bError;
 }
 
-void WorkerThread::SendWorkerThreadExposeComplete(bool bError)
+void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 {
     wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE);
+    event.SetPayload<usImage *>(pImage);
     event.SetInt(bError);
     wxQueueEvent(m_pFrame, event.Clone());
 }
@@ -122,7 +141,27 @@ bool WorkerThread::HandleGuide(S_ARGS_GUIDE *pArgs)
     {
         if (pArgs->guideDirection != NONE && pArgs->guideDuration > 0)
         {
-            pScope->Guide(pArgs->guideDirection, pArgs->guideDuration);
+            if (pScope->HasNonGUIGuide())
+            {
+                bError = pScope->NonGUIGuide(pArgs->guideDirection, pArgs->guideDuration);
+            }
+            else
+            {
+                // we don't have a non-gui guide function, wo we send this to the 
+                // main frame routine that handles guides requests
+                MyFrame::S_GUIDE_REQUEST request;
+                request.guideDirection = pArgs->guideDirection;
+                request.guideDuration  = pArgs->guideDuration;
+
+                wxCommandEvent evt(PHD_GUIDE_EVENT, GetId());
+                evt.SetClientData(&request);
+                wxQueueEvent(frame, evt.Clone());
+
+                // wait for the request to complete
+                request.semaphore.Wait();
+
+                bError = request.bError;
+            }
         }
     }
     catch (char *ErrorMsg)
@@ -170,7 +209,7 @@ wxThread::ExitCode WorkerThread::Entry()
                 break;
             case WORKER_THREAD_REQUEST_EXPOSE:
                 bError = HandleExpose(&message.args.expose);
-                SendWorkerThreadExposeComplete(bError);
+                SendWorkerThreadExposeComplete(message.args.expose.pImage, bError);
                 break;
             case WORKER_THREAD_REQUEST_GUIDE:
                 bError = HandleGuide(&message.args.guide);

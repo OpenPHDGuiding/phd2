@@ -35,13 +35,15 @@
 #ifndef CAMERA_H_INCLUDED
 #define CAMERA_H_INCLUDED
 
-enum NOISE_REDUCTION_METHOD {
+enum NOISE_REDUCTION_METHOD
+{
 	NR_NONE,
 	NR_2x2MEAN,
 	NR_3x3MEDIAN
 };
 
-class GuideCameraPrefs {
+class GuideCameraPrefs
+{
 public:
     static bool            UseSubframes; // Use subframes if possible from camera
     static int             GuideCameraGain;

@@ -48,7 +48,6 @@ wxDECLARE_EVENT(PHD_GUIDE_EVENT, wxCommandEvent);
 
 class MyFrame: public wxFrame
 {
-    usImage *m_pNextFullFrame;
 public:
 	MyFrame(const wxString& title);
 	virtual ~MyFrame();
@@ -121,15 +120,29 @@ public:
 	void OnExposeComplete(wxThreadEvent& evt);
 	void OnGuideComplete(wxThreadEvent& evt);
 
+    struct S_EXPOSE_REQUEST
+    {
+        usImage          *pImage;
+        double           exposureDuration;
+        bool             bError;
+        wxSemaphore      semaphore;
+    };
     void OnPhdExposeEvent(wxCommandEvent &evt);
+
+    struct S_GUIDE_REQUEST
+    {
+        GUIDE_DIRECTION  guideDirection;
+        double           guideDuration;
+        bool             bError;
+        wxSemaphore      semaphore;
+    };
     void OnPhdGuideEvent(wxCommandEvent &evt);
 
-    void StartExposure(void);
+    void ScheduleExposure(double exposureDuration);
+    void ScheduleGuide(GUIDE_DIRECTION guideDirection, double guideDuration);
 
-    void StartCapturing(void);
+    void StartCapturing(double exposureDuration);
     void StopCapturing(void);
-
-    void StartGuiding(GUIDE_DIRECTION guideDirection, double guideDuration);
 
     void UpdateButtonsStatus(void);
 

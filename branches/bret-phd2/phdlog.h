@@ -42,75 +42,20 @@ private:
     bool m_bEnabled;
     wxCriticalSection m_criticalSection;
     wxDateTime m_lastWriteTime;
+    wxString *m_pPathName;
 
-    void InitVars(void)
-    {
-        m_bEnabled = false;
-        m_lastWriteTime = wxDateTime::Now();
-    }
+    void InitVars(void);
 
 public:
-    LOG()
-    {
-        InitVars();
-    }
+    LOG(void);
+    LOG(char *pName, bool bEnabled);
+    ~LOG(void);
 
-    LOG(char *pName, bool bEnabled = true)
-    {
-        InitVars();
-
-        Init(pName, bEnabled);
-    }
-
-    ~LOG()
-    {
-        wxFFile::Flush();
-        wxFFile::Close();
-    }
-
-    bool Init(char *pName, bool bEnable=true)
-    {
-        wxCriticalSectionLocker lock(m_criticalSection);
-
-        if (m_bEnabled)
-        {
-            wxFFile::Flush();
-            wxFFile::Close();
-
-            m_bEnabled = false;
-        }
-
-        if (bEnable)
-        {
-            wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-            wxString strFileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_" + pName + ".log";
-            
-            m_bEnabled = wxFFile::Open(strFileName, "a");
-        }
-
-        return m_bEnabled;
-    }
-
+    bool SetState(bool bEnabled);
+    bool Init(char *pName, bool bEnable);
+    bool AddLine(const wxString& str); // adds a newline
     bool Write(const wxString& str);
-
-    bool AddLine(const wxString& str)
-    {
-        return Write(str + "\n");
-    }
-
-    bool Flush(void)
-    {
-        bool bReturn = true;
-
-        if (m_bEnabled)
-        {
-            wxCriticalSectionLocker lock(m_criticalSection);
-
-            bReturn = wxFFile::Flush();
-        }
-
-        return bReturn;
-    }
+    bool Flush(void);
 };
 
 extern LOG& operator<< (LOG& out, const wxString &str);

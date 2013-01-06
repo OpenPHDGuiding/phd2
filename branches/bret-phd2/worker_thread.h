@@ -101,7 +101,7 @@ protected:
         double exposureDuration;
     };
     bool HandleExpose(S_ARGS_EXPOSE *pArgs);
-    void SendWorkerThreadExposeComplete(bool bError);
+    void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadExposeComplete(wxThreadEvent& event);
 
     /*************      Guide       **************************/

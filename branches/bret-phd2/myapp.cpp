@@ -4,8 +4,6 @@
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2006-2010 Craig Stark.
- *  Refactored by Bret McKee
- *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -40,13 +38,17 @@ IMPLEMENT_APP(MyApp)
 
 // ------------------------  My App stuff -----------------------------
 bool MyApp::OnInit() {
-	SetVendorName(_T("StarkLabs"));
-	wxLocale locale;
-#ifndef DEBUG
+
+#ifdef DEBUG
 	#if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
 	wxDisableAsserts();
 	#endif
 #endif
+
+    Debug.Init("debug", true);
+	SetVendorName(_T("StarkLabs"));
+	wxLocale locale;
+
 	locale.Init(wxLANGUAGE_ENGLISH_US);
 //	wxMessageBox(wxString::Format("%f",1.23));
 #ifdef ORION
