@@ -233,9 +233,9 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 			SetStatusText(_T("ASCOM connected"));
         }
 	}
-	#endif
+#endif
 
-	#ifdef GUIDE_GPUSB
+#ifdef GUIDE_GPUSB
     else if (mount_menu->IsChecked(MOUNT_GPUSB)) {
         pNewScope = new ScopeGpUsb();
 
@@ -246,9 +246,9 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 			SetStatusText(_T("GPUSB connected"));
 		}
 	}
-	#endif
+#endif
 
-	#ifdef GUIDE_GPINT
+#ifdef GUIDE_GPINT
 	else if (mount_menu->IsChecked(MOUNT_GPINT3BC)) {
         pNewScope = new ScopeGpInt((short) 0x3BC);
 
@@ -314,8 +314,8 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText(_T("OnCamera selected"));
         }
 	}
-	#endif
-	#ifdef GUIDE_VOYAGER
+#endif
+#ifdef GUIDE_VOYAGER
 	else if (mount_menu->IsChecked(MOUNT_VOYAGER)) {
         ScopeVoyager *pVoyager = new ScopeVoyager();
         pNewScope = pVoyager;
@@ -338,7 +338,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText(_T("Voyager selected"));
         }
 	}
-	#endif
+#endif
 #ifdef GUIDE_EQUINOX
 	else if (mount_menu->IsChecked(MOUNT_EQUINOX)) {
         pNewScope = new ScopeEquinox();
@@ -353,7 +353,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         }
 	}
 #endif
-	#ifdef GUIDE_EQMAC
+#ifdef GUIDE_EQMAC
 	else if (mount_menu->IsChecked(MOUNT_EQMAC)) {
         ScopeEQMac *pEQMac = new ScopeEQMac();
         pNewScope = pEQMac;
@@ -368,8 +368,8 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText(_T("EQMac connected"));
         }
 	}
-	#endif
-	#ifdef GUIDE_INDI
+#endif
+#ifdef GUIDE_INDI
     else if (mount_menu->IsChecked(MOUNT_INDI)) {
         if (!INDI_ScopeConnect()) {
             pMount->IsConnected() = MOUNT_INDI;
@@ -396,6 +396,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             {
                 wxString value = pItem->GetItemLabelText();
                 pConfig->SetString("/scope/LastMenuChoice", pItem->GetItemLabelText());
+                break;
             }
         }
 	}
@@ -412,95 +413,62 @@ bool Scope::Move(GUIDE_DIRECTION direction)
     return Guide(direction, m_calibrationDuration);
 }
 
-bool Scope::Move(const Point& currentLocation, const Point& desiredLocation)
+bool Scope::Move(GUIDE_DIRECTION direction, double distance)
 {
     bool bError = false;
 
     try
     {
-        if (!currentLocation.IsValid())
-        {
-            throw THROW_INFO("invalid CurrentPosition");
-        }
-
-        if (!desiredLocation.IsValid())
-        {
-            throw ERROR_INFO("invalid LockPosition");
-        }
-
-        double theta = desiredLocation.Angle(currentLocation);
-        double hyp   = desiredLocation.Distance(currentLocation);
-
-        // Convert theta and hyp into RA and DEC
-
-        double raDistance  = cos(pMount->RaAngle() - theta) * hyp;
-        double decDistance = cos(pMount->DecAngle() - theta) * hyp;
-
-        pFrame->GraphLog->AppendData(desiredLocation.dX(currentLocation), desiredLocation.dY(currentLocation),
-                raDistance, decDistance);
-
-        // Feed the raw distances to the guide algorithms
-
-        raDistance = m_pRaGuideAlgorithm->result(raDistance);
-        decDistance = m_pDecGuideAlgorithm->result(decDistance);
-
-        // Figure out the guide directions based on the (possibly) updated distances
-        GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
-        GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
-
         // Compute the required guide durations
-        double raDuration = fabs(raDistance/RaRate());
-        double decDuration = fabs(decDistance/DecRate());
-
         if (m_guidingEnabled)
         {
-            // enforce max RA duration
-            if (raDuration > m_maxRaDuration)
+            double duration = 0.0;
+            char directionName = '?';
+
+            switch (direction)
             {
-                raDuration = m_maxRaDuration;
+                case NORTH:
+                case SOUTH:
+                    duration = fabs(distance/DecRate());
+
+                    // Enforce dec guiding mode
+                    if ((m_decGuideMode == DEC_NONE) ||
+                        (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
+                        (direction == NORTH && m_decGuideMode == DEC_SOUTH))
+                    {
+                        duration = 0.0;
+                    }
+
+                    // and max dec duration
+                    if  (duration > m_maxDecDuration)
+                    {
+                        duration = m_maxDecDuration;
+                    }
+                    directionName = (direction==SOUTH)?'S':'N';
+                    break;
+                case EAST:
+                case WEST:
+                    duration = fabs(distance/RaRate());
+                    // enforce max RA duration
+                    if (duration > m_maxRaDuration)
+                    {
+                        duration = m_maxRaDuration;
+                    }
+                    directionName = (direction==EAST)?'E':'W';
+
+                    break;
             }
 
-            // and the dec guiding mode
-            if ((m_decGuideMode == DEC_NONE) ||
-                (decDirection == SOUTH && m_decGuideMode == DEC_NORTH) ||
-                (decDirection == NORTH && m_decGuideMode == DEC_SOUTH))
+            // Acutall do the guide
+            assert(duration >= 0);
+            if (duration > 0.0)
             {
-                decDuration = 0.0;
-            }
+                pFrame->SetStatusText(wxString::Format("%c dur=%.1f dist=%.2f", directionName, duration, distance),1);
 
-            // and the max dec duration
-            if  (decDuration > m_maxDecDuration)
-            {
-                decDuration = m_maxDecDuration;
-            }
-
-        }
-        else
-        {
-            raDuration = 0.0;
-            decDuration = 0.0;
-        }
-
-        pFrame->SetStatusText("",1);
-
-        // We are now ready to actually guide
-        assert(raDuration >= 0);
-        if (raDuration > 0.0)
-        {
-            pFrame->SetStatusText(wxString::Format("%c dur=%.1f dist=%.2f", (raDirection==EAST)?'E':'W', raDuration, raDistance),1);
-            if (Guide(raDirection, raDuration))
-            {
-                throw ERROR_INFO("ra guide failed");
-            }
-        }
-
-        assert(decDuration >= 0);
-        if (decDuration > 0.0)
-        {
-            pFrame->SetStatusText(wxString::Format("%c dur=%.1f dist=%.2f", (decDirection==SOUTH)?'S':'N', decDuration, decDistance),1);
-            if (Guide(decDirection, decDuration))
-            {
-                throw ERROR_INFO("dec guide failed");
+                if (Guide(direction, duration))
+                {
+                    throw ERROR_INFO("guide failed");
+                }
             }
         }
     }

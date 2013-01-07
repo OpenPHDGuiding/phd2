@@ -81,10 +81,9 @@ public:
     Scope(void);
     virtual ~Scope(void);
 
-public:
-    bool Move(const Point& currentLocation, const Point& desiredLocation);
 private:
     bool Move(GUIDE_DIRECTION direction);
+    bool Move(GUIDE_DIRECTION direction, double distance);
     double CalibrationTime(int nCalibrationSteps);
     bool BacklashClearingFailed(void);
 

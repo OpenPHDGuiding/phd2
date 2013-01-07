@@ -263,6 +263,35 @@ bool Mount::Disconnect(void)
     return false;
 }
 
+bool Mount::BeginCalibration(const Point& currentPosition)
+{
+    bool bError = false;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Not connected");
+        }
+
+        if (!currentPosition.IsValid()) 
+        {
+            throw ERROR_INFO("Must have a valid lock position");
+        }
+
+        m_calibrationStartingLocation = currentPosition;
+        ClearCalibration();
+
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
 wxString Mount::GetCalibrationStatus(double dX, double dY, double dist, double dist_crit)
 {
     char directionName = '?';
@@ -424,24 +453,45 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
     return bError;
 }
 
-bool Mount::BeginCalibration(const Point& currentPosition)
+bool Mount::Move(const Point& currentLocation, const Point& desiredLocation)
 {
     bool bError = false;
 
     try
     {
-        if (!IsConnected())
+        if (!currentLocation.IsValid())
         {
-            throw ERROR_INFO("Not connected");
+            throw THROW_INFO("invalid CurrentPosition");
         }
 
-        if (!currentPosition.IsValid()) 
+        if (!desiredLocation.IsValid())
         {
-            throw ERROR_INFO("Must have a valid lock position");
+            throw ERROR_INFO("invalid LockPosition");
         }
 
-        m_calibrationStartingLocation = currentPosition;
-        ClearCalibration();
+        double theta = desiredLocation.Angle(currentLocation);
+        double hyp   = desiredLocation.Distance(currentLocation);
+
+        // Convert theta and hyp into RA and DEC
+
+        double raDistance  = cos(pMount->RaAngle() - theta) * hyp;
+        double decDistance = cos(pMount->DecAngle() - theta) * hyp;
+
+        pFrame->GraphLog->AppendData(desiredLocation.dX(currentLocation), desiredLocation.dY(currentLocation),
+                raDistance, decDistance);
+
+        // Feed the raw distances to the guide algorithms
+
+        raDistance = m_pRaGuideAlgorithm->result(raDistance);
+        decDistance = m_pDecGuideAlgorithm->result(decDistance);
+
+        // Figure out the guide directions based on the (possibly) updated distances
+        GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
+        GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
+
+        pFrame->SetStatusText("",1);
+        Move(decDirection, raDistance);
+        Move(raDirection, decDistance);
 
     }
     catch (wxString Msg)
@@ -452,7 +502,7 @@ bool Mount::BeginCalibration(const Point& currentPosition)
 
     return bError;
 }
-
+    
 void Mount::SetCalibration(double raAngle, double decAngle, double raRate, double decRate)
 {
     m_decAngle = decAngle;

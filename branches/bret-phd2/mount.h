@@ -117,13 +117,15 @@ public:
 
     bool UpdateCalibrationState(const Point &currentPosition);
     bool FlipCalibration(void);
+
+    virtual bool Move(const Point& currentLocation, const Point& desiredLocation);
 private:
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public: 
-    virtual bool Move(const Point& currentLocation, const Point& desiredLocation)=0;
     virtual bool Move(GUIDE_DIRECTION direction) = 0;
+    virtual bool Move(GUIDE_DIRECTION direction, double distance) = 0;
 
 private:
     virtual double CalibrationTime(int nCalibrationSteps) = 0;
