@@ -373,6 +373,7 @@
     <ClCompile Include="scope_voyager.cpp" />
     <ClCompile Include="socket_server.cpp" />
     <ClCompile Include="star.cpp" />
+    <ClCompile Include="stepguider.cpp" />
     <ClCompile Include="testguide.cpp" />
     <ClCompile Include="usImage.cpp" />
     <ClCompile Include="worker_thread.cpp" />
@@ -445,6 +446,9 @@
     <ClInclude Include="scopes.h" />
     <ClInclude Include="socket_server.h" />
     <ClInclude Include="star.h" />
+    <ClInclude Include="stepguider.h" />
+    <ClInclude Include="stepguiders.h" />
+    <ClInclude Include="stepguider_sxao.h" />
     <ClInclude Include="testguide.h" />
     <ClInclude Include="usImage.h" />
     <ClInclude Include="worker_thread.h" />

@@ -41,8 +41,10 @@ static const int DefaultCalibrationDuration = 750;
 static const int DefaultMaxDecDuration  = 1000;
 static const int DefaultMaxRaDuration  = 1000;
 static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
+static const double DEC_BACKLASH_DISTANCE = 3.0;
 
 Scope::Scope(void)
+    : Mount(DEC_BACKLASH_DISTANCE)
 {
     m_calibrationSteps = 0;
 
@@ -221,7 +223,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         // else if 
     }
 #ifdef GUIDE_ASCOM
-    else if (mount_menu->IsChecked(MOUNT_ASCOM)) {
+    else if (scope_menu->IsChecked(SCOPE_ASCOM)) {
         pNewScope = new ScopeASCOM();
 
         if (pNewScope->Connect())
@@ -236,7 +238,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 #endif
 
 #ifdef GUIDE_GPUSB
-    else if (mount_menu->IsChecked(MOUNT_GPUSB)) {
+    else if (scope_menu->IsChecked(SCOPE_GPUSB)) {
         pNewScope = new ScopeGpUsb();
 
 		if (pNewScope->Connect()) {
@@ -249,7 +251,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 #endif
 
 #ifdef GUIDE_GPINT
-	else if (mount_menu->IsChecked(MOUNT_GPINT3BC)) {
+	else if (scope_menu->IsChecked(SCOPE_GPINT3BC)) {
         pNewScope = new ScopeGpInt((short) 0x3BC);
 
         if (pNewScope->Connect())
@@ -261,7 +263,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText(_T("GPINT 3BC selected"));
         }
 	}
-	else if (mount_menu->IsChecked(MOUNT_GPINT378)) {
+	else if (scope_menu->IsChecked(SCOPE_GPINT378)) {
         pNewScope = new ScopeGpInt((short) 0x378);
 
         if (pNewScope->Connect())
@@ -273,7 +275,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText(_T("GPINT 378 selected"));
         }
 	}
-	else if (mount_menu->IsChecked(MOUNT_GPINT278)) {
+	else if (scope_menu->IsChecked(SCOPE_GPINT278)) {
         pNewScope = new ScopeGpInt((short) 0x278);
 
         if (pNewScope->Connect())
@@ -288,7 +290,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 #endif
 
 #ifdef GUIDE_GCUSBST4
-	else if (mount_menu->IsChecked(MOUNT_GCUSBST4)) {
+	else if (scope_menu->IsChecked(SCOPE_GCUSBST4)) {
         ScopeGCUSBST4 *pGCUSBST4 = new ScopeGCUSBST4();
         pNewScope = pGCUSBST4;
         if (pNewScope->Connect())
@@ -303,7 +305,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 #endif
 
 #ifdef GUIDE_ONBOARD
-	else if (mount_menu->IsChecked(MOUNT_CAMERA)) {
+	else if (scope_menu->IsChecked(SCOPE_CAMERA)) {
         pNewScope = new ScopeOnCamera();
         if (pNewScope->Connect())
         {
@@ -316,7 +318,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	}
 #endif
 #ifdef GUIDE_VOYAGER
-	else if (mount_menu->IsChecked(MOUNT_VOYAGER)) {
+	else if (scope_menu->IsChecked(SCOPE_VOYAGER)) {
         ScopeVoyager *pVoyager = new ScopeVoyager();
         pNewScope = pVoyager;
 
@@ -340,7 +342,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	}
 #endif
 #ifdef GUIDE_EQUINOX
-	else if (mount_menu->IsChecked(MOUNT_EQUINOX)) {
+	else if (scope_menu->IsChecked(SCOPE_EQUINOX)) {
         pNewScope = new ScopeEquinox();
 
         if (pNewScope->Connect())
@@ -354,7 +356,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	}
 #endif
 #ifdef GUIDE_EQMAC
-	else if (mount_menu->IsChecked(MOUNT_EQMAC)) {
+	else if (scope_menu->IsChecked(SCOPE_EQMAC)) {
         ScopeEQMac *pEQMac = new ScopeEQMac();
         pNewScope = pEQMac;
 
@@ -370,9 +372,9 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	}
 #endif
 #ifdef GUIDE_INDI
-    else if (mount_menu->IsChecked(MOUNT_INDI)) {
+    else if (scope_menu->IsChecked(SCOPE_INDI)) {
         if (!INDI_ScopeConnect()) {
-            pMount->IsConnected() = MOUNT_INDI;
+            pMount->IsConnected() = SCOPE_INDI;
         } else {
             pMount->IsConnected() = 0;
             SetStatusText(_T("FAIL: INDI mount"));
@@ -383,9 +385,9 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         delete pMount;
         pMount = pNewScope;
 		SetStatusText(_T("Mount connected"));
-		SetStatusText(_T("Scope"),4);
+		SetStatusText(_T("Scope"),3);
         // now store the scope we selected so we can use it as the default next time.
-        wxMenuItemList items = mount_menu->GetMenuItems();
+        wxMenuItemList items = scope_menu->GetMenuItems();
         wxMenuItemList::iterator iter;
 
         for(iter = items.begin(); iter != items.end(); iter++)
@@ -402,7 +404,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 	}
 	else
     {
-		SetStatusText(_T("No scope"),4);
+		SetStatusText(_T("No scope"),3);
 	}
 
     UpdateButtonsStatus();
@@ -413,72 +415,68 @@ bool Scope::Move(GUIDE_DIRECTION direction)
     return Guide(direction, m_calibrationDuration);
 }
 
-bool Scope::Move(GUIDE_DIRECTION direction, double distance)
+double Scope::Move(GUIDE_DIRECTION direction, double duration, const wxString& statusMsgFormat)
 {
-    bool bError = false;
-
     try
     {
-        // Compute the required guide durations
-        if (m_guidingEnabled)
+        if (!m_guidingEnabled)
         {
-            double duration = 0.0;
-            char directionName = '?';
+            duration = 0.0;
+            throw THROW_INFO("Guiding disabled");
+        }
 
-            switch (direction)
-            {
-                case NORTH:
-                case SOUTH:
-                    duration = fabs(distance/DecRate());
+        // Compute the actual guide durations
+        
+        switch (direction)
+        {
+            case NORTH:
+            case SOUTH:
 
-                    // Enforce dec guiding mode
-                    if ((m_decGuideMode == DEC_NONE) ||
-                        (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
-                        (direction == NORTH && m_decGuideMode == DEC_SOUTH))
-                    {
-                        duration = 0.0;
-                    }
-
-                    // and max dec duration
-                    if  (duration > m_maxDecDuration)
-                    {
-                        duration = m_maxDecDuration;
-                    }
-                    directionName = (direction==SOUTH)?'S':'N';
-                    break;
-                case EAST:
-                case WEST:
-                    duration = fabs(distance/RaRate());
-                    // enforce max RA duration
-                    if (duration > m_maxRaDuration)
-                    {
-                        duration = m_maxRaDuration;
-                    }
-                    directionName = (direction==EAST)?'E':'W';
-
-                    break;
-            }
-
-            // Acutall do the guide
-            assert(duration >= 0);
-            if (duration > 0.0)
-            {
-                pFrame->SetStatusText(wxString::Format("%c dur=%.1f dist=%.2f", directionName, duration, distance),1);
-
-                if (Guide(direction, duration))
+                // Enforce dec guiding mode
+                if ((m_decGuideMode == DEC_NONE) ||
+                    (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
+                    (direction == NORTH && m_decGuideMode == DEC_SOUTH))
                 {
-                    throw ERROR_INFO("guide failed");
+                    duration = 0.0;
                 }
+
+                // and max dec duration
+                if  (duration > m_maxDecDuration)
+                {
+                    duration = m_maxDecDuration;
+                }
+                break;
+            case EAST:
+            case WEST:
+                
+                // enforce max RA duration
+                if (duration > m_maxRaDuration)
+                {
+                    duration = m_maxRaDuration;
+                }
+
+                break;
+        }
+
+        // Actually do the guide
+        assert(duration >= 0);
+        if (duration > 0.0)
+        {
+            wxString statusMsg = wxString::Format(statusMsgFormat, duration);
+            pFrame->SetStatusText(statusMsg, 1);
+            if (Guide(direction, duration))
+            {
+                throw ERROR_INFO("guide failed");
             }
         }
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        duration = -1.0;
     }
 
-    return bError;
+    return duration;
 }
     
 double Scope::CalibrationTime(int nCalibrationSteps)

@@ -50,7 +50,7 @@ OSErr ScopeEquinox::E6AESendRoutine(double ewCorrection, double nsCorrection, in
 
  	OSErr err;
 	FourCharCode E6Sig = 'MPj6';  // the Equinox 6 creator signature
-	if (mountcode == MOUNT_EQMAC)
+	if (mountcode == SCOPE_EQMAC)
 		E6Sig = 'EQMC';
 	FourCharCode phdSig = 'PhDG';  // ***** you need to fill in your app signature here ******
 	AEAddressDesc addDesc;
@@ -129,9 +129,9 @@ OSErr ScopeEquinox::E6AESendRoutine(double ewCorrection, double nsCorrection, in
 
 bool ScopeEquinox::Connect() {
 	// Check the E6 connection by sending 0,0 to it and checking E6Return
-	OSErr err = E6AESendRoutine(0.0,0.0,MOUNT_EQUINOX);
+	OSErr err = E6AESendRoutine(0.0,0.0,SCOPE_EQUINOX);
 	wxString prefix = "E6";
-//	if (mountcode == MOUNT_EQMAC) prefix = "EQMAC";
+//	if (mountcode == SCOPE_EQMAC) prefix = "EQMAC";
 	if (E6ReturnCode == -1) {
 		wxMessageBox (prefix + " responded it's not connected to a mount");
 		return true;
@@ -166,9 +166,9 @@ bool ScopeEquinox::Guide(const GUIDE_DIRECTION direction, int duration) {
 			EWTime = (double) duration / -1000.0;
 			break;
 	}
-	OSErr err = E6AESendRoutine(EWTime, NSTime,MOUNT_EQUINOX);
+	OSErr err = E6AESendRoutine(EWTime, NSTime,SCOPE_EQUINOX);
 	wxString prefix = "E6";
-	//if (mountcode == MOUNT_EQMAC) prefix = "EQMAC";
+	//if (mountcode == SCOPE_EQMAC) prefix = "EQMAC";
 	if (E6ReturnCode == -1) {
 		wxMessageBox (prefix + " responded it's not connected to a mount");
 		return true;

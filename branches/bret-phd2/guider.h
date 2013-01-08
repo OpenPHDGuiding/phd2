@@ -99,8 +99,10 @@ class Guider: public wxWindow
     bool m_paused;
     Point m_lockPosition;
     GUIDER_STATE m_state;
-	double	m_scaleFactor;
     usImage *m_pCurrentImage;
+
+protected:
+	double	m_scaleFactor;
 
     // Things related to the Advanced Config Dialog
 protected:

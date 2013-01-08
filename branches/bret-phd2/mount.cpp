@@ -40,10 +40,11 @@ static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_RESIST_S
 
 static const int MAX_CALIBRATION_STEPS = 60;
 static const double MAX_CALIBRATION_DISTANCE = 25.0;
-static const double DEC_BACKLASH_DISTANCE = 3.0;
 
-Mount::Mount()
+Mount::Mount(double decBacklashDistance)
 {
+    m_decBacklashDistance = decBacklashDistance;
+
     m_connected = false;
 
     m_calibrated = false;
@@ -279,9 +280,9 @@ bool Mount::BeginCalibration(const Point& currentPosition)
             throw ERROR_INFO("Must have a valid lock position");
         }
 
-        m_calibrationStartingLocation = currentPosition;
         ClearCalibration();
-
+        m_calibrationStartingLocation = currentPosition;
+        m_backlashSteps = MAX_CALIBRATION_STEPS;
     }
     catch (wxString Msg)
     {
@@ -360,15 +361,17 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
         if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
         {
             // this is the "clearing dec backlash" case
-            if (dist >= DEC_BACKLASH_DISTANCE)
+            if (dist >= m_decBacklashDistance)
             {
                 assert(m_calibrationSteps == 0);
                 m_calibrationSteps = 1;
                 m_backlashSteps = 0;
                 m_calibrationStartingLocation = currentPosition;
+                statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
             }
             else if (--m_backlashSteps <= 0)
             {
+                assert(m_backlashSteps == 0);
                 if (BacklashClearingFailed())
                 {
                     wxMessageBox(_T("Unable to clear DEC backlash, and unable to cope -- aborting calibration"), _T("Alert"), wxOK | wxICON_ERROR);
@@ -418,6 +421,7 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
                 if (m_calibrationDirection == EAST)
                 {
                     m_calibrationDirection = NORTH;
+                    m_calibrationStartingLocation = currentPosition;
                     dX = dY = dist = 0.0;
                     statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
                 }
@@ -474,8 +478,8 @@ bool Mount::Move(const Point& currentLocation, const Point& desiredLocation)
 
         // Convert theta and hyp into RA and DEC
 
-        double raDistance  = cos(pMount->RaAngle() - theta) * hyp;
-        double decDistance = cos(pMount->DecAngle() - theta) * hyp;
+        double raDistance  = cos(m_raAngle - theta) * hyp;
+        double decDistance = cos(m_decAngle - theta) * hyp;
 
         pFrame->GraphLog->AppendData(desiredLocation.dX(currentLocation), desiredLocation.dY(currentLocation),
                 raDistance, decDistance);
@@ -489,10 +493,15 @@ bool Mount::Move(const Point& currentLocation, const Point& desiredLocation)
         GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
         GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
 
+        double actualRaDuration  = Move(raDirection,  fabs(raDistance/m_raRate), 
+                                            wxString::Format("%c dur=%%.0f dist=%.2f", 
+                                                            (raDirection==EAST)?'E':'W',
+                                                            raDistance));
+        double actualDecDuration = Move(decDirection, fabs(decDistance/m_decRate),
+                                            wxString::Format("%c dur=%%.0f dist=%.2f", 
+                                                            (decDirection==SOUTH)?'S':'N',
+                                                            decDistance));
         pFrame->SetStatusText("",1);
-        Move(decDirection, raDistance);
-        Move(raDirection, decDistance);
-
     }
     catch (wxString Msg)
     {

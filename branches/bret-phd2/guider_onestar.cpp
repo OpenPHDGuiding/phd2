@@ -378,14 +378,10 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         // now decorate the image to show the selection
         
         GUIDER_STATE state = GetState();
-        double scaleFactor = ScaleFactor();
         bool FoundStar = m_star.WasFound();
         double StarX = m_star.X;
         double StarY = m_star.Y;
 
-        double LockX = LockPosition().X;
-        double LockY = LockPosition().Y;
-        
 		if (state == STATE_SELECTED || IsPaused()) {
 
 			if (FoundStar)
@@ -393,42 +389,38 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
 			else
 				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*scaleFactor)-m_searchRegion,ROUND(StarY*scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
+			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 		}
 		else if (state == STATE_CALIBRATING) {  // in the cal process
 			dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*scaleFactor)-m_searchRegion,ROUND(StarY*scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
-			dc.SetPen(wxPen(wxColor(255,255,0),1,wxDOT));
-			dc.DrawLine(0, LockY*scaleFactor, XWinSize, LockY*scaleFactor);
-			dc.DrawLine(LockX*scaleFactor, 0, LockX*scaleFactor, YWinSize);
+			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 
 		}
-		else if (state == STATE_GUIDING) { // locked and guiding
+		else if (state == STATE_CALIBRATED || state == STATE_GUIDING) { // locked and guiding
 			if (FoundStar)
 				dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
 			else
 				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
 			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*scaleFactor)-m_searchRegion,ROUND(StarY*scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
-			dc.SetPen(wxPen(wxColor(0,255,0)));
-			dc.DrawLine(0, LockY*scaleFactor, XWinSize, LockY*scaleFactor);
-			dc.DrawLine(LockX*scaleFactor, 0, LockX*scaleFactor, YWinSize);
+			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 
 		}
 
 		if ((Log_Images==1) && (state >= STATE_SELECTED)) {  // Save star image as a JPEG
+            double LockX = LockPosition().X;
+            double LockY = LockPosition().Y;
+        
 			wxBitmap SubBmp(60,60,-1);
 			wxMemoryDC tmpMdc;
 			tmpMdc.SelectObject(SubBmp);
 			memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
-			//memDC.CrossHair(ROUND(LockX*scaleFactor),ROUND(LockY*scaleFactor));  // Draw the cross-hair on the origin
-			memDC.DrawLine(0, LockY*scaleFactor, XWinSize, LockY*scaleFactor);
-			memDC.DrawLine(LockX*scaleFactor, 0, LockX*scaleFactor, YWinSize);
+			memDC.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
+			memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
 #ifdef __APPLEX__
-			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*scaleFactor)-30,wxCOPY,false);
+			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
 #else
-			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*scaleFactor)-30,ROUND(StarY*scaleFactor)-30,wxCOPY,false);
+			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
 #endif
 
 			//			tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);

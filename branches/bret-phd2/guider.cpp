@@ -147,6 +147,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
     try
     {
         m_scaleFactor = 1.0;
+        GUIDER_STATE state = GetState();
 
         // see if we need to scale the image
         if ((m_displayedImage->GetWidth() == XWinSize) && (m_displayedImage->GetHeight() == YWinSize)) 
@@ -253,6 +254,27 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     break;
                 }
             }
+        }
+
+        // draw the lockpoint of there is one
+        if (state > STATE_SELECTED)
+        {
+            double LockX = LockPosition().X;
+            double LockY = LockPosition().Y;
+        
+            switch(state)
+            {
+                case STATE_CALIBRATING:
+                    dc.SetPen(wxPen(wxColor(255,255,0),1,wxDOT));
+                    break;
+                case STATE_CALIBRATED:
+                case STATE_GUIDING:
+                    dc.SetPen(wxPen(wxColor(0,255,0)));
+                    break;
+            }
+
+			dc.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
+			dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
         }
     }
     catch (wxString Msg)

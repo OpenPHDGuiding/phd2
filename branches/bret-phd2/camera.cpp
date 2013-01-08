@@ -296,7 +296,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		pCamera = new Camera_SimClass();
 	else if (Choice.Find(_T("None")) + 1) {
 		assert(pCamera == NULL);
-		SetStatusText(_T("No cam"),3);
+		SetStatusText(_T("No cam"),2);
 		return;
 	}
 #if defined (SAC42)
@@ -451,7 +451,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 				Camera_VIDEODEVICE.Name = deviceInfo->getProduct();
 			} else {
 				assert(pCamera == NULL);
-				SetStatusText(_T("No cam"),3);
+				SetStatusText(_T("No cam"),2);
 				return;
 			}
 		}
@@ -462,7 +462,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 
 	else {
 		assert(pCamera == NULL);
-		SetStatusText(_T("No cam"),3);
+		SetStatusText(_T("No cam"),2);
 		wxMessageBox(_T("Unknown camera choice"));
 		return;
 	}
@@ -473,19 +473,19 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		wxMessageBox(_T("Problem connecting to camera"),_T("Error"),wxOK);
         delete pCamera;
 		pCamera = NULL;
-		SetStatusText(_T("No cam"),3);
+		SetStatusText(_T("No cam"),2);
         UpdateButtonsStatus();
 		return;
 	}
 	SetStatusText(pCamera->Name + _T(" connected"));
-	SetStatusText(_T("Camera"),3);
+	SetStatusText(_T("Camera"),2);
     UpdateButtonsStatus();
     pConfig->SetString("/camera/LastMenuChoice", Choice);
 	if (pCamera->HasPropertyDialog)
 		Setup_Button->Enable(true);
 	else
 		Setup_Button->Enable(false);
-	if (pFrame->mount_menu->IsChecked(MOUNT_CAMERA) && pCamera->HasGuiderOutput) {
+	if (pFrame->scope_menu->IsChecked(SCOPE_CAMERA) && pCamera->HasGuiderOutput) {
 		if (pMount)
 			delete pMount;
 		pMount = new ScopeOnCamera();
@@ -493,7 +493,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
         {
             pMount->Connect();
         }
-		pFrame->SetStatusText(_T("Scope"),4);
+		pFrame->SetStatusText(_T("Scope"),3);
 	}
 
 }

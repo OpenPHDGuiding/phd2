@@ -1,9 +1,9 @@
 /*
- *  scope.h
+ *  stepguider.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
- *  Copyright (c) 2012 Bret McKee
+ *  Copyright (c) 2013 Bret McKee
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
+ *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its 
  *     Craig Stark, Stark Labs nor the names of its 
  *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
@@ -33,42 +33,32 @@
  *
  */
 
-#ifndef SCOPE_H_INCLUDED
-#define SCOPE_H_INCLUDED
+#ifndef STEPGUIDER_H_INCLUDED
+#define STEPGUIDER_H_INCLUDED
 
-class Scope:public Mount
+class StepGuider:public Mount
 {
-    int m_calibrationDuration;
-    int m_maxDecDuration;
-    int m_maxRaDuration;
-    DEC_GUIDE_MODE m_decGuideMode;
+    int m_pCalibrationSteps;
+    int m_maxDecSteps;
+    int m_maxRaSteps;
 
     // Things related to the Advanced Config Dialog
 protected:
-    class ScopeConfigDialogPane : public MountConfigDialogPane
+    class StepGuiderConfigDialogPane : public MountConfigDialogPane
     {
-        Scope *m_pScope;
-        wxSpinCtrl *m_pCalibrationDuration;
-        wxSpinCtrl *m_pMaxRaDuration;
-        wxSpinCtrl *m_pMaxDecDuration;
-        wxChoice   *m_pDecMode;
+        StepGuider *m_pStepGuider;
+        wxSpinCtrl *m_pCalibrationSteps;
 
         public:
-        ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
-        ~ScopeConfigDialogPane(void);
+        StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
+        ~StepGuiderConfigDialogPane(void);
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
     };
 
-    virtual int GetCalibrationDuration(void);
-    virtual bool SetCalibrationDuration(int calibrationDuration);
-    virtual int GetMaxDecDuration(void);
-    virtual bool SetMaxDecDuration(int maxDecDuration);
-    virtual int GetMaxRaDuration(void);
-    virtual bool SetMaxRaDuration(double maxRaDuration);
-    virtual DEC_GUIDE_MODE GetDecGuideMode(void);
-    virtual bool SetDecGuideMode(int decGuideMode);
+    virtual int GetCalibrationSteps(void);
+    virtual bool SetCalibrationSteps(int calibrationSteps);
 
     friend class GraphLogWindow;
 
@@ -78,8 +68,8 @@ public:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
 public:
-    Scope(void);
-    virtual ~Scope(void);
+    StepGuider(void);
+    virtual ~StepGuider(void);
 
 private:
     bool Move(GUIDE_DIRECTION direction);
@@ -89,8 +79,11 @@ private:
 
 // these MUST be supplied by a subclass
 private:
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
-    virtual bool IsGuiding()=0;
+    virtual bool Center(void)=0;
+    virtual bool Step (GUIDE_DIRECTION direction, int steps)=0;
+    virtual int ApproximateStepsRemaining(GUIDE_DIRECTION direction)=0;
+    virtual int ApproximateMaxStepsFromCenter(GUIDE_DIRECTION direction)=0;
+    virtual bool IsAtLimit(GUIDE_DIRECTION direction) = 0;
 };
 
-#endif /* SCOPE_H_INCLUDED */
+#endif /* STEPGUIDER_H_INCLUDED */

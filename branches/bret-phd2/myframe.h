@@ -105,11 +105,11 @@ public:
 
 	Guider *pGuider;
 	wxMenuBar *Menubar;
-	wxMenu	*tools_menu, *mount_menu; // need access to this...
+	wxMenu	*tools_menu, *scope_menu, *stepguider_menu; // need access to this...
 	wxChoice	*Dur_Choice;
 	wxCheckBox *HotPixel_Checkbox;
 	wxButton	*Setup_Button, *Dark_Button;
-	wxBitmapButton *Brain_Button, *Cam_Button, *Scope_Button, *Loop_Button, *Guide_Button, *Stop_Button;
+	wxBitmapButton *Brain_Button, *Cam_Button, *Scope_Button, *StepGuider_Button, *Loop_Button, *Guide_Button, *Stop_Button;
 	wxHtmlHelpController *help;
 	wxSlider *Gamma_Slider;
 	GraphLogWindow *GraphLog;
@@ -127,6 +127,7 @@ public:
 	void OnSettings(wxCommandEvent& evt);
 	void OnLog(wxCommandEvent& evt);
 	void OnConnectScope(wxCommandEvent& evt);
+	void OnConnectStepGuider(wxCommandEvent& evt);
 	void OnConnectCamera(wxCommandEvent& evt);
 	void OnLoopExposure(wxCommandEvent& evt);
 	void OnButtonStop(wxCommandEvent& evt);
@@ -215,18 +216,21 @@ private:
 
 enum {
 	MENU_SHOWHELP = 101,
-	MOUNT_ASCOM,
-	MOUNT_CAMERA,
-	MOUNT_GPUSB,
-	MOUNT_GPINT3BC,
-	MOUNT_GPINT378,
-	MOUNT_GPINT278,
-	MOUNT_VOYAGER,
-	MOUNT_EQUINOX,
-	MOUNT_EQMAC,
-	MOUNT_GCUSBST4,
-	MOUNT_INDI,
+	SCOPE_ASCOM,
+	SCOPE_CAMERA,
+	SCOPE_GPUSB,
+	SCOPE_GPINT3BC,
+	SCOPE_GPINT378,
+	SCOPE_GPINT278,
+	SCOPE_VOYAGER,
+	SCOPE_EQUINOX,
+	SCOPE_EQMAC,
+	SCOPE_GCUSBST4,
+	SCOPE_INDI,
+    AO_NONE,
+    AO_SXAO,
 	BUTTON_SCOPE,
+	BUTTON_STEPGUIDER,
 	BUTTON_CAMERA,
 	BUTTON_CAL,
 	BUTTON_DARK,

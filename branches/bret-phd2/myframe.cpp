@@ -90,6 +90,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
     EVT_BUTTON(BUTTON_CAMERA,MyFrame::OnConnectCamera)
     EVT_BUTTON(BUTTON_SCOPE, MyFrame::OnConnectScope)
+    EVT_BUTTON(BUTTON_STEPGUIDER, MyFrame::OnConnectStepGuider)
     EVT_BUTTON(BUTTON_LOOP, MyFrame::OnLoopExposure)
     EVT_MENU(BUTTON_LOOP, MyFrame::OnLoopExposure) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_STOP, MyFrame::OnButtonStop)
@@ -171,55 +172,63 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	file_menu->Append(wxID_EXIT, _T("E&xit\tAlt-X"), _T("Quit this program"));
 //	file_menu->Append(wxID_PREFERENCES, _T("&Preferences"), _T("Preferences"));
 
-	mount_menu = new wxMenu;
-	mount_menu->AppendRadioItem(MOUNT_ASCOM,_T("ASCOM"),_T("ASCOM telescope driver"));
-	mount_menu->AppendRadioItem(MOUNT_GPUSB,_T("GPUSB"),_T("ShoeString GPUSB ST-4"));
-	mount_menu->AppendRadioItem(MOUNT_GPINT3BC,_T("GPINT 3BC"),_T("ShoeString GPINT parallel port 3BC"));
-	mount_menu->AppendRadioItem(MOUNT_GPINT378,_T("GPINT 378"),_T("ShoeString GPINT parallel port 378"));
-	mount_menu->AppendRadioItem(MOUNT_GPINT278,_T("GPINT 278"),_T("ShoeString GPINT parallel port 278"));
-	mount_menu->AppendRadioItem(MOUNT_CAMERA,_T("On-camera"),_T("Camera Onboard ST-4"));
+	scope_menu = new wxMenu;
+	scope_menu->AppendRadioItem(SCOPE_ASCOM,_T("ASCOM"),_T("ASCOM telescope driver"));
+	scope_menu->AppendRadioItem(SCOPE_GPUSB,_T("GPUSB"),_T("ShoeString GPUSB ST-4"));
+	scope_menu->AppendRadioItem(SCOPE_GPINT3BC,_T("GPINT 3BC"),_T("ShoeString GPINT parallel port 3BC"));
+	scope_menu->AppendRadioItem(SCOPE_GPINT378,_T("GPINT 378"),_T("ShoeString GPINT parallel port 378"));
+	scope_menu->AppendRadioItem(SCOPE_GPINT278,_T("GPINT 278"),_T("ShoeString GPINT parallel port 278"));
+	scope_menu->AppendRadioItem(SCOPE_CAMERA,_T("On-camera"),_T("Camera Onboard ST-4"));
 #ifdef GUIDE_VOYAGER
-	mount_menu->AppendRadioItem(MOUNT_VOYAGER,_T("Voyager"),_T("Mount connected in Voyager"));
+	scope_menu->AppendRadioItem(SCOPE_VOYAGER,_T("Voyager"),_T("Mount connected in Voyager"));
 #endif
 #ifdef GUIDE_EQUINOX
-	mount_menu->AppendRadioItem(MOUNT_EQUINOX,_T("Equinox 6"),_T("Mount connected in Equinox 6"));
+	scope_menu->AppendRadioItem(SCOPE_EQUINOX,_T("Equinox 6"),_T("Mount connected in Equinox 6"));
 #endif
 #ifdef GUIDE_EQUINOX
-	mount_menu->AppendRadioItem(MOUNT_EQMAC,_T("EQMAC"),_T("Mount connected in EQMAC"));
+	scope_menu->AppendRadioItem(SCOPE_EQMAC,_T("EQMAC"),_T("Mount connected in EQMAC"));
 #endif
 #ifdef GUIDE_GCUSBST4
-	mount_menu->AppendRadioItem(MOUNT_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
+	scope_menu->AppendRadioItem(SCOPE_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
 #endif
-	mount_menu->FindItem(MOUNT_ASCOM)->Check(true); // set this as the default
+	scope_menu->FindItem(SCOPE_ASCOM)->Check(true); // set this as the default
 #if defined (__APPLE__)  // bit of a kludge here to deal with a fixed ordering elsewhere
-	mount_menu->FindItem(MOUNT_ASCOM)->Enable(false);
-	mount_menu->FindItem(MOUNT_GPINT3BC)->Enable(false);
-	mount_menu->FindItem(MOUNT_GPINT378)->Enable(false);
-	mount_menu->FindItem(MOUNT_GPINT278)->Enable(false);
-	mount_menu->FindItem(MOUNT_GPUSB)->Check(true); // set this as the default
+	scope_menu->FindItem(SCOPE_ASCOM)->Enable(false);
+	scope_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
+	scope_menu->FindItem(SCOPE_GPINT378)->Enable(false);
+	scope_menu->FindItem(SCOPE_GPINT278)->Enable(false);
+	scope_menu->FindItem(SCOPE_GPUSB)->Check(true); // set this as the default
 #endif
 #if defined (__WXGTK__)
-	mount_menu->FindItem(MOUNT_ASCOM)->Enable(false);
-	mount_menu->FindItem(MOUNT_GPINT3BC)->Enable(false);
-	mount_menu->FindItem(MOUNT_GPINT378)->Enable(false);
-	mount_menu->FindItem(MOUNT_GPINT278)->Enable(false);
-	mount_menu->FindItem(MOUNT_GPUSB)->Enable(false);
-	mount_menu->FindItem(MOUNT_CAMERA)->Check(true); // set this as the default
+	scope_menu->FindItem(SCOPE_ASCOM)->Enable(false);
+	scope_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
+	scope_menu->FindItem(SCOPE_GPINT378)->Enable(false);
+	scope_menu->FindItem(SCOPE_GPINT278)->Enable(false);
+	scope_menu->FindItem(SCOPE_GPUSB)->Enable(false);
+	scope_menu->FindItem(SCOPE_CAMERA)->Check(true); // set this as the default
 #endif
 #ifdef GUIDE_INDI
-	mount_menu->AppendRadioItem(MOUNT_INDI,_T("INDI"),_T("INDI"));
+	scope_menu->AppendRadioItem(SCOPE_INDI,_T("INDI"),_T("INDI"));
+#endif
+
+	stepguider_menu = new wxMenu;
+	stepguider_menu->AppendRadioItem(AO_NONE, _T("None"), _T("No Adaptive Optics"));
+	stepguider_menu->FindItem(AO_NONE)->Check(true); // set this as the default
+#ifdef STEPGUIDER_SXAO
+	stepguider_menu->AppendRadioItem(AO_SXAO, _T("sxAO"), _T("Starlight Xpress AO"));
+	stepguider_menu->FindItem(AO_SXAO)->Enable(false);
 #endif
     // try to get the last value from the config store
     wxString lastChoice = pConfig->GetString("/scope/LastMenuChoice", _T(""));
-    int lastId = mount_menu->FindItem(lastChoice);
+    int lastId = scope_menu->FindItem(lastChoice);
 
     if (lastId != wxNOT_FOUND)
     {
-	    mount_menu->FindItem(lastId)->Check(true);
+	    scope_menu->FindItem(lastId)->Check(true);
     }
 
 	tools_menu = new wxMenu;
-	//mount_menu->AppendSeparator();
+	//scope_menu->AppendSeparator();
 	tools_menu->Append(MENU_MANGUIDE, _T("&Manual Guide"), _T("Manual / test guide dialog"));
 	tools_menu->Append(MENU_CLEARDARK, _T("&Erase Dark Frame"), _T("Erase / clear out dark frame"));
 	tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
@@ -263,7 +272,8 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
 	Menubar = new wxMenuBar();
 	Menubar->Append(file_menu, _T("&File"));
-	Menubar->Append(mount_menu, _T("&Mount"));
+	Menubar->Append(scope_menu, _T("&Mount"));
+	Menubar->Append(stepguider_menu, _T("&AO"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
 	Menubar->Append(indi_menu, _T("&INDI"));
@@ -290,10 +300,11 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
 	// Setup Status bar
 	CreateStatusBar(6);
-	int status_widths[] = {-3,-5,10,60,67,65};
+	int status_widths[] = {-3,-5, 60, 67, 25,30};
 	SetStatusWidths(6,status_widths);
-	SetStatusText(_T("No cam"),3);
-	SetStatusText(_T("No scope"),4);
+	SetStatusText(_T("No cam"),2);
+	SetStatusText(_T("No scope"),3);
+	SetStatusText(_T(""),4);
 	SetStatusText(_T("No cal"),5);
 	//wxStatusBar *sbar = GetStatusBar();
 	//sbar->SetBackgroundColour(wxColour(_T("RED")));
@@ -303,7 +314,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	pGuider = new GuiderOneStar(this);
 
 	// Setup button panel
-	wxBitmap camera_bmp, scope_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
+	wxBitmap camera_bmp, scope_bmp, ao_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
 #if defined (WINICONS)
 	camera_bmp.CopyFromIcon(wxIcon(_T("camera_icon")));
 	scope_bmp.CopyFromIcon(wxIcon(_T("scope_icon")));
@@ -315,12 +326,14 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	#include "icons/sm_PHD.xpm"  // defines phd_icon[]
 	#include "icons/stop1.xpm" // defines stop_icon[]
 	#include "icons/scope1.xpm" // defines scope_icon[]
+	#include "icons/ao.xpm" // defines ao_icon[]
 	#include "icons/measure.xpm" // defines_cal_icon[]
 	#include "icons/loop3.xpm" // defines loop_icon
 	#include "icons/cam2.xpm"  // cam_icon
 	#include "icons/brain1.xpm" // brain_icon[]
 //	#include "icons/brain1_disable.xpm"
 	scope_bmp = wxBitmap(scope_icon);
+	ao_bmp = wxBitmap(ao_icon);
 	loop_bmp = wxBitmap(loop_icon);
 	cal_bmp = wxBitmap(cal_icon);
 	guide_bmp = wxBitmap(phd_icon);
@@ -335,6 +348,8 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	Cam_Button->SetToolTip(_T("Connect to camera"));
 	Scope_Button = new wxBitmapButton( this, BUTTON_SCOPE,scope_bmp);
 	Scope_Button->SetToolTip(_T("Connect to telescope"));
+	StepGuider_Button = new wxBitmapButton( this, BUTTON_STEPGUIDER, ao_bmp);
+	StepGuider_Button->SetToolTip(_T("Connect to Step Guiding unit"));
 	Loop_Button = new wxBitmapButton( this, BUTTON_LOOP, loop_bmp );
 	Loop_Button->SetToolTip(_T("Begin looping exposures for frame and focus"));
 //	wxBitmapButton *cal_button = new wxBitmapButton( this, BUTTON_CAL, cal_bmp );
@@ -346,6 +361,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	wxBoxSizer *button_sizer = new wxBoxSizer(wxHORIZONTAL);
 	button_sizer->Add(Cam_Button,wxSizerFlags(0).Border(wxALL, 3));
 	button_sizer->Add(Scope_Button,wxSizerFlags(0).Border(wxALL, 3));
+	button_sizer->Add(StepGuider_Button,wxSizerFlags(0).Border(wxALL, 3));
 	button_sizer->Add(Loop_Button,wxSizerFlags(0).Border(wxALL, 3));
 //	button_sizer->Add(cal_button,wxSizerFlags(0).Border(wxALL, 3));
 	button_sizer->Add(Guide_Button,wxSizerFlags(0).Border(wxALL, 3));
@@ -407,6 +423,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	// Some buttons off by default
 	Loop_Button->Enable(false);
 	Guide_Button->Enable(false);
+    StepGuider_Button->Enable(false);
 
 	// Do the main sizer
 	wxBoxSizer *lowersizer = new wxBoxSizer(wxHORIZONTAL);
@@ -495,7 +512,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 #endif
 		tools_menu->Check(MENU_LOG,false);
 	}
-	//mount_menu->Check(MOUNT_GPUSB,true);
+	//scope_menu->Check(SCOPE_GPUSB,true);
 
 	if (m_serverMode) {
 		tools_menu->Check(MENU_SERVER,true);
@@ -539,11 +556,12 @@ MyFrame::~MyFrame() {
 
 void MyFrame::UpdateButtonsStatus(void)
 {
-        Loop_Button->Enable(!CaptureActive);
+        Loop_Button->Enable(!CaptureActive && pCamera && pCamera->Connected);
         Cam_Button->Enable(!CaptureActive);
-        Scope_Button->Enable(!CaptureActive);
+        Scope_Button->Enable(!CaptureActive && pMount);
+        StepGuider_Button->Enable(!CaptureActive && pStepGuider);
         Brain_Button->Enable(!CaptureActive);
-        Dark_Button->Enable(!CaptureActive);
+        Dark_Button->Enable(!CaptureActive && pCamera && pCamera->Connected);
 
         bool bGuideable = pGuider->GetState() >= STATE_SELECTED &&
                           pGuider->GetState() < STATE_GUIDING &&

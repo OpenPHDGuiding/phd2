@@ -50,13 +50,17 @@ protected:
     bool m_connected;
     bool m_calibrated;
 
-    double m_decAngle;
     double m_raAngle;
-    double m_decRate;
     double m_raRate;
 
+    double m_decAngle;
+    double m_decRate;
+
     int m_calibrationSteps;
+
     int m_backlashSteps;
+    double m_decBacklashDistance;
+
     Point m_calibrationStartingLocation;
     GUIDE_DIRECTION m_calibrationDirection;
     bool m_guidingEnabled;
@@ -107,7 +111,7 @@ private:
     bool SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm **ppAlgorithm);
 
 public:
-    Mount();
+    Mount(double decBacklashDistance);
     virtual ~Mount();
 
     double DecAngle(void);
@@ -124,8 +128,10 @@ private:
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public: 
+    // move the mount defined calibration distance
     virtual bool Move(GUIDE_DIRECTION direction) = 0;
-    virtual bool Move(GUIDE_DIRECTION direction, double distance) = 0;
+    // move the requested direction, return the actual duration of the move
+    virtual double Move(GUIDE_DIRECTION direction, double duration, const wxString& statusMsgFormat) = 0;
 
 private:
     virtual double CalibrationTime(int nCalibrationSteps) = 0;

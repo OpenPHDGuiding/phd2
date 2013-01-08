@@ -119,9 +119,8 @@ bool Camera_SACGuiderClass::Connect() {
 	wxMessageBox(_T("RA-"));  wxTheApp->Yield(); PulseGuideScope(SOUTH,2000);wxTheApp->Yield(); 
 	wxMessageBox(_T("Done"));
 */
-	if (pFrame->mount_menu->IsChecked(MOUNT_CAMERA)) {
-		ScopeConnected = MOUNT_CAMERA;
-		pFrame->SetStatusText(_T("Scope"),4);
+	if (pFrame->scope_menu->IsChecked(SCOPE_CAMERA)) {
+		pFrame->SetStatusText(_T("Scope"),3);
 	}
 	ClearGuidePort();
 	Connected = true;

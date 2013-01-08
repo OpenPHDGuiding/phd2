@@ -129,6 +129,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "guiders.h"
 #include "cameras.h"
 #include "scopes.h"
+#include "stepguiders.h"
 #include "image_math.h"
 #include "worker_thread.h"
 #include "testguide.h"
@@ -139,6 +140,7 @@ extern Config *pConfig;
 
 extern MyFrame *pFrame;
 extern Mount *pMount;
+extern StepGuider *pStepGuider;
 extern GuideCamera *pCamera;
 
 extern LOG Debug;
