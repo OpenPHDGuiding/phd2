@@ -47,7 +47,9 @@ static const int DefaultTimelapse = 0;
 
 wxDEFINE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(PHD_MOVE_EVENT, wxCommandEvent);
-wxDEFINE_EVENT(WORKER_THREAD_SET_STATUS_TEXT_EVENT, wxThreadEvent);
+wxDEFINE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
+wxDEFINE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
+wxDEFINE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
@@ -112,10 +114,11 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_CLOSE(MyFrame::OnClose)
     EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
     EVT_THREAD(MYFRAME_WORKER_THREAD_MOVE_COMPLETE, MyFrame::OnMoveComplete)
-    EVT_THREAD(MYFRAME_WORKER_THREAD_SET_STATUS_TEXT, MyFrame::OnWorkerThreadSetStatusText)
+    EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnSetStatusText)
 
     EVT_COMMAND(wxID_ANY, PHD_EXPOSE_EVENT, MyFrame::OnPhdExposeEvent)
     EVT_COMMAND(wxID_ANY, PHD_MOVE_EVENT, MyFrame::OnPhdMoveEvent)
+    EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusbarTimerEvent)
 END_EVENT_TABLE()
 
 // ---------------------- Main Frame -------------------------------------
@@ -133,6 +136,8 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
     m_pWorkerThread = NULL;
     StartWorkerThread();
+
+    m_statusbarTimer.SetOwner(this, STATUSBAR_TIMER_EVENT);
 
     SocketServer = NULL;
 
@@ -570,9 +575,60 @@ void MyFrame::UpdateButtonsStatus(void)
         Guide_Button->Enable(bGuideable);
 }
 
-void MyFrame::OnWorkerThreadSetStatusText(wxThreadEvent& event)
+
+/*
+ * The base class wxFrame::SetStatusText() is not
+ * safe to call from worker threads.
+ *
+ * So, for non-main threads this routine queues the request 
+ * to the frames event queue, and it gets displayed by the main
+ * thread as part of event processing.
+ *
+ */
+
+void MyFrame::SetStatusText(const wxString& text, int number, int msToDisplay)
 {
-    pFrame->SetStatusText(event.GetString(), event.GetInt());
+    if (wxThread::IsMain() && number != 1)
+    {
+        wxFrame::SetStatusText(text, number);
+    }
+    else
+    {
+        wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
+        event.SetString(text);
+        event.SetInt(number);
+        event.SetExtraLong(msToDisplay);
+        wxQueueEvent(this, event.Clone());
+    }
+}
+
+void MyFrame::OnSetStatusText(wxThreadEvent& event)
+{
+    int pane = event.GetInt();
+    int duration = event.GetExtraLong();
+    wxString msg(event.GetString());
+
+    assert(wxThread::IsMain());
+
+    if (pane == 1)
+    {
+        STATUSBAR_QUEUE_ENTRY *pRequest = new STATUSBAR_QUEUE_ENTRY;
+        pRequest ->msg        = msg;
+        pRequest->msToDisplay = duration;
+
+        m_statusbarQueue.Post(*pRequest);
+
+        if (!m_statusbarTimer.IsRunning())
+        {
+            wxTimerEvent dummy;
+
+            OnStatusbarTimerEvent(dummy);
+        }
+    }
+    {
+        wxFrame::SetStatusText(msg, pane);
+    }
+
 }
 
 bool MyFrame::StartWorkerThread(void)
@@ -669,6 +725,29 @@ void MyFrame::OnPhdMoveEvent(wxCommandEvent& evt)
     }
 
     pRequest->semaphore.Post();
+}
+
+void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
+{
+    STATUSBAR_QUEUE_ENTRY message;
+    wxMessageQueueError queueError = m_statusbarQueue.ReceiveTimeout(0L, message);
+
+    switch (queueError)
+    {
+        case wxMSGQUEUE_NO_ERROR:
+            wxFrame::SetStatusText(message.msg, 1);
+            if (message.msToDisplay)
+            {
+                m_statusbarTimer.Start(message.msToDisplay, wxTIMER_ONE_SHOT);
+            }
+            break;
+        case wxMSGQUEUE_TIMEOUT:
+            wxFrame::SetStatusText("", 1);
+            break;
+        default:
+            wxMessageBox("OnStatusbarTimerEvent got an error dequeueing a message");
+            break;
+    }
 }
 
 void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)

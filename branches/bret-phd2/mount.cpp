@@ -493,15 +493,19 @@ bool Mount::Move(const Point& currentLocation, const Point& desiredLocation)
         GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
         GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
 
-        double actualRaDuration  = Move(raDirection,  fabs(raDistance/m_raRate), 
-                                            wxString::Format("%c dur=%%.0f dist=%.2f", 
-                                                            (raDirection==EAST)?'E':'W',
-                                                            raDistance));
-        double actualDecDuration = Move(decDirection, fabs(decDistance/m_decRate),
-                                            wxString::Format("%c dur=%%.0f dist=%.2f", 
-                                                            (decDirection==SOUTH)?'S':'N',
-                                                            decDistance));
-        pFrame->SetStatusText("",1);
+        double actualRaDuration  = Move(raDirection,  fabs(raDistance/m_raRate));
+        
+        if (actualRaDuration > 0)
+        {
+            pFrame->SetStatusText(wxString::Format("%c dist=%.2f dur=%.0f", (raDirection==EAST)?'E':'W', raDistance, actualRaDuration), 1, (int)actualRaDuration);
+        }
+
+        double actualDecDuration = Move(decDirection, fabs(decDistance/m_decRate));
+
+        if (actualDecDuration > 0)
+        {
+            pFrame->SetStatusText(wxString::Format("%c dist=%.2f dur=%.0f" , (decDirection==SOUTH)?'S':'N', decDistance, actualDecDuration), 1, (int)actualDecDuration);
+        }
     }
     catch (wxString Msg)
     {

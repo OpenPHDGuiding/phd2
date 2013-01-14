@@ -47,14 +47,6 @@ WorkerThread::~WorkerThread(void)
     Debug.Write("WorkerThread destructor called\n");
 }
 
-void WorkerThread::SetStatusText(const wxString& statusMessage, int field)
-{
-    wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_SET_STATUS_TEXT);
-    event.SetString(statusMessage);
-    event.SetInt(field);
-    wxQueueEvent(m_pFrame, event.Clone());
-}
-
 /*************      Terminate      **************************/
 
 void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
@@ -85,10 +77,11 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, double expo
 bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
 {
     bool bError = false;
+
     
     try
     {
-        wxMilliSleep(pFrame->GetTimeLapse());
+        wxMilliSleep(m_pFrame->GetTimeLapse());
 
         if (pCamera->HasNonGUICapture())
         {
@@ -101,7 +94,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
                 throw ERROR_INFO("CaptureFull failed");
             }
 
-            switch (pFrame->GetNoiseReductionMethod())
+            switch (m_pFrame->GetNoiseReductionMethod())
             {
                 case NR_NONE:
                     break;
@@ -124,7 +117,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
 
             wxCommandEvent evt(PHD_EXPOSE_EVENT, GetId());
             evt.SetClientData(&request);
-            wxQueueEvent(pFrame, evt.Clone());
+            wxQueueEvent(m_pFrame, evt.Clone());
 
             // wait for the request to complete
             request.semaphore.Wait();
@@ -218,7 +211,7 @@ bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
 
             wxCommandEvent evt(PHD_MOVE_EVENT, GetId());
             evt.SetClientData(&request);
-            wxQueueEvent(pFrame, evt.Clone());
+            wxQueueEvent(m_pFrame, evt.Clone());
 
             // wait for the request to complete
             request.semaphore.Wait();

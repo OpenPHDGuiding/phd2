@@ -131,7 +131,7 @@ public:
     // move the mount defined calibration distance
     virtual bool Move(GUIDE_DIRECTION direction) = 0;
     // move the requested direction, return the actual duration of the move
-    virtual double Move(GUIDE_DIRECTION direction, double duration, const wxString& statusMsgFormat) = 0;
+    virtual double Move(GUIDE_DIRECTION direction, double duration) = 0;
 
 private:
     virtual double CalibrationTime(int nCalibrationSteps) = 0;

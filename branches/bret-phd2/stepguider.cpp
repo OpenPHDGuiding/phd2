@@ -176,7 +176,7 @@ bool StepGuider::Move(GUIDE_DIRECTION direction)
     return Step(direction, m_calibrationSteps);
 }
 
-double StepGuider::Move(GUIDE_DIRECTION direction, double duration, const wxString& statusMsgFormat)
+double StepGuider::Move(GUIDE_DIRECTION direction, double duration)
 {
     int steps = 0;
 

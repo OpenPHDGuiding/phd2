@@ -41,12 +41,13 @@ enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
     MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE = wxID_HIGHEST+1,
     MYFRAME_WORKER_THREAD_MOVE_COMPLETE,
-    MYFRAME_WORKER_THREAD_SET_STATUS_TEXT,
 };
 
 wxDECLARE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(PHD_MOVE_EVENT, wxCommandEvent);
-wxDECLARE_EVENT(WORKER_THREAD_SET_STATUS_TEXT_EVENT, wxThreadEvent);
+wxDECLARE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
+wxDECLARE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
+wxDECLARE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
 
 enum NOISE_REDUCTION_METHOD
 {
@@ -201,14 +202,26 @@ public:
 
     void UpdateButtonsStatus(void);
 
+    virtual void SetStatusText(const wxString& text, int number=0, int msToDisplay = 0);
 
 private:
     wxCriticalSection m_CSpWorkerThread;
     WorkerThread *m_pWorkerThread;
     bool StartWorkerThread(void);
     void StopWorkerThread(void);
-    virtual void OnWorkerThreadSetStatusText(wxThreadEvent& event);
     wxSocketServer *SocketServer;
+
+    struct STATUSBAR_QUEUE_ENTRY
+    {
+        wxString msg;
+        int msToDisplay;
+    };
+
+    wxMessageQueue<STATUSBAR_QUEUE_ENTRY> m_statusbarQueue;
+    wxTimer m_statusbarTimer;
+
+    void OnSetStatusText(wxThreadEvent& event);
+    void OnStatusbarTimerEvent(wxTimerEvent& evt);
 
     // and of course, an event table
 	DECLARE_EVENT_TABLE()

@@ -48,10 +48,6 @@ public:
 private:
     wxThread::ExitCode Entry();
 
-    // a helper routine to set the status by sending a message
-    // to m_pFrame
-    void SetStatusText(const wxString& statusMessage, int field);
-
     /*
      * A worker thread is used only for long running tasks:
      *   - take an image

@@ -83,7 +83,7 @@ public:
 
 private:
     bool Move(GUIDE_DIRECTION direction);
-    double Move(GUIDE_DIRECTION direction, double duration, const wxString& statusMsgFormat);
+    double Move(GUIDE_DIRECTION direction, double duration);
     double CalibrationTime(int nCalibrationSteps);
     bool BacklashClearingFailed(void);
 

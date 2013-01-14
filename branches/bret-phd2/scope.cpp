@@ -415,7 +415,7 @@ bool Scope::Move(GUIDE_DIRECTION direction)
     return Guide(direction, m_calibrationDuration);
 }
 
-double Scope::Move(GUIDE_DIRECTION direction, double duration, const wxString& statusMsgFormat)
+double Scope::Move(GUIDE_DIRECTION direction, double duration)
 {
     try
     {
@@ -462,8 +462,6 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, const wxString& s
         assert(duration >= 0);
         if (duration > 0.0)
         {
-            wxString statusMsg = wxString::Format(statusMsgFormat, duration);
-            pFrame->SetStatusText(statusMsg, 1);
             if (Guide(direction, duration))
             {
                 throw ERROR_INFO("guide failed");
