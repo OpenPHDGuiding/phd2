@@ -612,11 +612,11 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
 
     if (pane == 1)
     {
-        STATUSBAR_QUEUE_ENTRY *pRequest = new STATUSBAR_QUEUE_ENTRY;
-        pRequest ->msg        = msg;
-        pRequest->msToDisplay = duration;
+        STATUSBAR_QUEUE_ENTRY request;
+        request.msg         = msg;
+        request.msToDisplay = duration;
 
-        m_statusbarQueue.Post(*pRequest);
+        m_statusbarQueue.Post(request);
 
         if (!m_statusbarTimer.IsRunning())
         {
@@ -625,6 +625,7 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
             OnStatusbarTimerEvent(dummy);
         }
     }
+    else
     {
         wxFrame::SetStatusText(msg, pane);
     }
