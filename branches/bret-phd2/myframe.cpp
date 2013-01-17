@@ -45,8 +45,8 @@ static const bool DefaultDitherRaOnly = false;
 static const bool DefaultServerMode = false;
 static const int DefaultTimelapse = 0;
 
-wxDEFINE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
-wxDEFINE_EVENT(PHD_MOVE_EVENT, wxCommandEvent);
+wxDEFINE_EVENT(REQUEST_EXPOSURE_EVENT, wxCommandEvent);
+wxDEFINE_EVENT(REQUEST_MOUNT_MOVE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDEFINE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
@@ -116,8 +116,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_THREAD(MYFRAME_WORKER_THREAD_MOVE_COMPLETE, MyFrame::OnMoveComplete)
     EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnSetStatusText)
 
-    EVT_COMMAND(wxID_ANY, PHD_EXPOSE_EVENT, MyFrame::OnPhdExposeEvent)
-    EVT_COMMAND(wxID_ANY, PHD_MOVE_EVENT, MyFrame::OnPhdMoveEvent)
+    EVT_COMMAND(wxID_ANY, REQUEST_EXPOSURE_EVENT, MyFrame::OnRequestExposure)
+    EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
     EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusbarTimerEvent)
 END_EVENT_TABLE()
 
@@ -687,7 +687,7 @@ void MyFrame::StopWorkerThread(void)
     m_pWorkerThread = NULL;
 }
 
-void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
+void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 {
     PHD_EXPOSE_REQUEST *pRequest = (PHD_EXPOSE_REQUEST *)evt.GetClientData();
     bool bError = pCamera->Capture(pRequest->exposureDuration, *pRequest->pImage, pRequest->subframe);
@@ -712,7 +712,7 @@ void MyFrame::OnPhdExposeEvent(wxCommandEvent& evt)
     pRequest->semaphore.Post();
 }
 
-void MyFrame::OnPhdMoveEvent(wxCommandEvent& evt)
+void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 {
     PHD_MOVE_REQUEST *pRequest = (PHD_MOVE_REQUEST *)evt.GetClientData();
 

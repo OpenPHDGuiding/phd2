@@ -40,9 +40,8 @@
 
 //#define DEVBUILD
 
-#if defined(__WINDOWS__)
+#if defined(__WINDOWS__) && defined(USE_VLD)
  #include <vld.h>
-IDispatch *ScopeDriverDisplay = NULL;  // Main scope connection
 #endif 
 
 // Globals`

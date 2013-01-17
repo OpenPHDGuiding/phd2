@@ -115,7 +115,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
             request.exposureDuration = pArgs->exposureDuration;
             request.subframe = pArgs->subframe;
 
-            wxCommandEvent evt(PHD_EXPOSE_EVENT, GetId());
+            wxCommandEvent evt(REQUEST_EXPOSURE_EVENT, GetId());
             evt.SetClientData(&request);
             wxQueueEvent(m_pFrame, evt.Clone());
 
@@ -209,7 +209,7 @@ bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
             request.currentLocation = pArgs->currentLocation;
             request.desiredLocation = pArgs->desiredLocation;
 
-            wxCommandEvent evt(PHD_MOVE_EVENT, GetId());
+            wxCommandEvent evt(REQUEST_MOUNT_MOVE_EVENT, GetId());
             evt.SetClientData(&request);
             wxQueueEvent(m_pFrame, evt.Clone());
 

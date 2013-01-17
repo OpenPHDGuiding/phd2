@@ -43,8 +43,8 @@ enum E_MYFRAME_WORKER_THREAD_MESSAGES
     MYFRAME_WORKER_THREAD_MOVE_COMPLETE,
 };
 
-wxDECLARE_EVENT(PHD_EXPOSE_EVENT, wxCommandEvent);
-wxDECLARE_EVENT(PHD_MOVE_EVENT, wxCommandEvent);
+wxDECLARE_EVENT(REQUEST_EXPOSURE_EVENT, wxCommandEvent);
+wxDECLARE_EVENT(REQUEST_MOUNT_MOVE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDECLARE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
@@ -179,7 +179,7 @@ public:
         bool             bError;
         wxSemaphore      semaphore;
     };
-    void OnPhdExposeEvent(wxCommandEvent &evt);
+    void OnRequestExposure(wxCommandEvent &evt);
 
     struct PHD_MOVE_REQUEST
     {
@@ -191,7 +191,7 @@ public:
         bool             bError;
         wxSemaphore      semaphore;
     };
-    void OnPhdMoveEvent(wxCommandEvent &evt);
+    void OnRequestMountMove(wxCommandEvent &evt);
 
     void ScheduleExposure(double exposureDuration, wxRect subframe);
     void ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation);
