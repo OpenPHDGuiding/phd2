@@ -35,7 +35,8 @@
 #ifndef CAMERA_H_INCLUDED
 #define CAMERA_H_INCLUDED
 
-class GuideCamera {
+class GuideCamera :  public wxMessageBoxProxy
+{
 protected:
     class CameraConfigDialogPane : public ConfigDialogPane 
     {
@@ -86,9 +87,9 @@ public:
 	virtual bool	Connect() { return true; }		// Opens up and connects to camera
 	virtual bool	Disconnect() { return true; }	// Disconnects, unloading any DLLs loaded by Connect
 	virtual void	InitCapture() { return; }		// Gets run at the start of any loop (e.g., reset stream, set gain, etc).
-	virtual bool	PulseGuideScope (int WXUNUSED(direction), int WXUNUSED(duration)) { return true; }
 
-    virtual bool    HasNonGUIPulseGuideScope(void) { return false; }
+    virtual bool    HasNonGUIMove(void) { return false; }
+	virtual bool	PulseGuideScope (int direction, int duration) { return true; }
 
     ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 

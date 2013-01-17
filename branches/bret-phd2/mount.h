@@ -44,7 +44,7 @@ enum GUIDE_DIRECTION {
 	WEST		// RA+
 };
 
-class Mount
+class Mount :  public wxMessageBoxProxy
 {
 protected:
     bool m_connected;

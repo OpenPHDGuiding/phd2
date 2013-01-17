@@ -1,5 +1,5 @@
 /*
- *  scope.h
+ *  messagebox_proxy.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -33,65 +33,23 @@
  *
  */
 
-#ifndef SCOPE_H_INCLUDED
-#define SCOPE_H_INCLUDED
+#ifndef MESSAGEBOX_PROXY_H_INCLUDED
+#define MESSAGEBOX_PROXY_H_INCLUDED
 
-class Scope:public Mount
+class wxMessageBoxProxy
 {
-    int m_calibrationDuration;
-    int m_maxDecDuration;
-    int m_maxRaDuration;
-    DEC_GUIDE_MODE m_decGuideMode;
-
-    // Things related to the Advanced Config Dialog
-protected:
-    class ScopeConfigDialogPane : public MountConfigDialogPane
-    {
-        Scope *m_pScope;
-        wxSpinCtrl *m_pCalibrationDuration;
-        wxSpinCtrl *m_pMaxRaDuration;
-        wxSpinCtrl *m_pMaxDecDuration;
-        wxChoice   *m_pDecMode;
-
-        public:
-        ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
-        ~ScopeConfigDialogPane(void);
-
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-    };
-
-    virtual int GetCalibrationDuration(void);
-    virtual bool SetCalibrationDuration(int calibrationDuration);
-    virtual int GetMaxDecDuration(void);
-    virtual bool SetMaxDecDuration(int maxDecDuration);
-    virtual int GetMaxRaDuration(void);
-    virtual bool SetMaxRaDuration(double maxRaDuration);
-    virtual DEC_GUIDE_MODE GetDecGuideMode(void);
-    virtual bool SetDecGuideMode(int decGuideMode);
-
-    friend class GraphLogWindow;
+    wxString m_message;
+    wxString m_caption;
+    int m_style;
+    wxWindow *m_parent;
+    int m_x;
+    int m_y;
+    wxSemaphore      m_semaphore;
+    int m_result;
 
 public:
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-
-    // functions with an implemenation in Scope that cannot be over-ridden
-    // by a subclass
-public:
-    Scope(void);
-    virtual ~Scope(void);
-
-private:
-    bool Move(GUIDE_DIRECTION direction);
-    double Move(GUIDE_DIRECTION direction, double duration);
-
-    double CalibrationTime(int nCalibrationSteps);
-    bool BacklashClearingFailed(void);
-
-// these MUST be supplied by a subclass
-private:
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
-    virtual bool IsGuiding()=0;
+    void showMessageBox(void);
+    int wxMessageBox(const wxString& message, const wxString& caption = "Message", int style = wxOK, wxWindow *parent = NULL, int x = -1, int y = -1);
 };
 
-#endif /* SCOPE_H_INCLUDED */
+#endif // MESSAGEBOX_PROXY_H_INCLUDED

@@ -106,3 +106,15 @@ bool PhdApp::OnInit() {
 
 	return true;
 }
+
+bool PhdApp::Yield(bool onlyIfNeeded)
+{
+    bool bReturn = !onlyIfNeeded;
+
+    if (wxThread::IsMain())
+    {
+        bReturn = wxApp::Yield(onlyIfNeeded);
+    }
+
+    return bReturn;
+}

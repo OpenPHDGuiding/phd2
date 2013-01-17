@@ -1,9 +1,9 @@
 /*
- *  scopes.h
+ *  messagebox_proxy.cpp
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created by Bret McKee
+ *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,8 @@
  *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *    Neither the name of Bret McKee, Dad Dog Development,
+ *     Craig Stark, Stark Labs nor the names of its 
  *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
  *
@@ -32,44 +33,48 @@
  *
  */
 
-#ifndef SCOPES_H_INCLUDED
-#define SCOPES_H_INCLUDED
+#include "phd.h"
 
-#ifndef OPENPHD
-/* Open PHD defines the available drivers in CMakeLists.txt rather than
-   statically here
- */
+void wxMessageBoxProxy::showMessageBox(void)
+{
+    assert(wxThread::IsMain());
+    m_result = ::wxMessageBox(m_message, m_caption, m_style, m_parent, m_x, m_y);
+    m_semaphore.Post();
+}
 
-#if defined (__WINDOWS__)
+int wxMessageBoxProxy::wxMessageBox(const wxString& message, const wxString& caption, int style, wxWindow *parent, int x, int y)
+{
+    int ret;
 
-#define GUIDE_ASCOM
-#define GUIDE_GPUSB
-#define GUIDE_GPINT
-//#define GUIDE_VOYAGER
+    if (wxThread::IsMain())
+    {
+        ret = ::wxMessageBox(message, caption, style, parent, x, y);
+    }
+    else
+    {
+        m_message = message;
+        m_caption = caption;
+        m_style = style;
+        m_parent = parent;
+        m_x = x;
+        m_y = y;
 
+        wxCommandEvent evt(WXMESSAGEBOX_PROXY_EVENT, wxID_ANY);
+        evt.SetClientData(this);
+        wxQueueEvent(pFrame, evt.Clone());
 
-#elif defined (__APPLE__)
-#define GUIDE_GPUSB
-#define GUIDE_GCUSBST4
-#define GUIDE_EQUINOX
-//#define GUIDE_VOYAGER
-//#define GUIDE_NEB
-#define GUIDE_EQMAC
-#endif /* apple */
+        // wait for the request to complete
+        m_semaphore.Wait();
 
-#define GUIDE_ONBOARD
+        ret = m_result;
+    }
 
-#endif /* not OPENPHD */
+    return ret;
+}
 
-#include "scope.h"
-#include "scope_none.h"
-#include "scope_onboard.h"
-#include "scope_ascom.h"
-#include "scope_gpusb.h"
-#include "scope_gpint.h"
-#include "scope_voyager.h"
-#include "scope_equinox.h"
-#include "scope_eqmac.h"
-#include "scope_GC_USBST4.h"
+void MyFrame::OnMessageBoxProxy(wxCommandEvent& evt)
+{
+    wxMessageBoxProxy *pRequest = (wxMessageBoxProxy *)evt.GetClientData();
 
-#endif /* SCOPES_H_INCLUDED */
+    pRequest->showMessageBox();
+}

@@ -127,7 +127,9 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "graph.h"
 #include "guide_algorithms.h"
 #include "guiders.h"
+#include "messagebox_proxy.h"
 #include "cameras.h"
+#include "mount.h"
 #include "scopes.h"
 #include "stepguiders.h"
 #include "image_math.h"
@@ -172,6 +174,7 @@ class PhdApp: public wxApp
   public:
     PhdApp(void){};
     bool OnInit(void);
+    virtual bool Yield(bool onlyIfNeeded=false);
 };
 
 #endif // PHD_H_INCLUDED
