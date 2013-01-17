@@ -48,12 +48,15 @@ public:
 	bool	Disconnect();
 	void	InitCapture();
 	bool	PulseGuideScope(int direction, int duration);
+    bool HasNonGuiMove(void);
 
 
 	Camera_SBIGClass();
 private:
 	bool UseTrackingCCD;
 	bool	LoadDriver();
+
+    virtual bool HasNonGUICapture(void);
 
 };
 #endif

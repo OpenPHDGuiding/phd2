@@ -43,6 +43,7 @@
 #include "Cam_SBIG.h"
 
 Camera_SBIGClass::Camera_SBIGClass() {
+    assert(wxThread::IsMain());
 	Connected = false;
 //	HaveBPMap = false;
 //	NBadPixels=-1;
@@ -58,6 +59,7 @@ Camera_SBIGClass::Camera_SBIGClass() {
 bool Camera_SBIGClass::LoadDriver() {
 	short err;
 
+    assert(wxThread::IsMain());
 #if defined (__WINDOWS__)
 	__try {
 		err = SBIGUnivDrvCommand(CC_OPEN_DRIVER, NULL, NULL);
@@ -81,6 +83,9 @@ bool Camera_SBIGClass::Connect() {
 	short err;
 	OpenDeviceParams odp;
 	int resp;
+
+    assert(wxThread::IsMain());
+
 //	wxMessageBox(_T("1: Loading SBIG DLL"));
 	if (LoadDriver()) {
 		wxMessageBox(_T("Error loading SBIG driver and/or DLL"));
@@ -225,6 +230,7 @@ bool Camera_SBIGClass::Connect() {
 }
 
 bool Camera_SBIGClass::Disconnect() {
+    assert(wxThread::IsMain());
 	SBIGUnivDrvCommand(CC_CLOSE_DEVICE, NULL, NULL);
 	SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
 	Connected = false;
@@ -233,9 +239,14 @@ bool Camera_SBIGClass::Disconnect() {
 }
 void Camera_SBIGClass::InitCapture() {
 	// Set gain
-
-
+    assert(wxThread::IsMain());
 }
+
+bool Camera_SBIGClass::HasNonGUICapture(void)
+{ 
+    return true; 
+}
+
 bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
 	bool still_going=true;
 	short  err;
@@ -400,6 +411,12 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img) {
 	return false;
 }
 */
+
+bool Camera_SBIGClass::HasNonGuiMove(void)
+{
+    return true;
+}
+
 bool Camera_SBIGClass::PulseGuideScope(int direction, int duration) {
 	ActivateRelayParams rp;
 	QueryCommandStatusParams qcsp;

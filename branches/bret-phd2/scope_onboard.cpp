@@ -109,6 +109,11 @@ bool ScopeOnCamera::Guide(const GUIDE_DIRECTION direction, const int duration)
     return bError;
 }
 
+bool ScopeOnCamera::HasNonGUIMove()
+{
+    return pCamera->HasNonGUIMove();
+}
+
 bool ScopeOnCamera::IsGuiding()
 {
     return false;

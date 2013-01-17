@@ -41,6 +41,8 @@ public:
     ScopeOnCamera(void);
 	virtual bool Connect(void);
 	virtual bool Disconnect(void);
+
+    virtual bool HasNonGUIMove(void);
     virtual bool Guide(const GUIDE_DIRECTION direction, const int duration);
     virtual bool IsGuiding(void);
 };
