@@ -221,7 +221,13 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					break;
 				case MSG_AUTOFINDSTAR:
 //				case 'f':
-                    pFrame->pGuider->AutoSelect();
+                    rval = pFrame->pGuider->AutoSelect();
+                    if (rval)
+                    {
+						wxCommandEvent *tmp_evt;
+						tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_LOOP);
+						QueueEvent(tmp_evt);
+                    }
 					break;
 				case MSG_SETLOCKPOSITION:
                 case 's':
@@ -248,10 +254,53 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					}
 					break;
 				case MSG_GETSTATUS:
+                    Debug.AddLine("processing MSG_GETSTATUS");
 					if( pGuider->IsPaused() )
-						rval = STATE_PAUSED;
+                    {
+						rval = EXPOSED_STATE_PAUSED;
+                        Debug.AddLine("returning EXPOSED_STATE_PAUSED");
+                    }
+                    else if (!pFrame->CaptureActive)
+                    {
+                        rval = EXPOSED_STATE_NONE;
+                        Debug.AddLine("!CaptureActive(), so returning EXPOSED_STATE_NONE");
+                    }
 					else
-						rval = pGuider->GetState();
+                    {
+                        // map the guider internal state into a server reported state
+                        switch (pGuider->GetState())
+                        {
+                            case STATE_UNINITIALIZED:
+                            case STATE_STOP:
+                            default:
+                                rval = EXPOSED_STATE_NONE;
+                                break;
+                            case STATE_SELECTING:
+                                rval = EXPOSED_STATE_LOOPING;
+                                break;
+                            case STATE_SELECTED:
+                                //rval = EXPOSED_STATE_LOOPING_SELECTED;
+                                rval = EXPOSED_STATE_SELECTED;
+                                break;
+                            case STATE_CALIBRATING:
+                                rval = EXPOSED_STATE_CALIBRATING;
+                                break;
+                            case STATE_CALIBRATED:
+                                rval = EXPOSED_STATE_SELECTED;
+                                break;
+                            case STATE_GUIDING:
+                                if (pGuider->IsLocked())
+                                {
+                                    rval = EXPOSED_STATE_GUIDING_LOCKED;
+                                }
+                                else
+                                {
+                                    rval = EXPOSED_STATE_GUIDING_LOST;
+                                }
+                                break;
+                        }
+                        Debug.AddLine(wxString::Format("case statement mapped state to %d", rval));
+                    }
 					break;
 				case MSG_LOOP:
 					{
@@ -276,7 +325,11 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
 					break;
 				case MSG_LOOPFRAMECOUNT:
 					{
+#ifdef BRET_TODO
 						rval = LoopFrameCount;
+#else
+                        rval = 1;
+#endif
 					}
 					break;
 				case MSG_CLEARCAL:
