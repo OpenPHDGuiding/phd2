@@ -1,5 +1,5 @@
 /*
- *  ascom.h
+ *  ascom_common.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -37,19 +37,65 @@
  *
  */
 
-
-#if !defined(ASCOM_COMMON_H_INCLUDED) && defined (__WINDOWS__)
-#define ASCOM_COMMON_H_INCLUDED
-
-#include <ObjIdl.h>
+#include "ascom_common.h"
+#include "phd.h"
 
 /* provides common ASCOM functionality */
 
-class ASCOM_COMMON
-{
-protected:
-    char *uni_to_ansi(OLECHAR *os);
-    bool GetDispatchID(IDispatch *pDriver, wchar_t *pName, DISPID *pId);
-};
+// Lifted from the ASCOM sample Utilities.cpp
+// -------------
+// uni_to_ansi() - Convert unicode to ANSI, return pointer to new[]'ed string
+// -------------
+//
 
-#endif // !defined(ASCOM_COMMON_H_INCLUDED) && defined (__WINDOWS__)
+char *ASCOM_COMMON::uni_to_ansi(OLECHAR *os)
+{
+    char *cp;
+
+    // Is this the right way??? (it works)
+    int len = WideCharToMultiByte(CP_ACP,
+                                0,
+                                os, 
+                                -1, 
+                                NULL, 
+                                0, 
+                                NULL, 
+                                NULL); 
+    cp = new char[len + 5];
+    if(cp == NULL)
+        return NULL;
+
+    if (0 == WideCharToMultiByte(CP_ACP, 
+                                    0, 
+                                    os, 
+                                    -1, 
+                                    cp, 
+                                    len, 
+                                    NULL, 
+                                    NULL)) 
+    {
+        delete [] cp;
+        return NULL;
+    }
+
+    cp[len] = '\0';
+    return(cp);
+}
+
+bool ASCOM_COMMON::GetDispatchID(IDispatch *pDriver, wchar_t *pName, DISPID *pId)
+{
+    bool bError = false;
+
+    if(FAILED(pDriver->GetIDsOfNames(IID_NULL, &pName, 1, LOCALE_USER_DEFAULT, pId)))
+    {
+        Debug.AddLine(wxString::Format("for pDriver %p, get dispatch id for %s failed", pDriver, pName));
+        bError = true;
+    }
+    else
+    {
+        Debug.AddLine(wxString::Format("for pDriver %p, dispatch id for %s = %d", pDriver, pName, *pId));
+    }
+
+    return bError;
+}
+

@@ -2,8 +2,12 @@
  *  scope_ascom.h
  *  PHD Guiding
  *
- *  Created by Bret McKee
- *  Copyright (c) 2012 Bret McKee
+ *  Created by Craig Stark.
+ *  Copyright (c) 2006-2010 Craig Stark.
+ *  All rights reserved.
+ *
+ *  Modified by Bret McKee
+ *  Copyright (c) 2012-2013 Bret McKee
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -39,10 +43,11 @@
 
 class ScopeASCOM:public Scope, private ASCOM_COMMON
 {
+    IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
+    DWORD m_dwCookie;
 
     // The CLSID and dispatch instance of the scope
     CLSID CLSID_driver;
-    IDispatch *ScopeDriverDisplay;
 
     // DISPIDs we reuse
     DISPID dispid_connected;
@@ -53,28 +58,20 @@ class ScopeASCOM:public Scope, private ASCOM_COMMON
     DISPID dispid_pulseguide;
 
     // other private varialbles
- //   bool m_bCanCheckGuiding;
     bool m_bCanCheckPulseGuiding;
 
     // private functions
     bool Choose(wxString &wx_ProgID);
+    virtual bool IsGuiding(IDispatch *pScopeDriver);
 
 public:
-    ScopeASCOM(void)
-    {
-        ScopeDriverDisplay = NULL;
-    }
-
-    virtual ~ScopeASCOM(void)
-    {
-        if (ScopeDriverDisplay)
-        {
-            ScopeDriverDisplay->Release();
-        }
-    }
+    ScopeASCOM(void);
+    virtual ~ScopeASCOM(void);
 
     virtual bool Connect(void);
     virtual bool Disconnect(void);
+
+    virtual bool HasNonGuiMove(void);
     virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
     virtual bool IsGuiding();
 

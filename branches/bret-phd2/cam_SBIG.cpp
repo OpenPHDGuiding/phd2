@@ -242,7 +242,7 @@ void Camera_SBIGClass::InitCapture() {
     assert(wxThread::IsMain());
 }
 
-bool Camera_SBIGClass::HasNonGUICapture(void)
+bool Camera_SBIGClass::HasNonGuiCapture(void)
 { 
     return true; 
 }

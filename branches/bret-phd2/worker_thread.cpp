@@ -83,7 +83,7 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
     {
         wxMilliSleep(m_pFrame->GetTimeLapse());
 
-        if (pCamera->HasNonGUICapture())
+        if (pCamera->HasNonGuiCapture())
         {
             Debug.Write(wxString::Format("Handling exposure in thread\n"));
 
@@ -246,11 +246,14 @@ wxThread::ExitCode WorkerThread::Entry()
 
     Debug.Write("WorkerThread::Entry() begins\n");
 
+#if defined(__WINDOWS__)
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+#endif
+
     while (!bDone)
     {
         WORKER_THREAD_REQUEST message;
         wxMessageQueueError queueError = m_workerQueue.Receive(message);
-
         if (queueError != wxMSGQUEUE_NO_ERROR)
         {
             wxLogError("Worker thread message queue receive failed");

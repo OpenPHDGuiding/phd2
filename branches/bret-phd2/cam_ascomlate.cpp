@@ -48,6 +48,9 @@
 extern char *uni_to_ansi(OLECHAR *os);
 
 Camera_ASCOMLateClass::Camera_ASCOMLateClass() {
+
+    assert(wxThread::IsMain());
+
 	Connected = FALSE;
 //	HaveBPMap = FALSE;
 //	NBadPixels=-1;
@@ -60,11 +63,11 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass() {
 	DriverVersion = 1;
 }
 
-
-
 bool Camera_ASCOMLateClass::Connect() {
 // returns true on error
 //	int retval;
+
+    assert(wxThread::IsMain());
 
 	// Get the Chooser up
 	CLSID CLSID_chooser;
@@ -371,6 +374,8 @@ bool Camera_ASCOMLateClass::Disconnect() {
 	VARIANT vRes;
 	HRESULT hr;
 
+    assert(wxThread::IsMain());
+
 	if (this->ASCOMDriver) {
 		// Disconnect
 		tmp_name=L"Connected";
@@ -456,7 +461,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
 	}
 	if (retval)
 		return true;
-
+;
 	if (debuglog) {
 		debug << _T(" - Getting ImageArray\n");
 		debugstr.Sync();
@@ -521,6 +526,7 @@ bool Camera_ASCOMLateClass::PulseGuideScope(int direction, int duration) {
 bool Camera_ASCOMLateClass::ASCOM_SetBin(int mode) {
 	// Assumes the dispid values needed are already set
 	// returns true on error, false if OK
+
 	DISPID dispidNamed = DISPID_PROPERTYPUT;
 	DISPPARAMS dispParms;
 	VARIANTARG rgvarg[1];					
@@ -739,12 +745,13 @@ bool Camera_ASCOMLateClass::ASCOM_IsMoving() {
 	return false;
 }
 
+bool Camera_ASCOMLateClass::HasNonGuiCapture(void)
+{
+    return true;
+}
 
-
-
-
-
-
-
-
+bool Camera_ASCOMLateClass::HasNonGuiMove(void)
+{
+    return true;
+}
 #endif

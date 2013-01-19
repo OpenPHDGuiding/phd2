@@ -56,7 +56,7 @@ private:
 	bool UseTrackingCCD;
 	bool	LoadDriver();
 
-    virtual bool HasNonGUICapture(void);
+    virtual bool HasNonGuiCapture(void);
 
 };
 #endif

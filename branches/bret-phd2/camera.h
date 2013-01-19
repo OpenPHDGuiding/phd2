@@ -79,7 +79,7 @@ public:
     int             DarkDur;
     usImage         CurrentDarkFrame;
 
-    virtual bool HasNonGUICapture(void) { return false; }
+    virtual bool HasNonGuiCapture(void) { return false; }
 
 	virtual bool	Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false) = 0;
 	virtual bool	Capture(int duration, usImage& img, bool recon) { return Capture(duration, img, wxRect(0, 0, 0, 0), recon); }
@@ -88,7 +88,7 @@ public:
 	virtual bool	Disconnect() { return true; }	// Disconnects, unloading any DLLs loaded by Connect
 	virtual void	InitCapture() { return; }		// Gets run at the start of any loop (e.g., reset stream, set gain, etc).
 
-    virtual bool    HasNonGUIMove(void) { return false; }
+    virtual bool    HasNonGuiMove(void) { return false; }
 	virtual bool	PulseGuideScope (int direction, int duration) { return true; }
 
     ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);

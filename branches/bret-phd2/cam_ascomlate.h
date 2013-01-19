@@ -39,6 +39,7 @@
 class Camera_ASCOMLateClass : public GuideCamera, protected ASCOM_COMMON {
 public:
 	virtual bool	Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool HasNonGuiCapture(void);
 	bool	Connect();
 	bool	Disconnect();
 
@@ -62,7 +63,10 @@ private:
 	bool ASCOM_StopExposure();
 	bool ASCOM_ImageReady(bool& ready);
 	bool ASCOM_Image(usImage& Image, bool useSubframe, wxRect subframe);
+
 	bool ASCOM_IsMoving();
+    bool HasNonGuiMove(void);
+
 	int DriverVersion;
 
 #endif
