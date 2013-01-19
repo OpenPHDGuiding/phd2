@@ -612,8 +612,6 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
     int duration = event.GetExtraLong();
     wxString msg(event.GetString());
 
-    assert(wxThread::IsMain());
-
     if (pane == 1)
     {
         STATUSBAR_QUEUE_ENTRY request;

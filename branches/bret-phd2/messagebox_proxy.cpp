@@ -37,7 +37,6 @@
 
 void wxMessageBoxProxy::showMessageBox(void)
 {
-    assert(wxThread::IsMain());
     m_result = ::wxMessageBox(m_message, m_caption, m_style, m_parent, m_x, m_y);
     m_semaphore.Post();
 }

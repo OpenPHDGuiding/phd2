@@ -43,7 +43,6 @@
 #include "Cam_SBIG.h"
 
 Camera_SBIGClass::Camera_SBIGClass() {
-    assert(wxThread::IsMain());
 	Connected = false;
 //	HaveBPMap = false;
 //	NBadPixels=-1;
@@ -59,7 +58,6 @@ Camera_SBIGClass::Camera_SBIGClass() {
 bool Camera_SBIGClass::LoadDriver() {
 	short err;
 
-    assert(wxThread::IsMain());
 #if defined (__WINDOWS__)
 	__try {
 		err = SBIGUnivDrvCommand(CC_OPEN_DRIVER, NULL, NULL);
@@ -83,8 +81,6 @@ bool Camera_SBIGClass::Connect() {
 	short err;
 	OpenDeviceParams odp;
 	int resp;
-
-    assert(wxThread::IsMain());
 
 //	wxMessageBox(_T("1: Loading SBIG DLL"));
 	if (LoadDriver()) {
@@ -230,7 +226,6 @@ bool Camera_SBIGClass::Connect() {
 }
 
 bool Camera_SBIGClass::Disconnect() {
-    assert(wxThread::IsMain());
 	SBIGUnivDrvCommand(CC_CLOSE_DEVICE, NULL, NULL);
 	SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
 	Connected = false;
@@ -239,7 +234,6 @@ bool Camera_SBIGClass::Disconnect() {
 }
 void Camera_SBIGClass::InitCapture() {
 	// Set gain
-    assert(wxThread::IsMain());
 }
 
 bool Camera_SBIGClass::HasNonGuiCapture(void)

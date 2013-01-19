@@ -49,8 +49,6 @@ extern char *uni_to_ansi(OLECHAR *os);
 
 Camera_ASCOMLateClass::Camera_ASCOMLateClass() {
 
-    assert(wxThread::IsMain());
-
 	Connected = FALSE;
 //	HaveBPMap = FALSE;
 //	NBadPixels=-1;
@@ -66,8 +64,6 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass() {
 bool Camera_ASCOMLateClass::Connect() {
 // returns true on error
 //	int retval;
-
-    assert(wxThread::IsMain());
 
 	// Get the Chooser up
 	CLSID CLSID_chooser;
@@ -373,8 +369,6 @@ bool Camera_ASCOMLateClass::Disconnect() {
 	EXCEPINFO excep;
 	VARIANT vRes;
 	HRESULT hr;
-
-    assert(wxThread::IsMain());
 
 	if (this->ASCOMDriver) {
 		// Disconnect

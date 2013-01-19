@@ -71,8 +71,6 @@ ScopeASCOM::~ScopeASCOM(void)
 bool ScopeASCOM::Choose(wxString &wx_ProgID) {
     bool bError = false;
 
-    assert(wxThread::IsMain());
-
     IDispatch *pChooserDisplay = NULL;	// Pointer to the Chooser
     BSTR bstr_ProgID = NULL;				
     char *cp = NULL;
@@ -156,8 +154,6 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
 bool ScopeASCOM::Connect(void) {
     bool bError = false;
     IDispatch *pScopeDriver = NULL;
-
-    assert(wxThread::IsMain());
 
     try
     {
@@ -328,8 +324,6 @@ bool ScopeASCOM::Connect(void) {
 bool ScopeASCOM::Disconnect(void) {
     bool bError = false;
     IDispatch *pScopeDriver = NULL;
-
-    assert(wxThread::IsMain());
 
     try
     {
