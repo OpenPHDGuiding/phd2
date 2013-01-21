@@ -90,11 +90,11 @@ protected:
         virtual void UnloadValues(void);
     };
 
-    GUIDE_ALGORITHM GetRaGuideAlgorithm(void);
-    void SetRaGuideAlgorithm(int raGuideAlgorithm);
+    virtual GUIDE_ALGORITHM GetRaGuideAlgorithm(void);
+    virtual void SetRaGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
 
-    GUIDE_ALGORITHM GetDecGuideAlgorithm(void);
-    void SetDecGuideAlgorithm(int decGuideAlgorithm);
+    virtual GUIDE_ALGORITHM GetDecGuideAlgorithm(void);
+    virtual void SetDecGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
 
     bool GetGuidingEnabled(void);
     void SetGuidingEnabled(bool guidingEnabled);

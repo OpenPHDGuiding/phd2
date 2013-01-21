@@ -37,10 +37,15 @@
 #include "wx/textfile.h"
 #include "socket_server.h"
 
+
 static const int DefaultCalibrationDuration = 750;
 static const int DefaultMaxDecDuration  = 1000;
 static const int DefaultMaxRaDuration  = 1000;
+
 static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
+static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
+static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_RESIST_SWITCH;
+
 static const double DEC_BACKLASH_DISTANCE = 3.0;
 
 Scope::Scope(void)
@@ -60,10 +65,27 @@ Scope::Scope(void)
     int decGuideMode = pConfig->GetInt("/scope/DecGuideMode", DefaultDecGuideMode);
     SetDecGuideMode(decGuideMode);
 
+    int raGuideAlgorithm = pConfig->GetInt("/scope/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
+    SetRaGuideAlgorithm(raGuideAlgorithm);
+
+    int decGuideAlgorithm = pConfig->GetInt("/scope/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
+    SetDecGuideAlgorithm(decGuideAlgorithm);
 }
 
 Scope::~Scope(void)
 {
+}
+
+void Scope::SetRaGuideAlgorithm(int guideAlgorithm)
+{
+    Mount::SetRaGuideAlgorithm(guideAlgorithm, DefaultRaGuideAlgorithm);
+    pConfig->SetInt("/scope/RaGuideAlgorithm", GetRaGuideAlgorithm());
+}
+
+void Scope::SetDecGuideAlgorithm(int guideAlgorithm)
+{
+    Mount::SetDecGuideAlgorithm(guideAlgorithm, DefaultDecGuideAlgorithm);
+    pConfig->SetInt("/scope/DecGuideAlgorithm", GetDecGuideAlgorithm());
 }
 
 int Scope::GetCalibrationDuration(void)

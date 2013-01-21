@@ -35,9 +35,6 @@
 
 #include "phd.h"
 
-static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
-static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_RESIST_SWITCH;
-
 static const int MAX_CALIBRATION_STEPS = 60;
 static const double MAX_CALIBRATION_DISTANCE = 25.0;
 
@@ -51,12 +48,6 @@ Mount::Mount(double decBacklashDistance)
     m_pDecGuideAlgorithm = NULL;
     m_pRaGuideAlgorithm = NULL;
     m_guidingEnabled = true;
-
-    int raGuideAlgorithm = pConfig->GetInt("/mount/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
-    SetRaGuideAlgorithm(raGuideAlgorithm);
-
-    int decGuideAlgorithm = pConfig->GetInt("/mount/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
-    SetDecGuideAlgorithm(decGuideAlgorithm);
 }
 
 Mount::~Mount()
@@ -144,15 +135,14 @@ GUIDE_ALGORITHM Mount::GetRaGuideAlgorithm(void)
     return GetGuideAlgorithm(m_pRaGuideAlgorithm);
 }
 
-void Mount::SetRaGuideAlgorithm(int raGuideAlgorithm)
+void Mount::SetRaGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm)
 {
     delete m_pRaGuideAlgorithm;
 
-    if (SetGuideAlgorithm(raGuideAlgorithm, &m_pRaGuideAlgorithm))
+    if (SetGuideAlgorithm(guideAlgorithm, &m_pRaGuideAlgorithm))
     {
-        SetRaGuideAlgorithm(DefaultRaGuideAlgorithm);
+        SetGuideAlgorithm(defaultAlgorithm, &m_pRaGuideAlgorithm);
     }
-    pConfig->SetInt("/mount/RaGuideAlgorithm", GetRaGuideAlgorithm());
 }
 
 GUIDE_ALGORITHM Mount::GetDecGuideAlgorithm(void)
@@ -160,15 +150,14 @@ GUIDE_ALGORITHM Mount::GetDecGuideAlgorithm(void)
     return GetGuideAlgorithm(m_pDecGuideAlgorithm);
 }
 
-void Mount::SetDecGuideAlgorithm(int decGuideAlgorithm)
+void Mount::SetDecGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm)
 {
     delete m_pDecGuideAlgorithm;
 
-    if (SetGuideAlgorithm(decGuideAlgorithm, &m_pDecGuideAlgorithm))
+    if (SetGuideAlgorithm(guideAlgorithm, &m_pDecGuideAlgorithm))
     {
-        SetRaGuideAlgorithm(DefaultRaGuideAlgorithm);
+        SetGuideAlgorithm(defaultAlgorithm, &m_pDecGuideAlgorithm);
     }
-    pConfig->SetInt("/guider/onestar/DecGuideAlgorithm", GetDecGuideAlgorithm());
 }
 
 wxString &Mount::Name(void)
@@ -486,8 +475,15 @@ bool Mount::Move(const Point& currentLocation, const Point& desiredLocation)
 
         // Feed the raw distances to the guide algorithms
 
-        raDistance = m_pRaGuideAlgorithm->result(raDistance);
-        decDistance = m_pDecGuideAlgorithm->result(decDistance);
+        if (m_pRaGuideAlgorithm)
+        {
+            raDistance = m_pRaGuideAlgorithm->result(raDistance);
+        }
+
+        if (m_pDecGuideAlgorithm)
+        {
+            decDistance = m_pDecGuideAlgorithm->result(decDistance);
+        }
 
         // Figure out the guide directions based on the (possibly) updated distances
         GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
