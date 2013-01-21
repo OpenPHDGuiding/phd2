@@ -373,9 +373,12 @@
     <ClCompile Include="scope_gpusb.cpp" />
     <ClCompile Include="scope_onboard.cpp" />
     <ClCompile Include="scope_voyager.cpp" />
+    <ClCompile Include="serialport.cpp" />
+    <ClCompile Include="serialport_win32.cpp" />
     <ClCompile Include="socket_server.cpp" />
     <ClCompile Include="star.cpp" />
     <ClCompile Include="stepguider.cpp" />
+    <ClCompile Include="stepguider_sxao.cpp" />
     <ClCompile Include="testguide.cpp" />
     <ClCompile Include="usImage.cpp" />
     <ClCompile Include="worker_thread.cpp" />
@@ -447,6 +450,9 @@
     <ClInclude Include="scope_onboard.h" />
     <ClInclude Include="scope_voyager.h" />
     <ClInclude Include="scopes.h" />
+    <ClInclude Include="serialport.h" />
+    <ClInclude Include="serialports.h" />
+    <ClInclude Include="serialport_win32.h" />
     <ClInclude Include="socket_server.h" />
     <ClInclude Include="star.h" />
     <ClInclude Include="stepguider.h" />

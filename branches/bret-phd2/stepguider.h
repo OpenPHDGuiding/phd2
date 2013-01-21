@@ -80,10 +80,10 @@ private:
 // these MUST be supplied by a subclass
 private:
     virtual bool Center(void)=0;
-    virtual bool Step (GUIDE_DIRECTION direction, int steps)=0;
+    virtual bool Step(GUIDE_DIRECTION direction, int steps)=0;
     virtual int ApproximateStepsRemaining(GUIDE_DIRECTION direction)=0;
     virtual int ApproximateMaxStepsFromCenter(GUIDE_DIRECTION direction)=0;
-    virtual bool IsAtLimit(GUIDE_DIRECTION direction) = 0;
+    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit) = 0;
 };
 
 #endif /* STEPGUIDER_H_INCLUDED */

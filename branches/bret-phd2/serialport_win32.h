@@ -53,7 +53,7 @@ public:
     virtual bool Send(const unsigned char * const pData, const unsigned count);
 
     virtual bool SetReceiveTimeout(int timeoutMs);
-    virtual int Receive(unsigned char *pData, const unsigned count);
+    virtual bool Receive(unsigned char *pData, const unsigned count);
 };
 
 #endif // SERIALPORT_WIN32_H_INCLUDED

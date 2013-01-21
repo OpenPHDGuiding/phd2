@@ -36,4 +36,39 @@
 #if defined(STEPGUIDER_SXAO) && !defined(STEPGUIDER_SXAO_H_INCLUDED)
 #define STEPGUIDER_SXAO_H_INCLUDED
 
+#include "wx/msw/ole/automtn.h"
+
+class StepGuiderSxAO : public StepGuider
+{
+    static const int MaxSteps       = 50;
+    static const int DefaultTimeout =  1*1000;
+    static const int CenterTimeout  = 30*1000;
+    SerialPort *m_pSerialPort;
+    int m_xOffset;
+    int m_yOffset;
+public:
+    StepGuiderSxAO(void);
+    virtual ~StepGuiderSxAO(void);
+
+    virtual bool Connect(void);
+	virtual bool Disconnect(void);
+
+private:
+    virtual bool Center(void);
+    virtual bool Step(GUIDE_DIRECTION direction, int steps);
+    virtual int ApproximateStepsRemaining(GUIDE_DIRECTION direction);
+    virtual int ApproximateMaxStepsFromCenter(GUIDE_DIRECTION direction);
+    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit);
+
+    bool SendThenReceive(unsigned char sendChar, unsigned char& receivedChar);
+    bool SendThenReceive(unsigned char *pBuffer, unsigned bufferSize, unsigned char& recievedChar);
+
+    bool SendShortCommand(unsigned char command, unsigned char& response);
+    bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char& response);
+
+     bool FirmwareVersion(unsigned& version);
+     bool Unjam(void);
+     bool Center(unsigned char cmd);
+};
+
 #endif // if defined(STEPGUIDER_SXAO) && !defined(STEPGUIDER_SXAO_H_INCLUDED)

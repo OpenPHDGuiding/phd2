@@ -71,6 +71,11 @@ bool LOG::SetState(bool bEnabled)
     return prevState;
 }
 
+bool LOG::GetState(void)
+{
+    return m_bEnabled;
+}
+
 bool LOG::Init(char *pName, bool bEnable=true)
 {
     wxCriticalSectionLocker lock(m_criticalSection);
@@ -102,6 +107,19 @@ bool LOG::Init(char *pName, bool bEnable=true)
 wxString LOG::AddLine(const wxString& str)
 {
     return Write(str + "\n");
+}
+
+wxString LOG::AddLine(const wxString& str, const unsigned char * const pBytes, unsigned count)
+{
+    wxString Line = str + " - ";
+
+    for(int i=0;i<count;i++)
+    {
+        unsigned char ch = pBytes[i];
+        Line += wxString::Format("%2.2X (%c) ", ch, isprint(ch) ? ch : '?');
+    }
+
+    return Write(Line + "\n");
 }
 
 bool LOG::Flush(void)

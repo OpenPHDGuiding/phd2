@@ -225,7 +225,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	stepguider_menu->FindItem(AO_NONE)->Check(true); // set this as the default
 #ifdef STEPGUIDER_SXAO
 	stepguider_menu->AppendRadioItem(AO_SXAO, _T("sxAO"), _T("Starlight Xpress AO"));
-	stepguider_menu->FindItem(AO_SXAO)->Enable(false);
+	//stepguider_menu->FindItem(AO_SXAO)->Enable(false);
 #endif
     // try to get the last value from the config store
     wxString lastChoice = pConfig->GetString("/scope/LastMenuChoice", _T(""));
@@ -432,7 +432,6 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	// Some buttons off by default
 	Loop_Button->Enable(false);
 	Guide_Button->Enable(false);
-    StepGuider_Button->Enable(false);
 
 	// Do the main sizer
 	wxBoxSizer *lowersizer = new wxBoxSizer(wxHORIZONTAL);
@@ -532,6 +531,9 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 			wxLogStatus(_T("Server started"));
 	}
 
+    tools_menu->Check(MENU_DEBUG, Debug.GetState());
+
+
 	#include "xhair.xpm"
 	wxImage Cursor = wxImage(mac_xhair);
 	Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X,8);
@@ -568,7 +570,7 @@ void MyFrame::UpdateButtonsStatus(void)
         Loop_Button->Enable(!CaptureActive && pCamera && pCamera->Connected);
         Cam_Button->Enable(!CaptureActive);
         Scope_Button->Enable(!CaptureActive && pMount);
-        StepGuider_Button->Enable(!CaptureActive && pStepGuider);
+        StepGuider_Button->Enable(!CaptureActive);
         Brain_Button->Enable(!CaptureActive);
         Dark_Button->Enable(!CaptureActive && pCamera && pCamera->Connected);
 
@@ -922,7 +924,7 @@ bool MyFrame::SetServerMode(bool serverMode)
 
     m_serverMode = serverMode;
 
-    pConfig->SetBoolean("/ServerMode", m_ditherRaOnly);
+    pConfig->SetBoolean("/ServerMode", m_serverMode);
 
     return bError;
 }

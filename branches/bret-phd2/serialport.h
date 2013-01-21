@@ -60,7 +60,7 @@ public:
     virtual bool Send(const unsigned char * const pData, const unsigned count) = 0;
 
     virtual bool SetReceiveTimeout(int timeoutMs) = 0;
-    virtual int Receive(unsigned char *pData, const unsigned count) = 0;
+    virtual bool Receive(unsigned char *pData, const unsigned count) = 0;
 };
 
 #endif // SERIALPORT_H_INCLUDED

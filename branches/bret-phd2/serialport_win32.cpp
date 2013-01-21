@@ -214,6 +214,8 @@ bool SerialPortWin32::Send(const unsigned char * const pData, const unsigned cou
     {
         DWORD nBytesWritten = 0;
 
+        Debug.AddLine("Sending", pData, count);
+
         if (!WriteFile(m_handle, pData, count, &nBytesWritten, NULL))
         {
             throw ERROR_INFO("SerialPortWin32: WriteFile failed");
@@ -234,9 +236,9 @@ bool SerialPortWin32::Send(const unsigned char * const pData, const unsigned cou
     return bError;
 }
 
-int SerialPortWin32::Receive(unsigned char *pData, const unsigned count)
+bool SerialPortWin32::Receive(unsigned char *pData, const unsigned count)
 {
-    int ret = 0;
+    bool bError = false;
 
     try
     {
@@ -252,16 +254,15 @@ int SerialPortWin32::Receive(unsigned char *pData, const unsigned count)
             throw ERROR_INFO("SerialPortWin32: recieveCount != count");
         }
 
-        ret = receiveCount;
-
+        Debug.AddLine("Received", pData, receiveCount);
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        ret = -1;
+        bError = true;
     }
 
-    return ret;
+    return bError;
 }
 
 #endif // _WINDOWS_

@@ -40,10 +40,6 @@
 
 //#define DEVBUILD
 
-#if defined(__WINDOWS__) && defined(USE_VLD)
- #include <vld.h>
-#endif 
-
 // Globals`
 
 Config *pConfig = new Config();
@@ -75,7 +71,11 @@ bool PhdApp::OnInit() {
 	#endif
 #endif
 
+#if defined(_DEBUG)
     Debug.Init("debug", true);
+#else
+    Debug.Init("debug", false);
+#endif
 	SetVendorName(_T("StarkLabs"));
     pConfig->Initialize(_T("PHDGuidingV2"));
 

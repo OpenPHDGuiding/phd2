@@ -392,8 +392,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 			Log_Data = false;
 			this->SetTitle(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
 		}
-	}
-	else if (evt.GetId() == MENU_LOGIMAGES) {
+	} else if (evt.GetId() == MENU_LOGIMAGES) {
 		if (wxGetKeyState(WXK_SHIFT)) {
 //			wxMessageBox("arg");
 #ifdef __WINDOWS__
@@ -417,8 +416,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 			
 		}
 		Menubar->Refresh();
-	}
-	else if (evt.GetId() == MENU_DEBUG)
+	} else if (evt.GetId() == MENU_DEBUG)
     {
         Debug.SetState(evt.IsChecked()); 
     }

@@ -76,6 +76,9 @@
 #pragma warning(disable:4305)
 #pragma warning(disable:4100)
 #pragma warning(disable:4996)
+
+#include <vld.h>
+
 #endif
 
 WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
@@ -128,6 +131,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "guide_algorithms.h"
 #include "guiders.h"
 #include "messagebox_proxy.h"
+#include "serialports.h"
 #include "cameras.h"
 #include "mount.h"
 #include "scopes.h"

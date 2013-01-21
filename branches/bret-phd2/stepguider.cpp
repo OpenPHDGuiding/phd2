@@ -121,8 +121,7 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 #ifdef STEPGUIDER_SXAO
         else if (stepguider_menu->IsChecked(AO_SXAO)) 
         {
-#if 0
-            //pNewStepGuider = new StepGuiderSxAO();
+            pNewStepGuider = new StepGuiderSxAO();
 
             if (pNewStepGuider->Connect())
             {
@@ -132,7 +131,6 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             {
                 SetStatusText(_T("sxAO connected"));
             }
-#endif
         }
 #endif
         if (pNewStepGuider && pNewStepGuider->IsConnected()) 
