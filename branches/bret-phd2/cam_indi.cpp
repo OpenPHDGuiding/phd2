@@ -160,7 +160,6 @@ bool Camera_INDIClass::Connect() {
 
 bool Camera_INDIClass::Disconnect() {
     Connected = FALSE;
-    pCamera = NULL;
     return false;
 }
 

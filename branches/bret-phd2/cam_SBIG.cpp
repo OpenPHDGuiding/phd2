@@ -229,7 +229,6 @@ bool Camera_SBIGClass::Disconnect() {
 	SBIGUnivDrvCommand(CC_CLOSE_DEVICE, NULL, NULL);
 	SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
 	Connected = false;
-	pCamera = NULL;
 	return false;
 }
 void Camera_SBIGClass::InitCapture() {

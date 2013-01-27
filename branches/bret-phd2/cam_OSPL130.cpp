@@ -54,7 +54,6 @@ bool Camera_OpticstarPL130Class::Connect() {
 bool Camera_OpticstarPL130Class::Disconnect() {
 	OSPL130_Finalize();
 	Connected = false;
-	pCamera = NULL;
 	if (RawData) delete [] RawData;
 	RawData = NULL;
 	return false;

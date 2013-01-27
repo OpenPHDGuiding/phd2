@@ -250,7 +250,6 @@ bool Camera_FirewireClass::Disconnect() {
 	m_pGrabber->stopLive();
 	m_pGrabber->closeDev();
 	Connected = false;
-	pCamera = NULL;
 	delete m_pGrabber;
 	return false;
 }

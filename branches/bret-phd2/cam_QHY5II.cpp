@@ -241,7 +241,6 @@ bool Camera_QHY5IIClass::Disconnect() {
 	RawBuffer = NULL;
 	FreeLibrary(CameraDLL);
 
-	pCamera = NULL;
 	return false;
 
 }

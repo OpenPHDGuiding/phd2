@@ -178,7 +178,6 @@ bool Camera_Atik16Class::Disconnect() {
 	ArtemisUnLoadDLL();
 	Sleep(100);
 	Connected = false;
-	pCamera = NULL;
 	return false;
 }
 

@@ -107,7 +107,6 @@ bool Camera_DSIClass::Disconnect() {
 #ifdef MEADE_DSI
 	MeadeCam->Close();
 	Connected = false;
-	pCamera = NULL;
 	delete MeadeCam;
 #endif
 	return false;

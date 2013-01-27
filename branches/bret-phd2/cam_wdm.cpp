@@ -204,7 +204,6 @@ bool Camera_WDMClass::Disconnect() {
 	CVPlatform::GetPlatform()->Release(VidCap);   
 //	delete VidCap;
 	Connected = false;
-	pCamera = NULL;
 
 	return false;
 }

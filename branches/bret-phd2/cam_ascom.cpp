@@ -135,7 +135,6 @@ bool Camera_ASCOMClass::Disconnect() {
 
 
 	Connected = false;
-	pCamera = NULL;
 //	if (RawData) delete [] RawData;
 //	RawData = NULL;
 	return false;

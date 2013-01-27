@@ -107,7 +107,6 @@ bool Camera_StarfishClass::Disconnect() {
 	if (fcUsb_haveCamera())
 		fcUsb_CloseCameraDriver();
 	Connected = false;
-	pCamera = NULL;
 	return false;
 }
 void Camera_StarfishClass::InitCapture() {

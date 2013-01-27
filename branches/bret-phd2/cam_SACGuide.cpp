@@ -186,7 +186,6 @@ bool Camera_SACGuiderClass::Disconnect() {
 	//if (CloseUSB) CloseUSB();
 	FreeLibrary(CameraDLL);   
 	Connected = false;
-	pCamera = NULL;
 	return false;
 }
 

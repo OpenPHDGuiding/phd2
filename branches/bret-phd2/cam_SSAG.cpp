@@ -110,7 +110,6 @@ bool Camera_SSAGClass::Disconnect() {
 	_SSAG_closeUSB();
 //	delete [] buffer;
 	Connected = false;
-	pCamera = NULL;
 	//qglogfile->AddLine(wxNow() + ": Disconnecting"); //qglogfile->Write(); //qglogfile->Close();
 	return false;
 

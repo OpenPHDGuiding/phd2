@@ -259,7 +259,6 @@ bool Camera_SXVClass::Disconnect() {
 		delete [] RawData;
 	RawData = NULL;
 	Connected = false;
-	pCamera = NULL;
 	sxReset(hCam);
 #ifdef __APPLE__
 	sx2Close(hCam);

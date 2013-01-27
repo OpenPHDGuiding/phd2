@@ -94,7 +94,6 @@ bool Camera_OpenSSAGClass::PulseGuideScope(int direction, int duration) {
 
 bool Camera_OpenSSAGClass::Disconnect() {
     Connected = false;
-    pCamera = NULL;
     ssag->Disconnect();
     return false;
 }
