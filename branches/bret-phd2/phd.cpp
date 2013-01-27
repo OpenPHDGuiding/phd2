@@ -42,7 +42,7 @@
 
 // Globals`
 
-Config *pConfig = new Config();
+Config PhdConfig;
 Mount *pMount = new ScopeNone();
 StepGuider *pStepGuider = NULL;
 MyFrame *pFrame = NULL;
@@ -77,7 +77,7 @@ bool PhdApp::OnInit() {
     Debug.Init("debug", false);
 #endif
 	SetVendorName(_T("StarkLabs"));
-    pConfig->Initialize(_T("PHDGuidingV2"));
+    PhdConfig.Initialize(_T("PHDGuidingV2"));
 
 	wxLocale locale;
 
@@ -105,6 +105,14 @@ bool PhdApp::OnInit() {
 	pFrame->Show(true);
 
 	return true;
+}
+
+int PhdApp::OnExit(void)
+{
+    delete pCamera;
+    pCamera = NULL;
+
+    return wxApp::OnExit();
 }
 
 bool PhdApp::Yield(bool onlyIfNeeded)

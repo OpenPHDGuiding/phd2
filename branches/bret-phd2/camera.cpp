@@ -157,7 +157,7 @@ GuideCamera::GuideCamera(void)
     HaveDark = false;
     DarkDur = 0;
 
-    double cameraGain = pConfig->GetDouble("/camera/gain", DefaultGuideCameraGain);
+    double cameraGain = PhdConfig.GetDouble("/camera/gain", DefaultGuideCameraGain);
     SetCameraGain(cameraGain);
 }
 
@@ -258,7 +258,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	Cameras.Add(_T("Guide chip on SBIG cam in Nebulosity"));
 #endif
 	Choice = Cameras[0];
-    wxString lastChoice = pConfig->GetString("/camera/LastMenuChoice", _T(""));
+    wxString lastChoice = PhdConfig.GetString("/camera/LastMenuChoice", _T(""));
     int selectedItem = Cameras.Index(lastChoice);			
 
 	if (wxGetKeyState(WXK_SHIFT)) { // use the last camera chosen and bypass the dialog
@@ -480,7 +480,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	SetStatusText(pCamera->Name + _T(" connected"));
 	SetStatusText(_T("Camera"),2);
     UpdateButtonsStatus();
-    pConfig->SetString("/camera/LastMenuChoice", Choice);
+    PhdConfig.SetString("/camera/LastMenuChoice", Choice);
 	if (pCamera->HasPropertyDialog)
 		Setup_Button->Enable(true);
 	else
@@ -522,7 +522,7 @@ bool GuideCamera::SetCameraGain(double cameraGain)
         GuideCameraGain = DefaultGuideCameraGain;
     }
 
-    pConfig->SetDouble("/camera/gain", GuideCameraGain);
+    PhdConfig.SetDouble("/camera/gain", GuideCameraGain);
 
     return bError;
 }

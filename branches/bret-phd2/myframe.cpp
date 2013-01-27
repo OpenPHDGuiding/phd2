@@ -145,19 +145,19 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
     SocketServer = NULL;
 
-    int noiseReductionMethod = pConfig->GetInt("/NoiseReductionMethod", DefaultNoiseReductionMethod);
+    int noiseReductionMethod = PhdConfig.GetInt("/NoiseReductionMethod", DefaultNoiseReductionMethod);
     SetNoiseReductionMethod(noiseReductionMethod);
 
-    double ditherScaleFactor = pConfig->GetDouble("/DitherScaleFactor", DefaultDitherScaleFactor);
+    double ditherScaleFactor = PhdConfig.GetDouble("/DitherScaleFactor", DefaultDitherScaleFactor);
     SetDitherScaleFactor(ditherScaleFactor);
 
-    bool ditherRaOnly = pConfig->GetBoolean("/DitherRaOnly", DefaultDitherRaOnly);
+    bool ditherRaOnly = PhdConfig.GetBoolean("/DitherRaOnly", DefaultDitherRaOnly);
     SetDitherScaleFactor(ditherScaleFactor);
 
-    bool serverMode = pConfig->GetBoolean("/ServerMode", DefaultServerMode);
+    bool serverMode = PhdConfig.GetBoolean("/ServerMode", DefaultServerMode);
     SetServerMode(serverMode);
 
-    int timeLapse   = pConfig->GetInt("/frame/TimeLapse", DefaultTimelapse);
+    int timeLapse   = PhdConfig.GetInt("/frame/TimeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
 
     // 
@@ -228,7 +228,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 	//stepguider_menu->FindItem(AO_SXAO)->Enable(false);
 #endif
     // try to get the last value from the config store
-    wxString lastChoice = pConfig->GetString("/scope/LastMenuChoice", _T(""));
+    wxString lastChoice = PhdConfig.GetString("/scope/LastMenuChoice", _T(""));
     int lastId = scope_menu->FindItem(lastChoice);
 
     if (lastId != wxNOT_FOUND)
@@ -862,7 +862,7 @@ bool MyFrame::SetNoiseReductionMethod(int noiseReductionMethod)
         m_noiseReductionMethod = (NOISE_REDUCTION_METHOD)DefaultNoiseReductionMethod;
     }
 
-    pConfig->SetInt("/NoiseReductionMethod", m_noiseReductionMethod);
+    PhdConfig.SetInt("/NoiseReductionMethod", m_noiseReductionMethod);
 
     return bError;
 }
@@ -892,7 +892,7 @@ bool MyFrame::SetDitherScaleFactor(double ditherScaleFactor)
         m_ditherScaleFactor = DefaultDitherScaleFactor;
     }
 
-    pConfig->SetInt("/DitherScaleFactor", m_ditherScaleFactor);
+    PhdConfig.SetInt("/DitherScaleFactor", m_ditherScaleFactor);
 
     return bError;
 }
@@ -908,7 +908,7 @@ bool MyFrame::SetDitherRaOnly(bool ditherRaOnly)
 
     m_ditherRaOnly = ditherRaOnly;
 
-    pConfig->SetBoolean("/DitherRaOnly", m_ditherRaOnly);
+    PhdConfig.SetBoolean("/DitherRaOnly", m_ditherRaOnly);
 
     return bError;
 }
@@ -924,7 +924,7 @@ bool MyFrame::SetServerMode(bool serverMode)
 
     m_serverMode = serverMode;
 
-    pConfig->SetBoolean("/ServerMode", m_serverMode);
+    PhdConfig.SetBoolean("/ServerMode", m_serverMode);
 
     return bError;
 }
@@ -954,7 +954,7 @@ bool MyFrame::SetTimeLapse(int timeLapse)
         m_timeLapse = DefaultTimelapse;
     }
 
-    pConfig->SetInt("/frame/timeLapse", m_timeLapse);
+    PhdConfig.SetInt("/frame/timeLapse", m_timeLapse);
 
     return bError;
 }

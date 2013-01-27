@@ -142,7 +142,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "advanced_dialog.h"
 #include "myframe.h"
 
-extern Config *pConfig;
+extern Config PhdConfig;
 
 extern MyFrame *pFrame;
 extern Mount *pMount;
@@ -178,6 +178,7 @@ class PhdApp: public wxApp
   public:
     PhdApp(void){};
     bool OnInit(void);
+    int OnExit(void);
     virtual bool Yield(bool onlyIfNeeded=false);
 };
 

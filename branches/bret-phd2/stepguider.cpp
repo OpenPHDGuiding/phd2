@@ -44,7 +44,7 @@ static const double DEC_BACKLASH_DISTANCE = 0.0;
 StepGuider::StepGuider(void)
     : Mount(DEC_BACKLASH_DISTANCE)
 {
-    int calibrationSteps = pConfig->GetInt("/stepguider/CalibrationSteps", DefaultCalibrationSteps);
+    int calibrationSteps =PhdConfig.GetInt("/stepguider/CalibrationSteps", DefaultCalibrationSteps);
     SetCalibrationSteps(calibrationSteps);
 }
 
@@ -87,7 +87,7 @@ bool StepGuider::SetCalibrationSteps(int calibrationSteps)
         m_calibrationSteps = DefaultCalibrationSteps;
     }
 
-    pConfig->SetInt("/stepguider/CalibrationSteps", m_calibrationSteps);
+   PhdConfig.SetInt("/stepguider/CalibrationSteps", m_calibrationSteps);
 
     return bError;
 }
@@ -150,7 +150,8 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
                 if (pItem->IsChecked())
                 {
                     wxString value = pItem->GetItemLabelText();
-                    pConfig->SetString("/stepguider/LastMenuChoice", pItem->GetItemLabelText());
+                    PhdConfig.SetString("/stepguider/LastMenuChoice", value);
+                    SetStatusText(value + " connected");
                     break;
                 }
             }

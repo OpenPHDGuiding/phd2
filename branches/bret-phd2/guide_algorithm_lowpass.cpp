@@ -44,10 +44,10 @@ static const double DefaultSlopeWeight = 5.0;
 
 GuideAlgorithmLowpass::GuideAlgorithmLowpass(void)
 {
-    double minMove    = pConfig->GetDouble("/GuideAlgorithm/Lowpass/minMove", DefaultMinMove);
+    double minMove    = PhdConfig.GetDouble("/GuideAlgorithm/Lowpass/minMove", DefaultMinMove);
     SetMinMove(minMove);
 
-    double slopeWeight    = pConfig->GetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", DefaultSlopeWeight);
+    double slopeWeight    = PhdConfig.GetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", DefaultSlopeWeight);
     SetSlopeWeight(slopeWeight);
 
     reset();
@@ -133,7 +133,7 @@ bool GuideAlgorithmLowpass::SetMinMove(double minMove)
         m_minMove = DefaultMinMove;
     }
 
-    pConfig->SetDouble("/GuideAlgorithm/Lowpass/minMove", m_minMove);
+    PhdConfig.SetDouble("/GuideAlgorithm/Lowpass/minMove", m_minMove);
 
     return bError;
 }
@@ -162,7 +162,7 @@ bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
         m_slopeWeight = DefaultSlopeWeight;
     }
 
-    pConfig->SetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", m_slopeWeight);
+    PhdConfig.SetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", m_slopeWeight);
 
     return bError;
 }

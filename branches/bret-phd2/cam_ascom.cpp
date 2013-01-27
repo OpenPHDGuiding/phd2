@@ -71,7 +71,7 @@ bool Camera_ASCOMClass::Connect() {
 	C->DeviceTypeV = "Camera";
 
 	// Look in Registry to see if there is a default
-	wxString wx_ProgID = pConfig->GetString("/camera/ASCOM/camera_id", _T(""));
+	wxString wx_ProgID = PhdConfig.GetString("/camera/ASCOM/camera_id", _T(""));
 	bstr_ProgID = wxBasicString(wx_ProgID).Get();
 
 	_bstr_t  drvrId = C->Choose(bstr_ProgID);
@@ -89,7 +89,7 @@ bool Camera_ASCOMClass::Connect() {
 		return true;
 	}
 	// Save name of cam
-	pConfig->SetString("/camera/ASCOM/camera_id", drvrId);
+	PhdConfig.SetString("/camera/ASCOM/camera_id", drvrId);
 
     try {
 		pCam->Connected = VARIANT_TRUE;

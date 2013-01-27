@@ -60,6 +60,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 Guider::~Guider(void)
 {
 	delete m_displayedImage;
+    delete m_pCurrentImage;
 }
 
 bool Guider::IsPaused()

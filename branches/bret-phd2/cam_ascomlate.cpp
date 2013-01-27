@@ -116,7 +116,7 @@ bool Camera_ASCOMLateClass::Connect() {
 	SysFreeString(bsDeviceType);
 
 	// Look in Registry to see if there is a default
-	wxString wx_ProgID = pConfig->GetString("/camera/ASCOMlate/camera_id", _T(""));
+	wxString wx_ProgID = PhdConfig.GetString("/camera/ASCOMlate/camera_id", _T(""));
 	BSTR bstr_ProgID=NULL;
 	bstr_ProgID = wxBasicString(wx_ProgID).Get();
 	
@@ -137,7 +137,7 @@ bool Camera_ASCOMLateClass::Connect() {
 		return true;
 	}
 	// Save name of cam
-	pConfig->SetString("/camera/ASCOMlate/camera_id", vRes.bstrVal);
+	PhdConfig.SetString("/camera/ASCOMlate/camera_id", vRes.bstrVal);
 
 	// Now, try to attach to the driver
 	if (FAILED(CLSIDFromProgID(vRes.bstrVal, &CLSID_driver))) {
