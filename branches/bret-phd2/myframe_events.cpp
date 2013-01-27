@@ -52,7 +52,7 @@ double MyFrame::RequestedExposureDuration() { // returns the duration based on p
 	wxString durtext;
 	double dReturn;
 	if (!pCamera || !pCamera->Connected)
-        return;
+        return 0.0;
 
 	durtext = pFrame->Dur_Choice->GetStringSelection();
 	durtext = durtext.BeforeFirst(' '); // remove the " s" bit
