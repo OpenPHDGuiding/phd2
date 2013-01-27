@@ -51,7 +51,8 @@ extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
 double MyFrame::RequestedExposureDuration() { // returns the duration based on pull-down
 	wxString durtext;
 	double dReturn;
-//	if (CaptureActive) return;  // Looping an exposure already
+	if (!pCamera || !pCamera->Connected)
+        return;
 
 	durtext = pFrame->Dur_Choice->GetStringSelection();
 	durtext = durtext.BeforeFirst(' '); // remove the " s" bit
