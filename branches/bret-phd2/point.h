@@ -38,6 +38,7 @@
 
 class Point
 {
+    bool m_valid;
 public:
     double X;
     double Y;
@@ -69,18 +70,21 @@ public:
 
     void Invalidate(void)
     {
-        SetXY(-1.0, -1.0);
+        m_valid = false;
     }
 
     void SetXY(const double x, const double y)
     {
         X = x;
         Y = y;
+        m_valid = true;
     }
 
     double dX(Point p) const
     {
         double dRet = X-p.X;
+
+        assert(m_valid);
 
         return dRet;
     }
@@ -93,6 +97,8 @@ public:
     double dY(Point p) const
     {
         double dRet = Y-p.Y;
+
+        assert(m_valid);
 
         return dRet;
     }
@@ -136,6 +142,19 @@ public:
     {
         return Angle(*pPoint);
     }
+
+    Point operator+(const Point& addend)
+    {
+        assert(m_valid);
+        return Point(this->X + addend.X, this->Y + addend.Y);
+    }
+
+    Point operator-(const Point& subtrahend)
+    {
+        assert(m_valid);
+        return Point(this->X - subtrahend.X, this->Y - subtrahend.Y);
+    }
 };
+
 
 #endif /* POINT_H_INCLUDED */
