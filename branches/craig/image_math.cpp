@@ -322,7 +322,12 @@ int FindStar(usImage& img) {
 	if (LastMass2 < 1.0) LastMass2 = StarMass;
 	if (LastMass1 < 1.0) LastMass1 = StarMass;
 	AvgMass = (StarMass + LastMass1 + LastMass2) / 3.0;*/
-	double MassRatio = mass / StarMass;
+	double MassRatio;
+	if (StarMass <= 0.0000001) {  // Likely on a first call or an error condition - handle gracefully
+		StarMass = 0.01;
+		MassRatio = 1.0;
+	}
+	else MassRatio= mass / StarMass;
 	if (MassRatio > 1.0)
 		MassRatio = 1.0/MassRatio;
 	MassRatio = 1.0 - MassRatio;
