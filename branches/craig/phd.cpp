@@ -45,7 +45,7 @@
 #include <wx/intl.h>
 #include <wx/socket.h>
 
-#define PHDSUBVER _T("a")
+#define PHDSUBVER _T("b")
 
 //#define WINICONS
 

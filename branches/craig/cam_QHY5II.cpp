@@ -101,7 +101,11 @@ Camera_QHY5IIClass::Camera_QHY5IIClass() {
 bool Camera_QHY5IIClass::Connect() {
 // returns true on error
 
-	CameraDLL = LoadLibrary(TEXT("qhy5IIdll"));
+	if (Name=="QHY 5L-II") 
+		CameraDLL = LoadLibrary(TEXT("qhy5LIIdll"));
+	else
+		CameraDLL = LoadLibrary(TEXT("qhy5IIdll"));
+
 	if (CameraDLL == NULL) {
 		wxMessageBox(_T("Cannot load qhy5IIdll.dll"),wxT("Error"),wxOK | wxICON_ERROR);
 		return true;
