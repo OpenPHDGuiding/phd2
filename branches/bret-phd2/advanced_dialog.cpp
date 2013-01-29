@@ -7,27 +7,27 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -43,7 +43,7 @@ wxDialog(pFrame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350)
     /*
      * the advanced dialog is made up of a number of "on the fly" generate slices that configure different things.
      *
-     * pTopLevelSizer is a top level Box Sizer in wxVERTICAL mode that contains a pair of sizers, 
+     * pTopLevelSizer is a top level Box Sizer in wxVERTICAL mode that contains a pair of sizers,
      * pConfigSizer to hold all the configuration panes and an unamed Button sizer and the OK and CANCEL buttons.
      *
      * pConfigSizer is a Horizontal Box Sizer which contains two Vertical Box sizers, one
@@ -135,18 +135,18 @@ void AdvancedDialog::UnloadValues(void)
 }
 
 BEGIN_EVENT_TABLE(AdvancedDialog, wxDialog)
-	EVT_BUTTON(wxID_PROPERTIES,AdvancedDialog::OnSetupCamera)
+    EVT_BUTTON(wxID_PROPERTIES,AdvancedDialog::OnSetupCamera)
 END_EVENT_TABLE()
 
 void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
-	// Prior to this we check to make sure the current camera is a WDM camera (main dialog) but...
+    // Prior to this we check to make sure the current camera is a WDM camera (main dialog) but...
 
-	if (pFrame->CaptureActive || !pCamera || !pCamera->Connected || !pCamera->HasPropertyDialog) return;  // One more safety check
-	/*if (pCamera == &Camera_WDM)
-		Camera_WDM.ShowPropertyDialog();
-	else if (pCamera == &Camera_VFW)
-		Camera_VFW.ShowPropertyDialog();*/
-	pCamera->ShowPropertyDialog();
+    if (pFrame->CaptureActive || !pCamera || !pCamera->Connected || !pCamera->HasPropertyDialog) return;  // One more safety check
+    /*if (pCamera == &Camera_WDM)
+        Camera_WDM.ShowPropertyDialog();
+    else if (pCamera == &Camera_VFW)
+        Camera_VFW.ShowPropertyDialog();*/
+    pCamera->ShowPropertyDialog();
 
 }
 

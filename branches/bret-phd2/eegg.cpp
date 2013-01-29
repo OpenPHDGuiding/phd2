@@ -7,27 +7,27 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -37,95 +37,95 @@
 void TestGuide() {
 
 #ifdef BRET_TODO
-	wxMessageBox(_T("W RA+")); wxTheApp->Yield(); pMount->Guide(WEST,2000); wxTheApp->Yield();
-	wxMessageBox(_T("N Dec+"));  wxTheApp->Yield(); pMount->Guide(NORTH,2000);wxTheApp->Yield();
-	wxMessageBox(_T("E RA-"));  wxTheApp->Yield(); pMount->Guide(EAST,2000);wxTheApp->Yield();
-	wxMessageBox(_T("S Dec-"));  wxTheApp->Yield(); pMount->Guide(SOUTH,2000);wxTheApp->Yield();
-	wxMessageBox(_T("Done"));
+    wxMessageBox(_T("W RA+")); wxTheApp->Yield(); pMount->Guide(WEST,2000); wxTheApp->Yield();
+    wxMessageBox(_T("N Dec+"));  wxTheApp->Yield(); pMount->Guide(NORTH,2000);wxTheApp->Yield();
+    wxMessageBox(_T("E RA-"));  wxTheApp->Yield(); pMount->Guide(EAST,2000);wxTheApp->Yield();
+    wxMessageBox(_T("S Dec-"));  wxTheApp->Yield(); pMount->Guide(SOUTH,2000);wxTheApp->Yield();
+    wxMessageBox(_T("Done"));
 #endif
 }
 
 void MyFrame::OnEEGG(wxCommandEvent &evt) {
 
-	if ((evt.GetId() == EEGG_TESTGUIDEDIR) && (pMount->IsConnected()))
-		TestGuide();
-	else if (evt.GetId() == EEGG_RANDOMMOTION) {
-		RandomMotionMode = !RandomMotionMode;
-		wxMessageBox(wxString::Format(_T("Random motion mode set to %d"),(int) RandomMotionMode));
-	}
-	else if (evt.GetId() == EEGG_MANUALCAL) {
-		wxString tmpstr;
+    if ((evt.GetId() == EEGG_TESTGUIDEDIR) && (pMount->IsConnected()))
+        TestGuide();
+    else if (evt.GetId() == EEGG_RANDOMMOTION) {
+        RandomMotionMode = !RandomMotionMode;
+        wxMessageBox(wxString::Format(_T("Random motion mode set to %d"),(int) RandomMotionMode));
+    }
+    else if (evt.GetId() == EEGG_MANUALCAL) {
+        wxString tmpstr;
         double RaRate   = pMount->RaRate();
         double DecRate  = pMount->DecRate();
         double RaAngle  = pMount->RaAngle();
         double DecAngle = pMount->DecAngle();
 
-		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("RA rate"), wxString::Format(_T("%.4f"),RaRate));
-		if (tmpstr.IsEmpty()) return;
-		tmpstr.ToDouble(&RaRate); // = 0.0035;
+        tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("RA rate"), wxString::Format(_T("%.4f"),RaRate));
+        if (tmpstr.IsEmpty()) return;
+        tmpstr.ToDouble(&RaRate); // = 0.0035;
 
-		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("Dec rate"), wxString::Format(_T("%.4f"),DecRate));
-		if (tmpstr.IsEmpty()) return;
-		tmpstr.ToDouble(&DecRate); // = 0.0035;
+        tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("Dec rate"), wxString::Format(_T("%.4f"),DecRate));
+        if (tmpstr.IsEmpty()) return;
+        tmpstr.ToDouble(&DecRate); // = 0.0035;
 
-		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.5)"), _T("RA angle"), wxString::Format(_T("%.3f"),RaAngle));
-		if (tmpstr.IsEmpty()) return;
-		tmpstr.ToDouble(&RaAngle); // = 0.0035;
+        tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.5)"), _T("RA angle"), wxString::Format(_T("%.3f"),RaAngle));
+        if (tmpstr.IsEmpty()) return;
+        tmpstr.ToDouble(&RaAngle); // = 0.0035;
 
-		tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 2.1)"), _T("Dec angle"), wxString::Format(_T("%.3f"),DecAngle));
-		if (tmpstr.IsEmpty()) return;
-		tmpstr.ToDouble(&DecAngle); // = 0.0035;
+        tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 2.1)"), _T("Dec angle"), wxString::Format(_T("%.3f"),DecAngle));
+        if (tmpstr.IsEmpty()) return;
+        tmpstr.ToDouble(&DecAngle); // = 0.0035;
 
-		pMount->SetCalibration(RaAngle, DecAngle, RaRate, DecRate);
-		SetStatusText(_T("Cal"),5);
-	}
-	else if (evt.GetId() == EEGG_CLEARCAL) {
-		pMount->ClearCalibration(); // clear calibration
-		SetStatusText(_T("No cal"),5);
-	}
-	else if (evt.GetId() == EEGG_FLIPRACAL) {
-		if (!pMount->IsCalibrated())
-			return;
+        pMount->SetCalibration(RaAngle, DecAngle, RaRate, DecRate);
+        SetStatusText(_T("Cal"),5);
+    }
+    else if (evt.GetId() == EEGG_CLEARCAL) {
+        pMount->ClearCalibration(); // clear calibration
+        SetStatusText(_T("No cal"),5);
+    }
+    else if (evt.GetId() == EEGG_FLIPRACAL) {
+        if (!pMount->IsCalibrated())
+            return;
 
-		double orig=pMount->RaAngle();
+        double orig=pMount->RaAngle();
         pMount->FlipCalibration();
         double RaAngle  = pMount->RaAngle();
-		wxMessageBox(wxString::Format(_T("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->RaAngle()));
-	}
-	else if (evt.GetId() == EEGG_MANUALLOCK) {
-		if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
-			return;
-		if (pGuider->GetState() > STATE_SELECTED) return;  // must not be calibrating or guiding already
-		if (evt.IsChecked()) {
+        wxMessageBox(wxString::Format(_T("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->RaAngle()));
+    }
+    else if (evt.GetId() == EEGG_MANUALLOCK) {
+        if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
+            return;
+        if (pGuider->GetState() > STATE_SELECTED) return;  // must not be calibrating or guiding already
+        if (evt.IsChecked()) {
             double LockX, LockY;
-			wxString tmpstr;
-			tmpstr = wxGetTextFromUser(_T("Enter x-lock position (or 0 for center)"), _T("X-lock position"));
-			if (tmpstr.IsEmpty()) return;
-			//ManualLock = true;
-			tmpstr.ToDouble(&LockX); 
-			LockX = fabs(LockX);
-			if (LockX < 0.0001) {
-				LockX = pCamera->FullSize.GetWidth() / 2;
-				LockY = pCamera->FullSize.GetHeight() / 2;
-			}
-			else {
-				tmpstr = wxGetTextFromUser(_T("Enter y-lock position"), _T("Y-lock position"));
-				if (tmpstr.IsEmpty()) return;
-				tmpstr.ToDouble(&LockY); 
-				LockY = fabs(LockY);
-			}
+            wxString tmpstr;
+            tmpstr = wxGetTextFromUser(_T("Enter x-lock position (or 0 for center)"), _T("X-lock position"));
+            if (tmpstr.IsEmpty()) return;
+            //ManualLock = true;
+            tmpstr.ToDouble(&LockX);
+            LockX = fabs(LockX);
+            if (LockX < 0.0001) {
+                LockX = pCamera->FullSize.GetWidth() / 2;
+                LockY = pCamera->FullSize.GetHeight() / 2;
+            }
+            else {
+                tmpstr = wxGetTextFromUser(_T("Enter y-lock position"), _T("Y-lock position"));
+                if (tmpstr.IsEmpty()) return;
+                tmpstr.ToDouble(&LockY);
+                LockY = fabs(LockY);
+            }
             pFrame->pGuider->SetLockPosition(Point(LockX, LockY));
-		}
-		else {
-			//ManualLock = false;
-		}
-	}	
-	else evt.Skip();
+        }
+        else {
+            //ManualLock = false;
+        }
+    }   
+    else evt.Skip();
 
 }
 
 
 
 void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(ect)) {
-	
+    
 }

@@ -11,28 +11,28 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
  *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *     Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -197,28 +197,28 @@ GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHyster
     m_pGuideAlgorithm = pGuideAlgorithm;
 
     width = StringWidth(_T("000.00"));
-	m_pHysteresis = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    m_pHysteresis = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 0.05,_T("Hysteresis"));
     m_pHysteresis->SetDigits(2);
 
-	DoAdd(_T("Hysteresis"), m_pHysteresis,
-	       _T("How much history of previous guide pulses should be applied\nDefault = 10%, increase to smooth out guiding commands"));
+    DoAdd(_T("Hysteresis"), m_pHysteresis,
+           _T("How much history of previous guide pulses should be applied\nDefault = 10%, increase to smooth out guiding commands"));
 
     width = StringWidth(_T("000.00"));
-	m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 1.0,_T("Hysteresis"));
     m_pAggression->SetDigits(1);
 
-	DoAdd(_T("Aggression"), m_pAggression,
-	      _T("What percent of the measured error should be applied? Default = 100%, adjust if responding too much or too slowly?"));
+    DoAdd(_T("Aggression"), m_pAggression,
+          _T("What percent of the measured error should be applied? Default = 100%, adjust if responding too much or too slowly?"));
 
     width = StringWidth(_T("000.00"));
-	m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
     m_pMinMove->SetDigits(2);
 
-	DoAdd(_T("Minimum Move (pixels)"), m_pMinMove,
-	      _T("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
+    DoAdd(_T("Minimum Move (pixels)"), m_pMinMove,
+          _T("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
 }
 
 GuideAlgorithmHysteresis::

@@ -7,28 +7,28 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its 
- *     Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its
+ *     Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -92,7 +92,7 @@ bool StepGuider::SetCalibrationSteps(int calibrationSteps)
     return bError;
 }
 
-void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event)) 
+void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 {
     StepGuider *pNewStepGuider = NULL;
 
@@ -113,13 +113,13 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             pStepGuider->Disconnect();
         }
 
-        if (stepguider_menu->IsChecked(AO_NONE)) 
+        if (stepguider_menu->IsChecked(AO_NONE))
         {
             delete pStepGuider;
             pStepGuider = NULL;
         }
 #ifdef STEPGUIDER_SXAO
-        else if (stepguider_menu->IsChecked(AO_SXAO)) 
+        else if (stepguider_menu->IsChecked(AO_SXAO))
         {
             pNewStepGuider = new StepGuiderSxAO();
 
@@ -133,7 +133,7 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             }
         }
 #endif
-        if (pNewStepGuider && pNewStepGuider->IsConnected()) 
+        if (pNewStepGuider && pNewStepGuider->IsConnected())
         {
             delete pStepGuider;
             pStepGuider = pNewStepGuider;
@@ -220,7 +220,7 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double duration)
 
     return (double)steps;
 }
-    
+
 double StepGuider::CalibrationTime(int nCalibrationSteps)
 {
     return nCalibrationSteps * m_calibrationSteps;
@@ -239,10 +239,10 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
     m_pStepGuider = pStepGuider;
 
     width = StringWidth(_T("00000"));
-	m_pCalibrationSteps = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    m_pCalibrationSteps = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
 
-	DoAdd(_T("Calibration steps"), m_pCalibrationSteps,
+    DoAdd(_T("Calibration steps"), m_pCalibrationSteps,
         wxString::Format("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes", DefaultCalibrationSteps));
 
 }

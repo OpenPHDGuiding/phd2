@@ -9,27 +9,27 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -57,10 +57,10 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
     EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
     EVT_MENU(EEGG_TESTGUIDEDIR, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
-    EVT_MENU(EEGG_RANDOMMOTION, MyFrame::OnEEGG)  
-    EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)  
-    EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)  
-    EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG) 
+    EVT_MENU(EEGG_RANDOMMOTION, MyFrame::OnEEGG)
+    EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
+    EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
+    EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
     EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
@@ -108,10 +108,10 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_SOCKET(SERVER_ID, MyFrame::OnServerEvent)
     EVT_SOCKET(SOCKET_ID, MyFrame::OnSocketEvent)
 #ifndef __WXGTK__
-    EVT_MENU(DONATE1,MyFrame::OnDonateMenu) 
-    EVT_MENU(DONATE2,MyFrame::OnDonateMenu) 
-    EVT_MENU(DONATE3,MyFrame::OnDonateMenu) 
-    EVT_MENU(DONATE4,MyFrame::OnDonateMenu) 
+    EVT_MENU(DONATE1,MyFrame::OnDonateMenu)
+    EVT_MENU(DONATE2,MyFrame::OnDonateMenu)
+    EVT_MENU(DONATE3,MyFrame::OnDonateMenu)
+    EVT_MENU(DONATE4,MyFrame::OnDonateMenu)
 #endif
     EVT_CLOSE(MyFrame::OnClose)
     EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
@@ -127,16 +127,16 @@ END_EVENT_TABLE()
 
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
-MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title, 
-												  wxPoint(-1,-1),wxSize(-1,-1),
-												  wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxBORDER_THEME) {
+MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
+                                                  wxPoint(-1,-1),wxSize(-1,-1),
+                                                  wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxMINIMIZE_BOX | wxBORDER_THEME) {
 
-	int fontsize = 11;
-	SetFont(wxFont(11,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	while (GetCharHeight() > 18) {
-		fontsize--;
-		SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	}
+    int fontsize = 11;
+    SetFont(wxFont(11,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    while (GetCharHeight() > 18) {
+        fontsize--;
+        SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    }
 
     m_pWorkerThread = NULL;
     StartWorkerThread();
@@ -160,72 +160,72 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     int timeLapse   = PhdConfig.GetInt("/frame/TimeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
 
-    // 
+    //
 /*#if defined (WINICONS)
-	SetIcon(wxIcon(_T("progicon")));
-#else 
-	#include "icons/phd.xpm"
-	SetIcon(wxIcon(prog_icon));
+    SetIcon(wxIcon(_T("progicon")));
+#else
+    #include "icons/phd.xpm"
+    SetIcon(wxIcon(prog_icon));
 #endif*/
-	SetIcon(wxIcon(_T("progicon")));
+    SetIcon(wxIcon(_T("progicon")));
 
-	SetBackgroundColour(*wxLIGHT_GREY);
+    SetBackgroundColour(*wxLIGHT_GREY);
 
 
-	// Setup menus
-	wxMenu *file_menu = new wxMenu;
+    // Setup menus
+    wxMenu *file_menu = new wxMenu;
     file_menu->AppendSeparator();
-	file_menu->Append(MENU_LOADDARK, _T("Load dark"), _T("Load dark frame"));
+    file_menu->Append(MENU_LOADDARK, _T("Load dark"), _T("Load dark frame"));
     file_menu->Append(MENU_SAVEDARK, _T("Save dark"), _T("Save dark frame"));
-	file_menu->Append(wxID_SAVE, _T("Save image"), _T("Save current image"));
-	file_menu->Append(wxID_EXIT, _T("E&xit\tAlt-X"), _T("Quit this program"));
-//	file_menu->Append(wxID_PREFERENCES, _T("&Preferences"), _T("Preferences"));
+    file_menu->Append(wxID_SAVE, _T("Save image"), _T("Save current image"));
+    file_menu->Append(wxID_EXIT, _T("E&xit\tAlt-X"), _T("Quit this program"));
+//  file_menu->Append(wxID_PREFERENCES, _T("&Preferences"), _T("Preferences"));
 
-	scope_menu = new wxMenu;
-	scope_menu->AppendRadioItem(SCOPE_ASCOM,_T("ASCOM"),_T("ASCOM telescope driver"));
-	scope_menu->AppendRadioItem(SCOPE_GPUSB,_T("GPUSB"),_T("ShoeString GPUSB ST-4"));
-	scope_menu->AppendRadioItem(SCOPE_GPINT3BC,_T("GPINT 3BC"),_T("ShoeString GPINT parallel port 3BC"));
-	scope_menu->AppendRadioItem(SCOPE_GPINT378,_T("GPINT 378"),_T("ShoeString GPINT parallel port 378"));
-	scope_menu->AppendRadioItem(SCOPE_GPINT278,_T("GPINT 278"),_T("ShoeString GPINT parallel port 278"));
-	scope_menu->AppendRadioItem(SCOPE_CAMERA,_T("On-camera"),_T("Camera Onboard ST-4"));
+    scope_menu = new wxMenu;
+    scope_menu->AppendRadioItem(SCOPE_ASCOM,_T("ASCOM"),_T("ASCOM telescope driver"));
+    scope_menu->AppendRadioItem(SCOPE_GPUSB,_T("GPUSB"),_T("ShoeString GPUSB ST-4"));
+    scope_menu->AppendRadioItem(SCOPE_GPINT3BC,_T("GPINT 3BC"),_T("ShoeString GPINT parallel port 3BC"));
+    scope_menu->AppendRadioItem(SCOPE_GPINT378,_T("GPINT 378"),_T("ShoeString GPINT parallel port 378"));
+    scope_menu->AppendRadioItem(SCOPE_GPINT278,_T("GPINT 278"),_T("ShoeString GPINT parallel port 278"));
+    scope_menu->AppendRadioItem(SCOPE_CAMERA,_T("On-camera"),_T("Camera Onboard ST-4"));
 #ifdef GUIDE_VOYAGER
-	scope_menu->AppendRadioItem(SCOPE_VOYAGER,_T("Voyager"),_T("Mount connected in Voyager"));
+    scope_menu->AppendRadioItem(SCOPE_VOYAGER,_T("Voyager"),_T("Mount connected in Voyager"));
 #endif
 #ifdef GUIDE_EQUINOX
-	scope_menu->AppendRadioItem(SCOPE_EQUINOX,_T("Equinox 6"),_T("Mount connected in Equinox 6"));
+    scope_menu->AppendRadioItem(SCOPE_EQUINOX,_T("Equinox 6"),_T("Mount connected in Equinox 6"));
 #endif
 #ifdef GUIDE_EQUINOX
-	scope_menu->AppendRadioItem(SCOPE_EQMAC,_T("EQMAC"),_T("Mount connected in EQMAC"));
+    scope_menu->AppendRadioItem(SCOPE_EQMAC,_T("EQMAC"),_T("Mount connected in EQMAC"));
 #endif
 #ifdef GUIDE_GCUSBST4
-	scope_menu->AppendRadioItem(SCOPE_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
+    scope_menu->AppendRadioItem(SCOPE_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
 #endif
-	scope_menu->FindItem(SCOPE_ASCOM)->Check(true); // set this as the default
+    scope_menu->FindItem(SCOPE_ASCOM)->Check(true); // set this as the default
 #if defined (__APPLE__)  // bit of a kludge here to deal with a fixed ordering elsewhere
-	scope_menu->FindItem(SCOPE_ASCOM)->Enable(false);
-	scope_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
-	scope_menu->FindItem(SCOPE_GPINT378)->Enable(false);
-	scope_menu->FindItem(SCOPE_GPINT278)->Enable(false);
-	scope_menu->FindItem(SCOPE_GPUSB)->Check(true); // set this as the default
+    scope_menu->FindItem(SCOPE_ASCOM)->Enable(false);
+    scope_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
+    scope_menu->FindItem(SCOPE_GPINT378)->Enable(false);
+    scope_menu->FindItem(SCOPE_GPINT278)->Enable(false);
+    scope_menu->FindItem(SCOPE_GPUSB)->Check(true); // set this as the default
 #endif
 #if defined (__WXGTK__)
-	scope_menu->FindItem(SCOPE_ASCOM)->Enable(false);
-	scope_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
-	scope_menu->FindItem(SCOPE_GPINT378)->Enable(false);
-	scope_menu->FindItem(SCOPE_GPINT278)->Enable(false);
-	scope_menu->FindItem(SCOPE_GPUSB)->Enable(false);
-	scope_menu->FindItem(SCOPE_CAMERA)->Check(true); // set this as the default
+    scope_menu->FindItem(SCOPE_ASCOM)->Enable(false);
+    scope_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
+    scope_menu->FindItem(SCOPE_GPINT378)->Enable(false);
+    scope_menu->FindItem(SCOPE_GPINT278)->Enable(false);
+    scope_menu->FindItem(SCOPE_GPUSB)->Enable(false);
+    scope_menu->FindItem(SCOPE_CAMERA)->Check(true); // set this as the default
 #endif
 #ifdef GUIDE_INDI
-	scope_menu->AppendRadioItem(SCOPE_INDI,_T("INDI"),_T("INDI"));
+    scope_menu->AppendRadioItem(SCOPE_INDI,_T("INDI"),_T("INDI"));
 #endif
 
-	stepguider_menu = new wxMenu;
-	stepguider_menu->AppendRadioItem(AO_NONE, _T("None"), _T("No Adaptive Optics"));
-	stepguider_menu->FindItem(AO_NONE)->Check(true); // set this as the default
+    stepguider_menu = new wxMenu;
+    stepguider_menu->AppendRadioItem(AO_NONE, _T("None"), _T("No Adaptive Optics"));
+    stepguider_menu->FindItem(AO_NONE)->Check(true); // set this as the default
 #ifdef STEPGUIDER_SXAO
-	stepguider_menu->AppendRadioItem(AO_SXAO, _T("sxAO"), _T("Starlight Xpress AO"));
-	//stepguider_menu->FindItem(AO_SXAO)->Enable(false);
+    stepguider_menu->AppendRadioItem(AO_SXAO, _T("sxAO"), _T("Starlight Xpress AO"));
+    //stepguider_menu->FindItem(AO_SXAO)->Enable(false);
 #endif
     // try to get the last value from the config store
     wxString lastChoice = PhdConfig.GetString("/scope/LastMenuChoice", _T(""));
@@ -233,335 +233,335 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
     if (lastId != wxNOT_FOUND)
     {
-	    scope_menu->FindItem(lastId)->Check(true);
+        scope_menu->FindItem(lastId)->Check(true);
     }
 
-	tools_menu = new wxMenu;
-	//scope_menu->AppendSeparator();
-	tools_menu->Append(MENU_MANGUIDE, _T("&Manual Guide"), _T("Manual / test guide dialog"));
-	tools_menu->Append(MENU_CLEARDARK, _T("&Erase Dark Frame"), _T("Erase / clear out dark frame"));
-	tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
-	tools_menu->Append(MENU_AUTOSTAR, _T("Auto-select &Star\tAlt-S"), _T("Automatically select star"));
-	tools_menu->Append(EEGG_MANUALCAL, _T("Enter calibration data"), _T("Manually calibrate"));
-	tools_menu->Append(EEGG_FLIPRACAL, _T("Flip calibration data"), _T("Flip RA calibration vector"));
-//	tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));
-	tools_menu->AppendSeparator();
-	tools_menu->AppendRadioItem(MENU_XHAIR0, _T("No overlay"),_T("No additional crosshairs"));
-	tools_menu->AppendRadioItem(MENU_XHAIR1, _T("Bullseye"),_T("Centered bullseye overlay"));
-	tools_menu->AppendRadioItem(MENU_XHAIR2, _T("Fine Grid"),_T("Grid overlay"));
-	tools_menu->AppendRadioItem(MENU_XHAIR3, _T("Coarse Grid"),_T("Grid overlay"));
-	tools_menu->AppendRadioItem(MENU_XHAIR4, _T("RA/Dec"),_T("RA and Dec overlay"));
-	tools_menu->AppendSeparator();
-	tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));
-	tools_menu->AppendCheckItem(MENU_LOGIMAGES,_T("Enable Star Image logging"),_T("Enable / disable logging of star images"));
-	tools_menu->AppendCheckItem(MENU_SERVER,_T("Enable Server"),_T("Enable / disable link to Nebulosity"));
-	tools_menu->AppendCheckItem(MENU_DEBUG,_T("Enable Debug logging"),_T("Enable / disable debug log file"));
-	tools_menu->AppendCheckItem(MENU_GRAPH,_T("Enable Graph"),_T("Enable / disable graph"));
-	tools_menu->AppendCheckItem(MENU_STARPROFILE,_T("Enable Star profile"),_T("Enable / disable star profile view"));
-	tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _T("Enable manual lock position"), _T("Give manual lock position"));
+    tools_menu = new wxMenu;
+    //scope_menu->AppendSeparator();
+    tools_menu->Append(MENU_MANGUIDE, _T("&Manual Guide"), _T("Manual / test guide dialog"));
+    tools_menu->Append(MENU_CLEARDARK, _T("&Erase Dark Frame"), _T("Erase / clear out dark frame"));
+    tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
+    tools_menu->Append(MENU_AUTOSTAR, _T("Auto-select &Star\tAlt-S"), _T("Automatically select star"));
+    tools_menu->Append(EEGG_MANUALCAL, _T("Enter calibration data"), _T("Manually calibrate"));
+    tools_menu->Append(EEGG_FLIPRACAL, _T("Flip calibration data"), _T("Flip RA calibration vector"));
+//  tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));
+    tools_menu->AppendSeparator();
+    tools_menu->AppendRadioItem(MENU_XHAIR0, _T("No overlay"),_T("No additional crosshairs"));
+    tools_menu->AppendRadioItem(MENU_XHAIR1, _T("Bullseye"),_T("Centered bullseye overlay"));
+    tools_menu->AppendRadioItem(MENU_XHAIR2, _T("Fine Grid"),_T("Grid overlay"));
+    tools_menu->AppendRadioItem(MENU_XHAIR3, _T("Coarse Grid"),_T("Grid overlay"));
+    tools_menu->AppendRadioItem(MENU_XHAIR4, _T("RA/Dec"),_T("RA and Dec overlay"));
+    tools_menu->AppendSeparator();
+    tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));
+    tools_menu->AppendCheckItem(MENU_LOGIMAGES,_T("Enable Star Image logging"),_T("Enable / disable logging of star images"));
+    tools_menu->AppendCheckItem(MENU_SERVER,_T("Enable Server"),_T("Enable / disable link to Nebulosity"));
+    tools_menu->AppendCheckItem(MENU_DEBUG,_T("Enable Debug logging"),_T("Enable / disable debug log file"));
+    tools_menu->AppendCheckItem(MENU_GRAPH,_T("Enable Graph"),_T("Enable / disable graph"));
+    tools_menu->AppendCheckItem(MENU_STARPROFILE,_T("Enable Star profile"),_T("Enable / disable star profile view"));
+    tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _T("Enable manual lock position"), _T("Give manual lock position"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-	wxMenu *indi_menu = new wxMenu;
-	indi_menu->Append(MENU_INDICONFIG, _T("&Configure..."), _T("Configure INDI settings"));
-	indi_menu->Append(MENU_INDIDIALOG, _T("&Controls..."), _T("Show INDI controls for available devices"));
+    wxMenu *indi_menu = new wxMenu;
+    indi_menu->Append(MENU_INDICONFIG, _T("&Configure..."), _T("Configure INDI settings"));
+    indi_menu->Append(MENU_INDIDIALOG, _T("&Controls..."), _T("Show INDI controls for available devices"));
 #endif
 
 #if defined (V4L_CAMERA)
-	wxMenu *v4l_menu = new wxMenu();
+    wxMenu *v4l_menu = new wxMenu();
 
-	v4l_menu->Append(MENU_V4LSAVESETTINGS, _T("&Save settings"), _T("Save current camera settings"));
-	v4l_menu->Append(MENU_V4LRESTORESETTINGS, _T("&Restore settings"), _T("Restore camera settings"));
+    v4l_menu->Append(MENU_V4LSAVESETTINGS, _T("&Save settings"), _T("Save current camera settings"));
+    v4l_menu->Append(MENU_V4LRESTORESETTINGS, _T("&Restore settings"), _T("Restore camera settings"));
 #endif
 
-	wxMenu *help_menu = new wxMenu;
-	help_menu->Append(wxID_ABOUT, _T("&About...\tF1"), _T("About PHD Guiding"));
-	help_menu->Append(wxID_HELP_CONTENTS,_T("Contents"),_T("Full help"));
-	help_menu->Append(wxID_HELP_PROCEDURES,_T("&Impatient Instructions"),_T("Quick instructions for the impatient"));
-//	help_menu->Append(EEGG_TESTGUIDEDIR, _T("."), _T(""));
+    wxMenu *help_menu = new wxMenu;
+    help_menu->Append(wxID_ABOUT, _T("&About...\tF1"), _T("About PHD Guiding"));
+    help_menu->Append(wxID_HELP_CONTENTS,_T("Contents"),_T("Full help"));
+    help_menu->Append(wxID_HELP_PROCEDURES,_T("&Impatient Instructions"),_T("Quick instructions for the impatient"));
+//  help_menu->Append(EEGG_TESTGUIDEDIR, _T("."), _T(""));
 
-	Menubar = new wxMenuBar();
-	Menubar->Append(file_menu, _T("&File"));
-	Menubar->Append(scope_menu, _T("&Mount"));
-	Menubar->Append(stepguider_menu, _T("&AO"));
+    Menubar = new wxMenuBar();
+    Menubar->Append(file_menu, _T("&File"));
+    Menubar->Append(scope_menu, _T("&Mount"));
+    Menubar->Append(stepguider_menu, _T("&AO"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-	Menubar->Append(indi_menu, _T("&INDI"));
+    Menubar->Append(indi_menu, _T("&INDI"));
 #endif
 
 #if defined (V4L_CAMERA)
-	Menubar->Append(v4l_menu, _T("&V4L"));
+    Menubar->Append(v4l_menu, _T("&V4L"));
 
-	Menubar->Enable(MENU_V4LSAVESETTINGS, false);
-	Menubar->Enable(MENU_V4LRESTORESETTINGS, false);
+    Menubar->Enable(MENU_V4LSAVESETTINGS, false);
+    Menubar->Enable(MENU_V4LRESTORESETTINGS, false);
 #endif
 
-	Menubar->Append(tools_menu, _T("&Tools"));
-	Menubar->Append(help_menu, _T("&Help"));
+    Menubar->Append(tools_menu, _T("&Tools"));
+    Menubar->Append(help_menu, _T("&Help"));
 #ifndef __WXGTK__
-	wxMenu *donate_menu = new wxMenu;
-	donate_menu->Append(DONATE1, _T("Donate $10"), _T("Donate $10 for PHD Guiding"));
-	donate_menu->Append(DONATE2, _T("Donate $25"), _T("Donate $25 for PHD Guiding"));
-	donate_menu->Append(DONATE3, _T("Donate $50"), _T("Donate $50 for PHD Guiding"));
-	donate_menu->Append(DONATE4, _T("Donate other"), _T("Donate a value of your own choosing for PHD Guiding"));
-	Menubar->Append(donate_menu, _T("   &Donate!   "));
+    wxMenu *donate_menu = new wxMenu;
+    donate_menu->Append(DONATE1, _T("Donate $10"), _T("Donate $10 for PHD Guiding"));
+    donate_menu->Append(DONATE2, _T("Donate $25"), _T("Donate $25 for PHD Guiding"));
+    donate_menu->Append(DONATE3, _T("Donate $50"), _T("Donate $50 for PHD Guiding"));
+    donate_menu->Append(DONATE4, _T("Donate other"), _T("Donate a value of your own choosing for PHD Guiding"));
+    Menubar->Append(donate_menu, _T("   &Donate!   "));
 #endif
-	SetMenuBar(Menubar);
+    SetMenuBar(Menubar);
 
-	// Setup Status bar
-	CreateStatusBar(6);
-	int status_widths[] = {-3,-5, 60, 67, 25,30};
-	SetStatusWidths(6,status_widths);
-	SetStatusText(_T("No cam"),2);
-	SetStatusText(_T("No scope"),3);
-	SetStatusText(_T(""),4);
-	SetStatusText(_T("No cal"),5);
-	//wxStatusBar *sbar = GetStatusBar();
-	//sbar->SetBackgroundColour(wxColour(_T("RED")));
+    // Setup Status bar
+    CreateStatusBar(6);
+    int status_widths[] = {-3,-5, 60, 67, 25,30};
+    SetStatusWidths(6,status_widths);
+    SetStatusText(_T("No cam"),2);
+    SetStatusText(_T("No scope"),3);
+    SetStatusText(_T(""),4);
+    SetStatusText(_T("No cal"),5);
+    //wxStatusBar *sbar = GetStatusBar();
+    //sbar->SetBackgroundColour(wxColour(_T("RED")));
 
-	//sbar->SetMinHeight(50);
-	// Setup Canvas for starfield image
-	pGuider = new GuiderOneStar(this);
+    //sbar->SetMinHeight(50);
+    // Setup Canvas for starfield image
+    pGuider = new GuiderOneStar(this);
 
-	// Setup button panel
-	wxBitmap camera_bmp, scope_bmp, ao_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
+    // Setup button panel
+    wxBitmap camera_bmp, scope_bmp, ao_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
 #if defined (WINICONS)
-	camera_bmp.CopyFromIcon(wxIcon(_T("camera_icon")));
-	scope_bmp.CopyFromIcon(wxIcon(_T("scope_icon")));
-	loop_bmp.CopyFromIcon(wxIcon(_T("loop_icon")));
-	cal_bmp.CopyFromIcon(wxIcon(_T("cal_icon")));
-	guide_bmp.CopyFromIcon(wxIcon(_T("phd_icon")));
-	stop_bmp.CopyFromIcon(wxIcon(_T("stop_icon")));
+    camera_bmp.CopyFromIcon(wxIcon(_T("camera_icon")));
+    scope_bmp.CopyFromIcon(wxIcon(_T("scope_icon")));
+    loop_bmp.CopyFromIcon(wxIcon(_T("loop_icon")));
+    cal_bmp.CopyFromIcon(wxIcon(_T("cal_icon")));
+    guide_bmp.CopyFromIcon(wxIcon(_T("phd_icon")));
+    stop_bmp.CopyFromIcon(wxIcon(_T("stop_icon")));
 #else
-	#include "icons/sm_PHD.xpm"  // defines phd_icon[]
-	#include "icons/stop1.xpm" // defines stop_icon[]
-	#include "icons/scope1.xpm" // defines scope_icon[]
-	#include "icons/ao.xpm" // defines ao_icon[]
-	#include "icons/measure.xpm" // defines_cal_icon[]
-	#include "icons/loop3.xpm" // defines loop_icon
-	#include "icons/cam2.xpm"  // cam_icon
-	#include "icons/brain1.xpm" // brain_icon[]
-//	#include "icons/brain1_disable.xpm"
-	scope_bmp = wxBitmap(scope_icon);
-	ao_bmp = wxBitmap(ao_icon);
-	loop_bmp = wxBitmap(loop_icon);
-	cal_bmp = wxBitmap(cal_icon);
-	guide_bmp = wxBitmap(phd_icon);
-	stop_bmp = wxBitmap(stop_icon);
-	camera_bmp = wxBitmap(cam_icon);
-//	SetBackgroundStyle(wxBG_STYLE_SYSTEM);
-//	SetBackgroundColour(wxColour(10,0,0));
+    #include "icons/sm_PHD.xpm"  // defines phd_icon[]
+    #include "icons/stop1.xpm" // defines stop_icon[]
+    #include "icons/scope1.xpm" // defines scope_icon[]
+    #include "icons/ao.xpm" // defines ao_icon[]
+    #include "icons/measure.xpm" // defines_cal_icon[]
+    #include "icons/loop3.xpm" // defines loop_icon
+    #include "icons/cam2.xpm"  // cam_icon
+    #include "icons/brain1.xpm" // brain_icon[]
+//  #include "icons/brain1_disable.xpm"
+    scope_bmp = wxBitmap(scope_icon);
+    ao_bmp = wxBitmap(ao_icon);
+    loop_bmp = wxBitmap(loop_icon);
+    cal_bmp = wxBitmap(cal_icon);
+    guide_bmp = wxBitmap(phd_icon);
+    stop_bmp = wxBitmap(stop_icon);
+    camera_bmp = wxBitmap(cam_icon);
+//  SetBackgroundStyle(wxBG_STYLE_SYSTEM);
+//  SetBackgroundColour(wxColour(10,0,0));
 #endif
 
-	Cam_Button = new wxBitmapButton( this, BUTTON_CAMERA, camera_bmp );
-//	Cam_Button = new wxBitmapButton( this, BUTTON_CAMERA, camera_bmp,wxPoint(50,50),wxDefaultSize );
-	Cam_Button->SetToolTip(_T("Connect to camera"));
-	Scope_Button = new wxBitmapButton( this, BUTTON_SCOPE,scope_bmp);
-	Scope_Button->SetToolTip(_T("Connect to telescope"));
-	StepGuider_Button = new wxBitmapButton( this, BUTTON_STEPGUIDER, ao_bmp);
-	StepGuider_Button->SetToolTip(_T("Connect to Step Guiding unit"));
-	Loop_Button = new wxBitmapButton( this, BUTTON_LOOP, loop_bmp );
-	Loop_Button->SetToolTip(_T("Begin looping exposures for frame and focus"));
-//	wxBitmapButton *cal_button = new wxBitmapButton( this, BUTTON_CAL, cal_bmp );
-//	cal_button->SetToolTip(_T("Calibrate camera and scope"));
-	Guide_Button = new wxBitmapButton( this, BUTTON_GUIDE, guide_bmp );
-	Guide_Button->SetToolTip(_T("Begin guiding (PHD)"));
-	Stop_Button = new wxBitmapButton( this, BUTTON_STOP, stop_bmp );
-	Stop_Button->SetToolTip(_T("Abort current action"));
-	wxBoxSizer *button_sizer = new wxBoxSizer(wxHORIZONTAL);
-	button_sizer->Add(Cam_Button,wxSizerFlags(0).Border(wxALL, 3));
-	button_sizer->Add(Scope_Button,wxSizerFlags(0).Border(wxALL, 3));
-	button_sizer->Add(StepGuider_Button,wxSizerFlags(0).Border(wxALL, 3));
-	button_sizer->Add(Loop_Button,wxSizerFlags(0).Border(wxALL, 3));
-//	button_sizer->Add(cal_button,wxSizerFlags(0).Border(wxALL, 3));
-	button_sizer->Add(Guide_Button,wxSizerFlags(0).Border(wxALL, 3));
-	button_sizer->Add(Stop_Button, wxSizerFlags(0).Border(wxALL, 3));
+    Cam_Button = new wxBitmapButton( this, BUTTON_CAMERA, camera_bmp );
+//  Cam_Button = new wxBitmapButton( this, BUTTON_CAMERA, camera_bmp,wxPoint(50,50),wxDefaultSize );
+    Cam_Button->SetToolTip(_T("Connect to camera"));
+    Scope_Button = new wxBitmapButton( this, BUTTON_SCOPE,scope_bmp);
+    Scope_Button->SetToolTip(_T("Connect to telescope"));
+    StepGuider_Button = new wxBitmapButton( this, BUTTON_STEPGUIDER, ao_bmp);
+    StepGuider_Button->SetToolTip(_T("Connect to Step Guiding unit"));
+    Loop_Button = new wxBitmapButton( this, BUTTON_LOOP, loop_bmp );
+    Loop_Button->SetToolTip(_T("Begin looping exposures for frame and focus"));
+//  wxBitmapButton *cal_button = new wxBitmapButton( this, BUTTON_CAL, cal_bmp );
+//  cal_button->SetToolTip(_T("Calibrate camera and scope"));
+    Guide_Button = new wxBitmapButton( this, BUTTON_GUIDE, guide_bmp );
+    Guide_Button->SetToolTip(_T("Begin guiding (PHD)"));
+    Stop_Button = new wxBitmapButton( this, BUTTON_STOP, stop_bmp );
+    Stop_Button->SetToolTip(_T("Abort current action"));
+    wxBoxSizer *button_sizer = new wxBoxSizer(wxHORIZONTAL);
+    button_sizer->Add(Cam_Button,wxSizerFlags(0).Border(wxALL, 3));
+    button_sizer->Add(Scope_Button,wxSizerFlags(0).Border(wxALL, 3));
+    button_sizer->Add(StepGuider_Button,wxSizerFlags(0).Border(wxALL, 3));
+    button_sizer->Add(Loop_Button,wxSizerFlags(0).Border(wxALL, 3));
+//  button_sizer->Add(cal_button,wxSizerFlags(0).Border(wxALL, 3));
+    button_sizer->Add(Guide_Button,wxSizerFlags(0).Border(wxALL, 3));
+    button_sizer->Add(Stop_Button, wxSizerFlags(0).Border(wxALL, 3));
 
-	// Setup the control area
-	wxBoxSizer *ctrl_sizer = new wxBoxSizer(wxHORIZONTAL);
-	wxString dur_choices[] = {
+    // Setup the control area
+    wxBoxSizer *ctrl_sizer = new wxBoxSizer(wxHORIZONTAL);
+    wxString dur_choices[] = {
        _T("0.05 s"), _T("0.1 s"), _T("0.2 s"), _T("0.5 s"),_T("1.0 s"),_T("1.5 s"),
-			 _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"), _T("10 s")
+             _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"), _T("10 s")
    };
-	Dur_Choice = new wxChoice(this, BUTTON_DURATION, wxPoint(-1,-1),wxSize(70,-1),WXSIZEOF(dur_choices),dur_choices);
-	Dur_Choice->SetSelection(4);
-	Dur_Choice->SetToolTip(_T("Camera exposure duration"));
-	Dur_Choice->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	ctrl_sizer->Add(Dur_Choice,wxSizerFlags(1).Border(wxALL,10));
-/*	Recal_Checkbox = new wxCheckBox(this,BUTTON_CAL,_T("Calibrate"),wxPoint(-1,-1),wxSize(-1,-1));
-	Recal_Checkbox->SetValue(true);
-	Recal_Checkbox->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	ctrl_sizer->Add(Recal_Checkbox,wxSizerFlags(0).Border(wxTOP,15));*/
+    Dur_Choice = new wxChoice(this, BUTTON_DURATION, wxPoint(-1,-1),wxSize(70,-1),WXSIZEOF(dur_choices),dur_choices);
+    Dur_Choice->SetSelection(4);
+    Dur_Choice->SetToolTip(_T("Camera exposure duration"));
+    Dur_Choice->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    ctrl_sizer->Add(Dur_Choice,wxSizerFlags(1).Border(wxALL,10));
+/*  Recal_Checkbox = new wxCheckBox(this,BUTTON_CAL,_T("Calibrate"),wxPoint(-1,-1),wxSize(-1,-1));
+    Recal_Checkbox->SetValue(true);
+    Recal_Checkbox->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    ctrl_sizer->Add(Recal_Checkbox,wxSizerFlags(0).Border(wxTOP,15));*/
 
-	wxSize szfoo;
-	Gamma_Slider = new wxSlider(this,CTRL_GAMMA,40,10,90,wxPoint(-1,-1),wxSize(100,-1));
-	ctrl_sizer->Add(Gamma_Slider,wxSizerFlags(0).FixedMinSize().Border(wxTOP,15));
-	Gamma_Slider->SetToolTip(_T("Screen gamma (brightness)"));
+    wxSize szfoo;
+    Gamma_Slider = new wxSlider(this,CTRL_GAMMA,40,10,90,wxPoint(-1,-1),wxSize(100,-1));
+    ctrl_sizer->Add(Gamma_Slider,wxSizerFlags(0).FixedMinSize().Border(wxTOP,15));
+    Gamma_Slider->SetToolTip(_T("Screen gamma (brightness)"));
 
-/*	HotPixel_Checkbox = new wxCheckBox(this,BUTTON_HOTPIXEL,_T("Fix Hot Pixels"),wxPoint(-1,-1),wxSize(-1,-1));
-	HotPixel_Checkbox->SetValue(false);
-	HotPixel_Checkbox->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	HotPixel_Checkbox->Enable(false);
-	ctrl_sizer->Add(HotPixel_Checkbox,wxSizerFlags(0).Border(wxTOP,15));
+/*  HotPixel_Checkbox = new wxCheckBox(this,BUTTON_HOTPIXEL,_T("Fix Hot Pixels"),wxPoint(-1,-1),wxSize(-1,-1));
+    HotPixel_Checkbox->SetValue(false);
+    HotPixel_Checkbox->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    HotPixel_Checkbox->Enable(false);
+    ctrl_sizer->Add(HotPixel_Checkbox,wxSizerFlags(0).Border(wxTOP,15));
 */
-	wxBitmap brain_bmp;
+    wxBitmap brain_bmp;
 #if defined (WINICONS)
-	brain_bmp.CopyFromIcon(wxIcon(_T("brain_icon")));
+    brain_bmp.CopyFromIcon(wxIcon(_T("brain_icon")));
 #else
-	brain_bmp = wxBitmap(brain_icon);
+    brain_bmp = wxBitmap(brain_icon);
 #endif
-	Brain_Button = new wxBitmapButton( this, BUTTON_DETAILS, brain_bmp );
-	Brain_Button->SetToolTip(_T("Advanced parameters"));
-	ctrl_sizer->Add(Brain_Button,wxSizerFlags(0).Border(wxALL, 3).Right());
+    Brain_Button = new wxBitmapButton( this, BUTTON_DETAILS, brain_bmp );
+    Brain_Button->SetToolTip(_T("Advanced parameters"));
+    ctrl_sizer->Add(Brain_Button,wxSizerFlags(0).Border(wxALL, 3).Right());
 
-	wxBoxSizer *extra_sizer1 = new wxBoxSizer(wxHORIZONTAL);
-	Setup_Button = new wxButton(this,wxID_PROPERTIES,_T("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
-	Setup_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-	//Setup_Button->SetBitmapDisabled(wxBitmap(brain_icon_disabled));
-	Setup_Button->Enable(false);
-	Dark_Button = new wxButton(this,BUTTON_DARK,_T("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
-	Dark_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-//	Dark_Button->SetBackgroundStyle(wxBG_STYLE_COLOUR);
-//	Dark_Button->SetBackgroundColour(wxColor(0,200,0));
-	extra_sizer1->Add(Dark_Button,wxSizerFlags(0).Border(wxALL,2).Center());
+    wxBoxSizer *extra_sizer1 = new wxBoxSizer(wxHORIZONTAL);
+    Setup_Button = new wxButton(this,wxID_PROPERTIES,_T("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
+    Setup_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    //Setup_Button->SetBitmapDisabled(wxBitmap(brain_icon_disabled));
+    Setup_Button->Enable(false);
+    Dark_Button = new wxButton(this,BUTTON_DARK,_T("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
+    Dark_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+//  Dark_Button->SetBackgroundStyle(wxBG_STYLE_COLOUR);
+//  Dark_Button->SetBackgroundColour(wxColor(0,200,0));
+    extra_sizer1->Add(Dark_Button,wxSizerFlags(0).Border(wxALL,2).Center());
 #ifndef ORION
-	extra_sizer1->Add(Setup_Button,wxSizerFlags(0).Border(wxALL,2).Center());
+    extra_sizer1->Add(Setup_Button,wxSizerFlags(0).Border(wxALL,2).Center());
 #endif
 
-	ctrl_sizer->Add(extra_sizer1,wxSizerFlags(0).Border(wxTOP,10).Right());
+    ctrl_sizer->Add(extra_sizer1,wxSizerFlags(0).Border(wxTOP,10).Right());
 
-	// Some buttons off by default
-	Loop_Button->Enable(false);
-	Guide_Button->Enable(false);
+    // Some buttons off by default
+    Loop_Button->Enable(false);
+    Guide_Button->Enable(false);
 
-	// Do the main sizer
-	wxBoxSizer *lowersizer = new wxBoxSizer(wxHORIZONTAL);
-	lowersizer->Add(button_sizer,wxSizerFlags(0));
-	lowersizer->Add(ctrl_sizer,wxSizerFlags(0).Right());
-//	lowersizer->Fit(this);
-//	szfoo = Gamma_Slider->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
-	wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
-	wxSize DisplaySize = wxGetDisplaySize();
-	int foo = DisplaySize.GetHeight();
-	if (DisplaySize.GetHeight() <= 600) {
-		XWinSize = 600;
-		YWinSize = DisplaySize.GetHeight() - 150;
-//		YWinSize = 600 - 150;
-	//	wxMessageBox(wxString::Format("Shrinking PHD window to %d x %d",XWinSize,YWinSize));
-	}
-	pGuider->SetMinSize(wxSize(XWinSize,YWinSize));
-	pGuider->SetSize(wxSize(XWinSize,YWinSize));
+    // Do the main sizer
+    wxBoxSizer *lowersizer = new wxBoxSizer(wxHORIZONTAL);
+    lowersizer->Add(button_sizer,wxSizerFlags(0));
+    lowersizer->Add(ctrl_sizer,wxSizerFlags(0).Right());
+//  lowersizer->Fit(this);
+//  szfoo = Gamma_Slider->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
+    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
+    wxSize DisplaySize = wxGetDisplaySize();
+    int foo = DisplaySize.GetHeight();
+    if (DisplaySize.GetHeight() <= 600) {
+        XWinSize = 600;
+        YWinSize = DisplaySize.GetHeight() - 150;
+//      YWinSize = 600 - 150;
+    //  wxMessageBox(wxString::Format("Shrinking PHD window to %d x %d",XWinSize,YWinSize));
+    }
+    pGuider->SetMinSize(wxSize(XWinSize,YWinSize));
+    pGuider->SetSize(wxSize(XWinSize,YWinSize));
 
-	topsizer->Add(pGuider,wxSizerFlags(0));
-	topsizer->Add(lowersizer,wxSizerFlags(0));
-	//szfoo = this->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
-	
-	//this->SetMinSize(640,590);
+    topsizer->Add(pGuider,wxSizerFlags(0));
+    topsizer->Add(lowersizer,wxSizerFlags(0));
+    //szfoo = this->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
+    
+    //this->SetMinSize(640,590);
 //#ifdef __APPLE__
-//	this->SetSize(640,590);
-//	SetSizer( topsizer );      // use the sizer for layout
+//  this->SetSize(640,590);
+//  SetSizer( topsizer );      // use the sizer for layout
 //#else
-	SetSizer( topsizer );      // use the sizer for layout
-	topsizer->SetSizeHints( this );
+    SetSizer( topsizer );      // use the sizer for layout
+    topsizer->SetSizeHints( this );
 //#endif
-	//szfoo = this->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
-	
-	// Setup  Help file
-	wxFileSystem::AddHandler(new wxZipFSHandler);
-	bool retval;
-	wxString filename = wxStandardPaths::Get().GetResourcesDir()
-		+ wxFILE_SEP_PATH
-		+ _T("PHDGuideHelp.zip");
-	help = new wxHtmlHelpController;
-	retval = help->AddBook(filename);
-	if (!retval) {
-		wxMessageBox(_T("Could not find help file: ")+filename,_T("Warning"), wxOK);
-	}
-	wxImage::AddHandler(new wxPNGHandler);
-//	wxImage::AddHandler( new wxJPEGHandler );  //wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib
+    //szfoo = this->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
+    
+    // Setup  Help file
+    wxFileSystem::AddHandler(new wxZipFSHandler);
+    bool retval;
+    wxString filename = wxStandardPaths::Get().GetResourcesDir()
+        + wxFILE_SEP_PATH
+        + _T("PHDGuideHelp.zip");
+    help = new wxHtmlHelpController;
+    retval = help->AddBook(filename);
+    if (!retval) {
+        wxMessageBox(_T("Could not find help file: ")+filename,_T("Warning"), wxOK);
+    }
+    wxImage::AddHandler(new wxPNGHandler);
+//  wxImage::AddHandler( new wxJPEGHandler );  //wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib
 
 // Setup some keyboard shortcuts
-	wxAcceleratorEntry entries[7];
-	entries[0].Set(wxACCEL_CTRL,  (int) 'T', EEGG_TESTGUIDEDIR);
-	entries[1].Set(wxACCEL_CTRL,  (int) 'R', EEGG_RANDOMMOTION);
-	entries[2].Set(wxACCEL_CTRL,  (int) 'M', EEGG_MANUALCAL);
-	entries[3].Set(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP);
-	entries[4].Set(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP);
-	entries[5].Set(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE);
-	entries[6].Set(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL);
-	wxAcceleratorTable accel(7, entries);
-	SetAcceleratorTable(accel);
+    wxAcceleratorEntry entries[7];
+    entries[0].Set(wxACCEL_CTRL,  (int) 'T', EEGG_TESTGUIDEDIR);
+    entries[1].Set(wxACCEL_CTRL,  (int) 'R', EEGG_RANDOMMOTION);
+    entries[2].Set(wxACCEL_CTRL,  (int) 'M', EEGG_MANUALCAL);
+    entries[3].Set(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP);
+    entries[4].Set(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP);
+    entries[5].Set(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE);
+    entries[6].Set(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL);
+    wxAcceleratorTable accel(7, entries);
+    SetAcceleratorTable(accel);
 
-	InitCameraParams();
+    InitCameraParams();
 
-	GraphLog = new GraphLogWindow(this);
-	Profile = new ProfileWindow(this);
+    GraphLog = new GraphLogWindow(this);
+    Profile = new ProfileWindow(this);
 
     Stretch_gamma = 0.4;
 
-	Gamma_Slider->SetValue((int) (Stretch_gamma * 100.0));
-	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-	wxDateTime now = wxDateTime::Now();
-	wxString LogFName;
-	LogFName = wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log") + now.Format(_T("_%d%b%y")) + _T(".txt"));
-	LogFile = new wxTextFile(LogFName);
-	if (Log_Data) {
+    Gamma_Slider->SetValue((int) (Stretch_gamma * 100.0));
+    wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+    wxDateTime now = wxDateTime::Now();
+    wxString LogFName;
+    LogFName = wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log") + now.Format(_T("_%d%b%y")) + _T(".txt"));
+    LogFile = new wxTextFile(LogFName);
+    if (Log_Data) {
 #ifdef ORION
-		this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s (Log active)"),VERSION,PHDSUBVER));
+        this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s (Log active)"),VERSION,PHDSUBVER));
 #else
-		this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com (Log active)"),VERSION,PHDSUBVER));
+        this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com (Log active)"),VERSION,PHDSUBVER));
 #endif
-		tools_menu->Check(MENU_LOG,true);
-	}
-	else {
+        tools_menu->Check(MENU_LOG,true);
+    }
+    else {
 #ifdef ORION
-		this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s"),VERSION,PHDSUBVER));
+        this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s"),VERSION,PHDSUBVER));
 #else
-		this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"),VERSION,PHDSUBVER));
+        this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"),VERSION,PHDSUBVER));
 #endif
-		tools_menu->Check(MENU_LOG,false);
-	}
-	//scope_menu->Check(SCOPE_GPUSB,true);
+        tools_menu->Check(MENU_LOG,false);
+    }
+    //scope_menu->Check(SCOPE_GPUSB,true);
 
-	if (m_serverMode) {
-		tools_menu->Check(MENU_SERVER,true);
-		if (StartServer(true)) {
-			wxLogStatus(_T("Server start failed"));
-		}
-		else
-			wxLogStatus(_T("Server started"));
-	}
+    if (m_serverMode) {
+        tools_menu->Check(MENU_SERVER,true);
+        if (StartServer(true)) {
+            wxLogStatus(_T("Server start failed"));
+        }
+        else
+            wxLogStatus(_T("Server started"));
+    }
 
     tools_menu->Check(MENU_DEBUG, Debug.GetState());
 
 
-	#include "xhair.xpm"
-	wxImage Cursor = wxImage(mac_xhair);
-	Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X,8);
-	Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y,8);
-	pGuider->SetCursor(wxCursor(Cursor));	
+    #include "xhair.xpm"
+    wxImage Cursor = wxImage(mac_xhair);
+    Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X,8);
+    Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y,8);
+    pGuider->SetCursor(wxCursor(Cursor));   
 
 #ifndef __WXGTK__
-	SetStatusText(_T("Like PHD? Consider donating"),1);
+    SetStatusText(_T("Like PHD? Consider donating"),1);
 #endif
 
     CaptureActive = false;
 
-//	wxStartTimer();
+//  wxStartTimer();
 }
 
 
 // frame destructor
 MyFrame::~MyFrame() {
-	if (pMount->IsConnected()) 
+    if (pMount->IsConnected())
     {
-		pMount->Disconnect();
+        pMount->Disconnect();
     }
 
     delete pMount;
 
-	if (pCamera && pCamera->Connected)
+    if (pCamera && pCamera->Connected)
     {
-		pCamera->Disconnect();
+        pCamera->Disconnect();
     }
 }
 
@@ -586,7 +586,7 @@ void MyFrame::UpdateButtonsStatus(void)
  * The base class wxFrame::SetStatusText() is not
  * safe to call from worker threads.
  *
- * So, for non-main threads this routine queues the request 
+ * So, for non-main threads this routine queues the request
  * to the frames event queue, and it gets displayed by the main
  * thread as part of event processing.
  *
@@ -698,7 +698,7 @@ void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 
     if (!bError)
     {
-		switch (m_noiseReductionMethod)
+        switch (m_noiseReductionMethod)
         {
             case NR_NONE:
                 break;
@@ -760,7 +760,7 @@ void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     assert(m_pWorkerThread);
-    
+
     m_pWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
 }
 
@@ -769,7 +769,7 @@ void MyFrame::ScheduleMove(Mount *pMount, const Point& currentLocation, const Po
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     assert(m_pWorkerThread);
-    
+
     m_pWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, currentLocation, desiredLocation);
 }
 
@@ -778,7 +778,7 @@ void MyFrame::ScheduleMove(Mount *pMount, const GUIDE_DIRECTION direction)
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     assert(m_pWorkerThread);
-    
+
     m_pWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);
 }
 
@@ -805,31 +805,31 @@ void MyFrame::StopCapturing(void)
 }
 
 void MyFrame::OnClose(wxCloseEvent &event) {
-	if (CaptureActive) {
-		if (event.CanVeto()) event.Veto();
-		return;
-	}
+    if (CaptureActive) {
+        if (event.CanVeto()) event.Veto();
+        return;
+    }
 
     StopWorkerThread();
 
-	if (pMount->IsConnected()) { // Disconnect
-		pMount->Disconnect();
+    if (pMount->IsConnected()) { // Disconnect
+        pMount->Disconnect();
     }
 
-	if (pCamera && pCamera->Connected)
-		pCamera->Disconnect();
+    if (pCamera && pCamera->Connected)
+        pCamera->Disconnect();
 
-	if (SocketServer)
-		delete SocketServer;
+    if (SocketServer)
+        delete SocketServer;
 
-	if (LogFile)
-		delete LogFile;
+    if (LogFile)
+        delete LogFile;
 
-	//delete pCamera;
-	help->Quit();
-	delete help;
-	Destroy();
-//	Close(true);
+    //delete pCamera;
+    help->Quit();
+    delete help;
+    Destroy();
+//  Close(true);
 }
 
 NOISE_REDUCTION_METHOD MyFrame::GetNoiseReductionMethod(void)
@@ -975,31 +975,31 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
 
     m_pDitherRaOnly = new wxCheckBox(pParent, wxID_ANY,_T("Dither RA only"), wxPoint(-1,-1), wxSize(75,-1));
     DoAdd(m_pDitherRaOnly, _T("Constrain dither to RA only?"));
-    
+
 
     width = StringWidth(_T("000.00"));
     m_pDitherScaleFactor = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("DitherScaleFactor"));
     m_pDitherScaleFactor->SetDigits(1);
     DoAdd(_T("Dither scale"), m_pDitherScaleFactor,
-	      _T("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
+          _T("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
 
-	wxString nralgo_choices[] = 
+    wxString nralgo_choices[] =
     {
-		_T("None"),_T("2x2 mean"),_T("3x3 median")
-	};
+        _T("None"),_T("2x2 mean"),_T("3x3 median")
+    };
 
     width = StringArrayWidth(nralgo_choices, WXSIZEOF(nralgo_choices));
-	m_pNoiseReduction = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
+    m_pNoiseReduction = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
             wxSize(width+35, -1), WXSIZEOF(nralgo_choices), nralgo_choices );
-    DoAdd(_T("Noise Reduction"), m_pNoiseReduction, 
-	      _T("Technique to reduce noise in images"));
+    DoAdd(_T("Noise Reduction"), m_pNoiseReduction,
+          _T("Technique to reduce noise in images"));
 
     width = StringWidth(_T("00000"));
-	m_pTimeLapse = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    m_pTimeLapse = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 0,_T("TimeLapse"));
-	DoAdd(_T("Time Lapse (ms)"), m_pTimeLapse,
-	      _T("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
+    DoAdd(_T("Time Lapse (ms)"), m_pTimeLapse,
+          _T("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
 }
 

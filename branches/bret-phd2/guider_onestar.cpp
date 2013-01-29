@@ -11,27 +11,27 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -54,14 +54,14 @@ static const int DefaultSearchRegion = 15;
 
 BEGIN_EVENT_TABLE(GuiderOneStar, Guider)
     EVT_PAINT(GuiderOneStar::OnPaint)
- 	EVT_LEFT_DOWN(GuiderOneStar::OnLClick)
+    EVT_LEFT_DOWN(GuiderOneStar::OnLClick)
 END_EVENT_TABLE()
 
 // Define a constructor for the guide canvas
 GuiderOneStar::GuiderOneStar(wxWindow *parent):
     Guider(parent, XWinSize, YWinSize)
 {
-    double massChangeThreshold  = PhdConfig.GetDouble("/guider/onestar/MassChangeThreshold", 
+    double massChangeThreshold  = PhdConfig.GetDouble("/guider/onestar/MassChangeThreshold",
             DefaultMassChangeThreshold);
     SetMassChangeThreshold(massChangeThreshold);
 
@@ -71,7 +71,7 @@ GuiderOneStar::GuiderOneStar(wxWindow *parent):
     SetState(STATE_UNINITIALIZED);
 }
 
-GuiderOneStar::~GuiderOneStar() 
+GuiderOneStar::~GuiderOneStar()
 {
 }
 
@@ -90,7 +90,7 @@ bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
         {
             throw ERROR_INFO("massChangeThreshold < 0");
         }
-        
+
         m_massChangeThreshold = massChangeThreshold;
     }
     catch (wxString Msg)
@@ -253,7 +253,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
         }
 
         Star newStar(m_star);
-        
+
         if (!newStar.Find(pImage, m_searchRegion))
         {
             Debug.Write("UpdateGuideState():newStar not found\n");
@@ -261,12 +261,12 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
         }
 
         if (m_massChangeThreshold < 0.99 &&
-            m_star.Mass > 0.0 &&  
-            newStar.Mass > 0.0 && 
+            m_star.Mass > 0.0 &&
+            newStar.Mass > 0.0 &&
             m_badMassCount++ < 2)
         {
             // check to see if it seems like the star we just found was the
-            // same as the orignial star.  We do this by comparing the 
+            // same as the orignial star.  We do this by comparing the
             // mass
             double massRatio;
 
@@ -308,24 +308,24 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
     return bError;
 }
 
-void GuiderOneStar::OnLClick(wxMouseEvent &mevent) 
+void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 {
     try
     {
-        if (GetState() > STATE_SELECTED) 
+        if (GetState() > STATE_SELECTED)
         {
             mevent.Skip();
             throw THROW_INFO("Skipping event because state > STATE_SELECTED");
         }
 
-        if (mevent.m_shiftDown) 
-        {  
+        if (mevent.m_shiftDown)
+        {
             // clear them out
             SetState(STATE_UNINITIALIZED);
         }
         else
         {
-            if ((mevent.m_x <= m_searchRegion) || (mevent.m_x >= (XWinSize+m_searchRegion)) || (mevent.m_y <= m_searchRegion) || (mevent.m_y >= (XWinSize+m_searchRegion))) 
+            if ((mevent.m_x <= m_searchRegion) || (mevent.m_x >= (XWinSize+m_searchRegion)) || (mevent.m_y <= m_searchRegion) || (mevent.m_y >= (XWinSize+m_searchRegion)))
             {
                 mevent.Skip();
                 throw THROW_INFO("Skipping event because click outside of search region");
@@ -367,159 +367,159 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 }
 
 // Define the repainting behaviour
-void GuiderOneStar::OnPaint(wxPaintEvent& event) 
+void GuiderOneStar::OnPaint(wxPaintEvent& event)
 {
-	wxAutoBufferedPaintDC dc(this);
-	wxMemoryDC memDC;
+    wxAutoBufferedPaintDC dc(this);
+    wxMemoryDC memDC;
 
-	if (!PaintHelper(dc, memDC))
+    if (!PaintHelper(dc, memDC))
     {
         // PaintHelper drew the image and any overlays
         // now decorate the image to show the selection
-        
+
         GUIDER_STATE state = GetState();
         bool FoundStar = m_star.WasFound();
         double StarX = m_star.X;
         double StarY = m_star.Y;
 
-		if (state == STATE_SELECTED || IsPaused()) {
+        if (state == STATE_SELECTED || IsPaused()) {
 
-			if (FoundStar)
-				dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
-			else
-				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
-			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
-		}
-		else if (state == STATE_CALIBRATING) {  // in the cal process
-			dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
-			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
+            if (FoundStar)
+                dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
+            else
+                dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
+            dc.SetBrush(* wxTRANSPARENT_BRUSH);
+            dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
+        }
+        else if (state == STATE_CALIBRATING) {  // in the cal process
+            dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
+            dc.SetBrush(* wxTRANSPARENT_BRUSH);
+            dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 
-		}
-		else if (state == STATE_CALIBRATED || state == STATE_GUIDING) { // locked and guiding
-			if (FoundStar)
-				dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
-			else
-				dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
-			dc.SetBrush(* wxTRANSPARENT_BRUSH);
-			dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
+        }
+        else if (state == STATE_CALIBRATED || state == STATE_GUIDING) { // locked and guiding
+            if (FoundStar)
+                dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
+            else
+                dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
+            dc.SetBrush(* wxTRANSPARENT_BRUSH);
+            dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
 
-		}
+        }
 
-		if ((Log_Images==1) && (state >= STATE_SELECTED)) {  // Save star image as a JPEG
+        if ((Log_Images==1) && (state >= STATE_SELECTED)) {  // Save star image as a JPEG
             double LockX = LockPosition().X;
             double LockY = LockPosition().Y;
-        
-			wxBitmap SubBmp(60,60,-1);
-			wxMemoryDC tmpMdc;
-			tmpMdc.SelectObject(SubBmp);
-			memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
-			memDC.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
-			memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
+
+            wxBitmap SubBmp(60,60,-1);
+            wxMemoryDC tmpMdc;
+            tmpMdc.SelectObject(SubBmp);
+            memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
+            memDC.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
+            memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
 #ifdef __APPLEX__
-			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
+            tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
 #else
-			tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
+            tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
 #endif
 
-			//			tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
-			wxString fname = LogFile->GetName();
-			wxDateTime CapTime;
-			CapTime=wxDateTime::Now();
-			//full_fname = base_name + CapTime.Format("_%j_%H%M%S.fit");
-			fname = fname.BeforeLast('.') + CapTime.Format(_T("_%j_%H%M%S")) + _T(".jpg");
-			SubBmp.SaveFile(fname,wxBITMAP_TYPE_JPEG);
-			tmpMdc.SelectObject(wxNullBitmap);
-		}
-		else if ((Log_Images==2) && (state >= STATE_SELECTED)) { // Save star image as a FITS
-			SaveStarFITS();
-		}
-		memDC.SelectObject(wxNullBitmap);
-	}
+            //          tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
+            wxString fname = LogFile->GetName();
+            wxDateTime CapTime;
+            CapTime=wxDateTime::Now();
+            //full_fname = base_name + CapTime.Format("_%j_%H%M%S.fit");
+            fname = fname.BeforeLast('.') + CapTime.Format(_T("_%j_%H%M%S")) + _T(".jpg");
+            SubBmp.SaveFile(fname,wxBITMAP_TYPE_JPEG);
+            tmpMdc.SelectObject(wxNullBitmap);
+        }
+        else if ((Log_Images==2) && (state >= STATE_SELECTED)) { // Save star image as a FITS
+            SaveStarFITS();
+        }
+        memDC.SelectObject(wxNullBitmap);
+    }
 }
 
 void GuiderOneStar::SaveStarFITS() {
     double StarX = m_star.X;
     double StarY = m_star.Y;
     usImage *pImage = CurrentImage();
-	usImage tmpimg;
+    usImage tmpimg;
 
-	tmpimg.Init(60,60);
-	int start_x = ROUND(StarX)-30;
-	int start_y = ROUND(StarY)-30;
-	if ((start_x + 60) > pImage->Size.GetWidth())
-		start_x = pImage->Size.GetWidth() - 60;
-	if ((start_y + 60) > pImage->Size.GetHeight())
-		start_y = pImage->Size.GetHeight() - 60;
-	int x,y, width;
-	width = pImage->Size.GetWidth();
-	unsigned short *usptr = tmpimg.ImageData;
-	for (y=0; y<60; y++)
-		for (x=0; x<60; x++, usptr++)
-			*usptr = *(pImage->ImageData + (y+start_y)*width + (x+start_x));
-	wxString fname = LogFile->GetName();
-	wxDateTime CapTime;
-	CapTime=wxDateTime::Now();
-	fname = fname.BeforeLast('.') + CapTime.Format(_T("_%j_%H%M%S")) + _T(".fit");
+    tmpimg.Init(60,60);
+    int start_x = ROUND(StarX)-30;
+    int start_y = ROUND(StarY)-30;
+    if ((start_x + 60) > pImage->Size.GetWidth())
+        start_x = pImage->Size.GetWidth() - 60;
+    if ((start_y + 60) > pImage->Size.GetHeight())
+        start_y = pImage->Size.GetHeight() - 60;
+    int x,y, width;
+    width = pImage->Size.GetWidth();
+    unsigned short *usptr = tmpimg.ImageData;
+    for (y=0; y<60; y++)
+        for (x=0; x<60; x++, usptr++)
+            *usptr = *(pImage->ImageData + (y+start_y)*width + (x+start_x));
+    wxString fname = LogFile->GetName();
+    wxDateTime CapTime;
+    CapTime=wxDateTime::Now();
+    fname = fname.BeforeLast('.') + CapTime.Format(_T("_%j_%H%M%S")) + _T(".fit");
 
-	fitsfile *fptr;  // FITS file pointer
-	int status = 0;  // CFITSIO status value MUST be initialized to zero!
-	long fpixel[3] = {1,1,1};
-	long fsize[3];
-	char keyname[9]; // was 9
-	char keycomment[100];
-	char keystring[100];
-	int output_format=USHORT_IMG;
+    fitsfile *fptr;  // FITS file pointer
+    int status = 0;  // CFITSIO status value MUST be initialized to zero!
+    long fpixel[3] = {1,1,1};
+    long fsize[3];
+    char keyname[9]; // was 9
+    char keycomment[100];
+    char keystring[100];
+    int output_format=USHORT_IMG;
 
-	fsize[0] = 60;
-	fsize[1] = 60;
-	fsize[2] = 0;
-	fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
-	if (!status) {
-		fits_create_img(fptr,output_format, 2, fsize, &status);
+    fsize[0] = 60;
+    fsize[1] = 60;
+    fsize[2] = 0;
+    fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
+    if (!status) {
+        fits_create_img(fptr,output_format, 2, fsize, &status);
 
-		time_t now;
-		struct tm *timestruct;
-		time(&now);
-		timestruct=gmtime(&now);
-		sprintf(keyname,"DATE");
-		sprintf(keycomment,"UTC date that FITS file was created");
-		sprintf(keystring,"%.4d-%.2d-%.2d %.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
-		if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
+        time_t now;
+        struct tm *timestruct;
+        time(&now);
+        timestruct=gmtime(&now);
+        sprintf(keyname,"DATE");
+        sprintf(keycomment,"UTC date that FITS file was created");
+        sprintf(keystring,"%.4d-%.2d-%.2d %.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
+        if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
 
-		sprintf(keyname,"DATE-OBS");
-		sprintf(keycomment,"YYYY-MM-DDThh:mm:ss observation start, UT");
-		sprintf(keystring,"%s",(const char*) pImage->ImgStartDate.c_str());
-		if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
+        sprintf(keyname,"DATE-OBS");
+        sprintf(keycomment,"YYYY-MM-DDThh:mm:ss observation start, UT");
+        sprintf(keystring,"%s",(const char*) pImage->ImgStartDate.c_str());
+        if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
 
-		sprintf(keyname,"EXPOSURE");
-		sprintf(keycomment,"Exposure time [s]");
-		float dur = (float) pImage->ImgExpDur / 1000.0;
-		if (!status) fits_write_key(fptr, TFLOAT, keyname, &dur, keycomment, &status);
+        sprintf(keyname,"EXPOSURE");
+        sprintf(keycomment,"Exposure time [s]");
+        float dur = (float) pImage->ImgExpDur / 1000.0;
+        if (!status) fits_write_key(fptr, TFLOAT, keyname, &dur, keycomment, &status);
 
-		unsigned int tmp = 1;
-		sprintf(keyname,"XBINNING");
-		sprintf(keycomment,"Camera binning mode");
-		fits_write_key(fptr, TUINT, keyname, &tmp, keycomment, &status);
-		sprintf(keyname,"YBINNING");
-		sprintf(keycomment,"Camera binning mode");
-		fits_write_key(fptr, TUINT, keyname, &tmp, keycomment, &status);
-		
-		sprintf(keyname,"XORGSUB");
-		sprintf(keycomment,"Subframe x position in binned pixels");
-		tmp = start_x;
-		fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
-		sprintf(keyname,"YORGSUB");
-		sprintf(keycomment,"Subframe y position in binned pixels");
-		tmp = start_y;
-		fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
-		
-		
-		if (!status) fits_write_pix(fptr,TUSHORT,fpixel,tmpimg.NPixels,tmpimg.ImageData,&status);
+        unsigned int tmp = 1;
+        sprintf(keyname,"XBINNING");
+        sprintf(keycomment,"Camera binning mode");
+        fits_write_key(fptr, TUINT, keyname, &tmp, keycomment, &status);
+        sprintf(keyname,"YBINNING");
+        sprintf(keycomment,"Camera binning mode");
+        fits_write_key(fptr, TUINT, keyname, &tmp, keycomment, &status);
+        
+        sprintf(keyname,"XORGSUB");
+        sprintf(keycomment,"Subframe x position in binned pixels");
+        tmp = start_x;
+        fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
+        sprintf(keyname,"YORGSUB");
+        sprintf(keycomment,"Subframe y position in binned pixels");
+        tmp = start_y;
+        fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
+        
+        
+        if (!status) fits_write_pix(fptr,TUSHORT,fpixel,tmpimg.NPixels,tmpimg.ImageData,&status);
 
-	}
-	fits_close_file(fptr,&status);
+    }
+    fits_close_file(fptr,&status);
 }
 
 ConfigDialogPane *GuiderOneStar::GetConfigDialogPane(wxWindow *pParent)
@@ -535,17 +535,17 @@ GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWi
     m_pGuiderOneStar = pGuider;
 
     width = StringWidth(_T("0000"));
-	m_pSearchRegion = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"), wxPoint(-1,-1),
+    m_pSearchRegion = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 10, 50, 15, _T("Search"));
     DoAdd(_T("Search region (pixels)"), m_pSearchRegion,
-	      _T("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
+          _T("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
 
     width = StringWidth(_T("0000"));
-	m_pMassChangeThreshold = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    m_pMassChangeThreshold = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
-	DoAdd(_T("Star mass tolerance"), m_pMassChangeThreshold,
-	      _T("Tolerance for change in star mass b/n frames. Default = 0.3 (0.1-1.0)"));
+    DoAdd(_T("Star mass tolerance"), m_pMassChangeThreshold,
+          _T("Tolerance for change in star mass b/n frames. Default = 0.3 (0.1-1.0)"));
 }
 
 GuiderOneStar::GuiderOneStarConfigDialogPane::~GuiderOneStarConfigDialogPane(void)

@@ -7,27 +7,27 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -39,7 +39,7 @@ static const int DefaultOverlayMode  = OVERLAY_NONE;
 BEGIN_EVENT_TABLE(Guider, wxWindow)
     EVT_PAINT(Guider::OnPaint)
     EVT_CLOSE(Guider::OnClose)
-	EVT_ERASE_BACKGROUND(Guider::OnErase)
+    EVT_ERASE_BACKGROUND(Guider::OnErase)
 END_EVENT_TABLE()
 
 Guider::Guider(wxWindow *parent, int xSize, int ySize) :
@@ -47,19 +47,19 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 {
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
-	m_displayedImage = new wxImage(XWinSize,YWinSize,true);
+    m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = false;
     m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);
 
-	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
-	SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
+    SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+    SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
 }
 
 Guider::~Guider(void)
 {
-	delete m_displayedImage;
+    delete m_displayedImage;
     delete m_pCurrentImage;
 }
 
@@ -132,7 +132,7 @@ GUIDER_STATE Guider::GetState(void)
 
 void Guider::OnErase(wxEraseEvent &evt)
 {
-	evt.Skip();
+    evt.Skip();
 }
 
 void Guider::OnClose(wxCloseEvent& evt)
@@ -142,7 +142,7 @@ void Guider::OnClose(wxCloseEvent& evt)
 
 bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
 {
-	wxBitmap* DisplayedBitmap = NULL;
+    wxBitmap* DisplayedBitmap = NULL;
     bool bError = false;
 
     try
@@ -151,7 +151,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
         GUIDER_STATE state = GetState();
 
         // see if we need to scale the image
-        if ((m_displayedImage->GetWidth() == XWinSize) && (m_displayedImage->GetHeight() == YWinSize)) 
+        if ((m_displayedImage->GetWidth() == XWinSize) && (m_displayedImage->GetHeight() == YWinSize))
         {
             // No scaling required
             DisplayedBitmap = new wxBitmap(*m_displayedImage);
@@ -160,20 +160,20 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
         else
         {
             DisplayedBitmap = new wxBitmap(m_displayedImage->Size(wxSize(XWinSize,YWinSize),wxPoint(0,0)));
-            
+
             memDC.SelectObject(*DisplayedBitmap);
         }
 
-        try 
+        try
         {
             dc.Blit(0, 0, DisplayedBitmap->GetWidth(),DisplayedBitmap->GetHeight(), & memDC, 0, 0, wxCOPY, false);
         }
-        catch (...) 
+        catch (...)
         {
             throw ERROR_INFO("dc.Blit() failed");
         }
 
-        if (m_overlayMode) 
+        if (m_overlayMode)
         {
             dc.SetPen(wxPen(wxColor(200,50,50)));
             dc.SetBrush(* wxTRANSPARENT_BRUSH);
@@ -262,7 +262,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
         {
             double LockX = LockPosition().X;
             double LockY = LockPosition().Y;
-        
+
             switch(state)
             {
                 case STATE_CALIBRATING:
@@ -274,8 +274,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     break;
             }
 
-			dc.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
-			dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
+            dc.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
+            dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
         }
     }
     catch (wxString Msg)
@@ -290,23 +290,23 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
 }
 
 void Guider::UpdateImageDisplay(usImage *pImage) {
-	int blevel, wlevel;
+    int blevel, wlevel;
 
     if (pImage==NULL)
     {
         pImage = m_pCurrentImage;
     }
 
-	pImage->CalcStats();
-	blevel = pImage->Min;
-	wlevel = pImage->FiltMax;
-    
-	if (pImage->Size.GetWidth() >= 1280) {
-		pImage->BinnedCopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
-	}
-	else {
-		pImage->CopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
-	}
+    pImage->CalcStats();
+    blevel = pImage->Min;
+    wlevel = pImage->FiltMax;
+
+    if (pImage->Size.GetWidth() >= 1280) {
+        pImage->BinnedCopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
+    }
+    else {
+        pImage->CopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
+    }
 
     Refresh();
     Update();
@@ -376,7 +376,7 @@ void Guider::SetState(GUIDER_STATE newState)
 
         if (newState == STATE_STOP)
         {
-            // we are going to stop looping exposures.  We should put 
+            // we are going to stop looping exposures.  We should put
             // ourselves into a good state to restart looping later
             switch(m_state)
             {
@@ -385,7 +385,7 @@ void Guider::SetState(GUIDER_STATE newState)
                 case STATE_SELECTED:
                     break;
                 case STATE_CALIBRATING:
-                    // because we have done some moving here, we need to just 
+                    // because we have done some moving here, we need to just
                     // start over...
                     newState = STATE_UNINITIALIZED;
                     break;
@@ -450,7 +450,7 @@ double Guider::ScaleFactor(void)
 void Guider::StartGuiding(void)
 {
     // we set the state to calibrating.  The state machine will
-    // automatically move from calibrating->calibrated->guiding 
+    // automatically move from calibrating->calibrated->guiding
     // when it can
     SetState(STATE_CALIBRATING);
 }
@@ -472,7 +472,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         Debug.Write(wxString::Format("UpdateGuideState(): m_state=%d\n", m_state));
 
         // switch in the new image
-        
+
         usImage *pPrevImage = m_pCurrentImage;
         m_pCurrentImage = pImage;
         delete pPrevImage;

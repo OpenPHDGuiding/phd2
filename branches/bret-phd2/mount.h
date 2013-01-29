@@ -7,28 +7,28 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
  *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *     Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -37,11 +37,11 @@
 #define MOUNT_H_INCLUDED
 
 enum GUIDE_DIRECTION {
-	NONE  = -1,
-	NORTH = 0,	// Dec+
-	SOUTH,		// Dec-
-	EAST,		// RA-
-	WEST		// RA+
+    NONE  = -1,
+    NORTH = 0,  // Dec+
+    SOUTH,      // Dec-
+    EAST,       // RA-
+    WEST        // RA+
 };
 
 class Mount :  public wxMessageBoxProxy
@@ -68,7 +68,7 @@ protected:
     GuideAlgorithm *m_pRaGuideAlgorithm;
     GuideAlgorithm *m_pDecGuideAlgorithm;
 
-	wxString m_Name;
+    wxString m_Name;
 
     // Things related to the Advanced Config Dialog
 protected:
@@ -127,7 +127,7 @@ private:
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 
     // pure virutal functions -- these MUST be overridden by a subclass
-public: 
+public:
     // move the mount defined calibration distance
     virtual bool Move(GUIDE_DIRECTION direction) = 0;
     // move the requested direction, return the actual duration of the move
@@ -138,16 +138,16 @@ private:
     virtual bool BacklashClearingFailed(void) = 0;
 
     // virtual functions -- these CAN be overridden by a subclass, which should
-    // consider whether they need to call the base class functions as part of 
+    // consider whether they need to call the base class functions as part of
     // their operation
 public:
     virtual bool HasNonGuiMove(void) {return false;}
 
-	virtual wxString &Name(void);
+    virtual wxString &Name(void);
     virtual bool IsConnected(void);
     virtual bool IsCalibrated(void);
     virtual bool Connect(void);
-	virtual bool Disconnect(void);
+    virtual bool Disconnect(void);
 
     virtual bool BeginCalibration(const Point &currentPosition);
     virtual void ClearCalibration(void);

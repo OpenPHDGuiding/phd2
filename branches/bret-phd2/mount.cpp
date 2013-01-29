@@ -7,28 +7,28 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
  *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *     Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -264,7 +264,7 @@ bool Mount::BeginCalibration(const Point& currentPosition)
             throw ERROR_INFO("Not connected");
         }
 
-        if (!currentPosition.IsValid()) 
+        if (!currentPosition.IsValid())
         {
             throw ERROR_INFO("Must have a valid lock position");
         }
@@ -490,7 +490,7 @@ bool Mount::Move(const Point& currentLocation, const Point& desiredLocation)
         GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
 
         double actualRaDuration  = Move(raDirection,  fabs(raDistance/m_raRate));
-        
+
         if (actualRaDuration > 0)
         {
             pFrame->SetStatusText(wxString::Format("%c dist=%.2f dur=%.0f", (raDirection==EAST)?'E':'W', raDistance, actualRaDuration), 1, (int)actualRaDuration);
@@ -511,7 +511,7 @@ bool Mount::Move(const Point& currentLocation, const Point& desiredLocation)
 
     return bError;
 }
-    
+
 void Mount::SetCalibration(double raAngle, double decAngle, double raRate, double decRate)
 {
     m_decAngle = decAngle;
@@ -527,7 +527,7 @@ bool Mount::FlipCalibration(void)
 
     if (!IsCalibrated())
     {
-		pFrame->SetStatusText(_T("No CAL"));
+        pFrame->SetStatusText(_T("No CAL"));
         bError = true;
     }
     else
@@ -564,36 +564,36 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, Mount *pM
     int width;
     m_pMount = pMount;
 
-	m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_T("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
+    m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_T("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
 
-	DoAdd(m_pRecalibrate, _T("Check to clear any previous calibration and force PHD to recalibrate"));
+    DoAdd(m_pRecalibrate, _T("Check to clear any previous calibration and force PHD to recalibrate"));
 
 
     m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_T("Enable Guide Output"), wxPoint(-1,-1), wxSize(75,-1));
     DoAdd(m_pEnableGuide, _T("Should mount guide commands be issued"));
 
-	wxString raAlgorithms[] = {
-		_T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
-	};
+    wxString raAlgorithms[] = {
+        _T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+    };
 
     width = StringArrayWidth(raAlgorithms, WXSIZEOF(raAlgorithms));
-	m_pRaGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1), 
+    m_pRaGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
                                     wxSize(width+35, -1), WXSIZEOF(raAlgorithms), raAlgorithms);
-    DoAdd(_T("RA Algorithm"), m_pRaGuideAlgorithm, 
-	      _T("Which Guide Algorithm to use for Right Ascention"));
+    DoAdd(_T("RA Algorithm"), m_pRaGuideAlgorithm,
+          _T("Which Guide Algorithm to use for Right Ascention"));
 
     m_pRaGuideAlgorithmConfigDialogPane  = m_pMount->m_pRaGuideAlgorithm->GetConfigDialogPane(pParent);
     DoAdd(m_pRaGuideAlgorithmConfigDialogPane);
 
-	wxString decAlgorithms[] = {
-		_T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
-	};
+    wxString decAlgorithms[] = {
+        _T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+    };
 
     width = StringArrayWidth(decAlgorithms, WXSIZEOF(decAlgorithms));
-	m_pDecGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1), 
+    m_pDecGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
                                     wxSize(width+35, -1), WXSIZEOF(decAlgorithms), decAlgorithms);
-    DoAdd(_T("Declination Algorithm"), m_pDecGuideAlgorithm, 
-	      _T("Which Guide Algorithm to use for Declination"));
+    DoAdd(_T("Declination Algorithm"), m_pDecGuideAlgorithm,
+          _T("Which Guide Algorithm to use for Declination"));
 
     m_pDecGuideAlgorithmConfigDialogPane  = pMount->m_pDecGuideAlgorithm->GetConfigDialogPane(pParent);
     DoAdd(m_pDecGuideAlgorithmConfigDialogPane);
@@ -607,8 +607,8 @@ void Mount::MountConfigDialogPane::LoadValues(void)
 {
     m_pRecalibrate->SetValue(!m_pMount->IsCalibrated());
 
-	m_pRaGuideAlgorithm->SetSelection(m_pMount->GetRaGuideAlgorithm());
-	m_pDecGuideAlgorithm->SetSelection(m_pMount->GetDecGuideAlgorithm());
+    m_pRaGuideAlgorithm->SetSelection(m_pMount->GetRaGuideAlgorithm());
+    m_pDecGuideAlgorithm->SetSelection(m_pMount->GetDecGuideAlgorithm());
     m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
 
     m_pRaGuideAlgorithmConfigDialogPane->LoadValues();

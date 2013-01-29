@@ -11,27 +11,27 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -71,8 +71,8 @@ ScopeASCOM::~ScopeASCOM(void)
 bool ScopeASCOM::Choose(wxString &wx_ProgID) {
     bool bError = false;
 
-    IDispatch *pChooserDisplay = NULL;	// Pointer to the Chooser
-    BSTR bstr_ProgID = NULL;				
+    IDispatch *pChooserDisplay = NULL;  // Pointer to the Chooser
+    BSTR bstr_ProgID = NULL;                
     char *cp = NULL;
 
     try
@@ -82,7 +82,7 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
         DISPID dispid;
         OLECHAR *tmp_name;
         DISPPARAMS dispParms;
-        VARIANTARG rgvarg[1];							// Chooser.Choose(ProgID)
+        VARIANTARG rgvarg[1];                           // Chooser.Choose(ProgID)
         EXCEPINFO excep;
         VARIANT vRes;
         HRESULT hr;
@@ -109,7 +109,7 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
         // Look in Registry to see if there is a default
         wx_ProgID = PhdConfig.GetString("/scope/ascom/ScopeID", _T(""));
         bstr_ProgID = wxBasicString(wx_ProgID).Get();
-        
+
         // Next, try to open it
         rgvarg[0].vt = VT_BSTR;
         rgvarg[0].bstrVal = bstr_ProgID;
@@ -126,7 +126,7 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
             throw ERROR_INFO("ASCOM Scope: Chooser returned 0 length string");
         }
 
-        cp = uni_to_ansi(vRes.bstrVal);	// Get ProgID in ANSI
+        cp = uni_to_ansi(vRes.bstrVal); // Get ProgID in ANSI
         wx_ProgID = wxString::Format("%s",cp);
         PhdConfig.SetString("/scope/ascom/ScopeID", wx_ProgID);
     }
@@ -167,7 +167,7 @@ bool ScopeASCOM::Connect(void) {
         wxString wx_ProgID;
 
         Debug.AddLine(wxString::Format("Connecting"));
-        
+
         if (IsConnected())
         {
             wxMessageBox("Scope already connected");
@@ -200,7 +200,7 @@ bool ScopeASCOM::Connect(void) {
 
             // set it up so any thread can talk to the scope
             // first find the global table
-            if (FAILED(::CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_IGlobalInterfaceTable, 
+            if (FAILED(::CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_IGlobalInterfaceTable,
                     (void **)&m_pIGlobalInterfaceTable)))
             {
                 throw ERROR_INFO("ASCOM Scope: Cannot CoCreateInstance of Global Interface Table");
@@ -213,7 +213,7 @@ bool ScopeASCOM::Connect(void) {
             {
                 throw ERROR_INFO("ASCOM Scope: Cannot register with Global Interface Table");
             }
-        
+
             assert(m_dwCookie);
 
             // --- get the dispatch IDs we need ...
@@ -267,7 +267,7 @@ bool ScopeASCOM::Connect(void) {
         rgvarg[0].boolVal = TRUE;
         dispParms.cArgs = 1;
         dispParms.rgvarg = rgvarg;
-        dispParms.cNamedArgs = 1;					// PropPut kludge
+        dispParms.cNamedArgs = 1;                   // PropPut kludge
         dispParms.rgdispidNamedArgs = &didPut;
         if(FAILED(hr = pScopeDriver->Invoke(dispid_connected,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,&dispParms,&vRes,&excep, NULL))) {
             wxMessageBox(_T("ASCOM driver problem during connection"),_T("Error"), wxOK | wxICON_ERROR);
@@ -285,7 +285,7 @@ bool ScopeASCOM::Connect(void) {
         }
 
         char *cp = NULL;
-        cp = uni_to_ansi(vRes.bstrVal);	// Get ProgID in ANSI
+        cp = uni_to_ansi(vRes.bstrVal); // Get ProgID in ANSI
         m_Name = cp;
         free(cp);
 
@@ -352,7 +352,7 @@ bool ScopeASCOM::Disconnect(void) {
         rgvarg[0].boolVal = FALSE;
         dispParms.cArgs = 1;
         dispParms.rgvarg = rgvarg;
-        dispParms.cNamedArgs = 1;					// PropPut kludge
+        dispParms.cNamedArgs = 1;                   // PropPut kludge
         dispParms.rgdispidNamedArgs = &didPut;
         if(FAILED(hr = pScopeDriver->Invoke(dispid_connected,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,&dispParms,&vRes,&excep, NULL))) {
             wxMessageBox(_T("ASCOM driver problem during connection"),_T("Error"), wxOK | wxICON_ERROR);
@@ -431,8 +431,8 @@ bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration) {
         dispParms.cNamedArgs = 0;
         dispParms.rgdispidNamedArgs =NULL;
         swatch.Start();
-        
-        if(FAILED(hr = pScopeDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD, 
+
+        if(FAILED(hr = pScopeDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
                                         &dispParms,&vRes,&excep,NULL))) {
             wxMessageBox(_T("ASCOM driver failed PulseGuide command"),_T("Error"), wxOK | wxICON_ERROR);
             Debug.AddLine(wxString::Format("pulseguide fails, pScopeDriver = 0x%p", pScopeDriver));
@@ -471,7 +471,7 @@ bool ScopeASCOM::IsGuiding(IDispatch *pScopeDriver)
         HRESULT hr;
         EXCEPINFO excep;
         VARIANT vRes;
-        
+
         assert(pScopeDriver);
 
         Debug.AddLine(wxString::Format("IsGuiding() entered for pScopeDriver=%p", pScopeDriver));
@@ -480,7 +480,7 @@ bool ScopeASCOM::IsGuiding(IDispatch *pScopeDriver)
             throw ERROR_INFO("ASCOM Scope: IsGuiding - scope is not connected");
         }
         if (!m_bCanCheckPulseGuiding){
-            // Assume all is good - best we can do as this is really a fail-safe check.  If we can't call this property (lame driver) guides will have to 
+            // Assume all is good - best we can do as this is really a fail-safe check.  If we can't call this property (lame driver) guides will have to
             // enforce the wait.  But, enough don't support this that we can't throw an error.
             throw ERROR_INFO("ASCOM Scope: IsGuiding - !m_bCanCheckPulseGuiding");
         }

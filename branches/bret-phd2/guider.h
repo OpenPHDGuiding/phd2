@@ -11,28 +11,28 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice, 
+ *    Redistributions of source code must retain the above copyright notice,
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice, 
+ *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
  *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its 
- *     contributors may be used to endorse or promote products derived from 
+ *     Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -43,41 +43,41 @@
 
 enum GUIDER_STATE
 {
-	STATE_UNINITIALIZED = 0,
-	STATE_SELECTING,
-	STATE_SELECTED,
-	STATE_CALIBRATING,
-	STATE_CALIBRATED,
-	STATE_GUIDING,
+    STATE_UNINITIALIZED = 0,
+    STATE_SELECTING,
+    STATE_SELECTED,
+    STATE_CALIBRATING,
+    STATE_CALIBRATED,
+    STATE_GUIDING,
     STATE_STOP, // This is a pseudo state
 };
 
 enum EXPOSED_STATES
 {
     EXPOSED_STATE_NONE = 0,
-	EXPOSED_STATE_SELECTED,
-	EXPOSED_STATE_CALIBRATING,
-	EXPOSED_STATE_GUIDING_LOCKED,
-	EXPOSED_STATE_GUIDING_LOST,
+    EXPOSED_STATE_SELECTED,
+    EXPOSED_STATE_CALIBRATING,
+    EXPOSED_STATE_GUIDING_LOCKED,
+    EXPOSED_STATE_GUIDING_LOST,
 
-	EXPOSED_STATE_PAUSED = 100,
-	EXPOSED_STATE_LOOPING,
-	EXPOSED_STATE_LOOPING_SELECTED 
+    EXPOSED_STATE_PAUSED = 100,
+    EXPOSED_STATE_LOOPING,
+    EXPOSED_STATE_LOOPING_SELECTED
 };
 
 enum DEC_GUIDE_MODE
 {
-	DEC_NONE = 0,
-	DEC_AUTO,
-	DEC_NORTH,
-	DEC_SOUTH
+    DEC_NONE = 0,
+    DEC_AUTO,
+    DEC_NORTH,
+    DEC_SOUTH
 };
 
 enum DEC_GUDING_ALGORITHM
 {
-	DEC_LOWPASS = 0,
-	DEC_RESISTSWITCH,
-	DEC_LOWPASS2
+    DEC_LOWPASS = 0,
+    DEC_RESISTSWITCH,
+    DEC_LOWPASS2
 };
 
 enum OVERLAY_MODE
@@ -100,9 +100,9 @@ enum OVERLAY_MODE
 
 class Guider: public wxWindow
 {
-    // Private member data. 
-    
-	wxImage	*m_displayedImage;
+    // Private member data.
+
+    wxImage *m_displayedImage;
     OVERLAY_MODE m_overlayMode;
     bool m_paused;
     Point m_lockPosition;
@@ -110,7 +110,7 @@ class Guider: public wxWindow
     usImage *m_pCurrentImage;
 
 protected:
-	double	m_scaleFactor;
+    double  m_scaleFactor;
 
     // Things related to the Advanced Config Dialog
 protected:
@@ -132,7 +132,7 @@ public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
 
 protected:
-	Guider(wxWindow *parent, int xSize, int ySize);
+    Guider(wxWindow *parent, int xSize, int ySize);
     virtual ~Guider(void);
 
     bool PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC);
@@ -145,8 +145,8 @@ public:
     bool SetPaused(bool paused);
     double CurrentError(void);
     GUIDER_STATE GetState(void);
-	void OnClose(wxCloseEvent& evt);
-	void OnErase(wxEraseEvent& evt);
+    void OnClose(wxCloseEvent& evt);
+    void OnErase(wxEraseEvent& evt);
     void UpdateImageDisplay(usImage *pImage=NULL);
     bool DoGuide(void);
 
@@ -162,12 +162,12 @@ public:
     void Reset(void);
 
     // virtual functions -- these CAN be overridden by a subclass, which should
-    // consider whether they need to call the base class functions as part of 
+    // consider whether they need to call the base class functions as part of
     // their operation
-private: 
+private:
     virtual void InvalidateLockPosition(void);
     virtual void UpdateLockPosition(void);
-    
+
     // pure virutal functions -- these MUST be overridden by a subclass
 private:
     virtual void InvalidateCurrentPosition(void) = 0;
@@ -175,7 +175,7 @@ private:
     virtual bool SetCurrentPosition(usImage *pImage, const Point& position)=0;
 
 public:
-	virtual void OnPaint(wxPaintEvent& evt) = 0;
+    virtual void OnPaint(wxPaintEvent& evt) = 0;
 
     virtual bool IsLocked(void) = 0;
     virtual bool AutoSelect(usImage *pImage=NULL)=0;
@@ -186,7 +186,7 @@ public:
 
     // wxWindows Event table
 private:
-	DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE()
 };
 
 #endif /* GUIDER_H_INCLUDED */
