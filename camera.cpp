@@ -218,6 +218,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #endif
 #if defined (QHY5II)
 	Cameras.Add(_T("QHY 5-II"));
+	Cameras.Add(_T("QHY 5L-II"));
 #endif
 #if defined (SAC42)
 	Cameras.Add(_T("SAC4-2"));
@@ -333,8 +334,16 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	}
 #endif
 #if defined (QHY5II)
-	else if (Choice.Find(_T("QHY 5-II")) + 1)
+	else if (Choice.Find(_T("QHY 5L-II")) + 1) {
+		Camera_QHY5II.FullSize=wxSize(1280,960);
+		Camera_QHY5II.Name=_T("QHY 5L-II");
 		CurrentGuideCamera = &Camera_QHY5II;
+	}
+	else if (Choice.Find(_T("QHY 5-II")) + 1) {
+		Camera_QHY5II.FullSize=wxSize(1280,1024);
+		Camera_QHY5II.Name=_T("QHY 5-II");
+		CurrentGuideCamera = &Camera_QHY5II;
+	}
 #endif
 /*#if defined (OPENSSAG)
 	else if (Choice.Find(_T("Open StarShoot AutoGuider")) + 1)
