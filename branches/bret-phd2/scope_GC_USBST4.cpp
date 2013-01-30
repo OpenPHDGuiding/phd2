@@ -136,7 +136,7 @@ bool ScopeGCUSBST4::Connect() {
     io_object_t     theObject;
     
     if (createSerialIterator(&theSerialIterator) != KERN_SUCCESS) {
-        wxMessageBox(_T("Error in finding serial ports"),_T("Error"));
+        wxMessageBox(_T("Error in finding serial ports"),_("Error"));
         return false;
     }
     bool found_device = false;
@@ -152,7 +152,7 @@ bool ScopeGCUSBST4::Connect() {
     IOObjectRelease(theSerialIterator); // Release the iterator.
     
     if (!found_device) {
-        wxMessageBox("Could not find device - searched for usbmodem* to no avail...");
+        wxMessageBox("Could not find device - searched for usbmodem* to no avail...",_("Error"));
         return true;
     }
 
@@ -166,7 +166,7 @@ bool ScopeGCUSBST4::Connect() {
     portFID = open(tempstr, O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (portFID == -1) { // error on opening
         wxMessageBox(wxString::Format(_T("Error opening serial port %s: %s(%d)"),
-                                        _U(tempstr), _U(strerror(errno)), errno));
+                                        _U(tempstr), _U(strerror(errno)), errno),_("Error"));
         return true;
     }
     ioctl(portFID, TIOCEXCL);
@@ -176,7 +176,7 @@ bool ScopeGCUSBST4::Connect() {
     struct termios  options;
     //options = gOriginalTTYAttrs;
     if (tcgetattr(portFID, &options) == -1) {
-        wxMessageBox(_T("Error getting port options"));
+        wxMessageBox(_T("Error getting port options"),_("Error"));
         close(portFID);
         return true;
     }
@@ -197,7 +197,7 @@ bool ScopeGCUSBST4::Connect() {
            options.c_lflag,
            options.c_ispeed));*/
     if (tcsetattr(portFID, TCSANOW, &options) == -1) {
-        wxMessageBox(_T("Error setting port options"));
+        wxMessageBox(_T("Error setting port options"),_("Error"));
         close(portFID);
         return true;
     }
@@ -225,7 +225,7 @@ bool ScopeGCUSBST4::Connect() {
     buf[1]=0;
     num_bytes = write(portFID,buf,1);
     if (num_bytes == -1) {
-        wxMessageBox(wxString::Format(_T("Error during initial kickstart: %s(%d)"),_U(strerror(errno)),errno));
+        wxMessageBox(wxString::Format(_T("Error during initial kickstart: %s(%d)"),_U(strerror(errno)),errno),_("Error"));
         close(portFID);
         return true;
     }
@@ -235,7 +235,7 @@ bool ScopeGCUSBST4::Connect() {
     buf[1]=0;
     num_bytes = write(portFID,buf,1);
     if (num_bytes == -1) {
-        wxMessageBox(wxString::Format(_T("Error during test polling of device: %s(%d)"),_U(strerror(errno)),errno));
+        wxMessageBox(wxString::Format(_T("Error during test polling of device: %s(%d)"),_U(strerror(errno)),errno),_("Error"));
         close(portFID);
         return true;
     }

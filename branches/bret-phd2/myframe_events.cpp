@@ -79,7 +79,7 @@ void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
 
 void MyFrame::OnInstructions(wxCommandEvent& WXUNUSED(event)) {
     if (CaptureActive) return;  // Looping an exposure already
-    wxMessageBox(wxString::Format(_T("Welcome to PHD (Push Here Dummy) Guiding\n\n \
+    wxMessageBox(wxString::Format(_("Welcome to PHD (Push Here Dummy) Guiding\n\n \
 Operation is quite simple (hence the 'PHD')\n\n \
   1) Press the Camera Button and select your camera\n \
   2) Select your scope interface in the Mount menu if not\n \
@@ -92,20 +92,17 @@ Operation is quite simple (hence the 'PHD')\n\n \
 PHD will then calibrate itself and begin guiding.  That's it!\n\n \
 To stop guiding, simply press the Stop Button. If you need to \n \
 tweak any options, click on the Brain Button to bring up the\n \
-Advanced panel.  ")),_T("Instructions"));
+Advanced panel.  ")),_("Instructions"));
 
 }
 
 void MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event)) {
-    help->Display(_T("Introduction"));
+    help->Display(_("Introduction"));
 }
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
     if (CaptureActive) return;  // Looping an exposure already
-#ifdef ORION
-    wxMessageBox(wxString::Format(_T("PHD Guiding for Orion v%s\n\nCopyright 2006-2012 Craig Stark, Stark Labs"),VERSION),_T("About PHD Guiding"), wxOK);
-#else
-    wxMessageBox(wxString::Format(_T("PHD Guiding v%s\n\nwww.stark-labs.com\n\nCopyright 2006-2011 Craig Stark\n\nSpecial Thanks to:\n  Sean Prange\n  Bret McKee\n  Jared Wellman"),VERSION),_T("About PHD Guiding"), wxOK);
-#endif
+    wxMessageBox(wxString::Format(_T("PHD Guiding v%s\n\nwww.stark-labs.com\n\nCopyright 2006-2013 Craig Stark & Bret McKee\n\nSpecial Thanks to:\n  Sean Prange\n  Jared Wellman"),VERSION),_("About PHD Guiding"), wxOK);
+
 }
 
 void MyFrame::OnOverlay(wxCommandEvent &evt) {
@@ -114,7 +111,7 @@ void MyFrame::OnOverlay(wxCommandEvent &evt) {
 
 void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
     if (CaptureActive) return;  // Looping an exposure already
-    wxString fname = wxFileSelector( wxT("Save FITS Image"), (const wxChar *)NULL,
+    wxString fname = wxFileSelector( _("Save FITS Image"), (const wxChar *)NULL,
                           (const wxChar *)NULL,
                            wxT("fit"), wxT("FITS files (*.fit)|*.fit"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
@@ -125,7 +122,7 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
 
     if (pGuider->SaveCurrentImage(fname))
     {
-        (void) wxMessageBox(_T("Error"),wxT("Your data were not saved"),wxOK | wxICON_ERROR);
+        (void) wxMessageBox(_("Error"),_("Your data were not saved"),wxOK | wxICON_ERROR);
     }
 }
 
@@ -134,10 +131,10 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
 
     if (evt.GetId() == MENU_SAVEDARK) {
         if (!pCamera || !pCamera->HaveDark) {
-            wxMessageBox("You haven't captured a dark frame - nothing to save");
+            wxMessageBox(_("You haven't captured a dark frame - nothing to save"));
             return;
         }
-        fname = wxFileSelector( wxT("Save dark (FITS Image)"), (const wxChar *)NULL,
+        fname = wxFileSelector( _("Save dark (FITS Image)"), (const wxChar *)NULL,
                                         (const wxChar *)NULL,
                                         wxT("fit"), wxT("FITS files (*.fit)|*.fit"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
         if (fname.IsEmpty()) return;  // Check for canceled dialog
@@ -146,30 +143,30 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
             fname = _T("!") + fname;
         if (pCamera->CurrentDarkFrame.Save(fname))
         {
-            wxMessageBox (_T("Error saving FITS file"));
+            wxMessageBox (_("Error saving FITS file"));
         }
     }
     else if (evt.GetId() == MENU_LOADDARK) {
         if (!pCamera || !pCamera->Connected)
         {
-            wxMessageBox("You must connect a camera before loading a dark");
+            wxMessageBox(_("You must connect a camera before loading a dark"));
             return;
         }
-        fname = wxFileSelector( wxT("Load dark (FITS Image)"), (const wxChar *)NULL,
+        fname = wxFileSelector( _("Load dark (FITS Image)"), (const wxChar *)NULL,
                                (const wxChar *)NULL,
                                wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_CHANGE_DIR);
         if (fname.IsEmpty()) return;  // Check for canceled dialog
 
         if (pCamera->CurrentDarkFrame.Load(fname))
         {
-            SetStatusText("Dark not loaded");
+            SetStatusText(_("Dark not loaded"));
         }
         else
         {
             pCamera->HaveDark = true;
             tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
-            Dark_Button->SetLabel(_T("Redo Dark"));
-            SetStatusText("Dark loaded");
+            Dark_Button->SetLabel(_("Redo Dark"));
+            SetStatusText(_("Dark loaded"));
         }
     }
 }
@@ -186,7 +183,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
     {
         if (!pCamera || !pCamera->Connected)
         {
-            wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
+            wxMessageBox(_("Please connect to a camera first"),_("Info"));
             throw ERROR_INFO("Camera not connected");
         }
 
@@ -300,21 +297,21 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
     double ExpDur = RequestedExposureDuration();
     if (pGuider->GetState() > STATE_SELECTED) return;
     if (!pCamera || !pCamera->Connected) {
-        wxMessageBox(_T("Please connect to a camera first"),_T("Info"));
+        wxMessageBox(_("Please connect to a camera first"),_("Info"));
         return;
     }
     if (CaptureActive) return;  // Looping an exposure already
     Dark_Button->SetForegroundColour(wxColour(200,0,0));
     int NDarks = 5;
 
-    SetStatusText(_T("Capturing dark"));
+    SetStatusText(_("Capturing dark"));
     if (pCamera->HasShutter)
         pCamera->ShutterState=true; // dark
     else
-        wxMessageBox(_T("Cover guide scope"));
+        wxMessageBox(_("Cover guide scope"));
     pCamera->InitCapture();
     if (pCamera->Capture(ExpDur, pCamera->CurrentDarkFrame, false)) {
-        wxMessageBox(_T("Error capturing dark frame"));
+        wxMessageBox(_("Error capturing dark frame"));
         pCamera->HaveDark = false;
         SetStatusText(wxString::Format(_T("%.1f s dark FAILED"),(float) ExpDur / 1000.0));
         Dark_Button->SetLabel(_T("Take Dark"));
@@ -342,21 +339,21 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
             *usptr = (unsigned short) (*iptr / NDarks);
 
 
-        Dark_Button->SetLabel(_T("Redo Dark"));
+        Dark_Button->SetLabel(_("Redo Dark"));
         pCamera->HaveDark = true;
         pCamera->DarkDur = ExpDur;
     }
-    SetStatusText(_T("Darks done"));
+    SetStatusText(_("Darks done"));
     if (pCamera->HasShutter)
         pCamera->ShutterState=false; // Lights
     else
-        wxMessageBox(_T("Uncover guide scope"));
+        wxMessageBox(_("Uncover guide scope"));
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
 }
 
 void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt)) {
     if (!pCamera->HaveDark) return;
-    Dark_Button->SetLabel(_T("Take Dark"));
+    Dark_Button->SetLabel(_("Take Dark"));
     Dark_Button->SetForegroundColour(wxColour(0,0,0));
     pCamera->HaveDark = false;
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
@@ -399,7 +396,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 #ifdef __WINDOWS__
 //          tools_menu->FindItem(MENU_LOGIMAGES)->SetTextColour(wxColour(200,10,10));
 #endif
-            tools_menu->FindItem(MENU_LOGIMAGES)->SetItemLabel(_T("Enable Raw Star logging"));
+            tools_menu->FindItem(MENU_LOGIMAGES)->SetItemLabel(_("Enable Raw Star logging"));
             if (evt.IsChecked())
                 Log_Images = 2;
             else
@@ -409,7 +406,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 #ifdef __WINDOWS__
 //          tools_menu->FindItem(MENU_LOGIMAGES)->SetTextColour(*wxBLACK);
 #endif
-            tools_menu->FindItem(MENU_LOGIMAGES)->SetText(_T("Enable Star Image logging"));
+            tools_menu->FindItem(MENU_LOGIMAGES)->SetText(_("Enable Star Image logging"));
             if (evt.IsChecked())
                 Log_Images = 1;
             else

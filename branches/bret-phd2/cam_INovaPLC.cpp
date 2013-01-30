@@ -51,7 +51,7 @@ bool Camera_INovaPLCClass::Connect() {
     DS_CAMERA_STATUS rval;
     rval = DSCameraInit(R_FULL);
     if (rval != STATUS_OK) {
-        wxMessageBox(wxString::Format("Error on connection: %d",rval));
+        wxMessageBox(wxString::Format(_("Error on connection: %d"),rval), _("Error"));
         return true;
     }
     DSCameraSetDataWide(true);
@@ -72,11 +72,11 @@ void Camera_INovaPLCClass::InitCapture() {
     rval = DSCameraSetExposureTime(exp_lines);
     wxMilliSleep(100);
     if (rval != STATUS_OK)
-        wxMessageBox("Error setting duration");
+        wxMessageBox(_T("Error setting duration"), _("Error"));
     rval = DSCameraSetAnalogGain(GuideCameraGain);
     wxMilliSleep(100);
     if (rval != STATUS_OK)
-        wxMessageBox("Error setting gain");
+        wxMessageBox(_T("Error setting gain"), _("Error"));
 
 
 }
@@ -122,7 +122,7 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
     DS_CAMERA_STATUS rval;
     int ntries = 1;
     if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
         Disconnect();
         return true;
     }
@@ -139,7 +139,7 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
         rval = DSCameraGrabFrame((BYTE *) RawData);
         //pFrame->SetStatusText(wxString::Format("%d %d",ntries,rval));
         if (ntries > 30) {
-            wxMessageBox("Timeout capturing frames - >30 bad in a row");
+            wxMessageBox("Timeout capturing frames - >30 bad in a row", _("Error"));
             return true;
         }
     }

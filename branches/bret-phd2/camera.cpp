@@ -264,7 +264,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     if (wxGetKeyState(WXK_SHIFT)) { // use the last camera chosen and bypass the dialog
         if (selectedItem == wxNOT_FOUND)
         {
-            Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras);
+            Choice = wxGetSingleChoice(_("Select your camera"),_("Camera connection"),Cameras);
         }
         else
         {
@@ -277,7 +277,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
         {
             selectedItem = 0;
         }
-        Choice = wxGetSingleChoice(_T("Select your camera"),_T("Camera connection"),Cameras,
+        Choice = wxGetSingleChoice(_("Select your camera"),_("Camera connection"),Cameras,
             this,-1,-1,true,300,500, selectedItem);
     }
     if (Choice.IsEmpty()) {
@@ -285,7 +285,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     }
     // Disconnect current camera
     if (pCamera && pCamera->Connected) {
-        SetStatusText(pCamera->Name + _T(" disconnected"));
+        SetStatusText(pCamera->Name + _(" disconnected"));
         pCamera->Disconnect();
     }
 
@@ -441,7 +441,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
             wxArrayString choices;
             int choice = 0;
 
-            if (-1 != (choice = wxGetSingleChoiceIndex(_T("Select your camera"), _T("V4L(2) devices"), Camera_VIDEODEVICE.GetProductArray(choices)))) {
+            if (-1 != (choice = wxGetSingleChoiceIndex(_("Select your camera"), _T("V4L(2) devices"), Camera_VIDEODEVICE.GetProductArray(choices)))) {
                 deviceInfo = Camera_VIDEODEVICE.GetDeviceAtIndex(choice);
 
                 Camera_VIDEODEVICE.SetDevice(deviceInfo->getDeviceName());
@@ -463,21 +463,21 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     else {
         assert(pCamera == NULL);
         SetStatusText(_T("No cam"),2);
-        wxMessageBox(_T("Unknown camera choice"));
+        wxMessageBox(_T("Unknown camera choice"),_("Error"));
         return;
     }
 
     assert(pCamera);
 
     if (pCamera->Connect()) {
-        wxMessageBox(_T("Problem connecting to camera"),_T("Error"),wxOK);
+        wxMessageBox(_("Problem connecting to camera"),_("Error"),wxOK);
         delete pCamera;
         pCamera = NULL;
         SetStatusText(_T("No cam"),2);
         UpdateButtonsStatus();
         return;
     }
-    SetStatusText(pCamera->Name + _T(" connected"));
+    SetStatusText(pCamera->Name + _(" connected"));
     SetStatusText(_T("Camera"),2);
     UpdateButtonsStatus();
     PhdConfig.SetString("/camera/LastMenuChoice", Choice);
@@ -533,7 +533,7 @@ ConfigDialogPane * GuideCamera::GetConfigDialogPane(wxWindow *pParent)
 }
 
 GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera)
-    : ConfigDialogPane(_T("Camera Settings"), pParent)
+    : ConfigDialogPane(_("Camera Settings"), pParent)
 {
 
     assert(pCamera);
@@ -542,8 +542,8 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
 
     if (m_pCamera->HasSubframes)
     {
-        m_pUseSubframes = new wxCheckBox(pParent, wxID_ANY,_T("UseSubframes"), wxPoint(-1,-1), wxSize(75,-1));
-        DoAdd(m_pUseSubframes, _T("Check to only download subframes (ROIs) if your camera supports it"));
+        m_pUseSubframes = new wxCheckBox(pParent, wxID_ANY,_("Use Subframes"), wxPoint(-1,-1), wxSize(75,-1));
+        DoAdd(m_pUseSubframes, _("Check to only download subframes (ROIs) if your camera supports it"));
     }
 
     if (m_pCamera->HasGainControl)
@@ -551,8 +551,8 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
         int width = StringWidth(_T("0000"));
         m_pCameraGain = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
                 wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 100, 100,_T("CameraGain"));
-        DoAdd(_T("Camera Gain"), m_pCameraGain,
-              _T("Camera gain boost? Default = 95%, lower if you experience noise or wish to guide on a very bright star). Not available on all cameras."));
+        DoAdd(_("Camera Gain"), m_pCameraGain,
+              _("Camera gain boost? Default = 95%, lower if you experience noise or wish to guide on a very bright star). Not available on all cameras."));
     }
 
     if (m_pCamera->HasDelayParam)
@@ -560,8 +560,8 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
         int width = StringWidth(_T("0000"));
         m_pDelay = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
                 wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 100, 100,_T("Delay"));
-        DoAdd(_T("LE Read Delay"), m_pDelay,
-              _T("Adjust if you get dropped frames"));
+        DoAdd(_("LE Read Delay"), m_pDelay,
+              _("Adjust if you get dropped frames"));
     }
 
     if (m_pCamera->HasPortNum)
@@ -575,8 +575,8 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
         int width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
         m_pPortNum = new wxChoice(pParent, wxID_ANY,wxPoint(-1,-1),
                 wxSize(width+35,-1), WXSIZEOF(port_choices), port_choices );
-        DoAdd(_T("LE Port"), m_pPortNum,
-               _T("Port number for long-exposure control"));
+        DoAdd(_("LE Port"), m_pPortNum,
+               _("Port number for long-exposure control"));
     }
 }
 

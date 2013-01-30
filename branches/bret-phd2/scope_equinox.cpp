@@ -133,11 +133,11 @@ bool ScopeEquinox::Connect() {
     wxString prefix = "E6";
 //  if (mountcode == SCOPE_EQMAC) prefix = "EQMAC";
     if (E6ReturnCode == -1) {
-        wxMessageBox (prefix + " responded it's not connected to a mount");
+        wxMessageBox (prefix + " responded it's not connected to a mount",_("Error"));
         return true;
     }
     else if (err == -600) {
-        wxMessageBox (prefix + " not running");
+        wxMessageBox (prefix + " not running",_("Error"));
         return true;
     }
 
@@ -170,11 +170,11 @@ bool ScopeEquinox::Guide(const GUIDE_DIRECTION direction, int duration) {
     wxString prefix = "E6";
     //if (mountcode == SCOPE_EQMAC) prefix = "EQMAC";
     if (E6ReturnCode == -1) {
-        wxMessageBox (prefix + " responded it's not connected to a mount");
+        wxMessageBox (prefix + " responded it's not connected to a mount",_("Error"));
         return true;
     }
     else if (err == -600) {
-        wxMessageBox (prefix + " not running");
+        wxMessageBox (prefix + " not running",_("Error"));
         return true;
     }
     wxMilliSleep(duration);

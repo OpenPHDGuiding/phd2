@@ -82,21 +82,21 @@ bool Camera_ASCOMLateClass::Connect() {
     // Find the ASCOM Chooser
     // First, go into the registry and get the CLSID of it based on the name
     if(FAILED(CLSIDFromProgID(L"DriverHelper.Chooser", &CLSID_chooser))) {
-        wxMessageBox (_T("Failed to find ASCOM.  Make sure it is installed"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox (_T("Failed to find ASCOM.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     // Next, create an instance of it and get another needed ID (dispid)
     if(FAILED(CoCreateInstance(CLSID_chooser,NULL,CLSCTX_SERVER,IID_IDispatch,(LPVOID *)&pChooserDisplay))) {
-        wxMessageBox (_T("Failed to find the ASCOM Chooser.  Make sure it is installed"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox (_T("Failed to find the ASCOM Chooser.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     if(FAILED(pChooserDisplay->GetIDsOfNames(IID_NULL, &tmp_name,1,LOCALE_USER_DEFAULT,&dispid_choose))) {
-        wxMessageBox (_T("Failed to find the Choose method.  Make sure it is installed"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox (_T("Failed to find the Choose method.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name=L"DeviceType";
     if(FAILED(pChooserDisplay->GetIDsOfNames(IID_NULL, &tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp))) {
-        wxMessageBox (_T("Failed to find the DeviceType property.  Make sure it is installed"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox (_T("Failed to find the DeviceType property.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     
@@ -110,7 +110,7 @@ bool Camera_ASCOMLateClass::Connect() {
     dispParms.rgdispidNamedArgs = &dispidNamed;
     if(FAILED(hr = pChooserDisplay->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
         &dispParms,&vRes,&excep, NULL))) {
-        wxMessageBox (_T("Failed to set the Chooser's type to Camera.  Something is wrong with ASCOM"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox (_T("Failed to set the Chooser's type to Camera.  Something is wrong with ASCOM"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     SysFreeString(bsDeviceType);
@@ -129,7 +129,7 @@ bool Camera_ASCOMLateClass::Connect() {
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
     if(FAILED(hr = pChooserDisplay->Invoke(dispid_choose,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,&dispParms,&vRes,&excep, NULL))) {
-        wxMessageBox (_T("Failed to run the Scope Chooser.  Something is wrong with ASCOM"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox (_T("Failed to run the Scope Chooser.  Something is wrong with ASCOM"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     pChooserDisplay->Release();
@@ -141,18 +141,18 @@ bool Camera_ASCOMLateClass::Connect() {
 
     // Now, try to attach to the driver
     if (FAILED(CLSIDFromProgID(vRes.bstrVal, &CLSID_driver))) {
-        wxMessageBox(_T("Could not get CLSID for camera"), _T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Could not get CLSID for camera"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     if (FAILED(CoCreateInstance(CLSID_driver,NULL,CLSCTX_SERVER,IID_IDispatch,(LPVOID *)&this->ASCOMDriver))) {
-        wxMessageBox(_T("Could not establish instance for camera"), _T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Could not establish instance for camera"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
     // Set it to connected
     tmp_name=L"Connected";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))  {
-        wxMessageBox(_T("ASCOM driver problem -- cannot connect"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver problem -- cannot connect"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     rgvarg[0].vt = VT_BOOL;
@@ -163,14 +163,14 @@ bool Camera_ASCOMLateClass::Connect() {
     dispParms.rgdispidNamedArgs = &dispidNamed;
     if(FAILED(hr = this->ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
         &dispParms,&vRes,&excep, NULL))) {
-        wxMessageBox(_T("ASCOM driver problem during connection"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver problem during connection"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
     // See if we have an onboard guider output
     tmp_name = L"CanPulseGuide";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))  {
-        wxMessageBox(_T("ASCOM driver missing the CanPulseGuide property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the CanPulseGuide property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     dispParms.cArgs = 0;
@@ -179,7 +179,7 @@ bool Camera_ASCOMLateClass::Connect() {
     dispParms.rgdispidNamedArgs = NULL;
     if(FAILED(hr = this->ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
         &dispParms,&vRes,&excep, NULL))) {
-        wxMessageBox(_T("ASCOM driver problem getting CanPulseGuide property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver problem getting CanPulseGuide property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     HasGuiderOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
@@ -199,7 +199,7 @@ bool Camera_ASCOMLateClass::Connect() {
     // Get the image size of a full frame
     tmp_name = L"CameraXSize";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))  {
-        wxMessageBox(_T("ASCOM driver missing the CameraXSize property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the CameraXSize property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     dispParms.cArgs = 0;
@@ -208,13 +208,13 @@ bool Camera_ASCOMLateClass::Connect() {
     dispParms.rgdispidNamedArgs = NULL;
     if(FAILED(hr = this->ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
         &dispParms,&vRes,&excep, NULL))) {
-        wxMessageBox(_T("ASCOM driver problem getting CameraXSize property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver problem getting CameraXSize property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     FullSize.SetWidth((int) vRes.lVal);
     tmp_name = L"CameraYSize";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))  {
-        wxMessageBox(_T("ASCOM driver missing the CameraYSize property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the CameraYSize property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     dispParms.cArgs = 0;
@@ -223,7 +223,7 @@ bool Camera_ASCOMLateClass::Connect() {
     dispParms.rgdispidNamedArgs = NULL;
     if(FAILED(hr = this->ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
         &dispParms,&vRes,&excep, NULL))) {
-        wxMessageBox(_T("ASCOM driver problem getting CameraYSize property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver problem getting CameraYSize property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     FullSize.SetHeight((int) vRes.lVal);
@@ -265,84 +265,84 @@ bool Camera_ASCOMLateClass::Connect() {
     // Get the dispids we'll need for more routine things
     tmp_name = L"BinX";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_setxbin)))  {
-        wxMessageBox(_T("ASCOM driver missing the BinX property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the BinX property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"BinY";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_setybin)))  {
-        wxMessageBox(_T("ASCOM driver missing the BinY property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the BinY property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"StartX";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_startx)))  {
-        wxMessageBox(_T("ASCOM driver missing the StartX property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the StartX property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"StartY";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_starty)))  {
-        wxMessageBox(_T("ASCOM driver missing the StartY property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the StartY property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"NumX";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_numx)))  {
-        wxMessageBox(_T("ASCOM driver missing the NumX property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the NumX property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"NumY";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_numy)))  {
-        wxMessageBox(_T("ASCOM driver missing the NumY property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the NumY property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"ImageReady";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_imageready)))  {
-        wxMessageBox(_T("ASCOM driver missing the ImageReady property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the ImageReady property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"ImageArray";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_imagearray)))  {
-        wxMessageBox(_T("ASCOM driver missing the ImageArray property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the ImageArray property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
     tmp_name = L"StartExposure";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_startexposure)))  {
-        wxMessageBox(_T("ASCOM driver missing the StartExposure method"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the StartExposure method"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"StopExposure";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_stopexposure)))  {
-        wxMessageBox(_T("ASCOM driver missing the StopExposure method"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the StopExposure method"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"SetupDialog";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_setupdialog)))  {
-        wxMessageBox(_T("ASCOM driver missing the SetupDialog method"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the SetupDialog method"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"CameraState";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_camerastate)))  {
-        wxMessageBox(_T("ASCOM driver missing the CameraState method"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the CameraState method"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
     tmp_name = L"SetCCDTemperature";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_setccdtemperature)))  {
-        wxMessageBox(_T("ASCOM driver missing the SetCCDTemperature method"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the SetCCDTemperature method"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"CoolerOn";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_cooleron)))  {
-        wxMessageBox(_T("ASCOM driver missing the CoolerOn property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the CoolerOn property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"PulseGuide";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_pulseguide)))  {
-        wxMessageBox(_T("ASCOM driver missing the PulseGuide method"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the PulseGuide method"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     tmp_name = L"IsPulseGuiding";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_ispulseguiding)))  {
-        wxMessageBox(_T("ASCOM driver missing the IsPulseGuiding property"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the IsPulseGuiding property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -374,7 +374,7 @@ bool Camera_ASCOMLateClass::Disconnect() {
         // Disconnect
         tmp_name=L"Connected";
         if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))  {
-            wxMessageBox(_T("ASCOM driver problem -- cannot disconnect"),_T("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("ASCOM driver problem -- cannot disconnect"),_("Error"), wxOK | wxICON_ERROR);
             return true;
         }
         rgvarg[0].vt = VT_BOOL;
@@ -385,7 +385,7 @@ bool Camera_ASCOMLateClass::Disconnect() {
         dispParms.rgdispidNamedArgs = &dispidNamed;
         if(FAILED(hr = this->ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
             &dispParms,&vRes,&excep, NULL))) {
-            wxMessageBox(_T("ASCOM driver problem during disconnection"),_T("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("ASCOM driver problem during disconnection"),_("Error"), wxOK | wxICON_ERROR);
             return true;
         }
 
@@ -428,7 +428,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     if (HasShutter && ShutterState) TakeDark=true;
     // Start the exposure
     if (ASCOM_StartExposure((double) duration / 1000.0, TakeDark)) {
-        wxMessageBox(_T("ASCOM error -- Cannot start exposure with given parameters"), _T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM error -- Cannot start exposure with given parameters"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -688,7 +688,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRec
     if(hr!=S_OK) return true;
 
     if (Image.Init((int) FullSize.GetWidth(), (int) FullSize.GetHeight())) {
-        wxMessageBox(_T("Cannot allocate enough memory"),wxT("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Cannot allocate enough memory"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     unsigned short *dataptr;
@@ -729,7 +729,7 @@ bool Camera_ASCOMLateClass::ASCOM_IsMoving() {
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
     if(FAILED(hr = this->ASCOMDriver->Invoke(dispid_ispulseguiding,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispParms,&vRes,&excep, NULL))) {
-        wxMessageBox(_T("ASCOM driver failed checking IsPulseGuiding"),_T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver failed checking IsPulseGuiding"),_("Error"), wxOK | wxICON_ERROR);
         return false;
     }
     if (vRes.boolVal == VARIANT_TRUE) {

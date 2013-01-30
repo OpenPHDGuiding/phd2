@@ -78,7 +78,7 @@ bool Camera_SACGuiderClass::Connect() {
         OpenUSB = (B_Cp_DLLFUNC)GetProcAddress(CameraDLL,"openUSB");
         if (!OpenUSB)   {
             FreeLibrary(CameraDLL);
-            (void) wxMessageBox(wxT("Didn't find openUSB in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+            (void) wxMessageBox(wxT("Didn't find openUSB in DLL"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
         else {
@@ -86,19 +86,19 @@ bool Camera_SACGuiderClass::Connect() {
             if (retval) {  // Good to go, now get other functions
             //  CloseUSB = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"closeUSB");
             //  if (!CloseUSB)
-            //      (void) wxMessageBox(wxT("Didn't find closeUSB in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+            //      (void) wxMessageBox(wxT("Didn't find closeUSB in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 CmosReset = (V_Cp_DLLFUNC)GetProcAddress(CameraDLL,"cmosReset");
                 if (!CmosReset)
-                    (void) wxMessageBox(wxT("Didn't find cmosReset in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find cmosReset in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 GetFrame = (GUIDEREG_DLLFUNC)GetProcAddress(CameraDLL,"readUSB2_OnePackage");
                 if (!GetFrame)
-                    (void) wxMessageBox(wxT("Didn't find readUSB2_OnePackage in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find readUSB2_OnePackage in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 SendI2C = (Uc_CpUCp_DLLFUNC)GetProcAddress(CameraDLL,"sendI2C");
                 if (!SendI2C)
-                    (void) wxMessageBox(wxT("Didn't find sendI2C in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find sendI2C in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 SendGuideCommand = (Uc_CpUCUC_DLLFUNC)GetProcAddress(CameraDLL,"sendGuideCommand");
                 if (!SendGuideCommand)
-                    (void) wxMessageBox(wxT("Didn't find sendGuideCommand in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find sendGuideCommand in DLL"),_("Error"),wxOK | wxICON_ERROR);
             }
             else {
                 FreeLibrary(CameraDLL);
@@ -107,7 +107,7 @@ bool Camera_SACGuiderClass::Connect() {
         }
     }
     else {
-      (void) wxMessageBox(wxT("Can't find cmosDLL.dll"),wxT("Error"),wxOK | wxICON_ERROR);
+      (void) wxMessageBox(wxT("Can't find cmosDLL.dll"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     CmosReset(DevName);
@@ -206,7 +206,7 @@ bool Camera_SACGuiderClass::GenericCapture(int duration, usImage& img, int xsize
     //buffer = new unsigned char[9000000];
     GetFrame(DevName,raw_imgsize,(unsigned long) duration,buffer);
     if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
         Disconnect();
         delete[] buffer;
         return true;

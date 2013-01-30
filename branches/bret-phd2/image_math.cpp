@@ -88,7 +88,7 @@ bool QuickLRecon(usImage& img) {
     xsize = img.Size.GetWidth();
     ysize = img.Size.GetHeight();
     if (Limg.Init(xsize,ysize)) {
-        (void) wxMessageBox(wxT("Memory allocation error"),_T("Error"),wxOK | wxICON_ERROR);
+        (void) wxMessageBox(wxT("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     for (y=0; y<ysize-1; y++) {
@@ -119,7 +119,7 @@ bool Median3(usImage& img) {
     xsize = img.Size.GetWidth();
     ysize = img.Size.GetHeight();
     if (Limg.Init(xsize,ysize)) {
-        (void) wxMessageBox(wxT("Memory allocation error"),_T("Error"),wxOK | wxICON_ERROR);
+        (void) wxMessageBox(wxT("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     for (y=1; y<ysize-1; y++) {
@@ -207,7 +207,7 @@ bool SquarePixels(usImage& img, float xsize, float ysize) {
 
     // Copy the existing data
     if (tempimg.Init(img.Size.GetWidth(), img.Size.GetHeight())) {
-        wxMessageBox(_T("Could not allocate enough memory"),_T("Error"),wxOK);
+        wxMessageBox(_T("Could not allocate enough memory"),_("Error"),wxOK);
         return true;
     }
     ptr = tempimg.ImageData;

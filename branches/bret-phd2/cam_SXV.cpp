@@ -95,7 +95,7 @@ bool Camera_SXVClass::Connect() {
                 tmp_name = _T("SXV-Lodestar");
             Names.Add(tmp_name);
         }
-        i=wxGetSingleChoiceIndex(_T("Camera choice"),_T("Available cameras"),Names);
+        i=wxGetSingleChoiceIndex(_("Select SX camera"),_("Camera choice"),Names);
         if (i == -1) return true;
         hCam = hCams[i];
     }
@@ -130,7 +130,7 @@ bool Camera_SXVClass::Connect() {
     }
     if (ncams > 1) {
         wxString ChoiceString;
-        ChoiceString=wxGetSingleChoice(_T("Camera choice"),_T("Available cameras"),Names);
+        ChoiceString=wxGetSingleChoice(_("Select SX camera"),_("Camera choice"),Names);
         if (ChoiceString.IsEmpty()) return true;
         ChoiceString=ChoiceString.Left(1);
         long lval;
@@ -149,7 +149,7 @@ bool Camera_SXVClass::Connect() {
      // New version
     int ncams = sx2EnumDevices();
     if (!ncams) {
-        wxMessageBox(_T("No SX cameras found"));
+        wxMessageBox(_T("No SX cameras found"), _("Error"));
         return true;
     }
     if (ncams > 1) {
@@ -178,7 +178,7 @@ bool Camera_SXVClass::Connect() {
         }
         
         wxString ChoiceString;
-        ChoiceString=wxGetSingleChoice(_T("Camera choice"),_T("Available cameras"),Names);
+        ChoiceString=wxGetSingleChoice(_("Select SX camera"),_("Camera choice"),Names);
         if (ChoiceString.IsEmpty()) return true;
         ChoiceString=ChoiceString.Left(1);
         long lval;
@@ -343,7 +343,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         output_xsize = output_xsize - 16;  // crop off 16 from one side
     if (img.NPixels != (output_xsize*output_ysize)) {
         if (img.Init(output_xsize,output_ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             return true;
         }

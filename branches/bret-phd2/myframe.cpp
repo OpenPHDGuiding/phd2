@@ -175,27 +175,27 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     // Setup menus
     wxMenu *file_menu = new wxMenu;
     file_menu->AppendSeparator();
-    file_menu->Append(MENU_LOADDARK, _T("Load dark"), _T("Load dark frame"));
-    file_menu->Append(MENU_SAVEDARK, _T("Save dark"), _T("Save dark frame"));
-    file_menu->Append(wxID_SAVE, _T("Save image"), _T("Save current image"));
-    file_menu->Append(wxID_EXIT, _T("E&xit\tAlt-X"), _T("Quit this program"));
+    file_menu->Append(MENU_LOADDARK, _("Load dark"), _("Load dark frame"));
+    file_menu->Append(MENU_SAVEDARK, _("Save dark"), _("Save dark frame"));
+    file_menu->Append(wxID_SAVE, _("Save image"), _("Save current image"));
+    file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
 //  file_menu->Append(wxID_PREFERENCES, _T("&Preferences"), _T("Preferences"));
 
     scope_menu = new wxMenu;
-    scope_menu->AppendRadioItem(SCOPE_ASCOM,_T("ASCOM"),_T("ASCOM telescope driver"));
+    scope_menu->AppendRadioItem(SCOPE_ASCOM,_T("ASCOM"),_("ASCOM telescope driver"));
     scope_menu->AppendRadioItem(SCOPE_GPUSB,_T("GPUSB"),_T("ShoeString GPUSB ST-4"));
     scope_menu->AppendRadioItem(SCOPE_GPINT3BC,_T("GPINT 3BC"),_T("ShoeString GPINT parallel port 3BC"));
     scope_menu->AppendRadioItem(SCOPE_GPINT378,_T("GPINT 378"),_T("ShoeString GPINT parallel port 378"));
     scope_menu->AppendRadioItem(SCOPE_GPINT278,_T("GPINT 278"),_T("ShoeString GPINT parallel port 278"));
-    scope_menu->AppendRadioItem(SCOPE_CAMERA,_T("On-camera"),_T("Camera Onboard ST-4"));
+    scope_menu->AppendRadioItem(SCOPE_CAMERA,_T("On-camera"),_("Camera Onboard ST-4"));
 #ifdef GUIDE_VOYAGER
-    scope_menu->AppendRadioItem(SCOPE_VOYAGER,_T("Voyager"),_T("Mount connected in Voyager"));
+    scope_menu->AppendRadioItem(SCOPE_VOYAGER,_T("Voyager"),_("Mount connected in Voyager"));
 #endif
 #ifdef GUIDE_EQUINOX
-    scope_menu->AppendRadioItem(SCOPE_EQUINOX,_T("Equinox 6"),_T("Mount connected in Equinox 6"));
+    scope_menu->AppendRadioItem(SCOPE_EQUINOX,_T("Equinox 6"),_("Mount connected in Equinox 6"));
 #endif
 #ifdef GUIDE_EQUINOX
-    scope_menu->AppendRadioItem(SCOPE_EQMAC,_T("EQMAC"),_T("Mount connected in EQMAC"));
+    scope_menu->AppendRadioItem(SCOPE_EQMAC,_T("EQMAC"),_("Mount connected in EQMAC"));
 #endif
 #ifdef GUIDE_GCUSBST4
     scope_menu->AppendRadioItem(SCOPE_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
@@ -221,10 +221,10 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 #endif
 
     stepguider_menu = new wxMenu;
-    stepguider_menu->AppendRadioItem(AO_NONE, _T("None"), _T("No Adaptive Optics"));
+    stepguider_menu->AppendRadioItem(AO_NONE, _("None"), _("No Adaptive Optics"));
     stepguider_menu->FindItem(AO_NONE)->Check(true); // set this as the default
 #ifdef STEPGUIDER_SXAO
-    stepguider_menu->AppendRadioItem(AO_SXAO, _T("sxAO"), _T("Starlight Xpress AO"));
+    stepguider_menu->AppendRadioItem(AO_SXAO, _("sxAO"), _T("Starlight Xpress AO"));
     //stepguider_menu->FindItem(AO_SXAO)->Enable(false);
 #endif
     // try to get the last value from the config store
@@ -238,51 +238,51 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
     tools_menu = new wxMenu;
     //scope_menu->AppendSeparator();
-    tools_menu->Append(MENU_MANGUIDE, _T("&Manual Guide"), _T("Manual / test guide dialog"));
-    tools_menu->Append(MENU_CLEARDARK, _T("&Erase Dark Frame"), _T("Erase / clear out dark frame"));
+    tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
+    tools_menu->Append(MENU_CLEARDARK, _("&Erase Dark Frame"), _("Erase / clear out dark frame"));
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
-    tools_menu->Append(MENU_AUTOSTAR, _T("Auto-select &Star\tAlt-S"), _T("Automatically select star"));
-    tools_menu->Append(EEGG_MANUALCAL, _T("Enter calibration data"), _T("Manually calibrate"));
-    tools_menu->Append(EEGG_FLIPRACAL, _T("Flip calibration data"), _T("Flip RA calibration vector"));
-//  tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));
+    tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
+    tools_menu->Append(EEGG_MANUALCAL, _("Enter calibration data"), _("Manually calibrate"));
+    tools_menu->Append(EEGG_FLIPRACAL, _("Flip calibration data"), _("Flip RA calibration vector"));
+//  tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
     tools_menu->AppendSeparator();
-    tools_menu->AppendRadioItem(MENU_XHAIR0, _T("No overlay"),_T("No additional crosshairs"));
-    tools_menu->AppendRadioItem(MENU_XHAIR1, _T("Bullseye"),_T("Centered bullseye overlay"));
-    tools_menu->AppendRadioItem(MENU_XHAIR2, _T("Fine Grid"),_T("Grid overlay"));
-    tools_menu->AppendRadioItem(MENU_XHAIR3, _T("Coarse Grid"),_T("Grid overlay"));
-    tools_menu->AppendRadioItem(MENU_XHAIR4, _T("RA/Dec"),_T("RA and Dec overlay"));
+    tools_menu->AppendRadioItem(MENU_XHAIR0, _("No overlay"),_("No additional crosshairs"));
+    tools_menu->AppendRadioItem(MENU_XHAIR1, _("Bullseye"),_("Centered bullseye overlay"));
+    tools_menu->AppendRadioItem(MENU_XHAIR2, _("Fine Grid"),_("Grid overlay"));
+    tools_menu->AppendRadioItem(MENU_XHAIR3, _("Coarse Grid"),_("Grid overlay"));
+    tools_menu->AppendRadioItem(MENU_XHAIR4, _("RA/Dec"),_("RA and Dec overlay"));
     tools_menu->AppendSeparator();
-    tools_menu->AppendCheckItem(MENU_LOG,_T("Enable &Logging\tAlt-L"),_T("Enable / disable log file"));
-    tools_menu->AppendCheckItem(MENU_LOGIMAGES,_T("Enable Star Image logging"),_T("Enable / disable logging of star images"));
-    tools_menu->AppendCheckItem(MENU_SERVER,_T("Enable Server"),_T("Enable / disable link to Nebulosity"));
-    tools_menu->AppendCheckItem(MENU_DEBUG,_T("Enable Debug logging"),_T("Enable / disable debug log file"));
-    tools_menu->AppendCheckItem(MENU_GRAPH,_T("Enable Graph"),_T("Enable / disable graph"));
-    tools_menu->AppendCheckItem(MENU_STARPROFILE,_T("Enable Star profile"),_T("Enable / disable star profile view"));
-    tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _T("Enable manual lock position"), _T("Give manual lock position"));
+    tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
+    tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image logging"),_("Enable / disable logging of star images"));
+    tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable / disable link to Nebulosity"));
+    tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug logging"),_("Enable / disable debug log file"));
+    tools_menu->AppendCheckItem(MENU_GRAPH,_("Enable Graph"),_("Enable / disable graph"));
+    tools_menu->AppendCheckItem(MENU_STARPROFILE,_("Enable Star profile"),_("Enable / disable star profile view"));
+    tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _("Enable manual lock position"), _("Give manual lock position"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     wxMenu *indi_menu = new wxMenu;
-    indi_menu->Append(MENU_INDICONFIG, _T("&Configure..."), _T("Configure INDI settings"));
-    indi_menu->Append(MENU_INDIDIALOG, _T("&Controls..."), _T("Show INDI controls for available devices"));
+    indi_menu->Append(MENU_INDICONFIG, _("&Configure..."), _("Configure INDI settings"));
+    indi_menu->Append(MENU_INDIDIALOG, _("&Controls..."), _("Show INDI controls for available devices"));
 #endif
 
 #if defined (V4L_CAMERA)
     wxMenu *v4l_menu = new wxMenu();
 
-    v4l_menu->Append(MENU_V4LSAVESETTINGS, _T("&Save settings"), _T("Save current camera settings"));
-    v4l_menu->Append(MENU_V4LRESTORESETTINGS, _T("&Restore settings"), _T("Restore camera settings"));
+    v4l_menu->Append(MENU_V4LSAVESETTINGS, _("&Save settings"), _("Save current camera settings"));
+    v4l_menu->Append(MENU_V4LRESTORESETTINGS, _("&Restore settings"), _("Restore camera settings"));
 #endif
 
     wxMenu *help_menu = new wxMenu;
-    help_menu->Append(wxID_ABOUT, _T("&About...\tF1"), _T("About PHD Guiding"));
-    help_menu->Append(wxID_HELP_CONTENTS,_T("Contents"),_T("Full help"));
-    help_menu->Append(wxID_HELP_PROCEDURES,_T("&Impatient Instructions"),_T("Quick instructions for the impatient"));
+    help_menu->Append(wxID_ABOUT, _("&About...\tF1"), _("About PHD Guiding"));
+    help_menu->Append(wxID_HELP_CONTENTS,_("Contents"),_("Full help"));
+    help_menu->Append(wxID_HELP_PROCEDURES,_("&Impatient Instructions"),_("Quick instructions for the impatient"));
 //  help_menu->Append(EEGG_TESTGUIDEDIR, _T("."), _T(""));
 
     Menubar = new wxMenuBar();
-    Menubar->Append(file_menu, _T("&File"));
-    Menubar->Append(scope_menu, _T("&Mount"));
-    Menubar->Append(stepguider_menu, _T("&AO"));
+    Menubar->Append(file_menu, _("&File"));
+    Menubar->Append(scope_menu, _("&Mount"));
+    Menubar->Append(stepguider_menu, _("&AO"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     Menubar->Append(indi_menu, _T("&INDI"));
@@ -295,8 +295,8 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     Menubar->Enable(MENU_V4LRESTORESETTINGS, false);
 #endif
 
-    Menubar->Append(tools_menu, _T("&Tools"));
-    Menubar->Append(help_menu, _T("&Help"));
+    Menubar->Append(tools_menu, _("&Tools"));
+    Menubar->Append(help_menu, _("&Help"));
 #ifndef __WXGTK__
     wxMenu *donate_menu = new wxMenu;
     donate_menu->Append(DONATE1, _T("Donate $10"), _T("Donate $10 for PHD Guiding"));
@@ -354,19 +354,19 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
     Cam_Button = new wxBitmapButton( this, BUTTON_CAMERA, camera_bmp );
 //  Cam_Button = new wxBitmapButton( this, BUTTON_CAMERA, camera_bmp,wxPoint(50,50),wxDefaultSize );
-    Cam_Button->SetToolTip(_T("Connect to camera"));
+    Cam_Button->SetToolTip(_("Connect to camera"));
     Scope_Button = new wxBitmapButton( this, BUTTON_SCOPE,scope_bmp);
-    Scope_Button->SetToolTip(_T("Connect to telescope"));
+    Scope_Button->SetToolTip(_("Connect to mount"));
     StepGuider_Button = new wxBitmapButton( this, BUTTON_STEPGUIDER, ao_bmp);
-    StepGuider_Button->SetToolTip(_T("Connect to Step Guiding unit"));
+    StepGuider_Button->SetToolTip(_("Connect to Step Guiding unit"));
     Loop_Button = new wxBitmapButton( this, BUTTON_LOOP, loop_bmp );
-    Loop_Button->SetToolTip(_T("Begin looping exposures for frame and focus"));
+    Loop_Button->SetToolTip(_("Begin looping exposures for frame and focus"));
 //  wxBitmapButton *cal_button = new wxBitmapButton( this, BUTTON_CAL, cal_bmp );
 //  cal_button->SetToolTip(_T("Calibrate camera and scope"));
     Guide_Button = new wxBitmapButton( this, BUTTON_GUIDE, guide_bmp );
-    Guide_Button->SetToolTip(_T("Begin guiding (PHD)"));
+    Guide_Button->SetToolTip(_("Begin guiding (PHD)"));
     Stop_Button = new wxBitmapButton( this, BUTTON_STOP, stop_bmp );
-    Stop_Button->SetToolTip(_T("Abort current action"));
+    Stop_Button->SetToolTip(_("Abort current action"));
     wxBoxSizer *button_sizer = new wxBoxSizer(wxHORIZONTAL);
     button_sizer->Add(Cam_Button,wxSizerFlags(0).Border(wxALL, 3));
     button_sizer->Add(Scope_Button,wxSizerFlags(0).Border(wxALL, 3));
@@ -384,7 +384,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
    };
     Dur_Choice = new wxChoice(this, BUTTON_DURATION, wxPoint(-1,-1),wxSize(70,-1),WXSIZEOF(dur_choices),dur_choices);
     Dur_Choice->SetSelection(4);
-    Dur_Choice->SetToolTip(_T("Camera exposure duration"));
+    Dur_Choice->SetToolTip(_("Camera exposure duration"));
     Dur_Choice->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     ctrl_sizer->Add(Dur_Choice,wxSizerFlags(1).Border(wxALL,10));
 /*  Recal_Checkbox = new wxCheckBox(this,BUTTON_CAL,_T("Calibrate"),wxPoint(-1,-1),wxSize(-1,-1));
@@ -395,7 +395,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     wxSize szfoo;
     Gamma_Slider = new wxSlider(this,CTRL_GAMMA,40,10,90,wxPoint(-1,-1),wxSize(100,-1));
     ctrl_sizer->Add(Gamma_Slider,wxSizerFlags(0).FixedMinSize().Border(wxTOP,15));
-    Gamma_Slider->SetToolTip(_T("Screen gamma (brightness)"));
+    Gamma_Slider->SetToolTip(_("Screen gamma (brightness)"));
 
 /*  HotPixel_Checkbox = new wxCheckBox(this,BUTTON_HOTPIXEL,_T("Fix Hot Pixels"),wxPoint(-1,-1),wxSize(-1,-1));
     HotPixel_Checkbox->SetValue(false);
@@ -410,22 +410,20 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     brain_bmp = wxBitmap(brain_icon);
 #endif
     Brain_Button = new wxBitmapButton( this, BUTTON_DETAILS, brain_bmp );
-    Brain_Button->SetToolTip(_T("Advanced parameters"));
+    Brain_Button->SetToolTip(_("Advanced parameters"));
     ctrl_sizer->Add(Brain_Button,wxSizerFlags(0).Border(wxALL, 3).Right());
 
     wxBoxSizer *extra_sizer1 = new wxBoxSizer(wxHORIZONTAL);
-    Setup_Button = new wxButton(this,wxID_PROPERTIES,_T("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
+    Setup_Button = new wxButton(this,wxID_PROPERTIES,_("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
     Setup_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     //Setup_Button->SetBitmapDisabled(wxBitmap(brain_icon_disabled));
     Setup_Button->Enable(false);
-    Dark_Button = new wxButton(this,BUTTON_DARK,_T("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
+    Dark_Button = new wxButton(this,BUTTON_DARK,_("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
     Dark_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 //  Dark_Button->SetBackgroundStyle(wxBG_STYLE_COLOUR);
 //  Dark_Button->SetBackgroundColour(wxColor(0,200,0));
     extra_sizer1->Add(Dark_Button,wxSizerFlags(0).Border(wxALL,2).Center());
-#ifndef ORION
     extra_sizer1->Add(Setup_Button,wxSizerFlags(0).Border(wxALL,2).Center());
-#endif
 
     ctrl_sizer->Add(extra_sizer1,wxSizerFlags(0).Border(wxTOP,10).Right());
 
@@ -474,7 +472,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     help = new wxHtmlHelpController;
     retval = help->AddBook(filename);
     if (!retval) {
-        wxMessageBox(_T("Could not find help file: ")+filename,_T("Warning"), wxOK);
+        wxMessageBox(_("Could not find help file: ")+filename,_("Error"), wxOK);
     }
     wxImage::AddHandler(new wxPNGHandler);
 //  wxImage::AddHandler( new wxJPEGHandler );  //wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib
@@ -505,19 +503,11 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     LogFName = wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log") + now.Format(_T("_%d%b%y")) + _T(".txt"));
     LogFile = new wxTextFile(LogFName);
     if (Log_Data) {
-#ifdef ORION
-        this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s (Log active)"),VERSION,PHDSUBVER));
-#else
         this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com (Log active)"),VERSION,PHDSUBVER));
-#endif
         tools_menu->Check(MENU_LOG,true);
     }
     else {
-#ifdef ORION
-        this->SetTitle(wxString::Format(_T("PHD Guiding for Orion %s%s"),VERSION,PHDSUBVER));
-#else
         this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"),VERSION,PHDSUBVER));
-#endif
         tools_menu->Check(MENU_LOG,false);
     }
     //scope_menu->Check(SCOPE_GPUSB,true);
@@ -525,10 +515,10 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     if (m_serverMode) {
         tools_menu->Check(MENU_SERVER,true);
         if (StartServer(true)) {
-            wxLogStatus(_T("Server start failed"));
+            wxLogStatus(_("Server start failed"));
         }
         else
-            wxLogStatus(_T("Server started"));
+            wxLogStatus(_("Server started"));
     }
 
     tools_menu->Check(MENU_DEBUG, Debug.GetState());
@@ -965,41 +955,41 @@ ConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 }
 
 MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame)
-    : ConfigDialogPane(_T("Global Settings"), pParent)
+    : ConfigDialogPane(_("Global Settings"), pParent)
 {
     int width;
     m_pFrame = pFrame;
 
-    m_pEnableLogging = new wxCheckBox(pParent, wxID_ANY,_T("Enable Logging"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pEnableLogging, _T("Save guide commands and info to a file?"));
+    m_pEnableLogging = new wxCheckBox(pParent, wxID_ANY,_("Enable Logging"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pEnableLogging, _("Save guide commands and info to a file?"));
 
-    m_pDitherRaOnly = new wxCheckBox(pParent, wxID_ANY,_T("Dither RA only"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pDitherRaOnly, _T("Constrain dither to RA only?"));
+    m_pDitherRaOnly = new wxCheckBox(pParent, wxID_ANY,_("Dither RA only"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pDitherRaOnly, _("Constrain dither to RA only?"));
 
 
     width = StringWidth(_T("000.00"));
     m_pDitherScaleFactor = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("DitherScaleFactor"));
     m_pDitherScaleFactor->SetDigits(1);
-    DoAdd(_T("Dither scale"), m_pDitherScaleFactor,
-          _T("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
+    DoAdd(_("Dither scale"), m_pDitherScaleFactor,
+          _("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
 
     wxString nralgo_choices[] =
     {
-        _T("None"),_T("2x2 mean"),_T("3x3 median")
+        _("None"),_("2x2 mean"),_("3x3 median")
     };
 
     width = StringArrayWidth(nralgo_choices, WXSIZEOF(nralgo_choices));
     m_pNoiseReduction = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
             wxSize(width+35, -1), WXSIZEOF(nralgo_choices), nralgo_choices );
-    DoAdd(_T("Noise Reduction"), m_pNoiseReduction,
-          _T("Technique to reduce noise in images"));
+    DoAdd(_("Noise Reduction"), m_pNoiseReduction,
+          _("Technique to reduce noise in images"));
 
     width = StringWidth(_T("00000"));
     m_pTimeLapse = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 0,_T("TimeLapse"));
-    DoAdd(_T("Time Lapse (ms)"), m_pTimeLapse,
-          _T("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
+    DoAdd(_("Time Lapse (ms)"), m_pTimeLapse,
+          _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
 }
 

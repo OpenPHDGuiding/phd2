@@ -138,7 +138,7 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
     // init memory
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             return true;
         }

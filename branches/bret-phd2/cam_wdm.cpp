@@ -91,13 +91,13 @@ bool Camera_WDMClass::Connect() {
 
     // Init the library
     if (CVFAILED(VidCap->Init())) {
-        wxMessageBox(_T("Error initializing WDM services"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Error initializing WDM services"),_("Error"),wxOK | wxICON_ERROR);
         CVPlatform::GetPlatform()->Release(VidCap);
       return true;
    }
     // Enumerate devices
    if (CVFAILED(VidCap->GetNumDevices(NDevices))) {
-        wxMessageBox(_T("Error detecting WDM devices"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Error detecting WDM devices"),_("Error"),wxOK | wxICON_ERROR);
       VidCap->Uninit();
       CVPlatform::GetPlatform()->Release(VidCap);
       return true;
@@ -115,7 +115,7 @@ bool Camera_WDMClass::Connect() {
             else
                 Devices.Add(wxString::Format("%d: Not available"),i);
         }
-        DeviceNum = wxGetSingleChoiceIndex(_T("Select WDM camera"),_T("Camera choice"),Devices);
+        DeviceNum = wxGetSingleChoiceIndex(_("Select WDM camera"),_("Camera choice"),Devices);
         if (DeviceNum == -1) return true;
  /* int curDevIndex = 0;
         for (curDevIndex = 0; curDevIndex < numDevices; curDevIndex++)
@@ -139,7 +139,7 @@ bool Camera_WDMClass::Connect() {
         delete [] devName;
     }
     else {
-        wxMessageBox(wxString::Format("Error connecting to WDM device #%d",DeviceNum),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(wxString::Format("Error connecting to WDM device #%d",DeviceNum),_("Error"),wxOK | wxICON_ERROR);
         VidCap->Uninit();
         CVPlatform::GetPlatform()->Release(VidCap);
         return true;
@@ -157,7 +157,7 @@ bool Camera_WDMClass::Connect() {
         }
     }
     // Let user choose mode
-    curmode = wxGetSingleChoiceIndex(_T("Select camera mode"),_T("Camera mode"),ModeNames);
+    curmode = wxGetSingleChoiceIndex(_("Select camera mode"),_("Camera mode"),ModeNames);
     if (curmode == -1) { //canceled
         VidCap->Uninit();
         CVPlatform::GetPlatform()->Release(VidCap);
@@ -165,7 +165,7 @@ bool Camera_WDMClass::Connect() {
     }
     // Activate this mode
     if (CVFAILED(VidCap->SetMode(curmode))) {
-        wxMessageBox(wxString::Format("Error activating video mode %d",curmode),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(wxString::Format("Error activating video mode %d",curmode),_("Error"),wxOK | wxICON_ERROR);
         VidCap->Uninit();
         CVPlatform::GetPlatform()->Release(VidCap);
         return true;
@@ -173,7 +173,7 @@ bool Camera_WDMClass::Connect() {
 
     // Setup x and y size
     if (CVFAILED(VidCap->GetCurrentMode(modeInfo))) {
-        wxMessageBox(wxString::Format("Error probing video mode %d",curmode),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(wxString::Format("Error probing video mode %d",curmode),_("Error"),wxOK | wxICON_ERROR);
         VidCap->Uninit();
         CVPlatform::GetPlatform()->Release(VidCap);
         return true;
@@ -181,7 +181,7 @@ bool Camera_WDMClass::Connect() {
     // Start the stream
     WDM_Stack_Mode = false; // Make sure we don't start saving
     if (CVFAILED(VidCap->StartImageCap(CVImage::CVIMAGE_GREY,  CaptureCallback, this))) {
-        wxMessageBox(_T("Failed to start image capture!"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Failed to start image capture!"),_("Error"),wxOK | wxICON_ERROR);
         VidCap->Uninit();
         CVPlatform::GetPlatform()->Release(VidCap);
       return true;
@@ -219,7 +219,7 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     //gNumFrames = 0;
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             return true;
         }
@@ -231,7 +231,7 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 //  if (CVFAILED(VidCap->StartImageCap(CVImage::CVIMAGE_GREY,  CaptureCallback, this))) {
 //  if (CVFAILED(VidCap->StartImageCap(CVImage::CVIMAGE_GREY,  CapStackCallback, 0))) {
 //  if (CVFAILED(VidCap->StartRawCap(RawCallback, 0))) {
-//      wxMessageBox(_T("Failed to start image capture!"),_T("Error"),wxOK | wxICON_ERROR);
+//      wxMessageBox(_T("Failed to start image capture!"),_("Error"),wxOK | wxICON_ERROR);
   //    Disconnect();
   //    return true;
 //  }

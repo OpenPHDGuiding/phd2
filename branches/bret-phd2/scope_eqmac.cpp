@@ -132,11 +132,11 @@ bool ScopeEQMac::Connect() {
     OSErr err = E6AESendRoutine(0.0,0.0,SCOPE_EQMAC);
     wxString prefix = "EQMAC";
     if (E6ReturnCode == -1) {
-        wxMessageBox (prefix + " responded it's not connected to a mount");
+        wxMessageBox (prefix + " responded it's not connected to a mount",_("Error"));
         return true;
     }
     else if (err == -600) {
-        wxMessageBox (prefix + " not running");
+        wxMessageBox (prefix + " not running",_("Error"));
         return true;
     }
 
@@ -168,11 +168,11 @@ bool ScopeEQMac::Guide(const GUIDE_DIRECTION direction, int duration) {
     OSErr err = E6AESendRoutine(EWTime, NSTime,SCOPE_EQMAC);
     wxString prefix = "EQMAC";
     if (E6ReturnCode == -1) {
-        wxMessageBox (prefix + " responded it's not connected to a mount");
+        wxMessageBox (prefix + " responded it's not connected to a mount",_("Error"));
         return true;
     }
     else if (err == -600) {
-        wxMessageBox (prefix + " not running");
+        wxMessageBox (prefix + " not running",_("Error"));
         return true;
     }
     wxMilliSleep(duration);

@@ -83,25 +83,9 @@ bool PhdApp::OnInit() {
 
     locale.Init(wxLANGUAGE_ENGLISH_US);
 //  wxMessageBox(wxString::Format("%f",1.23));
-#ifdef ORION
-    pFrame = new MyFrame(wxString::Format(_T("PHD Guiding for Orion v%s"),VERSION));
-#else
     pFrame = new MyFrame(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
-#endif
     wxImage::AddHandler(new wxJPEGHandler);
-#ifdef ORION
-    wxBitmap bitmap;
-    wxSplashScreen* splash;
-    if (bitmap.LoadFile(_T("OrionSplash.jpg"), wxBITMAP_TYPE_JPEG)) {
-        splash = new wxSplashScreen(bitmap,
-          wxSPLASH_CENTRE_ON_SCREEN|wxSPLASH_NO_TIMEOUT,
-          2000, NULL, -1, wxDefaultPosition, wxDefaultSize,
-          wxSIMPLE_BORDER|wxSTAY_ON_TOP);
-    }
-    wxYield();
-    wxMilliSleep(2000);
-    delete splash;
-#endif
+
     pFrame->Show(true);
 
     return true;

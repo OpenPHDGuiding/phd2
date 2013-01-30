@@ -87,7 +87,7 @@ bool Camera_FirewireClass::Connect() {
         if (debug) { debugfile->AddLine(wxString::Format("1: Init library")); debugfile->Write(); }
         // Init the TIS library
         if( ! DShowLib::InitLibrary( "ISB3200016679" ) ) {  // license key check
-            wxMessageBox(_T("Cannot initialize ImageCapture library"),_T("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Cannot initialize ImageCapture library"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
 
@@ -97,7 +97,7 @@ bool Camera_FirewireClass::Connect() {
         if (debug) { debugfile->AddLine(wxString::Format("3: Find cameras")); debugfile->Write(); }
         Grabber::tVidCapDevListPtr pVidCapDevList = m_pGrabber->getAvailableVideoCaptureDevices();
         if( pVidCapDevList == 0 || pVidCapDevList->empty() ) {
-            wxMessageBox(_T("No The Imaging Source cameras found"));
+            wxMessageBox(_("No camera found"));
             return true;
         }
         int NCams = (int) pVidCapDevList->size();
@@ -110,7 +110,7 @@ bool Camera_FirewireClass::Connect() {
                 it != pVidCapDevList->end(); ++it ) {
                 Names.Add(it->toString());
             }
-            CamNum = wxGetSingleChoiceIndex(_T("Select Camera"),_T("Camera"),Names);
+            CamNum = wxGetSingleChoiceIndex(_("Select Camera"),_("Camera"),Names);
             if (CamNum == -1)
                 return true;
         }
@@ -119,7 +119,7 @@ bool Camera_FirewireClass::Connect() {
         // Open camera
         retval = m_pGrabber->openDev( pVidCapDevList->at( CamNum ) );
         if (!retval) {
-            wxMessageBox(_T("Cannot open camera"));
+            wxMessageBox(_("Cannot open camera"));
             return true;
         }
         if (debug) { debugfile->AddLine(wxString(pVidCapDevList->at(CamNum).toString())); debugfile->Write(); }
@@ -128,7 +128,7 @@ bool Camera_FirewireClass::Connect() {
         // Get video formats
         Grabber::tVidFmtListPtr pVidFmtList = m_pGrabber->getAvailableVideoFormats();
         if ((pVidFmtList == 0) || pVidFmtList->empty()) {
-            wxMessageBox(_T("Cannot get list of video modes"));
+            wxMessageBox(_("Cannot get list of video modes"));
             m_pGrabber->closeDev();
             return true;
         }
@@ -208,7 +208,7 @@ bool Camera_FirewireClass::Connect() {
             if (pExposureValueElement != 0) {
                 pExposureValueElement->getInterfacePtr(m_pExposureAbs);
                 if (m_pExposureAbs == 0) {
-                    wxMessageBox(_T("Warning - cannot directly control exposure duration - running in auto-exposure"));
+                    wxMessageBox(_("Warning - cannot directly control exposure duration - running in auto-exposure"));
                     m_pGrabber->setProperty(CameraControl_Exposure,true);
                 }
                 else
@@ -279,7 +279,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
 
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
     }   

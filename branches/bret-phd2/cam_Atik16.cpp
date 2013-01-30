@@ -62,13 +62,13 @@ bool Camera_Atik16Class::Connect() {
 // returns true on error
 
     if (Cam_Handle) {
-        wxMessageBox(_T("But I'm already connected..."));
+        wxMessageBox(_("Already connected"));
         return false;  // Already connected
     }
     wxString DLLName = _T("ArtemisCCD.dll");
     if (HSModel) DLLName = _T("ArtemisHSC.dll");
     if (!ArtemisLoadDLL(DLLName.char_str())) {
-        wxMessageBox(_T("Cannot load Artemis DLL"), _T("DLL error"), wxICON_ERROR | wxOK);
+        wxMessageBox(_T("Cannot load Artemis DLL"), _("DLL error"), wxICON_ERROR | wxOK);
         return true;
     }
     // Find available cameras
@@ -89,7 +89,7 @@ bool Camera_Atik16Class::Connect() {
     else if (ncams == 0)
         return true;
     else {
-        i=wxGetSingleChoiceIndex(_T("Select camera"),("Camera name"),USBNames);
+        i=wxGetSingleChoiceIndex(_("Select camera"),_("Camera name"),USBNames);
         if (i == -1) { Disconnect(); return true; }
     }
 
@@ -209,7 +209,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
         ArtemisSetAmplifierSwitched(Cam_Handle,false);
     
     if (ArtemisStartExposure(Cam_Handle,(float) duration / 1000.0))  {
-        (void) wxMessageBox(wxT("Couldn't start exposure - aborting"),wxT("Error"),wxOK | wxICON_ERROR);
+        (void) wxMessageBox(_T("Couldn't start exposure - aborting"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -225,7 +225,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
     ArtemisGetImageData(Cam_Handle, &data_x, &data_y, &data_w, &data_h, &data_binx, &data_biny);
     if (img.NPixels != (FullSize.GetWidth()*FullSize.GetHeight())) {
         if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             return true;
         }

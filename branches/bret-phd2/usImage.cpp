@@ -271,9 +271,9 @@ bool usImage::Save(const wxString& fname)
         bError = status?true:false;
 
         if (bError)
-            pFrame->SetStatusText(fname + _T(" Not saved"));
+            pFrame->SetStatusText(fname + _(" Not saved"));
         else
-            pFrame->SetStatusText(fname + _T(" saved"));
+            pFrame->SetStatusText(fname + _(" saved"));
     }
     catch (wxString Msg)
     {
@@ -298,12 +298,12 @@ bool usImage::Load(const wxString& fname)
         int nhdus=0;
 
         if (!wxFileExists(fname)) {
-            wxMessageBox(_T("File does not exist - cannot load"));
+            wxMessageBox(_("File does not exist - cannot load"));
             throw ERROR_INFO("File does not exist");
         }
         if ( !fits_open_diskfile(&fptr, (const char*) fname.c_str(), READONLY, &status) ) {
             if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-                (void) wxMessageBox(wxT("FITS file is not of an image"), wxT("Error"),wxOK | wxICON_ERROR);
+                (void) wxMessageBox(wxT("FITS file is not of an image"), _("Error"),wxOK | wxICON_ERROR);
                 throw ERROR_INFO("Fits file is not an image");
             }
             
@@ -312,16 +312,16 @@ bool usImage::Load(const wxString& fname)
             fits_get_img_size(fptr, 2, fsize, &status);
             fits_get_num_hdus(fptr,&nhdus,&status);
             if ((nhdus != 1) || (naxis != 2)) {
-                (void) wxMessageBox( _T("Unsupported type or read error loading FITS file") ,wxT("Error"),wxOK | wxICON_ERROR);
+                (void) wxMessageBox( _T("Unsupported type or read error loading FITS file") ,_("Error"),wxOK | wxICON_ERROR);
                 throw ERROR_INFO("unsupported type");
             }
             if (Init((int) fsize[0],(int) fsize[1]))
             {
-                wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+                wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
                 throw ERROR_INFO("Memory Allocation failure");
             }
             if (fits_read_pix(fptr, TUSHORT, fpixel, (int) fsize[0]*(int) fsize[1], NULL, pCamera->CurrentDarkFrame.ImageData, NULL, &status) ) { // Read image
-                (void) wxMessageBox(_T("Error reading data"), wxT("Error"),wxOK | wxICON_ERROR);
+                (void) wxMessageBox(_T("Error reading data"), _("Error"),wxOK | wxICON_ERROR);
                 throw ERROR_INFO("Error reading");
             }
             fits_close_file(fptr,&status);

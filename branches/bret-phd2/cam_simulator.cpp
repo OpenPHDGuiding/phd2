@@ -88,7 +88,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
     if ( !fits_open_diskfile(&fptr, "phd011412.fit", READONLY, &status) ) {
 #endif
         if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-            (void) wxMessageBox(wxT("FITS file is not of an image"),wxT("Error"),wxOK | wxICON_ERROR);
+            (void) wxMessageBox(wxT("FITS file is not of an image"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
 
@@ -99,15 +99,15 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
         ysize = (int) fits_size[1];
         fits_get_num_hdus(fptr,&nhdus,&status);
         if ((nhdus != 1) || (naxis != 2)) {
-           (void) wxMessageBox(_T("Unsupported type or read error loading FITS file"),wxT("Error"),wxOK | wxICON_ERROR);
+           (void) wxMessageBox(_T("Unsupported type or read error loading FITS file"),_("Error"),wxOK | wxICON_ERROR);
            return true;
         }
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
         if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { // Read image
-            (void) wxMessageBox(_T("Error reading data"),wxT("Error"),wxOK | wxICON_ERROR);
+            (void) wxMessageBox(_T("Error reading data"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
         fits_close_file(fptr,&status);
@@ -133,7 +133,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img) {
     xsize = disk_image.GetWidth();
     ysize = disk_image.GetHeight();
     if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -195,7 +195,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 //  pFrame->SetStatusText(wxString::Format(_T("%d,%d,%d   %d,%d,%d"),star_x[0],star_y[0],inten[0],star_x[1],star_y[1],inten[1]));
     if (img.NPixels != (xsize*ysize) ) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
     }
@@ -250,7 +250,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
     sprintf(fname,"/Users/stark/dev/PHD/simimg/DriftSim_%d.fit",frame);
     if ( !fits_open_file(&fptr, fname, READONLY, &status) ) {
         if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-            (void) wxMessageBox(wxT("FITS file is not of an image"),wxT("Error"),wxOK | wxICON_ERROR);
+            (void) wxMessageBox(wxT("FITS file is not of an image"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
         
@@ -261,15 +261,15 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
         ysize = (int) fits_size[1];
         fits_get_num_hdus(fptr,&nhdus,&status);
         if ((nhdus != 1) || (naxis != 2)) {
-            (void) wxMessageBox(wxString::Format("Unsupported type or read error loading FITS file %d %d",nhdus,naxis),wxT("Error"),wxOK | wxICON_ERROR);
+            (void) wxMessageBox(wxString::Format("Unsupported type or read error loading FITS file %d %d",nhdus,naxis),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
         if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { // Read image
-            (void) wxMessageBox(_T("Error reading data"),wxT("Error"),wxOK | wxICON_ERROR);
+            (void) wxMessageBox(_T("Error reading data"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
         fits_close_file(fptr,&status);

@@ -63,7 +63,7 @@ bool StepGuiderSxAO::Connect(void)
 
         wxArrayString serialPorts = m_pSerialPort->GetSerialPortList();
 
-        int resp = wxGetSingleChoiceIndex(_T("Select Serial Port"), _T("Serial Port"), serialPorts);
+        int resp = wxGetSingleChoiceIndex(_("Select Serial Port"), _("Serial Port"), serialPorts);
 
         if (m_pSerialPort->Connect(serialPorts[resp], 9600, 8, 1, SerialPort::ParityNone, false, false))
         {

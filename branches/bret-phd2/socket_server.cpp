@@ -87,25 +87,25 @@ bool MyFrame::StartServer(bool state) {
 
         // We use Ok() here to see if the server is really listening
         if (! SocketServer->Ok()) {
-            wxLogStatus(_T("Server failed to start - Could not listen at the specified port"));
+            wxLogStatus(_("Server failed to start - Could not listen at the specified port"));
             return true;
         }
         SocketServer->SetEventHandler(*this, SERVER_ID);
         SocketServer->SetNotify(wxSOCKET_CONNECTION_FLAG);
         SocketServer->Notify(true);
         SocketConnections = 0;
-        SetStatusText(_T("Server started"));
-        wxLogStatus(_T("Server started"));
+        SetStatusText(_("Server started"));
+        wxLogStatus(_("Server started"));
         SocketLog->Show(this->Menubar->IsChecked(MENU_DEBUG));
     }
     else {
-        wxLogStatus(_T("Server stopped"));
+        wxLogStatus(_("Server stopped"));
         wxLog::SetActiveTarget(NULL);
         delete SocketLog;
         SocketLog = NULL;
         delete SocketServer;
         SocketServer= NULL;
-        SetStatusText(_T("Server stopped"));
+        SetStatusText(_("Server stopped"));
     }
 
     return false;

@@ -82,7 +82,7 @@ bool Camera_VFWClass::Connect() {
         wxArrayString devnames;
         for (i=0; i<ndevices; i++)
             devnames.Add(capwin->GetDeviceName(i));
-        devicenum = wxGetSingleChoiceIndex(_T("Select capture device"),_T("Camera choice"),devnames);
+        devicenum = wxGetSingleChoiceIndex(_("Select capture device"),_("Camera choice"),devnames);
         if (devicenum == -1)
             return true;
         else devicenum = devicenum + 1;
@@ -133,7 +133,7 @@ bool Camera_VFWClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     //gNumFrames = 0;
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             return true;
         }

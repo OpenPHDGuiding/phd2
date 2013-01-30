@@ -66,7 +66,7 @@ bool Camera_SAC42Class::Connect() {
     retval = FclInitialize("SAC4-2 camera",Index,CapInfo,&hDriver);
     if (retval) {
         FclUninitialize(&hDriver);
-        wxMessageBox(_T("Error connecting to SAC4-2"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Error connecting to SAC4-2"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     FclSetBw(hDriver,true);
@@ -111,7 +111,7 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
 
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             delete[] buffer;
             return true;
@@ -128,7 +128,7 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
         }
         retval = FclGetOneFrame(hDriver,CapInfo);  // get the frame
         if (retval) {
-            wxMessageBox(_T("Error capturing data from camera"),_T("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Error capturing data from camera"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             delete[] buffer;
             return true;

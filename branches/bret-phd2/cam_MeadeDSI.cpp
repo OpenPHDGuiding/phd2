@@ -60,7 +60,7 @@ bool Camera_DSIClass::Connect() {
     unsigned int NDevices = MeadeCam->EnumDsiDevices();
     unsigned int DevNum = 1;
     if (!NDevices) {
-        wxMessageBox(_T("No DSIs found"));
+        wxMessageBox(_T("No DSIs found"), _("Error"));
         return true;
     }
     else if (NDevices > 1) {
@@ -121,7 +121,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 //  pFrame->SetStatusText(wxString::Format("%u %d",(unsigned int) (GuideCameraGain * 63 / 100),duration));
     if ((unsigned)img.NPixels != MeadeCam->GetWidth() * MeadeCam->GetHeight()) {
         if (img.Init(MeadeCam->GetWidth(),MeadeCam->GetHeight())) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             return true;
         }

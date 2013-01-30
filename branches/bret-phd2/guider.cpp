@@ -480,13 +480,13 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         if (bStopping)
         {
             SetState(STATE_STOP);
-            statusMessage = _T("Stopped Guiding");
+            statusMessage = _("Stopped Guiding");
             throw THROW_INFO("Stopped Guiding");
         }
 
         if (IsPaused())
         {
-            statusMessage = _T("Paused");
+            statusMessage = _("Paused");
             throw THROW_INFO("Skipping frame - guider is paused");
         }
 
@@ -561,7 +561,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
 
 Guider::GuiderConfigDialogPane::GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider)
-    : ConfigDialogPane(_T("Guider Settings"), pParent)
+    : ConfigDialogPane(_("Guider Settings"), pParent)
 {
 }
 

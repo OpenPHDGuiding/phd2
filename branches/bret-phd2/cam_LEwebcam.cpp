@@ -121,7 +121,7 @@ bool Camera_LEwebcamClass::Connect() {
     LastPort = Port; // This needed to detect changes to/from the serial port
     if (Port == 0) {  // LXUSB
         if (!LXUSB_Open()) {
-            wxMessageBox(_T("Cannot find LXUSB interface"),_T("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Cannot find LXUSB interface"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
         LXUSB_Reset();
@@ -213,7 +213,7 @@ bool Camera_LEwebcamClass::ChangePorts() {
                 NULL  // hTemplate must be NULL for comm devices
                 );
         if (hCom == INVALID_HANDLE_VALUE) {
-            wxMessageBox(wxString::Format("Could not attach to %s"), PortName);
+            wxMessageBox(wxString::Format("Could not attach to %s", PortName), _("Error"));
             return true;
         }
         else {  // Valid basic connection - configure
@@ -230,7 +230,7 @@ bool Camera_LEwebcamClass::ChangePorts() {
                 EscapeCommFunction(hCom,CLRDTR);
             }
             else {
-                wxMessageBox(wxString::Format("Cannot configure ",PortName));
+                wxMessageBox(wxString::Format("Cannot configure %s",PortName));
                 return true;
             }
         }
@@ -256,7 +256,7 @@ bool Camera_LEwebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
     LastPort = Port;
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             return true;
         }

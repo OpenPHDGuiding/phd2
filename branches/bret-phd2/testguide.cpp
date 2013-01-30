@@ -35,13 +35,13 @@
 #include "phd.h"
 
 TestGuideDialog::TestGuideDialog():
-wxDialog(pFrame, wxID_ANY, _T("Manual Output"), wxPoint(-1,-1), wxSize(300,300)) {
+wxDialog(pFrame, wxID_ANY, _("Manual Output"), wxPoint(-1,-1), wxSize(300,300)) {
     wxGridSizer *sizer = new wxGridSizer(3,3,0,0);
 
-    NButton = new wxButton(this,MGUIDE_N,_T("North"),wxPoint(-1,-1),wxSize(-1,-1));
-    SButton = new wxButton(this,MGUIDE_S,_T("South"),wxPoint(-1,-1),wxSize(-1,-1));
-    EButton = new wxButton(this,MGUIDE_E,_T("East"),wxPoint(-1,-1),wxSize(-1,-1));
-    WButton = new wxButton(this,MGUIDE_W,_T("West"),wxPoint(-1,-1),wxSize(-1,-1));
+    NButton = new wxButton(this,MGUIDE_N,_("North"),wxPoint(-1,-1),wxSize(-1,-1));
+    SButton = new wxButton(this,MGUIDE_S,_("South"),wxPoint(-1,-1),wxSize(-1,-1));
+    EButton = new wxButton(this,MGUIDE_E,_("East"),wxPoint(-1,-1),wxSize(-1,-1));
+    WButton = new wxButton(this,MGUIDE_W,_("West"),wxPoint(-1,-1),wxSize(-1,-1));
     sizer->AddStretchSpacer();
     sizer->Add(NButton,wxSizerFlags().Expand().Border(wxALL,6));
     sizer->AddStretchSpacer();

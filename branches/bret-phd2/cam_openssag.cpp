@@ -61,7 +61,7 @@ bool Camera_OpenSSAGClass::Connect() {
     }
     */
     if (!ssag->Connect()) {
-        wxMessageBox(_T("Could not connect to StarShoot Autoguider"));
+        wxMessageBox(_T("Could not connect to StarShoot Autoguider"), _("Error"));
         return true;
     }
     
@@ -103,7 +103,7 @@ bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, 
     int ysize = FullSize.GetHeight();
     
     if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
         Disconnect();
         return true;
     }

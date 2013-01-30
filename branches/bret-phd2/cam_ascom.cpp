@@ -112,7 +112,7 @@ bool Camera_ASCOMClass::Connect() {
         pCam->NumY = pCam->CameraYSize;
     }
     catch (...) {
-        wxMessageBox(_T("Cannot program size: ") + wxConvertStringFromOle(pCam->LastError), _T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Cannot program size: ") + wxConvertStringFromOle(pCam->LastError), _("Error"), wxOK | wxICON_ERROR);
         return 1;
     }
 
@@ -161,7 +161,7 @@ bool Camera_ASCOMClass::Capture(int duration, usImage& img, wxRect subframe, boo
         pCam->StartExposure((double) duration / 1000.0, VARIANT_TRUE);
     }
     catch (...) {
-        wxMessageBox(_T("Cannot start exposure: ") + wxConvertStringFromOle(pCam->LastError), _T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Cannot start exposure: ") + wxConvertStringFromOle(pCam->LastError), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     if (debuglog) {
@@ -256,7 +256,7 @@ bool Camera_ASCOMClass::Capture(int duration, usImage& img, wxRect subframe, boo
     }
     if(IResult!=S_OK) return true;
     if (img.Init(xs,ys)) {
-        wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
         Disconnect();
         return true;
     }

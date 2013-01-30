@@ -286,7 +286,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
             if (massRatio > m_massChangeThreshold)
             {
                 m_star.SetError(Star::STAR_MASSCHANGE);
-                pFrame->SetStatusText(wxString::Format(_T("Mass: %.0f vs %.0f"), newStar.Mass, m_star.Mass), 1);
+                pFrame->SetStatusText(wxString::Format(_("Mass: %.0f vs %.0f"), newStar.Mass, m_star.Mass), 1);
                 Debug.Write(wxString::Format("UpdateGuideState(): star mass ratio=%.1f, thresh=%.1f new=%.1f, old=%.1f\n", massRatio, m_massChangeThreshold, newStar.Mass, m_star.Mass));
                 throw THROW_INFO("massChangeThreshold error");
             }
@@ -347,12 +347,12 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 
             if (!m_star.IsValid())
             {
-                pFrame->SetStatusText(wxString::Format(_T("No star found")));
+                pFrame->SetStatusText(wxString::Format(_("No star found")));
             }
             else
             {
                 SetLockPosition(m_star, true);
-                pFrame->SetStatusText(wxString::Format(_T("Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
+                pFrame->SetStatusText(wxString::Format(_("Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
                 pFrame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),m_star.Mass,m_star.SNR));
             }
 
@@ -537,15 +537,15 @@ GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWi
     width = StringWidth(_T("0000"));
     m_pSearchRegion = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 10, 50, 15, _T("Search"));
-    DoAdd(_T("Search region (pixels)"), m_pSearchRegion,
-          _T("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
+    DoAdd(_("Search region (pixels)"), m_pSearchRegion,
+          _("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
 
     width = StringWidth(_T("0000"));
     m_pMassChangeThreshold = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
-    DoAdd(_T("Star mass tolerance"), m_pMassChangeThreshold,
-          _T("Tolerance for change in star mass b/n frames. Default = 0.3 (0.1-1.0)"));
+    DoAdd(_("Star mass tolerance"), m_pMassChangeThreshold,
+          _("Tolerance for change in star mass b/n frames. Default = 0.3 (0.1-1.0)"));
 }
 
 GuiderOneStar::GuiderOneStarConfigDialogPane::~GuiderOneStarConfigDialogPane(void)

@@ -37,11 +37,11 @@
 void TestGuide() {
 
 #ifdef BRET_TODO
-    wxMessageBox(_T("W RA+")); wxTheApp->Yield(); pMount->Guide(WEST,2000); wxTheApp->Yield();
-    wxMessageBox(_T("N Dec+"));  wxTheApp->Yield(); pMount->Guide(NORTH,2000);wxTheApp->Yield();
-    wxMessageBox(_T("E RA-"));  wxTheApp->Yield(); pMount->Guide(EAST,2000);wxTheApp->Yield();
-    wxMessageBox(_T("S Dec-"));  wxTheApp->Yield(); pMount->Guide(SOUTH,2000);wxTheApp->Yield();
-    wxMessageBox(_T("Done"));
+    wxMessageBox(_("W RA+")); wxTheApp->Yield(); pMount->Guide(WEST,2000); wxTheApp->Yield();
+    wxMessageBox(_("N Dec+"));  wxTheApp->Yield(); pMount->Guide(NORTH,2000);wxTheApp->Yield();
+    wxMessageBox(_("E RA-"));  wxTheApp->Yield(); pMount->Guide(EAST,2000);wxTheApp->Yield();
+    wxMessageBox(_("S Dec-"));  wxTheApp->Yield(); pMount->Guide(SOUTH,2000);wxTheApp->Yield();
+    wxMessageBox(_("Done"));
 #endif
 }
 
@@ -60,19 +60,19 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
         double RaAngle  = pMount->RaAngle();
         double DecAngle = pMount->DecAngle();
 
-        tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("RA rate"), wxString::Format(_T("%.4f"),RaRate));
+        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("RA rate"), wxString::Format(_T("%.4f"),RaRate));
         if (tmpstr.IsEmpty()) return;
         tmpstr.ToDouble(&RaRate); // = 0.0035;
 
-        tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.005)"), _T("Dec rate"), wxString::Format(_T("%.4f"),DecRate));
+        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("Dec rate"), wxString::Format(_T("%.4f"),DecRate));
         if (tmpstr.IsEmpty()) return;
         tmpstr.ToDouble(&DecRate); // = 0.0035;
 
-        tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 0.5)"), _T("RA angle"), wxString::Format(_T("%.3f"),RaAngle));
+        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.5)"), _("RA angle"), wxString::Format(_T("%.3f"),RaAngle));
         if (tmpstr.IsEmpty()) return;
         tmpstr.ToDouble(&RaAngle); // = 0.0035;
 
-        tmpstr = wxGetTextFromUser(_T("Enter parameter (e.g. 2.1)"), _T("Dec angle"), wxString::Format(_T("%.3f"),DecAngle));
+        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Dec angle"), wxString::Format(_T("%.3f"),DecAngle));
         if (tmpstr.IsEmpty()) return;
         tmpstr.ToDouble(&DecAngle); // = 0.0035;
 
@@ -90,7 +90,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
         double orig=pMount->RaAngle();
         pMount->FlipCalibration();
         double RaAngle  = pMount->RaAngle();
-        wxMessageBox(wxString::Format(_T("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->RaAngle()));
+        wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->RaAngle()));
     }
     else if (evt.GetId() == EEGG_MANUALLOCK) {
         if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
@@ -99,7 +99,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
         if (evt.IsChecked()) {
             double LockX, LockY;
             wxString tmpstr;
-            tmpstr = wxGetTextFromUser(_T("Enter x-lock position (or 0 for center)"), _T("X-lock position"));
+            tmpstr = wxGetTextFromUser(_("Enter x-lock position (or 0 for center)"), _("X-lock position"));
             if (tmpstr.IsEmpty()) return;
             //ManualLock = true;
             tmpstr.ToDouble(&LockX);
@@ -109,7 +109,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
                 LockY = pCamera->FullSize.GetHeight() / 2;
             }
             else {
-                tmpstr = wxGetTextFromUser(_T("Enter y-lock position"), _T("Y-lock position"));
+                tmpstr = wxGetTextFromUser(_("Enter y-lock position"), _("Y-lock position"));
                 if (tmpstr.IsEmpty()) return;
                 tmpstr.ToDouble(&LockY);
                 LockY = fabs(LockY);

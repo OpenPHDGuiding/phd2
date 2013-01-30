@@ -76,7 +76,7 @@ bool Camera_StarShootDSCIClass::Connect() {
         OCP_openUSB = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"openUSB");
         if (!OCP_openUSB)   {
             FreeLibrary(CameraDLL);
-            (void) wxMessageBox(wxT("Didn't find openUSB in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+            (void) wxMessageBox(wxT("Didn't find openUSB in DLL"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
         else {
@@ -84,31 +84,31 @@ bool Camera_StarShootDSCIClass::Connect() {
             if (retval) {  // Good to go, now get other functions
                 OCP_isUSB2 = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"IsUSB20");
                 if (!OCP_isUSB2)
-                    (void) wxMessageBox(wxT("Didn't find IsUSB20 in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find IsUSB20 in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 
                 OCP_Width = (UI_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Width");
                 if (!OCP_Width)
-                    (void) wxMessageBox(wxT("Didn't find CAM_Width in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find CAM_Width in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 OCP_Height = (UI_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Height");
                 if (!OCP_Height)
-                    (void) wxMessageBox(wxT("Didn't find CAM_Height in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find CAM_Height in DLL"),_("Error"),wxOK | wxICON_ERROR);
             
                 OCP_sendEP1_1BYTE = (V_V_DLLFUNC)GetProcAddress(CameraDLL,"sendEP1_1BYTE");
                 if (!OCP_sendEP1_1BYTE)
-                    (void) wxMessageBox(wxT("Didn't find sendEP1_1BYTE"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find sendEP1_1BYTE"),_("Error"),wxOK | wxICON_ERROR);
                 OCP_sendRegister = (OCPREGFUNC)GetProcAddress(CameraDLL,"sendRegister");
                 if (!OCP_sendRegister)
-                    (void) wxMessageBox(wxT("Didn't find sendRegister in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find sendRegister in DLL"),_("Error"),wxOK | wxICON_ERROR);
 
                 OCP_Exposure = (B_I_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Exposure");
                 if (!OCP_Exposure)
-                    (void) wxMessageBox(wxT("Didn't find CAM_Exposure in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find CAM_Exposure in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 OCP_Exposing = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Exposing");
                 if (!OCP_Exposing)
-                    (void) wxMessageBox(wxT("Didn't find CAM_Exposing in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find CAM_Exposing in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 OCP_ProcessedBuffer = (USP_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_ProcessedBuffer");
                 if (!OCP_ProcessedBuffer)
-                    (void) wxMessageBox(wxT("Didn't find OPC_ProcessedBuffer in DLL"),wxT("Error"),wxOK | wxICON_ERROR);
+                    (void) wxMessageBox(wxT("Didn't find OPC_ProcessedBuffer in DLL"),_("Error"),wxOK | wxICON_ERROR);
             }
             else {
                 return true;
@@ -116,7 +116,7 @@ bool Camera_StarShootDSCIClass::Connect() {
         }
     }
     else {
-      (void) wxMessageBox(wxT("Can't find DSCI.dll"),wxT("Error"),wxOK | wxICON_ERROR);
+      (void) wxMessageBox(wxT("Can't find DSCI.dll"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     USB2 = OCP_isUSB2();
@@ -145,7 +145,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     }
 
     if (retval) {
-        (void) wxMessageBox(wxT("Problem sending register to StarShoot"),wxT("Error"),wxOK | wxICON_ERROR);
+        (void) wxMessageBox(wxT("Problem sending register to StarShoot"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     
@@ -154,7 +154,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     else
         retval = OCP_Exposure(0);  // Start USB1.1 exposure
     if (!retval) {
-        wxMessageBox(_T("Error starting exposure"),_T("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Error starting exposure"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     if (duration > 100) {
@@ -168,7 +168,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     }
     if (img.NPixels != (RawX*RawY)) {
         if (img.Init(RawX,RawY)) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             return true;
         }

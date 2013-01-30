@@ -61,7 +61,7 @@ bool StepGuider::BacklashClearingFailed(void)
 {
     bool bError = false;
 
-    wxMessageBox(_T("Unable to clear StepGuider DEC backlash -- should not happen. Calibration failed."), _T("Alert"), wxOK | wxICON_ERROR);
+    wxMessageBox(_T("Unable to clear StepGuider DEC backlash -- should not happen. Calibration failed."), _("Error"), wxOK | wxICON_ERROR);
 
     return true;
 }
@@ -129,7 +129,7 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             }
             else
             {
-                SetStatusText(_T("sxAO connected"));
+                SetStatusText(_("sxAO connected"));
             }
         }
 #endif
@@ -240,10 +240,10 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
 
     width = StringWidth(_T("00000"));
     m_pCalibrationSteps = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_("Cal_Dur"));
 
-    DoAdd(_T("Calibration steps"), m_pCalibrationSteps,
-        wxString::Format("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes", DefaultCalibrationSteps));
+    DoAdd(_("Calibration steps"), m_pCalibrationSteps,
+        wxString::Format(_T("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationSteps));
 
 }
 

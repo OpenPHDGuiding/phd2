@@ -90,19 +90,19 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
         // Find the ASCOM Chooser
         // First, go into the registry and get the CLSID of it based on the name
         if(FAILED(CLSIDFromProgID(L"DriverHelper.Chooser", &CLSID_chooser))) {
-            wxMessageBox (_T("Failed to find ASCOM.  Make sure it is installed"),_T("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox (_T("Failed to find ASCOM.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not get the CLSID of the chooser");
         }
 
         // Next, create an instance of it and get another needed ID (dispid)
         if(FAILED(CoCreateInstance(CLSID_chooser,NULL,CLSCTX_SERVER,IID_IDispatch,(LPVOID *)&pChooserDisplay))) {
-            wxMessageBox (_T("Failed to find the ASCOM Chooser.  Make sure it is installed"),_T("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox (_T("Failed to find the ASCOM Chooser.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not create chooser instance");
         }
 
         tmp_name = L"Choose";
         if(FAILED(pChooserDisplay->GetIDsOfNames(IID_NULL, &tmp_name,1,LOCALE_USER_DEFAULT,&dispid))) {
-            wxMessageBox (_T("Failed to find the ASCOM Chooser.  Make sure it is installed"),_T("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox (_T("Failed to find the ASCOM Chooser.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for Choose");
         }
 
@@ -118,7 +118,7 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
         dispParms.cNamedArgs = 0;
         dispParms.rgdispidNamedArgs = NULL;
         if(FAILED(hr = pChooserDisplay->Invoke(dispid,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,&dispParms,&vRes,&excep, NULL))) {
-            wxMessageBox (_T("Failed to run the Scope Chooser.  Something is wrong with ASCOM"),_T("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox (_T("Failed to run the Scope Chooser.  Something is wrong with ASCOM"),_("Error"),wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not get invoke Choose");
         }
 
@@ -170,7 +170,7 @@ bool ScopeASCOM::Connect(void) {
 
         if (IsConnected())
         {
-            wxMessageBox("Scope already connected");
+            wxMessageBox("Scope already connected",_("Error"));
             throw ERROR_INFO("ASCOM Scope: Connected - Already Connected");
         }
 
@@ -187,13 +187,13 @@ bool ScopeASCOM::Connect(void) {
             // Get the CLSID
             oc_ProgID = wxConvertStringToOle(wx_ProgID);  // OLE version of scope's ProgID
             if (FAILED(CLSIDFromProgID(oc_ProgID, &CLSID_driver))) {
-                wxMessageBox(_T("Could not connect to ") + wx_ProgID, _T("Error"), wxOK | wxICON_ERROR);
+                wxMessageBox(_T("Could not connect to ") + wx_ProgID, _("Error"), wxOK | wxICON_ERROR);
                 throw ERROR_INFO("ASCOM Scope: Could not get CLSID");
             }
 
             // ... create an OLE instance of the device ...
             if (FAILED(CoCreateInstance(CLSID_driver,NULL,CLSCTX_SERVER,IID_IDispatch,(LPVOID *)&pScopeDriver))) {
-                wxMessageBox(_T("Could not establish instance of ") + wx_ProgID, _T("Error"), wxOK | wxICON_ERROR);
+                wxMessageBox(_T("Could not establish instance of ") + wx_ProgID, _("Error"), wxOK | wxICON_ERROR);
                 throw ERROR_INFO("ASCOM Scope: Could not establish ASCOM Scope instance");
             }
             Debug.AddLine(wxString::Format("pScopeDriver = 0x%p", pScopeDriver));
@@ -220,19 +220,19 @@ bool ScopeASCOM::Connect(void) {
 
             // ... get the dispatch ID for the Connected property ...
             if (GetDispatchID(pScopeDriver, L"Connected", &dispid_connected)) {
-                wxMessageBox(_T("ASCOM driver problem -- cannot connect"),_T("Error"), wxOK | wxICON_ERROR);
+                wxMessageBox(_T("ASCOM driver problem -- cannot connect"),_("Error"), wxOK | wxICON_ERROR);
                 throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for the Connected property");
             }
 
             // ... get thie dispatch ID for the Name property ...
             if (GetDispatchID(pScopeDriver, L"Name", &dispid_name)) {
-                wxMessageBox(_T("Can't get the name of the scope -- ASCOM driver missing the name"),_T("Error"), wxOK | wxICON_ERROR);
+                wxMessageBox(_T("Can't get the name of the scope -- ASCOM driver missing the name"),_("Error"), wxOK | wxICON_ERROR);
                 throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for the Name property");
             }
 
             // ... get the dispatch ID for the "CanPulseGuide" property ....
             if (GetDispatchID(pScopeDriver, L"CanPulseGuide", &dispid_canpulseguide))  {
-                wxMessageBox(_T("ASCOM driver missing the CanPulseGuide property"),_T("Error"), wxOK | wxICON_ERROR);
+                wxMessageBox(_T("ASCOM driver missing the CanPulseGuide property"),_("Error"), wxOK | wxICON_ERROR);
                 throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for the CanPulseGuide property");
             }
 
@@ -249,13 +249,13 @@ bool ScopeASCOM::Connect(void) {
 
             // ... get the dispatch ID for the "Slewing" property ....
             if (GetDispatchID(pScopeDriver, L"Slewing", &dispid_isslewing))  {
-                wxMessageBox(_T("ASCOM driver missing the Slewing property"),_T("Error"), wxOK | wxICON_ERROR);
+                wxMessageBox(_T("ASCOM driver missing the Slewing property"),_("Error"), wxOK | wxICON_ERROR);
                 throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for the Slewing property");
             }
 
             // ... get the dispatch ID for the "PulseGuide" property ....
             if (GetDispatchID(pScopeDriver, L"PulseGuide", &dispid_pulseguide)) {
-                wxMessageBox(_T("ASCOM driver missing the PulseGuide property"),_T("Error"), wxOK | wxICON_ERROR);
+                wxMessageBox(_T("ASCOM driver missing the PulseGuide property"),_("Error"), wxOK | wxICON_ERROR);
                 throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for the PulseGuide property");
             }
         }
@@ -270,7 +270,7 @@ bool ScopeASCOM::Connect(void) {
         dispParms.cNamedArgs = 1;                   // PropPut kludge
         dispParms.rgdispidNamedArgs = &didPut;
         if(FAILED(hr = pScopeDriver->Invoke(dispid_connected,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,&dispParms,&vRes,&excep, NULL))) {
-            wxMessageBox(_T("ASCOM driver problem during connection"),_T("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("ASCOM driver problem during connection"),_("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not set Connected property to true");
         }
 
@@ -280,7 +280,7 @@ bool ScopeASCOM::Connect(void) {
         dispParms.cNamedArgs = 0;
         dispParms.rgdispidNamedArgs = NULL;
         if(FAILED(hr = pScopeDriver->Invoke(dispid_name,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispParms,&vRes,&excep, NULL))) {
-            wxMessageBox(_T("ASCOM driver problem getting Name property"),_T("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("ASCOM driver problem getting Name property"),_("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not get the scope name");
         }
 
@@ -298,11 +298,11 @@ bool ScopeASCOM::Connect(void) {
         dispParms.rgdispidNamedArgs = NULL;
         if(FAILED(hr = pScopeDriver->Invoke(dispid_canpulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
             &dispParms,&vRes,&excep, NULL))) {
-            wxMessageBox(_T("ASCOM driver does not support the needed Pulse Guide method."),_T("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("ASCOM driver does not support the needed Pulse Guide method."),_("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Cannot pulseguide");
         }
 
-        pFrame->SetStatusText(Name()+_T(" connected"));
+        pFrame->SetStatusText(Name()+_(" connected"));
         Scope::Connect();
 
         Debug.AddLine(wxString::Format("Connect success"));
@@ -355,7 +355,7 @@ bool ScopeASCOM::Disconnect(void) {
         dispParms.cNamedArgs = 1;                   // PropPut kludge
         dispParms.rgdispidNamedArgs = &didPut;
         if(FAILED(hr = pScopeDriver->Invoke(dispid_connected,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,&dispParms,&vRes,&excep, NULL))) {
-            wxMessageBox(_T("ASCOM driver problem during connection"),_T("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("ASCOM driver problem during connection"),_("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false");
         }
         Debug.AddLine(wxString::Format("Disconnected Successfully"));
@@ -434,7 +434,7 @@ bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration) {
 
         if(FAILED(hr = pScopeDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
                                         &dispParms,&vRes,&excep,NULL))) {
-            wxMessageBox(_T("ASCOM driver failed PulseGuide command"),_T("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("ASCOM driver failed PulseGuide command"),_("Error"), wxOK | wxICON_ERROR);
             Debug.AddLine(wxString::Format("pulseguide fails, pScopeDriver = 0x%p", pScopeDriver));
             throw ERROR_INFO("ASCOM Scope: pulseguide command failed");
         }
@@ -491,7 +491,7 @@ bool ScopeASCOM::IsGuiding(IDispatch *pScopeDriver)
         dispParms.cNamedArgs = 0;
         dispParms.rgdispidNamedArgs = NULL;
         if(FAILED(hr = pScopeDriver->Invoke(dispid_ispulseguiding,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispParms,&vRes,&excep, NULL))) {
-            wxMessageBox(_T("ASCOM driver failed checking IsPulseGuiding"),_T("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("ASCOM driver failed checking IsPulseGuiding"),_("Error"), wxOK | wxICON_ERROR);
             Debug.AddLine(wxString::Format("IsPulseGuding fails, pScopeDriver = 0x%p", pScopeDriver));
             throw ERROR_INFO("ASCOM Scope: IsGuiding - IsPulseGuiding failed");
         }
@@ -503,7 +503,7 @@ bool ScopeASCOM::IsGuiding(IDispatch *pScopeDriver)
             dispParms.cNamedArgs = 0;
             dispParms.rgdispidNamedArgs = NULL;
             if(FAILED(hr = pScopeDriver->Invoke(dispid_isslewing,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispParms,&vRes,&excep, NULL))) {
-                wxMessageBox(_T("ASCOM driver failed checking Slewing"),_T("Error"), wxOK | wxICON_ERROR);
+                wxMessageBox(_T("ASCOM driver failed checking Slewing"),_("Error"), wxOK | wxICON_ERROR);
                 throw ERROR_INFO("ASCOM Scope: IsGuiding - failed to check slewing");
             }
             if (vRes.boolVal != VARIANT_TRUE) {

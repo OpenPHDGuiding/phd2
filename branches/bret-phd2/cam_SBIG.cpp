@@ -100,7 +100,7 @@ bool Camera_SBIGClass::Connect() {
     interf.Add("USB2 direct");
     interf.Add("USB3 direct");
 #endif
-    resp = wxGetSingleChoiceIndex(_T("Select interface"),_T("Interface"),interf);
+    resp = wxGetSingleChoiceIndex(_("Select interface"),_("Interface"),interf);
     wxString IPstr;
     wxString tmpstr;
     unsigned long ip,tmp;
@@ -120,7 +120,7 @@ bool Camera_SBIGClass::Connect() {
                 int i;
                 for (i=0; i<usbp.camerasFound; i++)
                     USBNames.Add(usbp.usbInfo[i].name);
-                i=wxGetSingleChoiceIndex(_T("Select USB camera"),("Camera name"),USBNames);
+                i=wxGetSingleChoiceIndex(_("Select USB camera"),_("Camera name"),USBNames);
                 if (i == -1) { Disconnect(); return true; }
                 if (i == 0) odp.deviceType = DEV_USB1;
                 else if (i == 1) odp.deviceType = DEV_USB2;
@@ -130,7 +130,7 @@ bool Camera_SBIGClass::Connect() {
             break;
         case 1:
             odp.deviceType = DEV_ETH;
-            IPstr = wxGetTextFromUser(_T("IP address"),_T("Enter IP address"));
+            IPstr = wxGetTextFromUser(_("IP address"),_("Enter IP address"));
             tmpstr = IPstr.BeforeFirst('.');
             tmpstr.ToULong(&tmp);
             ip =  tmp << 24;
@@ -178,7 +178,7 @@ bool Camera_SBIGClass::Connect() {
 //  wxMessageBox(wxString::Format("6: Opening dev %u",odp.deviceType));
     err = SBIGUnivDrvCommand(CC_OPEN_DEVICE, &odp, NULL);
     if ( err != CE_NO_ERROR ) {
-        wxMessageBox (wxString::Format("Cannot open SBIG camera: Code %d",err));
+        wxMessageBox (wxString::Format("Cannot open SBIG camera: Code %d",err), _("Error"));
         Disconnect();
         return true;
     }
@@ -187,7 +187,7 @@ bool Camera_SBIGClass::Connect() {
     EstablishLinkResults elr;
     err = SBIGUnivDrvCommand(CC_ESTABLISH_LINK, NULL, &elr);
     if ( err != CE_NO_ERROR ) {
-        wxMessageBox (wxString::Format("Link to SBIG camera failed: Code %d",err));
+        wxMessageBox (wxString::Format("Link to SBIG camera failed: Code %d",err), _("Error"));
         Disconnect();
         return true;
     }
@@ -211,7 +211,7 @@ bool Camera_SBIGClass::Connect() {
         gcip.request = CCD_INFO_IMAGING;
         err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
         if (err != CE_NO_ERROR) {
-            wxMessageBox(_T("Error getting info on main CCD"));
+            wxMessageBox(_T("Error getting info on main CCD"), _("Error"));
             Disconnect();
             return true;
         }
@@ -298,7 +298,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     // init memory
     if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-        wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
         Disconnect();
         return true;
     }
@@ -309,7 +309,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     
     err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
     if (err != CE_NO_ERROR) {
-        wxMessageBox(_T("Cannot start exposure"));
+        wxMessageBox(_T("Cannot start exposure"), _("Error"));
         Disconnect();
         return true;
     }
@@ -322,7 +322,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         wxMilliSleep(20);
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR) {
-            wxMessageBox(_T("Cannot poll exposure"));
+            wxMessageBox(_T("Cannot poll exposure"), _("Error"));
             Disconnect();
             return true;
         }
@@ -335,7 +335,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     // End exposure
     err = SBIGUnivDrvCommand(CC_END_EXPOSURE, &eep, NULL);
     if (err != CE_NO_ERROR) {
-        wxMessageBox(_T("Cannot stop exposure"));
+        wxMessageBox(_T("Cannot stop exposure"), _("Error"));
         Disconnect();
         return true;
     }
@@ -364,7 +364,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             dataptr = img.ImageData + subframe.x + (y+subframe.y)*FullSize.GetWidth();
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             if (err != CE_NO_ERROR) {
-                wxMessageBox(_T("Error downloading data"));
+                wxMessageBox(_T("Error downloading data"), _("Error"));
                 Disconnect();
                 return true;
             }
@@ -377,7 +377,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             dataptr += FullSize.GetWidth();
             if (err != CE_NO_ERROR) {
-                wxMessageBox(_T("Error downloading data"));
+                wxMessageBox(_T("Error downloading data"), _("Error"));
                 Disconnect();
                 return true;
             }
@@ -435,7 +435,7 @@ bool Camera_SBIGClass::PulseGuideScope(int direction, int duration) {
         wxMilliSleep(10);
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR) {
-            wxMessageBox(_T("Cannot check SBIG relay status"));
+            wxMessageBox(_T("Cannot check SBIG relay status"), _("Error"));
             return true;
         }
         if (!qcsr.status) still_going = false;

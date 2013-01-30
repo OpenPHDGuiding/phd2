@@ -61,7 +61,7 @@ EVT_CHOICE(GRAPH_DM,GraphLogWindow::OnUpdateCommandGuideParams)
 END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
-wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCAPTION & ~wxSTAY_ON_TOP) {  // was 230
+wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),wxCAPTION & ~wxSTAY_ON_TOP) {  // was 230
     this->visible = false;
     this->n_items = 0;
     this->mode = 0; // RA/Dec
@@ -72,13 +72,13 @@ wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCA
     this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 
     this->LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("100"),wxPoint(10,10),wxSize(80,-1));
-    this->LengthButton->SetToolTip(_T("# of frames of history to display"));
+    this->LengthButton->SetToolTip(_("# of frames of history to display"));
     this->ModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"),wxPoint(10,40),wxSize(80,-1));
-    this->ModeButton->SetToolTip(_T("Toggle RA/Dec vs dx/dy.  Shift-click to change RA/dx color.  Ctrl-click to change Dec/dy color"));
-    this->HideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_T("Hide"),wxPoint(10,70),wxSize(80,-1));
-    this->HideButton->SetToolTip(_T("Hide graph"));
-    this->ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_T("Clear"),wxPoint(10,100),wxSize(80,-1));
-    this->ClearButton->SetToolTip(_T("Clear graph data"));
+    this->ModeButton->SetToolTip(_("Toggle RA/Dec vs dx/dy.  Shift-click to change RA/dx color.  Ctrl-click to change Dec/dy color"));
+    this->HideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_("Hide"),wxPoint(10,70),wxSize(80,-1));
+    this->HideButton->SetToolTip(_("Hide graph"));
+    this->ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxPoint(10,100),wxSize(80,-1));
+    this->ClearButton->SetToolTip(_("Clear graph data"));
     
     RA_Color=wxColour(100,100,255);
     DEC_Color = wxColour(255,0,0);
@@ -141,7 +141,7 @@ this->MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM, _T(""),
                                     0,2000, 0);
     // Dec Guide mode
     wxString dec_choices[] = {
-        _T("Off"),_T("Auto"),_T("North"),_T("South")
+        _("Off"),_("Auto"),_("North"),_("South")
     };
     this->DM_Ctrl= new wxChoice(this,GRAPH_DM,wxPoint(535,210+extra_offset),wxSize(ctl_size+15,-1),WXSIZEOF(dec_choices), dec_choices );
     //DM_Ctrl->SetSelection(pMount->GetDecGuideMode());
@@ -416,9 +416,9 @@ END_EVENT_TABLE()
 
 ProfileWindow::ProfileWindow(wxWindow *parent):
 #if defined (__APPLE__)
-wxMiniFrame(parent,wxID_ANY,_T("Profile"),wxDefaultPosition,wxSize(50,77),wxCAPTION & ~wxSTAY_ON_TOP) {
+wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(50,77),wxCAPTION & ~wxSTAY_ON_TOP) {
 #else
-wxMiniFrame(parent,wxID_ANY,_T("Profile"),wxDefaultPosition,wxSize(55,90),wxCAPTION & ~wxSTAY_ON_TOP) {
+wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(55,90),wxCAPTION & ~wxSTAY_ON_TOP) {
 #endif
 
     this->visible = false;
@@ -499,19 +499,19 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
     switch (this->mode) {  // Figure which profile to use
         case 0: // mid-row
             profptr = midrow_profile;
-            label = _T("Mid row");
+            label = _("Mid row");
             break;
         case 1: // avg row
             profptr = horiz_profile;
-            label = _T("Avg row");
+            label = _("Avg row");
             break;
         case 2:
             profptr = vert_profile;
-            label = _T("Avg col");
+            label = _("Avg col");
             break;
         default:
             profptr = midrow_profile;
-            label = _T("Mid row");
+            label = _("Mid row");
             break;
     }
 

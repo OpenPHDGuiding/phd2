@@ -97,7 +97,7 @@ bool Scope::BacklashClearingFailed(void)
 {
     bool bError = false;
 
-    wxMessageBox(_T("Unable to clear DEC backlash -- turning off Dec guiding"), _T("Alert"), wxOK | wxICON_ERROR);
+    wxMessageBox(_("Unable to clear DEC backlash -- turning off Dec guiding"),_("Error"), wxOK | wxICON_ERROR);
     SetDecGuideMode(DEC_NONE);
 
     return bError;
@@ -250,11 +250,11 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("FAIL: ASCOM connection");
+            SetStatusText(_("Connection FAIL") + ": ASCOM");
         }
         else
         {
-            SetStatusText(_T("ASCOM connected"));
+            SetStatusText("ASCOM " + _("connected"));
         }
     }
 #endif
@@ -264,10 +264,10 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pNewScope = new ScopeGpUsb();
 
         if (pNewScope->Connect()) {
-            SetStatusText(_T("FAIL: GPUSB"));
+            SetStatusText(_("Connection FAIL") + ": GPUSB");
         }
         else {
-            SetStatusText(_T("GPUSB connected"));
+            SetStatusText("GPUSB " + _("connected"));
         }
     }
 #endif
@@ -278,11 +278,11 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("FAIL: GPINT 3BC connection");
+            SetStatusText(_("Connection FAIL") + ": GPINT 3BC");
         }
         else
         {
-            SetStatusText(_T("GPINT 3BC selected"));
+            SetStatusText("GPINT 3BC " + _("connected"));
         }
     }
     else if (scope_menu->IsChecked(SCOPE_GPINT378)) {
@@ -290,11 +290,11 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("FAIL: GPINT 378 connection");
+            SetStatusText(_("Connection FAIL") + ": GPINT 378");
         }
         else
         {
-            SetStatusText(_T("GPINT 378 selected"));
+            SetStatusText("GPINT 378 " + _("connected"));
         }
     }
     else if (scope_menu->IsChecked(SCOPE_GPINT278)) {
@@ -302,11 +302,11 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("FAIL: GPINT 278 connection");
+            SetStatusText(_("Connection FAIL") + ": GPINT 278");
         }
         else
         {
-            SetStatusText(_T("GPINT 278 selected"));
+            SetStatusText("GPINT 278 " + _("connected"));
         }
     }
 #endif
@@ -317,11 +317,11 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pNewScope = pGCUSBST4;
         if (pNewScope->Connect())
         {
-            SetStatusText("FAIL: GCUSB-ST4 connection");
+            SetStatusText("_("Connection FAIL") + ": GCUSB-ST4n");
         }
         else
         {
-            SetStatusText(_T("GCUSB-ST4 selected"));
+            SetStatusText("GCUSB-ST4 " + _("connected"));
         }
     }
 #endif
@@ -331,11 +331,11 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pNewScope = new ScopeOnCamera();
         if (pNewScope->Connect())
         {
-            SetStatusText("FAIL: OnCamera connection");
+            SetStatusText(_("Connection FAIL") + ": OnCamera");
         }
         else
         {
-            SetStatusText(_T("OnCamera selected"));
+            SetStatusText("OnCamera " + _("connected"));
         }
     }
 #endif
@@ -346,9 +346,9 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("FAIL: Voyager localhost");
+            SetStatusText(_("Connection FAIL") + ": Voyager localhost");
 
-            wxString IPstr = wxGetTextFromUser(_T("Enter IP address"),_T("Voyager not found on localhost"));
+            wxString IPstr = wxGetTextFromUser(_("Enter IP address"),_T("Voyager not found on localhost"));
 
             // we have to use the ScopeVoyager pointer to pass the address to connect
             if (pVoyager->Connect(IPstr))
@@ -359,7 +359,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->IsConnected())
         {
-            SetStatusText(_T("Voyager selected"));
+            SetStatusText("Voyager " + _("connected"));
         }
     }
 #endif
@@ -369,11 +369,11 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 
         if (pNewScope->Connect())
         {
-            SetStatusText("FAIL: Equinox mount");
+            SetStatusText(_("Connection FAIL") + ": Equinox");
         }
         else
         {
-            SetStatusText(_T("Equinox connected"));
+            SetStatusText("Equinox " + _("connected"));
         }
     }
 #endif
@@ -385,11 +385,11 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         // must use pEquinox to pass an arument to connect
         if (pEQMac->Connect())
         {
-            SetStatusText("FAIL: EQMac mount");
+            SetStatusText(_("Connection FAIL") + ": EQMac");
         }
         else
         {
-            SetStatusText(_T("EQMac connected"));
+            SetStatusText("EQMac " + _("connected"));
         }
     }
 #endif
@@ -399,14 +399,14 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             pMount->IsConnected() = SCOPE_INDI;
         } else {
             pMount->IsConnected() = 0;
-            SetStatusText(_T("FAIL: INDI mount"));
+            SetStatusText(_("Connection FAIL") + ": INDI"));
         }
     }
 #endif
     if (pNewScope && pNewScope->IsConnected()) {
         delete pMount;
         pMount = pNewScope;
-        SetStatusText(_T("Mount connected"));
+        SetStatusText(_("Mount connected"));
         SetStatusText(_T("Scope"),3);
         // now store the scope we selected so we can use it as the default next time.
         wxMenuItemList items = scope_menu->GetMenuItems();
@@ -520,29 +520,29 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pCalibrationDuration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
 
-    DoAdd(_T("Calibration step (ms)"), m_pCalibrationDuration,
-        _T("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"));
+    DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
+        _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"));
 
     width = StringWidth(_T("00000"));
     m_pMaxRaDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 2000, 150, _T("MaxDec_Dur"));
-    DoAdd(_T("Max RA Duration"),  m_pMaxRaDuration,
-          _T("Longest length of pulse to send in RA\nDefault = 1000 ms. "));
+    DoAdd(_("Max RA Duration"),  m_pMaxRaDuration,
+          _("Longest length of pulse to send in RA\nDefault = 1000 ms. "));
 
     width = StringWidth(_T("00000"));
     m_pMaxDecDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS,0,2000,150,_T("MaxDec_Dur"));
-    DoAdd(_T("Max Dec Duration"),  m_pMaxDecDuration,
-          _T("Longest length of pulse to send in declination\nDefault = 100 ms.  Increase if drift is fast."));
+    DoAdd(_("Max Dec Duration"),  m_pMaxDecDuration,
+          _("Longest length of pulse to send in declination\nDefault = 100 ms.  Increase if drift is fast."));
 
     wxString dec_choices[] = {
-        _T("Off"),_T("Auto"),_T("North"),_T("South")
+        _("Off"),_("Auto"),_("North"),_("South")
     };
     width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
     m_pDecMode= new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
             wxSize(width+35, -1), WXSIZEOF(dec_choices), dec_choices);
-    DoAdd(_T("Dec guide mode"), m_pDecMode,
-          _T("Guide in declination as well?"));
+    DoAdd(_("Dec guide mode"), m_pDecMode,
+          _("Guide in declination as well?"));
 }
 
 Scope::ScopeConfigDialogPane::~ScopeConfigDialogPane(void)

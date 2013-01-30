@@ -36,12 +36,12 @@ bool Camera_OpticstarPL130Class::Connect() {
 // returns true on error
     int retval;
     if (!DLLExists("OSPL130RT.dll")) {
-        wxMessageBox(_T("Cannot find OSPL130RT.dll"),wxT("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Cannot find OSPL130RT.dll"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     retval = OSPL130_Initialize((int) Color, false, 0, 2);
     if (retval) {
-        wxMessageBox("Cannot init camera",wxT("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox("Cannot init camera",_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     RawData = new unsigned char [2621440];  //
@@ -66,13 +66,13 @@ bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subf
     int mode = 3 * (int) Color;
     if (img.NPixels != (FullSize.GetWidth()*FullSize.GetHeight())) {
         if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-            wxMessageBox(_T("Memory allocation error during capture"),wxT("Error"),wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
             Disconnect();
             return true;
         }
     }
     if (OSPL130_Capture(mode,duration)) {
-        wxMessageBox(_T("Cannot start exposure"), _T("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("Cannot start exposure"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     if (duration > 100) {

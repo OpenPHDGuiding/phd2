@@ -51,7 +51,7 @@ bool ScopeVoyager::Connect(wxString hostname)
     VoyagerClient.WaitOnConnect(5);
 
     if (VoyagerClient.IsConnected()) {
-        wxMessageBox(_T("Connection established"));
+        wxMessageBox(_("Connection established"));
         bError = false;
     }
 

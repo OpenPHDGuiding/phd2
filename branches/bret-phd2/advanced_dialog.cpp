@@ -35,9 +35,9 @@
 #include "phd.h"
 AdvancedDialog::AdvancedDialog():
 #if defined (__WINDOWS__)
-wxDialog(pFrame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(210,350), wxCAPTION | wxCLOSE_BOX)
+wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(210,350), wxCAPTION | wxCLOSE_BOX)
 #else
-wxDialog(pFrame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
+wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
 #endif
 {
     /*
@@ -96,7 +96,7 @@ wxDialog(pFrame, wxID_ANY, _T("Advanced setup"), wxPoint(-1,-1), wxSize(250,350)
     {
         m_pCameraPane=NULL;
         wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Settings")), wxVERTICAL);
-        wxStaticText *pText = new wxStaticText(this, wxID_ANY, _T("No Camera Connected"),wxPoint(-1,-1),wxSize(-1,-1));
+        wxStaticText *pText = new wxStaticText(this, wxID_ANY, _("No Camera Connected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
         pLeftSizer->Add(pBox, 0, wxALIGN_CENTER | wxGROW);
     }
