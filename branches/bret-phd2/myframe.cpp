@@ -452,7 +452,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     topsizer->Add(pGuider,wxSizerFlags(0));
     topsizer->Add(lowersizer,wxSizerFlags(0));
     //szfoo = this->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
-    
+
     //this->SetMinSize(640,590);
 //#ifdef __APPLE__
 //  this->SetSize(640,590);
@@ -462,7 +462,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     topsizer->SetSizeHints( this );
 //#endif
     //szfoo = this->GetSize(); wxMessageBox(wxString::Format("%d %d",szfoo.GetX(),szfoo.GetY()));
-    
+
     // Setup  Help file
     wxFileSystem::AddHandler(new wxZipFSHandler);
     bool retval;
@@ -528,7 +528,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     wxImage Cursor = wxImage(mac_xhair);
     Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X,8);
     Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y,8);
-    pGuider->SetCursor(wxCursor(Cursor));   
+    pGuider->SetCursor(wxCursor(Cursor));
 
 #ifndef __WXGTK__
     SetStatusText(_T("Like PHD? Consider donating"),1);

@@ -119,7 +119,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
         else {
             //ManualLock = false;
         }
-    }   
+    }
     else evt.Skip();
 
 }
@@ -127,5 +127,5 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 
 
 void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(ect)) {
-    
+
 }

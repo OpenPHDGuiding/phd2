@@ -48,7 +48,7 @@ public:
     //  int                 Binsize;
     bool                Init(int xsize, int ysize);
     void                CalcStats();
-    void                InitDate();                 
+    void                InitDate();
     bool                CopyToImage(wxImage **img, int blevel, int wlevel, double power);
     bool                BinnedCopyToImage(wxImage **img, int blevel, int wlevel, double power); // Does 2x2 bin during copy
     bool                Clean();

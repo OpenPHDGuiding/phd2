@@ -50,7 +50,7 @@ Camera_OpenSSAGClass::Camera_OpenSSAGClass() {
     FullSize = wxSize(1280,1024);  // Current size of a full frame
     HasGuiderOutput = true;  // Do we have an ST4 port?
     HasGainControl = true;  // Can we adjust gain?
-    
+
     ssag = new SSAG();
 }
 
@@ -64,9 +64,9 @@ bool Camera_OpenSSAGClass::Connect() {
         wxMessageBox(_T("Could not connect to StarShoot Autoguider"), _("Error"));
         return true;
     }
-    
+
     Connected = true;  // Set global flag for being connected
-    
+
     return false;
 }
 
@@ -86,9 +86,9 @@ bool Camera_OpenSSAGClass::PulseGuideScope(int direction, int duration) {
             break;
         default: return true; // bad direction passed in
     }
-    
+
     wxMilliSleep(duration + 10);
-    
+
     return false;
 }
 
@@ -101,24 +101,24 @@ bool Camera_OpenSSAGClass::Disconnect() {
 bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
-    
+
     if (img.Init(xsize,ysize)) {
         wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
         Disconnect();
         return true;
     }
-    
+
     ssag->SetGain((int)(GuideCameraGain / 24));
     struct raw_image *raw = ssag->Expose(duration);
-    
+
     for (unsigned int i = 0; i < raw->width * raw->height; i++) {
         img.ImageData[i] = (int)raw->data[i];
     }
-    
+
     ssag->FreeRawImage(raw);
-    
+
     if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
-    
+
     return false;
 }
 

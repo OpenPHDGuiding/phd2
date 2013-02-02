@@ -7,6 +7,6 @@ typedef unsigned int (CALLBACK* UI_V_DLLFUNC)(void);
 typedef void (CALLBACK* V_V_DLLFUNC)(void);
 typedef void (CALLBACK* V_UCp_DLLFUNC)(unsigned char*);
 typedef unsigned char (CALLBACK* OCPREGFUNC)(unsigned long,unsigned char,unsigned char,unsigned char,
-															bool,bool,bool,bool,bool,bool,bool,bool,bool,bool);
+                                                            bool,bool,bool,bool,bool,bool,bool,bool,bool,bool);
 
 

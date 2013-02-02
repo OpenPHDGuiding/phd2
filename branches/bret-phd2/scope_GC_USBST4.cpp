@@ -134,7 +134,7 @@ bool ScopeGCUSBST4::Connect() {
     char tempstr[256];
     io_iterator_t   theSerialIterator;
     io_object_t     theObject;
-    
+
     if (createSerialIterator(&theSerialIterator) != KERN_SUCCESS) {
         wxMessageBox(_T("Error in finding serial ports"),_("Error"));
         return false;
@@ -150,7 +150,7 @@ bool ScopeGCUSBST4::Connect() {
         }
     }
     IOObjectRelease(theSerialIterator); // Release the iterator.
-    
+
     if (!found_device) {
         wxMessageBox("Could not find device - searched for usbmodem* to no avail...",_("Error"));
         return true;
@@ -171,7 +171,7 @@ bool ScopeGCUSBST4::Connect() {
     }
     ioctl(portFID, TIOCEXCL);
     fcntl(portFID, F_SETFL, 0);
-    
+
     // Setup port
     struct termios  options;
     //options = gOriginalTTYAttrs;
@@ -205,17 +205,17 @@ bool ScopeGCUSBST4::Connect() {
     if (ioctl(portFID, TIOCMGET, &handshake) == -1) {
         wxMessageBox("Error getting port handshake");
         close(portFID);
-        return false;       
+        return false;
     }
     unsigned long mics = 1UL;
     if (ioctl(portFID, IOSSDATALAT, &mics) == -1) {
         wxMessageBox("Error setting port latency");
         close(portFID);
         return false;
-        
+
     }*/
 //  wxMessageBox(wxString::Format("%d",(int) cfgetispeed(&options)));
-    
+
     // Init / check the device
     char buf[2];
     int num_bytes;
@@ -229,7 +229,7 @@ bool ScopeGCUSBST4::Connect() {
         close(portFID);
         return true;
     }
-    
+
     // Do a quick check
     buf[0]=0x6;
     buf[1]=0;
@@ -250,7 +250,7 @@ bool ScopeGCUSBST4::Connect() {
         close(portFID);
         return true;
     }
-    
+
     Scope::Connect();
 
     return false;
@@ -260,7 +260,7 @@ bool ScopeGCUSBST4::Disconnect() {
     if (portFID > 0) {
         close(portFID);
         portFID = 0;
-    }   
+    }
 
     Scope::Disconnect();
     return false;

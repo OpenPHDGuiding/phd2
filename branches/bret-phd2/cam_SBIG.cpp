@@ -306,7 +306,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     // Start exposure
 
-    
+
     err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
     if (err != CE_NO_ERROR) {
         wxMessageBox(_T("Cannot start exposure"), _("Error"));
@@ -346,7 +346,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     rlp.readoutMode = 0;
     if (TakeSubframe) {
         img.Subframe=subframe;
-        
+
         // dump the lines above the one we want
         dlp.lineLength = subframe.y;
         dlp.readoutMode = 0;

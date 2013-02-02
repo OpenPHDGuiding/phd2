@@ -50,8 +50,8 @@ public:
     bool    Disconnect();
     void    InitCapture();
 //  bool    PulseGuideScope(int direction, int duration);
-    
-    
+
+
     Camera_FirewireClass();
 //  ~Camera_FirewireClass();
 private:

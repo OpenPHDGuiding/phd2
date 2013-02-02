@@ -60,7 +60,7 @@ bool Camera_INovaPLCClass::Connect() {
     RawData = new unsigned short[1280*1024];
 
     Connected = true;  // Set global flag for being connected
-    
+
     return false;
 }
 
@@ -147,9 +147,9 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
     for (unsigned int i = 0; i <xsize*ysize; i++) {
         img.ImageData[i] = (RawData[i]>> 8) | (RawData[i] << 8);
     }
-    
+
     if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
-    
+
     return false;
 }
 

@@ -72,7 +72,7 @@ bool Camera_ASCOMLateClass::Connect() {
     DISPID dispid_choose, dispid_tmp;
     DISPID dispidNamed = DISPID_PROPERTYPUT;
     OLECHAR *tmp_name = L"Choose";
-    //BSTR bstr_ProgID = NULL;              
+    //BSTR bstr_ProgID = NULL;
     DISPPARAMS dispParms;
     VARIANTARG rgvarg[2];                           // Chooser.Choose(ProgID)
     EXCEPINFO excep;
@@ -99,7 +99,7 @@ bool Camera_ASCOMLateClass::Connect() {
         wxMessageBox (_T("Failed to find the DeviceType property.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
-    
+
     // Set the Chooser type to Camera
     BSTR bsDeviceType = SysAllocString(L"Camera");
     rgvarg[0].vt = VT_BSTR;
@@ -119,7 +119,7 @@ bool Camera_ASCOMLateClass::Connect() {
     wxString wx_ProgID = PhdConfig.GetString("/camera/ASCOMlate/camera_id", _T(""));
     BSTR bstr_ProgID=NULL;
     bstr_ProgID = wxBasicString(wx_ProgID).Get();
-    
+
 
     // Next, try to open it
     rgvarg[0].vt = VT_BSTR;
@@ -245,7 +245,7 @@ bool Camera_ASCOMLateClass::Connect() {
         else
             DriverVersion = vRes.iVal;
     }
-    
+
     if (DriverVersion > 1) {  // We can check the color sensor status of the cam
         tmp_name = L"SensorType";
         if(!FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))  {
@@ -365,7 +365,7 @@ bool Camera_ASCOMLateClass::Disconnect() {
     DISPID dispidNamed = DISPID_PROPERTYPUT;
     OLECHAR *tmp_name = L"Connected";
     DISPPARAMS dispParms;
-    VARIANTARG rgvarg[1];                   
+    VARIANTARG rgvarg[1];
     EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
@@ -487,7 +487,7 @@ bool Camera_ASCOMLateClass::PulseGuideScope(int direction, int duration) {
         return true;
     wxStopWatch swatch;
     DISPPARAMS dispParms;
-    VARIANTARG rgvarg[2];                   
+    VARIANTARG rgvarg[2];
     EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
@@ -506,13 +506,13 @@ bool Camera_ASCOMLateClass::PulseGuideScope(int direction, int duration) {
                                     &dispParms,&vRes,&excep,NULL))) {
         return true;
     }
-    
+
     if (swatch.Time() < duration) {  // likely returned right away and not after move - enter poll loop
         while (this->ASCOM_IsMoving()) {
                 wxMilliSleep (100);
         }
     }
-        
+
     return false;
 }
 
@@ -522,7 +522,7 @@ bool Camera_ASCOMLateClass::ASCOM_SetBin(int mode) {
 
     DISPID dispidNamed = DISPID_PROPERTYPUT;
     DISPPARAMS dispParms;
-    VARIANTARG rgvarg[1];                   
+    VARIANTARG rgvarg[1];
     EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
@@ -549,7 +549,7 @@ bool Camera_ASCOMLateClass::ASCOM_SetROI(int startx, int starty, int numx, int n
     // returns true on error, false if OK
     DISPID dispidNamed = DISPID_PROPERTYPUT;
     DISPPARAMS dispParms;
-    VARIANTARG rgvarg[1];                   
+    VARIANTARG rgvarg[1];
     EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
@@ -586,7 +586,7 @@ bool Camera_ASCOMLateClass::ASCOM_StopExposure() {
     // Assumes the dispid values needed are already set
     // returns true on error, false if OK
     DISPPARAMS dispParms;
-    VARIANTARG rgvarg[1];                   
+    VARIANTARG rgvarg[1];
     EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
@@ -606,7 +606,7 @@ bool Camera_ASCOMLateClass::ASCOM_StartExposure(double duration, bool dark) {
     // Assumes the dispid values needed are already set
     // returns true on error, false if OK
     DISPPARAMS dispParms;
-    VARIANTARG rgvarg[2];                   
+    VARIANTARG rgvarg[2];
     EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
@@ -630,7 +630,7 @@ bool Camera_ASCOMLateClass::ASCOM_ImageReady(bool& ready) {
     // Assumes the dispid values needed are already set
     // returns true on error, false if OK
     DISPPARAMS dispParms;
-//  VARIANTARG rgvarg[1];                   
+//  VARIANTARG rgvarg[1];
     EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
@@ -667,7 +667,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRec
         return true;
     }
 
-    rawarray = vRes.parray; 
+    rawarray = vRes.parray;
     int dims = SafeArrayGetDim(rawarray);
     long ubound1, ubound2, lbound1, lbound2;
     long xsize, ysize;
@@ -722,7 +722,7 @@ bool Camera_ASCOMLateClass::ASCOM_IsMoving() {
     HRESULT hr;
     EXCEPINFO excep;
     VARIANT vRes;
-    
+
     if (!pMount->IsConnected()) return false;
     dispParms.cArgs = 0;
     dispParms.rgvarg = NULL;

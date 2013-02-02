@@ -72,7 +72,7 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
     bool bError = false;
 
     IDispatch *pChooserDisplay = NULL;  // Pointer to the Chooser
-    BSTR bstr_ProgID = NULL;                
+    BSTR bstr_ProgID = NULL;
     char *cp = NULL;
 
     try

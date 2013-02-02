@@ -244,7 +244,7 @@ void usImage::InitDate() {
     time_t now;
     struct tm *timestruct;
     time(&now);
-    timestruct=gmtime(&now);        
+    timestruct=gmtime(&now);
     ImgStartDate=wxString::Format("%.4d-%.2d-%.2dT%.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,
         timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
 
@@ -306,7 +306,7 @@ bool usImage::Load(const wxString& fname)
                 (void) wxMessageBox(wxT("FITS file is not of an image"), _("Error"),wxOK | wxICON_ERROR);
                 throw ERROR_INFO("Fits file is not an image");
             }
-            
+
             // Get HDUs and size
             fits_get_img_dim(fptr, &naxis, &status);
             fits_get_img_size(fptr, 2, fsize, &status);

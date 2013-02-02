@@ -46,7 +46,7 @@ public:
     bool    Connect();
     bool    Disconnect();
     void    InitCapture();
-    
+
     //  bool    SetGlobalGain(unsigned char gain);
     bool    PulseGuideScope(int direction, int duration);
     //  void    ClearGuidePort();
@@ -54,7 +54,7 @@ public:
     HANDLE hCam;
 #else
     void      *hCam;
-#endif  
+#endif
     Camera_SXVClass();
 
 private:

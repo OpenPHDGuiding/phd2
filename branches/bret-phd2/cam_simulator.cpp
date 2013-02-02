@@ -253,7 +253,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
             (void) wxMessageBox(wxT("FITS file is not of an image"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
-        
+
         // Get HDUs and size
         fits_get_img_dim(fptr, &naxis, &status);
         fits_get_img_size(fptr, 2, fits_size, &status);
@@ -285,9 +285,9 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
 
     }
     return false;
-    
+
 }
 #endif
-    
+
 
 #endif

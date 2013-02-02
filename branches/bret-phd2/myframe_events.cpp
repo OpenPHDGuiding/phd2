@@ -411,7 +411,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
                 Log_Images = 1;
             else
                 Log_Images = 0;
-            
+
         }
         Menubar->Refresh();
     } else if (evt.GetId() == MENU_DEBUG)

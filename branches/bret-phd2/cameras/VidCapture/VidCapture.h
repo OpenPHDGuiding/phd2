@@ -15,7 +15,7 @@
 #include "CVPlatform.h"    // Platform-specific creation of classes
 #include "CVVidCapture.h"  // Video capture interface
 
-// This one only needs to be #included if you want to do 
+// This one only needs to be #included if you want to do
 // DirectShow specific stuff - e.g. CVVidCaptureDSWin32::StartRawCap()
 
 //#ifdef WIN32

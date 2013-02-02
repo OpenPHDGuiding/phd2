@@ -207,7 +207,7 @@ bool Camera_ASCOMClass::Capture(int duration, usImage& img, wxRect subframe, boo
     }
 
     if (!rawdata) try {
-        rawarray =array_variant.parray; 
+        rawarray =array_variant.parray;
     }
     catch (...) {
         wxMessageBox("Error getting data from camera");
@@ -264,7 +264,7 @@ bool Camera_ASCOMClass::Capture(int duration, usImage& img, wxRect subframe, boo
         debug << _T(" - Copying image to internal buffer\n");
         debugstr.Sync();
     }
-    
+
     dataptr = img.ImageData;
     for (i=0; i<img.NPixels; i++, dataptr++)
         *dataptr = (unsigned short) rawdata[i];
@@ -328,7 +328,7 @@ bool Camera_ASCOMClass::PulseGuideScope(int direction, int duration) {
             return true;
         }
     }
-        
+
     return false;
 }
 

@@ -74,7 +74,7 @@ void SXCamRemoved (void *cam) {
 
 bool Camera_SXVClass::Connect() {
     // returns true on error
-    
+
     bool retval = true;
 #if defined (__WINDOWS__)
     HANDLE hCams[SXCCD_MAX_CAMS];
@@ -117,7 +117,7 @@ bool Camera_SXVClass::Connect() {
     int portstatus;
     portstatus = sxCamPortStatus(0);
     portstatus = sxCamPortStatus(1);
-    
+
     for (i=0; i<4; i++) {
         model = sxCamAvailable(i);
         if (model) {
@@ -125,7 +125,7 @@ bool Camera_SXVClass::Connect() {
             tmp_name=wxString::Format("%d: SXV-%c%d%c",i,model & 0x40 ? 'M' : 'H', model & 0x1F, model & 0x80 ? 'C' : '\0');
             if (model == 70)
                 tmp_name = wxString::Format("%d: SXV-Lodestar",i);
-            Names.Add(tmp_name);            
+            Names.Add(tmp_name);
         }
     }
     if (ncams > 1) {
@@ -143,9 +143,9 @@ bool Camera_SXVClass::Connect() {
     portstatus = sxCamPortStatus(0);
     portstatus = sxCamPortStatus(1);
     */
-    
-    
-    
+
+
+
      // New version
     int ncams = sx2EnumDevices();
     if (!ncams) {
@@ -173,10 +173,10 @@ bool Camera_SXVClass::Connect() {
             if (model) {
                 sx2GetName(i,devname);
                 tmp_name = wxString::Format("%d: %s",i+1,devname);
-                Names.Add(tmp_name);                
+                Names.Add(tmp_name);
             }
         }
-        
+
         wxString ChoiceString;
         ChoiceString=wxGetSingleChoice(_("Select SX camera"),_("Camera choice"),Names);
         if (ChoiceString.IsEmpty()) return true;
@@ -185,30 +185,30 @@ bool Camera_SXVClass::Connect() {
         ChoiceString.ToLong(&lval);
         lval = lval - 1;
         hCam = sx2Open((int) lval);
-    }       
+    }
     else
         hCam = sx2Open(0);
-    
 
-    
+
+
 
     if (hCam == NULL) return true;
 #endif
-    
+
     retval = false;  // assume all good
-        
+
     // Close all unused cameras if nCams > 1 after picking which one
     //  WRITE
-    
+
     // Load parameters
     sxGetCameraParams(hCam,0,&CCDParams);
     FullSize = wxSize(CCDParams.width, CCDParams.height);
 //  PixelSize[0] = CCDParams.pix_width;
 //  PixelSize[1] = CCDParams.pix_height;
-    
+
     // deal with what if no porch in there ??
     // WRITE??
-    
+
     CameraModel = sxGetCameraModel(hCam);
     Name=wxString::Format("SXV-%c%d%c",CameraModel & 0x40 ? 'M' : 'H', CameraModel & 0x1F, CameraModel & 0x80 ? 'C' : '\0');
     if (CameraModel == 70)
@@ -222,32 +222,32 @@ bool Camera_SXVClass::Connect() {
         ColorSensor = true;
     else
         ColorSensor = false;
-        
+
     if (CameraModel & 0x40)
         Interlaced = true;
     else
         Interlaced = false;
     if (SubType == 25)
         Interlaced = false;
-        
+
     if ( Interlaced ) {
         FullSize.SetHeight(FullSize.GetHeight() * 2);  // one of the interlaced CCDs that reports the size of a field
 //      PixelSize[1] = PixelSize[1] / 2.0;
     }
-    
+
     if (CCDParams.extra_caps & 0x20)
         HasShutter = true;
 
     RawData = new unsigned short[FullSize.GetHeight() * FullSize.GetWidth()];
-    
-    
+
+
 /*      wxMessageBox(wxString::Format("SX Camera Params:\n\n%u x %u (reported as %u x %u\nPixSz: %.2f x %.2f; #Pix: %u\nArray color type: %u,%u\nInterlaced: %d\nModel: %u, Subype: %u, Porch: %u,%u %u,%u\nExtras: %u\n",
             FullSize.GetWidth(),FullSize.GetHeight(),CCDParams.width, CCDParams.height,
              CCDParams.pix_width,CCDParams.pix_height,FullSize.GetHeight() * FullSize.GetWidth(),
             CCDParams.color_matrix, (int) ColorSensor, (int) Interlaced,
             CameraModel,SubType, CCDParams.hfront_porch,CCDParams.hback_porch,CCDParams.vfront_porch,CCDParams.vback_porch,
             CCDParams.extra_caps)+Name);
-*/  
+*/
 
     if (!retval)
         Connected = true;
@@ -266,12 +266,12 @@ bool Camera_SXVClass::Disconnect() {
     sxClose(hCam);
 #endif
     hCam = NULL;
-    
+
     return false;
 }
 void Camera_SXVClass::InitCapture() {
 
-    
+
 }
 
 bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
@@ -284,7 +284,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     unsigned short *rawptr;
 
     // Interlaced cams will be run in "high speed" mode (vertically binned) to avoid all sorts of crap
-    
+
     if (Interlaced) ysize = FullSize.GetHeight() / 2;
     else ysize = FullSize.GetHeight();
     xsize = FullSize.GetWidth();
@@ -329,13 +329,13 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 #else
         sxReadPixels(hCam, (UInt8 *) RawData, NPixelsToRead, sizeof (unsigned short));
 #endif
-    
+
     if (HasShutter && ShutterState) {
         sxSetShutter(hCam,0);  // Open it back up
         wxMilliSleep(200);
     }
-    
-    
+
+
     // Re-assemble image
     int output_xsize = FullSize.GetWidth();
     int output_ysize = FullSize.GetHeight();
@@ -347,8 +347,8 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
             Disconnect();
             return true;
         }
-    }       
-    
+    }
+
     rawptr = RawData;
     dataptr = img.ImageData;
     if (CameraModel == 39) { // CMOS guider -- crop and clean
@@ -392,7 +392,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         }
         for (x=0; x<xsize; x++, dataptr++)
             *dataptr =  *(dataptr - xsize);
-        
+
     }
     else {  // Progressive
         for (i=0; i<img.NPixels; i++, rawptr++, dataptr++) {
@@ -402,7 +402,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
     if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
     if (recon) QuickLRecon(img);  // pass 2x2 mean filter over it to help remove noise
-    
+
     if (CCDParams.pix_width != CCDParams.pix_height)
         SquarePixels(img,CCDParams.pix_width,CCDParams.pix_width);
 
@@ -435,7 +435,7 @@ bool Camera_SXVClass::PulseGuideScope(int direction, int duration) {
     wxMilliSleep(duration);
     dircmd = 0;
     sxSetSTAR2000(hCam,dircmd);
-    
+
     return false;
 }
 

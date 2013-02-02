@@ -3,52 +3,52 @@
 //#include "StdAfx.h"
 //#include "afx.h"
 
-typedef ULONG	U32, *PU32;
-typedef USHORT	U16, *PU16;
-typedef UCHAR	U8, *PU8;
+typedef ULONG   U32, *PU32;
+typedef USHORT  U16, *PU16;
+typedef UCHAR   U8, *PU8;
 
 
 struct CapInfoStruct {
-	unsigned char *Buffer;
-	unsigned long Height;
-	unsigned long Width;
-	unsigned long OffsetX;
-	unsigned long OffsetY;
-	unsigned long Exposure;
-	unsigned char Gain[3];
-	unsigned char Control;
-	unsigned char InternalUse;
-	unsigned char ColorOff[3];
-	unsigned char Reserved[4];
+    unsigned char *Buffer;
+    unsigned long Height;
+    unsigned long Width;
+    unsigned long OffsetX;
+    unsigned long OffsetY;
+    unsigned long Exposure;
+    unsigned char Gain[3];
+    unsigned char Control;
+    unsigned char InternalUse;
+    unsigned char ColorOff[3];
+    unsigned char Reserved[4];
 };
 
 typedef enum tagOS
 {
-	UNKNOWN_OS,
-	WIN98,
-	WINNT,
-	WIN2K
+    UNKNOWN_OS,
+    WIN98,
+    WINNT,
+    WIN2K
 } OSTYPE;
 
 
-#define ResSuccess					0x0000
-#define ResNullHandleErr			0x0001
-#define ResNullPointerErr			0x0002
-#define ResFileOpenErr				0x0003
-#define ResNoDeviceErr				0x0004
-#define ResInvalidParameterErr		0x0005
-#define ResOutOfMemoryErr			0x0006
-#define ResNoPreviewRunningErr		0x0007
-#define ResOSVersionErr				0x0008
-#define ResUsbNotAvailableErr		0x0009
-#define ResNotSupportedErr			0x000a
-#define ResNoSerialString			0x000b
-#define ResVerificationErr			0x000c
-//#define ResTimeoutErr	            0x000d
-#define ResScaleModeErr				0x000f
-#define ResUnknownErr				0x00ff
+#define ResSuccess                  0x0000
+#define ResNullHandleErr            0x0001
+#define ResNullPointerErr           0x0002
+#define ResFileOpenErr              0x0003
+#define ResNoDeviceErr              0x0004
+#define ResInvalidParameterErr      0x0005
+#define ResOutOfMemoryErr           0x0006
+#define ResNoPreviewRunningErr      0x0007
+#define ResOSVersionErr             0x0008
+#define ResUsbNotAvailableErr       0x0009
+#define ResNotSupportedErr          0x000a
+#define ResNoSerialString           0x000b
+#define ResVerificationErr          0x000c
+//#define ResTimeoutErr             0x000d
+#define ResScaleModeErr             0x000f
+#define ResUnknownErr               0x00ff
 
-#define WM_MOVEPOINT	WM_USER+10
+#define WM_MOVEPOINT    WM_USER+10
 
 
 
@@ -76,11 +76,11 @@ VOID
  *
  ******************************************************************************/
 FCL_API
-FclConvertRawToRgb(IN HANDLE hImager,	    // Modual device handle
-						IN BYTE* pSrc,		// Ptr to the source buffer
-						IN U32 width,		//image width
-						IN U32 height,		//image height
-						OUT BYTE* pDest);	// Ptr to the destination buffer
+FclConvertRawToRgb(IN HANDLE hImager,       // Modual device handle
+                        IN BYTE* pSrc,      // Ptr to the source buffer
+                        IN U32 width,       //image width
+                        IN U32 height,      //image height
+                        OUT BYTE* pDest);   // Ptr to the destination buffer
 
 /******************************************************************************
  *
@@ -90,8 +90,8 @@ FclConvertRawToRgb(IN HANDLE hImager,	    // Modual device handle
  *
  ******************************************************************************/
 FCL_API
-FclGetFrameRate(IN HANDLE hImager,	// Modual device handle
-					OUT float* pfFrameRate);// pointer to the current frame rate
+FclGetFrameRate(IN HANDLE hImager,  // Modual device handle
+                    OUT float* pfFrameRate);// pointer to the current frame rate
 
 
 /******************************************************************************
@@ -102,8 +102,8 @@ FclGetFrameRate(IN HANDLE hImager,	// Modual device handle
  *
  ******************************************************************************/
 FCL_API
-FclGetViewWin(IN HANDLE hImager,			// Modual device handle
-				OUT PRECT pSubWindowRect);	// subwindow rectangle
+FclGetViewWin(IN HANDLE hImager,            // Modual device handle
+                OUT PRECT pSubWindowRect);  // subwindow rectangle
 
 
 
@@ -115,44 +115,44 @@ FclGetViewWin(IN HANDLE hImager,			// Modual device handle
  *
  ******************************************************************************/
 FCL_API
-FclInitialize(	IN LPCSTR pFilterName,		// device name		
-				OUT int& index,				// index
-				IN CapInfoStruct capInfo,
-				OUT HANDLE* hImager);		// Modual device handle	pointer			
+FclInitialize(  IN LPCSTR pFilterName,      // device name
+                OUT int& index,             // index
+                IN CapInfoStruct capInfo,
+                OUT HANDLE* hImager);       // Modual device handle pointer
 
 /******************************************************************************
  *
  * Function: FclPauseView()
  *
- * Description:  Pause the View   
+ * Description:  Pause the View
  *
  ******************************************************************************/
 FCL_API
-FclPauseView(IN HANDLE hImager,			// Modual device handle
-				IN U32 pause);			// 1-pause,0-replay
+FclPauseView(IN HANDLE hImager,         // Modual device handle
+                IN U32 pause);          // 1-pause,0-replay
 
 
 /******************************************************************************
  *
  * Function: FclResetViewWin()
  *
- * Description:  Reset view window to the imager sub window size 
+ * Description:  Reset view window to the imager sub window size
  *
  ******************************************************************************/
 FCL_API
-FclResetViewWin(IN HANDLE hImager);	// Modual device handle
+FclResetViewWin(IN HANDLE hImager); // Modual device handle
 
 
 /******************************************************************************
  *
  * Function: FclSetViewWin()
  *
- * Description:  Set client rectangle of View window 
+ * Description:  Set client rectangle of View window
  *
  ******************************************************************************/
 FCL_API
-FclSetViewWin(IN HANDLE hImager,		// Modual device handle
-					IN RECT* pClientRect);	// desired client rectangle
+FclSetViewWin(IN HANDLE hImager,        // Modual device handle
+                    IN RECT* pClientRect);  // desired client rectangle
 
 
 /******************************************************************************
@@ -163,27 +163,27 @@ FclSetViewWin(IN HANDLE hImager,		// Modual device handle
  *
  ******************************************************************************/
 FCL_API
-FclStartView(IN HANDLE hImager,			// Modual device handle
-				LPSTR title="My View",	//window title
-				U32 style=WS_OVERLAPPEDWINDOW|WS_VISIBLE,//style
-				U32 x=0,					//left
-				U32 y=0,					//top
-				U32 width=-1,				//width
-				U32 height=-1,				//height
-				HWND parent=NULL,			//handle of parent window
-				U32 nId=0,					//child window id
-				IN int ViewDataThreadPriority=THREAD_PRIORITY_NORMAL,//View window's data thread priority
-				IN int ViewDrawThreadPriority=THREAD_PRIORITY_NORMAL);//View window's draw thread priority
+FclStartView(IN HANDLE hImager,         // Modual device handle
+                LPSTR title="My View",  //window title
+                U32 style=WS_OVERLAPPEDWINDOW|WS_VISIBLE,//style
+                U32 x=0,                    //left
+                U32 y=0,                    //top
+                U32 width=-1,               //width
+                U32 height=-1,              //height
+                HWND parent=NULL,           //handle of parent window
+                U32 nId=0,                  //child window id
+                IN int ViewDataThreadPriority=THREAD_PRIORITY_NORMAL,//View window's data thread priority
+                IN int ViewDrawThreadPriority=THREAD_PRIORITY_NORMAL);//View window's draw thread priority
 
 /******************************************************************************
  *
  * Function: FclStopView()
  *
- * Description:  Stop the View 
+ * Description:  Stop the View
  *
  ******************************************************************************/
 FCL_API
-FclStopView(IN HANDLE hImager);			// Modual device handle
+FclStopView(IN HANDLE hImager);         // Modual device handle
 
 
 /******************************************************************************
@@ -194,7 +194,7 @@ FclStopView(IN HANDLE hImager);			// Modual device handle
  *
  ******************************************************************************/
 FCL_API
-FclUninitialize(IN HANDLE* hImager);		// Ptr to Modual device handle
+FclUninitialize(IN HANDLE* hImager);        // Ptr to Modual device handle
 
 /******************************************************************************
  *
@@ -213,9 +213,9 @@ FclSetCapInfo(IN HANDLE hImager,struct CapInfoStruct capInfo);
  * Description: Save a paused frame as bmp file
  *
  ******************************************************************************/
-FCL_API 
-FclSavePausedFrameAsBmp(IN HANDLE hImager,	// Modual device handle
-						IN LPSTR FileName);
+FCL_API
+FclSavePausedFrameAsBmp(IN HANDLE hImager,  // Modual device handle
+                        IN LPSTR FileName);
 
 /******************************************************************************
  *
@@ -224,9 +224,9 @@ FclSavePausedFrameAsBmp(IN HANDLE hImager,	// Modual device handle
  * Description: Change scaninfo except size
  *
  ******************************************************************************/
-FCL_API 
+FCL_API
 FclSetPartOfCapInfo(IN HANDLE hImager,
-				IN struct CapInfoStruct scanInfo);
+                IN struct CapInfoStruct scanInfo);
 /******************************************************************************
  *
  * Function: FclSetDoAGC()
@@ -234,18 +234,18 @@ FclSetPartOfCapInfo(IN HANDLE hImager,
  * Description: Set the flag to let AGC run
  *
  ******************************************************************************/
-//FCL_API 
+//FCL_API
 //FclSetDoAGC(IN HANDLE hImager,IN BOOL bDoAgc);
 
 
 //Set AGC, when AGC is done, the callback function will be called
-FCL_API 
+FCL_API
 FclSetDoAWB(IN HANDLE hImager,
-			IN BOOL bDoAgc,		//flag to do AGC
-			IN BYTE btTarget,	//The target of AWB
-			IN LPVOID lpFunc,	//pointer to callback function
-			IN LONG * pParam);	//An optional parameter which could send to 
-								//callback function
+            IN BOOL bDoAgc,     //flag to do AGC
+            IN BYTE btTarget,   //The target of AWB
+            IN LPVOID lpFunc,   //pointer to callback function
+            IN LONG * pParam);  //An optional parameter which could send to
+                                //callback function
 /******************************************************************************
  *
  * Function: FclSetLUT()
@@ -253,13 +253,13 @@ FclSetDoAWB(IN HANDLE hImager,
  * Description: Set output curve with LUT methods
  *
  * Parameters: pLut, a table of 256 values for correction of brightness of
- *				image
+ *              image
  *
  ******************************************************************************/
-FCL_API 
+FCL_API
 FclSetLUT(IN HANDLE hImager,
-			IN BYTE *pLut,
-			IN BOOL bLut);
+            IN BYTE *pLut,
+            IN BOOL bLut);
 
 /******************************************************************************
  *
@@ -268,12 +268,12 @@ FclSetLUT(IN HANDLE hImager,
  * Description: Set gamma value
  *
  * Parameters: GammaValue, the standard gamma value
- * 
+ *
  ******************************************************************************/
-FCL_API 
-FclSetGammaValue(HANDLE hImager, 
-				 float GammaValue,
-				 BOOL bGammaOn);
+FCL_API
+FclSetGammaValue(HANDLE hImager,
+                 float GammaValue,
+                 BOOL bGammaOn);
 
 /******************************************************************************
  *
@@ -282,9 +282,9 @@ FclSetGammaValue(HANDLE hImager,
  * Description: Set the flag of black and white
  *
  ******************************************************************************/
-FCL_API 
+FCL_API
 FclSetBw(IN HANDLE hImager,
-			IN BOOL bBw);
+            IN BOOL bBw);
 
 
 /******************************************************************************
@@ -296,19 +296,19 @@ FclSetBw(IN HANDLE hImager,
  ******************************************************************************/
 FCL_API
 FclGetOneFrame(IN HANDLE hImager,
-			   IN struct CapInfoStruct capInfo);
+               IN struct CapInfoStruct capInfo);
 
 /******************************************************************************
  *
  * Function: FclGetRgbFrame()
  *
- * Description: Get a frame of image in RGB format 
+ * Description: Get a frame of image in RGB format
  *
  ******************************************************************************/
 FCL_API
 FclGetRgbFrame(IN HANDLE hImager,
-			   IN struct CapInfoStruct capInfo, 
-			   OUT BYTE* pDest);
+               IN struct CapInfoStruct capInfo,
+               OUT BYTE* pDest);
 
 /******************************************************************************
  *
@@ -317,12 +317,12 @@ FclGetRgbFrame(IN HANDLE hImager,
  * Description: Set the flag to adjust exposure automatically
  *
  ******************************************************************************/
-FCL_API 
+FCL_API
 FclSetExposureAdjust(IN HANDLE hImager,
-					 IN BOOL bAdjustExp,
-					 IN BYTE btTarget,
-					 IN LPVOID lpFunc,
-					 IN LONG * pParam);
+                     IN BOOL bAdjustExp,
+                     IN BYTE btTarget,
+                     IN LPVOID lpFunc,
+                     IN LONG * pParam);
 /******************************************************************************
  *
  * Function: FclGetSerial()
@@ -330,9 +330,9 @@ FclSetExposureAdjust(IN HANDLE hImager,
  * Description: Get serail number in firmware
  *
  ******************************************************************************/
-//FCL_API 
+//FCL_API
 //FclGetSerial(IN HANDLE hImager,
-//			OUT CString& strSerial);
+//          OUT CString& strSerial);
 
 
 
@@ -343,27 +343,27 @@ FclSetExposureAdjust(IN HANDLE hImager,
  * Description: send a command byte to camera
  *
  ******************************************************************************/
-FCL_API 
+FCL_API
 FclSendCommand(
-			IN HANDLE hImager,
-			IN UCHAR  uCommand);
+            IN HANDLE hImager,
+            IN UCHAR  uCommand);
 
 /******************************************************************************
  *
  * Function: FclBitOperation()
  *
- * Description: Bit operation 
- * 
+ * Description: Bit operation
+ *
  * Parameters: bOut ,bit 0,1,2 are data bits, bit 3,4,5 are direction bits
- *			   for bit 3,4,5, value 1 means write out the value of 1,2,3 , value
- *			   value 0 means read in the bit 1,2 ,3
+ *             for bit 3,4,5, value 1 means write out the value of 1,2,3 , value
+ *             value 0 means read in the bit 1,2 ,3
  ******************************************************************************/
 
-FCL_API 
+FCL_API
 FclBitOperation(
-			IN HANDLE hImager,
-			IN BYTE  bOut,
-			OUT BYTE& bIn);
+            IN HANDLE hImager,
+            IN BYTE  bOut,
+            OUT BYTE& bIn);
 
 /******************************************************************************
  *
@@ -372,14 +372,14 @@ FclBitOperation(
  * Description: Find out how many devices
  *
  * Parameters: pNumberDevices, pointer to the value of the device number
- * 
- * Notes: should be called when a device is initialized but not running 
- *		  the preveiw.
+ *
+ * Notes: should be called when a device is initialized but not running
+ *        the preveiw.
  *
  ******************************************************************************/
 FCL_API
 FclGetNumberDevices(IN HANDLE hImager,
-					OUT PU32 pNumberDevices);	// Ptr to number
+                    OUT PU32 pNumberDevices);   // Ptr to number
 
 /******************************************************************************
  *
@@ -388,13 +388,13 @@ FclGetNumberDevices(IN HANDLE hImager,
  * Description: Set caching ON or OFF
  *
  * Parameters: bCaching, TRUE meaning cache the image in memory, FALSE not
- * 
+ *
  * Notes: The cached image will be saved to disk when the preview window closed
  *
  ******************************************************************************/
-FCL_API 
+FCL_API
 FclSetCaching(IN HANDLE hImager,
-			IN BOOL  bCaching);
+            IN BOOL  bCaching);
 
 /******************************************************************************
  *
@@ -403,14 +403,14 @@ FclSetCaching(IN HANDLE hImager,
  * Description: Set the image in an scale mode
  *
  * Parameters: nMode, 0 is normal, 1:1, 1 is mediem, 1:4, 2 is small
- * 
+ *
  * Notes: In mode 1
  *
  ******************************************************************************/
-FCL_API 
+FCL_API
 FclScaleView(
-			IN HANDLE hImager,
-			IN int  nMode);
+            IN HANDLE hImager,
+            IN int  nMode);
 
 
 

@@ -382,7 +382,7 @@ bool Camera_LEwebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
     else if ((sum3 >= sum1) && (sum3>=sum2))
         imgdata = cap_img3.GetData();
     //pFrame->SetStatusText(wxString::Format("%d %d %d",sum1/10000,sum2/10000,sum3/10000),1);
-    
+
 
     //imgdata = cap_img.GetData();
     dptr = img.ImageData;

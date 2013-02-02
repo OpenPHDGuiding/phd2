@@ -102,7 +102,7 @@ bool Camera_WDMClass::Connect() {
       CVPlatform::GetPlatform()->Release(VidCap);
       return true;
    }
-    
+
     DeviceNum = 0;
     // Put up choice box to let user choose which camera
     if (NDevices > 1) {
@@ -169,7 +169,7 @@ bool Camera_WDMClass::Connect() {
         VidCap->Uninit();
         CVPlatform::GetPlatform()->Release(VidCap);
         return true;
-    }   
+    }
 
     // Setup x and y size
     if (CVFAILED(VidCap->GetCurrentMode(modeInfo))) {

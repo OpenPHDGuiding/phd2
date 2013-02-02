@@ -505,7 +505,7 @@ void GuiderOneStar::SaveStarFITS() {
         sprintf(keyname,"YBINNING");
         sprintf(keycomment,"Camera binning mode");
         fits_write_key(fptr, TUINT, keyname, &tmp, keycomment, &status);
-        
+
         sprintf(keyname,"XORGSUB");
         sprintf(keycomment,"Subframe x position in binned pixels");
         tmp = start_x;
@@ -514,8 +514,8 @@ void GuiderOneStar::SaveStarFITS() {
         sprintf(keycomment,"Subframe y position in binned pixels");
         tmp = start_y;
         fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
-        
-        
+
+
         if (!status) fits_write_pix(fptr,TUSHORT,fpixel,tmpimg.NPixels,tmpimg.ImageData,&status);
 
     }

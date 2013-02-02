@@ -45,16 +45,16 @@ int GPUSB_Model = 0;
 
 bool GPUSB_Open() {
     int i, ndevices, GPUSB_DevNum;
-    
+
     // VID = 4938  PID = 36897
-    
+
     HIDBuildDeviceList (NULL, NULL);
     GPUSB_DevNum = -1;
     ndevices = (int) HIDCountDevices();
-    
+
     i=0;
     // Locate the GPUSB
-    while ((i<ndevices) && (GPUSB_DevNum < 0)) {        
+    while ((i<ndevices) && (GPUSB_DevNum < 0)) {
         if (i==0) pGPUSB = HIDGetFirstDevice();
         else pGPUSB = HIDGetNextDevice (pGPUSB);
         if ((pGPUSB->vendorID == 4938) && (pGPUSB->productID == 36896)) { // got it
@@ -84,7 +84,7 @@ void GPUSB_SetBit(int bit, int val) {
     static int bitarray[8]={0,0,0,0,1,1,0,0};
     static unsigned char GPUSB_reg = 0x30;
 
-    
+
 
     if (GPUSB_Model) { // Newer models - use a single byte
         pCurrentHIDElement =  HIDGetFirstDeviceElement (pGPUSB, kHIDElementTypeOutput);
@@ -98,7 +98,7 @@ void GPUSB_SetBit(int bit, int val) {
         HID_IOEvent.longValueSize = 0;
         HID_IOEvent.longValue = nil;
         (*(IOHIDDeviceInterface**) pGPUSB->interface)->getElementValue (pGPUSB->interface, pCurrentHIDElement->cookie, &HID_IOEvent);
-        
+
         HID_IOEvent.value = (SInt32) GPUSB_reg;
 //      wxMessageBox(wxString::Format("%x - %x %x    %d %d",foo,GPUSB_reg,bmask,bit,val));
 //      HID_IOEvent.type = (IOHIDElementType) pCurrentHIDElement->type;
@@ -107,9 +107,9 @@ void GPUSB_SetBit(int bit, int val) {
     }
     else {
         // Generic bit-set routine.  For older adapters, we can't send a whole
-        // byte and things are setup as SInt32's per bit with 8 bits total...       
+        // byte and things are setup as SInt32's per bit with 8 bits total...
         IOHIDEventStruct hidstruct = {kIOHIDElementTypeOutput};
-        bitarray[bit]=val;  
+        bitarray[bit]=val;
 //      std::cout << "Setting to ";
         for (i=0; i<8; i++) {  // write
 //          std::cout << " " << bitarray[i];
@@ -157,25 +157,25 @@ bool GPUSB_LEDGreen() {
 bool GPUSB_DecPAssert() {
     if (!pGPUSB) return false;
     GPUSB_SetBit(3,1);
-    
+
     return true;
 }
 bool GPUSB_DecMAssert() {
     if (!pGPUSB) return false;
     GPUSB_SetBit(2,1);
-    
+
     return true;
 }
 bool GPUSB_RAPAssert() {
     if (!pGPUSB) return false;
     GPUSB_SetBit(1,1);
-    
+
     return true;
 }
 bool GPUSB_RAMAssert() {
     if (!pGPUSB) return false;
     GPUSB_SetBit(0,1);
-    
+
     return true;
 }
 bool GPUSB_AllDirDeassert() {
@@ -184,7 +184,7 @@ bool GPUSB_AllDirDeassert() {
     GPUSB_SetBit(1,0);
     GPUSB_SetBit(2,0);
     GPUSB_SetBit(3,0);
-    
+
     return true;
 }
 #endif // ------------------------------  Apple routines ----------------------------

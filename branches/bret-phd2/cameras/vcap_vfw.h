@@ -7,7 +7,7 @@
 // License:     wxWidgets V2.0
 /////////////////////////////////////////////////////////////////////////////
 //
-// Usage notes: 
+// Usage notes:
 // Link against vfw.lib
 // Read the header and the cpp file to figure out what something does
 // Test "problems" against MSW vidcap.exe to see if the same problem occurs
@@ -32,13 +32,13 @@ class WXDLLIMPEXP_VIDCAP wxVideoCaptureWindowVFW: public wxVideoCaptureWindowBas
 public:
     wxVideoCaptureWindowVFW() : wxVideoCaptureWindowBase() {}
     wxVideoCaptureWindowVFW( wxWindow *parent, wxWindowID id = -1,
-                             const wxPoint &pos = wxDefaultPosition, 
+                             const wxPoint &pos = wxDefaultPosition,
                              const wxSize &size = wxDefaultSize,
                              long style = wxSIMPLE_BORDER,
                              const wxString &name = wxT("wxVideoCaptureWindow") );
 
     bool Create( wxWindow *parent, wxWindowID id = -1,
-                 const wxPoint &pos = wxDefaultPosition, 
+                 const wxPoint &pos = wxDefaultPosition,
                  const wxSize &size = wxDefaultSize,
                  long style = wxSIMPLE_BORDER,
                  const wxString &name = wxT("wxVideoCaptureWindow") );
@@ -46,15 +46,15 @@ public:
     virtual ~wxVideoCaptureWindowVFW();
 
     // ----------------------------------------------------------------------
-    // Device descriptions & versions, get and enumerate 
+    // Device descriptions & versions, get and enumerate
     // ----------------------------------------------------------------------
 
-    void EnumerateDevices(); 
-        
+    void EnumerateDevices();
+
     // ----------------------------------------------------------------------
     // Connect or Disconnect to device
     // ----------------------------------------------------------------------
-    
+
     bool IsDeviceInitialized();
     bool DeviceConnect(int index);
     bool DeviceDisconnect();
@@ -74,7 +74,7 @@ public:
     void VideoDisplayDialog();
 
     // Dialog to show the available compression codecs used for capture
-    //   VFW - MSW system dialog 
+    //   VFW - MSW system dialog
     void VideoCompressionDialog();
 
     // Dialog to setup most of the capture preferences
@@ -84,7 +84,7 @@ public:
     // Dialog to set the audio channels, bits/sample, samples/second
     //   VFW - works only if HasAudioHardware is true, ie you have a sound card
     virtual void AudioFormatDialog();
-    
+
     void PropertiesDialog();
     wxString GetPropertiesString();
 
@@ -132,11 +132,11 @@ public:
     // ----------------------------------------------------------------------
 
     // Overview: These frames will be saved to the SetCaptureFilename() file
-    // USE: CaptureSingleFramesToFileOpen then CaptureSingleFrames... 
+    // USE: CaptureSingleFramesToFileOpen then CaptureSingleFrames...
     //   (see SetAviMaxIndexEntries() ) then CaptureSingleFramesToFileClose
-    
+
     //   SaveCapturedFileAs() can be used to extract video to new file
-    //   this is useful only if the the file is larger than the # of frames 
+    //   this is useful only if the the file is larger than the # of frames
     //   eg. you've called SetCaptureFilesizeMB to create a larger than necessary file
 
     // get how many frames we've taken, reset to -1 when closed
@@ -152,7 +152,7 @@ public:
     // a simple dialog to capture single frames to an AVI file
     //   it sets up the file and just click ok to save another frame
     void CaptureSingleFramesToFileDialog();
-    
+
     // ----------------------------------------------------------------------
     // Capture streaming video to an AVI file
     // ----------------------------------------------------------------------
@@ -178,7 +178,7 @@ public:
     unsigned long int GetCaptureTimeElapsedMS();
     // capture in progress? then true
     bool IsCapturingNow();
-    
+
     // keycode to terminate streaming video, default = VK_ESCAPE
     // NOTE use RegisterHotKey() for system wide key, NOT IMPLEMENTED, NOT TESTED
     unsigned int GetAbortKey();
@@ -262,7 +262,7 @@ public:
     // SetCaptureFilesizeMB() preallocates space for the video, make > needed
     // SaveCapturedFileAs() then copies only the actual video to a new file
     // or just set the filesize < than the needed, but take performance hit
-    
+
     // Set the name of a capture file, used with SetCaptureFilesizeMB
     //     MSW wants you to set the name, preallocate space, capture and then
     //     use SaveCapturedFileAs() to extract the video to a new file.
@@ -282,10 +282,10 @@ public:
     bool SetCaptureFilenameDialog();
 
     // preallocate space for the capture file, returns sucess
-    // this is to get a fixed "contiguous" file to capture to, 
+    // this is to get a fixed "contiguous" file to capture to,
     // however the user must run a defrag program to guarantee it's contiguous
     // if the captured data is smaller, then the rest of the file is just junk
-    // if set to zero or smaller than the actual capture size or if the file  
+    // if set to zero or smaller than the actual capture size or if the file
     // doesn't exist there be a performance loss...
     bool SetCaptureFilesizeMB(unsigned int filesizeMB=0 );
     // dialog to preallocate space for video capture, returns sucess
@@ -304,7 +304,7 @@ public:
     // ----------------------------------------------------------------------
     // device has waveform-audio, then true (usually means a sound card)
     bool HasAudioHardware();
-    
+
     // set the audio recording properties, see #defines above
     // channels = 1, 2 (mono, stereo)
     // bitspersample = 8, 16
@@ -312,13 +312,13 @@ public:
     // note: CD = stereo, 16bit, 44100
     //       Radio = mono, 8bit, 22050
     //       telephone = mono, 8bit, 11025
-    bool SetAudioFormat( int channels = 1, 
-                         int bitspersample = 8, 
+    bool SetAudioFormat( int channels = 1,
+                         int bitspersample = 8,
                          long int samplespersecond = 11025 );
 
     // get the audio format, see SetAudioFormat, returns sucess
-    bool GetAudioFormat( int *channels , 
-                         int *bitspersample , 
+    bool GetAudioFormat( int *channels ,
+                         int *bitspersample ,
                          long int *samplespersecond );
 
     // capture audio too, default = true if device has audio capability
@@ -356,8 +356,8 @@ public:
 
     bool VFW_SetCallbackOnStatus(bool on);
     // called when the device's status changes (usually)
-    virtual bool VFW_CallbackOnStatus(const wxString &statustext, int statusid); 
-    
+    virtual bool VFW_CallbackOnStatus(const wxString &statustext, int statusid);
+
     bool VFW_SetCallbackFrame(bool on);
     // called when preview frames are available, previewing or not
     virtual bool VFW_CallbackOnFrame(LPVIDEOHDR lpVHdr);
@@ -371,27 +371,27 @@ public:
     virtual bool VFW_CallbackOnCaptureControl(int nState);
 
     bool VFW_SetCallbackOnVideoStream(bool on);
-    // called before video frames are written to an AVI file 
+    // called before video frames are written to an AVI file
     virtual bool VFW_CallbackOnVideoStream(LPVIDEOHDR lpVHdr);
 
     bool VFW_SetCallbackOnWaveStream(bool on);
     // called during capture before audio buffers written, can be modified here
     virtual bool VFW_CallbackOnWaveStream(LPWAVEHDR lpWHdr);
 
-protected:  
+protected:
 
     // ----------------------------------------------------------------------
     // Implementation
     // ----------------------------------------------------------------------
-    
+
     void OnCloseWindow(wxCloseEvent &event);
     void OnIdle( wxIdleEvent &event );
 
     // ----------------------------------------------------------------------
-    // Size & Position functions 
+    // Size & Position functions
     // ----------------------------------------------------------------------
-    
-    virtual void DoSetSize(int x, int y, int width, int height, 
+
+    virtual void DoSetSize(int x, int y, int width, int height,
                            int sizeFlags = wxSIZE_AUTO);
     // adjust the scrollbars, use to generally refresh too
     void DoSizeWindow();
@@ -400,7 +400,7 @@ protected:
     void OnScrollWin( wxScrollWinEvent &event );
 
     // scroll the m_hWndC to this point, necessary for Overlay only
-    bool VFW_ScrollHWND(int x, int y); 
+    bool VFW_ScrollHWND(int x, int y);
 
     // x,y offset of the upperleft corner of MSW capture window
     wxPoint VFW_GetHWNDViewStart();
@@ -422,7 +422,7 @@ protected:
     // ----------------------------------------------------------------------
     // Member Variables
     // ----------------------------------------------------------------------
-    
+
     // Generic variables
 
     unsigned char *m_bmpdata;       // big 'ole temp storage for DIB
@@ -434,7 +434,7 @@ protected:
 
     wxString m_capturefilename;
 
-    long int m_capsingleframecount; // number of frames taken, 
+    long int m_capsingleframecount; // number of frames taken,
                                     // -1 when closed, >= 0 if open
 
     wxString m_statustext;          // MSW status messages
@@ -452,7 +452,7 @@ protected:
     // ------------------------------------------------------------------------
     CAPDRIVERCAPS m_CAPDRIVERCAPS;  // Capture Driver Capabilities
     bool VFW_GetCAPDRIVERCAPS();     // used internally
-    
+
     // Parts of CAPDRIVERCAPS that are not used
     // HANDLE hVideo[In,Out,ExitIn,ExtOut] are unused in Win32, always NULL
 
@@ -461,17 +461,17 @@ protected:
     bool VFW_GetCAPSTATUS();          // used internally
 
     // Parts of CAPSTATUS that are not used
-    // HPALETTE hPalCurrent - Current palette in use 
+    // HPALETTE hPalCurrent - Current palette in use
     // DWORD dwReturn - Error code after any operation, 32 bit unsigned int, StatusCallback does this
 
     // ------------------------------------------------------------------------
-    CAPTUREPARMS m_CAPTUREPARMS;   // Capture Parameters 
+    CAPTUREPARMS m_CAPTUREPARMS;   // Capture Parameters
     bool VFW_GetCAPTUREPARMS();     // used internally
     bool VFW_SetCAPTUREPARMS();     // used internally
 
     // Parts of CAPTUREPARMS that are unused
     // BOOL fUsingDOSMemory - unused in win32
-    // BOOL fMCIControl - controlling a MCI compatible device, VCR, laserdisc 
+    // BOOL fMCIControl - controlling a MCI compatible device, VCR, laserdisc
     // BOOL fStepMCIDevice - MCI device step capture if true, false is streaming
     // DWORD dwMCIStartTime - starting position in ms, for MCI device capture
     // DWORD dwMCIStopTime - stopping position in ms for MCI device capture

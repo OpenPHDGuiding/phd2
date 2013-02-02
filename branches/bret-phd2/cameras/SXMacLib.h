@@ -67,19 +67,19 @@ of the copyright holder.
 /*
  * CCD command options.
  */
-#define SXCCD_EXP_FLAGS_FIELD_ODD     	1
-#define SXCCD_EXP_FLAGS_FIELD_EVEN    	2
-#define SXCCD_EXP_FLAGS_FIELD_BOTH    	(SXCCD_EXP_FLAGS_FIELD_EVEN|SXCCD_EXP_FLAGS_FIELD_ODD)
-#define SXCCD_EXP_FLAGS_FIELD_MASK    	SXCCD_EXP_FLAGS_FIELD_BOTH
-#define SXCCD_EXP_FLAGS_NOBIN_ACCUM   	4
-#define SXCCD_EXP_FLAGS_NOWIPE_FRAME  	8
+#define SXCCD_EXP_FLAGS_FIELD_ODD       1
+#define SXCCD_EXP_FLAGS_FIELD_EVEN      2
+#define SXCCD_EXP_FLAGS_FIELD_BOTH      (SXCCD_EXP_FLAGS_FIELD_EVEN|SXCCD_EXP_FLAGS_FIELD_ODD)
+#define SXCCD_EXP_FLAGS_FIELD_MASK      SXCCD_EXP_FLAGS_FIELD_BOTH
+#define SXCCD_EXP_FLAGS_NOBIN_ACCUM     4
+#define SXCCD_EXP_FLAGS_NOWIPE_FRAME    8
 #define SXCCD_EXP_FLAGS_TDI             32
-#define SXCCD_EXP_FLAGS_NOCLEAR_FRAME 	64
+#define SXCCD_EXP_FLAGS_NOCLEAR_FRAME   64
 /*
  * Serial port queries.
  */
-#define	SXCCD_SERIAL_PORT_AVAIL_OUTPUT	0
-#define	SXCCD_SERIAL_PORT_AVAIL_INPUT	1
+#define SXCCD_SERIAL_PORT_AVAIL_OUTPUT  0
+#define SXCCD_SERIAL_PORT_AVAIL_INPUT   1
 /*
  * CCD parameters.
  */
@@ -119,8 +119,8 @@ typedef void (*sxCamRemovedProc)(void *device);
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
-	
+
+
 IOReturn sxReset(void *device);
 IOReturn sxClearPixels(void *device, UInt16 flags, UInt16 camIndex);
 IOReturn sxLatchPixels(void *device, UInt16 flags, UInt16 camIndex, UInt16 xoffset, UInt16 yoffset, UInt16 width, UInt16 height, UInt16 xbin, UInt16 ybin);
@@ -143,16 +143,16 @@ void    *sxOpen(int camnum);
 void     sxClose(void *device);
 void     sxProbe(sxCamAttachedProc cbAttached, sxCamRemovedProc cbRemoved);
 void     sxRelease(void);
-UInt16	sxCamAvailable(int camnum);
-UInt16	sxCamPortStatus(int camnum);
+UInt16  sxCamAvailable(int camnum);
+UInt16  sxCamPortStatus(int camnum);
 IOReturn sxSetCooler(void *device, UInt8 SetStatus, UInt16 SetTemp, UInt8 *RetStatus, UInt16 *RetTemp );
 
-	UInt16	sx2EnumDevices();
-	void	*sx2Open(int camnum);
-	void	sx2Close(void *device);
-	SInt32	sx2GetID(int camnum);
-	void	sx2GetName(int camnum, char *name);  // Name will be max of 32 bytes long
-	
+    UInt16  sx2EnumDevices();
+    void    *sx2Open(int camnum);
+    void    sx2Close(void *device);
+    SInt32  sx2GetID(int camnum);
+    void    sx2GetName(int camnum, char *name);  // Name will be max of 32 bytes long
+
 #ifdef SXCCD_DANGEROUS
 IOReturn sxWriteEEPROM(void *device, UInt16 address, UInt16 count, UInt18 *data, UInt16 admin_code);
 IOReturn sxReadEEPROM(void *device, UInt16 address, UInt16 count, UInt18 *data);

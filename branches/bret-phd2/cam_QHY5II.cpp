@@ -211,13 +211,13 @@ bool Camera_QHY5IIClass::PulseGuideScope(int direction, int duration) {
     DWORD reg = 0;
     DWORD dur = (DWORD) duration / 10;
     DWORD ptx, pty;
-    
+
     //if (dur >= 255) dur = 254; // Max guide pulse is 2.54s -- 255 keeps it on always
     switch (direction) {
-        case WEST: reg = 0x80; ptx = dur; pty = 0xFFFFFFFF; break;  
-        case NORTH: reg = 0x20; pty = dur; ptx = 0xFFFFFFFF; break; 
-        case SOUTH: reg = 0x40; pty = dur; ptx = 0xFFFFFFFF; break; 
-        case EAST: reg = 0x10;  ptx = dur; pty = 0xFFFFFFFF; break; 
+        case WEST: reg = 0x80; ptx = dur; pty = 0xFFFFFFFF; break;
+        case NORTH: reg = 0x20; pty = dur; ptx = 0xFFFFFFFF; break;
+        case SOUTH: reg = 0x40; pty = dur; ptx = 0xFFFFFFFF; break;
+        case EAST: reg = 0x10;  ptx = dur; pty = 0xFFFFFFFF; break;
         default: return true; // bad direction passed in
     }
     Q5II_GuideCommand(reg,ptx,pty);

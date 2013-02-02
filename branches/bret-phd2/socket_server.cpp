@@ -197,7 +197,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                     if (m_ditherRaOnly) {
                         if (fabs(tan(pMount->RaAngle())) > 1)
                             rx = ry / tan(pMount->RaAngle());
-                        else    
+                        else
                             ry = tan(pMount->RaAngle()) * rx;
                     }
 

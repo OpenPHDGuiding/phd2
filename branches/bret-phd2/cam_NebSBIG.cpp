@@ -69,9 +69,9 @@ bool Camera_NebSBIGClass::Capture(int duration, usImage& img, wxRect subframe, b
     }
     bool retval = ServerReqFrame(duration, img);
     if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
-    
+
     return retval;
-    
+
 }
 
 bool Camera_NebSBIGClass::PulseGuideScope(int direction, int duration) {

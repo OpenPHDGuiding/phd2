@@ -49,7 +49,7 @@ public:
     bool    PulseGuideScope(int direction, int duration);
 //  void    ClearGuidePort();
 
-    
+
     Camera_StarfishClass();
 private:
 //  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);

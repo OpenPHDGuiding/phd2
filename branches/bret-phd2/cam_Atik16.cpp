@@ -207,7 +207,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
         ArtemisSetAmplifierSwitched(Cam_Handle,true); // Set the amp-off parameter
     else
         ArtemisSetAmplifierSwitched(Cam_Handle,false);
-    
+
     if (ArtemisStartExposure(Cam_Handle,(float) duration / 1000.0))  {
         (void) wxMessageBox(_T("Couldn't start exposure - aborting"),_("Error"),wxOK | wxICON_ERROR);
         return true;

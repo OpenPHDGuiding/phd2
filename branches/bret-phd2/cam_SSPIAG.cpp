@@ -299,7 +299,7 @@ bool Camera_SSPIAGClass::PulseGuideScope(int direction, int duration) {
 // Buffer[0] = GuideCommand, Buffer[1]=PulseTime.
     int reg = 0;
     int dur = duration / 10;
-    
+
     if (dur >= 255) dur = 254; // Max guide pulse is 2.54s -- 255 keeps it on always
     // Output pins are NC, Com, RA+(W), Dec+(N), Dec-(S), RA-(E) ??  http://www.starlight-xpress.co.uk/faq.htm
     switch (direction) {
@@ -319,7 +319,7 @@ void Camera_SSPIAGClass::ClearGuidePort() {
 void Camera_SSPIAGClass::InitCapture() {
 
     //Q5V_SetQHY5VGlobalGain(GuideCameraGain * 63 / 100);
-    
+
 }
 bool Camera_SSPIAGClass::Disconnect() {
     //closeUSB();

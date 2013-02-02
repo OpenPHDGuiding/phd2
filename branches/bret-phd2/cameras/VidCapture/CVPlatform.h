@@ -9,27 +9,27 @@
 // All rights reserved.
 //
 // You may use this software in source and/or binary form, with or without
-// modification, for commercial or non-commercial purposes, provided that 
+// modification, for commercial or non-commercial purposes, provided that
 // you comply with the following conditions:
 //
 // * Redistributions of source code must retain the above copyright notice,
-//   this list of conditions and the following disclaimer. 
+//   this list of conditions and the following disclaimer.
 //
 // * Redistributions of modified source must be clearly marked as modified,
 //   and due notice must be placed in the modified source indicating the
 //   type of modification(s) and the name(s) of the person(s) performing
 //   said modification(s).
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED 
-// TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
-// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
-// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+// TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 //---------------------------------------------------------------------------
@@ -65,8 +65,8 @@ class CVPlatform
    public:
       /// GetPlatform() retrieves a pointer to the singleton platform object.
       ///
-      /// Only one instance will be created on the first call. 
-      /// It is automatically freed on exit from the process. 
+      /// Only one instance will be created on the first call.
+      /// It is automatically freed on exit from the process.
       ///
       /// \return CVPlatform* - pointer to CVPlatform object
       static CVPlatform* GetPlatform();
@@ -82,21 +82,21 @@ class CVPlatform
       ///
       /// This version is for video capture objects.
       ///
-      /// \param vidCap - a CVVidCapture* previously allocated by 
+      /// \param vidCap - a CVVidCapture* previously allocated by
       ///                 AcquireVideoCapture().
       /// \sa CVVidCapture, CVVidCaptureDSWin32
       void Release(CVVidCapture*& vidCap);
 
    // Constructor and destructor are protected.
-   protected:      
+   protected:
       /// CVPlatform constructor - use GetPlatform() instead.
       ///
       /// GetPlatform() creates the platform object if needed.
       CVPlatform();
 
       /// CVPlatform destructor - don't delete CVPlatform directly.
-      /// 
-      /// GetPlatform() registers with the runtime library for 
+      ///
+      /// GetPlatform() registers with the runtime library for
       /// deletion when the process exits.
       virtual ~CVPlatform();
 

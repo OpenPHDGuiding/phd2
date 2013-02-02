@@ -37,15 +37,15 @@ extern LPCWSTR MakeLPCWSTR(char* mbString);
 typedef int (__stdcall * TYPE_ARTEMISAPIVERSION)();
 int artfn ArtemisAPIVersion()
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[0])
-			pFuncs[0]=GetProcAddress(hArtemisDLL, "ArtemisAPIVersion");
-		TYPE_ARTEMISAPIVERSION pArtemisAPIVersion=(TYPE_ARTEMISAPIVERSION)pFuncs[0];
-		if (NULL != pArtemisAPIVersion)
-			return pArtemisAPIVersion();
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[0])
+            pFuncs[0]=GetProcAddress(hArtemisDLL, "ArtemisAPIVersion");
+        TYPE_ARTEMISAPIVERSION pArtemisAPIVersion=(TYPE_ARTEMISAPIVERSION)pFuncs[0];
+        if (NULL != pArtemisAPIVersion)
+            return pArtemisAPIVersion();
+    }
+    return (int)NULL;
 }
 
 
@@ -54,15 +54,15 @@ int artfn ArtemisAPIVersion()
 typedef bool (__stdcall * TYPE_ARTEMISDEVICENAME)(int Device, char * pName);
 bool artfn ArtemisDeviceName(int Device, char * pName)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[1])
-			pFuncs[1]=GetProcAddress(hArtemisDLL, "ArtemisDeviceName");
-		TYPE_ARTEMISDEVICENAME pArtemisDeviceName=(TYPE_ARTEMISDEVICENAME)pFuncs[1];
-		if (NULL != pArtemisDeviceName)
-			return (bool)(pArtemisDeviceName(Device, pName)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[1])
+            pFuncs[1]=GetProcAddress(hArtemisDLL, "ArtemisDeviceName");
+        TYPE_ARTEMISDEVICENAME pArtemisDeviceName=(TYPE_ARTEMISDEVICENAME)pFuncs[1];
+        if (NULL != pArtemisDeviceName)
+            return (bool)(pArtemisDeviceName(Device, pName)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -71,15 +71,15 @@ bool artfn ArtemisDeviceName(int Device, char * pName)
 typedef bool (__stdcall * TYPE_ARTEMISDEVICESERIAL)(int Device, char * pName);
 bool artfn ArtemisDeviceSerial(int Device, char * pName)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[2])
-			pFuncs[2]=GetProcAddress(hArtemisDLL, "ArtemisDeviceSerial");
-		TYPE_ARTEMISDEVICESERIAL pArtemisDeviceSerial=(TYPE_ARTEMISDEVICESERIAL)pFuncs[2];
-		if (NULL != pArtemisDeviceSerial)
-			return (bool)(pArtemisDeviceSerial(Device, pName)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[2])
+            pFuncs[2]=GetProcAddress(hArtemisDLL, "ArtemisDeviceSerial");
+        TYPE_ARTEMISDEVICESERIAL pArtemisDeviceSerial=(TYPE_ARTEMISDEVICESERIAL)pFuncs[2];
+        if (NULL != pArtemisDeviceSerial)
+            return (bool)(pArtemisDeviceSerial(Device, pName)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -87,15 +87,15 @@ bool artfn ArtemisDeviceSerial(int Device, char * pName)
 typedef bool (__stdcall * TYPE_ARTEMISDEVICEISCAMERA)(int Device);
 bool artfn ArtemisDeviceIsCamera(int Device)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[3])
-			pFuncs[3]=GetProcAddress(hArtemisDLL, "ArtemisDeviceIsCamera");
-		TYPE_ARTEMISDEVICEISCAMERA pArtemisDeviceIsCamera=(TYPE_ARTEMISDEVICEISCAMERA)pFuncs[3];
-		if (NULL != pArtemisDeviceIsCamera)
-			return (bool)(pArtemisDeviceIsCamera(Device)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[3])
+            pFuncs[3]=GetProcAddress(hArtemisDLL, "ArtemisDeviceIsCamera");
+        TYPE_ARTEMISDEVICEISCAMERA pArtemisDeviceIsCamera=(TYPE_ARTEMISDEVICEISCAMERA)pFuncs[3];
+        if (NULL != pArtemisDeviceIsCamera)
+            return (bool)(pArtemisDeviceIsCamera(Device)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -105,15 +105,15 @@ bool artfn ArtemisDeviceIsCamera(int Device)
 typedef int (__stdcall * TYPE_ARTEMISCAMERASERIAL)(ArtemisHandle hCam, int* flags, int* serial);
 int artfn ArtemisCameraSerial(ArtemisHandle hCam, int* flags, int* serial)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[4])
-			pFuncs[4]=GetProcAddress(hArtemisDLL, "ArtemisCameraSerial");
-		TYPE_ARTEMISCAMERASERIAL pArtemisCameraSerial=(TYPE_ARTEMISCAMERASERIAL)pFuncs[4];
-		if (NULL != pArtemisCameraSerial)
-			return pArtemisCameraSerial(hCam, flags, serial);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[4])
+            pFuncs[4]=GetProcAddress(hArtemisDLL, "ArtemisCameraSerial");
+        TYPE_ARTEMISCAMERASERIAL pArtemisCameraSerial=(TYPE_ARTEMISCAMERASERIAL)pFuncs[4];
+        if (NULL != pArtemisCameraSerial)
+            return pArtemisCameraSerial(hCam, flags, serial);
+    }
+    return (int)NULL;
 }
 
 
@@ -122,15 +122,15 @@ int artfn ArtemisCameraSerial(ArtemisHandle hCam, int* flags, int* serial)
 typedef bool (__stdcall * TYPE_ARTEMISDISCONNECT)(ArtemisHandle hCam);
 bool artfn ArtemisDisconnect(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[5])
-			pFuncs[5]=GetProcAddress(hArtemisDLL, "ArtemisDisconnect");
-		TYPE_ARTEMISDISCONNECT pArtemisDisconnect=(TYPE_ARTEMISDISCONNECT)pFuncs[5];
-		if (NULL != pArtemisDisconnect)
-			return (bool)(pArtemisDisconnect(hCam)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[5])
+            pFuncs[5]=GetProcAddress(hArtemisDLL, "ArtemisDisconnect");
+        TYPE_ARTEMISDISCONNECT pArtemisDisconnect=(TYPE_ARTEMISDISCONNECT)pFuncs[5];
+        if (NULL != pArtemisDisconnect)
+            return (bool)(pArtemisDisconnect(hCam)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -139,15 +139,15 @@ bool artfn ArtemisDisconnect(ArtemisHandle hCam)
 typedef ArtemisHandle (__stdcall * TYPE_ARTEMISCONNECT)(int Device);
 ArtemisHandle artfn ArtemisConnect(int Device)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[6])
-			pFuncs[6]=GetProcAddress(hArtemisDLL, "ArtemisConnect");
-		TYPE_ARTEMISCONNECT pArtemisConnect=(TYPE_ARTEMISCONNECT)pFuncs[6];
-		if (NULL != pArtemisConnect)
-			return pArtemisConnect(Device);
-	}
-	return (ArtemisHandle)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[6])
+            pFuncs[6]=GetProcAddress(hArtemisDLL, "ArtemisConnect");
+        TYPE_ARTEMISCONNECT pArtemisConnect=(TYPE_ARTEMISCONNECT)pFuncs[6];
+        if (NULL != pArtemisConnect)
+            return pArtemisConnect(Device);
+    }
+    return (ArtemisHandle)NULL;
 }
 
 
@@ -155,15 +155,15 @@ ArtemisHandle artfn ArtemisConnect(int Device)
 typedef bool (__stdcall * TYPE_ARTEMISDISCONNECTALL)();
 bool artfn ArtemisDisconnectAll()
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[7])
-			pFuncs[7]=GetProcAddress(hArtemisDLL, "ArtemisDisconnectAll");
-		TYPE_ARTEMISDISCONNECTALL pArtemisDisconnectAll=(TYPE_ARTEMISDISCONNECTALL)pFuncs[7];
-		if (NULL != pArtemisDisconnectAll)
-			return (bool)(pArtemisDisconnectAll()?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[7])
+            pFuncs[7]=GetProcAddress(hArtemisDLL, "ArtemisDisconnectAll");
+        TYPE_ARTEMISDISCONNECTALL pArtemisDisconnectAll=(TYPE_ARTEMISDISCONNECTALL)pFuncs[7];
+        if (NULL != pArtemisDisconnectAll)
+            return (bool)(pArtemisDisconnectAll()?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -171,15 +171,15 @@ bool artfn ArtemisDisconnectAll()
 typedef bool (__stdcall * TYPE_ARTEMISISCONNECTED)(ArtemisHandle hCam);
 bool artfn ArtemisIsConnected(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[8])
-			pFuncs[8]=GetProcAddress(hArtemisDLL, "ArtemisIsConnected");
-		TYPE_ARTEMISISCONNECTED pArtemisIsConnected=(TYPE_ARTEMISISCONNECTED)pFuncs[8];
-		if (NULL != pArtemisIsConnected)
-			return (bool)(pArtemisIsConnected(hCam)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[8])
+            pFuncs[8]=GetProcAddress(hArtemisDLL, "ArtemisIsConnected");
+        TYPE_ARTEMISISCONNECTED pArtemisIsConnected=(TYPE_ARTEMISISCONNECTED)pFuncs[8];
+        if (NULL != pArtemisIsConnected)
+            return (bool)(pArtemisIsConnected(hCam)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -187,15 +187,15 @@ bool artfn ArtemisIsConnected(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISPROPERTIES)(ArtemisHandle hCam, struct ARTEMISPROPERTIES * pProp);
 int artfn ArtemisProperties(ArtemisHandle hCam, struct ARTEMISPROPERTIES * pProp)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[9])
-			pFuncs[9]=GetProcAddress(hArtemisDLL, "ArtemisProperties");
-		TYPE_ARTEMISPROPERTIES pArtemisProperties=(TYPE_ARTEMISPROPERTIES)pFuncs[9];
-		if (NULL != pArtemisProperties)
-			return pArtemisProperties(hCam, pProp);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[9])
+            pFuncs[9]=GetProcAddress(hArtemisDLL, "ArtemisProperties");
+        TYPE_ARTEMISPROPERTIES pArtemisProperties=(TYPE_ARTEMISPROPERTIES)pFuncs[9];
+        if (NULL != pArtemisProperties)
+            return pArtemisProperties(hCam, pProp);
+    }
+    return (int)NULL;
 }
 
 
@@ -203,15 +203,15 @@ int artfn ArtemisProperties(ArtemisHandle hCam, struct ARTEMISPROPERTIES * pProp
 typedef int (__stdcall * TYPE_ARTEMISSETUPDIALOG)();
 int artfn ArtemisSetupDialog()
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[10])
-			pFuncs[10]=GetProcAddress(hArtemisDLL, "ArtemisSetupDialog");
-		TYPE_ARTEMISSETUPDIALOG pArtemisSetupDialog=(TYPE_ARTEMISSETUPDIALOG)pFuncs[10];
-		if (NULL != pArtemisSetupDialog)
-			return pArtemisSetupDialog();
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[10])
+            pFuncs[10]=GetProcAddress(hArtemisDLL, "ArtemisSetupDialog");
+        TYPE_ARTEMISSETUPDIALOG pArtemisSetupDialog=(TYPE_ARTEMISSETUPDIALOG)pFuncs[10];
+        if (NULL != pArtemisSetupDialog)
+            return pArtemisSetupDialog();
+    }
+    return (int)NULL;
 }
 
 
@@ -219,15 +219,15 @@ int artfn ArtemisSetupDialog()
 typedef int (__stdcall * TYPE_ARTEMISABORTEXPOSURE)(ArtemisHandle hCam);
 int artfn ArtemisAbortExposure(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[11])
-			pFuncs[11]=GetProcAddress(hArtemisDLL, "ArtemisAbortExposure");
-		TYPE_ARTEMISABORTEXPOSURE pArtemisAbortExposure=(TYPE_ARTEMISABORTEXPOSURE)pFuncs[11];
-		if (NULL != pArtemisAbortExposure)
-			return pArtemisAbortExposure(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[11])
+            pFuncs[11]=GetProcAddress(hArtemisDLL, "ArtemisAbortExposure");
+        TYPE_ARTEMISABORTEXPOSURE pArtemisAbortExposure=(TYPE_ARTEMISABORTEXPOSURE)pFuncs[11];
+        if (NULL != pArtemisAbortExposure)
+            return pArtemisAbortExposure(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -236,15 +236,15 @@ int artfn ArtemisAbortExposure(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISSUBFRAMEPOS)(ArtemisHandle hCam, int x, int y);
 int artfn ArtemisSubframePos(ArtemisHandle hCam, int x, int y)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[12])
-			pFuncs[12]=GetProcAddress(hArtemisDLL, "ArtemisSubframePos");
-		TYPE_ARTEMISSUBFRAMEPOS pArtemisSubframePos=(TYPE_ARTEMISSUBFRAMEPOS)pFuncs[12];
-		if (NULL != pArtemisSubframePos)
-			return pArtemisSubframePos(hCam, x, y);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[12])
+            pFuncs[12]=GetProcAddress(hArtemisDLL, "ArtemisSubframePos");
+        TYPE_ARTEMISSUBFRAMEPOS pArtemisSubframePos=(TYPE_ARTEMISSUBFRAMEPOS)pFuncs[12];
+        if (NULL != pArtemisSubframePos)
+            return pArtemisSubframePos(hCam, x, y);
+    }
+    return (int)NULL;
 }
 
 
@@ -253,15 +253,15 @@ int artfn ArtemisSubframePos(ArtemisHandle hCam, int x, int y)
 typedef int (__stdcall * TYPE_ARTEMISSUBFRAMESIZE)(ArtemisHandle hCam, int w, int h);
 int artfn ArtemisSubframeSize(ArtemisHandle hCam, int w, int h)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[13])
-			pFuncs[13]=GetProcAddress(hArtemisDLL, "ArtemisSubframeSize");
-		TYPE_ARTEMISSUBFRAMESIZE pArtemisSubframeSize=(TYPE_ARTEMISSUBFRAMESIZE)pFuncs[13];
-		if (NULL != pArtemisSubframeSize)
-			return pArtemisSubframeSize(hCam, w, h);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[13])
+            pFuncs[13]=GetProcAddress(hArtemisDLL, "ArtemisSubframeSize");
+        TYPE_ARTEMISSUBFRAMESIZE pArtemisSubframeSize=(TYPE_ARTEMISSUBFRAMESIZE)pFuncs[13];
+        if (NULL != pArtemisSubframeSize)
+            return pArtemisSubframeSize(hCam, w, h);
+    }
+    return (int)NULL;
 }
 
 
@@ -269,15 +269,15 @@ int artfn ArtemisSubframeSize(ArtemisHandle hCam, int w, int h)
 typedef int (__stdcall * TYPE_ARTEMISSUBFRAME)(ArtemisHandle hCam, int x, int y, int w, int h);
 int artfn ArtemisSubframe(ArtemisHandle hCam, int x, int y, int w, int h)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[14])
-			pFuncs[14]=GetProcAddress(hArtemisDLL, "ArtemisSubframe");
-		TYPE_ARTEMISSUBFRAME pArtemisSubframe=(TYPE_ARTEMISSUBFRAME)pFuncs[14];
-		if (NULL != pArtemisSubframe)
-			return pArtemisSubframe(hCam, x, y, w, h);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[14])
+            pFuncs[14]=GetProcAddress(hArtemisDLL, "ArtemisSubframe");
+        TYPE_ARTEMISSUBFRAME pArtemisSubframe=(TYPE_ARTEMISSUBFRAME)pFuncs[14];
+        if (NULL != pArtemisSubframe)
+            return pArtemisSubframe(hCam, x, y, w, h);
+    }
+    return (int)NULL;
 }
 
 
@@ -285,15 +285,15 @@ int artfn ArtemisSubframe(ArtemisHandle hCam, int x, int y, int w, int h)
 typedef int (__stdcall * TYPE_ARTEMISGETSUBFRAME)(ArtemisHandle hCam, int * x, int * y, int * w, int * h);
 int artfn ArtemisGetSubframe(ArtemisHandle hCam, int * x, int * y, int * w, int * h)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[15])
-			pFuncs[15]=GetProcAddress(hArtemisDLL, "ArtemisGetSubframe");
-		TYPE_ARTEMISGETSUBFRAME pArtemisGetSubframe=(TYPE_ARTEMISGETSUBFRAME)pFuncs[15];
-		if (NULL != pArtemisGetSubframe)
-			return pArtemisGetSubframe(hCam, x, y, w, h);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[15])
+            pFuncs[15]=GetProcAddress(hArtemisDLL, "ArtemisGetSubframe");
+        TYPE_ARTEMISGETSUBFRAME pArtemisGetSubframe=(TYPE_ARTEMISGETSUBFRAME)pFuncs[15];
+        if (NULL != pArtemisGetSubframe)
+            return pArtemisGetSubframe(hCam, x, y, w, h);
+    }
+    return (int)NULL;
 }
 
 
@@ -301,15 +301,15 @@ int artfn ArtemisGetSubframe(ArtemisHandle hCam, int * x, int * y, int * w, int 
 typedef int (__stdcall * TYPE_ARTEMISBIN)(ArtemisHandle hCam, int x, int y);
 int artfn ArtemisBin(ArtemisHandle hCam, int x, int y)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[16])
-			pFuncs[16]=GetProcAddress(hArtemisDLL, "ArtemisBin");
-		TYPE_ARTEMISBIN pArtemisBin=(TYPE_ARTEMISBIN)pFuncs[16];
-		if (NULL != pArtemisBin)
-			return pArtemisBin(hCam, x, y);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[16])
+            pFuncs[16]=GetProcAddress(hArtemisDLL, "ArtemisBin");
+        TYPE_ARTEMISBIN pArtemisBin=(TYPE_ARTEMISBIN)pFuncs[16];
+        if (NULL != pArtemisBin)
+            return pArtemisBin(hCam, x, y);
+    }
+    return (int)NULL;
 }
 
 
@@ -317,15 +317,15 @@ int artfn ArtemisBin(ArtemisHandle hCam, int x, int y)
 typedef int (__stdcall * TYPE_ARTEMISGETBIN)(ArtemisHandle hCam, int * x, int * y);
 int artfn ArtemisGetBin(ArtemisHandle hCam, int * x, int * y)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[17])
-			pFuncs[17]=GetProcAddress(hArtemisDLL, "ArtemisGetBin");
-		TYPE_ARTEMISGETBIN pArtemisGetBin=(TYPE_ARTEMISGETBIN)pFuncs[17];
-		if (NULL != pArtemisGetBin)
-			return pArtemisGetBin(hCam, x, y);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[17])
+            pFuncs[17]=GetProcAddress(hArtemisDLL, "ArtemisGetBin");
+        TYPE_ARTEMISGETBIN pArtemisGetBin=(TYPE_ARTEMISGETBIN)pFuncs[17];
+        if (NULL != pArtemisGetBin)
+            return pArtemisGetBin(hCam, x, y);
+    }
+    return (int)NULL;
 }
 
 
@@ -333,15 +333,15 @@ int artfn ArtemisGetBin(ArtemisHandle hCam, int * x, int * y)
 typedef int (__stdcall * TYPE_ARTEMISGETMAXBIN)(ArtemisHandle hCam, int * x, int * y);
 int artfn ArtemisGetMaxBin(ArtemisHandle hCam, int * x, int * y)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[18])
-			pFuncs[18]=GetProcAddress(hArtemisDLL, "ArtemisGetMaxBin");
-		TYPE_ARTEMISGETMAXBIN pArtemisGetMaxBin=(TYPE_ARTEMISGETMAXBIN)pFuncs[18];
-		if (NULL != pArtemisGetMaxBin)
-			return pArtemisGetMaxBin(hCam, x, y);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[18])
+            pFuncs[18]=GetProcAddress(hArtemisDLL, "ArtemisGetMaxBin");
+        TYPE_ARTEMISGETMAXBIN pArtemisGetMaxBin=(TYPE_ARTEMISGETMAXBIN)pFuncs[18];
+        if (NULL != pArtemisGetMaxBin)
+            return pArtemisGetMaxBin(hCam, x, y);
+    }
+    return (int)NULL;
 }
 
 
@@ -349,15 +349,15 @@ int artfn ArtemisGetMaxBin(ArtemisHandle hCam, int * x, int * y)
 typedef int (__stdcall * TYPE_ARTEMISPRECHARGEMODE)(ArtemisHandle hCam, int mode);
 int artfn ArtemisPrechargeMode(ArtemisHandle hCam, int mode)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[19])
-			pFuncs[19]=GetProcAddress(hArtemisDLL, "ArtemisPrechargeMode");
-		TYPE_ARTEMISPRECHARGEMODE pArtemisPrechargeMode=(TYPE_ARTEMISPRECHARGEMODE)pFuncs[19];
-		if (NULL != pArtemisPrechargeMode)
-			return pArtemisPrechargeMode(hCam, mode);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[19])
+            pFuncs[19]=GetProcAddress(hArtemisDLL, "ArtemisPrechargeMode");
+        TYPE_ARTEMISPRECHARGEMODE pArtemisPrechargeMode=(TYPE_ARTEMISPRECHARGEMODE)pFuncs[19];
+        if (NULL != pArtemisPrechargeMode)
+            return pArtemisPrechargeMode(hCam, mode);
+    }
+    return (int)NULL;
 }
 
 
@@ -365,15 +365,15 @@ int artfn ArtemisPrechargeMode(ArtemisHandle hCam, int mode)
 typedef int (__stdcall * TYPE_ARTEMISCLEARVREGS)(ArtemisHandle hCam);
 int artfn ArtemisClearVRegs(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[20])
-			pFuncs[20]=GetProcAddress(hArtemisDLL, "ArtemisClearVRegs");
-		TYPE_ARTEMISCLEARVREGS pArtemisClearVRegs=(TYPE_ARTEMISCLEARVREGS)pFuncs[20];
-		if (NULL != pArtemisClearVRegs)
-			return pArtemisClearVRegs(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[20])
+            pFuncs[20]=GetProcAddress(hArtemisDLL, "ArtemisClearVRegs");
+        TYPE_ARTEMISCLEARVREGS pArtemisClearVRegs=(TYPE_ARTEMISCLEARVREGS)pFuncs[20];
+        if (NULL != pArtemisClearVRegs)
+            return pArtemisClearVRegs(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -381,15 +381,15 @@ int artfn ArtemisClearVRegs(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISFIFO)(ArtemisHandle hCam, bool bEnable);
 int artfn ArtemisFIFO(ArtemisHandle hCam, bool bEnable)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[21])
-			pFuncs[21]=GetProcAddress(hArtemisDLL, "ArtemisFIFO");
-		TYPE_ARTEMISFIFO pArtemisFIFO=(TYPE_ARTEMISFIFO)pFuncs[21];
-		if (NULL != pArtemisFIFO)
-			return pArtemisFIFO(hCam, bEnable);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[21])
+            pFuncs[21]=GetProcAddress(hArtemisDLL, "ArtemisFIFO");
+        TYPE_ARTEMISFIFO pArtemisFIFO=(TYPE_ARTEMISFIFO)pFuncs[21];
+        if (NULL != pArtemisFIFO)
+            return pArtemisFIFO(hCam, bEnable);
+    }
+    return (int)NULL;
 }
 
 
@@ -397,15 +397,15 @@ int artfn ArtemisFIFO(ArtemisHandle hCam, bool bEnable)
 typedef int (__stdcall * TYPE_ARTEMISSTARTEXPOSURE)(ArtemisHandle hCam, float Seconds);
 int artfn ArtemisStartExposure(ArtemisHandle hCam, float Seconds)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[22])
-			pFuncs[22]=GetProcAddress(hArtemisDLL, "ArtemisStartExposure");
-		TYPE_ARTEMISSTARTEXPOSURE pArtemisStartExposure=(TYPE_ARTEMISSTARTEXPOSURE)pFuncs[22];
-		if (NULL != pArtemisStartExposure)
-			return pArtemisStartExposure(hCam, Seconds);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[22])
+            pFuncs[22]=GetProcAddress(hArtemisDLL, "ArtemisStartExposure");
+        TYPE_ARTEMISSTARTEXPOSURE pArtemisStartExposure=(TYPE_ARTEMISSTARTEXPOSURE)pFuncs[22];
+        if (NULL != pArtemisStartExposure)
+            return pArtemisStartExposure(hCam, Seconds);
+    }
+    return (int)NULL;
 }
 
 
@@ -413,15 +413,15 @@ int artfn ArtemisStartExposure(ArtemisHandle hCam, float Seconds)
 typedef int (__stdcall * TYPE_ARTEMISSTOPEXPOSURE)(ArtemisHandle hCam);
 int artfn ArtemisStopExposure(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[23])
-			pFuncs[23]=GetProcAddress(hArtemisDLL, "ArtemisStopExposure");
-		TYPE_ARTEMISSTOPEXPOSURE pArtemisStopExposure=(TYPE_ARTEMISSTOPEXPOSURE)pFuncs[23];
-		if (NULL != pArtemisStopExposure)
-			return pArtemisStopExposure(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[23])
+            pFuncs[23]=GetProcAddress(hArtemisDLL, "ArtemisStopExposure");
+        TYPE_ARTEMISSTOPEXPOSURE pArtemisStopExposure=(TYPE_ARTEMISSTOPEXPOSURE)pFuncs[23];
+        if (NULL != pArtemisStopExposure)
+            return pArtemisStopExposure(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -429,15 +429,15 @@ int artfn ArtemisStopExposure(ArtemisHandle hCam)
 typedef bool (__stdcall * TYPE_ARTEMISCANOVERLAPEXPOSURES)(ArtemisHandle hCam);
 bool artfn ArtemisCanOverlapExposures(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[24])
-			pFuncs[24]=GetProcAddress(hArtemisDLL, "ArtemisCanOverlapExposures");
-		TYPE_ARTEMISCANOVERLAPEXPOSURES pArtemisCanOverlapExposures=(TYPE_ARTEMISCANOVERLAPEXPOSURES)pFuncs[24];
-		if (NULL != pArtemisCanOverlapExposures)
-			return (bool)(pArtemisCanOverlapExposures(hCam)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[24])
+            pFuncs[24]=GetProcAddress(hArtemisDLL, "ArtemisCanOverlapExposures");
+        TYPE_ARTEMISCANOVERLAPEXPOSURES pArtemisCanOverlapExposures=(TYPE_ARTEMISCANOVERLAPEXPOSURES)pFuncs[24];
+        if (NULL != pArtemisCanOverlapExposures)
+            return (bool)(pArtemisCanOverlapExposures(hCam)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -445,15 +445,15 @@ bool artfn ArtemisCanOverlapExposures(ArtemisHandle hCam)
 typedef bool (__stdcall * TYPE_ARTEMISGETDARKMODE)(ArtemisHandle hCam);
 bool artfn ArtemisGetDarkMode(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[25])
-			pFuncs[25]=GetProcAddress(hArtemisDLL, "ArtemisGetDarkMode");
-		TYPE_ARTEMISGETDARKMODE pArtemisGetDarkMode=(TYPE_ARTEMISGETDARKMODE)pFuncs[25];
-		if (NULL != pArtemisGetDarkMode)
-			return (bool)(pArtemisGetDarkMode(hCam)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[25])
+            pFuncs[25]=GetProcAddress(hArtemisDLL, "ArtemisGetDarkMode");
+        TYPE_ARTEMISGETDARKMODE pArtemisGetDarkMode=(TYPE_ARTEMISGETDARKMODE)pFuncs[25];
+        if (NULL != pArtemisGetDarkMode)
+            return (bool)(pArtemisGetDarkMode(hCam)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -461,15 +461,15 @@ bool artfn ArtemisGetDarkMode(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISSETDARKMODE)(ArtemisHandle hCam, bool bEnable);
 int artfn ArtemisSetDarkMode(ArtemisHandle hCam, bool bEnable)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[26])
-			pFuncs[26]=GetProcAddress(hArtemisDLL, "ArtemisSetDarkMode");
-		TYPE_ARTEMISSETDARKMODE pArtemisSetDarkMode=(TYPE_ARTEMISSETDARKMODE)pFuncs[26];
-		if (NULL != pArtemisSetDarkMode)
-			return pArtemisSetDarkMode(hCam, bEnable);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[26])
+            pFuncs[26]=GetProcAddress(hArtemisDLL, "ArtemisSetDarkMode");
+        TYPE_ARTEMISSETDARKMODE pArtemisSetDarkMode=(TYPE_ARTEMISSETDARKMODE)pFuncs[26];
+        if (NULL != pArtemisSetDarkMode)
+            return pArtemisSetDarkMode(hCam, bEnable);
+    }
+    return (int)NULL;
 }
 
 
@@ -477,15 +477,15 @@ int artfn ArtemisSetDarkMode(ArtemisHandle hCam, bool bEnable)
 typedef int (__stdcall * TYPE_ARTEMISAUTOADJUSTBLACKLEVEL)(ArtemisHandle hCam, bool bEnable);
 int artfn ArtemisAutoAdjustBlackLevel(ArtemisHandle hCam, bool bEnable)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[27])
-			pFuncs[27]=GetProcAddress(hArtemisDLL, "ArtemisAutoAdjustBlackLevel");
-		TYPE_ARTEMISAUTOADJUSTBLACKLEVEL pArtemisAutoAdjustBlackLevel=(TYPE_ARTEMISAUTOADJUSTBLACKLEVEL)pFuncs[27];
-		if (NULL != pArtemisAutoAdjustBlackLevel)
-			return pArtemisAutoAdjustBlackLevel(hCam, bEnable);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[27])
+            pFuncs[27]=GetProcAddress(hArtemisDLL, "ArtemisAutoAdjustBlackLevel");
+        TYPE_ARTEMISAUTOADJUSTBLACKLEVEL pArtemisAutoAdjustBlackLevel=(TYPE_ARTEMISAUTOADJUSTBLACKLEVEL)pFuncs[27];
+        if (NULL != pArtemisAutoAdjustBlackLevel)
+            return pArtemisAutoAdjustBlackLevel(hCam, bEnable);
+    }
+    return (int)NULL;
 }
 
 
@@ -493,15 +493,15 @@ int artfn ArtemisAutoAdjustBlackLevel(ArtemisHandle hCam, bool bEnable)
 typedef int (__stdcall * TYPE_ARTEMISSTOPGUIDINGBEFOREDOWNLOAD)(ArtemisHandle hCam, bool bEnable);
 int artfn ArtemisStopGuidingBeforeDownload(ArtemisHandle hCam, bool bEnable)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[28])
-			pFuncs[28]=GetProcAddress(hArtemisDLL, "ArtemisStopGuidingBeforeDownload");
-		TYPE_ARTEMISSTOPGUIDINGBEFOREDOWNLOAD pArtemisStopGuidingBeforeDownload=(TYPE_ARTEMISSTOPGUIDINGBEFOREDOWNLOAD)pFuncs[28];
-		if (NULL != pArtemisStopGuidingBeforeDownload)
-			return pArtemisStopGuidingBeforeDownload(hCam, bEnable);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[28])
+            pFuncs[28]=GetProcAddress(hArtemisDLL, "ArtemisStopGuidingBeforeDownload");
+        TYPE_ARTEMISSTOPGUIDINGBEFOREDOWNLOAD pArtemisStopGuidingBeforeDownload=(TYPE_ARTEMISSTOPGUIDINGBEFOREDOWNLOAD)pFuncs[28];
+        if (NULL != pArtemisStopGuidingBeforeDownload)
+            return pArtemisStopGuidingBeforeDownload(hCam, bEnable);
+    }
+    return (int)NULL;
 }
 
 
@@ -509,15 +509,15 @@ int artfn ArtemisStopGuidingBeforeDownload(ArtemisHandle hCam, bool bEnable)
 typedef int (__stdcall * TYPE_ARTEMISPEEK)(ArtemisHandle hCam, int peekCode, int* peekValue);
 int artfn ArtemisPeek(ArtemisHandle hCam, int peekCode, int* peekValue)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[29])
-			pFuncs[29]=GetProcAddress(hArtemisDLL, "ArtemisPeek");
-		TYPE_ARTEMISPEEK pArtemisPeek=(TYPE_ARTEMISPEEK)pFuncs[29];
-		if (NULL != pArtemisPeek)
-			return pArtemisPeek(hCam, peekCode, peekValue);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[29])
+            pFuncs[29]=GetProcAddress(hArtemisDLL, "ArtemisPeek");
+        TYPE_ARTEMISPEEK pArtemisPeek=(TYPE_ARTEMISPEEK)pFuncs[29];
+        if (NULL != pArtemisPeek)
+            return pArtemisPeek(hCam, peekCode, peekValue);
+    }
+    return (int)NULL;
 }
 
 
@@ -525,15 +525,15 @@ int artfn ArtemisPeek(ArtemisHandle hCam, int peekCode, int* peekValue)
 typedef int (__stdcall * TYPE_ARTEMISPOKE)(ArtemisHandle hCam, int pokeCode, int pokeValue);
 int artfn ArtemisPoke(ArtemisHandle hCam, int pokeCode, int pokeValue)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[30])
-			pFuncs[30]=GetProcAddress(hArtemisDLL, "ArtemisPoke");
-		TYPE_ARTEMISPOKE pArtemisPoke=(TYPE_ARTEMISPOKE)pFuncs[30];
-		if (NULL != pArtemisPoke)
-			return pArtemisPoke(hCam, pokeCode, pokeValue);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[30])
+            pFuncs[30]=GetProcAddress(hArtemisDLL, "ArtemisPoke");
+        TYPE_ARTEMISPOKE pArtemisPoke=(TYPE_ARTEMISPOKE)pFuncs[30];
+        if (NULL != pArtemisPoke)
+            return pArtemisPoke(hCam, pokeCode, pokeValue);
+    }
+    return (int)NULL;
 }
 
 
@@ -542,15 +542,15 @@ int artfn ArtemisPoke(ArtemisHandle hCam, int pokeCode, int pokeValue)
 typedef int (__stdcall * TYPE_ARTEMISGETGPIOINFORMATION)(ArtemisHandle hCam, int* lineCount, int* lineValues);
 int artfn ArtemisGetGpioInformation(ArtemisHandle hCam, int* lineCount, int* lineValues)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[31])
-			pFuncs[31]=GetProcAddress(hArtemisDLL, "ArtemisGetGpioInformation");
-		TYPE_ARTEMISGETGPIOINFORMATION pArtemisGetGpioInformation=(TYPE_ARTEMISGETGPIOINFORMATION)pFuncs[31];
-		if (NULL != pArtemisGetGpioInformation)
-			return pArtemisGetGpioInformation(hCam, lineCount, lineValues);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[31])
+            pFuncs[31]=GetProcAddress(hArtemisDLL, "ArtemisGetGpioInformation");
+        TYPE_ARTEMISGETGPIOINFORMATION pArtemisGetGpioInformation=(TYPE_ARTEMISGETGPIOINFORMATION)pFuncs[31];
+        if (NULL != pArtemisGetGpioInformation)
+            return pArtemisGetGpioInformation(hCam, lineCount, lineValues);
+    }
+    return (int)NULL;
 }
 
 
@@ -559,15 +559,15 @@ int artfn ArtemisGetGpioInformation(ArtemisHandle hCam, int* lineCount, int* lin
 typedef int (__stdcall * TYPE_ARTEMISSETGPIODIRECTION)(ArtemisHandle hCam, int directionMask);
 int artfn ArtemisSetGpioDirection(ArtemisHandle hCam, int directionMask)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[32])
-			pFuncs[32]=GetProcAddress(hArtemisDLL, "ArtemisSetGpioDirection");
-		TYPE_ARTEMISSETGPIODIRECTION pArtemisSetGpioDirection=(TYPE_ARTEMISSETGPIODIRECTION)pFuncs[32];
-		if (NULL != pArtemisSetGpioDirection)
-			return pArtemisSetGpioDirection(hCam, directionMask);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[32])
+            pFuncs[32]=GetProcAddress(hArtemisDLL, "ArtemisSetGpioDirection");
+        TYPE_ARTEMISSETGPIODIRECTION pArtemisSetGpioDirection=(TYPE_ARTEMISSETGPIODIRECTION)pFuncs[32];
+        if (NULL != pArtemisSetGpioDirection)
+            return pArtemisSetGpioDirection(hCam, directionMask);
+    }
+    return (int)NULL;
 }
 
 
@@ -576,15 +576,15 @@ int artfn ArtemisSetGpioDirection(ArtemisHandle hCam, int directionMask)
 typedef int (__stdcall * TYPE_ARTEMISSETGPIOVALUES)(ArtemisHandle hCam, int lineValues);
 int artfn ArtemisSetGpioValues(ArtemisHandle hCam, int lineValues)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[33])
-			pFuncs[33]=GetProcAddress(hArtemisDLL, "ArtemisSetGpioValues");
-		TYPE_ARTEMISSETGPIOVALUES pArtemisSetGpioValues=(TYPE_ARTEMISSETGPIOVALUES)pFuncs[33];
-		if (NULL != pArtemisSetGpioValues)
-			return pArtemisSetGpioValues(hCam, lineValues);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[33])
+            pFuncs[33]=GetProcAddress(hArtemisDLL, "ArtemisSetGpioValues");
+        TYPE_ARTEMISSETGPIOVALUES pArtemisSetGpioValues=(TYPE_ARTEMISSETGPIOVALUES)pFuncs[33];
+        if (NULL != pArtemisSetGpioValues)
+            return pArtemisSetGpioValues(hCam, lineValues);
+    }
+    return (int)NULL;
 }
 
 
@@ -592,15 +592,15 @@ int artfn ArtemisSetGpioValues(ArtemisHandle hCam, int lineValues)
 typedef int (__stdcall * TYPE_ARTEMISCOLOURPROPERTIES)(ArtemisHandle hCam, ARTEMISCOLOURTYPE * colourType, int * normalOffsetX, int * normalOffsetY, int * previewOffsetX, int * previewOffsetY);
 int artfn ArtemisColourProperties(ArtemisHandle hCam, ARTEMISCOLOURTYPE * colourType, int * normalOffsetX, int * normalOffsetY, int * previewOffsetX, int * previewOffsetY)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[34])
-			pFuncs[34]=GetProcAddress(hArtemisDLL, "ArtemisColourProperties");
-		TYPE_ARTEMISCOLOURPROPERTIES pArtemisColourProperties=(TYPE_ARTEMISCOLOURPROPERTIES)pFuncs[34];
-		if (NULL != pArtemisColourProperties)
-			return pArtemisColourProperties(hCam, colourType, normalOffsetX, normalOffsetY, previewOffsetX, previewOffsetY);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[34])
+            pFuncs[34]=GetProcAddress(hArtemisDLL, "ArtemisColourProperties");
+        TYPE_ARTEMISCOLOURPROPERTIES pArtemisColourProperties=(TYPE_ARTEMISCOLOURPROPERTIES)pFuncs[34];
+        if (NULL != pArtemisColourProperties)
+            return pArtemisColourProperties(hCam, colourType, normalOffsetX, normalOffsetY, previewOffsetX, previewOffsetY);
+    }
+    return (int)NULL;
 }
 
 
@@ -608,15 +608,15 @@ int artfn ArtemisColourProperties(ArtemisHandle hCam, ARTEMISCOLOURTYPE * colour
 typedef int (__stdcall * TYPE_ARTEMISSETOVERLAPPEDEXPOSURETIME)(ArtemisHandle hCam, float Seconds);
 int artfn ArtemisSetOverlappedExposureTime(ArtemisHandle hCam, float Seconds)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[35])
-			pFuncs[35]=GetProcAddress(hArtemisDLL, "ArtemisSetOverlappedExposureTime");
-		TYPE_ARTEMISSETOVERLAPPEDEXPOSURETIME pArtemisSetOverlappedExposureTime=(TYPE_ARTEMISSETOVERLAPPEDEXPOSURETIME)pFuncs[35];
-		if (NULL != pArtemisSetOverlappedExposureTime)
-			return pArtemisSetOverlappedExposureTime(hCam, Seconds);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[35])
+            pFuncs[35]=GetProcAddress(hArtemisDLL, "ArtemisSetOverlappedExposureTime");
+        TYPE_ARTEMISSETOVERLAPPEDEXPOSURETIME pArtemisSetOverlappedExposureTime=(TYPE_ARTEMISSETOVERLAPPEDEXPOSURETIME)pFuncs[35];
+        if (NULL != pArtemisSetOverlappedExposureTime)
+            return pArtemisSetOverlappedExposureTime(hCam, Seconds);
+    }
+    return (int)NULL;
 }
 
 
@@ -624,15 +624,15 @@ int artfn ArtemisSetOverlappedExposureTime(ArtemisHandle hCam, float Seconds)
 typedef int (__stdcall * TYPE_ARTEMISSTARTOVERLAPPEDEXPOSURE)(ArtemisHandle hCam);
 int artfn ArtemisStartOverlappedExposure(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[36])
-			pFuncs[36]=GetProcAddress(hArtemisDLL, "ArtemisStartOverlappedExposure");
-		TYPE_ARTEMISSTARTOVERLAPPEDEXPOSURE pArtemisStartOverlappedExposure=(TYPE_ARTEMISSTARTOVERLAPPEDEXPOSURE)pFuncs[36];
-		if (NULL != pArtemisStartOverlappedExposure)
-			return pArtemisStartOverlappedExposure(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[36])
+            pFuncs[36]=GetProcAddress(hArtemisDLL, "ArtemisStartOverlappedExposure");
+        TYPE_ARTEMISSTARTOVERLAPPEDEXPOSURE pArtemisStartOverlappedExposure=(TYPE_ARTEMISSTARTOVERLAPPEDEXPOSURE)pFuncs[36];
+        if (NULL != pArtemisStartOverlappedExposure)
+            return pArtemisStartOverlappedExposure(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -640,15 +640,15 @@ int artfn ArtemisStartOverlappedExposure(ArtemisHandle hCam)
 typedef bool (__stdcall * TYPE_ARTEMISOVERLAPPEDEXPOSUREVALID)(ArtemisHandle hCam);
 bool artfn ArtemisOverlappedExposureValid(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[37])
-			pFuncs[37]=GetProcAddress(hArtemisDLL, "ArtemisOverlappedExposureValid");
-		TYPE_ARTEMISOVERLAPPEDEXPOSUREVALID pArtemisOverlappedExposureValid=(TYPE_ARTEMISOVERLAPPEDEXPOSUREVALID)pFuncs[37];
-		if (NULL != pArtemisOverlappedExposureValid)
-			return (bool)(pArtemisOverlappedExposureValid(hCam)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[37])
+            pFuncs[37]=GetProcAddress(hArtemisDLL, "ArtemisOverlappedExposureValid");
+        TYPE_ARTEMISOVERLAPPEDEXPOSUREVALID pArtemisOverlappedExposureValid=(TYPE_ARTEMISOVERLAPPEDEXPOSUREVALID)pFuncs[37];
+        if (NULL != pArtemisOverlappedExposureValid)
+            return (bool)(pArtemisOverlappedExposureValid(hCam)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -657,15 +657,15 @@ bool artfn ArtemisOverlappedExposureValid(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISEXPOSUREREADYCALLBACK)(ArtemisHandle hCam, HWND hWnd, int msg, int wParam, int lParam);
 int artfn ArtemisExposureReadyCallback(ArtemisHandle hCam, HWND hWnd, int msg, int wParam, int lParam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[38])
-			pFuncs[38]=GetProcAddress(hArtemisDLL, "ArtemisExposureReadyCallback");
-		TYPE_ARTEMISEXPOSUREREADYCALLBACK pArtemisExposureReadyCallback=(TYPE_ARTEMISEXPOSUREREADYCALLBACK)pFuncs[38];
-		if (NULL != pArtemisExposureReadyCallback)
-			return pArtemisExposureReadyCallback(hCam, hWnd, msg, wParam, lParam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[38])
+            pFuncs[38]=GetProcAddress(hArtemisDLL, "ArtemisExposureReadyCallback");
+        TYPE_ARTEMISEXPOSUREREADYCALLBACK pArtemisExposureReadyCallback=(TYPE_ARTEMISEXPOSUREREADYCALLBACK)pFuncs[38];
+        if (NULL != pArtemisExposureReadyCallback)
+            return pArtemisExposureReadyCallback(hCam, hWnd, msg, wParam, lParam);
+    }
+    return (int)NULL;
 }
 
 
@@ -673,15 +673,15 @@ int artfn ArtemisExposureReadyCallback(ArtemisHandle hCam, HWND hWnd, int msg, i
 typedef int (__stdcall * TYPE_ARTEMISGETIMAGEARRAY)(ArtemisHandle hCam, VARIANT * pImageArray);
 int artfn ArtemisGetImageArray(ArtemisHandle hCam, VARIANT * pImageArray)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[39])
-			pFuncs[39]=GetProcAddress(hArtemisDLL, "ArtemisGetImageArray");
-		TYPE_ARTEMISGETIMAGEARRAY pArtemisGetImageArray=(TYPE_ARTEMISGETIMAGEARRAY)pFuncs[39];
-		if (NULL != pArtemisGetImageArray)
-			return pArtemisGetImageArray(hCam, pImageArray);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[39])
+            pFuncs[39]=GetProcAddress(hArtemisDLL, "ArtemisGetImageArray");
+        TYPE_ARTEMISGETIMAGEARRAY pArtemisGetImageArray=(TYPE_ARTEMISGETIMAGEARRAY)pFuncs[39];
+        if (NULL != pArtemisGetImageArray)
+            return pArtemisGetImageArray(hCam, pImageArray);
+    }
+    return (int)NULL;
 }
 
 
@@ -690,15 +690,15 @@ int artfn ArtemisGetImageArray(ArtemisHandle hCam, VARIANT * pImageArray)
 typedef int (__stdcall * TYPE_ARTEMISGETIMAGEDATA)(ArtemisHandle hCam, int * x, int * y, int * w, int * h, int * binx, int * biny);
 int artfn ArtemisGetImageData(ArtemisHandle hCam, int * x, int * y, int * w, int * h, int * binx, int * biny)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[40])
-			pFuncs[40]=GetProcAddress(hArtemisDLL, "ArtemisGetImageData");
-		TYPE_ARTEMISGETIMAGEDATA pArtemisGetImageData=(TYPE_ARTEMISGETIMAGEDATA)pFuncs[40];
-		if (NULL != pArtemisGetImageData)
-			return pArtemisGetImageData(hCam, x, y, w, h, binx, biny);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[40])
+            pFuncs[40]=GetProcAddress(hArtemisDLL, "ArtemisGetImageData");
+        TYPE_ARTEMISGETIMAGEDATA pArtemisGetImageData=(TYPE_ARTEMISGETIMAGEDATA)pFuncs[40];
+        if (NULL != pArtemisGetImageData)
+            return pArtemisGetImageData(hCam, x, y, w, h, binx, biny);
+    }
+    return (int)NULL;
 }
 
 
@@ -706,15 +706,15 @@ int artfn ArtemisGetImageData(ArtemisHandle hCam, int * x, int * y, int * w, int
 typedef int (__stdcall * TYPE_ARTEMISREFLASH)(ArtemisHandle hCam , char * objfile);
 int artfn ArtemisReflash(ArtemisHandle hCam , char * objfile)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[41])
-			pFuncs[41]=GetProcAddress(hArtemisDLL, "ArtemisReflash");
-		TYPE_ARTEMISREFLASH pArtemisReflash=(TYPE_ARTEMISREFLASH)pFuncs[41];
-		if (NULL != pArtemisReflash)
-			return pArtemisReflash(hCam , objfile);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[41])
+            pFuncs[41]=GetProcAddress(hArtemisDLL, "ArtemisReflash");
+        TYPE_ARTEMISREFLASH pArtemisReflash=(TYPE_ARTEMISREFLASH)pFuncs[41];
+        if (NULL != pArtemisReflash)
+            return pArtemisReflash(hCam , objfile);
+    }
+    return (int)NULL;
 }
 
 
@@ -722,15 +722,15 @@ int artfn ArtemisReflash(ArtemisHandle hCam , char * objfile)
 typedef bool (__stdcall * TYPE_ARTEMISGETAMPLIFIERSWITCHED)(ArtemisHandle hCam);
 bool artfn ArtemisGetAmplifierSwitched(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[42])
-			pFuncs[42]=GetProcAddress(hArtemisDLL, "ArtemisGetAmplifierSwitched");
-		TYPE_ARTEMISGETAMPLIFIERSWITCHED pArtemisGetAmplifierSwitched=(TYPE_ARTEMISGETAMPLIFIERSWITCHED)pFuncs[42];
-		if (NULL != pArtemisGetAmplifierSwitched)
-			return (bool)(pArtemisGetAmplifierSwitched(hCam)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[42])
+            pFuncs[42]=GetProcAddress(hArtemisDLL, "ArtemisGetAmplifierSwitched");
+        TYPE_ARTEMISGETAMPLIFIERSWITCHED pArtemisGetAmplifierSwitched=(TYPE_ARTEMISGETAMPLIFIERSWITCHED)pFuncs[42];
+        if (NULL != pArtemisGetAmplifierSwitched)
+            return (bool)(pArtemisGetAmplifierSwitched(hCam)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -738,15 +738,15 @@ bool artfn ArtemisGetAmplifierSwitched(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISSETAMPLIFIERSWITCHED)(ArtemisHandle hCam, bool bSwitched);
 int artfn ArtemisSetAmplifierSwitched(ArtemisHandle hCam, bool bSwitched)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[43])
-			pFuncs[43]=GetProcAddress(hArtemisDLL, "ArtemisSetAmplifierSwitched");
-		TYPE_ARTEMISSETAMPLIFIERSWITCHED pArtemisSetAmplifierSwitched=(TYPE_ARTEMISSETAMPLIFIERSWITCHED)pFuncs[43];
-		if (NULL != pArtemisSetAmplifierSwitched)
-			return pArtemisSetAmplifierSwitched(hCam, bSwitched);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[43])
+            pFuncs[43]=GetProcAddress(hArtemisDLL, "ArtemisSetAmplifierSwitched");
+        TYPE_ARTEMISSETAMPLIFIERSWITCHED pArtemisSetAmplifierSwitched=(TYPE_ARTEMISSETAMPLIFIERSWITCHED)pFuncs[43];
+        if (NULL != pArtemisSetAmplifierSwitched)
+            return pArtemisSetAmplifierSwitched(hCam, bSwitched);
+    }
+    return (int)NULL;
 }
 
 
@@ -754,15 +754,15 @@ int artfn ArtemisSetAmplifierSwitched(ArtemisHandle hCam, bool bSwitched)
 typedef float (__stdcall * TYPE_ARTEMISLASTEXPOSUREDURATION)(ArtemisHandle hCam);
 float artfn ArtemisLastExposureDuration(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[44])
-			pFuncs[44]=GetProcAddress(hArtemisDLL, "ArtemisLastExposureDuration");
-		TYPE_ARTEMISLASTEXPOSUREDURATION pArtemisLastExposureDuration=(TYPE_ARTEMISLASTEXPOSUREDURATION)pFuncs[44];
-		if (NULL != pArtemisLastExposureDuration)
-			return pArtemisLastExposureDuration(hCam);
-	}
-	return (float)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[44])
+            pFuncs[44]=GetProcAddress(hArtemisDLL, "ArtemisLastExposureDuration");
+        TYPE_ARTEMISLASTEXPOSUREDURATION pArtemisLastExposureDuration=(TYPE_ARTEMISLASTEXPOSUREDURATION)pFuncs[44];
+        if (NULL != pArtemisLastExposureDuration)
+            return pArtemisLastExposureDuration(hCam);
+    }
+    return (float)NULL;
 }
 
 
@@ -770,15 +770,15 @@ float artfn ArtemisLastExposureDuration(ArtemisHandle hCam)
 typedef float (__stdcall * TYPE_ARTEMISEXPOSURETIMEREMAINING)(ArtemisHandle hCam);
 float artfn ArtemisExposureTimeRemaining(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[45])
-			pFuncs[45]=GetProcAddress(hArtemisDLL, "ArtemisExposureTimeRemaining");
-		TYPE_ARTEMISEXPOSURETIMEREMAINING pArtemisExposureTimeRemaining=(TYPE_ARTEMISEXPOSURETIMEREMAINING)pFuncs[45];
-		if (NULL != pArtemisExposureTimeRemaining)
-			return pArtemisExposureTimeRemaining(hCam);
-	}
-	return (float)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[45])
+            pFuncs[45]=GetProcAddress(hArtemisDLL, "ArtemisExposureTimeRemaining");
+        TYPE_ARTEMISEXPOSURETIMEREMAINING pArtemisExposureTimeRemaining=(TYPE_ARTEMISEXPOSURETIMEREMAINING)pFuncs[45];
+        if (NULL != pArtemisExposureTimeRemaining)
+            return pArtemisExposureTimeRemaining(hCam);
+    }
+    return (float)NULL;
 }
 
 
@@ -786,15 +786,15 @@ float artfn ArtemisExposureTimeRemaining(ArtemisHandle hCam)
 typedef char* (__stdcall * TYPE_ARTEMISLASTSTARTTIME)(ArtemisHandle hCam);
 char* artfn ArtemisLastStartTime(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[46])
-			pFuncs[46]=GetProcAddress(hArtemisDLL, "ArtemisLastStartTime");
-		TYPE_ARTEMISLASTSTARTTIME pArtemisLastStartTime=(TYPE_ARTEMISLASTSTARTTIME)pFuncs[46];
-		if (NULL != pArtemisLastStartTime)
-			return pArtemisLastStartTime(hCam);
-	}
-	return (char*)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[46])
+            pFuncs[46]=GetProcAddress(hArtemisDLL, "ArtemisLastStartTime");
+        TYPE_ARTEMISLASTSTARTTIME pArtemisLastStartTime=(TYPE_ARTEMISLASTSTARTTIME)pFuncs[46];
+        if (NULL != pArtemisLastStartTime)
+            return pArtemisLastStartTime(hCam);
+    }
+    return (char*)NULL;
 }
 
 
@@ -803,15 +803,15 @@ char* artfn ArtemisLastStartTime(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISLASTSTARTTIMEMILLISECONDS)(ArtemisHandle hCam);
 int artfn ArtemisLastStartTimeMilliseconds(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[47])
-			pFuncs[47]=GetProcAddress(hArtemisDLL, "ArtemisLastStartTimeMilliseconds");
-		TYPE_ARTEMISLASTSTARTTIMEMILLISECONDS pArtemisLastStartTimeMilliseconds=(TYPE_ARTEMISLASTSTARTTIMEMILLISECONDS)pFuncs[47];
-		if (NULL != pArtemisLastStartTimeMilliseconds)
-			return pArtemisLastStartTimeMilliseconds(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[47])
+            pFuncs[47]=GetProcAddress(hArtemisDLL, "ArtemisLastStartTimeMilliseconds");
+        TYPE_ARTEMISLASTSTARTTIMEMILLISECONDS pArtemisLastStartTimeMilliseconds=(TYPE_ARTEMISLASTSTARTTIMEMILLISECONDS)pFuncs[47];
+        if (NULL != pArtemisLastStartTimeMilliseconds)
+            return pArtemisLastStartTimeMilliseconds(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -819,15 +819,15 @@ int artfn ArtemisLastStartTimeMilliseconds(ArtemisHandle hCam)
 typedef bool (__stdcall * TYPE_ARTEMISIMAGEREADY)(ArtemisHandle hCam);
 bool artfn ArtemisImageReady(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[48])
-			pFuncs[48]=GetProcAddress(hArtemisDLL, "ArtemisImageReady");
-		TYPE_ARTEMISIMAGEREADY pArtemisImageReady=(TYPE_ARTEMISIMAGEREADY)pFuncs[48];
-		if (NULL != pArtemisImageReady)
-			return (bool)(pArtemisImageReady(hCam)?1:0);
-	}
-	return (bool)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[48])
+            pFuncs[48]=GetProcAddress(hArtemisDLL, "ArtemisImageReady");
+        TYPE_ARTEMISIMAGEREADY pArtemisImageReady=(TYPE_ARTEMISIMAGEREADY)pFuncs[48];
+        if (NULL != pArtemisImageReady)
+            return (bool)(pArtemisImageReady(hCam)?1:0);
+    }
+    return (bool)NULL;
 }
 
 
@@ -835,15 +835,15 @@ bool artfn ArtemisImageReady(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISSTOPGUIDING)(ArtemisHandle hCam);
 int artfn ArtemisStopGuiding(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[49])
-			pFuncs[49]=GetProcAddress(hArtemisDLL, "ArtemisStopGuiding");
-		TYPE_ARTEMISSTOPGUIDING pArtemisStopGuiding=(TYPE_ARTEMISSTOPGUIDING)pFuncs[49];
-		if (NULL != pArtemisStopGuiding)
-			return pArtemisStopGuiding(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[49])
+            pFuncs[49]=GetProcAddress(hArtemisDLL, "ArtemisStopGuiding");
+        TYPE_ARTEMISSTOPGUIDING pArtemisStopGuiding=(TYPE_ARTEMISSTOPGUIDING)pFuncs[49];
+        if (NULL != pArtemisStopGuiding)
+            return pArtemisStopGuiding(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -851,15 +851,15 @@ int artfn ArtemisStopGuiding(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISPULSEGUIDE)(ArtemisHandle hCam, int axis, int milli);
 int artfn ArtemisPulseGuide(ArtemisHandle hCam, int axis, int milli)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[50])
-			pFuncs[50]=GetProcAddress(hArtemisDLL, "ArtemisPulseGuide");
-		TYPE_ARTEMISPULSEGUIDE pArtemisPulseGuide=(TYPE_ARTEMISPULSEGUIDE)pFuncs[50];
-		if (NULL != pArtemisPulseGuide)
-			return pArtemisPulseGuide(hCam, axis, milli);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[50])
+            pFuncs[50]=GetProcAddress(hArtemisDLL, "ArtemisPulseGuide");
+        TYPE_ARTEMISPULSEGUIDE pArtemisPulseGuide=(TYPE_ARTEMISPULSEGUIDE)pFuncs[50];
+        if (NULL != pArtemisPulseGuide)
+            return pArtemisPulseGuide(hCam, axis, milli);
+    }
+    return (int)NULL;
 }
 
 
@@ -867,15 +867,15 @@ int artfn ArtemisPulseGuide(ArtemisHandle hCam, int axis, int milli)
 typedef int (__stdcall * TYPE_ARTEMISGUIDE)(ArtemisHandle hCam, int axis);
 int artfn ArtemisGuide(ArtemisHandle hCam, int axis)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[51])
-			pFuncs[51]=GetProcAddress(hArtemisDLL, "ArtemisGuide");
-		TYPE_ARTEMISGUIDE pArtemisGuide=(TYPE_ARTEMISGUIDE)pFuncs[51];
-		if (NULL != pArtemisGuide)
-			return pArtemisGuide(hCam, axis);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[51])
+            pFuncs[51]=GetProcAddress(hArtemisDLL, "ArtemisGuide");
+        TYPE_ARTEMISGUIDE pArtemisGuide=(TYPE_ARTEMISGUIDE)pFuncs[51];
+        if (NULL != pArtemisGuide)
+            return pArtemisGuide(hCam, axis);
+    }
+    return (int)NULL;
 }
 
 
@@ -883,15 +883,15 @@ int artfn ArtemisGuide(ArtemisHandle hCam, int axis)
 typedef int (__stdcall * TYPE_ARTEMISGUIDEPORT)(ArtemisHandle hCam, int nibble);
 int artfn ArtemisGuidePort(ArtemisHandle hCam, int nibble)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[52])
-			pFuncs[52]=GetProcAddress(hArtemisDLL, "ArtemisGuidePort");
-		TYPE_ARTEMISGUIDEPORT pArtemisGuidePort=(TYPE_ARTEMISGUIDEPORT)pFuncs[52];
-		if (NULL != pArtemisGuidePort)
-			return pArtemisGuidePort(hCam, nibble);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[52])
+            pFuncs[52]=GetProcAddress(hArtemisDLL, "ArtemisGuidePort");
+        TYPE_ARTEMISGUIDEPORT pArtemisGuidePort=(TYPE_ARTEMISGUIDEPORT)pFuncs[52];
+        if (NULL != pArtemisGuidePort)
+            return pArtemisGuidePort(hCam, nibble);
+    }
+    return (int)NULL;
 }
 
 
@@ -899,15 +899,15 @@ int artfn ArtemisGuidePort(ArtemisHandle hCam, int nibble)
 typedef int (__stdcall * TYPE_ARTEMISHIGHPRIORITY)(ArtemisHandle hCam, bool bHigh);
 int artfn ArtemisHighPriority(ArtemisHandle hCam, bool bHigh)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[53])
-			pFuncs[53]=GetProcAddress(hArtemisDLL, "ArtemisHighPriority");
-		TYPE_ARTEMISHIGHPRIORITY pArtemisHighPriority=(TYPE_ARTEMISHIGHPRIORITY)pFuncs[53];
-		if (NULL != pArtemisHighPriority)
-			return pArtemisHighPriority(hCam, bHigh);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[53])
+            pFuncs[53]=GetProcAddress(hArtemisDLL, "ArtemisHighPriority");
+        TYPE_ARTEMISHIGHPRIORITY pArtemisHighPriority=(TYPE_ARTEMISHIGHPRIORITY)pFuncs[53];
+        if (NULL != pArtemisHighPriority)
+            return pArtemisHighPriority(hCam, bHigh);
+    }
+    return (int)NULL;
 }
 
 
@@ -915,15 +915,15 @@ int artfn ArtemisHighPriority(ArtemisHandle hCam, bool bHigh)
 typedef int (__stdcall * TYPE_ARTEMISCAMERASTATE)(ArtemisHandle hCam);
 int artfn ArtemisCameraState(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[54])
-			pFuncs[54]=GetProcAddress(hArtemisDLL, "ArtemisCameraState");
-		TYPE_ARTEMISCAMERASTATE pArtemisCameraState=(TYPE_ARTEMISCAMERASTATE)pFuncs[54];
-		if (NULL != pArtemisCameraState)
-			return pArtemisCameraState(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[54])
+            pFuncs[54]=GetProcAddress(hArtemisDLL, "ArtemisCameraState");
+        TYPE_ARTEMISCAMERASTATE pArtemisCameraState=(TYPE_ARTEMISCAMERASTATE)pFuncs[54];
+        if (NULL != pArtemisCameraState)
+            return pArtemisCameraState(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -931,15 +931,15 @@ int artfn ArtemisCameraState(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISDOWNLOADPERCENT)(ArtemisHandle hCam);
 int artfn ArtemisDownloadPercent(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[55])
-			pFuncs[55]=GetProcAddress(hArtemisDLL, "ArtemisDownloadPercent");
-		TYPE_ARTEMISDOWNLOADPERCENT pArtemisDownloadPercent=(TYPE_ARTEMISDOWNLOADPERCENT)pFuncs[55];
-		if (NULL != pArtemisDownloadPercent)
-			return pArtemisDownloadPercent(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[55])
+            pFuncs[55]=GetProcAddress(hArtemisDLL, "ArtemisDownloadPercent");
+        TYPE_ARTEMISDOWNLOADPERCENT pArtemisDownloadPercent=(TYPE_ARTEMISDOWNLOADPERCENT)pFuncs[55];
+        if (NULL != pArtemisDownloadPercent)
+            return pArtemisDownloadPercent(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -947,15 +947,15 @@ int artfn ArtemisDownloadPercent(ArtemisHandle hCam)
 typedef void* (__stdcall * TYPE_ARTEMISIMAGEBUFFER)(ArtemisHandle hCam);
 void* artfn ArtemisImageBuffer(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[56])
-			pFuncs[56]=GetProcAddress(hArtemisDLL, "ArtemisImageBuffer");
-		TYPE_ARTEMISIMAGEBUFFER pArtemisImageBuffer=(TYPE_ARTEMISIMAGEBUFFER)pFuncs[56];
-		if (NULL != pArtemisImageBuffer)
-			return pArtemisImageBuffer(hCam);
-	}
-	return (void*)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[56])
+            pFuncs[56]=GetProcAddress(hArtemisDLL, "ArtemisImageBuffer");
+        TYPE_ARTEMISIMAGEBUFFER pArtemisImageBuffer=(TYPE_ARTEMISIMAGEBUFFER)pFuncs[56];
+        if (NULL != pArtemisImageBuffer)
+            return pArtemisImageBuffer(hCam);
+    }
+    return (void*)NULL;
 }
 
 
@@ -963,15 +963,15 @@ void* artfn ArtemisImageBuffer(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISAMPLIFIER)(ArtemisHandle hCam, bool bOn);
 int artfn ArtemisAmplifier(ArtemisHandle hCam, bool bOn)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[57])
-			pFuncs[57]=GetProcAddress(hArtemisDLL, "ArtemisAmplifier");
-		TYPE_ARTEMISAMPLIFIER pArtemisAmplifier=(TYPE_ARTEMISAMPLIFIER)pFuncs[57];
-		if (NULL != pArtemisAmplifier)
-			return pArtemisAmplifier(hCam, bOn);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[57])
+            pFuncs[57]=GetProcAddress(hArtemisDLL, "ArtemisAmplifier");
+        TYPE_ARTEMISAMPLIFIER pArtemisAmplifier=(TYPE_ARTEMISAMPLIFIER)pFuncs[57];
+        if (NULL != pArtemisAmplifier)
+            return pArtemisAmplifier(hCam, bOn);
+    }
+    return (int)NULL;
 }
 
 
@@ -979,15 +979,15 @@ int artfn ArtemisAmplifier(ArtemisHandle hCam, bool bOn)
 typedef int (__stdcall * TYPE_ARTEMISWEBCAMLE)(ArtemisHandle hCam, bool bHigh);
 int artfn ArtemisWebcamLE(ArtemisHandle hCam, bool bHigh)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[58])
-			pFuncs[58]=GetProcAddress(hArtemisDLL, "ArtemisWebcamLE");
-		TYPE_ARTEMISWEBCAMLE pArtemisWebcamLE=(TYPE_ARTEMISWEBCAMLE)pFuncs[58];
-		if (NULL != pArtemisWebcamLE)
-			return pArtemisWebcamLE(hCam, bHigh);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[58])
+            pFuncs[58]=GetProcAddress(hArtemisDLL, "ArtemisWebcamLE");
+        TYPE_ARTEMISWEBCAMLE pArtemisWebcamLE=(TYPE_ARTEMISWEBCAMLE)pFuncs[58];
+        if (NULL != pArtemisWebcamLE)
+            return pArtemisWebcamLE(hCam, bHigh);
+    }
+    return (int)NULL;
 }
 
 
@@ -995,15 +995,15 @@ int artfn ArtemisWebcamLE(ArtemisHandle hCam, bool bHigh)
 typedef int (__stdcall * TYPE_ARTEMISRESET)(ArtemisHandle hCam);
 int artfn ArtemisReset(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[59])
-			pFuncs[59]=GetProcAddress(hArtemisDLL, "ArtemisReset");
-		TYPE_ARTEMISRESET pArtemisReset=(TYPE_ARTEMISRESET)pFuncs[59];
-		if (NULL != pArtemisReset)
-			return pArtemisReset(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[59])
+            pFuncs[59]=GetProcAddress(hArtemisDLL, "ArtemisReset");
+        TYPE_ARTEMISRESET pArtemisReset=(TYPE_ARTEMISRESET)pFuncs[59];
+        if (NULL != pArtemisReset)
+            return pArtemisReset(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -1011,15 +1011,15 @@ int artfn ArtemisReset(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISGETPROCESSING)(ArtemisHandle hCam);
 int artfn ArtemisGetProcessing(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[60])
-			pFuncs[60]=GetProcAddress(hArtemisDLL, "ArtemisGetProcessing");
-		TYPE_ARTEMISGETPROCESSING pArtemisGetProcessing=(TYPE_ARTEMISGETPROCESSING)pFuncs[60];
-		if (NULL != pArtemisGetProcessing)
-			return pArtemisGetProcessing(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[60])
+            pFuncs[60]=GetProcAddress(hArtemisDLL, "ArtemisGetProcessing");
+        TYPE_ARTEMISGETPROCESSING pArtemisGetProcessing=(TYPE_ARTEMISGETPROCESSING)pFuncs[60];
+        if (NULL != pArtemisGetProcessing)
+            return pArtemisGetProcessing(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -1027,15 +1027,15 @@ int artfn ArtemisGetProcessing(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISSETPROCESSING)(ArtemisHandle hCam, int options);
 int artfn ArtemisSetProcessing(ArtemisHandle hCam, int options)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[61])
-			pFuncs[61]=GetProcAddress(hArtemisDLL, "ArtemisSetProcessing");
-		TYPE_ARTEMISSETPROCESSING pArtemisSetProcessing=(TYPE_ARTEMISSETPROCESSING)pFuncs[61];
-		if (NULL != pArtemisSetProcessing)
-			return pArtemisSetProcessing(hCam, options);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[61])
+            pFuncs[61]=GetProcAddress(hArtemisDLL, "ArtemisSetProcessing");
+        TYPE_ARTEMISSETPROCESSING pArtemisSetProcessing=(TYPE_ARTEMISSETPROCESSING)pFuncs[61];
+        if (NULL != pArtemisSetProcessing)
+            return pArtemisSetProcessing(hCam, options);
+    }
+    return (int)NULL;
 }
 
 
@@ -1043,15 +1043,15 @@ int artfn ArtemisSetProcessing(ArtemisHandle hCam, int options)
 typedef int (__stdcall * TYPE_ARTEMISTRIGGEREDEXPOSURE)(ArtemisHandle hCam, bool bAwaitTrigger);
 int artfn ArtemisTriggeredExposure(ArtemisHandle hCam, bool bAwaitTrigger)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[62])
-			pFuncs[62]=GetProcAddress(hArtemisDLL, "ArtemisTriggeredExposure");
-		TYPE_ARTEMISTRIGGEREDEXPOSURE pArtemisTriggeredExposure=(TYPE_ARTEMISTRIGGEREDEXPOSURE)pFuncs[62];
-		if (NULL != pArtemisTriggeredExposure)
-			return pArtemisTriggeredExposure(hCam, bAwaitTrigger);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[62])
+            pFuncs[62]=GetProcAddress(hArtemisDLL, "ArtemisTriggeredExposure");
+        TYPE_ARTEMISTRIGGEREDEXPOSURE pArtemisTriggeredExposure=(TYPE_ARTEMISTRIGGEREDEXPOSURE)pFuncs[62];
+        if (NULL != pArtemisTriggeredExposure)
+            return pArtemisTriggeredExposure(hCam, bAwaitTrigger);
+    }
+    return (int)NULL;
 }
 
 
@@ -1059,15 +1059,15 @@ int artfn ArtemisTriggeredExposure(ArtemisHandle hCam, bool bAwaitTrigger)
 typedef int (__stdcall * TYPE_ARTEMISSETPREVIEW)(ArtemisHandle hCam, bool bPrev);
 int artfn ArtemisSetPreview(ArtemisHandle hCam, bool bPrev)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[63])
-			pFuncs[63]=GetProcAddress(hArtemisDLL, "ArtemisSetPreview");
-		TYPE_ARTEMISSETPREVIEW pArtemisSetPreview=(TYPE_ARTEMISSETPREVIEW)pFuncs[63];
-		if (NULL != pArtemisSetPreview)
-			return pArtemisSetPreview(hCam, bPrev);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[63])
+            pFuncs[63]=GetProcAddress(hArtemisDLL, "ArtemisSetPreview");
+        TYPE_ARTEMISSETPREVIEW pArtemisSetPreview=(TYPE_ARTEMISSETPREVIEW)pFuncs[63];
+        if (NULL != pArtemisSetPreview)
+            return pArtemisSetPreview(hCam, bPrev);
+    }
+    return (int)NULL;
 }
 
 
@@ -1075,15 +1075,15 @@ int artfn ArtemisSetPreview(ArtemisHandle hCam, bool bPrev)
 typedef int (__stdcall * TYPE_ARTEMISSETSUBSAMPLE)(ArtemisHandle hCam, bool bSub);
 int artfn ArtemisSetSubSample(ArtemisHandle hCam, bool bSub)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[64])
-			pFuncs[64]=GetProcAddress(hArtemisDLL, "ArtemisSetSubSample");
-		TYPE_ARTEMISSETSUBSAMPLE pArtemisSetSubSample=(TYPE_ARTEMISSETSUBSAMPLE)pFuncs[64];
-		if (NULL != pArtemisSetSubSample)
-			return pArtemisSetSubSample(hCam, bSub);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[64])
+            pFuncs[64]=GetProcAddress(hArtemisDLL, "ArtemisSetSubSample");
+        TYPE_ARTEMISSETSUBSAMPLE pArtemisSetSubSample=(TYPE_ARTEMISSETSUBSAMPLE)pFuncs[64];
+        if (NULL != pArtemisSetSubSample)
+            return pArtemisSetSubSample(hCam, bSub);
+    }
+    return (int)NULL;
 }
 
 
@@ -1097,15 +1097,15 @@ int artfn ArtemisSetSubSample(ArtemisHandle hCam, bool bSub)
 typedef int (__stdcall * TYPE_ARTEMISPERIPHERAL)(ArtemisHandle hCam, int PeripheralID, unsigned char * pSendData, unsigned char * pRecvData);
 int artfn ArtemisPeripheral(ArtemisHandle hCam, int PeripheralID, unsigned char * pSendData, unsigned char * pRecvData)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[65])
-			pFuncs[65]=GetProcAddress(hArtemisDLL, "ArtemisPeripheral");
-		TYPE_ARTEMISPERIPHERAL pArtemisPeripheral=(TYPE_ARTEMISPERIPHERAL)pFuncs[65];
-		if (NULL != pArtemisPeripheral)
-			return pArtemisPeripheral(hCam, PeripheralID, pSendData, pRecvData);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[65])
+            pFuncs[65]=GetProcAddress(hArtemisDLL, "ArtemisPeripheral");
+        TYPE_ARTEMISPERIPHERAL pArtemisPeripheral=(TYPE_ARTEMISPERIPHERAL)pFuncs[65];
+        if (NULL != pArtemisPeripheral)
+            return pArtemisPeripheral(hCam, PeripheralID, pSendData, pRecvData);
+    }
+    return (int)NULL;
 }
 
 
@@ -1114,15 +1114,15 @@ int artfn ArtemisPeripheral(ArtemisHandle hCam, int PeripheralID, unsigned char 
 typedef int (__stdcall * TYPE_ARTEMISSETUPADC)(ArtemisHandle hCam, int param);
 int artfn ArtemisSetUpADC(ArtemisHandle hCam, int param)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[66])
-			pFuncs[66]=GetProcAddress(hArtemisDLL, "ArtemisSetUpADC");
-		TYPE_ARTEMISSETUPADC pArtemisSetUpADC=(TYPE_ARTEMISSETUPADC)pFuncs[66];
-		if (NULL != pArtemisSetUpADC)
-			return pArtemisSetUpADC(hCam, param);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[66])
+            pFuncs[66]=GetProcAddress(hArtemisDLL, "ArtemisSetUpADC");
+        TYPE_ARTEMISSETUPADC pArtemisSetUpADC=(TYPE_ARTEMISSETUPADC)pFuncs[66];
+        if (NULL != pArtemisSetUpADC)
+            return pArtemisSetUpADC(hCam, param);
+    }
+    return (int)NULL;
 }
 
 
@@ -1130,15 +1130,15 @@ int artfn ArtemisSetUpADC(ArtemisHandle hCam, int param)
 typedef int (__stdcall * TYPE_ARTEMISSETCONVERSIONSPEED)(ArtemisHandle hCam, int speed);
 int artfn ArtemisSetConversionSpeed(ArtemisHandle hCam, int speed)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[67])
-			pFuncs[67]=GetProcAddress(hArtemisDLL, "ArtemisSetConversionSpeed");
-		TYPE_ARTEMISSETCONVERSIONSPEED pArtemisSetConversionSpeed=(TYPE_ARTEMISSETCONVERSIONSPEED)pFuncs[67];
-		if (NULL != pArtemisSetConversionSpeed)
-			return pArtemisSetConversionSpeed(hCam, speed);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[67])
+            pFuncs[67]=GetProcAddress(hArtemisDLL, "ArtemisSetConversionSpeed");
+        TYPE_ARTEMISSETCONVERSIONSPEED pArtemisSetConversionSpeed=(TYPE_ARTEMISSETCONVERSIONSPEED)pFuncs[67];
+        if (NULL != pArtemisSetConversionSpeed)
+            return pArtemisSetConversionSpeed(hCam, speed);
+    }
+    return (int)NULL;
 }
 
 
@@ -1146,90 +1146,90 @@ int artfn ArtemisSetConversionSpeed(ArtemisHandle hCam, int speed)
 typedef int (__stdcall * TYPE_ARTEMISSETOVERSAMPLE)(ArtemisHandle hCam, int oversample);
 int artfn ArtemisSetOversample(ArtemisHandle hCam, int oversample)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[68])
-			pFuncs[68]=GetProcAddress(hArtemisDLL, "ArtemisSetOversample");
-		TYPE_ARTEMISSETOVERSAMPLE pArtemisSetOversample=(TYPE_ARTEMISSETOVERSAMPLE)pFuncs[68];
-		if (NULL != pArtemisSetOversample)
-			return pArtemisSetOversample(hCam, oversample);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[68])
+            pFuncs[68]=GetProcAddress(hArtemisDLL, "ArtemisSetOversample");
+        TYPE_ARTEMISSETOVERSAMPLE pArtemisSetOversample=(TYPE_ARTEMISSETOVERSAMPLE)pFuncs[68];
+        if (NULL != pArtemisSetOversample)
+            return pArtemisSetOversample(hCam, oversample);
+    }
+    return (int)NULL;
 }
 
 
 typedef int (__stdcall * TYPE_ARTEMISTEMPERATURESENSORINFO)(ArtemisHandle hCam, int sensor, int* temperature);
 int artfn ArtemisTemperatureSensorInfo(ArtemisHandle hCam, int sensor, int* temperature)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[69])
-			pFuncs[69]=GetProcAddress(hArtemisDLL, "ArtemisTemperatureSensorInfo");
-		TYPE_ARTEMISTEMPERATURESENSORINFO pArtemisTemperatureSensorInfo=(TYPE_ARTEMISTEMPERATURESENSORINFO)pFuncs[69];
-		if (NULL != pArtemisTemperatureSensorInfo)
-			return pArtemisTemperatureSensorInfo(hCam, sensor, temperature);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[69])
+            pFuncs[69]=GetProcAddress(hArtemisDLL, "ArtemisTemperatureSensorInfo");
+        TYPE_ARTEMISTEMPERATURESENSORINFO pArtemisTemperatureSensorInfo=(TYPE_ARTEMISTEMPERATURESENSORINFO)pFuncs[69];
+        if (NULL != pArtemisTemperatureSensorInfo)
+            return pArtemisTemperatureSensorInfo(hCam, sensor, temperature);
+    }
+    return (int)NULL;
 }
 
 
 typedef int (__stdcall * TYPE_ARTEMISCOOLINGINFO)(ArtemisHandle hCam, int* flags, int* level, int* minlvl, int* maxlvl, int* setpoint);
 int artfn ArtemisCoolingInfo(ArtemisHandle hCam, int* flags, int* level, int* minlvl, int* maxlvl, int* setpoint)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[70])
-			pFuncs[70]=GetProcAddress(hArtemisDLL, "ArtemisCoolingInfo");
-		TYPE_ARTEMISCOOLINGINFO pArtemisCoolingInfo=(TYPE_ARTEMISCOOLINGINFO)pFuncs[70];
-		if (NULL != pArtemisCoolingInfo)
-			return pArtemisCoolingInfo(hCam, flags, level, minlvl, maxlvl, setpoint);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[70])
+            pFuncs[70]=GetProcAddress(hArtemisDLL, "ArtemisCoolingInfo");
+        TYPE_ARTEMISCOOLINGINFO pArtemisCoolingInfo=(TYPE_ARTEMISCOOLINGINFO)pFuncs[70];
+        if (NULL != pArtemisCoolingInfo)
+            return pArtemisCoolingInfo(hCam, flags, level, minlvl, maxlvl, setpoint);
+    }
+    return (int)NULL;
 }
 
 
 typedef int (__stdcall * TYPE_ARTEMISSETCOOLING)(ArtemisHandle hCam, int setpoint);
 int artfn ArtemisSetCooling(ArtemisHandle hCam, int setpoint)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[71])
-			pFuncs[71]=GetProcAddress(hArtemisDLL, "ArtemisSetCooling");
-		TYPE_ARTEMISSETCOOLING pArtemisSetCooling=(TYPE_ARTEMISSETCOOLING)pFuncs[71];
-		if (NULL != pArtemisSetCooling)
-			return pArtemisSetCooling(hCam, setpoint);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[71])
+            pFuncs[71]=GetProcAddress(hArtemisDLL, "ArtemisSetCooling");
+        TYPE_ARTEMISSETCOOLING pArtemisSetCooling=(TYPE_ARTEMISSETCOOLING)pFuncs[71];
+        if (NULL != pArtemisSetCooling)
+            return pArtemisSetCooling(hCam, setpoint);
+    }
+    return (int)NULL;
 }
 
 
 typedef int (__stdcall * TYPE_ARTEMISCOOLERWARMUP)(ArtemisHandle hCam);
 int artfn ArtemisCoolerWarmUp(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[72])
-			pFuncs[72]=GetProcAddress(hArtemisDLL, "ArtemisCoolerWarmUp");
-		TYPE_ARTEMISCOOLERWARMUP pArtemisCoolerWarmUp=(TYPE_ARTEMISCOOLERWARMUP)pFuncs[72];
-		if (NULL != pArtemisCoolerWarmUp)
-			return pArtemisCoolerWarmUp(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[72])
+            pFuncs[72]=GetProcAddress(hArtemisDLL, "ArtemisCoolerWarmUp");
+        TYPE_ARTEMISCOOLERWARMUP pArtemisCoolerWarmUp=(TYPE_ARTEMISCOOLERWARMUP)pFuncs[72];
+        if (NULL != pArtemisCoolerWarmUp)
+            return pArtemisCoolerWarmUp(hCam);
+    }
+    return (int)NULL;
 }
 
 
 typedef int (__stdcall * TYPE_ARTEMISRECONNECTUSB)(ArtemisHandle hCam);
 int artfn ArtemisReconnectUSB(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[73])
-			pFuncs[73]=GetProcAddress(hArtemisDLL, "ArtemisReconnectUSB");
-		TYPE_ARTEMISRECONNECTUSB pArtemisReconnectUSB=(TYPE_ARTEMISRECONNECTUSB)pFuncs[73];
-		if (NULL != pArtemisReconnectUSB)
-			return pArtemisReconnectUSB(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[73])
+            pFuncs[73]=GetProcAddress(hArtemisDLL, "ArtemisReconnectUSB");
+        TYPE_ARTEMISRECONNECTUSB pArtemisReconnectUSB=(TYPE_ARTEMISRECONNECTUSB)pFuncs[73];
+        if (NULL != pArtemisReconnectUSB)
+            return pArtemisReconnectUSB(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -1240,15 +1240,15 @@ int artfn ArtemisReconnectUSB(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISDIAGNOSTICPING)(ArtemisHandle hCam, int send);
 int artfn ArtemisDiagnosticPing(ArtemisHandle hCam, int send)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[74])
-			pFuncs[74]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticPing");
-		TYPE_ARTEMISDIAGNOSTICPING pArtemisDiagnosticPing=(TYPE_ARTEMISDIAGNOSTICPING)pFuncs[74];
-		if (NULL != pArtemisDiagnosticPing)
-			return pArtemisDiagnosticPing(hCam, send);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[74])
+            pFuncs[74]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticPing");
+        TYPE_ARTEMISDIAGNOSTICPING pArtemisDiagnosticPing=(TYPE_ARTEMISDIAGNOSTICPING)pFuncs[74];
+        if (NULL != pArtemisDiagnosticPing)
+            return pArtemisDiagnosticPing(hCam, send);
+    }
+    return (int)NULL;
 }
 
 
@@ -1256,15 +1256,15 @@ int artfn ArtemisDiagnosticPing(ArtemisHandle hCam, int send)
 typedef int (__stdcall * TYPE_ARTEMISDIAGNOSTICPINGFIFO)(ArtemisHandle hCam, int send);
 int artfn ArtemisDiagnosticPingFIFO(ArtemisHandle hCam, int send)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[75])
-			pFuncs[75]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticPingFIFO");
-		TYPE_ARTEMISDIAGNOSTICPINGFIFO pArtemisDiagnosticPingFIFO=(TYPE_ARTEMISDIAGNOSTICPINGFIFO)pFuncs[75];
-		if (NULL != pArtemisDiagnosticPingFIFO)
-			return pArtemisDiagnosticPingFIFO(hCam, send);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[75])
+            pFuncs[75]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticPingFIFO");
+        TYPE_ARTEMISDIAGNOSTICPINGFIFO pArtemisDiagnosticPingFIFO=(TYPE_ARTEMISDIAGNOSTICPINGFIFO)pFuncs[75];
+        if (NULL != pArtemisDiagnosticPingFIFO)
+            return pArtemisDiagnosticPingFIFO(hCam, send);
+    }
+    return (int)NULL;
 }
 
 
@@ -1272,15 +1272,15 @@ int artfn ArtemisDiagnosticPingFIFO(ArtemisHandle hCam, int send)
 typedef int (__stdcall * TYPE_ARTEMISDIAGNOSTICRUNCCD)(ArtemisHandle hCam);
 int artfn ArtemisDiagnosticRunCCD(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[76])
-			pFuncs[76]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticRunCCD");
-		TYPE_ARTEMISDIAGNOSTICRUNCCD pArtemisDiagnosticRunCCD=(TYPE_ARTEMISDIAGNOSTICRUNCCD)pFuncs[76];
-		if (NULL != pArtemisDiagnosticRunCCD)
-			return pArtemisDiagnosticRunCCD(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[76])
+            pFuncs[76]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticRunCCD");
+        TYPE_ARTEMISDIAGNOSTICRUNCCD pArtemisDiagnosticRunCCD=(TYPE_ARTEMISDIAGNOSTICRUNCCD)pFuncs[76];
+        if (NULL != pArtemisDiagnosticRunCCD)
+            return pArtemisDiagnosticRunCCD(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -1288,15 +1288,15 @@ int artfn ArtemisDiagnosticRunCCD(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISDIAGNOSTICPRECHARGE)(ArtemisHandle hCam);
 int artfn ArtemisDiagnosticPrecharge(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[77])
-			pFuncs[77]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticPrecharge");
-		TYPE_ARTEMISDIAGNOSTICPRECHARGE pArtemisDiagnosticPrecharge=(TYPE_ARTEMISDIAGNOSTICPRECHARGE)pFuncs[77];
-		if (NULL != pArtemisDiagnosticPrecharge)
-			return pArtemisDiagnosticPrecharge(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[77])
+            pFuncs[77]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticPrecharge");
+        TYPE_ARTEMISDIAGNOSTICPRECHARGE pArtemisDiagnosticPrecharge=(TYPE_ARTEMISDIAGNOSTICPRECHARGE)pFuncs[77];
+        if (NULL != pArtemisDiagnosticPrecharge)
+            return pArtemisDiagnosticPrecharge(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -1306,15 +1306,15 @@ int artfn ArtemisDiagnosticPrecharge(ArtemisHandle hCam)
 typedef ArtemisHandle (__stdcall * TYPE_ARTEMISDIAGNOSTICCONNECT)(int Device);
 ArtemisHandle artfn ArtemisDiagnosticConnect(int Device)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[78])
-			pFuncs[78]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticConnect");
-		TYPE_ARTEMISDIAGNOSTICCONNECT pArtemisDiagnosticConnect=(TYPE_ARTEMISDIAGNOSTICCONNECT)pFuncs[78];
-		if (NULL != pArtemisDiagnosticConnect)
-			return pArtemisDiagnosticConnect(Device);
-	}
-	return (ArtemisHandle)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[78])
+            pFuncs[78]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticConnect");
+        TYPE_ARTEMISDIAGNOSTICCONNECT pArtemisDiagnosticConnect=(TYPE_ARTEMISDIAGNOSTICCONNECT)pFuncs[78];
+        if (NULL != pArtemisDiagnosticConnect)
+            return pArtemisDiagnosticConnect(Device);
+    }
+    return (ArtemisHandle)NULL;
 }
 
 
@@ -1323,15 +1323,15 @@ ArtemisHandle artfn ArtemisDiagnosticConnect(int Device)
 typedef int (__stdcall * TYPE_ARTEMISDIAGNOSTICCOMMAND)(ArtemisHandle hCam, int cmd);
 int artfn ArtemisDiagnosticCommand(ArtemisHandle hCam, int cmd)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[79])
-			pFuncs[79]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticCommand");
-		TYPE_ARTEMISDIAGNOSTICCOMMAND pArtemisDiagnosticCommand=(TYPE_ARTEMISDIAGNOSTICCOMMAND)pFuncs[79];
-		if (NULL != pArtemisDiagnosticCommand)
-			return pArtemisDiagnosticCommand(hCam, cmd);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[79])
+            pFuncs[79]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticCommand");
+        TYPE_ARTEMISDIAGNOSTICCOMMAND pArtemisDiagnosticCommand=(TYPE_ARTEMISDIAGNOSTICCOMMAND)pFuncs[79];
+        if (NULL != pArtemisDiagnosticCommand)
+            return pArtemisDiagnosticCommand(hCam, cmd);
+    }
+    return (int)NULL;
 }
 
 
@@ -1340,15 +1340,15 @@ int artfn ArtemisDiagnosticCommand(ArtemisHandle hCam, int cmd)
 typedef int (__stdcall * TYPE_ARTEMISDIAGNOSTICUSBERROR)(ArtemisHandle hCam);
 int artfn ArtemisDiagnosticUSBError(ArtemisHandle hCam)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[80])
-			pFuncs[80]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticUSBError");
-		TYPE_ARTEMISDIAGNOSTICUSBERROR pArtemisDiagnosticUSBError=(TYPE_ARTEMISDIAGNOSTICUSBERROR)pFuncs[80];
-		if (NULL != pArtemisDiagnosticUSBError)
-			return pArtemisDiagnosticUSBError(hCam);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[80])
+            pFuncs[80]=GetProcAddress(hArtemisDLL, "ArtemisDiagnosticUSBError");
+        TYPE_ARTEMISDIAGNOSTICUSBERROR pArtemisDiagnosticUSBError=(TYPE_ARTEMISDIAGNOSTICUSBERROR)pFuncs[80];
+        if (NULL != pArtemisDiagnosticUSBError)
+            return pArtemisDiagnosticUSBError(hCam);
+    }
+    return (int)NULL;
 }
 
 
@@ -1364,15 +1364,15 @@ int artfn ArtemisDiagnosticUSBError(ArtemisHandle hCam)
 typedef int (__stdcall * TYPE_ARTEMISSENDMESSAGE)(int msg, int unit);
 int artfn ArtemisSendMessage(int msg, int unit)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[81])
-			pFuncs[81]=GetProcAddress(hArtemisDLL, "ArtemisSendMessage");
-		TYPE_ARTEMISSENDMESSAGE pArtemisSendMessage=(TYPE_ARTEMISSENDMESSAGE)pFuncs[81];
-		if (NULL != pArtemisSendMessage)
-			return pArtemisSendMessage(msg, unit);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[81])
+            pFuncs[81]=GetProcAddress(hArtemisDLL, "ArtemisSendMessage");
+        TYPE_ARTEMISSENDMESSAGE pArtemisSendMessage=(TYPE_ARTEMISSENDMESSAGE)pFuncs[81];
+        if (NULL != pArtemisSendMessage)
+            return pArtemisSendMessage(msg, unit);
+    }
+    return (int)NULL;
 }
 
 
@@ -1386,19 +1386,19 @@ int artfn ArtemisSendMessage(int msg, int unit)
 //  1  camera busy
 //  2  no camera active
 //  3  invalid command
-//  4  no response fropm peripheral 
+//  4  no response fropm peripheral
 typedef int (__stdcall * TYPE_ARTEMISSENDPERIPHERALMESSAGE)(int peripheral, char * send, char * recv, int unit);
 int artfn ArtemisSendPeripheralMessage(int peripheral, char * send, char * recv, int unit)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[82])
-			pFuncs[82]=GetProcAddress(hArtemisDLL, "ArtemisSendPeripheralMessage");
-		TYPE_ARTEMISSENDPERIPHERALMESSAGE pArtemisSendPeripheralMessage=(TYPE_ARTEMISSENDPERIPHERALMESSAGE)pFuncs[82];
-		if (NULL != pArtemisSendPeripheralMessage)
-			return pArtemisSendPeripheralMessage(peripheral, send, recv, unit);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[82])
+            pFuncs[82]=GetProcAddress(hArtemisDLL, "ArtemisSendPeripheralMessage");
+        TYPE_ARTEMISSENDPERIPHERALMESSAGE pArtemisSendPeripheralMessage=(TYPE_ARTEMISSENDPERIPHERALMESSAGE)pFuncs[82];
+        if (NULL != pArtemisSendPeripheralMessage)
+            return pArtemisSendPeripheralMessage(peripheral, send, recv, unit);
+    }
+    return (int)NULL;
 }
 
 
@@ -1417,15 +1417,15 @@ int artfn ArtemisSendPeripheralMessage(int peripheral, char * send, char * recv,
 typedef int (__stdcall * TYPE_ARTEMISGETDESCRIPTION)(char * recv, int info, int unit);
 int artfn ArtemisGetDescription(char * recv, int info, int unit)
 {
-	if (hArtemisDLL)
-	{
-		if (NULL == pFuncs[83])
-			pFuncs[83]=GetProcAddress(hArtemisDLL, "ArtemisGetDescription");
-		TYPE_ARTEMISGETDESCRIPTION pArtemisGetDescription=(TYPE_ARTEMISGETDESCRIPTION)pFuncs[83];
-		if (NULL != pArtemisGetDescription)
-			return pArtemisGetDescription(recv, info, unit);
-	}
-	return (int)NULL;
+    if (hArtemisDLL)
+    {
+        if (NULL == pFuncs[83])
+            pFuncs[83]=GetProcAddress(hArtemisDLL, "ArtemisGetDescription");
+        TYPE_ARTEMISGETDESCRIPTION pArtemisGetDescription=(TYPE_ARTEMISGETDESCRIPTION)pFuncs[83];
+        if (NULL != pArtemisGetDescription)
+            return pArtemisGetDescription(recv, info, unit);
+    }
+    return (int)NULL;
 }
 
 
@@ -1433,20 +1433,20 @@ int artfn ArtemisGetDescription(char * recv, int info, int unit)
 // Returns true if loaded ok.
 bool artfn ArtemisLoadDLL(char *FileName)
 {
-	hArtemisDLL=LoadLibrary(TEXT(FileName));
-	if (hArtemisDLL==NULL)
-		return false;
-	for (int i=0; i<NFUNCS; i++)
-		pFuncs[i]=NULL;
-	return true;
+    hArtemisDLL=LoadLibrary(TEXT(FileName));
+    if (hArtemisDLL==NULL)
+        return false;
+    for (int i=0; i<NFUNCS; i++)
+        pFuncs[i]=NULL;
+    return true;
 }
 
 // Unload the Artemis DLL.
 void artfn ArtemisUnLoadDLL()
 {
-	if (hArtemisDLL!=NULL)
-		FreeLibrary(hArtemisDLL);
-	hArtemisDLL=NULL;
+    if (hArtemisDLL!=NULL)
+        FreeLibrary(hArtemisDLL);
+    hArtemisDLL=NULL;
 }
 
 

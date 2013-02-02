@@ -66,12 +66,12 @@ bool Camera_StarShootDSCIClass::Connect() {
     bool retval;
     // Local function pointers -- those used elsewhere are in class decl.
     B_V_DLLFUNC OCP_openUSB;            // Pointer to OPC's OpenUSB
-    B_V_DLLFUNC OCP_isUSB2; 
+    B_V_DLLFUNC OCP_isUSB2;
     UI_V_DLLFUNC OCP_Width;
     UI_V_DLLFUNC OCP_Height;
 
     CameraDLL = LoadLibrary(TEXT("DSCI"));  // load the DLL
-    
+
     if (CameraDLL != NULL) {  // check it and assign functions
         OCP_openUSB = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"openUSB");
         if (!OCP_openUSB)   {
@@ -85,14 +85,14 @@ bool Camera_StarShootDSCIClass::Connect() {
                 OCP_isUSB2 = (B_V_DLLFUNC)GetProcAddress(CameraDLL,"IsUSB20");
                 if (!OCP_isUSB2)
                     (void) wxMessageBox(wxT("Didn't find IsUSB20 in DLL"),_("Error"),wxOK | wxICON_ERROR);
-                
+
                 OCP_Width = (UI_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Width");
                 if (!OCP_Width)
                     (void) wxMessageBox(wxT("Didn't find CAM_Width in DLL"),_("Error"),wxOK | wxICON_ERROR);
                 OCP_Height = (UI_V_DLLFUNC)GetProcAddress(CameraDLL,"CAM_Height");
                 if (!OCP_Height)
                     (void) wxMessageBox(wxT("Didn't find CAM_Height in DLL"),_("Error"),wxOK | wxICON_ERROR);
-            
+
                 OCP_sendEP1_1BYTE = (V_V_DLLFUNC)GetProcAddress(CameraDLL,"sendEP1_1BYTE");
                 if (!OCP_sendEP1_1BYTE)
                     (void) wxMessageBox(wxT("Didn't find sendEP1_1BYTE"),_("Error"),wxOK | wxICON_ERROR);
@@ -133,12 +133,12 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     int i;
     unsigned char retval = 0;
     unsigned short *rawptr, *rawptr2;
-    
+
     if (duration < 1000) ampoff=false;
     // Send registers to setup exposure
     // duration, double-read, gain, offset, high-speed
     // bin, 5x always-falses, amp-off, false, over-sammple
-    
+
     if (duration != lastdur) {
         retval = OCP_sendRegister(duration,0,(unsigned char) (GuideCameraGain * 63 / 100),120,true,0,false,false,false,false,false,ampoff,false,false);
         lastdur = duration;
@@ -148,7 +148,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
         (void) wxMessageBox(wxT("Problem sending register to StarShoot"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
-    
+
     if (USB2)
         retval = OCP_Exposure(1);  // Start USB2 exposure
     else
@@ -177,7 +177,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     rawptr2 = img.ImageData;
     for (i=0; i<img.NPixels; i++, rawptr++, rawptr2++) {
         *rawptr2 = *rawptr;
-    
+
     }
     if (HaveDark) Subtract(img,CurrentDarkFrame);
     QuickLRecon(img);

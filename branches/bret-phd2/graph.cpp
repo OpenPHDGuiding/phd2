@@ -79,10 +79,10 @@ wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),wxCAP
     this->HideButton->SetToolTip(_("Hide graph"));
     this->ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxPoint(10,100),wxSize(80,-1));
     this->ClearButton->SetToolTip(_("Clear graph data"));
-    
+
     RA_Color=wxColour(100,100,255);
     DEC_Color = wxColour(255,0,0);
-    
+
     //SetForegroundColour(* wxWHITE);
 #ifdef __WINDOWS__
     int ctl_size = 45;
@@ -191,7 +191,7 @@ void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt)) {
 //  bool foo2 = wxGetKeyState(WXK_SHIFT);
     wxMouseState mstate = wxGetMouseState();
 //  bool foo1 = mstate.ShiftDown();
-    
+
     if (wxGetKeyState(WXK_SHIFT)) {
         wxColourData cdata;
         cdata.SetColour(RA_Color);
@@ -209,8 +209,8 @@ void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt)) {
             cdata = cdialog.GetColourData();
             DEC_Color = cdata.GetColour();
         }
-    }   
-        
+    }
+
     this->mode = 1 - this->mode;
     if (this->mode)
         this->ModeButton->SetLabel(_T("dx/dy"));

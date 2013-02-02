@@ -1855,7 +1855,7 @@ int ffgmng(fitsfile *mfptr, long *nmembers, int *status);
 int ffgmop(fitsfile *gfptr, long member, fitsfile **mfptr, int *status);
 int ffgmcp(fitsfile *gfptr, fitsfile *mfptr, long member, int cpopt,
        int *status);
-int ffgmtf(fitsfile *infptr, fitsfile *outfptr, long member, int tfopt, 
+int ffgmtf(fitsfile *infptr, fitsfile *outfptr, long member, int tfopt,
        int *status);
 int ffgmrm(fitsfile *fptr, long member, int rmopt, int *status);
 

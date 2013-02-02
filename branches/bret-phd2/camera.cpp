@@ -167,7 +167,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 
     wxArrayString Cameras;
     wxString Choice;
-    
+
     Cameras.Add(_T("None"));
 #if defined (ASCOM_LATECAMERA)
     Cameras.Add(_T("ASCOM (Late) Camera"));
@@ -259,7 +259,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #endif
     Choice = Cameras[0];
     wxString lastChoice = PhdConfig.GetString("/camera/LastMenuChoice", _T(""));
-    int selectedItem = Cameras.Index(lastChoice);           
+    int selectedItem = Cameras.Index(lastChoice);
 
     if (wxGetKeyState(WXK_SHIFT)) { // use the last camera chosen and bypass the dialog
         if (selectedItem == wxNOT_FOUND)

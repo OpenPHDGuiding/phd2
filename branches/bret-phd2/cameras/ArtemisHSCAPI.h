@@ -17,89 +17,89 @@
 
 enum ARTEMISERROR
 {
-	ARTEMIS_OK = 0,
-	ARTEMIS_INVALID_PARAMETER,
-	ARTEMIS_NOT_CONNECTED,
-	ARTEMIS_NOT_IMPLEMENTED,
-	ARTEMIS_NO_RESPONSE,
-	ARTEMIS_INVALID_FUNCTION,
+    ARTEMIS_OK = 0,
+    ARTEMIS_INVALID_PARAMETER,
+    ARTEMIS_NOT_CONNECTED,
+    ARTEMIS_NOT_IMPLEMENTED,
+    ARTEMIS_NO_RESPONSE,
+    ARTEMIS_INVALID_FUNCTION,
 };
 
 // Colour properties
 enum ARTEMISCOLOURTYPE
 {
-	ARTEMIS_COLOUR_UNKNOWN = 0,
-	ARTEMIS_COLOUR_NONE,
-	ARTEMIS_COLOUR_RGGB
+    ARTEMIS_COLOUR_UNKNOWN = 0,
+    ARTEMIS_COLOUR_NONE,
+    ARTEMIS_COLOUR_RGGB
 };
 
 //Other enumeration types
 enum ARTEMISPRECHARGEMODE
 {
-	PRECHARGE_NONE = 0,		// Precharge ignored
-	PRECHARGE_ICPS,			// In-camera precharge subtraction
-	PRECHARGE_FULL,			// Precharge sent with image data
+    PRECHARGE_NONE = 0,     // Precharge ignored
+    PRECHARGE_ICPS,         // In-camera precharge subtraction
+    PRECHARGE_FULL,         // Precharge sent with image data
 };
 
 // Camera State
 enum ARTEMISCAMERASTATE
 {
-	CAMERA_ERROR = -1,
-	CAMERA_IDLE = 0,
-	CAMERA_WAITING,
-	CAMERA_EXPOSING,
-	CAMERA_READING,
-	CAMERA_DOWNLOADING,
-	CAMERA_FLUSHING,
+    CAMERA_ERROR = -1,
+    CAMERA_IDLE = 0,
+    CAMERA_WAITING,
+    CAMERA_EXPOSING,
+    CAMERA_READING,
+    CAMERA_DOWNLOADING,
+    CAMERA_FLUSHING,
 };
 
 // Parameters for ArtemisSendMessage
 enum ARTEMISSENDMSG
 {
-	ARTEMIS_LE_LOW				=0,
-	ARTEMIS_LE_HIGH				=1,
-	ARTEMIS_GUIDE_NORTH			=10,
-	ARTEMIS_GUIDE_SOUTH			=11,
-	ARTEMIS_GUIDE_EAST			=12,
-	ARTEMIS_GUIDE_WEST			=13,
-	ARTEMIS_GUIDE_STOP			=14,
+    ARTEMIS_LE_LOW              =0,
+    ARTEMIS_LE_HIGH             =1,
+    ARTEMIS_GUIDE_NORTH         =10,
+    ARTEMIS_GUIDE_SOUTH         =11,
+    ARTEMIS_GUIDE_EAST          =12,
+    ARTEMIS_GUIDE_WEST          =13,
+    ARTEMIS_GUIDE_STOP          =14,
 };
 
 // Parameters for ArtemisGet/SetProcessing
 // These must be powers of 2.
 enum ARTEMISPROCESSING
 {
-	ARTEMIS_PROCESS_LINEARISE	=1,	// compensate for JFET nonlinearity
-	ARTEMIS_PROCESS_VBE			=2, // adjust for 'Venetian Blind effect'
+    ARTEMIS_PROCESS_LINEARISE   =1, // compensate for JFET nonlinearity
+    ARTEMIS_PROCESS_VBE         =2, // adjust for 'Venetian Blind effect'
 };
 
 // Parameters for ArtemisSetUpADC
 enum ARTEMISSETUPADC
 {
-	ARTEMIS_SETUPADC_MODE		=0,
-	ARTEMIS_SETUPADC_OFFSETR	=(1<<10),
-	ARTEMIS_SETUPADC_OFFSETG	=(2<<10),
-	ARTEMIS_SETUPADC_OFFSETB	=(3<<10),
-	ARTEMIS_SETUPADC_GAINR		=(4<<10),
-	ARTEMIS_SETUPADC_GAING		=(5<<10),
-	ARTEMIS_SETUPADC_GAINB		=(6<<10),
+    ARTEMIS_SETUPADC_MODE       =0,
+    ARTEMIS_SETUPADC_OFFSETR    =(1<<10),
+    ARTEMIS_SETUPADC_OFFSETG    =(2<<10),
+    ARTEMIS_SETUPADC_OFFSETB    =(3<<10),
+    ARTEMIS_SETUPADC_GAINR      =(4<<10),
+    ARTEMIS_SETUPADC_GAING      =(5<<10),
+    ARTEMIS_SETUPADC_GAINB      =(6<<10),
 };
 
 enum ARTEMISPROPERTIESCCDFLAGS
 {
-	ARTEMIS_PROPERTIES_CCDFLAGS_INTERLACED =1, // CCD is interlaced type
-	ARTEMIS_PROPERTIES_CCDFLAGS_DUMMY=0x7FFFFFFF // force size to 4 bytes
+    ARTEMIS_PROPERTIES_CCDFLAGS_INTERLACED =1, // CCD is interlaced type
+    ARTEMIS_PROPERTIES_CCDFLAGS_DUMMY=0x7FFFFFFF // force size to 4 bytes
 };
 enum ARTEMISPROPERTIESCAMERAFLAGS
 {
-	ARTEMIS_PROPERTIES_CAMERAFLAGS_FIFO =1, // Camera has readout FIFO fitted
-	ARTEMIS_PROPERTIES_CAMERAFLAGS_EXT_TRIGGER =2, // Camera has external trigger capabilities
-	ARTEMIS_PROPERTIES_CAMERAFLAGS_PREVIEW =4, // Camera can return preview data
-	ARTEMIS_PROPERTIES_CAMERAFLAGS_SUBSAMPLE =8, // Camera can return subsampled data
-	ARTEMIS_PROPERTIES_CAMERAFLAGS_HAS_SHUTTER =16, // Camera has a mechanical shutter
-	ARTEMIS_PROPERTIES_CAMERAFLAGS_HAS_GUIDE_PORT =32, // Camera has a guide port
-	ARTEMIS_PROPERTIES_CAMERAFLAGS_HAS_GPIO =64, // Camera has GPIO capability
-	ARTEMIS_PROPERTIES_CAMERAFLAGS_DUMMY=0x7FFFFFFF // force size to 4 bytes
+    ARTEMIS_PROPERTIES_CAMERAFLAGS_FIFO =1, // Camera has readout FIFO fitted
+    ARTEMIS_PROPERTIES_CAMERAFLAGS_EXT_TRIGGER =2, // Camera has external trigger capabilities
+    ARTEMIS_PROPERTIES_CAMERAFLAGS_PREVIEW =4, // Camera can return preview data
+    ARTEMIS_PROPERTIES_CAMERAFLAGS_SUBSAMPLE =8, // Camera can return subsampled data
+    ARTEMIS_PROPERTIES_CAMERAFLAGS_HAS_SHUTTER =16, // Camera has a mechanical shutter
+    ARTEMIS_PROPERTIES_CAMERAFLAGS_HAS_GUIDE_PORT =32, // Camera has a guide port
+    ARTEMIS_PROPERTIES_CAMERAFLAGS_HAS_GPIO =64, // Camera has GPIO capability
+    ARTEMIS_PROPERTIES_CAMERAFLAGS_DUMMY=0x7FFFFFFF // force size to 4 bytes
 };
 
 //Structures
@@ -107,15 +107,15 @@ enum ARTEMISPROPERTIESCAMERAFLAGS
 // camera/CCD properties
 struct ARTEMISPROPERTIES
 {
-	int Protocol;
-	int nPixelsX;
-	int nPixelsY;
-	float PixelMicronsX;
-	float PixelMicronsY;
-	int ccdflags;
-	int cameraflags;
-	char Description[40];
-	char Manufacturer[40];
+    int Protocol;
+    int nPixelsX;
+    int nPixelsY;
+    float PixelMicronsX;
+    float PixelMicronsY;
+    int ccdflags;
+    int cameraflags;
+    char Description[40];
+    char Manufacturer[40];
 };
 
 typedef void* ArtemisHandle;
@@ -128,10 +128,10 @@ typedef void* ArtemisHandle;
 class CArtemisHSCAPI
 {
 public:
-	CArtemisHSCAPI() {hArtemisDLL=NULL;}
-	~CArtemisHSCAPI() {ArtemisUnLoadDLL();}
-	FARPROC pFuncs[NFUNCS];
-	HINSTANCE hArtemisDLL;
+    CArtemisHSCAPI() {hArtemisDLL=NULL;}
+    ~CArtemisHSCAPI() {ArtemisUnLoadDLL();}
+    FARPROC pFuncs[NFUNCS];
+    HINSTANCE hArtemisDLL;
 #else
 #define artfn extern
 #endif
@@ -226,7 +226,7 @@ artfn  bool ArtemisCanOverlapExposures(ArtemisHandle hCam);
 artfn  bool ArtemisGetDarkMode(ArtemisHandle hCam);
 
 // Enable/disable dark mode - ie the shutter is to be kept closed during exposures
-artfn  int	ArtemisSetDarkMode(ArtemisHandle hCam, bool bEnable);
+artfn  int  ArtemisSetDarkMode(ArtemisHandle hCam, bool bEnable);
 
 // Allow/disallow automatic black level adjustment (only applies to quickercams)
 artfn  int ArtemisAutoAdjustBlackLevel(ArtemisHandle hCam, bool bEnable);
@@ -246,7 +246,7 @@ artfn  int ArtemisGetGpioInformation(ArtemisHandle hCam, int* lineCount, int* li
 
 // Set the GPIO line directions
 // (nth line is set as an input (output) if nth bit of directionMask is 1 (0)
-artfn  int	ArtemisSetGpioDirection(ArtemisHandle hCam, int directionMask);
+artfn  int  ArtemisSetGpioDirection(ArtemisHandle hCam, int directionMask);
 
 //Set GPIO output line values
 // (nth line (if it's an output) is set to high (low) if nth bit of lineValues is 1 (0)
@@ -256,10 +256,10 @@ artfn  int ArtemisSetGpioValues(ArtemisHandle hCam, int lineValues);
 artfn  int ArtemisColourProperties(ArtemisHandle hCam, ARTEMISCOLOURTYPE *colourType, int *normalOffsetX, int *normalOffsetY, int *previewOffsetX, int *previewOffsetY);
 
 // Set duration for overlapped exposures. Call once, not every frame.
-artfn  int	ArtemisSetOverlappedExposureTime(ArtemisHandle hCam, float Seconds);
+artfn  int  ArtemisSetOverlappedExposureTime(ArtemisHandle hCam, float Seconds);
 
 // Request an overlapped exposure to be downloaded when ready
-artfn  int	ArtemisStartOverlappedExposure(ArtemisHandle hCam);
+artfn  int  ArtemisStartOverlappedExposure(ArtemisHandle hCam);
 
 // Return true if the previous overlapped exposure had the requested exposure time.
 artfn  bool ArtemisOverlappedExposureValid(ArtemisHandle hCam);
@@ -426,7 +426,7 @@ artfn  int ArtemisSendMessage(int msg, int unit);
 //  1  camera busy
 //  2  no camera active
 //  3  invalid command
-//  4  no response fropm peripheral 
+//  4  no response fropm peripheral
 artfn  int ArtemisSendPeripheralMessage(int peripheral, char *send, char *recv, int unit);
 
 /////////////////////////////////////////////////

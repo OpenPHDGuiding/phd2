@@ -143,7 +143,7 @@ bool Camera_VFWClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         *dptr = (unsigned short) 0;
 
     swatch.Start(); //wxStartTimer();
-    while (still_going) {   
+    while (still_going) {
         VFW_Window->SnapshotTowxImage();
         cap_img = VFW_Window->GetwxImage();
         imgdata = cap_img.GetData();

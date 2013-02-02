@@ -80,7 +80,7 @@ bool Camera_DSIClass::Connect() {
         int choice = wxGetSingleChoiceIndex(wxString::Format("If using Envisage, disable live\npreview for this camera"),_("Which DSI camera?"),CamNames);
         if (choice == -1) return true;
         else DevNum = (unsigned int) choice + 1;
-        
+
     }
     retval = !(MeadeCam->Open(DevNum));
 //  wxMessageBox(wxString::Format("Color: %d\n%u x %u",
@@ -115,7 +115,7 @@ bool Camera_DSIClass::Disconnect() {
 bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
     bool retval;
     bool still_going = true;
-#ifdef MEADE_DSI    
+#ifdef MEADE_DSI
     MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
     MeadeCam->SetExposureTime(duration);
 //  pFrame->SetStatusText(wxString::Format("%u %d",(unsigned int) (GuideCameraGain * 63 / 100),duration));
@@ -137,7 +137,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         still_going = !(MeadeCam->ImageReady);
         wxTheApp->Yield();
     }
-    
+
     if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
     if (recon) {
         QuickLRecon(img);

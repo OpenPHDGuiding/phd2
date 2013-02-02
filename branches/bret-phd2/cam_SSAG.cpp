@@ -81,7 +81,7 @@ bool Camera_SSAGClass::Connect() {
 bool Camera_SSAGClass::PulseGuideScope(int direction, int duration) {
     int reg = 0;
     int dur = duration / 10;
-    
+
     //qglogfile->AddLine(wxString::Format("Sending guide dur %d",dur)); //qglogfile->Write();
     if (dur >= 255) dur = 254; // Max guide pulse is 2.54s -- 255 keeps it on always
     // Output pins are NC, Com, RA+(W), Dec+(N), Dec-(S), RA-(E) ??  http://www.starlight-xpress.co.uk/faq.htm
@@ -151,7 +151,7 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     while (_SSAG_isExposing())
         wxMilliSleep(50);
     //qglogfile->AddLine("Exposure done"); //qglogfile->Write();
-    
+
 /*  dptr = img.ImageData;
     for (i=0; i<img.NPixels; i++,dptr++) {
         *dptr = 0;

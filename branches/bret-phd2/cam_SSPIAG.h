@@ -43,7 +43,7 @@ public:
 
     bool    PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
-    
+
     Camera_SSPIAGClass();
 private:
     HINSTANCE CameraDLL;

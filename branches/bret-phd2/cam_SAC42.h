@@ -44,7 +44,7 @@ public:
 protected:
     HANDLE hDriver;
     struct CapInfoStruct CapInfo;
-    int Index;      
+    int Index;
     bool    ColorArray;
 //  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
     int MaxExposure;

@@ -175,7 +175,7 @@ bool Camera_FirewireClass::Connect() {
         pSink = FrameHandlerSink::create(eY800, 4 );  // not sure why I even need 4...
         if (pSink == 0)
             wxMessageBox(_T("Cannot setup frame handler"));
-        
+
         if (debug) { debugstep = 1; debugfile->AddLine(wxString::Format("12: Set snap mode")); debugfile->Write(); }
         pSink->setSnapMode( true );
 
@@ -184,12 +184,12 @@ bool Camera_FirewireClass::Connect() {
         if (!retval) { wxMessageBox("Could not set sink type"); }
 
         // Get info I need
-        if (debug) { debugstep = 3; debugfile->AddLine(wxString::Format("12b: Getting name for mode %d",ModeNum)); debugfile->Write(); }    
-        Name = wxString(pVidCapDevList->at(CamNum).toString()); 
+        if (debug) { debugstep = 3; debugfile->AddLine(wxString::Format("12b: Getting name for mode %d",ModeNum)); debugfile->Write(); }
+        Name = wxString(pVidCapDevList->at(CamNum).toString());
         if (debug) { debugstep = 4; debugfile->AddLine(_T(" Name: " + Name)); debugfile->Write(); }
-        if (debug) { debugstep = 5; debugfile->AddLine(wxString::Format("12c: Getting size for mode %d",ModeNum)); debugfile->Write(); }    
+        if (debug) { debugstep = 5; debugfile->AddLine(wxString::Format("12c: Getting size for mode %d",ModeNum)); debugfile->Write(); }
         SIZE sz = pVidFmtList->at(ModeNum).getSize();
-        if (debug) {debugstep = 6; debugfile->AddLine(_T("Size found - setting FullSize")); debugfile->Write(); }   
+        if (debug) {debugstep = 6; debugfile->AddLine(_T("Size found - setting FullSize")); debugfile->Write(); }
         FullSize = wxSize((int)sz.cx, (int)sz.cy);
 
         if (debug) { debugstep = 7; debugfile->AddLine(wxString::Format("Image: %d %d Camera: ",FullSize.GetWidth(),FullSize.GetHeight()) + Name); debugfile->Write(); }
@@ -273,7 +273,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
     Error err;
     bool retval;
     static int programmed_dur = 200;
-    
+
     xsize = FullSize.GetWidth();
     ysize = FullSize.GetHeight();
 
@@ -282,9 +282,9 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
             wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
             return true;
         }
-    }   
+    }
     dataptr = img.ImageData;
-    
+
     if ((duration != programmed_dur) && (m_pExposureAbs != 0)) {
         m_pExposureAbs->setValue(duration / 1000.0);
         programmed_dur = duration;
@@ -297,7 +297,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
     }
 
     // Flush
-    
+
 
     // grab the next frame
 
@@ -332,7 +332,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
     dc1394_capture_enqueue(camera, vframe);  // release this frame
     */
 
-    m_pGrabber->suspendLive();  
+    m_pGrabber->suspendLive();
     if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
 
     return false;
