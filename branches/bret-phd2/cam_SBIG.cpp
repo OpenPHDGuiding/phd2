@@ -100,7 +100,11 @@ bool Camera_SBIGClass::Connect() {
     interf.Add("USB2 direct");
     interf.Add("USB3 direct");
 #endif
-    resp = wxGetSingleChoiceIndex(_("Select interface"),_("Interface"),interf);
+    resp = PhdConfig.GetInt("/camera/sbig/interface", 0);
+    resp = wxGetSingleChoiceIndex(_T("Select interface"),_T("Interface"),interf,
+            NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT, 
+            resp);
+
     wxString IPstr;
     wxString tmpstr;
     unsigned long ip,tmp;
