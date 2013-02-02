@@ -147,22 +147,48 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
 
     try
     {
-        m_scaleFactor = 1.0;
         GUIDER_STATE state = GetState();
+        int imageWidth   = m_displayedImage->GetWidth();
+        int imageHeight  = m_displayedImage->GetHeight();
+        wxImage newImage(*m_displayedImage);
 
-        // see if we need to scale the image
-        if ((m_displayedImage->GetWidth() == XWinSize) && (m_displayedImage->GetHeight() == YWinSize))
-        {
-            // No scaling required
-            DisplayedBitmap = new wxBitmap(*m_displayedImage);
-            memDC.SelectObject(*DisplayedBitmap);
-        }
-        else
-        {
-            DisplayedBitmap = new wxBitmap(m_displayedImage->Size(wxSize(XWinSize,YWinSize),wxPoint(0,0)));
+        // scale the image if necessary
 
-            memDC.SelectObject(*DisplayedBitmap);
+        if (imageWidth != XWinSize || imageHeight != YWinSize)
+        {
+            // The image is not the exact right size -- figure out what to do.
+            double xScaleFactor = imageWidth/(double)XWinSize;
+            double yScaleFactor = imageHeight/(double)YWinSize;
+            int newWidth = imageWidth;
+            int newHeight = imageHeight;
+
+           double newScaleFactor = (xScaleFactor > yScaleFactor) ?
+                                    xScaleFactor :
+                                    yScaleFactor;
+
+            if (xScaleFactor > 1.0 || yScaleFactor > 1.0 ||
+                xScaleFactor < 0.5 || yScaleFactor < 0.5)
+            {
+                // The image is either too big, or so small that at least
+                // one dimension is less than half the width of the window
+                // so we are going to rescale it.
+                newWidth /= newScaleFactor;
+                newHeight /= newScaleFactor;
+
+                if (newScaleFactor > 1.0)
+                {
+                    newScaleFactor = 1.0/newScaleFactor;
+                }
+                m_scaleFactor = newScaleFactor;
+
+                m_displayedImage->Rescale(newWidth, newHeight);
+            }
+
+            newImage.Resize(wxSize(XWinSize,YWinSize),wxPoint(0,0));
         }
+
+        DisplayedBitmap = new wxBitmap(m_displayedImage->Size(wxSize(XWinSize,YWinSize),wxPoint(0,0)));
+        memDC.SelectObject(*DisplayedBitmap);
 
         try
         {
@@ -301,12 +327,19 @@ void Guider::UpdateImageDisplay(usImage *pImage) {
     blevel = pImage->Min;
     wlevel = pImage->FiltMax;
 
+#if 0
     if (pImage->Size.GetWidth() >= 1280) {
         pImage->BinnedCopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
+        m_scaleFactor = 0.5;
     }
-    else {
+    else
+    {
         pImage->CopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
+        m_scaleFactor = 1.0;
     }
+#else
+    pImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma);
+#endif
 
     Refresh();
     Update();

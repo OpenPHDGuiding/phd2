@@ -102,7 +102,7 @@ bool Camera_SBIGClass::Connect() {
 #endif
     resp = PhdConfig.GetInt("/camera/sbig/interface", 0);
     resp = wxGetSingleChoiceIndex(_T("Select interface"),_T("Interface"),interf,
-            NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT, 
+            NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
             resp);
 
     wxString IPstr;
