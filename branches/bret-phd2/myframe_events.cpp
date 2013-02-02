@@ -170,6 +170,13 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
         }
     }
 }
+
+void MyFrame::OnConnectMount(wxCommandEvent& event)
+{
+    OnConnectScope(event);
+    OnConnectStepGuider(event);
+}
+
 void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event)) {
 /*  if (ASCOM_IsMoving())
         SetStatusText(_T("Moving"),2);

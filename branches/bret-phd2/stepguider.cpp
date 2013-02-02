@@ -113,13 +113,13 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             pStepGuider->Disconnect();
         }
 
-        if (stepguider_menu->IsChecked(AO_NONE))
+        if (mount_menu->IsChecked(AO_NONE))
         {
             delete pStepGuider;
             pStepGuider = NULL;
         }
 #ifdef STEPGUIDER_SXAO
-        else if (stepguider_menu->IsChecked(AO_SXAO))
+        else if (mount_menu->IsChecked(AO_SXAO))
         {
             pNewStepGuider = new StepGuiderSxAO();
 
@@ -140,7 +140,7 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             SetStatusText(_T("Adaptive Optics Connected"), 1);
             SetStatusText(_T("AO"),4);
             // now store the stepguider we selected so we can use it as the default next time.
-            wxMenuItemList items = stepguider_menu->GetMenuItems();
+            wxMenuItemList items = mount_menu->GetMenuItems();
             wxMenuItemList::iterator iter;
 
             for(iter = items.begin(); iter != items.end(); iter++)
@@ -158,7 +158,7 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
         }
         else
         {
-            stepguider_menu->FindItem(AO_NONE)->Check(true);
+            mount_menu->FindItem(AO_NONE)->Check(true);
             SetStatusText(_T(""),4);
         }
     }

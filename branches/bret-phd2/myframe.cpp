@@ -93,8 +93,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_STARPROFILE, MyFrame::OnStarProfile)
     EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
     EVT_BUTTON(BUTTON_CAMERA,MyFrame::OnConnectCamera)
-    EVT_BUTTON(BUTTON_SCOPE, MyFrame::OnConnectScope)
-    EVT_BUTTON(BUTTON_STEPGUIDER, MyFrame::OnConnectStepGuider)
+    EVT_BUTTON(BUTTON_SCOPE, MyFrame::OnConnectMount)
     EVT_BUTTON(BUTTON_LOOP, MyFrame::OnLoopExposure)
     EVT_MENU(BUTTON_LOOP, MyFrame::OnLoopExposure) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_STOP, MyFrame::OnButtonStop)
@@ -181,63 +180,70 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
 //  file_menu->Append(wxID_PREFERENCES, _T("&Preferences"), _T("Preferences"));
 
-    scope_menu = new wxMenu;
-    scope_menu->AppendRadioItem(SCOPE_ASCOM,_T("ASCOM"),_("ASCOM telescope driver"));
-    scope_menu->AppendRadioItem(SCOPE_GPUSB,_T("GPUSB"),_T("ShoeString GPUSB ST-4"));
-    scope_menu->AppendRadioItem(SCOPE_GPINT3BC,_T("GPINT 3BC"),_T("ShoeString GPINT parallel port 3BC"));
-    scope_menu->AppendRadioItem(SCOPE_GPINT378,_T("GPINT 378"),_T("ShoeString GPINT parallel port 378"));
-    scope_menu->AppendRadioItem(SCOPE_GPINT278,_T("GPINT 278"),_T("ShoeString GPINT parallel port 278"));
-    scope_menu->AppendRadioItem(SCOPE_CAMERA,_T("On-camera"),_("Camera Onboard ST-4"));
+    mount_menu = new wxMenu;
+    mount_menu->AppendSeparator();
+    mount_menu->Append(SCOPE_HEADER,_T("Scope"),_("Select Scope"));
+    mount_menu->FindItem(SCOPE_HEADER)->Enable(false);
+    mount_menu->AppendSeparator();
+    mount_menu->AppendRadioItem(SCOPE_ASCOM,_T("ASCOM"),_("ASCOM telescope driver"));
+    mount_menu->AppendRadioItem(SCOPE_GPUSB,_T("GPUSB"),_T("ShoeString GPUSB ST-4"));
+    mount_menu->AppendRadioItem(SCOPE_GPINT3BC,_T("GPINT 3BC"),_T("ShoeString GPINT parallel port 3BC"));
+    mount_menu->AppendRadioItem(SCOPE_GPINT378,_T("GPINT 378"),_T("ShoeString GPINT parallel port 378"));
+    mount_menu->AppendRadioItem(SCOPE_GPINT278,_T("GPINT 278"),_T("ShoeString GPINT parallel port 278"));
+    mount_menu->AppendRadioItem(SCOPE_CAMERA,_T("On-camera"),_("Camera Onboard ST-4"));
 #ifdef GUIDE_VOYAGER
-    scope_menu->AppendRadioItem(SCOPE_VOYAGER,_T("Voyager"),_("Mount connected in Voyager"));
+    mount_menu->AppendRadioItem(SCOPE_VOYAGER,_T("Voyager"),_("Mount connected in Voyager"));
 #endif
 #ifdef GUIDE_EQUINOX
-    scope_menu->AppendRadioItem(SCOPE_EQUINOX,_T("Equinox 6"),_("Mount connected in Equinox 6"));
+    mount_menu->AppendRadioItem(SCOPE_EQUINOX,_T("Equinox 6"),_("Mount connected in Equinox 6"));
 #endif
 #ifdef GUIDE_EQUINOX
-    scope_menu->AppendRadioItem(SCOPE_EQMAC,_T("EQMAC"),_("Mount connected in EQMAC"));
+    mount_menu->AppendRadioItem(SCOPE_EQMAC,_T("EQMAC"),_("Mount connected in EQMAC"));
 #endif
 #ifdef GUIDE_GCUSBST4
-    scope_menu->AppendRadioItem(SCOPE_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
+    mount_menu->AppendRadioItem(SCOPE_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
 #endif
-    scope_menu->FindItem(SCOPE_ASCOM)->Check(true); // set this as the default
+    mount_menu->FindItem(SCOPE_ASCOM)->Check(true); // set this as the default
 #if defined (__APPLE__)  // bit of a kludge here to deal with a fixed ordering elsewhere
-    scope_menu->FindItem(SCOPE_ASCOM)->Enable(false);
-    scope_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
-    scope_menu->FindItem(SCOPE_GPINT378)->Enable(false);
-    scope_menu->FindItem(SCOPE_GPINT278)->Enable(false);
-    scope_menu->FindItem(SCOPE_GPUSB)->Check(true); // set this as the default
+    mount_menu->FindItem(SCOPE_ASCOM)->Enable(false);
+    mount_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
+    mount_menu->FindItem(SCOPE_GPINT378)->Enable(false);
+    mount_menu->FindItem(SCOPE_GPINT278)->Enable(false);
+    mount_menu->FindItem(SCOPE_GPUSB)->Check(true); // set this as the default
 #endif
 #if defined (__WXGTK__)
-    scope_menu->FindItem(SCOPE_ASCOM)->Enable(false);
-    scope_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
-    scope_menu->FindItem(SCOPE_GPINT378)->Enable(false);
-    scope_menu->FindItem(SCOPE_GPINT278)->Enable(false);
-    scope_menu->FindItem(SCOPE_GPUSB)->Enable(false);
-    scope_menu->FindItem(SCOPE_CAMERA)->Check(true); // set this as the default
+    mount_menu->FindItem(SCOPE_ASCOM)->Enable(false);
+    mount_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
+    mount_menu->FindItem(SCOPE_GPINT378)->Enable(false);
+    mount_menu->FindItem(SCOPE_GPINT278)->Enable(false);
+    mount_menu->FindItem(SCOPE_GPUSB)->Enable(false);
+    mount_menu->FindItem(SCOPE_CAMERA)->Check(true); // set this as the default
 #endif
 #ifdef GUIDE_INDI
-    scope_menu->AppendRadioItem(SCOPE_INDI,_T("INDI"),_T("INDI"));
+    mount_menu->AppendRadioItem(SCOPE_INDI,_T("INDI"),_T("INDI"));
+#endif
+    mount_menu->AppendSeparator();
+    mount_menu->Append(AO_HEADER,_T("Adaptive Optics"),_("Select Adaptive Optics Device"));
+    mount_menu->FindItem(AO_HEADER)->Enable(false);
+    mount_menu->AppendSeparator();
+    mount_menu->AppendRadioItem(AO_NONE, _("None"), _("No Adaptive Optics"));
+    mount_menu->FindItem(AO_NONE)->Check(true); // set this as the default
+#ifdef STEPGUIDER_SXAO
+    mount_menu->AppendRadioItem(AO_SXAO, _("sxAO"), _T("Starlight Xpress AO"));
+    mount_menu->FindItem(AO_SXAO)->Enable(false);
 #endif
 
-    stepguider_menu = new wxMenu;
-    stepguider_menu->AppendRadioItem(AO_NONE, _("None"), _("No Adaptive Optics"));
-    stepguider_menu->FindItem(AO_NONE)->Check(true); // set this as the default
-#ifdef STEPGUIDER_SXAO
-    stepguider_menu->AppendRadioItem(AO_SXAO, _("sxAO"), _T("Starlight Xpress AO"));
-    //stepguider_menu->FindItem(AO_SXAO)->Enable(false);
-#endif
     // try to get the last value from the config store
     wxString lastChoice = PhdConfig.GetString("/scope/LastMenuChoice", _T(""));
-    int lastId = scope_menu->FindItem(lastChoice);
+    int lastId = mount_menu->FindItem(lastChoice);
 
     if (lastId != wxNOT_FOUND)
     {
-        scope_menu->FindItem(lastId)->Check(true);
+        mount_menu->FindItem(lastId)->Check(true);
     }
 
     tools_menu = new wxMenu;
-    //scope_menu->AppendSeparator();
+    //mount_menu->AppendSeparator();
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
     tools_menu->Append(MENU_CLEARDARK, _("&Erase Dark Frame"), _("Erase / clear out dark frame"));
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
@@ -281,8 +287,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 
     Menubar = new wxMenuBar();
     Menubar->Append(file_menu, _("&File"));
-    Menubar->Append(scope_menu, _("&Mount"));
-    Menubar->Append(stepguider_menu, _("&AO"));
+    Menubar->Append(mount_menu, _("&Mounts"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     Menubar->Append(indi_menu, _T("&INDI"));
@@ -356,9 +361,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 //  Cam_Button = new wxBitmapButton( this, BUTTON_CAMERA, camera_bmp,wxPoint(50,50),wxDefaultSize );
     Cam_Button->SetToolTip(_("Connect to camera"));
     Scope_Button = new wxBitmapButton( this, BUTTON_SCOPE,scope_bmp);
-    Scope_Button->SetToolTip(_("Connect to mount"));
-    StepGuider_Button = new wxBitmapButton( this, BUTTON_STEPGUIDER, ao_bmp);
-    StepGuider_Button->SetToolTip(_("Connect to Step Guiding unit"));
+    Scope_Button->SetToolTip(_("Connect to mount(s)"));
     Loop_Button = new wxBitmapButton( this, BUTTON_LOOP, loop_bmp );
     Loop_Button->SetToolTip(_("Begin looping exposures for frame and focus"));
 //  wxBitmapButton *cal_button = new wxBitmapButton( this, BUTTON_CAL, cal_bmp );
@@ -370,7 +373,6 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     wxBoxSizer *button_sizer = new wxBoxSizer(wxHORIZONTAL);
     button_sizer->Add(Cam_Button,wxSizerFlags(0).Border(wxALL, 3));
     button_sizer->Add(Scope_Button,wxSizerFlags(0).Border(wxALL, 3));
-    button_sizer->Add(StepGuider_Button,wxSizerFlags(0).Border(wxALL, 3));
     button_sizer->Add(Loop_Button,wxSizerFlags(0).Border(wxALL, 3));
 //  button_sizer->Add(cal_button,wxSizerFlags(0).Border(wxALL, 3));
     button_sizer->Add(Guide_Button,wxSizerFlags(0).Border(wxALL, 3));
@@ -510,7 +512,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
         this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"),VERSION,PHDSUBVER));
         tools_menu->Check(MENU_LOG,false);
     }
-    //scope_menu->Check(SCOPE_GPUSB,true);
+    //mount_menu->Check(SCOPE_GPUSB,true);
 
     if (m_serverMode) {
         tools_menu->Check(MENU_SERVER,true);
@@ -560,7 +562,6 @@ void MyFrame::UpdateButtonsStatus(void)
         Loop_Button->Enable(!CaptureActive && pCamera && pCamera->Connected);
         Cam_Button->Enable(!CaptureActive);
         Scope_Button->Enable(!CaptureActive && pMount);
-        StepGuider_Button->Enable(!CaptureActive);
         Brain_Button->Enable(!CaptureActive);
         Dark_Button->Enable(!CaptureActive && pCamera && pCamera->Connected);
 

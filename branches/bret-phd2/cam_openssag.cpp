@@ -55,7 +55,7 @@ Camera_OpenSSAGClass::Camera_OpenSSAGClass() {
 }
 
 bool Camera_OpenSSAGClass::Connect() {
- /*   if (pFrame->scope_menu->IsChecked(SCOPE_CAMERA)) {
+ /*   if (pFrame->mount_menu->IsChecked(SCOPE_CAMERA)) {
         ScopeConnected = SCOPE_CAMERA;
         pFrame->SetStatusText(_T("Scope"),4);
     }

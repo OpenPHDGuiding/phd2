@@ -245,7 +245,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         // else if
     }
 #ifdef GUIDE_ASCOM
-    else if (scope_menu->IsChecked(SCOPE_ASCOM)) {
+    else if (mount_menu->IsChecked(SCOPE_ASCOM)) {
         pNewScope = new ScopeASCOM();
 
         if (pNewScope->Connect())
@@ -260,7 +260,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 #endif
 
 #ifdef GUIDE_GPUSB
-    else if (scope_menu->IsChecked(SCOPE_GPUSB)) {
+    else if (mount_menu->IsChecked(SCOPE_GPUSB)) {
         pNewScope = new ScopeGpUsb();
 
         if (pNewScope->Connect()) {
@@ -273,7 +273,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 #endif
 
 #ifdef GUIDE_GPINT
-    else if (scope_menu->IsChecked(SCOPE_GPINT3BC)) {
+    else if (mount_menu->IsChecked(SCOPE_GPINT3BC)) {
         pNewScope = new ScopeGpInt((short) 0x3BC);
 
         if (pNewScope->Connect())
@@ -285,7 +285,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText("GPINT 3BC " + _("connected"));
         }
     }
-    else if (scope_menu->IsChecked(SCOPE_GPINT378)) {
+    else if (mount_menu->IsChecked(SCOPE_GPINT378)) {
         pNewScope = new ScopeGpInt((short) 0x378);
 
         if (pNewScope->Connect())
@@ -297,7 +297,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             SetStatusText("GPINT 378 " + _("connected"));
         }
     }
-    else if (scope_menu->IsChecked(SCOPE_GPINT278)) {
+    else if (mount_menu->IsChecked(SCOPE_GPINT278)) {
         pNewScope = new ScopeGpInt((short) 0x278);
 
         if (pNewScope->Connect())
@@ -312,7 +312,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 #endif
 
 #ifdef GUIDE_GCUSBST4
-    else if (scope_menu->IsChecked(SCOPE_GCUSBST4)) {
+    else if (mount_menu->IsChecked(SCOPE_GCUSBST4)) {
         ScopeGCUSBST4 *pGCUSBST4 = new ScopeGCUSBST4();
         pNewScope = pGCUSBST4;
         if (pNewScope->Connect())
@@ -327,7 +327,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
 #endif
 
 #ifdef GUIDE_ONBOARD
-    else if (scope_menu->IsChecked(SCOPE_CAMERA)) {
+    else if (mount_menu->IsChecked(SCOPE_CAMERA)) {
         pNewScope = new ScopeOnCamera();
         if (pNewScope->Connect())
         {
@@ -340,7 +340,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     }
 #endif
 #ifdef GUIDE_VOYAGER
-    else if (scope_menu->IsChecked(SCOPE_VOYAGER)) {
+    else if (mount_menu->IsChecked(SCOPE_VOYAGER)) {
         ScopeVoyager *pVoyager = new ScopeVoyager();
         pNewScope = pVoyager;
 
@@ -364,7 +364,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     }
 #endif
 #ifdef GUIDE_EQUINOX
-    else if (scope_menu->IsChecked(SCOPE_EQUINOX)) {
+    else if (mount_menu->IsChecked(SCOPE_EQUINOX)) {
         pNewScope = new ScopeEquinox();
 
         if (pNewScope->Connect())
@@ -378,7 +378,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     }
 #endif
 #ifdef GUIDE_EQMAC
-    else if (scope_menu->IsChecked(SCOPE_EQMAC)) {
+    else if (mount_menu->IsChecked(SCOPE_EQMAC)) {
         ScopeEQMac *pEQMac = new ScopeEQMac();
         pNewScope = pEQMac;
 
@@ -394,7 +394,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     }
 #endif
 #ifdef GUIDE_INDI
-    else if (scope_menu->IsChecked(SCOPE_INDI)) {
+    else if (mount_menu->IsChecked(SCOPE_INDI)) {
         if (!INDI_ScopeConnect()) {
             pMount->IsConnected() = SCOPE_INDI;
         } else {
@@ -409,7 +409,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         SetStatusText(_("Mount connected"));
         SetStatusText(_T("Scope"),3);
         // now store the scope we selected so we can use it as the default next time.
-        wxMenuItemList items = scope_menu->GetMenuItems();
+        wxMenuItemList items = mount_menu->GetMenuItems();
         wxMenuItemList::iterator iter;
 
         for(iter = items.begin(); iter != items.end(); iter++)
