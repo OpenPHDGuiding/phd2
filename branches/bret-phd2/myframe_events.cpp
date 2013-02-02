@@ -265,6 +265,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
+        UpdateButtonsStatus();
     }
 }
 
@@ -286,6 +287,7 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
 void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event))
 {
     StopCapturing();
+    UpdateButtonsStatus();
 }
 
 void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event)) {
