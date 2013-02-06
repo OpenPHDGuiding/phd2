@@ -56,8 +56,8 @@ public:
 private:
     virtual bool Center(void);
     virtual bool Step(GUIDE_DIRECTION direction, int steps);
-    virtual int ApproximateStepsRemaining(GUIDE_DIRECTION direction);
-    virtual int ApproximateMaxStepsFromCenter(GUIDE_DIRECTION direction);
+    virtual int CurrentPosition(GUIDE_DIRECTION direction);
+    virtual int MaxStepsFromCenter(GUIDE_DIRECTION direction);
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit);
 
     bool SendThenReceive(unsigned char sendChar, unsigned char& receivedChar);

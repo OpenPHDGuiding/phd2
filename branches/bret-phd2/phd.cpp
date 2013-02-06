@@ -44,7 +44,7 @@
 
 Config PhdConfig;
 Mount *pMount = new ScopeNone();
-StepGuider *pStepGuider = NULL;
+Mount *pSecondaryMount = NULL;
 MyFrame *pFrame = NULL;
 GuideCamera *pCamera = NULL;
 

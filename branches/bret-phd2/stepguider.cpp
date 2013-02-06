@@ -41,10 +41,10 @@
 static const int DefaultCalibrationSteps = 10;
 static const double DEC_BACKLASH_DISTANCE = 0.0;
 
-StepGuider::StepGuider(void)
-    : Mount(DEC_BACKLASH_DISTANCE)
+StepGuider::StepGuider(void) :
+    Mount(DEC_BACKLASH_DISTANCE)
 {
-    int calibrationSteps =PhdConfig.GetInt("/stepguider/CalibrationSteps", DefaultCalibrationSteps);
+    int calibrationSteps = PhdConfig.GetInt("/stepguider/CalibrationSteps", DefaultCalibrationSteps);
     SetCalibrationSteps(calibrationSteps);
 }
 
@@ -87,14 +87,14 @@ bool StepGuider::SetCalibrationSteps(int calibrationSteps)
         m_calibrationSteps = DefaultCalibrationSteps;
     }
 
-   PhdConfig.SetInt("/stepguider/CalibrationSteps", m_calibrationSteps);
+    PhdConfig.SetInt("/stepguider/CalibrationSteps", m_calibrationSteps);
 
     return bError;
 }
 
 void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 {
-    StepGuider *pNewStepGuider = NULL;
+    StepGuider *pStepGuider = NULL;
 
     try
     {
@@ -108,12 +108,29 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             throw ERROR_INFO("Connecting Step Guider when CaptureActive");
         }
 
-        if (pStepGuider && pStepGuider->IsConnected())
+        if (pSecondaryMount)
         {
-            pStepGuider->Disconnect();
+            /*
+             * If there is a secondary mount, then the primary mount (aka pMount)
+             * is a StepGuider.  Get rid of the current primary mount,
+             * and move the secondary mount back to being the primary mount
+             */
+            assert(pMount);
+
+            if (pMount->IsConnected())
+            {
+                pMount->Disconnect();
+            }
+
+            delete pMount;
+            pMount = pSecondaryMount;
+            pSecondaryMount = NULL;
+            SetStatusText(_T(""),4);
         }
 
-        if (mount_menu->IsChecked(AO_NONE))
+        assert(pMount);
+
+        if (!pMount->IsConnected())
         {
             wxMessageBox(_T("Please connect a scope before connecting an AO"), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("attempt to connect AO with no scope connected");
@@ -126,24 +143,31 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 #ifdef STEPGUIDER_SXAO
         else if (mount_menu->IsChecked(AO_SXAO))
         {
-            pNewStepGuider = new StepGuiderSxAO();
-
-            if (pNewStepGuider->Connect())
-            {
-                SetStatusText("FAIL: sxAO connection");
-            }
-            else
-            {
-                SetStatusText(_("sxAO connected"));
-            }
+            pStepGuider = new StepGuiderSxAO();
         }
 #endif
-        if (pNewStepGuider && pNewStepGuider->IsConnected())
+
+        if (pStepGuider)
         {
-            delete pStepGuider;
-            pStepGuider = pNewStepGuider;
-            SetStatusText(_T("Adaptive Optics Connected"), 1);
+            if (pStepGuider->Connect())
+            {
+                SetStatusText("AO connect failed", 1);
+                throw ERROR_INFO("unable to connect to AO");
+            }
+
+            SetStatusText(_("Adaptive Optics Connected"), 1);
             SetStatusText(_T("AO"),4);
+
+            // successful connection - switch the step guider in
+
+            assert(pSecondaryMount == NULL);
+            pSecondaryMount = pMount;
+            pMount = pStepGuider;
+            pStepGuider = NULL;
+
+            // at this point, the AO is connected and active. Even if we
+            // fail from here on out that doesn't change
+
             // now store the stepguider we selected so we can use it as the default next time.
             wxMenuItemList items = mount_menu->GetMenuItems();
             wxMenuItemList::iterator iter;
@@ -161,11 +185,6 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
                 }
             }
         }
-        else
-        {
-            mount_menu->FindItem(AO_NONE)->Check(true);
-            SetStatusText(_T(""),4);
-        }
     }
     catch (wxString Msg)
     {
@@ -175,6 +194,9 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
         delete pStepGuider;
         pStepGuider = NULL;
     }
+
+    assert(pMount && pMount->IsConnected());
+    assert(!pSecondaryMount || pSecondaryMount->IsConnected());
 
     UpdateButtonsStatus();
 }

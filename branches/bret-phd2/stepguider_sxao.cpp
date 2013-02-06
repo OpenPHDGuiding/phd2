@@ -456,28 +456,28 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
     return bError;
 #endif
 
-int StepGuiderSxAO::ApproximateMaxStepsFromCenter(GUIDE_DIRECTION direction)
+int StepGuiderSxAO::MaxStepsFromCenter(GUIDE_DIRECTION direction)
 {
     return MaxSteps;
 }
 
-int StepGuiderSxAO::ApproximateStepsRemaining(GUIDE_DIRECTION direction)
+int StepGuiderSxAO::CurrentPosition(GUIDE_DIRECTION direction)
 {
     int ret=0;
 
     switch(direction)
     {
         case NORTH:
-            ret = MaxSteps - m_yOffset;
+            ret =  m_yOffset;
             break;
         case SOUTH:
-            ret =  m_yOffset + MaxSteps;
+            ret = -m_yOffset;
             break;
         case EAST:
-            ret = MaxSteps - m_xOffset;
+            ret =  m_xOffset;
             break;
         case WEST:
-            ret = m_xOffset + MaxSteps;
+            ret = -m_xOffset;
             break;
     }
 

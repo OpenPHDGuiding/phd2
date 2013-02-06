@@ -146,7 +146,7 @@ extern Config PhdConfig;
 
 extern MyFrame *pFrame;
 extern Mount *pMount;
-extern StepGuider *pStepGuider;
+extern Mount *pSecondaryMount;
 extern GuideCamera *pCamera;
 
 extern LOG Debug;

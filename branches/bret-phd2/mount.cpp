@@ -161,7 +161,7 @@ void Mount::SetDecGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgo
     }
 }
 
-wxString &Mount::Name(void)
+const wxString &Mount::Name(void)
 {
     return m_Name;
 }
