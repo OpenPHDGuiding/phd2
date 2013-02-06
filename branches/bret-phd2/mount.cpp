@@ -43,6 +43,7 @@ Mount::Mount(double decBacklashDistance)
     m_decBacklashDistance = decBacklashDistance;
 
     m_connected = false;
+    m_requestCount = 0;
 
     m_calibrated = false;
     m_pDecGuideAlgorithm = NULL;
@@ -183,6 +184,34 @@ bool Mount::IsCalibrated()
 
     return bReturn;
 }
+
+bool Mount::IsBusy(void)
+{
+    return m_requestCount > 0;
+}
+
+
+void Mount::UpdateRequestCount(bool increment)
+{
+    if (increment)
+    {
+        m_requestCount++;
+    }
+    else
+    {
+        m_requestCount--;
+    }
+
+
+    // for the moment we never enqueue requests if the mount is busy, but we can
+    // enqueue them two at a time.  There is no reason we can't, it's just that
+    // right now we don't, and this might catch an error
+    assert(m_requestCount <= 2);
+
+    // This assert is stronger -- this would indicate an error
+    assert(m_requestCount >= 0);
+}
+
 
 void Mount::ClearCalibration(void)
 {

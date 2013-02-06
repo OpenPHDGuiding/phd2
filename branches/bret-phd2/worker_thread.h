@@ -38,6 +38,45 @@
 
 class MyFrame;
 
+/*
+ * There are two worker threads.  The primary thread handles all exposure requests, and
+ * move requests for the first mount.  The secondary thread handles move requests for the
+ * second mount, so that on systems with two mounts (probably an AO and a telescope), the
+ * second mount can be moving while we image and guide with the first mount.
+ *
+ * The primary worker thread provides ordering - basically the upper levels enqueue things
+ * in order and it processes them in order.  If there is only one mount the queue can
+ * look like:
+ *
+ * PrimaryWorkerThread's queue:
+ * - mount 1 RA guide request
+ * - mount 1 Dec guide request
+ * - expose request
+ *
+ * SecondaryWorkerThread's queue:
+ *  <empty>
+ *
+ * The requests are handled in order by the primary worker. Both the guide requests will
+ * have finished before the expose request, so that the mount does not move while we take
+ * the exposure.
+ *
+ * If there are 2 mounts, the requests to the second mount get executed by the
+ * secondary thread, so the queues can look like this:
+ *
+ * PrimaryWorkerThread's queue:
+ * - mount 1 RA guide request
+ * - mount 1 Dec guide request
+ * - expose request
+ *
+ * SecondaryWorkerThread's queue:
+ * - mount 2 RA guide request
+ * - mount 2 Dec guide request
+ *
+ *  In this case, the to mount 2 guide requests can run while the expose request runs - the
+ *  theory is that the AO can keep ahead of the scope's motion.
+ *
+ */
+
 class WorkerThread: public wxThread
 {
     MyFrame *m_pFrame;
@@ -105,7 +144,7 @@ protected:
         Point           desiredLocation;
     };
     bool HandleMove(ARGS_MOVE *pArgs);
-    void SendWorkerThreadMoveComplete(bool bError);
+    void SendWorkerThreadMoveComplete(Mount *pMount, bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadGuideComplete(wxThreadEvent& event);
 
     // types and routines for the server->worker message queue

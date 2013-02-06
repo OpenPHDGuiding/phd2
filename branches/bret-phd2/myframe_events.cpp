@@ -280,6 +280,9 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
 {
     try
     {
+        Mount *pThisMount = event.GetPayload<Mount *>();
+        pThisMount->UpdateRequestCount(false);
+
         if (event.GetInt())
         {
             throw ERROR_INFO("Error reported moving");

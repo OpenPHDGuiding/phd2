@@ -49,6 +49,7 @@ class Mount :  public wxMessageBoxProxy
 protected:
     bool m_connected;
     bool m_calibrated;
+    int m_requestCount;
 
     double m_raAngle;
     double m_raRate;
@@ -125,6 +126,15 @@ public:
     virtual bool Move(const Point& currentLocation, const Point& desiredLocation);
 private:
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
+protected:
+    bool TransformCameraCoordinatesToMountCoordinates(const Point& currentLocation,
+                                                      const Point& desiredLocation,
+                                                      double& raDistance,
+                                                      double& decDistance);
+
+    bool TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
+                                                     const double decDistance,
+                                                     Point& cameraOffset);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
@@ -143,9 +153,14 @@ private:
 public:
     virtual bool HasNonGuiMove(void) {return false;}
 
-    virtual wxString &Name(void);
+    virtual const wxString &Name(void);
+
     virtual bool IsConnected(void);
     virtual bool IsCalibrated(void);
+
+    virtual bool IsBusy(void);
+    virtual void UpdateRequestCount(bool increment);
+
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 

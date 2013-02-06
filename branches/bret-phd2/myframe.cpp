@@ -137,8 +137,10 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
         SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     }
 
-    m_pWorkerThread = NULL;
-    StartWorkerThread();
+    m_pPrimaryWorkerThread = NULL;
+    StartWorkerThread(m_pPrimaryWorkerThread);
+    m_pSecondaryWorkerThread = NULL;
+    StartWorkerThread(m_pSecondaryWorkerThread);
 
     m_statusbarTimer.SetOwner(this, STATUSBAR_TIMER_EVENT);
 
@@ -627,24 +629,26 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
 
 }
 
-bool MyFrame::StartWorkerThread(void)
+bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
 {
     bool bError = false;
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     try
     {
-        if (!m_pWorkerThread || !m_pWorkerThread->IsRunning())
-        {
-            delete m_pWorkerThread;
-            m_pWorkerThread = new WorkerThread(this);
+        Debug.AddLine(wxString::Format("StartWorkerThread(0x%p) begins", pWorkerThread));
 
-            if (m_pWorkerThread->Create() != wxTHREAD_NO_ERROR)
+        if (!pWorkerThread || !pWorkerThread->IsRunning())
+        {
+            delete pWorkerThread;
+            pWorkerThread = new WorkerThread(this);
+
+            if (pWorkerThread->Create() != wxTHREAD_NO_ERROR)
             {
                 throw("Could not Create() the worker thread!");
             }
 
-            if (m_pWorkerThread->Run() != wxTHREAD_NO_ERROR)
+            if (pWorkerThread->Run() != wxTHREAD_NO_ERROR)
             {
                 throw("Could not Run() the worker thread!");
             }
@@ -653,33 +657,33 @@ bool MyFrame::StartWorkerThread(void)
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        delete m_pWorkerThread;
-        m_pWorkerThread = NULL;
+        delete pWorkerThread;
+        pWorkerThread = NULL;
         bError = true;
     }
+
+    Debug.AddLine(wxString::Format("StartWorkerThread(0x%p) ends", pWorkerThread));
 
     return bError;
 }
 
-void MyFrame::StopWorkerThread(void)
+void MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    Debug.Write("StopWorkerThread() begins\n");
+    Debug.AddLine(wxString::Format("StopWorkerThread(0x%p) begins", pWorkerThread));
 
-    StopCapturing();
-
-    if (m_pWorkerThread && m_pWorkerThread->IsRunning())
+    if (pWorkerThread && pWorkerThread->IsRunning())
     {
-        m_pWorkerThread->EnqueueWorkerThreadTerminateRequest();
-        wxThread::ExitCode threadExitCode = m_pWorkerThread->Wait();
+        pWorkerThread->EnqueueWorkerThreadTerminateRequest();
+        wxThread::ExitCode threadExitCode = pWorkerThread->Wait();
         Debug.Write(wxString::Format("StopWorkerThread() threadExitCode=%d\n", threadExitCode));
     }
 
-    Debug.Write("StopWorkerThread() exits\n");
+    Debug.AddLine(wxString::Format("StopWorkerThread(0x%p) ends", pWorkerThread));
 
-    delete m_pWorkerThread;
-    m_pWorkerThread = NULL;
+    delete pWorkerThread;
+    pWorkerThread = NULL;
 }
 
 void MyFrame::OnRequestExposure(wxCommandEvent& evt)
@@ -750,27 +754,44 @@ void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    assert(m_pWorkerThread);
-
-    m_pWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
+    assert(m_pPrimaryWorkerThread);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
 }
 
-void MyFrame::ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation)
+void MyFrame::ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation, bool usePrimaryThread)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    assert(m_pWorkerThread);
+    pMount->UpdateRequestCount(true);
 
-    m_pWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, currentLocation, desiredLocation);
+    if (usePrimaryThread)
+    {
+        assert(m_pPrimaryWorkerThread);
+        m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, currentLocation, desiredLocation);
+    }
+    else
+    {
+        assert(m_pSecondaryWorkerThread);
+        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, currentLocation, desiredLocation);
+    }
 }
 
-void MyFrame::ScheduleMove(Mount *pMount, const GUIDE_DIRECTION direction)
+void MyFrame::ScheduleMove(Mount *pMount, const GUIDE_DIRECTION direction, bool usePrimaryThread)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    assert(m_pWorkerThread);
+    pMount->UpdateRequestCount(true);
 
-    m_pWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);
+    if (usePrimaryThread)
+    {
+        assert(m_pPrimaryWorkerThread);
+        m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);
+    }
+    else
+    {
+        assert(m_pSecondaryWorkerThread);
+        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);
+    }
 }
 
 void MyFrame::StartCapturing()
@@ -801,7 +822,10 @@ void MyFrame::OnClose(wxCloseEvent &event) {
         return;
     }
 
-    StopWorkerThread();
+    StopCapturing();
+
+    StopWorkerThread(m_pPrimaryWorkerThread);
+    StopWorkerThread(m_pSecondaryWorkerThread);
 
     if (pMount->IsConnected()) { // Disconnect
         pMount->Disconnect();

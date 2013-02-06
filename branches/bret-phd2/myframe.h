@@ -196,8 +196,8 @@ public:
     void OnRequestMountMove(wxCommandEvent &evt);
 
     void ScheduleExposure(double exposureDuration, wxRect subframe);
-    void ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation);
-    void ScheduleMove(Mount *pMount, const GUIDE_DIRECTION direction);
+    void ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation, bool usePrimaryThread=true);
+    void ScheduleMove(Mount *pMount, const GUIDE_DIRECTION direction, bool usePrimaryThread=true);
 
     void StartCapturing(void);
     void StopCapturing(void);
@@ -208,9 +208,11 @@ public:
 
 private:
     wxCriticalSection m_CSpWorkerThread;
-    WorkerThread *m_pWorkerThread;
-    bool StartWorkerThread(void);
-    void StopWorkerThread(void);
+    WorkerThread *m_pPrimaryWorkerThread;
+    WorkerThread *m_pSecondaryWorkerThread;
+
+    bool StartWorkerThread(WorkerThread*& pWorkerThread);
+    void StopWorkerThread(WorkerThread*& pWorkerThread);
     wxSocketServer *SocketServer;
 
     struct STATUSBAR_QUEUE_ENTRY

@@ -230,10 +230,11 @@ bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
     return  bError;
 }
 
-void WorkerThread::SendWorkerThreadMoveComplete(bool bError)
+void WorkerThread::SendWorkerThreadMoveComplete(Mount *pMount, bool bError)
 {
     wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_MOVE_COMPLETE);
     event.SetInt(bError);
+    event.SetPayload<Mount *>(pMount);
     wxQueueEvent(m_pFrame, event.Clone());
 }
 
@@ -277,7 +278,7 @@ wxThread::ExitCode WorkerThread::Entry()
                 break;
             case REQUEST_MOVE:
                 bError = HandleMove(&message.args.move);
-                SendWorkerThreadMoveComplete(bError);
+                SendWorkerThreadMoveComplete(message.args.move.pMount, bError);
                 break;
         }
 

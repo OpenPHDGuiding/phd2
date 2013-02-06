@@ -143,7 +143,7 @@ double GuideAlgorithmResistSwitch::result(double input)
     }
     catch (wxString Msg)
     {
-        Debug.AddLine("GuideAlgorithResistSwitch::result() not allowing move: " + Msg);
+        POSSIBLY_UNUSED(Msg);
         dReturn = 0.0;
     }
 
