@@ -115,8 +115,13 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 
         if (mount_menu->IsChecked(AO_NONE))
         {
-            delete pStepGuider;
-            pStepGuider = NULL;
+            wxMessageBox(_T("Please connect a scope before connecting an AO"), _("Error"), wxOK | wxICON_ERROR);
+            throw ERROR_INFO("attempt to connect AO with no scope connected");
+        }
+
+        if (mount_menu->IsChecked(AO_NONE))
+        {
+            // nothing to do here
         }
 #ifdef STEPGUIDER_SXAO
         else if (mount_menu->IsChecked(AO_SXAO))
@@ -165,12 +170,16 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
+
+        mount_menu->FindItem(AO_NONE)->Check(true);
+        delete pStepGuider;
+        pStepGuider = NULL;
     }
 
     UpdateButtonsStatus();
 }
 
-bool StepGuider::Move(GUIDE_DIRECTION direction)
+bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
 {
     return Step(direction, m_calibrationSteps);
 }
