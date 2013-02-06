@@ -132,7 +132,7 @@ protected:
 
     /*************      Guide       **************************/
 public:
-    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& currentLocation, const Point& desiredLocation);
+    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& vectorEndpoint);
     void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction);
 protected:
     struct ARGS_MOVE
@@ -140,8 +140,7 @@ protected:
         Mount           *pMount;
         bool            calibrationMove;
         GUIDE_DIRECTION direction;
-        Point           currentLocation;
-        Point           desiredLocation;
+        Point           vectorEndpoint;
     };
     bool HandleMove(ARGS_MOVE *pArgs);
     void SendWorkerThreadMoveComplete(Mount *pMount, bool bError);

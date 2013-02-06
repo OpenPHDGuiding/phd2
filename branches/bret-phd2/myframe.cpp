@@ -721,7 +721,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
     }
     else
     {
-        pRequest->bError = pRequest->pMount->Move(pRequest->currentLocation, pRequest->desiredLocation);
+        pRequest->bError = pRequest->pMount->Move(pRequest->vectorEndpoint);
     }
 
     pRequest->semaphore.Post();
@@ -758,7 +758,7 @@ void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
 }
 
-void MyFrame::ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation, bool usePrimaryThread)
+void MyFrame::ScheduleMove(Mount *pMount, const Point& vectorEndpoint, bool usePrimaryThread)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -767,12 +767,12 @@ void MyFrame::ScheduleMove(Mount *pMount, const Point& currentLocation, const Po
     if (usePrimaryThread)
     {
         assert(m_pPrimaryWorkerThread);
-        m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, currentLocation, desiredLocation);
+        m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint);
     }
     else
     {
         assert(m_pSecondaryWorkerThread);
-        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, currentLocation, desiredLocation);
+        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint);
     }
 }
 

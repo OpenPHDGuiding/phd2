@@ -73,7 +73,7 @@ public:
 
 private:
     bool CalibrationMove(GUIDE_DIRECTION direction);
-    double Move(GUIDE_DIRECTION direction, double duration);
+    double Move(GUIDE_DIRECTION direction, double amount);
     double CalibrationTime(int nCalibrationSteps);
     bool BacklashClearingFailed(void);
 

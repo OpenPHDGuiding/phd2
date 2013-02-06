@@ -188,15 +188,14 @@ public:
         Mount           *pMount;
         bool            calibrationMove;
         GUIDE_DIRECTION direction;
-        Point           currentLocation;
-        Point           desiredLocation;
+        Point            vectorEndpoint;
         bool             bError;
         wxSemaphore      semaphore;
     };
     void OnRequestMountMove(wxCommandEvent &evt);
 
     void ScheduleExposure(double exposureDuration, wxRect subframe);
-    void ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation, bool usePrimaryThread=true);
+    void ScheduleMove(Mount *pMount, const Point& vectorEndpoint, bool usePrimaryThread=true);
     void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, bool usePrimaryThread=true);
 
     void StartCapturing(void);

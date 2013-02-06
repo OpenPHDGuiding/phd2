@@ -145,19 +145,18 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 
 /*************      Move       **************************/
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& currentLocation, const Point& desiredLocation)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& vectorEndpoint)
 {
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
-    Debug.Write(wxString::Format("Enqueuing Move request from (%.1f, %.1f) to (%.1f, %.1f)\n",
-                currentLocation.X, currentLocation.Y, desiredLocation.X, desiredLocation.Y));
+    Debug.Write(wxString::Format("Enqueuing Move request for (%.1f, %.1f)\n",
+                vectorEndpoint.X, vectorEndpoint.Y));
 
-    message.request = REQUEST_MOVE;
+    message.request                   = REQUEST_MOVE;
     message.args.move.pMount          = pMount;
     message.args.move.calibrationMove = false;
-    message.args.move.currentLocation = currentLocation;
-    message.args.move.desiredLocation = desiredLocation;
+    message.args.move.vectorEndpoint  = vectorEndpoint;
 
     wxMessageQueueError queueError = m_workerQueue.Post(message);
 }
@@ -193,7 +192,7 @@ bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
             }
             else
             {
-                bError = pArgs->pMount->Move(pArgs->currentLocation, pArgs->desiredLocation);
+                bError = pArgs->pMount->Move(pArgs->vectorEndpoint);
             }
         }
         else
@@ -206,8 +205,7 @@ bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
             request.pMount          = pArgs->pMount;
             request.calibrationMove = pArgs->calibrationMove;
             request.direction       = pArgs->direction;
-            request.currentLocation = pArgs->currentLocation;
-            request.desiredLocation = pArgs->desiredLocation;
+            request.vectorEndpoint  = pArgs->vectorEndpoint;
 
             wxCommandEvent evt(REQUEST_MOUNT_MOVE_EVENT, GetId());
             evt.SetClientData(&request);

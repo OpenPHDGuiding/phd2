@@ -184,7 +184,7 @@ bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
     return Step(direction, m_calibrationSteps);
 }
 
-double StepGuider::Move(GUIDE_DIRECTION direction, double duration)
+double StepGuider::Move(GUIDE_DIRECTION direction, double amount)
 {
     int steps = 0;
 
@@ -209,7 +209,7 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double duration)
             }
 
             // Acutally do the guide
-            steps = (int)(duration + 0.5);
+            steps = (int)(amount + 0.5);
             assert(steps >= 0);
 
             if (steps > 0)
@@ -218,6 +218,25 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double duration)
                 {
                     throw ERROR_INFO("step failed");
                 }
+            }
+
+            if (CurrentPosition(direction) > 0.75 * MaxStepsFromCenter(direction) &&
+                pSecondaryMount &&
+                !pSecondaryMount->IsBusy())
+            {
+                // we have to transform our notion of where we are (which is in "AO Coordinates")
+                // into "Camera Coordinates" so we can move the other mount to make the move
+
+                double raDistance = CurrentPosition(NORTH)*DecRate();
+                double decDistance = CurrentPosition(EAST)*RaRate();
+                Point cameraOffset;
+
+                if (TransformMoutCoordinatesToCameraCoordinates(raDistance, decDistance, cameraOffset))
+                {
+                    throw ERROR_INFO("MountToCamera failed");
+                }
+
+                pFrame->ScheduleMove(pSecondaryMount, cameraOffset, false);
             }
         }
     }

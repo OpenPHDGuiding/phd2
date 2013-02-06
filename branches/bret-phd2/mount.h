@@ -123,25 +123,24 @@ public:
     bool UpdateCalibrationState(const Point &currentPosition);
     bool FlipCalibration(void);
 
-    virtual bool Move(const Point& currentLocation, const Point& desiredLocation);
+    virtual bool Move(const Point& vectorEndpoint);
 private:
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 protected:
-    bool TransformCameraCoordinatesToMountCoordinates(const Point& currentLocation,
-                                                      const Point& desiredLocation,
+    bool TransformCameraCoordinatesToMountCoordinates(const Point& vectorEndpoint,
                                                       double& raDistance,
                                                       double& decDistance);
 
     bool TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
                                                      const double decDistance,
-                                                     Point& cameraOffset);
+                                                     Point& vectorEndpoint);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
     // move the mount defined calibration distance
     virtual bool CalibrationMove(GUIDE_DIRECTION direction) = 0;
-    // move the requested direction, return the actual duration of the move
-    virtual double Move(GUIDE_DIRECTION direction, double duration) = 0;
+    // move the requested direction, return the actual amount of the move
+    virtual double Move(GUIDE_DIRECTION direction, double amount) = 0;
 
 private:
     virtual double CalibrationTime(int nCalibrationSteps) = 0;

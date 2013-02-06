@@ -572,7 +572,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 SetState(STATE_GUIDING);
                 break;
             case STATE_GUIDING:
-                pFrame->ScheduleMove(pMount, CurrentPosition(), LockPosition());
+                pFrame->ScheduleMove(pMount, CurrentPosition() - LockPosition());
                 break;
         }
     }
