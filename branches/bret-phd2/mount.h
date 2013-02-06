@@ -139,7 +139,7 @@ protected:
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
     // move the mount defined calibration distance
-    virtual bool Move(GUIDE_DIRECTION direction) = 0;
+    virtual bool CalibrationMove(GUIDE_DIRECTION direction) = 0;
     // move the requested direction, return the actual duration of the move
     virtual double Move(GUIDE_DIRECTION direction, double duration) = 0;
 

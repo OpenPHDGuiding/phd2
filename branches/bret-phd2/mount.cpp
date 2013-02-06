@@ -460,7 +460,7 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
         else
         {
             pFrame->SetStatusText(statusMessage, 1);
-            pFrame->ScheduleMove(this, m_calibrationDirection);
+            pFrame->ScheduleCalibrationMove(this, m_calibrationDirection);
         }
     }
     catch (wxString Msg)

@@ -68,16 +68,16 @@ void TestGuideDialog::OnButton(wxCommandEvent &evt) {
     if (!(pMount->IsConnected())) return;
     switch (evt.GetId()) {
         case MGUIDE_N:
-            pMount->Move(NORTH);
+            pMount->CalibrationMove(NORTH);
             break;
         case MGUIDE_S:
-            pMount->Move(SOUTH);
+            pMount->CalibrationMove(SOUTH);
             break;
         case MGUIDE_E:
-            pMount->Move(EAST);
+            pMount->CalibrationMove(EAST);
             break;
         case MGUIDE_W:
-            pMount->Move(WEST);
+            pMount->CalibrationMove(WEST);
             break;
     }
 }

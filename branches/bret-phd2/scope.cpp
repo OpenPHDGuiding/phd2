@@ -432,7 +432,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     UpdateButtonsStatus();
 }
 
-bool Scope::Move(GUIDE_DIRECTION direction)
+bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
 {
     return Guide(direction, m_calibrationDuration);
 }

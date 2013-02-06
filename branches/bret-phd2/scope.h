@@ -85,7 +85,7 @@ public:
     virtual ~Scope(void);
 
 private:
-    bool Move(GUIDE_DIRECTION direction);
+    bool CalibrationMove(GUIDE_DIRECTION direction);
     double Move(GUIDE_DIRECTION direction, double duration);
 
     double CalibrationTime(int nCalibrationSteps);

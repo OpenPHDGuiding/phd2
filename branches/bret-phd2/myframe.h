@@ -197,7 +197,7 @@ public:
 
     void ScheduleExposure(double exposureDuration, wxRect subframe);
     void ScheduleMove(Mount *pMount, const Point& currentLocation, const Point& desiredLocation, bool usePrimaryThread=true);
-    void ScheduleMove(Mount *pMount, const GUIDE_DIRECTION direction, bool usePrimaryThread=true);
+    void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, bool usePrimaryThread=true);
 
     void StartCapturing(void);
     void StopCapturing(void);

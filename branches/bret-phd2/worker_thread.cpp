@@ -189,7 +189,7 @@ bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
             Debug.Write("Handling move in thread\n");
             if (pArgs->calibrationMove)
             {
-                bError = pArgs->pMount->Move(pArgs->direction);
+                bError = pArgs->pMount->CalibrationMove(pArgs->direction);
             }
             else
             {

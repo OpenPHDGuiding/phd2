@@ -717,7 +717,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
     if (pRequest->calibrationMove)
     {
-        pRequest->bError = pRequest->pMount->Move(pRequest->direction);
+        pRequest->bError = pRequest->pMount->CalibrationMove(pRequest->direction);
     }
     else
     {
@@ -776,7 +776,7 @@ void MyFrame::ScheduleMove(Mount *pMount, const Point& currentLocation, const Po
     }
 }
 
-void MyFrame::ScheduleMove(Mount *pMount, const GUIDE_DIRECTION direction, bool usePrimaryThread)
+void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, bool usePrimaryThread)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
