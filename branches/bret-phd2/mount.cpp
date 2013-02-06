@@ -49,6 +49,38 @@ Mount::Mount(double decBacklashDistance)
     m_pDecGuideAlgorithm = NULL;
     m_pRaGuideAlgorithm = NULL;
     m_guidingEnabled = true;
+
+    for(int i = 0;i<8;i++)
+    {
+        int x, y;
+        Point origin(0,0);
+        double baseAngle = i * PI/4.0;
+
+        SetCalibration(baseAngle, baseAngle+PI/2,1.0,1.0);
+
+        for(y=0;y<100;y++)
+        {
+            for(x=0;x<100;x++)
+            {
+                Point here(x,y);
+                double raDistance, decDistance;
+                bool ret;
+
+                ret = TransformCameraCoordinatesToMountCoordinates(here, origin, raDistance, decDistance);
+
+                assert(!ret);
+
+                Point back;
+
+                ret = TransformMoutCoordinatesToCameraCoordinates(raDistance, decDistance, back);
+
+                double error = here.Distance(back);
+                assert(error < 0.01);
+            }
+        }
+
+        ClearCalibration();
+    }
 }
 
 Mount::~Mount()
@@ -496,8 +528,62 @@ bool Mount::Move(const Point& currentLocation, const Point& desiredLocation)
 
         // Convert theta and hyp into RA and DEC
 
-        double raDistance  = cos(m_raAngle - theta) * hyp;
-        double decDistance = cos(m_decAngle - theta) * hyp;
+        raDistance  = cos(m_raAngle + theta) * hyp;
+        decDistance = cos(m_decAngle - theta) * hyp;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool Mount::TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
+                                                        const double decDistance,
+                                                        Point& cameraOffset)
+{
+    bool bError = false;
+
+    try
+    {
+        Point origin(0,0);
+        Point mountPosition(raDistance, decDistance);
+
+        double hyp = origin.Distance(mountPosition);
+        double theta = origin.Angle(mountPosition);
+        double cameraX = cos(m_raAngle + theta) * hyp;
+        double cameraY = cos(m_decAngle - theta) * hyp;
+
+        cameraOffset.SetXY(cameraX, cameraY);
+
+        Debug.AddLine(wxString::Format("MounToCamera -- raDistance=%.2f decDistance=%.2f hyp=%2.f theta=%.2f CameraX=%.2f, cameraY=%.2f",
+                raDistance, decDistance, hyp, theta, cameraX, cameraY));
+
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        cameraOffset.Invalidate();
+    }
+
+    return bError;
+}
+
+bool Mount::Move(const Point& currentLocation, const Point& desiredLocation)
+{
+    bool bError = false;
+
+    try
+    {
+        double raDistance, decDistance;
+
+        if (TransformCameraCoordinatesToMountCoordinates(currentLocation, desiredLocation, raDistance, decDistance))
+        {
+            throw ERROR_INFO("Unable to transform camera coordinates");
+        }
 
         pFrame->GraphLog->AppendData(desiredLocation.dX(currentLocation), desiredLocation.dY(currentLocation),
                 raDistance, decDistance);
