@@ -65,7 +65,7 @@ public:
 
     bool IsValid(void) const
     {
-        return (X >= 0) && (Y >=0);
+        return m_valid;
     }
 
     void Invalidate(void)
