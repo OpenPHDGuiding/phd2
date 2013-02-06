@@ -67,17 +67,18 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, double expo
 
     Debug.Write("Enqueuing Expose request\n");
 
-    message.request = REQUEST_EXPOSE;
-    message.args.expose.pImage = pImage;
+    message.request                      = REQUEST_EXPOSE;
+    message.args.expose.pImage           = pImage;
     message.args.expose.exposureDuration = exposureDuration;
-    message.args.expose.subframe = subframe;
+    message.args.expose.subframe         = subframe;
+    message.args.expose.pSemaphore       = NULL;
+
     wxMessageQueueError queueError = m_workerQueue.Post(message);
 }
 
-bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
+bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs)
 {
     bool bError = false;
-
 
     try
     {
@@ -110,19 +111,18 @@ bool WorkerThread::HandleExpose(ARGS_EXPOSE *pArgs)
         {
             Debug.Write(wxString::Format("Handling exposure in myFrame\n"));
 
-            MyFrame::PHD_EXPOSE_REQUEST request;
-            request.pImage = pArgs->pImage;
-            request.exposureDuration = pArgs->exposureDuration;
-            request.subframe = pArgs->subframe;
+            wxSemaphore semaphore;
+            pArgs->pSemaphore = &semaphore;
 
             wxCommandEvent evt(REQUEST_EXPOSURE_EVENT, GetId());
-            evt.SetClientData(&request);
+            evt.SetClientData(pArgs);
             wxQueueEvent(m_pFrame, evt.Clone());
 
             // wait for the request to complete
-            request.semaphore.Wait();
+            pArgs->pSemaphore->Wait();
 
-            bError = request.bError;
+            bError = pArgs->bError;
+            pArgs->pSemaphore = NULL;
         }
         Debug.Write(wxString::Format("Exposure complete\n"));
     }
@@ -145,7 +145,7 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 
 /*************      Move       **************************/
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& vectorEndpoint)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& vectorEndpoint, bool normalMove)
 {
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
@@ -157,6 +157,8 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& ve
     message.args.move.pMount          = pMount;
     message.args.move.calibrationMove = false;
     message.args.move.vectorEndpoint  = vectorEndpoint;
+    message.args.move.normalMove      = normalMove;
+    message.args.move.pSemaphore      = NULL;
 
     wxMessageQueueError queueError = m_workerQueue.Post(message);
 }
@@ -168,16 +170,18 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIR
 
     Debug.Write(wxString::Format("Enqueuing Calibration Move request for direction %d\n", direction));
 
-    message.request = REQUEST_MOVE;
+    message.request                   = REQUEST_MOVE;
     message.args.move.pMount          = pMount;
     message.args.move.calibrationMove = true;
     message.args.move.direction       = direction;
+    message.args.move.normalMove      = true;
+    message.args.move.pSemaphore      = NULL;
 
     wxMessageQueueError queueError = m_workerQueue.Post(message);
 }
 
 
-bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
+bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
 {
     bool bError = false;
 
@@ -192,7 +196,7 @@ bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
             }
             else
             {
-                bError = pArgs->pMount->Move(pArgs->vectorEndpoint);
+                bError = pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->normalMove);
             }
         }
         else
@@ -201,20 +205,19 @@ bool WorkerThread::HandleMove(ARGS_MOVE *pArgs)
             // main frame routine that handles guides requests
 
             Debug.Write("Handling guide in myFrame\n");
-            MyFrame::PHD_MOVE_REQUEST request;
-            request.pMount          = pArgs->pMount;
-            request.calibrationMove = pArgs->calibrationMove;
-            request.direction       = pArgs->direction;
-            request.vectorEndpoint  = pArgs->vectorEndpoint;
+
+            wxSemaphore semaphore;
+            pArgs->pSemaphore = &semaphore;
 
             wxCommandEvent evt(REQUEST_MOUNT_MOVE_EVENT, GetId());
-            evt.SetClientData(&request);
+            evt.SetClientData(pArgs);
             wxQueueEvent(m_pFrame, evt.Clone());
 
             // wait for the request to complete
-            request.semaphore.Wait();
+            pArgs->pSemaphore->Wait();
 
-            bError = request.bError;
+            bError = pArgs->bError;
+            pArgs->pSemaphore = NULL;
         }
 
         Debug.Write(wxString::Format("Guide complete\n"));

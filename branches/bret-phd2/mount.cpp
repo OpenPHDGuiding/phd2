@@ -538,7 +538,7 @@ bool Mount::TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
     return bError;
 }
 
-bool Mount::Move(const Point& vectorEndpoint)
+bool Mount::Move(const Point& vectorEndpoint, bool normalMove)
 {
     bool bError = false;
 
@@ -554,30 +554,33 @@ bool Mount::Move(const Point& vectorEndpoint)
         pFrame->GraphLog->AppendData(vectorEndpoint.X, vectorEndpoint.Y,
                 raDistance, decDistance);
 
-        // Feed the raw distances to the guide algorithms
-
-        if (m_pRaGuideAlgorithm)
+        if (normalMove)
         {
-            raDistance = m_pRaGuideAlgorithm->result(raDistance);
-        }
+            // Feed the raw distances to the guide algorithms
 
-        if (m_pDecGuideAlgorithm)
-        {
-            decDistance = m_pDecGuideAlgorithm->result(decDistance);
+            if (m_pRaGuideAlgorithm)
+            {
+                raDistance = m_pRaGuideAlgorithm->result(raDistance);
+            }
+
+            if (m_pDecGuideAlgorithm)
+            {
+                decDistance = m_pDecGuideAlgorithm->result(decDistance);
+            }
         }
 
         // Figure out the guide directions based on the (possibly) updated distances
         GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
         GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
 
-        double actualRaAmount  = Move(raDirection,  fabs(raDistance/m_raRate));
+        double actualRaAmount  = Move(raDirection,  fabs(raDistance/m_raRate), normalMove);
 
         if (actualRaAmount > 0)
         {
             pFrame->SetStatusText(wxString::Format("%c dist=%.2f dur=%.0f", (raDirection==EAST)?'E':'W', raDistance, actualRaAmount), 1, (int)actualRaAmount);
         }
 
-        double actualDecAmount = Move(decDirection, fabs(decDistance/m_decRate));
+        double actualDecAmount = Move(decDirection, fabs(decDistance/m_decRate), normalMove);
 
         if (actualDecAmount > 0)
         {

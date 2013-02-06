@@ -437,7 +437,7 @@ bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
     return Guide(direction, m_calibrationDuration);
 }
 
-double Scope::Move(GUIDE_DIRECTION direction, double duration)
+double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
 {
     try
     {
@@ -462,19 +462,25 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration)
                     duration = 0.0;
                 }
 
-                // and max dec duration
-                if  (duration > m_maxDecDuration)
+                if (normalMove)
                 {
-                    duration = m_maxDecDuration;
+                    // and max dec duration
+                    if  (duration > m_maxDecDuration)
+                    {
+                        duration = m_maxDecDuration;
+                    }
                 }
                 break;
             case EAST:
             case WEST:
 
-                // enforce max RA duration
-                if (duration > m_maxRaDuration)
+                if (normalMove)
                 {
-                    duration = m_maxRaDuration;
+                    // enforce max RA duration
+                    if (duration > m_maxRaDuration)
+                    {
+                        duration = m_maxRaDuration;
+                    }
                 }
 
                 break;

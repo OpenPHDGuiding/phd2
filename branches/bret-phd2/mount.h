@@ -123,7 +123,7 @@ public:
     bool UpdateCalibrationState(const Point &currentPosition);
     bool FlipCalibration(void);
 
-    virtual bool Move(const Point& vectorEndpoint);
+    virtual bool Move(const Point& vectorEndpoint, bool normalMove=true);
 private:
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 protected:
@@ -140,7 +140,7 @@ public:
     // move the mount defined calibration distance
     virtual bool CalibrationMove(GUIDE_DIRECTION direction) = 0;
     // move the requested direction, return the actual amount of the move
-    virtual double Move(GUIDE_DIRECTION direction, double amount) = 0;
+    virtual double Move(GUIDE_DIRECTION direction, double amount, bool normalMove) = 0;
 
 private:
     virtual double CalibrationTime(int nCalibrationSteps) = 0;

@@ -206,7 +206,7 @@ bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
     return Step(direction, m_calibrationSteps);
 }
 
-double StepGuider::Move(GUIDE_DIRECTION direction, double amount)
+double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMove)
 {
     int steps = 0;
 
@@ -258,7 +258,7 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount)
                     throw ERROR_INFO("MountToCamera failed");
                 }
 
-                pFrame->ScheduleMove(pSecondaryMount, cameraOffset, false);
+                pFrame->ScheduleMoveSecondary(pSecondaryMount, cameraOffset, false);
             }
         }
     }
@@ -305,7 +305,6 @@ void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
 {
     MountConfigDialogPane::LoadValues();
     m_pCalibrationSteps->SetValue(m_pStepGuider->GetCalibrationSteps());
-
 }
 
 void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)

@@ -126,13 +126,13 @@ protected:
         double exposureDuration;
         wxRect subframe;
     };
-    bool HandleExpose(ARGS_EXPOSE *pArgs);
+    bool HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs);
     void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadExposeComplete(wxThreadEvent& event);
 
     /*************      Guide       **************************/
 public:
-    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& vectorEndpoint);
+    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& vectorEndpoint, bool normalMove);
     void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction);
 protected:
     struct ARGS_MOVE
@@ -141,8 +141,9 @@ protected:
         bool            calibrationMove;
         GUIDE_DIRECTION direction;
         Point           vectorEndpoint;
+        bool            normalMove;
     };
-    bool HandleMove(ARGS_MOVE *pArgs);
+    bool HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs);
     void SendWorkerThreadMoveComplete(Mount *pMount, bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadGuideComplete(wxThreadEvent& event);
 
@@ -163,8 +164,8 @@ protected:
     struct WORKER_REQUEST_ARGS
     {
         // there is no ARGS_TERMINATE terminate;
-        ARGS_EXPOSE expose;
-        ARGS_MOVE  move;
+        MyFrame::EXPOSE_REQUEST expose;
+        MyFrame::PHD_MOVE_REQUEST   move;
     };
 
     /*

@@ -173,13 +173,13 @@ public:
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
-    struct PHD_EXPOSE_REQUEST
+    struct EXPOSE_REQUEST
     {
         usImage          *pImage;
         double           exposureDuration;
         wxRect           subframe;
         bool             bError;
-        wxSemaphore      semaphore;
+        wxSemaphore      *pSemaphore;
     };
     void OnRequestExposure(wxCommandEvent &evt);
 
@@ -189,14 +189,16 @@ public:
         bool            calibrationMove;
         GUIDE_DIRECTION direction;
         Point            vectorEndpoint;
+        bool             normalMove;
         bool             bError;
-        wxSemaphore      semaphore;
+        wxSemaphore      *pSemaphore;
     };
     void OnRequestMountMove(wxCommandEvent &evt);
 
     void ScheduleExposure(double exposureDuration, wxRect subframe);
-    void ScheduleMove(Mount *pMount, const Point& vectorEndpoint, bool usePrimaryThread=true);
-    void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, bool usePrimaryThread=true);
+    void ScheduleMovePrimary(Mount *pMount, const Point& vectorEndpoint, bool normalMove=true);
+    void ScheduleMoveSecondary(Mount *pMount, const Point& vectorEndpoint, bool normalMove=true);
+    void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction);
 
     void StartCapturing(void);
     void StopCapturing(void);

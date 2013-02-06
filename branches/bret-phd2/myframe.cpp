@@ -688,7 +688,7 @@ void MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
 
 void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 {
-    PHD_EXPOSE_REQUEST *pRequest = (PHD_EXPOSE_REQUEST *)evt.GetClientData();
+    EXPOSE_REQUEST *pRequest = (EXPOSE_REQUEST *)evt.GetClientData();
     bool bError = pCamera->Capture(pRequest->exposureDuration, *pRequest->pImage, pRequest->subframe);
 
     if (!bError)
@@ -708,7 +708,7 @@ void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 
     pRequest->bError = bError;
 
-    pRequest->semaphore.Post();
+    pRequest->pSemaphore->Post();
 }
 
 void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
@@ -721,10 +721,10 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
     }
     else
     {
-        pRequest->bError = pRequest->pMount->Move(pRequest->vectorEndpoint);
+        pRequest->bError = pRequest->pMount->Move(pRequest->vectorEndpoint, pRequest->normalMove);
     }
 
-    pRequest->semaphore.Post();
+    pRequest->pSemaphore->Post();
 }
 
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
@@ -758,40 +758,34 @@ void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
 }
 
-void MyFrame::ScheduleMove(Mount *pMount, const Point& vectorEndpoint, bool usePrimaryThread)
+void MyFrame::ScheduleMovePrimary(Mount *pMount, const Point& vectorEndpoint, bool normalMove)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     pMount->UpdateRequestCount(true);
 
-    if (usePrimaryThread)
-    {
-        assert(m_pPrimaryWorkerThread);
-        m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint);
-    }
-    else
-    {
-        assert(m_pSecondaryWorkerThread);
-        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint);
-    }
+    assert(m_pPrimaryWorkerThread);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
 }
 
-void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, bool usePrimaryThread)
+void MyFrame::ScheduleMoveSecondary(Mount *pMount, const Point& vectorEndpoint, bool normalMove)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     pMount->UpdateRequestCount(true);
 
-    if (usePrimaryThread)
-    {
-        assert(m_pPrimaryWorkerThread);
-        m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);
-    }
-    else
-    {
-        assert(m_pSecondaryWorkerThread);
-        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);
-    }
+    assert(m_pSecondaryWorkerThread);
+    m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
+}
+
+void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction)
+{
+    wxCriticalSectionLocker lock(m_CSpWorkerThread);
+
+    pMount->UpdateRequestCount(true);
+
+    assert(m_pPrimaryWorkerThread);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);
 }
 
 void MyFrame::StartCapturing()
