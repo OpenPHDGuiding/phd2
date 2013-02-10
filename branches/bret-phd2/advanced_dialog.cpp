@@ -102,9 +102,24 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
     }
 
     // Build the right column of panes
-    //
-    m_pMountPane = pMount->GetConfigDialogPane(this);
-    pRightSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
+
+    if (pSecondaryMount)
+    {
+        // if there are two mounts, the mount config goes on the left and
+        // the secondary goes on the right
+        m_pMountPane = pMount->GetConfigDialogPane(this);
+        pLeftSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
+
+        m_pSecondaryMountPane = pSecondaryMount->GetConfigDialogPane(this);
+        pRightSizer->Add(m_pSecondaryMountPane, 0, wxALIGN_CENTER | wxGROW);
+    }
+    else
+    {
+        // otherwise the mount goes on the right
+        m_pMountPane = pMount->GetConfigDialogPane(this);
+        pRightSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
+    }
+
 
     SetSizerAndFit(pTopLevelSizer);
 }
@@ -114,6 +129,10 @@ void AdvancedDialog::LoadValues(void)
 {
     m_pFramePane->LoadValues();
     m_pMountPane->LoadValues();
+    if (m_pSecondaryMountPane)
+    {
+        m_pSecondaryMountPane->LoadValues();
+    }
     m_pGuiderPane->LoadValues();
 
     if (m_pCameraPane)
@@ -126,6 +145,10 @@ void AdvancedDialog::UnloadValues(void)
 {
     m_pFramePane->UnloadValues();
     m_pMountPane->UnloadValues();
+    if (m_pSecondaryMountPane)
+    {
+        m_pSecondaryMountPane->UnloadValues();
+    }
     m_pGuiderPane->UnloadValues();
 
     if (m_pCameraPane)
@@ -147,6 +170,5 @@ void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
     else if (pCamera == &Camera_VFW)
         Camera_VFW.ShowPropertyDialog();*/
     pCamera->ShowPropertyDialog();
-
 }
 

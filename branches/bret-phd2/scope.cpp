@@ -505,9 +505,9 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
     return duration;
 }
 
-double Scope::CalibrationTime(int nCalibrationSteps)
+double Scope::ComputeCalibrationAmount(double pixelsMoved)
 {
-    return nCalibrationSteps * m_calibrationDuration;
+    return pixelsMoved/(m_calibrationSteps * m_calibrationDuration);
 }
 
 ConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)

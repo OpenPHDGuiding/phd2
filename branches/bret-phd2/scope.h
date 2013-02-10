@@ -88,7 +88,7 @@ private:
     bool CalibrationMove(GUIDE_DIRECTION direction);
     double Move(GUIDE_DIRECTION direction, double duration, bool normalMove=true);
 
-    double CalibrationTime(int nCalibrationSteps);
+    double ComputeCalibrationAmount(double pixelsMoved);
     bool BacklashClearingFailed(void);
 
 // these MUST be supplied by a subclass

@@ -38,6 +38,7 @@
 class AdvancedDialog: public wxDialog {
     ConfigDialogPane *m_pFramePane;
     ConfigDialogPane *m_pMountPane;
+    ConfigDialogPane *m_pSecondaryMountPane;
     ConfigDialogPane *m_pCameraPane;
     ConfigDialogPane *m_pGuiderPane;
 public:

@@ -282,7 +282,7 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
     try
     {
         Mount *pThisMount = event.GetPayload<Mount *>();
-        pThisMount->UpdateRequestCount(false);
+        pThisMount->DecrementRequestCount();
 
         if (event.GetInt())
         {

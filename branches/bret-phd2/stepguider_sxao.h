@@ -44,8 +44,6 @@ class StepGuiderSxAO : public StepGuider
     static const int DefaultTimeout =  1*1000;
     static const int CenterTimeout  = 30*1000;
     SerialPort *m_pSerialPort;
-    int m_xOffset;
-    int m_yOffset;
 public:
     StepGuiderSxAO(void);
     virtual ~StepGuiderSxAO(void);
@@ -54,9 +52,7 @@ public:
     virtual bool Disconnect(void);
 
 private:
-    virtual bool Center(void);
     virtual bool Step(GUIDE_DIRECTION direction, int steps);
-    virtual int CurrentPosition(GUIDE_DIRECTION direction);
     virtual int MaxStepsFromCenter(GUIDE_DIRECTION direction);
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit);
 
@@ -66,9 +62,10 @@ private:
     bool SendShortCommand(unsigned char command, unsigned char& response);
     bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char& response);
 
-     bool FirmwareVersion(unsigned& version);
-     bool Unjam(void);
-     bool Center(unsigned char cmd);
+    bool FirmwareVersion(unsigned& version);
+    bool Unjam(void);
+    bool Center(void);
+    bool Center(unsigned char cmd);
 };
 
 #endif // if defined(STEPGUIDER_SXAO) && !defined(STEPGUIDER_SXAO_H_INCLUDED)

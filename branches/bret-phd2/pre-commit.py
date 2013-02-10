@@ -28,13 +28,12 @@ class Filedata:
                 if ord(line[-1]) == 10:
                     if len(line) > 1 and ord(line[-2]) == 13 and ord(line[-1]) == 10:
                         self.dosEndings += 1
-                        line = line[:-2]
+                        line = line[:-1]
                     else:
                         self.unixEndings += 1
-                        line = line[:-1]
                 elif ord(line[-1]) == 13:
                     self.macEndings += 1
-                    line = line[:-1]
+                line = line[:-1]
                 if line.find("\t") >= 0:
                     self.tabs += 1
                 if line.endswith(" "):
@@ -161,6 +160,9 @@ def checkCommit():
     stdoutData = runCmdOK("git diff --cached --name-only {0}".format(against))
     files = stdoutData.split()
     reject = checkFiles(files)
+
+    if len(files) == 0:
+        print("No cached git files found -- did you forget a directory name?")
 
 #    if not reject:
 #        reject = not runCmdBool("git diff-index --check --cached {0} --".format(against))

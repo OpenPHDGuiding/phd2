@@ -38,56 +38,70 @@
 #include "wx/textfile.h"
 #include "socket_server.h"
 
-static const int DefaultCalibrationAmount = 5;
+static const int DefaultCalibrationStepsPerIteration = 5;
 static const double DEC_BACKLASH_DISTANCE = 0.0;
 
 StepGuider::StepGuider(void) :
     Mount(DEC_BACKLASH_DISTANCE)
 {
-    int calibrationAmount = PhdConfig.GetInt("/stepguider/CalibrationAmount", DefaultCalibrationAmount);
-    SetCalibrationAmount(calibrationAmount);
+    m_xOffset = 0;
+    m_yOffset = 0;
+
+    int calibrationStepsPerIteration = PhdConfig.GetInt("/stepguider/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
+    SetCalibrationStepsPerIteration(calibrationStepsPerIteration);
 }
 
 StepGuider::~StepGuider(void)
 {
 }
 
-int StepGuider::GetCalibrationAmount(void)
+int StepGuider::GetCalibrationStepsPerIteration(void)
 {
-    return m_calibrationAmount;
+    return m_calibrationStepsPerIteration;
 }
 
 bool StepGuider::BacklashClearingFailed(void)
 {
-    bool bError = false;
-
     wxMessageBox(_T("Unable to clear StepGuider DEC backlash -- should not happen. Calibration failed."), _("Error"), wxOK | wxICON_ERROR);
 
     return true;
 }
 
-bool StepGuider::SetCalibrationAmount(int calibrationAmount)
+bool StepGuider::BeginCalibration(void)
+{
+    m_calibrationStepCount = 0;
+
+    return Mount::BeginCalibration();
+}
+
+int StepGuider::IntegerPercent(int percentage, int number)
+{
+    long numerator = 100L * percentage;
+    return numerator/percentage;
+}
+
+bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteration)
 {
     bool bError = false;
 
     try
     {
-        if (calibrationAmount <= 0.0)
+        if (calibrationStepsPerIteration <= 0.0)
         {
-            throw ERROR_INFO("invalid calibrationAmount");
+            throw ERROR_INFO("invalid calibrationStepsPerIteration");
         }
 
-        m_calibrationAmount = calibrationAmount;
+        m_calibrationStepsPerIteration = calibrationStepsPerIteration;
 
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_calibrationAmount = DefaultCalibrationAmount;
+        m_calibrationStepsPerIteration = DefaultCalibrationStepsPerIteration;
     }
 
-    PhdConfig.SetInt("/stepguider/CalibrationAmount", m_calibrationAmount);
+    PhdConfig.SetInt("/stepguider/CalibrationStepsPerIteration", m_calibrationStepsPerIteration);
 
     return bError;
 }
@@ -203,10 +217,68 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
     UpdateButtonsStatus();
 }
 
+bool StepGuider::Center(void)
+{
+    bool bError = false;
+
+    try
+    {
+        m_xOffset = 0;
+        m_yOffset = 0;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+int StepGuider::CurrentPosition(GUIDE_DIRECTION direction)
+{
+    int ret=0;
+
+    switch(direction)
+    {
+        case NORTH:
+            ret =  m_yOffset;
+            break;
+        case SOUTH:
+            ret = -m_yOffset;
+            break;
+        case EAST:
+            ret =  m_xOffset;
+            break;
+        case WEST:
+            ret = -m_xOffset;
+            break;
+    }
+
+    return ret;
+}
+
 bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
 {
-    Debug.AddLine(wxString::Format("stepguider CalibrationMove(%d)", direction));
-    return Step(direction, m_calibrationAmount);
+    bool bError = false;
+
+    try
+    {
+        Debug.AddLine(wxString::Format("stepguider CalibrationMove(%d)", direction));
+
+        if (Step(direction, m_calibrationStepsPerIteration))
+        {
+            throw ERROR_INFO("StepGuider::CalibrationMove(): failed");
+        }
+        m_calibrationStepCount += m_calibrationStepsPerIteration;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
 }
 
 double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMove)
@@ -239,13 +311,46 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
 
             if (steps > 0)
             {
+                int yDirection = 0;
+                int xDirection = 0;
+
+                switch (direction)
+                {
+                    case NORTH:
+                        yDirection = 1;
+                        break;
+                    case SOUTH:
+                        yDirection = -1;
+                        break;
+                    case EAST:
+                        xDirection = 1;
+                        break;
+                    case WEST:
+                        xDirection = -1;
+                        break;
+                    default:
+                        throw ERROR_INFO("StepGuider::Move(): invalid direction");
+                        break;
+                }
+
+                if (fabs(CurrentPosition(direction) + xDirection*steps  + yDirection*steps) > MaxStepsFromCenter(direction))
+                {
+                    throw ERROR_INFO("StepGuiderSxAO::step: too close to max");
+                }
+
+                Debug.AddLine(wxString::Format("stepping direction=%d steps=%d xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
+
                 if (Step(direction, steps))
                 {
                     throw ERROR_INFO("step failed");
                 }
+
+                m_xOffset += xDirection * steps;
+                m_yOffset += yDirection * steps;
+
             }
 
-            if (CurrentPosition(direction) > 0.75 * MaxStepsFromCenter(direction) &&
+            if (CurrentPosition(direction) > IntegerPercent(75, MaxStepsFromCenter(direction)) &&
                 pSecondaryMount &&
                 !pSecondaryMount->IsBusy())
             {
@@ -276,15 +381,22 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
 
 bool StepGuider::IsAtCalibrationLimit(GUIDE_DIRECTION direction)
 {
-    bool bReturn = (CurrentPosition(direction) >= 0.79 * MaxStepsFromCenter(direction));
-    Debug.AddLine(wxString::Format("isatlimit=%d current=%d, max=%d", bReturn, CurrentPosition(direction), MaxStepsFromCenter(direction)));
+    bool bReturn = (CurrentPosition(direction) + m_calibrationStepCount >= MaxStepsFromCenter(direction));
+    Debug.AddLine(wxString::Format("IsAtCalibrationLimit=%d current=%d, max=%d", bReturn, CurrentPosition(direction), MaxStepsFromCenter(direction)));
 
     return bReturn;
 }
 
-double StepGuider::CalibrationTime(int nCalibrationSteps)
+double StepGuider::ComputeCalibrationAmount(double pixelsMoved)
 {
-    return nCalibrationSteps * m_calibrationAmount;
+    double amount = 0.0;
+
+    if (m_calibrationStepCount)
+    {
+        amount = pixelsMoved/m_calibrationStepCount;
+    }
+
+    return amount;
 }
 
 ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
@@ -300,11 +412,11 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
     m_pStepGuider = pStepGuider;
 
     width = StringWidth(_T("00000"));
-    m_pCalibrationAmount = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    m_pCalibrationStepsPerIteration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_("Cal_Dur"));
 
-    DoAdd(_("Calibration Amount"), m_pCalibrationAmount,
-        wxString::Format(_T("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationAmount));
+    DoAdd(_("Calibration Amount"), m_pCalibrationStepsPerIteration,
+        wxString::Format(_T("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationStepsPerIteration));
 
 }
 
@@ -315,11 +427,11 @@ StepGuider::StepGuiderConfigDialogPane::~StepGuiderConfigDialogPane(void)
 void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
 {
     MountConfigDialogPane::LoadValues();
-    m_pCalibrationAmount->SetValue(m_pStepGuider->GetCalibrationAmount());
+    m_pCalibrationStepsPerIteration->SetValue(m_pStepGuider->GetCalibrationStepsPerIteration());
 }
 
 void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
 {
-    m_pStepGuider->SetCalibrationAmount(m_pCalibrationAmount->GetValue());
+    m_pStepGuider->SetCalibrationStepsPerIteration(m_pCalibrationStepsPerIteration->GetValue());
     MountConfigDialogPane::UnloadValues();
 }

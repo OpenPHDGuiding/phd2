@@ -137,30 +137,34 @@ protected:
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
-    // move the mount defined calibration distance
-    virtual bool CalibrationMove(GUIDE_DIRECTION direction) = 0;
     // move the requested direction, return the actual amount of the move
     virtual double Move(GUIDE_DIRECTION direction, double amount, bool normalMove) = 0;
+    virtual bool CalibrationMove(GUIDE_DIRECTION direction) = 0;
 
 private:
-    virtual double CalibrationTime(int nCalibrationSteps) = 0;
+    // move the mount defined calibration distance
+    virtual double ComputeCalibrationAmount(double pixelsMoved) = 0;
     virtual bool BacklashClearingFailed(void) = 0;
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation
+private:
+    virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
+protected:
+    virtual bool BeginCalibration(void);
 public:
+    virtual bool IsBusy(void);
+    virtual void IncrementRequestCount(void);
+    virtual void DecrementRequestCount(void);
+
     virtual bool HasNonGuiMove(void) {return false;}
 
     virtual const wxString &Name(void);
 
     virtual bool IsConnected(void);
+
     virtual bool IsCalibrated(void);
-
-    virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
-
-    virtual bool IsBusy(void);
-    virtual void UpdateRequestCount(bool increment);
 
     virtual bool Connect(void);
     virtual bool Disconnect(void);
@@ -168,6 +172,7 @@ public:
     virtual bool BeginCalibration(const Point &currentPosition);
     virtual void ClearCalibration(void);
     virtual void SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
+
     virtual void ClearHistory(void);
 };
 

@@ -38,8 +38,6 @@
 StepGuiderSxAO::StepGuiderSxAO(void)
 {
     m_pSerialPort = NULL;
-    m_xOffset = 0;
-    m_yOffset = 0;
 }
 
 StepGuiderSxAO::~StepGuiderSxAO(void)
@@ -325,8 +323,10 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
             throw ERROR_INFO("StepGuiderSxAO::Center: SetReceiveTimeout failed");
         }
 
-        m_xOffset = 0;
-        m_yOffset = 0;
+        if (StepGuider::Center())
+        {
+            throw ERROR_INFO("StepGuider::Center: failed");
+        }
     }
     catch (wxString Msg)
     {
@@ -388,38 +388,25 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
         unsigned char cmd = 'G';
         unsigned char parameter;
         unsigned char response;
-        int yDirection = 0;
-        int xDirection = 0;
         int currentPos = 0;
 
         switch (direction)
         {
             case NORTH:
                 parameter = 'N';
-                yDirection = 1;
                 break;
             case SOUTH:
                 parameter = 'S';
-                yDirection = -1;
                 break;
             case EAST:
                 parameter = 'T';
-                xDirection = 1;
                 break;
             case WEST:
                 parameter = 'W';
-                xDirection = -1;
                 break;
             default:
                 throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
                 break;
-        }
-
-        Debug.AddLine(wxString::Format("sxAO stepping direction=%d steps=%d xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
-
-        if (CurrentPosition(direction) + (xDirection + yDirection) * steps > 0.90 * MaxStepsFromCenter(direction))
-        {
-            throw ERROR_INFO("StepGuiderSxAO::step: to close to max");
         }
 
         if (SendLongCommand(cmd, parameter, steps, response))
@@ -437,8 +424,6 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
             throw ERROR_INFO("StepGuiderSxAO::step: response != cmd");
         }
 
-        m_xOffset += xDirection * steps;
-        m_yOffset += yDirection * steps;
     }
     catch (wxString Msg)
     {
@@ -448,48 +433,10 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
 
     return bError;
 }
-
-#if 0
-    bool bError = false;
-
-    try
-    {
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-#endif
 
 int StepGuiderSxAO::MaxStepsFromCenter(GUIDE_DIRECTION direction)
 {
     return MaxSteps;
-}
-
-int StepGuiderSxAO::CurrentPosition(GUIDE_DIRECTION direction)
-{
-    int ret=0;
-
-    switch(direction)
-    {
-        case NORTH:
-            ret =  m_yOffset;
-            break;
-        case SOUTH:
-            ret = -m_yOffset;
-            break;
-        case EAST:
-            ret =  m_xOffset;
-            break;
-        case WEST:
-            ret = -m_xOffset;
-            break;
-    }
-
-    return ret;
 }
 
 bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit)

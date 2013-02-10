@@ -38,14 +38,17 @@
 
 class StepGuider:public Mount
 {
-    int m_calibrationAmount;
+    int m_calibrationStepsPerIteration;
+    int m_calibrationStepCount;
+    int m_xOffset;
+    int m_yOffset;
 
     // Things related to the Advanced Config Dialog
 protected:
     class StepGuiderConfigDialogPane : public MountConfigDialogPane
     {
         StepGuider *m_pStepGuider;
-        wxSpinCtrl *m_pCalibrationAmount;
+        wxSpinCtrl *m_pCalibrationStepsPerIteration;
 
         public:
         StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
@@ -55,35 +58,44 @@ protected:
         virtual void UnloadValues(void);
     };
 
-    virtual int GetCalibrationAmount(void);
-    virtual bool SetCalibrationAmount(int calibrationAmount);
-
-    virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
+    virtual int GetCalibrationStepsPerIteration(void);
+    virtual bool SetCalibrationStepsPerIteration(int calibrationStepsPerIteration);
 
     friend class GraphLogWindow;
 
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
-    // functions with an implemenation in Scope that cannot be over-ridden
-    // by a subclass
 public:
     StepGuider(void);
     virtual ~StepGuider(void);
 
+    // functions with an implemenation in StepGuider that cannot be over-ridden
+    // by a subclass
 private:
     bool CalibrationMove(GUIDE_DIRECTION direction);
     double Move(GUIDE_DIRECTION direction, double amount, bool normalMove=true);
     double CalibrationTime(int nCalibrationSteps);
     bool BacklashClearingFailed(void);
+protected:
+    int IntegerPercent(int percentage, int number);
 
-// these MUST be supplied by a subclass
+    // pure virutal functions -- these MUST be overridden by a subclass
 private:
-    virtual bool Center(void)=0;
     virtual bool Step(GUIDE_DIRECTION direction, int steps)=0;
-    virtual int CurrentPosition(GUIDE_DIRECTION direction)=0;
     virtual int MaxStepsFromCenter(GUIDE_DIRECTION direction)=0;
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit) = 0;
+
+    // virtual functions -- these CAN be overridden by a subclass, which should
+    // consider whether they need to call the base class functions as part of
+    // their operation
+private:
+    virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
+    virtual int CurrentPosition(GUIDE_DIRECTION direction);
+    virtual bool BeginCalibration(void);
+    virtual double ComputeCalibrationAmount(double pixelsMoved);
+protected:
+    virtual bool Center(void);
 };
 
 #endif /* STEPGUIDER_H_INCLUDED */

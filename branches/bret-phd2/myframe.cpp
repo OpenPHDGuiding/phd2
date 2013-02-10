@@ -762,7 +762,7 @@ void MyFrame::ScheduleMovePrimary(Mount *pMount, const Point& vectorEndpoint, bo
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    pMount->UpdateRequestCount(true);
+    pMount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
     m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
@@ -772,7 +772,7 @@ void MyFrame::ScheduleMoveSecondary(Mount *pMount, const Point& vectorEndpoint, 
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    pMount->UpdateRequestCount(true);
+    pMount->IncrementRequestCount();
 
     assert(m_pSecondaryWorkerThread);
     m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
@@ -782,7 +782,7 @@ void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direc
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    pMount->UpdateRequestCount(true);
+    pMount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
     m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);

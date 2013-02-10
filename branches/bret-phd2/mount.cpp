@@ -196,25 +196,21 @@ bool Mount::IsAtCalibrationLimit(GUIDE_DIRECTION direction)
 }
 
 
-void Mount::UpdateRequestCount(bool increment)
+void Mount::IncrementRequestCount(void)
 {
-    if (increment)
-    {
-        m_requestCount++;
-    }
-    else
-    {
-        m_requestCount--;
-    }
-
+    m_requestCount++;
 
     // for the moment we never enqueue requests if the mount is busy, but we can
     // enqueue them two at a time.  There is no reason we can't, it's just that
     // right now we don't, and this might catch an error
     assert(m_requestCount <= 2);
 
-    // This assert is stronger -- this would indicate an error
-    assert(m_requestCount >= 0);
+}
+
+void Mount::DecrementRequestCount(void)
+{
+    assert(m_requestCount > 0);
+    m_requestCount--;
 }
 
 
@@ -284,6 +280,11 @@ bool Mount::Disconnect(void)
 {
     m_connected = false;
 
+    return false;
+}
+
+bool Mount::BeginCalibration(void)
+{
     return false;
 }
 
@@ -411,7 +412,13 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
                 if (m_calibrationDirection == WEST)
                 {
                     m_raAngle = m_calibrationStartingLocation.Angle(currentPosition);
-                    m_raRate = dist/CalibrationTime(m_calibrationSteps);
+                    m_raRate = ComputeCalibrationAmount(dist);
+
+                    if (m_raRate == 0.0)
+                    {
+                        throw ERROR_INFO("invalid raRate");
+                    }
+
                     m_calibrationDirection = EAST;
 
                     Debug.Write(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f\n", m_raAngle, m_raRate));
@@ -420,7 +427,13 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
                 {
                     assert(m_calibrationDirection == NORTH);
                     m_decAngle = m_calibrationStartingLocation.Angle(currentPosition);
-                    m_decRate = dist/CalibrationTime(m_calibrationSteps);
+                    m_decRate = ComputeCalibrationAmount(dist);
+
+                    if (m_decRate == 0.0)
+                    {
+                        throw ERROR_INFO("invalid decRate");
+                    }
+
                     m_calibrationDirection = SOUTH;
 
                     Debug.Write(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f\n", m_decAngle, m_decRate));
