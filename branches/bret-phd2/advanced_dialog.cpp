@@ -115,9 +115,13 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
     }
     else
     {
-        // otherwise the mount goes on the right
+        // otherwise there is no secondary mount
+        m_pSecondaryMountPane = NULL;
+
+        // and the mount goes on the right
         m_pMountPane = pMount->GetConfigDialogPane(this);
         pRightSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
+
     }
 
 
