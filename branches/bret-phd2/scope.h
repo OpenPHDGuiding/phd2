@@ -84,12 +84,16 @@ public:
     Scope(void);
     virtual ~Scope(void);
 
+    virtual bool BeginCalibration(const Point &currentPosition);
+    virtual bool UpdateCalibrationState(const Point &currentPosition);
+
 private:
     bool CalibrationMove(GUIDE_DIRECTION direction);
     double Move(GUIDE_DIRECTION direction, double duration, bool normalMove=true);
 
     double ComputeCalibrationAmount(double pixelsMoved);
     bool BacklashClearingFailed(void);
+    wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 
 // these MUST be supplied by a subclass
 private:

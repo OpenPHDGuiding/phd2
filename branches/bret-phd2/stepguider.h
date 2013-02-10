@@ -70,6 +70,9 @@ public:
     StepGuider(void);
     virtual ~StepGuider(void);
 
+    virtual bool BeginCalibration(const Point &currentPosition);
+    bool UpdateCalibrationState(const Point &currentPosition);
+
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:
@@ -77,6 +80,7 @@ private:
     double Move(GUIDE_DIRECTION direction, double amount, bool normalMove=true);
     double CalibrationTime(int nCalibrationSteps);
     bool BacklashClearingFailed(void);
+    wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 protected:
     int IntegerPercent(int percentage, int number);
 

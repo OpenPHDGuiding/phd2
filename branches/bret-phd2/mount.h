@@ -120,12 +120,10 @@ public:
     double RaAngle(void);
     double RaRate(void);
 
-    bool UpdateCalibrationState(const Point &currentPosition);
     bool FlipCalibration(void);
+    virtual bool UpdateCalibrationState(const Point &currentPosition) = 0;
 
     virtual bool Move(const Point& vectorEndpoint, bool normalMove=true);
-private:
-    wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 protected:
     bool TransformCameraCoordinatesToMountCoordinates(const Point& vectorEndpoint,
                                                       double& raDistance,
@@ -149,10 +147,6 @@ private:
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation
-private:
-    virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
-protected:
-    virtual bool BeginCalibrationForDirection(GUIDE_DIRECTION direction);
 public:
     virtual bool IsBusy(void);
     virtual void IncrementRequestCount(void);
@@ -169,8 +163,8 @@ public:
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 
-    virtual bool BeginCalibration(const Point &currentPosition);
     virtual void ClearCalibration(void);
+    virtual bool BeginCalibration(const Point &currentPosition) = 0;
     virtual void SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
 
     virtual void ClearHistory(void);

@@ -40,6 +40,9 @@
 
 static const int DefaultCalibrationStepsPerIteration = 4;
 static const double DEC_BACKLASH_DISTANCE = 0.0;
+static const int MAX_CALIBRATION_STEPS = 60;
+static const double MAX_CALIBRATION_DISTANCE = 25.0;
+
 
 StepGuider::StepGuider(void) :
     Mount(DEC_BACKLASH_DISTANCE)
@@ -71,7 +74,7 @@ bool StepGuider::BeginCalibrationForDirection(GUIDE_DIRECTION direction)
 {
     m_calibrationStepCount = 0;
 
-    return Mount::BeginCalibrationForDirection(direction);
+    return false;
 }
 
 int StepGuider::IntegerPercent(int percentage, int number)
@@ -257,6 +260,215 @@ int StepGuider::CurrentPosition(GUIDE_DIRECTION direction)
     }
 
     return ret;
+}
+
+bool StepGuider::BeginCalibration(const Point& currentPosition)
+{
+    bool bError = false;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("Not connected");
+        }
+
+        if (!currentPosition.IsValid())
+        {
+            throw ERROR_INFO("Must have a valid lock position");
+        }
+
+        ClearCalibration();
+        m_calibrationStartingLocation = currentPosition;
+        m_backlashSteps = MAX_CALIBRATION_STEPS;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+wxString StepGuider::GetCalibrationStatus(double dX, double dY, double dist, double dist_crit)
+{
+    char directionName = '?';
+    wxString sReturn;
+
+    switch (m_calibrationDirection)
+    {
+        case NORTH:
+            directionName = 'N';
+            break;
+        case SOUTH:
+            directionName = 'S';
+            break;
+        case EAST:
+            directionName = 'E';
+            break;
+        case WEST:
+            directionName = 'W';
+            break;
+    }
+
+    if (m_calibrationDirection != NONE)
+    {
+        if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
+        {
+            pFrame->SetStatusText(wxString::Format(_T("Clear Backlash: %2d"), MAX_CALIBRATION_STEPS - m_calibrationSteps));
+        }
+        else
+        {
+            pFrame->SetStatusText(wxString::Format(_T("%c calibration: %2d"), directionName, m_calibrationSteps));
+        }
+        sReturn = wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)"),dX,dY,dist,dist_crit);
+        Debug.Write(wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f (%4.1f)\n"),dX,dY,dist,dist_crit));
+    }
+
+    return sReturn;
+}
+
+bool StepGuider::UpdateCalibrationState(const Point &currentPosition)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_calibrationDirection == NONE)
+        {
+            m_calibrationDirection = WEST;
+            m_calibrationStartingLocation = currentPosition;
+            BeginCalibrationForDirection(WEST);
+        }
+
+        double dX = m_calibrationStartingLocation.dX(currentPosition);
+        double dY = m_calibrationStartingLocation.dY(currentPosition);
+        double dist = m_calibrationStartingLocation.Distance(currentPosition);
+        double dist_crit = wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
+
+        wxString statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
+
+        /*
+         * There are 3 sorts of motion that can happen during calibration. We can be:
+         *   1. computing calibration data when moving WEST or NORTH
+         *   2. returning to center after one of thoese moves (moving EAST or SOUTH)
+         *   3. clearing dec backlash (before the NORTH move)
+         *
+         */
+
+        if (m_calibrationDirection == NORTH && m_backlashSteps > 0)
+        {
+            // this is the "clearing dec backlash" case
+            if (dist >= m_decBacklashDistance)
+            {
+                assert(m_calibrationSteps == 0);
+                m_calibrationSteps = 1;
+                m_backlashSteps = 0;
+                m_calibrationStartingLocation = currentPosition;
+                statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
+            }
+            else if (--m_backlashSteps <= 0)
+            {
+                assert(m_backlashSteps == 0);
+                if (BacklashClearingFailed())
+                {
+                    wxMessageBox(_T("Unable to clear DEC backlash, and unable to cope -- aborting calibration"), _T("Alert"), wxOK | wxICON_ERROR);
+                    throw ERROR_INFO("Unable to clear DEC backlash and unable to cope");
+                }
+            }
+        }
+        else if (m_calibrationDirection == WEST || m_calibrationDirection == NORTH)
+        {
+            // this is the moving over in WEST or NORTH case
+            //
+            if (dist >= dist_crit || IsAtCalibrationLimit(m_calibrationDirection)) // have we moved far enough yet?
+            {
+                if (m_calibrationDirection == WEST)
+                {
+                    m_raAngle = m_calibrationStartingLocation.Angle(currentPosition);
+                    m_raRate = ComputeCalibrationAmount(dist);
+
+                    if (m_raRate == 0.0)
+                    {
+                        throw ERROR_INFO("invalid raRate");
+                    }
+
+                    m_calibrationDirection = EAST;
+                    BeginCalibrationForDirection(EAST);
+
+                    Debug.Write(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f\n", m_raAngle, m_raRate));
+                }
+                else
+                {
+                    assert(m_calibrationDirection == NORTH);
+                    m_decAngle = m_calibrationStartingLocation.Angle(currentPosition);
+                    m_decRate = ComputeCalibrationAmount(dist);
+
+                    if (m_decRate == 0.0)
+                    {
+                        throw ERROR_INFO("invalid decRate");
+                    }
+
+                    m_calibrationDirection = SOUTH;
+                    BeginCalibrationForDirection(SOUTH);
+
+                    Debug.Write(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f\n", m_decAngle, m_decRate));
+                }
+            }
+            else if (m_calibrationSteps++ >= MAX_CALIBRATION_STEPS)
+            {
+                wchar_t *pDirection = m_calibrationDirection == NORTH ? pDirection = _T("Dec"): _T("RA");
+
+                wxMessageBox(wxString::Format(_T("%s Calibration failed - Star did not move enough"), pDirection), _T("Alert"), wxOK | wxICON_ERROR);
+
+                throw ERROR_INFO("Calibrate failed");
+            }
+        }
+        else
+        {
+            // this is the moving back in EAST or SOUTH case
+
+            if(--m_calibrationSteps == 0)
+            {
+                if (m_calibrationDirection == EAST)
+                {
+                    m_calibrationDirection = NORTH;
+                    BeginCalibrationForDirection(NORTH);
+                    m_calibrationStartingLocation = currentPosition;
+                    dX = dY = dist = 0.0;
+                    statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
+                }
+                else
+                {
+                    assert(m_calibrationDirection == SOUTH);
+                    m_calibrationDirection = NONE;
+                }
+            }
+        }
+
+        if (m_calibrationDirection == NONE)
+        {
+            m_calibrated = true;
+            pFrame->SetStatusText(_T("calibration complete"),1);
+            pFrame->SetStatusText(_T("Cal"),5);
+        }
+        else
+        {
+            pFrame->SetStatusText(statusMessage, 1);
+            pFrame->ScheduleCalibrationMove(this, m_calibrationDirection);
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+
+        ClearCalibration();
+
+        bError = true;
+    }
+
+    return bError;
 }
 
 bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
