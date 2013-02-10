@@ -616,7 +616,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     }
 
     // during calibration, the mount is responsible for updating the status message
-    if (m_state != STATE_CALIBRATING_PRIMARY)
+    if (m_state != STATE_CALIBRATING_PRIMARY && m_state != STATE_CALIBRATING_SECONDARY)
     {
         pFrame->SetStatusText(statusMessage);
     }

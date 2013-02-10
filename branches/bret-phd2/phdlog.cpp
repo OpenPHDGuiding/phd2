@@ -83,7 +83,9 @@ bool LOG::Init(char *pName, bool bEnable=true)
     if (m_pPathName == NULL)
     {
         wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-        wxString strFileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_" + (pName?pName:"debug") + ".log";
+        wxDateTime now = wxDateTime::Now();
+
+        wxString strFileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_" + (pName?pName:"debug") + now.Format(_T("_%y-%m-%d")) +  ".log";
 
         m_pPathName = new wxString(strFileName);
     }

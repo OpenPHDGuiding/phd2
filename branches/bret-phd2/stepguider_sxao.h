@@ -42,7 +42,7 @@ class StepGuiderSxAO : public StepGuider
 {
     static const int MaxSteps       = 50;
     static const int DefaultTimeout =  1*1000;
-    static const int CenterTimeout  = 30*1000;
+    static const int CenterTimeout  = 45*1000;
     SerialPort *m_pSerialPort;
 public:
     StepGuiderSxAO(void);

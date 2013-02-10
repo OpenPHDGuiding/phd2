@@ -283,7 +283,7 @@ bool Mount::Disconnect(void)
     return false;
 }
 
-bool Mount::BeginCalibration(void)
+bool Mount::BeginCalibrationForDirection(GUIDE_DIRECTION direction)
 {
     return false;
 }
@@ -365,6 +365,7 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
         {
             m_calibrationDirection = WEST;
             m_calibrationStartingLocation = currentPosition;
+            BeginCalibrationForDirection(WEST);
         }
 
         double dX = m_calibrationStartingLocation.dX(currentPosition);
@@ -420,6 +421,7 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
                     }
 
                     m_calibrationDirection = EAST;
+                    BeginCalibrationForDirection(EAST);
 
                     Debug.Write(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f\n", m_raAngle, m_raRate));
                 }
@@ -435,6 +437,7 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
                     }
 
                     m_calibrationDirection = SOUTH;
+                    BeginCalibrationForDirection(SOUTH);
 
                     Debug.Write(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f\n", m_decAngle, m_decRate));
                 }
@@ -457,6 +460,7 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
                 if (m_calibrationDirection == EAST)
                 {
                     m_calibrationDirection = NORTH;
+                    BeginCalibrationForDirection(NORTH);
                     m_calibrationStartingLocation = currentPosition;
                     dX = dY = dist = 0.0;
                     statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
@@ -569,11 +573,13 @@ bool Mount::Move(const Point& vectorEndpoint, bool normalMove)
             throw ERROR_INFO("Unable to transform camera coordinates");
         }
 
-        pFrame->GraphLog->AppendData(vectorEndpoint.X, vectorEndpoint.Y,
-                raDistance, decDistance);
+        Debug.AddLine(wxString::Format("Moving (%.2lf, %.2lf) raw raDistance=%.2lf decDistance=%.2lf", vectorEndpoint.X, vectorEndpoint.Y, raDistance, decDistance));
+
 
         if (normalMove)
         {
+            pFrame->GraphLog->AppendData(vectorEndpoint.X, vectorEndpoint.Y, raDistance, decDistance);
+
             // Feed the raw distances to the guide algorithms
 
             if (m_pRaGuideAlgorithm)
@@ -587,6 +593,7 @@ bool Mount::Move(const Point& vectorEndpoint, bool normalMove)
             }
         }
 
+
         // Figure out the guide directions based on the (possibly) updated distances
         GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
         GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
@@ -595,14 +602,18 @@ bool Mount::Move(const Point& vectorEndpoint, bool normalMove)
 
         if (actualRaAmount > 0)
         {
-            pFrame->SetStatusText(wxString::Format("%c dist=%.2f dur=%.0f", (raDirection==EAST)?'E':'W', raDistance, actualRaAmount), 1, (int)actualRaAmount);
+            wxString msg = wxString::Format("%c dist=%.2f dur=%.0f", (raDirection==EAST)?'E':'W', raDistance, actualRaAmount);
+            pFrame->SetStatusText(msg, 1, (int)actualRaAmount);
+            Debug.AddLine(msg);
         }
 
         double actualDecAmount = Move(decDirection, fabs(decDistance/m_decRate), normalMove);
 
         if (actualDecAmount > 0)
         {
-            pFrame->SetStatusText(wxString::Format("%c dist=%.2f dur=%.0f" , (decDirection==SOUTH)?'S':'N', decDistance, actualDecAmount), 1, (int)actualDecAmount);
+            wxString msg = wxString::Format("%c dist=%.2f dur=%.0f" , (decDirection==SOUTH)?'S':'N', decDistance, actualDecAmount);
+            pFrame->SetStatusText(msg, 1, (int)actualDecAmount);
+            Debug.AddLine(msg);
         }
     }
     catch (wxString Msg)
@@ -690,8 +701,15 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, Mount *pM
     DoAdd(_T("RA Algorithm"), m_pRaGuideAlgorithm,
           _T("Which Guide Algorithm to use for Right Ascention"));
 
-    m_pRaGuideAlgorithmConfigDialogPane  = m_pMount->m_pRaGuideAlgorithm->GetConfigDialogPane(pParent);
-    DoAdd(m_pRaGuideAlgorithmConfigDialogPane);
+    if (!m_pMount->m_pRaGuideAlgorithm)
+    {
+        m_pRaGuideAlgorithmConfigDialogPane  = NULL;
+    }
+    else
+    {
+        m_pRaGuideAlgorithmConfigDialogPane  = m_pMount->m_pRaGuideAlgorithm->GetConfigDialogPane(pParent);
+        DoAdd(m_pRaGuideAlgorithmConfigDialogPane);
+    }
 
     wxString decAlgorithms[] = {
         _T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
@@ -703,8 +721,15 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, Mount *pM
     DoAdd(_T("Declination Algorithm"), m_pDecGuideAlgorithm,
           _T("Which Guide Algorithm to use for Declination"));
 
-    m_pDecGuideAlgorithmConfigDialogPane  = pMount->m_pDecGuideAlgorithm->GetConfigDialogPane(pParent);
-    DoAdd(m_pDecGuideAlgorithmConfigDialogPane);
+    if (!pMount->m_pDecGuideAlgorithm)
+    {
+        m_pDecGuideAlgorithmConfigDialogPane  = NULL;
+    }
+    else
+    {
+        m_pDecGuideAlgorithmConfigDialogPane  = pMount->m_pDecGuideAlgorithm->GetConfigDialogPane(pParent);
+        DoAdd(m_pDecGuideAlgorithmConfigDialogPane);
+    }
 }
 
 Mount::MountConfigDialogPane::~MountConfigDialogPane(void)
@@ -719,8 +744,15 @@ void Mount::MountConfigDialogPane::LoadValues(void)
     m_pDecGuideAlgorithm->SetSelection(m_pMount->GetDecGuideAlgorithm());
     m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
 
-    m_pRaGuideAlgorithmConfigDialogPane->LoadValues();
-    m_pDecGuideAlgorithmConfigDialogPane->LoadValues();
+    if (m_pRaGuideAlgorithmConfigDialogPane)
+    {
+        m_pRaGuideAlgorithmConfigDialogPane->LoadValues();
+    }
+
+    if (m_pDecGuideAlgorithmConfigDialogPane)
+    {
+        m_pDecGuideAlgorithmConfigDialogPane->LoadValues();
+    }
 }
 
 void Mount::MountConfigDialogPane::UnloadValues(void)
@@ -735,8 +767,15 @@ void Mount::MountConfigDialogPane::UnloadValues(void)
     // note these two have to be before the SetXxxAlgorithm calls, because if we
     // changed the algorithm, the current one will get freed, and if we make
     // these two calls after that, bad things happen
-    m_pRaGuideAlgorithmConfigDialogPane->UnloadValues();
-    m_pDecGuideAlgorithmConfigDialogPane->UnloadValues();
+    if (m_pRaGuideAlgorithmConfigDialogPane)
+    {
+        m_pRaGuideAlgorithmConfigDialogPane->UnloadValues();
+    }
+
+    if (m_pDecGuideAlgorithmConfigDialogPane)
+    {
+        m_pDecGuideAlgorithmConfigDialogPane->UnloadValues();
+    }
 
     m_pMount->SetRaGuideAlgorithm(m_pRaGuideAlgorithm->GetSelection());
     m_pMount->SetDecGuideAlgorithm(m_pDecGuideAlgorithm->GetSelection());

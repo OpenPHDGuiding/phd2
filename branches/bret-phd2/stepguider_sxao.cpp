@@ -61,12 +61,19 @@ bool StepGuiderSxAO::Connect(void)
 
         wxArrayString serialPorts = m_pSerialPort->GetSerialPortList();
 
-        int resp = wxGetSingleChoiceIndex(_("Select Serial Port"), _("Serial Port"), serialPorts);
+        wxString lastSerialPort = PhdConfig.GetString("/stepguider/sxao/serialport", "");
+        int resp = serialPorts.Index(lastSerialPort);
+
+        resp = wxGetSingleChoiceIndex(_("Select serial port"),_("Serial Port"), serialPorts,
+                NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
+                resp);
 
         if (m_pSerialPort->Connect(serialPorts[resp], 9600, 8, 1, SerialPort::ParityNone, false, false))
         {
             throw ERROR_INFO("StepGuiderSxAO::Connect: serial port connect failed");
         }
+
+        PhdConfig.SetString("/stepguider/sxao/serialport", serialPorts[resp]);
 
         if (m_pSerialPort->SetReceiveTimeout(DefaultTimeout))
         {
@@ -105,7 +112,7 @@ bool StepGuiderSxAO::Disconnect(void)
 
     try
     {
-        if (m_pSerialPort->Disconnect())
+        if (m_pSerialPort && m_pSerialPort->Disconnect())
         {
             throw ERROR_INFO("StepGuiderSxAO::serial port disconnect failed");
         }

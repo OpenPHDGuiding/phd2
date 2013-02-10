@@ -92,7 +92,7 @@ private:
 private:
     virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
-    virtual bool BeginCalibration(void);
+    virtual bool BeginCalibrationForDirection(GUIDE_DIRECTION direction);
     virtual double ComputeCalibrationAmount(double pixelsMoved);
 protected:
     virtual bool Center(void);

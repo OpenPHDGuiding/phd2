@@ -38,9 +38,7 @@
 #include "wx/textfile.h"
 #include "socket_server.h"
 
-static const int DefaultCalibrationStepsPerIteration = 5;
-static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_NONE;
-static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_NONE;
+static const int DefaultCalibrationStepsPerIteration = 4;
 static const double DEC_BACKLASH_DISTANCE = 0.0;
 
 StepGuider::StepGuider(void) :
@@ -51,13 +49,6 @@ StepGuider::StepGuider(void) :
 
     int calibrationStepsPerIteration = PhdConfig.GetInt("/stepguider/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
     SetCalibrationStepsPerIteration(calibrationStepsPerIteration);
-
-    int decGuideMode = PhdConfig.GetInt("/scope/DecGuideMode", DefaultDecGuideMode);
-    SetDecGuideMode(decGuideMode);
-
-    int raGuideAlgorithm = PhdConfig.GetInt("/scope/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
-    SetRaGuideAlgorithm(raGuideAlgorithm);
-
 }
 
 StepGuider::~StepGuider(void)
@@ -76,17 +67,18 @@ bool StepGuider::BacklashClearingFailed(void)
     return true;
 }
 
-bool StepGuider::BeginCalibration(void)
+bool StepGuider::BeginCalibrationForDirection(GUIDE_DIRECTION direction)
 {
     m_calibrationStepCount = 0;
 
-    return Mount::BeginCalibration();
+    return Mount::BeginCalibrationForDirection(direction);
 }
 
 int StepGuider::IntegerPercent(int percentage, int number)
 {
-    long numerator = 100L * percentage;
-    return numerator/percentage;
+    long numerator =  (long)percentage*(long)number;
+    long value =  numerator/100L;
+    return (int)value;
 }
 
 bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteration)
@@ -131,6 +123,7 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             throw ERROR_INFO("Connecting Step Guider when CaptureActive");
         }
 
+
         if (pSecondaryMount)
         {
             /*
@@ -153,13 +146,11 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 
         assert(pMount);
 
-#if 0
-        if (!pMount->IsConnected())
+        if (!mount_menu->IsChecked(AO_NONE) && !pMount->IsConnected())
         {
             wxMessageBox(_T("Please connect a scope before connecting an AO"), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("attempt to connect AO with no scope connected");
         }
-#endif
 
         if (mount_menu->IsChecked(AO_NONE))
         {
@@ -174,6 +165,8 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 
         if (pStepGuider)
         {
+            assert(pMount && pMount->IsConnected());
+
             if (pStepGuider->Connect())
             {
                 SetStatusText("AO connect failed", 1);
@@ -220,7 +213,6 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
         pStepGuider = NULL;
     }
 
-    assert(pMount && pMount->IsConnected());
     assert(!pSecondaryMount || pSecondaryMount->IsConnected());
 
     UpdateButtonsStatus();
@@ -275,7 +267,7 @@ bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
     {
         Debug.AddLine(wxString::Format("stepguider CalibrationMove(%d)", direction));
 
-        if (Step(direction, m_calibrationStepsPerIteration))
+        if (Move(direction, m_calibrationStepsPerIteration, false))
         {
             throw ERROR_INFO("StepGuider::CalibrationMove(): failed");
         }
@@ -296,6 +288,8 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
 
     try
     {
+        Debug.AddLine(wxString::Format("Move(%d, %lf, %d)", direction, amount, normalMove));
+
         // Compute the required guide steps
         if (m_guidingEnabled)
         {
@@ -322,32 +316,37 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
             {
                 int yDirection = 0;
                 int xDirection = 0;
+                int offset = 0;
 
                 switch (direction)
                 {
                     case NORTH:
                         yDirection = 1;
+                        offset = m_yOffset;
                         break;
                     case SOUTH:
                         yDirection = -1;
+                        offset = m_yOffset;
                         break;
                     case EAST:
                         xDirection = 1;
+                        offset = m_xOffset;
                         break;
                     case WEST:
                         xDirection = -1;
+                        offset = m_xOffset;
                         break;
                     default:
                         throw ERROR_INFO("StepGuider::Move(): invalid direction");
                         break;
                 }
 
-                if (fabs(CurrentPosition(direction) + xDirection*steps  + yDirection*steps) > MaxStepsFromCenter(direction))
+                Debug.AddLine(wxString::Format("stepping direction=%d offset=%d steps=%.2lf xDirection=%d yDirection=%d", direction, offset, steps, xDirection, yDirection));
+
+                if (offset + xDirection*steps  + yDirection*steps > MaxStepsFromCenter(direction))
                 {
                     throw ERROR_INFO("StepGuiderSxAO::step: too close to max");
                 }
-
-                Debug.AddLine(wxString::Format("stepping direction=%d steps=%d xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
 
                 if (Step(direction, steps))
                 {
@@ -357,25 +356,8 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
                 m_xOffset += xDirection * steps;
                 m_yOffset += yDirection * steps;
 
-            }
+                Debug.AddLine(wxString::Format("stepped xOffset=%d yOffset=%d", m_xOffset, m_yOffset));
 
-            if (CurrentPosition(direction) > IntegerPercent(75, MaxStepsFromCenter(direction)) &&
-                pSecondaryMount &&
-                !pSecondaryMount->IsBusy())
-            {
-                // we have to transform our notion of where we are (which is in "AO Coordinates")
-                // into "Camera Coordinates" so we can move the other mount to make the move
-
-                double raDistance = CurrentPosition(NORTH)*DecRate();
-                double decDistance = CurrentPosition(EAST)*RaRate();
-                Point cameraOffset;
-
-                if (TransformMoutCoordinatesToCameraCoordinates(raDistance, decDistance, cameraOffset))
-                {
-                    throw ERROR_INFO("MountToCamera failed");
-                }
-
-                pFrame->ScheduleMoveSecondary(pSecondaryMount, cameraOffset, false);
             }
         }
     }
@@ -385,12 +367,33 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
         steps = -1;
     }
 
+    if (normalMove && CurrentPosition(direction) > IntegerPercent(75, MaxStepsFromCenter(direction)) &&
+        pSecondaryMount &&
+        !pSecondaryMount->IsBusy())
+    {
+        // we have to transform our notion of where we are (which is in "AO Coordinates")
+        // into "Camera Coordinates" so we can move the other mount
+
+        double raDistance = CurrentPosition(NORTH)*DecRate();
+        double decDistance = CurrentPosition(EAST)*RaRate();
+        Point cameraOffset;
+
+        if (TransformMoutCoordinatesToCameraCoordinates(raDistance, decDistance, cameraOffset))
+        {
+            throw ERROR_INFO("MountToCamera failed");
+        }
+
+        Debug.AddLine(wxString::Format("moving secondary mount raDistance=%.2lf decDistance=%.2lf", raDistance, decDistance));
+
+        pFrame->ScheduleMoveSecondary(pSecondaryMount, cameraOffset, false);
+    }
+
     return (double)steps;
 }
 
 bool StepGuider::IsAtCalibrationLimit(GUIDE_DIRECTION direction)
 {
-    bool bReturn = (CurrentPosition(direction) + m_calibrationStepCount >= MaxStepsFromCenter(direction));
+    bool bReturn = (CurrentPosition(direction) + m_calibrationStepsPerIteration >= MaxStepsFromCenter(direction));
     Debug.AddLine(wxString::Format("IsAtCalibrationLimit=%d current=%d, max=%d", bReturn, CurrentPosition(direction), MaxStepsFromCenter(direction)));
 
     return bReturn;
@@ -404,6 +407,8 @@ double StepGuider::ComputeCalibrationAmount(double pixelsMoved)
     {
         amount = pixelsMoved/m_calibrationStepCount;
     }
+
+    Debug.AddLine(wxString::Format("ComputeCalibrationAmount(%.2lf) returns %.2lf stepcount=%d", pixelsMoved, amount, m_calibrationStepCount));
 
     return amount;
 }

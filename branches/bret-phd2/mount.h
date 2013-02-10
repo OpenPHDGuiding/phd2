@@ -152,7 +152,7 @@ private:
 private:
     virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
 protected:
-    virtual bool BeginCalibration(void);
+    virtual bool BeginCalibrationForDirection(GUIDE_DIRECTION direction);
 public:
     virtual bool IsBusy(void);
     virtual void IncrementRequestCount(void);
