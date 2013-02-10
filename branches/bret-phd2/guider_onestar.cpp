@@ -400,7 +400,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
             dc.SetBrush(* wxTRANSPARENT_BRUSH);
             dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
         }
-        else if (state == STATE_CALIBRATING) {  // in the cal process
+        else if (state == STATE_CALIBRATING_PRIMARY) {  // in the cal process
             dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
             dc.SetBrush(* wxTRANSPARENT_BRUSH);
             dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);

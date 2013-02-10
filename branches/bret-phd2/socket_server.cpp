@@ -282,7 +282,8 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                                 //rval = EXPOSED_STATE_LOOPING_SELECTED;
                                 rval = EXPOSED_STATE_SELECTED;
                                 break;
-                            case STATE_CALIBRATING:
+                            case STATE_CALIBRATING_PRIMARY:
+                            case STATE_CALIBRATING_SECONDARY:
                                 rval = EXPOSED_STATE_CALIBRATING;
                                 break;
                             case STATE_CALIBRATED:

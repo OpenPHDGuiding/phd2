@@ -39,6 +39,8 @@
 #include "socket_server.h"
 
 static const int DefaultCalibrationStepsPerIteration = 5;
+static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_NONE;
+static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_NONE;
 static const double DEC_BACKLASH_DISTANCE = 0.0;
 
 StepGuider::StepGuider(void) :
@@ -49,6 +51,13 @@ StepGuider::StepGuider(void) :
 
     int calibrationStepsPerIteration = PhdConfig.GetInt("/stepguider/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
     SetCalibrationStepsPerIteration(calibrationStepsPerIteration);
+
+    int decGuideMode = PhdConfig.GetInt("/scope/DecGuideMode", DefaultDecGuideMode);
+    SetDecGuideMode(decGuideMode);
+
+    int raGuideAlgorithm = PhdConfig.GetInt("/scope/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
+    SetRaGuideAlgorithm(raGuideAlgorithm);
+
 }
 
 StepGuider::~StepGuider(void)

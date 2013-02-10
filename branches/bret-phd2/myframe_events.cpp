@@ -241,7 +241,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         pNewFrame = NULL; // the guider owns in now
 
 #ifdef BRET_DODO
-        if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING)
+        if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING_PRIMARY)
         {
             GUIDE_DIRECTION dir;
 

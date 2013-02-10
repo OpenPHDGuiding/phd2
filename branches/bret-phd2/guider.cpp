@@ -291,7 +291,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
 
             switch(state)
             {
-                case STATE_CALIBRATING:
+                case STATE_CALIBRATING_PRIMARY:
+                case STATE_CALIBRATING_SECONDARY:
                     dc.SetPen(wxPen(wxColor(255,255,0),1,wxDOT));
                     break;
                 case STATE_CALIBRATED:
@@ -424,10 +425,15 @@ void Guider::SetState(GUIDER_STATE newState)
                 case STATE_SELECTING:
                 case STATE_SELECTED:
                     break;
-                case STATE_CALIBRATING:
+                case STATE_CALIBRATING_PRIMARY:
                     // because we have done some moving here, we need to just
                     // start over...
                     newState = STATE_UNINITIALIZED;
+                    break;
+                case STATE_CALIBRATING_SECONDARY:
+                    // because we have done some moving here, we need to just
+                    // start over...
+                    newState = STATE_CALIBRATING_PRIMARY;
                     break;
                 case STATE_CALIBRATED:
                 case STATE_GUIDING:
@@ -451,17 +457,27 @@ void Guider::SetState(GUIDER_STATE newState)
             case STATE_SELECTED:
                 pMount->ClearHistory();
                 break;
-            case STATE_CALIBRATING:
-                if (pMount->IsCalibrated())
-                {
-                    newState = STATE_CALIBRATED;
-                }
-                else if (pMount->BeginCalibration(CurrentPosition()))
+            case STATE_CALIBRATING_PRIMARY:
+                if (!pMount->IsCalibrated() &&
+                     pMount->BeginCalibration(CurrentPosition()))
                 {
                     newState = STATE_UNINITIALIZED;
                     Debug.Write(ERROR_INFO("pMount->BeginCalibration failed"));
                 }
-                // else we are now in STATE_CALIBRATING
+                // else we move to STATE_CALIBRATING_PRIMARY as requested
+                break;
+            case STATE_CALIBRATING_SECONDARY:
+                if (!pSecondaryMount)
+                {
+                    newState = STATE_CALIBRATED;
+                }
+                else if (!pSecondaryMount->IsCalibrated() &&
+                          pSecondaryMount->BeginCalibration(CurrentPosition()))
+                {
+                    newState = STATE_UNINITIALIZED;
+                    Debug.Write(ERROR_INFO("pSecondaryMount->BeginCalibration failed"));
+                }
+                // else we move to STATE_CALIBRATING_SECONDARY as requested
                 break;
             case STATE_GUIDING:
                 //TODO: Deal with manual lock position
@@ -492,7 +508,7 @@ void Guider::StartGuiding(void)
     // we set the state to calibrating.  The state machine will
     // automatically move from calibrating->calibrated->guiding
     // when it can
-    SetState(STATE_CALIBRATING);
+    SetState(STATE_CALIBRATING_PRIMARY);
 }
 
 void Guider::Reset(void)
@@ -564,13 +580,23 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                      SetState(STATE_UNINITIALIZED);
                 }
                 break;
-            case STATE_CALIBRATING:
-
+            case STATE_CALIBRATING_PRIMARY:
                 if (pMount->IsCalibrated())
+                {
+                    SetState(STATE_CALIBRATING_SECONDARY);
+                }
+                else if (pMount->UpdateCalibrationState(CurrentPosition()))
+                {
+                    SetState(STATE_UNINITIALIZED);
+                    throw ERROR_INFO("Calibration failed");
+                }
+                break;
+            case STATE_CALIBRATING_SECONDARY:
+                if (!pSecondaryMount || pSecondaryMount->IsCalibrated())
                 {
                     SetState(STATE_CALIBRATED);
                 }
-                else if (pMount->UpdateCalibrationState(CurrentPosition()))
+                else if (pSecondaryMount->UpdateCalibrationState(CurrentPosition()))
                 {
                     SetState(STATE_UNINITIALIZED);
                     throw ERROR_INFO("Calibration failed");
@@ -590,7 +616,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     }
 
     // during calibration, the mount is responsible for updating the status message
-    if (m_state != STATE_CALIBRATING)
+    if (m_state != STATE_CALIBRATING_PRIMARY)
     {
         pFrame->SetStatusText(statusMessage);
     }
