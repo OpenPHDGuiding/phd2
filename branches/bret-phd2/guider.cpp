@@ -363,11 +363,18 @@ void Guider::UpdateLockPosition(void)
 bool Guider::SetLockPosition(const Point& position, bool bExact)
 {
     bool bError = false;
-    double x=position.X;
-    double y=position.Y;
 
     try
     {
+        if (!position.IsValid())
+        {
+            throw ERROR_INFO("Point is not valid");
+        }
+
+        double x=position.X;
+        double y=position.Y;
+        Debug.AddLine(wxString::Format("setting lock position to (%lf, %lf)", x, y));
+
         if ((x <= 0) || (x >= m_pCurrentImage->Size.x))
         {
             throw ERROR_INFO("invalid y value");
@@ -546,6 +553,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 if (CurrentPosition().IsValid())
                 {
                     m_lockPosition = CurrentPosition();
+                    Debug.AddLine("CurrentPosition() valid, moving to STATE_SELECTED");
                     SetState(STATE_SELECTED);
                 }
                 break;

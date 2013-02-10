@@ -50,7 +50,8 @@ bool Star::WasFound(FindResult result)
 {
     bool bReturn = false;
 
-    if (result == STAR_OK || result == STAR_SATURATED)
+    if (IsValid() &&
+        (result == STAR_OK || result == STAR_SATURATED))
     {
         bReturn = true;
     }
@@ -84,6 +85,8 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
 
     try
     {
+        Debug.AddLine(wxString::Format("Star::Find(0x%p, %d, %d, %d", pImg, searchRegion, base_x, base_y));
+
         if (base_x < 0 || base_y < 0)
         {
             throw ERROR_INFO("cooridnates are invalid");
@@ -223,19 +226,14 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
         SNR = 0.0;
     }
 
+    Debug.AddLine(wxString::Format("Star::Find returns %d, X=%lf, Y=%lf", bReturn, X, Y));
+
     return bReturn;
 }
 
 bool Star::Find(usImage *pImg, int searchRegion)
 {
-    bool bReturn = false;
-
-    if (IsValid())
-    {
-        bReturn = Find(pImg, searchRegion, X, Y);
-    }
-
-    return bReturn;
+    return Find(pImg, searchRegion, X, Y);
 }
 
 bool Star::AutoFind(usImage *pImg)
@@ -330,6 +328,8 @@ bool Star::AutoFind(usImage *pImg)
         bFound = true;
         SetXY(xpos, ypos);
     }
+
+    Debug.AddLine(wxString::Format("Autofind returns %d, xpos=%d, ypos=%d", bFound, xpos, ypos));
 
     return bFound;
 }

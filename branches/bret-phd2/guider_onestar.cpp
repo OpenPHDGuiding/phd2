@@ -143,8 +143,15 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const Point& position)
 
     try
     {
+        if (!position.IsValid())
+        {
+            throw ERROR_INFO("position is invalid");
+        }
+
         double x = position.X;
         double y = position.Y;
+
+        Debug.AddLine(wxString::Format("SetCurrentPostion(%d,%d)", x, y ));
 
         if ((x <= 0) || (x >= pImage->Size.x))
         {
@@ -184,11 +191,14 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
             throw ERROR_INFO("Uable to AutoFind");
         }
 
-        m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y);
-
-        if (!SetLockPosition(m_star , true))
+        if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y))
         {
-            throw ERROR_INFO("Uable to set Lock Position");
+            throw ERROR_INFO("Uable to find");
+        }
+
+        if (SetLockPosition(m_star , true))
+        {
+            throw ERROR_INFO("Unable to set Lock Position");
         }
     }
     catch (wxString Msg)
@@ -241,15 +251,14 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
         if (state == STATE_SELECTING && m_autoSelectTries++ == 0)
         {
             Debug.Write("UpdateGuideState(): Autoselecting\n");
+
             if (AutoSelect(pImage))
-            {
-                pFrame->SetStatusText(wxString::Format(_T("Auto Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
-            }
-            else
             {
                 statusMessage = _T("No Star selected");
                 throw THROW_INFO("No Star Autoselected");
             }
+
+            pFrame->SetStatusText(wxString::Format(_T("Auto Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
         }
 
         Star newStar(m_star);

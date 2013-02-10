@@ -190,6 +190,11 @@ bool Mount::IsBusy(void)
     return m_requestCount > 0;
 }
 
+bool Mount::IsAtCalibrationLimit(GUIDE_DIRECTION direction)
+{
+    return false;
+}
+
 
 void Mount::UpdateRequestCount(bool increment)
 {
@@ -401,7 +406,7 @@ bool Mount::UpdateCalibrationState(const Point &currentPosition)
         {
             // this is the moving over in WEST or NORTH case
             //
-            if (dist >= dist_crit) // have we moved far enough yet?
+            if (dist >= dist_crit || IsAtCalibrationLimit(m_calibrationDirection)) // have we moved far enough yet?
             {
                 if (m_calibrationDirection == WEST)
                 {
@@ -631,9 +636,15 @@ bool Mount::FlipCalibration(void)
 
 void Mount::ClearHistory(void)
 {
+    if (m_pRaGuideAlgorithm)
+    {
+        m_pRaGuideAlgorithm->reset();
+    }
 
-    m_pRaGuideAlgorithm->reset();
-    m_pDecGuideAlgorithm->reset();
+    if (m_pDecGuideAlgorithm)
+    {
+        m_pDecGuideAlgorithm->reset();
+    }
 }
 
 ConfigDialogPane *Mount::GetConfigDialogPane(wxWindow *pParent)

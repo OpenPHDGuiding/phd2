@@ -388,30 +388,38 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
         unsigned char cmd = 'G';
         unsigned char parameter;
         unsigned char response;
-        int xDirection = 0;
         int yDirection = 0;
+        int xDirection = 0;
+        int currentPos = 0;
 
         switch (direction)
         {
             case NORTH:
                 parameter = 'N';
-                xDirection = 1;
+                yDirection = 1;
                 break;
             case SOUTH:
                 parameter = 'S';
-                xDirection = -1;
+                yDirection = -1;
                 break;
             case EAST:
                 parameter = 'T';
-                yDirection = 1;
+                xDirection = 1;
                 break;
             case WEST:
                 parameter = 'W';
-                yDirection = -1;
+                xDirection = -1;
                 break;
             default:
                 throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
                 break;
+        }
+
+        Debug.AddLine(wxString::Format("sxAO stepping direction=%d steps=%d xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
+
+        if (CurrentPosition(direction) + (xDirection + yDirection) * steps > 0.90 * MaxStepsFromCenter(direction))
+        {
+            throw ERROR_INFO("StepGuiderSxAO::step: to close to max");
         }
 
         if (SendLongCommand(cmd, parameter, steps, response))

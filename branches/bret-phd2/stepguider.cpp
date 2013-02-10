@@ -38,23 +38,23 @@
 #include "wx/textfile.h"
 #include "socket_server.h"
 
-static const int DefaultCalibrationSteps = 10;
+static const int DefaultCalibrationAmount = 5;
 static const double DEC_BACKLASH_DISTANCE = 0.0;
 
 StepGuider::StepGuider(void) :
     Mount(DEC_BACKLASH_DISTANCE)
 {
-    int calibrationSteps = PhdConfig.GetInt("/stepguider/CalibrationSteps", DefaultCalibrationSteps);
-    SetCalibrationSteps(calibrationSteps);
+    int calibrationAmount = PhdConfig.GetInt("/stepguider/CalibrationAmount", DefaultCalibrationAmount);
+    SetCalibrationAmount(calibrationAmount);
 }
 
 StepGuider::~StepGuider(void)
 {
 }
 
-int StepGuider::GetCalibrationSteps(void)
+int StepGuider::GetCalibrationAmount(void)
 {
-    return m_calibrationSteps;
+    return m_calibrationAmount;
 }
 
 bool StepGuider::BacklashClearingFailed(void)
@@ -66,28 +66,28 @@ bool StepGuider::BacklashClearingFailed(void)
     return true;
 }
 
-bool StepGuider::SetCalibrationSteps(int calibrationSteps)
+bool StepGuider::SetCalibrationAmount(int calibrationAmount)
 {
     bool bError = false;
 
     try
     {
-        if (calibrationSteps <= 0.0)
+        if (calibrationAmount <= 0.0)
         {
-            throw ERROR_INFO("invalid calibrationSteps");
+            throw ERROR_INFO("invalid calibrationAmount");
         }
 
-        m_calibrationSteps = calibrationSteps;
+        m_calibrationAmount = calibrationAmount;
 
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_calibrationSteps = DefaultCalibrationSteps;
+        m_calibrationAmount = DefaultCalibrationAmount;
     }
 
-    PhdConfig.SetInt("/stepguider/CalibrationSteps", m_calibrationSteps);
+    PhdConfig.SetInt("/stepguider/CalibrationAmount", m_calibrationAmount);
 
     return bError;
 }
@@ -130,11 +130,13 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 
         assert(pMount);
 
+#if 0
         if (!pMount->IsConnected())
         {
             wxMessageBox(_T("Please connect a scope before connecting an AO"), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("attempt to connect AO with no scope connected");
         }
+#endif
 
         if (mount_menu->IsChecked(AO_NONE))
         {
@@ -203,7 +205,8 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 
 bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
 {
-    return Step(direction, m_calibrationSteps);
+    Debug.AddLine(wxString::Format("stepguider CalibrationMove(%d)", direction));
+    return Step(direction, m_calibrationAmount);
 }
 
 double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMove)
@@ -271,9 +274,17 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
     return (double)steps;
 }
 
+bool StepGuider::IsAtCalibrationLimit(GUIDE_DIRECTION direction)
+{
+    bool bReturn = (CurrentPosition(direction) >= 0.79 * MaxStepsFromCenter(direction));
+    Debug.AddLine(wxString::Format("isatlimit=%d current=%d, max=%d", bReturn, CurrentPosition(direction), MaxStepsFromCenter(direction)));
+
+    return bReturn;
+}
+
 double StepGuider::CalibrationTime(int nCalibrationSteps)
 {
-    return nCalibrationSteps * m_calibrationSteps;
+    return nCalibrationSteps * m_calibrationAmount;
 }
 
 ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
@@ -289,11 +300,11 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
     m_pStepGuider = pStepGuider;
 
     width = StringWidth(_T("00000"));
-    m_pCalibrationSteps = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    m_pCalibrationAmount = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_("Cal_Dur"));
 
-    DoAdd(_("Calibration steps"), m_pCalibrationSteps,
-        wxString::Format(_T("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationSteps));
+    DoAdd(_("Calibration Amount"), m_pCalibrationAmount,
+        wxString::Format(_T("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationAmount));
 
 }
 
@@ -304,11 +315,11 @@ StepGuider::StepGuiderConfigDialogPane::~StepGuiderConfigDialogPane(void)
 void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
 {
     MountConfigDialogPane::LoadValues();
-    m_pCalibrationSteps->SetValue(m_pStepGuider->GetCalibrationSteps());
+    m_pCalibrationAmount->SetValue(m_pStepGuider->GetCalibrationAmount());
 }
 
 void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
 {
-    m_pStepGuider->SetCalibrationSteps(m_pCalibrationSteps->GetValue());
+    m_pStepGuider->SetCalibrationAmount(m_pCalibrationAmount->GetValue());
     MountConfigDialogPane::UnloadValues();
 }

@@ -38,14 +38,14 @@
 
 class StepGuider:public Mount
 {
-    int m_pCalibrationSteps;
+    int m_calibrationAmount;
 
     // Things related to the Advanced Config Dialog
 protected:
     class StepGuiderConfigDialogPane : public MountConfigDialogPane
     {
         StepGuider *m_pStepGuider;
-        wxSpinCtrl *m_pCalibrationSteps;
+        wxSpinCtrl *m_pCalibrationAmount;
 
         public:
         StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
@@ -55,8 +55,10 @@ protected:
         virtual void UnloadValues(void);
     };
 
-    virtual int GetCalibrationSteps(void);
-    virtual bool SetCalibrationSteps(int calibrationSteps);
+    virtual int GetCalibrationAmount(void);
+    virtual bool SetCalibrationAmount(int calibrationAmount);
+
+    virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
 
     friend class GraphLogWindow;
 

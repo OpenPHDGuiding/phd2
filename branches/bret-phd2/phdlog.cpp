@@ -96,9 +96,14 @@ bool LOG::Init(char *pName, bool bEnable=true)
         m_bEnabled = false;
     }
 
-    if (bEnable && m_pPathName)
+    if (m_pPathName)
     {
-        m_bEnabled = wxFFile::Open(*m_pPathName, "a");
+        if (!wxFFile::Open(*m_pPathName, "a"))
+        {
+            wxMessageBox(wxString::Format("unable to open file %s", m_pPathName));
+        }
+
+        m_bEnabled = bEnable;
     }
 
     return m_bEnabled;
@@ -149,6 +154,7 @@ wxString LOG::Write(const wxString& str)
         m_lastWriteTime = now;
 
         wxFFile::Write(now.Format("%H:%M:%S.%l") + wxString::Format(" %d.%.6d ", milliSeconds/1000, milliSeconds%1000) + str);
+        wxFFile::Flush();
     }
 
     return str;

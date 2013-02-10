@@ -157,6 +157,8 @@ public:
     virtual bool IsConnected(void);
     virtual bool IsCalibrated(void);
 
+    virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
+
     virtual bool IsBusy(void);
     virtual void UpdateRequestCount(bool increment);
 
