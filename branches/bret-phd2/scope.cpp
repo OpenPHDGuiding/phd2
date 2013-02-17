@@ -51,7 +51,6 @@ static const int MAX_CALIBRATION_STEPS = 60;
 static const double MAX_CALIBRATION_DISTANCE = 25.0;
 
 Scope::Scope(void)
-    : Mount(DEC_BACKLASH_DISTANCE)
 {
     m_calibrationSteps = 0;
 
@@ -434,9 +433,15 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     UpdateButtonsStatus();
 }
 
+bool Scope::GuidingCeases(void)
+{
+    // for scopes, we have nothing special to do when guiding stops
+    return false;
+}
+
 bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
 {
-    return Guide(direction, m_calibrationDuration);
+    return Move(direction, m_calibrationDuration) >= 0.0;
 }
 
 double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
@@ -456,7 +461,7 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
             case NORTH:
             case SOUTH:
 
-                // Enforce dec guiding mode
+                // Enforce dec guiding mode for all moves
                 if ((m_decGuideMode == DEC_NONE) ||
                     (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
                     (direction == NORTH && m_decGuideMode == DEC_SOUTH))
@@ -466,7 +471,7 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
 
                 if (normalMove)
                 {
-                    // and max dec duration
+                    // and max dec duration for normal moves
                     if  (duration > m_maxDecDuration)
                     {
                         duration = m_maxDecDuration;
@@ -478,7 +483,7 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
 
                 if (normalMove)
                 {
-                    // enforce max RA duration
+                    // enforce max RA duration for normal moves
                     if (duration > m_maxRaDuration)
                     {
                         duration = m_maxRaDuration;
@@ -507,9 +512,12 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
     return duration;
 }
 
-double Scope::ComputeCalibrationAmount(double pixelsMoved)
+void Scope::ClearCalibration(void)
 {
-    return pixelsMoved/(m_calibrationSteps * m_calibrationDuration);
+    m_calibrationSteps = 0;
+    m_calibrationDirection = NONE;
+
+    Mount::ClearCalibration();
 }
 
 bool Scope::BeginCalibration(const Point& currentPosition)
@@ -636,7 +644,7 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
                 if (m_calibrationDirection == WEST)
                 {
                     m_raAngle = m_calibrationStartingLocation.Angle(currentPosition);
-                    m_raRate = ComputeCalibrationAmount(dist);
+                    m_raRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
                     if (m_raRate == 0.0)
                     {
@@ -651,7 +659,7 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
                 {
                     assert(m_calibrationDirection == NORTH);
                     m_decAngle = m_calibrationStartingLocation.Angle(currentPosition);
-                    m_decRate = ComputeCalibrationAmount(dist);
+                    m_raRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
                     if (m_decRate == 0.0)
                     {

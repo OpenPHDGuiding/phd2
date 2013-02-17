@@ -46,10 +46,13 @@ enum GUIDE_DIRECTION {
 
 class Mount :  public wxMessageBoxProxy
 {
-protected:
+private:
     bool m_connected;
-    bool m_calibrated;
     int m_requestCount;
+
+protected:
+    bool m_guidingEnabled;
+    bool m_calibrated;
 
     double m_raAngle;
     double m_raRate;
@@ -57,14 +60,6 @@ protected:
     double m_decAngle;
     double m_decRate;
 
-    int m_calibrationSteps;
-
-    int m_backlashSteps;
-    double m_decBacklashDistance;
-
-    Point m_calibrationStartingLocation;
-    GUIDE_DIRECTION m_calibrationDirection;
-    bool m_guidingEnabled;
 
     GuideAlgorithm *m_pRaGuideAlgorithm;
     GuideAlgorithm *m_pDecGuideAlgorithm;
@@ -112,8 +107,8 @@ private:
     bool SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm **ppAlgorithm);
 
 public:
-    Mount(double decBacklashDistance);
-    virtual ~Mount();
+    Mount(void);
+    virtual ~Mount(void);
 
     double DecAngle(void);
     double DecRate(void);
@@ -121,7 +116,6 @@ public:
     double RaRate(void);
 
     bool FlipCalibration(void);
-    virtual bool UpdateCalibrationState(const Point &currentPosition) = 0;
 
     virtual bool Move(const Point& vectorEndpoint, bool normalMove=true);
 protected:
@@ -139,9 +133,14 @@ public:
     virtual double Move(GUIDE_DIRECTION direction, double amount, bool normalMove) = 0;
     virtual bool CalibrationMove(GUIDE_DIRECTION direction) = 0;
 
+    // Calibration related routines
+    virtual bool BeginCalibration(const Point &currentPosition) = 0;
+    virtual bool UpdateCalibrationState(const Point &currentPosition) = 0;
+
+    virtual bool GuidingCeases(void)=0;
+
 private:
     // move the mount defined calibration distance
-    virtual double ComputeCalibrationAmount(double pixelsMoved) = 0;
     virtual bool BacklashClearingFailed(void) = 0;
 
     // virtual functions -- these CAN be overridden by a subclass, which should
@@ -159,12 +158,11 @@ public:
     virtual bool IsConnected(void);
 
     virtual bool IsCalibrated(void);
+    virtual void ClearCalibration(void);
 
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 
-    virtual void ClearCalibration(void);
-    virtual bool BeginCalibration(const Point &currentPosition) = 0;
     virtual void SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
 
     virtual void ClearHistory(void);

@@ -232,7 +232,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     mount_menu->FindItem(AO_NONE)->Check(true); // set this as the default
 #ifdef STEPGUIDER_SXAO
     mount_menu->AppendRadioItem(AO_SXAO, _("sxAO"), _T("Starlight Xpress AO"));
-    mount_menu->FindItem(AO_SXAO)->Enable(false);
+    //mount_menu->FindItem(AO_SXAO)->Enable(false);
 #endif
 
     // try to get the last value from the config store

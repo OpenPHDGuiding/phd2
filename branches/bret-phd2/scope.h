@@ -43,6 +43,13 @@ class Scope:public Mount
     int m_maxRaDuration;
     DEC_GUIDE_MODE m_decGuideMode;
 
+    // Calibration variables
+    int m_calibrationSteps;
+    int m_backlashSteps;
+    double m_decBacklashDistance;
+    GUIDE_DIRECTION m_calibrationDirection;
+    Point m_calibrationStartingLocation;
+
     // Things related to the Advanced Config Dialog
 protected:
     class ScopeConfigDialogPane : public MountConfigDialogPane
@@ -86,12 +93,13 @@ public:
 
     virtual bool BeginCalibration(const Point &currentPosition);
     virtual bool UpdateCalibrationState(const Point &currentPosition);
+    virtual bool GuidingCeases(void);
 
 private:
-    bool CalibrationMove(GUIDE_DIRECTION direction);
     double Move(GUIDE_DIRECTION direction, double duration, bool normalMove=true);
+    bool CalibrationMove(GUIDE_DIRECTION direction);
 
-    double ComputeCalibrationAmount(double pixelsMoved);
+    void ClearCalibration(void);
     bool BacklashClearingFailed(void);
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 

@@ -186,12 +186,12 @@ public:
     struct PHD_MOVE_REQUEST
     {
         Mount           *pMount;
-        bool            calibrationMove;
         GUIDE_DIRECTION direction;
-        Point            vectorEndpoint;
-        bool             normalMove;
-        bool             bError;
-        wxSemaphore      *pSemaphore;
+        bool            calibrationMove;
+        Point           vectorEndpoint;
+        bool            normalMove;
+        bool            bError;
+        wxSemaphore     *pSemaphore;
     };
     void OnRequestMountMove(wxCommandEvent &evt);
 

@@ -440,6 +440,11 @@ void Guider::SetState(GUIDER_STATE newState)
                     newState = STATE_SELECTED;
                     break;
             }
+
+            if (pMount->GuidingCeases())
+            {
+                throw ERROR_INFO("GuidingStops() failed");
+            }
         }
 
         if (newState > m_state + 1)

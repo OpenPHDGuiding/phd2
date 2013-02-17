@@ -35,13 +35,8 @@
 
 #include "phd.h"
 
-static const int MAX_CALIBRATION_STEPS = 60;
-static const double MAX_CALIBRATION_DISTANCE = 25.0;
-
-Mount::Mount(double decBacklashDistance)
+Mount::Mount(void)
 {
-    m_decBacklashDistance = decBacklashDistance;
-
     m_connected = false;
     m_requestCount = 0;
 
@@ -174,18 +169,6 @@ bool Mount::IsConnected()
     return bReturn;
 }
 
-bool Mount::IsCalibrated()
-{
-    bool bReturn = false;
-
-    if (IsConnected())
-    {
-        bReturn = m_calibrated;
-    }
-
-    return bReturn;
-}
-
 bool Mount::IsBusy(void)
 {
     return m_requestCount > 0;
@@ -208,12 +191,21 @@ void Mount::DecrementRequestCount(void)
     m_requestCount--;
 }
 
+bool Mount::IsCalibrated()
+{
+    bool bReturn = false;
+
+    if (IsConnected())
+    {
+        bReturn = m_calibrated;
+    }
+
+    return bReturn;
+}
 
 void Mount::ClearCalibration(void)
 {
     m_calibrated = false;
-    m_calibrationSteps = 0;
-    m_calibrationDirection = NONE;
 }
 
 double Mount::DecAngle()
@@ -381,7 +373,7 @@ bool Mount::Move(const Point& vectorEndpoint, bool normalMove)
 
         double actualRaAmount  = Move(raDirection,  fabs(raDistance/m_raRate), normalMove);
 
-        if (actualRaAmount > 0)
+        if (actualRaAmount >= 0.5)
         {
             wxString msg = wxString::Format("%c dist=%.2f dur=%.0f", (raDirection==EAST)?'E':'W', raDistance, actualRaAmount);
             pFrame->SetStatusText(msg, 1, (int)actualRaAmount);
@@ -390,7 +382,7 @@ bool Mount::Move(const Point& vectorEndpoint, bool normalMove)
 
         double actualDecAmount = Move(decDirection, fabs(decDistance/m_decRate), normalMove);
 
-        if (actualDecAmount > 0)
+        if (actualDecAmount >= 0.5)
         {
             wxString msg = wxString::Format("%c dist=%.2f dur=%.0f" , (decDirection==SOUTH)?'S':'N', decDistance, actualDecAmount);
             pFrame->SetStatusText(msg, 1, (int)actualDecAmount);

@@ -38,10 +38,23 @@
 
 class StepGuider:public Mount
 {
-    int m_calibrationStepsPerIteration;
-    int m_calibrationStepCount;
     int m_xOffset;
     int m_yOffset;
+
+    // Calibration variables
+    int m_calibrationStepsPerIteration;
+    int m_calibrationIterations;
+    Point m_calibrationStartingLocation;
+
+    enum CALIBRATION_STATE
+    {
+        CALIBRATION_STATE_CLEARED,
+        CALIBRATION_STATE_GOTO_SE_CORNER,
+        CALIBRATION_STATE_GO_WEST,
+        CALIBRATION_STATE_GO_NORTH,
+        CALIBRATION_STATE_RECENTER,
+        CALIBRATION_STATE_CENTERED,
+    } m_calibrationState;
 
     // Things related to the Advanced Config Dialog
 protected:
@@ -72,32 +85,33 @@ public:
 
     virtual bool BeginCalibration(const Point &currentPosition);
     bool UpdateCalibrationState(const Point &currentPosition);
+    virtual void ClearCalibration(void);
+
+    virtual bool GuidingCeases(void);
 
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:
-    bool CalibrationMove(GUIDE_DIRECTION direction);
     double Move(GUIDE_DIRECTION direction, double amount, bool normalMove=true);
+    bool CalibrationMove(GUIDE_DIRECTION direction);
+
     double CalibrationTime(int nCalibrationSteps);
     bool BacklashClearingFailed(void);
-    wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 protected:
     int IntegerPercent(int percentage, int number);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 private:
     virtual bool Step(GUIDE_DIRECTION direction, int steps)=0;
-    virtual int MaxStepsFromCenter(GUIDE_DIRECTION direction)=0;
+    virtual int MaxPosition(GUIDE_DIRECTION direction)=0;
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit) = 0;
+    virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation
 private:
-    virtual bool IsAtCalibrationLimit(GUIDE_DIRECTION direction);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
-    virtual bool BeginCalibrationForDirection(GUIDE_DIRECTION direction);
-    virtual double ComputeCalibrationAmount(double pixelsMoved);
 protected:
     virtual bool Center(void);
 };
