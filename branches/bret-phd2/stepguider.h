@@ -42,9 +42,10 @@ class StepGuider:public Mount
     int m_yOffset;
 
     // Calibration variables
-    int m_calibrationStepsPerIteration;
-    int m_calibrationIterations;
+    int   m_calibrationStepsPerIteration;
+    int   m_calibrationIterations;
     Point m_calibrationStartingLocation;
+
 
     enum CALIBRATION_STATE
     {

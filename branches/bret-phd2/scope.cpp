@@ -731,7 +731,7 @@ ConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)
 }
 
 Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope)
-    : MountConfigDialogPane(pParent, pScope)
+    : MountConfigDialogPane(pParent, "Scope", pScope)
 {
     int width;
 

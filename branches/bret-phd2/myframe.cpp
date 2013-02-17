@@ -589,6 +589,7 @@ void MyFrame::SetStatusText(const wxString& text, int number, int msToDisplay)
 {
     if (wxThread::IsMain() && number != 1)
     {
+        Debug.AddLine(wxString::Format("Status Line %d: %s", number, text));
         wxFrame::SetStatusText(text, number);
     }
     else

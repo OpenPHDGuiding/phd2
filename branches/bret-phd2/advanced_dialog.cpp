@@ -115,8 +115,12 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
     }
     else
     {
-        // otherwise there is no secondary mount
+        // otherwise there is no secondary mount, so we put up an empty AO box
         m_pSecondaryMountPane = NULL;
+        wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("AO Settings")), wxVERTICAL);
+        wxStaticText *pText = new wxStaticText(this, wxID_ANY, _("No AO Connected"),wxPoint(-1,-1),wxSize(-1,-1));
+        pBox->Add(pText);
+        pLeftSizer->Add(pBox, 0, wxALIGN_CENTER | wxGROW);
 
         // and the mount goes on the right
         m_pMountPane = pMount->GetConfigDialogPane(this);

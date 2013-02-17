@@ -426,9 +426,6 @@ bool StepGuider::UpdateCalibrationState(const Point &currentPosition)
             double dist = m_calibrationStartingLocation.Distance(currentPosition);
             wxString status1 = wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f"), dX, dY, dist);
 
-            Debug.AddLine(status0);
-            Debug.AddLine(status1);
-
             pFrame->SetStatusText(status0, 0);
             pFrame->SetStatusText(status1, 1);
         }
@@ -602,7 +599,7 @@ ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
 }
 
 StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider)
-    : MountConfigDialogPane(pParent, pStepGuider)
+    : MountConfigDialogPane(pParent, "AO", pStepGuider)
 {
     int width;
 

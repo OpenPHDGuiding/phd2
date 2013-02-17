@@ -79,7 +79,7 @@ protected:
         ConfigDialogPane *m_pDecGuideAlgorithmConfigDialogPane;
 
         public:
-        MountConfigDialogPane(wxWindow *pParent, Mount *pMount);
+        MountConfigDialogPane(wxWindow *pParent, wxString title, Mount *pMount);
         ~MountConfigDialogPane(void);
 
         virtual void LoadValues(void);
@@ -98,7 +98,7 @@ protected:
     friend class GraphLogWindow;
 
 public:
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
 
     // functions with an implemenation in Guider that cannot be over-ridden
     // by a subclass

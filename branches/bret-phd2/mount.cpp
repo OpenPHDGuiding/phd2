@@ -444,14 +444,16 @@ void Mount::ClearHistory(void)
     }
 }
 
+#if 0
 ConfigDialogPane *Mount::GetConfigDialogPane(wxWindow *pParent)
 {
     return new MountConfigDialogPane(pParent, this);
 }
+#endif
 
 
-Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, Mount *pMount)
-    : ConfigDialogPane(_T("Mount Settings"), pParent)
+Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, wxString title, Mount *pMount)
+    : ConfigDialogPane(title + " Settings", pParent)
 {
     int width;
     m_pMount = pMount;
