@@ -226,8 +226,8 @@ wxRect GuiderOneStar::GetBoundingBox(void)
 
     if (GetState() == STATE_GUIDING)
     {
-        box = wxRect(LockPosition().X - 2*m_searchRegion, LockPosition().Y - 2*m_searchRegion,
-                4*m_searchRegion, 4*m_searchRegion);
+        box = wxRect(LockPosition().X - 3*m_searchRegion, LockPosition().Y - 3*m_searchRegion,
+                6*m_searchRegion, 6*m_searchRegion);
         box.Intersect(wxRect(0, 0, pCamera->FullSize.x, pCamera->FullSize.y));
     }
 
@@ -242,7 +242,7 @@ void GuiderOneStar::InvalidateCurrentPosition(void)
 
 bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessage)
 {
-    bool bError = true;
+    bool bError = false;
 
     try
     {
@@ -265,8 +265,8 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
 
         if (!newStar.Find(pImage, m_searchRegion))
         {
-            Debug.Write("UpdateGuideState():newStar not found\n");
             statusMessage = _T("No Star found");
+            throw ERROR_INFO("UpdateGuideState():newStar not found");
         }
 
         if (m_massChangeThreshold < 0.99 &&
@@ -304,7 +304,6 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
         // update the star position, mass, etc.
         m_star = newStar;
         m_badMassCount = 0;
-        bError = false;
 
         pFrame->Profile->UpdateData(pImage, m_star.X, m_star.Y);
         statusMessage.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
@@ -312,6 +311,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
+        bError = true;
     }
 
     return bError;
