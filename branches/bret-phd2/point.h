@@ -40,6 +40,7 @@ class Point
 {
     bool m_valid;
 public:
+
     double X;
     double Y;
 
@@ -149,11 +150,36 @@ public:
         return Point(this->X + addend.X, this->Y + addend.Y);
     }
 
+    Point& operator+=(const Point& addend)
+    {
+        assert(m_valid);
+        this->X += addend.X;
+        this->Y += addend.Y;
+
+        return *this;
+    }
+
     Point operator-(const Point& subtrahend)
     {
         assert(m_valid);
         return Point(this->X - subtrahend.X, this->Y - subtrahend.Y);
     }
+
+    Point operator/(const double divisor)
+    {
+        assert(m_valid);
+        return Point(this->X/divisor, this->Y/divisor);
+    }
+
+    Point& operator/=(const double divisor)
+    {
+        assert(m_valid);
+        this->X /= divisor;
+        this->Y /= divisor;
+
+        return *this;
+    }
+
 };
 
 
