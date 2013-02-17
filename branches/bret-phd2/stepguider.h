@@ -38,7 +38,7 @@
 
 class StepGuider:public Mount
 {
-    static const int CALIBRATION_AVERAGE_NSAMPLES=10;
+    static const int CALIBRATION_AVERAGE_NSAMPLES=3;
     int m_xOffset;
     int m_yOffset;
 
@@ -95,6 +95,7 @@ public:
     virtual void ClearCalibration(void);
 
     virtual bool GuidingCeases(void);
+    virtual bool Move(const Point& vectorEndpoint, bool normalMove=true);
 
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
