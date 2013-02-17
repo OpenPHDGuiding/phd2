@@ -49,6 +49,7 @@ MyFrame *pFrame = NULL;
 GuideCamera *pCamera = NULL;
 
 DebugLog Debug;
+GuidingLog GuideLog;
 
 wxTextFile *LogFile;
 bool Log_Data = false;
@@ -64,7 +65,7 @@ IMPLEMENT_APP(PhdApp)
 
 // ------------------------  Phd App stuff -----------------------------
 bool PhdApp::OnInit() {
-
+    GuideLog.EnableLogging();
 #ifndef DEBUG
     #if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
     wxDisableAsserts();

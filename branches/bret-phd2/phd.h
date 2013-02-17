@@ -121,7 +121,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define THROW_INFO(s) (Debug.AddLine(wxString(THROW_INFO_BASE("Throw from", __FILE__, __LINE__) "->" s)))
 #define ERROR_INFO(s) (Debug.AddLine(wxString(THROW_INFO_BASE("Error thrown from", __FILE__, __LINE__) "->" s)))
 
-#include "debuglog.h"
 #include "config.h"
 #include "configdialog.h"
 #include "usImage.h"
@@ -141,6 +140,8 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "advanced_dialog.h"
 #include "myframe.h"
 #include "worker_thread.h"
+#include "debuglog.h"
+#include "guidinglog.h"
 
 extern Config PhdConfig;
 
@@ -150,6 +151,7 @@ extern Mount *pSecondaryMount;
 extern GuideCamera *pCamera;
 
 extern DebugLog Debug;
+extern GuidingLog GuideLog;
 
 #if 1
 // these seem like logging related globals

@@ -452,7 +452,9 @@ void Guider::SetState(GUIDER_STATE newState)
             throw ERROR_INFO("Illegal state transition");
         }
 
-        switch(newState)
+        GUIDER_STATE requestedState = newState;
+
+        switch(requestedState)
         {
             case STATE_UNINITIALIZED:
                 InvalidateLockPosition();
@@ -463,34 +465,56 @@ void Guider::SetState(GUIDER_STATE newState)
                 pMount->ClearHistory();
                 break;
             case STATE_CALIBRATING_PRIMARY:
-                if (!pMount->IsCalibrated() &&
-                     pMount->BeginCalibration(CurrentPosition()))
+                if (!pMount->IsCalibrated())
                 {
-                    newState = STATE_UNINITIALIZED;
-                    Debug.Write(ERROR_INFO("pMount->BeginCalibration failed"));
+                    if (pMount->BeginCalibration(CurrentPosition()))
+                    {
+                        newState = STATE_UNINITIALIZED;
+                        Debug.Write(ERROR_INFO("pMount->BeginCalibration failed"));
+                    }
+                    else
+                    {
+                        GuideLog.StartCalibration(pMount);
+                    }
                 }
-                // else we move to STATE_CALIBRATING_PRIMARY as requested
                 break;
             case STATE_CALIBRATING_SECONDARY:
                 if (!pSecondaryMount)
                 {
                     newState = STATE_CALIBRATED;
                 }
-                else if (!pSecondaryMount->IsCalibrated() &&
-                          pSecondaryMount->BeginCalibration(CurrentPosition()))
+                else if (!pSecondaryMount->IsCalibrated())
                 {
-                    newState = STATE_UNINITIALIZED;
-                    Debug.Write(ERROR_INFO("pSecondaryMount->BeginCalibration failed"));
+                    if (pSecondaryMount->BeginCalibration(CurrentPosition()))
+                    {
+                        newState = STATE_UNINITIALIZED;
+                        Debug.Write(ERROR_INFO("pSecondaryMount->BeginCalibration failed"));
+                    }
+                    else
+                    {
+                        GuideLog.StartCalibration(pSecondaryMount);
+                    }
                 }
-                // else we move to STATE_CALIBRATING_SECONDARY as requested
                 break;
             case STATE_GUIDING:
                 //TODO: Deal with manual lock position
                 m_lockPosition = CurrentPosition();
+
+                GuideLog.StartGuiding();
+                GuideLog.Flush();
+
                 break;
         }
 
-        m_state = newState;
+        if (newState >= requestedState)
+        {
+            m_state = newState;
+        }
+        else
+        {
+            SetState(newState);
+        }
+
     }
     catch (wxString Msg)
     {
