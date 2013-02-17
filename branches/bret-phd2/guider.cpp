@@ -579,14 +579,30 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         if (UpdateCurrentPosition(pImage, statusMessage))
         {
-            if (m_state == STATE_GUIDING)
+            switch(m_state)
             {
-                wxColor prevColor = GetBackgroundColour();
-                SetBackgroundColour(wxColour(64,0,0));
-                ClearBackground();
-                wxBell();
-                wxMilliSleep(100);
-                SetBackgroundColour(prevColor);
+                case STATE_UNINITIALIZED:
+                case STATE_SELECTING:
+                    break;
+                case STATE_SELECTED:
+                    // we had a current position and lost it
+                     SetState(STATE_UNINITIALIZED);
+                    break;
+                case STATE_CALIBRATING_PRIMARY:
+                case STATE_CALIBRATING_SECONDARY:
+                    SetState(STATE_SELECTED);
+                    pFrame->SetStatusText(_("Calibration aborted -- star lost"), 1);
+                    break;
+                case STATE_GUIDING:
+                {
+                    wxColor prevColor = GetBackgroundColour();
+                    SetBackgroundColour(wxColour(64,0,0));
+                    ClearBackground();
+                    wxBell();
+                    wxMilliSleep(100);
+                    SetBackgroundColour(prevColor);
+                }
+                    break;
             }
 
             throw THROW_INFO("unable to update current position");
@@ -595,19 +611,14 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         switch(m_state)
         {
             case STATE_SELECTING:
-                if (CurrentPosition().IsValid())
-                {
-                    m_lockPosition = CurrentPosition();
-                    Debug.AddLine("CurrentPosition() valid, moving to STATE_SELECTED");
-                    SetState(STATE_SELECTED);
-                }
+                assert(CurrentPosition().IsValid());
+
+                m_lockPosition = CurrentPosition();
+                Debug.AddLine("CurrentPosition() valid, moving to STATE_SELECTED");
+                SetState(STATE_SELECTED);
                 break;
             case STATE_SELECTED:
-                if (!CurrentPosition().IsValid())
-                {
-                    // we had a current position and lost it
-                     SetState(STATE_UNINITIALIZED);
-                }
+                // nothing to do but wait
                 break;
             case STATE_CALIBRATING_PRIMARY:
                 if (pMount->IsCalibrated())
@@ -652,7 +663,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
     pFrame->UpdateButtonsStatus();
 
-    Debug.Write("UpdateGuideState exits:" + statusMessage + "\n");
+    Debug.AddLine("UpdateGuideState exits:" + statusMessage);
 
     UpdateImageDisplay(pImage);
 }
