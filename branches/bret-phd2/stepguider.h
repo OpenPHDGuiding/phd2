@@ -60,7 +60,7 @@ class StepGuider:public Mount
         CALIBRATION_STATE_GO_NORTH,
         CALIBRATION_STATE_AVERAGE_ENDING_LOCATION,
         CALIBRATION_STATE_RECENTER,
-        CALIBRATION_STATE_CENTERED,
+        CALIBRATION_STATE_COMPLETE
     } m_calibrationState;
 
     // Things related to the Advanced Config Dialog
@@ -103,7 +103,6 @@ private:
     bool CalibrationMove(GUIDE_DIRECTION direction);
 
     double CalibrationTime(int nCalibrationSteps);
-    bool BacklashClearingFailed(void);
 protected:
     int IntegerPercent(int percentage, int number);
 

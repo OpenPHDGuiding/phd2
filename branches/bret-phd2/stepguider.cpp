@@ -59,13 +59,6 @@ int StepGuider::GetCalibrationStepsPerIteration(void)
     return m_calibrationStepsPerIteration;
 }
 
-bool StepGuider::BacklashClearingFailed(void)
-{
-    wxMessageBox(_T("Unable to clear StepGuider DEC backlash -- should not happen. Calibration failed."), _("Error"), wxOK | wxICON_ERROR);
-
-    return true;
-}
-
 int StepGuider::IntegerPercent(int percentage, int number)
 {
     long numerator =  (long)percentage*(long)number;

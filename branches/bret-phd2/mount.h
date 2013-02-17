@@ -140,9 +140,6 @@ public:
     virtual bool GuidingCeases(void)=0;
 
 private:
-    // move the mount defined calibration distance
-    virtual bool BacklashClearingFailed(void) = 0;
-
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation

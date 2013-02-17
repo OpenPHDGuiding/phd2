@@ -45,10 +45,18 @@ class Scope:public Mount
 
     // Calibration variables
     int m_calibrationSteps;
-    int m_backlashSteps;
-    double m_decBacklashDistance;
-    GUIDE_DIRECTION m_calibrationDirection;
     Point m_calibrationStartingLocation;
+
+    enum CALIBRATION_STATE
+    {
+        CALIBRATION_STATE_CLEARED,
+        CALIBRATION_STATE_GO_WEST,
+        CALIBRATION_STATE_GO_EAST,
+        CALIBRATION_STATE_CLEAR_BACKLASH,
+        CALIBRATION_STATE_GO_NORTH,
+        CALIBRATION_STATE_GO_SOUTH,
+        CALIBRATION_STATE_COMPLETE
+    } m_calibrationState;
 
     // Things related to the Advanced Config Dialog
 protected:
@@ -100,7 +108,6 @@ private:
     bool CalibrationMove(GUIDE_DIRECTION direction);
 
     void ClearCalibration(void);
-    bool BacklashClearingFailed(void);
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
 
 // these MUST be supplied by a subclass
