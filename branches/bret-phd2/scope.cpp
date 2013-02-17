@@ -431,7 +431,24 @@ bool Scope::GuidingCeases(void)
 
 bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
 {
-    return Move(direction, m_calibrationDuration) >= 0.0;
+    bool bError = false;
+
+    try
+    {
+        double duration = Move(direction, m_calibrationDuration);
+
+        if (duration < 0)
+        {
+            throw THROW_INFO("Duration < 0");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
 }
 
 double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
@@ -498,6 +515,8 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
         POSSIBLY_UNUSED(Msg);
         duration = -1.0;
     }
+
+    Debug.AddLine(wxString::Format("Move returns %.2lf", duration));
 
     return duration;
 }
