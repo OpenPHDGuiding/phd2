@@ -216,17 +216,17 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             // wait for the request to complete
             pArgs->pSemaphore->Wait();
 
-            bError = pArgs->bError;
             pArgs->pSemaphore = NULL;
+            bError = pArgs->bError;
         }
-
-        Debug.Write(wxString::Format("Guide complete\n"));
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
+
+    Debug.AddLine(wxString::Format("Guide complete, bError=%d", bError));
 
     return  bError;
 }
