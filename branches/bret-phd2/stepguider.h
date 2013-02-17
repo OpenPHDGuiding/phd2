@@ -38,6 +38,7 @@
 
 class StepGuider:public Mount
 {
+    static const int CALIBRATION_AVERAGE_NSAMPLES=10;
     int m_xOffset;
     int m_yOffset;
 
@@ -45,14 +46,19 @@ class StepGuider:public Mount
     int   m_calibrationStepsPerIteration;
     int   m_calibrationIterations;
     Point m_calibrationStartingLocation;
+    int   m_calibrationAverageSamples;
+    Point m_calibrationAveragedLocation;
 
 
     enum CALIBRATION_STATE
     {
         CALIBRATION_STATE_CLEARED,
         CALIBRATION_STATE_GOTO_SE_CORNER,
+        CALIBRATION_STATE_AVERAGE_STARTING_LOCATION,
         CALIBRATION_STATE_GO_WEST,
+        CALIBRATION_STATE_AVERAGE_CENTER_LOCATION,
         CALIBRATION_STATE_GO_NORTH,
+        CALIBRATION_STATE_AVERAGE_ENDING_LOCATION,
         CALIBRATION_STATE_RECENTER,
         CALIBRATION_STATE_CENTERED,
     } m_calibrationState;
