@@ -91,8 +91,8 @@ public:
     Scope(void);
     virtual ~Scope(void);
 
-    virtual bool BeginCalibration(const Point &currentPosition);
-    virtual bool UpdateCalibrationState(const Point &currentPosition);
+    virtual bool BeginCalibration(const Point &currentLocation);
+    virtual bool UpdateCalibrationState(const Point &currentLocation);
     virtual bool GuidingCeases(void);
 
 private:

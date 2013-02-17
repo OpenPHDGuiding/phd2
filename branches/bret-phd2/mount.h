@@ -134,8 +134,8 @@ public:
     virtual bool CalibrationMove(GUIDE_DIRECTION direction) = 0;
 
     // Calibration related routines
-    virtual bool BeginCalibration(const Point &currentPosition) = 0;
-    virtual bool UpdateCalibrationState(const Point &currentPosition) = 0;
+    virtual bool BeginCalibration(const Point &currentLocation) = 0;
+    virtual bool UpdateCalibrationState(const Point &currentLocation) = 0;
 
     virtual bool GuidingCeases(void)=0;
 

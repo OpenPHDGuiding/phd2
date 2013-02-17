@@ -520,7 +520,7 @@ void Scope::ClearCalibration(void)
     Mount::ClearCalibration();
 }
 
-bool Scope::BeginCalibration(const Point& currentPosition)
+bool Scope::BeginCalibration(const Point& currentLocation)
 {
     bool bError = false;
 
@@ -531,13 +531,13 @@ bool Scope::BeginCalibration(const Point& currentPosition)
             throw ERROR_INFO("Not connected");
         }
 
-        if (!currentPosition.IsValid())
+        if (!currentLocation.IsValid())
         {
             throw ERROR_INFO("Must have a valid lock position");
         }
 
         ClearCalibration();
-        m_calibrationStartingLocation = currentPosition;
+        m_calibrationStartingLocation = currentLocation;
         m_backlashSteps = MAX_CALIBRATION_STEPS;
     }
     catch (wxString Msg)
@@ -587,7 +587,7 @@ wxString Scope::GetCalibrationStatus(double dX, double dY, double dist, double d
     return sReturn;
 }
 
-bool Scope::UpdateCalibrationState(const Point &currentPosition)
+bool Scope::UpdateCalibrationState(const Point &currentLocation)
 {
     bool bError = false;
 
@@ -596,12 +596,12 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
         if (m_calibrationDirection == NONE)
         {
             m_calibrationDirection = WEST;
-            m_calibrationStartingLocation = currentPosition;
+            m_calibrationStartingLocation = currentLocation;
         }
 
-        double dX = m_calibrationStartingLocation.dX(currentPosition);
-        double dY = m_calibrationStartingLocation.dY(currentPosition);
-        double dist = m_calibrationStartingLocation.Distance(currentPosition);
+        double dX = m_calibrationStartingLocation.dX(currentLocation);
+        double dY = m_calibrationStartingLocation.dY(currentLocation);
+        double dist = m_calibrationStartingLocation.Distance(currentLocation);
         double dist_crit = wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
 
         wxString statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
@@ -622,7 +622,7 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
                 assert(m_calibrationSteps == 0);
                 m_calibrationSteps = 1;
                 m_backlashSteps = 0;
-                m_calibrationStartingLocation = currentPosition;
+                m_calibrationStartingLocation = currentLocation;
                 statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
             }
             else if (--m_backlashSteps <= 0)
@@ -643,7 +643,7 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
             {
                 if (m_calibrationDirection == WEST)
                 {
-                    m_raAngle = m_calibrationStartingLocation.Angle(currentPosition);
+                    m_raAngle = m_calibrationStartingLocation.Angle(currentLocation);
                     m_raRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
                     if (m_raRate == 0.0)
@@ -658,7 +658,7 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
                 else
                 {
                     assert(m_calibrationDirection == NORTH);
-                    m_decAngle = m_calibrationStartingLocation.Angle(currentPosition);
+                    m_decAngle = m_calibrationStartingLocation.Angle(currentLocation);
                     m_raRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
                     if (m_decRate == 0.0)
@@ -689,7 +689,7 @@ bool Scope::UpdateCalibrationState(const Point &currentPosition)
                 if (m_calibrationDirection == EAST)
                 {
                     m_calibrationDirection = NORTH;
-                    m_calibrationStartingLocation = currentPosition;
+                    m_calibrationStartingLocation = currentLocation;
                     dX = dY = dist = 0.0;
                     statusMessage = GetCalibrationStatus(dX, dY, dist, dist_crit);
                 }

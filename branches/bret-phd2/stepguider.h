@@ -84,8 +84,8 @@ public:
     StepGuider(void);
     virtual ~StepGuider(void);
 
-    virtual bool BeginCalibration(const Point &currentPosition);
-    bool UpdateCalibrationState(const Point &currentPosition);
+    virtual bool BeginCalibration(const Point &currentLocation);
+    bool UpdateCalibrationState(const Point &currentLocation);
     virtual void ClearCalibration(void);
 
     virtual bool GuidingCeases(void);

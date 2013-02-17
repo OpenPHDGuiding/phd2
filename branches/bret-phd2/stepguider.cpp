@@ -258,7 +258,7 @@ void StepGuider::ClearCalibration(void)
     m_calibrationState = CALIBRATION_STATE_CLEARED;
 }
 
-bool StepGuider::BeginCalibration(const Point& currentPosition)
+bool StepGuider::BeginCalibration(const Point& currentLocation)
 {
     bool bError = false;
 
@@ -269,14 +269,14 @@ bool StepGuider::BeginCalibration(const Point& currentPosition)
             throw ERROR_INFO("Not connected");
         }
 
-        if (!currentPosition.IsValid())
+        if (!currentLocation.IsValid())
         {
             throw ERROR_INFO("Must have a valid start position");
         }
 
         ClearCalibration();
         m_calibrationState = CALIBRATION_STATE_GOTO_SE_CORNER;
-        m_calibrationStartingLocation = currentPosition;
+        m_calibrationStartingLocation = currentLocation;
     }
     catch (wxString Msg)
     {
@@ -299,7 +299,7 @@ bool StepGuider::BeginCalibration(const Point& currentPosition)
  *  - the guider returns to the center of its travel and calibration is complete
  */
 
-bool StepGuider::UpdateCalibrationState(const Point &currentPosition)
+bool StepGuider::UpdateCalibrationState(const Point &currentLocation)
 {
     bool bError = false;
 
@@ -341,7 +341,7 @@ bool StepGuider::UpdateCalibrationState(const Point &currentPosition)
                     break;
                 }
                 m_calibrationState = CALIBRATION_STATE_GO_WEST;
-                m_calibrationStartingLocation = currentPosition;
+                m_calibrationStartingLocation = currentLocation;
                 m_calibrationIterations = 0;
                 // fall through
             case CALIBRATION_STATE_GO_WEST:
@@ -352,12 +352,12 @@ bool StepGuider::UpdateCalibrationState(const Point &currentPosition)
                     moveWest  = true;
                     break;
                 }
-                m_raAngle = m_calibrationStartingLocation.Angle(currentPosition);
-                m_raRate  = m_calibrationStartingLocation.Distance(currentPosition) /
+                m_raAngle = m_calibrationStartingLocation.Angle(currentLocation);
+                m_raRate  = m_calibrationStartingLocation.Distance(currentLocation) /
                             (m_calibrationIterations * m_calibrationStepsPerIteration);
                 Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f", m_raAngle, m_raRate));
-                Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(currentPosition), m_calibrationIterations));
-                m_calibrationStartingLocation = currentPosition;
+                Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(currentLocation), m_calibrationIterations));
+                m_calibrationStartingLocation = currentLocation;
                 m_calibrationIterations = 0;
                 m_calibrationState = CALIBRATION_STATE_GO_NORTH;
                 // fall through
@@ -369,12 +369,12 @@ bool StepGuider::UpdateCalibrationState(const Point &currentPosition)
                     moveNorth = true;
                     break;
                 }
-                m_decAngle = m_calibrationStartingLocation.Angle(currentPosition);
-                m_decRate  = m_calibrationStartingLocation.Distance(currentPosition) /
+                m_decAngle = m_calibrationStartingLocation.Angle(currentLocation);
+                m_decRate  = m_calibrationStartingLocation.Distance(currentLocation) /
                              (m_calibrationIterations * m_calibrationStepsPerIteration);
                 Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f", m_decAngle, m_decRate));
-                Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(currentPosition), m_calibrationIterations));
-                m_calibrationStartingLocation = currentPosition;
+                Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(currentLocation), m_calibrationIterations));
+                m_calibrationStartingLocation = currentLocation;
                 m_calibrationIterations = 0;
                 m_calibrationState = CALIBRATION_STATE_RECENTER;
                 // fall through
@@ -421,9 +421,9 @@ bool StepGuider::UpdateCalibrationState(const Point &currentPosition)
         }
         else
         {
-            double dX = m_calibrationStartingLocation.dX(currentPosition);
-            double dY = m_calibrationStartingLocation.dY(currentPosition);
-            double dist = m_calibrationStartingLocation.Distance(currentPosition);
+            double dX = m_calibrationStartingLocation.dX(currentLocation);
+            double dY = m_calibrationStartingLocation.dY(currentLocation);
+            double dist = m_calibrationStartingLocation.Distance(currentLocation);
             wxString status1 = wxString::Format(_T("dx=%4.1f dy=%4.1f dist=%4.1f"), dX, dY, dist);
 
             pFrame->SetStatusText(status0, 0);
