@@ -192,11 +192,17 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             Debug.Write("Handling move in thread\n");
             if (pArgs->calibrationMove)
             {
-                bError = pArgs->pMount->CalibrationMove(pArgs->direction);
+                if (pArgs->pMount->CalibrationMove(pArgs->direction))
+                {
+                    throw ERROR_INFO("CalibrationMove failed");
+                }
             }
             else
             {
-                bError = pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->normalMove);
+                if (pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->normalMove))
+                {
+                    throw ERROR_INFO("Move failed");
+                }
             }
         }
         else
@@ -217,7 +223,10 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             pArgs->pSemaphore->Wait();
 
             pArgs->pSemaphore = NULL;
-            bError = pArgs->bError;
+            if (pArgs->bError)
+            {
+                throw ERROR_INFO("Frame handled capture failed");
+            }
         }
     }
     catch (wxString Msg)
