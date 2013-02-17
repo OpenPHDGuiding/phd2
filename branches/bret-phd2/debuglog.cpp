@@ -35,34 +35,31 @@
 
 #include "phd.h"
 
-void LOG::InitVars(void)
+void DebugLog::InitVars(void)
 {
     m_bEnabled = false;
-    m_lastWriteTime = wxDateTime::Now();
-    m_pPathName = NULL;
+    m_lastWriteTime = wxDateTime::UNow();
 }
 
-LOG::LOG(void)
+DebugLog::DebugLog(void)
 {
     InitVars();
 }
 
-LOG::LOG(char *pName, bool bEnabled = true)
+DebugLog::DebugLog(char *pName, bool bEnabled = true)
 {
     InitVars();
 
     Init(pName, bEnabled);
 }
 
-LOG::~LOG(void)
+DebugLog::~DebugLog(void)
 {
     wxFFile::Flush();
     wxFFile::Close();
-
-    delete m_pPathName;
 }
 
-bool LOG::SetState(bool bEnabled)
+bool DebugLog::SetState(bool bEnabled)
 {
     bool prevState = m_bEnabled;
 
@@ -71,24 +68,14 @@ bool LOG::SetState(bool bEnabled)
     return prevState;
 }
 
-bool LOG::GetState(void)
+bool DebugLog::GetState(void)
 {
     return m_bEnabled;
 }
 
-bool LOG::Init(char *pName, bool bEnable=true)
+bool DebugLog::Init(char *pName, bool bEnable=true)
 {
     wxCriticalSectionLocker lock(m_criticalSection);
-
-    if (m_pPathName == NULL)
-    {
-        wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-        wxDateTime now = wxDateTime::Now();
-
-        wxString strFileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_" + (pName?pName:"debug") + now.Format(_T("_%y-%m-%d")) +  ".log";
-
-        m_pPathName = new wxString(strFileName);
-    }
 
     if (m_bEnabled)
     {
@@ -98,25 +85,30 @@ bool LOG::Init(char *pName, bool bEnable=true)
         m_bEnabled = false;
     }
 
-    if (m_pPathName)
+    if (m_pPathName.IsEmpty())
     {
-        if (!wxFFile::Open(*m_pPathName, "a"))
+        wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+        wxDateTime now = wxDateTime::UNow();
+
+        m_pPathName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
+
+        if (!wxFFile::Open(m_pPathName, "a"))
         {
             wxMessageBox(wxString::Format("unable to open file %s", m_pPathName));
         }
-
-        m_bEnabled = bEnable;
     }
+
+    m_bEnabled = bEnable;
 
     return m_bEnabled;
 }
 
-wxString LOG::AddLine(const wxString& str)
+wxString DebugLog::AddLine(const wxString& str)
 {
     return Write(str + "\n");
 }
 
-wxString LOG::AddLine(const wxString& str, const unsigned char * const pBytes, unsigned count)
+wxString DebugLog::AddLine(const wxString& str, const unsigned char * const pBytes, unsigned count)
 {
     wxString Line = str + " - ";
 
@@ -129,7 +121,7 @@ wxString LOG::AddLine(const wxString& str, const unsigned char * const pBytes, u
     return Write(Line + "\n");
 }
 
-bool LOG::Flush(void)
+bool DebugLog::Flush(void)
 {
     bool bReturn = true;
 
@@ -143,44 +135,42 @@ bool LOG::Flush(void)
     return bReturn;
 }
 
-wxString LOG::Write(const wxString& str)
+wxString DebugLog::Write(const wxString& str)
 {
     if (m_bEnabled)
     {
         wxCriticalSectionLocker lock(m_criticalSection);
 
-        wxDateTime now = wxDateTime::Now();
+        wxDateTime now = wxDateTime::UNow();
         wxTimeSpan deltaTime = now - m_lastWriteTime;
-        wxLongLong milliSeconds = deltaTime.GetMilliseconds();
-
         m_lastWriteTime = now;
 
-        wxFFile::Write(now.Format("%H:%M:%S.%l") + wxString::Format(" %d.%.6d ", milliSeconds/1000, milliSeconds%1000) + str);
+        wxFFile::Write(now.Format("%H:%M:%S.%l") + deltaTime.Format(" %S.%l ") + str);
         wxFFile::Flush();
     }
 
     return str;
 }
 
-LOG& operator<< (LOG& out, const wxString &str)
+DebugLog& operator<< (DebugLog& out, const wxString &str)
 {
     out.Write(str);
     return out;
 }
 
-LOG& operator<< (LOG& out, const char *str)
+DebugLog& operator<< (DebugLog& out, const char *str)
 {
     out.Write(str);
     return out;
 }
 
-LOG& operator<< (LOG& out, const int i)
+DebugLog& operator<< (DebugLog& out, const int i)
 {
     out.Write(wxString::Format(_T("%d"), i));
     return out;
 }
 
-LOG& operator<< (LOG& out, const double d)
+DebugLog& operator<< (DebugLog& out, const double d)
 {
     out.Write(wxString::Format(_T("%f"), d));
     return out;

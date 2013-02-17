@@ -48,7 +48,7 @@ Mount *pSecondaryMount = NULL;
 MyFrame *pFrame = NULL;
 GuideCamera *pCamera = NULL;
 
-LOG Debug;
+DebugLog Debug;
 
 wxTextFile *LogFile;
 bool Log_Data = false;

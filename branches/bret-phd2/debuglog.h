@@ -33,20 +33,20 @@
  *
  */
 
-class LOG:wxFFile
+class DebugLog:wxFFile
 {
 private:
     bool m_bEnabled;
     wxCriticalSection m_criticalSection;
     wxDateTime m_lastWriteTime;
-    wxString *m_pPathName;
+    wxString m_pPathName;
 
     void InitVars(void);
 
 public:
-    LOG(void);
-    LOG(char *pName, bool bEnabled);
-    ~LOG(void);
+    DebugLog(void);
+    DebugLog(char *pName, bool bEnabled);
+    ~DebugLog(void);
 
     bool SetState(bool bEnabled);
     bool GetState(void);
@@ -57,7 +57,7 @@ public:
     bool Flush(void);
 };
 
-extern LOG& operator<< (LOG& out, const wxString &str);
-extern LOG& operator<< (LOG& out, const char *str);
-extern LOG& operator<< (LOG& out, const int i);
-extern LOG& operator<< (LOG& out, const double d);
+extern DebugLog& operator<< (DebugLog& out, const wxString &str);
+extern DebugLog& operator<< (DebugLog& out, const char *str);
+extern DebugLog& operator<< (DebugLog& out, const int i);
+extern DebugLog& operator<< (DebugLog& out, const double d);
