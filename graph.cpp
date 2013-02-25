@@ -63,7 +63,23 @@ END_EVENT_TABLE()
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
 wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCAPTION & ~wxSTAY_ON_TOP) {  // was 230
 
-	this->visible = false;
+	int fontsize = 11;
+	wxFont deffont = GetFont();
+	int defsize = deffont.GetPointSize();
+	deffont.SetPointSize(fontsize);
+    deffont.SetFamily(wxFONTFAMILY_SWISS);
+ 	
+	SetFont(deffont);
+    //	SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+	int foo = GetCharHeight();
+	while (GetCharHeight() > 15) {
+		fontsize--;
+		deffont.SetPointSize(fontsize);
+		SetFont(deffont);
+        //	SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+	}
+
+    this->visible = false;
 	this->n_items = 0;
 	this->mode = 0; // RA/Dec
 	this->length = 100;
@@ -74,7 +90,7 @@ wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCA
 
 	this->LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("100"),wxPoint(10,10),wxSize(80,-1));
 	this->LengthButton->SetToolTip(_T("# of frames of history to display"));
-	this->ModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"),wxPoint(10,40),wxSize(80,-1));
+ 	this->ModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"),wxPoint(10,40),wxSize(80,-1));
 	this->ModeButton->SetToolTip(_T("Toggle RA/Dec vs dx/dy.  Shift-click to change RA/dx color.  Ctrl-click to change Dec/dy color"));
 	this->HideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_T("Hide"),wxPoint(10,70),wxSize(80,-1));
 	this->HideButton->SetToolTip(_T("Hide graph"));
@@ -94,6 +110,7 @@ wxMiniFrame(parent,wxID_ANY,_T("History"),wxDefaultPosition,wxSize(610,254),wxCA
 #endif
 	wxStaticText *raa_label = new wxStaticText(this,wxID_ANY,_T("RA agr"),wxPoint(10,210),wxSize(60,-1));
 	raa_label->SetOwnForegroundColour(* wxWHITE);
+    raa_label->SetFont(deffont);
 #ifdef __WINDOWS__
 	raa_label->SetOwnBackgroundColour(* wxBLACK);
 #endif
