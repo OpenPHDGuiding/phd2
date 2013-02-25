@@ -206,7 +206,7 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
 		if (!status) fits_write_pix(fptr,TUSHORT,fpixel,CurrentGuideCamera->CurrentDarkFrame.NPixels,CurrentGuideCamera->CurrentDarkFrame.ImageData,&status);
 		fits_close_file(fptr,&status);
 		if (status) wxMessageBox (_T("Error saving FITS file"));
-		else SetStatusText ("Dark loaded");
+		else SetStatusText ("Dark saved");
     }
 	else if (evt.GetId() == MENU_LOADDARK) {
 		fname = wxFileSelector( wxT("Load dark (FITS Image)"), (const wxChar *)NULL,
