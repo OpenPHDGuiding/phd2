@@ -175,7 +175,7 @@ void MyCanvas::FullFrameToDisplay() {
 	int blevel, wlevel;
 
 	CurrentFullFrame.CalcStats();
-	blevel = CurrentFullFrame.Min; //CurrentFullFrame.Min;
+	blevel = CurrentFullFrame.FiltMin; //CurrentFullFrame.Min;
 	wlevel = CurrentFullFrame.FiltMax ;  //CurrentFullFrame.Max / 2;
 //	blevel = CurrentFullFrame.Min;
 //	wlevel = CurrentFullFrame.Max / 2;
