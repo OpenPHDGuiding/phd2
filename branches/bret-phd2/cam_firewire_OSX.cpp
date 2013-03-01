@@ -331,7 +331,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
         Disconnect();
         return true;
     }
-    imgptr = vpFrame->image;
+    imgptr = vframe->image;
 //  pFrame->SetStatusText(wxString::Format("%d %d %d",(int) vpFrame->frames_behind, (int) vpFrame->size[0], (int) vpFrame->size[1]));
     for (i=0; i<img.NPixels; i++, dataptr++, imgptr++)
         *dataptr = (unsigned short) *imgptr;

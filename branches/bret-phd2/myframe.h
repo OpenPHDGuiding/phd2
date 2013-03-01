@@ -37,6 +37,8 @@
 #ifndef MYFRAME_H_INCLUDED
 #define MYFRAME_H_INCLUDED
 
+class WorkerThread;
+
 enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
     MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE = wxID_HIGHEST+1,
@@ -188,7 +190,7 @@ public:
         Mount           *pMount;
         GUIDE_DIRECTION direction;
         bool            calibrationMove;
-        Point           vectorEndpoint;
+        PHD_Point           vectorEndpoint;
         bool            normalMove;
         bool            bError;
         wxSemaphore     *pSemaphore;
@@ -196,8 +198,8 @@ public:
     void OnRequestMountMove(wxCommandEvent &evt);
 
     void ScheduleExposure(double exposureDuration, wxRect subframe);
-    void ScheduleMovePrimary(Mount *pMount, const Point& vectorEndpoint, bool normalMove=true);
-    void ScheduleMoveSecondary(Mount *pMount, const Point& vectorEndpoint, bool normalMove=true);
+    void ScheduleMovePrimary(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
+    void ScheduleMoveSecondary(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
     void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction);
 
     void StartCapturing(void);

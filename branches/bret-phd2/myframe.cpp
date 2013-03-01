@@ -760,7 +760,7 @@ void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
 }
 
-void MyFrame::ScheduleMovePrimary(Mount *pMount, const Point& vectorEndpoint, bool normalMove)
+void MyFrame::ScheduleMovePrimary(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -770,7 +770,7 @@ void MyFrame::ScheduleMovePrimary(Mount *pMount, const Point& vectorEndpoint, bo
     m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
 }
 
-void MyFrame::ScheduleMoveSecondary(Mount *pMount, const Point& vectorEndpoint, bool normalMove)
+void MyFrame::ScheduleMoveSecondary(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 

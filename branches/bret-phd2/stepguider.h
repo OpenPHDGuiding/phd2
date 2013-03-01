@@ -45,9 +45,9 @@ class StepGuider:public Mount
     // Calibration variables
     int   m_calibrationStepsPerIteration;
     int   m_calibrationIterations;
-    Point m_calibrationStartingLocation;
+    PHD_Point m_calibrationStartingLocation;
     int   m_calibrationAverageSamples;
-    Point m_calibrationAveragedLocation;
+    PHD_Point m_calibrationAveragedLocation;
 
 
     enum CALIBRATION_STATE
@@ -90,12 +90,12 @@ public:
     StepGuider(void);
     virtual ~StepGuider(void);
 
-    virtual bool BeginCalibration(const Point &currentLocation);
-    bool UpdateCalibrationState(const Point &currentLocation);
+    virtual bool BeginCalibration(const PHD_Point &currentLocation);
+    bool UpdateCalibrationState(const PHD_Point &currentLocation);
     virtual void ClearCalibration(void);
 
     virtual bool GuidingCeases(void);
-    virtual bool Move(const Point& vectorEndpoint, bool normalMove=true);
+    virtual bool Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
 
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass

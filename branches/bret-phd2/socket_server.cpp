@@ -201,7 +201,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                             ry = tan(pMount->RaAngle()) * rx;
                     }
 
-                    pGuider->SetLockPosition(Point(pGuider->LockPosition().Y + rx, pGuider->LockPosition().Y + ry));
+                    pGuider->SetLockPosition(PHD_Point(pGuider->LockPosition().Y + rx, pGuider->LockPosition().Y + ry));
 
                     wxLogStatus(_T("Moving by %.2f,%.2f"),rx,ry);
                     rval = RequestedExposureDuration() / 1000;
@@ -237,7 +237,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                     sock->Read(&y, 2);
                     sock->Discard();  // Clean out anything else
 
-                    if (pFrame->pGuider->SetLockPosition(Point(x,y), false))
+                    if (pFrame->pGuider->SetLockPosition(PHD_Point(x,y), false))
                     {
                         wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
                     }

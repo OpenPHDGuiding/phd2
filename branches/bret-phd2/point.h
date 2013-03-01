@@ -36,7 +36,7 @@
 #ifndef POINT_H_INCLUDED
 #define POINT_H_INCLUDED
 
-class Point
+class PHD_Point
 {
     bool m_valid;
 public:
@@ -44,22 +44,22 @@ public:
     double X;
     double Y;
 
-    Point(const double x, const double y)
+    PHD_Point(const double x, const double y)
     {
         SetXY(x,y);
     }
 
-    Point(Point const * const p)
+    PHD_Point(PHD_Point const * const p)
     {
         SetXY(p->X, p->Y);
     }
 
-    Point(const Point &p)
+    PHD_Point(const PHD_Point &p)
     {
         SetXY(p.X, p.Y);
     }
 
-    Point(void)
+    PHD_Point(void)
     {
         Invalidate();
     }
@@ -81,7 +81,7 @@ public:
         m_valid = true;
     }
 
-    double dX(Point p) const
+    double dX(PHD_Point p) const
     {
         double dRet = X-p.X;
 
@@ -90,12 +90,12 @@ public:
         return dRet;
     }
 
-    double dX(Point *pPoint) const
+    double dX(PHD_Point *pPoint) const
     {
         return this->dX(*pPoint);
     }
 
-    double dY(Point p) const
+    double dY(PHD_Point p) const
     {
         double dRet = Y-p.Y;
 
@@ -104,12 +104,12 @@ public:
         return dRet;
     }
 
-    double dY(Point *pPoint) const
+    double dY(PHD_Point *pPoint) const
     {
         return this->dY(*pPoint);
     }
 
-    double Distance(Point p) const
+    double Distance(PHD_Point p) const
     {
         double dX = this->dX(p);
         double dY = this->dY(p);
@@ -118,12 +118,12 @@ public:
         return dRet;
     }
 
-    double Distance(Point *pPoint) const
+    double Distance(PHD_Point *pPoint) const
     {
         return Distance(*pPoint);
     }
 
-    double Angle(Point p) const
+    double Angle(PHD_Point p) const
     {
         double dX = this->dX(p);
         double dY = this->dY(p);
@@ -139,18 +139,18 @@ public:
         return dRet;
     }
 
-    double Angle(Point *pPoint) const
+    double Angle(PHD_Point *pPoint) const
     {
         return Angle(*pPoint);
     }
 
-    Point operator+(const Point& addend)
+    PHD_Point operator+(const PHD_Point& addend)
     {
         assert(m_valid);
-        return Point(this->X + addend.X, this->Y + addend.Y);
+        return PHD_Point(this->X + addend.X, this->Y + addend.Y);
     }
 
-    Point& operator+=(const Point& addend)
+    PHD_Point& operator+=(const PHD_Point& addend)
     {
         assert(m_valid);
         this->X += addend.X;
@@ -159,19 +159,19 @@ public:
         return *this;
     }
 
-    Point operator-(const Point& subtrahend)
+    PHD_Point operator-(const PHD_Point& subtrahend)
     {
         assert(m_valid);
-        return Point(this->X - subtrahend.X, this->Y - subtrahend.Y);
+        return PHD_Point(this->X - subtrahend.X, this->Y - subtrahend.Y);
     }
 
-    Point operator/(const double divisor)
+    PHD_Point operator/(const double divisor)
     {
         assert(m_valid);
-        return Point(this->X/divisor, this->Y/divisor);
+        return PHD_Point(this->X/divisor, this->Y/divisor);
     }
 
-    Point& operator/=(const double divisor)
+    PHD_Point& operator/=(const double divisor)
     {
         assert(m_valid);
         this->X /= divisor;

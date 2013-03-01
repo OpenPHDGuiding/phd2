@@ -251,7 +251,7 @@ void StepGuider::ClearCalibration(void)
     m_calibrationState = CALIBRATION_STATE_CLEARED;
 }
 
-bool StepGuider::BeginCalibration(const Point& currentLocation)
+bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
 {
     bool bError = false;
 
@@ -292,7 +292,7 @@ bool StepGuider::BeginCalibration(const Point& currentLocation)
  *  - the guider returns to the center of its travel and calibration is complete
  */
 
-bool StepGuider::UpdateCalibrationState(const Point &currentLocation)
+bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
 {
     bool bError = false;
 
@@ -608,7 +608,7 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
     return (double)steps;
 }
 
-bool StepGuider::Move(const Point& vectorEndpoint, bool normalMove)
+bool StepGuider::Move(const PHD_Point& vectorEndpoint, bool normalMove)
 {
     bool bError = false;
 
@@ -621,7 +621,7 @@ bool StepGuider::Move(const Point& vectorEndpoint, bool normalMove)
 
         if (normalMove && pSecondaryMount && !pSecondaryMount->IsBusy())
         {
-            Point origin(0,0);
+            PHD_Point origin(0,0);
             double raDistance;
             double decDistance;
 
@@ -636,7 +636,7 @@ bool StepGuider::Move(const Point& vectorEndpoint, bool normalMove)
             if (fabs(decDistance) > IntegerPercent(75, MaxPosition(NORTH)*DecRate()) ||
                 fabs(raDistance) > IntegerPercent(75, MaxPosition(EAST)*RaRate()))
             {
-                Point cameraOffset;
+                PHD_Point cameraOffset;
 
                 // we have to transform our notion of where we are (which is in "AO Coordinates")
                 // into "Camera Coordinates" so we can move the other mount

@@ -528,7 +528,7 @@ void Scope::ClearCalibration(void)
     m_calibrationState = CALIBRATION_STATE_CLEARED;
 }
 
-bool Scope::BeginCalibration(const Point& currentLocation)
+bool Scope::BeginCalibration(const PHD_Point& currentLocation)
 {
     bool bError = false;
 
@@ -558,7 +558,7 @@ bool Scope::BeginCalibration(const Point& currentLocation)
     return bError;
 }
 
-bool Scope::UpdateCalibrationState(const Point &currentLocation)
+bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 {
     bool bError = false;
 

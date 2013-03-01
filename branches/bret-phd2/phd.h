@@ -125,7 +125,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "configdialog.h"
 #include "usImage.h"
 #include "point.h"
-#include "star.h."
+#include "star.h"
 #include "graph.h"
 #include "guide_algorithms.h"
 #include "guiders.h"

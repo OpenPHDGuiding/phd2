@@ -47,7 +47,7 @@
 // uni_to_ansi() - Convert unicode to ANSI, return pointer to new[]'ed string
 // -------------
 //
-
+#ifdef __WINDOWS__
 char *ASCOM_COMMON::uni_to_ansi(OLECHAR *os)
 {
     char *cp;
@@ -98,4 +98,6 @@ bool ASCOM_COMMON::GetDispatchID(IDispatch *pDriver, wchar_t *pName, DISPID *pId
 
     return bError;
 }
+#endif
+
 

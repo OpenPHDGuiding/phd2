@@ -117,15 +117,15 @@ public:
 
     bool FlipCalibration(void);
 
-    virtual bool Move(const Point& vectorEndpoint, bool normalMove=true);
+    virtual bool Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
 protected:
-    bool TransformCameraCoordinatesToMountCoordinates(const Point& vectorEndpoint,
+    bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& vectorEndpoint,
                                                       double& raDistance,
                                                       double& decDistance);
 
     bool TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
                                                      const double decDistance,
-                                                     Point& vectorEndpoint);
+                                                     PHD_Point& vectorEndpoint);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
@@ -134,8 +134,8 @@ public:
     virtual bool CalibrationMove(GUIDE_DIRECTION direction) = 0;
 
     // Calibration related routines
-    virtual bool BeginCalibration(const Point &currentLocation) = 0;
-    virtual bool UpdateCalibrationState(const Point &currentLocation) = 0;
+    virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;
+    virtual bool UpdateCalibrationState(const PHD_Point &currentLocation) = 0;
 
     virtual bool GuidingCeases(void)=0;
 

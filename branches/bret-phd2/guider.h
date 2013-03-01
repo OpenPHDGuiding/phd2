@@ -106,7 +106,7 @@ class Guider: public wxWindow
     wxImage *m_displayedImage;
     OVERLAY_MODE m_overlayMode;
     bool m_paused;
-    Point m_lockPosition;
+    PHD_Point m_lockPosition;
     GUIDER_STATE m_state;
     usImage *m_pCurrentImage;
 
@@ -151,8 +151,8 @@ public:
     void UpdateImageDisplay(usImage *pImage=NULL);
     bool DoGuide(void);
 
-    bool SetLockPosition(const Point& position, bool bExact=true);
-    Point &LockPosition();
+    bool SetLockPosition(const PHD_Point& position, bool bExact=true);
+    PHD_Point &LockPosition();
 
     bool SetOverlayMode(int newMode);
     bool SaveCurrentImage(const wxString& fileName);
@@ -173,7 +173,7 @@ private:
 private:
     virtual void InvalidateCurrentPosition(void) = 0;
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage) = 0;
-    virtual bool SetCurrentPosition(usImage *pImage, const Point& position)=0;
+    virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position)=0;
 
 public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;
@@ -181,7 +181,7 @@ public:
     virtual bool IsLocked(void) = 0;
     virtual bool AutoSelect(usImage *pImage=NULL)=0;
 
-    virtual Point &CurrentPosition(void) = 0;
+    virtual PHD_Point &CurrentPosition(void) = 0;
     virtual wxRect GetBoundingBox(void) = 0;
 
 

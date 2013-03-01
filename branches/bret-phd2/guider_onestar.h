@@ -83,14 +83,14 @@ public:
 
     virtual bool IsLocked(void);
     virtual bool AutoSelect(usImage *pImage=NULL);
-    virtual Point &CurrentPosition(void);
+    virtual PHD_Point &CurrentPosition(void);
     virtual wxRect GetBoundingBox(void);
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 private:
     virtual void InvalidateCurrentPosition(void);
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage);
-    virtual bool SetCurrentPosition(usImage *pImage, const Point& position);
+    virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);
 
     void OnLClick(wxMouseEvent& evt);
 

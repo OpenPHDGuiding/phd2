@@ -115,7 +115,7 @@ bool Guider::SetOverlayMode(int overlayMode)
     return bError;
 }
 
-Point &Guider::LockPosition()
+PHD_Point &Guider::LockPosition()
 {
     return m_lockPosition;
 }
@@ -361,7 +361,7 @@ void Guider::UpdateLockPosition(void)
     SetLockPosition(CurrentPosition(), true);
 }
 
-bool Guider::SetLockPosition(const Point& position, bool bExact)
+bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
 {
     bool bError = false;
 
@@ -392,7 +392,7 @@ bool Guider::SetLockPosition(const Point& position, bool bExact)
         }
         else
         {
-            SetCurrentPosition(m_pCurrentImage, Point(x, y));
+            SetCurrentPosition(m_pCurrentImage, PHD_Point(x, y));
 
             if (CurrentPosition().IsValid())
             {

@@ -145,7 +145,7 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 
 /*************      Move       **************************/
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& vectorEndpoint, bool normalMove)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
 {
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));

@@ -137,7 +137,7 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
 }
 
 
-bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const Point& position)
+bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& position)
 {
     bool bError = true;
 
@@ -215,7 +215,7 @@ bool GuiderOneStar::IsLocked(void)
     return m_star.WasFound();
 }
 
-Point &GuiderOneStar::CurrentPosition(void)
+PHD_Point &GuiderOneStar::CurrentPosition(void)
 {
     return m_star;
 }
@@ -352,7 +352,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             double StarX = (double) mevent.m_x / scaleFactor;
             double StarY = (double) mevent.m_y / scaleFactor;
 
-            SetCurrentPosition(pImage, Point(StarX, StarY));
+            SetCurrentPosition(pImage, PHD_Point(StarX, StarY));
 
             if (!m_star.IsValid())
             {

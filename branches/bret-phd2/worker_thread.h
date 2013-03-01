@@ -132,7 +132,7 @@ protected:
 
     /*************      Guide       **************************/
 public:
-    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const Point& vectorEndpoint, bool normalMove);
+    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove);
     void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction);
 protected:
     struct ARGS_MOVE
@@ -140,7 +140,7 @@ protected:
         Mount           *pMount;
         bool            calibrationMove;
         GUIDE_DIRECTION direction;
-        Point           vectorEndpoint;
+        PHD_Point           vectorEndpoint;
         bool            normalMove;
     };
     bool HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs);

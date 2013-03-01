@@ -34,7 +34,7 @@
  */
 
 #include "phd.h"
-
+#ifdef STEPGUIDER_SXAO
 StepGuiderSxAO::StepGuiderSxAO(void)
 {
     m_pSerialPort = NULL;
@@ -492,4 +492,6 @@ bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit)
 
     return bError;
 }
+
+#endif // STEPGUIDER_SXAO
 

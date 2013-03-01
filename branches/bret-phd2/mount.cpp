@@ -270,7 +270,7 @@ bool Mount::Disconnect(void)
     return false;
 }
 
-bool Mount::TransformCameraCoordinatesToMountCoordinates(const Point& vectorEndpoint,
+bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& vectorEndpoint,
                                                          double& raDistance,
                                                          double& decDistance)
 {
@@ -283,7 +283,7 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const Point& vectorEndp
             throw ERROR_INFO("invalid vectorEndPoint");
         }
 
-        Point origin(0,0);
+        PHD_Point origin(0,0);
         double theta = origin.Angle(vectorEndpoint);
         double hyp   = origin.Distance(vectorEndpoint);
 
@@ -303,14 +303,14 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const Point& vectorEndp
 
 bool Mount::TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
                                                         const double decDistance,
-                                                        Point& vectorEndpoint)
+                                                        PHD_Point& vectorEndpoint)
 {
     bool bError = false;
 
     try
     {
-        Point origin(0,0);
-        Point mountPosition(raDistance, decDistance);
+        PHD_Point origin(0,0);
+        PHD_Point mountPosition(raDistance, decDistance);
 
         double hyp = origin.Distance(mountPosition);
         double theta = origin.Angle(mountPosition);
@@ -333,7 +333,7 @@ bool Mount::TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
     return bError;
 }
 
-bool Mount::Move(const Point& vectorEndpoint, bool normalMove)
+bool Mount::Move(const PHD_Point& vectorEndpoint, bool normalMove)
 {
     bool bError = false;
 

@@ -45,7 +45,7 @@ class Scope:public Mount
 
     // Calibration variables
     int m_calibrationSteps;
-    Point m_calibrationStartingLocation;
+    PHD_Point m_calibrationStartingLocation;
 
     enum CALIBRATION_STATE
     {
@@ -99,8 +99,8 @@ public:
     Scope(void);
     virtual ~Scope(void);
 
-    virtual bool BeginCalibration(const Point &currentLocation);
-    virtual bool UpdateCalibrationState(const Point &currentLocation);
+    virtual bool BeginCalibration(const PHD_Point &currentLocation);
+    virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
     virtual bool GuidingCeases(void);
 
 private:

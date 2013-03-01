@@ -69,7 +69,7 @@ void Star::Invalidate(void)
     Mass = 0.0;
     SNR = 0.0;
     m_lastFindResult = STAR_ERROR;
-    Point::Invalidate();
+    PHD_Point::Invalidate();
 }
 
 void Star::SetError(FindResult error=STAR_ERROR)
