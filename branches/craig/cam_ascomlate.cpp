@@ -425,6 +425,11 @@ bool Camera_ASCOMLateClass::CaptureFull(int duration, usImage& img, bool recon) 
 		debugstr.Sync();
 	}
 
+	if (img.Init((int) FullSize.GetWidth(), (int) FullSize.GetHeight())) {
+		wxMessageBox(_T("Cannot allocate enough memory"),wxT("Error"),wxOK | wxICON_ERROR);
+		return true;
+	}
+
 	// Program the size
 	if (UseSubframes && (frame->canvas->State > STATE_NONE)) {
 		subframe = true;
@@ -699,10 +704,10 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool subframe) {
 	}
 	if(hr!=S_OK) return true;
 
-	if (Image.Init((int) FullSize.GetWidth(), (int) FullSize.GetHeight())) {
+/*	if (Image.Init((int) FullSize.GetWidth(), (int) FullSize.GetHeight())) {
 		wxMessageBox(_T("Cannot allocate enough memory"),wxT("Error"),wxOK | wxICON_ERROR);
 		return true;
-	}
+	}*/
 	unsigned short *dataptr;
 	if (subframe) {
 		dataptr = Image.ImageData;
