@@ -200,6 +200,20 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
         {
             throw ERROR_INFO("Unable to set Lock Position");
         }
+
+        if (pMount && !pMount->IsCalibrated())
+        {
+            //pMount->SetCalibration(-2.61, -1.04, 0.30, 0.26);
+            pMount->SetCalibration(-2.61, -1.04, 1.0, 1.0);
+            //pMount->SetCalibration(M_PI, -M_PI/2, 1.0, 1.0);
+        }
+
+        if (pSecondaryMount && !pSecondaryMount->IsCalibrated())
+        {
+            //pSecondaryMount->SetCalibration(0.14, 1.89, 0.02, 0.02);
+            pSecondaryMount->SetCalibration(-2.61, -1.04, 1.0, 1.0);
+        }
+
     }
     catch (wxString Msg)
     {

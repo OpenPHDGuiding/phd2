@@ -291,6 +291,9 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& vector
 
         raDistance  = cos(m_raAngle -  theta) * hyp;
         decDistance = cos(m_decAngle - theta) * hyp;
+
+        Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f theta=%.2f mountX=%.2lf mountY=%.2lf",
+                vectorEndpoint.X, vectorEndpoint.Y, hyp, theta, raDistance, decDistance);
     }
     catch (wxString Msg)
     {
@@ -319,8 +322,8 @@ bool Mount::TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
 
         vectorEndpoint.SetXY(cameraX, cameraY);
 
-        Debug.AddLine(wxString::Format("MounToCamera -- raDistance=%.2f decDistance=%.2f hyp=%2.f theta=%.2f CameraX=%.2f, cameraY=%.2f",
-                raDistance, decDistance, hyp, theta, cameraX, cameraY));
+        Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f theta=%.2f cameraX=%.2f, cameraY=%.2f",
+                raDistance, decDistance, hyp, theta, cameraX, cameraY);
 
     }
     catch (wxString Msg)
@@ -400,6 +403,7 @@ bool Mount::Move(const PHD_Point& vectorEndpoint, bool normalMove)
 
 void Mount::SetCalibration(double raAngle, double decAngle, double raRate, double decRate)
 {
+    Debug.AddLine("Mount::SetCalibration -- raAngle=%.2lf decAngle=%.2lf raRate=%.2lf decRate=%.2lf", raAngle, decAngle, raRate, decRate);
     m_decAngle = decAngle;
     m_raAngle  = raAngle;
     m_decRate  = decRate;

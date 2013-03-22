@@ -51,7 +51,6 @@ public:
     bool SetState(bool bEnabled);
     bool GetState(void);
     bool Init(char *pName, bool bEnable);
-    wxString AddLine(const wxString& str); // adds a newline
     wxString AddLine(const char *format, ...); // adds a newline
     wxString AddBytes(const wxString& str, const unsigned char * const pBytes, unsigned count);
     wxString Write(const wxString& str);

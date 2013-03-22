@@ -375,6 +375,7 @@
     <ClCompile Include="scope_onboard.cpp" />
     <ClCompile Include="scope_voyager.cpp" />
     <ClCompile Include="serialport.cpp" />
+    <ClCompile Include="serialport_loopback.cpp" />
     <ClCompile Include="serialport_win32.cpp" />
     <ClCompile Include="socket_server.cpp" />
     <ClCompile Include="star.cpp" />
@@ -454,6 +455,7 @@
     <ClInclude Include="scopes.h" />
     <ClInclude Include="serialport.h" />
     <ClInclude Include="serialports.h" />
+    <ClInclude Include="serialport_loopback.h" />
     <ClInclude Include="serialport_win32.h" />
     <ClInclude Include="socket_server.h" />
     <ClInclude Include="star.h" />

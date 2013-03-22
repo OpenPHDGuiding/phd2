@@ -103,11 +103,6 @@ bool DebugLog::Init(char *pName, bool bEnable=true)
     return m_bEnabled;
 }
 
-wxString DebugLog::AddLine(const wxString& str)
-{
-    return Write(str + "\n");
-}
-
 wxString DebugLog::AddLine(const char *format, ...)
 {
     va_list args;

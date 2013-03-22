@@ -52,7 +52,11 @@ bool StepGuiderSxAO::Connect(void)
 
     try
     {
+#ifdef USE_LOOPBACK_SERIAL
+        m_pSerialPort = new SerialPortLoopback();
+#else
         m_pSerialPort = SerialPort::SerialPortFactory();
+#endif
 
         if (!m_pSerialPort)
         {

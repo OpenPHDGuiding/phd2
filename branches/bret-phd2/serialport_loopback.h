@@ -1,5 +1,5 @@
 /*
- *  serialports.h
+ *  serialport_loopback.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -33,14 +33,28 @@
  *
  */
 
-#ifndef SERIALPORTS_H_INCLUDED
-#define SERIALPORTS_H_INCLUDED
+#if !defined(SERIALPORT_LOOPBACK_H_INCLUDED)
+#define SERIALPORT_LOOPBACK_H_INCLUDED
 
-#include "serialport.h"
-#include "serialport_win32.h"
+#include "wx/msw/ole/automtn.h"
 
-#ifdef USE_LOOPBACK_SERIAL
-#include "serialport_loopback.h"
-#endif
+class SerialPortLoopback:public SerialPort
+{
+    const static int MaxDataSize = 128;
+    char m_data;
+public:
+    wxArrayString GetSerialPortList(void);
 
-#endif // SERIALPORTS_H_INCLUDED
+    SerialPortLoopback(void);
+    virtual ~SerialPortLoopback(void);
+
+    virtual bool Connect(wxString portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
+    virtual bool Disconnect(void);
+
+    virtual bool Send(const unsigned char * const pData, const unsigned count);
+
+    virtual bool SetReceiveTimeout(int timeoutMs);
+    virtual bool Receive(unsigned char *pData, const unsigned count);
+};
+
+#endif // SERIALPORT_LOOPBACK_H_INCLUDED

@@ -630,18 +630,20 @@ bool StepGuider::Move(const PHD_Point& vectorEndpoint, bool normalMove)
                 throw ERROR_INFO("Unable to transform camera coordinates");
             }
 
-            raDistance  += CurrentPosition(EAST)*RaRate();
-            decDistance += CurrentPosition(NORTH)*DecRate();
+#if 0
+            raDistance  = CurrentPosition(EAST)*RaRate();
+            decDistance = CurrentPosition(NORTH)*DecRate();
+#endif
 
-            if (fabs(decDistance) > IntegerPercent(75, MaxPosition(NORTH)*DecRate()) ||
-                fabs(raDistance) > IntegerPercent(75, MaxPosition(EAST)*RaRate()))
+            if (fabs(decDistance) > IntegerPercent(0, MaxPosition(NORTH)*DecRate()) ||
+                fabs(raDistance) > IntegerPercent(0, MaxPosition(EAST)*RaRate()))
             {
                 PHD_Point cameraOffset;
 
                 // we have to transform our notion of where we are (which is in "AO Coordinates")
                 // into "Camera Coordinates" so we can move the other mount
 
-                if (TransformMoutCoordinatesToCameraCoordinates(0.5*raDistance, 0.5*decDistance, cameraOffset))
+                if (TransformMoutCoordinatesToCameraCoordinates(raDistance, decDistance, cameraOffset))
                 {
                     throw ERROR_INFO("MountToCamera failed");
                 }

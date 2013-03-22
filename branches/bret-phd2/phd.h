@@ -36,6 +36,8 @@
 #define PHD_H_INCLUDED
  //#define ORION
 
+#include <stdarg.h>
+
 #include <wx/wx.h>
 #include <wx/image.h>
 #include <wx/string.h>
@@ -102,6 +104,8 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #if !defined (PI)
 #define PI 3.1415926
 #endif
+
+#define USE_LOOPBACK_SERIAL
 
 #define CROPXSIZE 100
 #define CROPYSIZE 100
