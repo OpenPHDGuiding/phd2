@@ -214,7 +214,7 @@ bool SerialPortWin32::Send(const unsigned char * const pData, const unsigned cou
     {
         DWORD nBytesWritten = 0;
 
-        Debug.AddLine("Sending", pData, count);
+        Debug.AddBytes("Sending", pData, count);
 
         if (!WriteFile(m_handle, pData, count, &nBytesWritten, NULL))
         {
@@ -254,7 +254,7 @@ bool SerialPortWin32::Receive(unsigned char *pData, const unsigned count)
             throw ERROR_INFO("SerialPortWin32: recieveCount != count");
         }
 
-        Debug.AddLine("Received", pData, receiveCount);
+        Debug.AddBytes("Received", pData, receiveCount);
     }
     catch (wxString Msg)
     {

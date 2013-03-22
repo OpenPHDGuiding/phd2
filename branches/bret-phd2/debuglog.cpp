@@ -108,7 +108,19 @@ wxString DebugLog::AddLine(const wxString& str)
     return Write(str + "\n");
 }
 
-wxString DebugLog::AddLine(const wxString& str, const unsigned char * const pBytes, unsigned count)
+wxString DebugLog::AddLine(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    wxString ret = Write(wxString::FormatV(format, args) + "\n");
+
+    va_end(args);
+
+    return ret;
+}
+
+wxString DebugLog::AddBytes(const wxString& str, const unsigned char * const pBytes, unsigned count)
 {
     wxString Line = str + " - ";
 

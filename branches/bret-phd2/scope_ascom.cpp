@@ -439,12 +439,12 @@ bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration) {
             throw ERROR_INFO("ASCOM Scope: pulseguide command failed");
         }
         if (swatch.Time() < (long) duration) {
-            Debug.AddLine(_T("PulseGuide returned control before completion"));
+            Debug.AddLine("PulseGuide returned control before completion");
         }
 
         while (IsGuiding(pScopeDriver)) {
             SleepEx(50,true);
-            Debug.AddLine(_T("waiting 50ms"));
+            Debug.AddLine("waiting 50ms");
         }
     }
     catch (wxString Msg)
