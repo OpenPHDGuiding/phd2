@@ -54,11 +54,13 @@ protected:
     bool m_guidingEnabled;
     bool m_calibrated;
 
-    double m_raAngle;
-    double m_raRate;
+    double m_xAngle;
+    double m_xRate;
 
-    double m_decAngle;
-    double m_decRate;
+    double m_yAngle;
+    double m_yRate;
+
+    bool m_signFactor;
 
 
     GuideAlgorithm *m_pRaGuideAlgorithm;
@@ -109,6 +111,7 @@ private:
 public:
     Mount(void);
     virtual ~Mount(void);
+    void QuickTest(void);
 
     double DecAngle(void);
     double DecRate(void);
@@ -117,15 +120,13 @@ public:
 
     bool FlipCalibration(void);
 
-    virtual bool Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
+    virtual bool Move(const PHD_Point& cameraVectorEndpoint, bool normalMove=true);
 protected:
-    bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& vectorEndpoint,
-                                                      double& raDistance,
-                                                      double& decDistance);
+    bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
+                                                      PHD_Point& mountVectorEndpoint);
 
-    bool TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
-                                                     const double decDistance,
-                                                     PHD_Point& vectorEndpoint);
+    bool TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint,
+                                                     PHD_Point& cameraVectorEndpoint);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public:

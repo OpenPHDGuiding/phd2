@@ -377,11 +377,11 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
-                m_raAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
-                m_raRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
+                m_xAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
+                m_xRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                             (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_raAngle, m_raRate);
-                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f", m_raAngle, m_raRate));
+                status1.Printf(_("angle=%.2f rate=%.2f"), m_xAngle, m_xRate);
+                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f", m_xAngle, m_xRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationIterations = 0;
@@ -412,11 +412,11 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
-                m_decAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
-                m_decRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
+                m_yAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
+                m_yRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                              (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_decAngle, m_decRate);
-                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f", m_decAngle, m_decRate));
+                status1.Printf(_("angle=%.2f rate=%.2f"), m_yAngle, m_yRate);
+                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f", m_yAngle, m_yRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationState = CALIBRATION_STATE_RECENTER;
@@ -608,51 +608,48 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
     return (double)steps;
 }
 
-bool StepGuider::Move(const PHD_Point& vectorEndpoint, bool normalMove)
+bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 {
     bool bError = false;
 
     try
     {
-        if (Mount::Move(vectorEndpoint, normalMove) )
+        if (Mount::Move(cameraVectorEndpoint, normalMove) )
         {
             throw ERROR_INFO("Mount::Move() failed");
         }
 
         if (normalMove && pSecondaryMount && !pSecondaryMount->IsBusy())
         {
-            PHD_Point origin(0,0);
-            double raDistance;
-            double decDistance;
+            PHD_Point vectorEndpoint;
 
-            if (TransformCameraCoordinatesToMountCoordinates(vectorEndpoint, raDistance, decDistance))
+            if (TransformCameraCoordinatesToMountCoordinates(cameraVectorEndpoint, vectorEndpoint))
             {
                 throw ERROR_INFO("Unable to transform camera coordinates");
             }
 
-#if 0
-            raDistance  = CurrentPosition(EAST)*RaRate();
-            decDistance = CurrentPosition(NORTH)*DecRate();
-#endif
+            vectorEndpoint.X += m_xRate*CurrentPosition(EAST);
+            vectorEndpoint.Y += m_yRate*CurrentPosition(NORTH);
 
-            if (fabs(decDistance) > IntegerPercent(0, MaxPosition(NORTH)*DecRate()) ||
-                fabs(raDistance) > IntegerPercent(0, MaxPosition(EAST)*RaRate()))
+            if (fabs(vectorEndpoint.X) > IntegerPercent(80, MaxPosition(EAST)*m_xRate) ||
+                fabs(vectorEndpoint.Y) > IntegerPercent(80, MaxPosition(NORTH)*m_yRate))
             {
-                PHD_Point cameraOffset;
+                PHD_Point neutralCameraVectorEndpoint;
 
                 // we have to transform our notion of where we are (which is in "AO Coordinates")
-                // into "Camera Coordinates" so we can move the other mount
+                // into "Camera Coordinates" so we can bump the secondary mount to put us closer
+                // to the center of the AO
 
-                if (TransformMoutCoordinatesToCameraCoordinates(raDistance, decDistance, cameraOffset))
+                if (TransformMountCoordinatesToCameraCoordinates(vectorEndpoint, neutralCameraVectorEndpoint))
                 {
                     throw ERROR_INFO("MountToCamera failed");
                 }
 
-                Debug.AddLine(wxString::Format("foo1: CP(E)=%d CP(N)=%d", CurrentPosition(EAST), CurrentPosition(NORTH)));
-                Debug.AddLine(wxString::Format("foo2: ra=%.2lf dec=%.2lf", raDistance, decDistance));
-                Debug.AddLine(wxString::Format("foo3: c.X=%.2lf c.Y=%.2lf", cameraOffset.X, cameraOffset.Y));
+                Debug.AddLine("foo1: CP(E)=%d CP(N)=%d", CurrentPosition(EAST), CurrentPosition(NORTH));
+                Debug.AddLine("foo2: ra=%.2lf dec=%.2lf", vectorEndpoint.X, vectorEndpoint.Y);
+                Debug.AddLine("foo3: c.X=%.2lf c.Y=%.2lf", neutralCameraVectorEndpoint.X, neutralCameraVectorEndpoint.Y);
 
-                pFrame->ScheduleMoveSecondary(pSecondaryMount, cameraOffset, false);
+                pFrame->ScheduleMoveSecondary(pSecondaryMount, neutralCameraVectorEndpoint, false);
             }
         }
     }

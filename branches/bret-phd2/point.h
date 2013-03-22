@@ -123,6 +123,13 @@ public:
         return Distance(*pPoint);
     }
 
+    double Distance(void) const
+    {
+        PHD_Point origin(0,0);
+
+        return Distance(origin);
+    }
+
     double Angle(PHD_Point p) const
     {
         double dX = this->dX(p);
@@ -137,6 +144,13 @@ public:
         }
 
         return dRet;
+    }
+
+    double Angle(void) const
+    {
+        PHD_Point origin(0,0);
+
+        return Angle(origin);
     }
 
     double Angle(PHD_Point *pPoint) const

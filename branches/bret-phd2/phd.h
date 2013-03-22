@@ -105,7 +105,9 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define PI 3.1415926
 #endif
 
+#if BRET_AO_DEBUG
 #define USE_LOOPBACK_SERIAL
+#endif
 
 #define CROPXSIZE 100
 #define CROPYSIZE 100

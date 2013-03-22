@@ -35,6 +35,8 @@
 
 #include "phd.h"
 
+#ifdef USE_LOOPBACK_SERIAL
+
 wxArrayString SerialPortLoopback::GetSerialPortList(void)
 {
     wxArrayString ret;
@@ -162,3 +164,5 @@ bool SerialPortLoopback::Receive(unsigned char *pData, const unsigned count)
 
     return bError;
 }
+
+#endif // USE_LOOPBACK_SERIAL

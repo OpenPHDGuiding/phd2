@@ -608,16 +608,16 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
 
-                m_raAngle = m_calibrationStartingLocation.Angle(currentLocation);
-                m_raRate = dist/(m_calibrationSteps * m_calibrationDuration);
+                m_xAngle = m_calibrationStartingLocation.Angle(currentLocation);
+                m_xRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
-                if (m_raRate == 0.0)
+                if (m_xRate == 0.0)
                 {
                     throw ERROR_INFO("invalid raRate");
                 }
 
-                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f", m_raAngle, m_raRate));
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_raAngle, m_raRate);
+                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_xAngle, m_xRate));
+                status1.Printf(_("angle=%.2f rate=%.2f"), m_xAngle, m_xRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
                 // fall through
@@ -656,16 +656,19 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
 
-                m_decAngle = m_calibrationStartingLocation.Angle(currentLocation);
-                m_decRate = dist/(m_calibrationSteps * m_calibrationDuration);
+                // note: this calculation is reversed from the ra calculation, becase
+                // that one was calibrating WEST, but the angle is really relative
+                // to EAST
+                m_yAngle = currentLocation.Angle(m_calibrationStartingLocation);
+                m_yRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
-                if (m_raRate == 0.0)
+                if (m_xRate == 0.0)
                 {
                     throw ERROR_INFO("invalid raRate");
                 }
 
-                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f", m_decAngle, m_decRate));
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_decAngle, m_decRate);
+                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_yAngle, m_yRate));
+                status1.Printf(_("angle=%.2f rate=%.2f"), m_yAngle, m_yRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
                 // fall through

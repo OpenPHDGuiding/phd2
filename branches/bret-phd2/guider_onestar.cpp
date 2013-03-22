@@ -201,19 +201,23 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
             throw ERROR_INFO("Unable to set Lock Position");
         }
 
+#ifdef BRET_AO_DEBUG
         if (pMount && !pMount->IsCalibrated())
         {
             //pMount->SetCalibration(-2.61, -1.04, 0.30, 0.26);
-            pMount->SetCalibration(-2.61, -1.04, 1.0, 1.0);
-            //pMount->SetCalibration(M_PI, -M_PI/2, 1.0, 1.0);
+            //pMount->SetCalibration(-2.61, -1.04, 1.0, 1.0);
+            //pMount->SetCalibration(0.0, M_PI/2, 0.005, 0.005);
+            pMount->SetCalibration(M_PI/4 + 0.0, M_PI/4 + M_PI/2, 1.0, 1.0);
         }
 
         if (pSecondaryMount && !pSecondaryMount->IsCalibrated())
         {
             //pSecondaryMount->SetCalibration(0.14, 1.89, 0.02, 0.02);
-            pSecondaryMount->SetCalibration(-2.61, -1.04, 1.0, 1.0);
+            //pSecondaryMount->SetCalibration(-2.61, -1.04, 1.0, 1.0);
+            //pSecondaryMount->SetCalibration(M_PI, -M_PI/2, 1.0, 1.0);
+            pSecondaryMount->SetCalibration(-M_PI/4 + 0.0, -M_PI/4 + M_PI/2, 1.0, 1.0);
         }
-
+#endif
     }
     catch (wxString Msg)
     {
@@ -395,8 +399,12 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
     wxAutoBufferedPaintDC dc(this);
     wxMemoryDC memDC;
 
-    if (!PaintHelper(dc, memDC))
+    try
     {
+        if (PaintHelper(dc, memDC))
+        {
+            throw ERROR_INFO("PaintHelper failed");
+        }
         // PaintHelper drew the image and any overlays
         // now decorate the image to show the selection
 
@@ -459,6 +467,10 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
             SaveStarFITS();
         }
         memDC.SelectObject(wxNullBitmap);
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
     }
 }
 

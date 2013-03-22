@@ -47,6 +47,7 @@ int wxMessageBoxProxy::wxMessageBox(const wxString& message, const wxString& cap
 
     if (wxThread::IsMain())
     {
+        Debug.AddLine("wxMessageBoxProxy(%s)", message);
         ret = ::wxMessageBox(message, caption, style, parent, x, y);
     }
     else

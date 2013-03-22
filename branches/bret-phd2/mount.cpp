@@ -35,6 +35,87 @@
 
 #include "phd.h"
 
+/*
+ * QuickTest() is a routine to do some sanity checking on the transform routines, which
+ * have been a source of headaches of late.
+ *
+ */
+void Mount::QuickTest(void)
+{
+#ifdef _DEBUG
+    static bool bTested = false;
+#else
+    static bool bTested = true;
+#endif
+
+    if (!bTested)
+    {
+        double angles[] = {
+            -11*M_PI/12.0,
+            -10*M_PI/12.0,
+             -9*M_PI/12.0,
+             -8*M_PI/12.0,
+             -7*M_PI/12.0,
+             -6*M_PI/12.0,
+             -5*M_PI/12.0,
+             -4*M_PI/12.0,
+             -3*M_PI/12.0,
+             -2*M_PI/12.0,
+             -1*M_PI/12.0,
+              0*M_PI/12.0,
+              1*M_PI/12.0,
+              2*M_PI/12.0,
+              3*M_PI/12.0,
+              4*M_PI/12.0,
+              5*M_PI/12.0,
+              6*M_PI/12.0,
+              7*M_PI/12.0,
+              8*M_PI/12.0,
+              9*M_PI/12.0,
+             10*M_PI/12.0,
+             11*M_PI/12.0,
+             12*M_PI/12.0,
+        };
+
+        for(int i=0;i<sizeof(angles)/sizeof(angles[0]);i++)
+        {
+            for(int inverted=0;inverted<2;inverted++)
+            {
+                if (inverted)
+                {
+                    SetCalibration(angles[i], angles[i]-M_PI/2.0, 1.0, 1.0);
+                }
+                else
+                {
+                    SetCalibration(angles[i], angles[i]+M_PI/2.0, 1.0, 1.0);
+                }
+
+                for(int j=0;j<sizeof(angles)/sizeof(angles[0]);j++)
+                {
+                    PHD_Point p0(cos(angles[j]), sin(angles[j]));
+                    PHD_Point p1, p2;
+
+                    if (TransformCameraCoordinatesToMountCoordinates(p0, p1))
+                    {
+                        assert(false);
+                    }
+
+                    if (TransformMountCoordinatesToCameraCoordinates(p1, p2))
+                    {
+                        assert(false);
+                    }
+
+                    assert(fabs(p0.X - p2.X) < 0.01);
+                    assert(fabs(p0.Y - p2.Y) < 0.01);
+                }
+            }
+        }
+
+        bTested = true;
+        ClearCalibration();
+    }
+}
+
 Mount::Mount(void)
 {
     m_connected = false;
@@ -45,6 +126,7 @@ Mount::Mount(void)
     m_guidingEnabled = true;
 
     ClearCalibration();
+    QuickTest();
 }
 
 Mount::~Mount()
@@ -214,7 +296,7 @@ double Mount::DecAngle()
 
     if (IsCalibrated())
     {
-        dReturn = m_decAngle;
+        dReturn = m_yAngle;
     }
 
     return dReturn;
@@ -226,7 +308,7 @@ double Mount::RaAngle()
 
     if (IsCalibrated())
     {
-        dReturn = m_raAngle;
+        dReturn = m_xAngle;
     }
 
     return dReturn;
@@ -238,7 +320,7 @@ double Mount::DecRate()
 
     if (IsCalibrated())
     {
-        dReturn = m_decRate;
+        dReturn = m_yRate;
     }
 
     return dReturn;
@@ -250,7 +332,7 @@ double Mount::RaRate()
 
     if (IsCalibrated())
     {
-        dReturn = m_raRate;
+        dReturn = m_xRate;
     }
 
     return dReturn;
@@ -270,91 +352,133 @@ bool Mount::Disconnect(void)
     return false;
 }
 
-bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& vectorEndpoint,
-                                                         double& raDistance,
-                                                         double& decDistance)
+/*
+ * The transform code has proven tricky to get right.  For future generations (and
+ * for me the next time I try to work on it), I'm going to put some notes here.
+ *
+ * The goal of TransformCameraCoordinatesToMountCoordinates is to transform a camera
+ * pixel * coordinate into an x and y, and TransformMountCoordinatesToCameraCoordinates
+ * does * the reverse, converting a mount x and y into pixels coordinates.
+ *
+ * Note: If a mount's x and y axis are not perfectly perpendicular, the reverse transform
+ * will not be able to accuratey reverse the forward transform. The amount of inaccuracy
+ * depends upon the perpendicular error.
+ *
+ * Instead of using cos() to get the x coordinate and sin() to get the y,
+ * we keep 2 angles, one for X and one for Y, and use cosine on both of angles
+ * to get X and Y.
+ *
+ * This has two benefits -- it transparently deals with the calibration for a mount
+ * does not showing the x and y as separated by 90 degrees. It also avoids issues caused
+ * by mirrors in the light path -- we can simply ignore the relative alignment and
+ * everything just works.
+ *
+ * I have had an converstation with Craig about this, and he confirmed that reasoning.
+ *
+ * Even though I think I understand it now, this quote that I put in when I was sure I
+ * didn't still seems relevant, so I'm leaving it.
+ *
+ * In the words of Stevie Wonder, noted Computer Scientist and  singer/songwriter
+ * of some repute:
+ *
+ * "When you believe in things that you don't understand
+ * Then you suffer
+ * Superstition ain't the way"
+ *
+ */
+
+bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
+                                                         PHD_Point& mountVectorEndpoint)
 {
     bool bError = false;
 
     try
     {
-        if (!vectorEndpoint.IsValid())
+        if (!cameraVectorEndpoint.IsValid())
         {
-            throw ERROR_INFO("invalid vectorEndPoint");
+            throw ERROR_INFO("invalid cameraVectorEndPoint");
         }
 
-        PHD_Point origin(0,0);
-        double theta = origin.Angle(vectorEndpoint);
-        double hyp   = origin.Distance(vectorEndpoint);
+        double hyp   = cameraVectorEndpoint.Distance();
+        double cameraTheta = cameraVectorEndpoint.Angle();
 
         // Convert theta and hyp into RA and DEC
 
-        raDistance  = cos(m_raAngle -  theta) * hyp;
-        decDistance = cos(m_decAngle - theta) * hyp;
+        mountVectorEndpoint.SetXY(
+            cos(cameraTheta + m_xAngle)  * hyp,
+            cos(cameraTheta + m_yAngle) * (m_signFactor?-1.0:1.0) * hyp
+            );
 
-        Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f theta=%.2f mountX=%.2lf mountY=%.2lf",
-                vectorEndpoint.X, vectorEndpoint.Y, hyp, theta, raDistance, decDistance);
+        Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2lf mountY=%.2lf",
+                cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y);
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
+        mountVectorEndpoint.Invalidate();
     }
 
     return bError;
 }
 
-bool Mount::TransformMoutCoordinatesToCameraCoordinates(const double raDistance,
-                                                        const double decDistance,
-                                                        PHD_Point& vectorEndpoint)
+bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint,
+                                                        PHD_Point& cameraVectorEndpoint)
 {
     bool bError = false;
 
     try
     {
-        PHD_Point origin(0,0);
-        PHD_Point mountPosition(raDistance, decDistance);
+        if (!mountVectorEndpoint.IsValid())
+        {
+            throw ERROR_INFO("invalid mountVectorEndPoint");
+        }
 
-        double hyp = origin.Distance(mountPosition);
-        double theta = origin.Angle(mountPosition);
-        double cameraX = cos(m_raAngle -  theta) * hyp;
-        double cameraY = cos(m_decAngle - theta) * hyp;
+        double hyp = mountVectorEndpoint.Distance();
+        double mountTheta = mountVectorEndpoint.Angle();
 
-        vectorEndpoint.SetXY(cameraX, cameraY);
 
-        Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f theta=%.2f cameraX=%.2f, cameraY=%.2f",
-                raDistance, decDistance, hyp, theta, cameraX, cameraY);
+        cameraVectorEndpoint.SetXY(
+                cos(mountTheta - m_xAngle)  * hyp,
+                cos(mountTheta - m_yAngle) * (m_signFactor?1.0:-1.0) * hyp
+                );
+
+        Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f",
+                mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y);
 
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        vectorEndpoint.Invalidate();
+        cameraVectorEndpoint.Invalidate();
     }
 
     return bError;
 }
 
-bool Mount::Move(const PHD_Point& vectorEndpoint, bool normalMove)
+bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 {
     bool bError = false;
 
     try
     {
-        double raDistance, decDistance;
+        PHD_Point mountVectorEndpoint;
 
-        if (TransformCameraCoordinatesToMountCoordinates(vectorEndpoint, raDistance, decDistance))
+        if (TransformCameraCoordinatesToMountCoordinates(cameraVectorEndpoint, mountVectorEndpoint))
         {
             throw ERROR_INFO("Unable to transform camera coordinates");
         }
 
-        Debug.AddLine(wxString::Format("Moving (%.2lf, %.2lf) raw raDistance=%.2lf decDistance=%.2lf", vectorEndpoint.X, vectorEndpoint.Y, raDistance, decDistance));
+        double raDistance = mountVectorEndpoint.X;
+        double decDistance = mountVectorEndpoint.Y;
+
+        Debug.AddLine(wxString::Format("Moving (%.2lf, %.2lf) raw raDistance=%.2lf decDistance=%.2lf", cameraVectorEndpoint.X, cameraVectorEndpoint.Y, raDistance, decDistance));
 
 
         if (normalMove)
         {
-            pFrame->GraphLog->AppendData(vectorEndpoint.X, vectorEndpoint.Y, raDistance, decDistance);
+            pFrame->GraphLog->AppendData(cameraVectorEndpoint.X, cameraVectorEndpoint.Y, raDistance, decDistance);
 
             // Feed the raw distances to the guide algorithms
 
@@ -371,10 +495,10 @@ bool Mount::Move(const PHD_Point& vectorEndpoint, bool normalMove)
 
 
         // Figure out the guide directions based on the (possibly) updated distances
-        GUIDE_DIRECTION raDirection = raDistance > 0 ? EAST : WEST;
+        GUIDE_DIRECTION raDirection = raDistance > 0 ? WEST : EAST;
         GUIDE_DIRECTION decDirection = decDistance > 0 ? SOUTH : NORTH;
 
-        double actualRaAmount  = Move(raDirection,  fabs(raDistance/m_raRate), normalMove);
+        double actualRaAmount  = Move(raDirection,  fabs(raDistance/m_xRate), normalMove);
 
         if (actualRaAmount >= 0.5)
         {
@@ -383,7 +507,7 @@ bool Mount::Move(const PHD_Point& vectorEndpoint, bool normalMove)
             Debug.AddLine(msg);
         }
 
-        double actualDecAmount = Move(decDirection, fabs(decDistance/m_decRate), normalMove);
+        double actualDecAmount = Move(decDirection, fabs(decDistance/m_yRate), normalMove);
 
         if (actualDecAmount >= 0.5)
         {
@@ -401,13 +525,18 @@ bool Mount::Move(const PHD_Point& vectorEndpoint, bool normalMove)
     return bError;
 }
 
-void Mount::SetCalibration(double raAngle, double decAngle, double raRate, double decRate)
+void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate)
 {
-    Debug.AddLine("Mount::SetCalibration -- raAngle=%.2lf decAngle=%.2lf raRate=%.2lf decRate=%.2lf", raAngle, decAngle, raRate, decRate);
-    m_decAngle = decAngle;
-    m_raAngle  = raAngle;
-    m_decRate  = decRate;
-    m_raRate   = raRate;
+    Debug.AddLine("Mount::SetCalibration -- xAngle=%.2lf yAngle=%.2lf xRate=%.2lf yRate=%.2lf", xAngle, yAngle, xRate, yRate);
+
+    m_xAngle = xAngle;
+    m_yAngle = yAngle;
+
+    m_signFactor = (xAngle < yAngle);
+
+    m_yRate  = yRate;
+    m_xRate  = xRate;
+
     m_calibrated = true;
 }
 
@@ -422,14 +551,14 @@ bool Mount::FlipCalibration(void)
     }
     else
     {
-        double orig = m_raAngle;
+        double orig = m_xAngle;
 
-        m_raAngle += PI;
-        if (m_raAngle > PI)
+        m_xAngle += PI;
+        if (m_xAngle > PI)
         {
-            m_raAngle -= 2*PI;
+            m_xAngle -= 2*PI;
         }
-        pFrame->SetStatusText(wxString::Format(_T("CAL: %.2f -> %.2f"), orig, m_raAngle),0);
+        pFrame->SetStatusText(wxString::Format(_T("CAL: %.2f -> %.2f"), orig, m_xAngle),0);
     }
 
     return bError;
