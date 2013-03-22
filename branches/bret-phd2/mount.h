@@ -60,8 +60,7 @@ protected:
     double m_yAngle;
     double m_yRate;
 
-    bool m_signFactor;
-
+    bool m_negateForward;
 
     GuideAlgorithm *m_pRaGuideAlgorithm;
     GuideAlgorithm *m_pDecGuideAlgorithm;

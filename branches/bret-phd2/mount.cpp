@@ -81,14 +81,25 @@ void Mount::QuickTest(void)
         {
             for(int inverted=0;inverted<2;inverted++)
             {
+                double xAngle = angles[i];
+                double yAngle;
+
                 if (inverted)
                 {
-                    SetCalibration(angles[i], angles[i]-M_PI/2.0, 1.0, 1.0);
+                    yAngle = xAngle-M_PI/2.0;
                 }
                 else
                 {
-                    SetCalibration(angles[i], angles[i]+M_PI/2.0, 1.0, 1.0);
+                    yAngle = xAngle+M_PI/2.0;
                 }
+
+                // normalize the angles since real callers of setCalibration
+                // will get the angle from atan2().
+
+                xAngle = atan2(sin(xAngle), cos(xAngle));
+                yAngle = atan2(sin(yAngle), cos(yAngle));
+
+                SetCalibration(xAngle, yAngle, 1.0, 1.0);
 
                 for(int j=0;j<sizeof(angles)/sizeof(angles[0]);j++)
                 {
@@ -406,7 +417,7 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
 
         mountVectorEndpoint.SetXY(
             cos(cameraTheta + m_xAngle)  * hyp,
-            cos(cameraTheta + m_yAngle) * (m_signFactor?-1.0:1.0) * hyp
+            cos(cameraTheta + m_yAngle) * (m_negateForward?-1.0:1.0) * hyp
             );
 
         Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2lf mountY=%.2lf",
@@ -440,7 +451,7 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
 
         cameraVectorEndpoint.SetXY(
                 cos(mountTheta - m_xAngle)  * hyp,
-                cos(mountTheta - m_yAngle) * (m_signFactor?1.0:-1.0) * hyp
+                cos(mountTheta - m_yAngle) * (!m_negateForward?-1.0:1.0) * hyp
                 );
 
         Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f",
@@ -532,7 +543,31 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
     m_xAngle = xAngle;
     m_yAngle = yAngle;
 
-    m_signFactor = (xAngle < yAngle);
+    // see if the angles have wrapped. To set sign factor, we need to make sure
+    // that the two angles are close "enough".
+    //
+    // For example, if we have +135 degrees and -135 degrees, these angles are
+    // 90 degrees apart but to a simple test, they show up as 270 degrees apart.
+    // If the angles show up as more than 180 degrees apart, we assume this has
+    // happended
+
+    if (fabs(xAngle - yAngle) > M_PI)
+    {
+        if (xAngle < 0)
+        {
+            assert(yAngle >= 0);
+            xAngle += 2*M_PI;
+        }
+        else
+        {
+            assert(yAngle < 0);
+            yAngle += 2*M_PI;
+        }
+    }
+
+    assert(fabs(xAngle - yAngle) <= M_PI);
+
+    m_negateForward = (xAngle < yAngle);
 
     m_yRate  = yRate;
     m_xRate  = xRate;
