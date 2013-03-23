@@ -50,11 +50,11 @@ void Config::Initialize(wxString baseConfigName)
 {
     m_pConfig = new wxConfig(baseConfigName);
 
-    m_configVersion = GetLong((char *) "ConfigVersion", 0);
+    m_configVersion = GetLong("ConfigVersion", 0);
 
     if (m_configVersion == 0)
     {
-        SetLong((char *) "ConfigVersion", CURRENT_CONFIG_VERSION);
+        SetLong("ConfigVersion", CURRENT_CONFIG_VERSION);
     }
 }
 

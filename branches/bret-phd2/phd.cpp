@@ -73,9 +73,9 @@ bool PhdApp::OnInit() {
 #endif
 
 #if defined(_DEBUG)
-    Debug.Init((char *) "debug", true);
+    Debug.Init("debug", true);
 #else
-    Debug.Init((char *) "debug", false);
+    Debug.Init("debug", false);
 #endif
     SetVendorName(_T("StarkLabs"));
     PhdConfig.Initialize(_T("PHDGuidingV2"));
