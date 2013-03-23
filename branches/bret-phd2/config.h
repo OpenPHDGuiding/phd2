@@ -74,19 +74,19 @@ class Config
 public:
     Config(void);
     ~Config(void);
-    void Initialize(wxString baseConfigName);
+    void Initialize(const wxString& baseConfigName);
 
-    bool     GetBoolean(char *pName, bool defaultValue);
-    wxString GetString(char *pName, wxString defaultValue);
-    double   GetDouble(char *pName, double defaultValue);
-    long     GetLong(char *pName, long defaultValue);
-    int      GetInt(char *pName, int defaultValue);
+    bool     GetBoolean(const char *pName, bool defaultValue);
+    wxString GetString(const char *pName, wxString defaultValue);
+    double   GetDouble(const char *pName, double defaultValue);
+    long     GetLong(const char *pName, long defaultValue);
+    int      GetInt(const char *pName, int defaultValue);
 
-    void SetBoolean(char *pName, bool value);
-    void SetString(char *pName, wxString value);
-    void SetDouble(char *pName, double value);
-    void SetLong(char *pName, long value);
-    void SetInt(char *pName, int value);
+    void SetBoolean(const char *pName, bool value);
+    void SetString(const char *pName, wxString value);
+    void SetDouble(const char *pName, double value);
+    void SetLong(const char *pName, long value);
+    void SetInt(const char *pName, int value);
 };
 
 #endif /* CONFIG_H_INCLUDED */

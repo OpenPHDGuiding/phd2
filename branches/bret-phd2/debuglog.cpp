@@ -46,7 +46,7 @@ DebugLog::DebugLog(void)
     InitVars();
 }
 
-DebugLog::DebugLog(char *pName, bool bEnabled = true)
+DebugLog::DebugLog(const char *pName, bool bEnabled = true)
 {
     InitVars();
 
@@ -73,7 +73,7 @@ bool DebugLog::GetState(void)
     return m_bEnabled;
 }
 
-bool DebugLog::Init(char *pName, bool bEnable=true)
+bool DebugLog::Init(const char *pName, bool bEnable=true)
 {
     wxCriticalSectionLocker lock(m_criticalSection);
 

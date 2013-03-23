@@ -45,12 +45,12 @@ private:
 
 public:
     DebugLog(void);
-    DebugLog(char *pName, bool bEnabled);
+    DebugLog(const char *pName, bool bEnabled);
     ~DebugLog(void);
 
     bool SetState(bool bEnabled);
     bool GetState(void);
-    bool Init(char *pName, bool bEnable);
+    bool Init(const char *pName, bool bEnable);
     wxString AddLine(const char *format, ...); // adds a newline
     wxString AddBytes(const wxString& str, const unsigned char * const pBytes, unsigned count);
     wxString Write(const wxString& str);
