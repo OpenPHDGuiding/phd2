@@ -21,6 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{304B757A-50D3-4AFA-B521-C834F3CF8D69}</ProjectGuid>
     <RootNamespace>phd</RootNamespace>
+    <ProjectName>phd2</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -128,7 +129,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>wxmsw29ud_core.lib;wxbase29ud.lib;wxexpatd.lib;wxzlibd.lib;wxmsw29ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase29ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29ud_propgrid.lib;cfitsio.lib;DICAMSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Debug/phd.exe</OutputFile>
+      <OutputFile>.\Debug/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(wxwin)\lib\vc100_dll;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -236,7 +237,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw29u_html.lib;wxbase29u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Release/phd.exe</OutputFile>
+      <OutputFile>.\Release/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(wxwin)\lib\vc100_dll;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
