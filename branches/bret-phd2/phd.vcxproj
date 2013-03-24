@@ -340,7 +340,6 @@
     <ClCompile Include="cam_VFW.cpp" />
     <ClCompile Include="cam_wdm.cpp" />
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="config.cpp" />
     <ClCompile Include="configdialog.cpp" />
     <ClCompile Include="debuglog.cpp" />
     <ClCompile Include="eegg.cpp" />
@@ -361,6 +360,7 @@
     <ClCompile Include="phd.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="phdconfig.cpp" />
     <ClCompile Include="precompiled_header.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">phd.h</PrecompiledHeaderFile>
@@ -422,7 +422,6 @@
     <ClInclude Include="cam_WDM.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cameras.h" />
-    <ClInclude Include="config.h" />
     <ClInclude Include="configdialog.h" />
     <ClInclude Include="debuglog.h" />
     <ClInclude Include="graph.h" />
@@ -442,6 +441,7 @@
     <ClInclude Include="mount.h" />
     <ClInclude Include="myframe.h" />
     <ClInclude Include="phd.h" />
+    <ClInclude Include="phdconfig.h" />
     <ClInclude Include="point.h" />
     <ClInclude Include="scope.h" />
     <ClInclude Include="scope_ascom.h" />

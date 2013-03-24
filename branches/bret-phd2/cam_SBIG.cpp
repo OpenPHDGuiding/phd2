@@ -100,7 +100,7 @@ bool Camera_SBIGClass::Connect() {
     interf.Add("USB2 direct");
     interf.Add("USB3 direct");
 #endif
-    resp = PhdConfig.GetInt("/camera/sbig/interface", 0);
+    resp = pConfig->GetInt("/camera/sbig/interface", 0);
     resp = wxGetSingleChoiceIndex(_T("Select interface"),_T("Interface"),interf,
             NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
             resp);
@@ -110,7 +110,7 @@ bool Camera_SBIGClass::Connect() {
     unsigned long ip,tmp;
     if (resp == -1) { Disconnect(); return true; }  // user hit cancel
 
-    PhdConfig.SetInt("/camera/sbig/interface", resp);
+    pConfig->SetInt("/camera/sbig/interface", resp);
 
     switch (resp) {
         case 0:
@@ -138,13 +138,13 @@ bool Camera_SBIGClass::Connect() {
         case 1:
             odp.deviceType = DEV_ETH;
             IPstr = wxGetTextFromUser(_("IP address"),_("Enter IP address"),
-                                      PhdConfig.GetString("/camera/sbig/ipaddr", _T("")));
+                                      pConfig->GetString("/camera/sbig/ipaddr", _T("")));
             if (IPstr.length() == 0)
             {
                 Disconnect();
                 return true;
             }
-            PhdConfig.SetString("/camera/sbig/ipaddr", IPstr);
+            pConfig->SetString("/camera/sbig/ipaddr", IPstr);
             tmpstr = IPstr.BeforeFirst('.');
             tmpstr.ToULong(&tmp);
             ip =  tmp << 24;

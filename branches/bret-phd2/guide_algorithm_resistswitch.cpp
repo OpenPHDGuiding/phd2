@@ -43,7 +43,7 @@ static const double DefaultMinMove      = 0.2;
 
 GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitch(void)
 {
-    double minMove  = PhdConfig.GetDouble("/GuideAlgorithm/ResistSwitch/minMove", DefaultMinMove);
+    double minMove  = pConfig->GetDouble("/GuideAlgorithm/ResistSwitch/minMove", DefaultMinMove);
     SetMinMove(minMove);
 
     reset();
@@ -179,7 +179,7 @@ bool GuideAlgorithmResistSwitch::SetMinMove(double minMove)
         m_minMove = DefaultMinMove;
     }
 
-    PhdConfig.SetDouble("/GuideAlgorithm/ResistSwitch/minMove", m_minMove);
+    pConfig->SetDouble("/GuideAlgorithm/ResistSwitch/minMove", m_minMove);
 
     Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::SetParms() returns %d, m_minMove=%.2f\n", bError, m_minMove));
 

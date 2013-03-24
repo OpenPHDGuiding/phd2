@@ -54,22 +54,22 @@ Scope::Scope(void)
 {
     m_calibrationSteps = 0;
 
-    int calibrationDuration = PhdConfig.GetInt("/scope/CalibrationDuration", DefaultCalibrationDuration);
+    int calibrationDuration = pConfig->GetInt("/scope/CalibrationDuration", DefaultCalibrationDuration);
     SetCalibrationDuration(calibrationDuration);
 
-    int maxRaDuration  = PhdConfig.GetInt("/scope/MaxRaDuration", DefaultMaxRaDuration);
+    int maxRaDuration  = pConfig->GetInt("/scope/MaxRaDuration", DefaultMaxRaDuration);
     SetMaxRaDuration(maxRaDuration);
 
-    int maxDecDuration = PhdConfig.GetInt("/scope/MaxDecDuration", DefaultMaxDecDuration);
+    int maxDecDuration = pConfig->GetInt("/scope/MaxDecDuration", DefaultMaxDecDuration);
     SetMaxDecDuration(maxDecDuration);
 
-    int decGuideMode = PhdConfig.GetInt("/scope/DecGuideMode", DefaultDecGuideMode);
+    int decGuideMode = pConfig->GetInt("/scope/DecGuideMode", DefaultDecGuideMode);
     SetDecGuideMode(decGuideMode);
 
-    int raGuideAlgorithm = PhdConfig.GetInt("/scope/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
+    int raGuideAlgorithm = pConfig->GetInt("/scope/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
     SetRaGuideAlgorithm(raGuideAlgorithm);
 
-    int decGuideAlgorithm = PhdConfig.GetInt("/scope/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
+    int decGuideAlgorithm = pConfig->GetInt("/scope/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
     SetDecGuideAlgorithm(decGuideAlgorithm);
 }
 
@@ -80,13 +80,13 @@ Scope::~Scope(void)
 void Scope::SetRaGuideAlgorithm(int guideAlgorithm)
 {
     Mount::SetRaGuideAlgorithm(guideAlgorithm, DefaultRaGuideAlgorithm);
-    PhdConfig.SetInt("/scope/RaGuideAlgorithm", GetRaGuideAlgorithm());
+    pConfig->SetInt("/scope/RaGuideAlgorithm", GetRaGuideAlgorithm());
 }
 
 void Scope::SetDecGuideAlgorithm(int guideAlgorithm)
 {
     Mount::SetDecGuideAlgorithm(guideAlgorithm, DefaultDecGuideAlgorithm);
-    PhdConfig.SetInt("/scope/DecGuideAlgorithm", GetDecGuideAlgorithm());
+    pConfig->SetInt("/scope/DecGuideAlgorithm", GetDecGuideAlgorithm());
 }
 
 int Scope::GetCalibrationDuration(void)
@@ -115,7 +115,7 @@ bool Scope::SetCalibrationDuration(int calibrationDuration)
         m_calibrationDuration = DefaultCalibrationDuration;
     }
 
-    PhdConfig.SetInt("/scope/CalibrationDuration", m_calibrationDuration);
+    pConfig->SetInt("/scope/CalibrationDuration", m_calibrationDuration);
 
     return bError;
 }
@@ -145,7 +145,7 @@ bool Scope::SetMaxDecDuration(int maxDecDuration)
         m_maxDecDuration = DefaultMaxDecDuration;
     }
 
-    PhdConfig.SetInt("/scope/MaxDecDuration", m_maxDecDuration);
+    pConfig->SetInt("/scope/MaxDecDuration", m_maxDecDuration);
 
     return bError;
 }
@@ -175,7 +175,7 @@ bool Scope::SetMaxRaDuration(double maxRaDuration)
         m_maxRaDuration = DefaultMaxRaDuration;
     }
 
-    PhdConfig.SetInt("/scope/MaxRaDuration", m_maxRaDuration);
+    pConfig->SetInt("/scope/MaxRaDuration", m_maxRaDuration);
 
     return bError;
 }
@@ -212,7 +212,7 @@ bool Scope::SetDecGuideMode(int decGuideMode)
         m_decGuideMode = (DEC_GUIDE_MODE)DefaultDecGuideMode;
     }
 
-    PhdConfig.SetInt("/scope/DecGuideMode", m_decGuideMode);
+    pConfig->SetInt("/scope/DecGuideMode", m_decGuideMode);
 
     return bError;
 }
@@ -410,7 +410,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
             if (pItem->IsChecked())
             {
                 wxString value = pItem->GetItemLabelText();
-                PhdConfig.SetString("/scope/LastMenuChoice", pItem->GetItemLabelText());
+                pConfig->SetString("/scope/LastMenuChoice", pItem->GetItemLabelText());
                 break;
             }
         }

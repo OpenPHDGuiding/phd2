@@ -107,7 +107,7 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
         }
 
         // Look in Registry to see if there is a default
-        wx_ProgID = PhdConfig.GetString("/scope/ascom/ScopeID", _T(""));
+        wx_ProgID = pConfig->GetString("/scope/ascom/ScopeID", _T(""));
         bstr_ProgID = wxBasicString(wx_ProgID).Get();
 
         // Next, try to open it
@@ -128,7 +128,7 @@ bool ScopeASCOM::Choose(wxString &wx_ProgID) {
 
         cp = uni_to_ansi(vRes.bstrVal); // Get ProgID in ANSI
         wx_ProgID = wxString::Format("%s",cp);
-        PhdConfig.SetString("/scope/ascom/ScopeID", wx_ProgID);
+        pConfig->SetString("/scope/ascom/ScopeID", wx_ProgID);
     }
     catch (wxString Msg)
     {

@@ -1,5 +1,5 @@
 /*
- *  config.h
+ *  phdconfig.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
@@ -34,8 +34,8 @@
  *
  */
 
-#ifndef CONFIG_H_INCLUDED
-#define CONFIG_H_INCLUDED
+#ifndef PHDCONFIG_H_INCLUDED
+#define PHDCONFIG_H_INCLUDED
 
 /*
  * The way configuration varialbes are handled has been
@@ -65,15 +65,16 @@
  *
  */
 
-class Config
+class PhdConfig
 {
     static const long CURRENT_CONFIG_VERSION=2001;
     long m_configVersion;
 
     wxConfig *m_pConfig;
 public:
-    Config(void);
-    ~Config(void);
+    PhdConfig(void);
+    PhdConfig(const wxString& baseConfigName);
+    ~PhdConfig(void);
     void Initialize(const wxString& baseConfigName);
 
     bool     GetBoolean(const char *pName, bool defaultValue);
@@ -89,4 +90,4 @@ public:
     void SetInt(const char *pName, int value);
 };
 
-#endif /* CONFIG_H_INCLUDED */
+#endif /* PHDCONFIG_H_INCLUDED */

@@ -46,7 +46,7 @@ StepGuider::StepGuider(void)
     m_xOffset = 0;
     m_yOffset = 0;
 
-    int calibrationStepsPerIteration = PhdConfig.GetInt("/stepguider/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
+    int calibrationStepsPerIteration = pConfig->GetInt("/stepguider/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
     SetCalibrationStepsPerIteration(calibrationStepsPerIteration);
 }
 
@@ -87,7 +87,7 @@ bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteratio
         m_calibrationStepsPerIteration = DefaultCalibrationStepsPerIteration;
     }
 
-    PhdConfig.SetInt("/stepguider/CalibrationStepsPerIteration", m_calibrationStepsPerIteration);
+    pConfig->SetInt("/stepguider/CalibrationStepsPerIteration", m_calibrationStepsPerIteration);
 
     return bError;
 }
@@ -182,7 +182,7 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
                 if (pItem->IsChecked())
                 {
                     wxString value = pItem->GetItemLabelText();
-                    PhdConfig.SetString("/stepguider/LastMenuChoice", value);
+                    pConfig->SetString("/stepguider/LastMenuChoice", value);
                     SetStatusText(value + " connected");
                     break;
                 }

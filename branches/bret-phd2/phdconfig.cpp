@@ -36,17 +36,23 @@
 
 #include "phd.h"
 
-Config::Config(void)
+PhdConfig::PhdConfig(void)
 {
     m_pConfig = NULL;
 }
 
-Config::~Config(void)
+PhdConfig::PhdConfig(const wxString& baseConfigName)
+{
+    m_pConfig = NULL;
+    Initialize(baseConfigName);
+}
+
+PhdConfig::~PhdConfig(void)
 {
     delete m_pConfig;
 }
 
-void Config::Initialize(const wxString& baseConfigName)
+void PhdConfig::Initialize(const wxString& baseConfigName)
 {
     m_pConfig = new wxConfig(baseConfigName);
 
@@ -58,7 +64,7 @@ void Config::Initialize(const wxString& baseConfigName)
     }
 }
 
-bool Config::GetBoolean(const char *pName, bool defaultValue=false)
+bool PhdConfig::GetBoolean(const char *pName, bool defaultValue=false)
 {
     bool bReturn=defaultValue;
 
@@ -70,7 +76,7 @@ bool Config::GetBoolean(const char *pName, bool defaultValue=false)
     return bReturn;
 }
 
-wxString Config::GetString(const char *pName, wxString defaultValue)
+wxString PhdConfig::GetString(const char *pName, wxString defaultValue)
 {
     wxString sReturn=defaultValue;
 
@@ -82,7 +88,7 @@ wxString Config::GetString(const char *pName, wxString defaultValue)
     return sReturn;
 }
 
-double Config::GetDouble(const char *pName, double defaultValue)
+double PhdConfig::GetDouble(const char *pName, double defaultValue)
 {
     double dReturn = defaultValue;
 
@@ -94,7 +100,7 @@ double Config::GetDouble(const char *pName, double defaultValue)
     return dReturn;
 }
 
-long Config::GetLong(const char *pName, long defaultValue)
+long PhdConfig::GetLong(const char *pName, long defaultValue)
 {
     long lReturn = defaultValue;
 
@@ -106,7 +112,7 @@ long Config::GetLong(const char *pName, long defaultValue)
     return lReturn;
 }
 
-int Config::GetInt(const char *pName, int defaultValue)
+int PhdConfig::GetInt(const char *pName, int defaultValue)
 {
     long lReturn = GetLong(pName, defaultValue);
 
@@ -114,7 +120,7 @@ int Config::GetInt(const char *pName, int defaultValue)
 }
 
 
-void Config::SetBoolean(const char *pName, bool value)
+void PhdConfig::SetBoolean(const char *pName, bool value)
 {
     if (m_pConfig)
     {
@@ -122,7 +128,7 @@ void Config::SetBoolean(const char *pName, bool value)
     }
 }
 
-void Config::SetString(const char *pName, wxString value)
+void PhdConfig::SetString(const char *pName, wxString value)
 {
     if (m_pConfig)
     {
@@ -130,7 +136,7 @@ void Config::SetString(const char *pName, wxString value)
     }
 }
 
-void Config::SetDouble(const char *pName, double value)
+void PhdConfig::SetDouble(const char *pName, double value)
 {
     if (m_pConfig)
     {
@@ -138,7 +144,7 @@ void Config::SetDouble(const char *pName, double value)
     }
 }
 
-void Config::SetLong(const char *pName, long value)
+void PhdConfig::SetLong(const char *pName, long value)
 {
     if (m_pConfig)
     {
@@ -146,7 +152,7 @@ void Config::SetLong(const char *pName, long value)
     }
 }
 
-void Config::SetInt(const char *pName, int value)
+void PhdConfig::SetInt(const char *pName, int value)
 {
     SetLong(pName, value);
 }

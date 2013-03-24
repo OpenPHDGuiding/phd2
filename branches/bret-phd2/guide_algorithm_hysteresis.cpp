@@ -45,13 +45,13 @@ static const double DefaultAggression = 1.00;
 
 GuideAlgorithmHysteresis::GuideAlgorithmHysteresis(void)
 {
-    double minMove    = PhdConfig.GetDouble("/GuideAlgorithm/Hysteresis/minMove", DefaultMinMove);
+    double minMove    = pConfig->GetDouble("/GuideAlgorithm/Hysteresis/minMove", DefaultMinMove);
     SetMinMove(minMove);
 
-    double hysteresis = PhdConfig.GetDouble("/GuideAlgorithm/Hysteresis/hysteresis", DefaultHysteresis);
+    double hysteresis = pConfig->GetDouble("/GuideAlgorithm/Hysteresis/hysteresis", DefaultHysteresis);
     SetHysteresis(hysteresis);
 
-    double aggression   = PhdConfig.GetDouble("/GuideAlgorithm/Hysteresis/aggression", DefaultAggression);
+    double aggression   = pConfig->GetDouble("/GuideAlgorithm/Hysteresis/aggression", DefaultAggression);
     SetAggression(aggression);
 
     reset();
@@ -115,7 +115,7 @@ bool GuideAlgorithmHysteresis::SetMinMove(double minMove)
         m_minMove = DefaultMinMove;
     }
 
-    PhdConfig.SetDouble("/GuideAlgorithm/Hysteresis/minMove", m_minMove);
+    pConfig->SetDouble("/GuideAlgorithm/Hysteresis/minMove", m_minMove);
 
     return bError;
 }
@@ -146,7 +146,7 @@ bool GuideAlgorithmHysteresis::SetHysteresis(double hysteresis)
         m_hysteresis = DefaultHysteresis;
     }
 
-    PhdConfig.SetDouble("/GuideAlgorithm/Hysteresis/hysteresis", m_hysteresis);
+    pConfig->SetDouble("/GuideAlgorithm/Hysteresis/hysteresis", m_hysteresis);
 
     return bError;
 }
@@ -177,7 +177,7 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
     }
 
     m_lastMove = 0.0;
-    PhdConfig.SetDouble("/GuideAlgorithm/Hysteresis/aggression", m_aggression);
+    pConfig->SetDouble("/GuideAlgorithm/Hysteresis/aggression", m_aggression);
 
     return bError;
 }

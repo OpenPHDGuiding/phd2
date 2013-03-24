@@ -61,11 +61,11 @@ END_EVENT_TABLE()
 GuiderOneStar::GuiderOneStar(wxWindow *parent):
     Guider(parent, XWinSize, YWinSize)
 {
-    double massChangeThreshold  = PhdConfig.GetDouble("/guider/onestar/MassChangeThreshold",
+    double massChangeThreshold  = pConfig->GetDouble("/guider/onestar/MassChangeThreshold",
             DefaultMassChangeThreshold);
     SetMassChangeThreshold(massChangeThreshold);
 
-    int searchRegion = PhdConfig.GetInt("/guider/onestar/SearchRegion", DefaultSearchRegion);
+    int searchRegion = pConfig->GetInt("/guider/onestar/SearchRegion", DefaultSearchRegion);
     SetSearchRegion(searchRegion);
 
     SetState(STATE_UNINITIALIZED);
@@ -102,7 +102,7 @@ bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
     }
 
     m_badMassCount = 0;
-    PhdConfig.SetDouble("/guider/onestar/MassChangeThreshold", m_massChangeThreshold);
+    pConfig->SetDouble("/guider/onestar/MassChangeThreshold", m_massChangeThreshold);
 
     return bError;
 }
@@ -131,7 +131,7 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
         m_searchRegion = DefaultSearchRegion;
     }
 
-    PhdConfig.SetInt("/guider/onestar/SearchRegion", m_searchRegion);
+    pConfig->SetInt("/guider/onestar/SearchRegion", m_searchRegion);
 
     return bError;
 }
