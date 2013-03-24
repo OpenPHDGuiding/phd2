@@ -94,7 +94,8 @@ bool PhdApp::OnInit() {
 
 int PhdApp::OnExit(void)
 {
-    delete pCamera;
+    if (pCamera) 
+        delete pCamera;
     pCamera = NULL;
 
     return wxApp::OnExit();
