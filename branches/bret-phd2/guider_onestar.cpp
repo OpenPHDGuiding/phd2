@@ -209,7 +209,9 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
             //pMount->SetCalibration(0.0, M_PI/2, 0.005, 0.005);
             pMount->SetCalibration(M_PI/4 + 0.0, M_PI/4 + M_PI/2, 1.0, 1.0);
         }
+#endif
 
+#if 0
         if (pSecondaryMount && !pSecondaryMount->IsCalibrated())
         {
             //pSecondaryMount->SetCalibration(0.14, 1.89, 0.02, 0.02);

@@ -264,7 +264,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         }
 #endif
 
-        Debug.AddLine(wxString::Format("OneExposeCompete: CaptureActive=%d", CaptureActive));
+        Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d", CaptureActive));
         if (CaptureActive)
         {
             ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());

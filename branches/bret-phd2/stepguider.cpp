@@ -628,8 +628,10 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
                 throw ERROR_INFO("Unable to transform camera coordinates");
             }
 
+#ifdef BRET_AO_DEBUG
             vectorEndpoint.X += m_xRate*CurrentPosition(EAST);
             vectorEndpoint.Y += m_yRate*CurrentPosition(NORTH);
+#endif
 
             if (fabs(vectorEndpoint.X) > IntegerPercent(80, MaxPosition(EAST)*m_xRate) ||
                 fabs(vectorEndpoint.Y) > IntegerPercent(80, MaxPosition(NORTH)*m_yRate))
@@ -644,10 +646,6 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
                 {
                     throw ERROR_INFO("MountToCamera failed");
                 }
-
-                Debug.AddLine("foo1: CP(E)=%d CP(N)=%d", CurrentPosition(EAST), CurrentPosition(NORTH));
-                Debug.AddLine("foo2: x=%.2lf y=%.2lf", vectorEndpoint.X, vectorEndpoint.Y);
-                Debug.AddLine("foo3: c.X=%.2lf c.Y=%.2lf", neutralCameraVectorEndpoint.X, neutralCameraVectorEndpoint.Y);
 
                 pFrame->ScheduleMoveSecondary(pSecondaryMount, neutralCameraVectorEndpoint, false);
             }

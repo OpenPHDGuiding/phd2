@@ -110,7 +110,6 @@ private:
 public:
     Mount(void);
     virtual ~Mount(void);
-    void QuickTest(void);
 
     double yAngle(void);
     double yRate(void);
@@ -148,7 +147,8 @@ public:
     virtual void IncrementRequestCount(void);
     virtual void DecrementRequestCount(void);
 
-    virtual bool HasNonGuiMove(void) {return false;}
+    virtual bool HasNonGuiMove(void);
+    virtual bool SynchronousOnly(void);
 
     virtual const wxString &Name(void);
 
@@ -160,7 +160,6 @@ public:
 
     virtual bool Connect(void);
     virtual bool Disconnect(void);
-
 
     virtual void ClearHistory(void);
 };

@@ -35,18 +35,15 @@
 
 #include "phd.h"
 
+#ifdef BRET_TEST_TRANSLATE
 /*
- * QuickTest() is a routine to do some sanity checking on the transform routines, which
+ * TestTranslation() is a routine to do some sanity checking on the transform routines, which
  * have been a source of headaches of late.
  *
  */
-void Mount::QuickTest(void)
+static void TestTranslation(void)
 {
-#ifdef _DEBUG
     static bool bTested = false;
-#else
-    static bool bTested = true;
-#endif
 
     if (!bTested)
     {
@@ -126,6 +123,7 @@ void Mount::QuickTest(void)
         ClearCalibration();
     }
 }
+#endif
 
 Mount::Mount(void)
 {
@@ -137,13 +135,26 @@ Mount::Mount(void)
     m_guidingEnabled = true;
 
     ClearCalibration();
-    QuickTest();
+#ifdef BRET_TEST_TRANSLATE
+    TestTranslation();
+#endif
 }
 
 Mount::~Mount()
 {
     delete m_pXGuideAlgorithm;
     delete m_pYGuideAlgorithm;
+}
+
+
+bool Mount::HasNonGuiMove(void)
+{
+    return false;
+}
+
+bool Mount::SynchronousOnly(void)
+{
+    return false;
 }
 
 bool Mount::GetGuidingEnabled(void)

@@ -39,41 +39,20 @@
 class MyFrame;
 
 /*
- * There are two worker threads.  The primary thread handles all exposure requests, and
- * move requests for the first mount.  The secondary thread handles move requests for the
+ * There are two worker threads in PHD.  The primary thread handles all exposure requests,
+ * and move requests for the first mount.  The secondary thread handles move requests for the
  * second mount, so that on systems with two mounts (probably an AO and a telescope), the
  * second mount can be moving while we image and guide with the first mount.
  *
- * The primary worker thread provides ordering - basically the upper levels enqueue things
- * in order and it processes them in order.  If there is only one mount the queue can
- * look like:
+ * The worker threads have three queues, one for move requests (higher priority)
+ * and one for exposure requests (lower priority) and one "wakeup queue". The wx queue
+ * routines do not have a way to wait on multiple queues, so there is no easy way
+ * to implement the dual queue priority model without a third queue.
  *
- * PrimaryWorkerThread's queue:
- * - mount 1 RA guide request
- * - mount 1 Dec guide request
- * - expose request
- *
- * SecondaryWorkerThread's queue:
- *  <empty>
- *
- * The requests are handled in order by the primary worker. Both the guide requests will
- * have finished before the expose request, so that the mount does not move while we take
- * the exposure.
- *
- * If there are 2 mounts, the requests to the second mount get executed by the
- * secondary thread, so the queues can look like this:
- *
- * PrimaryWorkerThread's queue:
- * - mount 1 RA guide request
- * - mount 1 Dec guide request
- * - expose request
- *
- * SecondaryWorkerThread's queue:
- * - mount 2 RA guide request
- * - mount 2 Dec guide request
- *
- *  In this case, the to mount 2 guide requests can run while the expose request runs - the
- *  theory is that the AO can keep ahead of the scope's motion.
+ * When something is enqueued on either of the work queues, a dummy message is
+ * also enqueued on the wakeup queue, which wakes the thread up.  It then finds
+ * the work item by looking first on the high priority queue and then the low
+ * priority queue.
  *
  */
 
@@ -179,7 +158,11 @@ protected:
         WORKER_REQUEST_ARGS args;
     };
 
-    wxMessageQueue<WORKER_THREAD_REQUEST> m_workerQueue;
+    void EnqueueMessage(const WORKER_THREAD_REQUEST& message);
+
+    wxMessageQueue<bool> m_wakeupQueue;
+    wxMessageQueue<WORKER_THREAD_REQUEST> m_highPriorityQueue;
+    wxMessageQueue<WORKER_THREAD_REQUEST> m_lowPriorityQueue;
 };
 
 #endif /* WORKER_THREAD_H_INCLUDED */

@@ -85,7 +85,7 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
 
     try
     {
-        Debug.AddLine(wxString::Format("Star::Find(0x%p, %d, %d, %d", pImg, searchRegion, base_x, base_y));
+        Debug.AddLine(wxString::Format("Star::Find(0x%p, %d, %d, %d)", pImg, searchRegion, base_x, base_y));
 
         if (base_x < 0 || base_y < 0)
         {

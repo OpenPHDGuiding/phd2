@@ -715,6 +715,8 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 {
     PHD_MOVE_REQUEST *pRequest = (PHD_MOVE_REQUEST *)evt.GetClientData();
 
+    Debug.AddLine("OnRequestMountMove() begins");
+
     if (pRequest->calibrationMove)
     {
         pRequest->bError = pRequest->pMount->CalibrationMove(pRequest->direction);
@@ -725,6 +727,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
     }
 
     pRequest->pSemaphore->Post();
+    Debug.AddLine("OnRequestMountMove() ends");
 }
 
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
@@ -753,6 +756,7 @@ void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
+    Debug.AddLine("ScheduleExposure(%.2lf)", exposureDuration);
 
     assert(m_pPrimaryWorkerThread);
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
@@ -761,6 +765,8 @@ void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
 void MyFrame::ScheduleMovePrimary(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
+
+    Debug.AddLine("ScheduleMovePrimary(%p, x=%.2lf, y=%.2lf, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
 
     pMount->IncrementRequestCount();
 
@@ -772,10 +778,20 @@ void MyFrame::ScheduleMoveSecondary(Mount *pMount, const PHD_Point& vectorEndpoi
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    pMount->IncrementRequestCount();
+    Debug.AddLine("ScheduleMoveSecondary(%p, x=%.2lf, y=%.2lf, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
 
-    assert(m_pSecondaryWorkerThread);
-    m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
+    if (pMount->SynchronousOnly())
+    {
+        // some mounts must run on the Primary thread even if the secondary is requested.
+        ScheduleMovePrimary(pMount, vectorEndpoint, normalMove);
+    }
+    else
+    {
+        pMount->IncrementRequestCount();
+
+        assert(m_pSecondaryWorkerThread);
+        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
+    }
 }
 
 void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction)

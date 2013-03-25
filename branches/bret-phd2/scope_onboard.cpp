@@ -109,12 +109,22 @@ bool ScopeOnCamera::Guide(const GUIDE_DIRECTION direction, const int duration)
     return bError;
 }
 
-bool ScopeOnCamera::HasNonGuiMove()
+bool ScopeOnCamera::HasNonGuiMove(void)
 {
     return pCamera->HasNonGuiMove();
 }
 
-bool ScopeOnCamera::IsGuiding()
+/*
+ * OnCamera mounts cannot move the mount while
+ * imaging
+ */
+
+bool ScopeOnCamera::SynchronousOnly(void)
+{
+    return true;
+}
+
+bool ScopeOnCamera::IsGuiding(void)
 {
     return false;
 }
