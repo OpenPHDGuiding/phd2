@@ -67,26 +67,26 @@ Scope::Scope(void)
     SetDecGuideMode(decGuideMode);
 
     int raGuideAlgorithm = pConfig->GetInt("/scope/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
-    SetRaGuideAlgorithm(raGuideAlgorithm);
+    SetXGuideAlgorithm(raGuideAlgorithm);
 
     int decGuideAlgorithm = pConfig->GetInt("/scope/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
-    SetDecGuideAlgorithm(decGuideAlgorithm);
+    SetYGuideAlgorithm(decGuideAlgorithm);
 }
 
 Scope::~Scope(void)
 {
 }
 
-void Scope::SetRaGuideAlgorithm(int guideAlgorithm)
+void Scope::SetXGuideAlgorithm(int guideAlgorithm)
 {
-    Mount::SetRaGuideAlgorithm(guideAlgorithm, DefaultRaGuideAlgorithm);
-    pConfig->SetInt("/scope/RaGuideAlgorithm", GetRaGuideAlgorithm());
+    Mount::SetXGuideAlgorithm(guideAlgorithm, DefaultRaGuideAlgorithm);
+    pConfig->SetInt("/scope/RaGuideAlgorithm", GetXGuideAlgorithm());
 }
 
-void Scope::SetDecGuideAlgorithm(int guideAlgorithm)
+void Scope::SetYGuideAlgorithm(int guideAlgorithm)
 {
-    Mount::SetDecGuideAlgorithm(guideAlgorithm, DefaultDecGuideAlgorithm);
-    pConfig->SetInt("/scope/DecGuideAlgorithm", GetDecGuideAlgorithm());
+    Mount::SetYGuideAlgorithm(guideAlgorithm, DefaultDecGuideAlgorithm);
+    pConfig->SetInt("/scope/DecGuideAlgorithm", GetYGuideAlgorithm());
 }
 
 int Scope::GetCalibrationDuration(void)
@@ -613,7 +613,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 if (m_xRate == 0.0)
                 {
-                    throw ERROR_INFO("invalid raRate");
+                    throw ERROR_INFO("invalid xRate");
                 }
 
                 Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_xAngle, m_xRate));
@@ -664,7 +664,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 if (m_xRate == 0.0)
                 {
-                    throw ERROR_INFO("invalid raRate");
+                    throw ERROR_INFO("invalid xRate");
                 }
 
                 Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_yAngle, m_yRate));

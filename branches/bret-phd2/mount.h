@@ -62,8 +62,8 @@ protected:
 
     bool m_negateForward;
 
-    GuideAlgorithm *m_pRaGuideAlgorithm;
-    GuideAlgorithm *m_pDecGuideAlgorithm;
+    GuideAlgorithm *m_pXGuideAlgorithm;
+    GuideAlgorithm *m_pYGuideAlgorithm;
 
     wxString m_Name;
 
@@ -74,10 +74,10 @@ protected:
         Mount *m_pMount;
         wxCheckBox *m_pRecalibrate;
         wxCheckBox *m_pEnableGuide;
-        wxChoice   *m_pRaGuideAlgorithm;
-        wxChoice   *m_pDecGuideAlgorithm;
-        ConfigDialogPane *m_pRaGuideAlgorithmConfigDialogPane;
-        ConfigDialogPane *m_pDecGuideAlgorithmConfigDialogPane;
+        wxChoice   *m_pXGuideAlgorithm;
+        wxChoice   *m_pYGuideAlgorithm;
+        ConfigDialogPane *m_pXGuideAlgorithmConfigDialogPane;
+        ConfigDialogPane *m_pYGuideAlgorithmConfigDialogPane;
 
         public:
         MountConfigDialogPane(wxWindow *pParent, wxString title, Mount *pMount);
@@ -87,11 +87,11 @@ protected:
         virtual void UnloadValues(void);
     };
 
-    virtual GUIDE_ALGORITHM GetRaGuideAlgorithm(void);
-    virtual void SetRaGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
+    virtual GUIDE_ALGORITHM GetXGuideAlgorithm(void);
+    virtual void SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
 
-    virtual GUIDE_ALGORITHM GetDecGuideAlgorithm(void);
-    virtual void SetDecGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
+    virtual GUIDE_ALGORITHM GetYGuideAlgorithm(void);
+    virtual void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
 
     bool GetGuidingEnabled(void);
     void SetGuidingEnabled(bool guidingEnabled);
@@ -112,10 +112,10 @@ public:
     virtual ~Mount(void);
     void QuickTest(void);
 
-    double DecAngle(void);
-    double DecRate(void);
-    double RaAngle(void);
-    double RaRate(void);
+    double yAngle(void);
+    double yRate(void);
+    double xAngle(void);
+    double xRate(void);
 
     bool FlipCalibration(void);
 
@@ -156,11 +156,11 @@ public:
 
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
+    virtual void SetCalibration(double dxAngle, double dyAngle, double dxRate, double dyRate);
 
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 
-    virtual void SetCalibration(double dRaAngle, double dDecAngle, double dRaRate, double dDecRate);
 
     virtual void ClearHistory(void);
 };

@@ -231,8 +231,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                 case OVERLAY_RADEC:
                 {
                     double r=30.0;
-                    double cos_angle = cos(pMount->RaAngle());
-                    double sin_angle = sin(pMount->RaAngle());
+                    double cos_angle = cos(pMount->xAngle());
+                    double sin_angle = sin(pMount->xAngle());
                     double StarX = pFrame->pGuider->CurrentPosition().X;
                     double StarY = pFrame->pGuider->CurrentPosition().Y;
 
@@ -241,8 +241,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
                     dc.SetPen(wxPen(pFrame->GraphLog->DEC_Color,2,wxPENSTYLE_DOT));
-                    cos_angle = cos(pMount->DecAngle());
-                    sin_angle = sin(pMount->DecAngle());
+                    cos_angle = cos(pMount->yAngle());
+                    sin_angle = sin(pMount->yAngle());
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
 
@@ -254,11 +254,11 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
 
                     double MidX = (double) XWinSize / 2.0;
                     double MidY = (double) YWinSize / 2.0;
-                    gc->Rotate(pMount->RaAngle());
+                    gc->Rotate(pMount->xAngle());
                     gc->GetTransform().TransformPoint(&MidX, &MidY);
-                    gc->Rotate(-pMount->RaAngle());
+                    gc->Rotate(-pMount->xAngle());
                     gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
-                    gc->Rotate(pMount->RaAngle());
+                    gc->Rotate(pMount->xAngle());
                     for (i=-2; i<12; i++) {
                         gc->StrokeLine(0.0,step * (double) i,
                             (double) XWinSize, step * (double) i);
@@ -266,12 +266,12 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
 
                     MidX = (double) XWinSize / 2.0;
                     MidY = (double) YWinSize / 2.0;
-                    gc->Rotate(-pMount->RaAngle());
-                    gc->Rotate(pMount->DecAngle());
+                    gc->Rotate(-pMount->xAngle());
+                    gc->Rotate(pMount->yAngle());
                     gc->GetTransform().TransformPoint(&MidX, &MidY);
-                    gc->Rotate(-pMount->DecAngle());
+                    gc->Rotate(-pMount->yAngle());
                     gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
-                    gc->Rotate(pMount->DecAngle());
+                    gc->Rotate(pMount->yAngle());
                     gc->SetPen(wxPen(pFrame->GraphLog->DEC_Color,1,wxPENSTYLE_DOT ));
                     for (i=-2; i<12; i++) {
                         gc->StrokeLine(0.0,step * (double) i,

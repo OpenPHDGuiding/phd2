@@ -152,7 +152,7 @@ GraphLogWindow::~GraphLogWindow() {
 
 }
 void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
-    if (pMount->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+    if (pMount->GetYGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
     {
         GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
 
@@ -172,7 +172,7 @@ void GraphLogWindow::OnUpdateCommandGuideParams(wxCommandEvent& WXUNUSED(evt)) {
 }
 
 void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) {
-    if (pMount->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+    if (pMount->GetYGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
     {
         GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
 
@@ -249,7 +249,7 @@ void GraphLogWindow::SetState(bool is_active) {
     this->Show(is_active);
     if (is_active)
     {
-        if (pMount->GetDecGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+        if (pMount->GetYGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
         {
             GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
             this->RAA_Ctrl->SetValue((int) (pHyst->GetAggression() * 100));

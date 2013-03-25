@@ -195,10 +195,10 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                     rx = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
                     ry = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
                     if (m_ditherRaOnly) {
-                        if (fabs(tan(pMount->RaAngle())) > 1)
-                            rx = ry / tan(pMount->RaAngle());
+                        if (fabs(tan(pMount->xAngle())) > 1)
+                            rx = ry / tan(pMount->xAngle());
                         else
-                            ry = tan(pMount->RaAngle()) * rx;
+                            ry = tan(pMount->xAngle()) * rx;
                     }
 
                     pGuider->SetLockPosition(PHD_Point(pGuider->LockPosition().Y + rx, pGuider->LockPosition().Y + ry));

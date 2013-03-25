@@ -286,9 +286,9 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
  *  - it is assumed that the stepguider starts out centered, so
  *  - The initial state moves the stepguider into the south east corner. Then,
  *  - the guider moves West for the full travel of the guider to compute the
- *    RA calibration values, then
+ *    x calibration values, then
  *  - the guider moves North for the full travel of guider to compute the
- *    dec calibration values, then
+ *    y calibration values, then
  *  - the guider returns to the center of its travel and calibration is complete
  */
 
@@ -646,7 +646,7 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
                 }
 
                 Debug.AddLine("foo1: CP(E)=%d CP(N)=%d", CurrentPosition(EAST), CurrentPosition(NORTH));
-                Debug.AddLine("foo2: ra=%.2lf dec=%.2lf", vectorEndpoint.X, vectorEndpoint.Y);
+                Debug.AddLine("foo2: x=%.2lf y=%.2lf", vectorEndpoint.X, vectorEndpoint.Y);
                 Debug.AddLine("foo3: c.X=%.2lf c.Y=%.2lf", neutralCameraVectorEndpoint.X, neutralCameraVectorEndpoint.Y);
 
                 pFrame->ScheduleMoveSecondary(pSecondaryMount, neutralCameraVectorEndpoint, false);

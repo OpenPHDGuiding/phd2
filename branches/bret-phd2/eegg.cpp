@@ -55,28 +55,28 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
     }
     else if (evt.GetId() == EEGG_MANUALCAL) {
         wxString tmpstr;
-        double RaRate   = pMount->RaRate();
-        double DecRate  = pMount->DecRate();
-        double RaAngle  = pMount->RaAngle();
-        double DecAngle = pMount->DecAngle();
+        double xRate   = pMount->xRate();
+        double yRate  = pMount->yRate();
+        double xAngle  = pMount->xAngle();
+        double yAngle = pMount->yAngle();
 
-        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("RA rate"), wxString::Format(_T("%.4f"),RaRate));
+        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("RA rate"), wxString::Format(_T("%.4f"),xRate));
         if (tmpstr.IsEmpty()) return;
-        tmpstr.ToDouble(&RaRate); // = 0.0035;
+        tmpstr.ToDouble(&xRate); // = 0.0035;
 
-        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("Dec rate"), wxString::Format(_T("%.4f"),DecRate));
+        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("Dec rate"), wxString::Format(_T("%.4f"),yRate));
         if (tmpstr.IsEmpty()) return;
-        tmpstr.ToDouble(&DecRate); // = 0.0035;
+        tmpstr.ToDouble(&yRate); // = 0.0035;
 
-        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.5)"), _("RA angle"), wxString::Format(_T("%.3f"),RaAngle));
+        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.5)"), _("RA angle"), wxString::Format(_T("%.3f"),xAngle));
         if (tmpstr.IsEmpty()) return;
-        tmpstr.ToDouble(&RaAngle); // = 0.0035;
+        tmpstr.ToDouble(&xAngle); // = 0.0035;
 
-        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Dec angle"), wxString::Format(_T("%.3f"),DecAngle));
+        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Dec angle"), wxString::Format(_T("%.3f"),yAngle));
         if (tmpstr.IsEmpty()) return;
-        tmpstr.ToDouble(&DecAngle); // = 0.0035;
+        tmpstr.ToDouble(&yAngle); // = 0.0035;
 
-        pMount->SetCalibration(RaAngle, DecAngle, RaRate, DecRate);
+        pMount->SetCalibration(xAngle, yAngle, xRate, yRate);
         SetStatusText(_T("Cal"),5);
     }
     else if (evt.GetId() == EEGG_CLEARCAL) {
@@ -87,10 +87,10 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
         if (!pMount->IsCalibrated())
             return;
 
-        double orig=pMount->RaAngle();
+        double orig=pMount->xAngle();
         pMount->FlipCalibration();
-        double RaAngle  = pMount->RaAngle();
-        wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->RaAngle()));
+        double xAngle  = pMount->xAngle();
+        wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->xAngle()));
     }
     else if (evt.GetId() == EEGG_MANUALLOCK) {
         if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
