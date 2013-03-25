@@ -179,6 +179,15 @@ public:
         return PHD_Point(this->X - subtrahend.X, this->Y - subtrahend.Y);
     }
 
+    PHD_Point operator-=(const PHD_Point& subtrahend)
+    {
+        assert(m_valid);
+        this->X -= subtrahend.X;
+        this->Y -= subtrahend.Y;
+
+        return *this;
+    }
+
     PHD_Point operator/(const double divisor)
     {
         assert(m_valid);
@@ -194,6 +203,20 @@ public:
         return *this;
     }
 
+    PHD_Point operator*(const double multiplicand)
+    {
+        assert(m_valid);
+        return PHD_Point(this->X * multiplicand, this->Y * multiplicand);
+    }
+
+    PHD_Point& operator*=(const double multiplicand)
+    {
+        assert(m_valid);
+        this->X *= multiplicand;
+        this->Y *= multiplicand;
+
+        return *this;
+    }
 };
 
 
