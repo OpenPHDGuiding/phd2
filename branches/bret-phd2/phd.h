@@ -165,7 +165,6 @@ extern GuidingLog GuideLog;
 // these seem like logging related globals
 extern wxTextFile *LogFile;
 extern bool Log_Data;
-extern int Log_Images;
 #endif
 
 #if 1

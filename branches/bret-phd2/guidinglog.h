@@ -33,19 +33,48 @@
  *
  */
 
+enum LOGGED_IMAGE_FORMAT {
+	LIF_LOW_Q_JPEG,
+	LIF_HI_Q_JPEG,
+	LIF_RAW_FITS
+};
+
 class GuidingLog
 {
     bool m_enabled;
     wxFFile m_file;
+	bool m_image_logging_enabled;
+	LOGGED_IMAGE_FORMAT m_logged_image_format;
+	int m_frame;
+	wxDateTime m_guidingStarted;
+
 public:
     GuidingLog(bool active=false);
     ~GuidingLog(void);
 
     bool EnableLogging(void);
+    bool EnableLogging(bool enabled);
     bool DisableLogging(void);
+	bool IsEnabled(void);
     bool Flush(void);
+	void Close(void);
+
+	bool EnableImageLogging(LOGGED_IMAGE_FORMAT fmt);
+	bool DisableImageLogging(void);
+	bool IsImageLoggingEnabled(void);
+	LOGGED_IMAGE_FORMAT LoggedImageFormat(void);
 
     bool StartCalibration(Mount *pCalibrationMount);
-    bool StartGuiding(void);
+    bool CalibrationFailed(Mount *pCalibrationMount, wxString msg);
+    bool CalibrationStep(Mount *pCalibrationMount, wxString direction, int steps, double dx, double dy, const PHD_Point &xy, double dist);
+    bool CalibrationWestComplete(Mount *pCalibrationMount, double angle, double rate);
+    bool CalibrationNorthComplete(Mount *pCalibrationMount, double angle, double rate);
+    bool CalibrationComplete(Mount *pCalibrationMount);
+
+    bool StartGuiding();
+    bool GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
+		double RADuration, double RADistance,
+		double DECDuration, double DECDistance, int errorCode);
+
     bool StartEntry(void);
 };

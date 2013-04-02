@@ -850,6 +850,8 @@ void MyFrame::OnClose(wxCloseEvent &event) {
     if (LogFile)
         delete LogFile;
 
+	GuideLog.Close();
+
     //delete pCamera;
     help->Quit();
     delete help;
@@ -998,9 +1000,22 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     m_pEnableLogging = new wxCheckBox(pParent, wxID_ANY,_("Enable Logging"), wxPoint(-1,-1), wxSize(75,-1));
     DoAdd(m_pEnableLogging, _("Save guide commands and info to a file?"));
 
+    m_pEnableImageLogging = new wxCheckBox(pParent, wxID_ANY,_("Enable Star-image Logging"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pEnableImageLogging, _("Save guide-star images to a sequence of files?"));
+
+    wxString img_formats[] =
+    {
+        _("Low Q JPEG"),_("High Q JPEG"),_("Raw FITS")
+    };
+
+    width = StringArrayWidth(img_formats, WXSIZEOF(img_formats));
+    m_pLoggedImageFormat = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
+            wxSize(width+35, -1), WXSIZEOF(img_formats), img_formats );
+    DoAdd(_("Image format"), m_pLoggedImageFormat,
+          _("File format of logged images"));
+
     m_pDitherRaOnly = new wxCheckBox(pParent, wxID_ANY,_("Dither RA only"), wxPoint(-1,-1), wxSize(75,-1));
     DoAdd(m_pDitherRaOnly, _("Constrain dither to RA only?"));
-
 
     width = StringWidth(_T("000.00"));
     m_pDitherScaleFactor = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
@@ -1034,8 +1049,9 @@ MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
 
 void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
 {
-    m_pEnableLogging->SetValue(Log_Data); // Note: This is a global
-
+    m_pEnableLogging->SetValue(GuideLog.IsEnabled()); 
+	m_pEnableImageLogging->SetValue(GuideLog.IsImageLoggingEnabled());
+	m_pLoggedImageFormat->SetSelection(GuideLog.LoggedImageFormat());
     m_pNoiseReduction->SetSelection(m_pFrame->GetNoiseReductionMethod());
     m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
@@ -1044,8 +1060,12 @@ void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
 
 void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
 {
-    Log_Data = m_pEnableLogging->GetValue(); // Note: This is a global
-
+	GuideLog.EnableLogging(m_pEnableLogging->GetValue());
+    Log_Data = m_pEnableLogging->GetValue(); // Note: This is a global (and will be deprecated when new GuideLog reigns)
+	if (m_pEnableImageLogging->GetValue())
+		GuideLog.EnableImageLogging((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
+	else
+		GuideLog.DisableImageLogging();
     m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
     m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
     m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());

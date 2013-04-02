@@ -53,7 +53,6 @@ GuidingLog GuideLog;
 
 wxTextFile *LogFile;
 bool Log_Data = false;
-int Log_Images = 0;
 
 int AdvDlg_fontsize = 0;
 int XWinSize = 640;
@@ -65,7 +64,6 @@ IMPLEMENT_APP(PhdApp)
 
 // ------------------------  Phd App stuff -----------------------------
 bool PhdApp::OnInit() {
-    GuideLog.EnableLogging();
 #ifndef DEBUG
     #if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
     wxDisableAsserts();

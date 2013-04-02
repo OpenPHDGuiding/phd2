@@ -85,6 +85,8 @@ public:
     virtual bool AutoSelect(usImage *pImage=NULL);
     virtual PHD_Point &CurrentPosition(void);
     virtual wxRect GetBoundingBox(void);
+	virtual double StarMass(void);
+	virtual double SNR(void);
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 private:

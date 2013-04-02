@@ -66,6 +66,8 @@ protected:
     {
         MyFrame *m_pFrame;
         wxCheckBox *m_pEnableLogging;
+        wxCheckBox *m_pEnableImageLogging;
+		wxChoice* m_pLoggedImageFormat;
         wxCheckBox *m_pDitherRaOnly;
         wxSpinCtrlDouble *m_pDitherScaleFactor;
         wxChoice *m_pNoiseReduction;

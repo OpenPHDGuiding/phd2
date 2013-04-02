@@ -537,6 +537,8 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             pFrame->SetStatusText(msg, 1, (int)actualYAmount);
             Debug.AddLine(msg);
         }
+
+		GuideLog.GuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, 0);  // errorCode??
     }
     catch (wxString Msg)
     {

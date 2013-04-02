@@ -181,7 +181,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                 }
                 m_scaleFactor = newScaleFactor;
 
-                m_displayedImage->Rescale(newWidth, newHeight);
+                m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_HIGH);
             }
 
             newImage.Resize(wxSize(XWinSize,YWinSize),wxPoint(0,0));
@@ -527,6 +527,12 @@ usImage *Guider::CurrentImage(void)
     return m_pCurrentImage;
 }
 
+wxImage *Guider::DisplayedImage(void)
+{
+	return m_displayedImage;
+}
+
+
 double Guider::ScaleFactor(void)
 {
     return m_scaleFactor;
@@ -644,6 +650,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 break;
             case STATE_CALIBRATED:
                 SetState(STATE_GUIDING);
+				GuideLog.StartGuiding();
                 break;
             case STATE_GUIDING:
                 pFrame->ScheduleMovePrimary(pMount, CurrentPosition() - LockPosition());

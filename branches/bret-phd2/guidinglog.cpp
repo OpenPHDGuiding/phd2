@@ -36,6 +36,8 @@
 #include "phd.h"
 
 GuidingLog::GuidingLog(bool active)
+	: m_image_logging_enabled(false),
+	  m_logged_image_format(LIF_LOW_Q_JPEG)
 {
     if (active)
     {
@@ -53,10 +55,10 @@ bool GuidingLog::EnableLogging(void)
 
     try
     {
+        wxDateTime now = wxDateTime::Now();
         if (!m_file.IsOpened())
         {
             wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-            wxDateTime now = wxDateTime::Now();
 
             wxString fileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_GuideLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
 
@@ -67,6 +69,9 @@ bool GuidingLog::EnableLogging(void)
         }
 
         assert(m_file.IsOpened());
+
+		m_file.Write(_T("PHD version ") VERSION PHDSUBVER _T(". Log enabled at ") + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+		Flush();
 
         m_enabled = true;
     }
@@ -79,12 +84,25 @@ bool GuidingLog::EnableLogging(void)
     return bError;
 }
 
+bool GuidingLog::EnableLogging(bool enabled)
+{
+	return enabled ? EnableLogging() : DisableLogging();
+}
+
 bool GuidingLog::DisableLogging(void)
 {
     bool bError = false;
 
     try
     {
+		if (m_enabled) {
+			assert(m_file.IsOpened());
+			wxDateTime now = wxDateTime::Now();
+
+			m_file.Write("\n");
+			m_file.Write("Log disabled at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+			Flush();
+		}
         m_enabled = false;
     }
     catch (wxString Msg)
@@ -94,6 +112,11 @@ bool GuidingLog::DisableLogging(void)
     }
 
     return bError;
+}
+
+bool GuidingLog::IsEnabled(void)
+{
+	return m_enabled;
 }
 
 bool GuidingLog::Flush(void)
@@ -121,6 +144,26 @@ bool GuidingLog::Flush(void)
     return bError;
 }
 
+void GuidingLog::Close(void)
+{
+    try
+    {
+		if (m_enabled)
+		{
+			assert(m_file.IsOpened());
+			wxDateTime now = wxDateTime::Now();
+
+			m_file.Write("\n");
+			m_file.Write("Log closed at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+			Flush();
+		}
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+}
+
 bool GuidingLog::StartCalibration(Mount *pCalibrationMount)
 {
     bool bError = false;
@@ -137,12 +180,19 @@ bool GuidingLog::StartCalibration(Mount *pCalibrationMount)
 
             assert(pCalibrationMount && pCalibrationMount->IsConnected());
 
-            m_file.Write("Mount is " + pCalibrationMount->Name() + "\n");
+            if (pCamera)
+                m_file.Write("Camera is " + pCamera->Name + "\n");
+             m_file.Write("Mount is " + pCalibrationMount->Name() + "\n");
 
-            m_file.Write(wxString::Format("Lockposition = (%.2lf, %.2lf)\n",
+            m_file.Write(wxString::Format("Lock position = (%.2lf, %.2lf), Star position = (%.2lf, %.2lf)\n",
                         pFrame->pGuider->LockPosition().X,
-                        pFrame->pGuider->LockPosition().Y));
-        }
+                        pFrame->pGuider->LockPosition().Y,
+                        pFrame->pGuider->CurrentPosition().X,
+                        pFrame->pGuider->CurrentPosition().Y));
+			m_file.Write("Direction,Step,dx,dy,x,y,Dist\n");
+
+ 			Flush();
+       }
     }
     catch (wxString Msg)
     {
@@ -153,6 +203,126 @@ bool GuidingLog::StartCalibration(Mount *pCalibrationMount)
     return bError;
 }
 
+bool GuidingLog::CalibrationFailed(Mount *pCalibrationMount, wxString msg)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            assert(m_file.IsOpened());
+			m_file.Write(msg); m_file.Write("\n");
+ 			Flush();
+       }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::CalibrationStep(Mount *pCalibrationMount, wxString direction, 
+	int steps, double dx, double dy, const PHD_Point &xy, double dist)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            assert(m_file.IsOpened());
+			// Direction,Step,dx,dy,x,y,Dist
+			m_file.Write(wxString::Format("%s,%d,%.2lf,%.2lf,%.2lf,%.2lf,%.2lf\n",
+				direction,
+				steps,
+				dx, dy,
+				xy.X, xy.Y,
+				dist));
+ 			Flush();
+       }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::CalibrationWestComplete(Mount *pCalibrationMount, double angle, double rate)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            assert(m_file.IsOpened());
+			m_file.Write(wxString::Format("West calibration complete. Angle = %.2lf, Rate = %.2lf\n",
+				angle, rate));
+ 			Flush();
+       }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::CalibrationNorthComplete(Mount *pCalibrationMount, double angle, double rate)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            assert(m_file.IsOpened());
+			m_file.Write(wxString::Format("North calibration complete. Angle = %.2lf, Rate = %.2lf\n",
+				angle, rate));
+ 			Flush();
+       }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::CalibrationComplete(Mount *pCalibrationMount)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            assert(m_file.IsOpened());
+			m_file.Write(wxString::Format("Calibration complete, mount = %s.\n", pCalibrationMount->Name()));
+ 			Flush();
+       }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+
 bool GuidingLog::StartGuiding(void)
 {
     bool bError = false;
@@ -162,9 +332,12 @@ bool GuidingLog::StartGuiding(void)
         if (m_enabled)
         {
             assert(m_file.IsOpened());
-            wxDateTime now = wxDateTime::Now();
+            wxDateTime now = wxDateTime::UNow();
 
-            m_file.Write("\n");
+ 			m_frame = 1;
+			m_guidingStarted = now;
+
+			m_file.Write("\n");
             m_file.Write("Guiding Begins at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
 
             if (pCamera)
@@ -185,6 +358,44 @@ bool GuidingLog::StartGuiding(void)
             m_file.Write(wxString::Format("Lockposition = (%.2lf, %.2lf)\n",
                         pFrame->pGuider->LockPosition().X,
                         pFrame->pGuider->LockPosition().Y));
+			m_file.Write("Frame,Time,dx,dy,Theta,RADuration,RADistance,RADirection,DECDuration,DECDistance,DECDirection,StarMass,SNR,ErrorCode\n");
+
+ 			Flush();
+       }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
+		double RADuration, double RADistance,
+		double DECDuration, double DECDistance, int errorCode)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+           assert(m_file.IsOpened());
+            m_file.Write(wxString::Format("%d,%.3lf,%s,%.3lf,%.3lf,%.3lf,%.3lf,%.3lf,%s,%.3lf,%.3lf,%c,%.lf,%.lf,%d\n",
+                    m_frame,
+					(wxDateTime::UNow() - m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0,
+					pGuideMount->Name(),
+                    vectorEndpoint.X, vectorEndpoint.Y,
+					vectorEndpoint.Angle(PHD_Point(0,0)),
+					RADuration, RADistance, (RADistance > 0 ? "E" : RADistance < 0 ? "W" : ""),
+					DECDuration, DECDistance, (DECDistance > 0 ? "S" : DECDistance < 0 ? "N" : ""),
+					pFrame->pGuider->StarMass(), pFrame->pGuider->SNR(),
+
+					errorCode));
+ 			Flush();
+			m_frame += 1;
         }
     }
     catch (wxString Msg)
@@ -195,6 +406,7 @@ bool GuidingLog::StartGuiding(void)
 
     return bError;
 }
+
 
 bool GuidingLog::StartEntry(void)
 {
@@ -215,4 +427,27 @@ bool GuidingLog::StartEntry(void)
     }
 
     return bError;
+}
+
+bool GuidingLog::EnableImageLogging(LOGGED_IMAGE_FORMAT fmt) 
+{
+	m_image_logging_enabled = true;
+	m_logged_image_format = fmt;
+	return true;
+}
+
+bool GuidingLog::DisableImageLogging(void)
+{
+	m_image_logging_enabled = false;
+	return true;
+}
+
+bool GuidingLog::IsImageLoggingEnabled(void)
+{
+	return m_image_logging_enabled;
+}
+
+LOGGED_IMAGE_FORMAT GuidingLog::LoggedImageFormat(void)
+{
+	return m_logged_image_format;
 }

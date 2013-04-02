@@ -416,9 +416,9 @@ END_EVENT_TABLE()
 
 ProfileWindow::ProfileWindow(wxWindow *parent):
 #if defined (__APPLE__)
-wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(50,77),wxCAPTION & ~wxSTAY_ON_TOP) {
+wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(110,72),wxCAPTION & ~wxSTAY_ON_TOP) {
 #else
-wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(55,90),wxCAPTION & ~wxSTAY_ON_TOP) {
+wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(115,85),wxCAPTION & ~wxSTAY_ON_TOP) {
 #endif
 
     this->visible = false;
@@ -541,5 +541,35 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
     dc.SetFont(*wxSWISS_FONT);
 #endif
     dc.DrawText(label,2,47);
+
+	// JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
+	wxImage* img = pFrame->pGuider->DisplayedImage();
+	double scaleFactor = pFrame->pGuider->ScaleFactor();
+	if (img) {
+		// grab 30 px box around lock pos, scale by 2 & display next to profile
+		double LockX = pFrame->pGuider->LockPosition().X * scaleFactor;
+		double LockY = pFrame->pGuider->LockPosition().Y * scaleFactor;
+		double dStarX = LockX - pFrame->pGuider->CurrentPosition().X * scaleFactor;
+		double dStarY = LockY - pFrame->pGuider->CurrentPosition().Y * scaleFactor;
+		// grab the subframe
+		wxBitmap dBmp(*img);
+		wxBitmap subDBmp = dBmp.GetSubBitmap(wxRect(ROUND(LockX)-15, ROUND(LockY)-15, 30, 30));
+		wxImage subDImg = subDBmp.ConvertToImage();
+		// scale by 2
+		wxBitmap zoomedDBmp(subDImg.Rescale(60, 60, wxIMAGE_QUALITY_HIGH));
+		wxMemoryDC tmpMdc;
+		tmpMdc.SelectObject(zoomedDBmp);
+		// blit into profile DC
+		dc.Blit(50, 0, 60, 60, &tmpMdc, 0, 0, wxCOPY, false);
+		// lines for the lock pos + red dot at star centroid
+		dc.SetPen(wxPen(wxColor(0,200,0),1,wxDOT));
+		dc.DrawLine(50, 30, 110, 30);
+		dc.DrawLine(50 + 30, 0, 50 + 30, 60);
+		double starX = 50 + 30 - dStarX * 2 + 1, starY = 30 - dStarY * 2 + 1;
+		if (starX >= 50) {
+			dc.SetPen(RedPen);
+			dc.DrawPoint(starX, starY);
+		}
+	}
 }
 
