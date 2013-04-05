@@ -139,7 +139,7 @@ protected:
     bool PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC);
     void SetState(GUIDER_STATE newState);
     usImage *CurrentImage(void);
-    
+
 public:
     bool IsPaused(void);
     bool SetPaused(bool paused);
@@ -182,11 +182,11 @@ public:
 
     virtual PHD_Point &CurrentPosition(void) = 0;
     virtual wxRect GetBoundingBox(void) = 0;
-	virtual double StarMass(void) = 0;
-	virtual double SNR(void) = 0;
+    virtual double StarMass(void) = 0;
+    virtual double SNR(void) = 0;
 
-	virtual wxImage *DisplayedImage(void);
-	virtual double ScaleFactor(void);
+    virtual wxImage *DisplayedImage(void);
+    virtual double ScaleFactor(void);
 
     // wxWindows Event table
 private:

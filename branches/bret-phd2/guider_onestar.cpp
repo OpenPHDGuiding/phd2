@@ -256,12 +256,12 @@ wxRect GuiderOneStar::GetBoundingBox(void)
 
 double GuiderOneStar::StarMass(void)
 {
-	return m_star.Mass;
+    return m_star.Mass;
 }
 
 double GuiderOneStar::SNR(void)
 {
-	return m_star.SNR;
+    return m_star.SNR;
 }
 
 void GuiderOneStar::InvalidateCurrentPosition(void)
@@ -450,41 +450,41 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
 
         }
 
-		// Image logging
+        // Image logging
         if (state >= STATE_SELECTED && GuideLog.IsImageLoggingEnabled()) {
-			if (GuideLog.LoggedImageFormat() == LIF_RAW_FITS) { // Save star image as a FITS
-				SaveStarFITS();
-			}
-			else {  // Save star image as a JPEG
-				double LockX = LockPosition().X;
-				double LockY = LockPosition().Y;
+            if (GuideLog.LoggedImageFormat() == LIF_RAW_FITS) { // Save star image as a FITS
+                SaveStarFITS();
+            }
+            else {  // Save star image as a JPEG
+                double LockX = LockPosition().X;
+                double LockY = LockPosition().Y;
 
-				wxBitmap SubBmp(60,60,-1);
-				wxMemoryDC tmpMdc;
-				tmpMdc.SelectObject(SubBmp);
-				memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
-				memDC.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
-				memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
-	#ifdef __APPLEX__
-				tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
-	#else
-				tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
-	#endif
+                wxBitmap SubBmp(60,60,-1);
+                wxMemoryDC tmpMdc;
+                tmpMdc.SelectObject(SubBmp);
+                memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
+                memDC.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
+                memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
+    #ifdef __APPLEX__
+                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
+    #else
+                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
+    #endif
 
-				//          tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
-				wxString fname = LogFile->GetName();
-				wxDateTime CapTime;
-				CapTime=wxDateTime::Now();
-				//full_fname = base_name + CapTime.Format("_%j_%H%M%S.fit");
-				fname = fname.BeforeLast('.') + CapTime.Format(_T("_%j_%H%M%S")) + _T(".jpg");
-				wxImage subImg = SubBmp.ConvertToImage();
-				// subImg.Rescale(120, 120);  zoom up (not now)
-				if (GuideLog.LoggedImageFormat() == LIF_HI_Q_JPEG) 
-					// set high(ish) JPEG quality
-					subImg.SetOption(wxIMAGE_OPTION_QUALITY, 100);
-				subImg.SaveFile(fname,wxBITMAP_TYPE_JPEG);
-				tmpMdc.SelectObject(wxNullBitmap);
-			}
+                //          tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
+                wxString fname = LogFile->GetName();
+                wxDateTime CapTime;
+                CapTime=wxDateTime::Now();
+                //full_fname = base_name + CapTime.Format("_%j_%H%M%S.fit");
+                fname = fname.BeforeLast('.') + CapTime.Format(_T("_%j_%H%M%S")) + _T(".jpg");
+                wxImage subImg = SubBmp.ConvertToImage();
+                // subImg.Rescale(120, 120);  zoom up (not now)
+                if (GuideLog.LoggedImageFormat() == LIF_HI_Q_JPEG)
+                    // set high(ish) JPEG quality
+                    subImg.SetOption(wxIMAGE_OPTION_QUALITY, 100);
+                subImg.SaveFile(fname,wxBITMAP_TYPE_JPEG);
+                tmpMdc.SelectObject(wxNullBitmap);
+            }
         }
         memDC.SelectObject(wxNullBitmap);
     }

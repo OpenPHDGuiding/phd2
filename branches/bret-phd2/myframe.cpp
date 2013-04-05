@@ -850,7 +850,7 @@ void MyFrame::OnClose(wxCloseEvent &event) {
     if (LogFile)
         delete LogFile;
 
-	GuideLog.Close();
+    GuideLog.Close();
 
     //delete pCamera;
     help->Quit();
@@ -1049,9 +1049,9 @@ MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
 
 void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
 {
-    m_pEnableLogging->SetValue(GuideLog.IsEnabled()); 
-	m_pEnableImageLogging->SetValue(GuideLog.IsImageLoggingEnabled());
-	m_pLoggedImageFormat->SetSelection(GuideLog.LoggedImageFormat());
+    m_pEnableLogging->SetValue(GuideLog.IsEnabled());
+    m_pEnableImageLogging->SetValue(GuideLog.IsImageLoggingEnabled());
+    m_pLoggedImageFormat->SetSelection(GuideLog.LoggedImageFormat());
     m_pNoiseReduction->SetSelection(m_pFrame->GetNoiseReductionMethod());
     m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
@@ -1060,12 +1060,12 @@ void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
 
 void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
 {
-	GuideLog.EnableLogging(m_pEnableLogging->GetValue());
+    GuideLog.EnableLogging(m_pEnableLogging->GetValue());
     Log_Data = m_pEnableLogging->GetValue(); // Note: This is a global (and will be deprecated when new GuideLog reigns)
-	if (m_pEnableImageLogging->GetValue())
-		GuideLog.EnableImageLogging((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
-	else
-		GuideLog.DisableImageLogging();
+    if (m_pEnableImageLogging->GetValue())
+        GuideLog.EnableImageLogging((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
+    else
+        GuideLog.DisableImageLogging();
     m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
     m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
     m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());

@@ -529,7 +529,7 @@ usImage *Guider::CurrentImage(void)
 
 wxImage *Guider::DisplayedImage(void)
 {
-	return m_displayedImage;
+    return m_displayedImage;
 }
 
 
@@ -650,7 +650,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 break;
             case STATE_CALIBRATED:
                 SetState(STATE_GUIDING);
-				GuideLog.StartGuiding();
+                GuideLog.StartGuiding();
                 break;
             case STATE_GUIDING:
                 pFrame->ScheduleMovePrimary(pMount, CurrentPosition() - LockPosition());

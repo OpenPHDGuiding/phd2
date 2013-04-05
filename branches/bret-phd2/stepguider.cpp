@@ -270,7 +270,7 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
         ClearCalibration();
         m_calibrationState = CALIBRATION_STATE_GOTO_SE_CORNER;
         m_calibrationStartingLocation = currentLocation;
-		GuideLog.StartCalibration(this);
+        GuideLog.StartCalibration(this);
     }
     catch (wxString Msg)
     {

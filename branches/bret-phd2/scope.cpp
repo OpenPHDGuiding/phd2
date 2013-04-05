@@ -590,7 +590,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
             }
 
             wxMessageBox(errMsg + _("star did not move enough"), _T("Alert"), wxOK | wxICON_ERROR);
-			GuideLog.CalibrationFailed(this, errMsg + _("star did not move enough"));
+            GuideLog.CalibrationFailed(this, errMsg + _("star did not move enough"));
 
             throw ERROR_INFO("Calibrate failed");
         }
@@ -605,7 +605,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 {
                     m_calibrationSteps++;
                     status0.Printf(_T("West step %3d"), m_calibrationSteps);
-					GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
+                    GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, WEST);
                     break;
                 }
@@ -620,7 +620,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_xAngle, m_xRate));
                 status1.Printf(_("angle=%.2f rate=%.2f"), m_xAngle, m_xRate);
-				GuideLog.CalibrationWestComplete(this, m_xAngle, m_xRate);
+                GuideLog.CalibrationWestComplete(this, m_xAngle, m_xRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
                 // fall through
@@ -628,7 +628,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 if (m_calibrationSteps > 0)
                 {
                     status0.Printf(_T("East step %3d"), m_calibrationSteps);
-					GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
+                    GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
                     m_calibrationSteps--;
                     pFrame->ScheduleCalibrationMove(this, EAST);
                     break;
@@ -643,7 +643,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 {
                     m_calibrationSteps++;
                     status0.Printf(_T("Clear backlash step %3d"), m_calibrationSteps);
-					GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
+                    GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH);
                     break;
                 }
@@ -657,7 +657,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 {
                     m_calibrationSteps++;
                     status0.Printf(_T("North step %3d"), m_calibrationSteps);
-					GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
+                    GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH);
                     break;
                 }
@@ -675,7 +675,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_yAngle, m_yRate));
                 status1.Printf(_("angle=%.2f rate=%.2f"), m_yAngle, m_yRate);
-				GuideLog.CalibrationNorthComplete(this, m_yAngle, m_yRate);
+                GuideLog.CalibrationNorthComplete(this, m_yAngle, m_yRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
                 // fall through
@@ -683,7 +683,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 if (m_calibrationSteps > 0)
                 {
                     status0.Printf(_T("South step %3d"), m_calibrationSteps);
-					GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
+                    GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
                     m_calibrationSteps--;
                     pFrame->ScheduleCalibrationMove(this, SOUTH);
                     break;
@@ -694,7 +694,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrated = true;
                 pFrame->SetStatusText(_T("calibration complete"),1);
                 pFrame->SetStatusText(_T("Cal"),5);
-				GuideLog.CalibrationComplete(this);
+                GuideLog.CalibrationComplete(this);
                 break;
         }
 

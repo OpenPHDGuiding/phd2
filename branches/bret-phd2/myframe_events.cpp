@@ -383,7 +383,7 @@ void MyFrame::OnStarProfile(wxCommandEvent &evt) {
 void MyFrame::OnLog(wxCommandEvent &evt) {
     if (evt.GetId() == MENU_LOG) {
         if (evt.IsChecked()) {  // enable it
-			GuideLog.EnableLogging();
+            GuideLog.EnableLogging();
             Log_Data = true;
             if (!LogFile->IsOpened()) {
                 if (LogFile->Exists()) LogFile->Open();
@@ -401,7 +401,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
                 LogFile->Write();
                 LogFile->Close();
             }
-			GuideLog.DisableLogging();
+            GuideLog.DisableLogging();
             Log_Data = false;
             this->SetTitle(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
         }
@@ -413,11 +413,11 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 #endif
             tools_menu->FindItem(MENU_LOGIMAGES)->SetItemLabel(_("Enable Raw Star logging"));
             if (evt.IsChecked()) {
-				GuideLog.EnableImageLogging(LIF_RAW_FITS);
-			}
+                GuideLog.EnableImageLogging(LIF_RAW_FITS);
+            }
             else {
-				GuideLog.DisableImageLogging();
-			}
+                GuideLog.DisableImageLogging();
+            }
         }
         else {
 #ifdef __WINDOWS__
@@ -425,11 +425,11 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 #endif
             tools_menu->FindItem(MENU_LOGIMAGES)->SetText(_("Enable Star Image logging"));
             if (evt.IsChecked()) {
-				GuideLog.EnableImageLogging(LIF_LOW_Q_JPEG);
-			}
+                GuideLog.EnableImageLogging(LIF_LOW_Q_JPEG);
+            }
             else {
-				GuideLog.DisableImageLogging();
-			}
+                GuideLog.DisableImageLogging();
+            }
         }
         Menubar->Refresh();
     } else if (evt.GetId() == MENU_DEBUG)
