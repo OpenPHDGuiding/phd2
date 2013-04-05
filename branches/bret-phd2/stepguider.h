@@ -95,11 +95,11 @@ public:
     virtual void ClearCalibration(void);
 
     virtual bool GuidingCeases(void);
-    virtual bool Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
 
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:
+    virtual bool Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
     double Move(GUIDE_DIRECTION direction, double amount, bool normalMove=true);
     bool CalibrationMove(GUIDE_DIRECTION direction);
 

@@ -570,31 +570,6 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
         double dist = m_calibrationStartingLocation.Distance(currentLocation);
         double dist_crit = wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
 
-        if (m_calibrationSteps > MAX_CALIBRATION_STEPS)
-        {
-            wxString errMsg;
-
-            switch(m_calibrationState)
-            {
-                case CALIBRATION_STATE_GO_WEST:
-                case CALIBRATION_STATE_GO_EAST:
-                    errMsg.Printf(_("RA Calibration Failed:"));
-                    break;
-                case CALIBRATION_STATE_CLEAR_BACKLASH:
-                    errMsg.Printf(_("Backlash Clearing Failed:"));
-                     break;
-                case CALIBRATION_STATE_GO_NORTH:
-                case CALIBRATION_STATE_GO_SOUTH:
-                    errMsg.Printf(_("DEC Calibration Failed:"));
-                    break;
-            }
-
-            wxMessageBox(errMsg + _("star did not move enough"), _T("Alert"), wxOK | wxICON_ERROR);
-            GuideLog.CalibrationFailed(this, errMsg + _("star did not move enough"));
-
-            throw ERROR_INFO("Calibrate failed");
-        }
-
         switch (m_calibrationState)
         {
             case CALIBRATION_STATE_CLEARED:
@@ -603,7 +578,13 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_GO_WEST:
                 if (dist < dist_crit)
                 {
-                    m_calibrationSteps++;
+                    if (m_calibrationSteps++  > MAX_CALIBRATION_STEPS)
+                    {
+                        wxString msg(_("RA Calibration Failed: star did not move enough"));
+                        wxMessageBox(msg, _T("Alert"), wxOK | wxICON_ERROR);
+                        GuideLog.CalibrationFailed(this, msg);
+                        throw ERROR_INFO("Calibrate failed");
+                    }
                     status0.Printf(_T("West step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, WEST);
@@ -624,6 +605,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
                 // fall through
+                Debug.AddLine("Falling Through to state GO_EAST");
             case CALIBRATION_STATE_GO_EAST:
                 if (m_calibrationSteps > 0)
                 {
@@ -633,15 +615,21 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     pFrame->ScheduleCalibrationMove(this, EAST);
                     break;
                 }
-                m_calibrationSteps = 0;
-                dist = 0.0;
+                m_calibrationSteps = 0; dist = 0.0;
                 m_calibrationStartingLocation = currentLocation;
                 m_calibrationState = CALIBRATION_STATE_CLEAR_BACKLASH;
                 // fall through
+                Debug.AddLine("Falling Through to state CLEAR_BACKLASH");
             case CALIBRATION_STATE_CLEAR_BACKLASH:
                 if (dist < DEC_BACKLASH_DISTANCE)
                 {
-                    m_calibrationSteps++;
+                    if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
+                    {
+                        wxString msg(_("Backlash Clearing Failed: star did not move enough"));
+                        wxMessageBox(msg, _T("Alert"), wxOK | wxICON_ERROR);
+                        GuideLog.CalibrationFailed(this, msg);
+                        throw ERROR_INFO("Calibrate failed");
+                    }
                     status0.Printf(_T("Clear backlash step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH);
@@ -652,10 +640,17 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationStartingLocation = currentLocation;
                 m_calibrationState = CALIBRATION_STATE_GO_NORTH;
                 // fall through
+                Debug.AddLine("Falling Through to state GO_NORTH");
             case CALIBRATION_STATE_GO_NORTH:
                 if (dist < dist_crit)
                 {
-                    m_calibrationSteps++;
+                    if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
+                    {
+                        wxString msg(_("DEC Calibration Failed: star did not move enough"));
+                        wxMessageBox(msg, _T("Alert"), wxOK | wxICON_ERROR);
+                        GuideLog.CalibrationFailed(this, msg);
+                        throw ERROR_INFO("Calibrate failed");
+                    }
                     status0.Printf(_T("North step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH);
@@ -679,6 +674,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
                 // fall through
+                Debug.AddLine("Falling Through to state GO_SOUTH");
             case CALIBRATION_STATE_GO_SOUTH:
                 if (m_calibrationSteps > 0)
                 {
@@ -690,11 +686,13 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 }
                 m_calibrationState = CALIBRATION_STATE_COMPLETE;
                 // fall through
+                Debug.AddLine("Falling Through to state CALIBRATION_COMPLETE");
             case CALIBRATION_STATE_COMPLETE:
                 m_calibrated = true;
                 pFrame->SetStatusText(_T("calibration complete"),1);
                 pFrame->SetStatusText(_T("Cal"),5);
                 GuideLog.CalibrationComplete(this);
+                Debug.AddLine("Calibration Complete");
                 break;
         }
 
@@ -708,8 +706,15 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 status1.Printf(_T("dx=%4.1f dy=%4.1f dist=%4.1f"), dX, dY, dist);
             }
+        }
 
+        if (!status0.IsEmpty())
+        {
             pFrame->SetStatusText(status0, 0);
+        }
+
+        if (!status1.IsEmpty())
+        {
             pFrame->SetStatusText(status1, 1);
         }
     }

@@ -343,9 +343,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_AVERAGE_STARTING_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
+                status0.Printf(_("Averaging: %3d"), CALIBRATION_AVERAGE_NSAMPLES-m_calibrationAverageSamples+1);
                 if (m_calibrationAverageSamples < CALIBRATION_AVERAGE_NSAMPLES)
                 {
-                    status0.Printf(_("Averaging: %3d"), CALIBRATION_AVERAGE_NSAMPLES-m_calibrationAverageSamples+1);
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
@@ -372,9 +372,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_AVERAGE_CENTER_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
+                status0.Printf(_("Averaging: %3d"), CALIBRATION_AVERAGE_NSAMPLES-m_calibrationAverageSamples+1);
                 if (m_calibrationAverageSamples < CALIBRATION_AVERAGE_NSAMPLES)
                 {
-                    status0.Printf(_("Averaging: %3d"), CALIBRATION_AVERAGE_NSAMPLES-m_calibrationAverageSamples+1);
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
@@ -398,7 +398,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     moveNorth = true;
                     break;
                 }
-                Debug.AddLine(wxString::Format("Falling through to state AVERAGE_ENDIONG_LOCATION, position=(%.2lf, %.2lf)",
+                Debug.AddLine(wxString::Format("Falling through to state AVERAGE_ENDING_LOCATION, position=(%.2lf, %.2lf)",
                                                 currentLocation.X, currentLocation.Y));
                 m_calibrationAverageSamples = 0;
                 m_calibrationAveragedLocation.SetXY(0.0, 0.0);
@@ -407,9 +407,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_AVERAGE_ENDING_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
+                status0.Printf(_("Averaging: %3d"), CALIBRATION_AVERAGE_NSAMPLES-m_calibrationAverageSamples+1);
                 if (m_calibrationAverageSamples < CALIBRATION_AVERAGE_NSAMPLES)
                 {
-                    status0.Printf(_("Averaging: %3d"), CALIBRATION_AVERAGE_NSAMPLES-m_calibrationAverageSamples+1);
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
@@ -421,6 +421,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationState = CALIBRATION_STATE_RECENTER;
+                Debug.AddLine(wxString::Format("Falling through to state RECENTER, position=(%.2lf, %.2lf)",
+                                                currentLocation.X, currentLocation.Y));
                 // fall through
             case CALIBRATION_STATE_RECENTER:
                 status0.Printf(_("Finish Calibration: %3d"), stepsRemainingSE/2);
@@ -432,11 +434,14 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
                 m_calibrationState = CALIBRATION_STATE_COMPLETE;
+                Debug.AddLine(wxString::Format("Falling through to state COMPLETE, position=(%.2lf, %.2lf)",
+                                                currentLocation.X, currentLocation.Y));
                 // fall through
             case CALIBRATION_STATE_COMPLETE:
                 m_calibrated = true;
                 status1 = _T("calibration complete");
                 pFrame->SetStatusText(_T("Cal"),5);
+                Debug.AddLine("Calibration Complete");
                 break;
             default:
                 assert(false);
@@ -469,7 +474,6 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
 
         if (m_calibrationState != CALIBRATION_STATE_COMPLETE)
         {
-
             if (status1.IsEmpty())
             {
                 double dX = m_calibrationStartingLocation.dX(currentLocation);
@@ -477,8 +481,15 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 double dist = m_calibrationStartingLocation.Distance(currentLocation);
                 status1.Printf(_T("dx=%4.1f dy=%4.1f dist=%4.1f"), dX, dY, dist);
             }
+        }
 
+        if (!status0.IsEmpty())
+        {
             pFrame->SetStatusText(status0, 0);
+        }
+
+        if (!status1.IsEmpty())
+        {
             pFrame->SetStatusText(status1, 1);
         }
     }
@@ -517,7 +528,24 @@ bool StepGuider::GuidingCeases(void)
 
 bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
 {
-    return Move(direction, m_calibrationStepsPerIteration, false) == m_calibrationStepsPerIteration;
+    bool bError = false;
+
+    try
+    {
+        double stepsTaken = Move(direction, m_calibrationStepsPerIteration, false);
+
+        if (stepsTaken != m_calibrationStepsPerIteration)
+        {
+            throw THROW_INFO("stepsTaken != m_calibrationStepsPerIteration");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
 }
 
 double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMove)
@@ -615,41 +643,35 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
     try
     {
-        if (Mount::Move(cameraVectorEndpoint, normalMove) )
-        {
-            throw ERROR_INFO("Mount::Move() failed");
-        }
+        bool moveFailed = Mount::Move(cameraVectorEndpoint, normalMove);
 
-        if (normalMove && pSecondaryMount && !pSecondaryMount->IsBusy())
+        // see if we need to "bump" the secondary mount
+        if (normalMove &&                                                               // we only bump for normal moves
+            pSecondaryMount &&                                                          // if there is a mount to bump
+            !pSecondaryMount->IsBusy() &&                                               // and it can't already be busy
+            (moveFailed ||                                                              // and either the attempt to move the AO failed
+             fabs((double)CurrentPosition(EAST))  > IntegerPercent(80, MaxPosition(EAST)) ||    // or the AO is nearing the end of it's travel
+             fabs((double)CurrentPosition(NORTH)) > IntegerPercent(80, MaxPosition(NORTH))))
         {
-            PHD_Point vectorEndpoint;
+            PHD_Point vectorEndpoint(m_xRate*CurrentPosition(EAST),
+                                     m_yRate*CurrentPosition(NORTH));
 
-            if (TransformCameraCoordinatesToMountCoordinates(cameraVectorEndpoint, vectorEndpoint))
+            PHD_Point neutralCameraVectorEndpoint;
+
+            // we have to transform our notion of where we are (which is in "AO Coordinates")
+            // into "Camera Coordinates" so we can bump the secondary mount to put us closer
+            // to the center of the AO
+
+            if (TransformMountCoordinatesToCameraCoordinates(vectorEndpoint, neutralCameraVectorEndpoint))
             {
-                throw ERROR_INFO("Unable to transform camera coordinates");
+                throw ERROR_INFO("MountToCamera failed");
             }
 
 #ifdef BRET_AO_DEBUG
-            vectorEndpoint.X += m_xRate*CurrentPosition(EAST);
-            vectorEndpoint.Y += m_yRate*CurrentPosition(NORTH);
+            neutralCameraVectorEndpoint += cameraVectorEndpoint;
 #endif
 
-            if (fabs(vectorEndpoint.X) > IntegerPercent(80, MaxPosition(EAST)*m_xRate) ||
-                fabs(vectorEndpoint.Y) > IntegerPercent(80, MaxPosition(NORTH)*m_yRate))
-            {
-                PHD_Point neutralCameraVectorEndpoint;
-
-                // we have to transform our notion of where we are (which is in "AO Coordinates")
-                // into "Camera Coordinates" so we can bump the secondary mount to put us closer
-                // to the center of the AO
-
-                if (TransformMountCoordinatesToCameraCoordinates(vectorEndpoint, neutralCameraVectorEndpoint))
-                {
-                    throw ERROR_INFO("MountToCamera failed");
-                }
-
-                pFrame->ScheduleMoveSecondary(pSecondaryMount, neutralCameraVectorEndpoint, false);
-            }
+            pFrame->ScheduleMoveSecondary(pSecondaryMount, neutralCameraVectorEndpoint, false);
         }
     }
     catch (wxString Msg)

@@ -497,7 +497,6 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         Debug.AddLine(wxString::Format("Moving (%.2lf, %.2lf) raw xDistance=%.2lf yDistance=%.2lf", cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance));
 
-
         if (normalMove)
         {
             pFrame->GraphLog->AppendData(cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance);
@@ -515,12 +514,16 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             }
         }
 
-
         // Figure out the guide directions based on the (possibly) updated distances
         GUIDE_DIRECTION xDirection = xDistance > 0 ? WEST : EAST;
         GUIDE_DIRECTION yDirection = yDistance > 0 ? SOUTH : NORTH;
 
         double actualXAmount  = Move(xDirection,  fabs(xDistance/m_xRate), normalMove);
+
+        if (actualXAmount < 0.0)
+        {
+            throw ERROR_INFO("ActualXAmount < 0");
+        }
 
         if (actualXAmount >= 0.5)
         {
@@ -530,6 +533,11 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         }
 
         double actualYAmount = Move(yDirection, fabs(yDistance/m_yRate), normalMove);
+
+        if (actualYAmount < 0.0)
+        {
+            throw ERROR_INFO("ActualYAmount < 0");
+        }
 
         if (actualYAmount >= 0.5)
         {
