@@ -77,16 +77,16 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Craig_Release|Win32'">false</LinkIncremental>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</EmbedManifest>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Craig_Release|Win32'">true</EmbedManifest>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(WXWIN)\include\msvc;$(WXWIN)\include;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\dev\opencv\build\include\opencv;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Craig_Debug|Win32'">$(WXWIN)\include\msvc;$(WXWIN)\include;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\dev\opencv\build\include\opencv;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(WXWIN)\include\msvc;$(WXWIN)\include;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\dev\opencv\build\include\opencv;C:\dev\opencv\build\include\;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Craig_Debug|Win32'">$(WXWIN)\include\msvc;$(WXWIN)\include;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\dev\opencv\build\include\opencv;c:\dev\opencv\build\include\;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(WXWIN)\include\msvc;$(WXWIN)\include;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\dev\opencv\build\include\opencv;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Craig_Release|Win32'">$(WXWIN)\include\msvc;$(WXWIN)\include;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\dev\opencv\build\include\opencv;c:\dev\opencv\build\include\;$(IncludePath)</IncludePath>
     <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./cameras; $(VCInstallDir)atlmfc\lib;$(VCInstallDir)lib</ReferencePath>
     <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Craig_Release|Win32'">./cameras; $(VCInstallDir)atlmfc\lib;$(VCInstallDir)lib</ReferencePath>
     <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./cameras; $(VCInstallDir)atlmfc\lib;$(VCInstallDir)lib</ReferencePath>
     <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Craig_Debug|Win32'">./cameras; $(VCInstallDir)atlmfc\lib;$(VCInstallDir)lib</ReferencePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(WXWIN)\lib\vc_lib;C:\Program Files (x86)\Visual Leak Detector\lib\Win32;C:\dev\opencv\build\x86\vc10\staticlib;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Craig_Debug|Win32'">$(WXWIN)\lib\vc_lib;C:\Program Files (x86)\Visual Leak Detector\lib\Win32;C:\dev\opencv\build\x86\vc10\staticlib;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(WXWIN)\lib\vc_lib;C:\Program Files (x86)\Visual Leak Detector\lib\Win32;C:\dev\opencv\build\x86\vc10\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Craig_Debug|Win32'">$(WXWIN)\lib\vc_lib;C:\Program Files (x86)\Visual Leak Detector\lib\Win32;C:\dev\opencv\build\x86\vc10\lib;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Program Files (x86)\Visual Leak Detector\lib\Win32;$(WXWIN)\lib\vc_lib;C:\dev\opencv\build\x86\vc10\staticlib;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Craig_Release|Win32'">C:\Program Files (x86)\Visual Leak Detector\lib\Win32;$(WXWIN)\lib\vc_lib;C:\dev\opencv\build\x86\vc10\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -104,7 +104,7 @@
       <AdditionalOptions>/D "_CRT_SECURE_NO_DEPRECATE" /D "_CRT_NONSTDC_NO_DEPRECATE" %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(CFITSIO);$(WXWIN)\lib\vc_lib\mswud;cameras\VidCapture;cameras;cameras\TIS\include;C:\dev\fits;C:\dev\opencv\include\opencv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_WIN7;NOPCH;__WINDOWS__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_WIN7;NOPCH;__WINDOWS__;HAVE_OPENCV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -124,7 +124,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw29ud_core.lib;wxbase29ud.lib;wxexpatd.lib;wxzlibd.lib;wxmsw29ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase29ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29ud_propgrid.lib;cfitsio.lib;DICAMSDK.lib;opencv_core244.lib;opencv_highgui244.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw29ud_core.lib;wxbase29ud.lib;wxexpatd.lib;wxzlibd.lib;wxmsw29ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase29ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29ud_propgrid.lib;cfitsio.lib;DICAMSDK.lib;opencv_core244.lib;opencv_highgui244.lib;opencv_imgproc244.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug/phd.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -177,7 +177,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw29ud_core.lib;wxbase29ud.lib;wxexpatd.lib;wxzlibd.lib;wxmsw29ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase29ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29ud_propgrid.lib;cfitsio.lib;DICAMSDK.lib;OSPL130RT.lib;TIS_UDSHL09_vc10d.lib;opencv_core244.lib;opencv_highgui244.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw29ud_core.lib;wxbase29ud.lib;wxexpatd.lib;wxzlibd.lib;wxmsw29ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase29ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29ud_propgrid.lib;cfitsio.lib;DICAMSDK.lib;OSPL130RT.lib;TIS_UDSHL09_vc10d.lib;opencv_core244.lib;opencv_highgui244.lib;opencv_imgproc244.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug/phd.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>cameras;cameras\VidCapture;cameras\TIS\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -230,7 +230,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw29u_html.lib;wxbase29u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;opencv_core244.lib;opencv_highgui244.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw29u_html.lib;wxbase29u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;opencv_core244.lib;opencv_highgui244.lib;opencv_imgproc244.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Release/phd.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

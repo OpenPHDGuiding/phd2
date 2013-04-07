@@ -46,11 +46,36 @@ Camera_OpenCVClass::Camera_OpenCVClass() {
 	Name=_T("OpenCV");
 	FullSize = wxSize(640,480);
 	HasGuiderOutput = false;
-
+	CapDev = NULL;
 }
 
 bool Camera_OpenCVClass::Connect() {
-    CapDev = new VideoCapture(0);
+	int ncams = 0;
+	bool still_search = true;
+
+	VideoCapture tmpcap;
+	wxArrayString CamNames;
+	while (still_search) {
+		still_search = tmpcap.open(ncams);
+		if (still_search) {
+			CamNames.Add(wxString::Format("OpenCV %d - %d x %d",ncams,(int) tmpcap.get(CV_CAP_PROP_FRAME_WIDTH),(int) tmpcap.get(CV_CAP_PROP_FRAME_HEIGHT)));
+			ncams++;
+			tmpcap.release();
+		}
+	}
+	//wxMessageBox(wxString::Format("%d %d",ncams,CamNames.Count()));
+	if (ncams == 0)
+		return true;
+	int DeviceNum = 0;
+	if (ncams > 1)
+		DeviceNum = wxGetSingleChoiceIndex(_T("Select OpenCV camera"),_T("Camera choice"),CamNames);
+	if (DeviceNum == -1)
+		return true;
+
+    if (!CapDev)
+		CapDev = new VideoCapture(DeviceNum);
+	else // already have the valid pointer
+		CapDev->open(DeviceNum);
     if (!CapDev->isOpened())
         return true;
  	Connected = TRUE;
@@ -61,7 +86,12 @@ bool Camera_OpenCVClass::Disconnect() {
 	Connected = FALSE;
 	CurrentGuideCamera = NULL;
 	GuideCameraConnected = false;
-    delete CapDev;
+    if (CapDev) {
+		if (CapDev->isOpened())
+			CapDev->release();
+//		delete CapDev;
+	}
+//	CapDev = NULL;
 	return false;
 }
 
