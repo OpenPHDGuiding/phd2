@@ -206,7 +206,8 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	Cameras.Add(_T("StarShoot Planetary Imager & Autoguider"));
 #endif
 #if defined (OPENCV_CAMERA)
-	Cameras.Add(_T("OpenCV webcam"));
+	Cameras.Add(_T("OpenCV webcam 1"));
+	Cameras.Add(_T("OpenCV webcam 2"));
 #endif
 #if defined (OS_PL130)
 	Cameras.Add(_T("Opticstar PL-130M"));
@@ -354,8 +355,13 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 	}
 #endif
 #if defined (OPENCV_CAMERA)
-	else if (Choice.Find(_T("OpenCV webcam")) + 1)
+	else if (Choice.Find(_T("OpenCV webcam")) + 1) {
 		CurrentGuideCamera = &Camera_OpenCV;
+        if (Choice.Find(_T("2")) + 1)
+            Camera_OpenCV.DeviceNum = 1;
+        else
+            Camera_OpenCV.DeviceNum = 0;
+    }
 #endif
 #if defined (OPENSSAG)
 	else if (Choice.Find(_T("Orion StarShoot Autoguider")) + 1)

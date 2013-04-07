@@ -47,10 +47,13 @@ Camera_OpenCVClass::Camera_OpenCVClass() {
 	FullSize = wxSize(640,480);
 	HasGuiderOutput = false;
 	CapDev = NULL;
+    DeviceNum = 0;
 }
 
 bool Camera_OpenCVClass::Connect() {
-	int ncams = 0;
+
+    // This auto-detect not working on the Mac if a camera exists but is powered off (e.g., clamshell mode)
+	/*int ncams = 0;
 	bool still_search = true;
 
 	VideoCapture tmpcap;
@@ -63,7 +66,6 @@ bool Camera_OpenCVClass::Connect() {
 			tmpcap.release();
 		}
 	}
-	//wxMessageBox(wxString::Format("%d %d",ncams,CamNames.Count()));
 	if (ncams == 0)
 		return true;
 	int DeviceNum = 0;
@@ -71,6 +73,7 @@ bool Camera_OpenCVClass::Connect() {
 		DeviceNum = wxGetSingleChoiceIndex(_T("Select OpenCV camera"),_T("Camera choice"),CamNames);
 	if (DeviceNum == -1)
 		return true;
+    */ 
 
     if (!CapDev)
 		CapDev = new VideoCapture(DeviceNum);
