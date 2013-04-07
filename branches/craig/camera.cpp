@@ -153,6 +153,11 @@ Camera_INovaPLCClass Camera_INovaPLC;
 Camera_INDIClass Camera_INDI;
 #endif
 
+#if defined (OPENCV_CAMERA)
+#include "cam_opencv.h"
+Camera_OpenCVClass Camera_OpenCV;
+#endif
+
 #if defined (V4L_CAMERA)
 #include "cam_VIDEODEVICE.h"
 extern "C" {
@@ -199,6 +204,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #endif
 #if defined (SSPIAG)
 	Cameras.Add(_T("StarShoot Planetary Imager & Autoguider"));
+#endif
+#if defined (OPENCV_CAMERA)
+	Cameras.Add(_T("OpenCV webcam"));
 #endif
 #if defined (OS_PL130)
 	Cameras.Add(_T("Opticstar PL-130M"));
@@ -345,10 +353,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 		CurrentGuideCamera = &Camera_QHY5II;
 	}
 #endif
-/*#if defined (OPENSSAG)
-	else if (Choice.Find(_T("Open StarShoot AutoGuider")) + 1)
-		CurrentGuideCamera = &Camera_OpenSSAG;
-#endif*/
+#if defined (OPENCV_CAMERA)
+	else if (Choice.Find(_T("OpenCV webcam")) + 1)
+		CurrentGuideCamera = &Camera_OpenCV;
+#endif
 #if defined (OPENSSAG)
 	else if (Choice.Find(_T("Orion StarShoot Autoguider")) + 1)
 		CurrentGuideCamera = &Camera_OpenSSAG;
