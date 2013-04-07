@@ -53,9 +53,7 @@ bool Camera_OpenCVClass::Connect() {
     CapDev = new VideoCapture(0);
     if (!CapDev->isOpened())
         return true;
-    else 
-        wxMessageBox("yea");
-	Connected = TRUE;
+ 	Connected = TRUE;
 	return false;
 }
 
