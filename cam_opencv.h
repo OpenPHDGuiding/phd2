@@ -46,6 +46,7 @@ public:
 	bool	Disconnect();
 	void	InitCapture() { return; }
 	Camera_OpenCVClass();
+    int     DeviceNum;
 private:
 #ifdef HAVE_OPENCV
     cv::VideoCapture *CapDev;
