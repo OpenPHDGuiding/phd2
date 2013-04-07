@@ -1,9 +1,9 @@
 /*
- *  cameras.h
+ *  cam_opencv.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2013 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -32,76 +32,24 @@
  *
  */
 
-/* Current issues:
-- Need to fix the LE webcams to either not need wxVidCapLib or need a good way
-  to detect or package this
-  */
-
-
-#ifndef OPENPHD
-/* Open PHD defines the available drivers in CMakeLists.txt rather than
-   statically here
- */
-
-// Defines to define specific camera availability
-// Major build types
-#if defined (ORION)
- #define ORION_DSCI
- #define SSAG
- #define SSPIAG
-#elif defined (__WINDOWS__)  // Windows cameras
- #define QGUIDE
- #define ORION_DSCI
- #define WDM_CAMERA
- #define SAC42
- #define ATIK16
- #define SSAG
- #define SSPIAG
- #define MEADE_DSI
- #define STARFISH
- #define SIMULATOR
- #define SXV
- #define ATIK_GEN3
- #define INOVA_PLC
- #define ASCOM_LATECAMERA
- #define SBIG
- #define QHY5II
-#elif defined (__APPLE__)  // Mac cameras
- #define FIREWIRE
- #define SBIG
- #define MEADE_DSI
- #define STARFISH
- #define SIMULATOR
- #define SXV
- #define OPENSSAG
-#endif
-
-// extra bits
-#ifdef CLOSED_SOURCE
- #define OS_PL130  // Opticstar's library is closed
-#define FIREWIRE // This uses the The Imaging Source library, which is closed
-#endif
-
-
-#ifdef HAVE_WXVIDCAP   // These need wxVidCapLib, which needs to be built-up separately.  The LE-webcams could go to WDM
- #define VFW_CAMERA
- #define LE_PARALLEL_CAMERA
- #define LE_LXUSB_CAMERA
-#endif
-
 #ifdef HAVE_OPENCV
-#define OPENCV_CAMERA
+#include <cv.h> 
+#include "highgui.h"
 #endif
 
+#ifndef OCVDEF
+#define OCVDEF
+class Camera_OpenCVClass : public GuideCamera {
+public:
+	bool	CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
+	bool	Connect();		// Opens up and connects to cameras
+	bool	Disconnect();
+	void	InitCapture() { return; }
+	Camera_OpenCVClass();
+private:
+#ifdef HAVE_OPENCV
+    cv::VideoCapture *CapDev;
+#endif
+};
+#endif
 
-// Currently unused
-// #define NEB_SBIG   // This is for an on-hold project that would get the guide chip data from an SBIG connected in Neb
-// #define ASCOM_CAMERA  // This is for the old "early binding" that was allowed for a bit in ASCOM but is now gone
-
-
-extern bool DLLExists (wxString DLLName);
-#endif /* OPENPHD */
-
-extern void InitCameraParams();
-
-#include "camera.h"
