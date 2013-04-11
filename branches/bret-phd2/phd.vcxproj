@@ -105,7 +105,7 @@
       <AdditionalOptions>/D "_CRT_SECURE_NO_DEPRECATE" /D "_CRT_NONSTDC_NO_DEPRECATE" %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(CFITSIO);$(WXWIN)\include\msvc;$(WXWIN)\include;cameras\VidCapture;cameras;cameras\TIS\include;C:\dev\fits;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WXUSINGDLL;wxMSVC_VERSION_AUTO ;_UNICODE;WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_WIN7;NOPCH;__WINDOWS__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_WIN7;NOPCH;__WINDOWS__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
