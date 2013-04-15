@@ -38,10 +38,10 @@ TestGuideDialog::TestGuideDialog():
 wxDialog(pFrame, wxID_ANY, _("Manual Output"), wxPoint(-1,-1), wxSize(300,300)) {
     wxGridSizer *sizer = new wxGridSizer(3,3,0,0);
 
-    NButton = new wxButton(this,MGUIDE_N,_("North"),wxPoint(-1,-1),wxSize(-1,-1));
-    SButton = new wxButton(this,MGUIDE_S,_("South"),wxPoint(-1,-1),wxSize(-1,-1));
-    EButton = new wxButton(this,MGUIDE_E,_("East"),wxPoint(-1,-1),wxSize(-1,-1));
-    WButton = new wxButton(this,MGUIDE_W,_("West"),wxPoint(-1,-1),wxSize(-1,-1));
+    NButton = new wxButton(this,MGUIDE_UP,_("Up"),wxPoint(-1,-1),wxSize(-1,-1));
+    SButton = new wxButton(this,MGUIDE_DOWN,_("Down"),wxPoint(-1,-1),wxSize(-1,-1));
+    EButton = new wxButton(this,MGUIDE_RIGHT,_("Right"),wxPoint(-1,-1),wxSize(-1,-1));
+    WButton = new wxButton(this,MGUIDE_LEFT,_("Left"),wxPoint(-1,-1),wxSize(-1,-1));
     sizer->AddStretchSpacer();
     sizer->Add(NButton,wxSizerFlags().Expand().Border(wxALL,6));
     sizer->AddStretchSpacer();
@@ -56,10 +56,10 @@ wxDialog(pFrame, wxID_ANY, _("Manual Output"), wxPoint(-1,-1), wxSize(300,300)) 
 }
 
 BEGIN_EVENT_TABLE(TestGuideDialog, wxDialog)
-EVT_BUTTON(MGUIDE_N,TestGuideDialog::OnButton)
-EVT_BUTTON(MGUIDE_S,TestGuideDialog::OnButton)
-EVT_BUTTON(MGUIDE_E,TestGuideDialog::OnButton)
-EVT_BUTTON(MGUIDE_W,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE_UP,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE_DOWN,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE_RIGHT,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE_LEFT,TestGuideDialog::OnButton)
 END_EVENT_TABLE()
 
 
@@ -67,17 +67,17 @@ void TestGuideDialog::OnButton(wxCommandEvent &evt) {
 //  if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pMount->IsConnected())) return;
     if (!(pMount->IsConnected())) return;
     switch (evt.GetId()) {
-        case MGUIDE_N:
-            pMount->CalibrationMove(NORTH);
+        case MGUIDE_UP:
+            pMount->CalibrationMove(UP);
             break;
-        case MGUIDE_S:
-            pMount->CalibrationMove(SOUTH);
+        case MGUIDE_DOWN:
+            pMount->CalibrationMove(DOWN);
             break;
-        case MGUIDE_E:
-            pMount->CalibrationMove(EAST);
+        case MGUIDE_RIGHT:
+            pMount->CalibrationMove(RIGHT);
             break;
-        case MGUIDE_W:
-            pMount->CalibrationMove(WEST);
+        case MGUIDE_LEFT:
+            pMount->CalibrationMove(LEFT);
             break;
     }
 }

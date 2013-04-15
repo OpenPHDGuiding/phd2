@@ -38,10 +38,14 @@
 
 enum GUIDE_DIRECTION {
     NONE  = -1,
-    NORTH = 0,  // Dec+
-    SOUTH,      // Dec-
-    EAST,       // RA-
-    WEST        // RA+
+    UP = 0,
+    NORTH = UP,     // Dec + for eq mounts
+    DOWN,
+    SOUTH = DOWN,   // Dec-
+    RIGHT,
+    EAST = RIGHT,   // RA-
+    LEFT,
+    WEST = LEFT     // RA+
 };
 
 class Mount :  public wxMessageBoxProxy

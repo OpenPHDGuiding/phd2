@@ -227,16 +227,16 @@ int StepGuider::CurrentPosition(GUIDE_DIRECTION direction)
 
     switch(direction)
     {
-        case NORTH:
+        case UP:
             ret =  m_yOffset;
             break;
-        case SOUTH:
+        case DOWN:
             ret = -m_yOffset;
             break;
-        case EAST:
+        case RIGHT:
             ret =  m_xOffset;
             break;
-        case WEST:
+        case LEFT:
             ret = -m_xOffset;
             break;
     }
@@ -268,7 +268,7 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
         }
 
         ClearCalibration();
-        m_calibrationState = CALIBRATION_STATE_GOTO_SE_CORNER;
+        m_calibrationState = CALIBRATION_STATE_GOTO_LOWER_RIGHT_CORNER;
         m_calibrationStartingLocation = currentLocation;
         GuideLog.StartCalibration(this);
     }
@@ -300,10 +300,10 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
     try
     {
         wxString status0, status1;
-        int stepsRemainingNorth = MaxPosition(NORTH) - CurrentPosition(NORTH);
-        int stepsRemainingSouth = MaxPosition(SOUTH) - CurrentPosition(SOUTH);
-        int stepsRemainingEast  = MaxPosition(EAST)  - CurrentPosition(EAST);
-        int stepsRemainingWest  = MaxPosition(WEST)  - CurrentPosition(WEST);
+        int stepsRemainingNorth = MaxPosition(UP) - CurrentPosition(UP);
+        int stepsRemainingSouth = MaxPosition(DOWN) - CurrentPosition(DOWN);
+        int stepsRemainingEast  = MaxPosition(RIGHT)  - CurrentPosition(RIGHT);
+        int stepsRemainingWest  = MaxPosition(LEFT)  - CurrentPosition(LEFT);
 
         stepsRemainingNorth /= m_calibrationStepsPerIteration;
         stepsRemainingSouth /= m_calibrationStepsPerIteration;
@@ -326,7 +326,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
 
         switch (m_calibrationState)
         {
-            case CALIBRATION_STATE_GOTO_SE_CORNER:
+            case CALIBRATION_STATE_GOTO_LOWER_RIGHT_CORNER:
                 if (stepsRemainingSE > 0)
                 {
                     status0.Printf(_("Init Calibration: %3d"), stepsRemainingSE);
@@ -351,11 +351,11 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationIterations = 0;
-                Debug.AddLine(wxString::Format("Falling through to state GO_WEST, startinglocation=(%.2lf, %.2lf)",
+                Debug.AddLine(wxString::Format("Falling through to state GO_LEFT, startinglocation=(%.2lf, %.2lf)",
                                                 m_calibrationStartingLocation.X, m_calibrationStartingLocation.Y));
-                m_calibrationState = CALIBRATION_STATE_GO_WEST;
+                m_calibrationState = CALIBRATION_STATE_GO_LEFT;
                 // fall through
-            case CALIBRATION_STATE_GO_WEST:
+            case CALIBRATION_STATE_GO_LEFT:
                 if (stepsRemainingWest > 0)
                 {
                     status0.Printf(_("West Calibration: %3d"), stepsRemainingWest);
@@ -382,15 +382,15 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_xRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                             (m_calibrationIterations * m_calibrationStepsPerIteration);
                 status1.Printf(_("angle=%.2f rate=%.2f"), m_xAngle, m_xRate);
-                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.2f", m_xAngle, m_xRate));
+                Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.2f rate=%.2f", m_xAngle, m_xRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationIterations = 0;
-                m_calibrationState = CALIBRATION_STATE_GO_NORTH;
-                Debug.AddLine(wxString::Format("Falling through to state GO_NORTH, startinglocation=(%.2lf, %.2lf)",
+                m_calibrationState = CALIBRATION_STATE_GO_UP;
+                Debug.AddLine(wxString::Format("Falling through to state GO_UP, startinglocation=(%.2lf, %.2lf)",
                                                 m_calibrationStartingLocation.X, m_calibrationStartingLocation.Y));
                 // fall through
-            case CALIBRATION_STATE_GO_NORTH:
+            case CALIBRATION_STATE_GO_UP:
                 if (stepsRemainingNorth > 0)
                 {
                     status0.Printf(_("North Calibration: %3d"), stepsRemainingNorth);
@@ -417,7 +417,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_yRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                              (m_calibrationIterations * m_calibrationStepsPerIteration);
                 status1.Printf(_("angle=%.2f rate=%.2f"), m_yAngle, m_yRate);
-                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.2f", m_yAngle, m_yRate));
+                Debug.AddLine(wxString::Format("UP calibration completes with angle=%.2f rate=%.2f", m_yAngle, m_yRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationState = CALIBRATION_STATE_RECENTER;
@@ -426,11 +426,11 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 // fall through
             case CALIBRATION_STATE_RECENTER:
                 status0.Printf(_("Finish Calibration: %3d"), stepsRemainingSE/2);
-                moveEast = (CurrentPosition(WEST) >= m_calibrationStepsPerIteration);
-                moveSouth = (CurrentPosition(NORTH) >= m_calibrationStepsPerIteration);
+                moveEast = (CurrentPosition(LEFT) >= m_calibrationStepsPerIteration);
+                moveSouth = (CurrentPosition(UP) >= m_calibrationStepsPerIteration);
                 if (moveEast || moveSouth)
                 {
-                    Debug.AddLine(wxString::Format("CurrentPosition(EAST)=%d CurrentPosition(SOUTH)=%d", CurrentPosition(WEST), CurrentPosition(NORTH)));
+                    Debug.AddLine(wxString::Format("CurrentPosition(RIGHT)=%d CurrentPosition(DOWN)=%d", CurrentPosition(LEFT), CurrentPosition(UP)));
                     break;
                 }
                 m_calibrationState = CALIBRATION_STATE_COMPLETE;
@@ -451,25 +451,25 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
         if (moveNorth)
         {
             assert(!moveSouth);
-            pFrame->ScheduleCalibrationMove(this, NORTH);
+            pFrame->ScheduleCalibrationMove(this, UP);
         }
 
         if (moveSouth)
         {
             assert(!moveNorth);
-            pFrame->ScheduleCalibrationMove(this, SOUTH);
+            pFrame->ScheduleCalibrationMove(this, DOWN);
         }
 
         if (moveEast)
         {
             assert(!moveWest);
-            pFrame->ScheduleCalibrationMove(this, EAST);
+            pFrame->ScheduleCalibrationMove(this, RIGHT);
         }
 
         if (moveWest)
         {
             assert(!moveEast);
-            pFrame->ScheduleCalibrationMove(this, WEST);
+            pFrame->ScheduleCalibrationMove(this, LEFT);
         }
 
         if (m_calibrationState != CALIBRATION_STATE_COMPLETE)
@@ -564,16 +564,16 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
 
             switch (direction)
             {
-                case NORTH:
+                case UP:
                     directionName = 'N';
                     break;
-                case SOUTH:
+                case DOWN:
                     directionName = 'S';
                     break;
-                case EAST:
+                case RIGHT:
                     directionName = 'E';
                     break;
-                case WEST:
+                case LEFT:
                     directionName = 'W';
                     break;
             }
@@ -589,16 +589,16 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
 
                 switch (direction)
                 {
-                    case NORTH:
+                    case UP:
                         yDirection = 1;
                         break;
-                    case SOUTH:
+                    case DOWN:
                         yDirection = -1;
                         break;
-                    case EAST:
+                    case RIGHT:
                         xDirection = 1;
                         break;
-                    case WEST:
+                    case LEFT:
                         xDirection = -1;
                         break;
                     default:
@@ -650,11 +650,11 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             pSecondaryMount &&                                                          // if there is a mount to bump
             !pSecondaryMount->IsBusy() &&                                               // and it can't already be busy
             (moveFailed ||                                                              // and either the attempt to move the AO failed
-             fabs((double)CurrentPosition(EAST))  > IntegerPercent(80, MaxPosition(EAST)) ||    // or the AO is nearing the end of it's travel
-             fabs((double)CurrentPosition(NORTH)) > IntegerPercent(80, MaxPosition(NORTH))))
+             fabs((double)CurrentPosition(RIGHT))  > IntegerPercent(80, MaxPosition(RIGHT)) ||    // or the AO is nearing the end of it's travel
+             fabs((double)CurrentPosition(UP)) > IntegerPercent(80, MaxPosition(UP))))
         {
-            PHD_Point vectorEndpoint(m_xRate*CurrentPosition(EAST),
-                                     m_yRate*CurrentPosition(NORTH));
+            PHD_Point vectorEndpoint(m_xRate*CurrentPosition(RIGHT),
+                                     m_yRate*CurrentPosition(UP));
 
             PHD_Point neutralCameraVectorEndpoint;
 
