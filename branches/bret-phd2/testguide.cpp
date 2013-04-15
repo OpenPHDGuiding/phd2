@@ -35,50 +35,132 @@
 #include "phd.h"
 
 TestGuideDialog::TestGuideDialog():
-wxDialog(pFrame, wxID_ANY, _("Manual Output"), wxPoint(-1,-1), wxSize(300,300)) {
+wxDialog(pFrame, wxID_ANY, _("Manual Guide"), wxPoint(-1,-1), wxSize(300,300)) {
+    wxBoxSizer *pOuterSizer = new wxBoxSizer(wxVERTICAL);
+    wxStaticBoxSizer *pWrapperSizer = new wxStaticBoxSizer(wxVERTICAL, this, "Primary Mount");
     wxGridSizer *sizer = new wxGridSizer(3,3,0,0);
+    static wxString AoLabels[] = {_("Up"), _("Down"), _("Right"), _("Left") };
+    static wxString ScopeLabels[] = {_("North"), _("South"), _("East"), _("West") };
 
-    NButton = new wxButton(this,MGUIDE_UP,_("Up"),wxPoint(-1,-1),wxSize(-1,-1));
-    SButton = new wxButton(this,MGUIDE_DOWN,_("Down"),wxPoint(-1,-1),wxSize(-1,-1));
-    EButton = new wxButton(this,MGUIDE_RIGHT,_("Right"),wxPoint(-1,-1),wxSize(-1,-1));
-    WButton = new wxButton(this,MGUIDE_LEFT,_("Left"),wxPoint(-1,-1),wxSize(-1,-1));
-    sizer->AddStretchSpacer();
-    sizer->Add(NButton,wxSizerFlags().Expand().Border(wxALL,6));
-    sizer->AddStretchSpacer();
-    sizer->Add(WButton,wxSizerFlags().Expand().Border(wxALL,6));
-    sizer->AddStretchSpacer();
-    sizer->Add(EButton,wxSizerFlags().Expand().Border(wxALL,6));
-    sizer->AddStretchSpacer();
-    sizer->Add(SButton,wxSizerFlags().Expand().Border(wxALL,6));
+    wxString *pLabels;
 
-    SetSizer(sizer);
-    sizer->SetSizeHints(this);
+    if (pSecondaryMount && pSecondaryMount->IsConnected())
+    {
+        pLabels = AoLabels;
+    }
+    else
+    {
+        pLabels = ScopeLabels;
+    }
+
+    // Build the buttons for the primary mount
+
+    NButton1 = new wxButton(this, MGUIDE1_UP, pLabels[0], wxPoint(-1,-1),wxSize(-1,-1));
+    SButton1 = new wxButton(this, MGUIDE1_DOWN, pLabels[1], wxPoint(-1,-1),wxSize(-1,-1));
+    EButton1 = new wxButton(this, MGUIDE1_RIGHT, pLabels[2], wxPoint(-1,-1),wxSize(-1,-1));
+    WButton1 = new wxButton(this, MGUIDE1_LEFT, pLabels[3], wxPoint(-1,-1),wxSize(-1,-1));
+
+    sizer->AddStretchSpacer();
+    sizer->Add(NButton1,wxSizerFlags().Expand().Border(wxALL,6));
+    sizer->AddStretchSpacer();
+    sizer->Add(WButton1,wxSizerFlags().Expand().Border(wxALL,6));
+    sizer->AddStretchSpacer();
+    sizer->Add(EButton1,wxSizerFlags().Expand().Border(wxALL,6));
+    sizer->AddStretchSpacer();
+    sizer->Add(SButton1,wxSizerFlags().Expand().Border(wxALL,6));
+
+    pWrapperSizer->Add(sizer);
+    pOuterSizer->Add(pWrapperSizer);
+
+    if (pSecondaryMount && pSecondaryMount->IsConnected())
+    {
+        pWrapperSizer = new wxStaticBoxSizer(wxVERTICAL, this, "Secondary Mount");
+        sizer = new wxGridSizer(3,3,0,0);
+
+        pLabels = ScopeLabels;
+
+        NButton2 = new wxButton(this, MGUIDE2_UP, pLabels[0], wxPoint(-1,-1),wxSize(-1,-1));
+        SButton2 = new wxButton(this, MGUIDE2_DOWN, pLabels[1], wxPoint(-1,-1),wxSize(-1,-1));
+        EButton2 = new wxButton(this, MGUIDE2_RIGHT, pLabels[2], wxPoint(-1,-1),wxSize(-1,-1));
+        WButton2 = new wxButton(this, MGUIDE2_LEFT, pLabels[3], wxPoint(-1,-1),wxSize(-1,-1));
+
+        sizer->AddStretchSpacer();
+        sizer->Add(NButton2,wxSizerFlags().Expand().Border(wxALL,6));
+        sizer->AddStretchSpacer();
+        sizer->Add(WButton2,wxSizerFlags().Expand().Border(wxALL,6));
+        sizer->AddStretchSpacer();
+        sizer->Add(EButton2,wxSizerFlags().Expand().Border(wxALL,6));
+        sizer->AddStretchSpacer();
+        sizer->Add(SButton2,wxSizerFlags().Expand().Border(wxALL,6));
+
+        pWrapperSizer->Add(sizer);
+        pOuterSizer->Add(pWrapperSizer);
+    }
+    
+    SetSizer(pOuterSizer);
+    pOuterSizer->SetSizeHints(this);
 }
 
 BEGIN_EVENT_TABLE(TestGuideDialog, wxDialog)
-EVT_BUTTON(MGUIDE_UP,TestGuideDialog::OnButton)
-EVT_BUTTON(MGUIDE_DOWN,TestGuideDialog::OnButton)
-EVT_BUTTON(MGUIDE_RIGHT,TestGuideDialog::OnButton)
-EVT_BUTTON(MGUIDE_LEFT,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE1_UP,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE1_DOWN,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE1_RIGHT,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE1_LEFT,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE2_UP,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE2_DOWN,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE2_RIGHT,TestGuideDialog::OnButton)
+EVT_BUTTON(MGUIDE2_LEFT,TestGuideDialog::OnButton)
 END_EVENT_TABLE()
 
-
 void TestGuideDialog::OnButton(wxCommandEvent &evt) {
-//  if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pMount->IsConnected())) return;
-    if (!(pMount->IsConnected())) return;
     switch (evt.GetId()) {
-        case MGUIDE_UP:
-            pMount->CalibrationMove(UP);
+        case MGUIDE1_UP:
+            if (pMount && pMount->IsConnected())
+            {
+                pMount->CalibrationMove(UP);
+            }
             break;
-        case MGUIDE_DOWN:
-            pMount->CalibrationMove(DOWN);
+        case MGUIDE1_DOWN:
+            if (pMount && pMount->IsConnected())
+            {
+                pMount->CalibrationMove(DOWN);
+            }
             break;
-        case MGUIDE_RIGHT:
-            pMount->CalibrationMove(RIGHT);
+        case MGUIDE1_RIGHT:
+            if (pMount && pMount->IsConnected())
+            {
+                pMount->CalibrationMove(RIGHT);
+            }
             break;
-        case MGUIDE_LEFT:
-            pMount->CalibrationMove(LEFT);
+        case MGUIDE1_LEFT:
+            if (pMount && pMount->IsConnected())
+            {
+                pMount->CalibrationMove(LEFT);
+            }
+            break;
+        case MGUIDE2_UP:
+            if (pSecondaryMount && pSecondaryMount->IsConnected())
+            {
+                pSecondaryMount->CalibrationMove(UP);
+            }
+            break;
+        case MGUIDE2_DOWN:
+            if (pSecondaryMount && pSecondaryMount->IsConnected())
+            {
+                pSecondaryMount->CalibrationMove(DOWN);
+            }
+            break;
+        case MGUIDE2_RIGHT:
+            if (pSecondaryMount && pSecondaryMount->IsConnected())
+            {
+                pSecondaryMount->CalibrationMove(RIGHT);
+            }
+            break;
+        case MGUIDE2_LEFT:
+            if (pSecondaryMount && pSecondaryMount->IsConnected())
+            {
+                pSecondaryMount->CalibrationMove(LEFT);
+            }
             break;
     }
 }
-

@@ -535,8 +535,19 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
-    if ((pFrame->pGuider->GetState() > STATE_SELECTED) || !(pMount->IsConnected())) return;
-    TestGuideDialog* dlog = new TestGuideDialog();
-    dlog->Show();
+
+    if (pFrame->pGuider->GetState() > STATE_SELECTED)
+    {
+        wxMessageBox(_("Cannot Manual Guide when Calibrating or Guiding"),_("Info"));
+    }
+
+    if (!pMount->IsConnected())
+    {
+        wxMessageBox(_("Cannot Manual Guide without a mount connected"),_("Info"));
+    }
+
+    TestGuideDialog *pDialog = new TestGuideDialog();
+    pDialog->Show();
+    // we leak pDialog here
 }
 

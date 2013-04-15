@@ -40,8 +40,9 @@ public:
     TestGuideDialog();
     ~TestGuideDialog(void) {};
 private:
-        void OnButton(wxCommandEvent& evt);
-    wxButton *NButton, *SButton, *EButton, *WButton;
+    void OnButton(wxCommandEvent& evt);
+    wxButton *NButton1, *SButton1, *EButton1, *WButton1;
+    wxButton *NButton2, *SButton2, *EButton2, *WButton2;
     DECLARE_EVENT_TABLE()
 };
 
