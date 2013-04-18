@@ -424,6 +424,7 @@ void Guider::SetState(GUIDER_STATE newState)
                 case STATE_UNINITIALIZED:
                 case STATE_SELECTING:
                 case STATE_SELECTED:
+                    newState = m_state;
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                     // because we have done some moving here, we need to just
@@ -447,8 +448,11 @@ void Guider::SetState(GUIDER_STATE newState)
             }
         }
 
+        assert(newState != STATE_STOP);
+
         if (newState > m_state + 1)
         {
+            Debug.AddLine("Cannot transition from %d to  newState=%d", m_state, newState);
             throw ERROR_INFO("Illegal state transition");
         }
 
@@ -514,7 +518,6 @@ void Guider::SetState(GUIDER_STATE newState)
         {
             SetState(newState);
         }
-
     }
     catch (wxString Msg)
     {
