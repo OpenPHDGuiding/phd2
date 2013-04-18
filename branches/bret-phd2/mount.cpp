@@ -431,6 +431,8 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
             cos(cameraTheta + m_yAngle) * (m_negateForward?-1.0:1.0) * hyp
             );
 
+        Debug.AddLine("CameraToMount -- m_xAngle=%.2f m_yAngle=%.2f m_neg=%d", 
+                m_xAngle, m_yAngle, m_negateForward);
         Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2lf mountY=%.2lf",
                 cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y);
     }
@@ -465,6 +467,8 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
                 cos(mountTheta - m_yAngle) * (!m_negateForward?-1.0:1.0) * hyp
                 );
 
+        Debug.AddLine("MountToCamera -- m_xAngle=%.2f m_yAngle=%.2f m_neg=%d", 
+                m_xAngle, m_yAngle, !m_negateForward);
         Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f",
                 mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y);
 
