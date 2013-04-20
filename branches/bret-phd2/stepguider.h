@@ -49,6 +49,11 @@ class StepGuider:public Mount
     int   m_calibrationAverageSamples;
     PHD_Point m_calibrationAveragedLocation;
 
+    double m_calibrationXAngle;
+    double m_calibrationXRate;
+
+    double m_calibrationYAngle;
+    double m_calibrationYRate;
 
     enum CALIBRATION_STATE
     {

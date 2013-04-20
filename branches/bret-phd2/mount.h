@@ -54,8 +54,6 @@ private:
     bool m_connected;
     int m_requestCount;
 
-protected:
-    bool m_guidingEnabled;
     bool m_calibrated;
 
     double m_xAngle;
@@ -65,6 +63,9 @@ protected:
     double m_yRate;
 
     bool m_negateForward;
+
+protected:
+    bool m_guidingEnabled;
 
     GuideAlgorithm *m_pXGuideAlgorithm;
     GuideAlgorithm *m_pYGuideAlgorithm;

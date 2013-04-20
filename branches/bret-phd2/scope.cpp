@@ -591,17 +591,12 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
 
-                m_xAngle = m_calibrationStartingLocation.Angle(currentLocation);
-                m_xRate = dist/(m_calibrationSteps * m_calibrationDuration);
+                m_calibrationXAngle = m_calibrationStartingLocation.Angle(currentLocation);
+                m_calibrationXRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
-                if (m_xRate == 0.0)
-                {
-                    throw ERROR_INFO("invalid xRate");
-                }
-
-                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_xAngle, m_xRate));
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_xAngle, m_xRate);
-                GuideLog.CalibrationWestComplete(this, m_xAngle, m_xRate);
+                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_calibrationXAngle, m_calibrationXRate));
+                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationXAngle, m_calibrationXRate);
+                GuideLog.CalibrationWestComplete(this, m_calibrationXAngle, m_calibrationXRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
                 // fall through
@@ -660,17 +655,12 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 // note: this calculation is reversed from the ra calculation, becase
                 // that one was calibrating WEST, but the angle is really relative
                 // to EAST
-                m_yAngle = currentLocation.Angle(m_calibrationStartingLocation);
-                m_yRate = dist/(m_calibrationSteps * m_calibrationDuration);
+                m_calibrationYAngle = currentLocation.Angle(m_calibrationStartingLocation);
+                m_calibrationYRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
-                if (m_xRate == 0.0)
-                {
-                    throw ERROR_INFO("invalid xRate");
-                }
-
-                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_yAngle, m_yRate));
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_yAngle, m_yRate);
-                GuideLog.CalibrationNorthComplete(this, m_yAngle, m_yRate);
+                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_calibrationYAngle, m_calibrationYRate));
+                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationYAngle, m_calibrationYRate);
+                GuideLog.CalibrationNorthComplete(this, m_calibrationYAngle, m_calibrationYRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
                 // fall through
@@ -688,7 +678,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 // fall through
                 Debug.AddLine("Falling Through to state CALIBRATION_COMPLETE");
             case CALIBRATION_STATE_COMPLETE:
-                m_calibrated = true;
+                SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
+                               m_calibrationXRate,  m_calibrationYRate);
                 pFrame->SetStatusText(_T("calibration complete"),1);
                 pFrame->SetStatusText(_T("Cal"),5);
                 GuideLog.CalibrationComplete(this);

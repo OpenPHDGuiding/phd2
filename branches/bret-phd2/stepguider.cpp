@@ -378,11 +378,11 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
-                m_xAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
-                m_xRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
-                            (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_xAngle, m_xRate);
-                Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.2f rate=%.2f", m_xAngle, m_xRate));
+                m_calibrationXAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
+                m_calibrationXRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
+                                                     (m_calibrationIterations * m_calibrationStepsPerIteration);
+                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationXAngle, m_calibrationXRate);
+                Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.2f rate=%.2f", m_calibrationXAngle, m_calibrationXRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationIterations = 0;
@@ -413,11 +413,11 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
-                m_yAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
-                m_yRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
-                             (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_yAngle, m_yRate);
-                Debug.AddLine(wxString::Format("UP calibration completes with angle=%.2f rate=%.2f", m_yAngle, m_yRate));
+                m_calibrationYAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
+                m_calibrationYRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
+                                                     (m_calibrationIterations * m_calibrationStepsPerIteration);
+                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationYAngle, m_calibrationYRate);
+                Debug.AddLine(wxString::Format("UP calibration completes with angle=%.2f rate=%.2f", m_calibrationYAngle, m_calibrationYRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationState = CALIBRATION_STATE_RECENTER;
@@ -438,7 +438,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                                                 currentLocation.X, currentLocation.Y));
                 // fall through
             case CALIBRATION_STATE_COMPLETE:
-                m_calibrated = true;
+                SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
+                               m_calibrationXRate,  m_calibrationYRate);
                 status1 = _T("calibration complete");
                 pFrame->SetStatusText(_T("Cal"),5);
                 Debug.AddLine("Calibration Complete");
@@ -658,8 +659,8 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             // moved to, it was opposite where the star was. If we have moved
             // 20 steps RIGHT, that means the star would be 20 steps LEFT
             // if we had not stepped.
-            PHD_Point vectorEndpoint(m_xRate*CurrentPosition(LEFT),
-                                     m_yRate*CurrentPosition(DOWN));
+            PHD_Point vectorEndpoint(xRate()*CurrentPosition(LEFT),
+                                     yRate()*CurrentPosition(DOWN));
 
             PHD_Point neutralCameraVectorEndpoint;
 
