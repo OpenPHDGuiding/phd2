@@ -66,6 +66,7 @@
  #define INOVA_PLC
  #define ASCOM_LATECAMERA
  #define SBIG
+ #define SBIGROTATOR_CAMERA // must follow SBIG
  #define QHY5II
 
 #ifdef CLOSED_SOURCE

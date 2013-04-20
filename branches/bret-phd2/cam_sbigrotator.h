@@ -1,9 +1,9 @@
 /*
- *  usImage.h
+ *  cam_sbigrotator.h
  *  PHD Guiding
  *
- *  Created by Craig Stark on 9/20/08.
- *  Copyright (c) 2006-2009 Craig Stark.
+ *  Created by Bret McKee
+ *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Bret Mckee, Dad Dog Development Ltd nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,32 +32,26 @@
  *
  */
 
-#ifndef USIMAGECLASS
-#define USIMAGECLASS
-class usImage {
+#if defined(SBIG) && defined(SBIGROTATOR_CAMERA) && !defined(SBIGROTATOR_CAMERA_H_INCLUDED) 
+#define SBIGROTATOR_CAMERA_H_INCLUDED
+
+#include "cam_sbig.h"
+
+class Camera_SBIGRotatorClass : public GuideCamera
+{
+private:
+    Camera_SBIGClass *m_pSubcamera;
+    double m_raAngle;
+    bool m_mirror;
+
 public:
-    unsigned short      *ImageData;     // Pointer to raw data
-    wxSize              Size;               // Dimensions of image
-    wxRect              Subframe;       // were the valid data is
-    int                 NPixels;
-    int                 Min;
-    int                 Max;
-    int                 FiltMin, FiltMax;
-    wxString            ImgStartDate;
-    int                 ImgExpDur;
-    //  int                 Binsize;
-    bool                Init(int xsize, int ysize);
-    void                CalcStats();
-    void                InitDate();
-    bool                CopyToImage(wxImage **img, int blevel, int wlevel, double power);
-    bool                BinnedCopyToImage(wxImage **img, int blevel, int wlevel, double power); // Does 2x2 bin during copy
-    bool                CopyFromImage(const wxImage &img);
-    bool                Clean();
-    usImage() { Min=Max=FiltMin=FiltMax= 0; NPixels = 0; ImageData = NULL; ImgStartDate=_T(""); ImgExpDur = 0.0;}
-    ~usImage() {delete[] ImageData; }
-    bool                Load(const wxString& fname);
-    bool                Save(const wxString& fname);
-    bool                Rotate(double theta, bool mirror=false);
+    Camera_SBIGRotatorClass();
+    ~Camera_SBIGRotatorClass();
+    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool    PulseGuideScope (int direction, int duration);
+    bool    Connect();      // Opens up and connects to cameras
+    bool    Disconnect();
+    void    InitCapture() { return; }
 };
 
-#endif
+#endif //defined(SBIGROTATOR_CAMERA_H_INCLUDED) and defined(SBIG)

@@ -654,13 +654,8 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
              fabs((double)CurrentPosition(RIGHT))  > IntegerPercent(80, MaxPosition(RIGHT)) ||    // or the AO is nearing the end of it's travel
              fabs((double)CurrentPosition(UP)) > IntegerPercent(80, MaxPosition(UP))))
         {
-            // Note:  The request below is for the dirctions LEFT and DOWN, which
-            // essentially reverses the move. This is needed because when we
-            // moved to, it was opposite where the star was. If we have moved
-            // 20 steps RIGHT, that means the star would be 20 steps LEFT
-            // if we had not stepped.
-            PHD_Point vectorEndpoint(xRate()*CurrentPosition(LEFT),
-                                     yRate()*CurrentPosition(DOWN));
+            PHD_Point vectorEndpoint(xRate()*CurrentPosition(RIGHT),
+                                     yRate()*CurrentPosition(UP));
 
             PHD_Point neutralCameraVectorEndpoint;
 

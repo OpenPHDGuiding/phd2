@@ -133,6 +133,10 @@ static const bool DefaultUseSubframes = false;
 #include "cam_INDI.h"
 #endif
 
+#if defined(SBIGROTATOR_CAMERA)
+#include "cam_sbigrotator.h"
+#endif
+
 #if defined (V4L_CAMERA)
 #include "cam_VIDEODEVICE.h"
 extern "C" {
@@ -219,6 +223,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #endif
 #if defined (SBIG)
     Cameras.Add(_T("SBIG"));
+#endif
+#if defined (SBIGROTATOR_CAMERA)
+    Cameras.Add(_T("SBIG Rotator"));
 #endif
 #if defined (SXV)
     Cameras.Add(_T("Starlight Xpress SXV"));
@@ -403,10 +410,18 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     else if (Choice.Find(_T("Nebulosity")) + 1)
         pCamera = new Camera_NebSBIGClass();
 #endif
+
+#if defined (SBIGROTATOR_CAMERA)
+    // must go above SBIG
+    else if (Choice.Find(_T("SBIG Rotator")) + 1)
+        pCamera = new Camera_SBIGRotatorClass();
+#endif
+
 #if defined (SBIG)
     else if (Choice.Find(_T("SBIG")) + 1)
         pCamera = new Camera_SBIGClass();
 #endif
+
 #if defined (FIREWIRE)
     else if (Choice.Find(_T("The Imaging Source (DCAM Firewire)")) + 1)
         pCamera = new Camera_FirewireClass();
@@ -423,7 +438,6 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     else if (Choice.Find(_T("INDI Camera")) + 1)
         pCamera = new Camera_INDIClass();
 #endif
-
 #if defined (V4L_CAMERA)
     else if (Choice.Find(_T("V4L(2) Camera")) + 1) {
         // There is at least ONE V4L(2) device ... let's find out exactly

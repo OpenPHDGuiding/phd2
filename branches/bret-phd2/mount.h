@@ -62,8 +62,6 @@ private:
     double m_yAngle;
     double m_yRate;
 
-    bool m_negateForward;
-
 protected:
     bool m_guidingEnabled;
 

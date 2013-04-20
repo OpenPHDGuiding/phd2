@@ -435,7 +435,7 @@ bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
 
     try
     {
-        double duration = Move(direction, m_calibrationDuration);
+        double duration = Move(direction, m_calibrationDuration, false);
 
         if (duration < 0)
         {
@@ -501,7 +501,7 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
         }
 
         // Actually do the guide
-        assert(duration >= 0);
+        assert(duration >= 0.0);
         if (duration > 0.0)
         {
             if (Guide(direction, duration))
@@ -595,7 +595,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationXRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
                 Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_calibrationXAngle, m_calibrationXRate));
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationXAngle, m_calibrationXRate);
+                status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationXAngle, m_calibrationXRate);
                 GuideLog.CalibrationWestComplete(this, m_calibrationXAngle, m_calibrationXRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
@@ -612,6 +612,15 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 }
                 m_calibrationSteps = 0; dist = 0.0;
                 m_calibrationStartingLocation = currentLocation;
+
+                if (m_decGuideMode == DEC_NONE)
+                {
+                    m_calibrationState = CALIBRATION_STATE_COMPLETE;
+                    m_calibrationYAngle = 0;
+                    m_calibrationYRate = 1;
+                    break;
+                }
+
                 m_calibrationState = CALIBRATION_STATE_CLEAR_BACKLASH;
                 // fall through
                 Debug.AddLine("Falling Through to state CLEAR_BACKLASH");
@@ -659,7 +668,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationYRate = dist/(m_calibrationSteps * m_calibrationDuration);
 
                 Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_calibrationYAngle, m_calibrationYRate));
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationYAngle, m_calibrationYRate);
+                status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationYAngle, m_calibrationYRate);
                 GuideLog.CalibrationNorthComplete(this, m_calibrationYAngle, m_calibrationYRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;

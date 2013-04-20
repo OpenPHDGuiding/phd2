@@ -105,7 +105,7 @@
       <AdditionalOptions>/D "_CRT_SECURE_NO_DEPRECATE" /D "_CRT_NONSTDC_NO_DEPRECATE" %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(CFITSIO);$(WXWIN)\include\msvc;$(WXWIN)\include;cameras\VidCapture;cameras;cameras\TIS\include;C:\dev\fits;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_UNICODE;WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_WIN7;NOPCH;__WINDOWS__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WXUSINGDLL;wxMSVC_VERSION_AUTO ;_UNICODE;WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_WIN7;NOPCH;__WINDOWS__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -331,6 +331,7 @@
     <ClCompile Include="cam_SAC42.cpp" />
     <ClCompile Include="cam_SACGuide.cpp" />
     <ClCompile Include="cam_SBIG.cpp" />
+    <ClCompile Include="cam_sbigrotator.cpp" />
     <ClCompile Include="cam_simulator.cpp" />
     <ClCompile Include="cam_SSAG.cpp" />
     <ClCompile Include="cam_SSPIAG.cpp" />
@@ -412,6 +413,7 @@
     <ClInclude Include="cam_SAC42.h" />
     <ClInclude Include="cam_SACGuide.h" />
     <ClInclude Include="cam_SBIG.h" />
+    <ClInclude Include="cam_sbigrotator.h" />
     <ClInclude Include="cam_simulator.h" />
     <ClInclude Include="cam_SSAG.h" />
     <ClInclude Include="cam_SSPIAG.h" />

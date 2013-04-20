@@ -400,7 +400,7 @@ bool Mount::Disconnect(void)
  * Even though I think I understand it now, this quote that I put in when I was sure I
  * didn't still seems relevant, so I'm leaving it.
  *
- * In the words of Stevie Wonder, noted Computer Scientist and  singer/songwriter
+ * In the words of Stevie Wonder, noted Computer Scientist and singer/songwriter
  * of some repute:
  *
  * "When you believe in things that you don't understand
@@ -424,15 +424,21 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
         double hyp   = cameraVectorEndpoint.Distance();
         double cameraTheta = cameraVectorEndpoint.Angle();
 
+        double xAngle = cameraTheta - m_xAngle;
+        double yAngle = cameraTheta - m_yAngle;
+
+        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f)",
+                cameraTheta, m_xAngle, xAngle);
+        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_yAngle (%.2f) = yAngle (%.2f)",
+                cameraTheta, m_yAngle, yAngle);
+
         // Convert theta and hyp into X and Y
 
         mountVectorEndpoint.SetXY(
-            cos(cameraTheta + m_xAngle)  * hyp,
-            cos(cameraTheta + m_yAngle) * (m_negateForward?-1.0:1.0) * hyp
+            cos(xAngle) * hyp,
+            cos(yAngle) * hyp
             );
 
-        Debug.AddLine("CameraToMount -- m_xAngle=%.2f m_yAngle=%.2f m_neg=%d", 
-                m_xAngle, m_yAngle, m_negateForward);
         Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2lf mountY=%.2lf",
                 cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y);
     }
@@ -461,14 +467,15 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
         double hyp = mountVectorEndpoint.Distance();
         double mountTheta = mountVectorEndpoint.Angle();
 
+        double xAngle = mountTheta + m_xAngle;
+        double yAngle = mountTheta + m_yAngle;
 
         cameraVectorEndpoint.SetXY(
-                cos(mountTheta - m_xAngle)  * hyp,
-                cos(mountTheta - m_yAngle) * (!m_negateForward?-1.0:1.0) * hyp
+                cos(xAngle) * hyp,
+                cos(yAngle) * hyp
                 );
 
-        Debug.AddLine("MountToCamera -- m_xAngle=%.2f m_yAngle=%.2f m_neg=%d", 
-                m_xAngle, m_yAngle, !m_negateForward);
+        Debug.AddLine("MountToCamera -- m_xAngle=%.2f m_yAngle=%.2f", m_xAngle, m_yAngle);
         Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f",
                 mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y);
 
@@ -503,7 +510,7 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         if (normalMove)
         {
-            pFrame->GraphLog->AppendData(cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance);
+            pFrame->GraphLog->AppendData(xDistance, yDistance ,cameraVectorEndpoint.X, cameraVectorEndpoint.Y);
 
             // Feed the raw distances to the guide algorithms
 
@@ -519,8 +526,8 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         }
 
         // Figure out the guide directions based on the (possibly) updated distances
-        GUIDE_DIRECTION xDirection = xDistance > 0 ? WEST : EAST;
-        GUIDE_DIRECTION yDirection = yDistance > 0 ? SOUTH : NORTH;
+        GUIDE_DIRECTION xDirection = xDistance > 0 ? LEFT : RIGHT;
+        GUIDE_DIRECTION yDirection = yDistance > 0 ? DOWN : UP;
 
         double actualXAmount  = Move(xDirection,  fabs(xDistance/m_xRate), normalMove);
 
@@ -531,7 +538,7 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         if (actualXAmount >= 0.5)
         {
-            wxString msg = wxString::Format("%c dist=%.2f dur=%.0f", (xDirection==EAST)?'E':'W', xDistance, actualXAmount);
+            wxString msg = wxString::Format("%c dist=%.2f dur=%.0f", (xDirection==EAST)?'E':'W', fabs(xDistance), actualXAmount);
             pFrame->SetStatusText(msg, 1, (int)actualXAmount);
             Debug.AddLine(msg);
         }
@@ -545,7 +552,7 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         if (actualYAmount >= 0.5)
         {
-            wxString msg = wxString::Format("%c dist=%.2f dur=%.0f" , (yDirection==SOUTH)?'S':'N', yDistance, actualYAmount);
+            wxString msg = wxString::Format("%c dist=%.2f dur=%.0f" , (yDirection==SOUTH)?'S':'N', fabs(yDistance), actualYAmount);
             pFrame->SetStatusText(msg, 1, (int)actualYAmount);
             Debug.AddLine(msg);
         }
@@ -563,12 +570,16 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
 void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate)
 {
-    Debug.AddLine("Mount::SetCalibration -- xAngle=%.2lf yAngle=%.2lf xRate=%.2lf yRate=%.2lf", xAngle, yAngle, xRate, yRate);
+    Debug.AddLine("Mount::SetCalibration -- xAngle=%.2lf yAngle=%.2lf xRate=%.4lf yRate=%.4lf", xAngle, yAngle, xRate, yRate);
 
-    m_xAngle = xAngle;
-    m_yAngle = yAngle;
+    // we do the rates first, since they just get stored
 
-    // see if the angles have wrapped. To set sign factor, we need to make sure
+    m_yRate  = yRate;
+    m_xRate  = xRate;
+
+    // the angles are more difficult
+
+    // see if the angles have wrapped. To adjus the angle, we need to make sure
     // that the two angles are close "enough".
     //
     // For example, if we have +135 degrees and -135 degrees, these angles are
@@ -592,10 +603,22 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
 
     assert(fabs(xAngle - yAngle) <= M_PI);
 
-    m_negateForward = (xAngle < yAngle);
+    if (xAngle < yAngle)
+    {
+        if (yAngle < 0)
+        {
+            yAngle += M_PI/4;
+        }
+        else
+        {
+            yAngle -= M_PI/4;
+        }
+    }
 
-    m_yRate  = yRate;
-    m_xRate  = xRate;
+    m_xAngle = xAngle;
+    m_yAngle = yAngle;
+
+    Debug.AddLine("Mount::SetCalibration -- adjusted xAngle=%.2lf yAngle=%.2lf", xAngle, yAngle);
 
     m_calibrated = true;
 }

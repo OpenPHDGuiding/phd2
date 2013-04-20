@@ -119,7 +119,7 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
     int i;
     float d;
 
-//  Binsize = 1;
+//  Binsize = 1;	
     img = *rawimg;
     if ((!img->Ok()) || (img->GetWidth() != Size.GetWidth()) || (img->GetHeight() != Size.GetHeight()) ) {  // can't reuse bitmap
         if (img->Ok()) {
@@ -339,5 +339,59 @@ bool usImage::Load(const wxString& fname)
     }
 
     return bError;
+}
+
+bool usImage::Rotate(double theta, bool mirror)
+{
+    wxImage *pImg = new wxImage();
+
+    CalcStats();
+
+    CopyToImage(&pImg, Min, Max, 1.0);
+
+    wxImage mirrored = *pImg;
+
+    if (mirror)
+    {
+        mirrored = pImg->Mirror(false);
+    }
+
+    wxImage rotated = mirrored.Rotate(theta, wxPoint(0,0));
+
+    CopyFromImage(rotated);
+
+    delete pImg;
+
+    return false;
+}
+
+bool usImage::CopyFromImage(const wxImage &img)
+{
+    Init(img.GetWidth(), img.GetHeight());
+
+    unsigned char *pSrc = img.GetData();
+    unsigned short *pDest = ImageData;
+
+    for (int i=0; i<NPixels;i++)
+    {
+        double val = *pSrc;
+
+        val *=255.0;
+
+        if (val < 0)
+        {
+            val = 0.0;
+        }
+        else if (val > 65535.0)
+        {
+            val = 65535;
+        }
+
+        *pDest++ = (unsigned short)val;
+
+        pSrc += 3;
+    }
+
+    return false;
 }
 
