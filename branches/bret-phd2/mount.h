@@ -56,11 +56,12 @@ private:
 
     bool m_calibrated;
 
-    double m_xAngle;
     double m_xRate;
-
-    double m_yAngle;
     double m_yRate;
+
+    double m_xAngle;
+    double m_yAngle;
+    double m_mirrorFactor;
 
 protected:
     bool m_guidingEnabled;
@@ -109,6 +110,10 @@ public:
 private:
     GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     bool SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm **ppAlgorithm);
+
+#ifdef BRET_TEST_TRANSLATE
+    void Mount::TestTranslation(void);
+#endif
 
 public:
     Mount(void);

@@ -41,13 +41,15 @@
  * have been a source of headaches of late.
  *
  */
-static void TestTranslation(void)
+void Mount::TestTranslation(void)
 {
     static bool bTested = false;
 
     if (!bTested)
     {
         double angles[] = {
+#if 0
+#endif
             -11*M_PI/12.0,
             -10*M_PI/12.0,
              -9*M_PI/12.0,
@@ -61,6 +63,8 @@ static void TestTranslation(void)
              -1*M_PI/12.0,
               0*M_PI/12.0,
               1*M_PI/12.0,
+#if 0
+#endif
               2*M_PI/12.0,
               3*M_PI/12.0,
               4*M_PI/12.0,
@@ -74,9 +78,9 @@ static void TestTranslation(void)
              12*M_PI/12.0,
         };
 
-        for(int i=0;i<sizeof(angles)/sizeof(angles[0]);i++)
+        for(int inverted=0;inverted<2;inverted++)
         {
-            for(int inverted=0;inverted<2;inverted++)
+            for(int i=0;i<sizeof(angles)/sizeof(angles[0]);i++)
             {
                 double xAngle = angles[i];
                 double yAngle;
@@ -107,6 +111,20 @@ static void TestTranslation(void)
                     {
                         assert(false);
                     }
+
+                    double p0Angle = p0.Angle();
+                    double xActual = p0Angle - xAngle;
+                    double cosXActual = cos(xActual);
+
+                    assert(fabs(cosXActual - p1.X) < 0.01);
+
+                    double sinXActual = sin(xActual);
+
+                    if (inverted)
+                    {
+                        sinXActual *= -1;
+                    }
+                    assert(fabs(sinXActual - p1.Y) < 0.01);
 
                     if (TransformMountCoordinatesToCameraCoordinates(p1, p2))
                     {
@@ -427,20 +445,20 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
         double xAngle = cameraTheta - m_xAngle;
         double yAngle = cameraTheta - m_yAngle;
 
-        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f)",
-                cameraTheta, m_xAngle, xAngle);
-        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_yAngle (%.2f) = yAngle (%.2f)",
-                cameraTheta, m_yAngle, yAngle);
-
         // Convert theta and hyp into X and Y
 
         mountVectorEndpoint.SetXY(
             cos(xAngle) * hyp,
-            cos(yAngle) * hyp
+            m_mirrorFactor * sin(yAngle) * hyp
             );
 
-        Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2lf mountY=%.2lf",
-                cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y);
+        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f)",
+                cameraTheta, m_xAngle, xAngle);
+        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_yAngle (%.2f) = yAngle (%.2f)",
+                cameraTheta, m_yAngle, yAngle);
+        Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2lf mountY=%.2lf, mountTheta=%.2lf",
+                cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y,
+                mountVectorEndpoint.Angle());
     }
     catch (wxString Msg)
     {
@@ -465,19 +483,23 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
         }
 
         double hyp = mountVectorEndpoint.Distance();
-        double mountTheta = mountVectorEndpoint.Angle();
+        double mountTheta = m_mirrorFactor * mountVectorEndpoint.Angle();
 
         double xAngle = mountTheta + m_xAngle;
         double yAngle = mountTheta + m_yAngle;
 
         cameraVectorEndpoint.SetXY(
                 cos(xAngle) * hyp,
-                cos(yAngle) * hyp
+                sin(yAngle) * hyp
                 );
 
-        Debug.AddLine("MountToCamera -- m_xAngle=%.2f m_yAngle=%.2f", m_xAngle, m_yAngle);
-        Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f",
-                mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y);
+        Debug.AddLine("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f)",
+                mountTheta, m_xAngle, xAngle);
+        Debug.AddLine("MountToCamera -- mountTheta (%.2f) + m_yAngle (%.2f) = yAngle (%.2f)",
+                mountTheta, m_yAngle, yAngle);
+        Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f",
+                mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
+                cameraVectorEndpoint.Angle());
 
     }
     catch (wxString Msg)
@@ -577,22 +599,29 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
     m_yRate  = yRate;
     m_xRate  = xRate;
 
-    // the angles are more difficult
+    /*
+     * the angles are more difficult.
+     *
+     * We have to figure out if yAngle < xAngle to determine if the y axis
+     * is mirrored. In order to do that, we have to adjust the angles so that
+     * they are with 180 degrees of each other.
+     *
+     * For example, if we have +135 degrees and -135 degrees, these angles are
+     * 90 degrees apart but simply subtracting them shows them to be 270 degrees 
+     * apart. We check to see if subtraction shows the angles to be more than
+     * 180 degrees apart, and if it does, we add 360 degrees to the smaller angle.
+     *
+     */
 
-    // see if the angles have wrapped. To adjus the angle, we need to make sure
-    // that the two angles are close "enough".
-    //
-    // For example, if we have +135 degrees and -135 degrees, these angles are
-    // 90 degrees apart but to a simple test, they show up as 270 degrees apart.
-    // If the angles show up as more than 180 degrees apart, we assume this has
-    // happended
+    m_xAngle = xAngle;
+    m_yAngle = yAngle;
 
     if (fabs(xAngle - yAngle) > M_PI)
     {
         if (xAngle < 0)
         {
             assert(yAngle >= 0);
-            xAngle += 2*M_PI;
+            yAngle -= 2*M_PI;
         }
         else
         {
@@ -603,22 +632,32 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
 
     assert(fabs(xAngle - yAngle) <= M_PI);
 
-    if (xAngle < yAngle)
+    /*
+     * Now figure out the information for the y angle forward and reverse
+     * transforms (the xangle is now correct without further adjustment).
+     *
+     * Because we want to use cos() for the x and sin() for the y, we have to 
+     * adjust the y angle by 90 degrees since we measured it directly. If the
+     * image is not mirrored, and the telecope, alignment and measurements 
+     * were perfect, this would make yAngle == xAngle.  In the real world the
+     * difference between xAngle and yAngle will show the total of the
+     * imperfections.
+     *
+     */
+
+    if (yAngle < xAngle)
     {
-        if (yAngle < 0)
-        {
-            yAngle += M_PI/4;
-        }
-        else
-        {
-            yAngle -= M_PI/4;
-        }
+        m_mirrorFactor = -1.0;
+        m_yAngle += M_PI/2; // phase shift for sin() vs cos()
+    }
+    else
+    {
+        m_mirrorFactor =  1.0;
+        m_yAngle -= M_PI/2; // phase shift for sin() vs cos()
     }
 
-    m_xAngle = xAngle;
-    m_yAngle = yAngle;
-
-    Debug.AddLine("Mount::SetCalibration -- adjusted xAngle=%.2lf yAngle=%.2lf", xAngle, yAngle);
+    Debug.AddLine("Mount::SetCalibration -- adjusted xAngle=%.2lf yAngle=%.2lf",
+            m_xAngle, m_yAngle);
 
     m_calibrated = true;
 }
