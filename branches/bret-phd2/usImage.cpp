@@ -119,7 +119,7 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
     int i;
     float d;
 
-//  Binsize = 1;	
+//  Binsize = 1;
     img = *rawimg;
     if ((!img->Ok()) || (img->GetWidth() != Size.GetWidth()) || (img->GetHeight() != Size.GetHeight()) ) {  // can't reuse bitmap
         if (img->Ok()) {

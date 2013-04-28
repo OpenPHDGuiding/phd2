@@ -96,7 +96,7 @@ wxDialog(pFrame, wxID_ANY, _("Manual Guide"), wxPoint(-1,-1), wxSize(300,300)) {
         pWrapperSizer->Add(sizer);
         pOuterSizer->Add(pWrapperSizer);
     }
-    
+
     SetSizer(pOuterSizer);
     pOuterSizer->SetSizeHints(this);
 }

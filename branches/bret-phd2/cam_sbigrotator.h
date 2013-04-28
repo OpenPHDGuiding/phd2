@@ -32,7 +32,7 @@
  *
  */
 
-#if defined(SBIG) && defined(SBIGROTATOR_CAMERA) && !defined(SBIGROTATOR_CAMERA_H_INCLUDED) 
+#if defined(SBIG) && defined(SBIGROTATOR_CAMERA) && !defined(SBIGROTATOR_CAMERA_H_INCLUDED)
 #define SBIGROTATOR_CAMERA_H_INCLUDED
 
 #include "cam_sbig.h"
