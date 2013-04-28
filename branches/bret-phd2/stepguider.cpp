@@ -413,7 +413,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
-                m_calibrationYAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
+                m_calibrationYAngle = m_calibrationAveragedLocation.Angle(m_calibrationStartingLocation);
                 m_calibrationYRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                                                      (m_calibrationIterations * m_calibrationStepsPerIteration);
                 status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationYAngle, m_calibrationYRate);
@@ -551,7 +551,7 @@ bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
 
 double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMove)
 {
-    int steps = 0;
+    double steps = 0.0;
 
     try
     {
@@ -561,7 +561,6 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
         if (m_guidingEnabled)
         {
             char directionName = '?';
-            double steps = 0.0;
 
             switch (direction)
             {
@@ -581,9 +580,9 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
 
             // Acutally do the guide
             steps = (int)(amount + 0.5);
-            assert(steps >= 0);
+            assert(steps >= 0.0);
 
-            if (steps > 0)
+            if (steps > 0.0)
             {
                 int yDirection = 0;
                 int xDirection = 0;
@@ -654,8 +653,8 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
              fabs((double)CurrentPosition(RIGHT))  > IntegerPercent(80, MaxPosition(RIGHT)) ||    // or the AO is nearing the end of it's travel
              fabs((double)CurrentPosition(UP)) > IntegerPercent(80, MaxPosition(UP))))
         {
-            PHD_Point vectorEndpoint(xRate()*CurrentPosition(RIGHT),
-                                     yRate()*CurrentPosition(UP));
+            PHD_Point vectorEndpoint(xRate()*CurrentPosition(LEFT),
+                                     yRate()*CurrentPosition(DOWN));
 
             PHD_Point neutralCameraVectorEndpoint;
 

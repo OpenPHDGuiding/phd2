@@ -60,8 +60,7 @@ private:
     double m_yRate;
 
     double m_xAngle;
-    double m_yAngle;
-    double m_mirrorFactor;
+    double m_yAngleError;
 
 protected:
     bool m_guidingEnabled;
@@ -111,8 +110,8 @@ private:
     GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     bool SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm **ppAlgorithm);
 
-#ifdef BRET_TEST_TRANSLATE
-    void Mount::TestTranslation(void);
+#ifdef TEST_TRANSFORMS
+    void Mount::TestTransforms(void);
 #endif
 
 public:

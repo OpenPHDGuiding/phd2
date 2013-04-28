@@ -35,63 +35,34 @@
 
 #include "phd.h"
 
-#ifdef BRET_TEST_TRANSLATE
+#ifdef TEST_TRANSFORMS
 /*
- * TestTranslation() is a routine to do some sanity checking on the transform routines, which
- * have been a source of headaches of late.
+ * TestTransforms() is a routine to do some sanity checking on the transform routines, which
+ * have been a source of a huge number of headaches involving getting the reverse transforms
+ * to work
  *
  */
-void Mount::TestTranslation(void)
+void Mount::TestTransforms(void)
 {
     static bool bTested = false;
 
     if (!bTested)
     {
-        double angles[] = {
-#if 0
-#endif
-            -11*M_PI/12.0,
-            -10*M_PI/12.0,
-             -9*M_PI/12.0,
-             -8*M_PI/12.0,
-             -7*M_PI/12.0,
-             -6*M_PI/12.0,
-             -5*M_PI/12.0,
-             -4*M_PI/12.0,
-             -3*M_PI/12.0,
-             -2*M_PI/12.0,
-             -1*M_PI/12.0,
-              0*M_PI/12.0,
-              1*M_PI/12.0,
-#if 0
-#endif
-              2*M_PI/12.0,
-              3*M_PI/12.0,
-              4*M_PI/12.0,
-              5*M_PI/12.0,
-              6*M_PI/12.0,
-              7*M_PI/12.0,
-              8*M_PI/12.0,
-              9*M_PI/12.0,
-             10*M_PI/12.0,
-             11*M_PI/12.0,
-             12*M_PI/12.0,
-        };
-
         for(int inverted=0;inverted<2;inverted++)
         {
-            for(int i=0;i<sizeof(angles)/sizeof(angles[0]);i++)
+            // we test every 15 degrees, starting at -195 degrees and
+            // ending at 375 degrees
+
+            for(int i=-13;i<14;i++)
             {
-                double xAngle = angles[i];
+                double xAngle = ((double)i) * M_PI/12.0;
                 double yAngle;
+
+                yAngle = xAngle+M_PI/2.0;
 
                 if (inverted)
                 {
-                    yAngle = xAngle-M_PI/2.0;
-                }
-                else
-                {
-                    yAngle = xAngle+M_PI/2.0;
+                    yAngle -= M_PI;
                 }
 
                 // normalize the angles since real callers of setCalibration
@@ -100,11 +71,21 @@ void Mount::TestTranslation(void)
                 xAngle = atan2(sin(xAngle), cos(xAngle));
                 yAngle = atan2(sin(yAngle), cos(yAngle));
 
+                Debug.AddLine("xidx=%.2lf, yIdx=%.2lf", xAngle/M_PI*180.0/15, yAngle/M_PI*180.0/15);
+
                 SetCalibration(xAngle, yAngle, 1.0, 1.0);
 
-                for(int j=0;j<sizeof(angles)/sizeof(angles[0]);j++)
+                for(int j=-13;j<14;j++)
                 {
-                    PHD_Point p0(cos(angles[j]), sin(angles[j]));
+                    double cameraAngle = ((double)i) * M_PI/12.0;
+                    cameraAngle = atan2(sin(cameraAngle), cos(cameraAngle));
+
+                    PHD_Point p0(cos(cameraAngle), sin(cameraAngle));
+                    assert(fabs((p0.X*p0.X + p0.Y*p0.Y) - 1.00) < 0.01);
+
+                    double p0Angle = p0.Angle();
+                    assert(fabs(cameraAngle - p0Angle) < 0.01);
+
                     PHD_Point p1, p2;
 
                     if (TransformCameraCoordinatesToMountCoordinates(p0, p1))
@@ -112,25 +93,32 @@ void Mount::TestTranslation(void)
                         assert(false);
                     }
 
-                    double p0Angle = p0.Angle();
-                    double xActual = p0Angle - xAngle;
-                    double cosXActual = cos(xActual);
+                    assert(fabs((p1.X*p1.X + p1.Y*p1.Y) - 1.00) < 0.01);
 
-                    assert(fabs(cosXActual - p1.X) < 0.01);
+                    double adjustedCameraAngle = cameraAngle - xAngle;
 
-                    double sinXActual = sin(xActual);
+                    double cosAdjustedCameraAngle = cos(adjustedCameraAngle);
+
+                    // check that the X value is correct
+                    assert(fabs(cosAdjustedCameraAngle - p1.X) < 0.01);
+
+                    double sinAdjustedCameraAngle = sin(adjustedCameraAngle);
 
                     if (inverted)
                     {
-                        sinXActual *= -1;
+                        sinAdjustedCameraAngle *= -1;
                     }
-                    assert(fabs(sinXActual - p1.Y) < 0.01);
+                    // and check that the Y value is correct;
+                    assert(fabs(sinAdjustedCameraAngle - p1.Y) < 0.01);
 
                     if (TransformMountCoordinatesToCameraCoordinates(p1, p2))
                     {
                         assert(false);
                     }
 
+                    double p2Angle = p2.Angle();
+                    //assert(fabs(p0Angle - p2Angle) < 0.01);
+                    assert(fabs((p2.X*p2.X + p2.Y*p2.Y) - 1.00) < 0.01);
                     assert(fabs(p0.X - p2.X) < 0.01);
                     assert(fabs(p0.Y - p2.Y) < 0.01);
                 }
@@ -153,8 +141,8 @@ Mount::Mount(void)
     m_guidingEnabled = true;
 
     ClearCalibration();
-#ifdef BRET_TEST_TRANSLATE
-    TestTranslation();
+#ifdef TEST_TRANSFORMS
+    TestTransforms();
 #endif
 }
 
@@ -336,7 +324,7 @@ double Mount::yAngle()
 
     if (IsCalibrated())
     {
-        dReturn = m_yAngle;
+        dReturn = m_xAngle - m_yAngleError;
     }
 
     return dReturn;
@@ -393,30 +381,35 @@ bool Mount::Disconnect(void)
 }
 
 /*
- * The transform code has proven tricky to get right.  For future generations (and
- * for me the next time I try to work on it), I'm going to put some notes here.
+ * The transform code has proven really tricky to get right.  For future generations
+ * (and for me the next time I try to work on it), I'm going to put some notes here.
  *
  * The goal of TransformCameraCoordinatesToMountCoordinates is to transform a camera
- * pixel * coordinate into an x and y, and TransformMountCoordinatesToCameraCoordinates
- * does * the reverse, converting a mount x and y into pixels coordinates.
+ * pixel coordinate into an x and y, and TransformMountCoordinatesToCameraCoordinates
+ * does the reverse, converting a mount x and y into pixels coordinates.
  *
  * Note: If a mount's x and y axis are not perfectly perpendicular, the reverse transform
  * will not be able to accuratey reverse the forward transform. The amount of inaccuracy
  * depends upon the perpendicular error.
  *
- * Instead of using cos() to get the x coordinate and sin() to get the y,
- * we keep 2 angles, one for X and one for Y, and use cosine on both of angles
- * to get X and Y.
+ * The mount is calibrated but moving 1 axis, then the other, watching where the mount
+ * started and stopped.  Looking at the coordinates of the start and stop point, we
+ * can compute the angle and the speed.
  *
- * This has two benefits -- it transparently deals with the calibration for a mount
- * does not showing the x and y as separated by 90 degrees. It also avoids issues caused
- * by mirrors in the light path -- we can simply ignore the relative alignment and
- * everything just works.
+ * The original PHD code used cos() against both the angles, but that code had issues
+ * with sign reversal for some of the reverse transforms.  I spent some time looking
+ * at that code (OK, a lot of time) and I never managed to get it to work, so I
+ * rewrote it.
  *
- * I have had an converstation with Craig about this, and he confirmed that reasoning.
+ * After calibration, we use the x axis angle, and compute the y axis error by
+ * subtracting 90 degrees.  If the mount was perfectly perpendicular, the error
+ * will either be 0 or 180, depending on whether the axis motion was reversed
+ * during calibration.
  *
- * Even though I think I understand it now, this quote that I put in when I was sure I
- * didn't still seems relevant, so I'm leaving it.
+ * I put this quote in when I was trying to fix the cos/cos code.  Hopefully
+ * since  completely rewrote that code, I underand the new code. But I'm going
+ * to leave it hear as it still seems relevant, given the amount of trouble
+ * I had getting this code to work.
  *
  * In the words of Stevie Wonder, noted Computer Scientist and singer/songwriter
  * of some repute:
@@ -424,6 +417,12 @@ bool Mount::Disconnect(void)
  * "When you believe in things that you don't understand
  * Then you suffer
  * Superstition ain't the way"
+ *
+ * As part of trying to get the transforms to work, I wrote a routine called TestTransforms()
+ * which does a bunch of forward/reverse trasnform pairs, checking the results as it goes.
+ *
+ * If you ever have change the transform functions, it would be wise to #define TEST_TRANSFORMS
+ * to make sure that you (at least) didn't break anything that TestTransforms() checks for.
  *
  */
 
@@ -443,19 +442,19 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
         double cameraTheta = cameraVectorEndpoint.Angle();
 
         double xAngle = cameraTheta - m_xAngle;
-        double yAngle = cameraTheta - m_yAngle;
+        double yAngle = cameraTheta - (m_xAngle + m_yAngleError);
 
         // Convert theta and hyp into X and Y
 
         mountVectorEndpoint.SetXY(
             cos(xAngle) * hyp,
-            m_mirrorFactor * sin(yAngle) * hyp
+            sin(yAngle) * hyp
             );
 
-        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f)",
-                cameraTheta, m_xAngle, xAngle);
-        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_yAngle (%.2f) = yAngle (%.2f)",
-                cameraTheta, m_yAngle, yAngle);
+        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f = %.2f)",
+                cameraTheta, m_xAngle, xAngle, atan2(sin(xAngle), cos(xAngle)));
+        Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - (m_xAngle (%.2f) + m_yAngleError (%.2f)) = yAngle (%.2f = %.2f)",
+                cameraTheta, m_xAngle, m_yAngleError, yAngle, atan2(sin(yAngle), cos(yAngle)));
         Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2lf mountY=%.2lf, mountTheta=%.2lf",
                 cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y,
                 mountVectorEndpoint.Angle());
@@ -483,20 +482,22 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
         }
 
         double hyp = mountVectorEndpoint.Distance();
-        double mountTheta = m_mirrorFactor * mountVectorEndpoint.Angle();
+        double mountTheta = mountVectorEndpoint.Angle();
+
+        if (fabs(m_yAngleError) > M_PI/2)
+        {
+            mountTheta = -mountTheta;
+        }
 
         double xAngle = mountTheta + m_xAngle;
-        double yAngle = mountTheta + m_yAngle;
 
         cameraVectorEndpoint.SetXY(
                 cos(xAngle) * hyp,
-                sin(yAngle) * hyp
+                sin(xAngle) * hyp
                 );
 
-        Debug.AddLine("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f)",
-                mountTheta, m_xAngle, xAngle);
-        Debug.AddLine("MountToCamera -- mountTheta (%.2f) + m_yAngle (%.2f) = yAngle (%.2f)",
-                mountTheta, m_yAngle, yAngle);
+        Debug.AddLine("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f = %.2f)",
+                mountTheta, m_xAngle, xAngle, atan2(sin(xAngle), cos(xAngle)));
         Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f",
                 mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
                 cameraVectorEndpoint.Angle());
@@ -532,7 +533,8 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         if (normalMove)
         {
-            pFrame->GraphLog->AppendData(xDistance, yDistance ,cameraVectorEndpoint.X, cameraVectorEndpoint.Y);
+            pFrame->GraphLog->AppendData(cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
+                                         xDistance, yDistance);
 
             // Feed the raw distances to the guide algorithms
 
@@ -592,72 +594,23 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
 void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate)
 {
-    Debug.AddLine("Mount::SetCalibration -- xAngle=%.2lf yAngle=%.2lf xRate=%.4lf yRate=%.4lf", xAngle, yAngle, xRate, yRate);
 
+
+    Debug.AddLine("Mount::SetCalibration -- xAngle=%.2lf yAngle=%.2lf xRate=%.4lf yRate=%.4lf", xAngle, yAngle, xRate, yRate);
     // we do the rates first, since they just get stored
 
     m_yRate  = yRate;
     m_xRate  = xRate;
 
-    /*
-     * the angles are more difficult.
-     *
-     * We have to figure out if yAngle < xAngle to determine if the y axis
-     * is mirrored. In order to do that, we have to adjust the angles so that
-     * they are with 180 degrees of each other.
-     *
-     * For example, if we have +135 degrees and -135 degrees, these angles are
-     * 90 degrees apart but simply subtracting them shows them to be 270 degrees 
-     * apart. We check to see if subtraction shows the angles to be more than
-     * 180 degrees apart, and if it does, we add 360 degrees to the smaller angle.
-     *
-     */
+    // the angles are more difficult because we have to turn yAngle into a yError.
 
     m_xAngle = xAngle;
-    m_yAngle = yAngle;
+    m_yAngleError = (xAngle-yAngle) + M_PI/2;
 
-    if (fabs(xAngle - yAngle) > M_PI)
-    {
-        if (xAngle < 0)
-        {
-            assert(yAngle >= 0);
-            yAngle -= 2*M_PI;
-        }
-        else
-        {
-            assert(yAngle < 0);
-            yAngle += 2*M_PI;
-        }
-    }
+    m_yAngleError = atan2(sin(m_yAngleError), cos(m_yAngleError));
 
-    assert(fabs(xAngle - yAngle) <= M_PI);
-
-    /*
-     * Now figure out the information for the y angle forward and reverse
-     * transforms (the xangle is now correct without further adjustment).
-     *
-     * Because we want to use cos() for the x and sin() for the y, we have to 
-     * adjust the y angle by 90 degrees since we measured it directly. If the
-     * image is not mirrored, and the telecope, alignment and measurements 
-     * were perfect, this would make yAngle == xAngle.  In the real world the
-     * difference between xAngle and yAngle will show the total of the
-     * imperfections.
-     *
-     */
-
-    if (yAngle < xAngle)
-    {
-        m_mirrorFactor = -1.0;
-        m_yAngle += M_PI/2; // phase shift for sin() vs cos()
-    }
-    else
-    {
-        m_mirrorFactor =  1.0;
-        m_yAngle -= M_PI/2; // phase shift for sin() vs cos()
-    }
-
-    Debug.AddLine("Mount::SetCalibration -- adjusted xAngle=%.2lf yAngle=%.2lf",
-            m_xAngle, m_yAngle);
+    Debug.AddLine("Mount::SetCalibration -- sets m_xAngle=%.2lf m_yAngleError=%.2lf",
+            m_xAngle, m_yAngleError);
 
     m_calibrated = true;
 }
