@@ -5,7 +5,7 @@
 ;       include any DLLs, libraraies or anything else.  It assumes that it
 ;       is being installed on a system that already has PHD v1 installed
 
-#define APP_VERSION "2.0.1c"
+#define APP_VERSION "2.0.2"
 
 [Setup]
 AppName=phd2
@@ -16,7 +16,7 @@ UninstallDisplayIcon={app}\phd2.exe
 Compression=lzma2
 SolidCompression=yes
 OutputDir=.
-OutputBaseFilename="setup-phd2-v{#APP_VERSION}"
+OutputBaseFilename="phd2-v{#APP_VERSION}-installer"
 DirExistsWarning=no
 
 [Files]
