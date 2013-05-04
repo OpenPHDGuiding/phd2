@@ -225,6 +225,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
 #ifdef GUIDE_INDI
     mount_menu->AppendRadioItem(SCOPE_INDI,_T("INDI"),_T("INDI"));
 #endif
+
     mount_menu->AppendSeparator();
     mount_menu->Append(AO_HEADER,_T("Adaptive Optics"),_("Select Adaptive Optics Device"));
     mount_menu->FindItem(AO_HEADER)->Enable(false);
@@ -236,9 +237,17 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     //mount_menu->FindItem(AO_SXAO)->Enable(false);
 #endif
 
-    // try to get the last value from the config store
+    // try to get the last values from the config store
     wxString lastChoice = pConfig->GetString("/scope/LastMenuChoice", _T(""));
     int lastId = mount_menu->FindItem(lastChoice);
+
+    if (lastId != wxNOT_FOUND)
+    {
+        mount_menu->FindItem(lastId)->Check(true);
+    }
+
+    lastChoice = pConfig->GetString("/stepguider/LastMenuChoice", _T(""));
+    lastId = mount_menu->FindItem(lastChoice);
 
     if (lastId != wxNOT_FOUND)
     {
@@ -767,11 +776,11 @@ void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
 }
 
-void MyFrame::ScheduleMovePrimary(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
+void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    Debug.AddLine("ScheduleMovePrimary(%p, x=%.2lf, y=%.2lf, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
+    Debug.AddLine("SchedulePrimaryMove(%p, x=%.2lf, y=%.2lf, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
 
     pMount->IncrementRequestCount();
 
@@ -779,16 +788,16 @@ void MyFrame::ScheduleMovePrimary(Mount *pMount, const PHD_Point& vectorEndpoint
     m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
 }
 
-void MyFrame::ScheduleMoveSecondary(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
+void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    Debug.AddLine("ScheduleMoveSecondary(%p, x=%.2lf, y=%.2lf, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
+    Debug.AddLine("ScheduleSecondaryMove(%p, x=%.2lf, y=%.2lf, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
 
     if (pMount->SynchronousOnly())
     {
         // some mounts must run on the Primary thread even if the secondary is requested.
-        ScheduleMovePrimary(pMount, vectorEndpoint, normalMove);
+        SchedulePrimaryMove(pMount, vectorEndpoint, normalMove);
     }
     else
     {

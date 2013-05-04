@@ -38,10 +38,14 @@
 
 class StepGuider:public Mount
 {
-    static const int CALIBRATION_AVERAGE_NSAMPLES=3;
-    static const int m_bumpPercentage=80;
+    int m_samplesToAverage;
+    int m_bumpPercentage;
+    double m_bumpMaxStepsPerCycle;
+
     int m_xOffset;
     int m_yOffset;
+
+    PHD_Point m_bumpRemaining;
 
     // Calibration variables
     int   m_calibrationStepsPerIteration;
@@ -83,6 +87,15 @@ protected:
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
     };
+
+    virtual int GetSamplesToAverage(void);
+    virtual bool SetSamplesToAverage(int samplesToAverage);
+
+    virtual int GetBumpPercentage(void);
+    virtual bool SetBumpPercentage(int bumpPercentage);
+
+    virtual double GetBumpStepsPerCycle(void);
+    virtual bool SetBumpStepsPerCycle(double maxBumpPerCycle);
 
     virtual int GetCalibrationStepsPerIteration(void);
     virtual bool SetCalibrationStepsPerIteration(int calibrationStepsPerIteration);

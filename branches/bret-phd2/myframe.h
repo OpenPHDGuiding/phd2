@@ -194,7 +194,7 @@ public:
         Mount           *pMount;
         GUIDE_DIRECTION direction;
         bool            calibrationMove;
-        PHD_Point           vectorEndpoint;
+        PHD_Point       vectorEndpoint;
         bool            normalMove;
         bool            bError;
         wxSemaphore     *pSemaphore;
@@ -202,8 +202,9 @@ public:
     void OnRequestMountMove(wxCommandEvent &evt);
 
     void ScheduleExposure(double exposureDuration, wxRect subframe);
-    void ScheduleMovePrimary(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
-    void ScheduleMoveSecondary(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
+    void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
+
+    void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
     void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction);
 
     void StartCapturing(void);

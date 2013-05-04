@@ -38,13 +38,25 @@
 #include "wx/textfile.h"
 #include "socket_server.h"
 
-static const int DefaultCalibrationStepsPerIteration = 4;
+static const int DefaultSamplesToAverage = 3;
+static const int DefaultBumpPercentage = 80;
+static const double DefaultMaxBumpStepsPerCycle = 0.25;
 
+static const int DefaultCalibrationStepsPerIteration = 4;
 
 StepGuider::StepGuider(void)
 {
     m_xOffset = 0;
     m_yOffset = 0;
+
+    int samplesToAverage = pConfig->GetInt("/stepguider/SamplesToAverage", DefaultSamplesToAverage);
+    SetSamplesToAverage(samplesToAverage);
+
+    int bumpPercentage = pConfig->GetInt("/stepguider/BumpPercentage", DefaultBumpPercentage);
+    SetBumpPercentage(bumpPercentage);
+
+    int bumpStepsPerCycle = pConfig->GetDouble("/stepguider/BumpStepsPerCycle", DefaultMaxBumpStepsPerCycle);
+    SetBumpStepsPerCycle(bumpStepsPerCycle);
 
     int calibrationStepsPerIteration = pConfig->GetInt("/stepguider/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
     SetCalibrationStepsPerIteration(calibrationStepsPerIteration);
@@ -98,12 +110,6 @@ bool StepGuider::Disconnect(void)
     return bError;
 }
 
-
-int StepGuider::GetCalibrationStepsPerIteration(void)
-{
-    return m_calibrationStepsPerIteration;
-}
-
 int StepGuider::IntegerPercent(int percentage, int number)
 {
     long numerator =  (long)percentage*(long)number;
@@ -114,6 +120,101 @@ int StepGuider::IntegerPercent(int percentage, int number)
 int StepGuider::BumpPosition(GUIDE_DIRECTION direction)
 {
     return IntegerPercent(m_bumpPercentage, MaxPosition(direction));
+}
+
+int StepGuider::GetSamplesToAverage(void)
+{
+    return m_samplesToAverage;
+}
+
+bool StepGuider::SetSamplesToAverage(int samplesToAverage)
+{
+    bool bError = false;
+
+    try
+    {
+        if (samplesToAverage <= 0)
+        {
+            throw ERROR_INFO("invalid samplesToAverage");
+        }
+
+        m_samplesToAverage = samplesToAverage;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_samplesToAverage = DefaultSamplesToAverage;
+    }
+
+    pConfig->SetInt("/stepguider/SamplesToAverage", m_samplesToAverage);
+
+    return bError;
+}
+
+int StepGuider::GetBumpPercentage(void)
+{
+    return m_bumpPercentage;
+}
+
+bool StepGuider::SetBumpPercentage(int bumpPercentage)
+{
+    bool bError = false;
+
+    try
+    {
+        if (bumpPercentage <= 0)
+        {
+            throw ERROR_INFO("invalid bumpPercentage");
+        }
+
+        m_bumpPercentage = bumpPercentage;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_bumpPercentage = DefaultBumpPercentage;
+    }
+
+    pConfig->SetInt("/stepguider/BumpPercentage", m_bumpPercentage);
+
+    return bError;
+}
+
+double StepGuider::GetBumpStepsPerCycle(void)
+{
+    return m_bumpMaxStepsPerCycle;
+}
+
+bool StepGuider::SetBumpStepsPerCycle(double bumpStepsPerCycle)
+{
+    bool bError = false;
+
+    try
+    {
+        if (bumpStepsPerCycle <= 0.0)
+        {
+            throw ERROR_INFO("invalid bumpStepsPerCycle");
+        }
+
+        m_bumpMaxStepsPerCycle = bumpStepsPerCycle;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_bumpMaxStepsPerCycle = DefaultMaxBumpStepsPerCycle;
+    }
+
+    pConfig->SetDouble("/stepguider/BumpStepsPerCycle", m_bumpMaxStepsPerCycle);
+
+    return bError;
+}
+
+int StepGuider::GetCalibrationStepsPerIteration(void)
+{
+    return m_calibrationStepsPerIteration;
 }
 
 bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteration)
@@ -128,7 +229,6 @@ bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteratio
         }
 
         m_calibrationStepsPerIteration = calibrationStepsPerIteration;
-
     }
     catch (wxString Msg)
     {
@@ -222,14 +322,25 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             // fail from here on out that doesn't change
 
             // now store the stepguider we selected so we can use it as the default next time.
+            // Note: this code makes an assumption about the menu layout, namely that the
+            //       menu contains all the mounts on the top, the AO header, and all the 
+            //       stepguiders on the bottom
+
             wxMenuItemList items = mount_menu->GetMenuItems();
             wxMenuItemList::iterator iter;
+
+            bool inAoSection = false;
+            wxMenuItem *pAoHeader = mount_menu->FindItem(AO_HEADER);
 
             for(iter = items.begin(); iter != items.end(); iter++)
             {
                 wxMenuItem *pItem = *iter;
 
-                if (pItem->IsChecked())
+                if (pItem == pAoHeader)
+                {
+                    inAoSection = true;
+                }
+                else if (inAoSection && pItem->IsChecked())
                 {
                     wxString value = pItem->GetItemLabelText();
                     pConfig->SetString("/stepguider/LastMenuChoice", value);
@@ -393,8 +504,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_AVERAGE_STARTING_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
-                status0.Printf(_("Averaging: %3d"), CALIBRATION_AVERAGE_NSAMPLES-m_calibrationAverageSamples+1);
-                if (m_calibrationAverageSamples < CALIBRATION_AVERAGE_NSAMPLES)
+                status0.Printf(_("Averaging: %3d"), m_samplesToAverage -m_calibrationAverageSamples+1);
+                if (m_calibrationAverageSamples < m_samplesToAverage )
                 {
                     break;
                 }
@@ -422,8 +533,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_AVERAGE_CENTER_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
-                status0.Printf(_("Averaging: %3d"), CALIBRATION_AVERAGE_NSAMPLES-m_calibrationAverageSamples+1);
-                if (m_calibrationAverageSamples < CALIBRATION_AVERAGE_NSAMPLES)
+                status0.Printf(_("Averaging: %3d"), m_samplesToAverage -m_calibrationAverageSamples+1);
+                if (m_calibrationAverageSamples < m_samplesToAverage )
                 {
                     break;
                 }
@@ -457,8 +568,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_AVERAGE_ENDING_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
-                status0.Printf(_("Averaging: %3d"), CALIBRATION_AVERAGE_NSAMPLES-m_calibrationAverageSamples+1);
-                if (m_calibrationAverageSamples < CALIBRATION_AVERAGE_NSAMPLES)
+                status0.Printf(_("Averaging: %3d"), m_samplesToAverage -m_calibrationAverageSamples+1);
+                if (m_calibrationAverageSamples < m_samplesToAverage )
                 {
                     break;
                 }
@@ -700,7 +811,7 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         // see if we need to "bump" the secondary mount
         if (normalMove &&                                                               // we only bump for normal moves
             pSecondaryMount &&                                                          // if there is a mount to bump
-            !pSecondaryMount->IsBusy() &&                                               // and it can't already be busy
+            !m_bumpRemaining.IsValid() &&                                               // and we are not already bumping
             (moveFailed ||                                                              // and either the attempt to move the AO failed
              fabs((double)CurrentPosition(RIGHT))  > BumpPosition(RIGHT) ||    // or the AO is nearing the end of it's travel
              fabs((double)CurrentPosition(UP)) > BumpPosition(UP)))
@@ -708,22 +819,80 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             PHD_Point vectorEndpoint(xRate()*CurrentPosition(LEFT),
                                      yRate()*CurrentPosition(DOWN));
 
-            PHD_Point neutralCameraVectorEndpoint;
-
             // we have to transform our notion of where we are (which is in "AO Coordinates")
             // into "Camera Coordinates" so we can bump the secondary mount to put us closer
             // to the center of the AO
 
-            if (TransformMountCoordinatesToCameraCoordinates(vectorEndpoint, neutralCameraVectorEndpoint))
+            if (TransformMountCoordinatesToCameraCoordinates(vectorEndpoint, m_bumpRemaining))
             {
                 throw ERROR_INFO("MountToCamera failed");
             }
 
+            assert(m_bumpRemaining.IsValid());
 #ifdef BRET_AO_DEBUG
-            neutralCameraVectorEndpoint += cameraVectorEndpoint;
+            m_bumpRemaining += cameraVectorEndpoint;
 #endif
+            }
 
-            pFrame->ScheduleMoveSecondary(pSecondaryMount, neutralCameraVectorEndpoint, false);
+        // if we have a bump in progress and the secondary mount is not moving,
+        // schedule a move
+        if (m_bumpRemaining.IsValid() && !pSecondaryMount->IsBusy())
+        {
+            double xBumpSize = 0.0;
+            double yBumpSize = 0.0;
+
+            // for bumping, since we don't know which way we are moving (in mount coordinates),
+            // we just use the average calibration rate.  That should be close enough for our purposes
+            double maxBumpPixels = m_bumpMaxStepsPerCycle*2.0/(m_calibrationXRate + m_calibrationYRate);
+
+            // we are close enough to done -- avoiding direct comparison
+            // to 0.0 because with floating point we may never get 0.0
+            if (fabs(m_bumpRemaining.X) >= 0.01)
+            {
+                xBumpSize = m_bumpRemaining.X;
+
+                if (fabs(xBumpSize) > maxBumpPixels)
+                {
+                    xBumpSize = maxBumpPixels;
+
+                    if (m_bumpRemaining.X < 0.0)
+                    {
+                        xBumpSize *= -1;
+                    }
+                }
+            }
+
+            if (fabs(m_bumpRemaining.Y) >= 0.01)
+            {
+                yBumpSize = m_bumpRemaining.Y;
+
+                if (fabs(yBumpSize) > maxBumpPixels)
+                {
+                    yBumpSize = maxBumpPixels;
+
+                    if (m_bumpRemaining.Y < 0.0)
+                    {
+                        yBumpSize *= -1;
+                    }
+                }
+            }
+
+            if (fabs(xBumpSize) == 0.0 && fabs(yBumpSize) == 0.0)
+            {
+                Debug.AddLine("Mount Bump finished -- invalidating m_bumpRemaining");
+
+                m_bumpRemaining.Invalidate();
+            }
+            else
+            {
+                PHD_Point thisBump(xBumpSize, yBumpSize);
+
+                Debug.AddLine("Scheduling Mount bump of (%.2lf, %.2lf)", xBumpSize, yBumpSize);
+
+                pFrame->ScheduleSecondaryMove(pSecondaryMount, thisBump, false);
+
+                m_bumpRemaining -= thisBump;
+            }
         }
     }
     catch (wxString Msg)

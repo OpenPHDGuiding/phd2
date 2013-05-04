@@ -656,7 +656,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 GuideLog.StartGuiding();
                 break;
             case STATE_GUIDING:
-                pFrame->ScheduleMovePrimary(pMount, CurrentPosition() - LockPosition());
+                pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
                 break;
         }
     }
