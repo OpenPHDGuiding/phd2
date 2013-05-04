@@ -376,6 +376,10 @@ void MyFrame::OnGraph(wxCommandEvent &evt) {
     this->GraphLog->SetState(evt.IsChecked());
 }
 
+void MyFrame::OnAoGraph(wxCommandEvent &evt) {
+    this->pStepGuiderGraph->SetState(evt.IsChecked());
+}
+
 void MyFrame::OnStarProfile(wxCommandEvent &evt) {
     this->Profile->SetState(evt.IsChecked());
 }

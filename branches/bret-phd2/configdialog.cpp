@@ -101,4 +101,3 @@ int ConfigDialogPane::StringArrayWidth(wxString string[], int nElements)
 
     return width;
 }
-

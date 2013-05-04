@@ -1,5 +1,5 @@
 /*
- *  stepguider_sxAO.h
+ *  graph-stepguider.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -14,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its
- *     Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -31,41 +30,74 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+
  */
 
-#if defined(STEPGUIDER_SXAO) && !defined(STEPGUIDER_SXAO_H_INCLUDED)
-#define STEPGUIDER_SXAO_H_INCLUDED
+#ifndef GRAPH_STEPGUIDER_H_INCLUDED
+#define GRAPH_STEPGUIDER_H_INCLUDED
 
-#include "wx/msw/ole/automtn.h"
+class GraphStepguiderWindow;
 
-class StepGuiderSxAO : public StepGuider
+class GraphStepguiderClient : public wxWindow
 {
-    static const int MaxSteps       = 45;
-    static const int DefaultTimeout =  1*1000;
-    static const int CenterTimeout  = 45*1000;
-    SerialPort *m_pSerialPort;
-public:
-    StepGuiderSxAO(void);
-    virtual ~StepGuiderSxAO(void);
+    static const unsigned m_maxHistorySize = 64;
 
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
+    struct
+    {
+        int dx;
+        int dy;
+    } m_history[m_maxHistorySize];
 
-private:
-    virtual bool Step(GUIDE_DIRECTION direction, int steps);
-    virtual int MaxPosition(GUIDE_DIRECTION direction);
-    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit);
+    wxPen   *m_pPens[m_maxHistorySize];
+    wxBrush *m_pBrushes[m_maxHistorySize];
 
-    bool SendThenReceive(unsigned char sendChar, unsigned char& receivedChar);
-    bool SendThenReceive(unsigned char *pBuffer, unsigned bufferSize, unsigned char& recievedChar);
+    int m_nItems;    // # of items in the history
+    int m_length;     // # of items to display
 
-    bool SendShortCommand(unsigned char command, unsigned char& response);
-    bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char& response);
+    int m_xMax;
+    int m_yMax;
 
-    bool FirmwareVersion(unsigned& version);
-    bool Unjam(void);
-    bool Center(void);
-    bool Center(unsigned char cmd);
+    int m_xBump;
+    int m_yBump;
+
+    void OnPaint(wxPaintEvent& evt);
+
+    GraphStepguiderClient(wxWindow *parent);
+    virtual ~GraphStepguiderClient(void);
+
+    void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
+    void AppendData (double dx, double dy);
+
+    friend class GraphStepguiderWindow;
+
+    DECLARE_EVENT_TABLE()
 };
 
-#endif // if defined(STEPGUIDER_SXAO) && !defined(STEPGUIDER_SXAO_H_INCLUDED)
+class GraphStepguiderWindow : public wxMiniFrame
+{
+public:
+    GraphStepguiderWindow(wxWindow *parent);
+    ~GraphStepguiderWindow(void);
+
+    void OnButtonMode(wxCommandEvent& evt);
+    void OnButtonLength(wxCommandEvent& evt);
+    void OnButtonHide(wxCommandEvent& evt);
+    void OnButtonClear(wxCommandEvent& evt);
+
+    void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
+    void AppendData (double dx, double dy);
+    void SetState (bool is_active);
+
+private:
+    wxButton *LengthButton;
+    wxButton *HideButton;
+    wxButton *ClearButton;
+
+    GraphStepguiderClient *m_pClient;
+
+    bool m_visible;
+
+    DECLARE_EVENT_TABLE()
+};
+
+#endif // GRAPH_STEPGUIDER_H_INCLUDED

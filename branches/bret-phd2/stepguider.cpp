@@ -54,6 +54,51 @@ StepGuider::~StepGuider(void)
 {
 }
 
+bool StepGuider::Connect(void)
+{
+    bool bError = false;
+
+    try
+    {
+        if (Mount::Connect())
+        {
+            throw ERROR_INFO("Mount::Connect() failed");
+        }
+
+        pFrame->pStepGuiderGraph->SetLimits(MaxPosition(LEFT), MaxPosition(UP), BumpPosition(LEFT), BumpPosition(UP));
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool StepGuider::Disconnect(void)
+{
+    bool bError = false;
+
+    try
+    {
+        pFrame->pStepGuiderGraph->SetLimits(0, 0, 0, 0);
+
+        if (Mount::Disconnect())
+        {
+            throw ERROR_INFO("Mount::Disconnect() failed");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+
 int StepGuider::GetCalibrationStepsPerIteration(void)
 {
     return m_calibrationStepsPerIteration;
@@ -64,6 +109,11 @@ int StepGuider::IntegerPercent(int percentage, int number)
     long numerator =  (long)percentage*(long)number;
     long value =  numerator/100L;
     return (int)value;
+}
+
+int StepGuider::BumpPosition(GUIDE_DIRECTION direction)
+{
+    return IntegerPercent(m_bumpPercentage, MaxPosition(direction));
 }
 
 bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteration)
@@ -645,13 +695,15 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
     {
         bool moveFailed = Mount::Move(cameraVectorEndpoint, normalMove);
 
+        pFrame->pStepGuiderGraph->AppendData(m_xOffset, m_yOffset);
+
         // see if we need to "bump" the secondary mount
         if (normalMove &&                                                               // we only bump for normal moves
             pSecondaryMount &&                                                          // if there is a mount to bump
             !pSecondaryMount->IsBusy() &&                                               // and it can't already be busy
             (moveFailed ||                                                              // and either the attempt to move the AO failed
-             fabs((double)CurrentPosition(RIGHT))  > IntegerPercent(80, MaxPosition(RIGHT)) ||    // or the AO is nearing the end of it's travel
-             fabs((double)CurrentPosition(UP)) > IntegerPercent(80, MaxPosition(UP))))
+             fabs((double)CurrentPosition(RIGHT))  > BumpPosition(RIGHT) ||    // or the AO is nearing the end of it's travel
+             fabs((double)CurrentPosition(UP)) > BumpPosition(UP)))
         {
             PHD_Point vectorEndpoint(xRate()*CurrentPosition(LEFT),
                                      yRate()*CurrentPosition(DOWN));

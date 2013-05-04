@@ -89,6 +89,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
     EVT_MENU(MENU_DEBUG,MyFrame::OnLog)
     EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
+    EVT_MENU(MENU_AO_GRAPH, MyFrame::OnAoGraph)
     EVT_MENU(MENU_SERVER, MyFrame::OnServerMenu)
     EVT_MENU(MENU_STARPROFILE, MyFrame::OnStarProfile)
     EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
@@ -264,7 +265,9 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image logging"),_("Enable / disable logging of star images"));
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable / disable link to Nebulosity"));
     tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug logging"),_("Enable / disable debug log file"));
-    tools_menu->AppendCheckItem(MENU_GRAPH,_("Enable Graph"),_("Enable / disable graph"));
+    tools_menu->AppendCheckItem(MENU_GRAPH,_("Display Graph"),_("Enable / disable graph"));
+    tools_menu->AppendCheckItem(MENU_AO_GRAPH,_("Display AO Graph"),_("Enable / disable AO graph"));
+    tools_menu->FindItem(MENU_AO_GRAPH)->Enable(false); // only valid when an AO is connected
     tools_menu->AppendCheckItem(MENU_STARPROFILE,_("Enable Star profile"),_("Enable / disable star profile view"));
     tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _("Enable manual lock position"), _("Give manual lock position"));
 
@@ -496,6 +499,8 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
     InitCameraParams();
 
     GraphLog = new GraphLogWindow(this);
+    pStepGuiderGraph = new GraphStepguiderWindow(this);
+
     Profile = new ProfileWindow(this);
 
     Stretch_gamma = 0.4;

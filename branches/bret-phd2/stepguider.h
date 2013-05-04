@@ -39,6 +39,7 @@
 class StepGuider:public Mount
 {
     static const int CALIBRATION_AVERAGE_NSAMPLES=3;
+    static const int m_bumpPercentage=80;
     int m_xOffset;
     int m_yOffset;
 
@@ -99,6 +100,9 @@ public:
     bool UpdateCalibrationState(const PHD_Point &currentLocation);
     virtual void ClearCalibration(void);
 
+    virtual bool Connect(void);
+    virtual bool Disconnect(void);
+
     virtual bool GuidingCeases(void);
 
     // functions with an implemenation in StepGuider that cannot be over-ridden
@@ -111,6 +115,7 @@ private:
     double CalibrationTime(int nCalibrationSteps);
 protected:
     int IntegerPercent(int percentage, int number);
+    virtual int BumpPosition(GUIDE_DIRECTION direction);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 private:

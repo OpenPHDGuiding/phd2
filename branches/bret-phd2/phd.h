@@ -136,6 +136,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "point.h"
 #include "star.h"
 #include "graph.h"
+#include "graph-stepguider.h"
 #include "guide_algorithms.h"
 #include "guiders.h"
 #include "messagebox_proxy.h"

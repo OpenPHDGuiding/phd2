@@ -119,6 +119,7 @@ public:
     wxHtmlHelpController *help;
     wxSlider *Gamma_Slider;
     GraphLogWindow *GraphLog;
+    GraphStepguiderWindow *pStepGuiderGraph;
     ProfileWindow *Profile;
     unsigned char LoopFrameCount;
     bool CaptureActive; // Is camera looping captures?
@@ -164,6 +165,7 @@ public:
 
     bool StartServer(bool state);
     void OnGraph(wxCommandEvent& evt);
+    void OnAoGraph(wxCommandEvent& evt);
     void OnStarProfile(wxCommandEvent& evt);
     void OnAutoStar(wxCommandEvent& evt);
     bool FlipRACal(wxCommandEvent& evt);
@@ -287,6 +289,7 @@ enum {
     MENU_DEBUG,
     MENU_SERVER,
     MENU_GRAPH,
+    MENU_AO_GRAPH,
     MENU_STARPROFILE,
     MENU_AUTOSTAR,
     MENU_DRIFTTOOL,

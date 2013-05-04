@@ -292,6 +292,7 @@ void GraphLogWindow::AppendData(float dx, float dy, float RA, float Dec) {
 
 void GraphLogWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt)) {
     this->n_items = 0;
+    Refresh();
 }
 
 void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
@@ -405,7 +406,6 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
             dc.SetTextForeground(wxColour(185,20,0));
         dc.DrawText(wxString::Format(_T("%.2f"),osc_index),40,160);  // was 10,160
     }
-
 }
 
 
