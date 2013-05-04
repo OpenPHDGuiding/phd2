@@ -630,28 +630,58 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 // nothing to do but wait
                 break;
             case STATE_CALIBRATING_PRIMARY:
-                if (pMount->IsCalibrated())
+                if (!pMount->IsCalibrated())
                 {
-                    SetState(STATE_CALIBRATING_SECONDARY);
+                    if (pMount->UpdateCalibrationState(CurrentPosition()))
+                    {
+                        SetState(STATE_UNINITIALIZED);
+                        throw ERROR_INFO("Calibration failed");
+                    }
+
+                    if (!pMount->IsCalibrated())
+                    {
+                        break;
+                    }
                 }
-                else if (pMount->UpdateCalibrationState(CurrentPosition()))
+
+                SetState(STATE_CALIBRATING_SECONDARY);
+
+                if (m_state == STATE_CALIBRATING_SECONDARY)
                 {
-                    SetState(STATE_UNINITIALIZED);
-                    throw ERROR_INFO("Calibration failed");
+                    // if we really have a secondary mount, and it isn't calibrated,
+                    // we need to take another exposure before falling into the code
+                    // below.  If we don't have one, or it is calibrated, we can fall
+                    // through.  If we don't fall through, we end up displaying a frame
+                    // which has the lockpoint in the wrong place, and while I thought I
+                    // could live with it when I originally wrote the code, it bothered
+                    // me so I did this.  Ick.
+                    break;
                 }
-                break;
+
+                // Fall through
             case STATE_CALIBRATING_SECONDARY:
-                if (!pSecondaryMount || pSecondaryMount->IsCalibrated())
+                if (pSecondaryMount)
                 {
-                    SetState(STATE_CALIBRATED);
+                    if (!pSecondaryMount->IsCalibrated())
+                    {
+                        if (pSecondaryMount->UpdateCalibrationState(CurrentPosition()))
+                        {
+                            SetState(STATE_UNINITIALIZED);
+                            throw ERROR_INFO("Calibration failed");
+                        }
+                    }
+
+                    if (!pSecondaryMount->IsCalibrated())
+                    {
+                        break;
+                    }
                 }
-                else if (pSecondaryMount->UpdateCalibrationState(CurrentPosition()))
-                {
-                    SetState(STATE_UNINITIALIZED);
-                    throw ERROR_INFO("Calibration failed");
-                }
-                break;
+                assert(!pSecondaryMount || pSecondaryMount->IsCalibrated());
+
+                SetState(STATE_CALIBRATED);
+                // fall through
             case STATE_CALIBRATED:
+                assert(m_state == STATE_CALIBRATED);
                 SetState(STATE_GUIDING);
                 GuideLog.StartGuiding();
                 break;
