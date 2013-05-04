@@ -40,8 +40,7 @@
 
 static const int DefaultSamplesToAverage = 3;
 static const int DefaultBumpPercentage = 80;
-static const double DefaultMaxBumpStepsPerCycle = 0.25;
-
+static const double DefaultBumpMaxStepsPerCycle = 1.00;
 static const int DefaultCalibrationStepsPerIteration = 4;
 
 StepGuider::StepGuider(void)
@@ -55,8 +54,8 @@ StepGuider::StepGuider(void)
     int bumpPercentage = pConfig->GetInt("/stepguider/BumpPercentage", DefaultBumpPercentage);
     SetBumpPercentage(bumpPercentage);
 
-    int bumpStepsPerCycle = pConfig->GetDouble("/stepguider/BumpStepsPerCycle", DefaultMaxBumpStepsPerCycle);
-    SetBumpStepsPerCycle(bumpStepsPerCycle);
+    int bumpMaxStepsPerCycle = pConfig->GetDouble("/stepguider/BumpMaxStepsPerCycle", DefaultBumpMaxStepsPerCycle);
+    SetBumpMaxStepsPerCycle(bumpMaxStepsPerCycle);
 
     int calibrationStepsPerIteration = pConfig->GetInt("/stepguider/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
     SetCalibrationStepsPerIteration(calibrationStepsPerIteration);
@@ -182,12 +181,12 @@ bool StepGuider::SetBumpPercentage(int bumpPercentage)
     return bError;
 }
 
-double StepGuider::GetBumpStepsPerCycle(void)
+double StepGuider::GetBumpMaxStepsPerCycle(void)
 {
     return m_bumpMaxStepsPerCycle;
 }
 
-bool StepGuider::SetBumpStepsPerCycle(double bumpStepsPerCycle)
+bool StepGuider::SetBumpMaxStepsPerCycle(double bumpStepsPerCycle)
 {
     bool bError = false;
 
@@ -204,7 +203,7 @@ bool StepGuider::SetBumpStepsPerCycle(double bumpStepsPerCycle)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_bumpMaxStepsPerCycle = DefaultMaxBumpStepsPerCycle;
+        m_bumpMaxStepsPerCycle = DefaultBumpMaxStepsPerCycle;
     }
 
     pConfig->SetDouble("/stepguider/BumpStepsPerCycle", m_bumpMaxStepsPerCycle);
@@ -832,10 +831,10 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 #ifdef BRET_AO_DEBUG
             m_bumpRemaining += cameraVectorEndpoint;
 #endif
-            }
+        }
 
         // if we have a bump in progress and the secondary mount is not moving,
-        // schedule a move
+        // schedule another move
         if (m_bumpRemaining.IsValid() && !pSecondaryMount->IsBusy())
         {
             double xBumpSize = 0.0;
@@ -932,13 +931,33 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
 
     m_pStepGuider = pStepGuider;
 
-    width = StringWidth(_T("00000"));
+    width = StringWidth(_T("000"));
     m_pCalibrationStepsPerIteration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_("Cal_Dur"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10, 3,_("Cal_Steps"));
 
-    DoAdd(_("Calibration Amount"), m_pCalibrationStepsPerIteration,
+    DoAdd(_("Calibration Steps"), m_pCalibrationStepsPerIteration,
         wxString::Format(_T("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationStepsPerIteration));
 
+    width = StringWidth(_T("000"));
+    m_pSamplesToAverage = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 9, 0, _("Samples_To_Average"));
+
+    DoAdd(_("Samples to Average"), m_pSamplesToAverage,
+        wxString::Format(_T("When calibrating, how many samples should be averaged. Default = %d, increase for worse seeing and small imaging scales"), DefaultSamplesToAverage));
+
+    width = StringWidth(_T("000"));
+    m_pBumpPercentage = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 99, 0, _("Bump_Percentage"));
+
+    DoAdd(_("Bump Percentage"), m_pBumpPercentage,
+        wxString::Format(_T("What percentage of the AO travel can be used before bumping the mount. Default = %d"), DefaultBumpPercentage));
+
+    width = StringWidth(_T("00.00"));
+    m_pBumpMaxStepsPerCycle = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.01, 99.99, 0.0, 0.25, _("Bump_steps"));
+
+    DoAdd(_("Bump Step"), m_pBumpMaxStepsPerCycle,
+        wxString::Format(_T("How far should a mount bump move the mount between images (in AO steps). Default = %.2lf, decrease if mount bumps cause spikes on the graph"), DefaultBumpMaxStepsPerCycle));
 }
 
 StepGuider::StepGuiderConfigDialogPane::~StepGuiderConfigDialogPane(void)
@@ -949,10 +968,17 @@ void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
 {
     MountConfigDialogPane::LoadValues();
     m_pCalibrationStepsPerIteration->SetValue(m_pStepGuider->GetCalibrationStepsPerIteration());
+    m_pSamplesToAverage->SetValue(m_pStepGuider->GetSamplesToAverage());
+    m_pBumpPercentage->SetValue(m_pStepGuider->GetBumpPercentage());
+    m_pBumpMaxStepsPerCycle->SetValue(m_pStepGuider->GetBumpMaxStepsPerCycle());
 }
 
 void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
 {
     m_pStepGuider->SetCalibrationStepsPerIteration(m_pCalibrationStepsPerIteration->GetValue());
+    m_pStepGuider->SetSamplesToAverage(m_pSamplesToAverage->GetValue());
+    m_pStepGuider->SetBumpPercentage(m_pBumpPercentage->GetValue());
+    m_pStepGuider->SetBumpMaxStepsPerCycle(m_pBumpMaxStepsPerCycle->GetValue());
+
     MountConfigDialogPane::UnloadValues();
 }

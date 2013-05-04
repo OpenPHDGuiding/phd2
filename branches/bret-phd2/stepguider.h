@@ -79,6 +79,9 @@ protected:
     {
         StepGuider *m_pStepGuider;
         wxSpinCtrl *m_pCalibrationStepsPerIteration;
+        wxSpinCtrl *m_pSamplesToAverage;
+        wxSpinCtrl *m_pBumpPercentage;
+        wxSpinCtrlDouble *m_pBumpMaxStepsPerCycle;
 
         public:
         StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
@@ -94,8 +97,8 @@ protected:
     virtual int GetBumpPercentage(void);
     virtual bool SetBumpPercentage(int bumpPercentage);
 
-    virtual double GetBumpStepsPerCycle(void);
-    virtual bool SetBumpStepsPerCycle(double maxBumpPerCycle);
+    virtual double GetBumpMaxStepsPerCycle(void);
+    virtual bool SetBumpMaxStepsPerCycle(double maxBumpPerCycle);
 
     virtual int GetCalibrationStepsPerIteration(void);
     virtual bool SetCalibrationStepsPerIteration(int calibrationStepsPerIteration);
