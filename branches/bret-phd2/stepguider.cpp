@@ -322,7 +322,7 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 
             // now store the stepguider we selected so we can use it as the default next time.
             // Note: this code makes an assumption about the menu layout, namely that the
-            //       menu contains all the mounts on the top, the AO header, and all the 
+            //       menu contains all the mounts on the top, the AO header, and all the
             //       stepguiders on the bottom
 
             wxMenuItemList items = mount_menu->GetMenuItems();

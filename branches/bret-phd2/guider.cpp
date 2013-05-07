@@ -236,18 +236,18 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     double StarX = pFrame->pGuider->CurrentPosition().X;
                     double StarY = pFrame->pGuider->CurrentPosition().Y;
 
-                    dc.SetPen(wxPen(pFrame->GraphLog->RA_Color,2,wxPENSTYLE_DOT));
+                    dc.SetPen(wxPen(pFrame->GraphLog->GetRaOrDxColor(),2,wxPENSTYLE_DOT));
                     r=15.0;
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
-                    dc.SetPen(wxPen(pFrame->GraphLog->DEC_Color,2,wxPENSTYLE_DOT));
+                    dc.SetPen(wxPen(pFrame->GraphLog->GetDecOrDyColor(),2,wxPENSTYLE_DOT));
                     cos_angle = cos(pMount->yAngle());
                     sin_angle = sin(pMount->yAngle());
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
 
                     wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
-                    gc->SetPen(wxPen(pFrame->GraphLog->RA_Color,1,wxPENSTYLE_DOT ));
+                    gc->SetPen(wxPen(pFrame->GraphLog->GetRaOrDxColor(),1,wxPENSTYLE_DOT ));
                     wxGraphicsPath path = gc->CreatePath();
                     int i;
                     double step = (double) YWinSize / 10.0;
@@ -272,7 +272,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     gc->Rotate(-pMount->yAngle());
                     gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
                     gc->Rotate(pMount->yAngle());
-                    gc->SetPen(wxPen(pFrame->GraphLog->DEC_Color,1,wxPENSTYLE_DOT ));
+                    gc->SetPen(wxPen(pFrame->GraphLog->GetDecOrDyColor(),1,wxPENSTYLE_DOT ));
                     for (i=-2; i<12; i++) {
                         gc->StrokeLine(0.0,step * (double) i,
                             (double) XWinSize, step * (double) i);

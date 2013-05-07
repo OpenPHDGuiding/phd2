@@ -35,7 +35,57 @@
 #ifndef GRAPHCLASS
 #define GRAPHCLASS
 
+class GraphLogClientWindow : public wxWindow
+{
+    GraphLogClientWindow(wxWindow *parent);
+    ~GraphLogClientWindow(void);
+
+    bool SetMinLength(int minLength);
+    bool SetMaxLength(int maxLength);
+    bool SetMinHeight(int minLength);
+    bool SetMaxHeight(int minHeight);
+
+    wxColour m_raOrDxColor, m_decOrDyColor;
+    wxStaticText *m_pOscRMS, *m_pOscIndex;
+
+    void AppendData (float dx, float dy, float RA, float Dec);
+    void OnPaint(wxPaintEvent& evt);
+
+    int m_minLength;
+    int m_maxLength;
+
+    int m_minHeight;
+    int m_maxHeight;
+
+    static const int m_xSamplesPerDivision = 50;
+    static const int m_yDivisions = 3;
+
+    struct S_HISTORY
+    {
+        double dx;
+        double dy;
+        double ra;
+        double dec;
+    } *m_pHistory;
+
+    int m_nItems;    // # items in the history
+
+    enum
+    {
+        MODE_RADEC,
+        MODE_DXDY,
+    } m_mode;
+
+    int m_length;
+    int m_height;
+
+    friend class GraphLogWindow;
+
+    DECLARE_EVENT_TABLE()
+};
+
 class GraphLogWindow : public wxMiniFrame {
+    wxWindow *m_pParent;
 public:
     GraphLogWindow(wxWindow *parent);
     ~GraphLogWindow(void);
@@ -44,39 +94,34 @@ public:
     void OnPaint(wxPaintEvent& evt);
     void OnButtonMode(wxCommandEvent& evt);
     void OnButtonLength(wxCommandEvent& evt);
+    void OnButtonHeight(wxCommandEvent& evt);
     void OnButtonHide(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
     void OnUpdateSpinGuideParams(wxSpinEvent& evt);
     void OnUpdateSpinDGuideParams(wxSpinDoubleEvent& evt);
     void OnUpdateCommandGuideParams(wxCommandEvent& evt);
-    wxColour RA_Color, DEC_Color;
+
     wxSpinCtrlDouble *MM_Ctrl, *DSW_Ctrl;
     wxSpinCtrl *RAA_Ctrl, *RAH_Ctrl, *MDD_Ctrl, *MRAD_Ctrl;
     wxChoice *DM_Ctrl;
+    wxStaticText *m_pLabel1, *m_pLabel2;
+
+    wxColor GetRaOrDxColor(void);
+    wxColor GetDecOrDyColor(void);
 
 private:
-    wxButton *LengthButton;
-    wxButton *ModeButton;
-    wxButton *HideButton;
-    wxButton *ClearButton;
-//  wxBitmap *bmp;
-    float hdx[500]; // History of dx
-    float hdy[500];
-    float hra[500];
-    float hdec[500];
-    int n_items;    // # items in the history
-    bool visible;
-    int mode;   // 0 = RA/Dec, 1=dx, dy
-    int length;
+    wxButton *m_pLengthButton;
+    wxButton *m_pHeightButton;
+    wxButton *m_pModeButton;
+    wxButton *m_pHideButton;
+    wxButton *m_pClearButton;
 
-/*  float maxdx;    // Max dx
-    float maxdy;
-    float maxra;
-    float maxdec;
-    float mindx;    // Min dx
-    float mindy;
-    float minra;
-    float mindec;*/
+    int StringWidth(wxString string);
+
+    bool m_visible;
+
+    GraphLogClientWindow *m_pClient;
+
     DECLARE_EVENT_TABLE()
 };
 

@@ -150,7 +150,7 @@ void GraphStepguiderWindow::SetState(bool is_active)
     }
 }
 
-void GraphStepguiderWindow::SetLimits(unsigned xMax, unsigned yMax, 
+void GraphStepguiderWindow::SetLimits(unsigned xMax, unsigned yMax,
                                       unsigned xBump, unsigned yBump)
 {
     m_pClient->SetLimits(xMax, yMax, xBump, yBump);
@@ -181,7 +181,7 @@ EVT_PAINT(GraphStepguiderClient::OnPaint)
 END_EVENT_TABLE()
 
 GraphStepguiderClient::GraphStepguiderClient(wxWindow *parent):
-    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(201,201), wxFULL_REPAINT_ON_RESIZE )
+    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(201,201), wxFULL_REPAINT_ON_RESIZE)
 {
     m_nItems = 0;
     m_length = 1;
@@ -210,7 +210,7 @@ GraphStepguiderClient::~GraphStepguiderClient(void)
     }
 }
 
-void GraphStepguiderClient::SetLimits(unsigned xMax, unsigned yMax, 
+void GraphStepguiderClient::SetLimits(unsigned xMax, unsigned yMax,
                                       unsigned xBump, unsigned yBump)
 {
     m_xMax = xMax;

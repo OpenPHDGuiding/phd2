@@ -670,7 +670,6 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, wxString 
 
     DoAdd(m_pRecalibrate, _T("Check to clear any previous calibration and force PHD to recalibrate"));
 
-
     m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_T("Enable Guide Output"), wxPoint(-1,-1), wxSize(75,-1));
     DoAdd(m_pEnableGuide, _T("Should mount guide commands be issued"));
 

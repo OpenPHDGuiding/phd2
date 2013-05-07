@@ -6,6 +6,10 @@
  *  Copyright (c) 2008-2010 Craig Stark.
  *  All rights reserved.
  *
+ *  Seriously modified by Bret McKee
+ *  Copyright (c) 2013 Bret McKee
+ *  All rights reserved.
+ *
  *  This source code is distributed under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -14,7 +18,8 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Craig Stark, Stark Labs,
+ *     Bret McKee, Dad Dog Development, Ltd, nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -38,15 +43,17 @@
 #include <wx/utils.h>
 #include <wx/colordlg.h>
 
-// ADD SOMETHING ON THE GRAPH TO SHOW THE DEC DIRECTION YOU COULD SET TO.
-// IF DRIFT IS POSITIVE, GUIDE IN SOUTH.  IF DRIFT IS NEGATIVE, GUIDE IN NORTH
-// PERHAPS DO A LINEAR REGRESSION ON THE DEC DIST
+static const int DefaultMinLength =  50;
+static const int DefaultMaxLength = 400;
+static const int DefaultMinHeight =  1;
+static const int DefaultMaxHeight = 16;
 
 BEGIN_EVENT_TABLE(GraphLogWindow, wxMiniFrame)
 EVT_PAINT(GraphLogWindow::OnPaint)
 EVT_BUTTON(BUTTON_GRAPH_HIDE,GraphLogWindow::OnButtonHide)
 EVT_BUTTON(BUTTON_GRAPH_MODE,GraphLogWindow::OnButtonMode)
 EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphLogWindow::OnButtonLength)
+EVT_BUTTON(BUTTON_GRAPH_HEIGHT,GraphLogWindow::OnButtonHeight)
 EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
 EVT_SPINCTRL(GRAPH_RAA,GraphLogWindow::OnUpdateSpinGuideParams)
 EVT_SPINCTRL(GRAPH_RAH,GraphLogWindow::OnUpdateSpinGuideParams)
@@ -61,29 +68,77 @@ EVT_CHOICE(GRAPH_DM,GraphLogWindow::OnUpdateCommandGuideParams)
 END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
-wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),wxCAPTION & ~wxSTAY_ON_TOP) {  // was 230
-    this->visible = false;
-    this->n_items = 0;
-    this->mode = 0; // RA/Dec
-    this->length = 100;
-//  this->maxdx = this->maxdy = this->maxra = this->maxdec = 0.0;
-//  this->mindx = this->mindy = this->minra = this->mindec = 0.0;
-//  bmp = new wxBitmap(520,200,24);
-    this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),(wxCAPTION & ~wxSTAY_ON_TOP) | wxRESIZE_BORDER)
+{
+    int width;
+    wxCommandEvent dummy;
 
-    this->LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("100"),wxPoint(10,10),wxSize(80,-1));
-    this->LengthButton->SetToolTip(_("# of frames of history to display"));
-    this->ModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"),wxPoint(10,40),wxSize(80,-1));
-    this->ModeButton->SetToolTip(_("Toggle RA/Dec vs dx/dy.  Shift-click to change RA/dx color.  Ctrl-click to change Dec/dy color"));
-    this->HideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_("Hide"),wxPoint(10,70),wxSize(80,-1));
-    this->HideButton->SetToolTip(_("Hide graph"));
-    this->ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxPoint(10,100),wxSize(80,-1));
-    this->ClearButton->SetToolTip(_("Clear graph data"));
+    m_pParent = parent;
 
-    RA_Color=wxColour(100,100,255);
-    DEC_Color = wxColour(255,0,0);
+    wxBoxSizer *pMainSizer   = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *pButtonSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *pClientSizer = new wxBoxSizer(wxVERTICAL);
 
-    //SetForegroundColour(* wxWHITE);
+    wxBoxSizer *pControlSizer = new wxBoxSizer(wxHORIZONTAL);
+
+    pMainSizer->Add(pButtonSizer, wxSizerFlags().Left().DoubleHorzBorder().Expand());
+    pMainSizer->Add(pClientSizer, wxSizerFlags().Expand().Proportion(1));
+
+    m_pClient = new GraphLogClientWindow(this);
+    pClientSizer->Add(m_pClient, wxSizerFlags().Expand().Proportion(1));
+    pClientSizer->Add(pControlSizer, wxSizerFlags().Expand().Center());
+
+    m_visible = false;
+    SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+    SetBackgroundColour(*wxBLACK);
+
+    m_pLengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("foo"));
+    m_pLengthButton->SetToolTip(_("# of frames of history to display"));
+    OnButtonLength(dummy); // update the buttom label
+    pButtonSizer->Add(m_pLengthButton);
+
+    m_pHeightButton = new wxButton(this,BUTTON_GRAPH_HEIGHT,_T("foo"));
+    m_pHeightButton->SetToolTip(_("# of pixels per Y division"));
+    OnButtonHeight(dummy); // update the buttom label
+    pButtonSizer->Add(m_pHeightButton);
+
+    m_pModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"));
+    m_pModeButton->SetToolTip(_("Toggle RA/Dec vs dx/dy.  Shift-click to change RA/dx color.  Ctrl-click to change Dec/dy color"));
+    pButtonSizer->Add(m_pModeButton);
+
+    m_pHideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_("Hide"));
+    m_pHideButton->SetToolTip(_("Hide graph"));
+    pButtonSizer->Add(m_pHideButton);
+
+    m_pClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"));
+    m_pClearButton->SetToolTip(_("Clear graph data"));
+    pButtonSizer->Add(m_pClearButton);
+
+    wxBoxSizer *pLabelSizer = new wxBoxSizer(wxHORIZONTAL);
+
+    m_pLabel1 = new wxStaticText(this, wxID_ANY, _("RA"));
+    m_pLabel1->SetForegroundColour(m_pClient->m_raOrDxColor);
+    m_pLabel1->SetBackgroundColour(*wxBLACK);
+    pLabelSizer->Add(m_pLabel1, wxSizerFlags().Left());
+
+    m_pLabel2 = new wxStaticText(this, wxID_ANY, _("Dec"));
+    m_pLabel2->SetForegroundColour(m_pClient->m_decOrDyColor);
+    m_pLabel2->SetBackgroundColour(*wxBLACK);
+
+    pLabelSizer->AddStretchSpacer();
+    pLabelSizer->Add(m_pLabel2, wxSizerFlags().Right());
+
+    pButtonSizer->Add(pLabelSizer, wxSizerFlags().Expand());
+
+    m_pClient->m_pOscRMS = new wxStaticText(this, wxID_ANY, _("Osc RMS 0.00"));
+    m_pClient->m_pOscRMS->SetForegroundColour(*wxLIGHT_GREY);
+    m_pClient->m_pOscRMS->SetBackgroundColour(*wxBLACK);
+    pButtonSizer->Add(m_pClient->m_pOscRMS);
+
+    m_pClient->m_pOscIndex = new wxStaticText(this, wxID_ANY, _("Osc Idx 0.00"));
+    m_pClient->m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
+    m_pClient->m_pOscIndex->SetBackgroundColour(*wxBLACK);
+    pButtonSizer->Add(m_pClient->m_pOscIndex);
 #ifdef __WINDOWS__
     int ctl_size = 45;
     int extra_offset = -5;
@@ -93,32 +148,57 @@ wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),wxCAP
 #endif
 
     // Ra Aggression
-    wxStaticText *raa_label = new wxStaticText(this,wxID_ANY,_T("RA agr"),wxPoint(10,210),wxSize(60,-1));
-    raa_label->SetOwnForegroundColour(* wxWHITE);
+    wxStaticText *raa_label = new wxStaticText(this,wxID_ANY,_T("RA agr"));
+    raa_label->SetOwnForegroundColour(*wxWHITE);
 #ifdef __WINDOWS__
-    raa_label->SetOwnBackgroundColour(* wxBLACK);
+    raa_label->SetOwnBackgroundColour(*wxBLACK);
 #endif
-    this->RAA_Ctrl = new wxSpinCtrl(this,GRAPH_RAA, _T(""),
-                                    wxPoint(50,205),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
+
+    width = StringWidth(_T("0000"));
+
+    RAA_Ctrl = new wxSpinCtrl(this,GRAPH_RAA, _T(""), wxDefaultPosition,
+                                    wxSize(width+25, -1),wxSP_ARROW_KEYS | wxALIGN_RIGHT,
                                     0, 120, 0);
+
+    pControlSizer->AddStretchSpacer();
+    pControlSizer->Add(raa_label, wxSizerFlags().Right());
+    pControlSizer->AddSpacer(5);
+    pControlSizer->Add(RAA_Ctrl, wxSizerFlags().Left());
+    pControlSizer->AddSpacer(20);
+
     // Hysteresis
-    wxStaticText *rah_label = new wxStaticText(this,wxID_ANY,_T("RA hys"),wxPoint(110,210),wxSize(60,-1));
+    wxStaticText *rah_label = new wxStaticText(this,wxID_ANY,_T("RA hys"));
     rah_label->SetOwnForegroundColour(* wxWHITE);
 #ifdef __WINDOWS__
     rah_label->SetOwnBackgroundColour(* wxBLACK);
 #endif
-    this->RAH_Ctrl = new wxSpinCtrl(this,GRAPH_RAH, _T(""),
-                                    wxPoint(150,205),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
+    width = StringWidth(_T("0000"));
+
+    RAH_Ctrl = new wxSpinCtrl(this,GRAPH_RAH, _T(""), wxDefaultPosition,
+                                    wxSize(width+25,-1),wxSP_ARROW_KEYS | wxALIGN_RIGHT,
                                     0, 50, 0);
+
+    pControlSizer->Add(rah_label, wxSizerFlags().Right());
+    pControlSizer->AddSpacer(5);
+    pControlSizer->Add(RAH_Ctrl, wxSizerFlags().Left());
+    pControlSizer->AddSpacer(20);
+
 // Min Motion
-wxStaticText *mm_label = new wxStaticText(this,wxID_ANY,_T("Mn mo"),wxPoint(210,210),wxSize(60,-1));
-mm_label->SetOwnForegroundColour(* wxWHITE);
+    wxStaticText *mm_pLabel = new wxStaticText(this,wxID_ANY,_T("Min mot"));
+    mm_pLabel->SetOwnForegroundColour(* wxWHITE);
 #ifdef __WINDOWS__
-mm_label->SetOwnBackgroundColour(* wxBLACK);
+    mm_pLabel->SetOwnBackgroundColour(* wxBLACK);
 #endif
-this->MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM, _T(""),
-                                wxPoint(255,210+extra_offset),wxSize(ctl_size,-1),wxSP_ARROW_KEYS,
-                                0,5,0,0.05);
+    width = StringWidth(_T("00.00"));
+    MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM, _T(""), wxDefaultPosition,
+                                    wxSize(width+25,-1),wxSP_ARROW_KEYS | wxALIGN_RIGHT,
+                                    0,5,0,0.05);
+
+    pControlSizer->Add(mm_pLabel, wxSizerFlags().Right());
+    pControlSizer->AddSpacer(5);
+    pControlSizer->Add(MM_Ctrl, wxSizerFlags().Left());
+    pControlSizer->AddStretchSpacer();
+
 #ifdef BRET_TODO
     // Max RA Dur
     wxStaticText *mrad_label = new wxStaticText(this,wxID_ANY,_T("Mx RA"),wxPoint(315,210),wxSize(ctl_size+10,-1));
@@ -146,11 +226,35 @@ this->MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM, _T(""),
     this->DM_Ctrl= new wxChoice(this,GRAPH_DM,wxPoint(535,210+extra_offset),wxSize(ctl_size+15,-1),WXSIZEOF(dec_choices), dec_choices );
     //DM_Ctrl->SetSelection(pMount->GetDecGuideMode());
 #endif
+
+    SetSizer(pMainSizer);
+    pMainSizer->SetSizeHints(this);
 }
 
-GraphLogWindow::~GraphLogWindow() {
-
+GraphLogWindow::~GraphLogWindow()
+{
+    delete m_pClient;
 }
+
+wxColor GraphLogWindow::GetRaOrDxColor(void)
+{
+    return m_pClient->m_raOrDxColor;
+}
+
+wxColor GraphLogWindow::GetDecOrDyColor(void)
+{
+    return m_pClient->m_decOrDyColor;
+}
+
+int GraphLogWindow::StringWidth(wxString string)
+{
+    int width, height;
+
+    m_pParent->GetTextExtent(string, &width, &height);
+
+    return width;
+}
+
 void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
     if (pMount->GetYGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
     {
@@ -181,71 +285,76 @@ void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) 
 }
 
 void GraphLogWindow::OnButtonHide(wxCommandEvent& WXUNUSED(evt)) {
-    this->visible = false;
+    this->m_visible = false;
     pFrame->Menubar->Check(MENU_GRAPH,false);
     this->Show(false);
 }
 
 void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt)) {
-//  bool foo1 = wxGetMouseState::ShiftDown();
-//  bool foo2 = wxGetKeyState(WXK_SHIFT);
     wxMouseState mstate = wxGetMouseState();
-//  bool foo1 = mstate.ShiftDown();
 
     if (wxGetKeyState(WXK_SHIFT)) {
         wxColourData cdata;
-        cdata.SetColour(RA_Color);
+        cdata.SetColour(m_pClient->m_raOrDxColor);
         wxColourDialog cdialog(this, &cdata);
         if (cdialog.ShowModal() == wxID_OK) {
             cdata = cdialog.GetColourData();
-            RA_Color = cdata.GetColour();
+            m_pClient->m_raOrDxColor = cdata.GetColour();
         }
     }
     if (wxGetKeyState(WXK_CONTROL)) {
         wxColourData cdata;
-        cdata.SetColour(DEC_Color);
+        cdata.SetColour(m_pClient->m_decOrDyColor);
         wxColourDialog cdialog(this, &cdata);
         if (cdialog.ShowModal() == wxID_OK) {
             cdata = cdialog.GetColourData();
-            DEC_Color = cdata.GetColour();
+            m_pClient->m_decOrDyColor = cdata.GetColour();
         }
     }
 
-    this->mode = 1 - this->mode;
-    if (this->mode)
-        this->ModeButton->SetLabel(_T("dx/dy"));
-    else
-        this->ModeButton->SetLabel(_T("RA/Dec"));
-    this->Refresh();
-}
-
-void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt)) {
-    switch (length) {
-        case 100:
-            length = 250;
+    switch (m_pClient->m_mode)
+    {
+        case GraphLogClientWindow::MODE_RADEC:
+            m_pClient->m_mode = GraphLogClientWindow::MODE_DXDY;
+            m_pModeButton->SetLabel(_T("dx/dy"));
             break;
-        case 250:
-            length = 500;
+        case GraphLogClientWindow::MODE_DXDY:
+            m_pClient->m_mode = GraphLogClientWindow::MODE_RADEC;
+            m_pModeButton->SetLabel(_T("RA/Dec"));
             break;
-        case 500:
-            length = 50;
-            break;
-        case 50:
-            length = 100;
-            break;
-        default:
-            length = 100;
     }
-    this->LengthButton->SetLabel(wxString::Format(_T("%d"),length));
+
+    Refresh();
+}
+
+void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
+{
+    m_pClient->m_length *= 2;
+
+    if (m_pClient->m_length > m_pClient->m_maxLength)
+    {
+            m_pClient->m_length = m_pClient->m_minLength;
+    }
+
+    this->m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_pClient->m_length));
     this->Refresh();
 }
-/*void GraphLogWindow::OnCloseWindow(wxCloseEvent& WXUNUSED(evt)) {
 
+void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
+{
+    m_pClient->m_height *= 2;
+
+    if (m_pClient->m_height > m_pClient->m_maxHeight)
+    {
+            m_pClient->m_height = m_pClient->m_minHeight;
+    }
+
+    this->m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d"), m_pClient->m_height));
+    this->Refresh();
 }
-*/
 
 void GraphLogWindow::SetState(bool is_active) {
-    this->visible = is_active;
+    this->m_visible = is_active;
     this->Show(is_active);
     if (is_active)
     {
@@ -265,149 +374,345 @@ void GraphLogWindow::SetState(bool is_active) {
     }
 }
 
-void GraphLogWindow::AppendData(float dx, float dy, float RA, float Dec) {
-    if (this->n_items < 500) {
-        hdx[n_items]=dx;
-        hdy[n_items]=dy;
-        hra[n_items]=RA;
-        hdec[n_items]=Dec;
-        n_items++;
-    }
-    else {
-        int i;
-        for (i=0; i<499; i++) {
-            hdx[i]=hdx[i+1];
-            hdy[i]=hdy[i+1];
-            hra[i]=hra[i+1];
-            hdec[i]=hdec[i+1];
-        }
-        hdx[499]=dx;
-        hdy[499]=dy;
-        hra[499]=RA;
-        hdec[499]=Dec;
-    }
-    if (this->visible)
+void GraphLogWindow::AppendData(float dx, float dy, float RA, float Dec)
+{
+    m_pClient->AppendData(dx, dy, RA, Dec);
+
+    if (m_visible)
+    {
         Refresh();
+    }
 }
 
-void GraphLogWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt)) {
-    this->n_items = 0;
+void GraphLogWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
+{
+    m_pClient->m_nItems = 0;
     Refresh();
 }
 
-void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
+void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
+{
     wxAutoBufferedPaintDC dc(this);
 
-    const int xorig = 100;
-    const int yorig = 102;
-    int i,j;
-    const int xmag = 500 / this->length;
-    const int ymag = 25;
-
-    dc.SetBackground(* wxBLACK_BRUSH);
-    dc.SetBackground(wxColour(10,0,0));
+    dc.SetBackground(*wxBLACK_BRUSH);
+    //dc.SetBackground(wxColour(10,0,0));
     dc.Clear();
-    wxPen GreyDashPen, BluePen, RedPen;
-    GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
-//  BluePen = wxPen(wxColour(0,0,255));
-    BluePen = wxPen(RA_Color);
-    RedPen = wxPen(DEC_Color);
 
-    // Draw axes
-    dc.SetPen(* wxGREY_PEN);
-    dc.DrawLine(xorig,yorig,xorig+500,yorig);
-    dc.DrawLine(xorig,yorig-100,xorig,yorig+100);
-
-    // Draw horiz rule (scale is 1 pixel error per 25 pixels)
-    dc.SetPen(GreyDashPen);
-    dc.DrawLine(xorig,yorig+25,xorig+500,yorig+25);
-    dc.DrawLine(xorig,yorig+50,xorig+500,yorig+50);
-    dc.DrawLine(xorig,yorig+75,xorig+500,yorig+75);
-    dc.DrawLine(xorig,yorig+100,xorig+500,yorig+100);
-    dc.DrawLine(xorig,yorig-25,xorig+500,yorig-25);
-    dc.DrawLine(xorig,yorig-50,xorig+500,yorig-50);
-    dc.DrawLine(xorig,yorig-75,xorig+500,yorig-75);
-    dc.DrawLine(xorig,yorig-100,xorig+500,yorig-100);
-
-    // Draw vertical rule
-    for (i=25; i<this->length; i+=25)
-        dc.DrawLine(xorig+(i*xmag),yorig-100,xorig+(i*xmag),yorig+100);
-
-    if (this->mode) {
-        dc.SetTextForeground(RA_Color);
-        dc.DrawText(_T("dx"),10,125);
-        dc.SetTextForeground(DEC_Color);
-        dc.DrawText(_T("dy"),60,125);
-    }
-    else {
-        dc.SetTextForeground(RA_Color);
-        dc.DrawText(_T("RA"),10,125);
-        dc.SetTextForeground(DEC_Color);
-        dc.DrawText(_T("Dec"),60,125);
-    }
-
-
-    // Draw data
-    wxPoint Line1[500];
-    wxPoint Line2[500];
-    if (this->n_items) {
-        int start_item = 0;
-        if (this->n_items > this->length)
-            start_item = this->n_items - this->length;
-        j=0;
-        if (mode) {
-            for (i=start_item; i<this->n_items; i++,j++) {
-                Line1[j]=wxPoint(xorig+(j*xmag),yorig + (int) (hdx[i] * (float) ymag));
-                Line2[j]=wxPoint(xorig+(j*xmag),yorig + (int) (hdy[i] * (float) ymag));
-            }
-        }
-        else {
-            for (i=start_item; i<this->n_items; i++,j++) {
-                Line1[j]=wxPoint(xorig+(j*xmag),yorig + (int) (hra[i] * (float) ymag));
-                Line2[j]=wxPoint(xorig+(j*xmag),yorig + (int) (hdec[i] * (float) ymag));
-            }
-        }
-        int plot_length = this->length;
-        if (this->length > this->n_items)
-            plot_length = this->n_items;
-        dc.SetPen(BluePen);
-        dc.DrawLines(plot_length,Line1);
-        dc.SetPen(RedPen);
-        dc.DrawLines(plot_length,Line2);
-
-        // Figure oscillation score
-        int same_sides = 0;
-        float mean = 0.0;
-        for (i=(start_item+1); i < this->n_items; i++) {
-            if ( (hra[i] * hra[i-1]) > 0.0) same_sides++;
-            mean = mean + hra[i];
-        }
-        if (n_items != start_item)
-            mean = mean / (float) (n_items - start_item);
-        else
-            mean = 0.0;
-        double RMS = 0.0;
-        for (i=(start_item+1); i < this->n_items; i++) {
-            RMS = RMS + (hra[i]-mean)*(hra[i]-mean);
-        }
-        if (n_items != start_item)
-            RMS = sqrt(RMS/(float) (n_items - start_item));
-        else
-            RMS = 0.0;
-
-        dc.SetTextForeground(*wxLIGHT_GREY);
-        dc.DrawText(_T("Osc-Index"),10,145);
-        dc.DrawText(wxString::Format(_T("RMS: %.2f"),RMS),10,180);
-//      dc.SetTextForeground(wxColour(0,0,255));
-        float osc_index = 0.0;
-        if (n_items != start_item)
-            osc_index= 1.0 - (float) same_sides / (float) (this->n_items - (start_item));
-        if ((osc_index > 0.6) || (osc_index < 0.15))
-            dc.SetTextForeground(wxColour(185,20,0));
-        dc.DrawText(wxString::Format(_T("%.2f"),osc_index),40,160);  // was 10,160
+    switch (m_pClient->m_mode)
+    {
+        case GraphLogClientWindow::MODE_RADEC:
+            m_pLabel1->SetLabel(_("RA"));
+            m_pLabel2->SetLabel(_("Dec"));
+            break;
+        case GraphLogClientWindow::MODE_DXDY:
+            m_pLabel1->SetLabel(_("dx"));
+            m_pLabel2->SetLabel(_("dy"));
+            break;
     }
 }
 
+BEGIN_EVENT_TABLE(GraphLogClientWindow, wxWindow)
+EVT_PAINT(GraphLogClientWindow::OnPaint)
+END_EVENT_TABLE()
+
+GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
+    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(401,200), wxFULL_REPAINT_ON_RESIZE)
+{
+    m_nItems = 0;
+    m_mode = MODE_RADEC;
+
+    m_raOrDxColor  = wxColour(100,100,255);
+    m_decOrDyColor = wxColour(255,0,0);
+
+    int minLength = pConfig->GetInt("/graph/minLength", DefaultMinLength);
+    SetMinLength(minLength);
+
+    int maxLength = pConfig->GetInt("/graph/maxLength", DefaultMaxLength);
+    SetMaxLength(maxLength);
+
+    int minHeight = pConfig->GetInt("/graph/minHeight", DefaultMinHeight);
+    SetMinHeight(minHeight);
+
+    int maxHeight = pConfig->GetInt("/graph/maxHeight", DefaultMaxHeight);
+    SetMaxHeight(maxHeight);
+
+    m_length = m_maxLength;
+    m_height = m_maxHeight;
+
+    m_pHistory = new S_HISTORY[m_maxLength];
+}
+
+GraphLogClientWindow::~GraphLogClientWindow(void)
+{
+    delete [] m_pHistory;
+}
+
+bool GraphLogClientWindow::SetMinLength(int minLength)
+{
+    bool bError = false;
+
+    try
+    {
+        if (minLength < 1)
+        {
+            throw ERROR_INFO("minLength < 1");
+        }
+        m_minLength = minLength;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_minLength = DefaultMinLength;
+    }
+
+    pConfig->SetInt("/graph/minLength", m_minLength);
+
+    return bError;
+}
+
+bool GraphLogClientWindow::SetMaxLength(int maxLength)
+{
+    bool bError = false;
+
+    try
+    {
+        if (maxLength <= m_minLength)
+        {
+            throw ERROR_INFO("maxLength < m_minLength");
+        }
+        m_maxLength = maxLength;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_minLength = DefaultMinLength;
+        m_maxLength = DefaultMaxLength;
+    }
+
+    pConfig->SetInt("/graph/maxLength", m_maxLength);
+
+    return bError;
+}
+
+bool GraphLogClientWindow::SetMinHeight(int minHeight)
+{
+    bool bError = false;
+
+    try
+    {
+        if (minHeight < 1)
+        {
+            throw ERROR_INFO("minHeight < 1");
+        }
+        m_minHeight = minHeight;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_minHeight = DefaultMinHeight;
+    }
+
+    pConfig->SetInt("/graph/minHeight", m_minHeight);
+
+    return bError;
+}
+
+bool GraphLogClientWindow::SetMaxHeight(int maxHeight)
+{
+    bool bError = false;
+
+    try
+    {
+        if (maxHeight <= m_minHeight)
+        {
+            throw ERROR_INFO("maxHeight < m_minHeight");
+        }
+        m_maxHeight = maxHeight;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_minHeight = DefaultMinHeight;
+        m_maxHeight = DefaultMaxHeight;
+    }
+
+    pConfig->SetInt("/graph/maxHeight", m_maxHeight);
+
+    return bError;
+}
+
+void GraphLogClientWindow::AppendData(float dx, float dy, float RA, float Dec)
+{
+    const int idx = m_maxLength - 1;
+
+    memmove(m_pHistory, m_pHistory+1, sizeof(m_pHistory[0])*(m_maxLength-1));
+
+    m_pHistory[idx].dx  = dx;
+    m_pHistory[idx].dy  = dy;
+    m_pHistory[idx].ra  = RA;
+    m_pHistory[idx].dec = Dec;
+
+    if (m_nItems < m_maxLength)
+    {
+        m_nItems++;
+    }
+}
+
+void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
+{
+    //wxAutoBufferedPaintDC dc(this);
+    wxPaintDC dc(this);
+
+    wxSize size = GetClientSize();
+    wxSize center(size.x/2, size.y/2);
+
+    const int leftEdge = 0;
+    const int rightEdge = size.x-1;
+
+    const int topEdge = 0;
+    const int bottomEdge = size.y-1;
+
+    const int xorig = 0;
+    const int yorig = size.y/2;
+
+    int i;
+
+    const int xDivisions = m_length/m_xSamplesPerDivision-1;
+    const int xPixelsPerDivision = size.x/2/(xDivisions+1);
+
+    const int yPixelsPerDivision = size.y/2/(m_yDivisions+1);
+
+    wxPoint *pRaOrDxLine  = NULL;
+    wxPoint *pDecOrDyLine = NULL;
+
+    dc.SetBackground(*wxBLACK_BRUSH);
+    //dc.SetBackground(wxColour(10,0,0));
+    dc.Clear();
+
+    wxPen GreyDashPen;
+    GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
+
+    // Draw axes
+    dc.SetPen(*wxGREY_PEN);
+    dc.DrawLine(center.x,topEdge,center.x,bottomEdge);
+    dc.DrawLine(leftEdge,center.y,rightEdge,center.y);
+
+    // draw a box around the client area
+    dc.SetPen(*wxGREY_PEN);
+    dc.DrawLine(leftEdge, topEdge, rightEdge, topEdge);
+    dc.DrawLine(rightEdge, topEdge, rightEdge, bottomEdge);
+    dc.DrawLine(rightEdge, bottomEdge, leftEdge, bottomEdge);
+    dc.DrawLine(leftEdge, bottomEdge, leftEdge, topEdge);
+
+    // Draw horiz rule (scale is 1 pixel error per 25 pixels)
+    dc.SetPen(GreyDashPen);
+    for(i=1;i<=m_yDivisions;i++)
+    {
+        dc.DrawLine(leftEdge,center.y-i*yPixelsPerDivision, rightEdge, center.y-i*yPixelsPerDivision);
+        dc.DrawLine(leftEdge,center.y+i*yPixelsPerDivision, rightEdge, center.y+i*yPixelsPerDivision);
+    }
+
+    for(i=1;i<=xDivisions;i++)
+    {
+        dc.DrawLine(center.x-i*xPixelsPerDivision, topEdge, center.x-i*xPixelsPerDivision, bottomEdge);
+        dc.DrawLine(center.x+i*xPixelsPerDivision, topEdge, center.x+i*xPixelsPerDivision, bottomEdge);
+    }
+
+    // Draw data
+    pRaOrDxLine  = new wxPoint[m_maxLength];
+    pDecOrDyLine = new wxPoint[m_maxLength];
+
+    int start_item = m_maxLength;
+
+    if (m_nItems < m_length)
+    {
+        start_item -= m_nItems;
+    }
+    else
+    {
+        start_item -= m_length;
+    }
+
+    const double xmag = size.x / (double)m_length;
+    const double ymag = yPixelsPerDivision*(double)(m_yDivisions + 1)/(double)m_height;
+
+    for (i=start_item; i<m_maxLength; i++)
+    {
+        int j=i-start_item;
+        S_HISTORY *pSrc = m_pHistory + i;
+
+        switch (m_mode)
+        {
+            case MODE_RADEC:
+                    pRaOrDxLine[j] =wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->ra * (float) ymag));
+                    pDecOrDyLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dec * (float) ymag));
+                break;
+            case MODE_DXDY:
+                    pRaOrDxLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dx * (float) ymag));
+                    pDecOrDyLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dy * (float) ymag));
+                break;
+        }
+    }
+
+    wxPen raOrDxPen(m_raOrDxColor);
+    wxPen decOrDyPen(m_decOrDyColor);
+
+    int plot_length = m_length;
+
+    if (m_length > m_nItems)
+    {
+        plot_length = m_nItems;
+    }
+    dc.SetPen(raOrDxPen);
+    dc.DrawLines(plot_length,pRaOrDxLine);
+    dc.SetPen(decOrDyPen);
+    dc.DrawLines(plot_length,pDecOrDyLine);
+
+    // Figure oscillation score
+    int same_sides = 0;
+    float mean = 0.0;
+    for (i=(start_item+1); i < this->m_nItems; i++) {
+        if ( (m_pHistory[i].ra * m_pHistory[i-1].ra) > 0.0)
+            same_sides++;
+        mean = mean + m_pHistory[i].ra;
+    }
+    if (m_nItems != start_item)
+        mean = mean / (float) (m_nItems - start_item);
+    else
+        mean = 0.0;
+    double RMS = 0.0;
+    for (i=(start_item+1); i < this->m_nItems; i++) {
+        double ra = m_pHistory[i].ra;
+        RMS = RMS + (ra-mean)*(ra-mean);
+    }
+    if (m_nItems != start_item)
+        RMS = sqrt(RMS/(float) (m_nItems - start_item));
+    else
+        RMS = 0.0;
+    m_pOscRMS->SetLabel(wxString::Format("Osc RMS %4.2f", RMS));
+
+    float osc_index = 0.0;
+    if (m_nItems != start_item)
+        osc_index= 1.0 - (float) same_sides / (float) (this->m_nItems - (start_item));
+
+    if ((osc_index > 0.6) || (osc_index < 0.15))
+    {
+        m_pOscIndex->SetForegroundColour(wxColour(185,20,0));
+    }
+    else
+    {
+        m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
+    }
+
+    m_pOscIndex->SetLabel(wxString::Format("Osc RMS %4.2f", RMS));
+
+    delete [] pRaOrDxLine;
+    delete [] pDecOrDyLine;
+}
 
 BEGIN_EVENT_TABLE(ProfileWindow, wxMiniFrame)
 EVT_PAINT(ProfileWindow::OnPaint)
@@ -488,10 +793,10 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
     dc.SetBackground(wxColour(10,30,30));
     dc.Clear();
     if (pFrame->pGuider->GetState() == STATE_UNINITIALIZED) return;
-    wxPen RedPen;
+    wxPen decorDyPen;
 //  GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
-//  BluePen = wxPen(wxColour(100,100,255));
-    RedPen = wxPen(wxColour(255,0,0));
+//  raOrDxPen = wxPen(wxColour(100,100,255));
+    decorDyPen = wxPen(wxColour(255,0,0));
 
     int i;
     int *profptr;
@@ -532,7 +837,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
         Prof[i]=wxPoint(5+i*2,45-( (*(profptr + i) - Prof_Min) / Prof_Range ));
 
     // Draw it
-    dc.SetPen(RedPen);
+    dc.SetPen(decorDyPen);
     dc.DrawLines(21,Prof);
     dc.SetTextForeground(wxColour(100,100,255));
 #if defined (__APPLE__)
@@ -567,7 +872,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
         dc.DrawLine(50 + 30, 0, 50 + 30, 60);
         double starX = 50 + 30 - dStarX * 2 + 1, starY = 30 - dStarY * 2 + 1;
         if (starX >= 50) {
-            dc.SetPen(RedPen);
+            dc.SetPen(decorDyPen);
             dc.DrawPoint(starX, starY);
         }
     }
