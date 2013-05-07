@@ -328,6 +328,10 @@ void Guider::UpdateImageDisplay(usImage *pImage) {
     blevel = pImage->Min;
     wlevel = pImage->FiltMax;
 
+    Debug.AddLine("UpdateImageDisplay begins");
+    Debug.AddLine("Size=(%d,%d)", pImage->Size.x, pImage->Size.y);
+    Debug.AddLine("min=%d, max=%d, FiltMin=%d, FiltMax=%d", pImage->Min, pImage->Max, pImage->FiltMin, pImage->FiltMax);
+
 #if 0
     if (pImage->Size.GetWidth() >= 1280) {
         pImage->BinnedCopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);

@@ -495,6 +495,18 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     SetStatusText(_T("Camera"),2);
     UpdateButtonsStatus();
     pConfig->SetString("/camera/LastMenuChoice", Choice);
+
+    Debug.AddLine("Connected New Camera:" + pCamera->Name);
+    Debug.AddLine("FullSize=(%d,%d)", pCamera->FullSize.x, pCamera->FullSize.y);
+    Debug.AddLine("HasGainControl=%d", pCamera->HasGainControl);
+    if (pCamera->HasGainControl)
+    {
+        Debug.AddLine("GuideCameraGain=%d", pCamera->GuideCameraGain);
+    }
+    Debug.AddLine("HasShutter=%d", pCamera->HasShutter);
+    Debug.AddLine("HasSubFrames=%d", pCamera->HasSubframes);
+    Debug.AddLine("HasGuiderOutput=%d", pCamera->HasGuiderOutput);
+
     if (pCamera->HasPropertyDialog)
         Setup_Button->Enable(true);
     else
