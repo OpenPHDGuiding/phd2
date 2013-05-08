@@ -42,6 +42,8 @@ public:
     bool    Disconnect();
     void    InitCapture() { return; }
     Camera_SimClass();
+    virtual bool HasNonGuiCapture(void) { return true; }
+    virtual bool    HasNonGuiMove(void) { return true; }
 };
 #endif
 

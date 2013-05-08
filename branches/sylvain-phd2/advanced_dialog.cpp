@@ -34,11 +34,12 @@
 
 #include "phd.h"
 AdvancedDialog::AdvancedDialog():
-#if defined (__WINDOWS__)
-wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(210,350), wxCAPTION | wxCLOSE_BOX)
-#else
-wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
-#endif
+//#if defined (__WINDOWS__)
+//wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(210,350), wxCAPTION | wxCLOSE_BOX)
+//#else
+//wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
+//#endif
+wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     /*
      * the advanced dialog is made up of a number of "on the fly" generate slices that configure different things.
@@ -67,30 +68,33 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
      *
      */
 
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Center().Border(wxALL,2).Expand();
+
     // build all the empty sizer
     wxBoxSizer *pConfigSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer *pLeftSizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer *pRightSizer = new wxBoxSizer(wxVERTICAL);
 
-    pConfigSizer->Add(pLeftSizer, 0, wxALIGN_CENTER | wxGROW);
-    pConfigSizer->Add(pRightSizer, 0, wxALIGN_CENTER | wxGROW);
+    pConfigSizer->Add(pLeftSizer, sizer_flags);
+    pConfigSizer->Add(pRightSizer, sizer_flags);
 
     wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
-    pTopLevelSizer->Add(pConfigSizer, 0, wxALIGN_CENTER | wxGROW);
-    pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), 0, wxALIGN_CENTER | wxGROW);
+    pTopLevelSizer->Add(pConfigSizer, wxSizerFlags(0).Expand().Border(wxALL, 5));
+    pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 5));
 
     // Build the left column of panes
 
     m_pFramePane = pFrame->GetConfigDialogPane(this);
-    pLeftSizer->Add(m_pFramePane, 0, wxALIGN_CENTER | wxGROW);
+    pLeftSizer->Add(m_pFramePane, sizer_flags);
 
     m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(this);
-    pLeftSizer->Add(m_pGuiderPane, 0, wxALIGN_CENTER | wxGROW);
+    pLeftSizer->Add(m_pGuiderPane, sizer_flags);
 
     if (pCamera)
     {
         m_pCameraPane = pCamera->GetConfigDialogPane(this);
-        pLeftSizer->Add(m_pCameraPane, 0, wxALIGN_CENTER | wxGROW);
+        if (m_pCameraPane != NULL)
+            pLeftSizer->Add(m_pCameraPane, sizer_flags);
     }
     else
     {
@@ -98,7 +102,7 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
         wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Settings")), wxVERTICAL);
         wxStaticText *pText = new wxStaticText(this, wxID_ANY, _("No Camera Connected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
-        pLeftSizer->Add(pBox, 0, wxALIGN_CENTER | wxGROW);
+        pLeftSizer->Add(pBox, sizer_flags);
     }
 
     // Build the right column of panes
@@ -108,10 +112,10 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
         // if there are two mounts, the mount config goes on the left and
         // the secondary goes on the right
         m_pMountPane = pMount->GetConfigDialogPane(this);
-        pLeftSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
+        pLeftSizer->Add(m_pMountPane, sizer_flags);
 
         m_pSecondaryMountPane = pSecondaryMount->GetConfigDialogPane(this);
-        pRightSizer->Add(m_pSecondaryMountPane, 0, wxALIGN_CENTER | wxGROW);
+        pRightSizer->Add(m_pSecondaryMountPane, sizer_flags);
     }
     else
     {
@@ -120,11 +124,11 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350),
         wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("AO Settings")), wxVERTICAL);
         wxStaticText *pText = new wxStaticText(this, wxID_ANY, _("No AO Connected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
-        pLeftSizer->Add(pBox, 0, wxALIGN_CENTER | wxGROW);
+        pLeftSizer->Add(pBox, sizer_flags);
 
         // and the mount goes on the right
         m_pMountPane = pMount->GetConfigDialogPane(this);
-        pRightSizer->Add(m_pMountPane, 0, wxALIGN_CENTER | wxGROW);
+        pRightSizer->Add(m_pMountPane, sizer_flags);
 
     }
 
@@ -143,7 +147,7 @@ void AdvancedDialog::LoadValues(void)
     }
     m_pGuiderPane->LoadValues();
 
-    if (m_pCameraPane)
+    if (m_pCameraPane != NULL)
     {
         m_pCameraPane->LoadValues();
     }
@@ -159,7 +163,7 @@ void AdvancedDialog::UnloadValues(void)
     }
     m_pGuiderPane->UnloadValues();
 
-    if (m_pCameraPane)
+    if (m_pCameraPane != NULL)
     {
         m_pCameraPane->UnloadValues();
     }

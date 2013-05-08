@@ -66,7 +66,7 @@ bool Camera_SimClass::Disconnect() {
 }
 
 
-#include <fitsio.h>
+#include "fitsio.h"
 
 #if SIMMODE==1
 bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool recon) {

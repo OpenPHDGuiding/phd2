@@ -41,7 +41,7 @@
 #if defined (__APPLE__)
 #include "../cfitsio/fitsio.h"
 #else
-#include <fitsio.h>
+#include "fitsio.h"
 #endif
 
 #define SCALE_UP_SMALL  // Currently problematic as the box for the star is drawn in the wrong spot.
@@ -278,18 +278,18 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
     {
         GUIDER_STATE state = GetState();
 
-        if (state == STATE_SELECTING && m_autoSelectTries++ == 0)
-        {
-            Debug.Write("UpdateGuideState(): Autoselecting\n");
+        //if (state == STATE_SELECTING && m_autoSelectTries++ == 0)
+        //{
+        //    Debug.Write("UpdateGuideState(): Autoselecting\n");
 
-            if (AutoSelect(pImage))
-            {
-                statusMessage = _T("No Star selected");
-                throw THROW_INFO("No Star Autoselected");
-            }
+        //    if (AutoSelect(pImage))
+        //    {
+        //        statusMessage = _T("No Star selected");
+        //        throw THROW_INFO("No Star Autoselected");
+        //    }
 
-            pFrame->SetStatusText(wxString::Format(_T("Auto Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
-        }
+        //    pFrame->SetStatusText(wxString::Format(_T("Auto Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
+        //}
 
         Star newStar(m_star);
 
@@ -335,7 +335,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
         m_star = newStar;
         m_badMassCount = 0;
 
-        pFrame->Profile->UpdateData(pImage, m_star.X, m_star.Y);
+        pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
         statusMessage.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
     }
     catch (wxString Msg)

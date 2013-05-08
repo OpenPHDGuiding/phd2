@@ -1,9 +1,9 @@
 /*
- *  cam_SSAG.cpp
+ *  target.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
+ *  Created by Sylvain Girard
+ *  Copyright (c) 2013 Sylvain Girard
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -30,32 +30,72 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *
  */
- #ifndef SSAGDEF
-#define SSAGDEF
-#include "SSAGIF.h"
-class Camera_SSAGClass : public GuideCamera {
-public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture();
 
-//  bool    SetGlobalGain(unsigned char gain);
-    bool    PulseGuideScope(int direction, int duration);
-    void    ClearGuidePort();
-    //bool  SetColorGain(unsigned char r_gain, unsigned char g_gain, unsigned char b_gain);
-    //int   FindCameras(int DevNums[8]);
+#ifndef TARGET_H_INCLUDED
+#define TARGET_H_INCLUDED
 
-    Camera_SSAGClass();
-private:
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
-    unsigned char *buffer;
-    void RemoveLines(usImage& img);
+class TargetWindow;
 
-    virtual bool HasNonGuiCapture(void) { return true; }
-    virtual bool    HasNonGuiMove(void) { return true; }
+class TargetClient : public wxWindow
+{
+    TargetClient(wxWindow *parent);
+    ~TargetClient(void);
+
+    static const unsigned m_maxHistorySize = 400;
+
+    int m_minLength;
+    int m_maxLength;
+
+    int m_minHeight;
+    int m_maxHeight;
+
+    struct
+    {
+        double ra;
+        double dec;
+    } m_history[m_maxHistorySize];
+
+    int m_nItems;    // # of items in the history
+    int m_length;     // # of items to display
+    double m_zoom;
+
+    void AppendData (double ra, double dec);
+
+    void OnPaint(wxPaintEvent& evt);
+
+    friend class TargetWindow;
+
+    DECLARE_EVENT_TABLE()
 };
-#endif  //QGUIDEDEF
 
+class TargetWindow : public wxWindow
+{
+public:
+    TargetWindow(wxWindow *parent);
+    ~TargetWindow(void);
 
+    void OnButtonMode(wxCommandEvent& evt);
+    void OnButtonLength(wxCommandEvent& evt);
+    void OnButtonClear(wxCommandEvent& evt);
+    void OnButtonZoomIn(wxCommandEvent& evt);
+    void OnButtonZoomOut(wxCommandEvent& evt);
+
+    void AppendData(double ra, double dec);
+    void SetState(bool is_active);
+
+private:
+    wxButton *LengthButton;
+    wxButton *ClearButton;
+    wxButton *ZoomInButton;
+    wxButton *ZoomOutButton;
+
+    TargetClient *m_pClient;
+
+    bool m_visible;
+
+    DECLARE_EVENT_TABLE()
+};
+
+#endif // TARGET_H_INCLUDED

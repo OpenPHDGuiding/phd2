@@ -37,14 +37,14 @@
 #include <wx/utils.h>
 #include <wx/colordlg.h>
 
-BEGIN_EVENT_TABLE(GraphStepguiderWindow, wxMiniFrame)
-EVT_BUTTON(BUTTON_GRAPH_HIDE,GraphStepguiderWindow::OnButtonHide)
+BEGIN_EVENT_TABLE(GraphStepguiderWindow, wxWindow)
 EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphStepguiderWindow::OnButtonLength)
 EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphStepguiderWindow::OnButtonClear)
 END_EVENT_TABLE()
 
 GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent):
-    wxMiniFrame(parent,wxID_ANY,_("AO Position"),wxDefaultPosition,wxSize(610,254),(wxCAPTION & ~wxSTAY_ON_TOP) | wxRESIZE_BORDER)
+    //wxMiniFrame(parent,wxID_ANY,_("AO Position"),wxDefaultPosition,wxSize(610,254),(wxCAPTION & ~wxSTAY_ON_TOP) | wxRESIZE_BORDER)
+    wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, 0,_("AO Position"))
 {
     m_visible = false;
     m_pClient = new GraphStepguiderClient(this);
@@ -57,14 +57,10 @@ GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent):
     LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("  1"),wxPoint(10,10),wxSize(80,-1));
     LengthButton->SetToolTip(_("# of frames of history to display"));
 
-    HideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_("Hide"),wxPoint(10,70),wxSize(80,-1));
-    HideButton->SetToolTip(_("Hide graph"));
-
     ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxPoint(10,100),wxSize(80,-1));
     ClearButton->SetToolTip(_("Clear graph data"));
 
     pLeftSizer->Add(LengthButton, wxSizerFlags().Center().Border(wxALL,3));
-    pLeftSizer->Add(HideButton, wxSizerFlags().Center().Border(wxALL,3));
     pLeftSizer->Add(ClearButton, wxSizerFlags().Center().Border(wxALL,3));
 
     pMainSizer->Add(m_pClient, wxSizerFlags().Border(wxALL,3).Expand().Proportion(1));
@@ -86,13 +82,6 @@ GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent):
 GraphStepguiderWindow::~GraphStepguiderWindow()
 {
     delete m_pClient;
-}
-
-void GraphStepguiderWindow::OnButtonHide(wxCommandEvent& WXUNUSED(evt))
-{
-    m_visible = false;
-    pFrame->Menubar->Check(MENU_AO_GRAPH,false);
-    Show(false);
 }
 
 void GraphStepguiderWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
@@ -123,18 +112,18 @@ void GraphStepguiderWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
     }
 }
 
-void GraphStepguiderWindow::SetState(bool is_active)
+bool GraphStepguiderWindow::SetState(bool is_active)
 {
     try
     {
-        m_visible = is_active;
 
+        //m_pClient->m_xMax = 100; m_pClient->m_yMax = 100; // TODO ZeSly : debug code to delete
         if (m_pClient->m_xMax == 0 || m_pClient->m_yMax == 0)
         {
             throw ERROR_INFO("Unable to display AO graph with xMax or yMax unset");
         }
 
-        this->Show(m_visible);
+        m_visible = is_active;
 
     }
     catch (wxString Msg)
@@ -148,6 +137,8 @@ void GraphStepguiderWindow::SetState(bool is_active)
     {
         Refresh();
     }
+    
+    return m_visible;
 }
 
 void GraphStepguiderWindow::SetLimits(unsigned xMax, unsigned yMax,

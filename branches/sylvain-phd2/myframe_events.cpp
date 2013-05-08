@@ -54,7 +54,8 @@ double MyFrame::RequestedExposureDuration() { // returns the duration based on p
     if (!pCamera || !pCamera->Connected)
         return 0.0;
 
-    durtext = pFrame->Dur_Choice->GetStringSelection();
+    //durtext = pFrame->Dur_Choice->GetStringSelection();
+    durtext = pFrame->Dur_Choice->GetValue();
     durtext = durtext.BeforeFirst(' '); // remove the " s" bit
 #if wxUSE_XLOCALE
     durtext.ToCDouble(&dReturn);
@@ -64,9 +65,14 @@ double MyFrame::RequestedExposureDuration() { // returns the duration based on p
     dReturn *= 1000;
     if (pCamera->HaveDark) {
         if (pCamera->DarkDur != dReturn)
+        {
             Dark_Button->SetBackgroundColour(wxColor(255,0,0));
+            Dark_Button->SetForegroundColour(wxColour(0,0,0));
+        }
         else
+        {
             Dark_Button->SetBackgroundColour(wxNullColour);
+        }
     }
 
     return dReturn;
@@ -265,6 +271,12 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 #endif
 
         Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d", CaptureActive));
+        double dx = (double)rand() / RAND_MAX * 2 - 1;
+        double dy = (double)rand() / RAND_MAX * 2 - 1;
+        double ra = (double)rand() / RAND_MAX * 2 - 1;
+        double dec = (double)rand() / RAND_MAX * 2 - 1;
+        pGraphLog->AppendData(dx,dy,ra,dec);
+        pTarget->AppendData(ra,dec);
         if (CaptureActive)
         {
             ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
@@ -373,16 +385,61 @@ void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt)) {
 }
 
 void MyFrame::OnGraph(wxCommandEvent &evt) {
-    this->GraphLog->SetState(evt.IsChecked());
+    if (evt.IsChecked())
+    {
+        m_mgr.GetPane(_T("GraphLog")).Show().Bottom().Layer(1).Position(1).MinSize(-1, 220);
+    }
+    else
+    {
+        m_mgr.GetPane(_T("GraphLog")).Hide();
+    }
+    this->pGraphLog->SetState(evt.IsChecked());
+    m_mgr.Update();
 }
 
 void MyFrame::OnAoGraph(wxCommandEvent &evt) {
-    this->pStepGuiderGraph->SetState(evt.IsChecked());
+    if (this->pStepGuiderGraph->SetState(evt.IsChecked()))
+    {
+        m_mgr.GetPane(_T("AOPosition")).Show().Bottom().Layer(1).Position(1).MinSize(293,208);
+    }
+    else
+    {
+        m_mgr.GetPane(_T("AOPosition")).Hide();
+    }
+    m_mgr.Update();
 }
 
 void MyFrame::OnStarProfile(wxCommandEvent &evt) {
-    this->Profile->SetState(evt.IsChecked());
+    if (evt.IsChecked())
+    {
+#if defined (__APPLE__)
+        m_mgr.GetPane(_T("Profile")).Show().Float().MinSize(110,72);
+#else
+        m_mgr.GetPane(_T("Profile")).Show().Top().Right().MinSize(115,85);
+        //m_mgr.GetPane(_T("Profile")).Show().Bottom().Layer(1).Position(2).MinSize(115,85);
+#endif
+    }
+    else
+    {
+        m_mgr.GetPane(_T("Profile")).Hide();
+    }
+    this->pProfile->SetState(evt.IsChecked());
+    m_mgr.Update();
 }
+
+void MyFrame::OnTarget(wxCommandEvent &evt) {
+    if (evt.IsChecked())
+    {
+        m_mgr.GetPane(_T("Target")).Show().Bottom().Layer(1).Position(1).MinSize(293,208);
+    }
+    else
+    {
+        m_mgr.GetPane(_T("Target")).Hide();
+    }
+    this->pTarget->SetState(evt.IsChecked());
+    m_mgr.Update();
+}
+
 
 void MyFrame::OnLog(wxCommandEvent &evt) {
     if (evt.GetId() == MENU_LOG) {
@@ -490,14 +547,15 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
     {
         dlog->UnloadValues();
 #ifdef BRET_TODO
-    pFrame->GraphLog->RAA_Ctrl->SetValue((int) (RA_aggr * 100));
-    pFrame->GraphLog->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
+        pFrame->pGraphLog->RAA_Ctrl->SetValue((int) (RA_aggr * 100));
+        pFrame->pGraphLog->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
 #if ((wxMAJOR_VERSION > 2) || (wxMINOR_VERSION > 8))
-    pFrame->GraphLog->MM_Ctrl->SetValue(MinMotion);
+        pFrame->pGraphLog->MM_Ctrl->SetValue(MinMotion);
 #endif
-    pFrame->GraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
-    pFrame->GraphLog->DM_Ctrl->SetSelection(Dec_guide);
+        pFrame->pGraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
+        pFrame->pGraphLog->DM_Ctrl->SetSelection(Dec_guide);
 #endif // BRET_TODO
+        SetSampling();
     }
 }
 
@@ -555,3 +613,27 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
     // we leak pDialog here
 }
 
+void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
+{
+    wxAuiPaneInfo *p = evt.GetPane();
+    if (p->name == __T("GraphLog"))
+    {
+        Menubar->Check(MENU_GRAPH, false);
+        this->pGraphLog->SetState(false);
+    }
+    if (p->name == __T("Profile"))
+    {
+        Menubar->Check(MENU_STARPROFILE, false);
+        this->pProfile->SetState(false);
+    }
+    if (p->name == __T("AOPosition"))
+    {
+        Menubar->Check(MENU_AO_GRAPH, false);
+        this->pStepGuiderGraph->SetState(false);
+    }
+    if (p->name == __T("Target"))
+    {
+        Menubar->Check(MENU_TARGET, false);
+        this->pTarget->SetState(false);
+    }
+}

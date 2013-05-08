@@ -45,6 +45,7 @@ protected:
         wxSpinCtrl *m_pCameraGain;
         wxChoice   *m_pPortNum;
         wxSpinCtrl *m_pDelay;
+        wxTextCtrl *m_pPixelSize;
     public:
         CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
         virtual ~CameraConfigDialogPane(void);
@@ -55,14 +56,16 @@ protected:
 
     virtual double GetCameraGain(void);
     virtual bool SetCameraGain(double cameraGain);
+    virtual float GetCameraPixelSize(void);
+    virtual bool SetCameraPixelSize(float pixel_size);
 
     friend class CameraConfigDialogPane;
 
 public:
     int             GuideCameraGain;
-    wxString            Name;                   // User-friendly name
+    wxString        Name;                   // User-friendly name
     wxSize          FullSize;           // Size of current image
-    bool                Connected;
+    bool            Connected;
     bool            HasGuiderOutput;
     bool            HasPropertyDialog;
     bool            HasPortNum;
@@ -74,6 +77,7 @@ public:
     int             Delay;
     bool            ShutterState;  // false=light, true=dark
     bool            UseSubframes;
+    double          PixelSize;
 
     bool            HaveDark;
     int             DarkDur;

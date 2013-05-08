@@ -56,6 +56,7 @@ Camera_SSAGClass::Camera_SSAGClass() {
     FullSize = wxSize(1280,1024);
     HasGuiderOutput = true;
     HasGainControl = true;
+    //PixelSize = 5.2;
 }
 
 
