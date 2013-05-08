@@ -1,0 +1,618 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		58010E9213D1368600AD4D6D /* cam_openssag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58010E9113D1368600AD4D6D /* cam_openssag.cpp */; };
+		58010F4F13D1375E00AD4D6D /* libopenssag.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58010F4E13D1375E00AD4D6D /* libopenssag.a */; };
+		583291EA15DA07F300D96A6D /* scope_ascom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291DC15DA07F300D96A6D /* scope_ascom.cpp */; };
+		583291EC15DA07F300D96A6D /* scope_equinox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291DE15DA07F300D96A6D /* scope_equinox.cpp */; };
+		583291EE15DA07F300D96A6D /* scope_gpint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291E015DA07F300D96A6D /* scope_gpint.cpp */; };
+		583291F015DA07F300D96A6D /* scope_gpusb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291E215DA07F300D96A6D /* scope_gpusb.cpp */; };
+		583291F215DA07F300D96A6D /* scope_voyager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291E615DA07F300D96A6D /* scope_voyager.cpp */; };
+		583291F615DA081200D96A6D /* scope_GC_USBST4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291F315DA081200D96A6D /* scope_GC_USBST4.cpp */; };
+		5832920015DA102E00D96A6D /* phdlog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291FD15DA102E00D96A6D /* phdlog.cpp */; };
+		5832920415DA143E00D96A6D /* scope_eqmac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5832920115DA143E00D96A6D /* scope_eqmac.cpp */; };
+		585E878E15E8A0F700D96E46 /* libwx_osx_cocoau_html-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 585E878D15E8A0F700D96E46 /* libwx_osx_cocoau_html-2.9.a */; };
+		58CB7A3F15C4A2740079F7CC /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CB7A3D15C4A2740079F7CC /* IOKit.framework */; };
+		58CB7A4A15C4D7930079F7CC /* libwx_baseu_net-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CB7A4015C4D7930079F7CC /* libwx_baseu_net-2.9.a */; };
+		58CB7A4E15C4D7930079F7CC /* libwx_baseu-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CB7A4215C4D7930079F7CC /* libwx_baseu-2.9.a */; };
+		58CB7A5015C4D7930079F7CC /* libwx_osx_cocoau_adv-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CB7A4315C4D7930079F7CC /* libwx_osx_cocoau_adv-2.9.a */; };
+		58CB7A5415C4D7930079F7CC /* libwx_osx_cocoau_core-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CB7A4515C4D7930079F7CC /* libwx_osx_cocoau_core-2.9.a */; };
+		58CB7A5A15C4D7930079F7CC /* libwx_osx_cocoau_propgrid-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CB7A4815C4D7930079F7CC /* libwx_osx_cocoau_propgrid-2.9.a */; };
+		58EE97E913CD0F74009EC68D /* PHD_OSX_icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 588B7BF80B266D6100B4C6DF /* PHD_OSX_icon.icns */; };
+		58EE97EB13CD0F74009EC68D /* cam_MeadeDSI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E4D0B1FC6A700109891 /* cam_MeadeDSI.cpp */; };
+		58EE97EC13CD0F74009EC68D /* cam_simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E530B1FC6A700109891 /* cam_simulator.cpp */; };
+		58EE97ED13CD0F74009EC68D /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E5B0B1FC6A700109891 /* camera.cpp */; };
+		58EE97EE13CD0F74009EC68D /* canvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E5D0B1FC6A700109891 /* canvas.cpp */; };
+		58EE97EF13CD0F74009EC68D /* eegg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E600B1FC6A700109891 /* eegg.cpp */; };
+		58EE97F013CD0F74009EC68D /* frame_events.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E610B1FC6A700109891 /* frame_events.cpp */; };
+		58EE97F113CD0F74009EC68D /* guide_routines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E620B1FC6A700109891 /* guide_routines.cpp */; };
+		58EE97F213CD0F74009EC68D /* image_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E630B1FC6A700109891 /* image_math.cpp */; };
+		58EE97F313CD0F74009EC68D /* phd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E650B1FC6A700109891 /* phd.cpp */; };
+		58EE97F413CD0F74009EC68D /* prefs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E680B1FC6A700109891 /* prefs.cpp */; };
+		58EE97F513CD0F74009EC68D /* scope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E690B1FC6A700109891 /* scope.cpp */; };
+		58EE97F713CD0F74009EC68D /* usImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58339E6D0B1FC6A700109891 /* usImage.cpp */; };
+		58EE97F813CD0F74009EC68D /* cam_Starfish.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5828187C0B4A031200E5E22D /* cam_Starfish.cpp */; };
+		58EE97F913CD0F74009EC68D /* cam_SBIG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5881681B0B4DEDC000BDA6D4 /* cam_SBIG.cpp */; };
+		58EE97FA13CD0F74009EC68D /* cam_firewire_OSX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 587DEB2A0BAA255300FFB715 /* cam_firewire_OSX.cpp */; };
+		58EE97FB13CD0F74009EC68D /* socket_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B18D560D373FDF0054C3B6 /* socket_server.cpp */; };
+		58EE97FC13CD0F74009EC68D /* graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 585544770D8706C300666090 /* graph.cpp */; };
+		58EE97FD13CD0F74009EC68D /* cam_SXV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58C6F0390D8F0B8D00D74840 /* cam_SXV.cpp */; };
+		58EE97FE13CD0F74009EC68D /* cam_NebSBIG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58200FCC0DA492740066F54A /* cam_NebSBIG.cpp */; };
+		58EE980113CD0F74009EC68D /* libcfitsio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58339E890B1FC78600109891 /* libcfitsio.a */; };
+		58EE980213CD0F74009EC68D /* libDsiDevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58339E8D0B1FC7BE00109891 /* libDsiDevice.a */; };
+		58EE980313CD0F74009EC68D /* libHIDUtilities.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58339E880B1FC77700109891 /* libHIDUtilities.a */; };
+		58EE980513CD0F74009EC68D /* fcCamFw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5828185D0B4A022A00E5E22D /* fcCamFw.framework */; };
+		58EE980613CD0F74009EC68D /* SBIGUDrv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 588167710B4DED6900BDA6D4 /* SBIGUDrv.framework */; };
+		58EE980713CD0F74009EC68D /* libdc1394.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 587DEBE00BAA410600FFB715 /* libdc1394.a */; };
+		58EE980813CD0F74009EC68D /* libSXMacLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C6F07F0D8F7E5200D74840 /* libSXMacLib.a */; };
+		58EE981113CD0F74009EC68D /* libwxpng-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 584504B51097F95E00273CE4 /* libwxpng-2.9.a */; };
+		58EE981213CD0F74009EC68D /* libwxjpeg-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 584504BB1097F97B00273CE4 /* libwxjpeg-2.9.a */; };
+		58EE981313CD0F74009EC68D /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 584504D21097F9AB00273CE4 /* OpenGL.framework */; };
+		58EE981513CD0F74009EC68D /* PHDGuideHelp.zip in CopyFiles */ = {isa = PBXBuildFile; fileRef = 58F7157D0B20CC700056770B /* PHDGuideHelp.zip */; };
+		58EE981713CD0F74009EC68D /* SBIGUDrv.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 588167710B4DED6900BDA6D4 /* SBIGUDrv.framework */; };
+		58EE981813CD0F74009EC68D /* fcCamFw.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5828185D0B4A022A00E5E22D /* fcCamFw.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		58EE981413CD0F74009EC68D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				58EE981513CD0F74009EC68D /* PHDGuideHelp.zip in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58EE981613CD0F74009EC68D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				58EE981713CD0F74009EC68D /* SBIGUDrv.framework in CopyFiles */,
+				58EE981813CD0F74009EC68D /* fcCamFw.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		58010E9013D1368600AD4D6D /* cam_openssag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_openssag.h; sourceTree = "<group>"; };
+		58010E9113D1368600AD4D6D /* cam_openssag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_openssag.cpp; sourceTree = "<group>"; };
+		58010F4E13D1375E00AD4D6D /* libopenssag.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenssag.a; path = cameras/libopenssag.a; sourceTree = "<group>"; };
+		58200FCB0DA492740066F54A /* cam_NebSBIG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_NebSBIG.h; sourceTree = "<group>"; };
+		58200FCC0DA492740066F54A /* cam_NebSBIG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_NebSBIG.cpp; sourceTree = "<group>"; };
+		58200FD30DA493FC0066F54A /* socket_server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = socket_server.h; sourceTree = "<group>"; };
+		5828185D0B4A022A00E5E22D /* fcCamFw.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = fcCamFw.framework; path = /Library/Frameworks/fcCamFw.framework; sourceTree = "<absolute>"; };
+		5828187C0B4A031200E5E22D /* cam_Starfish.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cam_Starfish.cpp; sourceTree = "<group>"; };
+		5828187D0B4A031200E5E22D /* cam_Starfish.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cam_Starfish.h; sourceTree = "<group>"; };
+		583291DC15DA07F300D96A6D /* scope_ascom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_ascom.cpp; sourceTree = "<group>"; };
+		583291DD15DA07F300D96A6D /* scope_ascom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_ascom.h; sourceTree = "<group>"; };
+		583291DE15DA07F300D96A6D /* scope_equinox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_equinox.cpp; sourceTree = "<group>"; };
+		583291DF15DA07F300D96A6D /* scope_equinox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_equinox.h; sourceTree = "<group>"; };
+		583291E015DA07F300D96A6D /* scope_gpint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_gpint.cpp; sourceTree = "<group>"; };
+		583291E115DA07F300D96A6D /* scope_gpint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_gpint.h; sourceTree = "<group>"; };
+		583291E215DA07F300D96A6D /* scope_gpusb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_gpusb.cpp; sourceTree = "<group>"; };
+		583291E315DA07F300D96A6D /* scope_gpusb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_gpusb.h; sourceTree = "<group>"; };
+		583291E415DA07F300D96A6D /* scope_none.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_none.h; sourceTree = "<group>"; };
+		583291E515DA07F300D96A6D /* scope_onboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_onboard.h; sourceTree = "<group>"; };
+		583291E615DA07F300D96A6D /* scope_voyager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_voyager.cpp; sourceTree = "<group>"; };
+		583291E715DA07F300D96A6D /* scope_voyager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_voyager.h; sourceTree = "<group>"; };
+		583291E815DA07F300D96A6D /* scopes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scopes.h; sourceTree = "<group>"; };
+		583291F315DA081200D96A6D /* scope_GC_USBST4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_GC_USBST4.cpp; sourceTree = "<group>"; };
+		583291F415DA081200D96A6D /* scope_GC_USBST4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_GC_USBST4.h; sourceTree = "<group>"; };
+		583291F815DA085400D96A6D /* mount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mount.h; sourceTree = "<group>"; };
+		583291FD15DA102E00D96A6D /* phdlog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = phdlog.cpp; sourceTree = "<group>"; };
+		583291FE15DA102E00D96A6D /* phdlog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phdlog.h; sourceTree = "<group>"; };
+		5832920115DA143E00D96A6D /* scope_eqmac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_eqmac.cpp; sourceTree = "<group>"; };
+		5832920215DA143E00D96A6D /* scope_eqmac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_eqmac.h; sourceTree = "<group>"; };
+		58339E3A0B1FC2BF00109891 /* PHD-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PHD-Info.plist"; sourceTree = "<group>"; };
+		58339E4D0B1FC6A700109891 /* cam_MeadeDSI.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cam_MeadeDSI.cpp; sourceTree = "<group>"; };
+		58339E4E0B1FC6A700109891 /* cam_MeadeDSI.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cam_MeadeDSI.h; sourceTree = "<group>"; };
+		58339E530B1FC6A700109891 /* cam_simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cam_simulator.cpp; sourceTree = "<group>"; };
+		58339E540B1FC6A700109891 /* cam_simulator.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cam_simulator.h; sourceTree = "<group>"; };
+		58339E5B0B1FC6A700109891 /* camera.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = "<group>"; };
+		58339E5C0B1FC6A700109891 /* camera.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = camera.h; sourceTree = "<group>"; };
+		58339E5D0B1FC6A700109891 /* canvas.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = canvas.cpp; sourceTree = "<group>"; };
+		58339E600B1FC6A700109891 /* eegg.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = eegg.cpp; sourceTree = "<group>"; };
+		58339E610B1FC6A700109891 /* frame_events.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = frame_events.cpp; sourceTree = "<group>"; };
+		58339E620B1FC6A700109891 /* guide_routines.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = guide_routines.cpp; sourceTree = "<group>"; };
+		58339E630B1FC6A700109891 /* image_math.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = image_math.cpp; sourceTree = "<group>"; };
+		58339E640B1FC6A700109891 /* image_math.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = image_math.h; sourceTree = "<group>"; };
+		58339E650B1FC6A700109891 /* phd.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = phd.cpp; sourceTree = "<group>"; };
+		58339E660B1FC6A700109891 /* phd.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = phd.h; sourceTree = "<group>"; };
+		58339E680B1FC6A700109891 /* prefs.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = prefs.cpp; sourceTree = "<group>"; };
+		58339E690B1FC6A700109891 /* scope.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = scope.cpp; sourceTree = "<group>"; };
+		58339E6A0B1FC6A700109891 /* scope.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = scope.h; sourceTree = "<group>"; };
+		58339E6D0B1FC6A700109891 /* usImage.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = usImage.cpp; sourceTree = "<group>"; };
+		58339E880B1FC77700109891 /* libHIDUtilities.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHIDUtilities.a; sourceTree = "<group>"; };
+		58339E890B1FC78600109891 /* libcfitsio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcfitsio.a; sourceTree = "<group>"; };
+		58339E8D0B1FC7BE00109891 /* libDsiDevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libDsiDevice.a; path = cameras/libDsiDevice.a; sourceTree = "<group>"; };
+		584504B51097F95E00273CE4 /* libwxpng-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwxpng-2.9.a"; path = "../../../wxWidgets/Cocoa_32/lib/libwxpng-2.9.a"; sourceTree = SOURCE_ROOT; };
+		584504BB1097F97B00273CE4 /* libwxjpeg-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwxjpeg-2.9.a"; path = "../../../wxWidgets/Cocoa_32/lib/libwxjpeg-2.9.a"; sourceTree = SOURCE_ROOT; };
+		584504D21097F9AB00273CE4 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		585544770D8706C300666090 /* graph.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
+		585544780D8706C300666090 /* graph.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
+		585E878D15E8A0F700D96E46 /* libwx_osx_cocoau_html-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_html-2.9.a"; path = "../../../wxWidgets/Cocoa_32/lib/libwx_osx_cocoau_html-2.9.a"; sourceTree = "<group>"; };
+		585E87C915E8ABC300D96E46 /* cameras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cameras.h; sourceTree = "<group>"; };
+		587DEB290BAA255300FFB715 /* cam_firewire.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_firewire.h; sourceTree = "<group>"; };
+		587DEB2A0BAA255300FFB715 /* cam_firewire_OSX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_firewire_OSX.cpp; sourceTree = "<group>"; };
+		587DEBE00BAA410600FFB715 /* libdc1394.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdc1394.a; path = cameras/libdc1394.a; sourceTree = "<group>"; };
+		588052B10E857FC400FF94CF /* usImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = usImage.h; sourceTree = "<group>"; };
+		588167710B4DED6900BDA6D4 /* SBIGUDrv.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SBIGUDrv.framework; path = /Library/Frameworks/SBIGUDrv.framework; sourceTree = "<absolute>"; };
+		5881681B0B4DEDC000BDA6D4 /* cam_SBIG.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cam_SBIG.cpp; sourceTree = "<group>"; };
+		5881681C0B4DEDC000BDA6D4 /* cam_SBIG.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cam_SBIG.h; sourceTree = "<group>"; };
+		588B7BF80B266D6100B4C6DF /* PHD_OSX_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = PHD_OSX_icon.icns; sourceTree = "<group>"; };
+		58B18D560D373FDF0054C3B6 /* socket_server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = socket_server.cpp; sourceTree = "<group>"; };
+		58C6F0330D8F0B4800D74840 /* cam_SXV.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cam_SXV.h; sourceTree = "<group>"; };
+		58C6F0390D8F0B8D00D74840 /* cam_SXV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_SXV.cpp; sourceTree = "<group>"; };
+		58C6F07F0D8F7E5200D74840 /* libSXMacLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSXMacLib.a; path = cameras/libSXMacLib.a; sourceTree = "<group>"; };
+		58CB7A3D15C4A2740079F7CC /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
+		58CB7A4015C4D7930079F7CC /* libwx_baseu_net-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_baseu_net-2.9.a"; path = "../../../wxWidgets/Cocoa_32/lib/libwx_baseu_net-2.9.a"; sourceTree = "<group>"; };
+		58CB7A4215C4D7930079F7CC /* libwx_baseu-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_baseu-2.9.a"; path = "../../../wxWidgets/Cocoa_32/lib/libwx_baseu-2.9.a"; sourceTree = "<group>"; };
+		58CB7A4315C4D7930079F7CC /* libwx_osx_cocoau_adv-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_adv-2.9.a"; path = "../../../wxWidgets/Cocoa_32/lib/libwx_osx_cocoau_adv-2.9.a"; sourceTree = "<group>"; };
+		58CB7A4515C4D7930079F7CC /* libwx_osx_cocoau_core-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_core-2.9.a"; path = "../../../wxWidgets/Cocoa_32/lib/libwx_osx_cocoau_core-2.9.a"; sourceTree = "<group>"; };
+		58CB7A4815C4D7930079F7CC /* libwx_osx_cocoau_propgrid-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_propgrid-2.9.a"; path = "../../../wxWidgets/Cocoa_32/lib/libwx_osx_cocoau_propgrid-2.9.a"; sourceTree = "<group>"; };
+		58EE981C13CD0F74009EC68D /* PHD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PHD.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		58F7157D0B20CC700056770B /* PHDGuideHelp.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = PHDGuideHelp.zip; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		58EE980013CD0F74009EC68D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				58EE980113CD0F74009EC68D /* libcfitsio.a in Frameworks */,
+				58EE980213CD0F74009EC68D /* libDsiDevice.a in Frameworks */,
+				58EE980313CD0F74009EC68D /* libHIDUtilities.a in Frameworks */,
+				58EE980513CD0F74009EC68D /* fcCamFw.framework in Frameworks */,
+				58EE980613CD0F74009EC68D /* SBIGUDrv.framework in Frameworks */,
+				58EE980713CD0F74009EC68D /* libdc1394.a in Frameworks */,
+				58EE980813CD0F74009EC68D /* libSXMacLib.a in Frameworks */,
+				58EE981113CD0F74009EC68D /* libwxpng-2.9.a in Frameworks */,
+				58EE981213CD0F74009EC68D /* libwxjpeg-2.9.a in Frameworks */,
+				58EE981313CD0F74009EC68D /* OpenGL.framework in Frameworks */,
+				58010F4F13D1375E00AD4D6D /* libopenssag.a in Frameworks */,
+				58CB7A3F15C4A2740079F7CC /* IOKit.framework in Frameworks */,
+				58CB7A4A15C4D7930079F7CC /* libwx_baseu_net-2.9.a in Frameworks */,
+				58CB7A4E15C4D7930079F7CC /* libwx_baseu-2.9.a in Frameworks */,
+				58CB7A5015C4D7930079F7CC /* libwx_osx_cocoau_adv-2.9.a in Frameworks */,
+				58CB7A5415C4D7930079F7CC /* libwx_osx_cocoau_core-2.9.a in Frameworks */,
+				58CB7A5A15C4D7930079F7CC /* libwx_osx_cocoau_propgrid-2.9.a in Frameworks */,
+				585E878E15E8A0F700D96E46 /* libwx_osx_cocoau_html-2.9.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		582818990B4A050700E5E22D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				584504D21097F9AB00273CE4 /* OpenGL.framework */,
+				58CB7A3D15C4A2740079F7CC /* IOKit.framework */,
+				588167710B4DED6900BDA6D4 /* SBIGUDrv.framework */,
+				5828185D0B4A022A00E5E22D /* fcCamFw.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		583291DB15DA042400D96A6D /* Cameras */ = {
+			isa = PBXGroup;
+			children = (
+				58339E4D0B1FC6A700109891 /* cam_MeadeDSI.cpp */,
+				58339E4E0B1FC6A700109891 /* cam_MeadeDSI.h */,
+				587DEB290BAA255300FFB715 /* cam_firewire.h */,
+				587DEB2A0BAA255300FFB715 /* cam_firewire_OSX.cpp */,
+				58339E530B1FC6A700109891 /* cam_simulator.cpp */,
+				58339E540B1FC6A700109891 /* cam_simulator.h */,
+				5881681B0B4DEDC000BDA6D4 /* cam_SBIG.cpp */,
+				5881681C0B4DEDC000BDA6D4 /* cam_SBIG.h */,
+				5828187C0B4A031200E5E22D /* cam_Starfish.cpp */,
+				5828187D0B4A031200E5E22D /* cam_Starfish.h */,
+				58C6F0390D8F0B8D00D74840 /* cam_SXV.cpp */,
+				58C6F0330D8F0B4800D74840 /* cam_SXV.h */,
+				58010E9013D1368600AD4D6D /* cam_openssag.h */,
+				58010E9113D1368600AD4D6D /* cam_openssag.cpp */,
+				58200FCB0DA492740066F54A /* cam_NebSBIG.h */,
+				58200FCC0DA492740066F54A /* cam_NebSBIG.cpp */,
+				58339E5B0B1FC6A700109891 /* camera.cpp */,
+				58339E5C0B1FC6A700109891 /* camera.h */,
+				585E87C915E8ABC300D96E46 /* cameras.h */,
+			);
+			name = Cameras;
+			sourceTree = "<group>";
+		};
+		583291F715DA081D00D96A6D /* Scopes */ = {
+			isa = PBXGroup;
+			children = (
+				58339E690B1FC6A700109891 /* scope.cpp */,
+				58339E6A0B1FC6A700109891 /* scope.h */,
+				583291F315DA081200D96A6D /* scope_GC_USBST4.cpp */,
+				583291F415DA081200D96A6D /* scope_GC_USBST4.h */,
+				583291DC15DA07F300D96A6D /* scope_ascom.cpp */,
+				583291DD15DA07F300D96A6D /* scope_ascom.h */,
+				583291DE15DA07F300D96A6D /* scope_equinox.cpp */,
+				583291DF15DA07F300D96A6D /* scope_equinox.h */,
+				5832920115DA143E00D96A6D /* scope_eqmac.cpp */,
+				5832920215DA143E00D96A6D /* scope_eqmac.h */,
+				583291E015DA07F300D96A6D /* scope_gpint.cpp */,
+				583291E115DA07F300D96A6D /* scope_gpint.h */,
+				583291E215DA07F300D96A6D /* scope_gpusb.cpp */,
+				583291E315DA07F300D96A6D /* scope_gpusb.h */,
+				583291E415DA07F300D96A6D /* scope_none.h */,
+				583291E515DA07F300D96A6D /* scope_onboard.h */,
+				583291E615DA07F300D96A6D /* scope_voyager.cpp */,
+				583291E715DA07F300D96A6D /* scope_voyager.h */,
+				583291E815DA07F300D96A6D /* scopes.h */,
+				583291F815DA085400D96A6D /* mount.h */,
+			);
+			name = Scopes;
+			sourceTree = "<group>";
+		};
+		58339E1D0B1FC10000109891 = {
+			isa = PBXGroup;
+			children = (
+				582818990B4A050700E5E22D /* Frameworks */,
+				583291DB15DA042400D96A6D /* Cameras */,
+				583291F715DA081D00D96A6D /* Scopes */,
+				58339E5D0B1FC6A700109891 /* canvas.cpp */,
+				58339E600B1FC6A700109891 /* eegg.cpp */,
+				58339E610B1FC6A700109891 /* frame_events.cpp */,
+				58339E620B1FC6A700109891 /* guide_routines.cpp */,
+				585544770D8706C300666090 /* graph.cpp */,
+				585544780D8706C300666090 /* graph.h */,
+				58339E630B1FC6A700109891 /* image_math.cpp */,
+				58339E640B1FC6A700109891 /* image_math.h */,
+				58339E650B1FC6A700109891 /* phd.cpp */,
+				58339E660B1FC6A700109891 /* phd.h */,
+				58339E680B1FC6A700109891 /* prefs.cpp */,
+				58339E6D0B1FC6A700109891 /* usImage.cpp */,
+				588052B10E857FC400FF94CF /* usImage.h */,
+				58B18D560D373FDF0054C3B6 /* socket_server.cpp */,
+				58200FD30DA493FC0066F54A /* socket_server.h */,
+				583291FD15DA102E00D96A6D /* phdlog.cpp */,
+				583291FE15DA102E00D96A6D /* phdlog.h */,
+				58CB7A4015C4D7930079F7CC /* libwx_baseu_net-2.9.a */,
+				58CB7A4215C4D7930079F7CC /* libwx_baseu-2.9.a */,
+				58CB7A4315C4D7930079F7CC /* libwx_osx_cocoau_adv-2.9.a */,
+				58CB7A4515C4D7930079F7CC /* libwx_osx_cocoau_core-2.9.a */,
+				58CB7A4815C4D7930079F7CC /* libwx_osx_cocoau_propgrid-2.9.a */,
+				585E878D15E8A0F700D96E46 /* libwx_osx_cocoau_html-2.9.a */,
+				584504B51097F95E00273CE4 /* libwxpng-2.9.a */,
+				584504BB1097F97B00273CE4 /* libwxjpeg-2.9.a */,
+				58339E880B1FC77700109891 /* libHIDUtilities.a */,
+				58339E8D0B1FC7BE00109891 /* libDsiDevice.a */,
+				587DEBE00BAA410600FFB715 /* libdc1394.a */,
+				58C6F07F0D8F7E5200D74840 /* libSXMacLib.a */,
+				58339E890B1FC78600109891 /* libcfitsio.a */,
+				58010F4E13D1375E00AD4D6D /* libopenssag.a */,
+				58339E380B1FC2BF00109891 /* Products */,
+				58339E3A0B1FC2BF00109891 /* PHD-Info.plist */,
+				588B7BF80B266D6100B4C6DF /* PHD_OSX_icon.icns */,
+				58F7157D0B20CC700056770B /* PHDGuideHelp.zip */,
+			);
+			sourceTree = "<group>";
+		};
+		58339E380B1FC2BF00109891 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				58EE981C13CD0F74009EC68D /* PHD.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		58EE97E713CD0F74009EC68D /* PHD */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58EE981913CD0F74009EC68D /* Build configuration list for PBXNativeTarget "PHD" */;
+			buildPhases = (
+				58EE97E813CD0F74009EC68D /* Resources */,
+				58EE97EA13CD0F74009EC68D /* Sources */,
+				58EE980013CD0F74009EC68D /* Frameworks */,
+				58EE981413CD0F74009EC68D /* CopyFiles */,
+				58EE981613CD0F74009EC68D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PHD;
+			productName = PHD;
+			productReference = 58EE981C13CD0F74009EC68D /* PHD.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		58339E1F0B1FC10000109891 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "Stark Labs";
+			};
+			buildConfigurationList = 58339E200B1FC10000109891 /* Build configuration list for PBXProject "PHD" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 58339E1D0B1FC10000109891;
+			productRefGroup = 58339E380B1FC2BF00109891 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				58EE97E713CD0F74009EC68D /* PHD */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		58EE97E813CD0F74009EC68D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				58EE97E913CD0F74009EC68D /* PHD_OSX_icon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		58EE97EA13CD0F74009EC68D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				58EE97EB13CD0F74009EC68D /* cam_MeadeDSI.cpp in Sources */,
+				58EE97EC13CD0F74009EC68D /* cam_simulator.cpp in Sources */,
+				58EE97ED13CD0F74009EC68D /* camera.cpp in Sources */,
+				58EE97EE13CD0F74009EC68D /* canvas.cpp in Sources */,
+				58EE97EF13CD0F74009EC68D /* eegg.cpp in Sources */,
+				58EE97F013CD0F74009EC68D /* frame_events.cpp in Sources */,
+				58EE97F113CD0F74009EC68D /* guide_routines.cpp in Sources */,
+				58EE97F213CD0F74009EC68D /* image_math.cpp in Sources */,
+				58EE97F313CD0F74009EC68D /* phd.cpp in Sources */,
+				58EE97F413CD0F74009EC68D /* prefs.cpp in Sources */,
+				58EE97F513CD0F74009EC68D /* scope.cpp in Sources */,
+				58EE97F713CD0F74009EC68D /* usImage.cpp in Sources */,
+				58EE97F813CD0F74009EC68D /* cam_Starfish.cpp in Sources */,
+				58EE97F913CD0F74009EC68D /* cam_SBIG.cpp in Sources */,
+				58EE97FA13CD0F74009EC68D /* cam_firewire_OSX.cpp in Sources */,
+				58EE97FB13CD0F74009EC68D /* socket_server.cpp in Sources */,
+				58EE97FC13CD0F74009EC68D /* graph.cpp in Sources */,
+				58EE97FD13CD0F74009EC68D /* cam_SXV.cpp in Sources */,
+				58EE97FE13CD0F74009EC68D /* cam_NebSBIG.cpp in Sources */,
+				58010E9213D1368600AD4D6D /* cam_openssag.cpp in Sources */,
+				583291EA15DA07F300D96A6D /* scope_ascom.cpp in Sources */,
+				583291EC15DA07F300D96A6D /* scope_equinox.cpp in Sources */,
+				583291EE15DA07F300D96A6D /* scope_gpint.cpp in Sources */,
+				583291F015DA07F300D96A6D /* scope_gpusb.cpp in Sources */,
+				583291F215DA07F300D96A6D /* scope_voyager.cpp in Sources */,
+				583291F615DA081200D96A6D /* scope_GC_USBST4.cpp in Sources */,
+				5832920015DA102E00D96A6D /* phdlog.cpp in Sources */,
+				5832920415DA143E00D96A6D /* scope_eqmac.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		58339E210B1FC10000109891 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_VERSION = 4.0;
+				HEADER_SEARCH_PATHS = ./cameras;
+				LIBRARY_SEARCH_PATHS = ./cameras;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		58339E220B1FC10000109891 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = YES;
+				GCC_VERSION = 4.0;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		58EE981A13CD0F74009EC68D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Developer ID Application: Craig Stark";
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = (
+					"$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9",
+					"$(WXDIR)/include",
+					./cameras,
+					/Users/stark/dev/cfitsio,
+					"/Users/stark/dev/libdc1394-2.0.0-rc7",
+				);
+				INFOPLIST_FILE = "PHD-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(WXDIR)/Cocoa_32/lib",
+					/Users/stark/dev/cfitsio,
+					./cameras,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_5)",
+					"\"$(SRCROOT)/cameras\"",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/cameras\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_5 = "\"$(SRCROOT)\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = (
+					"-D__WXMAC__",
+					"-D_FILE_OFFSET_BITS=64",
+					"-D_LARGE_FILES",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+					"-DNO_GCC_PRAGMA",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					QuickTime,
+					"-framework",
+					IOKit,
+					"-framework",
+					Carbon,
+					"-framework",
+					Cocoa,
+					"-framework",
+					System,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					WebKit,
+					"-lz",
+					"-lpthread",
+					"-lusb",
+					"-liconv",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = PHD;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx10.6;
+				USER_HEADER_SEARCH_PATHS = "$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9 $(WXDIR)/include /Users/stark/dev/cfitsio /Users/stark/dev/libdc1394-2.0.0-rc7 /Users/stark/dev/HID\\ Utilities\\ Source/";
+				WRAPPER_EXTENSION = app;
+				WXDIR = /Users/stark/dev/wxWidgets;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		58EE981B13CD0F74009EC68D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Developer ID Application: Craig Stark";
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = (
+					"$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9",
+					"$(WXDIR)/include",
+					./cameras,
+					/Users/stark/dev/cfitsio,
+					"/Users/stark/dev/libdc1394-2.0.0-rc7",
+				);
+				INFOPLIST_FILE = "PHD-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(WXDIR)/Cocoa_32/lib",
+					/Users/stark/dev/cfitsio,
+					./cameras,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_5)",
+					"\"$(SRCROOT)/cameras\"",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/cameras\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_5 = "\"$(SRCROOT)\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = (
+					"-D__WXMAC__",
+					"-D_FILE_OFFSET_BITS=64",
+					"-D_LARGE_FILES",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+					"-DNO_GCC_PRAGMA",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					QuickTime,
+					"-framework",
+					IOKit,
+					"-framework",
+					Carbon,
+					"-framework",
+					Cocoa,
+					"-framework",
+					System,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					WebKit,
+					"-lz",
+					"-lpthread",
+					"-lusb",
+					"-liconv",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = PHD;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx10.6;
+				USER_HEADER_SEARCH_PATHS = "$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9 $(WXDIR)/include /Users/stark/dev/cfitsio /Users/stark/dev/libdc1394-2.0.0-rc7 /Users/stark/dev/HID\\ Utilities\\ Source/";
+				WRAPPER_EXTENSION = app;
+				WXDIR = /Users/stark/dev/wxWidgets;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		58339E200B1FC10000109891 /* Build configuration list for PBXProject "PHD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58339E210B1FC10000109891 /* Debug */,
+				58339E220B1FC10000109891 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58EE981913CD0F74009EC68D /* Build configuration list for PBXNativeTarget "PHD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58EE981A13CD0F74009EC68D /* Debug */,
+				58EE981B13CD0F74009EC68D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 58339E1F0B1FC10000109891 /* Project object */;
+}
