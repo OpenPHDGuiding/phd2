@@ -5,7 +5,7 @@
 ;       include any DLLs, libraraies or anything else.  It assumes that it
 ;       is being installed on a system that already has PHD v1 installed
 
-#define APP_VERSION "2.0.2"
+#define APP_VERSION "2.0.3"
 
 [Setup]
 AppName=phd2
