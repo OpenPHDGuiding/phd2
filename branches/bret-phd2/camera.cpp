@@ -161,7 +161,7 @@ GuideCamera::GuideCamera(void)
     HaveDark = false;
     DarkDur = 0;
 
-    double cameraGain = pConfig->GetDouble("/camera/gain", DefaultGuideCameraGain);
+    double cameraGain = pConfig->GetInt("/camera/gain", DefaultGuideCameraGain);
     SetCameraGain(cameraGain);
 }
 
@@ -524,12 +524,12 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 
 }
 
-double GuideCamera::GetCameraGain(void)
+int GuideCamera::GetCameraGain(void)
 {
     return GuideCameraGain;
 }
 
-bool GuideCamera::SetCameraGain(double cameraGain)
+bool GuideCamera::SetCameraGain(int cameraGain)
 {
     bool bError = false;
 
@@ -621,7 +621,7 @@ void GuideCamera::CameraConfigDialogPane::LoadValues(void)
 
     if (m_pCamera->HasGainControl)
     {
-        m_pCameraGain->SetValue(100*m_pCamera->GetCameraGain());
+        m_pCameraGain->SetValue(m_pCamera->GetCameraGain());
     }
 
     if (m_pCamera->HasDelayParam)
@@ -705,7 +705,7 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
 
     if (m_pCamera->HasGainControl)
     {
-        m_pCamera->SetCameraGain(m_pCameraGain->GetValue()/100);
+        m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
     }
 
     if (m_pCamera->HasDelayParam)

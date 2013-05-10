@@ -53,8 +53,8 @@ protected:
         virtual void UnloadValues(void);
     };
 
-    virtual double GetCameraGain(void);
-    virtual bool SetCameraGain(double cameraGain);
+    virtual int GetCameraGain(void);
+    virtual bool SetCameraGain(int cameraGain);
 
     friend class CameraConfigDialogPane;
 
