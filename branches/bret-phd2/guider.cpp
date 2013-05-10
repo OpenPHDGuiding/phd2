@@ -162,9 +162,12 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
             int newWidth = imageWidth;
             int newHeight = imageHeight;
 
-           double newScaleFactor = (xScaleFactor > yScaleFactor) ?
+            double newScaleFactor = (xScaleFactor > yScaleFactor) ?
                                     xScaleFactor :
                                     yScaleFactor;
+
+            Debug.AddLine("xScaleFactor=%.2lf, yScaleFactor=%.2lf, newScaleFactor=%2.lf", xScaleFactor,
+                    yScaleFactor, newScaleFactor);
 
             if (xScaleFactor > 1.0 || yScaleFactor > 1.0 ||
                 xScaleFactor < 0.5 || yScaleFactor < 0.5)
@@ -180,6 +183,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     newScaleFactor = 1.0/newScaleFactor;
                 }
                 m_scaleFactor = newScaleFactor;
+
+                Debug.AddLine("Resizing image to %d,%d", newWidth, newHeight);
 
                 m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_HIGH);
             }
