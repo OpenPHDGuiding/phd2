@@ -270,6 +270,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         }
 #endif
 
+#ifdef ZESLY_DODO
         Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d", CaptureActive));
         double dx = (double)rand() / RAND_MAX * 2 - 1;
         double dy = (double)rand() / RAND_MAX * 2 - 1;
@@ -277,6 +278,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         double dec = (double)rand() / RAND_MAX * 2 - 1;
         pGraphLog->AppendData(dx,dy,ra,dec);
         pTarget->AppendData(ra,dec);
+#endif
         if (CaptureActive)
         {
             ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());

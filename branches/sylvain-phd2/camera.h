@@ -54,8 +54,8 @@ protected:
         virtual void UnloadValues(void);
     };
 
-    virtual double GetCameraGain(void);
-    virtual bool SetCameraGain(double cameraGain);
+    virtual int GetCameraGain(void);
+    virtual bool SetCameraGain(int cameraGain);
     virtual float GetCameraPixelSize(void);
     virtual bool SetCameraPixelSize(float pixel_size);
 

@@ -42,7 +42,7 @@ AdvancedDialog::AdvancedDialog():
 wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     /*
-     * the advanced dialog is made up of a number of "on the fly" generate slices that configure different things.
+     * the advanced dialog is made up of a number of "on the fly" generated slices that configure different things.
      *
      * pTopLevelSizer is a top level Box Sizer in wxVERTICAL mode that contains a pair of sizers,
      * pConfigSizer to hold all the configuration panes and an unamed Button sizer and the OK and CANCEL buttons.
