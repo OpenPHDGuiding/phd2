@@ -132,10 +132,10 @@ END_EVENT_TABLE()
 
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
-MyFrame::MyFrame(const wxString& title) 
+MyFrame::MyFrame(const wxString& title)
     : wxFrame(NULL, wxID_ANY, title)
 {
-    m_mgr.SetManagedWindow(this); 
+    m_mgr.SetManagedWindow(this);
 
     //int fontsize = 11;
     //SetFont(wxFont(11,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
@@ -565,7 +565,7 @@ void MyFrame::SetupToolBar(wxToolBar *toolBar)
     toolBar->AddTool(BUTTON_STOP, _T("Stop"), stop_bmp, _T("Abort current action"));
     toolBar->AddSeparator();
     toolBar->AddControl(Dur_Choice, _T("Exposure duration"));
-    toolBar->AddControl(Gamma_Slider, _T("Gamme"));        
+    toolBar->AddControl(Gamma_Slider, _T("Gamme"));
     toolBar->AddSeparator();
     toolBar->AddTool(BUTTON_DETAILS, _T("Advanced parameters"), brain_bmp, _T("Advanced parameters"));
     //toolBar->AddTool(wxID_PROPERTIES, _T("Cam Dialog"), wxArtProvider::GetBitmap(wxART_MISSING_IMAGE));

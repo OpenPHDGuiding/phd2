@@ -137,7 +137,7 @@ bool GraphStepguiderWindow::SetState(bool is_active)
     {
         Refresh();
     }
-    
+
     return m_visible;
 }
 
