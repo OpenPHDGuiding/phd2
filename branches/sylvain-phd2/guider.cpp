@@ -43,7 +43,7 @@ BEGIN_EVENT_TABLE(Guider, wxWindow)
 END_EVENT_TABLE()
 
 Guider::Guider(wxWindow *parent, int xSize, int ySize) :
-    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(xSize, ySize))
+    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
 {
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
@@ -140,7 +140,7 @@ void Guider::OnClose(wxCloseEvent& evt)
     Destroy();
 }
 
-bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
+bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
 {
     wxBitmap* DisplayedBitmap = NULL;
     bool bError = false;
@@ -148,11 +148,21 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
     try
     {
         GUIDER_STATE state = GetState();
+        GetSize(&XWinSize, &YWinSize);
+
+        if (m_pCurrentImage->ImageData != NULL)
+        {
+            int blevel, wlevel;
+
+            blevel = m_pCurrentImage->Min;
+            wlevel = m_pCurrentImage->FiltMax;
+            m_pCurrentImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma);
+        }
+
         int imageWidth   = m_displayedImage->GetWidth();
         int imageHeight  = m_displayedImage->GetHeight();
         wxImage newImage(*m_displayedImage);
 
-        GetSize(&XWinSize, &YWinSize);
 
         // scale the image if necessary
 
@@ -168,7 +178,7 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                                     xScaleFactor :
                                     yScaleFactor;
 
-            Debug.AddLine("xScaleFactor=%.2lf, yScaleFactor=%.2lf, newScaleFactor=%2.lf", xScaleFactor,
+            Debug.AddLine("xScaleFactor=%.2lf, yScaleFactor=%.2lf, newScaleFactor=%.2lf", xScaleFactor,
                     yScaleFactor, newScaleFactor);
 
             if (xScaleFactor > 1.0 || yScaleFactor > 1.0 ||
@@ -180,16 +190,15 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                 newWidth /= newScaleFactor;
                 newHeight /= newScaleFactor;
 
-                if (newScaleFactor > 1.0)
-                {
-                    newScaleFactor = 1.0/newScaleFactor;
-                }
+                newScaleFactor = 1.0/newScaleFactor;
+
                 m_scaleFactor = newScaleFactor;
 
                 Debug.AddLine("Resizing image to %d,%d", newWidth, newHeight);
 
                 m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_HIGH);
             }
+            else m_scaleFactor = 1;
 
             newImage.Resize(wxSize(XWinSize,YWinSize),wxPoint(0,0));
         }
@@ -343,19 +352,20 @@ void Guider::UpdateImageDisplay(usImage *pImage) {
     Debug.AddLine("Size=(%d,%d)", pImage->Size.x, pImage->Size.y);
     Debug.AddLine("min=%d, max=%d, FiltMin=%d, FiltMax=%d", pImage->Min, pImage->Max, pImage->FiltMin, pImage->FiltMax);
 
-#if 0
-    if (pImage->Size.GetWidth() >= 1280) {
-        pImage->BinnedCopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
-        m_scaleFactor = 0.5;
-    }
-    else
-    {
-        pImage->CopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
-        m_scaleFactor = 1.0;
-    }
-#else
-    pImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma);
-#endif
+// CopyToImage will be called by OnPaint event
+//#if 0
+//    if (pImage->Size.GetWidth() >= 1280) {
+//        pImage->BinnedCopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
+//        m_scaleFactor = 0.5;
+//    }
+//    else
+//    {
+//        pImage->CopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
+//        m_scaleFactor = 1.0;
+//    }
+//#else
+//    //pImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma); 
+//#endif
 
     Refresh();
     Update();

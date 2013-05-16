@@ -151,7 +151,7 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
         double x = position.X;
         double y = position.Y;
 
-        Debug.AddLine(wxString::Format("SetCurrentPostion(%d,%d)", x, y ));
+        Debug.AddLine(wxString::Format("SetCurrentPostion(%lf,%lf)", x, y ));
 
         if ((x <= 0) || (x >= pImage->Size.x))
         {
@@ -188,12 +188,12 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
 
         if (!newStar.AutoFind(pImage))
         {
-            throw ERROR_INFO("Uable to AutoFind");
+            throw ERROR_INFO("Unable to AutoFind");
         }
 
         if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y))
         {
-            throw ERROR_INFO("Uable to find");
+            throw ERROR_INFO("Unable to find");
         }
 
         if (SetLockPosition(m_star , true))
@@ -408,7 +408,8 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 // Define the repainting behaviour
 void GuiderOneStar::OnPaint(wxPaintEvent& event)
 {
-    wxAutoBufferedPaintDC dc(this);
+    //wxAutoBufferedPaintDC dc(this);
+    wxClientDC dc(this);
     wxMemoryDC memDC;
 
     try
@@ -425,7 +426,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         double StarX = m_star.X;
         double StarY = m_star.Y;
 
-        if (state == STATE_SELECTED || IsPaused()) {
+        if (state == STATE_SELECTED /*|| IsPaused()*/) {
 
             if (FoundStar)
                 dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
