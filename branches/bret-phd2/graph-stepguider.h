@@ -73,7 +73,7 @@ class GraphStepguiderClient : public wxWindow
     DECLARE_EVENT_TABLE()
 };
 
-class GraphStepguiderWindow : public wxMiniFrame
+class GraphStepguiderWindow : public wxWindow
 {
 public:
     GraphStepguiderWindow(wxWindow *parent);
@@ -81,16 +81,14 @@ public:
 
     void OnButtonMode(wxCommandEvent& evt);
     void OnButtonLength(wxCommandEvent& evt);
-    void OnButtonHide(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
 
     void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
     void AppendData (double dx, double dy);
-    void SetState (bool is_active);
+    bool SetState (bool is_active);
 
 private:
     wxButton *LengthButton;
-    wxButton *HideButton;
     wxButton *ClearButton;
 
     GraphStepguiderClient *m_pClient;

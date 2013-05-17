@@ -84,7 +84,7 @@ class GraphLogClientWindow : public wxWindow
     DECLARE_EVENT_TABLE()
 };
 
-class GraphLogWindow : public wxMiniFrame {
+class GraphLogWindow : public wxWindow {
     wxWindow *m_pParent;
 public:
     GraphLogWindow(wxWindow *parent);
@@ -95,8 +95,9 @@ public:
     void OnButtonMode(wxCommandEvent& evt);
     void OnButtonLength(wxCommandEvent& evt);
     void OnButtonHeight(wxCommandEvent& evt);
-    void OnButtonHide(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
+    void OnButtonZoomIn(wxCommandEvent& evt);
+    void OnButtonZoomOut(wxCommandEvent& evt);
     void OnUpdateSpinGuideParams(wxSpinEvent& evt);
     void OnUpdateSpinDGuideParams(wxSpinDoubleEvent& evt);
     void OnUpdateCommandGuideParams(wxCommandEvent& evt);
@@ -113,8 +114,21 @@ private:
     wxButton *m_pLengthButton;
     wxButton *m_pHeightButton;
     wxButton *m_pModeButton;
-    wxButton *m_pHideButton;
     wxButton *m_pClearButton;
+    wxStaticText *RALabel;
+    wxStaticText *DecLabel;
+    wxStaticText *OscIndexLabel;
+    wxStaticText *RMSLabel;
+//  wxBitmap *bmp;
+    float hdx[500]; // History of dx
+    float hdy[500];
+    float hra[500];
+    float hdec[500];
+    int n_items;    // # items in the history
+    bool visible;
+    int mode;   // 0 = RA/Dec, 1=dx, dy
+    int length;
+    float vertical_scale;
 
     int StringWidth(wxString string);
 
@@ -124,22 +138,5 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
-
-class ProfileWindow : public wxMiniFrame {
-public:
-    ProfileWindow(wxWindow *parent);
-    ~ProfileWindow(void);
-    void UpdateData(usImage *pImg, float xpos, float ypos);
-    void OnPaint(wxPaintEvent& evt);
-    void SetState(bool is_active);
-    void OnLClick(wxMouseEvent& evt);
-private:
-    int mode; // 0= 2D profile of mid-row, 1=2D of avg_row, 2=2D of avg_col
-    bool visible;
-    unsigned short *data;
-    int horiz_profile[21], vert_profile[21], midrow_profile[21];
-    DECLARE_EVENT_TABLE()
-};
-
 
 #endif

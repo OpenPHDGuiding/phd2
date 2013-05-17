@@ -59,6 +59,7 @@ enum NOISE_REDUCTION_METHOD
     NR_3x3MEDIAN
 };
 
+//class MyFrame: public wxFrame
 class MyFrame: public wxFrame
 {
 protected:
@@ -72,6 +73,7 @@ protected:
         wxSpinCtrlDouble *m_pDitherScaleFactor;
         wxChoice *m_pNoiseReduction;
         wxSpinCtrl *m_pTimeLapse;
+        wxTextCtrl *m_pFocalLength;
     public:
         MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
         virtual ~MyFrameConfigDialogPane(void);
@@ -95,6 +97,8 @@ protected:
     bool SetTimeLapse(int timeLapse);
     int GetTimeLapse(void);
 
+    bool SetFocalLength(int focalLength);
+
     friend class MyFrameConfigDialogPane;
     friend class WorkerThread;
 
@@ -104,6 +108,10 @@ private:
     bool m_ditherRaOnly;
     bool m_serverMode;
     int  m_timeLapse;       // Delay between frames (useful for vid cameras)
+    int  m_focalLength;
+    double m_sampling;
+
+    wxAuiManager m_mgr;
 
 public:
     MyFrame(const wxString& title);
@@ -112,18 +120,22 @@ public:
     Guider *pGuider;
     wxMenuBar *Menubar;
     wxMenu  *tools_menu, *mount_menu; // need access to this...
-    wxChoice    *Dur_Choice;
+    wxToolBar *MainToolbar;
+    //wxChoice    *Dur_Choice;
+    wxComboBox    *Dur_Choice;
     wxCheckBox *HotPixel_Checkbox;
     wxButton    *Setup_Button, *Dark_Button;
-    wxBitmapButton *Brain_Button, *Cam_Button, *Scope_Button, *Loop_Button, *Guide_Button, *Stop_Button;
+    //wxBitmapButton *Brain_Button, *Cam_Button, *Scope_Button, *Loop_Button, *Guide_Button, *Stop_Button;
     wxHtmlHelpController *help;
     wxSlider *Gamma_Slider;
-    GraphLogWindow *GraphLog;
+    GraphLogWindow *pGraphLog;
     GraphStepguiderWindow *pStepGuiderGraph;
-    ProfileWindow *Profile;
+    ProfileWindow *pProfile;
     unsigned m_loopFrameCount;
+    TargetWindow *pTarget;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
+
     void OnQuit(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
     void OnAbout(wxCommandEvent& evt);
@@ -158,25 +170,28 @@ public:
     void OnINDIConfig(wxCommandEvent& evt);
     void OnINDIDialog(wxCommandEvent& evt);
 #endif
-
+    void OnPanelClose(wxAuiManagerEvent& evt);
 #if defined (V4L_CAMERA)
      void OnSaveSettings(wxCommandEvent& evt);
      void OnRestoreSettings(wxCommandEvent& evt);
 #endif
-
-    bool StartServer(bool state);
     void OnGraph(wxCommandEvent& evt);
     void OnAoGraph(wxCommandEvent& evt);
     void OnStarProfile(wxCommandEvent& evt);
+    void OnTarget(wxCommandEvent& evt);
     void OnAutoStar(wxCommandEvent& evt);
-    bool FlipCal(wxCommandEvent& evt);
-    double RequestedExposureDuration();
-    bool Voyager_Connect();
 #ifndef __WXGTK__
     void OnDonateMenu(wxCommandEvent& evt);
 #endif
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
+
+    bool StartServer(bool state);
+    bool FlipRACal(wxCommandEvent& evt);
+    double RequestedExposureDuration();
+    bool Voyager_Connect();
+    int GetFocalLength(void);
+
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
@@ -213,6 +228,9 @@ public:
 
     void UpdateButtonsStatus(void);
 
+    void SetSampling(void);
+    double GetSampling(void);
+
     virtual void SetStatusText(const wxString& text, int number=0, int msToDisplay = 0);
 
 private:
@@ -237,6 +255,12 @@ private:
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
 
     void OnMessageBoxProxy(wxCommandEvent& evt);
+
+    void SetupMenuBar(void);
+    void SetupStatusBar(void);
+    void SetupToolBar(wxToolBar *toolBar);
+    void SetupKeyboardShortcuts(void);
+    void SetupHelpFile(void);
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()
@@ -293,6 +317,7 @@ enum {
     MENU_GRAPH,
     MENU_AO_GRAPH,
     MENU_STARPROFILE,
+    MENU_TARGET,
     MENU_AUTOSTAR,
     MENU_DRIFTTOOL,
     MENU_SAVESETTINGS,
@@ -308,6 +333,8 @@ enum {
     BUTTON_GRAPH_MODE,
     BUTTON_GRAPH_HIDE,
     BUTTON_GRAPH_CLEAR,
+    BUTTON_GRAPH_ZOOMIN,
+    BUTTON_GRAPH_ZOOMOUT,
     GRAPH_RAA,
     GRAPH_RAH,
     GRAPH_MM,

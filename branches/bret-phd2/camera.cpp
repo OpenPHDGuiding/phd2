@@ -40,6 +40,7 @@
 
 static const int DefaultGuideCameraGain = 95;
 static const bool DefaultUseSubframes = false;
+static const double DefaultPixelSize = 0;
 
 #if defined (ATIK16)
  #include "cam_ATIK16.h"
@@ -163,6 +164,8 @@ GuideCamera::GuideCamera(void)
 
     double cameraGain = pConfig->GetInt("/camera/gain", DefaultGuideCameraGain);
     SetCameraGain(cameraGain);
+    double pixelSize = pConfig->GetDouble("/camera/pixelsize", DefaultPixelSize);
+    SetCameraPixelSize(pixelSize);
 }
 
 void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
@@ -495,6 +498,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     SetStatusText(_T("Camera"),2);
     UpdateButtonsStatus();
     pConfig->SetString("/camera/LastMenuChoice", Choice);
+    pFrame->SetSampling();
 
     Debug.AddLine("Connected New Camera:" + pCamera->Name);
     Debug.AddLine("FullSize=(%d,%d)", pCamera->FullSize.x, pCamera->FullSize.y);
@@ -508,9 +512,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     Debug.AddLine("HasGuiderOutput=%d", pCamera->HasGuiderOutput);
 
     if (pCamera->HasPropertyDialog)
-        Setup_Button->Enable(true);
+        MainToolbar->EnableTool(wxID_PROPERTIES, true);
     else
-        Setup_Button->Enable(false);
+        MainToolbar->EnableTool(wxID_PROPERTIES, false);
     if (pFrame->mount_menu->IsChecked(SCOPE_CAMERA) && pCamera->HasGuiderOutput) {
         if (pMount)
             delete pMount;
@@ -553,15 +557,46 @@ bool GuideCamera::SetCameraGain(int cameraGain)
     return bError;
 }
 
+float GuideCamera::GetCameraPixelSize(void)
+{
+    return PixelSize;
+}
+
+bool GuideCamera::SetCameraPixelSize(float pixel_size)
+{
+    bool bError = false;
+
+    try
+    {
+        if (pixel_size <= 0)
+        {
+            throw ERROR_INFO("cameraGain <= 0");
+        }
+        PixelSize = pixel_size;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        PixelSize = DefaultPixelSize;
+    }
+
+    pConfig->SetDouble("/camera/pixelsize", PixelSize);
+
+    return bError;
+}
+
 ConfigDialogPane * GuideCamera::GetConfigDialogPane(wxWindow *pParent)
 {
-    return new CameraConfigDialogPane(pParent, this);
+    //if (pCamera->HasSubframes || pCamera->HasGainControl || pCamera->HasDelayParam || pCamera->HasPortNum || pCamera->PixelSize == 0)
+        return new CameraConfigDialogPane(pParent, this);
+
+    //return NULL;    // No camera setting
 }
 
 GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera)
     : ConfigDialogPane(_("Camera Settings"), pParent)
 {
-
     assert(pCamera);
 
     m_pCamera = pCamera;
@@ -603,6 +638,16 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
                 wxSize(width+35,-1), WXSIZEOF(port_choices), port_choices );
         DoAdd(_("LE Port"), m_pPortNum,
                _("Port number for long-exposure control"));
+    }
+
+    //if (m_pCamera->PixelSize == 0)
+    {
+        int width = StringWidth(_T("0000"));
+        m_pPixelSize = new wxTextCtrl(pParent, wxID_ANY,
+            m_pCamera->PixelSize == 0 ? wxEmptyString : wxString::Format("%g", m_pCamera->PixelSize),
+            wxPoint(-1,-1), wxSize(width+10, -1));
+        DoAdd(_("Pixel size (µm)"), m_pPixelSize,
+               _("Used with the guide telescope focal length to display guiding error in arc-sec."));
     }
 }
 
@@ -692,6 +737,7 @@ void GuideCamera::CameraConfigDialogPane::LoadValues(void)
                 break;
         }
     }
+    m_pPixelSize->SetValue(wxString::Format(_T("%g"), m_pCamera->GetCameraPixelSize()));
 }
 
 void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
@@ -706,6 +752,7 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
     if (m_pCamera->HasGainControl)
     {
         m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
+        m_pCamera->SetCameraGain(m_pCameraGain->GetValue()/*/100*/);
     }
 
     if (m_pCamera->HasDelayParam)
@@ -740,6 +787,9 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
                 break;
         }
     }
+    double pixel_size;
+    m_pPixelSize->GetValue().ToDouble(&pixel_size);
+    m_pCamera->SetCameraPixelSize(pixel_size);
 }
 
 //#pragma unmanaged

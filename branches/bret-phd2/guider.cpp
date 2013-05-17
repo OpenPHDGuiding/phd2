@@ -43,7 +43,7 @@ BEGIN_EVENT_TABLE(Guider, wxWindow)
 END_EVENT_TABLE()
 
 Guider::Guider(wxWindow *parent, int xSize, int ySize) :
-    wxWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(xSize, xSize))
+    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(xSize, ySize))
 {
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
@@ -152,6 +152,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
         int imageHeight  = m_displayedImage->GetHeight();
         wxImage newImage(*m_displayedImage);
 
+        GetSize(&XWinSize, &YWinSize);
+
         // scale the image if necessary
 
         if (imageWidth != XWinSize || imageHeight != YWinSize)
@@ -204,22 +206,26 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
             throw ERROR_INFO("dc.Blit() failed");
         }
 
+        int XImgSize = m_displayedImage->GetWidth();
+        int YImgSize = m_displayedImage->GetHeight();
+
         if (m_overlayMode)
         {
             dc.SetPen(wxPen(wxColor(200,50,50)));
             dc.SetBrush(* wxTRANSPARENT_BRUSH);
 
+
             switch(m_overlayMode)
             {
                 case OVERLAY_BULLSEYE:
                 {
-                    int cx = XWinSize / 2;
-                    int cy = YWinSize / 2;
+                    int cx = XImgSize / 2;
+                    int cy = YImgSize / 2;
                     dc.DrawCircle(cx,cy,25);
                     dc.DrawCircle(cx,cy,50);
                     dc.DrawCircle(cx,cy,100);
-                    dc.DrawLine(0, cy, XWinSize, cy);
-                    dc.DrawLine(cx, 0, cx, YWinSize);
+                    dc.DrawLine(0, cy, XImgSize, cy);
+                    dc.DrawLine(cx, 0, cx, YImgSize);
                     break;
                 }
                 case OVERLAY_GRID_FINE:
@@ -227,10 +233,10 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                 {
                     int i;
                     int size = (m_overlayMode - 1) * 20;
-                    for (i=size; i<XWinSize; i+=size)
-                        dc.DrawLine(i,0,i,YWinSize);
-                    for (i=size; i<YWinSize; i+=size)
-                        dc.DrawLine(0,i,XWinSize,i);
+                    for (i=size; i<XImgSize; i+=size)
+                        dc.DrawLine(i,0,i,YImgSize);
+                    for (i=size; i<YImgSize; i+=size)
+                        dc.DrawLine(0,i,XImgSize,i);
                     break;
                 }
                 case OVERLAY_RADEC:
@@ -241,46 +247,46 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     double StarX = pFrame->pGuider->CurrentPosition().X;
                     double StarY = pFrame->pGuider->CurrentPosition().Y;
 
-                    dc.SetPen(wxPen(pFrame->GraphLog->GetRaOrDxColor(),2,wxPENSTYLE_DOT));
+                    dc.SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(),2,wxPENSTYLE_DOT));
                     r=15.0;
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
-                    dc.SetPen(wxPen(pFrame->GraphLog->GetDecOrDyColor(),2,wxPENSTYLE_DOT));
+                    dc.SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),2,wxPENSTYLE_DOT));
                     cos_angle = cos(pMount->yAngle());
                     sin_angle = sin(pMount->yAngle());
                     dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                         ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
 
                     wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
-                    gc->SetPen(wxPen(pFrame->GraphLog->GetRaOrDxColor(),1,wxPENSTYLE_DOT ));
+                    gc->SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(),1,wxPENSTYLE_DOT ));
                     wxGraphicsPath path = gc->CreatePath();
                     int i;
-                    double step = (double) YWinSize / 10.0;
+                    double step = (double) YImgSize / 10.0;
 
-                    double MidX = (double) XWinSize / 2.0;
-                    double MidY = (double) YWinSize / 2.0;
+                    double MidX = (double) XImgSize / 2.0;
+                    double MidY = (double) YImgSize / 2.0;
                     gc->Rotate(pMount->xAngle());
                     gc->GetTransform().TransformPoint(&MidX, &MidY);
                     gc->Rotate(-pMount->xAngle());
-                    gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
+                    gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
                     gc->Rotate(pMount->xAngle());
                     for (i=-2; i<12; i++) {
                         gc->StrokeLine(0.0,step * (double) i,
-                            (double) XWinSize, step * (double) i);
+                            (double) XImgSize, step * (double) i);
                     }
 
-                    MidX = (double) XWinSize / 2.0;
-                    MidY = (double) YWinSize / 2.0;
+                    MidX = (double) XImgSize / 2.0;
+                    MidY = (double) YImgSize / 2.0;
                     gc->Rotate(-pMount->xAngle());
                     gc->Rotate(pMount->yAngle());
                     gc->GetTransform().TransformPoint(&MidX, &MidY);
                     gc->Rotate(-pMount->yAngle());
-                    gc->Translate((double) XWinSize / 2.0 - MidX, (double) YWinSize / 2.0 - MidY);
+                    gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
                     gc->Rotate(pMount->yAngle());
-                    gc->SetPen(wxPen(pFrame->GraphLog->GetDecOrDyColor(),1,wxPENSTYLE_DOT ));
+                    gc->SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),1,wxPENSTYLE_DOT ));
                     for (i=-2; i<12; i++) {
                         gc->StrokeLine(0.0,step * (double) i,
-                            (double) XWinSize, step * (double) i);
+                            (double) XImgSize, step * (double) i);
                     }
                     delete gc;
                     break;
@@ -306,8 +312,8 @@ bool Guider::PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC)
                     break;
             }
 
-            dc.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
-            dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
+            dc.DrawLine(0, LockY*m_scaleFactor, XImgSize, LockY*m_scaleFactor);
+            dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YImgSize);
         }
     }
     catch (wxString Msg)

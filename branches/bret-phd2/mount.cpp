@@ -533,8 +533,9 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         if (normalMove)
         {
-            pFrame->GraphLog->AppendData(cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
+            pFrame->pGraphLog->AppendData(cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
                                          xDistance, yDistance);
+            pFrame->pTarget->AppendData(xDistance, yDistance);
 
             // Feed the raw distances to the guide algorithms
 

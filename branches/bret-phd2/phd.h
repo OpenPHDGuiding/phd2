@@ -67,10 +67,12 @@
 
 #include <wx/msgqueue.h>
 
+#include <wx/aui/aui.h>
+
 #include <math.h>
 
 #define VERSION _T("2.0.1")
-#define PHDSUBVER _T("c")
+#define PHDSUBVER _T("d")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
@@ -79,7 +81,7 @@
 #pragma warning(disable:4100)
 #pragma warning(disable:4996)
 
-#include <vld.h>
+//#include <vld.h>
 
 #endif
 
@@ -136,6 +138,8 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "point.h"
 #include "star.h"
 #include "graph.h"
+#include "star_profile.h"
+#include "target.h"
 #include "graph-stepguider.h"
 #include "guide_algorithms.h"
 #include "guiders.h"

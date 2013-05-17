@@ -38,7 +38,6 @@
  */
 
 #include "phd.h"
-#include "graph.h"
 #include <wx/dcbuffer.h>
 #include <wx/utils.h>
 #include <wx/colordlg.h>
@@ -48,9 +47,8 @@ static const int DefaultMaxLength = 400;
 static const int DefaultMinHeight =  1;
 static const int DefaultMaxHeight = 16;
 
-BEGIN_EVENT_TABLE(GraphLogWindow, wxMiniFrame)
+BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
 EVT_PAINT(GraphLogWindow::OnPaint)
-EVT_BUTTON(BUTTON_GRAPH_HIDE,GraphLogWindow::OnButtonHide)
 EVT_BUTTON(BUTTON_GRAPH_MODE,GraphLogWindow::OnButtonMode)
 EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphLogWindow::OnButtonLength)
 EVT_BUTTON(BUTTON_GRAPH_HEIGHT,GraphLogWindow::OnButtonHeight)
@@ -68,10 +66,13 @@ EVT_CHOICE(GRAPH_DM,GraphLogWindow::OnUpdateCommandGuideParams)
 END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
-wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),(wxCAPTION & ~wxSTAY_ON_TOP) | wxRESIZE_BORDER)
+//wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),(wxCAPTION & ~wxSTAY_ON_TOP) | wxRESIZE_BORDER)
+wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESIZE,_("Profile"))
 {
     int width;
     wxCommandEvent dummy;
+
+    //SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 
     m_pParent = parent;
 
@@ -86,7 +87,7 @@ wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),(wxCA
 
     m_pClient = new GraphLogClientWindow(this);
     pClientSizer->Add(m_pClient, wxSizerFlags().Expand().Proportion(1));
-    pClientSizer->Add(pControlSizer, wxSizerFlags().Expand().Center());
+    pClientSizer->Add(pControlSizer, wxSizerFlags().Expand().Center().Border(wxBOTTOM, 5));
 
     m_visible = false;
     SetBackgroundStyle(wxBG_STYLE_CUSTOM);
@@ -95,20 +96,16 @@ wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),(wxCA
     m_pLengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("foo"));
     m_pLengthButton->SetToolTip(_("# of frames of history to display"));
     OnButtonLength(dummy); // update the buttom label
-    pButtonSizer->Add(m_pLengthButton);
+    pButtonSizer->Add(m_pLengthButton, wxSizerFlags(0).Border(wxTOP, 5));
 
     m_pHeightButton = new wxButton(this,BUTTON_GRAPH_HEIGHT,_T("foo"));
-    m_pHeightButton->SetToolTip(_("# of pixels per Y division"));
+    //m_pHeightButton->SetToolTip(_("# of pixels per Y division"));
     OnButtonHeight(dummy); // update the buttom label
     pButtonSizer->Add(m_pHeightButton);
 
     m_pModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"));
     m_pModeButton->SetToolTip(_("Toggle RA/Dec vs dx/dy.  Shift-click to change RA/dx color.  Ctrl-click to change Dec/dy color"));
     pButtonSizer->Add(m_pModeButton);
-
-    m_pHideButton = new wxButton(this,BUTTON_GRAPH_HIDE,_("Hide"));
-    m_pHideButton->SetToolTip(_("Hide graph"));
-    pButtonSizer->Add(m_pHideButton);
 
     m_pClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"));
     m_pClearButton->SetToolTip(_("Clear graph data"));
@@ -130,12 +127,12 @@ wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),(wxCA
 
     pButtonSizer->Add(pLabelSizer, wxSizerFlags().Expand());
 
-    m_pClient->m_pOscRMS = new wxStaticText(this, wxID_ANY, _("Osc RMS 0.00"));
+    m_pClient->m_pOscRMS = new wxStaticText(this, wxID_ANY, _("RMS: 0.00"));
     m_pClient->m_pOscRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pOscRMS->SetBackgroundColour(*wxBLACK);
     pButtonSizer->Add(m_pClient->m_pOscRMS);
 
-    m_pClient->m_pOscIndex = new wxStaticText(this, wxID_ANY, _("Osc Idx 0.00"));
+    m_pClient->m_pOscIndex = new wxStaticText(this, wxID_ANY, _("Osc: 0.00"));
     m_pClient->m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pOscIndex->SetBackgroundColour(*wxBLACK);
     pButtonSizer->Add(m_pClient->m_pOscIndex);
@@ -256,7 +253,7 @@ int GraphLogWindow::StringWidth(wxString string)
 }
 
 void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
-    if (pMount->GetYGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
+    if (pMount->GetXGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
     {
         GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
 
@@ -282,12 +279,6 @@ void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) 
 
         pHyst->SetMinMove(this->MM_Ctrl->GetValue());
     }
-}
-
-void GraphLogWindow::OnButtonHide(wxCommandEvent& WXUNUSED(evt)) {
-    this->m_visible = false;
-    pFrame->Menubar->Check(MENU_GRAPH,false);
-    this->Show(false);
 }
 
 void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt)) {
@@ -409,6 +400,17 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             m_pLabel2->SetLabel(_("dy"));
             break;
     }
+
+    if (pFrame->GetSampling() != 1)
+    {
+        this->m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d''"), m_pClient->m_height));
+        m_pHeightButton->SetToolTip(_("# of arc-sec per Y division"));
+    }
+    else
+    {
+        this->m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d"), m_pClient->m_height));
+        m_pHeightButton->SetToolTip(_("# of pixels per Y division"));
+    }
 }
 
 BEGIN_EVENT_TABLE(GraphLogClientWindow, wxWindow)
@@ -436,7 +438,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     int maxHeight = pConfig->GetInt("/graph/maxHeight", DefaultMaxHeight);
     SetMaxHeight(maxHeight);
 
-    m_length = m_maxLength;
+    m_length = m_minLength;
     m_height = m_maxHeight;
 
     m_pHistory = new S_HISTORY[m_maxLength];
@@ -571,10 +573,10 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     wxSize center(size.x/2, size.y/2);
 
     const int leftEdge = 0;
-    const int rightEdge = size.x-1;
+    const int rightEdge = size.x-5;
 
-    const int topEdge = 0;
-    const int bottomEdge = size.y-1;
+    const int topEdge = 5;
+    const int bottomEdge = size.y-5;
 
     const int xorig = 0;
     const int yorig = size.y/2;
@@ -583,8 +585,9 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     const int xDivisions = m_length/m_xSamplesPerDivision-1;
     const int xPixelsPerDivision = size.x/2/(xDivisions+1);
-
     const int yPixelsPerDivision = size.y/2/(m_yDivisions+1);
+
+    const double sampling = pFrame->GetSampling();
 
     wxPoint *pRaOrDxLine  = NULL;
     wxPoint *pDecOrDyLine = NULL;
@@ -623,258 +626,105 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     // Draw data
-    pRaOrDxLine  = new wxPoint[m_maxLength];
-    pDecOrDyLine = new wxPoint[m_maxLength];
-
-    int start_item = m_maxLength;
-
-    if (m_nItems < m_length)
+    if (m_nItems > 0)
     {
-        start_item -= m_nItems;
-    }
-    else
-    {
-        start_item -= m_length;
-    }
+        pRaOrDxLine  = new wxPoint[m_maxLength];
+        pDecOrDyLine = new wxPoint[m_maxLength];
 
-    const double xmag = size.x / (double)m_length;
-    const double ymag = yPixelsPerDivision*(double)(m_yDivisions + 1)/(double)m_height;
+        int start_item = m_maxLength;
 
-    for (i=start_item; i<m_maxLength; i++)
-    {
-        int j=i-start_item;
-        S_HISTORY *pSrc = m_pHistory + i;
-
-        switch (m_mode)
+        if (m_nItems < m_length)
         {
+            start_item -= m_nItems;
+        }
+        else
+        {
+            start_item -= m_length;
+        }
+
+        const double xmag = size.x / (double)m_length;
+        const double ymag = yPixelsPerDivision*(double)(m_yDivisions + 1)/(double)m_height;
+
+        for (i=start_item; i<m_maxLength; i++)
+        {
+            int j=i-start_item;
+            S_HISTORY *pSrc = m_pHistory + i;
+
+            switch (m_mode)
+            {
             case MODE_RADEC:
-                    pRaOrDxLine[j] =wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->ra * (float) ymag));
-                    pDecOrDyLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dec * (float) ymag));
+                pRaOrDxLine[j] =wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->ra * (double) ymag * sampling));
+                pDecOrDyLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dec * (double) ymag * sampling));
                 break;
             case MODE_DXDY:
-                    pRaOrDxLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dx * (float) ymag));
-                    pDecOrDyLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dy * (float) ymag));
+                pRaOrDxLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dx * (double) ymag * sampling));
+                pDecOrDyLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dy * (double) ymag * sampling));
                 break;
+            }
         }
-    }
 
-    wxPen raOrDxPen(m_raOrDxColor);
-    wxPen decOrDyPen(m_decOrDyColor);
+        wxPen raOrDxPen(m_raOrDxColor);
+        wxPen decOrDyPen(m_decOrDyColor);
 
-    int plot_length = m_length;
+        int plot_length = m_length;
 
-    if (m_length > m_nItems)
-    {
-        plot_length = m_nItems;
-    }
-    dc.SetPen(raOrDxPen);
-    dc.DrawLines(plot_length,pRaOrDxLine);
-    dc.SetPen(decOrDyPen);
-    dc.DrawLines(plot_length,pDecOrDyLine);
-
-    // Figure oscillation score
-    int same_sides = 0;
-    float mean = 0.0;
-    for (i=(start_item+1); i < this->m_nItems; i++) {
-        if ( (m_pHistory[i].ra * m_pHistory[i-1].ra) > 0.0)
-            same_sides++;
-        mean = mean + m_pHistory[i].ra;
-    }
-    if (m_nItems != start_item)
-        mean = mean / (float) (m_nItems - start_item);
-    else
-        mean = 0.0;
-    double RMS = 0.0;
-    for (i=(start_item+1); i < this->m_nItems; i++) {
-        double ra = m_pHistory[i].ra;
-        RMS = RMS + (ra-mean)*(ra-mean);
-    }
-    if (m_nItems != start_item)
-        RMS = sqrt(RMS/(float) (m_nItems - start_item));
-    else
-        RMS = 0.0;
-    m_pOscRMS->SetLabel(wxString::Format("Osc RMS %4.2f", RMS));
-
-    float osc_index = 0.0;
-    if (m_nItems != start_item)
-        osc_index= 1.0 - (float) same_sides / (float) (this->m_nItems - (start_item));
-
-    if ((osc_index > 0.6) || (osc_index < 0.15))
-    {
-        m_pOscIndex->SetForegroundColour(wxColour(185,20,0));
-    }
-    else
-    {
-        m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
-    }
-
-    m_pOscIndex->SetLabel(wxString::Format("Osc RMS %4.2f", RMS));
-
-    delete [] pRaOrDxLine;
-    delete [] pDecOrDyLine;
-}
-
-BEGIN_EVENT_TABLE(ProfileWindow, wxMiniFrame)
-EVT_PAINT(ProfileWindow::OnPaint)
-EVT_LEFT_DOWN(ProfileWindow::OnLClick)
-END_EVENT_TABLE()
-
-ProfileWindow::ProfileWindow(wxWindow *parent):
-#if defined (__APPLE__)
-wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(110,72),wxCAPTION & ~wxSTAY_ON_TOP) {
-#else
-wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(115,85),wxCAPTION & ~wxSTAY_ON_TOP) {
-#endif
-
-    this->visible = false;
-    this->mode = 0; // 2D profile
-    this->data = NULL;
-    this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
-    this->data = new unsigned short[441];  // 21x21 subframe
-
-}
-
-ProfileWindow::~ProfileWindow() {
-    if (this->data) {
-        delete [] this->data;
-        this->data = NULL;
-    }
-}
-
-void ProfileWindow::OnLClick(wxMouseEvent& WXUNUSED(mevent)) {
-    this->mode = this->mode + 1;
-    if (this->mode > 2) this->mode = 0;
-    Refresh();
-}
-
-void ProfileWindow::SetState(bool is_active) {
-    this->visible = is_active;
-    this->Show(is_active);
-    if (is_active)
-        Refresh();
-}
-
-void ProfileWindow::UpdateData(usImage *pImg, float xpos, float ypos) {
-    if (this->data == NULL) return;
-    int xstart = ROUND(xpos) - 10;
-    int ystart = ROUND(ypos) - 10;
-    if (xstart < 0) xstart = 0;
-    else if (xstart > (pImg->Size.GetWidth() - 22))
-        xstart = pImg->Size.GetWidth() - 22;
-    if (ystart < 0) ystart = 0;
-    else if (ystart > (pImg->Size.GetHeight() - 22))
-    ystart = pImg->Size.GetHeight() - 22;
-
-    int x,y;
-    unsigned short *uptr = this->data;
-    const int xrowsize = pImg->Size.GetWidth();
-    for (x=0; x<21; x++)
-        horiz_profile[x] = vert_profile[x] = midrow_profile[x] = 0;
-    for (y=0; y<21; y++) {
-        for (x=0; x<21; x++, uptr++) {
-            *uptr = *(pImg->ImageData + xstart + x + (ystart + y) * xrowsize);
-            horiz_profile[x] += (int) *uptr;
-            vert_profile[y] += (int) *uptr;
+        if (m_length > m_nItems)
+        {
+            plot_length = m_nItems;
         }
-    }
-    uptr = this->data + 210;
-    for (x=0; x<21; x++, uptr++)
-        midrow_profile[x] = (int) *uptr;
-    if (this->visible)
-        Refresh();
+        dc.SetPen(raOrDxPen);
+        dc.DrawLines(plot_length,pRaOrDxLine);
+        dc.SetPen(decOrDyPen);
+        dc.DrawLines(plot_length,pDecOrDyLine);
 
-}
-
-void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
-    wxAutoBufferedPaintDC dc(this);
-    wxPoint Prof[21];
-
-    dc.SetBackground(* wxBLACK_BRUSH);
-    dc.SetBackground(wxColour(10,30,30));
-    dc.Clear();
-    if (pFrame->pGuider->GetState() == STATE_UNINITIALIZED) return;
-    wxPen decorDyPen;
-//  GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
-//  raOrDxPen = wxPen(wxColour(100,100,255));
-    decorDyPen = wxPen(wxColour(255,0,0));
-
-    int i;
-    int *profptr;
-    wxString label;
-    switch (this->mode) {  // Figure which profile to use
-        case 0: // mid-row
-            profptr = midrow_profile;
-            label = _("Mid row");
-            break;
-        case 1: // avg row
-            profptr = horiz_profile;
-            label = _("Avg row");
-            break;
-        case 2:
-            profptr = vert_profile;
-            label = _("Avg col");
-            break;
-        default:
-            profptr = midrow_profile;
-            label = _("Mid row");
-            break;
-    }
-
-    // Figure max and min
-    int Prof_Min, Prof_Max;
-    Prof_Min = Prof_Max = *profptr;
-
-    for (i=1; i<21; i++) {
-        if (*(profptr + i) < Prof_Min)
-            Prof_Min = *(profptr + i);
-        else if (*(profptr + i) > Prof_Max)
-            Prof_Max = *(profptr + i);
-    }
-    // Figure the actual points in the window
-    int Prof_Range = (Prof_Max - Prof_Min) / 42;  //
-    if (!Prof_Range) Prof_Range = 1;
-    for (i=0; i<21; i++)
-        Prof[i]=wxPoint(5+i*2,45-( (*(profptr + i) - Prof_Min) / Prof_Range ));
-
-    // Draw it
-    dc.SetPen(decorDyPen);
-    dc.DrawLines(21,Prof);
-    dc.SetTextForeground(wxColour(100,100,255));
-#if defined (__APPLE__)
-    dc.SetFont(*wxSMALL_FONT);
-#else
-    dc.SetFont(*wxSWISS_FONT);
-#endif
-    dc.DrawText(label,2,47);
-
-    // JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
-    wxImage* img = pFrame->pGuider->DisplayedImage();
-    double scaleFactor = pFrame->pGuider->ScaleFactor();
-    if (img) {
-        // grab 30 px box around lock pos, scale by 2 & display next to profile
-        double LockX = pFrame->pGuider->LockPosition().X * scaleFactor;
-        double LockY = pFrame->pGuider->LockPosition().Y * scaleFactor;
-        double dStarX = LockX - pFrame->pGuider->CurrentPosition().X * scaleFactor;
-        double dStarY = LockY - pFrame->pGuider->CurrentPosition().Y * scaleFactor;
-        // grab the subframe
-        wxBitmap dBmp(*img);
-        wxBitmap subDBmp = dBmp.GetSubBitmap(wxRect(ROUND(LockX)-15, ROUND(LockY)-15, 30, 30));
-        wxImage subDImg = subDBmp.ConvertToImage();
-        // scale by 2
-        wxBitmap zoomedDBmp(subDImg.Rescale(60, 60, wxIMAGE_QUALITY_HIGH));
-        wxMemoryDC tmpMdc;
-        tmpMdc.SelectObject(zoomedDBmp);
-        // blit into profile DC
-        dc.Blit(50, 0, 60, 60, &tmpMdc, 0, 0, wxCOPY, false);
-        // lines for the lock pos + red dot at star centroid
-        dc.SetPen(wxPen(wxColor(0,200,0),1,wxDOT));
-        dc.DrawLine(50, 30, 110, 30);
-        dc.DrawLine(50 + 30, 0, 50 + 30, 60);
-        double starX = 50 + 30 - dStarX * 2 + 1, starY = 30 - dStarY * 2 + 1;
-        if (starX >= 50) {
-            dc.SetPen(decorDyPen);
-            dc.DrawPoint(starX, starY);
+        // Figure oscillation score
+        int same_sides = 0;
+        double mean = 0.0;
+        for (i = start_item + 1 ; i < m_maxLength ; i++)
+        {
+            if ( (m_pHistory[i].ra * m_pHistory[i-1].ra) > 0.0)
+                same_sides++;
+            mean = mean + m_pHistory[i].ra;
         }
+        if (m_nItems != start_item)
+            mean = mean / (double) (m_nItems - start_item);
+        else
+            mean = 0.0;
+        double RMS = 0.0;
+        for (i = start_item + 1; i < m_maxLength; i++)
+        {
+            double ra = m_pHistory[i].ra;
+            RMS = RMS + (ra-mean)*(ra-mean);
+        }
+        if (m_nItems != start_item)
+            RMS = sqrt(RMS/(double) (m_maxLength - start_item));
+        else
+            RMS = 0.0;
+
+        if (sampling != 1)
+            m_pOscRMS->SetLabel(wxString::Format("RMS: %4.2f (%.2f'')", RMS, RMS * sampling));
+        else
+            m_pOscRMS->SetLabel(wxString::Format("RMS: %4.2f", RMS));
+
+        double osc_index = 0.0;
+        if (m_nItems != start_item)
+            osc_index= 1.0 - (double) same_sides / (double) (m_maxLength - start_item);
+
+        if ((osc_index > 0.6) || (osc_index < 0.15))
+        {
+            m_pOscIndex->SetForegroundColour(wxColour(185,20,0));
+        }
+        else
+        {
+            m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
+        }
+
+        if (sampling != 1)
+            m_pOscIndex->SetLabel(wxString::Format("Osc: %4.2f (%.2f)", osc_index, osc_index * sampling));
+        else
+            m_pOscIndex->SetLabel(wxString::Format("Osc: %4.2f", osc_index));
+
+        delete [] pRaOrDxLine;
+        delete [] pDecOrDyLine;
     }
 }
-

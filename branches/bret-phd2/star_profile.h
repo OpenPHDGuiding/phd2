@@ -1,9 +1,9 @@
 /*
- *  cam_SSAG.cpp
+ *  star_profile.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006, 2007, 2008, 2009, 2010 Craig Stark.
+ *  Created by Sylvain Girard
+ *  Copyright (c) 2013 Sylvain Girard
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -30,32 +30,26 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *
  */
- #ifndef SSAGDEF
-#define SSAGDEF
-#include "SSAGIF.h"
-class Camera_SSAGClass : public GuideCamera {
+
+#ifndef STAR_PROFILE_H
+#define STAR_PROFILE_H
+
+class ProfileWindow : public wxWindow {
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture();
-
-//  bool    SetGlobalGain(unsigned char gain);
-    bool    PulseGuideScope(int direction, int duration);
-    void    ClearGuidePort();
-    //bool  SetColorGain(unsigned char r_gain, unsigned char g_gain, unsigned char b_gain);
-    //int   FindCameras(int DevNums[8]);
-
-    Camera_SSAGClass();
+    ProfileWindow(wxWindow *parent);
+    ~ProfileWindow(void);
+    void UpdateData(usImage *pImg, float xpos, float ypos);
+    void OnPaint(wxPaintEvent& evt);
+    void SetState(bool is_active);
+    void OnLClick(wxMouseEvent& evt);
 private:
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
-    unsigned char *buffer;
-    void RemoveLines(usImage& img);
-
-    virtual bool HasNonGuiCapture(void) { return true; }
-    virtual bool    HasNonGuiMove(void) { return true; }
+    int mode; // 0= 2D profile of mid-row, 1=2D of avg_row, 2=2D of avg_col
+    bool visible;
+    unsigned short *data;
+    int horiz_profile[21], vert_profile[21], midrow_profile[21];
+    DECLARE_EVENT_TABLE()
 };
-#endif  //QGUIDEDEF
 
-
+#endif

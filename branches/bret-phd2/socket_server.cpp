@@ -287,7 +287,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 tmp_evt = new wxCommandEvent(0,wxID_EXECUTE);
                 bool wasPaused = pGuider->SetPaused(true);
                 // return 1 for success, 0 for failure
-                rval = FlipCal(*tmp_evt) ? 1 : 0;
+                rval = FlipRACal(*tmp_evt) ? 1 : 0;
                 pGuider->SetPaused(wasPaused);
                 delete tmp_evt;
                 break;

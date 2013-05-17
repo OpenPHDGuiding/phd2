@@ -689,6 +689,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_COMPLETE:
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
                                m_calibrationXRate,  m_calibrationYRate);
+                pFrame->SetSampling();
                 pFrame->SetStatusText(_T("calibration complete"),1);
                 pFrame->SetStatusText(_T("Cal"),5);
                 GuideLog.CalibrationComplete(this);
