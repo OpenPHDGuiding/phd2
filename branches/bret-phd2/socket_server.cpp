@@ -141,14 +141,7 @@ void MyFrame::OnServerEvent(wxSocketEvent& event) {
 void MyFrame::OnSocketEvent(wxSocketEvent& event) {
     wxSocketBase *sock = event.GetSocket();
     if (SocketServer == NULL) return;
-//  sock = SocketServer;
-    // First, print a message
-/*  switch(event.GetSocketEvent()) {
-        case wxSOCKET_INPUT : wxLogStatus("wxSOCKET_INPUT"); break;
-        case wxSOCKET_LOST  : wxLogStatus("wxSOCKET_LOST"); break;
-        default             : wxLogStatus("Unexpected event"); break;
-    }
-*/
+
     // Now we process the event
     switch(event.GetSocketEvent()) {
         case wxSOCKET_INPUT: {
@@ -265,7 +258,7 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                         tmp_evt = new wxCommandEvent(0,wxID_EXECUTE);
                         bool wasPaused = pGuider->SetPaused(true);
                         // return 1 for success, 0 for failure
-                        rval = FlipRACal(*tmp_evt) ? 1 : 0;
+                        rval = FlipCal(*tmp_evt) ? 1 : 0;
                         pGuider->SetPaused(wasPaused);
                         delete tmp_evt;
                     }

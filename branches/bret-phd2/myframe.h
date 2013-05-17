@@ -168,7 +168,7 @@ public:
     void OnAoGraph(wxCommandEvent& evt);
     void OnStarProfile(wxCommandEvent& evt);
     void OnAutoStar(wxCommandEvent& evt);
-    bool FlipRACal(wxCommandEvent& evt);
+    bool FlipCal(wxCommandEvent& evt);
     double RequestedExposureDuration();
     bool Voyager_Connect();
 #ifndef __WXGTK__

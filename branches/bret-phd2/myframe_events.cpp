@@ -446,7 +446,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
     }
 }
 
-bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))
+bool MyFrame::FlipCal( wxCommandEvent& WXUNUSED(evt))
 {
     return !pMount->FlipCalibration();
 }
