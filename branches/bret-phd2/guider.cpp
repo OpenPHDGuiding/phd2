@@ -609,8 +609,6 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     bool updateStatus = true;
     wxString statusMessage;
 
-    assert(!pMount->IsBusy());
-
     try
     {
         Debug.Write(wxString::Format("UpdateGuideState(): m_state=%d\n", m_state));
@@ -627,6 +625,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             statusMessage = _("Stopped Guiding");
             throw THROW_INFO("Stopped Guiding");
         }
+
+        assert(!pMount->IsBusy());
 
         if (IsPaused())
         {
