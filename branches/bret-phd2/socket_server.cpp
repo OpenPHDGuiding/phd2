@@ -161,8 +161,6 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
             sock->Read(&c, 1);
 //          wxLogStatus("Msg %d",(int) c);
             rval = 0;
-            float rx, ry;
-            float size = 1.0;
             switch (c) {
                 case MSG_PAUSE:
                 case 'p':
@@ -179,34 +177,53 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                 case MSG_MOVE3:  // +/- 2.0
                 case MSG_MOVE4:  // +/- 3.0
                 case MSG_MOVE5:  // +/- 5.0
-                    if (pGuider->GetState() != STATE_GUIDING) {
-                        break;
+                {
+                    double size = 1.0;
+
+                     if (pGuider->GetState() != STATE_GUIDING) {
+                         break;
+                     }
+
+                    // note: size is twice the desired move amount
+                    switch(c)
+                    {
+                        case MSG_MOVE1:  // +/- 0.5
+                            size =  1.0;
+                            break;
+                        case MSG_MOVE2:  // +/- 1.0
+                            size =  2.0;
+                            break;
+                        case MSG_MOVE3:  // +/- 2.0
+                            size =  4.0;
+                            break;
+                        case MSG_MOVE4:  // +/- 3.0
+                            size =  6.0;
+                            break;
+                        case MSG_MOVE5:  // +/- 5.0
+                            size = 10.0;
+                            break;
                     }
 
-                    if (c == MSG_MOVE2)
-                        size = 2.0;
-                    else if (c == MSG_MOVE3)
-                        size = 4.0;
-                    else if (c==MSG_MOVE4)
-                        size = 4.0;
-                    else if (c==MSG_MOVE5)
-                        size = 5.0;
-                    size = size * m_ditherScaleFactor;
-                    rx = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
-                    ry = (float) (rand() % 1000) / 1000.0 * size - (size / 2.0);
-                    if (m_ditherRaOnly) {
-                        if (fabs(tan(pMount->xAngle())) > 1)
-                            rx = ry / tan(pMount->xAngle());
-                        else
-                            ry = tan(pMount->xAngle()) * rx;
+                     size = size * m_ditherScaleFactor;
+
+                    double dRa  =  (rand()/(double)RAND_MAX)*size - (size /2.0);
+                    double dDec =  (rand()/(double)RAND_MAX)*size - (size /2.0);
+
+                    if (m_ditherRaOnly)
+                    {
+                        dDec = 0;
+                     }
+
+                    pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
+
+                    wxLogStatus(_T("Moving by %.2lf,%.2lf"),dRa, dDec);
+
+                     rval = RequestedExposureDuration() / 1000;
+                     if (rval < 1)
+                    {
+                         rval = 1;
                     }
-
-                    pGuider->SetLockPosition(PHD_Point(pGuider->LockPosition().Y + rx, pGuider->LockPosition().Y + ry));
-
-                    wxLogStatus(_T("Moving by %.2f,%.2f"),rx,ry);
-                    rval = RequestedExposureDuration() / 1000;
-                    if (rval < 1)
-                        rval = 1;
+                }
                     break;
                 case MSG_REQDIST:
                     if ((pGuider->GetState() != STATE_GUIDING)  && (pGuider->GetState() != STATE_UNINITIALIZED)) {

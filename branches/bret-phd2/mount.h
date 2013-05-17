@@ -126,7 +126,6 @@ public:
     bool FlipCalibration(void);
 
     virtual bool Move(const PHD_Point& cameraVectorEndpoint, bool normalMove=true);
-protected:
     bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
                                                       PHD_Point& mountVectorEndpoint);
 

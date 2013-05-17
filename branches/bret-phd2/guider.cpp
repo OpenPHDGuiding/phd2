@@ -418,6 +418,45 @@ bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
     return bError;
 }
 
+bool Guider::MoveLockPosition(const PHD_Point& mountDelta)
+{
+    bool bError = false;
+
+    try
+    {
+        if (!mountDelta.IsValid())
+        {
+            throw ERROR_INFO("Point is not valid");
+        }
+
+        if (!pMount || !pMount->IsCalibrated())
+        {
+            throw ERROR_INFO("No mount");
+        }
+
+        PHD_Point cameraDelta;
+
+        if (pMount->TransformMountCoordinatesToCameraCoordinates(mountDelta, cameraDelta))
+        {
+            throw ERROR_INFO("Transform failed");
+        }
+
+        PHD_Point newLockPosition = m_lockPosition + cameraDelta;
+
+        if (SetLockPosition(newLockPosition, true))
+        {
+            throw ERROR_INFO("SetLockPosition failed");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
 void Guider::SetState(GUIDER_STATE newState)
 {
     try
