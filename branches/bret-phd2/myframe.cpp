@@ -138,6 +138,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title,
         SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     }
 
+    m_loopFrameCount = 0;
     m_pPrimaryWorkerThread = NULL;
     StartWorkerThread(m_pPrimaryWorkerThread);
     m_pSecondaryWorkerThread = NULL;

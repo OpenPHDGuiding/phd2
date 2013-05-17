@@ -343,11 +343,14 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event) {
                     break;
                 case MSG_LOOPFRAMECOUNT:
                     {
-#ifdef BRET_TODO
-                        rval = LoopFrameCount;
-#else
-                        rval = 1;
-#endif
+                        if (m_loopFrameCount > UCHAR_MAX)
+                        {
+                            rval = UCHAR_MAX;
+                        }
+                        else
+                        {
+                            rval = m_loopFrameCount;
+                        }
                     }
                     break;
                 case MSG_CLEARCAL:

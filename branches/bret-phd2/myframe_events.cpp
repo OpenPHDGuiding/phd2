@@ -196,6 +196,8 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
 
         assert(!CaptureActive);
 
+        m_loopFrameCount = 0;
+
         pFrame->StartCapturing();
 
     }
@@ -236,6 +238,8 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 
             throw ERROR_INFO("Error reported capturing image");
         }
+
+        m_loopFrameCount++;
 
         pGuider->UpdateGuideState(pNewFrame, !CaptureActive);
         pNewFrame = NULL; // the guider owns in now

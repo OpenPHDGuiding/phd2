@@ -121,7 +121,7 @@ public:
     GraphLogWindow *GraphLog;
     GraphStepguiderWindow *pStepGuiderGraph;
     ProfileWindow *Profile;
-    unsigned char LoopFrameCount;
+    unsigned m_loopFrameCount;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
     void OnQuit(wxCommandEvent& evt);
