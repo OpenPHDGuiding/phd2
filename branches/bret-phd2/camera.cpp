@@ -162,7 +162,7 @@ GuideCamera::GuideCamera(void)
     HaveDark = false;
     DarkDur = 0;
 
-    double cameraGain = pConfig->GetInt("/camera/gain", DefaultGuideCameraGain);
+    int cameraGain = pConfig->GetInt("/camera/gain", DefaultGuideCameraGain);
     SetCameraGain(cameraGain);
     double pixelSize = pConfig->GetDouble("/camera/pixelsize", DefaultPixelSize);
     SetCameraPixelSize(pixelSize);
@@ -552,7 +552,7 @@ bool GuideCamera::SetCameraGain(int cameraGain)
         GuideCameraGain = DefaultGuideCameraGain;
     }
 
-    pConfig->SetDouble("/camera/gain", GuideCameraGain);
+    pConfig->SetInt("/camera/gain", GuideCameraGain);
 
     return bError;
 }
@@ -752,7 +752,6 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
     if (m_pCamera->HasGainControl)
     {
         m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
-        m_pCamera->SetCameraGain(m_pCameraGain->GetValue()/*/100*/);
     }
 
     if (m_pCamera->HasDelayParam)
