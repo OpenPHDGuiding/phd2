@@ -136,7 +136,7 @@ protected:
     Guider(wxWindow *parent, int xSize, int ySize);
     virtual ~Guider(void);
 
-    bool PaintHelper(wxAutoBufferedPaintDC &dc, wxMemoryDC &memDC);
+    bool PaintHelper(wxClientDC &dc, wxMemoryDC &memDC);
     void SetState(GUIDER_STATE newState);
     usImage *CurrentImage(void);
 
