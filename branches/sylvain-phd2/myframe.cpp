@@ -305,11 +305,16 @@ MyFrame::MyFrame(const wxString& title)
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR, wxColour(0, 51, 153));
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_TEXT_COLOUR, *wxWHITE);
-    m_mgr.SetFlags(m_mgr.GetFlags() | wxAUI_MGR_TRANSPARENT_DRAG);
+    //m_mgr.SetFlags(m_mgr.GetFlags() | wxAUI_MGR_TRANSPARENT_DRAG);
 
     wxString perspective = pConfig->GetString("/perspective", wxEmptyString);
     if (perspective != wxEmptyString)
         m_mgr.LoadPerspective(perspective);
+
+    pGraphLog->SetState(m_mgr.GetPane(_T("GraphLog")).IsShown());
+    pStepGuiderGraph->SetState(m_mgr.GetPane(_T("AOPosition")).IsShown());
+    pProfile->SetState(m_mgr.GetPane(_T("Profile")).IsShown());
+    pTarget->SetState(m_mgr.GetPane(_T("Target")).IsShown());
 
     m_mgr.Update();
 
