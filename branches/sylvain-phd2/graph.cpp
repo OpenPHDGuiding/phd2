@@ -643,7 +643,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         }
 
         const double xmag = size.x / (double)m_length;
-        const double ymag = yPixelsPerDivision*(double)(m_yDivisions + 1)/(double)m_height;
+        const double ymag = yPixelsPerDivision / (double)m_height;
 
         for (i=start_item; i<m_maxLength; i++)
         {
