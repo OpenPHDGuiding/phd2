@@ -52,7 +52,6 @@ ProfileWindow::ProfileWindow(wxWindow *parent) :
 {
     this->visible = false;
     this->mode = 0; // 2D profile
-    this->data = NULL;
     this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     this->data = new unsigned short[441];  // 21x21 subframe
 
@@ -147,8 +146,10 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
             break;
     }
 
+    float fwhm = 0;
+
     // Figure max and min
-    int Prof_Min, Prof_Max;
+    int Prof_Min, Prof_Max, Prof_Mid;
     Prof_Min = Prof_Max = *profptr;
 
     for (i=1; i<21; i++) {
@@ -157,17 +158,43 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
         else if (*(profptr + i) > Prof_Max)
             Prof_Max = *(profptr + i);
     }
-    // Figure the actual points in the window
-    int Prof_Range = (Prof_Max - Prof_Min) / 42;  //
-    if (!Prof_Range) Prof_Range = 1;
-    int wprof = (xsize - 15) / 2 - 5;
-    wprof /= 20;
-    for (i=0; i<21; i++)
-        Prof[i]=wxPoint(5+i*wprof,ysize-40-( (*(profptr + i) - Prof_Min) / Prof_Range ));
+    if (Prof_Min < Prof_Max)
+    {
+        Prof_Mid = (Prof_Max - Prof_Min) / 2 + Prof_Min;
+        // Figure the actual points in the window
+        float Prof_Range = (float)(Prof_Max - Prof_Min) / (float)(ysize-30);
+        if (!Prof_Range) Prof_Range = 1;
+        int wprof = (xsize - 15) / 2 - 5;
+        wprof /= 20;
+        for (i=0; i<21; i++)
+            Prof[i]=wxPoint(5+i*wprof,ysize-25-( (float)(*(profptr + i) - Prof_Min) / Prof_Range ));
 
-    // Draw it
-    dc.SetPen(RedPen);
-    dc.DrawLines(21,Prof);
+        // fwhm
+        int x1 = 0;
+        int x2 = 0;
+        int profval;
+        int profvalprec;
+        for (i=1; i<21; i++)
+        {
+            profval = *(profptr + i);
+            profvalprec = *(profptr + i - 1);
+            if (profvalprec <= Prof_Mid && profval >= Prof_Mid)
+                x1 = i;
+            else if (profvalprec >= Prof_Mid && profval <= Prof_Mid)
+                x2 = i;
+        }
+        profval = *(profptr + x1);
+        profvalprec = *(profptr + x1 - 1);
+        float f1 = (float)x1 - (float)(profval - Prof_Mid) / (float)(profval - profvalprec);
+        profval = *(profptr + x2);
+        profvalprec = *(profptr + x2 - 1);
+        float f2 = (float)x2 - (float)(profvalprec - Prof_Mid) / (float)(profvalprec - profval);
+        fwhm = f2 - f1;
+
+        // Draw it
+        dc.SetPen(RedPen);
+        dc.DrawLines(21,Prof);
+    }
     //dc.SetTextForeground(wxColour(100,100,255));
     dc.SetTextForeground(wxColour(255,0,0));
 #if defined (__APPLE__)
@@ -175,7 +202,9 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
 #else
     dc.SetFont(*wxSWISS_FONT);
 #endif
-    dc.DrawText(label,5,ysize - 38);
+    dc.DrawText(label,5,ysize - 20);
+    if (fwhm != 0)
+        dc.DrawText(wxString::Format(_("FWHM: %.2f"), fwhm),50,ysize - 20);
 
     // JBW: draw zoomed guidestar subframe (todo: make constants symbolic)
     wxImage* img = pFrame->pGuider->DisplayedImage();
@@ -192,7 +221,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
         double dStarY = LockY - pFrame->pGuider->CurrentPosition().Y * scaleFactor;
         // grab the subframe
         wxBitmap dBmp(*img);
-        wxBitmap subDBmp = dBmp.GetSubBitmap(wxRect(ROUND(LockX)-midwidth/2, ROUND(LockY)-midwidth/2, midwidth, midwidth));
+        wxBitmap subDBmp = dBmp.GetSubBitmap(wxRect(ROUND(LockX)-15, ROUND(LockY)-15, 30, 30));
         wxImage subDImg = subDBmp.ConvertToImage();
         // scale by 2
         wxBitmap zoomedDBmp(subDImg.Rescale(width, width, wxIMAGE_QUALITY_HIGH));
