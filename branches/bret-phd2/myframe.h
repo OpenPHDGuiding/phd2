@@ -152,6 +152,7 @@ public:
     void OnGammaSlider(wxScrollEvent& evt);
     void OnServerEvent(wxSocketEvent& evt);
     void OnSocketEvent(wxSocketEvent& evt);
+    void HandleSocketInput(wxSocketBase *sock);
     void OnServerMenu(wxCommandEvent& evt);
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     void OnINDIConfig(wxCommandEvent& evt);
