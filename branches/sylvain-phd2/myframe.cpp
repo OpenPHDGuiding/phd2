@@ -144,6 +144,7 @@ MyFrame::MyFrame(const wxString& title)
     //    SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     //}
 
+    m_loopFrameCount = 0;
     m_pPrimaryWorkerThread = NULL;
     StartWorkerThread(m_pPrimaryWorkerThread);
     m_pSecondaryWorkerThread = NULL;
@@ -565,7 +566,7 @@ void MyFrame::SetupToolBar(wxToolBar *toolBar)
     toolBar->AddTool(BUTTON_STOP, _T("Stop"), stop_bmp, _T("Abort current action"));
     toolBar->AddSeparator();
     toolBar->AddControl(Dur_Choice, _T("Exposure duration"));
-    toolBar->AddControl(Gamma_Slider, _T("Gamme"));
+    toolBar->AddControl(Gamma_Slider, _T("Gamma"));
     toolBar->AddSeparator();
     toolBar->AddTool(BUTTON_DETAILS, _T("Advanced parameters"), brain_bmp, _T("Advanced parameters"));
     //toolBar->AddTool(wxID_PROPERTIES, _T("Cam Dialog"), wxArtProvider::GetBitmap(wxART_MISSING_IMAGE));

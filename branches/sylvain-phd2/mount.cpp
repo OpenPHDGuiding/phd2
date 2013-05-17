@@ -324,7 +324,7 @@ double Mount::yAngle()
 
     if (IsCalibrated())
     {
-        dReturn = m_xAngle - m_yAngleError;
+        dReturn = m_xAngle - m_yAngleError + M_PI/2;
     }
 
     return dReturn;
@@ -596,7 +596,6 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate)
 {
 
-
     Debug.AddLine("Mount::SetCalibration -- xAngle=%.2lf yAngle=%.2lf xRate=%.4lf yRate=%.4lf", xAngle, yAngle, xRate, yRate);
     // we do the rates first, since they just get stored
 
@@ -620,21 +619,38 @@ bool Mount::FlipCalibration(void)
 {
     bool bError = false;
 
-    if (!IsCalibrated())
+    try
     {
-        pFrame->SetStatusText(_T("No CAL"));
-        bError = true;
-    }
-    else
-    {
-        double orig = m_xAngle;
-
-        m_xAngle += PI;
-        if (m_xAngle > PI)
+        if (!IsCalibrated())
         {
-            m_xAngle -= 2*PI;
+            pFrame->SetStatusText(_T("No CAL"));
+            throw ERROR_INFO("cannot flip if not calibrated");
         }
-        pFrame->SetStatusText(wxString::Format(_T("CAL: %.2f -> %.2f"), orig, m_xAngle),0);
+
+        double origX = xAngle();
+        double origY = yAngle();
+
+        Debug.AddLine("FlipCalibration before: x=%.2f, y=%.2f", origX, origY);
+
+        double newX = origX + M_PI;
+        double newY = origY;
+
+        Debug.AddLine("FlipCalibration pre-normalize: x=%.2f, y=%.2f", newX, newY);
+
+        // normlize
+        newX = atan2(sin(newX), cos(newX));
+        newY = atan2(sin(newY), cos(newY));
+
+        Debug.AddLine("FlipCalibration after: x=%.2f, y=%.2f", newX, newY);
+
+        SetCalibration(newX, newY, xRate(), yRate());
+
+        pFrame->SetStatusText(wxString::Format(_T("CAL: %.2f -> %.2f"), origX, newX), 0);
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
     }
 
     return bError;

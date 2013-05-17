@@ -162,7 +162,7 @@ GuideCamera::GuideCamera(void)
     HaveDark = false;
     DarkDur = 0;
 
-    double cameraGain = pConfig->GetInt("/camera/gain", DefaultGuideCameraGain);
+    int cameraGain = pConfig->GetInt("/camera/gain", DefaultGuideCameraGain);
     SetCameraGain(cameraGain);
     double pixelSize = pConfig->GetDouble("/camera/pixelsize", DefaultPixelSize);
     SetCameraPixelSize(pixelSize);

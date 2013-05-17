@@ -202,6 +202,8 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
 
         assert(!CaptureActive);
 
+        m_loopFrameCount = 0;
+
         pFrame->StartCapturing();
 
     }
@@ -243,6 +245,8 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             throw ERROR_INFO("Error reported capturing image");
         }
 
+        m_loopFrameCount++;
+
         pGuider->UpdateGuideState(pNewFrame, !CaptureActive);
         pNewFrame = NULL; // the guider owns in now
 
@@ -270,15 +274,15 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         }
 #endif
 
-#ifdef ZESLY_DODO
         Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d", CaptureActive));
+#ifdef ZESLY_DODO
         double dx = (double)rand() / RAND_MAX * 2 - 1;
         double dy = (double)rand() / RAND_MAX * 2 - 1;
         double ra = (double)rand() / RAND_MAX * 2 - 1;
         double dec = (double)rand() / RAND_MAX * 2 - 1;
         pGraphLog->AppendData(dx,dy,ra,dec);
         pTarget->AppendData(ra,dec);
-#endif
+#endif // ZESLY_DODO
         if (CaptureActive)
         {
             ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());

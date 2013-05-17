@@ -133,22 +133,25 @@ def runCmdBool(cmd):
 def checkFiles(fileNames):
     invalidEnding = False
     for fileName in fileNames:
-        if interestingExtension(fileName):
-            #print("checking file {0}".format(fileName))
-            (returnCode, stdoutData, stderrData) = runCmd("git show HEAD:{0}".format(fileName))
-            if returnCode == 0:
-                if stdoutData.startswith(codecs.BOM_UTF16_LE) or stdoutData.startswith(codecs.BOM_UTF16_BE):
-                    encoding = "utf-16"
-                elif stdoutData.startswith(codecs.BOM_UTF8):
-                    encoding = "utf-8-sig"
-                else:
-                    encoding = "ascii"
-                #print("checking file {0} bytes={1} encoding={2}".format(fileName, stdoutData[:4], encoding))
-                oldEnding = processFile(io.StringIO(unicode(stdoutData, encoding)))
-                newEnding = processNamedFile(fileName)
-                #print(fileName, oldEnding, newEnding)
+        try:
+            if interestingExtension(fileName):
+                #print("checking file {0}".format(fileName))
+                (returnCode, stdoutData, stderrData) = runCmd("git show HEAD:{0}".format(fileName))
+                if returnCode == 0:
+                    if stdoutData.startswith(codecs.BOM_UTF16_LE) or stdoutData.startswith(codecs.BOM_UTF16_BE):
+                        encoding = "utf-16"
+                    elif stdoutData.startswith(codecs.BOM_UTF8):
+                        encoding = "utf-8-sig"
+                    else:
+                        encoding = "ascii"
+                    #print("checking file {0} bytes={1} encoding={2}".format(fileName, stdoutData[:4], encoding))
+                    oldEnding = processFile(io.StringIO(unicode(stdoutData, encoding)))
+                    newEnding = processNamedFile(fileName)
+                    #print(fileName, oldEnding, newEnding)
 
-                invalidEnding = enforcePolicies(newEnding, fileName)
+                    invalidEnding = enforcePolicies(newEnding, fileName)
+        except Exception as ex:
+            print("caught exception {0} processing file {1}", ex, fileName, file=sys.stderr)
     return invalidEnding
 
 def checkCommit():

@@ -150,6 +150,7 @@ public:
     void UpdateImageDisplay(usImage *pImage=NULL);
     bool DoGuide(void);
 
+    bool MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position, bool bExact=true);
     PHD_Point &LockPosition();
 
