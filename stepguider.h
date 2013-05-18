@@ -1,0 +1,152 @@
+/*
+ *  stepguider.h
+ *  PHD Guiding
+ *
+ *  Created by Bret McKee
+ *  Copyright (c) 2013 Bret McKee
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its
+ *     Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#ifndef STEPGUIDER_H_INCLUDED
+#define STEPGUIDER_H_INCLUDED
+
+class StepGuider:public Mount
+{
+    int m_samplesToAverage;
+    int m_bumpPercentage;
+    double m_bumpMaxStepsPerCycle;
+
+    int m_xOffset;
+    int m_yOffset;
+
+    PHD_Point m_bumpRemaining;
+
+    // Calibration variables
+    int   m_calibrationStepsPerIteration;
+    int   m_calibrationIterations;
+    PHD_Point m_calibrationStartingLocation;
+    int   m_calibrationAverageSamples;
+    PHD_Point m_calibrationAveragedLocation;
+
+    double m_calibrationXAngle;
+    double m_calibrationXRate;
+
+    double m_calibrationYAngle;
+    double m_calibrationYRate;
+
+    enum CALIBRATION_STATE
+    {
+        CALIBRATION_STATE_CLEARED,
+        CALIBRATION_STATE_GOTO_LOWER_RIGHT_CORNER,
+        CALIBRATION_STATE_AVERAGE_STARTING_LOCATION,
+        CALIBRATION_STATE_GO_LEFT,
+        CALIBRATION_STATE_AVERAGE_CENTER_LOCATION,
+        CALIBRATION_STATE_GO_UP,
+        CALIBRATION_STATE_AVERAGE_ENDING_LOCATION,
+        CALIBRATION_STATE_RECENTER,
+        CALIBRATION_STATE_COMPLETE
+    } m_calibrationState;
+
+    // Things related to the Advanced Config Dialog
+protected:
+    class StepGuiderConfigDialogPane : public MountConfigDialogPane
+    {
+        StepGuider *m_pStepGuider;
+        wxSpinCtrl *m_pCalibrationStepsPerIteration;
+        wxSpinCtrl *m_pSamplesToAverage;
+        wxSpinCtrl *m_pBumpPercentage;
+        wxSpinCtrlDouble *m_pBumpMaxStepsPerCycle;
+
+        public:
+        StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
+        ~StepGuiderConfigDialogPane(void);
+
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
+
+    virtual int GetSamplesToAverage(void);
+    virtual bool SetSamplesToAverage(int samplesToAverage);
+
+    virtual int GetBumpPercentage(void);
+    virtual bool SetBumpPercentage(int bumpPercentage);
+
+    virtual double GetBumpMaxStepsPerCycle(void);
+    virtual bool SetBumpMaxStepsPerCycle(double maxBumpPerCycle);
+
+    virtual int GetCalibrationStepsPerIteration(void);
+    virtual bool SetCalibrationStepsPerIteration(int calibrationStepsPerIteration);
+
+    friend class GraphLogWindow;
+
+public:
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
+public:
+    StepGuider(void);
+    virtual ~StepGuider(void);
+
+    virtual bool BeginCalibration(const PHD_Point &currentLocation);
+    bool UpdateCalibrationState(const PHD_Point &currentLocation);
+    virtual void ClearCalibration(void);
+
+    virtual bool Connect(void);
+    virtual bool Disconnect(void);
+
+    virtual bool GuidingCeases(void);
+
+    // functions with an implemenation in StepGuider that cannot be over-ridden
+    // by a subclass
+private:
+    virtual bool Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
+    double Move(GUIDE_DIRECTION direction, double amount, bool normalMove=true);
+    bool CalibrationMove(GUIDE_DIRECTION direction);
+
+    double CalibrationTime(int nCalibrationSteps);
+protected:
+    int IntegerPercent(int percentage, int number);
+    virtual int BumpPosition(GUIDE_DIRECTION direction);
+
+    // pure virutal functions -- these MUST be overridden by a subclass
+private:
+    virtual bool Step(GUIDE_DIRECTION direction, int steps)=0;
+    virtual int MaxPosition(GUIDE_DIRECTION direction)=0;
+    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit) = 0;
+    virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
+
+    // virtual functions -- these CAN be overridden by a subclass, which should
+    // consider whether they need to call the base class functions as part of
+    // their operation
+private:
+    virtual int CurrentPosition(GUIDE_DIRECTION direction);
+protected:
+    virtual bool Center(void);
+};
+
+#endif /* STEPGUIDER_H_INCLUDED */
