@@ -37,6 +37,7 @@
 class Camera_Atik16Class : public GuideCamera {
 public:
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool HasNonGuiCapture(void);
     bool    Connect();
     bool    Disconnect();
 //  void    InitCapture();
@@ -49,5 +50,6 @@ public:
 private:
 //  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
     ArtemisHandle Cam_Handle;
+    bool HasNonGuiMove(void);
 };
 #endif  //ATIK16DEF

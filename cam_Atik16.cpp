@@ -139,7 +139,7 @@ bool Camera_Atik16Class::Connect() {
 bool Camera_Atik16Class::PulseGuideScope(int direction, int duration) {
 
     int axis;
-    wxStopWatch swatch;
+    //wxStopWatch swatch;
 
     // Output pins are NC, Com, RA+(W), Dec+(N), Dec-(S), RA-(E) ??  http://www.starlight-xpress.co.uk/faq.htm
     switch (direction) {
@@ -294,4 +294,14 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
 
     }
 }*/
+
+bool Camera_Atik16Class::HasNonGuiCapture(void)
+{
+    return true;
+}
+
+bool Camera_Atik16Class::HasNonGuiMove(void)
+{
+    return true;
+}
 #endif
