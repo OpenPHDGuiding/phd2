@@ -1,0 +1,38 @@
+Notes for MSVC/Windows users:
+
+The CMake routines that automatically find the cfitsio and zlib libraries
+don't work well under Windows, partially because there is no "standard"
+place to install them.  
+
+
+There is now support for the environment variables:
+
+CFITSIO
+ZLIB
+
+set them to the path where their respective libraries are installed and then
+cmake will be able to find them:
+
+>set CFITSIO=../cfitsio
+>set ZLIB=../zlib
+>cmake .
+-- Building for: Visual Studio 9 2008
+-- Check for working C compiler using: Visual Studio 9 2008
+-- Check for working C compiler using: Visual Studio 9 2008 -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working CXX compiler using: Visual Studio 9 2008
+-- Check for working CXX compiler using: Visual Studio 9 2008 -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+
+WARNING: Missing dependencies for V4L
+WARNING: V4L cameras will not be supported
+
+-- Found wxWidgets: TRUE
+-- found version string 3.25
+-- Found CFITSIO 3.25: C:/Users/bretm/Astronomy/src/cfitsio/cfitsio.lib
+-- Found ZLIB: C:/Users/bretm/Astronomy/src/zlib/include
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/bretm/Astronomy/src/phd

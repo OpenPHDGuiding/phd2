@@ -7,791 +7,460 @@
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
- *  Redistribution and use in source and binary forms, with or without
+ *  Redistribution and use in source and binary forms, with or without 
  *  modification, are permitted provided that the following conditions are met:
- *    Redistributions of source code must retain the above copyright notice,
+ *    Redistributions of source code must retain the above copyright notice, 
  *     this list of conditions and the following disclaimer.
- *    Redistributions in binary form must reproduce the above copyright notice,
+ *    Redistributions in binary form must reproduce the above copyright notice, 
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
- *     contributors may be used to endorse or promote products derived from
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its 
+ *     contributors may be used to endorse or promote products derived from 
  *     this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
  *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include "phd.h"
+#if defined (__WINDOWS__)
+#include "ascom.h"
+#endif
+
+#if defined (GUIDE_GCUSBST4)
+#include "GC_USBST4.h"
+#endif
 
 #include "image_math.h"
 #include "wx/textfile.h"
+#include "camera.h"
+#include "scope.h"
 #include "socket_server.h"
 
+#ifdef GUIDE_GPUSB
+#include "ShoeString.h"
+#endif
 
-static const int DefaultCalibrationDuration = 750;
-static const int DefaultMaxDecDuration  = 1000;
-static const int DefaultMaxRaDuration  = 1000;
+#ifdef GUIDE_INDI
+#include "tele_INDI.h"
+#endif
 
-static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
-static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
-static const GUIDE_ALGORITHM DefaultDecGuideAlgorithm = GUIDE_ALGORITHM_RESIST_SWITCH;
+void GuideScope(int direction, int duration) {
+	if (DisableGuideOutput && (frame->canvas->State >= STATE_GUIDING_LOCKED))  // Let you not actually send the commands during guiding
+		return;
+	try {
+        if ((ScopeConnected == MOUNT_CAMERA) && GuideCameraConnected && (CurrentGuideCamera->HasGuiderOutput))
+			CurrentGuideCamera->PulseGuideScope(direction,duration);
+    #ifdef GUIDE_GPUSB
+		else if (ScopeConnected == MOUNT_GPUSB)
+			GPUSB_PulseGuideScope(direction,duration);
+    #endif
+	#ifdef GUIDE_ASCOM
+		else if (ScopeConnected == MOUNT_ASCOM)
+			ASCOM_PulseGuideScope(direction,duration);
+    #endif
+    #ifdef GUIDE_PARALLEL
+		else if (ScopeConnected == MOUNT_GPINT3BC)
+			GPINT_PulseGuideScope(direction, duration, (short) 0x3BC);
+		else if (ScopeConnected == MOUNT_GPINT378)
+			GPINT_PulseGuideScope(direction, duration, (short) 0x378);
+		else if (ScopeConnected == MOUNT_GPINT278)
+			GPINT_PulseGuideScope(direction, duration, (short) 0x278);
+    #endif
+	#ifdef GUIDE_GCUSBST4
+		else if (ScopeConnected == MOUNT_GCUSBST4)
+			GCUSBST4_PulseGuideScope(direction,duration);
+	#endif
+	#ifdef GUIDE_NEB
+		else if (ScopeConnected == MOUNT_NEB)
+			ServerSendGuideCommand(direction,duration);
+    #endif
+    #ifdef GUIDE_VOYAGER
+		else if (ScopeConnected == MOUNT_VOYAGER)
+			Voyager_PulseGuideScope(direction,duration);
+    #endif
+    #ifdef GUIDE_EQUINOX
+		else if (ScopeConnected == MOUNT_EQUINOX)
+			Equinox_PulseGuideScope(direction,duration);
+    #endif
+    #ifdef GUIDE_INDI
+        else if (ScopeConnected == MOUNT_INDI)
+            INDI_PulseGuideScope(direction, duration);
+    #endif
+	}
+	catch (...) {
+		wxMessageBox(_T("Exception thrown while trying to send guide command"));
+	}
 
-static const double DEC_BACKLASH_DISTANCE = 3.0;
-static const int MAX_CALIBRATION_STEPS = 60;
-static const double MAX_CALIBRATION_DISTANCE = 25.0;
-
-Scope::Scope(void)
-{
-    m_calibrationSteps = 0;
-
-    int calibrationDuration = pConfig->GetInt("/scope/CalibrationDuration", DefaultCalibrationDuration);
-    SetCalibrationDuration(calibrationDuration);
-
-    int maxRaDuration  = pConfig->GetInt("/scope/MaxRaDuration", DefaultMaxRaDuration);
-    SetMaxRaDuration(maxRaDuration);
-
-    int maxDecDuration = pConfig->GetInt("/scope/MaxDecDuration", DefaultMaxDecDuration);
-    SetMaxDecDuration(maxDecDuration);
-
-    int decGuideMode = pConfig->GetInt("/scope/DecGuideMode", DefaultDecGuideMode);
-    SetDecGuideMode(decGuideMode);
-
-    int raGuideAlgorithm = pConfig->GetInt("/scope/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
-    SetXGuideAlgorithm(raGuideAlgorithm);
-
-    int decGuideAlgorithm = pConfig->GetInt("/scope/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
-    SetYGuideAlgorithm(decGuideAlgorithm);
 }
+void DisconnectScope() {
+#if defined (GUIDE_ASCOM)
+	if (ScopeDriverDisplay) {  // this defined by ASCOM
+		ScopeDriverDisplay->Release();
+		ScopeDriverDisplay = NULL;
+	}
+#endif
+#if defined (GUIDE_GCUSBST4)
+	if (ScopeConnected == MOUNT_GCUSBST4)
+		GCUSBST4_Disconnect();
+#endif
+#if defined (GUIDE_GPUSB)
+	if (ScopeConnected == MOUNT_GPUSB) {
+		GPUSB_Disconnect();
+	}
+#endif
+	// Nothing needed for GPINT
 
-Scope::~Scope(void)
-{
-}
-
-void Scope::SetXGuideAlgorithm(int guideAlgorithm)
-{
-    Mount::SetXGuideAlgorithm(guideAlgorithm, DefaultRaGuideAlgorithm);
-    pConfig->SetInt("/scope/RaGuideAlgorithm", GetXGuideAlgorithm());
-}
-
-void Scope::SetYGuideAlgorithm(int guideAlgorithm)
-{
-    Mount::SetYGuideAlgorithm(guideAlgorithm, DefaultDecGuideAlgorithm);
-    pConfig->SetInt("/scope/DecGuideAlgorithm", GetYGuideAlgorithm());
-}
-
-int Scope::GetCalibrationDuration(void)
-{
-    return m_calibrationDuration;
-}
-
-bool Scope::SetCalibrationDuration(int calibrationDuration)
-{
-    bool bError = false;
-
-    try
-    {
-        if (calibrationDuration <= 0.0)
-        {
-            throw ERROR_INFO("invalid calibrationDuration");
-        }
-
-        m_calibrationDuration = calibrationDuration;
-
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-        m_calibrationDuration = DefaultCalibrationDuration;
-    }
-
-    pConfig->SetInt("/scope/CalibrationDuration", m_calibrationDuration);
-
-    return bError;
-}
-
-int Scope::GetMaxDecDuration(void)
-{
-    return m_maxDecDuration;
-}
-
-bool Scope::SetMaxDecDuration(int maxDecDuration)
-{
-    bool bError = false;
-
-    try
-    {
-        if (maxDecDuration < 0)
-        {
-            throw ERROR_INFO("maxDecDuration < 0");
-        }
-
-        m_maxDecDuration = maxDecDuration;
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-        m_maxDecDuration = DefaultMaxDecDuration;
-    }
-
-    pConfig->SetInt("/scope/MaxDecDuration", m_maxDecDuration);
-
-    return bError;
-}
-
-int Scope::GetMaxRaDuration(void)
-{
-    return m_maxRaDuration;
-}
-
-bool Scope::SetMaxRaDuration(double maxRaDuration)
-{
-    bool bError = false;
-
-    try
-    {
-        if (maxRaDuration < 0)
-        {
-            throw ERROR_INFO("maxRaDuration < 0");
-        }
-
-        m_maxRaDuration =  maxRaDuration;
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-        m_maxRaDuration = DefaultMaxRaDuration;
-    }
-
-    pConfig->SetInt("/scope/MaxRaDuration", m_maxRaDuration);
-
-    return bError;
-}
-
-DEC_GUIDE_MODE Scope::GetDecGuideMode(void)
-{
-    return m_decGuideMode;
-}
-
-bool Scope::SetDecGuideMode(int decGuideMode)
-{
-    bool bError = false;
-
-    try
-    {
-        switch (decGuideMode)
-        {
-            case DEC_NONE:
-            case DEC_AUTO:
-            case DEC_NORTH:
-            case DEC_SOUTH:
-                break;
-            default:
-                throw ERROR_INFO("invalid decGuideMode");
-                break;
-        }
-
-        m_decGuideMode = (DEC_GUIDE_MODE)decGuideMode;
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-        m_decGuideMode = (DEC_GUIDE_MODE)DefaultDecGuideMode;
-    }
-
-    pConfig->SetInt("/scope/DecGuideMode", m_decGuideMode);
-
-    return bError;
+	ScopeConnected = 0;
 }
 
 void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
-//  wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-//  wxMessageBox(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log.txt"));
-    Scope *pNewScope = NULL;
+//	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+//	wxMessageBox(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log.txt"));
 
-    if (pGuider->GetState() > STATE_SELECTED) return;
-    if (CaptureActive) return;  // Looping an exposure already
-    if (pMount->IsConnected()) pMount->Disconnect();
+	if (canvas->State > STATE_SELECTED) return;
+	if (CaptureActive) return;  // Looping an exposure already
+	if (ScopeConnected) DisconnectScope();
 
-    if (false)
-    {
-        // this dummy if is here because otherwise we can't have the
-        // else if construct below, since we don't know which camera
-        // will be first.
-        //
-        // With this here and always false, the rest can safely begin with
-        // else if
-    }
-#ifdef GUIDE_ASCOM
-    else if (mount_menu->IsChecked(SCOPE_ASCOM)) {
-        pNewScope = new ScopeASCOM();
+	#ifdef GUIDE_GPUSB
+	if (mount_menu->IsChecked(MOUNT_GPUSB)) {
+		if (!GPUSB_Connect()) {
+			ScopeConnected = MOUNT_GPUSB;
+			SetStatusText(_T("GPUSB connected"));
+		}
+		else {
+			ScopeConnected = 0;
+			SetStatusText(_T("GPUSB failed"));
+		}
+	}
+	#endif
 
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": ASCOM");
-        }
-        else
-        {
-            SetStatusText("ASCOM " + _("connected"));
-        }
-    }
-#endif
-
-#ifdef GUIDE_GPUSB
-    else if (mount_menu->IsChecked(SCOPE_GPUSB)) {
-        pNewScope = new ScopeGpUsb();
-
-        if (pNewScope->Connect()) {
-            SetStatusText(_("Connection FAIL") + ": GPUSB");
-        }
-        else {
-            SetStatusText("GPUSB " + _("connected"));
-        }
-    }
-#endif
-
-#ifdef GUIDE_GPINT
-    else if (mount_menu->IsChecked(SCOPE_GPINT3BC)) {
-        pNewScope = new ScopeGpInt((short) 0x3BC);
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": GPINT 3BC");
-        }
-        else
-        {
-            SetStatusText("GPINT 3BC " + _("connected"));
-        }
-    }
-    else if (mount_menu->IsChecked(SCOPE_GPINT378)) {
-        pNewScope = new ScopeGpInt((short) 0x378);
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": GPINT 378");
-        }
-        else
-        {
-            SetStatusText("GPINT 378 " + _("connected"));
-        }
-    }
-    else if (mount_menu->IsChecked(SCOPE_GPINT278)) {
-        pNewScope = new ScopeGpInt((short) 0x278);
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": GPINT 278");
-        }
-        else
-        {
-            SetStatusText("GPINT 278 " + _("connected"));
-        }
-    }
-#endif
-
-#ifdef GUIDE_GCUSBST4
-    else if (mount_menu->IsChecked(SCOPE_GCUSBST4)) {
-        ScopeGCUSBST4 *pGCUSBST4 = new ScopeGCUSBST4();
-        pNewScope = pGCUSBST4;
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": GCUSB-ST4n");
-        }
-        else
-        {
-            SetStatusText("GCUSB-ST4 " + _("connected"));
-        }
-    }
-#endif
-
-#ifdef GUIDE_ONBOARD
-    else if (mount_menu->IsChecked(SCOPE_CAMERA)) {
-        pNewScope = new ScopeOnCamera();
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": OnCamera");
-        }
-        else
-        {
-            SetStatusText("OnCamera " + _("connected"));
-        }
-    }
-#endif
-#ifdef GUIDE_VOYAGER
-    else if (mount_menu->IsChecked(SCOPE_VOYAGER)) {
-        ScopeVoyager *pVoyager = new ScopeVoyager();
-        pNewScope = pVoyager;
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": Voyager localhost");
-
-            wxString IPstr = wxGetTextFromUser(_("Enter IP address"),_T("Voyager not found on localhost"));
-
-            // we have to use the ScopeVoyager pointer to pass the address to connect
-            if (pVoyager->Connect(IPstr))
-            {
-                SetStatusText("Voyager IP failed");
-            }
-        }
-
-        if (pNewScope->IsConnected())
-        {
-            SetStatusText("Voyager " + _("connected"));
-        }
-    }
-#endif
-#ifdef GUIDE_EQUINOX
-    else if (mount_menu->IsChecked(SCOPE_EQUINOX)) {
-        pNewScope = new ScopeEquinox();
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": Equinox");
-        }
-        else
-        {
-            SetStatusText("Equinox " + _("connected"));
-        }
-    }
-#endif
-#ifdef GUIDE_EQMAC
-    else if (mount_menu->IsChecked(SCOPE_EQMAC)) {
-        ScopeEQMac *pEQMac = new ScopeEQMac();
-        pNewScope = pEQMac;
-
-        // must use pEquinox to pass an arument to connect
-        if (pEQMac->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": EQMac");
-        }
-        else
-        {
-            SetStatusText("EQMac " + _("connected"));
-        }
-    }
-#endif
-#ifdef GUIDE_INDI
-    else if (mount_menu->IsChecked(SCOPE_INDI)) {
+    #ifdef GUIDE_ASCOM
+	else if (mount_menu->IsChecked(MOUNT_ASCOM)) {
+		wxString ScopeID;
+		if (!ASCOM_OpenChooser(ScopeID)) { // Put the ASCOM Chooser up and let user select scope
+			if (ASCOM_ConnectScope(ScopeID)){
+				ScopeConnected = 0;  //
+				SetStatusText("ASCOM connection failed");
+			}
+			else
+				ScopeConnected = MOUNT_ASCOM;
+		}
+	}
+	#endif
+	#ifdef GUIDE_PARALLEL
+	else if (mount_menu->IsChecked(MOUNT_GPINT3BC)) {
+		ScopeConnected = MOUNT_GPINT3BC;
+		GPINT_Connect((short) 0x3BC);
+		SetStatusText(_T("GPINT 3BC selected"));
+	}
+	else if (mount_menu->IsChecked(MOUNT_GPINT378)) {
+		ScopeConnected = MOUNT_GPINT378;
+		GPINT_Connect((short) 0x378);
+		SetStatusText(_T("GPINT 378 selected"));
+	}
+	else if (mount_menu->IsChecked(MOUNT_GPINT278)) {
+		ScopeConnected = MOUNT_GPINT278;
+		GPINT_Connect((short) 0x278);
+		SetStatusText(_T("GPINT 278 selected"));
+	}
+    #endif
+    #ifdef GUIDE_GCUSBST4
+	else if (mount_menu->IsChecked(MOUNT_GCUSBST4)) {
+		if (GCUSBST4_Connect()) {
+			ScopeConnected = MOUNT_GCUSBST4;
+			SetStatusText(_T("USB ST4 selected"));
+		}
+		else {
+			ScopeConnected = 0;
+			SetStatusText(_T("USB ST4 failed"));
+		}
+	}
+    #endif
+    #ifdef GUIDE_ONBOARD
+	else if (mount_menu->IsChecked(MOUNT_CAMERA)) {
+		ScopeConnected = MOUNT_CAMERA;
+	}
+	#endif
+	#ifdef GUIDE_NEB
+	else if (mount_menu->IsChecked(MOUNT_NEB)) {
+		if (SocketServer)
+			ScopeConnected = MOUNT_NEB;
+		else
+			SetStatusText("Server not running");
+	}
+	#endif
+	#ifdef GUIDE_VOYAGER
+	else if (mount_menu->IsChecked(MOUNT_VOYAGER)) {
+		if (!Voyager_Connect()) {
+			ScopeConnected = MOUNT_VOYAGER;
+		}
+		else  {
+			ScopeConnected = 0;
+			SetStatusText(_T("Voyager mount failed"));
+		}
+	}
+	#endif
+    #ifdef GUIDE_EQUINOX
+	else if (mount_menu->IsChecked(MOUNT_EQUINOX)) {
+		if (!Equinox_Connect()) {
+			ScopeConnected = MOUNT_EQUINOX;
+		}
+		else  {
+			ScopeConnected = 0;
+			SetStatusText(_T("Equinox mount failed"));
+		}
+	}
+    #endif
+    #ifdef GUIDE_INDI
+    else if (mount_menu->IsChecked(MOUNT_INDI)) {
         if (!INDI_ScopeConnect()) {
-            pMount->IsConnected() = SCOPE_INDI;
+            ScopeConnected = MOUNT_INDI;
         } else {
-            pMount->IsConnected() = 0;
-            SetStatusText(_("Connection FAIL") + ": INDI"));
+            ScopeConnected = 0;
+            SetStatusText(_T("INDI mount failed"));
         }
     }
-#endif
-    if (pNewScope && pNewScope->IsConnected()) {
-        delete pMount;
-        pMount = pNewScope;
-        SetStatusText(_("Mount connected"));
-        SetStatusText(_T("Scope"),3);
-        // now store the scope we selected so we can use it as the default next time.
-        wxMenuItemList items = mount_menu->GetMenuItems();
-        wxMenuItemList::iterator iter;
-
-        for(iter = items.begin(); iter != items.end(); iter++)
-        {
-            wxMenuItem *pItem = *iter;
-
-            if (pItem->IsChecked())
-            {
-                wxString value = pItem->GetItemLabelText();
-                pConfig->SetString("/scope/LastMenuChoice", pItem->GetItemLabelText());
-                break;
-            }
-        }
-    }
-    else
-    {
-        SetStatusText(_T("No scope"),3);
-    }
-
-    UpdateButtonsStatus();
+    #endif
+	if (ScopeConnected) {
+		SetStatusText(_T("Scope"),4);
+		if (FoundStar) Guide_Button->Enable(true);
+	}
+	else {
+		SetStatusText(_T("No scope"),4);
+		Guide_Button->Enable(false);
+	}
 }
 
-bool Scope::GuidingCeases(void)
-{
-    // for scopes, we have nothing special to do when guiding stops
-    return false;
+void CalibrateScope () {
+	double dist;
+	bool still_going;
+	int iterations, i;
+	double dist_crit;
+//	wxTextFile* logfile;
+
+	if (!ScopeConnected || !GuideCameraConnected) {
+		return;
+	}
+	if (frame->canvas->State != STATE_SELECTED) return;  // must have a star selected
+	if (!FoundStar) return;  // Must have a star
+
+	// Clear out any previous values
+	Calibrated = false;
+	RA_rate = RA_angle = Dec_rate = Dec_angle = 0.0;
+
+	frame->SetExpDuration();
+	frame->canvas->State = STATE_CALIBRATING;
+	// Get starting point / frame
+	if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame))
+		Abort = 1;
+	if (Abort) { frame->canvas->State = STATE_NONE; frame->canvas->Refresh(); return; }
+//	if (HaveDark) Subtract(CurrentFullFrame,CurrentDarkFrame);
+	if (NR_mode == NR_2x2MEAN)
+		QuickLRecon(CurrentFullFrame);
+	else if (NR_mode == NR_3x3MEDIAN)
+		Median3(CurrentFullFrame);
+	FindStar(CurrentFullFrame); // Get starting position
+	LockX = StarX;
+	LockY = StarY;
+	frame->canvas->FullFrameToDisplay();
+
+	still_going = true;
+	iterations = 0;
+	dist_crit = (double) CurrentGuideCamera->FullSize.GetHeight() * 0.05;
+	if (dist_crit > 25.0) dist_crit = 25.0;
+//	logfile = new wxTextFile(_T("PHD_log.txt"));
+//	wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+//	logfile = new wxTextFile(LogFName);
+	// Do the RA+ calibration
+	if (Log_Data) {
+		if (LogFile->Exists()) LogFile->Open();
+		else LogFile->Create();
+		wxDateTime now = wxDateTime::Now();
+		LogFile->AddLine(wxString::Format(_T("PHD Guide %s  -- "),VERSION) + now.FormatDate() + _T(" ") + now.FormatTime());
+		LogFile->AddLine(_T("Calibration begun"));
+		LogFile->AddLine(wxString::Format(_T("lock %.1f %.1f, star %.1f %.1f"),LockX,LockY,StarX,StarY));
+		LogFile->AddLine(_T("Direction,Step,dx,dy,x,y"));
+		LogFile->Write();
+	}
+
+	while (still_going) {
+		frame->SetStatusText(wxString::Format(_T("W calibration: %d"),iterations+1));
+		GuideScope(WEST,Cal_duration);
+		if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame))
+			Abort = 1;
+//		if (HaveDark) Subtract(CurrentFullFrame,CurrentDarkFrame);
+		if (NR_mode == NR_2x2MEAN)
+			QuickLRecon(CurrentFullFrame);
+		else if (NR_mode == NR_3x3MEDIAN)
+			Median3(CurrentFullFrame);
+		wxTheApp->Yield();
+		if (Abort) { frame->canvas->State = STATE_NONE; frame->canvas->Refresh(); return; }
+		if (NR_mode == NR_2x2MEAN)
+			QuickLRecon(CurrentFullFrame);
+		else if (NR_mode == NR_3x3MEDIAN)
+			Median3(CurrentFullFrame);
+		FindStar(CurrentFullFrame);
+		frame->canvas->FullFrameToDisplay();
+		dist = sqrt(dX*dX+dY*dY);
+		iterations++;
+		frame->SetStatusText(wxString::Format(_T("dx=%.1f dy=%.1f dist=%.1f (%.1f)"),dX,dY,dist,dist_crit),1);
+		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA+ (west),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
+//		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA+ (west) %d, dx= %.1f dy= %.1f x=%.1f y=%.1f"),iterations, dX,dY,StarX,StarY));
+		if (iterations > 60) {
+			wxMessageBox(_T("RA Calibration failed - Star did not move enough"),_T("Alert"),wxOK | wxICON_ERROR);
+			frame->canvas->State = STATE_NONE;
+			frame->canvas->Refresh();
+			return;
+		}
+		if (dist > dist_crit) {
+			RA_rate = dist / (double) (iterations * Cal_duration);
+			//wxMessageBox(wxString::Format("atany_x = %.2f, atan2= %.2f, dx= %.1f dy= %.1f",atan(dY / dX),atan2(dX,dY), dX, dY),_T("info"));
+			if (dX == 0.0) dX = 0.00001;
+			if (dX > 0.0) RA_angle = atan(dY/dX);
+			else if (dY >= 0.0) RA_angle = atan(dY/dX) + PI;
+			else RA_angle = atan(dY/dX) - PI;
+			still_going = false;
+		}
+	}
+	frame->SetStatusText(wxString::Format(_T("rate=%.2f angle=%.2f"),RA_rate*1000,RA_angle),1);
+	// Try to return back to the origin
+	for (i=0; i<iterations; i++) {
+		frame->SetStatusText(wxString::Format(_T("E calibration: %d"),i+1));
+		GuideScope(EAST,Cal_duration);
+		if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame))
+			Abort = 1;
+		if (Abort) { frame->canvas->State = STATE_NONE; frame->canvas->Refresh(); return; }
+//		if (HaveDark) Subtract(CurrentFullFrame,CurrentDarkFrame);
+		if (NR_mode == NR_2x2MEAN)
+			QuickLRecon(CurrentFullFrame);
+		else if (NR_mode == NR_3x3MEDIAN)
+			Median3(CurrentFullFrame);
+		wxTheApp->Yield();
+		FindStar(CurrentFullFrame);
+		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
+//		if (Log_Data) LogFile->AddLine(wxString::Format(_T("RA- (east) %d, x=%.1f y=%.1f"),iterations, StarX,StarY));
+		frame->canvas->FullFrameToDisplay();
+	}
+	if (Log_Data) LogFile->Write();
+	LockX = StarX;  // re-sync star position
+	LockY = StarY;
+
+	// Do DEC if pref is set for it
+	if (Dec_guide) {
+		still_going = true;
+		bool in_backlash = true;
+		iterations = 0;
+		while (in_backlash) {
+			frame->SetStatusText(wxString::Format(_T("Clearing Dec backlash: %d"),iterations+1));
+			GuideScope(NORTH,Cal_duration);
+			if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame))
+				Abort = 1;
+			if (Abort) { frame->canvas->State = STATE_NONE; frame->canvas->Refresh(); return; }
+//			if (HaveDark) Subtract(CurrentFullFrame,CurrentDarkFrame);
+			if (NR_mode == NR_2x2MEAN)
+				QuickLRecon(CurrentFullFrame);
+			else if (NR_mode == NR_3x3MEDIAN)
+				Median3(CurrentFullFrame);
+			wxTheApp->Yield();
+			FindStar(CurrentFullFrame);
+			frame->canvas->FullFrameToDisplay();
+			dist = sqrt(dX*dX+dY*dY);
+			iterations++;
+			if (abs(dist) >= 3.0) in_backlash = false;
+			else if (iterations > 80) {
+				wxMessageBox(_T("Can't seem to get star to move in Dec - turning off Dec guiding"),_T("Alert"),wxOK | wxICON_ERROR);
+				still_going = false;
+				in_backlash = false;
+				Dec_guide = DEC_OFF;
+				if (Log_Data) LogFile->AddLine(_T("Dec guiding failed during backlash removal - turned off"));
+			}
+
+		}
+		LockX = StarX;  // re-sync star position
+		LockY = StarY;
+		iterations = 0;
+		while (still_going && Dec_guide) { // do Dec +
+			frame->SetStatusText(wxString::Format(_T("N calibration: %d"),iterations+1));
+			GuideScope(NORTH,Cal_duration);
+			if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame))
+				Abort = 1;
+			if (Abort) { frame->canvas->State = STATE_NONE; frame->canvas->Refresh(); return; }
+//			if (HaveDark) Subtract(CurrentFullFrame,CurrentDarkFrame);
+			if (NR_mode == NR_2x2MEAN)
+				QuickLRecon(CurrentFullFrame);
+			else if (NR_mode == NR_3x3MEDIAN)
+				Median3(CurrentFullFrame);
+			wxTheApp->Yield();
+			FindStar(CurrentFullFrame);
+			frame->canvas->FullFrameToDisplay();
+			dist = sqrt(dX*dX+dY*dY);
+			iterations++;
+			frame->SetStatusText(wxString::Format(_T("dx=%.1f dy=%.1f dist=%.1f (%.1f)"),dX,dY,dist,dist_crit),1);
+//			if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec+ (north) %d, dx= %.1f dy= %.1f x=%.1f y=%.1f"),iterations, dX,dY,StarX,StarY));
+			if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec+ (north),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
+			if (iterations > 60) {
+				wxMessageBox(_T("Dec Calibration failed - turning off Dec guiding"),_T("Alert"),wxOK | wxICON_ERROR);
+				still_going = false;
+				Dec_guide = DEC_OFF;
+				if (Log_Data) LogFile->AddLine(_T("Dec guiding failed during North cal - turned off"));
+//				frame->canvas->State = STATE_NONE;
+//				frame->canvas->Refresh();
+				break;
+//				return;
+			}
+			if (dist > dist_crit) {
+				Dec_rate = dist / (double) (iterations * Cal_duration);
+				//wxMessageBox(wxString::Format("atany_x = %.2f, atan2= %.2f, dx= %.1f dy= %.1f",atan(dY / dX),atan2(dX,dY), dX, dY),_T("info"));
+				if (dX == 0.0) dX = 0.00001;
+				if (dX > 0.0) Dec_angle = atan(dY/dX);
+				else if (dY >= 0.0) Dec_angle = atan(dY/dX) + PI;
+				else Dec_angle = atan(dY/dX) - PI;
+				still_going = false;
+			}
+		}
+		// Return (or nearly so) if we've not turned it off...
+		if (Dec_guide) {
+			for (i=0; i<iterations; i++) {
+				frame->SetStatusText(wxString::Format(_T("S calibration: %d"),i+1));
+				GuideScope(SOUTH,Cal_duration);
+				if (CurrentGuideCamera->CaptureFull(ExpDur, CurrentFullFrame))
+					Abort = 1;
+				if (Abort) { frame->canvas->State = STATE_NONE; frame->canvas->Refresh(); return; }
+	//			if (HaveDark) Subtract(CurrentFullFrame,CurrentDarkFrame);
+				if (NR_mode == NR_2x2MEAN)
+					QuickLRecon(CurrentFullFrame);
+				else if (NR_mode == NR_3x3MEDIAN)
+					Median3(CurrentFullFrame);
+				wxTheApp->Yield();
+				FindStar(CurrentFullFrame);
+//				if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec- (south) %d, x=%.1f y=%.1f"),iterations, StarX,StarY));
+				if (Log_Data) LogFile->AddLine(wxString::Format(_T("Dec- (south),%d,%.1f,%.1f,%.1f,%.1f"),iterations, dX,dY,StarX,StarY));
+				frame->canvas->FullFrameToDisplay();
+			}
+		}
+		if (Log_Data) LogFile->Write();
+		LockX = StarX;  // re-sync star position
+		LockY = StarY;
+
+	}
+	if (Log_Data) LogFile->Close();
+//	delete logfile;
+	frame->SetStatusText(_T("Calibrated"));
+	frame->SetStatusText(_T(""),1);
+	frame->canvas->State = STATE_SELECTED;
+	Calibrated = true;
+	frame->SetStatusText(_T("Cal"),5);
+//	frame->Recal_Checkbox->SetValue(false);
 }
 
-bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
-{
-    bool bError = false;
-
-    try
-    {
-        double duration = Move(direction, m_calibrationDuration, false);
-
-        if (duration < 0)
-        {
-            throw THROW_INFO("Duration < 0");
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-}
-
-double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
-{
-    try
-    {
-        if (!m_guidingEnabled)
-        {
-            duration = 0.0;
-            throw THROW_INFO("Guiding disabled");
-        }
-
-        // Compute the actual guide durations
-
-        switch (direction)
-        {
-            case NORTH:
-            case SOUTH:
-
-                // Enforce dec guiding mode for all moves
-                if ((m_decGuideMode == DEC_NONE) ||
-                    (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
-                    (direction == NORTH && m_decGuideMode == DEC_SOUTH))
-                {
-                    duration = 0.0;
-                }
-
-                if (normalMove)
-                {
-                    // and max dec duration for normal moves
-                    if  (duration > m_maxDecDuration)
-                    {
-                        duration = m_maxDecDuration;
-                    }
-                }
-                break;
-            case EAST:
-            case WEST:
-
-                if (normalMove)
-                {
-                    // enforce max RA duration for normal moves
-                    if (duration > m_maxRaDuration)
-                    {
-                        duration = m_maxRaDuration;
-                    }
-                }
-
-                break;
-        }
-
-        // Actually do the guide
-        assert(duration >= 0.0);
-        if (duration > 0.0)
-        {
-            if (Guide(direction, duration))
-            {
-                throw ERROR_INFO("guide failed");
-            }
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        duration = -1.0;
-    }
-
-    Debug.AddLine(wxString::Format("Move returns %.2lf", duration));
-
-    return duration;
-}
-
-void Scope::ClearCalibration(void)
-{
-    Mount::ClearCalibration();
-
-    m_calibrationState = CALIBRATION_STATE_CLEARED;
-}
-
-bool Scope::BeginCalibration(const PHD_Point& currentLocation)
-{
-    bool bError = false;
-
-    try
-    {
-        if (!IsConnected())
-        {
-            throw ERROR_INFO("Not connected");
-        }
-
-        if (!currentLocation.IsValid())
-        {
-            throw ERROR_INFO("Must have a valid lock position");
-        }
-
-        ClearCalibration();
-        m_calibrationSteps = 0;
-        m_calibrationStartingLocation = currentLocation;
-        m_calibrationState = CALIBRATION_STATE_GO_WEST;
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-}
-
-bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
-{
-    bool bError = false;
-
-    try
-    {
-        wxString status0, status1;
-        double dX = m_calibrationStartingLocation.dX(currentLocation);
-        double dY = m_calibrationStartingLocation.dY(currentLocation);
-        double dist = m_calibrationStartingLocation.Distance(currentLocation);
-        double dist_crit = wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
-
-        switch (m_calibrationState)
-        {
-            case CALIBRATION_STATE_CLEARED:
-                assert(false);
-                break;
-            case CALIBRATION_STATE_GO_WEST:
-                if (dist < dist_crit)
-                {
-                    if (m_calibrationSteps++  > MAX_CALIBRATION_STEPS)
-                    {
-                        wxString msg(_("RA Calibration Failed: star did not move enough"));
-                        wxMessageBox(msg, _T("Alert"), wxOK | wxICON_ERROR);
-                        GuideLog.CalibrationFailed(this, msg);
-                        throw ERROR_INFO("Calibrate failed");
-                    }
-                    status0.Printf(_T("West step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    pFrame->ScheduleCalibrationMove(this, WEST);
-                    break;
-                }
-
-                m_calibrationXAngle = m_calibrationStartingLocation.Angle(currentLocation);
-                m_calibrationXRate = dist/(m_calibrationSteps * m_calibrationDuration);
-
-                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_calibrationXAngle, m_calibrationXRate));
-                status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationXAngle, m_calibrationXRate);
-                GuideLog.CalibrationWestComplete(this, m_calibrationXAngle, m_calibrationXRate);
-
-                m_calibrationState = CALIBRATION_STATE_GO_EAST;
-                // fall through
-                Debug.AddLine("Falling Through to state GO_EAST");
-            case CALIBRATION_STATE_GO_EAST:
-                if (m_calibrationSteps > 0)
-                {
-                    status0.Printf(_T("East step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    m_calibrationSteps--;
-                    pFrame->ScheduleCalibrationMove(this, EAST);
-                    break;
-                }
-                m_calibrationSteps = 0; dist = 0.0;
-                m_calibrationStartingLocation = currentLocation;
-
-                if (m_decGuideMode == DEC_NONE)
-                {
-                    m_calibrationState = CALIBRATION_STATE_COMPLETE;
-                    m_calibrationYAngle = 0;
-                    m_calibrationYRate = 1;
-                    break;
-                }
-
-                m_calibrationState = CALIBRATION_STATE_CLEAR_BACKLASH;
-                // fall through
-                Debug.AddLine("Falling Through to state CLEAR_BACKLASH");
-            case CALIBRATION_STATE_CLEAR_BACKLASH:
-                if (dist < DEC_BACKLASH_DISTANCE)
-                {
-                    if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
-                    {
-                        wxString msg(_("Backlash Clearing Failed: star did not move enough"));
-                        wxMessageBox(msg, _T("Alert"), wxOK | wxICON_ERROR);
-                        GuideLog.CalibrationFailed(this, msg);
-                        throw ERROR_INFO("Calibrate failed");
-                    }
-                    status0.Printf(_T("Clear backlash step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    pFrame->ScheduleCalibrationMove(this, NORTH);
-                    break;
-                }
-                m_calibrationSteps = 0;
-                dist = 0.0;
-                m_calibrationStartingLocation = currentLocation;
-                m_calibrationState = CALIBRATION_STATE_GO_NORTH;
-                // fall through
-                Debug.AddLine("Falling Through to state GO_NORTH");
-            case CALIBRATION_STATE_GO_NORTH:
-                if (dist < dist_crit)
-                {
-                    if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
-                    {
-                        wxString msg(_("DEC Calibration Failed: star did not move enough"));
-                        wxMessageBox(msg, _T("Alert"), wxOK | wxICON_ERROR);
-                        GuideLog.CalibrationFailed(this, msg);
-                        throw ERROR_INFO("Calibrate failed");
-                    }
-                    status0.Printf(_T("North step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    pFrame->ScheduleCalibrationMove(this, NORTH);
-                    break;
-                }
-
-                // note: this calculation is reversed from the ra calculation, becase
-                // that one was calibrating WEST, but the angle is really relative
-                // to EAST
-                m_calibrationYAngle = currentLocation.Angle(m_calibrationStartingLocation);
-                m_calibrationYRate = dist/(m_calibrationSteps * m_calibrationDuration);
-
-                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_calibrationYAngle, m_calibrationYRate));
-                status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationYAngle, m_calibrationYRate);
-                GuideLog.CalibrationNorthComplete(this, m_calibrationYAngle, m_calibrationYRate);
-
-                m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
-                // fall through
-                Debug.AddLine("Falling Through to state GO_SOUTH");
-            case CALIBRATION_STATE_GO_SOUTH:
-                if (m_calibrationSteps > 0)
-                {
-                    status0.Printf(_T("South step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    m_calibrationSteps--;
-                    pFrame->ScheduleCalibrationMove(this, SOUTH);
-                    break;
-                }
-                m_calibrationState = CALIBRATION_STATE_COMPLETE;
-                // fall through
-                Debug.AddLine("Falling Through to state CALIBRATION_COMPLETE");
-            case CALIBRATION_STATE_COMPLETE:
-                SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
-                               m_calibrationXRate,  m_calibrationYRate);
-                pFrame->SetSampling();
-                pFrame->SetStatusText(_T("calibration complete"),1);
-                pFrame->SetStatusText(_T("Cal"),5);
-                GuideLog.CalibrationComplete(this);
-                Debug.AddLine("Calibration Complete");
-                break;
-        }
-
-        if (m_calibrationState != CALIBRATION_STATE_COMPLETE)
-        {
-            if (status1.IsEmpty())
-            {
-                double dX = m_calibrationStartingLocation.dX(currentLocation);
-                double dY = m_calibrationStartingLocation.dY(currentLocation);
-                double dist = m_calibrationStartingLocation.Distance(currentLocation);
-
-                status1.Printf(_T("dx=%4.1f dy=%4.1f dist=%4.1f"), dX, dY, dist);
-            }
-        }
-
-        if (!status0.IsEmpty())
-        {
-            pFrame->SetStatusText(status0, 0);
-        }
-
-        if (!status1.IsEmpty())
-        {
-            pFrame->SetStatusText(status1, 1);
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-
-        ClearCalibration();
-
-        bError = true;
-    }
-
-    return bError;
-}
-
-ConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)
-{
-    return new ScopeConfigDialogPane(pParent, this);
-}
-
-Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope)
-    : MountConfigDialogPane(pParent, "Scope", pScope)
-{
-    int width;
-
-    m_pScope = pScope;
-
-    width = StringWidth(_T("00000"));
-    m_pCalibrationDuration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
-
-    DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
-        _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"));
-
-    width = StringWidth(_T("00000"));
-    m_pMaxRaDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 2000, 150, _T("MaxDec_Dur"));
-    DoAdd(_("Max RA Duration"),  m_pMaxRaDuration,
-          _("Longest length of pulse to send in RA\nDefault = 1000 ms. "));
-
-    width = StringWidth(_T("00000"));
-    m_pMaxDecDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS,0,2000,150,_T("MaxDec_Dur"));
-    DoAdd(_("Max Dec Duration"),  m_pMaxDecDuration,
-          _("Longest length of pulse to send in declination\nDefault = 100 ms.  Increase if drift is fast."));
-
-    wxString dec_choices[] = {
-        _("Off"),_("Auto"),_("North"),_("South")
-    };
-    width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
-    m_pDecMode= new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
-            wxSize(width+35, -1), WXSIZEOF(dec_choices), dec_choices);
-    DoAdd(_("Dec guide mode"), m_pDecMode,
-          _("Guide in declination as well?"));
-}
-
-Scope::ScopeConfigDialogPane::~ScopeConfigDialogPane(void)
-{
-}
-
-void Scope::ScopeConfigDialogPane::LoadValues(void)
-{
-    MountConfigDialogPane::LoadValues();
-    m_pCalibrationDuration->SetValue(m_pScope->GetCalibrationDuration());
-    m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
-    m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
-    m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
-
-}
-
-void Scope::ScopeConfigDialogPane::UnloadValues(void)
-{
-    m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
-    m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
-    m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
-    m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
-
-    MountConfigDialogPane::UnloadValues();
-}
