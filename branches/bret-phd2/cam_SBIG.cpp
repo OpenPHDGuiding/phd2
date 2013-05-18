@@ -217,6 +217,8 @@ bool Camera_SBIGClass::Connect() {
         if (resp == wxYES) {
             UseTrackingCCD = true;
             FullSize = wxSize((int) gcir0.readoutInfo->width,(int) gcir0.readoutInfo->height);
+            unsigned long bcd = gcir0.readoutInfo->pixelWidth > gcir0.readoutInfo->pixelHeight ? gcir0.readoutInfo->pixelWidth : gcir0.readoutInfo->pixelHeight;
+            PixelSize = (double)bcd2long(bcd) / 100.0;
         }
     }
     if (!UseTrackingCCD) {
@@ -230,6 +232,8 @@ bool Camera_SBIGClass::Connect() {
             return true;
         }
         FullSize = wxSize((int) gcir0.readoutInfo->width,(int) gcir0.readoutInfo->height);
+        unsigned long bcd = gcir0.readoutInfo->pixelWidth > gcir0.readoutInfo->pixelHeight ? gcir0.readoutInfo->pixelWidth : gcir0.readoutInfo->pixelHeight;
+        PixelSize = (double)bcd2long(bcd) / 100.0;
     }
 
 //  wxMessageBox(wxString::Format("%s (%u): %dx%d (%d)",gcir0.name,gcir0.cameraType, FullSize.GetWidth(),
@@ -237,6 +241,21 @@ bool Camera_SBIGClass::Connect() {
     Name = wxString(gcir0.name);
     Connected = true;
     return false;
+}
+
+unsigned long Camera_SBIGClass::bcd2long(unsigned long bcd)
+{
+    int pos = sizeof(bcd) * 8;
+    int digit;
+    unsigned long val = 0;
+
+    do {
+        pos -= 4;
+        digit = (bcd >> pos) & 0xf;
+        val = val * 10 + digit; 
+    } while (pos > 0);
+
+    return val;
 }
 
 bool Camera_SBIGClass::Disconnect() {
