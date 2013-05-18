@@ -56,7 +56,7 @@ Camera_SSAGClass::Camera_SSAGClass() {
     FullSize = wxSize(1280,1024);
     HasGuiderOutput = true;
     HasGainControl = true;
-    //PixelSize = 5.2;
+    PixelSize = 5.2;
 }
 
 
@@ -65,7 +65,6 @@ bool Camera_SSAGClass::Connect() {
 // returns true on error
 //  CameraReset();
     if (!_SSAG_openUSB()) {
-        wxMessageBox(_T("No camera"));
         return true;
     }
 //  ClearGuidePort();
