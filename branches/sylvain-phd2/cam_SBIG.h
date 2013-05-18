@@ -54,9 +54,10 @@ public:
     Camera_SBIGClass();
 private:
     bool UseTrackingCCD;
-    bool    LoadDriver();
+    bool LoadDriver();
 
     virtual bool HasNonGuiCapture(void);
 
+    unsigned long bcd2long(unsigned long bcd);
 };
 #endif
