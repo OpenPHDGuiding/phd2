@@ -570,7 +570,7 @@ bool GuideCamera::SetCameraPixelSize(float pixel_size)
     {
         if (pixel_size <= 0)
         {
-            throw ERROR_INFO("cameraGain <= 0");
+            throw ERROR_INFO("pixel_size <= 0");
         }
         PixelSize = pixel_size;
     }
