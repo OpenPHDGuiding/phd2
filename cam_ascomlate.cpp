@@ -262,6 +262,39 @@ bool Camera_ASCOMLateClass::Connect() {
     }
 //  wxMessageBox(wxString::Format("%d",(int) Color));
 
+    // Get pixel size in micons
+    tmp_name = L"PixelSizeX";
+    if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))  {
+        wxMessageBox(_T("ASCOM driver missing the PixelSizeX property"),_("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
+    dispParms.cArgs = 0;
+    dispParms.rgvarg = NULL;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+    if(FAILED(hr = this->ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
+        &dispParms,&vRes,&excep, NULL))) {
+        wxMessageBox(_T("ASCOM driver problem getting CameraXSize property"),_("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
+    PixelSize = (double) vRes.dblVal;
+    tmp_name = L"PixelSizeY";
+    if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))  {
+        wxMessageBox(_T("ASCOM driver missing the PixelSizeY property"),_("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
+    dispParms.cArgs = 0;
+    dispParms.rgvarg = NULL;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+    if(FAILED(hr = this->ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
+        &dispParms,&vRes,&excep, NULL))) {
+        wxMessageBox(_T("ASCOM driver problem getting CameraYSize property"),_("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
+    if ((double) vRes.dblVal > PixelSize) PixelSize = (double) vRes.dblVal;
+
+
     // Get the dispids we'll need for more routine things
     tmp_name = L"BinX";
     if(FAILED(this->ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_setxbin)))  {

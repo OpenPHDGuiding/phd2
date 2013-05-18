@@ -97,6 +97,7 @@ bool Camera_ASCOMClass::Connect() {
         HasGuiderOutput = (pCam->CanPulseGuide ? true : false);
         Name = (char *) pCam->Description;
         FullSize = wxSize(pCam->CameraXSize, pCam->CameraYSize);
+        PixelSize = pCam->PixelSizeX > pCam->PixelSizeY ? pCam->PixelSizeX : pCam->PixelSizeY;
     }
     catch (...) {
         return true;
