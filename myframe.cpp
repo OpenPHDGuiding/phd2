@@ -1168,15 +1168,9 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     DoAdd(_("Time Lapse (ms)"), m_pTimeLapse,
           _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
-    wxStaticBoxSizer *pGuiderTubeBox = new wxStaticBoxSizer(new wxStaticBox(pParent, wxID_ANY, _("Guider Telescope Settings")), wxVERTICAL);
-    wxBoxSizer *pGuiderTubeSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxStaticText *pFocalLengthText = new wxStaticText(pParent, wxID_ANY, _("Focale length (mm):"),wxPoint(-1,-1),wxSize(-1,-1));
-    m_pFocalLength = new wxTextCtrl(pParent, wxID_ANY, _("    "), wxDefaultPosition, wxSize(width+10, -1));
-    m_pFocalLength->SetToolTip(_("Used with the camera pixel size to display guiding error in arc-sec."));
-    pGuiderTubeSizer->Add(pFocalLengthText);
-    pGuiderTubeSizer->Add(m_pFocalLength);
-    pGuiderTubeBox->Add(pGuiderTubeSizer);
-    DoAdd(pGuiderTubeBox);
+    m_pFocalLength = new wxTextCtrl(pParent, wxID_ANY, _("    "), wxDefaultPosition, wxSize(width+30, -1));
+    DoAdd( _("Focale length (mm)"), m_pFocalLength,
+           _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 }
 
 MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
