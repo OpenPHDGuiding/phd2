@@ -39,7 +39,8 @@
 
 class Camera_INovaPLCClass : public GuideCamera {
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool HasNonGuiCapture(void);
     bool Connect();
     bool Disconnect();
     bool PulseGuideScope(int direction, int duration);
@@ -49,6 +50,8 @@ private:
 //    OpenSSAG::SSAG *ssag;
     unsigned int RowTime;
     unsigned short *RawData;
+
+    bool HasNonGuiMove(void);
 };
 
 

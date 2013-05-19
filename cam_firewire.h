@@ -46,6 +46,7 @@
 class Camera_FirewireClass : public GuideCamera {
 public:
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool HasNonGuiCapture(void);
     bool    Connect();
     bool    Disconnect();
     void    InitCapture();

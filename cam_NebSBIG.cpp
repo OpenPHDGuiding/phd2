@@ -79,4 +79,9 @@ bool Camera_NebSBIGClass::PulseGuideScope(int direction, int duration) {
     return retval;
 }
 
+bool Camera_NebSBIGClass::HasNonGuiCapture(void)
+{
+    return true;
+}
+
 #endif

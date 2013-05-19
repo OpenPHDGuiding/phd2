@@ -286,4 +286,9 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
     }
 }
 
+bool Camera_INDIClass::HasNonGuiCapture(void)
+{
+    return true;
+}
+
 #endif

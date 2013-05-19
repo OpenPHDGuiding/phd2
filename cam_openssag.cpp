@@ -50,6 +50,7 @@ Camera_OpenSSAGClass::Camera_OpenSSAGClass() {
     FullSize = wxSize(1280,1024);  // Current size of a full frame
     HasGuiderOutput = true;  // Do we have an ST4 port?
     HasGainControl = true;  // Can we adjust gain?
+    PixelSize = 5.2;
 
     ssag = new SSAG();
 }

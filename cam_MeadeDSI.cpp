@@ -150,5 +150,9 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     return false;
 }
 
+bool Camera_DSIClass::HasNonGuiCapture(void)
+{
+    return true;
+}
 
 #endif
