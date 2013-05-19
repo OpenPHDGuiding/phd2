@@ -153,4 +153,15 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
     return false;
 }
 
+
+bool Camera_INovaPLCClass::HasNonGuiCapture(void)
+{
+    return true;
+}
+
+bool Camera_INovaPLCClass::HasNonGuiMove(void)
+{
+    return true;
+}
+
 #endif // INOVA_PLC

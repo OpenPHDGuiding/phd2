@@ -58,6 +58,7 @@ public:
     bool    ReadStream(usImage& img);
     struct  indi_elem_t *blob_elem;
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool HasNonGuiCapture(void);
     bool    Connect();      // Opens up and connects to cameras
     bool    Disconnect();
     void    InitCapture() { return; }
