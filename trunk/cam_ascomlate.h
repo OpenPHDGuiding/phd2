@@ -1,5 +1,5 @@
 /*
- *  cam_ascom.h
+ *  cam_ascomlate.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
