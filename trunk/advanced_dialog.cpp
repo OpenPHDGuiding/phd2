@@ -68,71 +68,78 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
      *
      */
 
+    wxNotebook *pNotebook = new wxNotebook(this, wxID_ANY);
+
     wxSizerFlags sizer_flags = wxSizerFlags(0).Center().Border(wxALL,2).Expand();
 
     // build all the empty sizer
-    wxBoxSizer *pConfigSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer *pLeftSizer = new wxBoxSizer(wxVERTICAL);
-    wxBoxSizer *pRightSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *pGlobalTabSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *pGuidingTabSizer = new wxBoxSizer(wxVERTICAL);
 
-    pConfigSizer->Add(pLeftSizer, sizer_flags);
-    pConfigSizer->Add(pRightSizer, sizer_flags);
+    // build tabs
+    wxPanel *globalSettingsPanel = new wxPanel(pNotebook);
+    wxPanel *guiderSettingsPanel = new wxPanel(pNotebook);
+    globalSettingsPanel->SetSizer(pGlobalTabSizer);
+    guiderSettingsPanel->SetSizer(pGuidingTabSizer);
+    pNotebook->AddPage(globalSettingsPanel, _("Global"), true);
+    pNotebook->AddPage(guiderSettingsPanel, _("Guiding"));
 
-    wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
-    pTopLevelSizer->Add(pConfigSizer, wxSizerFlags(0).Expand().Border(wxALL, 5));
-    pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 5));
+    // Build the global tab pane
+    m_pFramePane = pFrame->GetConfigDialogPane(globalSettingsPanel);
+    pGlobalTabSizer->Add(m_pFramePane, sizer_flags);
 
-    // Build the left column of panes
-
-    m_pFramePane = pFrame->GetConfigDialogPane(this);
-    pLeftSizer->Add(m_pFramePane, sizer_flags);
-
-    m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(this);
-    pLeftSizer->Add(m_pGuiderPane, sizer_flags);
+    m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(globalSettingsPanel);
+    pGlobalTabSizer->Add(m_pGuiderPane, sizer_flags);
 
     if (pCamera)
     {
-        m_pCameraPane = pCamera->GetConfigDialogPane(this);
+        m_pCameraPane = pCamera->GetConfigDialogPane(globalSettingsPanel);
         if (m_pCameraPane != NULL)
-            pLeftSizer->Add(m_pCameraPane, sizer_flags);
+            pGlobalTabSizer->Add(m_pCameraPane, sizer_flags);
     }
     else
     {
         m_pCameraPane=NULL;
-        wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Camera Settings")), wxVERTICAL);
-        wxStaticText *pText = new wxStaticText(this, wxID_ANY, _("No Camera Connected"),wxPoint(-1,-1),wxSize(-1,-1));
+        wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(globalSettingsPanel, wxID_ANY, _("Camera Settings")), wxVERTICAL);
+        wxStaticText *pText = new wxStaticText(globalSettingsPanel, wxID_ANY, _("No Camera Connected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
-        pLeftSizer->Add(pBox, sizer_flags);
+        pGlobalTabSizer->Add(pBox, sizer_flags);
     }
 
-    // Build the right column of panes
+    // Build guiding tab
 
     if (pSecondaryMount)
     {
-        // if there are two mounts, the mount config goes on the left and
-        // the secondary goes on the right
-        m_pMountPane = pMount->GetConfigDialogPane(this);
-        pLeftSizer->Add(m_pMountPane, sizer_flags);
+        // if there are two mounts, the mount config goes to the Adaptive Optics tab
+        wxPanel *aoSettingsPanel = new wxPanel(pNotebook);
+        wxBoxSizer *pAoSizer = new wxBoxSizer(wxVERTICAL);
+        m_pMountPane = pMount->GetConfigDialogPane(aoSettingsPanel);
+        pAoSizer->Add(m_pMountPane, sizer_flags);
+        aoSettingsPanel->SetSizer(pAoSizer);
+        pNotebook->AddPage(aoSettingsPanel, _("Adaptive Optics"));
 
-        m_pSecondaryMountPane = pSecondaryMount->GetConfigDialogPane(this);
-        pRightSizer->Add(m_pSecondaryMountPane, sizer_flags);
+        // the secondary goes to the global tab pane
+        m_pSecondaryMountPane = pSecondaryMount->GetConfigDialogPane(guiderSettingsPanel);
+        pGuidingTabSizer->Add(m_pSecondaryMountPane, sizer_flags);
     }
     else
     {
         // otherwise there is no secondary mount, so we put up an empty AO box
         m_pSecondaryMountPane = NULL;
-        wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("AO Settings")), wxVERTICAL);
-        wxStaticText *pText = new wxStaticText(this, wxID_ANY, _("No AO Connected"),wxPoint(-1,-1),wxSize(-1,-1));
-        pBox->Add(pText);
-        pLeftSizer->Add(pBox, sizer_flags);
+        //wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(globalSettingsPanel, wxID_ANY, _("AO Settings")), wxVERTICAL);
+        //wxStaticText *pText = new wxStaticText(globalSettingsPanel, wxID_ANY, _("No AO Connected"),wxPoint(-1,-1),wxSize(-1,-1));
+        //pBox->Add(pText);
+        //pGlobalTabSizer->Add(pBox, sizer_flags);
 
         // and the mount goes on the right
-        m_pMountPane = pMount->GetConfigDialogPane(this);
-        pRightSizer->Add(m_pMountPane, sizer_flags);
+        m_pMountPane = pMount->GetConfigDialogPane(guiderSettingsPanel);
+        pGuidingTabSizer->Add(m_pMountPane, sizer_flags);
 
     }
 
-
+    wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
+    pTopLevelSizer->Add(pNotebook, wxSizerFlags(0).Expand().Border(wxALL, 5));
+    pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 5));
     SetSizerAndFit(pTopLevelSizer);
 }
 
