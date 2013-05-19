@@ -71,8 +71,8 @@
 
 #include <math.h>
 
-#define VERSION _T("2.0.1")
-#define PHDSUBVER _T("d")
+#define VERSION _T("2.0.4")
+#define PHDSUBVER _T("a")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
