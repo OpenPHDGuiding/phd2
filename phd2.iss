@@ -21,7 +21,7 @@ DirExistsWarning=no
 
 [Files]
 Source: "release\phd2.exe"; DestDir: "{app}"; Flags: replacesameversion
-Source: "PHD2_Readme.txt"; DestDir: "{app}"; Flags: isreadme
+Source: "README-Release.txt"; DestDir: "{app}"; Flags: isreadme
 
 [Icons]
 Name: "{group}\PHD2 Guiding"; FileName: "{app}\phd2.exe"
