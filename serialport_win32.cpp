@@ -50,6 +50,7 @@ wxArrayString SerialPortWin32::GetSerialPortList(void)
         do
         {
             bufferSize *= 2;
+            delete [] pBuffer;
             pBuffer = new char[bufferSize];
             if (pBuffer == NULL)
             {
@@ -100,7 +101,8 @@ bool SerialPortWin32::Connect(wxString portName, int baud, int dataBits, int sto
 
     try
     {
-        m_handle = CreateFile(portName,
+        wxString portPath = "\\\\.\\" + portName;
+        m_handle = CreateFile(portPath,
                                GENERIC_READ | GENERIC_WRITE,
                                0,    // must be opened with exclusive-access
                                NULL, // no security attributes
@@ -110,7 +112,7 @@ bool SerialPortWin32::Connect(wxString portName, int baud, int dataBits, int sto
                                );
         if (m_handle == INVALID_HANDLE_VALUE)
         {
-            throw ERROR_INFO("SerialPortWin32: CreateFile failed");
+            throw ERROR_INFO("SerialPortWin32: CreateFile("+portName+") failed");
         }
 
         DCB dcb;
