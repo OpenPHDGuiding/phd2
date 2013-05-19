@@ -93,7 +93,6 @@
 
 // Currently unused
 // #define NEB_SBIG   // This is for an on-hold project that would get the guide chip data from an SBIG connected in Neb
-// #define ASCOM_CAMERA  // This is for the old "early binding" that was allowed for a bit in ASCOM but is now gone
 
 
 extern bool DLLExists (wxString DLLName);

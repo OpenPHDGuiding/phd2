@@ -249,9 +249,6 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #if defined (LE_PARALLEL_CAMERA)
     Cameras.Add(_T("Long exposure webcam + Parallel/Serial"));
 #endif
-#if defined (ASCOM_CAMERA)
-    Cameras.Add(_T("ASCOM v5 Camera"));
-#endif
 #if defined (INDI_CAMERA)
     Cameras.Add(_T("INDI Camera"));
 #endif
