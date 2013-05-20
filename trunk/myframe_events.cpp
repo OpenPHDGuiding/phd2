@@ -622,22 +622,22 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
 void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
 {
     wxAuiPaneInfo *p = evt.GetPane();
-    if (p->name == __T("GraphLog"))
+    if (p->name == _T("GraphLog"))
     {
         Menubar->Check(MENU_GRAPH, false);
         this->pGraphLog->SetState(false);
     }
-    if (p->name == __T("Profile"))
+    if (p->name == _T("Profile"))
     {
         Menubar->Check(MENU_STARPROFILE, false);
         this->pProfile->SetState(false);
     }
-    if (p->name == __T("AOPosition"))
+    if (p->name == _T("AOPosition"))
     {
         Menubar->Check(MENU_AO_GRAPH, false);
         this->pStepGuiderGraph->SetState(false);
     }
-    if (p->name == __T("Target"))
+    if (p->name == _T("Target"))
     {
         Menubar->Check(MENU_TARGET, false);
         this->pTarget->SetState(false);

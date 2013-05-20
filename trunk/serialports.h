@@ -38,6 +38,7 @@
 
 #include "serialport.h"
 #include "serialport_win32.h"
+#include "serialport_mac.h"
 
 #ifdef USE_LOOPBACK_SERIAL
 #include "serialport_loopback.h"
