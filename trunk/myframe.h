@@ -120,7 +120,7 @@ public:
     Guider *pGuider;
     wxMenuBar *Menubar;
     wxMenu  *tools_menu, *mount_menu; // need access to this...
-    wxToolBar *MainToolbar;
+    wxAuiToolBar *MainToolbar;
     //wxChoice    *Dur_Choice;
     wxComboBox    *Dur_Choice;
     wxCheckBox *HotPixel_Checkbox;
@@ -258,7 +258,7 @@ private:
 
     void SetupMenuBar(void);
     void SetupStatusBar(void);
-    void SetupToolBar(wxToolBar *toolBar);
+    void SetupToolBar(wxAuiToolBar *toolBar);
     void SetupKeyboardShortcuts(void);
     void SetupHelpFile(void);
 
