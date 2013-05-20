@@ -344,3 +344,8 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
     return false;
 
 }
+
+bool Camera_FirewireClass::HasNonGuiCapture(void)
+{
+    return true;
+}
