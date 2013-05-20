@@ -193,12 +193,12 @@ MyFrame::MyFrame(const wxString& title)
     pGuider = new GuiderOneStar(this);
 
     // Setup button panel
-    MainToolbar = new wxToolBar(this, -1, wxDefaultPosition, wxDefaultSize,  wxTB_FLAT | wxTB_NODIVIDER);
+    MainToolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
     SetupToolBar(MainToolbar);
     m_mgr.AddPane(MainToolbar, wxAuiPaneInfo().
         Name(_T("MainToolBar")).Caption(_T("Main tool bar")).
-        ToolbarPane().Bottom().Row(1).
-        LeftDockable(false).RightDockable(false));
+        ToolbarPane().Bottom());;//.Row(1).
+        //LeftDockable(false).RightDockable(false));
 
     pGuider->SetMinSize(wxSize(XWinSize,YWinSize));
     pGuider->SetSize(wxSize(XWinSize,YWinSize));
@@ -303,7 +303,7 @@ MyFrame::MyFrame(const wxString& title)
 //  wxStartTimer();
     m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_VERTICAL);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
-    m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR, wxColour(0, 51, 153));
+    m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR, *wxBLACK);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_TEXT_COLOUR, *wxWHITE);
     //m_mgr.SetFlags(m_mgr.GetFlags() | wxAUI_MGR_TRANSPARENT_DRAG);
 
@@ -311,10 +311,23 @@ MyFrame::MyFrame(const wxString& title)
     if (perspective != wxEmptyString)
         m_mgr.LoadPerspective(perspective);
 
-    pGraphLog->SetState(m_mgr.GetPane(_T("GraphLog")).IsShown());
-    pStepGuiderGraph->SetState(m_mgr.GetPane(_T("AOPosition")).IsShown());
-    pProfile->SetState(m_mgr.GetPane(_T("Profile")).IsShown());
-    pTarget->SetState(m_mgr.GetPane(_T("Target")).IsShown());
+    bool panel_state;
+
+    panel_state = m_mgr.GetPane(_T("GraphLog")).IsShown();
+    pGraphLog->SetState(panel_state);
+    Menubar->Check(MENU_GRAPH, panel_state);
+
+    panel_state = m_mgr.GetPane(_T("AOPosition")).IsShown();
+    pStepGuiderGraph->SetState(panel_state);
+    Menubar->Check(MENU_AO_GRAPH, panel_state);
+
+    panel_state = m_mgr.GetPane(_T("Profile")).IsShown();
+    pProfile->SetState(panel_state);
+    Menubar->Check(MENU_STARPROFILE, panel_state);
+    
+    panel_state = m_mgr.GetPane(_T("Target")).IsShown();
+    pTarget->SetState(panel_state);
+    Menubar->Check(MENU_TARGET, panel_state);
 
     m_mgr.Update();
 
@@ -490,7 +503,7 @@ void MyFrame::SetupMenuBar(void)
     SetMenuBar(Menubar);
 }
 
-void MyFrame::SetupToolBar(wxToolBar *toolBar)
+void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
 {
     wxBitmap camera_bmp, scope_bmp, ao_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
 #if defined (WINICONS)
