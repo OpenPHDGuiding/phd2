@@ -100,7 +100,7 @@ public:
     virtual void    ShowPropertyDialog() { return; }
 
     GuideCamera(void);
-    ~GuideCamera(void) {};
+    virtual ~GuideCamera(void) {};
 };
 
 #endif /* CAMERA_H_INCLUDED */
