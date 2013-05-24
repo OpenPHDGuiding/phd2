@@ -111,11 +111,12 @@ private:
     int  m_timeLapse;       // Delay between frames (useful for vid cameras)
     int  m_focalLength;
     double m_sampling;
+    long m_instanceNumber;
 
     wxAuiManager m_mgr;
 
 public:
-    MyFrame(const wxString& title);
+    MyFrame(const wxString& title, int instanceNumber);
     virtual ~MyFrame();
 
     Guider *pGuider;

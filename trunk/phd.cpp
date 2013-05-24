@@ -33,7 +33,7 @@
  */
 
 #include "phd.h"
-
+#include <wx/cmdline.h>
 
 //#define WINICONS
 
@@ -59,10 +59,25 @@ int YWinSize = 512;
 
 bool RandomMotionMode = false;
 
+static const wxCmdLineEntryDesc cmdLineDesc[] =
+{
+    { wxCMD_LINE_OPTION, "i", "instanceNumber", "sets the PHD2 instance number (default = 1)", wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL},
+    { wxCMD_LINE_NONE }
+};
+
 IMPLEMENT_APP(PhdApp)
 
 // ------------------------  Phd App stuff -----------------------------
+PhdApp::PhdApp(void)
+{
+    m_instanceNumber = 1;
+};
+
 bool PhdApp::OnInit() {
+    if (!wxApp::OnInit())
+    {
+        return false;
+    }
 #ifndef DEBUG
     #if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
     wxDisableAsserts();
@@ -72,15 +87,23 @@ bool PhdApp::OnInit() {
     Debug.Init("debug", true);
 
     SetVendorName(_T("StarkLabs"));
-    pConfig = new PhdConfig(_T("PHDGuidingV2"));
+    pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
     pMount = new ScopeNone();
 
     wxLocale locale;
 
     locale.Init(wxLANGUAGE_ENGLISH_US);
-//  wxMessageBox(wxString::Format("%f",1.23));
-    pFrame = new MyFrame(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
+
+    wxString title = wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"), VERSION, PHDSUBVER);
+
+    if (m_instanceNumber > 1)
+    {
+        title = wxString::Format(_T("PHD Guiding(#%d) %s%s  -  www.stark-labs.com"), m_instanceNumber, VERSION, PHDSUBVER);
+    }
+
+    pFrame = new MyFrame(title, m_instanceNumber);
+
     wxImage::AddHandler(new wxJPEGHandler);
 
     pFrame->Show(true);
@@ -98,6 +121,21 @@ int PhdApp::OnExit(void)
     pConfig = NULL;
 
     return wxApp::OnExit();
+}
+
+void PhdApp::OnInitCmdLine(wxCmdLineParser& parser)
+{
+    parser.SetDesc(cmdLineDesc);
+    parser.SetSwitchChars(wxT("-"));
+}
+
+bool PhdApp::OnCmdLineParsed(wxCmdLineParser & parser)
+{
+    bool bReturn = true;
+
+    bool found = parser.Found("i", &m_instanceNumber);
+
+    return bReturn;
 }
 
 bool PhdApp::Yield(bool onlyIfNeeded)
