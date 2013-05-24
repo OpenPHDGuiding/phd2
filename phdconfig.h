@@ -73,10 +73,10 @@ class PhdConfig
     wxConfig *m_pConfig;
 public:
     PhdConfig(void);
-    PhdConfig(const wxString& baseConfigName);
+    PhdConfig(const wxString& baseConfigName, int instance);
     ~PhdConfig(void);
 
-    void Initialize(const wxString& baseConfigName);
+    void Initialize(const wxString& baseConfigName, int instance);
     void DeleteAll(void);
 
     bool     GetBoolean(const char *pName, bool defaultValue);

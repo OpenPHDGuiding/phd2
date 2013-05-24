@@ -74,7 +74,7 @@ void MyFrame::OnServerMenu(wxCommandEvent &evt) {
 
 bool MyFrame::StartServer(bool state) {
     wxIPV4address addr;
-    addr.Service(4300);
+    addr.Service(4299 + m_instanceNumber);
 
     if (state) {
         if (!SocketLog) {

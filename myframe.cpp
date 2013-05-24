@@ -132,9 +132,11 @@ END_EVENT_TABLE()
 
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
-MyFrame::MyFrame(const wxString& title)
+MyFrame::MyFrame(const wxString& title, int instanceNumber)
     : wxFrame(NULL, wxID_ANY, title)
 {
+    m_instanceNumber = instanceNumber;
+
     m_mgr.SetManagedWindow(this);
 
     //int fontsize = 11;
@@ -266,14 +268,17 @@ MyFrame::MyFrame(const wxString& title)
     wxString LogFName;
     LogFName = wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log") + now.Format(_T("_%d%b%y")) + _T(".txt"));
     LogFile = new wxTextFile(LogFName);
-    if (Log_Data) {
-        this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com (Log active)"),VERSION,PHDSUBVER));
+    tools_menu->Check(MENU_LOG,false);
+
+    wxString frameTitle = title;
+
+    if (Log_Data)
+    {
+        frameTitle += " (log active)";
         tools_menu->Check(MENU_LOG,true);
     }
-    else {
-        this->SetTitle(wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"),VERSION,PHDSUBVER));
-        tools_menu->Check(MENU_LOG,false);
-    }
+
+    this->SetTitle(frameTitle);
     //mount_menu->Check(SCOPE_GPUSB,true);
 
     if (m_serverMode) {

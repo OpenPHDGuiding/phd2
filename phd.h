@@ -190,10 +190,13 @@ extern bool RandomMotionMode;
 
 class PhdApp: public wxApp
 {
+    long m_instanceNumber;
   public:
-    PhdApp(void){};
+    PhdApp(void);
     bool OnInit(void);
     int OnExit(void);
+    void OnInitCmdLine(wxCmdLineParser& parser);
+    bool OnCmdLineParsed(wxCmdLineParser & parser);
     virtual bool Yield(bool onlyIfNeeded=false);
 };
 

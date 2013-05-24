@@ -41,10 +41,10 @@ PhdConfig::PhdConfig(void)
     m_pConfig = NULL;
 }
 
-PhdConfig::PhdConfig(const wxString& baseConfigName)
+PhdConfig::PhdConfig(const wxString& baseConfigName, int instance)
 {
     m_pConfig = NULL;
-    Initialize(baseConfigName);
+    Initialize(baseConfigName, instance);
 }
 
 PhdConfig::~PhdConfig(void)
@@ -52,9 +52,16 @@ PhdConfig::~PhdConfig(void)
     delete m_pConfig;
 }
 
-void PhdConfig::Initialize(const wxString& baseConfigName)
+void PhdConfig::Initialize(const wxString& baseConfigName, int instance)
 {
-    m_pConfig = new wxConfig(baseConfigName);
+    wxString configName = baseConfigName;
+    
+    if (instance > 1)
+    {
+        configName += wxString::Format("-instance%d", instance);
+    }
+
+    m_pConfig = new wxConfig(configName);
 
     m_configVersion = GetLong("ConfigVersion", 0);
 
