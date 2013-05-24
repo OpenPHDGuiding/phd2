@@ -1137,6 +1137,9 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     int width;
     m_pFrame = pFrame;
 
+    m_pResetConfiguration = new wxCheckBox(pParent, wxID_ANY,_("Reset Configuration"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pResetConfiguration, _("Reset all configuration to fresh install status -- Note: this closes PHD2"));
+
     m_pEnableLogging = new wxCheckBox(pParent, wxID_ANY,_("Enable Logging"), wxPoint(-1,-1), wxSize(75,-1));
     DoAdd(m_pEnableLogging, _("Save guide commands and info to a file?"));
 
@@ -1192,6 +1195,7 @@ MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
 
 void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
 {
+    m_pResetConfiguration->SetValue(false);
     m_pEnableLogging->SetValue(GuideLog.IsEnabled());
     m_pEnableImageLogging->SetValue(GuideLog.IsImageLoggingEnabled());
     m_pLoggedImageFormat->SetSelection(GuideLog.LoggedImageFormat());
@@ -1204,17 +1208,39 @@ void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
 
 void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
 {
-    GuideLog.EnableLogging(m_pEnableLogging->GetValue());
-    Log_Data = m_pEnableLogging->GetValue(); // Note: This is a global (and will be deprecated when new GuideLog reigns)
-    if (m_pEnableImageLogging->GetValue())
-        GuideLog.EnableImageLogging((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
-    else
-        GuideLog.DisableImageLogging();
-    m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
-    m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
-    m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
-    m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
-    long focalLength;
-    m_pFocalLength->GetValue().ToLong(&focalLength);
-    m_pFrame->SetFocalLength(focalLength);
+    try
+    {
+        if (m_pResetConfiguration->GetValue())
+        {
+            int choice = wxMessageBox(_("This will reset all PHD2 configuration values and exit the program.  Are you sure?"),_("Confirmation"), wxYES_NO);
+
+            if (choice == wxYES)
+            {
+                pConfig->DeleteAll();
+
+                wxCommandEvent *pEvent = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, wxID_EXIT);
+                pFrame->QueueEvent(pEvent);
+            }
+        }
+
+        GuideLog.EnableLogging(m_pEnableLogging->GetValue());
+
+        Log_Data = m_pEnableLogging->GetValue(); // Note: This is a global (and will be deprecated when new GuideLog reigns)
+        if (m_pEnableImageLogging->GetValue())
+            GuideLog.EnableImageLogging((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
+        else
+            GuideLog.DisableImageLogging();
+        m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
+        m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
+        m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
+        m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
+        long focalLength;
+        m_pFocalLength->GetValue().ToLong(&focalLength);
+        m_pFrame->SetFocalLength(focalLength);
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+
 }

@@ -75,7 +75,9 @@ public:
     PhdConfig(void);
     PhdConfig(const wxString& baseConfigName);
     ~PhdConfig(void);
+
     void Initialize(const wxString& baseConfigName);
+    void DeleteAll(void);
 
     bool     GetBoolean(const char *pName, bool defaultValue);
     wxString GetString(const char *pName, wxString defaultValue);
