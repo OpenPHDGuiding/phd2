@@ -64,6 +64,16 @@ void PhdConfig::Initialize(const wxString& baseConfigName)
     }
 }
 
+void PhdConfig::DeleteAll(void)
+{
+    if (m_pConfig)
+    {
+        m_pConfig->DeleteAll();
+        delete m_pConfig;
+        m_pConfig = NULL;
+    }
+}
+
 bool PhdConfig::GetBoolean(const char *pName, bool defaultValue=false)
 {
     bool bReturn=defaultValue;

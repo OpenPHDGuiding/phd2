@@ -66,6 +66,7 @@ protected:
     class MyFrameConfigDialogPane : public ConfigDialogPane
     {
         MyFrame *m_pFrame;
+        wxCheckBox *m_pResetConfiguration;
         wxCheckBox *m_pEnableLogging;
         wxCheckBox *m_pEnableImageLogging;
         wxChoice* m_pLoggedImageFormat;
