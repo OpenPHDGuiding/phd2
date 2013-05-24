@@ -842,12 +842,12 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
             // for bumping, since we don't know which way we are moving (in mount coordinates),
             // we just use the average calibration rate.  That should be close enough for our purposes
-            double maxBumpPixels = m_bumpMaxStepsPerCycle*2.0/(m_calibrationXRate + m_calibrationYRate);
 
             // we are close enough to done -- avoiding direct comparison
             // to 0.0 because with floating point we may never get 0.0
             if (fabs(m_bumpRemaining.X) >= 0.01)
             {
+                double maxBumpPixels = m_bumpMaxStepsPerCycle*m_calibrationXRate;
                 xBumpSize = m_bumpRemaining.X;
 
                 if (fabs(xBumpSize) > maxBumpPixels)
@@ -863,6 +863,7 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
             if (fabs(m_bumpRemaining.Y) >= 0.01)
             {
+                double maxBumpPixels = m_bumpMaxStepsPerCycle*m_calibrationYRate;
                 yBumpSize = m_bumpRemaining.Y;
 
                 if (fabs(yBumpSize) > maxBumpPixels)
