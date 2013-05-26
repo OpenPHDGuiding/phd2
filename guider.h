@@ -109,6 +109,7 @@ class Guider: public wxWindow
     PHD_Point m_lockPosition;
     GUIDER_STATE m_state;
     usImage *m_pCurrentImage;
+    bool m_scaleImage;
 
 protected:
     double  m_scaleFactor;
@@ -118,6 +119,7 @@ protected:
     class GuiderConfigDialogPane : public ConfigDialogPane
     {
         Guider *m_pGuider;
+        wxCheckBox *m_pScaleImage;
 
     public:
         GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider);
@@ -159,6 +161,9 @@ public:
 
     void StartGuiding(void);
     void UpdateGuideState(usImage *pImage, bool bStopping=false);
+
+    bool SetScaleImage(bool newScaleValue);
+    bool GetScaleImage(void);
 
     void Reset(void);
 

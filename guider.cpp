@@ -35,6 +35,7 @@
 #include "phd.h"
 
 static const int DefaultOverlayMode  = OVERLAY_NONE;
+static const bool DefaultScaleImage  = false;
 
 BEGIN_EVENT_TABLE(Guider, wxWindow)
     EVT_PAINT(Guider::OnPaint)
@@ -52,6 +53,9 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);
+
+    bool scaleImage = pConfig->GetBoolean("/guider/ScaleImage", DefaultScaleImage);
+    SetScaleImage(scaleImage);
 
     SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
@@ -115,6 +119,29 @@ bool Guider::SetOverlayMode(int overlayMode)
     return bError;
 }
 
+bool Guider::SetScaleImage(bool newScaleValue)
+{
+    bool bError = false;
+
+    try
+    {
+        m_scaleImage = newScaleValue;
+    }
+    catch (wxString Msg)
+    {
+        bError = true;
+    }
+
+    pConfig->SetBoolean("/guider/ScaleImage", m_scaleImage);
+
+    return bError;
+}
+
+bool Guider::GetScaleImage(void)
+{
+    return m_scaleImage;
+}
+
 PHD_Point &Guider::LockPosition()
 {
     return m_lockPosition;
@@ -163,7 +190,6 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
         int imageHeight  = m_displayedImage->GetHeight();
         wxImage newImage(*m_displayedImage);
 
-
         // scale the image if necessary
 
         if (imageWidth != XWinSize || imageHeight != YWinSize)
@@ -181,12 +207,16 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
             Debug.AddLine("xScaleFactor=%.2lf, yScaleFactor=%.2lf, newScaleFactor=%.2lf", xScaleFactor,
                     yScaleFactor, newScaleFactor);
 
+            // we rescale the image if:
+            // - The image is either too big
+            // - The image is so small that at least one dimension is less 
+            //   than half the width of the window or
+            // - The user has requsted rescaling
+
             if (xScaleFactor > 1.0 || yScaleFactor > 1.0 ||
-                xScaleFactor < 0.5 || yScaleFactor < 0.5)
+                xScaleFactor < 0.5 || yScaleFactor < 0.5 || m_scaleImage)
             {
-                // The image is either too big, or so small that at least
-                // one dimension is less than half the width of the window
-                // so we are going to rescale it.
+
                 newWidth /= newScaleFactor;
                 newHeight /= newScaleFactor;
 
@@ -198,7 +228,10 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
 
                 m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_HIGH);
             }
-            else m_scaleFactor = 1;
+            else
+            {
+                m_scaleFactor = 1.0;
+            }
 
             newImage.Resize(wxSize(XWinSize,YWinSize),wxPoint(0,0));
         }
@@ -351,21 +384,6 @@ void Guider::UpdateImageDisplay(usImage *pImage) {
     Debug.AddLine("UpdateImageDisplay begins");
     Debug.AddLine("Size=(%d,%d)", pImage->Size.x, pImage->Size.y);
     Debug.AddLine("min=%d, max=%d, FiltMin=%d, FiltMax=%d", pImage->Min, pImage->Max, pImage->FiltMin, pImage->FiltMax);
-
-// CopyToImage will be called by OnPaint event
-//#if 0
-//    if (pImage->Size.GetWidth() >= 1280) {
-//        pImage->BinnedCopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
-//        m_scaleFactor = 0.5;
-//    }
-//    else
-//    {
-//        pImage->CopyToImage(&m_displayedImage,blevel,wlevel,pFrame->Stretch_gamma);
-//        m_scaleFactor = 1.0;
-//    }
-//#else
-//    //pImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma); 
-//#endif
 
     Refresh();
     Update();
@@ -767,15 +785,22 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
     pFrame->UpdateButtonsStatus();
 
-    Debug.AddLine("UpdateGuideState exits:" + statusMessage);
-
     UpdateImageDisplay(pImage);
+
+    Debug.AddLine("UpdateGuideState exits:" + statusMessage);
 }
 
+ConfigDialogPane *Guider::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new GuiderConfigDialogPane(pParent, this);
+}
 
 Guider::GuiderConfigDialogPane::GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider)
     : ConfigDialogPane(_("Guider Settings"), pParent)
 {
+    m_pGuider = pGuider;
+    m_pScaleImage = new wxCheckBox(pParent, wxID_ANY,_("Always Scale Images"));
+    DoAdd(m_pScaleImage, _("Always scale images to fill window"));
 }
 
 Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
@@ -784,9 +809,10 @@ Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
 
 void Guider::GuiderConfigDialogPane::LoadValues(void)
 {
+    m_pScaleImage->SetValue(m_pGuider->GetScaleImage());
 }
 
 void Guider::GuiderConfigDialogPane::UnloadValues(void)
 {
-
+    m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
 }
