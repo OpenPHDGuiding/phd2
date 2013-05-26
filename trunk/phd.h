@@ -164,29 +164,23 @@ extern Mount *pMount;
 extern Mount *pSecondaryMount;
 extern GuideCamera *pCamera;
 
+//#define ALWAYS_FLUSH_DEBUGLOG
 extern DebugLog Debug;
 extern GuidingLog GuideLog;
 
-#if 1
-// these seem like logging related globals
+// these are the logging related globals
 extern wxTextFile *LogFile;
 extern bool Log_Data;
-#endif
 
-#if 1
 // these seem to be the windowing/display related globals
-
 extern int AdvDlg_fontsize;
 extern int XWinSize;
 extern int YWinSize;
-#endif
 
-#if 1
-// This is used by eegg.  It could go into guider, but that seem like more trouble than
-// it is worth
+// This is used by eegg.  It could go into guider, but that seem like more
+// trouble than it is worth
 
 extern bool RandomMotionMode;
-#endif
 
 class PhdApp: public wxApp
 {
