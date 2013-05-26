@@ -82,6 +82,23 @@ protected:
         virtual void UnloadValues(void);
     };
 
+    class ScopeGraphControlPane : public GraphControlPane
+    {
+    public:
+        ScopeGraphControlPane(wxWindow *pParent, Scope *pScope, wxString label);
+        ~ScopeGraphControlPane(void);
+
+    private:
+        Scope *m_pScope;
+        wxSpinCtrl *m_pMaxRaDuration;
+        wxSpinCtrl *m_pMaxDecDuration;
+        wxChoice   *m_pDecMode;
+
+        void OnMaxRaDurationSpinCtrl(wxSpinEvent& evt);
+        void OnMaxDecDurationSpinCtrl(wxSpinEvent& evt);
+        void OnDecModeChoice(wxCommandEvent& evt);
+    };
+
     virtual int GetCalibrationDuration(void);
     virtual bool SetCalibrationDuration(int calibrationDuration);
     virtual int GetMaxDecDuration(void);
@@ -98,6 +115,7 @@ protected:
 
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
 
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass

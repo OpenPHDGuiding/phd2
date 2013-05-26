@@ -60,6 +60,19 @@ protected:
         virtual void UnloadValues(void);
     };
 
+    class GuideAlgorithmResistSwitchGraphControlPane : public GraphControlPane
+    {
+    public:
+        GuideAlgorithmResistSwitchGraphControlPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm, wxString label);
+        ~GuideAlgorithmResistSwitchGraphControlPane(void);
+
+    private:
+        GuideAlgorithmResistSwitch *m_pGuideAlgorithm;
+        wxSpinCtrlDouble *m_pMinMove;
+
+        void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
+    };
+
     virtual double GetMinMove(void);
     virtual bool SetMinMove(double minMove);
 
@@ -72,6 +85,7 @@ public:
     virtual void reset(void);
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
 };
 
 #endif /* GUIDE_ALGORITHM_RESISTSWITCH_H_INCLUDED */

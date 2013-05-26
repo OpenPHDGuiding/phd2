@@ -206,7 +206,7 @@ GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHyster
 
     width = StringWidth(_T("000.00"));
     m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 1.0,_T("Hysteresis"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 120.0, 0.0, 1.0,_T("Aggression"));
     m_pAggression->SetDigits(1);
 
     DoAdd(_T("Aggression"), m_pAggression,
@@ -242,5 +242,76 @@ UnloadValues(void)
 {
     m_pGuideAlgorithm->SetHysteresis(m_pHysteresis->GetValue()/100.0);
     m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue()/100.0);
+    m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
+}
+
+GraphControlPane *GuideAlgorithmHysteresis::GetGraphControlPane(wxWindow *pParent, wxString label)
+{
+    return new GuideAlgorithmHysteresisGraphControlPane(pParent, this, label);
+}
+
+
+GuideAlgorithmHysteresis::
+GuideAlgorithmHysteresisGraphControlPane::
+GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm, wxString label)
+    :GraphControlPane(pParent, label)
+{
+    int width;
+
+    m_pGuideAlgorithm = pGuideAlgorithm;
+
+    // Aggression
+    width = StringWidth(_T("000.00"));
+    m_pAggression = new wxSpinCtrlDouble(this, wxID_ANY,_T(""), wxDefaultPosition,
+            wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 120.0, 0.0, 1.0,_T("Aggression"));
+    m_pAggression->SetDigits(1);
+    m_pAggression->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnAggressionSpinCtrlDouble, this);
+    DoAdd(m_pAggression, _T("Agr"));
+
+    // Hysteresis
+    width = StringWidth(_T("000.00"));
+    m_pHysteresis = new wxSpinCtrlDouble(this, wxID_ANY,_T(""), wxDefaultPosition,
+            wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 0.05,_T("Hysteresis"));
+    m_pHysteresis->SetDigits(2);
+    m_pHysteresis->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnHysteresisSpinCtrlDouble, this);
+    DoAdd(m_pHysteresis,_T("Hys"));
+
+    // Min move
+    width = StringWidth(_T("000.00"));
+    m_pMinMove = new wxSpinCtrlDouble(this, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
+    m_pMinMove->SetDigits(2);
+    m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnMinMoveSpinCtrlDouble, this);
+    DoAdd(m_pMinMove,_T("Min mo"));
+
+    m_pHysteresis->SetValue(100.0*m_pGuideAlgorithm->GetHysteresis());
+    m_pAggression->SetValue(100.0*m_pGuideAlgorithm->GetAggression());
+    m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+}
+
+GuideAlgorithmHysteresis::
+GuideAlgorithmHysteresisGraphControlPane::
+~GuideAlgorithmHysteresisGraphControlPane(void)
+{
+}
+
+void GuideAlgorithmHysteresis::
+    GuideAlgorithmHysteresisGraphControlPane::
+    OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+{
+    m_pGuideAlgorithm->SetAggression(this->m_pAggression->GetValue() / 100.0);
+}
+
+void GuideAlgorithmHysteresis::
+    GuideAlgorithmHysteresisGraphControlPane::
+    OnHysteresisSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+{
+    m_pGuideAlgorithm->SetHysteresis(this->m_pHysteresis->GetValue() / 100.0);
+}
+
+void GuideAlgorithmHysteresis::
+    GuideAlgorithmHysteresisGraphControlPane::
+    OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+{
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 }

@@ -309,6 +309,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="about_dialog.cpp" />
     <ClCompile Include="advanced_dialog.cpp" />
     <ClCompile Include="ascom_common.cpp" />
     <ClCompile Include="cameras\ArtemisHSCAPI.cpp">
@@ -398,9 +399,9 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="about_dialog.h" />
     <ClInclude Include="advanced_dialog.h" />
     <ClInclude Include="ascom_common.h" />
-    <ClInclude Include="cam_ascom.h" />
     <ClInclude Include="cam_Atik16.h" />
     <ClInclude Include="cam_firewire.h" />
     <ClInclude Include="cam_indi.h" />
@@ -431,7 +432,6 @@
     <ClInclude Include="graph-stepguider.h" />
     <ClInclude Include="graph.h" />
     <ClInclude Include="guiders.h" />
-    <ClInclude Include="guider_canvas.h" />
     <ClInclude Include="guider_onestar.h" />
     <ClInclude Include="guide_algorithm.h" />
     <ClInclude Include="guide_algorithms.h" />

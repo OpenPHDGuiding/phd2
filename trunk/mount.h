@@ -132,6 +132,10 @@ public:
     bool TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountVectorEndpoint,
                                                      PHD_Point& cameraVectorEndpoint);
 
+    GraphControlPane *GetXGuideAlgorithmControlPane(wxWindow *pParent);
+    GraphControlPane *GetYGuideAlgorithmControlPane(wxWindow *pParent);
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label) { return NULL; };
+
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move

@@ -64,6 +64,7 @@ public:
     virtual double result(double input) = 0;
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label) { return NULL; };
 };
 
 #endif /* GUIDE_ALGORITHM_H_INCLUDED */
