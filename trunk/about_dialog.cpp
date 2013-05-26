@@ -51,7 +51,7 @@ wxDialog(pFrame, wxID_ANY, _("About PHD Guiding"), wxDefaultPosition, wxDefaultS
     wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBitmap bmp(prog_icon);
     wxStaticBitmap *pImage = new wxStaticBitmap(this, wxID_ANY, bmp);
-    
+
     wxFileSystem::AddHandler(new wxMemoryFSHandler);
     wxMemoryFSHandler::AddFile("about.html", wxString::Format(
         "<html><body>"
