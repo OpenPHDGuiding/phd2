@@ -55,7 +55,7 @@ PhdConfig::~PhdConfig(void)
 void PhdConfig::Initialize(const wxString& baseConfigName, int instance)
 {
     wxString configName = baseConfigName;
-    
+
     if (instance > 1)
     {
         configName += wxString::Format("-instance%d", instance);

@@ -252,7 +252,7 @@ unsigned long Camera_SBIGClass::bcd2long(unsigned long bcd)
     do {
         pos -= 4;
         digit = (bcd >> pos) & 0xf;
-        val = val * 10 + digit; 
+        val = val * 10 + digit;
     } while (pos > 0);
 
     return val;

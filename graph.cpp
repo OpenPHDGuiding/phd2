@@ -645,7 +645,7 @@ GraphControlPane::GraphControlPane(wxWindow *pParent, wxString label)
     //m_pControlSizer = new wxStaticBoxSizer(wxHORIZONTAL, this, label);
     //m_pControlSizer->GetStaticBox()->SetBackgroundColour(*wxBLACK);
     //m_pControlSizer->GetStaticBox()->SetForegroundColour(*wxWHITE);
-    //m_pControlSizer->GetStaticBox()->SetOwnBackgroundColour(*wxBLACK); 
+    //m_pControlSizer->GetStaticBox()->SetOwnBackgroundColour(*wxBLACK);
 
     SetBackgroundColour(*wxBLACK);
 
