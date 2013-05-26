@@ -593,17 +593,18 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
     return bError;
 }
 
-void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate)
+void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination)
 {
 
-    Debug.AddLine("Mount::SetCalibration -- xAngle=%.2lf yAngle=%.2lf xRate=%.4lf yRate=%.4lf", xAngle, yAngle, xRate, yRate);
-    // we do the rates first, since they just get stored
+    Debug.AddLine("Mount::SetCalibration -- xAngle=%.2lf yAngle=%.2lf xRate=%.4lf yRate=%.4lf dec=%.lf", xAngle, yAngle, xRate, yRate, declination);
 
+    // we do the rates first, since they just get stored
     m_yRate  = yRate;
-    m_xRate  = xRate;
+    m_calXRate = xRate;
+    m_calDeclination = declination;
+    m_xRate  = m_calXRate;
 
     // the angles are more difficult because we have to turn yAngle into a yError.
-
     m_xAngle = xAngle;
     m_yAngleError = (xAngle-yAngle) + M_PI/2;
 
@@ -613,6 +614,33 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
             m_xAngle, m_yAngleError);
 
     m_calibrated = true;
+}
+
+/*
+ * Adjust the xRate to reflect the declination.  The default implemenation
+ * of GetDeclination returns 0, which makes this code into a no-op
+ */
+
+void Mount::AdjustForDeclination(void)
+{
+    // avoid division by zero and gross errors.  If the user didn't calibrate
+    // somewhere near the celestial equater, we don't do this
+    if (fabs(m_calDeclination) > (M_PI/2.0)*(2.0/3.0))
+    {
+        Debug.AddLine("skipping declination adjustment: too far from equator");
+    }
+    else
+    {
+        double newDeclination = GetDeclination();
+        m_xRate = (m_calXRate/cos(m_calDeclination))*cos(newDeclination);
+        Debug.AddLine("adjusted dec rate %.2lf -> %.2lf for dec %.2lf -> dec %.2lf",
+                m_calXRate, m_xRate, m_calDeclination, newDeclination);
+    }
+}
+
+double Mount::GetDeclination(void)
+{
+    return m_calDeclination;
 }
 
 bool Mount::FlipCalibration(void)
@@ -643,7 +671,7 @@ bool Mount::FlipCalibration(void)
 
         Debug.AddLine("FlipCalibration after: x=%.2f, y=%.2f", newX, newY);
 
-        SetCalibration(newX, newY, xRate(), yRate());
+        SetCalibration(newX, newY, xRate(), yRate(), m_calDeclination);
 
         pFrame->SetStatusText(wxString::Format(_T("CAL: %.2f -> %.2f"), origX, newX), 0);
     }

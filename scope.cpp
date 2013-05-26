@@ -429,6 +429,11 @@ bool Scope::GuidingCeases(void)
     return false;
 }
 
+double Scope::GetDeclination(void)
+{
+    return Mount::GetDeclination();
+}
+
 bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
 {
     bool bError = false;
@@ -688,7 +693,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 Debug.AddLine("Falling Through to state CALIBRATION_COMPLETE");
             case CALIBRATION_STATE_COMPLETE:
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
-                               m_calibrationXRate,  m_calibrationYRate);
+                               m_calibrationXRate,  m_calibrationYRate,
+                               GetDeclination());
                 pFrame->SetSampling();
                 pFrame->SetStatusText(_T("calibration complete"),1);
                 pFrame->SetStatusText(_T("Cal"),5);

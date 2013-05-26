@@ -56,13 +56,16 @@ class ScopeASCOM:public Scope, private ASCOM_COMMON
     DISPID dispid_ispulseguiding;
     DISPID dispid_isslewing;
     DISPID dispid_pulseguide;
+    DISPID dispid_declination;
 
     // other private varialbles
     bool m_bCanCheckPulseGuiding;
+    bool m_bCanGetDeclination;
 
     // private functions
     bool Choose(wxString &wx_ProgID);
     virtual bool IsGuiding(IDispatch *pScopeDriver);
+    virtual double GetDeclination(void);
 
 public:
     ScopeASCOM(void);
@@ -74,7 +77,6 @@ public:
     virtual bool HasNonGuiMove(void);
     virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
     virtual bool IsGuiding();
-
 };
 
 #endif /* GUIDE_ASCOM */

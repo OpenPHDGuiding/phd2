@@ -209,7 +209,7 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
 
             // we rescale the image if:
             // - The image is either too big
-            // - The image is so small that at least one dimension is less 
+            // - The image is so small that at least one dimension is less
             //   than half the width of the window or
             // - The user has requsted rescaling
 
@@ -584,6 +584,12 @@ void Guider::SetState(GUIDER_STATE newState)
                 break;
             case STATE_GUIDING:
                 //TODO: Deal with manual lock position
+                assert(pMount);
+                pMount->AdjustForDeclination();
+                if (pSecondaryMount)
+                {
+                    pSecondaryMount->AdjustForDeclination();
+                }
                 m_lockPosition = CurrentPosition();
 
                 GuideLog.StartGuiding();
