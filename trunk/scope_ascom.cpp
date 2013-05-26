@@ -258,6 +258,17 @@ bool ScopeASCOM::Connect(void) {
                 wxMessageBox(_T("ASCOM driver missing the PulseGuide property"),_("Error"), wxOK | wxICON_ERROR);
                 throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for the PulseGuide property");
             }
+
+            // ... get the dispatch ID for the "Declination" property ....
+            if (GetDispatchID(pScopeDriver, L"Declination", &dispid_declination))  {
+                m_bCanGetDeclination = false;
+                Debug.AddLine(wxString::Format("cannot get dispid_declination = %d", dispid_ispulseguiding));
+                // don't throw if we can't get this one
+            }
+            else
+            {
+                m_bCanGetDeclination = true;
+            }
         }
 
         // we have all the IDs we need - time to start using them
@@ -554,6 +565,57 @@ bool ScopeASCOM::IsGuiding()
 bool ScopeASCOM::HasNonGuiMove(void)
 {
     return true;
+}
+
+double ScopeASCOM::GetDeclination(void)
+{
+    double dReturn = Scope::GetDeclination();
+    IDispatch *pScopeDriver = NULL;
+
+    try
+    {
+        if (!m_bCanGetDeclination)
+        {
+            throw THROW_INFO("!b_CanGetDeclination");
+        }
+
+        if (FAILED(m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (void**)&pScopeDriver)))
+        {
+            throw ERROR_INFO("ASCOM Scope: Cannot get interface with Global Interface Table");
+        }
+
+        assert(pScopeDriver);
+
+        DISPPARAMS dispParms;
+        HRESULT hr;
+        EXCEPINFO excep;
+        VARIANT vRes;
+
+        dispParms.cArgs = 0;
+        dispParms.rgvarg = NULL;
+        dispParms.cNamedArgs = 0;
+        dispParms.rgdispidNamedArgs = NULL;
+
+        if(FAILED(hr = pScopeDriver->Invoke(dispid_declination, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
+        {
+            throw ERROR_INFO("GetDeclination() fails");
+        }
+
+        dReturn = vRes.dblVal/180.0*M_PI;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+
+    if (pScopeDriver)
+    {
+        pScopeDriver->Release();
+    }
+
+    Debug.AddLine("ScopeASCOM::GetDeclination() returns %.4lf", dReturn);
+
+    return dReturn;
 }
 
 #endif /* GUIDE_ASCOM */

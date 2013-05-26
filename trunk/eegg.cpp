@@ -59,6 +59,16 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
         double yRate  = pMount->yRate();
         double xAngle  = pMount->xAngle();
         double yAngle = pMount->yAngle();
+        double declination = pMount->GetDeclination();
+
+        if (!pMount->IsCalibrated())
+        {
+            xRate       = 1.0;
+            yRate       = 1.0;
+            xAngle      = 0.0;
+            yAngle      = M_PI/2;
+            declination = 0.0;
+        }
 
         tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("RA rate"), wxString::Format(_T("%.4f"),xRate));
         if (tmpstr.IsEmpty()) return;
@@ -76,7 +86,11 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
         if (tmpstr.IsEmpty()) return;
         tmpstr.ToDouble(&yAngle); // = 0.0035;
 
-        pMount->SetCalibration(xAngle, yAngle, xRate, yRate);
+        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Declination"), wxString::Format(_T("%.3f"),declination));
+        if (tmpstr.IsEmpty()) return;
+        tmpstr.ToDouble(&declination); // = 0.0035;
+
+        pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
         SetStatusText(_T("Cal"),5);
     }
     else if (evt.GetId() == EEGG_CLEARCAL) {

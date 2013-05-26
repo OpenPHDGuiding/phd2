@@ -62,6 +62,9 @@ private:
     double m_xAngle;
     double m_yAngleError;
 
+    double m_calXRate;
+    double m_calDeclination;
+
 protected:
     bool m_guidingEnabled;
 
@@ -136,6 +139,7 @@ public:
     GraphControlPane *GetYGuideAlgorithmControlPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label) { return NULL; };
 
+    void AdjustForDeclination(void);
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
@@ -148,7 +152,6 @@ public:
 
     virtual bool GuidingCeases(void)=0;
 
-private:
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation
@@ -166,12 +169,13 @@ public:
 
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
-    virtual void SetCalibration(double dxAngle, double dyAngle, double dxRate, double dyRate);
+    virtual void SetCalibration(double dxAngle, double dyAngle, double dxRate, double dyRate, double declination=0.0);
 
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 
     virtual void ClearHistory(void);
+    virtual double GetDeclination(void);
 };
 
 #endif /* MOUNT_H_INCLUDED */

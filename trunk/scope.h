@@ -126,6 +126,7 @@ public:
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
     virtual bool GuidingCeases(void);
+    virtual double GetDeclination(void);
 
 private:
     double Move(GUIDE_DIRECTION direction, double duration, bool normalMove=true);
