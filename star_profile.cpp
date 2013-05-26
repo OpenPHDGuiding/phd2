@@ -35,19 +35,12 @@
 
 #include "phd.h"
 
-//BEGIN_EVENT_TABLE(ProfileWindow, wxMiniFrame)
 BEGIN_EVENT_TABLE(ProfileWindow, wxWindow)
     EVT_PAINT(ProfileWindow::OnPaint)
     EVT_LEFT_DOWN(ProfileWindow::OnLClick)
 END_EVENT_TABLE()
 
 ProfileWindow::ProfileWindow(wxWindow *parent) :
-    //#if defined (__APPLE__)
-    //wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(110,72),wxCAPTION & ~wxSTAY_ON_TOP)
-    //#else
-    //wxMiniFrame(parent,wxID_ANY,_("Profile"),wxDefaultPosition,wxSize(115,85),wxCAPTION & ~wxSTAY_ON_TOP)
-    //#endif
-    //wxWindow(parent,wxID_ANY,wxDefaultPosition,wxSize(115,85), 0,_("Profile"))
     wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESIZE,_("Profile"))
 {
     this->visible = false;
