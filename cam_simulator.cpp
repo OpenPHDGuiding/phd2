@@ -271,6 +271,7 @@ Camera_SimClass::Camera_SimClass()
     FullSize = wxSize(640,480);
     HasGuiderOutput = true;
     HasShutter = true;
+    HasGainControl = true;
 }
 
 bool Camera_SimClass::Connect() {
