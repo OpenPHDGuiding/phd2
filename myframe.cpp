@@ -139,13 +139,6 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
 
     m_mgr.SetManagedWindow(this);
 
-    //int fontsize = 11;
-    //SetFont(wxFont(11,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-    //while (GetCharHeight() > 18) {
-    //    fontsize--;
-    //    SetFont(wxFont(fontsize,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-    //}
-
     m_loopFrameCount = 0;
     m_pPrimaryWorkerThread = NULL;
     StartWorkerThread(m_pPrimaryWorkerThread);
@@ -199,8 +192,7 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
     SetupToolBar(MainToolbar);
     m_mgr.AddPane(MainToolbar, wxAuiPaneInfo().
         Name(_T("MainToolBar")).Caption(_T("Main tool bar")).
-        ToolbarPane().Bottom());;//.Row(1).
-        //LeftDockable(false).RightDockable(false));
+        ToolbarPane().Bottom());;
 
     pGuider->SetMinSize(wxSize(XWinSize,YWinSize));
     pGuider->SetSize(wxSize(XWinSize,YWinSize));
@@ -279,7 +271,6 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
     }
 
     this->SetTitle(frameTitle);
-    //mount_menu->Check(SCOPE_GPUSB,true);
 
     if (m_serverMode) {
         tools_menu->Check(MENU_SERVER,true);
@@ -305,12 +296,10 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
 
     CaptureActive = false;
 
-//  wxStartTimer();
     m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_VERTICAL);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR, *wxBLACK);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_TEXT_COLOUR, *wxWHITE);
-    //m_mgr.SetFlags(m_mgr.GetFlags() | wxAUI_MGR_TRANSPARENT_DRAG);
 
     wxString perspective = pConfig->GetString("/perspective", wxEmptyString);
     if (perspective != wxEmptyString)
@@ -329,7 +318,7 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
     panel_state = m_mgr.GetPane(_T("Profile")).IsShown();
     pProfile->SetState(panel_state);
     Menubar->Check(MENU_STARPROFILE, panel_state);
-    
+
     panel_state = m_mgr.GetPane(_T("Target")).IsShown();
     pTarget->SetState(panel_state);
     Menubar->Check(MENU_TARGET, panel_state);
@@ -361,7 +350,6 @@ void MyFrame::SetupMenuBar(void)
     file_menu->Append(MENU_SAVEDARK, _("Save dark"), _("Save dark frame"));
     file_menu->Append(wxID_SAVE, _("Save image"), _("Save current image"));
     file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
-//  file_menu->Append(wxID_PREFERENCES, _T("&Preferences"), _T("Preferences"));
 
     mount_menu = new wxMenu;
     mount_menu->AppendSeparator();
@@ -414,7 +402,6 @@ void MyFrame::SetupMenuBar(void)
     mount_menu->FindItem(AO_NONE)->Check(true); // set this as the default
 #ifdef STEPGUIDER_SXAO
     mount_menu->AppendRadioItem(AO_SXAO, _("sxAO"), _T("Starlight Xpress AO"));
-    //mount_menu->FindItem(AO_SXAO)->Enable(false);
 #endif
 
     // try to get the last values from the config store
@@ -435,7 +422,6 @@ void MyFrame::SetupMenuBar(void)
     }
 
     tools_menu = new wxMenu;
-    //mount_menu->AppendSeparator();
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
     tools_menu->Append(MENU_CLEARDARK, _("&Erase Dark Frame"), _("Erase / clear out dark frame"));
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
@@ -478,7 +464,6 @@ void MyFrame::SetupMenuBar(void)
     help_menu->Append(wxID_ABOUT, _("&About...\tF1"), _("About PHD Guiding"));
     help_menu->Append(wxID_HELP_CONTENTS,_("Contents"),_("Full help"));
     help_menu->Append(wxID_HELP_PROCEDURES,_("&Impatient Instructions"),_("Quick instructions for the impatient"));
-//  help_menu->Append(EEGG_TESTGUIDEDIR, _T("."), _T(""));
 
     Menubar = new wxMenuBar();
     Menubar->Append(file_menu, _("&File"));
@@ -508,6 +493,26 @@ void MyFrame::SetupMenuBar(void)
     SetMenuBar(Menubar);
 }
 
+static void SetComboBoxWidth(wxComboBox *control, unsigned int extra)
+{
+    int i;
+    int width=-1;
+
+    for (i = 0; i < control->GetCount(); i++)
+    {
+        int thisWidth;
+
+        control->GetTextExtent(control->GetString(i), &thisWidth, NULL);
+
+        if (thisWidth > width)
+        {
+            width =  thisWidth;
+        }
+    }
+
+    control->SetMinSize(wxSize(width + extra, -1));
+}
+
 void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
 {
     wxBitmap camera_bmp, scope_bmp, ao_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
@@ -527,7 +532,6 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     #include "icons/loop3.xpm" // defines loop_icon
     #include "icons/cam2.xpm"  // cam_icon
     #include "icons/brain1.xpm" // brain_icon[]
-//  #include "icons/brain1_disable.xpm"
     scope_bmp = wxBitmap(scope_icon);
     ao_bmp = wxBitmap(ao_icon);
     loop_bmp = wxBitmap(loop_icon);
@@ -535,8 +539,6 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     guide_bmp = wxBitmap(phd_icon);
     stop_bmp = wxBitmap(stop_icon);
     camera_bmp = wxBitmap(cam_icon);
-//  SetBackgroundStyle(wxBG_STYLE_SYSTEM);
-//  SetBackgroundColour(wxColour(10,0,0));
 #endif
 
     wxString dur_choices[] = {
@@ -544,30 +546,16 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
         _T("0.05 s"), _T("0.1 s"), _T("0.2 s"), _T("0.5 s"),_T("1.0 s"),_T("1.5 s"),
         _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"), _T("10 s")
    };
-    //Dur_Choice = new wxChoice(this, BUTTON_DURATION, wxPoint(-1,-1),wxSize(70,-1),WXSIZEOF(dur_choices),dur_choices);
-    Dur_Choice = new wxComboBox(toolBar, BUTTON_DURATION, wxEmptyString, wxPoint(-1,-1),wxSize(80,-1), WXSIZEOF(dur_choices),dur_choices);
+    Dur_Choice = new wxComboBox(toolBar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition , wxDefaultSize, WXSIZEOF(dur_choices),dur_choices, wxCB_READONLY);
     Dur_Choice->SetSelection(8);
     Dur_Choice->SetToolTip(_("Camera exposure duration"));
-    //Dur_Choice->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    SetComboBoxWidth(Dur_Choice, 40);
 
-    /*  Recal_Checkbox = new wxCheckBox(this,BUTTON_CAL,_T("Calibrate"),wxPoint(-1,-1),wxSize(-1,-1));
-    Recal_Checkbox->SetValue(true);
-    Recal_Checkbox->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-    ctrl_sizer->Add(Recal_Checkbox,wxSizerFlags(0).Border(wxTOP,15));*/
-
-    //wxSize szfoo;
     Gamma_Slider = new wxSlider(toolBar,CTRL_GAMMA,40,10,90,wxPoint(-1,-1),wxSize(100,-1));
     Gamma_Slider->SetToolTip(_("Screen gamma (brightness)"));
     Stretch_gamma = 0.4;
     Gamma_Slider->SetValue((int) (Stretch_gamma * 100.0));
-    //ctrl_sizer->Add(Gamma_Slider,wxSizerFlags(0).FixedMinSize().Border(wxTOP,15));
 
-/*  HotPixel_Checkbox = new wxCheckBox(this,BUTTON_HOTPIXEL,_T("Fix Hot Pixels"),wxPoint(-1,-1),wxSize(-1,-1));
-    HotPixel_Checkbox->SetValue(false);
-    HotPixel_Checkbox->SetFont(wxFont(12,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-    HotPixel_Checkbox->Enable(false);
-    ctrl_sizer->Add(HotPixel_Checkbox,wxSizerFlags(0).Border(wxTOP,15));
-*/
     wxBitmap brain_bmp;
 #if defined (WINICONS)
     brain_bmp.CopyFromIcon(wxIcon(_T("brain_icon")));
@@ -610,9 +598,6 @@ void MyFrame::SetupStatusBar(void)
     SetStatusText(_T("No scope"),3);
     SetStatusText(_T(""),4);
     SetStatusText(_T("No cal"),5);
-    //wxStatusBar *sbar = GetStatusBar();
-    //sbar->SetBackgroundColour(wxColour(_T("RED")));
-    //sbar->SetMinHeight(50);
 }
 
 void MyFrame::SetupKeyboardShortcuts(void)
@@ -642,7 +627,6 @@ void MyFrame::SetupHelpFile(void)
         wxMessageBox(_("Could not find help file: ")+filename,_("Error"), wxOK);
     }
     wxImage::AddHandler(new wxPNGHandler);
-//  wxImage::AddHandler( new wxJPEGHandler );  //wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib
 }
 
 void MyFrame::UpdateButtonsStatus(void)
@@ -950,11 +934,9 @@ void MyFrame::OnClose(wxCloseEvent &event) {
         this->GetPosition().x, this->GetPosition().y);
     pConfig->SetString("/geometry", geometry);
 
-    //delete pCamera;
     help->Quit();
     delete help;
     Destroy();
-//  Close(true);
 }
 
 NOISE_REDUCTION_METHOD MyFrame::GetNoiseReductionMethod(void)
