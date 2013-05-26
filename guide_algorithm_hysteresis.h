@@ -62,6 +62,23 @@ protected:
         virtual void UnloadValues(void);
     };
 
+    class GuideAlgorithmHysteresisGraphControlPane : public GraphControlPane
+    {
+    public:
+        GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm, wxString label);
+        ~GuideAlgorithmHysteresisGraphControlPane(void);
+
+    private:
+        GuideAlgorithmHysteresis *m_pGuideAlgorithm;
+        wxSpinCtrlDouble *m_pAggression;
+        wxSpinCtrlDouble *m_pHysteresis;
+        wxSpinCtrlDouble *m_pMinMove;
+
+        void OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnHysteresisSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
+    };
+
     virtual double GetMinMove(void);
     virtual bool SetMinMove(double minMove);
     virtual double GetHysteresis(void);
@@ -80,7 +97,7 @@ public:
     virtual void reset(void);
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
 };
 
 #endif /* GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED */

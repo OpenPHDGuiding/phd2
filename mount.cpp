@@ -771,3 +771,13 @@ void Mount::MountConfigDialogPane::UnloadValues(void)
     m_pMount->SetXGuideAlgorithm(m_pXGuideAlgorithm->GetSelection());
     m_pMount->SetYGuideAlgorithm(m_pYGuideAlgorithm->GetSelection());
 }
+
+GraphControlPane *Mount::GetXGuideAlgorithmControlPane(wxWindow *pParent)
+{
+    return m_pXGuideAlgorithm->GetGraphControlPane(pParent, _("RA:"));
+}
+
+GraphControlPane *Mount::GetYGuideAlgorithmControlPane(wxWindow *pParent)
+{
+    return m_pYGuideAlgorithm->GetGraphControlPane(pParent, _("DEC:"));
+}

@@ -33,6 +33,8 @@
  */
 
 #include "phd.h"
+#include "about_dialog.h"
+
 #include <wx/spinctrl.h>
 #include <wx/textfile.h>
 #include "image_math.h"
@@ -107,7 +109,9 @@ void MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event)) {
 }
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
     if (CaptureActive) return;  // Looping an exposure already
-    wxMessageBox(wxString::Format(_T("PHD Guiding v%s\n\nwww.stark-labs.com\n\nCopyright 2006-2013 Craig Stark & Bret McKee\n\nSpecial Thanks to:\n  Sean Prange\n  Jared Wellman"),VERSION),_("About PHD Guiding"), wxOK);
+    //wxMessageBox(wxString::Format(_T("PHD Guiding v%s\n\nwww.stark-labs.com\n\nCopyright 2006-2013 Craig Stark & Bret McKee\n\nSpecial Thanks to:\n  Sean Prange\n  Jared Wellman"),VERSION),_("About PHD Guiding"), wxOK);
+    AboutDialog dlg;
+    dlg.ShowModal();
 
 }
 
@@ -552,16 +556,8 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
     if (dlog->ShowModal() == wxID_OK)
     {
         dlog->UnloadValues();
-#ifdef BRET_TODO
-        pFrame->pGraphLog->RAA_Ctrl->SetValue((int) (RA_aggr * 100));
-        pFrame->pGraphLog->RAH_Ctrl->SetValue((int) (RA_hysteresis * 100));
-#if ((wxMAJOR_VERSION > 2) || (wxMINOR_VERSION > 8))
-        pFrame->pGraphLog->MM_Ctrl->SetValue(MinMotion);
-#endif
-        pFrame->pGraphLog->MDD_Ctrl->SetValue(Max_Dec_Dur);
-        pFrame->pGraphLog->DM_Ctrl->SetSelection(Dec_guide);
-#endif // BRET_TODO
         SetSampling();
+        pGraphLog->UpdateControls();
     }
 }
 

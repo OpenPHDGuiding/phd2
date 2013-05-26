@@ -795,3 +795,56 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
 
     MountConfigDialogPane::UnloadValues();
 }
+
+GraphControlPane *Scope::GetGraphControlPane(wxWindow *pParent, wxString label)
+{
+    return new ScopeGraphControlPane(pParent, this, label);
+}
+
+Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pScope, wxString label)
+    : GraphControlPane(pParent, label)
+{
+    int width;
+    m_pScope = pScope;
+
+    width = StringWidth(_T("0000"));
+    m_pMaxRaDuration = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width+30, -1),
+        wxSP_ARROW_KEYS, 0,2000,0);
+    m_pMaxRaDuration->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &Scope::ScopeGraphControlPane::OnMaxRaDurationSpinCtrl, this);
+    DoAdd(m_pMaxRaDuration, _("Mx RA"));
+
+    width = StringWidth(_T("0000"));
+    m_pMaxDecDuration = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width+30, -1),
+        wxSP_ARROW_KEYS, 0,2000,0);
+    m_pMaxDecDuration->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &Scope::ScopeGraphControlPane::OnMaxRaDurationSpinCtrl, this);
+    DoAdd(m_pMaxDecDuration, _("Mx RA"));
+
+    wxString dec_choices[] = { _("Off"),_("Auto"),_("North"),_("South") };
+    m_pDecMode = new wxChoice(this, wxID_ANY,
+        wxDefaultPosition,wxDefaultSize, WXSIZEOF(dec_choices), dec_choices );
+    m_pDecMode->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &Scope::ScopeGraphControlPane::OnDecModeChoice, this);
+    m_pControlSizer->Add(m_pDecMode);
+
+    m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
+    m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
+    m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
+}
+
+Scope::ScopeGraphControlPane::~ScopeGraphControlPane()
+{
+}
+
+void Scope::ScopeGraphControlPane::OnMaxRaDurationSpinCtrl(wxSpinEvent& WXUNUSED(evt))
+{
+    m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
+}
+
+void Scope::ScopeGraphControlPane::OnMaxDecDurationSpinCtrl(wxSpinEvent& WXUNUSED(evt))
+{
+    m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
+}
+
+void Scope::ScopeGraphControlPane::OnDecModeChoice(wxCommandEvent& WXUNUSED(evt))
+{
+    m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
+}

@@ -48,46 +48,49 @@ static const int DefaultMinHeight =  1;
 static const int DefaultMaxHeight = 16;
 
 BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
-EVT_PAINT(GraphLogWindow::OnPaint)
-EVT_BUTTON(BUTTON_GRAPH_MODE,GraphLogWindow::OnButtonMode)
-EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphLogWindow::OnButtonLength)
-EVT_BUTTON(BUTTON_GRAPH_HEIGHT,GraphLogWindow::OnButtonHeight)
-EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
-EVT_SPINCTRL(GRAPH_RAA,GraphLogWindow::OnUpdateSpinGuideParams)
-EVT_SPINCTRL(GRAPH_RAH,GraphLogWindow::OnUpdateSpinGuideParams)
-
-#if (wxMAJOR_VERSION > 2) || ((wxMAJOR_VERSION == 2) && (wxMINOR_VERSION > 8))
-EVT_SPINCTRLDOUBLE(GRAPH_MM,GraphLogWindow::OnUpdateSpinDGuideParams)
-#endif
-
-EVT_SPINCTRL(GRAPH_MRAD,GraphLogWindow::OnUpdateSpinGuideParams)
-EVT_SPINCTRL(GRAPH_MDD,GraphLogWindow::OnUpdateSpinGuideParams)
-EVT_CHOICE(GRAPH_DM,GraphLogWindow::OnUpdateCommandGuideParams)
+    EVT_PAINT(GraphLogWindow::OnPaint)
+    EVT_BUTTON(BUTTON_GRAPH_MODE,GraphLogWindow::OnButtonMode)
+    EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphLogWindow::OnButtonLength)
+    EVT_BUTTON(BUTTON_GRAPH_HEIGHT,GraphLogWindow::OnButtonHeight)
+    EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
 END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
-//wxMiniFrame(parent,wxID_ANY,_("History"),wxDefaultPosition,wxSize(610,254),(wxCAPTION & ~wxSTAY_ON_TOP) | wxRESIZE_BORDER)
 wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESIZE,_("Profile"))
 {
-    int width;
     wxCommandEvent dummy;
 
     //SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 
     m_pParent = parent;
 
-    wxBoxSizer *pMainSizer   = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *pMainSizer   = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxVERTICAL);
-    wxBoxSizer *pClientSizer = new wxBoxSizer(wxVERTICAL);
-
-    wxBoxSizer *pControlSizer = new wxBoxSizer(wxHORIZONTAL);
-
-    pMainSizer->Add(pButtonSizer, wxSizerFlags().Left().DoubleHorzBorder().Expand());
-    pMainSizer->Add(pClientSizer, wxSizerFlags().Expand().Proportion(1));
+    wxBoxSizer *pClientSizer = new wxBoxSizer(wxHORIZONTAL);
 
     m_pClient = new GraphLogClientWindow(this);
+
+    pClientSizer->Add(pButtonSizer, wxSizerFlags().Left().DoubleHorzBorder().Expand());
     pClientSizer->Add(m_pClient, wxSizerFlags().Expand().Proportion(1));
-    pClientSizer->Add(pControlSizer, wxSizerFlags().Expand().Center().Border(wxBOTTOM, 5));
+
+
+    m_pControlSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
+    if (m_pXControlPane != NULL)
+        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Expand());
+    m_pYControlPane = pMount->GetYGuideAlgorithmControlPane(this);
+    //wxStaticLine *pLine = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
+    //m_pControlSizer->Add(pLine, wxSizerFlags().Expand());
+    if (m_pYControlPane != NULL)
+    {
+        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Expand());
+    }
+    m_pScopePane = pMount->GetGraphControlPane(this, _("Scope:"));
+    if (m_pScopePane != NULL)
+        m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Expand());
+
+    pMainSizer->Add(pClientSizer, wxSizerFlags().Expand().Proportion(1));
+    pMainSizer->Add(m_pControlSizer, wxSizerFlags().Expand().Border(wxALL, 10));
 
     m_visible = false;
     SetBackgroundStyle(wxBG_STYLE_CUSTOM);
@@ -136,93 +139,6 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     m_pClient->m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pOscIndex->SetBackgroundColour(*wxBLACK);
     pButtonSizer->Add(m_pClient->m_pOscIndex);
-#ifdef __WINDOWS__
-    int ctl_size = 45;
-    int extra_offset = -5;
-#else
-    int ctl_size = 60;
-    int extra_offset = 0;
-#endif
-
-    // Ra Aggression
-    wxStaticText *raa_label = new wxStaticText(this,wxID_ANY,_T("RA agr"));
-    raa_label->SetOwnForegroundColour(*wxWHITE);
-#ifdef __WINDOWS__
-    raa_label->SetOwnBackgroundColour(*wxBLACK);
-#endif
-
-    width = StringWidth(_T("0000"));
-
-    RAA_Ctrl = new wxSpinCtrl(this,GRAPH_RAA, _T(""), wxDefaultPosition,
-                                    wxSize(width+25, -1),wxSP_ARROW_KEYS | wxALIGN_RIGHT,
-                                    0, 120, 0);
-
-    pControlSizer->AddStretchSpacer();
-    pControlSizer->Add(raa_label, wxSizerFlags().Right());
-    pControlSizer->AddSpacer(5);
-    pControlSizer->Add(RAA_Ctrl, wxSizerFlags().Left());
-    pControlSizer->AddSpacer(20);
-
-    // Hysteresis
-    wxStaticText *rah_label = new wxStaticText(this,wxID_ANY,_T("RA hys"));
-    rah_label->SetOwnForegroundColour(* wxWHITE);
-#ifdef __WINDOWS__
-    rah_label->SetOwnBackgroundColour(* wxBLACK);
-#endif
-    width = StringWidth(_T("0000"));
-
-    RAH_Ctrl = new wxSpinCtrl(this,GRAPH_RAH, _T(""), wxDefaultPosition,
-                                    wxSize(width+25,-1),wxSP_ARROW_KEYS | wxALIGN_RIGHT,
-                                    0, 50, 0);
-
-    pControlSizer->Add(rah_label, wxSizerFlags().Right());
-    pControlSizer->AddSpacer(5);
-    pControlSizer->Add(RAH_Ctrl, wxSizerFlags().Left());
-    pControlSizer->AddSpacer(20);
-
-// Min Motion
-    wxStaticText *mm_pLabel = new wxStaticText(this,wxID_ANY,_T("Min mot"));
-    mm_pLabel->SetOwnForegroundColour(* wxWHITE);
-#ifdef __WINDOWS__
-    mm_pLabel->SetOwnBackgroundColour(* wxBLACK);
-#endif
-    width = StringWidth(_T("00.00"));
-    MM_Ctrl = new wxSpinCtrlDouble(this,GRAPH_MM, _T(""), wxDefaultPosition,
-                                    wxSize(width+25,-1),wxSP_ARROW_KEYS | wxALIGN_RIGHT,
-                                    0,5,0,0.05);
-
-    pControlSizer->Add(mm_pLabel, wxSizerFlags().Right());
-    pControlSizer->AddSpacer(5);
-    pControlSizer->Add(MM_Ctrl, wxSizerFlags().Left());
-    pControlSizer->AddStretchSpacer();
-
-#ifdef BRET_TODO
-    // Max RA Dur
-    wxStaticText *mrad_label = new wxStaticText(this,wxID_ANY,_T("Mx RA"),wxPoint(315,210),wxSize(ctl_size+10,-1));
-    mrad_label->SetOwnForegroundColour(* wxWHITE);
-#ifdef __WINDOWS__
-    mrad_label->SetOwnBackgroundColour(* wxBLACK);
-#endif
-    this->MRAD_Ctrl = new wxSpinCtrl(this,GRAPH_MRAD, _T(""),
-                                    wxPoint(360,205),wxSize(ctl_size+10,-1),wxSP_ARROW_KEYS,
-                                    0,2000,0);
-    // Max Dec Dur
-    wxStaticText *mdd_label = new wxStaticText(this,wxID_ANY,_T("Mx dec"),wxPoint(425,210),wxSize(ctl_size+10,-1));
-    mdd_label->SetOwnForegroundColour(* wxWHITE);
-#ifdef __WINDOWS__
-    mdd_label->SetOwnBackgroundColour(* wxBLACK);
-#endif
-    double Max_Dec_Dur = 0;
-    this->MDD_Ctrl = new wxSpinCtrl(this,GRAPH_MDD, _T(""),
-                                    wxPoint(470,205),wxSize(ctl_size+10,-1),wxSP_ARROW_KEYS,
-                                    0,2000, 0);
-    // Dec Guide mode
-    wxString dec_choices[] = {
-        _("Off"),_("Auto"),_("North"),_("South")
-    };
-    this->DM_Ctrl= new wxChoice(this,GRAPH_DM,wxPoint(535,210+extra_offset),wxSize(ctl_size+15,-1),WXSIZEOF(dec_choices), dec_choices );
-    //DM_Ctrl->SetSelection(pMount->GetDecGuideMode());
-#endif
 
     SetSizer(pMainSizer);
     pMainSizer->SetSizeHints(this);
@@ -250,35 +166,6 @@ int GraphLogWindow::StringWidth(wxString string)
     m_pParent->GetTextExtent(string, &width, &height);
 
     return width;
-}
-
-void GraphLogWindow::OnUpdateSpinGuideParams(wxSpinEvent& WXUNUSED(evt)) {
-    if (pMount->GetXGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
-    {
-        GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
-
-        pHyst->SetAggression((float) this->RAA_Ctrl->GetValue() / 100.0);
-        pHyst->SetHysteresis((float) this->RAH_Ctrl->GetValue() / 100.0);
-    }
-#ifdef BRET_TODO
-    pMount->SetMaxDecDuration(this->MDD_Ctrl->GetValue());
-    pMount->SetMaxRaDuration(this->MRAD_Ctrl->GetValue());
-#endif
-}
-
-void GraphLogWindow::OnUpdateCommandGuideParams(wxCommandEvent& WXUNUSED(evt)) {
-#ifdef BRET_TODO
-    pMount->SetDecGuideMode(this->DM_Ctrl->GetSelection());
-#endif
-}
-
-void GraphLogWindow::OnUpdateSpinDGuideParams(wxSpinDoubleEvent& WXUNUSED(evt)) {
-    if (pMount->GetYGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
-    {
-        GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
-
-        pHyst->SetMinMove(this->MM_Ctrl->GetValue());
-    }
 }
 
 void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt)) {
@@ -349,18 +236,7 @@ void GraphLogWindow::SetState(bool is_active) {
     this->Show(is_active);
     if (is_active)
     {
-        if (pMount->GetYGuideAlgorithm() == GUIDE_ALGORITHM_HYSTERESIS)
-        {
-            GuideAlgorithmHysteresis *pHyst = (GuideAlgorithmHysteresis *)pFrame->pGuider;
-            this->RAA_Ctrl->SetValue((int) (pHyst->GetAggression() * 100));
-            this->RAH_Ctrl->SetValue((int) (pHyst->GetHysteresis() * 100));
-            this->MM_Ctrl->SetValue(pHyst->GetMinMove());
-        }
-#ifdef BRET_TODO
-        this->MDD_Ctrl->SetValue(pMount->GetMaxDecDuration());
-        this->MRAD_Ctrl->SetValue(pMount->GetMaxRaDuration());
-        this->DM_Ctrl->SetSelection(pMount->GetDecGuideMode());
-#endif
+        //UpdateControls();
         Refresh();
     }
 }
@@ -373,6 +249,38 @@ void GraphLogWindow::AppendData(float dx, float dy, float RA, float Dec)
     {
         Refresh();
     }
+}
+
+void GraphLogWindow::UpdateControls()
+{
+    if (m_pXControlPane != NULL)
+    {
+        m_pControlSizer->Detach(m_pXControlPane);
+        m_pXControlPane->Destroy();
+    }
+    m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
+    if (m_pXControlPane != NULL)
+        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Expand());
+
+    if (m_pYControlPane != NULL)
+    {
+        m_pControlSizer->Detach(m_pYControlPane);
+        m_pYControlPane->Destroy();
+    }
+    m_pYControlPane = pMount->GetYGuideAlgorithmControlPane(this);
+    if (m_pYControlPane != NULL)
+        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Expand());
+
+    if (m_pScopePane != NULL)
+    {
+        m_pControlSizer->Detach(m_pScopePane);
+        m_pScopePane->Destroy();
+    }
+    m_pScopePane = pMount->GetGraphControlPane(this, _("Scope:"));
+    if (m_pScopePane != NULL)
+        m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Expand());
+
+    m_pControlSizer->Layout();
 }
 
 void GraphLogWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
@@ -727,4 +635,59 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         delete [] pRaOrDxLine;
         delete [] pDecOrDyLine;
     }
+}
+
+GraphControlPane::GraphControlPane(wxWindow *pParent, wxString label)
+:wxWindow(pParent, wxID_ANY)
+{
+    m_pParent = pParent;
+    m_pControlSizer = new wxBoxSizer(wxHORIZONTAL);
+    //m_pControlSizer = new wxStaticBoxSizer(wxHORIZONTAL, this, label);
+    //m_pControlSizer->GetStaticBox()->SetBackgroundColour(*wxBLACK);
+    //m_pControlSizer->GetStaticBox()->SetForegroundColour(*wxWHITE);
+    //m_pControlSizer->GetStaticBox()->SetOwnBackgroundColour(*wxBLACK); 
+
+    SetBackgroundColour(*wxBLACK);
+
+    int width  = StringWidth(label);
+    wxStaticText *pLabel = new wxStaticText(this,wxID_ANY,label, wxDefaultPosition, wxSize(width + 5, -1));
+    wxFont f = pLabel->GetFont();
+    f.SetWeight(wxBOLD);
+    pLabel->SetFont(f);
+#ifdef __WINDOWS__
+    pLabel->SetOwnForegroundColour(*wxWHITE);
+#else
+    pLabel->SetOwnBackgroundColour(*wxBLACK);
+#endif
+
+    m_pControlSizer->Add(pLabel, wxSizerFlags().Right());
+    SetSizer(m_pControlSizer);
+}
+
+GraphControlPane::~GraphControlPane(void)
+{
+}
+
+int GraphControlPane::StringWidth(wxString string)
+{
+    int width, height;
+
+    m_pParent->GetTextExtent(string, &width, &height);
+
+    return width;
+}
+
+void GraphControlPane::DoAdd(wxControl *pCtrl, wxString lbl)
+{
+    wxStaticText *pLabel = new wxStaticText(this,wxID_ANY,lbl);
+#ifdef __WINDOWS__
+    pLabel->SetOwnForegroundColour(*wxWHITE);
+#else
+    pLabel->SetOwnBackgroundColour(*wxBLACK);
+#endif
+
+    m_pControlSizer->Add(pLabel, wxSizerFlags().Right());
+    m_pControlSizer->AddSpacer(5);
+    m_pControlSizer->Add(pCtrl, wxSizerFlags().Left());
+    m_pControlSizer->AddSpacer(10);
 }

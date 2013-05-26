@@ -35,6 +35,8 @@
 #ifndef GRAPHCLASS
 #define GRAPHCLASS
 
+class GraphControlPane;
+
 class GraphLogClientWindow : public wxWindow
 {
     GraphLogClientWindow(wxWindow *parent);
@@ -90,6 +92,7 @@ public:
     GraphLogWindow(wxWindow *parent);
     ~GraphLogWindow(void);
     void AppendData (float dx, float dy, float RA, float Dec);
+    void UpdateControls(void);
     void SetState (bool is_active);
     void OnPaint(wxPaintEvent& evt);
     void OnButtonMode(wxCommandEvent& evt);
@@ -98,13 +101,7 @@ public:
     void OnButtonClear(wxCommandEvent& evt);
     void OnButtonZoomIn(wxCommandEvent& evt);
     void OnButtonZoomOut(wxCommandEvent& evt);
-    void OnUpdateSpinGuideParams(wxSpinEvent& evt);
-    void OnUpdateSpinDGuideParams(wxSpinDoubleEvent& evt);
-    void OnUpdateCommandGuideParams(wxCommandEvent& evt);
 
-    wxSpinCtrlDouble *MM_Ctrl, *DSW_Ctrl;
-    wxSpinCtrl *RAA_Ctrl, *RAH_Ctrl, *MDD_Ctrl, *MRAD_Ctrl;
-    wxChoice *DM_Ctrl;
     wxStaticText *m_pLabel1, *m_pLabel2;
 
     wxColor GetRaOrDxColor(void);
@@ -119,7 +116,11 @@ private:
     wxStaticText *DecLabel;
     wxStaticText *OscIndexLabel;
     wxStaticText *RMSLabel;
-//  wxBitmap *bmp;
+    wxBoxSizer *m_pControlSizer;
+    GraphControlPane *m_pXControlPane;
+    GraphControlPane *m_pYControlPane;
+    GraphControlPane *m_pScopePane;
+
     float hdx[500]; // History of dx
     float hdy[500];
     float hra[500];
@@ -137,6 +138,20 @@ private:
     GraphLogClientWindow *m_pClient;
 
     DECLARE_EVENT_TABLE()
+};
+
+class GraphControlPane : public wxWindow
+{
+public:
+    GraphControlPane(wxWindow *pParent, wxString label);
+    ~GraphControlPane(void);
+protected:
+    wxWindow *m_pParent;
+    wxBoxSizer *m_pControlSizer;
+    //wxStaticBoxSizer *m_pControlSizer;
+
+    int StringWidth(wxString string);
+    void DoAdd(wxControl *pCtrl, wxString lbl);
 };
 
 #endif

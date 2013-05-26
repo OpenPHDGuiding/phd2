@@ -61,6 +61,21 @@ protected:
         virtual void UnloadValues(void);
     };
 
+    class GuideAlgorithmLowpassGraphControlPane : public GraphControlPane
+    {
+    public:
+        GuideAlgorithmLowpassGraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm, wxString label);
+        ~GuideAlgorithmLowpassGraphControlPane(void);
+
+    private:
+        GuideAlgorithmLowpass *m_pGuideAlgorithm;
+        wxSpinCtrlDouble *m_pSlopeWeight;
+        wxSpinCtrlDouble *m_pMinMove;
+
+        void OnSlopeWeightSpinCtrlDouble(wxSpinDoubleEvent& evt);
+        void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
+    };
+
     virtual double GetMinMove(void);
     virtual bool SetMinMove(double minMove);
     virtual double GetSlopeWeight(void);
@@ -76,6 +91,7 @@ public:
     virtual void reset(void);
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
 };
 
 #endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */
