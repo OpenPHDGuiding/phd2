@@ -788,6 +788,17 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
     m_pCamera->SetCameraPixelSize(pixel_size);
 }
 
+wxString GuideCamera::GetSettingsSummary() {
+    // return a loggable summary of current camera settings
+    return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s\n",
+        Name, GuideCameraGain,
+        HasDelayParam ? wxString::Format(", delay = %d", Delay) : "",
+        HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "",
+        FullSize.GetWidth(), FullSize.GetHeight(),
+        HaveDark ? wxString::Format("have dark, dark dur = %d", DarkDur) : "no dark"
+    );
+}
+
 //#pragma unmanaged
 void InitCameraParams() {
 #if defined (LE_PARALLEL_CAMERA)

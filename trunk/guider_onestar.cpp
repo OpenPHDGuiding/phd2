@@ -578,6 +578,14 @@ void GuiderOneStar::SaveStarFITS() {
     fits_close_file(fptr,&status);
 }
 
+wxString GuiderOneStar::GetSettingsSummary() {
+    // return a loggable summary of guider configs
+    return wxString::Format("Search region = %d px, Star mass tolerance = %.3f px\n",
+        GetSearchRegion(),
+        GetMassChangeThreshold() * 100.0
+    );
+}
+
 ConfigDialogPane *GuiderOneStar::GetConfigDialogPane(wxWindow *pParent)
 {
     return new GuiderOneStarConfigDialogPane(pParent, this);

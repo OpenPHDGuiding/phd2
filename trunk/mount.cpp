@@ -697,6 +697,33 @@ void Mount::ClearHistory(void)
     }
 }
 
+#if 0
+ConfigDialogPane *Mount::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new MountConfigDialogPane(pParent, this);
+}
+#endif
+
+wxString Mount::GetSettingsSummary() {
+    // return a loggable summary of current mount settings
+    wxString algorithms[] = {
+        _T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+    };
+    return wxString::Format("Mount %s, %s connected, guiding %s, %s\n",
+        m_Name,
+        IsConnected() ? "" : "not",
+        m_guidingEnabled ? "enabled" : "disabled",
+        IsCalibrated() ? wxString::Format("xAngle = %.3f, xRate = %.3f, yAngle = %.3f, yRate = %.3f",
+                yAngle(), yRate(), xAngle(), xRate()) : "not calibrated"
+    ) + wxString::Format("RA guide algorithm %s, %s",
+        algorithms[GetXGuideAlgorithm()],
+        m_pXGuideAlgorithm->GetSettingsSummary()
+    ) + wxString::Format("DEC guide algorithm %s, %s",
+        algorithms[GetYGuideAlgorithm()],
+        m_pYGuideAlgorithm->GetSettingsSummary()
+    );
+}
+
 Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, wxString title, Mount *pMount)
     : ConfigDialogPane(title + " Settings", pParent)
 {

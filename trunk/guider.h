@@ -194,6 +194,8 @@ public:
     virtual wxImage *DisplayedImage(void);
     virtual double ScaleFactor(void);
 
+    virtual wxString GetSettingsSummary();
+
     // wxWindows Event table
 private:
     DECLARE_EVENT_TABLE()

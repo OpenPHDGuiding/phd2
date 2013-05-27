@@ -601,7 +601,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_calibrationXAngle, m_calibrationXRate));
                 status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationXAngle, m_calibrationXRate);
-                GuideLog.CalibrationWestComplete(this, m_calibrationXAngle, m_calibrationXRate);
+                GuideLog.CalibrationDirectComplete(this, "West", m_calibrationXAngle, m_calibrationXRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
                 // fall through
@@ -674,7 +674,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_calibrationYAngle, m_calibrationYRate));
                 status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationYAngle, m_calibrationYRate);
-                GuideLog.CalibrationNorthComplete(this, m_calibrationYAngle, m_calibrationYRate);
+                GuideLog.CalibrationDirectComplete(this, "North", m_calibrationYAngle, m_calibrationYRate);
 
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
                 // fall through
@@ -735,6 +735,18 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
     }
 
     return bError;
+}
+
+wxString Scope::GetSettingsSummary() {
+    // return a loggable summary of current mount settings
+    return Mount::GetSettingsSummary() +
+        wxString::Format("Calibration step %d, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
+            GetCalibrationDuration(),
+            GetMaxRaDuration(),
+            GetMaxDecDuration(),
+            GetDecGuideMode() == DEC_NONE ? "off" : GetDecGuideMode() == DEC_AUTO ? "Auto" :
+            GetDecGuideMode() == DEC_NORTH ? "north" : "south"
+        );
 }
 
 ConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)

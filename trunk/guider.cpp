@@ -591,10 +591,6 @@ void Guider::SetState(GUIDER_STATE newState)
                     pSecondaryMount->AdjustForDeclination();
                 }
                 m_lockPosition = CurrentPosition();
-
-                GuideLog.StartGuiding();
-                GuideLog.Flush();
-
                 break;
         }
 
@@ -794,6 +790,11 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     UpdateImageDisplay(pImage);
 
     Debug.AddLine("UpdateGuideState exits:" + statusMessage);
+}
+
+wxString Guider::GetSettingsSummary() {
+    // return a loggable summary of current global configs managed by MyFrame
+    return "";
 }
 
 ConfigDialogPane *Guider::GetConfigDialogPane(wxWindow *pParent)

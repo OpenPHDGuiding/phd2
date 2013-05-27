@@ -167,6 +167,14 @@ pConfig->SetDouble("/GuideAlgorithm/Lowpass/SlopeWeight", m_slopeWeight);
 return bError;
 }
 
+wxString GuideAlgorithmLowpass::GetSettingsSummary() {
+    // return a loggable summary of current mount settings
+    return wxString::Format("Slope weight = %.3f, Minimum move = %.3f\n",
+            GetSlopeWeight(),
+            GetMinMove()
+        );
+}
+
 ConfigDialogPane *GuideAlgorithmLowpass::GetConfigDialogPane(wxWindow *pParent)
 {
     return new GuideAlgorithmLowpassConfigDialogPane(pParent, this);

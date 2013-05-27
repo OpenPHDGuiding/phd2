@@ -64,6 +64,7 @@ public:
     virtual void reset(void);
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual wxString GetSettingsSummary() { return "\n"; }
 };
 
 #endif /* GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED */

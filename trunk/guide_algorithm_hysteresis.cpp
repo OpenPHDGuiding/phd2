@@ -182,6 +182,15 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
     return bError;
 }
 
+wxString GuideAlgorithmHysteresis::GetSettingsSummary() {
+    // return a loggable summary of current mount settings
+    return wxString::Format("Hysteresis = %.3f, Agression = %.3f, Minimum move = %.3f\n",
+            GetHysteresis(),
+            GetAggression(),
+            GetMinMove()
+        );
+}
+
 ConfigDialogPane *GuideAlgorithmHysteresis::GetConfigDialogPane(wxWindow *pParent)
 {
     return new GuideAlgorithmHysteresisConfigDialogPane(pParent, this);
