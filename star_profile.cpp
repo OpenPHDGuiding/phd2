@@ -226,10 +226,12 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
         dc.SetPen(wxPen(wxColor(0,200,0),1,wxDOT));
         dc.DrawLine(xoffset, midwidth, xoffset + width, midwidth);
         dc.DrawLine(xoffset + midwidth, 0, xoffset + midwidth, width);
-        double starX = xoffset + midwidth - dStarX * 2 + 1, starY = midwidth - dStarY * 2 + 1;
+		// and a small cross at the centroid
+        double starX = xoffset + midwidth - dStarX * (width / 30.0) + 1, starY = midwidth - dStarY * (width / 30.0) + 1;
         if (starX >= xoffset) {
             dc.SetPen(RedPen);
-            dc.DrawPoint(starX, starY);
+			dc.DrawLine(starX - 3, starY, starX + 3, starY);
+			dc.DrawLine(starX, starY - 3, starX, starY + 3);
         }
     }
 }

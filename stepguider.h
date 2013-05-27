@@ -107,6 +107,7 @@ protected:
 
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual wxString GetSettingsSummary();
 
 public:
     StepGuider(void);

@@ -519,12 +519,24 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.DrawLine(rightEdge, bottomEdge, leftEdge, bottomEdge);
     dc.DrawLine(leftEdge, bottomEdge, leftEdge, topEdge);
 
-    // Draw horiz rule (scale is 1 pixel error per 25 pixels)
+    // Draw horiz rule (scale is 1 pixel error per 25 pixels) + scale labels
     dc.SetPen(GreyDashPen);
+    dc.SetTextForeground(*wxLIGHT_GREY);
+#if defined (__APPLE__)
+    dc.SetFont(*wxSMALL_FONT);
+#else
+    dc.SetFont(*wxSWISS_FONT);
+#endif
+
     for(i=1;i<=m_yDivisions;i++)
     {
-        dc.DrawLine(leftEdge,center.y-i*yPixelsPerDivision, rightEdge, center.y-i*yPixelsPerDivision);
-        dc.DrawLine(leftEdge,center.y+i*yPixelsPerDivision, rightEdge, center.y+i*yPixelsPerDivision);
+        double div_y = center.y-i*yPixelsPerDivision;
+        dc.DrawLine(leftEdge,div_y, rightEdge, div_y);
+        dc.DrawText(wxString::Format("%g", i * (double)m_height / (m_yDivisions + 1)), leftEdge + 3, div_y - 13);
+
+        div_y = center.y+i*yPixelsPerDivision;
+        dc.DrawLine(leftEdge, div_y, rightEdge, div_y);
+        dc.DrawText(wxString::Format("%g", -i * (double)m_height / (m_yDivisions + 1)), leftEdge + 3, div_y - 13);
     }
 
     for(i=1;i<=xDivisions;i++)
@@ -532,6 +544,9 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.DrawLine(center.x-i*xPixelsPerDivision, topEdge, center.x-i*xPixelsPerDivision, bottomEdge);
         dc.DrawLine(center.x+i*xPixelsPerDivision, topEdge, center.x+i*xPixelsPerDivision, bottomEdge);
     }
+
+    const double xmag = size.x / (double)m_length;
+    const double ymag = yPixelsPerDivision*(double)(m_yDivisions + 1)/(double)m_height;
 
     // Draw data
     if (m_nItems > 0)
@@ -549,9 +564,6 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         {
             start_item -= m_length;
         }
-
-        const double xmag = size.x / (double)m_length;
-        const double ymag = yPixelsPerDivision / (double)m_height;
 
         for (i=start_item; i<m_maxLength; i++)
         {

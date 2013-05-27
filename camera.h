@@ -99,6 +99,8 @@ public:
 
     virtual void    ShowPropertyDialog() { return; }
 
+    virtual wxString GetSettingsSummary();
+
     GuideCamera(void);
     virtual ~GuideCamera(void) {};
 };

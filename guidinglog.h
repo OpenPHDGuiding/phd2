@@ -67,14 +67,17 @@ public:
     bool StartCalibration(Mount *pCalibrationMount);
     bool CalibrationFailed(Mount *pCalibrationMount, wxString msg);
     bool CalibrationStep(Mount *pCalibrationMount, wxString direction, int steps, double dx, double dy, const PHD_Point &xy, double dist);
-    bool CalibrationWestComplete(Mount *pCalibrationMount, double angle, double rate);
-    bool CalibrationNorthComplete(Mount *pCalibrationMount, double angle, double rate);
+    bool CalibrationDirectComplete(Mount *pCalibrationMount, wxString direction, double angle, double rate);
     bool CalibrationComplete(Mount *pCalibrationMount);
 
     bool StartGuiding();
     bool GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
         double RADuration, double RADistance,
         double DECDuration, double DECDistance, int errorCode);
+
+    bool ServerCommand(Guider* guider,  wxString cmd);
+    bool ServerGuidingDithered(Guider* guider, double dx, double dy);
+    bool ServerSetLockPosition(Guider* guider, const PHD_Point &xy);
 
     bool StartEntry(void);
 };

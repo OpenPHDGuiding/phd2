@@ -176,6 +176,7 @@ public:
 
     virtual void ClearHistory(void);
     virtual double GetDeclination(void);
+    virtual wxString GetSettingsSummary();
 };
 
 #endif /* MOUNT_H_INCLUDED */

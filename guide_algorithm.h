@@ -65,6 +65,7 @@ public:
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label) { return NULL; };
+    virtual wxString GetSettingsSummary() { return ""; }
 };
 
 #endif /* GUIDE_ALGORITHM_H_INCLUDED */

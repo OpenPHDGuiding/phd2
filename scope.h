@@ -116,6 +116,7 @@ protected:
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
+    virtual wxString GetSettingsSummary();
 
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass

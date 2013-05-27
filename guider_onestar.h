@@ -87,6 +87,7 @@ public:
     virtual wxRect GetBoundingBox(void);
     virtual double StarMass(void);
     virtual double SNR(void);
+    virtual wxString GetSettingsSummary();
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 private:

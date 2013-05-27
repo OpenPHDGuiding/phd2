@@ -186,6 +186,12 @@ bool GuideAlgorithmResistSwitch::SetMinMove(double minMove)
     return bError;
 }
 
+wxString GuideAlgorithmResistSwitch::GetSettingsSummary() {
+    // return a loggable summary of current mount settings
+    return wxString::Format("Minimum move = %.3f\n",
+            GetMinMove()
+        );
+}
 
 ConfigDialogPane *GuideAlgorithmResistSwitch::GetConfigDialogPane(wxWindow *pParent)
 {

@@ -234,6 +234,7 @@ public:
     double GetSampling(void);
 
     virtual void SetStatusText(const wxString& text, int number=0, int msToDisplay = 0);
+    virtual wxString GetSettingsSummary();
 
 private:
     wxCriticalSection m_CSpWorkerThread;

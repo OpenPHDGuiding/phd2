@@ -1113,6 +1113,17 @@ double MyFrame::GetSampling(void)
     return m_sampling;
 }
 
+wxString MyFrame::GetSettingsSummary() {
+    // return a loggable summary of current global configs managed by MyFrame
+    return wxString::Format("Dither = %s, Dither scale = %.3f, Image noise reduction = %s, Guide-frame time lapse = %d, Server %s\n",
+        m_ditherRaOnly ? "RA only" : "both axes",
+        m_ditherScaleFactor,
+        m_noiseReductionMethod == NR_NONE ? "none" : m_noiseReductionMethod == NR_2x2MEAN ? "2x2 mean" : "3x3 mean",
+        m_timeLapse,
+        m_serverMode ? "enabled" : "disabled"
+    );
+}
+
 ConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 {
     return new MyFrameConfigDialogPane(pParent, this);

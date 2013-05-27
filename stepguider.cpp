@@ -430,7 +430,6 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
         ClearCalibration();
         m_calibrationState = CALIBRATION_STATE_GOTO_LOWER_RIGHT_CORNER;
         m_calibrationStartingLocation = currentLocation;
-        GuideLog.StartCalibration(this);
     }
     catch (wxString Msg)
     {
@@ -521,6 +520,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     status0.Printf(_("Left Calibration: %3d"), stepsRemainingLeft);
                     m_calibrationIterations++;
                     moveLeft  = true;
+                    GuideLog.CalibrationStep(this, "Left", stepsRemainingLeft,
+                        m_calibrationStartingLocation.dX(currentLocation),  m_calibrationStartingLocation.dY(currentLocation),
+                        currentLocation, m_calibrationStartingLocation.Distance(currentLocation));
                     break;
                 }
                 Debug.AddLine(wxString::Format("Falling through to state AVERAGE_CENTER_LOCATION, position=(%.2lf, %.2lf)",
@@ -542,6 +544,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationXRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                                                      (m_calibrationIterations * m_calibrationStepsPerIteration);
                 status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationXAngle, m_calibrationXRate);
+                GuideLog.CalibrationDirectComplete(this, "Left", m_calibrationXAngle, m_calibrationXRate);
                 Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.2f rate=%.2f", m_calibrationXAngle, m_calibrationXRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
@@ -556,6 +559,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     status0.Printf(_("up Calibration: %3d"), stepsRemainingUp);
                     m_calibrationIterations++;
                     moveUp = true;
+                    GuideLog.CalibrationStep(this, "Up", stepsRemainingLeft,
+                        m_calibrationStartingLocation.dX(currentLocation),  m_calibrationStartingLocation.dY(currentLocation),
+                        currentLocation, m_calibrationStartingLocation.Distance(currentLocation));
                     break;
                 }
                 Debug.AddLine(wxString::Format("Falling through to state AVERAGE_ENDING_LOCATION, position=(%.2lf, %.2lf)",
@@ -577,6 +583,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationYRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                                                      (m_calibrationIterations * m_calibrationStepsPerIteration);
                 status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationYAngle, m_calibrationYRate);
+                GuideLog.CalibrationDirectComplete(this, "Left", m_calibrationYAngle, m_calibrationYRate);
                 Debug.AddLine(wxString::Format("UP calibration completes with angle=%.2f rate=%.2f", m_calibrationYAngle, m_calibrationYRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
@@ -602,6 +609,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                                m_calibrationXRate,  m_calibrationYRate);
                 status1 = _T("calibration complete");
                 pFrame->SetStatusText(_T("Cal"),5);
+                GuideLog.CalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");
                 break;
             default:
@@ -918,6 +926,16 @@ bool StepGuider::WouldHitLimit(GUIDE_DIRECTION direction, int steps)
     Debug.AddLine(wxString::Format("WouldHitLimit=%d current=%d, steps=%d, max=%d", bReturn, CurrentPosition(direction), steps, MaxPosition(direction)));
 
     return bReturn;
+}
+
+wxString StepGuider::GetSettingsSummary() {
+    // return a loggable summary of current mount settings
+    return wxString::Format("Calibration steps = %s, Samples to average = %d, Bump percentage = %d, Bump step = %.2f\n",
+            GetCalibrationStepsPerIteration(),
+            GetSamplesToAverage(),
+            GetBumpPercentage(),
+            GetBumpMaxStepsPerCycle()
+        );
 }
 
 ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)

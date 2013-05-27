@@ -92,6 +92,7 @@ public:
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
+    virtual wxString GetSettingsSummary();
 };
 
 #endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */

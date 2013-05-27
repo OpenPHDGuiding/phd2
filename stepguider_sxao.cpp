@@ -38,6 +38,7 @@
 StepGuiderSxAO::StepGuiderSxAO(void)
 {
     m_pSerialPort = NULL;
+    m_Name = "SXV-AO";
 }
 
 StepGuiderSxAO::~StepGuiderSxAO(void)

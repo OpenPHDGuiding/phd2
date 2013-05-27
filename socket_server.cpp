@@ -162,12 +162,14 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 Debug.AddLine("processing socket request PAUSE");
                 pGuider->SetPaused(true);
                 wxLogStatus(_T("Paused"));
+                GuideLog.ServerCommand(pGuider, "PAUSE");
                 break;
             case MSG_RESUME:
             case 'r':
                 Debug.AddLine("processing socket request RESUME");
                 pGuider->SetPaused(false);
                 wxLogStatus (_T("Resumed"));
+                GuideLog.ServerCommand(pGuider, "RESUME");
                 break;
             case MSG_MOVE1:  // +/- 0.5
             case MSG_MOVE2:  // +/- 1.0
@@ -219,6 +221,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
 
                 wxLogStatus(_T("Moving by %.2lf,%.2lf"),dRa, dDec);
+				GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
 
                  rval = RequestedExposureDuration() / 1000;
                  if (rval < 1)
@@ -258,6 +261,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                     tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_LOOP);
                     QueueEvent(tmp_evt);
                 }
+                GuideLog.ServerCommand(pGuider, "AUTO FIND STAR");
                 break;
             case MSG_SETLOCKPOSITION:
             {
@@ -272,6 +276,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 {
                     Debug.AddLine("processing socket request SETLOCKPOSITION for (%d, %d) succeeded", x, y);
                     wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
+					GuideLog.ServerSetLockPosition(pGuider, PHD_Point(x,y));
                 }
                 else
                 {
@@ -289,6 +294,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 // return 1 for success, 0 for failure
                 rval = FlipRACal(*tmp_evt) ? 1 : 0;
                 pGuider->SetPaused(wasPaused);
+				GuideLog.ServerCommand(pGuider, "FLIP RA CAL");
                 delete tmp_evt;
                 break;
             }
@@ -348,6 +354,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 wxCommandEvent *tmp_evt;
                 tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_LOOP);
                 QueueEvent(tmp_evt);
+                GuideLog.ServerCommand(pGuider, "LOOP");
                 break;
             }
             case MSG_STOP:
@@ -356,7 +363,8 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 wxCommandEvent *tmp_evt;
                 tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_STOP);
                 QueueEvent(tmp_evt);
-                break;
+                GuideLog.ServerCommand(pGuider, "STOP");
+               break;
             }
             case MSG_STARTGUIDING:
             {
@@ -364,6 +372,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 wxCommandEvent *tmp_evt;
                 tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_GUIDE);
                 QueueEvent(tmp_evt);
+                GuideLog.ServerCommand(pGuider, "START GUIDING");
                 break;
             }
             case MSG_LOOPFRAMECOUNT:
@@ -396,6 +405,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 }
 
                 pMount->ClearCalibration();
+				GuideLog.ServerCommand(pGuider, "CLEAR CAL");
             default:
                 wxLogStatus(_T("Unknown test id received from client: %d"),(int) c);
                 rval = 1;
