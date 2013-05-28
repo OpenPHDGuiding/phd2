@@ -516,6 +516,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
         if (pMount)
             delete pMount;
         pMount = new ScopeOnCamera();
+        pGraphLog->UpdateControls();
         if (!pMount->IsConnected())
         {
             pMount->Connect();

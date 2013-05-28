@@ -275,6 +275,7 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
             delete pMount;
             pMount = pSecondaryMount;
             pSecondaryMount = NULL;
+            pGraphLog->UpdateControls();
             SetStatusText(_T(""),4);
         }
 
