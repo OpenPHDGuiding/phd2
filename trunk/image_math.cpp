@@ -109,58 +109,60 @@ bool QuickLRecon(usImage& img) {
     return false;
 }
 
-bool Median3(usImage& img) {
-    usImage Limg;
-    int x, y;
-    int xsize, ysize;
-    unsigned short *ptr0, *ptr1;
-    unsigned short array[9];
-
-    xsize = img.Size.GetWidth();
-    ysize = img.Size.GetHeight();
-    if (Limg.Init(xsize,ysize)) {
-        (void) wxMessageBox(wxT("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    for (y=1; y<ysize-1; y++) {
-        for (x=1; x<xsize-1; x++) {
-            array[0] = img.ImageData[(x-1)+(y-1)*xsize];
-            array[1] = img.ImageData[(x)+(y-1)*xsize];
-            array[2] = img.ImageData[(x+1)+(y-1)*xsize];
-            array[3] = img.ImageData[(x-1)+(y)*xsize];
-            array[4] = img.ImageData[(x)+(y)*xsize];
-            array[5] = img.ImageData[(x+1)+(y)*xsize];
-            array[6] = img.ImageData[(x-1)+(y+1)*xsize];
-            array[7] = img.ImageData[(x)+(y+1)*xsize];
-            array[8] = img.ImageData[(x+1)+(y+1)*xsize];
-            qsort(array,9,sizeof(unsigned short),us_sort_func);
-            Limg.ImageData[x+y*xsize] = array[4];
-        }
-        Limg.ImageData[(xsize-1)+y*xsize]=img.ImageData[(xsize-1)+y*xsize];  // 1st & Last one in this row -- just grab from orig
-        Limg.ImageData[y*xsize]=img.ImageData[y*xsize];
-    }
-    for (x=0; x<xsize; x++) {
-        Limg.ImageData[x+(ysize-1)*xsize]=img.ImageData[x+(ysize-1)*xsize];  // Last row -- just duplicate
-        Limg.ImageData[x]=img.ImageData[x];  // First row
-    }
-    ptr0=img.ImageData;
-    ptr1=Limg.ImageData;
-    for (x=0; x<img.NPixels; x++, ptr0++, ptr1++)
-        *ptr0=(*ptr1);
-    //delete Limg;
-    Limg.Init(0,0);
-
-    return false;
+bool Median3(usImage& img)
+{
+    return Median3(img.ImageData, img.Size.GetWidth(), img.Size.GetHeight());
 }
 
-bool Median3(unsigned short ImageData [], int xsize, int ysize) {
-    unsigned short *tmpimg;
+inline static void swap(unsigned short& a, unsigned short& b)
+{
+    unsigned short const t = a;
+    a = b;
+    b = t;
+}
+
+static int partition(unsigned short *list, int left, int right, int pivotIndex)
+{
+    int pivotValue = list[pivotIndex];
+    swap(list[pivotIndex], list[right]);  // Move pivot to end
+    int storeIndex = left;
+    for (int i = left; i < right; i++)
+        if (list[i] < pivotValue)
+        {
+            if (i != storeIndex)
+                swap(list[storeIndex], list[i]);
+            ++storeIndex;
+        }
+    swap(list[right], list[storeIndex]); // Move pivot to its final place
+    return storeIndex;
+}
+
+// Hoare's selection algorithm
+static unsigned short select_kth(unsigned short *list, int left, int right, int k)
+{
+    while (true)
+    {
+        int pivotIndex = (left + right) / 2;  // select pivotIndex between left and right
+        int pivotNewIndex = partition(list, left, right, pivotIndex);
+        int pivotDist = pivotNewIndex - left + 1;
+        if (pivotDist == k)
+            return list[pivotNewIndex];
+        else if (k < pivotDist)
+            right = pivotNewIndex - 1;
+        else {
+            k = k - pivotDist;
+            left = pivotNewIndex + 1;
+        }
+    }
+}
+
+bool Median3(unsigned short ImageData [], int xsize, int ysize)
+{
     int x, y;
-    unsigned short *ptr0, *ptr1;
     unsigned short array[9];
     int NPixels = xsize * ysize;
 
-    tmpimg = new unsigned short[NPixels];
+    unsigned short *tmpimg = (unsigned short *) alloca(NPixels * sizeof(unsigned short));
 
     for (y=1; y<ysize-1; y++) {
         for (x=1; x<xsize-1; x++) {
@@ -173,21 +175,17 @@ bool Median3(unsigned short ImageData [], int xsize, int ysize) {
             array[6] = ImageData[(x-1)+(y+1)*xsize];
             array[7] = ImageData[(x)+(y+1)*xsize];
             array[8] = ImageData[(x+1)+(y+1)*xsize];
-            qsort(array,9,sizeof(unsigned short),us_sort_func);
-            tmpimg[x+y*xsize] = array[4];
+            tmpimg[x+y*xsize] = select_kth(array, 0, 9-1, 5);
         }
-        tmpimg[(xsize-1)+y*xsize]=ImageData[(xsize-1)+y*xsize];  // 1st & Last one in this row -- just grab from orig
-        tmpimg[y*xsize]=ImageData[y*xsize];
+        tmpimg[(xsize-1)+y*xsize] = ImageData[(xsize-1)+y*xsize];  // 1st & Last one in this row -- just grab from orig
+        tmpimg[y*xsize] = ImageData[y*xsize];
     }
-    for (x=0; x<xsize; x++) {
-        tmpimg[x+(ysize-1)*xsize]=ImageData[x+(ysize-1)*xsize];  // Last row -- just duplicate
-        tmpimg[x]=ImageData[x];  // First row
+    for (x = 0; x < xsize; x++) {
+        tmpimg[x+(ysize-1)*xsize] = ImageData[x+(ysize-1)*xsize];  // Last row -- just duplicate
+        tmpimg[x] = ImageData[x];  // First row
     }
-    ptr0=ImageData;
-    ptr1=tmpimg;
-    for (x=0; x<NPixels; x++, ptr0++, ptr1++)
-        *ptr0=(*ptr1);
-    delete [] tmpimg;
+
+    memcpy(ImageData, tmpimg, NPixels * sizeof(unsigned short));
 
     return false;
 }
