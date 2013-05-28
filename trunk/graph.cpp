@@ -545,11 +545,11 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     {
         double div_y = center.y-i*yPixelsPerDivision;
         dc.DrawLine(leftEdge,div_y, rightEdge, div_y);
-        dc.DrawText(wxString::Format("%g", i * (double)m_height / (m_yDivisions + 1)), leftEdge + 3, div_y - 13);
+        dc.DrawText(wxString::Format("%g%s", i * (double)m_height / (m_yDivisions + 1), sampling != 1 ? "''" : ""), leftEdge + 3, div_y - 13);
 
         div_y = center.y+i*yPixelsPerDivision;
         dc.DrawLine(leftEdge, div_y, rightEdge, div_y);
-        dc.DrawText(wxString::Format("%g", -i * (double)m_height / (m_yDivisions + 1)), leftEdge + 3, div_y - 13);
+        dc.DrawText(wxString::Format("%g%s", -i * (double)m_height / (m_yDivisions + 1), sampling != 1 ? "''" : ""), leftEdge + 3, div_y - 13);
     }
 
     for(i=1;i<=xDivisions;i++)
