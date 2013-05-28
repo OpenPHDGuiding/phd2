@@ -102,7 +102,7 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     pButtonSizer->Add(m_pLengthButton, wxSizerFlags(0).Border(wxTOP, 5));
 
     m_pHeightButton = new wxButton(this,BUTTON_GRAPH_HEIGHT,_T("foo"));
-    //m_pHeightButton->SetToolTip(_("# of pixels per Y division"));
+    m_heightButtonLabelVal = 0;
     OnButtonHeight(dummy); // update the buttom label
     pButtonSizer->Add(m_pHeightButton);
 
@@ -227,7 +227,7 @@ void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
             m_pClient->m_height = m_pClient->m_minHeight;
     }
 
-    this->m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d"), m_pClient->m_height));
+    UpdateHeightButtonLabel();
     this->Refresh();
 }
 
@@ -309,15 +309,28 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             break;
     }
 
-    if (pFrame->GetSampling() != 1)
+    UpdateHeightButtonLabel();
+}
+
+void GraphLogWindow::UpdateHeightButtonLabel(void)
+{
+    int val = m_pClient->m_height;
+    if (pFrame && pFrame->GetSampling() != 1.0)
+        val = -val; // <0 indicates arc-sec
+
+    if (m_heightButtonLabelVal != val)
     {
-        this->m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d''"), m_pClient->m_height));
-        m_pHeightButton->SetToolTip(_("# of arc-sec per Y division"));
-    }
-    else
-    {
-        this->m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d"), m_pClient->m_height));
-        m_pHeightButton->SetToolTip(_("# of pixels per Y division"));
+        if (val > 0)
+        {
+            m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d"), m_pClient->m_height));
+            m_pHeightButton->SetToolTip(_("# of pixels per Y division"));
+        }
+        else
+        {
+            m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d''"), m_pClient->m_height));
+            m_pHeightButton->SetToolTip(_("# of arc-sec per Y division"));
+        }
+        m_heightButtonLabelVal = val;
     }
 }
 

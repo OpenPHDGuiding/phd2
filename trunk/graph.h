@@ -110,6 +110,7 @@ public:
 private:
     wxButton *m_pLengthButton;
     wxButton *m_pHeightButton;
+    int m_heightButtonLabelVal; // value currently displayed on height button: <0 for arc-sec, >0 for pixels
     wxButton *m_pModeButton;
     wxButton *m_pClearButton;
     wxStaticText *RALabel;
@@ -130,12 +131,11 @@ private:
     int mode;   // 0 = RA/Dec, 1=dx, dy
     int length;
     float vertical_scale;
+    bool m_visible;
+    GraphLogClientWindow *m_pClient;
 
     int StringWidth(wxString string);
-
-    bool m_visible;
-
-    GraphLogClientWindow *m_pClient;
+    void UpdateHeightButtonLabel(void);
 
     DECLARE_EVENT_TABLE()
 };
