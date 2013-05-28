@@ -397,6 +397,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     if (pNewScope && pNewScope->IsConnected()) {
         delete pMount;
         pMount = pNewScope;
+        pGraphLog->UpdateControls();
         SetStatusText(_("Mount connected"));
         SetStatusText(_T("Scope"),3);
         // now store the scope we selected so we can use it as the default next time.
