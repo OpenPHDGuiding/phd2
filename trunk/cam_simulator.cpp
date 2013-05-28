@@ -178,17 +178,39 @@ inline static void set_pixel(usImage& img, int x, int y, unsigned short val)
         *addr = val;
 }
 
-static void render_star(usImage& img, const wxPoint& p, int inten)
+inline static void incr_pixel(usImage& img, int x, int y, unsigned int val)
 {
-    set_pixel(img, p.x, p.y, inten);
-    set_pixel(img, p.x, p.y + 1, inten / 2);
-    set_pixel(img, p.x, p.y - 1, inten / 2);
-    set_pixel(img, p.x + 1, p.y, inten / 2);
-    set_pixel(img, p.x - 1, p.y, inten / 2);
-    set_pixel(img, p.x + 1, p.y + 1, inten * 10 / 3);
-    set_pixel(img, p.x - 1, p.y + 1, inten * 10 / 3);
-    set_pixel(img, p.x + 1, p.y - 1, inten * 10 / 3);
-    set_pixel(img, p.x - 1, p.y - 1, inten * 10 / 3);
+    unsigned short *const addr = pixel_addr(img, x, y);
+    if (addr) {
+        unsigned int t = *addr;
+        t += val;
+        if (t > (unsigned int)(unsigned short)-1)
+            *addr = (unsigned short)-1;
+        else
+            *addr = (unsigned short)t;
+    }
+}
+
+static void render_star(usImage& img, const wxRealPoint& p, int inten)
+{
+    static unsigned int const STAR[][7] = {{  0,  0,  1,  1,  1,  0,  0,},
+                                           {  0,  2, 11, 17, 11,  2,  0,},
+                                           {  1, 11, 47, 78, 47, 11,  1,},
+                                           {  1, 17, 78,128, 78, 17,  1,},
+                                           {  1, 11, 47, 78, 47, 11,  1,},
+                                           {  0,  2, 11, 17, 11,  2,  0,},
+                                           {  0,  0,  1,  1,  1,  0,  0,}};
+
+    for (int sx = -3; sx <= 3; sx++) {
+        int const cx = (int) floor(p.x + (double) sx / 2.0 + 0.5);
+        for (int sy = -3; sy <= 3; sy++) {
+            int const cy = (int) floor(p.y + (double) sy / 2.0 + 0.5);
+            int incr = inten * STAR[sy + 3][sx + 3] / 256;
+            if (incr > (unsigned short)-1)
+                incr = (unsigned short)-1;
+            incr_pixel(img, cx, cy, incr);
+        }
+    }
 }
 
 void SimCamState::FillImage(usImage& img, int exptime, int gain, int offset)
@@ -237,7 +259,7 @@ void SimCamState::FillImage(usImage& img, int exptime, int gain, int offset)
     }
 
     // convert to camera coordinates
-    wxVector<wxPoint> cc(nr_stars);
+    wxVector<wxRealPoint> cc(nr_stars);
     double const angle = SimCamParams::cam_angle * PI / 180.;
     double const cos_t = cos(angle);
     double const sin_t = sin(angle);
@@ -384,6 +406,8 @@ static void fill_noise(usImage& img, int exptime, int gain, int offset)
 
 bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
+    long long start = wxGetLocalTimeMillis().GetValue();
+
     FullSize = wxSize(sim->width, sim->height);
 
     int const exptime = duration;
@@ -401,17 +425,12 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
     sim->FillImage(img, exptime, gain, offset);
 
-    if (exptime > 100) {
-        int t = 0;
-        while (t < exptime) {
-            wxMilliSleep(100);
-            wxTheApp->Yield(true);
-            t += 100;
-        }
-    }
-
     if (HaveDark && recon)
         Subtract(img, CurrentDarkFrame);
+
+    long long now = wxGetLocalTimeMillis().GetValue();
+    if (now < start + duration)
+        wxMilliSleep(start + duration - now);
 
     return false;
 }
