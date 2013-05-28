@@ -162,7 +162,7 @@ bool Median3(unsigned short ImageData [], int xsize, int ysize)
     unsigned short array[9];
     int NPixels = xsize * ysize;
 
-    unsigned short *tmpimg = (unsigned short *) alloca(NPixels * sizeof(unsigned short));
+    unsigned short *tmpimg = (unsigned short *) malloc(NPixels * sizeof(unsigned short));
 
     for (y=1; y<ysize-1; y++) {
         for (x=1; x<xsize-1; x++) {
@@ -186,6 +186,7 @@ bool Median3(unsigned short ImageData [], int xsize, int ysize)
     }
 
     memcpy(ImageData, tmpimg, NPixels * sizeof(unsigned short));
+    free(tmpimg);
 
     return false;
 }
