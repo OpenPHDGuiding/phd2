@@ -629,22 +629,51 @@ void MyFrame::SetupHelpFile(void)
     wxImage::AddHandler(new wxPNGHandler);
 }
 
+static bool cond_update_tool(wxAuiToolBar *tb, int toolId, bool enable)
+{
+    bool ret = false;
+    if (tb->GetToolEnabled(toolId) != enable) {
+        tb->EnableTool(toolId, enable);
+        ret = true;
+    }
+    return ret;
+}
+
 void MyFrame::UpdateButtonsStatus(void)
 {
-    MainToolbar->EnableTool(BUTTON_LOOP,!CaptureActive && pCamera && pCamera->Connected);
-    MainToolbar->EnableTool(BUTTON_CAMERA, !CaptureActive);
-    MainToolbar->EnableTool(BUTTON_SCOPE,!CaptureActive && pMount);
-    MainToolbar->EnableTool(wxID_PROPERTIES,!CaptureActive);        // Brain button
-    //MainToolbar->EnableTool(BUTTON_DARK, !CaptureActive && pCamera && pCamera->Connected);
-    Dark_Button->Enable(!CaptureActive && pCamera && pCamera->Connected);
+    bool need_update = false;
+
+    bool const loop_enabled = !CaptureActive && pCamera && pCamera->Connected;
+
+    if (cond_update_tool(MainToolbar, BUTTON_LOOP, loop_enabled))
+        need_update = true;
+
+    if (cond_update_tool(MainToolbar, BUTTON_CAMERA, !CaptureActive))
+        need_update = true;
+
+    if (cond_update_tool(MainToolbar, BUTTON_SCOPE, !CaptureActive && pMount))
+        need_update = true;
+
+    if (cond_update_tool(MainToolbar, wxID_PROPERTIES, !CaptureActive))
+        need_update = true;
+
+    if (Dark_Button->IsEnabled() != loop_enabled) {
+        //MainToolbar->EnableTool(BUTTON_DARK, !CaptureActive && pCamera && pCamera->Connected);
+        Dark_Button->Enable(loop_enabled);
+        need_update = true;
+    }
 
     bool bGuideable = pGuider->GetState() >= STATE_SELECTED &&
         pGuider->GetState() < STATE_GUIDING &&
         pMount->IsConnected();
 
-    MainToolbar->EnableTool(BUTTON_GUIDE,bGuideable);
-    Update();
-    Refresh();
+    if (cond_update_tool(MainToolbar, BUTTON_GUIDE, bGuideable))
+        need_update = true;
+
+    if (need_update) {
+        Update();
+        Refresh();
+    }
 }
 
 
@@ -765,24 +794,7 @@ void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 {
     EXPOSE_REQUEST *pRequest = (EXPOSE_REQUEST *)evt.GetClientData();
     bool bError = pCamera->Capture(pRequest->exposureDuration, *pRequest->pImage, pRequest->subframe);
-
-    if (!bError)
-    {
-        switch (m_noiseReductionMethod)
-        {
-            case NR_NONE:
-                break;
-            case NR_2x2MEAN:
-                QuickLRecon(*pRequest->pImage);
-                break;
-            case NR_3x3MEDIAN:
-                Median3(*pRequest->pImage);
-                break;
-        }
-    }
-
     pRequest->bError = bError;
-
     pRequest->pSemaphore->Post();
 }
 
