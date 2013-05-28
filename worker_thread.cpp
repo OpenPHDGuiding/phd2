@@ -114,18 +114,6 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs)
             {
                 throw ERROR_INFO("CaptureFull failed");
             }
-
-            switch (m_pFrame->GetNoiseReductionMethod())
-            {
-                case NR_NONE:
-                    break;
-                case NR_2x2MEAN:
-                    QuickLRecon(*pArgs->pImage);
-                    break;
-                case NR_3x3MEDIAN:
-                    Median3(*pArgs->pImage);
-                    break;
-            }
         }
         else
         {
@@ -145,6 +133,23 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs)
             pArgs->pSemaphore = NULL;
         }
         Debug.AddLine("Exposure complete");
+
+        if (!bError)
+        {
+            switch (m_pFrame->GetNoiseReductionMethod())
+            {
+                case NR_NONE:
+                    break;
+                case NR_2x2MEAN:
+                    QuickLRecon(*pArgs->pImage);
+                    break;
+                case NR_3x3MEDIAN:
+                    Median3(*pArgs->pImage);
+                    break;
+            }
+
+           pArgs->pImage->CalcStats();
+        }
     }
     catch (wxString Msg)
     {

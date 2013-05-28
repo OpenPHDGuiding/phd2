@@ -377,7 +377,6 @@ void Guider::UpdateImageDisplay(usImage *pImage) {
         pImage = m_pCurrentImage;
     }
 
-    pImage->CalcStats();
     blevel = pImage->Min;
     wlevel = pImage->FiltMax;
 
