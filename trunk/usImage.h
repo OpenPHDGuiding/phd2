@@ -58,6 +58,8 @@ public:
     bool                Load(const wxString& fname);
     bool                Save(const wxString& fname);
     bool                Rotate(double theta, bool mirror=false);
+    unsigned short&     Pixel(int x, int y) { return ImageData[y * Size.x + x]; }
+    const unsigned short& Pixel(int x, int y) const { return ImageData[y * Size.x + x]; }
 };
 
 #endif

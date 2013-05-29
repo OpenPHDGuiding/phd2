@@ -122,7 +122,7 @@ struct SimCamState {
     wxStopWatch timer;    // platform-independent timer
 
     SimCamState();
-    void FillImage(usImage& img, int exptime, int gain, int offset);
+    void FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset);
 };
 
 SimCamState::SimCamState()
@@ -168,7 +168,7 @@ inline static unsigned short *pixel_addr(usImage& img, int x, int y)
         return 0;
     if (y < 0 || y >= img.Size.y)
         return 0;
-    return &img.ImageData[y * img.Size.x + x];
+    return &img.Pixel(x, y);
 }
 
 inline static void set_pixel(usImage& img, int x, int y, unsigned short val)
@@ -191,7 +191,7 @@ inline static void incr_pixel(usImage& img, int x, int y, unsigned int val)
     }
 }
 
-static void render_star(usImage& img, const wxRealPoint& p, int inten)
+static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint& p, int inten)
 {
     static unsigned int const STAR[][7] = {{  0,  0,  1,  1,  1,  0,  0,},
                                            {  0,  2, 11, 17, 11,  2,  0,},
@@ -203,8 +203,12 @@ static void render_star(usImage& img, const wxRealPoint& p, int inten)
 
     for (int sx = -3; sx <= 3; sx++) {
         int const cx = (int) floor(p.x + (double) sx / 2.0 + 0.5);
+        if (cx < subframe.GetLeft() || cx > subframe.GetRight())
+            continue;
         for (int sy = -3; sy <= 3; sy++) {
             int const cy = (int) floor(p.y + (double) sy / 2.0 + 0.5);
+            if (cy < subframe.GetTop() || cy > subframe.GetBottom())
+                continue;
             int incr = inten * STAR[sy + 3][sx + 3] / 256;
             if (incr > (unsigned short)-1)
                 incr = (unsigned short)-1;
@@ -213,7 +217,7 @@ static void render_star(usImage& img, const wxRealPoint& p, int inten)
     }
 }
 
-void SimCamState::FillImage(usImage& img, int exptime, int gain, int offset)
+void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
     unsigned int const nr_stars = stars.size();
 
@@ -273,13 +277,14 @@ void SimCamState::FillImage(usImage& img, int exptime, int gain, int offset)
         for (unsigned int i = 0; i < nr_stars; i++) {
             unsigned short const newval =
                 stars[i].inten * exptime * gain + (int)((double) gain / 10.0 * (float) offset * (float) exptime / 100.0 + (rand() % (gain * 100)));
-            render_star(img, cc[i], newval);
+            render_star(img, subframe, cc[i], newval);
         }
     }
 
     // render hot pixels
     for (unsigned int i = 0; i < hotpx.size(); i++)
-        set_pixel(img, hotpx[i].x, hotpx[i].y, (unsigned short) -1);
+        if (subframe.Contains(hotpx[i]))
+            set_pixel(img, hotpx[i].x, hotpx[i].y, (unsigned short) -1);
 }
 
 Camera_SimClass::Camera_SimClass()
@@ -294,6 +299,7 @@ Camera_SimClass::Camera_SimClass()
     HasGuiderOutput = true;
     HasShutter = true;
     HasGainControl = true;
+    HasSubframes = true;
 }
 
 bool Camera_SimClass::Connect() {
@@ -397,11 +403,15 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img) {
 
 #if SIMMODE==3
 
-static void fill_noise(usImage& img, int exptime, int gain, int offset)
+static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
-    unsigned short *dataptr = img.ImageData;
-    for (unsigned int i = 0; i < img.NPixels; i++, dataptr++)  // put in base noise
-        *dataptr = (unsigned short) ((double) gain / 10.0 * offset * exptime / 100.0 + (rand() % (gain * 100)));
+    unsigned short *p0 = &img.Pixel(subframe.GetLeft(), subframe.GetTop());
+    for (unsigned int r = 0; r < subframe.GetHeight(); r++, p0 += img.Size.GetWidth())
+    {
+        unsigned short *const end = p0 + subframe.GetWidth();
+        for (unsigned short *p = p0; p < end; p++)
+            *p = (unsigned short) ((double) gain / 10.0 * offset * exptime / 100.0 + (rand() % (gain * 100)));
+    }
 }
 
 bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
@@ -409,6 +419,12 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     long long start = wxGetLocalTimeMillis().GetValue();
 
     FullSize = wxSize(sim->width, sim->height);
+
+    bool usingSubframe = UseSubframes;
+    if (subframe.width <= 0 || subframe.height <= 0)
+        usingSubframe = false;
+    if (!usingSubframe)
+        subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
 
     int const exptime = duration;
     int const gain = 30;
@@ -421,9 +437,15 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         }
     }
 
-    fill_noise(img, exptime, gain, offset);
+    if (usingSubframe)
+        memset(img.ImageData, 0, img.NPixels * sizeof(unsigned short));
 
-    sim->FillImage(img, exptime, gain, offset);
+    fill_noise(img, subframe, exptime, gain, offset);
+
+    sim->FillImage(img, subframe, exptime, gain, offset);
+
+    if (usingSubframe)
+        img.Subframe = subframe;
 
     if (HaveDark && recon)
         Subtract(img, CurrentDarkFrame);
