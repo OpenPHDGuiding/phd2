@@ -110,7 +110,7 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs)
 
             pArgs->pImage->InitDate();
 
-            if (pCamera->Capture(pArgs->exposureDuration, *pArgs->pImage, pArgs->subframe))
+            if (pCamera->Capture(pArgs->exposureDuration, *pArgs->pImage, pArgs->subframe, true))
             {
                 throw ERROR_INFO("CaptureFull failed");
             }

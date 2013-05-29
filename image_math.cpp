@@ -239,39 +239,67 @@ bool SquarePixels(usImage& img, float xsize, float ysize) {
     return false;
 }
 
-bool Subtract(usImage& light, usImage& dark) {
-    unsigned short *lptr;
-    unsigned short *dptr;
-    int i;
-
+bool Subtract(usImage& light, const usImage& dark)
+{
     if ((!light.ImageData) || (!dark.ImageData))
         return true;
     if (light.NPixels != dark.NPixels)
         return true;
 
-    lptr = light.ImageData;
-    dptr = dark.ImageData;
-    int mindiff = 65535;
-    int diff;
-
-    for (i=0; i<light.NPixels; i++, lptr++, dptr++) {
-        diff = (int) *lptr - (int) *dptr;
-        if (diff < mindiff)
-            mindiff = diff;
+    int left, top, width, height;
+    if (light.Subframe.GetWidth() > 0 && light.Subframe.GetHeight() > 0)
+    {
+        left = light.Subframe.GetLeft();
+        width = light.Subframe.GetWidth();
+        top = light.Subframe.GetTop();
+        height = light.Subframe.GetHeight();
     }
-    lptr = light.ImageData;
-    dptr = dark.ImageData;
+    else
+    {
+        left = top = 0;
+        width = light.Size.GetWidth();
+        height = light.Size.GetHeight();
+    }
+
+    int mindiff = 65535;
+
+    unsigned short *pl0 = &light.Pixel(left, top);
+    const unsigned short *pd0 = &dark.Pixel(left, top);
+    for (unsigned int r = 0; r < height;
+         r++, pl0 += light.Size.GetWidth(), pd0 += light.Size.GetWidth())
+    {
+        unsigned short *const endl = pl0 + width;
+        unsigned short *pl;
+        const unsigned short *pd;
+        for (pl = pl0, pd = pd0; pl < endl; pl++, pd++)
+        {
+            int diff = (int) *pl - (int) *pd;
+            if (diff < mindiff)
+                mindiff = diff;
+        }
+    }
+
     int offset = 0;
     if (mindiff < 0) // dark was lighter than light
         offset = -mindiff;
 
-    int newval;
-    for (i=0; i<light.NPixels; i++, lptr++, dptr++) {
-        newval = (int) *lptr - (int) *dptr + offset;
-        if (newval < 0) newval = 0; // shouldn't hit this...
-        else if (newval > 65535) newval = 65535;
-        *lptr = (unsigned short) newval;
+    pl0 = &light.Pixel(left, top);
+    pd0 = &dark.Pixel(left, top);
+    for (unsigned int r = 0; r < height;
+         r++, pl0 += light.Size.GetWidth(), pd0 += light.Size.GetWidth())
+    {
+        unsigned short *const endl = pl0 + width;
+        unsigned short *pl;
+        const unsigned short *pd;
+        for (pl = pl0, pd = pd0; pl < endl; pl++, pd++)
+        {
+            int newval = (int) *pl - (int) *pd + offset;
+            if (newval < 0) newval = 0; // shouldn't hit this...
+            else if (newval > 65535) newval = 65535;
+            *pl = (unsigned short) newval;
+        }
     }
+
     return false;
 }
 

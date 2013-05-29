@@ -181,7 +181,7 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
         {
             int blevel, wlevel;
 
-            blevel = m_pCurrentImage->Min;
+            blevel = m_pCurrentImage->FiltMin;
             wlevel = m_pCurrentImage->FiltMax;
             m_pCurrentImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma);
         }

@@ -553,9 +553,9 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     Dur_Choice->SetToolTip(_("Camera exposure duration"));
     SetComboBoxWidth(Dur_Choice, 40);
 
-    Gamma_Slider = new wxSlider(toolBar,CTRL_GAMMA,40,10,90,wxPoint(-1,-1),wxSize(100,-1));
+    Gamma_Slider = new wxSlider(toolBar,CTRL_GAMMA,100,10,300,wxPoint(-1,-1),wxSize(160/*160*/,-1));
     Gamma_Slider->SetToolTip(_("Screen gamma (brightness)"));
-    Stretch_gamma = 0.4;
+    Stretch_gamma = 1.0;
     Gamma_Slider->SetValue((int) (Stretch_gamma * 100.0));
 
     wxBitmap brain_bmp;
@@ -795,7 +795,7 @@ void MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
 void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 {
     EXPOSE_REQUEST *pRequest = (EXPOSE_REQUEST *)evt.GetClientData();
-    bool bError = pCamera->Capture(pRequest->exposureDuration, *pRequest->pImage, pRequest->subframe);
+    bool bError = pCamera->Capture(pRequest->exposureDuration, *pRequest->pImage, pRequest->subframe, true);
     pRequest->bError = bError;
     pRequest->pSemaphore->Post();
 }
