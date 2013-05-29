@@ -168,9 +168,11 @@ extern GuideCamera *pCamera;
 extern DebugLog Debug;
 extern GuidingLog GuideLog;
 
+#ifdef PHD1_LOGGING // deprecated
 // these are the logging related globals
 extern wxTextFile *LogFile;
 extern bool Log_Data;
+#endif
 
 // these seem to be the windowing/display related globals
 extern int AdvDlg_fontsize;

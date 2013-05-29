@@ -455,6 +455,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
     if (evt.GetId() == MENU_LOG) {
         if (evt.IsChecked()) {  // enable it
             GuideLog.EnableLogging();
+#ifdef PHD1_LOGGING // deprecated
             Log_Data = true;
             if (!LogFile->IsOpened()) {
                 if (LogFile->Exists()) LogFile->Open();
@@ -464,16 +465,19 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
             LogFile->AddLine(_T("Logging manually enabled"));
             LogFile->AddLine(wxString::Format(_T("PHD Guide %s  -- "),VERSION) + now.FormatDate()  + _T(" ") + now.FormatTime());
             LogFile->Write();
+#endif
             this->SetTitle(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com (Log active)"),VERSION));
         }
         else {
+#ifdef PHD1_LOGGING // deprecated
             if (LogFile->IsOpened()) {
                 LogFile->AddLine(_T("Logging manually disabled"));
                 LogFile->Write();
                 LogFile->Close();
             }
-            GuideLog.DisableLogging();
             Log_Data = false;
+#endif
+            GuideLog.DisableLogging();
             this->SetTitle(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
         }
     } else if (evt.GetId() == MENU_LOGIMAGES) {

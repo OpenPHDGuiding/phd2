@@ -75,6 +75,10 @@ bool GuidingLog::EnableLogging(void)
             Flush();
 
             m_enabled = true;
+
+            // dump guiding header if logging enabled during guide
+            if (pFrame->pGuider->GetState() == STATE_GUIDING)
+                GuidingHeader();
         }
         catch (wxString Msg)
         {
@@ -302,7 +306,7 @@ bool GuidingLog::CalibrationComplete(Mount *pCalibrationMount)
 }
 
 
-bool GuidingLog::StartGuiding(void)
+bool GuidingLog::StartGuiding()
 {
     bool bError = false;
 
@@ -319,6 +323,29 @@ bool GuidingLog::StartGuiding(void)
             m_file.Write("\n");
             m_file.Write("Guiding Begins at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
 
+            // add common guiding header
+            GuidingHeader();
+       }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::GuidingHeader(void)
+    // output guiding header to log file
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            assert(m_file.IsOpened());
             m_file.Write(pFrame->GetSettingsSummary());
             m_file.Write(pFrame->pGuider->GetSettingsSummary());
 
@@ -350,6 +377,7 @@ bool GuidingLog::StartGuiding(void)
 
     return bError;
 }
+
 
 bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
         double RADuration, double RADistance,
@@ -484,6 +512,69 @@ bool GuidingLog::ServerCommand(Guider* guider, wxString cmd)
         if (m_enabled)
         {
             m_file.Write(wxString::Format("Server received %s\n", cmd));
+            Flush();
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::SetGuidingParam(wxString name, double val)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            m_file.Write(wxString::Format("Guiding parameter change, %s = %f\n", name, val));
+            Flush();
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::SetGuidingParam(wxString name, int val)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            m_file.Write(wxString::Format("Guiding parameter change, %s = %d\n", name, val));
+            Flush();
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool GuidingLog::SetGuidingParam(wxString name, wxString val)
+{
+    bool bError = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            m_file.Write(wxString::Format("Guiding parameter change, %s = %s\n", name, val));
             Flush();
         }
     }

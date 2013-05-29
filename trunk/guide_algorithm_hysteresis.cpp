@@ -309,6 +309,7 @@ void GuideAlgorithmHysteresis::
     OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetAggression(this->m_pAggression->GetValue() / 100.0);
+    GuideLog.SetGuidingParam("Hysteresis aggression", this->m_pAggression->GetValue());
 }
 
 void GuideAlgorithmHysteresis::
@@ -316,6 +317,7 @@ void GuideAlgorithmHysteresis::
     OnHysteresisSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetHysteresis(this->m_pHysteresis->GetValue() / 100.0);
+    GuideLog.SetGuidingParam("Hysteresis hysteresis", this->m_pHysteresis->GetValue());
 }
 
 void GuideAlgorithmHysteresis::
@@ -323,4 +325,5 @@ void GuideAlgorithmHysteresis::
     OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
+    GuideLog.SetGuidingParam("Hysteresis minimum move", m_pMinMove->GetValue());
 }

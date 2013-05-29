@@ -79,5 +79,12 @@ public:
     bool ServerGuidingDithered(Guider* guider, double dx, double dy);
     bool ServerSetLockPosition(Guider* guider, const PHD_Point &xy);
 
+    bool SetGuidingParam(wxString name, double val);
+    bool SetGuidingParam(wxString name, int val);
+    bool SetGuidingParam(wxString name, wxString val);
+
     bool StartEntry(void);
+
+protected:
+    bool GuidingHeader(void);
 };
