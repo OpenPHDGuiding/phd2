@@ -50,8 +50,10 @@ GuideCamera *pCamera = NULL;
 DebugLog Debug;
 GuidingLog GuideLog;
 
+#ifdef PHD1_LOGGING // deprecated
 wxTextFile *LogFile;
 bool Log_Data = false;
+#endif
 
 int AdvDlg_fontsize = 0;
 int XWinSize = 640;

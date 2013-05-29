@@ -473,17 +473,14 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
     #endif
 
                 //          tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
-                wxString fname = LogFile->GetName();
-                wxDateTime CapTime;
-                CapTime=wxDateTime::Now();
-                //full_fname = base_name + CapTime.Format("_%j_%H%M%S.fit");
-                fname = fname.BeforeLast('.') + CapTime.Format(_T("_%j_%H%M%S")) + _T(".jpg");
+                wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+                wxString fname = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_GuideStar" + wxDateTime::Now().Format(_T("_%j_%H%M%S")) + ".jpg";
                 wxImage subImg = SubBmp.ConvertToImage();
                 // subImg.Rescale(120, 120);  zoom up (not now)
                 if (GuideLog.LoggedImageFormat() == LIF_HI_Q_JPEG)
                     // set high(ish) JPEG quality
                     subImg.SetOption(wxIMAGE_OPTION_QUALITY, 100);
-                subImg.SaveFile(fname,wxBITMAP_TYPE_JPEG);
+                subImg.SaveFile(fname, wxBITMAP_TYPE_JPEG);
                 tmpMdc.SelectObject(wxNullBitmap);
             }
         }
@@ -514,10 +511,8 @@ void GuiderOneStar::SaveStarFITS() {
     for (y=0; y<60; y++)
         for (x=0; x<60; x++, usptr++)
             *usptr = *(pImage->ImageData + (y+start_y)*width + (x+start_x));
-    wxString fname = LogFile->GetName();
-    wxDateTime CapTime;
-    CapTime=wxDateTime::Now();
-    fname = fname.BeforeLast('.') + CapTime.Format(_T("_%j_%H%M%S")) + _T(".fit");
+    wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+    wxString fname = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_GuideStar" + wxDateTime::Now().Format(_T("_%j_%H%M%S")) + ".fit";
 
     fitsfile *fptr;  // FITS file pointer
     int status = 0;  // CFITSIO status value MUST be initialized to zero!

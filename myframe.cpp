@@ -255,16 +255,18 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
         Name(_T("Target")).Caption(_T("Target")).
         Hide());
 
+#ifdef PHD1_LOGGING // deprecated
     wxStandardPathsBase& stdpath = wxStandardPaths::Get();
     wxDateTime now = wxDateTime::Now();
     wxString LogFName;
     LogFName = wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log") + now.Format(_T("_%d%b%y")) + _T(".txt"));
     LogFile = new wxTextFile(LogFName);
+#endif
     tools_menu->Check(MENU_LOG,false);
 
     wxString frameTitle = title;
 
-    if (Log_Data)
+    if (GuideLog.IsEnabled())
     {
         frameTitle += " (log active)";
         tools_menu->Check(MENU_LOG,true);
@@ -934,8 +936,10 @@ void MyFrame::OnClose(wxCloseEvent &event) {
     if (SocketServer)
         delete SocketServer;
 
+#ifdef PHD1_LOGGING // deprecated
     if (LogFile)
         delete LogFile;
+#endif
 
     GuideLog.Close();
 
@@ -1235,7 +1239,9 @@ void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
 
         GuideLog.EnableLogging(m_pEnableLogging->GetValue());
 
+#ifdef PHD1_LOGGING // deprecated
         Log_Data = m_pEnableLogging->GetValue(); // Note: This is a global (and will be deprecated when new GuideLog reigns)
+#endif
         if (m_pEnableImageLogging->GetValue())
             GuideLog.EnableImageLogging((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
         else
