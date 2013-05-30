@@ -126,7 +126,7 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
     pNotebook->AddPage(pScopeSettingsPanel, _("Scope"));
 
     // and populate it
-    if (pSecondaryMount)
+    if (pMount)
     {
         // if there are two mounts, the secondary mount config goes to the
         // scope tab
@@ -150,8 +150,8 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
     if (pSecondaryMount)
     {
         // if there are two mounts, the primary mount config goes to the Adaptive Optics tab
-        m_pMountPane = pMount->GetConfigDialogPane(pAoSettingsPanel);
-        pAoTabSizer->Add(m_pMountPane, sizer_flags);
+        m_pSecondaryMountPane = pSecondaryMount->GetConfigDialogPane(pAoSettingsPanel);
+        pAoTabSizer->Add(m_pSecondaryMountPane, sizer_flags);
     }
     else
     {
