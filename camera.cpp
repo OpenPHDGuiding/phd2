@@ -509,9 +509,9 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     Debug.AddLine("HasGuiderOutput=%d", pCamera->HasGuiderOutput);
 
     if (pCamera->HasPropertyDialog)
-        MainToolbar->EnableTool(wxID_PROPERTIES, true);
+        MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, true);
     else
-        MainToolbar->EnableTool(wxID_PROPERTIES, false);
+        MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
     if (pFrame->mount_menu->IsChecked(SCOPE_CAMERA) && pCamera->HasGuiderOutput) {
         if (pMount)
             delete pMount;
