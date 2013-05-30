@@ -114,24 +114,7 @@ void GraphStepguiderWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 
 bool GraphStepguiderWindow::SetState(bool is_active)
 {
-    try
-    {
-
-        //m_pClient->m_xMax = 100; m_pClient->m_yMax = 100; // TODO ZeSly : debug code to delete
-        if (m_pClient->m_xMax == 0 || m_pClient->m_yMax == 0)
-        {
-            throw ERROR_INFO("Unable to display AO graph with xMax or yMax unset");
-        }
-
-        m_visible = is_active;
-
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-
-        m_visible = false;
-    }
+    m_visible = is_active;
 
     if (m_visible)
     {
@@ -145,6 +128,11 @@ void GraphStepguiderWindow::SetLimits(unsigned xMax, unsigned yMax,
                                       unsigned xBump, unsigned yBump)
 {
     m_pClient->SetLimits(xMax, yMax, xBump, yBump);
+
+    if (this->m_visible)
+    {
+        Refresh();
+    }
 }
 
 void GraphStepguiderWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
@@ -244,12 +232,22 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     //dc.SetBackground(wxColour(10,0,0));
     dc.Clear();
 
+    wxSize size = GetClientSize();
+
+    if (m_xMax == 0 || m_yMax == 0)
+    {
+        wxString txt(_("AO not connected"));
+        wxSize txtsize = dc.GetTextExtent(txt);
+        dc.SetTextForeground(*wxRED);
+        dc.DrawText(txt, (size.x - txtsize.x) / 2, (size.y - txtsize.y) / 2);
+        return;
+    }
+
     wxPen GreySolidPen = wxPen(wxColour(200,200,200),2, wxSOLID);
     wxPen GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
 
     const int stepsPerDivision = 10;
 
-    wxSize size = GetClientSize();
     wxPoint center(size.x/2, size.y/2);
 
     int xSteps = ((m_xMax+stepsPerDivision-1)/stepsPerDivision)*stepsPerDivision;
