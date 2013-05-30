@@ -208,7 +208,7 @@ void AdvancedDialog::UnloadValues(void)
 }
 
 BEGIN_EVENT_TABLE(AdvancedDialog, wxDialog)
-    EVT_BUTTON(wxID_PROPERTIES,AdvancedDialog::OnSetupCamera)
+    EVT_BUTTON(BUTTON_CAM_PROPERTIES,AdvancedDialog::OnSetupCamera)
 END_EVENT_TABLE()
 
 void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {

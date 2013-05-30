@@ -102,11 +102,11 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(BUTTON_LOOP, MyFrame::OnLoopExposure) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_STOP, MyFrame::OnButtonStop)
     EVT_MENU(BUTTON_STOP, MyFrame::OnButtonStop) // Bit of a hack -- not actually on the menu but need an event to accelerate
-    EVT_TOOL(BUTTON_DETAILS, MyFrame::OnAdvanced)
+    EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
     EVT_BUTTON(BUTTON_DARK, MyFrame::OnDark)
     EVT_TOOL(BUTTON_GUIDE,MyFrame::OnGuide)
     EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
-    EVT_BUTTON(wxID_PROPERTIES,MyFrame::OnSetupCamera)
+    EVT_BUTTON(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
     EVT_COMMAND_SCROLL(CTRL_GAMMA,MyFrame::OnGammaSlider)
     EVT_SOCKET(SERVER_ID, MyFrame::OnServerEvent)
     EVT_SOCKET(SOCKET_ID, MyFrame::OnSocketEvent)
@@ -565,7 +565,7 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     brain_bmp = wxBitmap(brain_icon);
 #endif
 
-    Setup_Button = new wxButton(toolBar,wxID_PROPERTIES,_T("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
+    Setup_Button = new wxButton(toolBar,BUTTON_CAM_PROPERTIES,_T("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
     Setup_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     Setup_Button->Enable(false);
 
@@ -581,8 +581,7 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     toolBar->AddControl(Dur_Choice, _T("Exposure duration"));
     toolBar->AddControl(Gamma_Slider, _T("Gamma"));
     toolBar->AddSeparator();
-    toolBar->AddTool(BUTTON_DETAILS, _T("Advanced parameters"), brain_bmp, _T("Advanced parameters"));
-    //toolBar->AddTool(wxID_PROPERTIES, _T("Cam Dialog"), wxArtProvider::GetBitmap(wxART_MISSING_IMAGE));
+    toolBar->AddTool(BUTTON_ADVANCED, _T("Advanced parameters"), brain_bmp, _T("Advanced parameters"));
     toolBar->AddControl(Dark_Button, _T("Take Dark"));
     toolBar->AddControl(Setup_Button, _T("Cam Dialog"));
     toolBar->Realize();
@@ -656,11 +655,13 @@ void MyFrame::UpdateButtonsStatus(void)
     if (cond_update_tool(MainToolbar, BUTTON_SCOPE, !CaptureActive && pMount))
         need_update = true;
 
-    if (cond_update_tool(MainToolbar, wxID_PROPERTIES, !CaptureActive))
+    if (cond_update_tool(MainToolbar, BUTTON_ADVANCED, !CaptureActive))
+        need_update = true;
+
+    if (cond_update_tool(MainToolbar, BUTTON_CAM_PROPERTIES, !CaptureActive))
         need_update = true;
 
     if (Dark_Button->IsEnabled() != loop_enabled) {
-        //MainToolbar->EnableTool(BUTTON_DARK, !CaptureActive && pCamera && pCamera->Connected);
         Dark_Button->Enable(loop_enabled);
         need_update = true;
     }

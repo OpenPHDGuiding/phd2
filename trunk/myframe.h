@@ -294,7 +294,8 @@ enum {
     BUTTON_GUIDE,
     BUTTON_STOP,
     BUTTON_DURATION,
-    BUTTON_DETAILS,
+    BUTTON_ADVANCED,
+    BUTTON_CAM_PROPERTIES,
     CTRL_GAMMA,
     WIN_VFW,  // Dummy event to capture VFW streams
     MGUIDE1_UP,
