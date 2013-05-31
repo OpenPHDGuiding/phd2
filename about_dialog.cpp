@@ -60,10 +60,11 @@ wxDialog(pFrame, wxID_ANY, _("About PHD Guiding"), wxDefaultPosition, wxDefaultS
         "Copyright 2006-2013 Craig Stark & Bret McKee<br><br>Special Thanks to:<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Sean Prange<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Jared Wellman<br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;Sylvain Girard"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Sylvain Girard<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Andy Galasso"
         "</body></html>",VERSION,PHDSUBVER));
     wxHtmlWindow *pHtml;
-    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(350, 180), wxHW_SCROLLBAR_NEVER);
+    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(350, 190), wxHW_SCROLLBAR_NEVER);
     pHtml->SetBorders(0);
     pHtml->LoadPage("memory:about.html");
     pHtml->SetSize(pHtml->GetInternalRepresentation()->GetWidth(), pHtml->GetInternalRepresentation()->GetHeight());
