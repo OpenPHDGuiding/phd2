@@ -33,6 +33,10 @@
  */
 
 #include "phd.h"
+
+// a place to save id of selected panel so we can select the same panel next time the dialog is opened
+static int s_selectedPage = -1;
+
 AdvancedDialog::AdvancedDialog():
 //#if defined (__WINDOWS__)
 //wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(210,350), wxCAPTION | wxCLOSE_BOX)
@@ -68,7 +72,7 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
      *
      */
 
-    wxNotebook *pNotebook = new wxNotebook(this, wxID_ANY);
+    m_pNotebook = new wxNotebook(this, wxID_ANY);
 
     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
@@ -76,30 +80,30 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
     // it needs to be populated
 
     // Build the global tab pane
-    wxPanel *pGlobalSettingsPanel = new wxPanel(pNotebook);
+    wxPanel *pGlobalSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pGlobalTabSizer = new wxBoxSizer(wxVERTICAL);
     pGlobalSettingsPanel->SetSizer(pGlobalTabSizer);
-    pNotebook->AddPage(pGlobalSettingsPanel, _("Global"), true);
+    m_pNotebook->AddPage(pGlobalSettingsPanel, _("Global"), true);
 
     // and populate it
     m_pFramePane = pFrame->GetConfigDialogPane(pGlobalSettingsPanel);
     pGlobalTabSizer->Add(m_pFramePane, sizer_flags);
 
     // Build the guider tab
-    wxPanel *pGuiderSettingsPanel = new wxPanel(pNotebook);
+    wxPanel *pGuiderSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pGuidingTabSizer = new wxBoxSizer(wxVERTICAL);
     pGuiderSettingsPanel->SetSizer(pGuidingTabSizer);
-    pNotebook->AddPage(pGuiderSettingsPanel, _("Guiding"));
+    m_pNotebook->AddPage(pGuiderSettingsPanel, _("Guiding"));
 
     // and populate it
     m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(pGuiderSettingsPanel);
     pGuidingTabSizer->Add(m_pGuiderPane, sizer_flags);
 
     // Build the camera tab
-    wxPanel *pCameraSettingsPanel = new wxPanel(pNotebook);
+    wxPanel *pCameraSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pCameraTabSizer = new wxBoxSizer(wxVERTICAL);
     pCameraSettingsPanel->SetSizer(pCameraTabSizer);
-    pNotebook->AddPage(pCameraSettingsPanel, _("Camera"));
+    m_pNotebook->AddPage(pCameraSettingsPanel, _("Camera"));
 
     // and populate it
     if (pCamera)
@@ -120,10 +124,10 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
     }
 
     // Build scope tab
-    wxPanel *pScopeSettingsPanel = new wxPanel(pNotebook);
+    wxPanel *pScopeSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pScopeTabSizer = new wxBoxSizer(wxVERTICAL);
     pScopeSettingsPanel->SetSizer(pScopeTabSizer);
-    pNotebook->AddPage(pScopeSettingsPanel, _("Scope"));
+    m_pNotebook->AddPage(pScopeSettingsPanel, _("Scope"));
 
     // and populate it
     if (pMount)
@@ -141,10 +145,10 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
     }
 
     // Build AO tab
-    wxPanel *pAoSettingsPanel = new wxPanel(pNotebook);
+    wxPanel *pAoSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pAoTabSizer = new wxBoxSizer(wxVERTICAL);
     pAoSettingsPanel->SetSizer(pAoTabSizer);
-    pNotebook->AddPage(pAoSettingsPanel, _("AO"));
+    m_pNotebook->AddPage(pAoSettingsPanel, _("AO"));
 
     // and populate it
     if (pSecondaryMount)
@@ -167,7 +171,7 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
     }
 
     wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
-    pTopLevelSizer->Add(pNotebook, wxSizerFlags(0).Expand().Border(wxALL, 5));
+    pTopLevelSizer->Add(m_pNotebook, wxSizerFlags(0).Expand().Border(wxALL, 5));
     pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 5));
     SetSizerAndFit(pTopLevelSizer);
 }
@@ -175,41 +179,32 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
 
 void AdvancedDialog::LoadValues(void)
 {
-    m_pFramePane->LoadValues();
-    m_pMountPane->LoadValues();
+    ConfigDialogPane *const panes[] =
+        { m_pFramePane, m_pMountPane, m_pSecondaryMountPane, m_pGuiderPane, m_pCameraPane };
 
-    if (m_pSecondaryMountPane)
+    for (int i = 0; i < sizeof(panes)/sizeof(panes[0]); i++)
     {
-        m_pSecondaryMountPane->LoadValues();
+        ConfigDialogPane *const pane = panes[i];
+        if (pane)
+            pane->LoadValues();
     }
 
-    m_pGuiderPane->LoadValues();
-
-    if (m_pCameraPane != NULL)
-    {
-        m_pCameraPane->LoadValues();
-    }
+    if (s_selectedPage != -1)
+        m_pNotebook->ChangeSelection(s_selectedPage);
 }
 
 void AdvancedDialog::UnloadValues(void)
 {
-    m_pFramePane->UnloadValues();
-    m_pMountPane->UnloadValues();
-    if (m_pSecondaryMountPane)
-    {
-        m_pSecondaryMountPane->UnloadValues();
-    }
-    m_pGuiderPane->UnloadValues();
+    ConfigDialogPane *const panes[] =
+        { m_pFramePane, m_pMountPane, m_pSecondaryMountPane, m_pGuiderPane, m_pCameraPane };
 
-    if (m_pCameraPane != NULL)
+    for (int i = 0; i < sizeof(panes)/sizeof(panes[0]); i++)
     {
-        m_pCameraPane->UnloadValues();
+        ConfigDialogPane *const pane = panes[i];
+        if (pane)
+            pane->UnloadValues();
     }
 }
-
-BEGIN_EVENT_TABLE(AdvancedDialog, wxDialog)
-    EVT_BUTTON(BUTTON_CAM_PROPERTIES,AdvancedDialog::OnSetupCamera)
-END_EVENT_TABLE()
 
 void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
     // Prior to this we check to make sure the current camera is a WDM camera (main dialog) but...
@@ -222,3 +217,12 @@ void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
     pCamera->ShowPropertyDialog();
 }
 
+void AdvancedDialog::EndModal(int retCode)
+{
+    s_selectedPage = m_pNotebook->GetSelection();
+    wxDialog::EndModal(retCode);
+}
+
+BEGIN_EVENT_TABLE(AdvancedDialog, wxDialog)
+    EVT_BUTTON(BUTTON_CAM_PROPERTIES,AdvancedDialog::OnSetupCamera)
+END_EVENT_TABLE()
