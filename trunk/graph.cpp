@@ -53,6 +53,7 @@ BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphLogWindow::OnButtonLength)
     EVT_BUTTON(BUTTON_GRAPH_HEIGHT,GraphLogWindow::OnButtonHeight)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
+    EVT_CHECKBOX(CHECKBOX_GRAPH_TRENDLINES,GraphLogWindow::OnCheckboxTrendlines)
 END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
@@ -113,6 +114,11 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     m_pClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"));
     m_pClearButton->SetToolTip(_("Clear graph data"));
     pButtonSizer->Add(m_pClearButton);
+
+    m_pCheckboxTrendlines = new wxCheckBox(this,CHECKBOX_GRAPH_TRENDLINES,_("Trendlines"));
+    m_pCheckboxTrendlines->SetForegroundColour(*wxLIGHT_GREY);
+    m_pCheckboxTrendlines->SetToolTip(_("Plot trend lines"));
+    pButtonSizer->Add(m_pCheckboxTrendlines);
 
     wxBoxSizer *pLabelSizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -214,6 +220,8 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
             m_pClient->m_length = m_pClient->m_minLength;
     }
 
+    m_pClient->RecalculateTrendLines();
+
     this->m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_pClient->m_length));
     this->Refresh();
 }
@@ -285,7 +293,13 @@ void GraphLogWindow::UpdateControls()
 
 void GraphLogWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
 {
-    m_pClient->m_nItems = 0;
+    m_pClient->ResetData();
+    Refresh();
+}
+
+void GraphLogWindow::OnCheckboxTrendlines(wxCommandEvent& WXUNUSED(evt))
+{
+    m_pClient->m_showTrendlines = m_pCheckboxTrendlines->IsChecked();
     Refresh();
 }
 
@@ -341,7 +355,7 @@ END_EVENT_TABLE()
 GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(401,200), wxFULL_REPAINT_ON_RESIZE)
 {
-    m_nItems = 0;
+    ResetData();
     m_mode = MODE_RADEC;
 
     m_raOrDxColor  = wxColour(100,100,255);
@@ -362,12 +376,29 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     m_length = m_minLength;
     m_height = m_maxHeight;
 
+    m_showTrendlines = false;
+
     m_pHistory = new S_HISTORY[m_maxLength];
 }
 
 GraphLogClientWindow::~GraphLogClientWindow(void)
 {
     delete [] m_pHistory;
+}
+
+static void reset_trend_accums(TrendLineAccum accums[4])
+{
+    for (int i = 0; i < 4; i++)
+    {
+        accums[i].sum_xy = 0.0;
+        accums[i].sum_y = 0.0;
+    }
+}
+
+void GraphLogClientWindow::ResetData(void)
+{
+    m_nItems = 0;
+    reset_trend_accums(m_trendLineAccum);
 }
 
 bool GraphLogClientWindow::SetMinLength(int minLength)
@@ -468,11 +499,42 @@ bool GraphLogClientWindow::SetMaxHeight(int maxHeight)
     return bError;
 }
 
+// update_trend - update running accumulators for trend line calculations
+//
+static void update_trend(int nr, int max_nr, double newval, const double& oldval, TrendLineAccum *accum)
+{
+    // note: not safe to dereference oldval when nr == 0
+
+    if (nr < max_nr)
+    {
+        // number of items is increasing, increment sums
+        accum->sum_y += newval;
+        accum->sum_xy += nr * newval;
+    }
+    else
+    {
+        // number of items has reached limit. Update counters to reflect
+        // removal of oldest value (oldval) and addition of new value.
+        accum->sum_xy += (max_nr - 1) * newval + oldval - accum->sum_y;
+        accum->sum_y += newval - oldval;
+    }
+}
+
 void GraphLogClientWindow::AppendData(float dx, float dy, float RA, float Dec)
 {
-    const int idx = m_maxLength - 1;
+    int trend_items = m_nItems;
+    if (trend_items > m_length)
+        trend_items = m_length;
+    const int oldest = m_maxLength - trend_items;
+
+    update_trend(trend_items, m_length, dx, m_pHistory[oldest].dx, &m_trendLineAccum[0]);
+    update_trend(trend_items, m_length, dy, m_pHistory[oldest].dy, &m_trendLineAccum[1]);
+    update_trend(trend_items, m_length, RA, m_pHistory[oldest].ra, &m_trendLineAccum[2]);
+    update_trend(trend_items, m_length, Dec, m_pHistory[oldest].dec, &m_trendLineAccum[3]);
 
     memmove(m_pHistory, m_pHistory+1, sizeof(m_pHistory[0])*(m_maxLength-1));
+
+    const int idx = m_maxLength - 1;
 
     m_pHistory[idx].dx  = dx;
     m_pHistory[idx].dy  = dy;
@@ -483,6 +545,46 @@ void GraphLogClientWindow::AppendData(float dx, float dy, float RA, float Dec)
     {
         m_nItems++;
     }
+}
+
+void GraphLogClientWindow::RecalculateTrendLines(void)
+{
+    reset_trend_accums(m_trendLineAccum);
+    int trend_items = m_nItems;
+    if (trend_items > m_length)
+        trend_items = m_length;
+    const int begin = m_maxLength - trend_items;
+    for (int x = 0, i = begin; x < trend_items; i++, x++) {
+        update_trend(x, trend_items, m_pHistory[i].dx, 0.0, &m_trendLineAccum[0]);
+        update_trend(x, trend_items, m_pHistory[i].dy, 0.0, &m_trendLineAccum[1]);
+        update_trend(x, trend_items, m_pHistory[i].ra, 0.0, &m_trendLineAccum[2]);
+        update_trend(x, trend_items, m_pHistory[i].dec, 0.0, &m_trendLineAccum[3]);
+    }
+}
+
+// trendline - calculate the the trendline slope and intercept. We can do this
+// in O(1) without iterating over the history data since we have kept running
+// sums sum(y), sum(xy), and since sum(x) and sum(x^2) can be computed directly
+// in a single expression (without iterating) for x from 0..n-1
+//
+static std::pair<double, double> trendline(const TrendLineAccum& accum, int nn)
+{
+    assert(nn > 1);
+    double n = (double) nn;
+    // sum_x is: sum(x) for x from 0 .. n-1
+    double sum_x = 0.5 * n * (n - 1.0);
+    // denom is: (n sum(x^2) - sum(x)^2) for x from 0 .. n-1
+    double denom = n * n * (n - 1.0) * ((2.0 * n - 1.0) / 6.0 - 0.25 * (n - 1));
+
+    double a = (n * accum.sum_xy - sum_x * accum.sum_y) / denom;
+    double b = (accum.sum_y - a * sum_x) / n;
+
+    return std::make_pair(a, b);
+}
+
+inline static wxPoint pt(double x, double y, int xorig, int yorig, double xmag, double ymag)
+{
+    return wxPoint(xorig + (int)(x * xmag), yorig + (int)(y * ymag));
 }
 
 void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
@@ -559,7 +661,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     const double xmag = size.x / (double)m_length;
-    const double ymag = yPixelsPerDivision*(double)(m_yDivisions + 1)/(double)m_height;
+    const double ymag = yPixelsPerDivision * (double)(m_yDivisions + 1) / (double)m_height * sampling;
 
     // Draw data
     if (m_nItems > 0)
@@ -586,12 +688,12 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             switch (m_mode)
             {
             case MODE_RADEC:
-                pRaOrDxLine[j] =wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->ra * (double) ymag * sampling));
-                pDecOrDyLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dec * (double) ymag * sampling));
+                pRaOrDxLine[j] = pt(j, pSrc->ra, xorig, yorig, xmag, ymag);
+                pDecOrDyLine[j] = pt(j, pSrc->dec, xorig, yorig, xmag, ymag);
                 break;
             case MODE_DXDY:
-                pRaOrDxLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dx * (double) ymag * sampling));
-                pDecOrDyLine[j]=wxPoint(xorig+(j*xmag),yorig + (int) (pSrc->dy * (double) ymag * sampling));
+                pRaOrDxLine[j] = pt(j, pSrc->dx, xorig, yorig, xmag, ymag);
+                pDecOrDyLine[j] = pt(j, pSrc->dy, xorig, yorig, xmag, ymag);
                 break;
             }
         }
@@ -609,6 +711,40 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.DrawLines(plot_length,pRaOrDxLine);
         dc.SetPen(decOrDyPen);
         dc.DrawLines(plot_length,pDecOrDyLine);
+
+        // draw trend lines
+        if (m_showTrendlines && plot_length >= 5)
+        {
+            std::pair<double, double> trendRaOrDx;
+            std::pair<double, double> trendDecOrDy;
+            switch (m_mode)
+            {
+            case MODE_RADEC:
+                trendRaOrDx = trendline(m_trendLineAccum[2], plot_length);
+                trendDecOrDy = trendline(m_trendLineAccum[3], plot_length);
+                break;
+            case MODE_DXDY:
+                trendRaOrDx = trendline(m_trendLineAccum[0], plot_length);
+                trendDecOrDy = trendline(m_trendLineAccum[1], plot_length);
+                break;
+            }
+
+            wxPoint lineRaOrDx[2];
+            lineRaOrDx[0] = pt(0.0, trendRaOrDx.second, xorig, yorig, xmag, ymag);
+            lineRaOrDx[1] = pt(m_maxLength, trendRaOrDx.first * m_maxLength + trendRaOrDx.second, xorig, yorig, xmag, ymag);
+
+            wxPoint lineDecOrDy[2];
+            lineDecOrDy[0] = pt(0.0, trendDecOrDy.second, xorig, yorig, xmag, ymag);
+            lineDecOrDy[1] = pt(m_maxLength, trendDecOrDy.first * m_maxLength + trendDecOrDy.second, xorig, yorig, xmag, ymag);
+
+            raOrDxPen.SetStyle(wxLONG_DASH);
+            dc.SetPen(raOrDxPen);
+            dc.DrawLines(2, lineRaOrDx, 0, 0);
+
+            decOrDyPen.SetStyle(wxLONG_DASH);
+            dc.SetPen(decOrDyPen);
+            dc.DrawLines(2, lineDecOrDy, 0, 0);
+        }
 
         // Figure oscillation score
         int same_sides = 0;

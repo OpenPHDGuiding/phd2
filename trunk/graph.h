@@ -37,6 +37,13 @@
 
 class GraphControlPane;
 
+// accumulator for trend line calculation
+struct TrendLineAccum
+{
+    double sum_y;
+    double sum_xy;
+};
+
 class GraphLogClientWindow : public wxWindow
 {
     GraphLogClientWindow(wxWindow *parent);
@@ -50,7 +57,9 @@ class GraphLogClientWindow : public wxWindow
     wxColour m_raOrDxColor, m_decOrDyColor;
     wxStaticText *m_pOscRMS, *m_pOscIndex;
 
-    void AppendData (float dx, float dy, float RA, float Dec);
+    void AppendData(float dx, float dy, float RA, float Dec);
+    void ResetData(void);
+    void RecalculateTrendLines(void);
     void OnPaint(wxPaintEvent& evt);
 
     int m_minLength;
@@ -72,6 +81,8 @@ class GraphLogClientWindow : public wxWindow
 
     int m_nItems;    // # items in the history
 
+    TrendLineAccum m_trendLineAccum[4]; // dx, dy, ra, dec
+
     enum
     {
         MODE_RADEC,
@@ -80,6 +91,8 @@ class GraphLogClientWindow : public wxWindow
 
     int m_length;
     int m_height;
+
+    bool m_showTrendlines;
 
     friend class GraphLogWindow;
 
@@ -99,6 +112,7 @@ public:
     void OnButtonLength(wxCommandEvent& evt);
     void OnButtonHeight(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
+    void OnCheckboxTrendlines(wxCommandEvent& evt);
     void OnButtonZoomIn(wxCommandEvent& evt);
     void OnButtonZoomOut(wxCommandEvent& evt);
 
@@ -113,6 +127,7 @@ private:
     int m_heightButtonLabelVal; // value currently displayed on height button: <0 for arc-sec, >0 for pixels
     wxButton *m_pModeButton;
     wxButton *m_pClearButton;
+    wxCheckBox *m_pCheckboxTrendlines;
     wxStaticText *RALabel;
     wxStaticText *DecLabel;
     wxStaticText *OscIndexLabel;
@@ -122,15 +137,6 @@ private:
     GraphControlPane *m_pYControlPane;
     GraphControlPane *m_pScopePane;
 
-    float hdx[500]; // History of dx
-    float hdy[500];
-    float hra[500];
-    float hdec[500];
-    int n_items;    // # items in the history
-    bool visible;
-    int mode;   // 0 = RA/Dec, 1=dx, dy
-    int length;
-    float vertical_scale;
     bool m_visible;
     GraphLogClientWindow *m_pClient;
 
