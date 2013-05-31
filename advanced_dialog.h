@@ -36,6 +36,7 @@
 #define ADVANCED_DIALOG_H_INCLUDED
 
 class AdvancedDialog: public wxDialog {
+    wxNotebook *m_pNotebook;
     ConfigDialogPane *m_pFramePane;
     ConfigDialogPane *m_pMountPane;
     ConfigDialogPane *m_pSecondaryMountPane;
@@ -44,6 +45,7 @@ class AdvancedDialog: public wxDialog {
 public:
     AdvancedDialog();
     ~AdvancedDialog(void) {};
+    void EndModal(int retCode);
 
     void LoadValues(void);
     void UnloadValues(void);
