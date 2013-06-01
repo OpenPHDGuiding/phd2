@@ -221,7 +221,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
 
                 wxLogStatus(_T("Moving by %.2lf,%.2lf"),dRa, dDec);
-				GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
+                GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
 
                  rval = RequestedExposureDuration() / 1000;
                  if (rval < 1)
@@ -276,7 +276,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 {
                     Debug.AddLine("processing socket request SETLOCKPOSITION for (%d, %d) succeeded", x, y);
                     wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
-					GuideLog.ServerSetLockPosition(pGuider, PHD_Point(x,y));
+                    GuideLog.ServerSetLockPosition(pGuider, PHD_Point(x,y));
                 }
                 else
                 {
@@ -294,7 +294,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 // return 1 for success, 0 for failure
                 rval = FlipRACal(*tmp_evt) ? 1 : 0;
                 pGuider->SetPaused(wasPaused);
-				GuideLog.ServerCommand(pGuider, "FLIP RA CAL");
+                GuideLog.ServerCommand(pGuider, "FLIP RA CAL");
                 delete tmp_evt;
                 break;
             }
@@ -405,7 +405,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 }
 
                 pMount->ClearCalibration();
-				GuideLog.ServerCommand(pGuider, "CLEAR CAL");
+                GuideLog.ServerCommand(pGuider, "CLEAR CAL");
             default:
                 wxLogStatus(_T("Unknown test id received from client: %d"),(int) c);
                 rval = 1;
