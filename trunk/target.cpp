@@ -184,23 +184,18 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     dc.SetTextForeground(wxColour(200,200,200));
     dc.SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    dc.SetPen(GreySolidPen);
+    dc.SetBrush(* wxTRANSPARENT_BRUSH);
 
     wxSize size = GetClientSize();
     wxPoint center(size.x/2, size.y/2);
-    int radius_max = ((size.x < size.y ? size.x : size.y) - 6) / 2;
+    double radius_max = ((size.x < size.y ? size.x : size.y) - 6) / 2;
 
     int leftEdge     = center.x - radius_max;
     int rightEdge    = center.x + radius_max;
 
     int topEdge      = center.y - radius_max;
     int bottomEdge   = center.y + radius_max;
-
-    // Draw axes
-    dc.SetPen(GreySolidPen);
-    dc.SetBrush(* wxTRANSPARENT_BRUSH);
-
-    dc.DrawLine(leftEdge, center.y , rightEdge, center.y);
-    dc.DrawLine(center.x, topEdge, center.x, bottomEdge);
 
     // Draw circles
     wxString l;
@@ -210,17 +205,39 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.DrawCircle(center, radius_max);
     l = wxString::Format(_T("%g%s"), 2.0 / m_zoom, sampling != 1 ? "''" : "");
     sl = dc.GetTextExtent(l);
-    dc.DrawText(l, center.x - radius_max - sl.GetX(), center.y);
+    dc.DrawText(l, center.x - radius_max - sl.x, center.y);
 
     double r = radius_max / (2 / m_zoom);
     dc.DrawCircle(center, r);
     l = wxString::Format(_T("1%s"), sampling != 1 ? "''" : "");
     sl = dc.GetTextExtent(l);
-    dc.DrawText(l, center.x - r - sl.GetX(), center.y);
+    dc.DrawText(l, center.x - r - sl.x, center.y);
+
+    // Draw axes
+    dc.DrawLine(3, center.y , size.x - 3, center.y);
+    dc.DrawLine(center.x, 3, center.x, size.y - 3);
+
+    int g = size.x / 100;
+    for (double x = 0 ; x < size.x ; x += r/4)
+    {
+        if (x != radius_max && x != r)
+        {
+            dc.DrawLine(center.x + x, center.y - g, center.x + x, center.y + g);
+            dc.DrawLine(center.x - x, center.y - g, center.x - x, center.y + g);
+        }
+    }
+    for (double y = 0 ; y < size.y ; y += r/4)
+    {
+        if (y != radius_max && y != r)
+        {
+            dc.DrawLine(center.x - g, center.y + y, center.x + g, center.y + y);
+            dc.DrawLine(center.x - g, center.y - y, center.x + g, center.y - y);
+        }
+    }
 
     // Draw labels
-    dc.DrawText(_("RA"), leftEdge, center.y - 13);
-    dc.DrawText(_("Dec"), center.x + 2, topEdge - 3);
+    dc.DrawText(_("RA"), leftEdge, center.y - 15);
+    dc.DrawText(_("Dec"), center.x + 5, topEdge - 3);
 
     // Draw impacts
     double scale = radius_max / 2 * sampling;
@@ -249,8 +266,6 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
             dc.SetPen(*wxRED_PEN);
             dc.DrawLine(ximpact + lcrux, yimpact + lcrux, ximpact - lcrux - 1, yimpact - lcrux - 1);
             dc.DrawLine(ximpact + lcrux, yimpact - lcrux, ximpact - lcrux - 1, yimpact + lcrux + 1);
-            //dc.DrawLine(ximpact, yimpact + lcrux, ximpact, yimpact - lcrux);
-            //dc.DrawLine(ximpact + lcrux, yimpact, ximpact - lcrux, yimpact);
         }
         else
             dc.DrawCircle(ximpact, yimpact, dotSize);
