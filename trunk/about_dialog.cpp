@@ -61,7 +61,7 @@ wxDialog(pFrame, wxID_ANY, _("About PHD Guiding"), wxDefaultPosition, wxDefaultS
         "&nbsp;&nbsp;&nbsp;&nbsp;Sean Prange<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Jared Wellman<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Sylvain Girard<br>"
-		"&nbsp;&nbsp;&nbsp;&nbsp;Andy Galasso<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Andy Galasso<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;John Wainwright"
         "</body></html>",VERSION,PHDSUBVER));
     wxHtmlWindow *pHtml;
@@ -69,8 +69,6 @@ wxDialog(pFrame, wxID_ANY, _("About PHD Guiding"), wxDefaultPosition, wxDefaultS
     pHtml->SetBorders(0);
     pHtml->LoadPage("memory:about.html");
     pHtml->SetSize(pHtml->GetInternalRepresentation()->GetWidth(), pHtml->GetInternalRepresentation()->GetHeight());
-
-    //wxStaticText *pText = new wxStaticText(this, wxID_ANY, wxString::Format(_T("PHD Guiding v%s\n\nwww.stark-labs.com\n\nCopyright 2006-2013 Craig Stark & Bret McKee\n\nSpecial Thanks to:\n  Sean Prange\n  Jared Wellman"),VERSION));
 
     pSizer->Add(pImage, wxSizerFlags(0).Border(wxALL, 10));
     pSizer->Add(pHtml, wxSizerFlags(0).Border(wxALL, 10));

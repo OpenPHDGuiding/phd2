@@ -76,8 +76,8 @@ bool GuidingLog::EnableLogging(void)
 
             m_enabled = true;
 
-			// persist state
-			pConfig->SetBoolean("/LoggingMode", m_enabled);
+            // persist state
+            pConfig->SetBoolean("/LoggingMode", m_enabled);
 
             // dump guiding header if logging enabled during guide
             if (pFrame && pFrame->pGuider->GetState() == STATE_GUIDING)
@@ -113,8 +113,8 @@ bool GuidingLog::DisableLogging(void)
             Flush();
         }
         m_enabled = false;
-		// persist state
-		pConfig->SetBoolean("/LoggingMode", m_enabled);
+        // persist state
+        pConfig->SetBoolean("/LoggingMode", m_enabled);
     }
     catch (wxString Msg)
     {
