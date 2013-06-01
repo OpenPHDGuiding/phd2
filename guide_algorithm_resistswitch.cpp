@@ -201,7 +201,7 @@ ConfigDialogPane *GuideAlgorithmResistSwitch::GetConfigDialogPane(wxWindow *pPar
 GuideAlgorithmResistSwitch::
     GuideAlgorithmResistSwitchConfigDialogPane::
     GuideAlgorithmResistSwitchConfigDialogPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm)
-    :ConfigDialogPane(_T("ResistSwitch Guide Algorithm"), pParent)
+    :ConfigDialogPane(_("ResistSwitch Guide Algorithm"), pParent)
 {
     int width;
 
@@ -212,8 +212,8 @@ GuideAlgorithmResistSwitch::
         wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
 
-    DoAdd(_T("Minimum Move (pixels)"), m_pMinMove,
-        _T("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
+    DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
+        _("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
 
 }
 

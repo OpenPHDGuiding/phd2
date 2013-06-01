@@ -70,7 +70,7 @@ void ConfigDialogPane::DoAdd(wxWindow *pWindow1, wxWindow *pWindow2)
 
 void ConfigDialogPane::DoAdd(wxString label, wxWindow *pControl, wxString toolTip)
 {
-    wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, label + _T(": "),wxPoint(-1,-1),wxSize(-1,-1));
+    wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, label + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
     pControl->SetToolTip(toolTip);
 
     DoAdd(pLabel, pControl);

@@ -59,7 +59,7 @@ bool Camera_SBIGRotatorClass::Connect()
 
     try
     {
-        wxString raAngle = wxGetTextFromUser(_("Enter RA Angle (in degrees)"),_("RA angle"), _("0.0"));
+        wxString raAngle = wxGetTextFromUser(_("Enter RA Angle (in degrees)"),_("RA angle"), _T("0.0"));
         double temp;
 
         if (raAngle.length() == 0 || !raAngle.ToDouble(&temp))

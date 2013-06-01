@@ -271,9 +271,9 @@ bool usImage::Save(const wxString& fname)
         bError = status?true:false;
 
         if (bError)
-            pFrame->SetStatusText(fname + _(" Not saved"));
+            pFrame->SetStatusText(wxString::Format(_("%s Not saved"), fname));
         else
-            pFrame->SetStatusText(fname + _(" saved"));
+            pFrame->SetStatusText(wxString::Format(_("%s saved"),fname));
     }
     catch (wxString Msg)
     {

@@ -75,6 +75,9 @@ protected:
         wxChoice *m_pNoiseReduction;
         wxSpinCtrl *m_pTimeLapse;
         wxTextCtrl *m_pFocalLength;
+        wxChoice* m_pLanguage;
+        wxArrayInt m_LanguageIDs;
+        int m_oldLanguageChoice;
     public:
         MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
         virtual ~MyFrameConfigDialogPane(void);
@@ -100,6 +103,8 @@ protected:
 
     bool SetFocalLength(int focalLength);
 
+    bool SetLanguage(int language);
+
     friend class MyFrameConfigDialogPane;
     friend class WorkerThread;
 
@@ -112,11 +117,12 @@ private:
     int  m_focalLength;
     double m_sampling;
     long m_instanceNumber;
+    wxLocale *m_pLocale;
 
     wxAuiManager m_mgr;
 
 public:
-    MyFrame(const wxString& title, int instanceNumber);
+    MyFrame(const wxString& title, int instanceNumber, wxLocale *locale);
     virtual ~MyFrame();
 
     Guider *pGuider;
@@ -193,6 +199,7 @@ public:
     double RequestedExposureDuration();
     bool Voyager_Connect();
     int GetFocalLength(void);
+    int GetLanguage(void);
 
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);

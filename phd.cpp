@@ -93,9 +93,14 @@ bool PhdApp::OnInit() {
 
     pMount = new ScopeNone();
 
-    wxLocale locale;
-
-    locale.Init(wxLANGUAGE_ENGLISH_US);
+    wxLocale::AddCatalogLookupPathPrefix(_T("locales"));
+    //m_locale.Init(wxLANGUAGE_ENGLISH_US);
+    //m_locale.Init(wxLANGUAGE_FRENCH, wxLOCALE_LOAD_DEFAULT);
+    m_locale.Init(pConfig->GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
+    if (!m_locale.AddCatalog("messages"))
+    {
+        Debug.AddLine("locale.AddCatalog failed");
+    }
 
     wxString title = wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"), VERSION, PHDSUBVER);
 
@@ -104,7 +109,7 @@ bool PhdApp::OnInit() {
         title = wxString::Format(_T("PHD Guiding(#%d) %s%s  -  www.stark-labs.com"), m_instanceNumber, VERSION, PHDSUBVER);
     }
 
-    pFrame = new MyFrame(title, m_instanceNumber);
+    pFrame = new MyFrame(title, m_instanceNumber, &m_locale);
 
     wxImage::AddHandler(new wxJPEGHandler);
 

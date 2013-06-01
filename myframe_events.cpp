@@ -397,7 +397,7 @@ void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt)) {
 void MyFrame::OnGraph(wxCommandEvent &evt) {
     if (evt.IsChecked())
     {
-        m_mgr.GetPane(_T("GraphLog")).Show().Bottom().Layer(1).Position(1).MinSize(-1, 220);
+        m_mgr.GetPane(_T("GraphLog")).Show().Bottom().Position(0).MinSize(-1, 220);
     }
     else
     {
@@ -410,7 +410,7 @@ void MyFrame::OnGraph(wxCommandEvent &evt) {
 void MyFrame::OnAoGraph(wxCommandEvent &evt) {
     if (this->pStepGuiderGraph->SetState(evt.IsChecked()))
     {
-        m_mgr.GetPane(_T("AOPosition")).Show().Bottom().Layer(1).Position(1).MinSize(293,208);
+        m_mgr.GetPane(_T("AOPosition")).Show().Right().Position(1).MinSize(293,208);
     }
     else
     {
@@ -425,7 +425,7 @@ void MyFrame::OnStarProfile(wxCommandEvent &evt) {
 #if defined (__APPLE__)
         m_mgr.GetPane(_T("Profile")).Show().Float().MinSize(110,72);
 #else
-        m_mgr.GetPane(_T("Profile")).Show().Top().Right().MinSize(115,85);
+        m_mgr.GetPane(_T("Profile")).Show().Right().Position(0).MinSize(115,85);
         //m_mgr.GetPane(_T("Profile")).Show().Bottom().Layer(1).Position(2).MinSize(115,85);
 #endif
     }
@@ -440,7 +440,7 @@ void MyFrame::OnStarProfile(wxCommandEvent &evt) {
 void MyFrame::OnTarget(wxCommandEvent &evt) {
     if (evt.IsChecked())
     {
-        m_mgr.GetPane(_T("Target")).Show().Bottom().Layer(1).Position(1).MinSize(293,208);
+        m_mgr.GetPane(_T("Target")).Show().Right().Position(2).MinSize(293,208);
     }
     else
     {

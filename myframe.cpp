@@ -133,10 +133,11 @@ END_EVENT_TABLE()
 
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
-MyFrame::MyFrame(const wxString& title, int instanceNumber)
+MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     : wxFrame(NULL, wxID_ANY, title)
 {
     m_instanceNumber = instanceNumber;
+    m_pLocale = locale;
 
     m_mgr.SetManagedWindow(this);
 
@@ -163,7 +164,7 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
     SetServerMode(serverMode);
 
     bool loggingMode = pConfig->GetBoolean("/LoggingMode", DefaultLoggingMode);
-	GuideLog.EnableLogging(loggingMode);
+    GuideLog.EnableLogging(loggingMode);
 
     int timeLapse   = pConfig->GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
@@ -241,22 +242,22 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
 
     pGraphLog = new GraphLogWindow(this);
     m_mgr.AddPane(pGraphLog, wxAuiPaneInfo().
-        Name(_T("GraphLog")).Caption(_T("History")).
+        Name(_T("GraphLog")).Caption(_("History")).
         Hide());
 
     pStepGuiderGraph = new GraphStepguiderWindow(this);
     m_mgr.AddPane(pStepGuiderGraph, wxAuiPaneInfo().
-        Name(_T("AOPosition")).Caption(_T("AO Position")).
+        Name(_T("AOPosition")).Caption(_("AO Position")).
         Hide());
 
     pProfile = new ProfileWindow(this);
     m_mgr.AddPane(pProfile, wxAuiPaneInfo().
-        Name(_T("Profile")).Caption(_T("Star Profile")).
+        Name(_T("Profile")).Caption(_("Star Profile")).
         Hide());
 
     pTarget = new TargetWindow(this);
     m_mgr.AddPane(pTarget, wxAuiPaneInfo().
-        Name(_T("Target")).Caption(_T("Target")).
+        Name(_T("Target")).Caption(_("Target")).
         Hide());
 
 #ifdef PHD1_LOGGING // deprecated
@@ -297,7 +298,7 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
     pGuider->SetCursor(wxCursor(Cursor));
 
 #ifndef __WXGTK__
-    SetStatusText(_T("Like PHD? Consider donating"),1);
+    SetStatusText(_("Like PHD? Consider donating"),1);
 #endif
 
     CaptureActive = false;
@@ -309,7 +310,15 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
 
     wxString perspective = pConfig->GetString("/perspective", wxEmptyString);
     if (perspective != wxEmptyString)
+    {
         m_mgr.LoadPerspective(perspective);
+        m_mgr.GetPane(_T("MainToolBar")).Caption(_T("Main tool bar"));
+        m_mgr.GetPane(_T("Guider")).Caption(_T("Guider"));
+        m_mgr.GetPane(_T("GraphLog")).Caption(_("History"));
+        m_mgr.GetPane(_T("AOPosition")).Caption(_("AO Position"));
+        m_mgr.GetPane(_T("Profile")).Caption(_("Star Profile"));
+        m_mgr.GetPane(_T("Target")).Caption(_("Target"));
+    }
 
     bool panel_state;
 
@@ -490,11 +499,11 @@ void MyFrame::SetupMenuBar(void)
     Menubar->Append(help_menu, _("&Help"));
 #ifndef __WXGTK__
     wxMenu *donate_menu = new wxMenu;
-    donate_menu->Append(DONATE1, _T("Donate $10"), _T("Donate $10 for PHD Guiding"));
-    donate_menu->Append(DONATE2, _T("Donate $25"), _T("Donate $25 for PHD Guiding"));
-    donate_menu->Append(DONATE3, _T("Donate $50"), _T("Donate $50 for PHD Guiding"));
-    donate_menu->Append(DONATE4, _T("Donate other"), _T("Donate a value of your own choosing for PHD Guiding"));
-    Menubar->Append(donate_menu, _T("   &Donate!   "));
+    donate_menu->Append(DONATE1, _("Donate $10"), _("Donate $10 for PHD Guiding"));
+    donate_menu->Append(DONATE2, _("Donate $25"), _("Donate $25 for PHD Guiding"));
+    donate_menu->Append(DONATE3, _("Donate $50"), _("Donate $50 for PHD Guiding"));
+    donate_menu->Append(DONATE4, _("Donate other"), _("Donate a value of your own choosing for PHD Guiding"));
+    Menubar->Append(donate_menu, _("   &Donate!   "));
 #endif
     SetMenuBar(Menubar);
 }
@@ -569,25 +578,25 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     brain_bmp = wxBitmap(brain_icon);
 #endif
 
-    Setup_Button = new wxButton(toolBar,BUTTON_CAM_PROPERTIES,_T("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
+    Setup_Button = new wxButton(toolBar,BUTTON_CAM_PROPERTIES,_("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
     Setup_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     Setup_Button->Enable(false);
 
-    Dark_Button = new wxButton(toolBar,BUTTON_DARK,_T("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
+    Dark_Button = new wxButton(toolBar,BUTTON_DARK,_("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
     Dark_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 
-    toolBar->AddTool(BUTTON_CAMERA, _T("Camera"), camera_bmp, _T("Connect to camera"));
-    toolBar->AddTool(BUTTON_SCOPE, _T("Telescope"), scope_bmp, _T("Connect to mount(s)"));
-    toolBar->AddTool(BUTTON_LOOP, _T("Loop Exposure"), loop_bmp, _T("Begin looping exposures for frame and focus") );
-    toolBar->AddTool(BUTTON_GUIDE, _T("Guide"), guide_bmp, _T("Begin guiding (PHD)") );
-    toolBar->AddTool(BUTTON_STOP, _T("Stop"), stop_bmp, _T("Abort current action"));
+    toolBar->AddTool(BUTTON_CAMERA, _("Camera"), camera_bmp, _("Connect to camera"));
+    toolBar->AddTool(BUTTON_SCOPE, _("Telescope"), scope_bmp, _("Connect to mount(s)"));
+    toolBar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus") );
+    toolBar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD)") );
+    toolBar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort current action"));
     toolBar->AddSeparator();
-    toolBar->AddControl(Dur_Choice, _T("Exposure duration"));
-    toolBar->AddControl(Gamma_Slider, _T("Gamma"));
+    toolBar->AddControl(Dur_Choice, _("Exposure duration"));
+    toolBar->AddControl(Gamma_Slider, _("Gamma"));
     toolBar->AddSeparator();
-    toolBar->AddTool(BUTTON_ADVANCED, _T("Advanced parameters"), brain_bmp, _T("Advanced parameters"));
-    toolBar->AddControl(Dark_Button, _T("Take Dark"));
-    toolBar->AddControl(Setup_Button, _T("Cam Dialog"));
+    toolBar->AddTool(BUTTON_ADVANCED, _("Advanced parameters"), brain_bmp, _("Advanced parameters"));
+    toolBar->AddControl(Dark_Button, _("Take Dark"));
+    toolBar->AddControl(Setup_Button, _("Cam Dialog"));
     toolBar->Realize();
 
     toolBar->EnableTool(BUTTON_LOOP,false);
@@ -599,10 +608,10 @@ void MyFrame::SetupStatusBar(void)
     CreateStatusBar(6);
     int status_widths[] = {-3,-5, 60, 67, 25,30};
     SetStatusWidths(6,status_widths);
-    SetStatusText(_T("No cam"),2);
-    SetStatusText(_T("No scope"),3);
+    SetStatusText(_("No cam"),2);
+    SetStatusText(_("No scope"),3);
     SetStatusText(_T(""),4);
-    SetStatusText(_T("No cal"),5);
+    SetStatusText(_("No cal"),5);
 }
 
 void MyFrame::SetupKeyboardShortcuts(void)
@@ -1145,6 +1154,30 @@ wxString MyFrame::GetSettingsSummary() {
     );
 }
 
+int MyFrame::GetLanguage(void)
+{
+    int language = pConfig->GetInt("/wxLanguage", wxLANGUAGE_DEFAULT);
+    return language;
+}
+
+bool MyFrame::SetLanguage(int language)
+{
+    bool bError = false;
+
+    if (language < 0)
+    {
+        throw ERROR_INFO("language < 0");
+    }
+    else
+    {
+        bError = true;
+    }
+
+    pConfig->SetInt("/wxLanguage", language);
+
+    return bError;
+}
+
 ConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 {
     return new MyFrameConfigDialogPane(pParent, this);
@@ -1203,9 +1236,33 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     DoAdd(_("Time Lapse (ms)"), m_pTimeLapse,
           _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
-    m_pFocalLength = new wxTextCtrl(pParent, wxID_ANY, _("    "), wxDefaultPosition, wxSize(width+30, -1));
+    m_pFocalLength = new wxTextCtrl(pParent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width+30, -1));
     DoAdd( _("Focale length (mm)"), m_pFocalLength,
            _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
+
+    wxTranslations *pTrans = wxTranslations::Get();
+    wxArrayString availableTranslations = pTrans->GetAvailableTranslations("messages");
+    wxArrayString languages;
+    languages.Add(_("System default"));
+    languages.Add("English");
+    m_LanguageIDs.Add(wxLANGUAGE_DEFAULT);
+    m_LanguageIDs.Add(wxLANGUAGE_ENGLISH_US);
+    for (wxArrayString::iterator s = availableTranslations.begin() ; s != availableTranslations.end() ; ++s)
+    {
+        const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
+        wxLocale locale;
+        locale.Init(pLanguageInfo->Language);
+        locale.AddCatalog("messages");
+        languages.Add(locale.GetString(_("Language-Name")));
+        m_LanguageIDs.Add(pLanguageInfo->Language);
+    }
+
+    width = StringWidth(_("System default"));
+    m_pLanguage = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
+            wxSize(width+35, -1), languages);
+    DoAdd(_("Language"), m_pLanguage,
+          _("PHD Guiding Language. You'll have to restart PHD to take effect."));
+
 }
 
 MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
@@ -1223,6 +1280,10 @@ void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
     m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
     m_pFocalLength->SetValue(wxString::Format(_T("%d"), m_pFrame->GetFocalLength()));
+
+    int language = m_pFrame->GetLanguage();
+    m_oldLanguageChoice = m_LanguageIDs.Index(language);
+    m_pLanguage->SetSelection(m_oldLanguageChoice);
 }
 
 void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
@@ -1255,9 +1316,17 @@ void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
         m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
         m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
         m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
+
         long focalLength;
         m_pFocalLength->GetValue().ToLong(&focalLength);
         m_pFrame->SetFocalLength(focalLength);
+
+        int language = m_pLanguage->GetSelection();
+        pFrame->SetLanguage(m_LanguageIDs[language]);
+        if (m_oldLanguageChoice != m_LanguageIDs[language])
+        {
+            wxMessageBox(_("You must restart PHD for the language change to take effect."),_("Info"));
+        }
     }
     catch (wxString Msg)
     {

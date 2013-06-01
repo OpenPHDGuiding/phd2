@@ -82,9 +82,9 @@ bool Camera_SBIGClass::Connect() {
     OpenDeviceParams odp;
     int resp;
 
-//  wxMessageBox(_T("1: Loading SBIG DLL"));
+//  wxMessageBox(_("1: Loading SBIG DLL"));
     if (LoadDriver()) {
-        wxMessageBox(_T("Error loading SBIG driver and/or DLL"));
+        wxMessageBox(_("Error loading SBIG driver and/or DLL"));
         return true;
     }
     // Put dialog here to select which cam interface
@@ -101,7 +101,7 @@ bool Camera_SBIGClass::Connect() {
     interf.Add("USB3 direct");
 #endif
     resp = pConfig->GetInt("/camera/sbig/interface", 0);
-    resp = wxGetSingleChoiceIndex(_T("Select interface"),_T("Interface"),interf,
+    resp = wxGetSingleChoiceIndex(_("Select interface"),_("Interface"),interf,
             NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
             resp);
 
@@ -114,15 +114,15 @@ bool Camera_SBIGClass::Connect() {
 
     switch (resp) {
         case 0:
-//          wxMessageBox(_T("2: USB selected"));
+//          wxMessageBox(_("2: USB selected"));
             odp.deviceType = DEV_USB;
             QueryUSBResults usbp;
-//          wxMessageBox(_T("3: Sending Query USB"));
+//          wxMessageBox(_("3: Sending Query USB"));
             err = SBIGUnivDrvCommand(CC_QUERY_USB, 0,&usbp);
-//          wxMessageBox(_T("4: Query sent"));
+//          wxMessageBox(_("4: Query sent"));
 //          wxMessageBox(wxString::Format("5: %u cams found",usbp.camerasFound));
             if (usbp.camerasFound > 1) {
-//              wxMessageBox(_T("5a: Enumerating cams"));
+//              wxMessageBox(_("5a: Enumerating cams"));
                 wxArrayString USBNames;
                 int i;
                 for (i=0; i<usbp.camerasFound; i++)
@@ -213,7 +213,7 @@ bool Camera_SBIGClass::Connect() {
     gcip.request = CCD_INFO_TRACKING;
     err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
     if ( err == CE_NO_ERROR ) {
-        resp = wxMessageBox(wxString::Format("Tracking CCD found, use it?\n\nNo = use main image CCD"),_T("CCD Choice"),wxYES_NO | wxICON_QUESTION);
+        resp = wxMessageBox(wxString::Format("Tracking CCD found, use it?\n\nNo = use main image CCD"),_("CCD Choice"),wxYES_NO | wxICON_QUESTION);
         if (resp == wxYES) {
             UseTrackingCCD = true;
             FullSize = wxSize((int) gcir0.readoutInfo->width,(int) gcir0.readoutInfo->height);
@@ -222,12 +222,12 @@ bool Camera_SBIGClass::Connect() {
         }
     }
     if (!UseTrackingCCD) {
-//      wxMessageBox(_T("No tracking CCD - using main/only imager"));
+//      wxMessageBox(_("No tracking CCD - using main/only imager"));
 //      UseTrackingCCD = false;
         gcip.request = CCD_INFO_IMAGING;
         err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
         if (err != CE_NO_ERROR) {
-            wxMessageBox(_T("Error getting info on main CCD"), _("Error"));
+            wxMessageBox(_("Error getting info on main CCD"), _("Error"));
             Disconnect();
             return true;
         }
@@ -331,7 +331,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     // init memory
     if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
         Disconnect();
         return true;
     }
@@ -342,7 +342,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
     if (err != CE_NO_ERROR) {
-        wxMessageBox(_T("Cannot start exposure"), _("Error"));
+        wxMessageBox(_("Cannot start exposure"), _("Error"));
         Disconnect();
         return true;
     }
@@ -355,7 +355,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         wxMilliSleep(20);
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR) {
-            wxMessageBox(_T("Cannot poll exposure"), _("Error"));
+            wxMessageBox(_("Cannot poll exposure"), _("Error"));
             Disconnect();
             return true;
         }
@@ -368,7 +368,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     // End exposure
     err = SBIGUnivDrvCommand(CC_END_EXPOSURE, &eep, NULL);
     if (err != CE_NO_ERROR) {
-        wxMessageBox(_T("Cannot stop exposure"), _("Error"));
+        wxMessageBox(_("Cannot stop exposure"), _("Error"));
         Disconnect();
         return true;
     }
@@ -397,7 +397,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             dataptr = img.ImageData + subframe.x + (y+subframe.y)*FullSize.GetWidth();
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             if (err != CE_NO_ERROR) {
-                wxMessageBox(_T("Error downloading data"), _("Error"));
+                wxMessageBox(_("Error downloading data"), _("Error"));
                 Disconnect();
                 return true;
             }
@@ -410,7 +410,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             dataptr += FullSize.GetWidth();
             if (err != CE_NO_ERROR) {
-                wxMessageBox(_T("Error downloading data"), _("Error"));
+                wxMessageBox(_("Error downloading data"), _("Error"));
                 Disconnect();
                 return true;
             }
@@ -468,7 +468,7 @@ bool Camera_SBIGClass::PulseGuideScope(int direction, int duration) {
         wxMilliSleep(10);
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR) {
-            wxMessageBox(_T("Cannot check SBIG relay status"), _("Error"));
+            wxMessageBox(_("Cannot check SBIG relay status"), _("Error"));
             return true;
         }
         if (!qcsr.status) still_going = false;

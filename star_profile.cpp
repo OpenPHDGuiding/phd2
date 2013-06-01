@@ -78,7 +78,7 @@ void ProfileWindow::UpdateData(usImage *pImg, float xpos, float ypos) {
         xstart = pImg->Size.GetWidth() - 22;
     if (ystart < 0) ystart = 0;
     else if (ystart > (pImg->Size.GetHeight() - 22))
-    ystart = pImg->Size.GetHeight() - 22;
+        ystart = pImg->Size.GetHeight() - 22;
 
     int x,y;
     unsigned short *uptr = this->data;
@@ -113,30 +113,30 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
     const int ysize = this->GetSize().GetY();
 
     wxPen RedPen;
-//  GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
-//  BluePen = wxPen(wxColour(100,100,255));
+    //  GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
+    //  BluePen = wxPen(wxColour(100,100,255));
     RedPen = wxPen(wxColour(255,0,0));
 
     int i;
     int *profptr;
     wxString label;
     switch (this->mode) {  // Figure which profile to use
-        case 0: // mid-row
-            profptr = midrow_profile;
-            label = _("Mid row");
-            break;
-        case 1: // avg row
-            profptr = horiz_profile;
-            label = _("Avg row");
-            break;
-        case 2:
-            profptr = vert_profile;
-            label = _("Avg col");
-            break;
-        default:
-            profptr = midrow_profile;
-            label = _("Mid row");
-            break;
+    case 0: // mid-row
+        profptr = midrow_profile;
+        label = _("Mid row");
+        break;
+    case 1: // avg row
+        profptr = horiz_profile;
+        label = _("Avg row");
+        break;
+    case 2:
+        profptr = vert_profile;
+        label = _("Avg col");
+        break;
+    default:
+        profptr = midrow_profile;
+        label = _("Mid row");
+        break;
     }
 
     float fwhm = 0;
@@ -226,12 +226,12 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
         dc.SetPen(wxPen(wxColor(0,200,0),1,wxDOT));
         dc.DrawLine(xoffset, midwidth, xoffset + width, midwidth);
         dc.DrawLine(xoffset + midwidth, 0, xoffset + midwidth, width);
-		// and a small cross at the centroid
+        // and a small cross at the centroid
         double starX = xoffset + midwidth - dStarX * (width / 30.0) + 1, starY = midwidth - dStarY * (width / 30.0) + 1;
         if (starX >= xoffset) {
             dc.SetPen(RedPen);
-			dc.DrawLine(starX - 3, starY, starX + 3, starY);
-			dc.DrawLine(starX, starY - 3, starX, starY + 3);
+            dc.DrawLine(starX - 3, starY, starX + 3, starY);
+            dc.DrawLine(starX, starY - 3, starX, starY + 3);
         }
     }
 }

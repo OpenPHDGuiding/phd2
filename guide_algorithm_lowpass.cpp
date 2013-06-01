@@ -183,7 +183,7 @@ ConfigDialogPane *GuideAlgorithmLowpass::GetConfigDialogPane(wxWindow *pParent)
 GuideAlgorithmLowpass::
     GuideAlgorithmLowpassConfigDialogPane::
     GuideAlgorithmLowpassConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm)
-    :ConfigDialogPane(_T("Lowpass Guide Algorithm"), pParent)
+    :ConfigDialogPane(_("Lowpass Guide Algorithm"), pParent)
 {
     int width;
 
@@ -194,16 +194,16 @@ GuideAlgorithmLowpass::
         wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5,_T("SlopeWeight"));
     m_pSlopeWeight->SetDigits(2);
 
-    DoAdd(_T("Slope Weight"), m_pSlopeWeight,
-        _T("Weighting of slope parameter in lowpass auto-dec"));
+    DoAdd(_("Slope Weight"), m_pSlopeWeight,
+        _("Weighting of slope parameter in lowpass auto-dec"));
 
     width = StringWidth(_T("000.00"));
     m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
         wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
     m_pMinMove->SetDigits(2);
 
-    DoAdd(_T("Minimum Move (pixels)"), m_pMinMove,
-        _T("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
+    DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
+        _("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
 
 }
 
@@ -248,14 +248,14 @@ GuideAlgorithmLowpass::
         wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.5,_T("SlopeWeight"));
     m_pSlopeWeight->SetDigits(2);
     m_pSlopeWeight->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass::GuideAlgorithmLowpassGraphControlPane::OnSlopeWeightSpinCtrlDouble, this);
-    DoAdd(m_pSlopeWeight, _T("Sl W"));
+    DoAdd(m_pSlopeWeight, _("Sl W"));
 
     width = StringWidth(_T("000.00"));
     m_pMinMove = new wxSpinCtrlDouble(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
     m_pMinMove->SetDigits(2);
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass::GuideAlgorithmLowpassGraphControlPane::OnMinMoveSpinCtrlDouble, this);
-    DoAdd(m_pMinMove, _T("Min mo"));
+    DoAdd(m_pMinMove, _("Min mo"));
 
     m_pSlopeWeight->SetValue(m_pGuideAlgorithm->GetSlopeWeight());
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());

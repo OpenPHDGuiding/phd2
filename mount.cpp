@@ -563,7 +563,7 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         if (actualXAmount >= 0.5)
         {
-            wxString msg = wxString::Format("%c dist=%.2f dur=%.0f", (xDirection==EAST)?'E':'W', fabs(xDistance), actualXAmount);
+            wxString msg = wxString::Format(_("%s dist=%.2f dur=%.0f"), (xDirection==EAST)?_("E"):_("W"), fabs(xDistance), actualXAmount);
             pFrame->SetStatusText(msg, 1, (int)actualXAmount);
             Debug.AddLine(msg);
         }
@@ -577,7 +577,7 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         if (actualYAmount >= 0.5)
         {
-            wxString msg = wxString::Format("%c dist=%.2f dur=%.0f" , (yDirection==SOUTH)?'S':'N', fabs(yDistance), actualYAmount);
+            wxString msg = wxString::Format(_("%s dist=%.2f dur=%.0f") , (yDirection==SOUTH)?_("S"):_("N"), fabs(yDistance), actualYAmount);
             pFrame->SetStatusText(msg, 1, (int)actualYAmount);
             Debug.AddLine(msg);
         }
@@ -673,7 +673,7 @@ bool Mount::FlipCalibration(void)
 
         SetCalibration(newX, newY, xRate(), yRate(), m_calDeclination);
 
-        pFrame->SetStatusText(wxString::Format(_T("CAL: %.2f -> %.2f"), origX, newX), 0);
+        pFrame->SetStatusText(wxString::Format(_("CAL: %.2f -> %.2f"), origX, newX), 0);
     }
     catch (wxString Msg)
     {
@@ -725,27 +725,27 @@ wxString Mount::GetSettingsSummary() {
 }
 
 Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, wxString title, Mount *pMount)
-    : ConfigDialogPane(title + " Settings", pParent)
+    : ConfigDialogPane(wxString::Format(_("%s Settings"),title), pParent)
 {
     int width;
     m_pMount = pMount;
 
-    m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_T("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
+    m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
 
-    DoAdd(m_pRecalibrate, _T("Check to clear any previous calibration and force PHD to recalibrate"));
+    DoAdd(m_pRecalibrate, _("Check to clear any previous calibration and force PHD to recalibrate"));
 
-    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_T("Enable Guide Output"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pEnableGuide, _T("Should mount guide commands be issued"));
+    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_("Enable Guide Output"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pEnableGuide, _("Should mount guide commands be issued"));
 
     wxString xAlgorithms[] = {
-        _T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+        _("Identity"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch")
     };
 
     width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
     m_pXGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
                                     wxSize(width+35, -1), WXSIZEOF(xAlgorithms), xAlgorithms);
-    DoAdd(_T("RA Algorithm"), m_pXGuideAlgorithm,
-          _T("Which Guide Algorithm to use for Right Ascention"));
+    DoAdd(_("RA Algorithm"), m_pXGuideAlgorithm,
+          _("Which Guide Algorithm to use for Right Ascention"));
 
     if (!m_pMount->m_pXGuideAlgorithm)
     {
@@ -758,14 +758,14 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, wxString 
     }
 
     wxString yAlgorithms[] = {
-        _T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+        _("Identity"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch")
     };
 
     width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
     m_pYGuideAlgorithm = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
                                     wxSize(width+35, -1), WXSIZEOF(yAlgorithms), yAlgorithms);
-    DoAdd(_T("Declination Algorithm"), m_pYGuideAlgorithm,
-          _T("Which Guide Algorithm to use for Declination"));
+    DoAdd(_("Declination Algorithm"), m_pYGuideAlgorithm,
+          _("Which Guide Algorithm to use for Declination"));
 
     if (!pMount->m_pYGuideAlgorithm)
     {

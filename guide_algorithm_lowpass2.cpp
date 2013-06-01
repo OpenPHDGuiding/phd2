@@ -90,10 +90,10 @@ ConfigDialogPane *GuideAlgorithmLowpass2::GetConfigDialogPane(wxWindow *pParent)
 GuideAlgorithmLowpass2::
 GuideAlgorithmLowpass2ConfigDialogPane::
 GuideAlgorithmLowpass2ConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass2 *pGuideAlgorithm)
-    :ConfigDialogPane(_T("Lowpass2 Guide Algorithm"), pParent)
+    :ConfigDialogPane(_("Lowpass2 Guide Algorithm"), pParent)
 {
     m_pGuideAlgorithm = pGuideAlgorithm;
-    DoAdd(new wxStaticText(pParent, wxID_ANY, _T("Nothing to Configure"),wxPoint(-1,-1),wxSize(-1,-1)));
+    DoAdd(new wxStaticText(pParent, wxID_ANY, _("Nothing to Configure"),wxPoint(-1,-1),wxSize(-1,-1)));
 }
 
 GuideAlgorithmLowpass2::

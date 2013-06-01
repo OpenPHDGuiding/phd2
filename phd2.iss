@@ -21,6 +21,7 @@ DirExistsWarning=no
 
 [Files]
 Source: "release\phd2.exe"; DestDir: "{app}"; Flags: replacesameversion
+Source: "locales\*"; Excludes: "*-old.*"; DestDir: "{app}\locales"; Flags: recursesubdirs replacesameversion
 Source: "README-Release.txt"; DestDir: "{app}"; Flags: isreadme
 
 [Icons]

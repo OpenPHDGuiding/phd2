@@ -199,7 +199,7 @@ ConfigDialogPane *GuideAlgorithmHysteresis::GetConfigDialogPane(wxWindow *pParen
 GuideAlgorithmHysteresis::
 GuideAlgorithmHysteresisConfigDialogPane::
 GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm)
-    :ConfigDialogPane(_T("Hysteresis Guide Algorithm"), pParent)
+    :ConfigDialogPane(_("Hysteresis Guide Algorithm"), pParent)
 {
     int width;
 
@@ -210,24 +210,24 @@ GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHyster
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 0.05,_T("Hysteresis"));
     m_pHysteresis->SetDigits(2);
 
-    DoAdd(_T("Hysteresis"), m_pHysteresis,
-           _T("How much history of previous guide pulses should be applied\nDefault = 10%, increase to smooth out guiding commands"));
+    DoAdd(_("Hysteresis"), m_pHysteresis,
+           _("How much history of previous guide pulses should be applied\nDefault = 10%, increase to smooth out guiding commands"));
 
     width = StringWidth(_T("000.00"));
     m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 120.0, 0.0, 1.0,_T("Aggression"));
     m_pAggression->SetDigits(1);
 
-    DoAdd(_T("Aggression"), m_pAggression,
-          _T("What percent of the measured error should be applied? Default = 100%, adjust if responding too much or too slowly?"));
+    DoAdd(_("Aggression"), m_pAggression,
+          _("What percent of the measured error should be applied? Default = 100%, adjust if responding too much or too slowly?"));
 
     width = StringWidth(_T("000.00"));
     m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
     m_pMinMove->SetDigits(2);
 
-    DoAdd(_T("Minimum Move (pixels)"), m_pMinMove,
-          _T("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
+    DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
+          _("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
 }
 
 GuideAlgorithmHysteresis::
@@ -275,7 +275,7 @@ GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHyster
             wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 120.0, 0.0, 1.0,_T("Aggression"));
     m_pAggression->SetDigits(1);
     m_pAggression->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnAggressionSpinCtrlDouble, this);
-    DoAdd(m_pAggression, _T("Agr"));
+    DoAdd(m_pAggression, _("Agr"));
 
     // Hysteresis
     width = StringWidth(_T("000.00"));
@@ -283,7 +283,7 @@ GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHyster
             wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 0.05,_T("Hysteresis"));
     m_pHysteresis->SetDigits(2);
     m_pHysteresis->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnHysteresisSpinCtrlDouble, this);
-    DoAdd(m_pHysteresis,_T("Hys"));
+    DoAdd(m_pHysteresis,_("Hys"));
 
     // Min move
     width = StringWidth(_T("000.00"));
@@ -291,7 +291,7 @@ GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHyster
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
     m_pMinMove->SetDigits(2);
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnMinMoveSpinCtrlDouble, this);
-    DoAdd(m_pMinMove,_T("Min mo"));
+    DoAdd(m_pMinMove,_("Min mo"));
 
     m_pHysteresis->SetValue(100.0*m_pGuideAlgorithm->GetHysteresis());
     m_pAggression->SetValue(100.0*m_pGuideAlgorithm->GetAggression());
