@@ -61,7 +61,8 @@ wxDialog(pFrame, wxID_ANY, _("About PHD Guiding"), wxDefaultPosition, wxDefaultS
         "&nbsp;&nbsp;&nbsp;&nbsp;Sean Prange<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Jared Wellman<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Sylvain Girard<br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;Andy Galasso"
+		"&nbsp;&nbsp;&nbsp;&nbsp;Andy Galasso<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;John Wainwright"
         "</body></html>",VERSION,PHDSUBVER));
     wxHtmlWindow *pHtml;
     pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(350, 190), wxHW_SCROLLBAR_NEVER);
