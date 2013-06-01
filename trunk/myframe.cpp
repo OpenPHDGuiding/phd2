@@ -44,6 +44,7 @@ static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;
 static const bool DefaultDitherRaOnly = false;
 static const bool DefaultServerMode = false;
+static const bool DefaultLoggingMode = false;
 static const int DefaultTimelapse = 0;
 static const int DefaultFocalLength = 0;
 
@@ -160,6 +161,9 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber)
 
     bool serverMode = pConfig->GetBoolean("/ServerMode", DefaultServerMode);
     SetServerMode(serverMode);
+
+    bool loggingMode = pConfig->GetBoolean("/LoggingMode", DefaultLoggingMode);
+	GuideLog.EnableLogging(loggingMode);
 
     int timeLapse   = pConfig->GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
