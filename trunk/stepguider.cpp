@@ -945,7 +945,7 @@ ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
 }
 
 StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider)
-    : MountConfigDialogPane(pParent, "AO", pStepGuider)
+    : MountConfigDialogPane(pParent, _("AO"), pStepGuider)
 {
     int width;
 
@@ -953,31 +953,31 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
 
     width = StringWidth(_T("000"));
     m_pCalibrationStepsPerIteration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10, 3,_("Cal_Steps"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10, 3,_T("Cal_Steps"));
 
     DoAdd(_("Calibration Steps"), m_pCalibrationStepsPerIteration,
-        wxString::Format(_T("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationStepsPerIteration));
+        wxString::Format(_("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationStepsPerIteration));
 
     width = StringWidth(_T("000"));
     m_pSamplesToAverage = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 9, 0, _("Samples_To_Average"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 9, 0, _T("Samples_To_Average"));
 
     DoAdd(_("Samples to Average"), m_pSamplesToAverage,
-        wxString::Format(_T("When calibrating, how many samples should be averaged. Default = %d, increase for worse seeing and small imaging scales"), DefaultSamplesToAverage));
+        wxString::Format(_("When calibrating, how many samples should be averaged. Default = %d, increase for worse seeing and small imaging scales"), DefaultSamplesToAverage));
 
     width = StringWidth(_T("000"));
     m_pBumpPercentage = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 99, 0, _("Bump_Percentage"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 99, 0, _T("Bump_Percentage"));
 
     DoAdd(_("Bump Percentage"), m_pBumpPercentage,
-        wxString::Format(_T("What percentage of the AO travel can be used before bumping the mount. Default = %d"), DefaultBumpPercentage));
+        wxString::Format(_("What percentage of the AO travel can be used before bumping the mount. Default = %d"), DefaultBumpPercentage));
 
     width = StringWidth(_T("00.00"));
     m_pBumpMaxStepsPerCycle = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.01, 99.99, 0.0, 0.25, _("Bump_steps"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.01, 99.99, 0.0, 0.25, _T("Bump_steps"));
 
     DoAdd(_("Bump Step"), m_pBumpMaxStepsPerCycle,
-        wxString::Format(_T("How far should a mount bump move the mount between images (in AO steps). Default = %.2lf, decrease if mount bumps cause spikes on the graph"), DefaultBumpMaxStepsPerCycle));
+        wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). Default = %.2lf, decrease if mount bumps cause spikes on the graph"), DefaultBumpMaxStepsPerCycle));
 }
 
 StepGuider::StepGuiderConfigDialogPane::~StepGuiderConfigDialogPane(void)

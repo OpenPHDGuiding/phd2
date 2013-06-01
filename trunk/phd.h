@@ -108,7 +108,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #endif
 
 //#define TEST_TRANSFORMS
-//#define BRET_AO_DEBUG
+#define BRET_AO_DEBUG
 
 #ifdef BRET_AO_DEBUG
 #define USE_LOOPBACK_SERIAL
@@ -194,6 +194,8 @@ class PhdApp: public wxApp
     void OnInitCmdLine(wxCmdLineParser& parser);
     bool OnCmdLineParsed(wxCmdLineParser & parser);
     virtual bool Yield(bool onlyIfNeeded=false);
+protected:
+    wxLocale m_locale;
 };
 
 #endif // PHD_H_INCLUDED

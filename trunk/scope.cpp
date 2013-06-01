@@ -339,7 +339,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         {
             SetStatusText(_("Connection FAIL") + ": Voyager localhost");
 
-            wxString IPstr = wxGetTextFromUser(_("Enter IP address"),_T("Voyager not found on localhost"));
+            wxString IPstr = wxGetTextFromUser(_("Enter IP address"),_("Voyager not found on localhost"));
 
             // we have to use the ScopeVoyager pointer to pass the address to connect
             if (pVoyager->Connect(IPstr))
@@ -399,7 +399,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pMount = pNewScope;
         pGraphLog->UpdateControls();
         SetStatusText(_("Mount connected"));
-        SetStatusText(_T("Scope"),3);
+        SetStatusText(_("Scope"),3);
         // now store the scope we selected so we can use it as the default next time.
         wxMenuItemList items = mount_menu->GetMenuItems();
         wxMenuItemList::iterator iter;
@@ -418,7 +418,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     }
     else
     {
-        SetStatusText(_T("No scope"),3);
+        SetStatusText(_("No scope"),3);
     }
 
     UpdateButtonsStatus();
@@ -587,11 +587,11 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     if (m_calibrationSteps++  > MAX_CALIBRATION_STEPS)
                     {
                         wxString msg(_("RA Calibration Failed: star did not move enough"));
-                        wxMessageBox(msg, _T("Alert"), wxOK | wxICON_ERROR);
+                        wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
                         GuideLog.CalibrationFailed(this, msg);
                         throw ERROR_INFO("Calibrate failed");
                     }
-                    status0.Printf(_T("West step %3d"), m_calibrationSteps);
+                    status0.Printf(_("West step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, WEST);
                     break;
@@ -610,7 +610,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_GO_EAST:
                 if (m_calibrationSteps > 0)
                 {
-                    status0.Printf(_T("East step %3d"), m_calibrationSteps);
+                    status0.Printf(_("East step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
                     m_calibrationSteps--;
                     pFrame->ScheduleCalibrationMove(this, EAST);
@@ -636,11 +636,11 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
                     {
                         wxString msg(_("Backlash Clearing Failed: star did not move enough"));
-                        wxMessageBox(msg, _T("Alert"), wxOK | wxICON_ERROR);
+                        wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
                         GuideLog.CalibrationFailed(this, msg);
                         throw ERROR_INFO("Calibrate failed");
                     }
-                    status0.Printf(_T("Clear backlash step %3d"), m_calibrationSteps);
+                    status0.Printf(_("Clear backlash step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH);
                     break;
@@ -657,11 +657,11 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
                     {
                         wxString msg(_("DEC Calibration Failed: star did not move enough"));
-                        wxMessageBox(msg, _T("Alert"), wxOK | wxICON_ERROR);
+                        wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
                         GuideLog.CalibrationFailed(this, msg);
                         throw ERROR_INFO("Calibrate failed");
                     }
-                    status0.Printf(_T("North step %3d"), m_calibrationSteps);
+                    status0.Printf(_("North step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH);
                     break;
@@ -683,7 +683,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_GO_SOUTH:
                 if (m_calibrationSteps > 0)
                 {
-                    status0.Printf(_T("South step %3d"), m_calibrationSteps);
+                    status0.Printf(_("South step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
                     m_calibrationSteps--;
                     pFrame->ScheduleCalibrationMove(this, SOUTH);
@@ -697,8 +697,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                                m_calibrationXRate,  m_calibrationYRate,
                                GetDeclination());
                 pFrame->SetSampling();
-                pFrame->SetStatusText(_T("calibration complete"),1);
-                pFrame->SetStatusText(_T("Cal"),5);
+                pFrame->SetStatusText(_("calibration complete"),1);
+                pFrame->SetStatusText(_("Cal"),5);
                 GuideLog.CalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");
                 break;
@@ -712,7 +712,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 double dY = m_calibrationStartingLocation.dY(currentLocation);
                 double dist = m_calibrationStartingLocation.Distance(currentLocation);
 
-                status1.Printf(_T("dx=%4.1f dy=%4.1f dist=%4.1f"), dX, dY, dist);
+                status1.Printf(_("dx=%4.1f dy=%4.1f dist=%4.1f"), dX, dY, dist);
             }
         }
 
