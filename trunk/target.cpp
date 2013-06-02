@@ -35,6 +35,8 @@
 
 #include "phd.h"
 
+static double const MIN_ZOOM = 0.25;
+
 BEGIN_EVENT_TABLE(TargetWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH,TargetWindow::OnButtonLength)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,TargetWindow::OnButtonClear)
@@ -56,16 +58,17 @@ TargetWindow::TargetWindow(wxWindow *parent) :
 
     pMainSizer->Add(pLeftSizer);
 
-    LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("100"),wxDefaultPosition,wxSize(80,-1));
+    wxString label = wxString::Format("%3d", m_pClient->m_length);
+    LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,label,wxDefaultPosition,wxSize(80,-1));
     LengthButton->SetToolTip(_("# of frames of history to display"));
 
     wxBoxSizer *pZoomSizer = new wxBoxSizer(wxHORIZONTAL);
 
     ZoomInButton = new wxButton(this,BUTTON_GRAPH_ZOOMIN,_T("+"),wxDefaultPosition,wxSize(40,-1));
-    ZoomInButton->SetToolTip(_("Increase vertical scale"));
+    ZoomInButton->SetToolTip(_("Zoom in"));
 
     ZoomOutButton = new wxButton(this,BUTTON_GRAPH_ZOOMOUT,_T("-"),wxDefaultPosition,wxSize(40,-1));
-    ZoomOutButton->SetToolTip(_("Deccrease vertical scale"));
+    ZoomOutButton->SetToolTip(_("Zoom out"));
 
     pZoomSizer->Add(ZoomInButton);
     pZoomSizer->Add(ZoomOutButton);
@@ -114,6 +117,8 @@ void TargetWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
             m_pClient->m_length = m_pClient->m_minLength;
     }
 
+    pConfig->SetInt("/target/length", m_pClient->m_length);
+
     LengthButton->SetLabel(wxString::Format(_T("%3d"),m_pClient->m_length));
     Refresh();
 }
@@ -126,13 +131,21 @@ void TargetWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
 
 void TargetWindow::OnButtonZoomIn(wxCommandEvent& evt)
 {
-    if (m_pClient->m_zoom < 3) m_pClient->m_zoom *= 2;
+    if (m_pClient->m_zoom < 3)
+    {
+        m_pClient->m_zoom *= 2;
+        pConfig->SetDouble("/target/zoom", m_pClient->m_zoom);
+    }
     Refresh();
 }
 
 void TargetWindow::OnButtonZoomOut(wxCommandEvent& evt)
 {
-    if (m_pClient->m_zoom > 0.25) m_pClient->m_zoom /= 2;
+    if (m_pClient->m_zoom > MIN_ZOOM)
+    {
+        m_pClient->m_zoom /= 2.0;
+        pConfig->SetDouble("/target/zoom", m_pClient->m_zoom);
+    }
     Refresh();
 }
 
@@ -147,8 +160,10 @@ TargetClient::TargetClient(wxWindow *parent) :
     m_maxLength = 400;
 
     m_nItems = 0;
-    m_length = 100;
-    m_zoom = 1;
+    m_length = pConfig->GetInt("/target/length", 100);
+    m_zoom = pConfig->GetDouble("/target/zoom", 1.0);
+    if (m_zoom < MIN_ZOOM)
+        m_zoom = MIN_ZOOM;
 }
 
 TargetClient::~TargetClient(void)

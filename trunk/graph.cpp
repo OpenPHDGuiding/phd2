@@ -99,12 +99,12 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
 
     m_pLengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("foo"));
     m_pLengthButton->SetToolTip(_("# of frames of history to display"));
-    OnButtonLength(dummy); // update the buttom label
+    m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_pClient->m_length));
     pButtonSizer->Add(m_pLengthButton, wxSizerFlags(0).Border(wxTOP, 5));
 
     m_pHeightButton = new wxButton(this,BUTTON_GRAPH_HEIGHT,_T("foo"));
     m_heightButtonLabelVal = 0;
-    OnButtonHeight(dummy); // update the buttom label
+    UpdateHeightButtonLabel();
     pButtonSizer->Add(m_pHeightButton);
 
     m_pModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"));
@@ -222,6 +222,8 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 
     m_pClient->RecalculateTrendLines();
 
+    pConfig->SetInt("/graph/length", m_pClient->m_length);
+
     this->m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_pClient->m_length));
     this->Refresh();
 }
@@ -234,6 +236,8 @@ void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
     {
             m_pClient->m_height = m_pClient->m_minHeight;
     }
+
+    pConfig->SetInt("/graph/height", m_pClient->m_height);
 
     UpdateHeightButtonLabel();
     this->Refresh();
@@ -373,8 +377,8 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     int maxHeight = pConfig->GetInt("/graph/maxHeight", DefaultMaxHeight);
     SetMaxHeight(maxHeight);
 
-    m_length = m_minLength;
-    m_height = m_maxHeight;
+    m_length = pConfig->GetInt("/graph/length", m_minLength * 2);
+    m_height = pConfig->GetInt("/graph/height", m_minHeight);
 
     m_showTrendlines = false;
 

@@ -614,6 +614,15 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
             m_xAngle, m_yAngleError);
 
     m_calibrated = true;
+
+    // store calibration data
+    wxString prefix = "/" + GetMountClassName() + "/calibration/";
+    pConfig->SetString(prefix + "timestamp", wxDateTime::Now().Format());
+    pConfig->SetDouble(prefix + "xAngle", xAngle);
+    pConfig->SetDouble(prefix + "yAngle", yAngle);
+    pConfig->SetDouble(prefix + "xRate", xRate);
+    pConfig->SetDouble(prefix + "yRate", yRate);
+    pConfig->SetDouble(prefix + "declination", declination);
 }
 
 /*
@@ -640,7 +649,7 @@ void Mount::AdjustForDeclination(void)
 
 double Mount::GetDeclination(void)
 {
-    return m_calDeclination;
+    return m_calibrated ? m_calDeclination : 0.0;
 }
 
 bool Mount::FlipCalibration(void)
