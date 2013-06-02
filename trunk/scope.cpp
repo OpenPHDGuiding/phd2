@@ -750,6 +750,11 @@ wxString Scope::GetSettingsSummary() {
         );
 }
 
+wxString Scope::GetMountClassName() const
+{
+    return wxString("scope");
+}
+
 ConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)
 {
     return new ScopeConfigDialogPane(pParent, this);

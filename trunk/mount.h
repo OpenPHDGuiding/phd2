@@ -107,6 +107,8 @@ protected:
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
 
+    virtual wxString GetMountClassName() const = 0;
+
     // functions with an implemenation in Guider that cannot be over-ridden
     // by a subclass
 private:

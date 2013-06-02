@@ -939,6 +939,11 @@ wxString StepGuider::GetSettingsSummary() {
         );
 }
 
+wxString StepGuider::GetMountClassName() const
+{
+    return wxString("stepguider");
+}
+
 ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
 {
     return new StepGuiderConfigDialogPane(pParent, this);
