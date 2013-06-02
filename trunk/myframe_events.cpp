@@ -514,7 +514,18 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 
 bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))
 {
-    return !pMount->FlipCalibration();
+    bool bError = true;
+
+    if (pSecondaryMount)
+    {
+        bError = pSecondaryMount->FlipCalibration();
+    }
+    else if (pMount)
+    {
+        bError = pMount->FlipCalibration();
+    }
+
+    return bError;
 }
 
 void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {

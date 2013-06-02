@@ -131,9 +131,15 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
             return;
 
         double orig=pMount->xAngle();
-        pMount->FlipCalibration();
-        double xAngle  = pMount->xAngle();
-        wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->xAngle()));
+        if (pMount->FlipCalibration())
+        {
+            wxMessageBox(_("Failed to flip RA calibration"));
+        }
+        else
+        {
+            double xAngle  = pMount->xAngle();
+            wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->xAngle()));
+        }
     }
     else if (evt.GetId() == EEGG_MANUALLOCK) {
         if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
