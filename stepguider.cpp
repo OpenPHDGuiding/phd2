@@ -614,7 +614,6 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
                                m_calibrationXRate,  m_calibrationYRate);
                 status1 = _T("calibration complete");
-                pFrame->SetStatusText(_T("Cal"),5);
                 GuideLog.CalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");
                 break;

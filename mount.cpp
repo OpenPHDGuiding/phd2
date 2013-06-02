@@ -316,6 +316,7 @@ bool Mount::IsCalibrated()
 void Mount::ClearCalibration(void)
 {
     m_calibrated = false;
+    if (pFrame) pFrame->UpdateCalibrationStatus();
 }
 
 double Mount::yAngle()
@@ -369,6 +370,7 @@ double Mount::xRate()
 bool Mount::Connect(void)
 {
     m_connected = true;
+    if (pFrame) pFrame->UpdateCalibrationStatus();
 
     return false;
 }
@@ -376,6 +378,7 @@ bool Mount::Connect(void)
 bool Mount::Disconnect(void)
 {
     m_connected = false;
+    if (pFrame) pFrame->UpdateCalibrationStatus();
 
     return false;
 }
@@ -614,6 +617,7 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
             m_xAngle, m_yAngleError);
 
     m_calibrated = true;
+    if (pFrame) pFrame->UpdateCalibrationStatus();
 
     // store calibration data
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
@@ -660,7 +664,6 @@ bool Mount::FlipCalibration(void)
     {
         if (!IsCalibrated())
         {
-            pFrame->SetStatusText(_T("No CAL"));
             throw ERROR_INFO("cannot flip if not calibrated");
         }
 

@@ -237,6 +237,7 @@ public:
     void StopCapturing(void);
 
     void UpdateButtonsStatus(void);
+    void UpdateCalibrationStatus(void);
 
     void SetSampling(void);
     double GetSampling(void);

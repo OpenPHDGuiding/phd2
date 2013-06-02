@@ -78,7 +78,6 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
             {
                 load_calibration(pMount);
                 load_calibration(pSecondaryMount);
-                SetStatusText(_T("Cal"),5);
                 return;
             }
         }
@@ -120,11 +119,9 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
         tmpstr.ToDouble(&declination); // = 0.0035;
 
         pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
-        SetStatusText(_T("Cal"),5);
     }
     else if (evt.GetId() == EEGG_CLEARCAL) {
         pMount->ClearCalibration(); // clear calibration
-        SetStatusText(_T("No cal"),5);
     }
     else if (evt.GetId() == EEGG_FLIPRACAL) {
         if (!pMount->IsCalibrated())

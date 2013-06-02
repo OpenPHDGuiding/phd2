@@ -698,7 +698,6 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                                GetDeclination());
                 pFrame->SetSampling();
                 pFrame->SetStatusText(_("calibration complete"),1);
-                pFrame->SetStatusText(_("Cal"),5);
                 GuideLog.CalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");
                 break;
