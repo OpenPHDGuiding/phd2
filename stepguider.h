@@ -108,6 +108,7 @@ protected:
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual wxString GetSettingsSummary();
+    virtual wxString GetMountClassName() const;
 
 public:
     StepGuider(void);
