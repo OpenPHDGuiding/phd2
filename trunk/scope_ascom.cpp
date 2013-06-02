@@ -444,8 +444,8 @@ bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration) {
         swatch.Start();
 
         if(FAILED(hr = pScopeDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
-                                        &dispParms,&vRes,&excep,NULL))) {
-            wxMessageBox(_T("ASCOM driver failed PulseGuide command"),_("Error"), wxOK | wxICON_ERROR);
+                                        &dispParms,&vRes,&excep,NULL)))
+        {
             Debug.AddLine(wxString::Format("pulseguide fails, pScopeDriver = 0x%p", pScopeDriver));
             throw ERROR_INFO("ASCOM Scope: pulseguide command failed");
         }
