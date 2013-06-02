@@ -9,8 +9,7 @@ REM Script to extract new string to translate from PHD source code and
 REM update every localisation messages.po file. Tranlsating string should
 REM use the _() macro.
 REM
-cd locales
-xgettext *cpp -C --from-code=CP1252 --keyword="_" --keyword="wxPLURAL:1,2"
+xgettext *.cpp -C --from-code=CP1252 --keyword="_" --keyword="_NOTRANS" --keyword="wxPLURAL:1,2"
 cd locales
 copy /Y messages.pot messages-old.pot
 msgmerge messages-old.pot ..\messages.po -o messages.pot
