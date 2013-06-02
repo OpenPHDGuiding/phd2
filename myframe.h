@@ -169,6 +169,7 @@ public:
     void OnEEGG(wxCommandEvent& evt);
     void OnDriftTool(wxCommandEvent& evt);
     void OnSetupCamera(wxCommandEvent& evt);
+    void OnExposureDurationSelected(wxCommandEvent& evt);
     void OnGammaSlider(wxScrollEvent& evt);
     void OnServerEvent(wxSocketEvent& evt);
     void OnSocketEvent(wxSocketEvent& evt);
@@ -261,6 +262,8 @@ private:
     wxMessageQueue<STATUSBAR_QUEUE_ENTRY> m_statusbarQueue;
     wxTimer m_statusbarTimer;
 
+    double m_exposureDuration;
+
     void OnSetStatusText(wxThreadEvent& event);
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
 
@@ -271,6 +274,8 @@ private:
     void SetupToolBar(wxAuiToolBar *toolBar);
     void SetupKeyboardShortcuts(void);
     void SetupHelpFile(void);
+
+    double ExposureDurationFromSelection(const wxString& selection);
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()

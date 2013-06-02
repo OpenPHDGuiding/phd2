@@ -45,6 +45,21 @@ void TestGuide() {
 #endif
 }
 
+static void load_calibration(Mount *mnt)
+{
+    if (!mnt)
+        return;
+    wxString prefix = "/" + mnt->GetMountClassName() + "/calibration/";
+    if (!pConfig->HasEntry(prefix + "timestamp"))
+        return;
+    double xRate = pConfig->GetDouble(prefix + "xRate", 1.0);
+    double yRate = pConfig->GetDouble(prefix + "yRate", 1.0);
+    double xAngle = pConfig->GetDouble(prefix + "xAngle", 0.0);
+    double yAngle = pConfig->GetDouble(prefix + "yAngle", M_PI/2.0);
+    double declination = pConfig->GetDouble(prefix + "declination", 0.0);
+    mnt->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
+}
+
 void MyFrame::OnEEGG(wxCommandEvent &evt) {
 
     if ((evt.GetId() == EEGG_TESTGUIDEDIR) && (pMount->IsConnected()))
@@ -54,7 +69,20 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
         wxMessageBox(wxString::Format(_T("Random motion mode set to %d"),(int) RandomMotionMode));
     }
     else if (evt.GetId() == EEGG_MANUALCAL) {
-        wxString tmpstr;
+
+        wxString savedCal = pConfig->GetString("/scope/calibration/timestamp", "");
+        if (!savedCal.IsEmpty())
+        {
+            int answer = wxMessageBox("Load calibration data from " + savedCal + "?", "Load Calibration Data", wxYES_NO);
+            if (answer == wxYES)
+            {
+                load_calibration(pMount);
+                load_calibration(pSecondaryMount);
+                SetStatusText(_T("Cal"),5);
+                return;
+            }
+        }
+
         double xRate   = pMount->xRate();
         double yRate  = pMount->yRate();
         double xAngle  = pMount->xAngle();
@@ -70,6 +98,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
             declination = 0.0;
         }
 
+        wxString tmpstr;
         tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("RA rate"), wxString::Format(_T("%.4f"),xRate));
         if (tmpstr.IsEmpty()) return;
         tmpstr.ToDouble(&xRate); // = 0.0035;

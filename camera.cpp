@@ -157,7 +157,7 @@ GuideCamera::GuideCamera(void)
     HasShutter=false;
     ShutterState=false;
     HasSubframes=false;
-    UseSubframes = DefaultUseSubframes;
+    UseSubframes = pConfig->GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
 
     HaveDark = false;
     DarkDur = 0;
@@ -745,6 +745,7 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
     if (m_pCamera->HasSubframes)
     {
         m_pCamera->UseSubframes = m_pUseSubframes->GetValue();
+        pConfig->SetBoolean("/camera/UseSubframes", m_pCamera->UseSubframes);
     }
 
     if (m_pCamera->HasGainControl)

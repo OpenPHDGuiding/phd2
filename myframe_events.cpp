@@ -50,23 +50,15 @@ extern Camera_LEwebcamClass Camera_LEwebcamParallel;
 extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
 #endif
 
-double MyFrame::RequestedExposureDuration() { // returns the duration based on pull-down
-    wxString durtext;
-    double dReturn;
-    if (!pCamera || !pCamera->Connected)
-        return 0.0;
+void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
+{
+    wxString sel = Dur_Choice->GetValue();
+    m_exposureDuration = ExposureDurationFromSelection(sel);
 
-    //durtext = pFrame->Dur_Choice->GetStringSelection();
-    durtext = pFrame->Dur_Choice->GetValue();
-    durtext = durtext.BeforeFirst(' '); // remove the " s" bit
-#if wxUSE_XLOCALE
-    durtext.ToCDouble(&dReturn);
-#else
-    durtext.ToDouble(&dReturn);
-#endif
-    dReturn *= 1000;
-    if (pCamera->HaveDark) {
-        if (pCamera->DarkDur != dReturn)
+    pConfig->SetString("/ExposureDuration", sel);
+
+    if (pCamera && pCamera->HaveDark) {
+        if (pCamera->DarkDur != m_exposureDuration)
         {
             Dark_Button->SetBackgroundColour(wxColor(255,0,0));
             Dark_Button->SetForegroundColour(wxColour(0,0,0));
@@ -76,8 +68,14 @@ double MyFrame::RequestedExposureDuration() { // returns the duration based on p
             Dark_Button->SetBackgroundColour(wxNullColour);
         }
     }
+}
 
-    return dReturn;
+double MyFrame::RequestedExposureDuration()
+{
+    if (!pCamera || !pCamera->Connected)
+        return 0.0;
+
+    return m_exposureDuration;
 }
 
 void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
@@ -109,10 +107,8 @@ void MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event)) {
 }
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
     if (CaptureActive) return;  // Looping an exposure already
-    //wxMessageBox(wxString::Format(_T("PHD Guiding v%s\n\nwww.stark-labs.com\n\nCopyright 2006-2013 Craig Stark & Bret McKee\n\nSpecial Thanks to:\n  Sean Prange\n  Jared Wellman"),VERSION),_("About PHD Guiding"), wxOK);
     AboutDialog dlg;
     dlg.ShowModal();
-
 }
 
 void MyFrame::OnOverlay(wxCommandEvent &evt) {
@@ -323,8 +319,11 @@ void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event))
     UpdateButtonsStatus();
 }
 
-void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event)) {
-    Stretch_gamma = (double) Gamma_Slider->GetValue() / 100.0;
+void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event))
+{
+    int val = Gamma_Slider->GetValue();
+    pConfig->SetInt("/Gamma", val);
+    Stretch_gamma = (double) val / 100.0;
     pGuider->UpdateImageDisplay();
 }
 

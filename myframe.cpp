@@ -109,6 +109,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
     EVT_COMMAND_SCROLL(CTRL_GAMMA,MyFrame::OnGammaSlider)
+    EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
     EVT_SOCKET(SERVER_ID, MyFrame::OnServerEvent)
     EVT_SOCKET(SOCKET_ID, MyFrame::OnSocketEvent)
 #ifndef __WXGTK__
@@ -528,6 +529,27 @@ static void SetComboBoxWidth(wxComboBox *control, unsigned int extra)
     control->SetMinSize(wxSize(width + extra, -1));
 }
 
+static wxString dur_choices[] = {
+    _T("0.001 s"), _T("0.002 s"), _T("0.005 s"), _T("0.01 s"),
+    _T("0.05 s"), _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
+    _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"), _T("10 s")
+};
+static const int DefaultDurChoiceIdx = 8;
+static double dur_values[] = {
+    1., 2., 5., 10.,
+    50., 100., 200., 500., 1000., 1500.,
+    2000., 2500., 3000., 3500., 4000., 4500., 5000., 10000.,
+};
+
+double MyFrame::ExposureDurationFromSelection(const wxString& sel)
+{
+    for (unsigned int i = 0; i < WXSIZEOF(dur_choices); i++)
+        if (sel == dur_choices[i])
+            return dur_values[i];
+    Debug.AddLine("unexpected exposure selection: " + sel);
+    return 1000.;
+}
+
 void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
 {
     wxBitmap camera_bmp, scope_bmp, ao_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
@@ -556,20 +578,25 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     camera_bmp = wxBitmap(cam_icon);
 #endif
 
-    wxString dur_choices[] = {
-        _T("0.001 s"), _T("0.002 s"),_T("0.005 s"),_T("0.01 s"),
-        _T("0.05 s"), _T("0.1 s"), _T("0.2 s"), _T("0.5 s"),_T("1.0 s"),_T("1.5 s"),
-        _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"), _T("10 s")
-   };
     Dur_Choice = new wxComboBox(toolBar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition , wxDefaultSize, WXSIZEOF(dur_choices),dur_choices, wxCB_READONLY);
-    Dur_Choice->SetSelection(8);
+    wxString dur = pConfig->GetString("/ExposureDuration", dur_choices[DefaultDurChoiceIdx]);
+    Dur_Choice->SetValue(dur);
+    m_exposureDuration = ExposureDurationFromSelection(dur);
     Dur_Choice->SetToolTip(_("Camera exposure duration"));
     SetComboBoxWidth(Dur_Choice, 40);
 
-    Gamma_Slider = new wxSlider(toolBar,CTRL_GAMMA,100,10,300,wxPoint(-1,-1),wxSize(160/*160*/,-1));
+    enum {
+        GAMMA_MIN = 10,
+        GAMMA_MAX = 300,
+        GAMMA_DEFAULT = 100,
+    };
+    Gamma_Slider = new wxSlider(toolBar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1,-1), wxSize(160,-1));
     Gamma_Slider->SetToolTip(_("Screen gamma (brightness)"));
-    Stretch_gamma = 1.0;
-    Gamma_Slider->SetValue((int) (Stretch_gamma * 100.0));
+    int val = pConfig->GetInt("/Gamma", GAMMA_DEFAULT);
+    if (val < GAMMA_MIN) val = GAMMA_MIN;
+    if (val > GAMMA_MAX) val = GAMMA_MAX;
+    Stretch_gamma = (double) val / 100.0;
+    Gamma_Slider->SetValue(val);
 
     wxBitmap brain_bmp;
 #if defined (WINICONS)
