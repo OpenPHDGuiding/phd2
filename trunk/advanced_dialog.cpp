@@ -123,46 +123,41 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
         pCameraTabSizer->Add(pBox, sizer_flags);
     }
 
-    // Build scope tab
+    // Build scope and AO tabs
     wxPanel *pScopeSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pScopeTabSizer = new wxBoxSizer(wxVERTICAL);
     pScopeSettingsPanel->SetSizer(pScopeTabSizer);
     m_pNotebook->AddPage(pScopeSettingsPanel, _("Scope"));
 
-    // and populate it
-    if (pMount)
-    {
-        // if there are two mounts, the secondary mount config goes to the
-        // scope tab
-        m_pMountPane = pMount->GetConfigDialogPane(pScopeSettingsPanel);
-        pScopeTabSizer->Add(m_pMountPane, sizer_flags);
-    }
-    else
-    {
-        // the primary mount goes to the scope tab
-        m_pMountPane = pMount->GetConfigDialogPane(pScopeSettingsPanel);
-        pScopeTabSizer->Add(m_pMountPane, sizer_flags);
-    }
-
-    // Build AO tab
     wxPanel *pAoSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pAoTabSizer = new wxBoxSizer(wxVERTICAL);
     pAoSettingsPanel->SetSizer(pAoTabSizer);
     m_pNotebook->AddPage(pAoSettingsPanel, _("AO"));
 
-    // and populate it
+    // and populate them
     if (pSecondaryMount)
     {
-        // if there are two mounts, the primary mount config goes to the Adaptive Optics tab
-        m_pSecondaryMountPane = pSecondaryMount->GetConfigDialogPane(pAoSettingsPanel);
-        pAoTabSizer->Add(m_pSecondaryMountPane, sizer_flags);
+        // Since there are two mounts, we have an AO connected and can populatate both tabs.
+        m_pMountPane = pMount->GetConfigDialogPane(pAoSettingsPanel);
+        m_pSecondaryMountPane = pSecondaryMount->GetConfigDialogPane(pScopeSettingsPanel);
+
+        // The secondary mount config goes on the scope tab
+        pScopeTabSizer->Add(m_pSecondaryMountPane, sizer_flags);
+
+        // and the primary mount config goes on the Adaptive Optics tab
+        pAoTabSizer->Add(m_pMountPane, sizer_flags);
+
     }
     else
     {
-        // otherwise there is no secondary mount, so there is no AO.
-        // construct a text box informing the user of that fact
-
+        // We only have a scope
+        m_pMountPane = pMount->GetConfigDialogPane(pScopeSettingsPanel);
         m_pSecondaryMountPane = NULL;
+
+        // otherwise the primary mount goes on the scope tab
+        pScopeTabSizer->Add(m_pMountPane, sizer_flags);
+
+        // And a text box informing the user ther is no AO goes on the AO tab
 
         wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pAoSettingsPanel, wxID_ANY, _("AO Settings")), wxVERTICAL);
         wxStaticText *pText = new wxStaticText(pAoSettingsPanel, wxID_ANY, _("No AO Connected"),wxPoint(-1,-1),wxSize(-1,-1));
