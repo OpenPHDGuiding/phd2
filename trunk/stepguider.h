@@ -95,7 +95,7 @@ protected:
     virtual bool SetSamplesToAverage(int samplesToAverage);
 
     virtual int GetBumpPercentage(void);
-    virtual bool SetBumpPercentage(int bumpPercentage);
+    virtual bool SetBumpPercentage(int bumpPercentage, bool updateGraph=false);
 
     virtual double GetBumpMaxStepsPerCycle(void);
     virtual bool SetBumpMaxStepsPerCycle(double maxBumpPerCycle);

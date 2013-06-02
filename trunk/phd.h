@@ -108,7 +108,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #endif
 
 //#define TEST_TRANSFORMS
-#define BRET_AO_DEBUG
+//#define BRET_AO_DEBUG
 
 #ifdef BRET_AO_DEBUG
 #define USE_LOOPBACK_SERIAL

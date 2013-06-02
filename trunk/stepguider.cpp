@@ -156,7 +156,7 @@ int StepGuider::GetBumpPercentage(void)
     return m_bumpPercentage;
 }
 
-bool StepGuider::SetBumpPercentage(int bumpPercentage)
+bool StepGuider::SetBumpPercentage(int bumpPercentage, bool updateGraph)
 {
     bool bError = false;
 
@@ -177,6 +177,11 @@ bool StepGuider::SetBumpPercentage(int bumpPercentage)
     }
 
     pConfig->SetInt("/stepguider/BumpPercentage", m_bumpPercentage);
+
+    if (updateGraph)
+    {
+        pFrame->pStepGuiderGraph->SetLimits(MaxPosition(LEFT), MaxPosition(UP), BumpPosition(LEFT), BumpPosition(UP));
+    }
 
     return bError;
 }
@@ -1002,7 +1007,7 @@ void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
 {
     m_pStepGuider->SetCalibrationStepsPerIteration(m_pCalibrationStepsPerIteration->GetValue());
     m_pStepGuider->SetSamplesToAverage(m_pSamplesToAverage->GetValue());
-    m_pStepGuider->SetBumpPercentage(m_pBumpPercentage->GetValue());
+    m_pStepGuider->SetBumpPercentage(m_pBumpPercentage->GetValue(), true);
     m_pStepGuider->SetBumpMaxStepsPerCycle(m_pBumpMaxStepsPerCycle->GetValue());
 
     MountConfigDialogPane::UnloadValues();
