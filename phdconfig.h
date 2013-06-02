@@ -90,6 +90,8 @@ public:
     void SetDouble(const char *pName, double value);
     void SetLong(const char *pName, long value);
     void SetInt(const char *pName, int value);
+
+    bool HasEntry(const wxString& name) const;
 };
 
 #endif /* PHDCONFIG_H_INCLUDED */
