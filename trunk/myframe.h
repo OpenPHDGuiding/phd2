@@ -117,7 +117,6 @@ private:
     int  m_focalLength;
     double m_sampling;
     long m_instanceNumber;
-    wxLocale *m_pLocale;
 
     wxAuiManager m_mgr;
 
@@ -143,6 +142,7 @@ public:
     TargetWindow *pTarget;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
+    wxLocale *m_pLocale;
 
     void OnQuit(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);

@@ -91,16 +91,16 @@ bool PhdApp::OnInit() {
     SetVendorName(_T("StarkLabs"));
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
-    pMount = new ScopeNone();
-
     wxLocale::AddCatalogLookupPathPrefix(_T("locales"));
-    //m_locale.Init(wxLANGUAGE_ENGLISH_US);
-    //m_locale.Init(wxLANGUAGE_FRENCH, wxLOCALE_LOAD_DEFAULT);
     m_locale.Init(pConfig->GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
     if (!m_locale.AddCatalog("messages"))
     {
         Debug.AddLine("locale.AddCatalog failed");
     }
+    setlocale(LC_NUMERIC, "English");
+
+
+    pMount = new ScopeNone();
 
     wxString title = wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"), VERSION, PHDSUBVER);
 
