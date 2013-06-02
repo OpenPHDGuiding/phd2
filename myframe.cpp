@@ -1267,6 +1267,7 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     DoAdd( _("Focale length (mm)"), m_pFocalLength,
            _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 
+    int currentLanguage = m_pFrame->m_pLocale->GetLanguage();
     wxTranslations *pTrans = wxTranslations::Get();
     wxArrayString availableTranslations = pTrans->GetAvailableTranslations("messages");
     wxArrayString languages;
@@ -1277,12 +1278,11 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     for (wxArrayString::iterator s = availableTranslations.begin() ; s != availableTranslations.end() ; ++s)
     {
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
-        wxLocale locale;
-        locale.Init(pLanguageInfo->Language);
-        locale.AddCatalog("messages");
-        languages.Add(locale.GetString(_("Language-Name")));
+        pTrans->SetLanguage((wxLanguage)pLanguageInfo->Language);
+        languages.Add(pTrans->GetString(_("Language-Name")));
         m_LanguageIDs.Add(pLanguageInfo->Language);
     }
+    pTrans->SetLanguage((wxLanguage)currentLanguage);
 
     width = StringWidth(_("System default"));
     m_pLanguage = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
