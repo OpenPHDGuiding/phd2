@@ -182,7 +182,7 @@ void AdvancedDialog::LoadValues(void)
     ConfigDialogPane *const panes[] =
         { m_pFramePane, m_pMountPane, m_pSecondaryMountPane, m_pGuiderPane, m_pCameraPane };
 
-    for (int i = 0; i < sizeof(panes)/sizeof(panes[0]); i++)
+    for (int i = 0; i < WXSIZEOF(panes); i++)
     {
         ConfigDialogPane *const pane = panes[i];
         if (pane)
@@ -198,7 +198,7 @@ void AdvancedDialog::UnloadValues(void)
     ConfigDialogPane *const panes[] =
         { m_pFramePane, m_pMountPane, m_pSecondaryMountPane, m_pGuiderPane, m_pCameraPane };
 
-    for (int i = 0; i < sizeof(panes)/sizeof(panes[0]); i++)
+    for (int i = 0; i < WXSIZEOF(panes); i++)
     {
         ConfigDialogPane *const pane = panes[i];
         if (pane)
