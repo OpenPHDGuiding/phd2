@@ -458,7 +458,6 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug logging"),_("Enable / disable debug log file"));
     tools_menu->AppendCheckItem(MENU_GRAPH,_("Display Graph"),_("Enable / disable graph"));
     tools_menu->AppendCheckItem(MENU_AO_GRAPH,_("Display AO Graph"),_("Enable / disable AO graph"));
-    tools_menu->FindItem(MENU_AO_GRAPH)->Enable(false); // only valid when an AO is connected // TODO ZeSly : commented for debug
     tools_menu->AppendCheckItem(MENU_TARGET,_("Display Target"),_("Enable / disable target"));
     tools_menu->AppendCheckItem(MENU_STARPROFILE,_("Enable Star profile"),_("Enable / disable star profile view"));
     tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _("Enable manual lock position"), _("Give manual lock position"));
