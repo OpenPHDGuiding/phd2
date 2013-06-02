@@ -171,7 +171,7 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
             localmin
         };
 
-        for(int i=0; i < sizeof(thresholds)/sizeof(thresholds[0]) && mass < 10.0; i++)
+        for(int i=0; i < WXSIZEOF(thresholds) && mass < 10.0; i++)
         {
             mass = mx = my = 0.000001;
             double threshold = thresholds[i];

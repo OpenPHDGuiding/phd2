@@ -233,7 +233,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     double const amp[] =    { 1.44,    .49,  .16, .098,   .10, };
     double const phase[] =  { 0.0,     1.4, 98.8, 35.9, 150.4, };
     double pe = 0.;
-    for (unsigned int i = 0; i < sizeof(period)/sizeof(period[0]); i++)
+    for (unsigned int i = 0; i < WXSIZEOF(period); i++)
         pe += amp[i] * cos((now - phase[i]) / period[i] * 2. * PI);
     pe *= SimCamParams::pe_scale;
 
