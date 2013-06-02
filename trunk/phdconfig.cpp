@@ -173,3 +173,8 @@ void PhdConfig::SetInt(const char *pName, int value)
 {
     SetLong(pName, value);
 }
+
+bool PhdConfig::HasEntry(const wxString& name) const
+{
+    return m_pConfig && m_pConfig->HasEntry(name);
+}
