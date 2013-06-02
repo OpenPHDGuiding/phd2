@@ -629,15 +629,25 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     toolBar->EnableTool(BUTTON_GUIDE,false);
 }
 
+void MyFrame::UpdateCalibrationStatus(void)
+{
+    bool cal = pMount || pSecondaryMount;
+    if (pMount && !pMount->IsCalibrated())
+        cal = false;
+    if (pSecondaryMount && !pSecondaryMount->IsCalibrated())
+        cal = false;
+    SetStatusText(cal ? _T("Cal") : _T("No cal"), 5);
+}
+
 void MyFrame::SetupStatusBar(void)
 {
     CreateStatusBar(6);
-    int status_widths[] = {-3,-5, 60, 67, 25,30};
+    int status_widths[] = {-3, -5, 60, 67, 25, 32};
     SetStatusWidths(6,status_widths);
     SetStatusText(_("No cam"),2);
     SetStatusText(_("No scope"),3);
     SetStatusText(_T(""),4);
-    SetStatusText(_("No cal"),5);
+    UpdateCalibrationStatus();
 }
 
 void MyFrame::SetupKeyboardShortcuts(void)
