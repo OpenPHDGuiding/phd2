@@ -1193,12 +1193,14 @@ bool MyFrame::SetLanguage(int language)
 
     if (language < 0)
     {
-        throw ERROR_INFO("language < 0");
-    }
-    else
-    {
+        language = wxLANGUAGE_DEFAULT;
         bError = true;
     }
+
+    //wxTranslations *pTrans = wxTranslations::Get();
+    //pTrans->SetLanguage((wxLanguage)language);
+    //if (!pTrans->IsLoaded("messages"))
+    //    pTrans->AddCatalog("messages");
 
     pConfig->SetInt("/wxLanguage", language);
 
@@ -1209,6 +1211,8 @@ ConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 {
     return new MyFrameConfigDialogPane(pParent, this);
 }
+
+#define _NOTRANS(s) _T(s)   // Dummy macro to extract a string in .po file without calling translation function
 
 MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame)
     : ConfigDialogPane(_("Global Settings"), pParent)
@@ -1277,10 +1281,25 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     m_LanguageIDs.Add(wxLANGUAGE_ENGLISH_US);
     for (wxArrayString::iterator s = availableTranslations.begin() ; s != availableTranslations.end() ; ++s)
     {
+        bool bLanguageNameOk = false;
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
-        pTrans->SetLanguage((wxLanguage)pLanguageInfo->Language);
-        languages.Add(pTrans->GetString(_("Language-Name")));
+        wxString catalogFile = "locales\\" + pLanguageInfo->CanonicalName + "\\messages.mo";
+        wxMsgCatalog *pCat = wxMsgCatalog::CreateFromFile(catalogFile, "messages");
+        if (pCat != NULL)
+        {
+            const wxString *pLanguageName = pCat->GetString(_NOTRANS("Language-Name"));
+            if (pLanguageName != NULL)
+            {
+                languages.Add(*pLanguageName);
+                bLanguageNameOk = true;
+            }
+        }
+        if (!bLanguageNameOk)
+        {
+            languages.Add(pLanguageInfo->Description);
+        }
         m_LanguageIDs.Add(pLanguageInfo->Language);
+        delete pCat;
     }
     pTrans->SetLanguage((wxLanguage)currentLanguage);
 
