@@ -325,34 +325,6 @@ void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
 
             // at this point, the AO is connected and active. Even if we
             // fail from here on out that doesn't change
-
-            // now store the stepguider we selected so we can use it as the default next time.
-            // Note: this code makes an assumption about the menu layout, namely that the
-            //       menu contains all the mounts on the top, the AO header, and all the
-            //       stepguiders on the bottom
-
-            wxMenuItemList items = mount_menu->GetMenuItems();
-            wxMenuItemList::iterator iter;
-
-            bool inAoSection = false;
-            wxMenuItem *pAoHeader = mount_menu->FindItem(AO_HEADER);
-
-            for(iter = items.begin(); iter != items.end(); iter++)
-            {
-                wxMenuItem *pItem = *iter;
-
-                if (pItem == pAoHeader)
-                {
-                    inAoSection = true;
-                }
-                else if (inAoSection && pItem->IsChecked())
-                {
-                    wxString value = pItem->GetItemLabelText();
-                    pConfig->SetString("/stepguider/LastMenuChoice", value);
-                    SetStatusText(value + " connected");
-                    break;
-                }
-            }
         }
     }
     catch (wxString Msg)
