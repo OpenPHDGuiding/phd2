@@ -192,6 +192,7 @@ public:
 #ifndef __WXGTK__
     void OnDonateMenu(wxCommandEvent& evt);
 #endif
+    void OnMenuClose(wxMenuEvent& evt);
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
 

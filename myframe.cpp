@@ -118,6 +118,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(DONATE3,MyFrame::OnDonateMenu)
     EVT_MENU(DONATE4,MyFrame::OnDonateMenu)
 #endif
+    EVT_MENU_CLOSE(MyFrame::OnMenuClose)
     EVT_CLOSE(MyFrame::OnClose)
     EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
     EVT_THREAD(MYFRAME_WORKER_THREAD_MOVE_COMPLETE, MyFrame::OnMoveComplete)

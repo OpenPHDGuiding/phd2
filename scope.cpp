@@ -400,21 +400,6 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
         pGraphLog->UpdateControls();
         SetStatusText(_("Mount connected"));
         SetStatusText(_("Scope"),3);
-        // now store the scope we selected so we can use it as the default next time.
-        wxMenuItemList items = mount_menu->GetMenuItems();
-        wxMenuItemList::iterator iter;
-
-        for(iter = items.begin(); iter != items.end(); iter++)
-        {
-            wxMenuItem *pItem = *iter;
-
-            if (pItem->IsChecked())
-            {
-                wxString value = pItem->GetItemLabelText();
-                pConfig->SetString("/scope/LastMenuChoice", pItem->GetItemLabelText());
-                break;
-            }
-        }
     }
     else
     {
