@@ -342,6 +342,7 @@
     <ClCompile Include="cam_wdm.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="configdialog.cpp" />
+    <ClCompile Include="confirm_dialog.cpp" />
     <ClCompile Include="debuglog.cpp" />
     <ClCompile Include="eegg.cpp" />
     <ClCompile Include="graph-stepguider.cpp" />
@@ -428,6 +429,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="cameras.h" />
     <ClInclude Include="configdialog.h" />
+    <ClInclude Include="confirm_dialog.h" />
     <ClInclude Include="debuglog.h" />
     <ClInclude Include="graph-stepguider.h" />
     <ClInclude Include="graph.h" />

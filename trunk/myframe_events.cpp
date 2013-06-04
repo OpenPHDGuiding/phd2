@@ -79,8 +79,7 @@ double MyFrame::RequestedExposureDuration()
 }
 
 void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
-    if (CaptureActive) return;  // Looping an exposure already
-    Close(true);
+    Close(false);
 }
 
 void MyFrame::OnInstructions(wxCommandEvent& WXUNUSED(event)) {
