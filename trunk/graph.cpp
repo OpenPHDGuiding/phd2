@@ -71,10 +71,6 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
 
     m_pClient = new GraphLogClientWindow(this);
 
-    pClientSizer->Add(pButtonSizer, wxSizerFlags().Left().DoubleHorzBorder().Expand());
-    pClientSizer->Add(m_pClient, wxSizerFlags().Expand().Proportion(1));
-
-
     m_pControlSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
     if (m_pXControlPane != NULL)
@@ -136,15 +132,53 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
 
     pButtonSizer->Add(pLabelSizer, wxSizerFlags().Expand());
 
-    m_pClient->m_pOscRMS = new wxStaticText(this, wxID_ANY, _("RMS: 0.00"));
-    m_pClient->m_pOscRMS->SetForegroundColour(*wxLIGHT_GREY);
-    m_pClient->m_pOscRMS->SetBackgroundColour(*wxBLACK);
-    pButtonSizer->Add(m_pClient->m_pOscRMS);
+    wxStaticText *lbl;
+    
+    lbl = new wxStaticText(this, wxID_ANY, _("RMS Error:"), wxDefaultPosition, wxDefaultSize);
+    lbl->SetForegroundColour(*wxLIGHT_GREY);
+    lbl->SetBackgroundColour(*wxBLACK);
+    pButtonSizer->Add(lbl);
 
-    m_pClient->m_pOscIndex = new wxStaticText(this, wxID_ANY, _("Osc: 0.00"));
+    wxBoxSizer *szRaRMS = new wxBoxSizer(wxHORIZONTAL);
+    lbl = new wxStaticText(this, wxID_ANY, _("RA"), wxDefaultPosition, wxSize(24,-1), wxALIGN_RIGHT);
+    lbl->SetForegroundColour(*wxLIGHT_GREY);
+    lbl->SetBackgroundColour(*wxBLACK);
+    m_pClient->m_pRaRMS = new wxStaticText(this, wxID_ANY, _("0.00"), wxDefaultPosition, wxSize(80,-1));
+    m_pClient->m_pRaRMS->SetForegroundColour(*wxLIGHT_GREY);
+    m_pClient->m_pRaRMS->SetBackgroundColour(*wxBLACK);
+    szRaRMS->Add(lbl, wxSizerFlags().Border(wxRIGHT, 5));
+    szRaRMS->Add(m_pClient->m_pRaRMS);
+    pButtonSizer->Add(szRaRMS);
+
+    wxBoxSizer *szDecRMS = new wxBoxSizer(wxHORIZONTAL);
+    lbl = new wxStaticText(this, wxID_ANY, _("Dec"), wxDefaultPosition, wxSize(24,-1), wxALIGN_RIGHT);
+    lbl->SetForegroundColour(*wxLIGHT_GREY);
+    lbl->SetBackgroundColour(*wxBLACK);
+    m_pClient->m_pDecRMS = new wxStaticText(this, wxID_ANY, _("0.00"), wxDefaultPosition, wxSize(80,-1));
+    m_pClient->m_pDecRMS->SetForegroundColour(*wxLIGHT_GREY);
+    m_pClient->m_pDecRMS->SetBackgroundColour(*wxBLACK);
+    szDecRMS->Add(lbl, wxSizerFlags().Border(wxRIGHT, 5));
+    szDecRMS->Add(m_pClient->m_pDecRMS);
+    pButtonSizer->Add(szDecRMS);
+
+    wxBoxSizer *szTotRMS = new wxBoxSizer(wxHORIZONTAL);
+    lbl = new wxStaticText(this, wxID_ANY, _("Tot"), wxDefaultPosition, wxSize(24,-1), wxALIGN_RIGHT);
+    lbl->SetForegroundColour(*wxLIGHT_GREY);
+    lbl->SetBackgroundColour(*wxBLACK);
+    m_pClient->m_pTotRMS = new wxStaticText(this, wxID_ANY, _("0.00"), wxDefaultPosition, wxSize(80,-1));
+    m_pClient->m_pTotRMS->SetForegroundColour(*wxLIGHT_GREY);
+    m_pClient->m_pTotRMS->SetBackgroundColour(*wxBLACK);
+    szTotRMS->Add(lbl, wxSizerFlags().Border(wxRIGHT, 5));
+    szTotRMS->Add(m_pClient->m_pTotRMS);
+    pButtonSizer->Add(szTotRMS);
+
+    m_pClient->m_pOscIndex = new wxStaticText(this, wxID_ANY, _("RA Osc: 0.00"));
     m_pClient->m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pOscIndex->SetBackgroundColour(*wxBLACK);
     pButtonSizer->Add(m_pClient->m_pOscIndex);
+
+    pClientSizer->Add(pButtonSizer, wxSizerFlags().Left().DoubleHorzBorder().Expand());
+    pClientSizer->Add(m_pClient, wxSizerFlags().Expand().Proportion(1));
 
     SetSizer(pMainSizer);
     pMainSizer->SetSizeHints(this);
@@ -396,6 +430,7 @@ static void reset_trend_accums(TrendLineAccum accums[4])
     {
         accums[i].sum_xy = 0.0;
         accums[i].sum_y = 0.0;
+        accums[i].sum_y2 = 0.0;
     }
 }
 
@@ -403,6 +438,7 @@ void GraphLogClientWindow::ResetData(void)
 {
     m_nItems = 0;
     reset_trend_accums(m_trendLineAccum);
+    m_raSameSides = 0;
 }
 
 bool GraphLogClientWindow::SetMinLength(int minLength)
@@ -514,6 +550,7 @@ static void update_trend(int nr, int max_nr, double newval, const double& oldval
         // number of items is increasing, increment sums
         accum->sum_y += newval;
         accum->sum_xy += nr * newval;
+        accum->sum_y2 += newval * newval;
     }
     else
     {
@@ -521,6 +558,7 @@ static void update_trend(int nr, int max_nr, double newval, const double& oldval
         // removal of oldest value (oldval) and addition of new value.
         accum->sum_xy += (max_nr - 1) * newval + oldval - accum->sum_y;
         accum->sum_y += newval - oldval;
+        accum->sum_y2 += newval * newval - oldval * oldval;
     }
 }
 
@@ -535,6 +573,18 @@ void GraphLogClientWindow::AppendData(float dx, float dy, float RA, float Dec)
     update_trend(trend_items, m_length, dy, m_pHistory[oldest].dy, &m_trendLineAccum[1]);
     update_trend(trend_items, m_length, RA, m_pHistory[oldest].ra, &m_trendLineAccum[2]);
     update_trend(trend_items, m_length, Dec, m_pHistory[oldest].dec, &m_trendLineAccum[3]);
+
+    // update counter for osc index
+    if (trend_items >= 1)
+    {
+        if (RA * m_pHistory[m_maxLength-1].ra > 0.0)
+            ++m_raSameSides;
+        if (trend_items >= m_length)
+        {
+            if (m_pHistory[oldest].ra * m_pHistory[oldest + 1].ra > 0.0)
+                --m_raSameSides;
+        }
+    }
 
     memmove(m_pHistory, m_pHistory+1, sizeof(m_pHistory[0])*(m_maxLength-1));
 
@@ -558,12 +608,19 @@ void GraphLogClientWindow::RecalculateTrendLines(void)
     if (trend_items > m_length)
         trend_items = m_length;
     const int begin = m_maxLength - trend_items;
+    const int end = m_maxLength - 1;
     for (int x = 0, i = begin; x < trend_items; i++, x++) {
         update_trend(x, trend_items, m_pHistory[i].dx, 0.0, &m_trendLineAccum[0]);
         update_trend(x, trend_items, m_pHistory[i].dy, 0.0, &m_trendLineAccum[1]);
         update_trend(x, trend_items, m_pHistory[i].ra, 0.0, &m_trendLineAccum[2]);
         update_trend(x, trend_items, m_pHistory[i].dec, 0.0, &m_trendLineAccum[3]);
     }
+    // recalculate ra same side counter
+    m_raSameSides = 0;
+    if (trend_items >= 2)
+        for (int i = begin; i < end; i++)
+            if (m_pHistory[i].ra * m_pHistory[i + 1].ra > 0.0)
+                ++m_raSameSides;
 }
 
 // trendline - calculate the the trendline slope and intercept. We can do this
@@ -586,9 +643,33 @@ static std::pair<double, double> trendline(const TrendLineAccum& accum, int nn)
     return std::make_pair(a, b);
 }
 
-inline static wxPoint pt(double x, double y, int xorig, int yorig, double xmag, double ymag)
+// helper class to scale and translate points
+struct ScaleAndTranslate
 {
-    return wxPoint(xorig + (int)(x * xmag), yorig + (int)(y * ymag));
+    int m_xorig, m_yorig;
+    double m_xmag, m_ymag;
+    ScaleAndTranslate(int xorig, int yorig, double xmag, double ymag) : m_xorig(xorig), m_yorig(yorig), m_xmag(xmag), m_ymag(ymag) { }
+    wxPoint pt(double x, double y) const {
+        return wxPoint(m_xorig + (int)(x * m_xmag), m_yorig + (int)(y * m_ymag));
+    }
+};
+
+static double rms(unsigned int nr, const TrendLineAccum *accum)
+{
+    if (nr == 0)
+        return 0.0;
+    double const n = (double) nr;
+    double const s1 = accum->sum_y;
+    double const s2 = accum->sum_y2;
+    return sqrt(n * s2 - s1 * s1) / n;
+}
+
+static wxString rms_label(double rms, double sampling)
+{
+    if (sampling != 1.0)
+        return wxString::Format("%4.2f (%.2f'')", rms, rms * sampling);
+    else
+        return wxString::Format("%4.2f", rms);
 }
 
 void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
@@ -667,6 +748,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     const double xmag = size.x / (double)m_length;
     const double ymag = yPixelsPerDivision * (double)(m_yDivisions + 1) / (double)m_height * sampling;
 
+    ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
+
     // Draw data
     if (m_nItems > 0)
     {
@@ -692,12 +775,12 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             switch (m_mode)
             {
             case MODE_RADEC:
-                pRaOrDxLine[j] = pt(j, pSrc->ra, xorig, yorig, xmag, ymag);
-                pDecOrDyLine[j] = pt(j, pSrc->dec, xorig, yorig, xmag, ymag);
+                pRaOrDxLine[j] = sctr.pt(j, pSrc->ra);
+                pDecOrDyLine[j] = sctr.pt(j, pSrc->dec);
                 break;
             case MODE_DXDY:
-                pRaOrDxLine[j] = pt(j, pSrc->dx, xorig, yorig, xmag, ymag);
-                pDecOrDyLine[j] = pt(j, pSrc->dy, xorig, yorig, xmag, ymag);
+                pRaOrDxLine[j] = sctr.pt(j, pSrc->dx);
+                pDecOrDyLine[j] = sctr.pt(j, pSrc->dy);
                 break;
             }
         }
@@ -734,12 +817,12 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             }
 
             wxPoint lineRaOrDx[2];
-            lineRaOrDx[0] = pt(0.0, trendRaOrDx.second, xorig, yorig, xmag, ymag);
-            lineRaOrDx[1] = pt(m_maxLength, trendRaOrDx.first * m_maxLength + trendRaOrDx.second, xorig, yorig, xmag, ymag);
+            lineRaOrDx[0] = sctr.pt(0.0, trendRaOrDx.second);
+            lineRaOrDx[1] = sctr.pt(m_maxLength, trendRaOrDx.first * m_maxLength + trendRaOrDx.second);
 
             wxPoint lineDecOrDy[2];
-            lineDecOrDy[0] = pt(0.0, trendDecOrDy.second, xorig, yorig, xmag, ymag);
-            lineDecOrDy[1] = pt(m_maxLength, trendDecOrDy.first * m_maxLength + trendDecOrDy.second, xorig, yorig, xmag, ymag);
+            lineDecOrDy[0] = sctr.pt(0.0, trendDecOrDy.second);
+            lineDecOrDy[1] = sctr.pt(m_maxLength, trendDecOrDy.first * m_maxLength + trendDecOrDy.second);
 
             raOrDxPen.SetStyle(wxLONG_DASH);
             dc.SetPen(raOrDxPen);
@@ -750,38 +833,18 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             dc.DrawLines(2, lineDecOrDy, 0, 0);
         }
 
-        // Figure oscillation score
-        int same_sides = 0;
-        double mean = 0.0;
-        for (i = start_item + 1 ; i < m_maxLength ; i++)
-        {
-            if ( (m_pHistory[i].ra * m_pHistory[i-1].ra) > 0.0)
-                same_sides++;
-            mean = mean + m_pHistory[i].ra;
-        }
-        if (m_nItems != start_item)
-            mean = mean / (double) (m_nItems - start_item);
-        else
-            mean = 0.0;
-        double RMS = 0.0;
-        for (i = start_item + 1; i < m_maxLength; i++)
-        {
-            double ra = m_pHistory[i].ra;
-            RMS = RMS + (ra-mean)*(ra-mean);
-        }
-        if (m_nItems != start_item)
-            RMS = sqrt(RMS/(double) (m_maxLength - start_item));
-        else
-            RMS = 0.0;
+        double rms_ra = rms(plot_length, &m_trendLineAccum[2]);
+        double rms_dec = rms(plot_length, &m_trendLineAccum[3]);
+        double rms_tot = sqrt(rms_ra * rms_ra + rms_dec * rms_dec);
+        m_pRaRMS->SetLabel(rms_label(rms_ra, sampling));
+        m_pDecRMS->SetLabel(rms_label(rms_dec, sampling));
+        m_pTotRMS->SetLabel(rms_label(rms_tot, sampling));
 
-        if (sampling != 1)
-            m_pOscRMS->SetLabel(wxString::Format("RMS: %4.2f (%.2f'')", RMS, RMS * sampling));
-        else
-            m_pOscRMS->SetLabel(wxString::Format("RMS: %4.2f", RMS));
+        // Figure oscillation score
 
         double osc_index = 0.0;
-        if (m_nItems != start_item)
-            osc_index= 1.0 - (double) same_sides / (double) (m_maxLength - start_item);
+        if (plot_length >= 2)
+            osc_index = 1.0 - (double) m_raSameSides / (double) (plot_length - 1);
 
         if ((osc_index > 0.6) || (osc_index < 0.15))
         {
@@ -792,10 +855,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
         }
 
-        if (sampling != 1)
-            m_pOscIndex->SetLabel(wxString::Format("Osc: %4.2f (%.2f)", osc_index, osc_index * sampling));
-        else
-            m_pOscIndex->SetLabel(wxString::Format("Osc: %4.2f", osc_index));
+        m_pOscIndex->SetLabel(wxString::Format("RA Osc: %4.2f", osc_index));
 
         delete [] pRaOrDxLine;
         delete [] pDecOrDyLine;
