@@ -42,6 +42,7 @@ struct TrendLineAccum
 {
     double sum_y;
     double sum_xy;
+    double sum_y2;
 };
 
 class GraphLogClientWindow : public wxWindow
@@ -55,7 +56,7 @@ class GraphLogClientWindow : public wxWindow
     bool SetMaxHeight(int minHeight);
 
     wxColour m_raOrDxColor, m_decOrDyColor;
-    wxStaticText *m_pOscRMS, *m_pOscIndex;
+    wxStaticText *m_pRaRMS, *m_pDecRMS, *m_pTotRMS, *m_pOscIndex;
 
     void AppendData(float dx, float dy, float RA, float Dec);
     void ResetData(void);
@@ -82,6 +83,8 @@ class GraphLogClientWindow : public wxWindow
     int m_nItems;    // # items in the history
 
     TrendLineAccum m_trendLineAccum[4]; // dx, dy, ra, dec
+
+    int m_raSameSides; // accumulator for RA osc index
 
     enum
     {
