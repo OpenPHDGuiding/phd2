@@ -967,9 +967,16 @@ void MyFrame::StopCapturing(void)
 }
 
 void MyFrame::OnClose(wxCloseEvent &event) {
-    if (CaptureActive) {
-        if (event.CanVeto()) event.Veto();
-        return;
+    if (CaptureActive)
+    {
+        bool confirmed = ConfirmDialog::Confirm(_("Are you sure you want to exit while capturing is active?"),
+            "/quit_when_looping_ok", _("Confirm Exit"));
+        if (!confirmed)
+        {
+            if (event.CanVeto())
+                event.Veto();
+            return;
+        }
     }
 
     StopCapturing();
