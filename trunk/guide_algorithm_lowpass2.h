@@ -57,7 +57,7 @@ protected:
     };
 
 public:
-    GuideAlgorithmLowpass2(void);
+    GuideAlgorithmLowpass2(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmLowpass2(void);
     virtual GUIDE_ALGORITHM Algorithm(void);
 
@@ -65,6 +65,7 @@ public:
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual wxString GetSettingsSummary() { return "\n"; }
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "Lowpass2"; }
 };
 
 #endif /* GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED */

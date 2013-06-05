@@ -37,6 +37,7 @@
 
 class ConfigDialogPane : public wxStaticBoxSizer
 {
+protected:
     wxWindow *m_pParent;
 public:
     ConfigDialogPane(wxString heading, wxWindow *pParent);

@@ -349,6 +349,7 @@
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="guider.cpp" />
     <ClCompile Include="guider_onestar.cpp" />
+    <ClCompile Include="guide_algorithm.cpp" />
     <ClCompile Include="guide_algorithm_hysteresis.cpp" />
     <ClCompile Include="guide_algorithm_identity.cpp" />
     <ClCompile Include="guide_algorithm_lowpass.cpp" />

@@ -75,22 +75,25 @@ protected:
 
     // Things related to the Advanced Config Dialog
 protected:
-    class MountConfigDialogPane : public ConfigDialogPane
+    class MountConfigDialogPane : public wxEvtHandler, public ConfigDialogPane
     {
         Mount *m_pMount;
         wxCheckBox *m_pRecalibrate;
         wxCheckBox *m_pEnableGuide;
-        wxChoice   *m_pXGuideAlgorithm;
-        wxChoice   *m_pYGuideAlgorithm;
+        wxChoice   *m_pXGuideAlgorithmChoice;
+        wxChoice   *m_pYGuideAlgorithmChoice;
         ConfigDialogPane *m_pXGuideAlgorithmConfigDialogPane;
         ConfigDialogPane *m_pYGuideAlgorithmConfigDialogPane;
 
-        public:
+    public:
         MountConfigDialogPane(wxWindow *pParent, wxString title, Mount *pMount);
         ~MountConfigDialogPane(void);
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+
+        void OnXAlgorithmSelected(wxCommandEvent& evt);
+        void OnYAlgorithmSelected(wxCommandEvent& evt);
     };
 
     virtual GUIDE_ALGORITHM GetXGuideAlgorithm(void);
@@ -113,7 +116,7 @@ public:
     // by a subclass
 private:
     GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
-    bool SetGuideAlgorithm(int guideAlgorithm, GuideAlgorithm **ppAlgorithm);
+    static bool CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm);
 
 #ifdef TEST_TRANSFORMS
     void Mount::TestTransforms(void);

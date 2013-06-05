@@ -54,39 +54,29 @@ Scope::Scope(void)
 {
     m_calibrationSteps = 0;
 
-    int calibrationDuration = pConfig->GetInt("/scope/CalibrationDuration", DefaultCalibrationDuration);
+    wxString prefix = "/" + GetMountClassName();
+
+    int calibrationDuration = pConfig->GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
     SetCalibrationDuration(calibrationDuration);
 
-    int maxRaDuration  = pConfig->GetInt("/scope/MaxRaDuration", DefaultMaxRaDuration);
+    int maxRaDuration  = pConfig->GetInt(prefix + "/MaxRaDuration", DefaultMaxRaDuration);
     SetMaxRaDuration(maxRaDuration);
 
-    int maxDecDuration = pConfig->GetInt("/scope/MaxDecDuration", DefaultMaxDecDuration);
+    int maxDecDuration = pConfig->GetInt(prefix + "/MaxDecDuration", DefaultMaxDecDuration);
     SetMaxDecDuration(maxDecDuration);
 
-    int decGuideMode = pConfig->GetInt("/scope/DecGuideMode", DefaultDecGuideMode);
+    int decGuideMode = pConfig->GetInt(prefix + "/DecGuideMode", DefaultDecGuideMode);
     SetDecGuideMode(decGuideMode);
 
-    int raGuideAlgorithm = pConfig->GetInt("/scope/RaGuideAlgorithm", DefaultRaGuideAlgorithm);
+    int raGuideAlgorithm = pConfig->GetInt(prefix + "/XGuideAlgorithm", DefaultRaGuideAlgorithm);
     SetXGuideAlgorithm(raGuideAlgorithm);
 
-    int decGuideAlgorithm = pConfig->GetInt("/scope/DecGuideAlgorithm", DefaultDecGuideAlgorithm);
+    int decGuideAlgorithm = pConfig->GetInt(prefix + "/YGuideAlgorithm", DefaultDecGuideAlgorithm);
     SetYGuideAlgorithm(decGuideAlgorithm);
 }
 
 Scope::~Scope(void)
 {
-}
-
-void Scope::SetXGuideAlgorithm(int guideAlgorithm)
-{
-    Mount::SetXGuideAlgorithm(guideAlgorithm, DefaultRaGuideAlgorithm);
-    pConfig->SetInt("/scope/RaGuideAlgorithm", GetXGuideAlgorithm());
-}
-
-void Scope::SetYGuideAlgorithm(int guideAlgorithm)
-{
-    Mount::SetYGuideAlgorithm(guideAlgorithm, DefaultDecGuideAlgorithm);
-    pConfig->SetInt("/scope/DecGuideAlgorithm", GetYGuideAlgorithm());
 }
 
 int Scope::GetCalibrationDuration(void)

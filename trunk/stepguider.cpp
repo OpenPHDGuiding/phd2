@@ -42,23 +42,32 @@ static const int DefaultSamplesToAverage = 3;
 static const int DefaultBumpPercentage = 80;
 static const double DefaultBumpMaxStepsPerCycle = 1.00;
 static const int DefaultCalibrationStepsPerIteration = 4;
+static const int DefaultGuideAlgorithm = GUIDE_ALGORITHM_IDENTITY;
 
 StepGuider::StepGuider(void)
 {
     m_xOffset = 0;
     m_yOffset = 0;
 
-    int samplesToAverage = pConfig->GetInt("/stepguider/SamplesToAverage", DefaultSamplesToAverage);
+    wxString prefix = "/" + GetMountClassName();
+
+    int samplesToAverage = pConfig->GetInt(prefix + "/SamplesToAverage", DefaultSamplesToAverage);
     SetSamplesToAverage(samplesToAverage);
 
-    int bumpPercentage = pConfig->GetInt("/stepguider/BumpPercentage", DefaultBumpPercentage);
+    int bumpPercentage = pConfig->GetInt(prefix + "/BumpPercentage", DefaultBumpPercentage);
     SetBumpPercentage(bumpPercentage);
 
-    int bumpMaxStepsPerCycle = pConfig->GetDouble("/stepguider/BumpMaxStepsPerCycle", DefaultBumpMaxStepsPerCycle);
+    int bumpMaxStepsPerCycle = pConfig->GetDouble(prefix + "/BumpMaxStepsPerCycle", DefaultBumpMaxStepsPerCycle);
     SetBumpMaxStepsPerCycle(bumpMaxStepsPerCycle);
 
-    int calibrationStepsPerIteration = pConfig->GetInt("/stepguider/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
+    int calibrationStepsPerIteration = pConfig->GetInt(prefix + "/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
     SetCalibrationStepsPerIteration(calibrationStepsPerIteration);
+
+    int xGuideAlgorithm = pConfig->GetInt(prefix + "/XGuideAlgorithm", DefaultGuideAlgorithm);
+    SetXGuideAlgorithm(xGuideAlgorithm);
+
+    int yGuideAlgorithm = pConfig->GetInt(prefix + "/YGuideAlgorithm", DefaultGuideAlgorithm);
+    SetYGuideAlgorithm(yGuideAlgorithm);
 }
 
 StepGuider::~StepGuider(void)

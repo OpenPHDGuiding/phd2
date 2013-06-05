@@ -84,7 +84,7 @@ protected:
     friend class GuideAlgorithmLowpassConfigDialogPane;
 
 public:
-    GuideAlgorithmLowpass(void);
+    GuideAlgorithmLowpass(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmLowpass(void);
     virtual GUIDE_ALGORITHM Algorithm(void);
 
@@ -93,6 +93,7 @@ public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
     virtual wxString GetSettingsSummary();
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "Lowpass"; }
 };
 
 #endif /* GUIDE_ALGORITHM_LOWPASS_H_INCLUDED */

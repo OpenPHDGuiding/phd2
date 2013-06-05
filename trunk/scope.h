@@ -108,9 +108,6 @@ protected:
     virtual DEC_GUIDE_MODE GetDecGuideMode(void);
     virtual bool SetDecGuideMode(int decGuideMode);
 
-    virtual void SetXGuideAlgorithm(int guideAlgorithm);
-    virtual void SetYGuideAlgorithm(int guideAlgorithm);
-
     friend class GraphLogWindow;
 
 public:

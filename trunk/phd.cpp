@@ -122,6 +122,8 @@ int PhdApp::OnExit(void)
 {
     delete pMount;
     pMount = NULL;
+    delete pSecondaryMount;
+    pSecondaryMount = NULL;
     delete pCamera;
     pCamera = NULL;
     delete pConfig;
