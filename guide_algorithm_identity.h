@@ -55,7 +55,7 @@ protected:
     };
 
 public:
-    GuideAlgorithmIdentity(void);
+    GuideAlgorithmIdentity(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmIdentity(void);
     virtual GUIDE_ALGORITHM Algorithm(void);
 
@@ -63,6 +63,7 @@ public:
     virtual double result(double input);
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual wxString GetSettingsSummary() { return "\n"; }
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "Identity"; }
 };
 
 #endif /* GUIDE_ALGORITHM_IDENTITY_H_INCLUDED */

@@ -53,10 +53,24 @@
  *
  */
 
+class Mount;
+
+enum GuideAxis
+{
+    GUIDE_RA,
+    GUIDE_X = GUIDE_RA,
+    GUIDE_DEC,
+    GUIDE_Y = GUIDE_DEC,
+};
+
 class GuideAlgorithm
 {
+protected:
+    Mount *m_pMount;
+    GuideAxis m_guideAxis;
+
 public:
-    GuideAlgorithm(void) {};
+    GuideAlgorithm(Mount *pMount, GuideAxis axis) : m_pMount(pMount), m_guideAxis(axis) {};
     virtual ~GuideAlgorithm(void) {};
     virtual GUIDE_ALGORITHM Algorithm(void) = 0;
 
@@ -66,6 +80,8 @@ public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label) { return NULL; };
     virtual wxString GetSettingsSummary() { return ""; }
+    virtual wxString GetGuideAlgorithmClassName(void) const = 0;
+    wxString GetConfigPath();
 };
 
 #endif /* GUIDE_ALGORITHM_H_INCLUDED */

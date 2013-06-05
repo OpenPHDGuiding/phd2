@@ -2,11 +2,11 @@
  *  guide_algorithm.cpp
  *  PHD Guiding
  *
- *  Created by Bret McKee
- *  Copyright (c) 2012 Bret McKee
+ *  Created by Andy Galasso
+ *  Copyright (c) 2013 Andy Galasso
  *  All rights reserved.
  *
- *  Based upon work by Craig Stark.
+ *  Based upon work by Craig Stark and Bret McKee.
  *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
@@ -36,64 +36,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #include "phd.h"
 
-GuideAlgorithmIdentity::GuideAlgorithmIdentity(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis)
+wxString GuideAlgorithm::GetConfigPath()
 {
-    reset();
-}
-
-GuideAlgorithmIdentity::~GuideAlgorithmIdentity(void)
-{
-}
-
-GUIDE_ALGORITHM GuideAlgorithmIdentity::Algorithm(void)
-{
-    return GUIDE_ALGORITHM_IDENTITY;
-}
-
-void GuideAlgorithmIdentity::reset(void)
-{
-}
-
-// the default algorithm simply returns its input
-double GuideAlgorithmIdentity::result(double input)
-{
-    double dReturn = input;
-
-    return dReturn;
-}
-
-ConfigDialogPane *GuideAlgorithmIdentity::GetConfigDialogPane(wxWindow *pParent)
-{
-    return new GuideAlgorithmIdentityConfigDialogPane(pParent, this);
-}
-
-GuideAlgorithmIdentity::
-GuideAlgorithmIdentityConfigDialogPane::
-GuideAlgorithmIdentityConfigDialogPane(wxWindow *pParent, GuideAlgorithmIdentity *pGuideAlgorithm)
-    :ConfigDialogPane(_("Identity Guide Algorithm"), pParent)
-{
-    m_pGuideAlgorithm = pGuideAlgorithm;
-    DoAdd(new wxStaticText(pParent, wxID_ANY, _("Nothing to Configure"),wxPoint(-1,-1),wxSize(-1,-1)));
-}
-
-GuideAlgorithmIdentity::
-GuideAlgorithmIdentityConfigDialogPane::
-~GuideAlgorithmIdentityConfigDialogPane(void)
-{
-}
-
-void GuideAlgorithmIdentity::
-GuideAlgorithmIdentityConfigDialogPane::
-LoadValues(void)
-{
-}
-
-void GuideAlgorithmIdentity::
-GuideAlgorithmIdentityConfigDialogPane::
-UnloadValues(void)
-{
+    return "/" + m_pMount->GetMountClassName() + "/GuideAlgorithm/" +
+        (m_guideAxis == GUIDE_X ? "X/" : "Y/") + GetGuideAlgorithmClassName();
 }

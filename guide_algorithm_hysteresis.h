@@ -89,7 +89,7 @@ protected:
     friend class GuideAlgorithmHysteresisConfigDialogPane;
     friend class GraphLogWindow;
 public:
-    GuideAlgorithmHysteresis(void);
+    GuideAlgorithmHysteresis(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmHysteresis(void);
 
     virtual GUIDE_ALGORITHM Algorithm(void);
@@ -99,6 +99,7 @@ public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
     virtual wxString GetSettingsSummary();
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "Hysteresis"; }
 };
 
 #endif /* GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED */

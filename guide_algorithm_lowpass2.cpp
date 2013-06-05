@@ -39,7 +39,8 @@
 
 #include "phd.h"
 
-GuideAlgorithmLowpass2::GuideAlgorithmLowpass2(void)
+GuideAlgorithmLowpass2::GuideAlgorithmLowpass2(Mount *pMount, GuideAxis axis)
+    : GuideAlgorithm(pMount, axis)
 {
     reset();
 }

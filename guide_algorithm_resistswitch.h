@@ -78,7 +78,7 @@ protected:
 
     friend class GuideAlgorithmResistSwitchConfigDialogPane;
 public:
-    GuideAlgorithmResistSwitch(void);
+    GuideAlgorithmResistSwitch(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmResistSwitch(void);
     virtual GUIDE_ALGORITHM Algorithm(void);
 
@@ -87,6 +87,7 @@ public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
     virtual wxString GetSettingsSummary();
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "ResistSwitch"; }
 };
 
 #endif /* GUIDE_ALGORITHM_RESISTSWITCH_H_INCLUDED */
