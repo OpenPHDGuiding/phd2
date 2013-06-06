@@ -91,7 +91,7 @@ bool PhdApp::OnInit() {
     SetVendorName(_T("StarkLabs"));
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
-    wxLocale::AddCatalogLookupPathPrefix(_T("locales"));
+    wxLocale::AddCatalogLookupPathPrefix(_T("locale"));
     m_locale.Init(pConfig->GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
     if (!m_locale.AddCatalog("messages"))
     {

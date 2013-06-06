@@ -1300,7 +1300,8 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     {
         bool bLanguageNameOk = false;
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
-        wxString catalogFile = "locales\\" + pLanguageInfo->CanonicalName + "\\messages.mo";
+#ifdef __WINDOWS__
+        wxString catalogFile = "locale\\" + pLanguageInfo->CanonicalName + "\\messages.mo";
         wxMsgCatalog *pCat = wxMsgCatalog::CreateFromFile(catalogFile, "messages");
         if (pCat != NULL)
         {
@@ -1310,13 +1311,14 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
                 languages.Add(*pLanguageName);
                 bLanguageNameOk = true;
             }
+            delete pCat;
         }
+#endif
         if (!bLanguageNameOk)
         {
             languages.Add(pLanguageInfo->Description);
         }
         m_LanguageIDs.Add(pLanguageInfo->Language);
-        delete pCat;
     }
     pTrans->SetLanguage((wxLanguage)currentLanguage);
 
