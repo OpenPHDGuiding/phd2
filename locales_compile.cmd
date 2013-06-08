@@ -8,7 +8,7 @@ REM
 REM Script to compile localisition messages.po file to messages.mo file
 REM usable by PHD Guiding to display localised interface
 REM
-cd locales
+cd locale
 for /D %%d in (*.*) do (
     cd %%d
     msgfmt messages.po
