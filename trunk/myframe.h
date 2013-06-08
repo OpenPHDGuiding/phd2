@@ -185,6 +185,7 @@ public:
      void OnRestoreSettings(wxCommandEvent& evt);
 #endif
     void OnGraph(wxCommandEvent& evt);
+    void OnToolBar(wxCommandEvent& evt);    
     void OnAoGraph(wxCommandEvent& evt);
     void OnStarProfile(wxCommandEvent& evt);
     void OnTarget(wxCommandEvent& evt);
@@ -274,9 +275,10 @@ private:
 
     void SetupMenuBar(void);
     void SetupStatusBar(void);
-    void SetupToolBar(wxAuiToolBar *toolBar);
+    void SetupToolBar();
     void SetupKeyboardShortcuts(void);
     void SetupHelpFile(void);
+    void SetComboBoxWidth(wxComboBox *control, unsigned int extra);
 
     double ExposureDurationFromSelection(const wxString& selection);
 
@@ -338,6 +340,7 @@ enum {
     MENU_LOGIMAGES,
     MENU_DEBUG,
     MENU_SERVER,
+    MENU_TOOLBAR,
     MENU_GRAPH,
     MENU_AO_GRAPH,
     MENU_STARPROFILE,
