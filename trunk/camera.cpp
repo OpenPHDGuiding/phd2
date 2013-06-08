@@ -514,7 +514,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
         MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
     if (pFrame->mount_menu->IsChecked(SCOPE_CAMERA) && pCamera->HasGuiderOutput) {
         if (pMount)
+        {
             delete pMount;
+            pMount = NULL; // needed since ScopeOnCamera() ctor may try to reference pMount!
+        }
         pMount = new ScopeOnCamera();
         pGraphLog->UpdateControls();
         if (!pMount->IsConnected())

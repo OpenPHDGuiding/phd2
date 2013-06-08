@@ -471,6 +471,7 @@
     <ClInclude Include="star_profile.h" />
     <ClInclude Include="stepguider.h" />
     <ClInclude Include="stepguiders.h" />
+    <ClInclude Include="stepguider_simulator.h" />
     <ClInclude Include="stepguider_sxao.h" />
     <ClInclude Include="target.h" />
     <ClInclude Include="testguide.h" />

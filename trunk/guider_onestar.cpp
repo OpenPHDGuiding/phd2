@@ -151,7 +151,7 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
         double x = position.X;
         double y = position.Y;
 
-        Debug.AddLine(wxString::Format("SetCurrentPostion(%lf,%lf)", x, y ));
+        Debug.AddLine(wxString::Format("SetCurrentPostion(%.2f,%.2f)", x, y ));
 
         if ((x <= 0) || (x >= pImage->Size.x))
         {

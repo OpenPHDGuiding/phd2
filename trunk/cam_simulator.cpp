@@ -70,12 +70,73 @@ unsigned int SimCamParams::height = 580;         // simulated camera image heigh
 unsigned int SimCamParams::border = 12;          // do not place any stars within this size border
 unsigned int SimCamParams::nr_stars = 20;        // number of stars to generate
 unsigned int SimCamParams::nr_hot_pixels = 8;    // number of hot pixels to generate
-double SimCamParams::dec_backlash = 8.0;         // dec backlash amount (pixels)
+double SimCamParams::dec_backlash = 11.0;         // dec backlash amount (pixels)
 double SimCamParams::pe_scale = 3.5;             // scale factor controlling magnitude of simulated periodic error
-double SimCamParams::dec_drift_rate = 2.5 / 60.; // dec drift rate (pixels per second)
-double SimCamParams::seeing_scale = 0.7;         // simulated seeing scale factor
+double SimCamParams::dec_drift_rate = 4.8 / 60.; // dec drift rate (pixels per second)
+double SimCamParams::seeing_scale = 0.4;         // simulated seeing scale factor
 double SimCamParams::cam_angle = 15.0;           // simulated camera angle (degrees)
-double SimCamParams::guide_rate = 4.5;           // guide rate, pixels per second
+double SimCamParams::guide_rate = 3.5;           // guide rate, pixels per second
+
+#ifdef STEPGUIDER_SIMULATOR
+
+struct SimAoParams
+{
+    static unsigned int max_position; // max position in steps
+    static double scale;           // arcsec per step
+    static double angle;           // angle relative to camera (degrees)
+};
+
+unsigned int SimAoParams::max_position = 45;
+double SimAoParams::scale = 0.10;
+double SimAoParams::angle = 35.0;
+
+static StepGuiderSimulator *s_sim_ao;
+
+StepGuiderSimulator::StepGuiderSimulator(void)
+{
+}
+
+StepGuiderSimulator::~StepGuiderSimulator(void)
+{
+}
+
+bool StepGuiderSimulator::Connect(void)
+{
+    if (StepGuider::Connect())
+        return true;
+
+    s_sim_ao = this;
+
+    Debug.AddLine("AO Simulator Connected");
+
+    return false;
+}
+
+bool StepGuiderSimulator::Disconnect(void)
+{
+    if (StepGuider::Disconnect())
+        return true;
+
+    if (s_sim_ao == this) {
+        Debug.AddLine("AO Simulator Disconnected");
+        s_sim_ao = 0;
+    }
+
+    return false;
+}
+
+bool StepGuiderSimulator::Step(GUIDE_DIRECTION direction, int steps)
+{
+    // parent class maintains x/y offsets, so nothing to do here
+    return false;
+}
+
+int StepGuiderSimulator::MaxPosition(GUIDE_DIRECTION direction)
+{
+    return SimAoParams::max_position;
+}
+
+#endif // STEPGUIDER_SIMULATOR
 
 // value with backlash
 //   There is an index value, and a lower and upper limit separated by the
@@ -271,6 +332,23 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
         cc[i].x = pos[i].x * cos_t - pos[i].y * sin_t;
         cc[i].y = pos[i].x * sin_t + pos[i].y * cos_t;
     }
+
+#ifdef STEPGUIDER_SIMULATOR
+    // add-in AO offset
+    if (s_sim_ao) {
+        double const ao_angle = SimAoParams::angle * PI / 180.;
+        double const cos_a = cos(ao_angle);
+        double const sin_a = sin(ao_angle);
+        double const ao_x = (double) s_sim_ao->CurrentPosition(RIGHT) * SimAoParams::scale;
+        double const ao_y = (double) s_sim_ao->CurrentPosition(UP) * SimAoParams::scale;
+        double const dx = ao_x * cos_a - ao_y * sin_a;
+        double const dy = ao_x * sin_a + ao_y * cos_a;
+        for (unsigned int i = 0; i < nr_stars; i++) {
+            cc[i].x += dx;
+            cc[i].y += dy;
+        }
+    }
+#endif // STEPGUIDER_SIMULATOR
 
     // render each star
     if (!pCamera->ShutterState) {
@@ -530,6 +608,5 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
 
 }
 #endif
-
 
 #endif

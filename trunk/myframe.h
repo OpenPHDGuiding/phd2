@@ -192,7 +192,8 @@ public:
 #ifndef __WXGTK__
     void OnDonateMenu(wxCommandEvent& evt);
 #endif
-    void OnMenuClose(wxMenuEvent& evt);
+    void OnScopeSelected(wxCommandEvent& evt);
+    void OnStepGuiderSelected(wxCommandEvent& evt);
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
 
@@ -286,20 +287,25 @@ private:
 enum {
     MENU_SHOWHELP = 101,
     SCOPE_HEADER,
-    SCOPE_ASCOM,
-    SCOPE_CAMERA,
-    SCOPE_GPUSB,
-    SCOPE_GPINT3BC,
-    SCOPE_GPINT378,
-    SCOPE_GPINT278,
-    SCOPE_VOYAGER,
-    SCOPE_EQUINOX,
-    SCOPE_EQMAC,
-    SCOPE_GCUSBST4,
-    SCOPE_INDI,
+    BEGIN_SCOPES,
+      SCOPE_ASCOM,
+      SCOPE_CAMERA,
+      SCOPE_GPUSB,
+      SCOPE_GPINT3BC,
+      SCOPE_GPINT378,
+      SCOPE_GPINT278,
+      SCOPE_VOYAGER,
+      SCOPE_EQUINOX,
+      SCOPE_EQMAC,
+      SCOPE_GCUSBST4,
+      SCOPE_INDI,
+    END_SCOPES,
     AO_HEADER,
-    AO_NONE,
-    AO_SXAO,
+    BEGIN_STEPGUIDERS,
+      AO_NONE,
+      AO_SXAO,
+      AO_SIMULATOR,
+    END_STEPGUIDERS,
     BUTTON_SCOPE,
     BUTTON_CAMERA,
     BUTTON_CAL,

@@ -122,6 +122,7 @@ public:
     Scope(void);
     virtual ~Scope(void);
 
+    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination=0.0);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
     virtual bool GuidingCeases(void);

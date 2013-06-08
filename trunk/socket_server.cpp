@@ -216,18 +216,18 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                     dDec = 0;
                 }
 
-                Debug.AddLine("dither: size=%.2lf, dRA=%.2lf dDec=%.2lf", size, dRa, dDec);
+                Debug.AddLine("dither: size=%.2f, dRA=%.2f dDec=%.2f", size, dRa, dDec);
 
                 pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
 
-                wxLogStatus(_T("Moving by %.2lf,%.2lf"),dRa, dDec);
+                wxLogStatus(_T("Moving by %.2f,%.2f"),dRa, dDec);
                 GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
 
-                 rval = RequestedExposureDuration() / 1000;
-                 if (rval < 1)
-                 {
-                     rval = 1;
-                 }
+                rval = RequestedExposureDuration() / 1000;
+                if (rval < 1)
+                {
+                    rval = 1;
+                }
                 break;
             }
             case MSG_REQDIST:

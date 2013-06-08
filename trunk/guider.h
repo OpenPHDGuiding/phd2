@@ -110,6 +110,7 @@ class Guider: public wxWindow
     GUIDER_STATE m_state;
     usImage *m_pCurrentImage;
     bool m_scaleImage;
+    bool m_lockPosManualLocked;
 
 protected:
     double  m_scaleFactor;
@@ -154,7 +155,8 @@ public:
 
     bool MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position, bool bExact=true);
-    PHD_Point &LockPosition();
+    void SetLockPosManualLocked(bool manualLocked) { m_lockPosManualLocked = manualLocked; }
+    const PHD_Point& LockPosition();
 
     bool SetOverlayMode(int newMode);
     bool SaveCurrentImage(const wxString& fileName);

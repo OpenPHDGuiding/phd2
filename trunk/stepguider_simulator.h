@@ -1,9 +1,9 @@
 /*
- *  stepguiders.h
+ *  stepguider_sxAO.h
  *  PHD Guiding
  *
- *  Created by Bret McKee
- *  Copyright (c) 2013 Bret McKee
+ *  Created by Andy Galasso, based on work by Bret McKee
+ *  Copyright (c) 2013 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -33,17 +33,24 @@
  *
  */
 
-#if defined (__WINDOWS__)
-#define STEPGUIDER_SXAO
-#endif
+#ifndef STEPGUIDER_SIMULATOR_INCLUDED
+#define STEPGUIDER_SIMULATOR_INCLUDED
 
-#ifndef STEPGUIDERS_H_INCLUDED
-#define STEPGUIDERS_H_INCLUDED
+#ifdef STEPGUIDER_SIMULATOR
 
-#define STEPGUIDER_SIMULATOR
+class StepGuiderSimulator : public StepGuider
+{
+public:
+    StepGuiderSimulator(void);
+    virtual ~StepGuiderSimulator(void);
 
-#include "stepguider.h"
-#include "stepguider_sxao.h"
-#include "stepguider_simulator.h"
+    virtual bool Connect(void);
+    virtual bool Disconnect(void);
 
-#endif /* STEPGUIDERS_H_INCLUDED */
+private:
+    virtual bool Step(GUIDE_DIRECTION direction, int steps);
+    virtual int MaxPosition(GUIDE_DIRECTION direction);
+};
+
+#endif // STEPGUIDER_SIMULATOR
+#endif // STEPGUIDER_SIMULATOR_INCLUDED

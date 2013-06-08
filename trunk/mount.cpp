@@ -71,7 +71,7 @@ void Mount::TestTransforms(void)
                 xAngle = atan2(sin(xAngle), cos(xAngle));
                 yAngle = atan2(sin(yAngle), cos(yAngle));
 
-                Debug.AddLine("xidx=%.2lf, yIdx=%.2lf", xAngle/M_PI*180.0/15, yAngle/M_PI*180.0/15);
+                Debug.AddLine("xidx=%.2f, yIdx=%.2f", xAngle/M_PI*180.0/15, yAngle/M_PI*180.0/15);
 
                 SetCalibration(xAngle, yAngle, 1.0, 1.0);
 
@@ -464,7 +464,7 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
                 cameraTheta, m_xAngle, xAngle, atan2(sin(xAngle), cos(xAngle)));
         Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - (m_xAngle (%.2f) + m_yAngleError (%.2f)) = yAngle (%.2f = %.2f)",
                 cameraTheta, m_xAngle, m_yAngleError, yAngle, atan2(sin(yAngle), cos(yAngle)));
-        Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2lf mountY=%.2lf, mountTheta=%.2lf",
+        Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2f mountY=%.2f, mountTheta=%.2f",
                 cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y,
                 mountVectorEndpoint.Angle());
     }
@@ -538,7 +538,7 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         double xDistance = mountVectorEndpoint.X;
         double yDistance = mountVectorEndpoint.Y;
 
-        Debug.AddLine(wxString::Format("Moving (%.2lf, %.2lf) raw xDistance=%.2lf yDistance=%.2lf", cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance));
+        Debug.AddLine(wxString::Format("Moving (%.2f, %.2f) raw xDistance=%.2f yDistance=%.2f", cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance));
 
         if (normalMove)
         {
@@ -604,8 +604,8 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
 void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination)
 {
-
-    Debug.AddLine("Mount::SetCalibration -- xAngle=%.2lf yAngle=%.2lf xRate=%.4lf yRate=%.4lf dec=%.lf", xAngle, yAngle, xRate, yRate, declination);
+    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.2f yAngle=%.2f xRate=%.4f yRate=%.4f dec=%.2f",
+        GetMountClassName(), xAngle, yAngle, xRate, yRate, declination));
 
     // we do the rates first, since they just get stored
     m_yRate  = yRate;
@@ -619,8 +619,8 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
 
     m_yAngleError = atan2(sin(m_yAngleError), cos(m_yAngleError));
 
-    Debug.AddLine("Mount::SetCalibration -- sets m_xAngle=%.2lf m_yAngleError=%.2lf",
-            m_xAngle, m_yAngleError);
+    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- sets m_xAngle=%.2f m_yAngleError=%.2f",
+        GetMountClassName(), m_xAngle, m_yAngleError));
 
     m_calibrated = true;
     if (pFrame) pFrame->UpdateCalibrationStatus();
@@ -652,7 +652,7 @@ void Mount::AdjustForDeclination(void)
     {
         double newDeclination = GetDeclination();
         m_xRate = (m_calXRate/cos(m_calDeclination))*cos(newDeclination);
-        Debug.AddLine("adjusted dec rate %.2lf -> %.2lf for dec %.2lf -> dec %.2lf",
+        Debug.AddLine("adjusted dec rate %.2f -> %.2f for dec %.2f -> dec %.2f",
                 m_calXRate, m_xRate, m_calDeclination, newDeclination);
     }
 }
