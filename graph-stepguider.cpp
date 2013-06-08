@@ -108,7 +108,7 @@ void GraphStepguiderWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 
     this->LengthButton->SetLabel(wxString::Format(_T("%3d"),m_pClient->m_length));
 
-    pConfig->SetInt("graph_stepguider/length", m_pClient->m_length);
+    pConfig->SetInt("/graph_stepguider/length", m_pClient->m_length);
 
     if (m_visible)
     {
