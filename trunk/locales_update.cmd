@@ -10,7 +10,7 @@ REM update every localisation messages.po file. Tranlsating string should
 REM use the _() macro.
 REM
 xgettext *.cpp -C --from-code=CP1252 --keyword="_" --keyword="_NOTRANS" --keyword="wxPLURAL:1,2"
-cd locales
+cd locale
 copy /Y messages.pot messages-old.pot
 msgmerge messages-old.pot ..\messages.po -o messages.pot
 for /D %%d in (*.*) do (
