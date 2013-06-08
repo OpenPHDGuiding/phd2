@@ -143,7 +143,7 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     lbl = new wxStaticText(this, wxID_ANY, _("RA"), wxDefaultPosition, wxSize(24,-1), wxALIGN_RIGHT);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
-    m_pClient->m_pRaRMS = new wxStaticText(this, wxID_ANY, _("0.00"), wxDefaultPosition, wxSize(80,-1));
+    m_pClient->m_pRaRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80,-1));
     m_pClient->m_pRaRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pRaRMS->SetBackgroundColour(*wxBLACK);
     szRaRMS->Add(lbl, wxSizerFlags().Border(wxRIGHT, 5));
@@ -154,7 +154,7 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     lbl = new wxStaticText(this, wxID_ANY, _("Dec"), wxDefaultPosition, wxSize(24,-1), wxALIGN_RIGHT);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
-    m_pClient->m_pDecRMS = new wxStaticText(this, wxID_ANY, _("0.00"), wxDefaultPosition, wxSize(80,-1));
+    m_pClient->m_pDecRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80,-1));
     m_pClient->m_pDecRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pDecRMS->SetBackgroundColour(*wxBLACK);
     szDecRMS->Add(lbl, wxSizerFlags().Border(wxRIGHT, 5));
@@ -165,7 +165,7 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     lbl = new wxStaticText(this, wxID_ANY, _("Tot"), wxDefaultPosition, wxSize(24,-1), wxALIGN_RIGHT);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
-    m_pClient->m_pTotRMS = new wxStaticText(this, wxID_ANY, _("0.00"), wxDefaultPosition, wxSize(80,-1));
+    m_pClient->m_pTotRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80,-1));
     m_pClient->m_pTotRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pTotRMS->SetBackgroundColour(*wxBLACK);
     szTotRMS->Add(lbl, wxSizerFlags().Border(wxRIGHT, 5));

@@ -392,6 +392,20 @@ void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt)) {
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
 }
 
+void MyFrame::OnToolBar(wxCommandEvent &evt) {
+    if (evt.IsChecked())
+    {
+        //wxSize toolBarSize = MainToolbar->GetSize();
+        m_mgr.GetPane(_T("MainToolBar")).Show().Bottom()/*.MinSize(toolBarSize)*/;
+    }
+    else
+    {
+        m_mgr.GetPane(_T("MainToolBar")).Hide();
+    }
+    this->pGraphLog->SetState(evt.IsChecked());
+    m_mgr.Update();
+}
+
 void MyFrame::OnGraph(wxCommandEvent &evt) {
     if (evt.IsChecked())
     {
@@ -651,6 +665,11 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
 void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
 {
     wxAuiPaneInfo *p = evt.GetPane();
+    if (p->name == _T("MainToolBar"))
+    {
+        Menubar->Check(MENU_TOOLBAR, false);
+        this->pGraphLog->SetState(false);
+    }
     if (p->name == _T("GraphLog"))
     {
         Menubar->Check(MENU_GRAPH, false);

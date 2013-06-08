@@ -91,6 +91,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_LOG,MyFrame::OnLog)
     EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
     EVT_MENU(MENU_DEBUG,MyFrame::OnLog)
+    EVT_MENU(MENU_TOOLBAR,MyFrame::OnToolBar)
     EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
     EVT_MENU(MENU_AO_GRAPH, MyFrame::OnAoGraph)
     EVT_MENU(MENU_TARGET, MyFrame::OnTarget)
@@ -161,7 +162,7 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     SetDitherScaleFactor(ditherScaleFactor);
 
     bool ditherRaOnly = pConfig->GetBoolean("/DitherRaOnly", DefaultDitherRaOnly);
-    SetDitherScaleFactor(ditherScaleFactor);
+    SetDitherRaOnly(ditherRaOnly);
 
     bool serverMode = pConfig->GetBoolean("/ServerMode", DefaultServerMode);
     SetServerMode(serverMode);
@@ -177,17 +178,20 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     m_sampling = 1;
 
     //
-/*#if defined (WINICONS)
+#if defined (WINICONS)
     SetIcon(wxIcon(_T("progicon")));
 #else
     #include "icons/phd.xpm"
     SetIcon(wxIcon(prog_icon));
-#endif*/
-    SetIcon(wxIcon(_T("progicon")));
+#endif
+    //SetIcon(wxIcon(_T("progicon")));
     SetBackgroundColour(*wxLIGHT_GREY);
 
     // Setup menus
     SetupMenuBar();
+
+    // Setup button panel
+    SetupToolBar();
 
     // Setup Status bar
     SetupStatusBar();
@@ -195,25 +199,12 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     // Setup Canvas for starfield image
     pGuider = new GuiderOneStar(this);
 
-    // Setup button panel
-    MainToolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
-    SetupToolBar(MainToolbar);
-    m_mgr.AddPane(MainToolbar, wxAuiPaneInfo().
-        Name(_T("MainToolBar")).Caption(_T("Main tool bar")).
-        ToolbarPane().Bottom());;
-
-    pGuider->SetMinSize(wxSize(XWinSize,YWinSize));
-    pGuider->SetSize(wxSize(XWinSize,YWinSize));
-    m_mgr.AddPane(pGuider, wxAuiPaneInfo().
-        Name(_T("Guider")).Caption(_T("Guider")).
-        CenterPane().MinSize(wxSize(XWinSize,YWinSize)));
-
-    this->SetMinSize(wxSize(640,590));
+    this->SetMinSize(wxSize(800,600));
 
     wxString geometry = pConfig->GetString("/geometry", wxEmptyString);
     if (geometry == wxEmptyString)
     {
-        this->SetSize(640,590);
+        this->SetSize(800,600);
     }
     else
     {
@@ -234,7 +225,6 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
          }
     }
 
-
     // Setup  Help file
     SetupHelpFile();
 
@@ -242,6 +232,19 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     SetupKeyboardShortcuts();
 
     InitCameraParams();
+
+    wxSize toolBarSize = MainToolbar->GetClientSize();
+    printf("toolBarSize= %dx%d\n",toolBarSize.x, toolBarSize.y);
+    m_mgr.AddPane(MainToolbar, wxAuiPaneInfo().
+        Name(_T("MainToolBar")).Caption(_T("Main tool bar")).
+        ToolbarPane().Bottom());
+
+    pGuider->SetMinSize(wxSize(XWinSize,YWinSize));
+    pGuider->SetSize(wxSize(XWinSize,YWinSize));
+    m_mgr.AddPane(pGuider, wxAuiPaneInfo().
+        Name(_T("Guider")).Caption(_T("Guider")).
+        CenterPane().MinSize(wxSize(XWinSize,YWinSize)));
+
 
     pGraphLog = new GraphLogWindow(this);
     m_mgr.AddPane(pGraphLog, wxAuiPaneInfo().
@@ -324,6 +327,10 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     }
 
     bool panel_state;
+
+    panel_state = m_mgr.GetPane(_T("MainToolBar")).IsShown();
+    pGraphLog->SetState(panel_state);
+    Menubar->Check(MENU_TOOLBAR, panel_state);
 
     panel_state = m_mgr.GetPane(_T("GraphLog")).IsShown();
     pGraphLog->SetState(panel_state);
@@ -451,21 +458,24 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(EEGG_FLIPRACAL, _("Flip calibration data"), _("Flip RA calibration vector"));
 //  tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
     tools_menu->AppendSeparator();
-    tools_menu->AppendRadioItem(MENU_XHAIR0, _("No overlay"),_("No additional crosshairs"));
-    tools_menu->AppendRadioItem(MENU_XHAIR1, _("Bullseye"),_("Centered bullseye overlay"));
-    tools_menu->AppendRadioItem(MENU_XHAIR2, _("Fine Grid"),_("Grid overlay"));
-    tools_menu->AppendRadioItem(MENU_XHAIR3, _("Coarse Grid"),_("Grid overlay"));
-    tools_menu->AppendRadioItem(MENU_XHAIR4, _("RA/Dec"),_("RA and Dec overlay"));
-    tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
     tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image logging"),_("Enable / disable logging of star images"));
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable / disable link to Nebulosity"));
     tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug logging"),_("Enable / disable debug log file"));
-    tools_menu->AppendCheckItem(MENU_GRAPH,_("Display Graph"),_("Enable / disable graph"));
-    tools_menu->AppendCheckItem(MENU_AO_GRAPH,_("Display AO Graph"),_("Enable / disable AO graph"));
-    tools_menu->AppendCheckItem(MENU_TARGET,_("Display Target"),_("Enable / disable target"));
-    tools_menu->AppendCheckItem(MENU_STARPROFILE,_("Enable Star profile"),_("Enable / disable star profile view"));
     tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _("Enable manual lock position"), _("Give manual lock position"));
+
+    wxMenu *view_menu = new wxMenu();
+    view_menu->AppendCheckItem(MENU_TOOLBAR,_("Display Tool bar"),_("Enable / disable tool bar"));
+    view_menu->AppendCheckItem(MENU_GRAPH,_("Display Graph"),_("Enable / disable graph"));
+    view_menu->AppendCheckItem(MENU_AO_GRAPH,_("Display AO Graph"),_("Enable / disable AO graph"));
+    view_menu->AppendCheckItem(MENU_TARGET,_("Display Target"),_("Enable / disable target"));
+    view_menu->AppendCheckItem(MENU_STARPROFILE,_("Display Star profile"),_("Enable / disable star profile view"));
+    view_menu->AppendSeparator();
+    view_menu->AppendRadioItem(MENU_XHAIR0, _("No overlay"),_("No additional crosshairs"));
+    view_menu->AppendRadioItem(MENU_XHAIR1, _("Bullseye"),_("Centered bullseye overlay"));
+    view_menu->AppendRadioItem(MENU_XHAIR2, _("Fine Grid"),_("Grid overlay"));
+    view_menu->AppendRadioItem(MENU_XHAIR3, _("Coarse Grid"),_("Grid overlay"));
+    view_menu->AppendRadioItem(MENU_XHAIR4, _("RA/Dec"),_("RA and Dec overlay"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     wxMenu *indi_menu = new wxMenu;
@@ -501,6 +511,7 @@ void MyFrame::SetupMenuBar(void)
 #endif
 
     Menubar->Append(tools_menu, _("&Tools"));
+    Menubar->Append(view_menu, _("&View"));
     Menubar->Append(help_menu, _("&Help"));
 #ifndef __WXGTK__
     wxMenu *donate_menu = new wxMenu;
@@ -513,9 +524,9 @@ void MyFrame::SetupMenuBar(void)
     SetMenuBar(Menubar);
 }
 
-static void SetComboBoxWidth(wxComboBox *control, unsigned int extra)
+void MyFrame::SetComboBoxWidth(wxComboBox *control, unsigned int extra)
 {
-    int i;
+    unsigned int i;
     int width=-1;
 
     for (i = 0; i < control->GetCount(); i++)
@@ -554,8 +565,10 @@ double MyFrame::ExposureDurationFromSelection(const wxString& sel)
     return 1000.;
 }
 
-void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
+void MyFrame::SetupToolBar()
 {
+    MainToolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
+
     wxBitmap camera_bmp, scope_bmp, ao_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
 #if defined (WINICONS)
     camera_bmp.CopyFromIcon(wxIcon(_T("camera_icon")));
@@ -582,7 +595,7 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     camera_bmp = wxBitmap(cam_icon);
 #endif
 
-    Dur_Choice = new wxComboBox(toolBar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition , wxDefaultSize, WXSIZEOF(dur_choices),dur_choices, wxCB_READONLY);
+    Dur_Choice = new wxComboBox(MainToolbar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition , wxDefaultSize, WXSIZEOF(dur_choices),dur_choices, wxCB_READONLY);
     wxString dur = pConfig->GetString("/ExposureDuration", dur_choices[DefaultDurChoiceIdx]);
     Dur_Choice->SetValue(dur);
     m_exposureDuration = ExposureDurationFromSelection(dur);
@@ -594,7 +607,7 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
         GAMMA_MAX = 300,
         GAMMA_DEFAULT = 100,
     };
-    Gamma_Slider = new wxSlider(toolBar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1,-1), wxSize(160,-1));
+    Gamma_Slider = new wxSlider(MainToolbar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1,-1), wxSize(160,-1));
     Gamma_Slider->SetToolTip(_("Screen gamma (brightness)"));
     int val = pConfig->GetInt("/Gamma", GAMMA_DEFAULT);
     if (val < GAMMA_MIN) val = GAMMA_MIN;
@@ -609,29 +622,29 @@ void MyFrame::SetupToolBar(wxAuiToolBar *toolBar)
     brain_bmp = wxBitmap(brain_icon);
 #endif
 
-    Setup_Button = new wxButton(toolBar,BUTTON_CAM_PROPERTIES,_("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
+    Setup_Button = new wxButton(MainToolbar,BUTTON_CAM_PROPERTIES,_("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
     Setup_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     Setup_Button->Enable(false);
 
-    Dark_Button = new wxButton(toolBar,BUTTON_DARK,_("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
+    Dark_Button = new wxButton(MainToolbar,BUTTON_DARK,_("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
     Dark_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 
-    toolBar->AddTool(BUTTON_CAMERA, _("Camera"), camera_bmp, _("Connect to camera"));
-    toolBar->AddTool(BUTTON_SCOPE, _("Telescope"), scope_bmp, _("Connect to mount(s)"));
-    toolBar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus") );
-    toolBar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD)") );
-    toolBar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort current action"));
-    toolBar->AddSeparator();
-    toolBar->AddControl(Dur_Choice, _("Exposure duration"));
-    toolBar->AddControl(Gamma_Slider, _("Gamma"));
-    toolBar->AddSeparator();
-    toolBar->AddTool(BUTTON_ADVANCED, _("Advanced parameters"), brain_bmp, _("Advanced parameters"));
-    toolBar->AddControl(Dark_Button, _("Take Dark"));
-    toolBar->AddControl(Setup_Button, _("Cam Dialog"));
-    toolBar->Realize();
+    MainToolbar->AddTool(BUTTON_CAMERA, _("Camera"), camera_bmp, _("Connect to camera"));
+    MainToolbar->AddTool(BUTTON_SCOPE, _("Telescope"), scope_bmp, _("Connect to mount(s)"));
+    MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus") );
+    MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD)") );
+    MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort current action"));
+    MainToolbar->AddSeparator();
+    MainToolbar->AddControl(Dur_Choice, _("Exposure duration"));
+    MainToolbar->AddControl(Gamma_Slider, _("Gamma"));
+    MainToolbar->AddSeparator();
+    MainToolbar->AddTool(BUTTON_ADVANCED, _("Advanced parameters"), brain_bmp, _("Advanced parameters"));
+    MainToolbar->AddControl(Dark_Button, _("Take Dark"));
+    MainToolbar->AddControl(Setup_Button, _("Cam Dialog"));
+    MainToolbar->Realize();
 
-    toolBar->EnableTool(BUTTON_LOOP,false);
-    toolBar->EnableTool(BUTTON_GUIDE,false);
+    MainToolbar->EnableTool(BUTTON_LOOP,false);
+    MainToolbar->EnableTool(BUTTON_GUIDE,false);
 }
 
 void MyFrame::UpdateCalibrationStatus(void)
