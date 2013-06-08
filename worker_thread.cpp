@@ -175,7 +175,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
-    Debug.AddLine("Enqueuing Move request for (%.1f, %.1f)", vectorEndpoint.X, vectorEndpoint.Y);
+    Debug.AddLine(wxString::Format("Enqueuing Move request for %s (%.2f, %.2f)", pMount->GetMountClassName(), vectorEndpoint.X, vectorEndpoint.Y));
 
     message.request                   = REQUEST_MOVE;
     message.args.move.pMount          = pMount;
@@ -317,12 +317,15 @@ wxThread::ExitCode WorkerThread::Entry()
                 bDone = true;
                 break;
             case REQUEST_EXPOSE:
-                Debug.AddLine("worker thread servicing REQUEST_EXPOSE");
+                Debug.AddLine("worker thread servicing REQUEST_EXPOSE %.2f",
+                    message.args.expose.exposureDuration);
                 bError = HandleExpose(&message.args.expose);
                 SendWorkerThreadExposeComplete(message.args.expose.pImage, bError);
                 break;
             case REQUEST_MOVE:
-                Debug.AddLine("worker thread servicing REQUEST_MOVE");
+                Debug.AddLine(wxString::Format("worker thread servicing REQUEST_MOVE %s dir %d (%.2f, %.2f)",
+                    message.args.move.pMount->GetMountClassName(), message.args.move.direction,
+                    message.args.move.vectorEndpoint.X, message.args.move.vectorEndpoint.Y));
                 bError = HandleMove(&message.args.move);
                 SendWorkerThreadMoveComplete(message.args.move.pMount, bError);
                 break;

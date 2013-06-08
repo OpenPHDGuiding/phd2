@@ -118,7 +118,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(DONATE3,MyFrame::OnDonateMenu)
     EVT_MENU(DONATE4,MyFrame::OnDonateMenu)
 #endif
-    EVT_MENU_CLOSE(MyFrame::OnMenuClose)
+    EVT_MENU_RANGE(BEGIN_SCOPES, END_SCOPES, MyFrame::OnScopeSelected)
+    EVT_MENU_RANGE(BEGIN_STEPGUIDERS, END_STEPGUIDERS, MyFrame::OnStepGuiderSelected)
     EVT_CLOSE(MyFrame::OnClose)
     EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
     EVT_THREAD(MYFRAME_WORKER_THREAD_MOVE_COMPLETE, MyFrame::OnMoveComplete)
@@ -419,6 +420,9 @@ void MyFrame::SetupMenuBar(void)
     mount_menu->FindItem(AO_NONE)->Check(true); // set this as the default
 #ifdef STEPGUIDER_SXAO
     mount_menu->AppendRadioItem(AO_SXAO, _("sxAO"), _T("Starlight Xpress AO"));
+#endif
+#ifdef STEPGUIDER_SIMULATOR
+    mount_menu->AppendRadioItem(AO_SIMULATOR, _("Simulator"));
 #endif
 
     // try to get the last values from the config store
@@ -896,7 +900,7 @@ void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
-    Debug.AddLine("ScheduleExposure(%.2lf)", exposureDuration);
+    Debug.AddLine("ScheduleExposure(%.2f)", exposureDuration);
 
     assert(m_pPrimaryWorkerThread);
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
@@ -906,7 +910,7 @@ void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    Debug.AddLine("SchedulePrimaryMove(%p, x=%.2lf, y=%.2lf, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
+    Debug.AddLine("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
 
     pMount->IncrementRequestCount();
 
@@ -918,7 +922,7 @@ void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoi
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
-    Debug.AddLine("ScheduleSecondaryMove(%p, x=%.2lf, y=%.2lf, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
+    Debug.AddLine("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
 
     if (pMount->SynchronousOnly())
     {

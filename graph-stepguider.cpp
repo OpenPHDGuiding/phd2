@@ -54,7 +54,9 @@ GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent):
 
     pMainSizer->Add(pLeftSizer);
 
-    LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("  1"),wxPoint(10,10),wxSize(80,-1));
+    m_pClient->m_length = pConfig->GetInt("/graph_stepguider/length", 1);
+    wxString label = wxString::Format(_T("%3d"),m_pClient->m_length);
+    LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,label,wxPoint(10,10),wxSize(80,-1));
     LengthButton->SetToolTip(_("# of frames of history to display"));
 
     ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxPoint(10,100),wxSize(80,-1));
@@ -105,6 +107,8 @@ void GraphStepguiderWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
     }
 
     this->LengthButton->SetLabel(wxString::Format(_T("%3d"),m_pClient->m_length));
+
+    pConfig->SetInt("graph_stepguider/length", m_pClient->m_length);
 
     if (m_visible)
     {

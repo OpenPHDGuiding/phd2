@@ -81,7 +81,7 @@ public:
         m_valid = true;
     }
 
-    double dX(PHD_Point p) const
+    double dX(const PHD_Point& p) const
     {
         double dRet = X-p.X;
 
@@ -90,12 +90,12 @@ public:
         return dRet;
     }
 
-    double dX(PHD_Point *pPoint) const
+    double dX(const PHD_Point *pPoint) const
     {
         return this->dX(*pPoint);
     }
 
-    double dY(PHD_Point p) const
+    double dY(const PHD_Point& p) const
     {
         double dRet = Y-p.Y;
 
@@ -104,12 +104,12 @@ public:
         return dRet;
     }
 
-    double dY(PHD_Point *pPoint) const
+    double dY(const PHD_Point *pPoint) const
     {
         return this->dY(*pPoint);
     }
 
-    double Distance(PHD_Point p) const
+    double Distance(const PHD_Point& p) const
     {
         double dX = this->dX(p);
         double dY = this->dY(p);
@@ -118,7 +118,7 @@ public:
         return dRet;
     }
 
-    double Distance(PHD_Point *pPoint) const
+    double Distance(const PHD_Point *pPoint) const
     {
         return Distance(*pPoint);
     }
@@ -130,7 +130,7 @@ public:
         return Distance(origin);
     }
 
-    double Angle(PHD_Point p) const
+    double Angle(const PHD_Point& p) const
     {
         double dX = this->dX(p);
         double dY = this->dY(p);
@@ -153,7 +153,7 @@ public:
         return Angle(origin);
     }
 
-    double Angle(PHD_Point *pPoint) const
+    double Angle(const PHD_Point *pPoint) const
     {
         return Angle(*pPoint);
     }

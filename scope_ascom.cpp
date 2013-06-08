@@ -613,7 +613,7 @@ double ScopeASCOM::GetDeclination(void)
         pScopeDriver->Release();
     }
 
-    Debug.AddLine("ScopeASCOM::GetDeclination() returns %.4lf", dReturn);
+    Debug.AddLine("ScopeASCOM::GetDeclination() returns %.4f", dReturn);
 
     return dReturn;
 }

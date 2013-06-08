@@ -71,8 +71,8 @@ bool Camera_SBIGRotatorClass::Connect()
 
         wxArrayString choices;
 
-        choices.Add(wxString::Format("Unmirrored (%.2lf)", temp - 90));
-        choices.Add(wxString::Format("Mirrored (%.2lf)", temp + 90));
+        choices.Add(wxString::Format("Unmirrored (%.2f)", temp - 90));
+        choices.Add(wxString::Format("Mirrored (%.2f)", temp + 90));
 
         int idx = wxGetSingleChoiceIndex(_("Choose Dec Angle"), _("Dec Angle"),
                                               choices);

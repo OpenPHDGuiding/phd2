@@ -247,7 +247,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         m_loopFrameCount++;
 
         pGuider->UpdateGuideState(pNewFrame, !CaptureActive);
-        pNewFrame = NULL; // the guider owns in now
+        pNewFrame = NULL; // the guider owns it now
 
 #ifdef BRET_DODO
         if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING_PRIMARY)
@@ -552,38 +552,23 @@ void MyFrame::OnDonateMenu(wxCommandEvent &evt) {
 }
 #endif
 
-void MyFrame::OnMenuClose(wxMenuEvent& evt)
+void MyFrame::OnScopeSelected(wxCommandEvent& evt)
 {
-    if (evt.GetMenu() == mount_menu)
+    wxMenuItem *item = mount_menu->FindItem(evt.GetId());
+    if (item && item->IsChecked())
     {
-        // store the mount and stepguider selected so we can use it as the default next time.
-        // Note: this code makes an assumption about the menu layout, namely that the
-        //       menu contains all the mounts on the top, the AO header, and all the
-        //       stepguiders on the bottom
-
-        wxMenuItemList items = mount_menu->GetMenuItems();
-
-        bool inAoSection = false;
-        wxMenuItem *pAoHeader = mount_menu->FindItem(AO_HEADER);
-
-        for (wxMenuItemList::iterator iter = items.begin(); iter != items.end(); ++iter)
-        {
-            wxMenuItem *pItem = *iter;
-
-            if (pItem == pAoHeader)
-            {
-                inAoSection = true;
-            }
-            else if (pItem->IsChecked())
-            {
-                wxString value = pItem->GetItemLabelText();
-
-                wxString key = inAoSection ? "/stepguider/LastMenuChoice" : "/scope/LastMenuChoice";
-                pConfig->SetString(key, value);
-            }
-        }
+        pConfig->SetString("/scope/LastMenuChoice", item->GetItemLabelText());
     }
+    evt.Skip();
+}
 
+void MyFrame::OnStepGuiderSelected(wxCommandEvent& evt)
+{
+    wxMenuItem *item = mount_menu->FindItem(evt.GetId());
+    if (item && item->IsChecked())
+    {
+        pConfig->SetString("/stepguider/LastMenuChoice", item->GetItemLabelText());
+    }
     evt.Skip();
 }
 

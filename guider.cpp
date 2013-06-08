@@ -50,6 +50,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_scaleFactor = 1.0;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = false;
+    m_lockPosManualLocked = false;
     m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);
@@ -142,7 +143,7 @@ bool Guider::GetScaleImage(void)
     return m_scaleImage;
 }
 
-PHD_Point &Guider::LockPosition()
+const PHD_Point& Guider::LockPosition()
 {
     return m_lockPosition;
 }
@@ -204,7 +205,7 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
                                     xScaleFactor :
                                     yScaleFactor;
 
-            Debug.AddLine("xScaleFactor=%.2lf, yScaleFactor=%.2lf, newScaleFactor=%.2lf", xScaleFactor,
+            Debug.AddLine("xScaleFactor=%.2f, yScaleFactor=%.2f, newScaleFactor=%.2f", xScaleFactor,
                     yScaleFactor, newScaleFactor);
 
             // we rescale the image if:
@@ -416,7 +417,7 @@ bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
 
         double x=position.X;
         double y=position.Y;
-        Debug.AddLine(wxString::Format("setting lock position to (%lf, %lf)", x, y));
+        Debug.AddLine(wxString::Format("setting lock position to (%.2f, %.2f)", x, y));
 
         if ((x <= 0) || (x >= m_pCurrentImage->Size.x))
         {
@@ -582,14 +583,20 @@ void Guider::SetState(GUIDER_STATE newState)
                 }
                 break;
             case STATE_GUIDING:
-                //TODO: Deal with manual lock position
                 assert(pMount);
                 pMount->AdjustForDeclination();
                 if (pSecondaryMount)
                 {
                     pSecondaryMount->AdjustForDeclination();
                 }
-                m_lockPosition = CurrentPosition();
+                if (m_lockPosition.IsValid() && m_lockPosManualLocked)
+                {
+                    Debug.AddLine("keeping manual lock position");
+                }
+                else
+                {
+                    m_lockPosition = CurrentPosition();
+                }
                 break;
         }
 

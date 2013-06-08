@@ -99,12 +99,6 @@ protected:
 public:
     void EnqueueWorkerThreadExposeRequest(usImage *pImage, double exposureDuration, const wxRect& subframe);
 protected:
-    struct ARGS_EXPOSE
-    {
-        usImage *pImage;
-        double exposureDuration;
-        wxRect subframe;
-    };
     bool HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs);
     void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadExposeComplete(wxThreadEvent& event);
@@ -114,14 +108,6 @@ public:
     void EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove);
     void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction);
 protected:
-    struct ARGS_MOVE
-    {
-        Mount           *pMount;
-        bool            calibrationMove;
-        GUIDE_DIRECTION direction;
-        PHD_Point           vectorEndpoint;
-        bool            normalMove;
-    };
     bool HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs);
     void SendWorkerThreadMoveComplete(Mount *pMount, bool bError);
     // in the frame class: void MyFrame::OnWorkerThreadGuideComplete(wxThreadEvent& event);

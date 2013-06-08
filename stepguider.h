@@ -114,6 +114,7 @@ public:
     StepGuider(void);
     virtual ~StepGuider(void);
 
+    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination=0.0);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     bool UpdateCalibrationState(const PHD_Point &currentLocation);
     virtual void ClearCalibration(void);
@@ -132,22 +133,21 @@ private:
 
     double CalibrationTime(int nCalibrationSteps);
 protected:
-    int IntegerPercent(int percentage, int number);
+    static int IntegerPercent(int percentage, int number);
     virtual int BumpPosition(GUIDE_DIRECTION direction);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 private:
     virtual bool Step(GUIDE_DIRECTION direction, int steps)=0;
     virtual int MaxPosition(GUIDE_DIRECTION direction)=0;
-    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit) = 0;
-    virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation
-private:
+public:
+    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit);
+    virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
-protected:
     virtual bool Center(void);
 };
 

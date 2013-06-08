@@ -497,7 +497,7 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
         duration = -1.0;
     }
 
-    Debug.AddLine(wxString::Format("Move returns %.2lf", duration));
+    Debug.AddLine(wxString::Format("Move returns %.2f", duration));
 
     return duration;
 }
@@ -537,6 +537,15 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
     }
 
     return bError;
+}
+
+void Scope::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination)
+{
+    m_calibrationXAngle = xAngle;
+    m_calibrationXRate = xRate;
+    m_calibrationYAngle = yAngle;
+    m_calibrationYRate = yRate;
+    Mount::SetCalibration(xAngle, yAngle, xRate, yRate, declination);
 }
 
 bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
