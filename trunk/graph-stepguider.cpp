@@ -201,18 +201,6 @@ void GraphStepguiderClient::SetLimits(unsigned xMax, unsigned yMax,
 
     m_xBump = xBump;
     m_yBump = yBump;
-
-    if (pFrame)
-    {
-        if (m_xMax > 0 && m_yMax > 0)
-        {
-            pFrame->tools_menu->FindItem(MENU_AO_GRAPH)->Enable(true);
-        }
-        else
-        {
-            pFrame->tools_menu->FindItem(MENU_AO_GRAPH)->Enable(false);
-        }
-    }
 }
 
 void GraphStepguiderClient::AppendData(double dx, double dy)
