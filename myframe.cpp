@@ -465,7 +465,7 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug logging"),_("Enable / disable debug log file"));
     tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _("Enable manual lock position"), _("Give manual lock position"));
 
-    wxMenu *view_menu = new wxMenu();
+    view_menu = new wxMenu();
     view_menu->AppendCheckItem(MENU_TOOLBAR,_("Display Tool bar"),_("Enable / disable tool bar"));
     view_menu->AppendCheckItem(MENU_GRAPH,_("Display Graph"),_("Enable / disable graph"));
     view_menu->AppendCheckItem(MENU_AO_GRAPH,_("Display AO Graph"),_("Enable / disable AO graph"));

@@ -127,7 +127,7 @@ public:
 
     Guider *pGuider;
     wxMenuBar *Menubar;
-    wxMenu  *tools_menu, *mount_menu; // need access to this...
+    wxMenu  *tools_menu, *mount_menu, *view_menu; // need access to this...
     wxAuiToolBar *MainToolbar;
     //wxChoice    *Dur_Choice;
     wxComboBox    *Dur_Choice;
