@@ -509,14 +509,10 @@ void Guider::SetState(GUIDER_STATE newState)
                     newState = m_state;
                     break;
                 case STATE_CALIBRATING_PRIMARY:
-                    // because we have done some moving here, we need to just
-                    // start over...
-                    newState = STATE_UNINITIALIZED;
-                    break;
                 case STATE_CALIBRATING_SECONDARY:
                     // because we have done some moving here, we need to just
                     // start over...
-                    newState = STATE_CALIBRATING_PRIMARY;
+                    newState = STATE_UNINITIALIZED;
                     break;
                 case STATE_CALIBRATED:
                 case STATE_GUIDING:
