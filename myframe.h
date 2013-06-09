@@ -119,6 +119,7 @@ private:
     long m_instanceNumber;
 
     wxAuiManager m_mgr;
+    bool m_continueCapturing; // should anouther image be captuered?
 
 public:
     MyFrame(const wxString& title, int instanceNumber, wxLocale *locale);

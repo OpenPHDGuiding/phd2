@@ -773,6 +773,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             case STATE_CALIBRATED:
                 assert(m_state == STATE_CALIBRATED);
                 SetState(STATE_GUIDING);
+                pFrame->SetStatusText(_("Guiding..."), 1);
                 GuideLog.StartGuiding();
                 break;
             case STATE_GUIDING:

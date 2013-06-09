@@ -38,11 +38,6 @@
 static int s_selectedPage = -1;
 
 AdvancedDialog::AdvancedDialog():
-//#if defined (__WINDOWS__)
-//wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(210,350), wxCAPTION | wxCLOSE_BOX)
-//#else
-//wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxPoint(-1,-1), wxSize(250,350), wxCAPTION | wxCLOSE_BOX)
-//#endif
 wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     /*
