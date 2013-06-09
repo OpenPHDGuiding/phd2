@@ -228,7 +228,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 {
     try
     {
-        Debug.Write("Processing an image\n");
+        Debug.AddLine("Processing an image");
 
         usImage *pNewFrame = event.GetPayload<usImage *>();
 
@@ -246,8 +246,8 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 
         m_loopFrameCount++;
 
-        pGuider->UpdateGuideState(pNewFrame, !CaptureActive);
-        pNewFrame = NULL; // the guider owns it now
+        pGuider->UpdateGuideState(pNewFrame, !m_continueCapturing);
+        pNewFrame = NULL; // the guider owns in now
 
 #ifdef BRET_DODO
         if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING_PRIMARY)
@@ -273,7 +273,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         }
 #endif
 
-        Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d", CaptureActive));
+        Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d m_continueCapturing=%d", CaptureActive, m_continueCapturing));
 #ifdef ZESLY_DODO
         double dx = (double)rand() / RAND_MAX * 2 - 1;
         double dy = (double)rand() / RAND_MAX * 2 - 1;
@@ -282,9 +282,17 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         pGraphLog->AppendData(dx,dy,ra,dec);
         pTarget->AppendData(ra,dec);
 #endif // ZESLY_DODO
+
+        CaptureActive = m_continueCapturing;
+
         if (CaptureActive)
         {
             ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
+        }
+        else
+        {
+            UpdateButtonsStatus();
+            SetStatusText(_("Stopped."), 1);
         }
     }
     catch (wxString Msg)
@@ -299,7 +307,13 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
     try
     {
         Mount *pThisMount = event.GetPayload<Mount *>();
+        assert(pThisMount->IsBusy());
         pThisMount->DecrementRequestCount();
+
+        if (!pThisMount->IsBusy())
+        {
+            UpdateButtonsStatus();
+        }
 
         if (event.GetInt())
         {
@@ -595,7 +609,6 @@ void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
 
 void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 
-    if (CaptureActive) return;  // Looping an exposure already
     AdvancedDialog* dlog = new AdvancedDialog();
 
     dlog->LoadValues();

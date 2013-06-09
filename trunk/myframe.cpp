@@ -307,7 +307,8 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     SetStatusText(_("Like PHD? Consider donating"),1);
 #endif
 
-    CaptureActive = false;
+    m_continueCapturing = false;
+    CaptureActive     = false;
 
     m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_VERTICAL);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
@@ -711,7 +712,11 @@ void MyFrame::UpdateButtonsStatus(void)
 {
     bool need_update = false;
 
-    bool const loop_enabled = !CaptureActive && pCamera && pCamera->Connected;
+    bool const loop_enabled = 
+        !CaptureActive &&
+        pCamera && pCamera->Connected &&
+        (!pMount || !pMount->IsBusy()) &&
+        (!pSecondaryMount || !pSecondaryMount->IsBusy());
 
     if (cond_update_tool(MainToolbar, BUTTON_LOOP, loop_enabled))
         need_update = true;
@@ -719,10 +724,14 @@ void MyFrame::UpdateButtonsStatus(void)
     if (cond_update_tool(MainToolbar, BUTTON_CAMERA, !CaptureActive))
         need_update = true;
 
-    if (cond_update_tool(MainToolbar, BUTTON_SCOPE, !CaptureActive && pMount))
+    if (cond_update_tool(MainToolbar, BUTTON_SCOPE,
+                !CaptureActive &&
+                pMount && !pMount->IsBusy() &&
+                (!pSecondaryMount || !pSecondaryMount->IsBusy())
+                ));
         need_update = true;
 
-    if (cond_update_tool(MainToolbar, BUTTON_ADVANCED, !CaptureActive))
+    if (cond_update_tool(MainToolbar, BUTTON_ADVANCED, !m_continueCapturing))
         need_update = true;
 
     if (cond_update_tool(MainToolbar, BUTTON_CAM_PROPERTIES, !CaptureActive))
@@ -851,7 +860,7 @@ void MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
     {
         pWorkerThread->EnqueueWorkerThreadTerminateRequest();
         wxThread::ExitCode threadExitCode = pWorkerThread->Wait();
-        Debug.Write(wxString::Format("StopWorkerThread() threadExitCode=%d\n", threadExitCode));
+        Debug.AddLine("StopWorkerThread() threadExitCode=%d", threadExitCode);
     }
 
     Debug.AddLine(wxString::Format("StopWorkerThread(0x%p) ends", pWorkerThread));
@@ -963,11 +972,12 @@ void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direc
 
 void MyFrame::StartCapturing()
 {
-    Debug.Write(wxString::Format("StartCapture with old=%d\n", CaptureActive));
+    Debug.AddLine("StartCapture() CaptureActive=%d m_continueCapturing=%d", CaptureActive, m_continueCapturing);
 
     if (!CaptureActive)
     {
-        CaptureActive = true;
+        m_continueCapturing = true;
+        CaptureActive     = true;
 
         UpdateButtonsStatus();
 
@@ -979,8 +989,12 @@ void MyFrame::StartCapturing()
 
 void MyFrame::StopCapturing(void)
 {
-    Debug.Write(wxString::Format("StopCapture with old=%d\n", CaptureActive));
-    CaptureActive = false;
+    Debug.AddLine("StopCapture CaptureActive=%d m_continueCapturing=%d", CaptureActive, m_continueCapturing);
+    if (m_continueCapturing)	
+    {
+        SetStatusText(_("Waiting for devices before stopping..."), 1);
+    }
+    m_continueCapturing = false;
 }
 
 void MyFrame::OnClose(wxCloseEvent &event) {
