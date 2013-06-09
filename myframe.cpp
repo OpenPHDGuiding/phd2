@@ -712,7 +712,7 @@ void MyFrame::UpdateButtonsStatus(void)
 {
     bool need_update = false;
 
-    bool const loop_enabled = 
+    bool const loop_enabled =
         !CaptureActive &&
         pCamera && pCamera->Connected &&
         (!pMount || !pMount->IsBusy()) &&
@@ -990,7 +990,7 @@ void MyFrame::StartCapturing()
 void MyFrame::StopCapturing(void)
 {
     Debug.AddLine("StopCapture CaptureActive=%d m_continueCapturing=%d", CaptureActive, m_continueCapturing);
-    if (m_continueCapturing)	
+    if (m_continueCapturing)
     {
         SetStatusText(_("Waiting for devices before stopping..."), 1);
     }

@@ -186,7 +186,7 @@ public:
      void OnRestoreSettings(wxCommandEvent& evt);
 #endif
     void OnGraph(wxCommandEvent& evt);
-    void OnToolBar(wxCommandEvent& evt);    
+    void OnToolBar(wxCommandEvent& evt);
     void OnAoGraph(wxCommandEvent& evt);
     void OnStarProfile(wxCommandEvent& evt);
     void OnTarget(wxCommandEvent& evt);
