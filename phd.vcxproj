@@ -404,6 +404,7 @@
     <ClInclude Include="about_dialog.h" />
     <ClInclude Include="advanced_dialog.h" />
     <ClInclude Include="ascom_common.h" />
+    <ClInclude Include="cam_ascomlate.h" />
     <ClInclude Include="cam_Atik16.h" />
     <ClInclude Include="cam_firewire.h" />
     <ClInclude Include="cam_indi.h" />
@@ -434,6 +435,7 @@
     <ClInclude Include="debuglog.h" />
     <ClInclude Include="graph-stepguider.h" />
     <ClInclude Include="graph.h" />
+    <ClInclude Include="guider.h" />
     <ClInclude Include="guiders.h" />
     <ClInclude Include="guider_onestar.h" />
     <ClInclude Include="guide_algorithm.h" />
