@@ -64,6 +64,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
+    EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
     EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
@@ -457,13 +458,14 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
     tools_menu->Append(EEGG_MANUALCAL, _("Enter calibration data"), _("Manually calibrate"));
     tools_menu->Append(EEGG_FLIPRACAL, _("Flip calibration data"), _("Flip RA calibration vector"));
+    tools_menu->Append(EEGG_MANUALLOCK, _("Enter manual lock position"), _("Give manual lock position"));
 //  tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
     tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image logging"),_("Enable / disable logging of star images"));
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable / disable link to Nebulosity"));
     tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug logging"),_("Enable / disable debug log file"));
-    tools_menu->AppendCheckItem(EEGG_MANUALLOCK, _("Enable manual lock position"), _("Give manual lock position"));
+    tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky lock position"),_("Keep the same lock position when guiding starts"));
 
     view_menu = new wxMenu();
     view_menu->AppendCheckItem(MENU_TOOLBAR,_("Display Tool bar"),_("Enable / disable tool bar"));
