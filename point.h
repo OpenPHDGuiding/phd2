@@ -44,19 +44,14 @@ public:
     double X;
     double Y;
 
-    PHD_Point(const double x, const double y)
+    PHD_Point(double x, double y)
     {
         SetXY(x,y);
     }
 
-    PHD_Point(PHD_Point const * const p)
+    PHD_Point(const PHD_Point& p)
+        : m_valid(p.m_valid), X(p.X), Y(p.Y)
     {
-        SetXY(p->X, p->Y);
-    }
-
-    PHD_Point(const PHD_Point &p)
-    {
-        SetXY(p.X, p.Y);
     }
 
     PHD_Point(void)
@@ -83,10 +78,9 @@ public:
 
     double dX(const PHD_Point& p) const
     {
-        double dRet = X-p.X;
+        assert(m_valid && p.m_valid);
 
-        assert(m_valid);
-
+        double dRet = X - p.X;
         return dRet;
     }
 
@@ -97,10 +91,9 @@ public:
 
     double dY(const PHD_Point& p) const
     {
+        assert(m_valid && p.m_valid);
+
         double dRet = Y-p.Y;
-
-        assert(m_valid);
-
         return dRet;
     }
 
@@ -160,13 +153,13 @@ public:
 
     PHD_Point operator+(const PHD_Point& addend)
     {
-        assert(m_valid);
+        assert(m_valid && addend.m_valid);
         return PHD_Point(this->X + addend.X, this->Y + addend.Y);
     }
 
     PHD_Point& operator+=(const PHD_Point& addend)
     {
-        assert(m_valid);
+        assert(m_valid && addend.m_valid);
         this->X += addend.X;
         this->Y += addend.Y;
 
@@ -175,13 +168,13 @@ public:
 
     PHD_Point operator-(const PHD_Point& subtrahend)
     {
-        assert(m_valid);
+        assert(m_valid && subtrahend.m_valid);
         return PHD_Point(this->X - subtrahend.X, this->Y - subtrahend.Y);
     }
 
     PHD_Point operator-=(const PHD_Point& subtrahend)
     {
-        assert(m_valid);
+        assert(m_valid && subtrahend.m_valid);
         this->X -= subtrahend.X;
         this->Y -= subtrahend.Y;
 
