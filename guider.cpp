@@ -50,7 +50,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_scaleFactor = 1.0;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = false;
-    m_lockPosManualLocked = false;
+    m_lockPosIsSticky = false;
     m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);
@@ -585,9 +585,9 @@ void Guider::SetState(GUIDER_STATE newState)
                 {
                     pSecondaryMount->AdjustForDeclination();
                 }
-                if (m_lockPosition.IsValid() && m_lockPosManualLocked)
+                if (m_lockPosition.IsValid() && m_lockPosIsSticky)
                 {
-                    Debug.AddLine("keeping manual lock position");
+                    Debug.AddLine("keeping sticky lock position");
                 }
                 else
                 {

@@ -140,39 +140,56 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
     }
     else if (evt.GetId() == EEGG_MANUALLOCK) {
         if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
+        {
+            wxMessageBox(_("Entering manual calibration requires a camera and mount to be connected and calibrated."));
             return;
-        if (pGuider->GetState() > STATE_SELECTED) return;  // must not be calibrating or guiding already
-        if (evt.IsChecked()) {
-            double LockX, LockY;
-            PHD_Point curLock = pFrame->pGuider->LockPosition();
-            wxString tmpstr;
-            if (curLock.IsValid())
-                tmpstr = wxString::Format("%.3f", curLock.X);
-            tmpstr = wxGetTextFromUser(_("Enter x-lock position (or 0 for center)"), _("X-lock position"), tmpstr);
-            if (tmpstr.IsEmpty()) return;
-            tmpstr.ToDouble(&LockX);
-            LockX = fabs(LockX);
-            if (LockX < 0.0001) {
-                LockX = pCamera->FullSize.GetWidth() / 2;
-                LockY = pCamera->FullSize.GetHeight() / 2;
-            }
-            else {
-                if (curLock.IsValid())
-                    tmpstr = wxString::Format("%.3f", curLock.Y);
-                tmpstr = wxGetTextFromUser(_("Enter y-lock position"), _("Y-lock position"), tmpstr);
-                if (tmpstr.IsEmpty()) return;
-                tmpstr.ToDouble(&LockY);
-                LockY = fabs(LockY);
-            }
-            pFrame->pGuider->SetLockPosition(PHD_Point(LockX, LockY));
-            pFrame->pGuider->SetLockPosManualLocked(true);
+        }
+        if (pGuider->GetState() > STATE_SELECTED)
+        {
+            wxMessageBox(_("Entering manual calibration cannot be done while calibrating or guiding."));
+            return;  // must not be calibrating or guiding already
+        }
+
+        double LockX, LockY;
+        PHD_Point curLock = pFrame->pGuider->LockPosition();
+        wxString tmpstr;
+        if (curLock.IsValid())
+            tmpstr = wxString::Format("%.3f", curLock.X);
+        do
+        {
+            tmpstr = wxGetTextFromUser(_("Enter x-lock position, or 0 for center"), _("X-lock position"), tmpstr);
+        } while (!tmpstr.IsEmpty() && !tmpstr.ToDouble(&LockX));
+        if (tmpstr.IsEmpty())
+            return;
+        LockX = fabs(LockX);
+        if (LockX < 0.0001) {
+            LockX = pCamera->FullSize.GetWidth() / 2;
+            LockY = pCamera->FullSize.GetHeight() / 2;
         }
         else {
-            pFrame->pGuider->SetLockPosManualLocked(true);
+            tmpstr = "";
+            if (curLock.IsValid())
+                tmpstr = wxString::Format("%.3f", curLock.Y);
+            do {
+                tmpstr = wxGetTextFromUser(_("Enter y-lock position"), _("Y-lock position"), tmpstr);
+            } while (!tmpstr.IsEmpty() && !tmpstr.ToDouble(&LockY));
+            if (tmpstr.IsEmpty())
+                return;
+            LockY = fabs(LockY);
         }
+        pFrame->pGuider->SetLockPosition(PHD_Point(LockX, LockY));
+        pFrame->pGuider->SetLockPosIsSticky(true);
+        pFrame->tools_menu->FindItem(EEGG_STICKY_LOCK)->Check(true);
     }
-    else evt.Skip();
-
+    else if (evt.GetId() == EEGG_STICKY_LOCK)
+    {
+        bool sticky = evt.IsChecked();
+        pFrame->pGuider->SetLockPosIsSticky(sticky);
+    }
+    else
+    {
+        evt.Skip();
+    }
 }
 
 
