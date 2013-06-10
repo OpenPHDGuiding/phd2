@@ -728,7 +728,7 @@ void MyFrame::UpdateButtonsStatus(void)
                 !CaptureActive &&
                 pMount && !pMount->IsBusy() &&
                 (!pSecondaryMount || !pSecondaryMount->IsBusy())
-                ));
+                ))
         need_update = true;
 
     if (cond_update_tool(MainToolbar, BUTTON_ADVANCED, !m_continueCapturing))
