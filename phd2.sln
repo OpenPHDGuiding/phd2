@@ -1,20 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phd", "phd.vcxproj", "{304B757A-50D3-4AFA-B521-C834F3CF8D69}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phd2", "phd.vcxproj", "{304B757A-50D3-4AFA-B521-C834F3CF8D69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Craig_Debug|Win32 = Craig_Debug|Win32
-		Craig_Release|Win32 = Craig_Release|Win32
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Craig_Debug|Win32.ActiveCfg = Craig_Debug|Win32
-		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Craig_Debug|Win32.Build.0 = Craig_Debug|Win32
-		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Craig_Release|Win32.ActiveCfg = Craig_Release|Win32
-		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Craig_Release|Win32.Build.0 = Craig_Release|Win32
 		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Debug|Win32.ActiveCfg = Debug|Win32
 		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Debug|Win32.Build.0 = Debug|Win32
 		{304B757A-50D3-4AFA-B521-C834F3CF8D69}.Release|Win32.ActiveCfg = Release|Win32

@@ -78,6 +78,10 @@ static const double DefaultPixelSize = 0;
  #include "cam_VFW.h"
 #endif
 
+#if defined (OPENCV_CAMERA)
+#include "cam_opencv.h"
+#endif
+
 #if defined (WDM_CAMERA)
  #include "cam_WDM.h"
 #endif
@@ -236,7 +240,10 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #if defined (FIREWIRE)
     Cameras.Add(_T("The Imaging Source (DCAM Firewire)"));
 #endif
-
+#if defined (OPENCV_CAMERA)
+    Cameras.Add(_T("OpenCV webcam 1"));
+    Cameras.Add(_T("OpenCV webcam 2"));
+#endif
 #if defined (WDM_CAMERA)
     Cameras.Add(_T("Windows WDM-style webcam camera"));
 #endif
@@ -365,6 +372,17 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #if defined (ORION_DSCI)
     else if (Choice.Find(_T("Orion StarShoot DSCI")) + 1)
         pCamera = new Camera_StarShootDSCIClass();
+#endif
+#if defined (OPENCV_CAMERA)
+    else if (Choice.Find(_T("OpenCV webcam")) + 1)
+    {
+        int dev = 0;
+        if (Choice.Find(_T("2")) + 1)
+        {
+            dev = 1;
+        }
+        pCamera = new Camera_OpenCVClass(dev);
+    }
 #endif
 #if defined (WDM_CAMERA)
     else if (Choice.Find(_T("Windows WDM")) + 1)
@@ -829,4 +847,8 @@ bool DLLExists (wxString DLLName) {
         return true;
     return false;
 }
+#endif
+
+#ifdef OPENCV_CAMERA
+#include "cam_opencv.h"
 #endif
