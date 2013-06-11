@@ -150,7 +150,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
             return;  // must not be calibrating or guiding already
         }
 
-        double LockX, LockY;
+        double LockX=0.0, LockY=0.0;
         PHD_Point curLock = pFrame->pGuider->LockPosition();
         wxString tmpstr;
         if (curLock.IsValid())
