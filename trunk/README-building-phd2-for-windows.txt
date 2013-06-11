@@ -33,7 +33,14 @@ Set up a build environment from scratch on MS-Windows to compile PHD2.
    Extract in C:\dev\fits
    Set an environment variable CFITSIO to C:\dev\fits
 
-4) Get PHD2 sources from trunk branch at http://code.google.com/p/open-phd-guiding/
+4) Download OpenCV from http://opencv.org/ I am currently using versino 2.4.5.  Install it, and  
+    make sure you have set the OPENCV_DIR environment variable to point to where you put it.
+    You will have to copy 3 DLLs from opencv-2.4.5\build\x86\vc10\bin 
+    The files you need to copy are: 
+        Debug: opencv_core245d.dll  opencv_highgui245d.dll  opencv_imgproc245d.dll
+        Release: opencv_core245.dll  opencv_highgui245.dll  opencv_imgproc245.dll
 
-5) Open phd2.sln in Visual Studio, select release or build target and build.
+5) Get PHD2 sources from trunk branch at http://code.google.com/p/open-phd-guiding/
+
+6) Open phd2.sln in Visual Studio, select release or build target and build.
 
