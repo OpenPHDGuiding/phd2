@@ -146,7 +146,7 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     //qglogfile->AddLine("Exposure programmed"); //qglogfile->Write();
     if (duration > 100) {
         wxMilliSleep(duration - 100);
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
     while (_SSAG_isExposing())
         wxMilliSleep(50);

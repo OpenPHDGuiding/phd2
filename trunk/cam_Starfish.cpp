@@ -153,13 +153,13 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
     if (rval != kIOReturnSuccess) { if (debug) wxMessageBox(_T("Err 2")); return true; }
     if (duration > 100) {
         wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
     int i=0;
     while (still_going) {  // wait for image to finish and d/l
         wxMilliSleep(50);
         still_going = fcUsb_cmd_getState(CamNum) > 0;
-        wxTheApp->Yield();
+        wxGetApp().Yield();
         i++;
         if (i>50) {
             still_going=false;

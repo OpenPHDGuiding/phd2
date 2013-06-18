@@ -70,7 +70,7 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
     }
 }
 
-double MyFrame::RequestedExposureDuration()
+int MyFrame::RequestedExposureDuration()
 {
     if (!pCamera || !pCamera->Connected)
         return 0.0;
@@ -238,6 +238,9 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 
             StopCapturing();
             pGuider->Reset();
+            CaptureActive = m_continueCapturing;
+            UpdateButtonsStatus();
+            SetStatusText(_("Stopped."), 1);
 
             Debug.Write("OnExposureComplete(): Capture Error reported\n");
 
@@ -341,7 +344,7 @@ void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event))
 }
 
 void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
-    double ExpDur = RequestedExposureDuration();
+    int ExpDur = RequestedExposureDuration();
     if (pGuider->GetState() > STATE_SELECTED) return;
     if (!pCamera || !pCamera->Connected) {
         wxMessageBox(_("Please connect to a camera first"),_("Info"));

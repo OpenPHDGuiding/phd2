@@ -67,7 +67,7 @@ static const wxCmdLineEntryDesc cmdLineDesc[] =
     { wxCMD_LINE_NONE }
 };
 
-IMPLEMENT_APP(PhdApp)
+wxIMPLEMENT_APP(PhdApp);
 
 // ------------------------  Phd App stuff -----------------------------
 PhdApp::PhdApp(void)
@@ -84,6 +84,11 @@ bool PhdApp::OnInit() {
     #if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
     wxDisableAsserts();
     #endif
+#endif
+
+#if defined(__WINDOWS__)
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    Debug.AddLine("CoInitializeEx returns %x", hr);
 #endif
 
     Debug.Init("debug", true);

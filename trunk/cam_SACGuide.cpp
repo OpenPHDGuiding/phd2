@@ -113,10 +113,10 @@ bool Camera_SACGuiderClass::Connect() {
     CmosReset(DevName);
 //  TestGuide();
     /*
-        wxMessageBox(_T("RA+")); wxTheApp->Yield(); PulseGuideScope(WEST,2000); wxTheApp->Yield();
-    wxMessageBox(_T("Dec+"));  wxTheApp->Yield(); PulseGuideScope(NORTH,2000);wxTheApp->Yield();
-    wxMessageBox(_T("Dec-"));  wxTheApp->Yield(); PulseGuideScope(EAST,2000);wxTheApp->Yield();
-    wxMessageBox(_T("RA-"));  wxTheApp->Yield(); PulseGuideScope(SOUTH,2000);wxTheApp->Yield();
+        wxMessageBox(_T("RA+")); wxGetApp().Yield(); PulseGuideScope(WEST,2000); wxGetApp().Yield();
+    wxMessageBox(_T("Dec+"));  wxGetApp().Yield(); PulseGuideScope(NORTH,2000);wxGetApp().Yield();
+    wxMessageBox(_T("Dec-"));  wxGetApp().Yield(); PulseGuideScope(EAST,2000);wxGetApp().Yield();
+    wxMessageBox(_T("RA-"));  wxGetApp().Yield(); PulseGuideScope(SOUTH,2000);wxGetApp().Yield();
     wxMessageBox(_T("Done"));
 */
     if (pFrame->mount_menu->IsChecked(SCOPE_CAMERA)) {

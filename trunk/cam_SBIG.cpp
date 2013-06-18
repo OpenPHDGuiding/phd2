@@ -348,7 +348,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     }
     if (duration > 100) {
         wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
     qcsp.command = CC_START_EXPOSURE;
     while (still_going) {  // wait for image to finish and d/l
@@ -363,7 +363,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             qcsr.status = qcsr.status >> 2;
         if (qcsr.status == CS_INTEGRATION_COMPLETE)
             still_going = false;
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
     // End exposure
     err = SBIGUnivDrvCommand(CC_END_EXPOSURE, &eep, NULL);

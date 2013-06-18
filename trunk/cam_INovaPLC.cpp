@@ -67,8 +67,8 @@ bool Camera_INovaPLCClass::Connect() {
 void Camera_INovaPLCClass::InitCapture() {
     // Run after any exp change / at the start of a loop
     DS_CAMERA_STATUS rval;
-    double ExpDur = pFrame->RequestedExposureDuration();
-    int exp_lines = (int) ExpDur * 1000 / RowTime;
+    int ExpDur = pFrame->RequestedExposureDuration();
+    int exp_lines = ExpDur * 1000 / RowTime;
     rval = DSCameraSetExposureTime(exp_lines);
     wxMilliSleep(100);
     if (rval != STATUS_OK)
@@ -77,10 +77,7 @@ void Camera_INovaPLCClass::InitCapture() {
     wxMilliSleep(100);
     if (rval != STATUS_OK)
         wxMessageBox(_T("Error setting gain"), _("Error"));
-
-
 }
-
 
 bool Camera_INovaPLCClass::PulseGuideScope(int direction, int duration) {
     unsigned char dircode = 0;
@@ -126,7 +123,7 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
         Disconnect();
         return true;
     }
-    int ExpDur = (int) pFrame-> RequestedExposureDuration();
+    int ExpDur = pFrame->RequestedExposureDuration();
 
     if (duration != ExpDur) { // reset the exp time - and pause -- we have had a change here from the current value
         rval = DSCameraSetExposureTime(ExpDur * 1000 / RowTime);

@@ -307,7 +307,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         swatch.Start();
         if (duration > 100) {
             wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-            wxTheApp->Yield();
+            wxGetApp().Yield();
         }
         while (swatch.Time() < duration) {
             wxMilliSleep(10);

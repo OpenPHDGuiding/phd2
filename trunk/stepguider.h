@@ -45,7 +45,10 @@ class StepGuider:public Mount
     int m_xOffset;
     int m_yOffset;
 
+    PHD_Point m_avgOffset;
+
     PHD_Point m_bumpRemaining;
+    double m_bumpStepWeight;
 
     // Calibration variables
     int   m_calibrationStepsPerIteration;

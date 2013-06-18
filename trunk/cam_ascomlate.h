@@ -46,9 +46,11 @@ public:
     bool    PulseGuideScope(int direction, int duration);
     bool    Color;
     Camera_ASCOMLateClass();
+    ~Camera_ASCOMLateClass();
 private:
 #ifdef __WINDOWS__
-    IDispatch *ASCOMDriver;
+    IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
+    DWORD m_dwCookie;
     DISPID dispid_setxbin, dispid_setybin;  // Frequently used IDs
     DISPID dispid_startx, dispid_starty;
     DISPID dispid_numx, dispid_numy;

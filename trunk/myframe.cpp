@@ -553,19 +553,19 @@ static wxString dur_choices[] = {
     _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"), _T("10 s")
 };
 static const int DefaultDurChoiceIdx = 8;
-static double dur_values[] = {
-    1., 2., 5., 10.,
-    50., 100., 200., 500., 1000., 1500.,
-    2000., 2500., 3000., 3500., 4000., 4500., 5000., 10000.,
+static int dur_values[] = {
+    1, 2, 5, 10,
+    50, 100, 200, 500, 1000, 1500,
+    2000, 2500, 3000, 3500, 4000, 4500, 5000, 10000,
 };
 
-double MyFrame::ExposureDurationFromSelection(const wxString& sel)
+int MyFrame::ExposureDurationFromSelection(const wxString& sel)
 {
     for (unsigned int i = 0; i < WXSIZEOF(dur_choices); i++)
         if (sel == dur_choices[i])
             return dur_values[i];
     Debug.AddLine("unexpected exposure selection: " + sel);
-    return 1000.;
+    return 1000;
 }
 
 void MyFrame::SetupToolBar()
@@ -921,10 +921,10 @@ void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
     }
 }
 
-void MyFrame::ScheduleExposure(double exposureDuration, wxRect subframe)
+void MyFrame::ScheduleExposure(int exposureDuration, wxRect subframe)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
-    Debug.AddLine("ScheduleExposure(%.2f)", exposureDuration);
+    Debug.AddLine("ScheduleExposure(%d)", exposureDuration);
 
     assert(m_pPrimaryWorkerThread);
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);

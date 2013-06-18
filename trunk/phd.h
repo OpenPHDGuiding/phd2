@@ -199,4 +199,6 @@ protected:
     wxLocale m_locale;
 };
 
+wxDECLARE_APP(PhdApp);
+
 #endif // PHD_H_INCLUDED

@@ -48,6 +48,10 @@ class GraphStepguiderClient : public wxWindow
         int dy;
     } m_history[m_maxHistorySize];
 
+    PHD_Point m_avgPos;
+    PHD_Point m_curBump;
+    PHD_Point m_bumpRemaining;
+
     wxPen   *m_pPens[m_maxHistorySize];
     wxBrush *m_pBrushes[m_maxHistorySize];
 
@@ -66,7 +70,7 @@ class GraphStepguiderClient : public wxWindow
     virtual ~GraphStepguiderClient(void);
 
     void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
-    void AppendData (double dx, double dy);
+    void AppendData(int dx, int dy, const PHD_Point& avgPos);
 
     friend class GraphStepguiderWindow;
 
@@ -84,8 +88,9 @@ public:
     void OnButtonClear(wxCommandEvent& evt);
 
     void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
-    void AppendData (double dx, double dy);
-    bool SetState (bool is_active);
+    void AppendData(int dx, int dy, const PHD_Point& avgPos);
+    void ShowBump(const PHD_Point& curBump, const PHD_Point& bumpRemaining);
+    bool SetState(bool is_active);
 
 private:
     wxButton *LengthButton;

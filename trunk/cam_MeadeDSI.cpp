@@ -130,12 +130,12 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     if (!retval) return true;
     if (duration > 100) {
         wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
     while (still_going) {  // wait for image to finish and d/l
         wxMilliSleep(20);
         still_going = !(MeadeCam->ImageReady);
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
 
     if (HaveDark && recon) Subtract(img,CurrentDarkFrame);

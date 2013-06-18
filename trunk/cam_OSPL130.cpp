@@ -77,7 +77,7 @@ bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subf
     }
     if (duration > 100) {
         wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxTheApp->Yield();
+        wxGetApp().Yield();
 //      if (Abort) {
 //          MeadeCam->AbortImage();
 //          return true;
@@ -86,7 +86,7 @@ bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subf
     while (still_going) {  // wait for image to finish and d/l
         wxMilliSleep(20);
         OSPL130_IsExposing(&still_going);
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
     // Download
 //  rawptr = RawData;
