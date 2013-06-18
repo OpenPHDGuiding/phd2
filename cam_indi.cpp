@@ -268,7 +268,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
     }
     modal = true;
     while (modal) {
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
     if (! expose_prop) {
         indi_send(video_prop, indi_prop_set_switch(video_prop, "OFF", TRUE));

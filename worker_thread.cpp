@@ -80,7 +80,7 @@ void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
 
 /*************      Expose      **************************/
 
-void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, double exposureDuration, const wxRect& subframe)
+void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, const wxRect& subframe)
 {
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
@@ -282,7 +282,8 @@ wxThread::ExitCode WorkerThread::Entry()
     Debug.AddLine("WorkerThread::Entry() begins");
 
 #if defined(__WINDOWS__)
-    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    Debug.AddLine("worker thread CoInitializeEx returns %x", hr);
 #endif
 
     while (!bDone)
@@ -317,7 +318,7 @@ wxThread::ExitCode WorkerThread::Entry()
                 bDone = true;
                 break;
             case REQUEST_EXPOSE:
-                Debug.AddLine("worker thread servicing REQUEST_EXPOSE %.2f",
+                Debug.AddLine("worker thread servicing REQUEST_EXPOSE %d",
                     message.args.expose.exposureDuration);
                 bError = HandleExpose(&message.args.expose);
                 SendWorkerThreadExposeComplete(message.args.expose.pImage, bError);

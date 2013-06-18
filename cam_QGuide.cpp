@@ -163,7 +163,7 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
     //qglogfile->AddLine("Exposure programmed"); //qglogfile->Write();
     if (duration > 100) {
         wxMilliSleep(duration + 100);  // Shift to > duration
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
 #ifdef PHD1_LOGGING // deprecated
     if (Log_Data && QGDEBUG) {

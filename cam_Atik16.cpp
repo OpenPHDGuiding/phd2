@@ -216,7 +216,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
     while (ArtemisCameraState(Cam_Handle) > CAMERA_IDLE ) {
         if (duration > 100) {
             wxMilliSleep(100);
-            wxTheApp->Yield();
+            wxGetApp().Yield();
         }
         else
             wxMilliSleep(30);

@@ -159,7 +159,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     }
     if (duration > 100) {
         SleepEx(duration - 100, true); // wait until near end of exposure, nicely
-        wxTheApp->Yield();
+        wxGetApp().Yield();
     }
     bool still_going = true;
     while (still_going) {

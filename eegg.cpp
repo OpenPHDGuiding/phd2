@@ -37,10 +37,10 @@
 void TestGuide() {
 
 #ifdef BRET_TODO
-    wxMessageBox(_("W RA+")); wxTheApp->Yield(); pMount->Guide(WEST,2000); wxTheApp->Yield();
-    wxMessageBox(_("N Dec+"));  wxTheApp->Yield(); pMount->Guide(NORTH,2000);wxTheApp->Yield();
-    wxMessageBox(_("E RA-"));  wxTheApp->Yield(); pMount->Guide(EAST,2000);wxTheApp->Yield();
-    wxMessageBox(_("S Dec-"));  wxTheApp->Yield(); pMount->Guide(SOUTH,2000);wxTheApp->Yield();
+    wxMessageBox(_("W RA+")); wxGetApp().Yield(); pMount->Guide(WEST,2000); wxGetApp().Yield();
+    wxMessageBox(_("N Dec+"));  wxGetApp().Yield(); pMount->Guide(NORTH,2000);wxGetApp().Yield();
+    wxMessageBox(_("E RA-"));  wxGetApp().Yield(); pMount->Guide(EAST,2000);wxGetApp().Yield();
+    wxMessageBox(_("S Dec-"));  wxGetApp().Yield(); pMount->Guide(SOUTH,2000);wxGetApp().Yield();
     wxMessageBox(_("Done"));
 #endif
 }

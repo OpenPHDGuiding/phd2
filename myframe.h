@@ -119,7 +119,7 @@ private:
     long m_instanceNumber;
 
     wxAuiManager m_mgr;
-    bool m_continueCapturing; // should anouther image be captuered?
+    bool m_continueCapturing; // should another image be captured?
 
 public:
     MyFrame(const wxString& title, int instanceNumber, wxLocale *locale);
@@ -201,7 +201,7 @@ public:
 
     bool StartServer(bool state);
     bool FlipRACal(wxCommandEvent& evt);
-    double RequestedExposureDuration();
+    int RequestedExposureDuration();
     bool Voyager_Connect();
     int GetFocalLength(void);
     int GetLanguage(void);
@@ -212,7 +212,7 @@ public:
     struct EXPOSE_REQUEST
     {
         usImage          *pImage;
-        double           exposureDuration;
+        int              exposureDuration;
         wxRect           subframe;
         bool             bError;
         wxSemaphore      *pSemaphore;
@@ -231,7 +231,7 @@ public:
     };
     void OnRequestMountMove(wxCommandEvent &evt);
 
-    void ScheduleExposure(double exposureDuration, wxRect subframe);
+    void ScheduleExposure(int exposureDuration, wxRect subframe);
     void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
 
     void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
@@ -267,7 +267,7 @@ private:
     wxMessageQueue<STATUSBAR_QUEUE_ENTRY> m_statusbarQueue;
     wxTimer m_statusbarTimer;
 
-    double m_exposureDuration;
+    int m_exposureDuration;
 
     void OnSetStatusText(wxThreadEvent& event);
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
@@ -281,7 +281,7 @@ private:
     void SetupHelpFile(void);
     void SetComboBoxWidth(wxComboBox *control, unsigned int extra);
 
-    double ExposureDurationFromSelection(const wxString& selection);
+    int ExposureDurationFromSelection(const wxString& selection);
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()

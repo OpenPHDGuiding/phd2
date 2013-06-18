@@ -48,6 +48,7 @@ StepGuider::StepGuider(void)
 {
     m_xOffset = 0;
     m_yOffset = 0;
+    m_bumpStepWeight = 1.0;
 
     wxString prefix = "/" + GetMountClassName();
 
@@ -678,7 +679,13 @@ bool StepGuider::GuidingCeases(void)
 {
     bool bError = false;
 
-    // We have stopped guiding.  Take the opportunity to recenter the stepguider
+    // We have stopped guiding.  Reset bump state and recenter the stepguider
+
+    m_avgOffset.Invalidate();
+    m_bumpStepWeight = 1.0;
+    m_bumpRemaining.Invalidate();
+    // clear bump display in stepguider graph
+    pFrame->pStepGuiderGraph->ShowBump(PHD_Point(), m_bumpRemaining);
 
     try
     {
@@ -817,34 +824,65 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
     {
         bool moveFailed = Mount::Move(cameraVectorEndpoint, normalMove);
 
-        pFrame->pStepGuiderGraph->AppendData(m_xOffset, m_yOffset);
-
-        // see if we need to "bump" the secondary mount
-        if (normalMove &&                                                               // we only bump for normal moves
-            pSecondaryMount &&                                                          // if there is a mount to bump
-            !m_bumpRemaining.IsValid() &&                                               // and we are not already bumping
-            (moveFailed ||                                                              // and either the attempt to move the AO failed
-             fabs((double)CurrentPosition(RIGHT))  > BumpPosition(RIGHT) ||    // or the AO is nearing the end of it's travel
-             fabs((double)CurrentPosition(UP)) > BumpPosition(UP)))
+        // keep a moving average of the AO position
+        if (m_avgOffset.IsValid())
         {
-            PHD_Point vectorEndpoint(xRate()*CurrentPosition(LEFT),
-                                     yRate()*CurrentPosition(DOWN));
+            static double const alpha = .25; // moderately high weighting for latest sample
+            m_avgOffset.X = alpha * m_xOffset + (1.0 - alpha) * m_avgOffset.X;
+            m_avgOffset.Y = alpha * m_yOffset + (1.0 - alpha) * m_avgOffset.Y;
+        }
+        else
+        {
+            m_avgOffset.SetXY((double) m_xOffset, (double) m_yOffset);
+        }
 
-            // we have to transform our notion of where we are (which is in "AO Coordinates")
-            // into "Camera Coordinates" so we can bump the secondary mount to put us closer
-            // to the center of the AO
+        pFrame->pStepGuiderGraph->AppendData(m_xOffset, m_yOffset, m_avgOffset);
 
-            if (TransformMountCoordinatesToCameraCoordinates(vectorEndpoint, m_bumpRemaining))
+        // consider bumping the secondary mount if this is a normal move
+        if (normalMove && pSecondaryMount)
+        {
+            bool isOutside = abs(CurrentPosition(RIGHT)) > BumpPosition(RIGHT) ||
+                abs(CurrentPosition(UP)) > BumpPosition(UP);
+
+            // if the current bump has not brought us in, increase the bump size
+            if (isOutside && m_bumpRemaining.IsValid())
             {
-                throw ERROR_INFO("MountToCamera failed");
+                Debug.AddLine("outside bump range, increase bump weight %.2f => %.2f", m_bumpStepWeight, m_bumpStepWeight + 1.0);
+                m_bumpStepWeight += 1.0;
             }
 
-            Debug.AddLine("starting a new bump (%.3f, %.3f) isValid = %d", m_bumpRemaining.X, m_bumpRemaining.Y, m_bumpRemaining.IsValid());
+            // if we are back inside, decrease the bump weight
+            if (!isOutside && m_bumpStepWeight > 1.0)
+            {
+                double prior = m_bumpStepWeight;
+                m_bumpStepWeight *= 0.5;
+                if (m_bumpStepWeight < 1.0)
+                    m_bumpStepWeight = 1.0;
+                Debug.AddLine("back inside bump range: decrease bump weight %.2f => %.2f", prior, m_bumpStepWeight);
+            }
 
-            assert(m_bumpRemaining.IsValid());
+            if (isOutside)
+            {
+                // start a new bump based on average position
+                PHD_Point vectorEndpoint(xRate() * -m_avgOffset.X,
+                                         yRate() * -m_avgOffset.Y);
+
+                // we have to transform our notion of where we are (which is in "AO Coordinates")
+                // into "Camera Coordinates" so we can bump the secondary mount to put us closer
+                // to the center of the AO
+
+                if (TransformMountCoordinatesToCameraCoordinates(vectorEndpoint, m_bumpRemaining))
+                {
+                    throw ERROR_INFO("MountToCamera failed");
+                }
+
+                Debug.AddLine("starting a new bump (%.3f, %.3f) isValid = %d", m_bumpRemaining.X, m_bumpRemaining.Y, m_bumpRemaining.IsValid());
+
+                assert(m_bumpRemaining.IsValid());
 #ifdef BRET_AO_DEBUG
             m_bumpRemaining += cameraVectorEndpoint;
 #endif
+            }
         }
 
         if (m_bumpRemaining.IsValid() && pSecondaryMount->IsBusy())
@@ -866,12 +904,13 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             // to 0.0 because with floating point we may never get 0.0
             if (fabs(m_bumpRemaining.X) >= 0.01)
             {
-                double maxBumpPixels = m_bumpMaxStepsPerCycle * m_calibrationXRate;
+                double maxBumpPixels = m_bumpMaxStepsPerCycle * m_calibrationXRate * m_bumpStepWeight;
                 xBumpSize = m_bumpRemaining.X;
 
                 if (fabs(xBumpSize) > maxBumpPixels)
                 {
-                    Debug.AddLine("clamp x bump to %.3f (%.3f * %.3f)", maxBumpPixels, m_bumpMaxStepsPerCycle, m_calibrationXRate);
+                    Debug.AddLine("clamp x bump to %.3f (%.3f * %.3f * %.3f)", maxBumpPixels,
+                        m_bumpMaxStepsPerCycle, m_calibrationXRate, m_bumpStepWeight);
 
                     xBumpSize = maxBumpPixels;
 
@@ -886,12 +925,13 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
             if (fabs(m_bumpRemaining.Y) >= 0.01)
             {
-                double maxBumpPixels = m_bumpMaxStepsPerCycle * m_calibrationYRate;
+                double maxBumpPixels = m_bumpMaxStepsPerCycle * m_calibrationYRate * m_bumpStepWeight;
                 yBumpSize = m_bumpRemaining.Y;
 
                 if (fabs(yBumpSize) > maxBumpPixels)
                 {
-                    Debug.AddLine("clamp y bump to %.3f (%.3f * %.3f)", maxBumpPixels, m_bumpMaxStepsPerCycle, m_calibrationYRate);
+                    Debug.AddLine("clamp y bump to %.3f (%.3f * %.3f * .3f)", maxBumpPixels,
+                        m_bumpMaxStepsPerCycle, m_calibrationYRate, m_bumpStepWeight);
 
                     yBumpSize = maxBumpPixels;
 
@@ -909,10 +949,24 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
                 Debug.AddLine("Mount Bump finished -- invalidating m_bumpRemaining");
 
                 m_bumpRemaining.Invalidate();
+
+                pFrame->pStepGuiderGraph->ShowBump(PHD_Point(), m_bumpRemaining);
             }
             else
             {
                 PHD_Point thisBump(xBumpSize, yBumpSize);
+
+                // display the current and remaining bump vectors on the stepguider graph
+                {
+                    PHD_Point tcur, trem;
+                    TransformCameraCoordinatesToMountCoordinates(thisBump, tcur);
+                    tcur.X /= xRate();
+                    tcur.Y /= yRate();
+                    TransformCameraCoordinatesToMountCoordinates(m_bumpRemaining, trem);
+                    trem.X /= xRate();
+                    trem.Y /= yRate();
+                    pFrame->pStepGuiderGraph->ShowBump(tcur, trem);
+                }
 
                 Debug.AddLine("Scheduling Mount bump of (%.3f, %.3f)", thisBump.X, thisBump.Y);
 
@@ -920,7 +974,8 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
                 m_bumpRemaining -= thisBump;
 
-                Debug.AddLine("after bump, remaining is (%.3f, %.3f) valid=%d", m_bumpRemaining.X, m_bumpRemaining.Y, m_bumpRemaining.IsValid());
+                Debug.AddLine("after bump, remaining is (%.3f, %.3f) valid=%d",
+                    m_bumpRemaining.X, m_bumpRemaining.Y, m_bumpRemaining.IsValid());
             }
         }
     }

@@ -306,19 +306,19 @@ bool Camera_LEwebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
     }
 
 //  pFrame->SetStatusText(wxString::Format("%d %d %d",bulk_delay,final_delay,amp_lead),1);
-//  wxTheApp->Yield();
+//  wxGetApp().Yield();
 
     if (bulk_delay) {
         while (bulk_delay > 250) {
             SleepEx(245,true);
 
             bulk_delay = bulk_delay - 245;
-            wxTheApp->Yield();
+            wxGetApp().Yield();
         }
         SleepEx(bulk_delay,false);
     }
 //  pFrame->SetStatusText(wxString::Format("%d %d %d",bulk_delay,final_delay,amp_lead),1);
-//  wxTheApp->Yield();
+//  wxGetApp().Yield();
     SleepEx(final_delay - amp_lead,true);  // wait for last bit (or only bit) of exposure duration
 
     // switch amp back on

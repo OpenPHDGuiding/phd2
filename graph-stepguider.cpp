@@ -149,11 +149,22 @@ void GraphStepguiderWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
     }
 }
 
-void GraphStepguiderWindow::AppendData(double dx, double dy)
+void GraphStepguiderWindow::AppendData(int dx, int dy, const PHD_Point& avgPos)
 {
-    m_pClient->AppendData(dx, dy);
+    m_pClient->AppendData(dx, dy, avgPos);
 
     if (this->m_visible)
+    {
+        Refresh();
+    }
+}
+
+void GraphStepguiderWindow::ShowBump(const PHD_Point& curBump, const PHD_Point& bumpRemaining)
+{
+    m_pClient->m_curBump = curBump;
+    m_pClient->m_bumpRemaining = bumpRemaining;
+
+    if (m_visible)
     {
         Refresh();
     }
@@ -174,11 +185,6 @@ GraphStepguiderClient::GraphStepguiderClient(wxWindow *parent):
         int color = (int)(i*255/(double)m_maxHistorySize);
         m_pPens[i] = new wxPen(wxColor(color,color,color));
         m_pBrushes[i] = new wxBrush(wxColor(color,color,color), wxSOLID);
-    }
-
-    for(int i=0;i < 32;i++)
-    {
-        AppendData(i, i);
     }
 
     SetLimits(0, 0, 0, 0);
@@ -203,7 +209,7 @@ void GraphStepguiderClient::SetLimits(unsigned xMax, unsigned yMax,
     m_yBump = yBump;
 }
 
-void GraphStepguiderClient::AppendData(double dx, double dy)
+void GraphStepguiderClient::AppendData(int dx, int dy, const PHD_Point& avgPos)
 {
     memmove(&m_history, &m_history[1], sizeof(m_history[0])*(m_maxHistorySize-1));
 
@@ -214,6 +220,8 @@ void GraphStepguiderClient::AppendData(double dx, double dy)
     {
         m_nItems++;
     }
+
+    m_avgPos = avgPos;
 }
 
 void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
@@ -322,5 +330,35 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.SetPen(*m_pPens[i]);
         dc.SetBrush(*m_pBrushes[i]);
         dc.DrawCircle(center.x+m_history[i].dx*xPixelsPerStep, center.y+m_history[i].dy*yPixelsPerStep, dotSize);
+    }
+
+    if (m_avgPos.IsValid())
+    {
+        if (m_curBump.IsValid())
+            dc.SetPen(*wxRED_PEN);
+        else
+            dc.SetPen(*wxGREEN_PEN);
+        dc.SetBrush(*wxTRANSPARENT_BRUSH);
+
+        dc.DrawCircle(center.x + (int)(m_avgPos.X * xPixelsPerStep),
+                      center.y + (int)(m_avgPos.Y * yPixelsPerStep), dotSize);
+
+        if (m_curBump.IsValid())
+        {
+            dc.SetPen(*wxGREEN_PEN);
+            dc.DrawLine(center.x + (int)(m_avgPos.X * xPixelsPerStep),
+                    center.y + (int)(m_avgPos.Y * yPixelsPerStep),
+                    center.x + (int)((m_avgPos.X+m_curBump.X*2.0) * xPixelsPerStep),
+                    center.y + (int)((m_avgPos.Y+m_curBump.Y*2.0) * yPixelsPerStep));
+        }
+
+        if (m_bumpRemaining.IsValid())
+        {
+            dc.SetPen(*wxBLUE_PEN);
+            dc.DrawLine(center.x + (int)(m_avgPos.X * xPixelsPerStep),
+                    center.y + (int)(m_avgPos.Y * yPixelsPerStep),
+                    center.x + (int)((m_avgPos.X+m_bumpRemaining.X*2.0) * xPixelsPerStep),
+                    center.y + (int)((m_avgPos.Y+m_bumpRemaining.Y*2.0) * yPixelsPerStep));
+        }
     }
 }
