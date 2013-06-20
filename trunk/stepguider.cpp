@@ -792,18 +792,23 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
 
                 if (WouldHitLimit(direction, steps))
                 {
-                    throw ERROR_INFO("StepGuiderSxAO::step: would hit limit");
+                    double new_steps = MaxPosition(direction) - 1 - CurrentPosition(direction);
+                    Debug.AddLine(wxString::Format("StepGuider step would hit limit: truncate move direction=%d steps=%.2f => %.2f", direction, steps, new_steps));
+                    steps = new_steps;
                 }
 
-                if (Step(direction, steps))
+                if (steps > 0.0)
                 {
-                    throw ERROR_INFO("step failed");
+                    if (Step(direction, steps))
+                    {
+                        throw ERROR_INFO("step failed");
+                    }
+
+                    m_xOffset += xDirection * steps;
+                    m_yOffset += yDirection * steps;
+
+                    Debug.AddLine(wxString::Format("stepped: xOffset=%d yOffset=%d", m_xOffset, m_yOffset));
                 }
-
-                m_xOffset += xDirection * steps;
-                m_yOffset += yDirection * steps;
-
-                Debug.AddLine(wxString::Format("stepped: xOffset=%d yOffset=%d", m_xOffset, m_yOffset));
             }
         }
     }
