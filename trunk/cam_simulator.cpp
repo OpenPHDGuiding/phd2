@@ -94,6 +94,7 @@ static StepGuiderSimulator *s_sim_ao;
 
 StepGuiderSimulator::StepGuiderSimulator(void)
 {
+    m_Name = "AO-Simulator";
 }
 
 StepGuiderSimulator::~StepGuiderSimulator(void)
