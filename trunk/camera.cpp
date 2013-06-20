@@ -661,9 +661,9 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
 
     //if (m_pCamera->PixelSize == 0)
     {
-        int width = StringWidth(_T("0000"));
+        int width = StringWidth(_T("99.999"));
         m_pPixelSize = new wxTextCtrl(pParent, wxID_ANY,
-            m_pCamera->PixelSize == 0 ? wxString() : wxString::Format("%g", m_pCamera->PixelSize),
+            m_pCamera->PixelSize == 0 ? wxString() : wxString::Format("%6.3f", m_pCamera->PixelSize),
             wxPoint(-1,-1), wxSize(width+10, -1));
         DoAdd(_("Pixel size (µm)"), m_pPixelSize,
                _("Used with the guide telescope focal length to display guiding error in arc-sec."));
@@ -756,7 +756,7 @@ void GuideCamera::CameraConfigDialogPane::LoadValues(void)
                 break;
         }
     }
-    m_pPixelSize->SetValue(wxString::Format(_T("%g"), m_pCamera->GetCameraPixelSize()));
+    m_pPixelSize->SetValue(wxString::Format(_T("%6.3f"), m_pCamera->GetCameraPixelSize()));
 }
 
 void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
