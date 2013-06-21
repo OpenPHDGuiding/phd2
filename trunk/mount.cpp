@@ -592,6 +592,7 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         }
 
         GuideLog.GuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, 0);  // errorCode??
+        EvtServer.NotifyGuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, 0);
     }
     catch (wxString Msg)
     {

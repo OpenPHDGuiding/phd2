@@ -495,7 +495,7 @@ static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int ga
 
 bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
-    long long start = wxGetLocalTimeMillis().GetValue();
+    long long start = wxGetUTCTimeMillis().GetValue();
 
     FullSize = wxSize(sim->width, sim->height);
 
@@ -529,7 +529,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     if (HaveDark && recon)
         Subtract(img, CurrentDarkFrame);
 
-    long long now = wxGetLocalTimeMillis().GetValue();
+    long long now = wxGetUTCTimeMillis().GetValue();
     if (now < start + duration)
         wxMilliSleep(start + duration - now);
 

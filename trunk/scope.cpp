@@ -573,6 +573,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                         wxString msg(_("RA Calibration Failed: star did not move enough"));
                         wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
                         GuideLog.CalibrationFailed(this, msg);
+                        EvtServer.NotifyCalibrationFailed(this, msg);
                         throw ERROR_INFO("Calibrate failed");
                     }
                     status0.Printf(_("West step %3d"), m_calibrationSteps);
@@ -622,6 +623,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                         wxString msg(_("Backlash Clearing Failed: star did not move enough"));
                         wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
                         GuideLog.CalibrationFailed(this, msg);
+                        EvtServer.NotifyCalibrationFailed(this, msg);
                         throw ERROR_INFO("Calibrate failed");
                     }
                     status0.Printf(_("Clear backlash step %3d"), m_calibrationSteps);
@@ -643,6 +645,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                         wxString msg(_("DEC Calibration Failed: star did not move enough"));
                         wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
                         GuideLog.CalibrationFailed(this, msg);
+                        EvtServer.NotifyCalibrationFailed(this, msg);
                         throw ERROR_INFO("Calibrate failed");
                     }
                     status0.Printf(_("North step %3d"), m_calibrationSteps);
@@ -683,6 +686,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 pFrame->SetSampling();
                 pFrame->SetStatusText(_("calibration complete"),1);
                 GuideLog.CalibrationComplete(this);
+                EvtServer.NotifyCalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");
                 break;
         }

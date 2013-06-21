@@ -83,7 +83,7 @@ public:
 
     virtual bool IsLocked(void);
     virtual bool AutoSelect(usImage *pImage=NULL);
-    virtual PHD_Point &CurrentPosition(void);
+    virtual const PHD_Point& CurrentPosition(void);
     virtual wxRect GetBoundingBox(void);
     virtual double StarMass(void);
     virtual double SNR(void);

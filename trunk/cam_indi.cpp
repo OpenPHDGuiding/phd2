@@ -145,8 +145,8 @@ bool Camera_INDIClass::Connect() {
     indi_device_add_cb(INDIClient, indi_name.ToAscii(), (IndiDevCB)new_prop_cb, this);
 
     modal = true;
-    msec = wxGetLocalTimeMillis();
-    while(modal && wxGetLocalTimeMillis() - msec < 10 * 1000) {
+    msec = wxGetUTCTimeMillis();
+    while(modal && wxGetUTCTimeMillis() - msec < 10 * 1000) {
         ::wxSafeYield();
     }
     modal = false;

@@ -151,7 +151,7 @@ public:
         return Angle(*pPoint);
     }
 
-    PHD_Point operator+(const PHD_Point& addend)
+    PHD_Point operator+(const PHD_Point& addend) const
     {
         assert(m_valid && addend.m_valid);
         return PHD_Point(this->X + addend.X, this->Y + addend.Y);
@@ -166,7 +166,7 @@ public:
         return *this;
     }
 
-    PHD_Point operator-(const PHD_Point& subtrahend)
+    PHD_Point operator-(const PHD_Point& subtrahend) const
     {
         assert(m_valid && subtrahend.m_valid);
         return PHD_Point(this->X - subtrahend.X, this->Y - subtrahend.Y);
@@ -181,7 +181,7 @@ public:
         return *this;
     }
 
-    PHD_Point operator/(const double divisor)
+    PHD_Point operator/(const double divisor) const
     {
         assert(m_valid);
         return PHD_Point(this->X/divisor, this->Y/divisor);
@@ -196,7 +196,7 @@ public:
         return *this;
     }
 
-    PHD_Point operator*(const double multiplicand)
+    PHD_Point operator*(const double multiplicand) const
     {
         assert(m_valid);
         return PHD_Point(this->X * multiplicand, this->Y * multiplicand);

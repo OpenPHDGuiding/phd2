@@ -201,7 +201,7 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
 
         assert(!CaptureActive);
 
-        m_loopFrameCount = 0;
+        m_frameCounter = 0;
 
         pFrame->StartCapturing();
 
@@ -247,7 +247,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             throw ERROR_INFO("Error reported capturing image");
         }
 
-        m_loopFrameCount++;
+        ++m_frameCounter;
 
         pGuider->UpdateGuideState(pNewFrame, !m_continueCapturing);
         pNewFrame = NULL; // the guider owns in now
@@ -542,17 +542,15 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
     }
 }
 
-bool MyFrame::FlipRACal( wxCommandEvent& WXUNUSED(evt))
+bool MyFrame::FlipRACal()
 {
-    bool bError = true;
+    Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
 
-    if (pSecondaryMount)
+    bool bError = mount->FlipCalibration();
+
+    if (!bError)
     {
-        bError = pSecondaryMount->FlipCalibration();
-    }
-    else if (pMount)
-    {
-        bError = pMount->FlipCalibration();
+        EvtServer.NotifyCalibrationDataFlipped(mount);
     }
 
     return bError;

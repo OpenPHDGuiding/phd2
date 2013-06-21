@@ -397,6 +397,7 @@ bool Guider::SaveCurrentImage(const wxString& fileName)
 void Guider::InvalidateLockPosition(void)
 {
     m_lockPosition.Invalidate();
+    EvtServer.NotifyLockPositionLost();
 }
 
 void Guider::UpdateLockPosition(void)
@@ -431,7 +432,11 @@ bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
 
         if (bExact)
         {
-            m_lockPosition.SetXY(x,y);
+            if (!m_lockPosition.IsValid() || position.X != m_lockPosition.X || position.Y != m_lockPosition.Y)
+            {
+                EvtServer.NotifySetLockPosition(position);
+            }
+            m_lockPosition.SetXY(x, y);
         }
         else
         {
@@ -501,7 +506,7 @@ void Guider::SetState(GUIDER_STATE newState)
         {
             // we are going to stop looping exposures.  We should put
             // ourselves into a good state to restart looping later
-            switch(m_state)
+            switch (m_state)
             {
                 case STATE_UNINITIALIZED:
                 case STATE_SELECTING:
@@ -536,7 +541,7 @@ void Guider::SetState(GUIDER_STATE newState)
 
         GUIDER_STATE requestedState = newState;
 
-        switch(requestedState)
+        switch (requestedState)
         {
             case STATE_UNINITIALIZED:
                 InvalidateLockPosition();
@@ -557,6 +562,7 @@ void Guider::SetState(GUIDER_STATE newState)
                     else
                     {
                         GuideLog.StartCalibration(pMount);
+                        EvtServer.NotifyStartCalibration(pMount);
                     }
                 }
                 break;
@@ -575,6 +581,7 @@ void Guider::SetState(GUIDER_STATE newState)
                     else
                     {
                         GuideLog.StartCalibration(pSecondaryMount);
+                        EvtServer.NotifyStartCalibration(pSecondaryMount);
                     }
                 }
                 break;
@@ -591,7 +598,7 @@ void Guider::SetState(GUIDER_STATE newState)
                 }
                 else
                 {
-                    m_lockPosition = CurrentPosition();
+                    SetLockPosition(CurrentPosition());
                 }
                 break;
         }
@@ -659,6 +666,25 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         if (bStopping)
         {
+            // send a notification that we stopped
+            switch (m_state)
+            {
+                case STATE_UNINITIALIZED:
+                case STATE_SELECTING:
+                case STATE_SELECTED:
+                    EvtServer.NotifyLoopingStopped();
+                    break;
+                case STATE_CALIBRATING_PRIMARY:
+                case STATE_CALIBRATING_SECONDARY:
+                case STATE_CALIBRATED:
+                    EvtServer.NotifyCalibrationFailed(m_state == STATE_CALIBRATING_SECONDARY ? pSecondaryMount : pMount,
+                        _("Calibration manually stopped"));
+                    break;
+                case STATE_GUIDING:
+                    EvtServer.NotifyGuidingStopped();
+                    break;
+            }
+
             SetState(STATE_STOP);
             statusMessage = _("Stopped Guiding");
             throw THROW_INFO("Stopped Guiding");
@@ -674,22 +700,30 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         if (UpdateCurrentPosition(pImage, statusMessage))
         {
-            switch(m_state)
+            switch (m_state)
             {
                 case STATE_UNINITIALIZED:
                 case STATE_SELECTING:
+                    EvtServer.NotifyLooping(pFrame->m_frameCounter);
                     break;
                 case STATE_SELECTED:
                     // we had a current position and lost it
                      SetState(STATE_UNINITIALIZED);
+                     EvtServer.NotifyStarLost();
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:
                     SetState(STATE_SELECTED);
-                    pFrame->SetStatusText(_("Calibration aborted -- star lost"), 1);
+                    EvtServer.NotifyStarLost();
+                    {
+                        wxString msg(_("Calibration aborted -- star lost"));
+                        EvtServer.NotifyCalibrationFailed(m_state == STATE_CALIBRATING_PRIMARY ? pMount : pSecondaryMount, msg);
+                        pFrame->SetStatusText(msg, 1);
+                    }
                     break;
                 case STATE_GUIDING:
                 {
+                    EvtServer.NotifyStarLost();
                     wxColor prevColor = GetBackgroundColour();
                     SetBackgroundColour(wxColour(64,0,0));
                     ClearBackground();
@@ -703,13 +737,23 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             throw THROW_INFO("unable to update current position");
         }
 
-        switch(m_state)
+        switch (m_state)
+        {
+            case STATE_UNINITIALIZED:
+            case STATE_SELECTING:
+            case STATE_SELECTED:
+                EvtServer.NotifyLooping(pFrame->m_frameCounter);
+                break;
+        }
+
+        switch (m_state)
         {
             case STATE_SELECTING:
                 assert(CurrentPosition().IsValid());
 
-                m_lockPosition = CurrentPosition();
+                SetLockPosition(CurrentPosition());
                 Debug.AddLine("CurrentPosition() valid, moving to STATE_SELECTED");
+                EvtServer.NotifyStarSelected(CurrentPosition());
                 SetState(STATE_SELECTED);
                 break;
             case STATE_SELECTED:
@@ -770,7 +814,10 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 assert(m_state == STATE_CALIBRATED);
                 SetState(STATE_GUIDING);
                 pFrame->SetStatusText(_("Guiding..."), 1);
+                pFrame->m_guidingStarted = wxDateTime::UNow();
+                pFrame->m_frameCounter = 0;
                 GuideLog.StartGuiding();
+                EvtServer.NotifyStartGuiding();
                 break;
             case STATE_GUIDING:
                 pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
@@ -825,4 +872,57 @@ void Guider::GuiderConfigDialogPane::LoadValues(void)
 void Guider::GuiderConfigDialogPane::UnloadValues(void)
 {
     m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
+}
+
+EXPOSED_STATE Guider::GetExposedState(void)
+{
+    EXPOSED_STATE rval;
+    Guider *guider = pFrame->pGuider;
+
+    if (!guider)
+        rval = EXPOSED_STATE_NONE;
+
+    else if (guider->IsPaused())
+        rval = EXPOSED_STATE_PAUSED;
+
+    else if (!pFrame->CaptureActive)
+        rval = EXPOSED_STATE_NONE;
+
+    else
+    {
+        // map the guider internal state into a server reported state
+
+        switch (guider->GetState())
+        {
+            case STATE_UNINITIALIZED:
+            case STATE_STOP:
+            default:
+                rval = EXPOSED_STATE_NONE;
+                break;
+
+            case STATE_SELECTING:
+                rval = EXPOSED_STATE_LOOPING;
+                break;
+
+            case STATE_SELECTED:
+            case STATE_CALIBRATED:
+                rval = EXPOSED_STATE_SELECTED;
+                break;
+
+            case STATE_CALIBRATING_PRIMARY:
+            case STATE_CALIBRATING_SECONDARY:
+                rval = EXPOSED_STATE_CALIBRATING;
+                break;
+
+            case STATE_GUIDING:
+                if (guider->IsLocked())
+                    rval = EXPOSED_STATE_GUIDING_LOCKED;
+                else
+                    rval = EXPOSED_STATE_GUIDING_LOST;
+        }
+
+        Debug.AddLine(wxString::Format("case statement mapped state %d to %d", guider->GetState(), rval));
+    }
+
+    return rval;
 }

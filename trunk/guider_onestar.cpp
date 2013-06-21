@@ -235,7 +235,7 @@ bool GuiderOneStar::IsLocked(void)
     return m_star.WasFound();
 }
 
-PHD_Point &GuiderOneStar::CurrentPosition(void)
+const PHD_Point& GuiderOneStar::CurrentPosition(void)
 {
     return m_star;
 }

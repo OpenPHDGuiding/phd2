@@ -145,6 +145,9 @@ public:
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label) { return NULL; };
 
     void AdjustForDeclination(void);
+
+    wxString Name(void) const { return m_Name; }
+
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move

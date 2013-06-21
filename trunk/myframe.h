@@ -116,7 +116,7 @@ private:
     int  m_timeLapse;       // Delay between frames (useful for vid cameras)
     int  m_focalLength;
     double m_sampling;
-    long m_instanceNumber;
+    int m_instanceNumber;
 
     wxAuiManager m_mgr;
     bool m_continueCapturing; // should another image be captured?
@@ -139,11 +139,12 @@ public:
     GraphLogWindow *pGraphLog;
     GraphStepguiderWindow *pStepGuiderGraph;
     ProfileWindow *pProfile;
-    unsigned m_loopFrameCount;
     TargetWindow *pTarget;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
     wxLocale *m_pLocale;
+    unsigned int m_frameCounter;
+    wxDateTime m_guidingStarted;
 
     void OnQuit(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
@@ -172,9 +173,9 @@ public:
     void OnSetupCamera(wxCommandEvent& evt);
     void OnExposureDurationSelected(wxCommandEvent& evt);
     void OnGammaSlider(wxScrollEvent& evt);
-    void OnServerEvent(wxSocketEvent& evt);
-    void OnSocketEvent(wxSocketEvent& evt);
-    void HandleSocketInput(wxSocketBase *sock);
+    void OnSockServerEvent(wxSocketEvent& evt);
+    void OnSockServerClientEvent(wxSocketEvent& evt);
+    void HandleSockServerInput(wxSocketBase *sock);
     void OnServerMenu(wxCommandEvent& evt);
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     void OnINDIConfig(wxCommandEvent& evt);
@@ -200,12 +201,12 @@ public:
     void OnMoveComplete(wxThreadEvent& evt);
 
     bool StartServer(bool state);
-    bool FlipRACal(wxCommandEvent& evt);
+    bool FlipRACal();
     int RequestedExposureDuration();
     bool Voyager_Connect();
     int GetFocalLength(void);
     int GetLanguage(void);
-
+    int GetInstanceNumber() const { return m_instanceNumber; }
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
@@ -256,7 +257,9 @@ private:
 
     bool StartWorkerThread(WorkerThread*& pWorkerThread);
     void StopWorkerThread(WorkerThread*& pWorkerThread);
+
     wxSocketServer *SocketServer;
+    unsigned int SocketConnections; // number of clients connected to SocketServer
 
     struct STATUSBAR_QUEUE_ENTRY
     {
@@ -380,8 +383,10 @@ enum {
 };
 
 enum {
-    SERVER_ID = 100,
-    SOCKET_ID,
+    SOCK_SERVER_ID = 100,
+    SOCK_SERVER_CLIENT_ID,
+    EVENT_SERVER_ID,
+    EVENT_SERVER_CLIENT_ID,
 };
 
 #endif /* MYFRAME_H_INCLUDED */
