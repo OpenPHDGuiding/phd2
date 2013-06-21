@@ -202,6 +202,7 @@
     <ClCompile Include="confirm_dialog.cpp" />
     <ClCompile Include="debuglog.cpp" />
     <ClCompile Include="eegg.cpp" />
+    <ClCompile Include="event_server.cpp" />
     <ClCompile Include="graph-stepguider.cpp" />
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="guider.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="configdialog.h" />
     <ClInclude Include="confirm_dialog.h" />
     <ClInclude Include="debuglog.h" />
+    <ClInclude Include="event_server.h" />
     <ClInclude Include="graph-stepguider.h" />
     <ClInclude Include="graph.h" />
     <ClInclude Include="guider.h" />

@@ -112,8 +112,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_BUTTON(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
     EVT_COMMAND_SCROLL(CTRL_GAMMA,MyFrame::OnGammaSlider)
     EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
-    EVT_SOCKET(SERVER_ID, MyFrame::OnServerEvent)
-    EVT_SOCKET(SOCKET_ID, MyFrame::OnSocketEvent)
+    EVT_SOCKET(SOCK_SERVER_ID, MyFrame::OnSockServerEvent)
+    EVT_SOCKET(SOCK_SERVER_CLIENT_ID, MyFrame::OnSockServerClientEvent)
 #ifndef __WXGTK__
     EVT_MENU(DONATE1,MyFrame::OnDonateMenu)
     EVT_MENU(DONATE2,MyFrame::OnDonateMenu)
@@ -146,7 +146,7 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
 
     m_mgr.SetManagedWindow(this);
 
-    m_loopFrameCount = 0;
+    m_frameCounter = 0;
     m_pPrimaryWorkerThread = NULL;
     StartWorkerThread(m_pPrimaryWorkerThread);
     m_pSecondaryWorkerThread = NULL;
@@ -1024,8 +1024,8 @@ void MyFrame::OnClose(wxCloseEvent &event) {
     if (pCamera && pCamera->Connected)
         pCamera->Disconnect();
 
-    if (SocketServer)
-        delete SocketServer;
+    // stop the socket server and event server
+    StartServer(false);
 
 #ifdef PHD1_LOGGING // deprecated
     if (LogFile)

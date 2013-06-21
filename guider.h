@@ -53,7 +53,7 @@ enum GUIDER_STATE
     STATE_STOP, // This is a pseudo state
 };
 
-enum EXPOSED_STATES
+enum EXPOSED_STATE
 {
     EXPOSED_STATE_NONE = 0,
     EXPOSED_STATE_SELECTED,
@@ -63,7 +63,6 @@ enum EXPOSED_STATES
 
     EXPOSED_STATE_PAUSED = 100,
     EXPOSED_STATE_LOOPING,
-    EXPOSED_STATE_LOOPING_SELECTED
 };
 
 enum DEC_GUIDE_MODE
@@ -148,6 +147,7 @@ public:
     bool SetPaused(bool paused);
     double CurrentError(void);
     GUIDER_STATE GetState(void);
+    static EXPOSED_STATE GetExposedState(void);
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
     void UpdateImageDisplay(usImage *pImage=NULL);
@@ -188,7 +188,7 @@ public:
     virtual bool IsLocked(void) = 0;
     virtual bool AutoSelect(usImage *pImage=NULL)=0;
 
-    virtual PHD_Point &CurrentPosition(void) = 0;
+    virtual const PHD_Point& CurrentPosition(void) = 0;
     virtual wxRect GetBoundingBox(void) = 0;
     virtual double StarMass(void) = 0;
     virtual double SNR(void) = 0;

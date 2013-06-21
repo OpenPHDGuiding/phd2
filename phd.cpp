@@ -39,7 +39,7 @@
 
 //#define DEVBUILD
 
-// Globals`
+// Globals
 
 PhdConfig *pConfig=NULL;
 Mount *pMount = NULL;

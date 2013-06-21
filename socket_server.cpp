@@ -37,9 +37,6 @@
 #include <wx/log.h>
 #include "socket_server.h"
 
-static int SocketConnections;
-static wxSocketServer *SocketServer;
-static wxSocketBase *ServerEndpoint;
 static wxLogWindow *SocketLog = NULL;
 
 enum {
@@ -72,30 +69,48 @@ void MyFrame::OnServerMenu(wxCommandEvent &evt) {
     StartServer(GetServerMode());
 }
 
-bool MyFrame::StartServer(bool state) {
-    wxIPV4address addr;
-    addr.Service(4299 + m_instanceNumber);
-
+bool MyFrame::StartServer(bool state)
+{
     if (state) {
         if (!SocketLog) {
             SocketLog = new wxLogWindow(this,wxT("Server log"));
             SocketLog->SetVerbose(true);
             wxLog::SetActiveTarget(SocketLog);
         }
-        // Create the socket
-        SocketServer = new wxSocketServer(addr);
+
+        // Create the SocketServer socket
+        unsigned int port = 4300 + m_instanceNumber - 1;
+        wxIPV4address sockServerAddr;
+        sockServerAddr.Service(port);
+        SocketServer = new wxSocketServer(sockServerAddr);
 
         // We use Ok() here to see if the server is really listening
-        if (! SocketServer->Ok()) {
-            wxLogStatus(_("Server failed to start - Could not listen at the specified port"));
+        if (!SocketServer->Ok()) {
+            wxLogStatus(wxString::Format("Socket server failed to start - Could not listen at port %u", port));
+            wxLog::SetActiveTarget(NULL);
+            delete SocketLog;
+            SocketLog = NULL;
+            delete SocketServer;
+            SocketServer = NULL;
             return true;
         }
-        SocketServer->SetEventHandler(*this, SERVER_ID);
+        SocketServer->SetEventHandler(*this, SOCK_SERVER_ID);
         SocketServer->SetNotify(wxSOCKET_CONNECTION_FLAG);
         SocketServer->Notify(true);
+
+        // start the event server
+        if (EvtServer.EventServerStart(m_instanceNumber)) {
+            wxLog::SetActiveTarget(NULL);
+            delete SocketLog;
+            SocketLog = NULL;
+            delete SocketServer;
+            SocketServer = NULL;
+            return true;
+        }
+
         SocketConnections = 0;
         SetStatusText(_("Server started"));
-        wxLogStatus(_("Server started"));
+        wxLogStatus(wxString::Format(_("Server started, listening on port %u"), port));
         SocketLog->Show(this->Menubar->IsChecked(MENU_DEBUG));
     }
     else {
@@ -103,26 +118,30 @@ bool MyFrame::StartServer(bool state) {
         wxLog::SetActiveTarget(NULL);
         delete SocketLog;
         SocketLog = NULL;
+        EvtServer.EventServerStop();
         delete SocketServer;
-        SocketServer= NULL;
+        SocketServer = NULL;
         SetStatusText(_("Server stopped"));
     }
 
     return false;
 }
 
-void MyFrame::OnServerEvent(wxSocketEvent& event) {
-//  wxSocketBase *sock;
+void MyFrame::OnSockServerEvent(wxSocketEvent& event)
+{
+    wxSocketServer *server = static_cast<wxSocketServer *>(event.GetSocket());
 
-    if (SocketServer == NULL) return;
+    if (server == NULL)
+        return;
+
     if (event.GetSocketEvent() != wxSOCKET_CONNECTION) {
         wxLogStatus(_T("WTF is this event?"));
         return;
     }
 
-    ServerEndpoint = SocketServer->Accept(false);
+    wxSocketBase *client = server->Accept(false);
 
-    if (ServerEndpoint) {
+    if (client) {
         pFrame->SetStatusText("New connection");
         wxLogStatus(_T("New cnxn"));
     }
@@ -131,14 +150,14 @@ void MyFrame::OnServerEvent(wxSocketEvent& event) {
         return;
     }
 
-    ServerEndpoint->SetEventHandler(*this, SOCKET_ID);
-    ServerEndpoint->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
-    ServerEndpoint->Notify(true);
+    client->SetEventHandler(*this, SOCK_SERVER_CLIENT_ID);
+    client->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
+    client->Notify(true);
 
     SocketConnections++;
 }
 
-void MyFrame::HandleSocketInput(wxSocketBase *sock)
+void MyFrame::HandleSockServerInput(wxSocketBase *sock)
 {
     unsigned char rval = 0;
 
@@ -163,6 +182,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 pGuider->SetPaused(true);
                 wxLogStatus(_T("Paused"));
                 GuideLog.ServerCommand(pGuider, "PAUSE");
+                EvtServer.NotifyPaused();
                 break;
             case MSG_RESUME:
             case 'r':
@@ -170,6 +190,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 pGuider->SetPaused(false);
                 wxLogStatus (_T("Resumed"));
                 GuideLog.ServerCommand(pGuider, "RESUME");
+                EvtServer.NotifyResumed();
                 break;
             case MSG_MOVE1:  // +/- 0.5
             case MSG_MOVE2:  // +/- 1.0
@@ -222,6 +243,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
 
                 wxLogStatus(_T("Moving by %.2f,%.2f"),dRa, dDec);
                 GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
+                EvtServer.NotifyGuidingDithered(dRa, dDec);
 
                 rval = RequestedExposureDuration() / 1000;
                 if (rval < 1)
@@ -276,7 +298,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
                 {
                     Debug.AddLine("processing socket request SETLOCKPOSITION for (%d, %d) succeeded", x, y);
                     wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
-                    GuideLog.ServerSetLockPosition(pGuider, PHD_Point(x,y));
+                    GuideLog.ServerSetLockPosition(pGuider);
                 }
                 else
                 {
@@ -288,69 +310,20 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
             case MSG_FLIPRACAL:
             {
                 Debug.AddLine("processing socket request FLIPRACAL");
-                wxCommandEvent *tmp_evt;
-                tmp_evt = new wxCommandEvent(0,wxID_EXECUTE);
                 bool wasPaused = pGuider->SetPaused(true);
                 // return 1 for success, 0 for failure
                 rval = 1;
-                if ( FlipRACal(*tmp_evt))
+                if (FlipRACal())
                 {
                     rval = 0;
                 }
                 pGuider->SetPaused(wasPaused);
                 GuideLog.ServerCommand(pGuider, "FLIP RA CAL");
-                delete tmp_evt;
                 break;
             }
             case MSG_GETSTATUS:
                 Debug.AddLine("processing socket request GETSTATUS");
-                if( pGuider->IsPaused() )
-                {
-                    rval = EXPOSED_STATE_PAUSED;
-                    Debug.AddLine("returning EXPOSED_STATE_PAUSED");
-                }
-                else if (!pFrame->CaptureActive)
-                {
-                    rval = EXPOSED_STATE_NONE;
-                    Debug.AddLine("!CaptureActive(), so returning EXPOSED_STATE_NONE");
-                }
-                else
-                {
-                    // map the guider internal state into a server reported state
-                    switch (pGuider->GetState())
-                    {
-                        case STATE_UNINITIALIZED:
-                        case STATE_STOP:
-                        default:
-                            rval = EXPOSED_STATE_NONE;
-                            break;
-                        case STATE_SELECTING:
-                            rval = EXPOSED_STATE_LOOPING;
-                            break;
-                        case STATE_SELECTED:
-                            //rval = EXPOSED_STATE_LOOPING_SELECTED;
-                            rval = EXPOSED_STATE_SELECTED;
-                            break;
-                        case STATE_CALIBRATING_PRIMARY:
-                        case STATE_CALIBRATING_SECONDARY:
-                            rval = EXPOSED_STATE_CALIBRATING;
-                            break;
-                        case STATE_CALIBRATED:
-                            rval = EXPOSED_STATE_SELECTED;
-                            break;
-                        case STATE_GUIDING:
-                            if (pGuider->IsLocked())
-                            {
-                                rval = EXPOSED_STATE_GUIDING_LOCKED;
-                            }
-                            else
-                            {
-                                rval = EXPOSED_STATE_GUIDING_LOST;
-                            }
-                            break;
-                    }
-                    Debug.AddLine(wxString::Format("case statement mapped state %d to %d", pGuider->GetState(), rval));
-                }
+                rval = Guider::GetExposedState();
                 break;
             case MSG_LOOP:
             {
@@ -381,13 +354,13 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
             }
             case MSG_LOOPFRAMECOUNT:
                 Debug.AddLine("processing socket request LOOPFRAMECOUNT");
-                if (m_loopFrameCount > UCHAR_MAX)
+                if (m_frameCounter > UCHAR_MAX)
                 {
                     rval = UCHAR_MAX;
                 }
                 else
                 {
-                    rval = m_loopFrameCount;
+                    rval = m_frameCounter;
                 }
                 break;
             case MSG_CLEARCAL:
@@ -428,7 +401,7 @@ void MyFrame::HandleSocketInput(wxSocketBase *sock)
     sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
 }
 
-void MyFrame::OnSocketEvent(wxSocketEvent& event)
+void MyFrame::OnSockServerClientEvent(wxSocketEvent& event)
 {
     try
     {
@@ -440,10 +413,10 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event)
         }
 
         // Now we process the event
-        switch(event.GetSocketEvent())
+        switch (event.GetSocketEvent())
         {
             case wxSOCKET_INPUT:
-                HandleSocketInput(sock);
+                HandleSockServerInput(sock);
                 break;
             case wxSOCKET_LOST:
                 SocketConnections--;
@@ -460,9 +433,16 @@ void MyFrame::OnSocketEvent(wxSocketEvent& event)
     }
 }
 
+#ifdef NEB_SBIG
+
+// this code only works when there is a single socket connection from Nebulosity
+
+static int SocketConnections;
+static wxSocketBase *ServerEndpoint;
+
 bool ServerSendGuideCommand (int direction, int duration) {
     // Sends a guide command to Nebulosity
-    if (!SocketServer || !SocketConnections)
+    if (!pFrame->SocketServer || !SocketConnections)
         return true;
 
     unsigned char cmd = MSG_GUIDE;
@@ -470,7 +450,7 @@ bool ServerSendGuideCommand (int direction, int duration) {
     wxLogStatus(_T("Sending guide: %d %d"), direction, duration);
 //  cmd = 'Z';
     ServerEndpoint->Write(&cmd, 1);
-    if (SocketServer->Error())
+    if (pFrame->SocketServer->Error())
         wxLogStatus(_T("Error sending Neb command"));
     else {
         wxLogStatus(_T("Cmd done - sending data"));
@@ -483,14 +463,14 @@ bool ServerSendGuideCommand (int direction, int duration) {
 }
 
 bool ServerSendCamConnect(int& xsize, int& ysize) {
-    if (!SocketServer || !SocketConnections)
+    if (!pFrame->SocketServer || !SocketConnections)
         return true;
     wxLogStatus(_T("Sending cam connect request"));
     unsigned char cmd = MSG_CAMCONNECT;
     unsigned char rval = 0;
 
     ServerEndpoint->Write(&cmd, 1);
-    if (SocketServer->Error()) {
+    if (pFrame->SocketServer->Error()) {
         wxLogStatus(_T("Error sending Neb command"));
         return true;
     }
@@ -511,7 +491,7 @@ bool ServerSendCamConnect(int& xsize, int& ysize) {
 }
 
 bool ServerSendCamDisconnect() {
-    if (!SocketServer || !SocketConnections)
+    if (!pFrame->SocketServer || !SocketConnections)
         return true;
 
     wxLogStatus(_T("Sending cam disconnect request"));
@@ -519,7 +499,7 @@ bool ServerSendCamDisconnect() {
     unsigned char rval = 0;
 
     ServerEndpoint->Write(&cmd, 1);
-    if (SocketServer->Error()) {
+    if (pFrame->SocketServer->Error()) {
         wxLogStatus(_T("Error sending Neb command"));
         return true;
     }
@@ -535,14 +515,14 @@ bool ServerSendCamDisconnect() {
 }
 
 bool ServerReqFrame(int duration, usImage& img) {
-    if (!SocketServer || !SocketConnections)
+    if (!pFrame->SocketServer || !SocketConnections)
         return true;
     wxLogStatus(_T("Sending guide frame request"));
     unsigned char cmd = MSG_REQFRAME;
     unsigned char rval = 0;
 
     ServerEndpoint->Write(&cmd, 1);
-    if (SocketServer->Error()) {
+    if (pFrame->SocketServer->Error()) {
         wxLogStatus(_T("Error sending Neb command"));
         return true;
     }
@@ -595,3 +575,5 @@ bool ServerReqFrame(int duration, usImage& img) {
 
     return false;
 }
+
+#endif // NEB_SBIG

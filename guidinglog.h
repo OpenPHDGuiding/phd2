@@ -45,8 +45,6 @@ class GuidingLog
     wxFFile m_file;
     bool m_image_logging_enabled;
     LOGGED_IMAGE_FORMAT m_logged_image_format;
-    int m_frame;
-    wxDateTime m_guidingStarted;
 
 public:
     GuidingLog(bool active=false);
@@ -77,7 +75,7 @@ public:
 
     bool ServerCommand(Guider* guider,  wxString cmd);
     bool ServerGuidingDithered(Guider* guider, double dx, double dy);
-    bool ServerSetLockPosition(Guider* guider, const PHD_Point &xy);
+    bool ServerSetLockPosition(Guider* guider);
 
     bool SetGuidingParam(wxString name, double val);
     bool SetGuidingParam(wxString name, int val);

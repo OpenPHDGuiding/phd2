@@ -320,13 +320,9 @@ bool GuidingLog::StartGuiding()
         if (m_enabled)
         {
             assert(m_file.IsOpened());
-            wxDateTime now = wxDateTime::UNow();
-
-            m_frame = 1;
-            m_guidingStarted = now;
-
+                
             m_file.Write("\n");
-            m_file.Write("Guiding Begins at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+            m_file.Write("Guiding Begins at " + pFrame->m_guidingStarted.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
 
             // add common guiding header
             GuidingHeader();
@@ -394,10 +390,10 @@ bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
     {
         if (m_enabled)
         {
-           assert(m_file.IsOpened());
+            assert(m_file.IsOpened());
             m_file.Write(wxString::Format("%d,%.3f,%s,%.3f,%.3f,%.3f,%.3f,%.3f,%s,%.3f,%.3f,%s,%.f,%.2f,%d\n",
-                    m_frame,
-                    (wxDateTime::UNow() - m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0,
+                    pFrame->m_frameCounter,
+                    (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0,
                     pGuideMount->Name(),
                     vectorEndpoint.X, vectorEndpoint.Y,
                     vectorEndpoint.Angle(PHD_Point(0,0)),
@@ -406,7 +402,6 @@ bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
                     pFrame->pGuider->StarMass(), pFrame->pGuider->SNR(),
                     errorCode));
             Flush();
-            m_frame += 1;
         }
     }
     catch (wxString Msg)
@@ -485,7 +480,7 @@ bool GuidingLog::ServerGuidingDithered(Guider* guider, double dx, double dy)
     return bError;
 }
 
-bool GuidingLog::ServerSetLockPosition(Guider* guider, const PHD_Point &xy)
+bool GuidingLog::ServerSetLockPosition(Guider* guider)
 {
     bool bError = false;
 

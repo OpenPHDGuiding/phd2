@@ -32,14 +32,13 @@
  *
  */
 
+#ifdef NEB_SBIG
 extern bool ServerSendGuideCommand(int dir, int dur);
 extern bool ServerSendCamConnect(int& xsize, int& ysize);
 extern bool ServerSendCamDisconnect();
 extern bool ServerReqFrame(int duration, usImage& img);
-extern void Voyager_PulseGuideScope(int direction, int duration);
+#endif
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 extern OSErr E6AESendRoutine(double ewCorrection, double nsCorrection, int mountcode);
-extern bool Equinox_Connect(int mountcode);
-extern void Equinox_PulseGuideScope(int direction, int duration, int mountcode);
 #endif
