@@ -44,6 +44,11 @@ BEGIN_EVENT_TABLE(EventServer, wxEvtHandler)
     EVT_SOCKET(EVENT_SERVER_CLIENT_ID, EventServer::OnEventServerClientEvent)
 END_EVENT_TABLE()
 
+enum
+{
+    MSG_PROTOCOL_VERSION = 1,
+};
+
 static wxString state_name(EXPOSED_STATE st)
 {
     switch (st)
@@ -112,6 +117,15 @@ struct Ev : public JObj
             << NV("Inst", pFrame->GetInstanceNumber());
     }
 };
+
+static Ev ev_message_version()
+{
+    Ev ev("Version");
+    ev << NV("PHDVersion", VERSION)
+        << NV("PHDSubver", PHDSUBVER)
+        << NV("MsgVersion", MSG_PROTOCOL_VERSION);
+    return ev;
+}
 
 static Ev ev_set_lock_position(const PHD_Point& xy)
 {
@@ -198,6 +212,8 @@ inline static void simple_notify_ev(const EventServer::CliSockSet& cli, const Ev
 static void send_catchup_events(wxSocketClient *cli)
 {
     EXPOSED_STATE st = Guider::GetExposedState();
+
+    do_notify1(cli, ev_message_version());
 
     if (pFrame->pGuider)
     {
