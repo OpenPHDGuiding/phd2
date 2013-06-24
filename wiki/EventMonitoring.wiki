@@ -1,0 +1,200 @@
+#summary OpenPHD Event Monitoring interface
+
+<wiki:toc max_depth="2" />
+
+= Introduction =
+
+OpenPHD allows programs to connect to PHD to actively monitor guiding status. This allows clients to do things like:
+  * graph phd data in real time
+  * monitor phd for exceptional events like guiding lost, and send an alert when something goes wrong
+
+= Connection =
+
+Clients connect to PHD on TCP port 4400. When multiple PHD instances are running, each instance listens on successive port numbers (4401, 4402, ...).
+
+PHD allows multiple clients to establish connections simultaneously.
+
+When a client establishes a connection, PHD sends a series of event messages to the client (see [#Initial_Messages]). Then, as guiding events take place in PHD, notification messages are sent to all connected clients.
+
+= Message Format =
+
+Messages are formatted as [http://www.json.org/ JSON] objects. Each message is a single line of text terminated by CR LF.
+
+= Common attributes =
+
+All messages contain the following attributes in common:
+
+|| Attribute || Type || Description ||
+||`Event` || string || the name of the event ||
+|| `Timestamp` || number || the timesamp of the event in seconds from the epoch, including fractional seconds ||
+|| `Host` || string || the hostname of the machine running PHD ||
+|| `Inst` || number || the PHD instance number (1-based) ||
+
+= Event Messages =
+
+Here are the available messages and the attributes of each message.
+
+== `Version` ==
+
+Describes the PHD and message protocol versions.
+
+|| Attribute || Type || Description ||
+|| `PHDVersion` || string || the PHD version number ||
+|| `PHDSubver` || string || the PHD sub-version number ||
+|| `MsgVersion` || number || the version number of the event message protocol. The current version is 1. We will bump this number if the message protocol changes. ||
+
+Example
+{{{
+{"Event":"Version","Timestamp":1372082668.897,"Host":"AGALASSO","Inst":1,"PHDVersion":"2.0.4","PHDSubver":"a","MsgVersion":1}
+}}}
+
+== `LockPositionSet` ==
+
+The lock position has been established.
+
+|| Attribute || Type || Description ||
+|| X || number || lock position X-coordinate ||
+|| Y || number || lock position Y-coordinate ||
+
+== `CalibrationComplete` ==
+
+Calibration completed successfully.
+
+|| Attribute || Type || Description ||
+|| Mount || string || name of the mount that was calibrated ||
+
+== `StarSelected` ==
+
+A star has been selected.
+
+|| Attribute || Type || Description ||
+|| X || number || lock position X-coordinate ||
+|| Y || number || lock position Y-coordinate ||
+
+== `StartGuiding` ==
+
+Guiding begins.
+
+(no message attributes)
+
+== `Paused` ==
+
+Guiding has been paused.
+
+|| Attribute || Type || Description ||
+
+== `StartCalibration` ==
+
+Calibration begins.
+
+|| Attribute || Type || Description ||
+|| Mount || string || the name of the mount being calibrated ||
+
+== `AppState` ==
+
+|| Attribute || Type || Description ||
+|| State || string || the current state of PHD ||
+
+The state attribute can be one of the following:
+
+|| State || Description ||
+|| Stopped || PHD is idle ||
+|| Selected || A star is selected but PHD is neither looping exposures, calibrating, or guiding ||
+|| Calibrating || PHD is calibrating ||
+|| Guiding || PHD is guiding ||
+|| LostLock  || PHD has lost its lock position ||
+|| Paused || PHD is paused ||
+|| Looping || PHD is looping exposures ||
+
+== `CalibrationFailed` ==
+
+Calibration failed.
+
+|| Attribute || Type || Description ||
+|| Reason || string || an error message string ||
+
+== `CalibrationDataFlipped` ==
+
+Calibration data has been flipped.
+
+|| Attribute || Type || Description ||
+|| Mount || string || the name of the mount ||
+
+== `LoopingExposures` ==
+
+Sent for each exposure frame while looping exposures.
+
+|| Attribute || Type || Description ||
+|| Frame || number || the exposure frame number; starts at 1 each time looping starts ||
+
+== `LoopingExposuresStopped` ==
+
+Looping exposures has stopped.
+
+(no event attributes)
+
+== `StarLost` ==
+
+The selected star has been lost.
+
+(no event attributes)
+
+== `GuidingStopped` ==
+
+Guiding has stopped.
+
+(no event attributes)
+
+== `Resumed` ==
+
+PHD has been resumed after having been paused.
+
+(no attributes)
+
+== `GuideStep` ==
+
+This event corresponds to a line in the PHD Guide Log. The event is sent for each frame while guiding.
+
+|| Attribute || Type || Description ||
+||Frame||number||The frame number; starts at 1 each time guiding starts||
+||Time||number|| the time in seconds, including fractional seconds, since guiding started||
+||mount||string||the name of the mount||
+||dx||number||the X-offset in pixels||
+||dy||number||the Y-offset in pixels||
+||Theta||number||the angle in radians of the guide offset vector||
+||RADuration||number||the RA guide pulse duration in milliseconds||
+||RADistance||number||the RA distance in pixels of the guide offset vector; positive for East, negative for West||
+||RADirection||string||"E" or "W"||
+||DECDuration||number||the Dec guide pulse duration in milliseconds||
+||DECDistance||number||the Dec distance in pixels of the guide offset vector; positive for South, negative for North||
+||DECDirection||string||"S" or "N"||
+||StarMass||number||the Star Mass value of the guide star||
+||SNR||number||the computed Signal-to-noise ratio of the guide star||
+
+== `GuidingDithered` ==
+
+The lock position has been dithered.
+
+|| Attribute || Type || Description ||
+||dx||number||the dither X-offset in pixels||
+||dy||number||the dither Y-offset in pixels||
+
+== `LockPositionLost` ==
+
+The lock position has been lost.
+
+(no attributes)
+
+= Initial Messages =
+
+When a client first connects, PHD sends a series of events to the client. The first event is
+ * `Version`
+Then, one or more of
+ * `LockPositionSet`
+ * `StarSelected`
+ * `CalibrationComplete`
+ * `StartGuiding`, `StartCalibration`, or `Paused`
+depending on the state of PHD.
+
+Finally, PHD will send
+ * `AppState`
