@@ -176,7 +176,7 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
 
     int focalLength = pConfig->GetInt("/frame/focalLength", DefaultTimelapse);
     SetFocalLength(focalLength);
-    m_sampling = 1;
+    m_sampling = 1.0;
 
     //
 #if defined (WINICONS)
@@ -1205,12 +1205,12 @@ bool MyFrame::SetFocalLength(int focalLength)
 
 void MyFrame::SetSampling(void)
 {
-    m_sampling = 1;
+    m_sampling = 1.0;
     if (pCamera != NULL)
     {
         if (pCamera->PixelSize != 0 && GetFocalLength() != 0)
         {
-            m_sampling = 206 * pCamera->PixelSize / pFrame->GetFocalLength();
+            m_sampling = 206.0 * pCamera->PixelSize / pFrame->GetFocalLength();
         }
     }
 }

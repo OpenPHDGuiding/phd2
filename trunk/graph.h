@@ -37,6 +37,12 @@
 
 class GraphControlPane;
 
+enum GRAPH_UNITS
+{
+    UNIT_PIXELS,
+    UNIT_ARCSEC,
+};
+
 // accumulator for trend line calculation
 struct TrendLineAccum
 {
@@ -94,6 +100,7 @@ class GraphLogClientWindow : public wxWindow
 
     int m_length;
     int m_height;
+    GRAPH_UNITS m_heightUnits;
 
     bool m_showTrendlines;
 

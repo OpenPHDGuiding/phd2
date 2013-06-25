@@ -208,7 +208,8 @@ int GraphLogWindow::StringWidth(wxString string)
     return width;
 }
 
-void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt)) {
+void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt))
+{
     wxMouseState mstate = wxGetMouseState();
 
     if (wxGetKeyState(WXK_SHIFT)) {
@@ -264,14 +265,24 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 
 void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
 {
-    m_pClient->m_height *= 2;
-
-    if (m_pClient->m_height > m_pClient->m_maxHeight)
+    if (wxGetKeyState(WXK_SHIFT) && pFrame->GetSampling() != 1.0)
     {
-            m_pClient->m_height = m_pClient->m_minHeight;
+        if (m_pClient->m_heightUnits == UNIT_ARCSEC)
+            m_pClient->m_heightUnits = UNIT_PIXELS;
+        else
+            m_pClient->m_heightUnits = UNIT_ARCSEC;
     }
+    else
+    {
+        m_pClient->m_height *= 2;
 
-    pConfig->SetInt("/graph/height", m_pClient->m_height);
+        if (m_pClient->m_height > m_pClient->m_maxHeight)
+        {
+                m_pClient->m_height = m_pClient->m_minHeight;
+        }
+
+        pConfig->SetInt("/graph/height", m_pClient->m_height);
+    }
 
     UpdateHeightButtonLabel();
     this->Refresh();
@@ -367,7 +378,8 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 void GraphLogWindow::UpdateHeightButtonLabel(void)
 {
     int val = m_pClient->m_height;
-    if (pFrame && pFrame->GetSampling() != 1.0)
+
+    if (pFrame && pFrame->GetSampling() != 1.0 && m_pClient->m_heightUnits == UNIT_ARCSEC)
         val = -val; // <0 indicates arc-sec
 
     if (m_heightButtonLabelVal != val)
@@ -375,12 +387,15 @@ void GraphLogWindow::UpdateHeightButtonLabel(void)
         if (val > 0)
         {
             m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d"), m_pClient->m_height));
-            m_pHeightButton->SetToolTip(_("# of pixels per Y division"));
+            wxString tip(_("Pixels per Y division."));
+            if (pFrame && pFrame->GetSampling() != 1.0)
+                tip += _(" Shift-click to display arc-sec per division.");
+            m_pHeightButton->SetToolTip(tip);
         }
         else
         {
             m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d''"), m_pClient->m_height));
-            m_pHeightButton->SetToolTip(_("# of arc-sec per Y division"));
+            m_pHeightButton->SetToolTip(_("Arc-sec per Y division. Shift-click to display pixels per division."));
         }
         m_heightButtonLabelVal = val;
     }
@@ -413,6 +428,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
 
     m_length = pConfig->GetInt("/graph/length", m_minLength * 2);
     m_height = pConfig->GetInt("/graph/height", m_minHeight);
+    m_heightUnits = UNIT_ARCSEC; // preferred units, will still display pixels if pixel scale ("sampling") not available
 
     m_showTrendlines = false;
 
@@ -696,6 +712,12 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     const int yPixelsPerDivision = size.y/2/(m_yDivisions+1);
 
     const double sampling = pFrame->GetSampling();
+    GRAPH_UNITS units = m_heightUnits;
+    if (sampling == 1.0)
+    {
+        // force units to pixels if pixel scale not available
+        units = UNIT_PIXELS;
+    }
 
     wxPoint *pRaOrDxLine  = NULL;
     wxPoint *pDecOrDyLine = NULL;
@@ -728,25 +750,25 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.SetFont(*wxSWISS_FONT);
 #endif
 
-    for(i=1;i<=m_yDivisions;i++)
+    for (i = 1; i <= m_yDivisions; i++)
     {
         double div_y = center.y-i*yPixelsPerDivision;
         dc.DrawLine(leftEdge,div_y, rightEdge, div_y);
-        dc.DrawText(wxString::Format("%g%s", i * (double)m_height / (m_yDivisions + 1), sampling != 1 ? "''" : ""), leftEdge + 3, div_y - 13);
+        dc.DrawText(wxString::Format("%g%s", i * (double)m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : ""), leftEdge + 3, div_y - 13);
 
         div_y = center.y+i*yPixelsPerDivision;
         dc.DrawLine(leftEdge, div_y, rightEdge, div_y);
-        dc.DrawText(wxString::Format("%g%s", -i * (double)m_height / (m_yDivisions + 1), sampling != 1 ? "''" : ""), leftEdge + 3, div_y - 13);
+        dc.DrawText(wxString::Format("%g%s", -i * (double)m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : ""), leftEdge + 3, div_y - 13);
     }
 
-    for(i=1;i<=xDivisions;i++)
+    for (i = 1; i <= xDivisions; i++)
     {
         dc.DrawLine(center.x-i*xPixelsPerDivision, topEdge, center.x-i*xPixelsPerDivision, bottomEdge);
         dc.DrawLine(center.x+i*xPixelsPerDivision, topEdge, center.x+i*xPixelsPerDivision, bottomEdge);
     }
 
     const double xmag = size.x / (double)m_length;
-    const double ymag = yPixelsPerDivision * (double)(m_yDivisions + 1) / (double)m_height * sampling;
+    const double ymag = yPixelsPerDivision * (double)(m_yDivisions + 1) / (double)m_height * (units == UNIT_ARCSEC ? sampling : 1.0);
 
     ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
 
