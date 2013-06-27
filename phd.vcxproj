@@ -177,6 +177,7 @@
     <ClCompile Include="cam_firewire_IC.cpp" />
     <ClCompile Include="cam_indi.cpp" />
     <ClCompile Include="cam_INovaPLC.cpp" />
+    <ClCompile Include="cam_LELXUSBWebcam.cpp" />
     <ClCompile Include="cam_LEParallelWebcam.cpp" />
     <ClCompile Include="cam_LESerialWebcam.cpp" />
     <ClCompile Include="cam_LEwebcam.cpp" />
@@ -269,6 +270,7 @@
     <ClInclude Include="cam_firewire.h" />
     <ClInclude Include="cam_indi.h" />
     <ClInclude Include="cam_INovaPLC.h" />
+    <ClInclude Include="cam_LELXUSBWebcam.h" />
     <ClInclude Include="cam_LEParallelWebcam.h" />
     <ClInclude Include="cam_LESerialWebcam.h" />
     <ClInclude Include="cam_LEwebcam.h" />
