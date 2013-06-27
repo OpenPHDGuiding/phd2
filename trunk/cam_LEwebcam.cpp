@@ -47,6 +47,7 @@ Camera_LEWebcamClass::Camera_LEWebcamClass(int devNumber)
     : Camera_OpenCVClass(devNumber)
 {
     Name=_T("Generic LE Webcam");
+    readDelay = 0;
 }
 
 Camera_LEWebcamClass::~Camera_LEWebcamClass(void)
@@ -100,7 +101,6 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
         }
 
         int ampOnTime = 250;
-        int readDelay = Delay;
         int ampOffTime = duration - ampOnTime;
 
         if (ampOffTime <= 0)
@@ -121,7 +121,14 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
         // exposure complete - release the frame
         LEControl(LECAMERA_SHUTTER_CLOSED|LECAMERA_AMP_ON|LECAMERA_TRANSFER_FIELD_A|LECAMERA_TRANSFER_FIELD_B);
 
-        // now record it by grabbing three frames
+        // wait the final delay before reading (if there is one)
+        if (readDelay)
+        {
+            Sleep(readDelay);
+        }
+
+        // now record the frame.
+        // Start by grabbing three frames
         Mat frame1;
         pCapDev->read(frame1);
 

@@ -51,7 +51,7 @@ static const double DefaultPixelSize = 0;
 #endif
 
 #if defined (LE_PARALLEL_CAMERA)
- #include "cam_LEwebcam.h"
+ #include "cam_LEParallelwebcam.h"
 #endif
 
 #if defined (LE_LXUSB_CAMERA)
@@ -405,7 +405,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #endif
 #if defined (LE_PARALLEL_CAMERA)
     else if (Choice.Find( _T("Long exposure Parallel webcam")) + 1)
-        pCamera = new Camera_LEwebcamClass();
+        pCamera = new Camera_LEParallelWebcamClass();
 #endif
 #if defined (LE_LXUSB_CAMERA)
     else if (Choice.Find( _T("Long exposure LXUSB webcam")) + 1)
@@ -833,18 +833,6 @@ wxString GuideCamera::GetSettingsSummary() {
     );
 }
 
-//#pragma unmanaged
-void InitCameraParams() {
-#if defined (LE_PARALLEL_CAMERA)
-    Camera_LEwebcamParallel.Port = 0x378;
-    Camera_LEwebcamParallel.Delay = 5;
-    Camera_LEwebcamLXUSB.Port = 0;
-    Camera_LEwebcamLXUSB.Delay = 5;
-    Camera_LEwebcamLXUSB.HasPortNum = false;
-    Camera_LEwebcamLXUSB.Name=_T("Long exposure webcam: LXUSB");
-#endif
-}
-
 #ifndef OPENPHD
 bool DLLExists (wxString DLLName) {
     wxStandardPathsBase& StdPaths = wxStandardPaths::Get();
@@ -858,4 +846,5 @@ bool DLLExists (wxString DLLName) {
         return true;
     return false;
 }
+
 #endif
