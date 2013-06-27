@@ -55,7 +55,7 @@ static const double DefaultPixelSize = 0;
 #endif
 
 #if defined (LE_LXUSB_CAMERA)
- #include "cam_LEwebcam.h"
+ #include "cam_LELXUSBwebcam.h"
 #endif
 
 #if defined (SAC42)
@@ -409,7 +409,7 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
 #endif
 #if defined (LE_LXUSB_CAMERA)
     else if (Choice.Find( _T("Long exposure LXUSB webcam")) + 1)
-        pCamera = new Camera_LEWebcamClass();
+        pCamera = new Camera_LELxUsbWebcamClass();
 #endif
 #if defined (MEADE_DSI)
     else if (Choice.Find(_T("Meade DSI I, II, or III")) + 1)
