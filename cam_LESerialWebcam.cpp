@@ -85,11 +85,6 @@ bool Camera_LESerialWebcamClass::Connect()
 
         pConfig->SetString("/camera/serialLEWebcam/serialport", serialPorts[resp]);
 
-        if (LEControl(LECAMERA_LED_OFF|LECAMERA_SHUTTER_CLOSED|LECAMERA_TRANSFER_FIELD_NONE|LECAMERA_AMP_OFF))
-        {
-            throw ERROR_INFO("LESerialWebcamClass::Connect: LEControl failed");
-        }
-
         if (Camera_OpenCVClass::Connect())
         {
             throw ERROR_INFO("Unable to open base class camera");
@@ -110,10 +105,21 @@ bool Camera_LESerialWebcamClass::Disconnect()
 {
     bool bError = false;
 
-    delete m_pSerialPort;
-    m_pSerialPort = NULL;
+    try
+    {
+        delete m_pSerialPort;
+        m_pSerialPort = NULL;
 
-    bError = Camera_OpenCVClass::Disconnect();
+        if (Camera_LEWebcamClass::Disconnect())
+        {
+            throw ERROR_INFO("Base class Disconnect() failed");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
 
     return bError;
 }

@@ -60,11 +60,12 @@ bool Camera_LEWebcamClass::Connect()
 
     try
     {
+        LEControl(LECAMERA_LED_OFF|LECAMERA_SHUTTER_CLOSED|LECAMERA_TRANSFER_FIELD_NONE|LECAMERA_AMP_OFF);
+
         if (Camera_OpenCVClass::Connect())
         {
             throw ERROR_INFO("Unable to open base class camera");
         }
-        LEControl(LECAMERA_LED_OFF|LECAMERA_SHUTTER_CLOSED|LECAMERA_TRANSFER_FIELD_NONE|LECAMERA_AMP_OFF);
     }
     catch (wxString Msg)
     {
