@@ -1,10 +1,10 @@
 /*
- *  cam_LESerialWebcam.h
+ *  cam_LEParallelWebcam.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2013 Craig Stark.
- *  Ported to PHD2 by Bret McKee.
+ *  Ported to OpenCV by Bret McKee.
  *  Copyright (c) 2013 Bret McKee.
  *  All rights reserved.
  *
@@ -34,39 +34,22 @@
  *
  */
 
-#ifndef CAM_LEWEBCAM_H_INCLUDED
-#define CAM_LEWEBCAM_H_INCLUDED
+#ifndef CAM_LEPARALLELWEBCAM_H_INCLUDED
+#define CAM_LEPARALLELWEBCAM_H_INCLUDED
 
-#include "cam_opencv.h"
+#include "cam_LEWebcam.h"
 
-class Camera_LEWebcamClass : public Camera_OpenCVClass
+class Camera_LEParallelWebcamClass : public Camera_LEWebcamClass
 {
-protected:
-    enum LECAMERA_ACTIONS
-    {
-        LECAMERA_LED_OFF               =   1,
-        LECAMERA_LED_RED               =   2,
-        LECAMERA_LED_GREEN             =   4,
-        LECAMERA_AMP_OFF               =   8,
-        LECAMERA_AMP_ON                =  16,
-        LECAMERA_SHUTTER_CLOSED        =  32,
-        LECAMERA_SHUTTER_OPEN          =  64,
-        LECAMERA_TRANSFER_FIELD_NONE   = 128,
-        LECAMERA_TRANSFER_FIELD_A      = 256,
-        LECAMERA_TRANSFER_FIELD_B      = 512,
-    };
-
-    int readDelay;
-
-public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool    Connect();      // Opens up and connects to cameras
-    virtual bool    Disconnect();
-    virtual void    InitCapture() { return; }
-    Camera_LEWebcamClass(int devNumber);
-    ~Camera_LEWebcamClass(void);
 private:
-    virtual bool LEControl(int actions)=0;
+    virtual bool LEControl(int actions);
+    ParallelPort *m_pParallelPort;
+public:
+    Camera_LEParallelWebcamClass(int devNumber=0);
+    virtual ~Camera_LEParallelWebcamClass(void);
+
+    virtual bool    Connect();
+    virtual bool    Disconnect();
 };
 
-#endif //CAM_LESERIALWEBCAM_H_INCLUDED
+#endif // CAM_LEPARALLELWEBCAM_H_INCLUDED

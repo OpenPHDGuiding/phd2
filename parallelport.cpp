@@ -1,11 +1,9 @@
 /*
- *  cam_LESerialWebcam.h
+ *  parallelport.cpp
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2013 Craig Stark.
- *  Ported to PHD2 by Bret McKee.
- *  Copyright (c) 2013 Bret McKee.
+ *  Created by Bret McKee
+ *  Copyright (c) 2013 Bret McKee
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -16,7 +14,8 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its
+ *     Craig Stark, Stark Labs nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -34,39 +33,54 @@
  *
  */
 
-#ifndef CAM_LEWEBCAM_H_INCLUDED
-#define CAM_LEWEBCAM_H_INCLUDED
+#include "phd.h"
 
-#include "cam_opencv.h"
-
-class Camera_LEWebcamClass : public Camera_OpenCVClass
+ParallelPort::ParallelPort(void)
 {
-protected:
-    enum LECAMERA_ACTIONS
+}
+
+ParallelPort::~ParallelPort(void)
+{
+}
+
+bool ParallelPort::ManipulateByte(BYTE clearBits, BYTE setBits)
+{
+    bool bError = false;
+
+    try
     {
-        LECAMERA_LED_OFF               =   1,
-        LECAMERA_LED_RED               =   2,
-        LECAMERA_LED_GREEN             =   4,
-        LECAMERA_AMP_OFF               =   8,
-        LECAMERA_AMP_ON                =  16,
-        LECAMERA_SHUTTER_CLOSED        =  32,
-        LECAMERA_SHUTTER_OPEN          =  64,
-        LECAMERA_TRANSFER_FIELD_NONE   = 128,
-        LECAMERA_TRANSFER_FIELD_A      = 256,
-        LECAMERA_TRANSFER_FIELD_B      = 512,
-    };
+        BYTE origData;
 
-    int readDelay;
+        if (ReadByte(&origData))
+        {
+            throw ERROR_INFO("ParallelPort: ReadByte failed");
+        }
 
-public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool    Connect();      // Opens up and connects to cameras
-    virtual bool    Disconnect();
-    virtual void    InitCapture() { return; }
-    Camera_LEWebcamClass(int devNumber);
-    ~Camera_LEWebcamClass(void);
-private:
-    virtual bool LEControl(int actions)=0;
-};
+        BYTE data = origData;
 
-#endif //CAM_LESERIALWEBCAM_H_INCLUDED
+        data &= ~clearBits;
+        data |= setBits;
+
+        Debug.AddLine("ParallelPort::ManipulateByte: orig=0x%x clearBits=0x%x setBits=0x%x data=0x%x",
+                origData, clearBits, setBits, data);
+
+        if (WriteByte(data))
+        {
+            throw ERROR_INFO("ParallelPort: ReadByte failed");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+
+    return bError;
+}
+ParallelPort *ParallelPort::ParallelPortFactory(void)
+{
+#if defined(_WINDOWS_)
+    return new ParallelPortWin32();
+#endif
+}

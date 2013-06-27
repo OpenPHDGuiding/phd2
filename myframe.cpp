@@ -232,8 +232,6 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     // Setup some keyboard shortcuts
     SetupKeyboardShortcuts();
 
-    InitCameraParams();
-
     wxSize toolBarSize = MainToolbar->GetClientSize();
     printf("toolBarSize= %dx%d\n",toolBarSize.x, toolBarSize.y);
     m_mgr.AddPane(MainToolbar, wxAuiPaneInfo().

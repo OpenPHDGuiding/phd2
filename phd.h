@@ -145,6 +145,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "guiders.h"
 #include "messagebox_proxy.h"
 #include "serialports.h"
+#include "parallelports.h"
 #include "cameras.h"
 #include "mount.h"
 #include "scopes.h"

@@ -177,6 +177,7 @@
     <ClCompile Include="cam_firewire_IC.cpp" />
     <ClCompile Include="cam_indi.cpp" />
     <ClCompile Include="cam_INovaPLC.cpp" />
+    <ClCompile Include="cam_LEParallelWebcam.cpp" />
     <ClCompile Include="cam_LESerialWebcam.cpp" />
     <ClCompile Include="cam_LEwebcam.cpp" />
     <ClCompile Include="cam_MeadeDSI.cpp" />
@@ -220,6 +221,8 @@
     <ClCompile Include="mount.cpp" />
     <ClCompile Include="myframe.cpp" />
     <ClCompile Include="myframe_events.cpp" />
+    <ClCompile Include="parallelport.cpp" />
+    <ClCompile Include="parallelport_win32.cpp" />
     <ClCompile Include="phd.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -266,6 +269,7 @@
     <ClInclude Include="cam_firewire.h" />
     <ClInclude Include="cam_indi.h" />
     <ClInclude Include="cam_INovaPLC.h" />
+    <ClInclude Include="cam_LEParallelWebcam.h" />
     <ClInclude Include="cam_LESerialWebcam.h" />
     <ClInclude Include="cam_LEwebcam.h" />
     <ClInclude Include="cam_MeadeDSI.h" />
@@ -310,6 +314,9 @@
     <ClInclude Include="messagebox_proxy.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="myframe.h" />
+    <ClInclude Include="parallelport.h" />
+    <ClInclude Include="parallelports.h" />
+    <ClInclude Include="parallelport_win32.h" />
     <ClInclude Include="phd.h" />
     <ClInclude Include="phdconfig.h" />
     <ClInclude Include="point.h" />

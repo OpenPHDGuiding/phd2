@@ -143,7 +143,7 @@ def checkFiles(fileNames):
                     elif stdoutData.startswith(codecs.BOM_UTF8):
                         encoding = "utf-8-sig"
                     else:
-                        encoding = "ascii"
+                        encoding = "Latin-1"
                     #print("checking file {0} bytes={1} encoding={2}".format(fileName, stdoutData[:4], encoding))
                     oldEnding = processFile(io.StringIO(unicode(stdoutData, encoding)))
                     newEnding = processNamedFile(fileName)
@@ -151,7 +151,7 @@ def checkFiles(fileNames):
 
                     invalidEnding = enforcePolicies(newEnding, fileName)
         except Exception as ex:
-            print("caught exception {0} processing file {1}", ex, fileName, file=sys.stderr)
+            print("caught exception {0} processing file {1}".format(ex, fileName), file=sys.stderr)
     return invalidEnding
 
 def checkCommit():

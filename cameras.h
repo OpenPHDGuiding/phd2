@@ -71,7 +71,7 @@
  #define OPENCV_CAMERA
  #define LE_CAMERA
  #define LE_SERIAL_CAMERA
-// #define LE_PARALLEL_CAMERA
+ #define LE_PARALLEL_CAMERA
 // #define LE_LXUSB_CAMERA
 
 #ifdef CLOSED_SOURCE
@@ -98,7 +98,5 @@
 
 extern bool DLLExists (wxString DLLName);
 #endif /* OPENPHD */
-
-extern void InitCameraParams();
 
 #include "camera.h"
