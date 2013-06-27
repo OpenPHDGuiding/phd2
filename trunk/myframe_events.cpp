@@ -43,13 +43,6 @@
 #include <wx/stdpaths.h>
 #include <wx/utils.h>
 
-// Some specific camera includes
-#if defined (__WINDOWS__) && defined (LE_PARALLEL_CAMERA)
-#include "cam_LEwebcam.h"
-extern Camera_LEwebcamClass Camera_LEwebcamParallel;
-extern Camera_LEwebcamClass Camera_LEwebcamLXUSB;
-#endif
-
 void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
 {
     wxString sel = Dur_Choice->GetValue();

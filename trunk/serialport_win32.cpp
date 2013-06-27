@@ -267,4 +267,36 @@ bool SerialPortWin32::Receive(unsigned char *pData, const unsigned count)
     return bError;
 }
 
+bool SerialPortWin32::EscapeFunction(DWORD command)
+{
+    bool bError = false;
+
+    try
+    {
+        Debug.AddLine("EscapeFunction(0x%x)", command);
+
+        if (!EscapeCommFunction(m_handle, command))
+        {
+            throw ERROR_INFO("SerialPortWin32: EscapeCommFunction failed");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool SerialPortWin32::SetRTS(bool asserted)
+{
+    return SerialPortWin32::EscapeFunction(asserted?SETRTS:CLRRTS);
+}
+
+bool SerialPortWin32::SetDTR(bool asserted)
+{
+    return SerialPortWin32::EscapeFunction(asserted?SETDTR:CLRDTR);
+}
+
 #endif // _WINDOWS_

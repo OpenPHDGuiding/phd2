@@ -46,6 +46,10 @@ static const double DefaultPixelSize = 0;
  #include "cam_ATIK16.h"
 #endif
 
+#if defined (LE_SERIAL_CAMERA)
+ #include "cam_LESerialWebcam.h"
+#endif
+
 #if defined (LE_PARALLEL_CAMERA)
  #include "cam_LEwebcam.h"
 #endif
@@ -251,10 +255,13 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     Cameras.Add(_T("Windows VFW-style webcam camera (older & SAC8)"));
 #endif
 #if defined (LE_LXUSB_CAMERA)
-    Cameras.Add(_T("Long exposure webcam + LXUSB"));
+    Cameras.Add(_T("Long exposure LXUSB webcam"));
 #endif
 #if defined (LE_PARALLEL_CAMERA)
-    Cameras.Add(_T("Long exposure webcam + Parallel/Serial"));
+    Cameras.Add(_T("Long exposure Parallel webcam"));
+#endif
+#if defined (LE_SERIAL_CAMERA)
+    Cameras.Add(_T("Long exposure Serial webcam"));
 #endif
 #if defined (INDI_CAMERA)
     Cameras.Add(_T("INDI Camera"));
@@ -392,13 +399,17 @@ void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
     else if (Choice.Find(_T("Windows VFW")) + 1)
         pCamera = new Camera_VFWClass();
 #endif
-#if defined (LE_LXUSB_CAMERA)
-    else if (Choice.Find(_T("Long exposure webcam + LXUSB")) + 1)
-        pCamera = new Camera_LEwebcamClass();
+#if defined (LE_SERIAL_CAMERA)
+    else if (Choice.Find(_T("Long exposure Serial webcam")) + 1)
+        pCamera = new Camera_LESerialWebcamClass();
 #endif
 #if defined (LE_PARALLEL_CAMERA)
-    else if (Choice.Find(_T("Long exposure webcam + Parallel/Serial")) + 1)
+    else if (Choice.Find( _T("Long exposure Parallel webcam")) + 1)
         pCamera = new Camera_LEwebcamClass();
+#endif
+#if defined (LE_LXUSB_CAMERA)
+    else if (Choice.Find( _T("Long exposure LXUSB webcam")) + 1)
+        pCamera = new Camera_LEWebcamClass();
 #endif
 #if defined (MEADE_DSI)
     else if (Choice.Find(_T("Meade DSI I, II, or III")) + 1)
@@ -847,8 +858,4 @@ bool DLLExists (wxString DLLName) {
         return true;
     return false;
 }
-#endif
-
-#ifdef OPENCV_CAMERA
-#include "cam_opencv.h"
 #endif

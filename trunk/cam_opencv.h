@@ -4,6 +4,8 @@
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2013 Craig Stark.
+ *  Ported to PHD2 by Bret McKee.
+ *  Copyright (c) 2013 Bret McKee.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -39,16 +41,16 @@
 #define CAM_OPENCV_H_INCLUDED
 
 class Camera_OpenCVClass : public GuideCamera {
-public:
-    bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();      // Opens up and connects to cameras
-    bool    Disconnect();
-    void    InitCapture() { return; }
-    Camera_OpenCVClass(int devNumber);
-    ~Camera_OpenCVClass(void);
     int     DeviceNum;
-private:
-    cv::VideoCapture *CapDev;
+protected:
+    cv::VideoCapture *pCapDev;
+public:
+    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool    Connect();      // Opens up and connects to cameras
+    virtual bool    Disconnect();
+    virtual void    InitCapture() { return; }
+    Camera_OpenCVClass(int devNumber);
+    virtual ~Camera_OpenCVClass(void);
 };
 
 #endif //CAM_OPENCV_H_INCLUDED
