@@ -41,6 +41,8 @@
 class SerialPortWin32:public SerialPort
 {
     HANDLE m_handle;
+
+    bool SerialPortWin32::EscapeFunction(DWORD command);
 public:
     wxArrayString GetSerialPortList(void);
 
@@ -54,6 +56,9 @@ public:
 
     virtual bool SetReceiveTimeout(int timeoutMs);
     virtual bool Receive(unsigned char *pData, const unsigned count);
+
+    virtual bool SetRTS(bool asserted);
+    virtual bool SetDTR(bool asserted);
 };
 
 #endif // SERIALPORT_WIN32_H_INCLUDED

@@ -47,13 +47,13 @@ Camera_OpenCVClass::Camera_OpenCVClass(int devNumber)
     Name=_T("OpenCV");
     FullSize = wxSize(640,480);
     HasGuiderOutput = false;
-    CapDev = NULL;
+    pCapDev = NULL;
     DeviceNum = devNumber;
 }
 
 Camera_OpenCVClass::~Camera_OpenCVClass(void) {
-    delete CapDev;
-    CapDev = NULL;
+    delete pCapDev;
+    pCapDev = NULL;
 }
 
 bool Camera_OpenCVClass::Connect()
@@ -62,24 +62,24 @@ bool Camera_OpenCVClass::Connect()
 
     try
     {
-        if (!CapDev)
+        if (!pCapDev)
         {
-            CapDev = new VideoCapture(DeviceNum);
+            pCapDev = new VideoCapture(DeviceNum);
         }
 
-        if (!CapDev)
+        if (!pCapDev)
         {
-            throw ERROR_INFO("!CapDev");
+            throw ERROR_INFO("!pCapDev");
         }
 
-        if (!CapDev->isOpened())
+        if (!pCapDev->isOpened())
         {
-            CapDev->open(DeviceNum);
+            pCapDev->open(DeviceNum);
         }
 
-        if (!CapDev->isOpened())
+        if (!pCapDev->isOpened())
         {
-            throw ERROR_INFO("!CapDev->isOpened()");
+            throw ERROR_INFO("!pCapDev->isOpened()");
         }
 
         Connected = TRUE;
@@ -97,9 +97,9 @@ bool Camera_OpenCVClass::Disconnect()
 {
     Connected = FALSE;
 
-    if (CapDev && CapDev->isOpened())
+    if (pCapDev && pCapDev->isOpened())
     {
-        CapDev->release();
+        pCapDev->release();
     }
 
     return false;
@@ -116,18 +116,18 @@ bool Camera_OpenCVClass::Capture(int duration, usImage& img, wxRect subframe, bo
         Mat captured_frame;
         int i, nframes;
 
-        if (!CapDev)
+        if (!pCapDev)
         {
-            throw ERROR_INFO("!CapDev");
+            throw ERROR_INFO("!pCapDev");
         }
 
-        if (!CapDev->isOpened())
+        if (!pCapDev->isOpened())
         {
-            throw ERROR_INFO("!CapDev->isOpened()");
+            throw ERROR_INFO("!pCapDev->isOpened()");
         }
 
         // Grab at least one frame...
-        CapDev->read(captured_frame);
+        pCapDev->read(captured_frame);
         cvtColor(captured_frame,captured_frame,CV_RGB2GRAY);
 
         cv::Size sz = captured_frame.size();
@@ -149,7 +149,7 @@ bool Camera_OpenCVClass::Capture(int duration, usImage& img, wxRect subframe, bo
         while (swatch.Time() < duration)
         {
             nframes++;
-            CapDev->read(captured_frame);
+            pCapDev->read(captured_frame);
             cvtColor(captured_frame,captured_frame,CV_RGB2GRAY);
             dptr = captured_frame.data;
             for (i=0; i<img.NPixels; i++)

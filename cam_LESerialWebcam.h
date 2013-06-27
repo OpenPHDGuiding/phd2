@@ -1,9 +1,11 @@
 /*
- *  serialport.h
+ *  cam_LESerialWebcam.h
  *  PHD Guiding
  *
- *  Created by Bret McKee
- *  Copyright (c) 2013 Bret McKee
+ *  Created by Craig Stark.
+ *  Copyright (c) 2013 Craig Stark.
+ *  Ported to PHD2 by Bret McKee.
+ *  Copyright (c) 2013 Bret McKee.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,8 +16,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its
- *     Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -33,37 +34,22 @@
  *
  */
 
-#ifndef SERIALPORT_H_INCLUDED
-#define SERIALPORT_H_INCLUDED
+#ifndef CAM_LESERIALWEBCAM_H_INCLUDED
+#define CAM_LESERIALWEBCAM_H_INCLUDED
 
-class SerialPort
+#include "cam_LEWebcam.h"
+
+class Camera_LESerialWebcamClass : public Camera_LEWebcamClass
 {
+private:
+    virtual bool LEControl(int actions);
+    SerialPort *m_pSerialPort;
 public:
-    enum PARITY
-    {
-        ParityNone  = 0,
-        ParityOdd   = 1,
-        ParityEven  = 2,
-        ParityMark  = 3,
-        ParitySpace = 4,
-    };
+    Camera_LESerialWebcamClass(int devNumber=0);
+    virtual ~Camera_LESerialWebcamClass(void);
 
-    static SerialPort *SerialPortFactory(void);
-    virtual wxArrayString GetSerialPortList(void) = 0;
-
-    SerialPort(void);
-    virtual ~SerialPort(void);
-
-    virtual bool Connect(wxString portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR) = 0;
-    virtual bool Disconnect(void) = 0;
-
-    virtual bool Send(const unsigned char * const pData, const unsigned count) = 0;
-
-    virtual bool SetReceiveTimeout(int timeoutMs) = 0;
-    virtual bool Receive(unsigned char *pData, const unsigned count) = 0;
-
-    virtual bool SetRTS(bool asserted) = 0;
-    virtual bool SetDTR(bool asserted) = 0;
+    virtual bool    Connect();
+    virtual bool    Disconnect();
 };
 
-#endif // SERIALPORT_H_INCLUDED
+#endif //CAM_LESERIALWEBCAM_H_INCLUDED

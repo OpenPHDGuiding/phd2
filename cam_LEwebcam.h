@@ -1,9 +1,11 @@
 /*
- *  cam_LEwebcam.h
+ *  cam_LESerialWebcam.h
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2013 Craig Stark.
+ *  Ported to PHD2 by Bret McKee.
+ *  Copyright (c) 2013 Bret McKee.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,26 +33,38 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef LEWEBDEF
-#define LEWEBDEF
-#include "vcapwin.h"
-#include <wx/splitter.h>
 
-class Camera_LEwebcamClass : public GuideCamera {
+#ifndef CAM_LEWEBCAM_H_INCLUDED
+#define CAM_LEWEBCAM_H_INCLUDED
+
+#include "cam_opencv.h"
+
+class Camera_LEWebcamClass : public Camera_OpenCVClass
+{
+protected:
+    enum LECAMERA_ACTIONS
+    {
+        LECAMERA_LED_OFF               =   1,
+        LECAMERA_LED_RED               =   2,
+        LECAMERA_LED_GREEN             =   4,
+        LECAMERA_AMP_OFF               =   8,
+        LECAMERA_AMP_ON                =  16,
+        LECAMERA_SHUTTER_CLOSED        =  32,
+        LECAMERA_SHUTTER_OPEN          =  64,
+        LECAMERA_TRANSFER_FIELD_NONE   = 128,
+        LECAMERA_TRANSFER_FIELD_A      = 256,
+        LECAMERA_TRANSFER_FIELD_B      = 512,
+    };
+
 public:
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    ShowPropertyDialog();
-    void    InitCapture() { return; }
-    Camera_LEwebcamClass();
+    virtual bool    Connect();      // Opens up and connects to cameras
+    virtual bool    Disconnect();
+    virtual void    InitCapture() { return; }
+    Camera_LEWebcamClass(int devNumber);
+    ~Camera_LEWebcamClass(void);
 private:
-    wxVideoCaptureWindow *VFW_Window;
-    wxSplitterWindow    *Extra_Window;
-    DCB dcb;
-    HANDLE hCom;
-    short LastPort;
-    bool    ChangePorts();
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+    virtual bool LEControl(int actions)=0;
 };
-#endif
+
+#endif //CAM_LESERIALWEBCAM_H_INCLUDED
