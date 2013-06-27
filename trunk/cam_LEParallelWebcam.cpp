@@ -90,14 +90,9 @@ bool Camera_LEParallelWebcamClass::Connect()
 
         pConfig->SetString("/camera/parallelLEWebcam/parallelport", parallelPorts[resp]);
 
-        if (LEControl(LECAMERA_LED_OFF|LECAMERA_SHUTTER_CLOSED|LECAMERA_TRANSFER_FIELD_NONE|LECAMERA_AMP_OFF))
+        if (Camera_LEWebcamClass::Connect())
         {
-            throw ERROR_INFO("LEParallelWebcamClass::Connect: LEControl failed");
-        }
-
-        if (Camera_OpenCVClass::Connect())
-        {
-            throw ERROR_INFO("Unable to open base class camera");
+            throw ERROR_INFO("base class Connect() failed");
         }
     }
     catch (wxString Msg)
@@ -115,10 +110,21 @@ bool Camera_LEParallelWebcamClass::Disconnect()
 {
     bool bError = false;
 
-    delete m_pParallelPort;
-    m_pParallelPort = NULL;
+    try
+    {
+        delete m_pParallelPort;
+        m_pParallelPort = NULL;
 
-    bError = Camera_OpenCVClass::Disconnect();
+        if (Camera_LEWebcamClass::Disconnect())
+        {
+            throw ERROR_INFO("Base class Disconnect() failed");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
 
     return bError;
 }
