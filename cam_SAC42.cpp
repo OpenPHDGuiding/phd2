@@ -149,7 +149,7 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
         }
     }
     // Do quick L recon to remove bayer array
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
     if (ColorArray && recon) QuickLRecon(img);
 
     delete[] buffer;

@@ -138,7 +138,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         wxGetApp().Yield();
     }
 
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
     if (recon) {
         QuickLRecon(img);
         if (MeadeCam->IsDsiII)

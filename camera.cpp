@@ -155,7 +155,7 @@ extern "C" {
 
 GuideCamera::GuideCamera(void)
 {
-    Connected = FALSE;
+    Connected = false;
     Name=_T("");
     HasGuiderOutput = false;
     HasPropertyDialog = false;
@@ -167,13 +167,17 @@ GuideCamera::GuideCamera(void)
     HasSubframes=false;
     UseSubframes = pConfig->GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
 
-    HaveDark = false;
-    DarkDur = 0;
+    CurrentDarkFrame = NULL;
 
     int cameraGain = pConfig->GetInt("/camera/gain", DefaultGuideCameraGain);
     SetCameraGain(cameraGain);
     double pixelSize = pConfig->GetDouble("/camera/pixelsize", DefaultPixelSize);
     SetCameraPixelSize(pixelSize);
+}
+
+GuideCamera::~GuideCamera(void)
+{
+    ClearDarks();
 }
 
 void MyFrame::OnConnectCamera(wxCommandEvent& WXUNUSED(evt)) {
@@ -822,15 +826,79 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
     m_pCamera->SetCameraPixelSize(pixel_size);
 }
 
-wxString GuideCamera::GetSettingsSummary() {
+wxString GuideCamera::GetSettingsSummary()
+{
+    int darkDur;
+    { // lock scope
+        wxCriticalSectionLocker lck(DarkFrameLock);
+        darkDur = CurrentDarkFrame ? CurrentDarkFrame->ImgExpDur : 0;
+    } // lock scope
+
     // return a loggable summary of current camera settings
     return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s\n",
         Name, GuideCameraGain,
         HasDelayParam ? wxString::Format(", delay = %d", Delay) : "",
         HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "",
         FullSize.GetWidth(), FullSize.GetHeight(),
-        HaveDark ? wxString::Format("have dark, dark dur = %d", DarkDur) : "no dark"
-    );
+        darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark");
+}
+
+void GuideCamera::AddDark(usImage *dark)
+{
+    int const expdur = dark->ImgExpDur;
+
+    { // lock scope
+        wxCriticalSectionLocker lck(DarkFrameLock);
+
+        // free the prior dark with this exposure duration
+        ExposureImgMap::iterator pos = Darks.find(expdur);
+        if (pos != Darks.end())
+        {
+            usImage *prior = pos->second;
+            if (prior == CurrentDarkFrame)
+                CurrentDarkFrame = dark;
+            delete prior;
+        }
+
+    } // lock scope
+
+    Darks[expdur] = dark;
+}
+
+void GuideCamera::SelectDark(int exposureDuration)
+{
+    // select the dark frame with the smallest exposure >= the requested exposure.
+    // if there are no darks with exposures > the select exposure, select the dark with the greatest exposure
+    wxCriticalSectionLocker lck(DarkFrameLock);
+    CurrentDarkFrame = NULL;
+    for (ExposureImgMap::const_iterator it = Darks.begin(); it != Darks.end(); ++it)
+    {
+        CurrentDarkFrame = it->second;
+        if (it->first >= exposureDuration)
+            break;
+    }
+}
+
+void GuideCamera::ClearDarks()
+{
+    wxCriticalSectionLocker lck(DarkFrameLock);
+    while (!Darks.empty())
+    {
+        ExposureImgMap::iterator it = Darks.begin();
+        delete it->second;
+        Darks.erase(it);
+    }
+    CurrentDarkFrame = NULL;
+}
+
+void GuideCamera::SubtractDark(usImage& img)
+{
+    // dark subtraction is done in the camera worker thread, so we need to acquire the
+    // DarkFrameLock to protect against the dark frame disappearing when the main
+    // thread does "Load Darks" or "Clear Darks"
+    wxCriticalSectionLocker lck(DarkFrameLock);
+    if (CurrentDarkFrame)
+        Subtract(img, *CurrentDarkFrame);
 }
 
 #ifndef OPENPHD

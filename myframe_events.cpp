@@ -34,14 +34,16 @@
 
 #include "phd.h"
 #include "about_dialog.h"
+#include "image_math.h"
 
 #include <wx/spinctrl.h>
 #include <wx/textfile.h>
-#include "image_math.h"
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include <wx/stdpaths.h>
 #include <wx/utils.h>
+
+#include <fitsio.h>
 
 void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
 {
@@ -50,15 +52,22 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
 
     pConfig->SetString("/ExposureDuration", sel);
 
-    if (pCamera && pCamera->HaveDark) {
-        if (pCamera->DarkDur != m_exposureDuration)
+    if (pCamera)
+    {
+        // select the best matching dark frame
+        pCamera->SelectDark(m_exposureDuration);
+
+        if (pCamera->CurrentDarkFrame)
         {
-            Dark_Button->SetBackgroundColour(wxColor(255,0,0));
-            Dark_Button->SetForegroundColour(wxColour(0,0,0));
-        }
-        else
-        {
-            Dark_Button->SetBackgroundColour(wxNullColour);
+            if (pCamera->CurrentDarkFrame->ImgExpDur != m_exposureDuration)
+            {
+                Dark_Button->SetBackgroundColour(wxColor(255,0,0));
+                Dark_Button->SetForegroundColour(wxColour(0,0,0));
+            }
+            else
+            {
+                Dark_Button->SetBackgroundColour(wxNullColour);
+            }
         }
     }
 }
@@ -107,7 +116,8 @@ void MyFrame::OnOverlay(wxCommandEvent &evt) {
     pGuider->SetOverlayMode(evt.GetId() - MENU_XHAIR0);
 }
 
-void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
+void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
+{
     if (CaptureActive) return;  // Looping an exposure already
     wxString fname = wxFileSelector( _("Save FITS Image"), (const wxChar *)NULL,
                           (const wxChar *)NULL,
@@ -124,47 +134,188 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
     }
 }
 
-void MyFrame::OnLoadSaveDark(wxCommandEvent &evt) {
+static bool save_multi(const ExposureImgMap& darks, const wxString& fname)
+{
+    bool bError = false;
+
+    try
+    {
+        fitsfile *fptr;  // FITS file pointer
+        int status = 0;  // CFITSIO status value MUST be initialized to zero!
+        fits_create_file(&fptr, (const char*) fname.mb_str(wxConvUTF8), &status);
+
+        for (ExposureImgMap::const_iterator it = darks.begin(); it != darks.end(); ++it)
+        {
+            const usImage *const img = it->second;
+            long fpixel[3] = {1,1,1};
+            long fsize[] = {
+                (long) img->Size.GetWidth(),
+                (long) img->Size.GetHeight(),
+            };
+            if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
+
+            float exposure = (float) img->ImgExpDur / 1000.0;
+            char keyname[] = "EXPOSURE";
+            char comment[] = "Exposure time in seconds";
+            if (!status) fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
+            if (!status) fits_write_pix(fptr, TUSHORT, fpixel, img->NPixels, img->ImageData, &status);
+            Debug.AddLine("saving dark frame exposure = %d", img->ImgExpDur);
+        }
+
+        fits_close_file(fptr, &status);
+        bError = status ? true : false;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+static bool load_multi(GuideCamera *camera, const wxString& fname)
+{
+    bool bError = false;
+    fitsfile *fptr = 0;
+    int status = 0;  // CFITSIO status value MUST be initialized to zero!
+
+    try
+    {
+        if (!wxFileExists(fname)) {
+            wxMessageBox(_("File does not exist - cannot load"));
+            throw ERROR_INFO("File does not exist");
+        }
+
+        if (fits_open_diskfile(&fptr, (const char*) fname.c_str(), READONLY, &status) == 0)
+        {
+            int nhdus = 0;
+            fits_get_num_hdus(fptr, &nhdus, &status);
+
+            while (true)
+            {
+                int hdutype;
+                fits_get_hdu_type(fptr, &hdutype, &status);
+                if (hdutype != IMAGE_HDU)
+                {
+                    (void) wxMessageBox(wxT("FITS file is not of an image"), _("Error"),wxOK | wxICON_ERROR);
+                    throw ERROR_INFO("Fits file is not an image");
+                }
+
+                int naxis;
+                fits_get_img_dim(fptr, &naxis, &status);
+                if (naxis != 2)
+                {
+                    (void) wxMessageBox( _T("Unsupported type or read error loading FITS file") ,_("Error"),wxOK | wxICON_ERROR);
+                    throw ERROR_INFO("unsupported type");
+                }
+
+                long fsize[2];
+                fits_get_img_size(fptr, 2, fsize, &status);
+
+                std::auto_ptr<usImage> img(new usImage());
+
+                if (img->Init((int) fsize[0], (int) fsize[1]))
+                {
+                    wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+                    throw ERROR_INFO("Memory Allocation failure");
+                }
+
+                long fpixel[] = { 1, 1, 1 };
+                if (fits_read_pix(fptr, TUSHORT, fpixel, fsize[0] * fsize[1], NULL, img->ImageData, NULL, &status))
+                {
+                    (void) wxMessageBox(_T("Error reading data"), _("Error"),wxOK | wxICON_ERROR);
+                    throw ERROR_INFO("Error reading");
+                }
+
+                char keyname[] = "EXPOSURE";
+                float exposure;
+                if (fits_read_key(fptr, TFLOAT, keyname, &exposure, NULL, &status))
+                {
+                    exposure = (float) pFrame->RequestedExposureDuration() / 1000.0;
+                    Debug.AddLine("missing EXPOSURE value, assume %.3f", exposure);
+                    status = 0;
+                }
+                img->ImgExpDur = (int) (exposure * 1000.0);
+
+                Debug.AddLine("loaded dark frame exposure = %d", img->ImgExpDur);
+                camera->AddDark(img.release());
+
+                // if this is the last hdu, we are done
+                int hdunr = 0;
+                fits_get_hdu_num(fptr, &hdunr);
+                if (status || hdunr >= nhdus)
+                    break;
+
+                // move to the next hdu
+                fits_movrel_hdu(fptr, +1, NULL, &status);
+            }
+        }
+        else
+        {
+            wxMessageBox(_T("Error opening FITS file"));
+            throw ERROR_INFO("error opening file");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    if (fptr) fits_close_file(fptr, &status);
+
+    return bError;
+}
+
+void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
+{
     wxString fname;
 
-    if (evt.GetId() == MENU_SAVEDARK) {
-        if (!pCamera || !pCamera->HaveDark) {
-            wxMessageBox(_("You haven't captured a dark frame - nothing to save"));
+    if (evt.GetId() == MENU_SAVEDARK)
+    {
+        if (!pCamera || pCamera->Darks.empty()) {
+            wxMessageBox(_("You haven't captured any dark frames - nothing to save"));
             return;
         }
-        fname = wxFileSelector( _("Save dark (FITS Image)"), (const wxChar *)NULL,
-                                        (const wxChar *)NULL,
-                                        wxT("fit"), wxT("FITS files (*.fit)|*.fit"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+        wxString default_path = pConfig->GetString("/darkFilePath", wxEmptyString);
+        fname = wxFileSelector( _("Save darks (FITS Image)"), default_path,
+                                wxEmptyString, wxT("fit"),
+                                wxT("FITS files (*.fit)|*.fit"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
         if (fname.IsEmpty()) return;  // Check for canceled dialog
+        pConfig->SetString("/darkFilePath", wxFileName(fname).GetPath());
         if (!fname.EndsWith(_T(".fit"))) fname.Append(_T(".fit"));
         if (wxFileExists(fname))
             fname = _T("!") + fname;
-        if (pCamera->CurrentDarkFrame.Save(fname))
+        if (save_multi(pCamera->Darks, fname))
         {
             wxMessageBox (_("Error saving FITS file"));
         }
     }
-    else if (evt.GetId() == MENU_LOADDARK) {
+    else if (evt.GetId() == MENU_LOADDARK)
+    {
         if (!pCamera || !pCamera->Connected)
         {
-            wxMessageBox(_("You must connect a camera before loading a dark"));
+            wxMessageBox(_("You must connect a camera before loading dark frames"));
             return;
         }
-        fname = wxFileSelector( _("Load dark (FITS Image)"), (const wxChar *)NULL,
+        wxString default_path = pConfig->GetString("/darkFilePath", wxEmptyString);
+        fname = wxFileSelector( _("Load darks (FITS Image)"), default_path,
                                (const wxChar *)NULL,
                                wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_CHANGE_DIR);
         if (fname.IsEmpty()) return;  // Check for canceled dialog
+        pConfig->SetString("/darkFilePath", wxFileName(fname).GetPath());
 
-        if (pCamera->CurrentDarkFrame.Load(fname))
+        if (load_multi(pCamera, fname))
         {
-            SetStatusText(_("Dark not loaded"));
+            SetStatusText(_("Darks not loaded"));
         }
         else
         {
-            pCamera->HaveDark = true;
-            tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
+            pCamera->SelectDark(m_exposureDuration);
+            tools_menu->FindItem(MENU_CLEARDARK)->Enable(true);
             Dark_Button->SetLabel(_("Redo Dark"));
-            SetStatusText(_("Dark loaded"));
+            SetStatusText(_("Darks loaded"));
         }
     }
 }
@@ -336,7 +487,8 @@ void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event))
     pGuider->UpdateImageDisplay();
 }
 
-void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
+void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
+{
     int ExpDur = RequestedExposureDuration();
     if (pGuider->GetState() > STATE_SELECTED) return;
     if (!pCamera || !pCamera->Connected) {
@@ -353,56 +505,65 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event)) {
     else
         wxMessageBox(_("Cover guide scope"));
     pCamera->InitCapture();
-    if (pCamera->Capture(ExpDur, pCamera->CurrentDarkFrame, false)) {
+    std::auto_ptr<usImage> darkFrame(new usImage());
+    darkFrame->ImgExpDur = ExpDur;
+    if (pCamera->Capture(ExpDur, *darkFrame, false))
+    {
         wxMessageBox(_("Error capturing dark frame"));
-        pCamera->HaveDark = false;
-        SetStatusText(wxString::Format(_T("%.1f s dark FAILED"),(float) ExpDur / 1000.0));
+        SetStatusText(wxString::Format(_T("%.1f s dark FAILED"), (double) ExpDur / 1000.0));
         Dark_Button->SetLabel(_T("Take Dark"));
-        pCamera->ShutterState=false;
+        pCamera->ShutterState = false;
     }
-    else {
-        SetStatusText(wxString::Format(_T("%.1f s dark #1 captured"),(float) ExpDur / 1000.0));
-        int *avgimg = new int[pCamera->CurrentDarkFrame.NPixels];
+    else
+    {
+        SetStatusText(wxString::Format(_T("%.1f s dark #1 captured"), (double) ExpDur / 1000.0));
+        int *avgimg = new int[darkFrame->NPixels];
         int i, j;
         int *iptr = avgimg;
-        unsigned short *usptr = pCamera->CurrentDarkFrame.ImageData;
-        for (i=0; i<pCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
+        unsigned short *usptr = darkFrame->ImageData;
+        for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
             *iptr = (int) *usptr;
-        for (j=1; j<NDarks; j++) {
-            pCamera->Capture(ExpDur, pCamera->CurrentDarkFrame, false);
+        for (j = 1; j < NDarks; j++) {
+            pCamera->Capture(ExpDur, *darkFrame, false);
             iptr = avgimg;
-            usptr = pCamera->CurrentDarkFrame.ImageData;
-            for (i=0; i<pCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
+            usptr = darkFrame->ImageData;
+            for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
                 *iptr = *iptr + (int) *usptr;
-            SetStatusText(wxString::Format(_T("%.1f s dark #%d captured"),(float) ExpDur / 1000.0,j+1));
+            SetStatusText(wxString::Format(_T("%.1f s dark #%d captured"), (double) ExpDur / 1000.0, j + 1));
         }
         iptr = avgimg;
-        usptr = pCamera->CurrentDarkFrame.ImageData;
-        for (i=0; i<pCamera->CurrentDarkFrame.NPixels; i++, iptr++, usptr++)
+        usptr = darkFrame->ImageData;
+        for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
             *usptr = (unsigned short) (*iptr / NDarks);
 
+        delete[] avgimg;
 
         Dark_Button->SetLabel(_("Redo Dark"));
-        pCamera->HaveDark = true;
-        pCamera->DarkDur = ExpDur;
+        Dark_Button->SetBackgroundColour(wxNullColour);
+
+        pCamera->AddDark(darkFrame.release());
+        pCamera->SelectDark(ExpDur);
+        assert(pCamera->CurrentDarkFrame->ImgExpDur == ExpDur);
     }
     SetStatusText(_("Darks done"));
     if (pCamera->HasShutter)
-        pCamera->ShutterState=false; // Lights
+        pCamera->ShutterState = false; // Lights
     else
         wxMessageBox(_("Uncover guide scope"));
-    tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
+    tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->CurrentDarkFrame ? true : false);
 }
 
-void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt)) {
-    if (!pCamera->HaveDark) return;
+void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt))
+{
+    if (!pCamera->CurrentDarkFrame) return;
     Dark_Button->SetLabel(_("Take Dark"));
     Dark_Button->SetForegroundColour(wxColour(0,0,0));
-    pCamera->HaveDark = false;
-    tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->HaveDark);
+    pCamera->ClearDarks();
+    tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
 }
 
-void MyFrame::OnToolBar(wxCommandEvent &evt) {
+void MyFrame::OnToolBar(wxCommandEvent &evt)
+{
     if (evt.IsChecked())
     {
         //wxSize toolBarSize = MainToolbar->GetSize();
@@ -615,7 +776,8 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
     }
 }
 
-void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
+void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
+{
     try
     {
         if (pMount == NULL)

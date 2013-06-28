@@ -53,7 +53,7 @@ public:
     bool                BinnedCopyToImage(wxImage **img, int blevel, int wlevel, double power); // Does 2x2 bin during copy
     bool                CopyFromImage(const wxImage &img);
     bool                Clean();
-    usImage() { Min=Max=FiltMin=FiltMax= 0; NPixels = 0; ImageData = NULL; ImgStartDate=_T(""); ImgExpDur = 0.0;}
+    usImage() { Min=Max=FiltMin=FiltMax= 0; NPixels = 0; ImageData = NULL; ImgStartDate=_T(""); ImgExpDur = 0;}
     ~usImage() {delete[] ImageData; }
     bool                Load(const wxString& fname);
     bool                Save(const wxString& fname);

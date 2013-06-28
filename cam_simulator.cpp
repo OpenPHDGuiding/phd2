@@ -526,8 +526,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     if (usingSubframe)
         img.Subframe = subframe;
 
-    if (HaveDark && recon)
-        Subtract(img, CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
     long long now = wxGetUTCTimeMillis().GetValue();
     if (now < start + duration)

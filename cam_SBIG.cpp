@@ -418,7 +418,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     }
 
 
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
     //QuickLRecon(img);  // pass 2x2 mean filter over it to help remove noise
 

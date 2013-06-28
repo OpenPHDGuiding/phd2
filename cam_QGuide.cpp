@@ -194,7 +194,7 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
 */
     dptr = img.ImageData;
     GETBUFFER(dptr,img.NPixels*2);
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
 /*  bptr = buffer;
     for (i=0; i<img.NPixels; i++,dptr++, bptr++) {

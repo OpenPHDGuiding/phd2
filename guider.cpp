@@ -205,8 +205,8 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
                                     xScaleFactor :
                                     yScaleFactor;
 
-            Debug.AddLine("xScaleFactor=%.2f, yScaleFactor=%.2f, newScaleFactor=%.2f", xScaleFactor,
-                    yScaleFactor, newScaleFactor);
+//            Debug.AddLine("xScaleFactor=%.2f, yScaleFactor=%.2f, newScaleFactor=%.2f", xScaleFactor,
+//                    yScaleFactor, newScaleFactor);
 
             // we rescale the image if:
             // - The image is either too big

@@ -159,7 +159,7 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 */
     dptr = img.ImageData;
     _SSAG_GETBUFFER(dptr,img.NPixels*2);
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
 /*  bptr = buffer;
     for (i=0; i<img.NPixels; i++,dptr++, bptr++) {

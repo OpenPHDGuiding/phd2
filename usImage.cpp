@@ -320,7 +320,7 @@ bool usImage::Load(const wxString& fname)
                 wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
                 throw ERROR_INFO("Memory Allocation failure");
             }
-            if (fits_read_pix(fptr, TUSHORT, fpixel, (int) fsize[0]*(int) fsize[1], NULL, pCamera->CurrentDarkFrame.ImageData, NULL, &status) ) { // Read image
+            if (fits_read_pix(fptr, TUSHORT, fpixel, (int) (fsize[0] * fsize[1]), NULL, ImageData, NULL, &status) ) { // Read image
                 (void) wxMessageBox(_T("Error reading data"), _("Error"),wxOK | wxICON_ERROR);
                 throw ERROR_INFO("Error reading");
             }

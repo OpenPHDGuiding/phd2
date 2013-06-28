@@ -69,6 +69,7 @@
 
 #include <wx/aui/aui.h>
 
+#include <map>
 #include <math.h>
 
 #define VERSION _T("2.0.4")

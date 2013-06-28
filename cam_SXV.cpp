@@ -400,7 +400,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         }
     }
 
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
     if (recon) QuickLRecon(img);  // pass 2x2 mean filter over it to help remove noise
 
     if (CCDParams.pix_width != CCDParams.pix_height)

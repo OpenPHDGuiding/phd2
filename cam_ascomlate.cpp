@@ -612,7 +612,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         debugstr.Sync();
     }
 
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
     if (Color)
         QuickLRecon(img);
 

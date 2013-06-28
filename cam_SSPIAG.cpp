@@ -373,7 +373,7 @@ bool Camera_SSPIAGClass::Capture(int duration, usImage& img, wxRect subframe, bo
         }
     }
 
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
     // Do quick L recon to remove bayer array
     QuickLRecon(img);
