@@ -292,7 +292,7 @@ bool Camera_QHY5IIClass::Capture(int duration, usImage& img, wxRect subframe, bo
         }
     }
 
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
     return false;
 }

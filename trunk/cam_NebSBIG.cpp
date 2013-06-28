@@ -68,7 +68,7 @@ bool Camera_NebSBIGClass::Capture(int duration, usImage& img, wxRect subframe, b
         return true;
     }
     bool retval = ServerReqFrame(duration, img);
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
     return retval;
 

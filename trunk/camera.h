@@ -35,6 +35,8 @@
 #ifndef CAMERA_H_INCLUDED
 #define CAMERA_H_INCLUDED
 
+typedef std::map<int, usImage *> ExposureImgMap; // map exposure to image
+
 class GuideCamera :  public wxMessageBoxProxy
 {
 protected:
@@ -79,9 +81,9 @@ public:
     bool            UseSubframes;
     double          PixelSize;
 
-    bool            HaveDark;
-    int             DarkDur;
-    usImage         CurrentDarkFrame;
+    wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
+    usImage         *CurrentDarkFrame;
+    ExposureImgMap  Darks; // map exposure => dark frame
 
     virtual bool HasNonGuiCapture(void) { return false; }
 
@@ -101,8 +103,14 @@ public:
 
     virtual wxString GetSettingsSummary();
 
+    void            AddDark(usImage *dark);
+    void            SelectDark(int exposureDuration);
+    void            ClearDarks(void);
+
+    void            SubtractDark(usImage& img);
+
     GuideCamera(void);
-    virtual ~GuideCamera(void) {};
+    virtual ~GuideCamera(void);
 };
 
 #endif /* CAMERA_H_INCLUDED */

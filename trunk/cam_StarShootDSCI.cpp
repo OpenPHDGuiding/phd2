@@ -177,9 +177,8 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     rawptr2 = img.ImageData;
     for (i=0; i<img.NPixels; i++, rawptr++, rawptr2++) {
         *rawptr2 = *rawptr;
-
     }
-    if (HaveDark) Subtract(img,CurrentDarkFrame);
+    SubtractDark(img);
     QuickLRecon(img);
     SquarePixels(img,XPixelSize,YPixelSize);
     return false;

@@ -254,7 +254,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
 
 
     // Do quick L recon to remove bayer array
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
     if (Color && recon) QuickLRecon(img);
 //  RemoveLines(img);
     return false;

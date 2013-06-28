@@ -243,7 +243,7 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool 
      WDM_Stack_Mode = false;
   //  VidCap->Stop();       // Stop it
     pFrame->SetStatusText(wxString::Format("%d frames",NFrames),1);
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
     return false;
 }
 

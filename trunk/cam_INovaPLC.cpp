@@ -145,7 +145,7 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
         img.ImageData[i] = (RawData[i]>> 8) | (RawData[i] << 8);
     }
 
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
     return false;
 }

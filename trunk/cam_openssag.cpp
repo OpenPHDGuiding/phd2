@@ -118,7 +118,7 @@ bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, 
 
     ssag->FreeRawImage(raw);
 
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
     return false;
 }

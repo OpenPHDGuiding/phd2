@@ -175,7 +175,7 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
         if (debug) wxMessageBox(wxString::Format("Err 3 %d",rval));
         //return true;
     }*/
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
     if (recon) QuickLRecon(img);  // pass 2x2 mean filter over it to help remove noise
 
     return false;

@@ -95,8 +95,7 @@ bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subf
     dataptr = img.ImageData;
     // byte swap
 
-
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
     if (Color)
         QuickLRecon(img);
 

@@ -155,7 +155,7 @@ bool Camera_VFWClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         if ((swatch.Time() >= duration) && (NFrames > 2)) still_going=false;
     }
     pFrame->SetStatusText(wxString::Format("%d frames",NFrames),1);
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
     return false;
 }
 

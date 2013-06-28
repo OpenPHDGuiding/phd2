@@ -371,9 +371,9 @@ void MyFrame::SetupMenuBar(void)
 {
     wxMenu *file_menu = new wxMenu;
     file_menu->AppendSeparator();
-    file_menu->Append(MENU_LOADDARK, _("Load dark"), _("Load dark frame"));
-    file_menu->Append(MENU_SAVEDARK, _("Save dark"), _("Save dark frame"));
-    file_menu->Append(wxID_SAVE, _("Save image"), _("Save current image"));
+    file_menu->Append(MENU_LOADDARK, _("Load Dark Frames"), _("Load dark frames"));
+    file_menu->Append(MENU_SAVEDARK, _("Save Dark Frames"), _("Save dark frames"));
+    file_menu->Append(wxID_SAVE, _("Save Image"), _("Save current image"));
     file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
 
     mount_menu = new wxMenu;
@@ -451,28 +451,28 @@ void MyFrame::SetupMenuBar(void)
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
-    tools_menu->Append(MENU_CLEARDARK, _("&Erase Dark Frame"), _("Erase / clear out dark frame"));
+    tools_menu->Append(MENU_CLEARDARK, _("&Clear Dark Frames"), _("Erase / clear out dark frames"));
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
     tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
-    tools_menu->Append(EEGG_MANUALCAL, _("Enter calibration data"), _("Manually calibrate"));
-    tools_menu->Append(EEGG_FLIPRACAL, _("Flip calibration data"), _("Flip RA calibration vector"));
-    tools_menu->Append(EEGG_MANUALLOCK, _("Enter manual lock position"), _("Give manual lock position"));
+    tools_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data"), _("Manually calibrate"));
+    tools_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
+    tools_menu->Append(EEGG_MANUALLOCK, _("Enter Manual Lock Position"), _("Give manual lock position"));
 //  tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
-    tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image logging"),_("Enable / disable logging of star images"));
+    tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image Logging"),_("Enable / disable logging of star images"));
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable / disable link to Nebulosity"));
-    tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug logging"),_("Enable / disable debug log file"));
-    tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky lock position"),_("Keep the same lock position when guiding starts"));
+    tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug Logging"),_("Enable / disable debug log file"));
+    tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky Lock Position"),_("Keep the same lock position when guiding starts"));
 
     view_menu = new wxMenu();
-    view_menu->AppendCheckItem(MENU_TOOLBAR,_("Display Tool bar"),_("Enable / disable tool bar"));
+    view_menu->AppendCheckItem(MENU_TOOLBAR,_("Display Toolbar"),_("Enable / disable tool bar"));
     view_menu->AppendCheckItem(MENU_GRAPH,_("Display Graph"),_("Enable / disable graph"));
     view_menu->AppendCheckItem(MENU_AO_GRAPH,_("Display AO Graph"),_("Enable / disable AO graph"));
     view_menu->AppendCheckItem(MENU_TARGET,_("Display Target"),_("Enable / disable target"));
-    view_menu->AppendCheckItem(MENU_STARPROFILE,_("Display Star profile"),_("Enable / disable star profile view"));
+    view_menu->AppendCheckItem(MENU_STARPROFILE,_("Display Star Profile"),_("Enable / disable star profile view"));
     view_menu->AppendSeparator();
-    view_menu->AppendRadioItem(MENU_XHAIR0, _("No overlay"),_("No additional crosshairs"));
+    view_menu->AppendRadioItem(MENU_XHAIR0, _("No Overlay"),_("No additional crosshairs"));
     view_menu->AppendRadioItem(MENU_XHAIR1, _("Bullseye"),_("Centered bullseye overlay"));
     view_menu->AppendRadioItem(MENU_XHAIR2, _("Fine Grid"),_("Grid overlay"));
     view_menu->AppendRadioItem(MENU_XHAIR3, _("Coarse Grid"),_("Grid overlay"));
@@ -519,7 +519,7 @@ void MyFrame::SetupMenuBar(void)
     donate_menu->Append(DONATE1, _("Donate $10"), _("Donate $10 for PHD Guiding"));
     donate_menu->Append(DONATE2, _("Donate $25"), _("Donate $25 for PHD Guiding"));
     donate_menu->Append(DONATE3, _("Donate $50"), _("Donate $50 for PHD Guiding"));
-    donate_menu->Append(DONATE4, _("Donate other"), _("Donate a value of your own choosing for PHD Guiding"));
+    donate_menu->Append(DONATE4, _("Donate Other"), _("Donate a value of your own choosing for PHD Guiding"));
     Menubar->Append(donate_menu, _("   &Donate!   "));
 #endif
     SetMenuBar(Menubar);
@@ -634,7 +634,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddTool(BUTTON_SCOPE, _("Telescope"), scope_bmp, _("Connect to mount(s)"));
     MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus") );
     MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD)") );
-    MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort current action"));
+    MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort the current action"));
     MainToolbar->AddSeparator();
     MainToolbar->AddControl(Dur_Choice, _("Exposure duration"));
     MainToolbar->AddControl(Gamma_Slider, _("Gamma"));
