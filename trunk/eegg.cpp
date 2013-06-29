@@ -60,31 +60,43 @@ static void load_calibration(Mount *mnt)
     mnt->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
 }
 
-void MyFrame::OnEEGG(wxCommandEvent &evt) {
-
-    if ((evt.GetId() == EEGG_TESTGUIDEDIR) && (pMount->IsConnected()))
+void MyFrame::OnEEGG(wxCommandEvent &evt)
+{
+    if (evt.GetId() == EEGG_TESTGUIDEDIR)
+    {
+        if (!pMount->IsConnected())
+        {
+            wxMessageBox(_("Please connect a Mount to Manual Guide."));
+            return;
+        }
         TestGuide();
-    else if (evt.GetId() == EEGG_RANDOMMOTION) {
+    }
+    else if (evt.GetId() == EEGG_RANDOMMOTION)
+    {
         RandomMotionMode = !RandomMotionMode;
         wxMessageBox(wxString::Format(_T("Random motion mode set to %d"),(int) RandomMotionMode));
     }
-    else if (evt.GetId() == EEGG_MANUALCAL) {
-
-        wxString savedCal = pConfig->GetString("/scope/calibration/timestamp", "");
-        if (!savedCal.IsEmpty())
+    else if (evt.GetId() == EEGG_RESTORECAL)
+    {
+        wxString savedCal = pConfig->GetString("/scope/calibration/timestamp", wxEmptyString);
+        if (savedCal.IsEmpty())
         {
-            int answer = wxMessageBox("Load calibration data from " + savedCal + "?", "Load Calibration Data", wxYES_NO);
-            if (answer == wxYES)
-            {
-                load_calibration(pMount);
-                load_calibration(pSecondaryMount);
-                return;
-            }
+            wxMessageBox(_("There is no calibration data available."));
+            return;
         }
 
-        double xRate   = pMount->xRate();
+        int answer = wxMessageBox("Load calibration data from " + savedCal + "?", "Load Calibration Data", wxYES_NO);
+        if (answer == wxYES)
+        {
+            load_calibration(pMount);
+            load_calibration(pSecondaryMount);
+        }
+    }
+    else if (evt.GetId() == EEGG_MANUALCAL)
+    {
+        double xRate  = pMount->xRate();
         double yRate  = pMount->yRate();
-        double xAngle  = pMount->xAngle();
+        double xAngle = pMount->xAngle();
         double yAngle = pMount->yAngle();
         double declination = pMount->GetDeclination();
 
@@ -120,14 +132,16 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
 
         pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
     }
-    else if (evt.GetId() == EEGG_CLEARCAL) {
+    else if (evt.GetId() == EEGG_CLEARCAL)
+    {
         pMount->ClearCalibration(); // clear calibration
     }
-    else if (evt.GetId() == EEGG_FLIPRACAL) {
+    else if (evt.GetId() == EEGG_FLIPRACAL)
+    {
         if (!pMount->IsCalibrated())
             return;
 
-        double orig=pMount->xAngle();
+        double orig = pMount->xAngle();
         if (pMount->FlipCalibration())
         {
             wxMessageBox(_("Failed to flip RA calibration"));
@@ -138,7 +152,8 @@ void MyFrame::OnEEGG(wxCommandEvent &evt) {
             wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->xAngle()));
         }
     }
-    else if (evt.GetId() == EEGG_MANUALLOCK) {
+    else if (evt.GetId() == EEGG_MANUALLOCK)
+    {
         if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
         {
             wxMessageBox(_("Entering manual calibration requires a camera and mount to be connected and calibrated."));

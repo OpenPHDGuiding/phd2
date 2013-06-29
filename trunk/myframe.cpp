@@ -61,6 +61,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
     EVT_MENU(EEGG_TESTGUIDEDIR, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_MENU(EEGG_RANDOMMOTION, MyFrame::OnEEGG)
+    EVT_MENU(EEGG_RESTORECAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
@@ -100,17 +101,21 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_STARPROFILE, MyFrame::OnStarProfile)
     EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
     EVT_TOOL(BUTTON_CAMERA,MyFrame::OnConnectCamera)
+    EVT_MENU(BUTTON_CAMERA,MyFrame::OnConnectCamera) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_SCOPE, MyFrame::OnConnectMount)
+    EVT_MENU(BUTTON_SCOPE, MyFrame::OnConnectMount) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_LOOP, MyFrame::OnLoopExposure)
     EVT_MENU(BUTTON_LOOP, MyFrame::OnLoopExposure) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_STOP, MyFrame::OnButtonStop)
     EVT_MENU(BUTTON_STOP, MyFrame::OnButtonStop) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
+    EVT_MENU(BUTTON_ADVANCED, MyFrame::OnAdvanced) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_DARK, MyFrame::OnDark)
+    EVT_MENU(BUTTON_DARK, MyFrame::OnDark) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_GUIDE,MyFrame::OnGuide)
     EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
-    EVT_COMMAND_SCROLL(CTRL_GAMMA,MyFrame::OnGammaSlider)
+    EVT_COMMAND_SCROLL(CTRL_GAMMA, MyFrame::OnGammaSlider)
     EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
     EVT_SOCKET(SOCK_SERVER_ID, MyFrame::OnSockServerEvent)
     EVT_SOCKET(SOCK_SERVER_CLIENT_ID, MyFrame::OnSockServerClientEvent)
@@ -454,6 +459,7 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(MENU_CLEARDARK, _("&Clear Dark Frames"), _("Erase / clear out dark frames"));
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
     tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
+    tools_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data"), _("Restore calibration data from last successful calibration"));
     tools_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data"), _("Manually calibrate"));
     tools_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
     tools_menu->Append(EEGG_MANUALLOCK, _("Enter Manual Lock Position"), _("Give manual lock position"));
@@ -671,15 +677,21 @@ void MyFrame::SetupStatusBar(void)
 
 void MyFrame::SetupKeyboardShortcuts(void)
 {
-    wxAcceleratorEntry entries[7];
-    entries[0].Set(wxACCEL_CTRL,  (int) 'T', EEGG_TESTGUIDEDIR);
-    entries[1].Set(wxACCEL_CTRL,  (int) 'R', EEGG_RANDOMMOTION);
-    entries[2].Set(wxACCEL_CTRL,  (int) 'M', EEGG_MANUALCAL);
-    entries[3].Set(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP);
-    entries[4].Set(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP);
-    entries[5].Set(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE);
-    entries[6].Set(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL);
-    wxAcceleratorTable accel(7, entries);
+    wxAcceleratorEntry entries[] = {
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'A', BUTTON_ADVANCED),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'C', BUTTON_CAMERA),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'D', BUTTON_DARK),
+        wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'C', BUTTON_CAMERA),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'M', BUTTON_SCOPE),
+        wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'M', EEGG_MANUALCAL),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'R', EEGG_RANDOMMOTION),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'T', EEGG_TESTGUIDEDIR),
+    };
+    wxAcceleratorTable accel(WXSIZEOF(entries), entries);
     SetAcceleratorTable(accel);
 }
 
