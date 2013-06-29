@@ -5,7 +5,7 @@
 ;       include any DLLs, libraraies or anything else.  It assumes that it
 ;       is being installed on a system that already has PHD v1 installed
 
-#define APP_VERSION "2.0.4a"
+#define APP_VERSION "2.0.5a"
 
 [Setup]
 AppName=phd2
@@ -22,7 +22,7 @@ DirExistsWarning=no
 [Files]
 Source: "release\phd2.exe"; DestDir: "{app}"; Flags: replacesameversion
 Source: "locale\*"; Excludes: "*-old.*"; DestDir: "{app}\locale"; Flags: recursesubdirs replacesameversion
-Source: "README-Release.txt"; DestDir: "{app}"; Flags: isreadme
+Source: "README-PHD2.txt"; DestDir: "{app}"; Flags: isreadme
 
 [Icons]
 Name: "{group}\PHD2 Guiding"; FileName: "{app}\phd2.exe"
@@ -36,6 +36,12 @@ begin
     Result := True;
     if (PageId = wpSelectDir) and not FileExists(ExpandConstant('{app}\phd.exe')) then begin
         MsgBox('PHD does not seem to be installed in that folder.  Please select the correct folder.', mbError, MB_OK);
+        Result := False;
+        exit;
+    end;
+
+    if (PageId = wpSelectDir) and not FileExists(ExpandConstant('{app}\opencv_core244.dll')) then begin
+        MsgBox('PHD version 1.42.2 (or greater) does not seem to be installed in that folder.  Please select the correct folder.', mbError, MB_OK);
         Result := False;
         exit;
     end;

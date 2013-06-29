@@ -72,7 +72,7 @@
 #include <map>
 #include <math.h>
 
-#define VERSION _T("2.0.4")
+#define VERSION _T("2.0.5")
 #define PHDSUBVER _T("a")
 
 #if defined (__WINDOWS__)
