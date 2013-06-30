@@ -80,7 +80,7 @@ bool ParallelPortWin32::Connect(wxString portName)
 
         if (!address.ToLong(&addr, 16))
         {
-            throw ERROR_INFO("uable to convert " + address + " to a port number");
+            throw ERROR_INFO("uable to convert [" + address + "] to a port number");
         }
 
         m_portAddr = addr;

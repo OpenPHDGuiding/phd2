@@ -79,9 +79,16 @@ bool Camera_LEParallelWebcamClass::Connect()
         wxString lastParallelPort = pConfig->GetString("/camera/parallelLEWebcam/parallelport", "");
         int resp = parallelPorts.Index(lastParallelPort);
 
+        if (resp == wxNOT_FOUND)
+        {
+            resp = 0;
+        }
+
         resp = wxGetSingleChoiceIndex(_("Select Parallel port"),_("Parallel Port"), parallelPorts,
                 NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
                 resp);
+
+        Debug.AddLine("wxGetSingleChoiceIndex returns %d", resp);
 
         if (m_pParallelPort->Connect(parallelPorts[resp]))
         {
