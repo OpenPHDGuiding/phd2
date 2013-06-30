@@ -651,7 +651,6 @@ void Guider::Reset(void)
 
 void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 {
-    bool updateStatus = true;
     wxString statusMessage;
 
     try
