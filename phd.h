@@ -73,7 +73,7 @@
 #include <math.h>
 
 #define VERSION _T("2.0.5")
-#define PHDSUBVER _T("a")
+#define PHDSUBVER _T("b")
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
@@ -168,7 +168,7 @@ extern Mount *pMount;
 extern Mount *pSecondaryMount;
 extern GuideCamera *pCamera;
 
-//#define ALWAYS_FLUSH_DEBUGLOG
+#define ALWAYS_FLUSH_DEBUGLOG
 extern DebugLog Debug;
 extern GuidingLog GuideLog;
 

@@ -5,7 +5,7 @@
 ;       include any DLLs, libraraies or anything else.  It assumes that it
 ;       is being installed on a system that already has PHD v1 installed
 
-#define APP_VERSION "2.0.5a"
+#define APP_VERSION "2.0.5b"
 
 [Setup]
 AppName=phd2
@@ -22,7 +22,7 @@ DirExistsWarning=no
 [Files]
 Source: "release\phd2.exe"; DestDir: "{app}"; Flags: replacesameversion
 Source: "locale\*"; Excludes: "*-old.*"; DestDir: "{app}\locale"; Flags: recursesubdirs replacesameversion
-Source: "README-PHD2.txt"; DestDir: "{app}"; Flags: isreadme
+Source: "README-PHD2.txt"; DestDir: "{app}"; Flags: isreadme replacesameversion
 
 [Icons]
 Name: "{group}\PHD2 Guiding"; FileName: "{app}\phd2.exe"

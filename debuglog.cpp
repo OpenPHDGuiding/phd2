@@ -158,7 +158,7 @@ wxString DebugLog::Write(const wxString& str)
 
 
         wxFFile::Write(outputLine);
-#if defined(ALWAYS_FLUSH)
+#if defined(ALWAYS_FLUSH_DEBUGLOG)
         wxFFile::Flush();
 #endif
 #if defined(__WINDOWS__) && defined(_DEBUG)
