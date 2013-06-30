@@ -67,6 +67,8 @@ void PhdConfig::Initialize(const wxString& baseConfigName, int instance)
 
     if (m_configVersion == 0)
     {
+        Debug.AddLine(wxString::Format("Initializing a new config, m_pConfig=%p", m_pConfig));
+
         SetLong("ConfigVersion", CURRENT_CONFIG_VERSION);
     }
 }
@@ -75,6 +77,7 @@ void PhdConfig::DeleteAll(void)
 {
     if (m_pConfig)
     {
+        Debug.AddLine(wxString::Format("Deleting all configuration data"));
         m_pConfig->DeleteAll();
         delete m_pConfig;
         m_pConfig = NULL;
@@ -90,6 +93,8 @@ bool PhdConfig::GetBoolean(const char *pName, bool defaultValue=false)
         m_pConfig->Read(pName, &bReturn, defaultValue);
     }
 
+    Debug.AddLine(wxString::Format("GetBoolean(\"%s\", %d) returns %d", pName, defaultValue, bReturn));
+
     return bReturn;
 }
 
@@ -101,6 +106,8 @@ wxString PhdConfig::GetString(const char *pName, wxString defaultValue)
     {
         m_pConfig->Read(pName, &sReturn, defaultValue);
     }
+
+    Debug.AddLine(wxString::Format("GetString(\"%s\", \"%s\") returns \"%s\"", pName, defaultValue, sReturn));
 
     return sReturn;
 }
@@ -114,6 +121,8 @@ double PhdConfig::GetDouble(const char *pName, double defaultValue)
         m_pConfig->Read(pName, &dReturn, defaultValue);
     }
 
+    Debug.AddLine(wxString::Format("GetDouble(\"%s\", %lf) returns %lf", pName, defaultValue, dReturn));
+
     return dReturn;
 }
 
@@ -126,12 +135,16 @@ long PhdConfig::GetLong(const char *pName, long defaultValue)
         m_pConfig->Read(pName, &lReturn, defaultValue);
     }
 
+    Debug.AddLine(wxString::Format("GetLong(\"%s\", %ld) returns %ld", pName, defaultValue, lReturn));
+
     return lReturn;
 }
 
 int PhdConfig::GetInt(const char *pName, int defaultValue)
 {
     long lReturn = GetLong(pName, defaultValue);
+
+    Debug.AddLine(wxString::Format("GetInt(\"%s\", %d) returns %d", pName, defaultValue, (int)lReturn));
 
     return (int)lReturn;
 }
