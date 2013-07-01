@@ -261,13 +261,6 @@ private:
     wxSocketServer *SocketServer;
     unsigned int SocketConnections; // number of clients connected to SocketServer
 
-    struct STATUSBAR_QUEUE_ENTRY
-    {
-        wxString msg;
-        int msToDisplay;
-    };
-
-    wxMessageQueue<STATUSBAR_QUEUE_ENTRY> m_statusbarQueue;
     wxTimer m_statusbarTimer;
 
     int m_exposureDuration;
