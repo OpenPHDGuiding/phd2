@@ -804,18 +804,10 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
 
     if (pane == 1)
     {
-        STATUSBAR_QUEUE_ENTRY request;
-        request.msg         = msg;
-        request.msToDisplay = duration;
-
-        m_statusbarQueue.Post(request);
-
-        if (!m_statusbarTimer.IsRunning())
-        {
-            wxTimerEvent dummy;
-
-            OnStatusbarTimerEvent(dummy);
-        }
+        // display message for at least 500ms
+        const int MIN_DISPLAY_MS = 500;
+        wxFrame::SetStatusText(msg, pane);
+        m_statusbarTimer.Start(std::max(duration, MIN_DISPLAY_MS), wxTIMER_ONE_SHOT);
     }
     else
     {
@@ -910,25 +902,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 {
-    STATUSBAR_QUEUE_ENTRY message;
-    wxMessageQueueError queueError = m_statusbarQueue.ReceiveTimeout(0L, message);
-
-    switch (queueError)
-    {
-        case wxMSGQUEUE_NO_ERROR:
-            wxFrame::SetStatusText(message.msg, 1);
-            if (message.msToDisplay)
-            {
-                m_statusbarTimer.Start(message.msToDisplay, wxTIMER_ONE_SHOT);
-            }
-            break;
-        case wxMSGQUEUE_TIMEOUT:
-            wxFrame::SetStatusText("", 1);
-            break;
-        default:
-            wxMessageBox("OnStatusbarTimerEvent got an error dequeueing a message");
-            break;
-    }
+    wxFrame::SetStatusText("", 1);
 }
 
 void MyFrame::ScheduleExposure(int exposureDuration, wxRect subframe)

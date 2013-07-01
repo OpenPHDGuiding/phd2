@@ -570,10 +570,12 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             throw ERROR_INFO("ActualXAmount < 0");
         }
 
+        wxString msg;
+
         if (actualXAmount >= 0.5)
         {
-            wxString msg = wxString::Format(_("%s dist=%.2f dur=%.0f"), (xDirection==EAST)?_("E"):_("W"), fabs(xDistance), actualXAmount);
-            pFrame->SetStatusText(msg, 1, (int)actualXAmount);
+            msg = wxString::Format(_("%s %5.2f px %3.0f ms"), xDirection == EAST ? _("East") : _("West"),
+                fabs(xDistance), actualXAmount);
             Debug.AddLine(msg);
         }
 
@@ -586,9 +588,16 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         if (actualYAmount >= 0.5)
         {
-            wxString msg = wxString::Format(_("%s dist=%.2f dur=%.0f") , (yDirection==SOUTH)?_("S"):_("N"), fabs(yDistance), actualYAmount);
-            pFrame->SetStatusText(msg, 1, (int)actualYAmount);
+            msg = wxString::Format(_("%s%*s%s %.2f px %.0f ms"), msg,
+                msg.IsEmpty() ? 42 : msg.Len() < 30 ? 30 - msg.Len() : 1, "",
+                yDirection == SOUTH ? _("South") : _("North"),
+                fabs(yDistance), actualYAmount);
             Debug.AddLine(msg);
+        }
+
+        if (!msg.IsEmpty())
+        {
+            pFrame->SetStatusText(msg, 1, std::max((int)actualXAmount, (int)actualYAmount));
         }
 
         GuideLog.GuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, 0);  // errorCode??
