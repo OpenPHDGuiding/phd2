@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		58010E9213D1368600AD4D6D /* cam_openssag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58010E9113D1368600AD4D6D /* cam_openssag.cpp */; };
 		58010F4F13D1375E00AD4D6D /* libopenssag.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58010F4E13D1375E00AD4D6D /* libopenssag.a */; };
+		580F80D417810B200020900F /* about_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 580F80CA17810B1F0020900F /* about_dialog.cpp */; };
+		580F80D517810B200020900F /* cam_opencv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 580F80CC17810B1F0020900F /* cam_opencv.cpp */; };
+		580F80D617810B200020900F /* confirm_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 580F80CE17810B1F0020900F /* confirm_dialog.cpp */; };
+		580F80D717810B200020900F /* event_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 580F80D017810B1F0020900F /* event_server.cpp */; };
+		580F80D817810B200020900F /* guide_algorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 580F80D217810B1F0020900F /* guide_algorithm.cpp */; };
 		583291EA15DA07F300D96A6D /* scope_ascom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291DC15DA07F300D96A6D /* scope_ascom.cpp */; };
 		583291EC15DA07F300D96A6D /* scope_equinox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291DE15DA07F300D96A6D /* scope_equinox.cpp */; };
 		583291EE15DA07F300D96A6D /* scope_gpint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583291E015DA07F300D96A6D /* scope_gpint.cpp */; };
@@ -131,6 +136,16 @@
 		58010E9013D1368600AD4D6D /* cam_openssag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_openssag.h; sourceTree = "<group>"; };
 		58010E9113D1368600AD4D6D /* cam_openssag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_openssag.cpp; sourceTree = "<group>"; };
 		58010F4E13D1375E00AD4D6D /* libopenssag.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenssag.a; path = cameras/libopenssag.a; sourceTree = "<group>"; };
+		580F80CA17810B1F0020900F /* about_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = about_dialog.cpp; sourceTree = "<group>"; };
+		580F80CB17810B1F0020900F /* about_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = about_dialog.h; sourceTree = "<group>"; };
+		580F80CC17810B1F0020900F /* cam_opencv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_opencv.cpp; sourceTree = "<group>"; };
+		580F80CD17810B1F0020900F /* cam_opencv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_opencv.h; sourceTree = "<group>"; };
+		580F80CE17810B1F0020900F /* confirm_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = confirm_dialog.cpp; sourceTree = "<group>"; };
+		580F80CF17810B1F0020900F /* confirm_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = confirm_dialog.h; sourceTree = "<group>"; };
+		580F80D017810B1F0020900F /* event_server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = event_server.cpp; sourceTree = "<group>"; };
+		580F80D117810B1F0020900F /* event_server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = event_server.h; sourceTree = "<group>"; };
+		580F80D217810B1F0020900F /* guide_algorithm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = guide_algorithm.cpp; sourceTree = "<group>"; };
+		580F80D317810B200020900F /* stepguider_simulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stepguider_simulator.h; sourceTree = "<group>"; };
 		58200FCB0DA492740066F54A /* cam_NebSBIG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_NebSBIG.h; sourceTree = "<group>"; };
 		58200FCC0DA492740066F54A /* cam_NebSBIG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_NebSBIG.cpp; sourceTree = "<group>"; };
 		58200FD30DA493FC0066F54A /* socket_server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = socket_server.h; sourceTree = "<group>"; };
@@ -378,6 +393,16 @@
 				58339E4E0B1FC6A700109891 /* cam_MeadeDSI.h */,
 				587DEB290BAA255300FFB715 /* cam_firewire.h */,
 				587DEB2A0BAA255300FFB715 /* cam_firewire_OSX.cpp */,
+				580F80CA17810B1F0020900F /* about_dialog.cpp */,
+				580F80CB17810B1F0020900F /* about_dialog.h */,
+				580F80CC17810B1F0020900F /* cam_opencv.cpp */,
+				580F80CD17810B1F0020900F /* cam_opencv.h */,
+				580F80CE17810B1F0020900F /* confirm_dialog.cpp */,
+				580F80CF17810B1F0020900F /* confirm_dialog.h */,
+				580F80D017810B1F0020900F /* event_server.cpp */,
+				580F80D117810B1F0020900F /* event_server.h */,
+				580F80D217810B1F0020900F /* guide_algorithm.cpp */,
+				580F80D317810B200020900F /* stepguider_simulator.h */,
 				58B8CE1716E05EDB00F6E68E /* cam_firewire_IC.cpp */,
 				58339E530B1FC6A700109891 /* cam_simulator.cpp */,
 				58339E540B1FC6A700109891 /* cam_simulator.h */,
@@ -691,6 +716,11 @@
 				58EC72841749D8B300502727 /* serialport_loopback.cpp in Sources */,
 				58EC72851749D8B300502727 /* star_profile.cpp in Sources */,
 				58EC72861749D8B300502727 /* target.cpp in Sources */,
+				580F80D417810B200020900F /* about_dialog.cpp in Sources */,
+				580F80D517810B200020900F /* cam_opencv.cpp in Sources */,
+				580F80D617810B200020900F /* confirm_dialog.cpp in Sources */,
+				580F80D717810B200020900F /* event_server.cpp in Sources */,
+				580F80D817810B200020900F /* guide_algorithm.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
