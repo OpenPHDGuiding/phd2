@@ -337,7 +337,8 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
         *dataptr = (unsigned short) *imgptr;
     dc1394_capture_enqueue(camera, vframe);  // release this frame
 //  pFrame->SetStatusText(wxString::Format("Behind: %lu Pos: %lu",vpFrame->frames_behind,vpFrame->id));
-    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+//    if (HaveDark && recon) Subtract(img,CurrentDarkFrame);
+    if (recon) SubtractDark(img);
 
     if (DCAM_start_stop_mode)
         dc1394_video_set_transmission(camera,DC1394_OFF);
