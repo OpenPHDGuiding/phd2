@@ -33,7 +33,7 @@
  *
  */
 
-#ifdef GUIDE_ONBOARD
+#ifdef GUIDE_ONCAMERA
 
 class ScopeOnCamera:public Scope
 {
@@ -49,4 +49,4 @@ public:
     virtual bool IsGuiding(void);
 };
 
-#endif /* GUIDE_ONBOARD */
+#endif /* GUIDE_ONCAMERA */
