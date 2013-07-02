@@ -14,7 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development, nor the names of its
+ *    Neither the name of Bret McKee, Dad Dog Development,
  *     Craig Stark, Stark Labs nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
@@ -84,6 +84,8 @@ bool ParallelPortWin32::Connect(wxString portName)
         }
 
         m_portAddr = addr;
+
+        Debug.AddLine(wxString::Format("com port %s assigned address 0x%x", portName, m_portAddr));
     }
     catch (wxString Msg)
     {
