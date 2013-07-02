@@ -130,6 +130,7 @@ bool Guider::SetScaleImage(bool newScaleValue)
     }
     catch (wxString Msg)
     {
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
