@@ -240,7 +240,7 @@
     <ClCompile Include="scope_GC_USBST4.cpp" />
     <ClCompile Include="scope_gpint.cpp" />
     <ClCompile Include="scope_gpusb.cpp" />
-    <ClCompile Include="scope_onboard.cpp" />
+    <ClCompile Include="scope_oncamera.cpp" />
     <ClCompile Include="scope_voyager.cpp" />
     <ClCompile Include="serialport.cpp" />
     <ClCompile Include="serialport_loopback.cpp" />
@@ -330,7 +330,7 @@
     <ClInclude Include="scope_gpint.h" />
     <ClInclude Include="scope_gpusb.h" />
     <ClInclude Include="scope_none.h" />
-    <ClInclude Include="scope_onboard.h" />
+    <ClInclude Include="scope_oncamera.h" />
     <ClInclude Include="scope_voyager.h" />
     <ClInclude Include="scopes.h" />
     <ClInclude Include="serialport.h" />

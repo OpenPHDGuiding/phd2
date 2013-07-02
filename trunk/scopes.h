@@ -42,28 +42,28 @@
 
 #if defined (__WINDOWS__)
 
+#define GUIDE_ONCAMERA
 #define GUIDE_ASCOM
 #define GUIDE_GPUSB
 #define GUIDE_GPINT
-//#define GUIDE_VOYAGER
-
 
 #elif defined (__APPLE__)
+
+#define GUIDE_ONCAMERA
 #define GUIDE_GPUSB
 #define GUIDE_GCUSBST4
 #define GUIDE_EQUINOX
 //#define GUIDE_VOYAGER
 //#define GUIDE_NEB
 #define GUIDE_EQMAC
-#endif /* apple */
 
-#define GUIDE_ONBOARD
+#endif /* apple */
 
 #endif /* not OPENPHD */
 
 #include "scope.h"
 #include "scope_none.h"
-#include "scope_onboard.h"
+#include "scope_oncamera.h"
 #include "scope_ascom.h"
 #include "scope_gpusb.h"
 #include "scope_gpint.h"

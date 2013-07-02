@@ -35,6 +35,8 @@
 
 #include "phd.h"
 
+#ifdef GUIDE_ONCAMERA
+
 ScopeOnCamera::ScopeOnCamera(void)
 {
     m_Name =  "OnCamera";
@@ -50,6 +52,7 @@ bool ScopeOnCamera::Connect(void)
         {
             throw ERROR_INFO("Attempt to Connect onboard when camera is not connected");
         }
+
         if (!pCamera->HasGuiderOutput)
         {
             throw ERROR_INFO("Attempt to Connect onboard when camera does not have guide output");
@@ -60,8 +63,9 @@ bool ScopeOnCamera::Connect(void)
             Scope::Connect();
         }
     }
-    catch (...)
+    catch (wxString Msg)
     {
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -81,8 +85,9 @@ bool ScopeOnCamera::Disconnect(void)
 
         Scope::Disconnect();
     }
-    catch (...)
+    catch (wxString Msg)
     {
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -99,10 +104,12 @@ bool ScopeOnCamera::Guide(const GUIDE_DIRECTION direction, const int duration)
         {
             throw ERROR_INFO("Attempt to Guide while not connected");
         }
+
         pCamera->PulseGuideScope(direction,duration);
     }
-    catch (...)
+    catch (wxString Msg)
     {
+        POSSIBLY_UNUSED(Msg);
         bError = true;
     }
 
@@ -128,3 +135,5 @@ bool ScopeOnCamera::IsGuiding(void)
 {
     return false;
 }
+
+#endif // GUIDE_ONCAMERA
