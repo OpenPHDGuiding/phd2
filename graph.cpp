@@ -250,7 +250,7 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 {
     m_pClient->m_length *= 2;
 
-    if (m_pClient->m_length > m_pClient->m_maxLength)
+    if (m_pClient->m_length > m_pClient->m_history.capacity())
     {
             m_pClient->m_length = m_pClient->m_minLength;
     }
@@ -431,13 +431,10 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     m_heightUnits = UNIT_ARCSEC; // preferred units, will still display pixels if pixel scale ("sampling") not available
 
     m_showTrendlines = false;
-
-    m_pHistory = new S_HISTORY[m_maxLength];
 }
 
 GraphLogClientWindow::~GraphLogClientWindow(void)
 {
-    delete [] m_pHistory;
 }
 
 static void reset_trend_accums(TrendLineAccum accums[4])
@@ -452,7 +449,7 @@ static void reset_trend_accums(TrendLineAccum accums[4])
 
 void GraphLogClientWindow::ResetData(void)
 {
-    m_nItems = 0;
+    m_history.clear();
     reset_trend_accums(m_trendLineAccum);
     m_raSameSides = 0;
 }
@@ -491,17 +488,17 @@ bool GraphLogClientWindow::SetMaxLength(int maxLength)
         {
             throw ERROR_INFO("maxLength < m_minLength");
         }
-        m_maxLength = maxLength;
+        m_history.resize(maxLength);
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
         m_minLength = DefaultMinLength;
-        m_maxLength = DefaultMaxLength;
+        m_history.resize(DefaultMaxLength);
     }
 
-    pConfig->SetInt("/graph/maxLength", m_maxLength);
+    pConfig->SetInt("/graph/maxLength", m_history.capacity());
 
     return bError;
 }
@@ -580,62 +577,54 @@ static void update_trend(int nr, int max_nr, double newval, const double& oldval
 
 void GraphLogClientWindow::AppendData(float dx, float dy, float RA, float Dec)
 {
-    int trend_items = m_nItems;
-    if (trend_items > m_length)
-        trend_items = m_length;
-    const int oldest = m_maxLength - trend_items;
+    unsigned int trend_items = m_length;
+    if (trend_items > m_history.size())
+        trend_items = m_history.size();
+    const int oldest_idx = m_history.size() - trend_items;
 
-    update_trend(trend_items, m_length, dx, m_pHistory[oldest].dx, &m_trendLineAccum[0]);
-    update_trend(trend_items, m_length, dy, m_pHistory[oldest].dy, &m_trendLineAccum[1]);
-    update_trend(trend_items, m_length, RA, m_pHistory[oldest].ra, &m_trendLineAccum[2]);
-    update_trend(trend_items, m_length, Dec, m_pHistory[oldest].dec, &m_trendLineAccum[3]);
+    S_HISTORY oldest;
+    if (m_history.size() > 0)
+        oldest = m_history[oldest_idx];
+    update_trend(trend_items, m_length, dx, oldest.dx, &m_trendLineAccum[0]);
+    update_trend(trend_items, m_length, dy, oldest.dy, &m_trendLineAccum[1]);
+    update_trend(trend_items, m_length, RA, oldest.ra, &m_trendLineAccum[2]);
+    update_trend(trend_items, m_length, Dec, oldest.dec, &m_trendLineAccum[3]);
 
     // update counter for osc index
     if (trend_items >= 1)
     {
-        if (RA * m_pHistory[m_maxLength-1].ra > 0.0)
+        if (RA * m_history[m_history.size() - 1].ra > 0.0)
             ++m_raSameSides;
         if (trend_items >= m_length)
         {
-            if (m_pHistory[oldest].ra * m_pHistory[oldest + 1].ra > 0.0)
+            if (m_history[oldest_idx].ra * m_history[oldest_idx + 1].ra > 0.0)
                 --m_raSameSides;
         }
     }
 
-    memmove(m_pHistory, m_pHistory+1, sizeof(m_pHistory[0])*(m_maxLength-1));
-
-    const int idx = m_maxLength - 1;
-
-    m_pHistory[idx].dx  = dx;
-    m_pHistory[idx].dy  = dy;
-    m_pHistory[idx].ra  = RA;
-    m_pHistory[idx].dec = Dec;
-
-    if (m_nItems < m_maxLength)
-    {
-        m_nItems++;
-    }
+    m_history.push_back(S_HISTORY(dx, dy, RA, Dec));
 }
 
 void GraphLogClientWindow::RecalculateTrendLines(void)
 {
     reset_trend_accums(m_trendLineAccum);
-    int trend_items = m_nItems;
+    int trend_items = m_history.size();
     if (trend_items > m_length)
         trend_items = m_length;
-    const int begin = m_maxLength - trend_items;
-    const int end = m_maxLength - 1;
+    const int begin = m_history.size() - trend_items;
+    const int end = m_history.size() - 1;
     for (int x = 0, i = begin; x < trend_items; i++, x++) {
-        update_trend(x, trend_items, m_pHistory[i].dx, 0.0, &m_trendLineAccum[0]);
-        update_trend(x, trend_items, m_pHistory[i].dy, 0.0, &m_trendLineAccum[1]);
-        update_trend(x, trend_items, m_pHistory[i].ra, 0.0, &m_trendLineAccum[2]);
-        update_trend(x, trend_items, m_pHistory[i].dec, 0.0, &m_trendLineAccum[3]);
+        const S_HISTORY& h = m_history[i];
+        update_trend(x, trend_items, h.dx, 0.0, &m_trendLineAccum[0]);
+        update_trend(x, trend_items, h.dy, 0.0, &m_trendLineAccum[1]);
+        update_trend(x, trend_items, h.ra, 0.0, &m_trendLineAccum[2]);
+        update_trend(x, trend_items, h.dec, 0.0, &m_trendLineAccum[3]);
     }
     // recalculate ra same side counter
     m_raSameSides = 0;
     if (trend_items >= 2)
         for (int i = begin; i < end; i++)
-            if (m_pHistory[i].ra * m_pHistory[i + 1].ra > 0.0)
+            if (m_history[i].ra * m_history[i + 1].ra > 0.0)
                 ++m_raSameSides;
 }
 
@@ -705,8 +694,6 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     const int xorig = 0;
     const int yorig = size.y/2;
 
-    int i;
-
     const int xDivisions = m_length/m_xSamplesPerDivision-1;
     const int xPixelsPerDivision = size.x/2/(xDivisions+1);
     const int yPixelsPerDivision = size.y/2/(m_yDivisions+1);
@@ -718,9 +705,6 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         // force units to pixels if pixel scale not available
         units = UNIT_PIXELS;
     }
-
-    wxPoint *pRaOrDxLine  = NULL;
-    wxPoint *pDecOrDyLine = NULL;
 
     dc.SetBackground(*wxBLACK_BRUSH);
     //dc.SetBackground(wxColour(10,0,0));
@@ -750,7 +734,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.SetFont(*wxSWISS_FONT);
 #endif
 
-    for (i = 1; i <= m_yDivisions; i++)
+    for (int i = 1; i <= m_yDivisions; i++)
     {
         double div_y = center.y-i*yPixelsPerDivision;
         dc.DrawLine(leftEdge,div_y, rightEdge, div_y);
@@ -761,7 +745,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.DrawText(wxString::Format("%g%s", -i * (double)m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : ""), leftEdge + 3, div_y - 13);
     }
 
-    for (i = 1; i <= xDivisions; i++)
+    for (int i = 1; i <= xDivisions; i++)
     {
         dc.DrawLine(center.x-i*xPixelsPerDivision, topEdge, center.x-i*xPixelsPerDivision, bottomEdge);
         dc.DrawLine(center.x+i*xPixelsPerDivision, topEdge, center.x+i*xPixelsPerDivision, bottomEdge);
@@ -773,53 +757,43 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
 
     // Draw data
-    if (m_nItems > 0)
+    if (m_history.size() > 0)
     {
-        pRaOrDxLine  = new wxPoint[m_maxLength];
-        pDecOrDyLine = new wxPoint[m_maxLength];
-
-        int start_item = m_maxLength;
-
-        if (m_nItems < m_length)
+        unsigned int plot_length = m_length;
+        if (plot_length > m_history.size())
         {
-            start_item -= m_nItems;
-        }
-        else
-        {
-            start_item -= m_length;
+            plot_length = m_history.size();
         }
 
-        for (i=start_item; i<m_maxLength; i++)
+        wxPoint *pRaOrDxLine  = new wxPoint[plot_length];
+        wxPoint *pDecOrDyLine = new wxPoint[plot_length];
+
+        unsigned int start_item = m_history.size() - plot_length;
+
+        for (int i = start_item, j = 0; i < m_history.size(); i++, j++)
         {
-            int j=i-start_item;
-            S_HISTORY *pSrc = m_pHistory + i;
+            const S_HISTORY& h = m_history[i];
 
             switch (m_mode)
             {
             case MODE_RADEC:
-                pRaOrDxLine[j] = sctr.pt(j, pSrc->ra);
-                pDecOrDyLine[j] = sctr.pt(j, pSrc->dec);
+                pRaOrDxLine[j] = sctr.pt(j, h.ra);
+                pDecOrDyLine[j] = sctr.pt(j, h.dec);
                 break;
             case MODE_DXDY:
-                pRaOrDxLine[j] = sctr.pt(j, pSrc->dx);
-                pDecOrDyLine[j] = sctr.pt(j, pSrc->dy);
+                pRaOrDxLine[j] = sctr.pt(j, h.dx);
+                pDecOrDyLine[j] = sctr.pt(j, h.dy);
                 break;
             }
         }
 
         wxPen raOrDxPen(m_raOrDxColor);
-        wxPen decOrDyPen(m_decOrDyColor);
-
-        int plot_length = m_length;
-
-        if (m_length > m_nItems)
-        {
-            plot_length = m_nItems;
-        }
         dc.SetPen(raOrDxPen);
-        dc.DrawLines(plot_length,pRaOrDxLine);
+        dc.DrawLines(plot_length, pRaOrDxLine);
+
+        wxPen decOrDyPen(m_decOrDyColor);
         dc.SetPen(decOrDyPen);
-        dc.DrawLines(plot_length,pDecOrDyLine);
+        dc.DrawLines(plot_length, pDecOrDyLine);
 
         // draw trend lines
         if (m_showTrendlines && plot_length >= 5)
@@ -840,11 +814,11 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
             wxPoint lineRaOrDx[2];
             lineRaOrDx[0] = sctr.pt(0.0, trendRaOrDx.second);
-            lineRaOrDx[1] = sctr.pt(m_maxLength, trendRaOrDx.first * m_maxLength + trendRaOrDx.second);
+            lineRaOrDx[1] = sctr.pt(m_length, trendRaOrDx.first * m_length + trendRaOrDx.second);
 
             wxPoint lineDecOrDy[2];
             lineDecOrDy[0] = sctr.pt(0.0, trendDecOrDy.second);
-            lineDecOrDy[1] = sctr.pt(m_maxLength, trendDecOrDy.first * m_maxLength + trendDecOrDy.second);
+            lineDecOrDy[1] = sctr.pt(m_length, trendDecOrDy.first * m_length + trendDecOrDy.second);
 
             raOrDxPen.SetStyle(wxLONG_DASH);
             dc.SetPen(raOrDxPen);
@@ -853,6 +827,25 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             decOrDyPen.SetStyle(wxLONG_DASH);
             dc.SetPen(decOrDyPen);
             dc.DrawLines(2, lineDecOrDy, 0, 0);
+
+            // show polar alignment error
+            if (m_mode == MODE_RADEC && sampling != 1.0)
+            {
+                double declination = pMount->GetDeclination();
+                if (fabs(declination) < (M_PI/2.0)*(2.0/3.0))
+                {
+                    const S_HISTORY& h0 = m_history[start_item];
+                    const S_HISTORY& h1 = m_history[m_history.size() - 1];
+                    double dt = (double)(h1.timestamp - h0.timestamp) / (1000.0 * 60.0); // time span in minutes
+                    double ddec = (double) plot_length * trendDecOrDy.first;
+                    // From Frank Barrett, "Determining Polar Axis Alignment Accuracy"
+                    // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
+                    double err_arcmin = (3.81 * ddec) / (dt * cos(declination)); 
+                    double err_px = err_arcmin * sampling * 60.0;
+                    dc.DrawText(wxString::Format("Polar alignment error: %.2f' (%.1f px)", err_arcmin, err_px),
+                        leftEdge + 30, bottomEdge - 18);
+                }
+            }
         }
 
         double rms_ra = rms(plot_length, &m_trendLineAccum[2]);

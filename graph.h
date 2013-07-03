@@ -70,7 +70,6 @@ class GraphLogClientWindow : public wxWindow
     void OnPaint(wxPaintEvent& evt);
 
     int m_minLength;
-    int m_maxLength;
 
     int m_minHeight;
     int m_maxHeight;
@@ -80,13 +79,16 @@ class GraphLogClientWindow : public wxWindow
 
     struct S_HISTORY
     {
+        wxLongLong_t timestamp;
         double dx;
         double dy;
         double ra;
         double dec;
-    } *m_pHistory;
-
-    int m_nItems;    // # items in the history
+        S_HISTORY() { }
+        S_HISTORY(double dx_, double dy_, double ra_, double dec_, wxLongLong_t ts = wxDateTime::UNow().GetValue().GetValue())
+            : timestamp(ts), dx(dx_), dy(dy_), ra(ra_), dec(dec_) { }
+    };
+    circular_buffer<S_HISTORY> m_history;
 
     TrendLineAccum m_trendLineAccum[4]; // dx, dy, ra, dec
 
