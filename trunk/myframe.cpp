@@ -1194,7 +1194,7 @@ void MyFrame::SetSampling(void)
     {
         if (pCamera->PixelSize != 0 && GetFocalLength() != 0)
         {
-            m_sampling = 206.0 * pCamera->PixelSize / pFrame->GetFocalLength();
+            m_sampling = 206.265 * pCamera->PixelSize / pFrame->GetFocalLength();
         }
     }
 }

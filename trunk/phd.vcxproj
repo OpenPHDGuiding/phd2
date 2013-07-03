@@ -295,6 +295,7 @@
     <ClInclude Include="cam_WDM.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cameras.h" />
+    <ClInclude Include="circbuf.h" />
     <ClInclude Include="configdialog.h" />
     <ClInclude Include="confirm_dialog.h" />
     <ClInclude Include="debuglog.h" />
