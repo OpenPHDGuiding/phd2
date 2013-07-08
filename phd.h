@@ -192,6 +192,7 @@ extern bool RandomMotionMode;
 class PhdApp: public wxApp
 {
     long m_instanceNumber;
+    bool m_resetConfig;
   public:
     PhdApp(void);
     bool OnInit(void);

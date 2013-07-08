@@ -64,6 +64,7 @@ bool RandomMotionMode = false;
 static const wxCmdLineEntryDesc cmdLineDesc[] =
 {
     { wxCMD_LINE_OPTION, "i", "instanceNumber", "sets the PHD2 instance number (default = 1)", wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL},
+    { wxCMD_LINE_SWITCH, "R", "Reset", "Reset all PHD2 settings to default values"},
     { wxCMD_LINE_NONE }
 };
 
@@ -72,6 +73,7 @@ wxIMPLEMENT_APP(PhdApp);
 // ------------------------  Phd App stuff -----------------------------
 PhdApp::PhdApp(void)
 {
+    m_resetConfig = false;
     m_instanceNumber = 1;
 };
 
@@ -95,6 +97,11 @@ bool PhdApp::OnInit() {
 
     SetVendorName(_T("StarkLabs"));
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
+
+    if (m_resetConfig)
+    {
+        pConfig->DeleteAll();
+    }
 
     wxLocale::AddCatalogLookupPathPrefix(_T("locale"));
     m_locale.Init(pConfig->GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
@@ -147,7 +154,10 @@ bool PhdApp::OnCmdLineParsed(wxCmdLineParser & parser)
 {
     bool bReturn = true;
 
-    bool found = parser.Found("i", &m_instanceNumber);
+    (void)parser.Found("i", &m_instanceNumber);
+
+    bool resetValue = false;
+    m_resetConfig = parser.Found("R");
 
     return bReturn;
 }
