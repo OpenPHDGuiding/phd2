@@ -436,6 +436,8 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
 {
     try
     {
+        Debug.AddLine("Move(%d, %lf, %d)", direction, duration, normalMove);
+
         if (!m_guidingEnabled)
         {
             duration = 0.0;
@@ -455,6 +457,7 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
                     (direction == NORTH && m_decGuideMode == DEC_SOUTH))
                 {
                     duration = 0.0;
+                    Debug.AddLine("duration set to 0.0 by GuideMode");
                 }
 
                 if (normalMove)
@@ -463,6 +466,7 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
                     if  (duration > m_maxDecDuration)
                     {
                         duration = m_maxDecDuration;
+                        Debug.AddLine("duration set to %lf by maxDecDuration", duration);
                     }
                 }
                 break;
@@ -475,6 +479,7 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
                     if (duration > m_maxRaDuration)
                     {
                         duration = m_maxRaDuration;
+                        Debug.AddLine("duration set to %lf by maxRaDuration", duration);
                     }
                 }
 

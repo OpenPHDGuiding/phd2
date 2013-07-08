@@ -212,9 +212,14 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
     {
         if (pArgs->pMount->HasNonGuiMove())
         {
-            Debug.AddLine("Handling move in thread");
+            Debug.AddLine("Handling move in thread for %s dir=%d",
+                    pArgs->pMount->GetMountClassName(),
+                    pArgs->direction);
+
             if (pArgs->calibrationMove)
             {
+                Debug.AddLine("calibration move");
+
                 if (pArgs->pMount->CalibrationMove(pArgs->direction))
                 {
                     throw ERROR_INFO("CalibrationMove failed");
@@ -222,6 +227,9 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             }
             else
             {
+                Debug.AddLine(wxString::Format("endpoint = (%.2f, %.2f)",
+                    pArgs->vectorEndpoint.X, pArgs->vectorEndpoint.Y));
+
                 if (pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->normalMove))
                 {
                     throw ERROR_INFO("Move failed");
@@ -259,7 +267,7 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
         bError = true;
     }
 
-    Debug.AddLine(wxString::Format("myFrame handled move complete, bError=%d", bError));
+    Debug.AddLine(wxString::Format("move complete, bError=%d", bError));
 
     return  bError;
 }
