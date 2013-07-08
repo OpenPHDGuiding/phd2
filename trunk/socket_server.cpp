@@ -202,10 +202,10 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
 
                 double size = 1.0;
 
-                 if (pGuider->GetState() != STATE_GUIDING)
-                 {
-                     throw ERROR_INFO("cannot dither if not guiding");
-                 }
+                if (pGuider->GetState() != STATE_GUIDING)
+                {
+                    throw ERROR_INFO("cannot dither if not guiding");
+                }
 
                 // note: size is twice the desired move amount
                 switch(c)
@@ -329,7 +329,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             {
                 Debug.AddLine("processing socket request LOOP");
                 wxCommandEvent *tmp_evt;
-                tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_LOOP);
+                tmp_evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, BUTTON_LOOP);
                 QueueEvent(tmp_evt);
                 GuideLog.ServerCommand(pGuider, "LOOP");
                 break;
@@ -338,16 +338,16 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             {
                 Debug.AddLine("processing socket request STOP");
                 wxCommandEvent *tmp_evt;
-                tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_STOP);
+                tmp_evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, BUTTON_STOP);
                 QueueEvent(tmp_evt);
                 GuideLog.ServerCommand(pGuider, "STOP");
-               break;
+                break;
             }
             case MSG_STARTGUIDING:
             {
                 Debug.AddLine("processing socket request STARTGUIDING");
                 wxCommandEvent *tmp_evt;
-                tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_GUIDE);
+                tmp_evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, BUTTON_GUIDE);
                 QueueEvent(tmp_evt);
                 GuideLog.ServerCommand(pGuider, "START GUIDING");
                 break;
