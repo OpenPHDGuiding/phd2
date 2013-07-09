@@ -212,9 +212,9 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
     {
         if (pArgs->pMount->HasNonGuiMove())
         {
-            Debug.AddLine("Handling move in thread for %s dir=%d",
+            Debug.AddLine(wxString::Format("Handling move in thread for %s dir=%d",
                     pArgs->pMount->GetMountClassName(),
-                    pArgs->direction);
+                    pArgs->direction));
 
             if (pArgs->calibrationMove)
             {
@@ -238,7 +238,7 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
         }
         else
         {
-            // we don't have a non-gui guide function, wo we send this to the
+            // we don't have a non-gui guide function, so we send this to the
             // main frame routine that handles guides requests
 
             Debug.AddLine("Sending move to myFrame");
