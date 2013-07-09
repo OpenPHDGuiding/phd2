@@ -307,7 +307,7 @@ void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
     }
 #endif
 
-#ifdef GUIDE_ONBOARD
+#ifdef GUIDE_ONCAMERA
     else if (mount_menu->IsChecked(SCOPE_CAMERA)) {
         pNewScope = new ScopeOnCamera();
         if (pNewScope->Connect())
