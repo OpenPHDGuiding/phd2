@@ -86,7 +86,7 @@ bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
 
     try
     {
-        if (massChangeThreshold < 0)
+        if (massChangeThreshold < 0.0)
         {
             throw ERROR_INFO("massChangeThreshold < 0");
         }

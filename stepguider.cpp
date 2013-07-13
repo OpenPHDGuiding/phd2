@@ -710,6 +710,8 @@ bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
 {
     bool bError = false;
 
+    Debug.AddLine(wxString::Format("stepguider calibration move dir= %d steps= %d", direction, m_calibrationStepsPerIteration));
+
     try
     {
         double stepsTaken = Move(direction, m_calibrationStepsPerIteration, false);

@@ -414,6 +414,8 @@ bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
 {
     bool bError = false;
 
+    Debug.AddLine(wxString::Format("scope calibration move dir= %d dur= %d", direction, m_calibrationDuration));
+
     try
     {
         double duration = Move(direction, m_calibrationDuration, false);
