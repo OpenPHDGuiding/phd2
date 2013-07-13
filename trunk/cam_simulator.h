@@ -38,6 +38,11 @@
 
 struct SimCamState;
 
+enum PierSide {
+    PIER_SIDE_EAST,
+    PIER_SIDE_WEST,
+};
+
 class Camera_SimClass : public GuideCamera {
     SimCamState *sim;
 public:
@@ -50,6 +55,9 @@ public:
     virtual bool HasNonGuiCapture(void) { return true; }
     virtual bool    HasNonGuiMove(void) { return true; }
     bool PulseGuideScope (int direction, int duration);
+    PierSide GetPierSide(void) const;
+    void SetPierSide(PierSide side);
+    void FlipPierSide(void);
 };
 
 #endif
