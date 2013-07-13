@@ -57,6 +57,7 @@ struct SimCamParams
     static unsigned int border;
     static unsigned int nr_stars;
     static unsigned int nr_hot_pixels;
+    static double noise_multiplier;
     static double dec_backlash;
     static double pe_scale;
     static double dec_drift_rate;
@@ -70,7 +71,8 @@ unsigned int SimCamParams::height = 580;         // simulated camera image heigh
 unsigned int SimCamParams::border = 12;          // do not place any stars within this size border
 unsigned int SimCamParams::nr_stars = 20;        // number of stars to generate
 unsigned int SimCamParams::nr_hot_pixels = 8;    // number of hot pixels to generate
-double SimCamParams::dec_backlash = 11.0;         // dec backlash amount (pixels)
+double SimCamParams::noise_multiplier = 2.0;     // noise factor, increase to increase noise
+double SimCamParams::dec_backlash = 11.0;        // dec backlash amount (pixels)
 double SimCamParams::pe_scale = 3.5;             // scale factor controlling magnitude of simulated periodic error
 double SimCamParams::dec_drift_rate = 4.8 / 60.; // dec drift rate (pixels per second)
 double SimCamParams::seeing_scale = 0.4;         // simulated seeing scale factor
@@ -179,6 +181,7 @@ struct SimCamState {
     unsigned int height;
     wxVector<SimStar> stars; // star positions and intensities (ra, dec)
     wxVector<wxPoint> hotpx; // hot pixels
+    PierSide pier_side;
     double ra_ofs;        // assume no backlash in RA
     BacklashVal dec_ofs;  // simulate backlash in DEC
     wxStopWatch timer;    // platform-independent timer
@@ -195,10 +198,21 @@ SimCamState::SimCamState()
     unsigned int const nr_stars = SimCamParams::nr_stars;
     stars.resize(nr_stars);
     unsigned int const border = SimCamParams::border;
+
+    double const angle = SimCamParams::cam_angle * PI / 180.;
+    double const cos_t = cos(-angle);
+    double const sin_t = sin(-angle);
+
     srand(2); // always generate the same stars
     for (unsigned int i = 0; i < nr_stars; i++) {
-        stars[i].pos.x = border + (rand() % (width - 2 * border));
-        stars[i].pos.y = border + (rand() % (height - 2 * border));
+        // generate stars in camera coordinates
+        double cx = border + (rand() % (width - 2 * border));
+        double cy = border + (rand() % (height - 2 * border));
+        // convert to ra/dec coordinates
+        cx -= width / 2.0;
+        cy -= height / 2.0;
+        stars[i].pos.x = cx * cos_t - cy * sin_t;
+        stars[i].pos.y = cx * sin_t + cy * cos_t;
         stars[i].inten = 20 + rand() % 80;
     }
     // generate hot pixels
@@ -209,6 +223,7 @@ SimCamState::SimCamState()
         hotpx[i].y = rand() % height;
     }
     srand(clock());
+    pier_side = PIER_SIDE_EAST;
     ra_ofs = 0.;
     dec_ofs = BacklashVal(SimCamParams::dec_backlash);
 }
@@ -330,8 +345,8 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     double const cos_t = cos(angle);
     double const sin_t = sin(angle);
     for (unsigned int i = 0; i < nr_stars; i++) {
-        cc[i].x = pos[i].x * cos_t - pos[i].y * sin_t;
-        cc[i].y = pos[i].x * sin_t + pos[i].y * cos_t;
+        cc[i].x = pos[i].x * cos_t - pos[i].y * sin_t + width / 2.0;
+        cc[i].y = pos[i].x * sin_t + pos[i].y * cos_t + height / 2.0;
     }
 
 #ifdef STEPGUIDER_SIMULATOR
@@ -355,7 +370,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     if (!pCamera->ShutterState) {
         for (unsigned int i = 0; i < nr_stars; i++) {
             unsigned short const newval =
-                stars[i].inten * exptime * gain + (int)((double) gain / 10.0 * (float) offset * (float) exptime / 100.0 + (rand() % (gain * 100)));
+                stars[i].inten * exptime * gain + (int)((double) gain / 10.0 * offset * exptime / 100.0 + (rand() % (gain * 100)));
             render_star(img, subframe, cc[i], newval);
         }
     }
@@ -369,7 +384,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 Camera_SimClass::Camera_SimClass()
     : sim(new SimCamState())
 {
-    Connected = FALSE;
+    Connected = false;
 //  HaveBPMap = FALSE;
 //  NBadPixels=-1;
 //  ConnectedModel = 1;
@@ -381,14 +396,15 @@ Camera_SimClass::Camera_SimClass()
     HasSubframes = true;
 }
 
-bool Camera_SimClass::Connect() {
-//  wxMessageBox(wxGetCwd());
-    Connected = TRUE;
+bool Camera_SimClass::Connect()
+{
+    Connected = true;
     return false;
 }
 
-bool Camera_SimClass::Disconnect() {
-    Connected = FALSE;
+bool Camera_SimClass::Disconnect()
+{
+    Connected = false;
     return false;
 }
 
@@ -489,7 +505,7 @@ static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int ga
     {
         unsigned short *const end = p0 + subframe.GetWidth();
         for (unsigned short *p = p0; p < end; p++)
-            *p = (unsigned short) ((double) gain / 10.0 * offset * exptime / 100.0 + (rand() % (gain * 100)));
+            *p = (unsigned short) (SimCamParams::noise_multiplier * ((double) gain / 10.0 * offset * exptime / 100.0 + (rand() % (gain * 100))));
     }
 }
 
@@ -539,6 +555,15 @@ bool Camera_SimClass::PulseGuideScope(int direction, int duration)
 {
     double d = SimCamParams::guide_rate * duration / 1000.0;
 
+    // after pier flip, North/South have opposite affect on declination
+    if (sim->pier_side == PIER_SIDE_WEST)
+    {
+        switch (direction) {
+        case NORTH: direction = SOUTH; break;
+        case SOUTH: direction = NORTH; break;
+        }
+    }
+
     switch (direction) {
     case WEST:    sim->ra_ofs += d;      break;
     case EAST:    sim->ra_ofs -= d;      break;
@@ -549,6 +574,26 @@ bool Camera_SimClass::PulseGuideScope(int direction, int duration)
     wxMilliSleep(duration);
     return false;
 }
+
+PierSide Camera_SimClass::GetPierSide(void) const
+{
+    return sim->pier_side;
+}
+
+void Camera_SimClass::SetPierSide(PierSide side)
+{
+    sim->pier_side = side;
+}
+
+void Camera_SimClass::FlipPierSide(void)
+{
+    sim->pier_side = sim->pier_side == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST;
+    SimCamParams::cam_angle += 180.0;
+    if (SimCamParams::cam_angle >= 360.0)
+        SimCamParams::cam_angle -= 360.0;
+    Debug.AddLine("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f", sim->pier_side, SimCamParams::cam_angle);
+}
+
 #endif // SIMMODE==3
 
 #if SIMMODE == 4

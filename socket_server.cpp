@@ -36,6 +36,7 @@
 #include "phd.h"
 #include <wx/log.h>
 #include "socket_server.h"
+#include "cam_simulator.h"
 
 static wxLogWindow *SocketLog = NULL;
 
@@ -61,7 +62,8 @@ enum {
     MSG_LOOP,               //19
     MSG_STARTGUIDING,       //20
     MSG_LOOPFRAMECOUNT,     //21
-    MSG_CLEARCAL            //22
+    MSG_CLEARCAL,           //22
+    MSG_FLIP_SIM_CAMERA,    //23
 };
 
 void MyFrame::OnServerMenu(wxCommandEvent &evt) {
@@ -383,6 +385,16 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
 
                 pMount->ClearCalibration();
                 GuideLog.ServerCommand(pGuider, "CLEAR CAL");
+
+            case MSG_FLIP_SIM_CAMERA:
+                Debug.AddLine("processing socket request flip camera simulator");
+                if (pCamera && pCamera->Name == _T("Simulator"))
+                {
+                    Camera_SimClass *simcam = static_cast<Camera_SimClass *>(pCamera);
+                    simcam->FlipPierSide();
+                }
+                break;
+
             default:
                 wxLogStatus(_T("Unknown test id received from client: %d"),(int) c);
                 rval = 1;

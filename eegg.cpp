@@ -138,18 +138,17 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
     }
     else if (evt.GetId() == EEGG_FLIPRACAL)
     {
-        if (!pMount->IsCalibrated())
-            return;
+        Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
+        double orig = mount->xAngle();
 
-        double orig = pMount->xAngle();
-        if (pMount->FlipCalibration())
+        if (FlipRACal())
         {
             wxMessageBox(_("Failed to flip RA calibration"));
         }
         else
         {
-            double xAngle  = pMount->xAngle();
-            wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"),orig,pMount->xAngle()));
+            double xAngle = mount->xAngle();
+            wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"), orig, xAngle));
         }
     }
     else if (evt.GetId() == EEGG_MANUALLOCK)
