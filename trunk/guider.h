@@ -104,6 +104,8 @@ class Guider: public wxWindow
 
     wxImage *m_displayedImage;
     OVERLAY_MODE m_overlayMode;
+    int m_polarAlignCircleRadius;
+    PHD_Point m_polarAlignCircleCenter;
     bool m_paused;
     PHD_Point m_lockPosition;
     GUIDER_STATE m_state;
@@ -159,6 +161,7 @@ public:
     const PHD_Point& LockPosition();
 
     bool SetOverlayMode(int newMode);
+    void SetPolarAlignCircle(const PHD_Point& center, unsigned int radius);
     bool SaveCurrentImage(const wxString& fileName);
 
     void StartGuiding(void);

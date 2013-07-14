@@ -349,6 +349,11 @@ void GraphLogWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
 void GraphLogWindow::OnCheckboxTrendlines(wxCommandEvent& WXUNUSED(evt))
 {
     m_pClient->m_showTrendlines = m_pCheckboxTrendlines->IsChecked();
+    if (!m_pClient->m_showTrendlines)
+    {
+        // clear the polar alignment circle
+        pFrame->pGuider->SetPolarAlignCircle(PHD_Point(), 0);
+    }
     Refresh();
 }
 
@@ -796,6 +801,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         dc.DrawLines(plot_length, pDecOrDyLine);
 
         // draw trend lines
+        unsigned int polarAlignCircleRadius = 0;
         if (m_showTrendlines && plot_length >= 5)
         {
             std::pair<double, double> trendRaOrDx;
@@ -841,12 +847,14 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                     // From Frank Barrett, "Determining Polar Axis Alignment Accuracy"
                     // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
                     double err_arcmin = (3.81 * ddec) / (dt * cos(declination)); 
-                    double err_px = err_arcmin * sampling * 60.0;
-                    dc.DrawText(wxString::Format("Polar alignment error: %.2f' (%.1f px)", err_arcmin, err_px),
+                    unsigned int err_px = (unsigned int) floor(fabs(err_arcmin * sampling * 60.0) + 0.5);
+                    polarAlignCircleRadius = err_px;
+                    dc.DrawText(wxString::Format("Polar alignment error: %.2f' (%u px)", err_arcmin, err_px),
                         leftEdge + 30, bottomEdge - 18);
                 }
             }
         }
+        pFrame->pGuider->SetPolarAlignCircle(pFrame->pGuider->CurrentPosition(), polarAlignCircleRadius);
 
         double rms_ra = rms(plot_length, &m_trendLineAccum[2]);
         double rms_dec = rms(plot_length, &m_trendLineAccum[3]);
