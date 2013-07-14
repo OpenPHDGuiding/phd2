@@ -55,6 +55,8 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 
     SetOverlayMode(DefaultOverlayMode);
 
+    m_polarAlignCircleRadius = 0;
+
     bool scaleImage = pConfig->GetBoolean("/guider/ScaleImage", DefaultScaleImage);
     SetScaleImage(scaleImage);
 
@@ -118,6 +120,12 @@ bool Guider::SetOverlayMode(int overlayMode)
     Update();
 
     return bError;
+}
+
+void Guider::SetPolarAlignCircle(const PHD_Point& pt, unsigned int radius)
+{
+    m_polarAlignCircleRadius = radius;
+    m_polarAlignCircleCenter = pt;
 }
 
 bool Guider::SetScaleImage(bool newScaleValue)
@@ -288,8 +296,8 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
                     double r=30.0;
                     double cos_angle = cos(pMount->xAngle());
                     double sin_angle = sin(pMount->xAngle());
-                    double StarX = pFrame->pGuider->CurrentPosition().X;
-                    double StarY = pFrame->pGuider->CurrentPosition().Y;
+                    double StarX = CurrentPosition().X;
+                    double StarY = CurrentPosition().Y;
 
                     dc.SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(),2,wxPENSTYLE_DOT));
                     r=15.0;
@@ -358,6 +366,15 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
 
             dc.DrawLine(0, LockY*m_scaleFactor, XImgSize, LockY*m_scaleFactor);
             dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YImgSize);
+        }
+
+        // draw a polar alignment circle
+        if (m_polarAlignCircleRadius)
+        {
+            dc.SetBrush(*wxTRANSPARENT_BRUSH);
+            dc.SetPen(wxPen(wxColor(255,0,255)));
+            dc.DrawCircle(m_polarAlignCircleCenter.X * m_scaleFactor,
+                m_polarAlignCircleCenter.Y * m_scaleFactor, m_polarAlignCircleRadius * m_scaleFactor);
         }
     }
     catch (wxString Msg)
