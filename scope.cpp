@@ -203,6 +203,8 @@ bool Scope::SetDecGuideMode(int decGuideMode)
     }
 
     pConfig->SetInt("/scope/DecGuideMode", m_decGuideMode);
+    if (pFrame)
+        pFrame->UpdateCalibrationStatus();
 
     return bError;
 }
@@ -453,18 +455,17 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
             case NORTH:
             case SOUTH:
 
-                // Enforce dec guiding mode for all moves
-                if ((m_decGuideMode == DEC_NONE) ||
-                    (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
-                    (direction == NORTH && m_decGuideMode == DEC_SOUTH))
-                {
-                    duration = 0.0;
-                    Debug.AddLine("duration set to 0.0 by GuideMode");
-                }
-
+                // Enforce dec guiding mode and max dec duration for normal moves
                 if (normalMove)
                 {
-                    // and max dec duration for normal moves
+                    if ((m_decGuideMode == DEC_NONE) ||
+                        (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
+                        (direction == NORTH && m_decGuideMode == DEC_SOUTH))
+                    {
+                        duration = 0.0;
+                        Debug.AddLine("duration set to 0.0 by GuideMode");
+                    }
+
                     if  (duration > m_maxDecDuration)
                     {
                         duration = m_maxDecDuration;
@@ -555,6 +556,28 @@ void Scope::SetCalibration(double xAngle, double yAngle, double xRate, double yR
     Mount::SetCalibration(xAngle, yAngle, xRate, yRate, declination);
 }
 
+bool Scope::IsCalibrated(void)
+{
+    if (!Mount::IsCalibrated())
+        return false;
+
+    switch (m_decGuideMode)
+    {
+    case DEC_NONE:
+        return true;
+    case DEC_AUTO:
+    case DEC_NORTH:
+    case DEC_SOUTH:
+        {
+            bool have_ns_calibration = m_calibrationYAngle != 0.0 || m_calibrationYRate != 1.0;
+            return have_ns_calibration;
+        }
+    default:
+        assert(false);
+        return true;
+    }
+}
+
 bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 {
     bool bError = false;
@@ -614,8 +637,10 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 if (m_decGuideMode == DEC_NONE)
                 {
                     m_calibrationState = CALIBRATION_STATE_COMPLETE;
-                    m_calibrationYAngle = 0;
-                    m_calibrationYRate = 1;
+                    // these values uniquely indicate lack of Dec calibration data.
+                    // If you change them, you need to update Scope::IsCalibrated.
+                    m_calibrationYAngle = 0.0;
+                    m_calibrationYRate = 1.0;
                     break;
                 }
 
