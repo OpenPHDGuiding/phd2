@@ -155,12 +155,12 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
     {
         if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
         {
-            wxMessageBox(_("Entering manual calibration requires a camera and mount to be connected and calibrated."));
+            wxMessageBox(_("Entering a manual lock position requires a camera and mount to be connected and calibrated."));
             return;
         }
         if (pGuider->GetState() > STATE_SELECTED)
         {
-            wxMessageBox(_("Entering manual calibration cannot be done while calibrating or guiding."));
+            wxMessageBox(_("Entering a manual lock position cannot be done while calibrating or guiding."));
             return;  // must not be calibrating or guiding already
         }
 
