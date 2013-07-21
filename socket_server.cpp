@@ -278,11 +278,13 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             }
             case MSG_AUTOFINDSTAR:
                 Debug.AddLine("processing socket request AUTOFINDSTAR");
-                rval = pFrame->pGuider->AutoSelect();
-                if (rval)
+                bool error;
+                error = pFrame->pGuider->AutoSelect();
+                rval = error ? 0 : 1;
+                if (!error)
                 {
                     wxCommandEvent *tmp_evt;
-                    tmp_evt = new wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, BUTTON_LOOP);
+                    tmp_evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, BUTTON_LOOP);
                     QueueEvent(tmp_evt);
                 }
                 GuideLog.ServerCommand(pGuider, "AUTO FIND STAR");
@@ -294,7 +296,6 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 sock->Read(&x, 2);
                 sock->Read(&y, 2);
                 sock->Discard();  // Clean out anything else
-
 
                 if (pFrame->pGuider->SetLockPosition(PHD_Point(x,y), false))
                 {
@@ -356,7 +357,11 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             }
             case MSG_LOOPFRAMECOUNT:
                 Debug.AddLine("processing socket request LOOPFRAMECOUNT");
-                if (m_frameCounter > UCHAR_MAX)
+                if (!CaptureActive)
+                {
+                    rval = 0;
+                }
+                else if (m_frameCounter > UCHAR_MAX)
                 {
                     rval = UCHAR_MAX;
                 }
