@@ -41,7 +41,7 @@ begin
     end;
 
     if (PageId = wpSelectDir) and not FileExists(ExpandConstant('{app}\opencv_core244.dll')) then begin
-        MsgBox('PHD version 1.42.2 (or greater) does not seem to be installed in that folder.  Please select the correct folder.', mbError, MB_OK);
+        MsgBox('PHD version 1.14.2 (or greater) does not seem to be installed in that folder.  Please select the correct folder.', mbError, MB_OK);
         Result := False;
         exit;
     end;
