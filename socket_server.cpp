@@ -331,6 +331,13 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_LOOP:
             {
                 Debug.AddLine("processing socket request LOOP");
+                if (CaptureActive)
+                {
+                    // do not try to start looping when capture is already active
+                    Debug.AddLine("cannot start looping when capture is already active");
+                    rval = (unsigned char) -1;
+                    break;
+                }
                 wxCommandEvent *tmp_evt;
                 tmp_evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, BUTTON_LOOP);
                 QueueEvent(tmp_evt);

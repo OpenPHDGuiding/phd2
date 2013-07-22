@@ -343,7 +343,10 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
             throw ERROR_INFO("Camera not connected");
         }
 
-        assert(!CaptureActive);
+        if (CaptureActive)
+        {
+            throw ERROR_INFO("cannot start looping when capture active");
+        }
 
         m_frameCounter = 0;
 
