@@ -16,12 +16,12 @@ The available commands are given in the table below. The command and response ar
 || MSG_MOVE1 || 3 || Dither a random amount, up to +/- 0.5 x dither_scale || Camera exposure time in seconds, but not less than 1 ||
 || MSG_MOVE2 || 4 || Dither a random amount, up to +/- 1.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
 || MSG_MOVE3 || 5 || Dither a random amount, up to +/- 2.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
-|| MSG_IMAGE || 6 || || ||
-|| MSG_GUIDE || 7 || || ||
-|| MSG_CAMCONNECT || 8 || || ||
-|| MSG_CAMDISCONNECT || 9 || || ||
+|| MSG_IMAGE || 6 || (not currently implemented in PHD2) || 1||
+|| MSG_GUIDE || 7 || (not currently implemented in PHD2)|| 1||
+|| MSG_CAMCONNECT || 8 || (not currently implemented in PHD2)|| 1||
+|| MSG_CAMDISCONNECT || 9 || (not currently implemented in PHD2)|| 1||
 || MSG_REQDIST || 10 || Request guide error distance|| The current guide error distance in units of 1/100 pixel. Values > 255 are reported as 255. ||
-|| MSG_REQFRAME || 11 || || ||
+|| MSG_REQFRAME || 11 || (not currently implemented in PHD2)|| 1||
 || MSG_MOVE4 || 12 || Dither a random amount, up to +/- 3.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
 || MSG_MOVE5 || 13 || Dither a random amount, up to +/- 5.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
 || MSG_AUTOFINDSTAR || 14 || Auto-select a star. If a star is found, start looping exposures. || 1 if a star was selected, 0 if not ||
