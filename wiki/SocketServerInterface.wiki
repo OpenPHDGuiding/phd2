@@ -1,0 +1,37 @@
+#summary PHD socket server command interface
+
+= PHD Socket Server Interface =
+
+PHD supports control and monitoring through its "socket server" interface.
+
+  Note: using the socket server for status monitoring has been superseded by the EventMonitoring interface which provides much more detailed status information.
+
+When the server is enabled (Tools -> Enable Server), PHD2 listens for TCP connections on port 4300. It accepts one-byte commands and sends one-byte responses. PHD2 supports multiple concurrent client connections. When there are multiple PHD2 instances, each instance listens on successive TCP port numbers (4301, 4302, ...).
+
+The available commands are given in the table below. The command and response are each a single byte with the indicated values.
+
+|| *Command name* || *Value* || *Description* || *Response* ||
+|| MSG_PAUSE || 1 || Pause guiding. Camera exposures continue to loop if they are already looping.|| 0 ||
+|| MSG_RESUME || 2 || Resume guiding if it was posed, otherwise no effect.|| 0 ||
+|| MSG_MOVE1 || 3 || Dither a random amount, up to +/- 0.5 x dither_scale || Camera exposure time in seconds, but not less than 1 ||
+|| MSG_MOVE2 || 4 || Dither a random amount, up to +/- 1.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
+|| MSG_MOVE3 || 5 || Dither a random amount, up to +/- 2.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
+|| MSG_IMAGE || 6 || || ||
+|| MSG_GUIDE || 7 || || ||
+|| MSG_CAMCONNECT || 8 || || ||
+|| MSG_CAMDISCONNECT || 9 || || ||
+|| MSG_REQDIST || 10 || Request guide error distance|| The current guide error distance in units of 1/100 pixel. Values > 255 are reported as 255. ||
+|| MSG_REQFRAME || 11 || || ||
+|| MSG_MOVE4 || 12 || Dither a random amount, up to +/- 3.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
+|| MSG_MOVE5 || 13 || Dither a random amount, up to +/- 5.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
+|| MSG_AUTOFINDSTAR || 14 || Auto-select a star. If a star is found, start looping exposures. || 1 if a star was selected, 0 if not ||
+|| MSG_SETLOCKPOSITION || 15 || Read 2 16-bit integers, x and y,from the socket and set the lock position to (x,y) || 0 ||
+|| MSG_FLIPRACAL || 16 || Flip RA calibration data || 1 if RA calibration data was flipped, 0 otherwise||
+|| MSG_GETSTATUS || 17 || Get a value describing the state of PHD || *TODO: list the states* ||
+|| MSG_STOP || 18 || Stop looping exposures or guiding|| 0. Client should poll with MSG_GETSTATUS to check that looping/guiding has actually stopped.||
+|| MSG_LOOP || 19 || Start looping exposures||0 if request to start looping was accepted, non-zero otherwise (like when looping was already active). Client should poll with MSG_GETSTATUS to see if looping actually started. ||
+|| MSG_STARTGUIDING || 20 ||Start guiding || 0. Client should poll with MSG_GETSTATUS to check that guiding has actually started.||
+|| MSG_LOOPFRAMECOUNT || 21 ||Get the current frame counter value.|| 0 if not looping or guiding. Otherwise, the current frame counter value (capped at 255). The frame counter is incremented for each camera exposure when looping or guiding.||
+|| MSG_CLEARCAL || 22 ||Clear calibration data (force re-calibration) || 0||
+|| MSG_FLIP_SIM_CAMERA || 23 || When the camera simulator is active, simulate a scope meridian flip||0 ||
+|| || <any other value> || unknown command || 1 ||
