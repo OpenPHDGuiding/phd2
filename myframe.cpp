@@ -43,7 +43,7 @@
 static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;
 static const bool DefaultDitherRaOnly = false;
-static const bool DefaultServerMode = false;
+static const bool DefaultServerMode = true;
 static const bool DefaultLoggingMode = false;
 static const int DefaultTimelapse = 0;
 static const int DefaultFocalLength = 0;
@@ -498,7 +498,7 @@ void MyFrame::SetupMenuBar(void)
 #endif
 
     wxMenu *help_menu = new wxMenu;
-    help_menu->Append(wxID_ABOUT, _("&About...\tF1"), _("About PHD Guiding"));
+    help_menu->Append(wxID_ABOUT, _("&About...\tF1"), wxString::Format(_("About %s"), APPNAME));
     help_menu->Append(wxID_HELP_CONTENTS,_("Contents"),_("Full help"));
     help_menu->Append(wxID_HELP_PROCEDURES,_("&Impatient Instructions"),_("Quick instructions for the impatient"));
 
@@ -1343,8 +1343,7 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     m_pLanguage = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
             wxSize(width+35, -1), languages);
     DoAdd(_("Language"), m_pLanguage,
-          _("PHD Guiding Language. You'll have to restart PHD to take effect."));
-
+          wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 }
 
 MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)

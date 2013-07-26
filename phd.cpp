@@ -114,11 +114,11 @@ bool PhdApp::OnInit() {
 
     pMount = new ScopeNone();
 
-    wxString title = wxString::Format(_T("PHD Guiding %s%s  -  www.stark-labs.com"), VERSION, PHDSUBVER);
+    wxString title = wxString::Format(_T("%s %s"), APPNAME, FULLVER);
 
     if (m_instanceNumber > 1)
     {
-        title = wxString::Format(_T("PHD Guiding(#%d) %s%s  -  www.stark-labs.com"), m_instanceNumber, VERSION, PHDSUBVER);
+        title = wxString::Format(_T("%s(#%d) %s"), APPNAME, m_instanceNumber, FULLVER);
     }
 
     pFrame = new MyFrame(title, m_instanceNumber, &m_locale);

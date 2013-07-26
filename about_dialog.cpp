@@ -42,7 +42,7 @@ BEGIN_EVENT_TABLE(AboutDialog, wxDialog)
 END_EVENT_TABLE()
 
 AboutDialog::AboutDialog(void) :
-wxDialog(pFrame, wxID_ANY, _("About PHD Guiding"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
+wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     #include "icons/phd.xpm"  // defines prog_icon[]
 
@@ -55,17 +55,28 @@ wxDialog(pFrame, wxID_ANY, _("About PHD Guiding"), wxDefaultPosition, wxDefaultS
     wxFileSystem::AddHandler(new wxMemoryFSHandler);
     wxMemoryFSHandler::AddFile("about.html", wxString::Format(
         "<html><body>"
-        "<h2>PHD Guiding v%s%s</h2>"
-        "<a href=\"http:\\\\www.stark-labs.com/phdguiding.html\">www.stark-labs.com</a><br><br>"
-        "Copyright 2006-2013 Craig Stark & Bret McKee<br><br>Special Thanks to:<br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;Sean Prange<br>"
+        "<h2>%s %s</h2>"
+        "<a href=\"https://code.google.com/p/open-phd-guiding/\">Open PHD Guiding</a><br>"
+        "<a href=\"http://www.stark-labs.com/phdguiding.html\">www.stark-labs.com</a><br><br>"
+        "Credits:<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Craig Stark<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Bret McKee<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Bernhard Reutner-Fischer<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Stefan Elste<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Geoffrey Hausheer<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Jared Wellman<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;John Wainwright<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Sylvain Girard<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Andy Galasso<br>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;John Wainwright"
-        "</body></html>",VERSION,PHDSUBVER));
+        "<br>"
+        "Copyright 2006-2013 Craig Stark<br>"
+        "Copyright 2009 Geoffrey Hausheer<br>"
+        "Copyright 2012-2013 Bret McKee<br>"
+        "Copyright 2013 Sylvain Girard<br>"
+        "Copyright 2013 Andy Galasso<br>"
+        "</body></html>", APPNAME, FULLVER));
     wxHtmlWindow *pHtml;
-    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(350, 190), wxHW_SCROLLBAR_NEVER);
+    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(380, 400), wxHW_SCROLLBAR_AUTO);
     pHtml->SetBorders(0);
     pHtml->LoadPage("memory:about.html");
     pHtml->SetSize(pHtml->GetInternalRepresentation()->GetWidth(), pHtml->GetInternalRepresentation()->GetHeight());

@@ -121,7 +121,7 @@ struct Ev : public JObj
 static Ev ev_message_version()
 {
     Ev ev("Version");
-    ev << NV("PHDVersion", VERSION)
+    ev << NV("PHDVersion", PHDVERSION)
         << NV("PHDSubver", PHDSUBVER)
         << NV("MsgVersion", MSG_PROTOCOL_VERSION);
     return ev;
