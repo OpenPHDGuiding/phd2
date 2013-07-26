@@ -71,7 +71,7 @@ bool GuidingLog::EnableLogging(void)
 
             assert(m_file.IsOpened());
 
-            m_file.Write(_T("PHD version ") VERSION PHDSUBVER _T(". Log enabled at ") + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+            m_file.Write(_T("PHD version ") FULLVER _T(". Log enabled at ") + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
             Flush();
 
             m_enabled = true;

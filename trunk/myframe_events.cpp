@@ -649,10 +649,10 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
             }
             wxDateTime now = wxDateTime::Now();
             LogFile->AddLine(_T("Logging manually enabled"));
-            LogFile->AddLine(wxString::Format(_T("PHD Guide %s  -- "),VERSION) + now.FormatDate()  + _T(" ") + now.FormatTime());
+            LogFile->AddLine(wxString::Format(_T("PHD Guide %s  -- "), FULLVER) + now.FormatDate()  + _T(" ") + now.FormatTime());
             LogFile->Write();
 #endif
-            this->SetTitle(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com (Log active)"),VERSION));
+            SetTitle(wxString::Format(_T("%s %s (Log active)"), APPNAME, FULLVER));
         }
         else {
 #ifdef PHD1_LOGGING // deprecated
@@ -664,7 +664,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
             Log_Data = false;
 #endif
             GuideLog.DisableLogging();
-            this->SetTitle(wxString::Format(_T("PHD Guiding %s  -  www.stark-labs.com"),VERSION));
+            this->SetTitle(wxString::Format(_T("%s %s"), APPNAME, FULLVER));
         }
     } else if (evt.GetId() == MENU_LOGIMAGES) {
         if (wxGetKeyState(WXK_SHIFT)) {

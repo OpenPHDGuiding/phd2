@@ -80,7 +80,7 @@ bool Camera_FirewireClass::Connect() {
         if (debugfile->Exists()) debugfile->Open();
         else debugfile->Create();
         wxDateTime now = wxDateTime::Now();
-        debugfile->AddLine(wxString::Format("DEBUG PHD Guide %s  -- ",VERSION) + now.FormatDate() + now.FormatTime());
+        debugfile->AddLine(wxString::Format("DEBUG %s %s  -- ", APPNAME, FULLVER) + now.FormatDate() + now.FormatTime());
     }
 
     try {

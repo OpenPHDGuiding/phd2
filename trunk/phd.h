@@ -72,8 +72,10 @@
 #include <map>
 #include <math.h>
 
-#define VERSION _T("2.0.5")
-#define PHDSUBVER _T("c")
+#define APPNAME _T("PHD Guiding")
+#define PHDVERSION _T("2.0.5")
+#define PHDSUBVER _T("d")
+#define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
 #pragma warning(disable:4189)
