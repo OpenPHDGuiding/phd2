@@ -27,7 +27,7 @@ The available commands are given in the table below. The command and response ar
 || MSG_AUTOFINDSTAR || 14 || Auto-select a star. If a star is found, start looping exposures. || 1 if a star was selected, 0 if not ||
 || MSG_SETLOCKPOSITION || 15 || Read 2 16-bit integers, x and y,from the socket and set the lock position to (x,y) || 0 ||
 || MSG_FLIPRACAL || 16 || Flip RA calibration data || 1 if RA calibration data was flipped, 0 otherwise||
-|| MSG_GETSTATUS || 17 || Get a value describing the state of PHD || *TODO: list the states* ||
+|| MSG_GETSTATUS || 17 || Get a value describing the state of PHD || 0: not paused, looping, or guiding <br> 1: capture active and star selected <br> 2: calibrating <br> 3: guiding and locked on star <br> 4: guiding but star lost <br> 100: paused <br> 101: looping but no star selected ||
 || MSG_STOP || 18 || Stop looping exposures or guiding|| 0. Client should poll with MSG_GETSTATUS to check that looping/guiding has actually stopped.||
 || MSG_LOOP || 19 || Start looping exposures||0 if request to start looping was accepted, non-zero otherwise (like when looping was already active). Client should poll with MSG_GETSTATUS to see if looping actually started. ||
 || MSG_STARTGUIDING || 20 ||Start guiding || 0. Client should poll with MSG_GETSTATUS to check that guiding has actually started.||
