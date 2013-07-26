@@ -186,6 +186,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 GuideLog.ServerCommand(pGuider, "PAUSE");
                 EvtServer.NotifyPaused();
                 break;
+
             case MSG_RESUME:
             case 'r':
                 Debug.AddLine("processing socket request RESUME");
@@ -194,6 +195,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 GuideLog.ServerCommand(pGuider, "RESUME");
                 EvtServer.NotifyResumed();
                 break;
+
             case MSG_MOVE1:  // +/- 0.5
             case MSG_MOVE2:  // +/- 1.0
             case MSG_MOVE3:  // +/- 2.0
@@ -254,6 +256,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 }
                 break;
             }
+
             case MSG_REQDIST:
             {
                 Debug.AddLine("processing socket request REQDIST");
@@ -276,6 +279,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 wxLogStatus(_T("Sending pixel error of %.2f"),(float) rval / 100.0);
                 break;
             }
+
             case MSG_AUTOFINDSTAR:
                 Debug.AddLine("processing socket request AUTOFINDSTAR");
                 bool error;
@@ -289,6 +293,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 }
                 GuideLog.ServerCommand(pGuider, "AUTO FIND STAR");
                 break;
+
             case MSG_SETLOCKPOSITION:
             {
                 // Sets LockX and LockY to be user-specified
@@ -310,6 +315,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 }
                 break;
             }
+
             case MSG_FLIPRACAL:
             {
                 Debug.AddLine("processing socket request FLIPRACAL");
@@ -324,10 +330,12 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 GuideLog.ServerCommand(pGuider, "FLIP RA CAL");
                 break;
             }
+
             case MSG_GETSTATUS:
                 Debug.AddLine("processing socket request GETSTATUS");
                 rval = Guider::GetExposedState();
                 break;
+
             case MSG_LOOP:
             {
                 Debug.AddLine("processing socket request LOOP");
@@ -344,6 +352,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 GuideLog.ServerCommand(pGuider, "LOOP");
                 break;
             }
+
             case MSG_STOP:
             {
                 Debug.AddLine("processing socket request STOP");
@@ -353,6 +362,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 GuideLog.ServerCommand(pGuider, "STOP");
                 break;
             }
+
             case MSG_STARTGUIDING:
             {
                 Debug.AddLine("processing socket request STARTGUIDING");
@@ -362,6 +372,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 GuideLog.ServerCommand(pGuider, "START GUIDING");
                 break;
             }
+
             case MSG_LOOPFRAMECOUNT:
                 Debug.AddLine("processing socket request LOOPFRAMECOUNT");
                 if (!CaptureActive)
@@ -377,6 +388,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                     rval = m_frameCounter;
                 }
                 break;
+
             case MSG_CLEARCAL:
                 Debug.AddLine("processing socket request CLEARCAL");
 
@@ -397,6 +409,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
 
                 pMount->ClearCalibration();
                 GuideLog.ServerCommand(pGuider, "CLEAR CAL");
+                break;
 
             case MSG_FLIP_SIM_CAMERA:
                 Debug.AddLine("processing socket request flip camera simulator");
@@ -410,6 +423,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             default:
                 wxLogStatus(_T("Unknown test id received from client: %d"),(int) c);
                 rval = 1;
+                break;
         }
     }
     catch (wxString Msg)
