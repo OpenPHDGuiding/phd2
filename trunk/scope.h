@@ -116,8 +116,9 @@ public:
     virtual wxString GetSettingsSummary();
     virtual wxString GetMountClassName() const;
 
-    // functions with an implemenation in Scope that cannot be over-ridden
-    // by a subclass
+    static wxArrayString List(void);
+    static Scope *Factory(wxString choice);
+
 public:
     Scope(void);
     virtual ~Scope(void);
@@ -129,7 +130,12 @@ public:
     virtual bool GuidingCeases(void);
     virtual double GetDeclination(void);
 
+    virtual bool RequiresCamera(void);
+    virtual bool RequiresStepGuider(void);
+
 private:
+    // functions with an implemenation in Scope that cannot be over-ridden
+    // by a subclass
     double Move(GUIDE_DIRECTION direction, double duration, bool normalMove=true);
     bool CalibrationMove(GUIDE_DIRECTION direction);
 

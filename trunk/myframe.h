@@ -127,7 +127,7 @@ public:
 
     Guider *pGuider;
     wxMenuBar *Menubar;
-    wxMenu  *tools_menu, *mount_menu, *view_menu; // need access to this...
+    wxMenu  *tools_menu, *view_menu; // need access to this...
     wxAuiToolBar *MainToolbar;
     //wxChoice    *Dur_Choice;
     wxComboBox    *Dur_Choice;
@@ -138,6 +138,7 @@ public:
     wxSlider *Gamma_Slider;
     GraphLogWindow *pGraphLog;
     GraphStepguiderWindow *pStepGuiderGraph;
+    GearDialog *pGearDialog;
     ProfileWindow *pProfile;
     TargetWindow *pTarget;
     bool CaptureActive; // Is camera looping captures?
@@ -155,10 +156,7 @@ public:
     void OnSave(wxCommandEvent& evt);
     void OnSettings(wxCommandEvent& evt);
     void OnLog(wxCommandEvent& evt);
-    void OnConnectMount(wxCommandEvent& evt);
-    void OnConnectScope(wxCommandEvent& evt);
-    void OnConnectStepGuider(wxCommandEvent& evt);
-    void OnConnectCamera(wxCommandEvent& evt);
+    void OnSelectGear(wxCommandEvent& evt);
     void OnLoopExposure(wxCommandEvent& evt);
     void OnButtonStop(wxCommandEvent& evt);
     void OnDark(wxCommandEvent& evt);
@@ -195,8 +193,6 @@ public:
 #ifndef __WXGTK__
     void OnDonateMenu(wxCommandEvent& evt);
 #endif
-    void OnScopeSelected(wxCommandEvent& evt);
-    void OnStepGuiderSelected(wxCommandEvent& evt);
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
 
@@ -305,8 +301,7 @@ enum {
       AO_SXAO,
       AO_SIMULATOR,
     END_STEPGUIDERS,
-    BUTTON_SCOPE,
-    BUTTON_CAMERA,
+    BUTTON_GEAR,
     BUTTON_CAL,
     BUTTON_DARK,
     BUTTON_LOOP,
@@ -315,6 +310,22 @@ enum {
     BUTTON_DURATION,
     BUTTON_ADVANCED,
     BUTTON_CAM_PROPERTIES,
+    GEAR_DIALOG_IDS_BEGIN,
+        GEAR_CHOICE_CAMERA,
+        GEAR_BUTTON_CONNECT_CAMERA,
+        GEAR_BUTTON_DISCONNECT_CAMERA,
+
+        GEAR_CHOICE_SCOPE,
+        GEAR_BUTTON_CONNECT_SCOPE,
+        GEAR_BUTTON_DISCONNECT_SCOPE,
+
+        GEAR_CHOICE_STEPGUIDER,
+        GEAR_BUTTON_CONNECT_STEPGUIDER,
+        GEAR_BUTTON_DISCONNECT_STEPGUIDER,
+
+        GEAR_BUTTON_CONNECT_ALL,
+        GEAR_BUTTON_DISCONNECT_ALL,
+    GEAR_DIALOG_IDS_END,
     CTRL_GAMMA,
     WIN_VFW,  // Dummy event to capture VFW streams
     MGUIDE1_UP,

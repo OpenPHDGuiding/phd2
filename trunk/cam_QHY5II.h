@@ -41,7 +41,7 @@ public:
     bool    Disconnect();
     void    InitCapture();
 
-    bool    PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
 
     Camera_QHY5IIClass();

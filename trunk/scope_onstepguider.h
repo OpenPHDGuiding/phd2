@@ -1,9 +1,9 @@
 /*
- *  cam_Starfish.h
+ *  scope_onstepguider.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2007-2010 Craig Stark.
+ *  Created by Bret McKee
+ *  Copyright (c) 2012 Bret McKee
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,8 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Bret McKee, Dad Dog Development,
+ *     Craig Stark, Stark Labs nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -31,30 +32,21 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef STARFISHDEF
-#define STARFISHDEF
-#if defined (__WINDOWS__)
-#include "cameras/FcLib.h"
-#else
-#include <fcCamFw/fcCamFw.h>
-#endif
-class Camera_StarfishClass : public GuideCamera {
+
+#ifdef GUIDE_ONSTEPGUIDER
+
+#include "scope_onboard_st4.h"
+
+class ScopeOnStepGuider:public ScopeOnboardST4
+{
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture();
+    ScopeOnStepGuider(void);
+    virtual ~ScopeOnStepGuider(void);
 
-//  bool    SetGlobalGain(unsigned char gain);
-    bool    ST4PulseGuideScope(int direction, int duration);
-//  void    ClearGuidePort();
+    virtual bool Connect(void);
 
-
-    Camera_StarfishClass();
-private:
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
-    int CamNum;
-    int NCams;
-    bool DriverLoaded;
+    virtual bool RequiresStepGuider(void);
+    virtual bool HasNonGuiMove(void);
 };
-#endif  //STARFISHDEF
+
+#endif // GUIDE_ONSTEPGUIDER

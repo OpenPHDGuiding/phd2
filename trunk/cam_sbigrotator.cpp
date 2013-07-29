@@ -85,7 +85,7 @@ bool Camera_SBIGRotatorClass::Connect()
         Connected = m_pSubcamera->Connected;
 
         FullSize = m_pSubcamera->FullSize;
-        HasGuiderOutput = m_pSubcamera->HasGuiderOutput;
+        m_hasGuideOutput = m_pSubcamera->ST4HasGuideOutput();
     }
     catch (wxString Msg)
     {
@@ -112,8 +112,8 @@ bool Camera_SBIGRotatorClass::Capture(int duration, usImage& img, wxRect subfram
     return bError;
 }
 
-bool Camera_SBIGRotatorClass::PulseGuideScope (int direction, int duration)
+bool Camera_SBIGRotatorClass::ST4PulseGuideScope (int direction, int duration)
 {
-    return m_pSubcamera->PulseGuideScope(direction, duration);
+    return m_pSubcamera->ST4PulseGuideScope(direction, duration);
 }
 #endif // SBIGROTATOR_CAMERA_H_INCLUDED

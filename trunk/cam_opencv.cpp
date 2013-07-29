@@ -46,7 +46,7 @@ Camera_OpenCVClass::Camera_OpenCVClass(int devNumber)
     Connected = FALSE;
     Name=_T("OpenCV");
     FullSize = wxSize(640,480);
-    HasGuiderOutput = false;
+    m_hasGuideOutput = false;
     pCapDev = NULL;
     DeviceNum = devNumber;
 }

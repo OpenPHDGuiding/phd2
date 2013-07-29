@@ -82,7 +82,7 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass()
 //  NBadPixels=-1;
     Name=_T("ASCOM (late bound) camera");
     FullSize = wxSize(100,100);
-    HasGuiderOutput = false;
+    m_hasGuideOutput = false;
     HasGainControl = false;
     HasSubframes = true;
     Color = false;
@@ -253,7 +253,7 @@ bool Camera_ASCOMLateClass::Connect() {
         wxMessageBox(_T("ASCOM driver problem getting CanPulseGuide property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
-    HasGuiderOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
+    m_hasGuideOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
 
     // Check if we have a shutter
     tmp_name = L"HasShutter";
@@ -490,7 +490,7 @@ bool Camera_ASCOMLateClass::Connect() {
     this->ASCOM_SetROI(0,0,FullSize.GetWidth(),FullSize.GetHeight());
 
 /*  wxMessageBox(Name + wxString::Format(" connected\n%d x %d, Guider = %d",
-        FullSize.GetWidth(),FullSize.GetHeight(), (int) HasGuiderOutput));
+        FullSize.GetWidth(),FullSize.GetHeight(), (int) m_hasGuideOutput));
 */
     Connected = true;
     return false;
@@ -623,9 +623,9 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     return false;
 }
 
-bool Camera_ASCOMLateClass::PulseGuideScope(int direction, int duration)
+bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
 {
-    if (!HasGuiderOutput)
+    if (!m_hasGuideOutput)
         return true;
 
     AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
@@ -901,7 +901,7 @@ bool Camera_ASCOMLateClass::ASCOM_IsMoving()
     EXCEPINFO excep;
     VARIANT vRes;
 
-    if (!pMount->IsConnected()) return false;
+    if (!pMount || !pMount->IsConnected()) return false;
     dispParms.cArgs = 0;
     dispParms.rgvarg = NULL;
     dispParms.cNamedArgs = 0;
@@ -925,7 +925,7 @@ bool Camera_ASCOMLateClass::HasNonGuiCapture(void)
     return true;
 }
 
-bool Camera_ASCOMLateClass::HasNonGuiMove(void)
+bool Camera_ASCOMLateClass::ST4HasNonGuiMove(void)
 {
     return true;
 }

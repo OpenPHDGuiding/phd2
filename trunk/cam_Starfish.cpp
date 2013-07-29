@@ -70,7 +70,7 @@ Camera_StarfishClass::Camera_StarfishClass() {
     Name=_T("Fishcamp Starfish");
     FullSize = wxSize(1280,1024);
     HasGainControl = true;
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     DriverLoaded = false;
 }
 
@@ -193,7 +193,7 @@ bool Camera_StarfishClass::CaptureFull(int duration, usImage& img) {
     return false;
 }
 */
-bool Camera_StarfishClass::PulseGuideScope(int direction, int duration) {
+bool Camera_StarfishClass::ST4PulseGuideScope(int direction, int duration) {
 
     if (direction == WEST) direction = EAST;  // my ENUM and theirs are flipped
     else if (direction == EAST) direction = WEST;

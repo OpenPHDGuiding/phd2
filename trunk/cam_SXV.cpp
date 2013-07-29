@@ -50,7 +50,7 @@ Camera_SXVClass::Camera_SXVClass() {
     Name=_T("Starlight Xpress SXV");
     FullSize = wxSize(1280,1024);
     HasGainControl = false;
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     Interlaced = false;
     RawData = NULL;
 }
@@ -410,7 +410,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 }
 
 
-bool Camera_SXVClass::PulseGuideScope(int direction, int duration) {
+bool Camera_SXVClass::ST4PulseGuideScope(int direction, int duration) {
     // Guide port values
     // West = 1
     // East = 8

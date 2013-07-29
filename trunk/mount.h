@@ -107,14 +107,6 @@ protected:
 
     friend class GraphLogWindow;
 
-public:
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
-
-    virtual wxString GetMountClassName() const = 0;
-
-    // functions with an implemenation in Guider that cannot be over-ridden
-    // by a subclass
-private:
     GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     static bool CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm);
 
@@ -122,6 +114,8 @@ private:
     void Mount::TestTransforms(void);
 #endif
 
+    // functions with an implemenation in Guider that cannot be over-ridden
+    // by a subclass
 public:
     Mount(void);
     virtual ~Mount(void);
@@ -142,11 +136,9 @@ public:
 
     GraphControlPane *GetXGuideAlgorithmControlPane(wxWindow *pParent);
     GraphControlPane *GetYGuideAlgorithmControlPane(wxWindow *pParent);
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label) { return NULL; };
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
 
     void AdjustForDeclination(void);
-
-    wxString Name(void) const { return m_Name; }
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
@@ -160,6 +152,9 @@ public:
 
     virtual bool GuidingCeases(void)=0;
 
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
+    virtual wxString GetMountClassName() const = 0;
+
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation
@@ -171,14 +166,13 @@ public:
     virtual bool HasNonGuiMove(void);
     virtual bool SynchronousOnly(void);
 
-    virtual const wxString &Name(void);
-
-    virtual bool IsConnected(void);
+    virtual const wxString &Name(void) const;
 
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
     virtual void SetCalibration(double dxAngle, double dyAngle, double dxRate, double dyRate, double declination=0.0);
 
+    virtual bool IsConnected(void);
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 

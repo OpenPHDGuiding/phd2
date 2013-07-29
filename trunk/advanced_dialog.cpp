@@ -130,8 +130,12 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
     m_pNotebook->AddPage(pAoSettingsPanel, _("AO"));
 
     // and populate them
+    m_pSecondaryMountPane = NULL;
+    m_pMountPane          = NULL;
+
     if (pSecondaryMount)
     {
+        assert(pMount);
         // Since there are two mounts, we have an AO connected and can populatate both tabs.
         m_pMountPane = pMount->GetConfigDialogPane(pAoSettingsPanel);
         m_pSecondaryMountPane = pSecondaryMount->GetConfigDialogPane(pScopeSettingsPanel);
@@ -145,19 +149,32 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
     }
     else
     {
-        // We only have a scope
-        m_pMountPane = pMount->GetConfigDialogPane(pScopeSettingsPanel);
-        m_pSecondaryMountPane = NULL;
-
-        // otherwise the primary mount goes on the scope tab
-        pScopeTabSizer->Add(m_pMountPane, sizer_flags);
-
-        // And a text box informing the user ther is no AO goes on the AO tab
+        // Add a text box to the AO tab informing the user there is no AO
 
         wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pAoSettingsPanel, wxID_ANY, _("AO Settings")), wxVERTICAL);
         wxStaticText *pText = new wxStaticText(pAoSettingsPanel, wxID_ANY, _("No AO Connected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
         pAoTabSizer->Add(pBox, sizer_flags);
+
+        // and then either add the mount config dialog or a text box
+
+        if (pMount)
+        {
+            // We only have a scope
+            m_pMountPane = pMount->GetConfigDialogPane(pScopeSettingsPanel);
+
+            // so it goes on the scope tab
+            pScopeTabSizer->Add(m_pMountPane, sizer_flags);
+        }
+        else
+        {
+            // Add a text box to the Scope tab informing the user there is no AO
+            pBox = new wxStaticBoxSizer(new wxStaticBox(pScopeSettingsPanel, wxID_ANY, _("Scope Settings")), wxVERTICAL);
+            pText = new wxStaticText(pScopeSettingsPanel, wxID_ANY, _("No Scope Connected"),wxPoint(-1,-1),wxSize(-1,-1));
+            pBox->Add(pText);
+
+            pScopeTabSizer->Add(pBox, sizer_flags);
+        }
     }
 
     wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);

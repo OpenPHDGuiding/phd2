@@ -1,5 +1,5 @@
 /*
- *  scope_oncamera.h
+ *  scope_oncamera.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -39,101 +39,35 @@
 
 ScopeOnCamera::ScopeOnCamera(void)
 {
-    m_Name =  "OnCamera";
+    m_Name =  "On Camera";
+}
+
+ScopeOnCamera::~ScopeOnCamera(void)
+{
 }
 
 bool ScopeOnCamera::Connect(void)
 {
-    bool bError = false;
-
-    try
-    {
-        if (!pCamera || !pCamera->Connected)
-        {
-            throw ERROR_INFO("Attempt to Connect onboard when camera is not connected");
-        }
-
-        if (!pCamera->HasGuiderOutput)
-        {
-            throw ERROR_INFO("Attempt to Connect onboard when camera does not have guide output");
-        }
-
-        if (!IsConnected())
-        {
-            Scope::Connect();
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
+    return ScopeOnboardST4::Connect(pCamera);
 }
 
-bool ScopeOnCamera::Disconnect(void)
+bool ScopeOnCamera::RequiresCamera(void)
 {
-    bool bError = false;
-
-    try
-    {
-        if (!IsConnected())
-        {
-            throw ERROR_INFO("Attempt to Disconnect onboard when not connected");
-        }
-
-        Scope::Disconnect();
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-}
-
-bool ScopeOnCamera::Guide(const GUIDE_DIRECTION direction, const int duration)
-{
-    bool bError = false;
-
-    try
-    {
-        if (!IsConnected())
-        {
-            throw ERROR_INFO("Attempt to Guide while not connected");
-        }
-
-        pCamera->PulseGuideScope(direction,duration);
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
+    return true;
 }
 
 bool ScopeOnCamera::HasNonGuiMove(void)
 {
-    return pCamera->HasNonGuiMove();
+    return true;
 }
 
 /*
- * OnCamera mounts cannot move the mount while
- * imaging
+ * OnCamera mounts cannot move the mount while imaging
  */
 
 bool ScopeOnCamera::SynchronousOnly(void)
 {
     return true;
-}
-
-bool ScopeOnCamera::IsGuiding(void)
-{
-    return false;
 }
 
 #endif // GUIDE_ONCAMERA

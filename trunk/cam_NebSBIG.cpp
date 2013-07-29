@@ -74,7 +74,7 @@ bool Camera_NebSBIGClass::Capture(int duration, usImage& img, wxRect subframe, b
 
 }
 
-bool Camera_NebSBIGClass::PulseGuideScope(int direction, int duration) {
+bool Camera_NebSBIGClass::ST4PulseGuideScope(int direction, int duration) {
     bool retval = ServerSendGuideCommand(direction, duration);
     return retval;
 }

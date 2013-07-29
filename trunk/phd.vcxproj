@@ -206,6 +206,7 @@
     <ClCompile Include="debuglog.cpp" />
     <ClCompile Include="eegg.cpp" />
     <ClCompile Include="event_server.cpp" />
+    <ClCompile Include="gear_dialog.cpp" />
     <ClCompile Include="graph-stepguider.cpp" />
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="guider.cpp" />
@@ -222,6 +223,7 @@
     <ClCompile Include="mount.cpp" />
     <ClCompile Include="myframe.cpp" />
     <ClCompile Include="myframe_events.cpp" />
+    <ClCompile Include="onboard_st4.cpp" />
     <ClCompile Include="parallelport.cpp" />
     <ClCompile Include="parallelport_win32.cpp" />
     <ClCompile Include="phd.cpp">
@@ -240,7 +242,9 @@
     <ClCompile Include="scope_GC_USBST4.cpp" />
     <ClCompile Include="scope_gpint.cpp" />
     <ClCompile Include="scope_gpusb.cpp" />
+    <ClCompile Include="scope_onboard_st4.cpp" />
     <ClCompile Include="scope_oncamera.cpp" />
+    <ClCompile Include="scope_onstepguider.cpp" />
     <ClCompile Include="scope_voyager.cpp" />
     <ClCompile Include="serialport.cpp" />
     <ClCompile Include="serialport_loopback.cpp" />
@@ -300,6 +304,7 @@
     <ClInclude Include="confirm_dialog.h" />
     <ClInclude Include="debuglog.h" />
     <ClInclude Include="event_server.h" />
+    <ClInclude Include="gear_dialog.h" />
     <ClInclude Include="graph-stepguider.h" />
     <ClInclude Include="graph.h" />
     <ClInclude Include="guider.h" />
@@ -317,6 +322,7 @@
     <ClInclude Include="messagebox_proxy.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="myframe.h" />
+    <ClInclude Include="onboard_st4.h" />
     <ClInclude Include="parallelport.h" />
     <ClInclude Include="parallelports.h" />
     <ClInclude Include="parallelport_win32.h" />
@@ -331,7 +337,9 @@
     <ClInclude Include="scope_gpint.h" />
     <ClInclude Include="scope_gpusb.h" />
     <ClInclude Include="scope_none.h" />
+    <ClInclude Include="scope_onboard_st4.h" />
     <ClInclude Include="scope_oncamera.h" />
+    <ClInclude Include="scope_onstepguider.h" />
     <ClInclude Include="scope_voyager.h" />
     <ClInclude Include="scopes.h" />
     <ClInclude Include="serialport.h" />

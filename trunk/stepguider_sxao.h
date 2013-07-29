@@ -64,8 +64,13 @@ private:
 
     bool FirmwareVersion(unsigned& version);
     bool Unjam(void);
-    bool Center(void);
+    bool Center();
     bool Center(unsigned char cmd);
+
+    virtual bool    ST4HasGuideOutput(void);
+    virtual bool    ST4HostConnected(void);
+    virtual bool    ST4HasNonGuiMove(void);
+    virtual bool    ST4PulseGuideScope(int direction, int duration);
 };
 
 #endif // if defined(STEPGUIDER_SXAO) && !defined(STEPGUIDER_SXAO_H_INCLUDED)

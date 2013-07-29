@@ -43,7 +43,7 @@ public:
     bool    Connect();
     bool    Disconnect();
 
-    bool    PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration);
     bool    Color;
     Camera_ASCOMLateClass();
     ~Camera_ASCOMLateClass();
@@ -67,7 +67,7 @@ private:
     bool ASCOM_Image(usImage& Image, bool useSubframe, wxRect subframe);
 
     bool ASCOM_IsMoving();
-    bool HasNonGuiMove(void);
+    bool ST4HasNonGuiMove(void);
 
     int DriverVersion;
 

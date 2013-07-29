@@ -72,19 +72,34 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     m_pClient = new GraphLogClientWindow(this);
 
     m_pControlSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
+
+    if (pMount)
+    {
+        m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
+        m_pYControlPane = pMount->GetYGuideAlgorithmControlPane(this);
+        m_pScopePane    = pMount->GetGraphControlPane(this, _("Scope:"));
+    }
+    else
+    {
+        m_pXControlPane = NULL;
+        m_pYControlPane = NULL;
+        m_pScopePane    = NULL;
+    }
+
     if (m_pXControlPane != NULL)
+    {
         m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Expand());
-    m_pYControlPane = pMount->GetYGuideAlgorithmControlPane(this);
-    //wxStaticLine *pLine = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
-    //m_pControlSizer->Add(pLine, wxSizerFlags().Expand());
+    }
+
     if (m_pYControlPane != NULL)
     {
         m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Expand());
     }
-    m_pScopePane = pMount->GetGraphControlPane(this, _("Scope:"));
+
     if (m_pScopePane != NULL)
+    {
         m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Expand());
+    }
 
     pMainSizer->Add(pClientSizer, wxSizerFlags().Expand().Proportion(1));
     pMainSizer->Add(m_pControlSizer, wxSizerFlags().Expand().Border(wxALL, 10));
@@ -315,27 +330,46 @@ void GraphLogWindow::UpdateControls()
         m_pControlSizer->Detach(m_pXControlPane);
         m_pXControlPane->Destroy();
     }
-    m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
-    if (m_pXControlPane != NULL)
-        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Expand());
 
     if (m_pYControlPane != NULL)
     {
         m_pControlSizer->Detach(m_pYControlPane);
         m_pYControlPane->Destroy();
     }
-    m_pYControlPane = pMount->GetYGuideAlgorithmControlPane(this);
-    if (m_pYControlPane != NULL)
-        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Expand());
 
     if (m_pScopePane != NULL)
     {
         m_pControlSizer->Detach(m_pScopePane);
         m_pScopePane->Destroy();
     }
-    m_pScopePane = pMount->GetGraphControlPane(this, _("Scope:"));
+
+    if (pMount)
+    {
+        m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
+        m_pYControlPane = pMount->GetYGuideAlgorithmControlPane(this);
+        m_pScopePane    = pMount->GetGraphControlPane(this, _("Scope:"));
+    }
+    else
+    {
+        m_pXControlPane = NULL;
+        m_pYControlPane = NULL;
+        m_pScopePane    = NULL;
+    }
+
+    if (m_pXControlPane != NULL)
+    {
+        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Expand());
+    }
+
+    if (m_pYControlPane != NULL)
+    {
+        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Expand());
+    }
+
     if (m_pScopePane != NULL)
+    {
         m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Expand());
+    }
 
     m_pControlSizer->Layout();
 }
@@ -837,7 +871,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             // show polar alignment error
             if (m_mode == MODE_RADEC && sampling != 1.0)
             {
-                double declination = pMount->GetDeclination();
+                double declination = pMount?pMount->GetDeclination():M_PI/2.0;
+
                 if (fabs(declination) < (M_PI/2.0)*(2.0/3.0))
                 {
                     const S_HISTORY& h0 = m_history[start_item];
@@ -846,7 +881,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                     double ddec = (double) plot_length * trendDecOrDy.first;
                     // From Frank Barrett, "Determining Polar Axis Alignment Accuracy"
                     // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
-                    double err_arcmin = (3.81 * ddec) / (dt * cos(declination)); 
+                    double err_arcmin = (3.81 * ddec) / (dt * cos(declination));
                     unsigned int err_px = (unsigned int) floor(fabs(err_arcmin * sampling * 60.0) + 0.5);
                     polarAlignCircleRadius = err_px;
                     dc.DrawText(wxString::Format("Polar alignment error: %.2f' (%u px)", err_arcmin, err_px),

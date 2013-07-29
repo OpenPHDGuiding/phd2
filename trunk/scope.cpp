@@ -209,196 +209,137 @@ bool Scope::SetDecGuideMode(int decGuideMode)
     return bError;
 }
 
-void MyFrame::OnConnectScope(wxCommandEvent& WXUNUSED(event)) {
-//  wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-//  wxMessageBox(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log.txt"));
-    Scope *pNewScope = NULL;
+wxArrayString Scope::List(void)
+{
+    wxArrayString ScopeList;
 
-    if (pGuider->GetState() > STATE_SELECTED) return;
-    if (CaptureActive) return;  // Looping an exposure already
-    if (pMount->IsConnected()) pMount->Disconnect();
-
-    if (false)
-    {
-        // this dummy if is here because otherwise we can't have the
-        // else if construct below, since we don't know which camera
-        // will be first.
-        //
-        // With this here and always false, the rest can safely begin with
-        // else if
-    }
+    ScopeList.Add(_T("None"));
 #ifdef GUIDE_ASCOM
-    else if (mount_menu->IsChecked(SCOPE_ASCOM)) {
-        pNewScope = new ScopeASCOM();
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": ASCOM");
-        }
-        else
-        {
-            SetStatusText("ASCOM " + _("connected"));
-        }
-    }
+    ScopeList.Add(_T("ASCOM"));
 #endif
-
-#ifdef GUIDE_GPUSB
-    else if (mount_menu->IsChecked(SCOPE_GPUSB)) {
-        pNewScope = new ScopeGpUsb();
-
-        if (pNewScope->Connect()) {
-            SetStatusText(_("Connection FAIL") + ": GPUSB");
-        }
-        else {
-            SetStatusText("GPUSB " + _("connected"));
-        }
-    }
-#endif
-
-#ifdef GUIDE_GPINT
-    else if (mount_menu->IsChecked(SCOPE_GPINT3BC)) {
-        pNewScope = new ScopeGpInt((short) 0x3BC);
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": GPINT 3BC");
-        }
-        else
-        {
-            SetStatusText("GPINT 3BC " + _("connected"));
-        }
-    }
-    else if (mount_menu->IsChecked(SCOPE_GPINT378)) {
-        pNewScope = new ScopeGpInt((short) 0x378);
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": GPINT 378");
-        }
-        else
-        {
-            SetStatusText("GPINT 378 " + _("connected"));
-        }
-    }
-    else if (mount_menu->IsChecked(SCOPE_GPINT278)) {
-        pNewScope = new ScopeGpInt((short) 0x278);
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": GPINT 278");
-        }
-        else
-        {
-            SetStatusText("GPINT 278 " + _("connected"));
-        }
-    }
-#endif
-
-#ifdef GUIDE_GCUSBST4
-    else if (mount_menu->IsChecked(SCOPE_GCUSBST4)) {
-        ScopeGCUSBST4 *pGCUSBST4 = new ScopeGCUSBST4();
-        pNewScope = pGCUSBST4;
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": GCUSB-ST4n");
-        }
-        else
-        {
-            SetStatusText("GCUSB-ST4 " + _("connected"));
-        }
-    }
-#endif
-
 #ifdef GUIDE_ONCAMERA
-    else if (mount_menu->IsChecked(SCOPE_CAMERA)) {
-        pNewScope = new ScopeOnCamera();
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": OnCamera");
-        }
-        else
-        {
-            SetStatusText("OnCamera " + _("connected"));
-        }
-    }
+    ScopeList.Add(_T("On-camera"));
+#endif
+#ifdef GUIDE_ONSTEPGUIDER
+    ScopeList.Add(_T("On-AO"));
+#ifdef GUIDE_GPUSB
+    ScopeList.Add(_T("GPUSB"));
+#endif
+#ifdef GUIDE_GPINT
+    ScopeList.Add(_T("GPINT 3BC"));
+    ScopeList.Add(_T("GPINT 378"));
+    ScopeList.Add(_T("GPINT 278"));
+#endif
 #endif
 #ifdef GUIDE_VOYAGER
-    else if (mount_menu->IsChecked(SCOPE_VOYAGER)) {
-        ScopeVoyager *pVoyager = new ScopeVoyager();
-        pNewScope = pVoyager;
-
-        if (pNewScope->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": Voyager localhost");
-
-            wxString IPstr = wxGetTextFromUser(_("Enter IP address"),_("Voyager not found on localhost"));
-
-            // we have to use the ScopeVoyager pointer to pass the address to connect
-            if (pVoyager->Connect(IPstr))
-            {
-                SetStatusText("Voyager IP failed");
-            }
-        }
-
-        if (pNewScope->IsConnected())
-        {
-            SetStatusText("Voyager " + _("connected"));
-        }
-    }
+    ScopeList.Add(_T("Voyager"));
 #endif
 #ifdef GUIDE_EQUINOX
-    else if (mount_menu->IsChecked(SCOPE_EQUINOX)) {
-        pNewScope = new ScopeEquinox();
+    ScopeList.Add(_T("Equinox 6"));
+#endif
+#ifdef GUIDE_EQUINOX
+    ScopeList.Add(_T("EQMAC"));
+#endif
+#ifdef GUIDE_GCUSBST4
+    ScopeList.Add(_T("GC USB ST4"));
+#endif
 
-        if (pNewScope->Connect())
+    return ScopeList;
+}
+
+Scope *Scope::Factory(wxString choice)
+{
+    Scope *pReturn = NULL;
+
+    try
+    {
+        if (choice.IsEmpty())
         {
-            SetStatusText(_("Connection FAIL") + ": Equinox");
+            throw ERROR_INFO("ScopeFactory called with choice.IsEmpty()");
         }
-        else
-        {
-            SetStatusText("Equinox " + _("connected"));
+
+        Debug.AddLine("ScopeFactory(%s)", choice);
+
+        if (choice.Find(_T("None")) + 1) {
         }
-    }
+#ifdef GUIDE_ASCOM
+        else if (choice.Find(_T("ASCOM")) + 1) {
+            pReturn = new ScopeASCOM();
+        }
+#endif
+#ifdef GUIDE_ONCAMERA
+        else if (choice.Find(_T("On-camera")) + 1) {
+            pReturn = new ScopeOnCamera();
+        }
+#endif
+#ifdef GUIDE_ONSTEPGUIDER
+        else if (choice.Find(_T("On-AO")) + 1) {
+            pReturn = new ScopeOnStepGuider();
+        }
+#endif
+#ifdef GUIDE_GPUSB
+        else if (choice.Find(_T("GPUSB")) + 1) {
+            pReturn = new ScopeGpUsb();
+        }
+#endif
+#ifdef GUIDE_GPINT
+        else if (choice.Find(_T("GPINT 3BC")) + 1) {
+            pReturn = new ScopeGpInt((short) 0x3BC);
+        }
+        else if (choice.Find(_T("GPINT 378")) + 1) {
+            pReturn = new ScopeGpInt((short) 0x378);
+        }
+        else if (choice.Find(_T("GPINT 278")) + 1) {
+            pReturn = new ScopeGpInt((short) 0x278);
+        }
+#endif
+#ifdef GUIDE_VOYAGER
+        else if (choice.Find(_T("Voyager")) + 1) {
+            This needs work.  We have to move the setting of the IP address
+                into the connect routine
+            ScopeVoyager *pVoyager = new ScopeVoyager();
+        }
+#endif
+#ifdef GUIDE_EQUINOX
+        else if (choice.Find(_T("Equinox 6")) + 1) {
+            pReturn = new ScopeEquinox();
+        }
+#endif
+#ifdef GUIDE_EQUINOX
+        else if (choice.Find(_T("EQMAC")) + 1) {
+            pReturn = new ScopeEQMac();
+        }
+#endif
+#ifdef GUIDE_GCUSBST4
+        else if (choice.Find(_T("GC USB ST4")) + 1) {
+            pReturn = new ScopeGCUSBST4();
+        }
 #endif
 #ifdef GUIDE_EQMAC
-    else if (mount_menu->IsChecked(SCOPE_EQMAC)) {
-        ScopeEQMac *pEQMac = new ScopeEQMac();
-        pNewScope = pEQMac;
-
-        // must use pEquinox to pass an arument to connect
-        if (pEQMac->Connect())
-        {
-            SetStatusText(_("Connection FAIL") + ": EQMac");
+        This is broken.  The equinox entry above is named EQMAC.  I'm not
+            sure the difference between them.
+        else if (choice.Find(_T("EQMac")) + 1) {
+            pReturn = new ScopeEQMac();
         }
-        else
-        {
-            SetStatusText("EQMac " + _("connected"));
-        }
-    }
 #endif
 #ifdef GUIDE_INDI
-    else if (mount_menu->IsChecked(SCOPE_INDI)) {
-        if (!INDI_ScopeConnect()) {
-            pMount->IsConnected() = SCOPE_INDI;
-        } else {
-            pMount->IsConnected() = 0;
-            SetStatusText(_("Connection FAIL") + ": INDI"));
+        This is broken
+#endif
+        else {
+            throw ERROR_INFO("ScopeFactory: Unknown Scope choice");
         }
     }
-#endif
-    if (pNewScope && pNewScope->IsConnected()) {
-        delete pMount;
-        pMount = pNewScope;
-        pGraphLog->UpdateControls();
-        SetStatusText(_("Mount connected"));
-        SetStatusText(_("Scope"),3);
-    }
-    else
+    catch (wxString Msg)
     {
-        SetStatusText(_("No scope"),3);
+        POSSIBLY_UNUSED(Msg);
+        if (pReturn)
+        {
+            delete pReturn;
+            pReturn = NULL;
+        }
     }
 
-    UpdateButtonsStatus();
+    return pReturn;
 }
 
 bool Scope::GuidingCeases(void)
@@ -410,6 +351,16 @@ bool Scope::GuidingCeases(void)
 double Scope::GetDeclination(void)
 {
     return Mount::GetDeclination();
+}
+
+bool Scope::RequiresCamera(void)
+{
+    return false;
+}
+
+bool Scope::RequiresStepGuider(void)
+{
+    return false;
 }
 
 bool Scope::CalibrationMove(GUIDE_DIRECTION direction)

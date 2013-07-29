@@ -92,7 +92,7 @@ Camera_QHY5IIClass::Camera_QHY5IIClass() {
 //  NBadPixels=-1;
     Name=_T("QHY 5-II");
     FullSize = wxSize(1280,1024);
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     HasGainControl = true;
 }
 
@@ -207,7 +207,7 @@ bool Camera_QHY5IIClass::Connect() {
     return false;
 }
 
-bool Camera_QHY5IIClass::PulseGuideScope(int direction, int duration) {
+bool Camera_QHY5IIClass::ST4PulseGuideScope(int direction, int duration) {
     DWORD reg = 0;
     DWORD dur = (DWORD) duration / 10;
     DWORD ptx, pty;

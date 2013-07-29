@@ -53,8 +53,8 @@ public:
     Camera_SimClass();
     virtual ~Camera_SimClass();
     virtual bool HasNonGuiCapture(void) { return true; }
-    virtual bool    HasNonGuiMove(void) { return true; }
-    bool PulseGuideScope (int direction, int duration);
+    virtual bool    ST4HasNonGuiMove(void) { return true; }
+    bool ST4PulseGuideScope (int direction, int duration);
     PierSide GetPierSide(void) const;
     void SetPierSide(PierSide side);
     void FlipPierSide(void);

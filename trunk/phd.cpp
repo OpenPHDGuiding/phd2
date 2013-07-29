@@ -111,9 +111,6 @@ bool PhdApp::OnInit() {
     }
     setlocale(LC_NUMERIC, "English");
 
-
-    pMount = new ScopeNone();
-
     wxString title = wxString::Format(_T("%s %s"), APPNAME, FULLVER);
 
     if (m_instanceNumber > 1)
@@ -132,12 +129,10 @@ bool PhdApp::OnInit() {
 
 int PhdApp::OnExit(void)
 {
-    delete pMount;
-    pMount = NULL;
-    delete pSecondaryMount;
-    pSecondaryMount = NULL;
-    delete pCamera;
-    pCamera = NULL;
+    assert(pMount == NULL);
+    assert(pSecondaryMount == NULL);
+    assert(pCamera == NULL);
+
     delete pConfig;
     pConfig = NULL;
 

@@ -36,7 +36,7 @@
 #ifndef STEPGUIDER_H_INCLUDED
 #define STEPGUIDER_H_INCLUDED
 
-class StepGuider:public Mount
+class StepGuider:public Mount, public OnboardST4
 {
     int m_samplesToAverage;
     int m_bumpPercentage;
@@ -117,6 +117,9 @@ public:
     StepGuider(void);
     virtual ~StepGuider(void);
 
+    static wxArrayString List(void);
+    static StepGuider *Factory(wxString choice);
+
     virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination=0.0);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     bool UpdateCalibrationState(const PHD_Point &currentLocation);
@@ -151,7 +154,7 @@ public:
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit);
     virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
-    virtual bool Center(void);
+    virtual bool Center(bool move=true);
 };
 
 #endif /* STEPGUIDER_H_INCLUDED */

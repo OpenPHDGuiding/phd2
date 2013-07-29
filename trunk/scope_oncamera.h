@@ -35,18 +35,19 @@
 
 #ifdef GUIDE_ONCAMERA
 
-class ScopeOnCamera:public Scope
+#include "scope_onboard_st4.h"
+
+class ScopeOnCamera:public ScopeOnboardST4
 {
 public:
     ScopeOnCamera(void);
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
+    virtual ~ScopeOnCamera(void);
 
+    virtual bool Connect(void);
+
+    virtual bool RequiresCamera(void);
     virtual bool HasNonGuiMove(void);
     virtual bool SynchronousOnly(void);
-
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int duration);
-    virtual bool IsGuiding(void);
 };
 
-#endif /* GUIDE_ONCAMERA */
+#endif // GUIDE_ONCAMERA

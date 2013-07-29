@@ -49,7 +49,7 @@ Camera_SBIGClass::Camera_SBIGClass() {
     Name=_T("SBIG");
     //FullSize = wxSize(1280,1024);
     //HasGainControl = true;
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     UseTrackingCCD = false;
     HasShutter = true;
     HasSubframes = true;
@@ -438,12 +438,12 @@ bool Camera_SBIGClass::CaptureFull(int duration, usImage& img) {
 }
 */
 
-bool Camera_SBIGClass::HasNonGuiMove(void)
+bool Camera_SBIGClass::ST4HasNonGuiMove(void)
 {
     return true;
 }
 
-bool Camera_SBIGClass::PulseGuideScope(int direction, int duration) {
+bool Camera_SBIGClass::ST4PulseGuideScope(int direction, int duration) {
     ActivateRelayParams rp;
     QueryCommandStatusParams qcsp;
     QueryCommandStatusResults qcsr;

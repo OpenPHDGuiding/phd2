@@ -63,7 +63,7 @@ Camera_SACGuiderClass::Camera_SACGuiderClass() {
     NBadPixels=-1;
     Name=_T("SAC Guider");
     FullSize = wxSize(1280,1024);
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     HasGainControl = true;
 }
 
@@ -113,10 +113,10 @@ bool Camera_SACGuiderClass::Connect() {
     CmosReset(DevName);
 //  TestGuide();
     /*
-        wxMessageBox(_T("RA+")); wxGetApp().Yield(); PulseGuideScope(WEST,2000); wxGetApp().Yield();
-    wxMessageBox(_T("Dec+"));  wxGetApp().Yield(); PulseGuideScope(NORTH,2000);wxGetApp().Yield();
-    wxMessageBox(_T("Dec-"));  wxGetApp().Yield(); PulseGuideScope(EAST,2000);wxGetApp().Yield();
-    wxMessageBox(_T("RA-"));  wxGetApp().Yield(); PulseGuideScope(SOUTH,2000);wxGetApp().Yield();
+        wxMessageBox(_T("RA+")); wxGetApp().Yield(); ST4PulseGuideScope(WEST,2000); wxGetApp().Yield();
+    wxMessageBox(_T("Dec+"));  wxGetApp().Yield(); ST4PulseGuideScope(NORTH,2000);wxGetApp().Yield();
+    wxMessageBox(_T("Dec-"));  wxGetApp().Yield(); ST4PulseGuideScope(EAST,2000);wxGetApp().Yield();
+    wxMessageBox(_T("RA-"));  wxGetApp().Yield(); ST4PulseGuideScope(SOUTH,2000);wxGetApp().Yield();
     wxMessageBox(_T("Done"));
 */
     if (pFrame->mount_menu->IsChecked(SCOPE_CAMERA)) {
@@ -153,7 +153,7 @@ bool Camera_SACGuiderClass::SetGlobalGain(unsigned char gain) {
     return false;
 }
 
-bool Camera_SACGuiderClass::PulseGuideScope(int direction, int duration) {
+bool Camera_SACGuiderClass::ST4PulseGuideScope(int direction, int duration) {
     unsigned char dur;
     unsigned char reg = 0;
 
