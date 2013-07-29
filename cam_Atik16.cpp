@@ -49,7 +49,7 @@ Camera_Atik16Class::Camera_Atik16Class() {
 //  NBadPixels=-1;
     Name=_T("Atik 16");
     FullSize = wxSize(1280,1024);
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     HasGainControl = true;
     Color = false;
     Cam_Handle = NULL;
@@ -136,7 +136,7 @@ bool Camera_Atik16Class::Connect() {
     return false;
 }
 
-bool Camera_Atik16Class::PulseGuideScope(int direction, int duration) {
+bool Camera_Atik16Class::ST4PulseGuideScope(int direction, int duration) {
 
     int axis;
     //wxStopWatch swatch;
@@ -300,7 +300,7 @@ bool Camera_Atik16Class::HasNonGuiCapture(void)
     return true;
 }
 
-bool Camera_Atik16Class::HasNonGuiMove(void)
+bool Camera_Atik16Class::ST4HasNonGuiMove(void)
 {
     return true;
 }

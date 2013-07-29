@@ -50,7 +50,7 @@ public:
     bool    Connect();
     bool    Disconnect();
     void    InitCapture();
-//  bool    PulseGuideScope(int direction, int duration);
+//  bool    ST4PulseGuideScope(int direction, int duration);
 
 
     Camera_FirewireClass();

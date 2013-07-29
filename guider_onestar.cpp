@@ -210,16 +210,6 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
             pMount->SetCalibration(M_PI/4 + 0.0, M_PI/4 + M_PI/2, 1.0, 1.0);
         }
 #endif
-
-#if 0
-        if (pSecondaryMount && !pSecondaryMount->IsCalibrated())
-        {
-            //pSecondaryMount->SetCalibration(0.14, 1.89, 0.02, 0.02);
-            //pSecondaryMount->SetCalibration(-2.61, -1.04, 1.0, 1.0);
-            //pSecondaryMount->SetCalibration(M_PI, -M_PI/2, 1.0, 1.0);
-            pSecondaryMount->SetCalibration(-M_PI/4 + 0.0, -M_PI/4 + M_PI/2, 1.0, 1.0);
-        }
-#endif
     }
     catch (wxString Msg)
     {

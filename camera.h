@@ -37,7 +37,7 @@
 
 typedef std::map<int, usImage *> ExposureImgMap; // map exposure to image
 
-class GuideCamera :  public wxMessageBoxProxy
+class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 {
 protected:
     class CameraConfigDialogPane : public ConfigDialogPane
@@ -63,12 +63,13 @@ protected:
 
     friend class CameraConfigDialogPane;
 
+protected:
+    bool            m_hasGuideOutput;
 public:
     int             GuideCameraGain;
     wxString        Name;                   // User-friendly name
     wxSize          FullSize;           // Size of current image
     bool            Connected;
-    bool            HasGuiderOutput;
     bool            HasPropertyDialog;
     bool            HasPortNum;
     bool            HasDelayParam;
@@ -81,21 +82,26 @@ public:
     bool            UseSubframes;
     double          PixelSize;
 
+    static wxArrayString List(void);
+    static GuideCamera *Factory(wxString choice);
+
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage         *CurrentDarkFrame;
     ExposureImgMap  Darks; // map exposure => dark frame
 
-    virtual bool HasNonGuiCapture(void) { return false; }
+    virtual bool HasNonGuiCapture(void);
 
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false) = 0;
     virtual bool    Capture(int duration, usImage& img, bool recon) { return Capture(duration, img, wxRect(0, 0, 0, 0), recon); }
 
-    virtual bool    Connect() { return true; }      // Opens up and connects to camera
-    virtual bool    Disconnect() { return true; }   // Disconnects, unloading any DLLs loaded by Connect
-    virtual void    InitCapture() { return; }       // Gets run at the start of any loop (e.g., reset stream, set gain, etc).
+    virtual bool    Connect();                      // Opens up and connects to camera
+    virtual bool    Disconnect();                   // Disconnects, unloading any DLLs loaded by Connect
+    virtual void    InitCapture();                  // Gets run at the start of any loop (e.g., reset stream, set gain, etc).
 
-    virtual bool    HasNonGuiMove(void) { return false; }
-    virtual bool    PulseGuideScope (int direction, int duration) { return true; }
+    virtual bool    ST4HasGuideOutput(void);
+    virtual bool    ST4HostConnected(void);
+    virtual bool    ST4HasNonGuiMove(void);
+    virtual bool    ST4PulseGuideScope(int direction, int duration);
 
     ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 

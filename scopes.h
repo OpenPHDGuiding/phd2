@@ -43,6 +43,7 @@
 #if defined (__WINDOWS__)
 
 #define GUIDE_ONCAMERA
+#define GUIDE_ONSTEPGUIDER
 #define GUIDE_ASCOM
 #define GUIDE_GPUSB
 #define GUIDE_GPINT
@@ -64,6 +65,7 @@
 #include "scope.h"
 #include "scope_none.h"
 #include "scope_oncamera.h"
+#include "scope_onstepguider.h"
 #include "scope_ascom.h"
 #include "scope_gpusb.h"
 #include "scope_gpint.h"

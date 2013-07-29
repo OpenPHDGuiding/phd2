@@ -64,7 +64,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
 {
     if (evt.GetId() == EEGG_TESTGUIDEDIR)
     {
-        if (!pMount->IsConnected())
+        if (!pMount || !pMount->IsConnected())
         {
             wxMessageBox(_("Please connect a Mount to Manual Guide."));
             return;
@@ -88,72 +88,88 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
         int answer = wxMessageBox("Load calibration data from " + savedCal + "?", "Load Calibration Data", wxYES_NO);
         if (answer == wxYES)
         {
-            load_calibration(pMount);
-            load_calibration(pSecondaryMount);
+            if (pMount)
+            {
+                load_calibration(pMount);
+            }
+            if (pSecondaryMount)
+            {
+                load_calibration(pSecondaryMount);
+            }
         }
     }
     else if (evt.GetId() == EEGG_MANUALCAL)
     {
-        double xRate  = pMount->xRate();
-        double yRate  = pMount->yRate();
-        double xAngle = pMount->xAngle();
-        double yAngle = pMount->yAngle();
-        double declination = pMount->GetDeclination();
-
-        if (!pMount->IsCalibrated())
+        if (pMount)
         {
-            xRate       = 1.0;
-            yRate       = 1.0;
-            xAngle      = 0.0;
-            yAngle      = M_PI/2;
-            declination = 0.0;
+            double xRate  = pMount->xRate();
+            double yRate  = pMount->yRate();
+            double xAngle = pMount->xAngle();
+            double yAngle = pMount->yAngle();
+            double declination = pMount->GetDeclination();
+
+            if (!pMount->IsCalibrated())
+            {
+                xRate       = 1.0;
+                yRate       = 1.0;
+                xAngle      = 0.0;
+                yAngle      = M_PI/2;
+                declination = 0.0;
+            }
+
+            wxString tmpstr;
+            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("RA rate"), wxString::Format(_T("%.4f"),xRate));
+            if (tmpstr.IsEmpty()) return;
+            tmpstr.ToDouble(&xRate); // = 0.0035;
+
+            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("Dec rate"), wxString::Format(_T("%.4f"),yRate));
+            if (tmpstr.IsEmpty()) return;
+            tmpstr.ToDouble(&yRate); // = 0.0035;
+
+            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.5)"), _("RA angle"), wxString::Format(_T("%.3f"),xAngle));
+            if (tmpstr.IsEmpty()) return;
+            tmpstr.ToDouble(&xAngle); // = 0.0035;
+
+            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Dec angle"), wxString::Format(_T("%.3f"),yAngle));
+            if (tmpstr.IsEmpty()) return;
+            tmpstr.ToDouble(&yAngle); // = 0.0035;
+
+            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Declination"), wxString::Format(_T("%.3f"),declination));
+            if (tmpstr.IsEmpty()) return;
+            tmpstr.ToDouble(&declination); // = 0.0035;
+
+            pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
         }
-
-        wxString tmpstr;
-        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("RA rate"), wxString::Format(_T("%.4f"),xRate));
-        if (tmpstr.IsEmpty()) return;
-        tmpstr.ToDouble(&xRate); // = 0.0035;
-
-        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("Dec rate"), wxString::Format(_T("%.4f"),yRate));
-        if (tmpstr.IsEmpty()) return;
-        tmpstr.ToDouble(&yRate); // = 0.0035;
-
-        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.5)"), _("RA angle"), wxString::Format(_T("%.3f"),xAngle));
-        if (tmpstr.IsEmpty()) return;
-        tmpstr.ToDouble(&xAngle); // = 0.0035;
-
-        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Dec angle"), wxString::Format(_T("%.3f"),yAngle));
-        if (tmpstr.IsEmpty()) return;
-        tmpstr.ToDouble(&yAngle); // = 0.0035;
-
-        tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Declination"), wxString::Format(_T("%.3f"),declination));
-        if (tmpstr.IsEmpty()) return;
-        tmpstr.ToDouble(&declination); // = 0.0035;
-
-        pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
     }
     else if (evt.GetId() == EEGG_CLEARCAL)
     {
-        pMount->ClearCalibration(); // clear calibration
+        if (pMount)
+        {
+            pMount->ClearCalibration(); // clear calibration
+        }
     }
     else if (evt.GetId() == EEGG_FLIPRACAL)
     {
         Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
-        double orig = mount->xAngle();
 
-        if (FlipRACal())
+        if (mount)
         {
-            wxMessageBox(_("Failed to flip RA calibration"));
-        }
-        else
-        {
-            double xAngle = mount->xAngle();
-            wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"), orig, xAngle));
+            double orig = mount->xAngle();
+
+            if (FlipRACal())
+            {
+                wxMessageBox(_("Failed to flip RA calibration"));
+            }
+            else
+            {
+                double xAngle = mount->xAngle();
+                wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"), orig, xAngle));
+            }
         }
     }
     else if (evt.GetId() == EEGG_MANUALLOCK)
     {
-        if (!pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
+        if (!pMount || !pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
         {
             wxMessageBox(_("Entering a manual lock position requires a camera and mount to be connected and calibrated."));
             return;

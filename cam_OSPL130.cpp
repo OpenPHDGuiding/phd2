@@ -25,7 +25,7 @@ Camera_OpticstarPL130Class::Camera_OpticstarPL130Class() {
 //  NBadPixels=-1;
     Name=_T("Opticstar PL-130M");
     FullSize = wxSize(1280,1024);
-    HasGuiderOutput = false;
+    m_hasGuideOutput = false;
     HasGainControl = false;
     Color = false;
 }

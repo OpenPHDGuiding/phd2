@@ -100,10 +100,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_SERVER, MyFrame::OnServerMenu)
     EVT_MENU(MENU_STARPROFILE, MyFrame::OnStarProfile)
     EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
-    EVT_TOOL(BUTTON_CAMERA,MyFrame::OnConnectCamera)
-    EVT_MENU(BUTTON_CAMERA,MyFrame::OnConnectCamera) // Bit of a hack -- not actually on the menu but need an event to accelerate
-    EVT_TOOL(BUTTON_SCOPE, MyFrame::OnConnectMount)
-    EVT_MENU(BUTTON_SCOPE, MyFrame::OnConnectMount) // Bit of a hack -- not actually on the menu but need an event to accelerate
+    EVT_TOOL(BUTTON_GEAR,MyFrame::OnSelectGear)
+    EVT_MENU(BUTTON_GEAR,MyFrame::OnSelectGear) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_LOOP, MyFrame::OnLoopExposure)
     EVT_MENU(BUTTON_LOOP, MyFrame::OnLoopExposure) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_STOP, MyFrame::OnButtonStop)
@@ -125,8 +123,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(DONATE3,MyFrame::OnDonateMenu)
     EVT_MENU(DONATE4,MyFrame::OnDonateMenu)
 #endif
-    EVT_MENU_RANGE(BEGIN_SCOPES, END_SCOPES, MyFrame::OnScopeSelected)
-    EVT_MENU_RANGE(BEGIN_STEPGUIDERS, END_STEPGUIDERS, MyFrame::OnStepGuiderSelected)
     EVT_CLOSE(MyFrame::OnClose)
     EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
     EVT_THREAD(MYFRAME_WORKER_THREAD_MOVE_COMPLETE, MyFrame::OnMoveComplete)
@@ -270,13 +266,8 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
         Name(_T("Target")).Caption(_("Target")).
         Hide());
 
-#ifdef PHD1_LOGGING // deprecated
-    wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-    wxDateTime now = wxDateTime::Now();
-    wxString LogFName;
-    LogFName = wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_log") + now.Format(_T("_%d%b%y")) + _T(".txt"));
-    LogFile = new wxTextFile(LogFName);
-#endif
+    pGearDialog = new GearDialog(this);
+
     tools_menu->Check(MENU_LOG,false);
 
     wxString frameTitle = title;
@@ -360,7 +351,7 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
 
 // frame destructor
 MyFrame::~MyFrame() {
-    if (pMount->IsConnected())
+    if (pMount && pMount->IsConnected())
     {
         pMount->Disconnect();
     }
@@ -369,6 +360,10 @@ MyFrame::~MyFrame() {
     {
         pCamera->Disconnect();
     }
+
+    delete pGearDialog;
+    pGearDialog = NULL;
+
     m_mgr.UnInit();
 }
 
@@ -380,79 +375,6 @@ void MyFrame::SetupMenuBar(void)
     file_menu->Append(MENU_SAVEDARK, _("Save Dark Frames"), _("Save dark frames"));
     file_menu->Append(wxID_SAVE, _("Save Image"), _("Save current image"));
     file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
-
-    mount_menu = new wxMenu;
-    mount_menu->AppendSeparator();
-    mount_menu->Append(SCOPE_HEADER,_T("Scope"),_("Select Scope"));
-    mount_menu->FindItem(SCOPE_HEADER)->Enable(false);
-    mount_menu->AppendSeparator();
-    mount_menu->AppendRadioItem(SCOPE_ASCOM,_T("ASCOM"),_("ASCOM telescope driver"));
-    mount_menu->AppendRadioItem(SCOPE_GPUSB,_T("GPUSB"),_T("ShoeString GPUSB ST-4"));
-    mount_menu->AppendRadioItem(SCOPE_GPINT3BC,_T("GPINT 3BC"),_T("ShoeString GPINT parallel port 3BC"));
-    mount_menu->AppendRadioItem(SCOPE_GPINT378,_T("GPINT 378"),_T("ShoeString GPINT parallel port 378"));
-    mount_menu->AppendRadioItem(SCOPE_GPINT278,_T("GPINT 278"),_T("ShoeString GPINT parallel port 278"));
-    mount_menu->AppendRadioItem(SCOPE_CAMERA,_T("On-camera"),_("Camera Onboard ST-4"));
-#ifdef GUIDE_VOYAGER
-    mount_menu->AppendRadioItem(SCOPE_VOYAGER,_T("Voyager"),_("Mount connected in Voyager"));
-#endif
-#ifdef GUIDE_EQUINOX
-    mount_menu->AppendRadioItem(SCOPE_EQUINOX,_T("Equinox 6"),_("Mount connected in Equinox 6"));
-#endif
-#ifdef GUIDE_EQUINOX
-    mount_menu->AppendRadioItem(SCOPE_EQMAC,_T("EQMAC"),_("Mount connected in EQMAC"));
-#endif
-#ifdef GUIDE_GCUSBST4
-    mount_menu->AppendRadioItem(SCOPE_GCUSBST4,_T("GC USB ST4"),_T("GC USB ST4"));
-#endif
-    mount_menu->FindItem(SCOPE_ASCOM)->Check(true); // set this as the default
-#if defined (__APPLE__)  // bit of a kludge here to deal with a fixed ordering elsewhere
-    mount_menu->FindItem(SCOPE_ASCOM)->Enable(false);
-    mount_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
-    mount_menu->FindItem(SCOPE_GPINT378)->Enable(false);
-    mount_menu->FindItem(SCOPE_GPINT278)->Enable(false);
-    mount_menu->FindItem(SCOPE_GPUSB)->Check(true); // set this as the default
-#endif
-#if defined (__WXGTK__)
-    mount_menu->FindItem(SCOPE_ASCOM)->Enable(false);
-    mount_menu->FindItem(SCOPE_GPINT3BC)->Enable(false);
-    mount_menu->FindItem(SCOPE_GPINT378)->Enable(false);
-    mount_menu->FindItem(SCOPE_GPINT278)->Enable(false);
-    mount_menu->FindItem(SCOPE_GPUSB)->Enable(false);
-    mount_menu->FindItem(SCOPE_CAMERA)->Check(true); // set this as the default
-#endif
-#ifdef GUIDE_INDI
-    mount_menu->AppendRadioItem(SCOPE_INDI,_T("INDI"),_T("INDI"));
-#endif
-
-    mount_menu->AppendSeparator();
-    mount_menu->Append(AO_HEADER,_T("Adaptive Optics"),_("Select Adaptive Optics Device"));
-    mount_menu->FindItem(AO_HEADER)->Enable(false);
-    mount_menu->AppendSeparator();
-    mount_menu->AppendRadioItem(AO_NONE, _("None"), _("No Adaptive Optics"));
-    mount_menu->FindItem(AO_NONE)->Check(true); // set this as the default
-#ifdef STEPGUIDER_SXAO
-    mount_menu->AppendRadioItem(AO_SXAO, _("sxAO"), _T("Starlight Xpress AO"));
-#endif
-#ifdef STEPGUIDER_SIMULATOR
-    mount_menu->AppendRadioItem(AO_SIMULATOR, _("Simulator"));
-#endif
-
-    // try to get the last values from the config store
-    wxString lastChoice = pConfig->GetString("/scope/LastMenuChoice", _T(""));
-    int lastId = mount_menu->FindItem(lastChoice);
-
-    if (lastId != wxNOT_FOUND)
-    {
-        mount_menu->FindItem(lastId)->Check(true);
-    }
-
-    lastChoice = pConfig->GetString("/stepguider/LastMenuChoice", _T(""));
-    lastId = mount_menu->FindItem(lastChoice);
-
-    if (lastId != wxNOT_FOUND)
-    {
-        mount_menu->FindItem(lastId)->Check(true);
-    }
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
@@ -504,7 +426,6 @@ void MyFrame::SetupMenuBar(void)
 
     Menubar = new wxMenuBar();
     Menubar->Append(file_menu, _("&File"));
-    Menubar->Append(mount_menu, _("&Mounts"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     Menubar->Append(indi_menu, _T("&INDI"));
@@ -636,8 +557,7 @@ void MyFrame::SetupToolBar()
     Dark_Button = new wxButton(MainToolbar,BUTTON_DARK,_("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
     Dark_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 
-    MainToolbar->AddTool(BUTTON_CAMERA, _("Camera"), camera_bmp, _("Connect to camera"));
-    MainToolbar->AddTool(BUTTON_SCOPE, _("Telescope"), scope_bmp, _("Connect to mount(s)"));
+    MainToolbar->AddTool(BUTTON_GEAR, _("Equipment"), camera_bmp, _("Connect to equiptment"));
     MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus") );
     MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD)") );
     MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort the current action"));
@@ -680,12 +600,11 @@ void MyFrame::SetupKeyboardShortcuts(void)
     wxAcceleratorEntry entries[] = {
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'A', BUTTON_ADVANCED),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'C', BUTTON_CAMERA),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'C', BUTTON_GEAR),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'D', BUTTON_DARK),
-        wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'C', BUTTON_CAMERA),
+        wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'C', BUTTON_GEAR),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'M', BUTTON_SCOPE),
         wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'M', EEGG_MANUALCAL),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'R', EEGG_RANDOMMOTION),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP),
@@ -733,14 +652,7 @@ void MyFrame::UpdateButtonsStatus(void)
     if (cond_update_tool(MainToolbar, BUTTON_LOOP, loop_enabled))
         need_update = true;
 
-    if (cond_update_tool(MainToolbar, BUTTON_CAMERA, !CaptureActive))
-        need_update = true;
-
-    if (cond_update_tool(MainToolbar, BUTTON_SCOPE,
-                !CaptureActive &&
-                pMount && !pMount->IsBusy() &&
-                (!pSecondaryMount || !pSecondaryMount->IsBusy())
-                ))
+    if (cond_update_tool(MainToolbar, BUTTON_GEAR, !CaptureActive))
         need_update = true;
 
     if (cond_update_tool(MainToolbar, BUTTON_ADVANCED, !m_continueCapturing))
@@ -756,7 +668,7 @@ void MyFrame::UpdateButtonsStatus(void)
 
     bool bGuideable = pGuider->GetState() >= STATE_SELECTED &&
         pGuider->GetState() < STATE_GUIDING &&
-        pMount->IsConnected();
+        pMount && pMount->IsConnected();
 
     if (cond_update_tool(MainToolbar, BUTTON_GUIDE, bGuideable))
         need_update = true;
@@ -920,6 +832,7 @@ void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint
 
     Debug.AddLine("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
 
+    assert(pMount);
     pMount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
@@ -931,6 +844,8 @@ void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoi
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     Debug.AddLine("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
+
+    assert(pMount);
 
     if (pMount->SynchronousOnly())
     {
@@ -949,6 +864,8 @@ void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoi
 void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
+
+    assert(pMount);
 
     pMount->IncrementRequestCount();
 
@@ -1001,12 +918,15 @@ void MyFrame::OnClose(wxCloseEvent &event) {
     StopWorkerThread(m_pPrimaryWorkerThread);
     StopWorkerThread(m_pSecondaryWorkerThread);
 
-    if (pMount->IsConnected()) { // Disconnect
+    if (pMount && pMount->IsConnected())
+    {
         pMount->Disconnect();
     }
 
     if (pCamera && pCamera->Connected)
+    {
         pCamera->Disconnect();
+    }
 
     // stop the socket server and event server
     StartServer(false);

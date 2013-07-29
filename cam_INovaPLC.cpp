@@ -43,7 +43,7 @@ Camera_INovaPLCClass::Camera_INovaPLCClass() {
     Connected = FALSE;
     Name=_T("i-Nova PLC-M");
     FullSize = wxSize(1280,1024);  // Current size of a full frame
-    HasGuiderOutput = true;  // Do we have an ST4 port?
+    m_hasGuideOutput = true;  // Do we have an ST4 port?
     HasGainControl = true;  // Can we adjust gain?
 }
 
@@ -79,7 +79,7 @@ void Camera_INovaPLCClass::InitCapture() {
         wxMessageBox(_T("Error setting gain"), _("Error"));
 }
 
-bool Camera_INovaPLCClass::PulseGuideScope(int direction, int duration) {
+bool Camera_INovaPLCClass::ST4PulseGuideScope(int direction, int duration) {
     unsigned char dircode = 0;
     /*Param:  Value bit0 - RA+
              bit1 - DEC+
@@ -156,7 +156,7 @@ bool Camera_INovaPLCClass::HasNonGuiCapture(void)
     return true;
 }
 
-bool Camera_INovaPLCClass::HasNonGuiMove(void)
+bool Camera_INovaPLCClass::ST4HasNonGuiMove(void)
 {
     return true;
 }

@@ -48,7 +48,9 @@ public:
     Camera_SBIGRotatorClass();
     ~Camera_SBIGRotatorClass();
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool    PulseGuideScope (int direction, int duration);
+
+    virtual bool    ST4PulseGuideScope (int direction, int duration);
+
     bool    Connect();      // Opens up and connects to cameras
     bool    Disconnect();
     void    InitCapture() { return; }

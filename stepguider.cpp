@@ -75,6 +75,60 @@ StepGuider::~StepGuider(void)
 {
 }
 
+wxArrayString StepGuider::List(void)
+{
+    wxArrayString AoList;
+
+    AoList.Add(_T("None"));
+#ifdef STEPGUIDER_SXAO
+    AoList.Add(_T("sxAO"));
+#endif
+#ifdef STEPGUIDER_SIMULATOR
+    AoList.Add(_T("Simulator"));
+#endif
+
+    return AoList;
+}
+
+StepGuider *StepGuider::Factory(wxString choice)
+{
+    StepGuider *pReturn = NULL;
+
+    try
+    {
+        if (choice.IsEmpty())
+        {
+            throw ERROR_INFO("StepGuiderFactory called with choice.IsEmpty()");
+        }
+
+        Debug.AddLine("StepGuiderFactor(%s)", choice);
+
+        if (choice.Find(_T("None")) + 1) {
+        }
+#ifdef STEPGUIDER_SXAO
+        else if (choice.Find(_T("sxAO")) + 1) {
+            pReturn = new StepGuiderSxAO();
+        }
+#endif
+#ifdef STEPGUIDER_SIMULATOR
+        else if (choice.Find(_T("Simulator")) + 1) {
+            pReturn = new StepGuiderSimulator();
+        }
+#endif
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        if (pReturn)
+        {
+            delete pReturn;
+            pReturn = NULL;
+        }
+    }
+
+    return pReturn;
+}
+
 bool StepGuider::Connect(void)
 {
     bool bError = false;
@@ -256,115 +310,56 @@ bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteratio
     return bError;
 }
 
-void MyFrame::OnConnectStepGuider(wxCommandEvent& WXUNUSED(event))
-{
-    StepGuider *pStepGuider = NULL;
-
-    try
-    {
-        if (pGuider->GetState() > STATE_SELECTED)
-        {
-            throw ERROR_INFO("Connecting Step Guider when state > STATE_SELECTED");
-        }
-
-        if (CaptureActive)
-        {
-            throw ERROR_INFO("Connecting Step Guider when CaptureActive");
-        }
-
-
-        if (pSecondaryMount)
-        {
-            /*
-             * If there is a secondary mount, then the primary mount (aka pMount)
-             * is a StepGuider.  Get rid of the current primary mount,
-             * and move the secondary mount back to being the primary mount
-             */
-            assert(pMount);
-
-            if (pMount->IsConnected())
-            {
-                pMount->Disconnect();
-            }
-
-            delete pMount;
-            pMount = pSecondaryMount;
-            pSecondaryMount = NULL;
-            pGraphLog->UpdateControls();
-            SetStatusText(_T(""),4);
-        }
-
-        assert(pMount);
-
-        if (!mount_menu->IsChecked(AO_NONE) && !pMount->IsConnected())
-        {
-            wxMessageBox(_T("Please connect a scope before connecting an AO"), _("Error"), wxOK | wxICON_ERROR);
-            throw ERROR_INFO("attempt to connect AO with no scope connected");
-        }
-
-        if (mount_menu->IsChecked(AO_NONE))
-        {
-            // nothing to do here
-        }
-#ifdef STEPGUIDER_SXAO
-        else if (mount_menu->IsChecked(AO_SXAO))
-        {
-            pStepGuider = new StepGuiderSxAO();
-        }
-#endif
-#ifdef STEPGUIDER_SIMULATOR
-        else if (mount_menu->IsChecked(AO_SIMULATOR))
-        {
-            pStepGuider = new StepGuiderSimulator();
-        }
-#endif
-
-        if (pStepGuider)
-        {
-            assert(pMount && pMount->IsConnected());
-
-            if (pStepGuider->Connect())
-            {
-                SetStatusText("AO connect failed", 1);
-                throw ERROR_INFO("unable to connect to AO");
-            }
-
-            SetStatusText(_("Adaptive Optics Connected"), 1);
-            SetStatusText(_T("AO"),4);
-
-            // successful connection - switch the step guider in
-
-            assert(pSecondaryMount == NULL);
-            pSecondaryMount = pMount;
-            pMount = pStepGuider;
-            pStepGuider = NULL;
-
-            // at this point, the AO is connected and active. Even if we
-            // fail from here on out that doesn't change
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-
-        mount_menu->FindItem(AO_NONE)->Check(true);
-        delete pStepGuider;
-        pStepGuider = NULL;
-    }
-
-    assert(!pSecondaryMount || pSecondaryMount->IsConnected());
-
-    UpdateButtonsStatus();
-}
-
-bool StepGuider::Center(void)
+bool StepGuider::Center(bool move)
 {
     bool bError = false;
 
     try
     {
-        m_xOffset = 0;
-        m_yOffset = 0;
+        if (move)
+        {
+            int positionNorth = CurrentPosition(NORTH);
+
+            if (positionNorth > 0)
+            {
+                if (Step(SOUTH, positionNorth))
+                {
+                    throw ERROR_INFO("Center() failed to step SOUTH");
+                }
+            }
+            else
+            {
+                if (Step(NORTH, -positionNorth))
+                {
+                    throw ERROR_INFO("Center() failed to step NORTH");
+                }
+            }
+
+            int positionEast = CurrentPosition(EAST);
+
+            if (positionEast > 0)
+            {
+                if (Step(WEST, positionEast))
+                {
+                    throw ERROR_INFO("Center() failed to step WEST");
+                }
+            }
+            else
+            {
+                if (Step(EAST, -positionEast))
+                {
+                    throw ERROR_INFO("Center() failed to step WEST");
+                }
+            }
+
+            assert(m_xOffset == 0);
+            assert(m_yOffset == 0);
+        }
+        else
+        {
+            m_xOffset = 0;
+            m_yOffset = 0;
+        }
     }
     catch (wxString Msg)
     {

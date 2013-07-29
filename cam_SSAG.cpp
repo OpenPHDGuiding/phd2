@@ -54,7 +54,7 @@ Camera_SSAGClass::Camera_SSAGClass() {
 //  NBadPixels=-1;
     Name=_T("StarShoot Autoguider");
     FullSize = wxSize(1280,1024);
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     HasGainControl = true;
     PixelSize = 5.2;
 }
@@ -78,7 +78,7 @@ bool Camera_SSAGClass::Connect() {
     return false;
 }
 
-bool Camera_SSAGClass::PulseGuideScope(int direction, int duration) {
+bool Camera_SSAGClass::ST4PulseGuideScope(int direction, int duration) {
     int reg = 0;
     int dur = duration / 10;
 

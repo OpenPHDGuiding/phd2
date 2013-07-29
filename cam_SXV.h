@@ -48,7 +48,7 @@ public:
     void    InitCapture();
 
     //  bool    SetGlobalGain(unsigned char gain);
-    bool    PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration);
     //  void    ClearGuidePort();
 #if defined (__WINDOWS__)
     HANDLE hCam;

@@ -48,7 +48,7 @@ Camera_OpenSSAGClass::Camera_OpenSSAGClass() {
     Connected = FALSE;
     Name=_T("StarShoot Autoguider (OpenSSAG)");
     FullSize = wxSize(1280,1024);  // Current size of a full frame
-    HasGuiderOutput = true;  // Do we have an ST4 port?
+    m_hasGuideOutput = true;  // Do we have an ST4 port?
     HasGainControl = true;  // Can we adjust gain?
     PixelSize = 5.2;
 
@@ -71,7 +71,7 @@ bool Camera_OpenSSAGClass::Connect() {
     return false;
 }
 
-bool Camera_OpenSSAGClass::PulseGuideScope(int direction, int duration) {
+bool Camera_OpenSSAGClass::ST4PulseGuideScope(int direction, int duration) {
     switch (direction) {
         case WEST:
             ssag->Guide(guide_west, duration);

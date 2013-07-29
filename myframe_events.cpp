@@ -320,12 +320,6 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
     }
 }
 
-void MyFrame::OnConnectMount(wxCommandEvent& event)
-{
-    OnConnectScope(event);
-    OnConnectStepGuider(event);
-}
-
 void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event)) {
 /*  if (ASCOM_IsMoving())
         SetStatusText(_T("Moving"),2);
@@ -701,13 +695,17 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
 
 bool MyFrame::FlipRACal()
 {
+    bool bError = false;
     Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
 
-    bool bError = mount->FlipCalibration();
-
-    if (!bError)
+    if (mount)
     {
-        EvtServer.NotifyCalibrationDataFlipped(mount);
+        bError = mount->FlipCalibration();
+
+        if (!bError)
+        {
+            EvtServer.NotifyCalibrationDataFlipped(mount);
+        }
     }
 
     return bError;
@@ -737,26 +735,6 @@ void MyFrame::OnDonateMenu(wxCommandEvent &evt) {
 
 }
 #endif
-
-void MyFrame::OnScopeSelected(wxCommandEvent& evt)
-{
-    wxMenuItem *item = mount_menu->FindItem(evt.GetId());
-    if (item && item->IsChecked())
-    {
-        pConfig->SetString("/scope/LastMenuChoice", item->GetItemLabelText());
-    }
-    evt.Skip();
-}
-
-void MyFrame::OnStepGuiderSelected(wxCommandEvent& evt)
-{
-    wxMenuItem *item = mount_menu->FindItem(evt.GetId());
-    if (item && item->IsChecked())
-    {
-        pConfig->SetString("/stepguider/LastMenuChoice", item->GetItemLabelText());
-    }
-    evt.Skip();
-}
 
 void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
     if (!pCamera || !pCamera->Connected || !pCamera->HasPropertyDialog) return;  // One more safety check
@@ -824,7 +802,7 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
         wxMessageBox(_("Cannot Manual Guide when Calibrating or Guiding"),_("Info"));
     }
 
-    if (!pMount->IsConnected())
+    if (!pMount || !pMount->IsConnected())
     {
         wxMessageBox(_("Cannot Manual Guide without a mount connected"),_("Info"));
     }
@@ -863,3 +841,21 @@ void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
         this->pTarget->SetState(false);
     }
 }
+
+void MyFrame::OnSelectGear(wxCommandEvent& evt)
+{
+    try
+    {
+        if (CaptureActive)
+        {
+            throw ERROR_INFO("OnSelectGear called while CaptureActive");
+        }
+        pFrame->pGearDialog->ShowModal(wxGetKeyState(WXK_SHIFT));
+        UpdateButtonsStatus();
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+}
+

@@ -42,7 +42,7 @@ public:
     bool    Connect();      // Opens up and connects to cameras
     bool    Disconnect();
     void    InitCapture() { return; }
-    bool    PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration);
     Camera_NebSBIGClass();
 };
 #endif

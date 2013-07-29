@@ -64,7 +64,7 @@ Camera_QGuiderClass::Camera_QGuiderClass() {
 //  NBadPixels=-1;
     Name=_T("Q-Guider");
     FullSize = wxSize(1280,1024);
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     HasGainControl = true;
 }
 
@@ -88,7 +88,7 @@ bool Camera_QGuiderClass::Connect() {
     return false;
 }
 
-bool Camera_QGuiderClass::PulseGuideScope(int direction, int duration) {
+bool Camera_QGuiderClass::ST4PulseGuideScope(int direction, int duration) {
     int reg = 0;
     int dur = duration / 10;
 

@@ -92,7 +92,7 @@ bool StepGuiderSxAO::Connect(void)
             throw ERROR_INFO("StepGuiderSxAO::Connect: unable to get firmware version");
         }
 
-        if (Center())
+        if (Center(true))
         {
             if (Unjam())
             {
@@ -335,7 +335,7 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
             throw ERROR_INFO("StepGuiderSxAO::Center: SetReceiveTimeout failed");
         }
 
-        if (StepGuider::Center())
+        if (StepGuider::Center(false))
         {
             throw ERROR_INFO("StepGuider::Center: failed");
         }
@@ -349,7 +349,7 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
     return bError;
 }
 
-bool StepGuiderSxAO::Center(void)
+bool StepGuiderSxAO::Center()
 {
     bool bError = false;
 
@@ -359,7 +359,6 @@ bool StepGuiderSxAO::Center(void)
         {
             throw ERROR_INFO("StepGuiderSxAO::Center: Center() failed");
         }
-
     }
     catch (wxString Msg)
     {
@@ -488,6 +487,73 @@ bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit)
                 throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
                 break;
         }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+bool StepGuiderSxAO::ST4HasGuideOutput(void)
+{
+    return true;
+}
+
+bool StepGuiderSxAO::ST4HostConnected(void)
+{
+    return IsConnected();
+}
+
+bool StepGuiderSxAO::ST4HasNonGuiMove(void)
+{
+    return true;
+}
+
+bool StepGuiderSxAO::ST4PulseGuideScope(int direction, int duration)
+{
+    bool bError = false;
+
+    try
+    {
+        char cmd = 'M';
+        char parameter = 0;
+        unsigned char response;
+
+        switch (direction)
+        {
+            case NORTH:
+                parameter = 'N';
+                break;
+            case SOUTH:
+                parameter = 'S';
+                break;
+            case EAST:
+                parameter = 'T';
+                break;
+            case WEST:
+                parameter = 'W';
+                break;
+            default:
+                throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope(): invalid direction");
+                break;
+        }
+
+        if (SendLongCommand(cmd, parameter, duration, response))
+        {
+            throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope(): SendLongCommand failed");
+        }
+
+        if (response != cmd)
+        {
+            throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope(): response != cmd");
+        }
+
+        // The Step function is asynchronous, and there is no way to wait for it, so we just
+        // wait
+        wxMilliSleep(duration);
     }
     catch (wxString Msg)
     {

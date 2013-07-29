@@ -42,7 +42,7 @@ public:
     void    InitCapture();
 
 //  bool    SetGlobalGain(unsigned char gain);
-    bool    PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
     //bool  SetColorGain(unsigned char r_gain, unsigned char g_gain, unsigned char b_gain);
     //int   FindCameras(int DevNums[8]);
@@ -54,7 +54,7 @@ private:
     void RemoveLines(usImage& img);
 
     virtual bool HasNonGuiCapture(void) { return true; }
-    virtual bool    HasNonGuiMove(void) { return true; }
+    virtual bool    ST4HasNonGuiMove(void) { return true; }
 };
 #endif  //QGUIDEDEF
 

@@ -390,7 +390,7 @@ Camera_SimClass::Camera_SimClass()
 //  ConnectedModel = 1;
     Name=_T("Simulator");
     FullSize = wxSize(640,480);
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     HasShutter = true;
     HasGainControl = true;
     HasSubframes = true;
@@ -551,7 +551,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     return false;
 }
 
-bool Camera_SimClass::PulseGuideScope(int direction, int duration)
+bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
 {
     double d = SimCamParams::guide_rate * duration / 1000.0;
 

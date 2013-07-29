@@ -42,7 +42,7 @@ public:
     bool    Disconnect();
 //  void    InitCapture();
 
-    bool    PulseGuideScope(int direction, int duration);
+    bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
     bool    Color;
     bool    HSModel;
@@ -50,6 +50,6 @@ public:
 private:
 //  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
     ArtemisHandle Cam_Handle;
-    bool HasNonGuiMove(void);
+    bool ST4HasNonGuiMove(void);
 };
 #endif  //ATIK16DEF

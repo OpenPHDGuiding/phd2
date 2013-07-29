@@ -114,7 +114,7 @@ Camera_SSPIAGClass::Camera_SSPIAGClass() {
 //  NBadPixels=-1;
     Name=_T("StarShoot PIAG");
     FullSize = wxSize(752,480);
-    HasGuiderOutput = true;
+    m_hasGuideOutput = true;
     HasGainControl = true;
     RawBuffer = NULL;
 }
@@ -294,7 +294,7 @@ bool Camera_SSPIAGClass::Connect() {
     return false;
 }
 
-bool Camera_SSPIAGClass::PulseGuideScope(int direction, int duration) {
+bool Camera_SSPIAGClass::ST4PulseGuideScope(int direction, int duration) {
 // Vend req 0xb5  (vendTXD)
 // Buffer[0] = GuideCommand, Buffer[1]=PulseTime.
     int reg = 0;

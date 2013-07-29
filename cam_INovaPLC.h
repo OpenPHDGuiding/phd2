@@ -43,7 +43,7 @@ public:
     virtual bool HasNonGuiCapture(void);
     bool Connect();
     bool Disconnect();
-    bool PulseGuideScope(int direction, int duration);
+    bool ST4PulseGuideScope(int direction, int duration);
     void InitCapture();
     Camera_INovaPLCClass();
 private:
@@ -51,7 +51,7 @@ private:
     unsigned int RowTime;
     unsigned short *RawData;
 
-    bool HasNonGuiMove(void);
+    bool ST4HasNonGuiMove(void);
 };
 
 

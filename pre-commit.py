@@ -89,20 +89,20 @@ def enforcePolicies(fileData, fileName):
         if fileData.tabs > 0:
             print("Rejected - contains tabs: {0}".format(fileName))
             error = True
-
         if fileData.trailingSpaces > 0:
             print("Rejected - trailing spaces: {0}".format(fileName))
             error = True
-
     return error
 
 def processDirTree(startDir):
+    error = False
     for root, dirs, files in os.walk(startDir):
         for fileName in files:
             if interestingExtension(fileName):
                 fullPath = os.path.join(root, fileName)
                 fileData = processNamedFile(fullPath)
-                enforcePolicies(fileData, fullPath)
+                error = enforcePolicies(fileData, fullPath) or error
+    return error
 
 
 def usage():
@@ -149,7 +149,7 @@ def checkFiles(fileNames):
                     newEnding = processNamedFile(fileName)
                     #print(fileName, oldEnding, newEnding)
 
-                    invalidEnding = enforcePolicies(newEnding, fileName)
+                    invalidEnding = enforcePolicies(newEnding, fileName) or invalidEnding
         except Exception as ex:
             print("caught exception {0} processing file {1}".format(ex, fileName), file=sys.stderr)
     return invalidEnding
@@ -184,7 +184,6 @@ def main():
         processDirTree(dirName)
     else:
         print("too many arguments", file=sys.stderr)
-
 
 if __name__ == "__main__":
     main()

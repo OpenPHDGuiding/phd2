@@ -59,7 +59,7 @@ Camera_FirewireClass::Camera_FirewireClass() {
     Name=_T("The Imaging Source");
     FullSize = wxSize(1280,1024);
     HasGainControl = true;
-    HasGuiderOutput = false;
+    m_hasGuideOutput = false;
 }
 
 //Camera_FirewireClass::~Camera_FirewireClass () {
