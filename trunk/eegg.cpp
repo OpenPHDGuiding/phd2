@@ -167,7 +167,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
     }
     else if (evt.GetId() == EEGG_MANUALLOCK)
     {
-        if (!pMount || !pMount->IsConnected() || !pCamera && !pCamera->Connected || !pMount->IsCalibrated())
+        if (!pMount || !pMount->IsCalibrated() || !pCamera || !pCamera->Connected)
         {
             wxMessageBox(_("Entering a manual lock position requires a camera and mount to be connected and calibrated."));
             return;
