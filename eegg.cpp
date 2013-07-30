@@ -47,8 +47,6 @@ void TestGuide() {
 
 static void load_calibration(Mount *mnt)
 {
-    if (!mnt)
-        return;
     wxString prefix = "/" + mnt->GetMountClassName() + "/calibration/";
     if (!pConfig->HasEntry(prefix + "timestamp"))
         return;
