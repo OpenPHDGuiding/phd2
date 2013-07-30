@@ -557,7 +557,7 @@ void MyFrame::SetupToolBar()
     Dark_Button = new wxButton(MainToolbar,BUTTON_DARK,_("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
     Dark_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 
-    MainToolbar->AddTool(BUTTON_GEAR, _("Equipment"), camera_bmp, _("Connect to equiptment"));
+    MainToolbar->AddTool(BUTTON_GEAR, _("Equipment"), camera_bmp, _("Connect to equipment"));
     MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus") );
     MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD)") );
     MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort the current action"));
