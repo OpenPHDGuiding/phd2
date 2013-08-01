@@ -135,7 +135,7 @@ void GearDialog::Initialize(void)
     wxStaticText *pText = new wxStaticText(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
     int width, height;
     pText->SetLabel(_("This the place where you select your equipment. I will type more and better instructions when I get around to doing it. For now this will have to do"));
-    pText->GetTextExtent(_("MMMMMMMMMM"), &width, &height);
+    pText->GetTextExtent(_T("MMMMMMMMMM"), &width, &height);
     pText->Wrap(4*width);
     pTopLevelSizer->Add(pText, sizerTextFlags.Align(wxALIGN_CENTER));
 
