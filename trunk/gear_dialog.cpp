@@ -480,7 +480,7 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
 
         m_pCamera = GuideCamera::Factory(choice);
 
-        Debug.AddLine("Created new camera of type %s = %p", choice, m_pCamera);
+        Debug.AddLine(wxString::Format("Created new camera of type %s = %p", choice, m_pCamera));
 
         if (!m_pCamera)
         {
@@ -599,7 +599,7 @@ void GearDialog::OnChoiceScope(wxCommandEvent& event)
         UpdateGearPointers();
 
         m_pScope = Scope::Factory(choice);
-        Debug.AddLine("Created new scope of type %s = %p", choice, m_pScope);
+        Debug.AddLine(wxString::Format("Created new scope of type %s = %p", choice, m_pScope));
 
         if (!m_pScope)
         {
@@ -685,7 +685,7 @@ void GearDialog::OnChoiceStepGuider(wxCommandEvent& event)
         UpdateGearPointers();
 
         m_pStepGuider = StepGuider::Factory(choice);
-        Debug.AddLine("Created new scope of type %s = %p", choice, m_pStepGuider);
+        Debug.AddLine(wxString::Format("Created new scope of type %s = %p", choice, m_pStepGuider));
 
         if (!m_pStepGuider)
         {

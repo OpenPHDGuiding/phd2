@@ -258,7 +258,7 @@ Scope *Scope::Factory(wxString choice)
             throw ERROR_INFO("ScopeFactory called with choice.IsEmpty()");
         }
 
-        Debug.AddLine("ScopeFactory(%s)", choice);
+        Debug.AddLine(wxString::Format("ScopeFactory(%s)", choice));
 
         if (choice.Find(_T("None")) + 1) {
         }

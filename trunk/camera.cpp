@@ -300,7 +300,7 @@ GuideCamera *GuideCamera::Factory(wxString choice)
             throw ERROR_INFO("CameraFactory called with choice.IsEmpty()");
         }
 
-        Debug.AddLine("CameraFactory(%s)", choice);
+        Debug.AddLine(wxString::Format("CameraFactory(%s)", choice));
 
         if (choice.Find(_T("None")) + 1) {
         }
