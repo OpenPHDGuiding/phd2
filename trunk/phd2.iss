@@ -25,15 +25,15 @@ Source: "README-PHD2.txt";                    DestDir: "{app}"; Flags: isreadme 
 Source: "WinLibs\astroDLLGeneric.dll";        DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\astroDLLQHY5V.dll";          DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\astroDLLsspiag.dll";         DestDir: "{app}"; Flags: replacesameversion
-Source: "{%CFITSIO}\cfitsio.dll";             DestDir: "{app}"; Flags: replacesameversion external
+#emit 'Source: "' + GetEnv("CFITSIO") + '\cfitsio.dll";             DestDir: "{app}"; Flags: replacesameversion'
 Source: "WinLibs\CMOSDLL.dll";                DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\DICAMSDK.dll";               DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\DSCI.dll";                   DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\FcApi.dll";                  DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\inpout32.dll";               DestDir: "{app}"; Flags: replacesameversion
-Source: "{%OPENCV_DIR}\x86\vc10\bin\opencv_core245.dll"; DestDir: "{app}"; Flags: replacesameversion external
-Source: "{%OPENCV_DIR}\x86\vc10\bin\opencv_highgui245.dll"; DestDir: "{app}"; Flags: replacesameversion external
-Source: "{%OPENCV_DIR}\x86\vc10\bin\opencv_imgproc245.dll"; DestDir: "{app}"; Flags: replacesameversion external
+#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc10\bin\opencv_core245.dll"; DestDir: "{app}"; Flags: replacesameversion'
+#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc10\bin\opencv_highgui245.dll"; DestDir: "{app}"; Flags: replacesameversion'
+#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc10\bin\opencv_imgproc245.dll"; DestDir: "{app}"; Flags: replacesameversion'
 Source: "WinLibs\qhy5IIdll.dll";              DestDir: "{app}"; Flags: replacesameversion
 ; Missing: qhy5LIIdll.dll
 Source: "WinLibs\ShoestringGPUSB_DLL.dll";    DestDir: "{app}"; Flags: replacesameversion
