@@ -63,7 +63,7 @@ bool GuidingLog::EnableLogging(void)
 
                 wxString fileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_GuideLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
 
-                if (!m_file.Open(fileName, "wb"))
+                if (!m_file.Open(fileName, "w"))
                 {
                     throw ERROR_INFO("unable to open file");
                 }
