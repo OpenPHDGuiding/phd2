@@ -63,7 +63,6 @@
 #endif /* not OPENPHD */
 
 #include "scope.h"
-#include "scope_none.h"
 #include "scope_oncamera.h"
 #include "scope_onstepguider.h"
 #include "scope_ascom.h"
