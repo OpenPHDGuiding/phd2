@@ -231,31 +231,38 @@ void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt))
         wxColourData cdata;
         cdata.SetColour(m_pClient->m_raOrDxColor);
         wxColourDialog cdialog(this, &cdata);
+        cdialog.SetTitle(_("RA or dx Color"));
         if (cdialog.ShowModal() == wxID_OK) {
             cdata = cdialog.GetColourData();
             m_pClient->m_raOrDxColor = cdata.GetColour();
+            pConfig->SetString("/graph/RAColor", m_pClient->m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
+            m_pLabel1->SetForegroundColour(m_pClient->m_raOrDxColor);
         }
     }
-    if (wxGetKeyState(WXK_CONTROL)) {
+    else if (wxGetKeyState(WXK_CONTROL)) {
         wxColourData cdata;
         cdata.SetColour(m_pClient->m_decOrDyColor);
         wxColourDialog cdialog(this, &cdata);
+        cdialog.SetTitle(_("Dec or dy Color"));
         if (cdialog.ShowModal() == wxID_OK) {
             cdata = cdialog.GetColourData();
             m_pClient->m_decOrDyColor = cdata.GetColour();
+            pConfig->SetString("/graph/DecColor", m_pClient->m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
+            m_pLabel2->SetForegroundColour(m_pClient->m_decOrDyColor);
         }
     }
-
-    switch (m_pClient->m_mode)
-    {
-        case GraphLogClientWindow::MODE_RADEC:
-            m_pClient->m_mode = GraphLogClientWindow::MODE_DXDY;
-            m_pModeButton->SetLabel(_T("dx/dy"));
-            break;
-        case GraphLogClientWindow::MODE_DXDY:
-            m_pClient->m_mode = GraphLogClientWindow::MODE_RADEC;
-            m_pModeButton->SetLabel(_T("RA/Dec"));
-            break;
+    else {
+        switch (m_pClient->m_mode)
+        {
+            case GraphLogClientWindow::MODE_RADEC:
+                m_pClient->m_mode = GraphLogClientWindow::MODE_DXDY;
+                m_pModeButton->SetLabel(_T("dx/dy"));
+                break;
+            case GraphLogClientWindow::MODE_DXDY:
+                m_pClient->m_mode = GraphLogClientWindow::MODE_RADEC;
+                m_pModeButton->SetLabel(_T("RA/Dec"));
+                break;
+        }
     }
 
     Refresh();
@@ -450,8 +457,16 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     ResetData();
     m_mode = MODE_RADEC;
 
-    m_raOrDxColor  = wxColour(100,100,255);
-    m_decOrDyColor = wxColour(255,0,0);
+    if (!m_raOrDxColor.Set(pConfig->GetString("/graph/RAColor", wxEmptyString)))
+    {
+        m_raOrDxColor  = wxColour(100,100,255);
+        pConfig->SetString("/graph/RAColor", m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
+    }
+    if (!m_decOrDyColor.Set(pConfig->GetString("/graph/DecColor", wxEmptyString)))
+    {
+        m_decOrDyColor = wxColour(255,0,0);
+        pConfig->SetString("/graph/DecColor", m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
+    }
 
     int minLength = pConfig->GetInt("/graph/minLength", DefaultMinLength);
     SetMinLength(minLength);
