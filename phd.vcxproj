@@ -336,7 +336,6 @@
     <ClInclude Include="scope_GC_USBST4.h" />
     <ClInclude Include="scope_gpint.h" />
     <ClInclude Include="scope_gpusb.h" />
-    <ClInclude Include="scope_none.h" />
     <ClInclude Include="scope_onboard_st4.h" />
     <ClInclude Include="scope_oncamera.h" />
     <ClInclude Include="scope_onstepguider.h" />
