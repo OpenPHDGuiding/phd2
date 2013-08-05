@@ -318,37 +318,41 @@ bool StepGuider::Center(bool move)
     {
         if (move)
         {
-            int positionNorth = CurrentPosition(NORTH);
+            int positionUpDown = CurrentPosition(UP);
 
-            if (positionNorth > 0)
+            if (positionUpDown > 0)
             {
-                if (Step(SOUTH, positionNorth))
+                if (Move(DOWN, positionUpDown) != positionUpDown)
                 {
-                    throw ERROR_INFO("Center() failed to step SOUTH");
+                    throw ERROR_INFO("Center() failed to step DOWN");
                 }
             }
             else
             {
-                if (Step(NORTH, -positionNorth))
+                positionUpDown = -positionUpDown;
+
+                if (Move(UP, positionUpDown) != positionUpDown)
                 {
-                    throw ERROR_INFO("Center() failed to step NORTH");
+                    throw ERROR_INFO("Center() failed to step UP");
                 }
             }
 
-            int positionEast = CurrentPosition(EAST);
+            int positionLeftRight = CurrentPosition(LEFT);
 
-            if (positionEast > 0)
+            if (positionLeftRight > 0)
             {
-                if (Step(WEST, positionEast))
+                if (Move(RIGHT, positionLeftRight) != positionLeftRight)
                 {
-                    throw ERROR_INFO("Center() failed to step WEST");
+                    throw ERROR_INFO("Center() failed to step RIGHT");
                 }
             }
             else
             {
-                if (Step(EAST, -positionEast))
+                positionLeftRight = -positionLeftRight;
+
+                if (Move(LEFT, positionLeftRight) != positionLeftRight)
                 {
-                    throw ERROR_INFO("Center() failed to step WEST");
+                    throw ERROR_INFO("Center() failed to step LEFT");
                 }
             }
 
