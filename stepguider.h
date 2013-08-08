@@ -141,6 +141,7 @@ private:
 protected:
     static int IntegerPercent(int percentage, int number);
     virtual int BumpPosition(GUIDE_DIRECTION direction);
+    void ZeroCurrentPosition();
 
     // pure virutal functions -- these MUST be overridden by a subclass
 private:
@@ -154,7 +155,7 @@ public:
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit);
     virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
-    virtual bool Center(bool move=true);
+    virtual bool MoveToCenter();
 };
 
 #endif /* STEPGUIDER_H_INCLUDED */

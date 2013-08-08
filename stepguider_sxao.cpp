@@ -92,7 +92,7 @@ bool StepGuiderSxAO::Connect(void)
             throw ERROR_INFO("StepGuiderSxAO::Connect: unable to get firmware version");
         }
 
-        if (Center(true))
+        if (Center())
         {
             if (Unjam())
             {
@@ -335,10 +335,7 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
             throw ERROR_INFO("StepGuiderSxAO::Center: SetReceiveTimeout failed");
         }
 
-        if (StepGuider::Center(false))
-        {
-            throw ERROR_INFO("StepGuider::Center: failed");
-        }
+        StepGuider::ZeroCurrentPosition();
     }
     catch (wxString Msg)
     {
