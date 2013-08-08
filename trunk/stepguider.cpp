@@ -310,60 +310,58 @@ bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteratio
     return bError;
 }
 
-bool StepGuider::Center(bool move)
+void StepGuider::ZeroCurrentPosition()
+{
+    m_xOffset = 0;
+    m_yOffset = 0;
+}
+
+bool StepGuider::MoveToCenter()
 {
     bool bError = false;
 
     try
     {
-        if (move)
+        int positionUpDown = CurrentPosition(UP);
+
+        if (positionUpDown > 0)
         {
-            int positionUpDown = CurrentPosition(UP);
-
-            if (positionUpDown > 0)
+            if (Move(DOWN, positionUpDown) != positionUpDown)
             {
-                if (Move(DOWN, positionUpDown) != positionUpDown)
-                {
-                    throw ERROR_INFO("Center() failed to step DOWN");
-                }
+                throw ERROR_INFO("MoveToCenter() failed to step DOWN");
             }
-            else
-            {
-                positionUpDown = -positionUpDown;
-
-                if (Move(UP, positionUpDown) != positionUpDown)
-                {
-                    throw ERROR_INFO("Center() failed to step UP");
-                }
-            }
-
-            int positionLeftRight = CurrentPosition(LEFT);
-
-            if (positionLeftRight > 0)
-            {
-                if (Move(RIGHT, positionLeftRight) != positionLeftRight)
-                {
-                    throw ERROR_INFO("Center() failed to step RIGHT");
-                }
-            }
-            else
-            {
-                positionLeftRight = -positionLeftRight;
-
-                if (Move(LEFT, positionLeftRight) != positionLeftRight)
-                {
-                    throw ERROR_INFO("Center() failed to step LEFT");
-                }
-            }
-
-            assert(m_xOffset == 0);
-            assert(m_yOffset == 0);
         }
-        else
+        else if (positionUpDown < 0)
         {
-            m_xOffset = 0;
-            m_yOffset = 0;
+            positionUpDown = -positionUpDown;
+
+            if (Move(UP, positionUpDown) != positionUpDown)
+            {
+                throw ERROR_INFO("MoveToCenter() failed to step UP");
+            }
         }
+
+        int positionLeftRight = CurrentPosition(LEFT);
+
+        if (positionLeftRight > 0)
+        {
+            if (Move(RIGHT, positionLeftRight) != positionLeftRight)
+            {
+                throw ERROR_INFO("MoveToCenter() failed to step RIGHT");
+            }
+        }
+        else if (positionLeftRight < 0)
+        {
+            positionLeftRight = -positionLeftRight;
+
+            if (Move(LEFT, positionLeftRight) != positionLeftRight)
+            {
+                throw ERROR_INFO("MoveToCenter() failed to step LEFT");
+            }
+        }
+
+        assert(m_xOffset == 0);
+        assert(m_yOffset == 0);
     }
     catch (wxString Msg)
     {
@@ -688,12 +686,9 @@ bool StepGuider::GuidingCeases(void)
 
     try
     {
-        if (m_xOffset != 0 || m_yOffset != 0)
+        if (MoveToCenter())
         {
-            if (Center())
-            {
-                throw ERROR_INFO("Center() failed");
-            }
+            throw ERROR_INFO("MoveToCenter() failed");
         }
     }
     catch (wxString Msg)
@@ -731,7 +726,7 @@ bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
 
 double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMove)
 {
-    double steps = 0.0;
+    int steps = 0;
 
     try
     {
@@ -740,29 +735,11 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
         // Compute the required guide steps
         if (m_guidingEnabled)
         {
-            char directionName = '?';
-
-            switch (direction)
-            {
-                case UP:
-                    directionName = 'N';
-                    break;
-                case DOWN:
-                    directionName = 'S';
-                    break;
-                case RIGHT:
-                    directionName = 'E';
-                    break;
-                case LEFT:
-                    directionName = 'W';
-                    break;
-            }
-
             // Acutally do the guide
             steps = (int)(amount + 0.5);
-            assert(steps >= 0.0);
+            assert(steps >= 0);
 
-            if (steps > 0.0)
+            if (steps > 0)
             {
                 int yDirection = 0;
                 int xDirection = 0;
@@ -789,16 +766,16 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
                 assert(yDirection == 0 || xDirection == 0);
                 assert(yDirection != 0 || xDirection != 0);
 
-                Debug.AddLine(wxString::Format("stepping direction=%d steps=%.2f xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
+                Debug.AddLine(wxString::Format("stepping direction=%d steps=%d xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
 
                 if (WouldHitLimit(direction, steps))
                 {
-                    double new_steps = MaxPosition(direction) - 1 - CurrentPosition(direction);
-                    Debug.AddLine(wxString::Format("StepGuider step would hit limit: truncate move direction=%d steps=%.2f => %.2f", direction, steps, new_steps));
+                    int new_steps = MaxPosition(direction) - 1 - CurrentPosition(direction);
+                    Debug.AddLine(wxString::Format("StepGuider step would hit limit: truncate move direction=%d steps=%d => %d", direction, steps, new_steps));
                     steps = new_steps;
                 }
 
-                if (steps > 0.0)
+                if (steps > 0)
                 {
                     if (Step(direction, steps))
                     {

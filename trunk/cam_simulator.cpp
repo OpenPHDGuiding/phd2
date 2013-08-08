@@ -108,6 +108,8 @@ bool StepGuiderSimulator::Connect(void)
     if (StepGuider::Connect())
         return true;
 
+    ZeroCurrentPosition();
+
     s_sim_ao = this;
 
     Debug.AddLine("AO Simulator Connected");
