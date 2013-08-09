@@ -192,7 +192,7 @@ wxArrayString GuideCamera::List(void)
 
     CameraList.Add(_T("None"));
 #if defined (ASCOM_LATECAMERA)
-    CameraList.Add(_T("ASCOM (Late) Camera"));
+    CameraList.Add(_T("ASCOM Camera"));
 #endif
 #if defined (ATIK16)
     CameraList.Add(_T("Atik 16 series, mono"));
@@ -453,7 +453,7 @@ GuideCamera *GuideCamera::Factory(wxString choice)
         }
 #endif
 #if defined (ASCOM_LATECAMERA)
-        else if (choice.Find(_T("ASCOM (Late) Camera")) + 1) {
+        else if (choice.Find(_T("ASCOM Camera")) + 1) {
             pReturn = new Camera_ASCOMLateClass();
         }
 #endif

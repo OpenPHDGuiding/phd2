@@ -42,13 +42,13 @@ class GearDialog: public wxDialog
     StepGuider  *m_pStepGuider;
 
     wxChoice *m_pCameras;
-    wxButton *m_pConnectCameraButton;
+    wxToggleButton *m_pConnectCameraButton;
 
     wxChoice *m_pScopes;
-    wxButton *m_pConnectScopeButton;
+    wxToggleButton *m_pConnectScopeButton;
 
     wxChoice *m_pStepGuiders;
-    wxButton *m_pConnectStepGuiderButton;
+    wxToggleButton *m_pConnectStepGuiderButton;
 
     wxButton *m_pConnectAllButton;
     wxButton *m_pDisconnectAllButton;
