@@ -52,6 +52,7 @@
 #include <wx/display.h>
 #include <wx/statline.h>
 #include <wx/bmpbuttn.h>
+#include <wx/tglbtn.h>
 #include <wx/spinctrl.h>
 #include <wx/stdpaths.h>
 #include <wx/splash.h>

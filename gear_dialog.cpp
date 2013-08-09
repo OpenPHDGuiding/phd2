@@ -39,20 +39,25 @@ BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_BUTTON(GEAR_BUTTON_DISCONNECT_ALL, GearDialog::OnButtonDisconnectAll)
 
     EVT_CHOICE(GEAR_CHOICE_CAMERA, GearDialog::OnChoiceCamera)
-    EVT_BUTTON(GEAR_BUTTON_CONNECT_CAMERA, GearDialog::OnButtonConnectCamera)
-    EVT_BUTTON(GEAR_BUTTON_DISCONNECT_CAMERA, GearDialog::OnButtonDisconnectCamera)
+    EVT_TOGGLEBUTTON(GEAR_BUTTON_CONNECT_CAMERA, GearDialog::OnButtonConnectCamera)
+    EVT_TOGGLEBUTTON(GEAR_BUTTON_DISCONNECT_CAMERA, GearDialog::OnButtonDisconnectCamera)
 
     EVT_CHOICE(GEAR_CHOICE_SCOPE, GearDialog::OnChoiceScope)
-    EVT_BUTTON(GEAR_BUTTON_CONNECT_SCOPE, GearDialog::OnButtonConnectScope)
-    EVT_BUTTON(GEAR_BUTTON_DISCONNECT_SCOPE, GearDialog::OnButtonDisconnectScope)
+    EVT_TOGGLEBUTTON(GEAR_BUTTON_CONNECT_SCOPE, GearDialog::OnButtonConnectScope)
+    EVT_TOGGLEBUTTON(GEAR_BUTTON_DISCONNECT_SCOPE, GearDialog::OnButtonDisconnectScope)
 
     EVT_CHOICE(GEAR_CHOICE_STEPGUIDER, GearDialog::OnChoiceStepGuider)
-    EVT_BUTTON(GEAR_BUTTON_CONNECT_STEPGUIDER, GearDialog::OnButtonConnectStepGuider)
-    EVT_BUTTON(GEAR_BUTTON_DISCONNECT_STEPGUIDER, GearDialog::OnButtonDisconnectStepGuider)
+    EVT_TOGGLEBUTTON(GEAR_BUTTON_CONNECT_STEPGUIDER, GearDialog::OnButtonConnectStepGuider)
+    EVT_TOGGLEBUTTON(GEAR_BUTTON_DISCONNECT_STEPGUIDER, GearDialog::OnButtonDisconnectStepGuider)
 END_EVENT_TABLE()
 
+namespace xpm {
+#include "icons/connected.xpm"
+#include "icons/disconnected.xpm"
+}
+
 /*
- * The Gear Dialog allows the user to select and connec to their hardware.
+ * The Gear Dialog allows the user to select and connect to their hardware.
  *
  * The dialog looks something like this:
  *
@@ -73,13 +78,13 @@ END_EVENT_TABLE()
  * |  AO Selection                     |    | AO Connection Button|           |
  * |                                   |    +---------------------+           |
  * +--------------------------------------------------------------------------+
- * | +-------------------+   +-------------------+  +-------------------+     |
- * | |    Connect All    |   |  Disconnect All   |  |      Done         |     |
- * | +-------------------+   +-------------------+  +-------------------+     |
+ * |             +-------------------+   +-------------------+                |
+ * |             |    Connect All    |   |  Disconnect All   |                |
+ * |             +-------------------+   +-------------------+                |
  * +--------------------------------------------------------------------------+
  */
 GearDialog::GearDialog(wxWindow *pParent):
-wxDialog(pParent, wxID_ANY, _("Gear setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
+wxDialog(pParent, wxID_ANY, _("Connect Equipment"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     m_pCamera              = NULL;
     m_pScope               = NULL;
@@ -132,9 +137,9 @@ void GearDialog::Initialize(void)
     // text at the top.  I tried (really really hard) to get it to resize/Wrap()
     // with the rest of the sizer, but it just didn't want to work, and I needed
     // to get the rest of the dialog working.
-    wxStaticText *pText = new wxStaticText(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    wxStaticText *pText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
     int width, height;
-    pText->SetLabel(_("This the place where you select your equipment. I will type more and better instructions when I get around to doing it. For now this will have to do"));
+    pText->SetLabel(_("Select your equipment and click Connect All to connect, or click Disconnect All to disconnect. You can also connect or disconnect individual equipment items by clicking the button next to the item."));
     pText->GetTextExtent(_T("MMMMMMMMMM"), &width, &height);
     pText->Wrap(4*width);
     pTopLevelSizer->Add(pText, sizerTextFlags.Align(wxALIGN_CENTER));
@@ -144,39 +149,45 @@ void GearDialog::Initialize(void)
     pTopLevelSizer->Add(pGearSizer, sizerFlags);
 
     // Camera
-    pGearSizer->Add(new wxStaticText(this, wxID_ANY, "Camera", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL), sizerLabelFlags);
+    pGearSizer->Add(new wxStaticText(this, wxID_ANY, _("Camera"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL), sizerLabelFlags);
     m_pCameras = new wxChoice(this, GEAR_CHOICE_CAMERA, wxDefaultPosition, wxDefaultSize,
-            GuideCamera::List(), 0, wxDefaultValidator, "Camera");
+            GuideCamera::List(), 0, wxDefaultValidator, _("Camera"));
     pGearSizer->Add(m_pCameras, sizerButtonFlags);
-    m_pConnectCameraButton = new wxButton( this, GEAR_BUTTON_CONNECT_CAMERA, "Disconnect");
+    m_pConnectCameraButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_CAMERA, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    m_pConnectCameraButton->SetBitmapLabel(wxBitmap(xpm::disconnected));
+    m_pConnectCameraButton->SetBitmapPressed(wxBitmap(xpm::connected));
     pGearSizer->Add(m_pConnectCameraButton, sizerButtonFlags);
 
     // mount
-    pGearSizer->Add(new wxStaticText(this, wxID_ANY, "Mount", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), sizerLabelFlags);
+    pGearSizer->Add(new wxStaticText(this, wxID_ANY, _("Mount"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), sizerLabelFlags);
     m_pScopes = new wxChoice(this, GEAR_CHOICE_SCOPE, wxDefaultPosition, wxDefaultSize,
-            Scope::List(), 0, wxDefaultValidator, "Mounts");
+            Scope::List(), 0, wxDefaultValidator, _("Mount"));
     pGearSizer->Add(m_pScopes, sizerButtonFlags);
-    m_pConnectScopeButton = new wxButton( this, GEAR_BUTTON_CONNECT_SCOPE, "Disconnect");
+    m_pConnectScopeButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_SCOPE, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    m_pConnectScopeButton->SetBitmapLabel(wxBitmap(xpm::disconnected));
+    m_pConnectScopeButton->SetBitmapPressed(wxBitmap(xpm::connected));
     pGearSizer->Add(m_pConnectScopeButton, sizerButtonFlags);
 
     // ao
-    pGearSizer->Add(new wxStaticText(this, wxID_ANY, "AO", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), sizerLabelFlags);
+    pGearSizer->Add(new wxStaticText(this, wxID_ANY, _("AO"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), sizerLabelFlags);
     m_pStepGuiders = new wxChoice(this, GEAR_CHOICE_STEPGUIDER, wxDefaultPosition, wxDefaultSize,
-            StepGuider::List(), 0, wxDefaultValidator, "Camera");
+            StepGuider::List(), 0, wxDefaultValidator, _("AO"));
     pGearSizer->Add(m_pStepGuiders, sizerButtonFlags);
-    m_pConnectStepGuiderButton = new wxButton( this, GEAR_BUTTON_CONNECT_STEPGUIDER, "Disconnect");
+    m_pConnectStepGuiderButton = new wxToggleButton( this, GEAR_BUTTON_CONNECT_STEPGUIDER, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    m_pConnectStepGuiderButton->SetBitmapLabel(wxBitmap(xpm::disconnected));
+    m_pConnectStepGuiderButton->SetBitmapPressed(wxBitmap(xpm::connected));
     pGearSizer->Add(m_pConnectStepGuiderButton, sizerButtonFlags);
 
     // Setup the bottom row of buttons
 
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pConnectAllButton = new wxButton( this, GEAR_BUTTON_CONNECT_ALL, "Connect All");
+    m_pConnectAllButton = new wxButton( this, GEAR_BUTTON_CONNECT_ALL, _("Connect All"));
+    m_pConnectAllButton->SetToolTip(_("Connect all equipment and close the equipment selection window"));
     pButtonSizer->Add(m_pConnectAllButton, sizerFlags);
 
-    m_pDisconnectAllButton = new wxButton( this, GEAR_BUTTON_DISCONNECT_ALL, "Disconnect All");
+    m_pDisconnectAllButton = new wxButton( this, GEAR_BUTTON_DISCONNECT_ALL, _("Disconnect All"));
+    m_pDisconnectAllButton->SetToolTip(_("Disconnect all equipment and close the equipment selection window"));
     pButtonSizer->Add(m_pDisconnectAllButton, sizerFlags);
-
-    pButtonSizer->Add(new wxButton( this, wxID_OK, "Done" ), sizerFlags);
 
     pTopLevelSizer->Add(pButtonSizer, wxSizerFlags().Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2));
 
@@ -246,10 +257,9 @@ int GearDialog::ShowModal(bool autoConnect)
 
 void GearDialog::EndModal(int retCode)
 {
-
     assert(pCamera == m_pCamera);
 
-    if (pCamera  && pCamera->HasPropertyDialog)
+    if (pCamera && pCamera->HasPropertyDialog)
     {
         pFrame->MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, true);
     }
@@ -260,51 +270,15 @@ void GearDialog::EndModal(int retCode)
 
     pFrame->SetSampling();
 
-    if (pCamera && pCamera->Connected)
-    {
-        pFrame->SetStatusText(_T("Camera"),2);
-    }
-    else
-    {
-        pFrame->SetStatusText(_T("No cam"),2);
-    }
-
     if (m_pStepGuider)
     {
         assert(pMount == m_pStepGuider);
         assert(pSecondaryMount == m_pScope);
-
-        if (pMount && pMount->IsConnected())
-        {
-            pFrame->SetStatusText(_T("AO"),4);
-        }
-        else
-        {
-            pFrame->SetStatusText(_T(""),4);
-        }
-
-        if (pSecondaryMount && pSecondaryMount->IsConnected())
-        {
-            pFrame->SetStatusText(_("Scope"),3);
-        }
-        else
-        {
-            pFrame->SetStatusText(_(""),3);
-        }
     }
     else
     {
         assert(pMount == m_pScope);
         assert(pSecondaryMount == NULL);
-
-        if (pMount && pMount->IsConnected())
-        {
-            pFrame->SetStatusText(_("Scope"),3);
-        }
-        else
-        {
-            pFrame->SetStatusText(_(""),3);
-        }
     }
 
     pFrame->UpdateButtonsStatus();
@@ -319,7 +293,9 @@ void GearDialog::UpdateCameraButtonState(void)
     if (!m_pCamera)
     {
         m_pConnectCameraButton->Enable(false);
-        m_pConnectCameraButton->SetLabel("Connect");
+        m_pConnectCameraButton->SetLabel(_("Connect"));
+        m_pConnectCameraButton->SetValue(false);
+        m_pConnectCameraButton->SetToolTip(_("Connect to camera"));
         m_pConnectCameraButton->SetId(GEAR_BUTTON_CONNECT_CAMERA);
         m_pCameras->Enable(true);
     }
@@ -330,12 +306,16 @@ void GearDialog::UpdateCameraButtonState(void)
         if (m_pCamera->Connected)
         {
             m_pConnectCameraButton->SetLabel("Disconnect");
+            m_pConnectCameraButton->SetValue(true);
+            m_pConnectCameraButton->SetToolTip(_("Disconnect from camera"));
             m_pConnectCameraButton->SetId(GEAR_BUTTON_DISCONNECT_CAMERA);
             m_pCameras->Enable(false);
         }
         else
         {
             m_pConnectCameraButton->SetLabel("Connect");
+            m_pConnectCameraButton->SetValue(false);
+            m_pConnectCameraButton->SetToolTip(_("Connect to camera"));
             m_pConnectCameraButton->SetId(GEAR_BUTTON_CONNECT_CAMERA);
             m_pCameras->Enable(true);
         }
@@ -349,6 +329,8 @@ void GearDialog::UpdateScopeButtonState(void)
     {
         m_pConnectScopeButton->Enable(false);
         m_pConnectScopeButton->SetLabel("Connect");
+        m_pConnectScopeButton->SetValue(false);
+        m_pConnectScopeButton->SetToolTip(_("Connect to mount"));
         m_pConnectScopeButton->SetId(GEAR_BUTTON_CONNECT_SCOPE);
         m_pScopes->Enable(true);
     }
@@ -359,12 +341,16 @@ void GearDialog::UpdateScopeButtonState(void)
         if (m_pScope->IsConnected())
         {
             m_pConnectScopeButton->SetLabel("Disconnect");
+            m_pConnectScopeButton->SetValue(true);
+            m_pConnectScopeButton->SetToolTip(_("Disconnect from mount"));
             m_pConnectScopeButton->SetId(GEAR_BUTTON_DISCONNECT_SCOPE);
             m_pScopes->Enable(false);
         }
         else
         {
             m_pConnectScopeButton->SetLabel("Connect");
+            m_pConnectScopeButton->SetValue(false);
+            m_pConnectScopeButton->SetToolTip(_("Connect to mount"));
             m_pConnectScopeButton->SetId(GEAR_BUTTON_CONNECT_SCOPE);
             m_pScopes->Enable(true);
 
@@ -391,6 +377,8 @@ void GearDialog::UpdateStepGuiderButtonState(void)
     {
         m_pConnectStepGuiderButton->Enable(false);
         m_pConnectStepGuiderButton->SetLabel("Connect");
+        m_pConnectStepGuiderButton->SetValue(false);
+        m_pConnectStepGuiderButton->SetToolTip(_("Connect to AO"));
         m_pConnectStepGuiderButton->SetId(GEAR_BUTTON_CONNECT_STEPGUIDER);
         m_pStepGuiders->Enable(true);
     }
@@ -401,12 +389,16 @@ void GearDialog::UpdateStepGuiderButtonState(void)
         if (m_pStepGuider->IsConnected())
         {
             m_pConnectStepGuiderButton->SetLabel("Disconnect");
+            m_pConnectStepGuiderButton->SetValue(true);
+            m_pConnectStepGuiderButton->SetToolTip(_("Disconnect from AO"));
             m_pConnectStepGuiderButton->SetId(GEAR_BUTTON_DISCONNECT_STEPGUIDER);
             m_pStepGuiders->Enable(false);
         }
         else
         {
             m_pConnectStepGuiderButton->SetLabel("Connect");
+            m_pConnectStepGuiderButton->SetValue(false);
+            m_pConnectStepGuiderButton->SetToolTip(_("Connect to AO"));
             m_pConnectStepGuiderButton->SetId(GEAR_BUTTON_CONNECT_STEPGUIDER);
             m_pStepGuiders->Enable(true);
         }
@@ -457,6 +449,17 @@ void GearDialog::OnButtonConnectAll(wxCommandEvent& event)
     OnButtonConnectCamera(event);
     OnButtonConnectStepGuider(event);
     OnButtonConnectScope(event);
+
+    bool done = true;
+    if (m_pCamera && !m_pCamera->Connected)
+        done = false;
+    if (m_pScope && !m_pScope->IsConnected())
+        done = false;
+    if (m_pStepGuider && !m_pStepGuider->IsConnected())
+        done = false;
+
+    if (done)
+        EndModal(0);
 }
 
 void GearDialog::OnButtonDisconnectAll(wxCommandEvent& event)
@@ -464,6 +467,17 @@ void GearDialog::OnButtonDisconnectAll(wxCommandEvent& event)
     OnButtonDisconnectScope(event);
     OnButtonDisconnectCamera(event);
     OnButtonDisconnectStepGuider(event);
+
+    bool done = true;
+    if (m_pCamera && m_pCamera->Connected)
+        done = false;
+    if (m_pScope && m_pScope->IsConnected())
+        done = false;
+    if (m_pStepGuider && m_pStepGuider->IsConnected())
+        done = false;
+
+    if (done)
+        EndModal(0);
 }
 
 void GearDialog::OnChoiceCamera(wxCommandEvent& event)
@@ -518,6 +532,7 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
         pConfig->SetString("/camera/LastMenuChoice", m_pCameras->GetString(m_pCameras->GetCurrentSelection()));
 
         pFrame->SetStatusText(_("Camera Connected"), 1);
+        pFrame->SetStatusText(_T("Camera"), 2);
 
         Debug.AddLine("Connected Camera:" + m_pCamera->Name);
         Debug.AddLine("FullSize=(%d,%d)", m_pCamera->FullSize.x, m_pCamera->FullSize.y);
@@ -529,7 +544,6 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
         Debug.AddLine("HasShutter=%d", m_pCamera->HasShutter);
         Debug.AddLine("HasSubFrames=%d", m_pCamera->HasSubframes);
         Debug.AddLine("ST4HasGuideOutput=%d", m_pCamera->ST4HasGuideOutput());
-
     }
     catch (wxString Msg)
     {
@@ -562,6 +576,7 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
         }
 
         pFrame->SetStatusText(_("Camera Disconnected"), 1);
+        pFrame->SetStatusText(_T("No cam"), 2);
     }
     catch (wxString Msg)
     {
@@ -636,6 +651,7 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
         // Save the choice now that we have connected
         pConfig->SetString("/scope/LastMenuChoice", m_pScopes->GetString(m_pScopes->GetCurrentSelection()));
         pFrame->SetStatusText(_("Scope connected"));
+        pFrame->SetStatusText(_("Scope"), 3);
 
         Debug.AddLine("Connected Scope:" + m_pScope->Name());
     }
@@ -664,6 +680,7 @@ void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
 
         m_pScope->Disconnect();
         pFrame->SetStatusText(_("Scope Disconnected"));
+        pFrame->SetStatusText(wxEmptyString, 3);
     }
     catch (wxString Msg)
     {
@@ -722,6 +739,7 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
         // Save the choice now that we have connected
         pConfig->SetString("/stepguider/LastMenuChoice", m_pStepGuiders->GetString(m_pStepGuiders->GetCurrentSelection()));
         pFrame->SetStatusText(_("Adaptive Optics Connected"), 1);
+        pFrame->SetStatusText(_T("AO"), 4);
         Debug.AddLine("Connected AO:" + m_pStepGuider->Name());
     }
     catch (wxString Msg)
@@ -755,6 +773,7 @@ void GearDialog::OnButtonDisconnectStepGuider(wxCommandEvent& event)
         }
 
         pFrame->SetStatusText(_("Adaptive Optics Disconnected"), 1);
+        pFrame->SetStatusText(wxEmptyString, 4);
     }
     catch (wxString Msg)
     {
@@ -763,4 +782,3 @@ void GearDialog::OnButtonDisconnectStepGuider(wxCommandEvent& event)
 
     UpdateButtonState();
 }
-
