@@ -197,15 +197,15 @@ void GearDialog::Initialize(void)
 
     // preselect the choices
     wxCommandEvent dummyEvent;
-    wxString lastCamera = pConfig->GetString("/camera/LastMenuchoice", _T(""));
+    wxString lastCamera = pConfig->GetString("/camera/LastMenuchoice", wxEmptyString);
     m_pCameras->SetSelection(m_pCameras->FindString(lastCamera));
     OnChoiceCamera(dummyEvent);
 
-    wxString lastScope = pConfig->GetString("/scope/LastMenuChoice", _T(""));
+    wxString lastScope = pConfig->GetString("/scope/LastMenuChoice", wxEmptyString);
     m_pScopes->SetSelection(m_pScopes->FindString(lastScope));
     OnChoiceScope(dummyEvent);
 
-    wxString lastStepGuider = pConfig->GetString("/stepguider/LastMenuChoice", _T(""));
+    wxString lastStepGuider = pConfig->GetString("/stepguider/LastMenuChoice", wxEmptyString);
     m_pStepGuiders->SetSelection(m_pStepGuiders->FindString(lastStepGuider));
     OnChoiceStepGuider(dummyEvent);
 }
@@ -305,7 +305,7 @@ void GearDialog::UpdateCameraButtonState(void)
 
         if (m_pCamera->Connected)
         {
-            m_pConnectCameraButton->SetLabel("Disconnect");
+            m_pConnectCameraButton->SetLabel(_("Disconnect"));
             m_pConnectCameraButton->SetValue(true);
             m_pConnectCameraButton->SetToolTip(_("Disconnect from camera"));
             m_pConnectCameraButton->SetId(GEAR_BUTTON_DISCONNECT_CAMERA);
@@ -313,7 +313,7 @@ void GearDialog::UpdateCameraButtonState(void)
         }
         else
         {
-            m_pConnectCameraButton->SetLabel("Connect");
+            m_pConnectCameraButton->SetLabel(_("Connect"));
             m_pConnectCameraButton->SetValue(false);
             m_pConnectCameraButton->SetToolTip(_("Connect to camera"));
             m_pConnectCameraButton->SetId(GEAR_BUTTON_CONNECT_CAMERA);
@@ -328,7 +328,7 @@ void GearDialog::UpdateScopeButtonState(void)
     if (!m_pScope)
     {
         m_pConnectScopeButton->Enable(false);
-        m_pConnectScopeButton->SetLabel("Connect");
+        m_pConnectScopeButton->SetLabel(_("Connect"));
         m_pConnectScopeButton->SetValue(false);
         m_pConnectScopeButton->SetToolTip(_("Connect to mount"));
         m_pConnectScopeButton->SetId(GEAR_BUTTON_CONNECT_SCOPE);
@@ -340,7 +340,7 @@ void GearDialog::UpdateScopeButtonState(void)
 
         if (m_pScope->IsConnected())
         {
-            m_pConnectScopeButton->SetLabel("Disconnect");
+            m_pConnectScopeButton->SetLabel(_("Disconnect"));
             m_pConnectScopeButton->SetValue(true);
             m_pConnectScopeButton->SetToolTip(_("Disconnect from mount"));
             m_pConnectScopeButton->SetId(GEAR_BUTTON_DISCONNECT_SCOPE);
@@ -348,7 +348,7 @@ void GearDialog::UpdateScopeButtonState(void)
         }
         else
         {
-            m_pConnectScopeButton->SetLabel("Connect");
+            m_pConnectScopeButton->SetLabel(_("Connect"));
             m_pConnectScopeButton->SetValue(false);
             m_pConnectScopeButton->SetToolTip(_("Connect to mount"));
             m_pConnectScopeButton->SetId(GEAR_BUTTON_CONNECT_SCOPE);
@@ -376,7 +376,7 @@ void GearDialog::UpdateStepGuiderButtonState(void)
     if (!m_pStepGuider)
     {
         m_pConnectStepGuiderButton->Enable(false);
-        m_pConnectStepGuiderButton->SetLabel("Connect");
+        m_pConnectStepGuiderButton->SetLabel(_("Connect"));
         m_pConnectStepGuiderButton->SetValue(false);
         m_pConnectStepGuiderButton->SetToolTip(_("Connect to AO"));
         m_pConnectStepGuiderButton->SetId(GEAR_BUTTON_CONNECT_STEPGUIDER);
@@ -388,7 +388,7 @@ void GearDialog::UpdateStepGuiderButtonState(void)
 
         if (m_pStepGuider->IsConnected())
         {
-            m_pConnectStepGuiderButton->SetLabel("Disconnect");
+            m_pConnectStepGuiderButton->SetLabel(_("Disconnect"));
             m_pConnectStepGuiderButton->SetValue(true);
             m_pConnectStepGuiderButton->SetToolTip(_("Disconnect from AO"));
             m_pConnectStepGuiderButton->SetId(GEAR_BUTTON_DISCONNECT_STEPGUIDER);
@@ -396,7 +396,7 @@ void GearDialog::UpdateStepGuiderButtonState(void)
         }
         else
         {
-            m_pConnectStepGuiderButton->SetLabel("Connect");
+            m_pConnectStepGuiderButton->SetLabel(_("Connect"));
             m_pConnectStepGuiderButton->SetValue(false);
             m_pConnectStepGuiderButton->SetToolTip(_("Connect to AO"));
             m_pConnectStepGuiderButton->SetId(GEAR_BUTTON_CONNECT_STEPGUIDER);
@@ -532,7 +532,7 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
         pConfig->SetString("/camera/LastMenuChoice", m_pCameras->GetString(m_pCameras->GetCurrentSelection()));
 
         pFrame->SetStatusText(_("Camera Connected"), 1);
-        pFrame->SetStatusText(_T("Camera"), 2);
+        pFrame->SetStatusText(_("Camera"), 2);
 
         Debug.AddLine("Connected Camera:" + m_pCamera->Name);
         Debug.AddLine("FullSize=(%d,%d)", m_pCamera->FullSize.x, m_pCamera->FullSize.y);
@@ -576,7 +576,7 @@ void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
         }
 
         pFrame->SetStatusText(_("Camera Disconnected"), 1);
-        pFrame->SetStatusText(_T("No cam"), 2);
+        pFrame->SetStatusText(_("No cam"), 2);
     }
     catch (wxString Msg)
     {
