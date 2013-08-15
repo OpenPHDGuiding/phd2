@@ -94,8 +94,8 @@ public:
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false) = 0;
     virtual bool    Capture(int duration, usImage& img, bool recon) { return Capture(duration, img, wxRect(0, 0, 0, 0), recon); }
 
-    virtual bool    Connect();                      // Opens up and connects to camera
-    virtual bool    Disconnect();                   // Disconnects, unloading any DLLs loaded by Connect
+    virtual bool    Connect() = 0;                  // Opens up and connects to camera
+    virtual bool    Disconnect() = 0;               // Disconnects, unloading any DLLs loaded by Connect
     virtual void    InitCapture();                  // Gets run at the start of any loop (e.g., reset stream, set gain, etc).
 
     virtual bool    ST4HasGuideOutput(void);

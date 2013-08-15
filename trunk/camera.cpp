@@ -875,21 +875,8 @@ bool GuideCamera::HasNonGuiCapture(void)
     return false;
 }
 
-bool GuideCamera::Connect()
-{
-    assert(false);
-    return true;
-}
-
-bool GuideCamera::Disconnect()
-{
-    assert(false);
-    return true;
-}
-
 void GuideCamera::InitCapture()
 {
-    assert(false);
 }
 
 bool GuideCamera::ST4HasGuideOutput(void)
