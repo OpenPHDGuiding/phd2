@@ -594,7 +594,7 @@ GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWi
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
     DoAdd(_("Star mass tolerance"), m_pMassChangeThreshold,
-          _("Tolerance for change in star mass b/n frames. Default = 0.3 (0.1-1.0)"));
+          _("Tolerance for change in star mass between frames. Valid range is 10-100, default is 50. Set to 100 to ignore star mass changes."));
 }
 
 GuiderOneStar::GuiderOneStarConfigDialogPane::~GuiderOneStarConfigDialogPane(void)
