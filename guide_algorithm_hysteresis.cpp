@@ -187,7 +187,7 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
 
 wxString GuideAlgorithmHysteresis::GetSettingsSummary() {
     // return a loggable summary of current mount settings
-    return wxString::Format("Hysteresis = %.3f, Agression = %.3f, Minimum move = %.3f\n",
+    return wxString::Format("Hysteresis = %.3f, Aggression = %.3f, Minimum move = %.3f\n",
             GetHysteresis(),
             GetAggression(),
             GetMinMove()
