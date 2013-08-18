@@ -198,10 +198,7 @@ bool Camera_StarfishClass::ST4PulseGuideScope(int direction, int duration) {
     if (direction == WEST) direction = EAST;  // my ENUM and theirs are flipped
     else if (direction == EAST) direction = WEST;
 
-    if (fcUsb_cmd_setRelay(CamNum, direction) != kIOReturnSuccess)
-        return true;
-    wxMilliSleep(duration);
-    if (fcUsb_cmd_clearRelay(CamNum, direction) != kIOReturnSuccess)
+    if (FcCamFuncs::fcUsb_cmd_pulseRelay(CamNum, direction, duration, 0, false) != kIOReturnSuccess)
         return true;
 
     return false;
