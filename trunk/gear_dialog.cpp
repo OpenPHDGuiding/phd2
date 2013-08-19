@@ -154,7 +154,7 @@ void GearDialog::Initialize(void)
             GuideCamera::List(), 0, wxDefaultValidator, _("Camera"));
     pGearSizer->Add(m_pCameras, sizerButtonFlags);
     m_pConnectCameraButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_CAMERA, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_pConnectCameraButton->SetBitmapLabel(wxBitmap(xpm::disconnected));
+    m_pConnectCameraButton->SetBitmap(wxBitmap(xpm::disconnected));
     m_pConnectCameraButton->SetBitmapPressed(wxBitmap(xpm::connected));
     pGearSizer->Add(m_pConnectCameraButton, sizerButtonFlags);
 
@@ -164,7 +164,7 @@ void GearDialog::Initialize(void)
             Scope::List(), 0, wxDefaultValidator, _("Mount"));
     pGearSizer->Add(m_pScopes, sizerButtonFlags);
     m_pConnectScopeButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_SCOPE, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_pConnectScopeButton->SetBitmapLabel(wxBitmap(xpm::disconnected));
+    m_pConnectScopeButton->SetBitmap(wxBitmap(xpm::disconnected));
     m_pConnectScopeButton->SetBitmapPressed(wxBitmap(xpm::connected));
     pGearSizer->Add(m_pConnectScopeButton, sizerButtonFlags);
 
@@ -174,7 +174,7 @@ void GearDialog::Initialize(void)
             StepGuider::List(), 0, wxDefaultValidator, _("AO"));
     pGearSizer->Add(m_pStepGuiders, sizerButtonFlags);
     m_pConnectStepGuiderButton = new wxToggleButton( this, GEAR_BUTTON_CONNECT_STEPGUIDER, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_pConnectStepGuiderButton->SetBitmapLabel(wxBitmap(xpm::disconnected));
+    m_pConnectStepGuiderButton->SetBitmap(wxBitmap(xpm::disconnected));
     m_pConnectStepGuiderButton->SetBitmapPressed(wxBitmap(xpm::connected));
     pGearSizer->Add(m_pConnectStepGuiderButton, sizerButtonFlags);
 
