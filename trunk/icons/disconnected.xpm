@@ -1,5 +1,5 @@
 /* XPM */
-static char *disconnected[] = {
+static const char *disconnected[] = {
 /* columns rows colors chars-per-pixel */
 "22 22 182 2",
 "   c #020000",
