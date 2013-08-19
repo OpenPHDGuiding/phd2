@@ -57,7 +57,6 @@
 		58B8CE8416E05EDB00F6E68E /* myframe_events.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE4E16E05EDB00F6E68E /* myframe_events.cpp */; };
 		58B8CE8516E05EDB00F6E68E /* myframe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE4F16E05EDB00F6E68E /* myframe.cpp */; };
 		58B8CE8616E05EDB00F6E68E /* precompiled_header.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE5216E05EDB00F6E68E /* precompiled_header.cpp */; };
-		58B8CE8716E05EDB00F6E68E /* scope_onboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE5316E05EDB00F6E68E /* scope_onboard.cpp */; };
 		58B8CE8816E05EDB00F6E68E /* serialport_win32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE5416E05EDB00F6E68E /* serialport_win32.cpp */; };
 		58B8CE8916E05EDB00F6E68E /* serialport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE5616E05EDB00F6E68E /* serialport.cpp */; };
 		58B8CE8A16E05EDB00F6E68E /* star.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE5916E05EDB00F6E68E /* star.cpp */; };
@@ -65,6 +64,11 @@
 		58B8CE8C16E05EDB00F6E68E /* stepguider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE5D16E05EDB00F6E68E /* stepguider.cpp */; };
 		58B8CE8D16E05EDB00F6E68E /* testguide.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE6016E05EDB00F6E68E /* testguide.cpp */; };
 		58B8CE8E16E05EDB00F6E68E /* worker_thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE6216E05EDB00F6E68E /* worker_thread.cpp */; };
+		58CA526B17C1CAE2002A20D1 /* gear_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58CA526117C1CAE2002A20D1 /* gear_dialog.cpp */; };
+		58CA526C17C1CAE2002A20D1 /* onboard_st4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58CA526317C1CAE2002A20D1 /* onboard_st4.cpp */; };
+		58CA526D17C1CAE2002A20D1 /* scope_onboard_st4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58CA526517C1CAE2002A20D1 /* scope_onboard_st4.cpp */; };
+		58CA526E17C1CAE2002A20D1 /* scope_oncamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58CA526717C1CAE2002A20D1 /* scope_oncamera.cpp */; };
+		58CA526F17C1CAE2002A20D1 /* scope_onstepguider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58CA526917C1CAE2002A20D1 /* scope_onstepguider.cpp */; };
 		58CB7A3F15C4A2740079F7CC /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CB7A3D15C4A2740079F7CC /* IOKit.framework */; };
 		58CB7A4A15C4D7930079F7CC /* libwx_baseu_net-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CB7A4015C4D7930079F7CC /* libwx_baseu_net-2.9.a */; };
 		58CB7A4E15C4D7930079F7CC /* libwx_baseu-2.9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CB7A4215C4D7930079F7CC /* libwx_baseu-2.9.a */; };
@@ -160,8 +164,6 @@
 		583291E115DA07F300D96A6D /* scope_gpint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_gpint.h; sourceTree = "<group>"; };
 		583291E215DA07F300D96A6D /* scope_gpusb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_gpusb.cpp; sourceTree = "<group>"; };
 		583291E315DA07F300D96A6D /* scope_gpusb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_gpusb.h; sourceTree = "<group>"; };
-		583291E415DA07F300D96A6D /* scope_none.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_none.h; sourceTree = "<group>"; };
-		583291E515DA07F300D96A6D /* scope_onboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_onboard.h; sourceTree = "<group>"; };
 		583291E615DA07F300D96A6D /* scope_voyager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_voyager.cpp; sourceTree = "<group>"; };
 		583291E715DA07F300D96A6D /* scope_voyager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_voyager.h; sourceTree = "<group>"; };
 		583291E815DA07F300D96A6D /* scopes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scopes.h; sourceTree = "<group>"; };
@@ -274,7 +276,6 @@
 		58B8CE5016E05EDB00F6E68E /* myframe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = myframe.h; sourceTree = "<group>"; };
 		58B8CE5116E05EDB00F6E68E /* point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = point.h; sourceTree = "<group>"; };
 		58B8CE5216E05EDB00F6E68E /* precompiled_header.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = precompiled_header.cpp; sourceTree = "<group>"; };
-		58B8CE5316E05EDB00F6E68E /* scope_onboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_onboard.cpp; sourceTree = "<group>"; };
 		58B8CE5416E05EDB00F6E68E /* serialport_win32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = serialport_win32.cpp; sourceTree = "<group>"; };
 		58B8CE5516E05EDB00F6E68E /* serialport_win32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = serialport_win32.h; sourceTree = "<group>"; };
 		58B8CE5616E05EDB00F6E68E /* serialport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = serialport.cpp; sourceTree = "<group>"; };
@@ -294,6 +295,17 @@
 		58C6F0330D8F0B4800D74840 /* cam_SXV.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cam_SXV.h; sourceTree = "<group>"; };
 		58C6F0390D8F0B8D00D74840 /* cam_SXV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_SXV.cpp; sourceTree = "<group>"; };
 		58C6F07F0D8F7E5200D74840 /* libSXMacLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSXMacLib.a; path = cameras/libSXMacLib.a; sourceTree = "<group>"; };
+		58CA526017C1CAE2002A20D1 /* circbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = circbuf.h; sourceTree = "<group>"; };
+		58CA526117C1CAE2002A20D1 /* gear_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gear_dialog.cpp; sourceTree = "<group>"; };
+		58CA526217C1CAE2002A20D1 /* gear_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gear_dialog.h; sourceTree = "<group>"; };
+		58CA526317C1CAE2002A20D1 /* onboard_st4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = onboard_st4.cpp; sourceTree = "<group>"; };
+		58CA526417C1CAE2002A20D1 /* onboard_st4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = onboard_st4.h; sourceTree = "<group>"; };
+		58CA526517C1CAE2002A20D1 /* scope_onboard_st4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_onboard_st4.cpp; sourceTree = "<group>"; };
+		58CA526617C1CAE2002A20D1 /* scope_onboard_st4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_onboard_st4.h; sourceTree = "<group>"; };
+		58CA526717C1CAE2002A20D1 /* scope_oncamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_oncamera.cpp; sourceTree = "<group>"; };
+		58CA526817C1CAE2002A20D1 /* scope_oncamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_oncamera.h; sourceTree = "<group>"; };
+		58CA526917C1CAE2002A20D1 /* scope_onstepguider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scope_onstepguider.cpp; sourceTree = "<group>"; };
+		58CA526A17C1CAE2002A20D1 /* scope_onstepguider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scope_onstepguider.h; sourceTree = "<group>"; };
 		58CB7A3D15C4A2740079F7CC /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
 		58CB7A4015C4D7930079F7CC /* libwx_baseu_net-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_baseu_net-2.9.a"; path = "../../wxWidgets/Cocoa_32/lib/libwx_baseu_net-2.9.a"; sourceTree = "<group>"; };
 		58CB7A4215C4D7930079F7CC /* libwx_baseu-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_baseu-2.9.a"; path = "../../wxWidgets/Cocoa_32/lib/libwx_baseu-2.9.a"; sourceTree = "<group>"; };
@@ -359,6 +371,8 @@
 		583291DB15DA042400D96A6D /* Cameras */ = {
 			isa = PBXGroup;
 			children = (
+				58EC72781749D8B300502727 /* cam_sbigrotator.cpp */,
+				58EC72791749D8B300502727 /* cam_sbigrotator.h */,
 				58B8CE1316E05EDB00F6E68E /* cam_ascomlate.cpp */,
 				58B8CE1416E05EDB00F6E68E /* cam_ascomlate.h */,
 				58B8CE1516E05EDB00F6E68E /* cam_Atik16.cpp */,
@@ -426,7 +440,12 @@
 		583291F715DA081D00D96A6D /* Scopes */ = {
 			isa = PBXGroup;
 			children = (
-				58B8CE5316E05EDB00F6E68E /* scope_onboard.cpp */,
+				58CA526517C1CAE2002A20D1 /* scope_onboard_st4.cpp */,
+				58CA526617C1CAE2002A20D1 /* scope_onboard_st4.h */,
+				58CA526717C1CAE2002A20D1 /* scope_oncamera.cpp */,
+				58CA526817C1CAE2002A20D1 /* scope_oncamera.h */,
+				58CA526917C1CAE2002A20D1 /* scope_onstepguider.cpp */,
+				58CA526A17C1CAE2002A20D1 /* scope_onstepguider.h */,
 				58339E690B1FC6A700109891 /* scope.cpp */,
 				58339E6A0B1FC6A700109891 /* scope.h */,
 				583291F315DA081200D96A6D /* scope_GC_USBST4.cpp */,
@@ -441,8 +460,6 @@
 				583291E115DA07F300D96A6D /* scope_gpint.h */,
 				583291E215DA07F300D96A6D /* scope_gpusb.cpp */,
 				583291E315DA07F300D96A6D /* scope_gpusb.h */,
-				583291E415DA07F300D96A6D /* scope_none.h */,
-				583291E515DA07F300D96A6D /* scope_onboard.h */,
 				583291E615DA07F300D96A6D /* scope_voyager.cpp */,
 				583291E715DA07F300D96A6D /* scope_voyager.h */,
 				583291E815DA07F300D96A6D /* scopes.h */,
@@ -454,8 +471,11 @@
 		58339E1D0B1FC10000109891 = {
 			isa = PBXGroup;
 			children = (
-				58EC72781749D8B300502727 /* cam_sbigrotator.cpp */,
-				58EC72791749D8B300502727 /* cam_sbigrotator.h */,
+				58CA526017C1CAE2002A20D1 /* circbuf.h */,
+				58CA526117C1CAE2002A20D1 /* gear_dialog.cpp */,
+				58CA526217C1CAE2002A20D1 /* gear_dialog.h */,
+				58CA526317C1CAE2002A20D1 /* onboard_st4.cpp */,
+				58CA526417C1CAE2002A20D1 /* onboard_st4.h */,
 				58EC727A1749D8B300502727 /* graph-stepguider.cpp */,
 				58EC727B1749D8B300502727 /* graph-stepguider.h */,
 				58EC727C1749D8B300502727 /* serialport_loopback.cpp */,
@@ -701,7 +721,6 @@
 				58B8CE8416E05EDB00F6E68E /* myframe_events.cpp in Sources */,
 				58B8CE8516E05EDB00F6E68E /* myframe.cpp in Sources */,
 				58B8CE8616E05EDB00F6E68E /* precompiled_header.cpp in Sources */,
-				58B8CE8716E05EDB00F6E68E /* scope_onboard.cpp in Sources */,
 				58B8CE8816E05EDB00F6E68E /* serialport_win32.cpp in Sources */,
 				58B8CE8916E05EDB00F6E68E /* serialport.cpp in Sources */,
 				58B8CE8A16E05EDB00F6E68E /* star.cpp in Sources */,
@@ -721,6 +740,11 @@
 				580F80D617810B200020900F /* confirm_dialog.cpp in Sources */,
 				580F80D717810B200020900F /* event_server.cpp in Sources */,
 				580F80D817810B200020900F /* guide_algorithm.cpp in Sources */,
+				58CA526B17C1CAE2002A20D1 /* gear_dialog.cpp in Sources */,
+				58CA526C17C1CAE2002A20D1 /* onboard_st4.cpp in Sources */,
+				58CA526D17C1CAE2002A20D1 /* scope_onboard_st4.cpp in Sources */,
+				58CA526E17C1CAE2002A20D1 /* scope_oncamera.cpp in Sources */,
+				58CA526F17C1CAE2002A20D1 /* scope_onstepguider.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
