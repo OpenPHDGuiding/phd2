@@ -56,6 +56,7 @@ UInt16 fcUsb_cmd_getState(int camNum) { return FcCamFuncs::fcUsb_cmd_getState(ca
 int fcUsb_cmd_setRoi(int camNum, UInt16 left, UInt16 top, UInt16 right, UInt16 bottom) { return FcCamFuncs::fcUsb_cmd_setRoi(camNum,left,top,right,bottom); }
 int fcUsb_cmd_setRelay(int camNum, int whichRelay) { return FcCamFuncs::fcUsb_cmd_setRelay(camNum,whichRelay); }
 int fcUsb_cmd_clearRelay(int camNum, int whichRelay) { return FcCamFuncs::fcUsb_cmd_clearRelay(camNum,whichRelay); }
+int fcUsb_cmd_pulseRelay(int camNum, int whichRelay, int onMs, int offMs, Boolean repeats) { return FcCamFuncs::fcUsb_cmd_clearRelay(camNum,whichRelay, onMs, offMs, repeats); }
 int fcUsb_cmd_setTemperature(int camNum, SInt16 theTemp) { return FcCamFuncs::fcUsb_cmd_setTemperature(camNum,theTemp); }
 bool fcUsb_cmd_getTECInPowerOK(int camNum) { return FcCamFuncs::fcUsb_cmd_getTECInPowerOK(camNum); }
 int fcUsb_cmd_getRawFrame(int camNum, UInt16 numRows, UInt16 numCols, UInt16 *frameBuffer) { return FcCamFuncs::fcUsb_cmd_getRawFrame(camNum,numRows,numCols, frameBuffer); }
@@ -198,7 +199,7 @@ bool Camera_StarfishClass::ST4PulseGuideScope(int direction, int duration) {
     if (direction == WEST) direction = EAST;  // my ENUM and theirs are flipped
     else if (direction == EAST) direction = WEST;
 
-    if (FcCamFuncs::fcUsb_cmd_pulseRelay(CamNum, direction, duration, 0, false) != kIOReturnSuccess)
+    if (fcUsb_cmd_pulseRelay(CamNum, direction, duration, 0, false) != kIOReturnSuccess)
         return true;
 
     return false;
