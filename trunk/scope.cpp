@@ -305,7 +305,7 @@ Scope *Scope::Factory(wxString choice)
             pReturn = new ScopeEquinox();
         }
 #endif
-#ifdef GUIDE_EQUINOX
+#ifdef GUIDE_EQMAC
         else if (choice.Find(_T("EQMAC")) + 1) {
             pReturn = new ScopeEQMac();
         }
@@ -313,13 +313,6 @@ Scope *Scope::Factory(wxString choice)
 #ifdef GUIDE_GCUSBST4
         else if (choice.Find(_T("GC USB ST4")) + 1) {
             pReturn = new ScopeGCUSBST4();
-        }
-#endif
-#ifdef GUIDE_EQMAC
-        This is broken.  The equinox entry above is named EQMAC.  I'm not
-            sure the difference between them.
-        else if (choice.Find(_T("EQMac")) + 1) {
-            pReturn = new ScopeEQMac();
         }
 #endif
 #ifdef GUIDE_INDI
