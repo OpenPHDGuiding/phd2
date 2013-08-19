@@ -34,6 +34,7 @@
  */
 
 #include "phd.h"
+#include "scope_onboard_st4.h"
 
 ScopeOnboardST4::ScopeOnboardST4(void)
 {
