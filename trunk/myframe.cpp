@@ -658,11 +658,18 @@ void MyFrame::UpdateButtonsStatus(void)
     if (cond_update_tool(MainToolbar, BUTTON_ADVANCED, !m_continueCapturing))
         need_update = true;
 
-    if (cond_update_tool(MainToolbar, BUTTON_CAM_PROPERTIES, !CaptureActive))
-        need_update = true;
-
     if (Dark_Button->IsEnabled() != loop_enabled) {
         Dark_Button->Enable(loop_enabled);
+        need_update = true;
+    }
+
+    bool const cam_dialog_btn_enable =
+        !CaptureActive &&
+        pCamera && pCamera->Connected &&
+        pCamera->HasPropertyDialog;
+
+    if (Setup_Button->IsEnabled() != cam_dialog_btn_enable) {
+        Setup_Button->Enable(cam_dialog_btn_enable);
         need_update = true;
     }
 

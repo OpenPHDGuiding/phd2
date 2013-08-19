@@ -261,11 +261,11 @@ void GearDialog::EndModal(int retCode)
 
     if (pCamera && pCamera->HasPropertyDialog)
     {
-        pFrame->MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, true);
+        pFrame->Setup_Button->Enable(true);
     }
     else
     {
-        pFrame->MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
+        pFrame->Setup_Button->Enable(false);
     }
 
     pFrame->SetSampling();
