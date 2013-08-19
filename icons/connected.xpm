@@ -1,5 +1,5 @@
 /* XPM */
-static char *connected[] = {
+static const char *connected[] = {
 /* columns rows colors chars-per-pixel */
 "22 22 70 1",
 "  c #020202",
