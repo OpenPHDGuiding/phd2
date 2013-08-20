@@ -723,8 +723,8 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
 
     if (pane == 1)
     {
-        // display message for at least 500ms
-        const int MIN_DISPLAY_MS = 500;
+        // display message for 2.5s, or until the next message is displayed
+        const int MIN_DISPLAY_MS = 2500;
         wxFrame::SetStatusText(msg, pane);
         m_statusbarTimer.Start(std::max(duration, MIN_DISPLAY_MS), wxTIMER_ONE_SHOT);
     }
