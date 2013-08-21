@@ -73,7 +73,7 @@ bool DebugLog::GetState(void)
     return m_bEnabled;
 }
 
-bool DebugLog::Init(const char *pName, bool bEnable=true)
+bool DebugLog::Init(const char *pName, bool bEnable)
 {
     wxCriticalSectionLocker lock(m_criticalSection);
 
@@ -85,7 +85,7 @@ bool DebugLog::Init(const char *pName, bool bEnable=true)
         m_bEnabled = false;
     }
 
-    if (m_pPathName.IsEmpty())
+    if (bEnable && m_pPathName.IsEmpty())
     {
         wxStandardPathsBase& stdpath = wxStandardPaths::Get();
         wxDateTime now = wxDateTime::UNow();

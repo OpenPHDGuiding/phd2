@@ -690,7 +690,9 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
         Menubar->Refresh();
     } else if (evt.GetId() == MENU_DEBUG)
     {
-        Debug.SetState(evt.IsChecked());
+        bool enable = evt.IsChecked();
+        pConfig->SetBoolean("/EnableDebugLog", enable);
+        Debug.SetState(enable);
     }
 }
 
