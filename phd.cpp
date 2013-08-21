@@ -93,10 +93,10 @@ bool PhdApp::OnInit() {
     Debug.AddLine("CoInitializeEx returns %x", hr);
 #endif
 
-    Debug.Init("debug", true);
-
     SetVendorName(_T("StarkLabs"));
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
+
+    Debug.Init("debug", pConfig->GetBoolean("/EnableDebugLog", true));
 
     if (m_resetConfig)
     {
