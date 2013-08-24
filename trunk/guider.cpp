@@ -543,7 +543,7 @@ void Guider::SetState(GUIDER_STATE newState)
                     break;
             }
 
-            if (pMount->GuidingCeases())
+            if (pMount && pMount->GuidingCeases())
             {
                 throw ERROR_INFO("GuidingStops() failed");
             }
@@ -567,7 +567,10 @@ void Guider::SetState(GUIDER_STATE newState)
                 newState = STATE_SELECTING;
                 break;
             case STATE_SELECTED:
-                pMount->ClearHistory();
+                if (pMount)
+                {
+                    pMount->ClearHistory();
+                }
                 break;
             case STATE_CALIBRATING_PRIMARY:
                 if (!pMount->IsCalibrated())
