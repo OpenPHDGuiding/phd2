@@ -46,18 +46,19 @@ enum PierSide {
 class Camera_SimClass : public GuideCamera {
     SimCamState *sim;
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();      // Opens up and connects to cameras
-    bool    Disconnect();
-    void    InitCapture() { return; }
     Camera_SimClass();
-    virtual ~Camera_SimClass();
-    virtual bool HasNonGuiCapture(void) { return true; }
-    virtual bool    ST4HasNonGuiMove(void) { return true; }
-    bool ST4PulseGuideScope (int direction, int duration);
-    PierSide GetPierSide(void) const;
-    void SetPierSide(PierSide side);
-    void FlipPierSide(void);
+    ~Camera_SimClass();
+    bool         Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    bool         Connect();      // Opens up and connects to cameras
+    bool         Disconnect();
+    void         InitCapture() { return; }
+    void         ShowPropertyDialog();
+    bool         HasNonGuiCapture(void) { return true; }
+    bool         ST4HasNonGuiMove(void) { return true; }
+    bool         ST4PulseGuideScope (int direction, int duration);
+    PierSide     GetPierSide(void) const;
+    void         SetPierSide(PierSide side);
+    void         FlipPierSide(void);
 };
 
 #endif
