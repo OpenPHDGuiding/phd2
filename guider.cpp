@@ -707,7 +707,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             throw THROW_INFO("Stopped Guiding");
         }
 
-        assert(!pMount->IsBusy());
+        assert(!pMount || !pMount->IsBusy());
 
         if (IsPaused())
         {
