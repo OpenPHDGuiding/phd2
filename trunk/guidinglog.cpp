@@ -274,7 +274,7 @@ bool GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, wxString di
         if (m_enabled)
         {
             assert(m_file.IsOpened());
-            m_file.Write(wxString::Format("%s calibration complete. Angle = %.3f, Rate = %.3f\n",
+            m_file.Write(wxString::Format("%s calibration complete. Angle = %.3f, Rate = %.4f\n",
                 direction, angle, rate));
             Flush();
        }
