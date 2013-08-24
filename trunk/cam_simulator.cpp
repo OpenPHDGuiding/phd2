@@ -48,7 +48,6 @@
 #define SIMMODE 3   // 1=FITS, 2=BMP, 3=Generate
 
 /* simulation parameters for SIMMODE = 3*/
-// TODO: some kind of UI to sepcify these at runtime?
 
 struct SimCamParams
 {
@@ -69,15 +68,57 @@ struct SimCamParams
 unsigned int SimCamParams::width = 752;          // simulated camera image width
 unsigned int SimCamParams::height = 580;         // simulated camera image height
 unsigned int SimCamParams::border = 12;          // do not place any stars within this size border
-unsigned int SimCamParams::nr_stars = 20;        // number of stars to generate
-unsigned int SimCamParams::nr_hot_pixels = 8;    // number of hot pixels to generate
-double SimCamParams::noise_multiplier = 2.0;     // noise factor, increase to increase noise
-double SimCamParams::dec_backlash = 11.0;        // dec backlash amount (pixels)
-double SimCamParams::pe_scale = 3.5;             // scale factor controlling magnitude of simulated periodic error
-double SimCamParams::dec_drift_rate = 4.8 / 60.; // dec drift rate (pixels per second)
-double SimCamParams::seeing_scale = 0.4;         // simulated seeing scale factor
-double SimCamParams::cam_angle = 15.0;           // simulated camera angle (degrees)
-double SimCamParams::guide_rate = 3.5;           // guide rate, pixels per second
+unsigned int SimCamParams::nr_stars;             // number of stars to generate
+unsigned int SimCamParams::nr_hot_pixels;        // number of hot pixels to generate
+double SimCamParams::noise_multiplier;           // noise factor, increase to increase noise
+double SimCamParams::dec_backlash;               // dec backlash amount (pixels)
+double SimCamParams::pe_scale;                   // scale factor controlling magnitude of simulated periodic error
+double SimCamParams::dec_drift_rate;             // dec drift rate (pixels per second)
+double SimCamParams::seeing_scale;               // simulated seeing scale factor
+double SimCamParams::cam_angle;                  // simulated camera angle (degrees)
+double SimCamParams::guide_rate;                 // guide rate, pixels per second
+
+#define NR_STARS_DEFAULT 20
+#define NR_HOT_PIXELS_DEFAULT 8
+#define NOISE_DEFAULT 2.0
+#define NOISE_MAX 5.0
+#define DEC_BACKLASH_DEFAULT 11.0
+#define DEC_BACKLASH_MAX 30.0
+#define PE_DEFAULT 3.5
+#define PE_MAX 20.0
+#define DEC_DRIFT_DEFAULT (4.8 / 60.0)
+#define DEC_DRIFT_MAX (10.0 / 60.0)
+#define SEEING_DEFAULT 0.4
+#define SEEING_MAX 1.0
+#define CAM_ANGLE_DEFAULT 15.0
+#define GUIDE_RATE_DEFAULT 3.5
+#define GUIDE_RATE_MAX 8.0
+
+static void load_sim_params()
+{
+    SimCamParams::nr_stars = pConfig->GetInt("/SimCam/nr_stars", NR_STARS_DEFAULT);
+    SimCamParams::nr_hot_pixels = pConfig->GetInt("/SimCam/nr_hot_pixels", NR_HOT_PIXELS_DEFAULT);
+    SimCamParams::noise_multiplier = pConfig->GetDouble("/SimCam/noise", NOISE_DEFAULT);
+    SimCamParams::dec_backlash = pConfig->GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT);
+    SimCamParams::pe_scale = pConfig->GetDouble("/SimCam/pe_scale", PE_DEFAULT);
+    SimCamParams::dec_drift_rate = pConfig->GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT);
+    SimCamParams::seeing_scale = pConfig->GetDouble("/SimCam/seeing_scale", SEEING_DEFAULT);
+    SimCamParams::cam_angle = pConfig->GetDouble("/SimCam/cam_angle", CAM_ANGLE_DEFAULT);
+    SimCamParams::guide_rate = pConfig->GetDouble("/SimCam/guide_rate", GUIDE_RATE_DEFAULT);
+}
+
+static void save_sim_params()
+{
+    pConfig->SetInt("/SimCam/nr_stars", SimCamParams::nr_stars);
+    pConfig->SetInt("/SimCam/nr_hot_pixels", SimCamParams::nr_hot_pixels);
+    pConfig->SetDouble("/SimCam/noise", SimCamParams::noise_multiplier);
+    pConfig->SetDouble("/SimCam/dec_backlash", SimCamParams::dec_backlash);
+    pConfig->SetDouble("/SimCam/pe_scale", SimCamParams::pe_scale);
+    pConfig->SetDouble("/SimCam/dec_drift", SimCamParams::dec_drift_rate);
+    pConfig->SetDouble("/SimCam/seeing_scale", SimCamParams::seeing_scale);
+    pConfig->SetDouble("/SimCam/cam_angle", SimCamParams::cam_angle);
+    pConfig->SetDouble("/SimCam/guide_rate", SimCamParams::guide_rate);
+}
 
 #ifdef STEPGUIDER_SIMULATOR
 
@@ -188,11 +229,11 @@ struct SimCamState {
     BacklashVal dec_ofs;  // simulate backlash in DEC
     wxStopWatch timer;    // platform-independent timer
 
-    SimCamState();
+    void Initialize();
     void FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset);
 };
 
-SimCamState::SimCamState()
+void SimCamState::Initialize()
 {
     width = SimCamParams::width;
     height = SimCamParams::height;
@@ -201,20 +242,11 @@ SimCamState::SimCamState()
     stars.resize(nr_stars);
     unsigned int const border = SimCamParams::border;
 
-    double const angle = SimCamParams::cam_angle * PI / 180.;
-    double const cos_t = cos(-angle);
-    double const sin_t = sin(-angle);
-
     srand(2); // always generate the same stars
     for (unsigned int i = 0; i < nr_stars; i++) {
-        // generate stars in camera coordinates
-        double cx = border + (rand() % (width - 2 * border));
-        double cy = border + (rand() % (height - 2 * border));
-        // convert to ra/dec coordinates
-        cx -= width / 2.0;
-        cy -= height / 2.0;
-        stars[i].pos.x = cx * cos_t - cy * sin_t;
-        stars[i].pos.y = cx * sin_t + cy * cos_t;
+        // generate stars in ra/dec coordinates
+        stars[i].pos.x = (double)(rand() % (width - 2 * border)) - 0.5 * width;
+        stars[i].pos.y = (double)(rand() % (height - 2 * border)) - 0.5 * height;
         stars[i].inten = 20 + rand() % 80;
     }
     // generate hot pixels
@@ -396,10 +428,13 @@ Camera_SimClass::Camera_SimClass()
     HasShutter = true;
     HasGainControl = true;
     HasSubframes = true;
+    HasPropertyDialog = true;
 }
 
 bool Camera_SimClass::Connect()
 {
+    load_sim_params();
+    sim->Initialize();
     Connected = true;
     return false;
 }
@@ -655,5 +690,98 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
 
 }
 #endif
+
+struct SimCamDialog : public wxDialog
+{
+    wxSlider *stars;
+    wxSlider *hotpx;
+    wxSlider *noise;
+    wxSlider *dec_backlash;
+    wxSlider *pe;
+    wxSlider *dec_drift;
+    wxSlider *seeing;
+    wxSlider *cam_angle;
+    wxSlider *guide_rate;
+    wxSlider *ao_angle;
+    wxSlider *ao_step_size;
+
+    SimCamDialog(wxWindow *parent);
+    ~SimCamDialog() { }
+    void OnReset(wxCommandEvent& event);
+
+    DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE(SimCamDialog, wxDialog)
+    EVT_BUTTON(wxRESET, SimCamDialog::OnReset)
+END_EVENT_TABLE()
+
+static wxSizer *label_slider(wxWindow *parent, const wxString& label, wxSlider **pslider, int val, int minval, int maxval)
+{
+    wxSize label_size = parent->GetTextExtent(_T("MMMMMMMM"));
+    wxSize slider_size = parent->GetTextExtent(_T("MMMMMMMMMMMMMM"));
+    slider_size.SetHeight(slider_size.GetHeight() * 4);
+    wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+    sizer->Add(new wxStaticText(parent, wxID_ANY, label, wxDefaultPosition, label_size, wxALIGN_RIGHT));
+    wxSlider *slider = new wxSlider(parent, wxID_ANY, val, minval, maxval, wxDefaultPosition, slider_size, wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
+    *pslider = slider;
+    sizer->Add(slider);
+    return sizer;
+}
+
+SimCamDialog::SimCamDialog(wxWindow *parent)
+    : wxDialog(parent, wxID_ANY, _("Camera Simulator"))
+{
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+
+    sizer->Add(label_slider(this, _("Stars"),        &stars,        SimCamParams::nr_stars, 0, 100));
+    sizer->Add(label_slider(this, _("Hot Pixels"),   &hotpx,        SimCamParams::nr_hot_pixels, 0, 100));
+    sizer->Add(label_slider(this, _("Noise"),        &noise,        (int)floor(SimCamParams::noise_multiplier * 100.0 / NOISE_MAX), 0, 100));
+    sizer->Add(label_slider(this, _("Dec Backlash"), &dec_backlash, (int)floor(SimCamParams::dec_backlash * 100.0 / DEC_BACKLASH_MAX), 0, 100));
+    sizer->Add(label_slider(this, _("PE"),           &pe,           (int)floor(SimCamParams::pe_scale * 100.0 / PE_MAX), 0, 100));
+    sizer->Add(label_slider(this, _("DEC Drift"),    &dec_drift,    (int)floor(SimCamParams::dec_drift_rate * 100.0 / DEC_DRIFT_MAX), 0, 100));
+    sizer->Add(label_slider(this, _("Seeing"),       &seeing,       (int)floor(SimCamParams::seeing_scale * 100.0 / SEEING_MAX), 0, 100));
+    sizer->Add(label_slider(this, _("Cam Angle"),    &cam_angle,    (int)floor(SimCamParams::cam_angle + 0.5), 0, 359));
+    sizer->Add(label_slider(this, _("Guide Rate"),   &guide_rate,   (int)floor(SimCamParams::guide_rate * 100.0 / GUIDE_RATE_MAX), 0, 100));
+
+    sizer->Add(new wxButton(this, wxRESET, _("Reset")));
+
+    wxBoxSizer *main_sizer = new wxBoxSizer(wxVERTICAL);
+    main_sizer->Add(sizer, wxSizerFlags(0).Expand());
+    main_sizer->Add(CreateSeparatedButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 10));
+    SetSizerAndFit(main_sizer);
+}
+
+void SimCamDialog::OnReset(wxCommandEvent& event)
+{
+    stars->SetValue(NR_STARS_DEFAULT);
+    hotpx->SetValue(NR_HOT_PIXELS_DEFAULT);
+    noise->SetValue((int)floor(NOISE_DEFAULT * 100.0 / NOISE_MAX));
+    dec_backlash->SetValue((int)floor(DEC_BACKLASH_DEFAULT * 100.0 / DEC_BACKLASH_MAX));
+    pe->SetValue((int)floor(PE_DEFAULT * 100.0 / PE_MAX));
+    dec_drift->SetValue((int)floor(DEC_DRIFT_DEFAULT * 100.0 / DEC_DRIFT_MAX));
+    seeing->SetValue((int)floor(SEEING_DEFAULT * 100.0 / SEEING_MAX));
+    cam_angle->SetValue((int)floor(CAM_ANGLE_DEFAULT + 0.5));
+    guide_rate->SetValue((int)floor(GUIDE_RATE_DEFAULT * 100.0 / GUIDE_RATE_MAX));
+}
+
+void Camera_SimClass::ShowPropertyDialog()
+{
+    SimCamDialog dlg(pFrame);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+        SimCamParams::nr_stars = dlg.stars->GetValue();
+        SimCamParams::nr_hot_pixels = dlg.hotpx->GetValue();
+        SimCamParams::noise_multiplier = (double) dlg.noise->GetValue() * NOISE_MAX / 100.0;
+        SimCamParams::dec_backlash =     (double) dlg.dec_backlash->GetValue() * DEC_BACKLASH_MAX / 100.0;
+        SimCamParams::pe_scale =         (double) dlg.pe->GetValue() * PE_MAX / 100.0;
+        SimCamParams::dec_drift_rate =   (double) dlg.dec_drift->GetValue() * DEC_DRIFT_MAX / 100.0;
+        SimCamParams::seeing_scale =     (double) dlg.seeing->GetValue() * SEEING_MAX / 100.0;
+        SimCamParams::cam_angle =        (double) dlg.cam_angle->GetValue();
+        SimCamParams::guide_rate =       (double) dlg.guide_rate->GetValue() * GUIDE_RATE_MAX / 100.0;
+        save_sim_params();
+        sim->Initialize();
+    }
+}
 
 #endif
