@@ -633,27 +633,31 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
 {
     try
     {
-        if (m_pScope == NULL)
-        {
-            throw ERROR_INFO("OnButtonConnectScope called with m_pScope == NULL");
-        }
+        // m_pScope is NULL when scope selection is "None"
 
-        if (m_pScope->IsConnected())
+        if (m_pScope && m_pScope->IsConnected())
         {
             throw THROW_INFO("OnButtonConnectScope: called when connected");
         }
 
-        if (m_pScope->Connect())
+        if (m_pScope && m_pScope->Connect())
         {
             throw THROW_INFO("OnButtonConnectScope: connect failed");
         }
 
         // Save the choice now that we have connected
         pConfig->SetString("/scope/LastMenuChoice", m_pScopes->GetString(m_pScopes->GetCurrentSelection()));
-        pFrame->SetStatusText(_("Scope connected"));
-        pFrame->SetStatusText(_("Scope"), 3);
+        if (m_pScope)
+        {
+            pFrame->SetStatusText(_("Scope connected"));
+            pFrame->SetStatusText(_("Scope"), 3);
+        }
+        else
+        {
+            pFrame->SetStatusText(wxEmptyString, 3);
+        }
 
-        Debug.AddLine("Connected Scope:" + m_pScope->Name());
+        Debug.AddLine("Connected Scope:" + (m_pScope ? m_pScope->Name() : _("None")));
     }
     catch (wxString Msg)
     {
@@ -721,26 +725,31 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
 {
     try
     {
-        if (m_pStepGuider == NULL)
-        {
-            throw ERROR_INFO("OnButtonConnectStepGuider called with m_pStepGuider == NULL");
-        }
+        // m_pStepGuider is NULL when stepguider selection is "None"
 
-        if (m_pStepGuider->IsConnected())
+        if (m_pStepGuider && m_pStepGuider->IsConnected())
         {
             throw THROW_INFO("OnButtonConnectStepGuider: called when connected");
         }
 
-        if (m_pStepGuider->Connect())
+        if (m_pStepGuider && m_pStepGuider->Connect())
         {
             throw THROW_INFO("OnButtonConnectStepGuider: connect failed");
         }
 
         // Save the choice now that we have connected
         pConfig->SetString("/stepguider/LastMenuChoice", m_pStepGuiders->GetString(m_pStepGuiders->GetCurrentSelection()));
-        pFrame->SetStatusText(_("Adaptive Optics Connected"), 1);
-        pFrame->SetStatusText(_T("AO"), 4);
-        Debug.AddLine("Connected AO:" + m_pStepGuider->Name());
+        if (m_pStepGuider)
+        {
+            pFrame->SetStatusText(_("Adaptive Optics Connected"), 1);
+            pFrame->SetStatusText(_T("AO"), 4);
+        }
+        else
+        {
+            pFrame->SetStatusText(wxEmptyString, 4);
+        }
+
+        Debug.AddLine("Connected AO:" + (m_pStepGuider ? m_pStepGuider->Name() : _("None")));
     }
     catch (wxString Msg)
     {
