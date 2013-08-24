@@ -234,7 +234,7 @@ int GearDialog::ShowModal(bool autoConnect)
         OnButtonConnectAll(dummyEvent);
 
         if (m_pCamera && m_pCamera->Connected &&
-            m_pScope  && m_pScope->IsConnected() &&
+            (!m_pScope || m_pScope->IsConnected()) &&
             (!m_pStepGuider || m_pStepGuider->IsConnected()))
         {
             callSuper = false;
