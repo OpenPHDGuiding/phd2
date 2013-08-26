@@ -45,9 +45,9 @@ so make sure you install it there.
 
 In order to get a static copy of wx working, you need to build it yourself.
 
-Install it in <install path>, and cd into the build directory:
+Install it in <wx install path>, and cd into the build directory:
 
-  <install path>\wxWidgets-2.9.4\build\msw
+  cd <wx install path>\build\msw
 
 The following step might not be needed, at least not on WinXP.
 
@@ -62,7 +62,7 @@ Do two command line builds, one for release, one for debug:
   nmake -f makefile.vc BUILD=debug SHARED=0
 }}}
 
-Set a WXWIN environment variable to point to <install path> so that the PHD2 build will find the bits.
+Set a WXWIN environment variable to point to <wx install path> so that the PHD2 build will find the bits.
 
   _Extra Info_ wxWidgets sources are downloaded as a zip file. The latest release is now 2.9.5, but you should stick with the release used in the current PHD2 build. On the wxWidgets site, go to the downloads page, then select ‘releases’ at the upper left to find the earlier release package you need.  Once it’s downloaded, extract into a location you want. 
 
@@ -78,7 +78,7 @@ Extract in <fits location>
 
 Set an environment variable CFITSIO to <fits location>
 
-  _Extra Info_ The latest Windows zip file for CFITSIO does not have pre-compiled versions of the libraries needed by PHD2.  So you will need to build them in much the same way as you built the wxWidgets files.  From a single command-line session, run the same "\Program Files (x86)\Microsoft Visual Studio 10.0\vc\bin\vcvars32.bat" file, then run two nmakes: 
+  _Extra Info_ The latest Windows zip file for CFITSIO does not have pre-compiled versions of the libraries needed by PHD2.  So you will need to build them in much the same way as you built the wxWidgets files.  From a single command-line session, run the same "\Program Files (x86)\Microsoft Visual Studio 10.0\vc\bin\vcvars32.bat" file, cd to the <fits location> install directory, then run two nmakes: 
   {{{
 nmake winDumpExts.mak
 nmake makefile.vcc
