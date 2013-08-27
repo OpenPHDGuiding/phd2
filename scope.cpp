@@ -215,7 +215,9 @@ wxArrayString Scope::List(void)
 
     ScopeList.Add(_T("None"));
 #ifdef GUIDE_ASCOM
-    ScopeList.Add(_T("ASCOM"));
+    wxArrayString ascomScopes = ScopeASCOM::EnumAscomScopes();
+    for (unsigned int i = 0; i < ascomScopes.Count(); i++)
+        ScopeList.Add(ascomScopes[i]);
 #endif
 #ifdef GUIDE_ONCAMERA
     ScopeList.Add(_T("On-camera"));
@@ -260,13 +262,17 @@ Scope *Scope::Factory(wxString choice)
 
         Debug.AddLine(wxString::Format("ScopeFactory(%s)", choice));
 
-        if (choice.Find(_T("None")) + 1) {
+        if (false) // so else ifs can follow
+        {
         }
 #ifdef GUIDE_ASCOM
-        else if (choice.Find(_T("ASCOM")) + 1) {
-            pReturn = new ScopeASCOM();
+        // do ASCOM first since it includes choices that could match stings belop like Simulator
+        else if (choice.Find(_T("ASCOM")) != wxNOT_FOUND) {
+            pReturn = new ScopeASCOM(choice);
         }
 #endif
+        else if (choice.Find(_T("None")) + 1) {
+        }
 #ifdef GUIDE_ONCAMERA
         else if (choice.Find(_T("On-camera")) + 1) {
             pReturn = new ScopeOnCamera();

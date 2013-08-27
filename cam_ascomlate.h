@@ -45,8 +45,9 @@ public:
 
     bool    ST4PulseGuideScope(int direction, int duration);
     bool    Color;
-    Camera_ASCOMLateClass();
+    Camera_ASCOMLateClass(const wxString& choice);
     ~Camera_ASCOMLateClass();
+    static wxArrayString EnumAscomCameras();
 private:
 #ifdef __WINDOWS__
     IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
@@ -70,6 +71,8 @@ private:
     bool ST4HasNonGuiMove(void);
 
     int DriverVersion;
+
+    wxString m_choice; // name of chosen camera
 
 #endif
 };
