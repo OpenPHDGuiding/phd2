@@ -1,13 +1,9 @@
 /*
- *  scope_ascom.h
+ *  comdispatch.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
- *  All rights reserved.
- *
- *  Modified by Bret McKee
- *  Copyright (c) 2012-2013 Bret McKee
+ *  Created by Andy Galasso.
+ *  Copyright (c) 2013 Andy Galasso.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -18,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -36,50 +31,41 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifndef COMDISPATCH_INCLUDED
 
-#ifdef GUIDE_ASCOM
+#if defined(__WINDOWS__)
 
-#include "ascom_common.h"
-
-class ScopeASCOM:public Scope, private ASCOM_COMMON
+class DispatchClass
 {
-    IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
-    DWORD m_dwCookie;
-
-    // The CLSID and dispatch instance of the scope
-    CLSID CLSID_driver;
-
-    // DISPIDs we reuse
-    DISPID dispid_connected;
-    DISPID dispid_name;
-    DISPID dispid_canpulseguide;
-    DISPID dispid_ispulseguiding;
-    DISPID dispid_isslewing;
-    DISPID dispid_pulseguide;
-    DISPID dispid_declination;
-
-    // other private varialbles
-    bool m_bCanCheckPulseGuiding;
-    bool m_bCanGetDeclination;
-
-    wxString m_choice; // name of chosen scope
-
-    // private functions
-    virtual bool IsGuiding(IDispatch *pScopeDriver);
-    virtual double GetDeclination(void);
-
+    typedef std::map<wxString, DISPID> idmap_t;
+    idmap_t m_idmap;
 public:
-    ScopeASCOM(const wxString& choice);
-    virtual ~ScopeASCOM(void);
-
-    static wxArrayString EnumAscomScopes(void);
-
-    virtual bool Connect(void);
-    virtual bool Disconnect(void);
-
-    virtual bool HasNonGuiMove(void);
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
-    virtual bool IsGuiding();
+    DispatchClass() { }
+    ~DispatchClass() { }
+    static bool dispid(DISPID *ret, IDispatch *idisp, OLECHAR *name);
+    bool dispid_cached(DISPID *ret, IDispatch *idisp, OLECHAR *name);
 };
 
-#endif /* GUIDE_ASCOM */
+class DispatchObj
+{
+    DispatchClass *m_class;
+    IDispatch *m_idisp;
+    EXCEPINFO m_excep;
+    bool _dispid(DISPID *ret, OLECHAR *name);
+public:
+    DispatchObj();
+    DispatchObj(DispatchClass *cls);
+    DispatchObj(IDispatch *idisp, DispatchClass *cls);
+    ~DispatchObj();
+    bool Create(OLECHAR *progid);
+    bool GetProp(VARIANT *res, OLECHAR *name);
+    bool GetProp(VARIANT *res, OLECHAR *name, int arg);
+    bool PutProp(OLECHAR *name, OLECHAR *val);
+    bool PutProp(OLECHAR *name, bool val);
+    bool InvokeMethod(VARIANT *res, OLECHAR *name, OLECHAR *arg);
+    const EXCEPINFO& Excep() const { return m_excep; }
+    IDispatch *IDisp() const { return m_idisp; }
+};
+
+#endif
+#endif

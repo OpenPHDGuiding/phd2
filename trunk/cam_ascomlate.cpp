@@ -36,6 +36,7 @@
 #include "phd.h"
 #if defined (ASCOM_LATECAMERA)
 #include "camera.h"
+#include "comdispatch.h"
 #include "time.h"
 #include "image_math.h"
 #include "wx/stopwatch.h"
@@ -45,14 +46,6 @@
 
 #include "cam_ascomlate.h"
 #include <wx/msw/ole/oleutils.h>
-extern char *uni_to_ansi(OLECHAR *os);
-
-struct InterfaceGuard
-{
-    IUnknown *m_iu;
-    InterfaceGuard(IUnknown *iu) : m_iu(iu) { }
-    ~InterfaceGuard() { if (m_iu) m_iu->Release(); }
-};
 
 struct AutoASCOMDriver
 {
@@ -72,15 +65,16 @@ struct AutoASCOMDriver
     IDispatch *operator->() const { return m_driver; }
 };
 
-Camera_ASCOMLateClass::Camera_ASCOMLateClass()
+Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
 {
     m_pIGlobalInterfaceTable = NULL;
     m_dwCookie = 0;
+    m_choice = choice;
 
     Connected = FALSE;
 //  HaveBPMap = FALSE;
 //  NBadPixels=-1;
-    Name=_T("ASCOM (late bound) camera");
+    Name = choice;
     FullSize = wxSize(100,100);
     m_hasGuideOutput = false;
     HasGainControl = false;
@@ -103,172 +97,171 @@ Camera_ASCOMLateClass::~Camera_ASCOMLateClass()
     }
 }
 
-bool Camera_ASCOMLateClass::Connect() {
-// returns true on error
-//  int retval;
+static wxString displayName(const wxString& ascomName)
+{
+    if (ascomName.Find(_T("ASCOM")) != wxNOT_FOUND)
+        return ascomName;
+    return ascomName + _T(" (ASCOM)");
+}
 
-    // Get the Chooser up
-    CLSID CLSID_chooser;
-    CLSID CLSID_driver;
-    IDispatch *pChooserDisplay = NULL;  // Pointer to the Chooser
-    DISPID dispid_choose, dispid_tmp;
-    DISPID dispidNamed = DISPID_PROPERTYPUT;
-    OLECHAR *tmp_name = L"Choose";
-    //BSTR bstr_ProgID = NULL;
-    DISPPARAMS dispParms;
-    VARIANTARG rgvarg[2];                           // Chooser.Choose(ProgID)
-    EXCEPINFO excep;
-    VARIANT vRes;
-    HRESULT hr;
+// map descriptive name to progid
+static std::map<wxString, wxString> s_progid;
 
-    // Find the ASCOM Chooser
-    // First, go into the registry and get the CLSID of it based on the name
-    if(FAILED(CLSIDFromProgID(L"DriverHelper.Chooser", &CLSID_chooser))) {
-        wxMessageBox (_T("Failed to find ASCOM.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
+{
+    wxArrayString list;
+    list.Add(_T("ASCOM Camera Chooser"));
+
+    try
+    {
+        DispatchObj profile;
+        if (!profile.Create(L"ASCOM.Utilities.Profile"))
+            throw ERROR_INFO("ASCOM Camera: could not instantiate ASCOM profile class");
+
+        VARIANT res;
+        if (!profile.InvokeMethod(&res, L"RegisteredDevices", L"Camera"))
+            throw ERROR_INFO("ASCOM Camera: could not query registered camera devices");
+
+        DispatchClass ilist_class;
+        DispatchObj ilist(res.pdispVal, &ilist_class);
+
+        VARIANT vcnt;
+        if (!ilist.GetProp(&vcnt, L"Count"))
+            throw ERROR_INFO("ASCOM Camera: could not query registered cameras");
+
+        unsigned int const count = vcnt.intVal;
+        DispatchClass kvpair_class;
+
+        for (unsigned int i = 0; i < count; i++)
+        {
+            VARIANT kvpres;
+            if (ilist.GetProp(&kvpres, L"Item", i))
+            {
+                DispatchObj kvpair(kvpres.pdispVal, &kvpair_class);
+                VARIANT vkey, vval;
+                if (kvpair.GetProp(&vkey, L"Key") && kvpair.GetProp(&vval, L"Value"))
+                {
+                    wxString ascomName = wxBasicString(vval.bstrVal).Get();
+                    wxString displName = displayName(ascomName);
+                    wxString progid = wxBasicString(vkey.bstrVal).Get();
+                    s_progid[displName] = progid;
+                    list.Add(displName);
+                }
+            }
+        }
     }
-    // Next, create an instance of it and get another needed ID (dispid)
-    if(FAILED(CoCreateInstance(CLSID_chooser,NULL,CLSCTX_SERVER,IID_IDispatch,(LPVOID *)&pChooserDisplay))) {
-        wxMessageBox (_T("Failed to find the ASCOM Chooser.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    if(FAILED(pChooserDisplay->GetIDsOfNames(IID_NULL, &tmp_name,1,LOCALE_USER_DEFAULT,&dispid_choose))) {
-        wxMessageBox (_T("Failed to find the Choose method.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    tmp_name=L"DeviceType";
-    if(FAILED(pChooserDisplay->GetIDsOfNames(IID_NULL, &tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp))) {
-        wxMessageBox (_T("Failed to find the DeviceType property.  Make sure it is installed"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+    catch (const wxString& msg)
+    {
+        POSSIBLY_UNUSED(msg);
     }
 
-    // Set the Chooser type to Camera
-    BSTR bsDeviceType = SysAllocString(L"Camera");
-    rgvarg[0].vt = VT_BSTR;
-    rgvarg[0].bstrVal = bsDeviceType;
-    dispParms.cArgs = 1;
-    dispParms.rgvarg = rgvarg;
-    dispParms.cNamedArgs = 1;  // Stupid kludge IMHO - needed whenever you do a put - http://msdn.microsoft.com/en-us/library/ms221479.aspx
-    dispParms.rgdispidNamedArgs = &dispidNamed;
-    if(FAILED(hr = pChooserDisplay->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
-        &dispParms,&vRes,&excep, NULL))) {
-        wxMessageBox (_T("Failed to set the Chooser's type to Camera.  Something is wrong with ASCOM"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+    return list;
+}
+
+static bool ChooseASCOMCamera(BSTR *res)
+{
+    DispatchObj chooser;
+    if (!chooser.Create(L"DriverHelper.Chooser"))
+    {
+        wxMessageBox(_("Failed to find the ASCOM Chooser. Make sure it is installed"), _("Error"), wxOK | wxICON_ERROR);
+        return false;
     }
-    SysFreeString(bsDeviceType);
+
+    if (!chooser.PutProp(L"DeviceType", L"Camera"))
+    {
+        wxMessageBox(_("Failed to set the Chooser's type to Camera. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
+        return false;
+    }
 
     // Look in Registry to see if there is a default
     wxString wx_ProgID = pConfig->GetString("/camera/ASCOMlate/camera_id", _T(""));
-    BSTR bstr_ProgID=NULL;
-    bstr_ProgID = wxBasicString(wx_ProgID).Get();
+    BSTR bstr_ProgID = wxBasicString(wx_ProgID).Get();
 
-    // Next, try to open it
-    rgvarg[0].vt = VT_BSTR;
-    rgvarg[0].bstrVal = bstr_ProgID;
-    dispParms.cArgs = 1;
-    dispParms.rgvarg = rgvarg;
-    dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
-    if(FAILED(hr = pChooserDisplay->Invoke(dispid_choose,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,&dispParms,&vRes,&excep, NULL))) {
-        wxMessageBox (_T("Failed to run the Scope Chooser.  Something is wrong with ASCOM"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
+    VARIANT vchoice;
+    if (!chooser.InvokeMethod(&vchoice, L"Choose", bstr_ProgID))
+    {
+        wxMessageBox(_("Failed to run the Scope Chooser. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
+        return false;
     }
-    pChooserDisplay->Release();
-    if(SysStringLen(vRes.bstrVal) == 0) { // They hit cancel - bail
-        return true;
-    }
+
+    if (SysStringLen(vchoice.bstrVal) == 0)
+        return false; // use hit cancel
+
     // Save name of cam
-    pConfig->SetString("/camera/ASCOMlate/camera_id", vRes.bstrVal);
+    pConfig->SetString("/camera/ASCOMlate/camera_id", vchoice.bstrVal);
 
-    // Now, try to attach to the driver
-    if (FAILED(CLSIDFromProgID(vRes.bstrVal, &CLSID_driver))) {
+    *res = vchoice.bstrVal;
+    return true;
+}
+
+static bool GetDriverProgId(BSTR *progid, const wxString& choice)
+{
+    if (choice.Find(_T("Chooser")) != wxNOT_FOUND)
+    {
+        if (!ChooseASCOMCamera(progid))
+            return false;
+    }
+    else
+    {
+        wxString progidstr = s_progid[choice];
+        *progid = wxBasicString(progidstr).Get();
+    }
+    return true;
+}
+
+bool Camera_ASCOMLateClass::Connect()
+{
+    BSTR bstr_progid;
+    if (!GetDriverProgId(&bstr_progid, m_choice))
+        return true;
+
+    DispatchClass driver_class;
+    DispatchObj driver(&driver_class);
+
+    if (!driver.Create(bstr_progid))
+    {
         wxMessageBox(_T("Could not get CLSID for camera"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
-    IDispatch *ASCOMDriver;
-    if (FAILED(CoCreateInstance(CLSID_driver,NULL,CLSCTX_SERVER,IID_IDispatch,(LPVOID *)&ASCOMDriver))) {
-        wxMessageBox(_T("Could not establish instance for camera"), _("Error"), wxOK | wxICON_ERROR);
+    if (!driver.PutProp(L"Connected", true))
+    {
+        wxMessageBox(_T("ASCOM driver problem: Connect: ") + wxString(driver.Excep().bstrDescription),
+            _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
-    InterfaceGuard _guard(ASCOMDriver); // release reference on exit
-
-    if (m_pIGlobalInterfaceTable == NULL)
+    VARIANT vname;
+    if (driver.GetProp(&vname, L"Name"))
     {
-        // first find the global table
-        if (FAILED(::CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_IGlobalInterfaceTable,
-                (void **)&m_pIGlobalInterfaceTable)))
-        {
-            wxMessageBox(_T("ASCOM Camera: Cannot CoCreateInstance of Global Interface Table"));
-            return true;
-        }
-    }
-
-    assert(m_pIGlobalInterfaceTable);
-
-    // then add the Interface to it
-    if (FAILED(m_pIGlobalInterfaceTable->RegisterInterfaceInGlobal(ASCOMDriver, IID_IDispatch, &m_dwCookie)))
-    {
-        wxMessageBox(_T("ASCOM Camera: Cannot register with Global Interface Table"));
-        return true;
-    }
-
-    assert(m_dwCookie);
-
-    // Set it to connected
-    tmp_name=L"Connected";
-    if (FAILED(ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))
-    {
-        wxMessageBox(_T("ASCOM driver problem -- cannot connect"),_("Error"), wxOK | wxICON_ERROR);
-        return true;
-    }
-    rgvarg[0].vt = VT_BOOL;
-    rgvarg[0].boolVal = VARIANT_TRUE;
-    dispParms.cArgs = 1;
-    dispParms.rgvarg = rgvarg;
-    dispParms.cNamedArgs = 1;                   // PropPut kludge
-    dispParms.rgdispidNamedArgs = &dispidNamed;
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
-        &dispParms,&vRes,&excep, NULL)))
-    {
-        wxMessageBox(_T("ASCOM driver problem during connection"),_("Error"), wxOK | wxICON_ERROR);
-        return true;
+        Name = vname.bstrVal;
+        Debug.AddLine(wxString::Format("setting camera Name = %s", Name));
     }
 
     // See if we have an onboard guider output
-    tmp_name = L"CanPulseGuide";
-    if (FAILED(ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))
+    VARIANT vRes;
+    if (!driver.GetProp(&vRes, L"CanPulseGuide"))
     {
-        wxMessageBox(_T("ASCOM driver missing the CanPulseGuide property"),_("Error"), wxOK | wxICON_ERROR);
-        return true;
-    }
-    dispParms.cArgs = 0;
-    dispParms.rgvarg = NULL;
-    dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
-        &dispParms,&vRes,&excep, NULL)))
-    {
-        wxMessageBox(_T("ASCOM driver problem getting CanPulseGuide property"),_("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_T("ASCOM driver missing the CanPulseGuide property"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     m_hasGuideOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
 
     // Check if we have a shutter
-    tmp_name = L"HasShutter";
-    if (!FAILED(ASCOMDriver->GetIDsOfNames(IID_NULL,&tmp_name,1,LOCALE_USER_DEFAULT,&dispid_tmp)))
+    if (driver.GetProp(&vRes, L"HasShutter"))
     {
-        dispParms.cArgs = 0;
-        dispParms.rgvarg = NULL;
-        dispParms.cNamedArgs = 0;
-        dispParms.rgdispidNamedArgs = NULL;
-        if (!FAILED(hr = ASCOMDriver->Invoke(dispid_tmp,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
-            &dispParms,&vRes,&excep, NULL)))
-        {
-            HasShutter = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
-        }
+        HasShutter = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
     }
+
+    // TODO - convert the rest of these to use the DispatchObj wrapper
+
+    IDispatch *ASCOMDriver = driver.IDisp();
+    BSTR tmp_name;
+    DISPPARAMS dispParms;
+    DISPID dispidNamed = DISPID_PROPERTYPUT;
+    DISPID dispid_tmp;
+    HRESULT hr;
+    EXCEPINFO excep;
 
     // Get the image size of a full frame
     tmp_name = L"CameraXSize";
@@ -485,6 +478,28 @@ bool Camera_ASCOMLateClass::Connect() {
         return true;
     }
 
+    // add the driver interface to the global table for access in other threads
+    if (m_pIGlobalInterfaceTable == NULL)
+    {
+        if (FAILED(::CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_IGlobalInterfaceTable,
+                (void **)&m_pIGlobalInterfaceTable)))
+        {
+            wxMessageBox(_T("ASCOM Camera: Cannot CoCreateInstance of Global Interface Table"));
+            return true;
+        }
+    }
+
+    assert(m_pIGlobalInterfaceTable);
+
+    // Add the interface. Any errors from this point on must remove the interface from the global table
+    if (FAILED(m_pIGlobalInterfaceTable->RegisterInterfaceInGlobal(ASCOMDriver, IID_IDispatch, &m_dwCookie)))
+    {
+        wxMessageBox(_T("ASCOM Camera: Cannot register with Global Interface Table"));
+        return true;
+    }
+
+    assert(m_dwCookie);
+
     // Program some defaults -- full size and 1x1 bin
     this->ASCOM_SetBin(1);
     this->ASCOM_SetROI(0,0,FullSize.GetWidth(),FullSize.GetHeight());
@@ -532,6 +547,12 @@ bool Camera_ASCOMLateClass::Disconnect()
         wxMessageBox(_T("ASCOM driver problem during disconnection"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
+
+    // cleanup the global interface table
+    m_pIGlobalInterfaceTable->RevokeInterfaceFromGlobal(m_dwCookie);
+    m_dwCookie = 0;
+    m_pIGlobalInterfaceTable->Release();
+    m_pIGlobalInterfaceTable = NULL;
 
     Connected = false;
     return false;

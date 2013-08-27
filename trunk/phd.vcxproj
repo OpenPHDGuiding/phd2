@@ -201,6 +201,7 @@
     <ClCompile Include="cam_VFW.cpp" />
     <ClCompile Include="cam_wdm.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="comdispatch.cpp" />
     <ClCompile Include="configdialog.cpp" />
     <ClCompile Include="confirm_dialog.cpp" />
     <ClCompile Include="debuglog.cpp" />
@@ -300,6 +301,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="cameras.h" />
     <ClInclude Include="circbuf.h" />
+    <ClInclude Include="comdispatch.h" />
     <ClInclude Include="configdialog.h" />
     <ClInclude Include="confirm_dialog.h" />
     <ClInclude Include="debuglog.h" />
