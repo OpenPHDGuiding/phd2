@@ -1,9 +1,9 @@
 /*
- *  phdlog.h
+ *  loggers.h
  *  PHD Guiding
  *
- *  Created by Bret McKee
- *  Copyright (c) 2012 Bret McKee
+ *  Created by Bruce Waddington
+ *  Copyright (c) 2013 Bruce Waddington
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -32,36 +32,21 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#include "loggers.h"
-
-class DebugLog:public wxFFile, public loggers
+#ifndef LOGGERS_H_INCLUDED
+#define LOGGERS_H_INCLUDED
+class loggers
 {
 private:
-    bool m_bEnabled;
-    wxCriticalSection m_criticalSection;
-    wxDateTime m_lastWriteTime;
-    wxString m_pPathName;
+    wxString m_CurrentDir;
+    bool m_Initialized;                // internal state check - eliminates need for "init" method
 
-    void InitVars(void);
+protected:
+
+    bool SetLogDir (wxString newdir);
 
 public:
-    DebugLog(void);
-    DebugLog(const char *pName, bool bEnabled);
-    ~DebugLog(void);
+    loggers(void);
+    ~loggers(void);
+    wxString GetLogDir (void);};
 
-    bool SetState(bool bEnabled);
-    bool GetState(void);
-    bool Init(const char *pName, bool bEnable, bool bForceOpen = false);
-    wxString AddLine(const char *format, ...); // adds a newline
-    wxString AddBytes(const wxString& str, const unsigned char * const pBytes, unsigned count);
-    wxString Write(const wxString& str);
-    bool Flush(void);
-
-    bool ChangeDirLog (wxString newdir);
-};
-
-extern DebugLog& operator<< (DebugLog& out, const wxString &str);
-extern DebugLog& operator<< (DebugLog& out, const char *str);
-extern DebugLog& operator<< (DebugLog& out, const int i);
-extern DebugLog& operator<< (DebugLog& out, const double d);
+#endif

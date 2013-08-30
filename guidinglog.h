@@ -33,13 +33,15 @@
  *
  */
 
+#include "loggers.h"
+
 enum LOGGED_IMAGE_FORMAT {
     LIF_LOW_Q_JPEG,
     LIF_HI_Q_JPEG,
     LIF_RAW_FITS
 };
 
-class GuidingLog
+class GuidingLog: public loggers
 {
     bool m_enabled;
     wxFFile m_file;
@@ -82,6 +84,8 @@ public:
     bool SetGuidingParam(wxString name, wxString val);
 
     bool StartEntry(void);
+
+    bool ChangeDirLog (wxString newdir);
 
 protected:
     bool GuidingHeader(void);

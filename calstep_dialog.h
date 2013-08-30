@@ -1,9 +1,9 @@
 /*
- *  phdlog.h
+ *  calstep_dialog.h
  *  PHD Guiding
  *
- *  Created by Bret McKee
- *  Copyright (c) 2012 Bret McKee
+ *  Created by Bruce Waddington
+ *  Copyright (c) 2013 Bruce Waddington
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -33,35 +33,47 @@
  *
  */
 
-#include "loggers.h"
+#ifndef CalstepDialog_h_included
+#define CalstepDialog_h_included
 
-class DebugLog:public wxFFile, public loggers
+class CalstepDialog : public wxDialog
 {
 private:
-    bool m_bEnabled;
-    wxCriticalSection m_criticalSection;
-    wxDateTime m_lastWriteTime;
-    wxString m_pPathName;
 
-    void InitVars(void);
+    // wx UI controls
+    wxDialog *m_pParent;
+    wxBoxSizer *m_pVSizer;
+    wxFlexGridSizer *m_pInputTableSizer;
+    wxFlexGridSizer *m_pOutputTableSizer;
+    wxStaticBoxSizer *m_pInputGroupBox;
+    wxStaticBoxSizer *m_pOutputGroupBox;
+    wxTextCtrl *m_pFocalLength;
+    wxTextCtrl *m_pPixelSize;
+    wxTextCtrl *m_pGuideSpeed;
+    wxTextCtrl *m_pNumSteps;
+    wxTextCtrl *m_pRslt;
+    wxTextCtrl *m_pImageScale;
+    // numeric values from fields, populated by validators
+    float m_fPixelSize;
+    int m_iFocalLength;
+    float m_fGuideSpeed;
+    int m_iNumSteps;
+    float m_fImageScale;
+    int m_iRslt;
+    bool m_bValidResult;
+    // pConfig prefix string for persisting guide speed
+    wxString m_sConfigPrefix;
 
 public:
-    DebugLog(void);
-    DebugLog(const char *pName, bool bEnabled);
-    ~DebugLog(void);
+    CalstepDialog(int focalLength, float pixelSize, wxString configPrefix);
+    ~CalstepDialog(void);
+    int CalstepDialog::GetResult ();
 
-    bool SetState(bool bEnabled);
-    bool GetState(void);
-    bool Init(const char *pName, bool bEnable, bool bForceOpen = false);
-    wxString AddLine(const char *format, ...); // adds a newline
-    wxString AddBytes(const wxString& str, const unsigned char * const pBytes, unsigned count);
-    wxString Write(const wxString& str);
-    bool Flush(void);
-
-    bool ChangeDirLog (wxString newdir);
+private:
+    void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip);
+    int CalstepDialog::StringWidth(wxString string);
+    void CalstepDialog::OnRecalc (wxCommandEvent& evt);
+    bool CalstepDialog::CalcDefaultDuration (int FocalLength, float PixelSize, float GuideSpeed, int DesiredSteps, float& ImageScale, int& StepSize);
 };
 
-extern DebugLog& operator<< (DebugLog& out, const wxString &str);
-extern DebugLog& operator<< (DebugLog& out, const char *str);
-extern DebugLog& operator<< (DebugLog& out, const int i);
-extern DebugLog& operator<< (DebugLog& out, const double d);
+#endif

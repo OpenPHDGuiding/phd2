@@ -36,7 +36,7 @@
 #include "image_math.h"
 #include "wx/textfile.h"
 #include "socket_server.h"
-
+#include "calstep_dialog.h"
 
 static const int DefaultCalibrationDuration = 750;
 static const int DefaultMaxDecDuration  = 1000;
@@ -743,6 +743,16 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
         _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"));
 
+    // add the 'auto' button and bind it to the associated event-handler
+    wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
+    wxButton *m_pAutoDuration = new wxButton(pParent, wxID_OK, "Calculate..." );
+    m_pAutoDuration->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnAutoDuration, this);
+    pButtonSizer->Add(
+        m_pAutoDuration,
+        wxSizerFlags(0).Center());
+    // Use base class 'add' to get the button centered
+    ScopeConfigDialogPane::Add (pButtonSizer, wxSizerFlags(0).Center());
+
     width = StringWidth(_T("00000"));
     m_pMaxRaDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 2000, 150, _T("MaxDec_Dur"));
@@ -763,6 +773,30 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
             wxSize(width+35, -1), WXSIZEOF(dec_choices), dec_choices);
     DoAdd(_("Dec guide mode"), m_pDecMode,
           _("Guide in declination as well?"));
+}
+
+void Scope::ScopeConfigDialogPane::OnAutoDuration (wxCommandEvent& evt)
+{
+    CalstepDialog *pCalc;
+    int iFocalLength = pFrame->GetFocalLength ();
+    float fPixelSize;
+    wxString sConfigPrefix = "";
+
+    if (pCamera)
+        fPixelSize = pCamera->PixelSize;
+    else
+        fPixelSize = 0;
+    if (pMount)
+    {
+        sConfigPrefix = "/" + pMount->GetMountClassName();
+    }
+
+    pCalc = new CalstepDialog (iFocalLength, fPixelSize, sConfigPrefix);
+    if (pCalc->ShowModal () == wxID_OK)
+    {
+        m_pCalibrationDuration->SetValue (pCalc->GetResult ());
+    }
+    pCalc->Destroy ();
 }
 
 Scope::ScopeConfigDialogPane::~ScopeConfigDialogPane(void)
