@@ -139,8 +139,8 @@ END_EVENT_TABLE()
 
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
-MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
-    : wxFrame(NULL, wxID_ANY, title)
+MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
+    : wxFrame(NULL, wxID_ANY, wxEmptyString)
 {
     m_instanceNumber = instanceNumber;
     m_pLocale = locale;
@@ -157,29 +157,14 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
 
     SocketServer = NULL;
 
-    int noiseReductionMethod = pConfig->GetInt("/NoiseReductionMethod", DefaultNoiseReductionMethod);
-    SetNoiseReductionMethod(noiseReductionMethod);
-
-    double ditherScaleFactor = pConfig->GetDouble("/DitherScaleFactor", DefaultDitherScaleFactor);
-    SetDitherScaleFactor(ditherScaleFactor);
-
-    bool ditherRaOnly = pConfig->GetBoolean("/DitherRaOnly", DefaultDitherRaOnly);
-    SetDitherRaOnly(ditherRaOnly);
-
-    bool serverMode = pConfig->GetBoolean("/ServerMode", DefaultServerMode);
+    bool serverMode = pConfig->Global.GetBoolean("/ServerMode", DefaultServerMode);
     SetServerMode(serverMode);
 
-    bool loggingMode = pConfig->GetBoolean("/LoggingMode", DefaultLoggingMode);
+    bool loggingMode = pConfig->Global.GetBoolean("/LoggingMode", DefaultLoggingMode);
     GuideLog.EnableLogging(loggingMode);
 
-    int timeLapse   = pConfig->GetInt("/frame/timeLapse", DefaultTimelapse);
-    SetTimeLapse(timeLapse);
-
-    int focalLength = pConfig->GetInt("/frame/focalLength", DefaultTimelapse);
-    SetFocalLength(focalLength);
     m_sampling = 1.0;
 
-    //
 #if defined (WINICONS)
     SetIcon(wxIcon(_T("progicon")));
 #else
@@ -198,12 +183,15 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     // Setup Status bar
     SetupStatusBar();
 
+    LoadProfileSettings();
+
     // Setup Canvas for starfield image
     pGuider = new GuiderOneStar(this);
+    pGuider->LoadProfileSettings();
 
     this->SetMinSize(wxSize(800,600));
 
-    wxString geometry = pConfig->GetString("/geometry", wxEmptyString);
+    wxString geometry = pConfig->Global.GetString("/geometry", wxEmptyString);
     if (geometry == wxEmptyString)
     {
         this->SetSize(800,600);
@@ -245,7 +233,6 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
         Name(_T("Guider")).Caption(_T("Guider")).
         CenterPane().MinSize(wxSize(XWinSize,YWinSize)));
 
-
     pGraphLog = new GraphLogWindow(this);
     m_mgr.AddPane(pGraphLog, wxAuiPaneInfo().
         Name(_T("GraphLog")).Caption(_("History")).
@@ -270,21 +257,13 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
 
     tools_menu->Check(MENU_LOG,false);
 
-    wxString frameTitle = title;
+    UpdateTitle();
 
-    if (GuideLog.IsEnabled())
+    if (m_serverMode)
     {
-        frameTitle += " (log active)";
-        tools_menu->Check(MENU_LOG,true);
-    }
-
-    this->SetTitle(frameTitle);
-
-    if (m_serverMode) {
         tools_menu->Check(MENU_SERVER,true);
-        if (StartServer(true)) {
+        if (StartServer(true))
             wxLogStatus(_("Server start failed"));
-        }
         else
             wxLogStatus(_("Server started"));
     }
@@ -310,7 +289,7 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR, *wxBLACK);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_TEXT_COLOUR, *wxWHITE);
 
-    wxString perspective = pConfig->GetString("/perspective", wxEmptyString);
+    wxString perspective = pConfig->Global.GetString("/perspective", wxEmptyString);
     if (perspective != wxEmptyString)
     {
         m_mgr.LoadPerspective(perspective);
@@ -345,7 +324,6 @@ MyFrame::MyFrame(const wxString& title, int instanceNumber, wxLocale *locale)
     Menubar->Check(MENU_TARGET, panel_state);
 
     m_mgr.Update();
-
 }
 
 
@@ -365,6 +343,26 @@ MyFrame::~MyFrame() {
     pGearDialog = NULL;
 
     m_mgr.UnInit();
+}
+
+void MyFrame::UpdateTitle(void)
+{
+    wxString title = wxString::Format(_T("%s %s"), APPNAME, FULLVER);
+
+    if (m_instanceNumber > 1)
+    {
+        title = wxString::Format(_T("%s(#%d) %s"), APPNAME, m_instanceNumber, FULLVER);
+    }
+
+    title += " - " + pConfig->GetCurrentProfile();
+
+    if (GuideLog.IsEnabled())
+    {
+        title += " (log active)";
+        tools_menu->Check(MENU_LOG,true);
+    }
+
+    SetTitle(title);
 }
 
 void MyFrame::SetupMenuBar(void)
@@ -493,6 +491,40 @@ int MyFrame::ExposureDurationFromSelection(const wxString& sel)
     return 1000;
 }
 
+enum {
+    GAMMA_MIN = 10,
+    GAMMA_MAX = 300,
+    GAMMA_DEFAULT = 100,
+};
+
+void MyFrame::LoadProfileSettings(void)
+{
+    int noiseReductionMethod = pConfig->Profile.GetInt("/NoiseReductionMethod", DefaultNoiseReductionMethod);
+    SetNoiseReductionMethod(noiseReductionMethod);
+
+    double ditherScaleFactor = pConfig->Profile.GetDouble("/DitherScaleFactor", DefaultDitherScaleFactor);
+    SetDitherScaleFactor(ditherScaleFactor);
+
+    bool ditherRaOnly = pConfig->Profile.GetBoolean("/DitherRaOnly", DefaultDitherRaOnly);
+    SetDitherRaOnly(ditherRaOnly);
+
+    int timeLapse   = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
+    SetTimeLapse(timeLapse);
+
+    int focalLength = pConfig->Profile.GetInt("/frame/focalLength", DefaultTimelapse);
+    SetFocalLength(focalLength);
+
+    wxString dur = pConfig->Profile.GetString("/ExposureDuration", dur_choices[DefaultDurChoiceIdx]);
+    Dur_Choice->SetValue(dur);
+    m_exposureDuration = ExposureDurationFromSelection(dur);
+
+    int val = pConfig->Profile.GetInt("/Gamma", GAMMA_DEFAULT);
+    if (val < GAMMA_MIN) val = GAMMA_MIN;
+    if (val > GAMMA_MAX) val = GAMMA_MAX;
+    Stretch_gamma = (double) val / 100.0;
+    Gamma_Slider->SetValue(val);
+}
+
 void MyFrame::SetupToolBar()
 {
     MainToolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
@@ -523,25 +555,13 @@ void MyFrame::SetupToolBar()
     camera_bmp = wxBitmap(cam_icon);
 #endif
 
-    Dur_Choice = new wxComboBox(MainToolbar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition , wxDefaultSize, WXSIZEOF(dur_choices),dur_choices, wxCB_READONLY);
-    wxString dur = pConfig->GetString("/ExposureDuration", dur_choices[DefaultDurChoiceIdx]);
-    Dur_Choice->SetValue(dur);
-    m_exposureDuration = ExposureDurationFromSelection(dur);
+    Dur_Choice = new wxComboBox(MainToolbar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+        WXSIZEOF(dur_choices), dur_choices, wxCB_READONLY);
     Dur_Choice->SetToolTip(_("Camera exposure duration"));
     SetComboBoxWidth(Dur_Choice, 40);
 
-    enum {
-        GAMMA_MIN = 10,
-        GAMMA_MAX = 300,
-        GAMMA_DEFAULT = 100,
-    };
     Gamma_Slider = new wxSlider(MainToolbar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1,-1), wxSize(160,-1));
     Gamma_Slider->SetToolTip(_("Screen gamma (brightness)"));
-    int val = pConfig->GetInt("/Gamma", GAMMA_DEFAULT);
-    if (val < GAMMA_MIN) val = GAMMA_MIN;
-    if (val > GAMMA_MAX) val = GAMMA_MAX;
-    Stretch_gamma = (double) val / 100.0;
-    Gamma_Slider->SetValue(val);
 
     wxBitmap brain_bmp;
 #if defined (WINICONS)
@@ -945,12 +965,12 @@ void MyFrame::OnClose(wxCloseEvent &event) {
 
     GuideLog.Close();
 
-    pConfig->SetString("/perspective", m_mgr.SavePerspective());
+    pConfig->Global.SetString("/perspective", m_mgr.SavePerspective());
     wxString geometry = wxString::Format("%c;%d;%d;%d;%d",
         this->IsMaximized() ? '1' : '0',
         this->GetSize().x, this->GetSize().y,
         this->GetPosition().x, this->GetPosition().y);
-    pConfig->SetString("/geometry", geometry);
+    pConfig->Global.SetString("/geometry", geometry);
 
     help->Quit();
     delete help;
@@ -987,7 +1007,7 @@ bool MyFrame::SetNoiseReductionMethod(int noiseReductionMethod)
         m_noiseReductionMethod = (NOISE_REDUCTION_METHOD)DefaultNoiseReductionMethod;
     }
 
-    pConfig->SetInt("/NoiseReductionMethod", m_noiseReductionMethod);
+    pConfig->Profile.SetInt("/NoiseReductionMethod", m_noiseReductionMethod);
 
     return bError;
 }
@@ -1017,7 +1037,7 @@ bool MyFrame::SetDitherScaleFactor(double ditherScaleFactor)
         m_ditherScaleFactor = DefaultDitherScaleFactor;
     }
 
-    pConfig->SetInt("/DitherScaleFactor", m_ditherScaleFactor);
+    pConfig->Profile.SetDouble("/DitherScaleFactor", m_ditherScaleFactor);
 
     return bError;
 }
@@ -1033,7 +1053,7 @@ bool MyFrame::SetDitherRaOnly(bool ditherRaOnly)
 
     m_ditherRaOnly = ditherRaOnly;
 
-    pConfig->SetBoolean("/DitherRaOnly", m_ditherRaOnly);
+    pConfig->Profile.SetBoolean("/DitherRaOnly", m_ditherRaOnly);
 
     return bError;
 }
@@ -1049,7 +1069,7 @@ bool MyFrame::SetServerMode(bool serverMode)
 
     m_serverMode = serverMode;
 
-    pConfig->SetBoolean("/ServerMode", m_serverMode);
+    pConfig->Global.SetBoolean("/ServerMode", m_serverMode);
 
     return bError;
 }
@@ -1079,7 +1099,7 @@ bool MyFrame::SetTimeLapse(int timeLapse)
         m_timeLapse = DefaultTimelapse;
     }
 
-    pConfig->SetInt("/frame/timeLapse", m_timeLapse);
+    pConfig->Profile.SetInt("/frame/timeLapse", m_timeLapse);
 
     return bError;
 }
@@ -1097,7 +1117,7 @@ bool MyFrame::SetFocalLength(int focalLength)
     {
         if (focalLength < 0)
         {
-            throw ERROR_INFO("timeLapse < 0");
+            throw ERROR_INFO("focal length < 0");
         }
 
         m_focalLength = focalLength;
@@ -1109,26 +1129,17 @@ bool MyFrame::SetFocalLength(int focalLength)
         m_focalLength = DefaultFocalLength;
     }
 
-    pConfig->SetInt("/frame/focalLength", m_focalLength);
+    pConfig->Profile.SetInt("/frame/focalLength", m_focalLength);
 
     return bError;
 }
 
-void MyFrame::SetSampling(void)
+double MyFrame::GetCameraPixelScale(void)
 {
-    m_sampling = 1.0;
-    if (pCamera != NULL)
-    {
-        if (pCamera->PixelSize != 0 && GetFocalLength() != 0)
-        {
-            m_sampling = 206.265 * pCamera->PixelSize / pFrame->GetFocalLength();
-        }
-    }
-}
+    if (!pCamera || pCamera->PixelSize == 0.0 || m_focalLength == 0)
+        return 1.0;
 
-double MyFrame::GetSampling(void)
-{
-    return m_sampling;
+    return 206.265 * pCamera->PixelSize / m_focalLength;
 }
 
 wxString MyFrame::GetSettingsSummary() {
@@ -1144,7 +1155,7 @@ wxString MyFrame::GetSettingsSummary() {
 
 int MyFrame::GetLanguage(void)
 {
-    int language = pConfig->GetInt("/wxLanguage", wxLANGUAGE_DEFAULT);
+    int language = pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT);
     return language;
 }
 
@@ -1163,7 +1174,7 @@ bool MyFrame::SetLanguage(int language)
     //if (!pTrans->IsLoaded("messages"))
     //    pTrans->AddCatalog("messages");
 
-    pConfig->SetInt("/wxLanguage", language);
+    pConfig->Global.SetInt("/wxLanguage", language);
 
     return bError;
 }
@@ -1273,10 +1284,10 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
           wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 
     // Log directory edit box: Need a wide text box so put the label above it
-    wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, _("Default log directory") + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
+    wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, _("Log folder") + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
     DoAdd (pLabel);
     m_pLogDir = new wxTextCtrl(pParent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width+30, -1));
-    m_pLogDir->SetToolTip (_("Directory for guide/debug logs; empty string to restore default value"));
+    m_pLogDir->SetToolTip (_("Folder for guide and debug logs; empty string to restore the default location"));
     DoAdd (m_pLogDir);
 }
 

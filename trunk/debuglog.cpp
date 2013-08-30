@@ -90,7 +90,6 @@ bool DebugLog::Init(const char *pName, bool bEnable, bool bForceOpen)
         wxStandardPathsBase& stdpath = wxStandardPaths::Get();
         wxDateTime now = wxDateTime::UNow();
 
-        // m_pPathName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
         m_pPathName = GetLogDir() + PATHSEPSTR + "PHD_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
 
         if (!wxFFile::Open(m_pPathName, "a"))
@@ -111,7 +110,7 @@ bool DebugLog::ChangeDirLog (wxString newdir)
 
     if (!SetLogDir (newdir))
     {
-        wxMessageBox(wxString::Format("invalid directory name %s, debug log directory unchanged", newdir));
+        wxMessageBox(wxString::Format("invalid folder name %s, debug log folder unchanged", newdir));
         bOk = false;
     }
 

@@ -96,28 +96,28 @@ double SimCamParams::guide_rate;                 // guide rate, pixels per secon
 
 static void load_sim_params()
 {
-    SimCamParams::nr_stars = pConfig->GetInt("/SimCam/nr_stars", NR_STARS_DEFAULT);
-    SimCamParams::nr_hot_pixels = pConfig->GetInt("/SimCam/nr_hot_pixels", NR_HOT_PIXELS_DEFAULT);
-    SimCamParams::noise_multiplier = pConfig->GetDouble("/SimCam/noise", NOISE_DEFAULT);
-    SimCamParams::dec_backlash = pConfig->GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT);
-    SimCamParams::pe_scale = pConfig->GetDouble("/SimCam/pe_scale", PE_DEFAULT);
-    SimCamParams::dec_drift_rate = pConfig->GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT);
-    SimCamParams::seeing_scale = pConfig->GetDouble("/SimCam/seeing_scale", SEEING_DEFAULT);
-    SimCamParams::cam_angle = pConfig->GetDouble("/SimCam/cam_angle", CAM_ANGLE_DEFAULT);
-    SimCamParams::guide_rate = pConfig->GetDouble("/SimCam/guide_rate", GUIDE_RATE_DEFAULT);
+    SimCamParams::nr_stars = pConfig->Profile.GetInt("/SimCam/nr_stars", NR_STARS_DEFAULT);
+    SimCamParams::nr_hot_pixels = pConfig->Profile.GetInt("/SimCam/nr_hot_pixels", NR_HOT_PIXELS_DEFAULT);
+    SimCamParams::noise_multiplier = pConfig->Profile.GetDouble("/SimCam/noise", NOISE_DEFAULT);
+    SimCamParams::dec_backlash = pConfig->Profile.GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT);
+    SimCamParams::pe_scale = pConfig->Profile.GetDouble("/SimCam/pe_scale", PE_DEFAULT);
+    SimCamParams::dec_drift_rate = pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT);
+    SimCamParams::seeing_scale = pConfig->Profile.GetDouble("/SimCam/seeing_scale", SEEING_DEFAULT);
+    SimCamParams::cam_angle = pConfig->Profile.GetDouble("/SimCam/cam_angle", CAM_ANGLE_DEFAULT);
+    SimCamParams::guide_rate = pConfig->Profile.GetDouble("/SimCam/guide_rate", GUIDE_RATE_DEFAULT);
 }
 
 static void save_sim_params()
 {
-    pConfig->SetInt("/SimCam/nr_stars", SimCamParams::nr_stars);
-    pConfig->SetInt("/SimCam/nr_hot_pixels", SimCamParams::nr_hot_pixels);
-    pConfig->SetDouble("/SimCam/noise", SimCamParams::noise_multiplier);
-    pConfig->SetDouble("/SimCam/dec_backlash", SimCamParams::dec_backlash);
-    pConfig->SetDouble("/SimCam/pe_scale", SimCamParams::pe_scale);
-    pConfig->SetDouble("/SimCam/dec_drift", SimCamParams::dec_drift_rate);
-    pConfig->SetDouble("/SimCam/seeing_scale", SimCamParams::seeing_scale);
-    pConfig->SetDouble("/SimCam/cam_angle", SimCamParams::cam_angle);
-    pConfig->SetDouble("/SimCam/guide_rate", SimCamParams::guide_rate);
+    pConfig->Profile.SetInt("/SimCam/nr_stars", SimCamParams::nr_stars);
+    pConfig->Profile.SetInt("/SimCam/nr_hot_pixels", SimCamParams::nr_hot_pixels);
+    pConfig->Profile.SetDouble("/SimCam/noise", SimCamParams::noise_multiplier);
+    pConfig->Profile.SetDouble("/SimCam/dec_backlash", SimCamParams::dec_backlash);
+    pConfig->Profile.SetDouble("/SimCam/pe_scale", SimCamParams::pe_scale);
+    pConfig->Profile.SetDouble("/SimCam/dec_drift", SimCamParams::dec_drift_rate);
+    pConfig->Profile.SetDouble("/SimCam/seeing_scale", SimCamParams::seeing_scale);
+    pConfig->Profile.SetDouble("/SimCam/cam_angle", SimCamParams::cam_angle);
+    pConfig->Profile.SetDouble("/SimCam/guide_rate", SimCamParams::guide_rate);
 }
 
 #ifdef STEPGUIDER_SIMULATOR

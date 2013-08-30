@@ -195,7 +195,7 @@ void Mount::SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgori
         guideAlgorithm = defaultAlgorithm;
     }
 
-    pConfig->SetInt("/" + GetMountClassName() + "/XGuideAlgorithm", guideAlgorithm);
+    pConfig->Profile.SetInt("/" + GetMountClassName() + "/XGuideAlgorithm", guideAlgorithm);
 }
 
 GUIDE_ALGORITHM Mount::GetYGuideAlgorithm(void)
@@ -213,7 +213,7 @@ void Mount::SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgori
         guideAlgorithm = defaultAlgorithm;
     }
 
-    pConfig->SetInt("/" + GetMountClassName() + "/YGuideAlgorithm", guideAlgorithm);
+    pConfig->Profile.SetInt("/" + GetMountClassName() + "/YGuideAlgorithm", guideAlgorithm);
 }
 
 bool Mount::GetGuidingEnabled(void)
@@ -835,12 +835,12 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
 
     // store calibration data
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
-    pConfig->SetString(prefix + "timestamp", wxDateTime::Now().Format());
-    pConfig->SetDouble(prefix + "xAngle", xAngle);
-    pConfig->SetDouble(prefix + "yAngle", yAngle);
-    pConfig->SetDouble(prefix + "xRate", xRate);
-    pConfig->SetDouble(prefix + "yRate", yRate);
-    pConfig->SetDouble(prefix + "declination", declination);
+    pConfig->Profile.SetString(prefix + "timestamp", wxDateTime::Now().Format());
+    pConfig->Profile.SetDouble(prefix + "xAngle", xAngle);
+    pConfig->Profile.SetDouble(prefix + "yAngle", yAngle);
+    pConfig->Profile.SetDouble(prefix + "xRate", xRate);
+    pConfig->Profile.SetDouble(prefix + "yRate", yRate);
+    pConfig->Profile.SetDouble(prefix + "declination", declination);
 }
 
 bool Mount::IsConnected()

@@ -66,7 +66,7 @@ bool StepGuiderSxAO::Connect(void)
 
         wxArrayString serialPorts = m_pSerialPort->GetSerialPortList();
 
-        wxString lastSerialPort = pConfig->GetString("/stepguider/sxao/serialport", "");
+        wxString lastSerialPort = pConfig->Profile.GetString("/stepguider/sxao/serialport", "");
         int resp = serialPorts.Index(lastSerialPort);
 
         resp = wxGetSingleChoiceIndex(_("Select serial port"),_("Serial Port"), serialPorts,
@@ -78,7 +78,7 @@ bool StepGuiderSxAO::Connect(void)
             throw ERROR_INFO("StepGuiderSxAO::Connect: serial port connect failed");
         }
 
-        pConfig->SetString("/stepguider/sxao/serialport", serialPorts[resp]);
+        pConfig->Profile.SetString("/stepguider/sxao/serialport", serialPorts[resp]);
 
         if (m_pSerialPort->SetReceiveTimeout(DefaultTimeout))
         {

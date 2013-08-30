@@ -96,7 +96,7 @@ bool PhdApp::OnInit() {
     SetVendorName(_T("StarkLabs"));
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
-    Debug.Init("debug", pConfig->GetBoolean("/EnableDebugLog", true));
+    Debug.Init("debug", pConfig->Global.GetBoolean("/EnableDebugLog", true));
 
     if (m_resetConfig)
     {
@@ -104,21 +104,14 @@ bool PhdApp::OnInit() {
     }
 
     wxLocale::AddCatalogLookupPathPrefix(_T("locale"));
-    m_locale.Init(pConfig->GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
+    m_locale.Init(pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
     if (!m_locale.AddCatalog("messages"))
     {
         Debug.AddLine("locale.AddCatalog failed");
     }
     setlocale(LC_NUMERIC, "English");
 
-    wxString title = wxString::Format(_T("%s %s"), APPNAME, FULLVER);
-
-    if (m_instanceNumber > 1)
-    {
-        title = wxString::Format(_T("%s(#%d) %s"), APPNAME, m_instanceNumber, FULLVER);
-    }
-
-    pFrame = new MyFrame(title, m_instanceNumber, &m_locale);
+    pFrame = new MyFrame(m_instanceNumber, &m_locale);
 
     wxImage::AddHandler(new wxJPEGHandler);
 

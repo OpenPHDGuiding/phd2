@@ -47,6 +47,7 @@ protected:
 public:
     loggers(void);
     ~loggers(void);
-    wxString GetLogDir (void);};
+    wxString GetLogDir(void);
+};
 
 #endif

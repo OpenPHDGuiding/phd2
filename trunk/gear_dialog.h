@@ -41,6 +41,10 @@ class GearDialog: public wxDialog
     Scope       *m_pScope;
     StepGuider  *m_pStepGuider;
 
+    wxChoice *m_profiles;
+    wxButton *m_btnProfileManage;
+    wxMenu *m_menuProfileManage;
+
     wxChoice *m_pCameras;
     wxToggleButton *m_pConnectCameraButton;
 
@@ -62,6 +66,7 @@ public:
     void EndModal(int retCode);
 
 private:
+    void LoadGearChoices(void);
     void UpdateGearPointers(void);
 
     void UpdateCameraButtonState(void);
@@ -71,8 +76,16 @@ private:
     void UpdateDisconnectAllButtonState(void);
     void UpdateButtonState(void);
 
+    void OnProfileChoice(wxCommandEvent& event);
+    void OnButtonProfileManage(wxCommandEvent& event);
+    void OnProfileNew(wxCommandEvent& event);
+    void OnProfileDelete(wxCommandEvent& event);
+    void OnProfileRename(wxCommandEvent& event);
+    void OnAdvanced(wxCommandEvent& event);
+
     void OnButtonConnectAll(wxCommandEvent& event);
     void OnButtonDisconnectAll(wxCommandEvent& event);
+    void OnChar(wxKeyEvent& event);
 
     void OnChoiceCamera(wxCommandEvent& event);
     void OnButtonConnectCamera(wxCommandEvent& event);

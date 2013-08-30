@@ -54,7 +54,7 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, wxString configPr
 
     m_sConfigPrefix = configPrefix;
     if (m_sConfigPrefix.Len() > 0)
-        m_fGuideSpeed = (float) pConfig->GetDouble (m_sConfigPrefix + "/GuideSpeed", 0);
+        m_fGuideSpeed = (float) pConfig->Profile.GetDouble (m_sConfigPrefix + "/GuideSpeed", 0);
     else
         m_fGuideSpeed = 0;
     if (m_fGuideSpeed <= 0)
@@ -197,7 +197,7 @@ void CalstepDialog::OnRecalc (wxCommandEvent& evt)
                             m_pImageScale->SetValue (wxString::Format ("%.2f", m_fImageScale));
                             m_pRslt->SetValue (wxString::Format ("%3d", m_iRslt));
                             // Remember the guide speed chosen is just to help the user - purely a UI thing, no guiding implications
-                            pConfig->SetDouble (m_sConfigPrefix + "/GuideSpeed", (double) m_fGuideSpeed);
+                            pConfig->Profile.SetDouble (m_sConfigPrefix + "/GuideSpeed", (double) m_fGuideSpeed);
                             m_bValidResult = true;
                         }
                         else

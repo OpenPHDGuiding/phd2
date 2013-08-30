@@ -148,7 +148,7 @@ static bool ChooseASCOMScope(BSTR *res)
     }
 
     // Look in Registry to see if there is a default
-    wxString wx_ProgID = pConfig->GetString("/scope/ascom/ScopeID", _T(""));
+    wxString wx_ProgID = pConfig->Global.GetString("/scope/ascom/ScopeID", _T(""));
     BSTR bstr_ProgID = wxBasicString(wx_ProgID).Get();
 
     VARIANT vchoice;
@@ -162,7 +162,7 @@ static bool ChooseASCOMScope(BSTR *res)
         return false; // use hit cancel
 
     // Save name of scope
-    pConfig->SetString("/scope/ascom/ScopeID", vchoice.bstrVal);
+    pConfig->Global.SetString("/scope/ascom/ScopeID", vchoice.bstrVal);
 
     *res = vchoice.bstrVal;
     return true;

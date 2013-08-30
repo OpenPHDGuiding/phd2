@@ -56,22 +56,22 @@ Scope::Scope(void)
 
     wxString prefix = "/" + GetMountClassName();
 
-    int calibrationDuration = pConfig->GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
+    int calibrationDuration = pConfig->Profile.GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
     SetCalibrationDuration(calibrationDuration);
 
-    int maxRaDuration  = pConfig->GetInt(prefix + "/MaxRaDuration", DefaultMaxRaDuration);
+    int maxRaDuration  = pConfig->Profile.GetInt(prefix + "/MaxRaDuration", DefaultMaxRaDuration);
     SetMaxRaDuration(maxRaDuration);
 
-    int maxDecDuration = pConfig->GetInt(prefix + "/MaxDecDuration", DefaultMaxDecDuration);
+    int maxDecDuration = pConfig->Profile.GetInt(prefix + "/MaxDecDuration", DefaultMaxDecDuration);
     SetMaxDecDuration(maxDecDuration);
 
-    int decGuideMode = pConfig->GetInt(prefix + "/DecGuideMode", DefaultDecGuideMode);
+    int decGuideMode = pConfig->Profile.GetInt(prefix + "/DecGuideMode", DefaultDecGuideMode);
     SetDecGuideMode(decGuideMode);
 
-    int raGuideAlgorithm = pConfig->GetInt(prefix + "/XGuideAlgorithm", DefaultRaGuideAlgorithm);
+    int raGuideAlgorithm = pConfig->Profile.GetInt(prefix + "/XGuideAlgorithm", DefaultRaGuideAlgorithm);
     SetXGuideAlgorithm(raGuideAlgorithm);
 
-    int decGuideAlgorithm = pConfig->GetInt(prefix + "/YGuideAlgorithm", DefaultDecGuideAlgorithm);
+    int decGuideAlgorithm = pConfig->Profile.GetInt(prefix + "/YGuideAlgorithm", DefaultDecGuideAlgorithm);
     SetYGuideAlgorithm(decGuideAlgorithm);
 }
 
@@ -105,7 +105,7 @@ bool Scope::SetCalibrationDuration(int calibrationDuration)
         m_calibrationDuration = DefaultCalibrationDuration;
     }
 
-    pConfig->SetInt("/scope/CalibrationDuration", m_calibrationDuration);
+    pConfig->Profile.SetInt("/scope/CalibrationDuration", m_calibrationDuration);
 
     return bError;
 }
@@ -135,7 +135,7 @@ bool Scope::SetMaxDecDuration(int maxDecDuration)
         m_maxDecDuration = DefaultMaxDecDuration;
     }
 
-    pConfig->SetInt("/scope/MaxDecDuration", m_maxDecDuration);
+    pConfig->Profile.SetInt("/scope/MaxDecDuration", m_maxDecDuration);
 
     return bError;
 }
@@ -165,7 +165,7 @@ bool Scope::SetMaxRaDuration(double maxRaDuration)
         m_maxRaDuration = DefaultMaxRaDuration;
     }
 
-    pConfig->SetInt("/scope/MaxRaDuration", m_maxRaDuration);
+    pConfig->Profile.SetInt("/scope/MaxRaDuration", m_maxRaDuration);
 
     return bError;
 }
@@ -202,7 +202,7 @@ bool Scope::SetDecGuideMode(int decGuideMode)
         m_decGuideMode = (DEC_GUIDE_MODE)DefaultDecGuideMode;
     }
 
-    pConfig->SetInt("/scope/DecGuideMode", m_decGuideMode);
+    pConfig->Profile.SetInt("/scope/DecGuideMode", m_decGuideMode);
     if (pFrame)
         pFrame->UpdateCalibrationStatus();
 
@@ -665,7 +665,6 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
                                m_calibrationXRate,  m_calibrationYRate,
                                GetDeclination());
-                pFrame->SetSampling();
                 pFrame->SetStatusText(_("calibration complete"),1);
                 GuideLog.CalibrationComplete(this);
                 EvtServer.NotifyCalibrationComplete(this);

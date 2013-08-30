@@ -51,7 +51,7 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
     wxString sel = Dur_Choice->GetValue();
     m_exposureDuration = ExposureDurationFromSelection(sel);
 
-    pConfig->SetString("/ExposureDuration", sel);
+    pConfig->Profile.SetString("/ExposureDuration", sel);
 
     if (pCamera)
     {
@@ -279,12 +279,12 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
             wxMessageBox(_("You haven't captured any dark frames - nothing to save"));
             return;
         }
-        wxString default_path = pConfig->GetString("/darkFilePath", wxEmptyString);
+        wxString default_path = pConfig->Global.GetString("/darkFilePath", wxEmptyString);
         fname = wxFileSelector( _("Save darks (FITS Image)"), default_path,
                                 wxEmptyString, wxT("fit"),
                                 wxT("FITS files (*.fit)|*.fit"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
         if (fname.IsEmpty()) return;  // Check for canceled dialog
-        pConfig->SetString("/darkFilePath", wxFileName(fname).GetPath());
+        pConfig->Global.SetString("/darkFilePath", wxFileName(fname).GetPath());
         if (!fname.EndsWith(_T(".fit"))) fname.Append(_T(".fit"));
         if (wxFileExists(fname))
             fname = _T("!") + fname;
@@ -300,12 +300,12 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
             wxMessageBox(_("You must connect a camera before loading dark frames"));
             return;
         }
-        wxString default_path = pConfig->GetString("/darkFilePath", wxEmptyString);
+        wxString default_path = pConfig->Global.GetString("/darkFilePath", wxEmptyString);
         fname = wxFileSelector( _("Load darks (FITS Image)"), default_path,
                                (const wxChar *)NULL,
                                wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_CHANGE_DIR);
         if (fname.IsEmpty()) return;  // Check for canceled dialog
-        pConfig->SetString("/darkFilePath", wxFileName(fname).GetPath());
+        pConfig->Global.SetString("/darkFilePath", wxFileName(fname).GetPath());
 
         if (load_multi(pCamera, fname))
         {
@@ -480,7 +480,7 @@ void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event))
 void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event))
 {
     int val = Gamma_Slider->GetValue();
-    pConfig->SetInt("/Gamma", val);
+    pConfig->Profile.SetInt("/Gamma", val);
     Stretch_gamma = (double) val / 100.0;
     pGuider->UpdateImageDisplay();
 }
@@ -691,7 +691,7 @@ void MyFrame::OnLog(wxCommandEvent &evt) {
     } else if (evt.GetId() == MENU_DEBUG)
     {
         bool enable = evt.IsChecked();
-        pConfig->SetBoolean("/EnableDebugLog", enable);
+        pConfig->Global.SetBoolean("/EnableDebugLog", enable);
         Debug.SetState(enable);
     }
 }
@@ -755,7 +755,6 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
     if (dlog->ShowModal() == wxID_OK)
     {
         dlog->UnloadValues();
-        SetSampling();
         pGraphLog->UpdateControls();
     }
 }

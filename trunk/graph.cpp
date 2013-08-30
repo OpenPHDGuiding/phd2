@@ -235,7 +235,7 @@ void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt))
         if (cdialog.ShowModal() == wxID_OK) {
             cdata = cdialog.GetColourData();
             m_pClient->m_raOrDxColor = cdata.GetColour();
-            pConfig->SetString("/graph/RAColor", m_pClient->m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
+            pConfig->Global.SetString("/graph/RAColor", m_pClient->m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
             m_pLabel1->SetForegroundColour(m_pClient->m_raOrDxColor);
         }
     }
@@ -247,7 +247,7 @@ void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt))
         if (cdialog.ShowModal() == wxID_OK) {
             cdata = cdialog.GetColourData();
             m_pClient->m_decOrDyColor = cdata.GetColour();
-            pConfig->SetString("/graph/DecColor", m_pClient->m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
+            pConfig->Global.SetString("/graph/DecColor", m_pClient->m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
             m_pLabel2->SetForegroundColour(m_pClient->m_decOrDyColor);
         }
     }
@@ -279,7 +279,7 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 
     m_pClient->RecalculateTrendLines();
 
-    pConfig->SetInt("/graph/length", m_pClient->m_length);
+    pConfig->Global.SetInt("/graph/length", m_pClient->m_length);
 
     this->m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_pClient->m_length));
     this->Refresh();
@@ -287,7 +287,7 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 
 void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
 {
-    if (wxGetKeyState(WXK_SHIFT) && pFrame->GetSampling() != 1.0)
+    if (wxGetKeyState(WXK_SHIFT) && pFrame->GetCameraPixelScale() != 1.0)
     {
         if (m_pClient->m_heightUnits == UNIT_ARCSEC)
             m_pClient->m_heightUnits = UNIT_PIXELS;
@@ -303,7 +303,7 @@ void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
                 m_pClient->m_height = m_pClient->m_minHeight;
         }
 
-        pConfig->SetInt("/graph/height", m_pClient->m_height);
+        pConfig->Global.SetInt("/graph/height", m_pClient->m_height);
     }
 
     UpdateHeightButtonLabel();
@@ -425,7 +425,7 @@ void GraphLogWindow::UpdateHeightButtonLabel(void)
 {
     int val = m_pClient->m_height;
 
-    if (pFrame && pFrame->GetSampling() != 1.0 && m_pClient->m_heightUnits == UNIT_ARCSEC)
+    if (pFrame && pFrame->GetCameraPixelScale() != 1.0 && m_pClient->m_heightUnits == UNIT_ARCSEC)
         val = -val; // <0 indicates arc-sec
 
     if (m_heightButtonLabelVal != val)
@@ -434,7 +434,7 @@ void GraphLogWindow::UpdateHeightButtonLabel(void)
         {
             m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d"), m_pClient->m_height));
             wxString tip(_("Pixels per Y division."));
-            if (pFrame && pFrame->GetSampling() != 1.0)
+            if (pFrame && pFrame->GetCameraPixelScale() != 1.0)
                 tip += _(" Shift-click to display arc-sec per division.");
             m_pHeightButton->SetToolTip(tip);
         }
@@ -457,31 +457,31 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     ResetData();
     m_mode = MODE_RADEC;
 
-    if (!m_raOrDxColor.Set(pConfig->GetString("/graph/RAColor", wxEmptyString)))
+    if (!m_raOrDxColor.Set(pConfig->Global.GetString("/graph/RAColor", wxEmptyString)))
     {
         m_raOrDxColor  = wxColour(100,100,255);
-        pConfig->SetString("/graph/RAColor", m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
+        pConfig->Global.SetString("/graph/RAColor", m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
     }
-    if (!m_decOrDyColor.Set(pConfig->GetString("/graph/DecColor", wxEmptyString)))
+    if (!m_decOrDyColor.Set(pConfig->Global.GetString("/graph/DecColor", wxEmptyString)))
     {
         m_decOrDyColor = wxColour(255,0,0);
-        pConfig->SetString("/graph/DecColor", m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
+        pConfig->Global.SetString("/graph/DecColor", m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
     }
 
-    int minLength = pConfig->GetInt("/graph/minLength", DefaultMinLength);
+    int minLength = pConfig->Global.GetInt("/graph/minLength", DefaultMinLength);
     SetMinLength(minLength);
 
-    int maxLength = pConfig->GetInt("/graph/maxLength", DefaultMaxLength);
+    int maxLength = pConfig->Global.GetInt("/graph/maxLength", DefaultMaxLength);
     SetMaxLength(maxLength);
 
-    int minHeight = pConfig->GetInt("/graph/minHeight", DefaultMinHeight);
+    int minHeight = pConfig->Global.GetInt("/graph/minHeight", DefaultMinHeight);
     SetMinHeight(minHeight);
 
-    int maxHeight = pConfig->GetInt("/graph/maxHeight", DefaultMaxHeight);
+    int maxHeight = pConfig->Global.GetInt("/graph/maxHeight", DefaultMaxHeight);
     SetMaxHeight(maxHeight);
 
-    m_length = pConfig->GetInt("/graph/length", m_minLength * 2);
-    m_height = pConfig->GetInt("/graph/height", m_minHeight);
+    m_length = pConfig->Global.GetInt("/graph/length", m_minLength * 2);
+    m_height = pConfig->Global.GetInt("/graph/height", m_minHeight);
     m_heightUnits = UNIT_ARCSEC; // preferred units, will still display pixels if pixel scale ("sampling") not available
 
     m_showTrendlines = false;
@@ -527,7 +527,7 @@ bool GraphLogClientWindow::SetMinLength(int minLength)
         m_minLength = DefaultMinLength;
     }
 
-    pConfig->SetInt("/graph/minLength", m_minLength);
+    pConfig->Global.SetInt("/graph/minLength", m_minLength);
 
     return bError;
 }
@@ -552,7 +552,7 @@ bool GraphLogClientWindow::SetMaxLength(int maxLength)
         m_history.resize(DefaultMaxLength);
     }
 
-    pConfig->SetInt("/graph/maxLength", m_history.capacity());
+    pConfig->Global.SetInt("/graph/maxLength", m_history.capacity());
 
     return bError;
 }
@@ -576,7 +576,7 @@ bool GraphLogClientWindow::SetMinHeight(int minHeight)
         m_minHeight = DefaultMinHeight;
     }
 
-    pConfig->SetInt("/graph/minHeight", m_minHeight);
+    pConfig->Global.SetInt("/graph/minHeight", m_minHeight);
 
     return bError;
 }
@@ -601,7 +601,7 @@ bool GraphLogClientWindow::SetMaxHeight(int maxHeight)
         m_maxHeight = DefaultMaxHeight;
     }
 
-    pConfig->SetInt("/graph/maxHeight", m_maxHeight);
+    pConfig->Global.SetInt("/graph/maxHeight", m_maxHeight);
 
     return bError;
 }
@@ -752,7 +752,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     const int xPixelsPerDivision = size.x/2/(xDivisions+1);
     const int yPixelsPerDivision = size.y/2/(m_yDivisions+1);
 
-    const double sampling = pFrame->GetSampling();
+    const double sampling = pFrame->GetCameraPixelScale();
     GRAPH_UNITS units = m_heightUnits;
     if (sampling == 1.0)
     {

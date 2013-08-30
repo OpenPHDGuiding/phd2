@@ -61,18 +61,23 @@ END_EVENT_TABLE()
 GuiderOneStar::GuiderOneStar(wxWindow *parent):
     Guider(parent, XWinSize, YWinSize)
 {
-    double massChangeThreshold  = pConfig->GetDouble("/guider/onestar/MassChangeThreshold",
-            DefaultMassChangeThreshold);
-    SetMassChangeThreshold(massChangeThreshold);
-
-    int searchRegion = pConfig->GetInt("/guider/onestar/SearchRegion", DefaultSearchRegion);
-    SetSearchRegion(searchRegion);
-
     SetState(STATE_UNINITIALIZED);
 }
 
 GuiderOneStar::~GuiderOneStar()
 {
+}
+
+void GuiderOneStar::LoadProfileSettings(void)
+{
+    Guider::LoadProfileSettings();
+
+    double massChangeThreshold  = pConfig->Profile.GetDouble("/guider/onestar/MassChangeThreshold",
+            DefaultMassChangeThreshold);
+    SetMassChangeThreshold(massChangeThreshold);
+
+    int searchRegion = pConfig->Profile.GetInt("/guider/onestar/SearchRegion", DefaultSearchRegion);
+    SetSearchRegion(searchRegion);
 }
 
 double GuiderOneStar::GetMassChangeThreshold(void)
@@ -102,7 +107,7 @@ bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
     }
 
     m_badMassCount = 0;
-    pConfig->SetDouble("/guider/onestar/MassChangeThreshold", m_massChangeThreshold);
+    pConfig->Profile.SetDouble("/guider/onestar/MassChangeThreshold", m_massChangeThreshold);
 
     return bError;
 }
@@ -131,7 +136,7 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
         m_searchRegion = DefaultSearchRegion;
     }
 
-    pConfig->SetInt("/guider/onestar/SearchRegion", m_searchRegion);
+    pConfig->Profile.SetInt("/guider/onestar/SearchRegion", m_searchRegion);
 
     return bError;
 }

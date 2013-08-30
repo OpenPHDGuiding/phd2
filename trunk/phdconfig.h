@@ -65,19 +65,20 @@
  *
  */
 
-class PhdConfig
+class PhdConfig;
+
+class ConfigSection
 {
-    static const long CURRENT_CONFIG_VERSION=2001;
-    long m_configVersion;
-
     wxConfig *m_pConfig;
-public:
-    PhdConfig(void);
-    PhdConfig(const wxString& baseConfigName, int instance);
-    ~PhdConfig(void);
+    wxString m_prefix;
 
-    void Initialize(const wxString& baseConfigName, int instance);
-    void DeleteAll(void);
+    friend class PhdConfig;
+
+public:
+    ConfigSection();
+    ~ConfigSection();
+
+    void SelectProfile(int profileId);
 
     bool     GetBoolean(const char *pName, bool defaultValue);
     wxString GetString(const char *pName, wxString defaultValue);
@@ -92,6 +93,40 @@ public:
     void SetInt(const char *pName, int value);
 
     bool HasEntry(const wxString& name) const;
+};
+
+class PhdConfig
+{
+    static const long CURRENT_CONFIG_VERSION=2001;
+    long m_configVersion;
+    int m_currentProfileId;
+
+public:
+    PhdConfig(void);
+    PhdConfig(const wxString& baseConfigName, int instance);
+    ~PhdConfig(void);
+
+    static wxString DefaultProfileName;
+
+    void Initialize(const wxString& baseConfigName, int instance);
+    void DeleteAll(void);
+
+    void InitializeProfile(void);
+    wxString GetCurrentProfile(void);
+    bool SetCurrentProfile(const wxString& name);
+
+    int GetProfileId(const wxString& name);
+    int FirstProfile(void);
+    wxString GetProfileName(int profileId);
+    bool CreateProfile(const wxString& name);
+    bool CloneProfile(const wxString& dest, const wxString& source);
+    void DeleteProfile(const wxString& name);
+    bool RenameProfile(const wxString& oldname, const wxString& newname);
+    wxArrayString ProfileNames(void);
+    unsigned int NumProfiles(void);
+
+    ConfigSection Global;
+    ConfigSection Profile;
 };
 
 #endif /* PHDCONFIG_H_INCLUDED */

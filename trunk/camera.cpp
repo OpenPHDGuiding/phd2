@@ -165,13 +165,13 @@ GuideCamera::GuideCamera(void)
     HasShutter=false;
     ShutterState=false;
     HasSubframes=false;
-    UseSubframes = pConfig->GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
+    UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
 
     CurrentDarkFrame = NULL;
 
-    int cameraGain = pConfig->GetInt("/camera/gain", DefaultGuideCameraGain);
+    int cameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
     SetCameraGain(cameraGain);
-    double pixelSize = pConfig->GetDouble("/camera/pixelsize", DefaultPixelSize);
+    double pixelSize = pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
     SetCameraPixelSize(pixelSize);
 }
 
@@ -549,7 +549,7 @@ bool GuideCamera::SetCameraGain(int cameraGain)
         GuideCameraGain = DefaultGuideCameraGain;
     }
 
-    pConfig->SetInt("/camera/gain", GuideCameraGain);
+    pConfig->Profile.SetInt("/camera/gain", GuideCameraGain);
 
     return bError;
 }
@@ -578,17 +578,14 @@ bool GuideCamera::SetCameraPixelSize(float pixel_size)
         PixelSize = DefaultPixelSize;
     }
 
-    pConfig->SetDouble("/camera/pixelsize", PixelSize);
+    pConfig->Profile.SetDouble("/camera/pixelsize", PixelSize);
 
     return bError;
 }
 
 ConfigDialogPane * GuideCamera::GetConfigDialogPane(wxWindow *pParent)
 {
-    //if (pCamera->HasSubframes || pCamera->HasGainControl || pCamera->HasDelayParam || pCamera->HasPortNum || pCamera->PixelSize == 0)
-        return new CameraConfigDialogPane(pParent, this);
-
-    //return NULL;    // No camera setting
+    return new CameraConfigDialogPane(pParent, this);
 }
 
 GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera)
@@ -744,7 +741,7 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
     if (m_pCamera->HasSubframes)
     {
         m_pCamera->UseSubframes = m_pUseSubframes->GetValue();
-        pConfig->SetBoolean("/camera/UseSubframes", m_pCamera->UseSubframes);
+        pConfig->Profile.SetBoolean("/camera/UseSubframes", m_pCamera->UseSubframes);
     }
 
     if (m_pCamera->HasGainControl)
