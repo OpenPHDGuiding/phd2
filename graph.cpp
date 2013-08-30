@@ -312,12 +312,11 @@ void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
 
 void GraphLogWindow::SetState(bool is_active) {
     this->m_visible = is_active;
-    this->Show(is_active);
     if (is_active)
     {
-        //UpdateControls();
-        Refresh();
+        UpdateControls();
     }
+    this->Show(is_active);
 }
 
 void GraphLogWindow::AppendData(float dx, float dy, float RA, float Dec)
@@ -350,7 +349,7 @@ void GraphLogWindow::UpdateControls()
         m_pScopePane->Destroy();
     }
 
-    if (pMount)
+    if (pMount && pMount->IsConnected())
     {
         m_pXControlPane = pMount->GetXGuideAlgorithmControlPane(this);
         m_pYControlPane = pMount->GetYGuideAlgorithmControlPane(this);
@@ -379,6 +378,7 @@ void GraphLogWindow::UpdateControls()
     }
 
     m_pControlSizer->Layout();
+    Refresh();
 }
 
 void GraphLogWindow::OnButtonClear(wxCommandEvent& WXUNUSED(evt))
