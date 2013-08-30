@@ -52,22 +52,22 @@ StepGuider::StepGuider(void)
 
     wxString prefix = "/" + GetMountClassName();
 
-    int samplesToAverage = pConfig->GetInt(prefix + "/SamplesToAverage", DefaultSamplesToAverage);
+    int samplesToAverage = pConfig->Profile.GetInt(prefix + "/SamplesToAverage", DefaultSamplesToAverage);
     SetSamplesToAverage(samplesToAverage);
 
-    int bumpPercentage = pConfig->GetInt(prefix + "/BumpPercentage", DefaultBumpPercentage);
+    int bumpPercentage = pConfig->Profile.GetInt(prefix + "/BumpPercentage", DefaultBumpPercentage);
     SetBumpPercentage(bumpPercentage);
 
-    int bumpMaxStepsPerCycle = pConfig->GetDouble(prefix + "/BumpMaxStepsPerCycle", DefaultBumpMaxStepsPerCycle);
+    int bumpMaxStepsPerCycle = pConfig->Profile.GetDouble(prefix + "/BumpMaxStepsPerCycle", DefaultBumpMaxStepsPerCycle);
     SetBumpMaxStepsPerCycle(bumpMaxStepsPerCycle);
 
-    int calibrationStepsPerIteration = pConfig->GetInt(prefix + "/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
+    int calibrationStepsPerIteration = pConfig->Profile.GetInt(prefix + "/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
     SetCalibrationStepsPerIteration(calibrationStepsPerIteration);
 
-    int xGuideAlgorithm = pConfig->GetInt(prefix + "/XGuideAlgorithm", DefaultGuideAlgorithm);
+    int xGuideAlgorithm = pConfig->Profile.GetInt(prefix + "/XGuideAlgorithm", DefaultGuideAlgorithm);
     SetXGuideAlgorithm(xGuideAlgorithm);
 
-    int yGuideAlgorithm = pConfig->GetInt(prefix + "/YGuideAlgorithm", DefaultGuideAlgorithm);
+    int yGuideAlgorithm = pConfig->Profile.GetInt(prefix + "/YGuideAlgorithm", DefaultGuideAlgorithm);
     SetYGuideAlgorithm(yGuideAlgorithm);
 }
 
@@ -210,7 +210,7 @@ bool StepGuider::SetSamplesToAverage(int samplesToAverage)
         m_samplesToAverage = DefaultSamplesToAverage;
     }
 
-    pConfig->SetInt("/stepguider/SamplesToAverage", m_samplesToAverage);
+    pConfig->Profile.SetInt("/stepguider/SamplesToAverage", m_samplesToAverage);
 
     return bError;
 }
@@ -240,7 +240,7 @@ bool StepGuider::SetBumpPercentage(int bumpPercentage, bool updateGraph)
         m_bumpPercentage = DefaultBumpPercentage;
     }
 
-    pConfig->SetInt("/stepguider/BumpPercentage", m_bumpPercentage);
+    pConfig->Profile.SetInt("/stepguider/BumpPercentage", m_bumpPercentage);
 
     if (updateGraph)
     {
@@ -275,7 +275,7 @@ bool StepGuider::SetBumpMaxStepsPerCycle(double bumpStepsPerCycle)
         m_bumpMaxStepsPerCycle = DefaultBumpMaxStepsPerCycle;
     }
 
-    pConfig->SetDouble("/stepguider/BumpMaxStepsPerCycle", m_bumpMaxStepsPerCycle);
+    pConfig->Profile.SetDouble("/stepguider/BumpMaxStepsPerCycle", m_bumpMaxStepsPerCycle);
 
     return bError;
 }
@@ -305,7 +305,7 @@ bool StepGuider::SetCalibrationStepsPerIteration(int calibrationStepsPerIteratio
         m_calibrationStepsPerIteration = DefaultCalibrationStepsPerIteration;
     }
 
-    pConfig->SetInt("/stepguider/CalibrationStepsPerIteration", m_calibrationStepsPerIteration);
+    pConfig->Profile.SetInt("/stepguider/CalibrationStepsPerIteration", m_calibrationStepsPerIteration);
 
     return bError;
 }

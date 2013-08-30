@@ -45,10 +45,10 @@ static const double DefaultSlopeWeight = 5.0;
 GuideAlgorithmLowpass::GuideAlgorithmLowpass(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis)
 {
-    double minMove     = pConfig->GetDouble(GetConfigPath() + "/minMove", DefaultMinMove);
+    double minMove     = pConfig->Profile.GetDouble(GetConfigPath() + "/minMove", DefaultMinMove);
     SetMinMove(minMove);
 
-    double slopeWeight = pConfig->GetDouble(GetConfigPath() + "/SlopeWeight", DefaultSlopeWeight);
+    double slopeWeight = pConfig->Profile.GetDouble(GetConfigPath() + "/SlopeWeight", DefaultSlopeWeight);
     SetSlopeWeight(slopeWeight);
 
     reset();
@@ -134,7 +134,7 @@ bool GuideAlgorithmLowpass::SetMinMove(double minMove)
         m_minMove = DefaultMinMove;
     }
 
-    pConfig->SetDouble(GetConfigPath() + "/minMove", m_minMove);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/minMove", m_minMove);
 
     return bError;
 }
@@ -145,27 +145,28 @@ double GuideAlgorithmLowpass::GetSlopeWeight(void)
 }
 
 bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
-{    bool bError = false;
-
-try
 {
-    if (slopeWeight < 0.0)
+    bool bError = false;
+
+    try
     {
-        throw ERROR_INFO("invalid slopeWeight");
+        if (slopeWeight < 0.0)
+        {
+            throw ERROR_INFO("invalid slopeWeight");
+        }
+
+        m_slopeWeight = slopeWeight;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_slopeWeight = DefaultSlopeWeight;
     }
 
-    m_slopeWeight = slopeWeight;
-}
-catch (wxString Msg)
-{
-    POSSIBLY_UNUSED(Msg);
-    bError = true;
-    m_slopeWeight = DefaultSlopeWeight;
-}
+    pConfig->Profile.SetDouble(GetConfigPath() + "/SlopeWeight", m_slopeWeight);
 
-pConfig->SetDouble(GetConfigPath() + "/SlopeWeight", m_slopeWeight);
-
-return bError;
+    return bError;
 }
 
 wxString GuideAlgorithmLowpass::GetSettingsSummary() {

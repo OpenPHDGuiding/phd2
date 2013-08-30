@@ -71,7 +71,7 @@ bool Camera_LESerialWebcamClass::Connect()
 
         wxArrayString serialPorts = m_pSerialPort->GetSerialPortList();
 
-        wxString lastSerialPort = pConfig->GetString("/camera/serialLEWebcam/serialport", "");
+        wxString lastSerialPort = pConfig->Profile.GetString("/camera/serialLEWebcam/serialport", "");
         int resp = serialPorts.Index(lastSerialPort);
 
         resp = wxGetSingleChoiceIndex(_("Select serial port"),_("Serial Port"), serialPorts,
@@ -83,7 +83,7 @@ bool Camera_LESerialWebcamClass::Connect()
             throw ERROR_INFO("LESerialWebcamClass::Connect: serial port connect failed");
         }
 
-        pConfig->SetString("/camera/serialLEWebcam/serialport", serialPorts[resp]);
+        pConfig->Profile.SetString("/camera/serialLEWebcam/serialport", serialPorts[resp]);
 
         if (Camera_OpenCVClass::Connect())
         {

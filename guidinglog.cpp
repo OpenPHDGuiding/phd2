@@ -61,7 +61,6 @@ bool GuidingLog::EnableLogging(void)
             {
                 wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 
-                // wxString fileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_GuideLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
                 wxString fileName = GetLogDir () + PATHSEPSTR + "PHD_GuideLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
 
                 if (!m_file.Open(fileName, "w"))
@@ -78,7 +77,7 @@ bool GuidingLog::EnableLogging(void)
             m_enabled = true;
 
             // persist state
-            pConfig->SetBoolean("/LoggingMode", m_enabled);
+            pConfig->Global.SetBoolean("/LoggingMode", m_enabled);
 
             // dump guiding header if logging enabled during guide
             if (pFrame && pFrame->pGuider->GetState() == STATE_GUIDING)
@@ -115,7 +114,7 @@ bool GuidingLog::DisableLogging(void)
         }
         m_enabled = false;
         // persist state
-        pConfig->SetBoolean("/LoggingMode", m_enabled);
+        pConfig->Global.SetBoolean("/LoggingMode", m_enabled);
     }
     catch (wxString Msg)
     {
@@ -140,7 +139,7 @@ bool GuidingLog::ChangeDirLog (wxString newdir)
     }
     if (!SetLogDir (newdir))
     {
-        wxMessageBox(wxString::Format("invalid directory name %s, log directory unchanged", newdir));
+        wxMessageBox(wxString::Format("invalid folder name %s, log folder unchanged", newdir));
         bOk = false;
     }
     if (bEnabled)                    // if SetLogDir failed, no harm no foul, stay with original. Otherwise

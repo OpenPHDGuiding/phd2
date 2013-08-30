@@ -48,13 +48,13 @@ void TestGuide() {
 static void load_calibration(Mount *mnt)
 {
     wxString prefix = "/" + mnt->GetMountClassName() + "/calibration/";
-    if (!pConfig->HasEntry(prefix + "timestamp"))
+    if (!pConfig->Profile.HasEntry(prefix + "timestamp"))
         return;
-    double xRate = pConfig->GetDouble(prefix + "xRate", 1.0);
-    double yRate = pConfig->GetDouble(prefix + "yRate", 1.0);
-    double xAngle = pConfig->GetDouble(prefix + "xAngle", 0.0);
-    double yAngle = pConfig->GetDouble(prefix + "yAngle", M_PI/2.0);
-    double declination = pConfig->GetDouble(prefix + "declination", 0.0);
+    double xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
+    double yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+    double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
+    double yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", M_PI/2.0);
+    double declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
     mnt->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
 }
 
@@ -76,7 +76,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
     }
     else if (evt.GetId() == EEGG_RESTORECAL)
     {
-        wxString savedCal = pConfig->GetString("/scope/calibration/timestamp", wxEmptyString);
+        wxString savedCal = pConfig->Profile.GetString("/scope/calibration/timestamp", wxEmptyString);
         if (savedCal.IsEmpty())
         {
             wxMessageBox(_("There is no calibration data available."));

@@ -178,6 +178,8 @@ public:
 private:
     virtual void InvalidateLockPosition(void);
     virtual void UpdateLockPosition(void);
+public:
+    virtual void LoadProfileSettings(void);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 private:

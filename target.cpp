@@ -117,7 +117,7 @@ void TargetWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
             m_pClient->m_length = m_pClient->m_minLength;
     }
 
-    pConfig->SetInt("/target/length", m_pClient->m_length);
+    pConfig->Global.SetInt("/target/length", m_pClient->m_length);
 
     LengthButton->SetLabel(wxString::Format(_T("%3d"),m_pClient->m_length));
     Refresh();
@@ -134,7 +134,7 @@ void TargetWindow::OnButtonZoomIn(wxCommandEvent& evt)
     if (m_pClient->m_zoom < 3)
     {
         m_pClient->m_zoom *= 2;
-        pConfig->SetDouble("/target/zoom", m_pClient->m_zoom);
+        pConfig->Global.SetDouble("/target/zoom", m_pClient->m_zoom);
     }
     Refresh();
 }
@@ -144,7 +144,7 @@ void TargetWindow::OnButtonZoomOut(wxCommandEvent& evt)
     if (m_pClient->m_zoom > MIN_ZOOM)
     {
         m_pClient->m_zoom /= 2.0;
-        pConfig->SetDouble("/target/zoom", m_pClient->m_zoom);
+        pConfig->Global.SetDouble("/target/zoom", m_pClient->m_zoom);
     }
     Refresh();
 }
@@ -160,8 +160,8 @@ TargetClient::TargetClient(wxWindow *parent) :
     m_maxLength = 400;
 
     m_nItems = 0;
-    m_length = pConfig->GetInt("/target/length", 100);
-    m_zoom = pConfig->GetDouble("/target/zoom", 1.0);
+    m_length = pConfig->Global.GetInt("/target/length", 100);
+    m_zoom = pConfig->Global.GetDouble("/target/zoom", 1.0);
     if (m_zoom < MIN_ZOOM)
         m_zoom = MIN_ZOOM;
 }
@@ -191,7 +191,7 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     //dc.SetBackground(wxColour(10,0,0));
     dc.Clear();
 
-    double sampling = pFrame->GetSampling();
+    double sampling = pFrame->GetCameraPixelScale();
 
     wxColour Grey(128,128,128);
     wxPen GreySolidPen = wxPen(Grey,1, wxSOLID);

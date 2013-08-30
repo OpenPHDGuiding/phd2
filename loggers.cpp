@@ -59,7 +59,7 @@ wxString loggers::GetLogDir (void)
 
         if (pConfig)
         {
-            srslt = pConfig->GetString ("/frame/LogDir", "");
+            srslt = pConfig->Global.GetString ("/frame/LogDir", "");
             if (srslt.length() == 0)
                 srslt = stdpath.GetDocumentsDir();                // user has never even looked at it
             else
@@ -106,7 +106,7 @@ bool loggers::SetLogDir (wxString newdir)
     if (bOk)
     {
         m_CurrentDir = newdir;
-        pConfig->SetString ("/frame/logdir", newdir);
+        pConfig->Global.SetString ("/frame/logdir", newdir);
     }
 
     return (bOk);

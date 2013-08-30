@@ -76,7 +76,7 @@ bool Camera_LEParallelWebcamClass::Connect()
 
         wxArrayString parallelPorts = m_pParallelPort->GetParallelPortList();
 
-        wxString lastParallelPort = pConfig->GetString("/camera/parallelLEWebcam/parallelport", "");
+        wxString lastParallelPort = pConfig->Profile.GetString("/camera/parallelLEWebcam/parallelport", "");
         int resp = parallelPorts.Index(lastParallelPort);
 
         if (resp == wxNOT_FOUND)
@@ -95,7 +95,7 @@ bool Camera_LEParallelWebcamClass::Connect()
             throw ERROR_INFO("LEParallelWebcamClass::Connect: parallel port connect failed");
         }
 
-        pConfig->SetString("/camera/parallelLEWebcam/parallelport", parallelPorts[resp]);
+        pConfig->Profile.SetString("/camera/parallelLEWebcam/parallelport", parallelPorts[resp]);
 
         if (Camera_LEWebcamClass::Connect())
         {

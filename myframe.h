@@ -124,7 +124,7 @@ private:
     bool m_continueCapturing; // should another image be captured?
 
 public:
-    MyFrame(const wxString& title, int instanceNumber, wxLocale *locale);
+    MyFrame(int instanceNumber, wxLocale *locale);
     virtual ~MyFrame();
 
     Guider *pGuider;
@@ -197,6 +197,8 @@ public:
 #endif
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
+    void LoadProfileSettings(void);
+    void UpdateTitle(void);
 
     bool StartServer(bool state);
     bool FlipRACal();
@@ -242,8 +244,7 @@ public:
     void UpdateButtonsStatus(void);
     void UpdateCalibrationStatus(void);
 
-    void SetSampling(void);
-    double GetSampling(void);
+    double GetCameraPixelScale(void);
 
     virtual void SetStatusText(const wxString& text, int number=0, int msToDisplay = 0);
     virtual wxString GetSettingsSummary();
@@ -313,6 +314,12 @@ enum {
     BUTTON_ADVANCED,
     BUTTON_CAM_PROPERTIES,
     GEAR_DIALOG_IDS_BEGIN,
+        GEAR_PROFILES,
+        GEAR_PROFILE_MANAGE,
+        GEAR_PROFILE_NEW,
+        GEAR_PROFILE_DELETE,
+        GEAR_PROFILE_RENAME,
+
         GEAR_CHOICE_CAMERA,
         GEAR_BUTTON_CONNECT_CAMERA,
         GEAR_BUTTON_DISCONNECT_CAMERA,

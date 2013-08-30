@@ -174,7 +174,7 @@ static bool ChooseASCOMCamera(BSTR *res)
     }
 
     // Look in Registry to see if there is a default
-    wxString wx_ProgID = pConfig->GetString("/camera/ASCOMlate/camera_id", _T(""));
+    wxString wx_ProgID = pConfig->Profile.GetString("/camera/ASCOMlate/camera_id", _T(""));
     BSTR bstr_ProgID = wxBasicString(wx_ProgID).Get();
 
     VARIANT vchoice;
@@ -188,7 +188,7 @@ static bool ChooseASCOMCamera(BSTR *res)
         return false; // use hit cancel
 
     // Save name of cam
-    pConfig->SetString("/camera/ASCOMlate/camera_id", vchoice.bstrVal);
+    pConfig->Profile.SetString("/camera/ASCOMlate/camera_id", vchoice.bstrVal);
 
     *res = vchoice.bstrVal;
     return true;

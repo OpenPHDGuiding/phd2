@@ -57,9 +57,6 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 
     m_polarAlignCircleRadius = 0;
 
-    bool scaleImage = pConfig->GetBoolean("/guider/ScaleImage", DefaultScaleImage);
-    SetScaleImage(scaleImage);
-
     SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
 }
@@ -68,6 +65,12 @@ Guider::~Guider(void)
 {
     delete m_displayedImage;
     delete m_pCurrentImage;
+}
+
+void Guider::LoadProfileSettings(void)
+{
+    bool scaleImage = pConfig->Profile.GetBoolean("/guider/ScaleImage", DefaultScaleImage);
+    SetScaleImage(scaleImage);
 }
 
 bool Guider::IsPaused()
@@ -142,7 +145,7 @@ bool Guider::SetScaleImage(bool newScaleValue)
         bError = true;
     }
 
-    pConfig->SetBoolean("/guider/ScaleImage", m_scaleImage);
+    pConfig->Profile.SetBoolean("/guider/ScaleImage", m_scaleImage);
 
     return bError;
 }

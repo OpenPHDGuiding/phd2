@@ -90,6 +90,9 @@ public:
     virtual wxString GetSettingsSummary();
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+
+    virtual void LoadProfileSettings(void);
+
 private:
     virtual void InvalidateCurrentPosition(void);
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage);
