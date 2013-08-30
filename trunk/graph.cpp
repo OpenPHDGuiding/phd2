@@ -465,7 +465,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     if (!m_decOrDyColor.Set(pConfig->GetString("/graph/DecColor", wxEmptyString)))
     {
         m_decOrDyColor = wxColour(255,0,0);
-        pConfig->SetString("/graph/DecColor", m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
+        pConfig->SetString("/graph/DecColor", m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
     }
 
     int minLength = pConfig->GetInt("/graph/minLength", DefaultMinLength);
