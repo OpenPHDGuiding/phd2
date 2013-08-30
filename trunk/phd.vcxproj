@@ -168,6 +168,7 @@
     <ClCompile Include="about_dialog.cpp" />
     <ClCompile Include="advanced_dialog.cpp" />
     <ClCompile Include="ascom_common.cpp" />
+    <ClCompile Include="calstep_dialog.cpp" />
     <ClCompile Include="cameras\ArtemisHSCAPI.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -220,6 +221,7 @@
     <ClCompile Include="guide_algorithm_resistswitch.cpp" />
     <ClCompile Include="guidinglog.cpp" />
     <ClCompile Include="image_math.cpp" />
+    <ClCompile Include="loggers.cpp" />
     <ClCompile Include="messagebox_proxy.cpp" />
     <ClCompile Include="mount.cpp" />
     <ClCompile Include="myframe.cpp" />
@@ -270,6 +272,7 @@
     <ClInclude Include="about_dialog.h" />
     <ClInclude Include="advanced_dialog.h" />
     <ClInclude Include="ascom_common.h" />
+    <ClInclude Include="calstep_dialog.h" />
     <ClInclude Include="cam_ascomlate.h" />
     <ClInclude Include="cam_Atik16.h" />
     <ClInclude Include="cam_firewire.h" />
@@ -321,6 +324,7 @@
     <ClInclude Include="guide_algorithm_resistswitch.h" />
     <ClInclude Include="guidinglog.h" />
     <ClInclude Include="image_math.h" />
+    <ClInclude Include="loggers.h" />
     <ClInclude Include="messagebox_proxy.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="myframe.h" />

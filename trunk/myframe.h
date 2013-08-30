@@ -78,6 +78,8 @@ protected:
         wxChoice* m_pLanguage;
         wxArrayInt m_LanguageIDs;
         int m_oldLanguageChoice;
+        wxTextCtrl *m_pLogDir;
+
     public:
         MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
         virtual ~MyFrameConfigDialogPane(void);

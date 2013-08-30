@@ -73,7 +73,7 @@ bool DebugLog::GetState(void)
     return m_bEnabled;
 }
 
-bool DebugLog::Init(const char *pName, bool bEnable)
+bool DebugLog::Init(const char *pName, bool bEnable, bool bForceOpen)
 {
     wxCriticalSectionLocker lock(m_criticalSection);
 
@@ -85,12 +85,13 @@ bool DebugLog::Init(const char *pName, bool bEnable)
         m_bEnabled = false;
     }
 
-    if (bEnable && m_pPathName.IsEmpty())
+    if (bEnable && (m_pPathName.IsEmpty() || bForceOpen))
     {
         wxStandardPathsBase& stdpath = wxStandardPaths::Get();
         wxDateTime now = wxDateTime::UNow();
 
-        m_pPathName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
+        // m_pPathName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
+        m_pPathName = GetLogDir() + PATHSEPSTR + "PHD_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
 
         if (!wxFFile::Open(m_pPathName, "a"))
         {
@@ -101,6 +102,21 @@ bool DebugLog::Init(const char *pName, bool bEnable)
     m_bEnabled = bEnable;
 
     return m_bEnabled;
+}
+
+bool DebugLog::ChangeDirLog (wxString newdir)
+{
+    bool bEnabled = GetState ();
+    bool bOk = true;
+
+    if (!SetLogDir (newdir))
+    {
+        wxMessageBox(wxString::Format("invalid directory name %s, debug log directory unchanged", newdir));
+        bOk = false;
+    }
+
+    Init("debug", bEnabled, true);                // lots of side effects, but all good...
+    return (bOk);
 }
 
 wxString DebugLog::AddLine(const char *format, ...)

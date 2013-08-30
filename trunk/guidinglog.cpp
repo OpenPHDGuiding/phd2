@@ -61,7 +61,8 @@ bool GuidingLog::EnableLogging(void)
             {
                 wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 
-                wxString fileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_GuideLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
+                // wxString fileName = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_GuideLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
+                wxString fileName = GetLogDir () + PATHSEPSTR + "PHD_GuideLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
 
                 if (!m_file.Open(fileName, "w"))
                 {
@@ -123,6 +124,28 @@ bool GuidingLog::DisableLogging(void)
     }
 
     return bError;
+}
+
+bool GuidingLog::ChangeDirLog (wxString newdir)
+{
+    bool bEnabled = IsEnabled ();
+    bool bOk = true;
+
+    if (bEnabled)
+    {
+        DisableLogging ();                // shut down the old log in its existing location
+        Close();
+        m_file.Close();                    // above doesn't *really* close the file
+
+    }
+    if (!SetLogDir (newdir))
+    {
+        wxMessageBox(wxString::Format("invalid directory name %s, log directory unchanged", newdir));
+        bOk = false;
+    }
+    if (bEnabled)                    // if SetLogDir failed, no harm no foul, stay with original. Otherwise
+        EnableLogging ();            // start fresh...
+    return (bOk);
 }
 
 bool GuidingLog::IsEnabled(void)

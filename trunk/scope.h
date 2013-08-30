@@ -73,6 +73,8 @@ protected:
         wxSpinCtrl *m_pMaxRaDuration;
         wxSpinCtrl *m_pMaxDecDuration;
         wxChoice   *m_pDecMode;
+        wxButton   *m_pAutoDuration;
+        void OnAutoDuration (wxCommandEvent& evt);                // auto calibration feature
 
         public:
         ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
@@ -97,6 +99,7 @@ protected:
         void OnMaxRaDurationSpinCtrl(wxSpinEvent& evt);
         void OnMaxDecDurationSpinCtrl(wxSpinEvent& evt);
         void OnDecModeChoice(wxCommandEvent& evt);
+
     };
 
     virtual int GetCalibrationDuration(void);

@@ -1271,6 +1271,13 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
             wxSize(width+35, -1), languages);
     DoAdd(_("Language"), m_pLanguage,
           wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
+
+    // Log directory edit box: Need a wide text box so put the label above it
+    wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, _("Default log directory") + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
+    DoAdd (pLabel);
+    m_pLogDir = new wxTextCtrl(pParent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width+30, -1));
+    m_pLogDir->SetToolTip (_("Directory for guide/debug logs; empty string to restore default value"));
+    DoAdd (m_pLogDir);
 }
 
 MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
@@ -1292,6 +1299,8 @@ void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
     int language = m_pFrame->GetLanguage();
     m_oldLanguageChoice = m_LanguageIDs.Index(language);
     m_pLanguage->SetSelection(m_oldLanguageChoice);
+
+    m_pLogDir->SetValue (GuideLog.GetLogDir ());
 }
 
 void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
@@ -1334,6 +1343,13 @@ void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
         if (m_oldLanguageChoice != m_LanguageIDs[language])
         {
             wxMessageBox(_("You must restart PHD for the language change to take effect."),_("Info"));
+        }
+
+        wxString newdir = m_pLogDir->GetValue ();
+        if (!newdir.IsSameAs (GuideLog.GetLogDir()))
+        {
+            GuideLog.ChangeDirLog (newdir);
+            Debug.ChangeDirLog (newdir);
         }
     }
     catch (wxString Msg)
