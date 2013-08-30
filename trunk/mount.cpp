@@ -58,7 +58,7 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, wxString 
     DoAdd(m_pEnableGuide, _("Should mount guide commands be issued"));
 
     wxString xAlgorithms[] = {
-        _("Identity"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch")
+        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch")
     };
 
     width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
@@ -81,7 +81,7 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, wxString 
     }
 
     wxString yAlgorithms[] = {
-        _("Identity"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch")
+        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch")
     };
 
     width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
@@ -891,7 +891,7 @@ double Mount::GetDeclination(void)
 wxString Mount::GetSettingsSummary() {
     // return a loggable summary of current mount settings
     wxString algorithms[] = {
-        _T("Identity"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
+        _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
     return wxString::Format("Mount %s, %s connected, guiding %s, %s\n",
         m_Name,
