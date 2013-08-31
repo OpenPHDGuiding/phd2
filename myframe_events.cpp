@@ -861,3 +861,14 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
     }
 }
 
+void MyFrame::OnCharHook(wxKeyEvent& evt)
+{
+    if (evt.GetKeyCode() == 'B' && !evt.HasModifiers())
+    {
+        pGuider->ToggleShowBookmarks();
+    }
+    else
+    {
+        evt.Skip();
+    }
+}

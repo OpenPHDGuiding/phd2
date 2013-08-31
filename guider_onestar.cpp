@@ -160,12 +160,12 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
 
         if ((x <= 0) || (x >= pImage->Size.x))
         {
-            throw ERROR_INFO("invalid y value");
+            throw ERROR_INFO("invalid x value");
         }
 
         if ((y <= 0) || (y >= pImage->Size.x))
         {
-            throw ERROR_INFO("invalid x value");
+            throw ERROR_INFO("invalid y value");
         }
 
         bError = m_star.Find(pImage, m_searchRegion, x, y);
@@ -342,10 +342,44 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
     return bError;
 }
 
+bool IsClose(const wxPoint& p1, const wxPoint& p2, int tolerance)
+{
+    return abs(p1.x - p2.x) <= tolerance &&
+        abs(p1.y - p2.y) <= tolerance;
+}
+
+std::vector<wxPoint>::iterator FindBookmark(const wxPoint& pos, std::vector<wxPoint>& vec)
+{
+    enum { TOLERANCE = 6 };
+    std::vector<wxPoint>::iterator it;
+    for (it = vec.begin(); it != vec.end(); ++it)
+        if (IsClose(*it, pos, TOLERANCE))
+            break;
+    return it;
+}
+
+static void UpdateBookmarks(const wxPoint& pos, std::vector<wxPoint>& vec)
+{
+    std::vector<wxPoint>::iterator it = FindBookmark(pos, vec);
+    if (it == vec.end())
+        vec.push_back(pos);
+    else
+        vec.erase(it);
+}
+
 void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 {
     try
     {
+        if (mevent.ControlDown())
+        {
+            UpdateBookmarks(mevent.GetPosition(), m_bookmarks);
+            m_showBookmarks = true;
+            Refresh();
+            Update();
+            return;
+        }
+
         if (GetState() > STATE_SELECTED)
         {
             mevent.Skip();
@@ -415,6 +449,21 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         }
         // PaintHelper drew the image and any overlays
         // now decorate the image to show the selection
+
+        // display bookmarks
+        if (m_showBookmarks && m_bookmarks.size() > 0)
+        {
+            dc.SetPen(wxPen(wxColour(0,255,255),1,wxSOLID));
+            dc.SetBrush(*wxTRANSPARENT_BRUSH);
+
+            for (std::vector<wxPoint>::const_iterator it = m_bookmarks.begin();
+                 it != m_bookmarks.end(); ++it)
+            {
+                dc.DrawCircle(*it, 3);
+                dc.DrawCircle(*it, 6);
+                dc.DrawCircle(*it, 12);
+            }
+        }
 
         GUIDER_STATE state = GetState();
         bool FoundStar = m_star.WasFound();

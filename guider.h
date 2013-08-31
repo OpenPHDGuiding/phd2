@@ -115,6 +115,8 @@ class Guider: public wxWindow
 
 protected:
     double  m_scaleFactor;
+    bool m_showBookmarks;
+    std::vector<wxPoint> m_bookmarks;
 
     // Things related to the Advanced Config Dialog
 protected:
@@ -169,6 +171,8 @@ public:
 
     bool SetScaleImage(bool newScaleValue);
     bool GetScaleImage(void);
+
+    void ToggleShowBookmarks(void);
 
     void Reset(void);
 

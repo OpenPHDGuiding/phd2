@@ -177,6 +177,7 @@ public:
     void OnSockServerClientEvent(wxSocketEvent& evt);
     void HandleSockServerInput(wxSocketBase *sock);
     void OnServerMenu(wxCommandEvent& evt);
+    void OnCharHook(wxKeyEvent& evt);
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     void OnINDIConfig(wxCommandEvent& evt);
     void OnINDIDialog(wxCommandEvent& evt);
