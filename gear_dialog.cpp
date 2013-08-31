@@ -57,7 +57,7 @@ BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_CONNECT_STEPGUIDER, GearDialog::OnButtonConnectStepGuider)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_DISCONNECT_STEPGUIDER, GearDialog::OnButtonDisconnectStepGuider)
 
-    EVT_CHAR(GearDialog::OnChar)
+    EVT_CHAR_HOOK(GearDialog::OnChar)
 END_EVENT_TABLE()
 
 namespace xpm {
@@ -114,6 +114,8 @@ wxDialog(pParent, wxID_ANY, _("Connect Equipment"), wxDefaultPosition, wxDefault
     m_menuProfileManage = NULL;
 
     Initialize();
+
+    Centre(wxBOTH);
 }
 
 GearDialog::~GearDialog(void)
@@ -516,12 +518,14 @@ void GearDialog::OnButtonDisconnectAll(wxCommandEvent& event)
 
 void GearDialog::OnChar(wxKeyEvent& evt)
 {
-    // TODO - this does not work (it never gets called)
-    if (evt.GetKeyCode() == WXK_ESCAPE)
+    if (evt.GetKeyCode() == WXK_ESCAPE && !evt.HasModifiers())
     {
         EndModal(0);
     }
-    evt.Skip();
+    else
+    {
+        evt.Skip();
+    }
 }
 
 void GearDialog::OnChoiceCamera(wxCommandEvent& event)
