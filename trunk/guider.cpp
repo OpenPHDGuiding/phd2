@@ -945,3 +945,13 @@ EXPOSED_STATE Guider::GetExposedState(void)
 
     return rval;
 }
+
+void Guider::ToggleShowBookmarks()
+{
+    m_showBookmarks = !m_showBookmarks;
+    if (m_bookmarks.size())
+    {
+        Update();
+        Refresh();
+    }
+}
