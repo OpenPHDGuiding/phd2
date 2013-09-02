@@ -34,7 +34,7 @@
  */
 #ifndef LOGGERS_H_INCLUDED
 #define LOGGERS_H_INCLUDED
-class loggers
+class Loggers
 {
 private:
     wxString m_CurrentDir;
@@ -43,10 +43,11 @@ private:
 protected:
 
     bool SetLogDir (wxString newdir);
+    virtual bool ChangeDirLog (wxString newdir);
 
 public:
-    loggers(void);
-    ~loggers(void);
+    Loggers(void);
+    ~Loggers(void);
     wxString GetLogDir(void);
 };
 

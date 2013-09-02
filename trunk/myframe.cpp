@@ -39,6 +39,7 @@
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
 #include <wx/artprov.h>
+#include <wx/dirdlg.h>
 
 static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;
@@ -1284,12 +1285,30 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     DoAdd(_("Language"), m_pLanguage,
           wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 
-    // Log directory edit box: Need a wide text box so put the label above it
-    wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, _("Log folder") + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
-    DoAdd (pLabel);
-    m_pLogDir = new wxTextCtrl(pParent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width+30, -1));
+    // Log directory location - use a group box with a wide text edit control on top and a centered 'browse' button below it
+    wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer (wxVERTICAL, pParent, "Log File Location");
+    wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
+
+    m_pLogDir = new wxTextCtrl(pParent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(250, -1));
     m_pLogDir->SetToolTip (_("Folder for guide and debug logs; empty string to restore the default location"));
-    DoAdd (m_pLogDir);
+    wxButton *pSelectDir = new wxButton(pParent, wxID_OK, "Browse..." );
+    pButtonSizer->Add (pSelectDir, wxSizerFlags(0).Center());
+    pSelectDir->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &MyFrame::MyFrameConfigDialogPane::OnDirSelect, this);
+
+    pInputGroupBox->Add (m_pLogDir, wxSizerFlags(0).Expand());
+    pInputGroupBox->Add (pButtonSizer, wxSizerFlags(0).Center().Border(wxTop, 20));
+    MyFrameConfigDialogPane::Add (pInputGroupBox);
+
+}
+
+void MyFrame::MyFrameConfigDialogPane::OnDirSelect (wxCommandEvent& evt)
+{
+    wxString sRtn = wxDirSelector("Choose a location", m_pLogDir->GetValue ());
+
+    if (sRtn.Len() > 0)
+        m_pLogDir->SetValue (sRtn);
+
+
 }
 
 MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)

@@ -178,6 +178,7 @@ public:
 
     virtual void ClearHistory(void);
     virtual double GetDeclination(void);
+    virtual bool GetGuideRate(double *pRAGuideRate, double *pDecGuideRate);
     virtual wxString GetSettingsSummary();
 };
 

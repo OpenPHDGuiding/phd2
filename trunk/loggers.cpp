@@ -38,17 +38,23 @@
 #include "loggers.h"
 
 
-loggers::loggers(void)
+Loggers::Loggers(void)
 {
     m_Initialized = false;
 }
 
-loggers::~loggers(void)
+Loggers::~Loggers(void)
 {
 }
 
+// Default, safety-net implementation behind derived logger classes
+bool Loggers::ChangeDirLog (wxString newdir)
+{
+    return (false);
+}
+
 // Return the current logging directory.  Design invaraint: returned string must always be a valid directory
-wxString loggers::GetLogDir (void)
+wxString Loggers::GetLogDir (void)
 {
     if (m_Initialized)
         return (m_CurrentDir);
@@ -81,7 +87,7 @@ wxString loggers::GetLogDir (void)
 
 // Change the current logging directory, creating a new directory if needed. File system errors will result in a 'false' return
 // and the current directory will be left unchanged.
-bool loggers::SetLogDir (wxString newdir)
+bool Loggers::SetLogDir (wxString newdir)
 {
     bool bOk = true;
 
@@ -113,4 +119,5 @@ bool loggers::SetLogDir (wxString newdir)
 
 
 }
+
 
