@@ -793,7 +793,10 @@ void Scope::ScopeConfigDialogPane::OnAutoDuration (wxCommandEvent& evt)
     pCalc = new CalstepDialog (iFocalLength, fPixelSize, sConfigPrefix);
     if (pCalc->ShowModal () == wxID_OK)
     {
-        m_pCalibrationDuration->SetValue (pCalc->GetResult ());
+        int iRslt;
+        iRslt = pCalc->GetResult ();
+        if (iRslt > 0)                              // User might hit 'ok' with empty field
+            m_pCalibrationDuration->SetValue (iRslt);
     }
     pCalc->Destroy ();
 }
