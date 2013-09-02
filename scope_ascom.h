@@ -57,21 +57,24 @@ class ScopeASCOM:public Scope, private ASCOM_COMMON
     DISPID dispid_isslewing;
     DISPID dispid_pulseguide;
     DISPID dispid_declination;
+    DISPID dispid_raguiderate;
+    DISPID dispid_decguiderate;
 
     // other private varialbles
     bool m_bCanCheckPulseGuiding;
     bool m_bCanGetDeclination;
+    bool m_bCanGetGuideRates;
 
     wxString m_choice; // name of chosen scope
 
     // private functions
     virtual bool IsGuiding(IDispatch *pScopeDriver);
     virtual double GetDeclination(void);
+    virtual bool GetGuideRate(double *pRAGuideRate, double *pDecGuideRate);
 
 public:
     ScopeASCOM(const wxString& choice);
     virtual ~ScopeASCOM(void);
-
     static wxArrayString EnumAscomScopes(void);
 
     virtual bool Connect(void);

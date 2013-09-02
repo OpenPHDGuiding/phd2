@@ -35,13 +35,15 @@
 
 #include "loggers.h"
 
+#define GUIDELOG_VERSION _T("2.1")
+
 enum LOGGED_IMAGE_FORMAT {
     LIF_LOW_Q_JPEG,
     LIF_HI_Q_JPEG,
     LIF_RAW_FITS
 };
 
-class GuidingLog: public loggers
+class GuidingLog: public Loggers
 {
     bool m_enabled;
     wxFFile m_file;

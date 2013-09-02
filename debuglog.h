@@ -35,7 +35,7 @@
 
 #include "loggers.h"
 
-class DebugLog:public wxFFile, public loggers
+class DebugLog:public wxFFile, public Loggers
 {
 private:
     bool m_bEnabled;

@@ -40,8 +40,12 @@
 CalstepDialog::CalstepDialog(int focalLength, float pixelSize, wxString configPrefix) :
     wxDialog(pFrame, wxID_ANY, _T("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
+    double dGuideRateDec; 
+    double dGuideRateRA; 
+    bool bRateSuccess = false;
+    const double dSiderealSecondPerSec = 0.9973;
+
     // Get squared away with initial parameter values
-    wxString sTemp = pMount->Name();
     m_iNumSteps = 12;
     if (focalLength > 0)
         m_iFocalLength = focalLength;
@@ -51,12 +55,36 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, wxString configPr
         m_fPixelSize = pixelSize;
     else
         m_fPixelSize = 0;
+    // See if we can get the guide rates - if not, use our best default
+    try 
+    {
+        if (pSecondaryMount) 
+            bRateSuccess = pSecondaryMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
+        else
+            if (pMount) 
+                bRateSuccess = pMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
+    }
+    catch (wxString sMsg)
+    {
+        bRateSuccess = false;
+        POSSIBLY_UNUSED(sMsg);
+    }
+    if (bRateSuccess) 
+    {
+        if (dGuideRateRA >= dGuideRateDec) 
+            m_fGuideSpeed = dGuideRateRA * 3600.0/(15.0 * dSiderealSecondPerSec);                    // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
+        else
+            m_fGuideSpeed = dGuideRateDec/(15.0 * dSiderealSecondPerSec);
 
-    m_sConfigPrefix = configPrefix;
-    if (m_sConfigPrefix.Len() > 0)
-        m_fGuideSpeed = (float) pConfig->Profile.GetDouble (m_sConfigPrefix + "/GuideSpeed", 0);
+    }
     else
-        m_fGuideSpeed = 0;
+    {
+        m_sConfigPrefix = configPrefix;             // Try getting it from the config file
+        if (m_sConfigPrefix.Len() > 0)
+            m_fGuideSpeed = (float) pConfig->Profile.GetDouble (m_sConfigPrefix + "/GuideSpeed", 0);
+        else
+            m_fGuideSpeed = 0;
+    }
     if (m_fGuideSpeed <= 0)
         m_fGuideSpeed = 1.0;                // Give him an ok default
     m_bValidResult = false;

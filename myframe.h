@@ -86,6 +86,7 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+        void MyFrame::MyFrameConfigDialogPane::OnDirSelect (wxCommandEvent& evt);
     };
 
     NOISE_REDUCTION_METHOD GetNoiseReductionMethod(void);

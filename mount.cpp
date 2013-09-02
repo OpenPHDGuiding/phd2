@@ -888,6 +888,13 @@ double Mount::GetDeclination(void)
     return m_calibrated ? m_calDeclination : 0.0;
 }
 
+// Safety net - return false in case subclass can't handle guide rates
+bool Mount::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
+{
+    return (false);         // Not implemented in subclass
+}
+
+
 wxString Mount::GetSettingsSummary() {
     // return a loggable summary of current mount settings
     wxString algorithms[] = {

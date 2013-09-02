@@ -269,14 +269,32 @@ bool ScopeASCOM::Connect(void)
         }
 
         // ... get the dispatch ID for the "Declination" property ....
-        if (GetDispatchID(pScopeDriver, L"Declination", &dispid_declination))  {
+        if (GetDispatchID(pScopeDriver, L"Declination", &dispid_declination)) 
+        {
             m_bCanGetDeclination = false;
-            Debug.AddLine(wxString::Format("cannot get dispid_declination = %d", dispid_ispulseguiding));
+            Debug.AddLine(wxString::Format("cannot get dispid_declination = %d", dispid_declination));
             // don't throw if we can't get this one
+        
         }
         else
         {
             m_bCanGetDeclination = true;
+        }
+        // ... get the dispatch IDs for the two guide rate properties - if we can't get them, no sweat, using only in step calculator
+        m_bCanGetGuideRates = true;         // Likely case, required for any ASCOM driver at V2 or later
+        if (GetDispatchID(pScopeDriver, L"GuideRateDeclination", &dispid_decguiderate)) 
+        {
+            Debug.AddLine(wxString::Format("cannot get dispid_decguiderate = %d", dispid_decguiderate));
+            m_bCanGetGuideRates = false;
+            // don't throw if we can't get this one
+        
+        }
+        if (GetDispatchID(pScopeDriver, L"GuideRateRightAscension", &dispid_raguiderate)) 
+        {
+            Debug.AddLine(wxString::Format("cannot get dispid_raguiderate = %d", dispid_raguiderate));
+            m_bCanGetGuideRates = false;
+            // don't throw if we can't get this one
+        
         }
 
         // we have all the IDs we need - time to start using them
@@ -603,6 +621,7 @@ bool ScopeASCOM::HasNonGuiMove(void)
     return true;
 }
 
+// Warning: declination is returned in units of radians, not the decimal degrees used in the ASCOM interface
 double ScopeASCOM::GetDeclination(void)
 {
     double dReturn = Scope::GetDeclination();
@@ -652,6 +671,68 @@ double ScopeASCOM::GetDeclination(void)
     Debug.AddLine("ScopeASCOM::GetDeclination() returns %.4f", dReturn);
 
     return dReturn;
+}
+// Return RA and Dec guide rates in native ASCOM units, degrees/sec. Throw error only if the interface table pointer is no good, otherwise just log results
+bool ScopeASCOM::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
+{
+    IDispatch *pScopeDriver = NULL;
+    bool bSuccess = true;
+
+if (m_bCanGetGuideRates)            // Here to keep from beating our head against the wall and generating logged errors
+{
+        try
+        {
+
+            if (FAILED(m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (void**)&pScopeDriver)))
+            {
+                throw ERROR_INFO("ASCOM Scope: Cannot get interface with Global Interface Table");
+            }
+
+            assert(pScopeDriver);
+
+            DISPPARAMS dispParms;
+            HRESULT hr;
+            EXCEPINFO excep;
+            VARIANT vRes;
+
+            dispParms.cArgs = 0;
+            dispParms.rgvarg = NULL;
+            dispParms.cNamedArgs = 0;
+            dispParms.rgdispidNamedArgs = NULL;
+
+            if(FAILED(hr = pScopeDriver->Invoke(dispid_decguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
+            {
+                bSuccess = false;
+                Debug.AddLine ("GuideRateDeclination() fails");
+            }
+            else
+                *pDecGuideRate = vRes.dblVal;
+
+            if(FAILED(hr = pScopeDriver->Invoke(dispid_raguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
+            {
+                bSuccess = false;
+                Debug.AddLine ("GuideRateRightAscension () fails");
+            }
+            else
+                *pRAGuideRate = vRes.dblVal;
+
+        }
+        catch (wxString Msg)
+        {
+            POSSIBLY_UNUSED(Msg);
+        }
+
+        if (pScopeDriver)
+        {
+            pScopeDriver->Release();
+        }
+
+        Debug.AddLine("ScopeASCOM::GetGuideRates() returns %u %.4f %.4f", bSuccess, *pDecGuideRate, *pRAGuideRate);
+}
+else
+    bSuccess = false;
+
+return (bSuccess);
 }
 
 #endif /* GUIDE_ASCOM */
