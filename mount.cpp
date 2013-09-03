@@ -888,10 +888,11 @@ double Mount::GetDeclination(void)
     return m_calibrated ? m_calDeclination : 0.0;
 }
 
-// Safety net - return false in case subclass can't handle guide rates
+// Safety net - return true in case subclass can't handle guide rates
+// Convention in this class is to return true for error conditions
 bool Mount::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
 {
-    return (false);         // Not implemented in subclass
+    return (true);         // Not implemented in subclass
 }
 
 

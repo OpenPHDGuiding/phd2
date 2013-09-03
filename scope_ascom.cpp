@@ -269,12 +269,11 @@ bool ScopeASCOM::Connect(void)
         }
 
         // ... get the dispatch ID for the "Declination" property ....
-        if (GetDispatchID(pScopeDriver, L"Declination", &dispid_declination)) 
+        if (GetDispatchID(pScopeDriver, L"Declination", &dispid_declination))
         {
             m_bCanGetDeclination = false;
             Debug.AddLine(wxString::Format("cannot get dispid_declination = %d", dispid_declination));
             // don't throw if we can't get this one
-        
         }
         else
         {
@@ -282,19 +281,19 @@ bool ScopeASCOM::Connect(void)
         }
         // ... get the dispatch IDs for the two guide rate properties - if we can't get them, no sweat, using only in step calculator
         m_bCanGetGuideRates = true;         // Likely case, required for any ASCOM driver at V2 or later
-        if (GetDispatchID(pScopeDriver, L"GuideRateDeclination", &dispid_decguiderate)) 
+        if (GetDispatchID(pScopeDriver, L"GuideRateDeclination", &dispid_decguiderate))
         {
             Debug.AddLine(wxString::Format("cannot get dispid_decguiderate = %d", dispid_decguiderate));
             m_bCanGetGuideRates = false;
             // don't throw if we can't get this one
-        
+
         }
-        if (GetDispatchID(pScopeDriver, L"GuideRateRightAscension", &dispid_raguiderate)) 
+        if (GetDispatchID(pScopeDriver, L"GuideRateRightAscension", &dispid_raguiderate))
         {
             Debug.AddLine(wxString::Format("cannot get dispid_raguiderate = %d", dispid_raguiderate));
             m_bCanGetGuideRates = false;
             // don't throw if we can't get this one
-        
+
         }
 
         // we have all the IDs we need - time to start using them
@@ -673,13 +672,14 @@ double ScopeASCOM::GetDeclination(void)
     return dReturn;
 }
 // Return RA and Dec guide rates in native ASCOM units, degrees/sec. Throw error only if the interface table pointer is no good, otherwise just log results
+// Convention is, apparently, to return true on an error
 bool ScopeASCOM::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
 {
     IDispatch *pScopeDriver = NULL;
-    bool bSuccess = true;
+    bool bError = false;
 
-if (m_bCanGetGuideRates)            // Here to keep from beating our head against the wall and generating logged errors
-{
+    if (m_bCanGetGuideRates)            // Here to keep from beating our head against the wall and generating logged errors
+    {
         try
         {
 
@@ -702,7 +702,7 @@ if (m_bCanGetGuideRates)            // Here to keep from beating our head agains
 
             if(FAILED(hr = pScopeDriver->Invoke(dispid_decguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
             {
-                bSuccess = false;
+                bError = true;
                 Debug.AddLine ("GuideRateDeclination() fails");
             }
             else
@@ -710,7 +710,7 @@ if (m_bCanGetGuideRates)            // Here to keep from beating our head agains
 
             if(FAILED(hr = pScopeDriver->Invoke(dispid_raguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
             {
-                bSuccess = false;
+                bError = true;
                 Debug.AddLine ("GuideRateRightAscension () fails");
             }
             else
@@ -719,6 +719,7 @@ if (m_bCanGetGuideRates)            // Here to keep from beating our head agains
         }
         catch (wxString Msg)
         {
+            bError = true;
             POSSIBLY_UNUSED(Msg);
         }
 
@@ -727,12 +728,12 @@ if (m_bCanGetGuideRates)            // Here to keep from beating our head agains
             pScopeDriver->Release();
         }
 
-        Debug.AddLine("ScopeASCOM::GetGuideRates() returns %u %.4f %.4f", bSuccess, *pDecGuideRate, *pRAGuideRate);
-}
-else
-    bSuccess = false;
+        Debug.AddLine("ScopeASCOM::GetGuideRates() returns %u %.4f %.4f", bError, *pDecGuideRate, *pRAGuideRate);
+    }
+    else
+        bError = true;
 
-return (bSuccess);
+    return (bError);
 }
 
 #endif /* GUIDE_ASCOM */
