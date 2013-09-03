@@ -40,8 +40,8 @@
 CalstepDialog::CalstepDialog(int focalLength, float pixelSize, wxString configPrefix) :
     wxDialog(pFrame, wxID_ANY, _T("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
-    double dGuideRateDec;
-    double dGuideRateRA;
+    double dGuideRateDec = 0.0; // initialize to suppress compiler warning
+    double dGuideRateRA = 0.0; // initialize to suppress compiler warning
     bool bRateError = true;
     const double dSiderealSecondPerSec = 0.9973;
 
