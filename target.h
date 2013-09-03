@@ -76,8 +76,8 @@ public:
     TargetWindow(wxWindow *parent);
     ~TargetWindow(void);
 
-    void OnButtonMode(wxCommandEvent& evt);
     void OnButtonLength(wxCommandEvent& evt);
+    void OnMenuLength(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
     void OnButtonZoomIn(wxCommandEvent& evt);
     void OnButtonZoomOut(wxCommandEvent& evt);

@@ -39,6 +39,7 @@ static double const MIN_ZOOM = 0.25;
 
 BEGIN_EVENT_TABLE(TargetWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH,TargetWindow::OnButtonLength)
+    EVT_MENU_RANGE(MENU_LENGTH_BEGIN, MENU_LENGTH_END, TargetWindow::OnMenuLength)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,TargetWindow::OnButtonClear)
     EVT_BUTTON(BUTTON_GRAPH_ZOOMIN,TargetWindow::OnButtonZoomIn)
     EVT_BUTTON(BUTTON_GRAPH_ZOOMOUT,TargetWindow::OnButtonZoomOut)
@@ -60,7 +61,7 @@ TargetWindow::TargetWindow(wxWindow *parent) :
 
     wxString label = wxString::Format("%3d", m_pClient->m_length);
     LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,label,wxDefaultPosition,wxSize(80,-1));
-    LengthButton->SetToolTip(_("# of frames of history to display"));
+    LengthButton->SetToolTip(_("Select the number of frames of history to display"));
 
     wxBoxSizer *pZoomSizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -110,16 +111,36 @@ void TargetWindow::AppendData(double ra, double dec)
 
 void TargetWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 {
-    m_pClient->m_length *= 2;
+    wxMenu *menu = new wxMenu();
 
-    if (m_pClient->m_length > m_pClient->m_maxLength)
+    int val = m_pClient->m_minLength;
+    for (int id = MENU_LENGTH_BEGIN; id <= MENU_LENGTH_END; id++)
     {
-            m_pClient->m_length = m_pClient->m_minLength;
+        wxMenuItem *item = menu->AppendRadioItem(id, wxString::Format("%d", val));
+        if (val == m_pClient->m_length)
+            item->Check(true);
+        val *= 2;
+        if (val > m_pClient->m_maxLength)
+            break;
     }
 
-    pConfig->Global.SetInt("/target/length", m_pClient->m_length);
+    PopupMenu(menu, LengthButton->GetPosition().x,
+        LengthButton->GetPosition().y + LengthButton->GetSize().GetHeight());
 
-    LengthButton->SetLabel(wxString::Format(_T("%3d"),m_pClient->m_length));
+    delete menu;
+}
+
+void TargetWindow::OnMenuLength(wxCommandEvent& evt)
+{
+    unsigned int val = m_pClient->m_minLength;
+    for (int id = MENU_LENGTH_BEGIN; id < evt.GetId(); id++)
+        val *= 2;
+
+    m_pClient->m_length = val;
+
+    pConfig->Global.SetInt("/target/length", val);
+
+    LengthButton->SetLabel(wxString::Format(_T("%3d"), val));
     Refresh();
 }
 

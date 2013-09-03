@@ -120,9 +120,15 @@ public:
     void UpdateControls(void);
     void SetState (bool is_active);
     void OnPaint(wxPaintEvent& evt);
-    void OnButtonMode(wxCommandEvent& evt);
+    void OnButtonSettings(wxCommandEvent& evt);
+    void OnRADecDxDy(wxCommandEvent& evt);
+    void OnArcsecsPixels(wxCommandEvent& evt);
+    void OnRADxColor(wxCommandEvent& evt);
+    void OnDecDyColor(wxCommandEvent& evt);
     void OnButtonLength(wxCommandEvent& evt);
+    void OnMenuLength(wxCommandEvent& evt);
     void OnButtonHeight(wxCommandEvent& evt);
+    void OnMenuHeight(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
     void OnCheckboxTrendlines(wxCommandEvent& evt);
     void OnButtonZoomIn(wxCommandEvent& evt);
@@ -137,7 +143,7 @@ private:
     wxButton *m_pLengthButton;
     wxButton *m_pHeightButton;
     int m_heightButtonLabelVal; // value currently displayed on height button: <0 for arc-sec, >0 for pixels
-    wxButton *m_pModeButton;
+    wxButton *m_pSettingsButton;
     wxButton *m_pClearButton;
     wxCheckBox *m_pCheckboxTrendlines;
     wxStaticText *RALabel;

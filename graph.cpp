@@ -49,9 +49,15 @@ static const int DefaultMaxHeight = 16;
 
 BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_PAINT(GraphLogWindow::OnPaint)
-    EVT_BUTTON(BUTTON_GRAPH_MODE,GraphLogWindow::OnButtonMode)
+    EVT_BUTTON(BUTTON_GRAPH_SETTINGS,GraphLogWindow::OnButtonSettings)
+    EVT_MENU_RANGE(GRAPH_RADEC, GRAPH_DXDY, GraphLogWindow::OnRADecDxDy)
+    EVT_MENU_RANGE(GRAPH_ARCSECS, GRAPH_PIXELS, GraphLogWindow::OnArcsecsPixels)
+    EVT_MENU(GRAPH_RADX_COLOR, GraphLogWindow::OnRADxColor)
+    EVT_MENU(GRAPH_DECDY_COLOR, GraphLogWindow::OnDecDyColor)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphLogWindow::OnButtonLength)
+    EVT_MENU_RANGE(MENU_LENGTH_BEGIN, MENU_LENGTH_END, GraphLogWindow::OnMenuLength)
     EVT_BUTTON(BUTTON_GRAPH_HEIGHT,GraphLogWindow::OnButtonHeight)
+    EVT_MENU_RANGE(MENU_HEIGHT_BEGIN, MENU_HEIGHT_END, GraphLogWindow::OnMenuHeight)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
     EVT_CHECKBOX(CHECKBOX_GRAPH_TRENDLINES,GraphLogWindow::OnCheckboxTrendlines)
 END_EVENT_TABLE()
@@ -109,7 +115,7 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     SetBackgroundColour(*wxBLACK);
 
     m_pLengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("foo"));
-    m_pLengthButton->SetToolTip(_("# of frames of history to display"));
+    m_pLengthButton->SetToolTip(_("Select the number of frames of history to display on the X-axis"));
     m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_pClient->m_length));
     pButtonSizer->Add(m_pLengthButton, wxSizerFlags(0).Border(wxTOP, 5));
 
@@ -118,9 +124,9 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     UpdateHeightButtonLabel();
     pButtonSizer->Add(m_pHeightButton);
 
-    m_pModeButton = new wxButton(this,BUTTON_GRAPH_MODE,_T("RA/Dec"));
-    m_pModeButton->SetToolTip(_("Toggle RA/Dec vs dx/dy.  Shift-click to change RA/dx color.  Ctrl-click to change Dec/dy color"));
-    pButtonSizer->Add(m_pModeButton);
+    m_pSettingsButton = new wxButton(this,BUTTON_GRAPH_SETTINGS,_T("Settings"));
+    m_pSettingsButton->SetToolTip(_("Graph settings"));
+    pButtonSizer->Add(m_pSettingsButton);
 
     m_pClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"));
     m_pClearButton->SetToolTip(_("Clear graph data"));
@@ -223,94 +229,189 @@ int GraphLogWindow::StringWidth(wxString string)
     return width;
 }
 
-void GraphLogWindow::OnButtonMode(wxCommandEvent& WXUNUSED(evt))
+void GraphLogWindow::OnButtonSettings(wxCommandEvent& WXUNUSED(evt))
 {
-    wxMouseState mstate = wxGetMouseState();
+    wxMenu *menu = new wxMenu();
+    wxMenuItem *item1, *item2;
 
-    if (wxGetKeyState(WXK_SHIFT)) {
-        wxColourData cdata;
-        cdata.SetColour(m_pClient->m_raOrDxColor);
-        wxColourDialog cdialog(this, &cdata);
-        cdialog.SetTitle(_("RA or dx Color"));
-        if (cdialog.ShowModal() == wxID_OK) {
-            cdata = cdialog.GetColourData();
-            m_pClient->m_raOrDxColor = cdata.GetColour();
-            pConfig->Global.SetString("/graph/RAColor", m_pClient->m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
-            m_pLabel1->SetForegroundColour(m_pClient->m_raOrDxColor);
-        }
+    // setup RA/Dec / dx/dy items
+    item1 = menu->Append(wxID_ANY, _("Plot mode"));
+    item1->Enable(false);
+    item1 = menu->AppendRadioItem(GRAPH_RADEC, _("RA / Dec"));
+    item2 = menu->AppendRadioItem(GRAPH_DXDY, _("dx / dy"));
+    if (m_pClient->m_mode == GraphLogClientWindow::MODE_RADEC)
+        item1->Check();
+    else
+        item2->Check();
+    menu->AppendSeparator();
+
+    // setup Arcses / pixels items
+    item1 = menu->Append(wxID_ANY, _("Y-axis units"));
+    item1->Enable(false);
+    item1 = menu->AppendRadioItem(GRAPH_ARCSECS, _("Arc-seconds"));
+    bool enable_arcsecs = pFrame->GetCameraPixelScale() != 1.0;
+    if (!enable_arcsecs)
+        item1->Enable(false);
+    item2 = menu->AppendRadioItem(GRAPH_PIXELS, _("Pixels"));
+    if (m_pClient->m_heightUnits == UNIT_ARCSEC && enable_arcsecs)
+        item1->Check();
+    else
+        item2->Check();
+    menu->AppendSeparator();
+
+    // setup color selection items
+    if (m_pClient->m_mode == GraphLogClientWindow::MODE_RADEC)
+    {
+        menu->Append(GRAPH_RADX_COLOR, _("RA Color..."));
+        menu->Append(GRAPH_DECDY_COLOR, _("Dec Color..."));
     }
-    else if (wxGetKeyState(WXK_CONTROL)) {
-        wxColourData cdata;
-        cdata.SetColour(m_pClient->m_decOrDyColor);
-        wxColourDialog cdialog(this, &cdata);
-        cdialog.SetTitle(_("Dec or dy Color"));
-        if (cdialog.ShowModal() == wxID_OK) {
-            cdata = cdialog.GetColourData();
-            m_pClient->m_decOrDyColor = cdata.GetColour();
-            pConfig->Global.SetString("/graph/DecColor", m_pClient->m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
-            m_pLabel2->SetForegroundColour(m_pClient->m_decOrDyColor);
-        }
-    }
-    else {
-        switch (m_pClient->m_mode)
-        {
-            case GraphLogClientWindow::MODE_RADEC:
-                m_pClient->m_mode = GraphLogClientWindow::MODE_DXDY;
-                m_pModeButton->SetLabel(_T("dx/dy"));
-                break;
-            case GraphLogClientWindow::MODE_DXDY:
-                m_pClient->m_mode = GraphLogClientWindow::MODE_RADEC;
-                m_pModeButton->SetLabel(_T("RA/Dec"));
-                break;
-        }
+    else
+    {
+        menu->Append(GRAPH_RADX_COLOR, _("dx Color..."));
+        menu->Append(GRAPH_DECDY_COLOR, _("dy Color..."));
     }
 
+    PopupMenu(menu, m_pSettingsButton->GetPosition().x,
+        m_pSettingsButton->GetPosition().y + m_pSettingsButton->GetSize().GetHeight());
+
+    delete menu;
+}
+
+void GraphLogWindow::OnRADecDxDy(wxCommandEvent& evt)
+{
+    switch (evt.GetId())
+    {
+    case GRAPH_DXDY:
+        m_pClient->m_mode = GraphLogClientWindow::MODE_DXDY;
+        break;
+    case GRAPH_RADEC:
+        m_pClient->m_mode = GraphLogClientWindow::MODE_RADEC;
+        break;
+    }
     Refresh();
+}
+
+void GraphLogWindow::OnArcsecsPixels(wxCommandEvent& evt)
+{
+    switch (evt.GetId())
+    {
+    case GRAPH_ARCSECS:
+        m_pClient->m_heightUnits = UNIT_ARCSEC;
+        break;
+    case GRAPH_PIXELS:
+        m_pClient->m_heightUnits = UNIT_PIXELS;
+        break;
+    }
+    Refresh();
+}
+
+void GraphLogWindow::OnRADxColor(wxCommandEvent& evt)
+{
+    wxColourData cdata;
+    cdata.SetColour(m_pClient->m_raOrDxColor);
+    wxColourDialog cdialog(this, &cdata);
+    cdialog.SetTitle(_("RA or dx Color"));
+    if (cdialog.ShowModal() == wxID_OK)
+    {
+        cdata = cdialog.GetColourData();
+        m_pClient->m_raOrDxColor = cdata.GetColour();
+        pConfig->Global.SetString("/graph/RAColor", m_pClient->m_raOrDxColor.GetAsString(wxC2S_HTML_SYNTAX));
+        m_pLabel1->SetForegroundColour(m_pClient->m_raOrDxColor);
+        Refresh();
+    }
+}
+
+void GraphLogWindow::OnDecDyColor(wxCommandEvent& evt)
+{
+    wxColourData cdata;
+    cdata.SetColour(m_pClient->m_decOrDyColor);
+    wxColourDialog cdialog(this, &cdata);
+    cdialog.SetTitle(_("Dec or dy Color"));
+    if (cdialog.ShowModal() == wxID_OK)
+    {
+        cdata = cdialog.GetColourData();
+        m_pClient->m_decOrDyColor = cdata.GetColour();
+        pConfig->Global.SetString("/graph/DecColor", m_pClient->m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
+        m_pLabel2->SetForegroundColour(m_pClient->m_decOrDyColor);
+        Refresh();
+    }
 }
 
 void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 {
-    m_pClient->m_length *= 2;
-
-    if (m_pClient->m_length > m_pClient->m_history.capacity())
+    wxMenu *menu = new wxMenu();
+    int val = m_pClient->m_minLength;
+    for (int id = MENU_LENGTH_BEGIN; id <= MENU_LENGTH_END; id++)
     {
-            m_pClient->m_length = m_pClient->m_minLength;
+        wxMenuItem *item = menu->AppendRadioItem(id, wxString::Format("%d", val));
+        if (val == m_pClient->m_length)
+            item->Check(true);
+        val *= 2;
+        if (val > m_pClient->m_history.capacity())
+            break;
     }
+
+    PopupMenu(menu, m_pLengthButton->GetPosition().x,
+        m_pLengthButton->GetPosition().y + m_pLengthButton->GetSize().GetHeight());
+
+    delete menu;
+}
+
+void GraphLogWindow::OnMenuLength(wxCommandEvent& evt)
+{
+    unsigned int val = m_pClient->m_minLength;
+    for (int id = MENU_LENGTH_BEGIN; id < evt.GetId(); id++)
+        val *= 2;
+
+    m_pClient->m_length = val;
 
     m_pClient->RecalculateTrendLines();
 
-    pConfig->Global.SetInt("/graph/length", m_pClient->m_length);
+    pConfig->Global.SetInt("/graph/length", val);
 
-    this->m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_pClient->m_length));
-    this->Refresh();
+    m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), val));
+
+    Refresh();
 }
 
 void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
 {
-    if (wxGetKeyState(WXK_SHIFT) && pFrame->GetCameraPixelScale() != 1.0)
-    {
-        if (m_pClient->m_heightUnits == UNIT_ARCSEC)
-            m_pClient->m_heightUnits = UNIT_PIXELS;
-        else
-            m_pClient->m_heightUnits = UNIT_ARCSEC;
-    }
-    else
-    {
-        m_pClient->m_height *= 2;
+    wxMenu *menu = new wxMenu();
 
-        if (m_pClient->m_height > m_pClient->m_maxHeight)
-        {
-                m_pClient->m_height = m_pClient->m_minHeight;
-        }
-
-        pConfig->Global.SetInt("/graph/height", m_pClient->m_height);
+    int val = m_pClient->m_minHeight;
+    for (int id = MENU_HEIGHT_BEGIN; id <= MENU_HEIGHT_END; id++)
+    {
+        wxMenuItem *item = menu->AppendRadioItem(id, wxString::Format("%d", val));
+        if (val == m_pClient->m_height)
+            item->Check(true);
+        val *= 2;
+        if (val > m_pClient->m_maxHeight)
+            break;
     }
 
-    UpdateHeightButtonLabel();
-    this->Refresh();
+    PopupMenu(menu, m_pHeightButton->GetPosition().x,
+        m_pHeightButton->GetPosition().y + m_pHeightButton->GetSize().GetHeight());
+
+    delete menu;
 }
 
-void GraphLogWindow::SetState(bool is_active) {
+void GraphLogWindow::OnMenuHeight(wxCommandEvent& evt)
+{
+    unsigned int val = m_pClient->m_minHeight;
+    for (int id = MENU_HEIGHT_BEGIN; id < evt.GetId(); id++)
+        val *= 2;
+
+    m_pClient->m_height = val;
+
+    pConfig->Global.SetInt("/graph/height", m_pClient->m_height);
+
+    UpdateHeightButtonLabel();
+
+    Refresh();
+}
+
+void GraphLogWindow::SetState(bool is_active)
+{
     this->m_visible = is_active;
     if (is_active)
     {
@@ -377,7 +478,7 @@ void GraphLogWindow::UpdateControls()
         m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Expand());
     }
 
-    m_pControlSizer->Layout();
+    Layout();
     Refresh();
 }
 
@@ -433,15 +534,12 @@ void GraphLogWindow::UpdateHeightButtonLabel(void)
         if (val > 0)
         {
             m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d"), m_pClient->m_height));
-            wxString tip(_("Pixels per Y division."));
-            if (pFrame && pFrame->GetCameraPixelScale() != 1.0)
-                tip += _(" Shift-click to display arc-sec per division.");
-            m_pHeightButton->SetToolTip(tip);
+            m_pHeightButton->SetToolTip(_("Select the Y-axis scale, pixels per Y division"));
         }
         else
         {
             m_pHeightButton->SetLabel(wxString::Format(_T("y:+/-%d''"), m_pClient->m_height));
-            m_pHeightButton->SetToolTip(_("Arc-sec per Y division. Shift-click to display pixels per division."));
+            m_pHeightButton->SetToolTip(_("Select the Y-axis scale, arc-seconds per Y division"));
         }
         m_heightButtonLabelVal = val;
     }
@@ -482,7 +580,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
 
     m_length = pConfig->Global.GetInt("/graph/length", m_minLength * 2);
     m_height = pConfig->Global.GetInt("/graph/height", m_minHeight);
-    m_heightUnits = UNIT_ARCSEC; // preferred units, will still display pixels if pixel scale ("sampling") not available
+    m_heightUnits = UNIT_ARCSEC; // preferred units, will still display pixels if camera pixel scale not available
 
     m_showTrendlines = false;
 }
