@@ -213,6 +213,7 @@ bool ScopeASCOM::Connect(void)
 
         // do the ASCOM Dance.
         // Get the CLSID
+        CLSID CLSID_driver;
         if (FAILED(CLSIDFromProgID(bstr_progid, &CLSID_driver))) {
             wxMessageBox(_T("Could not connect to ") + wxString(bstr_progid), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not get CLSID");

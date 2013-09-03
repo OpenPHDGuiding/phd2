@@ -46,9 +46,6 @@ class ScopeASCOM:public Scope, private ASCOM_COMMON
     IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
     DWORD m_dwCookie;
 
-    // The CLSID and dispatch instance of the scope
-    CLSID CLSID_driver;
-
     // DISPIDs we reuse
     DISPID dispid_connected;
     DISPID dispid_name;

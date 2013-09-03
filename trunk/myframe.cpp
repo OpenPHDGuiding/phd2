@@ -685,16 +685,6 @@ void MyFrame::UpdateButtonsStatus(void)
         need_update = true;
     }
 
-    bool const cam_dialog_btn_enable =
-        !CaptureActive &&
-        pCamera && pCamera->Connected &&
-        pCamera->HasPropertyDialog;
-
-    if (Setup_Button->IsEnabled() != cam_dialog_btn_enable) {
-        Setup_Button->Enable(cam_dialog_btn_enable);
-        need_update = true;
-    }
-
     bool bGuideable = pGuider->GetState() >= STATE_SELECTED &&
         pGuider->GetState() < STATE_GUIDING &&
         pMount && pMount->IsConnected();
