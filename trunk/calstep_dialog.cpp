@@ -40,9 +40,9 @@
 CalstepDialog::CalstepDialog(int focalLength, float pixelSize, wxString configPrefix) :
     wxDialog(pFrame, wxID_ANY, _T("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
-    double dGuideRateDec; 
-    double dGuideRateRA; 
-    bool bRateSuccess = false;
+    double dGuideRateDec;
+    double dGuideRateRA;
+    bool bRateError = true;
     const double dSiderealSecondPerSec = 0.9973;
 
     // Get squared away with initial parameter values
@@ -56,22 +56,22 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, wxString configPr
     else
         m_fPixelSize = 0;
     // See if we can get the guide rates - if not, use our best default
-    try 
+    try
     {
-        if (pSecondaryMount) 
-            bRateSuccess = pSecondaryMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
+        if (pSecondaryMount)
+            bRateError = pSecondaryMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
         else
-            if (pMount) 
-                bRateSuccess = pMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
+            if (pMount)
+                bRateError = pMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
     }
     catch (wxString sMsg)
     {
-        bRateSuccess = false;
+        bRateError = true;
         POSSIBLY_UNUSED(sMsg);
     }
-    if (bRateSuccess) 
+    if (!bRateError)
     {
-        if (dGuideRateRA >= dGuideRateDec) 
+        if (dGuideRateRA >= dGuideRateDec)
             m_fGuideSpeed = dGuideRateRA * 3600.0/(15.0 * dSiderealSecondPerSec);                    // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
         else
             m_fGuideSpeed = dGuideRateDec/(15.0 * dSiderealSecondPerSec);
