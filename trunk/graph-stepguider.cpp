@@ -38,8 +38,9 @@
 #include <wx/colordlg.h>
 
 BEGIN_EVENT_TABLE(GraphStepguiderWindow, wxWindow)
-EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphStepguiderWindow::OnButtonLength)
-EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphStepguiderWindow::OnButtonClear)
+    EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphStepguiderWindow::OnButtonLength)
+    EVT_MENU_RANGE(MENU_LENGTH_BEGIN, MENU_LENGTH_END, GraphStepguiderWindow::OnMenuLength)
+    EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphStepguiderWindow::OnButtonClear)
 END_EVENT_TABLE()
 
 GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent):
@@ -57,7 +58,7 @@ GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent):
     m_pClient->m_length = pConfig->Global.GetInt("/graph_stepguider/length", 1);
     wxString label = wxString::Format(_T("%3d"),m_pClient->m_length);
     LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,label,wxPoint(10,10),wxSize(80,-1));
-    LengthButton->SetToolTip(_("# of frames of history to display"));
+    LengthButton->SetToolTip(_("Select the number of frames of history to display"));
 
     ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxPoint(10,100),wxSize(80,-1));
     ClearButton->SetToolTip(_("Clear graph data"));
@@ -88,32 +89,38 @@ GraphStepguiderWindow::~GraphStepguiderWindow()
 
 void GraphStepguiderWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 {
-    switch (m_pClient->m_length)
+    wxMenu *menu = new wxMenu();
+
+    int val = 1;
+    for (int id = MENU_LENGTH_BEGIN; id <= MENU_LENGTH_END; id++)
     {
-        case  1:
-            m_pClient->m_length =  4;
+        wxMenuItem *item = menu->AppendRadioItem(id, wxString::Format("%d", val));
+        if (val == m_pClient->m_length)
+            item->Check(true);
+        val *= 4;
+        if (val > 64)
             break;
-        case  4:
-            m_pClient->m_length = 16;
-            break;
-        case 16:
-            m_pClient->m_length = 64;
-            break;
-        case 64:
-            m_pClient->m_length =  1;
-            break;
-        default:
-            m_pClient->m_length =  1;
     }
 
-    this->LengthButton->SetLabel(wxString::Format(_T("%3d"),m_pClient->m_length));
+    PopupMenu(menu, LengthButton->GetPosition().x,
+        LengthButton->GetPosition().y + LengthButton->GetSize().GetHeight());
 
-    pConfig->Global.SetInt("/graph_stepguider/length", m_pClient->m_length);
+    delete menu;
+}
 
-    if (m_visible)
-    {
-        Refresh();
-    }
+void GraphStepguiderWindow::OnMenuLength(wxCommandEvent& evt)
+{
+    unsigned int val = 1;
+    for (int id = MENU_LENGTH_BEGIN; id < evt.GetId(); id++)
+        val *= 4;
+
+    m_pClient->m_length = val;
+
+    LengthButton->SetLabel(wxString::Format(_T("%3d"), val));
+
+    pConfig->Global.SetInt("/graph_stepguider/length", val);
+
+    Refresh();
 }
 
 bool GraphStepguiderWindow::SetState(bool is_active)

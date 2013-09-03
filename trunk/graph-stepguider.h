@@ -83,8 +83,8 @@ public:
     GraphStepguiderWindow(wxWindow *parent);
     ~GraphStepguiderWindow(void);
 
-    void OnButtonMode(wxCommandEvent& evt);
     void OnButtonLength(wxCommandEvent& evt);
+    void OnMenuLength(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
 
     void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
