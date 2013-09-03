@@ -303,7 +303,7 @@ void GearDialog::EndModal(int retCode)
 {
     assert(pCamera == m_pCamera);
 
-    if (pCamera && pCamera->HasPropertyDialog)
+    if (pCamera && pCamera->HasPropertyDialog && pCamera->Connected)
     {
         pFrame->Setup_Button->Enable(true);
     }
