@@ -80,13 +80,14 @@ protected:
         int m_oldLanguageChoice;
         wxTextCtrl *m_pLogDir;
 
+        void OnDirSelect(wxCommandEvent& evt);
+
     public:
         MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
         virtual ~MyFrameConfigDialogPane(void);
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
-        void MyFrame::MyFrameConfigDialogPane::OnDirSelect (wxCommandEvent& evt);
     };
 
     NOISE_REDUCTION_METHOD GetNoiseReductionMethod(void);
