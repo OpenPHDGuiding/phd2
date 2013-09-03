@@ -63,6 +63,7 @@ struct SimCamParams
     static double seeing_scale;
     static double cam_angle;
     static double guide_rate;
+    static PierSide pier_side;
 };
 
 unsigned int SimCamParams::width = 752;          // simulated camera image width
@@ -77,6 +78,7 @@ double SimCamParams::dec_drift_rate;             // dec drift rate (pixels per s
 double SimCamParams::seeing_scale;               // simulated seeing scale factor
 double SimCamParams::cam_angle;                  // simulated camera angle (degrees)
 double SimCamParams::guide_rate;                 // guide rate, pixels per second
+PierSide SimCamParams::pier_side;                // side of pier
 
 #define NR_STARS_DEFAULT 20
 #define NR_HOT_PIXELS_DEFAULT 8
@@ -93,6 +95,7 @@ double SimCamParams::guide_rate;                 // guide rate, pixels per secon
 #define CAM_ANGLE_DEFAULT 15.0
 #define GUIDE_RATE_DEFAULT 3.5
 #define GUIDE_RATE_MAX 8.0
+#define PIER_SIDE_DEFAULT PIER_SIDE_EAST
 
 static void load_sim_params()
 {
@@ -105,6 +108,7 @@ static void load_sim_params()
     SimCamParams::seeing_scale = pConfig->Profile.GetDouble("/SimCam/seeing_scale", SEEING_DEFAULT);
     SimCamParams::cam_angle = pConfig->Profile.GetDouble("/SimCam/cam_angle", CAM_ANGLE_DEFAULT);
     SimCamParams::guide_rate = pConfig->Profile.GetDouble("/SimCam/guide_rate", GUIDE_RATE_DEFAULT);
+    SimCamParams::pier_side = (PierSide) pConfig->Profile.GetInt("/SimCam/pier_side", PIER_SIDE_DEFAULT);
 }
 
 static void save_sim_params()
@@ -118,6 +122,7 @@ static void save_sim_params()
     pConfig->Profile.SetDouble("/SimCam/seeing_scale", SimCamParams::seeing_scale);
     pConfig->Profile.SetDouble("/SimCam/cam_angle", SimCamParams::cam_angle);
     pConfig->Profile.SetDouble("/SimCam/guide_rate", SimCamParams::guide_rate);
+    pConfig->Profile.SetInt("/SimCam/pier_side", (int) SimCamParams::pier_side);
 }
 
 #ifdef STEPGUIDER_SIMULATOR
@@ -224,7 +229,6 @@ struct SimCamState {
     unsigned int height;
     wxVector<SimStar> stars; // star positions and intensities (ra, dec)
     wxVector<wxPoint> hotpx; // hot pixels
-    PierSide pier_side;
     double ra_ofs;        // assume no backlash in RA
     BacklashVal dec_ofs;  // simulate backlash in DEC
     wxStopWatch timer;    // platform-independent timer
@@ -257,7 +261,6 @@ void SimCamState::Initialize()
         hotpx[i].y = rand() % height;
     }
     srand(clock());
-    pier_side = PIER_SIDE_EAST;
     ra_ofs = 0.;
     dec_ofs = BacklashVal(SimCamParams::dec_backlash);
 }
@@ -592,15 +595,6 @@ bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
 {
     double d = SimCamParams::guide_rate * duration / 1000.0;
 
-    // after pier flip, North/South have opposite affect on declination
-    if (sim->pier_side == PIER_SIDE_WEST)
-    {
-        switch (direction) {
-        case NORTH: direction = SOUTH; break;
-        case SOUTH: direction = NORTH; break;
-        }
-    }
-
     switch (direction) {
     case WEST:    sim->ra_ofs += d;      break;
     case EAST:    sim->ra_ofs -= d;      break;
@@ -614,21 +608,21 @@ bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
 
 PierSide Camera_SimClass::GetPierSide(void) const
 {
-    return sim->pier_side;
+    return SimCamParams::pier_side;
 }
 
-void Camera_SimClass::SetPierSide(PierSide side)
+static PierSide OtherSide(PierSide side)
 {
-    sim->pier_side = side;
+    return side == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST;
 }
 
 void Camera_SimClass::FlipPierSide(void)
 {
-    sim->pier_side = sim->pier_side == PIER_SIDE_EAST ? PIER_SIDE_WEST : PIER_SIDE_EAST;
+    SimCamParams::pier_side = OtherSide(SimCamParams::pier_side);
     SimCamParams::cam_angle += 180.0;
     if (SimCamParams::cam_angle >= 360.0)
         SimCamParams::cam_angle -= 360.0;
-    Debug.AddLine("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f", sim->pier_side, SimCamParams::cam_angle);
+    Debug.AddLine("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f", SimCamParams::pier_side, SimCamParams::cam_angle);
 }
 
 #endif // SIMMODE==3
@@ -704,16 +698,19 @@ struct SimCamDialog : public wxDialog
     wxSlider *guide_rate;
     wxSlider *ao_angle;
     wxSlider *ao_step_size;
+    PierSide pier_side;
 
     SimCamDialog(wxWindow *parent);
     ~SimCamDialog() { }
     void OnReset(wxCommandEvent& event);
+    void OnPierFlip(wxCommandEvent& event);
 
     DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE(SimCamDialog, wxDialog)
-    EVT_BUTTON(wxRESET, SimCamDialog::OnReset)
+    EVT_BUTTON(wxID_RESET, SimCamDialog::OnReset)
+    EVT_BUTTON(wxID_CONVERT, SimCamDialog::OnPierFlip)
 END_EVENT_TABLE()
 
 static wxSizer *label_slider(wxWindow *parent, const wxString& label, wxSlider **pslider, int val, int minval, int maxval)
@@ -744,7 +741,10 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     sizer->Add(label_slider(this, _("Cam Angle"),    &cam_angle,    (int)floor(SimCamParams::cam_angle + 0.5), 0, 359));
     sizer->Add(label_slider(this, _("Guide Rate"),   &guide_rate,   (int)floor(SimCamParams::guide_rate * 100.0 / GUIDE_RATE_MAX), 0, 100));
 
-    sizer->Add(new wxButton(this, wxRESET, _("Reset")));
+    sizer->Add(new wxButton(this, wxID_CONVERT, _("Pier Flip")));
+    pier_side = SimCamParams::pier_side;
+
+    sizer->Add(new wxButton(this, wxID_RESET, _("Reset")));
 
     wxBoxSizer *main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(sizer, wxSizerFlags(0).Expand());
@@ -763,6 +763,17 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     seeing->SetValue((int)floor(SEEING_DEFAULT * 100.0 / SEEING_MAX));
     cam_angle->SetValue((int)floor(CAM_ANGLE_DEFAULT + 0.5));
     guide_rate->SetValue((int)floor(GUIDE_RATE_DEFAULT * 100.0 / GUIDE_RATE_MAX));
+    pier_side = PIER_SIDE_DEFAULT;
+}
+
+void SimCamDialog::OnPierFlip(wxCommandEvent& event)
+{
+    int angle = cam_angle->GetValue();
+    angle += 180;
+    if (angle >= 360)
+        angle -= 360;
+    cam_angle->SetValue(angle);
+    pier_side = OtherSide(pier_side);
 }
 
 void Camera_SimClass::ShowPropertyDialog()
@@ -779,6 +790,7 @@ void Camera_SimClass::ShowPropertyDialog()
         SimCamParams::seeing_scale =     (double) dlg.seeing->GetValue() * SEEING_MAX / 100.0;
         SimCamParams::cam_angle =        (double) dlg.cam_angle->GetValue();
         SimCamParams::guide_rate =       (double) dlg.guide_rate->GetValue() * GUIDE_RATE_MAX / 100.0;
+        SimCamParams::pier_side = dlg.pier_side;
         save_sim_params();
         sim->Initialize();
     }
