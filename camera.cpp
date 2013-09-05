@@ -70,6 +70,10 @@ static const double DefaultPixelSize = 0;
  #include "cam_QHY5II.h"
 #endif
 
+#if defined (QHY5LII)
+ #include "cam_QHY5LII.h"
+#endif
+
 #if defined (ORION_DSCI)
  #include "cam_StarShootDSCI.h"
 #endif
@@ -238,6 +242,9 @@ wxArrayString GuideCamera::List(void)
 #if defined (QHY5II)
     CameraList.Add(_T("QHY 5-II"));
 #endif
+#if defined (QHY5LII)
+    CameraList.Add(_T("QHY 5L-II"));
+#endif
 #if defined (SAC42)
     CameraList.Add(_T("SAC4-2"));
 #endif
@@ -360,6 +367,11 @@ GuideCamera *GuideCamera::Factory(wxString choice)
 #if defined (QHY5II)
         else if (choice.Find(_T("QHY 5-II")) + 1) {
             pReturn = new Camera_QHY5IIClass();
+        }
+#endif
+#if defined (QHY5LII)
+        else if (choice.Find(_T("QHY 5L-II")) + 1) {
+            pReturn = new Camera_QHY5LIIClass();
         }
 #endif
 #if defined (OPENSSAG)

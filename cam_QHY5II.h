@@ -34,20 +34,11 @@
 #ifndef QHY5IIDEF
 #define QHY5IIDEF
 
-class Camera_QHY5IIClass : public GuideCamera {
+#include "cam_QHY5IIbase.h"
+
+class Camera_QHY5IIClass : public Camera_QHY5IIBase {
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture();
-
-    bool    ST4PulseGuideScope(int direction, int duration);
-    void    ClearGuidePort();
-
     Camera_QHY5IIClass();
-private:
-    HINSTANCE CameraDLL;
-    unsigned char *RawBuffer;
 };
 #endif  //QHY5IIDEF
 

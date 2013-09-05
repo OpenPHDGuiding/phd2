@@ -1,9 +1,9 @@
 /*
- *  cameras.h
+ *  cam_QHY5II.cpp
  *  PHD Guiding
  *
  *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2012 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -32,72 +32,15 @@
  *
  */
 
-/* Current issues:
-- Need to fix the LE webcams to either not need wxVidCapLib or need a good way
-  to detect or package this
-  */
 
+#include "phd.h"
+#if defined (QHY5LII)
+#include "cam_QHY5LII.h"
 
-#ifndef OPENPHD
-/* Open PHD defines the available drivers in CMakeLists.txt rather than
-   statically here
- */
+Camera_QHY5LIIClass::Camera_QHY5LIIClass() :
+    Camera_QHY5IIBase(true)
+{
+    Name=_T("QHY 5L-II");
+}
 
-// Defines to define specific camera availability
-
-#if defined (ORION)
- #define ORION_DSCI
- #define SSAG
- #define SSPIAG
-
-#elif defined (__WINDOWS__)  // Windows cameras
- #define QGUIDE
- #define ORION_DSCI
- #define WDM_CAMERA
- #define SAC42
- #define ATIK16
- #define SSAG
- #define SSPIAG
- #define MEADE_DSI
- #define STARFISH
- #define SIMULATOR
- #define SXV
- #define ATIK_GEN3
- #define INOVA_PLC
- #define ASCOM_LATECAMERA
- #define SBIG
- #define SBIGROTATOR_CAMERA // must follow SBIG
- #define QHY5II
- #define QHY5LII
- #define OPENCV_CAMERA
- #define LE_CAMERA
- #define LE_SERIAL_CAMERA
- #define LE_PARALLEL_CAMERA
- #define LE_LXUSB_CAMERA
-
-#ifdef CLOSED_SOURCE
- #define OS_PL130  // Opticstar's library is closed
-#define FIREWIRE // This uses the The Imaging Source library, which is closed
 #endif
-
-#ifdef HAVE_WXVIDCAP   // These need wxVidCapLib, which needs to be built-up separately.  The LE-webcams could go to WDM
- #define VFW_CAMERA
-#endif
-
-#elif defined (__APPLE__)  // Mac cameras
- #define FIREWIRE
- #define SBIG
- #define MEADE_DSI
- #define STARFISH
- #define SIMULATOR
- #define SXV
- #define OPENSSAG
-#endif
-
-// Currently unused
-// #define NEB_SBIG   // This is for an on-hold project that would get the guide chip data from an SBIG connected in Neb
-
-extern bool DLLExists (wxString DLLName);
-#endif /* OPENPHD */
-
-#include "camera.h"
