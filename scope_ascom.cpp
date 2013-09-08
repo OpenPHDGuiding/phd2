@@ -661,6 +661,7 @@ double ScopeASCOM::GetDeclination(void)
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
+        m_bCanGetDeclination = false;
     }
 
     if (pScopeDriver)
