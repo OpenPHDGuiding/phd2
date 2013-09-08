@@ -224,6 +224,7 @@ wxArrayString Scope::List(void)
 #endif
 #ifdef GUIDE_ONSTEPGUIDER
     ScopeList.Add(_T("On-AO"));
+#endif
 #ifdef GUIDE_GPUSB
     ScopeList.Add(_T("GPUSB"));
 #endif
@@ -231,7 +232,6 @@ wxArrayString Scope::List(void)
     ScopeList.Add(_T("GPINT 3BC"));
     ScopeList.Add(_T("GPINT 378"));
     ScopeList.Add(_T("GPINT 278"));
-#endif
 #endif
 #ifdef GUIDE_VOYAGER
     ScopeList.Add(_T("Voyager"));
