@@ -392,7 +392,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         ++m_frameCounter;
 
         pGuider->UpdateGuideState(pNewFrame, !m_continueCapturing);
-        pNewFrame = NULL; // the guider owns in now
+        pNewFrame = NULL; // the guider owns it now
 
 #ifdef BRET_DODO
         if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING_PRIMARY)

@@ -113,8 +113,8 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
         unsigned sval;
 
         // make sure the star is not too near the edge
-        if (start_x < 0 || start_x + searchRegion >= pImg->Size.GetWidth() ||
-            start_y < 0 || start_y + searchRegion >= pImg->Size.GetHeight())
+        if (start_x < 0 || start_x + searchsize >= pImg->Size.GetWidth() ||
+            start_y < 0 || start_y + searchsize >= pImg->Size.GetHeight())
         {
             Result = STAR_TOO_NEAR_EDGE;
             throw ERROR_INFO("Star too near edge");
