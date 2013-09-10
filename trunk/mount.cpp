@@ -740,18 +740,21 @@ GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, wxString label)
 
 void Mount::AdjustForDeclination(void)
 {
-    // avoid division by zero and gross errors.  If the user didn't calibrate
-    // somewhere near the celestial equater, we don't do this
-    if (fabs(m_calDeclination) > (M_PI/2.0)*(2.0/3.0))
+    double newDeclination = GetDeclination();
+
+    if (newDeclination != m_calDeclination)             // Compensation required
     {
-        Debug.AddLine("skipping declination adjustment: too far from equator");
-    }
-    else
-    {
-        double newDeclination = GetDeclination();
-        m_xRate = (m_calXRate/cos(m_calDeclination))*cos(newDeclination);
-        Debug.AddLine("adjusted dec rate %.2f -> %.2f for dec %.2f -> dec %.2f",
+        // avoid division by zero and gross errors.  If the user didn't calibrate
+        // somewhere near the celestial equater, we don't do this
+        if (fabs(m_calDeclination) > (M_PI/2.0)*(2.0/3.0))
+            Debug.AddLine("skipping declination adjustment: too far from equator");
+        else
+        {
+            m_xRate = (m_calXRate/cos(m_calDeclination))*cos(newDeclination);
+            pFrame->SetStatusText ( _("Cal +"), 5 );            // Let the user know we're doing this
+            Debug.AddLine("Dec comp: XRate %.4f -> %.4f for dec %.2f -> dec %.2f",
                 m_calXRate, m_xRate, m_calDeclination, newDeclination);
+        }
     }
 }
 
