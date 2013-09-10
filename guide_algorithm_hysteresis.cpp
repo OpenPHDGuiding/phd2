@@ -210,7 +210,7 @@ GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHyster
 
     width = StringWidth(_T("000.00"));
     m_pHysteresis = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 0.05,_T("Hysteresis"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 1.0,_T("Hysteresis"));
     m_pHysteresis->SetDigits(2);
 
     DoAdd(_("Hysteresis"), m_pHysteresis,
@@ -283,7 +283,7 @@ GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHyster
     // Hysteresis
     width = StringWidth(_T("000.00"));
     m_pHysteresis = new wxSpinCtrlDouble(this, wxID_ANY,_T(""), wxDefaultPosition,
-            wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 0.05,_T("Hysteresis"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 1.0,_T("Hysteresis"));
     m_pHysteresis->SetDigits(2);
     m_pHysteresis->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnHysteresisSpinCtrlDouble, this);
     DoAdd(m_pHysteresis,_("Hys"));
