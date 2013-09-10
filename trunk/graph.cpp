@@ -114,23 +114,24 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     SetBackgroundColour(*wxBLACK);
 
-    m_pLengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,_T("foo"));
+    m_pLengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     m_pLengthButton->SetToolTip(_("Select the number of frames of history to display on the X-axis"));
     m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_pClient->m_length));
-    pButtonSizer->Add(m_pLengthButton, wxSizerFlags(0).Border(wxTOP, 5));
+    pButtonSizer->Add(m_pLengthButton, wxSizerFlags().Border(wxTOP, 5).Expand());
 
-    m_pHeightButton = new wxButton(this,BUTTON_GRAPH_HEIGHT,_T("foo"));
+    m_pHeightButton = new OptionsButton(this,BUTTON_GRAPH_HEIGHT, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     m_heightButtonLabelVal = 0;
     UpdateHeightButtonLabel();
-    pButtonSizer->Add(m_pHeightButton);
+    pButtonSizer->Add(m_pHeightButton, wxSizerFlags().Expand());
 
-    m_pSettingsButton = new wxButton(this,BUTTON_GRAPH_SETTINGS,_T("Settings"));
+    m_pSettingsButton = new OptionsButton(this, BUTTON_GRAPH_SETTINGS, _("Settings"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     m_pSettingsButton->SetToolTip(_("Graph settings"));
-    pButtonSizer->Add(m_pSettingsButton);
+    pButtonSizer->Add(m_pSettingsButton, wxSizerFlags().Expand());
 
     m_pClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"));
     m_pClearButton->SetToolTip(_("Clear graph data"));
-    pButtonSizer->Add(m_pClearButton);
+    m_pClearButton->SetBackgroundStyle(wxBG_STYLE_TRANSPARENT);
+    pButtonSizer->Add(m_pClearButton, wxSizerFlags().Expand());
 
     m_pCheckboxTrendlines = new wxCheckBox(this,CHECKBOX_GRAPH_TRENDLINES,_("Trendlines"));
     m_pCheckboxTrendlines->SetForegroundColour(*wxLIGHT_GREY);

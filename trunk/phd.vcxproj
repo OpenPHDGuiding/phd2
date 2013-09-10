@@ -229,6 +229,7 @@
     <ClCompile Include="myframe.cpp" />
     <ClCompile Include="myframe_events.cpp" />
     <ClCompile Include="onboard_st4.cpp" />
+    <ClCompile Include="optionsbutton.cpp" />
     <ClCompile Include="parallelport.cpp" />
     <ClCompile Include="parallelport_win32.cpp" />
     <ClCompile Include="phd.cpp">
@@ -333,6 +334,7 @@
     <ClInclude Include="mount.h" />
     <ClInclude Include="myframe.h" />
     <ClInclude Include="onboard_st4.h" />
+    <ClInclude Include="optionsbutton.h" />
     <ClInclude Include="parallelport.h" />
     <ClInclude Include="parallelports.h" />
     <ClInclude Include="parallelport_win32.h" />

@@ -138,6 +138,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 
 #include "phdconfig.h"
 #include "configdialog.h"
+#include "optionsbutton.h"
 #include "usImage.h"
 #include "point.h"
 #include "star.h"

@@ -1,9 +1,9 @@
 /*
- *  target.h
+ *  optionsbutton.h
  *  PHD Guiding
  *
- *  Created by Sylvain Girard
- *  Copyright (c) 2013 Sylvain Girard
+ *  Created by Andy Galasso
+ *  Copyright (c) 2013 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,8 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
+ *    Neither the name of Craig Stark, Stark Labs,
+ *     Bret McKee, Dad Dog Development, Ltd, nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -30,72 +31,37 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
  */
+#ifndef OPTIONSBUTTON_INCLUDED
+#define OPTIONSBUTTON_INCLUDED
 
-#ifndef TARGET_H_INCLUDED
-#define TARGET_H_INCLUDED
-
-class TargetWindow;
-
-class TargetClient : public wxWindow
+class OptionsButton : public wxPanel
 {
-    TargetClient(wxWindow *parent);
-    ~TargetClient(void);
+    bool m_highlighted;
+    wxString m_label;
+    wxBitmap *m_bmp;
+    wxBitmap *m_bmp_bold;
 
-    static const unsigned m_maxHistorySize = 400;
-
-    int m_minLength;
-    int m_maxLength;
-
-    int m_minHeight;
-    int m_maxHeight;
-
-    struct
-    {
-        double ra;
-        double dec;
-    } m_history[m_maxHistorySize];
-
-    int m_nItems;    // # of items in the history
-    int m_length;     // # of items to display
-    double m_zoom;
-
-    void AppendData (double ra, double dec);
-
-    void OnPaint(wxPaintEvent& evt);
-
-    friend class TargetWindow;
-
-    DECLARE_EVENT_TABLE()
-};
-
-class TargetWindow : public wxWindow
-{
 public:
-    TargetWindow(wxWindow *parent);
-    ~TargetWindow(void);
 
-    void OnButtonLength(wxCommandEvent& evt);
-    void OnMenuLength(wxCommandEvent& evt);
-    void OnButtonClear(wxCommandEvent& evt);
-    void OnButtonZoomIn(wxCommandEvent& evt);
-    void OnButtonZoomOut(wxCommandEvent& evt);
+    OptionsButton(wxWindow *parent, wxWindowID id, const wxString& label,
+                  const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+                  long style = wxTAB_TRAVERSAL, const wxString& name = "OptionsButton");
+    ~OptionsButton();
 
-    void AppendData(double ra, double dec);
-    void SetState(bool is_active);
+    void SetLabel(const wxString& label);
 
 private:
-    OptionsButton *LengthButton;
-    wxButton *ClearButton;
-    wxButton *ZoomInButton;
-    wxButton *ZoomOutButton;
 
-    TargetClient *m_pClient;
+    wxSize GetMinSize() const;
 
-    bool m_visible;
+    void OnPaint(wxPaintEvent& evt);
+    void OnMouseEnter(wxMouseEvent& evt);
+    void OnMouseMove(wxMouseEvent& evt);
+    void OnMouseLeave(wxMouseEvent& evt);
+    void OnClick(wxMouseEvent& evt);
 
     DECLARE_EVENT_TABLE()
 };
 
-#endif // TARGET_H_INCLUDED
+#endif

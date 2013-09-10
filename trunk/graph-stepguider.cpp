@@ -57,13 +57,13 @@ GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent):
 
     m_pClient->m_length = pConfig->Global.GetInt("/graph_stepguider/length", 1);
     wxString label = wxString::Format(_T("%3d"),m_pClient->m_length);
-    LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,label,wxPoint(10,10),wxSize(80,-1));
+    LengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH,label,wxPoint(10,10),wxSize(80,-1),wxALIGN_CENTER_HORIZONTAL);
     LengthButton->SetToolTip(_("Select the number of frames of history to display"));
 
     ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxPoint(10,100),wxSize(80,-1));
     ClearButton->SetToolTip(_("Clear graph data"));
 
-    pLeftSizer->Add(LengthButton, wxSizerFlags().Center().Border(wxALL,3));
+    pLeftSizer->Add(LengthButton, wxSizerFlags().Center().Border(wxALL,3).Expand());
     pLeftSizer->Add(ClearButton, wxSizerFlags().Center().Border(wxALL,3));
 
     pMainSizer->Add(m_pClient, wxSizerFlags().Border(wxALL,3).Expand().Proportion(1));
