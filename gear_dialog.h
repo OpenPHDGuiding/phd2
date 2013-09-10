@@ -42,7 +42,7 @@ class GearDialog: public wxDialog
     StepGuider  *m_pStepGuider;
 
     wxChoice *m_profiles;
-    wxButton *m_btnProfileManage;
+    OptionsButton *m_btnProfileManage;
     wxMenu *m_menuProfileManage;
 
     wxChoice *m_pCameras;

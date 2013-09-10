@@ -60,7 +60,7 @@ TargetWindow::TargetWindow(wxWindow *parent) :
     pMainSizer->Add(pLeftSizer);
 
     wxString label = wxString::Format("%3d", m_pClient->m_length);
-    LengthButton = new wxButton(this,BUTTON_GRAPH_LENGTH,label,wxDefaultPosition,wxSize(80,-1));
+    LengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH,label,wxDefaultPosition,wxSize(80,-1),wxALIGN_CENTER_HORIZONTAL);
     LengthButton->SetToolTip(_("Select the number of frames of history to display"));
 
     wxBoxSizer *pZoomSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -77,7 +77,7 @@ TargetWindow::TargetWindow(wxWindow *parent) :
     ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxDefaultPosition,wxSize(80,-1));
     ClearButton->SetToolTip(_("Clear graph data"));
 
-    pLeftSizer->Add(LengthButton, wxSizerFlags().Center().Border(wxTOP | wxRIGHT | wxLEFT,5));
+    pLeftSizer->Add(LengthButton, wxSizerFlags().Center().Border(wxTOP | wxRIGHT | wxLEFT,5).Expand());
     pLeftSizer->Add(pZoomSizer, wxSizerFlags().Center().Border(wxRIGHT | wxLEFT,5));
     pLeftSizer->Add(ClearButton, wxSizerFlags().Center().Border(wxRIGHT | wxLEFT,5));
 

@@ -93,7 +93,7 @@ public:
     bool SetState(bool is_active);
 
 private:
-    wxButton *LengthButton;
+    OptionsButton *LengthButton;
     wxButton *ClearButton;
 
     GraphStepguiderClient *m_pClient;

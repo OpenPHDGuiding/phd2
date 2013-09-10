@@ -140,10 +140,10 @@ public:
     wxColor GetDecOrDyColor(void);
 
 private:
-    wxButton *m_pLengthButton;
-    wxButton *m_pHeightButton;
+    OptionsButton *m_pLengthButton;
+    OptionsButton *m_pHeightButton;
     int m_heightButtonLabelVal; // value currently displayed on height button: <0 for arc-sec, >0 for pixels
-    wxButton *m_pSettingsButton;
+    OptionsButton *m_pSettingsButton;
     wxButton *m_pClearButton;
     wxCheckBox *m_pCheckboxTrendlines;
     wxStaticText *RALabel;

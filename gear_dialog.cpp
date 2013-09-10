@@ -165,7 +165,7 @@ void GearDialog::Initialize(void)
     m_menuProfileManage->Append(GEAR_PROFILE_RENAME, _("Rename"), _("Rename the selected profile"));
     m_menuProfileManage->Append(BUTTON_ADVANCED, _("Settings..."), _("Open the advanced settings dialog"));
 
-    m_btnProfileManage = new wxButton(this, GEAR_PROFILE_MANAGE, _("Manage Profiles..."), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    m_btnProfileManage = new OptionsButton(this, GEAR_PROFILE_MANAGE, _("Manage Profiles"));
     m_btnProfileManage->SetToolTip(_("Create a new Equipment Profile, or delete or rename the selected Equipment Profile"));
     profilesSizer->Add(m_btnProfileManage, sizerButtonFlags);
 
