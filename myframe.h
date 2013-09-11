@@ -202,11 +202,12 @@ public:
     void OnMoveComplete(wxThreadEvent& evt);
     void LoadProfileSettings(void);
     void UpdateTitle(void);
+    void UpdateDarksButton(void);
 
     bool StartServer(bool state);
     bool FlipRACal();
     int RequestedExposureDuration();
-    bool Voyager_Connect();
+    void LoadDarkFrames(const wxString& filename);
     int GetFocalLength(void);
     int GetLanguage(void);
     int GetInstanceNumber() const { return m_instanceNumber; }

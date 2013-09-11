@@ -558,6 +558,20 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
     UpdateButtonState();
 }
 
+static void
+AutoLoadDarks()
+{
+    if (pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true))
+    {
+        wxString darks = pConfig->Profile.GetString("/camera/DarksFile", wxEmptyString);
+        if (!darks.IsEmpty())
+        {
+            Debug.AddLine(wxString::Format("auto-loading darks from %s", darks));
+            pFrame->LoadDarkFrames(darks);
+        }
+    }
+}
+
 void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
 {
     try
@@ -592,6 +606,8 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
         Debug.AddLine("HasShutter=%d", m_pCamera->HasShutter);
         Debug.AddLine("HasSubFrames=%d", m_pCamera->HasSubframes);
         Debug.AddLine("ST4HasGuideOutput=%d", m_pCamera->ST4HasGuideOutput());
+
+        AutoLoadDarks();
     }
     catch (wxString Msg)
     {

@@ -183,8 +183,8 @@ static bool load_multi(GuideCamera *camera, const wxString& fname)
 
     try
     {
-        if (!wxFileExists(fname)) {
-            wxMessageBox(_("File does not exist - cannot load"));
+        if (!wxFileExists(fname))
+        {
             throw ERROR_INFO("File does not exist");
         }
 
@@ -264,7 +264,10 @@ static bool load_multi(GuideCamera *camera, const wxString& fname)
         bError = true;
     }
 
-    if (fptr) fits_close_file(fptr, &status);
+    if (fptr)
+    {
+        fits_close_file(fptr, &status);
+    }
 
     return bError;
 }
@@ -275,7 +278,8 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
 
     if (evt.GetId() == MENU_SAVEDARK)
     {
-        if (!pCamera || pCamera->Darks.empty()) {
+        if (!pCamera || pCamera->Darks.empty())
+        {
             wxMessageBox(_("You haven't captured any dark frames - nothing to save"));
             return;
         }
@@ -283,15 +287,29 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
         fname = wxFileSelector( _("Save darks (FITS Image)"), default_path,
                                 wxEmptyString, wxT("fit"),
                                 wxT("FITS files (*.fit)|*.fit"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-        if (fname.IsEmpty()) return;  // Check for canceled dialog
+        if (fname.IsEmpty())
+        {
+            // dialog canceled
+            return;
+        }
+
         pConfig->Global.SetString("/darkFilePath", wxFileName(fname).GetPath());
-        if (!fname.EndsWith(_T(".fit"))) fname.Append(_T(".fit"));
+        if (!fname.EndsWith(_T(".fit")))
+        {
+            fname.Append(_T(".fit"));
+        }
+
         if (wxFileExists(fname))
+        {
             fname = _T("!") + fname;
+        }
+
         if (save_multi(pCamera->Darks, fname))
         {
             wxMessageBox (_("Error saving FITS file"));
         }
+
+        pConfig->Profile.SetString("/camera/DarksFile", fname);
     }
     else if (evt.GetId() == MENU_LOADDARK)
     {
@@ -304,24 +322,36 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
         fname = wxFileSelector( _("Load darks (FITS Image)"), default_path,
                                (const wxChar *)NULL,
                                wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_CHANGE_DIR);
-        if (fname.IsEmpty()) return;  // Check for canceled dialog
+        if (fname.IsEmpty())
+        {
+            // dialog canceled
+            return;
+        }
         pConfig->Global.SetString("/darkFilePath", wxFileName(fname).GetPath());
 
-        if (load_multi(pCamera, fname))
-        {
-            SetStatusText(_("Darks not loaded"));
-        }
-        else
-        {
-            pCamera->SelectDark(m_exposureDuration);
-            tools_menu->FindItem(MENU_CLEARDARK)->Enable(true);
-            Dark_Button->SetLabel(_("Redo Dark"));
-            SetStatusText(_("Darks loaded"));
-        }
+        LoadDarkFrames(fname);
     }
 }
 
-void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event)) {
+void MyFrame::LoadDarkFrames(const wxString& filename)
+{
+    if (load_multi(pCamera, filename))
+    {
+        Debug.AddLine(wxString::Format("failed to load dark frames from %s", filename));
+        SetStatusText(_("Darks not loaded"));
+    }
+    else
+    {
+        pCamera->SelectDark(m_exposureDuration);
+        tools_menu->FindItem(MENU_CLEARDARK)->Enable(true);
+        Dark_Button->SetLabel(_("Redo Dark"));
+        SetStatusText(_("Darks loaded"));
+        pConfig->Profile.SetString("/camera/DarksFile", filename);
+    }
+}
+
+void MyFrame::OnIdle(wxIdleEvent& WXUNUSED(event))
+{
 /*  if (ASCOM_IsMoving())
         SetStatusText(_T("Moving"),2);
     else
@@ -553,10 +583,18 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt))
 {
-    if (!pCamera->CurrentDarkFrame) return;
+    if (!pCamera->CurrentDarkFrame)
+    {
+        return;
+    }
+    pCamera->ClearDarks();
+    UpdateDarksButton();
+}
+
+void MyFrame::UpdateDarksButton(void)
+{
     Dark_Button->SetLabel(_("Take Dark"));
     Dark_Button->SetForegroundColour(wxColour(0,0,0));
-    pCamera->ClearDarks();
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
 }
 

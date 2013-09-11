@@ -182,6 +182,7 @@ GuideCamera::GuideCamera(void)
 GuideCamera::~GuideCamera(void)
 {
     ClearDarks();
+    pFrame->UpdateDarksButton();
 
     if (Connected)
     {
@@ -655,6 +656,12 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
         DoAdd(_("Pixel size (µm)"), m_pPixelSize,
                _("Used with the guide telescope focal length to display guiding error in arc-sec."));
     }
+
+    m_pLoadDarks = new wxCheckBox(pParent, wxID_ANY, _("Auto load dark frames"), wxDefaultPosition, wxSize(75,-1));
+    DoAdd(m_pLoadDarks, _("Check to reload dark frames automatically when you connect the camera. First, you'll need to capture dark frames "
+                          "for any exposure durations you will be using and save the dark frames to a .fit file using the Save Dark Frames "
+                          "option in the File menu. Then, when this option is selected, the dark frames will be loaded from the file whenever "
+                          "the camera is connected."));
 }
 
 GuideCamera::CameraConfigDialogPane::~CameraConfigDialogPane(void)
@@ -743,7 +750,11 @@ void GuideCamera::CameraConfigDialogPane::LoadValues(void)
                 break;
         }
     }
+
     m_pPixelSize->SetValue(wxString::Format(_T("%6.3f"), m_pCamera->GetCameraPixelSize()));
+
+    bool autoLoadDarks = pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true);
+    m_pLoadDarks->SetValue(autoLoadDarks);
 }
 
 void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
@@ -793,9 +804,13 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
                 break;
         }
     }
+
     double pixel_size;
     m_pPixelSize->GetValue().ToDouble(&pixel_size);
     m_pCamera->SetCameraPixelSize(pixel_size);
+
+    bool autoLoadDarks = m_pLoadDarks->GetValue();
+    pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", autoLoadDarks);
 }
 
 wxString GuideCamera::GetSettingsSummary()
