@@ -119,13 +119,19 @@ void MyFrame::OnOverlay(wxCommandEvent &evt) {
 
 void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
 {
-    if (CaptureActive) return;  // Looping an exposure already
+    if (CaptureActive)
+    {
+        return;  // Looping an exposure already
+    }
+
     wxString fname = wxFileSelector( _("Save FITS Image"), (const wxChar *)NULL,
                           (const wxChar *)NULL,
-                           wxT("fit"), wxT("FITS files (*.fit)|*.fit"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+                           wxT("fit"), wxT("FITS files (*.fit)|*.fit"),wxFD_SAVE | wxFD_OVERWRITE_PROMPT,
+                           this);
 
     if (fname.IsEmpty())
         return;  // Check for canceled dialog
+
     if (wxFileExists(fname))
         fname = _T("!") + fname;
 
@@ -286,7 +292,8 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
         wxString default_path = pConfig->Global.GetString("/darkFilePath", wxEmptyString);
         fname = wxFileSelector( _("Save darks (FITS Image)"), default_path,
                                 wxEmptyString, wxT("fit"),
-                                wxT("FITS files (*.fit)|*.fit"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+                                wxT("FITS files (*.fit)|*.fit"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT,
+                                this);
         if (fname.IsEmpty())
         {
             // dialog canceled
@@ -320,8 +327,9 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
         }
         wxString default_path = pConfig->Global.GetString("/darkFilePath", wxEmptyString);
         fname = wxFileSelector( _("Load darks (FITS Image)"), default_path,
-                               (const wxChar *)NULL,
-                               wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_CHANGE_DIR);
+                               wxEmptyString,
+                               wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_CHANGE_DIR,
+                               this);
         if (fname.IsEmpty())
         {
             // dialog canceled

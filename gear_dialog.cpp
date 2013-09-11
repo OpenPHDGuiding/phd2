@@ -40,6 +40,8 @@ BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_MENU(GEAR_PROFILE_NEW, GearDialog::OnProfileNew)
     EVT_MENU(GEAR_PROFILE_DELETE, GearDialog::OnProfileDelete)
     EVT_MENU(GEAR_PROFILE_RENAME, GearDialog::OnProfileRename)
+    EVT_MENU(GEAR_PROFILE_LOAD, GearDialog::OnProfileLoad)
+    EVT_MENU(GEAR_PROFILE_SAVE, GearDialog::OnProfileSave)
     EVT_MENU(BUTTON_ADVANCED, GearDialog::OnAdvanced)
 
     EVT_BUTTON(GEAR_BUTTON_CONNECT_ALL, GearDialog::OnButtonConnectAll)
@@ -163,6 +165,8 @@ void GearDialog::Initialize(void)
     m_menuProfileManage->Append(GEAR_PROFILE_NEW, _("New"), _("Create a new profile, optionally copying from another profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_DELETE, _("Delete"), _("Delete the selected profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_RENAME, _("Rename"), _("Rename the selected profile"));
+    m_menuProfileManage->Append(GEAR_PROFILE_LOAD, _("Import..."), _("Load a profile from a file"));
+    m_menuProfileManage->Append(GEAR_PROFILE_SAVE, _("Export..."), _("Save the selected profile to a file"));
     m_menuProfileManage->Append(BUTTON_ADVANCED, _("Settings..."), _("Open the advanced settings dialog"));
 
     m_btnProfileManage = new OptionsButton(this, GEAR_PROFILE_MANAGE, _("Manage Profiles"));
@@ -1006,6 +1010,59 @@ void GearDialog::OnProfileRename(wxCommandEvent& event)
     m_profiles->SetString(sel, newname);
     pFrame->UpdateTitle();
     Layout();
+}
+
+void GearDialog::OnProfileLoad(wxCommandEvent& event)
+{
+    wxString default_path = pConfig->Global.GetString("/profileFilePath", wxEmptyString);
+    wxString fname = wxFileSelector(_("Import PHD Equipment Profile"), default_path, wxEmptyString,
+                               wxT("phd"), wxT("PHD profile files (*.phd)|*.phd"), wxFD_OPEN | wxFD_CHANGE_DIR,
+                               this);
+    if (fname.IsEmpty())
+    {
+        // dialog canceled
+        return;
+    }
+    pConfig->Global.SetString("/profileFilePath", wxFileName(fname).GetPath());
+
+    if (pConfig->ReadProfile(fname))
+    {
+        wxLogError("Cannot open file '%s'.", fname);
+        return;
+    }
+
+    wxArrayString profiles = pConfig->ProfileNames();
+    m_profiles->Set(profiles);
+    m_profiles->SetStringSelection(pConfig->GetCurrentProfile());
+    Layout();
+
+    wxCommandEvent dummy;
+    OnProfileChoice(dummy);
+}
+
+void GearDialog::OnProfileSave(wxCommandEvent& event)
+{
+    wxString default_path = pConfig->Global.GetString("/profileFilePath", wxEmptyString);
+    wxString fname = wxFileSelector(_("Export PHD Equipment Profile"), default_path,
+        pConfig->GetCurrentProfile() + wxT(".phd"), wxT("phd"),
+        wxT("PHD profile files (*.phd)|*.phd"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, this);
+
+    if (fname.IsEmpty())
+    {
+        // dialog canceled
+        return;
+    }
+
+    pConfig->Global.SetString("/profileFilePath", wxFileName(fname).GetPath());
+    if (!fname.EndsWith(_T(".phd")))
+    {
+        fname.Append(_T(".phd"));
+    }
+
+    if (pConfig->WriteProfile(fname))
+    {
+        wxLogError("Cannot write file '%s'.", fname);
+    }
 }
 
 void GearDialog::OnAdvanced(wxCommandEvent& event)

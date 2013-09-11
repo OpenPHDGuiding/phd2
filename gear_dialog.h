@@ -81,6 +81,8 @@ private:
     void OnProfileNew(wxCommandEvent& event);
     void OnProfileDelete(wxCommandEvent& event);
     void OnProfileRename(wxCommandEvent& event);
+    void OnProfileLoad(wxCommandEvent& event);
+    void OnProfileSave(wxCommandEvent& event);
     void OnAdvanced(wxCommandEvent& event);
 
     void OnButtonConnectAll(wxCommandEvent& event);
