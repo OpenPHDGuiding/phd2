@@ -122,6 +122,8 @@ public:
     bool CloneProfile(const wxString& dest, const wxString& source);
     void DeleteProfile(const wxString& name);
     bool RenameProfile(const wxString& oldname, const wxString& newname);
+    bool WriteProfile(const wxString& filename);
+    bool ReadProfile(const wxString& filename);
     wxArrayString ProfileNames(void);
     unsigned int NumProfiles(void);
 

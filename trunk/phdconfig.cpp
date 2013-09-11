@@ -35,8 +35,13 @@
  */
 
 #include "phd.h"
+#include <wx/wfstream.h>
+#include <wx/txtstrm.h>
+#include <wx/tokenzr.h>
 
 wxString PhdConfig::DefaultProfileName = _("My Equipment");
+
+#define PROFILE_STREAM_VERSION "1"
 
 ConfigSection::ConfigSection(void)
     : m_pConfig(NULL)
@@ -481,6 +486,179 @@ bool PhdConfig::RenameProfile(const wxString& oldname, const wxString& newname)
     }
 
     Profile.m_pConfig->Write(wxString::Format("/profile/%d/name", id), newname);
+    return false;
+}
+
+bool PhdConfig::ReadProfile(const wxString& filename)
+{
+    wxFileInputStream is(filename);
+    if (!is.IsOk())
+    {
+        Debug.AddLine(wxString::Format("Cannot open file '%s'.", filename));
+        return true;
+    }
+    wxTextInputStream tis(is);
+
+    wxString s = tis.ReadLine();
+    if (s != "PHD Profile " PROFILE_STREAM_VERSION)
+    {
+        Debug.AddLine(wxString::Format("invalid profile file '%s'", filename));
+        return true;
+    }
+
+    // use the filename as the profile name
+    wxFileName fname(filename);
+    wxString profileName = fname.GetName();
+
+    // if a profile exists with this name, delete it
+
+    int id = GetProfileId(profileName);
+    if (id > 0)
+    {
+        Global.m_pConfig->DeleteGroup(wxString::Format("/profile/%d", id));
+    }
+
+    CreateProfile(profileName);
+    SetCurrentProfile(profileName);
+
+    while (!is.Eof())
+    {
+        wxString s = tis.ReadLine();
+        if (s.IsEmpty())
+            continue;
+        wxStringTokenizer tokenizer(s, "\t\r\n");
+        wxString name = tokenizer.GetNextToken();
+        // skip the stored name as we are using the file name for the profile name
+        if (name == "/name")
+            continue;
+        wxString typestr = tokenizer.GetNextToken();
+        long type;
+        if (!typestr.ToLong(&type))
+        {
+            Debug.AddLine(wxString::Format("bad type '%s' in file; line = %s", typestr, s));
+            continue;
+        }
+        wxString val = tokenizer.GetString();
+        val.Trim();
+        switch ((wxConfigBase::EntryType) type)
+        {
+        case wxConfigBase::Type_String:
+            Profile.SetString(name, val);
+            break;
+        case wxConfigBase::Type_Boolean: {
+            long lval;
+            if (!val.ToLong(&lval))
+            {
+                Debug.AddLine(wxString::Format("bad bool val '%s' in file; line = %s", val, s));
+            }
+            else
+            {
+                Profile.SetBoolean(name, lval ? true : false);
+            }
+            break;
+        }
+        case wxConfigBase::Type_Integer: {
+            long lval;
+            if (!val.ToLong(&lval))
+            {
+                Debug.AddLine(wxString::Format("bad int val '%s' in file; line = %s", val, s));
+            }
+            else
+            {
+                Profile.SetLong(name, lval);
+            }
+            break;
+        }
+        case wxConfigBase::Type_Float: {
+            double dval;
+            if (!val.ToDouble(&dval))
+            {
+                Debug.AddLine(wxString::Format("bad float val '%s' in file; line = %s", val, s));
+            }
+            else
+            {
+                Profile.SetDouble(name, dval);
+            }
+            break;
+        }
+        default:
+            Debug.AddLine(wxString::Format("bad type '%s' in file; line = %s", typestr, s));
+            break;
+        }
+    }
+
+    return false;
+}
+
+static void WriteVal(wxTextOutputStream& os, wxConfigBase *cfg, const wxString& key, const wxString& prefix)
+{
+    wxString sval;
+    wxConfigBase::EntryType type = cfg->GetEntryType(key);
+    switch (type) {
+    case wxConfigBase::Type_String: {
+        wxString val;
+        cfg->Read(key, &val);
+        sval = val;
+        break;
+    }
+    case wxConfigBase::Type_Boolean: {
+        bool val;
+        cfg->Read(key, &val);
+        sval = wxString(val ? "1" : "0");
+        break;
+    }
+    case wxConfigBase::Type_Integer: {
+        long val;
+        cfg->Read(key, &val);
+        sval = wxString::Format("%lu", val);
+        break;
+    }
+    case wxConfigBase::Type_Float: {
+        double val;
+        cfg->Read(key, &val);
+        sval = wxString::Format("%g", val);
+        break;
+    }
+    }
+
+    os.WriteString(wxString::Format("%s\t%d\t%s\n", key.substr(prefix.length()), (int) type, sval));
+}
+
+static void WriteGroup(wxTextOutputStream& os, wxConfigBase *cfg, const wxString& group, const wxString& prefix)
+{
+    wxString str;
+    long cookie;
+
+    AutoConfigPath changer(cfg, group);
+
+    bool more = cfg->GetFirstGroup(str, cookie);
+    while (more)
+    {
+        WriteGroup(os, cfg, group + "/" + str, prefix);
+        more = cfg->GetNextGroup(str, cookie);
+    }
+
+    more = cfg->GetFirstEntry(str, cookie);
+    while (more)
+    {
+        WriteVal(os, cfg, group + "/" + str, prefix);
+        more = cfg->GetNextEntry(str, cookie);
+    }
+}
+
+bool PhdConfig::WriteProfile(const wxString& filename)
+{
+    wxFileOutputStream os(filename);
+    if (!os.IsOk())
+    {
+        return true;
+    }
+    wxTextOutputStream tos(os);
+
+    tos.WriteString("PHD Profile " PROFILE_STREAM_VERSION "\n");
+    wxString profile = wxString::Format("/profile/%d", m_currentProfileId);
+    WriteGroup(tos, Profile.m_pConfig, profile, profile);
+
     return false;
 }
 
