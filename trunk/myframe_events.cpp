@@ -328,7 +328,7 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
         wxString default_path = pConfig->Global.GetString("/darkFilePath", wxEmptyString);
         fname = wxFileSelector( _("Load darks (FITS Image)"), default_path,
                                wxEmptyString,
-                               wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_CHANGE_DIR,
+                               wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_FILE_MUST_EXIST,
                                this);
         if (fname.IsEmpty())
         {

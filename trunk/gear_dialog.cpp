@@ -1015,20 +1015,26 @@ void GearDialog::OnProfileRename(wxCommandEvent& event)
 void GearDialog::OnProfileLoad(wxCommandEvent& event)
 {
     wxString default_path = pConfig->Global.GetString("/profileFilePath", wxEmptyString);
-    wxString fname = wxFileSelector(_("Import PHD Equipment Profile"), default_path, wxEmptyString,
-                               wxT("phd"), wxT("PHD profile files (*.phd)|*.phd"), wxFD_OPEN | wxFD_CHANGE_DIR,
-                               this);
-    if (fname.IsEmpty())
-    {
-        // dialog canceled
-        return;
-    }
-    pConfig->Global.SetString("/profileFilePath", wxFileName(fname).GetPath());
 
-    if (pConfig->ReadProfile(fname))
+    wxFileDialog dlg(this, _("Import PHD Equipment Profiles"), default_path, wxEmptyString,
+        wxT("PHD profile files (*.phd)|*.phd"), wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
+
+    if (dlg.ShowModal() == wxID_CANCEL)
     {
-        wxLogError("Cannot open file '%s'.", fname);
-        return;
+            return;
+    }
+
+    wxArrayString paths;
+    dlg.GetPaths(paths);
+
+    for (size_t i = 0; i < paths.GetCount(); i++)
+    {
+        wxString path = paths[i];
+
+        if (i == 0)
+            pConfig->Global.SetString("/profileFilePath", wxFileName(path).GetPath());
+
+        pConfig->ReadProfile(path);
     }
 
     wxArrayString profiles = pConfig->ProfileNames();
