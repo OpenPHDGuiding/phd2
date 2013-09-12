@@ -191,7 +191,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pGuider = new GuiderOneStar(this);
     pGuider->LoadProfileSettings();
 
-    this->SetMinSize(wxSize(800,600));
+    SetMinSize(wxSize(400,300));
 
     wxString geometry = pConfig->Global.GetString("/geometry", wxEmptyString);
     if (geometry == wxEmptyString)
