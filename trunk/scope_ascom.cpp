@@ -673,15 +673,16 @@ double ScopeASCOM::GetDeclination(void)
 
     return dReturn;
 }
-// Return RA and Dec guide rates in native ASCOM units, degrees/sec. Throw error only if the interface table pointer is no good, otherwise just log results
+// Return RA and Dec guide rates in native ASCOM units, degrees/sec. 
 // Convention is, apparently, to return true on an error
 bool ScopeASCOM::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
 {
     IDispatch *pScopeDriver = NULL;
-    bool bError = false;
+    bool bError = true;
 
     if (m_bCanGetGuideRates)            // Here to keep from beating our head against the wall and generating logged errors
     {
+        bError = false;
         try
         {
 
@@ -704,19 +705,17 @@ bool ScopeASCOM::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
 
             if(FAILED(hr = pScopeDriver->Invoke(dispid_decguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
             {
-                bError = true;
-                Debug.AddLine ("GuideRateDeclination() fails");
+                throw ERROR_INFO("ASCOM Scope: GuideRateDec() failed");
             }
-            else
-                *pDecGuideRate = vRes.dblVal;
+
+            *pDecGuideRate = vRes.dblVal;
 
             if(FAILED(hr = pScopeDriver->Invoke(dispid_raguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
             {
-                bError = true;
-                Debug.AddLine ("GuideRateRightAscension () fails");
+                throw ERROR_INFO("ASCOM Scope: GuideRateRA() failed");
             }
-            else
-                *pRAGuideRate = vRes.dblVal;
+
+            *pRAGuideRate = vRes.dblVal;
 
         }
         catch (wxString Msg)
@@ -732,8 +731,6 @@ bool ScopeASCOM::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
 
         Debug.AddLine("ScopeASCOM::GetGuideRates() returns %u %.4f %.4f", bError, *pDecGuideRate, *pRAGuideRate);
     }
-    else
-        bError = true;
 
     return (bError);
 }

@@ -800,8 +800,16 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
 
     if (dlog->ShowModal() == wxID_OK)
     {
+        Debug.AddLine("User exited setup dialog with 'ok'");    // Make things more clear in the debug log
         dlog->UnloadValues();
         pGraphLog->UpdateControls();
+
+    }
+    else                // Cancel event may require non-trivial undos
+    {
+        Debug.AddLine("User exited setup dialog with 'cancel'");
+        dlog->Undo();
+
     }
 }
 
