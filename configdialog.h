@@ -45,6 +45,7 @@ public:
 
     virtual void LoadValues(void) = 0;
     virtual void UnloadValues(void) = 0;
+    virtual void Undo();
 
 protected:
     void DoAdd(wxSizer *pSizer);

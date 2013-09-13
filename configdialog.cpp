@@ -101,3 +101,8 @@ int ConfigDialogPane::StringArrayWidth(wxString string[], int nElements)
 
     return width;
 }
+// Default implementation does nothing because most config dialogs don't need an 'undo' function - simply not calling 'Unload' prevents any pending changes from 
+// being saved.  But if non-scalar objects are involved - as in guide algorithms - a specific Undo may be required
+void ConfigDialogPane::Undo(void)
+{
+}

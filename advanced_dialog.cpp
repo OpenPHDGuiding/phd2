@@ -213,6 +213,19 @@ void AdvancedDialog::UnloadValues(void)
     }
 }
 
+void AdvancedDialog::Undo(void)
+{
+    ConfigDialogPane *const panes[] =
+        { m_pFramePane, m_pMountPane, m_pSecondaryMountPane, m_pGuiderPane, m_pCameraPane };
+
+    for (int i = 0; i < WXSIZEOF(panes); i++)
+    {
+        ConfigDialogPane *const pane = panes[i];
+        if (pane)
+            pane->Undo();
+    }
+}
+
 void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
     // Prior to this we check to make sure the current camera is a WDM camera (main dialog) but...
 

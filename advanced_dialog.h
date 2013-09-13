@@ -49,6 +49,7 @@ public:
 
     void LoadValues(void);
     void UnloadValues(void);
+    void Undo(void);
 private:
     void OnSetupCamera(wxCommandEvent& event);
     DECLARE_EVENT_TABLE()

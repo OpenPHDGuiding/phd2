@@ -82,6 +82,8 @@ protected:
         wxCheckBox *m_pEnableGuide;
         wxChoice   *m_pXGuideAlgorithmChoice;
         wxChoice   *m_pYGuideAlgorithmChoice;
+        int        m_iInitXGuideAlgorithmSelection;
+        int        m_iInitYGuideAlgorithmSelection;
         ConfigDialogPane *m_pXGuideAlgorithmConfigDialogPane;
         ConfigDialogPane *m_pYGuideAlgorithmConfigDialogPane;
 
@@ -91,6 +93,7 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+        virtual void Undo(void);
 
         void OnXAlgorithmSelected(wxCommandEvent& evt);
         void OnYAlgorithmSelected(wxCommandEvent& evt);

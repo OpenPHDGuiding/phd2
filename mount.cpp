@@ -139,8 +139,10 @@ void Mount::MountConfigDialogPane::LoadValues(void)
 {
     m_pRecalibrate->SetValue(!m_pMount->IsCalibrated());
 
-    m_pXGuideAlgorithmChoice->SetSelection(m_pMount->GetXGuideAlgorithm());
-    m_pYGuideAlgorithmChoice->SetSelection(m_pMount->GetYGuideAlgorithm());
+    m_iInitXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithm();
+    m_pXGuideAlgorithmChoice->SetSelection(m_iInitXGuideAlgorithmSelection);
+    m_iInitYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithm();
+    m_pYGuideAlgorithmChoice->SetSelection(m_iInitYGuideAlgorithmSelection);
     m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
 
     if (m_pXGuideAlgorithmConfigDialogPane)
@@ -178,6 +180,22 @@ void Mount::MountConfigDialogPane::UnloadValues(void)
 
     m_pMount->SetXGuideAlgorithm(m_pXGuideAlgorithmChoice->GetSelection());
     m_pMount->SetYGuideAlgorithm(m_pYGuideAlgorithmChoice->GetSelection());
+}
+
+// Restore the guide algorithms - all the UI controls will follow correctly if the actual algorithm choices are correct
+void Mount::MountConfigDialogPane::Undo(void)
+{
+    if (m_pXGuideAlgorithmConfigDialogPane)
+    {
+        m_pXGuideAlgorithmConfigDialogPane->Undo();
+    }
+
+    if (m_pYGuideAlgorithmConfigDialogPane)
+    {
+        m_pYGuideAlgorithmConfigDialogPane->Undo();
+    }
+    m_pMount->SetXGuideAlgorithm(m_iInitXGuideAlgorithmSelection);
+    m_pMount->SetYGuideAlgorithm(m_iInitYGuideAlgorithmSelection);
 }
 
 GUIDE_ALGORITHM Mount::GetXGuideAlgorithm(void)
