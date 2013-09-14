@@ -673,7 +673,7 @@ double ScopeASCOM::GetDeclination(void)
 
     return dReturn;
 }
-// Return RA and Dec guide rates in native ASCOM units, degrees/sec. 
+// Return RA and Dec guide rates in native ASCOM units, degrees/sec.
 // Convention is, apparently, to return true on an error
 bool ScopeASCOM::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
 {
