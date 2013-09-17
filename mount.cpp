@@ -490,7 +490,7 @@ bool Mount::FlipCalibration(void)
         Debug.AddLine("FlipCalibration before: x=%.2f, y=%.2f", origX, origY);
 
         double newX = origX + M_PI;
-        double newY = origY;
+        double newY = origY + M_PI;
 
         Debug.AddLine("FlipCalibration pre-normalize: x=%.2f, y=%.2f", newX, newY);
 
