@@ -745,6 +745,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     // add the 'auto' button and bind it to the associated event-handler
     wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
     wxButton *m_pAutoDuration = new wxButton(pParent, wxID_OK, "Calculate..." );
+    m_pAutoDuration->SetToolTip(_("Click to open the Calibration Step Calculator to help find a good calibration step size"));
     m_pAutoDuration->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnAutoDuration, this);
     pButtonSizer->Add(
         m_pAutoDuration,
@@ -756,7 +757,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pMaxRaDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 2000, 150, _T("MaxDec_Dur"));
     DoAdd(_("Max RA Duration"),  m_pMaxRaDuration,
-          _("Longest length of pulse to send in RA\nDefault = 1000 ms. "));
+          _("Longest length of pulse to send in RA\nDefault = 1000 ms."));
 
     width = StringWidth(_T("00000"));
     m_pMaxDecDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
