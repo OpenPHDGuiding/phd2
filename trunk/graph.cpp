@@ -510,6 +510,7 @@ void GraphLogWindow::OnCheckboxTrendlines(wxCommandEvent& WXUNUSED(evt))
 void GraphLogWindow::OnCheckboxCorrections(wxCommandEvent& WXUNUSED(evt))
 {
     m_pClient->m_showCorrections = m_pCheckboxCorrections->IsChecked();
+    pConfig->Global.SetBoolean("/graph/showCorrections", m_pClient->m_showCorrections);
     Refresh();
 }
 
@@ -597,7 +598,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     m_heightUnits = UNIT_ARCSEC; // preferred units, will still display pixels if camera pixel scale not available
 
     m_showTrendlines = false;
-    m_showCorrections = true;
+    m_showCorrections = pConfig->Global.GetBoolean("/graph/showCorrections", true);
 }
 
 GraphLogClientWindow::~GraphLogClientWindow(void)
