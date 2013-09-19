@@ -183,6 +183,8 @@ public:
     virtual double GetDeclination(void);
     virtual bool GetGuideRate(double *pRAGuideRate, double *pDecGuideRate);
     virtual wxString GetSettingsSummary();
+
+    virtual bool CalibrationFlipRequiresDecFlip(void);
 };
 
 #endif /* MOUNT_H_INCLUDED */

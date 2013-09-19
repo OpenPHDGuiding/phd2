@@ -487,14 +487,21 @@ bool Mount::FlipCalibration(void)
         double origX = xAngle();
         double origY = yAngle();
 
-        Debug.AddLine("FlipCalibration before: x=%.2f, y=%.2f", origX, origY);
+        bool decFlipRequired = CalibrationFlipRequiresDecFlip();
+
+        Debug.AddLine("FlipCalibration before: x=%.2f, y=%.2f decFlipRequired=%d", origX, origY, decFlipRequired);
 
         double newX = origX + M_PI;
-        double newY = origY + M_PI;
+        double newY = origY;
+
+        if (decFlipRequired)
+        {
+            newY += M_PI;
+        }
 
         Debug.AddLine("FlipCalibration pre-normalize: x=%.2f, y=%.2f", newX, newY);
 
-        // normlize
+        // normalize
         newX = atan2(sin(newX), cos(newX));
         newY = atan2(sin(newY), cos(newY));
 
@@ -502,7 +509,8 @@ bool Mount::FlipCalibration(void)
 
         SetCalibration(newX, newY, xRate(), yRate(), m_calDeclination);
 
-        pFrame->SetStatusText(wxString::Format(_("CAL: %.2f -> %.2f"), origX, newX), 0);
+        pFrame->SetStatusText(wxString::Format(_("CAL: (%.f,%.f)->(%.f,%.f)"),
+            origX * 180. / M_PI, origY * 180. / M_PI, newX * 180. / M_PI, newY * 180. / M_PI), 0);
     }
     catch (wxString Msg)
     {
@@ -926,7 +934,6 @@ bool Mount::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
     return (true);         // Not implemented in subclass
 }
 
-
 wxString Mount::GetSettingsSummary() {
     // return a loggable summary of current mount settings
     wxString algorithms[] = {
@@ -947,3 +954,7 @@ wxString Mount::GetSettingsSummary() {
     );
 }
 
+bool Mount::CalibrationFlipRequiresDecFlip(void)
+{
+    return false;
+}
