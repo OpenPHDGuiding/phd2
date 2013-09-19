@@ -606,8 +606,8 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
         if (normalMove)
         {
-            double const raDuration = xDirection == LEFT ? actualXAmount : -actualXAmount;
-            double const decDuration = yDirection == DOWN ? actualYAmount : -actualYAmount;
+            double const raDuration = xDirection == LEFT ? -actualXAmount : actualXAmount;
+            double const decDuration = yDirection == DOWN ? -actualYAmount : actualYAmount;
             pFrame->pGraphLog->AppendData(cameraVectorEndpoint, mountVectorEndpoint, raDuration, decDuration);
             pFrame->pTarget->AppendData(mountVectorEndpoint);
         }
