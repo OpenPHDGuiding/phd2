@@ -73,6 +73,9 @@ Scope::Scope(void)
 
     int decGuideAlgorithm = pConfig->Profile.GetInt(prefix + "/YGuideAlgorithm", DefaultDecGuideAlgorithm);
     SetYGuideAlgorithm(decGuideAlgorithm);
+
+    bool val = pConfig->Profile.GetBoolean(prefix + "/CalFlipRequiresDecFlip", false);
+    SetCalibrationFlipRequiresDecFlip(val);
 }
 
 Scope::~Scope(void)
@@ -360,6 +363,17 @@ bool Scope::RequiresCamera(void)
 bool Scope::RequiresStepGuider(void)
 {
     return false;
+}
+
+bool Scope::CalibrationFlipRequiresDecFlip(void)
+{
+    return m_calibrationFlipRequiresDecFlip;
+}
+
+void Scope::SetCalibrationFlipRequiresDecFlip(bool val)
+{
+    m_calibrationFlipRequiresDecFlip = val;
+    pConfig->Profile.SetBoolean("/scope/CalFlipRequiresDecFlip", val);
 }
 
 bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
@@ -769,37 +783,39 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
         _("Off"),_("Auto"),_("North"),_("South")
     };
     width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
-    m_pDecMode= new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
+    m_pDecMode = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
             wxSize(width+35, -1), WXSIZEOF(dec_choices), dec_choices);
     DoAdd(_("Dec guide mode"), m_pDecMode,
           _("Guide in declination as well?"));
+
+    m_pNeedFlipDec = new wxCheckBox(pParent, wxID_ANY, _("Reverse Dec output after meridian flip"));
+    DoAdd(m_pNeedFlipDec, _("Check if your mount needs Dec output reversed after doing Flip Calibration Data"));
 }
 
 void Scope::ScopeConfigDialogPane::OnAutoDuration (wxCommandEvent& evt)
 {
-    CalstepDialog *pCalc;
     int iFocalLength = pFrame->GetFocalLength ();
     float fPixelSize;
-    wxString sConfigPrefix = "";
+    wxString sConfigPrefix;
 
     if (pCamera)
         fPixelSize = pCamera->PixelSize;
     else
         fPixelSize = 0;
+
     if (pMount)
     {
         sConfigPrefix = "/" + pMount->GetMountClassName();
     }
 
-    pCalc = new CalstepDialog (iFocalLength, fPixelSize, sConfigPrefix);
-    if (pCalc->ShowModal () == wxID_OK)
+    CalstepDialog calc (iFocalLength, fPixelSize, sConfigPrefix);
+    if (calc.ShowModal () == wxID_OK)
     {
         int iRslt;
-        iRslt = pCalc->GetResult ();
+        iRslt = calc.GetResult ();
         if (iRslt > 0)                              // User might hit 'ok' with empty field
             m_pCalibrationDuration->SetValue (iRslt);
     }
-    pCalc->Destroy ();
 }
 
 Scope::ScopeConfigDialogPane::~ScopeConfigDialogPane(void)
@@ -813,7 +829,7 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
     m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
     m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
     m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
-
+    m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
 }
 
 void Scope::ScopeConfigDialogPane::UnloadValues(void)
@@ -822,6 +838,7 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
     m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
     m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
+    m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
 
     MountConfigDialogPane::UnloadValues();
 }

@@ -53,6 +53,8 @@ class Scope:public Mount
     double m_calibrationYAngle;
     double m_calibrationYRate;
 
+    bool m_calibrationFlipRequiresDecFlip;
+
     enum CALIBRATION_STATE
     {
         CALIBRATION_STATE_CLEARED,
@@ -74,9 +76,11 @@ protected:
         wxSpinCtrl *m_pMaxDecDuration;
         wxChoice   *m_pDecMode;
         wxButton   *m_pAutoDuration;
-        void OnAutoDuration (wxCommandEvent& evt);                // auto calibration feature
+        wxCheckBox *m_pNeedFlipDec;
 
-        public:
+        void OnAutoDuration (wxCommandEvent& evt);  // calibration step calculator
+
+    public:
         ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
         ~ScopeConfigDialogPane(void);
 
@@ -135,6 +139,8 @@ public:
 
     virtual bool RequiresCamera(void);
     virtual bool RequiresStepGuider(void);
+    virtual bool CalibrationFlipRequiresDecFlip(void);
+    void SetCalibrationFlipRequiresDecFlip(bool val);
 
 private:
     // functions with an implemenation in Scope that cannot be over-ridden

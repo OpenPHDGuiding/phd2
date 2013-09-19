@@ -152,7 +152,8 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
 
         if (mount)
         {
-            double orig = mount->xAngle();
+            double xorig = mount->xAngle() * 180. / M_PI;
+            double yorig = mount->yAngle() * 180. / M_PI;
 
             if (FlipRACal())
             {
@@ -160,8 +161,10 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             }
             else
             {
-                double xAngle = mount->xAngle();
-                wxMessageBox(wxString::Format(_("RA calibration angle flipped: %.2f to %.2f"), orig, xAngle));
+                double xnew = mount->xAngle() * 180. / M_PI;
+                double ynew = mount->yAngle() * 180. / M_PI;
+                wxMessageBox(wxString::Format(_("RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"),
+                    xorig, yorig, xnew, ynew));
             }
         }
     }
