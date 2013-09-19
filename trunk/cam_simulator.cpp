@@ -276,7 +276,7 @@ static void rand_normal(double r[2])
     double u = (double) rand() / RAND_MAX;
     double v = (double) rand() / RAND_MAX;
     double const a = sqrt(-2.0 * log(u));
-    double const p = 2 * PI * v;
+    double const p = 2 * M_PI * v;
     r[0] = a * cos(p);
     r[1] = a * sin(p);
 }
@@ -353,7 +353,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     double const phase[] =  { 0.0,     1.4, 98.8, 35.9, 150.4, };
     double pe = 0.;
     for (unsigned int i = 0; i < WXSIZEOF(period); i++)
-        pe += amp[i] * cos((now - phase[i]) / period[i] * 2. * PI);
+        pe += amp[i] * cos((now - phase[i]) / period[i] * 2. * M_PI);
     pe *= SimCamParams::pe_scale;
 
     // add in pe
@@ -383,7 +383,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 
     // convert to camera coordinates
     wxVector<wxRealPoint> cc(nr_stars);
-    double const angle = SimCamParams::cam_angle * PI / 180.;
+    double const angle = SimCamParams::cam_angle * M_PI / 180.;
     double const cos_t = cos(angle);
     double const sin_t = sin(angle);
     for (unsigned int i = 0; i < nr_stars; i++) {
@@ -394,7 +394,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 #ifdef STEPGUIDER_SIMULATOR
     // add-in AO offset
     if (s_sim_ao) {
-        double const ao_angle = SimAoParams::angle * PI / 180.;
+        double const ao_angle = SimAoParams::angle * M_PI / 180.;
         double const cos_a = cos(ao_angle);
         double const sin_a = sin(ao_angle);
         double const ao_x = (double) s_sim_ao->CurrentPosition(RIGHT) * SimAoParams::scale;
