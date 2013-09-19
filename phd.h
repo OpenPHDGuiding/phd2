@@ -107,10 +107,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define PATHSEPSTR _T("/")
 #endif
 
-#if !defined (PI)
-#define PI 3.1415926
-#endif
-
 //#define TEST_TRANSFORMS
 //#define BRET_AO_DEBUG
 
