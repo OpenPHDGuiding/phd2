@@ -943,8 +943,8 @@ wxString Mount::GetSettingsSummary() {
         m_Name,
         IsConnected() ? "" : "not",
         m_guidingEnabled ? "enabled" : "disabled",
-        IsCalibrated() ? wxString::Format("xAngle = %.3f, xRate = %.3f, yAngle = %.3f, yRate = %.3f",
-                yAngle(), yRate(), xAngle(), xRate()) : "not calibrated"
+        IsCalibrated() ? wxString::Format("xAngle = %.3f, xRate = %.4f, yAngle = %.3f, yRate = %.4f",
+                xAngle(), xRate(), yAngle(), yRate()) : "not calibrated"
     ) + wxString::Format("RA guide algorithm %s, %s",
         algorithms[GetXGuideAlgorithm()],
         m_pXGuideAlgorithm->GetSettingsSummary()
