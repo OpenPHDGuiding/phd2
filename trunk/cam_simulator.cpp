@@ -64,6 +64,7 @@ struct SimCamParams
     static double cam_angle;
     static double guide_rate;
     static PierSide pier_side;
+    static bool reverse_dec_pulse_on_west_side;
 };
 
 unsigned int SimCamParams::width = 752;          // simulated camera image width
@@ -79,6 +80,7 @@ double SimCamParams::seeing_scale;               // simulated seeing scale facto
 double SimCamParams::cam_angle;                  // simulated camera angle (degrees)
 double SimCamParams::guide_rate;                 // guide rate, pixels per second
 PierSide SimCamParams::pier_side;                // side of pier
+bool SimCamParams::reverse_dec_pulse_on_west_side; // reverse dec pulse on west side of pier, like ASCOM pulse guided equatorial mounts
 
 #define NR_STARS_DEFAULT 20
 #define NR_HOT_PIXELS_DEFAULT 8
@@ -96,6 +98,7 @@ PierSide SimCamParams::pier_side;                // side of pier
 #define GUIDE_RATE_DEFAULT 3.5
 #define GUIDE_RATE_MAX 8.0
 #define PIER_SIDE_DEFAULT PIER_SIDE_EAST
+#define REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT true
 
 static void load_sim_params()
 {
@@ -109,6 +112,7 @@ static void load_sim_params()
     SimCamParams::cam_angle = pConfig->Profile.GetDouble("/SimCam/cam_angle", CAM_ANGLE_DEFAULT);
     SimCamParams::guide_rate = pConfig->Profile.GetDouble("/SimCam/guide_rate", GUIDE_RATE_DEFAULT);
     SimCamParams::pier_side = (PierSide) pConfig->Profile.GetInt("/SimCam/pier_side", PIER_SIDE_DEFAULT);
+    SimCamParams::reverse_dec_pulse_on_west_side = pConfig->Profile.GetBoolean("/SimCam/reverse_dec_pulse_on_west_side", REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT);
 }
 
 static void save_sim_params()
@@ -123,6 +127,7 @@ static void save_sim_params()
     pConfig->Profile.SetDouble("/SimCam/cam_angle", SimCamParams::cam_angle);
     pConfig->Profile.SetDouble("/SimCam/guide_rate", SimCamParams::guide_rate);
     pConfig->Profile.SetInt("/SimCam/pier_side", (int) SimCamParams::pier_side);
+    pConfig->Profile.SetBoolean("/SimCam/reverse_dec_pulse_on_west_side", SimCamParams::reverse_dec_pulse_on_west_side);
 }
 
 #ifdef STEPGUIDER_SIMULATOR
@@ -595,6 +600,15 @@ bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
 {
     double d = SimCamParams::guide_rate * duration / 1000.0;
 
+    if (SimCamParams::pier_side == PIER_SIDE_WEST && SimCamParams::reverse_dec_pulse_on_west_side)
+    {
+        // after pier flip, North/South have opposite affect on declination
+        switch (direction) {
+        case NORTH: direction = SOUTH; break;
+        case SOUTH: direction = NORTH; break;
+        }
+    }
+
     switch (direction) {
     case WEST:    sim->ra_ofs += d;      break;
     case EAST:    sim->ra_ofs -= d;      break;
@@ -698,12 +712,15 @@ struct SimCamDialog : public wxDialog
     wxSlider *guide_rate;
     wxSlider *ao_angle;
     wxSlider *ao_step_size;
+    wxCheckBox *reverse_dec_pulse_on_west;
     PierSide pier_side;
+    wxStaticText *pier_side_label;
 
     SimCamDialog(wxWindow *parent);
     ~SimCamDialog() { }
     void OnReset(wxCommandEvent& event);
     void OnPierFlip(wxCommandEvent& event);
+    void UpdatePierSideLabel();
 
     DECLARE_EVENT_TABLE()
 };
@@ -741,15 +758,30 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     sizer->Add(label_slider(this, _("Cam Angle"),    &cam_angle,    (int)floor(SimCamParams::cam_angle + 0.5), 0, 359));
     sizer->Add(label_slider(this, _("Guide Rate"),   &guide_rate,   (int)floor(SimCamParams::guide_rate * 100.0 / GUIDE_RATE_MAX), 0, 100));
 
-    sizer->Add(new wxButton(this, wxID_CONVERT, _("Pier Flip")));
+    reverse_dec_pulse_on_west = new wxCheckBox(this, wxID_ANY, _("Reverse Dec pulse on West side of pier"));
+    reverse_dec_pulse_on_west->SetToolTip(_("Simulate a mount that reverses guide pulse direction after a meridian flip, like an ASCOM pulse-guided mount."));
+    reverse_dec_pulse_on_west->SetValue(SimCamParams::reverse_dec_pulse_on_west_side);
+    sizer->Add(reverse_dec_pulse_on_west);
+
+    wxBoxSizer *sizer1 = new wxBoxSizer(wxHORIZONTAL);
+    sizer1->Add(new wxButton(this, wxID_CONVERT, _("Pier Flip")));
     pier_side = SimCamParams::pier_side;
 
-    sizer->Add(new wxButton(this, wxID_RESET, _("Reset")));
+    pier_side_label = new wxStaticText(this, wxID_ANY, _("Side of Pier: MMMMM"));
+    sizer1->Add(pier_side_label, wxSizerFlags().Border(wxALL).Expand());
+
+    sizer->Add(sizer1);
+
+    wxButton *btn = new wxButton(this, wxID_RESET, _("Reset"));
+    btn->SetToolTip(_("Reset all values to application defaults"));
+    sizer->Add(btn);
 
     wxBoxSizer *main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(sizer, wxSizerFlags(0).Expand());
     main_sizer->Add(CreateSeparatedButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 10));
     SetSizerAndFit(main_sizer);
+
+    UpdatePierSideLabel();
 }
 
 void SimCamDialog::OnReset(wxCommandEvent& event)
@@ -763,7 +795,9 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     seeing->SetValue((int)floor(SEEING_DEFAULT * 100.0 / SEEING_MAX));
     cam_angle->SetValue((int)floor(CAM_ANGLE_DEFAULT + 0.5));
     guide_rate->SetValue((int)floor(GUIDE_RATE_DEFAULT * 100.0 / GUIDE_RATE_MAX));
+    reverse_dec_pulse_on_west->SetValue(REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT);
     pier_side = PIER_SIDE_DEFAULT;
+    UpdatePierSideLabel();
 }
 
 void SimCamDialog::OnPierFlip(wxCommandEvent& event)
@@ -774,6 +808,12 @@ void SimCamDialog::OnPierFlip(wxCommandEvent& event)
         angle -= 360;
     cam_angle->SetValue(angle);
     pier_side = OtherSide(pier_side);
+    UpdatePierSideLabel();
+}
+
+void SimCamDialog::UpdatePierSideLabel()
+{
+    pier_side_label->SetLabel(wxString::Format("Side of pier: %s", pier_side == PIER_SIDE_EAST ? _("East") : _("West")));
 }
 
 void Camera_SimClass::ShowPropertyDialog()
@@ -791,6 +831,7 @@ void Camera_SimClass::ShowPropertyDialog()
         SimCamParams::cam_angle =        (double) dlg.cam_angle->GetValue();
         SimCamParams::guide_rate =       (double) dlg.guide_rate->GetValue() * GUIDE_RATE_MAX / 100.0;
         SimCamParams::pier_side = dlg.pier_side;
+        SimCamParams::reverse_dec_pulse_on_west_side = dlg.reverse_dec_pulse_on_west->GetValue();
         save_sim_params();
         sim->Initialize();
     }
