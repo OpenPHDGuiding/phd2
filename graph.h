@@ -51,6 +51,20 @@ struct TrendLineAccum
     double sum_y2;
 };
 
+struct S_HISTORY
+{
+    wxLongLong_t timestamp;
+    double dx;
+    double dy;
+    double ra;
+    double dec;
+    double raDur;
+    double decDur;
+    S_HISTORY() { }
+    S_HISTORY(double dx_, double dy_, double ra_, double dec_, double raDur_, double decDur_, wxLongLong_t ts = wxDateTime::UNow().GetValue().GetValue())
+        : timestamp(ts), dx(dx_), dy(dy_), ra(ra_), dec(dec_), raDur(raDur_), decDur(decDur_) { }
+};
+
 class GraphLogClientWindow : public wxWindow
 {
     GraphLogClientWindow(wxWindow *parent);
@@ -64,7 +78,7 @@ class GraphLogClientWindow : public wxWindow
     wxColour m_raOrDxColor, m_decOrDyColor;
     wxStaticText *m_pRaRMS, *m_pDecRMS, *m_pTotRMS, *m_pOscIndex;
 
-    void AppendData(float dx, float dy, float RA, float Dec);
+    void AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDuration, double decDuration);
     void ResetData(void);
     void RecalculateTrendLines(void);
     void OnPaint(wxPaintEvent& evt);
@@ -77,17 +91,6 @@ class GraphLogClientWindow : public wxWindow
     static const int m_xSamplesPerDivision = 50;
     static const int m_yDivisions = 3;
 
-    struct S_HISTORY
-    {
-        wxLongLong_t timestamp;
-        double dx;
-        double dy;
-        double ra;
-        double dec;
-        S_HISTORY() { }
-        S_HISTORY(double dx_, double dy_, double ra_, double dec_, wxLongLong_t ts = wxDateTime::UNow().GetValue().GetValue())
-            : timestamp(ts), dx(dx_), dy(dy_), ra(ra_), dec(dec_) { }
-    };
     circular_buffer<S_HISTORY> m_history;
 
     TrendLineAccum m_trendLineAccum[4]; // dx, dy, ra, dec
@@ -105,6 +108,7 @@ class GraphLogClientWindow : public wxWindow
     GRAPH_UNITS m_heightUnits;
 
     bool m_showTrendlines;
+    bool m_showCorrections;
 
     friend class GraphLogWindow;
 
@@ -116,7 +120,7 @@ class GraphLogWindow : public wxWindow {
 public:
     GraphLogWindow(wxWindow *parent);
     ~GraphLogWindow(void);
-    void AppendData (float dx, float dy, float RA, float Dec);
+    void AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDuration, double decDuration);
     void UpdateControls(void);
     void SetState (bool is_active);
     void OnPaint(wxPaintEvent& evt);
@@ -131,6 +135,7 @@ public:
     void OnMenuHeight(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
     void OnCheckboxTrendlines(wxCommandEvent& evt);
+    void OnCheckboxCorrections(wxCommandEvent& evt);
     void OnButtonZoomIn(wxCommandEvent& evt);
     void OnButtonZoomOut(wxCommandEvent& evt);
 
@@ -146,6 +151,7 @@ private:
     OptionsButton *m_pSettingsButton;
     wxButton *m_pClearButton;
     wxCheckBox *m_pCheckboxTrendlines;
+    wxCheckBox *m_pCheckboxCorrections;
     wxStaticText *RALabel;
     wxStaticText *DecLabel;
     wxStaticText *OscIndexLabel;

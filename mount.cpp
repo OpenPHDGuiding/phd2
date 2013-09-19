@@ -529,14 +529,11 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         double xDistance = mountVectorEndpoint.X;
         double yDistance = mountVectorEndpoint.Y;
 
-        Debug.AddLine(wxString::Format("Moving (%.2f, %.2f) raw xDistance=%.2f yDistance=%.2f", cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance));
+        Debug.AddLine(wxString::Format("Moving (%.2f, %.2f) raw xDistance=%.2f yDistance=%.2f",
+            cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance));
 
         if (normalMove)
         {
-            pFrame->pGraphLog->AppendData(cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
-                                         xDistance, yDistance);
-            pFrame->pTarget->AppendData(xDistance, yDistance);
-
             // Feed the raw distances to the guide algorithms
 
             if (m_pXGuideAlgorithm)
@@ -551,14 +548,17 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         }
 
         // Figure out the guide directions based on the (possibly) updated distances
-        GUIDE_DIRECTION xDirection = xDistance > 0 ? LEFT : RIGHT;
-        GUIDE_DIRECTION yDirection = yDistance > 0 ? DOWN : UP;
+        GUIDE_DIRECTION xDirection = xDistance > 0.0 ? LEFT : RIGHT;
+        GUIDE_DIRECTION yDirection = yDistance > 0.0 ? DOWN : UP;
 
-        double actualXAmount  = Move(xDirection,  fabs(xDistance/m_xRate), normalMove);
+        double actualXAmount = Move(xDirection, fabs(xDistance / m_xRate), normalMove);
+        int errorCode = 0;
 
         if (actualXAmount < 0.0)
         {
-            throw ERROR_INFO("ActualXAmount < 0");
+            actualXAmount = 0.0;
+            errorCode |= 1;
+            bError = true;
         }
 
         wxString msg;
@@ -570,11 +570,13 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             Debug.AddLine(msg);
         }
 
-        double actualYAmount = Move(yDirection, fabs(yDistance/m_yRate), normalMove);
+        double actualYAmount = Move(yDirection, fabs(yDistance / m_yRate), normalMove);
 
         if (actualYAmount < 0.0)
         {
-            throw ERROR_INFO("ActualYAmount < 0");
+            actualYAmount = 0.0;
+            errorCode |= 2;
+            bError = true;
         }
 
         if (actualYAmount >= 0.5)
@@ -591,12 +593,20 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             pFrame->SetStatusText(msg, 1, std::max((int)actualXAmount, (int)actualYAmount));
         }
 
-        GuideLog.GuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, 0);  // errorCode??
-        EvtServer.NotifyGuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, 0);
+        GuideLog.GuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, errorCode);
+        EvtServer.NotifyGuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, errorCode);
+
+        if (normalMove)
+        {
+            double const raDuration = xDirection == LEFT ? actualXAmount : -actualXAmount;
+            double const decDuration = yDirection == DOWN ? actualYAmount : -actualYAmount;
+            pFrame->pGraphLog->AppendData(cameraVectorEndpoint, mountVectorEndpoint, raDuration, decDuration);
+            pFrame->pTarget->AppendData(mountVectorEndpoint);
+        }
     }
-    catch (wxString Msg)
+    catch (wxString errMsg)
     {
-        POSSIBLY_UNUSED(Msg);
+        POSSIBLY_UNUSED(errMsg);
         bError = true;
     }
 
