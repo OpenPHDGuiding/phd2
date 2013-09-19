@@ -60,12 +60,13 @@ BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_MENU_RANGE(MENU_HEIGHT_BEGIN, MENU_HEIGHT_END, GraphLogWindow::OnMenuHeight)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
     EVT_CHECKBOX(CHECKBOX_GRAPH_TRENDLINES,GraphLogWindow::OnCheckboxTrendlines)
+    EVT_CHECKBOX(CHECKBOX_GRAPH_CORRECTIONS,GraphLogWindow::OnCheckboxCorrections)
 END_EVENT_TABLE()
 
 GraphLogWindow::GraphLogWindow(wxWindow *parent):
 wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESIZE,_T("Graph"))
 {
-    wxCommandEvent dummy;
+    SetBackgroundStyle(wxBG_STYLE_PAINT);
 
     //SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
 
@@ -137,6 +138,12 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     m_pCheckboxTrendlines->SetForegroundColour(*wxLIGHT_GREY);
     m_pCheckboxTrendlines->SetToolTip(_("Plot trend lines"));
     pButtonSizer->Add(m_pCheckboxTrendlines);
+
+    m_pCheckboxCorrections = new wxCheckBox(this,CHECKBOX_GRAPH_CORRECTIONS,_("Corrections"));
+    m_pCheckboxCorrections->SetForegroundColour(*wxLIGHT_GREY);
+    m_pCheckboxCorrections->SetToolTip(_("Display mount corrections"));
+    m_pCheckboxCorrections->SetValue(m_pClient->m_showCorrections);
+    pButtonSizer->Add(m_pCheckboxCorrections);
 
     wxBoxSizer *pLabelSizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -421,9 +428,9 @@ void GraphLogWindow::SetState(bool is_active)
     this->Show(is_active);
 }
 
-void GraphLogWindow::AppendData(float dx, float dy, float RA, float Dec)
+void GraphLogWindow::AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDur, double decDur)
 {
-    m_pClient->AppendData(dx, dy, RA, Dec);
+    m_pClient->AppendData(cameraOffset, mountOffset, raDur, decDur);
 
     if (m_visible)
     {
@@ -497,6 +504,12 @@ void GraphLogWindow::OnCheckboxTrendlines(wxCommandEvent& WXUNUSED(evt))
         // clear the polar alignment circle
         pFrame->pGuider->SetPolarAlignCircle(PHD_Point(), 0);
     }
+    Refresh();
+}
+
+void GraphLogWindow::OnCheckboxCorrections(wxCommandEvent& WXUNUSED(evt))
+{
+    m_pClient->m_showCorrections = m_pCheckboxCorrections->IsChecked();
     Refresh();
 }
 
@@ -584,6 +597,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     m_heightUnits = UNIT_ARCSEC; // preferred units, will still display pixels if camera pixel scale not available
 
     m_showTrendlines = false;
+    m_showCorrections = true;
 }
 
 GraphLogClientWindow::~GraphLogClientWindow(void)
@@ -728,7 +742,7 @@ static void update_trend(int nr, int max_nr, double newval, const double& oldval
     }
 }
 
-void GraphLogClientWindow::AppendData(float dx, float dy, float RA, float Dec)
+void GraphLogClientWindow::AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDur, double decDur)
 {
     unsigned int trend_items = m_length;
     if (trend_items > m_history.size())
@@ -738,15 +752,15 @@ void GraphLogClientWindow::AppendData(float dx, float dy, float RA, float Dec)
     S_HISTORY oldest;
     if (m_history.size() > 0)
         oldest = m_history[oldest_idx];
-    update_trend(trend_items, m_length, dx, oldest.dx, &m_trendLineAccum[0]);
-    update_trend(trend_items, m_length, dy, oldest.dy, &m_trendLineAccum[1]);
-    update_trend(trend_items, m_length, RA, oldest.ra, &m_trendLineAccum[2]);
-    update_trend(trend_items, m_length, Dec, oldest.dec, &m_trendLineAccum[3]);
+    update_trend(trend_items, m_length, cameraOffset.X, oldest.dx, &m_trendLineAccum[0]);
+    update_trend(trend_items, m_length, cameraOffset.Y, oldest.dy, &m_trendLineAccum[1]);
+    update_trend(trend_items, m_length, mountOffset.X, oldest.ra, &m_trendLineAccum[2]);
+    update_trend(trend_items, m_length, mountOffset.Y, oldest.dec, &m_trendLineAccum[3]);
 
     // update counter for osc index
     if (trend_items >= 1)
     {
-        if (RA * m_history[m_history.size() - 1].ra > 0.0)
+        if (mountOffset.X * m_history[m_history.size() - 1].ra > 0.0)
             ++m_raSameSides;
         if (trend_items >= m_length)
         {
@@ -755,7 +769,7 @@ void GraphLogClientWindow::AppendData(float dx, float dy, float RA, float Dec)
         }
     }
 
-    m_history.push_back(S_HISTORY(dx, dy, RA, Dec));
+    m_history.push_back(S_HISTORY(cameraOffset.X, cameraOffset.Y, mountOffset.X, mountOffset.Y, raDur, decDur));
 }
 
 void GraphLogClientWindow::RecalculateTrendLines(void)
@@ -828,6 +842,22 @@ static wxString rms_label(double rms, double sampling)
         return wxString::Format("%4.2f (%.2f'')", rms, rms * sampling);
     else
         return wxString::Format("%4.2f", rms);
+}
+
+static double GetMaxDuration(const circular_buffer<S_HISTORY>& history, int start_item)
+{
+    double maxdur = 1.0; // always return at least 1.0 to protect against divide-by-zero
+    for (int i = start_item; i < history.size(); i++)
+    {
+        const S_HISTORY& h = history[i];
+        double d = fabs(h.raDur);
+        if (d > maxdur)
+            maxdur = d;
+        d = fabs(h.decDur);
+        if (d > maxdur)
+            maxdur = d;
+    }
+    return maxdur;
 }
 
 void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
@@ -923,6 +953,43 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
         unsigned int start_item = m_history.size() - plot_length;
 
+        if (m_showCorrections)
+        {
+            double maxDur = GetMaxDuration(m_history, start_item);
+
+            const double ymag = (size.y - 10) * 0.5 / maxDur;
+            ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
+
+            dc.SetBrush(*wxTRANSPARENT_BRUSH);
+
+            dc.SetPen(wxPen(m_raOrDxColor.ChangeLightness(60)));
+
+            for (int i = start_item, j = 0; i < m_history.size(); i++, j++)
+            {
+                const S_HISTORY& h = m_history[i];
+
+                wxPoint pt(sctr.pt(j, h.raDur));
+                if (h.raDur <= -0.5)
+                    dc.DrawRectangle(pt,wxSize(4, yorig - pt.y));
+                else if (h.raDur >= 0.5)
+                    dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
+            }
+
+            dc.SetPen(wxPen(m_decOrDyColor.ChangeLightness(60)));
+
+            for (int i = start_item, j = 0; i < m_history.size(); i++, j++)
+            {
+                const S_HISTORY& h = m_history[i];
+
+                wxPoint pt(sctr.pt(j, h.decDur));
+                pt.x += 5;
+                if (h.decDur <= -0.5)
+                    dc.DrawRectangle(pt,wxSize(4, yorig - pt.y));
+                else if (h.decDur >= 0.5)
+                    dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
+            }
+        }
+
         for (int i = start_item, j = 0; i < m_history.size(); i++, j++)
         {
             const S_HISTORY& h = m_history[i];
@@ -940,11 +1007,11 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             }
         }
 
-        wxPen raOrDxPen(m_raOrDxColor);
+        wxPen raOrDxPen(m_raOrDxColor, 2);
         dc.SetPen(raOrDxPen);
         dc.DrawLines(plot_length, pRaOrDxLine);
 
-        wxPen decOrDyPen(m_decOrDyColor);
+        wxPen decOrDyPen(m_decOrDyColor, 2);
         dc.SetPen(decOrDyPen);
         dc.DrawLines(plot_length, pDecOrDyLine);
 

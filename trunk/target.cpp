@@ -99,9 +99,9 @@ void TargetWindow::SetState(bool is_active)
         Refresh();
 }
 
-void TargetWindow::AppendData(double ra, double dec)
+void TargetWindow::AppendData(const PHD_Point& mountOffset)
 {
-    m_pClient->AppendData(ra, dec);
+    m_pClient->AppendData(mountOffset);
 
     if (this->m_visible)
     {
@@ -191,12 +191,12 @@ TargetClient::~TargetClient(void)
 {
 }
 
-void TargetClient::AppendData(double ra, double dec)
+void TargetClient::AppendData(const PHD_Point& mountOffset)
 {
     memmove(&m_history, &m_history[1], sizeof(m_history[0])*(m_maxHistorySize-1));
 
-    m_history[m_maxHistorySize-1].ra = ra;
-    m_history[m_maxHistorySize-1].dec = dec;
+    m_history[m_maxHistorySize-1].ra = mountOffset.X;
+    m_history[m_maxHistorySize-1].dec = mountOffset.Y;
 
     if (m_nItems < m_maxHistorySize)
     {

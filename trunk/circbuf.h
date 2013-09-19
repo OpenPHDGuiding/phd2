@@ -65,7 +65,7 @@ public:
     void resize(unsigned int capacity);
     void push_back(const T& t);
     void clear();
-    T& operator[](unsigned int n);
+    T& operator[](unsigned int n) const;
     unsigned int size() const { return m_size; }
     unsigned int capacity() const { return m_capacity; }
     iterator begin() { return iterator(*this, m_tail); }
@@ -130,7 +130,7 @@ void circular_buffer<T>::push_back(const T& t)
 }
 
 template<typename T>
-T& circular_buffer<T>::operator[](unsigned int n)
+T& circular_buffer<T>::operator[](unsigned int n) const
 {
     assert(n < m_size);
     return m_ary[(m_tail + n) % m_capacity];
