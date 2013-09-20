@@ -37,8 +37,8 @@
 #include "calstep_dialog.h"
 #include "wx/valnum.h"
 
-CalstepDialog::CalstepDialog(int focalLength, float pixelSize, wxString configPrefix) :
-    wxDialog(pFrame, wxID_ANY, _T("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
+CalstepDialog::CalstepDialog(int focalLength, float pixelSize, const wxString& configPrefix) :
+    wxDialog(pFrame, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
     double dGuideRateDec = 0.0; // initialize to suppress compiler warning
     double dGuideRateRA = 0.0; // initialize to suppress compiler warning
@@ -102,36 +102,36 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, wxString configPr
     int width = StringWidth(_T("00000")) + 10;
     wxIntegerValidator <int> valFocalLength (&m_iFocalLength, 0);
     valFocalLength.SetRange (0, 3500);
-    m_pFocalLength = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1), 0, valFocalLength);
+    m_pFocalLength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valFocalLength);
     AddTableEntry (m_pInputTableSizer, _("Focal length, mm"), m_pFocalLength, _("Guide scope focal length"));
 
      // Pixel size: float <= 25
     wxFloatingPointValidator<float>
         valPixelSize(2, &m_fPixelSize, wxNUM_VAL_ZERO_AS_BLANK);
     valPixelSize.SetRange(0, 25);
-    m_pPixelSize = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1), 0,valPixelSize);
+    m_pPixelSize = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0,valPixelSize);
     AddTableEntry (m_pInputTableSizer, ("Pixel size, microns"), m_pPixelSize, _("Guide camera pixel size"));
 
     // Guide speed multiplier: float <= 2.0
     wxFloatingPointValidator<float>
         valGuideSpeed(2, &m_fGuideSpeed, wxNUM_VAL_ZERO_AS_BLANK);
     valGuideSpeed.SetRange(0, 2.0);
-    m_pGuideSpeed = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1), 0, valGuideSpeed);
+    m_pGuideSpeed = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valGuideSpeed);
     AddTableEntry (m_pInputTableSizer, _("Guide speed, n.nn x sidereal"), m_pGuideSpeed, _("Guide speed, multiple of sidereal rate; to guide at ") +
         _("50% sidereal rate, enter 0.5"));
 
     // Number of steps: int < MAX_CALIBRATION_STEPS
     wxIntegerValidator <int> valNumSteps (&m_iNumSteps, 0);
     valNumSteps.SetRange (0, 60);
-    m_pNumSteps = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1), 0, valNumSteps);
+    m_pNumSteps = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valNumSteps);
     AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps, _("Targeted # steps in each direction"));
 
     // Build the group of output fields
     m_pOutputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, "Computed Values");
 
-    m_pImageScale = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1));
+    m_pImageScale = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
     AddTableEntry (m_pOutputTableSizer, "Image scale, arc-sec/px", m_pImageScale, "");
-    m_pRslt = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width, -1));
+    m_pRslt = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
     AddTableEntry (m_pOutputTableSizer, "Calibration step, ms", m_pRslt, "");
 
     // Add the tables to the panel, centered
@@ -164,8 +164,7 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, wxString configPr
     SetSizerAndFit (m_pVSizer);
 }
 
-
-int CalstepDialog::StringWidth(wxString string)
+int CalstepDialog::StringWidth(const wxString& string)
 {
     int width, height;
 
@@ -173,6 +172,7 @@ int CalstepDialog::StringWidth(wxString string)
 
     return width;
 }
+
 // Utility function to add the <label, input> tuples to the grid including tool-tips
 void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip)
 {

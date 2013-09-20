@@ -65,15 +65,15 @@ private:
     wxString m_sConfigPrefix;
 
 public:
-    CalstepDialog(int focalLength, float pixelSize, wxString configPrefix);
+    CalstepDialog(int focalLength, float pixelSize, const wxString& configPrefix);
     ~CalstepDialog(void);
-    int CalstepDialog::GetResult ();
+    int GetResult ();
 
 private:
-    void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip);
-    int CalstepDialog::StringWidth(wxString string);
-    void CalstepDialog::OnRecalc (wxCommandEvent& evt);
-    bool CalstepDialog::CalcDefaultDuration (int FocalLength, float PixelSize, float GuideSpeed, int DesiredSteps, float& ImageScale, int& StepSize);
+    void AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip);
+    int StringWidth(const wxString& string);
+    void OnRecalc (wxCommandEvent& evt);
+    bool CalcDefaultDuration (int FocalLength, float PixelSize, float GuideSpeed, int DesiredSteps, float& ImageScale, int& StepSize);
 };
 
 #endif
