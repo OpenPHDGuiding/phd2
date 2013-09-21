@@ -107,7 +107,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
     //dc.SetBackground(* wxBLACK_BRUSH);
     dc.SetBackground(wxColour(10,30,30));
     dc.Clear();
-    if (pFrame->pGuider->GetState() == STATE_UNINITIALIZED) return;
+    if (!pFrame || pFrame->pGuider->GetState() == STATE_UNINITIALIZED) return;
 
     const int xsize = this->GetSize().GetX();
     const int ysize = this->GetSize().GetY();
