@@ -379,7 +379,8 @@ bool ScopeASCOM::Connect(void)
     return bError;
 }
 
-bool ScopeASCOM::Disconnect(void) {
+bool ScopeASCOM::Disconnect(void)
+{
     bool bError = false;
     IDispatch *pScopeDriver = NULL;
 
@@ -441,7 +442,8 @@ bool ScopeASCOM::Disconnect(void) {
     return bError;
 }
 
-bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration) {
+bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration)
+{
     bool bError = false;
     IDispatch *pScopeDriver = NULL;
 
@@ -594,6 +596,11 @@ bool ScopeASCOM::IsGuiding()
 
     try
     {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("ASCOM Scope: Cannot check IsGuiding when not connected to mount");
+        }
+
         if (FAILED(m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (void**)&pScopeDriver)))
         {
             throw ERROR_INFO("ASCOM Scope: Cannot get interface with Global Interface Table");
@@ -629,6 +636,11 @@ double ScopeASCOM::GetDeclination(void)
 
     try
     {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("ASCOM Scope: cannot get Declination when not connected to mount");
+        }
+
         if (!m_bCanGetDeclination)
         {
             throw THROW_INFO("!b_CanGetDeclination");
@@ -656,7 +668,7 @@ double ScopeASCOM::GetDeclination(void)
             throw ERROR_INFO("GetDeclination() fails");
         }
 
-        dReturn = vRes.dblVal/180.0*M_PI;
+        dReturn = vRes.dblVal / 180.0 * M_PI;
     }
     catch (wxString Msg)
     {
@@ -673,66 +685,72 @@ double ScopeASCOM::GetDeclination(void)
 
     return dReturn;
 }
+
 // Return RA and Dec guide rates in native ASCOM units, degrees/sec.
-// Convention is, apparently, to return true on an error
+// Convention is to return true on an error
 bool ScopeASCOM::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
 {
+    bool bError = false;
     IDispatch *pScopeDriver = NULL;
-    bool bError = true;
 
-    if (m_bCanGetGuideRates)            // Here to keep from beating our head against the wall and generating logged errors
+    try
     {
-        bError = false;
-        try
+        if (!IsConnected())
         {
-
-            if (FAILED(m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (void**)&pScopeDriver)))
-            {
-                throw ERROR_INFO("ASCOM Scope: Cannot get interface with Global Interface Table");
-            }
-
-            assert(pScopeDriver);
-
-            DISPPARAMS dispParms;
-            HRESULT hr;
-            EXCEPINFO excep;
-            VARIANT vRes;
-
-            dispParms.cArgs = 0;
-            dispParms.rgvarg = NULL;
-            dispParms.cNamedArgs = 0;
-            dispParms.rgdispidNamedArgs = NULL;
-
-            if(FAILED(hr = pScopeDriver->Invoke(dispid_decguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
-            {
-                throw ERROR_INFO("ASCOM Scope: GuideRateDec() failed");
-            }
-
-            *pDecGuideRate = vRes.dblVal;
-
-            if(FAILED(hr = pScopeDriver->Invoke(dispid_raguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
-            {
-                throw ERROR_INFO("ASCOM Scope: GuideRateRA() failed");
-            }
-
-            *pRAGuideRate = vRes.dblVal;
-
-        }
-        catch (wxString Msg)
-        {
-            bError = true;
-            POSSIBLY_UNUSED(Msg);
+            throw ERROR_INFO("ASCOM Scope: cannot get guide rates when not connected");
         }
 
-        if (pScopeDriver)
+        if (!m_bCanGetGuideRates)
         {
-            pScopeDriver->Release();
+            throw THROW_INFO("ASCOM Scope: not capable of getting guide rates");
         }
 
-        Debug.AddLine("ScopeASCOM::GetGuideRates() returns %u %.4f %.4f", bError, *pDecGuideRate, *pRAGuideRate);
+        if (FAILED(m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (void**)&pScopeDriver)))
+        {
+            throw ERROR_INFO("ASCOM Scope: Cannot get interface with Global Interface Table");
+        }
+
+        assert(pScopeDriver);
+
+        DISPPARAMS dispParms;
+        HRESULT hr;
+        EXCEPINFO excep;
+        VARIANT vRes;
+
+        dispParms.cArgs = 0;
+        dispParms.rgvarg = NULL;
+        dispParms.cNamedArgs = 0;
+        dispParms.rgdispidNamedArgs = NULL;
+
+        if (FAILED(hr = pScopeDriver->Invoke(dispid_decguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
+        {
+            throw ERROR_INFO("ASCOM Scope: GuideRateDec() failed");
+        }
+
+        *pDecGuideRate = vRes.dblVal;
+
+        if (FAILED(hr = pScopeDriver->Invoke(dispid_raguiderate, IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
+        {
+            throw ERROR_INFO("ASCOM Scope: GuideRateRA() failed");
+        }
+
+        *pRAGuideRate = vRes.dblVal;
+    }
+    catch (wxString Msg)
+    {
+        bError = true;
+        POSSIBLY_UNUSED(Msg);
     }
 
-    return (bError);
+    if (pScopeDriver)
+    {
+        pScopeDriver->Release();
+    }
+
+    Debug.AddLine("ScopeASCOM::GetGuideRates() returns %u %.4f %.4f", bError,
+        bError ? 0.0 : *pDecGuideRate, bError ? 0.0 : *pRAGuideRate);
+
+    return bError;
 }
 
 #endif /* GUIDE_ASCOM */
