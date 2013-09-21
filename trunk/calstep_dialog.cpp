@@ -58,11 +58,10 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, const wxString& c
     // See if we can get the guide rates - if not, use our best default
     try
     {
-        if (pSecondaryMount)
+        if (pSecondaryMount && pSecondaryMount->IsConnected())
             bRateError = pSecondaryMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
-        else
-            if (pMount)
-                bRateError = pMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
+        else if (pMount && pMount->IsConnected())
+            bRateError = pMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
     }
     catch (wxString sMsg)
     {
@@ -75,7 +74,6 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, const wxString& c
             m_fGuideSpeed = dGuideRateRA * 3600.0/(15.0 * dSiderealSecondPerSec);                    // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
         else
             m_fGuideSpeed = dGuideRateDec/(15.0 * dSiderealSecondPerSec);
-
     }
     else
     {
