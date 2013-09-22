@@ -458,8 +458,6 @@ Camera_SimClass::~Camera_SimClass()
     delete sim;
 }
 
-#include "fitsio.h"
-
 #if SIMMODE==1
 bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool recon) {
     int xsize, ysize;

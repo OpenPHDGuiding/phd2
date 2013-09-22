@@ -34,7 +34,6 @@
 
 #include "phd.h"
 #include "image_math.h"
-#include "fitsio.h"
 
 bool usImage::Init(int xsize, int ysize) {
 // Allocates space for image and sets params up

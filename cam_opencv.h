@@ -34,7 +34,6 @@
  *
  */
 
-#include <opencv/cv.h>
 #include <opencv/highgui.h>
 
 #ifndef CAM_OPENCV_H_INCLUDED
