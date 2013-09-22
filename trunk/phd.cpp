@@ -88,15 +88,21 @@ bool PhdApp::OnInit() {
     #endif
 #endif
 
-#if defined(__WINDOWS__)
-    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-    Debug.AddLine("CoInitializeEx returns %x", hr);
-#endif
-
     SetVendorName(_T("StarkLabs"));
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
     Debug.Init("debug", pConfig->Global.GetBoolean("/EnableDebugLog", true));
+
+    Debug.AddLine(wxString::Format("PHD2 version %s begins execution with:", FULLVER));
+    Debug.AddLine(wxString::Format("   %s", wxVERSION_STRING));
+    float dummy;
+    Debug.AddLine(wxString::Format("   cfitsio %.2lf", ffvers(&dummy)));
+    Debug.AddLine(wxString::Format("   opencv %s", CV_VERSION));
+
+#if defined(__WINDOWS__)
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    Debug.AddLine("CoInitializeEx returns %x", hr);
+#endif
 
     if (m_resetConfig)
     {

@@ -43,7 +43,6 @@
 #include <wx/stdpaths.h>
 #include <wx/utils.h>
 
-#include <fitsio.h>
 #include <memory>
 
 void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))

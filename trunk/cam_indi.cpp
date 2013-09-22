@@ -167,12 +167,6 @@ void Camera_INDIClass::ShowPropertyDialog() {
     indigui_show_dialog(INDIClient);
 }
 
-#if defined (__APPLE__)
-#include "../cfitsio/fitsio.h"
-#else
-#include <fitsio.h>
-#endif
-
 bool Camera_INDIClass::ReadFITS(usImage& img) {
     int xsize, ysize;
     fitsfile *fptr;  // FITS file pointer
