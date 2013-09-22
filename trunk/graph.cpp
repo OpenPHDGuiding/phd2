@@ -68,10 +68,6 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
 {
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
-    //SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-
-    m_pParent = parent;
-
     wxBoxSizer *pMainSizer   = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer *pClientSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -228,11 +224,11 @@ wxColor GraphLogWindow::GetDecOrDyColor(void)
     return m_pClient->m_decOrDyColor;
 }
 
-int GraphLogWindow::StringWidth(wxString string)
+int GraphLogWindow::StringWidth(const wxString& string)
 {
     int width, height;
 
-    m_pParent->GetTextExtent(string, &width, &height);
+    GetParent()->GetTextExtent(string, &width, &height);
 
     return width;
 }
@@ -1102,15 +1098,10 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 }
 
-GraphControlPane::GraphControlPane(wxWindow *pParent, wxString label)
-:wxWindow(pParent, wxID_ANY)
+GraphControlPane::GraphControlPane(wxWindow *pParent, const wxString& label)
+    : wxWindow(pParent, wxID_ANY)
 {
-    m_pParent = pParent;
     m_pControlSizer = new wxBoxSizer(wxHORIZONTAL);
-    //m_pControlSizer = new wxStaticBoxSizer(wxHORIZONTAL, this, label);
-    //m_pControlSizer->GetStaticBox()->SetBackgroundColour(*wxBLACK);
-    //m_pControlSizer->GetStaticBox()->SetForegroundColour(*wxWHITE);
-    //m_pControlSizer->GetStaticBox()->SetOwnBackgroundColour(*wxBLACK);
 
     SetBackgroundColour(*wxBLACK);
 
@@ -1133,16 +1124,16 @@ GraphControlPane::~GraphControlPane(void)
 {
 }
 
-int GraphControlPane::StringWidth(wxString string)
+int GraphControlPane::StringWidth(const wxString& string)
 {
     int width, height;
 
-    m_pParent->GetTextExtent(string, &width, &height);
+    GetParent()->GetTextExtent(string, &width, &height);
 
     return width;
 }
 
-void GraphControlPane::DoAdd(wxControl *pCtrl, wxString lbl)
+void GraphControlPane::DoAdd(wxControl *pCtrl, const wxString& lbl)
 {
     wxStaticText *pLabel = new wxStaticText(this,wxID_ANY,lbl);
 #ifdef __WINDOWS__
