@@ -115,8 +115,8 @@ class GraphLogClientWindow : public wxWindow
     DECLARE_EVENT_TABLE()
 };
 
-class GraphLogWindow : public wxWindow {
-    wxWindow *m_pParent;
+class GraphLogWindow : public wxWindow
+{
 public:
     GraphLogWindow(wxWindow *parent);
     ~GraphLogWindow(void);
@@ -164,7 +164,7 @@ private:
     bool m_visible;
     GraphLogClientWindow *m_pClient;
 
-    int StringWidth(wxString string);
+    int StringWidth(const wxString& string);
     void UpdateHeightButtonLabel(void);
 
     DECLARE_EVENT_TABLE()
@@ -173,15 +173,13 @@ private:
 class GraphControlPane : public wxWindow
 {
 public:
-    GraphControlPane(wxWindow *pParent, wxString label);
+    GraphControlPane(wxWindow *pParent, const wxString& label);
     ~GraphControlPane(void);
 protected:
-    wxWindow *m_pParent;
     wxBoxSizer *m_pControlSizer;
-    //wxStaticBoxSizer *m_pControlSizer;
 
-    int StringWidth(wxString string);
-    void DoAdd(wxControl *pCtrl, wxString lbl);
+    int StringWidth(const wxString& string);
+    void DoAdd(wxControl *pCtrl, const wxString& lbl);
 };
 
 #endif
