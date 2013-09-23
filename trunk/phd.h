@@ -136,9 +136,9 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "../cfitsio/fitsio.h"
 #else
 #include "fitsio.h"
+#include <opencv/cv.h>
 #endif
 
-#include <opencv/cv.h>
 
 #include "phdconfig.h"
 #include "configdialog.h"
