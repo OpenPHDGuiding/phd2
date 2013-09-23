@@ -97,7 +97,9 @@ bool PhdApp::OnInit() {
     Debug.AddLine(wxString::Format("   %s", wxVERSION_STRING));
     float dummy;
     Debug.AddLine(wxString::Format("   cfitsio %.2lf", ffvers(&dummy)));
+#if defined(CV_VERSION)
     Debug.AddLine(wxString::Format("   opencv %s", CV_VERSION));
+#endif
 
 #if defined(__WINDOWS__)
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
