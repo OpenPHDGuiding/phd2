@@ -80,11 +80,13 @@ int MyFrame::RequestedExposureDuration()
     return m_exposureDuration;
 }
 
-void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event)) {
+void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
+{
     Close(false);
 }
 
-void MyFrame::OnInstructions(wxCommandEvent& WXUNUSED(event)) {
+void MyFrame::OnInstructions(wxCommandEvent& WXUNUSED(event))
+{
     if (CaptureActive) return;  // Looping an exposure already
     wxMessageBox(wxString::Format(_("Welcome to PHD (Push Here Dummy) Guiding\n\n \
 Operation is quite simple (hence the 'PHD')\n\n \
@@ -103,16 +105,20 @@ Advanced panel.  ")),_("Instructions"));
 
 }
 
-void MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event)) {
+void MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
+{
     help->Display(_("Introduction"));
 }
-void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event)) {
+
+void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
+{
     if (CaptureActive) return;  // Looping an exposure already
     AboutDialog dlg;
     dlg.ShowModal();
 }
 
-void MyFrame::OnOverlay(wxCommandEvent &evt) {
+void MyFrame::OnOverlay(wxCommandEvent &evt)
+{
     pGuider->SetOverlayMode(evt.GetId() - MENU_XHAIR0);
 }
 
@@ -377,7 +383,15 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
 
         if (CaptureActive)
         {
-            throw ERROR_INFO("cannot start looping when capture active");
+            // if we are guiding, stop guiding and go back to looping
+            if (pGuider->IsCalibratingOrGuiding())
+            {
+                pGuider->StopGuiding();
+            }
+            else
+            {
+                throw ERROR_INFO("cannot start looping when capture active");
+            }
         }
 
         m_frameCounter = 0;
@@ -491,11 +505,6 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
         Mount *pThisMount = event.GetPayload<Mount *>();
         assert(pThisMount->IsBusy());
         pThisMount->DecrementRequestCount();
-
-        if (!pThisMount->IsBusy())
-        {
-            UpdateButtonsStatus();
-        }
 
         if (event.GetInt())
         {
@@ -620,7 +629,8 @@ void MyFrame::OnToolBar(wxCommandEvent &evt)
     m_mgr.Update();
 }
 
-void MyFrame::OnGraph(wxCommandEvent &evt) {
+void MyFrame::OnGraph(wxCommandEvent &evt)
+{
     if (evt.IsChecked())
     {
         m_mgr.GetPane(_T("GraphLog")).Show().Bottom().Position(0).MinSize(-1, 220);
@@ -633,7 +643,8 @@ void MyFrame::OnGraph(wxCommandEvent &evt) {
     m_mgr.Update();
 }
 
-void MyFrame::OnAoGraph(wxCommandEvent &evt) {
+void MyFrame::OnAoGraph(wxCommandEvent &evt)
+{
     if (this->pStepGuiderGraph->SetState(evt.IsChecked()))
     {
         m_mgr.GetPane(_T("AOPosition")).Show().Right().Position(1).MinSize(293,208);
@@ -645,7 +656,8 @@ void MyFrame::OnAoGraph(wxCommandEvent &evt) {
     m_mgr.Update();
 }
 
-void MyFrame::OnStarProfile(wxCommandEvent &evt) {
+void MyFrame::OnStarProfile(wxCommandEvent &evt)
+{
     if (evt.IsChecked())
     {
 #if defined (__APPLE__)
@@ -663,7 +675,8 @@ void MyFrame::OnStarProfile(wxCommandEvent &evt) {
     m_mgr.Update();
 }
 
-void MyFrame::OnTarget(wxCommandEvent &evt) {
+void MyFrame::OnTarget(wxCommandEvent &evt)
+{
     if (evt.IsChecked())
     {
         m_mgr.GetPane(_T("Target")).Show().Right().Position(2).MinSize(293,208);
@@ -676,8 +689,8 @@ void MyFrame::OnTarget(wxCommandEvent &evt) {
     m_mgr.Update();
 }
 
-
-void MyFrame::OnLog(wxCommandEvent &evt) {
+void MyFrame::OnLog(wxCommandEvent &evt)
+{
     if (evt.GetId() == MENU_LOG) {
         if (evt.IsChecked()) {  // enable it
             GuideLog.EnableLogging();
@@ -759,7 +772,8 @@ bool MyFrame::FlipRACal()
     return bError;
 }
 
-void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt)) {
+void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt))
+{
     pFrame->pGuider->AutoSelect();
 }
 
@@ -784,15 +798,15 @@ void MyFrame::OnDonateMenu(wxCommandEvent &evt) {
 }
 #endif
 
-void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
+void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event))
+{
     if (!pCamera || !pCamera->Connected || !pCamera->HasPropertyDialog) return;  // One more safety check
 
     pCamera->ShowPropertyDialog();
-
 }
 
-void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
-
+void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
+{
     AdvancedDialog* dlog = new AdvancedDialog();
 
     dlog->LoadValues();
@@ -802,13 +816,11 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
         Debug.AddLine("User exited setup dialog with 'ok'");    // Make things more clear in the debug log
         dlog->UnloadValues();
         pGraphLog->UpdateControls();
-
     }
     else                // Cancel event may require non-trivial undos
     {
         Debug.AddLine("User exited setup dialog with 'cancel'");
         dlog->Undo();
-
     }
 }
 
@@ -841,6 +853,8 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
         pGuider->StartGuiding();
 
         StartCapturing();
+
+        UpdateButtonsStatus();
     }
     catch (wxString Msg)
     {
@@ -850,8 +864,8 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
     return;
 }
 
-void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt)) {
-
+void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt))
+{
     if (pFrame->pGuider->GetState() > STATE_SELECTED)
     {
         wxMessageBox(_("Cannot Manual Guide when Calibrating or Guiding"),_("Info"));

@@ -170,6 +170,11 @@ GUIDER_STATE Guider::GetState(void)
     return m_state;
 }
 
+bool Guider::IsCalibratingOrGuiding(void)
+{
+    return m_state >= STATE_CALIBRATING_PRIMARY && m_state <= STATE_GUIDING;
+}
+
 void Guider::OnErase(wxEraseEvent &evt)
 {
     evt.Skip();
@@ -548,7 +553,7 @@ void Guider::SetState(GUIDER_STATE newState)
 
             if (pMount && pMount->GuidingCeases())
             {
-                throw ERROR_INFO("GuidingStops() failed");
+                throw ERROR_INFO("GuidingCeases() failed");
             }
         }
 
@@ -652,7 +657,6 @@ wxImage *Guider::DisplayedImage(void)
     return m_displayedImage;
 }
 
-
 double Guider::ScaleFactor(void)
 {
     return m_scaleFactor;
@@ -664,6 +668,30 @@ void Guider::StartGuiding(void)
     // automatically move from calibrating->calibrated->guiding
     // when it can
     SetState(STATE_CALIBRATING_PRIMARY);
+}
+
+void Guider::StopGuiding(void)
+{
+    // first, send a notification that we stopped
+    switch (m_state)
+    {
+        case STATE_UNINITIALIZED:
+        case STATE_SELECTING:
+        case STATE_SELECTED:
+            EvtServer.NotifyLoopingStopped();
+            break;
+        case STATE_CALIBRATING_PRIMARY:
+        case STATE_CALIBRATING_SECONDARY:
+        case STATE_CALIBRATED:
+            EvtServer.NotifyCalibrationFailed(m_state == STATE_CALIBRATING_SECONDARY ? pSecondaryMount : pMount,
+                _("Calibration manually stopped"));
+            break;
+        case STATE_GUIDING:
+            EvtServer.NotifyGuidingStopped();
+            break;
+    }
+
+    SetState(STATE_STOP);
 }
 
 void Guider::Reset(void)
@@ -689,26 +717,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         if (bStopping)
         {
-            // send a notification that we stopped
-            switch (m_state)
-            {
-                case STATE_UNINITIALIZED:
-                case STATE_SELECTING:
-                case STATE_SELECTED:
-                    EvtServer.NotifyLoopingStopped();
-                    break;
-                case STATE_CALIBRATING_PRIMARY:
-                case STATE_CALIBRATING_SECONDARY:
-                case STATE_CALIBRATED:
-                    EvtServer.NotifyCalibrationFailed(m_state == STATE_CALIBRATING_SECONDARY ? pSecondaryMount : pMount,
-                        _("Calibration manually stopped"));
-                    break;
-                case STATE_GUIDING:
-                    EvtServer.NotifyGuidingStopped();
-                    break;
-            }
-
-            SetState(STATE_STOP);
+            StopGuiding();
             statusMessage = _("Stopped Guiding");
             throw THROW_INFO("Stopped Guiding");
         }

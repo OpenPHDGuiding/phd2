@@ -697,10 +697,8 @@ void MyFrame::UpdateButtonsStatus(void)
     bool need_update = false;
 
     bool const loop_enabled =
-        !CaptureActive &&
-        pCamera && pCamera->Connected &&
-        (!pMount || !pMount->IsBusy()) &&
-        (!pSecondaryMount || !pSecondaryMount->IsBusy());
+        (!CaptureActive || pGuider->IsCalibratingOrGuiding()) &&
+        pCamera && pCamera->Connected;
 
     if (cond_update_tool(MainToolbar, BUTTON_LOOP, loop_enabled))
         need_update = true;
@@ -711,13 +709,15 @@ void MyFrame::UpdateButtonsStatus(void)
     if (cond_update_tool(MainToolbar, BUTTON_ADVANCED, !m_continueCapturing))
         need_update = true;
 
-    if (Dark_Button->IsEnabled() != loop_enabled) {
-        Dark_Button->Enable(loop_enabled);
+    bool dark_enabled = loop_enabled && !CaptureActive;
+
+    if (Dark_Button->IsEnabled() != dark_enabled)
+    {
+        Dark_Button->Enable(dark_enabled);
         need_update = true;
     }
 
-    bool bGuideable = pGuider->GetState() >= STATE_SELECTED &&
-        pGuider->GetState() < STATE_GUIDING &&
+    bool bGuideable = pGuider->GetState() == STATE_SELECTED &&
         pMount && pMount->IsConnected();
 
     if (cond_update_tool(MainToolbar, BUTTON_GUIDE, bGuideable))

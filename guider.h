@@ -152,6 +152,7 @@ public:
     double CurrentError(void);
     GUIDER_STATE GetState(void);
     static EXPOSED_STATE GetExposedState(void);
+    bool IsCalibratingOrGuiding(void);
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
     void UpdateImageDisplay(usImage *pImage=NULL);
@@ -167,6 +168,7 @@ public:
     bool SaveCurrentImage(const wxString& fileName);
 
     void StartGuiding(void);
+    void StopGuiding(void);
     void UpdateGuideState(usImage *pImage, bool bStopping=false);
 
     bool SetScaleImage(bool newScaleValue);
