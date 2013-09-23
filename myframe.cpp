@@ -452,16 +452,23 @@ void MyFrame::SetupMenuBar(void)
     SetMenuBar(Menubar);
 }
 
-void MyFrame::SetComboBoxWidth(wxComboBox *control, unsigned int extra)
+int MyFrame::GetTextWidth(wxControl *pControl, wxString string)
+{
+    int width;
+
+    pControl->GetTextExtent(string, &width, NULL);
+
+    return width;
+}
+
+void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
 {
     unsigned int i;
     int width=-1;
 
-    for (i = 0; i < control->GetCount(); i++)
+    for (i = 0; i < pComboBox->GetCount(); i++)
     {
-        int thisWidth;
-
-        control->GetTextExtent(control->GetString(i), &thisWidth, NULL);
+        int thisWidth = GetTextWidth(pComboBox, pComboBox->GetString(i));
 
         if (thisWidth > width)
         {
@@ -469,7 +476,7 @@ void MyFrame::SetComboBoxWidth(wxComboBox *control, unsigned int extra)
         }
     }
 
-    control->SetMinSize(wxSize(width + extra, -1));
+    pComboBox->SetMinSize(wxSize(width + extra, -1));
 }
 
 static wxString dur_choices[] = {
@@ -610,9 +617,31 @@ void MyFrame::UpdateCalibrationStatus(void)
 
 void MyFrame::SetupStatusBar(void)
 {
-    CreateStatusBar(6);
-    int status_widths[] = {-3, -5, 60, 67, 25, 32};
-    SetStatusWidths(6,status_widths);
+    const int statusBarFields = 6;
+
+    CreateStatusBar(statusBarFields);
+    wxControl *pControl = (wxControl*)GetStatusBar();
+
+    int statusWidths[statusBarFields] = {
+        -3,
+        -5,
+        wxMax(GetTextWidth(pControl, _("Camera")), GetTextWidth(pControl, _("No Cam"))),
+        wxMax(GetTextWidth(pControl, _("Scope")),  GetTextWidth(pControl, _("No Scope"))),
+        GetTextWidth(pControl, _("AO")),
+        wxMax(GetTextWidth(pControl, _("No Cal")),  GetTextWidth(pControl, _("Cal +"))),
+    };
+
+    // This code really bothers me, but it needs to be here because on Mac it 
+    // truncates the status bar text even though we calculated the sizes above.
+    for(int i=0;i<statusBarFields;i++)
+    {
+        if (statusWidths[i] > 0)
+        {
+            statusWidths[i] = (120*statusWidths[i])/100;
+        }
+    } 
+
+    SetStatusWidths(6,statusWidths);
     SetStatusText(_("No cam"),2);
     SetStatusText(_("No scope"),3);
     SetStatusText(_T(""),4);

@@ -278,7 +278,8 @@ private:
     void SetupToolBar();
     void SetupKeyboardShortcuts(void);
     void SetupHelpFile(void);
-    void SetComboBoxWidth(wxComboBox *control, unsigned int extra);
+    int GetTextWidth(wxControl *pControl, wxString string);
+    void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
 
     int ExposureDurationFromSelection(const wxString& selection);
 
