@@ -3,6 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Craig Stark.
+ *  Reimplemented for PHD2 by Andy Galasso.
  *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
@@ -65,6 +66,7 @@ struct SimCamParams
     static double guide_rate;
     static PierSide pier_side;
     static bool reverse_dec_pulse_on_west_side;
+    static unsigned int clouds_inten;
 };
 
 unsigned int SimCamParams::width = 752;          // simulated camera image width
@@ -81,6 +83,7 @@ double SimCamParams::cam_angle;                  // simulated camera angle (degr
 double SimCamParams::guide_rate;                 // guide rate, pixels per second
 PierSide SimCamParams::pier_side;                // side of pier
 bool SimCamParams::reverse_dec_pulse_on_west_side; // reverse dec pulse on west side of pier, like ASCOM pulse guided equatorial mounts
+unsigned int SimCamParams::clouds_inten;          // clouds intensity blocking out stars
 
 #define NR_STARS_DEFAULT 20
 #define NR_HOT_PIXELS_DEFAULT 8
@@ -99,6 +102,7 @@ bool SimCamParams::reverse_dec_pulse_on_west_side; // reverse dec pulse on west 
 #define GUIDE_RATE_MAX 8.0
 #define PIER_SIDE_DEFAULT PIER_SIDE_EAST
 #define REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT true
+#define CLOUDS_INTEN_DEFAULT 10
 
 static void load_sim_params()
 {
@@ -336,6 +340,17 @@ static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint&
     }
 }
 
+static void render_clouds(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
+{
+    unsigned short *p0 = &img.Pixel(subframe.GetLeft(), subframe.GetTop());
+    for (unsigned int r = 0; r < subframe.GetHeight(); r++, p0 += img.Size.GetWidth())
+    {
+        unsigned short *const end = p0 + subframe.GetWidth();
+        for (unsigned short *p = p0; p < end; p++)
+            *p = (unsigned short) (SimCamParams::clouds_inten * ((double) gain / 10.0 * offset * exptime / 100.0 + ((rand() % (gain * 100)) / 30.0)));
+    }
+}
+
 void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
     unsigned int const nr_stars = stars.size();
@@ -416,6 +431,9 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             render_star(img, subframe, cc[i], newval);
         }
     }
+
+    if (SimCamParams::clouds_inten)
+        render_clouds(img, subframe, exptime, gain, offset);
 
     // render hot pixels
     for (unsigned int i = 0; i < hotpx.size(); i++)
@@ -713,6 +731,7 @@ struct SimCamDialog : public wxDialog
     wxCheckBox *reverse_dec_pulse_on_west;
     PierSide pier_side;
     wxStaticText *pier_side_label;
+    wxCheckBox *clouds;
 
     SimCamDialog(wxWindow *parent);
     ~SimCamDialog() { }
@@ -744,25 +763,40 @@ static wxSizer *label_slider(wxWindow *parent, const wxString& label, wxSlider *
 SimCamDialog::SimCamDialog(wxWindow *parent)
     : wxDialog(parent, wxID_ANY, _("Camera Simulator"))
 {
-    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *sizerl = new wxBoxSizer(wxVERTICAL);
 
-    sizer->Add(label_slider(this, _("Stars"),        &stars,        SimCamParams::nr_stars, 0, 100));
-    sizer->Add(label_slider(this, _("Hot Pixels"),   &hotpx,        SimCamParams::nr_hot_pixels, 0, 100));
-    sizer->Add(label_slider(this, _("Noise"),        &noise,        (int)floor(SimCamParams::noise_multiplier * 100.0 / NOISE_MAX), 0, 100));
-    sizer->Add(label_slider(this, _("Dec Backlash"), &dec_backlash, (int)floor(SimCamParams::dec_backlash * 100.0 / DEC_BACKLASH_MAX), 0, 100));
-    sizer->Add(label_slider(this, _("PE"),           &pe,           (int)floor(SimCamParams::pe_scale * 100.0 / PE_MAX), 0, 100));
-    sizer->Add(label_slider(this, _("DEC Drift"),    &dec_drift,    (int)floor(SimCamParams::dec_drift_rate * 100.0 / DEC_DRIFT_MAX), 0, 100));
-    sizer->Add(label_slider(this, _("Seeing"),       &seeing,       (int)floor(SimCamParams::seeing_scale * 100.0 / SEEING_MAX), 0, 100));
-    sizer->Add(label_slider(this, _("Cam Angle"),    &cam_angle,    (int)floor(SimCamParams::cam_angle + 0.5), 0, 359));
-    sizer->Add(label_slider(this, _("Guide Rate"),   &guide_rate,   (int)floor(SimCamParams::guide_rate * 100.0 / GUIDE_RATE_MAX), 0, 100));
+    sizerl->Add(label_slider(this, _("Stars"),        &stars,        SimCamParams::nr_stars, 0, 100));
+    sizerl->Add(label_slider(this, _("Hot Pixels"),   &hotpx,        SimCamParams::nr_hot_pixels, 0, 100));
+    sizerl->Add(label_slider(this, _("Noise"),        &noise,        (int)floor(SimCamParams::noise_multiplier * 100.0 / NOISE_MAX), 0, 100));
+    sizerl->Add(label_slider(this, _("Dec Backlash"), &dec_backlash, (int)floor(SimCamParams::dec_backlash * 100.0 / DEC_BACKLASH_MAX), 0, 100));
+    sizerl->Add(label_slider(this, _("PE"),           &pe,           (int)floor(SimCamParams::pe_scale * 100.0 / PE_MAX), 0, 100));
+
+    wxBoxSizer *sizerr = new wxBoxSizer(wxVERTICAL);
+    sizerr->Add(label_slider(this, _("DEC Drift"),    &dec_drift,    (int)floor(SimCamParams::dec_drift_rate * 100.0 / DEC_DRIFT_MAX), 0, 100));
+    sizerr->Add(label_slider(this, _("Seeing"),       &seeing,       (int)floor(SimCamParams::seeing_scale * 100.0 / SEEING_MAX), 0, 100));
+    sizerr->Add(label_slider(this, _("Cam Angle"),    &cam_angle,    (int)floor(SimCamParams::cam_angle + 0.5), 0, 359));
+    sizerr->Add(label_slider(this, _("Guide Rate"),   &guide_rate,   (int)floor(SimCamParams::guide_rate * 100.0 / GUIDE_RATE_MAX), 0, 100));
+    sizerr->Add(0, 0, 2, wxEXPAND, 5);
+
+    wxBoxSizer *sizerlr = new wxBoxSizer(wxHORIZONTAL);
+    sizerlr->Add(sizerl);
+    sizerlr->Add(sizerr);
+
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(sizerlr, wxSizerFlags().Border(wxALL).Expand());
+
+    clouds = new wxCheckBox(this, wxID_ANY, _("Clouds"));
+    clouds->SetToolTip(_("Simulate clouds blocking stars"));
+    clouds->SetValue(SimCamParams::clouds_inten > 0);
+    sizer->Add(clouds, wxSizerFlags().Border(wxALL).Expand());
 
     reverse_dec_pulse_on_west = new wxCheckBox(this, wxID_ANY, _("Reverse Dec pulse on West side of pier"));
     reverse_dec_pulse_on_west->SetToolTip(_("Simulate a mount that reverses guide pulse direction after a meridian flip, like an ASCOM pulse-guided mount."));
     reverse_dec_pulse_on_west->SetValue(SimCamParams::reverse_dec_pulse_on_west_side);
-    sizer->Add(reverse_dec_pulse_on_west);
+    sizer->Add(reverse_dec_pulse_on_west, wxSizerFlags().Border(wxALL).Expand());
 
     wxBoxSizer *sizer1 = new wxBoxSizer(wxHORIZONTAL);
-    sizer1->Add(new wxButton(this, wxID_CONVERT, _("Pier Flip")));
+    sizer1->Add(new wxButton(this, wxID_CONVERT, _("Pier Flip")), wxSizerFlags().Border(wxALL).Expand());
     pier_side = SimCamParams::pier_side;
 
     pier_side_label = new wxStaticText(this, wxID_ANY, _("Side of Pier: MMMMM"));
@@ -772,7 +806,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
 
     wxButton *btn = new wxButton(this, wxID_RESET, _("Reset"));
     btn->SetToolTip(_("Reset all values to application defaults"));
-    sizer->Add(btn);
+    sizer->Add(btn, wxSizerFlags().Border(wxALL));
 
     wxBoxSizer *main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(sizer, wxSizerFlags(0).Expand());
@@ -796,6 +830,7 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     reverse_dec_pulse_on_west->SetValue(REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT);
     pier_side = PIER_SIDE_DEFAULT;
     UpdatePierSideLabel();
+    clouds->SetValue(false);
 }
 
 void SimCamDialog::OnPierFlip(wxCommandEvent& event)
@@ -830,6 +865,7 @@ void Camera_SimClass::ShowPropertyDialog()
         SimCamParams::guide_rate =       (double) dlg.guide_rate->GetValue() * GUIDE_RATE_MAX / 100.0;
         SimCamParams::pier_side = dlg.pier_side;
         SimCamParams::reverse_dec_pulse_on_west_side = dlg.reverse_dec_pulse_on_west->GetValue();
+        SimCamParams::clouds_inten = dlg.clouds->GetValue() ? CLOUDS_INTEN_DEFAULT : 0;
         save_sim_params();
         sim->Initialize();
     }
