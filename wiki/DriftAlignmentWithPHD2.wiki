@@ -29,6 +29,8 @@ The first iteration or two are for determining how the azimuth adjustment affect
 
 Repeat *Drift* and *Adjust Azimuth* until you are satisfied with your azimuth alignment.
 
+  Tip: you can keep track of the star's position in each iteration by marking the position with a Bookmark. Ctrl-click on the image to add or remove a bookmark. Press 'B' to toggle display of bookmarks on/off.
+
 
 = Adjust Altitude =
 
