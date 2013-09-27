@@ -442,18 +442,18 @@ bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
             throw ERROR_INFO("Point is not valid");
         }
 
-        double x=position.X;
-        double y=position.Y;
+        double x = position.X;
+        double y = position.Y;
         Debug.AddLine(wxString::Format("setting lock position to (%.2f, %.2f)", x, y));
 
-        if ((x <= 0) || (x >= m_pCurrentImage->Size.x))
-        {
-            throw ERROR_INFO("invalid y value");
-        }
-
-        if ((y <= 0) || (y >= m_pCurrentImage->Size.x))
+        if ((x < 0.0) || (x >= m_pCurrentImage->Size.x))
         {
             throw ERROR_INFO("invalid x value");
+        }
+
+        if ((y < 0.0) || (y >= m_pCurrentImage->Size.y))
+        {
+            throw ERROR_INFO("invalid y value");
         }
 
         if (bExact)

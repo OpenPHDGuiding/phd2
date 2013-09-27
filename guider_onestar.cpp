@@ -157,12 +157,12 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
             throw ERROR_INFO("invalid x value");
         }
 
-        if ((y <= 0) || (y >= pImage->Size.x))
+        if ((y <= 0) || (y >= pImage->Size.y))
         {
             throw ERROR_INFO("invalid y value");
         }
 
-        bError = m_star.Find(pImage, m_searchRegion, x, y);
+        bError = !m_star.Find(pImage, m_searchRegion, x, y);
     }
     catch (wxString Msg)
     {
@@ -387,7 +387,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
         }
         else
         {
-            if ((mevent.m_x <= m_searchRegion) || (mevent.m_x >= (XWinSize+m_searchRegion)) || (mevent.m_y <= m_searchRegion) || (mevent.m_y >= (XWinSize+m_searchRegion)))
+            if ((mevent.m_x <= m_searchRegion) || (mevent.m_x + m_searchRegion >= XWinSize) || (mevent.m_y <= m_searchRegion) || (mevent.m_y + m_searchRegion >= YWinSize))
             {
                 mevent.Skip();
                 throw THROW_INFO("Skipping event because click outside of search region");
@@ -416,6 +416,9 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
                 SetLockPosition(m_star, true);
                 pFrame->SetStatusText(wxString::Format(_("Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
                 pFrame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),m_star.Mass,m_star.SNR));
+                EvtServer.NotifyStarSelected(CurrentPosition());
+                SetState(STATE_SELECTED);
+                pFrame->UpdateButtonsStatus();
             }
 
             Refresh();
