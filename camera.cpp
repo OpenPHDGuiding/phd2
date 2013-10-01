@@ -191,6 +191,11 @@ GuideCamera::~GuideCamera(void)
     }
 }
 
+static int CompareNoCase(const wxString& first, const wxString& second)
+{
+    return first.CmpNoCase(second);
+}
+
 wxArrayString GuideCamera::List(void)
 {
     wxArrayString CameraList;
@@ -296,7 +301,7 @@ wxArrayString GuideCamera::List(void)
     CameraList.Add(_T("Guide chip on SBIG cam in Nebulosity"));
 #endif
 
-    CameraList.Sort();
+    CameraList.Sort(&CompareNoCase);
 
     return CameraList;
 }

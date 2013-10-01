@@ -212,6 +212,11 @@ bool Scope::SetDecGuideMode(int decGuideMode)
     return bError;
 }
 
+static int CompareNoCase(const wxString& first, const wxString& second)
+{
+    return first.CmpNoCase(second);
+}
+
 wxArrayString Scope::List(void)
 {
     wxArrayString ScopeList;
@@ -248,6 +253,8 @@ wxArrayString Scope::List(void)
 #ifdef GUIDE_GCUSBST4
     ScopeList.Add(_T("GC USB ST4"));
 #endif
+
+    ScopeList.Sort(&CompareNoCase);
 
     return ScopeList;
 }
