@@ -730,7 +730,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 wxString Scope::GetSettingsSummary() {
     // return a loggable summary of current mount settings
     return Mount::GetSettingsSummary() +
-        wxString::Format("Calibration step %d, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
+        wxString::Format("Calibration step = %d, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
             GetCalibrationDuration(),
             GetMaxRaDuration(),
             GetMaxDecDuration(),

@@ -939,16 +939,16 @@ wxString Mount::GetSettingsSummary() {
     wxString algorithms[] = {
         _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
-    return wxString::Format("Mount %s, %s connected, guiding %s, %s\n",
+    return wxString::Format("Mount = %s,%s connected, guiding %s, %s\n",
         m_Name,
-        IsConnected() ? "" : "not",
+        IsConnected() ? " " : " not",
         m_guidingEnabled ? "enabled" : "disabled",
         IsCalibrated() ? wxString::Format("xAngle = %.3f, xRate = %.4f, yAngle = %.3f, yRate = %.4f",
                 xAngle(), xRate(), yAngle(), yRate()) : "not calibrated"
-    ) + wxString::Format("RA guide algorithm %s, %s",
+    ) + wxString::Format("X guide algorithm = %s, %s",
         algorithms[GetXGuideAlgorithm()],
         m_pXGuideAlgorithm->GetSettingsSummary()
-    ) + wxString::Format("DEC guide algorithm %s, %s",
+    ) + wxString::Format("Y guide algorithm = %s, %s",
         algorithms[GetYGuideAlgorithm()],
         m_pYGuideAlgorithm->GetSettingsSummary()
     );
