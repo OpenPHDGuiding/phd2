@@ -214,8 +214,8 @@ bool GuidingLog::StartCalibration(Mount *pCalibrationMount)
             assert(pCalibrationMount && pCalibrationMount->IsConnected());
 
             if (pCamera)
-                m_file.Write("Camera is " + pCamera->Name + "\n");
-             m_file.Write("Mount is " + pCalibrationMount->Name() + "\n");
+                m_file.Write("Camera = " + pCamera->Name + "\n");
+             m_file.Write("Mount = " + pCalibrationMount->Name() + "\n");
 
             m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f\n",
                         pFrame->pGuider->LockPosition().X,
@@ -345,6 +345,7 @@ bool GuidingLog::StartGuiding()
 
             m_file.Write("\n");
             m_file.Write("Guiding Begins at " + pFrame->m_guidingStarted.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+			Flush();
 
             // add common guiding header
             GuidingHeader();
@@ -384,9 +385,11 @@ bool GuidingLog::GuidingHeader(void)
                 m_file.Write("Secondary " + pSecondaryMount->GetSettingsSummary());
             }
 
-            m_file.Write(wxString::Format("Lockposition = %.3f, %.3f\n",
+            m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f\n",
                         pFrame->pGuider->LockPosition().X,
-                        pFrame->pGuider->LockPosition().Y));
+                        pFrame->pGuider->LockPosition().Y,
+                        pFrame->pGuider->CurrentPosition().X,
+                        pFrame->pGuider->CurrentPosition().Y));
             m_file.Write("Frame,Time,mount,dx,dy,Theta,RADuration,RADistance,RADirection,DECDuration,DECDistance,DECDirection,StarMass,SNR,ErrorCode\n");
 
             Flush();
