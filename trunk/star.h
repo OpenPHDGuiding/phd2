@@ -74,8 +74,14 @@ public:
     bool WasFound(void);
     void Invalidate(void);
     void SetError(FindResult error);
+    FindResult GetError(void) const;
 private:
     FindResult m_lastFindResult;
 };
+
+inline Star::FindResult Star::GetError(void) const
+{
+    return m_lastFindResult;
+}
 
 #endif /* STAR_H_INCLUDED */

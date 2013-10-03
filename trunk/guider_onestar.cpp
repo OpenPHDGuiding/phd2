@@ -56,6 +56,8 @@ GuiderOneStar::GuiderOneStar(wxWindow *parent):
     Guider(parent, XWinSize, YWinSize)
 {
     SetState(STATE_UNINITIALIZED);
+    m_badMassCount = 0;
+    m_starFoundTimestamp = 0;
 }
 
 GuiderOneStar::~GuiderOneStar()
@@ -134,7 +136,6 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
 
     return bError;
 }
-
 
 bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& position)
 {
@@ -285,6 +286,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
         if (!newStar.Find(pImage, m_searchRegion))
         {
             statusMessage = _("No star found");
+            m_star.SetError(newStar.GetError());
             throw ERROR_INFO("UpdateGuideState():newStar not found");
         }
 
@@ -300,11 +302,11 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
 
             if (newStar.Mass > m_star.Mass)
             {
-                massRatio = m_star.Mass/newStar.Mass;
+                massRatio = m_star.Mass / newStar.Mass;
             }
             else
             {
-                massRatio = newStar.Mass/m_star.Mass;
+                massRatio = newStar.Mass / m_star.Mass;
             }
 
             massRatio = 1.0 - massRatio;
@@ -324,6 +326,24 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
         m_star = newStar;
         m_badMassCount = 0;
 
+        const PHD_Point& lockPos = LockPosition();
+        if (lockPos.IsValid())
+        {
+            m_starFoundTimestamp = wxDateTime::GetTimeNow();
+            double distance = newStar.Distance(lockPos);
+            if (GetState() == STATE_GUIDING)
+            {
+                // update moving average distance
+                static double const alpha = .3; // moderately high weighting for latest sample
+                m_avgDistance += alpha * (distance - m_avgDistance);
+            }
+            else
+            {
+                // not yet guiding, reinitialize average distance
+                m_avgDistance = distance;
+            }
+        }
+
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
         statusMessage.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
     }
@@ -336,13 +356,31 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
     return bError;
 }
 
-bool IsClose(const wxPoint& p1, const wxPoint& p2, int tolerance)
+double GuiderOneStar::CurrentError(void)
+{
+    enum { THRESHOLD_SECONDS = 20 };
+    static double const LARGE_DISTANCE = 100.0;
+
+    if (!m_starFoundTimestamp)
+    {
+        return LARGE_DISTANCE;
+    }
+
+    if (wxDateTime::GetTimeNow() - m_starFoundTimestamp > THRESHOLD_SECONDS)
+    {
+        return LARGE_DISTANCE;
+    }
+
+    return m_avgDistance;
+}
+
+static bool IsClose(const wxPoint& p1, const wxPoint& p2, int tolerance)
 {
     return abs(p1.x - p2.x) <= tolerance &&
         abs(p1.y - p2.y) <= tolerance;
 }
 
-std::vector<wxPoint>::iterator FindBookmark(const wxPoint& pos, std::vector<wxPoint>& vec)
+static std::vector<wxPoint>::iterator FindBookmark(const wxPoint& pos, std::vector<wxPoint>& vec)
 {
     enum { TOLERANCE = 6 };
     std::vector<wxPoint>::iterator it;
@@ -533,7 +571,8 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
     }
 }
 
-void GuiderOneStar::SaveStarFITS() {
+void GuiderOneStar::SaveStarFITS()
+{
     double StarX = m_star.X;
     double StarY = m_star.Y;
     usImage *pImage = CurrentImage();
@@ -614,7 +653,8 @@ void GuiderOneStar::SaveStarFITS() {
     fits_close_file(fptr,&status);
 }
 
-wxString GuiderOneStar::GetSettingsSummary() {
+wxString GuiderOneStar::GetSettingsSummary()
+{
     // return a loggable summary of guider configs
     return wxString::Format("Search region = %d px, Star mass tolerance = %.3f px\n",
         GetSearchRegion(),

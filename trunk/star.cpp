@@ -72,7 +72,7 @@ void Star::Invalidate(void)
     PHD_Point::Invalidate();
 }
 
-void Star::SetError(FindResult error=STAR_ERROR)
+void Star::SetError(FindResult error)
 {
     m_lastFindResult = error;
 }

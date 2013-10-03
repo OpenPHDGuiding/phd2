@@ -811,8 +811,8 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         if (m_avgOffset.IsValid())
         {
             static double const alpha = .25; // moderately high weighting for latest sample
-            m_avgOffset.X = alpha * m_xOffset + (1.0 - alpha) * m_avgOffset.X;
-            m_avgOffset.Y = alpha * m_yOffset + (1.0 - alpha) * m_avgOffset.Y;
+            m_avgOffset.X += alpha * (m_xOffset - m_avgOffset.X);
+            m_avgOffset.Y += alpha * (m_yOffset - m_avgOffset.Y);
         }
         else
         {
