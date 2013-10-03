@@ -345,7 +345,7 @@ bool GuidingLog::StartGuiding()
 
             m_file.Write("\n");
             m_file.Write("Guiding Begins at " + pFrame->m_guidingStarted.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
-			Flush();
+            Flush();
 
             // add common guiding header
             GuidingHeader();

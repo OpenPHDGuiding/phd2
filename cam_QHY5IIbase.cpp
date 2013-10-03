@@ -98,10 +98,10 @@ Camera_QHY5IIBase::Camera_QHY5IIBase(bool QHY5L) {
 bool Camera_QHY5IIBase::Connect() {
 // returns true on error
 
-	if (m_QHY5L)
-		CameraDLL = LoadLibrary(TEXT("qhy5LIIdll"));
-	else
-		CameraDLL = LoadLibrary(TEXT("qhy5IIdll"));
+    if (m_QHY5L)
+        CameraDLL = LoadLibrary(TEXT("qhy5LIIdll"));
+    else
+        CameraDLL = LoadLibrary(TEXT("qhy5IIdll"));
 
     if (CameraDLL == NULL) {
         wxMessageBox(_T("Cannot load qhy5IIdll.dll"),_("Error"),wxOK | wxICON_ERROR);
