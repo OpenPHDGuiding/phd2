@@ -996,7 +996,7 @@ bool StepGuider::WouldHitLimit(GUIDE_DIRECTION direction, int steps)
 wxString StepGuider::GetSettingsSummary() {
     // return a loggable summary of current mount settings
     return Mount::GetSettingsSummary() +
-		wxString::Format("Calibration steps = %d, Samples to average = %d, Bump percentage = %d, Bump step = %.2f\n",
+        wxString::Format("Calibration steps = %d, Samples to average = %d, Bump percentage = %d, Bump step = %.2f\n",
             GetCalibrationStepsPerIteration(),
             GetSamplesToAverage(),
             GetBumpPercentage(),
