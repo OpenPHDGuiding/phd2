@@ -445,7 +445,7 @@ void EventServer::NotifyResumed()
 }
 
 void EventServer::NotifyGuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint, double RADuration, double RADistance,
-    double DECDuration, double DECDistance, int errorCode)
+    double DECDuration, double DECDistance)
 {
     if (m_eventServerClients.empty())
         return;
@@ -467,6 +467,7 @@ void EventServer::NotifyGuideStep(Mount *pGuideMount, const PHD_Point& vectorEnd
        << NV("StarMass", pFrame->pGuider->StarMass(), 0)
        << NV("SNR", pFrame->pGuider->SNR(), 2);
 
+    int errorCode = pFrame->pGuider->StarError();
     if (errorCode)
        ev << NV("ErrorCode", errorCode);
 

@@ -204,6 +204,7 @@ public:
     virtual wxRect GetBoundingBox(void) = 0;
     virtual double StarMass(void) = 0;
     virtual double SNR(void) = 0;
+    virtual int StarError(void) = 0;
 
     virtual wxImage *DisplayedImage(void);
     virtual double ScaleFactor(void);

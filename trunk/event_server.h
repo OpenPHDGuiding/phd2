@@ -67,7 +67,7 @@ public:
     void NotifyPaused();
     void NotifyResumed();
     void NotifyGuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint, double RADuration, double RADistance,
-        double DECDuration, double DECDistance, int errorCode);
+        double DECDuration, double DECDistance);
     void NotifyGuidingDithered(double dx, double dy);
     void NotifySetLockPosition(const PHD_Point& xy);
     void NotifyLockPositionLost();
