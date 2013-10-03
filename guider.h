@@ -149,7 +149,6 @@ protected:
 public:
     bool IsPaused(void);
     bool SetPaused(bool paused);
-    double CurrentError(void);
     GUIDER_STATE GetState(void);
     static EXPOSED_STATE GetExposedState(void);
     bool IsCalibratingOrGuiding(void);
@@ -192,6 +191,8 @@ private:
     virtual void InvalidateCurrentPosition(void) = 0;
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage) = 0;
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position)=0;
+public:
+    virtual double CurrentError(void) = 0;
 
 public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;

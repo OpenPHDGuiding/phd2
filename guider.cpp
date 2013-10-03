@@ -160,11 +160,6 @@ const PHD_Point& Guider::LockPosition()
     return m_lockPosition;
 }
 
-double Guider::CurrentError(void)
-{
-    return m_lockPosition.Distance(CurrentPosition());
-}
-
 GUIDER_STATE Guider::GetState(void)
 {
     return m_state;
