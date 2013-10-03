@@ -75,7 +75,7 @@ public:
     bool StartGuiding();
     bool GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
         double RADuration, double RADistance,
-        double DECDuration, double DECDistance, int errorCode);
+        double DECDuration, double DECDistance);
 
     bool ServerCommand(Guider* guider,  wxString cmd);
     bool ServerGuidingDithered(Guider* guider, double dx, double dy);

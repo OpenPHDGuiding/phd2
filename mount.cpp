@@ -560,12 +560,10 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         GUIDE_DIRECTION yDirection = yDistance > 0.0 ? DOWN : UP;
 
         double actualXAmount = Move(xDirection, fabs(xDistance / m_xRate), normalMove);
-        int errorCode = 0;
 
         if (actualXAmount < 0.0)
         {
             actualXAmount = 0.0;
-            errorCode |= 1;
             bError = true;
         }
 
@@ -583,7 +581,6 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         if (actualYAmount < 0.0)
         {
             actualYAmount = 0.0;
-            errorCode |= 2;
             bError = true;
         }
 
@@ -601,8 +598,8 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             pFrame->SetStatusText(msg, 1, std::max((int)actualXAmount, (int)actualYAmount));
         }
 
-        GuideLog.GuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, errorCode);
-        EvtServer.NotifyGuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance, errorCode);
+        GuideLog.GuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance);
+        EvtServer.NotifyGuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance);
 
         if (normalMove)
         {

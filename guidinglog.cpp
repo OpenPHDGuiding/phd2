@@ -332,7 +332,6 @@ bool GuidingLog::CalibrationComplete(Mount *pCalibrationMount)
     return bError;
 }
 
-
 bool GuidingLog::StartGuiding()
 {
     bool bError = false;
@@ -404,10 +403,9 @@ bool GuidingLog::GuidingHeader(void)
     return bError;
 }
 
-
 bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
         double RADuration, double RADistance,
-        double DECDuration, double DECDistance, int errorCode)
+        double DECDuration, double DECDistance)
 {
     bool bError = false;
 
@@ -424,8 +422,7 @@ bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
                     vectorEndpoint.Angle(PHD_Point(0,0)),
                     RADuration, RADistance, (RADistance > 0 ? "E" : RADistance < 0 ? "W" : ""),
                     DECDuration, DECDistance, (DECDistance > 0 ? "S" : DECDistance < 0 ? "N" : ""),
-                    pFrame->pGuider->StarMass(), pFrame->pGuider->SNR(),
-                    errorCode));
+                    pFrame->pGuider->StarMass(), pFrame->pGuider->SNR(), pFrame->pGuider->StarError()));
             Flush();
         }
     }
@@ -437,7 +434,6 @@ bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
 
     return bError;
 }
-
 
 bool GuidingLog::StartEntry(void)
 {

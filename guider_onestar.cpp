@@ -254,6 +254,11 @@ double GuiderOneStar::SNR(void)
     return m_star.SNR;
 }
 
+int GuiderOneStar::StarError(void)
+{
+    return m_star.GetError();
+}
+
 void GuiderOneStar::InvalidateCurrentPosition(void)
 {
     m_star.Invalidate();
