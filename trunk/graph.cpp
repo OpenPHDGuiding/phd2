@@ -1049,9 +1049,9 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             // show polar alignment error
             if (m_mode == MODE_RADEC && sampling != 1.0)
             {
-                double declination = pMount?pMount->GetDeclination():M_PI/2.0;
+                double declination = pMount ? pMount->GetDeclination() : M_PI / 2.0;
 
-                if (fabs(declination) < (M_PI/2.0)*(2.0/3.0))
+                if (fabs(declination) <= Mount::DEC_COMP_LIMIT)
                 {
                     const S_HISTORY& h0 = m_history[start_item];
                     const S_HISTORY& h1 = m_history[m_history.size() - 1];

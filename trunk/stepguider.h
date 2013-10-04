@@ -120,7 +120,7 @@ public:
     static wxArrayString List(void);
     static StepGuider *Factory(wxString choice);
 
-    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination=0.0);
+    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     bool UpdateCalibrationState(const PHD_Point &currentLocation);
     virtual void ClearCalibration(void);

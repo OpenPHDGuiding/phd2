@@ -35,6 +35,9 @@
 
 #include "phd.h"
 
+// enable dec compensation when calibration declination is less than this
+const double Mount::DEC_COMP_LIMIT = M_PI / 2.0 * 2.0 / 3.0;
+
 static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *parent)
 {
     // we need to force the guide alogorithm config pane to be large enough for
@@ -507,7 +510,7 @@ bool Mount::FlipCalibration(void)
 
         Debug.AddLine("FlipCalibration after: x=%.2f, y=%.2f", newX, newY);
 
-        SetCalibration(newX, newY, xRate(), yRate(), m_calDeclination);
+        SetCalibration(newX, newY, m_calXRate, m_yRate, m_calDeclination);
 
         pFrame->SetStatusText(wxString::Format(_("CAL: (%.f,%.f)->(%.f,%.f)"),
             origX * 180. / M_PI, origY * 180. / M_PI, newX * 180. / M_PI, newY * 180. / M_PI), 0);
@@ -778,15 +781,18 @@ void Mount::AdjustForDeclination(void)
     if (newDeclination != m_calDeclination)             // Compensation required
     {
         // avoid division by zero and gross errors.  If the user didn't calibrate
-        // somewhere near the celestial equater, we don't do this
-        if (fabs(m_calDeclination) > (M_PI/2.0)*(2.0/3.0))
-            Debug.AddLine("skipping declination adjustment: too far from equator");
+        // somewhere near the celestial equator, we don't do this
+        if (fabs(m_calDeclination) > DEC_COMP_LIMIT)
+        {
+            Debug.AddLine("skipping declination adjustment: initial calibration too far from equator");
+        }
         else
         {
-            m_xRate = (m_calXRate/cos(m_calDeclination))*cos(newDeclination);
-            pFrame->SetStatusText ( _("Cal +"), 5 );            // Let the user know we're doing this
+            m_xRate = (m_calXRate / cos(m_calDeclination)) * cos(newDeclination);
+            m_currentDeclination = newDeclination;
             Debug.AddLine("Dec comp: XRate %.4f -> %.4f for dec %.2f -> dec %.2f",
                 m_calXRate, m_xRate, m_calDeclination, newDeclination);
+            if (pFrame) pFrame->UpdateCalibrationStatus();
         }
     }
 }
@@ -856,6 +862,7 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
     m_calXRate = xRate;
     m_calDeclination = declination;
     m_xRate  = m_calXRate;
+    m_currentDeclination = declination;
 
     // the angles are more difficult because we have to turn yAngle into a yError.
     m_xAngle = xAngle;

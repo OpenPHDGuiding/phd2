@@ -606,7 +606,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 // fall through
             case CALIBRATION_STATE_COMPLETE:
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
-                               m_calibrationXRate,  m_calibrationYRate);
+                               m_calibrationXRate,  m_calibrationYRate, 0.0);
                 status1 = _T("calibration complete");
                 GuideLog.CalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");

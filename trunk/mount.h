@@ -64,6 +64,7 @@ private:
 
     double m_calXRate;
     double m_calDeclination;
+    double m_currentDeclination;
 
 protected:
     bool m_guidingEnabled;
@@ -123,10 +124,13 @@ public:
     Mount(void);
     virtual ~Mount(void);
 
+    static const double DEC_COMP_LIMIT; // declination compensation limit
+
     double yAngle(void);
     double yRate(void);
     double xAngle(void);
     double xRate(void);
+    bool DecCompensationActive(void) const;
 
     bool FlipCalibration(void);
 
@@ -169,11 +173,11 @@ public:
     virtual bool HasNonGuiMove(void);
     virtual bool SynchronousOnly(void);
 
-    virtual const wxString &Name(void) const;
+    virtual const wxString& Name(void) const;
 
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
-    virtual void SetCalibration(double dxAngle, double dyAngle, double dxRate, double dyRate, double declination=0.0);
+    virtual void SetCalibration(double dxAngle, double dyAngle, double dxRate, double dyRate, double declination);
 
     virtual bool IsConnected(void);
     virtual bool Connect(void);
@@ -186,5 +190,10 @@ public:
 
     virtual bool CalibrationFlipRequiresDecFlip(void);
 };
+
+inline bool Mount::DecCompensationActive(void) const
+{
+    return m_currentDeclination != m_calDeclination;
+}
 
 #endif /* MOUNT_H_INCLUDED */
