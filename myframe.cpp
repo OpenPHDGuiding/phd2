@@ -612,7 +612,11 @@ void MyFrame::UpdateCalibrationStatus(void)
         cal = false;
     if (pSecondaryMount && !pSecondaryMount->IsCalibrated())
         cal = false;
-    SetStatusText(cal ? _T("Cal") : _T("No cal"), 5);
+
+    bool deccomp = (pMount && pMount->DecCompensationActive()) ||
+        (pSecondaryMount && pSecondaryMount->DecCompensationActive());
+
+    SetStatusText(cal ? deccomp ? _("Cal +") : _("Cal") : _("No cal"), 5);
 }
 
 void MyFrame::SetupStatusBar(void)
@@ -628,7 +632,7 @@ void MyFrame::SetupStatusBar(void)
         wxMax(GetTextWidth(pControl, _("Camera")), GetTextWidth(pControl, _("No Cam"))),
         wxMax(GetTextWidth(pControl, _("Scope")),  GetTextWidth(pControl, _("No Scope"))),
         GetTextWidth(pControl, _("AO")),
-        wxMax(GetTextWidth(pControl, _("No Cal")),  GetTextWidth(pControl, _("Cal +"))),
+        wxMax(GetTextWidth(pControl, _("No cal")),  GetTextWidth(pControl, _("Cal +"))),
     };
 
     // This code really bothers me, but it needs to be here because on Mac it 
