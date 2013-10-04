@@ -289,7 +289,6 @@ private:
 
 enum {
     MENU_SHOWHELP = 101,
-    SCOPE_HEADER,
     BEGIN_SCOPES,
       SCOPE_ASCOM,
       SCOPE_CAMERA,
@@ -303,7 +302,6 @@ enum {
       SCOPE_GCUSBST4,
       SCOPE_INDI,
     END_SCOPES,
-    AO_HEADER,
     BEGIN_STEPGUIDERS,
       AO_NONE,
       AO_SXAO,
@@ -410,7 +408,8 @@ enum {
     EEGG_MANUALLOCK,
     EEGG_STICKY_LOCK,
     EEGG_FLIPRACAL,
-    EEGG_RANDOMMOTION
+    EEGG_RANDOMMOTION,
+    STAR_MASS_ENABLE,
 };
 
 enum {

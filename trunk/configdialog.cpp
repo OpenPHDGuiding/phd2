@@ -34,7 +34,7 @@
 
 #include "phd.h"
 
-ConfigDialogPane::ConfigDialogPane(wxString heading, wxWindow *pParent)
+ConfigDialogPane::ConfigDialogPane(const wxString& heading, wxWindow *pParent)
     : wxStaticBoxSizer(new wxStaticBox(pParent, wxID_ANY, heading), wxVERTICAL)
 {
     m_pParent = pParent;
@@ -54,7 +54,7 @@ void ConfigDialogPane::DoAdd(wxWindow *pWindow)
     this->Add(pWindow, wxSizerFlags().Expand().Border(wxALL,3));
 }
 
-void ConfigDialogPane::DoAdd(wxWindow *pWindow, wxString toolTip)
+void ConfigDialogPane::DoAdd(wxWindow *pWindow, const wxString& toolTip)
 {
     pWindow->SetToolTip(toolTip);
     DoAdd(pWindow);
@@ -68,7 +68,7 @@ void ConfigDialogPane::DoAdd(wxWindow *pWindow1, wxWindow *pWindow2)
     DoAdd(pSizer);
 }
 
-void ConfigDialogPane::DoAdd(wxString label, wxWindow *pControl, wxString toolTip)
+void ConfigDialogPane::DoAdd(const wxString& label, wxWindow *pControl, const wxString& toolTip)
 {
     wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, label + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
     pControl->SetToolTip(toolTip);
@@ -76,7 +76,7 @@ void ConfigDialogPane::DoAdd(wxString label, wxWindow *pControl, wxString toolTi
     DoAdd(pLabel, pControl);
 }
 
-int ConfigDialogPane::StringWidth(wxString string)
+int ConfigDialogPane::StringWidth(const wxString& string)
 {
     int width, height;
 
@@ -101,6 +101,7 @@ int ConfigDialogPane::StringArrayWidth(wxString string[], int nElements)
 
     return width;
 }
+
 // Default implementation does nothing because most config dialogs don't need an 'undo' function - simply not calling 'Unload' prevents any pending changes from
 // being saved.  But if non-scalar objects are involved - as in guide algorithms - a specific Undo may be required
 void ConfigDialogPane::Undo(void)

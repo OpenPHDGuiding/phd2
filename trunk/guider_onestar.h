@@ -48,6 +48,7 @@ private:
 
     // parameters
     double m_raAggression;
+    bool m_massChangeThresholdEnabled;
     double m_massChangeThreshold;
     int m_badMassCount;
     time_t m_starFoundTimestamp;  // timestamp when star was last found
@@ -60,6 +61,7 @@ protected:
     {
         GuiderOneStar *m_pGuiderOneStar;
         wxSpinCtrl *m_pSearchRegion;
+        wxCheckBox *m_pEnableStarMassChangeThresh;
         wxSpinCtrlDouble *m_pMassChangeThreshold;
 
         public:
@@ -68,8 +70,12 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+
+        void OnStarMassEnableChecked(wxCommandEvent& event);
     };
 
+    virtual bool GetMassChangeThresholdEnabled(void);
+    virtual void SetMassChangeThresholdEnabled(bool enable);
     virtual double GetMassChangeThreshold(void);
     virtual bool SetMassChangeThreshold(double starMassChangeThreshold);
     virtual int GetSearchRegion(void);
