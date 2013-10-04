@@ -40,7 +40,7 @@ class ConfigDialogPane : public wxStaticBoxSizer
 protected:
     wxWindow *m_pParent;
 public:
-    ConfigDialogPane(wxString heading, wxWindow *pParent);
+    ConfigDialogPane(const wxString& heading, wxWindow *pParent);
     virtual ~ConfigDialogPane(void);
 
     virtual void LoadValues(void) = 0;
@@ -50,11 +50,11 @@ public:
 protected:
     void DoAdd(wxSizer *pSizer);
     void DoAdd(wxWindow *pWindow);
-    void DoAdd(wxWindow *pWindow, wxString toolTip);
+    void DoAdd(wxWindow *pWindow, const wxString& toolTip);
     void DoAdd(wxWindow *pWindow1, wxWindow *pWindow2);
-    void DoAdd(wxString Label, wxWindow *pControl, wxString toolTip);
+    void DoAdd(const wxString& Label, wxWindow *pControl, const wxString& toolTip);
 
-    int StringWidth(wxString string);
+    int StringWidth(const wxString& string);
     int StringArrayWidth(wxString string[], int nElements);
 };
 

@@ -68,12 +68,27 @@ void GuiderOneStar::LoadProfileSettings(void)
 {
     Guider::LoadProfileSettings();
 
-    double massChangeThreshold  = pConfig->Profile.GetDouble("/guider/onestar/MassChangeThreshold",
+    double massChangeThreshold = pConfig->Profile.GetDouble("/guider/onestar/MassChangeThreshold",
             DefaultMassChangeThreshold);
     SetMassChangeThreshold(massChangeThreshold);
 
+    bool massChangeThreshEnabled = pConfig->Profile.GetBoolean("/guider/onestar/MassChangeThresholdEnabled", massChangeThreshold != 1.0);
+    SetMassChangeThresholdEnabled(massChangeThreshEnabled);
+
     int searchRegion = pConfig->Profile.GetInt("/guider/onestar/SearchRegion", DefaultSearchRegion);
     SetSearchRegion(searchRegion);
+}
+
+bool GuiderOneStar::GetMassChangeThresholdEnabled(void)
+{
+    return m_massChangeThresholdEnabled;
+}
+
+void GuiderOneStar::SetMassChangeThresholdEnabled(bool enable)
+{
+    m_massChangeThresholdEnabled = enable;
+    m_badMassCount = 0;
+    pConfig->Profile.SetBoolean("/guider/onestar/MassChangeThresholdEnabled", enable);
 }
 
 double GuiderOneStar::GetMassChangeThreshold(void)
@@ -295,7 +310,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
             throw ERROR_INFO("UpdateGuideState():newStar not found");
         }
 
-        if (m_massChangeThreshold < 0.99 &&
+        if (m_massChangeThresholdEnabled &&
             m_star.Mass > 0.0 &&
             newStar.Mass > 0.0 &&
             m_badMassCount++ < 2)
@@ -661,10 +676,14 @@ void GuiderOneStar::SaveStarFITS()
 wxString GuiderOneStar::GetSettingsSummary()
 {
     // return a loggable summary of guider configs
-    return wxString::Format("Search region = %d px, Star mass tolerance = %.3f px\n",
-        GetSearchRegion(),
-        GetMassChangeThreshold() * 100.0
-    );
+    wxString s = wxString::Format(_T("Search region = %d px, Star mass tolerance "), GetSearchRegion());
+
+    if (GetMassChangeThresholdEnabled())
+        s += wxString::Format(_T(" = %.1f%%\n"), GetMassChangeThreshold() * 100.0);
+    else
+        s += _T(" disabled\n");
+
+    return s;
 }
 
 ConfigDialogPane *GuiderOneStar::GetConfigDialogPane(wxWindow *pParent)
@@ -685,12 +704,20 @@ GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWi
     DoAdd(_("Search region (pixels)"), m_pSearchRegion,
           _("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
 
+    m_pEnableStarMassChangeThresh = new wxCheckBox(pParent, STAR_MASS_ENABLE, _("Star mass change detection"));
+    DoAdd(m_pEnableStarMassChangeThresh, _("Check to enable star mass change detection. When enabled, "
+        "PHD skips frames when the guide star mass changes by an amount greater then the Star mass tolerance setting."));
+
+    pParent->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderOneStar::GuiderOneStarConfigDialogPane::OnStarMassEnableChecked, this, STAR_MASS_ENABLE);
+
     width = StringWidth(_T("0000"));
     m_pMassChangeThreshold = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
     DoAdd(_("Star mass tolerance"), m_pMassChangeThreshold,
-          _("Tolerance for change in star mass between frames. Valid range is 10-100, default is 50. Set to 100 to ignore star mass changes."));
+          _("When star mass change detection is enabled, this is the tolerance for star mass changes between frames, in percent. "
+          "Larger values are more tolerant (less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
+          "If star mass change detection is not enabled then this setting is ignored."));
 }
 
 GuiderOneStar::GuiderOneStarConfigDialogPane::~GuiderOneStarConfigDialogPane(void)
@@ -700,14 +727,24 @@ GuiderOneStar::GuiderOneStarConfigDialogPane::~GuiderOneStarConfigDialogPane(voi
 void GuiderOneStar::GuiderOneStarConfigDialogPane::LoadValues(void)
 {
     GuiderConfigDialogPane::LoadValues();
-    m_pMassChangeThreshold->SetValue(100.0*m_pGuiderOneStar->GetMassChangeThreshold());
+
+    bool starMassEnabled = m_pGuiderOneStar->GetMassChangeThresholdEnabled();
+    m_pEnableStarMassChangeThresh->SetValue(starMassEnabled);
+    m_pMassChangeThreshold->Enable(starMassEnabled);
+    m_pMassChangeThreshold->SetValue(100.0 * m_pGuiderOneStar->GetMassChangeThreshold());
     m_pSearchRegion->SetValue(m_pGuiderOneStar->GetSearchRegion());
 }
 
 void GuiderOneStar::GuiderOneStarConfigDialogPane::UnloadValues(void)
 {
-    m_pGuiderOneStar->SetMassChangeThreshold(m_pMassChangeThreshold->GetValue()/100.0);
-
+    m_pGuiderOneStar->SetMassChangeThresholdEnabled(m_pEnableStarMassChangeThresh->GetValue());
+    m_pGuiderOneStar->SetMassChangeThreshold(m_pMassChangeThreshold->GetValue() / 100.0);
     m_pGuiderOneStar->SetSearchRegion(m_pSearchRegion->GetValue());
+
     GuiderConfigDialogPane::UnloadValues();
+}
+
+void GuiderOneStar::GuiderOneStarConfigDialogPane::OnStarMassEnableChecked(wxCommandEvent& event)
+{
+    m_pMassChangeThreshold->Enable(event.IsChecked());
 }
