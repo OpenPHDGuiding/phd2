@@ -53,6 +53,7 @@ static const double MAX_CALIBRATION_DISTANCE = 25.0;
 Scope::Scope(void)
 {
     m_calibrationSteps = 0;
+    m_graphControlPane = NULL;
 
     wxString prefix = "/" + GetMountClassName();
 
@@ -80,6 +81,10 @@ Scope::Scope(void)
 
 Scope::~Scope(void)
 {
+    if (m_graphControlPane)
+    {
+        m_graphControlPane->m_pScope = NULL;
+    }
 }
 
 int Scope::GetCalibrationDuration(void)
@@ -381,6 +386,27 @@ void Scope::SetCalibrationFlipRequiresDecFlip(bool val)
 {
     m_calibrationFlipRequiresDecFlip = val;
     pConfig->Profile.SetBoolean("/scope/CalFlipRequiresDecFlip", val);
+}
+
+void Scope::StartDecDrift(void)
+{
+    m_saveDecGuideMode = m_decGuideMode;
+    m_decGuideMode = DEC_NONE;
+    if (m_graphControlPane)
+    {
+        m_graphControlPane->m_pDecMode->SetSelection(DEC_NONE);
+        m_graphControlPane->m_pDecMode->Enable(false);
+    }
+}
+
+void Scope::EndDecDrift(void)
+{
+    m_decGuideMode = m_saveDecGuideMode;
+    if (m_graphControlPane)
+    {
+        m_graphControlPane->m_pDecMode->SetSelection(m_decGuideMode);
+        m_graphControlPane->m_pDecMode->Enable(true);
+    }
 }
 
 bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
@@ -860,6 +886,7 @@ Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pS
 {
     int width;
     m_pScope = pScope;
+    pScope->m_graphControlPane = this;
 
     width = StringWidth(_T("0000"));
     m_pMaxRaDuration = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width+30, -1),
@@ -886,6 +913,10 @@ Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pS
 
 Scope::ScopeGraphControlPane::~ScopeGraphControlPane()
 {
+    if (m_pScope)
+    {
+        m_pScope->m_graphControlPane = NULL;
+    }
 }
 
 void Scope::ScopeGraphControlPane::OnMaxRaDurationSpinCtrl(wxSpinEvent& WXUNUSED(evt))

@@ -424,6 +424,13 @@ void GraphLogWindow::SetState(bool is_active)
     this->Show(is_active);
 }
 
+void GraphLogWindow::EnableTrendLines(bool enable)
+{
+    m_pCheckboxTrendlines->SetValue(enable);
+    wxCommandEvent dummy;
+    OnCheckboxTrendlines(dummy);
+}
+
 void GraphLogWindow::AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDur, double decDur)
 {
     m_pClient->AppendData(cameraOffset, mountOffset, raDur, decDur);

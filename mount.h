@@ -186,9 +186,16 @@ public:
     virtual void ClearHistory(void);
     virtual double GetDeclination(void);
     virtual bool GetGuideRate(double *pRAGuideRate, double *pDecGuideRate);
+    virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
+    virtual bool CanSlew(void);
+    virtual bool SlewToCoordinates(double ra, double dec);
+    virtual bool Slewing(void);
     virtual wxString GetSettingsSummary();
 
     virtual bool CalibrationFlipRequiresDecFlip(void);
+
+    virtual void StartDecDrift(void);
+    virtual void EndDecDrift(void);
 };
 
 inline bool Mount::DecCompensationActive(void) const

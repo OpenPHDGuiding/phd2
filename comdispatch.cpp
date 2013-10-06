@@ -100,7 +100,7 @@ bool DispatchObj::Create(OLECHAR *progid)
     return true;
 }
 
-bool DispatchObj::_dispid(DISPID *ret, OLECHAR *name)
+bool DispatchObj::GetDispatchId(DISPID *ret, OLECHAR *name)
 {
     if (m_class)
         return m_class->dispid_cached(ret, m_idisp, name);
@@ -108,12 +108,8 @@ bool DispatchObj::_dispid(DISPID *ret, OLECHAR *name)
         return DispatchClass::dispid(ret, m_idisp, name);
 }
 
-bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name)
+bool DispatchObj::GetProp(VARIANT *res, DISPID dispid)
 {
-    DISPID dispid;
-    if (!_dispid(&dispid, name))
-        return false;
-
     DISPPARAMS dispParms;
     dispParms.cArgs = 0;
     dispParms.rgvarg = NULL;
@@ -126,10 +122,19 @@ bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name)
     return true;
 }
 
+bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name)
+{
+    DISPID dispid;
+    if (!GetDispatchId(&dispid, name))
+        return false;
+
+    return GetProp(res, dispid);
+}
+
 bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name, int arg)
 {
     DISPID dispid;
-    if (!_dispid(&dispid, name))
+    if (!GetDispatchId(&dispid, name))
         return false;
 
     VARIANTARG rgvarg[1];
@@ -150,7 +155,7 @@ bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name, int arg)
 bool DispatchObj::PutProp(OLECHAR *name, OLECHAR *val)
 {
     DISPID dispid;
-    if (!_dispid(&dispid, name))
+    if (!GetDispatchId(&dispid, name))
         return false;
 
     VARIANTARG rgvarg[1];
@@ -169,12 +174,8 @@ bool DispatchObj::PutProp(OLECHAR *name, OLECHAR *val)
     return !FAILED(hr);
 }
 
-bool DispatchObj::PutProp(OLECHAR *name, bool val)
+bool DispatchObj::PutProp(DISPID dispid, bool val)
 {
-    DISPID dispid;
-    if (!_dispid(&dispid, name))
-        return false;
-
     VARIANTARG rgvarg[1];
     rgvarg[0].vt = VT_BOOL;
     rgvarg[0].boolVal = val ? VARIANT_TRUE : VARIANT_FALSE;
@@ -190,10 +191,18 @@ bool DispatchObj::PutProp(OLECHAR *name, bool val)
     return !FAILED(hr);
 }
 
+bool DispatchObj::PutProp(OLECHAR *name, bool val)
+{
+    DISPID dispid;
+    if (!GetDispatchId(&dispid, name))
+        return false;
+    return PutProp(dispid, val);
+}
+
 bool DispatchObj::InvokeMethod(VARIANT *res, OLECHAR *name, OLECHAR *arg)
 {
     DISPID dispid;
-    if (!_dispid(&dispid, name))
+    if (!GetDispatchId(&dispid, name))
         return false;
 
     BSTR bs = SysAllocString(arg);
@@ -212,6 +221,26 @@ bool DispatchObj::InvokeMethod(VARIANT *res, OLECHAR *name, OLECHAR *arg)
         return false;
     }
     SysFreeString(bs);
+    return true;
+}
+
+bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid, double arg1, double arg2)
+{
+    VARIANTARG rgvarg[2];
+    rgvarg[0].vt = VT_R8;
+    rgvarg[0].dblVal = arg2;
+    rgvarg[1].vt = VT_R8;
+    rgvarg[1].dblVal = arg1;
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 2;
+    dispParms.rgvarg = rgvarg;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+    HRESULT hr;
+    if (FAILED(hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, res, &m_excep, NULL)))
+    {
+        return false;
+    }
     return true;
 }
 

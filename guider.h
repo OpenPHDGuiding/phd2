@@ -174,6 +174,7 @@ public:
     bool GetScaleImage(void);
 
     void ToggleShowBookmarks(void);
+    void DeleteAllBookmarks(void);
 
     void Reset(void);
 

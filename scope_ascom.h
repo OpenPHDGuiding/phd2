@@ -41,7 +41,9 @@
 
 #include "ascom_common.h"
 
-class ScopeASCOM:public Scope, private ASCOM_COMMON
+class DispatchObj;
+
+class ScopeASCOM : public Scope, private ASCOM_COMMON
 {
     IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
     DWORD m_dwCookie;
@@ -54,18 +56,24 @@ class ScopeASCOM:public Scope, private ASCOM_COMMON
     DISPID dispid_isslewing;
     DISPID dispid_pulseguide;
     DISPID dispid_declination;
+    DISPID dispid_rightascension;
+    DISPID dispid_siderealtime;
+    DISPID dispid_canslew;
+    DISPID dispid_slewtocoordinates;
     DISPID dispid_raguiderate;
     DISPID dispid_decguiderate;
 
     // other private varialbles
     bool m_bCanCheckPulseGuiding;
-    bool m_bCanGetDeclination;
+    bool m_bCanGetCoordinates;
     bool m_bCanGetGuideRates;
+    bool m_bCanSlew;
 
     wxString m_choice; // name of chosen scope
 
     // private functions
-    virtual bool IsGuiding(IDispatch *pScopeDriver);
+    virtual bool IsGuiding(DispatchObj *pScopeDriver);
+    virtual bool IsSlewing(DispatchObj *pScopeDriver);
     virtual double GetDeclination(void);
     virtual bool GetGuideRate(double *pRAGuideRate, double *pDecGuideRate);
 
@@ -79,7 +87,12 @@ public:
 
     virtual bool HasNonGuiMove(void);
     virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
-    virtual bool IsGuiding();
+    virtual bool IsGuiding(void);
+
+    virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
+    virtual bool CanSlew(void);
+    virtual bool SlewToCoordinates(double ra, double dec);
+    virtual bool Slewing(void);
 };
 
 #endif /* GUIDE_ASCOM */

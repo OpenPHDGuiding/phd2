@@ -68,6 +68,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
+    EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
     EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
@@ -257,6 +258,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     pGearDialog = new GearDialog(this);
 
+    pDriftTool = NULL;
+
     tools_menu->Check(MENU_LOG,false);
 
     UpdateTitle();
@@ -344,6 +347,11 @@ MyFrame::~MyFrame() {
     delete pGearDialog;
     pGearDialog = NULL;
 
+    if (pDriftTool)
+    {
+        pDriftTool->Destroy();
+    }
+
     m_mgr.UnInit();
 }
 
@@ -385,7 +393,7 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data"), _("Manually calibrate"));
     tools_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
     tools_menu->Append(EEGG_MANUALLOCK, _("Enter Manual Lock Position"), _("Give manual lock position"));
-//  tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
+    tools_menu->Append(MENU_DRIFTTOOL,_("Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
     tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image Logging"),_("Enable / disable logging of star images"));
@@ -452,7 +460,7 @@ void MyFrame::SetupMenuBar(void)
     SetMenuBar(Menubar);
 }
 
-int MyFrame::GetTextWidth(wxControl *pControl, wxString string)
+int MyFrame::GetTextWidth(wxControl *pControl, const wxString& string)
 {
     int width;
 
@@ -727,7 +735,16 @@ void MyFrame::UpdateButtonsStatus(void)
     if (cond_update_tool(MainToolbar, BUTTON_GUIDE, bGuideable))
         need_update = true;
 
-    if (need_update) {
+    if (pDriftTool)
+    {
+        // let the drift tool update its buttons too
+        wxCommandEvent event(APPSTATE_NOTIFY_EVENT, GetId());
+        event.SetEventObject(this);
+        wxPostEvent(pDriftTool, event);
+    }
+
+    if (need_update)
+    {
         Update();
         Refresh();
     }
@@ -954,7 +971,8 @@ void MyFrame::StopCapturing(void)
     m_continueCapturing = false;
 }
 
-void MyFrame::OnClose(wxCloseEvent &event) {
+void MyFrame::OnClose(wxCloseEvent &event)
+{
     if (CaptureActive)
     {
         bool confirmed = ConfirmDialog::Confirm(_("Are you sure you want to exit while capturing is active?"),

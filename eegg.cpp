@@ -33,6 +33,7 @@
  */
 
 #include "phd.h"
+#include "drift_tool.h"
 
 void TestGuide() {
 
@@ -223,8 +224,12 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
     }
 }
 
+void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(evt))
+{
+    if (!pDriftTool)
+    {
+        pDriftTool = DriftTool::CreateDriftToolWindow();
+    }
 
-
-void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(ect)) {
-
+    pDriftTool->Show();
 }
