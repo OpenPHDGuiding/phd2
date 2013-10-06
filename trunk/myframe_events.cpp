@@ -45,6 +45,8 @@
 
 #include <memory>
 
+wxDEFINE_EVENT(APPSTATE_NOTIFY_EVENT, wxCommandEvent);
+
 void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
 {
     wxString sel = Dur_Choice->GetValue();
@@ -930,9 +932,12 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
 
 void MyFrame::OnCharHook(wxKeyEvent& evt)
 {
-    if (evt.GetKeyCode() == 'B' && !evt.HasModifiers())
+    if (evt.GetKeyCode() == 'B')
     {
-        pGuider->ToggleShowBookmarks();
+        if (!evt.HasModifiers())
+            pGuider->ToggleShowBookmarks();
+        else if (evt.GetModifiers() == wxMOD_CONTROL)
+            pGuider->DeleteAllBookmarks();
     }
     else
     {

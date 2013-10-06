@@ -42,6 +42,7 @@ class Scope:public Mount
     int m_maxDecDuration;
     int m_maxRaDuration;
     DEC_GUIDE_MODE m_decGuideMode;
+    DEC_GUIDE_MODE m_saveDecGuideMode;
 
     // Calibration variables
     int m_calibrationSteps;
@@ -95,6 +96,8 @@ protected:
         ~ScopeGraphControlPane(void);
 
     private:
+        friend class Scope;
+
         Scope *m_pScope;
         wxSpinCtrl *m_pMaxRaDuration;
         wxSpinCtrl *m_pMaxDecDuration;
@@ -103,8 +106,8 @@ protected:
         void OnMaxRaDurationSpinCtrl(wxSpinEvent& evt);
         void OnMaxDecDurationSpinCtrl(wxSpinEvent& evt);
         void OnDecModeChoice(wxCommandEvent& evt);
-
     };
+    ScopeGraphControlPane *m_graphControlPane;
 
     virtual int GetCalibrationDuration(void);
     virtual bool SetCalibrationDuration(int calibrationDuration);
@@ -141,6 +144,9 @@ public:
     virtual bool RequiresStepGuider(void);
     virtual bool CalibrationFlipRequiresDecFlip(void);
     void SetCalibrationFlipRequiresDecFlip(bool val);
+
+    virtual void StartDecDrift(void);
+    virtual void EndDecDrift(void);
 
 private:
     // functions with an implemenation in Scope that cannot be over-ridden

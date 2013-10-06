@@ -959,3 +959,21 @@ void Guider::ToggleShowBookmarks()
         Refresh();
     }
 }
+
+void Guider::DeleteAllBookmarks()
+{
+    if (m_bookmarks.size())
+    {
+        bool confirmed = ConfirmDialog::Confirm(_("Are you sure you want to delete all Bookmarks?"),
+            "/delete_all_bookmarks_ok", _("Confirm"));
+        if (confirmed)
+        {
+            m_bookmarks.clear();
+            if (m_showBookmarks)
+            {
+                Update();
+                Refresh();
+            }
+        }
+    }
+}

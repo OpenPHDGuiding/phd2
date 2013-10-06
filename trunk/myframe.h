@@ -145,6 +145,7 @@ public:
     GearDialog *pGearDialog;
     ProfileWindow *pProfile;
     TargetWindow *pTarget;
+    wxWindow *pDriftTool;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
     wxLocale *m_pLocale;
@@ -278,7 +279,7 @@ private:
     void SetupToolBar();
     void SetupKeyboardShortcuts(void);
     void SetupHelpFile(void);
-    int GetTextWidth(wxControl *pControl, wxString string);
+    int GetTextWidth(wxControl *pControl, const wxString& string);
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
 
     int ExposureDurationFromSelection(const wxString& selection);
@@ -418,5 +419,7 @@ enum {
     EVENT_SERVER_ID,
     EVENT_SERVER_CLIENT_ID,
 };
+
+wxDECLARE_EVENT(APPSTATE_NOTIFY_EVENT, wxCommandEvent);
 
 #endif /* MYFRAME_H_INCLUDED */

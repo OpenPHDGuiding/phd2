@@ -1,9 +1,9 @@
 /*
- *  comdispatch.h
+ *  drift_tool.h
  *  PHD Guiding
  *
- *  Created by Andy Galasso.
- *  Copyright (c) 2013 Andy Galasso.
+ *  Created by Andy Galasso
+ *  Copyright (c) 2013 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,44 +31,14 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef COMDISPATCH_INCLUDED
+#ifndef DRIFT_TOOL_H
+#define DRIFT_TOOL_H
 
-#if defined(__WINDOWS__)
-
-class DispatchClass
+class DriftTool
 {
-    typedef std::map<wxString, DISPID> idmap_t;
-    idmap_t m_idmap;
+    DriftTool(); // not implemented
 public:
-    DispatchClass() { }
-    ~DispatchClass() { }
-    static bool dispid(DISPID *ret, IDispatch *idisp, OLECHAR *name);
-    bool dispid_cached(DISPID *ret, IDispatch *idisp, OLECHAR *name);
+    static wxWindow *CreateDriftToolWindow();
 };
 
-class DispatchObj
-{
-    DispatchClass *m_class;
-    IDispatch *m_idisp;
-    EXCEPINFO m_excep;
-public:
-    DispatchObj();
-    DispatchObj(DispatchClass *cls);
-    DispatchObj(IDispatch *idisp, DispatchClass *cls);
-    ~DispatchObj();
-    bool Create(OLECHAR *progid);
-    bool GetDispatchId(DISPID *ret, OLECHAR *name);
-    bool GetProp(VARIANT *res, DISPID dispid);
-    bool GetProp(VARIANT *res, OLECHAR *name);
-    bool GetProp(VARIANT *res, OLECHAR *name, int arg);
-    bool PutProp(OLECHAR *name, OLECHAR *val);
-    bool PutProp(DISPID dispid, bool val);
-    bool PutProp(OLECHAR *name, bool val);
-    bool InvokeMethod(VARIANT *res, OLECHAR *name, OLECHAR *arg);
-    bool InvokeMethod(VARIANT *res, DISPID dispid, double arg1, double arg2);
-    const EXCEPINFO& Excep() const { return m_excep; }
-    IDispatch *IDisp() const { return m_idisp; }
-};
-
-#endif
 #endif

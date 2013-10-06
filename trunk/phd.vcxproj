@@ -208,6 +208,7 @@
     <ClCompile Include="configdialog.cpp" />
     <ClCompile Include="confirm_dialog.cpp" />
     <ClCompile Include="debuglog.cpp" />
+    <ClCompile Include="drift_tool.cpp" />
     <ClCompile Include="eegg.cpp" />
     <ClCompile Include="event_server.cpp" />
     <ClCompile Include="gear_dialog.cpp" />
@@ -313,6 +314,7 @@
     <ClInclude Include="configdialog.h" />
     <ClInclude Include="confirm_dialog.h" />
     <ClInclude Include="debuglog.h" />
+    <ClInclude Include="drift_tool.h" />
     <ClInclude Include="event_server.h" />
     <ClInclude Include="gear_dialog.h" />
     <ClInclude Include="graph-stepguider.h" />

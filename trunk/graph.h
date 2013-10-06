@@ -120,9 +120,12 @@ class GraphLogWindow : public wxWindow
 public:
     GraphLogWindow(wxWindow *parent);
     ~GraphLogWindow(void);
+
     void AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDuration, double decDuration);
     void UpdateControls(void);
-    void SetState (bool is_active);
+    void SetState(bool is_active);
+    void EnableTrendLines(bool enable);
+
     void OnPaint(wxPaintEvent& evt);
     void OnButtonSettings(wxCommandEvent& evt);
     void OnRADecDxDy(wxCommandEvent& evt);

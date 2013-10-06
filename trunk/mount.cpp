@@ -935,10 +935,31 @@ double Mount::GetDeclination(void)
 // Convention in this class is to return true for error conditions
 bool Mount::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
 {
-    return (true);         // Not implemented in subclass
+    return true; // error, not implemented
 }
 
-wxString Mount::GetSettingsSummary() {
+bool Mount::GetCoordinates(double *ra, double *dec, double *siderealTime)
+{
+    return true; // error
+}
+
+bool Mount::CanSlew(void)
+{
+    return false;
+}
+
+bool Mount::SlewToCoordinates(double ra, double dec)
+{
+    return true; // error
+}
+
+bool Mount::Slewing(void)
+{
+    return false;
+}
+
+wxString Mount::GetSettingsSummary()
+{
     // return a loggable summary of current mount settings
     wxString algorithms[] = {
         _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
@@ -961,4 +982,12 @@ wxString Mount::GetSettingsSummary() {
 bool Mount::CalibrationFlipRequiresDecFlip(void)
 {
     return false;
+}
+
+void Mount::StartDecDrift(void)
+{
+}
+
+void Mount::EndDecDrift(void)
+{
 }
