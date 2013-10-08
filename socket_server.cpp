@@ -40,6 +40,8 @@
 
 static wxLogWindow *SocketLog = NULL;
 
+static std::set<wxSocketBase *> s_clients;
+
 enum {
     MSG_PAUSE = 1,
     MSG_RESUME,
@@ -66,7 +68,8 @@ enum {
     MSG_FLIP_SIM_CAMERA,    //23
 };
 
-void MyFrame::OnServerMenu(wxCommandEvent &evt) {
+void MyFrame::OnServerMenu(wxCommandEvent &evt)
+{
     SetServerMode(evt.IsChecked());
     StartServer(GetServerMode());
 }
@@ -110,13 +113,14 @@ bool MyFrame::StartServer(bool state)
             return true;
         }
 
-        SocketConnections = 0;
         SetStatusText(_("Server started"));
         wxLogStatus(wxString::Format(_("Server started, listening on port %u"), port));
         SocketLog->Show(this->Menubar->IsChecked(MENU_DEBUG));
     }
     else {
         wxLogStatus(_("Server stopped"));
+        std::for_each(s_clients.begin(), s_clients.end(), std::mem_fun(&wxSocketBase::Destroy));
+        s_clients.empty();
         wxLog::SetActiveTarget(NULL);
         delete SocketLog;
         SocketLog = NULL;
@@ -156,7 +160,7 @@ void MyFrame::OnSockServerEvent(wxSocketEvent& event)
     client->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
     client->Notify(true);
 
-    SocketConnections++;
+    s_clients.insert(client);
 }
 
 void MyFrame::HandleSockServerInput(wxSocketBase *sock)
@@ -449,8 +453,10 @@ void MyFrame::OnSockServerClientEvent(wxSocketEvent& event)
                 HandleSockServerInput(sock);
                 break;
             case wxSOCKET_LOST:
-                SocketConnections--;
                 wxLogStatus(_T("Deleting socket"));
+                size_t n;
+                n = s_clients.erase(sock);
+                assert(n > 0);
                 sock->Destroy();
                 break;
             default:
