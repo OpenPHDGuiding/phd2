@@ -263,7 +263,6 @@ private:
     void StopWorkerThread(WorkerThread*& pWorkerThread);
 
     wxSocketServer *SocketServer;
-    unsigned int SocketConnections; // number of clients connected to SocketServer
 
     wxTimer m_statusbarTimer;
 
