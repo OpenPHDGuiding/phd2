@@ -538,7 +538,9 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         }
 
         double xDistance = mountVectorEndpoint.X;
+        double xRawDistance = xDistance;                // for logging, before any adjustments
         double yDistance = mountVectorEndpoint.Y;
+        double yRawDistance = yDistance;
 
         Debug.AddLine(wxString::Format("Moving (%.2f, %.2f) raw xDistance=%.2f yDistance=%.2f",
             cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance));
@@ -601,7 +603,7 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             pFrame->SetStatusText(msg, 1, std::max((int)actualXAmount, (int)actualYAmount));
         }
 
-        GuideLog.GuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance);
+        GuideLog.GuideStep(this, cameraVectorEndpoint, xRawDistance,yRawDistance,actualXAmount, xDistance, actualYAmount, yDistance);
         EvtServer.NotifyGuideStep(this, cameraVectorEndpoint, actualXAmount, xDistance, actualYAmount, yDistance);
 
         if (normalMove)

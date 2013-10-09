@@ -43,3 +43,7 @@ wxString GuideAlgorithm::GetConfigPath()
     return "/" + m_pMount->GetMountClassName() + "/GuideAlgorithm/" +
         (m_guideAxis == GUIDE_X ? "X/" : "Y/") + GetGuideAlgorithmClassName();
 }
+wxString GuideAlgorithm::GetAxis()
+{
+    return (m_guideAxis == GUIDE_RA ? _("RA") : _("DEC"));
+}

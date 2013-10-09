@@ -61,7 +61,7 @@ bool GuidingLog::EnableLogging(void)
             {
                 wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 
-                wxString fileName = GetLogDir () + PATHSEPSTR + "PHD_GuideLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
+                wxString fileName = GetLogDir () + PATHSEPSTR + "PHD2_GuideLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
 
                 if (!m_file.Open(fileName, "w"))
                 {
@@ -71,7 +71,7 @@ bool GuidingLog::EnableLogging(void)
 
             assert(m_file.IsOpened());
 
-            m_file.Write(_T("PHD version ") FULLVER _T(", Log version ") GUIDELOG_VERSION _T(". Log enabled at ") + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+            m_file.Write(_T("PHD2 version ") FULLVER _T(", Log version ") GUIDELOG_VERSION _T(". Log enabled at ") + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
             Flush();
 
             m_enabled = true;
@@ -389,7 +389,7 @@ bool GuidingLog::GuidingHeader(void)
                         pFrame->pGuider->LockPosition().Y,
                         pFrame->pGuider->CurrentPosition().X,
                         pFrame->pGuider->CurrentPosition().Y));
-            m_file.Write("Frame,Time,mount,dx,dy,Theta,RADuration,RADistance,RADirection,DECDuration,DECDistance,DECDirection,StarMass,SNR,ErrorCode\n");
+            m_file.Write("Frame,Time,mount,dx,dy,Theta,RARawDistance,DECRawDistance,RADuration,RAGuideDistance,RADirection,DECDuration,DECGuideDistance,DECDirection,StarMass,SNR,ErrorCode\n");
 
             Flush();
        }
@@ -404,8 +404,9 @@ bool GuidingLog::GuidingHeader(void)
 }
 
 bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
-        double RADuration, double RADistance,
-        double DECDuration, double DECDistance)
+        double RARawDistance, double DECRawDistance,
+        double RADuration, double RAGuideDistance,
+        double DECDuration, double DECGuideDistance)
 {
     bool bError = false;
 
@@ -414,14 +415,15 @@ bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
         if (m_enabled)
         {
             assert(m_file.IsOpened());
-            m_file.Write(wxString::Format("%d,%.3f,%s,%.3f,%.3f,%.3f,%.3f,%.3f,%s,%.3f,%.3f,%s,%.f,%.2f,%d\n",
+            m_file.Write(wxString::Format("%d,%.3f,%s,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%s,%.3f,%.3f,%s,%.f,%.2f,%d\n",
                     pFrame->m_frameCounter,
                     (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0,
                     pGuideMount->Name(),
                     vectorEndpoint.X, vectorEndpoint.Y,
                     vectorEndpoint.Angle(PHD_Point(0,0)),
-                    RADuration, RADistance, (RADistance > 0 ? "E" : RADistance < 0 ? "W" : ""),
-                    DECDuration, DECDistance, (DECDistance > 0 ? "S" : DECDistance < 0 ? "N" : ""),
+                    RARawDistance, DECRawDistance,
+                    RADuration, RAGuideDistance, (RAGuideDistance > 0 ? "E" : RAGuideDistance < 0 ? "W" : ""),
+                    DECDuration, DECGuideDistance, (DECGuideDistance > 0 ? "S" : DECGuideDistance < 0 ? "N" : ""),
                     pFrame->pGuider->StarMass(), pFrame->pGuider->SNR(), pFrame->pGuider->StarError()));
             Flush();
         }

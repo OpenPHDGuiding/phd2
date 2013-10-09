@@ -90,7 +90,7 @@ bool DebugLog::Init(const char *pName, bool bEnable, bool bForceOpen)
         wxStandardPathsBase& stdpath = wxStandardPaths::Get();
         wxDateTime now = wxDateTime::UNow();
 
-        m_pPathName = GetLogDir() + PATHSEPSTR + "PHD_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
+        m_pPathName = GetLogDir() + PATHSEPSTR + "PHD2_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
 
         if (!wxFFile::Open(m_pPathName, "a"))
         {

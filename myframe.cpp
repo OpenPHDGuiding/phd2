@@ -643,7 +643,7 @@ void MyFrame::SetupStatusBar(void)
         wxMax(GetTextWidth(pControl, _("No cal")),  GetTextWidth(pControl, _("Cal +"))),
     };
 
-    // This code really bothers me, but it needs to be here because on Mac it 
+    // This code really bothers me, but it needs to be here because on Mac it
     // truncates the status bar text even though we calculated the sizes above.
     for(int i=0;i<statusBarFields;i++)
     {
@@ -651,7 +651,7 @@ void MyFrame::SetupStatusBar(void)
         {
             statusWidths[i] = (120*statusWidths[i])/100;
         }
-    } 
+    }
 
     SetStatusWidths(6,statusWidths);
     SetStatusText(_("No cam"),2);

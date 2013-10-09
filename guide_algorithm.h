@@ -82,6 +82,7 @@ public:
     virtual wxString GetSettingsSummary() { return ""; }
     virtual wxString GetGuideAlgorithmClassName(void) const = 0;
     wxString GetConfigPath();
+    wxString GetAxis();
 };
 
 #endif /* GUIDE_ALGORITHM_H_INCLUDED */

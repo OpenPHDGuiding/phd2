@@ -35,7 +35,7 @@
 
 #include "loggers.h"
 
-#define GUIDELOG_VERSION _T("2.1")
+#define GUIDELOG_VERSION _T("2.2")
 
 enum LOGGED_IMAGE_FORMAT {
     LIF_LOW_Q_JPEG,
@@ -74,8 +74,9 @@ public:
 
     bool StartGuiding();
     bool GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
-        double RADuration, double RADistance,
-        double DECDuration, double DECDistance);
+        double RARawDistance, double DECRawDistance,
+        double RADuration, double RAGuideDistance,
+        double DECDuration, double DECGuideDistance);
 
     bool ServerCommand(Guider* guider,  wxString cmd);
     bool ServerGuidingDithered(Guider* guider, double dx, double dy);

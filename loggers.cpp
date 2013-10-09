@@ -53,6 +53,18 @@ bool Loggers::ChangeDirLog (wxString newdir)
     return (false);
 }
 
+// Return a valid default directory location for log files.  On Windows, this will normally be "My Documents\PHD2"
+wxString DefaultDir (void)
+{
+    wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+    wxString srslt = stdpath.GetDocumentsDir () + PATHSEPSTR + "PHD2";
+
+    if (!wxDirExists (srslt))
+        if (!wxFileName::Mkdir (srslt, 511, true))
+            srslt = stdpath.GetDocumentsDir ();             // should never happen
+    return (srslt);
+
+}
 // Return the current logging directory.  Design invaraint: returned string must always be a valid directory
 wxString Loggers::GetLogDir (void)
 {
@@ -61,23 +73,22 @@ wxString Loggers::GetLogDir (void)
     else
     {                                // One-time initialization at start-up
         wxString srslt = "";
-        wxStandardPathsBase& stdpath = wxStandardPaths::Get();
 
         if (pConfig)
         {
             srslt = pConfig->Global.GetString ("/frame/LogDir", "");
             if (srslt.length() == 0)
-                srslt = stdpath.GetDocumentsDir();                // user has never even looked at it
+                srslt = DefaultDir();                // user has never even looked at it
             else
                 if (!wxDirExists (srslt))        // user might have deleted our old directories
                 {
                     if (!wxFileName::Mkdir (srslt, 511, true))        // will build entire hierarchy if needed
-                        srslt = stdpath.GetDocumentsDir ();
+                        srslt = DefaultDir ();
                 }
 
         }
         else
-            srslt = stdpath.GetDocumentsDir();                    // shouldn't ever happen
+            srslt = DefaultDir ();                    // shouldn't ever happen
 
         m_CurrentDir = srslt;
         m_Initialized = true;
@@ -97,16 +108,14 @@ bool Loggers::SetLogDir (wxString newdir)
         newdir = newdir.substr (0, newdir.length()-stemp.length());
     }
 
-    if (newdir.length() == 0)                // Empty-string shorthand for "default documents directory"
+    if (newdir.length() == 0)                // Empty-string shorthand for "default location"
     {
-        wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-
-        newdir = stdpath.GetDocumentsDir();
+        newdir = DefaultDir ();
     }
     else
         if (!wxDirExists (newdir))
         {
-            bOk = wxFileName::Mkdir (newdir, 511, true);        // will build entire hierarchy; client handles errors                                                   // client should handle error messages
+            bOk = wxFileName::Mkdir (newdir, 511, true);        // will build entire hierarchy; client handles errors
         }
 
     if (bOk)
