@@ -394,38 +394,16 @@ double GuiderOneStar::CurrentError(void)
     return m_avgDistance;
 }
 
-static bool IsClose(const wxPoint& p1, const wxPoint& p2, int tolerance)
-{
-    return abs(p1.x - p2.x) <= tolerance &&
-        abs(p1.y - p2.y) <= tolerance;
-}
-
-static std::vector<wxPoint>::iterator FindBookmark(const wxPoint& pos, std::vector<wxPoint>& vec)
-{
-    enum { TOLERANCE = 6 };
-    std::vector<wxPoint>::iterator it;
-    for (it = vec.begin(); it != vec.end(); ++it)
-        if (IsClose(*it, pos, TOLERANCE))
-            break;
-    return it;
-}
-
-static void UpdateBookmarks(const wxPoint& pos, std::vector<wxPoint>& vec)
-{
-    std::vector<wxPoint>::iterator it = FindBookmark(pos, vec);
-    if (it == vec.end())
-        vec.push_back(pos);
-    else
-        vec.erase(it);
-}
-
 void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 {
     try
     {
-        if (mevent.ControlDown())
+        if (mevent.GetModifiers() == wxMOD_CONTROL)
         {
-            UpdateBookmarks(mevent.GetPosition(), m_bookmarks);
+            double const scaleFactor = ScaleFactor();
+            wxRealPoint pt((double) mevent.m_x / scaleFactor,
+                           (double) mevent.m_y / scaleFactor);
+            ToggleBookmark(pt);
             m_showBookmarks = true;
             Refresh();
             Update();
@@ -438,7 +416,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             throw THROW_INFO("Skipping event because state > STATE_SELECTED");
         }
 
-        if (mevent.m_shiftDown)
+        if (mevent.GetModifiers() == wxMOD_SHIFT)
         {
             // clear them out
             SetState(STATE_UNINITIALIZED);
@@ -511,12 +489,13 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
             dc.SetPen(wxPen(wxColour(0,255,255),1,wxSOLID));
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
-            for (std::vector<wxPoint>::const_iterator it = m_bookmarks.begin();
+            for (std::vector<wxRealPoint>::const_iterator it = m_bookmarks.begin();
                  it != m_bookmarks.end(); ++it)
             {
-                dc.DrawCircle(*it, 3);
-                dc.DrawCircle(*it, 6);
-                dc.DrawCircle(*it, 12);
+                wxPoint p((int) (it->x * m_scaleFactor), (int)(it->y * m_scaleFactor));
+                dc.DrawCircle(p, 3);
+                dc.DrawCircle(p, 6);
+                dc.DrawCircle(p, 12);
             }
         }
 
