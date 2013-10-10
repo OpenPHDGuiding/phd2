@@ -977,3 +977,45 @@ void Guider::DeleteAllBookmarks()
         }
     }
 }
+
+static bool IsClose(const wxRealPoint& p1, const wxRealPoint& p2, double tolerance)
+{
+    return fabs(p1.x - p2.x) <= tolerance &&
+        fabs(p1.y - p2.y) <= tolerance;
+}
+
+static std::vector<wxRealPoint>::iterator FindBookmark(const wxRealPoint& pos, std::vector<wxRealPoint>& vec)
+{
+    static const double TOLERANCE = 6.0;
+    std::vector<wxRealPoint>::iterator it;
+    for (it = vec.begin(); it != vec.end(); ++it)
+        if (IsClose(*it, pos, TOLERANCE))
+            break;
+    return it;
+}
+
+void Guider::ToggleBookmark(const wxRealPoint& pos)
+{
+    std::vector<wxRealPoint>::iterator it = FindBookmark(pos, m_bookmarks);
+    if (it == m_bookmarks.end())
+        m_bookmarks.push_back(pos);
+    else
+        m_bookmarks.erase(it);
+}
+
+void Guider::BookmarkLockPosition()
+{
+    if (m_lockPosition.IsValid())
+    {
+        wxRealPoint pt(m_lockPosition.X, m_lockPosition.Y);
+        std::vector<wxRealPoint>::iterator it = FindBookmark(pt, m_bookmarks);
+        if (it != m_bookmarks.end())
+            m_bookmarks.erase(it);
+        m_bookmarks.push_back(pt);
+        if (m_showBookmarks)
+        {
+            Update();
+            Refresh();
+        }
+    }
+}

@@ -938,6 +938,8 @@ void MyFrame::OnCharHook(wxKeyEvent& evt)
             pGuider->ToggleShowBookmarks();
         else if (evt.GetModifiers() == wxMOD_CONTROL)
             pGuider->DeleteAllBookmarks();
+        else if (evt.GetModifiers() == wxMOD_SHIFT)
+            pGuider->BookmarkLockPosition();
     }
     else
     {
