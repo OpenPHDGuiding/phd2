@@ -33,9 +33,9 @@
  *
  */
 
-#include "loggers.h"
+#include "logger.h"
 
-class DebugLog:public wxFFile, public Loggers
+class DebugLog : public wxFFile, public Logger
 {
 private:
     bool m_bEnabled;

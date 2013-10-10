@@ -1,5 +1,5 @@
 /*
- *  loggers.h
+ *  logger.h
  *  PHD Guiding
  *
  *  Created by Bruce Waddington
@@ -32,22 +32,23 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef LOGGERS_H_INCLUDED
-#define LOGGERS_H_INCLUDED
-class Loggers
+#ifndef LOGGER_H_INCLUDED
+#define LOGGER_H_INCLUDED
+
+class Logger
 {
-private:
     wxString m_CurrentDir;
     bool m_Initialized;                // internal state check - eliminates need for "init" method
 
 protected:
 
-    bool SetLogDir (wxString newdir);
-    virtual bool ChangeDirLog (wxString newdir);
+    bool SetLogDir(const wxString& newdir);
+    virtual bool ChangeDirLog(const wxString& newdir);
 
 public:
-    Loggers(void);
-    ~Loggers(void);
+
+    Logger(void);
+    ~Logger(void);
     wxString GetLogDir(void);
 };
 

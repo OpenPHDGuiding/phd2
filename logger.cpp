@@ -1,5 +1,5 @@
 /*
- *  loggers.cpp
+ *  logger.cpp
  *  PHD Guiding
  *
  *  Created by Bruce Waddington
@@ -35,26 +35,25 @@
 
 
 #include "phd.h"
-#include "loggers.h"
+#include "logger.h"
 
-
-Loggers::Loggers(void)
+Logger::Logger(void)
 {
     m_Initialized = false;
 }
 
-Loggers::~Loggers(void)
+Logger::~Logger(void)
 {
 }
 
 // Default, safety-net implementation behind derived logger classes
-bool Loggers::ChangeDirLog (wxString newdir)
+bool Logger::ChangeDirLog (const wxString& newdir)
 {
-    return (false);
+    return false;
 }
 
 // Return a valid default directory location for log files.  On Windows, this will normally be "My Documents\PHD2"
-wxString DefaultDir (void)
+static wxString DefaultDir (void)
 {
     wxStandardPathsBase& stdpath = wxStandardPaths::Get();
     wxString srslt = stdpath.GetDocumentsDir () + PATHSEPSTR + "PHD2";
@@ -66,7 +65,7 @@ wxString DefaultDir (void)
 
 }
 // Return the current logging directory.  Design invaraint: returned string must always be a valid directory
-wxString Loggers::GetLogDir (void)
+wxString Logger::GetLogDir (void)
 {
     if (m_Initialized)
         return (m_CurrentDir);
@@ -98,8 +97,9 @@ wxString Loggers::GetLogDir (void)
 
 // Change the current logging directory, creating a new directory if needed. File system errors will result in a 'false' return
 // and the current directory will be left unchanged.
-bool Loggers::SetLogDir (wxString newdir)
+bool Logger::SetLogDir (const wxString& dir)
 {
+    wxString newdir(dir);
     bool bOk = true;
 
     if (newdir.EndsWith (PATHSEPSTR))        // Need a standard form - no trailing separators
@@ -125,8 +125,4 @@ bool Loggers::SetLogDir (wxString newdir)
     }
 
     return (bOk);
-
-
 }
-
-

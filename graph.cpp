@@ -431,9 +431,9 @@ void GraphLogWindow::EnableTrendLines(bool enable)
     OnCheckboxTrendlines(dummy);
 }
 
-void GraphLogWindow::AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDur, double decDur)
+void GraphLogWindow::AppendData(const GuideStepInfo& step)
 {
-    m_pClient->AppendData(cameraOffset, mountOffset, raDur, decDur);
+    m_pClient->AppendData(step);
 
     if (m_visible)
     {
@@ -746,7 +746,7 @@ static void update_trend(int nr, int max_nr, double newval, const double& oldval
     }
 }
 
-void GraphLogClientWindow::AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDur, double decDur)
+void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
 {
     unsigned int trend_items = m_length;
     if (trend_items > m_history.size())
@@ -756,15 +756,15 @@ void GraphLogClientWindow::AppendData(const PHD_Point& cameraOffset, const PHD_P
     S_HISTORY oldest;
     if (m_history.size() > 0)
         oldest = m_history[oldest_idx];
-    update_trend(trend_items, m_length, cameraOffset.X, oldest.dx, &m_trendLineAccum[0]);
-    update_trend(trend_items, m_length, cameraOffset.Y, oldest.dy, &m_trendLineAccum[1]);
-    update_trend(trend_items, m_length, mountOffset.X, oldest.ra, &m_trendLineAccum[2]);
-    update_trend(trend_items, m_length, mountOffset.Y, oldest.dec, &m_trendLineAccum[3]);
+    update_trend(trend_items, m_length, step.cameraOffset->X, oldest.dx, &m_trendLineAccum[0]);
+    update_trend(trend_items, m_length, step.cameraOffset->Y, oldest.dy, &m_trendLineAccum[1]);
+    update_trend(trend_items, m_length, step.mountOffset->X, oldest.ra, &m_trendLineAccum[2]);
+    update_trend(trend_items, m_length, step.mountOffset->Y, oldest.dec, &m_trendLineAccum[3]);
 
     // update counter for osc index
     if (trend_items >= 1)
     {
-        if (mountOffset.X * m_history[m_history.size() - 1].ra > 0.0)
+        if (step.mountOffset->X * m_history[m_history.size() - 1].ra > 0.0)
             ++m_raSameSides;
         if (trend_items >= m_length)
         {
@@ -773,7 +773,7 @@ void GraphLogClientWindow::AppendData(const PHD_Point& cameraOffset, const PHD_P
         }
     }
 
-    m_history.push_back(S_HISTORY(cameraOffset.X, cameraOffset.Y, mountOffset.X, mountOffset.Y, raDur, decDur));
+    m_history.push_back(S_HISTORY(step));
 }
 
 void GraphLogClientWindow::RecalculateTrendLines(void)

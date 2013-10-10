@@ -33,9 +33,13 @@
  *
  */
 
-#include "loggers.h"
+#ifndef GUIDINGLOG_INCLUDED
+#define GUIDINGLOG_INCLUDED
 
-#define GUIDELOG_VERSION _T("2.2")
+#include "logger.h"
+
+class Mount;
+class Guider;
 
 enum LOGGED_IMAGE_FORMAT {
     LIF_LOW_Q_JPEG,
@@ -43,7 +47,18 @@ enum LOGGED_IMAGE_FORMAT {
     LIF_RAW_FITS
 };
 
-class GuidingLog: public Loggers
+struct GuideStepInfo
+{
+    Mount *mount;
+    const PHD_Point *cameraOffset;
+    const PHD_Point *mountOffset;
+    double guideDistanceRA;
+    double guideDistanceDec;
+    double durationRA;
+    double durationDec;
+};
+
+class GuidingLog : public Logger
 {
     bool m_enabled;
     wxFFile m_file;
@@ -73,10 +88,7 @@ public:
     bool CalibrationComplete(Mount *pCalibrationMount);
 
     bool StartGuiding();
-    bool GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
-        double RARawDistance, double DECRawDistance,
-        double RADuration, double RAGuideDistance,
-        double DECDuration, double DECGuideDistance);
+    bool GuideStep(const GuideStepInfo& info);
 
     bool ServerCommand(Guider* guider,  wxString cmd);
     bool ServerGuidingDithered(Guider* guider, double dx, double dy);
@@ -93,3 +105,5 @@ public:
 protected:
     bool GuidingHeader(void);
 };
+
+#endif

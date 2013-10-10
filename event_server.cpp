@@ -444,8 +444,7 @@ void EventServer::NotifyResumed()
     SIMPLE_NOTIFY("Resumed");
 }
 
-void EventServer::NotifyGuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint, double RADuration, double RADistance,
-    double DECDuration, double DECDistance)
+void EventServer::NotifyGuideStep(const GuideStepInfo& step)
 {
     if (m_eventServerClients.empty())
         return;
@@ -454,16 +453,16 @@ void EventServer::NotifyGuideStep(Mount *pGuideMount, const PHD_Point& vectorEnd
 
     ev << NV("Frame", (int) pFrame->m_frameCounter)
        << NV("Time", (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0, 3)
-       << NV("mount", pGuideMount->Name())
-       << NV("dx", vectorEndpoint.X, 3)
-       << NV("dy", vectorEndpoint.Y, 3)
-       << NV("Theta", vectorEndpoint.Angle(PHD_Point(0., 0.)), 3)
-       << NV("RADuration", RADuration, 3)
-       << NV("RADistance", RADistance, 3)
-       << NV("RADirection", RADistance >= 0.0 ? "E" : "W")
-       << NV("DECDuration", DECDuration, 3)
-       << NV("DECDistance", DECDistance, 3)
-       << NV("DECDirection", DECDistance >= 0.0 ? "S" : "N")
+       << NV("mount", step.mount->Name())
+       << NV("dx", step.cameraOffset->X, 3)
+       << NV("dy", step.cameraOffset->Y, 3)
+       << NV("Theta", step.cameraOffset->Angle(), 3)
+       << NV("RADistanceRaw", step.mountOffset->X, 3)
+       << NV("DECDistanceRaw", step.mountOffset->Y, 3)
+       << NV("RADistanceGuide", step.guideDistanceRA, 3)
+       << NV("DECDistanceGuide", step.guideDistanceDec, 3)
+       << NV("RADuration", step.durationRA, 3)
+       << NV("DECDuration", step.durationDec, 3)
        << NV("StarMass", pFrame->pGuider->StarMass(), 0)
        << NV("SNR", pFrame->pGuider->SNR(), 2);
 

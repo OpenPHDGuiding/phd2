@@ -35,6 +35,8 @@
 
 #include "phd.h"
 
+#define GUIDELOG_VERSION _T("2.2")
+
 GuidingLog::GuidingLog(bool active)
     : m_image_logging_enabled(false),
       m_logged_image_format(LIF_LOW_Q_JPEG)
@@ -403,10 +405,7 @@ bool GuidingLog::GuidingHeader(void)
     return bError;
 }
 
-bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
-        double RARawDistance, double DECRawDistance,
-        double RADuration, double RAGuideDistance,
-        double DECDuration, double DECGuideDistance)
+bool GuidingLog::GuideStep(const GuideStepInfo& step)
 {
     bool bError = false;
 
@@ -418,12 +417,12 @@ bool GuidingLog::GuideStep(Mount *pGuideMount, const PHD_Point& vectorEndpoint,
             m_file.Write(wxString::Format("%d,%.3f,%s,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%s,%.3f,%.3f,%s,%.f,%.2f,%d\n",
                     pFrame->m_frameCounter,
                     (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0,
-                    pGuideMount->Name(),
-                    vectorEndpoint.X, vectorEndpoint.Y,
-                    vectorEndpoint.Angle(PHD_Point(0,0)),
-                    RARawDistance, DECRawDistance,
-                    RADuration, RAGuideDistance, (RAGuideDistance > 0 ? "E" : RAGuideDistance < 0 ? "W" : ""),
-                    DECDuration, DECGuideDistance, (DECGuideDistance > 0 ? "S" : DECGuideDistance < 0 ? "N" : ""),
+                    step.mount->Name(),
+                    step.cameraOffset->X, step.cameraOffset->Y,
+                    step.cameraOffset->Angle(),
+                    step.mountOffset->X, step.mountOffset->Y,
+                    step.durationRA, step.guideDistanceRA, (step.guideDistanceRA > 0.0 ? "E" : step.guideDistanceRA < 0.0 ? "W" : ""),
+                    step.durationDec, step.guideDistanceDec, (step.guideDistanceDec > 0.0 ? "S" : step.guideDistanceDec < 0.0 ? "N" : ""),
                     pFrame->pGuider->StarMass(), pFrame->pGuider->SNR(), pFrame->pGuider->StarError()));
             Flush();
         }

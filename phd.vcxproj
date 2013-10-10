@@ -224,7 +224,7 @@
     <ClCompile Include="guide_algorithm_resistswitch.cpp" />
     <ClCompile Include="guidinglog.cpp" />
     <ClCompile Include="image_math.cpp" />
-    <ClCompile Include="loggers.cpp" />
+    <ClCompile Include="logger.cpp" />
     <ClCompile Include="messagebox_proxy.cpp" />
     <ClCompile Include="mount.cpp" />
     <ClCompile Include="myframe.cpp" />
@@ -331,7 +331,7 @@
     <ClInclude Include="guide_algorithm_resistswitch.h" />
     <ClInclude Include="guidinglog.h" />
     <ClInclude Include="image_math.h" />
-    <ClInclude Include="loggers.h" />
+    <ClInclude Include="logger.h" />
     <ClInclude Include="messagebox_proxy.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="myframe.h" />
