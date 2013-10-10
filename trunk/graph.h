@@ -61,8 +61,10 @@ struct S_HISTORY
     double raDur;
     double decDur;
     S_HISTORY() { }
-    S_HISTORY(double dx_, double dy_, double ra_, double dec_, double raDur_, double decDur_, wxLongLong_t ts = wxDateTime::UNow().GetValue().GetValue())
-        : timestamp(ts), dx(dx_), dy(dy_), ra(ra_), dec(dec_), raDur(raDur_), decDur(decDur_) { }
+    S_HISTORY(const GuideStepInfo& step)
+        : timestamp(wxDateTime::UNow().GetValue().GetValue()),
+        dx(step.cameraOffset->X), dy(step.cameraOffset->Y), ra(step.mountOffset->X), dec(step.mountOffset->Y),
+        raDur(step.durationRA), decDur(step.durationDec) { }
 };
 
 class GraphLogClientWindow : public wxWindow
@@ -78,7 +80,7 @@ class GraphLogClientWindow : public wxWindow
     wxColour m_raOrDxColor, m_decOrDyColor;
     wxStaticText *m_pRaRMS, *m_pDecRMS, *m_pTotRMS, *m_pOscIndex;
 
-    void AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDuration, double decDuration);
+    void AppendData(const GuideStepInfo& step);
     void ResetData(void);
     void RecalculateTrendLines(void);
     void OnPaint(wxPaintEvent& evt);
@@ -121,7 +123,7 @@ public:
     GraphLogWindow(wxWindow *parent);
     ~GraphLogWindow(void);
 
-    void AppendData(const PHD_Point& cameraOffset, const PHD_Point& mountOffset, double raDuration, double decDuration);
+    void AppendData(const GuideStepInfo& step);
     void UpdateControls(void);
     void SetState(bool is_active);
     void EnableTrendLines(bool enable);

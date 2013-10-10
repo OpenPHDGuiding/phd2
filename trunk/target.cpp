@@ -99,9 +99,9 @@ void TargetWindow::SetState(bool is_active)
         Refresh();
 }
 
-void TargetWindow::AppendData(const PHD_Point& mountOffset)
+void TargetWindow::AppendData(const GuideStepInfo& step)
 {
-    m_pClient->AppendData(mountOffset);
+    m_pClient->AppendData(step);
 
     if (this->m_visible)
     {
@@ -191,12 +191,12 @@ TargetClient::~TargetClient(void)
 {
 }
 
-void TargetClient::AppendData(const PHD_Point& mountOffset)
+void TargetClient::AppendData(const GuideStepInfo& step)
 {
     memmove(&m_history, &m_history[1], sizeof(m_history[0])*(m_maxHistorySize-1));
 
-    m_history[m_maxHistorySize-1].ra = mountOffset.X;
-    m_history[m_maxHistorySize-1].dec = mountOffset.Y;
+    m_history[m_maxHistorySize-1].ra = step.mountOffset->X;
+    m_history[m_maxHistorySize-1].dec = step.mountOffset->Y;
 
     if (m_nItems < m_maxHistorySize)
     {

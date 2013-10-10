@@ -34,7 +34,6 @@
 
 #ifndef PHD_H_INCLUDED
 #define PHD_H_INCLUDED
- //#define ORION
 
 #include <stdarg.h>
 
@@ -147,6 +146,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "point.h"
 #include "star.h"
 #include "circbuf.h"
+#include "guidinglog.h"
 #include "graph.h"
 #include "star_profile.h"
 #include "target.h"
@@ -168,7 +168,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "myframe.h"
 #include "worker_thread.h"
 #include "debuglog.h"
-#include "guidinglog.h"
 #include "event_server.h"
 #include "confirm_dialog.h"
 

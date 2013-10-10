@@ -61,7 +61,7 @@ class TargetClient : public wxWindow
     int m_length;     // # of items to display
     double m_zoom;
 
-    void AppendData(const PHD_Point& mountOffset);
+    void AppendData(const GuideStepInfo& step);
 
     void OnPaint(wxPaintEvent& evt);
 
@@ -82,7 +82,7 @@ public:
     void OnButtonZoomIn(wxCommandEvent& evt);
     void OnButtonZoomOut(wxCommandEvent& evt);
 
-    void AppendData(const PHD_Point& mountOffset);
+    void AppendData(const GuideStepInfo& step);
     void SetState(bool is_active);
 
 private:
