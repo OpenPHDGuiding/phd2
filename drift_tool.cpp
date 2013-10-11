@@ -76,16 +76,17 @@ struct DriftToolWin : public wxFrame
     bool m_can_slew;
     bool m_slewing;
 
-    double m_raSlewVal;
-    double m_decSlewVal;
-
-    wxStaticText *m_title;
+    wxStaticBitmap *m_bmp;
+    wxBitmap *m_azArrowBmp;
+    wxBitmap *m_altArrowBmp;
     wxStaticText *m_instructions;
     wxTextCtrl *m_raCurrent;
     wxTextCtrl *m_decCurrent;
-    wxTextCtrl *m_raSlew;
-    wxTextCtrl *m_decSlew;
+    wxSpinCtrl *m_raSlew;
+    wxSpinCtrl *m_decSlew;
     wxButton *m_slew;
+    wxStaticText *m_notesLabel;
+    wxTextCtrl *m_notes;
     wxButton *m_drift;
     wxButton *m_adjust;
     wxButton *m_phaseBtn;
@@ -95,6 +96,7 @@ struct DriftToolWin : public wxFrame
     void EnableSlew(bool enable);
 
     void OnSlew(wxCommandEvent& evt);
+    void OnNotesText(wxCommandEvent& evt);
     void OnDrift(wxCommandEvent& evt);
     void OnAdjust(wxCommandEvent& evt);
     void OnPhase(wxCommandEvent& evt);
@@ -118,104 +120,124 @@ BEGIN_EVENT_TABLE(DriftToolWin, wxFrame)
 END_EVENT_TABLE()
 
 DriftToolWin::DriftToolWin()
-    : wxFrame(pFrame, wxID_ANY, _("Drift Align Tool"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxCLOSE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxTAB_TRAVERSAL|wxFRAME_FLOAT_ON_PARENT),
+    : wxFrame(pFrame, wxID_ANY, _("Drift Align"), wxDefaultPosition, wxDefaultSize,
+              wxCAPTION|wxCLOSE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxTAB_TRAVERSAL|wxFRAME_FLOAT_ON_PARENT|wxFRAME_NO_TASKBAR),
         m_need_end_dec_drift(false),
         m_slewing(false)
 {
+    SetBackgroundColour(wxColor(0xcccccc));
+
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-    wxBoxSizer* bSizer1;
-    bSizer1 = new wxBoxSizer(wxVERTICAL);
+    // a vertical sizer holding everything
+    wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
 
-    m_title = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_title->Wrap(-1);
-    bSizer1->Add(m_title, 0, wxALIGN_CENTER|wxALL, 5);
+    // a horizontal box sizer for the bitmap and the instructions
+    wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(400,100), wxALIGN_LEFT|wxST_NO_AUTORESIZE);
+#   include "icons/AzArrow.xpm"
+    m_azArrowBmp = new wxBitmap(AzArrow);
+#   include "icons/AltArrow.xpm"
+    m_altArrowBmp = new wxBitmap(AltArrow);
+
+    m_bmp = new wxStaticBitmap(this, wxID_ANY, *m_azArrowBmp, wxDefaultPosition, wxSize(80, 100));
+    instrSizer->Add(m_bmp, 0, wxALIGN_CENTER_VERTICAL|wxFIXED_MINSIZE, 5);
+
+    m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(300,90), wxALIGN_LEFT|wxST_NO_AUTORESIZE);
     m_instructions->Wrap(-1);
-    bSizer1->Add(m_instructions, 0, wxALL, 5);
+    instrSizer->Add(m_instructions, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-    wxStaticBoxSizer* sbSizer1;
-    sbSizer1 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Scope Pointing")), wxVERTICAL);
+    topSizer->Add(instrSizer);
 
-    wxGridBagSizer* gbSizer2;
-    gbSizer2 = new wxGridBagSizer(0, 0);
-    gbSizer2->SetFlexibleDirection(wxBOTH);
-    gbSizer2->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    // static box sizer holding the scope pointing controls
+    wxStaticBoxSizer *sbSizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Scope Pointing")), wxVERTICAL);
 
-    wxStaticText* staticText3;
-    staticText3 = new wxStaticText(this, wxID_ANY, _("Meridian Offset (deg)"), wxDefaultPosition, wxDefaultSize, 0);
-    staticText3->Wrap(-1);
-    gbSizer2->Add(staticText3, wxGBPosition(0, 1), wxGBSpan(1, 1), wxALL, 5);
+    // a grid box sizer for laying out scope pointing the controls
+    wxGridBagSizer *gbSizer = new wxGridBagSizer(0, 0);
+    gbSizer->SetFlexibleDirection(wxBOTH);
+    gbSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
-    wxStaticText* staticText4;
-    staticText4 = new wxStaticText(this, wxID_ANY, _("Declination (deg)"), wxDefaultPosition, wxDefaultSize, 0);
-    staticText4->Wrap(-1);
-    gbSizer2->Add(staticText4, wxGBPosition(0, 2), wxGBSpan(1, 1), wxALL, 5);
+    wxStaticText *txt;
 
-    wxStaticText* staticText5;
-    staticText5 = new wxStaticText(this, wxID_ANY, _("Current"), wxDefaultPosition, wxDefaultSize, 0);
-    staticText5->Wrap(-1);
-    gbSizer2->Add(staticText5, wxGBPosition(1, 0), wxGBSpan(1, 1), wxALL, 5);
+    txt = new wxStaticText(this, wxID_ANY, _("Meridian Offset (deg)"), wxDefaultPosition, wxDefaultSize, 0);
+    txt->Wrap(-1);
+    gbSizer->Add(txt, wxGBPosition(0, 1), wxGBSpan(1, 1), wxALL, 5);
+
+    txt = new wxStaticText(this, wxID_ANY, _("Declination (deg)"), wxDefaultPosition, wxDefaultSize, 0);
+    txt->Wrap(-1);
+    gbSizer->Add(txt, wxGBPosition(0, 2), wxGBSpan(1, 1), wxALL, 5);
+
+    txt = new wxStaticText(this, wxID_ANY, _("Current"), wxDefaultPosition, wxDefaultSize, 0);
+    txt->Wrap(-1);
+    gbSizer->Add(txt, wxGBPosition(1, 0), wxGBSpan(1, 1), wxALL, 5);
 
     m_raCurrent = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer2->Add(m_raCurrent, wxGBPosition(1, 1), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(m_raCurrent, wxGBPosition(1, 1), wxGBSpan(1, 1), wxALL, 5);
 
     m_decCurrent = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer2->Add(m_decCurrent, wxGBPosition(1, 2), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(m_decCurrent, wxGBPosition(1, 2), wxGBSpan(1, 1), wxALL, 5);
 
-    wxStaticText* staticText6;
-    staticText6 = new wxStaticText(this, wxID_ANY, _("Slew To"), wxDefaultPosition, wxDefaultSize, 0);
-    staticText6->Wrap(-1);
-    gbSizer2->Add(staticText6, wxGBPosition(2, 0), wxGBSpan(1, 1), wxALL, 5);
+    txt = new wxStaticText(this, wxID_ANY, _("Slew To"), wxDefaultPosition, wxDefaultSize, 0);
+    txt->Wrap(-1);
+    gbSizer->Add(txt, wxGBPosition(2, 0), wxGBSpan(1, 1), wxALL, 5);
 
-    wxFloatingPointValidator<double> ra_validator(0, &m_raSlewVal, wxNUM_VAL_DEFAULT);
-    ra_validator.SetRange(-90.0, 90.0);
-    m_raSlew = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0L, ra_validator);
-    gbSizer2->Add(m_raSlew, wxGBPosition(2, 1), wxGBSpan(1, 1), wxALL, 5);
+    m_raSlew = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -90, 90);
+    gbSizer->Add(m_raSlew, wxGBPosition(2, 1), wxGBSpan(1, 1), wxALL, 5);
 
-    wxFloatingPointValidator<double> dec_validator(0, &m_decSlewVal, wxNUM_VAL_DEFAULT);
-    ra_validator.SetRange(-90.0, 90.0);
-    m_decSlew = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0L, dec_validator);
-    gbSizer2->Add(m_decSlew, wxGBPosition(2, 2), wxGBSpan(1, 1), wxALL, 5);
+    m_decSlew = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -90, 90);
+    gbSizer->Add(m_decSlew, wxGBPosition(2, 2), wxGBSpan(1, 1), wxALL, 5);
 
     m_slew = new wxButton(this, ID_SLEW, _("Slew"), wxDefaultPosition, wxDefaultSize, 0);
-    gbSizer2->Add(m_slew, wxGBPosition(2, 3), wxGBSpan(1, 1), wxALL, 5);
+    m_slew->SetToolTip(_("Click to slew to given coordinates. Shift-click to save the coordinates without slewing."));
+    gbSizer->Add(m_slew, wxGBPosition(2, 3), wxGBSpan(1, 1), wxALL, 5);
 
-    sbSizer1->Add(gbSizer2, 1, wxALIGN_CENTER, 5);
+    // add grid bag sizer to static sizer
+    sbSizer->Add(gbSizer, 1, wxALIGN_CENTER, 5);
 
-    bSizer1->Add(sbSizer1, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    // add static sizer to top-level sizer
+    topSizer->Add(sbSizer, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-    bSizer1->Add(0, 30, 0, wxEXPAND, 5);
+    // add some padding below the static sizer
+    topSizer->Add(0, 3, 0, wxEXPAND, 3);
 
-    wxBoxSizer* bSizer2;
-    bSizer2 = new wxBoxSizer(wxHORIZONTAL);
+    m_notesLabel = new wxStaticText(this, wxID_ANY, _("Altitude adjustment notes"), wxDefaultPosition, wxDefaultSize, 0);
+    m_notesLabel->Wrap(-1);
+    topSizer->Add(m_notesLabel, 0, wxEXPAND|wxTOP|wxLEFT, 8);
 
-    bSizer2->Add(0, 0, 2, wxEXPAND, 5);
+    m_notes = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 54), wxTE_MULTILINE);
+    topSizer->Add(m_notes, 0, wxEXPAND|wxLEFT|wxRIGHT|wxBOTTOM, 5);
+    m_notes->Bind(wxEVT_COMMAND_TEXT_UPDATED, &DriftToolWin::OnNotesText, this);
+
+    // horizontal sizer for the buttons
+    wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
+
+    // proportional pad on left of Drift button
+    hSizer->Add(0, 0, 2, wxEXPAND, 5);
 
     m_drift = new wxButton(this, ID_DRIFT, _("Drift"), wxDefaultPosition, wxDefaultSize, 0);
-    bSizer2->Add(m_drift, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    hSizer->Add(m_drift, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    bSizer2->Add(0, 0, 1, wxEXPAND, 5);
+    // proportional pad on right of Drift button
+    hSizer->Add(0, 0, 1, wxEXPAND, 5);
 
     m_adjust = new wxButton(this, ID_ADJUST, _("Adjust"), wxDefaultPosition, wxDefaultSize, 0);
-    bSizer2->Add(m_adjust, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    hSizer->Add(m_adjust, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    bSizer2->Add(0, 0, 2, wxEXPAND, 5);
+    // proportional pad on right of Align button
+    hSizer->Add(0, 0, 2, wxEXPAND, 5);
 
     m_phaseBtn = new wxButton(this, ID_PHASE, wxT("???"), wxDefaultPosition, wxDefaultSize, 0);
-    bSizer2->Add(m_phaseBtn, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    hSizer->Add(m_phaseBtn, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
 
-    bSizer1->Add(bSizer2, 1, wxEXPAND|wxALL, 5);
+    // add button sizer to top level sizer
+    topSizer->Add(hSizer, 1, wxEXPAND|wxALL, 5);
 
-    bSizer1->Add(0, 0, 1, wxEXPAND, 5);
-
-    SetSizer(bSizer1);
-
-    Layout();
-    bSizer1->Fit(this);
+    SetSizer(topSizer);
 
     m_statusBar = CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
+
+    Layout();
+    topSizer->Fit(this);
 
     int xpos = pConfig->Global.GetInt("/DriftTool/pos.x", -1);
     int ypos = pConfig->Global.GetInt("/DriftTool/pos.y", -1);
@@ -252,6 +274,8 @@ DriftToolWin::DriftToolWin()
 DriftToolWin::~DriftToolWin()
 {
     delete m_timer;
+    delete m_azArrowBmp;
+    delete m_altArrowBmp;
     pFrame->pDriftTool = NULL;
 }
 
@@ -292,30 +316,38 @@ static void SaveRADec(Phase phase, double ra, double dec)
 
 void DriftToolWin::UpdatePhaseState()
 {
-    LoadRADec(m_phase, &m_raSlewVal, &m_decSlewVal);
-    TransferDataToWindow();
+    double ra, dec;
+    LoadRADec(m_phase, &ra, &dec);
+    m_raSlew->SetValue((int) floor(ra));
+    m_decSlew->SetValue((int) floor(dec));
 
     if (m_phase == PHASE_ADJUST_AZ)
     {
-        m_title->SetLabel(_("Azimuth Adjustment"));
-        m_instructions->SetLabel(_("Instructions:\r"
-            "  Slew to near the Meridian and the Equator.\r"
-            "  Press Drift to measure drift.\r"
-            "  Press Adjust and adjust your mount's azimuth.\r"
-            "  Repeat Drift/Adjust until alignment is complete.\r"
-            "  Then, click Altitude to begin Altitude adjustment."));
+        SetTitle(_("Drift Align - Azimuth Adjustment"));
+        m_bmp->SetBitmap(*m_azArrowBmp);
+        m_instructions->SetLabel(
+            _("Slew to near the Meridian and the Equator.\r"
+              "Press Drift to measure drift.\r"
+              "Press Adjust and adjust your mount's azimuth.\r"
+              "Repeat Drift/Adjust until alignment is complete.\r"
+              "Then, click Altitude to begin Altitude adjustment."));
+        m_notesLabel->SetLabel(_("Azimuth adjustment notes"));
+        m_notes->SetValue(pConfig->Profile.GetString("/DriftTool/Az/Notes", wxEmptyString));
         m_phaseBtn->SetLabel(_("> Altitude"));
     }
     else
     {
-        m_title->SetLabel(_("Altitude Adjustment"));
-        m_instructions->SetLabel(_("Instructions:\r"
-            "  Slew to a location near the Equator and the Eastern or Western horizon.\r"
-            "  Press Drift to measure drift.\r"
-            "  Press Adjust and adjust your mount's altitude.\r"
-            "  Repeat Drift/Adjust until alignment is complete.\r"
-            "  Click Azimuth to repeat Azimuth adjustment."));
-        m_phaseBtn->SetLabel(_("> Azimuth"));
+        SetTitle(_("Drift Align - Altitude Adjustment"));
+        m_bmp->SetBitmap(*m_altArrowBmp);
+        m_instructions->SetLabel(
+            _("Slew to a location near the Equator and the Eastern or Western horizon.\r"
+              "Press Drift to measure drift.\r"
+              "Press Adjust and adjust your mount's altitude.\r"
+              "Repeat Drift/Adjust until alignment is complete.\r"
+              "Click Azimuth to repeat Azimuth adjustment."));
+        m_notesLabel->SetLabel(_("Altitude adjustment notes"));
+        m_notes->SetValue(pConfig->Profile.GetString("/DriftTool/Alt/Notes", wxEmptyString));
+        m_phaseBtn->SetLabel(_("< Azimuth"));
     }
 }
 
@@ -423,7 +455,15 @@ repeat:
 
 void DriftToolWin::OnSlew(wxCommandEvent& evt)
 {
-    if (Validate() && TransferDataFromWindow())
+    double raSlew = (double) m_raSlew->GetValue();
+    double decSlew = (double) m_decSlew->GetValue();
+
+    if (wxGetKeyState(WXK_SHIFT))
+    {
+        SaveRADec(m_phase, raSlew, decSlew);
+        SetStatusText(_("Coordinates saved."));
+    }
+    else
     {
         double cur_ra, cur_dec, cur_st;
         if (pMount->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
@@ -431,23 +471,35 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
             Debug.AddLine("Drift tool: slew failed to get scope coordinates");
             return;
         }
-        double slew_ra = cur_st + (m_raSlewVal * 24.0 / 360.0);
+        double slew_ra = cur_st + (raSlew * 24.0 / 360.0);
         if (slew_ra >= 24.0)
             slew_ra -= 24.0;
         else if (slew_ra < 0.0)
             slew_ra += 24.0;
-        Debug.AddLine(wxString::Format("Drift tool slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f", cur_ra, cur_dec, slew_ra, m_decSlewVal));
+        Debug.AddLine(wxString::Format("Drift tool slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f", cur_ra, cur_dec, slew_ra, decSlew));
         m_slewing = true;
         m_slew->Enable(false);
         GetStatusBar()->PushStatusText(_("Slewing ..."));
-        if (pMount->SlewToCoordinates(slew_ra, m_decSlewVal))
+        if (pMount->SlewToCoordinates(slew_ra, decSlew))
         {
             GetStatusBar()->PopStatusText();
             m_slewing = false;
             m_slew->Enable(true);
             Debug.AddLine("Drift tool: slew failed");
         }
-        SaveRADec(m_phase, m_raSlewVal, m_decSlewVal);
+        SaveRADec(m_phase, raSlew, decSlew);
+    }
+}
+
+void DriftToolWin::OnNotesText(wxCommandEvent& evt)
+{
+    if (m_phase == PHASE_ADJUST_AZ)
+    {
+        pConfig->Profile.SetString("/DriftTool/Az/Notes", m_notes->GetValue());
+    }
+    else
+    {
+        pConfig->Profile.SetString("/DriftTool/Alt/Notes", m_notes->GetValue());
     }
 }
 
