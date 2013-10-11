@@ -932,16 +932,31 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
 
 void MyFrame::OnCharHook(wxKeyEvent& evt)
 {
+    bool handled = false;
+
     if (evt.GetKeyCode() == 'B')
     {
-        if (!evt.HasModifiers())
-            pGuider->ToggleShowBookmarks();
-        else if (evt.GetModifiers() == wxMOD_CONTROL)
-            pGuider->DeleteAllBookmarks();
-        else if (evt.GetModifiers() == wxMOD_SHIFT)
-            pGuider->BookmarkLockPosition();
+        if (!evt.GetEventObject()->IsKindOf(wxCLASSINFO(wxTextCtrl)))
+        {
+            if (!evt.HasModifiers())
+            {
+                pGuider->ToggleShowBookmarks();
+                handled = true;
+            }
+            else if (evt.GetModifiers() == wxMOD_CONTROL)
+            {
+                pGuider->DeleteAllBookmarks();
+                handled = true;
+            }
+            else if (evt.GetModifiers() == wxMOD_SHIFT)
+            {
+                pGuider->BookmarkLockPosition();
+                handled = true;
+            }
+        }
     }
-    else
+
+    if (!handled)
     {
         evt.Skip();
     }

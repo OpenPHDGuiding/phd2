@@ -72,7 +72,7 @@ bool ConfigSection::GetBoolean(const char *pName, bool defaultValue=false)
     return bReturn;
 }
 
-wxString ConfigSection::GetString(const char *pName, wxString defaultValue)
+wxString ConfigSection::GetString(const char *pName, const wxString& defaultValue)
 {
     wxString sReturn = defaultValue;
     wxString name = m_prefix + pName;
@@ -140,7 +140,7 @@ void ConfigSection::SetBoolean(const char *pName, bool value)
     }
 }
 
-void ConfigSection::SetString(const char *pName, wxString value)
+void ConfigSection::SetString(const char *pName, const wxString& value)
 {
     if (m_pConfig)
     {

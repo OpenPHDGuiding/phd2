@@ -81,13 +81,13 @@ public:
     void SelectProfile(int profileId);
 
     bool     GetBoolean(const char *pName, bool defaultValue);
-    wxString GetString(const char *pName, wxString defaultValue);
+    wxString GetString(const char *pName, const wxString& defaultValue);
     double   GetDouble(const char *pName, double defaultValue);
     long     GetLong(const char *pName, long defaultValue);
     int      GetInt(const char *pName, int defaultValue);
 
     void SetBoolean(const char *pName, bool value);
-    void SetString(const char *pName, wxString value);
+    void SetString(const char *pName, const wxString& value);
     void SetDouble(const char *pName, double value);
     void SetLong(const char *pName, long value);
     void SetInt(const char *pName, int value);
