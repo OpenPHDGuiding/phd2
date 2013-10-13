@@ -362,11 +362,6 @@ bool Scope::GuidingCeases(void)
     return false;
 }
 
-double Scope::GetDeclination(void)
-{
-    return Mount::GetDeclination();
-}
-
 bool Scope::RequiresCamera(void)
 {
     return false;
@@ -544,13 +539,13 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
     return bError;
 }
 
-void Scope::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination)
+void Scope::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide)
 {
     m_calibrationXAngle = xAngle;
     m_calibrationXRate = xRate;
     m_calibrationYAngle = yAngle;
     m_calibrationYRate = yRate;
-    Mount::SetCalibration(xAngle, yAngle, xRate, yRate, declination);
+    Mount::SetCalibration(xAngle, yAngle, xRate, yRate, declination, pierSide);
 }
 
 bool Scope::IsCalibrated(void)
@@ -711,7 +706,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_COMPLETE:
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
                                m_calibrationXRate,  m_calibrationYRate,
-                               GetDeclination());
+                               GetDeclination(), SideOfPier());
                 pFrame->SetStatusText(_("calibration complete"),1);
                 GuideLog.CalibrationComplete(this);
                 EvtServer.NotifyCalibrationComplete(this);

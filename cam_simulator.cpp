@@ -636,7 +636,7 @@ bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-PierSide Camera_SimClass::GetPierSide(void) const
+PierSide Camera_SimClass::SideOfPier(void) const
 {
     return SimCamParams::pier_side;
 }
