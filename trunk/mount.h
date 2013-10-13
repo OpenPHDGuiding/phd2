@@ -48,6 +48,12 @@ enum GUIDE_DIRECTION {
     WEST = LEFT     // RA+
 };
 
+enum PierSide {
+    PIER_SIDE_UNKNOWN = -1,
+    PIER_SIDE_EAST = 0,
+    PIER_SIDE_WEST = 1,
+};
+
 class Mount :  public wxMessageBoxProxy
 {
 private:
@@ -64,6 +70,8 @@ private:
 
     double m_calXRate;
     double m_calDeclination;
+    PierSide m_calPierSide;
+
     double m_currentDeclination;
 
 protected:
@@ -145,7 +153,7 @@ public:
     GraphControlPane *GetYGuideAlgorithmControlPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
 
-    void AdjustForDeclination(void);
+    void AdjustCalibrationForScopePointing(void);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
@@ -177,19 +185,22 @@ public:
 
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
-    virtual void SetCalibration(double dxAngle, double dyAngle, double dxRate, double dyRate, double declination);
+    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide side);
 
     virtual bool IsConnected(void);
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 
     virtual void ClearHistory(void);
+
     virtual double GetDeclination(void);
-    virtual bool GetGuideRate(double *pRAGuideRate, double *pDecGuideRate);
+    virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
     virtual bool CanSlew(void);
     virtual bool SlewToCoordinates(double ra, double dec);
     virtual bool Slewing(void);
+    virtual PierSide SideOfPier(void);
+
     virtual wxString GetSettingsSummary();
 
     virtual bool CalibrationFlipRequiresDecFlip(void);

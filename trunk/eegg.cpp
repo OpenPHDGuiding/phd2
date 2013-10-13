@@ -56,7 +56,10 @@ static void load_calibration(Mount *mnt)
     double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
     double yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", M_PI/2.0);
     double declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
-    mnt->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
+    int t = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
+    PierSide pierSide = t == PIER_SIDE_EAST ? PIER_SIDE_EAST :
+        t == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
+    mnt->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pierSide);
 }
 
 void MyFrame::OnEEGG(wxCommandEvent &evt)
@@ -137,7 +140,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             if (tmpstr.IsEmpty()) return;
             tmpstr.ToDouble(&declination); // = 0.0035;
 
-            pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination);
+            pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pMount->SideOfPier());
         }
     }
     else if (evt.GetId() == EEGG_CLEARCAL)

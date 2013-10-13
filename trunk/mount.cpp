@@ -38,6 +38,31 @@
 // enable dec compensation when calibration declination is less than this
 const double Mount::DEC_COMP_LIMIT = M_PI / 2.0 * 2.0 / 3.0;
 
+inline static bool
+IsOppositeSide(PierSide a, PierSide b)
+{
+    return (a == PIER_SIDE_EAST && b == PIER_SIDE_WEST) ||
+        (a == PIER_SIDE_WEST && b == PIER_SIDE_EAST);
+}
+
+inline static const char *PierSideStr(PierSide p, const char *unknown = _("Unknown"))
+{
+    switch (p) {
+    case PIER_SIDE_EAST: return _("East");
+    case PIER_SIDE_WEST: return _("West");
+    default:             return unknown;
+    }
+}
+
+inline static PierSide OppositeSide(PierSide p)
+{
+    switch (p) {
+    case PIER_SIDE_EAST: return PIER_SIDE_WEST;
+    case PIER_SIDE_WEST: return PIER_SIDE_EAST;
+    default:             return PIER_SIDE_UNKNOWN;
+    }
+}
+
 static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *parent)
 {
     // we need to force the guide alogorithm config pane to be large enough for
@@ -492,7 +517,8 @@ bool Mount::FlipCalibration(void)
 
         bool decFlipRequired = CalibrationFlipRequiresDecFlip();
 
-        Debug.AddLine("FlipCalibration before: x=%.2f, y=%.2f decFlipRequired=%d", origX, origY, decFlipRequired);
+        Debug.AddLine("FlipCalibration before: x=%.2f, y=%.2f decFlipRequired=%d sideOfPier=%s",
+            origX, origY, decFlipRequired, PierSideStr(m_calPierSide));
 
         double newX = origX + M_PI;
         double newY = origY;
@@ -508,12 +534,16 @@ bool Mount::FlipCalibration(void)
         newX = atan2(sin(newX), cos(newX));
         newY = atan2(sin(newY), cos(newY));
 
-        Debug.AddLine("FlipCalibration after: x=%.2f, y=%.2f", newX, newY);
+        PierSide priorPierSide = m_calPierSide;
+        PierSide newPierSide = OppositeSide(m_calPierSide);
 
-        SetCalibration(newX, newY, m_calXRate, m_yRate, m_calDeclination);
+        Debug.AddLine("FlipCalibration after: x=%.2f, y=%.2f sideOfPier=%s", newX, newY, PierSideStr(newPierSide));
 
-        pFrame->SetStatusText(wxString::Format(_("CAL: (%.f,%.f)->(%.f,%.f)"),
-            origX * 180. / M_PI, origY * 180. / M_PI, newX * 180. / M_PI, newY * 180. / M_PI), 0);
+        SetCalibration(newX, newY, m_calXRate, m_yRate, m_calDeclination, newPierSide);
+
+        pFrame->SetStatusText(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
+            PierSideStr(priorPierSide, ""), origX * 180. / M_PI, origY * 180. / M_PI,
+            PierSideStr(newPierSide, ""), newX * 180. / M_PI, newY * 180. / M_PI), 0);
     }
     catch (wxString Msg)
     {
@@ -780,11 +810,14 @@ GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, wxString label)
 };
 
 /*
- * Adjust the xRate to reflect the declination.  The default implemenation
- * of GetDeclination returns 0, which makes this code into a no-op
+ * Adjust the calibration data for the scope's current coordinates.
+ *
+ * This includes adjusting the xRate to compensate for changes in declination
+ * relative to the declination where calibration was done, and possibly flipping
+ * the calibration data if the mount is known to be on the other side of the
+ * pier from where calibration was done.
  */
-
-void Mount::AdjustForDeclination(void)
+void Mount::AdjustCalibrationForScopePointing(void)
 {
     double newDeclination = GetDeclination();
 
@@ -804,6 +837,14 @@ void Mount::AdjustForDeclination(void)
                 m_calXRate, m_xRate, m_calDeclination, newDeclination);
             if (pFrame) pFrame->UpdateCalibrationStatus();
         }
+    }
+
+    PierSide newPierSide = SideOfPier();
+    if (IsOppositeSide(newPierSide, m_calPierSide))
+    {
+        Debug.AddLine(wxString::Format("Guiding starts on opposite side of pier: calibration data "
+            "side is %s, current side is %s", PierSideStr(m_calPierSide), PierSideStr(newPierSide)));
+        FlipCalibration();
     }
 }
 
@@ -839,7 +880,7 @@ bool Mount::SynchronousOnly(void)
     return false;
 }
 
-const wxString &Mount::Name(void) const
+const wxString& Mount::Name(void) const
 {
     return m_Name;
 }
@@ -862,15 +903,16 @@ void Mount::ClearCalibration(void)
     if (pFrame) pFrame->UpdateCalibrationStatus();
 }
 
-void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination)
+void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide)
 {
-    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.2f yAngle=%.2f xRate=%.4f yRate=%.4f dec=%.2f",
-        GetMountClassName(), xAngle, yAngle, xRate, yRate, declination));
+    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.2f yAngle=%.2f xRate=%.4f yRate=%.4f dec=%.2f pierSide=%d",
+        GetMountClassName(), xAngle, yAngle, xRate, yRate, declination, pierSide));
 
     // we do the rates first, since they just get stored
     m_yRate  = yRate;
     m_calXRate = xRate;
     m_calDeclination = declination;
+    m_calPierSide = pierSide;
     m_xRate  = m_calXRate;
     m_currentDeclination = declination;
 
@@ -894,6 +936,7 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
     pConfig->Profile.SetDouble(prefix + "xRate", xRate);
     pConfig->Profile.SetDouble(prefix + "yRate", yRate);
     pConfig->Profile.SetDouble(prefix + "declination", declination);
+    pConfig->Profile.SetInt(prefix + "pierSide", pierSide);
 }
 
 bool Mount::IsConnected()
@@ -943,7 +986,7 @@ double Mount::GetDeclination(void)
 
 // Safety net - return true in case subclass can't handle guide rates
 // Convention in this class is to return true for error conditions
-bool Mount::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
+bool Mount::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     return true; // error, not implemented
 }
@@ -966,6 +1009,11 @@ bool Mount::SlewToCoordinates(double ra, double dec)
 bool Mount::Slewing(void)
 {
     return false;
+}
+
+PierSide Mount::SideOfPier(void)
+{
+    return PIER_SIDE_UNKNOWN;
 }
 
 wxString Mount::GetSettingsSummary()

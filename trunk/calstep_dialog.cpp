@@ -59,9 +59,9 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, const wxString& c
     try
     {
         if (pSecondaryMount && pSecondaryMount->IsConnected())
-            bRateError = pSecondaryMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
+            bRateError = pSecondaryMount->GetGuideRates(&dGuideRateRA, &dGuideRateDec);
         else if (pMount && pMount->IsConnected())
-            bRateError = pMount->GetGuideRate (&dGuideRateRA, &dGuideRateDec);
+            bRateError = pMount->GetGuideRates(&dGuideRateRA, &dGuideRateDec);
     }
     catch (wxString sMsg)
     {

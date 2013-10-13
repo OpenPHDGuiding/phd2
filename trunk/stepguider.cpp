@@ -431,13 +431,13 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
     return bError;
 }
 
-void StepGuider::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination)
+void StepGuider::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide)
 {
     m_calibrationXAngle = xAngle;
     m_calibrationXRate = xRate;
     m_calibrationYAngle = yAngle;
     m_calibrationYRate = yRate;
-    Mount::SetCalibration(xAngle, yAngle, xRate, yRate, declination);
+    Mount::SetCalibration(xAngle, yAngle, xRate, yRate, declination, pierSide);
 }
 
 /*
@@ -606,7 +606,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 // fall through
             case CALIBRATION_STATE_COMPLETE:
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
-                               m_calibrationXRate,  m_calibrationYRate, 0.0);
+                               m_calibrationXRate,  m_calibrationYRate,
+                               0.0, PIER_SIDE_UNKNOWN);
                 status1 = _T("calibration complete");
                 GuideLog.CalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");

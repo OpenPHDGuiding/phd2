@@ -50,18 +50,16 @@ class ScopeASCOM : public Scope, private ASCOM_COMMON
 
     // DISPIDs we reuse
     DISPID dispid_connected;
-    DISPID dispid_name;
-    DISPID dispid_canpulseguide;
     DISPID dispid_ispulseguiding;
     DISPID dispid_isslewing;
     DISPID dispid_pulseguide;
     DISPID dispid_declination;
     DISPID dispid_rightascension;
     DISPID dispid_siderealtime;
-    DISPID dispid_canslew;
     DISPID dispid_slewtocoordinates;
     DISPID dispid_raguiderate;
     DISPID dispid_decguiderate;
+    DISPID dispid_sideofpier;
 
     // other private varialbles
     bool m_bCanCheckPulseGuiding;
@@ -75,7 +73,7 @@ class ScopeASCOM : public Scope, private ASCOM_COMMON
     virtual bool IsGuiding(DispatchObj *pScopeDriver);
     virtual bool IsSlewing(DispatchObj *pScopeDriver);
     virtual double GetDeclination(void);
-    virtual bool GetGuideRate(double *pRAGuideRate, double *pDecGuideRate);
+    virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
 
 public:
     ScopeASCOM(const wxString& choice);
@@ -93,6 +91,7 @@ public:
     virtual bool CanSlew(void);
     virtual bool SlewToCoordinates(double ra, double dec);
     virtual bool Slewing(void);
+    virtual PierSide SideOfPier(void);
 };
 
 #endif /* GUIDE_ASCOM */

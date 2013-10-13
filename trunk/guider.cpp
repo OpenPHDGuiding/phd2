@@ -611,11 +611,13 @@ void Guider::SetState(GUIDER_STATE newState)
                 break;
             case STATE_GUIDING:
                 assert(pMount);
-                pMount->AdjustForDeclination();
+
+                pMount->AdjustCalibrationForScopePointing();
                 if (pSecondaryMount)
                 {
-                    pSecondaryMount->AdjustForDeclination();
+                    pSecondaryMount->AdjustCalibrationForScopePointing();
                 }
+
                 if (m_lockPosition.IsValid() && m_lockPosIsSticky)
                 {
                     Debug.AddLine("keeping sticky lock position");

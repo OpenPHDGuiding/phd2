@@ -240,20 +240,6 @@ bool ScopeASCOM::Connect(void)
             throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for the Connected property");
         }
 
-        // ... get thie dispatch ID for the Name property ...
-        if (!pScopeDriver.GetDispatchId(&dispid_name, L"Name"))
-        {
-            wxMessageBox(_T("Can't get the name of the scope -- ASCOM driver missing the name"),_("Error"), wxOK | wxICON_ERROR);
-            throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for the Name property");
-        }
-
-        // ... get the dispatch ID for the "CanPulseGuide" property ....
-        if (!pScopeDriver.GetDispatchId(&dispid_canpulseguide, L"CanPulseGuide"))
-        {
-            wxMessageBox(_T("ASCOM driver missing the CanPulseGuide property"),_("Error"), wxOK | wxICON_ERROR);
-            throw ERROR_INFO("ASCOM Scope: Could not get the dispatch id for the CanPulseGuide property");
-        }
-
         // ... get the dispatch ID for the "IsPulseGuiding" property ....
         m_bCanCheckPulseGuiding = true;
         if (!pScopeDriver.GetDispatchId(&dispid_ispulseguiding, L"IsPulseGuiding"))
@@ -296,12 +282,7 @@ bool ScopeASCOM::Connect(void)
         }
 
         m_bCanSlew = true;
-        if (!pScopeDriver.GetDispatchId(&dispid_canslew, L"CanSlew"))
-        {
-            m_bCanSlew = false;
-            Debug.AddLine(wxString::Format("cannot get dispid_canslew = %d", dispid_canslew));
-        }
-        else if (!pScopeDriver.GetDispatchId(&dispid_slewtocoordinates, L"SlewToCoordinates"))
+        if (!pScopeDriver.GetDispatchId(&dispid_slewtocoordinates, L"SlewToCoordinates"))
         {
             m_bCanSlew = false;
             Debug.AddLine(wxString::Format("cannot get dispid_slewtocoordinates = %d", dispid_slewtocoordinates));
@@ -322,6 +303,12 @@ bool ScopeASCOM::Connect(void)
             // don't throw if we can't get this one
         }
 
+        if (!pScopeDriver.GetDispatchId(&dispid_sideofpier, L"SideOfPier"))
+        {
+            Debug.AddLine(wxString::Format("cannot get dispid_sideofpier"));
+            dispid_sideofpier = DISPID_UNKNOWN;
+        }
+
         // we have all the IDs we need - time to start using them
 
         // ... set the Connected property to true....
@@ -334,9 +321,9 @@ bool ScopeASCOM::Connect(void)
 
         // get the scope name
         VARIANT vRes;
-        if (!pScopeDriver.GetProp(&vRes, dispid_name))
+        if (!pScopeDriver.GetProp(&vRes, L"Name"))
         {
-            wxMessageBox(_T("ASCOM driver problem getting Name property"),_("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("ASCOM driver problem getting Name property"), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not get the scope name");
         }
 
@@ -347,7 +334,7 @@ bool ScopeASCOM::Connect(void)
         Debug.AddLine(wxString::Format("Scope reports its name as ") + m_Name);
 
         // see if we can pulse guide
-        if (!pScopeDriver.GetProp(&vRes, dispid_canpulseguide) || !vRes.boolVal)
+        if (!pScopeDriver.GetProp(&vRes, L"CanPulseGuide") || !vRes.boolVal)
         {
             wxMessageBox(_T("ASCOM driver does not support the needed Pulse Guide method."),_("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Cannot pulseguide");
@@ -356,7 +343,7 @@ bool ScopeASCOM::Connect(void)
         // see if we can slew
         if (m_bCanSlew)
         {
-            if (!pScopeDriver.GetProp(&vRes, dispid_canslew))
+            if (!pScopeDriver.GetProp(&vRes, L"CanSlew"))
             {
                 Debug.AddLine("ASCOM scope got error invoking CanSlew");
                 m_bCanSlew = false;
@@ -409,13 +396,6 @@ bool ScopeASCOM::Disconnect(void)
 
     try
     {
-        DISPPARAMS dispParms;
-        DISPID didPut = DISPID_PROPERTYPUT;
-        VARIANTARG rgvarg[1];
-        HRESULT hr;
-        EXCEPINFO excep;
-        VARIANT vRes;
-
         Debug.AddLine(wxString::Format("Disconnecting"));
 
         if (!IsConnected())
@@ -424,16 +404,12 @@ bool ScopeASCOM::Disconnect(void)
         }
 
         AutoASCOMDriver pScopeDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+        DispatchObj scope(pScopeDriver, NULL);
 
         // ... set the Connected property to false....
-        rgvarg[0].vt = VT_BOOL;
-        rgvarg[0].boolVal = FALSE;
-        dispParms.cArgs = 1;
-        dispParms.rgvarg = rgvarg;
-        dispParms.cNamedArgs = 1;                   // PropPut kludge
-        dispParms.rgdispidNamedArgs = &didPut;
-        if(FAILED(hr = pScopeDriver->Invoke(dispid_connected,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,&dispParms,&vRes,&excep, NULL))) {
-            wxMessageBox(_T("ASCOM driver problem during connection"),_("Error"), wxOK | wxICON_ERROR);
+        if (!scope.PutProp(dispid_connected, false))
+        {
+            wxMessageBox(_T("ASCOM driver problem during disconnect"), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false");
         }
 
@@ -462,14 +438,6 @@ bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration)
 
     try
     {
-        DISPPARAMS dispParms;
-        VARIANTARG rgvarg[2];
-        HRESULT hr;
-        EXCEPINFO excep;
-        VARIANT vRes;
-        int i;
-        wxStopWatch swatch;
-
         Debug.AddLine(wxString::Format("Guiding  Dir = %d, Dur = %d", direction, duration));
 
         if (!IsConnected())
@@ -484,15 +452,19 @@ bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration)
         if (IsGuiding(&scope))
         {
             Debug.AddLine("Entered PulseGuideScope while moving");
-            for(i=0;(i<20) && IsGuiding(&scope);i++) {
+            int i;
+            for (i=0; (i < 20) && IsGuiding(&scope); i++)
+            {
                 Debug.AddLine("Still moving");
                 wxMilliSleep(50);
             }
-            if (i==20) {
+            if (i==20)
+            {
                 Debug.AddLine("Moving after 1s still - aborting");
                 throw ERROR_INFO("ASCOM Scope: scope is still moving after 1 second");
             }
-            else {
+            else
+            {
                 Debug.AddLine("Movement stopped - continuing");
             }
         }
@@ -500,29 +472,41 @@ bool ScopeASCOM::Guide(const GUIDE_DIRECTION direction, const int duration)
         // Do the move
         // Convert into the right direction #'s if buttons used
 
+        VARIANTARG rgvarg[2];
         rgvarg[1].vt = VT_I2;
         rgvarg[1].iVal =  direction;
         rgvarg[0].vt = VT_I4;
         rgvarg[0].lVal = (long) duration;
+
+        DISPPARAMS dispParms;
         dispParms.cArgs = 2;
         dispParms.rgvarg = rgvarg;
         dispParms.cNamedArgs = 0;
         dispParms.rgdispidNamedArgs =NULL;
+
+        wxStopWatch swatch;
         swatch.Start();
 
-        if(FAILED(hr = pScopeDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
+        HRESULT hr;
+        EXCEPINFO excep;
+        VARIANT vRes;
+
+        if (FAILED(hr = pScopeDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
                                         &dispParms,&vRes,&excep,NULL)))
         {
             Debug.AddLine(wxString::Format("pulseguide fails, pScopeDriver = 0x%p", pScopeDriver.get()));
             throw ERROR_INFO("ASCOM Scope: pulseguide command failed");
         }
-        if (swatch.Time() < (long) duration) {
+
+        if (swatch.Time() < (long) duration)
+        {
             Debug.AddLine("PulseGuide returned control before completion");
         }
 
-        while (IsGuiding(&scope)) {
-            SleepEx(50,true);
+        while (IsGuiding(&scope))
+        {
             Debug.AddLine("waiting 50ms");
+            SleepEx(50, true);
         }
     }
     catch (wxString Msg)
@@ -683,7 +667,7 @@ double ScopeASCOM::GetDeclination(void)
 
 // Return RA and Dec guide rates in native ASCOM units, degrees/sec.
 // Convention is to return true on an error
-bool ScopeASCOM::GetGuideRate(double *pRAGuideRate, double *pDecGuideRate)
+bool ScopeASCOM::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     bool bError = false;
 
@@ -836,4 +820,46 @@ bool ScopeASCOM::SlewToCoordinates(double ra, double dec)
     return bError;
 }
 
-#endif /* GUIDE_ASCOM */
+PierSide ScopeASCOM::SideOfPier(void)
+{
+    PierSide pierSide = PIER_SIDE_UNKNOWN;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("ASCOM Scope: cannot get side of pier when not connected");
+        }
+
+        if (dispid_sideofpier == DISPID_UNKNOWN)
+        {
+            throw THROW_INFO("ASCOM Scope: not capable of getting side of pier");
+        }
+
+        AutoASCOMDriver pScopeDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+        DispatchObj scope(pScopeDriver, NULL);
+
+        VARIANT vRes;
+
+        if (!scope.GetProp(&vRes, dispid_sideofpier))
+        {
+            throw ERROR_INFO("ASCOM Scope: SideOfPier failed");
+        }
+
+        switch (vRes.intVal) {
+        case 0: pierSide = PIER_SIDE_EAST; break;
+        case 1: pierSide = PIER_SIDE_WEST; break;
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+    }
+
+    Debug.AddLine("ScopeASCOM::SideOfPier() returns %d", pierSide);
+
+    return pierSide;
+}
+
+#endif /* G 
+UIDE_ASCOM */
