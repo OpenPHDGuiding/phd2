@@ -2,7 +2,7 @@
 
 = PHD Socket Server Interface =
 
-PHD supports control and monitoring through its "socket server" interface.
+PHD supports control and monitoring through its _Socket Server_ interface.
 
   Note: using the socket server for status monitoring has been superseded by the EventMonitoring interface which provides much more detailed status information.
 
@@ -24,7 +24,7 @@ The available commands are given in the table below. The command and response ar
 || MSG_REQFRAME || 11 || (not currently implemented in PHD2)|| 1||
 || MSG_MOVE4 || 12 || Dither a random amount, up to +/- 3.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
 || MSG_MOVE5 || 13 || Dither a random amount, up to +/- 5.0 x dither_scale|| Camera exposure time in seconds, but not less than 1||
-|| MSG_AUTOFINDSTAR || 14 || Auto-select a star. If a star is found, start looping exposures. || 1 if a star was selected, 0 if not ||
+|| MSG_AUTOFINDSTAR || 14 || Auto-select a guide star. || 1 if a star was selected, 0 if not ||
 || MSG_SETLOCKPOSITION || 15 || Read 2 16-bit integers, x and y,from the socket and set the lock position to (x,y) || 0 ||
 || MSG_FLIPRACAL || 16 || Flip RA calibration data || 1 if RA calibration data was flipped, 0 otherwise||
 || MSG_GETSTATUS || 17 || Get a value describing the state of PHD || 0: not paused, looping, or guiding <br> 1: capture active and star selected <br> 2: calibrating <br> 3: guiding and locked on star <br> 4: guiding but star lost <br> 100: paused <br> 101: looping but no star selected ||
