@@ -972,10 +972,11 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             {
                 const S_HISTORY& h = m_history[i];
 
-                wxPoint pt(sctr.pt(j, h.raDur));
-                if (h.raDur <= -0.5)
+                const double raDur = h.ra > 0.0 ? -h.raDur : h.raDur;
+                wxPoint pt(sctr.pt(j, raDur));
+                if (raDur <= -0.5)
                     dc.DrawRectangle(pt,wxSize(4, yorig - pt.y));
-                else if (h.raDur >= 0.5)
+                else if (raDur >= 0.5)
                     dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
             }
 
@@ -985,11 +986,12 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             {
                 const S_HISTORY& h = m_history[i];
 
-                wxPoint pt(sctr.pt(j, h.decDur));
+                const double decDur = h.dec > 0.0 ? -h.decDur : h.decDur;
+                wxPoint pt(sctr.pt(j, decDur));
                 pt.x += 5;
-                if (h.decDur <= -0.5)
+                if (decDur <= -0.5)
                     dc.DrawRectangle(pt,wxSize(4, yorig - pt.y));
-                else if (h.decDur >= 0.5)
+                else if (decDur >= 0.5)
                     dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
             }
         }
@@ -1063,10 +1065,10 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                     const S_HISTORY& h0 = m_history[start_item];
                     const S_HISTORY& h1 = m_history[m_history.size() - 1];
                     double dt = (double)(h1.timestamp - h0.timestamp) / (1000.0 * 60.0); // time span in minutes
-                    double ddec = (double) plot_length * trendDecOrDy.first;
+                    double ddec = (double) (plot_length - 1) * trendDecOrDy.first;
                     // From Frank Barrett, "Determining Polar Axis Alignment Accuracy"
                     // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
-                    double err_arcmin = (3.81 * ddec) / (dt * cos(declination));
+                    double err_arcmin = (3.82 * ddec) / (dt * cos(declination));
                     unsigned int err_px = (unsigned int) floor(fabs(err_arcmin * sampling * 60.0) + 0.5);
                     polarAlignCircleRadius = err_px;
                     dc.DrawText(wxString::Format("Polar alignment error: %.2f' (%u px)", err_arcmin, err_px),

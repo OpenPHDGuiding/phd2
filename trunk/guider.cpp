@@ -867,9 +867,10 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     Debug.AddLine("UpdateGuideState exits:" + statusMessage);
 }
 
-wxString Guider::GetSettingsSummary() {
+wxString Guider::GetSettingsSummary()
+{
     // return a loggable summary of current global configs managed by MyFrame
-    return "";
+    return wxEmptyString;
 }
 
 ConfigDialogPane *Guider::GetConfigDialogPane(wxWindow *pParent)
