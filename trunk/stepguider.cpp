@@ -101,7 +101,7 @@ StepGuider *StepGuider::Factory(wxString choice)
             throw ERROR_INFO("StepGuiderFactory called with choice.IsEmpty()");
         }
 
-        Debug.AddLine(wxString::Format("StepGuiderFactor(%s)", choice));
+        Debug.AddLine(wxString::Format("StepGuiderFactory(%s)", choice));
 
         if (choice.Find(_T("None")) + 1) {
         }
