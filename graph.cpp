@@ -597,7 +597,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     SetMaxHeight(maxHeight);
 
     m_length = pConfig->Global.GetInt("/graph/length", m_minLength * 2);
-    m_height = pConfig->Global.GetInt("/graph/height", m_minHeight);
+    m_height = pConfig->Global.GetInt("/graph/height", m_minHeight * 2 * 2); // match PHD1 4-pixel scale for new users
     m_heightUnits = UNIT_ARCSEC; // preferred units, will still display pixels if camera pixel scale not available
 
     m_showTrendlines = false;
