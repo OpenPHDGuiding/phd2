@@ -35,9 +35,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-20 16:27+0200\n"
-"PO-Revision-Date: 2013-10-20 18:26+0100\n"
-"Last-Translator: Sylvain Girard <sylvain.girard@zesly.net>\n"
+"POT-Creation-Date: 2013-10-17 17:33+0200\n"
+"PO-Revision-Date: 2013-10-20 16:23+0100\n"
+"Last-Translator: Sylvain Girard <zesly42@gmail.com>\n"
 "Language-Team: Français\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -96,41 +96,44 @@ msgid "No Scope Connected"
 msgstr "Aucun Scope Connecté"
 
 #: calstep_dialog.cpp:41
+#, fuzzy
 msgid "Calibration Step Calculator"
-msgstr "Calculateur de Pas de Calibration"
+msgstr "Nb Pas de Calibration"
 
 #: calstep_dialog.cpp:104
+#, fuzzy
 msgid "Focal length, mm"
-msgstr "Longueur Focale, mm"
+msgstr "Longueur Focale (mm)"
 
 #: calstep_dialog.cpp:104
 msgid "Guide scope focal length"
-msgstr "Logueur focale du tube de guidage"
+msgstr ""
 
 #: calstep_dialog.cpp:111
 msgid "Guide camera pixel size"
-msgstr "Taille des pixels de la caméra de guidage"
+msgstr ""
 
 #: calstep_dialog.cpp:118
 msgid "Guide speed, n.nn x sidereal"
-msgstr "Vitesse de guidage, n.nn x sidérale"
+msgstr ""
 
 #: calstep_dialog.cpp:118
 msgid "Guide speed, multiple of sidereal rate; to guide at "
-msgstr "Vitesse de guidage, multiple de la vitesse sidérale ; "
+msgstr ""
 
 #: calstep_dialog.cpp:119
 #, c-format
 msgid "50% sidereal rate, enter 0.5"
-msgstr "Pour guider à 50% de la vitesse sidérale, entrez 0.5"
+msgstr ""
 
 #: calstep_dialog.cpp:125
+#, fuzzy
 msgid "Calibration steps"
-msgstr "Pas de calibration"
+msgstr "Nb Pas de Calibration"
 
 #: calstep_dialog.cpp:125
 msgid "Targeted # steps in each direction"
-msgstr "Nombre de pas ciblé dans chaque direction"
+msgstr ""
 
 #: calstep_dialog.cpp:177 configdialog.cpp:73
 msgid ": "
@@ -138,7 +141,7 @@ msgstr " : "
 
 #: calstep_dialog.cpp:233
 msgid "Num steps must be >= 6 and <= 60"
-msgstr "Le nombre de pas doit etre >= 6 et <= 60"
+msgstr ""
 
 #: calstep_dialog.cpp:233 calstep_dialog.cpp:235 calstep_dialog.cpp:237
 #: calstep_dialog.cpp:239 cam_ascomlate.cpp:166 cam_ascomlate.cpp:172
@@ -209,32 +212,28 @@ msgstr "Erreur"
 
 #: calstep_dialog.cpp:235
 msgid "Guide speed must be >= 0.2 and <= 2.0"
-msgstr "La vitesse de guidage doit être >= 0.2 et <= 2.0"
+msgstr ""
 
 #: calstep_dialog.cpp:237
 msgid "Pixel size must be >= 3.0 and <= 25.0"
-msgstr "La taille des pixels doit être >= 3.0 et <= 25.0"
+msgstr ""
 
 #: calstep_dialog.cpp:239
 msgid "Focal length must be >= 50 and < 4000"
-msgstr "La longueur focale doit être >= 50 et <= 4000"
+msgstr ""
 
 #: cam_ascomlate.cpp:166 scope_ascom.cpp:159
 msgid "Failed to find the ASCOM Chooser. Make sure it is installed"
 msgstr ""
-"Impossible de trouver ASCOM Chooser. Assurez-vous qu'il est bien installé."
 
 #: cam_ascomlate.cpp:172
 msgid ""
 "Failed to set the Chooser's type to Camera. Something is wrong with ASCOM"
 msgstr ""
-"Impossible de définir le type de Chooser à Caméra. Quelque chose ne va pas "
-"avec ASCOM."
 
 #: cam_ascomlate.cpp:183
 msgid "Failed to run the Scope Chooser. Something is wrong with ASCOM"
 msgstr ""
-"Impossible de lancer le Scope Chooser. Quelque chose ne va pas avec ASCOM."
 
 #: cam_Atik16.cpp:65
 msgid "Already connected"
@@ -374,82 +373,82 @@ msgid "Dec Angle"
 msgstr "Angle Dec"
 
 #: cam_simulator.cpp:764
+#, fuzzy
 msgid "Camera Simulator"
-msgstr "Simulateur de Caméra"
+msgstr "Simulateur"
 
 #: cam_simulator.cpp:768
 msgid "Stars"
-msgstr "Etoiles"
+msgstr ""
 
 #: cam_simulator.cpp:769
 msgid "Hot Pixels"
-msgstr "Pixels Chaux"
+msgstr ""
 
 #: cam_simulator.cpp:770
 msgid "Noise"
-msgstr "Bruit"
+msgstr ""
 
 #: cam_simulator.cpp:771
 msgid "Dec Backlash"
-msgstr "Jeu Dec"
+msgstr ""
 
 #: cam_simulator.cpp:772
+#, fuzzy
 msgid "PE"
-msgstr "PE"
+msgstr "E"
 
 #: cam_simulator.cpp:775
 msgid "DEC Drift"
-msgstr "Dérive DEC"
+msgstr ""
 
 #: cam_simulator.cpp:776
 msgid "Seeing"
-msgstr "Seeing"
+msgstr ""
 
 #: cam_simulator.cpp:777
+#, fuzzy
 msgid "Cam Angle"
-msgstr "Angle Cam"
+msgstr "Angle Dec"
 
 #: cam_simulator.cpp:778
+#, fuzzy
 msgid "Guide Rate"
-msgstr "Taux de Guidage"
+msgstr "Guider"
 
 #: cam_simulator.cpp:788
 msgid "Clouds"
-msgstr "Nuages"
+msgstr ""
 
 #: cam_simulator.cpp:789
 msgid "Simulate clouds blocking stars"
-msgstr "Simuler des nuages bloquant les étoiles"
+msgstr ""
 
 #: cam_simulator.cpp:793
 msgid "Reverse Dec pulse on West side of pier"
-msgstr "Inverser impulsion Dec sur le côté Ouest du méridien"
+msgstr ""
 
 #: cam_simulator.cpp:794
 msgid ""
 "Simulate a mount that reverses guide pulse direction after a meridian flip, "
 "like an ASCOM pulse-guided mount."
 msgstr ""
-"Simuler une monture qui inverse la direction des impulsions de guidage après "
-"un bascuelement au méridien, comme monture ASCOM guidée par impulsion (pulse-"
-"guiding)."
 
 #: cam_simulator.cpp:799
 msgid "Pier Flip"
-msgstr "Basculement au méridien"
+msgstr ""
 
 #: cam_simulator.cpp:802
 msgid "Side of Pier: MMMMM"
-msgstr "Côté du méridien : MMMMM"
+msgstr ""
 
 #: cam_simulator.cpp:807
 msgid "Reset"
-msgstr "Réinitialiser"
+msgstr ""
 
 #: cam_simulator.cpp:808
 msgid "Reset all values to application defaults"
 msgstr ""
-"Réinitialiser toutes les valeurs aux valeurs par défaut de l'applications"
 
 #: cam_simulator.cpp:849 mount.cpp:51 mount.cpp:607 testguide.cpp:43
 msgid "East"
@@ -543,8 +542,9 @@ msgstr ""
 "erreurs de guidage en arc-sec."
 
 #: camera.cpp:665
+#, fuzzy
 msgid "Auto load dark frames"
-msgstr "Charger auto images de dark"
+msgstr "Charger images de dark"
 
 #: camera.cpp:666
 msgid ""
@@ -554,12 +554,6 @@ msgid ""
 "Frames option in the File menu. Then, when this option is selected, the dark "
 "frames will be loaded from the file whenever the camera is connected."
 msgstr ""
-"Cochez pour recharger les images de dark automatiquement quand vous "
-"connectez la caméra. D'abord, vous devez capturer des dark pour tout les "
-"temps de poses que vous allez utiliser et sauver les images de dark dans des "
-"fichiers .fit en utilisant l'option Enregistrer Images de Dark dans le menu "
-"Fichier. Ensuite, quand cette option est sélectionnée, les images de dark "
-"seront chargées depuis les fichiers dès que la caméra sera connectée."
 
 #: confirm_dialog.cpp:40
 msgid "Don't ask again"
@@ -571,143 +565,137 @@ msgstr "Confirmation"
 
 #: drift_tool.cpp:123 myframe.cpp:396
 msgid "Drift Align"
-msgstr "Alignement de la Dérive (Drift Align)"
+msgstr ""
 
 #: drift_tool.cpp:153
+#, fuzzy
 msgid "Scope Pointing"
-msgstr "Pointage Scope"
+msgstr "Réglages Scope"
 
 #: drift_tool.cpp:162
 msgid "Meridian Offset (deg)"
-msgstr "Offset du méridien (deg)"
+msgstr ""
 
 #: drift_tool.cpp:166
+#, fuzzy
 msgid "Declination (deg)"
-msgstr "Déclinaison (deg)"
+msgstr "Déclinaison"
 
 #: drift_tool.cpp:170
 msgid "Current"
-msgstr "En cours"
+msgstr ""
 
 #: drift_tool.cpp:180
 msgid "Slew To"
-msgstr "Pointer Vers"
+msgstr ""
 
 #: drift_tool.cpp:190
 msgid "Slew"
-msgstr "Pointer"
+msgstr ""
 
 #: drift_tool.cpp:191
 msgid ""
 "Click to slew to given coordinates. Shift-click to save the coordinates "
 "without slewing."
 msgstr ""
-"Cliquez sur Pointer pour pointer les coordonnées données. Shift-clique pour "
-"sauver les coordonnées sans les pointer."
 
 #: drift_tool.cpp:203 drift_tool.cpp:348
 msgid "Altitude adjustment notes"
-msgstr "Notes d'ajustement de l'altitude"
+msgstr ""
 
 #: drift_tool.cpp:217
 msgid "Drift"
-msgstr "Dériver"
+msgstr ""
 
 #: drift_tool.cpp:223
+#, fuzzy
 msgid "Adjust"
-msgstr "Ajuster"
+msgstr "Auto"
 
 #: drift_tool.cpp:326
 msgid "Drift Align - Azimuth Adjustment"
-msgstr "Alignement de la Dérive (Drift Align) - Ajustement de l'Azimuth"
+msgstr ""
 
 #: drift_tool.cpp:329
 msgid ""
-"Slew to near the Meridian and the Equator.\n"
-"Press Drift to measure drift.\n"
-"Press Adjust and adjust your mount's azimuth.\n"
-"Repeat Drift/Adjust until alignment is complete.\n"
-"Then, click Altitude to begin Altitude adjustment."
+"Slew to near the Meridian and the Equator.\rPress Drift to measure drift."
+"\rPress Adjust and adjust your mount's azimuth.\rRepeat Drift/Adjust until "
+"alignment is complete.\rThen, click Altitude to begin Altitude adjustment."
 msgstr ""
-"Pointez vers le Méridien et l'Equateur\n"
-"Appuyez sur Dériverpour mesurer la Dérive\n"
-"Appuyez sur Ajuster et ajustez l'azimuth de votre monture\n"
-"Répétez Dériver/Ajuster jusqu'à le complet alignement\n"
-"Ensuite, cliquez sur Altitude pour commencer l'ajustement de l'Altitude."
 
 #: drift_tool.cpp:334
 msgid "Azimuth adjustment notes"
-msgstr "Notes d'ajustement de l'azimuth"
+msgstr ""
 
 #: drift_tool.cpp:336
 msgid "> Altitude"
-msgstr "> Altitude"
+msgstr ""
 
 #: drift_tool.cpp:340
 msgid "Drift Align - Altitude Adjustment"
-msgstr "Alignement de la Dérive (Drift Align) - Ajustement de l'Altitude"
+msgstr ""
 
 #: drift_tool.cpp:343
 msgid ""
-"Slew to a location near the Equator and the Eastern or Western horizon.\n"
-"Press Drift to measure drift.\n"
-"Press Adjust and adjust your mount's altitude.\n"
-"Repeat Drift/Adjust until alignment is complete.\n"
-"Click Azimuth to repeat Azimuth adjustment."
+"Slew to a location near the Equator and the Eastern or Western horizon."
+"\rPress Drift to measure drift.\rPress Adjust and adjust your mount's "
+"altitude.\rRepeat Drift/Adjust until alignment is complete.\rClick Azimuth "
+"to repeat Azimuth adjustment."
 msgstr ""
-"Pointez près de l'Equateur et de l'horizon Est ou Ouest\n"
-"Appuyez sur Dériver pour mesurer la dérive\n"
-"Appuyez sur Ajuster et ajusteé l'altitude de votre monture\n"
-"Répétez Dériver/Ajuster jusqu'à le complet alignement\n"
-"Cliquez sur Azimuth pour recommencer l'ajustement de l'Azimuth."
 
 #: drift_tool.cpp:350
 msgid "< Azimuth"
-msgstr "< Azimuth"
+msgstr ""
 
 #: drift_tool.cpp:372
+#, fuzzy
 msgid "Please connect a camera and a mount"
-msgstr "S'il vous plait, connectez une caméra et une monture"
+msgstr "S'il vous plait, connectez une caméra d'abord"
 
 #: drift_tool.cpp:379
 msgid "Please calibrate before starting drift alignment"
-msgstr "Veuillez calibrer avant de commencer l'alignement de la dérive."
+msgstr ""
 
 #: drift_tool.cpp:387
+#, fuzzy
 msgid "Start Looping..."
-msgstr "Commence à boucler..."
+msgstr "Réglages AO"
 
 #: drift_tool.cpp:397
+#, fuzzy
 msgid "Auto-selecting a star"
-msgstr "Selection auto d'une étoile"
+msgstr "Selection auto d'Etoile\tAlt-S"
 
 #: drift_tool.cpp:403
+#, fuzzy
 msgid "Waiting for calibration to complete..."
-msgstr "Attente de la fin de la calibration..."
+msgstr "calibration complete"
 
 #: drift_tool.cpp:406
+#, fuzzy
 msgid "Start guiding..."
-msgstr "Commence à guider..."
+msgstr "Guidage..."
 
 #: drift_tool.cpp:417
 msgid "Drifting... click Adjust when done drifting"
-msgstr "Dérive en cours... cliquer sur Ajuster quand la dérive est terminé"
+msgstr ""
 
 #: drift_tool.cpp:431
 msgid "Adjust azimuth, click Drift when done"
-msgstr "Ajustez l'azimuth, cliquez sur Dériver quand vous avez terminer"
+msgstr ""
 
 #: drift_tool.cpp:432
 msgid "Adjust altitude, click Drift when done"
-msgstr "Ajustez l'altitude, cliquez sur Dériver quand vous avez terminer"
+msgstr ""
 
 #: drift_tool.cpp:464
 msgid "Coordinates saved."
-msgstr "Coordonnées sauvegardées."
+msgstr ""
 
 #: drift_tool.cpp:482
+#, fuzzy
 msgid "Slewing ..."
-msgstr "Pointage..."
+msgstr "Réglages AO"
 
 #: eegg.cpp:41
 msgid "W RA+"
@@ -770,9 +758,9 @@ msgid "Failed to flip RA calibration"
 msgstr "Echec de l'inverseion de la calibration AD"
 
 #: eegg.cpp:170
-#, c-format
+#, fuzzy, c-format
 msgid "RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"
-msgstr "Angle de calibration AD inversé : (%.2f, %.2f) vers (%.2f, %.2f)"
+msgstr "Angle de calibration AD inversé : %.2f vers %.2f"
 
 #: eegg.cpp:179
 msgid ""
@@ -806,12 +794,14 @@ msgid "Y-lock position"
 msgstr "Postion verrouillage-Y"
 
 #: gear_dialog.cpp:98
+#, fuzzy
 msgid "Connect Equipment"
-msgstr "Connecter Equipement"
+msgstr "Connecter à l'équipement"
 
 #: gear_dialog.cpp:157
+#, fuzzy
 msgid "Equipment profile"
-msgstr "Profile d'equipement"
+msgstr "Equipement"
 
 #: gear_dialog.cpp:159
 msgid ""
@@ -819,70 +809,66 @@ msgid ""
 "settings and equipment selections in an Equipment Profile. You can create "
 "mutiple profiles and switch back and forth between them."
 msgstr ""
-"Sélectionnez le Profil de l'Equipement que vous souhaitez utiliser. PHD "
-"stocke tous vos réglages et les sélections d'équipement dans un Profil "
-"d'Equipement. Vous pouvez créer des profils mutiple et basculer entre eux."
 
 #: gear_dialog.cpp:165
 msgid "New"
-msgstr "Nouveau"
+msgstr ""
 
 #: gear_dialog.cpp:165
 msgid "Create a new profile, optionally copying from another profile"
 msgstr ""
-"Créer un nouveau profil, éventuellement copié a partir d'un autre profil"
 
 #: gear_dialog.cpp:166
 msgid "Delete"
-msgstr "Supprimer"
+msgstr ""
 
 #: gear_dialog.cpp:166
 msgid "Delete the selected profile"
-msgstr "Supprime le profile sélectionné"
+msgstr ""
 
 #: gear_dialog.cpp:167
 msgid "Rename"
-msgstr "Renommer"
+msgstr ""
 
 #: gear_dialog.cpp:167
 msgid "Rename the selected profile"
-msgstr "Renommer le profil selectionné"
+msgstr ""
 
 #: gear_dialog.cpp:168
 msgid "Import..."
-msgstr "Import..."
+msgstr ""
 
 #: gear_dialog.cpp:168
 msgid "Load a profile from a file"
-msgstr "Charger un profil a partir d'un fichier"
+msgstr ""
 
 #: gear_dialog.cpp:169
 msgid "Export..."
-msgstr "Exporter..."
+msgstr ""
 
 #: gear_dialog.cpp:169
 msgid "Save the selected profile to a file"
-msgstr "Enregistrez le profil sélectionné dans un fichier"
+msgstr ""
 
 #: gear_dialog.cpp:170
+#, fuzzy
 msgid "Settings..."
-msgstr "Réglages..."
+msgstr "Réglages AO"
 
 #: gear_dialog.cpp:170
 msgid "Open the advanced settings dialog"
-msgstr "Ouvrez la boîte de dialogue des paramètres avancés"
+msgstr ""
 
 #: gear_dialog.cpp:172
+#, fuzzy
 msgid "Manage Profiles"
-msgstr "Gérer les Profils"
+msgstr "Profile Etoile"
 
 #: gear_dialog.cpp:173
 msgid ""
 "Create a new Equipment Profile, or delete or rename the selected Equipment "
 "Profile"
 msgstr ""
-"Créer un nouveau Profile d'Equipement, ou supprimer ou renommer le Profile "
-"d'Equipement selectionné"
 
 #: gear_dialog.cpp:185
 msgid ""
@@ -890,36 +876,36 @@ msgid ""
 "Disconnect All to disconnect. You can also connect or disconnect individual "
 "equipment items by clicking the button next to the item."
 msgstr ""
-"Choisissez votre matériel ci-dessous et cliquez sur Connecter Tout pour "
-"connecter, ou cliquez sur Déconnecter Tout pour déconnecter. Vous pouvez "
-"également connecter ou déconecter les équipements individuelement en "
-"cliquant sur le bouton à côté de l'élément."
 
 #: gear_dialog.cpp:199 gear_dialog.cpp:209 gear_dialog.cpp:219
 #: gear_dialog.cpp:354 gear_dialog.cpp:389 gear_dialog.cpp:437
+#, fuzzy
 msgid "Disconnect"
-msgstr "Déconnecter"
+msgstr " déconnectée"
 
 #: gear_dialog.cpp:205 gear_dialog.cpp:207
+#, fuzzy
 msgid "Mount"
-msgstr "Monture"
+msgstr "&Montures"
 
 #: gear_dialog.cpp:227
+#, fuzzy
 msgid "Connect All"
-msgstr "Connecter Tout"
+msgstr "ECHEC Connection"
 
 #: gear_dialog.cpp:228
 msgid "Connect all equipment and close the equipment selection window"
 msgstr ""
-"Connecte tous l'équipement et ferme la fenêtre de selection d'équipement"
 
 #: gear_dialog.cpp:231
+#, fuzzy
 msgid "Disconnect All"
-msgstr "Déconnecter Tout"
+msgstr " déconnectée"
 
 #: gear_dialog.cpp:232
+#, fuzzy
 msgid "Disconnect all equipment"
-msgstr "Déonnecter tout l'équipement"
+msgstr "Connecter à l'équipement"
 
 #: gear_dialog.cpp:248 gear_dialog.cpp:252 gear_dialog.cpp:256
 #: gear_dialog.cpp:732 gear_dialog.cpp:828 mount.cpp:89 mount.cpp:112
@@ -929,36 +915,41 @@ msgstr "Aucun"
 
 #: gear_dialog.cpp:342 gear_dialog.cpp:362 gear_dialog.cpp:377
 #: gear_dialog.cpp:397 gear_dialog.cpp:425 gear_dialog.cpp:445
+#, fuzzy
 msgid "Connect"
-msgstr "Connecter"
+msgstr "connectée"
 
 #: gear_dialog.cpp:344 gear_dialog.cpp:364
 msgid "Connect to camera"
 msgstr "Connecter la caméra"
 
 #: gear_dialog.cpp:356
+#, fuzzy
 msgid "Disconnect from camera"
-msgstr "Déconnecter la caméra"
+msgstr "Connecter la caméra"
 
 #: gear_dialog.cpp:379 gear_dialog.cpp:399
+#, fuzzy
 msgid "Connect to mount"
-msgstr "Connecter à la monture"
+msgstr "Connecter à l'équipement"
 
 #: gear_dialog.cpp:391
 msgid "Disconnect from mount"
-msgstr "Déconnecter la monture"
+msgstr ""
 
 #: gear_dialog.cpp:427 gear_dialog.cpp:447
+#, fuzzy
 msgid "Connect to AO"
-msgstr "Connecter l'AO"
+msgstr "Connecter la caméra"
 
 #: gear_dialog.cpp:439
 msgid "Disconnect from AO"
-msgstr "Déconnecter l'AO"
+msgstr ""
 
 #: gear_dialog.cpp:593
+#, fuzzy
 msgid "Connecting to Camera ..."
-msgstr "Connection à la caméra"
+msgstr "Connecter la caméra"
 
 #: gear_dialog.cpp:600
 msgid "Camera Connected"
@@ -977,8 +968,9 @@ msgid "No cam"
 msgstr "Pas de cam"
 
 #: gear_dialog.cpp:714
+#, fuzzy
 msgid "Connecting to Scope ..."
-msgstr "Connection au Scope"
+msgstr "Connecter la caméra"
 
 #: gear_dialog.cpp:724
 msgid "Scope connected"
@@ -993,8 +985,9 @@ msgid "Scope Disconnected"
 msgstr "Scope Déconnectée"
 
 #: gear_dialog.cpp:810
+#, fuzzy
 msgid "Connecting to AO ..."
-msgstr "Connection à l'AO"
+msgstr "ECHEC Connection"
 
 #: gear_dialog.cpp:820
 msgid "Adaptive Optics Connected"
@@ -1009,81 +1002,81 @@ msgid "Adaptive Optics Disconnected"
 msgstr "Optique Adaptive Déconnectée"
 
 #: gear_dialog.cpp:896
+#, fuzzy
 msgid "New Equipment Profile"
-msgstr "Nouveau Profil d'Equipement"
+msgstr "Equipement"
 
 #: gear_dialog.cpp:903
 msgid "Name"
-msgstr "Nom"
+msgstr ""
 
 #: gear_dialog.cpp:907
 msgid "Enter the name of the new equipment profile"
-msgstr "Entrer le nom du nouveau profil d'équipement"
+msgstr ""
 
 #: gear_dialog.cpp:911
 msgid "PHD Defaults"
-msgstr "PHD Par Défaut"
+msgstr ""
 
 #: gear_dialog.cpp:914
 msgid "Profile initial settings"
-msgstr "Réglages initiaux du profil"
+msgstr ""
 
 #: gear_dialog.cpp:917
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
 msgstr ""
-"Sélectionnez PHD Par Défaut pour créer un profil avec les paramètres par "
-"défaut de PHD, ou sélectionnez un profil d'équipement existant pour copier "
-"ses paramètres dans votre nouveau profil."
 
 #: gear_dialog.cpp:950
 #, c-format
 msgid "Could not create profile %s from profile %s"
-msgstr "Impossible de créer le profile %s a partir du profile %s"
+msgstr ""
 
 #: gear_dialog.cpp:957
-#, c-format
+#, fuzzy, c-format
 msgid "Could not create profile %s"
-msgstr "Impossible de créer le profile %s"
+msgstr "Fichier d'aide non trouvé : "
 
 #: gear_dialog.cpp:973
 #, c-format
 msgid "Delete profile %s?"
-msgstr "Supprimer le profil %s ?"
+msgstr ""
 
 #: gear_dialog.cpp:973
 msgid "Delete Equipment Profile"
-msgstr "Supprimer un Profil d'Equipement"
+msgstr ""
 
 #: gear_dialog.cpp:989
 #, c-format
 msgid "Rename %s"
-msgstr "Renommer %s"
+msgstr ""
 
 #: gear_dialog.cpp:989
 msgid "Rename Equipment Profile"
-msgstr "Renommer Profile d'Equipement"
+msgstr ""
 
 #: gear_dialog.cpp:1005
+#, fuzzy
 msgid "Could not rename profile"
-msgstr "Impossible de renommer le profil"
+msgstr "Fichier d'aide non trouvé : "
 
 #: gear_dialog.cpp:1019
 msgid "Import PHD Equipment Profiles"
-msgstr "Importer Profiles d'Equipement PHD"
+msgstr ""
 
 #: gear_dialog.cpp:1052
 msgid "Export PHD Equipment Profile"
-msgstr "Exporter un Profil d'Equipement PHD"
+msgstr ""
 
 #: graph-stepguider.cpp:48 myframe.cpp:246 myframe.cpp:304
 msgid "AO Position"
 msgstr "Position OA"
 
 #: graph-stepguider.cpp:61 target.cpp:64
+#, fuzzy
 msgid "Select the number of frames of history to display"
-msgstr "Sélectionner le nombre d'images de l'historique a afficher"
+msgstr "# d'images de l'historique a afficher"
 
 #: graph-stepguider.cpp:63 graph.cpp:128 target.cpp:77
 msgid "Clear"
@@ -1102,16 +1095,19 @@ msgid "Scope:"
 msgstr "Scope :"
 
 #: graph.cpp:115
+#, fuzzy
 msgid "Select the number of frames of history to display on the X-axis"
-msgstr "Sélectionner le nombre d'images de l'historique a afficher sur l'axe X"
+msgstr "# d'images de l'historique a afficher"
 
 #: graph.cpp:124
+#, fuzzy
 msgid "Settings"
-msgstr "Réglages"
+msgstr "Réglages AO"
 
 #: graph.cpp:125
+#, fuzzy
 msgid "Graph settings"
-msgstr "Réglages du graph"
+msgstr "&Enregistrer la configuration"
 
 #: graph.cpp:133
 msgid "Trendlines"
@@ -1122,19 +1118,20 @@ msgid "Plot trend lines"
 msgstr "Tracer les lignes de tendance"
 
 #: graph.cpp:138
+#, fuzzy
 msgid "Corrections"
-msgstr "Corrections"
+msgstr "ECHEC Connection"
 
 #: graph.cpp:140
 msgid "Display mount corrections"
-msgstr "Afficher les corrections de monture"
+msgstr ""
 
 #: graph.cpp:146 graph.cpp:168 graph.cpp:531 guide_algorithm.cpp:48
-#: target.cpp:274
+#: target.cpp:275
 msgid "RA"
 msgstr "AD"
 
-#: graph.cpp:151 graph.cpp:179 graph.cpp:532 target.cpp:275
+#: graph.cpp:151 graph.cpp:179 graph.cpp:532 target.cpp:276
 msgid "Dec"
 msgstr "Dec"
 
@@ -1152,51 +1149,51 @@ msgstr "Osc AD: 0.00"
 
 #: graph.cpp:242
 msgid "Plot mode"
-msgstr "Mode Plot"
+msgstr ""
 
 #: graph.cpp:244
 msgid "RA / Dec"
-msgstr "AD / Dec"
+msgstr ""
 
 #: graph.cpp:245
 msgid "dx / dy"
-msgstr "dx / dy"
+msgstr ""
 
 #: graph.cpp:253
 msgid "Y-axis units"
-msgstr "Unités axe-Y"
+msgstr ""
 
 #: graph.cpp:255
 msgid "Arc-seconds"
-msgstr "Secondes d'arc"
+msgstr ""
 
 #: graph.cpp:259
 msgid "Pixels"
-msgstr "Pixels"
+msgstr ""
 
 #: graph.cpp:269
 msgid "RA Color..."
-msgstr "Couleur AD..."
+msgstr ""
 
 #: graph.cpp:270
 msgid "Dec Color..."
-msgstr "Couleur Dec..."
+msgstr ""
 
 #: graph.cpp:274
 msgid "dx Color..."
-msgstr "Couleur dx..."
+msgstr ""
 
 #: graph.cpp:275
 msgid "dy Color..."
-msgstr "Couleur dy..."
+msgstr ""
 
 #: graph.cpp:317
 msgid "RA or dx Color"
-msgstr "Couleur AD ou dx"
+msgstr ""
 
 #: graph.cpp:333
 msgid "Dec or dy Color"
-msgstr "Couleur Dec ou dy"
+msgstr ""
 
 #: graph.cpp:535
 msgid "dx"
@@ -1208,15 +1205,17 @@ msgstr "dy"
 
 #: graph.cpp:555
 msgid "Select the Y-axis scale, pixels per Y division"
-msgstr "Sélectionnez l'échelle de l'axe Y, en pixels par division"
+msgstr ""
 
 #: graph.cpp:560
+#, fuzzy
 msgid "Select the Y-axis scale, arc-seconds per Y division"
-msgstr "Sélectionner l'échelle de l'axe Y, en secondes d'arc pas division"
+msgstr "Shift-clique pour affichage en arc-sec par division"
 
 #: guide_algorithm.cpp:48
+#, fuzzy
 msgid "DEC"
-msgstr "DEC"
+msgstr "DEC :"
 
 #: guide_algorithm_hysteresis.cpp:205
 msgid "Hysteresis Guide Algorithm"
@@ -1273,8 +1272,9 @@ msgid "Min mo"
 msgstr "Dp Min"
 
 #: guide_algorithm_identity.cpp:77
+#, fuzzy
 msgid "Guide Algorithm"
-msgstr "Algorithme de Guidage"
+msgstr "Algorithme Passe-bas"
 
 #: guide_algorithm_identity.cpp:80 guide_algorithm_lowpass2.cpp:97
 msgid "Nothing to Configure"
@@ -1337,8 +1337,9 @@ msgid "Always scale images to fill window"
 msgstr "Toujours ajuster les images à la fenêtre"
 
 #: guider.cpp:970
+#, fuzzy
 msgid "Are you sure you want to delete all Bookmarks?"
-msgstr "Etes-vous sur de vouloir supprimer tous les Signets"
+msgstr "Etes-vous sur de vouloir quitter alors l'acquisition est active ?"
 
 #: guider_onestar.cpp:308 guider_onestar.cpp:448
 msgid "No star found"
@@ -1368,7 +1369,7 @@ msgstr ""
 
 #: guider_onestar.cpp:686
 msgid "Star mass change detection"
-msgstr "Détection de variation de masse d'étoile"
+msgstr ""
 
 #: guider_onestar.cpp:687
 msgid ""
@@ -1376,10 +1377,6 @@ msgid ""
 "when the guide star mass changes by an amount greater then the Star mass "
 "tolerance setting."
 msgstr ""
-"Cochez pour permettre la détection de la variation de masse d'étoile. "
-"Lorsque cette option est activée, PHD ignore les images lorsque la masse de "
-"l'étoile-guide varie d'un niveau supérieur au réglage de Tolérence de masse "
-"d'étoile."
 
 #: guider_onestar.cpp:696
 msgid "Star mass tolerance"
@@ -1392,16 +1389,10 @@ msgid ""
 "(less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
 "If star mass change detection is not enabled then this setting is ignored."
 msgstr ""
-"Quand la détection de la variation de masse étoile est activée, c'est la "
-"tolérance pour les changements de masse d'étoile entre les images, en "
-"pourcent. Des valeurs plus élevées sont plus tolérants (moins sensible) aux "
-"changements de masse d'étoile. La plage valide est 10-100, valeur par défaut "
-"est 50. Si la détection de changement de masse de l'étoile n'est pas activé "
-"ce paramètre est ignoré."
 
 #: mount.cpp:48
 msgid "Unknown"
-msgstr "Inconnu"
+msgstr ""
 
 #: mount.cpp:76
 #, c-format
@@ -1426,8 +1417,6 @@ msgid ""
 "Keep this checked for guiding. Un-check to disable all mount guide commands "
 "and allow the mount to run un-guided"
 msgstr ""
-"Laissez coché pour guider. Décocher pour désactiver toutes les commandes de "
-"guidage et permettre à la monture de fonctionner non-guidée."
 
 #: mount.cpp:89 mount.cpp:112
 msgid "Lowpass"
@@ -1458,9 +1447,9 @@ msgid "Which Guide Algorithm to use for Declination"
 msgstr "Quel algorithme de guidage utilser en Déclinaison"
 
 #: mount.cpp:544
-#, c-format
+#, fuzzy, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
-msgstr "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
+msgstr "CAL: %.2f -> %.2f"
 
 #: mount.cpp:607
 #, c-format
@@ -1603,7 +1592,7 @@ msgstr "Donner la position de verrouilage manuel"
 
 #: myframe.cpp:396
 msgid "Run the Drift Alignment tool"
-msgstr "Lancer l'outil d'Alignement de la Dérive (Drift Alignment)"
+msgstr ""
 
 #: myframe.cpp:398
 msgid "Enable &Logging\tAlt-L"
@@ -1855,8 +1844,6 @@ msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
 msgstr ""
-"Connecte l'équipement. Shift-Clique pour reconnecter le même équipement qu'à "
-"la dernière connection."
 
 #: myframe.cpp:600
 msgid "Loop Exposure"
@@ -1896,7 +1883,7 @@ msgstr "Configuration avancée"
 
 #: myframe.cpp:627 myframe.cpp:643
 msgid "Cal +"
-msgstr "Cal +"
+msgstr ""
 
 #: myframe.cpp:627
 msgid "Cal"
@@ -1908,9 +1895,10 @@ msgstr "Non cal"
 
 #: myframe.cpp:640
 msgid "No Cam"
-msgstr "Pas de Cam"
+msgstr ""
 
 #: myframe.cpp:641
+#, fuzzy
 msgid "No Scope"
 msgstr "Pas de Scope"
 
@@ -2064,18 +2052,16 @@ msgstr "Langue de %s. Vous devrez redémarre PHD pour que ça prenne effet."
 
 #: myframe.cpp:1332
 msgid "Log File Location"
-msgstr "Emplacement Fichier de Log"
+msgstr ""
 
 #: myframe.cpp:1336
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr ""
-"Dossier pour les log de guidage et de debug ; chaine vide pour restaure "
-"l'emplacement par défaut"
 
 #: myframe.cpp:1337
 msgid "Browse..."
-msgstr "Parcourir..."
+msgstr ""
 
 #: myframe.cpp:1386
 msgid ""
@@ -2233,8 +2219,9 @@ msgid "Cannot Manual Guide without a mount connected"
 msgstr "Guidage manuel impossible sans monture connectée"
 
 #: phdconfig.cpp:42
+#, fuzzy
 msgid "My Equipment"
-msgstr "Mon Equipement"
+msgstr "Equipement"
 
 #: scope.cpp:595
 msgid "RA Calibration Failed: star did not move enough"
@@ -2309,20 +2296,19 @@ msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
 msgstr ""
-"Cliquez pour ouvrir le Calculateur de Pas de Calibration pour vous aider à "
-"trouver la bonne taille de pas de calibration."
 
 #: scope.cpp:801
 msgid "Max RA Duration"
 msgstr "Durée AD Max"
 
 #: scope.cpp:802
+#, fuzzy
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 1000 ms."
 msgstr ""
-"Plus longue impulsion à envoyer en AD\n"
-"Par défaut = 1000 ms."
+"Longueur d'impulsion maximum en AD\n"
+"Par défaut = 1000ms."
 
 #: scope.cpp:807
 msgid "Max Dec Duration"
@@ -2354,15 +2340,13 @@ msgstr "Guider en déclinaison aussi ?"
 
 #: scope.cpp:819
 msgid "Reverse Dec output after meridian flip"
-msgstr "Inverser la sortie Dec après basculement au méridien"
+msgstr ""
 
 #: scope.cpp:820
 msgid ""
 "Check if your mount needs Dec output reversed after doing Flip Calibration "
 "Data"
 msgstr ""
-"Cochez si votre monture a besoin de sortie Dec inversé après une inversion "
-"des données de calibration"
 
 #: scope.cpp:890
 msgid "Mx RA"
@@ -2376,13 +2360,10 @@ msgstr "Mx DEC"
 msgid ""
 "Failed to set the Chooser's type to Telescope. Something is wrong with ASCOM"
 msgstr ""
-"Impossible de définir le type Chooser à Telescope. Quelque chose ne va pas "
-"avec ASCOM"
 
 #: scope_ascom.cpp:176
 msgid "Failed to run the Telescope Chooser. Something is wrong with ASCOM"
 msgstr ""
-"Impossible de lancer le Telescope Chooser. Quelque chose ne va pas avec ASCOM"
 
 #: scope_ascom.cpp:379
 msgid " connected"
