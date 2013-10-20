@@ -119,6 +119,8 @@ bool PhdApp::OnInit() {
     }
     setlocale(LC_NUMERIC, "English");
 
+	pConfig->InitializeProfile();
+
     pFrame = new MyFrame(m_instanceNumber, &m_locale);
 
     wxImage::AddHandler(new wxJPEGHandler);

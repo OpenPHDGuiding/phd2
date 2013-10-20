@@ -248,7 +248,6 @@ void PhdConfig::Initialize(const wxString& baseConfigName, int instance)
         Global.SetLong("ConfigVersion", CURRENT_CONFIG_VERSION);
     }
 
-    InitializeProfile();
 }
 
 void PhdConfig::InitializeProfile(void)
@@ -259,8 +258,8 @@ void PhdConfig::InitializeProfile(void)
         currentProfile = FirstProfile();
     if (currentProfile <= 0)
     {
-        CreateProfile(DefaultProfileName);
-        currentProfile = GetProfileId(DefaultProfileName);
+        CreateProfile(wxGetTranslation(DefaultProfileName));
+        currentProfile = GetProfileId(wxGetTranslation(DefaultProfileName));
     }
     m_currentProfileId = currentProfile;
     Profile.SelectProfile(currentProfile);
@@ -461,7 +460,7 @@ void PhdConfig::DeleteProfile(const wxString& name)
     if (NumProfiles() == 0)
     {
         Debug.AddLine("Last profile deleted... create a new one");
-        CreateProfile(DefaultProfileName);
+        CreateProfile(wxGetTranslation(DefaultProfileName));
     }
     if (id == m_currentProfileId)
     {
