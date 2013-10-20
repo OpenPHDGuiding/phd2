@@ -238,21 +238,20 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     wxSize sl;
     radius_max -= 18;
 
-    dc.DrawCircle(center, radius_max);
-    l = wxString::Format(_T("%g%s"), 2.0 / m_zoom, sampling != 1 ? "''" : "");
-    sl = dc.GetTextExtent(l);
-    dc.DrawText(l, center.x - radius_max - sl.x, center.y);
-
-    double r = radius_max / (2 / m_zoom);
-    dc.DrawCircle(center, r);
-    l = wxString::Format(_T("1%s"), sampling != 1 ? "''" : "");
-    sl = dc.GetTextExtent(l);
-    dc.DrawText(l, center.x - r - sl.x, center.y);
+	for (int i = 1 ; i <= 4 ; i++)
+	{
+		double rr = radius_max / 4;
+		dc.DrawCircle(center, rr*i);
+		l = wxString::Format(_T("%g%s"), i/2.0 / m_zoom, sampling != 1 ? "''" : "");
+		sl = dc.GetTextExtent(l);
+		dc.DrawText(l, center.x - sl.x - 1, center.y - rr*i - sl.y);
+	}
 
     // Draw axes
     dc.DrawLine(3, center.y , size.x - 3, center.y);
     dc.DrawLine(center.x, 3, center.x, size.y - 3);
 
+    double r = radius_max / (2 / m_zoom);
     int g = size.x / 100;
     for (double x = 0 ; x < size.x ; x += r/4)
     {
