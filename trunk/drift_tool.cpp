@@ -326,10 +326,10 @@ void DriftToolWin::UpdatePhaseState()
         SetTitle(_("Drift Align - Azimuth Adjustment"));
         m_bmp->SetBitmap(*m_azArrowBmp);
         m_instructions->SetLabel(
-            _("Slew to near the Meridian and the Equator.\r"
-              "Press Drift to measure drift.\r"
-              "Press Adjust and adjust your mount's azimuth.\r"
-              "Repeat Drift/Adjust until alignment is complete.\r"
+            _("Slew to near the Meridian and the Equator.\n"
+              "Press Drift to measure drift.\n"
+              "Press Adjust and adjust your mount's azimuth.\n"
+              "Repeat Drift/Adjust until alignment is complete.\n"
               "Then, click Altitude to begin Altitude adjustment."));
         m_notesLabel->SetLabel(_("Azimuth adjustment notes"));
         m_notes->SetValue(pConfig->Profile.GetString("/DriftTool/Az/Notes", wxEmptyString));
@@ -340,10 +340,10 @@ void DriftToolWin::UpdatePhaseState()
         SetTitle(_("Drift Align - Altitude Adjustment"));
         m_bmp->SetBitmap(*m_altArrowBmp);
         m_instructions->SetLabel(
-            _("Slew to a location near the Equator and the Eastern or Western horizon.\r"
-              "Press Drift to measure drift.\r"
-              "Press Adjust and adjust your mount's altitude.\r"
-              "Repeat Drift/Adjust until alignment is complete.\r"
+            _("Slew to a location near the Equator and the Eastern or Western horizon.\n"
+              "Press Drift to measure drift.\n"
+              "Press Adjust and adjust your mount's altitude.\n"
+              "Repeat Drift/Adjust until alignment is complete.\n"
               "Click Azimuth to repeat Azimuth adjustment."));
         m_notesLabel->SetLabel(_("Altitude adjustment notes"));
         m_notes->SetValue(pConfig->Profile.GetString("/DriftTool/Alt/Notes", wxEmptyString));

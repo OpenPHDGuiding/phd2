@@ -1329,12 +1329,12 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
           wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 
     // Log directory location - use a group box with a wide text edit control on top and a centered 'browse' button below it
-    wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer (wxVERTICAL, pParent, "Log File Location");
+    wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer (wxVERTICAL, pParent, _("Log File Location"));
     wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
 
     m_pLogDir = new wxTextCtrl(pParent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(250, -1));
     m_pLogDir->SetToolTip (_("Folder for guide and debug logs; empty string to restore the default location"));
-    wxButton *pSelectDir = new wxButton(pParent, wxID_OK, "Browse..." );
+    wxButton *pSelectDir = new wxButton(pParent, wxID_OK, _("Browse...") );
     pButtonSizer->Add (pSelectDir, wxSizerFlags(0).Center());
     pSelectDir->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &MyFrame::MyFrameConfigDialogPane::OnDirSelect, this);
 
