@@ -35,7 +35,7 @@
 
 #include "phd.h"
 
-#define GUIDELOG_VERSION _T("2.2")
+#define GUIDELOG_VERSION _T("2.3")
 
 GuidingLog::GuidingLog(bool active)
     : m_image_logging_enabled(false),
