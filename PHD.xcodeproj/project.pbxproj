@@ -110,8 +110,9 @@
 		58EE981513CD0F74009EC68D /* PHDGuideHelp.zip in CopyFiles */ = {isa = PBXBuildFile; fileRef = 58F7157D0B20CC700056770B /* PHDGuideHelp.zip */; };
 		58EE981713CD0F74009EC68D /* SBIGUDrv.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 588167710B4DED6900BDA6D4 /* SBIGUDrv.framework */; };
 		58EE981813CD0F74009EC68D /* fcCamFw.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5828185D0B4A022A00E5E22D /* fcCamFw.framework */; };
+		A1A088E31815CF63004899C0 /* drift_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088DE1815CF63004899C0 /* drift_tool.cpp */; };
+		A1A088E41815CF63004899C0 /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088E01815CF63004899C0 /* logger.cpp */; };
 		F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */; };
-		F4B88DE917ED3C36003ED742 /* loggers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE817ED3C36003ED742 /* loggers.cpp */; };
 		F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */; };
 /* End PBXBuildFile section */
 
@@ -328,8 +329,13 @@
 		58EC72871749D98B00502727 /* libwx_osx_cocoau_aui-2.9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_aui-2.9.a"; path = "../wxWidgets-2.9.5/Cocoa_32/lib/libwx_osx_cocoau_aui-2.9.a"; sourceTree = "<group>"; };
 		58EE981C13CD0F74009EC68D /* PHD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PHD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58F7157D0B20CC700056770B /* PHDGuideHelp.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = PHDGuideHelp.zip; sourceTree = SOURCE_ROOT; };
+		A1A088DD1815CF1F004899C0 /* calstep_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calstep_dialog.h; sourceTree = "<group>"; };
+		A1A088DE1815CF63004899C0 /* drift_tool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = drift_tool.cpp; sourceTree = "<group>"; };
+		A1A088DF1815CF63004899C0 /* drift_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = drift_tool.h; sourceTree = "<group>"; };
+		A1A088E01815CF63004899C0 /* logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = logger.cpp; sourceTree = "<group>"; };
+		A1A088E11815CF63004899C0 /* logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = logger.h; sourceTree = "<group>"; };
+		A1A088E21815CF63004899C0 /* optionsbutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = optionsbutton.h; sourceTree = "<group>"; };
 		F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calstep_dialog.cpp; sourceTree = "<group>"; };
-		F4B88DE817ED3C36003ED742 /* loggers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = loggers.cpp; sourceTree = "<group>"; };
 		F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = optionsbutton.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -477,8 +483,13 @@
 		58339E1D0B1FC10000109891 = {
 			isa = PBXGroup;
 			children = (
+				A1A088DE1815CF63004899C0 /* drift_tool.cpp */,
+				A1A088DF1815CF63004899C0 /* drift_tool.h */,
+				A1A088E01815CF63004899C0 /* logger.cpp */,
+				A1A088E11815CF63004899C0 /* logger.h */,
+				A1A088E21815CF63004899C0 /* optionsbutton.h */,
+				A1A088DD1815CF1F004899C0 /* calstep_dialog.h */,
 				F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */,
-				F4B88DE817ED3C36003ED742 /* loggers.cpp */,
 				F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */,
 				582818990B4A050700E5E22D /* Frameworks */,
 				58B8CE9016E05F3A00F6E68E /* Libs */,
@@ -675,7 +686,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */,
-				F4B88DE917ED3C36003ED742 /* loggers.cpp in Sources */,
 				F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */,
 				58EE97EB13CD0F74009EC68D /* cam_MeadeDSI.cpp in Sources */,
 				58EE97EC13CD0F74009EC68D /* cam_simulator.cpp in Sources */,
@@ -757,6 +767,8 @@
 				58CA526D17C1CAE2002A20D1 /* scope_onboard_st4.cpp in Sources */,
 				58CA526E17C1CAE2002A20D1 /* scope_oncamera.cpp in Sources */,
 				58CA526F17C1CAE2002A20D1 /* scope_onstepguider.cpp in Sources */,
+				A1A088E31815CF63004899C0 /* drift_tool.cpp in Sources */,
+				A1A088E41815CF63004899C0 /* logger.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
