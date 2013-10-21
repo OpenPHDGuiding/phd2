@@ -54,6 +54,7 @@
  */
 
 class Mount;
+class GraphControlPane;
 
 enum GuideAxis
 {
@@ -78,7 +79,7 @@ public:
     virtual double result(double input) = 0;
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label) { return NULL; };
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) { return NULL; };
     virtual wxString GetSettingsSummary() { return ""; }
     virtual wxString GetGuideAlgorithmClassName(void) const = 0;
     wxString GetConfigPath();

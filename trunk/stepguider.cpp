@@ -90,7 +90,7 @@ wxArrayString StepGuider::List(void)
     return AoList;
 }
 
-StepGuider *StepGuider::Factory(wxString choice)
+StepGuider *StepGuider::Factory(const wxString& choice)
 {
     StepGuider *pReturn = NULL;
 
@@ -1008,6 +1008,37 @@ wxString StepGuider::GetSettingsSummary() {
 wxString StepGuider::GetMountClassName() const
 {
     return wxString("stepguider");
+}
+
+bool StepGuider::IsStepGuider(void) const
+{
+    return true;
+}
+
+const char *StepGuider::DirectionStr(GUIDE_DIRECTION d)
+{
+    // these are used internally in the guide log and event server and are not translated
+    switch (d) {
+    case NONE:  return "None";
+    case UP:    return "Up";
+    case DOWN:  return "Down";
+    case RIGHT: return "Right";
+    case LEFT:  return "Left";
+    default:    return "?";
+    }
+}
+
+const char *StepGuider::DirectionChar(GUIDE_DIRECTION d)
+{
+    // these are used internally in the guide log and event server and are not translated
+    switch (d) {
+    case NONE:  return "-";
+    case UP:    return "U";
+    case DOWN:  return "D";
+    case RIGHT: return "R";
+    case LEFT:  return "L";
+    default:    return "?";
+    }
 }
 
 ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)

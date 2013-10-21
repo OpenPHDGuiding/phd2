@@ -127,26 +127,26 @@ bool GuidingLog::DisableLogging(void)
     return bError;
 }
 
-bool GuidingLog::ChangeDirLog (wxString newdir)
+bool GuidingLog::ChangeDirLog(const wxString& newdir)
 {
-    bool bEnabled = IsEnabled ();
+    bool bEnabled = IsEnabled();
     bool bOk = true;
 
     if (bEnabled)
     {
-        DisableLogging ();                // shut down the old log in its existing location
+        DisableLogging();                  // shut down the old log in its existing location
         Close();
         m_file.Close();                    // above doesn't *really* close the file
-
     }
-    if (!SetLogDir (newdir))
+    if (!SetLogDir(newdir))
     {
         wxMessageBox(wxString::Format("invalid folder name %s, log folder unchanged", newdir));
         bOk = false;
     }
     if (bEnabled)                    // if SetLogDir failed, no harm no foul, stay with original. Otherwise
-        EnableLogging ();            // start fresh...
-    return (bOk);
+        EnableLogging();             // start fresh...
+
+    return bOk;
 }
 
 bool GuidingLog::IsEnabled(void)
@@ -238,7 +238,7 @@ bool GuidingLog::StartCalibration(Mount *pCalibrationMount)
     return bError;
 }
 
-bool GuidingLog::CalibrationFailed(Mount *pCalibrationMount, wxString msg)
+bool GuidingLog::CalibrationFailed(Mount *pCalibrationMount, const wxString& msg)
 {
     bool bError = false;
 
@@ -260,8 +260,8 @@ bool GuidingLog::CalibrationFailed(Mount *pCalibrationMount, wxString msg)
     return bError;
 }
 
-bool GuidingLog::CalibrationStep(Mount *pCalibrationMount, wxString direction,
-    int steps, double dx, double dy, const PHD_Point &xy, double dist)
+bool GuidingLog::CalibrationStep(Mount *pCalibrationMount, const wxString& direction,
+    int steps, double dx, double dy, const PHD_Point& xy, double dist)
 {
     bool bError = false;
 
@@ -289,7 +289,7 @@ bool GuidingLog::CalibrationStep(Mount *pCalibrationMount, wxString direction,
     return bError;
 }
 
-bool GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, wxString direction, double angle, double rate)
+bool GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, const wxString& direction, double angle, double rate)
 {
     bool bError = false;
 
@@ -391,7 +391,7 @@ bool GuidingLog::GuidingHeader(void)
                         pFrame->pGuider->LockPosition().Y,
                         pFrame->pGuider->CurrentPosition().X,
                         pFrame->pGuider->CurrentPosition().Y));
-            m_file.Write("Frame,Time,mount,dx,dy,Theta,RARawDistance,DECRawDistance,RADuration,RAGuideDistance,RADirection,DECDuration,DECGuideDistance,DECDirection,StarMass,SNR,ErrorCode\n");
+            m_file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
 
             Flush();
        }
@@ -414,16 +414,31 @@ bool GuidingLog::GuideStep(const GuideStepInfo& step)
         if (m_enabled)
         {
             assert(m_file.IsOpened());
-            m_file.Write(wxString::Format("%d,%.3f,%s,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%s,%.3f,%.3f,%s,%.f,%.2f,%d\n",
-                    pFrame->m_frameCounter,
-                    (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0,
-                    step.mount->Name(),
-                    step.cameraOffset->X, step.cameraOffset->Y,
-                    step.cameraOffset->Angle(),
-                    step.mountOffset->X, step.mountOffset->Y,
-                    step.durationRA, step.guideDistanceRA, (step.guideDistanceRA > 0.0 ? "E" : step.guideDistanceRA < 0.0 ? "W" : ""),
-                    step.durationDec, step.guideDistanceDec, (step.guideDistanceDec > 0.0 ? "S" : step.guideDistanceDec < 0.0 ? "N" : ""),
-                    pFrame->pGuider->StarMass(), pFrame->pGuider->SNR(), pFrame->pGuider->StarError()));
+
+            m_file.Write(wxString::Format("%d,%.3f,\"%s\",%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
+                pFrame->m_frameCounter, step.time,
+                step.mount->Name(),
+                step.cameraOffset->X, step.cameraOffset->Y,
+                step.mountOffset->X, step.mountOffset->Y,
+                step.guideDistanceRA, step.guideDistanceDec));
+
+            if (step.mount->IsStepGuider())
+            {
+                double xSteps = step.directionRA == LEFT ? -step.durationRA : step.durationRA;
+                double ySteps = step.directionDec == DOWN ? -step.durationDec : step.durationDec;
+                m_file.Write(wxString::Format(",,,,%.f,%.f,", xSteps, ySteps));
+            }
+            else
+            {
+                m_file.Write(wxString::Format("%.3f,%s,%.3f,%s,,,",
+                    step.durationRA, step.durationRA > 0. ? step.mount->DirectionChar((GUIDE_DIRECTION)step.directionRA) : "",
+                    step.durationDec, step.durationDec > 0. ? step.mount->DirectionChar((GUIDE_DIRECTION)step.directionDec): ""));
+            }
+
+            m_file.Write(wxString::Format("%.f,%.2f,%d\n",
+                    pFrame->pGuider->StarMass(), pFrame->pGuider->SNR(),
+                    pFrame->pGuider->StarError()));
+
             Flush();
         }
     }
@@ -524,7 +539,7 @@ bool GuidingLog::ServerSetLockPosition(Guider* guider)
     return bError;
 }
 
-bool GuidingLog::ServerCommand(Guider* guider, wxString cmd)
+bool GuidingLog::ServerCommand(Guider* guider, const wxString& cmd)
 {
     bool bError = false;
 
@@ -545,7 +560,7 @@ bool GuidingLog::ServerCommand(Guider* guider, wxString cmd)
     return bError;
 }
 
-bool GuidingLog::SetGuidingParam(wxString name, double val)
+bool GuidingLog::SetGuidingParam(const wxString& name, double val)
 {
     bool bError = false;
 
@@ -566,7 +581,7 @@ bool GuidingLog::SetGuidingParam(wxString name, double val)
     return bError;
 }
 
-bool GuidingLog::SetGuidingParam(wxString name, int val)
+bool GuidingLog::SetGuidingParam(const wxString& name, int val)
 {
     bool bError = false;
 
@@ -587,7 +602,7 @@ bool GuidingLog::SetGuidingParam(wxString name, int val)
     return bError;
 }
 
-bool GuidingLog::SetGuidingParam(wxString name, wxString val)
+bool GuidingLog::SetGuidingParam(const wxString& name, const wxString& val)
 {
     bool bError = false;
 

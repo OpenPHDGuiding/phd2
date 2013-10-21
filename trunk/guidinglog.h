@@ -50,12 +50,17 @@ enum LOGGED_IMAGE_FORMAT {
 struct GuideStepInfo
 {
     Mount *mount;
+    double time;
     const PHD_Point *cameraOffset;
     const PHD_Point *mountOffset;
     double guideDistanceRA;
     double guideDistanceDec;
     double durationRA;
     double durationDec;
+    // TODO: the following two members are GUIDE_DIRECTION, but we have circular
+    // dependencies in our header files so cannot use GUIDE_DIRECTION here
+    int directionRA;
+    int directionDec;
 };
 
 class GuidingLog : public Logger
@@ -82,25 +87,25 @@ public:
     LOGGED_IMAGE_FORMAT LoggedImageFormat(void);
 
     bool StartCalibration(Mount *pCalibrationMount);
-    bool CalibrationFailed(Mount *pCalibrationMount, wxString msg);
-    bool CalibrationStep(Mount *pCalibrationMount, wxString direction, int steps, double dx, double dy, const PHD_Point &xy, double dist);
-    bool CalibrationDirectComplete(Mount *pCalibrationMount, wxString direction, double angle, double rate);
+    bool CalibrationFailed(Mount *pCalibrationMount, const wxString& msg);
+    bool CalibrationStep(Mount *pCalibrationMount, const wxString& direction, int steps, double dx, double dy, const PHD_Point &xy, double dist);
+    bool CalibrationDirectComplete(Mount *pCalibrationMount, const wxString& direction, double angle, double rate);
     bool CalibrationComplete(Mount *pCalibrationMount);
 
     bool StartGuiding();
     bool GuideStep(const GuideStepInfo& info);
 
-    bool ServerCommand(Guider* guider,  wxString cmd);
+    bool ServerCommand(Guider* guider, const wxString& cmd);
     bool ServerGuidingDithered(Guider* guider, double dx, double dy);
     bool ServerSetLockPosition(Guider* guider);
 
-    bool SetGuidingParam(wxString name, double val);
-    bool SetGuidingParam(wxString name, int val);
-    bool SetGuidingParam(wxString name, wxString val);
+    bool SetGuidingParam(const wxString& name, double val);
+    bool SetGuidingParam(const wxString& name, int val);
+    bool SetGuidingParam(const wxString& name, const wxString& val);
 
     bool StartEntry(void);
 
-    bool ChangeDirLog (wxString newdir);
+    bool ChangeDirLog(const wxString& newdir);
 
 protected:
     bool GuidingHeader(void);

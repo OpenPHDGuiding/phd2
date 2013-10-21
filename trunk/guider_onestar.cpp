@@ -658,9 +658,9 @@ wxString GuiderOneStar::GetSettingsSummary()
     wxString s = wxString::Format(_T("Search region = %d px, Star mass tolerance "), GetSearchRegion());
 
     if (GetMassChangeThresholdEnabled())
-        s += wxString::Format(_T(" = %.1f%%\n"), GetMassChangeThreshold() * 100.0);
+        s += wxString::Format(_T("= %.1f%%\n"), GetMassChangeThreshold() * 100.0);
     else
-        s += _T(" disabled\n");
+        s += _T("disabled\n");
 
     return s;
 }

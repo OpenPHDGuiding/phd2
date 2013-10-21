@@ -264,7 +264,7 @@ wxArrayString Scope::List(void)
     return ScopeList;
 }
 
-Scope *Scope::Factory(wxString choice)
+Scope *Scope::Factory(const wxString& choice)
 {
     Scope *pReturn = NULL;
 
@@ -871,12 +871,12 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     MountConfigDialogPane::UnloadValues();
 }
 
-GraphControlPane *Scope::GetGraphControlPane(wxWindow *pParent, wxString label)
+GraphControlPane *Scope::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new ScopeGraphControlPane(pParent, this, label);
 }
 
-Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pScope, wxString label)
+Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pScope, const wxString& label)
     : GraphControlPane(pParent, label)
 {
     int width;

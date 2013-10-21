@@ -72,7 +72,7 @@ static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *
     return pane;
 }
 
-Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, wxString title, Mount *pMount)
+Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount)
     : ConfigDialogPane(wxString::Format(_("%s Settings"),title), pParent)
 {
     int width;
@@ -517,8 +517,8 @@ bool Mount::FlipCalibration(void)
 
         bool decFlipRequired = CalibrationFlipRequiresDecFlip();
 
-        Debug.AddLine("FlipCalibration before: x=%.2f, y=%.2f decFlipRequired=%d sideOfPier=%s",
-            origX, origY, decFlipRequired, PierSideStr(m_calPierSide));
+        Debug.AddLine(wxString::Format("FlipCalibration before: x=%.2f, y=%.2f decFlipRequired=%d sideOfPier=%s",
+            origX, origY, decFlipRequired, PierSideStr(m_calPierSide)));
 
         double newX = origX + M_PI;
         double newY = origY;
@@ -537,7 +537,8 @@ bool Mount::FlipCalibration(void)
         PierSide priorPierSide = m_calPierSide;
         PierSide newPierSide = OppositeSide(m_calPierSide);
 
-        Debug.AddLine("FlipCalibration after: x=%.2f, y=%.2f sideOfPier=%s", newX, newY, PierSideStr(newPierSide));
+        Debug.AddLine(wxString::Format("FlipCalibration after: x=%.2f, y=%.2f sideOfPier=%s",
+            newX, newY, PierSideStr(newPierSide)));
 
         SetCalibration(newX, newY, m_calXRate, m_yRate, m_calDeclination, newPierSide);
 
@@ -634,20 +635,21 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         GuideStepInfo info;
 
         info.mount = this;
+        info.time = (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0;
         info.cameraOffset = &cameraVectorEndpoint;
         info.mountOffset = &mountVectorEndpoint;
         info.guideDistanceRA = xDistance;
         info.guideDistanceDec = yDistance;
         info.durationRA = actualXAmount;
+        info.directionRA = xDirection;
         info.durationDec = actualYAmount;
+        info.directionDec = yDirection;
 
         GuideLog.GuideStep(info);
         EvtServer.NotifyGuideStep(info);
 
         if (normalMove)
         {
-            double const raDuration = xDirection == LEFT ? -actualXAmount : actualXAmount;
-            double const decDuration = yDirection == DOWN ? -actualYAmount : actualYAmount;
             pFrame->pGraphLog->AppendData(info);
             pFrame->pTarget->AppendData(info);
         }
@@ -804,7 +806,7 @@ GraphControlPane *Mount::GetYGuideAlgorithmControlPane(wxWindow *pParent)
     return m_pYGuideAlgorithm->GetGraphControlPane(pParent, _("DEC:"));
 }
 
-GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, wxString label)
+GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return NULL;
 };
@@ -883,6 +885,37 @@ bool Mount::SynchronousOnly(void)
 const wxString& Mount::Name(void) const
 {
     return m_Name;
+}
+
+bool Mount::IsStepGuider(void) const
+{
+    return false;
+}
+
+const char *Mount::DirectionStr(GUIDE_DIRECTION d)
+{
+    // these are used internally in the guide log and event server and are not translated
+    switch (d) {
+    case NONE:  return "None";
+    case NORTH: return "North";
+    case SOUTH: return "South";
+    case EAST:  return "East";
+    case WEST:  return "West";
+    default:    return "?";
+    }
+}
+
+const char *Mount::DirectionChar(GUIDE_DIRECTION d)
+{
+    // these are used internally in the guide log and event server and are not translated
+    switch (d) {
+    case NONE:  return "-";
+    case NORTH: return "N";
+    case SOUTH: return "S";
+    case EAST:  return "E";
+    case WEST:  return "W";
+    default:    return "?";
+    }
 }
 
 bool Mount::IsCalibrated()

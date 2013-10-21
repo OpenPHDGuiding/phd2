@@ -110,19 +110,22 @@ protected:
 
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual wxString GetSettingsSummary();
-    virtual wxString GetMountClassName() const;
+    virtual wxString GetSettingsSummary(void);
+    virtual wxString GetMountClassName(void) const;
+    virtual bool IsStepGuider(void) const;
+    virtual const char *DirectionStr(GUIDE_DIRECTION d);
+    virtual const char *DirectionChar(GUIDE_DIRECTION d);
 
 public:
     StepGuider(void);
     virtual ~StepGuider(void);
 
     static wxArrayString List(void);
-    static StepGuider *Factory(wxString choice);
+    static StepGuider *Factory(const wxString& choice);
 
     virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide);
-    virtual bool BeginCalibration(const PHD_Point &currentLocation);
-    bool UpdateCalibrationState(const PHD_Point &currentLocation);
+    virtual bool BeginCalibration(const PHD_Point& currentLocation);
+    bool UpdateCalibrationState(const PHD_Point& currentLocation);
     virtual void ClearCalibration(void);
 
     virtual bool Connect(void);

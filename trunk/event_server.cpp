@@ -452,18 +452,28 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
     Ev ev("GuideStep");
 
     ev << NV("Frame", (int) pFrame->m_frameCounter)
-       << NV("Time", (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0, 3)
+       << NV("Time", step.time, 3)
        << NV("mount", step.mount->Name())
        << NV("dx", step.cameraOffset->X, 3)
        << NV("dy", step.cameraOffset->Y, 3)
-       << NV("Theta", step.cameraOffset->Angle(), 3)
        << NV("RADistanceRaw", step.mountOffset->X, 3)
        << NV("DECDistanceRaw", step.mountOffset->Y, 3)
        << NV("RADistanceGuide", step.guideDistanceRA, 3)
-       << NV("DECDistanceGuide", step.guideDistanceDec, 3)
-       << NV("RADuration", step.durationRA, 3)
-       << NV("DECDuration", step.durationDec, 3)
-       << NV("StarMass", pFrame->pGuider->StarMass(), 0)
+       << NV("DECDistanceGuide", step.guideDistanceDec, 3);
+
+    if (step.durationRA > 0.)
+    {
+       ev << NV("RADuration", step.durationRA, 3)
+          << NV("RADirection", step.mount->DirectionStr((GUIDE_DIRECTION)step.directionRA));
+    }
+
+    if (step.durationDec > 0.)
+    {
+        ev << NV("DECDuration", step.durationDec, 3)
+           << NV("DECDirection", step.mount->DirectionStr((GUIDE_DIRECTION)step.directionDec));
+    }
+
+    ev << NV("StarMass", pFrame->pGuider->StarMass(), 0)
        << NV("SNR", pFrame->pGuider->SNR(), 2);
 
     int errorCode = pFrame->pGuider->StarError();
