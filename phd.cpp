@@ -55,7 +55,6 @@ wxTextFile *LogFile;
 bool Log_Data = false;
 #endif
 
-int AdvDlg_fontsize = 0;
 int XWinSize = 640;
 int YWinSize = 512;
 
@@ -119,7 +118,7 @@ bool PhdApp::OnInit() {
     }
     setlocale(LC_NUMERIC, "English");
 
-	pConfig->InitializeProfile();
+    pConfig->InitializeProfile();
 
     pFrame = new MyFrame(m_instanceNumber, &m_locale);
 

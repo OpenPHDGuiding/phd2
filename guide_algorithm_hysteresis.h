@@ -40,7 +40,7 @@
 #ifndef GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED
 #define GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED
 
-class GuideAlgorithmHysteresis:GuideAlgorithm
+class GuideAlgorithmHysteresis : GuideAlgorithm
 {
     double m_minMove;
     double m_hysteresis;

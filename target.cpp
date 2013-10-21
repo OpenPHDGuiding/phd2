@@ -238,14 +238,14 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     wxSize sl;
     radius_max -= 18;
 
-	for (int i = 1 ; i <= 4 ; i++)
-	{
-		double rr = radius_max / 4;
-		dc.DrawCircle(center, rr*i);
-		l = wxString::Format(_T("%g%s"), i/2.0 / m_zoom, sampling != 1 ? "''" : "");
-		sl = dc.GetTextExtent(l);
-		dc.DrawText(l, center.x - sl.x - 1, center.y - rr*i - sl.y);
-	}
+    for (int i = 1 ; i <= 4 ; i++)
+    {
+        double rr = radius_max / 4;
+        dc.DrawCircle(center, rr*i);
+        l = wxString::Format(_T("%g%s"), i/2.0 / m_zoom, sampling != 1 ? "''" : "");
+        sl = dc.GetTextExtent(l);
+        dc.DrawText(l, center.x - sl.x - 1, center.y - rr*i - sl.y);
+    }
 
     // Draw axes
     dc.DrawLine(3, center.y , size.x - 3, center.y);

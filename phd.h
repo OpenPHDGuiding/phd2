@@ -113,9 +113,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #define USE_LOOPBACK_SERIAL
 #endif
 
-#define CROPXSIZE 100
-#define CROPYSIZE 100
-
 #define ROUND(x) (int) floor(x + 0.5)
 
 /* eliminate warnings for unused variables */
@@ -189,7 +186,6 @@ extern bool Log_Data;
 #endif
 
 // these seem to be the windowing/display related globals
-extern int AdvDlg_fontsize;
 extern int XWinSize;
 extern int YWinSize;
 

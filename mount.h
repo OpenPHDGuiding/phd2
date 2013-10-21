@@ -97,7 +97,7 @@ protected:
         ConfigDialogPane *m_pYGuideAlgorithmConfigDialogPane;
 
     public:
-        MountConfigDialogPane(wxWindow *pParent, wxString title, Mount *pMount);
+        MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount);
         ~MountConfigDialogPane(void);
 
         virtual void LoadValues(void);
@@ -151,7 +151,7 @@ public:
 
     GraphControlPane *GetXGuideAlgorithmControlPane(wxWindow *pParent);
     GraphControlPane *GetYGuideAlgorithmControlPane(wxWindow *pParent);
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
 
     void AdjustCalibrationForScopePointing(void);
 
@@ -182,6 +182,9 @@ public:
     virtual bool SynchronousOnly(void);
 
     virtual const wxString& Name(void) const;
+    virtual bool IsStepGuider() const;
+    virtual const char *DirectionStr(GUIDE_DIRECTION d);
+    virtual const char *DirectionChar(GUIDE_DIRECTION d);
 
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);

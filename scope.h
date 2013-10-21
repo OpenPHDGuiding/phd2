@@ -92,7 +92,7 @@ protected:
     class ScopeGraphControlPane : public GraphControlPane
     {
     public:
-        ScopeGraphControlPane(wxWindow *pParent, Scope *pScope, wxString label);
+        ScopeGraphControlPane(wxWindow *pParent, Scope *pScope, const wxString& label);
         ~ScopeGraphControlPane(void);
 
     private:
@@ -122,12 +122,12 @@ protected:
 
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, wxString label);
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();
     virtual wxString GetMountClassName() const;
 
     static wxArrayString List(void);
-    static Scope *Factory(wxString choice);
+    static Scope *Factory(const wxString& choice);
 
 public:
     Scope(void);
