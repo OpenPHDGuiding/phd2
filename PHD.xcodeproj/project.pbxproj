@@ -803,6 +803,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CFITSIO = ../cfitsio;
 				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
@@ -820,26 +821,29 @@
 					"$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9",
 					"$(WXDIR)/include",
 					./cameras,
-					/Users/stark/dev/cfitsio,
-					"/Users/stark/dev/libdc1394-2.0.0-rc7",
+					"$(CFITSIO)",
+					"$(LIBDC)",
+					"$(LIBUSB)/include",
 				);
 				INFOPLIST_FILE = "PHD-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBDC = "../libdc1394-2.0.0-rc7";
 				LIBRARY_SEARCH_PATHS = (
 					"$(WXDIR)/Cocoa_32/lib",
-					/Users/stark/dev/cfitsio,
+					"$(CFITSIO)",
 					./cameras,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_5)",
-					/usr/local/lib,
 					"\"$(SRCROOT)/cameras\"",
+					"$(LIBUSB)/lib",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/cameras\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_5 = "\"$(SRCROOT)\"";
+				LIBUSB = "../libusb-1.0.9";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_CFLAGS = (
 					"-D__WXMAC__",
@@ -867,14 +871,15 @@
 					"-lz",
 					"-lpthread",
 					"-lusb",
+					"-lusb-1.0",
 					"-liconv",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = PHD;
 				SDKROOT = macosx10.7;
-				USER_HEADER_SEARCH_PATHS = "$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9 $(WXDIR)/include /Users/stark/dev/cfitsio /Users/stark/dev/libdc1394-2.0.0-rc7 /Users/stark/dev/HID\\ Utilities\\ Source/";
+				USER_HEADER_SEARCH_PATHS = "$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9 $(WXDIR)/include $(CFITSIO) $(LIBDC) ../HID\\ Utilities\\ Source/ $(LIBUSB)/include";
 				WRAPPER_EXTENSION = app;
-				WXDIR = /Users/stark/dev/wxWidgets;
+				WXDIR = ../wxWidgets;
 				ZERO_LINK = NO;
 			};
 			name = Debug;
@@ -883,6 +888,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CFITSIO = ../cfitsio;
 				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
@@ -898,26 +904,29 @@
 					"$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9",
 					"$(WXDIR)/include",
 					./cameras,
-					/Users/stark/dev/cfitsio,
-					"/Users/stark/dev/libdc1394-2.0.0-rc7",
+					"$(CFITSIO)",
+					"$(LIBDC)",
+					"$(LIBUSB)/include",
 				);
 				INFOPLIST_FILE = "PHD-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBDC = "../libdc1394-2.0.0-rc7";
 				LIBRARY_SEARCH_PATHS = (
 					"$(WXDIR)/Cocoa_32/lib",
-					/Users/stark/dev/cfitsio,
+					"$(CFITSIO)",
 					./cameras,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_5)",
-					/usr/local/lib,
 					"\"$(SRCROOT)/cameras\"",
+					"$(LIBUSB)/lib",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/cameras\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_5 = "\"$(SRCROOT)\"";
+				LIBUSB = "../libusb-1.0.9";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_CFLAGS = (
 					"-D__WXMAC__",
@@ -945,14 +954,15 @@
 					"-lz",
 					"-lpthread",
 					"-lusb",
+					"-lusb-1.0",
 					"-liconv",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = PHD;
 				SDKROOT = macosx10.7;
-				USER_HEADER_SEARCH_PATHS = "$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9 $(WXDIR)/include /Users/stark/dev/cfitsio /Users/stark/dev/libdc1394-2.0.0-rc7 /Users/stark/dev/HID\\ Utilities\\ Source/";
+				USER_HEADER_SEARCH_PATHS = "$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-2.9 $(WXDIR)/include $(CFITSIO) $(LIBDC) ../HID\\ Utilities\\ Source/ $(LIBUSB)/include";
 				WRAPPER_EXTENSION = app;
-				WXDIR = /Users/stark/dev/wxWidgets;
+				WXDIR = ../wxWidgets;
 				ZERO_LINK = NO;
 			};
 			name = Release;
