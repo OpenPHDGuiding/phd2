@@ -885,7 +885,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     const int xPixelsPerDivision = size.x/2/(xDivisions+1);
     const int yPixelsPerDivision = size.y/2/(m_yDivisions+1);
 
-    const double sampling = pFrame->GetCameraPixelScale();
+    const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
     GRAPH_UNITS units = m_heightUnits;
     if (sampling == 1.0)
     {
