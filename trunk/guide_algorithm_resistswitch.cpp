@@ -238,7 +238,7 @@ void GuideAlgorithmResistSwitch::
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 }
 
-GraphControlPane *GuideAlgorithmResistSwitch::GetGraphControlPane(wxWindow *pParent, wxString label)
+GraphControlPane *GuideAlgorithmResistSwitch::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new GuideAlgorithmResistSwitchGraphControlPane(pParent, this, label);
 }
