@@ -231,7 +231,7 @@ void GuideAlgorithmLowpass::
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 }
 
-GraphControlPane *GuideAlgorithmLowpass::GetGraphControlPane(wxWindow *pParent, wxString label)
+GraphControlPane *GuideAlgorithmLowpass::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new GuideAlgorithmLowpassGraphControlPane(pParent, this, label);
 }

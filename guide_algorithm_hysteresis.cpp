@@ -257,7 +257,7 @@ UnloadValues(void)
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 }
 
-GraphControlPane *GuideAlgorithmHysteresis::GetGraphControlPane(wxWindow *pParent, wxString label)
+GraphControlPane *GuideAlgorithmHysteresis::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new GuideAlgorithmHysteresisGraphControlPane(pParent, this, label);
 }
