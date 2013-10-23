@@ -36,7 +36,7 @@
 #define ADVANCED_DIALOG_H_INCLUDED
 
 class AdvancedDialog: public wxDialog {
-    wxNotebook *m_pNotebook;
+    wxBookCtrlBase *m_pNotebook;
     ConfigDialogPane *m_pFramePane;
     ConfigDialogPane *m_pMountPane;
     ConfigDialogPane *m_pSecondaryMountPane;

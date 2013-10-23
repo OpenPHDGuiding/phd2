@@ -34,11 +34,15 @@
 
 #include "phd.h"
 
+#if defined(__WXOSX__)
+# include <wx/choicebk.h>
+#endif
+
 // a place to save id of selected panel so we can select the same panel next time the dialog is opened
 static int s_selectedPage = -1;
 
-AdvancedDialog::AdvancedDialog():
-wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
+AdvancedDialog::AdvancedDialog() :
+    wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     /*
      * the advanced dialog is made up of a number of "on the fly" generated slices that configure different things.
@@ -67,7 +71,11 @@ wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize
      *
      */
 
+#if defined(__WXOSX__)
+    m_pNotebook = new wxChoicebook(this, wxID_ANY);
+#else
     m_pNotebook = new wxNotebook(this, wxID_ANY);
+#endif
 
     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
