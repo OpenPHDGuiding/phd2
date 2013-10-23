@@ -63,8 +63,14 @@ BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_CHECKBOX(CHECKBOX_GRAPH_CORRECTIONS,GraphLogWindow::OnCheckboxCorrections)
 END_EVENT_TABLE()
 
-GraphLogWindow::GraphLogWindow(wxWindow *parent):
-wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESIZE,_T("Graph"))
+#ifdef __WXOSX__
+# define OSX_SMALL_FONT(lbl) do { (lbl)->SetFont(*wxSMALL_FONT); } while (0)
+#else
+# define OSX_SMALL_FONT(lbl)
+#endif
+
+GraphLogWindow::GraphLogWindow(wxWindow *parent) :
+    wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESIZE,_T("Graph"))
 {
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
@@ -108,7 +114,7 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     pMainSizer->Add(m_pControlSizer, wxSizerFlags().Expand().Border(wxALL, 10));
 
     m_visible = false;
-    SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+
     SetBackgroundColour(*wxBLACK);
 
     m_pLengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
@@ -131,15 +137,25 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     pButtonSizer->Add(m_pClearButton, wxSizerFlags().Expand());
 
     m_pCheckboxTrendlines = new wxCheckBox(this,CHECKBOX_GRAPH_TRENDLINES,_("Trendlines"));
+#if defined(__WXOSX__)
+    // workaround inability to set checkbox foreground color
+    m_pCheckboxTrendlines->SetBackgroundColour(wxColor(200, 200, 200));
+#else
     m_pCheckboxTrendlines->SetForegroundColour(*wxLIGHT_GREY);
+#endif
     m_pCheckboxTrendlines->SetToolTip(_("Plot trend lines"));
-    pButtonSizer->Add(m_pCheckboxTrendlines);
+    pButtonSizer->Add(m_pCheckboxTrendlines, wxSizerFlags().Expand().Border(wxTOP, 1));
 
     m_pCheckboxCorrections = new wxCheckBox(this,CHECKBOX_GRAPH_CORRECTIONS,_("Corrections"));
+#if defined(__WXOSX__)
+    // workaround inability to set checkbox foreground color
+    m_pCheckboxCorrections->SetBackgroundColour(wxColor(200, 200, 200));
+#else
     m_pCheckboxCorrections->SetForegroundColour(*wxLIGHT_GREY);
+#endif
     m_pCheckboxCorrections->SetToolTip(_("Display mount corrections"));
     m_pCheckboxCorrections->SetValue(m_pClient->m_showCorrections);
-    pButtonSizer->Add(m_pCheckboxCorrections);
+    pButtonSizer->Add(m_pCheckboxCorrections, wxSizerFlags().Expand());
 
     wxBoxSizer *pLabelSizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -160,15 +176,20 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     wxStaticText *lbl;
 
     lbl = new wxStaticText(this, wxID_ANY, _("RMS Error:"), wxDefaultPosition, wxDefaultSize);
+    OSX_SMALL_FONT(lbl);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
     pButtonSizer->Add(lbl);
 
+    wxSize size1 = GetTextExtent(_T("XXXX"));
+
     wxBoxSizer *szRaRMS = new wxBoxSizer(wxHORIZONTAL);
-    lbl = new wxStaticText(this, wxID_ANY, _("RA"), wxDefaultPosition, wxSize(24,-1), wxALIGN_RIGHT);
+    lbl = new wxStaticText(this, wxID_ANY, _("RA"), wxDefaultPosition, size1, wxALIGN_RIGHT);
+    OSX_SMALL_FONT(lbl);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
     m_pClient->m_pRaRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80,-1));
+    OSX_SMALL_FONT(m_pClient->m_pRaRMS);
     m_pClient->m_pRaRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pRaRMS->SetBackgroundColour(*wxBLACK);
     szRaRMS->Add(lbl, wxSizerFlags().Border(wxRIGHT, 5));
@@ -176,10 +197,12 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     pButtonSizer->Add(szRaRMS);
 
     wxBoxSizer *szDecRMS = new wxBoxSizer(wxHORIZONTAL);
-    lbl = new wxStaticText(this, wxID_ANY, _("Dec"), wxDefaultPosition, wxSize(24,-1), wxALIGN_RIGHT);
+    lbl = new wxStaticText(this, wxID_ANY, _("Dec"), wxDefaultPosition, size1, wxALIGN_RIGHT);
+    OSX_SMALL_FONT(lbl);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
     m_pClient->m_pDecRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80,-1));
+    OSX_SMALL_FONT(m_pClient->m_pDecRMS);
     m_pClient->m_pDecRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pDecRMS->SetBackgroundColour(*wxBLACK);
     szDecRMS->Add(lbl, wxSizerFlags().Border(wxRIGHT, 5));
@@ -187,10 +210,12 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     pButtonSizer->Add(szDecRMS);
 
     wxBoxSizer *szTotRMS = new wxBoxSizer(wxHORIZONTAL);
-    lbl = new wxStaticText(this, wxID_ANY, _("Tot"), wxDefaultPosition, wxSize(24,-1), wxALIGN_RIGHT);
+    lbl = new wxStaticText(this, wxID_ANY, _("Tot"), wxDefaultPosition, size1, wxALIGN_RIGHT);
+    OSX_SMALL_FONT(lbl);
     lbl->SetForegroundColour(*wxLIGHT_GREY);
     lbl->SetBackgroundColour(*wxBLACK);
     m_pClient->m_pTotRMS = new wxStaticText(this, wxID_ANY, _T("0.00"), wxDefaultPosition, wxSize(80,-1));
+    OSX_SMALL_FONT(m_pClient->m_pTotRMS);
     m_pClient->m_pTotRMS->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pTotRMS->SetBackgroundColour(*wxBLACK);
     szTotRMS->Add(lbl, wxSizerFlags().Border(wxRIGHT, 5));
@@ -198,6 +223,7 @@ wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESI
     pButtonSizer->Add(szTotRMS);
 
     m_pClient->m_pOscIndex = new wxStaticText(this, wxID_ANY, _("RA Osc: 0.00"));
+    OSX_SMALL_FONT(m_pClient->m_pOscIndex);
     m_pClient->m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
     m_pClient->m_pOscIndex->SetBackgroundColour(*wxBLACK);
     pButtonSizer->Add(m_pClient->m_pOscIndex);
@@ -915,7 +941,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     // Draw horiz rule (scale is 1 pixel error per 25 pixels) + scale labels
     dc.SetPen(GreyDashPen);
     dc.SetTextForeground(*wxLIGHT_GREY);
-#if defined (__APPLE__)
+#if defined(__WXOSX__)
     dc.SetFont(*wxSMALL_FONT);
 #else
     dc.SetFont(*wxSWISS_FONT);
@@ -1119,11 +1145,8 @@ GraphControlPane::GraphControlPane(wxWindow *pParent, const wxString& label)
     wxFont f = pLabel->GetFont();
     f.SetWeight(wxBOLD);
     pLabel->SetFont(f);
-#ifdef __WINDOWS__
-    pLabel->SetOwnForegroundColour(*wxWHITE);
-#else
-    pLabel->SetOwnBackgroundColour(*wxBLACK);
-#endif
+    pLabel->SetForegroundColour(*wxWHITE);
+    pLabel->SetBackgroundColour(*wxBLACK);
 
     m_pControlSizer->Add(pLabel, wxSizerFlags().Right());
     SetSizer(m_pControlSizer);
@@ -1145,11 +1168,8 @@ int GraphControlPane::StringWidth(const wxString& string)
 void GraphControlPane::DoAdd(wxControl *pCtrl, const wxString& lbl)
 {
     wxStaticText *pLabel = new wxStaticText(this,wxID_ANY,lbl);
-#ifdef __WINDOWS__
-    pLabel->SetOwnForegroundColour(*wxWHITE);
-#else
-    pLabel->SetOwnBackgroundColour(*wxBLACK);
-#endif
+    pLabel->SetForegroundColour(*wxWHITE);
+    pLabel->SetBackgroundColour(*wxBLACK);
 
     m_pControlSizer->Add(pLabel, wxSizerFlags().Right());
     m_pControlSizer->AddSpacer(5);
