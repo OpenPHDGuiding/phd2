@@ -938,17 +938,31 @@ void MyFrame::OnCharHook(wxKeyEvent& evt)
     {
         if (!evt.GetEventObject()->IsKindOf(wxCLASSINFO(wxTextCtrl)))
         {
-            if (!evt.HasModifiers())
+            int modifiers;
+#ifdef __WXOSX__
+            modifiers = 0;
+            if (wxGetKeyState(WXK_ALT))
+                modifiers |= wxMOD_ALT;
+            if (wxGetKeyState(WXK_CONTROL))
+                modifiers |= wxMOD_CONTROL;
+            if (wxGetKeyState(WXK_SHIFT))
+                modifiers |= wxMOD_SHIFT;
+            if (wxGetKeyState(WXK_RAW_CONTROL))
+                modifiers |= wxMOD_RAW_CONTROL;
+#else
+            modifiers = evt.GetModifiers();
+#endif
+            if (!modifiers)
             {
                 pGuider->ToggleShowBookmarks();
                 handled = true;
             }
-            else if (evt.GetModifiers() == wxMOD_CONTROL)
+            else if (modifiers == wxMOD_CONTROL)
             {
                 pGuider->DeleteAllBookmarks();
                 handled = true;
             }
-            else if (evt.GetModifiers() == wxMOD_SHIFT)
+            else if (modifiers == wxMOD_SHIFT)
             {
                 pGuider->BookmarkLockPosition();
                 handled = true;
