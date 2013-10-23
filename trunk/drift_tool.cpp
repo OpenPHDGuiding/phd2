@@ -144,6 +144,9 @@ DriftToolWin::DriftToolWin()
     instrSizer->Add(m_bmp, 0, wxALIGN_CENTER_VERTICAL|wxFIXED_MINSIZE, 5);
 
     m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(300,90), wxALIGN_LEFT|wxST_NO_AUTORESIZE);
+#ifdef __WXOSX__
+    m_instructions->SetFont(*wxSMALL_FONT);
+#endif
     m_instructions->Wrap(-1);
     instrSizer->Add(m_instructions, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
