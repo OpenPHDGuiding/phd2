@@ -527,8 +527,10 @@ void MyFrame::LoadProfileSettings(void)
     bool ditherRaOnly = pConfig->Profile.GetBoolean("/DitherRaOnly", DefaultDitherRaOnly);
     SetDitherRaOnly(ditherRaOnly);
 
-    int timeLapse   = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
+    int timeLapse = pConfig->Profile.GetInt("/frame/timeLapse", DefaultTimelapse);
     SetTimeLapse(timeLapse);
+
+    SetAutoLoadCalibration(pConfig->Profile.GetBoolean("/AutoLoadCalibration", false));
 
     int focalLength = pConfig->Profile.GetInt("/frame/focalLength", DefaultTimelapse);
     SetFocalLength(focalLength);
@@ -1103,6 +1105,48 @@ bool MyFrame::SetDitherRaOnly(bool ditherRaOnly)
     return bError;
 }
 
+bool MyFrame::GetAutoLoadCalibration(void)
+{
+    return m_autoLoadCalibration;
+}
+
+void MyFrame::SetAutoLoadCalibration(bool val)
+{
+    if (m_autoLoadCalibration != val)
+    {
+        m_autoLoadCalibration = val;
+        pConfig->Profile.SetBoolean("/AutoLoadCalibration", m_autoLoadCalibration);
+    }
+}
+
+static void load_calibration(Mount *mnt)
+{
+    wxString prefix = "/" + mnt->GetMountClassName() + "/calibration/";
+    if (!pConfig->Profile.HasEntry(prefix + "timestamp"))
+        return;
+    double xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
+    double yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+    double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
+    double yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", M_PI/2.0);
+    double declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
+    int t = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
+    PierSide pierSide = t == PIER_SIDE_EAST ? PIER_SIDE_EAST :
+        t == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
+    mnt->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pierSide);
+}
+
+void MyFrame::LoadCalibration(void)
+{
+    if (pMount)
+    {
+        load_calibration(pMount);
+    }
+    if (pSecondaryMount)
+    {
+        load_calibration(pSecondaryMount);
+    }
+}
+
 bool MyFrame::GetServerMode(void)
 {
     return m_serverMode;
@@ -1339,29 +1383,29 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
           wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 
     // Log directory location - use a group box with a wide text edit control on top and a centered 'browse' button below it
-    wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer (wxVERTICAL, pParent, _("Log File Location"));
-    wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, pParent, _("Log File Location"));
+    wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
 
     m_pLogDir = new wxTextCtrl(pParent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(250, -1));
-    m_pLogDir->SetToolTip (_("Folder for guide and debug logs; empty string to restore the default location"));
+    m_pLogDir->SetToolTip(_("Folder for guide and debug logs; empty string to restore the default location"));
     wxButton *pSelectDir = new wxButton(pParent, wxID_OK, _("Browse...") );
-    pButtonSizer->Add (pSelectDir, wxSizerFlags(0).Center());
-    pSelectDir->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &MyFrame::MyFrameConfigDialogPane::OnDirSelect, this);
+    pButtonSizer->Add(pSelectDir, wxSizerFlags(0).Center());
+    pSelectDir->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &MyFrame::MyFrameConfigDialogPane::OnDirSelect, this);
 
-    pInputGroupBox->Add (m_pLogDir, wxSizerFlags(0).Expand());
-    pInputGroupBox->Add (pButtonSizer, wxSizerFlags(0).Center().Border(wxTop, 20));
-    MyFrameConfigDialogPane::Add (pInputGroupBox);
+    pInputGroupBox->Add(m_pLogDir, wxSizerFlags(0).Expand());
+    pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Center().Border(wxTop, 20));
+    MyFrameConfigDialogPane::Add(pInputGroupBox);
 
+    m_pAutoLoadCalibration = new wxCheckBox(pParent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
+    DoAdd(m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
 }
 
-void MyFrame::MyFrameConfigDialogPane::OnDirSelect (wxCommandEvent& evt)
+void MyFrame::MyFrameConfigDialogPane::OnDirSelect(wxCommandEvent& evt)
 {
-    wxString sRtn = wxDirSelector("Choose a location", m_pLogDir->GetValue ());
+    wxString sRtn = wxDirSelector("Choose a location", m_pLogDir->GetValue());
 
     if (sRtn.Len() > 0)
         m_pLogDir->SetValue (sRtn);
-
-
 }
 
 MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
@@ -1384,7 +1428,8 @@ void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
     m_oldLanguageChoice = m_LanguageIDs.Index(language);
     m_pLanguage->SetSelection(m_oldLanguageChoice);
 
-    m_pLogDir->SetValue (GuideLog.GetLogDir ());
+    m_pLogDir->SetValue(GuideLog.GetLogDir());
+    m_pAutoLoadCalibration->SetValue(m_pFrame->GetAutoLoadCalibration());
 }
 
 void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
@@ -1429,12 +1474,14 @@ void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
             wxMessageBox(_("You must restart PHD for the language change to take effect."),_("Info"));
         }
 
-        wxString newdir = m_pLogDir->GetValue ();
-        if (!newdir.IsSameAs (GuideLog.GetLogDir()))
+        wxString newdir = m_pLogDir->GetValue();
+        if (!newdir.IsSameAs(GuideLog.GetLogDir()))
         {
-            GuideLog.ChangeDirLog (newdir);
-            Debug.ChangeDirLog (newdir);
+            GuideLog.ChangeDirLog(newdir);
+            Debug.ChangeDirLog(newdir);
         }
+
+        m_pFrame->SetAutoLoadCalibration(m_pAutoLoadCalibration->GetValue());
     }
     catch (wxString Msg)
     {

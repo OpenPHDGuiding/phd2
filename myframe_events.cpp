@@ -852,6 +852,22 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
             throw ERROR_INFO("Unable to guide with state < STATE_SELECTED");
         }
 
+        if (wxGetKeyState(WXK_SHIFT))
+        {
+            bool recalibrate = true;
+            if (pMount->IsCalibrated() || (pSecondaryMount && pSecondaryMount->IsCalibrated()))
+            {
+                recalibrate = ConfirmDialog::Confirm(_("Are you sure you want force recalibration?"),
+                    "/force_recalibration_ok", _("Force Recalibration"));
+            }
+            if (recalibrate)
+            {
+                pMount->ClearCalibration();
+                if (pSecondaryMount)
+                    pSecondaryMount->ClearCalibration();
+            }
+        }
+
         pGuider->StartGuiding();
 
         StartCapturing();

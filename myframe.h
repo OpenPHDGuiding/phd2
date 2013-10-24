@@ -79,6 +79,7 @@ protected:
         wxArrayInt m_LanguageIDs;
         int m_oldLanguageChoice;
         wxTextCtrl *m_pLogDir;
+        wxCheckBox *m_pAutoLoadCalibration;
 
         void OnDirSelect(wxCommandEvent& evt);
 
@@ -100,7 +101,7 @@ protected:
     bool SetDitherRaOnly(bool ditherRaOnly);
 
     bool GetServerMode(void);
-    bool SetServerMode(bool ditherRaOnly);
+    bool SetServerMode(bool val);
 
     bool SetTimeLapse(int timeLapse);
     int GetTimeLapse(void);
@@ -108,6 +109,8 @@ protected:
     bool SetFocalLength(int focalLength);
 
     bool SetLanguage(int language);
+
+    void SetAutoLoadCalibration(bool val);
 
     friend class MyFrameConfigDialogPane;
     friend class WorkerThread;
@@ -120,6 +123,7 @@ private:
     int  m_timeLapse;       // Delay between frames (useful for vid cameras)
     int  m_focalLength;
     double m_sampling;
+    bool m_autoLoadCalibration;
     int m_instanceNumber;
 
     wxAuiManager m_mgr;
@@ -211,6 +215,8 @@ public:
     void LoadDarkFrames(const wxString& filename);
     int GetFocalLength(void);
     int GetLanguage(void);
+    bool GetAutoLoadCalibration(void);
+    void LoadCalibration(void);
     int GetInstanceNumber() const { return m_instanceNumber; }
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
