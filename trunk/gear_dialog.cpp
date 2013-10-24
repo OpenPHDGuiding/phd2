@@ -330,6 +330,16 @@ void GearDialog::EndModal(int retCode)
     pFrame->UpdateButtonsStatus();
     pFrame->pGraphLog->UpdateControls();
 
+    if (pFrame->GetAutoLoadCalibration())
+    {
+        if (pMount && pMount->IsConnected() &&
+            (!pSecondaryMount || pSecondaryMount->IsConnected()))
+        {
+            Debug.AddLine("Auto-loading calibration data");
+            pFrame->LoadCalibration();
+        }
+    }
+
     wxDialog::EndModal(retCode);
 }
 

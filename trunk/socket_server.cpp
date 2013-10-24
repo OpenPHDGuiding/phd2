@@ -388,22 +388,11 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_CLEARCAL:
                 Debug.AddLine("processing socket request CLEARCAL");
 
-                if (!pMount)
-                {
-                    throw ERROR_INFO("cannot CLEARCAL if !pMount");
-                }
+                if (pMount)
+                    pMount->ClearCalibration();
+                if (pSecondaryMount)
+                    pSecondaryMount->ClearCalibration();
 
-                if (!pMount->IsConnected())
-                {
-                    throw ERROR_INFO("cannot CLEARCAL if !pMount->IsConnected");
-                }
-
-                if (!pMount->IsCalibrated())
-                {
-                    throw ERROR_INFO("cannot CLEARCAL if !pMount->IsCalibrated()");
-                }
-
-                pMount->ClearCalibration();
                 GuideLog.ServerCommand(pGuider, "CLEAR CAL");
                 break;
 
