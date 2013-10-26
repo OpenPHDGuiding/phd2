@@ -37,7 +37,7 @@
 #include "calstep_dialog.h"
 #include "wx/valnum.h"
 
-CalstepDialog::CalstepDialog(int focalLength, float pixelSize, const wxString& configPrefix) :
+CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& configPrefix) :
     wxDialog(pFrame, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
     double dGuideRateDec = 0.0; // initialize to suppress compiler warning
@@ -93,7 +93,7 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, const wxString& c
     m_pOutputTableSizer = new wxFlexGridSizer (2, 2, 15, 15);
 
     // Build the group of input fields
-    m_pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, "Input Parameters");
+    m_pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Input Parameters"));
 
     // Note that "min" values in fp validators don't work right - so leave them out
     // Focal length - int <= 4000
@@ -103,18 +103,14 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, const wxString& c
     m_pFocalLength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valFocalLength);
     AddTableEntry (m_pInputTableSizer, _("Focal length, mm"), m_pFocalLength, _("Guide scope focal length"));
 
-     // Pixel size: float <= 25
-    wxFloatingPointValidator<float>
-        valPixelSize(2, &m_fPixelSize, wxNUM_VAL_ZERO_AS_BLANK);
-    valPixelSize.SetRange(0, 25);
-    m_pPixelSize = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0,valPixelSize);
-    AddTableEntry (m_pInputTableSizer, ("Pixel size, microns"), m_pPixelSize, _("Guide camera pixel size"));
+    // Pixel size: float <= 25
+    m_pPixelSize = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0);
+    m_pPixelSize->SetValue(wxString::Format("%.2f",m_fPixelSize));
+    AddTableEntry (m_pInputTableSizer, _("Pixel size, microns"), m_pPixelSize, _("Guide camera pixel size"));
 
     // Guide speed multiplier: float <= 2.0
-    wxFloatingPointValidator<float>
-        valGuideSpeed(2, &m_fGuideSpeed, wxNUM_VAL_ZERO_AS_BLANK);
-    valGuideSpeed.SetRange(0, 2.0);
-    m_pGuideSpeed = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valGuideSpeed);
+    m_pGuideSpeed = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0);
+    m_pGuideSpeed->SetValue(wxString::Format("%.2f", m_fGuideSpeed));
     AddTableEntry (m_pInputTableSizer, _("Guide speed, n.nn x sidereal"), m_pGuideSpeed, _("Guide speed, multiple of sidereal rate; to guide at ") +
         _("50% sidereal rate, enter 0.5"));
 
@@ -125,12 +121,12 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, const wxString& c
     AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps, _("Targeted # steps in each direction"));
 
     // Build the group of output fields
-    m_pOutputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, "Computed Values");
+    m_pOutputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Computed Values"));
 
     m_pImageScale = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
-    AddTableEntry (m_pOutputTableSizer, "Image scale, arc-sec/px", m_pImageScale, "");
+    AddTableEntry (m_pOutputTableSizer, _("Image scale, arc-sec/px"), m_pImageScale, "");
     m_pRslt = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
-    AddTableEntry (m_pOutputTableSizer, "Calibration step, ms", m_pRslt, "");
+    AddTableEntry (m_pOutputTableSizer, _("Calibration step, ms"), m_pRslt, "");
 
     // Add the tables to the panel, centered
     m_pInputGroupBox->Add (m_pInputTableSizer, 0, wxALL, 10);
@@ -143,17 +139,14 @@ CalstepDialog::CalstepDialog(int focalLength, float pixelSize, const wxString& c
 
      //create three buttons that are horizontally unstretchable,
      // with an all-around border with a width of 10 and implicit top alignment
-    wxButton *pRecalc = new wxButton( this, wxID_OK, "Recalc" );
+    wxButton *pRecalc = new wxButton( this, wxID_OK, _("Recalc") );
     pRecalc->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &CalstepDialog::OnRecalc, this);
     pButtonSizer->Add(
         pRecalc,
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
-    pButtonSizer->Add(
-        new wxButton( this, wxID_OK, "OK" ),
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
-     pButtonSizer->Add(
-        new wxButton( this, wxID_CANCEL, "Cancel" ),
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
+	pButtonSizer->Add(
+		CreateButtonSizer(wxOK | wxCANCEL),
+		wxSizerFlags(0).Align(0).Border(wxALL, 10));
 
      //position the buttons centered with no border
      m_pVSizer->Add(
@@ -183,7 +176,7 @@ void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWi
  // Based on computed image scale, compute a calibration pulse direction that will result in DesiredSteps
 //  for a "travel" distance of MAX_CALIBRATION_DISTANCE in each direction.  Note: this doesn't take into account any dec
 //  compensation for RA times.  Result will be rounded up to the nearest 50 ms
-bool CalstepDialog::CalcDefaultDuration (int FocalLength, float PixelSize, float GuideSpeed, int DesiredSteps, float& ImageScale, int& StepSize)
+bool CalstepDialog::CalcDefaultDuration (int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps, double& ImageScale, int& StepSize)
 {
     int totalDistance;            // In units of arc-secs
     float totalDuration;
@@ -212,7 +205,14 @@ void CalstepDialog::OnRecalc (wxCommandEvent& evt)
     m_bValidResult = false;
 
     if (this->Validate() && this->TransferDataFromWindow())
-    // The validators make life easier by insuring there will be numeric values of some kind in the various properties
+    {
+        m_pPixelSize->GetValue().ToDouble(&m_fPixelSize);
+        m_pPixelSize->SetValue(wxString::Format("%.2f",m_fPixelSize));
+
+        m_pGuideSpeed->GetValue().ToDouble(&m_fGuideSpeed);
+        m_pGuideSpeed->SetValue(wxString::Format("%.2f",m_fGuideSpeed));
+
+        // The validators make life easier by insuring there will be numeric values of some kind in the various properties
         if (m_iFocalLength >= 50 && m_iFocalLength <= 4000)
             if (m_fPixelSize >= 3.0 && m_fPixelSize <= 25)
                 if (m_fGuideSpeed >= 0.2 && m_fGuideSpeed <= 2.0)
@@ -223,7 +223,7 @@ void CalstepDialog::OnRecalc (wxCommandEvent& evt)
                             m_pImageScale->SetValue (wxString::Format ("%.2f", m_fImageScale));
                             m_pRslt->SetValue (wxString::Format ("%3d", m_iRslt));
                             // Remember the guide speed chosen is just to help the user - purely a UI thing, no guiding implications
-                            pConfig->Profile.SetDouble (m_sConfigPrefix + "/GuideSpeed", (double) m_fGuideSpeed);
+                            pConfig->Profile.SetDouble (m_sConfigPrefix + "/GuideSpeed", m_fGuideSpeed);
                             m_bValidResult = true;
                         }
                         else
@@ -237,6 +237,7 @@ void CalstepDialog::OnRecalc (wxCommandEvent& evt)
                 wxMessageBox (_("Pixel size must be >= 3.0 and <= 25.0"),  _("Error"), wxOK | wxICON_ERROR);
         else
             wxMessageBox (_("Focal length must be >= 50 and < 4000"),  _("Error"), wxOK | wxICON_ERROR);
+    }
 }
 // Public function for client to get the calculated value for step-size
 int CalstepDialog::GetResult ()
@@ -246,6 +247,7 @@ int CalstepDialog::GetResult ()
     else
         return (0);
 }
+
 CalstepDialog::~CalstepDialog(void)
 {
 }
