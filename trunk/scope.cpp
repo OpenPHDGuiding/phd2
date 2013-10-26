@@ -786,7 +786,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
 
     // add the 'auto' button and bind it to the associated event-handler
     wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
-    wxButton *m_pAutoDuration = new wxButton(pParent, wxID_OK, "Calculate..." );
+    wxButton *m_pAutoDuration = new wxButton(pParent, wxID_OK, _("Calculate...") );
     m_pAutoDuration->SetToolTip(_("Click to open the Calibration Step Calculator to help find a good calibration step size"));
     m_pAutoDuration->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnAutoDuration, this);
     pButtonSizer->Add(
@@ -823,7 +823,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
 void Scope::ScopeConfigDialogPane::OnAutoDuration (wxCommandEvent& evt)
 {
     int iFocalLength = pFrame->GetFocalLength ();
-    float fPixelSize;
+    double fPixelSize;
     wxString sConfigPrefix;
 
     if (pCamera)

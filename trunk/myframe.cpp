@@ -368,7 +368,7 @@ void MyFrame::UpdateTitle(void)
 
     if (GuideLog.IsEnabled())
     {
-        title += " (log active)";
+        title += _(" (log active)");
         tools_menu->Check(MENU_LOG,true);
     }
 
@@ -1237,9 +1237,9 @@ wxString MyFrame::GetSettingsSummary()
     double pixelScale = GetCameraPixelScale();
     wxString scaleStr;
     if (pixelScale == 1.0)
-        scaleStr = _("unspecified");
+        scaleStr = "unspecified";
     else
-        scaleStr = wxString::Format(_("%.2f "), pixelScale) + _("arc-sec/px");
+        scaleStr = wxString::Format("%.2f ", pixelScale) + "arc-sec/px";
 
     return wxString::Format("Dither = %s, Dither scale = %.3f, Image noise reduction = %s, Guide-frame time lapse = %d, Server %s\n"
         "Pixel scale = %s\n",
