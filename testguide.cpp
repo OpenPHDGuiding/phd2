@@ -37,7 +37,7 @@
 TestGuideDialog::TestGuideDialog():
 wxDialog(pFrame, wxID_ANY, _("Manual Guide"), wxPoint(-1,-1), wxSize(300,300)) {
     wxBoxSizer *pOuterSizer = new wxBoxSizer(wxVERTICAL);
-    wxStaticBoxSizer *pWrapperSizer = new wxStaticBoxSizer(wxVERTICAL, this, "Primary Mount");
+    wxStaticBoxSizer *pWrapperSizer = new wxStaticBoxSizer(wxVERTICAL, this, _("Primary Mount"));
     wxGridSizer *sizer = new wxGridSizer(3,3,0,0);
     static wxString AoLabels[] = {_("Up"), _("Down"), _("Right"), _("Left") };
     static wxString ScopeLabels[] = {_("North"), _("South"), _("East"), _("West") };
@@ -70,11 +70,11 @@ wxDialog(pFrame, wxID_ANY, _("Manual Guide"), wxPoint(-1,-1), wxSize(300,300)) {
     sizer->Add(SButton1,wxSizerFlags().Expand().Border(wxALL,6));
 
     pWrapperSizer->Add(sizer);
-    pOuterSizer->Add(pWrapperSizer);
+    pOuterSizer->Add(pWrapperSizer,wxSizerFlags().Border(wxALL,3));
 
     if (pSecondaryMount && pSecondaryMount->IsConnected())
     {
-        pWrapperSizer = new wxStaticBoxSizer(wxVERTICAL, this, "Secondary Mount");
+        pWrapperSizer = new wxStaticBoxSizer(wxVERTICAL, this, _("Secondary Mount"));
         sizer = new wxGridSizer(3,3,0,0);
 
         pLabels = ScopeLabels;
@@ -94,7 +94,7 @@ wxDialog(pFrame, wxID_ANY, _("Manual Guide"), wxPoint(-1,-1), wxSize(300,300)) {
         sizer->Add(SButton2,wxSizerFlags().Expand().Border(wxALL,6));
 
         pWrapperSizer->Add(sizer);
-        pOuterSizer->Add(pWrapperSizer);
+        pOuterSizer->Add(pWrapperSizer,wxSizerFlags().Border(wxALL,3));
     }
 
     SetSizer(pOuterSizer);
