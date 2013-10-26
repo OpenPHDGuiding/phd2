@@ -34,6 +34,7 @@
 
 #include "phd.h"
 #include "drift_tool.h"
+#include "manualcal_dialog.h"
 
 void TestGuide() {
 
@@ -96,28 +97,12 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
                 declination = 0.0;
             }
 
-            wxString tmpstr;
-            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("RA rate"), wxString::Format(_T("%.4f"),xRate));
-            if (tmpstr.IsEmpty()) return;
-            tmpstr.ToDouble(&xRate); // = 0.0035;
-
-            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.005)"), _("Dec rate"), wxString::Format(_T("%.4f"),yRate));
-            if (tmpstr.IsEmpty()) return;
-            tmpstr.ToDouble(&yRate); // = 0.0035;
-
-            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 0.5)"), _("RA angle"), wxString::Format(_T("%.3f"),xAngle));
-            if (tmpstr.IsEmpty()) return;
-            tmpstr.ToDouble(&xAngle); // = 0.0035;
-
-            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Dec angle"), wxString::Format(_T("%.3f"),yAngle));
-            if (tmpstr.IsEmpty()) return;
-            tmpstr.ToDouble(&yAngle); // = 0.0035;
-
-            tmpstr = wxGetTextFromUser(_("Enter parameter (e.g. 2.1)"), _("Declination"), wxString::Format(_T("%.3f"),declination));
-            if (tmpstr.IsEmpty()) return;
-            tmpstr.ToDouble(&declination); // = 0.0035;
-
-            pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pMount->SideOfPier());
+            ManualCalDialog manualcal(xRate, yRate, xAngle, yAngle, declination);
+            if (manualcal.ShowModal () == wxID_OK)
+            {
+                manualcal.GetValue(&xRate, &yRate, &xAngle, &yAngle, &declination);
+                pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pMount->SideOfPier());
+            }
         }
     }
     else if (evt.GetId() == EEGG_CLEARCAL)

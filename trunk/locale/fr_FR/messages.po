@@ -35,8 +35,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-26 16:53+0200\n"
-"PO-Revision-Date: 2013-10-26 16:46+0100\n"
+"POT-Creation-Date: 2013-10-26 19:57+0200\n"
+"PO-Revision-Date: 2013-10-26 19:58+0100\n"
 "Last-Translator: Sylvain Girard <sylvain.girard@zesly.net>\n"
 "Language-Team: Français\n"
 "MIME-Version: 1.0\n"
@@ -385,7 +385,7 @@ msgstr "Impossible de récupere le statut des relais"
 msgid "Enter RA Angle (in degrees)"
 msgstr "Entrez Angle AD (en degrés)"
 
-#: cam_sbigrotator.cpp:62 eegg.cpp:108
+#: cam_sbigrotator.cpp:62
 msgid "RA angle"
 msgstr "angle AD"
 
@@ -734,72 +734,44 @@ msgstr "Coordonnées sauvegardées."
 msgid "Slewing ..."
 msgstr "Pointage..."
 
-#: eegg.cpp:41
+#: eegg.cpp:42
 msgid "W RA+"
 msgstr "O AD+"
 
-#: eegg.cpp:42
+#: eegg.cpp:43
 msgid "N Dec+"
 msgstr "N DEC+"
 
-#: eegg.cpp:43
+#: eegg.cpp:44
 msgid "E RA-"
 msgstr "E RA-"
 
-#: eegg.cpp:44
+#: eegg.cpp:45
 msgid "S Dec-"
 msgstr "S Dec-"
 
-#: eegg.cpp:45
+#: eegg.cpp:46
 msgid "Done"
 msgstr "Terminé"
 
-#: eegg.cpp:55
+#: eegg.cpp:56
 msgid "Please connect a Mount to Manual Guide."
 msgstr "S'il vous plait, connectez une Monture pour Guider en Manuel"
 
-#: eegg.cpp:70
+#: eegg.cpp:71
 msgid "There is no calibration data available."
 msgstr "Il n'ya pas de données de calibration disponibles."
 
-#: eegg.cpp:100 eegg.cpp:104
-msgid "Enter parameter (e.g. 0.005)"
-msgstr "Entrer paramètre (ex. : 0.005)"
-
-#: eegg.cpp:100
-msgid "RA rate"
-msgstr "Taux AD"
-
-#: eegg.cpp:104
-msgid "Dec rate"
-msgstr "Taux Dec"
-
-#: eegg.cpp:108
-msgid "Enter parameter (e.g. 0.5)"
-msgstr "Entrer paramètre (ex. : 0.5)"
-
-#: eegg.cpp:112 eegg.cpp:116
-msgid "Enter parameter (e.g. 2.1)"
-msgstr "Entrer paramètre (ex. : 2.1)"
-
-#: eegg.cpp:112
-msgid "Dec angle"
-msgstr "angle dec"
-
-#: eegg.cpp:116
-msgid "Declination"
-msgstr "Déclinaison"
-
-#: eegg.cpp:145
+#: eegg.cpp:130
 msgid "Failed to flip RA calibration"
 msgstr "Echec de l'inverseion de la calibration AD"
 
-#: eegg.cpp:151
+#: eegg.cpp:136
 #, c-format
 msgid "RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"
 msgstr "Angle de calibration AD inversé : (%.2f, %.2f) vers (%.2f, %.2f)"
 
-#: eegg.cpp:160
+#: eegg.cpp:145
 msgid ""
 "Entering a manual lock position requires a camera and mount to be connected "
 "and calibrated."
@@ -807,26 +779,26 @@ msgstr ""
 "La saisie d'une position de véroullage manuel nécessite une caméra et une "
 "monture connectées et calbrées."
 
-#: eegg.cpp:165
+#: eegg.cpp:150
 msgid ""
 "Entering a manual lock position cannot be done while calibrating or guiding."
 msgstr ""
 "La saisie d'une position de verrouillage manuel ne peut être fait pendant la "
 "calibration ou le guidage."
 
-#: eegg.cpp:176
+#: eegg.cpp:161
 msgid "Enter x-lock position, or 0 for center"
 msgstr "Entrer position verrouillage-x, ou 0 pour le centre"
 
-#: eegg.cpp:176
+#: eegg.cpp:161
 msgid "X-lock position"
 msgstr "Postion verrouillage-X"
 
-#: eegg.cpp:190
+#: eegg.cpp:175
 msgid "Enter y-lock position"
 msgstr "Entrer position verrouillage-y"
 
-#: eegg.cpp:190
+#: eegg.cpp:175
 msgid "Y-lock position"
 msgstr "Postion verrouillage-Y"
 
@@ -1268,8 +1240,8 @@ msgid ""
 "What percent of the measured error should be applied? Default = 100%, adjust "
 "if responding too much or too slowly?"
 msgstr ""
-"Quel pourcentage de l'erreur mesurée doit être appliqué ? Par défaut = 100%"
-"ajustez si le guidage répond trop ou trop lentement."
+"Quel pourcentage de l'erreur mesurée doit être appliqué ? Par défaut = "
+"100%ajustez si le guidage répond trop ou trop lentement."
 
 #: guide_algorithm_hysteresis.cpp:232 guide_algorithm_lowpass.cpp:207
 #: guide_algorithm_resistswitch.cpp:216
@@ -1423,6 +1395,30 @@ msgstr ""
 "changements de masse d'étoile. La plage valide est 10-100, valeur par défaut "
 "est 50. Si la détection de changement de masse de l'étoile n'est pas activé "
 "ce paramètre est ignoré."
+
+#: manualcal_dialog.cpp:40
+msgid "Manual Calibration"
+msgstr "Calibration Manuelle"
+
+#: manualcal_dialog.cpp:46
+msgid "RA rate (e.g. 0.005):"
+msgstr "Taux AD (ex. : 0.005) :"
+
+#: manualcal_dialog.cpp:52
+msgid "Dec rate (e.g. 0.005):"
+msgstr "Taux Dec (ex. : 0.005) :"
+
+#: manualcal_dialog.cpp:58
+msgid "RA angle (e.g. 0.5):"
+msgstr "Angle AD (ex. : 0.5) :"
+
+#: manualcal_dialog.cpp:64
+msgid "Dec angle (e.g. 2.1):"
+msgstr "Angle Dec (ex. : 2.1) :"
+
+#: manualcal_dialog.cpp:70
+msgid "Declination (e.g. 2.1):"
+msgstr "Déclinaison (ex. : 2.1) :"
 
 #: mount.cpp:48
 msgid "Unknown"
@@ -2570,6 +2566,10 @@ msgstr "Zoom arrière"
 msgid "Manual Guide"
 msgstr "Guidage Manuel"
 
+#: testguide.cpp:40
+msgid "Primary Mount"
+msgstr "Monture Primaire"
+
 #: testguide.cpp:42
 msgid "Up"
 msgstr "Haut"
@@ -2586,6 +2586,10 @@ msgstr "Gauche"
 msgid "Left"
 msgstr "Droite"
 
+#: testguide.cpp:77
+msgid "Secondary Mount"
+msgstr "Monture Secondaire"
+
 #: usImage.cpp:273
 #, c-format
 msgid "%s Not saved"
@@ -2599,6 +2603,18 @@ msgstr "%s enregistrée"
 #: usImage.cpp:300
 msgid "File does not exist - cannot load"
 msgstr "Le fichier n'existe pas - ouverture impossible"
+
+#~ msgid "RA rate"
+#~ msgstr "Taux AD"
+
+#~ msgid "Dec rate"
+#~ msgstr "Taux Dec"
+
+#~ msgid "Dec angle"
+#~ msgstr "angle dec"
+
+#~ msgid "Declination"
+#~ msgstr "Déclinaison"
 
 #~ msgid "Gear setup"
 #~ msgstr "Configuration Matériel"
