@@ -54,18 +54,19 @@ private:
     wxTextCtrl *m_pRslt;
     wxTextCtrl *m_pImageScale;
     // numeric values from fields, populated by validators
-    float m_fPixelSize;
+    double m_fPixelSize;
+	wxString m_sPixelSize;
     int m_iFocalLength;
-    float m_fGuideSpeed;
+    double m_fGuideSpeed;
     int m_iNumSteps;
-    float m_fImageScale;
+    double m_fImageScale;
     int m_iRslt;
     bool m_bValidResult;
     // pConfig prefix string for persisting guide speed
     wxString m_sConfigPrefix;
 
 public:
-    CalstepDialog(int focalLength, float pixelSize, const wxString& configPrefix);
+    CalstepDialog(int focalLength, double pixelSize, const wxString& configPrefix);
     ~CalstepDialog(void);
     int GetResult ();
 
@@ -73,7 +74,7 @@ private:
     void AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip);
     int StringWidth(const wxString& string);
     void OnRecalc (wxCommandEvent& evt);
-    bool CalcDefaultDuration (int FocalLength, float PixelSize, float GuideSpeed, int DesiredSteps, float& ImageScale, int& StepSize);
+    bool CalcDefaultDuration (int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps, double& ImageScale, int& StepSize);
 };
 
 #endif
