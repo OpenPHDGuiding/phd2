@@ -1469,7 +1469,7 @@ void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
 
         int language = m_pLanguage->GetSelection();
         pFrame->SetLanguage(m_LanguageIDs[language]);
-        if (m_oldLanguageChoice != m_LanguageIDs[language])
+        if (m_oldLanguageChoice != language)
         {
             wxMessageBox(_("You must restart PHD for the language change to take effect."),_("Info"));
         }
