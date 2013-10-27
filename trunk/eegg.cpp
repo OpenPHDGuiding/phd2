@@ -100,7 +100,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             ManualCalDialog manualcal(xRate, yRate, xAngle, yAngle, declination);
             if (manualcal.ShowModal () == wxID_OK)
             {
-                manualcal.GetValue(&xRate, &yRate, &xAngle, &yAngle, &declination);
+                manualcal.GetValues(&xRate, &yRate, &xAngle, &yAngle, &declination);
                 pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pMount->SideOfPier());
             }
         }
