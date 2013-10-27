@@ -92,7 +92,7 @@ int ManualCalDialog::StringWidth(const wxString& string)
     return width;
 }
 
-void ManualCalDialog::GetValue(double *xRate, double *yRate, double *xAngle, double *yAngle, double *declination)
+void ManualCalDialog::GetValues(double *xRate, double *yRate, double *xAngle, double *yAngle, double *declination)
 {
     m_pXRate->GetValue().ToDouble(xRate);
     m_pYRate->GetValue().ToDouble(yRate);

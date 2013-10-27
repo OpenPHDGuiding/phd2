@@ -52,7 +52,7 @@ public:
     ManualCalDialog(double xRate, double yRate, double xAngle, double yAngle, double declination);
     ~ManualCalDialog(void);
 
-    void ManualCalDialog::GetValue(double *xRate, double *yRate, double *xAngle, double *yAngle, double *declination);
+    void GetValues(double *xRate, double *yRate, double *xAngle, double *yAngle, double *declination);
 };
 
 #endif
