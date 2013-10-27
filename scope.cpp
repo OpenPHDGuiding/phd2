@@ -781,19 +781,19 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pCalibrationDuration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
 
-    DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
-        _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"));
-
     // add the 'auto' button and bind it to the associated event-handler
-    wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
+    //wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
     wxButton *m_pAutoDuration = new wxButton(pParent, wxID_OK, _("Calculate...") );
     m_pAutoDuration->SetToolTip(_("Click to open the Calibration Step Calculator to help find a good calibration step size"));
     m_pAutoDuration->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnAutoDuration, this);
-    pButtonSizer->Add(
-        m_pAutoDuration,
-        wxSizerFlags(0).Center());
-    // Use base class 'add' to get the button centered
-    ScopeConfigDialogPane::Add (pButtonSizer, wxSizerFlags(0).Center());
+    //pButtonSizer->Add(
+    //    m_pAutoDuration,
+    //    wxSizerFlags(0).Center());
+    //// Use base class 'add' to get the button centered
+    //ScopeConfigDialogPane::Add (pButtonSizer, wxSizerFlags(0).Center());
+    DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
+        _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"), m_pAutoDuration);
+
 
     width = StringWidth(_T("00000"));
     m_pMaxRaDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),

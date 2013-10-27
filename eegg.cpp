@@ -186,6 +186,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
     {
         bool sticky = evt.IsChecked();
         pFrame->pGuider->SetLockPosIsSticky(sticky);
+        pConfig->Global.SetBoolean("/StickyLockPosition", sticky);
     }
     else
     {

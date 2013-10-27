@@ -74,9 +74,9 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
 {
     SetBackgroundStyle(wxBG_STYLE_PAINT);
 
-    wxBoxSizer *pMainSizer   = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *pMainSizer   = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxVERTICAL);
-    wxBoxSizer *pClientSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *pClientSizer = new wxBoxSizer(wxVERTICAL);
 
     m_pClient = new GraphLogClientWindow(this);
 
@@ -110,8 +110,6 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
         m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Expand());
     }
 
-    pMainSizer->Add(pClientSizer, wxSizerFlags().Expand().Proportion(1));
-    pMainSizer->Add(m_pControlSizer, wxSizerFlags().Expand().Border(wxALL, 10));
 
     m_visible = false;
 
@@ -228,8 +226,10 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     m_pClient->m_pOscIndex->SetBackgroundColour(*wxBLACK);
     pButtonSizer->Add(m_pClient->m_pOscIndex);
 
-    pClientSizer->Add(pButtonSizer, wxSizerFlags().Left().DoubleHorzBorder().Expand());
     pClientSizer->Add(m_pClient, wxSizerFlags().Expand().Proportion(1));
+    pClientSizer->Add(m_pControlSizer, wxSizerFlags().Expand().Border(wxALL, 10));
+    pMainSizer->Add(pButtonSizer, wxSizerFlags().Left().DoubleHorzBorder().Expand());
+    pMainSizer->Add(pClientSizer, wxSizerFlags().Expand().Proportion(1));
 
     SetSizer(pMainSizer);
     pMainSizer->SetSizeHints(this);
