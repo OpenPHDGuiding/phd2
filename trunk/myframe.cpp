@@ -192,6 +192,10 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pGuider = new GuiderOneStar(this);
     pGuider->LoadProfileSettings();
 
+    bool sticky = pConfig->Global.GetBoolean("/StickyLockPosition", false);
+    pGuider->SetLockPosIsSticky(sticky);
+    tools_menu->Check(EEGG_STICKY_LOCK, sticky);
+
     SetMinSize(wxSize(400,300));
 
     wxString geometry = pConfig->Global.GetString("/geometry", wxEmptyString);

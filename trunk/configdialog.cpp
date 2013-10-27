@@ -60,20 +60,21 @@ void ConfigDialogPane::DoAdd(wxWindow *pWindow, const wxString& toolTip)
     DoAdd(pWindow);
 }
 
-void ConfigDialogPane::DoAdd(wxWindow *pWindow1, wxWindow *pWindow2)
+void ConfigDialogPane::DoAdd(wxWindow *pWindow1, wxWindow *pWindow2, wxWindow *pWindow3)
 {
     wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
     pSizer->Add(pWindow1);
     pSizer->Add(pWindow2);
+    if (pWindow3 != NULL) pSizer->Add(pWindow3);
     DoAdd(pSizer);
 }
 
-void ConfigDialogPane::DoAdd(const wxString& label, wxWindow *pControl, const wxString& toolTip)
+void ConfigDialogPane::DoAdd(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2)
 {
     wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, label + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
     pControl->SetToolTip(toolTip);
 
-    DoAdd(pLabel, pControl);
+    DoAdd(pLabel, pControl, pControl2);
 }
 
 int ConfigDialogPane::StringWidth(const wxString& string)

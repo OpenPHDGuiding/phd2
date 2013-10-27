@@ -78,12 +78,17 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     int width;
     m_pMount = pMount;
 
-    m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_("Force calibration"),wxPoint(-1,-1),wxSize(75,-1));
+    wxBoxSizer *chkSizer = new wxBoxSizer(wxHORIZONTAL);
+    
+    m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_("Force calibration"));
+    m_pRecalibrate->SetToolTip(_("Check to clear any previous calibration and force PHD to recalibrate"));
 
-    DoAdd(m_pRecalibrate, _("Check to clear any previous calibration and force PHD to recalibrate"));
-
-    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_("Enable Guide Output"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pEnableGuide, _("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
+    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_("Enable Guide Output"));
+    m_pEnableGuide->SetToolTip(_("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
+    
+    chkSizer->Add(m_pRecalibrate);
+    chkSizer->Add(m_pEnableGuide);
+    DoAdd(chkSizer);
 
     wxString xAlgorithms[] = {
         _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch")

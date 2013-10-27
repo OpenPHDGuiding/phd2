@@ -635,7 +635,7 @@ void MyFrame::OnGraph(wxCommandEvent &evt)
 {
     if (evt.IsChecked())
     {
-        m_mgr.GetPane(_T("GraphLog")).Show().Bottom().Position(0).MinSize(-1, 220);
+        m_mgr.GetPane(_T("GraphLog")).Show().Bottom().Position(0).MinSize(-1, 240);
     }
     else
     {

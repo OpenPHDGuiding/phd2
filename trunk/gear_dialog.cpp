@@ -739,7 +739,7 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
             pFrame->SetStatusText(wxEmptyString, 3);
         }
 
-        Debug.AddLine("Connected Scope:" + (m_pScope ? m_pScope->Name() : _("None")));
+        Debug.AddLine("Connected Scope:" + (m_pScope ? m_pScope->Name() : "None"));
     }
     catch (wxString Msg)
     {
@@ -835,7 +835,7 @@ void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)
             pFrame->SetStatusText(wxEmptyString, 4);
         }
 
-        Debug.AddLine("Connected AO:" + (m_pStepGuider ? m_pStepGuider->Name() : _("None")));
+        Debug.AddLine("Connected AO:" + (m_pStepGuider ? m_pStepGuider->Name() : "None"));
     }
     catch (wxString Msg)
     {
