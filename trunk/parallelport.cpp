@@ -78,9 +78,12 @@ bool ParallelPort::ManipulateByte(BYTE clearBits, BYTE setBits)
 
     return bError;
 }
+
 ParallelPort *ParallelPort::ParallelPortFactory(void)
 {
 #if defined(_WINDOWS_)
     return new ParallelPortWin32();
+#else
+    return 0;
 #endif
 }

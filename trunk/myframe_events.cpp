@@ -693,8 +693,10 @@ void MyFrame::OnTarget(wxCommandEvent &evt)
 
 void MyFrame::OnLog(wxCommandEvent &evt)
 {
-    if (evt.GetId() == MENU_LOG) {
-        if (evt.IsChecked()) {  // enable it
+    if (evt.GetId() == MENU_LOG)
+    {
+        if (evt.IsChecked())  // enable it
+        {
             GuideLog.EnableLogging();
 #ifdef PHD1_LOGGING // deprecated
             Log_Data = true;
@@ -709,9 +711,11 @@ void MyFrame::OnLog(wxCommandEvent &evt)
 #endif
             SetTitle(wxString::Format(_T("%s %s (Log active)"), APPNAME, FULLVER));
         }
-        else {
+        else
+        {
 #ifdef PHD1_LOGGING // deprecated
-            if (LogFile->IsOpened()) {
+            if (LogFile->IsOpened())
+            {
                 LogFile->AddLine(_T("Logging manually disabled"));
                 LogFile->Write();
                 LogFile->Close();
@@ -719,10 +723,13 @@ void MyFrame::OnLog(wxCommandEvent &evt)
             Log_Data = false;
 #endif
             GuideLog.DisableLogging();
-            this->SetTitle(wxString::Format(_T("%s %s"), APPNAME, FULLVER));
+            SetTitle(wxString::Format(_T("%s %s"), APPNAME, FULLVER));
         }
-    } else if (evt.GetId() == MENU_LOGIMAGES) {
-        if (wxGetKeyState(WXK_SHIFT)) {
+    }
+    else if (evt.GetId() == MENU_LOGIMAGES)
+    {
+        if (wxGetKeyState(WXK_SHIFT))
+        {
 //          wxMessageBox("arg");
 #ifdef __WINDOWS__
 //          tools_menu->FindItem(MENU_LOGIMAGES)->SetTextColour(wxColour(200,10,10));
@@ -735,11 +742,12 @@ void MyFrame::OnLog(wxCommandEvent &evt)
                 GuideLog.DisableImageLogging();
             }
         }
-        else {
+        else
+        {
 #ifdef __WINDOWS__
 //          tools_menu->FindItem(MENU_LOGIMAGES)->SetTextColour(*wxBLACK);
 #endif
-            tools_menu->FindItem(MENU_LOGIMAGES)->SetText(_("Enable Star Image logging"));
+            tools_menu->FindItem(MENU_LOGIMAGES)->SetItemLabel(_("Enable Star Image logging"));
             if (evt.IsChecked()) {
                 GuideLog.EnableImageLogging(LIF_LOW_Q_JPEG);
             }
@@ -748,7 +756,8 @@ void MyFrame::OnLog(wxCommandEvent &evt)
             }
         }
         Menubar->Refresh();
-    } else if (evt.GetId() == MENU_DEBUG)
+    }
+    else if (evt.GetId() == MENU_DEBUG)
     {
         bool enable = evt.IsChecked();
         pConfig->Global.SetBoolean("/EnableDebugLog", enable);

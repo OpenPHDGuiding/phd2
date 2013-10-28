@@ -286,18 +286,18 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
 
     try
     {
-        GUIDER_STATE state = GetState();
-
+        //GUIDER_STATE state = GetState();
+        //
         //if (state == STATE_SELECTING && m_autoSelectTries++ == 0)
         //{
         //    Debug.Write("UpdateGuideState(): Autoselecting\n");
-
+        //
         //    if (AutoSelect(pImage))
         //    {
         //        statusMessage = _T("No Star selected");
         //        throw THROW_INFO("No Star Autoselected");
         //    }
-
+        //
         //    pFrame->SetStatusText(wxString::Format(_T("Auto Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
         //}
 

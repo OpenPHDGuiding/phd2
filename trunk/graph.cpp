@@ -370,7 +370,7 @@ void GraphLogWindow::OnDecDyColor(wxCommandEvent& evt)
 void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 {
     wxMenu *menu = new wxMenu();
-    int val = m_pClient->m_minLength;
+    unsigned int val = m_pClient->m_minLength;
     for (int id = MENU_LENGTH_BEGIN; id <= MENU_LENGTH_END; id++)
     {
         wxMenuItem *item = menu->AppendRadioItem(id, wxString::Format("%d", val));
@@ -408,7 +408,7 @@ void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
 {
     wxMenu *menu = new wxMenu();
 
-    int val = m_pClient->m_minHeight;
+    unsigned int val = m_pClient->m_minHeight;
     for (int id = MENU_HEIGHT_BEGIN; id <= MENU_HEIGHT_END; id++)
     {
         wxMenuItem *item = menu->AppendRadioItem(id, wxString::Format("%d", val));
@@ -651,7 +651,7 @@ void GraphLogClientWindow::ResetData(void)
     m_raSameSides = 0;
 }
 
-bool GraphLogClientWindow::SetMinLength(int minLength)
+bool GraphLogClientWindow::SetMinLength(unsigned int minLength)
 {
     bool bError = false;
 
@@ -675,7 +675,7 @@ bool GraphLogClientWindow::SetMinLength(int minLength)
     return bError;
 }
 
-bool GraphLogClientWindow::SetMaxLength(int maxLength)
+bool GraphLogClientWindow::SetMaxLength(unsigned int maxLength)
 {
     bool bError = false;
 
@@ -700,7 +700,7 @@ bool GraphLogClientWindow::SetMaxLength(int maxLength)
     return bError;
 }
 
-bool GraphLogClientWindow::SetMinHeight(int minHeight)
+bool GraphLogClientWindow::SetMinHeight(unsigned int minHeight)
 {
     bool bError = false;
 
@@ -724,7 +724,7 @@ bool GraphLogClientWindow::SetMinHeight(int minHeight)
     return bError;
 }
 
-bool GraphLogClientWindow::SetMaxHeight(int maxHeight)
+bool GraphLogClientWindow::SetMaxHeight(unsigned int maxHeight)
 {
     bool bError = false;
 
@@ -805,12 +805,12 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
 void GraphLogClientWindow::RecalculateTrendLines(void)
 {
     reset_trend_accums(m_trendLineAccum);
-    int trend_items = m_history.size();
+    unsigned int trend_items = m_history.size();
     if (trend_items > m_length)
         trend_items = m_length;
     const int begin = m_history.size() - trend_items;
     const int end = m_history.size() - 1;
-    for (int x = 0, i = begin; x < trend_items; i++, x++) {
+    for (unsigned int x = 0, i = begin; x < trend_items; i++, x++) {
         const S_HISTORY& h = m_history[i];
         update_trend(x, trend_items, h.dx, 0.0, &m_trendLineAccum[0]);
         update_trend(x, trend_items, h.dy, 0.0, &m_trendLineAccum[1]);
@@ -877,7 +877,7 @@ static wxString rms_label(double rms, double sampling)
 static double GetMaxDuration(const circular_buffer<S_HISTORY>& history, int start_item)
 {
     double maxdur = 1.0; // always return at least 1.0 to protect against divide-by-zero
-    for (int i = start_item; i < history.size(); i++)
+    for (unsigned int i = start_item; i < history.size(); i++)
     {
         const S_HISTORY& h = history[i];
         double d = fabs(h.raDur);
@@ -994,7 +994,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
             dc.SetPen(wxPen(m_raOrDxColor.ChangeLightness(60)));
 
-            for (int i = start_item, j = 0; i < m_history.size(); i++, j++)
+            for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
             {
                 const S_HISTORY& h = m_history[i];
 
@@ -1008,7 +1008,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
             dc.SetPen(wxPen(m_decOrDyColor.ChangeLightness(60)));
 
-            for (int i = start_item, j = 0; i < m_history.size(); i++, j++)
+            for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
             {
                 const S_HISTORY& h = m_history[i];
 
@@ -1022,7 +1022,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             }
         }
 
-        for (int i = start_item, j = 0; i < m_history.size(); i++, j++)
+        for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
         {
             const S_HISTORY& h = m_history[i];
 

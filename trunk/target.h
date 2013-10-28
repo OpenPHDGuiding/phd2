@@ -43,13 +43,13 @@ class TargetClient : public wxWindow
     TargetClient(wxWindow *parent);
     ~TargetClient(void);
 
-    static const unsigned m_maxHistorySize = 400;
+    static const unsigned int m_maxHistorySize = 400;
 
-    int m_minLength;
-    int m_maxLength;
+    unsigned int m_minLength;
+    unsigned int m_maxLength;
 
-    int m_minHeight;
-    int m_maxHeight;
+    unsigned int m_minHeight;
+    unsigned int m_maxHeight;
 
     struct
     {
@@ -57,8 +57,8 @@ class TargetClient : public wxWindow
         double dec;
     } m_history[m_maxHistorySize];
 
-    int m_nItems;    // # of items in the history
-    int m_length;     // # of items to display
+    unsigned int m_nItems;    // # of items in the history
+    unsigned int m_length;     // # of items to display
     double m_zoom;
 
     void AppendData(const GuideStepInfo& step);

@@ -55,8 +55,8 @@ class GraphStepguiderClient : public wxWindow
     wxPen   *m_pPens[m_maxHistorySize];
     wxBrush *m_pBrushes[m_maxHistorySize];
 
-    int m_nItems;    // # of items in the history
-    int m_length;     // # of items to display
+    unsigned int m_nItems;    // # of items in the history
+    unsigned int m_length;     // # of items to display
 
     int m_xMax;
     int m_yMax;

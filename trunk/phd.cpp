@@ -153,7 +153,6 @@ bool PhdApp::OnCmdLineParsed(wxCmdLineParser & parser)
 
     (void)parser.Found("i", &m_instanceNumber);
 
-    bool resetValue = false;
     m_resetConfig = parser.Found("R");
 
     return bReturn;

@@ -42,10 +42,12 @@
 
 class GuideAlgorithmLowpass:GuideAlgorithm
 {
-    static const int HISTORY_SIZE=10;
+    static const unsigned int HISTORY_SIZE = 10;
+
     ArrayOfDbl m_history;
     double m_slopeWeight;
     double m_minMove;
+
 protected:
     class GuideAlgorithmLowpassConfigDialogPane : public ConfigDialogPane
     {

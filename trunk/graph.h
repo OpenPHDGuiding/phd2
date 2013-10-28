@@ -72,10 +72,10 @@ class GraphLogClientWindow : public wxWindow
     GraphLogClientWindow(wxWindow *parent);
     ~GraphLogClientWindow(void);
 
-    bool SetMinLength(int minLength);
-    bool SetMaxLength(int maxLength);
-    bool SetMinHeight(int minLength);
-    bool SetMaxHeight(int minHeight);
+    bool SetMinLength(unsigned int minLength);
+    bool SetMaxLength(unsigned int maxLength);
+    bool SetMinHeight(unsigned int minLength);
+    bool SetMaxHeight(unsigned int minHeight);
 
     wxColour m_raOrDxColor, m_decOrDyColor;
     wxStaticText *m_pRaRMS, *m_pDecRMS, *m_pTotRMS, *m_pOscIndex;
@@ -85,10 +85,10 @@ class GraphLogClientWindow : public wxWindow
     void RecalculateTrendLines(void);
     void OnPaint(wxPaintEvent& evt);
 
-    int m_minLength;
+    unsigned int m_minLength;
 
-    int m_minHeight;
-    int m_maxHeight;
+    unsigned int m_minHeight;
+    unsigned int m_maxHeight;
 
     static const int m_xSamplesPerDivision = 50;
     static const int m_yDivisions = 3;
@@ -105,8 +105,8 @@ class GraphLogClientWindow : public wxWindow
         MODE_DXDY,
     } m_mode;
 
-    int m_length;
-    int m_height;
+    unsigned int m_length;
+    unsigned int m_height;
     GRAPH_UNITS m_heightUnits;
 
     bool m_showTrendlines;
