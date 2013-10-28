@@ -1,0 +1,34 @@
+#summary Building PHD2 on Linux
+
+= Instructions for building PHD2 on Linux =
+
+ * install dependencies (commands for a Fedora-like system; your system may vary)
+{{{
+sudo yum install subversion gtk2-devel cfitsio-devel opencv-devel
+}}}
+
+ * download and install wxWidgets 2.9.5 or later. Right now the latest is 3.0.0rc2, and that works fine.
+{{{
+cd wxWidgets-3.0.0-rc2
+mkdir build
+cd build
+../configure --with-libpng=builtin --with-regex=builtin --with-libjpeg=builtin --with-libtiff=builtin --with-expat=builtin --disable-shared
+make
+sudo make install
+}}}
+
+  * get the phd2 sources
+{{{
+svn checkout http://open-phd-guiding.googlecode.com/svn/trunk/ open-phd-guiding
+}}}
+
+  * build phd2
+{{{
+cd open-phd-guiding
+make
+}}}
+
+  * run phd2
+{{{
+./phd2
+}}}
