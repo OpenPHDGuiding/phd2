@@ -87,7 +87,6 @@ bool DebugLog::Init(const char *pName, bool bEnable, bool bForceOpen)
 
     if (bEnable && (m_pPathName.IsEmpty() || bForceOpen))
     {
-        wxStandardPathsBase& stdpath = wxStandardPaths::Get();
         wxDateTime now = wxDateTime::UNow();
 
         m_pPathName = GetLogDir() + PATHSEPSTR + "PHD2_DebugLog" + now.Format(_T("_%Y-%m-%d")) +  now.Format(_T("_%H%M%S"))+ ".txt";
@@ -130,11 +129,11 @@ wxString DebugLog::AddLine(const char *format, ...)
     return ret;
 }
 
-wxString DebugLog::AddBytes(const wxString& str, const unsigned char * const pBytes, unsigned count)
+wxString DebugLog::AddBytes(const wxString& str, const unsigned char *pBytes, unsigned int count)
 {
     wxString Line = str + " - ";
 
-    for(int i=0;i<count;i++)
+    for (unsigned int i=0; i < count; i++)
     {
         unsigned char ch = pBytes[i];
         Line += wxString::Format("%2.2X (%c) ", ch, isprint(ch) ? ch : '?');

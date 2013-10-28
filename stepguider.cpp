@@ -374,9 +374,9 @@ bool StepGuider::MoveToCenter()
 
 int StepGuider::CurrentPosition(GUIDE_DIRECTION direction)
 {
-    int ret=0;
+    int ret = 0;
 
-    switch(direction)
+    switch (direction)
     {
         case UP:
             ret =  m_yOffset;
@@ -389,6 +389,8 @@ int StepGuider::CurrentPosition(GUIDE_DIRECTION direction)
             break;
         case LEFT:
             ret = -m_xOffset;
+            break;
+        case NONE:
             break;
     }
 
@@ -807,6 +809,8 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
     try
     {
         bool moveFailed = Mount::Move(cameraVectorEndpoint, normalMove);
+        if (moveFailed)
+            Debug.AddLine("StepGuider::Move: Mount::Move failed!");
 
         // keep a moving average of the AO position
         if (m_avgOffset.IsValid())

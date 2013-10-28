@@ -389,6 +389,8 @@ static void CopyVal(wxConfigBase *cfg, const wxString& src, const wxString& dst)
         cfg->Write(dst, val);
         break;
     }
+    case wxConfigBase::Type_Unknown:
+        break;
     }
 }
 
@@ -618,6 +620,8 @@ static void WriteVal(wxTextOutputStream& os, wxConfigBase *cfg, const wxString& 
         sval = wxString::Format("%g", val);
         break;
     }
+    case wxConfigBase::Type_Unknown:
+        break;
     }
 
     os.WriteString(wxString::Format("%s\t%d\t%s\n", key.substr(prefix.length()), (int) type, sval));

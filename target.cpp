@@ -113,7 +113,7 @@ void TargetWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 {
     wxMenu *menu = new wxMenu();
 
-    int val = m_pClient->m_minLength;
+    unsigned int val = m_pClient->m_minLength;
     for (int id = MENU_LENGTH_BEGIN; id <= MENU_LENGTH_END; id++)
     {
         wxMenuItem *item = menu->AppendRadioItem(id, wxString::Format("%d", val));
@@ -228,10 +228,7 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     double radius_max = ((size.x < size.y ? size.x : size.y) - 6) / 2;
 
     int leftEdge     = center.x - radius_max;
-    int rightEdge    = center.x + radius_max;
-
     int topEdge      = center.y - radius_max;
-    int bottomEdge   = center.y + radius_max;
 
     // Draw circles
     wxString l;
@@ -276,7 +273,7 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     // Draw impacts
     double scale = radius_max / 2 * sampling;
-    int startPoint = m_maxHistorySize - m_length;
+    unsigned int startPoint = m_maxHistorySize - m_length;
 
     if (m_nItems < m_length)
     {
@@ -291,11 +288,11 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     dc.SetPen(wxPen(wxColour(127,127,255),1, wxSOLID));
-    for(int i=startPoint; i<m_maxHistorySize;i++)
+    for (unsigned int i = startPoint; i < m_maxHistorySize; i++)
     {
         int ximpact = center.x + m_history[i].ra * scale * m_zoom;
         int yimpact = center.y + m_history[i].dec * scale * m_zoom;
-        if (i == m_maxHistorySize-1)
+        if (i == m_maxHistorySize - 1)
         {
             int lcrux = 4;
             dc.SetPen(*wxRED_PEN);

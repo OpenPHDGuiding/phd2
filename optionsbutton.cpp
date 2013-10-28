@@ -56,8 +56,8 @@ OptionsButton::OptionsButton(wxWindow *parent, wxWindowID id, const wxString& la
                              const wxPoint& pos, const wxSize& size, long style, const wxString& name)
     :
     wxPanel(parent, id, pos, size, style, name),
-    m_label(label),
-    m_highlighted(false)
+    m_highlighted(false),
+    m_label(label)
 {
     m_bmp = new wxBitmap(down_arrow);
     m_bmp_bold = new wxBitmap(down_arrow_bold);

@@ -42,10 +42,12 @@
 
 class GuideAlgorithmResistSwitch:GuideAlgorithm
 {
-    static const int HISTORY_SIZE=10;
+    static const unsigned int HISTORY_SIZE = 10;
+
     ArrayOfDbl m_history;
     double m_minMove;
     int    m_currentSide;
+
 protected:
     class GuideAlgorithmResistSwitchConfigDialogPane : public ConfigDialogPane
     {
@@ -77,6 +79,7 @@ protected:
     virtual bool SetMinMove(double minMove);
 
     friend class GuideAlgorithmResistSwitchConfigDialogPane;
+
 public:
     GuideAlgorithmResistSwitch(Mount *pMount, GuideAxis axis);
     virtual ~GuideAlgorithmResistSwitch(void);

@@ -71,14 +71,6 @@ GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent):
     SetSizer(pMainSizer);
     pMainSizer->SetSizeHints(this);
 
-#ifdef __WINDOWS__
-    int ctl_size = 45;
-    int extra_offset = -5;
-#else
-    int ctl_size = 60;
-    int extra_offset = 0;
-#endif
-
     Refresh();
 }
 
@@ -91,7 +83,7 @@ void GraphStepguiderWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
 {
     wxMenu *menu = new wxMenu();
 
-    int val = 1;
+    unsigned int val = 1;
     for (int id = MENU_LENGTH_BEGIN; id <= MENU_LENGTH_END; id++)
     {
         wxMenuItem *item = menu->AppendRadioItem(id, wxString::Format("%d", val));
@@ -187,9 +179,9 @@ GraphStepguiderClient::GraphStepguiderClient(wxWindow *parent):
     m_nItems = 0;
     m_length = 1;
 
-    for(int i=0;i < m_maxHistorySize;i++)
+    for (unsigned int i = 0; i < m_maxHistorySize; i++)
     {
-        int color = (int)(i*255/(double)m_maxHistorySize);
+        int color = (int)(i * 255 / m_maxHistorySize);
         m_pPens[i] = new wxPen(wxColor(color,color,color));
         m_pBrushes[i] = new wxBrush(wxColor(color,color,color), wxSOLID);
     }
@@ -199,7 +191,7 @@ GraphStepguiderClient::GraphStepguiderClient(wxWindow *parent):
 
 GraphStepguiderClient::~GraphStepguiderClient(void)
 {
-    for(int i=0;i<m_maxHistorySize;i++)
+    for (unsigned int i = 0; i < m_maxHistorySize; i++)
     {
         delete m_pBrushes[i];
         delete m_pPens[i];
@@ -314,21 +306,21 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     dc.SetPen(*wxWHITE_PEN);
 
-    int startPoint = m_maxHistorySize - m_length;
+    unsigned int startPoint = m_maxHistorySize - m_length;
 
     if (m_nItems < m_length)
     {
         startPoint = m_maxHistorySize - m_nItems;
     }
 
-    int dotSize = (xPixelsPerStep>yPixelsPerStep?yPixelsPerStep:xPixelsPerStep)/2;
+    int dotSize = (xPixelsPerStep > yPixelsPerStep ? yPixelsPerStep : xPixelsPerStep) / 2;
 
     if (startPoint == m_maxHistorySize)
     {
         dc.DrawCircle(center, dotSize);
     }
 
-    for(int i=startPoint; i<m_maxHistorySize;i++)
+    for (unsigned int i = startPoint; i < m_maxHistorySize; i++)
     {
         if (i == m_maxHistorySize-1)
         {

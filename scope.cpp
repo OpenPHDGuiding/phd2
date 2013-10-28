@@ -479,6 +479,9 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
                 }
 
                 break;
+
+            case NONE:
+                break;
         }
 
         // Actually do the guide

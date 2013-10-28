@@ -47,5 +47,7 @@ SerialPort *SerialPort::SerialPortFactory(void)
 {
 #if defined(_WINDOWS_)
     return new SerialPortWin32();
+#else
+    return 0;
 #endif
 }

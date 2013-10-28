@@ -246,7 +246,7 @@ bool Subtract(usImage& light, const usImage& dark)
     if (light.NPixels != dark.NPixels)
         return true;
 
-    int left, top, width, height;
+    unsigned int left, top, width, height;
     if (light.Subframe.GetWidth() > 0 && light.Subframe.GetHeight() > 0)
     {
         left = light.Subframe.GetLeft();

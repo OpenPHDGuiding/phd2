@@ -103,7 +103,7 @@ double GuideAlgorithmResistSwitch::result(double input)
             throw THROW_INFO("input < m_minMove");
         }
 
-        for(int i=0; i<m_history.GetCount(); i++)
+        for (unsigned int i = 0; i < m_history.GetCount(); i++)
         {
             if (fabs(m_history[i]) > m_minMove)
             {

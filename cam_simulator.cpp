@@ -343,7 +343,7 @@ static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint&
 static void render_clouds(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
     unsigned short *p0 = &img.Pixel(subframe.GetLeft(), subframe.GetTop());
-    for (unsigned int r = 0; r < subframe.GetHeight(); r++, p0 += img.Size.GetWidth())
+    for (int r = 0; r < subframe.GetHeight(); r++, p0 += img.Size.GetWidth())
     {
         unsigned short *const end = p0 + subframe.GetWidth();
         for (unsigned short *p = p0; p < end; p++)
@@ -562,7 +562,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img) {
 static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
     unsigned short *p0 = &img.Pixel(subframe.GetLeft(), subframe.GetTop());
-    for (unsigned int r = 0; r < subframe.GetHeight(); r++, p0 += img.Size.GetWidth())
+    for (int r = 0; r < subframe.GetHeight(); r++, p0 += img.Size.GetWidth())
     {
         unsigned short *const end = p0 + subframe.GetWidth();
         for (unsigned short *p = p0; p < end; p++)

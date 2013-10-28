@@ -346,6 +346,9 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
                     delete gc;
                     break;
                 }
+
+            case OVERLAY_NONE:
+                break;
             }
         }
 
@@ -355,8 +358,13 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
             double LockX = LockPosition().X;
             double LockY = LockPosition().Y;
 
-            switch(state)
+            switch (state)
             {
+                case STATE_UNINITIALIZED:
+                case STATE_SELECTING:
+                case STATE_SELECTED:
+                case STATE_STOP:
+                    break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:
                     dc.SetPen(wxPen(wxColor(255,255,0),1,wxDOT));
@@ -544,6 +552,8 @@ void Guider::SetState(GUIDER_STATE newState)
                 case STATE_GUIDING:
                     newState = STATE_SELECTED;
                     break;
+                case STATE_STOP:
+                    break;
             }
 
             if (pMount && pMount->GuidingCeases())
@@ -627,6 +637,11 @@ void Guider::SetState(GUIDER_STATE newState)
                     SetLockPosition(CurrentPosition());
                 }
                 break;
+
+            case STATE_SELECTING:
+            case STATE_CALIBRATED:
+            case STATE_STOP:
+                break;
         }
 
         if (newState >= requestedState)
@@ -685,6 +700,8 @@ void Guider::StopGuiding(void)
             break;
         case STATE_GUIDING:
             EvtServer.NotifyGuidingStopped();
+            break;
+        case STATE_STOP:
             break;
     }
 
@@ -757,6 +774,10 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     SetBackgroundColour(prevColor);
                 }
                     break;
+
+                case STATE_CALIBRATED:
+                case STATE_STOP:
+                    break;
             }
 
             throw THROW_INFO("unable to update current position");
@@ -768,6 +789,12 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             case STATE_SELECTING:
             case STATE_SELECTED:
                 EvtServer.NotifyLooping(pFrame->m_frameCounter);
+                break;
+            case STATE_CALIBRATING_PRIMARY:
+            case STATE_CALIBRATING_SECONDARY:
+            case STATE_CALIBRATED:
+            case STATE_GUIDING:
+            case STATE_STOP:
                 break;
         }
 
@@ -846,6 +873,10 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 break;
             case STATE_GUIDING:
                 pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
+                break;
+
+            case STATE_UNINITIALIZED:
+            case STATE_STOP:
                 break;
         }
     }
