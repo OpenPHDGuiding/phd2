@@ -17,6 +17,12 @@ make
 sudo make install
 }}}
 
+If you prefer not to install this wxWidgets build on your system, and just use it for building PHD2, add the following to option to configure:
+
+{{{--prefix=WXDIR}}}
+
+replacing {{{WXDIR}}} with a location of your choice. Then, add {{{WXDIR/bin}}} to your PATH before building PHD2 as described below.
+
   * get the phd2 sources
 {{{
 svn checkout http://open-phd-guiding.googlecode.com/svn/trunk/ open-phd-guiding
