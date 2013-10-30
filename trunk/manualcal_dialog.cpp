@@ -75,8 +75,8 @@ ManualCalDialog::ManualCalDialog(double xRate, double yRate, double xAngle, doub
 
     pVSizer->Add(pGridSizer, wxSizerFlags(0).Border(wxALL, 10));
     pVSizer->Add(
-	CreateButtonSizer(wxOK | wxCANCEL),
-	wxSizerFlags(0).Right().Border(wxALL, 10));
+    CreateButtonSizer(wxOK | wxCANCEL),
+    wxSizerFlags(0).Right().Border(wxALL, 10));
 
     SetSizerAndFit (pVSizer);
 

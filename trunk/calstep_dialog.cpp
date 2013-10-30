@@ -144,9 +144,9 @@ CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& 
     pButtonSizer->Add(
         pRecalc,
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
-	pButtonSizer->Add(
-		CreateButtonSizer(wxOK | wxCANCEL),
-		wxSizerFlags(0).Align(0).Border(wxALL, 10));
+    pButtonSizer->Add(
+        CreateButtonSizer(wxOK | wxCANCEL),
+        wxSizerFlags(0).Align(0).Border(wxALL, 10));
 
      //position the buttons centered with no border
      m_pVSizer->Add(
@@ -227,7 +227,7 @@ void CalstepDialog::OnRecalc (wxCommandEvent& evt)
                             m_bValidResult = true;
                         }
                         else
-                            wxMessageBox ("Could not compute step size", "Error", wxOK | wxICON_ERROR);
+                            wxMessageBox (_("Could not compute step size"), "Error", wxOK | wxICON_ERROR);
                     }
                     else
                         wxMessageBox (_("Num steps must be >= 6 and <= 60"),  _("Error"), wxOK | wxICON_ERROR);

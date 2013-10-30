@@ -79,13 +79,13 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     m_pMount = pMount;
 
     wxBoxSizer *chkSizer = new wxBoxSizer(wxHORIZONTAL);
-    
+
     m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_("Force calibration"));
     m_pRecalibrate->SetToolTip(_("Check to clear any previous calibration and force PHD to recalibrate"));
 
     m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_("Enable Guide Output"));
     m_pEnableGuide->SetToolTip(_("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
-    
+
     chkSizer->Add(m_pRecalibrate);
     chkSizer->Add(m_pEnableGuide);
     DoAdd(chkSizer);
@@ -573,8 +573,16 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
             throw ERROR_INFO("Unable to transform camera coordinates");
         }
 
+        // Maybe let a simulator tweak the star position by a fractional px amount - these will already be in mount coordinates
+        if (pCamera->IsSimulator())
+        {
+            mountVectorEndpoint.X -= pCamera->Guide_X_Adjustment();             // bw: += creates huge instability
+            mountVectorEndpoint.Y += pCamera->Guide_Y_Adjustment();
+        }
         double xDistance = mountVectorEndpoint.X;
         double yDistance = mountVectorEndpoint.Y;
+
+
 
         Debug.AddLine(wxString::Format("Moving (%.2f, %.2f) raw xDistance=%.2f yDistance=%.2f",
             cameraVectorEndpoint.X, cameraVectorEndpoint.Y, xDistance, yDistance));

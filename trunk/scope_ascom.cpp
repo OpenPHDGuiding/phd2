@@ -861,5 +861,4 @@ PierSide ScopeASCOM::SideOfPier(void)
     return pierSide;
 }
 
-#endif /* G 
-UIDE_ASCOM */
+#endif /* GUIDE_ASCOM */
