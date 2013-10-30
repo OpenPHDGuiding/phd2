@@ -137,8 +137,8 @@ static void load_sim_params()
     SimCamParams::custom_pe_amp = (pConfig->Profile.GetDouble("/SimCam/pe_cust_amp", PE_CUSTOM_AMP_DEFAULT));
     SimCamParams::custom_pe_period = (pConfig->Profile.GetDouble("/SimCam/pe_cust_period", PE_CUSTOM_PERIOD_DEFAULT));
 
-    double dval = pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_MAX);
-    SimCamParams::dec_drift_rate = range_check(dval, 0, DEC_DRIFT_DEFAULT) * SimCamParams::inverse_imagescale / 60.0;  //a-s per min is saved
+    double dval = pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT);
+    SimCamParams::dec_drift_rate = range_check(dval, 0, DEC_DRIFT_MAX) * SimCamParams::inverse_imagescale / 60.0;  //a-s per min is saved
     // backlash is arc-secs in UI - map to px for internal use
     dval = pConfig->Profile.GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT);
     SimCamParams::dec_backlash = range_check(dval, 0, DEC_BACKLASH_MAX) * SimCamParams::inverse_imagescale;
