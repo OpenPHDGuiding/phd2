@@ -169,6 +169,9 @@ GuideCamera::GuideCamera(void)
     HasShutter=false;
     ShutterState=false;
     HasSubframes=false;
+    m_isSimulator = false;
+    m_guideXAdjustment = 0;
+    m_guideYAdjustment = 0;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
 
     CurrentDarkFrame = NULL;
@@ -189,6 +192,20 @@ GuideCamera::~GuideCamera(void)
         pFrame->SetStatusText(pCamera->Name + _(" disconnected"));
         pCamera->Disconnect();
     }
+}
+// Base class stuff for letting a simulator tweak the star position by fractional px amounts
+bool GuideCamera::IsSimulator ()
+{
+    return (m_isSimulator);
+}
+double GuideCamera::Guide_X_Adjustment ()
+{
+    return (m_guideXAdjustment);
+
+}
+double GuideCamera::Guide_Y_Adjustment ()
+{
+    return (m_guideYAdjustment);
 }
 
 static int CompareNoCase(const wxString& first, const wxString& second)

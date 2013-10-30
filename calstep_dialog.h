@@ -55,7 +55,7 @@ private:
     wxTextCtrl *m_pImageScale;
     // numeric values from fields, populated by validators
     double m_fPixelSize;
-	wxString m_sPixelSize;
+    wxString m_sPixelSize;
     int m_iFocalLength;
     double m_fGuideSpeed;
     int m_iNumSteps;
