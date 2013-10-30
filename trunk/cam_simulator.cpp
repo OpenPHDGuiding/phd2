@@ -411,6 +411,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     double pe = 0.;
 
     if (SimCamParams::use_pe)
+    {
         if (SimCamParams::use_default_pe_params)
         {
             for (unsigned int i = 0; i < WXSIZEOF(period); i++)
@@ -421,6 +422,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
         {
             pe = SimCamParams::custom_pe_amp * cos(now/ SimCamParams::custom_pe_period * 2.0 * M_PI) * SimCamParams::inverse_imagescale;
         }
+    }
 
     // simulate drift in DEC
     double const drift = now * SimCamParams::dec_drift_rate;
@@ -947,7 +949,6 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     : wxDialog(parent, wxID_ANY, _("Camera Simulator"))
 {
     wxBoxSizer *pVSizer = new wxBoxSizer (wxVERTICAL);
-    wxBoxSizer *pHSizer = new wxBoxSizer (wxHORIZONTAL);
     double imageScale = pFrame->GetCameraPixelScale ();
 
     SimCamParams::inverse_imagescale = 1.0/imageScale;
