@@ -108,6 +108,7 @@ double SimCamParams::custom_pe_period;
 #define SEEING_DEFAULT 2.0                        // arc-sec FWHM
 #define SEEING_MAX 4.0
 #define CAM_ANGLE_DEFAULT 15.0
+#define CAM_ANGLE_MAX 360.0
 #define GUIDE_RATE_DEFAULT (0.5 * 15.0)           // multiples of sidereal rate, a-s/sec
 #define GUIDE_RATE_MAX (1.0 * 15.0)
 #define PIER_SIDE_DEFAULT PIER_SIDE_EAST
@@ -119,6 +120,12 @@ double SimCamParams::custom_pe_period;
 #define PE_CUSTOM_AMP_DEFAULT 2.0               // Give them a trivial 2 a-s 4 min smooth curve
 #define PE_CUSTOM_PERIOD_DEFAULT 240.0
 
+// Needed to handle legacy registry values that may no longer be in correct units or range
+static double range_check (double thisval, double minval, double maxval) 
+{
+    return (wxMin(wxMax(thisval, minval),maxval));
+}
+
 static void load_sim_params()
 {
     SimCamParams::nr_stars = pConfig->Profile.GetInt("/SimCam/nr_stars", NR_STARS_DEFAULT);
@@ -129,12 +136,16 @@ static void load_sim_params()
     SimCamParams::use_default_pe_params = (pConfig->Profile.GetBoolean("/SimCam/use_default_pe", USE_PE_DEFAULT_PARAMS));
     SimCamParams::custom_pe_amp = (pConfig->Profile.GetDouble("/SimCam/pe_cust_amp", PE_CUSTOM_AMP_DEFAULT));
     SimCamParams::custom_pe_period = (pConfig->Profile.GetDouble("/SimCam/pe_cust_period", PE_CUSTOM_PERIOD_DEFAULT));
-    SimCamParams::dec_drift_rate = (pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT)*SimCamParams::inverse_imagescale / 60.0);  //a-s per min is saved
-    SimCamParams::seeing_scale = pConfig->Profile.GetDouble("/SimCam/seeing_scale", SEEING_DEFAULT);        // FWHM a-s
-    SimCamParams::cam_angle = pConfig->Profile.GetDouble("/SimCam/cam_angle", CAM_ANGLE_DEFAULT);
-    SimCamParams::guide_rate = pConfig->Profile.GetDouble("/SimCam/guide_rate", GUIDE_RATE_DEFAULT);
+
+    double dval = pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_MAX);
+    SimCamParams::dec_drift_rate = range_check(dval, 0, DEC_DRIFT_DEFAULT) * SimCamParams::inverse_imagescale / 60.0;  //a-s per min is saved
     // backlash is arc-secs in UI - map to px for internal use
-    SimCamParams::dec_backlash = pConfig->Profile.GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT) * SimCamParams::inverse_imagescale;
+    dval = pConfig->Profile.GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT);
+    SimCamParams::dec_backlash = range_check(dval, 0, DEC_BACKLASH_MAX) * SimCamParams::inverse_imagescale;
+
+    SimCamParams::seeing_scale = range_check(pConfig->Profile.GetDouble("/SimCam/seeing_scale", SEEING_DEFAULT), 0, SEEING_MAX);       // FWHM a-s
+    SimCamParams::cam_angle = pConfig->Profile.GetDouble("/SimCam/cam_angle", CAM_ANGLE_DEFAULT);
+    SimCamParams::guide_rate = range_check(pConfig->Profile.GetDouble("/SimCam/guide_rate", GUIDE_RATE_DEFAULT), 0, GUIDE_RATE_MAX);
     SimCamParams::pier_side = (PierSide) pConfig->Profile.GetInt("/SimCam/pier_side", PIER_SIDE_DEFAULT);
     SimCamParams::reverse_dec_pulse_on_west_side = pConfig->Profile.GetBoolean("/SimCam/reverse_dec_pulse_on_west_side", REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT);
 }
@@ -930,17 +941,22 @@ void SimCamDialog::OnOkClick (wxCommandEvent& evt)
     {
         wxString sAmp = pPECustomAmp->GetValue();
         wxString sPeriod = pPECustomPeriod->GetValue();
-        double amp = 0;
-        double period = 0;
+        double amp = -1;
+        double period = -1;
         if (sAmp.ToDouble (&amp) && sPeriod.ToDouble (&period))
             if (amp > 0 && period > 0)
                 bOk = true;
             else
+            {
                 wxMessageBox (_("PE amplitude and period must be > 0"), "Error", wxOK | wxICON_ERROR);
+            }
         else
+        {
             wxMessageBox (_("PE amplitude and period must be numbers > 0"), "Error", wxOK | wxICON_ERROR);
-
+        }
     }
+    else
+        bOk = true;
     if (bOk)
         wxDialog::EndModal (wxID_OK);
 }
@@ -1021,7 +1037,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     // Session group controls
     wxStaticBoxSizer *pSessionGroup = new wxStaticBoxSizer (wxVERTICAL, this, _("Session"));
     wxFlexGridSizer *pSessionTable = new wxFlexGridSizer (1, 5, 15, 15);
-    pCameraAngleSpin = NewSpinner (this, SimCamParams::cam_angle, 0, 360.0, 10, _("Camera angle, degrees"));
+    pCameraAngleSpin = NewSpinner (this, SimCamParams::cam_angle, 0, CAM_ANGLE_MAX, 10, _("Camera angle, degrees"));
     AddTableEntryPair (this, pSessionTable, _("Camera angle"), pCameraAngleSpin);
     pSeeingSpin = NewSpinner (this, SimCamParams::seeing_scale, 0, SEEING_MAX, 0.5, _("Seeing, FWHM arc-sec"));
     AddTableEntryPair (this, pSessionTable, _("Seeing"), pSeeingSpin);
