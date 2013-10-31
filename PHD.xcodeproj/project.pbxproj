@@ -113,6 +113,7 @@
 		A1A088E31815CF63004899C0 /* drift_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088DE1815CF63004899C0 /* drift_tool.cpp */; };
 		A1A088E41815CF63004899C0 /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088E01815CF63004899C0 /* logger.cpp */; };
 		A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE284181CD8A4000B6085 /* manualcal_dialog.cpp */; };
+		A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE287182225E7000B6085 /* json_parser.cpp */; };
 		F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */; };
 		F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */; };
 /* End PBXBuildFile section */
@@ -338,6 +339,8 @@
 		A1A088E21815CF63004899C0 /* optionsbutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = optionsbutton.h; sourceTree = "<group>"; };
 		A1ACE284181CD8A4000B6085 /* manualcal_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = manualcal_dialog.cpp; sourceTree = "<group>"; };
 		A1ACE285181CD8A4000B6085 /* manualcal_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = manualcal_dialog.h; sourceTree = "<group>"; };
+		A1ACE287182225E7000B6085 /* json_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_parser.cpp; sourceTree = "<group>"; };
+		A1ACE288182225E7000B6085 /* json_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_parser.h; sourceTree = "<group>"; };
 		F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calstep_dialog.cpp; sourceTree = "<group>"; };
 		F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = optionsbutton.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -511,6 +514,8 @@
 				58B8CE8F16E05EFD00F6E68E /* Guiding */,
 				58339E630B1FC6A700109891 /* image_math.cpp */,
 				58339E640B1FC6A700109891 /* image_math.h */,
+				A1ACE287182225E7000B6085 /* json_parser.cpp */,
+				A1ACE288182225E7000B6085 /* json_parser.h */,
 				58B8CE9016E05F3A00F6E68E /* Libs */,
 				A1A088E01815CF63004899C0 /* logger.cpp */,
 				A1A088E11815CF63004899C0 /* logger.h */,
@@ -775,6 +780,7 @@
 				A1A088E31815CF63004899C0 /* drift_tool.cpp in Sources */,
 				A1A088E41815CF63004899C0 /* logger.cpp in Sources */,
 				A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */,
+				A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
