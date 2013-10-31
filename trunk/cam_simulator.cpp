@@ -475,15 +475,18 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     double total_shift_x = pe + ra_ofs;
     double total_shift_y = drift + dec_ofs.val();
 
+    double seeing[2] = { 0.0 };
+
     // simulate seeing
     if (SimCamParams::seeing_scale > 0.0)
     {
-        double seeing[2];
         rand_normal(seeing);
         static const double seeing_adjustment = (2.345 * 1.4 * 2.4);        //FWHM, geometry, empirical
         double sigma = SimCamParams::seeing_scale / seeing_adjustment * SimCamParams::inverse_imagescale;
-        total_shift_x += seeing[0] * sigma;
-        total_shift_y += seeing[1] *= sigma;
+        seeing[0] *= sigma;
+        seeing[1] *= sigma;
+        total_shift_x += seeing[0];
+        total_shift_y += seeing[1];
     }
 
     for (unsigned int i = 0; i < nr_stars; i++)
@@ -493,10 +496,11 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     }
 
 #ifdef SIMDEBUG
-        DebugFile.Write(wxString::Format( "%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f\n",
+    DebugFile.Write(wxString::Format( "%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f\n",
         pe, drift, seeing[0], seeing[1], total_shift_x, total_shift_y,
         ra_ofs, dec_ofs.val()));
 #endif
+
     // convert to camera coordinates
     wxVector<wxRealPoint> cc(nr_stars);
     double const angle = SimCamParams::cam_angle * M_PI / 180.;
