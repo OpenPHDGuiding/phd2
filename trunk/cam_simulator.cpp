@@ -115,7 +115,8 @@ double SimCamParams::custom_pe_period;
 #define REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT true
 #define CLOUDS_INTEN_DEFAULT 10
 #define USE_PE_DEFAULT true
-#define PE_SLIDER_DEFAULT 1.0
+#define PE_SCALE_DEFAULT 5.0                    // amplitude arc-sec
+#define PE_SCALE_MAX 10.0                        
 #define USE_PE_DEFAULT_PARAMS true
 #define PE_CUSTOM_AMP_DEFAULT 2.0               // Give them a trivial 2 a-s 4 min smooth curve
 #define PE_CUSTOM_PERIOD_DEFAULT 240.0
@@ -132,16 +133,16 @@ static void load_sim_params()
     SimCamParams::nr_hot_pixels = pConfig->Profile.GetInt("/SimCam/nr_hot_pixels", NR_HOT_PIXELS_DEFAULT);
     SimCamParams::noise_multiplier = pConfig->Profile.GetDouble("/SimCam/noise", NOISE_DEFAULT);
     SimCamParams::use_pe = (pConfig->Profile.GetBoolean ("/SimCam/use_pe", USE_PE_DEFAULT));
-    SimCamParams::pe_scale = wxMin(1.0, (pConfig->Profile.GetDouble("/SimCam/pe_scale", PE_SLIDER_DEFAULT)));
     SimCamParams::use_default_pe_params = (pConfig->Profile.GetBoolean("/SimCam/use_default_pe", USE_PE_DEFAULT_PARAMS));
     SimCamParams::custom_pe_amp = (pConfig->Profile.GetDouble("/SimCam/pe_cust_amp", PE_CUSTOM_AMP_DEFAULT));
     SimCamParams::custom_pe_period = (pConfig->Profile.GetDouble("/SimCam/pe_cust_period", PE_CUSTOM_PERIOD_DEFAULT));
 
     double dval = pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT);
     SimCamParams::dec_drift_rate = range_check(dval, 0, DEC_DRIFT_MAX) * SimCamParams::inverse_imagescale / 60.0;  //a-s per min is saved
-    // backlash is arc-secs in UI - map to px for internal use
+    // backlash is in arc-secs in UI - map to px for internal use
     dval = pConfig->Profile.GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT);
     SimCamParams::dec_backlash = range_check(dval, 0, DEC_BACKLASH_MAX) * SimCamParams::inverse_imagescale;
+    SimCamParams::pe_scale = range_check(pConfig->Profile.GetDouble("/SimCam/pe_scale", PE_SCALE_DEFAULT), 0, PE_SCALE_MAX);
 
     SimCamParams::seeing_scale = range_check(pConfig->Profile.GetDouble("/SimCam/seeing_scale", SEEING_DEFAULT), 0, SEEING_MAX);       // FWHM a-s
     SimCamParams::cam_angle = pConfig->Profile.GetDouble("/SimCam/cam_angle", CAM_ANGLE_DEFAULT);
@@ -419,6 +420,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     static double const period[] = { 230.5, 122.0, 49.4, 9.56, 76.84, };
     static double const amp[] =    {2.02, 0.69, 0.22, 0.137, 0.14};   // in a-s
     static double const phase[] =  { 0.0,     1.4, 98.8, 35.9, 150.4, };
+    static double const max_amp = 4.85;         // max amplitude of canned PE
     double pe = 0.;
 
     if (SimCamParams::use_pe)
@@ -427,7 +429,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
         {
             for (unsigned int i = 0; i < WXSIZEOF(period); i++)
                 pe += amp[i] * cos((now - phase[i]) / period[i] * 2. * M_PI);
-            pe *= (SimCamParams::pe_scale * SimCamParams::inverse_imagescale);      // modulated PE in px
+            pe *= (SimCamParams::pe_scale/max_amp * SimCamParams::inverse_imagescale);      // modulated PE in px
         }
         else
         {
@@ -844,10 +846,11 @@ struct SimCamDialog : public wxDialog
     PierSide pPierSide;
     wxStaticText *pPiersideLabel;
     wxRadioButton *pPEDefaultRb;
-    wxSlider *pPEDefSlider;
+    wxSpinCtrlDouble *pPEDefScale;
     wxRadioButton *pPECustomRb;
     wxTextCtrl *pPECustomAmp;
     wxTextCtrl *pPECustomPeriod;
+    wxButton *pPierFlip;
 
     SimCamDialog(wxWindow *parent);
     ~SimCamDialog() { }
@@ -918,9 +921,25 @@ static wxTextCtrl* AddCustomPEField (wxWindow* parent, wxFlexGridSizer* pTable, 
 
 static void SetRBState (SimCamDialog* pParent, bool using_defaults)
 {
-    pParent->pPEDefSlider->Enable(using_defaults);
+    pParent->pPEDefScale->Enable(using_defaults);
     pParent->pPECustomAmp->Enable(!using_defaults);
     pParent->pPECustomPeriod->Enable(!using_defaults);
+}
+
+static void SetControlStates (SimCamDialog* pParent, bool CaptureActive)
+{
+    pParent->pBacklashSpin->Enable(!CaptureActive);
+    pParent->pDriftSpin->Enable(!CaptureActive);
+    pParent->pGuideRateSpin->Enable(!CaptureActive);
+    pParent->pCameraAngleSpin->Enable(!CaptureActive);
+    pParent->pPEDefaultRb->Enable(!CaptureActive);
+    pParent->pPEDefScale->Enable(!CaptureActive);
+    pParent->pPECustomAmp->Enable(!CaptureActive);
+    pParent->pPECustomPeriod->Enable(!CaptureActive);
+    pParent->pPECustomRb->Enable(!CaptureActive);
+    pParent->pUsePECbx->Enable(!CaptureActive);
+    pParent->pPierFlip->Enable(!CaptureActive);
+    pParent->pReverseDecPulseCbx->Enable(!CaptureActive);
 }
 
 // Event handlers
@@ -1000,11 +1019,12 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     pPEDefaultRb = new wxRadioButton(this, wxID_ANY, _("Default curve"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
     pPEDefaultRb->SetValue (SimCamParams::use_default_pe_params);
     pPEDefaultRb->Bind (wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbDefaultPE, this);                // Event handler binding
-    wxStaticText *pSliderLabel = new wxStaticText(this, wxID_ANY, _("Percent maximum:"),wxPoint(-1,-1),wxSize(-1,-1));
-    pPEDefSlider = NewSlider (this, SimCamParams::pe_scale * 100, 0, 100, "% of max");
+    wxStaticText *pSliderLabel = new wxStaticText(this, wxID_ANY, _("Amplitude: "),wxPoint(-1,-1),wxSize(-1,-1));
+    pPEDefScale = NewSpinner(this, SimCamParams::pe_scale, 0, PE_SCALE_MAX, 0.5, "PE Amplitude, arc-secs");
+
     pPEDefaults->Add (pPEDefaultRb);
-    pPEDefaults->Add (pSliderLabel, wxSizerFlags().Border(wxLEFT, 6));
-    pPEDefaults->Add (pPEDefSlider);
+    pPEDefaults->Add (pSliderLabel, wxSizerFlags().Border(wxLEFT, 8));
+    pPEDefaults->Add (pPEDefScale, wxSizerFlags().Border(wxLEFT, 15));
     // Custom PE parameters
     wxFlexGridSizer *pPECustom = new wxFlexGridSizer (1, 5, 10, 10);
     pPECustomRb = new wxRadioButton(this, wxID_ANY, _("Custom curve"), wxDefaultPosition, wxDefaultSize);
@@ -1029,7 +1049,8 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     pPierSide = SimCamParams::pier_side;
     pPiersideLabel = new wxStaticText(this, wxID_ANY, _("Side of Pier: MMMMM"));
     pMiscSizer->Add (pReverseDecPulseCbx, wxSizerFlags().Border(10).Expand());
-    pMiscSizer->Add(new wxButton(this, wxID_CONVERT, _("Pier Flip")), wxSizerFlags().Border(wxLEFT, 30).Expand());
+    pPierFlip = new wxButton(this, wxID_CONVERT, _("Pier Flip")); 
+    pMiscSizer->Add(pPierFlip, wxSizerFlags().Border(wxLEFT, 30).Expand());
     pMiscSizer->Add(pPiersideLabel , wxSizerFlags().Border(wxLEFT, 30).Expand());
     pMountGroup->Add (pPEGroup, wxSizerFlags().Center().Border(10).Expand());
     pMountGroup->Add (pMiscSizer, wxSizerFlags().Border(wxTOP, 10).Expand());
@@ -1072,7 +1093,9 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
         wxSizerFlags(0).Center() );
 
     SetSizerAndFit (pVSizer);
-    SetRBState (this, pPEDefaultRb->GetValue());        // Enable matching PE-related controls
+    SetControlStates(this, pFrame->CaptureActive);
+    if (!pFrame->CaptureActive)
+        SetRBState (this, pPEDefaultRb->GetValue());        // Enable matching PE-related controls
     UpdatePierSideLabel();
 }
 
@@ -1091,7 +1114,7 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     pUsePECbx->SetValue (USE_PE_DEFAULT);
     pPEDefaultRb->SetValue (USE_PE_DEFAULT_PARAMS);
     pPECustomRb->SetValue(!USE_PE_DEFAULT_PARAMS);
-    pPEDefSlider->SetValue(PE_SLIDER_DEFAULT * 100.0);
+    pPEDefScale->SetValue(PE_SCALE_DEFAULT);
     pPECustomAmp->SetValue(wxString::Format("%0.1f",PE_CUSTOM_AMP_DEFAULT));
     pPECustomPeriod->SetValue(wxString::Format("%0.1f", PE_CUSTOM_PERIOD_DEFAULT));
     pPierSide = PIER_SIDE_DEFAULT;
@@ -1132,7 +1155,7 @@ void Camera_SimClass::ShowPropertyDialog()
         SimCamParams::use_pe = dlg.pUsePECbx->GetValue();
         SimCamParams::use_default_pe_params = dlg.pPEDefaultRb->GetValue();
         if (SimCamParams::use_default_pe_params)
-            SimCamParams::pe_scale = dlg.pPEDefSlider->GetValue() / 100.0;
+            SimCamParams::pe_scale = dlg.pPEDefScale->GetValue();
         else
         {
             dlg.pPECustomAmp->GetValue().ToDouble (&SimCamParams::custom_pe_amp);
