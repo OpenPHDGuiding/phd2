@@ -736,15 +736,6 @@ void MyFrame::UpdateButtonsStatus(void)
         need_update = true;
     }
 
-    if (pCamera->IsSimulator())
-    {
-        bool btn_enabled = loop_enabled && !CaptureActive;
-        if (Setup_Button->IsEnabled () != btn_enabled)
-        {
-            Setup_Button->Enable (btn_enabled);
-            need_update = true;
-        }
-    }
     bool bGuideable = pGuider->GetState() == STATE_SELECTED &&
         pMount && pMount->IsConnected();
 
