@@ -1,6 +1,6 @@
 #summary OpenPHD Event Monitoring interface
 
-<wiki:toc max_depth="2" />
+<wiki:toc max_depth="3" />
 
 = Introduction =
 
@@ -221,7 +221,7 @@ Get current camera exposure time:
 Set camera exposure:
 {{{
 --> {"method": "set_exposure", "params": [1500], "id": 2}
-<-- {"jsonrpc": 2.0, "result": 0, "id": 2}
+<-- {"jsonrpc": "2.0", "result": 0, "id": 2}
 }}}
 
 Set camera exposure (error):
