@@ -36,6 +36,7 @@
 
 #include <wx/sstream.h>
 #include <wx/sckstrm.h>
+#include <sstream>
 
 EventServer EvtServer;
 
