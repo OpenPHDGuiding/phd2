@@ -514,6 +514,32 @@ int MyFrame::ExposureDurationFromSelection(const wxString& sel)
     return 1000;
 }
 
+void MyFrame::GetExposureDurations(std::vector<int> *exposure_durations)
+{
+    exposure_durations->clear();
+    for (unsigned int i = 0; i < WXSIZEOF(dur_values); i++)
+        exposure_durations->push_back(dur_values[i]);
+}
+
+static int dur_index(int duration)
+{
+    for (int i = 0; i < WXSIZEOF(dur_values); i++)
+        if (duration == dur_values[i])
+            return i;
+    return -1;
+}
+
+bool MyFrame::SetExposureDuration(int val)
+{
+    int idx;
+    if ((idx = dur_index(val)) == -1)
+        return false;
+    Dur_Choice->SetValue(dur_choices[idx]);
+    wxCommandEvent dummy;
+    OnExposureDurationSelected(dummy);
+    return true;
+}
+
 enum {
     GAMMA_MIN = 10,
     GAMMA_MAX = 300,

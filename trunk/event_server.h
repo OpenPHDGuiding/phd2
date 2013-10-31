@@ -37,6 +37,7 @@
 #define EVENT_SERVER_INCLUDED
 
 #include <set>
+#include "json_parser.h"
 
 class EventServer : public wxEvtHandler
 {
@@ -44,6 +45,7 @@ public:
     typedef std::set<wxSocketClient *> CliSockSet;
 
 private:
+    JsonParser m_parser;
     wxSocketServer *m_serverSocket;
     CliSockSet m_eventServerClients;
 

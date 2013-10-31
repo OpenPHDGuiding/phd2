@@ -209,6 +209,9 @@ public:
     void UpdateTitle(void);
     void UpdateDarksButton(void);
 
+    void GetExposureDurations(std::vector<int> *exposure_durations);
+    bool SetExposureDuration(int val);
+
     bool StartServer(bool state);
     bool FlipRACal();
     int RequestedExposureDuration();
