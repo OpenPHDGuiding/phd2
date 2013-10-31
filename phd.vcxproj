@@ -224,6 +224,7 @@
     <ClCompile Include="guide_algorithm_resistswitch.cpp" />
     <ClCompile Include="guidinglog.cpp" />
     <ClCompile Include="image_math.cpp" />
+    <ClCompile Include="json_parser.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="manualcal_dialog.cpp" />
     <ClCompile Include="messagebox_proxy.cpp" />
@@ -332,6 +333,7 @@
     <ClInclude Include="guide_algorithm_resistswitch.h" />
     <ClInclude Include="guidinglog.h" />
     <ClInclude Include="image_math.h" />
+    <ClInclude Include="json_parser.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="manualcal_dialog.h" />
     <ClInclude Include="messagebox_proxy.h" />

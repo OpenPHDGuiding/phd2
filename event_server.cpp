@@ -64,6 +64,89 @@ static wxString state_name(EXPOSED_STATE st)
     }
 }
 
+template<char LDELIM, char RDELIM>
+struct JSeq
+{
+    wxString m_s;
+    bool m_first;
+    bool m_closed;
+    JSeq() : m_first(true), m_closed(false) { m_s << LDELIM; }
+    void close() { m_s << RDELIM; m_closed = true; }
+    wxString str() { if (!m_closed) close(); return m_s; }
+};
+
+typedef JSeq<'[', ']'> JAry;
+typedef JSeq<'{', '}'> JObj;
+
+static JAry& operator<<(JAry& a, const wxString& str)
+{
+    if (a.m_first)
+        a.m_first = false;
+    else
+        a.m_s << ',';
+    a.m_s << str;
+    return a;
+}
+
+static wxString json_escape(const wxString& s)
+{
+    wxString t(s);
+    static const wxString BACKSLASH("\\");
+    static const wxString BACKSLASHBACKSLASH("\\\\");
+    static const wxString DQUOT("\"");
+    static const wxString BACKSLASHDQUOT("\\\"");
+    t.Replace(BACKSLASH, BACKSLASHBACKSLASH);
+    t.Replace(DQUOT, BACKSLASHDQUOT);
+    return t;
+}
+
+static wxString json_format(const json_value *j)
+{
+    static const wxString literal_null("null");
+    static const wxString literal_true("true");
+    static const wxString literal_false("false");
+
+    if (!j)
+        return literal_null;
+
+    switch (j->type) {
+    default:
+    case JSON_NULL: return literal_null;
+    case JSON_OBJECT: {
+        wxString ret("{");
+        bool first = true;
+        for (const json_value *jj = j->first_child; jj; jj = jj->next_sibling)
+        {
+            if (first)
+                first = false;
+            else
+                ret << ",";
+            ret << '"' << jj->name << "\":" << json_format(jj);
+        }
+        ret << "}";
+        return ret;
+    }
+    case JSON_ARRAY: {
+        wxString ret("[");
+        bool first = true;
+        for (json_value *jj = j->first_child; jj; jj = jj->next_sibling)
+        {
+            if (first)
+                first = false;
+            else
+                ret << ",";
+            ret << json_format(jj);
+        }
+        ret << "]";
+        return ret;
+    }
+    case JSON_STRING: return '"' + json_escape(j->string_value) + '"';
+    case JSON_INT:    return wxString::Format("%d", j->int_value);
+    case JSON_FLOAT:  return wxString::Format("%g", (double) j->float_value);
+    case JSON_BOOL:   return j->int_value ? literal_true : literal_false;
+    }
+}
+
 // name-value pair
 struct NV
 {
@@ -73,24 +156,30 @@ struct NV
     NV(const wxString& n_, int v_) : n(n_), v(wxString::Format("%d", v_)) { }
     NV(const wxString& n_, double v_) : n(n_), v(wxString::Format("%g", v_)) { }
     NV(const wxString& n_, double v_, int prec) : n(n_), v(wxString::Format("%.*f", prec, v_)) { }
+    template<typename T>
+    NV(const wxString& n_, const std::vector<T>& vec);
+    NV(const wxString& n_, JAry& ary) : n(n_), v(ary.str()) { }
+    NV(const wxString& n_, JObj& obj) : n(n_), v(obj.str()) { }
+    NV(const wxString& n_, const json_value *v_) : n(n_), v(json_format(v_)) { }
 };
 
-NV NVMount(const Mount *mount)
+template<typename T>
+NV::NV(const wxString& n_, const std::vector<T>& vec)
+    : n(n_)
 {
-    return NV("Mount", mount->Name());
+    std::ostringstream os;
+    os << '[';
+    for (int i = 0; i < vec.size(); i++)
+    {
+        if (i != 0)
+            os << ',';
+        os << vec[i];
+    }
+    os << ']';
+    v = os.str();
 }
 
-struct JObj
-{
-    wxString m_s;
-    bool m_first;
-    bool m_closed;
-    JObj() : m_first(true), m_closed(false) { m_s << "{"; }
-    void close() { m_s << "}"; m_closed = true; }
-    wxString str() { if (!m_closed) close(); return m_s; }
-};
-
-JObj& operator<<(JObj& j, const NV& nv)
+static JObj& operator<<(JObj& j, const NV& nv)
 {
     if (j.m_first)
         j.m_first = false;
@@ -100,10 +189,19 @@ JObj& operator<<(JObj& j, const NV& nv)
     return j;
 }
 
-JObj& operator<<(JObj& j, const PHD_Point& pt)
+static NV NVMount(const Mount *mount)
 {
-    j << NV("X", pt.X, 3) << NV("Y", pt.Y, 3);
-    return j;
+    return NV("Mount", mount->Name());
+}
+
+static JObj& operator<<(JObj& j, const PHD_Point& pt)
+{
+    return j << NV("X", pt.X, 3) << NV("Y", pt.Y, 3);
+}
+
+static JAry& operator<<(JAry& a, JObj& j)
+{
+    return a << j.str();
 }
 
 struct Ev : public JObj
@@ -178,9 +276,14 @@ static void send_buf(wxSocketClient *client, const wxCharBuffer& buf)
     client->Write("\r\n", 2);
 }
 
-static void do_notify1(wxSocketClient *client, const JObj& jj)
+static void do_notify1(wxSocketClient *client, const JAry& ary)
 {
-    send_buf(client, JObj(jj).str().ToUTF8());
+    send_buf(client, JAry(ary).str().ToUTF8());
+}
+
+static void do_notify1(wxSocketClient *client, const JObj& j)
+{
+    send_buf(client, JObj(j).str().ToUTF8());
 }
 
 static void do_notify(const EventServer::CliSockSet& cli, const JObj& jj)
@@ -248,6 +351,307 @@ static void send_catchup_events(wxSocketClient *cli)
     do_notify1(cli, ev_app_state());
 }
 
+struct ClientReadBuf
+{
+    enum { SIZE = 1024 };
+    char buf[SIZE];
+    char *dest;
+
+    ClientReadBuf() { reset(); }
+    size_t avail() const { return &buf[SIZE] - dest; }
+    void reset() { dest = &buf[0]; }
+};
+
+inline static ClientReadBuf *client_rdbuf(wxSocketClient *cli)
+{
+    return (ClientReadBuf *) cli->GetClientData();
+}
+
+static void destroy_client(wxSocketClient *cli)
+{
+    ClientReadBuf *buf = client_rdbuf(cli);
+    cli->Destroy();
+    delete buf;
+}
+
+static void drain_input(wxSocketInputStream& sis)
+{
+    while (sis.CanRead())
+    {
+        char buf[1024];
+        if (sis.Read(buf, sizeof(buf)).LastRead() == 0)
+            break;
+    }
+}
+
+static bool find_eol(char *p, size_t len)
+{
+    const char *end = p + len;
+    for (; p < end; p++)
+    {
+        if (*p == '\r' || *p == '\n')
+        {
+            *p = 0;
+            return true;
+        }
+    }
+    return false;
+}
+
+enum {
+    JSONRPC_PARSE_ERROR = -32700,
+    JSONRPC_INVALID_REQUEST = -32600,
+    JSONRPC_METHOD_NOT_FOUND = -32601,
+    JSONRPC_INVALID_PARAMS = -32602,
+    JSONRPC_INTERNAL_ERROR = -32603,
+};
+
+static NV jrpc_error(int code, const wxString& msg)
+{
+    JObj err;
+    err << NV("code", code) << NV("message", json_escape(msg));
+    return NV("error", err);
+}
+
+template<typename T>
+static NV jrpc_result(T t)
+{
+    return NV("result", t);
+}
+
+static NV jrpc_id(const json_value *id)
+{
+    return NV("id", id);
+}
+
+struct JRpcResponse : public JObj
+{
+    JRpcResponse() { *this << NV("jsonrpc", "2.0"); }
+};
+
+static wxString parser_error(const JsonParser& parser)
+{
+    return wxString::Format("invalid JSON request: %s on line %d at \"%.12s...\"",
+        parser.ErrorDesc(), parser.ErrorLine(), parser.ErrorPos());
+}
+
+static void
+parse_request(const json_value *req, const json_value **pmethod, const json_value **pparams,
+              const json_value **pid)
+{
+    *pmethod = *pparams = *pid = 0;
+
+    if (req)
+    {
+        for (json_value *t = req->first_child; t; t = t->next_sibling)
+        {
+            if (t->name)
+            {
+                if (t->type == JSON_STRING && strcmp(t->name, "method") == 0)
+                    *pmethod = t;
+                else if (strcmp(t->name, "params") == 0)
+                    *pparams = t;
+                else if (strcmp(t->name, "id") == 0)
+                    *pid = t;
+            }
+        }
+    }
+}
+
+static const json_value *at(const json_value *ary, unsigned int idx)
+{
+    unsigned int i = 0;
+    for (const json_value *j = ary->first_child; j; j = j->next_sibling, i++)
+    {
+        if (i == idx)
+            return j;
+    }
+    return 0;
+}
+
+static void get_exposure(JObj& response, const json_value *params)
+{
+    response << jrpc_result(pFrame->RequestedExposureDuration());
+}
+
+static void get_exposure_durations(JObj& response, const json_value *params)
+{
+    std::vector<int> exposure_durations;
+    pFrame->GetExposureDurations(&exposure_durations);
+    response << jrpc_result(exposure_durations);
+}
+
+static void get_profiles(JObj& response, const json_value *params)
+{
+    JAry ary;
+    wxArrayString names = pConfig->ProfileNames();
+    for (int i = 0; i < names.size(); i++)
+    {
+        wxString name = names[i];
+        int id = pConfig->GetProfileId(name);
+        if (id)
+        {
+            JObj t;
+            t << NV("id", id) << NV("name", name);
+            ary << t;
+        }
+    }
+    response << jrpc_result(ary);
+}
+
+static void set_exposure(JObj& response, const json_value *params)
+{
+    const json_value *exp;
+    if (!params || (exp = at(params, 0)) == 0 || exp->type != JSON_INT)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected exposure param");
+        return;
+    }
+
+    bool ok = pFrame->SetExposureDuration(exp->int_value);
+    if (ok)
+    {
+        response << jrpc_result(1);
+    }
+    else
+    {
+        response << jrpc_error(1, "could not set exposure duration");
+    }
+}
+
+static bool handle_request(JObj& response, const json_value *req)
+{
+    const json_value *method;
+    const json_value *params;
+    const json_value *id;
+
+    parse_request(req, &method, &params, &id);
+
+    if (!method)
+    {
+        response << jrpc_error(JSONRPC_INVALID_REQUEST, "invalid request") << jrpc_id(0);
+        return true;
+    }
+
+    static struct {
+        const char *name;
+        void (*fn)(JObj& response, const json_value *params);
+    } methods[] = {
+        { "get_exposure", &get_exposure, },
+        { "set_exposure", &set_exposure, },
+        { "get_exposure_durations", &get_exposure_durations, },
+        { "get_profiles", &get_profiles, },
+    };
+
+    bool found = false;
+    for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
+    {
+        if (strcmp(method->string_value, methods[i].name) == 0)
+        {
+            (*methods[i].fn)(response, params);
+            if (id)
+            {
+                response << jrpc_id(id);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    if (id)
+    {
+        response << jrpc_error(JSONRPC_METHOD_NOT_FOUND, "method not found") << jrpc_id(id);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonParser& parser)
+{
+    if (!parser.Parse(input))
+    {
+        JRpcResponse response;
+        response << jrpc_error(JSONRPC_PARSE_ERROR, parser_error(parser)) << jrpc_id(0);
+        do_notify1(cli, response);
+        return;
+    }
+
+    const json_value *root = parser.Root();
+
+    if (root->type == JSON_ARRAY)
+    {
+        // a batch request
+
+        JAry ary;
+
+        bool found = false;
+        for (const json_value *req = root->first_child; req; req = req->next_sibling)
+        {
+            JRpcResponse response;
+            if (handle_request(response, req))
+            {
+                ary << response;
+                found = true;
+            }
+        }
+
+        if (found)
+            do_notify1(cli, ary);
+    }
+    else
+    {
+        // a single request
+
+        const json_value *const req = root;
+        JRpcResponse response;
+        if (handle_request(response, req))
+            do_notify1(cli, response);
+    }
+}
+
+static void handle_cli_input(wxSocketClient *cli, JsonParser& parser)
+{
+    ClientReadBuf *rdbuf = client_rdbuf(cli);
+
+    wxSocketInputStream sis(*cli);
+    size_t avail = rdbuf->avail();
+
+    while (sis.CanRead())
+    {
+        if (avail == 0)
+        {
+            drain_input(sis);
+
+            JRpcResponse response;
+            response << jrpc_error(JSONRPC_INTERNAL_ERROR, "too big") << jrpc_id(0);
+            do_notify1(cli, response);
+
+            rdbuf->reset();
+            break;
+        }
+        size_t n = sis.Read(rdbuf->dest, avail).LastRead();
+        if (n == 0)
+            break;
+
+        if (find_eol(rdbuf->dest, n))
+        {
+            drain_input(sis);
+            handle_cli_input_complete(cli, &rdbuf->buf[0], parser);
+            rdbuf->reset();
+            break;
+        }
+
+        rdbuf->dest += n;
+        avail -= n;
+    }
+}
+
 EventServer::EventServer()
 {
 }
@@ -294,7 +698,7 @@ void EventServer::EventServerStop()
     for (CliSockSet::const_iterator it = m_eventServerClients.begin();
          it != m_eventServerClients.end(); ++it)
     {
-        (*it)->Destroy();
+        destroy_client(*it);
     }
     m_eventServerClients.clear();
 
@@ -322,6 +726,7 @@ void EventServer::OnEventServerEvent(wxSocketEvent& event)
     client->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
     client->SetFlags(wxSOCKET_NOWAIT);
     client->Notify(true);
+    client->SetClientData(new ClientReadBuf());
 
     send_catchup_events(client);
 
@@ -340,22 +745,11 @@ void EventServer::OnEventServerClientEvent(wxSocketEvent& event)
         if (n != 1)
             Debug.AddLine("client disconnected but not present in client set!");
 
-        cli->Destroy();
+        destroy_client(cli);
     }
     else if (event.GetSocketEvent() == wxSOCKET_INPUT)
     {
-        // consume the input
-        // TODO: parse input message
-        wxSocketInputStream sis(*cli);
-        while (sis.CanRead())
-        {
-            char buf[4096];
-            sis.Read(buf, sizeof(buf));
-            if (sis.LastRead() == 0)
-                break;
-        }
-
-        do_notify1(cli, ev_app_state());
+        handle_cli_input(cli, m_parser);
     }
     else
     {
