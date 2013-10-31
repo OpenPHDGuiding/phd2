@@ -285,7 +285,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X,8);
     Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y,8);
     pGuider->SetCursor(wxCursor(Cursor));
-    // pGuider->SetCursor(wxCursor(wxCURSOR_CROSS));
 
 #ifndef __WXGTK__
     SetStatusText(_("Like PHD? Consider donating"),1);

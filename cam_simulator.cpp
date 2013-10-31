@@ -33,8 +33,6 @@
  *
  */
 
-
-
 #include "phd.h"
 
 #ifdef SIMULATOR
@@ -96,17 +94,18 @@ bool SimCamParams::use_pe;
 bool SimCamParams::use_default_pe_params;
 double SimCamParams::custom_pe_amp;
 double SimCamParams::custom_pe_period;
+
 // Note: these are all in units appropriate for the UI
 #define NR_STARS_DEFAULT 20
 #define NR_HOT_PIXELS_DEFAULT 8
 #define NOISE_DEFAULT 2.0
 #define NOISE_MAX 5.0
-#define DEC_BACKLASH_DEFAULT 1.0                  // arc-sec
-#define DEC_BACKLASH_MAX 10.0
-#define DEC_DRIFT_DEFAULT 3.0                     // arc-sec per minute
-#define DEC_DRIFT_MAX 10.0
+#define DEC_BACKLASH_DEFAULT 5.0                  // arc-sec
+#define DEC_BACKLASH_MAX 40.0
+#define DEC_DRIFT_DEFAULT 5.0                     // arc-sec per minute
+#define DEC_DRIFT_MAX 30.0
 #define SEEING_DEFAULT 2.0                        // arc-sec FWHM
-#define SEEING_MAX 4.0
+#define SEEING_MAX 5.0
 #define CAM_ANGLE_DEFAULT 15.0
 #define CAM_ANGLE_MAX 360.0
 #define GUIDE_RATE_DEFAULT (0.5 * 15.0)           // multiples of sidereal rate, a-s/sec
@@ -116,15 +115,15 @@ double SimCamParams::custom_pe_period;
 #define CLOUDS_INTEN_DEFAULT 10
 #define USE_PE_DEFAULT true
 #define PE_SCALE_DEFAULT 5.0                    // amplitude arc-sec
-#define PE_SCALE_MAX 10.0                        
+#define PE_SCALE_MAX 20.0
 #define USE_PE_DEFAULT_PARAMS true
 #define PE_CUSTOM_AMP_DEFAULT 2.0               // Give them a trivial 2 a-s 4 min smooth curve
 #define PE_CUSTOM_PERIOD_DEFAULT 240.0
 
 // Needed to handle legacy registry values that may no longer be in correct units or range
-static double range_check (double thisval, double minval, double maxval) 
+static double range_check(double thisval, double minval, double maxval)
 {
-    return (wxMin(wxMax(thisval, minval),maxval));
+    return wxMin(wxMax(thisval, minval), maxval);
 }
 
 static void load_sim_params()
@@ -132,10 +131,10 @@ static void load_sim_params()
     SimCamParams::nr_stars = pConfig->Profile.GetInt("/SimCam/nr_stars", NR_STARS_DEFAULT);
     SimCamParams::nr_hot_pixels = pConfig->Profile.GetInt("/SimCam/nr_hot_pixels", NR_HOT_PIXELS_DEFAULT);
     SimCamParams::noise_multiplier = pConfig->Profile.GetDouble("/SimCam/noise", NOISE_DEFAULT);
-    SimCamParams::use_pe = (pConfig->Profile.GetBoolean ("/SimCam/use_pe", USE_PE_DEFAULT));
-    SimCamParams::use_default_pe_params = (pConfig->Profile.GetBoolean("/SimCam/use_default_pe", USE_PE_DEFAULT_PARAMS));
-    SimCamParams::custom_pe_amp = (pConfig->Profile.GetDouble("/SimCam/pe_cust_amp", PE_CUSTOM_AMP_DEFAULT));
-    SimCamParams::custom_pe_period = (pConfig->Profile.GetDouble("/SimCam/pe_cust_period", PE_CUSTOM_PERIOD_DEFAULT));
+    SimCamParams::use_pe = pConfig->Profile.GetBoolean("/SimCam/use_pe", USE_PE_DEFAULT);
+    SimCamParams::use_default_pe_params = pConfig->Profile.GetBoolean("/SimCam/use_default_pe", USE_PE_DEFAULT_PARAMS);
+    SimCamParams::custom_pe_amp = pConfig->Profile.GetDouble("/SimCam/pe_cust_amp", PE_CUSTOM_AMP_DEFAULT);
+    SimCamParams::custom_pe_period = pConfig->Profile.GetDouble("/SimCam/pe_cust_period", PE_CUSTOM_PERIOD_DEFAULT);
 
     double dval = pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT);
     SimCamParams::dec_drift_rate = range_check(dval, 0, DEC_DRIFT_MAX) * SimCamParams::inverse_imagescale / 60.0;  //a-s per min is saved
@@ -156,13 +155,13 @@ static void save_sim_params()
     pConfig->Profile.SetInt("/SimCam/nr_stars", SimCamParams::nr_stars);
     pConfig->Profile.SetInt("/SimCam/nr_hot_pixels", SimCamParams::nr_hot_pixels);
     pConfig->Profile.SetDouble("/SimCam/noise", SimCamParams::noise_multiplier);
-    pConfig->Profile.SetDouble("/SimCam/dec_backlash", SimCamParams::dec_backlash / (SimCamParams::inverse_imagescale));
-    pConfig->Profile.SetBoolean ("/SimCam/use_pe", SimCamParams::use_pe);
+    pConfig->Profile.SetDouble("/SimCam/dec_backlash", SimCamParams::dec_backlash / SimCamParams::inverse_imagescale);
+    pConfig->Profile.SetBoolean("/SimCam/use_pe", SimCamParams::use_pe);
     pConfig->Profile.SetBoolean("/SimCam/use_default_pe", SimCamParams::use_default_pe_params);
     pConfig->Profile.SetDouble("/SimCam/pe_scale", SimCamParams::pe_scale);
     pConfig->Profile.SetDouble("/SimCam/pe_cust_amp", SimCamParams::custom_pe_amp);
     pConfig->Profile.SetDouble("/SimCam/pe_cust_period", SimCamParams::custom_pe_period);
-    pConfig->Profile.SetDouble("/SimCam/dec_drift", (SimCamParams::dec_drift_rate * 60.0/SimCamParams::inverse_imagescale));
+    pConfig->Profile.SetDouble("/SimCam/dec_drift", SimCamParams::dec_drift_rate * 60.0 / SimCamParams::inverse_imagescale);
     pConfig->Profile.SetDouble("/SimCam/seeing_scale", SimCamParams::seeing_scale);
     pConfig->Profile.SetDouble("/SimCam/cam_angle", SimCamParams::cam_angle);
     pConfig->Profile.SetDouble("/SimCam/guide_rate", SimCamParams::guide_rate);
@@ -277,7 +276,6 @@ struct SimCamState {
     double ra_ofs;        // assume no backlash in RA
     BacklashVal dec_ofs;  // simulate backlash in DEC
     wxStopWatch timer;    // platform-independent timer
-    Camera_SimClass *pThisCam;  // needed for fractional px offsets
 #ifdef SIMDEBUG
     wxFFile DebugFile;
     double last_ra_move;
@@ -314,11 +312,11 @@ void SimCamState::Initialize()
     srand(clock());
     ra_ofs = 0.;
     dec_ofs = BacklashVal(SimCamParams::dec_backlash);
+
 #ifdef SIMDEBUG
     DebugFile.Open ("Sim_Debug.txt", "w");
     DebugFile.Write ("PE, Drift, RA_Seeing, Dec_Seeing, Total_X, Total_Y, RA_Ofs, Dec_Ofs, \n");
 #endif
-
 }
 
 // get a pair of normally-distributed independent random values - Box-Muller algorithm, sigma=1
@@ -363,22 +361,52 @@ inline static void incr_pixel(usImage& img, int x, int y, unsigned int val)
 
 static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint& p, int inten)
 {
-    static unsigned int const STAR[][7] = {{  0,  0,  1,  1,  1,  0,  0,},
-                                           {  0,  2, 11, 17, 11,  2,  0,},
-                                           {  1, 11, 47, 78, 47, 11,  1,},
-                                           {  1, 17, 78,128, 78, 17,  1,},
-                                           {  1, 11, 47, 78, 47, 11,  1,},
-                                           {  0,  2, 11, 17, 11,  2,  0,},
-                                           {  0,  0,  1,  1,  1,  0,  0,}};
-    for (int sx = -3; sx <= 3; sx++) {
-        int const cx = (int) floor(p.x + (double) sx / 2.0 + 0.5);
+    enum { WIDTH = 5 };
+    double STAR[][WIDTH] = {{ 0.0,  0.8,   2.2,  0.8, 0.0, },
+                            { 0.8, 16.6,  46.1, 16.6, 0.8, },
+                            { 2.2, 46.1, 128.0, 46.1, 2.2, },
+                            { 0.8, 16.6,  46.1, 16.6, 0.8, },
+                            { 0.0,  0.8,   2.2,  0.8, 0.0, },
+                           };
+
+    wxRealPoint intpart;
+    double fx = modf(p.x, &intpart.x);
+    double fy = modf(p.y, &intpart.y);
+    double f00 = (1.0 - fx) * (1.0 - fy);
+    double f01 = (1.0 - fx) * fy;
+    double f10 = fx * (1.0 - fy);
+    double f11 = fx * fy;
+
+    double d[WIDTH + 1][WIDTH + 1] = { 0.0 };
+    for (unsigned int i = 0; i < WIDTH; i++)
+        for (unsigned int j = 0; j < WIDTH; j++)
+        {
+            double s = STAR[i][j];
+            if (s > 0.0)
+            {
+                s *= (double) inten;
+                s /= 256.0;
+                d[i][j] += f00 * s;
+                d[i+1][j] += f10 * s;
+                d[i][j+1] += f01 * s;
+                d[i+1][j+1] += f11 * s;
+            }
+        }
+
+    wxPoint c((int) intpart.x - (WIDTH - 1) / 2,
+              (int) intpart.y - (WIDTH - 1) / 2);
+
+    for (unsigned int i = 0; i < WIDTH + 1; i++)
+    {
+        int const cx = c.x + i;
         if (cx < subframe.GetLeft() || cx > subframe.GetRight())
             continue;
-        for (int sy = -3; sy <= 3; sy++) {
-            int const cy = (int) floor(p.y + (double) sy / 2.0 + 0.5);
+        for (unsigned int j = 0; j < WIDTH + 1; j++)
+        {
+            int const cy = c.y + j;
             if (cy < subframe.GetTop() || cy > subframe.GetBottom())
                 continue;
-            int incr = inten * STAR[sy + 3][sx + 3] / 256;
+            int incr = (int) d[i][j];
             if (incr > (unsigned short)-1)
                 incr = (unsigned short)-1;
             incr_pixel(img, cx, cy, incr);
@@ -400,6 +428,7 @@ static void render_clouds(usImage& img, const wxRect& subframe, int exptime, int
 void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
     unsigned int const nr_stars = stars.size();
+
 #ifdef SIMDEBUG
     static int CountUp (0);
     if (CountUp == 0)
@@ -417,9 +446,6 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     double const now = timer.Time() / 1000.;
 
     // Compute PE - canned PE terms create some "steep" sections of the curve
-    static double const period[] = { 230.5, 122.0, 49.4, 9.56, 76.84, };
-    static double const amp[] =    {2.02, 0.69, 0.22, 0.137, 0.14};   // in a-s
-    static double const phase[] =  { 0.0,     1.4, 98.8, 35.9, 150.4, };
     static double const max_amp = 4.85;         // max amplitude of canned PE
     double pe = 0.;
 
@@ -427,9 +453,14 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     {
         if (SimCamParams::use_default_pe_params)
         {
+            static double const period[] = { 230.5, 122.0, 49.4, 9.56, 76.84, };
+            static double const amp[] =    {2.02, 0.69, 0.22, 0.137, 0.14};   // in a-s
+            static double const phase[] =  { 0.0,     1.4, 98.8, 35.9, 150.4, };
+
             for (unsigned int i = 0; i < WXSIZEOF(period); i++)
                 pe += amp[i] * cos((now - phase[i]) / period[i] * 2. * M_PI);
-            pe *= (SimCamParams::pe_scale/max_amp * SimCamParams::inverse_imagescale);      // modulated PE in px
+
+            pe *= (SimCamParams::pe_scale / max_amp * SimCamParams::inverse_imagescale);      // modulated PE in px
         }
         else
         {
@@ -440,49 +471,25 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     // simulate drift in DEC
     double const drift = now * SimCamParams::dec_drift_rate;
 
-    // simulate seeing
-    double seeing [2] = {0};
-    static const double seeing_adjustment = (2.345 * 1.4 * 2.4);        //FWHM, geometry, empirical
-
-    if (SimCamParams::seeing_scale > 0)
-    {
-        rand_normal (seeing);
-        seeing [0] = seeing[0] * SimCamParams::seeing_scale/seeing_adjustment * SimCamParams::inverse_imagescale;
-        seeing [1] = seeing[1] * SimCamParams::seeing_scale/seeing_adjustment * SimCamParams::inverse_imagescale;
-    }
-
     // Compute total movements from all sources - ra_ofs and dec_ofs are cumulative sums of all guider movements relative to zero-point
-    double total_shift_x = pe + seeing[0] + ra_ofs;
-    double total_shift_y = drift + seeing[1] + dec_ofs.val();
-    if (!s_sim_ao)
-    {
-        // For non-AO operations, split into integral and fractional adjustments
-        double intX = 0, intY = 0;
-        double fracX = 0, fracY = 0;
-        fracX = modf(total_shift_x, &intX);
-        fracY = modf(total_shift_y, &intY);
-        pThisCam->SetGuideXAdjustment (fracX);     // These will be applied in mount.cpp
-        pThisCam->SetGuideYAdjustment (fracY);
-#ifdef SIMDEBUG
-        Debug.AddLine (wxString::Format("SimDebug: Requested cum deflection in X of %.3f + %.3f", intX, fracX));
-        Debug.AddLine (wxString::Format("SimDebug: Requested cum deflection in Y of %.3f + %.3f", intY, fracY));
-#endif
+    double total_shift_x = pe + ra_ofs;
+    double total_shift_y = drift + dec_ofs.val();
 
-        // Apply just the integral adjustments
-        for (unsigned int i = 0; i < nr_stars; i++)
-        {
-            pos[i].x += intX;
-            pos[i].y += intY;
-        }
-    }
-    else
+    // simulate seeing
+    if (SimCamParams::seeing_scale > 0.0)
     {
-        // For AO, apply the full amount
-        for (unsigned int i = 0; i < nr_stars; i++)
-        {
-            pos[i].x += total_shift_x;
-            pos[i].y += total_shift_y;
-        }
+        double seeing[2];
+        rand_normal(seeing);
+        static const double seeing_adjustment = (2.345 * 1.4 * 2.4);        //FWHM, geometry, empirical
+        double sigma = SimCamParams::seeing_scale / seeing_adjustment * SimCamParams::inverse_imagescale;
+        total_shift_x += seeing[0] * sigma;
+        total_shift_y += seeing[1] *= sigma;
+    }
+
+    for (unsigned int i = 0; i < nr_stars; i++)
+    {
+        pos[i].x += total_shift_x;
+        pos[i].y += total_shift_y;
     }
 
 #ifdef SIMDEBUG
@@ -552,10 +559,6 @@ Camera_SimClass::Camera_SimClass()
     HasGainControl = true;
     HasSubframes = true;
     HasPropertyDialog = true;
-    m_isSimulator = true;
-    m_guideXAdjustment = 0;
-    m_guideYAdjustment = 0;
-    sim->pThisCam = this;
 }
 
 bool Camera_SimClass::Connect()
@@ -572,15 +575,6 @@ bool Camera_SimClass::Disconnect()
 {
     Connected = false;
     return false;
-}
-
-void Camera_SimClass::SetGuideXAdjustment (double amt)
-{
-    m_guideXAdjustment = amt;
-}
-void Camera_SimClass::SetGuideYAdjustment (double amt)
-{
-    m_guideYAdjustment = amt;
 }
 
 Camera_SimClass::~Camera_SimClass()
@@ -851,15 +845,16 @@ struct SimCamDialog : public wxDialog
     wxTextCtrl *pPECustomAmp;
     wxTextCtrl *pPECustomPeriod;
     wxButton *pPierFlip;
+    wxButton *pResetBtn;
 
     SimCamDialog(wxWindow *parent);
     ~SimCamDialog() { }
     void OnReset(wxCommandEvent& event);
     void OnPierFlip(wxCommandEvent& event);
     void UpdatePierSideLabel();
-    void OnRbDefaultPE (wxCommandEvent& evt);
-    void OnRbCustomPE (wxCommandEvent& evt);
-    void OnOkClick (wxCommandEvent& evt);
+    void OnRbDefaultPE(wxCommandEvent& evt);
+    void OnRbCustomPE(wxCommandEvent& evt);
+    void OnOkClick(wxCommandEvent& evt);
 
     DECLARE_EVENT_TABLE()
 };
@@ -867,219 +862,223 @@ struct SimCamDialog : public wxDialog
 BEGIN_EVENT_TABLE(SimCamDialog, wxDialog)
     EVT_BUTTON(wxID_RESET, SimCamDialog::OnReset)
     EVT_BUTTON(wxID_CONVERT, SimCamDialog::OnPierFlip)
-
-
 END_EVENT_TABLE()
 
 // Utility functions for adding controls with specified properties
-static wxSlider* NewSlider (wxWindow* parent, int val, int minval, int maxval, wxString tooltip)
+static wxSlider *NewSlider(wxWindow *parent, int val, int minval, int maxval, const wxString& tooltip)
 {
-    wxSlider *pNewCtrl  = new wxSlider(parent, wxID_ANY, val, minval, maxval, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
-    pNewCtrl->SetToolTip (tooltip);
-    return (pNewCtrl);
+    wxSlider *pNewCtrl = new wxSlider(parent, wxID_ANY, val, minval, maxval, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
+    pNewCtrl->SetToolTip(tooltip);
+    return pNewCtrl;
 }
 
-static  wxSpinCtrlDouble* NewSpinner (wxWindow* parent, double val, double minval, double maxval, double inc,
-    wxString tooltip)
+static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, double val, double minval, double maxval, double inc,
+    const wxString& tooltip)
 {
-    wxSpinCtrlDouble *pNewCtrl = new wxSpinCtrlDouble (parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+    wxSpinCtrlDouble *pNewCtrl = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
         wxDefaultSize, wxSP_ARROW_KEYS, minval, maxval, val, inc);
-    pNewCtrl->SetDigits (2);
-    pNewCtrl->SetToolTip (tooltip);
-    return (pNewCtrl);
+    pNewCtrl->SetDigits(2);
+    pNewCtrl->SetToolTip(tooltip);
+    return pNewCtrl;
 }
 
-static wxCheckBox* NewCheckBox (wxWindow* parent, bool val, wxString label, wxString tooltip)
+static wxCheckBox *NewCheckBox(wxWindow *parent, bool val, const wxString& label, const wxString& tooltip)
 {
-    wxCheckBox *pNewCtrl = new wxCheckBox (parent, wxID_ANY, label);
-    pNewCtrl->SetValue (val);
-    pNewCtrl->SetToolTip (tooltip);
-    return (pNewCtrl);
+    wxCheckBox *pNewCtrl = new wxCheckBox(parent, wxID_ANY, label);
+    pNewCtrl->SetValue(val);
+    pNewCtrl->SetToolTip(tooltip);
+    return pNewCtrl;
 }
 
 // Utility function to add the <label, input> pairs to a grid including tool-tips
-static void AddTableEntryPair (wxWindow* parent, wxFlexGridSizer* pTable, wxString label, wxWindow* pControl)
+static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)
 {
-    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
-    pTable->Add (pLabel, 1, wxALL, 5);
-    pTable->Add (pControl, 1, wxALL, 5);
+    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "), wxPoint(-1,-1), wxSize(-1,-1));
+    pTable->Add(pLabel, 1, wxALL, 5);
+    pTable->Add(pControl, 1, wxALL, 5);
 }
 
-static wxTextCtrl* AddCustomPEField (wxWindow* parent, wxFlexGridSizer* pTable, wxString label, wxString tip, double val)
+static wxTextCtrl *AddCustomPEField(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, const wxString& tip, double val)
 {
     int width;
     int height;
 
     parent->GetTextExtent(_("999.9"), &width, &height);
     wxTextCtrl *pCtrl = new wxTextCtrl(parent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width+30, -1));
-    pCtrl->SetValue (wxString::Format("%.1f", val));
-    pCtrl->SetToolTip (tip);
-    AddTableEntryPair (parent, pTable, label, pCtrl);
+    pCtrl->SetValue(wxString::Format("%.1f", val));
+    pCtrl->SetToolTip(tip);
+    AddTableEntryPair(parent, pTable, label, pCtrl);
     return pCtrl;
 }
 
-
-static void SetRBState (SimCamDialog* pParent, bool using_defaults)
+static void SetRBState(SimCamDialog *dlg, bool using_defaults)
 {
-    pParent->pPEDefScale->Enable(using_defaults);
-    pParent->pPECustomAmp->Enable(!using_defaults);
-    pParent->pPECustomPeriod->Enable(!using_defaults);
+    dlg->pPEDefScale->Enable(using_defaults);
+    dlg->pPECustomAmp->Enable(!using_defaults);
+    dlg->pPECustomPeriod->Enable(!using_defaults);
 }
 
-static void SetControlStates (SimCamDialog* pParent, bool CaptureActive)
+static void SetControlStates(SimCamDialog *dlg, bool CaptureActive)
 {
-    pParent->pBacklashSpin->Enable(!CaptureActive);
-    pParent->pDriftSpin->Enable(!CaptureActive);
-    pParent->pGuideRateSpin->Enable(!CaptureActive);
-    pParent->pCameraAngleSpin->Enable(!CaptureActive);
-    pParent->pPEDefaultRb->Enable(!CaptureActive);
-    pParent->pPEDefScale->Enable(!CaptureActive);
-    pParent->pPECustomAmp->Enable(!CaptureActive);
-    pParent->pPECustomPeriod->Enable(!CaptureActive);
-    pParent->pPECustomRb->Enable(!CaptureActive);
-    pParent->pUsePECbx->Enable(!CaptureActive);
-    pParent->pPierFlip->Enable(!CaptureActive);
-    pParent->pReverseDecPulseCbx->Enable(!CaptureActive);
+    bool enable = !CaptureActive;
+
+    dlg->pBacklashSpin->Enable(enable);
+    dlg->pDriftSpin->Enable(enable);
+    dlg->pGuideRateSpin->Enable(enable);
+    dlg->pCameraAngleSpin->Enable(enable);
+    dlg->pPEDefaultRb->Enable(enable);
+    dlg->pPEDefScale->Enable(enable);
+    dlg->pPECustomAmp->Enable(enable);
+    dlg->pPECustomPeriod->Enable(enable);
+    dlg->pPECustomRb->Enable(enable);
+    dlg->pUsePECbx->Enable(enable);
+    dlg->pPierFlip->Enable(enable);
+    dlg->pReverseDecPulseCbx->Enable(enable);
+    dlg->pResetBtn->Enable(enable);
 }
 
 // Event handlers
-void SimCamDialog::OnRbDefaultPE (wxCommandEvent& evt)
+void SimCamDialog::OnRbDefaultPE(wxCommandEvent& evt)
 {
-    SetRBState (this, true);
+    SetRBState(this, true);
 }
-void SimCamDialog::OnRbCustomPE (wxCommandEvent& evt)
+
+void SimCamDialog::OnRbCustomPE(wxCommandEvent& evt)
 {
-    SetRBState (this, false);
+    SetRBState(this, false);
 }
 
 // Need to enforce semantics on free-form user input
-void SimCamDialog::OnOkClick (wxCommandEvent& evt)
+void SimCamDialog::OnOkClick(wxCommandEvent& evt)
 {
-    bool bOk = false;
+    bool bOk = true;
+
     if (pPECustomRb->GetValue())
     {
         wxString sAmp = pPECustomAmp->GetValue();
         wxString sPeriod = pPECustomPeriod->GetValue();
-        double amp = -1;
-        double period = -1;
-        if (sAmp.ToDouble (&amp) && sPeriod.ToDouble (&period))
-            if (amp > 0 && period > 0)
-                bOk = true;
-            else
+        double amp;
+        double period;
+        if (sAmp.ToDouble(&amp) && sPeriod.ToDouble(&period))
+        {
+            if (amp <= 0.0 || period <= 0.0)
             {
-                wxMessageBox (_("PE amplitude and period must be > 0"), "Error", wxOK | wxICON_ERROR);
+                wxMessageBox(_("PE amplitude and period must be > 0"), "Error", wxOK | wxICON_ERROR);
+                bOk = false;
             }
+        }
         else
         {
-            wxMessageBox (_("PE amplitude and period must be numbers > 0"), "Error", wxOK | wxICON_ERROR);
+            wxMessageBox(_("PE amplitude and period must be numbers > 0"), "Error", wxOK | wxICON_ERROR);
+            bOk = false;
         }
     }
-    else
-        bOk = true;
+
     if (bOk)
-        wxDialog::EndModal (wxID_OK);
+        wxDialog::EndModal(wxID_OK);
 }
 
 SimCamDialog::SimCamDialog(wxWindow *parent)
     : wxDialog(parent, wxID_ANY, _("Camera Simulator"))
 {
-    wxBoxSizer *pVSizer = new wxBoxSizer (wxVERTICAL);
-    double imageScale = pFrame->GetCameraPixelScale ();
+    wxBoxSizer *pVSizer = new wxBoxSizer(wxVERTICAL);
+    double imageScale = pFrame->GetCameraPixelScale();
 
     SimCamParams::inverse_imagescale = 1.0/imageScale;
 
     // Camera group controls
-    wxStaticBoxSizer *pCamGroup = new wxStaticBoxSizer (wxVERTICAL, this, _("Camera"));
-    wxFlexGridSizer *pCamTable = new wxFlexGridSizer (1, 6, 15, 15);
-    pStarsSlider = NewSlider (this, SimCamParams::nr_stars, 1, 100, _("Number of simulated stars"));
-    AddTableEntryPair (this, pCamTable, _("Stars"), pStarsSlider);
-    pHotpxSlider = NewSlider (this, SimCamParams::nr_hot_pixels, 0, 50, _("Number of hot pixels"));
-    AddTableEntryPair (this, pCamTable, _("Hot pixels"), pHotpxSlider);
-    pNoiseSlider = NewSlider (this, (int)floor(SimCamParams::noise_multiplier * 100 / NOISE_MAX), 0, 100,  _("% Simulated noise"));
-    AddTableEntryPair (this, pCamTable, _("Noise"), pNoiseSlider);
-    pCamGroup->Add (pCamTable);
+    wxStaticBoxSizer *pCamGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Camera"));
+    wxFlexGridSizer *pCamTable = new wxFlexGridSizer(1, 6, 15, 15);
+    pStarsSlider = NewSlider(this, SimCamParams::nr_stars, 1, 100, _("Number of simulated stars"));
+    AddTableEntryPair(this, pCamTable, _("Stars"), pStarsSlider);
+    pHotpxSlider = NewSlider(this, SimCamParams::nr_hot_pixels, 0, 50, _("Number of hot pixels"));
+    AddTableEntryPair(this, pCamTable, _("Hot pixels"), pHotpxSlider);
+    pNoiseSlider = NewSlider(this, (int)floor(SimCamParams::noise_multiplier * 100 / NOISE_MAX), 0, 100,  _("% Simulated noise"));
+    AddTableEntryPair(this, pCamTable, _("Noise"), pNoiseSlider);
+    pCamGroup->Add(pCamTable);
 
     // Mount group controls
-    wxStaticBoxSizer *pMountGroup = new wxStaticBoxSizer (wxVERTICAL, this, _("Mount"));
-    wxFlexGridSizer *pMountTable = new wxFlexGridSizer (1, 6, 15, 15);
-    pBacklashSpin = NewSpinner (this, SimCamParams::dec_backlash * imageScale, 0, DEC_BACKLASH_MAX, 0.1, _("Dec backlash, arc-secs"));
-    AddTableEntryPair (this, pMountTable, _("Dec backlash"), pBacklashSpin);
-    pDriftSpin = NewSpinner (this, SimCamParams::dec_drift_rate * 60.0 * imageScale, 0, DEC_DRIFT_MAX, 0.5, _("Dec drift, arc-sec/min"));
-    AddTableEntryPair (this, pMountTable, _("Dec drift"), pDriftSpin);
-    pGuideRateSpin = NewSpinner (this, SimCamParams::guide_rate / 15.0, 0.25, GUIDE_RATE_MAX, 0.25, _("Guide rate, x sidereal"));
-    AddTableEntryPair (this, pMountTable, _("Guide rate"), pGuideRateSpin);
-    pMountGroup->Add (pMountTable);
+    wxStaticBoxSizer *pMountGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Mount"));
+    wxFlexGridSizer *pMountTable = new wxFlexGridSizer(1, 6, 15, 15);
+    pBacklashSpin = NewSpinner(this, SimCamParams::dec_backlash * imageScale, 0, DEC_BACKLASH_MAX, 0.1, _("Dec backlash, arc-secs"));
+    AddTableEntryPair(this, pMountTable, _("Dec backlash"), pBacklashSpin);
+    pDriftSpin = NewSpinner(this, SimCamParams::dec_drift_rate * 60.0 * imageScale, 0, DEC_DRIFT_MAX, 0.5, _("Dec drift, arc-sec/min"));
+    AddTableEntryPair(this, pMountTable, _("Dec drift"), pDriftSpin);
+    pGuideRateSpin = NewSpinner(this, SimCamParams::guide_rate / 15.0, 0.25, GUIDE_RATE_MAX, 0.25, _("Guide rate, x sidereal"));
+    AddTableEntryPair(this, pMountTable, _("Guide rate"), pGuideRateSpin);
+    pMountGroup->Add(pMountTable);
 
     // Add embedded group for PE info (still within mount group)
-    wxStaticBoxSizer *pPEGroup = new wxStaticBoxSizer (wxVERTICAL, this, _("PE"));
-    pUsePECbx = NewCheckBox (this, SimCamParams::use_pe, _("Apply PE"), _("Simulate periodic error"));
+    wxStaticBoxSizer *pPEGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("PE"));
+    pUsePECbx = NewCheckBox(this, SimCamParams::use_pe, _("Apply PE"), _("Simulate periodic error"));
     wxBoxSizer *pPEHorSizer = new wxBoxSizer(wxHORIZONTAL);
     // Default PE parameters
-    wxFlexGridSizer *pPEDefaults = new wxFlexGridSizer (1, 3, 10, 10);
+    wxFlexGridSizer *pPEDefaults = new wxFlexGridSizer(1, 3, 10, 10);
     pPEDefaultRb = new wxRadioButton(this, wxID_ANY, _("Default curve"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-    pPEDefaultRb->SetValue (SimCamParams::use_default_pe_params);
-    pPEDefaultRb->Bind (wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbDefaultPE, this);                // Event handler binding
+    pPEDefaultRb->SetValue(SimCamParams::use_default_pe_params);
+    pPEDefaultRb->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbDefaultPE, this);                // Event handler binding
     wxStaticText *pSliderLabel = new wxStaticText(this, wxID_ANY, _("Amplitude: "),wxPoint(-1,-1),wxSize(-1,-1));
     pPEDefScale = NewSpinner(this, SimCamParams::pe_scale, 0, PE_SCALE_MAX, 0.5, "PE Amplitude, arc-secs");
 
-    pPEDefaults->Add (pPEDefaultRb);
-    pPEDefaults->Add (pSliderLabel, wxSizerFlags().Border(wxLEFT, 8));
-    pPEDefaults->Add (pPEDefScale, wxSizerFlags().Border(wxLEFT, 15));
+    pPEDefaults->Add(pPEDefaultRb);
+    pPEDefaults->Add(pSliderLabel, wxSizerFlags().Border(wxLEFT, 8));
+    pPEDefaults->Add(pPEDefScale, wxSizerFlags().Border(wxLEFT, 15));
     // Custom PE parameters
-    wxFlexGridSizer *pPECustom = new wxFlexGridSizer (1, 5, 10, 10);
+    wxFlexGridSizer *pPECustom = new wxFlexGridSizer(1, 5, 10, 10);
     pPECustomRb = new wxRadioButton(this, wxID_ANY, _("Custom curve"), wxDefaultPosition, wxDefaultSize);
     pPECustomRb->SetValue(!SimCamParams::use_default_pe_params);
-    pPECustomRb->Bind (wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbCustomPE, this);              // Event handler binding
-    pPECustom->Add (pPECustomRb, wxSizerFlags().Border(wxTOP, 4));
-    pPECustomAmp = AddCustomPEField (this, pPECustom, _("Amplitude: "), _("Amplitude, arc-secs"), SimCamParams::custom_pe_amp);
-    pPECustomPeriod = AddCustomPEField (this, pPECustom, _("Period: "), _("Period, seconds"), SimCamParams::custom_pe_period);
+    pPECustomRb->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbCustomPE, this);              // Event handler binding
+    pPECustom->Add(pPECustomRb, wxSizerFlags().Border(wxTOP, 4));
+    pPECustomAmp = AddCustomPEField(this, pPECustom, _("Amplitude: "), _("Amplitude, arc-secs"), SimCamParams::custom_pe_amp);
+    pPECustomPeriod = AddCustomPEField(this, pPECustom, _("Period: "), _("Period, seconds"), SimCamParams::custom_pe_period);
     // VSizer for default and custom controls
     wxBoxSizer *pPEVSizer = new wxBoxSizer(wxVERTICAL);
     pPEVSizer->Add(pPEDefaults, wxSizerFlags().Border(wxLEFT, 60));
-    pPEVSizer->Add (pPECustom, wxSizerFlags().Border(wxLEFT, 60));
+    pPEVSizer->Add(pPECustom, wxSizerFlags().Border(wxLEFT, 60));
     // Finish off the whole PE group
     pPEHorSizer->Add(pUsePECbx);
-    pPEHorSizer->Add (pPEVSizer);
-    pPEGroup->Add (pPEHorSizer);
+    pPEHorSizer->Add(pPEVSizer);
+    pPEGroup->Add(pPEHorSizer);
 
     // Now add some miscellaneous mount-related stuff (still within mount group)
     wxBoxSizer *pMiscSizer = new wxBoxSizer(wxHORIZONTAL);
-    pReverseDecPulseCbx = NewCheckBox (this, SimCamParams::reverse_dec_pulse_on_west_side, _("Reverse Dec pulse on west side of pier"),
+    pReverseDecPulseCbx = NewCheckBox(this, SimCamParams::reverse_dec_pulse_on_west_side, _("Reverse Dec pulse on west side of pier"),
     _("Simulate a mount that reverses guide pulse direction after a meridian flip, like an ASCOM pulse-guided mount."));
     pPierSide = SimCamParams::pier_side;
     pPiersideLabel = new wxStaticText(this, wxID_ANY, _("Side of Pier: MMMMM"));
-    pMiscSizer->Add (pReverseDecPulseCbx, wxSizerFlags().Border(10).Expand());
-    pPierFlip = new wxButton(this, wxID_CONVERT, _("Pier Flip")); 
+    pMiscSizer->Add(pReverseDecPulseCbx, wxSizerFlags().Border(10).Expand());
+    pPierFlip = new wxButton(this, wxID_CONVERT, _("Pier Flip"));
     pMiscSizer->Add(pPierFlip, wxSizerFlags().Border(wxLEFT, 30).Expand());
     pMiscSizer->Add(pPiersideLabel , wxSizerFlags().Border(wxLEFT, 30).Expand());
-    pMountGroup->Add (pPEGroup, wxSizerFlags().Center().Border(10).Expand());
-    pMountGroup->Add (pMiscSizer, wxSizerFlags().Border(wxTOP, 10).Expand());
+    pMountGroup->Add(pPEGroup, wxSizerFlags().Center().Border(10).Expand());
+    pMountGroup->Add(pMiscSizer, wxSizerFlags().Border(wxTOP, 10).Expand());
 
     // Session group controls
-    wxStaticBoxSizer *pSessionGroup = new wxStaticBoxSizer (wxVERTICAL, this, _("Session"));
-    wxFlexGridSizer *pSessionTable = new wxFlexGridSizer (1, 5, 15, 15);
-    pCameraAngleSpin = NewSpinner (this, SimCamParams::cam_angle, 0, CAM_ANGLE_MAX, 10, _("Camera angle, degrees"));
-    AddTableEntryPair (this, pSessionTable, _("Camera angle"), pCameraAngleSpin);
-    pSeeingSpin = NewSpinner (this, SimCamParams::seeing_scale, 0, SEEING_MAX, 0.5, _("Seeing, FWHM arc-sec"));
-    AddTableEntryPair (this, pSessionTable, _("Seeing"), pSeeingSpin);
+    wxStaticBoxSizer *pSessionGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Session"));
+    wxFlexGridSizer *pSessionTable = new wxFlexGridSizer(1, 5, 15, 15);
+    pCameraAngleSpin = NewSpinner(this, SimCamParams::cam_angle, 0, CAM_ANGLE_MAX, 10, _("Camera angle, degrees"));
+    AddTableEntryPair(this, pSessionTable, _("Camera angle"), pCameraAngleSpin);
+    pSeeingSpin = NewSpinner(this, SimCamParams::seeing_scale, 0, SEEING_MAX, 0.5, _("Seeing, FWHM arc-sec"));
+    AddTableEntryPair(this, pSessionTable, _("Seeing"), pSeeingSpin);
     pCloudsCbx = new wxCheckBox(this, wxID_ANY, _("Star fading due to clouds"));
-    pSessionGroup->Add (pSessionTable);
-    pSessionGroup->Add (pCloudsCbx);
+    pCloudsCbx->SetValue(SimCamParams::clouds_inten > 0);
+    pSessionGroup->Add(pSessionTable);
+    pSessionGroup->Add(pCloudsCbx);
 
-    pVSizer->Add (pCamGroup, wxSizerFlags().Border(10).Expand());
-    pVSizer->Add (pMountGroup, wxSizerFlags().Border(wxTOP, 20));
-    pVSizer->Add (pSessionGroup, wxSizerFlags().Border(wxTOP, 20).Expand());
+    pVSizer->Add(pCamGroup, wxSizerFlags().Border(10).Expand());
+    pVSizer->Add(pMountGroup, wxSizerFlags().Border(wxTOP, 20));
+    pVSizer->Add(pSessionGroup, wxSizerFlags().Border(wxTOP, 20).Expand());
 
     // Now deal with the buttons
     wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
-    wxButton *pBtn = new wxButton(this, wxID_RESET, _("Reset"));
-    pBtn->SetToolTip(_("Reset all values to application defaults"));
+    pResetBtn = new wxButton(this, wxID_RESET, _("Reset"));
+    pResetBtn->SetToolTip(_("Reset all values to application defaults"));
     pButtonSizer->Add(
-        pBtn,
+        pResetBtn,
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
     // Need to handle the OK event ourselves to validate text input fields
-    pBtn = new wxButton(this, wxID_OK, _("OK"));
-    pBtn->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &SimCamDialog::OnOkClick, this);
+    wxButton *pBtn = new wxButton(this, wxID_OK, _("OK"));
+    pBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &SimCamDialog::OnOkClick, this);
     pButtonSizer->Add(
         pBtn,
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
@@ -1092,10 +1091,10 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
         pButtonSizer,
         wxSizerFlags(0).Center() );
 
-    SetSizerAndFit (pVSizer);
+    SetSizerAndFit(pVSizer);
     SetControlStates(this, pFrame->CaptureActive);
     if (!pFrame->CaptureActive)
-        SetRBState (this, pPEDefaultRb->GetValue());        // Enable matching PE-related controls
+        SetRBState(this, pPEDefaultRb->GetValue());        // Enable matching PE-related controls
     UpdatePierSideLabel();
 }
 
@@ -1111,8 +1110,8 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     pCameraAngleSpin->SetValue(CAM_ANGLE_DEFAULT);
     pGuideRateSpin->SetValue(GUIDE_RATE_DEFAULT / GUIDE_RATE_MAX);
     pReverseDecPulseCbx->SetValue(REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT);
-    pUsePECbx->SetValue (USE_PE_DEFAULT);
-    pPEDefaultRb->SetValue (USE_PE_DEFAULT_PARAMS);
+    pUsePECbx->SetValue(USE_PE_DEFAULT);
+    pPEDefaultRb->SetValue(USE_PE_DEFAULT_PARAMS);
     pPECustomRb->SetValue(!USE_PE_DEFAULT_PARAMS);
     pPEDefScale->SetValue(PE_SCALE_DEFAULT);
     pPECustomAmp->SetValue(wxString::Format("%0.1f",PE_CUSTOM_AMP_DEFAULT));
@@ -1158,8 +1157,8 @@ void Camera_SimClass::ShowPropertyDialog()
             SimCamParams::pe_scale = dlg.pPEDefScale->GetValue();
         else
         {
-            dlg.pPECustomAmp->GetValue().ToDouble (&SimCamParams::custom_pe_amp);
-            dlg.pPECustomPeriod->GetValue().ToDouble (&SimCamParams::custom_pe_period);
+            dlg.pPECustomAmp->GetValue().ToDouble(&SimCamParams::custom_pe_amp);
+            dlg.pPECustomPeriod->GetValue().ToDouble(&SimCamParams::custom_pe_period);
         }
         SimCamParams::dec_drift_rate =   (double) dlg.pDriftSpin->GetValue() /(imageScale*60.0);  // a-s per min to px per second
         SimCamParams::seeing_scale =     (double) dlg.pSeeingSpin->GetValue();                      // already in a-s
