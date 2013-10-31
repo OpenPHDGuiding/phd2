@@ -66,9 +66,6 @@ protected:
 
 protected:
     bool            m_hasGuideOutput;
-    double          m_guideXAdjustment;
-    double          m_guideYAdjustment;
-    bool            m_isSimulator;
 
 public:
     int             GuideCameraGain;
@@ -86,7 +83,6 @@ public:
     bool            ShutterState;  // false=light, true=dark
     bool            UseSubframes;
     double          PixelSize;
-    bool            IsSimulator();        // some special props for simulator
 
     static wxArrayString List(void);
     static GuideCamera *Factory(wxString choice);
@@ -108,8 +104,6 @@ public:
     virtual bool    ST4HostConnected(void);
     virtual bool    ST4HasNonGuiMove(void);
     virtual bool    ST4PulseGuideScope(int direction, int duration);
-    virtual double  Guide_X_Adjustment ();          // Used by simulator for fractional px moves
-    virtual double  Guide_Y_Adjustment ();
 
     ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
