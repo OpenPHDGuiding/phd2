@@ -523,7 +523,7 @@ void MyFrame::GetExposureDurations(std::vector<int> *exposure_durations)
 
 static int dur_index(int duration)
 {
-    for (int i = 0; i < WXSIZEOF(dur_values); i++)
+    for (unsigned int i = 0; i < WXSIZEOF(dur_values); i++)
         if (duration == dur_values[i])
             return i;
     return -1;

@@ -377,7 +377,7 @@ static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint&
     double f10 = fx * (1.0 - fy);
     double f11 = fx * fy;
 
-    double d[WIDTH + 1][WIDTH + 1] = { 0.0 };
+    double d[WIDTH + 1][WIDTH + 1] = { { 0.0 } };
     for (unsigned int i = 0; i < WIDTH; i++)
         for (unsigned int j = 0; j < WIDTH; j++)
         {

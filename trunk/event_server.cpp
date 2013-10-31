@@ -170,7 +170,7 @@ NV::NV(const wxString& n_, const std::vector<T>& vec)
 {
     std::ostringstream os;
     os << '[';
-    for (int i = 0; i < vec.size(); i++)
+    for (unsigned int i = 0; i < vec.size(); i++)
     {
         if (i != 0)
             os << ',';
@@ -486,7 +486,7 @@ static void get_profiles(JObj& response, const json_value *params)
 {
     JAry ary;
     wxArrayString names = pConfig->ProfileNames();
-    for (int i = 0; i < names.size(); i++)
+    for (unsigned int i = 0; i < names.size(); i++)
     {
         wxString name = names[i];
         int id = pConfig->GetProfileId(name);
@@ -544,7 +544,6 @@ static bool handle_request(JObj& response, const json_value *req)
         { "get_profiles", &get_profiles, },
     };
 
-    bool found = false;
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
     {
         if (strcmp(method->string_value, methods[i].name) == 0)
