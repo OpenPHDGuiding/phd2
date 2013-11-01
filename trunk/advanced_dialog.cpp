@@ -121,7 +121,7 @@ AdvancedDialog::AdvancedDialog() :
     {
         m_pCameraPane=NULL;
         wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pCameraSettingsPanel, wxID_ANY, _("Camera Settings")), wxVERTICAL);
-        wxStaticText *pText = new wxStaticText(pCameraSettingsPanel, wxID_ANY, _("No Camera Connected"),wxPoint(-1,-1),wxSize(-1,-1));
+        wxStaticText *pText = new wxStaticText(pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
         pCameraTabSizer->Add(pBox, sizer_flags);
     }
@@ -130,7 +130,7 @@ AdvancedDialog::AdvancedDialog() :
     wxPanel *pScopeSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pScopeTabSizer = new wxBoxSizer(wxVERTICAL);
     pScopeSettingsPanel->SetSizer(pScopeTabSizer);
-    m_pNotebook->AddPage(pScopeSettingsPanel, _("Scope"));
+    m_pNotebook->AddPage(pScopeSettingsPanel, _("Mount"));
 
     wxPanel *pAoSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pAoTabSizer = new wxBoxSizer(wxVERTICAL);
@@ -160,7 +160,7 @@ AdvancedDialog::AdvancedDialog() :
         // Add a text box to the AO tab informing the user there is no AO
 
         wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pAoSettingsPanel, wxID_ANY, _("AO Settings")), wxVERTICAL);
-        wxStaticText *pText = new wxStaticText(pAoSettingsPanel, wxID_ANY, _("No AO Connected"),wxPoint(-1,-1),wxSize(-1,-1));
+        wxStaticText *pText = new wxStaticText(pAoSettingsPanel, wxID_ANY, _("No AO Selected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
         pAoTabSizer->Add(pBox, sizer_flags);
 
@@ -176,9 +176,9 @@ AdvancedDialog::AdvancedDialog() :
         }
         else
         {
-            // Add a text box to the Scope tab informing the user there is no AO
-            pBox = new wxStaticBoxSizer(new wxStaticBox(pScopeSettingsPanel, wxID_ANY, _("Scope Settings")), wxVERTICAL);
-            pText = new wxStaticText(pScopeSettingsPanel, wxID_ANY, _("No Scope Connected"),wxPoint(-1,-1),wxSize(-1,-1));
+            // Add a text box to the Mount tab informing the user there is no Mount
+            pBox = new wxStaticBoxSizer(new wxStaticBox(pScopeSettingsPanel, wxID_ANY, _("Mount Settings")), wxVERTICAL);
+            pText = new wxStaticText(pScopeSettingsPanel, wxID_ANY, _("No Mount Selected"),wxPoint(-1,-1),wxSize(-1,-1));
             pBox->Add(pText);
 
             pScopeTabSizer->Add(pBox, sizer_flags);
