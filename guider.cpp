@@ -269,7 +269,6 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
             dc.SetPen(wxPen(wxColor(200,50,50)));
             dc.SetBrush(* wxTRANSPARENT_BRUSH);
 
-
             switch(m_overlayMode)
             {
                 case OVERLAY_BULLSEYE:
