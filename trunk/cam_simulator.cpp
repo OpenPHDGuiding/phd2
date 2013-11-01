@@ -1020,6 +1020,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     wxFlexGridSizer *pPEDefaults = new wxFlexGridSizer(1, 3, 10, 10);
     pPEDefaultRb = new wxRadioButton(this, wxID_ANY, _("Default curve"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
     pPEDefaultRb->SetValue(SimCamParams::use_default_pe_params);
+    pPEDefaultRb->SetToolTip(_("Use a built-in PE curve that has some steep and smooth sections."));
     pPEDefaultRb->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbDefaultPE, this);                // Event handler binding
     wxStaticText *pSliderLabel = new wxStaticText(this, wxID_ANY, _("Amplitude: "),wxPoint(-1,-1),wxSize(-1,-1));
     pPEDefScale = NewSpinner(this, SimCamParams::pe_scale, 0, PE_SCALE_MAX, 0.5, "PE Amplitude, arc-secs");
@@ -1031,10 +1032,11 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     wxFlexGridSizer *pPECustom = new wxFlexGridSizer(1, 5, 10, 10);
     pPECustomRb = new wxRadioButton(this, wxID_ANY, _("Custom curve"), wxDefaultPosition, wxDefaultSize);
     pPECustomRb->SetValue(!SimCamParams::use_default_pe_params);
+    pPECustomRb->SetToolTip(_("Use a simple sinusoidal curve. You can specify the amplitude and period."));
     pPECustomRb->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbCustomPE, this);              // Event handler binding
     pPECustom->Add(pPECustomRb, wxSizerFlags().Border(wxTOP, 4));
-    pPECustomAmp = AddCustomPEField(this, pPECustom, _("Amplitude: "), _("Amplitude, arc-secs"), SimCamParams::custom_pe_amp);
-    pPECustomPeriod = AddCustomPEField(this, pPECustom, _("Period: "), _("Period, seconds"), SimCamParams::custom_pe_period);
+    pPECustomAmp = AddCustomPEField(this, pPECustom, _("Amplitude"), _("Amplitude, arc-secs"), SimCamParams::custom_pe_amp);
+    pPECustomPeriod = AddCustomPEField(this, pPECustom, _("Period"), _("Period, seconds"), SimCamParams::custom_pe_period);
     // VSizer for default and custom controls
     wxBoxSizer *pPEVSizer = new wxBoxSizer(wxVERTICAL);
     pPEVSizer->Add(pPEDefaults, wxSizerFlags().Border(wxLEFT, 60));
