@@ -797,7 +797,6 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
         _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"), m_pAutoDuration);
 
-
     width = StringWidth(_T("00000"));
     m_pMaxRaDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 2000, 150, _T("MaxDec_Dur"));
@@ -808,7 +807,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pMaxDecDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS,0,2000,150,_T("MaxDec_Dur"));
     DoAdd(_("Max Dec Duration"),  m_pMaxDecDuration,
-          _("Longest length of pulse to send in declination\nDefault = 100 ms.  Increase if drift is fast."));
+          _("Longest length of pulse to send in declination\nDefault = 1000 ms.  Increase if drift is fast."));
 
     wxString dec_choices[] = {
         _("Off"),_("Auto"),_("North"),_("South")
