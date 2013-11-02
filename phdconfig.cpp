@@ -341,6 +341,12 @@ wxString PhdConfig::GetProfileName(int profileId)
     return name;
 }
 
+bool PhdConfig::ProfileExists(int profileId)
+{
+    wxString name = Global.GetString(wxString::Format("/profile/%d/name", profileId), wxEmptyString);
+    return !name.IsEmpty();
+}
+
 bool PhdConfig::CreateProfile(const wxString& name)
 {
     // does the profile already exist?

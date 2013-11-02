@@ -50,6 +50,10 @@ enum
     MSG_PROTOCOL_VERSION = 1,
 };
 
+static const wxString literal_null("null");
+static const wxString literal_true("true");
+static const wxString literal_false("false");
+
 static wxString state_name(EXPOSED_STATE st)
 {
     switch (st)
@@ -103,10 +107,6 @@ static wxString json_escape(const wxString& s)
 
 static wxString json_format(const json_value *j)
 {
-    static const wxString literal_null("null");
-    static const wxString literal_true("true");
-    static const wxString literal_false("false");
-
     if (!j)
         return literal_null;
 
@@ -154,9 +154,11 @@ struct NV
     wxString n;
     wxString v;
     NV(const wxString& n_, const wxString& v_) : n(n_), v('"'+v_+'"') { }
+    NV(const wxString& n_, const char *v_) : n(n_), v('"'+wxString(v_)+'"') { }
     NV(const wxString& n_, int v_) : n(n_), v(wxString::Format("%d", v_)) { }
     NV(const wxString& n_, double v_) : n(n_), v(wxString::Format("%g", v_)) { }
     NV(const wxString& n_, double v_, int prec) : n(n_), v(wxString::Format("%.*f", prec, v_)) { }
+    NV(const wxString& n_, bool v_) : n(n_), v(v_ ? literal_true : literal_false) { }
     template<typename T>
     NV(const wxString& n_, const std::vector<T>& vec);
     NV(const wxString& n_, JAry& ary) : n(n_), v(ary.str()) { }
@@ -494,6 +496,8 @@ static void get_profiles(JObj& response, const json_value *params)
         {
             JObj t;
             t << NV("id", id) << NV("name", name);
+            if (id == pConfig->GetCurrentProfileId())
+                t << NV("selected", true);
             ary << t;
         }
     }
@@ -520,6 +524,90 @@ static void set_exposure(JObj& response, const json_value *params)
     }
 }
 
+static void get_profile(JObj& response, const json_value *params)
+{
+    int id = pConfig->GetCurrentProfileId();
+    wxString name = pConfig->GetCurrentProfile();
+    JObj t;
+    t << NV("id", id) << NV("name", name);
+    response << jrpc_result(t);
+}
+
+static bool all_equipment_connected()
+{
+    return pCamera && pCamera->Connected &&
+        (!pMount || pMount->IsConnected()) &&
+        (!pSecondaryMount || pSecondaryMount->IsConnected());
+}
+
+static void set_profile(JObj& response, const json_value *params)
+{
+    const json_value *id;
+    if (!params || (id = at(params, 0)) == 0 || id->type != JSON_INT)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected profile id param");
+        return;
+    }
+
+    if (!pFrame || !pFrame->pGearDialog) // paranoia
+    {
+        response << jrpc_error(1, "internal error");
+        return;
+    }
+
+    wxString errMsg;
+    bool error = pFrame->pGearDialog->SetProfile(id->int_value, &errMsg);
+
+    if (error)
+    {
+        response << jrpc_error(1, errMsg);
+    }
+    else
+    {
+        response << jrpc_result(0);
+    }
+}
+
+static void get_connected(JObj& response, const json_value *params)
+{
+    response << jrpc_result(all_equipment_connected());
+}
+
+static void set_connected(JObj& response, const json_value *params)
+{
+    const json_value *val;
+    if (!params || (val = at(params, 0)) == 0 || val->type != JSON_BOOL)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected connected boolean param");
+        return;
+    }
+
+    if (!pFrame || !pFrame->pGearDialog) // paranoia
+    {
+        response << jrpc_error(1, "internal error");
+        return;
+    }
+
+    wxString errMsg;
+    bool error = val->int_value ? pFrame->pGearDialog->ConnectAll(&errMsg) :
+        pFrame->pGearDialog->DisconnectAll(&errMsg);
+
+    if (error)
+    {
+        response << jrpc_error(1, errMsg);
+    }
+    else
+    {
+        response << jrpc_result(0);
+    }
+}
+
+static void get_calibrated(JObj& response, const json_value *params)
+{
+    bool calibrated = pMount && pMount->IsCalibrated() && (!pSecondaryMount || pSecondaryMount->IsCalibrated());
+    response << jrpc_result(calibrated);
+}
+
 static bool handle_request(JObj& response, const json_value *req)
 {
     const json_value *method;
@@ -542,6 +630,11 @@ static bool handle_request(JObj& response, const json_value *req)
         { "set_exposure", &set_exposure, },
         { "get_exposure_durations", &get_exposure_durations, },
         { "get_profiles", &get_profiles, },
+        { "get_profile", &get_profile, },
+        { "set_profile", &set_profile, },
+        { "get_connected", &get_connected, },
+        { "set_connected", &set_connected, },
+        { "get_calibrated", &get_calibrated, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

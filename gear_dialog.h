@@ -65,6 +65,10 @@ public:
     int ShowModal(bool autoConnect);
     void EndModal(int retCode);
 
+    bool SetProfile(int profileId, wxString *error);
+    bool ConnectAll(wxString *error);
+    bool DisconnectAll(wxString *error);
+
 private:
     void LoadGearChoices(void);
     void UpdateGearPointers(void);

@@ -947,7 +947,6 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
             throw ERROR_INFO("OnSelectGear called while CaptureActive");
         }
         pFrame->pGearDialog->ShowModal(wxGetKeyState(WXK_SHIFT));
-        UpdateButtonsStatus();
     }
     catch (wxString Msg)
     {
