@@ -305,7 +305,10 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessa
 
         if (!newStar.Find(pImage, m_searchRegion))
         {
-            statusMessage = _("No star found");
+            if (m_star.IsValid())
+                statusMessage = _("No star found");
+            else
+                statusMessage = _("No star selected");
             m_star.SetError(newStar.GetError());
             throw ERROR_INFO("UpdateGuideState():newStar not found");
         }

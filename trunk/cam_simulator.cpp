@@ -941,6 +941,15 @@ static void SetControlStates(SimCamDialog *dlg, bool CaptureActive)
     dlg->pResetBtn->Enable(enable);
 }
 
+static int StringWidth(SimCamDialog *dlg, const wxString& string)
+{
+    int width, height;
+
+    dlg->GetTextExtent(string, &width, &height);
+
+    return width;
+}
+
 // Event handlers
 void SimCamDialog::OnRbDefaultPE(wxCommandEvent& evt)
 {
@@ -1025,9 +1034,10 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     wxStaticText *pSliderLabel = new wxStaticText(this, wxID_ANY, _("Amplitude: "),wxPoint(-1,-1),wxSize(-1,-1));
     pPEDefScale = NewSpinner(this, SimCamParams::pe_scale, 0, PE_SCALE_MAX, 0.5, "PE Amplitude, arc-secs");
 
+    int hor_spacing = StringWidth(this, "9");
     pPEDefaults->Add(pPEDefaultRb);
-    pPEDefaults->Add(pSliderLabel, wxSizerFlags().Border(wxLEFT, 8));
-    pPEDefaults->Add(pPEDefScale, wxSizerFlags().Border(wxLEFT, 15));
+    pPEDefaults->Add(pSliderLabel, wxSizerFlags().Border(wxLEFT, hor_spacing));
+    pPEDefaults->Add(pPEDefScale, wxSizerFlags().Border(wxLEFT, hor_spacing + 1));
     // Custom PE parameters
     wxFlexGridSizer *pPECustom = new wxFlexGridSizer(1, 5, 10, 10);
     pPECustomRb = new wxRadioButton(this, wxID_ANY, _("Custom curve"), wxDefaultPosition, wxDefaultSize);
