@@ -48,10 +48,10 @@ public:
     virtual void Undo();
 
 protected:
+    wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = NULL);
     void DoAdd(wxSizer *pSizer);
     void DoAdd(wxWindow *pWindow);
     void DoAdd(wxWindow *pWindow, const wxString& toolTip);
-    void DoAdd(wxWindow *pWindow1, wxWindow *pWindow2, wxWindow *pWindow3 = NULL);
     void DoAdd(const wxString& Label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = NULL);
 
     int StringWidth(const wxString& string);

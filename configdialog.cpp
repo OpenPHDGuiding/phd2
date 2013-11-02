@@ -60,21 +60,23 @@ void ConfigDialogPane::DoAdd(wxWindow *pWindow, const wxString& toolTip)
     DoAdd(pWindow);
 }
 
-void ConfigDialogPane::DoAdd(wxWindow *pWindow1, wxWindow *pWindow2, wxWindow *pWindow3)
+wxSizer *ConfigDialogPane::MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2)
 {
+    wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, label + _(": "));
+    pControl->SetToolTip(toolTip);
+
     wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
-    pSizer->Add(pWindow1);
-    pSizer->Add(pWindow2);
-    if (pWindow3 != NULL) pSizer->Add(pWindow3);
-    DoAdd(pSizer);
+    pSizer->Add(pLabel);
+    pSizer->Add(pControl);
+    if (pControl2 != NULL)
+        pSizer->Add(pControl2);
+
+    return pSizer;
 }
 
 void ConfigDialogPane::DoAdd(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2)
 {
-    wxStaticText *pLabel = new wxStaticText(m_pParent, wxID_ANY, label + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
-    pControl->SetToolTip(toolTip);
-
-    DoAdd(pLabel, pControl, pControl2);
+    DoAdd(MakeLabeledControl(label, pControl, toolTip, pControl2));
 }
 
 int ConfigDialogPane::StringWidth(const wxString& string)

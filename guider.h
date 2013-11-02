@@ -162,6 +162,7 @@ public:
     bool MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position, bool bExact=true);
     void SetLockPosIsSticky(bool isSticky) { m_lockPosIsSticky = isSticky; }
+    bool LockPosIsSticky(void) const { return m_lockPosIsSticky; }
     const PHD_Point& LockPosition();
 
     bool SetOverlayMode(int newMode);
@@ -206,6 +207,7 @@ public:
 
     virtual const PHD_Point& CurrentPosition(void) = 0;
     virtual wxRect GetBoundingBox(void) = 0;
+    virtual int GetMaxMovePixels(void) = 0;
     virtual double StarMass(void) = 0;
     virtual double SNR(void) = 0;
     virtual int StarError(void) = 0;

@@ -93,6 +93,7 @@ public:
     virtual bool AutoSelect(usImage *pImage=NULL);
     virtual const PHD_Point& CurrentPosition(void);
     virtual wxRect GetBoundingBox(void);
+    virtual int GetMaxMovePixels(void);
     virtual double StarMass(void);
     virtual double SNR(void);
     virtual int StarError(void);

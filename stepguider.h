@@ -138,7 +138,8 @@ public:
 private:
     virtual bool Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
     double Move(GUIDE_DIRECTION direction, double amount, bool normalMove=true);
-    bool CalibrationMove(GUIDE_DIRECTION direction);
+    bool CalibrationMove(GUIDE_DIRECTION direction, int steps);
+    int CalibrationMoveSize(void);
 
     double CalibrationTime(int nCalibrationSteps);
 protected:

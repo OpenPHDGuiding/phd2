@@ -112,54 +112,56 @@ EVT_BUTTON(MGUIDE2_RIGHT,TestGuideDialog::OnButton)
 EVT_BUTTON(MGUIDE2_LEFT,TestGuideDialog::OnButton)
 END_EVENT_TABLE()
 
-void TestGuideDialog::OnButton(wxCommandEvent &evt) {
-    switch (evt.GetId()) {
+void TestGuideDialog::OnButton(wxCommandEvent &evt)
+{
+    switch (evt.GetId())
+    {
         case MGUIDE1_UP:
             if (pMount && pMount->IsConnected())
             {
-                pMount->CalibrationMove(UP);
+                pMount->CalibrationMove(UP, pMount->CalibrationMoveSize());
             }
             break;
         case MGUIDE1_DOWN:
             if (pMount && pMount->IsConnected())
             {
-                pMount->CalibrationMove(DOWN);
+                pMount->CalibrationMove(DOWN, pMount->CalibrationMoveSize());
             }
             break;
         case MGUIDE1_RIGHT:
             if (pMount && pMount->IsConnected())
             {
-                pMount->CalibrationMove(RIGHT);
+                pMount->CalibrationMove(RIGHT, pMount->CalibrationMoveSize());
             }
             break;
         case MGUIDE1_LEFT:
             if (pMount && pMount->IsConnected())
             {
-                pMount->CalibrationMove(LEFT);
+                pMount->CalibrationMove(LEFT, pMount->CalibrationMoveSize());
             }
             break;
         case MGUIDE2_UP:
             if (pSecondaryMount && pSecondaryMount->IsConnected())
             {
-                pSecondaryMount->CalibrationMove(UP);
+                pSecondaryMount->CalibrationMove(UP, pMount->CalibrationMoveSize());
             }
             break;
         case MGUIDE2_DOWN:
             if (pSecondaryMount && pSecondaryMount->IsConnected())
             {
-                pSecondaryMount->CalibrationMove(DOWN);
+                pSecondaryMount->CalibrationMove(DOWN, pMount->CalibrationMoveSize());
             }
             break;
         case MGUIDE2_RIGHT:
             if (pSecondaryMount && pSecondaryMount->IsConnected())
             {
-                pSecondaryMount->CalibrationMove(RIGHT);
+                pSecondaryMount->CalibrationMove(RIGHT, pMount->CalibrationMoveSize());
             }
             break;
         case MGUIDE2_LEFT:
             if (pSecondaryMount && pSecondaryMount->IsConnected())
             {
-                pSecondaryMount->CalibrationMove(LEFT);
+                pSecondaryMount->CalibrationMove(LEFT, pMount->CalibrationMoveSize());
             }
             break;
     }

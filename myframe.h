@@ -237,20 +237,21 @@ public:
     struct PHD_MOVE_REQUEST
     {
         Mount           *pMount;
+        int             duration;
         GUIDE_DIRECTION direction;
         bool            calibrationMove;
-        PHD_Point       vectorEndpoint;
         bool            normalMove;
         bool            bError;
+        PHD_Point       vectorEndpoint;
         wxSemaphore     *pSemaphore;
     };
     void OnRequestMountMove(wxCommandEvent &evt);
 
     void ScheduleExposure(int exposureDuration, wxRect subframe);
-    void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
 
+    void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
     void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
-    void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction);
+    void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
 
     void StartCapturing(void);
     void StopCapturing(void);

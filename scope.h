@@ -46,6 +46,9 @@ class Scope : public Mount
 
     // Calibration variables
     int m_calibrationSteps;
+    bool m_fastRecenterEnabled;
+    int m_recenterRemaining;
+    int m_recenterDuration;
     PHD_Point m_calibrationStartingLocation;
 
     double m_calibrationXAngle;
@@ -72,11 +75,12 @@ protected:
     class ScopeConfigDialogPane : public MountConfigDialogPane
     {
         Scope *m_pScope;
+
         wxSpinCtrl *m_pCalibrationDuration;
         wxSpinCtrl *m_pMaxRaDuration;
         wxSpinCtrl *m_pMaxDecDuration;
+        wxCheckBox *m_pEnableFastRecenter;
         wxChoice   *m_pDecMode;
-        wxButton   *m_pAutoDuration;
         wxCheckBox *m_pNeedFlipDec;
 
         void OnAutoDuration (wxCommandEvent& evt);  // calibration step calculator
@@ -115,6 +119,8 @@ protected:
     virtual bool SetMaxDecDuration(int maxDecDuration);
     virtual int GetMaxRaDuration(void);
     virtual bool SetMaxRaDuration(double maxRaDuration);
+    bool IsFastRecenterEnabled(void);
+    void EnableFastRecenter(bool enable);
     virtual DEC_GUIDE_MODE GetDecGuideMode(void);
     virtual bool SetDecGuideMode(int decGuideMode);
 
@@ -151,7 +157,8 @@ private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
     double Move(GUIDE_DIRECTION direction, double duration, bool normalMove=true);
-    bool CalibrationMove(GUIDE_DIRECTION direction);
+    bool CalibrationMove(GUIDE_DIRECTION direction, int duration);
+    int CalibrationMoveSize(void);
 
     void ClearCalibration(void);
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
