@@ -187,7 +187,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point
     EnqueueMessage(message);
 }
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction, int duration)
 {
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
@@ -198,6 +198,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIR
     message.args.move.pMount          = pMount;
     message.args.move.calibrationMove = true;
     message.args.move.direction       = direction;
+    message.args.move.duration        = duration;
     message.args.move.normalMove      = true;
     message.args.move.pSemaphore      = NULL;
 
@@ -220,7 +221,7 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             {
                 Debug.AddLine("calibration move");
 
-                if (pArgs->pMount->CalibrationMove(pArgs->direction))
+                if (pArgs->pMount->CalibrationMove(pArgs->direction, pArgs->duration))
                 {
                     throw ERROR_INFO("CalibrationMove failed");
                 }

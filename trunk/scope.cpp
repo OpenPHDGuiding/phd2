@@ -66,6 +66,9 @@ Scope::Scope(void)
     int maxDecDuration = pConfig->Profile.GetInt(prefix + "/MaxDecDuration", DefaultMaxDecDuration);
     SetMaxDecDuration(maxDecDuration);
 
+    bool enableFastRecenter = pConfig->Profile.GetBoolean(prefix + "/FastRecenter", true);
+    EnableFastRecenter(enableFastRecenter);
+
     int decGuideMode = pConfig->Profile.GetInt(prefix + "/DecGuideMode", DefaultDecGuideMode);
     SetDecGuideMode(decGuideMode);
 
@@ -176,6 +179,17 @@ bool Scope::SetMaxRaDuration(double maxRaDuration)
     pConfig->Profile.SetInt("/scope/MaxRaDuration", m_maxRaDuration);
 
     return bError;
+}
+
+bool Scope::IsFastRecenterEnabled(void)
+{
+    return m_fastRecenterEnabled;
+}
+
+void Scope::EnableFastRecenter(bool enable)
+{
+    m_fastRecenterEnabled = enable;
+    pConfig->Profile.SetInt("/scope/FastRecenter", m_fastRecenterEnabled);
 }
 
 DEC_GUIDE_MODE Scope::GetDecGuideMode(void)
@@ -404,19 +418,19 @@ void Scope::EndDecDrift(void)
     }
 }
 
-bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
+bool Scope::CalibrationMove(GUIDE_DIRECTION direction, int duration)
 {
     bool bError = false;
 
-    Debug.AddLine(wxString::Format("scope calibration move dir= %d dur= %d", direction, m_calibrationDuration));
+    Debug.AddLine(wxString::Format("scope calibration move dir= %d dur= %d", direction, duration));
 
     try
     {
-        double duration = Move(direction, m_calibrationDuration, false);
+        double amount = Move(direction, duration, false);
 
-        if (duration < 0)
+        if (amount < 0.0)
         {
-            throw THROW_INFO("Duration < 0");
+            throw THROW_INFO("Move returned value < 0");
         }
     }
     catch (wxString Msg)
@@ -426,6 +440,11 @@ bool Scope::CalibrationMove(GUIDE_DIRECTION direction)
     }
 
     return bError;
+}
+
+int Scope::CalibrationMoveSize(void)
+{
+    return m_calibrationDuration;
 }
 
 double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
@@ -573,6 +592,8 @@ bool Scope::IsCalibrated(void)
     }
 }
 
+#define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
+
 bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 {
     bool bError = false;
@@ -590,10 +611,11 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_CLEARED:
                 assert(false);
                 break;
+
             case CALIBRATION_STATE_GO_WEST:
                 if (dist < dist_crit)
                 {
-                    if (m_calibrationSteps++  > MAX_CALIBRATION_STEPS)
+                    if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
                     {
                         wxString msg(_("RA Calibration Failed: star did not move enough"));
                         wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
@@ -603,12 +625,31 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     }
                     status0.Printf(_("West step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    pFrame->ScheduleCalibrationMove(this, WEST);
+                    pFrame->ScheduleCalibrationMove(this, WEST, m_calibrationDuration);
                     break;
                 }
 
                 m_calibrationXAngle = m_calibrationStartingLocation.Angle(currentLocation);
-                m_calibrationXRate = dist/(m_calibrationSteps * m_calibrationDuration);
+                m_calibrationXRate = dist / (m_calibrationSteps * m_calibrationDuration);
+
+                // for GO_EAST m_recenterRemaining contains the total remaining duration.
+                // Choose the largest pulse size that will not lose the guide star or exceed
+                // the user-specified max pulse
+
+                m_recenterRemaining = m_calibrationSteps * m_calibrationDuration;
+
+                if (m_fastRecenterEnabled)
+                {
+                    m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibrationXRate);
+                    if (m_recenterDuration > m_maxRaDuration)
+                        m_recenterDuration = m_maxRaDuration;
+                    if (m_recenterDuration < m_calibrationDuration)
+                        m_recenterDuration = m_calibrationDuration;
+                }
+                else
+                    m_recenterDuration = m_calibrationDuration;
+
+                m_calibrationSteps = DIV_ROUND_UP(m_recenterRemaining, m_recenterDuration);
 
                 Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_calibrationXAngle, m_calibrationXRate));
                 status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationXAngle, m_calibrationXRate);
@@ -617,15 +658,24 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
                 // fall through
                 Debug.AddLine("Falling Through to state GO_EAST");
+
             case CALIBRATION_STATE_GO_EAST:
-                if (m_calibrationSteps > 0)
+                if (m_recenterRemaining > 0)
                 {
                     status0.Printf(_("East step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    m_calibrationSteps--;
-                    pFrame->ScheduleCalibrationMove(this, EAST);
+
+                    int duration = m_recenterDuration;
+                    if (duration > m_recenterRemaining)
+                        duration = m_recenterRemaining;
+
+                    m_recenterRemaining -= duration;
+                    --m_calibrationSteps;
+
+                    pFrame->ScheduleCalibrationMove(this, EAST, duration);
                     break;
                 }
+
                 m_calibrationSteps = 0; dist = 0.0;
                 m_calibrationStartingLocation = currentLocation;
 
@@ -642,6 +692,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationState = CALIBRATION_STATE_CLEAR_BACKLASH;
                 // fall through
                 Debug.AddLine("Falling Through to state CLEAR_BACKLASH");
+
             case CALIBRATION_STATE_CLEAR_BACKLASH:
                 if (dist < DEC_BACKLASH_DISTANCE)
                 {
@@ -655,7 +706,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     }
                     status0.Printf(_("Clear backlash step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    pFrame->ScheduleCalibrationMove(this, NORTH);
+                    pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                     break;
                 }
                 m_calibrationSteps = 0;
@@ -664,6 +715,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationState = CALIBRATION_STATE_GO_NORTH;
                 // fall through
                 Debug.AddLine("Falling Through to state GO_NORTH");
+
             case CALIBRATION_STATE_GO_NORTH:
                 if (dist < dist_crit)
                 {
@@ -677,7 +729,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                     }
                     status0.Printf(_("North step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    pFrame->ScheduleCalibrationMove(this, NORTH);
+                    pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                     break;
                 }
 
@@ -685,7 +737,25 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 // that one was calibrating WEST, but the angle is really relative
                 // to EAST
                 m_calibrationYAngle = currentLocation.Angle(m_calibrationStartingLocation);
-                m_calibrationYRate = dist/(m_calibrationSteps * m_calibrationDuration);
+                m_calibrationYRate = dist / (m_calibrationSteps * m_calibrationDuration);
+
+                // for GO_SOUTH m_recenterRemaining contains the total remaining duration.
+                // Choose the largest pulse size that will not lose the guide star or exceed
+                // the user-specified max pulse
+                m_recenterRemaining = m_calibrationSteps * m_calibrationDuration;
+
+                if (m_fastRecenterEnabled)
+                {
+                    m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibrationYRate);
+                    if (m_recenterDuration > m_maxDecDuration)
+                        m_recenterDuration = m_maxDecDuration;
+                    if (m_recenterDuration < m_calibrationDuration)
+                        m_recenterDuration = m_calibrationDuration;
+                }
+                else
+                    m_recenterDuration = m_calibrationDuration;
+
+                m_calibrationSteps = DIV_ROUND_UP(m_recenterRemaining, m_recenterDuration);
 
                 Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_calibrationYAngle, m_calibrationYRate));
                 status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationYAngle, m_calibrationYRate);
@@ -694,18 +764,27 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
                 // fall through
                 Debug.AddLine("Falling Through to state GO_SOUTH");
+
             case CALIBRATION_STATE_GO_SOUTH:
-                if (m_calibrationSteps > 0)
+                if (m_recenterRemaining > 0)
                 {
                     status0.Printf(_("South step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
-                    m_calibrationSteps--;
-                    pFrame->ScheduleCalibrationMove(this, SOUTH);
+
+                    int duration = m_recenterDuration;
+                    if (duration > m_recenterRemaining)
+                        duration = m_recenterRemaining;
+
+                    m_recenterRemaining -= duration;
+                    --m_calibrationSteps;
+
+                    pFrame->ScheduleCalibrationMove(this, SOUTH, duration);
                     break;
                 }
                 m_calibrationState = CALIBRATION_STATE_COMPLETE;
                 // fall through
                 Debug.AddLine("Falling Through to state CALIBRATION_COMPLETE");
+
             case CALIBRATION_STATE_COMPLETE:
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
                                m_calibrationXRate,  m_calibrationYRate,
@@ -774,7 +853,7 @@ ConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)
 }
 
 Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope)
-    : MountConfigDialogPane(pParent, "Scope", pScope)
+    : MountConfigDialogPane(pParent, "Mount", pScope)
 {
     int width;
 
@@ -785,29 +864,39 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
 
     // add the 'auto' button and bind it to the associated event-handler
-    //wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
-    wxButton *m_pAutoDuration = new wxButton(pParent, wxID_OK, _("Calculate...") );
-    m_pAutoDuration->SetToolTip(_("Click to open the Calibration Step Calculator to help find a good calibration step size"));
-    m_pAutoDuration->Bind (wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnAutoDuration, this);
-    //pButtonSizer->Add(
-    //    m_pAutoDuration,
-    //    wxSizerFlags(0).Center());
-    //// Use base class 'add' to get the button centered
-    //ScopeConfigDialogPane::Add (pButtonSizer, wxSizerFlags(0).Center());
+    wxButton *pAutoDuration = new wxButton(pParent, wxID_OK, _("Calculate...") );
+    pAutoDuration->SetToolTip(_("Click to open the Calibration Step Calculator to help find a good calibration step size"));
+    pAutoDuration->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnAutoDuration, this);
+
     DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
-        _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"), m_pAutoDuration);
+        _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"), pAutoDuration);
+
+    wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+
+    wxStaticText *lbl = new wxStaticText(pParent, wxID_ANY, "Max Duration");
+    sizer->Add(lbl, wxSizerFlags().Expand().Border(wxALL,3));
 
     width = StringWidth(_T("00000"));
     m_pMaxRaDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 2000, 150, _T("MaxDec_Dur"));
-    DoAdd(_("Max RA Duration"),  m_pMaxRaDuration,
+    wxSizer *sizer1 = MakeLabeledControl(_("RA"),  m_pMaxRaDuration,
           _("Longest length of pulse to send in RA\nDefault = 1000 ms."));
+    sizer->Add(sizer1, wxSizerFlags().Expand().Border(wxALL,3));
 
     width = StringWidth(_T("00000"));
     m_pMaxDecDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS,0,2000,150,_T("MaxDec_Dur"));
-    DoAdd(_("Max Dec Duration"),  m_pMaxDecDuration,
+    wxSizer *sizer2 = MakeLabeledControl(_("Dec"),  m_pMaxDecDuration,
           _("Longest length of pulse to send in declination\nDefault = 1000 ms.  Increase if drift is fast."));
+    sizer->Add(sizer2, wxSizerFlags().Expand().Border(wxALL,3));
+
+    DoAdd(sizer);
+
+    m_pEnableFastRecenter = new wxCheckBox(pParent, wxID_ANY, _("Fast recenter after calibration"));
+    DoAdd(m_pEnableFastRecenter, _("Speed up calibration by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration."));
+
+    m_pNeedFlipDec = new wxCheckBox(pParent, wxID_ANY, _("Reverse Dec output after meridian flip"));
+    DoAdd(m_pNeedFlipDec, _("Check if your mount needs Dec output reversed after doing Flip Calibration Data"));
 
     wxString dec_choices[] = {
         _("Off"),_("Auto"),_("North"),_("South")
@@ -817,9 +906,6 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
             wxSize(width+35, -1), WXSIZEOF(dec_choices), dec_choices);
     DoAdd(_("Dec guide mode"), m_pDecMode,
           _("Guide in declination as well?"));
-
-    m_pNeedFlipDec = new wxCheckBox(pParent, wxID_ANY, _("Reverse Dec output after meridian flip"));
-    DoAdd(m_pNeedFlipDec, _("Check if your mount needs Dec output reversed after doing Flip Calibration Data"));
 }
 
 void Scope::ScopeConfigDialogPane::OnAutoDuration (wxCommandEvent& evt)
@@ -858,6 +944,7 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
     m_pCalibrationDuration->SetValue(m_pScope->GetCalibrationDuration());
     m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
     m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
+    m_pEnableFastRecenter->SetValue(m_pScope->IsFastRecenterEnabled());
     m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
     m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
 }
@@ -867,6 +954,7 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
     m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
     m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
+    m_pScope->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
     m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
     m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
 

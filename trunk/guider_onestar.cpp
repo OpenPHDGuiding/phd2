@@ -259,6 +259,11 @@ wxRect GuiderOneStar::GetBoundingBox(void)
     return box;
 }
 
+int GuiderOneStar::GetMaxMovePixels(void)
+{
+    return m_searchRegion;
+}
+
 double GuiderOneStar::StarMass(void)
 {
     return m_star.Mass;

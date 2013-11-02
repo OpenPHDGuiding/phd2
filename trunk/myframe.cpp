@@ -904,7 +904,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
     if (pRequest->calibrationMove)
     {
-        pRequest->bError = pRequest->pMount->CalibrationMove(pRequest->direction);
+        pRequest->bError = pRequest->pMount->CalibrationMove(pRequest->direction, pRequest->duration);
     }
     else
     {
@@ -964,7 +964,7 @@ void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoi
     }
 }
 
-void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction)
+void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -973,7 +973,7 @@ void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direc
     pMount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, direction, duration);
 }
 
 void MyFrame::StartCapturing()

@@ -159,7 +159,8 @@ public:
 public:
     // move the requested direction, return the actual amount of the move
     virtual double Move(GUIDE_DIRECTION direction, double amount, bool normalMove) = 0;
-    virtual bool CalibrationMove(GUIDE_DIRECTION direction) = 0;
+    virtual bool CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
+    virtual int CalibrationMoveSize(void) = 0;
 
     // Calibration related routines
     virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;

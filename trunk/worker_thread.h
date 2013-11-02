@@ -106,7 +106,7 @@ protected:
     /*************      Guide       **************************/
 public:
     void EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove);
-    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction);
+    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
 protected:
     bool HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs);
     void SendWorkerThreadMoveComplete(Mount *pMount, bool bError);

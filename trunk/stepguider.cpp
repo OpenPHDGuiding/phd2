@@ -622,25 +622,25 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
         if (moveUp)
         {
             assert(!moveDown);
-            pFrame->ScheduleCalibrationMove(this, UP);
+            pFrame->ScheduleCalibrationMove(this, UP, m_calibrationStepsPerIteration);
         }
 
         if (moveDown)
         {
             assert(!moveUp);
-            pFrame->ScheduleCalibrationMove(this, DOWN);
+            pFrame->ScheduleCalibrationMove(this, DOWN, m_calibrationStepsPerIteration);
         }
 
         if (moveRight)
         {
             assert(!moveLeft);
-            pFrame->ScheduleCalibrationMove(this, RIGHT);
+            pFrame->ScheduleCalibrationMove(this, RIGHT, m_calibrationStepsPerIteration);
         }
 
         if (moveLeft)
         {
             assert(!moveRight);
-            pFrame->ScheduleCalibrationMove(this, LEFT);
+            pFrame->ScheduleCalibrationMove(this, LEFT, m_calibrationStepsPerIteration);
         }
 
         if (m_calibrationState != CALIBRATION_STATE_COMPLETE)
@@ -703,17 +703,17 @@ bool StepGuider::GuidingCeases(void)
     return bError;
 }
 
-bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
+bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int steps)
 {
     bool bError = false;
 
-    Debug.AddLine(wxString::Format("stepguider calibration move dir= %d steps= %d", direction, m_calibrationStepsPerIteration));
+    Debug.AddLine(wxString::Format("stepguider calibration move dir= %d steps= %d", direction, steps));
 
     try
     {
-        double stepsTaken = Move(direction, m_calibrationStepsPerIteration, false);
+        double stepsTaken = Move(direction, steps, false);
 
-        if (stepsTaken != m_calibrationStepsPerIteration)
+        if ((int) stepsTaken != steps)
         {
             throw THROW_INFO("stepsTaken != m_calibrationStepsPerIteration");
         }
@@ -725,6 +725,11 @@ bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction)
     }
 
     return bError;
+}
+
+int StepGuider::CalibrationMoveSize(void)
+{
+    return m_calibrationStepsPerIteration;
 }
 
 double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMove)
