@@ -999,7 +999,7 @@ bool GearDialog::DisconnectAll(wxString *error)
     if (pFrame->CaptureActive)
     {
         // these error messages are internal to the event server and are not translated
-        *error = "cannot disconnect equipmnet while capture active";
+        *error = "cannot disconnect equipment while capture active";
         return true;
     }
 
