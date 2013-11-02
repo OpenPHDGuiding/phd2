@@ -422,6 +422,8 @@ repeat:
                 pFrame->pGraphLog->EnableTrendLines(true);
                 m_drifting = true;
                 return;
+            case STATE_STOP:
+                return;
             }
         }
     }
