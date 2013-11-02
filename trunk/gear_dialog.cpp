@@ -894,6 +894,129 @@ void GearDialog::OnProfileChoice(wxCommandEvent& event)
     pFrame->UpdateTitle();
 }
 
+bool GearDialog::SetProfile(int profileId, wxString *error)
+{
+    if (profileId == pConfig->GetCurrentProfileId())
+        return false;
+
+    if (IsModal())
+    {
+        // these error messages are internal to the event server and are not translated
+        *error = "cannot set profile when Connect Equipment dialog is open";
+        return true;
+    }
+
+    if ((m_pCamera && m_pCamera->Connected) ||
+        (m_pScope && m_pScope->IsConnected()) ||
+        (m_pStepGuider && m_pStepGuider->IsConnected()))
+    {
+        *error = "cannot set profile when equipment is connected";
+        return true;
+    }
+
+    if (!pConfig->ProfileExists(profileId))
+    {
+        *error = "invalid profile id";
+        return true;
+    }
+
+    wxString profile = pConfig->GetProfileName(profileId);
+
+    if (!m_profiles->SetStringSelection(profile))
+    {
+        *error = "invalid profile id";
+        return true;
+    }
+
+    // need the side-effects for making the selection
+    wxCommandEvent dummy;
+    OnProfileChoice(dummy);
+
+    // need the side-effects of closing the dialog
+    EndModal(0);
+
+    return false;
+}
+
+bool GearDialog::ConnectAll(wxString *error)
+{
+    if (m_pCamera && m_pCamera->Connected &&
+        (!m_pScope || m_pScope->IsConnected()) &&
+        (!m_pStepGuider || m_pStepGuider->IsConnected()))
+    {
+        // everything already connected
+        return false;
+    }
+
+    if (pFrame->CaptureActive)
+    {
+        // these error messages are internal to the event server and are not translated
+        *error = "cannot connect equipment when capture is active";
+        return true;
+    }
+
+    if (IsModal())
+    {
+        *error = "cannot connect equipment when Connect Equipment dialog is open";
+        return true;
+    }
+
+    wxCommandEvent dummyEvent;
+    OnButtonConnectAll(dummyEvent);
+
+    // need the side-effects of closing the dialog
+    EndModal(0);
+
+    wxString fail;
+    if (!m_pCamera || !m_pCamera->Connected)
+        fail += " camera";
+    if (m_pScope && !m_pScope->IsConnected())
+        fail += " mount";
+    if (m_pStepGuider && !m_pStepGuider->IsConnected())
+        fail += " AO";
+
+    if (fail.IsEmpty())
+    {
+        return false;
+    }
+    else
+    {
+        *error = "equipment failed to connect:" + fail;
+        return true;
+    }
+}
+
+bool GearDialog::DisconnectAll(wxString *error)
+{
+    if ((!m_pCamera || !m_pCamera->Connected) &&
+        (!m_pScope || !m_pScope->IsConnected()) &&
+        (!m_pStepGuider || !m_pStepGuider->IsConnected()))
+    {
+        // nothing connected
+        return false;
+    }
+
+    if (pFrame->CaptureActive)
+    {
+        // these error messages are internal to the event server and are not translated
+        *error = "cannot disconnect equipmnet while capture active";
+        return true;
+    }
+
+    if (IsModal())
+    {
+        *error = "cannot disconnect equipment when Connect Equipment dialog is open";
+        return true;
+    }
+
+    wxCommandEvent dummy;
+    OnButtonDisconnectAll(dummy);
+
+    EndModal(0); // need the side effects
+
+    return false;
+}
+
 struct NewProfileDialog : public wxDialog
 {
     wxTextCtrl *m_name;

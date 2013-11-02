@@ -113,11 +113,13 @@ public:
 
     void InitializeProfile(void);
     wxString GetCurrentProfile(void);
+    int GetCurrentProfileId(void) { return m_currentProfileId; }
     bool SetCurrentProfile(const wxString& name);
 
     int GetProfileId(const wxString& name);
     int FirstProfile(void);
     wxString GetProfileName(int profileId);
+    bool ProfileExists(int profileId);
     bool CreateProfile(const wxString& name);
     bool CloneProfile(const wxString& dest, const wxString& source);
     void DeleteProfile(const wxString& name);
