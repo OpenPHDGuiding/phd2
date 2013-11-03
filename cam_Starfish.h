@@ -56,5 +56,7 @@ private:
     int CamNum;
     int NCams;
     bool DriverLoaded;
+    virtual bool HasNonGuiCapture(void) { return true; }
+    virtual bool    ST4HasNonGuiMove(void) { return true; }
 };
 #endif  //STARFISHDEF
