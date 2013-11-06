@@ -185,19 +185,13 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_PAUSE:
             case 'p':
                 Debug.AddLine("processing socket request PAUSE");
-                pGuider->SetPaused(true);
-                wxLogStatus(_T("Paused"));
-                GuideLog.ServerCommand(pGuider, "PAUSE");
-                EvtServer.NotifyPaused();
+                SetPaused(true);
                 break;
 
             case MSG_RESUME:
             case 'r':
                 Debug.AddLine("processing socket request RESUME");
-                pGuider->SetPaused(false);
-                wxLogStatus (_T("Resumed"));
-                GuideLog.ServerCommand(pGuider, "RESUME");
-                EvtServer.NotifyResumed();
+                SetPaused(false);
                 break;
 
             case MSG_MOVE1:  // +/- 0.5

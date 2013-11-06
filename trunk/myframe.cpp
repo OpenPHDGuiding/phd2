@@ -1004,6 +1004,24 @@ void MyFrame::StopCapturing(void)
     m_continueCapturing = false;
 }
 
+void MyFrame::SetPaused(bool pause)
+{
+    if (pause && !pGuider->IsPaused())
+    {
+        pGuider->SetPaused(true);
+        wxLogStatus(_T("Paused"));
+        GuideLog.ServerCommand(pGuider, "PAUSE");
+        EvtServer.NotifyPaused();
+    }
+    else if (!pause && pGuider->IsPaused())
+    {
+        pGuider->SetPaused(false);
+        wxLogStatus(_T("Resumed"));
+        GuideLog.ServerCommand(pGuider, "RESUME");
+        EvtServer.NotifyResumed();
+    }
+}
+
 bool MyFrame::StartLooping(void)
 {
     bool error = false;

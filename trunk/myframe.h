@@ -256,6 +256,8 @@ public:
     void StartCapturing(void);
     void StopCapturing(void);
 
+    void SetPaused(bool paused);
+
     bool StartLooping(void); // stop guiding and continue capturing, or, start capturing
     bool StartGuiding(void);
     bool Dither(double amount, bool raOnly);
