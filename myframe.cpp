@@ -984,6 +984,7 @@ void MyFrame::StartCapturing()
     {
         m_continueCapturing = true;
         CaptureActive     = true;
+        m_frameCounter = 0;
 
         UpdateButtonsStatus();
 
@@ -1001,6 +1002,96 @@ void MyFrame::StopCapturing(void)
         SetStatusText(_("Waiting for devices before stopping..."), 1);
     }
     m_continueCapturing = false;
+}
+
+bool MyFrame::StartLooping(void)
+{
+    bool error = false;
+
+    try
+    {
+        if (!pCamera || !pCamera->Connected)
+        {
+            throw ERROR_INFO("Camera not connected");
+        }
+
+        if (CaptureActive)
+        {
+            // if we are guiding, stop guiding and go back to looping
+            if (pGuider->IsCalibratingOrGuiding())
+            {
+                pGuider->StopGuiding();
+            }
+            else
+            {
+                throw ERROR_INFO("cannot start looping when capture active");
+            }
+        }
+
+        pFrame->StartCapturing();
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+    }
+
+    return error;
+}
+
+bool MyFrame::StartGuiding(void)
+{
+    bool error = true;
+
+    if (pMount && pMount->IsConnected() &&
+        pCamera && pCamera->Connected &&
+        pGuider->GetState() >= STATE_SELECTED)
+    {
+        pGuider->StartGuiding();
+        StartCapturing();
+        UpdateButtonsStatus();
+        error = false;
+    }
+
+    return error;
+}
+
+bool MyFrame::Dither(double amount, bool raOnly)
+{
+    bool error = false;
+
+    try
+    {
+        if (pGuider->GetState() != STATE_GUIDING)
+        {
+            throw ERROR_INFO("cannot dither if not guiding");
+        }
+
+        amount *= m_ditherScaleFactor;
+
+        double dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
+        double dDec =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
+
+        if (raOnly || m_ditherRaOnly)
+        {
+            dDec = 0.;
+        }
+
+        Debug.AddLine("dither: size=%.2f, dRA=%.2f dDec=%.2f", amount, dRa, dDec);
+
+        pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
+
+        wxLogStatus(_T("Moving by %.2f,%.2f"),dRa, dDec);
+        GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
+        EvtServer.NotifyGuidingDithered(dRa, dDec);
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+    }
+
+    return error;
 }
 
 void MyFrame::OnClose(wxCloseEvent &event)
