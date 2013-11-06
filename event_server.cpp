@@ -93,6 +93,11 @@ static JAry& operator<<(JAry& a, const wxString& str)
     return a;
 }
 
+static JAry& operator<<(JAry& a, double d)
+{
+    return a << wxString::Format("%.2f", d);
+}
+
 static wxString json_escape(const wxString& s)
 {
     wxString t(s);
@@ -148,6 +153,8 @@ static wxString json_format(const json_value *j)
     }
 }
 
+struct NULL_TYPE { } NULL_VALUE;
+
 // name-value pair
 struct NV
 {
@@ -164,6 +171,8 @@ struct NV
     NV(const wxString& n_, JAry& ary) : n(n_), v(ary.str()) { }
     NV(const wxString& n_, JObj& obj) : n(n_), v(obj.str()) { }
     NV(const wxString& n_, const json_value *v_) : n(n_), v(json_format(v_)) { }
+    NV(const wxString& n_, const PHD_Point& p) : n(n_) { JAry ary; ary << p.X << p.Y; v = ary.str(); }
+    NV(const wxString& n_, const NULL_TYPE& nul) : n(n_), v(literal_null) { }
 };
 
 template<typename T>
@@ -608,6 +617,94 @@ static void get_calibrated(JObj& response, const json_value *params)
     response << jrpc_result(calibrated);
 }
 
+static bool float_param(const json_value *v, double *p)
+{
+    if (v->type == JSON_INT)
+    {
+        *p = (double) v->int_value;
+        return true;
+    }
+    else if (v->type == JSON_FLOAT)
+    {
+        *p = v->float_value;
+        return true;
+    }
+
+    return false;
+}
+
+static void get_paused(JObj& response, const json_value *params)
+{
+    response << jrpc_result(pFrame->pGuider->IsPaused());
+}
+
+static void set_paused(JObj& response, const json_value *params)
+{
+    const json_value *p;
+    bool val;
+
+    if (!params || (p = at(params, 0)) == 0 || p->type != JSON_BOOL)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected bool param at index 0");
+        return;
+    }
+    val = p->int_value ? true : false;
+
+    pFrame->SetPaused(val);
+
+    response << jrpc_result(0);
+}
+
+static void stop_capture(JObj& response, const json_value *params)
+{
+    pFrame->StopCapturing();
+    response << jrpc_result(0);
+}
+
+static void get_lock_position(JObj& response, const json_value *params)
+{
+    PHD_Point lockPos = pFrame->pGuider->LockPosition();
+    if (lockPos.IsValid())
+        response << jrpc_result(lockPos);
+    else
+        response << jrpc_result(NULL_VALUE);
+}
+
+// {"method": "set_lock_position", "params": [X, Y, true], "id": 1}
+static void set_lock_position(JObj& response, const json_value *params)
+{
+    const json_value *p0, *p1;
+    double x, y;
+
+    if (!params || (p0 = at(params, 0)) == 0 || (p1 = at(params, 1)) == 0 ||
+        !float_param(p0, &x) || !float_param(p1, &y))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected lock position x, y params");
+        return;
+    }
+
+    bool exact = true;
+    const json_value *p2 = at(params, 2);
+    if (p2)
+    {
+        if (p2->type != JSON_BOOL)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected boolean param at index 2");
+            return;
+        }
+        exact = p2->int_value ? true : false;
+    }
+
+    bool error = pFrame->pGuider->SetLockPosition(PHD_Point(x, y), exact);
+    if (error)
+    {
+        response << jrpc_error(JSONRPC_INVALID_REQUEST, "could not set lock position");
+        return;
+    }
+
+    response << jrpc_result(0);
+}
+
 static bool handle_request(JObj& response, const json_value *req)
 {
     const json_value *method;
@@ -635,6 +732,11 @@ static bool handle_request(JObj& response, const json_value *req)
         { "get_connected", &get_connected, },
         { "set_connected", &set_connected, },
         { "get_calibrated", &get_calibrated, },
+        { "get_paused", &get_paused, },
+        { "set_paused", &set_paused, },
+        { "get_lock_position", &get_lock_position, },
+        { "set_lock_position", &set_lock_position, },
+        { "stop_capture", &stop_capture, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
