@@ -383,23 +383,12 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
             throw ERROR_INFO("Camera not connected");
         }
 
-        if (CaptureActive)
+        if (CaptureActive && !pGuider->IsCalibratingOrGuiding())
         {
-            // if we are guiding, stop guiding and go back to looping
-            if (pGuider->IsCalibratingOrGuiding())
-            {
-                pGuider->StopGuiding();
-            }
-            else
-            {
-                throw ERROR_INFO("cannot start looping when capture active");
-            }
+            throw ERROR_INFO("cannot start looping when capture active");
         }
 
-        m_frameCounter = 0;
-
-        pFrame->StartCapturing();
-
+        StartLooping();
     }
     catch (wxString Msg)
     {
@@ -437,11 +426,10 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             UpdateButtonsStatus();
             SetStatusText(_("Stopped."), 1);
 
-            Debug.Write("OnExposureComplete(): Capture Error reported\n");
+            Debug.Write("OnExposeComplete(): Capture Error reported\n");
 
             throw ERROR_INFO("Error reported capturing image");
         }
-
         ++m_frameCounter;
 
         pGuider->UpdateGuideState(pNewFrame, !m_continueCapturing);
@@ -471,15 +459,8 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         }
 #endif
 
-        Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d m_continueCapturing=%d", CaptureActive, m_continueCapturing));
-#ifdef ZESLY_DODO
-        double dx = (double)rand() / RAND_MAX * 2 - 1;
-        double dy = (double)rand() / RAND_MAX * 2 - 1;
-        double ra = (double)rand() / RAND_MAX * 2 - 1;
-        double dec = (double)rand() / RAND_MAX * 2 - 1;
-        pGraphLog->AppendData(dx,dy,ra,dec);
-        pTarget->AppendData(ra,dec);
-#endif // ZESLY_DODO
+        Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d m_continueCapturing=%d",
+            CaptureActive, m_continueCapturing));
 
         CaptureActive = m_continueCapturing;
 
@@ -522,7 +503,6 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
 void MyFrame::OnButtonStop(wxCommandEvent& WXUNUSED(event))
 {
     StopCapturing();
-    UpdateButtonsStatus();
 }
 
 void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event))
@@ -877,11 +857,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
             }
         }
 
-        pGuider->StartGuiding();
-
-        StartCapturing();
-
-        UpdateButtonsStatus();
+        StartGuiding();
     }
     catch (wxString Msg)
     {

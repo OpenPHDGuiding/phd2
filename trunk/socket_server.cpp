@@ -210,48 +210,30 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
 
                 double size = 1.0;
 
-                if (pGuider->GetState() != STATE_GUIDING)
-                {
-                    throw ERROR_INFO("cannot dither if not guiding");
-                }
-
-                // note: size is twice the desired move amount
-                switch(c)
+                switch (c)
                 {
                     case MSG_MOVE1:  // +/- 0.5
-                        size =  1.0;
+                        size = 0.5;
                         break;
                     case MSG_MOVE2:  // +/- 1.0
-                        size =  2.0;
+                        size = 1.0;
                         break;
                     case MSG_MOVE3:  // +/- 2.0
-                        size =  4.0;
+                        size = 2.0;
                         break;
                     case MSG_MOVE4:  // +/- 3.0
-                        size =  6.0;
+                        size = 3.0;
                         break;
                     case MSG_MOVE5:  // +/- 5.0
-                        size = 10.0;
+                        size = 5.0;
                         break;
                 }
 
-                size = size * m_ditherScaleFactor;
-
-                double dRa  =  (rand()/(double)RAND_MAX)*size - (size /2.0);
-                double dDec =  (rand()/(double)RAND_MAX)*size - (size /2.0);
-
-                if (m_ditherRaOnly)
+                bool error = Dither(size, m_ditherRaOnly);
+                if (error)
                 {
-                    dDec = 0;
+                    throw ERROR_INFO("dither failed");
                 }
-
-                Debug.AddLine("dither: size=%.2f, dRA=%.2f dDec=%.2f", size, dRa, dDec);
-
-                pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
-
-                wxLogStatus(_T("Moving by %.2f,%.2f"),dRa, dDec);
-                GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
-                EvtServer.NotifyGuidingDithered(dRa, dDec);
 
                 rval = RequestedExposureDuration() / 1000;
                 if (rval < 1)
@@ -291,9 +273,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 rval = error ? 0 : 1;
                 if (!error)
                 {
-                    wxCommandEvent *tmp_evt;
-                    tmp_evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, BUTTON_LOOP);
-                    QueueEvent(tmp_evt);
+                    StartLooping();
                 }
                 GuideLog.ServerCommand(pGuider, "AUTO FIND STAR");
                 break;
@@ -343,8 +323,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_LOOP:
             {
                 Debug.AddLine("processing socket request LOOP");
-                wxCommandEvent *tmp_evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, BUTTON_LOOP);
-                QueueEvent(tmp_evt);
+                StartLooping();
                 GuideLog.ServerCommand(pGuider, "LOOP");
                 break;
             }
@@ -352,9 +331,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_STOP:
             {
                 Debug.AddLine("processing socket request STOP");
-                wxCommandEvent *tmp_evt;
-                tmp_evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, BUTTON_STOP);
-                QueueEvent(tmp_evt);
+                StopCapturing();
                 GuideLog.ServerCommand(pGuider, "STOP");
                 break;
             }
@@ -362,9 +339,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_STARTGUIDING:
             {
                 Debug.AddLine("processing socket request STARTGUIDING");
-                wxCommandEvent *tmp_evt;
-                tmp_evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, BUTTON_GUIDE);
-                QueueEvent(tmp_evt);
+                StartGuiding();
                 GuideLog.ServerCommand(pGuider, "START GUIDING");
                 break;
             }
