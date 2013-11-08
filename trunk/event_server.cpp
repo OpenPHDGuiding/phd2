@@ -690,15 +690,51 @@ static void set_paused(JObj& response, const json_value *params)
     response << jrpc_result(0);
 }
 
+static void loop(JObj& response, const json_value *params)
+{
+    bool error = pFrame->StartLooping();
+
+    if (error)
+        response << jrpc_error(1, "could not start looping");
+    else
+        response << jrpc_result(0);
+}
+
 static void stop_capture(JObj& response, const json_value *params)
 {
     pFrame->StopCapturing();
     response << jrpc_result(0);
 }
 
+static void find_star(JObj& response, const json_value *params)
+{
+    bool error = pFrame->pGuider->AutoSelect();
+
+    if (!error)
+    {
+        const PHD_Point& lockPos = pFrame->pGuider->LockPosition();
+        if (lockPos.IsValid())
+        {
+            response << jrpc_result(lockPos);
+            return;
+        }
+    }
+
+    response << jrpc_error(1, "could not find star");
+}
+
+static void get_pixel_scale(JObj& response, const json_value *params)
+{
+    double scale = pFrame->GetCameraPixelScale();
+    if (scale == 1.0)
+        response << jrpc_result(NULL_VALUE); // scale unknown
+    else
+        response << jrpc_result(scale);
+}
+
 static void get_lock_position(JObj& response, const json_value *params)
 {
-    PHD_Point lockPos = pFrame->pGuider->LockPosition();
+    const PHD_Point& lockPos = pFrame->pGuider->LockPosition();
     if (lockPos.IsValid())
         response << jrpc_result(lockPos);
     else
@@ -897,9 +933,12 @@ static bool handle_request(JObj& response, const json_value *req)
         { "set_paused", &set_paused, },
         { "get_lock_position", &get_lock_position, },
         { "set_lock_position", &set_lock_position, },
+        { "loop", &loop, },
         { "stop_capture", &stop_capture, },
         { "guide", &guide, },
         { "dither", &dither, },
+        { "find_star", &find_star, },
+        { "get_pixel_scale", &get_pixel_scale, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
