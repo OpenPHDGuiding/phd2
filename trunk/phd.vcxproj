@@ -239,6 +239,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="phdconfig.cpp" />
+    <ClCompile Include="phdcontrol.cpp" />
     <ClCompile Include="precompiled_header.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">phd.h</PrecompiledHeaderFile>
@@ -346,6 +347,7 @@
     <ClInclude Include="parallelport_win32.h" />
     <ClInclude Include="phd.h" />
     <ClInclude Include="phdconfig.h" />
+    <ClInclude Include="phdcontrol.h" />
     <ClInclude Include="point.h" />
     <ClInclude Include="scope.h" />
     <ClInclude Include="scope_ascom.h" />
