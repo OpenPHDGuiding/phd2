@@ -136,6 +136,23 @@ Looping exposures has stopped.
 
 (no event attributes)
 
+=== `Settling` ===
+
+Sent for each exposure frame after a `dither` or `guide` method invocation until guiding has settled.
+
+|| Attribute || Type || Description ||
+|| Distance || number || the current distance between the guide star and lock position ||
+|| Time || number || the elapsed time that the distance has been below the settling tolerance distance (the `pixels` attribute of the `SETTLE` parameter) ||
+|| SettleTime || number || the requested settle time (the `time` attribute of the `SETTLE` parameter) ||
+
+=== `SettleDone` ===
+
+Sent after a `dither` or `guide` method invocation indicating whether settling was achieved, or if the guider failed to settle before the time limit was reached, or if some other error occurred preventing `guide` or `dither` to complete and settle.
+
+|| Attribute || Type || Description ||
+|| Status || number || 0 if settling succeeded, non-zero if it failed ||
+|| Error || string || a description of the reason why the `guide` or `dither` command failed to complete and settle ||
+
 === `StarLost` ===
 
 The selected star has been lost.
@@ -233,6 +250,7 @@ Set camera exposure (error):
 == Available Methods ==
 
 ||*Method*||*params*||*result*||*Description*||
+||`dither`|| PIXELS (float), RA_ONLY (boolean), SETTLE (object) || integer (0) || See below ||
 ||`get_calibrated`||none||boolean: true if calibrated|| ||
 ||`get_connected`||none||boolean: true if all equipment is connected || ||
 ||`get_exposure`||none||integer: exposure time in milliseconds|| ||
@@ -241,9 +259,56 @@ Set camera exposure (error):
 ||`get_paused`||none||boolean: true if paused|| ||
 ||`get_profile`||none||{{{ {"id":profile_id,"name":"profile_name"} }}} ||
 ||`get_profiles`||none||array of {{{ {"id":profile_id,"name":"profile_name"} }}} ||
+||`guide`|| SETTLE (object), RECALIBRATE (boolean)|| integer(0) || See below ||
+||`loop`||none||integer (0)||start capturing, or, if guiding, stop guiding but continue capturing||
 ||`set_connected`||boolean: connect|| integer (0) || connect or disconnect all equipment ||
 ||`set_exposure`||integer: exposure time in milliseconds|| integer (0)||
 ||`set_lock_position`||X: float, Y: float, EXACT: boolean (optional, default = true) || integer (0) || When EXACT is `true`, the lock position is moved to the exact given coordinates. When `false`, the current position is moved to the given coordinates and if a guide star is in range, the lock position is et to the coordinates of the guide star. ||
 ||`set_paused`||boolean: pause||integer (0)|| ||
 ||`set_profile`||integer: profile id|| integer (0) || Select an equipment profile. All equipment must be disconnected before switching profiles. ||
 ||`stop_capture`||none||integer (0)||Stop capturing (and stop guiding)||
+
+=== Settle parameter ===
+
+The `SETTLE` parameter is used by the `guide` and `dither` commands to specify when PHD2 should consider guiding to be stable enough for imaging. `SETTLE` is an object with the following attributes:
+ * `pixels` - maximum guide distance for guiding to be considered stable or "in-range"
+ * `time` - minimum time to be in-range before considering guiding to be stable
+ * `timeout` - time limit before settling is considered to have failed
+
+So, for example, to request settling at less than 1.5 pixels for at least 10 seconds, with a time limit of 60 seconds, the settle object parameter would be:
+{{{
+{"pixels": 1.5, "time": 10, "timeout": 60}
+}}}
+
+=== Guide Method ===
+
+The `guide` method allows a client to request PHD2 to do whatever it needs to start guiding and to report when guiding is settled and stable.
+
+When the `guide` method command is received, PHD2 will respond immediately indicating that the `guide` sequence has started. The `guide` method will return an error status if equipment is not connected. PHD will then:
+
+ * start capturing if necessary
+ * auto-select a guide star if one is not already selected
+ * calibrate if necessary, or if the RECALIBRATE parameter is true
+ * wait for calibration to complete
+ * start guiding if necessary
+ * wait for settle (or timeout)
+ * report progress of settling for each exposure (send `Settling` events)
+ * report success or failure by sending a `SettleDone` event.
+
+If the `guide` command is accepted, PHD is guaranteed to send a `SettleDone` event some time later indicating the success or failure of the guide sequence.
+
+Example
+{{{
+{"method": "guide", "params": [{"pixels": 1.5, "time": 8, "timeout": 40}, false], "id": 42}
+}}}
+
+=== Dither Method ===
+
+The `dither` method allows the client to request a random shift of the lock position by +/- PIXELS on each of the RA and Dec axes. If the RA_ONLY parameter is true, or if the Dither RA Only option is set in the Brain, the dither will only be on the RA axis. The PIXELS parameter is multiplied by the Dither Scale value in the Brain.
+
+Like the `guide` method, the `dither` method takes a `SETTLE` object parameter. PHD will send `Settling` and `SettleDone` events to indicate when guiding has stabilized after the dither.
+
+Example
+{{{
+{"method": "dither", "params": [10, false, {"pixels": 1.5, "time": 8, "timeout": 40}], "id": 42}
+}}}
