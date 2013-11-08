@@ -167,6 +167,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "debuglog.h"
 #include "event_server.h"
 #include "confirm_dialog.h"
+#include "phdcontrol.h"
 
 extern PhdConfig *pConfig;
 
