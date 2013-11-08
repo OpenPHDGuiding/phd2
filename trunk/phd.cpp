@@ -120,6 +120,8 @@ bool PhdApp::OnInit() {
 
     pConfig->InitializeProfile();
 
+    PhdController::OnAppInit();
+
     pFrame = new MyFrame(m_instanceNumber, &m_locale);
 
     wxImage::AddHandler(new wxJPEGHandler);
@@ -134,6 +136,8 @@ int PhdApp::OnExit(void)
     assert(pMount == NULL);
     assert(pSecondaryMount == NULL);
     assert(pCamera == NULL);
+
+    PhdController::OnAppExit();
 
     delete pConfig;
     pConfig = NULL;
