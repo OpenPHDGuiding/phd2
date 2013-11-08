@@ -51,6 +51,8 @@ public:
 
     static void AbortController(const wxString& reason);
     static void UpdateControllerState(void);
+    static void OnAppInit(void);
+    static void OnAppExit(void);
 };
 
 #endif

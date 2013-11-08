@@ -56,13 +56,27 @@ struct ControllerState
     bool saveSticky;
     SettleParams settle;
     bool settlePriorFrameInRange;
-    wxStopWatch settleTimeout;
-    wxStopWatch settleInRange;
+    wxStopWatch *settleTimeout;
+    wxStopWatch *settleInRange;
     bool succeeded;
     wxString errorMsg;
 };
 
 static ControllerState ctrl;
+
+void PhdController::OnAppInit()
+{
+    ctrl.settleTimeout = new wxStopWatch();
+    ctrl.settleInRange = new wxStopWatch();
+}
+
+void PhdController::OnAppExit()
+{
+    delete ctrl.settleTimeout;
+    ctrl.settleTimeout = NULL;
+    delete ctrl.settleInRange;
+    ctrl.settleInRange = NULL;
+}
 
 #define SETSTATE(newstate) do { \
     Debug.AddLine("PhdController: newstate " #newstate); \
@@ -291,7 +305,7 @@ void PhdController::UpdateControllerState(void)
 
         case STATE_SETTLE_BEGIN:
             ctrl.settlePriorFrameInRange = false;
-            ctrl.settleTimeout.Start();
+            ctrl.settleTimeout->Start();
             SETSTATE(STATE_SETTLE_WAIT);
             done = true;
             break;
@@ -308,16 +322,16 @@ void PhdController::UpdateControllerState(void)
             {
                 if (!ctrl.settlePriorFrameInRange)
                 {
-                    ctrl.settleInRange.Start();
+                    ctrl.settleInRange->Start();
                 }
-                else if (((timeInRange = ctrl.settleInRange.Time()) / 1000) >= ctrl.settle.settleTimeSec)
+                else if (((timeInRange = ctrl.settleInRange->Time()) / 1000) >= ctrl.settle.settleTimeSec)
                 {
                     ctrl.succeeded = true;
                     SETSTATE(STATE_FINISH);
                     break;
                 }
             }
-            if ((ctrl.settleTimeout.Time() / 1000) >= ctrl.settle.timeoutSec)
+            if ((ctrl.settleTimeout->Time() / 1000) >= ctrl.settle.timeoutSec)
             {
                 do_fail(_("timed-out waiting for guider to settle"));
                 break;
