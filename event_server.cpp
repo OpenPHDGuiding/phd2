@@ -282,6 +282,33 @@ static Ev ev_app_state(EXPOSED_STATE st = Guider::GetExposedState())
     return ev;
 }
 
+static Ev ev_settling(double distance, double time, double settleTime)
+{
+    Ev ev("Settling");
+
+    ev << NV("Distance", distance, 2)
+       << NV("Time", time, 1)
+       << NV("SettleTime", settleTime, 1);
+
+    return ev;
+}
+
+static Ev ev_settle_done(const wxString& errorMsg)
+{
+    Ev ev("SettleDone");
+
+    int status = errorMsg.IsEmpty() ? 0 : 1;
+
+    ev << NV("Status", status);
+
+    if (status != 0)
+    {
+        ev << NV("Error", errorMsg);
+    }
+
+    return ev;
+}
+
 static void send_buf(wxSocketClient *client, const wxCharBuffer& buf)
 {
     client->Write(buf.data(), buf.length());
@@ -633,6 +660,14 @@ static bool float_param(const json_value *v, double *p)
     return false;
 }
 
+static bool float_param(const char *name, const json_value *v, double *p)
+{
+    if (strcmp(name, v->name) != 0)
+        return false;
+
+    return float_param(v, p);
+}
+
 static void get_paused(JObj& response, const json_value *params)
 {
     response << jrpc_result(pFrame->pGuider->IsPaused());
@@ -705,6 +740,132 @@ static void set_lock_position(JObj& response, const json_value *params)
     response << jrpc_result(0);
 }
 
+static bool parse_settle(SettleParams *settle, const json_value *j, wxString *error)
+{
+    bool found_pixels = false, found_time = false, found_timeout = false;
+
+    for (json_value *t = j->first_child; t; t = t->next_sibling)
+    {
+        if (float_param("pixels", t, &settle->tolerancePx))
+        {
+            found_pixels = true;
+            continue;
+        }
+        double d;
+        if (float_param("time", t, &d))
+        {
+            settle->settleTimeSec = (int) floor(d);
+            found_time = true;
+            continue;
+        }
+        if (float_param("timeout", t, &d))
+        {
+            settle->timeoutSec = (int) floor(d);
+            found_timeout = true;
+            continue;
+        }
+    }
+
+    bool ok = found_pixels && found_time && found_timeout;
+    if (!ok)
+        *error = "invalid settle params";
+
+    return ok;
+}
+
+static void guide(JObj& response, const json_value *params)
+{
+    // params:
+    //   settle [object]:
+    //     pixels [float]
+    //     arcsecs [float]
+    //     frames [integer]
+    //     time [integer]
+    //     timeout [integer]
+    //   recalibrate: boolean
+    //
+    // {"method": "guide", "params": [{"pixels": 0.5, "time": 6, "timeout": 30}, false], "id": 42}
+    //
+    // todo:
+    //   accept tolerance in arcsec or pixels
+    //   accept settle time in seconds or frames
+
+    SettleParams settle;
+
+    const json_value *p0;
+    if (!params || (p0 = at(params, 0)) == 0 || p0->type != JSON_OBJECT)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected settle object param");
+        return;
+    }
+    wxString errMsg;
+    if (!parse_settle(&settle, p0, &errMsg))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, errMsg);
+        return;
+    }
+
+    bool recalibrate = false;
+    const json_value *p1 = at(params, 1);
+    if (p1 && (p1->type == JSON_BOOL || p1->type == JSON_INT))
+    {
+        recalibrate = p1->int_value ? true : false;
+    }
+
+    PhdController::Guide(recalibrate, settle);
+    response << jrpc_result(0);
+}
+
+static void dither(JObj& response, const json_value *params)
+{
+    // params:
+    //   amount [integer] - max pixels to move in each axis
+    //   raOnly [bool] - when true, only dither ra
+    //   settle [object]:
+    //     pixels [float]
+    //     arcsecs [float]
+    //     frames [integer]
+    //     time [integer]
+    //     timeout [integer]
+    //
+    // {"method": "dither", "params": [10, false, {"pixels": 1.5, "time": 8, "timeout": 30}], "id": 42}
+
+    const json_value *p;
+    double ditherAmt;
+
+    if (!params || (p = at(params, 0)) == 0 || !float_param(p, &ditherAmt))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected dither amount param");
+        return;
+    }
+
+    if ((p = at(params, 1)) == 0 || p->type != JSON_BOOL)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected dither raOnly param");
+        return;
+    }
+    bool raOnly = p->int_value ? true : false;
+
+    SettleParams settle;
+
+    if ((p = at(params, 2)) == 0 || p->type != JSON_OBJECT)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected settle object param");
+        return;
+    }
+    wxString errMsg;
+    if (!parse_settle(&settle, p, &errMsg))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, errMsg);
+        return;
+    }
+
+    if (PhdController::Dither(fabs(ditherAmt), raOnly, settle))
+        response << jrpc_result(0);
+    else
+        response << jrpc_error(1, "dither failed");
+}
+
 static bool handle_request(JObj& response, const json_value *req)
 {
     const json_value *method;
@@ -737,6 +898,8 @@ static bool handle_request(JObj& response, const json_value *req)
         { "get_lock_position", &get_lock_position, },
         { "set_lock_position", &set_lock_position, },
         { "stop_capture", &stop_capture, },
+        { "guide", &guide, },
+        { "dither", &dither, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
@@ -1102,4 +1265,20 @@ void EventServer::NotifyAppState()
         return;
 
     do_notify(m_eventServerClients, ev_app_state());
+}
+
+void EventServer::NotifySettling(double distance, double time, double settleTime)
+{
+    if (m_eventServerClients.empty())
+        return;
+
+    do_notify(m_eventServerClients, ev_settling(distance, time, settleTime));
+}
+
+void EventServer::NotifySettleDone(const wxString& errorMsg)
+{
+    if (m_eventServerClients.empty())
+        return;
+
+    do_notify(m_eventServerClients, ev_settle_done(errorMsg));
 }

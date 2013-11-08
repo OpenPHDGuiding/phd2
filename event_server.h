@@ -73,6 +73,8 @@ public:
     void NotifySetLockPosition(const PHD_Point& xy);
     void NotifyLockPositionLost();
     void NotifyAppState();
+    void NotifySettling(double distance, double time, double settleTime);
+    void NotifySettleDone(const wxString& errorMsg);
 
 private:
     void OnEventServerEvent(wxSocketEvent& evt);

@@ -424,6 +424,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             pGuider->Reset();
             CaptureActive = m_continueCapturing;
             UpdateButtonsStatus();
+            PhdController::AbortController("Error reported capturing image");
             SetStatusText(_("Stopped."), 1);
 
             Debug.Write("OnExposeComplete(): Capture Error reported\n");
@@ -434,6 +435,8 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 
         pGuider->UpdateGuideState(pNewFrame, !m_continueCapturing);
         pNewFrame = NULL; // the guider owns it now
+
+        PhdController::UpdateControllerState();
 
 #ifdef BRET_DODO
         if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING_PRIMARY)
@@ -472,6 +475,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         {
             UpdateButtonsStatus();
             SetStatusText(_("Stopped."), 1);
+            PhdController::AbortController("Stopped capturing");
         }
     }
     catch (wxString Msg)

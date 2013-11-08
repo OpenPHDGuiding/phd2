@@ -114,6 +114,7 @@
 		A1A088E41815CF63004899C0 /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088E01815CF63004899C0 /* logger.cpp */; };
 		A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE284181CD8A4000B6085 /* manualcal_dialog.cpp */; };
 		A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE287182225E7000B6085 /* json_parser.cpp */; };
+		A1ACE28C1827567B000B6085 /* phdcontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE28A1827567B000B6085 /* phdcontrol.cpp */; };
 		F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */; };
 		F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */; };
 /* End PBXBuildFile section */
@@ -341,6 +342,8 @@
 		A1ACE285181CD8A4000B6085 /* manualcal_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = manualcal_dialog.h; sourceTree = "<group>"; };
 		A1ACE287182225E7000B6085 /* json_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_parser.cpp; sourceTree = "<group>"; };
 		A1ACE288182225E7000B6085 /* json_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_parser.h; sourceTree = "<group>"; };
+		A1ACE28A1827567B000B6085 /* phdcontrol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = phdcontrol.cpp; sourceTree = "<group>"; };
+		A1ACE28B1827567B000B6085 /* phdcontrol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phdcontrol.h; sourceTree = "<group>"; };
 		F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calstep_dialog.cpp; sourceTree = "<group>"; };
 		F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = optionsbutton.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -389,18 +392,27 @@
 		583291DB15DA042400D96A6D /* Cameras */ = {
 			isa = PBXGroup;
 			children = (
-				58EC72781749D8B300502727 /* cam_sbigrotator.cpp */,
-				58EC72791749D8B300502727 /* cam_sbigrotator.h */,
 				58B8CE1316E05EDB00F6E68E /* cam_ascomlate.cpp */,
 				58B8CE1416E05EDB00F6E68E /* cam_ascomlate.h */,
 				58B8CE1516E05EDB00F6E68E /* cam_Atik16.cpp */,
 				58B8CE1616E05EDB00F6E68E /* cam_Atik16.h */,
+				587DEB290BAA255300FFB715 /* cam_firewire.h */,
+				58B8CE1716E05EDB00F6E68E /* cam_firewire_IC.cpp */,
+				587DEB2A0BAA255300FFB715 /* cam_firewire_OSX.cpp */,
 				58B8CE1816E05EDB00F6E68E /* cam_indi.cpp */,
 				58B8CE1916E05EDB00F6E68E /* cam_indi.h */,
 				58B8CE1A16E05EDB00F6E68E /* cam_INovaPLC.cpp */,
 				58B8CE1B16E05EDB00F6E68E /* cam_INovaPLC.h */,
 				58B8CE1C16E05EDB00F6E68E /* cam_LEwebcam.cpp */,
 				58B8CE1D16E05EDB00F6E68E /* cam_LEwebcam.h */,
+				58339E4D0B1FC6A700109891 /* cam_MeadeDSI.cpp */,
+				58339E4E0B1FC6A700109891 /* cam_MeadeDSI.h */,
+				58200FCC0DA492740066F54A /* cam_NebSBIG.cpp */,
+				58200FCB0DA492740066F54A /* cam_NebSBIG.h */,
+				580F80CC17810B1F0020900F /* cam_opencv.cpp */,
+				580F80CD17810B1F0020900F /* cam_opencv.h */,
+				58010E9113D1368600AD4D6D /* cam_openssag.cpp */,
+				58010E9013D1368600AD4D6D /* cam_openssag.h */,
 				58B8CE1E16E05EDB00F6E68E /* cam_OSPL130.cpp */,
 				58B8CE1F16E05EDB00F6E68E /* cam_OSPL130.h */,
 				58B8CE2016E05EDB00F6E68E /* cam_QGuide.cpp */,
@@ -411,43 +423,26 @@
 				58B8CE2516E05EDB00F6E68E /* cam_SAC42.h */,
 				58B8CE2616E05EDB00F6E68E /* cam_SACGuide.cpp */,
 				58B8CE2716E05EDB00F6E68E /* cam_SACGuide.h */,
+				5881681B0B4DEDC000BDA6D4 /* cam_SBIG.cpp */,
+				5881681C0B4DEDC000BDA6D4 /* cam_SBIG.h */,
+				58EC72781749D8B300502727 /* cam_sbigrotator.cpp */,
+				58EC72791749D8B300502727 /* cam_sbigrotator.h */,
+				58339E530B1FC6A700109891 /* cam_simulator.cpp */,
+				58339E540B1FC6A700109891 /* cam_simulator.h */,
 				58B8CE2816E05EDB00F6E68E /* cam_SSAG.cpp */,
 				58B8CE2916E05EDB00F6E68E /* cam_SSAG.h */,
 				58B8CE2A16E05EDB00F6E68E /* cam_SSPIAG.cpp */,
 				58B8CE2B16E05EDB00F6E68E /* cam_SSPIAG.h */,
+				5828187C0B4A031200E5E22D /* cam_Starfish.cpp */,
+				5828187D0B4A031200E5E22D /* cam_Starfish.h */,
 				58B8CE2C16E05EDB00F6E68E /* cam_StarShootDSCI.cpp */,
 				58B8CE2D16E05EDB00F6E68E /* cam_StarShootDSCI.h */,
+				58C6F0390D8F0B8D00D74840 /* cam_SXV.cpp */,
+				58C6F0330D8F0B4800D74840 /* cam_SXV.h */,
 				58B8CE2E16E05EDB00F6E68E /* cam_VFW.cpp */,
 				58B8CE2F16E05EDB00F6E68E /* cam_VFW.h */,
 				58B8CE3016E05EDB00F6E68E /* cam_wdm.cpp */,
 				58B8CE3116E05EDB00F6E68E /* cam_WDM.h */,
-				58339E4D0B1FC6A700109891 /* cam_MeadeDSI.cpp */,
-				58339E4E0B1FC6A700109891 /* cam_MeadeDSI.h */,
-				587DEB290BAA255300FFB715 /* cam_firewire.h */,
-				587DEB2A0BAA255300FFB715 /* cam_firewire_OSX.cpp */,
-				580F80CA17810B1F0020900F /* about_dialog.cpp */,
-				580F80CB17810B1F0020900F /* about_dialog.h */,
-				580F80CC17810B1F0020900F /* cam_opencv.cpp */,
-				580F80CD17810B1F0020900F /* cam_opencv.h */,
-				580F80CE17810B1F0020900F /* confirm_dialog.cpp */,
-				580F80CF17810B1F0020900F /* confirm_dialog.h */,
-				580F80D017810B1F0020900F /* event_server.cpp */,
-				580F80D117810B1F0020900F /* event_server.h */,
-				580F80D217810B1F0020900F /* guide_algorithm.cpp */,
-				580F80D317810B200020900F /* stepguider_simulator.h */,
-				58B8CE1716E05EDB00F6E68E /* cam_firewire_IC.cpp */,
-				58339E530B1FC6A700109891 /* cam_simulator.cpp */,
-				58339E540B1FC6A700109891 /* cam_simulator.h */,
-				5881681B0B4DEDC000BDA6D4 /* cam_SBIG.cpp */,
-				5881681C0B4DEDC000BDA6D4 /* cam_SBIG.h */,
-				5828187C0B4A031200E5E22D /* cam_Starfish.cpp */,
-				5828187D0B4A031200E5E22D /* cam_Starfish.h */,
-				58C6F0390D8F0B8D00D74840 /* cam_SXV.cpp */,
-				58C6F0330D8F0B4800D74840 /* cam_SXV.h */,
-				58010E9013D1368600AD4D6D /* cam_openssag.h */,
-				58010E9113D1368600AD4D6D /* cam_openssag.cpp */,
-				58200FCB0DA492740066F54A /* cam_NebSBIG.h */,
-				58200FCC0DA492740066F54A /* cam_NebSBIG.cpp */,
 				58339E5B0B1FC6A700109891 /* camera.cpp */,
 				58339E5C0B1FC6A700109891 /* camera.h */,
 				585E87C915E8ABC300D96E46 /* cameras.h */,
@@ -458,30 +453,30 @@
 		583291F715DA081D00D96A6D /* Scopes */ = {
 			isa = PBXGroup;
 			children = (
+				583291F815DA085400D96A6D /* mount.h */,
+				58339E690B1FC6A700109891 /* scope.cpp */,
+				58339E6A0B1FC6A700109891 /* scope.h */,
+				583291DC15DA07F300D96A6D /* scope_ascom.cpp */,
+				583291DD15DA07F300D96A6D /* scope_ascom.h */,
+				5832920115DA143E00D96A6D /* scope_eqmac.cpp */,
+				5832920215DA143E00D96A6D /* scope_eqmac.h */,
+				583291DE15DA07F300D96A6D /* scope_equinox.cpp */,
+				583291DF15DA07F300D96A6D /* scope_equinox.h */,
+				583291F315DA081200D96A6D /* scope_GC_USBST4.cpp */,
+				583291F415DA081200D96A6D /* scope_GC_USBST4.h */,
+				583291E015DA07F300D96A6D /* scope_gpint.cpp */,
+				583291E115DA07F300D96A6D /* scope_gpint.h */,
+				583291E215DA07F300D96A6D /* scope_gpusb.cpp */,
+				583291E315DA07F300D96A6D /* scope_gpusb.h */,
 				58CA526517C1CAE2002A20D1 /* scope_onboard_st4.cpp */,
 				58CA526617C1CAE2002A20D1 /* scope_onboard_st4.h */,
 				58CA526717C1CAE2002A20D1 /* scope_oncamera.cpp */,
 				58CA526817C1CAE2002A20D1 /* scope_oncamera.h */,
 				58CA526917C1CAE2002A20D1 /* scope_onstepguider.cpp */,
 				58CA526A17C1CAE2002A20D1 /* scope_onstepguider.h */,
-				58339E690B1FC6A700109891 /* scope.cpp */,
-				58339E6A0B1FC6A700109891 /* scope.h */,
-				583291F315DA081200D96A6D /* scope_GC_USBST4.cpp */,
-				583291F415DA081200D96A6D /* scope_GC_USBST4.h */,
-				583291DC15DA07F300D96A6D /* scope_ascom.cpp */,
-				583291DD15DA07F300D96A6D /* scope_ascom.h */,
-				583291DE15DA07F300D96A6D /* scope_equinox.cpp */,
-				583291DF15DA07F300D96A6D /* scope_equinox.h */,
-				5832920115DA143E00D96A6D /* scope_eqmac.cpp */,
-				5832920215DA143E00D96A6D /* scope_eqmac.h */,
-				583291E015DA07F300D96A6D /* scope_gpint.cpp */,
-				583291E115DA07F300D96A6D /* scope_gpint.h */,
-				583291E215DA07F300D96A6D /* scope_gpusb.cpp */,
-				583291E315DA07F300D96A6D /* scope_gpusb.h */,
 				583291E615DA07F300D96A6D /* scope_voyager.cpp */,
 				583291E715DA07F300D96A6D /* scope_voyager.h */,
 				583291E815DA07F300D96A6D /* scopes.h */,
-				583291F815DA085400D96A6D /* mount.h */,
 			);
 			name = Scopes;
 			sourceTree = "<group>";
@@ -489,6 +484,8 @@
 		58339E1D0B1FC10000109891 = {
 			isa = PBXGroup;
 			children = (
+				580F80CA17810B1F0020900F /* about_dialog.cpp */,
+				580F80CB17810B1F0020900F /* about_dialog.h */,
 				58B8CE0D16E05EDB00F6E68E /* advanced_dialog.cpp */,
 				58B8CE0E16E05EDB00F6E68E /* advanced_dialog.h */,
 				58B8CE0F16E05EDB00F6E68E /* ascom_common.cpp */,
@@ -499,11 +496,15 @@
 				58CA526017C1CAE2002A20D1 /* circbuf.h */,
 				58B8CE3416E05EDB00F6E68E /* configdialog.cpp */,
 				58B8CE3516E05EDB00F6E68E /* configdialog.h */,
+				580F80CE17810B1F0020900F /* confirm_dialog.cpp */,
+				580F80CF17810B1F0020900F /* confirm_dialog.h */,
 				58B8CE3616E05EDB00F6E68E /* debuglog.cpp */,
 				58B8CE3716E05EDB00F6E68E /* debuglog.h */,
 				A1A088DE1815CF63004899C0 /* drift_tool.cpp */,
 				A1A088DF1815CF63004899C0 /* drift_tool.h */,
 				58339E600B1FC6A700109891 /* eegg.cpp */,
+				580F80D017810B1F0020900F /* event_server.cpp */,
+				580F80D117810B1F0020900F /* event_server.h */,
 				582818990B4A050700E5E22D /* Frameworks */,
 				58CA526117C1CAE2002A20D1 /* gear_dialog.cpp */,
 				58CA526217C1CAE2002A20D1 /* gear_dialog.h */,
@@ -511,6 +512,7 @@
 				58EC727B1749D8B300502727 /* graph-stepguider.h */,
 				585544770D8706C300666090 /* graph.cpp */,
 				585544780D8706C300666090 /* graph.h */,
+				580F80D217810B1F0020900F /* guide_algorithm.cpp */,
 				58B8CE8F16E05EFD00F6E68E /* Guiding */,
 				58339E630B1FC6A700109891 /* image_math.cpp */,
 				58339E640B1FC6A700109891 /* image_math.h */,
@@ -537,6 +539,8 @@
 				588B7BF80B266D6100B4C6DF /* PHD_OSX_icon.icns */,
 				58B8BBF9171FA6DB00BA1A38 /* phdconfig.cpp */,
 				58B8BBFA171FA6DB00BA1A38 /* phdconfig.h */,
+				A1ACE28A1827567B000B6085 /* phdcontrol.cpp */,
+				A1ACE28B1827567B000B6085 /* phdcontrol.h */,
 				58F7157D0B20CC700056770B /* PHDGuideHelp.zip */,
 				58B8CE5116E05EDB00F6E68E /* point.h */,
 				58B8CE5216E05EDB00F6E68E /* precompiled_header.cpp */,
@@ -557,6 +561,7 @@
 				58B8CE5A16E05EDB00F6E68E /* star.h */,
 				58EC727E1749D8B300502727 /* star_profile.cpp */,
 				58EC727F1749D8B300502727 /* star_profile.h */,
+				580F80D317810B200020900F /* stepguider_simulator.h */,
 				58EC72801749D8B300502727 /* target.cpp */,
 				58EC72811749D8B300502727 /* target.h */,
 				58B8CE6016E05EDB00F6E68E /* testguide.cpp */,
@@ -781,6 +786,7 @@
 				A1A088E41815CF63004899C0 /* logger.cpp in Sources */,
 				A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */,
 				A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */,
+				A1ACE28C1827567B000B6085 /* phdcontrol.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
