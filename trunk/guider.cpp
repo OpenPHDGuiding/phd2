@@ -753,8 +753,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     break;
                 case STATE_SELECTED:
                     // we had a current position and lost it
-                     SetState(STATE_UNINITIALIZED);
-                     EvtServer.NotifyStarLost();
+                    SetState(STATE_UNINITIALIZED);
+                    EvtServer.NotifyStarLost();
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:
