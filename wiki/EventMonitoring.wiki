@@ -267,6 +267,7 @@ Set camera exposure (error):
 ||`set_paused`||boolean: pause||integer (0)|| ||
 ||`set_profile`||integer: profile id|| integer (0) || Select an equipment profile. All equipment must be disconnected before switching profiles. ||
 ||`stop_capture`||none||integer (0)||Stop capturing (and stop guiding)||
+||`get_pixel_scale`||none||integer: guider image scale in arc-sec/pixel. || ||
 
 === Settle parameter ===
 
