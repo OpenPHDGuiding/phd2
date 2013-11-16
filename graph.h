@@ -99,7 +99,7 @@ class GraphLogClientWindow : public wxWindow
 
     int m_raSameSides; // accumulator for RA osc index
 
-    enum
+    enum GRAPH_MODE
     {
         MODE_RADEC,
         MODE_DXDY,

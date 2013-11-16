@@ -318,6 +318,7 @@ void GraphLogWindow::OnRADecDxDy(wxCommandEvent& evt)
         m_pClient->m_mode = GraphLogClientWindow::MODE_RADEC;
         break;
     }
+    pConfig->Global.SetInt ("/graph/ScopeOrCameraUnits", (int)m_pClient->m_mode);
     Refresh();
 }
 
@@ -332,6 +333,7 @@ void GraphLogWindow::OnArcsecsPixels(wxCommandEvent& evt)
         m_pClient->m_heightUnits = UNIT_PIXELS;
         break;
     }
+    pConfig->Global.SetInt ("/graph/HeightUnits", (int)m_pClient->m_heightUnits);
     Refresh();
 }
 
@@ -597,7 +599,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(401,200), wxFULL_REPAINT_ON_RESIZE)
 {
     ResetData();
-    m_mode = MODE_RADEC;
+    m_mode = (GRAPH_MODE) pConfig->Global.GetInt ("/graph/ScopeOrCameraUnits", (int) MODE_RADEC);
 
     if (!m_raOrDxColor.Set(pConfig->Global.GetString("/graph/RAColor", wxEmptyString)))
     {
@@ -624,7 +626,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
 
     m_length = pConfig->Global.GetInt("/graph/length", m_minLength * 2);
     m_height = pConfig->Global.GetInt("/graph/height", m_minHeight * 2 * 2); // match PHD1 4-pixel scale for new users
-    m_heightUnits = UNIT_ARCSEC; // preferred units, will still display pixels if camera pixel scale not available
+    m_heightUnits = (GRAPH_UNITS) pConfig->Global.GetInt ("graph/HeightUnits", (int) UNIT_ARCSEC); // preferred units, will still display pixels if camera pixel scale not available
 
     m_showTrendlines = false;
     m_showCorrections = pConfig->Global.GetBoolean("/graph/showCorrections", true);
