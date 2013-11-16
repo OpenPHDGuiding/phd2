@@ -1,5 +1,7 @@
 #summary working area for new documentation that will talk about v2's features and how to use them
 
+** to get started I have ported the existing help file's content below. Over time I/we will massage it into a version that is up-to-date w.r.t. v2. **
+
 = Introduction =
 
 Welcome to PHD Guiding! v 1.11
