@@ -37,9 +37,9 @@
 #ifndef CAM_LEWEBCAM_H_INCLUDED
 #define CAM_LEWEBCAM_H_INCLUDED
 
-#include "cam_opencv.h"
+#include "cam_wdm.h"
 
-class Camera_LEWebcamClass : public Camera_OpenCVClass
+class Camera_LEWebcamClass : public Camera_WDMClass
 {
 protected:
     enum LECAMERA_ACTIONS
@@ -63,7 +63,7 @@ public:
     virtual bool    Connect();      // Opens up and connects to cameras
     virtual bool    Disconnect();
     virtual void    InitCapture() { return; }
-    Camera_LEWebcamClass(int devNumber);
+    Camera_LEWebcamClass(int devNumber=-1);
     ~Camera_LEWebcamClass(void);
 private:
     virtual bool LEControl(int actions)=0;

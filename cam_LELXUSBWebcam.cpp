@@ -63,6 +63,7 @@ bool Camera_LELxUsbWebcamClass::Connect()
     {
         if (!LXUSB_Open())
         {
+            wxMessageBox(_("Unable to open LXUSB device"),_("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("LXUSB_Open failed");
         }
 

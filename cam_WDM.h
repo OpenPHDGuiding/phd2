@@ -6,6 +6,10 @@
  *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
+ *  Refactored by Bret McKee
+ *  Copyright (c) 2013 Dad Dog Development Ltd.
+ *  All rights reserved.
+ *
  *  This source code is distributed under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -31,32 +35,41 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifdef WDM_CAMERA
 
-#ifndef WDMDEF
-#define WDMDEF
+#ifndef WDM_H_INCLUDED
+#define WDM_H_INCLUDED
+
 #define CVRES_VIDCAP_OFFSET wxID_HIGHEST+1
 #include "VidCapture.h"  // For DirectShow
 
-class Camera_WDMClass : public GuideCamera {
+class Camera_WDMClass : public GuideCamera
+{
 public:
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool    CaptureOneFrame(usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
     bool    Connect();
     bool    Disconnect();
     void    ShowPropertyDialog();
     void    InitCapture() { return; }
-    Camera_WDMClass();
-private:
-    //HANDLE hDriver;
-    int DeviceNum;
-    CVVidCapture* VidCap;
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+    Camera_WDMClass(int devNumber=-1);
 protected:
     static bool CaptureCallback( CVRES status, CVImage* imagePtr, void* userParam);
-    int NFrames;
-    int NAttempts;
-    unsigned short *stackptr;
+    volatile int m_nFrames;
+    volatile int m_nAttempts;
+    unsigned short *m_stackptr;
+    volatile enum E_CAPTURE_MODE
+    {
+        NOT_CAPTURING = 0,
+        STOP_CAPTURING,
+        CAPTURE_ONE_FRAME,
+        CAPTURE_STACKING,
+        CAPTURE_STACK_FRAMES
+    } m_captureMode;
+private:
+    int m_deviceNumber;
+    CVVidCapture* m_pVidCap;
+    bool BeginCapture(usImage& img, E_CAPTURE_MODE captureMode);
+    void EndCapture(void);
 };
-#endif
 
-#endif // WDM_CAMERA
+#endif // WDM_H_INCLUDED
