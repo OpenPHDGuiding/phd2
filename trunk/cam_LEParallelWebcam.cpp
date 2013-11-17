@@ -76,6 +76,12 @@ bool Camera_LEParallelWebcamClass::Connect()
 
         wxArrayString parallelPorts = m_pParallelPort->GetParallelPortList();
 
+        if (parallelPorts.IsEmpty())
+        {
+            wxMessageBox(_("No parallel ports found"),_("Error"), wxOK | wxICON_ERROR);
+            throw ERROR_INFO("No parallel port found");
+        }
+
         wxString lastParallelPort = pConfig->Profile.GetString("/camera/parallelLEWebcam/parallelport", "");
         int resp = parallelPorts.Index(lastParallelPort);
 

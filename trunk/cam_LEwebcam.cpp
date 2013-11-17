@@ -44,7 +44,7 @@
 using namespace cv;
 
 Camera_LEWebcamClass::Camera_LEWebcamClass(int devNumber)
-    : Camera_OpenCVClass(devNumber)
+     :Camera_WDMClass(devNumber)
 {
     Name=_T("Generic LE Webcam");
     readDelay = 0;
@@ -62,7 +62,7 @@ bool Camera_LEWebcamClass::Connect()
     {
         LEControl(LECAMERA_LED_OFF|LECAMERA_SHUTTER_CLOSED|LECAMERA_TRANSFER_FIELD_NONE|LECAMERA_AMP_OFF);
 
-        if (Camera_OpenCVClass::Connect())
+        if (Camera_WDMClass::Connect())
         {
             throw ERROR_INFO("Unable to open base class camera");
         }
@@ -80,7 +80,7 @@ bool Camera_LEWebcamClass::Disconnect()
 {
     bool bError = false;
 
-    bError = Camera_OpenCVClass::Disconnect();
+    bError = Camera_WDMClass::Disconnect();
 
     return bError;
 }
@@ -91,16 +91,6 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
 
     try
     {
-        if (!pCapDev)
-        {
-            throw ERROR_INFO("!pCapDev");
-        }
-
-        if (!pCapDev->isOpened())
-        {
-            throw ERROR_INFO("!pCapDev->isOpened()");
-        }
-
         int ampOnTime = 250;
         int ampOffTime = duration - ampOnTime;
 
@@ -130,62 +120,62 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
 
         // now record the frame.
         // Start by grabbing three frames
-        Mat frame1;
-        pCapDev->read(frame1);
+        usImage frame1;
+        if (CaptureOneFrame(frame1, subframe, recon))
+        {
+            throw ERROR_INFO("CaptureOneFrame(frame1) failed");
+        }
 
-        Mat frame2;
-        pCapDev->read(frame2);
+        usImage frame2;
+        if (CaptureOneFrame(frame2, subframe, recon))
+        {
+            throw ERROR_INFO("CaptureOneFrame(frame2) failed");
+        }
 
-        Mat frame3;
-        pCapDev->read(frame3);
+        usImage frame3;
+        if (CaptureOneFrame(frame3, subframe, recon))
+        {
+            throw ERROR_INFO("CaptureOneFrame(frame3) failed");
+        }
 
-        cvtColor(frame1, frame1, CV_RGB2GRAY);
-        cvtColor(frame2, frame2, CV_RGB2GRAY);
-        cvtColor(frame3, frame3, CV_RGB2GRAY);
-
-        unsigned char *dptr1 = frame1.data;
-        unsigned char *dptr2 = frame2.data;
-        unsigned char *dptr3 = frame3.data;
+        unsigned short *dptr1 = frame1.ImageData;
+        unsigned short *dptr2 = frame2.ImageData;
+        unsigned short *dptr3 = frame3.ImageData;
 
         UINT64 sum1=0;
         UINT64 sum2=0;
         UINT64 sum3=0;
 
-        cv::Size sz = frame1.size();
-
         // we only use the data from the frame with the largest sum.
         // This is because we are not exactly sure when we will capture the "Long Exposure"
         // frame
 
-        for(int i=0;i < sz.width * sz.height; i++)
+        for(int i=0;i < frame1.NPixels; i++)
         {
             sum1 += *dptr1++;
             sum2 += *dptr2++;
             sum3 += *dptr3++;
         }
 
-        unsigned char *srcPtr = frame1.data;
+        Debug.AddLine("sum1=%lld sum2=%lld sum3=%lld", sum1, sum2, sum3);
+
+        const usImage *srcPtr = &frame1;
 
         if (sum2 > sum1 && sum2 > sum3)
         {
-            srcPtr = frame2.data;
+            srcPtr = &frame2;
         }
         else if (sum3 > sum1 && sum3 > sum2)
         {
-            srcPtr = frame3.data;
+            srcPtr = &frame3;
         }
 
-        if (img.Init(sz.width,sz.height))
+        if (img.Init(srcPtr->Size.x, srcPtr->Size.y))
         {
-            wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
-            throw ERROR_INFO("img.Init failed");
+            throw ERROR_INFO("img.Init() failed");
         }
 
-        // copy the image data from the frame with the largest sum
-        for (int i=0; i<img.NPixels; i++)
-        {
-            img.ImageData[i] = srcPtr[i];
-        }
+        memcpy(img.ImageData, srcPtr->ImageData, srcPtr->NPixels * sizeof(srcPtr->ImageData[0]));
     }
     catch (wxString Msg)
     {

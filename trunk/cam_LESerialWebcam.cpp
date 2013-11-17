@@ -71,6 +71,12 @@ bool Camera_LESerialWebcamClass::Connect()
 
         wxArrayString serialPorts = m_pSerialPort->GetSerialPortList();
 
+        if (serialPorts.IsEmpty())
+        {
+            wxMessageBox(_("No serial ports found"),_("Error"), wxOK | wxICON_ERROR);
+            throw ERROR_INFO("No Serial port found");
+        }
+
         wxString lastSerialPort = pConfig->Profile.GetString("/camera/serialLEWebcam/serialport", "");
         int resp = serialPorts.Index(lastSerialPort);
 
@@ -85,7 +91,7 @@ bool Camera_LESerialWebcamClass::Connect()
 
         pConfig->Profile.SetString("/camera/serialLEWebcam/serialport", serialPorts[resp]);
 
-        if (Camera_OpenCVClass::Connect())
+        if (Camera_LEWebcamClass::Connect())
         {
             throw ERROR_INFO("Unable to open base class camera");
         }

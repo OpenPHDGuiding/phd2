@@ -66,6 +66,12 @@ bool StepGuiderSxAO::Connect(void)
 
         wxArrayString serialPorts = m_pSerialPort->GetSerialPortList();
 
+        if (serialPorts.IsEmpty())
+        {
+            wxMessageBox(_("No serial ports found"),_("Error"), wxOK | wxICON_ERROR);
+            throw ERROR_INFO("No Serial port found");
+        }
+
         wxString lastSerialPort = pConfig->Profile.GetString("/stepguider/sxao/serialport", "");
         int resp = serialPorts.Index(lastSerialPort);
 

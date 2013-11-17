@@ -6,6 +6,10 @@
  *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
+ *  Refactored by Bret McKee
+ *  Copyright (c) 2013 Dad Dog Development Ltd.
+ *  All rights reserved.
+ *
  *  This source code is distributed under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -39,216 +43,368 @@
 #include <Dshow.h>         // DirectShow (using DirectX 9.0 for dev)
 #include "cam_WDM.h"
 
-//int gNumFrames;
-bool WDM_Stack_Mode = false;
 
-Camera_WDMClass::Camera_WDMClass() {
+Camera_WDMClass::Camera_WDMClass(int deviceNumber)
+{
     Connected = FALSE;
-//  HaveBPMap = FALSE;
-//  NBadPixels=-1;
     Name=_T("Windows Camera");      // should get overwritten on connect
-    FullSize = wxSize(640,480); // should get overwritten on connect
-    DeviceNum = 0;                          // Which WDM device connected
+    FullSize = wxSize(640,480);     // should get overwritten on connect
+    m_deviceNumber = deviceNumber;  // Which WDM device connected
     HasPropertyDialog = true;
     HasDelayParam = false;
     HasPortNum = false;
+    m_captureMode = NOT_CAPTURING;
+    m_pVidCap = NULL;
 }
 
 
-bool Camera_WDMClass::CaptureCallback( CVRES status, CVImage* imagePtr, void* userParam) {
-   if (!WDM_Stack_Mode) {  return true; }// streaming, but not saving / doing anything
-
+bool Camera_WDMClass::CaptureCallback(CVRES status, CVImage* imagePtr, void* userParam)
+{
     Camera_WDMClass* cam = (Camera_WDMClass*)userParam;
+    bool bReturn = CVSUCCESS(status);
 
-    if (CVSUCCESS(status)) {
-        cam->NAttempts++;
-        int i, npixels;
-        npixels = cam->FullSize.GetWidth() * cam->FullSize.GetHeight();
-        unsigned short *dptr;
-        dptr = cam->stackptr;
-        unsigned char *imgdata;
-        imgdata = imagePtr->GetRawDataPtr();
-        unsigned int sum = 0;
-        for (i=0; i<npixels; i++, imgdata++, dptr++) {
-            *dptr = *dptr + (unsigned short) (*imgdata);
-            sum = sum + (unsigned int) (*imgdata);
-        }
-        if (sum > 100) // non-black
-            cam->NFrames++;
+    cam->m_nAttempts++;
 
-        return true;
+    if (cam->m_captureMode == STOP_CAPTURING)
+    {
+        cam->m_captureMode = NOT_CAPTURING;
     }
-   return false;
-}
 
-bool Camera_WDMClass::Connect() {
-// returns true on error
-    int NDevices;
-//  char DevName[256];
-
-    // Setup VidCap library
-    VidCap = CVPlatform::GetPlatform()->AcquireVideoCapture();
-
-    // Init the library
-    if (CVFAILED(VidCap->Init())) {
-        wxMessageBox(_T("Error initializing WDM services"),_("Error"),wxOK | wxICON_ERROR);
-        CVPlatform::GetPlatform()->Release(VidCap);
-      return true;
-   }
-    // Enumerate devices
-   if (CVFAILED(VidCap->GetNumDevices(NDevices))) {
-        wxMessageBox(_T("Error detecting WDM devices"),_("Error"),wxOK | wxICON_ERROR);
-      VidCap->Uninit();
-      CVPlatform::GetPlatform()->Release(VidCap);
-      return true;
-   }
-
-    DeviceNum = 0;
-    // Put up choice box to let user choose which camera
-    if (NDevices > 1) {
-        wxArrayString Devices;
+    if (bReturn && cam->m_captureMode != NOT_CAPTURING)
+    {
         int i;
-        CVVidCapture::VIDCAP_DEVICE devInfo;
-        for (i=0; i<NDevices; i++) {
-            if (CVSUCCESS(VidCap->GetDeviceInfo(i,devInfo)))
-                Devices.Add(wxString::Format("%d: %s",i,devInfo.DeviceString));
-            else
-                Devices.Add(wxString::Format("%d: Not available"),i);
-        }
-        DeviceNum = wxGetSingleChoiceIndex(_("Select WDM camera"),_("Camera choice"),Devices);
-        if (DeviceNum == -1) return true;
- /* int curDevIndex = 0;
-        for (curDevIndex = 0; curDevIndex < numDevices; curDevIndex++)
+        unsigned int sum = 0;
+        unsigned char *imgdata = imagePtr->GetRawDataPtr();
+        int npixels = cam->FullSize.GetWidth() * cam->FullSize.GetHeight();
+        unsigned short *dptr = cam->m_stackptr;
+
+        for (i=0; i<npixels; i++, dptr++)
         {
-         if (CVSUCCESS(vidCap->GetDeviceInfo(curDevIndex,devInfo)))
-         {
-            printf("Device %d: %s\n",curDevIndex,devInfo.DeviceString);
-         }
-        }*/
-    }
+            unsigned short pixelValue = *imgdata++;
+            *dptr = *dptr + pixelValue;
+            sum += pixelValue;
+        }
 
-    // Connect to camera
-    if (CVSUCCESS(VidCap->Connect(DeviceNum))) {
-        int devNameLen = 0;
-        VidCap->GetDeviceName(0,devNameLen);
-        devNameLen++;
-        char *devName = new char[devNameLen];
-        VidCap->GetDeviceName(devName,devNameLen);
-        Name = wxString::Format("%s",devName);  //
-//      wxMessageBox(Name + _T(" Connected"),_T("Info"),wxOK);
-        delete [] devName;
-    }
-    else {
-        wxMessageBox(wxString::Format("Error connecting to WDM device #%d",DeviceNum),_("Error"),wxOK | wxICON_ERROR);
-        VidCap->Uninit();
-        CVPlatform::GetPlatform()->Release(VidCap);
-        return true;
-    }
-    // Get modes
-    CVVidCapture::VIDCAP_MODE modeInfo;
-    int numModes = 0;
-    int curmode;
-    VidCap->GetNumSupportedModes(numModes);
-    wxArrayString ModeNames;
-    for (curmode = 0; curmode < numModes; curmode++) {
-        if (CVSUCCESS(VidCap->GetModeInfo(curmode, modeInfo))) {
-            ModeNames.Add(wxString::Format("%dx%d (%s)",modeInfo.XRes,modeInfo.YRes,
-                VidCap->GetFormatModeName(modeInfo.InputFormat)));
+        if (sum > 100) // non-black
+        {
+            cam->m_nFrames++;
+
+            // change the state if needed
+            switch (cam->m_captureMode)
+            {
+                case CAPTURE_ONE_FRAME:
+                    cam->m_captureMode = NOT_CAPTURING;
+                    break;
+                case CAPTURE_STACK_FRAMES:
+                    cam->m_captureMode = CAPTURE_STACKING;
+                    break;
+            }
         }
     }
-    // Let user choose mode
-    curmode = wxGetSingleChoiceIndex(_("Select camera mode"),_("Camera mode"),ModeNames);
-    if (curmode == -1) { //canceled
-        VidCap->Uninit();
-        CVPlatform::GetPlatform()->Release(VidCap);
-        return true;
-    }
-    // Activate this mode
-    if (CVFAILED(VidCap->SetMode(curmode))) {
-        wxMessageBox(wxString::Format("Error activating video mode %d",curmode),_("Error"),wxOK | wxICON_ERROR);
-        VidCap->Uninit();
-        CVPlatform::GetPlatform()->Release(VidCap);
-        return true;
-    }
 
-    // Setup x and y size
-    if (CVFAILED(VidCap->GetCurrentMode(modeInfo))) {
-        wxMessageBox(wxString::Format("Error probing video mode %d",curmode),_("Error"),wxOK | wxICON_ERROR);
-        VidCap->Uninit();
-        CVPlatform::GetPlatform()->Release(VidCap);
-        return true;
-    }
-    // Start the stream
-    WDM_Stack_Mode = false; // Make sure we don't start saving
-    if (CVFAILED(VidCap->StartImageCap(CVImage::CVIMAGE_GREY,  CaptureCallback, this))) {
-        wxMessageBox(_T("Failed to start image capture!"),_("Error"),wxOK | wxICON_ERROR);
-        VidCap->Uninit();
-        CVPlatform::GetPlatform()->Release(VidCap);
-      return true;
-    }
-    FullSize=wxSize(modeInfo.XRes, modeInfo.YRes);
-    pFrame->SetStatusText(wxString::Format("%d x %d mode activated",modeInfo.XRes, modeInfo.YRes),1);
-
-    Connected = true;
-    return false;
+    return bReturn;
 }
 
-bool Camera_WDMClass::Disconnect() {
-   CVRES result = 0;
+bool Camera_WDMClass::Connect()
+{
+    bool bError = false;
 
-    VidCap->Stop();     // Stop it
+    try
+    {
+        int nDevices;
 
-    result = VidCap->Disconnect();
+        // Setup VidCap library
+        m_pVidCap = CVPlatform::GetPlatform()->AcquireVideoCapture();
 
-   result = VidCap->Uninit();
-    CVPlatform::GetPlatform()->Release(VidCap);
-//  delete VidCap;
+        // Init the library
+        if (CVFAILED(m_pVidCap->Init()))
+        {
+            wxMessageBox(_T("Error initializing WDM services"),_("Error"),wxOK | wxICON_ERROR);
+            throw ERROR_INFO("CVFAILED(VidCap->Init())");
+        }
+
+        // Enumerate devices
+        if (CVFAILED(m_pVidCap->GetNumDevices(nDevices)))
+        {
+            wxMessageBox(_T("Error detecting WDM devices"),_("Error"),wxOK | wxICON_ERROR);
+            throw ERROR_INFO("CVFAILED(m_pVidCap->GetNumDevices(nDevices))");
+        }
+
+        // Put up choice box to let user choose which camera
+        if (nDevices == 0)
+        {
+            m_deviceNumber = 0;
+        }
+        else
+        {
+            int i;
+            wxArrayString Devices;
+            CVVidCapture::VIDCAP_DEVICE devInfo;
+
+            for (i=0; i<nDevices; i++)
+            {
+                if (CVSUCCESS(m_pVidCap->GetDeviceInfo(i,devInfo)))
+                {
+                    Devices.Add(wxString::Format("%d: %s",i,devInfo.DeviceString));
+                }
+                else
+                {
+                    Devices.Add(wxString::Format("%d: Not available"),i);
+                }
+            }
+
+            m_deviceNumber = wxGetSingleChoiceIndex(_("Select WDM camera"),_("Camera choice"), Devices);
+
+            if (m_deviceNumber == -1)
+            {
+                throw ERROR_INFO("m_deviceNumber == -1");
+            }
+        }
+
+        // Connect to camera
+        if (CVSUCCESS(m_pVidCap->Connect(m_deviceNumber)))
+        {
+            int devNameLen = 0;
+
+            // find the length of th name
+            m_pVidCap->GetDeviceName(NULL, devNameLen);
+            devNameLen++;
+
+            // now get the name
+            char *devName = new char[devNameLen];
+            m_pVidCap->GetDeviceName(devName,devNameLen);
+
+            Name = wxString::Format("%s",devName);
+
+            delete [] devName;
+        }
+        else
+        {
+            wxMessageBox(wxString::Format("Error connecting to WDM device #%d",m_deviceNumber),_("Error"),wxOK | wxICON_ERROR);
+            throw ERROR_INFO("Error connecting to WDM device");
+        }
+
+        // Get modes
+        CVVidCapture::VIDCAP_MODE modeInfo;
+        int numModes = 0;
+        int curmode;
+        m_pVidCap->GetNumSupportedModes(numModes);
+        wxArrayString ModeNames;
+
+        for (curmode = 0; curmode < numModes; curmode++)
+        {
+            if (CVSUCCESS(m_pVidCap->GetModeInfo(curmode, modeInfo)))
+            {
+                ModeNames.Add(wxString::Format("%dx%d (%s)",modeInfo.XRes,modeInfo.YRes,
+                    m_pVidCap->GetFormatModeName(modeInfo.InputFormat)));
+            }
+        }
+
+        // Let user choose mode
+        curmode = wxGetSingleChoiceIndex(_("Select camera mode"),_("Camera mode"),ModeNames);
+
+        if (curmode == -1)
+        {
+            //canceled
+            throw ERROR_INFO("user did not choose a mode");
+        }
+
+        // Activate this mode
+        if (CVFAILED(m_pVidCap->SetMode(curmode)))
+        {
+            wxMessageBox(wxString::Format("Error activating video mode %d",curmode),_("Error"),wxOK | wxICON_ERROR);
+            throw ERROR_INFO("setmode() failed");
+        }
+
+        // get the x and y size
+        if (CVFAILED(m_pVidCap->GetCurrentMode(modeInfo)))
+        {
+            wxMessageBox(wxString::Format("Error probing video mode %d",curmode),_("Error"),wxOK | wxICON_ERROR);
+            throw ERROR_INFO("GetCurrentMode() failed");
+        }
+
+        FullSize=wxSize(modeInfo.XRes, modeInfo.YRes);
+
+        // Start the stream
+        m_captureMode = NOT_CAPTURING; // Make sure we don't start saving yet
+
+        if (CVFAILED(m_pVidCap->StartImageCap(CVImage::CVIMAGE_GREY,  CaptureCallback, this)))
+        {
+            wxMessageBox(_T("Failed to start image capture!"),_("Error"),wxOK | wxICON_ERROR);
+            throw ERROR_INFO("StartImageCap() failed");
+        }
+
+        pFrame->SetStatusText(wxString::Format("%d x %d mode activated",modeInfo.XRes, modeInfo.YRes),1);
+
+        Connected = true;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+
+        if (m_pVidCap)
+        {
+            m_pVidCap->Uninit();
+            CVPlatform::GetPlatform()->Release(m_pVidCap);
+
+            m_pVidCap = NULL;
+        }
+    }
+
+    return bError;
+}
+
+bool Camera_WDMClass::Disconnect()
+{
+    if (m_pVidCap)
+    {
+        // ignore errors
+        m_pVidCap->Stop();
+        m_pVidCap->Disconnect();
+        m_pVidCap->Uninit();
+        CVPlatform::GetPlatform()->Release(m_pVidCap);
+
+        m_pVidCap = NULL;
+    }
     Connected = false;
 
     return false;
 }
 
 
-bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-    int xsize,ysize, i;
-    NFrames = NAttempts = 0;
-    xsize = FullSize.GetWidth();
-    ysize = FullSize.GetHeight();
-    unsigned short *dptr;
+bool Camera_WDMClass::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
+{
+    bool bError = false;
 
-    //gNumFrames = 0;
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
-            Disconnect();
-            return true;
+    try
+    {
+        int xsize, ysize;
+        xsize = FullSize.GetWidth();
+        ysize = FullSize.GetHeight();
+
+        assert(captureMode == CAPTURE_ONE_FRAME || captureMode == CAPTURE_STACK_FRAMES);
+
+        if (img.NPixels != (xsize*ysize))
+        {
+            if (img.Init(xsize,ysize))
+            {
+                wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+                Disconnect();
+                throw ERROR_INFO("img.Init() failed");
+            }
+        }
+
+        memset(img.ImageData, 0, img.NPixels * sizeof(unsigned short));
+
+        m_nFrames = 0;
+        m_nAttempts = 0;
+        m_stackptr = img.ImageData;
+        m_captureMode = captureMode;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_captureMode = STOP_CAPTURING;
+    }
+
+    return bError;
+}
+
+void Camera_WDMClass::EndCapture(void)
+{
+    int iterations = 0;
+
+    // wait to for the capture callback to run successfully
+    while ((m_captureMode == CAPTURE_ONE_FRAME || m_captureMode == CAPTURE_STACK_FRAMES) && m_nFrames == 0 && m_nAttempts < 3)
+    {
+        if (iterations++ > 100)
+        {
+            Debug.AddLine("breaking out of lower loop");
+            break;
+        }
+        Sleep(10);
+    }
+
+    m_captureMode = STOP_CAPTURING;
+    iterations = 0;
+
+    while (m_captureMode != NOT_CAPTURING)
+    {
+        if (iterations++ > 100)
+        {
+            Debug.AddLine("breaking out of lower loop");
+            break;
+        }
+        Sleep(10);
+    }
+}
+
+bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
+    bool bError = false;
+
+    try
+    {
+        if (BeginCapture(img, CAPTURE_STACK_FRAMES))
+        {
+            throw ERROR_INFO("BeingCapture() failed");
+        }
+
+        Sleep(duration);  // accumulate for the requested duration
+
+        EndCapture();
+
+        pFrame->SetStatusText(wxString::Format("%d frames", m_nFrames),1);
+
+        if (recon)
+        {
+            SubtractDark(img);
         }
     }
-    dptr = img.ImageData;
-    for (i=0; i<img.NPixels; i++, dptr++)
-        *dptr = (unsigned short) 0;
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
 
-//  if (CVFAILED(VidCap->StartImageCap(CVImage::CVIMAGE_GREY,  CaptureCallback, this))) {
-//  if (CVFAILED(VidCap->StartImageCap(CVImage::CVIMAGE_GREY,  CapStackCallback, 0))) {
-//  if (CVFAILED(VidCap->StartRawCap(RawCallback, 0))) {
-//      wxMessageBox(_T("Failed to start image capture!"),_("Error"),wxOK | wxICON_ERROR);
-  //    Disconnect();
-  //    return true;
-//  }
-    stackptr = img.ImageData;
-    WDM_Stack_Mode = true;
-    Sleep(duration);  // let capture go on
-    while ((NFrames < 1) && (NAttempts < 3))
-        Sleep(50);
-     WDM_Stack_Mode = false;
-  //  VidCap->Stop();       // Stop it
-    pFrame->SetStatusText(wxString::Format("%d frames",NFrames),1);
-    if (recon) SubtractDark(img);
-    return false;
+    return bError;
 }
 
+bool Camera_WDMClass::CaptureOneFrame(usImage& img, wxRect subframe, bool recon)
+{
+    bool bError = false;
 
-void Camera_WDMClass::ShowPropertyDialog() {
-    VidCap->ShowPropertyDialog((HWND) pFrame->GetHandle());
+    try
+    {
+        if (BeginCapture(img, CAPTURE_ONE_FRAME))
+        {
+            throw ERROR_INFO("BeingCapture() failed");
+        }
+
+        EndCapture();
+
+        if (recon)
+        {
+            SubtractDark(img);
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
 }
+
+void Camera_WDMClass::ShowPropertyDialog()
+{
+    if (m_pVidCap)
+    {
+        m_pVidCap->ShowPropertyDialog((HWND) pFrame->GetHandle());
+    }
+}
+
 #endif // WDM_CAMERA defined
