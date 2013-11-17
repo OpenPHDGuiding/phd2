@@ -654,10 +654,9 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
 
     //if (m_pCamera->PixelSize == 0)
     {
-        int width = StringWidth(_T("99.999"));
-        m_pPixelSize = new wxTextCtrl(pParent, wxID_ANY,
-            m_pCamera->PixelSize == 0 ? wxString() : wxString::Format("%6.3f", m_pCamera->PixelSize),
-            wxPoint(-1,-1), wxSize(width+10, -1));
+        int width = StringWidth(_T("99.99")) + 20;
+        m_pPixelSize = new wxSpinCtrlDouble (pParent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+            wxSize(width, -1), wxSP_ARROW_KEYS, 3.0, 25.0, m_pCamera->PixelSize, 0.1);
         DoAdd(_("Pixel size (microns)"), m_pPixelSize,
                _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
     }
@@ -756,7 +755,7 @@ void GuideCamera::CameraConfigDialogPane::LoadValues(void)
         }
     }
 
-    m_pPixelSize->SetValue(wxString::Format(_T("%6.3f"), m_pCamera->GetCameraPixelSize()));
+    m_pPixelSize->SetValue(m_pCamera->GetCameraPixelSize());
 
     bool autoLoadDarks = pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true);
     m_pLoadDarks->SetValue(autoLoadDarks);
@@ -811,7 +810,7 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
     }
 
     double pixel_size;
-    m_pPixelSize->GetValue().ToDouble(&pixel_size);
+    pixel_size = m_pPixelSize->GetValue();
     m_pCamera->SetCameraPixelSize(pixel_size);
 
     bool autoLoadDarks = m_pLoadDarks->GetValue();
