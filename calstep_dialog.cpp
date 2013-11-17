@@ -37,6 +37,24 @@
 #include "calstep_dialog.h"
 #include "wx/valnum.h"
 
+#define MIN_PIXELSIZE 3.0
+#define MAX_PIXELSIZE 25.0
+#define MIN_GUIDESPEED 0.25
+#define MAX_GUIDESPEED 2.0
+#define MIN_STEPS 6.0
+#define MAX_STEPS 60.0
+#define MIN_DECLINATION -60.0
+#define MAX_DECLINATION 60.0
+#define DEFAULT_STEPS 12
+
+static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc)
+{
+    wxSpinCtrlDouble *pNewCtrl = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+        wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, inc);
+    pNewCtrl->SetDigits(2);
+    return pNewCtrl;
+}
+
 CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& configPrefix) :
     wxDialog(pFrame, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
@@ -46,7 +64,8 @@ CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& 
     const double dSiderealSecondPerSec = 0.9973;
 
     // Get squared away with initial parameter values
-    m_iNumSteps = 12;
+    m_iNumSteps = DEFAULT_STEPS;
+    m_dDeclination = 0.0;
     if (focalLength > 0)
         m_iFocalLength = focalLength;
     else
@@ -97,28 +116,30 @@ CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& 
 
     // Note that "min" values in fp validators don't work right - so leave them out
     // Focal length - int <= 4000
-    int width = StringWidth(_T("00000")) + 10;
+    int width = StringWidth("00000") + 10;
     wxIntegerValidator <int> valFocalLength (&m_iFocalLength, 0);
     valFocalLength.SetRange (0, 3500);
     m_pFocalLength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valFocalLength);
     AddTableEntry (m_pInputTableSizer, _("Focal length, mm"), m_pFocalLength, _("Guide scope focal length"));
 
-    // Pixel size: float <= 25
-    m_pPixelSize = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0);
-    m_pPixelSize->SetValue(wxString::Format("%.2f",m_fPixelSize));
+    // Pixel size
+    m_pPixelSize = NewSpinner (this, 1.5*width, m_fPixelSize, MIN_PIXELSIZE, MAX_PIXELSIZE, 0.1);
     AddTableEntry (m_pInputTableSizer, _("Pixel size, microns"), m_pPixelSize, _("Guide camera pixel size"));
 
-    // Guide speed multiplier: float <= 2.0
-    m_pGuideSpeed = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0);
-    m_pGuideSpeed->SetValue(wxString::Format("%.2f", m_fGuideSpeed));
+    // Guide speed
+    m_pGuideSpeed = NewSpinner (this, 1.5*width, m_fGuideSpeed, MIN_GUIDESPEED, MAX_GUIDESPEED, 0.25);
     AddTableEntry (m_pInputTableSizer, _("Guide speed, n.nn x sidereal"), m_pGuideSpeed, _("Guide speed, multiple of sidereal rate; to guide at ") +
         _("50% sidereal rate, enter 0.5"));
 
-    // Number of steps: int < MAX_CALIBRATION_STEPS
-    wxIntegerValidator <int> valNumSteps (&m_iNumSteps, 0);
-    valNumSteps.SetRange (0, 60);
-    m_pNumSteps = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valNumSteps);
+    // Number of steps
+    m_pNumSteps = NewSpinner (this, 1.5*width, m_iNumSteps, MIN_STEPS, MAX_STEPS, 1);
+    m_pNumSteps->SetDigits (0);
     AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps, _("Targeted # steps in each direction"));
+
+    // Calibration declination
+    m_pDeclination = NewSpinner(this, 1.5*width, m_dDeclination, MIN_DECLINATION, MAX_DECLINATION, 5.0);
+    m_pDeclination->SetDigits(0);
+    AddTableEntry (m_pInputTableSizer, _("Calibration declination, degrees"), m_pDeclination, _("Approximate declination where you will do calibration"));
 
     // Build the group of output fields
     m_pOutputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Computed Values"));
@@ -136,7 +157,6 @@ CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& 
 
     // Now deal with the buttons
     wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
-
      //create three buttons that are horizontally unstretchable,
      // with an all-around border with a width of 10 and implicit top alignment
     wxButton *pRecalc = new wxButton( this, wxID_OK, _("Recalc") );
@@ -173,14 +193,17 @@ void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWi
     pControl->SetToolTip (toolTip);
 }
 
- // Based on computed image scale, compute a calibration pulse direction that will result in DesiredSteps
-//  for a "travel" distance of MAX_CALIBRATION_DISTANCE in each direction.  Note: this doesn't take into account any dec
-//  compensation for RA times.  Result will be rounded up to the nearest 50 ms
-bool CalstepDialog::CalcDefaultDuration (int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps, double& ImageScale, int& StepSize)
+// Based on computed image scale, compute an RA calibration pulse direction that will result in DesiredSteps
+//  for a "travel" distance of MAX_CALIBRATION_DISTANCE in each direction, adjusted for declination.
+//  Result will be rounded up to the nearest 50 ms and is constrained to insure Dec calibration is at least
+//  MIN_STEPs
+bool CalstepDialog::CalcDefaultDuration (int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps,
+    double Declination, double& ImageScale, int& StepSize)
 {
     int totalDistance;            // In units of arc-secs
     float totalDuration;
-    int iTemp;
+    int iPulse;
+    int iMaxStep;
 
     try
     {
@@ -188,8 +211,10 @@ bool CalstepDialog::CalcDefaultDuration (int FocalLength, double PixelSize, doub
         ImageScale = 3438.0 * PixelSize/1000.0 * 60.0f / FocalLength;
         totalDistance = 25.0 * ImageScale;
         totalDuration = totalDistance / (15.0 * GuideSpeed);
-        iTemp = floor (totalDuration/DesiredSteps * 1000.0);            // milliseconds
-        StepSize = ((iTemp+49) / 50) * 50;                                // discourage "false precision" - round up to nearest 50 ms
+        iPulse = floor (totalDuration/DesiredSteps * 1000.0);            // milliseconds at DEC=0
+        iMaxStep = floor(totalDuration/MIN_STEPS * 1000.0);             // max step size to still get MIN steps
+        iPulse = wxMin(iMaxStep, iPulse / cos(M_PI/180 * Declination));     // UI forces abs(Dec) <= 60 degrees
+        StepSize = ((iPulse+49) / 50) * 50;                                // discourage "false precision" - round up to nearest 50 ms
         return (true);
     }
     catch (wxString Msg)
@@ -206,35 +231,28 @@ void CalstepDialog::OnRecalc (wxCommandEvent& evt)
 
     if (this->Validate() && this->TransferDataFromWindow())
     {
-        m_pPixelSize->GetValue().ToDouble(&m_fPixelSize);
-        m_pPixelSize->SetValue(wxString::Format("%.2f",m_fPixelSize));
+        m_fPixelSize = m_pPixelSize->GetValue();
+        m_pPixelSize->SetValue(m_fPixelSize);           // For European locales, '.' -> ',' on output
+        m_fGuideSpeed = m_pGuideSpeed->GetValue();
+        m_pGuideSpeed->SetValue(m_fGuideSpeed);
+        m_iNumSteps = m_pNumSteps->GetValue();
+        m_dDeclination = abs(m_pDeclination->GetValue());
 
-        m_pGuideSpeed->GetValue().ToDouble(&m_fGuideSpeed);
-        m_pGuideSpeed->SetValue(wxString::Format("%.2f",m_fGuideSpeed));
-
-        // The validators make life easier by insuring there will be numeric values of some kind in the various properties
+        // Spin controls enforce numeric ranges
         if (m_iFocalLength >= 50 && m_iFocalLength <= 4000)
-            if (m_fPixelSize >= 3.0 && m_fPixelSize <= 25)
-                if (m_fGuideSpeed >= 0.2 && m_fGuideSpeed <= 2.0)
-                    if (m_iNumSteps >= 6 && m_iNumSteps <= 60)
-                    {
-                        if (CalcDefaultDuration (m_iFocalLength, m_fPixelSize, m_fGuideSpeed, m_iNumSteps, m_fImageScale, m_iRslt))
-                        {
-                            m_pImageScale->SetValue (wxString::Format ("%.2f", m_fImageScale));
-                            m_pRslt->SetValue (wxString::Format ("%3d", m_iRslt));
-                            // Remember the guide speed chosen is just to help the user - purely a UI thing, no guiding implications
-                            pConfig->Profile.SetDouble (m_sConfigPrefix + "/GuideSpeed", m_fGuideSpeed);
-                            m_bValidResult = true;
-                        }
-                        else
-                            wxMessageBox (_("Could not compute step size"), "Error", wxOK | wxICON_ERROR);
-                    }
-                    else
-                        wxMessageBox (_("Num steps must be >= 6 and <= 60"),  _("Error"), wxOK | wxICON_ERROR);
-                else
-                    wxMessageBox (_("Guide speed must be >= 0.2 and <= 2.0"),  _("Error"), wxOK | wxICON_ERROR);
+        {
+            if (CalcDefaultDuration (m_iFocalLength, m_fPixelSize, m_fGuideSpeed, m_iNumSteps, m_dDeclination, m_fImageScale, m_iRslt))
+            {
+                m_pImageScale->SetValue (wxString::Format ("%.2f", m_fImageScale));
+                m_pRslt->SetValue (wxString::Format ("%3d", m_iRslt));
+                // Remember the guide speed chosen is just to help the user - purely a UI thing, no guiding implications
+                pConfig->Profile.SetDouble (m_sConfigPrefix + "/GuideSpeed", m_fGuideSpeed);
+                m_bValidResult = true;
+            }
             else
-                wxMessageBox (_("Pixel size must be >= 3.0 and <= 25.0"),  _("Error"), wxOK | wxICON_ERROR);
+                wxMessageBox (_("Could not compute step size"), "Error", wxOK | wxICON_ERROR);
+        }
+
         else
             wxMessageBox (_("Focal length must be >= 50 and < 4000"),  _("Error"), wxOK | wxICON_ERROR);
     }

@@ -48,9 +48,10 @@ private:
     wxStaticBoxSizer *m_pInputGroupBox;
     wxStaticBoxSizer *m_pOutputGroupBox;
     wxTextCtrl *m_pFocalLength;
-    wxTextCtrl *m_pPixelSize;
-    wxTextCtrl *m_pGuideSpeed;
-    wxTextCtrl *m_pNumSteps;
+    wxSpinCtrlDouble *m_pPixelSize;
+    wxSpinCtrlDouble *m_pGuideSpeed;
+    wxSpinCtrlDouble *m_pNumSteps;
+    wxSpinCtrlDouble *m_pDeclination;
     wxTextCtrl *m_pRslt;
     wxTextCtrl *m_pImageScale;
     // numeric values from fields, populated by validators
@@ -62,6 +63,7 @@ private:
     double m_fImageScale;
     int m_iRslt;
     bool m_bValidResult;
+    double m_dDeclination;
     // pConfig prefix string for persisting guide speed
     wxString m_sConfigPrefix;
 
@@ -74,7 +76,7 @@ private:
     void AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip);
     int StringWidth(const wxString& string);
     void OnRecalc (wxCommandEvent& evt);
-    bool CalcDefaultDuration (int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps, double& ImageScale, int& StepSize);
+    bool CalcDefaultDuration (int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps, double Declination, double& ImageScale, int& StepSize);
 };
 
 #endif

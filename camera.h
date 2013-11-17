@@ -47,7 +47,7 @@ protected:
         wxSpinCtrl *m_pCameraGain;
         wxChoice   *m_pPortNum;
         wxSpinCtrl *m_pDelay;
-        wxTextCtrl *m_pPixelSize;
+        wxSpinCtrlDouble *m_pPixelSize;
         wxCheckBox *m_pLoadDarks;
     public:
         CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
