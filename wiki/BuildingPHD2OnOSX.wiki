@@ -6,8 +6,8 @@ The easiest way to build PHD2 is to use pre-built dependent libraries as we desc
 
  * Install xcode 4
 
- * Unpack the dependencies bundle [http://adgsoftware.com/phd2/PHD2-OSX-devel-0.1.tar.bz2 PHD2-OSX-devel-0.1.tar.bz2] into a location of your choice:
-{{{tar xfj PHD2-OSX-devel-0.1.tar.bz2}}}
+ * Unpack the dependencies bundle [http://adgsoftware.com/phd2/PHD2-OSX-devel-0.2.tar.bz2 PHD2-OSX-devel-0.2.tar.bz2] into a location of your choice:
+{{{tar xfj PHD2-OSX-devel-0.2.tar.bz2}}}
 
  * get phd2 sources
 
@@ -23,7 +23,7 @@ Checkout the open-phd-guiding source tree into this directory so that open-phd-g
   +--- opencv
   +--- opencv-2.4.6.1
   +--- wxWidgets
-  +--- wxWidgets-2.9.5
+  +--- wxWidgets-3.0.0
 }}}
 
 This is important because the PHD2 xcode project file will expect to find the dependencies via relative paths.
@@ -89,13 +89,17 @@ then
 I got that from Bret. I'm not even sure we are using that yet on Mac.
 
 == wxWidgets ==
-Another one kindly provided by Bret.
 
-Craig's notes on building wxWidgets from the open-phd-guiding google group:
+Download the wxWidgets-3.0.0 sources from [http://sourceforge.net/projects/wxwindows/files/]
 
-"To get wxWidgets going, I grab the 2.9.4 (or 2.9.3 or SVN) and:
+Unpack the sources in the directory containing open-phd-guiding.
+
+Configure and build:
+
+{{{
+  cd wxWidgets-3.0.0
   mkdir Cocoa_32
   cd Cocoa_32
-  ../configure --with-libpng=builtin --with-cocoa --disable-shared --with-macosx-version-min=10.5 --enable-macosx_arch=i386 --with-macosx-sdk=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk
-
-Now, on 10.8, it'll be a touch different.  You can version-min to 10.6 if you like and I'd suggest still going for the 10.7 SDK."
+  ../configure --with-libpng=builtin --with-cocoa --disable-shared --with-macosx-version-min=10.6 --enable-macosx_arch=i386 --with-macosx-sdk=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk
+  make
+}}}
