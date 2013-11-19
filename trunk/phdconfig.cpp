@@ -39,7 +39,9 @@
 #include <wx/txtstrm.h>
 #include <wx/tokenzr.h>
 
-wxString PhdConfig::DefaultProfileName = _("My Equipment");
+// NOTE: Not translated here, explicitly translated below. Using _("...")
+// here in a static initializer crashes
+wxString PhdConfig::DefaultProfileName = _T("My Equipment");
 
 #define PROFILE_STREAM_VERSION "1"
 
