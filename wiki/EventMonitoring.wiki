@@ -257,17 +257,17 @@ Set camera exposure (error):
 ||`get_exposure_durations`||none||array of integers: the list of valid exposure times in milliseconds || ||
 ||`get_lock_position`||none||array: `[x, y]` coordinates of lock position, or `null` if lock position is not set || ||
 ||`get_paused`||none||boolean: true if paused|| ||
+||`get_pixel_scale`||none||integer: guider image scale in arc-sec/pixel. || ||
 ||`get_profile`||none||{{{ {"id":profile_id,"name":"profile_name"} }}} ||
 ||`get_profiles`||none||array of {{{ {"id":profile_id,"name":"profile_name"} }}} ||
 ||`guide`|| SETTLE (object), RECALIBRATE (boolean)|| integer(0) || See below ||
 ||`loop`||none||integer (0)||start capturing, or, if guiding, stop guiding but continue capturing||
 ||`set_connected`||boolean: connect|| integer (0) || connect or disconnect all equipment ||
 ||`set_exposure`||integer: exposure time in milliseconds|| integer (0)||
-||`set_lock_position`||X: float, Y: float, EXACT: boolean (optional, default = true) || integer (0) || When EXACT is `true`, the lock position is moved to the exact given coordinates. When `false`, the current position is moved to the given coordinates and if a guide star is in range, the lock position is et to the coordinates of the guide star. ||
+||`set_lock_position`||X: float, Y: float, EXACT: boolean (optional, default = true) || integer (0) || When EXACT is `true`, the lock position is moved to the exact given coordinates. When `false`, the current position is moved to the given coordinates and if a guide star is in range, the lock position is set to the coordinates of the guide star. ||
 ||`set_paused`||boolean: pause||integer (0)|| ||
 ||`set_profile`||integer: profile id|| integer (0) || Select an equipment profile. All equipment must be disconnected before switching profiles. ||
 ||`stop_capture`||none||integer (0)||Stop capturing (and stop guiding)||
-||`get_pixel_scale`||none||integer: guider image scale in arc-sec/pixel. || ||
 
 === Settle parameter ===
 
