@@ -28,7 +28,7 @@ Checkout the open-phd-guiding source tree into this directory so that open-phd-g
 
 This is important because the PHD2 xcode project file will expect to find the dependencies via relative paths.
 
-If you already have a wxWidgets source tree somewhere else that you wold prefer to use, you can adjust the symlink to point to that location.
+If you already have a wxWidgets source tree somewhere else that you would prefer to use, you can adjust the symlink to point to that location.
 
  * Unzip the following two frameworks in extra_frameworks/ into /Library/Frameworks
 
