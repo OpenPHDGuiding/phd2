@@ -7,9 +7,9 @@
 sudo yum install subversion gtk2-devel cfitsio-devel opencv-devel
 }}}
 
- * download and install wxWidgets 2.9.5 or later. Right now the latest is 3.0.0rc2, and that works fine.
+ * download and install wxWidgets 3.0.0 or later.
 {{{
-cd wxWidgets-3.0.0-rc2
+cd wxWidgets-3.0.0
 mkdir build
 cd build
 ../configure --with-libpng=builtin --with-regex=builtin --with-libjpeg=builtin --with-libtiff=builtin --with-expat=builtin --disable-shared
