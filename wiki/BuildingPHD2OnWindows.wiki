@@ -4,7 +4,6 @@ This page describes how to set up a build environment from scratch on MS-Windows
 
 = Summary =
 
-  # Install PHD1
   # Get the Visual Studio C++ compiler
   # Install Visual Leak Detector
   # Install wxWidgets
@@ -15,21 +14,14 @@ This page describes how to set up a build environment from scratch on MS-Windows
 
 = Step-by-step =
 
-1. PHD2 uses some DLLs that are distributed with PHD1, so you'll need
-to download and install PHD1 before you can run PHD2. I find it
-easiest to set my PATH environment variable to include the PHD1
-directory. That allows PHD2 to to find the required DLLs.
-
-  _Extra Info_ There are many DLLs that are required in this way, notably the ones for all the cameras.  Setting the PATH environment variable is the most straightforward approach because the alternative will require copying many files to multiple destination folders in the PHD2 environment.  To set the PATH variable in Win7, open Computer/Properties, then select ‘Advanced system settings.’  From there, click on ‘Environment variables’ and make your changes.  Don’t do this from a command line window because changes made there will be lost when you close the commandline session.  This is true of all the environment variable settings described in this document.
-
-2. If you do not yet have a version of Visual Studio 2010 then get a
+1. If you do not yet have a version of Visual Studio 2010 then get a
 free copy at
 
 http://www.microsoft.com/visualstudio/eng/downloads#d-2010-express
 
 The download you want is "Visual C++ 2010 Express".
 
-3. Download and install Visual Leak Detector (VLD) Version 2.3.0 from https://vld.codeplex.com/
+2. Download and install Visual Leak Detector (VLD) Version 2.3.0 from https://vld.codeplex.com/
 
 The VC++ project files assume you have VLD installed in the default
 location:
@@ -40,7 +32,7 @@ so make sure you install it there.
 
   _Extra Info_ The VLD is packaged as a Windows installer exe file, so just run it. It will ask if you want to automatically add its directory into the PATH environment string, and you should answer ‘yes.’
 
-4. Download wxWidgets 2.9.4 from
+3. Download wxWidgets 3.0.0 from
   http://sourceforge.net/projects/wxwindows/files/
 
 In order to get a static copy of wx working, you need to build it yourself.
@@ -64,13 +56,13 @@ Do two command line builds, one for release, one for debug:
 
 Set a WXWIN environment variable to point to <wx install path> so that the PHD2 build will find the bits.
 
-  _Extra Info_ wxWidgets sources are downloaded as a zip file. The latest release is now 2.9.5, but you should stick with the release used in the current PHD2 build. On the wxWidgets site, go to the downloads page, then select ‘releases’ at the upper left to find the earlier release package you need.  Once it’s downloaded, extract into a location you want. 
+  _Extra Info_ wxWidgets sources are downloaded as a zip file. You should stick with the 3.0.0 release used in the current PHD2 build. On the wxWidgets site, go to the downloads page, then select ‘releases’ at the upper left to find the earlier release package you need.  Once it’s downloaded, extract into a location you want. 
 
   You will probably need to load the VC variables on Win 7, as described above, before you can run the ‘nmake’ commands.  You must run vcvars32.bat and do the nmake runs in a single command-line session or the VC environment variables won’t be retained.  Just go into the \build\msw directory and run the \Program Files (x86)… vcvars32.bat file from  there.  You can use the tab key to reduce the amount of typing required. Then set the WXWIN environment variable as follows:  suppose you’ve installed wxWidgets in a folder c:\dev\CPP_Libs\wx_Widgets-2.9.4\.  Then the environment variable should look like this: 
 
-  WXWIN = C:\dev\CPP_Libs\wxWidgets-2.9.4\
+  WXWIN = C:\dev\CPP_Libs\wxWidgets-3.0.0\
 
-5. Download the CFITSIO V3.340 Software Library from
+4. Download the CFITSIO V3.340 Software Library from
 
   http://heasarc.gsfc.nasa.gov/fitsio/
 
@@ -86,7 +78,7 @@ nmake makefile.vcc
 
   You should ignore all the warning messages.  These steps are described in README.win32 in the CFITSIO directory – just open it with a text editor.
 
-6. Download OpenCV 2.4.5 from http://opencv.org/. Install it, and set
+5. Download OpenCV 2.4.5 from http://opencv.org/. Install it, and set
 the OPENCV_DIR environment variable to point to the build\ subdirectory of where you put it. For example, if you install it in C:\opencv, set OPENCV_DIR to C:\opencv\build
 
 You will have to copy 3 Debug and Release DLLs from opencv-2.4.5\build\x86\vc10\bin
@@ -102,10 +94,10 @@ You can either copy these to the Debug\ and Release\ build directories that VC c
 
   _Extra Info_ PHD2 is currently using OpenCV version 2.4.5, but this is no longer the latest OpenCV release.  Don’t download and install the latest release – stick with the version used by the PHD2 build.  The version numbers are embedded in the OpenCV filenames, so PHD2 is implicitly tied to a specific release level.  On the OpenCV site, click on ‘downloads’ to find the earlier release you need, don’t use the “latest downloads” link on their home page.  OpenCV is installed with a Windows installer executable, so just run it and specify the target directory you want.
 
-7. Get PHD2 sources from the trunk branch at
+6. Get PHD2 sources from the trunk branch at
 
   http://code.google.com/p/open-phd-guiding/
 
-8. Open phd2.sln in Visual Studio, select the Release or Debug build target and build.
+7. Open phd2.sln in Visual Studio, select the Release or Debug build target and build.
 
   _Extra Info_ You may have jumped ahead at some point and downloaded the PHD2 source just for inspection.  If you opened the VCC project before doing all of the steps above, you will obviously see a ton of IntelliSense syntax errors.  These may persist even after you’ve done the steps above and even after you’ve successfully compiled the project.  You have two options at this point: you can try to sort through the IntelliSense options and somehow get it to rebuild its database or you can delete the PHD2 files and simply download them again.  The second option seems a lot easier.  If you’ve set everything up as described, the project will compile and you are good to go.
