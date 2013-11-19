@@ -58,7 +58,7 @@ Set a WXWIN environment variable to point to <wx install path> so that the PHD2 
 
   _Extra Info_ wxWidgets sources are downloaded as a zip file. You should stick with the 3.0.0 release used in the current PHD2 build. On the wxWidgets site, go to the downloads page, then select ‘releases’ at the upper left to find the earlier release package you need.  Once it’s downloaded, extract into a location you want. 
 
-  You will probably need to load the VC variables on Win 7, as described above, before you can run the ‘nmake’ commands.  You must run vcvars32.bat and do the nmake runs in a single command-line session or the VC environment variables won’t be retained.  Just go into the \build\msw directory and run the \Program Files (x86)… vcvars32.bat file from  there.  You can use the tab key to reduce the amount of typing required. Then set the WXWIN environment variable as follows:  suppose you’ve installed wxWidgets in a folder c:\dev\CPP_Libs\wx_Widgets-2.9.4\.  Then the environment variable should look like this: 
+  You will probably need to load the VC variables on Win 7, as described above, before you can run the ‘nmake’ commands.  You must run vcvars32.bat and do the nmake runs in a single command-line session or the VC environment variables won’t be retained.  Just go into the \build\msw directory and run the \Program Files (x86)… vcvars32.bat file from  there.  You can use the tab key to reduce the amount of typing required. Then set the WXWIN environment variable as follows:  suppose you’ve installed wxWidgets in a folder c:\dev\CPP_Libs\wx_Widgets-3.0.0\.  Then the environment variable should look like this: 
 
   WXWIN = C:\dev\CPP_Libs\wxWidgets-3.0.0\
 
