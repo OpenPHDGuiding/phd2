@@ -90,7 +90,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opencv_core245d.lib;opencv_highgui245d.lib;opencv_imgproc245d.lib;wxmsw29ud_core.lib;wxbase29ud.lib;wxmsw29ud_aui.lib;wxexpatd.lib;wxzlibd.lib;wxmsw29ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase29ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;cfitsio.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29ud_propgrid.lib;DICAMSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core245d.lib;opencv_highgui245d.lib;opencv_imgproc245d.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_aui.lib;wxexpatd.lib;wxzlibd.lib;wxmsw30ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase30ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;cfitsio.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30ud_propgrid.lib;DICAMSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)\build\x64\vc10\lib;$(OPENCV_DIR)\build\x64\vc10\lib;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -145,7 +145,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opencv_core245.lib;opencv_highgui245.lib;opencv_imgproc245.lib;wxmsw29u_core.lib;wxbase29u.lib;wxmsw29u_aui.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw29u_html.lib;wxbase29u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw29u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core245.lib;opencv_highgui245.lib;opencv_imgproc245.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_aui.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw30u_html.lib;wxbase30u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Release/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)/build/x64/vc10/lib;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
