@@ -35,6 +35,7 @@
 #include "phd.h"
 #include "drift_tool.h"
 #include "manualcal_dialog.h"
+#include "calrestore_dialog.h"
 
 void TestGuide() {
 
@@ -72,8 +73,9 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             return;
         }
 
-        int answer = wxMessageBox("Load calibration data from " + savedCal + "?", "Load Calibration Data", wxYES_NO);
-        if (answer == wxYES)
+        CalrestoreDialog dlg;
+        dlg.Show();
+        if (dlg.ShowModal() == wxID_OK)
         {
             pFrame->LoadCalibration();
         }
