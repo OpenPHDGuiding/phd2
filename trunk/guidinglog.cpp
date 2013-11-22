@@ -61,13 +61,14 @@ bool GuidingLog::EnableLogging(void)
             wxDateTime now = wxDateTime::Now();
             if (!m_file.IsOpened())
             {
-                wxString fileName = GetLogDir() + PATHSEPSTR + "PHD2_GuideLog" + now.Format(_T("_%Y-%m-%d")) +
+                m_fileName = GetLogDir() + PATHSEPSTR + "PHD2_GuideLog" + now.Format(_T("_%Y-%m-%d")) +
                     now.Format(_T("_%H%M%S")) + ".txt";
 
-                if (!m_file.Open(fileName, "w"))
+                if (!m_file.Open(m_fileName, "w"))
                 {
                     throw ERROR_INFO("unable to open file");
                 }
+                m_keepFile = false;             // Don't keep it until something meaningful is logged
             }
 
             assert(m_file.IsOpened());
@@ -191,6 +192,11 @@ void GuidingLog::Close(void)
             m_file.Write("\n");
             m_file.Write("Log closed at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
             Flush();
+            if (!m_keepFile)            // Delete the file if nothing useful was logged
+            {
+                m_file.Close();
+                wxRemoveFile (m_fileName);
+            }
         }
     }
     catch (wxString Msg)
@@ -225,7 +231,7 @@ bool GuidingLog::StartCalibration(Mount *pCalibrationMount)
                         pFrame->pGuider->CurrentPosition().X,
                         pFrame->pGuider->CurrentPosition().Y));
             m_file.Write("Direction,Step,dx,dy,x,y,Dist\n");
-
+            m_keepFile = true;
             Flush();
        }
     }
@@ -346,6 +352,7 @@ bool GuidingLog::StartGuiding()
 
             m_file.Write("\n");
             m_file.Write("Guiding Begins at " + pFrame->m_guidingStarted.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
+            m_keepFile = true;
             Flush();
 
             // add common guiding header
@@ -451,27 +458,6 @@ bool GuidingLog::GuideStep(const GuideStepInfo& step)
     return bError;
 }
 
-bool GuidingLog::StartEntry(void)
-{
-    bool bError = false;
-
-    try
-    {
-        if (m_enabled)
-        {
-            assert(m_file.IsOpened());
-            m_file.Write("\n");
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-}
-
 bool GuidingLog::EnableImageLogging(LOGGED_IMAGE_FORMAT fmt)
 {
     m_image_logging_enabled = true;
@@ -527,6 +513,7 @@ bool GuidingLog::ServerSetLockPosition(Guider* guider)
         {
             m_file.Write(wxString::Format("Server received SET LOCK POSITION, new lock pos = %.4f, %.3f\n",
                 guider->LockPosition().X, guider->LockPosition().Y));
+            m_keepFile = true;
             Flush();
         }
     }
@@ -548,6 +535,7 @@ bool GuidingLog::ServerCommand(Guider* guider, const wxString& cmd)
         if (m_enabled)
         {
             m_file.Write(wxString::Format("Server received %s\n", cmd));
+            m_keepFile = true;
             Flush();
         }
     }
@@ -569,6 +557,7 @@ bool GuidingLog::SetGuidingParam(const wxString& name, double val)
         if (m_enabled)
         {
             m_file.Write(wxString::Format("Guiding parameter change, %s = %f\n", name, val));
+            m_keepFile = true;
             Flush();
         }
     }
@@ -590,6 +579,7 @@ bool GuidingLog::SetGuidingParam(const wxString& name, int val)
         if (m_enabled)
         {
             m_file.Write(wxString::Format("Guiding parameter change, %s = %d\n", name, val));
+            m_keepFile = true;
             Flush();
         }
     }
@@ -611,6 +601,7 @@ bool GuidingLog::SetGuidingParam(const wxString& name, const wxString& val)
         if (m_enabled)
         {
             m_file.Write(wxString::Format("Guiding parameter change, %s = %s\n", name, val));
+            m_keepFile = true;
             Flush();
         }
     }

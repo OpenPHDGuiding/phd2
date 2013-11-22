@@ -67,6 +67,8 @@ class GuidingLog : public Logger
 {
     bool m_enabled;
     wxFFile m_file;
+    wxString m_fileName;
+    bool m_keepFile;
     bool m_image_logging_enabled;
     LOGGED_IMAGE_FORMAT m_logged_image_format;
 
@@ -102,8 +104,6 @@ public:
     bool SetGuidingParam(const wxString& name, double val);
     bool SetGuidingParam(const wxString& name, int val);
     bool SetGuidingParam(const wxString& name, const wxString& val);
-
-    bool StartEntry(void);
 
     bool ChangeDirLog(const wxString& newdir);
 
