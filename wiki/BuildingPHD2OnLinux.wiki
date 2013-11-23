@@ -2,16 +2,32 @@
 
 = Instructions for building PHD2 on Linux =
 
+== Build Dependencies ==
+=== Fedora-like systems ===
+
  * install dependencies (commands for a Fedora-like system; your system may vary)
 {{{
 sudo yum install subversion gtk2-devel cfitsio-devel opencv-devel
 }}}
 
- * download and install wxWidgets 3.0.0 or later.
+=== Ubuntu ===
+
+ * install dependencies (tested on 13.10)
 {{{
-cd wxWidgets-3.0.0
-mkdir build
-cd build
+sudo apt-get install build-essential libgtk2.0-dev libcfitsio3-dev libopencv-dev
+}}}
+
+=== wxWidgets-3.0.0 ===
+
+ * download and extract wxWidgets 3.0.0 or later from http://wxwidgets.org
+{{{
+# cd into the extracted wx 
+cd wxWidgets-3.0.0/
+
+# change files to have unix newlines, this is needed for at least all python and shell scripts
+find . -type f -print -exec perl -p -i -e "s/\r\n/\n/" {} \;
+
+cd build/
 ../configure --with-libpng=builtin --with-regex=builtin --with-libjpeg=builtin --with-libtiff=builtin --with-expat=builtin --disable-shared
 make
 sudo make install
@@ -22,6 +38,8 @@ If you prefer not to install this wxWidgets build on your system, and just use i
 {{{--prefix=WXDIR}}}
 
 replacing {{{WXDIR}}} with a location of your choice. Then, add {{{WXDIR/bin}}} to your PATH before building PHD2 as described below.
+
+== phd2 ===
 
   * get the phd2 sources
 {{{
