@@ -2,7 +2,7 @@
 
 ** to get started I have ported the existing help file's content below. Over time I/we will massage it into a version that is up-to-date w.r.t. v2. **
 
-** Dave's ToDo List **
+== Dave's ToDo List ==
 
 things to document, in no particular order:
 
