@@ -2,6 +2,25 @@
 
 ** to get started I have ported the existing help file's content below. Over time I/we will massage it into a version that is up-to-date w.r.t. v2. **
 
+** Dave's ToDo List **
+
+things to document, in no particular order:
+- Calibration Step Size Calculator
+- AO
+- Auto-Restore Calibration switch
+- Fast Recenter After Calibration switch
+- How Auto-Load Dark Frames works
+- Trendlines display
+- Corrections display
+- interoperability with Sequence Generator Pro
+- Drift Align
+- Sticky Lock Position (I have no idea what this is!!!)
+- Equipment Profiles and how they work
+
+
+
+
+
 = Introduction =
 
 Welcome to PHD Guiding! v 1.11
