@@ -37,8 +37,10 @@
  */
 
 #include "phd.h"
+#include <wx/dir.h>
 
 #define SCALE_UP_SMALL  // Currently problematic as the box for the star is drawn in the wrong spot.
+
 #if ((wxMAJOR_VERSION < 3) && (wxMINOR_VERSION < 9))
 #define wxPENSTYLE_DOT wxDOT
 #endif
@@ -188,6 +190,54 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
     return bError;
 }
 
+class AutoSelectFailFinder : public wxDirTraverser
+{
+public:
+    wxString prefix;
+    wxArrayString files;
+    AutoSelectFailFinder(const wxString& prefix_) : prefix(prefix_) {  }
+    wxDirTraverseResult OnFile(const wxString& filename)
+    {
+        wxFileName fn(filename);
+        if (fn.GetFullName().StartsWith(prefix))
+            files.Add(filename);
+        return wxDIR_CONTINUE;
+    }
+    wxDirTraverseResult OnDir(const wxString& WXUNUSED(dirname))
+    {
+        return wxDIR_CONTINUE;
+    }
+};
+
+static void RemoveOldAutoSelectFailFiles(const wxString& prefix, unsigned int keep_files)
+{
+    AutoSelectFailFinder finder(prefix);
+    wxDir dir(Debug.GetLogDir());
+    dir.Traverse(finder);
+
+    finder.files.Sort();
+
+    while (finder.files.size() >= keep_files)
+    {
+        wxRemoveFile(finder.files[0]);
+        finder.files.RemoveAt(0);
+    }
+}
+
+static void SaveAutoSelectFailedImg(usImage *pImage)
+{
+    static const wxString prefix = _T("PHD2_AutoSelectFail_");
+    enum { KEEP_FILES = 10 };
+
+    RemoveOldAutoSelectFailFiles(prefix, KEEP_FILES);
+
+    wxString filename = prefix + wxDateTime::UNow().Format(_T("%Y-%m-%d_%H%M%S.fit"));
+
+    Debug.AddLine("GuiderOneStar::AutoSelect failed. Saving image to " + filename);
+
+    pImage->Save(wxFileName(Debug.GetLogDir(), filename).GetFullPath());
+}
+
 bool GuiderOneStar::AutoSelect(usImage *pImage)
 {
     bool bError = false;
@@ -228,6 +278,8 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
     }
     catch (wxString Msg)
     {
+        SaveAutoSelectFailedImg(pImage);
+
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
