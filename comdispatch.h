@@ -66,6 +66,7 @@ public:
     bool PutProp(OLECHAR *name, bool val);
     bool InvokeMethod(VARIANT *res, OLECHAR *name, OLECHAR *arg);
     bool InvokeMethod(VARIANT *res, DISPID dispid, double arg1, double arg2);
+    bool InvokeMethod(VARIANT *res, DISPID dispid);
     const EXCEPINFO& Excep() const { return m_excep; }
     IDispatch *IDisp() const { return m_idisp; }
 };

@@ -115,11 +115,8 @@ bool DispatchObj::GetProp(VARIANT *res, DISPID dispid)
     dispParms.rgvarg = NULL;
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
-    HRESULT hr;
-    if (FAILED(hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, res, &m_excep, NULL)))
-        return false;
-
-    return true;
+    HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, res, &m_excep, NULL);
+    return !FAILED(hr);
 }
 
 bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name)
@@ -145,11 +142,9 @@ bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name, int arg)
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
-    HRESULT hr;
-    if (FAILED(hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, res, &m_excep, NULL)))
-        return false;
+    HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, res, &m_excep, NULL);
 
-    return true;
+    return !FAILED(hr);
 }
 
 bool DispatchObj::PutProp(OLECHAR *name, OLECHAR *val)
@@ -187,7 +182,6 @@ bool DispatchObj::PutProp(DISPID dispid, bool val)
     dispParms.rgdispidNamedArgs = &dispidNamed;
     VARIANT res;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &res, &m_excep, NULL);
-
     return !FAILED(hr);
 }
 
@@ -236,12 +230,19 @@ bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid, double arg1, double 
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
-    HRESULT hr;
-    if (FAILED(hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, res, &m_excep, NULL)))
-    {
-        return false;
-    }
-    return true;
+    HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, res, &m_excep, NULL);
+    return !FAILED(hr);
+}
+
+bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid)
+{
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 0;
+    dispParms.rgvarg = NULL;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+    HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, res, &m_excep, NULL);
+    return !FAILED(hr);
 }
 
 #endif // __WINDOWS__
