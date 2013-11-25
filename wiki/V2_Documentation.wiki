@@ -6,30 +6,37 @@
 
 things to document, in no particular order:
 
-• Calibration Step Size Calculator
+ * Calibration Step Size Calculator
 
-• AO
+ * AO
 
-• Auto-Restore Calibration switch
+ * Auto-Restore Calibration switch
 
-• Fast Recenter After Calibration switch
+ * Fast Recenter After Calibration switch
 
-• How Auto-Load Dark Frames works
+ * Dark frames: how to keep darks for multiple exposure times, and how Auto-Load Dark Frames works
 
-• Trendlines display
+ * Trendlines display
 
-• Corrections display
+ * Corrections display
 
-• interoperability with Sequence Generator Pro
+ * interoperability with Sequence Generator Pro
 
+ * Sticky Lock Position (I have no idea what this is!!!)
 
-• Sticky Lock Position (I have no idea what this is!!!)
+ * Equipment Profiles and how they work
 
-• Equipment Profiles and how they work
-
-
-
-
+ * Polar Drift Align tool
+ * calibration declination compensation
+ * log files directory selection
+ * bookmarks
+ * ascom devices connect directly without going through the ASCOM chooser
+ * simulator
+ * connect equipment dialog (replaces scope and mount menus in PHD1)
+ * i18n - how to select language (French translation available)
+ * how to dock, un-dock and resize windows
+ * How to display and graph of guide error in units of arc-seconds or pixels
+ * target display
 
 = Introduction =
 
