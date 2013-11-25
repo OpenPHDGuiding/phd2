@@ -5,17 +5,27 @@
 ** Dave's ToDo List **
 
 things to document, in no particular order:
-- Calibration Step Size Calculator
-- AO
-- Auto-Restore Calibration switch
-- Fast Recenter After Calibration switch
-- How Auto-Load Dark Frames works
-- Trendlines display
-- Corrections display
-- interoperability with Sequence Generator Pro
-- Drift Align
-- Sticky Lock Position (I have no idea what this is!!!)
-- Equipment Profiles and how they work
+
+• Calibration Step Size Calculator
+
+• AO
+
+• Auto-Restore Calibration switch
+
+• Fast Recenter After Calibration switch
+
+• How Auto-Load Dark Frames works
+
+• Trendlines display
+
+• Corrections display
+
+• interoperability with Sequence Generator Pro
+
+
+• Sticky Lock Position (I have no idea what this is!!!)
+
+• Equipment Profiles and how they work
 
 
 
