@@ -35,11 +35,6 @@
 #ifndef SCOPES_H_INCLUDED
 #define SCOPES_H_INCLUDED
 
-#ifndef OPENPHD
-/* Open PHD defines the available drivers in CMakeLists.txt rather than
-   statically here
- */
-
 #if defined (__WINDOWS__)
 
 #define GUIDE_ONCAMERA
@@ -58,9 +53,12 @@
 //#define GUIDE_NEB
 #define GUIDE_EQMAC
 
-#endif /* apple */
+#elif defined (__LINUX__)
 
-#endif /* not OPENPHD */
+#define GUIDE_ONCAMERA
+#define GUIDE_ONSTEPGUIDER
+
+#endif // WINDOWS/APPLE/LINUX
 
 #include "scope.h"
 #include "scope_oncamera.h"
