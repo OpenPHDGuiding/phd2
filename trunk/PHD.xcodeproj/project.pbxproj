@@ -110,6 +110,7 @@
 		58EE981513CD0F74009EC68D /* PHDGuideHelp.zip in CopyFiles */ = {isa = PBXBuildFile; fileRef = 58F7157D0B20CC700056770B /* PHDGuideHelp.zip */; };
 		58EE981713CD0F74009EC68D /* SBIGUDrv.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 588167710B4DED6900BDA6D4 /* SBIGUDrv.framework */; };
 		58EE981813CD0F74009EC68D /* fcCamFw.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5828185D0B4A022A00E5E22D /* fcCamFw.framework */; };
+		A117D7151844861000F5B01F /* calrestore_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A117D7131844861000F5B01F /* calrestore_dialog.cpp */; };
 		A1A088E31815CF63004899C0 /* drift_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088DE1815CF63004899C0 /* drift_tool.cpp */; };
 		A1A088E41815CF63004899C0 /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088E01815CF63004899C0 /* logger.cpp */; };
 		A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE284181CD8A4000B6085 /* manualcal_dialog.cpp */; };
@@ -332,6 +333,8 @@
 		58EC72871749D98B00502727 /* libwx_osx_cocoau_aui-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_aui-3.0.a"; path = "../wxWidgets-2.9.5/Cocoa_32/lib/libwx_osx_cocoau_aui-3.0.a"; sourceTree = "<group>"; };
 		58EE981C13CD0F74009EC68D /* PHD2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PHD2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58F7157D0B20CC700056770B /* PHDGuideHelp.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = PHDGuideHelp.zip; sourceTree = SOURCE_ROOT; };
+		A117D7131844861000F5B01F /* calrestore_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calrestore_dialog.cpp; sourceTree = "<group>"; };
+		A117D7141844861000F5B01F /* calrestore_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calrestore_dialog.h; sourceTree = "<group>"; };
 		A1A088DD1815CF1F004899C0 /* calstep_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calstep_dialog.h; sourceTree = "<group>"; };
 		A1A088DE1815CF63004899C0 /* drift_tool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = drift_tool.cpp; sourceTree = "<group>"; };
 		A1A088DF1815CF63004899C0 /* drift_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = drift_tool.h; sourceTree = "<group>"; };
@@ -490,6 +493,8 @@
 				58B8CE0E16E05EDB00F6E68E /* advanced_dialog.h */,
 				58B8CE0F16E05EDB00F6E68E /* ascom_common.cpp */,
 				58B8CE1016E05EDB00F6E68E /* ascom_common.h */,
+				A117D7131844861000F5B01F /* calrestore_dialog.cpp */,
+				A117D7141844861000F5B01F /* calrestore_dialog.h */,
 				F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */,
 				A1A088DD1815CF1F004899C0 /* calstep_dialog.h */,
 				583291DB15DA042400D96A6D /* Cameras */,
@@ -664,7 +669,7 @@
 			attributes = {
 				ORGANIZATIONNAME = "open-phd-guiding";
 			};
-			buildConfigurationList = 58339E200B1FC10000109891 /* Build configuration list for PBXProject "PHD2" */;
+			buildConfigurationList = 58339E200B1FC10000109891 /* Build configuration list for PBXProject "PHD" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -787,6 +792,7 @@
 				A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */,
 				A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */,
 				A1ACE28C1827567B000B6085 /* phdcontrol.cpp in Sources */,
+				A117D7151844861000F5B01F /* calrestore_dialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -988,7 +994,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58339E200B1FC10000109891 /* Build configuration list for PBXProject "PHD2" */ = {
+		58339E200B1FC10000109891 /* Build configuration list for PBXProject "PHD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58339E210B1FC10000109891 /* Debug */,
