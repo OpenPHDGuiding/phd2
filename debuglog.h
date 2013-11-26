@@ -54,11 +54,11 @@ public:
     bool GetState(void);
     bool Init(const char *pName, bool bEnable, bool bForceOpen = false);
     wxString AddLine(const char *format, ...); // adds a newline
-    wxString AddBytes(const wxString& str, const unsigned char * const pBytes, unsigned count);
+    wxString AddBytes(const wxString& str, const unsigned char *pBytes, unsigned count);
     wxString Write(const wxString& str);
     bool Flush(void);
 
-    bool ChangeDirLog (wxString newdir);
+    bool ChangeDirLog (const wxString& newdir);
 };
 
 extern DebugLog& operator<< (DebugLog& out, const wxString &str);

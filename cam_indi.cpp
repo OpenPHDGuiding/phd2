@@ -56,10 +56,11 @@ void camera_capture_cb(struct indi_prop_t *iprop, void *data)
     cb->modal = false;
 }
 
-Camera_INDIClass::Camera_INDIClass() {
+Camera_INDIClass::Camera_INDIClass()
+{
     Connected = FALSE;
     Name=_T("INDI Camera");
-    HasPropertyDialog = true;
+    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     FullSize = wxSize(640,480);
 }
 

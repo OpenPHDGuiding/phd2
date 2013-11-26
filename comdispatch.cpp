@@ -88,6 +88,14 @@ DispatchObj::~DispatchObj()
         m_idisp->Release();
 }
 
+void DispatchObj::Attach(IDispatch *idisp, DispatchClass *cls)
+{
+    m_class = cls;
+    if (m_idisp)
+        m_idisp->Release();
+    m_idisp = idisp;
+}
+
 bool DispatchObj::Create(OLECHAR *progid)
 {
     CLSID clsid;
@@ -243,6 +251,14 @@ bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid)
     dispParms.rgdispidNamedArgs = NULL;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, res, &m_excep, NULL);
     return !FAILED(hr);
+}
+
+bool DispatchObj::InvokeMethod(VARIANT *res, OLECHAR *name)
+{
+    DISPID dispid;
+    if (!GetDispatchId(&dispid, name))
+        return false;
+    return InvokeMethod(res, dispid);
 }
 
 #endif // __WINDOWS__

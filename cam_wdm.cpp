@@ -50,7 +50,7 @@ Camera_WDMClass::Camera_WDMClass(int deviceNumber)
     Name=_T("Windows Camera");      // should get overwritten on connect
     FullSize = wxSize(640,480);     // should get overwritten on connect
     m_deviceNumber = deviceNumber;  // Which WDM device connected
-    HasPropertyDialog = true;
+    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     HasDelayParam = false;
     HasPortNum = false;
     m_captureMode = NOT_CAPTURING;

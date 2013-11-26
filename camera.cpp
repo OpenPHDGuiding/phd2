@@ -162,7 +162,7 @@ GuideCamera::GuideCamera(void)
     Connected = false;
     Name=_T("");
     m_hasGuideOutput = false;
-    HasPropertyDialog = false;
+    PropertyDialogType = PROPDLG_NONE;
     HasPortNum = false;
     HasDelayParam = false;
     HasGainControl = false;

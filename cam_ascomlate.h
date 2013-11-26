@@ -36,18 +36,26 @@
 #define CAM_ASCOMLATE_H_INCLUDED
 
 #if defined (ASCOM_LATECAMERA)
-class Camera_ASCOMLateClass : public GuideCamera, protected ASCOM_COMMON {
-public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool HasNonGuiCapture(void);
-    bool    Connect();
-    bool    Disconnect();
 
+class DispatchObj;
+class DispatchClass;
+
+class Camera_ASCOMLateClass : public GuideCamera, protected ASCOM_COMMON
+{
+public:
+    virtual bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    virtual bool HasNonGuiCapture(void);
+    bool    Connect(void);
+    bool    Disconnect(void);
+    void    ShowPropertyDialog(void);
     bool    ST4PulseGuideScope(int direction, int duration);
+
     bool    Color;
+
     Camera_ASCOMLateClass(const wxString& choice);
     ~Camera_ASCOMLateClass();
     static wxArrayString EnumAscomCameras();
+
 private:
 #ifdef __WINDOWS__
     IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
@@ -57,9 +65,9 @@ private:
     DISPID dispid_numx, dispid_numy;
     DISPID dispid_startexposure, dispid_stopexposure;
     DISPID dispid_imageready, dispid_imagearray;
-    DISPID dispid_setupdialog, dispid_camerastate;
     DISPID dispid_ispulseguiding, dispid_pulseguide;
-    DISPID dispid_cooleron,dispid_setccdtemperature;
+
+    bool Create(DispatchObj *obj, DispatchClass *cls);
     bool ASCOM_SetBin(int mode);
     bool ASCOM_SetROI(int startx, int starty, int numx, int numy);
     bool ASCOM_StartExposure(double duration, bool light);

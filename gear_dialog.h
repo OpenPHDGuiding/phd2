@@ -46,12 +46,15 @@ class GearDialog: public wxDialog
     wxMenu *m_menuProfileManage;
 
     wxChoice *m_pCameras;
+    wxButton *m_pSetupCameraButton;
     wxToggleButton *m_pConnectCameraButton;
 
     wxChoice *m_pScopes;
+    wxButton *m_pSetupScopeButton;
     wxToggleButton *m_pConnectScopeButton;
 
     wxChoice *m_pStepGuiders;
+    wxButton *m_pSetupStepGuiderButton;
     wxToggleButton *m_pConnectStepGuiderButton;
 
     wxButton *m_pConnectAllButton;
@@ -94,14 +97,17 @@ private:
     void OnChar(wxKeyEvent& event);
 
     void OnChoiceCamera(wxCommandEvent& event);
+    void OnButtonSetupCamera(wxCommandEvent& event);
     void OnButtonConnectCamera(wxCommandEvent& event);
     void OnButtonDisconnectCamera(wxCommandEvent& event);
 
     void OnChoiceScope(wxCommandEvent& event);
+    void OnButtonSetupScope(wxCommandEvent& event);
     void OnButtonConnectScope(wxCommandEvent& event);
     void OnButtonDisconnectScope(wxCommandEvent& event);
 
     void OnChoiceStepGuider(wxCommandEvent& event);
+    void OnButtonSetupStepGuider(wxCommandEvent& event);
     void OnButtonConnectStepGuider(wxCommandEvent& event);
     void OnButtonDisconnectStepGuider(wxCommandEvent& event);
 private:

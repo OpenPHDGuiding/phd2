@@ -37,6 +37,13 @@
 
 typedef std::map<int, usImage *> ExposureImgMap; // map exposure to image
 
+enum PropDlgType
+{
+    PROPDLG_NONE,
+    PROPDLG_WHEN_CONNECTED, // property dialog available when connected
+    PROPDLG_WHEN_DISCONNECTED, // property dialog available when disconnected
+};
+
 class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 {
 protected:
@@ -72,7 +79,7 @@ public:
     wxString        Name;                   // User-friendly name
     wxSize          FullSize;           // Size of current image
     bool            Connected;
-    bool            HasPropertyDialog;
+    PropDlgType     PropertyDialogType;
     bool            HasPortNum;
     bool            HasDelayParam;
     bool            HasGainControl;
