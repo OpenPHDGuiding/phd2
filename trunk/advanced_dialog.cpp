@@ -234,10 +234,13 @@ void AdvancedDialog::Undo(void)
     }
 }
 
-void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event)) {
+void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event))
+{
     // Prior to this we check to make sure the current camera is a WDM camera (main dialog) but...
 
-    if (pFrame->CaptureActive || !pCamera || !pCamera->Connected || !pCamera->HasPropertyDialog) return;  // One more safety check
+    if (pFrame->CaptureActive || !pCamera || !pCamera->Connected || pCamera->PropertyDialogType != PROPDLG_WHEN_CONNECTED)
+        return;  // One more safety check
+
     /*if (pCamera == &Camera_WDM)
         Camera_WDM.ShowPropertyDialog();
     else if (pCamera == &Camera_VFW)

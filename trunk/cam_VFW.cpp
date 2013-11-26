@@ -47,7 +47,7 @@ Camera_VFWClass::Camera_VFWClass() {
     Name=_T("Windows VFW");
     FullSize = wxSize(640,480);  // should be overwritten
     VFW_Window = NULL; Extra_Window=NULL;
-    HasPropertyDialog = true;
+    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     HasDelayParam = false;
     HasPortNum = false;
 }

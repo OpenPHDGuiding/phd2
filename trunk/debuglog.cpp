@@ -102,19 +102,19 @@ bool DebugLog::Init(const char *pName, bool bEnable, bool bForceOpen)
     return m_bEnabled;
 }
 
-bool DebugLog::ChangeDirLog (wxString newdir)
+bool DebugLog::ChangeDirLog(const wxString& newdir)
 {
-    bool bEnabled = GetState ();
+    bool bEnabled = GetState();
     bool bOk = true;
 
-    if (!SetLogDir (newdir))
+    if (!SetLogDir(newdir))
     {
         wxMessageBox(wxString::Format("invalid folder name %s, debug log folder unchanged", newdir));
         bOk = false;
     }
 
     Init("debug", bEnabled, true);                // lots of side effects, but all good...
-    return (bOk);
+    return bOk;
 }
 
 wxString DebugLog::AddLine(const char *format, ...)

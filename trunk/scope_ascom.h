@@ -70,6 +70,7 @@ class ScopeASCOM : public Scope, private ASCOM_COMMON
     wxString m_choice; // name of chosen scope
 
     // private functions
+    bool Create(DispatchObj& obj);
     virtual bool IsGuiding(DispatchObj *pScopeDriver);
     virtual bool IsSlewing(DispatchObj *pScopeDriver);
     virtual double GetDeclination(void);
@@ -83,7 +84,11 @@ public:
     virtual bool Connect(void);
     virtual bool Disconnect(void);
 
+    virtual bool HasSetupDialog(void) const;
+    virtual void SetupDialog(void);
+
     virtual bool HasNonGuiMove(void);
+
     virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
     virtual bool IsGuiding(void);
 

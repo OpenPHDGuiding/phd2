@@ -181,9 +181,11 @@ public:
 
     virtual bool HasNonGuiMove(void);
     virtual bool SynchronousOnly(void);
+    virtual bool HasSetupDialog(void) const;
+    virtual void SetupDialog(void);
 
     virtual const wxString& Name(void) const;
-    virtual bool IsStepGuider() const;
+    virtual bool IsStepGuider(void) const;
     virtual const char *DirectionStr(GUIDE_DIRECTION d);
     virtual const char *DirectionChar(GUIDE_DIRECTION d);
 

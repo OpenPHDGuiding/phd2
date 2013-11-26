@@ -70,7 +70,9 @@ CalrestoreDialog::CalrestoreDialog() :
     wxString prefix = "/" + pMount->GetMountClassName() + "/calibration/";
     dXRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0) *  1000.0;       // pixels per millisecond
     dYRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0) * 1000.0;
-    sCamAngle = wxString::Format("%0.1f", pConfig->Profile.GetDouble(prefix + "xAngle", 0.0) * 180.0/M_PI);
+    double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0) * 180.0/M_PI;
+    if (xAngle < 0.0) xAngle += 360.0;
+    sCamAngle = wxString::Format("%0.1f deg", xAngle);
     dDeclination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
     if (dDeclination == 0)
     {
@@ -94,8 +96,8 @@ CalrestoreDialog::CalrestoreDialog() :
     sHTML_Final += TableRow (_("Timestamp:"), sTimestamp, _("Camera angle:"), sCamAngle) +
                    TableRow (_("RA rate:"), wxString::Format("%0.3f arc-sec/sec",dXRate * dImageScale), _("Dec rate:"), wxString::Format("%0.3f arc-sec/sec",dYRate * dImageScale)) +
                    TableRow ("", wxString::Format("%0.3f px/sec",dXRate), "", wxString::Format("%0.3f px/sec",dYRate)) +
-                   TableRow (_("Guider focal length:"), wxString::Format("%d", iFocalLength), _("Guider pixel size:"), sPixelSize) +
-                   TableRow (_("Side of pier:"), sPierSide, _("Declination ") + (bDecEstimated ? _("(estimated):") : _("(from mount)")), wxString::Format("%0.0f", dDeclination));
+                   TableRow (_("Guider focal length:"), wxString::Format("%d mm", iFocalLength), _("Guider pixel size:"), sPixelSize) +
+                   TableRow (_("Side of pier:"), sPierSide, _("Declination ") + (bDecEstimated ? _("(estimated):") : _("(from mount)")), wxString::Format("%0.0f deg", dDeclination));
     sHTML_Final += sHTML_Wrapup;
     wxMemoryFSHandler::AddFile ("cal_data.html", sHTML_Final);
     // Pull the in-memory file into an HTML viewer control

@@ -562,7 +562,7 @@ Camera_SimClass::Camera_SimClass()
     HasShutter = true;
     HasGainControl = true;
     HasSubframes = true;
-    HasPropertyDialog = true;
+    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
 }
 
 bool Camera_SimClass::Connect()

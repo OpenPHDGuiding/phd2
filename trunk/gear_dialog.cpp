@@ -48,14 +48,17 @@ BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_BUTTON(GEAR_BUTTON_DISCONNECT_ALL, GearDialog::OnButtonDisconnectAll)
 
     EVT_CHOICE(GEAR_CHOICE_CAMERA, GearDialog::OnChoiceCamera)
+    EVT_BUTTON(GEAR_BUTTON_SETUP_CAMERA, GearDialog::OnButtonSetupCamera)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_CONNECT_CAMERA, GearDialog::OnButtonConnectCamera)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_DISCONNECT_CAMERA, GearDialog::OnButtonDisconnectCamera)
 
     EVT_CHOICE(GEAR_CHOICE_SCOPE, GearDialog::OnChoiceScope)
+    EVT_BUTTON(GEAR_BUTTON_SETUP_SCOPE, GearDialog::OnButtonSetupScope)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_CONNECT_SCOPE, GearDialog::OnButtonConnectScope)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_DISCONNECT_SCOPE, GearDialog::OnButtonDisconnectScope)
 
     EVT_CHOICE(GEAR_CHOICE_STEPGUIDER, GearDialog::OnChoiceStepGuider)
+    EVT_BUTTON(GEAR_BUTTON_SETUP_STEPGUIDER, GearDialog::OnButtonSetupStepGuider)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_CONNECT_STEPGUIDER, GearDialog::OnButtonConnectStepGuider)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_DISCONNECT_STEPGUIDER, GearDialog::OnButtonDisconnectStepGuider)
 
@@ -65,6 +68,7 @@ END_EVENT_TABLE()
 namespace xpm {
 #include "icons/connected.xpm"
 #include "icons/disconnected.xpm"
+#include "icons/setup.xpm"
 }
 
 /*
@@ -188,7 +192,7 @@ void GearDialog::Initialize(void)
     pTopLevelSizer->Add(pText, sizerTextFlags.Align(wxALIGN_CENTER));
 
     // The Gear grid in the middle of the screen
-    wxFlexGridSizer *pGearSizer = new wxFlexGridSizer(3);
+    wxFlexGridSizer *pGearSizer = new wxFlexGridSizer(4);
     pTopLevelSizer->Add(pGearSizer, sizerFlags);
 
     // Camera
@@ -196,6 +200,9 @@ void GearDialog::Initialize(void)
     m_pCameras = new wxChoice(this, GEAR_CHOICE_CAMERA, wxDefaultPosition, wxDefaultSize,
             GuideCamera::List(), 0, wxDefaultValidator, _("Camera"));
     pGearSizer->Add(m_pCameras, sizerButtonFlags);
+    m_pSetupCameraButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_CAMERA, wxBitmap(xpm::setup));
+    m_pSetupCameraButton->SetToolTip(_("Camera Setup"));
+    pGearSizer->Add(m_pSetupCameraButton, sizerButtonFlags);
     m_pConnectCameraButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_CAMERA, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     m_pConnectCameraButton->SetBitmap(wxBitmap(xpm::disconnected));
     m_pConnectCameraButton->SetBitmapPressed(wxBitmap(xpm::connected));
@@ -206,6 +213,9 @@ void GearDialog::Initialize(void)
     m_pScopes = new wxChoice(this, GEAR_CHOICE_SCOPE, wxDefaultPosition, wxDefaultSize,
             Scope::List(), 0, wxDefaultValidator, _("Mount"));
     pGearSizer->Add(m_pScopes, sizerButtonFlags);
+    m_pSetupScopeButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_SCOPE, wxBitmap(xpm::setup));
+    m_pSetupScopeButton->SetToolTip(_("Mount Setup"));
+    pGearSizer->Add(m_pSetupScopeButton, sizerButtonFlags);
     m_pConnectScopeButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_SCOPE, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     m_pConnectScopeButton->SetBitmap(wxBitmap(xpm::disconnected));
     m_pConnectScopeButton->SetBitmapPressed(wxBitmap(xpm::connected));
@@ -216,6 +226,9 @@ void GearDialog::Initialize(void)
     m_pStepGuiders = new wxChoice(this, GEAR_CHOICE_STEPGUIDER, wxDefaultPosition, wxDefaultSize,
             StepGuider::List(), 0, wxDefaultValidator, _("AO"));
     pGearSizer->Add(m_pStepGuiders, sizerButtonFlags);
+    m_pSetupStepGuiderButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_STEPGUIDER, wxBitmap(xpm::setup));
+    m_pSetupStepGuiderButton->SetToolTip(_("AO Setup"));
+    pGearSizer->Add(m_pSetupStepGuiderButton, sizerButtonFlags);
     m_pConnectStepGuiderButton = new wxToggleButton( this, GEAR_BUTTON_CONNECT_STEPGUIDER, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     m_pConnectStepGuiderButton->SetBitmap(wxBitmap(xpm::disconnected));
     m_pConnectStepGuiderButton->SetBitmapPressed(wxBitmap(xpm::connected));
@@ -307,7 +320,7 @@ void GearDialog::EndModal(int retCode)
 {
     assert(pCamera == m_pCamera);
 
-    if (pCamera && pCamera->HasPropertyDialog && pCamera->Connected)
+    if (pCamera && pCamera->Connected && pCamera->PropertyDialogType == PROPDLG_WHEN_CONNECTED)
     {
         pFrame->Setup_Button->Enable(true);
     }
@@ -348,6 +361,7 @@ void GearDialog::UpdateCameraButtonState(void)
     // Now set up the buttons to match our current state
     if (!m_pCamera)
     {
+        m_pSetupCameraButton->Enable(false);
         m_pConnectCameraButton->Enable(false);
         m_pConnectCameraButton->SetLabel(_("Connect"));
         m_pConnectCameraButton->SetValue(false);
@@ -357,6 +371,9 @@ void GearDialog::UpdateCameraButtonState(void)
     }
     else
     {
+        m_pSetupCameraButton->Enable((m_pCamera->PropertyDialogType == PROPDLG_WHEN_CONNECTED && m_pCamera->Connected) ||
+            (m_pCamera->PropertyDialogType == PROPDLG_WHEN_DISCONNECTED && !m_pCamera->Connected));
+
         m_pConnectCameraButton->Enable(true);
 
         if (m_pCamera->Connected)
@@ -383,6 +400,7 @@ void GearDialog::UpdateScopeButtonState(void)
     // Now set up the buttons to match our current state
     if (!m_pScope)
     {
+        m_pSetupScopeButton->Enable(false);
         m_pConnectScopeButton->Enable(false);
         m_pConnectScopeButton->SetLabel(_("Connect"));
         m_pConnectScopeButton->SetValue(false);
@@ -392,6 +410,7 @@ void GearDialog::UpdateScopeButtonState(void)
     }
     else
     {
+        m_pSetupScopeButton->Enable(m_pScope->HasSetupDialog());
         m_pConnectScopeButton->Enable(true);
 
         if (m_pScope->IsConnected())
@@ -431,6 +450,7 @@ void GearDialog::UpdateStepGuiderButtonState(void)
     // Now set up the buttons to match our current state
     if (!m_pStepGuider)
     {
+        m_pSetupStepGuiderButton->Enable(false);
         m_pConnectStepGuiderButton->Enable(false);
         m_pConnectStepGuiderButton->SetLabel(_("Connect"));
         m_pConnectStepGuiderButton->SetValue(false);
@@ -440,6 +460,7 @@ void GearDialog::UpdateStepGuiderButtonState(void)
     }
     else
     {
+        m_pSetupStepGuiderButton->Enable(false);
         m_pConnectStepGuiderButton->Enable(true);
 
         if (m_pStepGuider->IsConnected())
@@ -586,6 +607,11 @@ AutoLoadDarks()
     }
 }
 
+void GearDialog::OnButtonSetupCamera(wxCommandEvent& event)
+{
+    m_pCamera->ShowPropertyDialog();
+}
+
 void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
 {
     try
@@ -708,6 +734,11 @@ void GearDialog::OnChoiceScope(wxCommandEvent& event)
     UpdateButtonState();
 }
 
+void GearDialog::OnButtonSetupScope(wxCommandEvent& event)
+{
+    m_pScope->SetupDialog();
+}
+
 void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
 {
     try
@@ -802,6 +833,10 @@ void GearDialog::OnChoiceStepGuider(wxCommandEvent& event)
     }
 
     UpdateButtonState();
+}
+
+void GearDialog::OnButtonSetupStepGuider(wxCommandEvent& event)
+{
 }
 
 void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)

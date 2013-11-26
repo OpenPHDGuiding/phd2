@@ -795,7 +795,8 @@ void MyFrame::OnDonateMenu(wxCommandEvent &evt) {
 
 void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event))
 {
-    if (!pCamera || !pCamera->Connected || !pCamera->HasPropertyDialog) return;  // One more safety check
+    if (!pCamera || !pCamera->Connected || pCamera->PropertyDialogType != PROPDLG_WHEN_CONNECTED)
+        return;  // One more safety check
 
     pCamera->ShowPropertyDialog();
 }

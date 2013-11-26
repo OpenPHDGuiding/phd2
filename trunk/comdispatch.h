@@ -56,6 +56,7 @@ public:
     DispatchObj(DispatchClass *cls);
     DispatchObj(IDispatch *idisp, DispatchClass *cls);
     ~DispatchObj();
+    void Attach(IDispatch *idisp, DispatchClass *cls);
     bool Create(OLECHAR *progid);
     bool GetDispatchId(DISPID *ret, OLECHAR *name);
     bool GetProp(VARIANT *res, DISPID dispid);
@@ -64,6 +65,7 @@ public:
     bool PutProp(OLECHAR *name, OLECHAR *val);
     bool PutProp(DISPID dispid, bool val);
     bool PutProp(OLECHAR *name, bool val);
+    bool InvokeMethod(VARIANT *res, OLECHAR *name);
     bool InvokeMethod(VARIANT *res, OLECHAR *name, OLECHAR *arg);
     bool InvokeMethod(VARIANT *res, DISPID dispid, double arg1, double arg2);
     bool InvokeMethod(VARIANT *res, DISPID dispid);

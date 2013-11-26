@@ -187,9 +187,14 @@ static bool ChooseASCOMScope(BSTR *res)
     return true;
 }
 
+static bool IsChooser(const wxString& choice)
+{
+    return choice.Find(_T("Chooser")) != wxNOT_FOUND;
+}
+
 static bool GetDriverProgId(BSTR *progid, const wxString& choice)
 {
-    if (choice.Find(_T("Chooser")) != wxNOT_FOUND)
+    if (IsChooser(choice))
     {
         if (!ChooseASCOMScope(progid))
             return false;
@@ -200,6 +205,81 @@ static bool GetDriverProgId(BSTR *progid, const wxString& choice)
         *progid = wxBasicString(progidstr).Get();
     }
     return true;
+}
+
+bool ScopeASCOM::Create(DispatchObj& obj)
+{
+    try
+    {
+        if (m_dwCookie)
+        {
+            IDispatch *idisp;
+            if (FAILED(m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (LPVOID *) &idisp)))
+            {
+                throw ERROR_INFO("ScopeASCOM: m_dwCookie is non-zero but GetInterfaceFromGlobal failed!");
+            }
+            obj.Attach(idisp, NULL);
+            return true;
+        }
+
+        BSTR bstr_progid;
+        if (!GetDriverProgId(&bstr_progid, m_choice))
+        {
+            throw ERROR_INFO("ASCOM Scope: Chooser returned an error");
+        }
+
+        if (!obj.Create(bstr_progid))
+        {
+            throw ERROR_INFO("Could not establish instance of " + wxString(bstr_progid));
+        }
+
+        Debug.AddLine(wxString::Format("pScopeDriver = 0x%p", obj.IDisp()));
+
+        // store the driver interface in the global table for access by other threads
+        if (m_pIGlobalInterfaceTable == NULL)
+        {
+            // first find the global table
+            if (FAILED(::CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_IGlobalInterfaceTable,
+                    (void **)&m_pIGlobalInterfaceTable)))
+            {
+                throw ERROR_INFO("ASCOM Scope: Cannot CoCreateInstance of Global Interface Table");
+            }
+        }
+        assert(m_pIGlobalInterfaceTable);
+
+        // add the Interface to the global table. Any errors past this point need to remove the interface from the global table.
+        if (FAILED(m_pIGlobalInterfaceTable->RegisterInterfaceInGlobal(obj.IDisp(), IID_IDispatch, &m_dwCookie)))
+        {
+            throw ERROR_INFO("ASCOM Scope: Cannot register with Global Interface Table");
+        }
+        assert(m_dwCookie);
+    }
+    catch (const wxString& msg)
+    {
+        Debug.Write(msg + "\n");
+        return false;
+    }
+
+    return true;
+}
+
+bool ScopeASCOM::HasSetupDialog(void) const
+{
+    return !IsChooser(m_choice);
+}
+
+void ScopeASCOM::SetupDialog(void)
+{
+    DispatchObj scope;
+    if (Create(scope))
+    {
+        VARIANT res;
+        if (!scope.InvokeMethod(&res, L"SetupDialog"))
+        {
+            wxMessageBox(wxString(scope.Excep().bstrSource) + ":\n" +
+                scope.Excep().bstrDescription, _("Error"), wxOK | wxICON_ERROR);
+        }
+    }
 }
 
 bool ScopeASCOM::Connect(void)
@@ -216,20 +296,13 @@ bool ScopeASCOM::Connect(void)
             throw ERROR_INFO("ASCOM Scope: Connected - Already Connected");
         }
 
-        BSTR bstr_progid;
-        if (!GetDriverProgId(&bstr_progid, m_choice))
-        {
-            throw ERROR_INFO("ASCOM Scope: Chooser returned an error");
-        }
-
         DispatchObj pScopeDriver;
 
-        if (!pScopeDriver.Create(bstr_progid))
+        if (!Create(pScopeDriver))
         {
-            wxMessageBox(_T("Could not establish instance of ") + wxString(bstr_progid), _("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(_T("Could not establish instance of ") + m_choice, _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not establish ASCOM Scope instance");
         }
-        Debug.AddLine(wxString::Format("pScopeDriver = 0x%p", pScopeDriver.IDisp()));
 
         // --- get the dispatch IDs we need ...
 
@@ -355,27 +428,6 @@ bool ScopeASCOM::Connect(void)
             }
         }
 
-        // store the driver interface in the global table for access by other threads
-        if (m_pIGlobalInterfaceTable == NULL)
-        {
-            // first find the global table
-            if (FAILED(::CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_IGlobalInterfaceTable,
-                    (void **)&m_pIGlobalInterfaceTable)))
-            {
-                throw ERROR_INFO("ASCOM Scope: Cannot CoCreateInstance of Global Interface Table");
-            }
-        }
-
-        assert(m_pIGlobalInterfaceTable);
-
-        // add the Interface to the global table. Any errors past this point need to remove the interface from the global table.
-        if (FAILED(m_pIGlobalInterfaceTable->RegisterInterfaceInGlobal(pScopeDriver.IDisp(), IID_IDispatch, &m_dwCookie)))
-        {
-            throw ERROR_INFO("ASCOM Scope: Cannot register with Global Interface Table");
-        }
-
-        assert(m_dwCookie);
-
         pFrame->SetStatusText(Name()+_(" connected"));
         Scope::Connect();
 
@@ -412,12 +464,6 @@ bool ScopeASCOM::Disconnect(void)
             wxMessageBox(_T("ASCOM driver problem during disconnect"), _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false");
         }
-
-        // cleanup the global interface table
-        m_pIGlobalInterfaceTable->RevokeInterfaceFromGlobal(m_dwCookie);
-        m_dwCookie = 0;
-        m_pIGlobalInterfaceTable->Release();
-        m_pIGlobalInterfaceTable = NULL;
 
         Debug.AddLine(wxString::Format("Disconnected Successfully"));
     }
