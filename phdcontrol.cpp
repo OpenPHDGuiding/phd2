@@ -184,7 +184,7 @@ void PhdController::UpdateControllerState(void)
 
             if (!all_gear_connected())
             {
-                do_fail(_("all equipment must be connected first"));
+                do_fail(_T("all equipment must be connected first"));
             }
             else if (pFrame->pGuider->IsCalibratingOrGuiding())
             {
@@ -203,7 +203,7 @@ void PhdController::UpdateControllerState(void)
                 Debug.AddLine("PhdController: start capturing");
                 if (!start_capturing())
                 {
-                    do_fail(_("unable to start capturing"));
+                    do_fail(_T("unable to start capturing"));
                     break;
                 }
                 SETSTATE(STATE_SELECT_STAR);
@@ -224,7 +224,7 @@ void PhdController::UpdateControllerState(void)
             bool error = pFrame->pGuider->AutoSelect();
             if (error)
             {
-                do_fail(_("failed to find a suitable guide star"));
+                do_fail(_T("failed to find a suitable guide star"));
             }
             else
             {
@@ -267,7 +267,7 @@ void PhdController::UpdateControllerState(void)
                 if (!start_guiding())
                 {
                     pFrame->pGuider->SetLockPosIsSticky(ctrl.saveSticky);
-                    do_fail(_("could not start calibration"));
+                    do_fail(_T("could not start calibration"));
                     break;
                 }
 
@@ -296,7 +296,7 @@ void PhdController::UpdateControllerState(void)
         case STATE_GUIDE:
             if (!start_guiding())
             {
-                do_fail(_("could not start guiding"));
+                do_fail(_T("could not start guiding"));
                 break;
             }
             SETSTATE(STATE_SETTLE_BEGIN);
@@ -333,7 +333,7 @@ void PhdController::UpdateControllerState(void)
             }
             if ((ctrl.settleTimeout->Time() / 1000) >= ctrl.settle.timeoutSec)
             {
-                do_fail(_("timed-out waiting for guider to settle"));
+                do_fail(_T("timed-out waiting for guider to settle"));
                 break;
             }
             EvtServer.NotifySettling(currentError, (double) timeInRange / 1000., ctrl.settle.settleTimeSec);
