@@ -30,11 +30,11 @@ Set up a build environment from scratch on MS-Windows to compile and run PHD2.
 
    so make sure you install it there.
 
-3) Download wxWidgets 2.9.4 from http://sourceforge.net/projects/wxwindows/files/
+3) Download wxWidgets 3.0.0 from http://sourceforge.net/projects/wxwindows/files/
    In order to get a static copy of wx working, you need to build it yourself.
    Install it in <install path>, and cd into the build directory:
 
-   <install path>\wxWidgets-2.9.4\build\msw
+   <install path>\wxWidgets-3.0.0\build\msw
 
    The following step might not be needed, at least not on WinXP.
    Load the VC variables so nmake and the command line compilers are in the path:
