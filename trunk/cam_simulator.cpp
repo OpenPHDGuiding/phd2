@@ -907,7 +907,7 @@ static wxTextCtrl *AddCustomPEField(wxWindow *parent, wxFlexGridSizer *pTable, c
     int width;
     int height;
 
-    parent->GetTextExtent(_("999.9"), &width, &height);
+    parent->GetTextExtent(_T("999.9"), &width, &height);
     wxTextCtrl *pCtrl = new wxTextCtrl(parent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width+30, -1));
     pCtrl->SetValue(wxString::Format("%.1f", val));
     pCtrl->SetToolTip(tip);
