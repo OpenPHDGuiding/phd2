@@ -152,8 +152,8 @@ CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& 
     // Add the tables to the panel, centered
     m_pInputGroupBox->Add (m_pInputTableSizer, 0, wxALL, 10);
     m_pOutputGroupBox->Add (m_pOutputTableSizer, 0, wxALL, 10);
-    m_pVSizer->Add (m_pInputGroupBox, wxSizerFlags().Center().Border(10));
-    m_pVSizer->Add (m_pOutputGroupBox, wxSizerFlags().Center().Border(10));
+    m_pVSizer->Add (m_pInputGroupBox, wxSizerFlags().Center().Border(wxALL, 10));
+    m_pVSizer->Add (m_pOutputGroupBox, wxSizerFlags().Center().Border(wxRIGHT|wxLEFT|wxBOTTOM, 10));
 
     // Now deal with the buttons
     wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );

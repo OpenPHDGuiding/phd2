@@ -34,20 +34,7 @@
  */
 #include "phd.h"
 #include "calrestore_dialog.h"
-#include <wx/fs_mem.h>
-#include <wx/html/htmlwin.h>
-
-// Utility function to create a row in the table - each row has four elements: <label> <value> <label> <value>
-static wxString TableRow (wxString sLabel1, wxString sVal1, wxString sLabel2, wxString sVal2)
-{
-    wxString sRslt = "<tr>"
-          "<td style=\"width: 136px;\">" + sLabel1 + "</td>"
-          "<td style=\"width: 173px;\">" + sVal1 + "</td>"
-          "<td style=\"width: 168px;\">" + sLabel2 + "</td>"
-          "<td style=\"width: 134px;\">" + sVal2 + "</td>"
-        "</tr>";
-    return (sRslt);
-}
+#include <wx/grid.h>
 
 CalrestoreDialog::CalrestoreDialog() :
     wxDialog(pFrame, wxID_ANY, _("Restore calibration data"), wxDefaultPosition, wxSize(800, 400), wxCAPTION | wxCLOSE_BOX)
@@ -86,28 +73,40 @@ CalrestoreDialog::CalrestoreDialog() :
 
     // Create the vertical sizer we're going to need
     wxBoxSizer *pVSizer = new wxBoxSizer(wxVERTICAL);
-    // Create an in-memory file that can be displayed as a table of values
-    // Use TableEntry to populate each row - avoid inline strings in order to support localization
-    wxFileSystem::AddHandler(new wxMemoryFSHandler);
-    wxString sHTML_Leadin = "<html>" "<body style=\"width: 658px;\">" "<table style=\"text-align: left; width: 645px;\" border=\"1\" cellpadding=\"2\" cellspacing=\"2\">" "<tbody>";
-    wxString sHTML_Wrapup =  "</tbody>" "</table>" "<br>" "</body>" "</html>";
+    wxGrid *pGrid = new wxGrid(this, wxID_ANY);
+    pGrid->CreateGrid(4, 4);
+    pGrid->SetRowLabelSize(1);
+    pGrid->SetColLabelSize(1);
+    pGrid->EnableEditing(false);
 
-    wxString sHTML_Final = sHTML_Leadin;
-    sHTML_Final += TableRow (_("Timestamp:"), sTimestamp, _("Camera angle:"), sCamAngle) +
-                   TableRow (_("RA rate:"), wxString::Format("%0.3f arc-sec/sec",dXRate * dImageScale), _("Dec rate:"), wxString::Format("%0.3f arc-sec/sec",dYRate * dImageScale)) +
-                   TableRow ("", wxString::Format("%0.3f px/sec",dXRate), "", wxString::Format("%0.3f px/sec",dYRate)) +
-                   TableRow (_("Guider focal length:"), wxString::Format("%d mm", iFocalLength), _("Guider pixel size:"), sPixelSize) +
-                   TableRow (_("Side of pier:"), sPierSide, _("Declination ") + (bDecEstimated ? _("(estimated):") : _("(from mount)")), wxString::Format("%0.0f deg", dDeclination));
-    sHTML_Final += sHTML_Wrapup;
-    wxMemoryFSHandler::AddFile ("cal_data.html", sHTML_Final);
-    // Pull the in-memory file into an HTML viewer control
-    wxHtmlWindow *pHtml;
-    pHtml = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxSize(658, 130), wxHW_SCROLLBAR_AUTO);
-    pHtml->SetBorders(0);
-    pHtml->LoadPage("memory:cal_data.html");
-    pHtml->SetSize(pHtml->GetInternalRepresentation()->GetWidth(), pHtml->GetInternalRepresentation()->GetHeight());
+    int col = 0;
+    int row = 0;
+    pGrid->SetCellValue( _("Timestamp:"), row, col++);
+    pGrid->SetCellValue(sTimestamp, row, col++);
+    pGrid->SetCellValue(_("Camera angle:"), row, col++);
+    pGrid->SetCellValue(sCamAngle, row, col++);
+    row++;
+    col = 0;
+    pGrid->SetCellValue(_("RA rate:"), row, col++);
+    pGrid->SetCellValue( wxString::Format("%0.3f ''/sec\n%0.3f px/sec",dXRate * dImageScale,dXRate), row, col++);
+    pGrid->SetCellValue(_("Dec rate:"), row, col++);
+    pGrid->SetCellValue(wxString::Format("%0.3f ''/sec\n%0.3f px/sec",dYRate * dImageScale,dYRate), row, col++);
+    row++;
+    col = 0;
+    pGrid->SetCellValue(_("Guider focal length:"), row, col++);
+    pGrid->SetCellValue(wxString::Format("%d mm", iFocalLength), row, col++);
+    pGrid->SetCellValue(_("Guider pixel size:"), row, col++);
+    pGrid->SetCellValue(sPixelSize, row, col++);
+    row++;
+    col = 0;
+    pGrid->SetCellValue(_("Side of pier:"), row, col++);
+    pGrid->SetCellValue(sPierSide, row, col++);
+    pGrid->SetCellValue(_("Declination ") + (bDecEstimated ? _("(estimated):") : _("(from mount)")), row, col++);
+    pGrid->SetCellValue(wxString::Format("%0.0f deg", dDeclination), row, col++);
+    pGrid->AutoSize();
+    pGrid->ClearSelection();
 
-    pVSizer->Add(pHtml, wxSizerFlags(0).Border(wxALL, 20));
+    pVSizer->Add(pGrid, wxSizerFlags(0).Border(wxALL, 20));
 
     // Now deal with the buttons
     wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
@@ -115,10 +114,10 @@ CalrestoreDialog::CalrestoreDialog() :
     wxButton *pRestore = new wxButton( this, wxID_OK, _("Restore") );
     pButtonSizer->Add(
         pRestore,
-        wxSizerFlags(0).Align(0).Border(wxALL, 20));
+        wxSizerFlags(0).Align(0).Border(wxRIGHT | wxLEFT | wxBOTTOM, 10));
     pButtonSizer->Add(
         CreateButtonSizer(wxCANCEL),
-        wxSizerFlags(0).Align(0).Border(wxALL, 20));
+        wxSizerFlags(0).Align(0).Border(wxRIGHT | wxLEFT | wxBOTTOM, 10));
 
      //position the buttons centered with no border
      pVSizer->Add(
