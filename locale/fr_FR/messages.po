@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-26 23:54+0100\n"
-"PO-Revision-Date: 2013-11-26 23:56+0100\n"
+"PO-Revision-Date: 2013-11-27 22:48+0100\n"
 "Last-Translator: Sylvain Girard <sylvain.girard@zesly.net>\n"
 "Language-Team: Français\n"
 "MIME-Version: 1.0\n"
@@ -164,7 +164,7 @@ msgstr "Calculateur de Pas de Calibration"
 
 #: calstep_dialog.cpp:115
 msgid "Input Parameters"
-msgstr "Paramètres d\"entrée"
+msgstr "Paramètres d'entrée"
 
 #: calstep_dialog.cpp:123
 msgid "Focal length, mm"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-26 23:54+0100\n"
+"POT-Creation-Date: 2013-11-27 22:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,47 +85,47 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: calrestore_dialog.cpp:96
+#: calrestore_dialog.cpp:97
 msgid "Timestamp:"
 msgstr ""
 
-#: calrestore_dialog.cpp:96
+#: calrestore_dialog.cpp:99
 msgid "Camera angle:"
 msgstr ""
 
-#: calrestore_dialog.cpp:97
+#: calrestore_dialog.cpp:103
 msgid "RA rate:"
 msgstr ""
 
-#: calrestore_dialog.cpp:97
+#: calrestore_dialog.cpp:105
 msgid "Dec rate:"
 msgstr ""
 
-#: calrestore_dialog.cpp:99
+#: calrestore_dialog.cpp:109
 msgid "Guider focal length:"
 msgstr ""
 
-#: calrestore_dialog.cpp:99
+#: calrestore_dialog.cpp:111
 msgid "Guider pixel size:"
 msgstr ""
 
-#: calrestore_dialog.cpp:100
+#: calrestore_dialog.cpp:115
 msgid "Side of pier:"
 msgstr ""
 
-#: calrestore_dialog.cpp:100
+#: calrestore_dialog.cpp:117
 msgid "Declination "
 msgstr ""
 
-#: calrestore_dialog.cpp:100
+#: calrestore_dialog.cpp:117
 msgid "(estimated):"
 msgstr ""
 
-#: calrestore_dialog.cpp:100
+#: calrestore_dialog.cpp:117
 msgid "(from mount)"
 msgstr ""
 
-#: calrestore_dialog.cpp:115
+#: calrestore_dialog.cpp:127
 msgid "Restore"
 msgstr ""
 
