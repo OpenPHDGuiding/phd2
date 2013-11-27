@@ -1081,9 +1081,9 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     pSessionGroup->Add(pSessionTable);
     pSessionGroup->Add(pCloudsCbx);
 
-    pVSizer->Add(pCamGroup, wxSizerFlags().Border(10).Expand());
-    pVSizer->Add(pMountGroup, wxSizerFlags().Border(wxTOP, 20));
-    pVSizer->Add(pSessionGroup, wxSizerFlags().Border(wxTOP, 20).Expand());
+    pVSizer->Add(pCamGroup, wxSizerFlags().Border(wxALL, 10).Expand());
+    pVSizer->Add(pMountGroup, wxSizerFlags().Border(wxRIGHT | wxLEFT, 10));
+    pVSizer->Add(pSessionGroup, wxSizerFlags().Border(wxRIGHT | wxLEFT, 10).Expand());
 
     // Now deal with the buttons
     wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
