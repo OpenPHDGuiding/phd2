@@ -1,7 +1,7 @@
 all: phd2
 
 WX_CPPFLAGS ?= $(shell wx-config --cxxflags)
-WX_LDLIBS   ?= $(shell wx-config --libs core,base,net,html,aui)
+WX_LDLIBS   ?= $(shell wx-config --libs core,base,net,html,aui,adv)
 FITS_LDLIBS ?= $(shell pkg-config cfitsio --libs)
 FITS_CFLAGS ?= $(shell pkg-config cfitsio --cflags)
 CXXFLAGS ?= -O2
