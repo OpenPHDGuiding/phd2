@@ -404,15 +404,10 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
 }
 
 void Guider::UpdateImageDisplay(usImage *pImage) {
-    int blevel, wlevel;
-
     if (pImage==NULL)
     {
         pImage = m_pCurrentImage;
     }
-
-    blevel = pImage->Min;
-    wlevel = pImage->FiltMax;
 
     Debug.AddLine("UpdateImageDisplay begins");
     Debug.AddLine("Size=(%d,%d)", pImage->Size.x, pImage->Size.y);
