@@ -228,8 +228,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     // Setup some keyboard shortcuts
     SetupKeyboardShortcuts();
 
-    wxSize toolBarSize = MainToolbar->GetClientSize();
-
     m_mgr.AddPane(MainToolbar, wxAuiPaneInfo().
         Name(_T("MainToolBar")).Caption(_T("Main tool bar")).
         ToolbarPane().Bottom());
