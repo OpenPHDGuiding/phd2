@@ -168,7 +168,7 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
         {
             localmean + ((double) max + localmin - localmean) / 10.0,  // Note: max already has localmin pulled from it
             localmean,
-            localmin
+            (double) localmin
         };
 
         for (unsigned int i = 0; i < WXSIZEOF(thresholds) && mass < 10.0; i++)
