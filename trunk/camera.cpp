@@ -654,9 +654,11 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
 
     //if (m_pCamera->PixelSize == 0)
     {
-        int width = StringWidth(_T("99.99")) + 20;
+        int width = StringWidth(_T("99.999")) + 20;
+
         m_pPixelSize = new wxSpinCtrlDouble (pParent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-            wxSize(width, -1), wxSP_ARROW_KEYS, 3.0, 25.0, m_pCamera->PixelSize, 0.1);
+            wxSize(width, -1), wxSP_ARROW_KEYS, 0.1, 99.9, m_pCamera->PixelSize, 0.1);
+        m_pPixelSize->SetDigits(2);
         DoAdd(_("Pixel size (microns)"), m_pPixelSize,
                _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
     }
