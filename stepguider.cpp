@@ -923,7 +923,7 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 
                 if (fabs(yBumpSize) > maxBumpPixels)
                 {
-                    Debug.AddLine("clamp y bump to %.3f (%.3f * %.3f * .3f)", maxBumpPixels,
+                    Debug.AddLine("clamp y bump to %.3f (%.3f * %.3f * %.3f)", maxBumpPixels,
                         m_bumpMaxStepsPerCycle, m_calibrationYRate, m_bumpStepWeight);
 
                     yBumpSize = maxBumpPixels;
