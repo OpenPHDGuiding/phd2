@@ -73,11 +73,18 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             return;
         }
 
-        CalrestoreDialog dlg;
-        dlg.Show();
-        if (dlg.ShowModal() == wxID_OK)
+        if (pMount)
         {
-            pFrame->LoadCalibration();
+            CalrestoreDialog dlg;
+            dlg.Show();
+            if (dlg.ShowModal() == wxID_OK)
+            {
+                pFrame->LoadCalibration();
+            }
+        }
+        else
+        {
+            wxMessageBox(_("Please connect a mount first."));
         }
     }
     else if (evt.GetId() == EEGG_MANUALCAL)

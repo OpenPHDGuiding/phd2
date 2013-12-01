@@ -44,9 +44,9 @@ CalrestoreDialog::CalrestoreDialog() :
     wxString sYAngle;
     wxString sTimestamp;
     wxString sPierSide;
-    double dXRate;
-    double dYRate;
-    double dDeclination;
+    double dXRate = 0.0;
+    double dYRate = 0.0;
+    double dDeclination = 0.0;
     bool bDecEstimated = false;
     wxString sPixelSize = wxString::Format("%.1f u", pConfig->Profile.GetDouble ("/camera/pixelsize", 1.0));
     double dImageScale = pFrame->GetCameraPixelScale();
@@ -54,22 +54,26 @@ CalrestoreDialog::CalrestoreDialog() :
 
     // Get the other values we need from the config file entry
     sTimestamp = pConfig->Profile.GetString("/scope/calibration/timestamp", wxEmptyString);
-    wxString prefix = "/" + pMount->GetMountClassName() + "/calibration/";
-    dXRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0) *  1000.0;       // pixels per millisecond
-    dYRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0) * 1000.0;
-    double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0) * 180.0/M_PI;
-    if (xAngle < 0.0) xAngle += 360.0;
-    sCamAngle = wxString::Format("%0.1f deg", xAngle);
-    dDeclination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
-    if (dDeclination == 0)
-    {
-        dDeclination = floor(acos(dXRate/dYRate) * 180.0/M_PI);        // cos(dec) = Dec_Rate/RA_Rate
-        bDecEstimated = true;
-    }
 
-    int iSide = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
-    sPierSide = iSide == PIER_SIDE_EAST ? _("East") :
-        iSide == PIER_SIDE_WEST ? _("West") : _("Unknown");
+    if (pMount)
+    {
+        wxString prefix = "/" + pMount->GetMountClassName() + "/calibration/";
+        dXRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0) *  1000.0;       // pixels per millisecond
+        dYRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0) * 1000.0;
+        double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0) * 180.0/M_PI;
+        if (xAngle < 0.0) xAngle += 360.0;
+        sCamAngle = wxString::Format("%0.1f deg", xAngle);
+        dDeclination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
+        if (dDeclination == 0.0)
+        {
+            dDeclination = floor(acos(dXRate/dYRate) * 180.0/M_PI);        // cos(dec) = Dec_Rate/RA_Rate
+            bDecEstimated = true;
+        }
+
+        int iSide = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
+        sPierSide = iSide == PIER_SIDE_EAST ? _("East") :
+            iSide == PIER_SIDE_WEST ? _("West") : _("Unknown");
+    }
 
     // Create the vertical sizer we're going to need
     wxBoxSizer *pVSizer = new wxBoxSizer(wxVERTICAL);
