@@ -137,10 +137,6 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
 
     //qglogfile->AddLine(wxString::Format("Capturing dur %d",duration)); //qglogfile->Write();
 //  ThreadedExposure(10, buffer);
-#ifdef PHD1_LOGGING // deprecated
-    if (Log_Data && QGDEBUG) {
-        LogFile->AddLine("QGDEBUG: Programming exposure"); LogFile->Write(); }
-#endif
     ProgramCamera(0,0,1280,1024, (GuideCameraGain * 63 / 100) );
 
 /*  ThreadedExposure(10, NULL);
@@ -155,20 +151,12 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
         }
     }
 //  ThreadedExposure(duration, buffer);
-#ifdef PHD1_LOGGING // deprecated
-    if (Log_Data && QGDEBUG) {
-        LogFile->AddLine("QGDEBUG: Starting exposure thread"); LogFile->Write(); }
-#endif
     ThreadedExposure(duration, NULL);
     //qglogfile->AddLine("Exposure programmed"); //qglogfile->Write();
     if (duration > 100) {
         wxMilliSleep(duration + 100);  // Shift to > duration
         wxGetApp().Yield();
     }
-#ifdef PHD1_LOGGING // deprecated
-    if (Log_Data && QGDEBUG) {
-        LogFile->AddLine("QGDEBUG: waiting"); LogFile->Write(); }
-#endif
 
     int nloops = 0;
     while (isExposing()) {
@@ -177,12 +165,6 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
             break;
     }
     if (nloops > 30) {
-#ifdef PHD1_LOGGING // deprecated
-        if (Log_Data && QGDEBUG) {
-            LogFile->AddLine("QGDEBUG: ERROR - TIMEOUT EXCEEDED WHEN WAITING FOR IMAGE");
-            LogFile->Write();
-        }
-#endif
         return false;
     }
     //qglogfile->AddLine("Exposure done"); //qglogfile->Write();

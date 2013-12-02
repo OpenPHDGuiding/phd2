@@ -1142,11 +1142,6 @@ void MyFrame::OnClose(wxCloseEvent &event)
     // stop the socket server and event server
     StartServer(false);
 
-#ifdef PHD1_LOGGING // deprecated
-    if (LogFile)
-        delete LogFile;
-#endif
-
     GuideLog.Close();
 
     pConfig->Global.SetString("/perspective", m_mgr.SavePerspective());
@@ -1588,9 +1583,6 @@ void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
 
         GuideLog.EnableLogging(m_pEnableLogging->GetValue());
 
-#ifdef PHD1_LOGGING // deprecated
-        Log_Data = m_pEnableLogging->GetValue(); // Note: This is a global (and will be deprecated when new GuideLog reigns)
-#endif
         if (m_pEnableImageLogging->GetValue())
             GuideLog.EnableImageLogging((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
         else

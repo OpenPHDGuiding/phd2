@@ -682,30 +682,10 @@ void MyFrame::OnLog(wxCommandEvent &evt)
         if (evt.IsChecked())  // enable it
         {
             GuideLog.EnableLogging();
-#ifdef PHD1_LOGGING // deprecated
-            Log_Data = true;
-            if (!LogFile->IsOpened()) {
-                if (LogFile->Exists()) LogFile->Open();
-                else LogFile->Create();
-            }
-            wxDateTime now = wxDateTime::Now();
-            LogFile->AddLine(_T("Logging manually enabled"));
-            LogFile->AddLine(wxString::Format(_T("PHD Guide %s  -- "), FULLVER) + now.FormatDate()  + _T(" ") + now.FormatTime());
-            LogFile->Write();
-#endif
             SetTitle(wxString::Format(_T("%s %s (Log active)"), APPNAME, FULLVER));
         }
         else
         {
-#ifdef PHD1_LOGGING // deprecated
-            if (LogFile->IsOpened())
-            {
-                LogFile->AddLine(_T("Logging manually disabled"));
-                LogFile->Write();
-                LogFile->Close();
-            }
-            Log_Data = false;
-#endif
             GuideLog.DisableLogging();
             SetTitle(wxString::Format(_T("%s %s"), APPNAME, FULLVER));
         }
