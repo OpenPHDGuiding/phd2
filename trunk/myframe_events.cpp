@@ -752,27 +752,6 @@ void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt))
     pFrame->pGuider->AutoSelect();
 }
 
-#ifndef __WXGTK__
-void MyFrame::OnDonateMenu(wxCommandEvent &evt) {
-
-    switch (evt.GetId()) {
-        case DONATE1:
-            wxLaunchDefaultBrowser(_T("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=11353812"));
-            break;
-        case DONATE2:
-            wxLaunchDefaultBrowser(_T("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6NAB6S65UNHP4"));
-            break;
-        case DONATE3:
-            wxLaunchDefaultBrowser(_T("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VHJPKAQZVF9GN"));
-            break;
-        case DONATE4:
-            wxLaunchDefaultBrowser(_T("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CGUQHJLE9GR8A"));
-            break;
-    }
-
-}
-#endif
-
 void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event))
 {
     if (!pCamera || !pCamera->Connected || pCamera->PropertyDialogType != PROPDLG_WHEN_CONNECTED)

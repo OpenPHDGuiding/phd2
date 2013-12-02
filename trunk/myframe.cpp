@@ -120,12 +120,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
     EVT_SOCKET(SOCK_SERVER_ID, MyFrame::OnSockServerEvent)
     EVT_SOCKET(SOCK_SERVER_CLIENT_ID, MyFrame::OnSockServerClientEvent)
-#ifndef __WXGTK__
-    EVT_MENU(DONATE1,MyFrame::OnDonateMenu)
-    EVT_MENU(DONATE2,MyFrame::OnDonateMenu)
-    EVT_MENU(DONATE3,MyFrame::OnDonateMenu)
-    EVT_MENU(DONATE4,MyFrame::OnDonateMenu)
-#endif
     EVT_CLOSE(MyFrame::OnClose)
     EVT_THREAD(MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE, MyFrame::OnExposeComplete)
     EVT_THREAD(MYFRAME_WORKER_THREAD_MOVE_COMPLETE, MyFrame::OnMoveComplete)
@@ -451,14 +445,6 @@ void MyFrame::SetupMenuBar(void)
     Menubar->Append(tools_menu, _("&Tools"));
     Menubar->Append(view_menu, _("&View"));
     Menubar->Append(help_menu, _("&Help"));
-#ifndef __WXGTK__
-    wxMenu *donate_menu = new wxMenu;
-    donate_menu->Append(DONATE1, _("Donate $10"), _("Donate $10 for PHD Guiding"));
-    donate_menu->Append(DONATE2, _("Donate $25"), _("Donate $25 for PHD Guiding"));
-    donate_menu->Append(DONATE3, _("Donate $50"), _("Donate $50 for PHD Guiding"));
-    donate_menu->Append(DONATE4, _("Donate Other"), _("Donate a value of your own choosing for PHD Guiding"));
-    Menubar->Append(donate_menu, _("   &Donate!   "));
-#endif
     SetMenuBar(Menubar);
 }
 
