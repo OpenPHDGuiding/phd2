@@ -10,6 +10,7 @@ CPPFLAGS += $(WX_CPPFLAGS) $(FITS_CFLAGS)
 # FIXME: fix camera negotiation. Hardcoded lists don't make much sense
 CPPFLAGS += -DSIMULATOR
 LDLIBS  ?= $(WX_LDLIBS) $(FITS_LDLIBS)
+LDLIBS += -lusb-1.0
 
 CXX_SRC = $(wildcard *.cpp)
 
