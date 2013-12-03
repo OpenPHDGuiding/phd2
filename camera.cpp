@@ -66,6 +66,10 @@ static const double DefaultPixelSize = 0;
  #include "cam_QGuide.h"
 #endif
 
+#if defined (CAM_QHY5)
+# include "cam_qhy5.h"
+#endif
+
 #if defined (QHY5II)
  #include "cam_QHY5II.h"
 #endif
@@ -245,6 +249,9 @@ wxArrayString GuideCamera::List(void)
 #if defined (MEADE_DSI)
     CameraList.Add(_T("Meade DSI I, II, or III"));
 #endif
+#if defined (CAM_QHY5)
+    CameraList.Add(_T("QHY 5"));
+#endif
 #if defined (QHY5II)
     CameraList.Add(_T("QHY 5-II"));
 #endif
@@ -378,6 +385,11 @@ GuideCamera *GuideCamera::Factory(wxString choice)
 #if defined (QHY5LII)
         else if (choice.Find(_T("QHY 5L-II")) + 1) {
             pReturn = new Camera_QHY5LIIClass();
+        }
+#endif
+#if defined (CAM_QHY5) // must come afer other QHY 5's since this pattern would match them
+        else if (choice.Find(_T("QHY 5")) + 1) {
+            pReturn = new Camera_QHY5Class();
         }
 #endif
 #if defined (OPENSSAG)
