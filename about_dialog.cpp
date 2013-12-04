@@ -69,6 +69,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "&nbsp;&nbsp;&nbsp;&nbsp;Sylvain Girard<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Andy Galasso<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Bruce Waddington<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Max Chen<br>"
         "<br>"
         "Copyright 2006-2013 Craig Stark<br>"
         "Copyright 2009 Geoffrey Hausheer<br>"
@@ -78,7 +79,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "Copyright 2013 Bruce Waddington<br>"
         "</body></html>", APPNAME, FULLVER));
     wxHtmlWindow *pHtml;
-    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(380, 400), wxHW_SCROLLBAR_AUTO);
+    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(380, 440), wxHW_SCROLLBAR_AUTO);
     pHtml->SetBorders(0);
     pHtml->LoadPage("memory:about.html");
     pHtml->SetSize(pHtml->GetInternalRepresentation()->GetWidth(), pHtml->GetInternalRepresentation()->GetHeight());
