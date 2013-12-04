@@ -162,6 +162,8 @@ private:
     wxStaticText *OscIndexLabel;
     wxStaticText *RMSLabel;
     wxBoxSizer *m_pControlSizer;
+    wxBoxSizer *m_pControlSizer1;
+    wxBoxSizer *m_pControlSizer2;
     GraphControlPane *m_pXControlPane;
     GraphControlPane *m_pYControlPane;
     GraphControlPane *m_pScopePane;
