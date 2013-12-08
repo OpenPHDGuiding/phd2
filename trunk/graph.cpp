@@ -595,16 +595,21 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     int ControlSizerWidth = m_pControlSizer->GetSize().GetWidth();
     if (ControlSizerWidth != 0)
     {
+        int orientation;
         if (ControlSizerWidth > XControlPaneWidth + YControlPaneWidth + ScopePaneWidth)
         {
-            m_pControlSizer->SetOrientation(wxHORIZONTAL);
+            orientation = wxHORIZONTAL;
         }
         else
         {
-            m_pControlSizer->SetOrientation(wxVERTICAL);
+            orientation = wxVERTICAL;
+        }
+        if (m_pControlSizer->GetOrientation() != orientation)
+        {
+            m_pControlSizer->SetOrientation(orientation);
+            Layout();
         }
     }
-    Layout();
 }
 
 void GraphLogWindow::UpdateHeightButtonLabel(void)
