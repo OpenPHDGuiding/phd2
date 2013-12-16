@@ -38,8 +38,6 @@
 #include "socket_server.h"
 #include "cam_simulator.h"
 
-static wxLogWindow *SocketLog = NULL;
-
 static std::set<wxSocketBase *> s_clients;
 
 enum {
@@ -76,13 +74,8 @@ void MyFrame::OnServerMenu(wxCommandEvent &evt)
 
 bool MyFrame::StartServer(bool state)
 {
-    if (state) {
-        if (!SocketLog) {
-            SocketLog = new wxLogWindow(this,wxT("Server log"));
-            SocketLog->SetVerbose(true);
-            wxLog::SetActiveTarget(SocketLog);
-        }
-
+    if (state)
+    {
         // Create the SocketServer socket
         unsigned int port = 4300 + m_instanceNumber - 1;
         wxIPV4address sockServerAddr;
@@ -90,11 +83,9 @@ bool MyFrame::StartServer(bool state)
         SocketServer = new wxSocketServer(sockServerAddr);
 
         // We use Ok() here to see if the server is really listening
-        if (!SocketServer->Ok()) {
-            wxLogStatus(wxString::Format("Socket server failed to start - Could not listen at port %u", port));
-            wxLog::SetActiveTarget(NULL);
-            delete SocketLog;
-            SocketLog = NULL;
+        if (!SocketServer->Ok())
+        {
+            Debug.AddLine(wxString::Format("Socket server failed to start - Could not listen at port %u", port));
             delete SocketServer;
             SocketServer = NULL;
             return true;
@@ -104,26 +95,20 @@ bool MyFrame::StartServer(bool state)
         SocketServer->Notify(true);
 
         // start the event server
-        if (EvtServer.EventServerStart(m_instanceNumber)) {
-            wxLog::SetActiveTarget(NULL);
-            delete SocketLog;
-            SocketLog = NULL;
+        if (EvtServer.EventServerStart(m_instanceNumber))
+        {
             delete SocketServer;
             SocketServer = NULL;
             return true;
         }
 
         SetStatusText(_("Server started"));
-        wxLogStatus(wxString::Format(_("Server started, listening on port %u"), port));
-        SocketLog->Show(this->Menubar->IsChecked(MENU_DEBUG));
+        Debug.AddLine(wxString::Format("Server started, listening on port %u", port));
     }
     else {
-        wxLogStatus(_("Server stopped"));
+        Debug.AddLine("Server stopped");
         std::for_each(s_clients.begin(), s_clients.end(), std::mem_fun(&wxSocketBase::Destroy));
         s_clients.empty();
-        wxLog::SetActiveTarget(NULL);
-        delete SocketLog;
-        SocketLog = NULL;
         EvtServer.EventServerStop();
         delete SocketServer;
         SocketServer = NULL;
@@ -140,19 +125,23 @@ void MyFrame::OnSockServerEvent(wxSocketEvent& event)
     if (server == NULL)
         return;
 
-    if (event.GetSocketEvent() != wxSOCKET_CONNECTION) {
-        wxLogStatus(_T("WTF is this event?"));
+    if (event.GetSocketEvent() != wxSOCKET_CONNECTION)
+    {
+        Debug.AddLine(wxString::Format("socket server event expected %d, got %d. ignoring it.",
+            wxSOCKET_CONNECTION, event.GetSocketEvent()));
         return;
     }
 
     wxSocketBase *client = server->Accept(false);
 
-    if (client) {
+    if (client)
+    {
         pFrame->SetStatusText("New connection");
-        wxLogStatus(_T("New cnxn"));
+        Debug.AddLine("SOCKSVR: New connection");
     }
-    else {
-        wxLogStatus(_T("Cnxn error"));
+    else
+    {
+        Debug.AddLine("SOCKSVR: connection error");
         return;
     }
 
@@ -256,7 +245,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                     rval = (unsigned char) (currentError * 100);
                 }
 
-                wxLogStatus(_T("Sending pixel error of %.2f"),(float) rval / 100.0);
+                Debug.AddLine(wxString::Format("SOCKSVR: Sending pixel error of %.2f", (float) rval / 100.0));
                 break;
             }
 
@@ -283,13 +272,12 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 if (pFrame->pGuider->SetLockPosition(PHD_Point(x,y), false))
                 {
                     Debug.AddLine("processing socket request SETLOCKPOSITION for (%d, %d) succeeded", x, y);
-                    wxLogStatus(wxString::Format("Lock set to %d,%d",x,y));
+                    pFrame->SetStatusText(wxString::Format("Lock set to %d,%d",x,y));
                     GuideLog.ServerSetLockPosition(pGuider);
                 }
                 else
                 {
                     Debug.AddLine("processing socket request SETLOCKPOSITION for (%d, %d) failed", x, y);
-                    wxLogStatus(wxString::Format("Lock set to %d,%d failed",x,y));
                 }
                 break;
             }
@@ -375,7 +363,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 break;
 
             default:
-                wxLogStatus(_T("Unknown test id received from client: %d"),(int) c);
+                Debug.AddLine(wxString::Format("SOCKSVR: Unknown command char received from client: %d"), (int) c);
                 rval = 1;
                 break;
         }
@@ -411,7 +399,7 @@ void MyFrame::OnSockServerClientEvent(wxSocketEvent& event)
                 HandleSockServerInput(sock);
                 break;
             case wxSOCKET_LOST:
-                wxLogStatus(_T("Deleting socket"));
+                Debug.AddLine("SOCKSVR: Client disconnected, deleting socket");
                 size_t n;
                 n = s_clients.erase(sock);
                 assert(n > 0);
@@ -441,17 +429,17 @@ bool ServerSendGuideCommand (int direction, int duration) {
 
     unsigned char cmd = MSG_GUIDE;
     unsigned char rval = 0;
-    wxLogStatus(_T("Sending guide: %d %d"), direction, duration);
+    Debug.AddLine(wxString::Format("Sending guide: %d %d", direction, duration));
 //  cmd = 'Z';
     ServerEndpoint->Write(&cmd, 1);
     if (pFrame->SocketServer->Error())
-        wxLogStatus(_T("Error sending Neb command"));
+        Debug.AddLine(_T("Error sending Neb command"));
     else {
-        wxLogStatus(_T("Cmd done - sending data"));
+        Debug.AddLine(_T("Cmd done - sending data"));
         ServerEndpoint->Write(&direction, sizeof(int));
         ServerEndpoint->Write(&duration, sizeof(int));
         ServerEndpoint->Read(&rval,1);
-        wxLogStatus(_T("Sent guide command - returned %d"), (int) rval);
+        Debug.AddLine(_T("Sent guide command - returned %d"), (int) rval);
     }
     return false;
 }
@@ -459,19 +447,19 @@ bool ServerSendGuideCommand (int direction, int duration) {
 bool ServerSendCamConnect(int& xsize, int& ysize) {
     if (!pFrame->SocketServer || !SocketConnections)
         return true;
-    wxLogStatus(_T("Sending cam connect request"));
+    Debug.AddLine(_T("Sending cam connect request"));
     unsigned char cmd = MSG_CAMCONNECT;
     unsigned char rval = 0;
 
     ServerEndpoint->Write(&cmd, 1);
     if (pFrame->SocketServer->Error()) {
-        wxLogStatus(_T("Error sending Neb command"));
+        Debug.AddLine(_T("Error sending Neb command"));
         return true;
     }
     else {
 //      unsigned char c;
         ServerEndpoint->Read(&rval, 1);
-        wxLogStatus(_T("Cmd done - returned %d"), (int) rval);
+        Debug.AddLine(_T("Cmd done - returned %d"), (int) rval);
     }
     if (rval)
         return true;
@@ -479,7 +467,7 @@ bool ServerSendCamConnect(int& xsize, int& ysize) {
         // Should get x and y size back
         ServerEndpoint->Read(&xsize,sizeof(int));
         ServerEndpoint->Read(&ysize,sizeof(int));
-        wxLogStatus(_T("Guide chip reported as %d x %d"),xsize,ysize);
+        Debug.AddLine(_T("Guide chip reported as %d x %d"),xsize,ysize);
         return false;
     }
 }
@@ -488,19 +476,19 @@ bool ServerSendCamDisconnect() {
     if (!pFrame->SocketServer || !SocketConnections)
         return true;
 
-    wxLogStatus(_T("Sending cam disconnect request"));
+    Debug.AddLine(_T("Sending cam disconnect request"));
     unsigned char cmd = MSG_CAMDISCONNECT;
     unsigned char rval = 0;
 
     ServerEndpoint->Write(&cmd, 1);
     if (pFrame->SocketServer->Error()) {
-        wxLogStatus(_T("Error sending Neb command"));
+        Debug.AddLine(_T("Error sending Neb command"));
         return true;
     }
     else {
 //      unsigned char c;
         ServerEndpoint->Read(&rval, 1);
-        wxLogStatus(_T("Cmd done - returned %d"), (int) rval);
+        Debug.AddLine(_T("Cmd done - returned %d"), (int) rval);
     }
     if (rval)
         return true;
@@ -511,28 +499,28 @@ bool ServerSendCamDisconnect() {
 bool ServerReqFrame(int duration, usImage& img) {
     if (!pFrame->SocketServer || !SocketConnections)
         return true;
-    wxLogStatus(_T("Sending guide frame request"));
+    Debug.AddLine(_T("Sending guide frame request"));
     unsigned char cmd = MSG_REQFRAME;
     unsigned char rval = 0;
 
     ServerEndpoint->Write(&cmd, 1);
     if (pFrame->SocketServer->Error()) {
-        wxLogStatus(_T("Error sending Neb command"));
+        Debug.AddLine(_T("Error sending Neb command"));
         return true;
     }
     else {
 //      unsigned char c;
         ServerEndpoint->Read(&rval, 1);
-        wxLogStatus(_T("Cmd done - returned %d"), (int) rval);
+        Debug.AddLine(_T("Cmd done - returned %d"), (int) rval);
     }
     if (rval)
         return true;
     else { // grab frame data
         // Send duration request
         ServerEndpoint->Write(&duration,sizeof(int));
-        wxLogStatus(_T("Starting %d ms frame"),duration);
+        Debug.AddLine(_T("Starting %d ms frame"),duration);
         wxMilliSleep(duration); // might as well wait here nicely at least this long
-        wxLogStatus(_T("Reading frame - looking for %d pixels (%d bytes)"),img.NPixels,img.NPixels*2);
+        Debug.AddLine(_T("Reading frame - looking for %d pixels (%d bytes)"),img.NPixels,img.NPixels*2);
         unsigned short *dataptr;
         dataptr = img.ImageData;
         unsigned short buffer[512];
@@ -546,7 +534,7 @@ bool ServerReqFrame(int duration, usImage& img) {
             ServerEndpoint->Read(&buffer,packet_size * 2);
             pixels_left -= packet_size;
             if ((j%100) == 0)
-                wxLogStatus(_T("%d left"),pixels_left);
+                Debug.AddLine(_T("%d left"),pixels_left);
             for (i=0; i<packet_size; i++, dataptr++)
                 *dataptr = buffer[i];
             if (pixels_left < 256)
@@ -561,10 +549,10 @@ bool ServerReqFrame(int duration, usImage& img) {
             if (*dataptr > max) max = (int) *dataptr;
             else if (*dataptr < min) min = (int) *dataptr;
         }
-        wxLogStatus(_T("Frame received min=%d max=%d"),min,max);
+        Debug.AddLine(_T("Frame received min=%d max=%d"),min,max);
 
 //      ServerEndpoint->ReadMsg(img.ImageData,(xsize * ysize * 2));
-        wxLogStatus(_T("Frame read"));
+        Debug.AddLine(_T("Frame read"));
     }
 
     return false;

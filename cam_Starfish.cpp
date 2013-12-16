@@ -166,7 +166,7 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
             still_going=false;
 //          if (debuglog) { debug << "Starfish timeout - " << fcUsb_cmd_getState(CamNum) << "\n"; debugstr.Sync(); }
 //          wxMessageBox (wxString::Format("timeout code %d",(int)  fcUsb_cmd_getState(CamNum)));
-            wxLogStatus("Fishcamp timeout");
+            Debug.AddLine("Fishcamp timeout");
             wxBell();
         }
     }

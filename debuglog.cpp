@@ -59,18 +59,13 @@ DebugLog::~DebugLog(void)
     wxFFile::Close();
 }
 
-bool DebugLog::SetState(bool bEnabled)
+bool DebugLog::Enable(bool bEnabled)
 {
     bool prevState = m_bEnabled;
 
     m_bEnabled = bEnabled;
 
     return prevState;
-}
-
-bool DebugLog::GetState(void)
-{
-    return m_bEnabled;
 }
 
 bool DebugLog::Init(const char *pName, bool bEnable, bool bForceOpen)
@@ -104,7 +99,7 @@ bool DebugLog::Init(const char *pName, bool bEnable, bool bForceOpen)
 
 bool DebugLog::ChangeDirLog(const wxString& newdir)
 {
-    bool bEnabled = GetState();
+    bool bEnabled = IsEnabled();
     bool bOk = true;
 
     if (!SetLogDir(newdir))

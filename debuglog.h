@@ -50,8 +50,8 @@ public:
     DebugLog(const char *pName, bool bEnabled);
     ~DebugLog(void);
 
-    bool SetState(bool bEnabled);
-    bool GetState(void);
+    bool Enable(bool bEnabled);
+    bool IsEnabled(void);
     bool Init(const char *pName, bool bEnable, bool bForceOpen = false);
     wxString AddLine(const char *format, ...); // adds a newline
     wxString AddBytes(const wxString& str, const unsigned char *pBytes, unsigned count);
@@ -65,3 +65,8 @@ extern DebugLog& operator<< (DebugLog& out, const wxString &str);
 extern DebugLog& operator<< (DebugLog& out, const char *str);
 extern DebugLog& operator<< (DebugLog& out, const int i);
 extern DebugLog& operator<< (DebugLog& out, const double d);
+
+inline bool DebugLog::IsEnabled(void)
+{
+    return m_bEnabled;
+}
