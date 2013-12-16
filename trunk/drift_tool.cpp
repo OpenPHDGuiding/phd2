@@ -72,6 +72,7 @@ struct DriftToolWin : public wxFrame
     Mode m_mode;
     bool m_drifting;
     bool m_need_end_dec_drift;
+    bool m_save_lock_pos_is_sticky;
 
     bool m_can_slew;
     bool m_slewing;
@@ -267,6 +268,11 @@ DriftToolWin::DriftToolWin()
         evt.SetInt(1); // "Checked"
         pFrame->OnGraph(evt);
     }
+
+    // we do not want sticky lock position enabled
+    m_save_lock_pos_is_sticky = pFrame->pGuider->LockPosIsSticky();
+    pFrame->pGuider->SetLockPosIsSticky(false);
+    pFrame->tools_menu->FindItem(EEGG_STICKY_LOCK)->Check(false);
 
     m_phase = PHASE_ADJUST_AZ;
     m_mode = MODE_IDLE;
@@ -550,6 +556,13 @@ void DriftToolWin::OnClose(wxCloseEvent& evt)
         pMount->EndDecDrift();
         pFrame->pGraphLog->EnableTrendLines(false);
         m_need_end_dec_drift = false;
+    }
+
+    // turn sticky lock position back on if we disabled it
+    if (m_save_lock_pos_is_sticky)
+    {
+        pFrame->pGuider->SetLockPosIsSticky(true);
+        pFrame->tools_menu->FindItem(EEGG_STICKY_LOCK)->Check(true);
     }
 
     // save the window position
