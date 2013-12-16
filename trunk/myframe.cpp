@@ -278,10 +278,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     Cursor.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y,8);
     pGuider->SetCursor(wxCursor(Cursor));
 
-#ifndef __WXGTK__
-    SetStatusText(_("Like PHD? Consider donating"),1);
-#endif
-
     m_continueCapturing = false;
     CaptureActive     = false;
 
