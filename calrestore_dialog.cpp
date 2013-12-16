@@ -58,7 +58,7 @@ CalrestoreDialog::CalrestoreDialog() :
     if (pMount)
     {
         wxString prefix = "/" + pMount->GetMountClassName() + "/calibration/";
-        dXRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0) *  1000.0;       // pixels per millisecond
+        dXRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0) * 1000.0;       // pixels per millisecond
         dYRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0) * 1000.0;
         double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0) * 180.0/M_PI;
         if (xAngle < 0.0) xAngle += 360.0;
@@ -66,9 +66,10 @@ CalrestoreDialog::CalrestoreDialog() :
         dDeclination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
         if (dDeclination == 0.0)
         {
-            dDeclination = floor(acos(dXRate/dYRate) * 180.0/M_PI);        // cos(dec) = Dec_Rate/RA_Rate
+            dDeclination = acos(dXRate/dYRate);        // cos(dec) = Dec_Rate/RA_Rate
             bDecEstimated = true;
         }
+        dDeclination *= 180.0 / M_PI;
 
         int iSide = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
         sPierSide = iSide == PIER_SIDE_EAST ? _("East") :
