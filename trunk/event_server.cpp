@@ -1072,7 +1072,7 @@ bool EventServer::EventServerStart(unsigned int instanceId)
 
     if (!m_serverSocket->Ok())
     {
-        wxLogStatus(wxString::Format("Event server failed to start - Could not listen at port %u", port));
+        Debug.AddLine(wxString::Format("Event server failed to start - Could not listen at port %u", port));
         delete m_serverSocket;
         m_serverSocket = NULL;
         return true;

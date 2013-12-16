@@ -264,12 +264,12 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     {
         tools_menu->Check(MENU_SERVER,true);
         if (StartServer(true))
-            wxLogStatus(_("Server start failed"));
+            SetStatusText(_("Server start failed"));
         else
-            wxLogStatus(_("Server started"));
+            SetStatusText(_("Server started"));
     }
 
-    tools_menu->Check(MENU_DEBUG, Debug.GetState());
+    tools_menu->Check(MENU_DEBUG, Debug.IsEnabled());
 
 
     #include "xhair.xpm"
@@ -989,14 +989,14 @@ void MyFrame::SetPaused(bool pause)
     if (pause && !pGuider->IsPaused())
     {
         pGuider->SetPaused(true);
-        wxLogStatus(_T("Paused"));
+        SetStatusText(_("Paused"));
         GuideLog.ServerCommand(pGuider, "PAUSE");
         EvtServer.NotifyPaused();
     }
     else if (!pause && pGuider->IsPaused())
     {
         pGuider->SetPaused(false);
-        wxLogStatus(_T("Resumed"));
+        SetStatusText(_("Resumed"));
         GuideLog.ServerCommand(pGuider, "RESUME");
         EvtServer.NotifyResumed();
     }
@@ -1079,7 +1079,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
 
         pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
 
-        wxLogStatus(_T("Moving by %.2f,%.2f"),dRa, dDec);
+        SetStatusText(_("Dither by %.2f,%.2f"), dRa, dDec);
         GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
         EvtServer.NotifyGuidingDithered(dRa, dDec);
     }

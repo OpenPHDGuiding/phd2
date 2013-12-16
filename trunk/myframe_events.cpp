@@ -725,7 +725,7 @@ void MyFrame::OnLog(wxCommandEvent &evt)
     {
         bool enable = evt.IsChecked();
         pConfig->Global.SetBoolean("/EnableDebugLog", enable);
-        Debug.SetState(enable);
+        Debug.Enable(enable);
     }
 }
 

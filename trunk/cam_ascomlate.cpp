@@ -447,21 +447,11 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
 {
     bool retval = false;
     bool still_going = true;
-    wxString msg = "Retvals: ";
     bool TakeSubframe = UseSubframes;
 
     if (subframe.width <= 0 || subframe.height <= 0)
     {
         TakeSubframe = false;
-    }
-
-    wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-    wxFFileOutputStream debugstr (wxString(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_ASCOM_Debug_log") + _T(".txt")), _T("a+t"));
-    wxTextOutputStream debug (debugstr);
-    bool debuglog = pFrame->Menubar->IsChecked(MENU_DEBUG);
-    if (debuglog) {
-        debug << _T("ASCOM Late capture entered - programming exposure\n");
-        debugstr.Sync();
     }
 
     // Program the size
@@ -471,17 +461,13 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
 
     ASCOM_SetROI(subframe.x, subframe.y, subframe.width, subframe.height);
 
-    bool TakeDark = false;
-    if (HasShutter && ShutterState) TakeDark=true;
+    bool takeDark = HasShutter && ShutterState;
+
     // Start the exposure
-    if (ASCOM_StartExposure((double) duration / 1000.0, TakeDark)) {
+    if (ASCOM_StartExposure((double) duration / 1000.0, takeDark)) {
+        Debug.AddLine("ASCOM_StartExposure failed");
         wxMessageBox(_T("ASCOM error -- Cannot start exposure with given parameters"), _("Error"), wxOK | wxICON_ERROR);
         return true;
-    }
-
-    if (debuglog) {
-        debug << _T(" - Waiting\n");
-        debugstr.Sync();
     }
 
     if (duration > 100) {
@@ -490,41 +476,30 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     }
     while (still_going) {  // wait for image to finish and d/l
         wxMilliSleep(20);
-        bool ready=false;
+        bool ready = false;
         if (ASCOM_ImageReady(ready)) {
+            Debug.AddLine("ASCOM_ImageReady failed");
             wxMessageBox("Exception thrown polling camera");
             still_going = false;
             retval = true;
         }
-        if (ready) still_going=false;
+        if (ready) still_going = false;
         wxGetApp().Yield();
     }
     if (retval)
         return true;
 
-    if (debuglog) {
-        debug << _T(" - Getting ImageArray\n");
-        debugstr.Sync();
-    }
-
     // Get the image
     if (ASCOM_Image(img, TakeSubframe, subframe)) {
+        Debug.AddLine("ASCOM_Image failed");
         wxMessageBox(_T("Error reading image"));
         return true;
     }
 
-    if (debuglog) {
-        debug << _T(" - Doing recon\n");
-        debugstr.Sync();
-    }
-
-    if (recon) SubtractDark(img);
+    if (recon)
+        SubtractDark(img);
     if (Color)
         QuickLRecon(img);
-
-    if (recon) {
-        ;
-    }
 
     return false;
 }
