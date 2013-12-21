@@ -37,34 +37,9 @@
 #include "manualcal_dialog.h"
 #include "calrestore_dialog.h"
 
-void TestGuide() {
-
-#ifdef BRET_TODO
-    wxMessageBox(_("W RA+")); wxGetApp().Yield(); pMount->Guide(WEST,2000); wxGetApp().Yield();
-    wxMessageBox(_("N Dec+"));  wxGetApp().Yield(); pMount->Guide(NORTH,2000);wxGetApp().Yield();
-    wxMessageBox(_("E RA-"));  wxGetApp().Yield(); pMount->Guide(EAST,2000);wxGetApp().Yield();
-    wxMessageBox(_("S Dec-"));  wxGetApp().Yield(); pMount->Guide(SOUTH,2000);wxGetApp().Yield();
-    wxMessageBox(_("Done"));
-#endif
-}
-
 void MyFrame::OnEEGG(wxCommandEvent &evt)
 {
-    if (evt.GetId() == EEGG_TESTGUIDEDIR)
-    {
-        if (!pMount || !pMount->IsConnected())
-        {
-            wxMessageBox(_("Please connect a Mount to Manual Guide."));
-            return;
-        }
-        TestGuide();
-    }
-    else if (evt.GetId() == EEGG_RANDOMMOTION)
-    {
-        RandomMotionMode = !RandomMotionMode;
-        wxMessageBox(wxString::Format(_T("Random motion mode set to %d"),(int) RandomMotionMode));
-    }
-    else if (evt.GetId() == EEGG_RESTORECAL)
+    if (evt.GetId() == EEGG_RESTORECAL)
     {
         wxString savedCal = pConfig->Profile.GetString("/scope/calibration/timestamp", wxEmptyString);
         if (savedCal.IsEmpty())

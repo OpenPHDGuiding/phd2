@@ -35,15 +35,11 @@
 #ifndef TESTGUIDE_H_INCLUDED
 #define TESTGUIDE_H_INCLUDED
 
-class TestGuideDialog: public wxDialog {
+class TestGuide
+{
+    TestGuide(); // not implemented
 public:
-    TestGuideDialog();
-    ~TestGuideDialog(void) {};
-private:
-    void OnButton(wxCommandEvent& evt);
-    wxButton *NButton1, *SButton1, *EButton1, *WButton1;
-    wxButton *NButton2, *SButton2, *EButton2, *WButton2;
-    DECLARE_EVENT_TABLE()
+    static wxWindow *CreateManualGuideWindow();
 };
 
 #endif //TESTGUIDE_H_INCLUDED

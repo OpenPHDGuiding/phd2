@@ -38,8 +38,6 @@
 #include "image_math.h"
 #include "wx/stopwatch.h"
 
-extern void TestGuide();
-
 #include "cam_Atik16.h"
 //#define ARTEMISDLLNAME "ArtemisCCD.dll"
 

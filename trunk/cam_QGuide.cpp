@@ -39,7 +39,6 @@
 #include "time.h"
 #include "image_math.h"
 
-extern void TestGuide();
 #include <wx/stdpaths.h>
 #include <wx/textfile.h>
 //wxTextFile *qglogfile;

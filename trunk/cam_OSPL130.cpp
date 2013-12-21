@@ -13,8 +13,6 @@
 #include "image_math.h"
 #include "wx/stopwatch.h"
 
-extern void TestGuide();
-
 #if defined (OS_PL130)
 #include "cam_OSPL130.h"
 #include "cameras/OSPL130API.h"

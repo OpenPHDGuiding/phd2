@@ -94,12 +94,6 @@ protected:
     NOISE_REDUCTION_METHOD GetNoiseReductionMethod(void);
     bool SetNoiseReductionMethod(int noiseReductionMethod);
 
-    double GetDitherScaleFactor(void);
-    bool SetDitherScaleFactor(double ditherScaleFactor);
-
-    bool GetDitherRaOnly(void);
-    bool SetDitherRaOnly(bool ditherRaOnly);
-
     bool GetServerMode(void);
     bool SetServerMode(bool val);
 
@@ -150,6 +144,7 @@ public:
     ProfileWindow *pProfile;
     TargetWindow *pTarget;
     wxWindow *pDriftTool;
+    wxWindow *pManualGuide;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
     wxLocale *m_pLocale;
@@ -200,9 +195,6 @@ public:
     void OnStarProfile(wxCommandEvent& evt);
     void OnTarget(wxCommandEvent& evt);
     void OnAutoStar(wxCommandEvent& evt);
-#ifndef __WXGTK__
-    void OnDonateMenu(wxCommandEvent& evt);
-#endif
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
     void LoadProfileSettings(void);
@@ -211,6 +203,11 @@ public:
 
     void GetExposureDurations(std::vector<int> *exposure_durations);
     bool SetExposureDuration(int val);
+    double GetDitherScaleFactor(void);
+    bool SetDitherScaleFactor(double ditherScaleFactor);
+    bool GetDitherRaOnly(void);
+    bool SetDitherRaOnly(bool ditherRaOnly);
+    double GetDitherAmount(int ditherType);
 
     bool StartServer(bool state);
     bool FlipRACal();
@@ -414,20 +411,13 @@ enum {
     CHECKBOX_GRAPH_CORRECTIONS,
     BUTTON_GRAPH_ZOOMIN,
     BUTTON_GRAPH_ZOOMOUT,
-//  EEGG_FITSSAVE,
-    DONATE1,
-    DONATE2,
-    DONATE3,
-    DONATE4,
     ABOUT_LINK,
-    EEGG_TESTGUIDEDIR,
     EEGG_RESTORECAL,
     EEGG_MANUALCAL,
     EEGG_CLEARCAL,
     EEGG_MANUALLOCK,
     EEGG_STICKY_LOCK,
     EEGG_FLIPRACAL,
-    EEGG_RANDOMMOTION,
     STAR_MASS_ENABLE,
 };
 

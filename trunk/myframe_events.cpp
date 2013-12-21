@@ -438,30 +438,6 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 
         PhdController::UpdateControllerState();
 
-#ifdef BRET_DODO
-        if (RandomMotionMode && pGuider->GetState() < STATE_CALIBRATING_PRIMARY)
-        {
-            GUIDE_DIRECTION dir;
-
-            if (rand() % 2)
-                dir = EAST;
-            else
-                dir = WEST;
-            int dur = rand() % 1000;
-            ScheduleGuide(dir, dur, wxString::Format(_T("Random motion: %d %d"),dir,dur));
-
-            if ((rand() % 5) == 0) {  // Occasional Dec
-                if (rand() % 2)
-                    dir = NORTH;
-                else
-                    dir = SOUTH;
-                dur = rand() % 1000;
-                pMount->Guide(dir,dur);
-                ScheduleGuide(dir, dur, wxString::Format(_T("Random motion: %d %d"),dir,dur));
-            }
-        }
-#endif
-
         Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d m_continueCapturing=%d",
             CaptureActive, m_continueCapturing));
 
@@ -768,12 +744,20 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
 
     if (dlog->ShowModal() == wxID_OK)
     {
-        Debug.AddLine("User exited setup dialog with 'ok'");    // Make things more clear in the debug log
+        Debug.AddLine("User exited setup dialog with 'ok'");
         dlog->UnloadValues();
         pGraphLog->UpdateControls();
+        if (pManualGuide)
+        {
+            // notify the manual guide dialog to update its controls
+            wxCommandEvent event(APPSTATE_NOTIFY_EVENT, GetId());
+            event.SetEventObject(this);
+            wxPostEvent(pManualGuide, event);
+        }
     }
-    else                // Cancel event may require non-trivial undos
+    else
     {
+        // Cancel event may require non-trivial undos
         Debug.AddLine("User exited setup dialog with 'cancel'");
         dlog->Undo();
     }
@@ -833,19 +817,16 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt))
 {
-    if (pFrame->pGuider->GetState() > STATE_SELECTED)
-    {
-        wxMessageBox(_("Cannot Manual Guide when Calibrating or Guiding"),_("Info"));
-    }
-
     if (!pMount || !pMount->IsConnected())
     {
-        wxMessageBox(_("Cannot Manual Guide without a mount connected"),_("Info"));
+        wxMessageBox(_("Please connect a mount first"), _("Manual Guide"));
+        return;
     }
 
-    TestGuideDialog *pDialog = new TestGuideDialog();
-    pDialog->Show();
-    // we leak pDialog here
+    if (!pManualGuide)
+        pManualGuide = TestGuide::CreateManualGuideWindow();
+
+    pManualGuide->Show();
 }
 
 void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)

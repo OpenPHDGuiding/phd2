@@ -152,6 +152,18 @@ void MyFrame::OnSockServerEvent(wxSocketEvent& event)
     s_clients.insert(client);
 }
 
+double MyFrame::GetDitherAmount(int ditherType)
+{
+    switch (ditherType) {
+    case 1: return 0.5;
+    case 2: return 1.0;
+    case 3: return 2.0;
+    case 4: return 3.0;
+    case 5: return 5.0;
+    }
+    return 1.0;
+}
+
 void MyFrame::HandleSockServerInput(wxSocketBase *sock)
 {
     unsigned char rval = 0;
@@ -191,26 +203,17 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             {
                 Debug.AddLine("processing socket request MOVEn");
 
-                double size = 1.0;
-
+                int ditherType = 3;
                 switch (c)
                 {
-                    case MSG_MOVE1:  // +/- 0.5
-                        size = 0.5;
-                        break;
-                    case MSG_MOVE2:  // +/- 1.0
-                        size = 1.0;
-                        break;
-                    case MSG_MOVE3:  // +/- 2.0
-                        size = 2.0;
-                        break;
-                    case MSG_MOVE4:  // +/- 3.0
-                        size = 3.0;
-                        break;
-                    case MSG_MOVE5:  // +/- 5.0
-                        size = 5.0;
-                        break;
+                    case MSG_MOVE1: ditherType = 1; break;
+                    case MSG_MOVE2: ditherType = 2; break;
+                    case MSG_MOVE3: ditherType = 3; break;
+                    case MSG_MOVE4: ditherType = 4; break;
+                    case MSG_MOVE5: ditherType = 5; break;
                 }
+
+                double size = GetDitherAmount(ditherType);
 
                 bool error = Dither(size, m_ditherRaOnly);
                 if (error)
