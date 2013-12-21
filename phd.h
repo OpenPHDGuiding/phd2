@@ -184,11 +184,6 @@ extern GuidingLog GuideLog;
 extern int XWinSize;
 extern int YWinSize;
 
-// This is used by eegg.  It could go into guider, but that seem like more
-// trouble than it is worth
-
-extern bool RandomMotionMode;
-
 class PhdApp: public wxApp
 {
     long m_instanceNumber;

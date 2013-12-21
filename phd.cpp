@@ -53,8 +53,6 @@ GuidingLog GuideLog;
 int XWinSize = 640;
 int YWinSize = 512;
 
-bool RandomMotionMode = false;
-
 static const wxCmdLineEntryDesc cmdLineDesc[] =
 {
     { wxCMD_LINE_OPTION, "i", "instanceNumber", "sets the PHD2 instance number (default = 1)", wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL},

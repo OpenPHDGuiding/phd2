@@ -60,8 +60,6 @@ wxDEFINE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
     EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
-    EVT_MENU(EEGG_TESTGUIDEDIR, MyFrame::OnEEGG)  // Bit of a hack -- not actually on the menu but need an event to accelerate
-    EVT_MENU(EEGG_RANDOMMOTION, MyFrame::OnEEGG)
     EVT_MENU(EEGG_RESTORECAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
@@ -255,6 +253,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pGearDialog = new GearDialog(this);
 
     pDriftTool = NULL;
+
+    pManualGuide = NULL;
 
     tools_menu->Check(MENU_LOG,false);
 
@@ -683,9 +683,7 @@ void MyFrame::SetupKeyboardShortcuts(void)
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP),
         wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'M', EEGG_MANUALCAL),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'R', EEGG_RANDOMMOTION),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'T', EEGG_TESTGUIDEDIR),
     };
     wxAcceleratorTable accel(WXSIZEOF(entries), entries);
     SetAcceleratorTable(accel);

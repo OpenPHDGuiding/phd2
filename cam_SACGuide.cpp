@@ -37,7 +37,6 @@
 #include "image_math.h"
 #include "cam_SACGuide.h"
 
-extern void TestGuide();
 // FC Labs version -- draws from SAC4-2 for all
 Camera_SACGuiderClass::Camera_SACGuiderClass() {
     Connected = FALSE;
@@ -111,9 +110,8 @@ bool Camera_SACGuiderClass::Connect() {
         return true;
     }
     CmosReset(DevName);
-//  TestGuide();
-    /*
-        wxMessageBox(_T("RA+")); wxGetApp().Yield(); ST4PulseGuideScope(WEST,2000); wxGetApp().Yield();
+/*
+    wxMessageBox(_T("RA+")); wxGetApp().Yield(); ST4PulseGuideScope(WEST,2000); wxGetApp().Yield();
     wxMessageBox(_T("Dec+"));  wxGetApp().Yield(); ST4PulseGuideScope(NORTH,2000);wxGetApp().Yield();
     wxMessageBox(_T("Dec-"));  wxGetApp().Yield(); ST4PulseGuideScope(EAST,2000);wxGetApp().Yield();
     wxMessageBox(_T("RA-"));  wxGetApp().Yield(); ST4PulseGuideScope(SOUTH,2000);wxGetApp().Yield();
