@@ -335,8 +335,10 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event)) {
 			if (debuglog) { debug << _T("Finding star - "); debugstr.Sync(); }
 			FindStar(CurrentFullFrame); // track it
 			if (debuglog) { debug << _T("Done (") << FoundStar << _T(")\n"); debugstr.Sync(); }
-			if (FoundStar)
-				SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
+			if (FoundStar) {
+				SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR),1);
+				SetStatusText(wxString::Format("%.1f,%.1f",StarX,StarY));
+			}
 			else {
 				SetStatusText(_T("Star lost"));
 			/*	SetBackgroundColour(wxColour(255,0,0));

@@ -108,7 +108,7 @@ void MyCanvas::OnLClick(wxMouseEvent &mevent) {
 		FindStar(CurrentFullFrame);
 		//LockX = StarX;
 		//LockY = StarY;
-		frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR));
+		frame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),StarMass,StarSNR),1);
 		//Targ_x = (int) StarX;
 		//Targ_y = (int) StarY;
 		//Origin_x = Targ_x;

@@ -108,7 +108,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
 
         CaptureActive = true;
         canvas->State = STATE_GUIDING_LOCKED;
-        SetStatusText(_T("Guiding"));
+ //       SetStatusText(_T("Guiding"));
         if (Log_Data) {
             if (LogFile->Exists()) LogFile->Open();
             else LogFile->Create();
@@ -187,6 +187,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                     // sound the alarm and wait here
                 }
                 if (!FoundStar) {
+					SetStatusText(_T("Guiding") + wxString::Format(" ??,??"));
                     SetBackgroundColour(wxColour(64,0,0));
                     Refresh();
                     wxTheApp->Yield();
@@ -195,6 +196,9 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event)) {
                     SetBackgroundColour(DefaultColor);
                     Refresh();
                 }
+				else 
+					SetStatusText(_T("Guiding") + wxString::Format(" %.1f,%.1f",StarX,StarY));
+   
                 Debug << _T("Calculating - RA ");
                 if (dX == 0.0) dX = 0.000001;
                 if (dX > 0.0) theta = atan(dY/dX);		// theta = angle star is at
