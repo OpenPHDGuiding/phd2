@@ -20,7 +20,7 @@ DirExistsWarning=no
 [Files]
 Source: "Release\phd2.exe";                   DestDir: "{app}"; Flags: replacesameversion
 Source: "locale\*"; Excludes: "*-old.*";      DestDir: "{app}\locale"; Flags: recursesubdirs replacesameversion
-Source: "PHDGuideHelp.zip";                   DestDir: "{app}"; Flags: replacesameversion
+Source: "PHD2GuideHelp.zip";                  DestDir: "{app}"; Flags: replacesameversion
 Source: "README-PHD2.txt";                    DestDir: "{app}"; Flags: isreadme replacesameversion
 Source: "WinLibs\astroDLLGeneric.dll";        DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\astroDLLQHY5V.dll";          DestDir: "{app}"; Flags: replacesameversion
