@@ -95,8 +95,8 @@ Operation is quite simple (hence the 'PHD')\n\n \
   1) Press the 'Camera' button, select your camera and mount, click on 'Connect All'\n \
   2) Pick an exposure duration from the drop-down list\n \
   3) Hit the 'Loop' button, adjust your focus if necessary\n \
-  4) Click on a star away from the edge or use Alt-s to auto-select a star\n \
-  5) Press the PHD2 (archery target) icon\n\n \
+  4) Click on a star away from the edge or use Alt-S to auto-select a star\n \
+  5) Press the PHD (archery target) icon\n\n \
 PHD2 will then calibrate itself and begin guiding.  That's it!\n\n \
 To stop guiding, simply press the 'Loop' or 'Stop' buttons. If you need to \n \
 tweak any options, click on the 'Brain' button to bring up the 'Advanced' \n \
