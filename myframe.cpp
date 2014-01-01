@@ -695,7 +695,7 @@ void MyFrame::SetupHelpFile(void)
     bool retval;
     wxString filename = wxStandardPaths::Get().GetResourcesDir()
         + wxFILE_SEP_PATH
-        + _T("PHDGuideHelp.zip");
+        + _T("PHD2GuideHelp.zip");
     help = new wxHtmlHelpController;
     retval = help->AddBook(filename);
     if (!retval) {
