@@ -745,7 +745,7 @@ GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWi
 
     m_pEnableStarMassChangeThresh = new wxCheckBox(pParent, STAR_MASS_ENABLE, _("Star mass change detection"));
     DoAdd(m_pEnableStarMassChangeThresh, _("Check to enable star mass change detection. When enabled, "
-        "PHD skips frames when the guide star mass changes by an amount greater then the Star mass tolerance setting."));
+        "PHD skips frames when the guide star mass changes by an amount greater than the Star mass tolerance setting."));
 
     pParent->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderOneStar::GuiderOneStarConfigDialogPane::OnStarMassEnableChecked, this, STAR_MASS_ENABLE);
 

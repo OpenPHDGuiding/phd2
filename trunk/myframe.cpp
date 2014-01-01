@@ -1077,7 +1077,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
 
         pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
 
-        SetStatusText(_("Dither by %.2f,%.2f"), dRa, dDec);
+        SetStatusText(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
         GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
         EvtServer.NotifyGuidingDithered(dRa, dDec);
     }
