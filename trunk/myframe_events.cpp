@@ -90,20 +90,18 @@ void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 void MyFrame::OnInstructions(wxCommandEvent& WXUNUSED(event))
 {
     if (CaptureActive) return;  // Looping an exposure already
-    wxMessageBox(wxString::Format(_("Welcome to PHD (Push Here Dummy) Guiding\n\n \
+    wxMessageBox(wxString::Format(_("Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n\n \
 Operation is quite simple (hence the 'PHD')\n\n \
-  1) Press the Camera Button and select your camera\n \
-  2) Select your scope interface in the Mount menu if not\n \
-     already selected.  Then, press the Telescope Button \n \
-     to connect to your scope\n \
-  3) Pick an exposure duration from the drop-down list\n \
-  4) Hit the Loop Button, adjust your focus\n \
-  5) Click on a star away from the edge\n \
-  6) Press the PHD (archery target) icon\n\n \
-PHD will then calibrate itself and begin guiding.  That's it!\n\n \
-To stop guiding, simply press the Stop Button. If you need to \n \
-tweak any options, click on the Brain Button to bring up the\n \
-Advanced panel.  ")),_("Instructions"));
+  1) Press the 'Camera' button, select your camera and mount, click on 'Connect All'\n \
+  2) Pick an exposure duration from the drop-down list\n \
+  3) Hit the 'Loop' button, adjust your focus if necessary\n \
+  4) Click on a star away from the edge or use Alt-s to auto-select a star\n \
+  5) Press the PHD2 (archery target) icon\n\n \
+PHD2 will then calibrate itself and begin guiding.  That's it!\n\n \
+To stop guiding, simply press the 'Loop' or 'Stop' buttons. If you need to \n \
+tweak any options, click on the 'Brain' button to bring up the 'Advanced' \n \
+panel. Use the 'View' menu to watch your guiding performance. If you have\n \
+problems, read the help files! ")),_("Instructions"));
 
 }
 
