@@ -376,7 +376,8 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
         POSSIBLY_UNUSED(Msg);
     }
 
-    Debug.AddLine("Sending socket respose %d (0x%x)", rval, rval);
+    Debug.AddLine("Sending socket response %d (0x%x)", rval, rval);
+
     // Send response
     sock->Write(&rval,1);
 
