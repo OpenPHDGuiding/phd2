@@ -80,8 +80,8 @@ void Star::SetError(FindResult error)
 bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
 {
     FindResult Result = STAR_OK;
-    double X = base_x;
-    double Y = base_y;
+    double newX = base_x;
+    double newY = base_y;
 
     try
     {
@@ -89,79 +89,88 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
 
         if (base_x < 0 || base_y < 0)
         {
-            throw ERROR_INFO("cooridnates are invalid");
+            throw ERROR_INFO("coordinates are invalid");
         }
-
-        // ADD BIT ABOUT USING PREVIOUS DELTA TO FIGURE NEW STARTING SPOT TO LOOK - -maybe have this be an option
-
-        unsigned short max=0, nearmax1=0, nearmax2=0, localmin = 65535;
-        unsigned long maxlval=0, mean=0;
-        double localmean = 0.0;
-
-        unsigned short *dataptr = pImg->ImageData;
-        int rowsize = pImg->Size.GetWidth();
-        int searchsize = searchRegion * 2 + 1;
 
         // u-left corner of local area
         int start_x = base_x - searchRegion;
         int start_y = base_y - searchRegion;
 
-        int x, y;
-
-        double mass=0, mx=0.0, my=0.0, val;
-        unsigned long lval;
-        unsigned sval;
+        int searchsize = searchRegion * 2 + 1;
 
         // make sure the star is not too near the edge
-        if (start_x < 0 || start_x + searchsize >= pImg->Size.GetWidth() ||
-            start_y < 0 || start_y + searchsize >= pImg->Size.GetHeight())
+        if (start_x < 1 || start_x + searchsize + 1 >= pImg->Size.GetWidth() ||
+            start_y < 1 || start_y + searchsize + 1 >= pImg->Size.GetHeight())
         {
             Result = STAR_TOO_NEAR_EDGE;
             throw ERROR_INFO("Star too near edge");
         }
 
-        if (start_y == 0)
-            start_y = 1;
+        const unsigned short *dataptr = pImg->ImageData;
+        int rowsize = pImg->Size.GetWidth();
 
         // compute localmin and localmean, which we need to find the star
-        for (y=0; y<searchsize; y++) {
-            for (x=0; x<searchsize; x++) {
-                if (*(dataptr + (start_x + x) + rowsize * (start_y + y-1)) < localmin)
-                    localmin = *(dataptr + (start_x + x) + rowsize * (start_y + y-1));
-                localmean = localmean + (double)  *(dataptr + (start_x + x) + rowsize * (start_y + y-1));
-
+        unsigned short localmin = 65535;
+        double localmean = 0.0;
+        for (int y = 0; y < searchsize; y++)
+        {
+            for (int x = 0; x < searchsize; x++)
+            {
+                unsigned short val = *(dataptr + (start_x + x) + rowsize * (start_y + y));
+                if (val < localmin)
+                    localmin = val;
+                localmean += (double) val;
             }
         }
-        localmean = localmean / (double) (searchsize * searchsize);
+        localmean /= (double) (searchsize * searchsize);
 
-        // get rough guess on star's location
-        for (y=0; y<searchsize; y++) {
-            for (x=0; x<searchsize; x++) {
+        // get rough guess on star's location by finding the peak value within the search region
+
+        unsigned long maxlval = 0;
+        unsigned short max = 0, nearmax1 = 0, nearmax2 = 0;
+        unsigned long mean = 0;
+
+        for (int y = 0; y < searchsize; y++)
+        {
+            for (int x = 0; x < searchsize; x++)
+            {
+                unsigned long lval;
                 lval = *(dataptr + (start_x + x) + rowsize * (start_y + y)) +  // combine adjacent pixels to smooth image
                     *(dataptr + (start_x + x+1) + rowsize * (start_y + y)) +        // find max of this smoothed area and set
                     *(dataptr + (start_x + x-1) + rowsize * (start_y + y)) +        // base_x and y to be this spot
                     *(dataptr + (start_x + x) + rowsize * (start_y + y+1)) +
                     *(dataptr + (start_x + x) + rowsize * (start_y + y-1)) +
                     *(dataptr + (start_x + x) + rowsize * (start_y + y));  // weigh current pixel by 2x
-                if (lval >= maxlval) {
+
+                if (lval >= maxlval)
+                {
                     base_x = start_x + x;
                     base_y = start_y + y;
                     maxlval = lval;
                 }
-                sval = *(dataptr + (start_x + x) + rowsize * (start_y + y)) -localmin;
-                if ( sval >= max) {
+
+                unsigned int sval = *(dataptr + (start_x + x) + rowsize * (start_y + y)) - localmin;
+                if (sval >= max) {
                     nearmax2 = nearmax1;
                     nearmax1 = max;
                     max = sval;
                 }
-                mean = mean + sval;
+                mean += sval;
             }
         }
-        mean = mean / (searchsize * searchsize);
+        mean /= (searchsize * searchsize);
 
-        // should be close now, hone in
-        int ft_range = 15; // must be odd
-        int hft_range = ft_range / 2;
+        // should be close now, hone in by finding the weighted average position
+
+        const int ft_range = 15; // must be odd
+        const int hft_range = ft_range / 2;
+
+        if (base_x < hft_range || base_x + hft_range >= pImg->Size.GetWidth() ||
+            base_y < hft_range || base_y + hft_range >= pImg->Size.GetHeight())
+        {
+            Result = STAR_TOO_NEAR_EDGE;
+            throw ERROR_INFO("Star peak too near edge");
+        }
 
         // we try these thresholds in this order trying to get a mass >= 10
         double thresholds[] =
@@ -171,18 +180,23 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
             (double) localmin
         };
 
+        double mass = 0.0, mx = 0.0, my = 0.0;
+
         for (unsigned int i = 0; i < WXSIZEOF(thresholds) && mass < 10.0; i++)
         {
             mass = mx = my = 0.000001;
             double threshold = thresholds[i];
-            for (y=0; y<ft_range; y++) {
-                for (x=0; x<ft_range; x++) {
-                    val = (double) *(dataptr + (base_x + (x-hft_range)) + rowsize*(base_y + (y-hft_range))) - threshold;
-                    if (val < 0.0)
-                        val=0.0;
-                    mx = mx + (double) (base_x + x-hft_range) * val;
-                    my = my + (double) (base_y + y-hft_range) * val;
-                    mass = mass + val;
+            for (int y = 0; y < ft_range; y++)
+            {
+                for (int x = 0; x < ft_range; x++)
+                {
+                    double val = (double) *(dataptr + (base_x + x - hft_range) + rowsize * (base_y + y - hft_range)) - threshold;
+                    if (val > 0.0)
+                    {
+                        mx += (double) (base_x + x - hft_range) * val;
+                        my += (double) (base_y + y - hft_range) * val;
+                        mass += val;
+                    }
                 }
             }
         }
@@ -197,8 +211,8 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
             Result = STAR_LOWSNR;
         }
         else {
-            X = mx / mass;
-            Y = my / mass;
+            newX = mx / mass;
+            newY = my / mass;
             if (max == nearmax2) {
                 Result = STAR_SATURATED;
             }
@@ -215,7 +229,7 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
     }
 
     // update state
-    SetXY(X, Y);
+    SetXY(newX, newY);
     m_lastFindResult = Result;
 
     bool bReturn = WasFound(Result);
@@ -226,7 +240,7 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
         SNR = 0.0;
     }
 
-    Debug.AddLine(wxString::Format("Star::Find returns %d, X=%.2f, Y=%.2f", bReturn, X, Y));
+    Debug.AddLine(wxString::Format("Star::Find returns %d, X=%.2f, Y=%.2f", bReturn, newX, newY));
 
     return bReturn;
 }
