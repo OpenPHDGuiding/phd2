@@ -44,25 +44,31 @@ enum PropDlgType
     PROPDLG_WHEN_DISCONNECTED, // property dialog available when disconnected
 };
 
+class GuideCamera;
+
+class CameraConfigDialogPane : public ConfigDialogPane
+{
+    GuideCamera *m_pCamera;
+    wxCheckBox *m_pUseSubframes;
+    wxSpinCtrl *m_pCameraGain;
+    wxChoice   *m_pPortNum;
+    wxSpinCtrl *m_pDelay;
+    wxSpinCtrlDouble *m_pPixelSize;
+    wxCheckBox *m_pLoadDarks;
+public:
+    CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
+    virtual ~CameraConfigDialogPane(void);
+
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+
+    double GetPixelSize(void);
+    void SetPixelSize(double val);
+};
+
 class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 {
 protected:
-    class CameraConfigDialogPane : public ConfigDialogPane
-    {
-        GuideCamera *m_pCamera;
-        wxCheckBox *m_pUseSubframes;
-        wxSpinCtrl *m_pCameraGain;
-        wxChoice   *m_pPortNum;
-        wxSpinCtrl *m_pDelay;
-        wxSpinCtrlDouble *m_pPixelSize;
-        wxCheckBox *m_pLoadDarks;
-    public:
-        CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
-        virtual ~CameraConfigDialogPane(void);
-
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-    };
 
     virtual int GetCameraGain(void);
     virtual bool SetCameraGain(int cameraGain);
@@ -112,7 +118,7 @@ public:
     virtual bool    ST4HasNonGuiMove(void);
     virtual bool    ST4PulseGuideScope(int direction, int duration);
 
-    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    CameraConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
     virtual void    ShowPropertyDialog() { return; }
 

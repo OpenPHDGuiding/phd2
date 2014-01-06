@@ -1390,14 +1390,14 @@ bool MyFrame::SetLanguage(int language)
     return bError;
 }
 
-ConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
+MyFrameConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 {
     return new MyFrameConfigDialogPane(pParent, this);
 }
 
 #define _NOTRANS(s) _T(s)   // Dummy macro to extract a string in .po file without calling translation function
 
-MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame)
+MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame)
     : ConfigDialogPane(_("Global Settings"), pParent)
 {
     int width;
@@ -1502,7 +1502,7 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     m_pLogDir->SetToolTip(_("Folder for guide and debug logs; empty string to restore the default location"));
     wxButton *pSelectDir = new wxButton(pParent, wxID_OK, _("Browse...") );
     pButtonSizer->Add(pSelectDir, wxSizerFlags(0).Center());
-    pSelectDir->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &MyFrame::MyFrameConfigDialogPane::OnDirSelect, this);
+    pSelectDir->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &MyFrameConfigDialogPane::OnDirSelect, this);
 
     pInputGroupBox->Add(m_pLogDir, wxSizerFlags(0).Expand());
     pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Center().Border(wxTop, 20));
@@ -1512,7 +1512,7 @@ MyFrame::MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyF
     DoAdd(m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
 }
 
-void MyFrame::MyFrameConfigDialogPane::OnDirSelect(wxCommandEvent& evt)
+void MyFrameConfigDialogPane::OnDirSelect(wxCommandEvent& evt)
 {
     wxString sRtn = wxDirSelector("Choose a location", m_pLogDir->GetValue());
 
@@ -1520,11 +1520,11 @@ void MyFrame::MyFrameConfigDialogPane::OnDirSelect(wxCommandEvent& evt)
         m_pLogDir->SetValue (sRtn);
 }
 
-MyFrame::MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
+MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
 {
 }
 
-void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
+void MyFrameConfigDialogPane::LoadValues(void)
 {
     m_pResetConfiguration->SetValue(false);
     m_pEnableLogging->SetValue(GuideLog.IsEnabled());
@@ -1534,7 +1534,7 @@ void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
     m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
     m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
-    m_pFocalLength->SetValue(wxString::Format(_T("%d"), m_pFrame->GetFocalLength()));
+    SetFocalLength(m_pFrame->GetFocalLength());
 
     int language = m_pFrame->GetLanguage();
     m_oldLanguageChoice = m_LanguageIDs.Index(language);
@@ -1544,7 +1544,7 @@ void MyFrame::MyFrameConfigDialogPane::LoadValues(void)
     m_pAutoLoadCalibration->SetValue(m_pFrame->GetAutoLoadCalibration());
 }
 
-void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
+void MyFrameConfigDialogPane::UnloadValues(void)
 {
     try
     {
@@ -1572,9 +1572,7 @@ void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
         m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
         m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
 
-        long focalLength;
-        m_pFocalLength->GetValue().ToLong(&focalLength);
-        m_pFrame->SetFocalLength(focalLength);
+        m_pFrame->SetFocalLength(GetFocalLength());
 
         int language = m_pLanguage->GetSelection();
         pFrame->SetLanguage(m_LanguageIDs[language]);
@@ -1597,4 +1595,16 @@ void MyFrame::MyFrameConfigDialogPane::UnloadValues(void)
         POSSIBLY_UNUSED(Msg);
     }
 
+}
+
+int MyFrameConfigDialogPane::GetFocalLength(void)
+{
+    long val = 0;
+    m_pFocalLength->GetValue().ToLong(&val);
+    return (int) val;
+}
+
+void MyFrameConfigDialogPane::SetFocalLength(int val)
+{
+    m_pFocalLength->SetValue(wxString::Format(_T("%d"), val));
 }

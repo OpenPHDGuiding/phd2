@@ -59,38 +59,43 @@ enum NOISE_REDUCTION_METHOD
     NR_3x3MEDIAN
 };
 
+class MyFrame;
+
+class MyFrameConfigDialogPane : public ConfigDialogPane
+{
+    MyFrame *m_pFrame;
+    wxCheckBox *m_pResetConfiguration;
+    wxCheckBox *m_pEnableLogging;
+    wxCheckBox *m_pEnableImageLogging;
+    wxChoice* m_pLoggedImageFormat;
+    wxCheckBox *m_pDitherRaOnly;
+    wxSpinCtrlDouble *m_pDitherScaleFactor;
+    wxChoice *m_pNoiseReduction;
+    wxSpinCtrl *m_pTimeLapse;
+    wxTextCtrl *m_pFocalLength;
+    wxChoice* m_pLanguage;
+    wxArrayInt m_LanguageIDs;
+    int m_oldLanguageChoice;
+    wxTextCtrl *m_pLogDir;
+    wxCheckBox *m_pAutoLoadCalibration;
+
+    void OnDirSelect(wxCommandEvent& evt);
+
+public:
+    MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
+    virtual ~MyFrameConfigDialogPane(void);
+
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+
+    int GetFocalLength(void);
+    void SetFocalLength(int val);
+};
+
 //class MyFrame: public wxFrame
-class MyFrame: public wxFrame
+class MyFrame : public wxFrame
 {
 protected:
-    class MyFrameConfigDialogPane : public ConfigDialogPane
-    {
-        MyFrame *m_pFrame;
-        wxCheckBox *m_pResetConfiguration;
-        wxCheckBox *m_pEnableLogging;
-        wxCheckBox *m_pEnableImageLogging;
-        wxChoice* m_pLoggedImageFormat;
-        wxCheckBox *m_pDitherRaOnly;
-        wxSpinCtrlDouble *m_pDitherScaleFactor;
-        wxChoice *m_pNoiseReduction;
-        wxSpinCtrl *m_pTimeLapse;
-        wxTextCtrl *m_pFocalLength;
-        wxChoice* m_pLanguage;
-        wxArrayInt m_LanguageIDs;
-        int m_oldLanguageChoice;
-        wxTextCtrl *m_pLogDir;
-        wxCheckBox *m_pAutoLoadCalibration;
-
-        void OnDirSelect(wxCommandEvent& evt);
-
-    public:
-        MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
-        virtual ~MyFrameConfigDialogPane(void);
-
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-    };
-
     NOISE_REDUCTION_METHOD GetNoiseReductionMethod(void);
     bool SetNoiseReductionMethod(int noiseReductionMethod);
 
@@ -219,7 +224,7 @@ public:
     void LoadCalibration(void);
     int GetInstanceNumber() const { return m_instanceNumber; }
 
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
     struct EXPOSE_REQUEST
     {
