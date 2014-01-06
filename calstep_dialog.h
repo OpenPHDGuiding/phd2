@@ -61,7 +61,7 @@ private:
     double m_fGuideSpeed;
     int m_iNumSteps;
     double m_fImageScale;
-    int m_iRslt;
+    int m_iStepSize;
     bool m_bValidResult;
     double m_dDeclination;
     // pConfig prefix string for persisting guide speed
@@ -70,11 +70,10 @@ private:
 public:
     CalstepDialog(int focalLength, double pixelSize, const wxString& configPrefix);
     ~CalstepDialog(void);
-    int GetResult ();
+    bool GetResults (int& focalLength, double& pixelSize, int& stepSize);
 
 private:
     void AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip);
-    int StringWidth(const wxString& string);
     void OnRecalc (wxCommandEvent& evt);
     bool CalcDefaultDuration (int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps, double Declination, double& ImageScale, int& StepSize);
 };
