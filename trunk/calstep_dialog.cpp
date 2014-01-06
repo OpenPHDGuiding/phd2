@@ -37,7 +37,7 @@
 #include "calstep_dialog.h"
 #include "wx/valnum.h"
 
-#define MIN_PIXELSIZE 3.0
+#define MIN_PIXELSIZE 0.0
 #define MAX_PIXELSIZE 25.0
 #define MIN_GUIDESPEED 0.25
 #define MAX_GUIDESPEED 2.0
@@ -55,6 +55,15 @@ static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, dou
     return pNewCtrl;
 }
 
+static int StringWidth(CalstepDialog* dlg, const wxString& string)
+{
+    int width, height;
+
+    dlg->GetTextExtent(string, &width, &height);
+
+    return width;
+}
+
 CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& configPrefix) :
     wxDialog(pFrame, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
@@ -66,14 +75,9 @@ CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& 
     // Get squared away with initial parameter values
     m_iNumSteps = DEFAULT_STEPS;
     m_dDeclination = 0.0;
-    if (focalLength > 0)
-        m_iFocalLength = focalLength;
-    else
-        m_iFocalLength = 0;
-    if (pixelSize > 0)
-        m_fPixelSize = pixelSize;
-    else
-        m_fPixelSize = 0;
+    m_iFocalLength = focalLength;
+    m_fPixelSize = pixelSize;
+
     // See if we can get the guide rates - if not, use our best default
     try
     {
@@ -116,7 +120,7 @@ CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& 
 
     // Note that "min" values in fp validators don't work right - so leave them out
     // Focal length - int <= 4000
-    int width = StringWidth("00000") + 10;
+    int width = StringWidth(this, "00000") + 10;
     wxIntegerValidator <int> valFocalLength (&m_iFocalLength, 0);
     valFocalLength.SetRange (0, 3500);
     m_pFocalLength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valFocalLength);
@@ -175,15 +179,6 @@ CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& 
     SetSizerAndFit (m_pVSizer);
 }
 
-int CalstepDialog::StringWidth(const wxString& string)
-{
-    int width, height;
-
-    GetTextExtent(string, &width, &height);
-
-    return width;
-}
-
 // Utility function to add the <label, input> tuples to the grid including tool-tips
 void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip)
 {
@@ -239,12 +234,12 @@ void CalstepDialog::OnRecalc (wxCommandEvent& evt)
         m_dDeclination = abs(m_pDeclination->GetValue());
 
         // Spin controls enforce numeric ranges
-        if (m_iFocalLength >= 50 && m_iFocalLength <= 4000)
+        if (m_iFocalLength >= 50 && m_iFocalLength <= 4000 && m_fPixelSize > 0)
         {
-            if (CalcDefaultDuration (m_iFocalLength, m_fPixelSize, m_fGuideSpeed, m_iNumSteps, m_dDeclination, m_fImageScale, m_iRslt))
+            if (CalcDefaultDuration (m_iFocalLength, m_fPixelSize, m_fGuideSpeed, m_iNumSteps, m_dDeclination, m_fImageScale, m_iStepSize))
             {
                 m_pImageScale->SetValue (wxString::Format ("%.2f", m_fImageScale));
-                m_pRslt->SetValue (wxString::Format ("%3d", m_iRslt));
+                m_pRslt->SetValue (wxString::Format ("%3d", m_iStepSize));
                 // Remember the guide speed chosen is just to help the user - purely a UI thing, no guiding implications
                 pConfig->Profile.SetDouble (m_sConfigPrefix + "/GuideSpeed", m_fGuideSpeed);
                 m_bValidResult = true;
@@ -254,16 +249,21 @@ void CalstepDialog::OnRecalc (wxCommandEvent& evt)
         }
 
         else
-            wxMessageBox (_("Focal length must be >= 50 and < 4000"),  _("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox (_("Focal length must be >= 50 and < 4000, Pixel size must be > 0"),  _("Error"), wxOK | wxICON_ERROR);
     }
 }
-// Public function for client to get the calculated value for step-size
-int CalstepDialog::GetResult ()
+// Public function for client to get the computed step-size along with possibly modified values for focal length and pixel size
+bool CalstepDialog::GetResults (int& focalLength, double& pixelSize, int& stepSize)
 {
     if (m_bValidResult)
-        return (m_iRslt);
+    {
+        focalLength = m_iFocalLength;
+        pixelSize = m_fPixelSize;
+        stepSize = m_iStepSize;
+        return (true);
+    }
     else
-        return (0);
+        return (false);
 }
 
 CalstepDialog::~CalstepDialog(void)

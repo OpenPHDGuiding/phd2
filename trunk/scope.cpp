@@ -56,7 +56,6 @@ Scope::Scope(void)
     m_graphControlPane = NULL;
 
     wxString prefix = "/" + GetMountClassName();
-
     int calibrationDuration = pConfig->Profile.GetInt(prefix + "/CalibrationDuration", DefaultCalibrationDuration);
     SetCalibrationDuration(calibrationDuration);
 
@@ -910,27 +909,33 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
 
 void Scope::ScopeConfigDialogPane::OnAutoDuration (wxCommandEvent& evt)
 {
-    int iFocalLength = pFrame->GetFocalLength ();
-    double fPixelSize;
+    int lFocalLength = 0;
+    double dPixelSize = 0;
     wxString sConfigPrefix;
+    AdvancedDialog* pAdvancedDlg = AdvancedDialog::Instance();
 
-    if (pCamera)
-        fPixelSize = pCamera->PixelSize;
-    else
-        fPixelSize = 0;
+    if (pAdvancedDlg)
+    {
+        dPixelSize = pAdvancedDlg->GetPixelSize ();
+        lFocalLength = pAdvancedDlg->GetFocalLength ();
+    }
 
     if (pMount)
     {
         sConfigPrefix = "/" + pMount->GetMountClassName();
     }
 
-    CalstepDialog calc (iFocalLength, fPixelSize, sConfigPrefix);
+    CalstepDialog calc (lFocalLength, dPixelSize, sConfigPrefix);
     if (calc.ShowModal () == wxID_OK)
     {
-        int iRslt;
-        iRslt = calc.GetResult ();
-        if (iRslt > 0)                              // User might hit 'ok' with empty field
-            m_pCalibrationDuration->SetValue (iRslt);
+        int iDuration;
+        if (calc.GetResults (lFocalLength, dPixelSize, iDuration))
+        {
+            // Following sets values in the UI controls of the various dialog tabs - not underlying data values
+            pAdvancedDlg->SetFocalLength (lFocalLength);
+            pAdvancedDlg->SetPixelSize (dPixelSize);
+            m_pCalibrationDuration->SetValue (iDuration);
+        }
     }
 }
 
