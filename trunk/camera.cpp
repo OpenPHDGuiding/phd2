@@ -613,12 +613,12 @@ bool GuideCamera::SetCameraPixelSize(float pixel_size)
     return bError;
 }
 
-ConfigDialogPane * GuideCamera::GetConfigDialogPane(wxWindow *pParent)
+CameraConfigDialogPane *GuideCamera::GetConfigDialogPane(wxWindow *pParent)
 {
     return new CameraConfigDialogPane(pParent, this);
 }
 
-GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera)
+CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera)
     : ConfigDialogPane(_("Camera Settings"), pParent)
 {
     assert(pCamera);
@@ -682,11 +682,11 @@ GuideCamera::CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, G
                           "the camera is connected."));
 }
 
-GuideCamera::CameraConfigDialogPane::~CameraConfigDialogPane(void)
+CameraConfigDialogPane::~CameraConfigDialogPane(void)
 {
 }
 
-void GuideCamera::CameraConfigDialogPane::LoadValues(void)
+void CameraConfigDialogPane::LoadValues(void)
 {
     assert(m_pCamera);
 
@@ -775,7 +775,7 @@ void GuideCamera::CameraConfigDialogPane::LoadValues(void)
     m_pLoadDarks->SetValue(autoLoadDarks);
 }
 
-void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
+void CameraConfigDialogPane::UnloadValues(void)
 {
     assert(m_pCamera);
 
@@ -829,6 +829,16 @@ void GuideCamera::CameraConfigDialogPane::UnloadValues(void)
 
     bool autoLoadDarks = m_pLoadDarks->GetValue();
     pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", autoLoadDarks);
+}
+
+double CameraConfigDialogPane::GetPixelSize(void)
+{
+    return m_pPixelSize->GetValue();
+}
+
+void CameraConfigDialogPane::SetPixelSize(double val)
+{
+    m_pPixelSize->SetValue(val);
 }
 
 wxString GuideCamera::GetSettingsSummary()

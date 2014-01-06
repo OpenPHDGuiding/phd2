@@ -41,6 +41,8 @@
 // a place to save id of selected panel so we can select the same panel next time the dialog is opened
 static int s_selectedPage = -1;
 
+static AdvancedDialog *s_advancedDialogInstance;
+
 AdvancedDialog::AdvancedDialog() :
     wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
@@ -70,6 +72,8 @@ AdvancedDialog::AdvancedDialog() :
      * +-------------------------------------------------------------------------+
      *
      */
+
+    s_advancedDialogInstance = this;
 
 #if defined(__WXOSX__)
     m_pNotebook = new wxChoicebook(this, wxID_ANY);
@@ -191,6 +195,15 @@ AdvancedDialog::AdvancedDialog() :
     SetSizerAndFit(pTopLevelSizer);
 }
 
+AdvancedDialog::~AdvancedDialog()
+{
+    s_advancedDialogInstance = 0;
+}
+
+AdvancedDialog *AdvancedDialog::Instance()
+{
+    return s_advancedDialogInstance;
+}
 
 void AdvancedDialog::LoadValues(void)
 {
@@ -252,6 +265,27 @@ void AdvancedDialog::EndModal(int retCode)
 {
     s_selectedPage = m_pNotebook->GetSelection();
     wxDialog::EndModal(retCode);
+}
+
+int AdvancedDialog::GetFocalLength(void)
+{
+    return m_pFramePane->GetFocalLength();
+}
+
+void AdvancedDialog::SetFocalLength(int val)
+{
+    m_pFramePane->SetFocalLength(val);
+}
+
+double AdvancedDialog::GetPixelSize(void)
+{
+    return m_pCameraPane ? m_pCameraPane->GetPixelSize() : 0.0;
+}
+
+void AdvancedDialog::SetPixelSize(double val)
+{
+    if (m_pCameraPane)
+        m_pCameraPane->SetPixelSize(val);
 }
 
 BEGIN_EVENT_TABLE(AdvancedDialog, wxDialog)

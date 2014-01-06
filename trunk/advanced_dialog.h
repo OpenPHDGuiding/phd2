@@ -35,21 +35,34 @@
 #ifndef ADVANCED_DIALOG_H_INCLUDED
 #define ADVANCED_DIALOG_H_INCLUDED
 
-class AdvancedDialog: public wxDialog {
+class MyFrameConfigDialogPane;
+class CameraConfigDialogPane;
+
+class AdvancedDialog : public wxDialog
+{
     wxBookCtrlBase *m_pNotebook;
-    ConfigDialogPane *m_pFramePane;
+    MyFrameConfigDialogPane *m_pFramePane;
     ConfigDialogPane *m_pMountPane;
     ConfigDialogPane *m_pSecondaryMountPane;
-    ConfigDialogPane *m_pCameraPane;
+    CameraConfigDialogPane *m_pCameraPane;
     ConfigDialogPane *m_pGuiderPane;
 public:
     AdvancedDialog();
-    ~AdvancedDialog(void) {};
+    ~AdvancedDialog();
+
+    static AdvancedDialog *Instance(void);
+
     void EndModal(int retCode);
 
     void LoadValues(void);
     void UnloadValues(void);
     void Undo(void);
+
+    int GetFocalLength(void);
+    void SetFocalLength(int val);
+    double GetPixelSize(void);
+    void SetPixelSize(double val);
+
 private:
     void OnSetupCamera(wxCommandEvent& event);
     DECLARE_EVENT_TABLE()
