@@ -299,16 +299,37 @@ const PHD_Point& GuiderOneStar::CurrentPosition(void)
 
 wxRect GuiderOneStar::GetBoundingBox(void)
 {
-    wxRect box(0, 0, 0, 0);
+    GUIDER_STATE state = GetState();
 
-    if (GetState() == STATE_GUIDING)
-    {
-        box = wxRect(LockPosition().X - 3*m_searchRegion, LockPosition().Y - 3*m_searchRegion,
-                6*m_searchRegion, 6*m_searchRegion);
-        box.Intersect(wxRect(0, 0, pCamera->FullSize.x, pCamera->FullSize.y));
+    bool subframe;
+    PHD_Point pos;
+
+    switch (state) {
+    case STATE_SELECTED:
+    case STATE_CALIBRATING_PRIMARY:
+    case STATE_CALIBRATING_SECONDARY:
+        subframe = true;
+        pos = CurrentPosition();
+        break;
+    case STATE_GUIDING:
+        subframe = true;
+        pos = LockPosition();
+        break;
+    default:
+        subframe = false;
     }
 
-    return box;
+    if (subframe)
+    {
+        wxRect box(pos.X - 3 * m_searchRegion, pos.Y - 3 * m_searchRegion,
+                6 * m_searchRegion, 6 * m_searchRegion);
+        box.Intersect(wxRect(0, 0, pCamera->FullSize.x, pCamera->FullSize.y));
+        return box;
+    }
+    else
+    {
+        return wxRect(0, 0, 0, 0);
+    }
 }
 
 int GuiderOneStar::GetMaxMovePixels(void)
