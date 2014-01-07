@@ -111,58 +111,60 @@ bool usImage::Clean() {
     return false;
 }
 
-bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power) {
-    wxImage *img;
-    unsigned char *ImgPtr;
-    unsigned short *RawPtr;
-    int i;
-    float d;
+bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power)
+{
+    wxImage *img = *rawimg;
 
-//  Binsize = 1;
-    img = *rawimg;
-    if ((!img->Ok()) || (img->GetWidth() != Size.GetWidth()) || (img->GetHeight() != Size.GetHeight()) ) {  // can't reuse bitmap
-        if (img->Ok()) {
+    if (!img->Ok() || (img->GetWidth() != Size.GetWidth()) || (img->GetHeight() != Size.GetHeight()) ) // can't reuse bitmap
+    {
+        if (img->Ok())
+        {
             delete img;  // Clear out current image if it exists
             img = (wxImage *) NULL;
         }
         img = new wxImage(Size.GetWidth(), Size.GetHeight(), false);
     }
-    ImgPtr = img->GetData();
-    RawPtr = ImageData;
-//  s_factor = (((float) Max - (float) Min) / 255.0);
 
-    float range = (float) (wlevel - blevel);
+    unsigned char *ImgPtr = img->GetData();
+    unsigned short *RawPtr = ImageData;
 
-    if ((power == 1.0) || (range == 0.0)) {
-        range = wlevel;  // Go 0-max
-        for (i=0; i<NPixels; i++, RawPtr++ ) {
-            d = ((float) (*RawPtr) / range) * 255.0;
-            if (d < 0.0) d = 0.0;
-            else if (d > 255.0) d = 255.0;
-            *ImgPtr = (unsigned char) d;
-            ImgPtr++;
-            *ImgPtr = (unsigned char) d;
-            ImgPtr++;
-            *ImgPtr = (unsigned char) d;
-            ImgPtr++;
+    if (power == 1.0 || blevel >= wlevel)
+    {
+        float range = wlevel;  // Go 0-max
+        for (int i = 0; i < NPixels; i++, RawPtr++)
+        {
+            float d;
+            if (*RawPtr >= wlevel)
+                d = 255.0;
+            else
+                d = ((float) (*RawPtr) / range) * 255.0;
 
+            *ImgPtr++ = (unsigned char) d;
+            *ImgPtr++ = (unsigned char) d;
+            *ImgPtr++ = (unsigned char) d;
         }
     }
-    else {
-        for (i=0; i<NPixels; i++, RawPtr++ ) {
-            d = ((float) (*RawPtr) - (float) blevel) / range;
-            if (d < 0.0) d= 0.0;
-            else if (d > 1.0) d = 1.0;
-            d = pow(d, (float) power) * 255.0;
-            *ImgPtr = (unsigned char) d;
-            ImgPtr++;
-            *ImgPtr = (unsigned char) d;
-            ImgPtr++;
-            *ImgPtr = (unsigned char) d;
-            ImgPtr++;
-
+    else
+    {
+        float range = (float) (wlevel - blevel);
+        for (int i = 0; i < NPixels; i++, RawPtr++ )
+        {
+            float d;
+            if (*RawPtr <= blevel)
+                d = 0.0;
+            else if (*RawPtr >= wlevel)
+                d = 255.0;
+            else
+            {
+                d = ((float) (*RawPtr) - (float) blevel) / range;
+                d = pow(d, (float) power) * 255.0;
+            }
+            *ImgPtr++ = (unsigned char) d;
+            *ImgPtr++ = (unsigned char) d;
+            *ImgPtr++ = (unsigned char) d;
         }
     }
+
     *rawimg = img;
     return false;
 }
