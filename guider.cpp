@@ -182,7 +182,6 @@ void Guider::OnClose(wxCloseEvent& evt)
 
 bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
 {
-    wxBitmap* DisplayedBitmap = NULL;
     bool bError = false;
 
     try
@@ -201,15 +200,14 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
 
         int imageWidth   = m_displayedImage->GetWidth();
         int imageHeight  = m_displayedImage->GetHeight();
-        wxImage newImage(*m_displayedImage);
 
         // scale the image if necessary
 
         if (imageWidth != XWinSize || imageHeight != YWinSize)
         {
             // The image is not the exact right size -- figure out what to do.
-            double xScaleFactor = imageWidth/(double)XWinSize;
-            double yScaleFactor = imageHeight/(double)YWinSize;
+            double xScaleFactor = imageWidth / (double)XWinSize;
+            double yScaleFactor = imageHeight / (double)YWinSize;
             int newWidth = imageWidth;
             int newHeight = imageHeight;
 
@@ -245,21 +243,15 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
             {
                 m_scaleFactor = 1.0;
             }
-
-            newImage.Resize(wxSize(XWinSize,YWinSize),wxPoint(0,0));
         }
 
-        DisplayedBitmap = new wxBitmap(m_displayedImage->Size(wxSize(XWinSize,YWinSize),wxPoint(0,0)));
-        memDC.SelectObject(*DisplayedBitmap);
+        // important to provide explicit color for r,g,b, optional args to Size().
+        // If default args are provided wxWidgets performs some expensive histogram
+        // operations.
+        wxBitmap DisplayedBitmap(m_displayedImage->Size(wxSize(XWinSize, YWinSize), wxPoint(0, 0), 0, 0, 0));
+        memDC.SelectObject(DisplayedBitmap);
 
-        try
-        {
-            dc.Blit(0, 0, DisplayedBitmap->GetWidth(),DisplayedBitmap->GetHeight(), & memDC, 0, 0, wxCOPY, false);
-        }
-        catch (...)
-        {
-            throw ERROR_INFO("dc.Blit() failed");
-        }
+        dc.Blit(0, 0, DisplayedBitmap.GetWidth(), DisplayedBitmap.GetHeight(), &memDC, 0, 0, wxCOPY, false);
 
         int XImgSize = m_displayedImage->GetWidth();
         int YImgSize = m_displayedImage->GetHeight();
@@ -267,9 +259,9 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
         if (m_overlayMode)
         {
             dc.SetPen(wxPen(wxColor(200,50,50)));
-            dc.SetBrush(* wxTRANSPARENT_BRUSH);
+            dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
-            switch(m_overlayMode)
+            switch (m_overlayMode)
             {
                 case OVERLAY_BULLSEYE:
                 {
@@ -379,8 +371,8 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
                     break;
             }
 
-            dc.DrawLine(0, LockY*m_scaleFactor, XImgSize, LockY*m_scaleFactor);
-            dc.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YImgSize);
+            dc.DrawLine(0, LockY * m_scaleFactor, XImgSize, LockY * m_scaleFactor);
+            dc.DrawLine(LockX * m_scaleFactor, 0, LockX * m_scaleFactor, YImgSize);
         }
 
         // draw a polar alignment circle
@@ -397,8 +389,6 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
-
-    delete DisplayedBitmap;
 
     return bError;
 }
