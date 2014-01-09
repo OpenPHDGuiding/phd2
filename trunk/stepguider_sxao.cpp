@@ -119,6 +119,11 @@ bool StepGuiderSxAO::Connect(void)
 
 bool StepGuiderSxAO::Disconnect(void)
 {
+    if (StepGuider::Disconnect())
+    {
+        return true;
+    }
+
     bool bError = false;
 
     try
