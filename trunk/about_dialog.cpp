@@ -56,8 +56,8 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
     wxMemoryFSHandler::AddFile("about.html", wxString::Format(
         "<html><body>"
         "<h2>%s %s</h2>"
-        "<a href=\"https://code.google.com/p/open-phd-guiding/\">Open PHD Guiding</a><br>"
-        "<a href=\"http://www.stark-labs.com/phdguiding.html\">www.stark-labs.com</a><br><br>"
+        "<a href=\"http://openphdguiding.org\">PHD2 home page - openphdguiding.org</a><br>"
+        "<a href=\"https://code.google.com/p/open-phd-guiding/\">PHD2 open source project page</a><br><br>"
         "Credits:<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Craig Stark<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Bret McKee<br>"
