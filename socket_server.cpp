@@ -324,7 +324,8 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_STARTGUIDING:
             {
                 Debug.AddLine("processing socket request STARTGUIDING");
-                StartGuiding();
+                bool err = StartGuiding();
+                Debug.AddLine(wxString::Format("StartGuiding returned %d, guider state is %d", err, pFrame->pGuider->GetState()));
                 GuideLog.ServerCommand(pGuider, "START GUIDING");
                 break;
             }

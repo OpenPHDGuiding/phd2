@@ -308,7 +308,7 @@ wxRect GuiderOneStar::GetBoundingBox(void)
     case STATE_SELECTED:
     case STATE_CALIBRATING_PRIMARY:
     case STATE_CALIBRATING_SECONDARY:
-        subframe = true;
+        subframe = m_star.WasFound();
         pos = CurrentPosition();
         break;
     case STATE_GUIDING:
@@ -316,6 +316,11 @@ wxRect GuiderOneStar::GetBoundingBox(void)
         pos = LockPosition();
         break;
     default:
+        subframe = false;
+    }
+
+    if (m_forceFullFrame)
+    {
         subframe = false;
     }
 
@@ -355,38 +360,41 @@ int GuiderOneStar::StarError(void)
 void GuiderOneStar::InvalidateCurrentPosition(void)
 {
     m_star.Invalidate();
-    m_autoSelectTries = 0;
 }
 
-bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString &statusMessage)
+static wxString StarStatusStr(const Star& star)
 {
+    if (!star.IsValid())
+        return _("No star selected");
+
+    switch (star.GetError())
+    {
+    case Star::STAR_LOWSNR:        return _("Star lost - low SNR");
+    case Star::STAR_LOWMASS:       return _("Star lost - low mass");
+    case Star::STAR_TOO_NEAR_EDGE: return _("Star too near edge");
+    case Star::STAR_MASSCHANGE:    return _("Star lost - mass changed");
+    default:                       return _("No star found");
+    }
+}
+
+bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessage)
+{
+    if (!m_star.IsValid() && m_star.X == 0.0 && m_star.Y == 0.0)
+    {
+        Debug.AddLine("UpdateCurrentPosition: no star selected");
+        statusMessage = _("No star selected");
+        return true;
+    }
+
     bool bError = false;
 
     try
     {
-        //GUIDER_STATE state = GetState();
-        //
-        //if (state == STATE_SELECTING && m_autoSelectTries++ == 0)
-        //{
-        //    Debug.Write("UpdateGuideState(): Autoselecting\n");
-        //
-        //    if (AutoSelect(pImage))
-        //    {
-        //        statusMessage = _T("No Star selected");
-        //        throw THROW_INFO("No Star Autoselected");
-        //    }
-        //
-        //    pFrame->SetStatusText(wxString::Format(_T("Auto Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
-        //}
-
         Star newStar(m_star);
 
         if (!newStar.Find(pImage, m_searchRegion))
         {
-            if (m_star.IsValid())
-                statusMessage = _("No star found");
-            else
-                statusMessage = _("No star selected");
+            statusMessage = StarStatusStr(newStar);
             m_star.SetError(newStar.GetError());
             throw ERROR_INFO("UpdateGuideState():newStar not found");
         }

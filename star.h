@@ -50,7 +50,6 @@ public:
         STAR_LOWSNR,
         STAR_LOWMASS,
         STAR_TOO_NEAR_EDGE,
-        STAR_LARGEMOTION,
         STAR_MASSCHANGE,
         STAR_ERROR,
     };

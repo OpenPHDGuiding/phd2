@@ -114,7 +114,8 @@ class Guider: public wxWindow
     bool m_lockPosIsSticky;
 
 protected:
-    double  m_scaleFactor;
+    bool m_forceFullFrame;
+    double m_scaleFactor;
     bool m_showBookmarks;
     std::vector<wxRealPoint> m_bookmarks;
 
@@ -164,6 +165,7 @@ public:
     void SetLockPosIsSticky(bool isSticky) { m_lockPosIsSticky = isSticky; }
     bool LockPosIsSticky(void) const { return m_lockPosIsSticky; }
     const PHD_Point& LockPosition();
+    void ForceFullFrame(void);
 
     bool SetOverlayMode(int newMode);
     void SetPolarAlignCircle(const PHD_Point& center, unsigned int radius);
