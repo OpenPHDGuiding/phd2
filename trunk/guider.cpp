@@ -51,6 +51,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = false;
     m_lockPosIsSticky = false;
+    m_forceFullFrame = false;
     m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);
@@ -85,6 +86,15 @@ bool Guider::SetPaused(bool state)
     m_paused = state;
 
     return bReturn;
+}
+
+void Guider::ForceFullFrame(void)
+{
+    if (!m_forceFullFrame)
+    {
+        Debug.AddLine("setting force full frames = true");
+        m_forceFullFrame = true;
+    }
 }
 
 OVERLAY_MODE Guider::GetOverlayMode(void)
@@ -393,8 +403,9 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
     return bError;
 }
 
-void Guider::UpdateImageDisplay(usImage *pImage) {
-    if (pImage==NULL)
+void Guider::UpdateImageDisplay(usImage *pImage)
+{
+    if (!pImage)
     {
         pImage = m_pCurrentImage;
     }
@@ -772,6 +783,13 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             throw THROW_INFO("unable to update current position");
         }
 
+        // we have a star selected, so re-enable subframes
+        if (m_forceFullFrame)
+        {
+            Debug.AddLine("setting force full frames = false");
+            m_forceFullFrame = false;
+        }
+
         switch (m_state)
         {
             case STATE_UNINITIALIZED:
@@ -947,7 +965,11 @@ EXPOSED_STATE Guider::GetExposedState(void)
                 break;
 
             case STATE_SELECTING:
-                rval = EXPOSED_STATE_LOOPING;
+                // only report "looping" if no star is selected
+                if (guider->CurrentPosition().IsValid())
+                    rval = EXPOSED_STATE_SELECTED;
+                else
+                    rval = EXPOSED_STATE_LOOPING;
                 break;
 
             case STATE_SELECTED:

@@ -40,6 +40,8 @@
 Star::Star(void)
 {
     Invalidate();
+    // Star is a bit quirky in that we use X and Y after the star is Invalidate()ed.
+    X = Y = 0.0;
 }
 
 Star::~Star(void)

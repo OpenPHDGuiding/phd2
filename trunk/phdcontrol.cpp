@@ -155,6 +155,7 @@ static bool start_capturing(void)
         return false;
     }
 
+    pFrame->pGuider->ForceFullFrame(); // we need a full frame to auto-select a star
     pFrame->StartCapturing();
 
     return true;

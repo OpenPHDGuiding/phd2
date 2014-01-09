@@ -89,7 +89,6 @@ void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::OnInstructions(wxCommandEvent& WXUNUSED(event))
 {
-    if (CaptureActive) return;  // Looping an exposure already
     wxMessageBox(wxString::Format(_("Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n\n \
 Operation is quite simple (hence the 'PHD')\n\n \
   1) Press the 'Camera' button, select your camera and mount, click on 'Connect All'\n \
@@ -112,7 +111,6 @@ void MyFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
-    if (CaptureActive) return;  // Looping an exposure already
     AboutDialog dlg;
     dlg.ShowModal();
 }
@@ -447,6 +445,9 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         }
         else
         {
+            // when looping resumes, start with at least one full frame. This enables applications
+            // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
+            pGuider->ForceFullFrame();
             UpdateButtonsStatus();
             SetStatusText(_("Stopped."), 1);
             PhdController::AbortController("Stopped capturing");
