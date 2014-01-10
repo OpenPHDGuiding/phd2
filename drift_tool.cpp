@@ -73,6 +73,7 @@ struct DriftToolWin : public wxFrame
     bool m_drifting;
     bool m_need_end_dec_drift;
     bool m_save_lock_pos_is_sticky;
+    bool m_save_use_subframes;
 
     bool m_can_slew;
     bool m_slewing;
@@ -274,6 +275,8 @@ DriftToolWin::DriftToolWin()
     pFrame->pGuider->SetLockPosIsSticky(false);
     pFrame->tools_menu->FindItem(EEGG_STICKY_LOCK)->Check(false);
 
+    m_save_use_subframes = pCamera->UseSubframes;
+
     m_phase = PHASE_ADJUST_AZ;
     m_mode = MODE_IDLE;
     UpdatePhaseState();
@@ -373,6 +376,9 @@ repeat:
         m_adjust->Enable(true);
         EnableSlew(false);
 
+        // restore subframes setting
+        pCamera->UseSubframes = m_save_use_subframes;
+
         if (!m_drifting)
         {
             if (!pCamera->Connected ||
@@ -442,6 +448,9 @@ repeat:
         SetStatusText(m_phase == PHASE_ADJUST_AZ ? _("Adjust azimuth, click Drift when done") :
             _("Adjust altitude, click Drift when done"));
 
+        // use full frames for adjust phase
+        pCamera->UseSubframes = false;
+
         if (pFrame->pGuider->GetState() == STATE_GUIDING)
         {
             // stop guiding but continue looping
@@ -455,6 +464,9 @@ repeat:
         m_drifting = false;
         EnableSlew(m_can_slew);
         SetStatusText(idleStatus);
+
+        // restore subframes setting
+        pCamera->UseSubframes = m_save_use_subframes;
 
         if (pFrame->pGuider->GetState() == STATE_GUIDING)
         {
@@ -564,6 +576,9 @@ void DriftToolWin::OnClose(wxCloseEvent& evt)
         pFrame->pGuider->SetLockPosIsSticky(true);
         pFrame->tools_menu->FindItem(EEGG_STICKY_LOCK)->Check(true);
     }
+
+    // restore subframes setting
+    pCamera->UseSubframes = m_save_use_subframes;
 
     // save the window position
     int x, y;
