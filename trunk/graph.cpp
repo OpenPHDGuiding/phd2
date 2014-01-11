@@ -1152,7 +1152,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
         double rms_ra = rms(plot_length, &m_trendLineAccum[2]);
         double rms_dec = rms(plot_length, &m_trendLineAccum[3]);
-        double rms_tot = sqrt(rms_ra * rms_ra + rms_dec * rms_dec);
+        double rms_tot = hypot(rms_ra, rms_dec);
         m_pRaRMS->SetLabel(rms_label(rms_ra, sampling));
         m_pDecRMS->SetLabel(rms_label(rms_dec, sampling));
         m_pTotRMS->SetLabel(rms_label(rms_tot, sampling));
