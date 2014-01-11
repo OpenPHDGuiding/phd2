@@ -106,8 +106,7 @@ public:
     {
         double dX = this->dX(p);
         double dY = this->dY(p);
-        double dRet = sqrt(dX*dX + dY*dY);
-
+        double dRet = hypot(dX, dY);
         return dRet;
     }
 
