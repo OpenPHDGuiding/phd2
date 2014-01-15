@@ -36,18 +36,26 @@
 #ifndef STEPGUIDER_H_INCLUDED
 #define STEPGUIDER_H_INCLUDED
 
-class StepGuider:public Mount, public OnboardST4
+class StepGuider : public Mount, public OnboardST4
 {
     int m_samplesToAverage;
     int m_bumpPercentage;
     double m_bumpMaxStepsPerCycle;
+
+    int m_xBumpPos1;
+    int m_xBumpPos2;
+    int m_yBumpPos1;
+    int m_yBumpPos2;
+    int m_bumpCenterTolerance;
 
     int m_xOffset;
     int m_yOffset;
 
     PHD_Point m_avgOffset;
 
-    PHD_Point m_bumpRemaining;
+    bool m_bumpInProgress;
+    bool m_bumpTimeoutEventSent;
+    long m_bumpStartTime;
     double m_bumpStepWeight;
 
     // Calibration variables
@@ -140,12 +148,11 @@ private:
     double Move(GUIDE_DIRECTION direction, double amount, bool normalMove=true);
     bool CalibrationMove(GUIDE_DIRECTION direction, int steps);
     int CalibrationMoveSize(void);
+    void InitBumpPositions(void);
 
     double CalibrationTime(int nCalibrationSteps);
 protected:
-    static int IntegerPercent(int percentage, int number);
-    virtual int BumpPosition(GUIDE_DIRECTION direction);
-    void ZeroCurrentPosition();
+    void ZeroCurrentPosition(void);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 private:
@@ -159,7 +166,7 @@ public:
     virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit);
     virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
-    virtual bool MoveToCenter();
+    virtual bool MoveToCenter(void);
 };
 
 #endif /* STEPGUIDER_H_INCLUDED */

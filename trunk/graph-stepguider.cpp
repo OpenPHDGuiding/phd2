@@ -158,10 +158,9 @@ void GraphStepguiderWindow::AppendData(int dx, int dy, const PHD_Point& avgPos)
     }
 }
 
-void GraphStepguiderWindow::ShowBump(const PHD_Point& curBump, const PHD_Point& bumpRemaining)
+void GraphStepguiderWindow::ShowBump(const PHD_Point& curBump)
 {
     m_pClient->m_curBump = curBump;
-    m_pClient->m_bumpRemaining = bumpRemaining;
 
     if (m_visible)
     {
@@ -349,15 +348,6 @@ void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
                     center.y + (int)(m_avgPos.Y * yPixelsPerStep),
                     center.x + (int)((m_avgPos.X+m_curBump.X*2.0) * xPixelsPerStep),
                     center.y + (int)((m_avgPos.Y+m_curBump.Y*2.0) * yPixelsPerStep));
-        }
-
-        if (m_bumpRemaining.IsValid())
-        {
-            dc.SetPen(*wxBLUE_PEN);
-            dc.DrawLine(center.x + (int)(m_avgPos.X * xPixelsPerStep),
-                    center.y + (int)(m_avgPos.Y * yPixelsPerStep),
-                    center.x + (int)((m_avgPos.X+m_bumpRemaining.X*2.0) * xPixelsPerStep),
-                    center.y + (int)((m_avgPos.Y+m_bumpRemaining.Y*2.0) * yPixelsPerStep));
         }
     }
 }

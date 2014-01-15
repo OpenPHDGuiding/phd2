@@ -50,7 +50,6 @@ class GraphStepguiderClient : public wxWindow
 
     PHD_Point m_avgPos;
     PHD_Point m_curBump;
-    PHD_Point m_bumpRemaining;
 
     wxPen   *m_pPens[m_maxHistorySize];
     wxBrush *m_pBrushes[m_maxHistorySize];
@@ -89,7 +88,7 @@ public:
 
     void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
     void AppendData(int dx, int dy, const PHD_Point& avgPos);
-    void ShowBump(const PHD_Point& curBump, const PHD_Point& bumpRemaining);
+    void ShowBump(const PHD_Point& curBump);
     bool SetState(bool is_active);
 
 private:

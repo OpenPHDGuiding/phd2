@@ -52,10 +52,10 @@ static const int DefaultFocalLength = 0;
 wxDEFINE_EVENT(REQUEST_EXPOSURE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(REQUEST_MOUNT_MOVE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(WXMESSAGEBOX_PROXY_EVENT, wxCommandEvent);
-
 wxDEFINE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDEFINE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
+wxDEFINE_EVENT(BUMP_TIMEOUT_EVENT, wxThreadEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
@@ -128,6 +128,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnSetStatusText)
     EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
     EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusbarTimerEvent)
+    EVT_THREAD(BUMP_TIMEOUT_EVENT, MyFrame::OnBumpTimeout)
 
     EVT_AUI_PANE_CLOSE(MyFrame::OnPanelClose)
 END_EVENT_TABLE()
@@ -781,11 +782,11 @@ void MyFrame::SetStatusText(const wxString& text, int number, int msToDisplay)
     }
     else
     {
-        wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
-        event.SetString(text);
-        event.SetInt(number);
-        event.SetExtraLong(msToDisplay);
-        wxQueueEvent(this, event.Clone());
+        wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
+        event->SetString(text);
+        event->SetInt(number);
+        event->SetExtraLong(msToDisplay);
+        wxQueueEvent(this, event);
     }
 }
 
@@ -806,7 +807,6 @@ void MyFrame::OnSetStatusText(wxThreadEvent& event)
     {
         wxFrame::SetStatusText(msg, pane);
     }
-
 }
 
 bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
