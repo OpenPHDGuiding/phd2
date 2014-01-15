@@ -116,7 +116,6 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
         m_pControlSizer2->Add(m_pScopePane, wxSizerFlags().Expand());
     }
 
-
     m_visible = false;
 
     SetBackgroundColour(*wxBLACK);
@@ -171,6 +170,8 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     m_pLabel2 = new wxStaticText(this, wxID_ANY, _("Dec"));
     m_pLabel2->SetForegroundColour(m_pClient->m_decOrDyColor);
     m_pLabel2->SetBackgroundColour(*wxBLACK);
+
+    UpdateRADecDxDyLabels();
 
     pLabelSizer->AddStretchSpacer();
     pLabelSizer->Add(m_pLabel2, wxSizerFlags().Right());
@@ -313,6 +314,21 @@ void GraphLogWindow::OnButtonSettings(wxCommandEvent& WXUNUSED(evt))
     delete menu;
 }
 
+void GraphLogWindow::UpdateRADecDxDyLabels(void)
+{
+    switch (m_pClient->m_mode)
+    {
+        case GraphLogClientWindow::MODE_RADEC:
+            m_pLabel1->SetLabel(_("RA"));
+            m_pLabel2->SetLabel(_("Dec"));
+            break;
+        case GraphLogClientWindow::MODE_DXDY:
+            m_pLabel1->SetLabel(_("dx"));
+            m_pLabel2->SetLabel(_("dy"));
+            break;
+    }
+}
+
 void GraphLogWindow::OnRADecDxDy(wxCommandEvent& evt)
 {
     switch (evt.GetId())
@@ -324,7 +340,8 @@ void GraphLogWindow::OnRADecDxDy(wxCommandEvent& evt)
         m_pClient->m_mode = GraphLogClientWindow::MODE_RADEC;
         break;
     }
-    pConfig->Global.SetInt ("/graph/ScopeOrCameraUnits", (int)m_pClient->m_mode);
+    pConfig->Global.SetInt("/graph/ScopeOrCameraUnits", (int)m_pClient->m_mode);
+    UpdateRADecDxDyLabels();
     Refresh();
 }
 
@@ -339,7 +356,7 @@ void GraphLogWindow::OnArcsecsPixels(wxCommandEvent& evt)
         m_pClient->m_heightUnits = UNIT_PIXELS;
         break;
     }
-    pConfig->Global.SetInt ("/graph/HeightUnits", (int)m_pClient->m_heightUnits);
+    pConfig->Global.SetInt("/graph/HeightUnits", (int)m_pClient->m_heightUnits);
     Refresh();
 }
 
@@ -559,18 +576,6 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     //dc.SetBackground(wxColour(10,0,0));
     dc.Clear();
 
-    switch (m_pClient->m_mode)
-    {
-        case GraphLogClientWindow::MODE_RADEC:
-            m_pLabel1->SetLabel(_("RA"));
-            m_pLabel2->SetLabel(_("Dec"));
-            break;
-        case GraphLogClientWindow::MODE_DXDY:
-            m_pLabel1->SetLabel(_("dx"));
-            m_pLabel2->SetLabel(_("dy"));
-            break;
-    }
-
     UpdateHeightButtonLabel();
 
     int XControlPaneWidth = 0;
@@ -643,7 +648,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(401,200), wxFULL_REPAINT_ON_RESIZE)
 {
     ResetData();
-    m_mode = (GRAPH_MODE) pConfig->Global.GetInt ("/graph/ScopeOrCameraUnits", (int) MODE_RADEC);
+    m_mode = (GRAPH_MODE) pConfig->Global.GetInt("/graph/ScopeOrCameraUnits", (int) MODE_RADEC);
 
     if (!m_raOrDxColor.Set(pConfig->Global.GetString("/graph/RAColor", wxEmptyString)))
     {
@@ -670,7 +675,7 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
 
     m_length = pConfig->Global.GetInt("/graph/length", m_minLength * 2);
     m_height = pConfig->Global.GetInt("/graph/height", m_minHeight * 2 * 2); // match PHD1 4-pixel scale for new users
-    m_heightUnits = (GRAPH_UNITS) pConfig->Global.GetInt ("graph/HeightUnits", (int) UNIT_ARCSEC); // preferred units, will still display pixels if camera pixel scale not available
+    m_heightUnits = (GRAPH_UNITS) pConfig->Global.GetInt("graph/HeightUnits", (int) UNIT_ARCSEC); // preferred units, will still display pixels if camera pixel scale not available
 
     m_showTrendlines = false;
     m_showCorrections = pConfig->Global.GetBoolean("/graph/showCorrections", true);
