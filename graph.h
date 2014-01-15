@@ -62,7 +62,7 @@ struct S_HISTORY
     double decDur;
     S_HISTORY() { }
     S_HISTORY(const GuideStepInfo& step)
-        : timestamp(wxDateTime::UNow().GetValue().GetValue()),
+        : timestamp(::wxGetUTCTimeMillis().GetValue()),
         dx(step.cameraOffset->X), dy(step.cameraOffset->Y), ra(step.mountOffset->X), dec(step.mountOffset->Y),
         raDur(step.durationRA), decDur(step.durationDec) { }
 };
@@ -119,6 +119,31 @@ class GraphLogClientWindow : public wxWindow
 
 class GraphLogWindow : public wxWindow
 {
+    OptionsButton *m_pLengthButton;
+    OptionsButton *m_pHeightButton;
+    int m_heightButtonLabelVal; // value currently displayed on height button: <0 for arc-sec, >0 for pixels
+    OptionsButton *m_pSettingsButton;
+    wxButton *m_pClearButton;
+    wxCheckBox *m_pCheckboxTrendlines;
+    wxCheckBox *m_pCheckboxCorrections;
+    wxStaticText *RALabel;
+    wxStaticText *DecLabel;
+    wxStaticText *OscIndexLabel;
+    wxStaticText *RMSLabel;
+    wxBoxSizer *m_pControlSizer;
+    wxBoxSizer *m_pControlSizer1;
+    wxBoxSizer *m_pControlSizer2;
+    GraphControlPane *m_pXControlPane;
+    GraphControlPane *m_pYControlPane;
+    GraphControlPane *m_pScopePane;
+
+    bool m_visible;
+    GraphLogClientWindow *m_pClient;
+
+    int StringWidth(const wxString& string);
+    void UpdateHeightButtonLabel(void);
+    void UpdateRADecDxDyLabels(void);
+
 public:
     GraphLogWindow(wxWindow *parent);
     ~GraphLogWindow(void);
@@ -148,31 +173,6 @@ public:
 
     wxColor GetRaOrDxColor(void);
     wxColor GetDecOrDyColor(void);
-
-private:
-    OptionsButton *m_pLengthButton;
-    OptionsButton *m_pHeightButton;
-    int m_heightButtonLabelVal; // value currently displayed on height button: <0 for arc-sec, >0 for pixels
-    OptionsButton *m_pSettingsButton;
-    wxButton *m_pClearButton;
-    wxCheckBox *m_pCheckboxTrendlines;
-    wxCheckBox *m_pCheckboxCorrections;
-    wxStaticText *RALabel;
-    wxStaticText *DecLabel;
-    wxStaticText *OscIndexLabel;
-    wxStaticText *RMSLabel;
-    wxBoxSizer *m_pControlSizer;
-    wxBoxSizer *m_pControlSizer1;
-    wxBoxSizer *m_pControlSizer2;
-    GraphControlPane *m_pXControlPane;
-    GraphControlPane *m_pYControlPane;
-    GraphControlPane *m_pScopePane;
-
-    bool m_visible;
-    GraphLogClientWindow *m_pClient;
-
-    int StringWidth(const wxString& string);
-    void UpdateHeightButtonLabel(void);
 
     DECLARE_EVENT_TABLE()
 };
