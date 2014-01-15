@@ -162,10 +162,10 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs)
 
 void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 {
-    wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE);
-    event.SetPayload<usImage *>(pImage);
-    event.SetInt(bError);
-    wxQueueEvent(m_pFrame, event.Clone());
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_EXPOSE_COMPLETE);
+    event->SetPayload<usImage *>(pImage);
+    event->SetInt(bError);
+    wxQueueEvent(m_pFrame, event);
 }
 
 /*************      Move       **************************/
@@ -275,10 +275,10 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
 
 void WorkerThread::SendWorkerThreadMoveComplete(Mount *pMount, bool bError)
 {
-    wxThreadEvent event = wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_MOVE_COMPLETE);
-    event.SetInt(bError);
-    event.SetPayload<Mount *>(pMount);
-    wxQueueEvent(m_pFrame, event.Clone());
+    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_MOVE_COMPLETE);
+    event->SetInt(bError);
+    event->SetPayload<Mount *>(pMount);
+    wxQueueEvent(m_pFrame, event);
 }
 
 /*
