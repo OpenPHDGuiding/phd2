@@ -874,6 +874,13 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
     }
 }
 
+void MyFrame::OnBumpTimeout(wxThreadEvent& evt)
+{
+    wxMessageBox(_("A mount \"bump\" was needed to bring the AO back to its center position, \n"
+        "but the bump did not complete in a reasonable amount of time.\n"
+        "You probably need to increase the AO Bump Step setting.\n"), _("Warning"));
+}
+
 void MyFrame::OnCharHook(wxKeyEvent& evt)
 {
     bool handled = false;

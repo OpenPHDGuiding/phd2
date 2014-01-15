@@ -51,6 +51,7 @@ wxDECLARE_EVENT(WXMESSAGEBOX_PROXY_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDECLARE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
+wxDECLARE_EVENT(BUMP_TIMEOUT_EVENT, wxThreadEvent);
 
 enum NOISE_REDUCTION_METHOD
 {
@@ -202,6 +203,7 @@ public:
     void OnAutoStar(wxCommandEvent& evt);
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
+    void OnBumpTimeout(wxThreadEvent& evt);
     void LoadProfileSettings(void);
     void UpdateTitle(void);
     void UpdateDarksButton(void);
