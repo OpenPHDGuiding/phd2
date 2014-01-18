@@ -35,11 +35,15 @@
 #ifndef GEAR_DIALOG_H_INCLUDED
 #define GEAR_DIALOG_H_INCLUDED
 
-class GearDialog: public wxDialog
+class GearDialog : public wxDialog
 {
     GuideCamera *m_pCamera;
     Scope       *m_pScope;
     StepGuider  *m_pStepGuider;
+
+    bool m_cameraUpdated;
+    bool m_mountUpdated;
+    bool m_stepGuiderUpdated;
 
     wxChoice *m_profiles;
     OptionsButton *m_btnProfileManage;
@@ -82,6 +86,7 @@ private:
     void UpdateConnectAllButtonState(void);
     void UpdateDisconnectAllButtonState(void);
     void UpdateButtonState(void);
+    void UpdateAdvancedDialog(void);
 
     void OnProfileChoice(wxCommandEvent& event);
     void OnButtonProfileManage(wxCommandEvent& event);
@@ -110,7 +115,7 @@ private:
     void OnButtonSetupStepGuider(wxCommandEvent& event);
     void OnButtonConnectStepGuider(wxCommandEvent& event);
     void OnButtonDisconnectStepGuider(wxCommandEvent& event);
-private:
+
     DECLARE_EVENT_TABLE()
 };
 

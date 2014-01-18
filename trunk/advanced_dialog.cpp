@@ -41,9 +41,15 @@
 // a place to save id of selected panel so we can select the same panel next time the dialog is opened
 static int s_selectedPage = -1;
 
-static AdvancedDialog *s_advancedDialogInstance;
+enum {
+    GLOBAL_PAGE,
+    GUIDER_PAGE,
+    CAMERA_PAGE,
+    MOUNT_PAGE,
+    AO_PAGE,
+};
 
-AdvancedDialog::AdvancedDialog() :
+AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     /*
@@ -73,8 +79,6 @@ AdvancedDialog::AdvancedDialog() :
      *
      */
 
-    s_advancedDialogInstance = this;
-
 #if defined(__WXOSX__)
     m_pNotebook = new wxChoicebook(this, wxID_ANY);
 #else
@@ -93,8 +97,8 @@ AdvancedDialog::AdvancedDialog() :
     m_pNotebook->AddPage(pGlobalSettingsPanel, _("Global"), true);
 
     // and populate it
-    m_pFramePane = pFrame->GetConfigDialogPane(pGlobalSettingsPanel);
-    pGlobalTabSizer->Add(m_pFramePane, sizer_flags);
+    m_pGlobalPane = pFrame->GetConfigDialogPane(pGlobalSettingsPanel);
+    pGlobalTabSizer->Add(m_pGlobalPane, sizer_flags);
 
     // Build the guider tab
     wxPanel *pGuiderSettingsPanel = new wxPanel(m_pNotebook);
@@ -107,10 +111,32 @@ AdvancedDialog::AdvancedDialog() :
     pGuidingTabSizer->Add(m_pGuiderPane, sizer_flags);
 
     // Build the camera tab
+    AddCameraPage();
+
+    // Build Mount tab
+    AddMountPage();
+
+    // Build AO tab
+    AddAoPage();
+
+    wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
+    pTopLevelSizer->Add(m_pNotebook, wxSizerFlags(0).Expand().Border(wxALL, 5));
+    pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 5));
+    SetSizerAndFit(pTopLevelSizer);
+}
+
+AdvancedDialog::~AdvancedDialog()
+{
+}
+
+void AdvancedDialog::AddCameraPage(void)
+{
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
+
     wxPanel *pCameraSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pCameraTabSizer = new wxBoxSizer(wxVERTICAL);
     pCameraSettingsPanel->SetSizer(pCameraTabSizer);
-    m_pNotebook->AddPage(pCameraSettingsPanel, _("Camera"));
+    m_pNotebook->InsertPage(CAMERA_PAGE, pCameraSettingsPanel, _("Camera"));
 
     // and populate it
     if (pCamera)
@@ -123,41 +149,64 @@ AdvancedDialog::AdvancedDialog() :
     }
     else
     {
-        m_pCameraPane=NULL;
+        m_pCameraPane = NULL;
         wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pCameraSettingsPanel, wxID_ANY, _("Camera Settings")), wxVERTICAL);
         wxStaticText *pText = new wxStaticText(pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
         pCameraTabSizer->Add(pBox, sizer_flags);
     }
+}
 
-    // Build scope and AO tabs
+void AdvancedDialog::AddMountPage(void)
+{
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
+
     wxPanel *pScopeSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pScopeTabSizer = new wxBoxSizer(wxVERTICAL);
     pScopeSettingsPanel->SetSizer(pScopeTabSizer);
-    m_pNotebook->AddPage(pScopeSettingsPanel, _("Mount"));
+    m_pNotebook->InsertPage(MOUNT_PAGE, pScopeSettingsPanel, _("Mount"));
+
+    Mount *mount = NULL;
+    if (pSecondaryMount)
+        mount = pSecondaryMount;
+    else if (pMount && !pMount->IsStepGuider())
+        mount = pMount;
+
+    m_pMountPane = NULL;
+
+    if (mount)
+    {
+        m_pMountPane = mount->GetConfigDialogPane(pScopeSettingsPanel);
+        pScopeTabSizer->Add(m_pMountPane, sizer_flags);
+    }
+    else
+    {
+        // Add a text box to the Mount tab informing the user there is no Mount
+        wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pScopeSettingsPanel, wxID_ANY, _("Mount Settings")), wxVERTICAL);
+        wxStaticText *pText = new wxStaticText(pScopeSettingsPanel, wxID_ANY, _("No Mount Selected"),wxPoint(-1,-1),wxSize(-1,-1));
+        pBox->Add(pText);
+        pScopeTabSizer->Add(pBox, sizer_flags);
+    }
+}
+
+void AdvancedDialog::AddAoPage(void)
+{
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
     wxPanel *pAoSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pAoTabSizer = new wxBoxSizer(wxVERTICAL);
     pAoSettingsPanel->SetSizer(pAoTabSizer);
-    m_pNotebook->AddPage(pAoSettingsPanel, _("AO"));
+    m_pNotebook->InsertPage(AO_PAGE, pAoSettingsPanel, _("AO"));
 
-    // and populate them
-    m_pSecondaryMountPane = NULL;
-    m_pMountPane          = NULL;
+    m_pAoPane = NULL;
 
-    if (pSecondaryMount)
+    if (pMount && pMount->IsStepGuider())
     {
-        assert(pMount);
-        // Since there are two mounts, we have an AO connected and can populatate both tabs.
-        m_pMountPane = pMount->GetConfigDialogPane(pAoSettingsPanel);
-        m_pSecondaryMountPane = pSecondaryMount->GetConfigDialogPane(pScopeSettingsPanel);
-
-        // The secondary mount config goes on the scope tab
-        pScopeTabSizer->Add(m_pSecondaryMountPane, sizer_flags);
+        // We have an AO connected
+        m_pAoPane = pMount->GetConfigDialogPane(pAoSettingsPanel);
 
         // and the primary mount config goes on the Adaptive Optics tab
-        pAoTabSizer->Add(m_pMountPane, sizer_flags);
-
+        pAoTabSizer->Add(m_pAoPane, sizer_flags);
     }
     else
     {
@@ -167,48 +216,37 @@ AdvancedDialog::AdvancedDialog() :
         wxStaticText *pText = new wxStaticText(pAoSettingsPanel, wxID_ANY, _("No AO Selected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
         pAoTabSizer->Add(pBox, sizer_flags);
-
-        // and then either add the mount config dialog or a text box
-
-        if (pMount)
-        {
-            // We only have a scope
-            m_pMountPane = pMount->GetConfigDialogPane(pScopeSettingsPanel);
-
-            // so it goes on the scope tab
-            pScopeTabSizer->Add(m_pMountPane, sizer_flags);
-        }
-        else
-        {
-            // Add a text box to the Mount tab informing the user there is no Mount
-            pBox = new wxStaticBoxSizer(new wxStaticBox(pScopeSettingsPanel, wxID_ANY, _("Mount Settings")), wxVERTICAL);
-            pText = new wxStaticText(pScopeSettingsPanel, wxID_ANY, _("No Mount Selected"),wxPoint(-1,-1),wxSize(-1,-1));
-            pBox->Add(pText);
-
-            pScopeTabSizer->Add(pBox, sizer_flags);
-        }
     }
-
-    wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
-    pTopLevelSizer->Add(m_pNotebook, wxSizerFlags(0).Expand().Border(wxALL, 5));
-    pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 5));
-    SetSizerAndFit(pTopLevelSizer);
 }
 
-AdvancedDialog::~AdvancedDialog()
+void AdvancedDialog::UpdateCameraPage(void)
 {
-    s_advancedDialogInstance = 0;
+    AddCameraPage();
+    m_pNotebook->DeletePage(CAMERA_PAGE + 1);
+    m_pNotebook->GetPage(CAMERA_PAGE)->Layout();
+    GetSizer()->Fit(this);
 }
 
-AdvancedDialog *AdvancedDialog::Instance()
+void AdvancedDialog::UpdateMountPage(void)
 {
-    return s_advancedDialogInstance;
+    AddMountPage();
+    m_pNotebook->DeletePage(MOUNT_PAGE + 1);
+    m_pNotebook->GetPage(MOUNT_PAGE)->Layout();
+    GetSizer()->Fit(this);
+}
+
+void AdvancedDialog::UpdateAoPage(void)
+{
+    AddAoPage();
+    m_pNotebook->DeletePage(AO_PAGE + 1);
+    m_pNotebook->GetPage(AO_PAGE)->Layout();
+    GetSizer()->Fit(this);
 }
 
 void AdvancedDialog::LoadValues(void)
 {
     ConfigDialogPane *const panes[] =
-        { m_pFramePane, m_pMountPane, m_pSecondaryMountPane, m_pGuiderPane, m_pCameraPane };
+        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane };
 
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {
@@ -224,7 +262,7 @@ void AdvancedDialog::LoadValues(void)
 void AdvancedDialog::UnloadValues(void)
 {
     ConfigDialogPane *const panes[] =
-        { m_pFramePane, m_pMountPane, m_pSecondaryMountPane, m_pGuiderPane, m_pCameraPane };
+        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane };
 
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {
@@ -237,7 +275,7 @@ void AdvancedDialog::UnloadValues(void)
 void AdvancedDialog::Undo(void)
 {
     ConfigDialogPane *const panes[] =
-        { m_pFramePane, m_pMountPane, m_pSecondaryMountPane, m_pGuiderPane, m_pCameraPane };
+        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane };
 
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {
@@ -245,20 +283,6 @@ void AdvancedDialog::Undo(void)
         if (pane)
             pane->Undo();
     }
-}
-
-void AdvancedDialog::OnSetupCamera(wxCommandEvent& WXUNUSED(event))
-{
-    // Prior to this we check to make sure the current camera is a WDM camera (main dialog) but...
-
-    if (pFrame->CaptureActive || !pCamera || !pCamera->Connected || pCamera->PropertyDialogType != PROPDLG_WHEN_CONNECTED)
-        return;  // One more safety check
-
-    /*if (pCamera == &Camera_WDM)
-        Camera_WDM.ShowPropertyDialog();
-    else if (pCamera == &Camera_VFW)
-        Camera_VFW.ShowPropertyDialog();*/
-    pCamera->ShowPropertyDialog();
 }
 
 void AdvancedDialog::EndModal(int retCode)
@@ -269,12 +293,12 @@ void AdvancedDialog::EndModal(int retCode)
 
 int AdvancedDialog::GetFocalLength(void)
 {
-    return m_pFramePane->GetFocalLength();
+    return m_pGlobalPane->GetFocalLength();
 }
 
 void AdvancedDialog::SetFocalLength(int val)
 {
-    m_pFramePane->SetFocalLength(val);
+    m_pGlobalPane->SetFocalLength(val);
 }
 
 double AdvancedDialog::GetPixelSize(void)
@@ -287,7 +311,3 @@ void AdvancedDialog::SetPixelSize(double val)
     if (m_pCameraPane)
         m_pCameraPane->SetPixelSize(val);
 }
-
-BEGIN_EVENT_TABLE(AdvancedDialog, wxDialog)
-    EVT_BUTTON(BUTTON_CAM_PROPERTIES,AdvancedDialog::OnSetupCamera)
-END_EVENT_TABLE()

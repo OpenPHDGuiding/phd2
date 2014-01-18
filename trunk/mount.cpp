@@ -171,11 +171,14 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 void Mount::MountConfigDialogPane::LoadValues(void)
 {
     m_pRecalibrate->SetValue(!m_pMount->IsCalibrated());
+    m_pRecalibrate->Enable(!pFrame->CaptureActive);
 
-    m_iInitXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithm();
-    m_pXGuideAlgorithmChoice->SetSelection(m_iInitXGuideAlgorithmSelection);
-    m_iInitYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithm();
-    m_pYGuideAlgorithmChoice->SetSelection(m_iInitYGuideAlgorithmSelection);
+    m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithm();
+    m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
+    m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
+    m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithm();
+    m_pYGuideAlgorithmChoice->SetSelection(m_initYGuideAlgorithmSelection);
+    m_pYGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
     m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
 
     if (m_pXGuideAlgorithmConfigDialogPane)
@@ -227,8 +230,8 @@ void Mount::MountConfigDialogPane::Undo(void)
     {
         m_pYGuideAlgorithmConfigDialogPane->Undo();
     }
-    m_pMount->SetXGuideAlgorithm(m_iInitXGuideAlgorithmSelection);
-    m_pMount->SetYGuideAlgorithm(m_iInitYGuideAlgorithmSelection);
+    m_pMount->SetXGuideAlgorithm(m_initXGuideAlgorithmSelection);
+    m_pMount->SetYGuideAlgorithm(m_initYGuideAlgorithmSelection);
 }
 
 GUIDE_ALGORITHM Mount::GetXGuideAlgorithm(void)
@@ -238,15 +241,18 @@ GUIDE_ALGORITHM Mount::GetXGuideAlgorithm(void)
 
 void Mount::SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm)
 {
-    delete m_pXGuideAlgorithm;
-
-    if (CreateGuideAlgorithm(guideAlgorithm, this, GUIDE_X, &m_pXGuideAlgorithm))
+    if (!m_pXGuideAlgorithm || m_pXGuideAlgorithm->Algorithm() != guideAlgorithm)
     {
-        CreateGuideAlgorithm(defaultAlgorithm, this, GUIDE_X, &m_pXGuideAlgorithm);
-        guideAlgorithm = defaultAlgorithm;
-    }
+        delete m_pXGuideAlgorithm;
 
-    pConfig->Profile.SetInt("/" + GetMountClassName() + "/XGuideAlgorithm", guideAlgorithm);
+        if (CreateGuideAlgorithm(guideAlgorithm, this, GUIDE_X, &m_pXGuideAlgorithm))
+        {
+            CreateGuideAlgorithm(defaultAlgorithm, this, GUIDE_X, &m_pXGuideAlgorithm);
+            guideAlgorithm = defaultAlgorithm;
+        }
+
+        pConfig->Profile.SetInt("/" + GetMountClassName() + "/XGuideAlgorithm", guideAlgorithm);
+    }
 }
 
 GUIDE_ALGORITHM Mount::GetYGuideAlgorithm(void)
@@ -256,15 +262,18 @@ GUIDE_ALGORITHM Mount::GetYGuideAlgorithm(void)
 
 void Mount::SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm)
 {
-    delete m_pYGuideAlgorithm;
-
-    if (CreateGuideAlgorithm(guideAlgorithm, this, GUIDE_Y, &m_pYGuideAlgorithm))
+    if (!m_pYGuideAlgorithm || m_pYGuideAlgorithm->Algorithm() != guideAlgorithm)
     {
-        CreateGuideAlgorithm(defaultAlgorithm, this, GUIDE_Y, &m_pYGuideAlgorithm);
-        guideAlgorithm = defaultAlgorithm;
-    }
+        delete m_pYGuideAlgorithm;
 
-    pConfig->Profile.SetInt("/" + GetMountClassName() + "/YGuideAlgorithm", guideAlgorithm);
+        if (CreateGuideAlgorithm(guideAlgorithm, this, GUIDE_Y, &m_pYGuideAlgorithm))
+        {
+            CreateGuideAlgorithm(defaultAlgorithm, this, GUIDE_Y, &m_pYGuideAlgorithm);
+            guideAlgorithm = defaultAlgorithm;
+        }
+
+        pConfig->Profile.SetInt("/" + GetMountClassName() + "/YGuideAlgorithm", guideAlgorithm);
+    }
 }
 
 bool Mount::GetGuidingEnabled(void)

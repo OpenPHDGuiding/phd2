@@ -907,34 +907,34 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
           _("Guide in declination as well?"));
 }
 
-void Scope::ScopeConfigDialogPane::OnAutoDuration (wxCommandEvent& evt)
+void Scope::ScopeConfigDialogPane::OnAutoDuration(wxCommandEvent& evt)
 {
-    int lFocalLength = 0;
-    double dPixelSize = 0;
-    wxString sConfigPrefix;
-    AdvancedDialog* pAdvancedDlg = AdvancedDialog::Instance();
+    int focalLength = 0;
+    double pixelSize = 0;
+    wxString configPrefix;
+    AdvancedDialog *pAdvancedDlg = pFrame->pAdvancedDialog;
 
     if (pAdvancedDlg)
     {
-        dPixelSize = pAdvancedDlg->GetPixelSize ();
-        lFocalLength = pAdvancedDlg->GetFocalLength ();
+        pixelSize = pAdvancedDlg->GetPixelSize();
+        focalLength = pAdvancedDlg->GetFocalLength();
     }
 
     if (pMount)
     {
-        sConfigPrefix = "/" + pMount->GetMountClassName();
+        configPrefix = "/" + pMount->GetMountClassName();
     }
 
-    CalstepDialog calc (lFocalLength, dPixelSize, sConfigPrefix);
-    if (calc.ShowModal () == wxID_OK)
+    CalstepDialog calc(focalLength, pixelSize, configPrefix);
+    if (calc.ShowModal() == wxID_OK)
     {
         int iDuration;
-        if (calc.GetResults (lFocalLength, dPixelSize, iDuration))
+        if (calc.GetResults(focalLength, pixelSize, iDuration))
         {
             // Following sets values in the UI controls of the various dialog tabs - not underlying data values
-            pAdvancedDlg->SetFocalLength (lFocalLength);
-            pAdvancedDlg->SetPixelSize (dPixelSize);
-            m_pCalibrationDuration->SetValue (iDuration);
+            pAdvancedDlg->SetFocalLength(focalLength);
+            pAdvancedDlg->SetPixelSize(pixelSize);
+            m_pCalibrationDuration->SetValue(iDuration);
         }
     }
 }

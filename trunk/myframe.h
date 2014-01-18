@@ -78,6 +78,7 @@ class MyFrameConfigDialogPane : public ConfigDialogPane
     wxArrayInt m_LanguageIDs;
     int m_oldLanguageChoice;
     wxTextCtrl *m_pLogDir;
+    wxButton *m_pSelectDir;
     wxCheckBox *m_pAutoLoadCalibration;
 
     void OnDirSelect(wxCommandEvent& evt);
@@ -144,6 +145,7 @@ public:
     //wxBitmapButton *Brain_Button, *Cam_Button, *Scope_Button, *Loop_Button, *Guide_Button, *Stop_Button;
     wxHtmlHelpController *help;
     wxSlider *Gamma_Slider;
+    AdvancedDialog *pAdvancedDialog;
     GraphLogWindow *pGraphLog;
     GraphStepguiderWindow *pStepGuiderGraph;
     GearDialog *pGearDialog;
