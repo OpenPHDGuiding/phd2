@@ -91,8 +91,8 @@ protected:
         wxCheckBox *m_pEnableGuide;
         wxChoice   *m_pXGuideAlgorithmChoice;
         wxChoice   *m_pYGuideAlgorithmChoice;
-        int        m_iInitXGuideAlgorithmSelection;
-        int        m_iInitYGuideAlgorithmSelection;
+        int        m_initXGuideAlgorithmSelection;
+        int        m_initYGuideAlgorithmSelection;
         ConfigDialogPane *m_pXGuideAlgorithmConfigDialogPane;
         ConfigDialogPane *m_pYGuideAlgorithmConfigDialogPane;
 

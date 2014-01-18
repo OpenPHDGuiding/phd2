@@ -124,10 +124,12 @@ CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& 
     wxIntegerValidator <int> valFocalLength (&m_iFocalLength, 0);
     valFocalLength.SetRange (0, 3500);
     m_pFocalLength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valFocalLength);
+    m_pFocalLength->Enable(!pFrame->CaptureActive);
     AddTableEntry (m_pInputTableSizer, _("Focal length, mm"), m_pFocalLength, _("Guide scope focal length"));
 
     // Pixel size
     m_pPixelSize = NewSpinner (this, 1.5*width, m_fPixelSize, MIN_PIXELSIZE, MAX_PIXELSIZE, 0.1);
+    m_pPixelSize->Enable(!pFrame->CaptureActive);
     AddTableEntry (m_pInputTableSizer, _("Pixel size, microns"), m_pPixelSize, _("Guide camera pixel size"));
 
     // Guide speed

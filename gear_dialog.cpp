@@ -98,8 +98,11 @@ namespace xpm {
  * |             +-------------------+   +-------------------+                |
  * +--------------------------------------------------------------------------+
  */
-GearDialog::GearDialog(wxWindow *pParent):
-wxDialog(pParent, wxID_ANY, _("Connect Equipment"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
+GearDialog::GearDialog(wxWindow *pParent) :
+    wxDialog(pParent, wxID_ANY, _("Connect Equipment"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
+    m_cameraUpdated(false),
+    m_mountUpdated(false),
+    m_stepGuiderUpdated(false)
 {
     m_pCamera              = NULL;
     m_pScope               = NULL;
@@ -253,6 +256,8 @@ void GearDialog::Initialize(void)
 
     // preselect the choices
     LoadGearChoices();
+
+    UpdateAdvancedDialog();
 }
 
 void GearDialog::LoadGearChoices(void)
@@ -354,6 +359,8 @@ void GearDialog::EndModal(int retCode)
     }
 
     wxDialog::EndModal(retCode);
+
+    UpdateAdvancedDialog();
 }
 
 void GearDialog::UpdateCameraButtonState(void)
@@ -591,10 +598,11 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
     }
 
     UpdateButtonState();
+
+    m_cameraUpdated = true;
 }
 
-static void
-AutoLoadDarks()
+static void AutoLoadDarks()
 {
     if (pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true))
     {
@@ -732,6 +740,8 @@ void GearDialog::OnChoiceScope(wxCommandEvent& event)
     }
 
     UpdateButtonState();
+
+    m_mountUpdated = true;
 }
 
 void GearDialog::OnButtonSetupScope(wxCommandEvent& event)
@@ -837,6 +847,8 @@ void GearDialog::OnChoiceStepGuider(wxCommandEvent& event)
     }
 
     UpdateButtonState();
+
+    m_stepGuiderUpdated = true;
 }
 
 void GearDialog::OnButtonSetupStepGuider(wxCommandEvent& event)
@@ -1247,7 +1259,31 @@ void GearDialog::OnProfileSave(wxCommandEvent& event)
     }
 }
 
+void GearDialog::UpdateAdvancedDialog(void)
+{
+    MyFrame *frame = static_cast<MyFrame *>(GetParent()); // global pFrame may not have initialized yet
+
+    if (m_cameraUpdated)
+    {
+        frame->pAdvancedDialog->UpdateCameraPage();
+        m_cameraUpdated = false;
+    }
+
+    if (m_mountUpdated)
+    {
+        frame->pAdvancedDialog->UpdateMountPage();
+        m_mountUpdated = false;
+    }
+
+    if (m_stepGuiderUpdated)
+    {
+        frame->pAdvancedDialog->UpdateAoPage();
+        m_stepGuiderUpdated = false;
+    }
+}
+
 void GearDialog::OnAdvanced(wxCommandEvent& event)
 {
+    UpdateAdvancedDialog();
     pFrame->OnAdvanced(event);
 }

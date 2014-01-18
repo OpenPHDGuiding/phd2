@@ -767,9 +767,12 @@ void CameraConfigDialogPane::LoadValues(void)
                 m_pPortNum->SetSelection(0);
                 break;
         }
+
+        m_pPortNum->Enable(!pFrame->CaptureActive);
     }
 
     m_pPixelSize->SetValue(m_pCamera->GetCameraPixelSize());
+    m_pPixelSize->Enable(!pFrame->CaptureActive);
 
     bool autoLoadDarks = pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true);
     m_pLoadDarks->SetValue(autoLoadDarks);

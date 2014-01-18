@@ -251,6 +251,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         Name(_T("Target")).Caption(_("Target")).
         Hide());
 
+    pAdvancedDialog = new AdvancedDialog(this);
+
     pGearDialog = new GearDialog(this);
 
     pDriftTool = NULL;
@@ -271,7 +273,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     }
 
     tools_menu->Check(MENU_DEBUG, Debug.IsEnabled());
-
 
     #include "xhair.xpm"
     wxImage Cursor = wxImage(mac_xhair);
@@ -339,6 +340,8 @@ MyFrame::~MyFrame() {
 
     delete pGearDialog;
     pGearDialog = NULL;
+
+    pAdvancedDialog->Destroy();
 
     if (pDriftTool)
     {
@@ -727,9 +730,6 @@ void MyFrame::UpdateButtonsStatus(void)
         need_update = true;
 
     if (cond_update_tool(MainToolbar, BUTTON_GEAR, !CaptureActive))
-        need_update = true;
-
-    if (cond_update_tool(MainToolbar, BUTTON_ADVANCED, !m_continueCapturing))
         need_update = true;
 
     bool dark_enabled = loop_enabled && !CaptureActive;
@@ -1500,9 +1500,9 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 
     m_pLogDir = new wxTextCtrl(pParent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(250, -1));
     m_pLogDir->SetToolTip(_("Folder for guide and debug logs; empty string to restore the default location"));
-    wxButton *pSelectDir = new wxButton(pParent, wxID_OK, _("Browse...") );
-    pButtonSizer->Add(pSelectDir, wxSizerFlags(0).Center());
-    pSelectDir->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &MyFrameConfigDialogPane::OnDirSelect, this);
+    m_pSelectDir = new wxButton(pParent, wxID_OK, _("Browse...") );
+    pButtonSizer->Add(m_pSelectDir, wxSizerFlags(0).Center());
+    m_pSelectDir->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &MyFrameConfigDialogPane::OnDirSelect, this);
 
     pInputGroupBox->Add(m_pLogDir, wxSizerFlags(0).Expand());
     pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Center().Border(wxTop, 20));
@@ -1527,6 +1527,7 @@ MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
 void MyFrameConfigDialogPane::LoadValues(void)
 {
     m_pResetConfiguration->SetValue(false);
+    m_pResetConfiguration->Enable(!pFrame->CaptureActive);
     m_pEnableLogging->SetValue(GuideLog.IsEnabled());
     m_pEnableImageLogging->SetValue(GuideLog.IsImageLoggingEnabled());
     m_pLoggedImageFormat->SetSelection(GuideLog.LoggedImageFormat());
@@ -1535,12 +1536,16 @@ void MyFrameConfigDialogPane::LoadValues(void)
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
     m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
     SetFocalLength(m_pFrame->GetFocalLength());
+    m_pFocalLength->Enable(!pFrame->CaptureActive);
 
     int language = m_pFrame->GetLanguage();
     m_oldLanguageChoice = m_LanguageIDs.Index(language);
     m_pLanguage->SetSelection(m_oldLanguageChoice);
+    m_pLanguage->Enable(!pFrame->CaptureActive);
 
     m_pLogDir->SetValue(GuideLog.GetLogDir());
+    m_pLogDir->Enable(!pFrame->CaptureActive);
+    m_pSelectDir->Enable(!pFrame->CaptureActive);
     m_pAutoLoadCalibration->SetValue(m_pFrame->GetAutoLoadCalibration());
 }
 

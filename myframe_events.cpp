@@ -737,14 +737,12 @@ void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
 {
-    AdvancedDialog* dlog = new AdvancedDialog();
+    pAdvancedDialog->LoadValues();
 
-    dlog->LoadValues();
-
-    if (dlog->ShowModal() == wxID_OK)
+    if (pAdvancedDialog->ShowModal() == wxID_OK)
     {
         Debug.AddLine("User exited setup dialog with 'ok'");
-        dlog->UnloadValues();
+        pAdvancedDialog->UnloadValues();
         pGraphLog->UpdateControls();
         if (pManualGuide)
         {
@@ -758,7 +756,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
     {
         // Cancel event may require non-trivial undos
         Debug.AddLine("User exited setup dialog with 'cancel'");
-        dlog->Undo();
+        pAdvancedDialog->Undo();
     }
 }
 
