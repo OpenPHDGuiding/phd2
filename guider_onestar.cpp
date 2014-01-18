@@ -778,7 +778,7 @@ GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWi
 
     pParent->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderOneStar::GuiderOneStarConfigDialogPane::OnStarMassEnableChecked, this, STAR_MASS_ENABLE);
 
-    width = StringWidth(_T("0000"));
+    width = StringWidth(_T("100.0"));
     m_pMassChangeThreshold = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
