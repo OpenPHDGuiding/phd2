@@ -62,6 +62,25 @@ static const wxCmdLineEntryDesc cmdLineDesc[] =
 
 wxIMPLEMENT_APP(PhdApp);
 
+static void DisableOSXAppNap(void)
+{
+#ifdef __APPLE__
+# define  APPKEY "com.open-phd-guiding.PHD2"
+    int osver = wxPlatformInfo::Get().GetOSMinorVersion();
+    if (osver == 9)  // Mavericks -- deal with App Nap
+    {
+        wxArrayString out, err;
+        wxExecute("defaults read " APPKEY " NSAppSleepDisabled", out, err);
+        if (err.GetCount() > 0 || (out.GetCount() > 0 && out[0].Contains("0"))) // it's not there or disabled
+        {
+            wxExecute("defaults write " APPKEY " NSAppSleepDisabled -bool YES");
+            wxMessageBox("OSX 10.9's App Nap feature causes problems.  Please quit and relaunch PHD to finish disabling App Nap.");
+        }
+    }
+# undef APPKEY
+#endif
+}
+
 // ------------------------  Phd App stuff -----------------------------
 PhdApp::PhdApp(void)
 {
@@ -98,9 +117,7 @@ bool PhdApp::OnInit() {
     Debug.AddLine("CoInitializeEx returns %x", hr);
 #endif
 
-#ifdef __APPLE__
-    wxExecute("defaults write com.open-phd-guiding.PHD2 NSAppSleepDisabled -bool YES");
-#endif
+    DisableOSXAppNap();
 
     if (m_resetConfig)
     {
