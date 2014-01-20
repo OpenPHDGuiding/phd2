@@ -79,6 +79,11 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR4,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR5,MyFrame::OnOverlay)
+    EVT_MENU(MENU_BOOKMARKS_SHOW, MyFrame::OnBookmarksShow)
+    EVT_MENU(MENU_BOOKMARKS_SET_AT_LOCK, MyFrame::OnBookmarksSetAtLockPos)
+    EVT_MENU(MENU_BOOKMARKS_SET_AT_STAR, MyFrame::OnBookmarksSetAtCurPos)
+    EVT_MENU(MENU_BOOKMARKS_CLEAR_ALL, MyFrame::OnBookmarksClearAll)
+
     EVT_CHAR_HOOK(MyFrame::OnCharHook)
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     EVT_MENU(MENU_INDICONFIG,MyFrame::OnINDIConfig)
@@ -410,6 +415,13 @@ void MyFrame::SetupMenuBar(void)
     view_menu->AppendRadioItem(MENU_XHAIR3, _("Coarse Grid"),_("Grid overlay"));
     view_menu->AppendRadioItem(MENU_XHAIR4, _("RA/Dec"),_("RA and Dec overlay"));
 
+    bookmarks_menu = new wxMenu();
+    bookmarks_menu->AppendCheckItem(MENU_BOOKMARKS_SHOW, _("Show Bookmarks\tB"), _("Hide or show bookmarks"));
+    bookmarks_menu->Check(MENU_BOOKMARKS_SHOW, true);
+    bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_LOCK, _("Bookmark Lock Pos\tShift-B"), _("Set a bookmark at the current lock position"));
+    bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_STAR, _("Bookmark Star Pos"), _("Set a bookmark at the position of the currently selected star"));
+    bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("Delete all\tCtrl-B"), _("Remove all bookmarks"));
+
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     wxMenu *indi_menu = new wxMenu;
     indi_menu->Append(MENU_INDICONFIG, _("&Configure..."), _("Configure INDI settings"));
@@ -444,6 +456,7 @@ void MyFrame::SetupMenuBar(void)
 
     Menubar->Append(tools_menu, _("&Tools"));
     Menubar->Append(view_menu, _("&View"));
+    Menubar->Append(bookmarks_menu, _("&Bookmarks"));
     Menubar->Append(help_menu, _("&Help"));
     SetMenuBar(Menubar);
 }

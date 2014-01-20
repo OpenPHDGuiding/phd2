@@ -136,7 +136,7 @@ public:
 
     Guider *pGuider;
     wxMenuBar *Menubar;
-    wxMenu  *tools_menu, *view_menu; // need access to this...
+    wxMenu *tools_menu, *view_menu, *bookmarks_menu;
     wxAuiToolBar *MainToolbar;
     //wxChoice    *Dur_Choice;
     wxComboBox    *Dur_Choice;
@@ -203,6 +203,11 @@ public:
     void OnStarProfile(wxCommandEvent& evt);
     void OnTarget(wxCommandEvent& evt);
     void OnAutoStar(wxCommandEvent& evt);
+    void OnBookmarksShow(wxCommandEvent& evt);
+    void OnBookmarksSetAtLockPos(wxCommandEvent& evt);
+    void OnBookmarksSetAtCurPos(wxCommandEvent& evt);
+    void OnBookmarksClearAll(wxCommandEvent& evt);
+
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
     void OnBumpTimeout(wxThreadEvent& evt);
@@ -428,6 +433,10 @@ enum {
     EEGG_STICKY_LOCK,
     EEGG_FLIPRACAL,
     STAR_MASS_ENABLE,
+    MENU_BOOKMARKS_SHOW,
+    MENU_BOOKMARKS_SET_AT_LOCK,
+    MENU_BOOKMARKS_SET_AT_STAR,
+    MENU_BOOKMARKS_CLEAR_ALL,
 };
 
 enum {
