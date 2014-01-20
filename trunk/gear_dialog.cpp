@@ -467,7 +467,6 @@ void GearDialog::UpdateStepGuiderButtonState(void)
     }
     else
     {
-        m_pSetupStepGuiderButton->Enable(false);
         m_pConnectStepGuiderButton->Enable(true);
 
         if (m_pStepGuider->IsConnected())
@@ -477,6 +476,7 @@ void GearDialog::UpdateStepGuiderButtonState(void)
             m_pConnectStepGuiderButton->SetToolTip(_("Disconnect from AO"));
             m_pConnectStepGuiderButton->SetId(GEAR_BUTTON_DISCONNECT_STEPGUIDER);
             m_pStepGuiders->Enable(false);
+            m_pSetupStepGuiderButton->Enable(false);
         }
         else
         {
@@ -485,6 +485,7 @@ void GearDialog::UpdateStepGuiderButtonState(void)
             m_pConnectStepGuiderButton->SetToolTip(_("Connect to AO"));
             m_pConnectStepGuiderButton->SetId(GEAR_BUTTON_CONNECT_STEPGUIDER);
             m_pStepGuiders->Enable(true);
+            m_pSetupStepGuiderButton->Enable(true);
         }
     }
 }
@@ -853,6 +854,7 @@ void GearDialog::OnChoiceStepGuider(wxCommandEvent& event)
 
 void GearDialog::OnButtonSetupStepGuider(wxCommandEvent& event)
 {
+    m_pStepGuider->ShowPropertyDialog();
 }
 
 void GearDialog::OnButtonConnectStepGuider(wxCommandEvent& event)

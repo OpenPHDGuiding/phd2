@@ -141,6 +141,8 @@ public:
 
     virtual bool GuidingCeases(void);
 
+    virtual void ShowPropertyDialog(void);
+
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:

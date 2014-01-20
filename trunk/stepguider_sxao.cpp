@@ -37,8 +37,15 @@
 #ifdef STEPGUIDER_SXAO
 StepGuiderSxAO::StepGuiderSxAO(void)
 {
-    m_pSerialPort = NULL;
     m_Name = "SXV-AO";
+
+#ifdef USE_LOOPBACK_SERIAL
+    m_pSerialPort = new SerialPortLoopback();
+#else
+    m_pSerialPort = SerialPort::SerialPortFactory();
+#endif
+
+    m_serialPortName = pConfig->Profile.GetString("/stepguider/sxao/serialport", wxEmptyString);
 }
 
 StepGuiderSxAO::~StepGuiderSxAO(void)
@@ -46,45 +53,30 @@ StepGuiderSxAO::~StepGuiderSxAO(void)
     delete m_pSerialPort;
 }
 
-
 bool StepGuiderSxAO::Connect(void)
 {
     bool bError = false;
 
     try
     {
-#ifdef USE_LOOPBACK_SERIAL
-        m_pSerialPort = new SerialPortLoopback();
-#else
-        m_pSerialPort = SerialPort::SerialPortFactory();
-#endif
-
         if (!m_pSerialPort)
         {
             throw ERROR_INFO("StepGuiderSxAO::Connect: serial port is NULL");
         }
 
-        wxArrayString serialPorts = m_pSerialPort->GetSerialPortList();
-
-        if (serialPorts.IsEmpty())
+        if (m_serialPortName.IsEmpty())
         {
-            wxMessageBox(_("No serial ports found"),_("Error"), wxOK | wxICON_ERROR);
-            throw ERROR_INFO("No Serial port found");
+            ShowPropertyDialog();
         }
 
-        wxString lastSerialPort = pConfig->Profile.GetString("/stepguider/sxao/serialport", "");
-        int resp = serialPorts.Index(lastSerialPort);
+        Debug.AddLine(wxString::Format("Connecting to SX AO on port %s", m_serialPortName));
 
-        resp = wxGetSingleChoiceIndex(_("Select serial port"),_("Serial Port"), serialPorts,
-                NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
-                resp);
-
-        if (m_pSerialPort->Connect(serialPorts[resp], 9600, 8, 1, SerialPort::ParityNone, false, false))
+        if (m_pSerialPort->Connect(m_serialPortName, 9600, 8, 1, SerialPort::ParityNone, false, false))
         {
             throw ERROR_INFO("StepGuiderSxAO::Connect: serial port connect failed");
         }
 
-        pConfig->Profile.SetString("/stepguider/sxao/serialport", serialPorts[resp]);
+        pConfig->Profile.SetString("/stepguider/sxao/serialport", m_serialPortName);
 
         if (m_pSerialPort->SetReceiveTimeout(DefaultTimeout))
         {
@@ -117,6 +109,37 @@ bool StepGuiderSxAO::Connect(void)
     return bError;
 }
 
+void StepGuiderSxAO::ShowPropertyDialog(void)
+{
+    try
+    {
+        wxArrayString serialPorts;
+        if (m_pSerialPort)
+        {
+            serialPorts = m_pSerialPort->GetSerialPortList();
+        }
+
+        if (serialPorts.IsEmpty())
+        {
+            wxMessageBox(_("No serial ports found"),_("Error"), wxOK | wxICON_ERROR);
+            throw ERROR_INFO("No Serial ports found");
+        }
+
+        int resp = serialPorts.Index(m_serialPortName);
+
+        resp = wxGetSingleChoiceIndex(_("Select serial port"),_("Serial Port"), serialPorts,
+                NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
+                resp);
+
+        m_serialPortName = serialPorts[resp];
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        m_serialPortName = wxEmptyString;
+    }
+}
+
 bool StepGuiderSxAO::Disconnect(void)
 {
     if (StepGuider::Disconnect())
@@ -132,9 +155,6 @@ bool StepGuiderSxAO::Disconnect(void)
         {
             throw ERROR_INFO("StepGuiderSxAO::serial port disconnect failed");
         }
-
-        delete m_pSerialPort;
-        m_pSerialPort = NULL;
     }
     catch (wxString Msg)
     {
