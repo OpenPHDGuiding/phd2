@@ -192,7 +192,15 @@ bool MyApp::OnInit() {
 	#endif
 #endif
 #ifdef __APPLE__
-    wxExecute(wxString("defaults write com.StarkLabs.PHD NSAppSleepDisabled -bool YES"));
+    int osver = wxPlatformInfo::Get().GetOSMinorVersion();
+    if (osver == 9) { // Mavericks -- deal with App Nap
+        wxArrayString foo_out, foo_err;
+        wxExecute(wxString("defaults read com.StarkLabs.PHD NSAppSleepDisabled"),foo_out,foo_err);
+        if (foo_err.GetCount() || (foo_out.GetCount() && (foo_out[0].Contains("0")))) { // it's not there or disabled
+            wxExecute(wxString("defaults write com.StarkLabs.PHD NSAppSleepDisabled -bool YES"));
+            wxMessageBox("OSX 10.9's App Nap feature causes problems.  Please quit and relaunch PHD  to finish disabling App Nap.");
+        }
+    }
 #endif
 
 	locale.Init(wxLANGUAGE_ENGLISH_US);
