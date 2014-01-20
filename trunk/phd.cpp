@@ -98,6 +98,10 @@ bool PhdApp::OnInit() {
     Debug.AddLine("CoInitializeEx returns %x", hr);
 #endif
 
+#ifdef __APPLE__
+    wxExecute("defaults write com.open-phd-guiding.PHD2 NSAppSleepDisabled -bool YES");
+#endif
+
     if (m_resetConfig)
     {
         pConfig->DeleteAll();
