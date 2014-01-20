@@ -723,6 +723,10 @@ bool StepGuider::GuidingCeases(void)
     return bError;
 }
 
+void StepGuider::ShowPropertyDialog(void)
+{
+}
+
 bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int steps)
 {
     bool bError = false;

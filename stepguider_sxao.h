@@ -33,23 +33,28 @@
  *
  */
 
-#if defined(STEPGUIDER_SXAO) && !defined(STEPGUIDER_SXAO_H_INCLUDED)
+#ifndef STEPGUIDER_SXAO_H_INCLUDED
 #define STEPGUIDER_SXAO_H_INCLUDED
 
-#include "wx/msw/ole/automtn.h"
+#if defined(STEPGUIDER_SXAO)
 
 class StepGuiderSxAO : public StepGuider
 {
     static const int MaxSteps       =      45;
     static const int DefaultTimeout =  1*1000;
     static const int CenterTimeout  = 45*1000;
+
+    wxString m_serialPortName;
     SerialPort *m_pSerialPort;
+
 public:
     StepGuiderSxAO(void);
     virtual ~StepGuiderSxAO(void);
 
     virtual bool Connect(void);
     virtual bool Disconnect(void);
+
+    virtual void ShowPropertyDialog(void);
 
 private:
     virtual bool Step(GUIDE_DIRECTION direction, int steps);
@@ -73,4 +78,5 @@ private:
     virtual bool    ST4PulseGuideScope(int direction, int duration);
 };
 
-#endif // if defined(STEPGUIDER_SXAO) && !defined(STEPGUIDER_SXAO_H_INCLUDED)
+#endif // if defined(STEPGUIDER_SXAO)
+#endif // if !defined(STEPGUIDER_SXAO_H_INCLUDED)
