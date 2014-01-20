@@ -995,14 +995,25 @@ EXPOSED_STATE Guider::GetExposedState(void)
     return rval;
 }
 
-void Guider::ToggleShowBookmarks()
+bool Guider::GetBookmarksShown(void)
 {
-    m_showBookmarks = !m_showBookmarks;
-    if (m_bookmarks.size())
+    return m_showBookmarks;
+}
+
+void Guider::SetBookmarksShown(bool show)
+{
+    bool prev = m_showBookmarks;
+    m_showBookmarks = show;
+    if (prev != show && m_bookmarks.size())
     {
         Update();
         Refresh();
     }
+}
+
+void Guider::ToggleShowBookmarks()
+{
+    SetBookmarksShown(!m_showBookmarks);
 }
 
 void Guider::DeleteAllBookmarks()
@@ -1048,19 +1059,35 @@ void Guider::ToggleBookmark(const wxRealPoint& pos)
         m_bookmarks.erase(it);
 }
 
+static bool BookmarkPos(const PHD_Point& pos, std::vector<wxRealPoint>& vec)
+{
+    if (pos.IsValid())
+    {
+        wxRealPoint pt(pos.X, pos.Y);
+        std::vector<wxRealPoint>::iterator it = FindBookmark(pt, vec);
+        if (it != vec.end())
+            vec.erase(it);
+        vec.push_back(pt);
+        return true;
+    }
+    return false;
+}
+
 void Guider::BookmarkLockPosition()
 {
-    if (m_lockPosition.IsValid())
+    if (BookmarkPos(m_lockPosition, m_bookmarks) && m_showBookmarks)
     {
-        wxRealPoint pt(m_lockPosition.X, m_lockPosition.Y);
-        std::vector<wxRealPoint>::iterator it = FindBookmark(pt, m_bookmarks);
-        if (it != m_bookmarks.end())
-            m_bookmarks.erase(it);
-        m_bookmarks.push_back(pt);
-        if (m_showBookmarks)
-        {
-            Update();
-            Refresh();
-        }
+        Update();
+        Refresh();
+    }
+}
+
+void Guider::BookmarkCurPosition()
+{
+    PHD_Point curPos(CurrentPosition());
+    if (BookmarkPos(curPos, m_bookmarks) && m_showBookmarks)
+    {
+        Update();
+        Refresh();
     }
 }

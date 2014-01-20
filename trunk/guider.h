@@ -178,9 +178,12 @@ public:
     bool SetScaleImage(bool newScaleValue);
     bool GetScaleImage(void);
 
+    bool GetBookmarksShown(void);
+    void SetBookmarksShown(bool show);
     void ToggleShowBookmarks(void);
     void DeleteAllBookmarks(void);
     void BookmarkLockPosition();
+    void BookmarkCurPosition();
 
     void Reset(void);
 

@@ -879,6 +879,26 @@ void MyFrame::OnBumpTimeout(wxThreadEvent& evt)
         "You probably need to increase the AO Bump Step setting.\n"), _("Warning"));
 }
 
+void MyFrame::OnBookmarksShow(wxCommandEvent& evt)
+{
+    pGuider->SetBookmarksShown(evt.IsChecked());
+}
+
+void MyFrame::OnBookmarksSetAtLockPos(wxCommandEvent& evt)
+{
+    pGuider->BookmarkLockPosition();
+}
+
+void MyFrame::OnBookmarksSetAtCurPos(wxCommandEvent& evt)
+{
+    pGuider->BookmarkCurPosition();
+}
+
+void MyFrame::OnBookmarksClearAll(wxCommandEvent& evt)
+{
+    pGuider->DeleteAllBookmarks();
+}
+
 void MyFrame::OnCharHook(wxKeyEvent& evt)
 {
     bool handled = false;
@@ -904,6 +924,7 @@ void MyFrame::OnCharHook(wxKeyEvent& evt)
             if (!modifiers)
             {
                 pGuider->ToggleShowBookmarks();
+                bookmarks_menu->Check(MENU_BOOKMARKS_SHOW, pGuider->GetBookmarksShown());
                 handled = true;
             }
             else if (modifiers == wxMOD_CONTROL)
