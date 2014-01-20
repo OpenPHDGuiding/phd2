@@ -191,6 +191,10 @@ bool MyApp::OnInit() {
 	wxDisableAsserts();
 	#endif
 #endif
+#ifdef __APPLE__
+    wxExecute(wxString("defaults write com.StarkLabs.PHD NSAppSleepDisabled -bool YES"));
+#endif
+
 	locale.Init(wxLANGUAGE_ENGLISH_US);
 //	wxMessageBox(wxString::Format("%f",1.23));
 #ifdef ORION
