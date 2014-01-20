@@ -95,7 +95,7 @@ SerialPortWin32::~SerialPortWin32(void)
     }
 }
 
-bool SerialPortWin32::Connect(wxString portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR)
+bool SerialPortWin32::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR)
 {
     bool bError = false;
 

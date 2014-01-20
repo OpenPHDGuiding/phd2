@@ -54,7 +54,7 @@ public:
     SerialPort(void);
     virtual ~SerialPort(void);
 
-    virtual bool Connect(wxString portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR) = 0;
+    virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR) = 0;
     virtual bool Disconnect(void) = 0;
 
     virtual bool Send(const unsigned char * const pData, const unsigned count) = 0;
