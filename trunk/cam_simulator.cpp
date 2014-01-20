@@ -137,7 +137,7 @@ static void load_sim_params()
     SimCamParams::custom_pe_period = pConfig->Profile.GetDouble("/SimCam/pe_cust_period", PE_CUSTOM_PERIOD_DEFAULT);
 
     double dval = pConfig->Profile.GetDouble("/SimCam/dec_drift", DEC_DRIFT_DEFAULT);
-    SimCamParams::dec_drift_rate = range_check(dval, 0, DEC_DRIFT_MAX) * SimCamParams::inverse_imagescale / 60.0;  //a-s per min is saved
+    SimCamParams::dec_drift_rate = range_check(dval, -DEC_DRIFT_MAX, DEC_DRIFT_MAX) * SimCamParams::inverse_imagescale / 60.0;  //a-s per min is saved
     // backlash is in arc-secs in UI - map to px for internal use
     dval = pConfig->Profile.GetDouble("/SimCam/dec_backlash", DEC_BACKLASH_DEFAULT);
     SimCamParams::dec_backlash = range_check(dval, 0, DEC_BACKLASH_MAX) * SimCamParams::inverse_imagescale;
@@ -273,9 +273,12 @@ struct SimCamState {
     unsigned int height;
     wxVector<SimStar> stars; // star positions and intensities (ra, dec)
     wxVector<wxPoint> hotpx; // hot pixels
-    double ra_ofs;        // assume no backlash in RA
-    BacklashVal dec_ofs;  // simulate backlash in DEC
-    wxStopWatch timer;    // platform-independent timer
+    double ra_ofs;           // assume no backlash in RA
+    BacklashVal dec_ofs;     // simulate backlash in DEC
+    double cum_dec_drift;    // cumulative dec drift
+    wxStopWatch timer;       // platform-independent timer
+    long last_exposure_time; // last expoure time, milliseconds
+
 #ifdef SIMDEBUG
     wxFFile DebugFile;
     double last_ra_move;
@@ -312,6 +315,8 @@ void SimCamState::Initialize()
     srand(clock());
     ra_ofs = 0.;
     dec_ofs = BacklashVal(SimCamParams::dec_backlash);
+    cum_dec_drift = 0.;
+    last_exposure_time = 0;
 
 #ifdef SIMDEBUG
     DebugFile.Open ("Sim_Debug.txt", "w");
@@ -438,12 +443,17 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     }
     CountUp++;
 #endif
+
     // start with original star positions
     wxVector<wxRealPoint> pos(nr_stars);
     for (unsigned int i = 0; i < nr_stars; i++)
         pos[i] = stars[i].pos;
 
-    double const now = timer.Time() / 1000.;
+    long const cur_time = timer.Time();
+    long const delta_time_ms = last_exposure_time - cur_time;
+    last_exposure_time = cur_time;
+
+    double const now = cur_time / 1000.;
 
     // Compute PE - canned PE terms create some "steep" sections of the curve
     static double const max_amp = 4.85;         // max amplitude of canned PE
@@ -464,16 +474,16 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
         }
         else
         {
-            pe = SimCamParams::custom_pe_amp * cos(now/ SimCamParams::custom_pe_period * 2.0 * M_PI) * SimCamParams::inverse_imagescale;
+            pe = SimCamParams::custom_pe_amp * cos(now / SimCamParams::custom_pe_period * 2.0 * M_PI) * SimCamParams::inverse_imagescale;
         }
     }
 
     // simulate drift in DEC
-    double const drift = now * SimCamParams::dec_drift_rate;
+    cum_dec_drift += (double) delta_time_ms * SimCamParams::dec_drift_rate / 1000.;
 
     // Compute total movements from all sources - ra_ofs and dec_ofs are cumulative sums of all guider movements relative to zero-point
     double total_shift_x = pe + ra_ofs;
-    double total_shift_y = drift + dec_ofs.val();
+    double total_shift_y = cum_dec_drift + dec_ofs.val();
 
     double seeing[2] = { 0.0 };
 
@@ -922,12 +932,11 @@ static void SetRBState(SimCamDialog *dlg, bool using_defaults)
     dlg->pPECustomPeriod->Enable(!using_defaults);
 }
 
-static void SetControlStates(SimCamDialog *dlg, bool CaptureActive)
+static void SetControlStates(SimCamDialog *dlg, bool captureActive)
 {
-    bool enable = !CaptureActive;
+    bool enable = !captureActive;
 
     dlg->pBacklashSpin->Enable(enable);
-    dlg->pDriftSpin->Enable(enable);
     dlg->pGuideRateSpin->Enable(enable);
     dlg->pCameraAngleSpin->Enable(enable);
     dlg->pPEDefaultRb->Enable(enable);
@@ -1015,7 +1024,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     wxFlexGridSizer *pMountTable = new wxFlexGridSizer(1, 6, 15, 15);
     pBacklashSpin = NewSpinner(this, SimCamParams::dec_backlash * imageScale, 0, DEC_BACKLASH_MAX, 0.1, _("Dec backlash, arc-secs"));
     AddTableEntryPair(this, pMountTable, _("Dec backlash"), pBacklashSpin);
-    pDriftSpin = NewSpinner(this, SimCamParams::dec_drift_rate * 60.0 * imageScale, 0, DEC_DRIFT_MAX, 0.5, _("Dec drift, arc-sec/min"));
+    pDriftSpin = NewSpinner(this, SimCamParams::dec_drift_rate * 60.0 * imageScale, -DEC_DRIFT_MAX, DEC_DRIFT_MAX, 0.5, _("Dec drift, arc-sec/min"));
     AddTableEntryPair(this, pMountTable, _("Dec drift"), pDriftSpin);
     pGuideRateSpin = NewSpinner(this, SimCamParams::guide_rate / 15.0, 0.25, GUIDE_RATE_MAX, 0.25, _("Guide rate, x sidereal"));
     AddTableEntryPair(this, pMountTable, _("Guide rate"), pGuideRateSpin);
@@ -1176,7 +1185,7 @@ void Camera_SimClass::ShowPropertyDialog()
             dlg.pPECustomAmp->GetValue().ToDouble(&SimCamParams::custom_pe_amp);
             dlg.pPECustomPeriod->GetValue().ToDouble(&SimCamParams::custom_pe_period);
         }
-        SimCamParams::dec_drift_rate =   (double) dlg.pDriftSpin->GetValue() /(imageScale*60.0);  // a-s per min to px per second
+        SimCamParams::dec_drift_rate =   (double) dlg.pDriftSpin->GetValue() / (imageScale * 60.0);  // a-s per min to px per second
         SimCamParams::seeing_scale =     (double) dlg.pSeeingSpin->GetValue();                      // already in a-s
         SimCamParams::cam_angle =        (double) dlg.pCameraAngleSpin->GetValue();
         SimCamParams::guide_rate =       (double) dlg.pGuideRateSpin->GetValue() * 15.0;
