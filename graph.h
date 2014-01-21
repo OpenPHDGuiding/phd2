@@ -69,29 +69,24 @@ struct S_HISTORY
 
 class GraphLogClientWindow : public wxWindow
 {
-    GraphLogClientWindow(wxWindow *parent);
-    ~GraphLogClientWindow(void);
+public:
+    enum GRAPH_MODE
+    {
+        MODE_RADEC,
+        MODE_DXDY,
+    };
 
-    bool SetMinLength(unsigned int minLength);
-    bool SetMaxLength(unsigned int maxLength);
-    bool SetMinHeight(unsigned int minLength);
-    bool SetMaxHeight(unsigned int minHeight);
+private:
+    static const int m_xSamplesPerDivision = 50;
+    static const int m_yDivisions = 3;
 
     wxColour m_raOrDxColor, m_decOrDyColor;
     wxStaticText *m_pRaRMS, *m_pDecRMS, *m_pTotRMS, *m_pOscIndex;
-
-    void AppendData(const GuideStepInfo& step);
-    void ResetData(void);
-    void RecalculateTrendLines(void);
-    void OnPaint(wxPaintEvent& evt);
 
     unsigned int m_minLength;
 
     unsigned int m_minHeight;
     unsigned int m_maxHeight;
-
-    static const int m_xSamplesPerDivision = 50;
-    static const int m_yDivisions = 3;
 
     circular_buffer<S_HISTORY> m_history;
 
@@ -99,11 +94,7 @@ class GraphLogClientWindow : public wxWindow
 
     int m_raSameSides; // accumulator for RA osc index
 
-    enum GRAPH_MODE
-    {
-        MODE_RADEC,
-        MODE_DXDY,
-    } m_mode;
+    GRAPH_MODE m_mode;
 
     unsigned int m_length;
     unsigned int m_height;
@@ -113,6 +104,20 @@ class GraphLogClientWindow : public wxWindow
     bool m_showCorrections;
 
     friend class GraphLogWindow;
+
+public:
+    GraphLogClientWindow(wxWindow *parent);
+    ~GraphLogClientWindow(void);
+
+    bool SetMinLength(unsigned int minLength);
+    bool SetMaxLength(unsigned int maxLength);
+    bool SetMinHeight(unsigned int minLength);
+    bool SetMaxHeight(unsigned int minHeight);
+
+    void AppendData(const GuideStepInfo& step);
+    void ResetData(void);
+    void RecalculateTrendLines(void);
+    void OnPaint(wxPaintEvent& evt);
 
     DECLARE_EVENT_TABLE()
 };
@@ -152,6 +157,7 @@ public:
     void UpdateControls(void);
     void SetState(bool is_active);
     void EnableTrendLines(bool enable);
+    GraphLogClientWindow::GRAPH_MODE SetMode(GraphLogClientWindow::GRAPH_MODE newMode);
 
     void OnPaint(wxPaintEvent& evt);
     void OnButtonSettings(wxCommandEvent& evt);

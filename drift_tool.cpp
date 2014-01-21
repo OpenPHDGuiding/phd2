@@ -74,6 +74,7 @@ struct DriftToolWin : public wxFrame
     bool m_need_end_dec_drift;
     bool m_save_lock_pos_is_sticky;
     bool m_save_use_subframes;
+    GraphLogClientWindow::GRAPH_MODE m_save_graph_mode;
 
     bool m_can_slew;
     bool m_slewing;
@@ -269,6 +270,9 @@ DriftToolWin::DriftToolWin()
         evt.SetInt(1); // "Checked"
         pFrame->OnGraph(evt);
     }
+
+    // graph must be showing RA/Dec
+    m_save_graph_mode = pFrame->pGraphLog->SetMode(GraphLogClientWindow::MODE_RADEC);
 
     // we do not want sticky lock position enabled
     m_save_lock_pos_is_sticky = pFrame->pGuider->LockPosIsSticky();
@@ -569,6 +573,9 @@ void DriftToolWin::OnClose(wxCloseEvent& evt)
         pFrame->pGraphLog->EnableTrendLines(false);
         m_need_end_dec_drift = false;
     }
+
+    // restore graph mode
+    pFrame->pGraphLog->SetMode(m_save_graph_mode);
 
     // turn sticky lock position back on if we disabled it
     if (m_save_lock_pos_is_sticky)
