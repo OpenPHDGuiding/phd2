@@ -329,20 +329,30 @@ void GraphLogWindow::UpdateRADecDxDyLabels(void)
     }
 }
 
+GraphLogClientWindow::GRAPH_MODE GraphLogWindow::SetMode(GraphLogClientWindow::GRAPH_MODE newMode)
+{
+    GraphLogClientWindow::GRAPH_MODE prev = m_pClient->m_mode;
+    if (m_pClient->m_mode != newMode)
+    {
+        m_pClient->m_mode = newMode;
+        pConfig->Global.SetInt("/graph/ScopeOrCameraUnits", (int) m_pClient->m_mode);
+        UpdateRADecDxDyLabels();
+        Refresh();
+    }
+    return prev;
+}
+
 void GraphLogWindow::OnRADecDxDy(wxCommandEvent& evt)
 {
     switch (evt.GetId())
     {
     case GRAPH_DXDY:
-        m_pClient->m_mode = GraphLogClientWindow::MODE_DXDY;
+        SetMode(GraphLogClientWindow::MODE_DXDY);
         break;
     case GRAPH_RADEC:
-        m_pClient->m_mode = GraphLogClientWindow::MODE_RADEC;
+        SetMode(GraphLogClientWindow::MODE_RADEC);
         break;
     }
-    pConfig->Global.SetInt("/graph/ScopeOrCameraUnits", (int)m_pClient->m_mode);
-    UpdateRADecDxDyLabels();
-    Refresh();
 }
 
 void GraphLogWindow::OnArcsecsPixels(wxCommandEvent& evt)
