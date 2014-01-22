@@ -115,7 +115,7 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
     dlg.ShowModal();
 }
 
-void MyFrame::OnOverlay(wxCommandEvent &evt)
+void MyFrame::OnOverlay(wxCommandEvent& evt)
 {
     pGuider->SetOverlayMode(evt.GetId() - MENU_XHAIR0);
 }
@@ -281,7 +281,7 @@ static bool load_multi(GuideCamera *camera, const wxString& fname)
     return bError;
 }
 
-void MyFrame::OnLoadSaveDark(wxCommandEvent &evt)
+void MyFrame::OnLoadSaveDark(wxCommandEvent& evt)
 {
     wxString fname;
 
@@ -575,7 +575,7 @@ void MyFrame::UpdateDarksButton(void)
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
 }
 
-void MyFrame::OnToolBar(wxCommandEvent &evt)
+void MyFrame::OnToolBar(wxCommandEvent& evt)
 {
     if (evt.IsChecked())
     {
@@ -590,7 +590,7 @@ void MyFrame::OnToolBar(wxCommandEvent &evt)
     m_mgr.Update();
 }
 
-void MyFrame::OnGraph(wxCommandEvent &evt)
+void MyFrame::OnGraph(wxCommandEvent& evt)
 {
     if (evt.IsChecked())
     {
@@ -604,7 +604,7 @@ void MyFrame::OnGraph(wxCommandEvent &evt)
     m_mgr.Update();
 }
 
-void MyFrame::OnAoGraph(wxCommandEvent &evt)
+void MyFrame::OnAoGraph(wxCommandEvent& evt)
 {
     if (this->pStepGuiderGraph->SetState(evt.IsChecked()))
     {
@@ -617,7 +617,7 @@ void MyFrame::OnAoGraph(wxCommandEvent &evt)
     m_mgr.Update();
 }
 
-void MyFrame::OnStarProfile(wxCommandEvent &evt)
+void MyFrame::OnStarProfile(wxCommandEvent& evt)
 {
     if (evt.IsChecked())
     {
@@ -636,7 +636,7 @@ void MyFrame::OnStarProfile(wxCommandEvent &evt)
     m_mgr.Update();
 }
 
-void MyFrame::OnTarget(wxCommandEvent &evt)
+void MyFrame::OnTarget(wxCommandEvent& evt)
 {
     if (evt.IsChecked())
     {
@@ -650,7 +650,7 @@ void MyFrame::OnTarget(wxCommandEvent &evt)
     m_mgr.Update();
 }
 
-void MyFrame::OnLog(wxCommandEvent &evt)
+void MyFrame::OnLog(wxCommandEvent& evt)
 {
     if (evt.GetId() == MENU_LOG)
     {
@@ -667,34 +667,7 @@ void MyFrame::OnLog(wxCommandEvent &evt)
     }
     else if (evt.GetId() == MENU_LOGIMAGES)
     {
-        if (wxGetKeyState(WXK_SHIFT))
-        {
-//          wxMessageBox("arg");
-#ifdef __WINDOWS__
-//          tools_menu->FindItem(MENU_LOGIMAGES)->SetTextColour(wxColour(200,10,10));
-#endif
-            tools_menu->FindItem(MENU_LOGIMAGES)->SetItemLabel(_("Enable Raw Star logging"));
-            if (evt.IsChecked()) {
-                GuideLog.EnableImageLogging(LIF_RAW_FITS);
-            }
-            else {
-                GuideLog.DisableImageLogging();
-            }
-        }
-        else
-        {
-#ifdef __WINDOWS__
-//          tools_menu->FindItem(MENU_LOGIMAGES)->SetTextColour(*wxBLACK);
-#endif
-            tools_menu->FindItem(MENU_LOGIMAGES)->SetItemLabel(_("Enable Star Image logging"));
-            if (evt.IsChecked()) {
-                GuideLog.EnableImageLogging(LIF_LOW_Q_JPEG);
-            }
-            else {
-                GuideLog.DisableImageLogging();
-            }
-        }
-        Menubar->Refresh();
+        GuideLog.EnableImageLogging(evt.IsChecked());
     }
     else if (evt.GetId() == MENU_DEBUG)
     {

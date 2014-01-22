@@ -81,8 +81,7 @@ bool Camera_QGuiderClass::Connect() {
 //  buffer = new unsigned char[1311744];
     SETBUFFERMODE(0);
     Connected = true;
-    wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-//  qglogfile = new wxTextFile(stdpath.GetDocumentsDir() + PATHSEPSTR + _T("PHD_QGuide_log.txt"));
+//  qglogfile = new wxTextFile(Debug.GetLogDir() + PATHSEPSTR + _T("PHD_QGuide_log.txt"));
     //qglogfile->AddLine(wxNow() + ": QGuide connected"); //qglogfile->Write();
     return false;
 }

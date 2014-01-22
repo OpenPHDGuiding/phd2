@@ -396,10 +396,10 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(EEGG_MANUALLOCK, _("Enter Manual Lock Position"), _("Give manual lock position"));
     tools_menu->Append(MENU_DRIFTTOOL,_("Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
-    tools_menu->AppendCheckItem(MENU_LOG,_("Enable &Logging\tAlt-L"),_("Enable / disable log file"));
-    tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image Logging"),_("Enable / disable logging of star images"));
+    tools_menu->AppendCheckItem(MENU_LOG,_("Enable Guide &Log\tAlt-L"),_("Enable guide log file"));
+    tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug Log"),_("Enable debug log file"));
+    tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image Logging"),_("Enable logging of star images"));
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable / disable link to Nebulosity"));
-    tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug Logging"),_("Enable / disable debug log file"));
     tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky Lock Position"),_("Keep the same lock position when guiding starts"));
 
     view_menu = new wxMenu();
@@ -1103,7 +1103,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
     return error;
 }
 
-void MyFrame::OnClose(wxCloseEvent &event)
+void MyFrame::OnClose(wxCloseEvent& event)
 {
     if (CaptureActive)
     {
@@ -1419,11 +1419,8 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
     m_pResetConfiguration = new wxCheckBox(pParent, wxID_ANY,_("Reset Configuration"), wxPoint(-1,-1), wxSize(75,-1));
     DoAdd(m_pResetConfiguration, _("Reset all configuration to fresh install status -- Note: this closes PHD2"));
 
-    m_pEnableLogging = new wxCheckBox(pParent, wxID_ANY,_("Enable Logging"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pEnableLogging, _("Save guide commands and info to a file?"));
-
-    m_pEnableImageLogging = new wxCheckBox(pParent, wxID_ANY,_("Enable Star-image Logging"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pEnableImageLogging, _("Save guide-star images to a sequence of files?"));
+    m_pResetDontAskAgain = new wxCheckBox(pParent, wxID_ANY,_("Reset \"Don't Ask Again\" messages"), wxPoint(-1,-1), wxSize(75,-1));
+    DoAdd(m_pResetDontAskAgain, _("Restore any messages that were hidden when you checked \"Don't Ask Again\"."));
 
     wxString img_formats[] =
     {
@@ -1433,7 +1430,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
     width = StringArrayWidth(img_formats, WXSIZEOF(img_formats));
     m_pLoggedImageFormat = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
             wxSize(width+35, -1), WXSIZEOF(img_formats), img_formats );
-    DoAdd(_("Image format"), m_pLoggedImageFormat,
+    DoAdd(_("Image logging format"), m_pLoggedImageFormat,
           _("File format of logged images"));
 
     m_pDitherRaOnly = new wxCheckBox(pParent, wxID_ANY,_("Dither RA only"), wxPoint(-1,-1), wxSize(75,-1));
@@ -1541,9 +1538,8 @@ void MyFrameConfigDialogPane::LoadValues(void)
 {
     m_pResetConfiguration->SetValue(false);
     m_pResetConfiguration->Enable(!pFrame->CaptureActive);
-    m_pEnableLogging->SetValue(GuideLog.IsEnabled());
-    m_pEnableImageLogging->SetValue(GuideLog.IsImageLoggingEnabled());
-    m_pLoggedImageFormat->SetSelection(GuideLog.LoggedImageFormat());
+    m_pResetDontAskAgain->SetValue(false);
+    m_pLoggedImageFormat->SetSelection(GuideLog.GetLoggedImageFormat());
     m_pNoiseReduction->SetSelection(m_pFrame->GetNoiseReductionMethod());
     m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
@@ -1579,12 +1575,12 @@ void MyFrameConfigDialogPane::UnloadValues(void)
             }
         }
 
-        GuideLog.EnableLogging(m_pEnableLogging->GetValue());
+        if (this->m_pResetDontAskAgain->GetValue())
+        {
+            ConfirmDialog::ResetAllDontAskAgain();
+        }
 
-        if (m_pEnableImageLogging->GetValue())
-            GuideLog.EnableImageLogging((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
-        else
-            GuideLog.DisableImageLogging();
+        GuideLog.SetLoggedImageFormat((LOGGED_IMAGE_FORMAT) m_pLoggedImageFormat->GetSelection());
         m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
         m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
         m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());

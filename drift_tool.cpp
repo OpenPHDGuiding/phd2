@@ -630,5 +630,25 @@ void DriftToolWin::OnTimer(wxTimerEvent& evt)
 
 wxWindow *DriftTool::CreateDriftToolWindow()
 {
+    // confirm that image scale is specified
+
+    if (pFrame->GetCameraPixelScale() == 1.0)
+    {
+        bool confirmed = ConfirmDialog::Confirm(_(
+            "The Drift Align tool is most effective when PHD2 knows your guide\r\n"
+            "scope focal length and camera pixel size.\r\n"
+            "\r\n"
+            "Enter your guide scope focal length on the Global tab in the Brain.\r\n"
+            "Enter your camera pixel size on the Camera tab in the Brain.\r\n"
+            "\r\n"
+            "Would you like to run the drift tool anyway?"),
+                "/drift_tool_without_pixscale", _("Confirm"));
+
+        if (!confirmed)
+        {
+            return 0;
+        }
+    }
+
     return new DriftToolWin();
 }

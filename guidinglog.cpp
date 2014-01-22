@@ -458,17 +458,9 @@ bool GuidingLog::GuideStep(const GuideStepInfo& step)
     return bError;
 }
 
-bool GuidingLog::EnableImageLogging(LOGGED_IMAGE_FORMAT fmt)
+void GuidingLog::EnableImageLogging(bool enable)
 {
-    m_image_logging_enabled = true;
-    m_logged_image_format = fmt;
-    return true;
-}
-
-bool GuidingLog::DisableImageLogging(void)
-{
-    m_image_logging_enabled = false;
-    return true;
+    m_image_logging_enabled = enable;
 }
 
 bool GuidingLog::IsImageLoggingEnabled(void)
@@ -476,7 +468,12 @@ bool GuidingLog::IsImageLoggingEnabled(void)
     return m_image_logging_enabled;
 }
 
-LOGGED_IMAGE_FORMAT GuidingLog::LoggedImageFormat(void)
+void GuidingLog::SetLoggedImageFormat(LOGGED_IMAGE_FORMAT format)
+{
+    m_logged_image_format = format;
+}
+
+LOGGED_IMAGE_FORMAT GuidingLog::GetLoggedImageFormat(void)
 {
     return m_logged_image_format;
 }

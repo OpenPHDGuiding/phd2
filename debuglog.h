@@ -58,7 +58,7 @@ public:
     wxString Write(const wxString& str);
     bool Flush(void);
 
-    bool ChangeDirLog (const wxString& newdir);
+    bool ChangeDirLog(const wxString& newdir);
 };
 
 extern DebugLog& operator<< (DebugLog& out, const wxString &str);

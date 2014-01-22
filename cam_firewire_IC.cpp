@@ -75,8 +75,7 @@ bool Camera_FirewireClass::Connect() {
     int debugstep = 0;
 
     if (debug) {
-        wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-        debugfile = new wxTextFile(stdpath.GetDocumentsDir() + PATHSEPSTR + wxString::Format("PHD_debug_%ld.txt",wxGetLocalTime()));
+        debugfile = new wxTextFile(Debug.GetLogDir() + PATHSEPSTR + wxString::Format("PHD_debug_%ld.txt",wxGetLocalTime()));
         if (debugfile->Exists()) debugfile->Open();
         else debugfile->Create();
         wxDateTime now = wxDateTime::Now();
