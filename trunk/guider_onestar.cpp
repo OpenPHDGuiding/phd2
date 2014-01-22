@@ -619,11 +619,14 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         }
 
         // Image logging
-        if (state >= STATE_SELECTED && GuideLog.IsImageLoggingEnabled()) {
-            if (GuideLog.LoggedImageFormat() == LIF_RAW_FITS) { // Save star image as a FITS
+        if (state >= STATE_SELECTED && GuideLog.IsImageLoggingEnabled())
+        {
+            if (GuideLog.GetLoggedImageFormat() == LIF_RAW_FITS) // Save star image as a FITS
+            {
                 SaveStarFITS();
             }
-            else {  // Save star image as a JPEG
+            else  // Save star image as a JPEG
+            {
                 double LockX = LockPosition().X;
                 double LockY = LockPosition().Y;
 
@@ -638,15 +641,16 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
     #else
                 tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
     #endif
-
                 //          tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
-                wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-                wxString fname = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_GuideStar" + wxDateTime::Now().Format(_T("_%j_%H%M%S")) + ".jpg";
+
+                wxString fname = Debug.GetLogDir() + PATHSEPSTR + "PHD_GuideStar" + wxDateTime::Now().Format(_T("_%j_%H%M%S")) + ".jpg";
                 wxImage subImg = SubBmp.ConvertToImage();
                 // subImg.Rescale(120, 120);  zoom up (not now)
-                if (GuideLog.LoggedImageFormat() == LIF_HI_Q_JPEG)
+                if (GuideLog.GetLoggedImageFormat() == LIF_HI_Q_JPEG)
+                {
                     // set high(ish) JPEG quality
                     subImg.SetOption(wxIMAGE_OPTION_QUALITY, 100);
+                }
                 subImg.SaveFile(fname, wxBITMAP_TYPE_JPEG);
                 tmpMdc.SelectObject(wxNullBitmap);
             }
@@ -679,8 +683,8 @@ void GuiderOneStar::SaveStarFITS()
     for (y=0; y<60; y++)
         for (x=0; x<60; x++, usptr++)
             *usptr = *(pImage->ImageData + (y+start_y)*width + (x+start_x));
-    wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-    wxString fname = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD_GuideStar" + wxDateTime::Now().Format(_T("_%j_%H%M%S")) + ".fit";
+
+    wxString fname = Debug.GetLogDir() + PATHSEPSTR + "PHD_GuideStar" + wxDateTime::Now().Format(_T("_%j_%H%M%S")) + ".fit";
 
     fitsfile *fptr;  // FITS file pointer
     int status = 0;  // CFITSIO status value MUST be initialized to zero!

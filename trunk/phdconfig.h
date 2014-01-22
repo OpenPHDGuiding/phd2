@@ -93,6 +93,9 @@ public:
     void SetInt(const char *pName, int value);
 
     bool HasEntry(const wxString& name) const;
+
+    void DeleteEntry(const wxString& name);
+    void DeleteGroup(const wxString& name);
 };
 
 class PhdConfig

@@ -47,82 +47,84 @@ Logger::~Logger(void)
 }
 
 // Default, safety-net implementation behind derived logger classes
-bool Logger::ChangeDirLog (const wxString& newdir)
+bool Logger::ChangeDirLog(const wxString& newdir)
 {
     return false;
 }
 
 // Return a valid default directory location for log files.  On Windows, this will normally be "My Documents\PHD2"
-static wxString DefaultDir (void)
+static wxString DefaultDir(void)
 {
     wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-    wxString srslt = stdpath.GetDocumentsDir () + PATHSEPSTR + "PHD2";
+    wxString rslt = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD2";
 
-    if (!wxDirExists (srslt))
-        if (!wxFileName::Mkdir (srslt, 511, true))
-            srslt = stdpath.GetDocumentsDir ();             // should never happen
-    return (srslt);
+    if (!wxDirExists(rslt))
+        if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
+            rslt = stdpath.GetDocumentsDir();             // should never happen
 
+    return rslt;
 }
+
 // Return the current logging directory.  Design invaraint: returned string must always be a valid directory
-wxString Logger::GetLogDir (void)
+wxString Logger::GetLogDir(void)
 {
     if (m_Initialized)
-        return (m_CurrentDir);
-    else
-    {                                // One-time initialization at start-up
-        wxString srslt = "";
+        return m_CurrentDir;
 
-        if (pConfig)
-        {
-            srslt = pConfig->Global.GetString ("/frame/LogDir", "");
-            if (srslt.length() == 0)
-                srslt = DefaultDir();                // user has never even looked at it
-            else
-                if (!wxDirExists (srslt))        // user might have deleted our old directories
-                {
-                    if (!wxFileName::Mkdir (srslt, 511, true))        // will build entire hierarchy if needed
-                        srslt = DefaultDir ();
-                }
+    // One-time initialization at start-up
+    wxString rslt = "";
 
-        }
+    if (pConfig)
+    {
+        rslt = pConfig->Global.GetString ("/frame/LogDir", "");
+        if (rslt.length() == 0)
+            rslt = DefaultDir();                // user has never even looked at it
         else
-            srslt = DefaultDir ();                    // shouldn't ever happen
-
-        m_CurrentDir = srslt;
-        m_Initialized = true;
-        return (srslt);
+            if (!wxDirExists(rslt))        // user might have deleted our old directories
+            {
+                if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))        // will build entire hierarchy if needed
+                    rslt = DefaultDir();
+            }
     }
+    else
+        rslt = DefaultDir();                    // shouldn't ever happen
+
+    m_CurrentDir = rslt;
+    m_Initialized = true;
+
+    return rslt;
 }
 
 // Change the current logging directory, creating a new directory if needed. File system errors will result in a 'false' return
 // and the current directory will be left unchanged.
-bool Logger::SetLogDir (const wxString& dir)
+bool Logger::SetLogDir(const wxString& dir)
 {
     wxString newdir(dir);
     bool bOk = true;
 
-    if (newdir.EndsWith (PATHSEPSTR))        // Need a standard form - no trailing separators
+    if (newdir.EndsWith(PATHSEPSTR))        // Need a standard form - no trailing separators
     {
         wxString stemp = PATHSEPSTR;
-        newdir = newdir.substr (0, newdir.length()-stemp.length());
+        newdir = newdir.substr(0, newdir.length() - stemp.length());
     }
 
     if (newdir.length() == 0)                // Empty-string shorthand for "default location"
     {
-        newdir = DefaultDir ();
+        newdir = DefaultDir();
     }
     else
-        if (!wxDirExists (newdir))
+    {
+        if (!wxDirExists(newdir))
         {
-            bOk = wxFileName::Mkdir (newdir, 511, true);        // will build entire hierarchy; client handles errors
+            bOk = wxFileName::Mkdir(newdir, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);        // will build entire hierarchy; client handles errors
         }
+    }
 
     if (bOk)
     {
         m_CurrentDir = newdir;
-        pConfig->Global.SetString ("/frame/logdir", newdir);
+        pConfig->Global.SetString("/frame/logdir", newdir);
     }
 
-    return (bOk);
+    return bOk;
 }

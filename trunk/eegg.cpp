@@ -185,5 +185,8 @@ void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(evt))
         pDriftTool = DriftTool::CreateDriftToolWindow();
     }
 
-    pDriftTool->Show();
+    if (pDriftTool)
+    {
+        pDriftTool->Show();
+    }
 }

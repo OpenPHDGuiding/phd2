@@ -55,9 +55,16 @@ ConfirmDialog::~ConfirmDialog(void)
 {
 }
 
+static wxString ConfigKey(const wxString& name)
+{
+    return "/Confirm" + name;
+}
+
 bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, const wxString& title_arg)
 {
-    bool skip_confirm = pConfig->Global.GetBoolean(config_key, false);
+    wxString key(ConfigKey(config_key));
+
+    bool skip_confirm = pConfig->Global.GetBoolean(key, false);
     if (skip_confirm)
         return true;
 
@@ -69,9 +76,14 @@ bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, 
     if (dlg.ShowModal() == wxID_OK)
     {
         if (dlg.dont_ask_again->IsChecked())
-            pConfig->Global.SetBoolean(config_key, true);
+            pConfig->Global.SetBoolean(key, true);
         return true;
     }
 
     return false;
+}
+
+void ConfirmDialog::ResetAllDontAskAgain(void)
+{
+    pConfig->Global.DeleteGroup("/Confirm");
 }

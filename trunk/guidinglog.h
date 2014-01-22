@@ -83,10 +83,10 @@ public:
     bool Flush(void);
     void Close(void);
 
-    bool EnableImageLogging(LOGGED_IMAGE_FORMAT fmt);
-    bool DisableImageLogging(void);
+    void EnableImageLogging(bool enable);
     bool IsImageLoggingEnabled(void);
-    LOGGED_IMAGE_FORMAT LoggedImageFormat(void);
+    void SetLoggedImageFormat(LOGGED_IMAGE_FORMAT val);
+    LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
 
     bool StartCalibration(Mount *pCalibrationMount);
     bool CalibrationFailed(Mount *pCalibrationMount, const wxString& msg);

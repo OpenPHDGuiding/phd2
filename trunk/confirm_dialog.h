@@ -43,6 +43,7 @@ public:
     ~ConfirmDialog(void);
 
     static bool Confirm(const wxString& prompt, const wxString& config_key, const wxString& title = "");
+    static void ResetAllDontAskAgain(void);
 
 private:
     wxCheckBox *dont_ask_again;

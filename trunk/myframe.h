@@ -66,8 +66,7 @@ class MyFrameConfigDialogPane : public ConfigDialogPane
 {
     MyFrame *m_pFrame;
     wxCheckBox *m_pResetConfiguration;
-    wxCheckBox *m_pEnableLogging;
-    wxCheckBox *m_pEnableImageLogging;
+    wxCheckBox *m_pResetDontAskAgain;
     wxChoice* m_pLoggedImageFormat;
     wxCheckBox *m_pDitherRaOnly;
     wxSpinCtrlDouble *m_pDitherScaleFactor;

@@ -176,6 +176,16 @@ bool ConfigSection::HasEntry(const wxString& name) const
     return m_pConfig && m_pConfig->HasEntry(m_prefix + name);
 }
 
+void ConfigSection::DeleteEntry(const wxString& name)
+{
+    m_pConfig->DeleteEntry(m_prefix + name);
+}
+
+void ConfigSection::DeleteGroup(const wxString& name)
+{
+    m_pConfig->DeleteGroup(m_prefix + name);
+}
+
 PhdConfig::PhdConfig(void)
 {
 }
