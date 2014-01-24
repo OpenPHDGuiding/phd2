@@ -65,7 +65,7 @@ StepGuider::StepGuider(void)
     int bumpPercentage = pConfig->Profile.GetInt(prefix + "/BumpPercentage", DefaultBumpPercentage);
     SetBumpPercentage(bumpPercentage);
 
-    int bumpMaxStepsPerCycle = pConfig->Profile.GetDouble(prefix + "/BumpMaxStepsPerCycle", DefaultBumpMaxStepsPerCycle);
+    double bumpMaxStepsPerCycle = pConfig->Profile.GetDouble(prefix + "/BumpMaxStepsPerCycle", DefaultBumpMaxStepsPerCycle);
     SetBumpMaxStepsPerCycle(bumpMaxStepsPerCycle);
 
     int calibrationStepsPerIteration = pConfig->Profile.GetInt(prefix + "/CalibrationStepsPerIteration", DefaultCalibrationStepsPerIteration);
