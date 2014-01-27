@@ -65,9 +65,6 @@ Scope::Scope(void)
     int maxDecDuration = pConfig->Profile.GetInt(prefix + "/MaxDecDuration", DefaultMaxDecDuration);
     SetMaxDecDuration(maxDecDuration);
 
-    bool enableFastRecenter = pConfig->Profile.GetBoolean(prefix + "/FastRecenter", true);
-    EnableFastRecenter(enableFastRecenter);
-
     int decGuideMode = pConfig->Profile.GetInt(prefix + "/DecGuideMode", DefaultDecGuideMode);
     SetDecGuideMode(decGuideMode);
 
@@ -178,17 +175,6 @@ bool Scope::SetMaxRaDuration(double maxRaDuration)
     pConfig->Profile.SetInt("/scope/MaxRaDuration", m_maxRaDuration);
 
     return bError;
-}
-
-bool Scope::IsFastRecenterEnabled(void)
-{
-    return m_fastRecenterEnabled;
-}
-
-void Scope::EnableFastRecenter(bool enable)
-{
-    m_fastRecenterEnabled = enable;
-    pConfig->Profile.SetInt("/scope/FastRecenter", m_fastRecenterEnabled);
 }
 
 DEC_GUIDE_MODE Scope::GetDecGuideMode(void)
@@ -637,7 +623,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
 
                 m_recenterRemaining = m_calibrationSteps * m_calibrationDuration;
 
-                if (m_fastRecenterEnabled)
+                if (pFrame->pGuider->IsFastRecenterEnabled())
                 {
                     m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibrationXRate);
                     if (m_recenterDuration > m_maxRaDuration)
@@ -743,7 +729,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 // the user-specified max pulse
                 m_recenterRemaining = m_calibrationSteps * m_calibrationDuration;
 
-                if (m_fastRecenterEnabled)
+                if (pFrame->pGuider->IsFastRecenterEnabled())
                 {
                     m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibrationYRate);
                     if (m_recenterDuration > m_maxDecDuration)
@@ -891,9 +877,6 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
 
     DoAdd(sizer);
 
-    m_pEnableFastRecenter = new wxCheckBox(pParent, wxID_ANY, _("Fast recenter after calibration"));
-    DoAdd(m_pEnableFastRecenter, _("Speed up calibration by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration."));
-
     m_pNeedFlipDec = new wxCheckBox(pParent, wxID_ANY, _("Reverse Dec output after meridian flip"));
     DoAdd(m_pNeedFlipDec, _("Check if your mount needs Dec output reversed after doing Flip Calibration Data"));
 
@@ -949,7 +932,6 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
     m_pCalibrationDuration->SetValue(m_pScope->GetCalibrationDuration());
     m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
     m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
-    m_pEnableFastRecenter->SetValue(m_pScope->IsFastRecenterEnabled());
     m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
     m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
 }
@@ -959,7 +941,6 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
     m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
     m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
-    m_pScope->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
     m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
     m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
 
