@@ -70,6 +70,9 @@ Guider::~Guider(void)
 
 void Guider::LoadProfileSettings(void)
 {
+    bool enableFastRecenter = pConfig->Profile.GetBoolean("/guider/FastRecenter", true);
+    EnableFastRecenter(enableFastRecenter);
+
     bool scaleImage = pConfig->Profile.GetBoolean("/guider/ScaleImage", DefaultScaleImage);
     SetScaleImage(scaleImage);
 }
@@ -133,6 +136,17 @@ bool Guider::SetOverlayMode(int overlayMode)
     Update();
 
     return bError;
+}
+
+bool Guider::IsFastRecenterEnabled(void)
+{
+    return m_fastRecenterEnabled;
+}
+
+void Guider::EnableFastRecenter(bool enable)
+{
+    m_fastRecenterEnabled = enable;
+    pConfig->Profile.SetInt("/guider/FastRecenter", m_fastRecenterEnabled);
 }
 
 void Guider::SetPolarAlignCircle(const PHD_Point& pt, unsigned int radius)
@@ -515,6 +529,15 @@ bool Guider::MoveLockPosition(const PHD_Point& mountDelta)
         {
             throw ERROR_INFO("SetLockPosition failed");
         }
+
+        if (IsFastRecenterEnabled())
+        {
+            m_ditherRecenterRemaining.SetXY(fabs(mountDelta.X), fabs(mountDelta.Y));
+            m_ditherRecenterDir.x = mountDelta.X < 0.0 ? 1 : -1;
+            m_ditherRecenterDir.y = mountDelta.Y < 0.0 ? 1 : -1;
+            double f = (double) GetMaxMovePixels() / m_ditherRecenterRemaining.Distance();
+            m_ditherRecenterStep.SetXY(f * m_ditherRecenterRemaining.X, f * m_ditherRecenterRemaining.Y);
+        }
     }
     catch (wxString Msg)
     {
@@ -621,6 +644,8 @@ void Guider::SetState(GUIDER_STATE newState)
                 break;
             case STATE_GUIDING:
                 assert(pMount);
+
+                m_ditherRecenterRemaining.Invalidate();  // reset dither fast recenter state
 
                 pMount->AdjustCalibrationForScopePointing();
                 if (pSecondaryMount)
@@ -879,7 +904,33 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 EvtServer.NotifyStartGuiding();
                 break;
             case STATE_GUIDING:
-                pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
+                if (m_ditherRecenterRemaining.IsValid())
+                {
+                    // fast recenter after dither taking large steps and bypassing
+                    // guide algorithms (normalMove=false)
+
+                    PHD_Point step(wxMin(m_ditherRecenterRemaining.X, m_ditherRecenterStep.X),
+                                   wxMin(m_ditherRecenterRemaining.Y, m_ditherRecenterStep.Y));
+
+                    Debug.AddLine(wxString::Format("dither recenter: remaining=(%.1f,%.1f) step=(%.1f,%.1f)",
+                        m_ditherRecenterRemaining.X * m_ditherRecenterDir.x,
+                        m_ditherRecenterRemaining.Y * m_ditherRecenterDir.y,
+                        step.X * m_ditherRecenterDir.x, step.Y * m_ditherRecenterDir.y));
+
+                    m_ditherRecenterRemaining -= step;
+                    if (m_ditherRecenterRemaining.X < 0.5 && m_ditherRecenterRemaining.Y < 0.5)
+                        m_ditherRecenterRemaining.Invalidate();
+
+                    PHD_Point mountCoords(step.X * m_ditherRecenterDir.x, step.Y * m_ditherRecenterDir.y);
+                    PHD_Point cameraCoords;
+                    pMount->TransformMountCoordinatesToCameraCoordinates(mountCoords, cameraCoords);
+                    pFrame->SchedulePrimaryMove(pMount, cameraCoords, false);
+                }
+                else
+                {
+                    // ordinary guide step
+                    pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
+                }
                 break;
 
             case STATE_UNINITIALIZED:
@@ -922,6 +973,9 @@ Guider::GuiderConfigDialogPane::GuiderConfigDialogPane(wxWindow *pParent, Guider
     m_pGuider = pGuider;
     m_pScaleImage = new wxCheckBox(pParent, wxID_ANY,_("Always Scale Images"));
     DoAdd(m_pScaleImage, _("Always scale images to fill window"));
+
+    m_pEnableFastRecenter = new wxCheckBox(pParent, wxID_ANY, _("Fast recenter after calibration or dither"));
+    DoAdd(m_pEnableFastRecenter, _("Speed up calibration and dithering by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration or dither."));
 }
 
 Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
@@ -931,11 +985,13 @@ Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
 void Guider::GuiderConfigDialogPane::LoadValues(void)
 {
     m_pScaleImage->SetValue(m_pGuider->GetScaleImage());
+    m_pEnableFastRecenter->SetValue(m_pGuider->IsFastRecenterEnabled());
 }
 
 void Guider::GuiderConfigDialogPane::UnloadValues(void)
 {
     m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
+    m_pGuider->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
 }
 
 EXPOSED_STATE Guider::GetExposedState(void)

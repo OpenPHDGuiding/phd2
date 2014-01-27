@@ -46,7 +46,6 @@ class Scope : public Mount
 
     // Calibration variables
     int m_calibrationSteps;
-    bool m_fastRecenterEnabled;
     int m_recenterRemaining;
     int m_recenterDuration;
     PHD_Point m_calibrationStartingLocation;
@@ -79,7 +78,6 @@ protected:
         wxSpinCtrl *m_pCalibrationDuration;
         wxSpinCtrl *m_pMaxRaDuration;
         wxSpinCtrl *m_pMaxDecDuration;
-        wxCheckBox *m_pEnableFastRecenter;
         wxChoice   *m_pDecMode;
         wxCheckBox *m_pNeedFlipDec;
 
@@ -119,8 +117,6 @@ protected:
     virtual bool SetMaxDecDuration(int maxDecDuration);
     virtual int GetMaxRaDuration(void);
     virtual bool SetMaxRaDuration(double maxRaDuration);
-    bool IsFastRecenterEnabled(void);
-    void EnableFastRecenter(bool enable);
     virtual DEC_GUIDE_MODE GetDecGuideMode(void);
     virtual bool SetDecGuideMode(int decGuideMode);
 

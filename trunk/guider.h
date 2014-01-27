@@ -108,10 +108,14 @@ class Guider: public wxWindow
     PHD_Point m_polarAlignCircleCenter;
     bool m_paused;
     PHD_Point m_lockPosition;
+    PHD_Point m_ditherRecenterStep;
+    wxPoint m_ditherRecenterDir;
+    PHD_Point m_ditherRecenterRemaining;
     GUIDER_STATE m_state;
     usImage *m_pCurrentImage;
     bool m_scaleImage;
     bool m_lockPosIsSticky;
+    bool m_fastRecenterEnabled;
 
 protected:
     bool m_forceFullFrame;
@@ -125,6 +129,7 @@ protected:
     {
         Guider *m_pGuider;
         wxCheckBox *m_pScaleImage;
+        wxCheckBox *m_pEnableFastRecenter;
 
     public:
         GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider);
@@ -222,7 +227,9 @@ public:
 
     virtual wxString GetSettingsSummary();
 
-    // wxWindows Event table
+    bool IsFastRecenterEnabled(void);
+    void EnableFastRecenter(bool enable);
+
 private:
     DECLARE_EVENT_TABLE()
 };
