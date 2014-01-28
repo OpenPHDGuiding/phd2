@@ -134,6 +134,10 @@ static const double DefaultPixelSize = 0;
 #include "cam_openssag.h"
 #endif
 
+#if defined (KWIQGUIDER)
+#include "cam_KWIQGuider.h"
+#endif
+
 #if defined (SSPIAG)
 #include "cam_SSPIAG.h"
 #endif
@@ -242,6 +246,9 @@ wxArrayString GuideCamera::List(void)
 #endif
 #if defined (OPENSSAG)
     CameraList.Add(_T("Orion StarShoot Autoguider"));
+#endif
+#if defined (KWIQGUIDER)
+    CameraList.Add(_T("KWIQGuider"));
 #endif
 #if defined (QGUIDE)
     CameraList.Add(_T("MagZero MZ-5"));
@@ -395,6 +402,11 @@ GuideCamera *GuideCamera::Factory(wxString choice)
 #if defined (OPENSSAG)
         else if (choice.Find(_T("Orion StarShoot Autoguider")) + 1) {
             pReturn = new Camera_OpenSSAGClass();
+        }
+#endif
+#if defined (KWIQGUIDER)
+        else if (choice.Find(_T("KWIQGuider")) + 1) {
+            pReturn = new Camera_KWIQGuiderClass();
         }
 #endif
 #if defined (SSAG)

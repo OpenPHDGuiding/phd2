@@ -91,6 +91,7 @@
 # define SIMULATOR
 # define SXV
 # define OPENSSAG
+# define KWIQGUIDER
 
 #elif defined (__LINUX__)
 # define CAM_QHY5
