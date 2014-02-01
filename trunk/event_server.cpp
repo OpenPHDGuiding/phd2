@@ -162,6 +162,7 @@ struct NV
     wxString v;
     NV(const wxString& n_, const wxString& v_) : n(n_), v('"'+v_+'"') { }
     NV(const wxString& n_, const char *v_) : n(n_), v('"'+wxString(v_)+'"') { }
+    NV(const wxString& n_, const wchar_t *v_) : n(n_), v('"'+wxString(v_)+'"') { }
     NV(const wxString& n_, int v_) : n(n_), v(wxString::Format("%d", v_)) { }
     NV(const wxString& n_, double v_) : n(n_), v(wxString::Format("%g", v_)) { }
     NV(const wxString& n_, double v_, int prec) : n(n_), v(wxString::Format("%.*f", prec, v_)) { }
