@@ -733,6 +733,12 @@ static void get_pixel_scale(JObj& response, const json_value *params)
         response << jrpc_result(scale);
 }
 
+static void get_app_state(JObj& response, const json_value *params)
+{
+    EXPOSED_STATE st = Guider::GetExposedState();
+    response << jrpc_result(state_name(st));
+}
+
 static void get_lock_position(JObj& response, const json_value *params)
 {
     const PHD_Point& lockPos = pFrame->pGuider->LockPosition();
@@ -940,6 +946,7 @@ static bool handle_request(JObj& response, const json_value *req)
         { "dither", &dither, },
         { "find_star", &find_star, },
         { "get_pixel_scale", &get_pixel_scale, },
+        { "get_app_state", &get_app_state, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
