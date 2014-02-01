@@ -1067,8 +1067,8 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
 
     // Now add some miscellaneous mount-related stuff (still within mount group)
     wxBoxSizer *pMiscSizer = new wxBoxSizer(wxHORIZONTAL);
-    pReverseDecPulseCbx = NewCheckBox(this, SimCamParams::reverse_dec_pulse_on_west_side, _("Reverse Dec pulse on west side of pier"),
-    _("Simulate a mount that reverses guide pulse direction after a meridian flip, like an ASCOM pulse-guided mount."));
+    pReverseDecPulseCbx = NewCheckBox(this, SimCamParams::reverse_dec_pulse_on_west_side, _("Reverse Dec pulse on West side of pier"),
+        _("Simulate a mount that reverses guide pulse direction after a meridian flip, like an ASCOM pulse-guided mount."));
     pPierSide = SimCamParams::pier_side;
     pPiersideLabel = new wxStaticText(this, wxID_ANY, _("Side of Pier: MMMMM"));
     pMiscSizer->Add(pReverseDecPulseCbx, wxSizerFlags().Border(10).Expand());
