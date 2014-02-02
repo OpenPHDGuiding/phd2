@@ -424,9 +424,8 @@ void Guider::UpdateImageDisplay(usImage *pImage)
         pImage = m_pCurrentImage;
     }
 
-    Debug.AddLine("UpdateImageDisplay begins");
-    Debug.AddLine("Size=(%d,%d)", pImage->Size.x, pImage->Size.y);
-    Debug.AddLine("min=%d, max=%d, FiltMin=%d, FiltMax=%d", pImage->Min, pImage->Max, pImage->FiltMin, pImage->FiltMax);
+    Debug.AddLine("UpdateImageDisplay: Size=(%d,%d) min=%d, max=%d, FiltMin=%d, FiltMax=%d",
+        pImage->Size.x, pImage->Size.y, pImage->Min, pImage->Max, pImage->FiltMin, pImage->FiltMax);
 
     Refresh();
     Update();

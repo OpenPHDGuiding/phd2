@@ -908,7 +908,7 @@ void Scope::ScopeConfigDialogPane::OnAutoDuration(wxCommandEvent& evt)
         configPrefix = "/" + pMount->GetMountClassName();
     }
 
-    CalstepDialog calc(focalLength, pixelSize, configPrefix);
+    CalstepDialog calc(m_pParent, focalLength, pixelSize, configPrefix);
     if (calc.ShowModal() == wxID_OK)
     {
         int iDuration;

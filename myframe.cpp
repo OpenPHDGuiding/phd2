@@ -149,6 +149,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     m_mgr.SetManagedWindow(this);
 
     m_frameCounter = 0;
+    m_loggedImageFrame = 0;
     m_pPrimaryWorkerThread = NULL;
     StartWorkerThread(m_pPrimaryWorkerThread);
     m_pSecondaryWorkerThread = NULL;
@@ -163,6 +164,9 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     bool loggingMode = pConfig->Global.GetBoolean("/LoggingMode", DefaultLoggingMode);
     GuideLog.EnableLogging(loggingMode);
+
+    m_image_logging_enabled = false;
+    m_logged_image_format = (LOGGED_IMAGE_FORMAT) pConfig->Global.GetInt("/LoggedImageFormat", LIF_LOW_Q_JPEG);
 
     m_sampling = 1.0;
 
@@ -535,6 +539,27 @@ bool MyFrame::SetExposureDuration(int val)
     wxCommandEvent dummy;
     OnExposureDurationSelected(dummy);
     return true;
+}
+
+void MyFrame::EnableImageLogging(bool enable)
+{
+    m_image_logging_enabled = enable;
+}
+
+bool MyFrame::IsImageLoggingEnabled(void)
+{
+    return m_image_logging_enabled;
+}
+
+void MyFrame::SetLoggedImageFormat(LOGGED_IMAGE_FORMAT format)
+{
+    pConfig->Global.SetInt("/LoggedImageFormat", (int) format);
+    m_logged_image_format = format;
+}
+
+LOGGED_IMAGE_FORMAT MyFrame::GetLoggedImageFormat(void)
+{
+    return m_logged_image_format;
 }
 
 enum {
@@ -976,6 +1001,7 @@ void MyFrame::StartCapturing()
         m_continueCapturing = true;
         CaptureActive     = true;
         m_frameCounter = 0;
+        m_loggedImageFrame = 0;
 
         UpdateButtonsStatus();
 
@@ -1539,7 +1565,7 @@ void MyFrameConfigDialogPane::LoadValues(void)
     m_pResetConfiguration->SetValue(false);
     m_pResetConfiguration->Enable(!pFrame->CaptureActive);
     m_pResetDontAskAgain->SetValue(false);
-    m_pLoggedImageFormat->SetSelection(GuideLog.GetLoggedImageFormat());
+    m_pLoggedImageFormat->SetSelection(m_pFrame->GetLoggedImageFormat());
     m_pNoiseReduction->SetSelection(m_pFrame->GetNoiseReductionMethod());
     m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
@@ -1580,7 +1606,7 @@ void MyFrameConfigDialogPane::UnloadValues(void)
             ConfirmDialog::ResetAllDontAskAgain();
         }
 
-        GuideLog.SetLoggedImageFormat((LOGGED_IMAGE_FORMAT) m_pLoggedImageFormat->GetSelection());
+        m_pFrame->SetLoggedImageFormat((LOGGED_IMAGE_FORMAT) m_pLoggedImageFormat->GetSelection());
         m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
         m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
         m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());

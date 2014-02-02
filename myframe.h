@@ -60,6 +60,13 @@ enum NOISE_REDUCTION_METHOD
     NR_3x3MEDIAN
 };
 
+enum LOGGED_IMAGE_FORMAT
+{
+    LIF_LOW_Q_JPEG,
+    LIF_HI_Q_JPEG,
+    LIF_RAW_FITS
+};
+
 class MyFrame;
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
@@ -117,6 +124,8 @@ protected:
 
 private:
     NOISE_REDUCTION_METHOD m_noiseReductionMethod;
+    bool m_image_logging_enabled;
+    LOGGED_IMAGE_FORMAT m_logged_image_format;
     double m_ditherScaleFactor;
     bool m_ditherRaOnly;
     bool m_serverMode;
@@ -156,6 +165,7 @@ public:
     double Stretch_gamma;
     wxLocale *m_pLocale;
     unsigned int m_frameCounter;
+    unsigned int m_loggedImageFrame;
     wxDateTime m_guidingStarted;
 
     void OnQuit(wxCommandEvent& evt);
@@ -221,6 +231,10 @@ public:
     bool GetDitherRaOnly(void);
     bool SetDitherRaOnly(bool ditherRaOnly);
     double GetDitherAmount(int ditherType);
+    void EnableImageLogging(bool enable);
+    bool IsImageLoggingEnabled(void);
+    void SetLoggedImageFormat(LOGGED_IMAGE_FORMAT val);
+    LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
 
     bool StartServer(bool state);
     bool FlipRACal();

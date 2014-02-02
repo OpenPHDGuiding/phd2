@@ -64,8 +64,8 @@ static int StringWidth(CalstepDialog* dlg, const wxString& string)
     return width;
 }
 
-CalstepDialog::CalstepDialog(int focalLength, double pixelSize, const wxString& configPrefix) :
-    wxDialog(pFrame, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
+CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, const wxString& configPrefix) :
+    wxDialog(parent, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
     double dGuideRateDec = 0.0; // initialize to suppress compiler warning
     double dGuideRateRA = 0.0; // initialize to suppress compiler warning

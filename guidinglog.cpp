@@ -38,8 +38,6 @@
 #define GUIDELOG_VERSION _T("2.3")
 
 GuidingLog::GuidingLog(bool active)
-    : m_image_logging_enabled(false),
-      m_logged_image_format(LIF_LOW_Q_JPEG)
 {
     if (active)
     {
@@ -456,26 +454,6 @@ bool GuidingLog::GuideStep(const GuideStepInfo& step)
     }
 
     return bError;
-}
-
-void GuidingLog::EnableImageLogging(bool enable)
-{
-    m_image_logging_enabled = enable;
-}
-
-bool GuidingLog::IsImageLoggingEnabled(void)
-{
-    return m_image_logging_enabled;
-}
-
-void GuidingLog::SetLoggedImageFormat(LOGGED_IMAGE_FORMAT format)
-{
-    m_logged_image_format = format;
-}
-
-LOGGED_IMAGE_FORMAT GuidingLog::GetLoggedImageFormat(void)
-{
-    return m_logged_image_format;
 }
 
 bool GuidingLog::ServerGuidingDithered(Guider* guider, double dx, double dy)
