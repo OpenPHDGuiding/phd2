@@ -465,6 +465,18 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessa
     return bError;
 }
 
+bool GuiderOneStar::IsValidLockPosition(const PHD_Point& pt)
+{
+    usImage *pImage = CurrentImage();
+    if (!pImage)
+        return false;
+    // this is a bit ugly as it is tightly coupled to Star::Find
+    return pt.X >= 1 + m_searchRegion &&
+        pt.X + 1 + m_searchRegion < pImage->Size.GetX() &&
+        pt.Y >= 1 + m_searchRegion &&
+        pt.Y + 1 + m_searchRegion < pImage->Size.GetY();
+}
+
 double GuiderOneStar::CurrentError(void)
 {
     enum { THRESHOLD_SECONDS = 20 };

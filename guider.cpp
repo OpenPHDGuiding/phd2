@@ -499,9 +499,9 @@ bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
     return bError;
 }
 
-bool Guider::MoveLockPosition(const PHD_Point& mountDelta)
+MOVE_LOCK_RESULT Guider::MoveLockPosition(const PHD_Point& mountDelta)
 {
-    bool bError = false;
+    MOVE_LOCK_RESULT result = MOVE_LOCK_OK;
 
     try
     {
@@ -524,6 +524,11 @@ bool Guider::MoveLockPosition(const PHD_Point& mountDelta)
 
         PHD_Point newLockPosition = m_lockPosition + cameraDelta;
 
+        if (!IsValidLockPosition(newLockPosition))
+        {
+            return MOVE_LOCK_REJECTED;
+        }
+
         if (SetLockPosition(newLockPosition, true))
         {
             throw ERROR_INFO("SetLockPosition failed");
@@ -541,10 +546,10 @@ bool Guider::MoveLockPosition(const PHD_Point& mountDelta)
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        result = MOVE_LOCK_ERROR;
     }
 
-    return bError;
+    return result;
 }
 
 void Guider::SetState(GUIDER_STATE newState)

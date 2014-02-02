@@ -40,7 +40,6 @@
 #ifndef GUIDER_H_INCLUDED
 #define GUIDER_H_INCLUDED
 
-
 enum GUIDER_STATE
 {
     STATE_UNINITIALIZED = 0,
@@ -87,6 +86,13 @@ enum OVERLAY_MODE
     OVERLAY_GRID_FINE,
     OVERLAY_GRID_COARSE,
     OVERLAY_RADEC
+};
+
+enum MOVE_LOCK_RESULT
+{
+    MOVE_LOCK_OK,
+    MOVE_LOCK_REJECTED,
+    MOVE_LOCK_ERROR,
 };
 
 /*
@@ -165,7 +171,7 @@ public:
     void UpdateImageDisplay(usImage *pImage=NULL);
     bool DoGuide(void);
 
-    bool MoveLockPosition(const PHD_Point& mountDelta);
+    MOVE_LOCK_RESULT MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position, bool bExact=true);
     void SetLockPosIsSticky(bool isSticky) { m_lockPosIsSticky = isSticky; }
     bool LockPosIsSticky(void) const { return m_lockPosIsSticky; }
@@ -203,6 +209,7 @@ public:
 
     // pure virutal functions -- these MUST be overridden by a subclass
 private:
+    virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
     virtual void InvalidateCurrentPosition(void) = 0;
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage) = 0;
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position)=0;
