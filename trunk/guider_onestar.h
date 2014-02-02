@@ -103,6 +103,7 @@ public:
     virtual void LoadProfileSettings(void);
 
 private:
+    virtual bool IsValidLockPosition(const PHD_Point& pt);
     virtual void InvalidateCurrentPosition(void);
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage);
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);

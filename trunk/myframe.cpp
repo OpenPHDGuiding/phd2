@@ -1104,17 +1104,33 @@ bool MyFrame::Dither(double amount, bool raOnly)
 
         amount *= m_ditherScaleFactor;
 
-        double dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
-        double dDec =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
+        double dRa, dDec;
 
-        if (raOnly || m_ditherRaOnly)
+        while (true)
         {
-            dDec = 0.;
+            dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
+            dDec =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
+
+            if (raOnly || m_ditherRaOnly)
+            {
+                dDec = 0.;
+            }
+
+            Debug.AddLine("dither: size=%.2f, dRA=%.2f dDec=%.2f", amount, dRa, dDec);
+
+            MOVE_LOCK_RESULT result = pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
+            if (result == MOVE_LOCK_OK)
+            {
+                break;
+            }
+            else if (result == MOVE_LOCK_ERROR)
+            {
+                throw ERROR_INFO("move lock failed");
+            }
+
+            // lock pos was rejected (too close to the edge), try again
+            Debug.AddLine("dither lock pos rejected, try again");
         }
-
-        Debug.AddLine("dither: size=%.2f, dRA=%.2f dDec=%.2f", amount, dRa, dDec);
-
-        pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
 
         SetStatusText(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
         GuideLog.ServerGuidingDithered(pGuider, dRa, dDec);
