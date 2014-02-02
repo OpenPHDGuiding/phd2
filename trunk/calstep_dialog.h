@@ -68,7 +68,7 @@ private:
     wxString m_sConfigPrefix;
 
 public:
-    CalstepDialog(int focalLength, double pixelSize, const wxString& configPrefix);
+    CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, const wxString& configPrefix);
     ~CalstepDialog(void);
     bool GetResults (int& focalLength, double& pixelSize, int& stepSize);
 

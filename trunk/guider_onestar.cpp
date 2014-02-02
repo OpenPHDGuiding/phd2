@@ -593,35 +593,46 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         double StarX = m_star.X;
         double StarY = m_star.Y;
 
-        if (state == STATE_SELECTED /*|| IsPaused()*/) {
-
+        if (state == STATE_SELECTED /*|| IsPaused()*/)
+        {
             if (FoundStar)
                 dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
             else
                 dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
-            dc.SetBrush(* wxTRANSPARENT_BRUSH);
-            dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
+            dc.SetBrush(*wxTRANSPARENT_BRUSH);
+            dc.DrawRectangle(ROUND(StarX * m_scaleFactor) - m_searchRegion,
+                ROUND(StarY * m_scaleFactor) - m_searchRegion,
+                m_searchRegion * 2 + 1, m_searchRegion * 2 + 1);
         }
-        else if (state == STATE_CALIBRATING_PRIMARY || state == STATE_CALIBRATING_SECONDARY) {  // in the cal process
+        else if (state == STATE_CALIBRATING_PRIMARY || state == STATE_CALIBRATING_SECONDARY)
+        {
+            // in the calibration process
             dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
-            dc.SetBrush(* wxTRANSPARENT_BRUSH);
-            dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
-
+            dc.SetBrush(*wxTRANSPARENT_BRUSH);
+            dc.DrawRectangle(ROUND(StarX * m_scaleFactor) - m_searchRegion,
+                ROUND(StarY * m_scaleFactor) - m_searchRegion,
+                m_searchRegion * 2 + 1, m_searchRegion * 2 + 1);
         }
-        else if (state == STATE_CALIBRATED || state == STATE_GUIDING) { // locked and guiding
+        else if (state == STATE_CALIBRATED || state == STATE_GUIDING)
+        {
+            // locked and guiding
             if (FoundStar)
                 dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
             else
                 dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
-            dc.SetBrush(* wxTRANSPARENT_BRUSH);
-            dc.DrawRectangle(ROUND(StarX*m_scaleFactor)-m_searchRegion,ROUND(StarY*m_scaleFactor)-m_searchRegion,m_searchRegion*2+1,m_searchRegion*2+1);
-
+            dc.SetBrush(*wxTRANSPARENT_BRUSH);
+            dc.DrawRectangle(ROUND(StarX * m_scaleFactor) - m_searchRegion,
+                ROUND(StarY * m_scaleFactor) - m_searchRegion,
+                m_searchRegion * 2 + 1, m_searchRegion * 2 + 1);
         }
 
         // Image logging
-        if (state >= STATE_SELECTED && GuideLog.IsImageLoggingEnabled())
+        if (state >= STATE_SELECTED && pFrame->IsImageLoggingEnabled() && pFrame->m_frameCounter != pFrame->m_loggedImageFrame)
         {
-            if (GuideLog.GetLoggedImageFormat() == LIF_RAW_FITS) // Save star image as a FITS
+            // only log each image frame once
+            pFrame->m_loggedImageFrame = pFrame->m_frameCounter;
+
+            if (pFrame->GetLoggedImageFormat() == LIF_RAW_FITS) // Save star image as a FITS
             {
                 SaveStarFITS();
             }
@@ -634,7 +645,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
                 wxMemoryDC tmpMdc;
                 tmpMdc.SelectObject(SubBmp);
                 memDC.SetPen(wxPen(wxColor(0,255,0),1,wxDOT));
-                memDC.DrawLine(0, LockY*m_scaleFactor, XWinSize, LockY*m_scaleFactor);
+                memDC.DrawLine(0, LockY * m_scaleFactor, XWinSize, LockY * m_scaleFactor);
                 memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
     #ifdef __APPLEX__
                 tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
@@ -646,7 +657,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
                 wxString fname = Debug.GetLogDir() + PATHSEPSTR + "PHD_GuideStar" + wxDateTime::Now().Format(_T("_%j_%H%M%S")) + ".jpg";
                 wxImage subImg = SubBmp.ConvertToImage();
                 // subImg.Rescale(120, 120);  zoom up (not now)
-                if (GuideLog.GetLoggedImageFormat() == LIF_HI_Q_JPEG)
+                if (pFrame->GetLoggedImageFormat() == LIF_HI_Q_JPEG)
                 {
                     // set high(ish) JPEG quality
                     subImg.SetOption(wxIMAGE_OPTION_QUALITY, 100);
@@ -655,7 +666,6 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
                 tmpMdc.SelectObject(wxNullBitmap);
             }
         }
-        memDC.SelectObject(wxNullBitmap);
     }
     catch (wxString Msg)
     {
@@ -737,7 +747,6 @@ void GuiderOneStar::SaveStarFITS()
         sprintf(keycomment,"Subframe y position in binned pixels");
         tmp = start_y;
         fits_write_key(fptr, TINT, keyname, &tmp, keycomment, &status);
-
 
         if (!status) fits_write_pix(fptr,TUSHORT,fpixel,tmpimg.NPixels,tmpimg.ImageData,&status);
 

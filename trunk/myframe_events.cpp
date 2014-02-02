@@ -667,7 +667,7 @@ void MyFrame::OnLog(wxCommandEvent& evt)
     }
     else if (evt.GetId() == MENU_LOGIMAGES)
     {
-        GuideLog.EnableImageLogging(evt.IsChecked());
+        pFrame->EnableImageLogging(evt.IsChecked());
     }
     else if (evt.GetId() == MENU_DEBUG)
     {

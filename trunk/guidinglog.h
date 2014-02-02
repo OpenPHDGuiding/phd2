@@ -41,12 +41,6 @@
 class Mount;
 class Guider;
 
-enum LOGGED_IMAGE_FORMAT {
-    LIF_LOW_Q_JPEG,
-    LIF_HI_Q_JPEG,
-    LIF_RAW_FITS
-};
-
 struct GuideStepInfo
 {
     Mount *mount;
@@ -69,8 +63,6 @@ class GuidingLog : public Logger
     wxFFile m_file;
     wxString m_fileName;
     bool m_keepFile;
-    bool m_image_logging_enabled;
-    LOGGED_IMAGE_FORMAT m_logged_image_format;
 
 public:
     GuidingLog(bool active=false);
@@ -82,11 +74,6 @@ public:
     bool IsEnabled(void);
     bool Flush(void);
     void Close(void);
-
-    void EnableImageLogging(bool enable);
-    bool IsImageLoggingEnabled(void);
-    void SetLoggedImageFormat(LOGGED_IMAGE_FORMAT val);
-    LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
 
     bool StartCalibration(Mount *pCalibrationMount);
     bool CalibrationFailed(Mount *pCalibrationMount, const wxString& msg);
