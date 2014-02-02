@@ -454,7 +454,13 @@ static NV jrpc_error(int code, const wxString& msg)
 }
 
 template<typename T>
-static NV jrpc_result(T t)
+static NV jrpc_result(const T& t)
+{
+    return NV("result", t);
+}
+
+template<typename T>
+static NV jrpc_result(T& t)
 {
     return NV("result", t);
 }
@@ -783,6 +789,16 @@ static void set_lock_position(JObj& response, const json_value *params)
     response << jrpc_result(0);
 }
 
+static void flip_calibration(JObj& response, const json_value *params)
+{
+    bool error = pFrame->FlipRACal();
+
+    if (error)
+        response << jrpc_error(1, "could not flip calibration");
+    else
+        response << jrpc_result(0);
+}
+
 static bool parse_settle(SettleParams *settle, const json_value *j, wxString *error)
 {
     bool found_pixels = false, found_time = false, found_timeout = false;
@@ -947,6 +963,7 @@ static bool handle_request(JObj& response, const json_value *req)
         { "find_star", &find_star, },
         { "get_pixel_scale", &get_pixel_scale, },
         { "get_app_state", &get_app_state, },
+        { "flip_calibration", &flip_calibration, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
