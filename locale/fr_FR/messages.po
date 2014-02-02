@@ -87,7 +87,7 @@ msgstr "Aucune Monture selectionnée"
 #: advanced_dialog.cpp:199 gear_dialog.cpp:228 gear_dialog.cpp:230
 #: myframe.cpp:696 stepguider.cpp:1052 testguide.cpp:168
 msgid "AO"
-msgstr "OA"
+msgstr "AO"
 
 #: advanced_dialog.cpp:215
 msgid "AO Settings"
@@ -173,7 +173,7 @@ msgstr "Longueur Focale, mm"
 
 #: calstep_dialog.cpp:128
 msgid "Guide scope focal length"
-msgstr "Logueur focale du tube de guidage"
+msgstr "Longueur focale du tube de guidage"
 
 #: calstep_dialog.cpp:133
 msgid "Pixel size, microns"
@@ -202,7 +202,7 @@ msgstr "Pas de calibration"
 
 #: calstep_dialog.cpp:143
 msgid "Targeted # steps in each direction"
-msgstr "Nombre de pas ciblé dans chaque direction"
+msgstr "Nombre de pas prévus dans chaque direction"
 
 #: calstep_dialog.cpp:148
 msgid "Calibration declination, degrees"
@@ -325,7 +325,7 @@ msgstr ""
 
 #: cam_ascomlate.cpp:269
 msgid "ASCOM Camera Driver missing required property "
-msgstr "Un propriété requise dur Driver de Camera ASCOM est maquante"
+msgstr "Un propriété requise du Driver de Camera ASCOM est maquante"
 
 #: cam_Atik16.cpp:63
 msgid "Already connected"
@@ -458,11 +458,11 @@ msgstr "Erreur au téléchargement des donnés"
 
 #: cam_SBIG.cpp:471
 msgid "Cannot check SBIG relay status"
-msgstr "Impossible de récupere le statut des relais"
+msgstr "Impossible de récupérer le statut des relais"
 
 #: cam_sbigrotator.cpp:62
 msgid "Enter RA Angle (in degrees)"
-msgstr "Entrez Angle AD (en degrés)"
+msgstr "Entrez l'Angle AD (en degrés)"
 
 #: cam_sbigrotator.cpp:62
 msgid "RA angle"
@@ -482,7 +482,7 @@ msgstr "AO-Simulateur"
 
 #: cam_simulator.cpp:988
 msgid "PE amplitude and period must be > 0"
-msgstr "Amplitude et période PE doit être > 0"
+msgstr "Amplitude et période PE doivent être > 0"
 
 #: cam_simulator.cpp:994
 msgid "PE amplitude and period must be numbers > 0"
@@ -502,11 +502,11 @@ msgstr "Etoiles"
 
 #: cam_simulator.cpp:1016
 msgid "Number of hot pixels"
-msgstr "Nombre de pixel chaux"
+msgstr "Nombre de pixel chauds"
 
 #: cam_simulator.cpp:1017
 msgid "Hot pixels"
-msgstr "Pixels chaux"
+msgstr "Pixels chauds"
 
 #: cam_simulator.cpp:1018
 #, c-format
@@ -612,7 +612,7 @@ msgstr "Côté du méridien : MMMMM"
 
 #: cam_simulator.cpp:1075
 msgid "Pier Flip"
-msgstr "Basculement au méridien"
+msgstr "Retournement au méridien"
 
 #: cam_simulator.cpp:1082
 msgid "Session"
@@ -636,7 +636,7 @@ msgstr "Seeing"
 
 #: cam_simulator.cpp:1088
 msgid "Star fading due to clouds"
-msgstr "Affaiblissement d'étoile due aux muages"
+msgstr "Affaiblissement de l'étoile due aux nuages"
 
 #: cam_simulator.cpp:1099 testguide.cpp:108
 msgid "Reset"
@@ -645,7 +645,7 @@ msgstr "Réinitialiser"
 #: cam_simulator.cpp:1100
 msgid "Reset all values to application defaults"
 msgstr ""
-"Réinitialiser toutes les valeurs aux valeurs par défaut de l'applications"
+"Réinitialiser toutes les valeurs aux valeurs par défaut de l'application"
 
 #: cam_simulator.cpp:1105
 msgid "OK"
@@ -716,7 +716,7 @@ msgstr "LP delai de lecture"
 
 #: camera.cpp:661
 msgid "Adjust if you get dropped frames"
-msgstr "Ajuster si vous rater des images"
+msgstr "Ajuster si vous ratez des images"
 
 #: camera.cpp:675
 msgid "LE Port"
@@ -735,13 +735,13 @@ msgid ""
 "Guide camera pixel size in microns. Used with the guide telescope focal "
 "length to display guiding error in arc-seconds."
 msgstr ""
-"Taille des pixel de la caméra de guidage en micormètres. Utiliser avec la "
+"Taille des pixel de la caméra de guidage en microns. Utiliser avec la "
 "longueur focale du telescope de guidage pour afficher les erreurs de guidage "
 "en arc-sec."
 
 #: camera.cpp:690
 msgid "Auto load dark frames"
-msgstr "Charger auto images de dark"
+msgstr "Chargement  auto images de dark"
 
 #: camera.cpp:691
 msgid ""
@@ -768,7 +768,7 @@ msgstr "Confirmation"
 
 #: drift_tool.cpp:126 myframe.cpp:401
 msgid "Drift Align"
-msgstr "Alignement de la Dérive (Drift Align)"
+msgstr "Alignement par la Dérive (Drift Align)"
 
 #: drift_tool.cpp:159
 msgid "Scope Pointing"
@@ -799,8 +799,8 @@ msgid ""
 "Click to slew to given coordinates. Shift-click to save the coordinates "
 "without slewing."
 msgstr ""
-"Cliquez sur Pointer pour pointer les coordonnées données. Shift-clique pour "
-"sauver les coordonnées sans les pointer."
+"Cliquez sur Pointer pour pointer les coordonnées données. Shift-clic pour "
+"sauver les coordonnées sans déplacement."
 
 #: drift_tool.cpp:209 drift_tool.cpp:364
 msgid "Altitude adjustment notes"
@@ -816,7 +816,7 @@ msgstr "Ajuster"
 
 #: drift_tool.cpp:342
 msgid "Drift Align - Azimuth Adjustment"
-msgstr "Alignement de la Dérive (Drift Align) - Ajustement de l'Azimuth"
+msgstr "Alignement par la Dérive (Drift Align) - Ajustement de l'Azimuth"
 
 #: drift_tool.cpp:345
 msgid ""
@@ -827,7 +827,7 @@ msgid ""
 "Then, click Altitude to begin Altitude adjustment."
 msgstr ""
 "Pointez vers le Méridien et l'Equateur\n"
-"Appuyez sur Dériverpour mesurer la Dérive\n"
+"Appuyez sur Dériver pour mesurer la Dérive\n"
 "Appuyez sur Ajuster et ajustez l'azimuth de votre monture\n"
 "Répétez Dériver/Ajuster jusqu'à le complet alignement\n"
 "Ensuite, cliquez sur Altitude pour commencer l'ajustement de l'Altitude."
@@ -935,7 +935,7 @@ msgstr "S'il vous plait, connectez une monture d'abord"
 
 #: eegg.cpp:114
 msgid "Failed to flip RA calibration"
-msgstr "Echec de l'inverseion de la calibration AD"
+msgstr "Echec de l'inversion de la calibration AD"
 
 #: eegg.cpp:120
 #, c-format
@@ -947,8 +947,8 @@ msgid ""
 "Entering a manual lock position requires a camera and mount to be connected "
 "and calibrated."
 msgstr ""
-"La saisie d'une position de véroullage manuel nécessite une caméra et une "
-"monture connectées et calbrées."
+"La saisie d'une position de verrouillage manuel nécessite une caméra et une "
+"monture connectées et calibrées."
 
 #: eegg.cpp:134
 msgid ""
@@ -975,11 +975,11 @@ msgstr "Postion verrouillage-Y"
 
 #: gear_dialog.cpp:102
 msgid "Connect Equipment"
-msgstr "Connecter Equipement"
+msgstr "Connecter l'équipement"
 
 #: gear_dialog.cpp:164
 msgid "Equipment profile"
-msgstr "Profile d'equipement"
+msgstr "Profil d'équipement"
 
 #: gear_dialog.cpp:166
 msgid ""
@@ -1006,7 +1006,7 @@ msgstr "Supprimer"
 
 #: gear_dialog.cpp:173
 msgid "Delete the selected profile"
-msgstr "Supprime le profile sélectionné"
+msgstr "Supprime le profil sélectionné"
 
 #: gear_dialog.cpp:174
 msgid "Rename"
@@ -1018,7 +1018,7 @@ msgstr "Renommer le profil selectionné"
 
 #: gear_dialog.cpp:175
 msgid "Import..."
-msgstr "Import..."
+msgstr "Importer..."
 
 #: gear_dialog.cpp:175
 msgid "Load a profile from a file"
@@ -1049,7 +1049,7 @@ msgid ""
 "Create a new Equipment Profile, or delete or rename the selected Equipment "
 "Profile"
 msgstr ""
-"Créer un nouveau Profile d'Equipement, ou supprimer ou renommer le Profile "
+"Créer un nouveau Profil d'Equipement, ou supprimer ou renommer le Profil "
 "d'Equipement selectionné"
 
 #: gear_dialog.cpp:192
@@ -1060,7 +1060,7 @@ msgid ""
 msgstr ""
 "Choisissez votre matériel ci-dessous et cliquez sur Connecter Tout pour "
 "connecter, ou cliquez sur Déconnecter Tout pour déconnecter. Vous pouvez "
-"également connecter ou déconecter les équipements individuelement en "
+"également connecter ou déconnecter les équipements individuellement en "
 "cliquant sur le bouton à côté de l'élément."
 
 #: gear_dialog.cpp:207
@@ -1095,7 +1095,7 @@ msgstr "Déconnecter Tout"
 
 #: gear_dialog.cpp:248
 msgid "Disconnect all equipment"
-msgstr "Déonnecter tout l'équipement"
+msgstr "Déconnecter tout l'équipement"
 
 #: gear_dialog.cpp:266 gear_dialog.cpp:270 gear_dialog.cpp:274 mount.cpp:94
 #: mount.cpp:117 myframe.cpp:1474
@@ -1133,7 +1133,7 @@ msgstr "Déconnecter l'AO"
 
 #: gear_dialog.cpp:638
 msgid "Connecting to Camera ..."
-msgstr "Connection à la caméra"
+msgstr "Connexion à la caméra"
 
 #: gear_dialog.cpp:645
 msgid "Camera Connected"
@@ -1169,7 +1169,7 @@ msgstr "Echec Connexion Scope"
 
 #: gear_dialog.cpp:810
 msgid "Scope Disconnected"
-msgstr "Scope Déconnectée"
+msgstr "Scope Déconnecté"
 
 #: gear_dialog.cpp:873
 msgid "Connecting to AO ..."
@@ -1181,7 +1181,7 @@ msgstr "Optique Adaptive connectée"
 
 #: gear_dialog.cpp:896
 msgid "AO Connect Failed"
-msgstr "Eche Connexion OA"
+msgstr "Echec Connexion AO"
 
 #: gear_dialog.cpp:923
 msgid "Adaptive Optics Disconnected"
@@ -1201,7 +1201,7 @@ msgstr "Entrer le nom du nouveau profil d'équipement"
 
 #: gear_dialog.cpp:1101
 msgid "PHD Defaults"
-msgstr "PHD Par Défaut"
+msgstr "Par Défaut PHD"
 
 #: gear_dialog.cpp:1104
 msgid "Profile initial settings"
@@ -1219,12 +1219,12 @@ msgstr ""
 #: gear_dialog.cpp:1140
 #, c-format
 msgid "Could not create profile %s from profile %s"
-msgstr "Impossible de créer le profile %s a partir du profile %s"
+msgstr "Impossible de créer le profil %s a partir du profil %s"
 
 #: gear_dialog.cpp:1147
 #, c-format
 msgid "Could not create profile %s"
-msgstr "Impossible de créer le profile %s"
+msgstr "Impossible de créer le profil %s"
 
 #: gear_dialog.cpp:1163
 #, c-format
@@ -1242,7 +1242,7 @@ msgstr "Renommer %s"
 
 #: gear_dialog.cpp:1179
 msgid "Rename Equipment Profile"
-msgstr "Renommer Profile d'Equipement"
+msgstr "Renommer Profil d'Equipement"
 
 #: gear_dialog.cpp:1195
 msgid "Could not rename profile"
@@ -1250,7 +1250,7 @@ msgstr "Impossible de renommer le profil"
 
 #: gear_dialog.cpp:1209
 msgid "Import PHD Equipment Profiles"
-msgstr "Importer Profiles d'Equipement PHD"
+msgstr "Importer Profils d'Equipement PHD"
 
 #: gear_dialog.cpp:1242
 msgid "Export PHD Equipment Profile"
@@ -1258,7 +1258,7 @@ msgstr "Exporter un Profil d'Equipement PHD"
 
 #: graph-stepguider.cpp:48 myframe.cpp:250 myframe.cpp:307
 msgid "AO Position"
-msgstr "Position OA"
+msgstr "Position AO"
 
 #: graph-stepguider.cpp:61 target.cpp:64
 msgid "Select the number of frames of history to display"
@@ -1274,7 +1274,7 @@ msgstr "Effacer les données du graph"
 
 #: graph-stepguider.cpp:237
 msgid "AO not connected"
-msgstr "OA non connecté"
+msgstr "AO non connecté"
 
 #: graph.cpp:90 graph.cpp:524
 msgid "Scope:"
@@ -1727,7 +1727,7 @@ msgstr "Historique"
 
 #: myframe.cpp:255 myframe.cpp:308
 msgid "Star Profile"
-msgstr "Profile Etoile"
+msgstr "Profil Etoile"
 
 #: myframe.cpp:260 myframe.cpp:309 target.cpp:49
 msgid "Target"
@@ -1896,11 +1896,11 @@ msgstr "Activer / Désactiver le graph"
 
 #: myframe.cpp:412
 msgid "Display AO Graph"
-msgstr "Afficher le Graph OA"
+msgstr "Afficher le Graph AO"
 
 #: myframe.cpp:412
 msgid "Enable / disable AO graph"
-msgstr "Activer / Désactiver le graph OA"
+msgstr "Activer / Désactiver le graph AO"
 
 #: myframe.cpp:413
 msgid "Display Target"
@@ -1912,11 +1912,11 @@ msgstr "Activer / Désactiver la cible"
 
 #: myframe.cpp:414
 msgid "Display Star Profile"
-msgstr "Afficher le profile de l'étoile"
+msgstr "Afficher le profil de l'étoile"
 
 #: myframe.cpp:414
 msgid "Enable / disable star profile view"
-msgstr "Activer / Désactiver le profile de l'étoile"
+msgstr "Activer / Désactiver le profil de l'étoile"
 
 #: myframe.cpp:416
 msgid "No Overlay"
@@ -2489,10 +2489,10 @@ msgid ""
 "but the bump did not complete in a reasonable amount of time.\n"
 "You probably need to increase the AO Bump Step setting.\n"
 msgstr ""
-"Un \"saut\" de la monture était nécessaire pour amener l'OA a sa position "
+"Un \"saut\" de la monture était nécessaire pour amener l'AO a sa position "
 "centrale,\n"
 "mais le saut ne s'est pas terminé dans un délai raisonnable.\n"
-"Vous avez probalement besoin d'augmenter le réglage de Pas de saut OA.\n"
+"Vous avez probalement besoin d'augmenter le réglage de Pas de saut AO.\n"
 
 #: myframe_events.cpp:852
 msgid "Warning"
@@ -2596,7 +2596,7 @@ msgstr ""
 
 #: scope.cpp:880
 msgid "Reverse Dec output after meridian flip"
-msgstr "Inverser la sortie Dec après basculement au méridien"
+msgstr "Inverser la sortie Dec après retournement au méridien"
 
 #: scope.cpp:881
 msgid ""
@@ -2656,7 +2656,7 @@ msgstr "Serveur arrèter"
 
 #: star_profile.cpp:44
 msgid "Profile"
-msgstr "Profile"
+msgstr "Profil"
 
 #: star_profile.cpp:126 star_profile.cpp:138
 msgid "Mid row"
@@ -2741,7 +2741,7 @@ msgid ""
 "What percentage of the AO travel can be used before bumping the mount. "
 "Default = %d"
 msgstr ""
-"Quel pourcentage de la course OA peut être utilisé avant de bouger la "
+"Quel pourcentage de la course AO peut être utilisé avant de bouger la "
 "monture. Par défaut = %d"
 
 #: stepguider.cpp:1083
@@ -2755,7 +2755,7 @@ msgid ""
 "Default = %.2f, decrease if mount bumps cause spikes on the graph"
 msgstr ""
 "A quel point un saut de monture doit déplacer la monture entre les images "
-"(en pas d'OA). Par défaut = %.2f, diminuez si les sauts de monture provoque "
+"(en pas d'AO). Par défaut = %.2f, diminuez si les sauts de monture provoque "
 "des pics sur le graphique."
 
 #: target.cpp:69
