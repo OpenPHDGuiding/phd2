@@ -623,6 +623,11 @@ static json_value *json_parse(char *source, const char **error_pos,
         JSON_ERROR(it, "Not all objects/arrays have been properly closed");
     }
 
+    if (!root)
+    {
+        JSON_ERROR(it, "empty string");
+    }
+
     return root;
 }
 
