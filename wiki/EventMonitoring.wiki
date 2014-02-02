@@ -251,6 +251,7 @@ Set camera exposure (error):
 
 ||*Method*||*params*||*result*||*Description*||
 ||`dither`|| PIXELS (float), RA_ONLY (boolean), SETTLE (object) || integer (0) || See below ||
+||`flip_calibration`||none|| integer (0) || ||
 ||`get_app_state`||none||string: current app state|| same value that came in the last [EventMonitoring#AppState AppState] notification ||
 ||`get_calibrated`||none||boolean: true if calibrated|| ||
 ||`get_connected`||none||boolean: true if all equipment is connected || ||
