@@ -80,13 +80,8 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
 
     m_pClient = new GraphLogClientWindow(this);
 
-    m_pControlSizer = new wxBoxSizer(wxVERTICAL);
-
-    m_pControlSizer1 = new wxBoxSizer(wxHORIZONTAL);
-    m_pControlSizer2 = new wxBoxSizer(wxHORIZONTAL);
-
-    m_pControlSizer->Add(m_pControlSizer1, wxSizerFlags().Border(wxTOP, 10));
-    m_pControlSizer->Add(m_pControlSizer2, wxSizerFlags().Border(wxTOP, 10));
+    m_pControlSizer = new wxFlexGridSizer(3, 1, 0, 0);
+    m_ControlNbRows = 3;
 
     if (pMount)
     {
@@ -103,17 +98,17 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
 
     if (m_pXControlPane != NULL)
     {
-        m_pControlSizer1->Add(m_pXControlPane, wxSizerFlags().Expand());
+        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Border(wxTOP, 5).Expand());
     }
 
     if (m_pYControlPane != NULL)
     {
-        m_pControlSizer1->Add(m_pYControlPane, wxSizerFlags().Expand());
+        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Border(wxTOP, 5).Expand());
     }
 
     if (m_pScopePane != NULL)
     {
-        m_pControlSizer2->Add(m_pScopePane, wxSizerFlags().Expand());
+        m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Border(wxTOP, 5).Expand());
     }
 
     m_visible = false;
@@ -506,19 +501,19 @@ void GraphLogWindow::UpdateControls()
 {
     if (m_pXControlPane != NULL)
     {
-        m_pControlSizer1->Detach(m_pXControlPane);
+        m_pControlSizer->Detach(m_pXControlPane);
         m_pXControlPane->Destroy();
     }
 
     if (m_pYControlPane != NULL)
     {
-        m_pControlSizer1->Detach(m_pYControlPane);
+        m_pControlSizer->Detach(m_pYControlPane);
         m_pYControlPane->Destroy();
     }
 
     if (m_pScopePane != NULL)
     {
-        m_pControlSizer2->Detach(m_pScopePane);
+        m_pControlSizer->Detach(m_pScopePane);
         m_pScopePane->Destroy();
     }
 
@@ -537,17 +532,17 @@ void GraphLogWindow::UpdateControls()
 
     if (m_pXControlPane != NULL)
     {
-        m_pControlSizer1->Add(m_pXControlPane, wxSizerFlags().Expand());
+        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Border(wxTOP, 5).Expand());
     }
 
     if (m_pYControlPane != NULL)
     {
-        m_pControlSizer1->Add(m_pYControlPane, wxSizerFlags().Expand());
+        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Border(wxTOP, 5).Expand());
     }
 
     if (m_pScopePane != NULL)
     {
-        m_pControlSizer2->Add(m_pScopePane, wxSizerFlags().Expand());
+        m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Border(wxTOP, 5).Expand());
     }
 
     Layout();
@@ -610,18 +605,24 @@ void GraphLogWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     int ControlSizerWidth = m_pControlSizer->GetSize().GetWidth();
     if (ControlSizerWidth != 0)
     {
-        int orientation;
+        int nb_row;
         if (ControlSizerWidth > XControlPaneWidth + YControlPaneWidth + ScopePaneWidth)
         {
-            orientation = wxHORIZONTAL;
+            nb_row = 1;
+        }
+        else if (ControlSizerWidth > XControlPaneWidth + YControlPaneWidth)
+        {
+            nb_row = 2;
         }
         else
         {
-            orientation = wxVERTICAL;
+            nb_row = 3;
         }
-        if (m_pControlSizer->GetOrientation() != orientation)
+        if (m_ControlNbRows != nb_row)
         {
-            m_pControlSizer->SetOrientation(orientation);
+            m_ControlNbRows = nb_row;
+            m_pControlSizer->SetRows(nb_row);
+            m_pControlSizer->SetCols(4 - nb_row);
             Layout();
         }
     }
