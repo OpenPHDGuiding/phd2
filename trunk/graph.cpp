@@ -98,17 +98,17 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
 
     if (m_pXControlPane != NULL)
     {
-        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Border(wxTOP, 5).Expand());
+        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Border(wxTOP, 5));
     }
 
     if (m_pYControlPane != NULL)
     {
-        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Border(wxTOP, 5).Expand());
+        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Border(wxTOP, 5));
     }
 
     if (m_pScopePane != NULL)
     {
-        m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Border(wxTOP, 5).Expand());
+        m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Border(wxTOP, 5));
     }
 
     m_visible = false;
@@ -532,17 +532,17 @@ void GraphLogWindow::UpdateControls()
 
     if (m_pXControlPane != NULL)
     {
-        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Border(wxTOP, 5).Expand());
+        m_pControlSizer->Add(m_pXControlPane, wxSizerFlags().Border(wxTOP, 5));
     }
 
     if (m_pYControlPane != NULL)
     {
-        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Border(wxTOP, 5).Expand());
+        m_pControlSizer->Add(m_pYControlPane, wxSizerFlags().Border(wxTOP, 5));
     }
 
     if (m_pScopePane != NULL)
     {
-        m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Border(wxTOP, 5).Expand());
+        m_pControlSizer->Add(m_pScopePane, wxSizerFlags().Border(wxTOP, 5));
     }
 
     Layout();
