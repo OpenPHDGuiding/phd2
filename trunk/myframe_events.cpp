@@ -789,7 +789,7 @@ void MyFrame::OnTestGuide(wxCommandEvent& WXUNUSED(evt))
 {
     if (!pMount || !pMount->IsConnected())
     {
-        wxMessageBox(_("Please connect a mount first"), _("Manual Guide"));
+        wxMessageBox(_("Please connect a mount first."), _("Manual Guide"));
         return;
     }
 
