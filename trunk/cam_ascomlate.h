@@ -68,14 +68,15 @@ private:
     DISPID dispid_ispulseguiding, dispid_pulseguide;
 
     bool Create(DispatchObj *obj, DispatchClass *cls);
-    bool ASCOM_SetBin(int mode);
-    bool ASCOM_SetROI(int startx, int starty, int numx, int numy);
-    bool ASCOM_StartExposure(double duration, bool light);
-    bool ASCOM_StopExposure();
-    bool ASCOM_ImageReady(bool& ready);
-    bool ASCOM_Image(usImage& Image, bool useSubframe, wxRect subframe);
 
-    bool ASCOM_IsMoving();
+    bool ASCOM_SetBin(int mode, EXCEPINFO *excep);
+    bool ASCOM_SetROI(int startx, int starty, int numx, int numy, EXCEPINFO *excep);
+    bool ASCOM_StartExposure(double duration, bool light, EXCEPINFO *excep);
+    bool ASCOM_StopExposure(EXCEPINFO *excep);
+    bool ASCOM_ImageReady(bool *ready, EXCEPINFO *excep);
+    bool ASCOM_Image(usImage& Image, bool useSubframe, wxRect subframe, EXCEPINFO *excep);
+    bool ASCOM_IsMoving(void);
+
     bool ST4HasNonGuiMove(void);
 
     int DriverVersion;
