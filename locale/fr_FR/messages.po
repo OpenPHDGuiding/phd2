@@ -35,8 +35,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-02 19:07+0100\n"
-"PO-Revision-Date: 2014-02-02 19:18+0100\n"
+"POT-Creation-Date: 2014-02-03 19:45+0100\n"
+"PO-Revision-Date: 2014-02-03 19:53+0100\n"
 "Last-Translator: Sylvain Girard <sylvain.girard@zesly.net>\n"
 "Language-Team: Français\n"
 "MIME-Version: 1.0\n"
@@ -239,70 +239,70 @@ msgstr "Impossible de calculer la taille du pas"
 #: calstep_dialog.cpp:254
 msgid "Focal length must be >= 50 and < 4000, Pixel size must be > 0"
 msgstr ""
-"La longueur focale doit être >= 50 et <= 4000, la taille des pixels doit "
-"être > 0"
+"La longueur focale doit être >= 50 et < 4000, la taille des pixels doit être "
+"> 0"
 
 #: calstep_dialog.cpp:254 cam_ascomlate.cpp:172 cam_ascomlate.cpp:178
-#: cam_ascomlate.cpp:189 cam_ascomlate.cpp:269 cam_ascomlate.cpp:283
-#: cam_ascomlate.cpp:290 cam_ascomlate.cpp:305 cam_ascomlate.cpp:320
-#: cam_ascomlate.cpp:327 cam_ascomlate.cpp:351 cam_ascomlate.cpp:358
-#: cam_ascomlate.cpp:423 cam_ascomlate.cpp:441 cam_ascomlate.cpp:469
-#: cam_ascomlate.cpp:752 cam_ascomlate.cpp:798 cam_Atik16.cpp:210
-#: cam_Atik16.cpp:226 cam_firewire_IC.cpp:89 cam_firewire_IC.cpp:281
-#: cam_indi.cpp:189 cam_indi.cpp:193 cam_indi.cpp:204 cam_indi.cpp:208
-#: cam_indi.cpp:212 cam_indi.cpp:226 cam_indi.cpp:230 cam_indi.cpp:235
-#: cam_indi.cpp:240 cam_indi.cpp:279 cam_INovaPLC.cpp:54 cam_INovaPLC.cpp:75
-#: cam_INovaPLC.cpp:79 cam_INovaPLC.cpp:122 cam_INovaPLC.cpp:139
-#: cam_KWIQGuider.cpp:62 cam_KWIQGuider.cpp:104 cam_LELXUSBWebcam.cpp:66
-#: cam_LEParallelWebcam.cpp:81 cam_LESerialWebcam.cpp:76 cam_MeadeDSI.cpp:63
-#: cam_MeadeDSI.cpp:124 cam_NebSBIG.cpp:66 cam_openssag.cpp:65
-#: cam_openssag.cpp:107 cam_OSPL130.cpp:37 cam_OSPL130.cpp:42
-#: cam_OSPL130.cpp:67 cam_OSPL130.cpp:73 cam_QGuide.cpp:146 cam_qhy5.cpp:88
-#: cam_qhy5.cpp:95 cam_qhy5.cpp:196 cam_qhy5.cpp:252 cam_qhy5.cpp:258
-#: cam_QHY5IIbase.cpp:107 cam_QHY5IIbase.cpp:113 cam_QHY5IIbase.cpp:119
-#: cam_QHY5IIbase.cpp:125 cam_QHY5IIbase.cpp:131 cam_QHY5IIbase.cpp:137
-#: cam_QHY5IIbase.cpp:143 cam_QHY5IIbase.cpp:155 cam_QHY5IIbase.cpp:161
-#: cam_QHY5IIbase.cpp:167 cam_QHY5IIbase.cpp:173 cam_QHY5IIbase.cpp:179
-#: cam_QHY5IIbase.cpp:185 cam_QHY5IIbase.cpp:191 cam_QHY5IIbase.cpp:263
-#: cam_SAC42.cpp:69 cam_SAC42.cpp:114 cam_SAC42.cpp:131 cam_SACGuide.cpp:80
-#: cam_SACGuide.cpp:91 cam_SACGuide.cpp:94 cam_SACGuide.cpp:97
-#: cam_SACGuide.cpp:100 cam_SACGuide.cpp:109 cam_SACGuide.cpp:207
-#: cam_SBIG.cpp:195 cam_SBIG.cpp:204 cam_SBIG.cpp:230 cam_SBIG.cpp:334
-#: cam_SBIG.cpp:345 cam_SBIG.cpp:358 cam_SBIG.cpp:371 cam_SBIG.cpp:400
-#: cam_SBIG.cpp:413 cam_SBIG.cpp:471 cam_simulator.cpp:622
-#: cam_simulator.cpp:633 cam_simulator.cpp:637 cam_simulator.cpp:641
-#: cam_simulator.cpp:667 cam_simulator.cpp:714 cam_simulator.cpp:802
-#: cam_simulator.cpp:813 cam_simulator.cpp:817 cam_simulator.cpp:821
-#: cam_SSAG.cpp:137 cam_SSPIAG.cpp:128 cam_SSPIAG.cpp:134 cam_SSPIAG.cpp:140
-#: cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:152 cam_SSPIAG.cpp:158 cam_SSPIAG.cpp:164
-#: cam_SSPIAG.cpp:170 cam_SSPIAG.cpp:176 cam_SSPIAG.cpp:182 cam_SSPIAG.cpp:188
-#: cam_SSPIAG.cpp:194 cam_SSPIAG.cpp:200 cam_SSPIAG.cpp:206 cam_SSPIAG.cpp:212
-#: cam_SSPIAG.cpp:218 cam_SSPIAG.cpp:230 cam_SSPIAG.cpp:236 cam_SSPIAG.cpp:242
-#: cam_SSPIAG.cpp:247 cam_SSPIAG.cpp:254 cam_SSPIAG.cpp:261 cam_SSPIAG.cpp:349
-#: cam_Starfish.cpp:142 cam_StarShootDSCI.cpp:79 cam_StarShootDSCI.cpp:87
-#: cam_StarShootDSCI.cpp:91 cam_StarShootDSCI.cpp:94 cam_StarShootDSCI.cpp:98
-#: cam_StarShootDSCI.cpp:101 cam_StarShootDSCI.cpp:105
-#: cam_StarShootDSCI.cpp:108 cam_StarShootDSCI.cpp:111
-#: cam_StarShootDSCI.cpp:119 cam_StarShootDSCI.cpp:148
-#: cam_StarShootDSCI.cpp:157 cam_StarShootDSCI.cpp:171 cam_SXV.cpp:152
-#: cam_SXV.cpp:346 cam_VFW.cpp:136 cam_wdm.cpp:122 cam_wdm.cpp:129
-#: cam_wdm.cpp:183 cam_wdm.cpp:215 cam_wdm.cpp:222 cam_wdm.cpp:233
-#: cam_wdm.cpp:292 gear_dialog.cpp:1131 gear_dialog.cpp:1140
-#: gear_dialog.cpp:1147 gear_dialog.cpp:1189 gear_dialog.cpp:1195
-#: image_math.cpp:91 image_math.cpp:209 myframe.cpp:744 myframe_events.cpp:143
-#: myframe_events.cpp:211 myframe_events.cpp:219 myframe_events.cpp:230
-#: myframe_events.cpp:237 scope_ascom.cpp:159 scope_ascom.cpp:165
-#: scope_ascom.cpp:176 scope_ascom.cpp:280 scope_ascom.cpp:295
-#: scope_ascom.cpp:303 scope_ascom.cpp:312 scope_ascom.cpp:328
-#: scope_ascom.cpp:335 scope_ascom.cpp:391 scope_ascom.cpp:399
-#: scope_ascom.cpp:412 scope_ascom.cpp:464 scope_ascom.cpp:586
-#: scope_ascom.cpp:613 scope_eqmac.cpp:135 scope_eqmac.cpp:139
-#: scope_eqmac.cpp:171 scope_eqmac.cpp:175 scope_equinox.cpp:136
-#: scope_equinox.cpp:140 scope_equinox.cpp:173 scope_equinox.cpp:177
-#: scope_GC_USBST4.cpp:139 scope_GC_USBST4.cpp:155 scope_GC_USBST4.cpp:169
-#: scope_GC_USBST4.cpp:179 scope_GC_USBST4.cpp:200 scope_GC_USBST4.cpp:228
-#: scope_GC_USBST4.cpp:238 stepguider_sxao.cpp:124 usImage.cpp:307
-#: usImage.cpp:316 usImage.cpp:321 usImage.cpp:325
+#: cam_ascomlate.cpp:189 cam_ascomlate.cpp:269 cam_ascomlate.cpp:293
+#: cam_ascomlate.cpp:300 cam_ascomlate.cpp:315 cam_ascomlate.cpp:330
+#: cam_ascomlate.cpp:337 cam_ascomlate.cpp:361 cam_ascomlate.cpp:368
+#: cam_ascomlate.cpp:436 cam_ascomlate.cpp:453 cam_ascomlate.cpp:483
+#: cam_ascomlate.cpp:497 cam_ascomlate.cpp:760 cam_ascomlate.cpp:808
+#: cam_Atik16.cpp:210 cam_Atik16.cpp:226 cam_firewire_IC.cpp:89
+#: cam_firewire_IC.cpp:281 cam_indi.cpp:189 cam_indi.cpp:193 cam_indi.cpp:204
+#: cam_indi.cpp:208 cam_indi.cpp:212 cam_indi.cpp:226 cam_indi.cpp:230
+#: cam_indi.cpp:235 cam_indi.cpp:240 cam_indi.cpp:279 cam_INovaPLC.cpp:54
+#: cam_INovaPLC.cpp:75 cam_INovaPLC.cpp:79 cam_INovaPLC.cpp:122
+#: cam_INovaPLC.cpp:139 cam_KWIQGuider.cpp:62 cam_KWIQGuider.cpp:104
+#: cam_LELXUSBWebcam.cpp:66 cam_LEParallelWebcam.cpp:81
+#: cam_LESerialWebcam.cpp:76 cam_MeadeDSI.cpp:63 cam_MeadeDSI.cpp:124
+#: cam_NebSBIG.cpp:66 cam_openssag.cpp:65 cam_openssag.cpp:107
+#: cam_OSPL130.cpp:37 cam_OSPL130.cpp:42 cam_OSPL130.cpp:67 cam_OSPL130.cpp:73
+#: cam_QGuide.cpp:146 cam_qhy5.cpp:88 cam_qhy5.cpp:95 cam_qhy5.cpp:196
+#: cam_qhy5.cpp:252 cam_qhy5.cpp:258 cam_QHY5IIbase.cpp:107
+#: cam_QHY5IIbase.cpp:113 cam_QHY5IIbase.cpp:119 cam_QHY5IIbase.cpp:125
+#: cam_QHY5IIbase.cpp:131 cam_QHY5IIbase.cpp:137 cam_QHY5IIbase.cpp:143
+#: cam_QHY5IIbase.cpp:155 cam_QHY5IIbase.cpp:161 cam_QHY5IIbase.cpp:167
+#: cam_QHY5IIbase.cpp:173 cam_QHY5IIbase.cpp:179 cam_QHY5IIbase.cpp:185
+#: cam_QHY5IIbase.cpp:191 cam_QHY5IIbase.cpp:263 cam_SAC42.cpp:69
+#: cam_SAC42.cpp:114 cam_SAC42.cpp:131 cam_SACGuide.cpp:80 cam_SACGuide.cpp:91
+#: cam_SACGuide.cpp:94 cam_SACGuide.cpp:97 cam_SACGuide.cpp:100
+#: cam_SACGuide.cpp:109 cam_SACGuide.cpp:207 cam_SBIG.cpp:195 cam_SBIG.cpp:204
+#: cam_SBIG.cpp:230 cam_SBIG.cpp:334 cam_SBIG.cpp:345 cam_SBIG.cpp:358
+#: cam_SBIG.cpp:371 cam_SBIG.cpp:400 cam_SBIG.cpp:413 cam_SBIG.cpp:471
+#: cam_simulator.cpp:622 cam_simulator.cpp:633 cam_simulator.cpp:637
+#: cam_simulator.cpp:641 cam_simulator.cpp:667 cam_simulator.cpp:714
+#: cam_simulator.cpp:802 cam_simulator.cpp:813 cam_simulator.cpp:817
+#: cam_simulator.cpp:821 cam_SSAG.cpp:137 cam_SSPIAG.cpp:128
+#: cam_SSPIAG.cpp:134 cam_SSPIAG.cpp:140 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:152
+#: cam_SSPIAG.cpp:158 cam_SSPIAG.cpp:164 cam_SSPIAG.cpp:170 cam_SSPIAG.cpp:176
+#: cam_SSPIAG.cpp:182 cam_SSPIAG.cpp:188 cam_SSPIAG.cpp:194 cam_SSPIAG.cpp:200
+#: cam_SSPIAG.cpp:206 cam_SSPIAG.cpp:212 cam_SSPIAG.cpp:218 cam_SSPIAG.cpp:230
+#: cam_SSPIAG.cpp:236 cam_SSPIAG.cpp:242 cam_SSPIAG.cpp:247 cam_SSPIAG.cpp:254
+#: cam_SSPIAG.cpp:261 cam_SSPIAG.cpp:349 cam_Starfish.cpp:142
+#: cam_StarShootDSCI.cpp:79 cam_StarShootDSCI.cpp:87 cam_StarShootDSCI.cpp:91
+#: cam_StarShootDSCI.cpp:94 cam_StarShootDSCI.cpp:98 cam_StarShootDSCI.cpp:101
+#: cam_StarShootDSCI.cpp:105 cam_StarShootDSCI.cpp:108
+#: cam_StarShootDSCI.cpp:111 cam_StarShootDSCI.cpp:119
+#: cam_StarShootDSCI.cpp:148 cam_StarShootDSCI.cpp:157
+#: cam_StarShootDSCI.cpp:171 cam_SXV.cpp:152 cam_SXV.cpp:346 cam_VFW.cpp:136
+#: cam_wdm.cpp:122 cam_wdm.cpp:129 cam_wdm.cpp:183 cam_wdm.cpp:215
+#: cam_wdm.cpp:222 cam_wdm.cpp:233 cam_wdm.cpp:292 gear_dialog.cpp:1131
+#: gear_dialog.cpp:1140 gear_dialog.cpp:1147 gear_dialog.cpp:1189
+#: gear_dialog.cpp:1195 image_math.cpp:91 image_math.cpp:209 myframe.cpp:744
+#: myframe_events.cpp:143 myframe_events.cpp:211 myframe_events.cpp:219
+#: myframe_events.cpp:230 myframe_events.cpp:237 scope_ascom.cpp:159
+#: scope_ascom.cpp:165 scope_ascom.cpp:176 scope_ascom.cpp:280
+#: scope_ascom.cpp:295 scope_ascom.cpp:303 scope_ascom.cpp:312
+#: scope_ascom.cpp:328 scope_ascom.cpp:335 scope_ascom.cpp:391
+#: scope_ascom.cpp:399 scope_ascom.cpp:412 scope_ascom.cpp:464
+#: scope_ascom.cpp:586 scope_ascom.cpp:613 scope_eqmac.cpp:135
+#: scope_eqmac.cpp:139 scope_eqmac.cpp:171 scope_eqmac.cpp:175
+#: scope_equinox.cpp:136 scope_equinox.cpp:140 scope_equinox.cpp:173
+#: scope_equinox.cpp:177 scope_GC_USBST4.cpp:139 scope_GC_USBST4.cpp:155
+#: scope_GC_USBST4.cpp:169 scope_GC_USBST4.cpp:179 scope_GC_USBST4.cpp:200
+#: scope_GC_USBST4.cpp:228 scope_GC_USBST4.cpp:238 stepguider_sxao.cpp:124
+#: usImage.cpp:307 usImage.cpp:316 usImage.cpp:321 usImage.cpp:325
 msgid "Error"
 msgstr "Erreur"
 
@@ -326,6 +326,60 @@ msgstr ""
 #: cam_ascomlate.cpp:269
 msgid "ASCOM Camera Driver missing required property "
 msgstr "Un propriété requise du Driver de Camera ASCOM est maquante"
+
+#: cam_ascomlate.cpp:293
+msgid "Could not create ASCOM camera object"
+msgstr "Impossible de créer l'objet Caméra ASCOM"
+
+#: cam_ascomlate.cpp:299
+msgid "ASCOM driver problem: Connect"
+msgstr "Problème de driver ASCOM : Connect"
+
+#: cam_ascomlate.cpp:315
+msgid "ASCOM driver missing the CanPulseGuide property"
+msgstr "La propriété CanPulseGuide du driver ASCOM est maquante"
+
+#: cam_ascomlate.cpp:330
+msgid "ASCOM driver missing the CameraXSize property"
+msgstr "La propriété CameraXSize du driver ASCOM est maquante"
+
+#: cam_ascomlate.cpp:337
+msgid "ASCOM driver missing the CameraYSize property"
+msgstr "La propriété CameraYSize du driver ASCOM est maquante"
+
+#: cam_ascomlate.cpp:361
+msgid "ASCOM driver missing the PixelSizeX property"
+msgstr "La propriété PixelSizeX du driver ASCOM est maquante"
+
+#: cam_ascomlate.cpp:368
+msgid "ASCOM driver missing the PixelSizeY property"
+msgstr "La propriété PixelSizeY du driver ASCOM est maquante"
+
+#: cam_ascomlate.cpp:435
+msgid "ASCOM driver problem -- cannot disconnect"
+msgstr "Problème de driver ASCOM : impossible de déconnecter"
+
+#: cam_ascomlate.cpp:482
+msgid "ASCOM error -- Cannot start exposure with given parameters"
+msgstr ""
+"Erreur ASCOM -- Impossible de démarrer la poses avec les paramètres donnés"
+
+#: cam_ascomlate.cpp:497
+msgid "Exception thrown polling camera"
+msgstr "Exception levée pendant le polling de la caméra"
+
+#: cam_ascomlate.cpp:510
+msgid "Error reading image"
+msgstr "Erreur a la lecture de l'image"
+
+#: cam_ascomlate.cpp:760
+msgid "Cannot allocate memory to download image from camera"
+msgstr ""
+"Impossible d'allouer de la mémoire pour télécharger l'image de la caméra"
+
+#: cam_ascomlate.cpp:808
+msgid "ASCOM driver failed checking IsPulseGuiding"
+msgstr "Echec du driver ASCOM sur la propriété IsPulseGuiding"
 
 #: cam_Atik16.cpp:63
 msgid "Already connected"
@@ -762,7 +816,7 @@ msgstr ""
 msgid "Don't ask again"
 msgstr "Ne plus demander"
 
-#: confirm_dialog.cpp:73 drift_tool.cpp:645 guider.cpp:1079
+#: confirm_dialog.cpp:73 drift_tool.cpp:645 guider.cpp:1084
 msgid "Confirm"
 msgstr "Confirmation"
 
@@ -1098,7 +1152,7 @@ msgid "Disconnect all equipment"
 msgstr "Déconnecter tout l'équipement"
 
 #: gear_dialog.cpp:266 gear_dialog.cpp:270 gear_dialog.cpp:274 mount.cpp:94
-#: mount.cpp:117 myframe.cpp:1474
+#: mount.cpp:117 myframe.cpp:1490
 msgid "None"
 msgstr "Aucun"
 
@@ -1436,7 +1490,7 @@ msgid ""
 "How many (fractional) pixels must the star move to trigger a guide pulse? "
 "Default = 0.15"
 msgstr ""
-"De combien de pixels (fractionnaire) l'étoile doit bougé pour déclenché une "
+"De combien de pixels (fractionnaire) l'étoile doit bouger pour déclenché une "
 "impulsion de guidage ? Par défaut = 0.15"
 
 #: guide_algorithm_hysteresis.cpp:281
@@ -1483,43 +1537,43 @@ msgstr "Algorithme Passe-bas 2"
 msgid "ResistSwitch Guide Algorithm"
 msgstr "Algorithme ResistSwitch"
 
-#: guider.cpp:723
+#: guider.cpp:728
 msgid "Calibration manually stopped"
-msgstr "Calibration manuelle arrêtée"
+msgstr "Calibration arrêtée manuellement"
 
-#: guider.cpp:759
+#: guider.cpp:764
 msgid "Stopped Guiding"
-msgstr "Guidage Arréter"
+msgstr "Guidage Arrété"
 
-#: guider.cpp:767 myframe.cpp:1029
+#: guider.cpp:772 myframe.cpp:1029
 msgid "Paused"
 msgstr "Pause"
 
-#: guider.cpp:788
+#: guider.cpp:793
 msgid "star lost"
 msgstr "étoile perdue"
 
-#: guider.cpp:899
+#: guider.cpp:904
 msgid "Guiding..."
 msgstr "Guidage..."
 
-#: guider.cpp:970
+#: guider.cpp:975
 msgid "Guider Settings"
-msgstr "Réglage Guider"
+msgstr "Réglage Guideur"
 
-#: guider.cpp:973
+#: guider.cpp:978
 msgid "Always Scale Images"
-msgstr "Images toujours ajuster"
+msgstr "Toujours ajuster les images"
 
-#: guider.cpp:974
+#: guider.cpp:979
 msgid "Always scale images to fill window"
 msgstr "Toujours ajuster les images à la fenêtre"
 
-#: guider.cpp:976
+#: guider.cpp:981
 msgid "Fast recenter after calibration or dither"
 msgstr "Recentrage rapide après calibration ou dithering"
 
-#: guider.cpp:977
+#: guider.cpp:982
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -1529,9 +1583,9 @@ msgstr ""
 "guidage plus grande pour recentrer l'étoile. Décochez pour utiliser "
 "l'ancienne méthode plus lente de recentrage après calibration ou dithering."
 
-#: guider.cpp:1078
+#: guider.cpp:1083
 msgid "Are you sure you want to delete all Bookmarks?"
-msgstr "Etes-vous sur de vouloir supprimer tous les Signets"
+msgstr "Etes-vous sur de vouloir supprimer tous les Signets ?"
 
 #: guider_onestar.cpp:368 guider_onestar.cpp:385
 msgid "No star selected"
@@ -1553,25 +1607,25 @@ msgstr "Etoile trop près du bord"
 msgid "Star lost - mass changed"
 msgstr "Etoile perdue - sa masse a changé"
 
-#: guider_onestar.cpp:376 guider_onestar.cpp:537
+#: guider_onestar.cpp:376 guider_onestar.cpp:549
 msgid "No star found"
-msgstr "Etoile non trouvé"
+msgstr "Etoile non trouvée"
 
 #: guider_onestar.cpp:428
 #, c-format
 msgid "Mass: %.0f vs %.0f"
 msgstr "Masss: %.0f vs %.0f"
 
-#: guider_onestar.cpp:542
+#: guider_onestar.cpp:554
 #, c-format
 msgid "Selected star at (%.1f, %.1f)"
 msgstr "Etoile selectionnée à (%.1f, %.1f)"
 
-#: guider_onestar.cpp:785
+#: guider_onestar.cpp:797
 msgid "Search region (pixels)"
 msgstr "Région de recherche (pixels)"
 
-#: guider_onestar.cpp:786
+#: guider_onestar.cpp:798
 msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
@@ -1579,11 +1633,11 @@ msgstr ""
 "Combien de pixels (haut/bas/gauche/droite) doit-on examiner pour trouver un "
 "étoile ? Par défaut = 15"
 
-#: guider_onestar.cpp:788
+#: guider_onestar.cpp:800
 msgid "Star mass change detection"
 msgstr "Détection de variation de masse d'étoile"
 
-#: guider_onestar.cpp:789
+#: guider_onestar.cpp:801
 msgid ""
 "Check to enable star mass change detection. When enabled, PHD skips frames "
 "when the guide star mass changes by an amount greater than the Star mass "
@@ -1594,11 +1648,11 @@ msgstr ""
 "l'étoile-guide varie d'un niveau supérieur au réglage de Tolérence de masse "
 "d'étoile."
 
-#: guider_onestar.cpp:798
+#: guider_onestar.cpp:810
 msgid "Star mass tolerance"
 msgstr "Tolérance de masse d'étoile"
 
-#: guider_onestar.cpp:799
+#: guider_onestar.cpp:811
 msgid ""
 "When star mass change detection is enabled, this is the tolerance for star "
 "mass changes between frames, in percent. Larger values are more tolerant "
@@ -1648,7 +1702,7 @@ msgstr "Forcer calibration"
 #: mount.cpp:84
 msgid "Check to clear any previous calibration and force PHD to recalibrate"
 msgstr ""
-"Cocher pour supprimer toute ancienne calibration et force PHD à recalibrer"
+"Cochez pour supprimer toute ancienne calibration et force PHD à recalibrer"
 
 #: mount.cpp:86
 msgid "Enable Guide Output"
@@ -1659,7 +1713,7 @@ msgid ""
 "Keep this checked for guiding. Un-check to disable all mount guide commands "
 "and allow the mount to run un-guided"
 msgstr ""
-"Laissez coché pour guider. Décocher pour désactiver toutes les commandes de "
+"Laissez coché pour guider. Décochez pour désactiver toutes les commandes de "
 "guidage et permettre à la monture de fonctionner non-guidée."
 
 #: mount.cpp:94 mount.cpp:117
@@ -1820,7 +1874,7 @@ msgstr "Calibrer manuellement"
 
 #: myframe.cpp:399
 msgid "Flip Calibration Data"
-msgstr "Inversé les Données de Calibration"
+msgstr "Inverser les Données de Calibration"
 
 #: myframe.cpp:399
 msgid "Flip RA calibration vector"
@@ -1848,7 +1902,7 @@ msgstr "Activer / Désactiver le fichier de log de guidage"
 
 #: myframe.cpp:404
 msgid "Enable Debug Log"
-msgstr "Activé le log de debug"
+msgstr "Activer le log de debug"
 
 #: myframe.cpp:404
 msgid "Enable debug log file"
@@ -1872,7 +1926,7 @@ msgstr "Activer / Désactiver le lien vers Nebulosity ou autre logiciel"
 
 #: myframe.cpp:407
 msgid "Sticky Lock Position"
-msgstr "Epingler le Position de Vérouillage"
+msgstr "Epingler la Position de Vérouillage"
 
 #: myframe.cpp:407
 msgid "Keep the same lock position when guiding starts"
@@ -1884,7 +1938,7 @@ msgstr "Afficher la Barre d'outils"
 
 #: myframe.cpp:410
 msgid "Enable / disable tool bar"
-msgstr "Activer / Désactiver la bar d'outils"
+msgstr "Activer / Désactiver la barre d'outils"
 
 #: myframe.cpp:411
 msgid "Display Graph"
@@ -1892,7 +1946,7 @@ msgstr "Afficher le Graph"
 
 #: myframe.cpp:411
 msgid "Enable / disable graph"
-msgstr "Activer / Désactiver le graph"
+msgstr "Activer / Désactiver le graphe"
 
 #: myframe.cpp:412
 msgid "Display AO Graph"
@@ -1932,7 +1986,7 @@ msgstr "Cible"
 
 #: myframe.cpp:417
 msgid "Centered bullseye overlay"
-msgstr "Réticule centrer"
+msgstr "Réticule centré"
 
 #: myframe.cpp:418
 msgid "Fine Grid"
@@ -2088,7 +2142,7 @@ msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
 msgstr ""
-"Connecte l'équipement. Shift-Clique pour reconnecter le même équipement qu'à "
+"Connecte l'équipement. Shift-Clic pour reconnecter le même équipement qu'à "
 "la dernière connection."
 
 #: myframe.cpp:654
@@ -2121,7 +2175,7 @@ msgstr "Temps de pose"
 
 #: myframe.cpp:659
 msgid "Gamma"
-msgstr "Gamme"
+msgstr "Gamma"
 
 #: myframe.cpp:661
 msgid "Advanced parameters"
@@ -2163,103 +2217,103 @@ msgstr "Attente du matériel avant d'arréter..."
 msgid "Resumed"
 msgstr "Reprise"
 
-#: myframe.cpp:1119
+#: myframe.cpp:1135
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr "Dither de %.2f,%.2f"
 
-#: myframe.cpp:1136
+#: myframe.cpp:1152
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr "Etes-vous sur de vouloir quitter alors l'acquisition est active ?"
 
-#: myframe.cpp:1137
+#: myframe.cpp:1153
 msgid "Confirm Exit"
 msgstr "Confirmer"
 
-#: myframe.cpp:1440
+#: myframe.cpp:1456
 msgid "Global Settings"
 msgstr "Réglages Globaux"
 
-#: myframe.cpp:1445
+#: myframe.cpp:1461
 msgid "Reset Configuration"
 msgstr "Remise a zéro de la configuration"
 
-#: myframe.cpp:1446
+#: myframe.cpp:1462
 msgid ""
 "Reset all configuration to fresh install status -- Note: this closes PHD2"
 msgstr ""
 "Réinitialiser la configuration au statut de nouvelle installation -- Note : "
 "ça ferme PHD2"
 
-#: myframe.cpp:1448
+#: myframe.cpp:1464
 msgid "Reset \"Don't Ask Again\" messages"
 msgstr "Réinitialise \"Ne Plus Demander\""
 
-#: myframe.cpp:1449
+#: myframe.cpp:1465
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't Ask Again\"."
 msgstr ""
 "Restaure tous les messages qui ont été caché lorsque vous avez cliqué sur "
 "\"Ne Plus Demander\""
 
-#: myframe.cpp:1453
+#: myframe.cpp:1469
 msgid "Low Q JPEG"
 msgstr "Faible Q JPEG"
 
-#: myframe.cpp:1453
+#: myframe.cpp:1469
 msgid "High Q JPEG"
 msgstr "Haute Q JPEG"
 
-#: myframe.cpp:1453
+#: myframe.cpp:1469
 msgid "Raw FITS"
 msgstr "FITS brute"
 
-#: myframe.cpp:1459
+#: myframe.cpp:1475
 msgid "Image logging format"
 msgstr "Format d'image loggué"
 
-#: myframe.cpp:1460
+#: myframe.cpp:1476
 msgid "File format of logged images"
 msgstr "Format de fichier des images loguées"
 
-#: myframe.cpp:1462
+#: myframe.cpp:1478
 msgid "Dither RA only"
 msgstr "Dithering seulement en AD"
 
-#: myframe.cpp:1463
+#: myframe.cpp:1479
 msgid "Constrain dither to RA only?"
 msgstr "Contraindre le dithering en AD seulement ?"
 
-#: myframe.cpp:1469
+#: myframe.cpp:1485
 msgid "Dither scale"
 msgstr "Echelle de dithering"
 
-#: myframe.cpp:1470
+#: myframe.cpp:1486
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr ""
 "Mise a l'echelle des commandes de dithering. Par défaut = 1.0 (0.01-100.0)"
 
-#: myframe.cpp:1474
+#: myframe.cpp:1490
 msgid "2x2 mean"
 msgstr "moyenne 2x2"
 
-#: myframe.cpp:1474
+#: myframe.cpp:1490
 msgid "3x3 median"
-msgstr "moyenne 3x3"
+msgstr "mediane 3x3"
 
-#: myframe.cpp:1480
+#: myframe.cpp:1496
 msgid "Noise Reduction"
 msgstr "Réduction du Bruit"
 
-#: myframe.cpp:1481
+#: myframe.cpp:1497
 msgid "Technique to reduce noise in images"
 msgstr "Technique de réduction de bruit des images"
 
-#: myframe.cpp:1486
+#: myframe.cpp:1502
 msgid "Time Lapse (ms)"
 msgstr "Laps de Temp (ms)"
 
-#: myframe.cpp:1487
+#: myframe.cpp:1503
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -2270,11 +2324,11 @@ msgstr ""
 "l'aide d'une caméra vidéo), mais que vous voulez envoyer des commandes de "
 "guidage moins souvent"
 
-#: myframe.cpp:1490
+#: myframe.cpp:1506
 msgid "Focal length (mm)"
 msgstr "Longueur Focale (mm)"
 
-#: myframe.cpp:1491
+#: myframe.cpp:1507
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -2282,43 +2336,43 @@ msgstr ""
 "Longueur focale du telescope de guidage, utilisé avec la taille des pixels "
 "de la caméra pour afficher les erreurs de guidage en arc-sec."
 
-#: myframe.cpp:1497 myframe.cpp:1527
+#: myframe.cpp:1513 myframe.cpp:1543
 msgid "System default"
 msgstr "Système par défaut"
 
-#: myframe.cpp:1510
+#: myframe.cpp:1526
 msgid "Language-Name"
 msgstr "Français"
 
-#: myframe.cpp:1530
+#: myframe.cpp:1546
 msgid "Language"
 msgstr "Langue"
 
-#: myframe.cpp:1531
+#: myframe.cpp:1547
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "Langue de %s. Vous devrez redémarre PHD pour que ça prenne effet."
 
-#: myframe.cpp:1534
+#: myframe.cpp:1550
 msgid "Log File Location"
 msgstr "Emplacement Fichier de Log"
 
-#: myframe.cpp:1538
+#: myframe.cpp:1554
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr ""
 "Dossier pour les log de guidage et de debug ; chaine vide pour restaure "
 "l'emplacement par défaut"
 
-#: myframe.cpp:1539
+#: myframe.cpp:1555
 msgid "Browse..."
 msgstr "Parcourir..."
 
-#: myframe.cpp:1547
+#: myframe.cpp:1563
 msgid "Auto restore calibration"
 msgstr "Auto-restaurer la calibration"
 
-#: myframe.cpp:1548
+#: myframe.cpp:1564
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
@@ -2326,7 +2380,7 @@ msgstr ""
 "Restaurer automatiquement les données de calibration de la dernière "
 "calibration réussie à la connection de l'équipement"
 
-#: myframe.cpp:1593
+#: myframe.cpp:1609
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
@@ -2334,16 +2388,16 @@ msgstr ""
 "Cela va réinitialiser toutes les valeurs de configurations de PHD2. Etes-"
 "vous sur ?"
 
-#: myframe.cpp:1593
+#: myframe.cpp:1609
 msgid "Confirmation"
 msgstr "Confirmation"
 
-#: myframe.cpp:1621
+#: myframe.cpp:1637
 msgid "You must restart PHD for the language change to take effect."
 msgstr ""
-"Vous devez redémarre PHD pour que le changement de langue prenne effet."
+"Vous devez redémarrer PHD pour que le changement de langue prenne effet."
 
-#: myframe.cpp:1621 myframe_events.cpp:378 myframe_events.cpp:500
+#: myframe.cpp:1637 myframe_events.cpp:378 myframe_events.cpp:500
 msgid "Info"
 msgstr "Info"
 
@@ -2425,7 +2479,7 @@ msgstr "Impossible d'enregistrer le fichier FITS"
 
 #: myframe_events.cpp:328
 msgid "You must connect a camera before loading dark frames"
-msgstr "Vous devez connecté une caméra avant d'ouvrir des darks"
+msgstr "Vous devez connecter une caméra avant d'ouvrir des darks"
 
 #: myframe_events.cpp:332
 msgid "Load darks (FITS Image)"
@@ -2441,7 +2495,7 @@ msgstr "Refaire Dark"
 
 #: myframe_events.cpp:359
 msgid "Darks loaded"
-msgstr "Dark chargé"
+msgstr "Darks chargés"
 
 #: myframe_events.cpp:378 myframe_events.cpp:500
 msgid "Please connect to a camera first"
@@ -2546,7 +2600,7 @@ msgstr "Sud pas %3d"
 
 #: scope.cpp:777
 msgid "calibration complete"
-msgstr "calibration complete"
+msgstr "calibration complète"
 
 #: scope.cpp:792
 #, c-format
@@ -2652,7 +2706,7 @@ msgstr "Connection établie"
 
 #: socket_server.cpp:115
 msgid "Server stopped"
-msgstr "Serveur arrèter"
+msgstr "Serveur arrêté"
 
 #: star_profile.cpp:44
 msgid "Profile"
@@ -2660,11 +2714,11 @@ msgstr "Profil"
 
 #: star_profile.cpp:126 star_profile.cpp:138
 msgid "Mid row"
-msgstr "Mi lig"
+msgstr "Mi ligne"
 
 #: star_profile.cpp:130
 msgid "Avg row"
-msgstr "Moy lig"
+msgstr "Moy ligne"
 
 #: star_profile.cpp:134
 msgid "Avg col"
@@ -2728,12 +2782,12 @@ msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
 "increase for worse seeing and small imaging scales"
 msgstr ""
-"Lors de la calibration, combien d'échantinnon doivent être moyenné. Par "
-"défaut = %d, augmenter en cas de turbulense et petites échelles d'imagerie"
+"Lors de la calibration, combien d'échantillons doivent être moyennés. Par "
+"défaut = %d, augmentez en cas de turbu forte et d'échantillonage serré"
 
 #: stepguider.cpp:1076
 msgid "Bump Percentage"
-msgstr "Pourcentage de Saut"
+msgstr "Pourcentage du Saut"
 
 #: stepguider.cpp:1077
 #, c-format
@@ -2746,7 +2800,7 @@ msgstr ""
 
 #: stepguider.cpp:1083
 msgid "Bump Step"
-msgstr "Pas de saut"
+msgstr "Pas du saut"
 
 #: stepguider.cpp:1084
 #, c-format
@@ -2754,9 +2808,9 @@ msgid ""
 "How far should a mount bump move the mount between images (in AO steps). "
 "Default = %.2f, decrease if mount bumps cause spikes on the graph"
 msgstr ""
-"A quel point un saut de monture doit déplacer la monture entre les images "
-"(en pas d'AO). Par défaut = %.2f, diminuez si les sauts de monture provoque "
-"des pics sur le graphique."
+"Jusqu'où un saut de monture doit déplacer la monture entre les images (en "
+"pas d'AO). Par défaut = %.2f, diminuez si les sauts de monture provoque des "
+"pics sur le graphique."
 
 #: target.cpp:69
 msgid "Zoom in"
@@ -2779,8 +2833,8 @@ msgid ""
 "Reset the manual guide pulse duration to the default value. The default "
 "value is the calibration step size."
 msgstr ""
-"Réinitialiser la durée d'impulsions manuel de guidage à la valeur par "
-"défaut. La valeur par défaut est la pas de calibration."
+"Réinitialiser la durée d'impulsion manuelle de guidage à la valeur par "
+"défaut. La valeur par défaut est le pas de calibration."
 
 #: testguide.cpp:114 testguide.cpp:139
 msgid "Dither"
@@ -2838,9 +2892,9 @@ msgid ""
 "Dither on RA axis only. Changing the value here affects both manual "
 "dithering and dithering from imaging applications connected to PHD."
 msgstr ""
-"Dithering seulement en AD. Les changements de cette valeur affect a la fois "
-"le dithering manuelle et la dérive venant d'applications d'imagerie conneté "
-"à PHD."
+"Dithering seulement en AD. Les changements de cette valeur affectent a la "
+"fois le dithering manuel et le dithering venant d'applications d'imagerie "
+"conneté à PHD."
 
 #: testguide.cpp:140
 msgid ""
@@ -2848,8 +2902,8 @@ msgid ""
 "maximum value determined by the dither type and the dither scale factor."
 msgstr ""
 "Dépace la position de verouillage du guideur d'une quantité aléatoire sur "
-"chaque axes, jusqu'à la valeur maximum déterminé par le dithering type et le "
-"facteur de dithering."
+"chaque axe, jusqu'à la valeur maximum déterminée par le type de dithering et "
+"le facteur de dithering."
 
 #: testguide.cpp:158
 msgid "Up"

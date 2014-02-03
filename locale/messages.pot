@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-02 19:07+0100\n"
+"POT-Creation-Date: 2014-02-03 19:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -240,66 +240,66 @@ msgid "Focal length must be >= 50 and < 4000, Pixel size must be > 0"
 msgstr ""
 
 #: calstep_dialog.cpp:254 cam_ascomlate.cpp:172 cam_ascomlate.cpp:178
-#: cam_ascomlate.cpp:189 cam_ascomlate.cpp:269 cam_ascomlate.cpp:283
-#: cam_ascomlate.cpp:290 cam_ascomlate.cpp:305 cam_ascomlate.cpp:320
-#: cam_ascomlate.cpp:327 cam_ascomlate.cpp:351 cam_ascomlate.cpp:358
-#: cam_ascomlate.cpp:423 cam_ascomlate.cpp:441 cam_ascomlate.cpp:469
-#: cam_ascomlate.cpp:752 cam_ascomlate.cpp:798 cam_Atik16.cpp:210
-#: cam_Atik16.cpp:226 cam_firewire_IC.cpp:89 cam_firewire_IC.cpp:281
-#: cam_indi.cpp:189 cam_indi.cpp:193 cam_indi.cpp:204 cam_indi.cpp:208
-#: cam_indi.cpp:212 cam_indi.cpp:226 cam_indi.cpp:230 cam_indi.cpp:235
-#: cam_indi.cpp:240 cam_indi.cpp:279 cam_INovaPLC.cpp:54 cam_INovaPLC.cpp:75
-#: cam_INovaPLC.cpp:79 cam_INovaPLC.cpp:122 cam_INovaPLC.cpp:139
-#: cam_KWIQGuider.cpp:62 cam_KWIQGuider.cpp:104 cam_LELXUSBWebcam.cpp:66
-#: cam_LEParallelWebcam.cpp:81 cam_LESerialWebcam.cpp:76 cam_MeadeDSI.cpp:63
-#: cam_MeadeDSI.cpp:124 cam_NebSBIG.cpp:66 cam_openssag.cpp:65
-#: cam_openssag.cpp:107 cam_OSPL130.cpp:37 cam_OSPL130.cpp:42
-#: cam_OSPL130.cpp:67 cam_OSPL130.cpp:73 cam_QGuide.cpp:146 cam_qhy5.cpp:88
-#: cam_qhy5.cpp:95 cam_qhy5.cpp:196 cam_qhy5.cpp:252 cam_qhy5.cpp:258
-#: cam_QHY5IIbase.cpp:107 cam_QHY5IIbase.cpp:113 cam_QHY5IIbase.cpp:119
-#: cam_QHY5IIbase.cpp:125 cam_QHY5IIbase.cpp:131 cam_QHY5IIbase.cpp:137
-#: cam_QHY5IIbase.cpp:143 cam_QHY5IIbase.cpp:155 cam_QHY5IIbase.cpp:161
-#: cam_QHY5IIbase.cpp:167 cam_QHY5IIbase.cpp:173 cam_QHY5IIbase.cpp:179
-#: cam_QHY5IIbase.cpp:185 cam_QHY5IIbase.cpp:191 cam_QHY5IIbase.cpp:263
-#: cam_SAC42.cpp:69 cam_SAC42.cpp:114 cam_SAC42.cpp:131 cam_SACGuide.cpp:80
-#: cam_SACGuide.cpp:91 cam_SACGuide.cpp:94 cam_SACGuide.cpp:97
-#: cam_SACGuide.cpp:100 cam_SACGuide.cpp:109 cam_SACGuide.cpp:207
-#: cam_SBIG.cpp:195 cam_SBIG.cpp:204 cam_SBIG.cpp:230 cam_SBIG.cpp:334
-#: cam_SBIG.cpp:345 cam_SBIG.cpp:358 cam_SBIG.cpp:371 cam_SBIG.cpp:400
-#: cam_SBIG.cpp:413 cam_SBIG.cpp:471 cam_simulator.cpp:622
-#: cam_simulator.cpp:633 cam_simulator.cpp:637 cam_simulator.cpp:641
-#: cam_simulator.cpp:667 cam_simulator.cpp:714 cam_simulator.cpp:802
-#: cam_simulator.cpp:813 cam_simulator.cpp:817 cam_simulator.cpp:821
-#: cam_SSAG.cpp:137 cam_SSPIAG.cpp:128 cam_SSPIAG.cpp:134 cam_SSPIAG.cpp:140
-#: cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:152 cam_SSPIAG.cpp:158 cam_SSPIAG.cpp:164
-#: cam_SSPIAG.cpp:170 cam_SSPIAG.cpp:176 cam_SSPIAG.cpp:182 cam_SSPIAG.cpp:188
-#: cam_SSPIAG.cpp:194 cam_SSPIAG.cpp:200 cam_SSPIAG.cpp:206 cam_SSPIAG.cpp:212
-#: cam_SSPIAG.cpp:218 cam_SSPIAG.cpp:230 cam_SSPIAG.cpp:236 cam_SSPIAG.cpp:242
-#: cam_SSPIAG.cpp:247 cam_SSPIAG.cpp:254 cam_SSPIAG.cpp:261 cam_SSPIAG.cpp:349
-#: cam_Starfish.cpp:142 cam_StarShootDSCI.cpp:79 cam_StarShootDSCI.cpp:87
-#: cam_StarShootDSCI.cpp:91 cam_StarShootDSCI.cpp:94 cam_StarShootDSCI.cpp:98
-#: cam_StarShootDSCI.cpp:101 cam_StarShootDSCI.cpp:105
-#: cam_StarShootDSCI.cpp:108 cam_StarShootDSCI.cpp:111
-#: cam_StarShootDSCI.cpp:119 cam_StarShootDSCI.cpp:148
-#: cam_StarShootDSCI.cpp:157 cam_StarShootDSCI.cpp:171 cam_SXV.cpp:152
-#: cam_SXV.cpp:346 cam_VFW.cpp:136 cam_wdm.cpp:122 cam_wdm.cpp:129
-#: cam_wdm.cpp:183 cam_wdm.cpp:215 cam_wdm.cpp:222 cam_wdm.cpp:233
-#: cam_wdm.cpp:292 gear_dialog.cpp:1131 gear_dialog.cpp:1140
-#: gear_dialog.cpp:1147 gear_dialog.cpp:1189 gear_dialog.cpp:1195
-#: image_math.cpp:91 image_math.cpp:209 myframe.cpp:744 myframe_events.cpp:143
-#: myframe_events.cpp:211 myframe_events.cpp:219 myframe_events.cpp:230
-#: myframe_events.cpp:237 scope_ascom.cpp:159 scope_ascom.cpp:165
-#: scope_ascom.cpp:176 scope_ascom.cpp:280 scope_ascom.cpp:295
-#: scope_ascom.cpp:303 scope_ascom.cpp:312 scope_ascom.cpp:328
-#: scope_ascom.cpp:335 scope_ascom.cpp:391 scope_ascom.cpp:399
-#: scope_ascom.cpp:412 scope_ascom.cpp:464 scope_ascom.cpp:586
-#: scope_ascom.cpp:613 scope_eqmac.cpp:135 scope_eqmac.cpp:139
-#: scope_eqmac.cpp:171 scope_eqmac.cpp:175 scope_equinox.cpp:136
-#: scope_equinox.cpp:140 scope_equinox.cpp:173 scope_equinox.cpp:177
-#: scope_GC_USBST4.cpp:139 scope_GC_USBST4.cpp:155 scope_GC_USBST4.cpp:169
-#: scope_GC_USBST4.cpp:179 scope_GC_USBST4.cpp:200 scope_GC_USBST4.cpp:228
-#: scope_GC_USBST4.cpp:238 stepguider_sxao.cpp:124 usImage.cpp:307
-#: usImage.cpp:316 usImage.cpp:321 usImage.cpp:325
+#: cam_ascomlate.cpp:189 cam_ascomlate.cpp:269 cam_ascomlate.cpp:293
+#: cam_ascomlate.cpp:300 cam_ascomlate.cpp:315 cam_ascomlate.cpp:330
+#: cam_ascomlate.cpp:337 cam_ascomlate.cpp:361 cam_ascomlate.cpp:368
+#: cam_ascomlate.cpp:436 cam_ascomlate.cpp:453 cam_ascomlate.cpp:483
+#: cam_ascomlate.cpp:497 cam_ascomlate.cpp:760 cam_ascomlate.cpp:808
+#: cam_Atik16.cpp:210 cam_Atik16.cpp:226 cam_firewire_IC.cpp:89
+#: cam_firewire_IC.cpp:281 cam_indi.cpp:189 cam_indi.cpp:193 cam_indi.cpp:204
+#: cam_indi.cpp:208 cam_indi.cpp:212 cam_indi.cpp:226 cam_indi.cpp:230
+#: cam_indi.cpp:235 cam_indi.cpp:240 cam_indi.cpp:279 cam_INovaPLC.cpp:54
+#: cam_INovaPLC.cpp:75 cam_INovaPLC.cpp:79 cam_INovaPLC.cpp:122
+#: cam_INovaPLC.cpp:139 cam_KWIQGuider.cpp:62 cam_KWIQGuider.cpp:104
+#: cam_LELXUSBWebcam.cpp:66 cam_LEParallelWebcam.cpp:81
+#: cam_LESerialWebcam.cpp:76 cam_MeadeDSI.cpp:63 cam_MeadeDSI.cpp:124
+#: cam_NebSBIG.cpp:66 cam_openssag.cpp:65 cam_openssag.cpp:107
+#: cam_OSPL130.cpp:37 cam_OSPL130.cpp:42 cam_OSPL130.cpp:67 cam_OSPL130.cpp:73
+#: cam_QGuide.cpp:146 cam_qhy5.cpp:88 cam_qhy5.cpp:95 cam_qhy5.cpp:196
+#: cam_qhy5.cpp:252 cam_qhy5.cpp:258 cam_QHY5IIbase.cpp:107
+#: cam_QHY5IIbase.cpp:113 cam_QHY5IIbase.cpp:119 cam_QHY5IIbase.cpp:125
+#: cam_QHY5IIbase.cpp:131 cam_QHY5IIbase.cpp:137 cam_QHY5IIbase.cpp:143
+#: cam_QHY5IIbase.cpp:155 cam_QHY5IIbase.cpp:161 cam_QHY5IIbase.cpp:167
+#: cam_QHY5IIbase.cpp:173 cam_QHY5IIbase.cpp:179 cam_QHY5IIbase.cpp:185
+#: cam_QHY5IIbase.cpp:191 cam_QHY5IIbase.cpp:263 cam_SAC42.cpp:69
+#: cam_SAC42.cpp:114 cam_SAC42.cpp:131 cam_SACGuide.cpp:80 cam_SACGuide.cpp:91
+#: cam_SACGuide.cpp:94 cam_SACGuide.cpp:97 cam_SACGuide.cpp:100
+#: cam_SACGuide.cpp:109 cam_SACGuide.cpp:207 cam_SBIG.cpp:195 cam_SBIG.cpp:204
+#: cam_SBIG.cpp:230 cam_SBIG.cpp:334 cam_SBIG.cpp:345 cam_SBIG.cpp:358
+#: cam_SBIG.cpp:371 cam_SBIG.cpp:400 cam_SBIG.cpp:413 cam_SBIG.cpp:471
+#: cam_simulator.cpp:622 cam_simulator.cpp:633 cam_simulator.cpp:637
+#: cam_simulator.cpp:641 cam_simulator.cpp:667 cam_simulator.cpp:714
+#: cam_simulator.cpp:802 cam_simulator.cpp:813 cam_simulator.cpp:817
+#: cam_simulator.cpp:821 cam_SSAG.cpp:137 cam_SSPIAG.cpp:128
+#: cam_SSPIAG.cpp:134 cam_SSPIAG.cpp:140 cam_SSPIAG.cpp:146 cam_SSPIAG.cpp:152
+#: cam_SSPIAG.cpp:158 cam_SSPIAG.cpp:164 cam_SSPIAG.cpp:170 cam_SSPIAG.cpp:176
+#: cam_SSPIAG.cpp:182 cam_SSPIAG.cpp:188 cam_SSPIAG.cpp:194 cam_SSPIAG.cpp:200
+#: cam_SSPIAG.cpp:206 cam_SSPIAG.cpp:212 cam_SSPIAG.cpp:218 cam_SSPIAG.cpp:230
+#: cam_SSPIAG.cpp:236 cam_SSPIAG.cpp:242 cam_SSPIAG.cpp:247 cam_SSPIAG.cpp:254
+#: cam_SSPIAG.cpp:261 cam_SSPIAG.cpp:349 cam_Starfish.cpp:142
+#: cam_StarShootDSCI.cpp:79 cam_StarShootDSCI.cpp:87 cam_StarShootDSCI.cpp:91
+#: cam_StarShootDSCI.cpp:94 cam_StarShootDSCI.cpp:98 cam_StarShootDSCI.cpp:101
+#: cam_StarShootDSCI.cpp:105 cam_StarShootDSCI.cpp:108
+#: cam_StarShootDSCI.cpp:111 cam_StarShootDSCI.cpp:119
+#: cam_StarShootDSCI.cpp:148 cam_StarShootDSCI.cpp:157
+#: cam_StarShootDSCI.cpp:171 cam_SXV.cpp:152 cam_SXV.cpp:346 cam_VFW.cpp:136
+#: cam_wdm.cpp:122 cam_wdm.cpp:129 cam_wdm.cpp:183 cam_wdm.cpp:215
+#: cam_wdm.cpp:222 cam_wdm.cpp:233 cam_wdm.cpp:292 gear_dialog.cpp:1131
+#: gear_dialog.cpp:1140 gear_dialog.cpp:1147 gear_dialog.cpp:1189
+#: gear_dialog.cpp:1195 image_math.cpp:91 image_math.cpp:209 myframe.cpp:744
+#: myframe_events.cpp:143 myframe_events.cpp:211 myframe_events.cpp:219
+#: myframe_events.cpp:230 myframe_events.cpp:237 scope_ascom.cpp:159
+#: scope_ascom.cpp:165 scope_ascom.cpp:176 scope_ascom.cpp:280
+#: scope_ascom.cpp:295 scope_ascom.cpp:303 scope_ascom.cpp:312
+#: scope_ascom.cpp:328 scope_ascom.cpp:335 scope_ascom.cpp:391
+#: scope_ascom.cpp:399 scope_ascom.cpp:412 scope_ascom.cpp:464
+#: scope_ascom.cpp:586 scope_ascom.cpp:613 scope_eqmac.cpp:135
+#: scope_eqmac.cpp:139 scope_eqmac.cpp:171 scope_eqmac.cpp:175
+#: scope_equinox.cpp:136 scope_equinox.cpp:140 scope_equinox.cpp:173
+#: scope_equinox.cpp:177 scope_GC_USBST4.cpp:139 scope_GC_USBST4.cpp:155
+#: scope_GC_USBST4.cpp:169 scope_GC_USBST4.cpp:179 scope_GC_USBST4.cpp:200
+#: scope_GC_USBST4.cpp:228 scope_GC_USBST4.cpp:238 stepguider_sxao.cpp:124
+#: usImage.cpp:307 usImage.cpp:316 usImage.cpp:321 usImage.cpp:325
 msgid "Error"
 msgstr ""
 
@@ -318,6 +318,58 @@ msgstr ""
 
 #: cam_ascomlate.cpp:269
 msgid "ASCOM Camera Driver missing required property "
+msgstr ""
+
+#: cam_ascomlate.cpp:293
+msgid "Could not create ASCOM camera object"
+msgstr ""
+
+#: cam_ascomlate.cpp:299
+msgid "ASCOM driver problem: Connect"
+msgstr ""
+
+#: cam_ascomlate.cpp:315
+msgid "ASCOM driver missing the CanPulseGuide property"
+msgstr ""
+
+#: cam_ascomlate.cpp:330
+msgid "ASCOM driver missing the CameraXSize property"
+msgstr ""
+
+#: cam_ascomlate.cpp:337
+msgid "ASCOM driver missing the CameraYSize property"
+msgstr ""
+
+#: cam_ascomlate.cpp:361
+msgid "ASCOM driver missing the PixelSizeX property"
+msgstr ""
+
+#: cam_ascomlate.cpp:368
+msgid "ASCOM driver missing the PixelSizeY property"
+msgstr ""
+
+#: cam_ascomlate.cpp:435
+msgid "ASCOM driver problem -- cannot disconnect"
+msgstr ""
+
+#: cam_ascomlate.cpp:482
+msgid "ASCOM error -- Cannot start exposure with given parameters"
+msgstr ""
+
+#: cam_ascomlate.cpp:497
+msgid "Exception thrown polling camera"
+msgstr ""
+
+#: cam_ascomlate.cpp:510
+msgid "Error reading image"
+msgstr ""
+
+#: cam_ascomlate.cpp:760
+msgid "Cannot allocate memory to download image from camera"
+msgstr ""
+
+#: cam_ascomlate.cpp:808
+msgid "ASCOM driver failed checking IsPulseGuiding"
 msgstr ""
 
 #: cam_Atik16.cpp:63
@@ -732,7 +784,7 @@ msgstr ""
 msgid "Don't ask again"
 msgstr ""
 
-#: confirm_dialog.cpp:73 drift_tool.cpp:645 guider.cpp:1079
+#: confirm_dialog.cpp:73 drift_tool.cpp:645 guider.cpp:1084
 msgid "Confirm"
 msgstr ""
 
@@ -1033,7 +1085,7 @@ msgid "Disconnect all equipment"
 msgstr ""
 
 #: gear_dialog.cpp:266 gear_dialog.cpp:270 gear_dialog.cpp:274 mount.cpp:94
-#: mount.cpp:117 myframe.cpp:1474
+#: mount.cpp:117 myframe.cpp:1490
 msgid "None"
 msgstr ""
 
@@ -1409,50 +1461,50 @@ msgstr ""
 msgid "ResistSwitch Guide Algorithm"
 msgstr ""
 
-#: guider.cpp:723
+#: guider.cpp:728
 msgid "Calibration manually stopped"
 msgstr ""
 
-#: guider.cpp:759
+#: guider.cpp:764
 msgid "Stopped Guiding"
 msgstr ""
 
-#: guider.cpp:767 myframe.cpp:1029
+#: guider.cpp:772 myframe.cpp:1029
 msgid "Paused"
 msgstr ""
 
-#: guider.cpp:788
+#: guider.cpp:793
 msgid "star lost"
 msgstr ""
 
-#: guider.cpp:899
+#: guider.cpp:904
 msgid "Guiding..."
 msgstr ""
 
-#: guider.cpp:970
+#: guider.cpp:975
 msgid "Guider Settings"
 msgstr ""
 
-#: guider.cpp:973
+#: guider.cpp:978
 msgid "Always Scale Images"
 msgstr ""
 
-#: guider.cpp:974
+#: guider.cpp:979
 msgid "Always scale images to fill window"
 msgstr ""
 
-#: guider.cpp:976
+#: guider.cpp:981
 msgid "Fast recenter after calibration or dither"
 msgstr ""
 
-#: guider.cpp:977
+#: guider.cpp:982
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
 "recentering after calibration or dither."
 msgstr ""
 
-#: guider.cpp:1078
+#: guider.cpp:1083
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr ""
 
@@ -1476,7 +1528,7 @@ msgstr ""
 msgid "Star lost - mass changed"
 msgstr ""
 
-#: guider_onestar.cpp:376 guider_onestar.cpp:537
+#: guider_onestar.cpp:376 guider_onestar.cpp:549
 msgid "No star found"
 msgstr ""
 
@@ -1485,37 +1537,37 @@ msgstr ""
 msgid "Mass: %.0f vs %.0f"
 msgstr ""
 
-#: guider_onestar.cpp:542
+#: guider_onestar.cpp:554
 #, c-format
 msgid "Selected star at (%.1f, %.1f)"
 msgstr ""
 
-#: guider_onestar.cpp:785
+#: guider_onestar.cpp:797
 msgid "Search region (pixels)"
 msgstr ""
 
-#: guider_onestar.cpp:786
+#: guider_onestar.cpp:798
 msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
 msgstr ""
 
-#: guider_onestar.cpp:788
+#: guider_onestar.cpp:800
 msgid "Star mass change detection"
 msgstr ""
 
-#: guider_onestar.cpp:789
+#: guider_onestar.cpp:801
 msgid ""
 "Check to enable star mass change detection. When enabled, PHD skips frames "
 "when the guide star mass changes by an amount greater than the Star mass "
 "tolerance setting."
 msgstr ""
 
-#: guider_onestar.cpp:798
+#: guider_onestar.cpp:810
 msgid "Star mass tolerance"
 msgstr ""
 
-#: guider_onestar.cpp:799
+#: guider_onestar.cpp:811
 msgid ""
 "When star mass change detection is enabled, this is the tolerance for star "
 "mass changes between frames, in percent. Larger values are more tolerant "
@@ -2068,169 +2120,169 @@ msgstr ""
 msgid "Resumed"
 msgstr ""
 
-#: myframe.cpp:1119
+#: myframe.cpp:1135
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr ""
 
-#: myframe.cpp:1136
+#: myframe.cpp:1152
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr ""
 
-#: myframe.cpp:1137
+#: myframe.cpp:1153
 msgid "Confirm Exit"
 msgstr ""
 
-#: myframe.cpp:1440
+#: myframe.cpp:1456
 msgid "Global Settings"
 msgstr ""
 
-#: myframe.cpp:1445
+#: myframe.cpp:1461
 msgid "Reset Configuration"
 msgstr ""
 
-#: myframe.cpp:1446
+#: myframe.cpp:1462
 msgid ""
 "Reset all configuration to fresh install status -- Note: this closes PHD2"
 msgstr ""
 
-#: myframe.cpp:1448
+#: myframe.cpp:1464
 msgid "Reset \"Don't Ask Again\" messages"
 msgstr ""
 
-#: myframe.cpp:1449
+#: myframe.cpp:1465
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't Ask Again\"."
 msgstr ""
 
-#: myframe.cpp:1453
+#: myframe.cpp:1469
 msgid "Low Q JPEG"
 msgstr ""
 
-#: myframe.cpp:1453
+#: myframe.cpp:1469
 msgid "High Q JPEG"
 msgstr ""
 
-#: myframe.cpp:1453
+#: myframe.cpp:1469
 msgid "Raw FITS"
 msgstr ""
 
-#: myframe.cpp:1459
+#: myframe.cpp:1475
 msgid "Image logging format"
 msgstr ""
 
-#: myframe.cpp:1460
+#: myframe.cpp:1476
 msgid "File format of logged images"
 msgstr ""
 
-#: myframe.cpp:1462
+#: myframe.cpp:1478
 msgid "Dither RA only"
 msgstr ""
 
-#: myframe.cpp:1463
+#: myframe.cpp:1479
 msgid "Constrain dither to RA only?"
 msgstr ""
 
-#: myframe.cpp:1469
+#: myframe.cpp:1485
 msgid "Dither scale"
 msgstr ""
 
-#: myframe.cpp:1470
+#: myframe.cpp:1486
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr ""
 
-#: myframe.cpp:1474
+#: myframe.cpp:1490
 msgid "2x2 mean"
 msgstr ""
 
-#: myframe.cpp:1474
+#: myframe.cpp:1490
 msgid "3x3 median"
 msgstr ""
 
-#: myframe.cpp:1480
+#: myframe.cpp:1496
 msgid "Noise Reduction"
 msgstr ""
 
-#: myframe.cpp:1481
+#: myframe.cpp:1497
 msgid "Technique to reduce noise in images"
 msgstr ""
 
-#: myframe.cpp:1486
+#: myframe.cpp:1502
 msgid "Time Lapse (ms)"
 msgstr ""
 
-#: myframe.cpp:1487
+#: myframe.cpp:1503
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
 "guide commands less frequently"
 msgstr ""
 
-#: myframe.cpp:1490
+#: myframe.cpp:1506
 msgid "Focal length (mm)"
 msgstr ""
 
-#: myframe.cpp:1491
+#: myframe.cpp:1507
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
 msgstr ""
 
-#: myframe.cpp:1497 myframe.cpp:1527
+#: myframe.cpp:1513 myframe.cpp:1543
 msgid "System default"
 msgstr ""
 
-#: myframe.cpp:1510
+#: myframe.cpp:1526
 msgid "Language-Name"
 msgstr ""
 
-#: myframe.cpp:1530
+#: myframe.cpp:1546
 msgid "Language"
 msgstr ""
 
-#: myframe.cpp:1531
+#: myframe.cpp:1547
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr ""
 
-#: myframe.cpp:1534
+#: myframe.cpp:1550
 msgid "Log File Location"
 msgstr ""
 
-#: myframe.cpp:1538
+#: myframe.cpp:1554
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr ""
 
-#: myframe.cpp:1539
+#: myframe.cpp:1555
 msgid "Browse..."
 msgstr ""
 
-#: myframe.cpp:1547
+#: myframe.cpp:1563
 msgid "Auto restore calibration"
 msgstr ""
 
-#: myframe.cpp:1548
+#: myframe.cpp:1564
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
 msgstr ""
 
-#: myframe.cpp:1593
+#: myframe.cpp:1609
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
 msgstr ""
 
-#: myframe.cpp:1593
+#: myframe.cpp:1609
 msgid "Confirmation"
 msgstr ""
 
-#: myframe.cpp:1621
+#: myframe.cpp:1637
 msgid "You must restart PHD for the language change to take effect."
 msgstr ""
 
-#: myframe.cpp:1621 myframe_events.cpp:378 myframe_events.cpp:500
+#: myframe.cpp:1637 myframe_events.cpp:378 myframe_events.cpp:500
 msgid "Info"
 msgstr ""
 
