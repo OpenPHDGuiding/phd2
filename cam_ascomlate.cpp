@@ -272,6 +272,16 @@ static bool GetDispid(DISPID *pid, DispatchObj& obj, OLECHAR *name)
     return true;
 }
 
+static wxString ExcepMsg(const EXCEPINFO& excep)
+{
+    return wxString::Format("(%s) %s", excep.bstrSource, excep.bstrDescription);
+}
+
+static wxString ExcepMsg(const wxString& prefix, const EXCEPINFO& excep)
+{
+    return prefix + ":\n" + ExcepMsg(excep);
+}
+
 bool Camera_ASCOMLateClass::Connect()
 {
     DispatchClass driver_class;
@@ -280,13 +290,13 @@ bool Camera_ASCOMLateClass::Connect()
     // create the COM object
     if (!Create(&driver, &driver_class))
     {
-        wxMessageBox(_T("Could not create ASCOM camera object"), _("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("Could not create ASCOM camera object"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
     if (!driver.PutProp(L"Connected", true))
     {
-        wxMessageBox(_T("ASCOM driver problem: Connect: ") + wxString(driver.Excep().bstrDescription),
+        wxMessageBox(ExcepMsg(_("ASCOM driver problem: Connect"), driver.Excep()),
             _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
@@ -302,7 +312,7 @@ bool Camera_ASCOMLateClass::Connect()
     VARIANT vRes;
     if (!driver.GetProp(&vRes, L"CanPulseGuide"))
     {
-        wxMessageBox(_T("ASCOM driver missing the CanPulseGuide property"), _("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("ASCOM driver missing the CanPulseGuide property"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     m_hasGuideOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
@@ -317,14 +327,14 @@ bool Camera_ASCOMLateClass::Connect()
 
     if (!driver.GetProp(&vRes, L"CameraXSize"))
     {
-        wxMessageBox(_T("ASCOM driver missing the CameraXSize property"),_("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("ASCOM driver missing the CameraXSize property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     FullSize.SetWidth((int) vRes.lVal);
 
     if (!driver.GetProp(&vRes, L"CameraYSize"))
     {
-        wxMessageBox(_T("ASCOM driver missing the CameraYSize property"),_("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("ASCOM driver missing the CameraYSize property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     FullSize.SetHeight((int) vRes.lVal);
@@ -348,14 +358,14 @@ bool Camera_ASCOMLateClass::Connect()
 
     if (!driver.GetProp(&vRes, L"PixelSizeX"))
     {
-        wxMessageBox(_T("ASCOM driver missing the PixelSizeX property"),_("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("ASCOM driver missing the PixelSizeX property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     PixelSize = (double) vRes.dblVal;
 
     if (!driver.GetProp(&vRes, L"PixelSizeY"))
     {
-        wxMessageBox(_T("ASCOM driver missing the PixelSizeY property"),_("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("ASCOM driver missing the PixelSizeY property"),_("Error"), wxOK | wxICON_ERROR);
         return true;
     }
     if ((double) vRes.dblVal > PixelSize)
@@ -399,8 +409,9 @@ bool Camera_ASCOMLateClass::Connect()
         return true;
 
     // Program some defaults -- full size and 1x1 bin
-    ASCOM_SetBin(1);
-    ASCOM_SetROI(0,0,FullSize.GetWidth(),FullSize.GetHeight());
+    EXCEPINFO excep;
+    ASCOM_SetBin(1, &excep);
+    ASCOM_SetROI(0, 0, FullSize.GetWidth(), FullSize.GetHeight(), &excep);
 
     Connected = true;
 
@@ -420,7 +431,9 @@ bool Camera_ASCOMLateClass::Disconnect()
 
     if (!driver.PutProp(L"Connected", false))
     {
-        wxMessageBox(_T("ASCOM driver problem -- cannot disconnect"),_("Error"), wxOK | wxICON_ERROR);
+        Debug.AddLine(ExcepMsg("ASCOM disconnect", driver.Excep()));
+        wxMessageBox(ExcepMsg(_("ASCOM driver problem -- cannot disconnect"), driver.Excep()),
+            _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -437,8 +450,7 @@ void Camera_ASCOMLateClass::ShowPropertyDialog(void)
         VARIANT res;
         if (!camera.InvokeMethod(&res, L"SetupDialog"))
         {
-            wxMessageBox(wxString(camera.Excep().bstrSource) + ":\n" +
-                camera.Excep().bstrDescription, _("Error"), wxOK | wxICON_ERROR);
+            wxMessageBox(ExcepMsg(camera.Excep()), _("Error"), wxOK | wxICON_ERROR);
         }
     }
 }
@@ -459,14 +471,16 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         subframe = wxRect(0,0,FullSize.GetWidth(),FullSize.GetHeight());
     }
 
-    ASCOM_SetROI(subframe.x, subframe.y, subframe.width, subframe.height);
+    EXCEPINFO excep;
+    ASCOM_SetROI(subframe.x, subframe.y, subframe.width, subframe.height, &excep);
 
     bool takeDark = HasShutter && ShutterState;
 
     // Start the exposure
-    if (ASCOM_StartExposure((double) duration / 1000.0, takeDark)) {
-        Debug.AddLine("ASCOM_StartExposure failed");
-        wxMessageBox(_T("ASCOM error -- Cannot start exposure with given parameters"), _("Error"), wxOK | wxICON_ERROR);
+    if (ASCOM_StartExposure((double) duration / 1000.0, takeDark, &excep)) {
+        Debug.AddLine(ExcepMsg("ASCOM_StartExposure failed", excep));
+        wxMessageBox(ExcepMsg(_("ASCOM error -- Cannot start exposure with given parameters"), excep),
+            _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -477,9 +491,10 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     while (still_going) {  // wait for image to finish and d/l
         wxMilliSleep(20);
         bool ready = false;
-        if (ASCOM_ImageReady(ready)) {
-            Debug.AddLine("ASCOM_ImageReady failed");
-            wxMessageBox("Exception thrown polling camera");
+        EXCEPINFO excep;
+        if (ASCOM_ImageReady(&ready, &excep)) {
+            Debug.AddLine(ExcepMsg("ASCOM_ImageReady failed", excep));
+            wxMessageBox(ExcepMsg(_("Exception thrown polling camera"), excep), _("Error"), wxOK | wxICON_ERROR);
             still_going = false;
             retval = true;
         }
@@ -490,9 +505,9 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         return true;
 
     // Get the image
-    if (ASCOM_Image(img, TakeSubframe, subframe)) {
-        Debug.AddLine("ASCOM_Image failed");
-        wxMessageBox(_T("Error reading image"));
+    if (ASCOM_Image(img, TakeSubframe, subframe, &excep)) {
+        Debug.AddLine(ExcepMsg(_T("ASCOM_Image failed"), excep));
+        wxMessageBox(ExcepMsg(_("Error reading image"), excep));
         return true;
     }
 
@@ -535,7 +550,7 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
     }
 
     if (swatch.Time() < duration) {  // likely returned right away and not after move - enter poll loop
-        while (this->ASCOM_IsMoving()) {
+        while (ASCOM_IsMoving()) {
             wxMilliSleep(50);
         }
     }
@@ -543,7 +558,7 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
     return false;
 }
 
-bool Camera_ASCOMLateClass::ASCOM_SetBin(int mode)
+bool Camera_ASCOMLateClass::ASCOM_SetBin(int mode, EXCEPINFO *excep)
 {
     // Assumes the dispid values needed are already set
     // returns true on error, false if OK
@@ -551,7 +566,6 @@ bool Camera_ASCOMLateClass::ASCOM_SetBin(int mode)
     DISPID dispidNamed = DISPID_PROPERTYPUT;
     DISPPARAMS dispParms;
     VARIANTARG rgvarg[1];
-    EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
 
@@ -565,12 +579,12 @@ bool Camera_ASCOMLateClass::ASCOM_SetBin(int mode)
     AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
 
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_setxbin,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
-        &dispParms,&vRes,&excep, NULL)))
+        &dispParms, &vRes, excep, NULL)))
     {
         return true;
     }
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_setybin,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
-        &dispParms,&vRes,&excep, NULL)))
+        &dispParms, &vRes, excep, NULL)))
     {
         return true;
     }
@@ -578,14 +592,13 @@ bool Camera_ASCOMLateClass::ASCOM_SetBin(int mode)
     return false;
 }
 
-bool Camera_ASCOMLateClass::ASCOM_SetROI(int startx, int starty, int numx, int numy)
+bool Camera_ASCOMLateClass::ASCOM_SetROI(int startx, int starty, int numx, int numy, EXCEPINFO *excep)
 {
     // assumes the needed dispids have been set
     // returns true on error, false if OK
     DISPID dispidNamed = DISPID_PROPERTYPUT;
     DISPPARAMS dispParms;
     VARIANTARG rgvarg[1];
-    EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
 
@@ -599,38 +612,37 @@ bool Camera_ASCOMLateClass::ASCOM_SetROI(int startx, int starty, int numx, int n
     AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
 
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_startx,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
-        &dispParms,&vRes,&excep, NULL)))
+        &dispParms, &vRes, excep, NULL)))
     {
         return true;
     }
     rgvarg[0].lVal = (long) starty;
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_starty,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
-        &dispParms,&vRes,&excep, NULL)))
+        &dispParms, &vRes, excep, NULL)))
     {
         return true;
     }
     rgvarg[0].lVal = (long) numx;
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_numx,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
-        &dispParms,&vRes,&excep, NULL)))
+        &dispParms, &vRes, excep, NULL)))
     {
         return true;
     }
     rgvarg[0].lVal = (long) numy;
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_numy,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
-        &dispParms,&vRes,&excep, NULL)))
+        &dispParms, &vRes, excep, NULL)))
     {
         return true;
     }
     return false;
 }
 
-bool Camera_ASCOMLateClass::ASCOM_StopExposure()
+bool Camera_ASCOMLateClass::ASCOM_StopExposure(EXCEPINFO *excep)
 {
     // Assumes the dispid values needed are already set
     // returns true on error, false if OK
     DISPPARAMS dispParms;
     VARIANTARG rgvarg[1];
-    EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
 
@@ -642,20 +654,19 @@ bool Camera_ASCOMLateClass::ASCOM_StopExposure()
     AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
 
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_stopexposure,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
-        &dispParms,&vRes,&excep, NULL)))
+        &dispParms, &vRes, excep, NULL)))
     {
         return true;
     }
     return false;
 }
 
-bool Camera_ASCOMLateClass::ASCOM_StartExposure(double duration, bool dark)
+bool Camera_ASCOMLateClass::ASCOM_StartExposure(double duration, bool dark, EXCEPINFO *excep)
 {
     // Assumes the dispid values needed are already set
     // returns true on error, false if OK
     DISPPARAMS dispParms;
     VARIANTARG rgvarg[2];
-    EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
 
@@ -671,20 +682,18 @@ bool Camera_ASCOMLateClass::ASCOM_StartExposure(double duration, bool dark)
     AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
 
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_startexposure,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
-                                    &dispParms,&vRes,&excep,NULL)))
+                                    &dispParms,&vRes,excep,NULL)))
     {
         return true;
     }
     return false;
 }
 
-bool Camera_ASCOMLateClass::ASCOM_ImageReady(bool& ready)
+bool Camera_ASCOMLateClass::ASCOM_ImageReady(bool *ready, EXCEPINFO *excep)
 {
     // Assumes the dispid values needed are already set
     // returns true on error, false if OK
     DISPPARAMS dispParms;
-//  VARIANTARG rgvarg[1];
-    EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
 
@@ -696,20 +705,19 @@ bool Camera_ASCOMLateClass::ASCOM_ImageReady(bool& ready)
     AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
 
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_imageready,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
-        &dispParms,&vRes,&excep, NULL)))
+        &dispParms, &vRes, excep, NULL)))
     {
         return true;
     }
-    ready = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
+    *ready = vRes.boolVal != VARIANT_FALSE;
     return false;
 }
 
-bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRect subframe)
+bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRect subframe, EXCEPINFO *excep)
 {
     // Assumes the dispid values needed are already set
     // returns true on error, false if OK
     DISPPARAMS dispParms;
-    EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
     SAFEARRAY *rawarray;
@@ -723,7 +731,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRec
     AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
 
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_imagearray,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
-        &dispParms,&vRes,&excep, NULL)))
+        &dispParms, &vRes, excep, NULL)))
     {
         return true;
     }
@@ -749,7 +757,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRec
     if(hr!=S_OK) return true;
 
     if (Image.Init((int) FullSize.GetWidth(), (int) FullSize.GetHeight())) {
-        wxMessageBox(_T("Cannot allocate enough memory"),_("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_("Cannot allocate memory to download image from camera"),_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
     unsigned short *dataptr;
@@ -778,7 +786,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRec
     return false;
 }
 
-bool Camera_ASCOMLateClass::ASCOM_IsMoving()
+bool Camera_ASCOMLateClass::ASCOM_IsMoving(void)
 {
     DISPPARAMS dispParms;
     HRESULT hr;
@@ -786,6 +794,7 @@ bool Camera_ASCOMLateClass::ASCOM_IsMoving()
     VARIANT vRes;
 
     if (!pMount || !pMount->IsConnected()) return false;
+
     dispParms.cArgs = 0;
     dispParms.rgvarg = NULL;
     dispParms.cNamedArgs = 0;
@@ -795,7 +804,8 @@ bool Camera_ASCOMLateClass::ASCOM_IsMoving()
 
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_ispulseguiding,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispParms,&vRes,&excep, NULL)))
     {
-        wxMessageBox(_T("ASCOM driver failed checking IsPulseGuiding"),_("Error"), wxOK | wxICON_ERROR);
+        Debug.AddLine(ExcepMsg("ASCOM driver failed checking IsPulseGuiding", excep));
+        wxMessageBox(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding"), excep), _("Error"), wxOK | wxICON_ERROR);
         return false;
     }
     if (vRes.boolVal == VARIANT_TRUE) {
