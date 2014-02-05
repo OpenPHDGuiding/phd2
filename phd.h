@@ -73,7 +73,7 @@
 #include <math.h>
 
 #define APPNAME _T("PHD Guiding")
-#define PHDVERSION _T("2.2.0")
+#define PHDVERSION _T("2.2.1")
 #define PHDSUBVER _T("")
 #define FULLVER PHDVERSION PHDSUBVER
 
