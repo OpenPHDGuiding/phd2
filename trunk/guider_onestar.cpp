@@ -538,6 +538,13 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
     }
 }
 
+inline static void DrawBox(wxClientDC& dc, const PHD_Point& star, int halfW, double scale)
+{
+    dc.SetBrush(*wxTRANSPARENT_BRUSH);
+    double w = ROUND((halfW * 2 + 1) * scale);
+    dc.DrawRectangle(ROUND((star.X - halfW) * scale), ROUND((star.Y - halfW) * scale), w, w);
+}
+
 // Define the repainting behaviour
 void GuiderOneStar::OnPaint(wxPaintEvent& event)
 {
@@ -572,8 +579,6 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
 
         GUIDER_STATE state = GetState();
         bool FoundStar = m_star.WasFound();
-        double StarX = m_star.X;
-        double StarY = m_star.Y;
 
         if (state == STATE_SELECTED /*|| IsPaused()*/)
         {
@@ -581,19 +586,13 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
                 dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
             else
                 dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
-            dc.SetBrush(*wxTRANSPARENT_BRUSH);
-            dc.DrawRectangle(ROUND(StarX * m_scaleFactor) - m_searchRegion,
-                ROUND(StarY * m_scaleFactor) - m_searchRegion,
-                m_searchRegion * 2 + 1, m_searchRegion * 2 + 1);
+            DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATING_PRIMARY || state == STATE_CALIBRATING_SECONDARY)
         {
             // in the calibration process
             dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
-            dc.SetBrush(*wxTRANSPARENT_BRUSH);
-            dc.DrawRectangle(ROUND(StarX * m_scaleFactor) - m_searchRegion,
-                ROUND(StarY * m_scaleFactor) - m_searchRegion,
-                m_searchRegion * 2 + 1, m_searchRegion * 2 + 1);
+            DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATED || state == STATE_GUIDING)
         {
@@ -602,10 +601,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
                 dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
             else
                 dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
-            dc.SetBrush(*wxTRANSPARENT_BRUSH);
-            dc.DrawRectangle(ROUND(StarX * m_scaleFactor) - m_searchRegion,
-                ROUND(StarY * m_scaleFactor) - m_searchRegion,
-                m_searchRegion * 2 + 1, m_searchRegion * 2 + 1);
+            DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
 
         // Image logging
@@ -630,9 +626,9 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
                 memDC.DrawLine(0, LockY * m_scaleFactor, XWinSize, LockY * m_scaleFactor);
                 memDC.DrawLine(LockX*m_scaleFactor, 0, LockX*m_scaleFactor, YWinSize);
     #ifdef __APPLEX__
-                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
+                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X*m_scaleFactor)-30,Displayed_Image->GetHeight() - ROUND(m_star.Y*m_scaleFactor)-30,wxCOPY,false);
     #else
-                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(StarX*m_scaleFactor)-30,ROUND(StarY*m_scaleFactor)-30,wxCOPY,false);
+                tmpMdc.Blit(0,0,60,60,&memDC,ROUND(m_star.X*m_scaleFactor)-30,ROUND(m_star.Y*m_scaleFactor)-30,wxCOPY,false);
     #endif
                 //          tmpMdc.Blit(0,0,200,200,&Cdc,0,0,wxCOPY);
 
