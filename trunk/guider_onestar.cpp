@@ -59,7 +59,6 @@ GuiderOneStar::GuiderOneStar(wxWindow *parent):
 {
     SetState(STATE_UNINITIALIZED);
     m_badMassCount = 0;
-    m_starFoundTimestamp = 0;
 }
 
 GuiderOneStar::~GuiderOneStar()
@@ -438,19 +437,8 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessa
         const PHD_Point& lockPos = LockPosition();
         if (lockPos.IsValid())
         {
-            m_starFoundTimestamp = wxDateTime::GetTimeNow();
             double distance = newStar.Distance(lockPos);
-            if (GetState() == STATE_GUIDING)
-            {
-                // update moving average distance
-                static double const alpha = .3; // moderately high weighting for latest sample
-                m_avgDistance += alpha * (distance - m_avgDistance);
-            }
-            else
-            {
-                // not yet guiding, reinitialize average distance
-                m_avgDistance = distance;
-            }
+            UpdateCurrentDistance(distance);
         }
 
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
@@ -475,24 +463,6 @@ bool GuiderOneStar::IsValidLockPosition(const PHD_Point& pt)
         pt.X + 1 + m_searchRegion < pImage->Size.GetX() &&
         pt.Y >= 1 + m_searchRegion &&
         pt.Y + 1 + m_searchRegion < pImage->Size.GetY();
-}
-
-double GuiderOneStar::CurrentError(void)
-{
-    enum { THRESHOLD_SECONDS = 20 };
-    static double const LARGE_DISTANCE = 100.0;
-
-    if (!m_starFoundTimestamp)
-    {
-        return LARGE_DISTANCE;
-    }
-
-    if (wxDateTime::GetTimeNow() - m_starFoundTimestamp > THRESHOLD_SECONDS)
-    {
-        return LARGE_DISTANCE;
-    }
-
-    return m_avgDistance;
 }
 
 void GuiderOneStar::OnLClick(wxMouseEvent &mevent)

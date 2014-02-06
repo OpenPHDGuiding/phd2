@@ -117,6 +117,9 @@ class Guider: public wxWindow
     PHD_Point m_ditherRecenterStep;
     wxPoint m_ditherRecenterDir;
     PHD_Point m_ditherRecenterRemaining;
+    time_t m_starFoundTimestamp;  // timestamp when star was last found
+    double m_avgDistance;         // averaged distance for distance reporting
+    bool m_avgDistanceNeedReset;
     GUIDER_STATE m_state;
     usImage *m_pCurrentImage;
     bool m_scaleImage;
@@ -157,6 +160,7 @@ protected:
     bool PaintHelper(wxClientDC &dc, wxMemoryDC &memDC);
     void SetState(GUIDER_STATE newState);
     usImage *CurrentImage(void);
+    void UpdateCurrentDistance(double distance);
 
     void ToggleBookmark(const wxRealPoint& pt);
 
@@ -189,6 +193,8 @@ public:
     bool SetScaleImage(bool newScaleValue);
     bool GetScaleImage(void);
 
+    double CurrentError(void);
+
     bool GetBookmarksShown(void);
     void SetBookmarksShown(bool show);
     void ToggleShowBookmarks(void);
@@ -213,8 +219,6 @@ private:
     virtual void InvalidateCurrentPosition(void) = 0;
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage) = 0;
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position)=0;
-public:
-    virtual double CurrentError(void) = 0;
 
 public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;

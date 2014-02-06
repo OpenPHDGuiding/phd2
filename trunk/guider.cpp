@@ -50,6 +50,8 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_scaleFactor = 1.0;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = false;
+    m_starFoundTimestamp = 0;
+    m_avgDistanceNeedReset = false;
     m_lockPosIsSticky = false;
     m_forceFullFrame = false;
     m_pCurrentImage = new usImage(); // so we always have one
@@ -534,6 +536,9 @@ MOVE_LOCK_RESULT Guider::MoveLockPosition(const PHD_Point& mountDelta)
             throw ERROR_INFO("SetLockPosition failed");
         }
 
+        // update average distance right away so GetCurrentDistance reflects the increased distance from the dither
+        m_avgDistance += cameraDelta.Distance();
+
         if (IsFastRecenterEnabled())
         {
             m_ditherRecenterRemaining.SetXY(fabs(mountDelta.X), fabs(mountDelta.Y));
@@ -686,6 +691,48 @@ void Guider::SetState(GUIDER_STATE newState)
     {
         POSSIBLY_UNUSED(Msg);
     }
+}
+
+void Guider::UpdateCurrentDistance(double distance)
+{
+    m_starFoundTimestamp = wxDateTime::GetTimeNow();
+
+    if (GetState() == STATE_GUIDING)
+    {
+        // update moving average distance
+        static double const alpha = .3; // moderately high weighting for latest sample
+        m_avgDistance += alpha * (distance - m_avgDistance);
+    }
+    else
+    {
+        // not yet guiding, reinitialize average distance
+        m_avgDistance = distance;
+    }
+
+    if (m_avgDistanceNeedReset)
+    {
+        // avg distance history invalidated
+        m_avgDistance = distance;
+        m_avgDistanceNeedReset = false;
+    }
+}
+
+double Guider::CurrentError(void)
+{
+    enum { THRESHOLD_SECONDS = 20 };
+    static double const LARGE_DISTANCE = 100.0;
+
+    if (!m_starFoundTimestamp)
+    {
+        return LARGE_DISTANCE;
+    }
+
+    if (wxDateTime::GetTimeNow() - m_starFoundTimestamp > THRESHOLD_SECONDS)
+    {
+        return LARGE_DISTANCE;
+    }
+
+    return m_avgDistance;
 }
 
 usImage *Guider::CurrentImage(void)
@@ -923,7 +970,12 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
                     m_ditherRecenterRemaining -= step;
                     if (m_ditherRecenterRemaining.X < 0.5 && m_ditherRecenterRemaining.Y < 0.5)
+                    {
+                        // fast recenter is done
                         m_ditherRecenterRemaining.Invalidate();
+                        // reset distance tracker
+                        m_avgDistanceNeedReset = true;
+                    }
 
                     PHD_Point mountCoords(step.X * m_ditherRecenterDir.x, step.Y * m_ditherRecenterDir.y);
                     PHD_Point cameraCoords;
