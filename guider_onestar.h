@@ -47,12 +47,9 @@ private:
     Star m_star;
 
     // parameters
-    double m_raAggression;
     bool m_massChangeThresholdEnabled;
     double m_massChangeThreshold;
     int m_badMassCount;
-    time_t m_starFoundTimestamp;  // timestamp when star was last found
-    double m_avgDistance;         // averaged distance for distance reporting
     int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
 
 protected:
@@ -107,7 +104,6 @@ private:
     virtual void InvalidateCurrentPosition(void);
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage);
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);
-    virtual double CurrentError(void);
 
     void OnLClick(wxMouseEvent& evt);
 
