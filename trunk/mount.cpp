@@ -1052,6 +1052,11 @@ bool Mount::GetCoordinates(double *ra, double *dec, double *siderealTime)
     return true; // error
 }
 
+bool Mount::GetSiteLatLong(double *latitude, double *longitude)
+{
+    return true; // error
+}
+
 bool Mount::CanSlew(void)
 {
     return false;

@@ -74,6 +74,20 @@ ScopeASCOM::ScopeASCOM(const wxString& choice)
     m_pIGlobalInterfaceTable = NULL;
     m_dwCookie = 0;
     m_choice = choice;
+
+    dispid_connected = DISPID_UNKNOWN;
+    dispid_ispulseguiding = DISPID_UNKNOWN;
+    dispid_isslewing = DISPID_UNKNOWN;
+    dispid_pulseguide = DISPID_UNKNOWN;
+    dispid_declination = DISPID_UNKNOWN;
+    dispid_rightascension = DISPID_UNKNOWN;
+    dispid_siderealtime = DISPID_UNKNOWN;
+    dispid_sitelatitude = DISPID_UNKNOWN;
+    dispid_sitelongitude = DISPID_UNKNOWN;
+    dispid_slewtocoordinates = DISPID_UNKNOWN;
+    dispid_raguiderate = DISPID_UNKNOWN;
+    dispid_decguiderate = DISPID_UNKNOWN;
+    dispid_sideofpier = DISPID_UNKNOWN;
 }
 
 ScopeASCOM::~ScopeASCOM(void)
@@ -352,6 +366,15 @@ bool ScopeASCOM::Connect(void)
         {
             Debug.AddLine(wxString::Format("cannot get dispid_siderealtime = %d", dispid_siderealtime));
             m_bCanGetCoordinates = false;
+        }
+
+        if (!pScopeDriver.GetDispatchId(&dispid_sitelatitude, L"SiteLatitude"))
+        {
+            Debug.AddLine(wxString::Format("cannot get dispid_sitelatitude"));
+        }
+        if (!pScopeDriver.GetDispatchId(&dispid_sitelongitude, L"SiteLongitude"))
+        {
+            Debug.AddLine(wxString::Format("cannot get dispid_sitelongitude"));
         }
 
         m_bCanSlew = true;
@@ -803,6 +826,49 @@ bool ScopeASCOM::GetCoordinates(double *ra, double *dec, double *siderealTime)
         *ra = vRA.dblVal;
         *dec = vDec.dblVal;
         *siderealTime = vST.dblVal;
+    }
+    catch (wxString Msg)
+    {
+        bError = true;
+        POSSIBLY_UNUSED(Msg);
+    }
+
+    return bError;
+}
+
+bool ScopeASCOM::GetSiteLatLong(double *latitude, double *longitude)
+{
+    if (dispid_sitelatitude == DISPID_UNKNOWN || dispid_sitelongitude == DISPID_UNKNOWN)
+        return true;
+
+    bool bError = false;
+
+    try
+    {
+        if (!IsConnected())
+        {
+            throw ERROR_INFO("ASCOM Scope: cannot get site latitude/longitude when not connected");
+        }
+
+        AutoASCOMDriver pScopeDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+        DispatchObj scope(pScopeDriver, NULL);
+
+        VARIANT vLat;
+
+        if (!scope.GetProp(&vLat, dispid_sitelatitude))
+        {
+            throw ERROR_INFO("ASCOM Scope: get site latitude failed"); // fixme excepinfo
+        }
+
+        VARIANT vLong;
+
+        if (!scope.GetProp(&vLong, dispid_sitelongitude))
+        {
+            throw ERROR_INFO("ASCOM Scope: get site longitude failed");
+        }
+
+        *latitude = vLat.dblVal;
+        *longitude = vLong.dblVal;
     }
     catch (wxString Msg)
     {

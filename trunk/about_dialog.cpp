@@ -75,7 +75,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "Copyright 2009 Geoffrey Hausheer<br>"
         "Copyright 2012-2013 Bret McKee<br>"
         "Copyright 2013 Sylvain Girard<br>"
-        "Copyright 2013 Andy Galasso<br>"
+        "Copyright 2013-2014 Andy Galasso<br>"
         "Copyright 2013 Bruce Waddington<br>"
         "</body></html>", APPNAME, FULLVER));
     wxHtmlWindow *pHtml;
