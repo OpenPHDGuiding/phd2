@@ -202,6 +202,7 @@ public:
     virtual double GetDeclination(void);
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
+    virtual bool GetSiteLatLong(double *latitude, double *longitude);
     virtual bool CanSlew(void);
     virtual bool SlewToCoordinates(double ra, double dec);
     virtual bool Slewing(void);

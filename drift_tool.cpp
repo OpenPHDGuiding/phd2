@@ -3,7 +3,7 @@
  *  PHD Guiding
  *
  *  Created by Andy Galasso
- *  Copyright (c) 2013 Andy Galasso
+ *  Copyright (c) 2013-2014 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -78,6 +78,7 @@ struct DriftToolWin : public wxFrame
 
     bool m_can_slew;
     bool m_slewing;
+    PHD_Point m_siteLatLong;
 
     wxStaticBitmap *m_bmp;
     wxBitmap *m_azArrowBmp;
@@ -107,7 +108,7 @@ struct DriftToolWin : public wxFrame
     void OnClose(wxCloseEvent& evt);
     void OnTimer(wxTimerEvent& evt);
 
-    void ShowScopeCoordinates(void);
+    void UpdateScopeCoordinates(void);
 
     DECLARE_EVENT_TABLE()
 };
@@ -254,6 +255,14 @@ DriftToolWin::DriftToolWin()
 
     // can mount slew?
     m_can_slew = pMount && pMount->CanSlew();
+
+    // get site lat/long from scope
+    double lat, lon;
+    m_siteLatLong.Invalidate();
+    if (!pMount->GetSiteLatLong(&lat, &lon))
+    {
+        m_siteLatLong.SetXY(lat, lon);
+    }
 
     m_timer = NULL;
     if (m_can_slew)
@@ -593,29 +602,60 @@ void DriftToolWin::OnClose(wxCloseEvent& evt)
     pConfig->Global.SetInt("/DriftTool/pos.x", x);
     pConfig->Global.SetInt("/DriftTool/pos.y", y);
 
+    // restore polar align circle correction factor
+    pFrame->pGuider->SetPolarAlignCircleCorrection(1.0);
+
     evt.Skip();
 }
 
-void DriftToolWin::ShowScopeCoordinates(void)
+void DriftToolWin::UpdateScopeCoordinates(void)
 {
     if (!pMount)
         return;
-    double ra, dec, st;
-    if (pMount->GetCoordinates(&ra, &dec, &st))
+    double ra_hrs, dec_deg, st_hrs;
+    if (pMount->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
         return; // error
-    double ra_deg = (ra - st) * (360.0 / 24.0);
-    if (ra_deg > 180.0)
-        ra_deg -= 360.0;
-    if (ra_deg <= -180.0)
-        ra_deg += 360.0;
+    double ra_ofs_deg = (ra_hrs - st_hrs) * (360.0 / 24.0);
+    if (ra_ofs_deg > 180.0)
+        ra_ofs_deg -= 360.0;
+    if (ra_ofs_deg <= -180.0)
+        ra_ofs_deg += 360.0;
 
-    m_raCurrent->SetValue(wxString::Format("%+.f", ra_deg));
-    m_decCurrent->SetValue(wxString::Format("%+.f", dec));
+    m_raCurrent->SetValue(wxString::Format("%+.f", ra_ofs_deg));
+    m_decCurrent->SetValue(wxString::Format("%+.f", dec_deg));
+
+    // update polar align circle radius
+    if (m_siteLatLong.IsValid())
+    {
+        double correction;
+
+        if (m_phase == PHASE_ADJUST_AZ)
+        {
+            // azimuth correction from "Star Offset Positioning for Polar Axis Alignment", Frank Barrett, 2/19/2010
+            double dec_r = dec_deg * M_PI / 180.;
+            if (fabs(dec_r) < Mount::DEC_COMP_LIMIT)
+            {
+                double alt_deg = 90.0 - m_siteLatLong.X + dec_deg;
+                correction = cos(alt_deg * M_PI / 180.) / cos(dec_r);
+            }
+            else
+            {
+                correction = 1.0;
+            }
+        }
+        else
+        {
+            // altitude correction - scale by cos(angle from meridian)
+            correction = cos(ra_ofs_deg * M_PI / 180.);
+        }
+
+        pFrame->pGuider->SetPolarAlignCircleCorrection(correction);
+    }
 }
 
 void DriftToolWin::OnTimer(wxTimerEvent& evt)
 {
-    ShowScopeCoordinates();
+    UpdateScopeCoordinates();
 
     if (m_slewing)
     {

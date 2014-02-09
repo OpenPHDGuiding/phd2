@@ -56,6 +56,8 @@ class ScopeASCOM : public Scope, private ASCOM_COMMON
     DISPID dispid_declination;
     DISPID dispid_rightascension;
     DISPID dispid_siderealtime;
+    DISPID dispid_sitelatitude;
+    DISPID dispid_sitelongitude;
     DISPID dispid_slewtocoordinates;
     DISPID dispid_raguiderate;
     DISPID dispid_decguiderate;
@@ -93,6 +95,7 @@ public:
     virtual bool IsGuiding(void);
 
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
+    virtual bool GetSiteLatLong(double *latitude, double *longitude);
     virtual bool CanSlew(void);
     virtual bool SlewToCoordinates(double ra, double dec);
     virtual bool Slewing(void);

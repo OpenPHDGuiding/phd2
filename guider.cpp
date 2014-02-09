@@ -58,7 +58,8 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 
     SetOverlayMode(DefaultOverlayMode);
 
-    m_polarAlignCircleRadius = 0;
+    m_polarAlignCircleRadius = 0.0;
+    m_polarAlignCircleCorrection = 1.0;
 
     SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
@@ -151,10 +152,20 @@ void Guider::EnableFastRecenter(bool enable)
     pConfig->Profile.SetInt("/guider/FastRecenter", m_fastRecenterEnabled);
 }
 
-void Guider::SetPolarAlignCircle(const PHD_Point& pt, unsigned int radius)
+void Guider::SetPolarAlignCircle(const PHD_Point& pt, double radius)
 {
     m_polarAlignCircleRadius = radius;
     m_polarAlignCircleCenter = pt;
+}
+
+double Guider::GetPolarAlignCircleCorrection(void)
+{
+    return m_polarAlignCircleCorrection;
+}
+
+void Guider::SetPolarAlignCircleCorrection(double val)
+{
+    m_polarAlignCircleCorrection = val;
 }
 
 bool Guider::SetScaleImage(bool newScaleValue)
@@ -405,9 +416,11 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
         if (m_polarAlignCircleRadius)
         {
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
-            dc.SetPen(wxPen(wxColor(255,0,255)));
+            wxPenStyle penStyle = m_polarAlignCircleCorrection == 1.0 ? wxPENSTYLE_DOT : wxPENSTYLE_SOLID;
+            dc.SetPen(wxPen(wxColor(255,0,255), 1, penStyle));
+            int radius = (int) floor(m_polarAlignCircleRadius * m_polarAlignCircleCorrection * m_scaleFactor + 0.5);
             dc.DrawCircle(m_polarAlignCircleCenter.X * m_scaleFactor,
-                m_polarAlignCircleCenter.Y * m_scaleFactor, m_polarAlignCircleRadius * m_scaleFactor);
+                m_polarAlignCircleCenter.Y * m_scaleFactor, radius);
         }
     }
     catch (wxString Msg)
