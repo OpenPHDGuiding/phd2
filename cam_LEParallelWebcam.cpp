@@ -74,34 +74,23 @@ bool Camera_LEParallelWebcamClass::Connect()
             throw ERROR_INFO("LEParallelWebcamClass::Connect: parallel port is NULL");
         }
 
-        wxArrayString parallelPorts = m_pParallelPort->GetParallelPortList();
-
-        if (parallelPorts.IsEmpty())
-        {
-            wxMessageBox(_("No parallel ports found"),_("Error"), wxOK | wxICON_ERROR);
-            throw ERROR_INFO("No parallel port found");
-        }
-
         wxString lastParallelPort = pConfig->Profile.GetString("/camera/parallelLEWebcam/parallelport", "");
-        int resp = parallelPorts.Index(lastParallelPort);
 
-        if (resp == wxNOT_FOUND)
+        wxString choice = m_pParallelPort->ChooseParallelPort(lastParallelPort);
+
+        Debug.AddLine("Camera_LEParallelWebcamClass::Connect: parallel port choice is: %s", choice);
+
+        if (choice.IsEmpty())
         {
-            resp = 0;
+            throw ERROR_INFO("no parallel port selected");
         }
 
-        resp = wxGetSingleChoiceIndex(_("Select Parallel port"),_("Parallel Port"), parallelPorts,
-                NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
-                resp);
-
-        Debug.AddLine("wxGetSingleChoiceIndex returns %d", resp);
-
-        if (m_pParallelPort->Connect(parallelPorts[resp]))
+        if (m_pParallelPort->Connect(choice))
         {
             throw ERROR_INFO("LEParallelWebcamClass::Connect: parallel port connect failed");
         }
 
-        pConfig->Profile.SetString("/camera/parallelLEWebcam/parallelport", parallelPorts[resp]);
+        pConfig->Profile.SetString("/camera/parallelLEWebcam/parallelport", choice);
 
         if (Camera_LEWebcamClass::Connect())
         {
