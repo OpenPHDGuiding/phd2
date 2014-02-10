@@ -40,13 +40,15 @@
 class ParallelPortWin32:public ParallelPort
 {
     short m_portAddr;
+
 public:
-    virtual wxArrayString GetParallelPortList(void);
 
     ParallelPortWin32(void);
     virtual ~ParallelPortWin32(void);
 
-    virtual bool Connect(wxString portName);
+    virtual wxString ChooseParallelPort(const wxString& dflt);
+
+    virtual bool Connect(const wxString& portName);
     virtual bool Disconnect(void);
 
     virtual bool ReadByte(UINT8 *pData);

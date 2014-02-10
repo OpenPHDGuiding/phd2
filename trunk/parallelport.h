@@ -42,12 +42,13 @@ class ParallelPort
 {
 public:
     static ParallelPort *ParallelPortFactory(void);
-    virtual wxArrayString GetParallelPortList(void) = 0;
 
     ParallelPort(void);
     virtual ~ParallelPort(void);
 
-    virtual bool Connect(wxString portName) = 0;
+    virtual wxString ChooseParallelPort(const wxString& dflt) = 0;
+
+    virtual bool Connect(const wxString& portName) = 0;
     virtual bool Disconnect(void) = 0;
 
     virtual bool ReadByte(BYTE *pData) = 0;
