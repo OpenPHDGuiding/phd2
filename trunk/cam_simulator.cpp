@@ -950,15 +950,6 @@ static void SetControlStates(SimCamDialog *dlg, bool captureActive)
     dlg->pResetBtn->Enable(enable);
 }
 
-static int StringWidth(SimCamDialog *dlg, const wxString& string)
-{
-    int width, height;
-
-    dlg->GetTextExtent(string, &width, &height);
-
-    return width;
-}
-
 // Event handlers
 void SimCamDialog::OnRbDefaultPE(wxCommandEvent& evt)
 {

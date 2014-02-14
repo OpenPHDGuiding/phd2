@@ -232,6 +232,7 @@
     <ClCompile Include="mount.cpp" />
     <ClCompile Include="myframe.cpp" />
     <ClCompile Include="myframe_events.cpp" />
+    <ClCompile Include="nudge_lock.cpp" />
     <ClCompile Include="onboard_st4.cpp" />
     <ClCompile Include="optionsbutton.cpp" />
     <ClCompile Include="parallelport.cpp" />
@@ -342,6 +343,7 @@
     <ClInclude Include="messagebox_proxy.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="myframe.h" />
+    <ClInclude Include="nudge_lock.h" />
     <ClInclude Include="onboard_st4.h" />
     <ClInclude Include="optionsbutton.h" />
     <ClInclude Include="parallelport.h" />

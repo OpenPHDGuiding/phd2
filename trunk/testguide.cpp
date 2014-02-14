@@ -83,13 +83,6 @@ wxBEGIN_EVENT_TABLE(TestGuideDialog, wxDialog)
     EVT_BUTTON(ID_DITHER, TestGuideDialog::OnDither)
 wxEND_EVENT_TABLE()
 
-static int StringWidth(wxWindow *win, const wxString& s)
-{
-    int width, height;
-    win->GetTextExtent(s, &width, &height);
-    return width;
-}
-
 wxSizer *TestGuideDialog::InitMountControls()
 {
     wxSizer *sz1 = new wxBoxSizer(wxHORIZONTAL);
@@ -326,4 +319,15 @@ void TestGuideDialog::OnButton(wxCommandEvent &evt)
 wxWindow *TestGuide::CreateManualGuideWindow()
 {
     return new TestGuideDialog();
+}
+
+void TestGuide::ManualGuideUpdateControls()
+{
+    // notify the manual guide dialog to update its controls
+    if (pFrame->pManualGuide)
+    {
+        wxCommandEvent event(APPSTATE_NOTIFY_EVENT, pFrame->GetId());
+        event.SetEventObject(pFrame);
+        wxPostEvent(pFrame->pManualGuide, event);
+    }
 }

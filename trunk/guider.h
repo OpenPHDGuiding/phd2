@@ -217,8 +217,9 @@ public:
     virtual void LoadProfileSettings(void);
 
     // pure virutal functions -- these MUST be overridden by a subclass
-private:
+public:
     virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
+private:
     virtual void InvalidateCurrentPosition(void) = 0;
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage) = 0;
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position)=0;

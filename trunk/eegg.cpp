@@ -36,6 +36,7 @@
 #include "drift_tool.h"
 #include "manualcal_dialog.h"
 #include "calrestore_dialog.h"
+#include "nudge_lock.h"
 
 void MyFrame::OnEEGG(wxCommandEvent &evt)
 {
@@ -124,53 +125,17 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
     }
     else if (evt.GetId() == EEGG_MANUALLOCK)
     {
-        if (!pMount || !pMount->IsCalibrated() || !pCamera || !pCamera->Connected)
-        {
-            wxMessageBox(_("Entering a manual lock position requires a camera and mount to be connected and calibrated."));
-            return;
-        }
-        if (pGuider->GetState() > STATE_SELECTED)
-        {
-            wxMessageBox(_("Entering a manual lock position cannot be done while calibrating or guiding."));
-            return;  // must not be calibrating or guiding already
-        }
+        if (!pFrame->pNudgeLock)
+            pFrame->pNudgeLock = NudgeLockTool::CreateNudgeLockToolWindow();
 
-        double LockX=0.0, LockY=0.0;
-        PHD_Point curLock = pFrame->pGuider->LockPosition();
-        wxString tmpstr;
-        if (curLock.IsValid())
-            tmpstr = wxString::Format("%.3f", curLock.X);
-        do
-        {
-            tmpstr = wxGetTextFromUser(_("Enter x-lock position, or 0 for center"), _("X-lock position"), tmpstr);
-        } while (!tmpstr.IsEmpty() && !tmpstr.ToDouble(&LockX));
-        if (tmpstr.IsEmpty())
-            return;
-        LockX = fabs(LockX);
-        if (LockX < 0.0001) {
-            LockX = pCamera->FullSize.GetWidth() / 2;
-            LockY = pCamera->FullSize.GetHeight() / 2;
-        }
-        else {
-            tmpstr = "";
-            if (curLock.IsValid())
-                tmpstr = wxString::Format("%.3f", curLock.Y);
-            do {
-                tmpstr = wxGetTextFromUser(_("Enter y-lock position"), _("Y-lock position"), tmpstr);
-            } while (!tmpstr.IsEmpty() && !tmpstr.ToDouble(&LockY));
-            if (tmpstr.IsEmpty())
-                return;
-            LockY = fabs(LockY);
-        }
-        pFrame->pGuider->SetLockPosition(PHD_Point(LockX, LockY));
-        pFrame->pGuider->SetLockPosIsSticky(true);
-        pFrame->tools_menu->FindItem(EEGG_STICKY_LOCK)->Check(true);
+        pFrame->pNudgeLock->Show();
     }
     else if (evt.GetId() == EEGG_STICKY_LOCK)
     {
         bool sticky = evt.IsChecked();
         pFrame->pGuider->SetLockPosIsSticky(sticky);
         pConfig->Global.SetBoolean("/StickyLockPosition", sticky);
+        NudgeLockTool::UpdateNudgeLockControls();
     }
     else
     {

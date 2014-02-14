@@ -33,6 +33,7 @@
  */
 
 #include "phd.h"
+#include "nudge_lock.h"
 
 static const int DefaultOverlayMode  = OVERLAY_NONE;
 static const bool DefaultScaleImage  = false;
@@ -455,6 +456,7 @@ void Guider::InvalidateLockPosition(void)
 {
     m_lockPosition.Invalidate();
     EvtServer.NotifyLockPositionLost();
+    NudgeLockTool::UpdateNudgeLockControls();
 }
 
 void Guider::UpdateLockPosition(void)
@@ -492,6 +494,7 @@ bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
             if (!m_lockPosition.IsValid() || position.X != m_lockPosition.X || position.Y != m_lockPosition.Y)
             {
                 EvtServer.NotifySetLockPosition(position);
+                NudgeLockTool::UpdateNudgeLockControls();
             }
             m_lockPosition.SetXY(x, y);
         }

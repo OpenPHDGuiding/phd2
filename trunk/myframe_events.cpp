@@ -717,13 +717,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
         Debug.AddLine("User exited setup dialog with 'ok'");
         pAdvancedDialog->UnloadValues();
         pGraphLog->UpdateControls();
-        if (pManualGuide)
-        {
-            // notify the manual guide dialog to update its controls
-            wxCommandEvent event(APPSTATE_NOTIFY_EVENT, GetId());
-            event.SetEventObject(this);
-            wxPostEvent(pManualGuide, event);
-        }
+        TestGuide::ManualGuideUpdateControls();
     }
     else
     {
