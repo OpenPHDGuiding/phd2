@@ -55,15 +55,6 @@ static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, dou
     return pNewCtrl;
 }
 
-static int StringWidth(CalstepDialog* dlg, const wxString& string)
-{
-    int width, height;
-
-    dlg->GetTextExtent(string, &width, &height);
-
-    return width;
-}
-
 CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, const wxString& configPrefix) :
     wxDialog(parent, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {

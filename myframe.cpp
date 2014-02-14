@@ -265,8 +265,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pGearDialog = new GearDialog(this);
 
     pDriftTool = NULL;
-
     pManualGuide = NULL;
+    pNudgeLock = NULL;
 
     tools_menu->Check(MENU_LOG,false);
 
@@ -397,7 +397,7 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data"), _("Restore calibration data from last successful calibration"));
     tools_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data"), _("Manually calibrate"));
     tools_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
-    tools_menu->Append(EEGG_MANUALLOCK, _("Enter Manual Lock Position"), _("Give manual lock position"));
+    tools_menu->Append(EEGG_MANUALLOCK, _("Adjust Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_DRIFTTOOL,_("Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_LOG,_("Enable Guide &Log\tAlt-L"),_("Enable guide log file"));

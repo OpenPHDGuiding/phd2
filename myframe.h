@@ -161,6 +161,7 @@ public:
     TargetWindow *pTarget;
     wxWindow *pDriftTool;
     wxWindow *pManualGuide;
+    wxWindow *pNudgeLock;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
     wxLocale *m_pLocale;
@@ -460,5 +461,17 @@ enum {
 };
 
 wxDECLARE_EVENT(APPSTATE_NOTIFY_EVENT, wxCommandEvent);
+
+inline static int StringWidth(const wxWindow *window, const wxString& s)
+{
+    int width, height;
+    window->GetTextExtent(s, &width, &height);
+    return width;
+}
+
+inline static wxSize StringSize(const wxWindow *window, const wxString& s, int extra = 0)
+{
+    return wxSize(StringWidth(window, s) + extra, -1);
+}
 
 #endif /* MYFRAME_H_INCLUDED */

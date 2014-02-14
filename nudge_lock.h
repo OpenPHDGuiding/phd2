@@ -1,9 +1,9 @@
 /*
- *  testguide.h
+ *  nudge_lock_tool.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created by Andy Galasso
+ *  Copyright (c) 2014 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,8 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Bret McKee, Dad Dog Development,
+ *     Craig Stark, Stark Labs nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,15 +33,15 @@
  *
  */
 
-#ifndef TESTGUIDE_H_INCLUDED
-#define TESTGUIDE_H_INCLUDED
+#ifndef NUDGE_LOCK_TOOL_INCLUDED
+#define NUDGE_LOCK_TOOL_INCLUDED
 
-class TestGuide
+class NudgeLockTool
 {
-    TestGuide(); // not implemented
+    NudgeLockTool(); // not implemented
 public:
-    static wxWindow *CreateManualGuideWindow();
-    static void ManualGuideUpdateControls();
+    static wxWindow *CreateNudgeLockToolWindow();
+    static void UpdateNudgeLockControls();
 };
 
-#endif //TESTGUIDE_H_INCLUDED
+#endif

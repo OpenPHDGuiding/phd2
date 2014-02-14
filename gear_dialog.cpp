@@ -809,6 +809,7 @@ void GearDialog::OnButtonDisconnectScope(wxCommandEvent& event)
         m_pScope->Disconnect();
         pFrame->SetStatusText(_("Scope Disconnected"));
         pFrame->SetStatusText(wxEmptyString, 3);
+
         if (pFrame->pManualGuide)
         {
             pFrame->pManualGuide->Destroy();
@@ -922,6 +923,7 @@ void GearDialog::OnButtonDisconnectStepGuider(wxCommandEvent& event)
 
         pFrame->SetStatusText(_("Adaptive Optics Disconnected"), 1);
         pFrame->SetStatusText(wxEmptyString, 4);
+
         if (pFrame->pManualGuide)
         {
             pFrame->pManualGuide->Destroy();

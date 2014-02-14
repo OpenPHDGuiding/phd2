@@ -122,6 +122,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
     wxString label;
     switch (this->mode) {  // Figure which profile to use
     case 0: // mid-row
+    default:
         profptr = midrow_profile;
         label = _("Mid row");
         break;
@@ -132,10 +133,6 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt)) {
     case 2:
         profptr = vert_profile;
         label = _("Avg col");
-        break;
-    default:
-        profptr = midrow_profile;
-        label = _("Mid row");
         break;
     }
 
