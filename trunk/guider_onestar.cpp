@@ -476,6 +476,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
                            (double) mevent.m_y / scaleFactor);
             ToggleBookmark(pt);
             m_showBookmarks = true;
+            pFrame->bookmarks_menu->Check(MENU_BOOKMARKS_SHOW, GetBookmarksShown());
             Refresh();
             Update();
             return;
