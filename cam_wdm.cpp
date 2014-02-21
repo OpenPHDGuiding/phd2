@@ -289,7 +289,7 @@ bool Camera_WDMClass::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
         {
             if (img.Init(xsize,ysize))
             {
-                wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+                pFrame->Alert(_("Memory allocation error during capture"));
                 Disconnect();
                 throw ERROR_INFO("img.Init() failed");
             }

@@ -64,13 +64,13 @@ bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subf
     int mode = 3 * (int) Color;
     if (img.NPixels != (FullSize.GetWidth()*FullSize.GetHeight())) {
         if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error during capture"));
             Disconnect();
             return true;
         }
     }
     if (OSPL130_Capture(mode,duration)) {
-        wxMessageBox(_T("Cannot start exposure"), _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Cannot start exposure"));
         return true;
     }
     if (duration > 100) {

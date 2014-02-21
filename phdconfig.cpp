@@ -41,7 +41,7 @@
 
 // NOTE: Not translated here, explicitly translated below. Using _("...")
 // here in a static initializer crashes
-wxString PhdConfig::DefaultProfileName = _T("My Equipment");
+wxString PhdConfig::DefaultProfileName = wxTRANSLATE("My Equipment");
 
 #define PROFILE_STREAM_VERSION "1"
 

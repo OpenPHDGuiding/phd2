@@ -134,7 +134,7 @@ bool Camera_OpenCVClass::Capture(int duration, usImage& img, wxRect subframe, bo
 
         if (img.Init(sz.width,sz.height))
         {
-            wxMessageBox(_T("Memory allocation error"),wxT("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error"));
             throw ERROR_INFO("img.Init failed");
         }
 

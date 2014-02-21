@@ -54,7 +54,7 @@ class StepGuider : public Mount, public OnboardST4
     PHD_Point m_avgOffset;
 
     bool m_bumpInProgress;
-    bool m_bumpTimeoutEventSent;
+    bool m_bumpTimeoutAlertSent;
     long m_bumpStartTime;
     double m_bumpStepWeight;
 

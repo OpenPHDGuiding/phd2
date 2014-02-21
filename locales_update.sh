@@ -13,7 +13,7 @@
 
 set -x
 
-xgettext *.cpp -C --from-code=CP1252 --keyword="_" --keyword="_NOTRANS" --keyword="wxPLURAL:1,2"
+xgettext *.cpp -C --from-code=CP1252 --keyword="_" --keyword="wxPLURAL:1,2" --keyword="wxTRANSLATE"
 cd locale
 cp messages.pot messages-old.pot
 msgmerge messages-old.pot ../messages.po -o messages.pot

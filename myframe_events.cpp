@@ -140,7 +140,7 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
 
     if (pGuider->SaveCurrentImage(fname))
     {
-        (void) wxMessageBox(_("Error"),_("Your data were not saved"),wxOK | wxICON_ERROR);
+        Alert(_("The image could not be saved to ") + fname);
     }
 }
 
@@ -208,15 +208,15 @@ static bool load_multi(GuideCamera *camera, const wxString& fname)
                 fits_get_hdu_type(fptr, &hdutype, &status);
                 if (hdutype != IMAGE_HDU)
                 {
-                    (void) wxMessageBox(wxT("FITS file is not of an image"), _("Error"),wxOK | wxICON_ERROR);
-                    throw ERROR_INFO("Fits file is not an image");
+                    pFrame->Alert(_("FITS file is not of an image: ") + fname);
+                    throw ERROR_INFO("FITS file is not an image");
                 }
 
                 int naxis;
                 fits_get_img_dim(fptr, &naxis, &status);
                 if (naxis != 2)
                 {
-                    (void) wxMessageBox( _T("Unsupported type or read error loading FITS file") ,_("Error"),wxOK | wxICON_ERROR);
+                    pFrame->Alert(_("Unsupported type or read error loading FITS file ") + fname);
                     throw ERROR_INFO("unsupported type");
                 }
 
@@ -227,14 +227,14 @@ static bool load_multi(GuideCamera *camera, const wxString& fname)
 
                 if (img->Init((int) fsize[0], (int) fsize[1]))
                 {
-                    wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+                    pFrame->Alert(_("Memory allocation error reading FITS file ") + fname);
                     throw ERROR_INFO("Memory Allocation failure");
                 }
 
                 long fpixel[] = { 1, 1, 1 };
                 if (fits_read_pix(fptr, TUSHORT, fpixel, fsize[0] * fsize[1], NULL, img->ImageData, NULL, &status))
                 {
-                    (void) wxMessageBox(_T("Error reading data"), _("Error"),wxOK | wxICON_ERROR);
+                    pFrame->Alert(_("Error reading data from ") + fname);
                     throw ERROR_INFO("Error reading");
                 }
 
@@ -263,7 +263,7 @@ static bool load_multi(GuideCamera *camera, const wxString& fname)
         }
         else
         {
-            wxMessageBox(_T("Error opening FITS file"));
+            pFrame->Alert(_("Error opening FITS file ") + fname);
             throw ERROR_INFO("error opening file");
         }
     }
@@ -316,7 +316,7 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent& evt)
 
         if (save_multi(pCamera->Darks, fname))
         {
-            wxMessageBox (_("Error saving FITS file"));
+            Alert(_("Error saving darks FITS file ") + fname);
         }
 
         pConfig->Profile.SetString("/camera/DarksFile", fname);
@@ -325,7 +325,7 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent& evt)
     {
         if (!pCamera || !pCamera->Connected)
         {
-            wxMessageBox(_("You must connect a camera before loading dark frames"));
+            Alert(_("You must connect a camera before loading dark frames"));
             return;
         }
         wxString default_path = pConfig->Global.GetString("/darkFilePath", wxEmptyString);
@@ -496,7 +496,8 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
 {
     int ExpDur = RequestedExposureDuration();
     if (pGuider->GetState() > STATE_SELECTED) return;
-    if (!pCamera || !pCamera->Connected) {
+    if (!pCamera || !pCamera->Connected)
+    {
         wxMessageBox(_("Please connect to a camera first"),_("Info"));
         return;
     }
@@ -514,7 +515,7 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
     darkFrame->ImgExpDur = ExpDur;
     if (pCamera->Capture(ExpDur, *darkFrame, false))
     {
-        wxMessageBox(_("Error capturing dark frame"));
+        Alert(_("Error capturing dark frame"));
         SetStatusText(wxString::Format(_T("%.1f s dark FAILED"), (double) ExpDur / 1000.0));
         Dark_Button->SetLabel(_T("Take Dark"));
         pCamera->ShutterState = false;
@@ -551,10 +552,12 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
         assert(pCamera->CurrentDarkFrame->ImgExpDur == ExpDur);
     }
     SetStatusText(_("Darks done"));
+
     if (pCamera->HasShutter)
         pCamera->ShutterState = false; // Lights
     else
         wxMessageBox(_("Uncover guide scope"));
+
     tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->CurrentDarkFrame ? true : false);
 }
 
@@ -837,13 +840,6 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
     {
         POSSIBLY_UNUSED(Msg);
     }
-}
-
-void MyFrame::OnBumpTimeout(wxThreadEvent& evt)
-{
-    wxMessageBox(_("A mount \"bump\" was needed to bring the AO back to its center position, \n"
-        "but the bump did not complete in a reasonable amount of time.\n"
-        "You probably need to increase the AO Bump Step setting.\n"), _("Warning"));
 }
 
 void MyFrame::OnBookmarksShow(wxCommandEvent& evt)

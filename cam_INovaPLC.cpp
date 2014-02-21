@@ -72,11 +72,11 @@ void Camera_INovaPLCClass::InitCapture() {
     rval = DSCameraSetExposureTime(exp_lines);
     wxMilliSleep(100);
     if (rval != STATUS_OK)
-        wxMessageBox(_T("Error setting duration"), _("Error"));
+        pFrame->Alert(_("Error setting exposure duration"));
     rval = DSCameraSetAnalogGain(GuideCameraGain);
     wxMilliSleep(100);
     if (rval != STATUS_OK)
-        wxMessageBox(_T("Error setting gain"), _("Error"));
+        pFrame->Alert(_("Error setting gain"));
 }
 
 bool Camera_INovaPLCClass::ST4PulseGuideScope(int direction, int duration) {
@@ -119,7 +119,7 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
     DS_CAMERA_STATUS rval;
     int ntries = 1;
     if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Memory allocation error during capture"));
         Disconnect();
         return true;
     }
@@ -136,7 +136,7 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
         rval = DSCameraGrabFrame((BYTE *) RawData);
         //pFrame->SetStatusText(wxString::Format("%d %d",ntries,rval));
         if (ntries > 30) {
-            wxMessageBox("Timeout capturing frames - >30 bad in a row", _("Error"));
+            pFrame->Alert("Timeout capturing frames - >30 bad in a row");
             return true;
         }
     }

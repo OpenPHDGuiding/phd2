@@ -484,7 +484,7 @@ bool ScopeASCOM::Disconnect(void)
         // ... set the Connected property to false....
         if (!scope.PutProp(dispid_connected, false))
         {
-            wxMessageBox(_T("ASCOM driver problem during disconnect"), _("Error"), wxOK | wxICON_ERROR);
+            pFrame->Alert(_("ASCOM driver problem during disconnect"));
             throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false");
         }
 
@@ -606,7 +606,7 @@ bool ScopeASCOM::IsGuiding(DispatchObj *scope)
         VARIANT vRes;
         if (!scope->GetProp(&vRes, dispid_ispulseguiding))
         {
-            wxMessageBox(_T("ASCOM driver failed checking IsPulseGuiding"),_("Error"), wxOK | wxICON_ERROR);
+            pFrame->Alert(_("ASCOM driver failed checking IsPulseGuiding"));
             Debug.AddLine(wxString::Format("IsPulseGuding fails, pScopeDriver = 0x%p", scope->IDisp()));
             throw ERROR_INFO("ASCOM Scope: IsGuiding - IsPulseGuiding failed");
         }
@@ -633,7 +633,7 @@ bool ScopeASCOM::IsSlewing(DispatchObj *scope)
     VARIANT vRes;
     if (!scope->GetProp(&vRes, dispid_isslewing))
     {
-        wxMessageBox(_T("ASCOM driver failed checking Slewing"), _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_("ASCOM driver failed checking Slewing"));
         return false;
     }
 

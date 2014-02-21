@@ -117,7 +117,7 @@ bool ScopeGCUSBST4::Guide(const GUIDE_DIRECTION direction, int duration) {
 //  wxMessageBox(wxString::Format("Sending -%s-",buf));
     int num_bytes = write(portFID,buf,strlen(buf));
     if (num_bytes == -1) {
-        wxMessageBox(wxString::Format(_T("Error writing to GC USB ST4: %s(%d)"),_U(strerror(errno)),errno));
+        pFrame->Alert(wxString::Format(_("Error writing to GC USB ST4: %s(%d)"),_U(strerror(errno)),errno));
 //      close(portFID);
 //      return false;
     }

@@ -139,19 +139,19 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
     // init memory
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error during capture"));
             Disconnect();
             return true;
         }
     }
     // set ROI
     rval = fcUsb_cmd_setRoi(CamNum,(unsigned short) xpos, (unsigned short) ypos, (unsigned short) (xpos + xsize - 1), (unsigned short) (ypos + ysize - 1));
-    if (rval != kIOReturnSuccess) { if (debug) wxMessageBox(_T("Err 1")); return true; }
+    if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 1")); return true; }
     // set duratinon
     fcUsb_cmd_setIntegrationTime(CamNum, (unsigned int) duration);
 
     rval = fcUsb_cmd_startExposure(CamNum);
-    if (rval != kIOReturnSuccess) { if (debug) wxMessageBox(_T("Err 2")); return true; }
+    if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 2")); return true; }
     if (duration > 100) {
         wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
         wxGetApp().Yield();
@@ -173,7 +173,7 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
 
     rval = fcUsb_cmd_getRawFrame(CamNum,(unsigned short) ysize,(unsigned short) xsize,img.ImageData);
 /*  if (rval != kIOReturnSuccess) {
-        if (debug) wxMessageBox(wxString::Format("Err 3 %d",rval));
+        if (debug) pFrame->Alert(wxString::Format("Starfish Err 3 %d",rval));
         //return true;
     }*/
     if (recon) SubtractDark(img);

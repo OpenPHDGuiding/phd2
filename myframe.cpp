@@ -55,7 +55,7 @@ wxDEFINE_EVENT(WXMESSAGEBOX_PROXY_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDEFINE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
-wxDEFINE_EVENT(BUMP_TIMEOUT_EVENT, wxThreadEvent);
+wxDEFINE_EVENT(ALERT_FROM_THREAD_EVENT, wxThreadEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
@@ -131,9 +131,9 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, WXMESSAGEBOX_PROXY_EVENT, MyFrame::OnMessageBoxProxy)
 
     EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnSetStatusText)
+    EVT_THREAD(ALERT_FROM_THREAD_EVENT, MyFrame::OnAlertFromThread)
     EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
     EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusbarTimerEvent)
-    EVT_THREAD(BUMP_TIMEOUT_EVENT, MyFrame::OnBumpTimeout)
 
     EVT_AUI_PANE_CLOSE(MyFrame::OnPanelClose)
 END_EVENT_TABLE()
@@ -190,8 +190,18 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     LoadProfileSettings();
 
-    // Setup Canvas for starfield image
-    pGuider = new GuiderOneStar(this);
+    // Setup container window for alert message info bar and guider window
+    wxWindow *guiderWin = new wxWindow(this, wxID_ANY);
+    wxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+
+    m_infoBar = new wxInfoBar(guiderWin);
+    sizer->Add(m_infoBar, wxSizerFlags().Expand());
+
+    pGuider = new GuiderOneStar(guiderWin);
+    sizer->Add(pGuider, wxSizerFlags().Proportion(1).Expand());
+
+    guiderWin->SetSizer(sizer);
+
     pGuider->LoadProfileSettings();
 
     bool sticky = pConfig->Global.GetBoolean("/StickyLockPosition", false);
@@ -224,9 +234,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
          }
     }
 
-    // Setup  Help file
-    SetupHelpFile();
-
     // Setup some keyboard shortcuts
     SetupKeyboardShortcuts();
 
@@ -234,9 +241,9 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         Name(_T("MainToolBar")).Caption(_T("Main tool bar")).
         ToolbarPane().Bottom());
 
-    pGuider->SetMinSize(wxSize(XWinSize,YWinSize));
-    pGuider->SetSize(wxSize(XWinSize,YWinSize));
-    m_mgr.AddPane(pGuider, wxAuiPaneInfo().
+    guiderWin->SetMinSize(wxSize(XWinSize,YWinSize));
+    guiderWin->SetSize(wxSize(XWinSize,YWinSize));
+    m_mgr.AddPane(guiderWin, wxAuiPaneInfo().
         Name(_T("Guider")).Caption(_T("Guider")).
         CenterPane().MinSize(wxSize(XWinSize,YWinSize)));
 
@@ -271,6 +278,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     tools_menu->Check(MENU_LOG,false);
 
     UpdateTitle();
+
+    SetupHelpFile();
 
     if (m_serverMode)
     {
@@ -334,9 +343,8 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     m_mgr.Update();
 }
 
-
-// frame destructor
-MyFrame::~MyFrame() {
+MyFrame::~MyFrame()
+{
     if (pMount && pMount->IsConnected())
     {
         pMount->Disconnect();
@@ -740,8 +748,9 @@ void MyFrame::SetupHelpFile(void)
         + _T("PHD2GuideHelp.zip");
     help = new wxHtmlHelpController;
     retval = help->AddBook(filename);
-    if (!retval) {
-        wxMessageBox(_("Could not find help file: ")+filename,_("Error"), wxOK);
+    if (!retval)
+    {
+        Alert(_("Could not find help file: ") + filename);
     }
     wxImage::AddHandler(new wxPNGHandler);
 }
@@ -799,6 +808,31 @@ void MyFrame::UpdateButtonsStatus(void)
     }
 }
 
+static void DoAlert(wxInfoBar *infoBar, const wxString& msg, int flags)
+{
+    Debug.AddLine(wxString::Format("Alert: %s", msg));
+    infoBar->ShowMessage(msg, flags);
+}
+
+void MyFrame::Alert(const wxString& msg, int flags)
+{
+    if (wxThread::IsMain())
+    {
+        DoAlert(m_infoBar, msg, flags);
+    }
+    else
+    {
+        wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, ALERT_FROM_THREAD_EVENT);
+        event->SetString(msg);
+        event->SetInt(flags);
+        wxQueueEvent(this, event);
+    }
+}
+
+void MyFrame::OnAlertFromThread(wxThreadEvent& event)
+{
+    DoAlert(m_infoBar, event.GetString(), event.GetInt());
+}
 
 /*
  * The base class wxFrame::SetStatusText() is not
@@ -1450,8 +1484,6 @@ MyFrameConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
     return new MyFrameConfigDialogPane(pParent, this);
 }
 
-#define _NOTRANS(s) _T(s)   // Dummy macro to extract a string in .po file without calling translation function
-
 MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame)
     : ConfigDialogPane(_("Global Settings"), pParent)
 {
@@ -1523,7 +1555,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
         wxMsgCatalog *pCat = wxMsgCatalog::CreateFromFile(catalogFile, "messages");
         if (pCat != NULL)
         {
-            const wxString *pLanguageName = pCat->GetString(_NOTRANS("Language-Name"));
+            const wxString *pLanguageName = pCat->GetString(wxTRANSLATE("Language-Name"));
             if (pLanguageName != NULL)
             {
                 languages.Add(*pLanguageName);

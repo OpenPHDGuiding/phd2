@@ -54,7 +54,7 @@ StepGuider::StepGuider(void)
     m_yOffset = 0;
 
     m_bumpInProgress = false;
-    m_bumpTimeoutEventSent = false;
+    m_bumpTimeoutAlertSent = false;
     m_bumpStepWeight = 1.0;
 
     wxString prefix = "/" + GetMountClassName();
@@ -703,7 +703,7 @@ bool StepGuider::GuidingCeases(void)
     m_avgOffset.Invalidate();
     m_bumpInProgress = false;
     m_bumpStepWeight = 1.0;
-    m_bumpTimeoutEventSent = false;
+    m_bumpTimeoutAlertSent = false;
     // clear bump display in stepguider graph
     pFrame->pStepGuiderGraph->ShowBump(PHD_Point());
 
@@ -887,13 +887,15 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
                 Debug.AddLine("back inside bump range: decrease bump weight %.2f => %.2f", prior, m_bumpStepWeight);
             }
 
-            if (m_bumpInProgress && !m_bumpTimeoutEventSent)
+            if (m_bumpInProgress && !m_bumpTimeoutAlertSent)
             {
                 long now = ::wxGetUTCTime();
                 if (now - m_bumpStartTime > BumpWarnTime)
                 {
-                    wxQueueEvent(pFrame, new wxThreadEvent(wxEVT_THREAD, BUMP_TIMEOUT_EVENT));
-                    m_bumpTimeoutEventSent = true;
+                    pFrame->Alert(_("A mount \"bump\" was needed to bring the AO back to its center position,\n"
+                        "but the bump did not complete in a reasonable amount of time.\n"
+                        "You probably need to increase the AO Bump Step setting."), wxICON_INFORMATION);
+                    m_bumpTimeoutAlertSent = true;
                 }
             }
 
@@ -902,7 +904,7 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
                 // start a new bump
                 m_bumpInProgress = true;
                 m_bumpStartTime = ::wxGetUTCTime();
-                m_bumpTimeoutEventSent = false;
+                m_bumpTimeoutAlertSent = false;
 
                 Debug.AddLine("starting a new bump");
             }

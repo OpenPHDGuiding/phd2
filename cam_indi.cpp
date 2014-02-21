@@ -186,11 +186,11 @@ bool Camera_INDIClass::ReadFITS(usImage& img) {
             NULL,
             &status) )
     {
-        (void) wxMessageBox(_T("Unsupported type or read error loading FITS file"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Unsupported type or read error loading FITS file"));
         return true;
     }
     if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-        (void) wxMessageBox(_T("FITS file is not of an image"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("FITS file is not of an image"));
         return true;
     }
 
@@ -201,15 +201,15 @@ bool Camera_INDIClass::ReadFITS(usImage& img) {
     ysize = (int) fits_size[1];
     fits_get_num_hdus(fptr,&nhdus,&status);
     if ((nhdus != 1) || (naxis != 2)) {
-        (void) wxMessageBox(_T("Unsupported type or read error loading FITS file"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Unsupported type or read error loading FITS file"));
         return true;
     }
     if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Memory allocation error"));
         return true;
     }
     if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { // Read image
-        (void) wxMessageBox(_T("Error reading data"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Error reading data"));
         return true;
     }
     fits_close_file(fptr,&status);
@@ -223,21 +223,21 @@ bool Camera_INDIClass::ReadStream(usImage& img) {
     struct indi_elem_t *elem;
 
     if (! frame_prop) {
-        wxMessageBox(_T("Failed to determine image dimensions"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Failed to determine image dimensions"));
         return true;
     }
     if (! (elem = indi_find_elem(frame_prop, "WIDTH"))) {
-        wxMessageBox(_T("Failed to determine image dimensions"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Failed to determine image dimensions"));
         return true;
     }
     xsize = elem->value.num.value;
     if (! (elem = indi_find_elem(frame_prop, "HEIGHT"))) {
-        wxMessageBox(_T("Failed to determine image dimensions"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Failed to determine image dimensions"));
         return true;
     }
     ysize = elem->value.num.value;
     if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Memory allocation error"));
         return true;
     }
     outptr = img.ImageData;
@@ -276,7 +276,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
         printf("Processing stream file\n");
         return ReadStream(img);
     } else {
-        wxMessageBox(_T("Unknown image format: ") + wxString::FromAscii(blob_elem->value.blob.fmt),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(blob_elem->value.blob.fmt));
         return true;
     }
 }
