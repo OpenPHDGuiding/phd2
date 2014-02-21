@@ -136,9 +136,10 @@ bool PhdApp::OnInit() {
 
     PhdController::OnAppInit();
 
-    pFrame = new MyFrame(m_instanceNumber, &m_locale);
-
     wxImage::AddHandler(new wxJPEGHandler);
+    wxImage::AddHandler(new wxPNGHandler);
+
+    pFrame = new MyFrame(m_instanceNumber, &m_locale);
 
     pFrame->Show(true);
 
