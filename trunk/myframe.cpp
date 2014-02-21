@@ -752,7 +752,6 @@ void MyFrame::SetupHelpFile(void)
     {
         Alert(_("Could not find help file: ") + filename);
     }
-    wxImage::AddHandler(new wxPNGHandler);
 }
 
 static bool cond_update_tool(wxAuiToolBar *tb, int toolId, bool enable)
