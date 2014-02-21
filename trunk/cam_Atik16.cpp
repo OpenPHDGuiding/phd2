@@ -207,7 +207,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
         ArtemisSetAmplifierSwitched(Cam_Handle,false);
 
     if (ArtemisStartExposure(Cam_Handle,(float) duration / 1000.0))  {
-        (void) wxMessageBox(_T("Couldn't start exposure - aborting"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Couldn't start exposure - aborting"));
         return true;
     }
 
@@ -223,7 +223,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
     ArtemisGetImageData(Cam_Handle, &data_x, &data_y, &data_w, &data_h, &data_binx, &data_biny);
     if (img.NPixels != (FullSize.GetWidth()*FullSize.GetHeight())) {
         if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error during capture"));
             Disconnect();
             return true;
         }

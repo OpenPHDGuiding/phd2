@@ -298,13 +298,16 @@ bool usImage::Load(const wxString& fname)
         int hdutype, naxis;
         int nhdus=0;
 
-        if (!wxFileExists(fname)) {
-            wxMessageBox(_("File does not exist - cannot load"));
+        if (!wxFileExists(fname))
+        {
+            pFrame->Alert(_("File does not exist - cannot load ") + fname);
             throw ERROR_INFO("File does not exist");
         }
-        if ( !fits_open_diskfile(&fptr, (const char*) fname.c_str(), READONLY, &status) ) {
-            if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-                (void) wxMessageBox(wxT("FITS file is not of an image"), _("Error"),wxOK | wxICON_ERROR);
+        if (!fits_open_diskfile(&fptr, fname.c_str(), READONLY, &status))
+        {
+            if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
+            {
+                pFrame->Alert(_("FITS file is not of an image: ") + fname);
                 throw ERROR_INFO("Fits file is not an image");
             }
 
@@ -313,23 +316,23 @@ bool usImage::Load(const wxString& fname)
             fits_get_img_size(fptr, 2, fsize, &status);
             fits_get_num_hdus(fptr,&nhdus,&status);
             if ((nhdus != 1) || (naxis != 2)) {
-                (void) wxMessageBox( _T("Unsupported type or read error loading FITS file") ,_("Error"),wxOK | wxICON_ERROR);
+                pFrame->Alert(_("Unsupported type or read error loading FITS file ") + fname);
                 throw ERROR_INFO("unsupported type");
             }
             if (Init((int) fsize[0],(int) fsize[1]))
             {
-                wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+                pFrame->Alert(_("Memory allocation error loading FITS file ") + fname);
                 throw ERROR_INFO("Memory Allocation failure");
             }
             if (fits_read_pix(fptr, TUSHORT, fpixel, (int) (fsize[0] * fsize[1]), NULL, ImageData, NULL, &status) ) { // Read image
-                (void) wxMessageBox(_T("Error reading data"), _("Error"),wxOK | wxICON_ERROR);
+                pFrame->Alert(_("Error reading data from FITS file ") + fname);
                 throw ERROR_INFO("Error reading");
             }
             fits_close_file(fptr,&status);
         }
         else
         {
-            wxMessageBox(_T("Error opening FITS file"));
+            pFrame->Alert(_("Error opening FITS file ") + fname);
             throw ERROR_INFO("error opening file");
         }
     }

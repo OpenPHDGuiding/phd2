@@ -266,7 +266,7 @@ static bool GetDispid(DISPID *pid, DispatchObj& obj, OLECHAR *name)
 {
     if (!obj.GetDispatchId(pid, name))
     {
-        wxMessageBox(_("ASCOM Camera Driver missing required property ") + name, _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_("ASCOM Camera Driver missing required property ") + name);
         return false;
     }
     return true;
@@ -290,14 +290,13 @@ bool Camera_ASCOMLateClass::Connect()
     // create the COM object
     if (!Create(&driver, &driver_class))
     {
-        wxMessageBox(_("Could not create ASCOM camera object"), _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Could not create ASCOM camera object"));
         return true;
     }
 
     if (!driver.PutProp(L"Connected", true))
     {
-        wxMessageBox(ExcepMsg(_("ASCOM driver problem: Connect"), driver.Excep()),
-            _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(ExcepMsg(_("ASCOM driver problem: Connect"), driver.Excep()));
         return true;
     }
 
@@ -312,7 +311,7 @@ bool Camera_ASCOMLateClass::Connect()
     VARIANT vRes;
     if (!driver.GetProp(&vRes, L"CanPulseGuide"))
     {
-        wxMessageBox(_("ASCOM driver missing the CanPulseGuide property"), _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_("ASCOM driver missing the CanPulseGuide property"));
         return true;
     }
     m_hasGuideOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
@@ -327,14 +326,14 @@ bool Camera_ASCOMLateClass::Connect()
 
     if (!driver.GetProp(&vRes, L"CameraXSize"))
     {
-        wxMessageBox(_("ASCOM driver missing the CameraXSize property"),_("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_("ASCOM driver missing the CameraXSize property"));
         return true;
     }
     FullSize.SetWidth((int) vRes.lVal);
 
     if (!driver.GetProp(&vRes, L"CameraYSize"))
     {
-        wxMessageBox(_("ASCOM driver missing the CameraYSize property"),_("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_("ASCOM driver missing the CameraYSize property"));
         return true;
     }
     FullSize.SetHeight((int) vRes.lVal);
@@ -358,14 +357,14 @@ bool Camera_ASCOMLateClass::Connect()
 
     if (!driver.GetProp(&vRes, L"PixelSizeX"))
     {
-        wxMessageBox(_("ASCOM driver missing the PixelSizeX property"),_("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_("ASCOM driver missing the PixelSizeX property"));
         return true;
     }
     PixelSize = (double) vRes.dblVal;
 
     if (!driver.GetProp(&vRes, L"PixelSizeY"))
     {
-        wxMessageBox(_("ASCOM driver missing the PixelSizeY property"),_("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_("ASCOM driver missing the PixelSizeY property"));
         return true;
     }
     if ((double) vRes.dblVal > PixelSize)
@@ -432,8 +431,7 @@ bool Camera_ASCOMLateClass::Disconnect()
     if (!driver.PutProp(L"Connected", false))
     {
         Debug.AddLine(ExcepMsg("ASCOM disconnect", driver.Excep()));
-        wxMessageBox(ExcepMsg(_("ASCOM driver problem -- cannot disconnect"), driver.Excep()),
-            _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(ExcepMsg(_("ASCOM driver problem -- cannot disconnect"), driver.Excep()));
         return true;
     }
 
@@ -450,7 +448,7 @@ void Camera_ASCOMLateClass::ShowPropertyDialog(void)
         VARIANT res;
         if (!camera.InvokeMethod(&res, L"SetupDialog"))
         {
-            wxMessageBox(ExcepMsg(camera.Excep()), _("Error"), wxOK | wxICON_ERROR);
+            pFrame->Alert(ExcepMsg(camera.Excep()));
         }
     }
 }
@@ -479,8 +477,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     // Start the exposure
     if (ASCOM_StartExposure((double) duration / 1000.0, takeDark, &excep)) {
         Debug.AddLine(ExcepMsg("ASCOM_StartExposure failed", excep));
-        wxMessageBox(ExcepMsg(_("ASCOM error -- Cannot start exposure with given parameters"), excep),
-            _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(ExcepMsg(_("ASCOM error -- Cannot start exposure with given parameters"), excep));
         return true;
     }
 
@@ -494,7 +491,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         EXCEPINFO excep;
         if (ASCOM_ImageReady(&ready, &excep)) {
             Debug.AddLine(ExcepMsg("ASCOM_ImageReady failed", excep));
-            wxMessageBox(ExcepMsg(_("Exception thrown polling camera"), excep), _("Error"), wxOK | wxICON_ERROR);
+            pFrame->Alert(ExcepMsg(_("Exception thrown polling camera"), excep));
             still_going = false;
             retval = true;
         }
@@ -507,7 +504,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     // Get the image
     if (ASCOM_Image(img, TakeSubframe, subframe, &excep)) {
         Debug.AddLine(ExcepMsg(_T("ASCOM_Image failed"), excep));
-        wxMessageBox(ExcepMsg(_("Error reading image"), excep));
+        pFrame->Alert(ExcepMsg(_("Error reading image"), excep));
         return true;
     }
 
@@ -757,7 +754,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRec
     if(hr!=S_OK) return true;
 
     if (Image.Init((int) FullSize.GetWidth(), (int) FullSize.GetHeight())) {
-        wxMessageBox(_("Cannot allocate memory to download image from camera"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Cannot allocate memory to download image from camera"));
         return true;
     }
     unsigned short *dataptr;
@@ -805,7 +802,7 @@ bool Camera_ASCOMLateClass::ASCOM_IsMoving(void)
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_ispulseguiding,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispParms,&vRes,&excep, NULL)))
     {
         Debug.AddLine(ExcepMsg("ASCOM driver failed checking IsPulseGuiding", excep));
-        wxMessageBox(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding"), excep), _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding"), excep));
         return false;
     }
     if (vRes.boolVal == VARIANT_TRUE) {

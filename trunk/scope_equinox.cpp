@@ -170,11 +170,11 @@ bool ScopeEquinox::Guide(const GUIDE_DIRECTION direction, int duration) {
     wxString prefix = "E6";
     //if (mountcode == SCOPE_EQMAC) prefix = "EQMAC";
     if (E6ReturnCode == -1) {
-        wxMessageBox (prefix + " responded it's not connected to a mount",_("Error"));
+        pFrame->Alert(prefix + _(" responded it's not connected to a mount"));
         return true;
     }
     else if (err == -600) {
-        wxMessageBox (prefix + " not running",_("Error"));
+        pFrame->Alert(prefix + _(" not running"));
         return true;
     }
     wxMilliSleep(duration);

@@ -111,7 +111,7 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
 
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error during capture"));
             Disconnect();
             delete[] buffer;
             return true;
@@ -128,7 +128,7 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
         }
         retval = FclGetOneFrame(hDriver,CapInfo);  // get the frame
         if (retval) {
-            wxMessageBox(_T("Error capturing data from camera"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Error capturing data from camera"));
             Disconnect();
             delete[] buffer;
             return true;

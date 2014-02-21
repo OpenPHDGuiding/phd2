@@ -51,7 +51,7 @@ wxDECLARE_EVENT(WXMESSAGEBOX_PROXY_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDECLARE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
-wxDECLARE_EVENT(BUMP_TIMEOUT_EVENT, wxThreadEvent);
+wxDECLARE_EVENT(ALERT_FROM_THREAD_EVENT, wxThreadEvent);
 
 enum NOISE_REDUCTION_METHOD
 {
@@ -100,7 +100,6 @@ public:
     void SetFocalLength(int val);
 };
 
-//class MyFrame: public wxFrame
 class MyFrame : public wxFrame
 {
 protected:
@@ -146,11 +145,10 @@ public:
     wxMenuBar *Menubar;
     wxMenu *tools_menu, *view_menu, *bookmarks_menu;
     wxAuiToolBar *MainToolbar;
-    //wxChoice    *Dur_Choice;
+    wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
     wxCheckBox *HotPixel_Checkbox;
     wxButton    *Setup_Button, *Dark_Button;
-    //wxBitmapButton *Brain_Button, *Cam_Button, *Scope_Button, *Loop_Button, *Guide_Button, *Stop_Button;
     wxHtmlHelpController *help;
     wxSlider *Gamma_Slider;
     AdvancedDialog *pAdvancedDialog;
@@ -220,7 +218,6 @@ public:
 
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
-    void OnBumpTimeout(wxThreadEvent& evt);
     void LoadProfileSettings(void);
     void UpdateTitle(void);
     void UpdateDarksButton(void);
@@ -292,6 +289,7 @@ public:
 
     double GetCameraPixelScale(void);
 
+    void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
     virtual void SetStatusText(const wxString& text, int number=0, int msToDisplay = 0);
     virtual wxString GetSettingsSummary();
 
@@ -310,6 +308,7 @@ private:
     int m_exposureDuration;
 
     void OnSetStatusText(wxThreadEvent& event);
+    void OnAlertFromThread(wxThreadEvent& event);
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
 
     void OnMessageBoxProxy(wxCommandEvent& evt);

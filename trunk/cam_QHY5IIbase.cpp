@@ -260,7 +260,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, boo
 
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error during capture"));
             Disconnect();
             return true;
         }

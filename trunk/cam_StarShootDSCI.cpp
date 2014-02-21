@@ -145,7 +145,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     }
 
     if (retval) {
-        (void) wxMessageBox(wxT("Problem sending register to StarShoot"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Problem sending register to StarShoot"));
         return true;
     }
 
@@ -154,7 +154,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     else
         retval = OCP_Exposure(0);  // Start USB1.1 exposure
     if (!retval) {
-        wxMessageBox(_T("Error starting exposure"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Error starting exposure"));
         return true;
     }
     if (duration > 100) {
@@ -168,7 +168,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
     }
     if (img.NPixels != (RawX*RawY)) {
         if (img.Init(RawX,RawY)) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error during capture"));
             Disconnect();
             return true;
         }

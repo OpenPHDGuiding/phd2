@@ -119,10 +119,9 @@ Camera_SSPIAGClass::Camera_SSPIAGClass() {
     RawBuffer = NULL;
 }
 
-
-
-bool Camera_SSPIAGClass::Connect() {
-// returns true on error
+bool Camera_SSPIAGClass::Connect()
+{
+    // returns true on error
     CameraDLL = LoadLibrary(TEXT("astroDLLsspiag"));
     if (CameraDLL == NULL) {
         wxMessageBox(_T("Cannot load astroDLLsspiag.dll"),_("Error"),wxOK | wxICON_ERROR);
@@ -346,7 +345,7 @@ bool Camera_SSPIAGClass::Capture(int duration, usImage& img, wxRect subframe, bo
 
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_T("Memory allocation error during capture"));
             Disconnect();
             return true;
         }

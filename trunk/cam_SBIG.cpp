@@ -331,7 +331,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     // init memory
     if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-        wxMessageBox(_("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Memory allocation error during capture"));
         Disconnect();
         return true;
     }
@@ -342,7 +342,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
     if (err != CE_NO_ERROR) {
-        wxMessageBox(_("Cannot start exposure"), _("Error"));
+        pFrame->Alert(_("Cannot start exposure"));
         Disconnect();
         return true;
     }
@@ -355,7 +355,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         wxMilliSleep(20);
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR) {
-            wxMessageBox(_("Cannot poll exposure"), _("Error"));
+            pFrame->Alert(_("Cannot poll exposure"));
             Disconnect();
             return true;
         }
@@ -368,7 +368,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     // End exposure
     err = SBIGUnivDrvCommand(CC_END_EXPOSURE, &eep, NULL);
     if (err != CE_NO_ERROR) {
-        wxMessageBox(_("Cannot stop exposure"), _("Error"));
+        pFrame->Alert(_("Cannot stop exposure"));
         Disconnect();
         return true;
     }
@@ -397,7 +397,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             dataptr = img.ImageData + subframe.x + (y+subframe.y)*FullSize.GetWidth();
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             if (err != CE_NO_ERROR) {
-                wxMessageBox(_("Error downloading data"), _("Error"));
+                pFrame->Alert(_("Error downloading data"));
                 Disconnect();
                 return true;
             }
@@ -410,7 +410,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             dataptr += FullSize.GetWidth();
             if (err != CE_NO_ERROR) {
-                wxMessageBox(_("Error downloading data"), _("Error"));
+                pFrame->Alert(_("Error downloading data"));
                 Disconnect();
                 return true;
             }
@@ -468,7 +468,7 @@ bool Camera_SBIGClass::ST4PulseGuideScope(int direction, int duration) {
         wxMilliSleep(10);
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR) {
-            wxMessageBox(_("Cannot check SBIG relay status"), _("Error"));
+            pFrame->Alert(_("Cannot check SBIG relay status"));
             return true;
         }
         if (!qcsr.status) still_going = false;

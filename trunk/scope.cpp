@@ -579,7 +579,7 @@ bool Scope::IsCalibrated(void)
 
 #define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
 
-bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
+bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 {
     bool bError = false;
 
@@ -602,11 +602,12 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 {
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
                     {
-                        wxString msg(_("RA Calibration Failed: star did not move enough"));
-                        wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
+                        wxString msg(wxTRANSLATE("RA Calibration Failed: star did not move enough"));
+                        const wxString& translated(wxGetTranslation(msg));
+                        pFrame->Alert(translated);
                         GuideLog.CalibrationFailed(this, msg);
                         EvtServer.NotifyCalibrationFailed(this, msg);
-                        throw ERROR_INFO("Calibrate failed");
+                        throw ERROR_INFO("RA calibration failed");
                     }
                     status0.Printf(_("West step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
@@ -683,11 +684,12 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 {
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
                     {
-                        wxString msg(_("Backlash Clearing Failed: star did not move enough"));
-                        wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
+                        wxString msg(wxTRANSLATE("Backlash Clearing Failed: star did not move enough"));
+                        const wxString& translated(wxGetTranslation(msg));
+                        pFrame->Alert(translated);
                         GuideLog.CalibrationFailed(this, msg);
                         EvtServer.NotifyCalibrationFailed(this, msg);
-                        throw ERROR_INFO("Calibrate failed");
+                        throw ERROR_INFO("Clear backlash failed");
                     }
                     status0.Printf(_("Clear backlash step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
@@ -706,11 +708,12 @@ bool Scope::UpdateCalibrationState(const PHD_Point &currentLocation)
                 {
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
                     {
-                        wxString msg(_("DEC Calibration Failed: star did not move enough"));
-                        wxMessageBox(msg, _("Alert"), wxOK | wxICON_ERROR);
+                        wxString msg(wxTRANSLATE("DEC Calibration Failed: star did not move enough"));
+                        const wxString& translated(wxGetTranslation(msg));
+                        pFrame->Alert(translated);
                         GuideLog.CalibrationFailed(this, msg);
                         EvtServer.NotifyCalibrationFailed(this, msg);
-                        throw ERROR_INFO("Calibrate failed");
+                        throw ERROR_INFO("Dec calibration failed");
                     }
                     status0.Printf(_("North step %3d"), m_calibrationSteps);
                     GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);

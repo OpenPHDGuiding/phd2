@@ -78,7 +78,8 @@ float CalcSlope(ArrayOfDbl& y) {
 }
 
 //
-bool QuickLRecon(usImage& img) {
+bool QuickLRecon(usImage& img)
+{
     // Does a simple debayer of luminance data only -- sliding 2x2 window
     usImage Limg;
     int x, y;
@@ -88,7 +89,7 @@ bool QuickLRecon(usImage& img) {
     xsize = img.Size.GetWidth();
     ysize = img.Size.GetHeight();
     if (Limg.Init(xsize,ysize)) {
-        (void) wxMessageBox(wxT("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Memory allocation error"));
         return true;
     }
     for (y=0; y<ysize-1; y++) {
@@ -191,7 +192,8 @@ bool Median3(unsigned short ImageData [], int xsize, int ysize)
     return false;
 }
 
-bool SquarePixels(usImage& img, float xsize, float ysize) {
+bool SquarePixels(usImage& img, float xsize, float ysize)
+{
     // Stretches one dimension to square up pixels
     int x,y;
     int newsize;
@@ -206,7 +208,7 @@ bool SquarePixels(usImage& img, float xsize, float ysize) {
 
     // Copy the existing data
     if (tempimg.Init(img.Size.GetWidth(), img.Size.GetHeight())) {
-        wxMessageBox(_T("Could not allocate enough memory"),_("Error"),wxOK);
+        pFrame->Alert(_("Memory allocation error"));
         return true;
     }
     ptr = tempimg.ImageData;

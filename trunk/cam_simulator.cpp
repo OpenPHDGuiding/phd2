@@ -619,7 +619,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
     if ( !fits_open_diskfile(&fptr, "phd011412.fit", READONLY, &status) ) {
 #endif
         if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-            (void) wxMessageBox(wxT("FITS file is not of an image"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("FITS file is not of an image"));
             return true;
         }
 
@@ -630,15 +630,15 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
         ysize = (int) fits_size[1];
         fits_get_num_hdus(fptr,&nhdus,&status);
         if ((nhdus != 1) || (naxis != 2)) {
-           (void) wxMessageBox(_T("Unsupported type or read error loading FITS file"),_("Error"),wxOK | wxICON_ERROR);
+           pFrame->Alert(_("Unsupported type or read error loading FITS file"));
            return true;
         }
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error"));
             return true;
         }
         if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { // Read image
-            (void) wxMessageBox(_T("Error reading data"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Error reading data"));
             return true;
         }
         fits_close_file(fptr,&status);
@@ -658,13 +658,13 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img) {
 
     bool retval = disk_image.LoadFile("/Users/stark/dev/PHD/simimage.bmp");
     if (!retval) {
-        wxMessageBox(_T("Cannot load simulated image"));
+        pFrame->Alert(_("Cannot load simulated image"));
         return true;
     }
     xsize = disk_image.GetWidth();
     ysize = disk_image.GetHeight();
     if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+        pFrame->Alert(_("Memory allocation error"));
         return true;
     }
 
@@ -711,7 +711,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
     if (img.NPixels != (int)(sim->width * sim->height)) {
         if (img.Init(sim->width, sim->height)) {
-            wxMessageBox(_T("Memory allocation error"),_("Error"), wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error"));
             return true;
         }
     }
@@ -799,7 +799,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
     sprintf(fname,"/Users/stark/dev/PHD/simimg/DriftSim_%d.fit",frame);
     if ( !fits_open_file(&fptr, fname, READONLY, &status) ) {
         if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-            (void) wxMessageBox(wxT("FITS file is not of an image"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("FITS file is not of an image"));
             return true;
         }
 
@@ -810,15 +810,15 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
         ysize = (int) fits_size[1];
         fits_get_num_hdus(fptr,&nhdus,&status);
         if ((nhdus != 1) || (naxis != 2)) {
-            (void) wxMessageBox(wxString::Format("Unsupported type or read error loading FITS file %d %d",nhdus,naxis),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(wxString::Format(_("Unsupported type or read error loading FITS file %d %d"),nhdus,naxis));
             return true;
         }
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error"));
             return true;
         }
         if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { // Read image
-            (void) wxMessageBox(_T("Error reading data"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Error reading data"));
             return true;
         }
         fits_close_file(fptr,&status);

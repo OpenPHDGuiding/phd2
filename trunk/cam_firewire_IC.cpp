@@ -278,7 +278,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
 
     if (img.NPixels != (xsize*ysize)) {
         if (img.Init(xsize,ysize)) {
-            wxMessageBox(_T("Memory allocation error"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error"));
             return true;
         }
     }
@@ -291,7 +291,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
 
     retval = m_pGrabber->startLive(false);
     if (!retval) {
-        wxMessageBox(_T("Could not start video stream"));
+        pFrame->Alert(_("Could not start video stream"));
         return true;
     }
 
@@ -311,7 +311,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
     }
 
     if( err.isError() ) {
-        wxMessageBox(wxString::Format("Error capturing image: %d (%d)",(int) err.getVal(), (int)  eTIMEOUT_PREMATURLY_ELAPSED) + wxString(err.c_str()));
+        pFrame->Alert(wxString::Format(_("Error capturing image: %d (%d)"),(int) err.getVal(), (int)  eTIMEOUT_PREMATURLY_ELAPSED) + wxString(err.c_str()));
         Disconnect();
         return true;
     }
@@ -321,7 +321,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
         *dataptr = (unsigned short) *imgptr;
 
 /*  if (dc1394_capture_dequeue(camera, DC1394_CAPTURE_POLICY_WAIT, &vframe)!=DC1394_SUCCESS) {
-        wxMessageBox(_T("Cannot get a frame from the queue"));
+        pFrame->Alert(_("Cannot get a frame from the queue"));
         Disconnect();
         return true;
     }

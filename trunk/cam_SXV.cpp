@@ -343,7 +343,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         output_xsize = output_xsize - 16;  // crop off 16 from one side
     if (img.NPixels != (output_xsize*output_ysize)) {
         if (img.Init(output_xsize,output_ysize)) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+            pFrame->Alert(_("Memory allocation error during capture"));
             Disconnect();
             return true;
         }
