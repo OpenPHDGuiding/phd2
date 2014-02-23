@@ -1289,8 +1289,8 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
            << NV("DECDirection", step.mount->DirectionStr((GUIDE_DIRECTION)step.directionDec));
     }
 
-    ev << NV("StarMass", pFrame->pGuider->StarMass(), 0)
-       << NV("SNR", pFrame->pGuider->SNR(), 2);
+    ev << NV("StarMass", step.starMass, 0)
+       << NV("SNR", step.starSNR, 2);
 
     int errorCode = pFrame->pGuider->StarError();
     if (errorCode)

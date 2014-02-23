@@ -55,6 +55,8 @@ struct GuideStepInfo
     // dependencies in our header files so cannot use GUIDE_DIRECTION here
     int directionRA;
     int directionDec;
+    double starMass;
+    double starSNR;
 };
 
 class GuidingLog : public Logger

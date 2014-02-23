@@ -658,6 +658,8 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         info.directionRA = xDirection;
         info.durationDec = actualYAmount;
         info.directionDec = yDirection;
+        info.starMass = pFrame->pGuider->StarMass();
+        info.starSNR = pFrame->pGuider->SNR();
 
         GuideLog.GuideStep(info);
         EvtServer.NotifyGuideStep(info);
