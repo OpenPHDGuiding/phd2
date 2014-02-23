@@ -54,6 +54,8 @@ BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_MENU_RANGE(GRAPH_ARCSECS, GRAPH_PIXELS, GraphLogWindow::OnArcsecsPixels)
     EVT_MENU(GRAPH_RADX_COLOR, GraphLogWindow::OnRADxColor)
     EVT_MENU(GRAPH_DECDY_COLOR, GraphLogWindow::OnDecDyColor)
+    EVT_MENU(GRAPH_STAR_MASS, GraphLogWindow::OnMenuStarMass)
+    EVT_MENU(GRAPH_STAR_SNR, GraphLogWindow::OnMenuStarSNR)
     EVT_BUTTON(BUTTON_GRAPH_LENGTH,GraphLogWindow::OnButtonLength)
     EVT_MENU_RANGE(MENU_LENGTH_BEGIN, MENU_LENGTH_END, GraphLogWindow::OnMenuLength)
     EVT_BUTTON(BUTTON_GRAPH_HEIGHT,GraphLogWindow::OnButtonHeight)
@@ -291,6 +293,12 @@ void GraphLogWindow::OnButtonSettings(wxCommandEvent& WXUNUSED(evt))
         item2->Check();
     menu->AppendSeparator();
 
+    item1 = menu->AppendCheckItem(GRAPH_STAR_MASS, _("Star Mass"));
+    item1->Check(m_pClient->m_showStarMass);
+    item1 = menu->AppendCheckItem(GRAPH_STAR_SNR, _("Star SNR"));
+    item1->Check(m_pClient->m_showStarSNR);
+    menu->AppendSeparator();
+
     // setup color selection items
     if (m_pClient->m_mode == GraphLogClientWindow::MODE_RADEC)
     {
@@ -362,6 +370,20 @@ void GraphLogWindow::OnArcsecsPixels(wxCommandEvent& evt)
         break;
     }
     pConfig->Global.SetInt("/graph/HeightUnits", (int)m_pClient->m_heightUnits);
+    Refresh();
+}
+
+void GraphLogWindow::OnMenuStarMass(wxCommandEvent& evt)
+{
+    m_pClient->m_showStarMass = evt.IsChecked();
+    pConfig->Global.SetBoolean("/graph/showStarMass", m_pClient->m_showStarMass);
+    Refresh();
+}
+
+void GraphLogWindow::OnMenuStarSNR(wxCommandEvent& evt)
+{
+    m_pClient->m_showStarSNR = evt.IsChecked();
+    pConfig->Global.SetBoolean("/graph/showStarSNR", m_pClient->m_showStarSNR);
     Refresh();
 }
 
@@ -651,12 +673,14 @@ void GraphLogWindow::UpdateHeightButtonLabel(void)
     }
 }
 
-BEGIN_EVENT_TABLE(GraphLogClientWindow, wxWindow)
-EVT_PAINT(GraphLogClientWindow::OnPaint)
-END_EVENT_TABLE()
+wxBEGIN_EVENT_TABLE(GraphLogClientWindow, wxWindow)
+    EVT_PAINT(GraphLogClientWindow::OnPaint)
+wxEND_EVENT_TABLE()
 
 GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
-    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(401,200), wxFULL_REPAINT_ON_RESIZE)
+    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(401,200), wxFULL_REPAINT_ON_RESIZE),
+    m_line1(0),
+    m_line2(0)
 {
     ResetData();
     m_mode = (GRAPH_MODE) pConfig->Global.GetInt("/graph/ScopeOrCameraUnits", (int) MODE_RADEC);
@@ -690,10 +714,14 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
 
     m_showTrendlines = false;
     m_showCorrections = pConfig->Global.GetBoolean("/graph/showCorrections", true);
+    m_showStarMass = pConfig->Global.GetBoolean("/graph/showStarMass", false);
+    m_showStarSNR = pConfig->Global.GetBoolean("/graph/showStarSNR", false);
 }
 
 GraphLogClientWindow::~GraphLogClientWindow(void)
 {
+    delete [] m_line1;
+    delete [] m_line2;
 }
 
 static void reset_trend_accums(TrendLineAccum accums[4])
@@ -743,19 +771,25 @@ bool GraphLogClientWindow::SetMaxLength(unsigned int maxLength)
 
     try
     {
-        if (maxLength <= m_minLength)
+        if (maxLength < m_minLength)
         {
             throw ERROR_INFO("maxLength < m_minLength");
         }
-        m_history.resize(maxLength);
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_minLength = DefaultMinLength;
-        m_history.resize(DefaultMaxLength);
+        maxLength = m_minLength;
     }
+
+    m_history.resize(maxLength);
+
+    delete [] m_line1;
+    m_line1 = new wxPoint[maxLength];
+
+    delete [] m_line2;
+    m_line2 = new wxPoint[maxLength];
 
     pConfig->Global.SetInt("/graph/maxLength", m_history.capacity());
 
@@ -952,6 +986,30 @@ static double GetMaxDuration(const circular_buffer<S_HISTORY>& history, int star
     return maxdur;
 }
 
+static double GetMaxStarMass(const circular_buffer<S_HISTORY>& history, int start_item)
+{
+    double maxMass = 0.0;
+    for (unsigned int i = start_item; i < history.size(); i++)
+    {
+        const S_HISTORY& h = history[i];
+        if (h.starMass > maxMass)
+            maxMass = h.starMass;
+    }
+    return maxMass;
+}
+
+static double GetMaxStarSNR(const circular_buffer<S_HISTORY>& history, int start_item)
+{
+    double maxSNR = 0.0;
+    for (unsigned int i = start_item; i < history.size(); i++)
+    {
+        const S_HISTORY& h = history[i];
+        if (h.starSNR > maxSNR)
+            maxSNR = h.starSNR;
+    }
+    return maxSNR;
+}
+
 void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 {
     //wxAutoBufferedPaintDC dc(this);
@@ -1040,9 +1098,6 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             plot_length = m_history.size();
         }
 
-        wxPoint *pRaOrDxLine  = new wxPoint[plot_length];
-        wxPoint *pDecOrDyLine = new wxPoint[plot_length];
-
         unsigned int start_item = m_history.size() - plot_length;
 
         if (m_showCorrections)
@@ -1084,6 +1139,40 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             }
         }
 
+        if (m_showStarMass)
+        {
+            double maxMass = GetMaxStarMass(m_history, start_item);
+
+            const double ymag = (size.y - 10) * 0.5 / maxMass;
+            ScaleAndTranslate sctr(xorig, yorig, xmag, -ymag);
+
+            for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
+            {
+                const S_HISTORY& h = m_history[i];
+                m_line1[j] = sctr.pt(j, h.starMass);
+            }
+
+            dc.SetPen(*wxYELLOW_PEN);
+            dc.DrawLines(plot_length, m_line1);
+        }
+
+        if (m_showStarSNR)
+        {
+            double maxSNR = GetMaxStarSNR(m_history, start_item);
+
+            const double ymag = (size.y - 10) * 0.5 / maxSNR;
+            ScaleAndTranslate sctr(xorig, yorig, xmag, -ymag);
+
+            for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
+            {
+                const S_HISTORY& h = m_history[i];
+                m_line1[j] = sctr.pt(j, h.starSNR);
+            }
+
+            dc.SetPen(*wxWHITE_PEN);
+            dc.DrawLines(plot_length, m_line1);
+        }
+
         for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
         {
             const S_HISTORY& h = m_history[i];
@@ -1091,23 +1180,23 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             switch (m_mode)
             {
             case MODE_RADEC:
-                pRaOrDxLine[j] = sctr.pt(j, h.ra);
-                pDecOrDyLine[j] = sctr.pt(j, h.dec);
+                m_line1[j] = sctr.pt(j, h.ra);
+                m_line2[j] = sctr.pt(j, h.dec);
                 break;
             case MODE_DXDY:
-                pRaOrDxLine[j] = sctr.pt(j, h.dx);
-                pDecOrDyLine[j] = sctr.pt(j, h.dy);
+                m_line1[j] = sctr.pt(j, h.dx);
+                m_line2[j] = sctr.pt(j, h.dy);
                 break;
             }
         }
 
         wxPen raOrDxPen(m_raOrDxColor, 2);
         dc.SetPen(raOrDxPen);
-        dc.DrawLines(plot_length, pRaOrDxLine);
+        dc.DrawLines(plot_length, m_line1);
 
         wxPen decOrDyPen(m_decOrDyColor, 2);
         dc.SetPen(decOrDyPen);
-        dc.DrawLines(plot_length, pDecOrDyLine);
+        dc.DrawLines(plot_length, m_line2);
 
         // draw trend lines
         double polarAlignCircleRadius = 0.0;
@@ -1191,9 +1280,6 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         }
 
         m_pOscIndex->SetLabel(wxString::Format("RA Osc: %4.2f", osc_index));
-
-        delete [] pRaOrDxLine;
-        delete [] pDecOrDyLine;
     }
 }
 

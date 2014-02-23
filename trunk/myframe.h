@@ -427,6 +427,8 @@ enum {
         GRAPH_DXDY,
         GRAPH_ARCSECS,
         GRAPH_PIXELS,
+        GRAPH_STAR_MASS,
+        GRAPH_STAR_SNR,
         GRAPH_RADX_COLOR,
         GRAPH_DECDY_COLOR,
     BUTTON_GRAPH_CLEAR,

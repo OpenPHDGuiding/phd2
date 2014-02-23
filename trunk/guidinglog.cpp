@@ -441,8 +441,7 @@ bool GuidingLog::GuideStep(const GuideStepInfo& step)
             }
 
             m_file.Write(wxString::Format("%.f,%.2f,%d\n",
-                    pFrame->pGuider->StarMass(), pFrame->pGuider->SNR(),
-                    pFrame->pGuider->StarError()));
+                    step.starMass, step.starSNR, pFrame->pGuider->StarError()));
 
             Flush();
         }

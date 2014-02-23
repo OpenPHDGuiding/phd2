@@ -60,11 +60,13 @@ struct S_HISTORY
     double dec;
     double raDur;
     double decDur;
+    double starSNR;
+    double starMass;
     S_HISTORY() { }
     S_HISTORY(const GuideStepInfo& step)
         : timestamp(::wxGetUTCTimeMillis().GetValue()),
         dx(step.cameraOffset->X), dy(step.cameraOffset->Y), ra(step.mountOffset->X), dec(step.mountOffset->Y),
-        raDur(step.durationRA), decDur(step.durationDec) { }
+        raDur(step.durationRA), decDur(step.durationDec), starSNR(step.starSNR), starMass(step.starMass) { }
 };
 
 class GraphLogClientWindow : public wxWindow
@@ -90,6 +92,9 @@ private:
 
     circular_buffer<S_HISTORY> m_history;
 
+    wxPoint *m_line1;
+    wxPoint *m_line2;
+
     TrendLineAccum m_trendLineAccum[4]; // dx, dy, ra, dec
 
     int m_raSameSides; // accumulator for RA osc index
@@ -102,6 +107,8 @@ private:
 
     bool m_showTrendlines;
     bool m_showCorrections;
+    bool m_showStarMass;
+    bool m_showStarSNR;
 
     friend class GraphLogWindow;
 
@@ -164,6 +171,8 @@ public:
     void OnArcsecsPixels(wxCommandEvent& evt);
     void OnRADxColor(wxCommandEvent& evt);
     void OnDecDyColor(wxCommandEvent& evt);
+    void OnMenuStarMass(wxCommandEvent& evt);
+    void OnMenuStarSNR(wxCommandEvent& evt);
     void OnButtonLength(wxCommandEvent& evt);
     void OnMenuLength(wxCommandEvent& evt);
     void OnButtonHeight(wxCommandEvent& evt);
