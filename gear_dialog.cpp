@@ -834,7 +834,7 @@ void GearDialog::OnChoiceStepGuider(wxCommandEvent& event)
         UpdateGearPointers();
 
         m_pStepGuider = StepGuider::Factory(choice);
-        Debug.AddLine(wxString::Format("Created new scope of type %s = %p", choice, m_pStepGuider));
+        Debug.AddLine(wxString::Format("Created new stepguider of type %s = %p", choice, m_pStepGuider));
 
         pConfig->Profile.SetString("/stepguider/LastMenuChoice", choice);
 
