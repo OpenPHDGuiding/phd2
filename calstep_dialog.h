@@ -52,6 +52,7 @@ private:
     wxSpinCtrlDouble *m_pGuideSpeed;
     wxSpinCtrlDouble *m_pNumSteps;
     wxSpinCtrlDouble *m_pDeclination;
+    wxStaticText *m_status;
     wxTextCtrl *m_pRslt;
     wxTextCtrl *m_pImageScale;
     // numeric values from fields, populated by validators
@@ -64,18 +65,17 @@ private:
     int m_iStepSize;
     bool m_bValidResult;
     double m_dDeclination;
-    // pConfig prefix string for persisting guide speed
-    wxString m_sConfigPrefix;
 
 public:
-    CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, const wxString& configPrefix);
+    CalstepDialog(wxWindow *parent, int focalLength, double pixelSize);
     ~CalstepDialog(void);
     bool GetResults (int& focalLength, double& pixelSize, int& stepSize);
 
 private:
+    void OnText(wxCommandEvent& evt);
+    void OnSpinCtrlDouble(wxSpinDoubleEvent& evt);
     void AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip);
-    void OnRecalc (wxCommandEvent& evt);
-    bool CalcDefaultDuration (int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps, double Declination, double& ImageScale, int& StepSize);
+    void DoRecalc (void);
 };
 
 #endif

@@ -906,12 +906,7 @@ void Scope::ScopeConfigDialogPane::OnAutoDuration(wxCommandEvent& evt)
         focalLength = pAdvancedDlg->GetFocalLength();
     }
 
-    if (pMount)
-    {
-        configPrefix = "/" + pMount->GetMountClassName();
-    }
-
-    CalstepDialog calc(m_pParent, focalLength, pixelSize, configPrefix);
+    CalstepDialog calc(m_pParent, focalLength, pixelSize);
     if (calc.ShowModal() == wxID_OK)
     {
         int iDuration;
