@@ -65,6 +65,8 @@ public:
     virtual void    InitCapture() { return; }
     Camera_LEWebcamClass(int devNumber=-1);
     ~Camera_LEWebcamClass(void);
+    virtual bool HasNonGuiCapture(void) { return true; }
+
 private:
     virtual bool LEControl(int actions)=0;
 };

@@ -47,14 +47,14 @@ public:
     //bool  SetColorGain(unsigned char r_gain, unsigned char g_gain, unsigned char b_gain);
     //int   FindCameras(int DevNums[8]);
 
+    virtual bool HasNonGuiCapture(void) { return true; }
+    virtual bool ST4HasNonGuiMove(void) { return true; }
+
     Camera_SSAGClass();
 private:
 //  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
     unsigned char *buffer;
     void RemoveLines(usImage& img);
-
-    virtual bool HasNonGuiCapture(void) { return true; }
-    virtual bool    ST4HasNonGuiMove(void) { return true; }
 };
 #endif  //QGUIDEDEF
 
