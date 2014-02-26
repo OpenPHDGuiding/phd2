@@ -165,8 +165,8 @@ NudgeLockDialog::NudgeLockDialog()
     wxSize s1 = StringSize(this, _("Set"), 10);
     wxSize s2 = StringSize(this, _("Save"), 10);
     wxSize s3 = StringSize(this, _("Restore"), 10);
-    size_t longest = MAX(s1.GetX(),s2.GetX());
-    longest = MAX(longest, s3.GetX());
+    size_t longest = wxMax(s1.GetX(), s2.GetX());
+    longest = wxMax(longest, s3.GetX());
 
     wxSize btnsize(longest, -1);
     updateLockPosButton = new wxButton(this, ID_SET_LOCK_POS, _("Set"), wxDefaultPosition, btnsize);
