@@ -36,6 +36,10 @@
 #ifndef NUDGE_LOCK_TOOL_INCLUDED
 #define NUDGE_LOCK_TOOL_INCLUDED
 
+#ifndef MAX
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#endif
+
 class NudgeLockTool
 {
     NudgeLockTool(); // not implemented
