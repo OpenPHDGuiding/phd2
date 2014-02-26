@@ -162,7 +162,13 @@ NudgeLockDialog::NudgeLockDialog()
     lockPosCtrlY->SetToolTip(_("Lock position Y coordinate"));
     sz3->Add(lockPosCtrlY, wxSizerFlags().Border(wxLEFT, 5).Align(wxALIGN_CENTER_VERTICAL));
 
-    wxSize btnsize(StringSize(this, _("Restore"), 10));
+    wxSize s1 = StringSize(this, _("Set"), 10);
+    wxSize s2 = StringSize(this, _("Save"), 10);
+    wxSize s3 = StringSize(this, _("Restore"), 10);
+    size_t longest = MAX(s1.GetX(),s2.GetX());
+    longest = MAX(longest, s3.GetX());
+
+    wxSize btnsize(longest, -1);
     updateLockPosButton = new wxButton(this, ID_SET_LOCK_POS, _("Set"), wxDefaultPosition, btnsize);
     updateLockPosButton->SetToolTip(_("Set the lock position to the entered coordinates"));
     sz3->Add(updateLockPosButton, wxSizerFlags().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
