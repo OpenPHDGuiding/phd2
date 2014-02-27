@@ -92,7 +92,7 @@ public:
     bool            HasShutter;
     bool            HasSubframes;
     short           Port;
-    int             Delay;
+    int             ReadDelay;
     bool            ShutterState;  // false=light, true=dark
     bool            UseSubframes;
     double          PixelSize;

@@ -178,6 +178,7 @@ GuideCamera::GuideCamera(void)
     ShutterState=false;
     HasSubframes=false;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
+    ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", 0);
 
     CurrentDarkFrame = NULL;
 
@@ -656,8 +657,8 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     {
         int width = StringWidth(_T("0000"));
         m_pDelay = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-                wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 100, 100,_T("Delay"));
-        DoAdd(_("LE Read Delay"), m_pDelay,
+                wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 250, 150,_T("Delay"));
+        DoAdd(_("LE Read Delay (ms)"), m_pDelay,
               _("Adjust if you get dropped frames"));
     }
 
@@ -714,7 +715,7 @@ void CameraConfigDialogPane::LoadValues(void)
 
     if (m_pCamera->HasDelayParam)
     {
-        m_pDelay->SetValue(m_pCamera->Delay);
+        m_pDelay->SetValue(m_pCamera->ReadDelay);
     }
 
     if (m_pCamera->HasPortNum)
@@ -807,7 +808,8 @@ void CameraConfigDialogPane::UnloadValues(void)
 
     if (m_pCamera->HasDelayParam)
     {
-        m_pCamera->Delay = m_pDelay->GetValue();
+        m_pCamera->ReadDelay = m_pDelay->GetValue();
+        pConfig->Profile.SetInt("/camera/ReadDelay", m_pCamera->ReadDelay);
     }
 
     if (m_pCamera->HasPortNum)
@@ -867,7 +869,7 @@ wxString GuideCamera::GetSettingsSummary()
     // return a loggable summary of current camera settings
     return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s\n",
         Name, GuideCameraGain,
-        HasDelayParam ? wxString::Format(", delay = %d", Delay) : "",
+        HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
         HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "",
         FullSize.GetWidth(), FullSize.GetHeight(),
         darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark");

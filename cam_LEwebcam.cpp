@@ -47,7 +47,8 @@ Camera_LEWebcamClass::Camera_LEWebcamClass(int devNumber)
      :Camera_WDMClass(devNumber)
 {
     Name=_T("Generic LE Webcam");
-    readDelay = 0;
+    HasDelayParam = true;
+    ReadDelay = 0;
 }
 
 Camera_LEWebcamClass::~Camera_LEWebcamClass(void)
@@ -113,9 +114,9 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
         LEControl(LECAMERA_SHUTTER_CLOSED|LECAMERA_AMP_ON|LECAMERA_TRANSFER_FIELD_A|LECAMERA_TRANSFER_FIELD_B);
 
         // wait the final delay before reading (if there is one)
-        if (readDelay)
+        if (ReadDelay)
         {
-            Sleep(readDelay);
+            Sleep(ReadDelay);
         }
 
         // now record the frame.

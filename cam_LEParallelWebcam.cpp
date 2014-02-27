@@ -51,7 +51,7 @@ Camera_LEParallelWebcamClass::Camera_LEParallelWebcamClass(int devNumber)
     : Camera_LEWebcamClass(devNumber)
 {
     Name=_T("Parallel LE Webcam");
-    readDelay = 5;
+    ReadDelay = 5;
     m_pParallelPort = NULL;
 }
 

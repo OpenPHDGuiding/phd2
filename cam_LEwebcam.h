@@ -56,8 +56,6 @@ protected:
         LECAMERA_TRANSFER_FIELD_B      = 512,
     };
 
-    int readDelay;
-
 public:
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
     virtual bool    Connect();      // Opens up and connects to cameras

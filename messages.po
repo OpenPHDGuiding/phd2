@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-25 20:49+0100\n"
+"POT-Creation-Date: 2014-02-27 19:44+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgstr ""
 msgid "Camera"
 msgstr ""
 
-#: advanced_dialog.cpp:153 camera.cpp:634
+#: advanced_dialog.cpp:153 camera.cpp:635
 msgid "Camera Settings"
 msgstr ""
 
@@ -125,7 +125,7 @@ msgstr ""
 msgid "(from mount)"
 msgstr ""
 
-#: calrestore_dialog.cpp:119 nudge_lock.cpp:165 nudge_lock.cpp:172
+#: calrestore_dialog.cpp:119 nudge_lock.cpp:167 nudge_lock.cpp:178
 msgid "Restore"
 msgstr ""
 
@@ -212,7 +212,7 @@ msgstr ""
 
 #: cam_ascomlate.cpp:172 cam_ascomlate.cpp:178 cam_ascomlate.cpp:189
 #: cam_firewire_IC.cpp:89 cam_INovaPLC.cpp:54 cam_KWIQGuider.cpp:62
-#: cam_KWIQGuider.cpp:104 cam_LELXUSBWebcam.cpp:66 cam_LESerialWebcam.cpp:83
+#: cam_KWIQGuider.cpp:104 cam_LELXUSBWebcam.cpp:66 cam_LESerialWebcam.cpp:77
 #: cam_MeadeDSI.cpp:63 cam_MeadeDSI.cpp:124 cam_openssag.cpp:65
 #: cam_openssag.cpp:107 cam_OSPL130.cpp:37 cam_OSPL130.cpp:42 cam_qhy5.cpp:88
 #: cam_qhy5.cpp:95 cam_qhy5.cpp:196 cam_qhy5.cpp:252 cam_qhy5.cpp:258
@@ -416,15 +416,15 @@ msgstr ""
 msgid "Unable to open LXUSB device"
 msgstr ""
 
-#: cam_LESerialWebcam.cpp:83 stepguider_sxao.cpp:124
+#: cam_LESerialWebcam.cpp:77 stepguider_sxao.cpp:124
 msgid "No serial ports found"
 msgstr ""
 
-#: cam_LESerialWebcam.cpp:90 stepguider_sxao.cpp:130
+#: cam_LESerialWebcam.cpp:84 stepguider_sxao.cpp:130
 msgid "Select serial port"
 msgstr ""
 
-#: cam_LESerialWebcam.cpp:90 stepguider_sxao.cpp:130
+#: cam_LESerialWebcam.cpp:84 stepguider_sxao.cpp:130
 msgid "Serial Port"
 msgstr ""
 
@@ -717,63 +717,63 @@ msgstr ""
 msgid "Camera mode"
 msgstr ""
 
-#: camera.cpp:197
+#: camera.cpp:198
 msgid " disconnected"
 msgstr ""
 
-#: camera.cpp:537
+#: camera.cpp:538
 msgid "Select your camera"
 msgstr ""
 
-#: camera.cpp:642
+#: camera.cpp:643
 msgid "Use Subframes"
 msgstr ""
 
-#: camera.cpp:643
+#: camera.cpp:644
 msgid "Check to only download subframes (ROIs) if your camera supports it"
 msgstr ""
 
-#: camera.cpp:651
+#: camera.cpp:652
 msgid "Camera Gain"
 msgstr ""
 
-#: camera.cpp:652
+#: camera.cpp:653
 msgid ""
 "Camera gain boost? Default = 95%, lower if you experience noise or wish to "
 "guide on a very bright star). Not available on all cameras."
 msgstr ""
 
-#: camera.cpp:660
-msgid "LE Read Delay"
+#: camera.cpp:661
+msgid "LE Read Delay (ms)"
 msgstr ""
 
-#: camera.cpp:661
+#: camera.cpp:662
 msgid "Adjust if you get dropped frames"
 msgstr ""
 
-#: camera.cpp:675
+#: camera.cpp:676
 msgid "LE Port"
 msgstr ""
 
-#: camera.cpp:676
+#: camera.cpp:677
 msgid "Port number for long-exposure control"
 msgstr ""
 
-#: camera.cpp:686
+#: camera.cpp:687
 msgid "Pixel size (microns)"
 msgstr ""
 
-#: camera.cpp:687
+#: camera.cpp:688
 msgid ""
 "Guide camera pixel size in microns. Used with the guide telescope focal "
 "length to display guiding error in arc-seconds."
 msgstr ""
 
-#: camera.cpp:690
+#: camera.cpp:691
 msgid "Auto load dark frames"
 msgstr ""
 
-#: camera.cpp:691
+#: camera.cpp:692
 msgid ""
 "Check to reload dark frames automatically when you connect the camera. "
 "First, you'll need to capture dark frames for any exposure durations you "
@@ -2435,32 +2435,32 @@ msgstr ""
 msgid "Lock position Y coordinate"
 msgstr ""
 
-#: nudge_lock.cpp:166
+#: nudge_lock.cpp:165 nudge_lock.cpp:172
 msgid "Set"
 msgstr ""
 
-#: nudge_lock.cpp:167
-msgid "Set the lock position to the entered coordinates"
-msgstr ""
-
-#: nudge_lock.cpp:169
+#: nudge_lock.cpp:166 nudge_lock.cpp:175
 msgid "Save"
 msgstr ""
 
-#: nudge_lock.cpp:170
+#: nudge_lock.cpp:173
+msgid "Set the lock position to the entered coordinates"
+msgstr ""
+
+#: nudge_lock.cpp:176
 msgid "Save the current lock position so it can be restored later"
 msgstr ""
 
-#: nudge_lock.cpp:173
+#: nudge_lock.cpp:179
 msgid "Restore the saved lock position"
 msgstr ""
 
-#: nudge_lock.cpp:318
+#: nudge_lock.cpp:324
 #, c-format
 msgid "Set lock position to saved value (%.2f,%.2f)?"
 msgstr ""
 
-#: nudge_lock.cpp:319
+#: nudge_lock.cpp:325
 msgid "Restore saved Lock Pos"
 msgstr ""
 
