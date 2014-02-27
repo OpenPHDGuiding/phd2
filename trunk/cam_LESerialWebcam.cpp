@@ -47,6 +47,7 @@ Camera_LESerialWebcamClass::Camera_LESerialWebcamClass(int devNumber)
     : Camera_LEWebcamClass(devNumber)
 {
     Name=_T("Serial LE Webcam");
+    ReadDelay = 150;
     m_pSerialPort = NULL;
 }
 

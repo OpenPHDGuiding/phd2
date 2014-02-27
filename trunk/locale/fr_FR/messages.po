@@ -35,8 +35,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-25 20:49+0100\n"
-"PO-Revision-Date: 2014-02-26 00:47+0100\n"
+"POT-Creation-Date: 2014-02-27 19:44+0100\n"
+"PO-Revision-Date: 2014-02-27 19:45+0100\n"
 "Last-Translator: Sylvain Girard <sylvain.girard@zesly.net>\n"
 "Language-Team: Français\n"
 "MIME-Version: 1.0\n"
@@ -63,7 +63,7 @@ msgstr "Guidage"
 msgid "Camera"
 msgstr "Caméra"
 
-#: advanced_dialog.cpp:153 camera.cpp:634
+#: advanced_dialog.cpp:153 camera.cpp:635
 msgid "Camera Settings"
 msgstr "Réglages Caméra"
 
@@ -155,7 +155,7 @@ msgstr "(estimé) : "
 msgid "(from mount)"
 msgstr "(depuis la monture)"
 
-#: calrestore_dialog.cpp:119 nudge_lock.cpp:165 nudge_lock.cpp:172
+#: calrestore_dialog.cpp:119 nudge_lock.cpp:167 nudge_lock.cpp:178
 msgid "Restore"
 msgstr "Restaurer"
 
@@ -243,7 +243,7 @@ msgstr ""
 
 #: cam_ascomlate.cpp:172 cam_ascomlate.cpp:178 cam_ascomlate.cpp:189
 #: cam_firewire_IC.cpp:89 cam_INovaPLC.cpp:54 cam_KWIQGuider.cpp:62
-#: cam_KWIQGuider.cpp:104 cam_LELXUSBWebcam.cpp:66 cam_LESerialWebcam.cpp:83
+#: cam_KWIQGuider.cpp:104 cam_LELXUSBWebcam.cpp:66 cam_LESerialWebcam.cpp:77
 #: cam_MeadeDSI.cpp:63 cam_MeadeDSI.cpp:124 cam_openssag.cpp:65
 #: cam_openssag.cpp:107 cam_OSPL130.cpp:37 cam_OSPL130.cpp:42 cam_qhy5.cpp:88
 #: cam_qhy5.cpp:95 cam_qhy5.cpp:196 cam_qhy5.cpp:252 cam_qhy5.cpp:258
@@ -454,15 +454,15 @@ msgstr "Erreur en fixant le gain"
 msgid "Unable to open LXUSB device"
 msgstr "Impossible d'ouvrir le périphérique LXUSB"
 
-#: cam_LESerialWebcam.cpp:83 stepguider_sxao.cpp:124
+#: cam_LESerialWebcam.cpp:77 stepguider_sxao.cpp:124
 msgid "No serial ports found"
 msgstr "Aucun port série trouvé"
 
-#: cam_LESerialWebcam.cpp:90 stepguider_sxao.cpp:130
+#: cam_LESerialWebcam.cpp:84 stepguider_sxao.cpp:130
 msgid "Select serial port"
 msgstr "Selectionner le port série"
 
-#: cam_LESerialWebcam.cpp:90 stepguider_sxao.cpp:130
+#: cam_LESerialWebcam.cpp:84 stepguider_sxao.cpp:130
 msgid "Serial Port"
 msgstr "Port Série"
 
@@ -763,29 +763,29 @@ msgstr "Selectionnez mode caméra"
 msgid "Camera mode"
 msgstr "Mode caméra"
 
-#: camera.cpp:197
+#: camera.cpp:198
 msgid " disconnected"
 msgstr " déconnectée"
 
-#: camera.cpp:537
+#: camera.cpp:538
 msgid "Select your camera"
 msgstr "Selectionnez votre caméra"
 
-#: camera.cpp:642
+#: camera.cpp:643
 msgid "Use Subframes"
 msgstr "Utiliser le fenêtrage"
 
-#: camera.cpp:643
+#: camera.cpp:644
 msgid "Check to only download subframes (ROIs) if your camera supports it"
 msgstr ""
 "Cocher pour charger uniquement les images fenêtreés (ROI) si votre caméra le "
 "supporte"
 
-#: camera.cpp:651
+#: camera.cpp:652
 msgid "Camera Gain"
 msgstr "Gain caméra"
 
-#: camera.cpp:652
+#: camera.cpp:653
 msgid ""
 "Camera gain boost? Default = 95%, lower if you experience noise or wish to "
 "guide on a very bright star). Not available on all cameras."
@@ -794,27 +794,27 @@ msgstr ""
 "du bruit ou si vous voulez guider une étoile très brillante. Pas disponible "
 "pour toutes les caméras."
 
-#: camera.cpp:660
-msgid "LE Read Delay"
-msgstr "LP delai de lecture"
-
 #: camera.cpp:661
+msgid "LE Read Delay (ms)"
+msgstr "LP delai de lecture (ms)"
+
+#: camera.cpp:662
 msgid "Adjust if you get dropped frames"
 msgstr "Ajuster si vous ratez des images"
 
-#: camera.cpp:675
+#: camera.cpp:676
 msgid "LE Port"
 msgstr "Port LP"
 
-#: camera.cpp:676
+#: camera.cpp:677
 msgid "Port number for long-exposure control"
 msgstr "Numéro de port pour la pose longue"
 
-#: camera.cpp:686
+#: camera.cpp:687
 msgid "Pixel size (microns)"
 msgstr "Taille des pixel (µm)"
 
-#: camera.cpp:687
+#: camera.cpp:688
 msgid ""
 "Guide camera pixel size in microns. Used with the guide telescope focal "
 "length to display guiding error in arc-seconds."
@@ -823,11 +823,11 @@ msgstr ""
 "longueur focale du telescope de guidage pour afficher les erreurs de guidage "
 "en arc-sec."
 
-#: camera.cpp:690
+#: camera.cpp:691
 msgid "Auto load dark frames"
 msgstr "Chargement  auto images de dark"
 
-#: camera.cpp:691
+#: camera.cpp:692
 msgid ""
 "Check to reload dark frames automatically when you connect the camera. "
 "First, you'll need to capture dark frames for any exposure durations you "
@@ -2604,34 +2604,34 @@ msgstr "Verrouiller la position coordonnée X"
 msgid "Lock position Y coordinate"
 msgstr "Verrouiller la position coordonnée Y"
 
-#: nudge_lock.cpp:166
+#: nudge_lock.cpp:165 nudge_lock.cpp:172
 msgid "Set"
 msgstr "Fixer"
 
-#: nudge_lock.cpp:167
-msgid "Set the lock position to the entered coordinates"
-msgstr "Réglez la position de verrouillage sur les coordonnées entrées"
-
-#: nudge_lock.cpp:169
+#: nudge_lock.cpp:166 nudge_lock.cpp:175
 msgid "Save"
 msgstr "Enregistrer"
 
-#: nudge_lock.cpp:170
+#: nudge_lock.cpp:173
+msgid "Set the lock position to the entered coordinates"
+msgstr "Réglez la position de verrouillage sur les coordonnées entrées"
+
+#: nudge_lock.cpp:176
 msgid "Save the current lock position so it can be restored later"
 msgstr ""
 "Enregistre de la position de verrouillage actuel afin qu'il puisse être "
 "restauré plus tard"
 
-#: nudge_lock.cpp:173
+#: nudge_lock.cpp:179
 msgid "Restore the saved lock position"
 msgstr "Restaurer la position de vérouillage enregistrée"
 
-#: nudge_lock.cpp:318
+#: nudge_lock.cpp:324
 #, c-format
 msgid "Set lock position to saved value (%.2f,%.2f)?"
 msgstr "Fixer la position de verouillage a la valeur enregistrée (%.2f,%.2f) ?"
 
-#: nudge_lock.cpp:319
+#: nudge_lock.cpp:325
 msgid "Restore saved Lock Pos"
 msgstr "Restaure pos. verr. enregistrée"
 
@@ -3049,6 +3049,15 @@ msgstr "Erreur d'allocation mémoire au chargement du fichier FITS"
 #: usImage.cpp:328
 msgid "Error reading data from FITS file "
 msgstr "Impossible de lire des données du fichier FITS"
+
+#~ msgid "Serial LE Webcam"
+#~ msgstr "Webcam LP Série"
+
+#~ msgid "Read delay (ms):"
+#~ msgstr "Delai de lecture (ms) :"
+
+#~ msgid "Webcam settings"
+#~ msgstr "Réglages Webcam"
 
 #~ msgid "Recalc"
 #~ msgstr "Recalc"
