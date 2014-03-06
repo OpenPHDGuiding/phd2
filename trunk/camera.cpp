@@ -41,6 +41,7 @@
 static const int DefaultGuideCameraGain = 95;
 static const bool DefaultUseSubframes = false;
 static const double DefaultPixelSize = 0;
+static const int DefaultReadDelay = 150;
 
 #if defined (ATIK16)
  #include "cam_ATIK16.h"
@@ -178,7 +179,7 @@ GuideCamera::GuideCamera(void)
     ShutterState=false;
     HasSubframes=false;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
-    ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", 0);
+    ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
 
     CurrentDarkFrame = NULL;
 

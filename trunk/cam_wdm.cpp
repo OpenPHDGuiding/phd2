@@ -324,7 +324,7 @@ void Camera_WDMClass::EndCapture(void)
             Debug.AddLine("breaking out of lower loop");
             break;
         }
-        Sleep(10);
+        wxMilliSleep(10);
     }
 
     m_captureMode = STOP_CAPTURING;
@@ -337,7 +337,7 @@ void Camera_WDMClass::EndCapture(void)
             Debug.AddLine("breaking out of lower loop");
             break;
         }
-        Sleep(10);
+        wxMilliSleep(10);
     }
 }
 
@@ -352,7 +352,7 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool 
             throw ERROR_INFO("BeingCapture() failed");
         }
 
-        Sleep(duration);  // accumulate for the requested duration
+        wxMilliSleep(duration);  // accumulate for the requested duration
 
         EndCapture();
 

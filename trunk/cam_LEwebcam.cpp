@@ -48,7 +48,6 @@ Camera_LEWebcamClass::Camera_LEWebcamClass(int devNumber)
 {
     Name=_T("Generic LE Webcam");
     HasDelayParam = true;
-    ReadDelay = 0;
 }
 
 Camera_LEWebcamClass::~Camera_LEWebcamClass(void)
@@ -61,12 +60,12 @@ bool Camera_LEWebcamClass::Connect()
 
     try
     {
-        LEControl(LECAMERA_LED_OFF|LECAMERA_SHUTTER_CLOSED|LECAMERA_TRANSFER_FIELD_NONE|LECAMERA_AMP_OFF);
-
         if (Camera_WDMClass::Connect())
         {
             throw ERROR_INFO("Unable to open base class camera");
         }
+
+        LEControl(LECAMERA_LED_OFF | LECAMERA_SHUTTER_CLOSED | LECAMERA_EXPOSURE_FIELD_NONE | LECAMERA_AMP_OFF);
     }
     catch (wxString Msg)
     {
@@ -92,31 +91,31 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
 
     try
     {
-        int ampOnTime = 250;
-        int ampOffTime = duration - ampOnTime;
+        int ampOffTime = 400;
+        int ampOnTime = duration - ampOffTime;
 
-        if (ampOffTime <= 0)
+        if (ampOnTime <= 0)
         {
-            ampOnTime = duration;
+            ampOffTime = duration;
         }
         else
         {
-            // do the "amp off" part of the exposure.
-            LEControl(LECAMERA_LED_RED|LECAMERA_SHUTTER_OPEN|LECAMERA_TRANSFER_FIELD_NONE|LECAMERA_AMP_OFF);
-            Sleep(ampOffTime);
+            // do the "amp on" part of the exposure
+            LEControl(LECAMERA_LED_GREEN | LECAMERA_SHUTTER_OPEN | LECAMERA_EXPOSURE_FIELD_A | LECAMERA_EXPOSURE_FIELD_B | LECAMERA_AMP_ON);
+            wxMilliSleep(ampOnTime);
         }
 
-        // do the "amp on" part of the exposure
-        LEControl(LECAMERA_LED_GREEN|LECAMERA_SHUTTER_OPEN|LECAMERA_TRANSFER_FIELD_NONE|LECAMERA_AMP_ON);
-        Sleep(ampOnTime);
+        // do the "amp off" part of the exposure.
+        LEControl(LECAMERA_LED_RED | LECAMERA_SHUTTER_OPEN | LECAMERA_EXPOSURE_FIELD_A | LECAMERA_EXPOSURE_FIELD_B | LECAMERA_AMP_OFF);
+        wxMilliSleep(ampOffTime);
 
         // exposure complete - release the frame
-        LEControl(LECAMERA_SHUTTER_CLOSED|LECAMERA_AMP_ON|LECAMERA_TRANSFER_FIELD_A|LECAMERA_TRANSFER_FIELD_B);
+        LEControl(LECAMERA_SHUTTER_CLOSED | LECAMERA_AMP_ON | LECAMERA_EXPOSURE_FIELD_NONE | LECAMERA_AMP_OFF);
 
         // wait the final delay before reading (if there is one)
         if (ReadDelay)
         {
-            Sleep(ReadDelay);
+            wxMilliSleep(ReadDelay);
         }
 
         // now record the frame.
@@ -185,7 +184,7 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
     }
 
     // turn off the LE camera
-    LEControl(LECAMERA_LED_OFF|LECAMERA_SHUTTER_CLOSED|LECAMERA_TRANSFER_FIELD_NONE|LECAMERA_AMP_OFF);
+    LEControl(LECAMERA_LED_OFF | LECAMERA_SHUTTER_CLOSED | LECAMERA_EXPOSURE_FIELD_NONE | LECAMERA_AMP_OFF);
 
     return bError;
 }
