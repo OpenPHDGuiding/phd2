@@ -44,12 +44,21 @@ class Camera_LESerialWebcamClass : public Camera_LEWebcamClass
 private:
     virtual bool LEControl(int actions);
     SerialPort *m_pSerialPort;
+    bool m_InvertedLogic;
+    bool m_UseAmp;
+
+    int m_signalConfig;
+    bool m_Expo;
+    bool m_Amp;
+
 public:
     Camera_LESerialWebcamClass(int devNumber=0);
     virtual ~Camera_LESerialWebcamClass(void);
 
     virtual bool    Connect();
     virtual bool    Disconnect();
+
+    void    ShowPropertyDialog();
 };
 
 #endif //CAM_LESERIALWEBCAM_H_INCLUDED

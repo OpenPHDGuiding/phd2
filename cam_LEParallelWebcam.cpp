@@ -51,7 +51,6 @@ Camera_LEParallelWebcamClass::Camera_LEParallelWebcamClass(int devNumber)
     : Camera_LEWebcamClass(devNumber)
 {
     Name=_T("Parallel LE Webcam");
-    ReadDelay = 5;
     m_pParallelPort = NULL;
 }
 
@@ -154,11 +153,11 @@ bool Camera_LEParallelWebcamClass::LEControl(int actions)
         BYTE bitsToClear = 0;
         BYTE bitsToSet = 0;
 
-        if (actions & LECAMERA_TRANSFER_FIELD_NONE)
+        if (actions & LECAMERA_EXPOSURE_FIELD_NONE)
         {
             bitsToClear |= PARALLEL_BIT_TRANSFER;
         }
-        else if ((actions & LECAMERA_TRANSFER_FIELD_A) || (actions & LECAMERA_TRANSFER_FIELD_B))
+        else if ((actions & LECAMERA_EXPOSURE_FIELD_A) || (actions & LECAMERA_EXPOSURE_FIELD_B))
         {
             bitsToSet |= PARALLEL_BIT_TRANSFER;
         }

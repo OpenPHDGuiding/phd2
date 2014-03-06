@@ -123,19 +123,19 @@ bool Camera_LELxUsbWebcamClass::LEControl(int actions)
 
         LXUSB_Status(&frame1State, &frame2State, &shutterState, &ampState, &ledState);
 
-        if (actions & LECAMERA_TRANSFER_FIELD_NONE)
+        if (actions & LECAMERA_EXPOSURE_FIELD_NONE)
         {
             frame1State = LXUSB_FRAME1_DEASSERTED;
             frame2State = LXUSB_FRAME2_DEASSERTED;
         }
         else
         {
-            if (actions & LECAMERA_TRANSFER_FIELD_A)
+            if (actions & LECAMERA_EXPOSURE_FIELD_A)
             {
                 frame1State = LXUSB_FRAME1_ASSERTED;
             }
 
-            if (actions & LECAMERA_TRANSFER_FIELD_B)
+            if (actions & LECAMERA_EXPOSURE_FIELD_B)
             {
                 frame2State = LXUSB_FRAME2_ASSERTED;
             }

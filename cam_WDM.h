@@ -65,9 +65,9 @@ protected:
         CAPTURE_STACKING,
         CAPTURE_STACK_FRAMES
     } m_captureMode;
+    CVVidCapture* m_pVidCap;
 private:
     int m_deviceNumber;
-    CVVidCapture* m_pVidCap;
     bool BeginCapture(usImage& img, E_CAPTURE_MODE captureMode);
     void EndCapture(void);
 };

@@ -51,9 +51,9 @@ protected:
         LECAMERA_AMP_ON                =  16,
         LECAMERA_SHUTTER_CLOSED        =  32,
         LECAMERA_SHUTTER_OPEN          =  64,
-        LECAMERA_TRANSFER_FIELD_NONE   = 128,
-        LECAMERA_TRANSFER_FIELD_A      = 256,
-        LECAMERA_TRANSFER_FIELD_B      = 512,
+        LECAMERA_EXPOSURE_FIELD_NONE   = 128,
+        LECAMERA_EXPOSURE_FIELD_A      = 256,
+        LECAMERA_EXPOSURE_FIELD_B      = 512,
     };
 
 public:

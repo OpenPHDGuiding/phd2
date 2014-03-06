@@ -171,10 +171,10 @@ void Camera_Atik16Class::ClearGuidePort() {
 bool Camera_Atik16Class::Disconnect() {
     if (ArtemisIsConnected(Cam_Handle))
         ArtemisDisconnect(Cam_Handle);
-    Sleep(100);
+    wxMilliSleep(100);
     Cam_Handle = NULL;
     ArtemisUnLoadDLL();
-    Sleep(100);
+    wxMilliSleep(100);
     Connected = false;
     return false;
 }
