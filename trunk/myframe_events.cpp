@@ -705,10 +705,12 @@ void MyFrame::OnAutoStar(wxCommandEvent& WXUNUSED(evt))
 
 void MyFrame::OnSetupCamera(wxCommandEvent& WXUNUSED(event))
 {
-    if (!pCamera || !pCamera->Connected || pCamera->PropertyDialogType != PROPDLG_WHEN_CONNECTED)
-        return;  // One more safety check
-
-    pCamera->ShowPropertyDialog();
+    if (pCamera &&
+        (((pCamera->PropertyDialogType & PROPDLG_WHEN_CONNECTED) != 0 && pCamera->Connected) ||
+         ((pCamera->PropertyDialogType & PROPDLG_WHEN_DISCONNECTED) != 0 && !pCamera->Connected)))
+    {
+        pCamera->ShowPropertyDialog();
+    }
 }
 
 void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))

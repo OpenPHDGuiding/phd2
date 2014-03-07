@@ -325,7 +325,8 @@ void GearDialog::EndModal(int retCode)
 {
     assert(pCamera == m_pCamera);
 
-    if (pCamera && pCamera->Connected && pCamera->PropertyDialogType == PROPDLG_WHEN_CONNECTED)
+    if (pCamera &&
+        (pCamera->PropertyDialogType & PROPDLG_WHEN_CONNECTED) != 0 && pCamera->Connected)
     {
         pFrame->Setup_Button->Enable(true);
     }
@@ -378,8 +379,9 @@ void GearDialog::UpdateCameraButtonState(void)
     }
     else
     {
-        m_pSetupCameraButton->Enable((m_pCamera->PropertyDialogType == PROPDLG_WHEN_CONNECTED && m_pCamera->Connected) ||
-            (m_pCamera->PropertyDialogType == PROPDLG_WHEN_DISCONNECTED && !m_pCamera->Connected));
+        bool enablePropDlg = ((m_pCamera->PropertyDialogType & PROPDLG_WHEN_CONNECTED) != 0 && m_pCamera->Connected) ||
+            ((m_pCamera->PropertyDialogType & PROPDLG_WHEN_DISCONNECTED) != 0 && !m_pCamera->Connected);
+        m_pSetupCameraButton->Enable(enablePropDlg);
 
         m_pConnectCameraButton->Enable(true);
 

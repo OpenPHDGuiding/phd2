@@ -39,9 +39,10 @@ typedef std::map<int, usImage *> ExposureImgMap; // map exposure to image
 
 enum PropDlgType
 {
-    PROPDLG_NONE,
-    PROPDLG_WHEN_CONNECTED, // property dialog available when connected
-    PROPDLG_WHEN_DISCONNECTED, // property dialog available when disconnected
+    PROPDLG_NONE = 0,
+    PROPDLG_WHEN_CONNECTED = (1 << 0),    // property dialog available when connected
+    PROPDLG_WHEN_DISCONNECTED = (1 << 1), // property dialog available when disconnected
+    PROPDLG_ANY = (PROPDLG_WHEN_CONNECTED | PROPDLG_WHEN_DISCONNECTED),
 };
 
 class GuideCamera;
