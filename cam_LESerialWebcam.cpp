@@ -57,8 +57,8 @@ using namespace cv;
 Camera_LESerialWebcamClass::Camera_LESerialWebcamClass(int devNumber)
     : Camera_LEWebcamClass(devNumber)
 {
-    Name=_T("Serial LE Webcam");
-    PropertyDialogType = PROPDLG_WHEN_DISCONNECTED;
+    Name = _T("Serial LE Webcam");
+    PropertyDialogType = PROPDLG_ANY;
     m_pSerialPort = NULL;
 }
 
@@ -99,8 +99,6 @@ bool Camera_LESerialWebcamClass::Connect()
         {
             throw ERROR_INFO("Unable to open base class camera");
         }
-
-        PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     }
     catch (wxString Msg)
     {
