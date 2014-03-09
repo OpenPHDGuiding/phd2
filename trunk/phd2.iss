@@ -31,9 +31,9 @@ Source: "WinLibs\DICAMSDK.dll";               DestDir: "{app}"; Flags: replacesa
 Source: "WinLibs\DSCI.dll";                   DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\FcApi.dll";                  DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\inpout32.dll";               DestDir: "{app}"; Flags: replacesameversion
-#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc10\bin\opencv_core245.dll"; DestDir: "{app}"; Flags: replacesameversion'
-#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc10\bin\opencv_highgui245.dll"; DestDir: "{app}"; Flags: replacesameversion'
-#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc10\bin\opencv_imgproc245.dll"; DestDir: "{app}"; Flags: replacesameversion'
+#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc11\bin\opencv_core245.dll"; DestDir: "{app}"; Flags: replacesameversion'
+#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc11\bin\opencv_highgui245.dll"; DestDir: "{app}"; Flags: replacesameversion'
+#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc11\bin\opencv_imgproc245.dll"; DestDir: "{app}"; Flags: replacesameversion'
 Source: "WinLibs\qhy5IIdll.dll";              DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\qhy5LIIdll.dll";             DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\ShoestringGPUSB_DLL.dll";    DestDir: "{app}"; Flags: replacesameversion
