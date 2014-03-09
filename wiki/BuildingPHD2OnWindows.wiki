@@ -14,12 +14,11 @@ This page describes how to set up a build environment from scratch on MS-Windows
 
 = Step-by-step =
 
-1. If you do not yet have a version of Visual Studio 2010 then get a
-free copy at
+1. If you do not yet have a version of Visual Studio 2013 for Windows Desktop then get a free copy at
 
-http://www.microsoft.com/visualstudio/eng/downloads#d-2010-express
+http://www.visualstudio.com/en-us/downloads
 
-The download you want is "Visual C++ 2010 Express".
+The download you want is "Visual Studio Express 2013 for Windows Desktop".
 
 2. Download and install Visual Leak Detector (VLD) Version 2.3.0 from https://vld.codeplex.com/
 
@@ -45,7 +44,7 @@ The following step might not be needed, at least not on WinXP.
 
 Load the VC variables so nmake and the command line compilers are in the path:
 
-  "\Program Files (x86)\Microsoft Visual Studio 10.0\vc\bin\vcvars32.bat"
+  "\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\vcvars32.bat"
 
 Do two command line builds, one for release, one for debug:
 
@@ -70,7 +69,7 @@ Extract in <fits location>
 
 Set an environment variable CFITSIO to <fits location>
 
-  _Extra Info_ The latest Windows zip file for CFITSIO does not have pre-compiled versions of the libraries needed by PHD2.  So you will need to build them in much the same way as you built the wxWidgets files.  From a single command-line session, run the same "\Program Files (x86)\Microsoft Visual Studio 10.0\vc\bin\vcvars32.bat" file, cd to the <fits location> install directory, then run two nmakes: 
+  _Extra Info_ The latest Windows zip file for CFITSIO does not have pre-compiled versions of the libraries needed by PHD2.  So you will need to build them in much the same way as you built the wxWidgets files.  From a single command-line session, run the same "\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\vcvars32.bat" file, cd to the <fits location> install directory, then run two nmakes: 
   {{{
 nmake winDumpExts.mak
 nmake makefile.vcc
@@ -81,7 +80,7 @@ nmake makefile.vcc
 5. Download OpenCV 2.4.5 from http://opencv.org/. Install it, and set
 the OPENCV_DIR environment variable to point to the build\ subdirectory of where you put it. For example, if you install it in C:\opencv, set OPENCV_DIR to C:\opencv\build
 
-You will have to copy 3 Debug and Release DLLs from opencv-2.4.5\build\x86\vc10\bin
+You will have to copy 3 Debug and Release DLLs from opencv-2.4.5\build\x86\vc11\bin
 
 The files you need to copy are:
 
