@@ -76,6 +76,7 @@ const
 
   VC_2010_REDIST_X86 = '{196BB40D-1578-3D01-B289-BEFC77A11A1E}';
   VC_2010_SP1_REDIST_X86 = '{F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}';
+  VC_2013_REDIST_X86 = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
 
 function MsiQueryProductState(szProduct: string): INSTALLSTATE; 
   external 'MsiQueryProductState{#AW}@msi.dll stdcall';
@@ -87,6 +88,5 @@ end;
 
 function VCRedistNeedsInstall: Boolean;
 begin
-  Result := not (VCVersionInstalled(VC_2010_REDIST_X86) or
-    VCVersionInstalled(VC_2010_SP1_REDIST_X86));
+  Result := not (VCVersionInstalled(VC_2013_REDIST_X86));
 end;
