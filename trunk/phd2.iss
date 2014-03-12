@@ -38,8 +38,8 @@ Source: "WinLibs\qhy5IIdll.dll";              DestDir: "{app}"; Flags: replacesa
 Source: "WinLibs\qhy5LIIdll.dll";             DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\ShoestringGPUSB_DLL.dll";    DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\ShoestringLXUSB_DLL.dll";    DestDir: "{app}"; Flags: replacesameversion
-Source: "WinLibs\SSAGIF.dll";                 DestDir: "{app}"; Flags: replacesameversion
-Source: "WinLibs\SSAGIF_orig.dll";            DestDir: "{app}"; Flags: replacesameversion
+Source: "WinLibs\SSAGIFv2.dll";               DestDir: "{app}"; Flags: replacesameversion
+Source: "WinLibs\SSAGIFv4.dll";               DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\SSPIAGCAM.dll";              DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\SSPIAGUSB_WIN.dll";          DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\SXUSB.dll";                  DestDir: "{app}"; Flags: replacesameversion

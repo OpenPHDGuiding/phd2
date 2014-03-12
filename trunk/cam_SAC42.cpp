@@ -44,7 +44,6 @@ Camera_SAC42Class::Camera_SAC42Class() {
     Connected = FALSE;
 //  HaveBPMap = FALSE;
 //  NBadPixels=-1;
-//  ConnectedModel = 1;
     Name=_T("SAC4-2");
     FullSize = wxSize(1280,1024);
 //  FullSize = wxSize(320,200);

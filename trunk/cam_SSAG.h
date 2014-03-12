@@ -31,31 +31,27 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
- #ifndef SSAGDEF
+#ifndef SSAGDEF
 #define SSAGDEF
-#include "SSAGIF.h"
-class Camera_SSAGClass : public GuideCamera {
+
+class Camera_SSAGClass : public GuideCamera
+{
 public:
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
     bool    Connect();
     bool    Disconnect();
     void    InitCapture();
 
-//  bool    SetGlobalGain(unsigned char gain);
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
-    //bool  SetColorGain(unsigned char r_gain, unsigned char g_gain, unsigned char b_gain);
-    //int   FindCameras(int DevNums[8]);
 
     virtual bool HasNonGuiCapture(void) { return true; }
     virtual bool ST4HasNonGuiMove(void) { return true; }
 
     Camera_SSAGClass();
+
 private:
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
-    unsigned char *buffer;
     void RemoveLines(usImage& img);
 };
-#endif  //QGUIDEDEF
 
-
+#endif  // SSAGDEF

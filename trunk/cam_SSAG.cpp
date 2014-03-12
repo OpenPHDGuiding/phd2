@@ -32,7 +32,9 @@
  *
  */
 #include "phd.h"
+
 #if defined (SSAG)
+
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
@@ -45,44 +47,198 @@
 // QHY CMOS guide camera version
 // Tom's driver
 
-extern int ushort_compare (const void * a, const void * b);
+#include <Setupapi.h>
 
-Camera_SSAGClass::Camera_SSAGClass() {
-    Connected = FALSE;
-//  HaveBPMap = FALSE;
-//  NBadPixels=-1;
-    Name=_T("StarShoot Autoguider");
-    FullSize = wxSize(1280,1024);
-    m_hasGuideOutput = true;
-    HasGainControl = true;
-    PixelSize = 5.2;
+#define INITGUID
+#include <devpkey.h>
+
+extern int ushort_compare(const void * a, const void * b);
+
+static bool GetDiPropStr(HDEVINFO h, SP_DEVINFO_DATA *data, const DEVPROPKEY& key, WCHAR *buf, DWORD size)
+{
+	DEVPROPTYPE proptype;
+	return SetupDiGetDeviceProperty(h, data, &key, &proptype, (PBYTE)buf, size, &size, 0) &&
+		proptype == DEVPROP_TYPE_STRING;
 }
 
+static unsigned int GetSSAGDriverVersion()
+{
+	// check to see if the SSAG driver is v2 ("1.2.0.0") or v4 ("3.0.0.0")
 
+	unsigned int driverVersion = 2; // assume v2
 
-bool Camera_SSAGClass::Connect() {
-// returns true on error
-//  CameraReset();
-    if (!_SSAG_openUSB()) {
+	HDEVINFO h = SetupDiGetClassDevs(NULL, L"USB", NULL, DIGCF_ALLCLASSES | DIGCF_PRESENT);
+	if (h != INVALID_HANDLE_VALUE)
+	{
+		DWORD idx = 0;
+		SP_DEVINFO_DATA data;
+		memset(&data, 0, sizeof(data));
+		data.cbSize = sizeof(data);
+
+		while (SetupDiEnumDeviceInfo(h, idx, &data))
+		{
+			WCHAR buf[4096];
+
+			if (GetDiPropStr(h, &data, DEVPKEY_Device_InstanceId, buf, sizeof(buf)) &&
+				wcsncmp(buf, L"USB\\VID_1856&PID_0012\\", 22) == 0)
+			{
+				if (GetDiPropStr(h, &data, DEVPKEY_Device_DriverVersion, buf, sizeof(buf)))
+				{
+					Debug.AddLine(wxString::Format("SSAG driver version is %s", wxString(buf)));
+					int v;
+					if (swscanf(buf, L"%d", &v) == 1 && v >= 3)
+					{
+						driverVersion = 4;
+					}
+				}
+				break;
+			}
+
+			++idx;
+		}
+
+		SetupDiDestroyDeviceInfoList(h);
+	}
+
+	return driverVersion;
+}
+
+// declare function pointers for imported functions
+
+#define F1(r,f,a1)             typedef r (_stdcall *f##_t)(a1);             static f##_t f;
+#define F2(r,f,a1,a2)          typedef r (_stdcall *f##_t)(a1,a2);          static f##_t f;
+#define F5(r,f,a1,a2,a3,a4,a5) typedef r (_stdcall *f##_t)(a1,a2,a3,a4,a5); static f##_t f;
+#include "cameras/_SSAGIF.h"
+#undef F1
+#undef F2
+#undef F5
+
+// initialize the function pointers
+
+static bool InitProcs(HINSTANCE hinst)
+{
+	bool ok = false;
+
+	try
+	{
+
+#define F(f,n) \
+		if ((f = (f##_t) GetProcAddress(hinst, n)) == NULL) \
+			throw ERROR_INFO("SSAGIF DLL missing " n);
+#define F1(r,f,a1) F(f,#f)
+#define F2(r,f,a1,a2) F(f,#f)
+#define F5(r,f,a1,a2,a3,a4,a5) F(f,#f)
+#include "cameras/_SSAGIF.h"
+#undef F1
+#undef F2
+#undef F5
+#undef F
+
+		ok = true;
+	}
+	catch (const wxString& msg)
+	{
+		POSSIBLY_UNUSED(msg);
+	}
+
+	return ok;
+}
+
+static HINSTANCE s_dllinst;
+
+//
+// load the SSAGv2 or SSAGv4 DLL based on the SSAG driver version and load the addresses of the imported functions
+//
+static bool LoadSSAGIFDll()
+{
+	bool ok = false;
+
+	try
+	{
+		unsigned int driverVersion = GetSSAGDriverVersion();
+
+		LPCWSTR libname;
+		if (driverVersion == 2)
+			libname = _T("SSAGIFv2.dll");
+		else if (driverVersion == 4)
+			libname = _T("SSAGIFv4.dll");
+		else
+			throw ERROR_INFO("unexpected SSAG driver version!");
+
+		wxASSERT(s_dllinst == NULL);
+		s_dllinst = LoadLibrary(libname);
+		if (s_dllinst == NULL)
+			throw ERROR_INFO("SSAG LoadLibrary failed");
+
+		if (!InitProcs(s_dllinst))
+			throw ERROR_INFO("SSAG failed to load required symbols");
+
+		ok = true;
+	}
+	catch (const wxString& msg)
+	{
+		POSSIBLY_UNUSED(msg);
+		if (s_dllinst != NULL)
+		{
+			FreeLibrary(s_dllinst);
+			s_dllinst = NULL;
+		}
+	}
+
+	return ok;
+}
+
+static void UnloadSSAGIFDll()
+{
+	if (s_dllinst != NULL)
+	{
+		FreeLibrary(s_dllinst);
+		s_dllinst = NULL;
+	}
+}
+
+Camera_SSAGClass::Camera_SSAGClass()
+{
+	Connected = false;
+	Name = _T("StarShoot Autoguider");
+	FullSize = wxSize(1280, 1024);
+	m_hasGuideOutput = true;
+	HasGainControl = true;
+	PixelSize = 5.2;
+}
+
+bool Camera_SSAGClass::Connect()
+{
+	// returns true on error
+
+	if (!LoadSSAGIFDll())
+		return true;
+
+    if (!_SSAG_openUSB())
+	{
+		UnloadSSAGIFDll();
         return true;
     }
-//  ClearGuidePort();
-//  GuideCommand(0x0F,10);
-//  buffer = new unsigned char[1311744];
+
     _SSAG_SETBUFFERMODE(0);
     Connected = true;
-//  qglogfile = new wxTextFile(Debug.GetLogDir() + PATHSEPSTR + _T("PHD_QGuide_log.txt"));
-    //qglogfile->AddLine(wxNow() + ": QGuide connected"); //qglogfile->Write();
+
+	//qglogfile = new wxTextFile(Debug.GetLogDir() + PATHSEPSTR + _T("PHD_QGuide_log.txt"));
+	//qglogfile->AddLine(wxNow() + ": QGuide connected"); //qglogfile->Write();
+
     return false;
 }
 
-bool Camera_SSAGClass::ST4PulseGuideScope(int direction, int duration) {
+bool Camera_SSAGClass::ST4PulseGuideScope(int direction, int duration)
+{
     int reg = 0;
     int dur = duration / 10;
 
     //qglogfile->AddLine(wxString::Format("Sending guide dur %d",dur)); //qglogfile->Write();
-    if (dur >= 255) dur = 254; // Max guide pulse is 2.54s -- 255 keeps it on always
-    // Output pins are NC, Com, RA+(W), Dec+(N), Dec-(S), RA-(E) ??  http://www.starlight-xpress.co.uk/faq.htm
+
+	if (dur >= 255) dur = 254; // Max guide pulse is 2.54s -- 255 keeps it on always
+    
+	// Output pins are NC, Com, RA+(W), Dec+(N), Dec-(S), RA-(E) ??  http://www.starlight-xpress.co.uk/faq.htm
     switch (direction) {
         case WEST: reg = 0x80; break;   // 0111 0000
         case NORTH: reg = 0x40; break;  // 1011 0000
@@ -90,101 +246,87 @@ bool Camera_SSAGClass::ST4PulseGuideScope(int direction, int duration) {
         case EAST: reg = 0x10;  break;  // 1110 0000
         default: return true; // bad direction passed in
     }
-    _SSAG_GuideCommand(reg,dur);
-    //if (duration > 50) wxMilliSleep(duration - 50);  // wait until it's mostly done
+    _SSAG_GuideCommand(reg, dur);
+
     wxMilliSleep(duration + 10);
+
     //qglogfile->AddLine("Done"); //qglogfile->Write();
+
     return false;
 }
-void Camera_SSAGClass::ClearGuidePort() {
-//  SendGuideCommand(DevName,0,0);
+
+void Camera_SSAGClass::ClearGuidePort()
+{
 }
-void Camera_SSAGClass::InitCapture() {
-//  CameraReset();
-    _SSAG_ProgramCamera(0,0,1280,1024, (GuideCameraGain * 63 / 100) );
+
+void Camera_SSAGClass::InitCapture()
+{
+    _SSAG_ProgramCamera(0, 0, 1280, 1024, (GuideCameraGain * 63 / 100));
     _SSAG_SetNoiseReduction(0);
 }
-bool Camera_SSAGClass::Disconnect() {
+
+bool Camera_SSAGClass::Disconnect()
+{
     _SSAG_closeUSB();
-//  delete [] buffer;
+	UnloadSSAGIFDll();
     Connected = false;
     //qglogfile->AddLine(wxNow() + ": Disconnecting"); //qglogfile->Write(); //qglogfile->Close();
     return false;
-
 }
 
-bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-// Only does full frames still
+bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
+	// Only does full frames
 
-//  unsigned char *bptr;
     unsigned short *dptr;
-//  int  i;
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
     bool firstimg = true;
 
     //qglogfile->AddLine(wxString::Format("Capturing dur %d",duration)); //qglogfile->Write();
-//  ThreadedExposure(10, buffer);
 
-    _SSAG_ProgramCamera(0,0,1280,1024, (GuideCameraGain * 63 / 100) );
+    _SSAG_ProgramCamera(0, 0, 1280, 1024, (GuideCameraGain * 63 / 100));
 
-/*  ThreadedExposure(10, NULL);
-    while (isExposing())
-        wxMilliSleep(10);
-*/
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
+    if (img.NPixels != (xsize*ysize))
+	{
+        if (img.Init(xsize,ysize))
+		{
             pFrame->Alert(_T("Memory allocation error during capture"));
             Disconnect();
             return true;
         }
     }
-//  ThreadedExposure(duration, buffer);
+
     _SSAG_ThreadedExposure(duration, NULL);
+
     //qglogfile->AddLine("Exposure programmed"); //qglogfile->Write();
-    if (duration > 100) {
+
+	if (duration > 100) {
         wxMilliSleep(duration - 100);
         wxGetApp().Yield();
     }
+
     while (_SSAG_isExposing())
         wxMilliSleep(50);
+
     //qglogfile->AddLine("Exposure done"); //qglogfile->Write();
 
-/*  dptr = img.ImageData;
-    for (i=0; i<img.NPixels; i++,dptr++) {
-        *dptr = 0;
-    }
-*/
     dptr = img.ImageData;
-    _SSAG_GETBUFFER(dptr,img.NPixels*2);
-    if (recon) SubtractDark(img);
+    _SSAG_GETBUFFER(dptr, img.NPixels * 2);
 
-/*  bptr = buffer;
-    for (i=0; i<img.NPixels; i++,dptr++, bptr++) {
-        *dptr = (unsigned short) (*bptr);
-    }
-*/
+	if (recon) SubtractDark(img);
+
     //qglogfile->AddLine("Image loaded"); //qglogfile->Write();
 
     // Do quick L recon to remove bayer array
 //  QuickLRecon(img);
 //  RemoveLines(img);
-    return false;
-}
-
-/*bool Camera_SSAGClass::CaptureCrop(int duration, usImage& img) {
-    GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_SSAGClass::CaptureFull(int duration, usImage& img) {
-    GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
 
     return false;
 }
-*/
-void Camera_SSAGClass::RemoveLines(usImage& img) {
+
+void Camera_SSAGClass::RemoveLines(usImage& img)
+{
     int i, j, val;
     unsigned short data[21];
     unsigned short *ptr1, *ptr2;
@@ -218,4 +360,5 @@ void Camera_SSAGClass::RemoveLines(usImage& img) {
 
     }
 }
+
 #endif
