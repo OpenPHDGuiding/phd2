@@ -42,7 +42,6 @@ Camera_SACGuiderClass::Camera_SACGuiderClass() {
     Connected = FALSE;
     HaveBPMap = FALSE;
     NBadPixels=-1;
-//  ConnectedModel = 1;
     Name=_T("SAC Guider");
     FullSize = wxSize(1280,1024);
     hDriver = NULL;

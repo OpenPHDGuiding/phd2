@@ -564,8 +564,7 @@ Camera_SimClass::Camera_SimClass()
 {
     Connected = false;
 //  HaveBPMap = FALSE;
-//  NBadPixels=-1;
-//  ConnectedModel = 1;
+//  NBadPixels = -1;
     Name=_T("Simulator");
     FullSize = wxSize(640,480);
     m_hasGuideOutput = true;
