@@ -74,7 +74,7 @@ ConfigDialogPane *GuideAlgorithmIdentity::GetConfigDialogPane(wxWindow *pParent)
 GuideAlgorithmIdentity::
 GuideAlgorithmIdentityConfigDialogPane::
 GuideAlgorithmIdentityConfigDialogPane(wxWindow *pParent, GuideAlgorithmIdentity *pGuideAlgorithm)
-    :ConfigDialogPane(_("Guide Algorithm"), pParent)
+    : ConfigDialogPane(_("Guide Algorithm"), pParent)
 {
     m_pGuideAlgorithm = pGuideAlgorithm;
     DoAdd(new wxStaticText(pParent, wxID_ANY, _("Nothing to Configure"),wxPoint(-1,-1),wxSize(-1,-1)));

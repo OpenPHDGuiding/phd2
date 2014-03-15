@@ -185,7 +185,7 @@ ConfigDialogPane *GuideAlgorithmLowpass::GetConfigDialogPane(wxWindow *pParent)
 GuideAlgorithmLowpass::
     GuideAlgorithmLowpassConfigDialogPane::
     GuideAlgorithmLowpassConfigDialogPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm)
-    :ConfigDialogPane(_("Lowpass Guide Algorithm"), pParent)
+    : ConfigDialogPane(_("Lowpass Guide Algorithm"), pParent)
 {
     int width;
 
