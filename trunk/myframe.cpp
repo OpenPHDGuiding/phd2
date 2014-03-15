@@ -40,6 +40,7 @@
 #include <wx/fs_zip.h>
 #include <wx/artprov.h>
 #include <wx/dirdlg.h>
+#include <wx/textwrapper.h>
 
 static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;
@@ -807,10 +808,25 @@ void MyFrame::UpdateButtonsStatus(void)
     }
 }
 
+static wxString WrapText(wxWindow *win, const wxString& text, int width)
+{
+    struct Wrapper : public wxTextWrapper
+    {
+        wxString m_str;
+        Wrapper(wxWindow *win, const wxString& text, int width) {
+            Wrap(win, text, width);
+        }
+        const wxString& Str() const { return m_str; }
+        void OnOutputLine(const wxString& line) { m_str += line; }
+        void OnNewLine() { m_str += '\n'; }
+    };
+    return Wrapper(win, text, width).Str();
+}
+
 static void DoAlert(wxInfoBar *infoBar, const wxString& msg, int flags)
 {
     Debug.AddLine(wxString::Format("Alert: %s", msg));
-    infoBar->ShowMessage(msg, flags);
+    infoBar->ShowMessage(WrapText(infoBar, msg, pFrame->GetSize().GetWidth() - 80), flags);
 }
 
 void MyFrame::Alert(const wxString& msg, int flags)
@@ -953,11 +969,11 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
     if (pRequest->calibrationMove)
     {
-        pRequest->bError = pRequest->pMount->CalibrationMove(pRequest->direction, pRequest->duration);
+        pRequest->moveResult = pRequest->pMount->CalibrationMove(pRequest->direction, pRequest->duration);
     }
     else
     {
-        pRequest->bError = pRequest->pMount->Move(pRequest->vectorEndpoint, pRequest->normalMove);
+        pRequest->moveResult = pRequest->pMount->Move(pRequest->vectorEndpoint, pRequest->normalMove);
     }
 
     pRequest->pSemaphore->Post();
@@ -1258,7 +1274,6 @@ bool MyFrame::SetNoiseReductionMethod(int noiseReductionMethod)
 
     return bError;
 }
-
 
 double MyFrame::GetDitherScaleFactor(void)
 {
