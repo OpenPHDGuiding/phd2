@@ -202,7 +202,7 @@ ConfigDialogPane *GuideAlgorithmHysteresis::GetConfigDialogPane(wxWindow *pParen
 GuideAlgorithmHysteresis::
 GuideAlgorithmHysteresisConfigDialogPane::
 GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm)
-    :ConfigDialogPane(_("Hysteresis Guide Algorithm"), pParent)
+    : ConfigDialogPane(_("Hysteresis Guide Algorithm"), pParent)
 {
     int width;
 

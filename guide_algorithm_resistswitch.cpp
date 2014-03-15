@@ -202,7 +202,7 @@ ConfigDialogPane *GuideAlgorithmResistSwitch::GetConfigDialogPane(wxWindow *pPar
 GuideAlgorithmResistSwitch::
     GuideAlgorithmResistSwitchConfigDialogPane::
     GuideAlgorithmResistSwitchConfigDialogPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm)
-    :ConfigDialogPane(_("ResistSwitch Guide Algorithm"), pParent)
+    : ConfigDialogPane(_("ResistSwitch Guide Algorithm"), pParent)
 {
     int width;
 
