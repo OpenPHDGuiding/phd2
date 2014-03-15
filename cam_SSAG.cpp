@@ -65,6 +65,9 @@ static unsigned int GetSSAGDriverVersion()
 {
     // check to see if the SSAG driver is v2 ("1.2.0.0") or v4 ("3.0.0.0")
 
+    Debug.AddLine("Checking SSAG driver version");
+
+    bool found = false;
     unsigned int driverVersion = 2; // assume v2
 
     HDEVINFO h = SetupDiGetClassDevs(NULL, L"USB", NULL, DIGCF_ALLCLASSES | DIGCF_PRESENT);
@@ -80,8 +83,10 @@ static unsigned int GetSSAGDriverVersion()
             WCHAR buf[4096];
 
             if (GetDiPropStr(h, &data, DEVPKEY_Device_InstanceId, buf, sizeof(buf)) &&
-                wcsncmp(buf, L"USB\\VID_1856&PID_0012\\", 22) == 0)
+                (wcsncmp(buf, L"USB\\VID_1856&PID_0012\\", 22) == 0) ||
+                (wcsncmp(buf, L"USB\\VID_1856&PID_0011\\", 22) == 0))
             {
+                Debug.AddLine(wxString::Format("Found SSAG device %s", buf));
                 if (GetDiPropStr(h, &data, DEVPKEY_Device_DriverVersion, buf, sizeof(buf)))
                 {
                     Debug.AddLine(wxString::Format("SSAG driver version is %s", wxString(buf)));
@@ -91,6 +96,7 @@ static unsigned int GetSSAGDriverVersion()
                         driverVersion = 4;
                     }
                 }
+                found = true;
                 break;
             }
 
@@ -99,6 +105,9 @@ static unsigned int GetSSAGDriverVersion()
 
         SetupDiDestroyDeviceInfoList(h);
     }
+
+    if (!found)
+        Debug.AddLine("No SSAG device was found");
 
     return driverVersion;
 }
@@ -166,6 +175,7 @@ static bool LoadSSAGIFDll()
             throw ERROR_INFO("unexpected SSAG driver version!");
 
         wxASSERT(s_dllinst == NULL);
+        Debug.AddLine(wxString::Format("Loading SSAG dll %s", libname));
         s_dllinst = LoadLibrary(libname);
         if (s_dllinst == NULL)
             throw ERROR_INFO("SSAG LoadLibrary failed");
@@ -192,6 +202,7 @@ static void UnloadSSAGIFDll()
 {
     if (s_dllinst != NULL)
     {
+        Debug.AddLine("Unloading SSAG DLL");
         FreeLibrary(s_dllinst);
         s_dllinst = NULL;
     }
