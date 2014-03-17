@@ -969,11 +969,11 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
     if (pRequest->calibrationMove)
     {
-        pRequest->moveResult = pRequest->pMount->CalibrationMove(pRequest->direction, pRequest->duration);
+        pRequest->bError = pRequest->pMount->CalibrationMove(pRequest->direction, pRequest->duration);
     }
     else
     {
-        pRequest->moveResult = pRequest->pMount->Move(pRequest->vectorEndpoint, pRequest->normalMove);
+        pRequest->bError = pRequest->pMount->Move(pRequest->vectorEndpoint, pRequest->normalMove);
     }
 
     pRequest->pSemaphore->Post();
