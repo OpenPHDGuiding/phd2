@@ -49,12 +49,13 @@ struct GuideStepInfo
     const PHD_Point *mountOffset;
     double guideDistanceRA;
     double guideDistanceDec;
-    double durationRA;
-    double durationDec;
+    int durationRA;
+    int durationDec;
     // TODO: the following two members are GUIDE_DIRECTION, but we have circular
     // dependencies in our header files so cannot use GUIDE_DIRECTION here
     int directionRA;
     int directionDec;
+    wxPoint aoPos;
     double starMass;
     double starSNR;
 };

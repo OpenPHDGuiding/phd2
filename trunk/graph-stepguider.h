@@ -69,7 +69,7 @@ class GraphStepguiderClient : public wxWindow
     virtual ~GraphStepguiderClient(void);
 
     void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
-    void AppendData(int dx, int dy, const PHD_Point& avgPos);
+    void AppendData(int xPos, int yPos, const PHD_Point& avgPos);
 
     friend class GraphStepguiderWindow;
 
@@ -87,7 +87,7 @@ public:
     void OnButtonClear(wxCommandEvent& evt);
 
     void SetLimits(unsigned xMax, unsigned yMax, unsigned xBump, unsigned yBump);
-    void AppendData(int dx, int dy, const PHD_Point& avgPos);
+    void AppendData(int xPos, int yPos, const PHD_Point& avgPos);
     void ShowBump(const PHD_Point& curBump);
     bool SetState(bool is_active);
 

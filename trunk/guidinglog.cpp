@@ -429,15 +429,15 @@ bool GuidingLog::GuideStep(const GuideStepInfo& step)
 
             if (step.mount->IsStepGuider())
             {
-                double xSteps = step.directionRA == LEFT ? -step.durationRA : step.durationRA;
-                double ySteps = step.directionDec == DOWN ? -step.durationDec : step.durationDec;
-                m_file.Write(wxString::Format(",,,,%.f,%.f,", xSteps, ySteps));
+                int xSteps = step.directionRA == LEFT ? -step.durationRA : step.durationRA;
+                int ySteps = step.directionDec == DOWN ? -step.durationDec : step.durationDec;
+                m_file.Write(wxString::Format(",,,,%d,%d,", xSteps, ySteps));
             }
             else
             {
-                m_file.Write(wxString::Format("%.3f,%s,%.3f,%s,,,",
-                    step.durationRA, step.durationRA > 0. ? step.mount->DirectionChar((GUIDE_DIRECTION)step.directionRA) : "",
-                    step.durationDec, step.durationDec > 0. ? step.mount->DirectionChar((GUIDE_DIRECTION)step.directionDec): ""));
+                m_file.Write(wxString::Format("%d,%s,%d,%s,,,",
+                    step.durationRA, step.durationRA > 0 ? step.mount->DirectionChar((GUIDE_DIRECTION)step.directionRA) : "",
+                    step.durationDec, step.durationDec > 0 ? step.mount->DirectionChar((GUIDE_DIRECTION)step.directionDec): ""));
             }
 
             m_file.Write(wxString::Format("%.f,%.2f,%d\n",

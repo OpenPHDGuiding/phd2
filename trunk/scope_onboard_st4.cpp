@@ -115,9 +115,9 @@ bool ScopeOnboardST4::Disconnect(void)
     return bError;
 }
 
-bool ScopeOnboardST4::Guide(const GUIDE_DIRECTION direction, const int duration)
+Mount::MOVE_RESULT ScopeOnboardST4::Guide(GUIDE_DIRECTION direction, int duration)
 {
-    bool bError = false;
+    MOVE_RESULT result = MOVE_OK;
 
     try
     {
@@ -136,15 +136,18 @@ bool ScopeOnboardST4::Guide(const GUIDE_DIRECTION direction, const int duration)
             throw ERROR_INFO("Attempt to Guide On Camera mount when camera is not connected");
         }
 
-        bError = m_pOnboardHost->ST4PulseGuideScope(direction,duration);
+        if (m_pOnboardHost->ST4PulseGuideScope(direction,duration))
+        {
+            result = MOVE_ERROR;
+        }
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        result = MOVE_ERROR;
     }
 
-    return bError;
+    return result;
 }
 
 bool ScopeOnboardST4::HasNonGuiMove(void)
@@ -176,9 +179,4 @@ bool ScopeOnboardST4::HasNonGuiMove(void)
     }
 
     return bReturn;
-}
-
-bool ScopeOnboardST4::IsGuiding(void)
-{
-    return false;
 }

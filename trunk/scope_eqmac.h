@@ -35,7 +35,7 @@
 
 #ifdef GUIDE_EQMAC
 
-class ScopeEQMac:public Scope
+class ScopeEQMac : public Scope
 {
 public:
     ScopeEQMac(void) {
@@ -49,11 +49,8 @@ public:
         return false;
     }
 
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
+    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
 
-    virtual bool IsGuiding(void) {
-        return false;
-    }
 private:
     AppleEvent E6Return;
     AppleEvent E6Event;

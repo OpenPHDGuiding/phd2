@@ -263,7 +263,7 @@ public:
         GUIDE_DIRECTION direction;
         bool            calibrationMove;
         bool            normalMove;
-        bool            bError;
+        Mount::MOVE_RESULT moveResult;
         PHD_Point       vectorEndpoint;
         wxSemaphore     *pSemaphore;
     };

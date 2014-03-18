@@ -226,7 +226,7 @@ bool StepGuiderSimulator::Step(GUIDE_DIRECTION direction, int steps)
     return false;
 }
 
-int StepGuiderSimulator::MaxPosition(GUIDE_DIRECTION direction)
+int StepGuiderSimulator::MaxPosition(GUIDE_DIRECTION direction) const
 {
     return SimAoParams::max_position;
 }

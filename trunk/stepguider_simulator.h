@@ -49,7 +49,7 @@ public:
 
 private:
     virtual bool Step(GUIDE_DIRECTION direction, int steps);
-    virtual int MaxPosition(GUIDE_DIRECTION direction);
+    virtual int MaxPosition(GUIDE_DIRECTION direction) const;
 };
 
 #endif // STEPGUIDER_SIMULATOR

@@ -403,28 +403,28 @@ void Scope::EndDecDrift(void)
     }
 }
 
-bool Scope::CalibrationMove(GUIDE_DIRECTION direction, int duration)
+Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duration)
 {
-    bool bError = false;
+    MOVE_RESULT result = MOVE_OK;
 
     Debug.AddLine(wxString::Format("scope calibration move dir= %d dur= %d", direction, duration));
 
     try
     {
-        double amount = Move(direction, duration, false);
+        int amountMoved;
+        result = Move(direction, duration, false, &amountMoved);
 
-        if (amount < 0.0)
+        if (result != MOVE_OK)
         {
-            throw THROW_INFO("Move returned value < 0");
+            throw THROW_INFO("Move failed");
         }
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
     }
 
-    return bError;
+    return result;
 }
 
 int Scope::CalibrationMoveSize(void)
@@ -432,15 +432,16 @@ int Scope::CalibrationMoveSize(void)
     return m_calibrationDuration;
 }
 
-double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
+Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool normalMove, int *amountMoved)
 {
+    MOVE_RESULT result = MOVE_OK;
+
     try
     {
-        Debug.AddLine("Move(%d, %lf, %d)", direction, duration, normalMove);
+        Debug.AddLine("Move(%d, %d, %d)", direction, duration, normalMove);
 
         if (!m_guidingEnabled)
         {
-            duration = 0.0;
             throw THROW_INFO("Guiding disabled");
         }
 
@@ -458,14 +459,14 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
                         (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
                         (direction == NORTH && m_decGuideMode == DEC_SOUTH))
                     {
-                        duration = 0.0;
-                        Debug.AddLine("duration set to 0.0 by GuideMode");
+                        duration = 0;
+                        Debug.AddLine("duration set to 0 by GuideMode");
                     }
 
                     if  (duration > m_maxDecDuration)
                     {
                         duration = m_maxDecDuration;
-                        Debug.AddLine("duration set to %lf by maxDecDuration", duration);
+                        Debug.AddLine("duration set to %d by maxDecDuration", duration);
                     }
                 }
                 break;
@@ -478,7 +479,7 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
                     if (duration > m_maxRaDuration)
                     {
                         duration = m_maxRaDuration;
-                        Debug.AddLine("duration set to %lf by maxRaDuration", duration);
+                        Debug.AddLine("duration set to %d by maxRaDuration", duration);
                     }
                 }
 
@@ -489,10 +490,11 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
         }
 
         // Actually do the guide
-        assert(duration >= 0.0);
-        if (duration > 0.0)
+        assert(duration >= 0);
+        if (duration > 0)
         {
-            if (Guide(direction, duration))
+            result = Guide(direction, duration);
+            if (result != MOVE_OK)
             {
                 throw ERROR_INFO("guide failed");
             }
@@ -501,12 +503,17 @@ double Scope::Move(GUIDE_DIRECTION direction, double duration, bool normalMove)
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        duration = -1.0;
+        if (result == MOVE_OK)
+            result = MOVE_ERROR;
+        duration = 0;
     }
 
-    Debug.AddLine(wxString::Format("Move returns %.2f", duration));
+    Debug.AddLine(wxString::Format("Move returns status %d, amount %d", result, duration));
 
-    return duration;
+    if (amountMoved)
+        *amountMoved = duration;
+
+    return result;
 }
 
 void Scope::ClearCalibration(void)

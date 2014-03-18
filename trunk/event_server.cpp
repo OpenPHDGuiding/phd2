@@ -98,6 +98,11 @@ static JAry& operator<<(JAry& a, double d)
     return a << wxString::Format("%.2f", d);
 }
 
+static JAry& operator<<(JAry& a, int i)
+{
+    return a << wxString::Format("%d", i);
+}
+
 static wxString json_escape(const wxString& s)
 {
     wxString t(s);
@@ -173,6 +178,7 @@ struct NV
     NV(const wxString& n_, JObj& obj) : n(n_), v(obj.str()) { }
     NV(const wxString& n_, const json_value *v_) : n(n_), v(json_format(v_)) { }
     NV(const wxString& n_, const PHD_Point& p) : n(n_) { JAry ary; ary << p.X << p.Y; v = ary.str(); }
+    NV(const wxString& n_, const wxPoint& p) : n(n_) { JAry ary; ary << p.x << p.y; v = ary.str(); }
     NV(const wxString& n_, const NULL_TYPE& nul) : n(n_), v(literal_null) { }
 };
 
@@ -249,6 +255,12 @@ static Ev ev_calibration_complete(Mount *mount)
 {
     Ev ev("CalibrationComplete");
     ev << NVMount(mount);
+
+    if (mount->IsStepGuider())
+    {
+        ev << NV("Limit", mount->GetAoMaxPos());
+    }
+
     return ev;
 }
 
@@ -1269,7 +1281,7 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
 
     ev << NV("Frame", (int) pFrame->m_frameCounter)
        << NV("Time", step.time, 3)
-       << NV("mount", step.mount->Name())
+       << NVMount(step.mount)
        << NV("dx", step.cameraOffset->X, 3)
        << NV("dy", step.cameraOffset->Y, 3)
        << NV("RADistanceRaw", step.mountOffset->X, 3)
@@ -1277,16 +1289,21 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
        << NV("RADistanceGuide", step.guideDistanceRA, 3)
        << NV("DECDistanceGuide", step.guideDistanceDec, 3);
 
-    if (step.durationRA > 0.)
+    if (step.durationRA > 0)
     {
-       ev << NV("RADuration", step.durationRA, 3)
+       ev << NV("RADuration", step.durationRA)
           << NV("RADirection", step.mount->DirectionStr((GUIDE_DIRECTION)step.directionRA));
     }
 
-    if (step.durationDec > 0.)
+    if (step.durationDec > 0)
     {
-        ev << NV("DECDuration", step.durationDec, 3)
+        ev << NV("DECDuration", step.durationDec)
            << NV("DECDirection", step.mount->DirectionStr((GUIDE_DIRECTION)step.directionDec));
+    }
+
+    if (step.mount->IsStepGuider())
+    {
+        ev << NV("Pos", step.aoPos);
     }
 
     ev << NV("StarMass", step.starMass, 0)

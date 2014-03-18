@@ -50,17 +50,10 @@ public:
         VoyagerClient.Close();
     }
 
-    virtual bool Connect(wxString hostname);
+    virtual bool Connect(const wxString& hostname);
     virtual bool Connect(void);
     virtual bool Disconnect(void);
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
-
-    virtual bool IsGuiding(void)
-    {
-        return false;
-    }
-
-
+    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
 };
 
 #endif /* GUIDE_VOYAGER */

@@ -468,8 +468,15 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
         assert(pThisMount->IsBusy());
         pThisMount->DecrementRequestCount();
 
-        if (event.GetInt())
+        Mount::MOVE_RESULT moveResult = static_cast<Mount::MOVE_RESULT>(event.GetInt());
+        if (moveResult != Mount::MOVE_OK)
         {
+            if (moveResult == Mount::MOVE_STOP_GUIDING)
+            {
+                Debug.AddLine("mount move error indicates guiding should stop");
+                pGuider->StopGuiding();
+            }
+
             throw ERROR_INFO("Error reported moving");
         }
     }

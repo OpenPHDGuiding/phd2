@@ -96,9 +96,8 @@ char * ScopeGCUSBST4::getRegistryString(io_object_t sObj, char *propName) {
 
 #endif
 
-
-
-bool ScopeGCUSBST4::Guide(const GUIDE_DIRECTION direction, int duration) {
+Mount::MOVE_RESULT ScopeGCUSBST4::Guide(GUIDE_DIRECTION direction, int duration)
+{
     char buf[16];
     switch (direction) {
         case NORTH:
@@ -123,11 +122,10 @@ bool ScopeGCUSBST4::Guide(const GUIDE_DIRECTION direction, int duration) {
     }
 //  wxMessageBox(wxString::Format("send %d vs %d",strlen(buf),num_bytes));
     wxMilliSleep(duration + 50);
-    return false;
+    return MOVE_OK;
 }
 
 bool ScopeGCUSBST4::Connect() {
-
 #ifdef __APPLE__
     wxArrayString DeviceNames;
     wxArrayString PortNames;

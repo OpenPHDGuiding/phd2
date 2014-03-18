@@ -60,7 +60,8 @@ bool ScopeGpInt::Disconnect(void) {
     return false;
 }
 
-bool ScopeGpInt::Guide(const GUIDE_DIRECTION direction, int duration) {
+Mount::MOVE_RESULT ScopeGpInt::Guide(GUIDE_DIRECTION direction, int duration)
+{
     short reg = Inp32(port);
 
     reg = reg & 0x0F;  // Deassert all directions
@@ -75,7 +76,7 @@ bool ScopeGpInt::Guide(const GUIDE_DIRECTION direction, int duration) {
     reg = reg & 0x0F;  // Deassert all directions
     Out32(port,reg);
 
-    return false;
+    return MOVE_OK;
 }
 
 

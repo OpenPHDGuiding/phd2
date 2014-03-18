@@ -146,9 +146,8 @@ bool ScopeEquinox::Connect() {
     return false;
 }
 
-
-bool ScopeEquinox::Guide(const GUIDE_DIRECTION direction, int duration) {
-
+Mount::MOVE_RESULT ScopeEquinox::Guide(GUIDE_DIRECTION direction, int duration)
+{
     double NSTime = 0.0;
     double EWTime = 0.0;
 
@@ -171,17 +170,16 @@ bool ScopeEquinox::Guide(const GUIDE_DIRECTION direction, int duration) {
     //if (mountcode == SCOPE_EQMAC) prefix = "EQMAC";
     if (E6ReturnCode == -1) {
         pFrame->Alert(prefix + _(" responded it's not connected to a mount"));
-        return true;
+        return MOVE_ERROR;
     }
     else if (err == -600) {
         pFrame->Alert(prefix + _(" not running"));
-        return true;
+        return MOVE_ERROR;
     }
     wxMilliSleep(duration);
 
-    return false;
+    return MOVE_OK;
 }
 
 #endif
-
 #endif /* GUIDE_EQUINOX */

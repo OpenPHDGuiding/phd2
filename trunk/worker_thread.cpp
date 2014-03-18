@@ -205,9 +205,9 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIR
     EnqueueMessage(message);
 }
 
-bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
+Mount::MOVE_RESULT WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
 {
-    bool bError = false;
+    Mount::MOVE_RESULT result = Mount::MOVE_OK;
 
     try
     {
@@ -221,7 +221,8 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             {
                 Debug.AddLine("calibration move");
 
-                if (pArgs->pMount->CalibrationMove(pArgs->direction, pArgs->duration))
+                result = pArgs->pMount->CalibrationMove(pArgs->direction, pArgs->duration);
+                if (result != Mount::MOVE_OK)
                 {
                     throw ERROR_INFO("CalibrationMove failed");
                 }
@@ -231,7 +232,8 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
                 Debug.AddLine(wxString::Format("endpoint = (%.2f, %.2f)",
                     pArgs->vectorEndpoint.X, pArgs->vectorEndpoint.Y));
 
-                if (pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->normalMove))
+                result = pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->normalMove);
+                if (result != Mount::MOVE_OK)
                 {
                     throw ERROR_INFO("Move failed");
                 }
@@ -255,8 +257,9 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             pArgs->pSemaphore->Wait();
 
             pArgs->pSemaphore = NULL;
+            result = pArgs->moveResult;
 
-            if (pArgs->bError)
+            if (result != Mount::MOVE_OK)
             {
                 throw ERROR_INFO("myFrame handled move failed");
             }
@@ -265,22 +268,22 @@ bool WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        if (result == Mount::MOVE_OK)
+            result = Mount::MOVE_ERROR;
     }
 
-    Debug.AddLine(wxString::Format("move complete, bError=%d", bError));
+    Debug.AddLine(wxString::Format("move complete, result=%d", result));
 
-    return  bError;
+    return result;
 }
 
-void WorkerThread::SendWorkerThreadMoveComplete(Mount *pMount, bool bError)
+void WorkerThread::SendWorkerThreadMoveComplete(Mount *pMount, Mount::MOVE_RESULT moveResult)
 {
     wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, MYFRAME_WORKER_THREAD_MOVE_COMPLETE);
-    event->SetInt(bError);
+    event->SetInt(moveResult);
     event->SetPayload<Mount *>(pMount);
     wxQueueEvent(m_pFrame, event);
 }
-
 /*
  * entry point for the background thread
  */
@@ -332,13 +335,14 @@ wxThread::ExitCode WorkerThread::Entry()
                 bError = HandleExpose(&message.args.expose);
                 SendWorkerThreadExposeComplete(message.args.expose.pImage, bError);
                 break;
-            case REQUEST_MOVE:
+            case REQUEST_MOVE: {
                 Debug.AddLine(wxString::Format("worker thread servicing REQUEST_MOVE %s dir %d (%.2f, %.2f)",
                     message.args.move.pMount->GetMountClassName(), message.args.move.direction,
                     message.args.move.vectorEndpoint.X, message.args.move.vectorEndpoint.Y));
-                bError = HandleMove(&message.args.move);
-                SendWorkerThreadMoveComplete(message.args.move.pMount, bError);
+                Mount::MOVE_RESULT moveResult = HandleMove(&message.args.move);
+                SendWorkerThreadMoveComplete(message.args.move.pMount, moveResult);
                 break;
+            }
             default:
                 Debug.AddLine("worker thread servicing unknown request %d", message.request);
                 break;
