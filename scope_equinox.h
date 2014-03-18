@@ -35,7 +35,7 @@
 
 #ifdef GUIDE_EQUINOX
 
-class ScopeEquinox:public Scope
+class ScopeEquinox : public Scope
 {
 public:
     ScopeEquinox(void) {
@@ -49,19 +49,14 @@ public:
         return false;
     }
 
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
+    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
 
-    virtual bool IsGuiding(void) {
-        return false;
-    }
 private:
     AppleEvent E6Return;
     AppleEvent E6Event;
     SInt16 E6ReturnCode;
 
-
     OSErr E6AESendRoutine(double ewCorrection, double nsCorrection, int mountcode);
 
 };
-
 #endif /* GUIDE_EQUINOX */

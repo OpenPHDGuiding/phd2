@@ -129,6 +129,13 @@ protected:
     // functions with an implemenation in Guider that cannot be over-ridden
     // by a subclass
 public:
+
+    enum MOVE_RESULT {
+        MOVE_OK = 0,             // move succeeded
+        MOVE_ERROR,              // move failed
+        MOVE_STOP_GUIDING,       // move failed and guiding must stop
+    };
+
     Mount(void);
     virtual ~Mount(void);
 
@@ -142,7 +149,7 @@ public:
 
     bool FlipCalibration(void);
 
-    virtual bool Move(const PHD_Point& cameraVectorEndpoint, bool normalMove=true);
+    virtual MOVE_RESULT Move(const PHD_Point& cameraVectorEndpoint, bool normalMove=true);
     bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
                                                       PHD_Point& mountVectorEndpoint);
 
@@ -158,8 +165,8 @@ public:
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
-    virtual double Move(GUIDE_DIRECTION direction, double amount, bool normalMove) = 0;
-    virtual bool CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
+    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved) = 0;
+    virtual MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
     virtual int CalibrationMoveSize(void) = 0;
 
     // Calibration related routines
@@ -186,6 +193,8 @@ public:
 
     virtual const wxString& Name(void) const;
     virtual bool IsStepGuider(void) const;
+    virtual wxPoint GetAoPos(void) const;
+    virtual wxPoint GetAoMaxPos(void) const;
     virtual const char *DirectionStr(GUIDE_DIRECTION d);
     virtual const char *DirectionChar(GUIDE_DIRECTION d);
 

@@ -970,16 +970,16 @@ static wxString rms_label(double rms, double sampling)
         return wxString::Format("%4.2f", rms);
 }
 
-static double GetMaxDuration(const circular_buffer<S_HISTORY>& history, int start_item)
+static int GetMaxDuration(const circular_buffer<S_HISTORY>& history, int start_item)
 {
-    double maxdur = 1.0; // always return at least 1.0 to protect against divide-by-zero
+    int maxdur = 1; // always return at least 1 to protect against divide-by-zero
     for (unsigned int i = start_item; i < history.size(); i++)
     {
         const S_HISTORY& h = history[i];
-        double d = fabs(h.raDur);
+        int d = abs(h.raDur);
         if (d > maxdur)
             maxdur = d;
-        d = fabs(h.decDur);
+        d = abs(h.decDur);
         if (d > maxdur)
             maxdur = d;
     }
@@ -1102,25 +1102,27 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
         if (m_showCorrections)
         {
-            double maxDur = GetMaxDuration(m_history, start_item);
+            int maxDur = GetMaxDuration(m_history, start_item);
 
-            const double ymag = (size.y - 10) * 0.5 / maxDur;
+            const double ymag = (size.y - 10) * 0.5 / (double) maxDur;
             ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
 
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
-
             dc.SetPen(wxPen(m_raOrDxColor.ChangeLightness(60)));
 
             for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
             {
                 const S_HISTORY& h = m_history[i];
 
-                const double raDur = h.ra > 0.0 ? -h.raDur : h.raDur;
-                wxPoint pt(sctr.pt(j, raDur));
-                if (raDur <= -0.5)
-                    dc.DrawRectangle(pt,wxSize(4, yorig - pt.y));
-                else if (raDur >= 0.5)
-                    dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
+                if (h.raDur != 0)
+                {
+                    const int raDur = h.ra > 0.0 ? -h.raDur : h.raDur;
+                    wxPoint pt(sctr.pt(j, raDur));
+                    if (raDur < 0)
+                        dc.DrawRectangle(pt, wxSize(4, yorig - pt.y));
+                    else
+                        dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
+                }
             }
 
             dc.SetPen(wxPen(m_decOrDyColor.ChangeLightness(60)));
@@ -1129,13 +1131,16 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             {
                 const S_HISTORY& h = m_history[i];
 
-                const double decDur = h.dec > 0.0 ? -h.decDur : h.decDur;
-                wxPoint pt(sctr.pt(j, decDur));
-                pt.x += 5;
-                if (decDur <= -0.5)
-                    dc.DrawRectangle(pt,wxSize(4, yorig - pt.y));
-                else if (decDur >= 0.5)
-                    dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
+                if (h.decDur != 0)
+                {
+                    const int decDur = h.dec > 0.0 ? -h.decDur : h.decDur;
+                    wxPoint pt(sctr.pt(j, decDur));
+                    pt.x += 5;
+                    if (decDur < 0)
+                        dc.DrawRectangle(pt,wxSize(4, yorig - pt.y));
+                    else
+                        dc.DrawRectangle(wxPoint(pt.x, yorig), wxSize(4, pt.y - yorig));
+                }
             }
         }
 

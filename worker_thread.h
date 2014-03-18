@@ -108,12 +108,11 @@ public:
     void EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove);
     void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
 protected:
-    bool HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs);
-    void SendWorkerThreadMoveComplete(Mount *pMount, bool bError);
+    Mount::MOVE_RESULT HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs);
+    void SendWorkerThreadMoveComplete(Mount *pMount, Mount::MOVE_RESULT moveResult);
     // in the frame class: void MyFrame::OnWorkerThreadGuideComplete(wxThreadEvent& event);
 
     // types and routines for the server->worker message queue
-
     enum WORKER_REQUEST_TYPE
     {
         REQUEST_NONE,       // not used
@@ -130,14 +129,13 @@ protected:
     {
         // there is no ARGS_TERMINATE terminate;
         MyFrame::EXPOSE_REQUEST expose;
-        MyFrame::PHD_MOVE_REQUEST   move;
+        MyFrame::PHD_MOVE_REQUEST move;
     };
 
     /*
      * this struct is passed through the message queue to the worker thread
      * to request work
      */
-
     struct WORKER_THREAD_REQUEST
     {
         WORKER_REQUEST_TYPE request;

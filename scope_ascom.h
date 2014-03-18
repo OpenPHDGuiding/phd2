@@ -62,6 +62,7 @@ class ScopeASCOM : public Scope, private ASCOM_COMMON
     DISPID dispid_raguiderate;
     DISPID dispid_decguiderate;
     DISPID dispid_sideofpier;
+    DISPID dispid_abortslew;
 
     // other private varialbles
     bool m_bCanCheckPulseGuiding;
@@ -69,14 +70,16 @@ class ScopeASCOM : public Scope, private ASCOM_COMMON
     bool m_bCanGetGuideRates;
     bool m_bCanSlew;
 
+    bool m_enableCheckSlewing;
+    bool m_abortSlewWhenGuidingStuck;
+
     wxString m_choice; // name of chosen scope
 
     // private functions
     bool Create(DispatchObj& obj);
-    virtual bool IsGuiding(DispatchObj *pScopeDriver);
-    virtual bool IsSlewing(DispatchObj *pScopeDriver);
-    virtual double GetDeclination(void);
-    virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
+    bool IsGuiding(DispatchObj *pScopeDriver);
+    bool IsSlewing(DispatchObj *pScopeDriver);
+    void AbortSlew(DispatchObj *pScopeDriver);
 
 public:
     ScopeASCOM(const wxString& choice);
@@ -91,9 +94,10 @@ public:
 
     virtual bool HasNonGuiMove(void);
 
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs);
-    virtual bool IsGuiding(void);
+    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
 
+    virtual double GetDeclination(void);
+    virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
     virtual bool CanSlew(void);

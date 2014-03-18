@@ -345,7 +345,9 @@ bool StepGuider::MoveToCenter()
 
         if (positionUpDown > 0)
         {
-            if (Move(DOWN, positionUpDown) != positionUpDown)
+            int amountMoved = 0;
+            Move(DOWN, positionUpDown, true, &amountMoved);
+            if (amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step DOWN");
             }
@@ -354,7 +356,9 @@ bool StepGuider::MoveToCenter()
         {
             positionUpDown = -positionUpDown;
 
-            if (Move(UP, positionUpDown) != positionUpDown)
+            int amountMoved = 0;
+            Move(UP, positionUpDown, true, &amountMoved);
+            if (amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step UP");
             }
@@ -364,7 +368,9 @@ bool StepGuider::MoveToCenter()
 
         if (positionLeftRight > 0)
         {
-            if (Move(RIGHT, positionLeftRight) != positionLeftRight)
+            int amountMoved = 0;
+            Move(RIGHT, positionLeftRight, true, &amountMoved);
+            if (amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step RIGHT");
             }
@@ -373,7 +379,9 @@ bool StepGuider::MoveToCenter()
         {
             positionLeftRight = -positionLeftRight;
 
-            if (Move(LEFT, positionLeftRight) != positionLeftRight)
+            int amountMoved = 0;
+            Move(LEFT, positionLeftRight, true, &amountMoved);
+            if (amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step LEFT");
             }
@@ -727,17 +735,18 @@ void StepGuider::ShowPropertyDialog(void)
 {
 }
 
-bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int steps)
+Mount::MOVE_RESULT StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int steps)
 {
-    bool bError = false;
+    MOVE_RESULT result = MOVE_OK;
 
     Debug.AddLine(wxString::Format("stepguider calibration move dir= %d steps= %d", direction, steps));
 
     try
     {
-        double stepsTaken = Move(direction, steps, false);
+        int stepsTaken = 0;
+        result = Move(direction, steps, false, &stepsTaken);
 
-        if ((int) stepsTaken != steps)
+        if (stepsTaken != steps)
         {
             throw THROW_INFO("stepsTaken != m_calibrationStepsPerIteration");
         }
@@ -745,10 +754,11 @@ bool StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int steps)
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        if (result == MOVE_OK)
+           result = MOVE_ERROR;
     }
 
-    return bError;
+    return result;
 }
 
 int StepGuider::CalibrationMoveSize(void)
@@ -756,19 +766,18 @@ int StepGuider::CalibrationMoveSize(void)
     return m_calibrationStepsPerIteration;
 }
 
-double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMove)
+Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool normalMove, int *amountMoved)
 {
-    int steps = 0;
+    MOVE_RESULT result = MOVE_OK;
 
     try
     {
-        Debug.AddLine(wxString::Format("Move(%d, %.2f, %d)", direction, amount, normalMove));
+        Debug.AddLine(wxString::Format("Move(%d, %d, %d)", direction, steps, normalMove));
 
         // Compute the required guide steps
         if (m_guidingEnabled)
         {
             // Acutally do the guide
-            steps = (int)(amount + 0.5);
             assert(steps >= 0);
 
             if (steps > 0)
@@ -825,20 +834,24 @@ double StepGuider::Move(GUIDE_DIRECTION direction, double amount, bool normalMov
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        steps = -1;
+        steps = 0;
+        result = MOVE_ERROR;
     }
 
-    return (double)steps;
+    if (amountMoved)
+        *amountMoved = steps;
+
+    return result;
 }
 
-bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
+Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 {
-    bool bError = false;
+    MOVE_RESULT result = MOVE_OK;
 
     try
     {
-        bool moveFailed = Mount::Move(cameraVectorEndpoint, normalMove);
-        if (moveFailed)
+        MOVE_RESULT mountResult = Mount::Move(cameraVectorEndpoint, normalMove);
+        if (mountResult != MOVE_OK)
             Debug.AddLine("StepGuider::Move: Mount::Move failed!");
 
         // keep a moving average of the AO position
@@ -970,10 +983,10 @@ bool StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        result = MOVE_ERROR;
     }
 
-    return bError;
+    return result;
 }
 
 bool StepGuider::IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit)
@@ -1017,6 +1030,16 @@ wxString StepGuider::GetMountClassName() const
 bool StepGuider::IsStepGuider(void) const
 {
     return true;
+}
+
+wxPoint StepGuider::GetAoPos(void) const
+{
+    return wxPoint(m_xOffset, m_yOffset);
+}
+
+wxPoint StepGuider::GetAoMaxPos(void) const
+{
+    return wxPoint(MaxPosition(RIGHT), MaxPosition(UP));
 }
 
 const char *StepGuider::DirectionStr(GUIDE_DIRECTION d)

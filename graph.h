@@ -58,8 +58,8 @@ struct S_HISTORY
     double dy;
     double ra;
     double dec;
-    double raDur;
-    double decDur;
+    int raDur;
+    int decDur;
     double starSNR;
     double starMass;
     S_HISTORY() { }

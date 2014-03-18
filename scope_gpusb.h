@@ -35,7 +35,7 @@
 
 #ifdef GUIDE_GPUSB
 
-class ScopeGpUsb:public Scope
+class ScopeGpUsb : public Scope
 {
 public:
     ScopeGpUsb(void)
@@ -44,15 +44,8 @@ public:
     }
 
     virtual bool Connect(void);
-
     virtual bool Disconnect(void);
-
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int duration);
-
-    virtual bool IsGuiding()
-    {
-        return false;
-    }
+    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
 };
 
 #endif /* GUIDE_GPUSB */

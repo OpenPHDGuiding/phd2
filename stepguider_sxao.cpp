@@ -473,7 +473,7 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
     return bError;
 }
 
-int StepGuiderSxAO::MaxPosition(GUIDE_DIRECTION direction)
+int StepGuiderSxAO::MaxPosition(GUIDE_DIRECTION direction) const
 {
     return MaxSteps;
 }

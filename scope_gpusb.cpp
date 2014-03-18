@@ -208,7 +208,8 @@ bool ScopeGpUsb::Disconnect() {
     return false;
 }
 
-bool ScopeGpUsb::Guide(const GUIDE_DIRECTION direction, int duration) {
+Mount::MOVE_RESULT ScopeGpUsb::Guide(GUIDE_DIRECTION direction, int duration)
+{
     GPUSB_AllDirDeassert();
     GPUSB_LEDGreen();
     switch (direction) {
@@ -220,7 +221,7 @@ bool ScopeGpUsb::Guide(const GUIDE_DIRECTION direction, int duration) {
     wxMilliSleep(duration);
     GPUSB_AllDirDeassert();
     GPUSB_LEDRed();
-    return false;
+    return MOVE_OK;
 }
 
 #endif /* GUIDE_GPUSB */

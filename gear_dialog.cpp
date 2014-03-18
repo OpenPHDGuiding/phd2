@@ -311,6 +311,7 @@ int GearDialog::ShowModal(bool autoConnect)
     {
         UpdateButtonState();
 
+        CenterOnParent();
         ret = wxDialog::ShowModal();
     }
     else

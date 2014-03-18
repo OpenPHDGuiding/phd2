@@ -145,9 +145,8 @@ bool ScopeEQMac::Connect() {
     return false;
 }
 
-
-bool ScopeEQMac::Guide(const GUIDE_DIRECTION direction, int duration) {
-
+Mount::MOVE_RESULT ScopeEQMac::Guide(GUIDE_DIRECTION direction, int duration)
+{
     double NSTime = 0.0;
     double EWTime = 0.0;
 
@@ -169,17 +168,16 @@ bool ScopeEQMac::Guide(const GUIDE_DIRECTION direction, int duration) {
     wxString prefix = "EQMAC";
     if (E6ReturnCode == -1) {
         pFrame->Alert(prefix + _(" responded it's not connected to a mount"));
-        return true;
+        return MOVE_ERROR;
     }
     else if (err == -600) {
         pFrame->Alert(prefix + _(" not running"));
-        return true;
+        return MOVE_ERROR;
     }
     wxMilliSleep(duration);
 
-    return false;
+    return MOVE_OK;
 }
 
 #endif
-
 #endif /* GUIDE_EQMAC */

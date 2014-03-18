@@ -36,7 +36,7 @@
 #ifndef SCOPE_ONBOARD_ST4_H_INCLUDED
 #define SCOPE_ONBOARD_ST4_H_INCLUDED
 
-class ScopeOnboardST4:public Scope
+class ScopeOnboardST4 : public Scope
 {
     OnboardST4 *m_pOnboardHost;
 protected:
@@ -49,8 +49,7 @@ public:
 
     virtual bool HasNonGuiMove(void);
 
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int duration);
-    virtual bool IsGuiding(void);
+    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
 };
 
 #endif // SCOPE_ONBOARD_ST4_H_INCLUDED

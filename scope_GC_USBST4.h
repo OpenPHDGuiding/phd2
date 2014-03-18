@@ -33,7 +33,8 @@
  */
 #ifdef  GUIDE_GCUSBST4
 
-class ScopeGCUSBST4:public Scope {
+class ScopeGCUSBST4 : public Scope
+{
 public:
     ScopeGCUSBST4(void) {
         m_Name = wxString("GCUSB-ST4");
@@ -43,18 +44,12 @@ public:
 
     virtual bool Disconnect(void);
 
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int duration);
+    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
 
-    virtual bool IsGuiding() {
-        return false;
-    }
 private:
     int portFID;
     kern_return_t createSerialIterator(io_iterator_t *serialIterator);
     char *getRegistryString(io_object_t sObj, char *propName);
-
 };
 
 #endif /* GUIDE_GCUSBST4 */
-
-

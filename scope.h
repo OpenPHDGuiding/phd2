@@ -152,8 +152,8 @@ public:
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
-    double Move(GUIDE_DIRECTION direction, double duration, bool normalMove=true);
-    bool CalibrationMove(GUIDE_DIRECTION direction, int duration);
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, bool normalMove, int *amountMoved);
+    MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration);
     int CalibrationMoveSize(void);
 
     void ClearCalibration(void);
@@ -161,8 +161,7 @@ private:
 
 // these MUST be supplied by a subclass
 private:
-    virtual bool Guide(const GUIDE_DIRECTION direction, const int durationMs)=0;
-    virtual bool IsGuiding()=0;
+    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) = 0;
 };
 
 #endif /* SCOPE_H_INCLUDED */

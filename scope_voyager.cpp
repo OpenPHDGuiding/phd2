@@ -37,11 +37,10 @@
 
 #ifdef GUIDE_VOYAGER
 
-bool ScopeVoyager::Connect(wxString hostname)
+bool ScopeVoyager::Connect(const wxString& hostname)
 {
     bool bError = true;
     wxIPV4address addr;
-
     addr.Hostname(hostname);
     addr.Service(4030);
 
@@ -76,9 +75,9 @@ bool ScopeVoyager::Disconnect(void)
     return false;
 }
 
-bool ScopeVoyager::Guide(const GUIDE_DIRECTION direction, int duration)
+Mount::MOVE_RESULT ScopeVoyager::Guide(GUIDE_DIRECTION direction, int duration)
 {
-    bool bError = false;
+    MOVE_RESULT result = MOVE_OK;
 
     try
     {
@@ -126,10 +125,10 @@ bool ScopeVoyager::Guide(const GUIDE_DIRECTION direction, int duration)
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        bError = true;
+        result = MOVE_ERROR;
     }
 
-    return bError;
+    return result;
 }
 
 #endif /* GUIDE_VOYAGER */

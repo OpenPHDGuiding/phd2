@@ -569,9 +569,9 @@ bool Mount::FlipCalibration(void)
     return bError;
 }
 
-bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
+Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 {
-    bool bError = false;
+    MOVE_RESULT result = MOVE_OK;
 
     try
     {
@@ -607,47 +607,40 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         GUIDE_DIRECTION xDirection = xDistance > 0.0 ? LEFT : RIGHT;
         GUIDE_DIRECTION yDirection = yDistance > 0.0 ? DOWN : UP;
 
-        double actualXAmount = Move(xDirection, fabs(xDistance / m_xRate), normalMove);
-
-        if (actualXAmount < 0.0)
-        {
-            actualXAmount = 0.0;
-            bError = true;
-        }
+        int requestedXAmount = (int) floor(fabs(xDistance / m_xRate) + 0.5);
+        int actualXAmount = 0;
+        result = Move(xDirection, requestedXAmount, normalMove, &actualXAmount);
 
         wxString msg;
 
-        if (actualXAmount >= 0.5)
+        if (actualXAmount > 0)
         {
-            msg = wxString::Format(_("%s %5.2f px %3.0f ms"), xDirection == EAST ? _("East") : _("West"),
+            msg = wxString::Format(_("%s %5.2f px %3d ms"), xDirection == EAST ? _("East") : _("West"),
                 fabs(xDistance), actualXAmount);
-            Debug.AddLine(msg);
         }
 
-        double actualYAmount = Move(yDirection, fabs(yDistance / m_yRate), normalMove);
-
-        if (actualYAmount < 0.0)
+        int actualYAmount = 0;
+        if (result == MOVE_OK || result == MOVE_ERROR)
         {
-            actualYAmount = 0.0;
-            bError = true;
-        }
+            int requestedYAmount = (int) floor(fabs(yDistance / m_yRate) + 0.5);
+            result = Move(yDirection, requestedYAmount, normalMove, &actualYAmount);
 
-        if (actualYAmount >= 0.5)
-        {
-            msg = wxString::Format(_("%s%*s%s %.2f px %.0f ms"), msg,
-                msg.IsEmpty() ? 42 : msg.Len() < 30 ? 30 - msg.Len() : 1, "",
-                yDirection == SOUTH ? _("South") : _("North"),
-                fabs(yDistance), actualYAmount);
-            Debug.AddLine(msg);
+            if (actualYAmount > 0)
+            {
+                msg = wxString::Format(_("%s%*s%s %.2f px %d ms"), msg,
+                    msg.IsEmpty() ? 42 : msg.Len() < 30 ? 30 - msg.Len() : 1, "",
+                    yDirection == SOUTH ? _("South") : _("North"),
+                    fabs(yDistance), actualYAmount);
+            }
         }
 
         if (!msg.IsEmpty())
         {
-            pFrame->SetStatusText(msg, 1, std::max((int)actualXAmount, (int)actualYAmount));
+            pFrame->SetStatusText(msg, 1, wxMax(actualXAmount, actualYAmount));
+            Debug.AddLine(msg);
         }
 
         GuideStepInfo info;
-
         info.mount = this;
         info.time = (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0;
         info.cameraOffset = &cameraVectorEndpoint;
@@ -658,6 +651,7 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
         info.directionRA = xDirection;
         info.durationDec = actualYAmount;
         info.directionDec = yDirection;
+        info.aoPos = GetAoPos();
         info.starMass = pFrame->pGuider->StarMass();
         info.starSNR = pFrame->pGuider->SNR();
 
@@ -673,10 +667,10 @@ bool Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
     catch (wxString errMsg)
     {
         POSSIBLY_UNUSED(errMsg);
-        bError = true;
+        result = MOVE_ERROR;
     }
 
-    return bError;
+    return result;
 }
 
 /*
@@ -915,6 +909,16 @@ const wxString& Mount::Name(void) const
 bool Mount::IsStepGuider(void) const
 {
     return false;
+}
+
+wxPoint Mount::GetAoPos(void) const
+{
+    return wxPoint();
+}
+
+wxPoint Mount::GetAoMaxPos(void) const
+{
+    return wxPoint();
 }
 
 const char *Mount::DirectionStr(GUIDE_DIRECTION d)

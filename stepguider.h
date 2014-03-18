@@ -121,6 +121,8 @@ public:
     virtual wxString GetSettingsSummary(void);
     virtual wxString GetMountClassName(void) const;
     virtual bool IsStepGuider(void) const;
+    virtual wxPoint GetAoPos(void) const;
+    virtual wxPoint GetAoMaxPos(void) const;
     virtual const char *DirectionStr(GUIDE_DIRECTION d);
     virtual const char *DirectionChar(GUIDE_DIRECTION d);
 
@@ -146,9 +148,9 @@ public:
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:
-    virtual bool Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
-    double Move(GUIDE_DIRECTION direction, double amount, bool normalMove=true);
-    bool CalibrationMove(GUIDE_DIRECTION direction, int steps);
+    virtual MOVE_RESULT Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved);
+    MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps);
     int CalibrationMoveSize(void);
     void InitBumpPositions(void);
 
@@ -158,8 +160,8 @@ protected:
 
     // pure virutal functions -- these MUST be overridden by a subclass
 private:
-    virtual bool Step(GUIDE_DIRECTION direction, int steps)=0;
-    virtual int MaxPosition(GUIDE_DIRECTION direction)=0;
+    virtual bool Step(GUIDE_DIRECTION direction, int steps) = 0;
+    virtual int MaxPosition(GUIDE_DIRECTION direction) const = 0;
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
