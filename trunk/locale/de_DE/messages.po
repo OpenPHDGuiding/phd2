@@ -2343,7 +2343,7 @@ msgstr "Grundeinstellung"
 
 #: myframe.cpp:1526
 msgid "Language-Name"
-msgstr "Name der Sprache"
+msgstr "Deutsch"
 
 #: myframe.cpp:1546
 msgid "Language"
