@@ -78,10 +78,11 @@ nmake makefile.vcc
 
   You should ignore all the warning messages.  These steps are described in README.win32 in the CFITSIO directory – just open it with a text editor.
 
-5. Download OpenCV 2.4.5 from http://opencv.org/. Install it, and set
-the OPENCV_DIR environment variable to point to the build\ subdirectory of where you put it. For example, if you install it in C:\opencv, set OPENCV_DIR to C:\opencv\build
+5. Download the pre-built OpenCV 2.4.5 DLLs from http://openphdguiding.org/opencv-245-vc12.zip. Unzip and install in <opencv location>. Set the environment variable OPENCV_DIR to point to the <opencv location>\install. For example, if you installed the folder to C:\opencv-245-vc12, then set OPENCV_DIR to "C:\opencv-245-vc12\install".
 
-You will have to copy 3 Debug and Release DLLs from opencv-2.4.5\build\x86\vc11\bin
+Note: do not install the prebuilt DLLs from the opencv distribution from opencv.org. These were built with VS 2010 and will introduce an unwanted dependency on the VS 2010 C++ runtime DLLs.  If you do prefer to download opencv from opencv.org, make sure you re-build it with VS 2013.
+
+Next you will have to copy 3 Debug and Release DLLs from <opencv location>\install\x86\vc12\bin\
 
 The files you need to copy are:
 
@@ -90,9 +91,9 @@ Debug: opencv_core245d.dll opencv_highgui245d.dll opencv_imgproc245d.dll
 Release: opencv_core245.dll opencv_highgui245.dll opencv_imgproc245.dll
 }}}
 
-You can either copy these to the Debug\ and Release\ build directories that VC creates, or copy them to an existing PHD2 install directory. If you copy them to the PHD2 install directory, make sure that directory is in your PATH environment variable.
+You can either copy these to the Debug\ and Release\ build directories that VC creates, or copy them to an existing PHD2 install directory. If you copy them to the PHD2 install directory, make sure that directory is in your PATH environment variable. (See note below "Running PHD2 from Visual Studio".)
 
-  _Extra Info_ PHD2 is currently using OpenCV version 2.4.5, but this is no longer the latest OpenCV release.  Don’t download and install the latest release – stick with the version used by the PHD2 build.  The version numbers are embedded in the OpenCV filenames, so PHD2 is implicitly tied to a specific release level.  On the OpenCV site, click on ‘downloads’ to find the earlier release you need, don’t use the “latest downloads” link on their home page.  OpenCV is installed with a Windows installer executable, so just run it and specify the target directory you want.
+  _Extra Info_ PHD2 is currently using OpenCV version 2.4.5, but this is no longer the latest OpenCV release.  Don’t download and install the latest release – stick with the version used by the PHD2 build.  The version numbers are embedded in the OpenCV filenames, so PHD2 is implicitly tied to a specific release level.
 
 6. Get PHD2 sources from the trunk branch at
 
