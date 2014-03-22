@@ -11,6 +11,7 @@ This page describes how to set up a build environment from scratch on MS-Windows
   # Install opencv
   # Get PHD2 sources
   # Compile PHD2
+  # Running PHD2 from Visual Studio
 
 = Step-by-step =
 
@@ -89,7 +90,7 @@ Debug: opencv_core245d.dll opencv_highgui245d.dll opencv_imgproc245d.dll
 Release: opencv_core245.dll opencv_highgui245.dll opencv_imgproc245.dll
 }}}
 
-You can either copy these to the Debug\ and Release\ build directories that VC creates, or copy them to your PHD1 install directory. If you copy them to the PHD1 install directory, make sure that directory is in your PATH environment variable.
+You can either copy these to the Debug\ and Release\ build directories that VC creates, or copy them to an existing PHD2 install directory. If you copy them to the PHD2 install directory, make sure that directory is in your PATH environment variable.
 
   _Extra Info_ PHD2 is currently using OpenCV version 2.4.5, but this is no longer the latest OpenCV release.  Don’t download and install the latest release – stick with the version used by the PHD2 build.  The version numbers are embedded in the OpenCV filenames, so PHD2 is implicitly tied to a specific release level.  On the OpenCV site, click on ‘downloads’ to find the earlier release you need, don’t use the “latest downloads” link on their home page.  OpenCV is installed with a Windows installer executable, so just run it and specify the target directory you want.
 
@@ -100,3 +101,13 @@ You can either copy these to the Debug\ and Release\ build directories that VC c
 7. Open phd2.sln in Visual Studio, select the Release or Debug build target and build.
 
   _Extra Info_ You may have jumped ahead at some point and downloaded the PHD2 source just for inspection.  If you opened the VCC project before doing all of the steps above, you will obviously see a ton of IntelliSense syntax errors.  These may persist even after you’ve done the steps above and even after you’ve successfully compiled the project.  You have two options at this point: you can try to sort through the IntelliSense options and somehow get it to rebuild its database or you can delete the PHD2 files and simply download them again.  The second option seems a lot easier.  If you’ve set everything up as described, the project will compile and you are good to go.
+
+8. Running PHD2 from Visual Studio
+
+PHD2 has runtime dependencies on several camera support libraries (DLLs). In order to run, the DLLs must be available either in a directory on PATH (environment variable), or in the same directory as PHD2.exe.
+
+One solution is to download and install an official PHD2 release build, and then add the install location to the PATH environment variable.
+
+An alternate approach is to manually copy the DLLs from WinLibs\ to the Release\ and Debug\ directories.
+
+Once you do one of those steps, you should be able to run PHD2 from Visual Studio.
