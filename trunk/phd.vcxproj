@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,12 +19,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -52,8 +52,8 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OPENCV_DIR)\include;$(WXWIN)\include\msvc;$(WXWIN)\include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
     <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OPENCV_DIR)\x86\vc10\bin;./cameras; $(VCInstallDir)atlmfc\lib;$(VCInstallDir)lib</ReferencePath>
     <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./cameras; $(VCInstallDir)atlmfc\lib;$(VCInstallDir)lib</ReferencePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OPENCV_DIR)\x86\vc10\lib;$(WXWIN)\lib\vc_lib;$(CFITSIO);C:\Program Files (x86)\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OPENCV_DIR)\x86\vc10\lib;$(WXWIN)\lib\vc_lib;$(CFITSIO);$(OPENCV_DIR)\build\x64\vc10\staticlib;C:\Program Files (x86)\Visual Leak Detector\lib\Win32;$(WXWIN)\lib\vc_lib;$(CFITSIO);$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OPENCV_DIR)\x86\vc12\lib;$(WXWIN)\lib\vc_lib;$(CFITSIO);C:\Program Files (x86)\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OPENCV_DIR)\x86\vc12\lib;$(WXWIN)\lib\vc_lib;$(CFITSIO);$(OPENCV_DIR)\build\x64\vc10\staticlib;C:\Program Files (x86)\Visual Leak Detector\lib\Win32;$(WXWIN)\lib\vc_lib;$(CFITSIO);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
