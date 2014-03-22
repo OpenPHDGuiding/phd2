@@ -54,12 +54,41 @@
 
 extern int ushort_compare(const void * a, const void * b);
 
+#if DONE_SUPPORTING_XP // this is the newer API, but it does not work on Windows XP
+
 static bool GetDiPropStr(HDEVINFO h, SP_DEVINFO_DATA *data, const DEVPROPKEY& key, WCHAR *buf, DWORD size)
 {
     DEVPROPTYPE proptype;
     return SetupDiGetDeviceProperty(h, data, &key, &proptype, (PBYTE)buf, size, &size, 0) &&
         proptype == DEVPROP_TYPE_STRING;
 }
+
+#else
+
+static wxString GetDiPropStr(HDEVINFO h, SP_DEVINFO_DATA *data, const wxString& key)
+{
+    wxString val;
+
+    WCHAR buf[4096];
+    DWORD size = sizeof(buf);
+    DWORD proptype;
+    if (SetupDiGetDeviceRegistryProperty(h, data, SPDRP_DRIVER, &proptype, (PBYTE)&buf[0], size, &size))
+    {
+        wxRegKey k(wxString("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Class\\") + buf);
+        if (!k.QueryValue(key, val, false))
+        {
+            Debug.AddLine("SSAG failed to get " + key + " driver property value");
+        }
+    }
+    else
+    {
+        Debug.AddLine("SSAG failed to get SDRP_DIRVER registry property for SSAG");
+    }
+
+    return val;
+}
+
+#endif // XP
 
 static unsigned int GetSSAGDriverVersion()
 {
@@ -80,6 +109,7 @@ static unsigned int GetSSAGDriverVersion()
 
         while (SetupDiEnumDeviceInfo(h, idx, &data))
         {
+#if DONE_SUPPORTING_XP
             WCHAR buf[4096];
 
             if (GetDiPropStr(h, &data, DEVPKEY_Device_InstanceId, buf, sizeof(buf)) &&
@@ -99,6 +129,30 @@ static unsigned int GetSSAGDriverVersion()
                 found = true;
                 break;
             }
+#else
+            WCHAR buf[4096];
+            DWORD size = sizeof(buf);
+            DWORD proptype;
+
+            if (SetupDiGetDeviceRegistryProperty(h, &data, SPDRP_HARDWAREID, &proptype, (PBYTE)&buf[0], size, &size) &&
+                (wcsncmp(buf, L"USB\\VID_1856&PID_0012", 21) == 0 ||
+                 wcsncmp(buf, L"USB\\VID_1856&PID_0011", 21) == 0))
+            {
+                Debug.AddLine(wxString::Format("Found SSAG device %s", buf));
+                wxString ver = GetDiPropStr(h, &data, "DriverVersion");
+                if (ver.Length())
+                {
+                    Debug.AddLine(wxString::Format("SSAG driver version is %s", ver));
+                    int v;
+                    if (wxSscanf(ver, "%d", &v) == 1 && v >= 3)
+                    {
+                        driverVersion = 4;
+                    }
+                }
+                found = true;
+                break;
+            }
+#endif // XP
 
             ++idx;
         }
