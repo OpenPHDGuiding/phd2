@@ -1089,12 +1089,25 @@ wxString Mount::GetSettingsSummary()
     wxString algorithms[] = {
         _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
-    return wxString::Format("Mount = %s,%s connected, guiding %s, %s\n",
+
+    double cur_ra, cur_dec, cur_st;
+    wxString dec_str;
+    if (!GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+    {
+        dec_str = wxString::Format("%0.1f deg", cur_dec);
+    }
+    else
+    {
+        dec_str = "Unknown";
+    }
+    return wxString::Format("Mount = %s,%s connected, guiding %s, %s, Dec = %s, Pier side = %s\n",
         m_Name,
         IsConnected() ? " " : " not",
         m_guidingEnabled ? "enabled" : "disabled",
         IsCalibrated() ? wxString::Format("xAngle = %.3f, xRate = %.4f, yAngle = %.3f, yRate = %.4f",
-                xAngle(), xRate(), yAngle(), yRate()) : "not calibrated"
+                xAngle(), xRate(), yAngle(), yRate()) : "not calibrated",
+                dec_str,
+                PierSideStr(SideOfPier())
     ) + wxString::Format("X guide algorithm = %s, %s",
         algorithms[GetXGuideAlgorithm()],
         m_pXGuideAlgorithm->GetSettingsSummary()

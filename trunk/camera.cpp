@@ -868,12 +868,18 @@ wxString GuideCamera::GetSettingsSummary()
     } // lock scope
 
     // return a loggable summary of current camera settings
-    return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s\n",
+    wxString pixelSizeStr;
+    if (PixelSize == 0)
+        pixelSizeStr = "unspecified";
+    else
+        pixelSizeStr = wxString::Format("%0.1f um", PixelSize);
+    return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s, pixel size = %s\n",
         Name, GuideCameraGain,
         HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
         HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "",
         FullSize.GetWidth(), FullSize.GetHeight(),
-        darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark");
+        darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
+        pixelSizeStr);
 }
 
 void GuideCamera::AddDark(usImage *dark)
