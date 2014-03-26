@@ -35,7 +35,7 @@
 
 #include "phd.h"
 
-#define GUIDELOG_VERSION _T("2.3")
+#define GUIDELOG_VERSION _T("2.4")
 
 GuidingLog::GuidingLog(bool active)
 {
@@ -203,9 +203,34 @@ void GuidingLog::Close(void)
     }
 }
 
+static const char *PierSideStr(PierSide p, const char *unknown = _("Unknown"))
+{
+    switch (p)
+    {
+    case PIER_SIDE_EAST: return _("East");
+    case PIER_SIDE_WEST: return _("West");
+    default:             return _("Unknown");
+    }
+}
+
+static double HourAngle(double ra, double lst)
+{
+    double delta = 0;
+
+    delta = lst - ra;
+    if (delta > 12)
+        delta = delta - 24;
+    else
+        if (delta < -12)
+            delta = delta + 24;
+
+    return delta;
+}
+
 bool GuidingLog::StartCalibration(Mount *pCalibrationMount)
 {
     bool bError = false;
+
 
     try
     {
@@ -221,7 +246,18 @@ bool GuidingLog::StartCalibration(Mount *pCalibrationMount)
 
             if (pCamera)
                 m_file.Write("Camera = " + pCamera->Name + "\n");
-             m_file.Write("Mount = " + pCalibrationMount->Name() + "\n");
+            m_file.Write("Mount = " + pCalibrationMount->Name());
+
+            double cur_ra, cur_dec, cur_st;
+            if (!pCalibrationMount->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+            {
+                m_file.Write(wxString::Format(", Dec = %0.1f deg, Hour angle = %0.1f hr, Pier side = %s\n", cur_dec,
+                    HourAngle (cur_ra, cur_st), PierSideStr(pCalibrationMount->SideOfPier())));
+            }
+            else
+            {
+                m_file.Write(", Dec = Unknown, Hour angle = Unknown, Pier side = Unknown\n");
+            }
 
             m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f\n",
                         pFrame->pGuider->LockPosition().X,

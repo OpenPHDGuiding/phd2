@@ -1455,15 +1455,20 @@ wxString MyFrame::GetSettingsSummary()
         scaleStr = "unspecified";
     else
         scaleStr = wxString::Format("%.2f ", pixelScale) + "arc-sec/px";
+    wxString focalLengthStr;
+    if (m_focalLength == 0)
+        focalLengthStr = "unspecified";
+    else
+        focalLengthStr = wxString::Format("%d", m_focalLength) + " mm";
 
     return wxString::Format("Dither = %s, Dither scale = %.3f, Image noise reduction = %s, Guide-frame time lapse = %d, Server %s\n"
-        "Pixel scale = %s\n",
+        "Pixel scale = %s, Focal length = %s\n",
         m_ditherRaOnly ? "RA only" : "both axes",
         m_ditherScaleFactor,
         m_noiseReductionMethod == NR_NONE ? "none" : m_noiseReductionMethod == NR_2x2MEAN ? "2x2 mean" : "3x3 mean",
         m_timeLapse,
         m_serverMode ? "enabled" : "disabled",
-        scaleStr
+        scaleStr, focalLengthStr
     );
 }
 
