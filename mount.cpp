@@ -832,6 +832,10 @@ GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, const wxString& 
 void Mount::AdjustCalibrationForScopePointing(void)
 {
     double newDeclination = GetDeclination();
+    PierSide newPierSide = SideOfPier();
+
+    Debug.AddLine(wxString::Format("AdjustCalibrationForScopePointing (%s): current dec=%.1f pierSide=%d, cal dec=%.1f pierSide=%d",
+        GetMountClassName(), newDeclination * 180. / M_PI, newPierSide, m_calDeclination * 180. / M_PI, m_calPierSide));
 
     if (newDeclination != m_calDeclination)             // Compensation required
     {
@@ -851,7 +855,6 @@ void Mount::AdjustCalibrationForScopePointing(void)
         }
     }
 
-    PierSide newPierSide = SideOfPier();
     if (IsOppositeSide(newPierSide, m_calPierSide))
     {
         Debug.AddLine(wxString::Format("Guiding starts on opposite side of pier: calibration data "
