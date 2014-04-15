@@ -257,19 +257,21 @@ bool usImage::Save(const wxString& fname)
 
     try
     {
+        long fsize[3] = {
+            (long)Size.GetWidth(),
+            (long)Size.GetHeight(),
+            0L,
+        };
+        long fpixel[3] = { 1, 1, 1 };
+
         fitsfile *fptr;  // FITS file pointer
         int status = 0;  // CFITSIO status value MUST be initialized to zero!
-        long fpixel[3] = {1,1,1};
-        long fsize[3];
-        int output_format=USHORT_IMG;
-        fsize[0] = (long) Size.GetWidth();
-        fsize[1] = (long) Size.GetHeight();
-        fsize[2] = 0;
-        fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
-        if (!status) fits_create_img(fptr,output_format, 2, fsize, &status);
-        if (!status) fits_write_pix(fptr,TUSHORT,fpixel,NPixels,ImageData,&status);
+
+        fits_create_file(&fptr, (_T("!") + fname).mb_str(wxConvUTF8), &status);
+        if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
+        if (!status) fits_write_pix(fptr, TUSHORT, fpixel, NPixels, ImageData, &status);
         fits_close_file(fptr,&status);
-        bError = status?true:false;
+        bError = status ? true : false;
 
         if (bError)
             pFrame->SetStatusText(wxString::Format(_("%s Not saved"), fname));

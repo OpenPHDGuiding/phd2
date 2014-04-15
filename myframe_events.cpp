@@ -135,9 +135,6 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
     if (fname.IsEmpty())
         return;  // Check for canceled dialog
 
-    if (wxFileExists(fname))
-        fname = _T("!") + fname;
-
     if (pGuider->SaveCurrentImage(fname))
     {
         Alert(_("The image could not be saved to ") + fname);
@@ -152,7 +149,8 @@ static bool save_multi(const ExposureImgMap& darks, const wxString& fname)
     {
         fitsfile *fptr;  // FITS file pointer
         int status = 0;  // CFITSIO status value MUST be initialized to zero!
-        fits_create_file(&fptr, (const char*) fname.mb_str(wxConvUTF8), &status);
+
+        fits_create_file(&fptr, (_T("!") + fname).mb_str(wxConvUTF8), &status);
 
         for (ExposureImgMap::const_iterator it = darks.begin(); it != darks.end(); ++it)
         {
@@ -304,14 +302,10 @@ void MyFrame::OnLoadSaveDark(wxCommandEvent& evt)
         }
 
         pConfig->Global.SetString("/darkFilePath", wxFileName(fname).GetPath());
+
         if (!fname.EndsWith(_T(".fit")))
         {
             fname.Append(_T(".fit"));
-        }
-
-        if (wxFileExists(fname))
-        {
-            fname = _T("!") + fname;
         }
 
         if (save_multi(pCamera->Darks, fname))
