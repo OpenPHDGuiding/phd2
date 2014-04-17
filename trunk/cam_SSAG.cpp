@@ -65,6 +65,15 @@ static bool GetDiPropStr(HDEVINFO h, SP_DEVINFO_DATA *data, const DEVPROPKEY& ke
 
 #else
 
+static bool QueryValue(const wxRegKey& rk, const wxString& key, wxString& val)
+{
+    // prevent pop-up message if key does not exist
+    bool save = wxLog::EnableLogging(false);
+    bool ok = rk.QueryValue(key, val, false);
+    wxLog::EnableLogging(save);
+    return ok;
+}
+
 static wxString GetDiPropStr(HDEVINFO h, SP_DEVINFO_DATA *data, const wxString& key)
 {
     wxString val;
@@ -75,7 +84,7 @@ static wxString GetDiPropStr(HDEVINFO h, SP_DEVINFO_DATA *data, const wxString& 
     if (SetupDiGetDeviceRegistryProperty(h, data, SPDRP_DRIVER, &proptype, (PBYTE)&buf[0], size, &size))
     {
         wxRegKey k(wxString("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Class\\") + buf);
-        if (!k.QueryValue(key, val, false))
+        if (!QueryValue(k, key, val))
         {
             Debug.AddLine("SSAG failed to get " + key + " driver property value");
         }
