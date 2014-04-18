@@ -347,7 +347,7 @@ LEWebcamDialog::LEWebcamDialog(wxWindow *parent, CVVidCapture *vc)
     pSignalSizer->Add(m_pLEAmpDTR, wxSizerFlags().Center());
     m_pLEAmpRTS = new wxCheckBox(this, wxID_ANY, _T(""));
     m_pLEAmpRTS->SetValue(signal_config & LE_AMP_RTS ? true : false);
-    pSignalSizer->Add(m_pLEAmpRTS, wxSizerFlags().Center());    
+    pSignalSizer->Add(m_pLEAmpRTS, wxSizerFlags().Center());
 
     m_pInvertedLogic = new wxCheckBox(this, wxID_ANY, _("Inverted logic"));
     m_pInvertedLogic->SetValue(pConfig->Profile.GetBoolean("/camera/serialLEWebcam/InvertedLogic", true));
@@ -360,7 +360,7 @@ LEWebcamDialog::LEWebcamDialog(wxWindow *parent, CVVidCapture *vc)
     pVSizer->Add(pSignalSizer, wxSizerFlags().Border(wxALL, 10).Expand());
     pVSizer->Add(m_pInvertedLogic, wxSizerFlags().Border(wxRIGHT | wxLEFT, 10));
     pVSizer->Add(m_pUseAmp, wxSizerFlags().Border(wxTOP | wxRIGHT | wxLEFT, 10));
-    
+
     pHSizer = new wxBoxSizer(wxHORIZONTAL);
     wxButton *pBtnDefault = new wxButton(this, wxID_DEFAULT, _("Defaults"));
     pHSizer->Add(pBtnDefault);
@@ -375,7 +375,7 @@ LEWebcamDialog::LEWebcamDialog(wxWindow *parent, CVVidCapture *vc)
 }
 
 void Camera_LESerialWebcamClass::ShowPropertyDialog()
-{   
+{
     LEWebcamDialog dlg(pFrame, m_pVidCap);
     if (dlg.ShowModal() == wxID_OK)
     {

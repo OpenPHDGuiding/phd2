@@ -164,7 +164,7 @@ void GearDialog::Initialize(void)
     profilesSizer->Add(new wxStaticText(this, wxID_ANY, _("Equipment profile"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL), sizerLabelFlags);
     m_profiles = new wxChoice(this, GEAR_PROFILES, wxDefaultPosition, wxDefaultSize, pConfig->ProfileNames());
     m_profiles->SetToolTip(_("Select the Equipment Profile you would like to use. PHD stores all of your settings and equipment selections in an Equipment Profile. "
-        "You can create mutiple profiles and switch back and forth between them."));
+                             "You can create mutiple profiles and switch back and forth between them."));
     m_profiles->SetStringSelection(pConfig->GetCurrentProfile());
     profilesSizer->Add(m_profiles, sizerButtonFlags);
 
@@ -201,7 +201,7 @@ void GearDialog::Initialize(void)
     // Camera
     pGearSizer->Add(new wxStaticText(this, wxID_ANY, _("Camera"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL), sizerLabelFlags);
     m_pCameras = new wxChoice(this, GEAR_CHOICE_CAMERA, wxDefaultPosition, wxDefaultSize,
-            GuideCamera::List(), 0, wxDefaultValidator, _("Camera"));
+                              GuideCamera::List(), 0, wxDefaultValidator, _("Camera"));
     pGearSizer->Add(m_pCameras, sizerButtonFlags);
     m_pSetupCameraButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_CAMERA, wxBitmap(xpm::setup));
     m_pSetupCameraButton->SetToolTip(_("Camera Setup"));
@@ -214,7 +214,7 @@ void GearDialog::Initialize(void)
     // mount
     pGearSizer->Add(new wxStaticText(this, wxID_ANY, _("Mount"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), sizerLabelFlags);
     m_pScopes = new wxChoice(this, GEAR_CHOICE_SCOPE, wxDefaultPosition, wxDefaultSize,
-            Scope::List(), 0, wxDefaultValidator, _("Mount"));
+                             Scope::List(), 0, wxDefaultValidator, _("Mount"));
     pGearSizer->Add(m_pScopes, sizerButtonFlags);
     m_pSetupScopeButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_SCOPE, wxBitmap(xpm::setup));
     m_pSetupScopeButton->SetToolTip(_("Mount Setup"));
@@ -227,7 +227,7 @@ void GearDialog::Initialize(void)
     // ao
     pGearSizer->Add(new wxStaticText(this, wxID_ANY, _("AO"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), sizerLabelFlags);
     m_pStepGuiders = new wxChoice(this, GEAR_CHOICE_STEPGUIDER, wxDefaultPosition, wxDefaultSize,
-            StepGuider::List(), 0, wxDefaultValidator, _("AO"));
+                                  StepGuider::List(), 0, wxDefaultValidator, _("AO"));
     pGearSizer->Add(m_pStepGuiders, sizerButtonFlags);
     m_pSetupStepGuiderButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_STEPGUIDER, wxBitmap(xpm::setup));
     m_pSetupStepGuiderButton->SetToolTip(_("AO Setup"));
@@ -520,7 +520,7 @@ void GearDialog::UpdateDisconnectAllButtonState(void)
     else
     {
         m_pDisconnectAllButton->Enable(false);
-        // allow profiles to be selected / modified only when everything is disconnected.
+// allow profiles to be selected / modified only when everything is disconnected.
         m_profiles->Enable(true);
         m_btnProfileManage->Enable(true);
     }
@@ -652,21 +652,22 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
             throw THROW_INFO("OnButtonConnectCamera: connect failed");
         }
 
-
-
         Debug.AddLine("Connected Camera:" + m_pCamera->Name);
         Debug.AddLine("FullSize=(%d,%d)", m_pCamera->FullSize.x, m_pCamera->FullSize.y);
         Debug.AddLine("HasGainControl=%d", m_pCamera->HasGainControl);
+
         if (m_pCamera->HasGainControl)
         {
             Debug.AddLine("GuideCameraGain=%d", m_pCamera->GuideCameraGain);
         }
+
         Debug.AddLine("HasShutter=%d", m_pCamera->HasShutter);
         Debug.AddLine("HasSubFrames=%d", m_pCamera->HasSubframes);
         Debug.AddLine("ST4HasGuideOutput=%d", m_pCamera->ST4HasGuideOutput());
 
         AutoLoadDarks();
         AutoLoadDefectMap();
+
         wxString msg = _("Camera Connected");
         if (pCamera->CurrentDefectMap)
         {
@@ -682,7 +683,7 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
 
         pFrame->SetStatusText(msg, 1);
         pFrame->SetStatusText(_("Camera"), 2);
-        pFrame->UpdateDarksUIState();       
+        pFrame->UpdateDarksUIState();
     }
     catch (wxString Msg)
     {
@@ -966,7 +967,7 @@ void GearDialog::OnButtonDisconnectStepGuider(wxCommandEvent& event)
 void GearDialog::OnButtonProfileManage(wxCommandEvent& event)
 {
     PopupMenu(m_menuProfileManage, m_btnProfileManage->GetPosition().x,
-        m_btnProfileManage->GetPosition().y + m_btnProfileManage->GetSize().GetHeight());
+              m_btnProfileManage->GetPosition().y + m_btnProfileManage->GetSize().GetHeight());
 }
 
 void GearDialog::OnProfileChoice(wxCommandEvent& event)
@@ -1238,11 +1239,11 @@ void GearDialog::OnProfileLoad(wxCommandEvent& event)
     wxString default_path = pConfig->Global.GetString("/profileFilePath", wxEmptyString);
 
     wxFileDialog dlg(this, _("Import PHD Equipment Profiles"), default_path, wxEmptyString,
-        wxT("PHD profile files (*.phd)|*.phd"), wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
+                     wxT("PHD profile files (*.phd)|*.phd"), wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
 
     if (dlg.ShowModal() == wxID_CANCEL)
     {
-            return;
+        return;
     }
 
     wxArrayString paths;
@@ -1271,8 +1272,8 @@ void GearDialog::OnProfileSave(wxCommandEvent& event)
 {
     wxString default_path = pConfig->Global.GetString("/profileFilePath", wxEmptyString);
     wxString fname = wxFileSelector(_("Export PHD Equipment Profile"), default_path,
-        pConfig->GetCurrentProfile() + wxT(".phd"), wxT("phd"),
-        wxT("PHD profile files (*.phd)|*.phd"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, this);
+                                    pConfig->GetCurrentProfile() + wxT(".phd"), wxT("phd"),
+                                    wxT("PHD profile files (*.phd)|*.phd"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, this);
 
     if (fname.IsEmpty())
     {

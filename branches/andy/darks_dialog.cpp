@@ -49,20 +49,19 @@ static const int MaxNoteLength = 65;            // For now
 // Utility function to add the <label, input> pairs to a flexgrid
 static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)
 {
-	wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "), wxPoint(-1, -1), wxSize(-1, -1));
-	pTable->Add(pLabel, 1, wxALL, 5);
-	pTable->Add(pControl, 1, wxALL, 5);
+    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "), wxPoint(-1, -1), wxSize(-1, -1));
+    pTable->Add(pLabel, 1, wxALL, 5);
+    pTable->Add(pControl, 1, wxALL, 5);
 }
 
-
 static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, int width, int val, int minval, int maxval, int inc,
-	const wxString& tooltip)
+                                 const wxString& tooltip)
 {
-	wxSpinCtrl *pNewCtrl = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-		wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, _("Exposure time"));
-	pNewCtrl->SetValue(val);
-	pNewCtrl->SetToolTip(tooltip);
-	return pNewCtrl;
+    wxSpinCtrl *pNewCtrl = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+                                          wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, _("Exposure time"));
+    pNewCtrl->SetValue(val);
+    pNewCtrl->SetToolTip(tooltip);
+    return pNewCtrl;
 }
 
 DarksDialog::DarksDialog(wxWindow *parent) :
@@ -75,22 +74,22 @@ DarksDialog::DarksDialog(wxWindow *parent) :
 
     // Create overall vertical sizer
     wxBoxSizer *pvSizer = new wxBoxSizer(wxVERTICAL);
-	// Dark library controls
+    // Dark library controls
     m_pCreateDarks = new wxCheckBox(this, wxID_ANY, _("Create Dark Library"), wxPoint(-1, -1), wxDefaultSize);
     m_pCreateDarks->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &DarksDialog::OnUseDarks, this); // hook the event for UI state changes
     m_pCreateDarks->SetValue(pConfig->Profile.GetBoolean("/camera/darks_create_darks", true));
     m_pCreateDarks->SetToolTip( _("Create a library of dark frames using specified exposure times"));
-	wxStaticBoxSizer *pDarkGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Dark Library"));
-	wxFlexGridSizer *pDarkParams = new wxFlexGridSizer(2, 4, 5, 15);
+    wxStaticBoxSizer *pDarkGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Dark Library"));
+    wxFlexGridSizer *pDarkParams = new wxFlexGridSizer(2, 4, 5, 15);
 
     m_pDarkMinExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-        expCount, &expStrings[0], wxCB_READONLY);
+                                       expCount, &expStrings[0], wxCB_READONLY);
     AddTableEntryPair(this, pDarkParams, "Min Exposure Time", m_pDarkMinExpTime);
     m_pDarkMinExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_min_exptime", expStrings[0]));
     m_pDarkMinExpTime->SetToolTip(_("Minimum exposure time for darks"));
 
     m_pDarkMaxExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-        expCount, &expStrings[0], wxCB_READONLY);
+                                       expCount, &expStrings[0], wxCB_READONLY);
     AddTableEntryPair(this, pDarkParams, "Max Exposure Time", m_pDarkMaxExpTime);
     m_pDarkMaxExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_max_exptime", expStrings[expCount-1]));
     m_pDarkMaxExpTime->SetToolTip(_("Maximum exposure time for darks"));
@@ -100,15 +99,15 @@ DarksDialog::DarksDialog(wxWindow *parent) :
     pDarkGroup->Add(pDarkParams, wxSizerFlags().Border(wxALL, 10));
     pvSizer->Add(m_pCreateDarks, wxSizerFlags().Border(wxALL, 10));
     pvSizer->Add(pDarkGroup, wxSizerFlags().Border(wxALL, 10));
-	
-	// Defect map controls
+
+    // Defect map controls
     m_pCreateDMap = new wxCheckBox(this, wxID_ANY, _("Create Defect Map"), wxPoint(-1, -1), wxDefaultSize);
     m_pCreateDMap->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &DarksDialog::OnUseDMap, this); // hook the event for UI state changes
     m_pCreateDMap->SetValue(pConfig->Profile.GetBoolean("/camera/dmap_create_dmap", false));
     m_pCreateDMap->SetToolTip(_("Check to create defect (bad pixel) map"));
     pvSizer->Add(m_pCreateDMap, wxSizerFlags().Border(wxALL, 10));
-	wxStaticBoxSizer *pDMapGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Defect Map"));
-	wxFlexGridSizer *pDMapParams = new wxFlexGridSizer(2, 4, 5, 15);
+    wxStaticBoxSizer *pDMapGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("Defect Map"));
+    wxFlexGridSizer *pDMapParams = new wxFlexGridSizer(2, 4, 5, 15);
     m_pDefectExpTime = NewSpinnerInt(this, width, pConfig->Profile.GetInt("/camera/dmap_exptime", DefDMExpTime), 5, 15, 1, _("Exposure time for building defect map"));
     AddTableEntryPair(this, pDMapParams, "Exposure Time", m_pDefectExpTime);
     // parent, wxID_ANY, val, minval, maxval, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_VALUE_LABEL
@@ -117,13 +116,13 @@ DarksDialog::DarksDialog(wxWindow *parent) :
     m_pNumDefExposures = NewSpinnerInt(this, width, pConfig->Profile.GetInt("/camera/dmap_num_frames", DefDMCount), 5, 25, 1, _("Number of exposures for building defect map"));
     AddTableEntryPair(this, pDMapParams, "Number of Exposures", m_pNumDefExposures);
     pDMapGroup->Add(pDMapParams, wxSizerFlags().Border(wxALL, 10));
-	pvSizer->Add(pDMapGroup, wxSizerFlags().Border(wxALL, 10));	
+    pvSizer->Add(pDMapGroup, wxSizerFlags().Border(wxALL, 10));
 
-	// Controls for notes and status 
+    // Controls for notes and status
     wxBoxSizer *phSizer = new wxBoxSizer(wxHORIZONTAL);
-	wxStaticText *pNoteLabel = new wxStaticText(this, wxID_ANY,  _("Notes: "), wxPoint(-1, -1), wxSize(-1, -1));	
+    wxStaticText *pNoteLabel = new wxStaticText(this, wxID_ANY,  _("Notes: "), wxPoint(-1, -1), wxSize(-1, -1));
     width = StringWidth(this, _("M"));
-	m_pNotes = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width * 38, -1));
+    m_pNotes = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width * 38, -1));
     m_pNotes->SetToolTip(_("Free-form note, included in FITs header for each dark frame; max length=65"));
     m_pNotes->SetMaxLength(MaxNoteLength);
     m_pNotes->SetValue(pConfig->Profile.GetString("/camera/darks_note", ""));
@@ -136,11 +135,11 @@ DarksDialog::DarksDialog(wxWindow *parent) :
     pvSizer->Add(phSizer, wxSizerFlags().Border(wxALL, 5));
     pvSizer->Add(m_pProgress, wxSizerFlags().Border(wxLEFT, 60));
 
-	// Buttons
-	wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
-	m_pStartBtn = new wxButton(this, wxID_ANY, _("Start"));	
-	m_pStartBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &DarksDialog::OnStart, this);    
-	m_pStartBtn->SetToolTip("");
+    // Buttons
+    wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
+    m_pStartBtn = new wxButton(this, wxID_ANY, _("Start"));
+    m_pStartBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &DarksDialog::OnStart, this);
+    m_pStartBtn->SetToolTip("");
 
     m_pStopBtn = new wxButton(this, wxID_ANY, _("Stop"));
     m_pStopBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &DarksDialog::OnStop, this);
@@ -188,21 +187,23 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
     int defectExpTime;
     int darkFrameCount = m_pDarkCount->GetValue();
     int defectFrameCount = m_pNumDefExposures->GetValue();
-    std::vector<int> exposureDurations;    
+    std::vector<int> exposureDurations;
     usImage *pNewDark;
     DefectMap *pNewDefectMap;
-        
+
     m_pStartBtn->Enable(false);
     m_pStopBtn->Enable(true);
     m_pStopBtn->Refresh();
     wxYield();
 
-    pFrame->GetExposureDurations(&exposureDurations);    
+    pFrame->GetExposureDurations(&exposureDurations);
     if (pCamera->HasShutter)
         pCamera->ShutterState = true; // dark
     else
         wxMessageBox(_("Cover guide scope"));
+
     m_pProgress->SetValue(0);
+
     if (m_pCreateDarks->GetValue())
     {
         minExpInx = m_pDarkMinExpTime->GetSelection();
@@ -226,7 +227,6 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
                     delete pNewDark;
                 break;
             }
-
             else
             {
                 pCamera->AddDark(pNewDark);
@@ -241,7 +241,6 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             pFrame->LoadDarkLibrary();          // Put it to use, including selection of matching dark frame
             ShowStatus(_("Dark library built"), false);
         }
-
     }
     if (m_pCreateDMap->GetValue() && !m_cancelling)
     {
@@ -262,12 +261,13 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             pCamera->CurrentDefectMap = pNewDefectMap;          // Put it to use
             ShowStatus(wxString::Format(_("Defect map built, %d defects mapped"), pNewDefectMap->numDefects), false);
         }
-
     }
+
     if (pCamera->HasShutter)
         pCamera->ShutterState = false; // Lights
     else
         wxMessageBox(_("Uncover guide scope"));
+
     m_pStartBtn->Enable(true);
     m_pStopBtn->Enable(false);
     if (m_cancelling)
@@ -289,10 +289,9 @@ void DarksDialog::ShowStatus(const wxString msg, bool appending)
         m_pStatusBar->SetStatusText(preamble + " " + msg);
     else
     {
-        m_pStatusBar->SetStatusText(msg);    
+        m_pStatusBar->SetStatusText(msg);
         preamble = msg;
     }
-
 }
 
 void DarksDialog::EndModal(int retCode)
@@ -326,7 +325,7 @@ void DarksDialog::CreateMasterDarkFrame(int expTime, int frameCount, usImage*& d
 
     int ExpDur = expTime;
     int NDarks = frameCount;
- 
+
     pCamera->InitCapture();
     darkFrame = new usImage();
     darkFrame->ImgExpDur = ExpDur;
@@ -337,7 +336,7 @@ void DarksDialog::CreateMasterDarkFrame(int expTime, int frameCount, usImage*& d
     }
     else
     {
-        m_pProgress->SetValue(m_pProgress->GetValue() + 1);        
+        m_pProgress->SetValue(m_pProgress->GetValue() + 1);
         ShowStatus(_T("dark #1 captured"), true);
         wxYield();
         int *avgimg = new int[darkFrame->NPixels];
@@ -378,7 +377,7 @@ void DarksDialog::SetUIState()
     m_pDarkMinExpTime->Enable(darkval);
     m_pDarkMaxExpTime->Enable(darkval);
     m_pDarkCount->Enable(darkval);
-    
+
     // Defect library controls
     bool dmval = m_pCreateDMap->GetValue();
     m_pDefectExpTime->Enable(dmval);

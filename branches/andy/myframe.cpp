@@ -222,21 +222,21 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     }
     else
     {
-         wxArrayString fields = wxSplit(geometry, ';');
-         if (fields[0] == "1")
-         {
-             this->Maximize();
-         }
-         else
-         {
-             long w, h, x, y;
-             fields[1].ToLong(&w);
-             fields[2].ToLong(&h);
-             fields[3].ToLong(&x);
-             fields[4].ToLong(&y);
-             this->SetSize(w, h);
-             this->SetPosition(wxPoint(x, y));
-         }
+        wxArrayString fields = wxSplit(geometry, ';');
+        if (fields[0] == "1")
+        {
+            this->Maximize();
+        }
+        else
+        {
+            long w, h, x, y;
+            fields[1].ToLong(&w);
+            fields[2].ToLong(&h);
+            fields[3].ToLong(&x);
+            fields[4].ToLong(&y);
+            this->SetSize(w, h);
+            this->SetPosition(wxPoint(x, y));
+        }
     }
 
     // Setup some keyboard shortcuts
@@ -1536,7 +1536,7 @@ void MyFrame::UpdateDarksUIState()
 
 void MyFrame::LoadDarkLibrary()
 {
-    wxString filename = DarkLibFileName(pConfig->GetCurrentProfileId()); 
+    wxString filename = DarkLibFileName(pConfig->GetCurrentProfileId());
 
     if (!pCamera || !pCamera->Connected)
     {
@@ -1575,7 +1575,7 @@ void MyFrame::SaveDarkLibrary(wxString note)
 void MyFrame::SaveDefectMap(DefectMap* pMap)
 {
 
-    if (pMap) 
+    if (pMap)
     {
         wxString filename = DefectMapFileName(pConfig->GetCurrentProfileId());
         wxFileOutputStream oStream(filename);
@@ -1584,14 +1584,14 @@ void MyFrame::SaveDefectMap(DefectMap* pMap)
         if (oStream.GetLastError() == wxSTREAM_NO_ERROR)
         {
             outText << wxString::Format("%d\n", pMap->numDefects);
-            for (int i = 0; i < pMap->numDefects; i++) 
+            for (int i = 0; i < pMap->numDefects; i++)
             {
                 outText << wxString::Format("%d %d\n", pMap->defects[i].x , pMap->defects[i].y);
             }
             oStream.Close();
             Debug.AddLine(wxString::Format("Saved defect map to %s", filename));
         }
-        else 
+        else
         {
             Debug.AddLine(wxString::Format("Failed to save defect map to %s", filename));
         }
@@ -1610,7 +1610,7 @@ void MyFrame::LoadDefectMap()
         wxInt16 numDefects, xPos, yPos;
 
         // Check to see if a defect map already exists and clear it out if it does
-        if (pCamera->CurrentDefectMap) 
+        if (pCamera->CurrentDefectMap)
         {
             pCamera->ClearDefects();
         }

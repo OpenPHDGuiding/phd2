@@ -41,21 +41,21 @@ class DarksDialog : public wxDialog
 private:
     bool m_cancelling;
     // wx UI controls
-	wxCheckBox *m_pCreateDarks;
+    wxCheckBox *m_pCreateDarks;
     wxComboBox *m_pDarkMinExpTime;
-	wxComboBox *m_pDarkMaxExpTime;
-	wxSpinCtrl *m_pDarkCount;
-	wxCheckBox *m_pCreateDMap;
-	wxSlider   *m_pSigmaX;
+    wxComboBox *m_pDarkMaxExpTime;
+    wxSpinCtrl *m_pDarkCount;
+    wxCheckBox *m_pCreateDMap;
+    wxSlider   *m_pSigmaX;
     wxSpinCtrl *m_pDefectExpTime;
     wxSpinCtrl *m_pNumDefExposures;
-	wxTextCtrl *m_pNotes;
-	wxGauge *m_pProgress;
+    wxTextCtrl *m_pNotes;
+    wxGauge *m_pProgress;
     wxButton *m_pStartBtn;
     wxStatusBar *m_pStatusBar;
     wxButton *m_pStopBtn;
     void SetUIState(void);
-	void OnUseDarks(wxCommandEvent& evt);
+    void OnUseDarks(wxCommandEvent& evt);
     void OnUseDMap(wxCommandEvent& evt);
     void OnStart(wxCommandEvent& evt);
     void OnStop(wxCommandEvent& evt);
