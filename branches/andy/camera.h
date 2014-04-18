@@ -37,6 +37,15 @@
 
 typedef std::map<int, usImage *> ExposureImgMap; // map exposure to image
 
+typedef struct {
+    int x, y;
+} Defect;
+
+typedef struct {
+    Defect *defects;
+    int     numDefects;
+} DefectMap;
+
 enum PropDlgType
 {
     PROPDLG_NONE = 0,
@@ -56,6 +65,8 @@ class CameraConfigDialogPane : public ConfigDialogPane
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
     wxCheckBox *m_pLoadDarks;
+    wxCheckBox *m_pLoadDefectMap;
+
 public:
     CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
     virtual ~CameraConfigDialogPane(void);
@@ -105,6 +116,8 @@ public:
     usImage         *CurrentDarkFrame;
     ExposureImgMap  Darks; // map exposure => dark frame
 
+    DefectMap       *CurrentDefectMap;
+
     virtual bool HasNonGuiCapture(void);
 
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false) = 0;
@@ -124,9 +137,10 @@ public:
     virtual void    ShowPropertyDialog() { return; }
 
     virtual wxString GetSettingsSummary();
-
     void            AddDark(usImage *dark);
     void            SelectDark(int exposureDuration);
+    void            GetSpecificDark(int exposureDuration, usImage*& dark);
+    void            ClearDefects(void);
     void            ClearDarks(void);
 
     void            SubtractDark(usImage& img);

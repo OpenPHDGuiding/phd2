@@ -1,9 +1,9 @@
 /*
- *  image_math.h
+ *  darks_dialog.h
  *  PHD Guiding
  *
- *  Created by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created by Bruce Waddington in collaboration with David Ault and Andy Galasso
+ *  Copyright (c) 2014 Bruce Waddington
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -14,7 +14,8 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Bret McKee, Dad Dog Development,
+ *     Craig Stark, Stark Labs nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -32,16 +33,43 @@
  *
  */
 
-extern bool QuickLRecon(usImage& img);
-extern bool Median3(unsigned short ImageData [], int xsize, int ysize);
-extern bool Median3(usImage& img);
-extern bool SquarePixels(usImage& img, float xsize, float ysize);
-extern int dbl_sort_func(double *first, double *second);
-extern int us_sort_func (const void *first, const void *second);
-extern bool Subtract(usImage& light, const usImage& dark);
-extern void AutoFindStar(usImage&, int& x, int&y);
-extern float CalcSlope(ArrayOfDbl& y);
-extern bool DefectRemoval(usImage& light, DefectMap& defectMap);
-extern void QuickSort(unsigned short *list, int left, int right);
-extern unsigned short ImageMedian(usImage& img);
-extern void CalculateDefectMap(usImage *dark, double dmSigmaFactor, DefectMap*& defectMap);
+#ifndef DarksDialog_h_included
+#define DarksDialog_h_included
+
+class DarksDialog : public wxDialog
+{
+private:
+    bool m_cancelling;
+    // wx UI controls
+	wxCheckBox *m_pCreateDarks;
+    wxComboBox *m_pDarkMinExpTime;
+	wxComboBox *m_pDarkMaxExpTime;
+	wxSpinCtrl *m_pDarkCount;
+	wxCheckBox *m_pCreateDMap;
+	wxSlider   *m_pSigmaX;
+    wxSpinCtrl *m_pDefectExpTime;
+    wxSpinCtrl *m_pNumDefExposures;
+	wxTextCtrl *m_pNotes;
+	wxGauge *m_pProgress;
+    wxButton *m_pStartBtn;
+    wxStatusBar *m_pStatusBar;
+    wxButton *m_pStopBtn;
+    void SetUIState(void);
+	void OnUseDarks(wxCommandEvent& evt);
+    void OnUseDMap(wxCommandEvent& evt);
+    void OnStart(wxCommandEvent& evt);
+    void OnStop(wxCommandEvent& evt);
+    void SaveProfileInfo();
+    void ShowStatus(const wxString msg, bool appending);
+    void CreateMasterDarkFrame(int expTime, int frameCount, usImage*& darkFrame);
+    void EndModal(int retCode);
+
+public:
+    DarksDialog(wxWindow *parent);
+    ~DarksDialog(void);
+
+private:
+
+};
+
+#endif

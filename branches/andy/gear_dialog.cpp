@@ -606,16 +606,23 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
     m_cameraUpdated = true;
 }
 
+static void AutoLoadDefectMap()
+{
+    if (pConfig->Profile.GetBoolean("/camera/AutoLoadDefectMap", true))
+    {
+        Debug.AddLine(_("auto-loading defect map"));
+        pFrame->LoadDefectMap();
+    }
+}
+
 static void AutoLoadDarks()
 {
     if (pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true))
     {
-        wxString darks = pConfig->Profile.GetString("/camera/DarksFile", wxEmptyString);
-        if (!darks.IsEmpty())
-        {
-            Debug.AddLine(wxString::Format("auto-loading darks from %s", darks));
-            pFrame->LoadDarkFrames(darks);
-        }
+
+        Debug.AddLine(_("Auto-loading dark library"));
+        pFrame->LoadDarkLibrary();
+
     }
 }
 
@@ -645,8 +652,7 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
             throw THROW_INFO("OnButtonConnectCamera: connect failed");
         }
 
-        pFrame->SetStatusText(_("Camera Connected"), 1);
-        pFrame->SetStatusText(_("Camera"), 2);
+
 
         Debug.AddLine("Connected Camera:" + m_pCamera->Name);
         Debug.AddLine("FullSize=(%d,%d)", m_pCamera->FullSize.x, m_pCamera->FullSize.y);
@@ -660,6 +666,23 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
         Debug.AddLine("ST4HasGuideOutput=%d", m_pCamera->ST4HasGuideOutput());
 
         AutoLoadDarks();
+        AutoLoadDefectMap();
+        wxString msg = _("Camera Connected");
+        if (pCamera->CurrentDefectMap)
+        {
+            msg += _(", defect map loaded");
+            if (pCamera->CurrentDarkFrame)
+                msg += _(", darks available");
+        }
+        else
+        {
+            if (pCamera->CurrentDarkFrame)
+                msg += _(", darks loaded");
+        }
+
+        pFrame->SetStatusText(msg, 1);
+        pFrame->SetStatusText(_("Camera"), 2);
+        pFrame->UpdateDarksUIState();       
     }
     catch (wxString Msg)
     {
@@ -1168,6 +1191,9 @@ void GearDialog::OnProfileDelete(wxCommandEvent& event)
     int result = wxMessageBox(wxString::Format(_("Delete profile %s?"), current), _("Delete Equipment Profile"), wxOK | wxCANCEL | wxCENTRE);
     if (result != wxOK)
         return;
+    int id = pConfig->GetProfileId(current);
+    if (id > 0)
+        pFrame->DeleteDarkLibraryFiles(id);
     pConfig->DeleteProfile(current);
     wxArrayString profiles = pConfig->ProfileNames();
     m_profiles->Set(profiles);

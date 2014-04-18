@@ -270,13 +270,13 @@ bool usImage::Save(const wxString& fname)
         fits_create_file(&fptr, (_T("!") + fname).mb_str(wxConvUTF8), &status);
         if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
         if (!status) fits_write_pix(fptr, TUSHORT, fpixel, NPixels, ImageData, &status);
-        fits_close_file(fptr,&status);
+        fits_close_file(fptr, &status);
         bError = status ? true : false;
 
         if (bError)
             pFrame->SetStatusText(wxString::Format(_("%s Not saved"), fname));
         else
-            pFrame->SetStatusText(wxString::Format(_("%s saved"),fname));
+            pFrame->SetStatusText(wxString::Format(_("%s saved"), fname));
     }
     catch (wxString Msg)
     {

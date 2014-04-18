@@ -192,6 +192,168 @@ bool Median3(unsigned short ImageData [], int xsize, int ysize)
     return false;
 }
 
+unsigned short Median8(usImage& img, int x, int y) 
+{
+    unsigned short newValue;
+    unsigned short array[8];
+    int            xsize = img.Size.GetWidth();
+    int            ysize = img.Size.GetHeight();
+
+    if( (x>0) && (y>0) && (x<(xsize-1)) && (y<(ysize-1))) 
+    {
+        array[0] = img.ImageData[(x-1) + (y-1) * xsize];
+        array[1] = img.ImageData[(x)   + (y-1) * xsize];
+        array[2] = img.ImageData[(x+1) + (y-1) * xsize];
+        array[3] = img.ImageData[(x-1) + (y)   * xsize];
+        array[4] = img.ImageData[(x+1) + (y)   * xsize];
+        array[5] = img.ImageData[(x-1) + (y+1) * xsize];
+        array[6] = img.ImageData[(x)   + (y+1) * xsize];
+        array[7] = img.ImageData[(x+1) + (y+1) * xsize];
+        newValue = (select_kth(array, 0, 7, 4) + select_kth(array, 0, 7, 5)) / 2;
+    } 
+    else 
+    {
+        if( (x==0) && (y==0) ) 
+        {
+            // At lower left corner
+            array[0] = img.ImageData[(x+1) + (y)   * xsize];
+            array[1] = img.ImageData[(x)   + (y+1) * xsize];
+            array[2] = img.ImageData[(x+1) + (y+1) * xsize];
+            newValue = select_kth(array, 0, 2, 2);
+        }
+        if( (x==0) && (y==(ysize-1)) ) 
+        {
+            // At upper left corner
+            array[0] = img.ImageData[(x+1) + (y)   * xsize];
+            array[1] = img.ImageData[(x)   + (y-1) * xsize];
+            array[2] = img.ImageData[(x+1) + (y-1) * xsize];
+            newValue = select_kth(array, 0, 2, 2);
+        }
+        if( (x==(xsize-1)) && (y==(ysize-1)) ) 
+        {
+            // At upper right corner
+            array[0] = img.ImageData[(x-1) + (y)   * xsize];
+            array[1] = img.ImageData[(x)   + (y-1) * xsize];
+            array[2] = img.ImageData[(x-1) + (y-1) * xsize];
+            newValue = select_kth(array, 0, 2, 2);
+        }
+        if( (x==(xsize-1)) && (y==0) ) 
+        {
+            // At lower right corner
+            array[0] = img.ImageData[(x-1) + (y)   * xsize];
+            array[1] = img.ImageData[(x)   + (y+1) * xsize];
+            array[2] = img.ImageData[(x-1) + (y+1) * xsize];
+            newValue = select_kth(array, 0, 2, 2);
+        }
+        if( (x==0) && (y>0) && (y<(ysize-1)) ) 
+        {
+            // On left edge
+            array[0] = img.ImageData[(x)   + (y-1) * xsize];
+            array[1] = img.ImageData[(x)   + (y+1) * xsize];
+            array[2] = img.ImageData[(x+1) + (y-1) * xsize];
+            array[3] = img.ImageData[(x+1) + (y)   * xsize];
+            array[4] = img.ImageData[(x+1) + (y+1) * xsize];
+            newValue = select_kth(array, 0, 4, 3);
+        }
+        if( (x==(xsize-1)) && (y>0) && (y<(ysize-1)) ) 
+        {
+            // On right edge
+            array[0] = img.ImageData[(x)   + (y-1) * xsize];
+            array[1] = img.ImageData[(x)   + (y+1) * xsize];
+            array[2] = img.ImageData[(x-1) + (y-1) * xsize];
+            array[3] = img.ImageData[(x-1) + (y)   * xsize];
+            array[4] = img.ImageData[(x-1) + (y+1) * xsize];
+            newValue = select_kth(array, 0, 4, 3);
+        }
+        if( (y==0) && (x>0) && (x<(xsize-1)) ) 
+        {
+            // On bottom edge
+            array[0] = img.ImageData[(x-1) + (y)   * xsize];
+            array[1] = img.ImageData[(x-1) + (y+1) * xsize];
+            array[2] = img.ImageData[(x)   + (y+1) * xsize];
+            array[3] = img.ImageData[(x+1) + (y)   * xsize];
+            array[4] = img.ImageData[(x+1) + (y+1) * xsize];
+            newValue = select_kth(array, 0, 4, 3);
+        }
+        if( (y==(ysize-1)) && (x>0) && (x<(xsize-1)) ) 
+        {
+            // On top edge
+            array[0] = img.ImageData[(x-1) + (y)   * xsize];
+            array[1] = img.ImageData[(x-1) + (y-1) * xsize];
+            array[2] = img.ImageData[(x)   + (y-1) * xsize];
+            array[3] = img.ImageData[(x+1) + (y)   * xsize];
+            array[4] = img.ImageData[(x+1) + (y-1) * xsize];
+            newValue = select_kth(array, 0, 4, 3);
+        }
+    }
+
+    return newValue;
+}
+
+void QuickSort(unsigned short *list, int left, int right) 
+{
+    if(left<right) 
+    {
+        int            l          = left+1;
+        int            r          = right;
+        unsigned short pivotValue = list[left];
+
+        while(l<r) 
+        {
+            if(list[l]<=pivotValue)
+                l++;
+            else if(list[r]>=pivotValue)
+                r--;
+            else
+                swap(list[l], list[r]);
+        }
+        if(list[l]<pivotValue) 
+        {
+            swap(list[l], list[left]);
+            l--;
+        } 
+        else 
+        {
+            l--;
+            swap(list[l], list[left]);
+        }
+        QuickSort(list, left, l);
+        QuickSort(list, r, right);
+    }
+}
+
+unsigned short ImageMedian(usImage& img) 
+{
+    int             xsize    = img.Size.GetWidth();
+    int             ysize    = img.Size.GetHeight();
+    int             NPixels  = xsize * ysize;
+    int             mid      = NPixels / 2 ;
+    unsigned short *tmpImage = (unsigned short *) malloc(NPixels * sizeof(unsigned short));
+    int             x, y;
+    int             median;
+
+    // Duplicate Image data to temporary array
+    for (y = 0; y<ysize; y++) 
+    {
+        for (x = 0; x<xsize; x++) 
+        {
+            tmpImage[x + y*xsize] = img.Pixel(x, y);
+        }
+    }
+
+    QuickSort(tmpImage, 0, NPixels-1);
+
+    if( (NPixels % 2)==0 ) 
+    {
+        median  = (tmpImage[mid-1] + tmpImage[mid]) / 2;
+    } else 
+    {
+        median  = tmpImage[mid];
+    }
+
+    return median;
+}
+
 bool SquarePixels(usImage& img, float xsize, float ysize)
 {
     // Stretches one dimension to square up pixels
@@ -305,6 +467,161 @@ bool Subtract(usImage& light, const usImage& dark)
     return false;
 }
 
+// DefectMap* CalculateDefectMap(usImage *dark, double dmSigmaFactor)
+void CalculateDefectMap(usImage *dark, double dmSigmaFactor, DefectMap*& defectMap)
+{
+    int                   x, y, i;
+    int                   pixelCnt = 0;
+    double                sum = 0.0;
+    int                   mean = 0;
+    int                  *tmpimg = NULL;
+    int                   tmpInt = 0;
+    int                   median = 0;
+    int                   min = 0;
+    int                   max = 0;
+    double                tmpFloat = 0.0;
+    int                   stdev = 0;
+    int                   clipLow = 0;
+    int                   clipHigh = 65535;
+    bool                  DMUseMedian = false;              // Vestigial - maybe use median instead of mean
+
+    Debug.AddLine("Creating defect map...");
+    // pixelCnt = dark->Size.GetHeight() * dark->Size.GetWidth();
+    pixelCnt = dark->NPixels;
+
+    if (DMUseMedian) {
+        // Find the median of the image
+        median = (int)ImageMedian(*dark);
+        Debug.AddLine("Dark Median is = %d", median);
+    }
+    else {
+        // Find the mean of the image
+        sum = 0.0;
+        for (y = 0; y<dark->Size.GetHeight(); y++) 
+        {
+            for (x = 0; x<dark->Size.GetWidth(); x++) 
+            {
+                sum += ((double)dark->Pixel(x, y));
+            }
+        }
+        mean = (int)(sum / (double)pixelCnt);
+        Debug.AddLine("Dark Mean is = %d", mean);
+    }
+
+
+    // Determine the standard deviation from the median or the mean, depending on user choice
+    sum = 0.0;
+    for (y = 0; y<dark->Size.GetHeight(); y++) 
+    {
+        for (x = 0; x<dark->Size.GetWidth(); x++)
+        {
+            if (DMUseMedian)
+                tmpFloat = (double)(((int)dark->Pixel(x, y)) - median);
+            else
+                tmpFloat = (double)(((int)dark->Pixel(x, y)) - mean);
+            sum += (tmpFloat * tmpFloat);
+        }
+    }
+    stdev = (int)sqrt(sum / ((double)pixelCnt));
+    Debug.AddLine("Dark Standard Deviation is = %d", stdev);
+
+    // Find the clipping points beyond which the pixels will be considered defects
+    int midpoint = (DMUseMedian ? median : mean);
+    clipLow = midpoint - (dmSigmaFactor * stdev);
+    clipHigh = midpoint + (dmSigmaFactor * stdev);
+    if (clipLow<0) 
+    {
+        clipLow = 0;
+    }
+    if (clipHigh>65535) 
+    {
+        clipHigh = 65535;
+    }
+
+    // Make a first pass to count the number of defects
+    i = 0;
+    for (y = 0; y<dark->Size.GetHeight(); y++) 
+    {
+        for (x = 0; x<dark->Size.GetWidth(); x++) 
+        {
+            tmpInt = (int)(dark->Pixel(x, y));
+            if ((tmpInt<clipLow) || (tmpInt>clipHigh)) 
+            {
+                i++;
+            }
+        }
+    }
+
+    // Allocate the defect map entries
+    defectMap = (DefectMap *)malloc(sizeof(DefectMap));
+    defectMap->numDefects = i;
+    defectMap->defects = (Defect *)malloc(i * sizeof(Defect));
+    Debug.AddLine("New defect map created, count=%d, sigmaX=%0.2f", i, dmSigmaFactor);
+
+    // Assign the defect map entries
+    i = 0;
+    for (y = 0; y<dark->Size.GetHeight(); y++) 
+    {
+        for (x = 0; x<dark->Size.GetWidth(); x++) 
+        {
+            tmpInt = (int)(dark->Pixel(x, y));
+            if ((tmpInt<clipLow) || (tmpInt>clipHigh)) 
+            {
+                defectMap->defects[i].x = x;
+                defectMap->defects[i].y = y;
+                i++;
+            }
+        }
+    }
+    Debug.AddLine("Defect map built");
+}
+
+bool DefectRemoval(usImage& light, DefectMap& defectMap) 
+{
+    int                   i, x, y;
+    unsigned short       *pl = NULL;
+
+    // Check to make sure the light frame is valid
+    if (!light.ImageData)
+        return true;
+
+    if (light.Subframe.GetWidth() > 0 && light.Subframe.GetHeight() > 0)
+    {
+        // Determine the extents of the sub frame
+        unsigned int llx, lly, urx, ury;
+        llx = light.Subframe.GetLeft();
+        lly = light.Subframe.GetTop();
+        urx = llx + (light.Subframe.GetWidth() - 1);
+        ury = lly + (light.Subframe.GetHeight() - 1);
+
+        // Step over each defect and replace the light value
+        // with the median of the surrounding pixels
+        for (i = 0; i<defectMap.numDefects; i++)
+        {
+            x = defectMap.defects[i].x;
+            y = defectMap.defects[i].y;
+            // Check to see if we are within the subframe before correcting the defect
+            if ((x >= llx) && (y >= lly) && (x <= urx) && (y <= ury)) {
+                pl = &light.Pixel(x, y);
+                *pl = Median8(light, x, y);
+            }
+        }
+    }
+    else
+    {
+        // Step over each defect and replace the light value
+        // with the median of the surrounding pixels
+        for (i = 0; i < defectMap.numDefects; i++)
+        {
+            x = defectMap.defects[i].x;
+            y = defectMap.defects[i].y;
+            pl = &light.Pixel(x, y);
+            *pl = Median8(light, x, y);
+        }
+    }
+
+    return false;
+}
 void AutoFindStar(usImage& img, int& xpos, int& ypos) {
     // returns x and y of best star or 0 in each if nothing good found
     float A, B1, B2, C1, C2, C3, D1, D2, D3;

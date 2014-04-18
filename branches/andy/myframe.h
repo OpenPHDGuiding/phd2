@@ -136,6 +136,7 @@ private:
 
     wxAuiManager m_mgr;
     bool m_continueCapturing; // should another image be captured?
+    int m_darkMenuInx;
 
 public:
     MyFrame(int instanceNumber, wxLocale *locale);
@@ -143,7 +144,7 @@ public:
 
     Guider *pGuider;
     wxMenuBar *Menubar;
-    wxMenu *tools_menu, *view_menu, *bookmarks_menu;
+    wxMenu *tools_menu, *view_menu, *bookmarks_menu, *darks_menu;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
@@ -181,7 +182,9 @@ public:
     void OnButtonStop(wxCommandEvent& evt);
     void OnDark(wxCommandEvent& evt);
     void OnClearDark(wxCommandEvent& evt);
-    void OnLoadSaveDark(wxCommandEvent& evt);
+    void OnLoadDark(wxCommandEvent& evt);
+    void OnClearDefectMap(wxCommandEvent& evt);
+    void OnLoadDefectMap(wxCommandEvent& evt);
     void OnGuide(wxCommandEvent& evt);
     void OnAdvanced(wxCommandEvent& evt);
     void OnIdle(wxIdleEvent& evt);
@@ -220,9 +223,11 @@ public:
     void OnMoveComplete(wxThreadEvent& evt);
     void LoadProfileSettings(void);
     void UpdateTitle(void);
-    void UpdateDarksButton(void);
+    void UpdateDarksUIState(void);
 
     void GetExposureDurations(std::vector<int> *exposure_durations);
+    void GetExposureDurationStrings(wxArrayString *target);
+    int ExposureDurationFromSelection(const wxString& selection);
     bool SetExposureDuration(int val);
     double GetDitherScaleFactor(void);
     bool SetDitherScaleFactor(double ditherScaleFactor);
@@ -237,12 +242,17 @@ public:
     bool StartServer(bool state);
     bool FlipRACal();
     int RequestedExposureDuration();
-    void LoadDarkFrames(const wxString& filename);
+    void SaveDefectMap(DefectMap* pMap);
+    void LoadDefectMap();
     int GetFocalLength(void);
     int GetLanguage(void);
     bool GetAutoLoadCalibration(void);
     void LoadCalibration(void);
     int GetInstanceNumber() const { return m_instanceNumber; }
+    wxString GetDefaultFileDir();
+    void LoadDarkLibrary();
+    void SaveDarkLibrary(wxString note);
+    void DeleteDarkLibraryFiles(int profileID);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
@@ -321,7 +331,7 @@ private:
     int GetTextWidth(wxControl *pControl, const wxString& string);
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
 
-    int ExposureDurationFromSelection(const wxString& selection);
+
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()
@@ -400,7 +410,9 @@ enum {
     MENU_XHAIR3,
     MENU_XHAIR4,
     MENU_XHAIR5,
+    MENU_TAKEDARKS,
     MENU_CLEARDARK,
+    MENU_CLEARDEFECTMAP,
     MENU_LOG,
     MENU_LOGIMAGES,
     MENU_DEBUG,
@@ -415,7 +427,7 @@ enum {
     MENU_SAVESETTINGS,
     MENU_LOADSETTINGS,
     MENU_LOADDARK,
-    MENU_SAVEDARK,
+    MENU_LOADDEFECTMAP,
     MENU_INDICONFIG,
     MENU_INDIDIALOG,
     MENU_V4LSAVESETTINGS,
