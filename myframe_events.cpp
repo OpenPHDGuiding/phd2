@@ -661,13 +661,12 @@ void MyFrame::OnLog(wxCommandEvent& evt)
         if (evt.IsChecked())  // enable it
         {
             GuideLog.EnableLogging();
-            SetTitle(wxString::Format(_T("%s %s (Log active)"), APPNAME, FULLVER));
         }
         else
         {
             GuideLog.DisableLogging();
-            SetTitle(wxString::Format(_T("%s %s"), APPNAME, FULLVER));
         }
+        UpdateTitle();
     }
     else if (evt.GetId() == MENU_LOGIMAGES)
     {
