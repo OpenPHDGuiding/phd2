@@ -702,7 +702,7 @@ void GuiderOneStar::SaveStarFITS()
 
         sprintf(keyname,"DATE-OBS");
         sprintf(keycomment,"YYYY-MM-DDThh:mm:ss observation start, UT");
-        sprintf(keystring,"%s",(const char*) pImage->ImgStartDate.c_str());
+        sprintf(keystring,"%s", (const char *) pImage->GetImgStartTime().c_str());
         if (!status) fits_write_key(fptr, TSTRING, keyname, keystring, keycomment, &status);
 
         sprintf(keyname,"EXPOSURE");

@@ -35,9 +35,11 @@
 #include "phd.h"
 #include "image_math.h"
 
-bool usImage::Init(int xsize, int ysize) {
-// Allocates space for image and sets params up
-// returns true on error
+bool usImage::Init(int xsize, int ysize)
+{
+    // Allocates space for image and sets params up
+    // returns true on error
+
     if (ImageData) {
         delete[] ImageData;
         ImageData = NULL;
@@ -53,62 +55,86 @@ bool usImage::Init(int xsize, int ysize) {
     return false;
 }
 
-void usImage::CalcStats() {
-    int i, d;
-    unsigned short *ptr, *tmpdata;
+void usImage::SwapImageData(usImage& other)
+{
+    unsigned short *t = ImageData;
+    ImageData = other.ImageData;
+    other.ImageData = t;
+}
 
-    if ((!ImageData) || (!NPixels))
+void usImage::CalcStats()
+{
+    if (!ImageData || !NPixels)
         return;
-
-    tmpdata = new unsigned short[NPixels];
 
     Min = 65535; Max = 0;
     FiltMin = 65535; FiltMax = 0;
 
     if (Subframe.width <= 0 || Subframe.height <= 0)
     {
-        for (i=0, ptr=ImageData; i<NPixels; i++, ptr++) {
-            d = (int) ( *ptr);
+        // full frame, no subframe
+
+        const unsigned short *src;
+
+        src = ImageData;
+        for (int i = 0; i < NPixels; i++)
+        {
+            int d = (int) *src++;
             if (d < Min) Min = d;
             if (d > Max) Max = d;
-            tmpdata[i]=d;
         }
 
-        Median3(tmpdata,Size.GetWidth(),Size.GetHeight());
-        for (i=0, ptr=tmpdata; i<NPixels; i++, ptr++) {
-            d = (int) ( *ptr);
+        unsigned short *tmpdata = new unsigned short[NPixels];
+
+        Median3(tmpdata, ImageData, Size.GetWidth(), Size.GetHeight());
+
+        src = tmpdata;
+        for (int i = 0; i < NPixels; i++)
+        {
+            int d = (int) *src++;
             if (d < FiltMin) FiltMin = d;
             if (d > FiltMax) FiltMax = d;
         }
+
+        delete[] tmpdata;
     }
     else
-    {  // Subframe
-        int x, y;
-        i=0;
-        for (y=0; y<Subframe.height; y++) {
-            ptr = ImageData + Subframe.x + (Subframe.y + y)*Size.GetWidth();
-            for (x=0; x<Subframe.width; x++, ptr++, i++) {
-               d = (int) ( *ptr);
+    {
+        // Subframe
+
+        unsigned int pixcnt = Subframe.width * Subframe.height;
+        unsigned short *tmpdata = new unsigned short[pixcnt];
+
+        unsigned short *dst;
+
+        dst = tmpdata;
+        for (int y = 0; y < Subframe.height; y++)
+        {
+            const unsigned short *src = ImageData + Subframe.x + (Subframe.y + y) * Size.GetWidth();
+            for (int x = 0; x < Subframe.width; x++)
+            {
+               int d = (int) *src;
                if (d < Min) Min = d;
                if (d > Max) Max = d;
-               tmpdata[i]=d;
-           }
+               *dst++ = *src++;
+            }
         }
 
-        Median3(tmpdata, Subframe.width, Subframe.height);
-        for (i=0, ptr=tmpdata; i<(Subframe.width*Subframe.height); i++, ptr++) {
-            d = (int) ( *ptr);
+        dst = new unsigned short[pixcnt];
+
+        Median3(dst, tmpdata, Subframe.width, Subframe.height);
+
+        const unsigned short *src = dst;
+        for (int i = 0; i < pixcnt; i++)
+        {
+            int d = (int) *src++;
             if (d < FiltMin) FiltMin = d;
             if (d > FiltMax) FiltMax = d;
         }
+
+        delete[] dst;
+        delete[] tmpdata;
     }
-
-    delete [] tmpdata;
-}
-
-bool usImage::Clean() {
-
-    return false;
 }
 
 bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power)
@@ -241,14 +267,19 @@ bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double
     return false;
 }
 
-void usImage::InitDate() {
-    time_t now;
-    struct tm *timestruct;
-    time(&now);
-    timestruct=gmtime(&now);
-    ImgStartDate=wxString::Format("%.4d-%.2d-%.2dT%.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,
-        timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
+void usImage::InitImgStartTime()
+{
+    ImgStartTime = time(0);
+}
 
+wxString usImage::GetImgStartTime() const
+{
+    if (!ImgStartTime)
+        return wxEmptyString;
+
+    struct tm *timestruct = gmtime(&ImgStartTime);
+    return wxString::Format("%.4d-%.2d-%.2dT%.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,
+        timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
 }
 
 bool usImage::Save(const wxString& fname)
@@ -400,4 +431,3 @@ bool usImage::CopyFromImage(const wxImage &img)
 
     return false;
 }
-

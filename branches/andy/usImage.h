@@ -34,7 +34,9 @@
 
 #ifndef USIMAGECLASS
 #define USIMAGECLASS
-class usImage {
+
+class usImage
+{
 public:
     unsigned short      *ImageData;     // Pointer to raw data
     wxSize              Size;               // Dimensions of image
@@ -43,18 +45,20 @@ public:
     int                 Min;
     int                 Max;
     int                 FiltMin, FiltMax;
-    wxString            ImgStartDate;
+    time_t              ImgStartTime;
     int                 ImgExpDur;
-    //  int                 Binsize;
+
+    usImage() { Min = Max = FiltMin = FiltMax = 0; NPixels = 0; ImageData = NULL; ImgStartTime = 0; ImgExpDur = 0; }
+    ~usImage() { delete[] ImageData; }
+
     bool                Init(int xsize, int ysize);
+    void                SwapImageData(usImage& other);
     void                CalcStats();
-    void                InitDate();
+    void                InitImgStartTime();
+    wxString            GetImgStartTime() const;
     bool                CopyToImage(wxImage **img, int blevel, int wlevel, double power);
     bool                BinnedCopyToImage(wxImage **img, int blevel, int wlevel, double power); // Does 2x2 bin during copy
     bool                CopyFromImage(const wxImage &img);
-    bool                Clean();
-    usImage() { Min=Max=FiltMin=FiltMax= 0; NPixels = 0; ImageData = NULL; ImgStartDate=_T(""); ImgExpDur = 0;}
-    ~usImage() {delete[] ImageData; }
     bool                Load(const wxString& fname);
     bool                Save(const wxString& fname);
     bool                Rotate(double theta, bool mirror=false);

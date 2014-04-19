@@ -33,15 +33,11 @@
  */
 
 extern bool QuickLRecon(usImage& img);
-extern bool Median3(unsigned short ImageData [], int xsize, int ysize);
+extern bool Median3(unsigned short *dst, const unsigned short *src, int xsize, int ysize);
 extern bool Median3(usImage& img);
 extern bool SquarePixels(usImage& img, float xsize, float ysize);
 extern int dbl_sort_func(double *first, double *second);
-extern int us_sort_func (const void *first, const void *second);
 extern bool Subtract(usImage& light, const usImage& dark);
-extern void AutoFindStar(usImage&, int& x, int&y);
-extern float CalcSlope(ArrayOfDbl& y);
-extern bool DefectRemoval(usImage& light, DefectMap& defectMap);
-extern void QuickSort(unsigned short *list, int left, int right);
-extern unsigned short ImageMedian(usImage& img);
+extern float CalcSlope(const ArrayOfDbl& y);
+extern bool RemoveDefects(usImage& light, const DefectMap& defectMap);
 extern void CalculateDefectMap(usImage *dark, double dmSigmaFactor, DefectMap*& defectMap);

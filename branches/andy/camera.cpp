@@ -1001,18 +1001,16 @@ void GuideCamera::SubtractDark(usImage& img)
     // dark subtraction is done in the camera worker thread, so we need to acquire the
     // DarkFrameLock to protect against the dark frame disappearing when the main
     // thread does "Load Darks" or "Clear Darks"
+
+    wxCriticalSectionLocker lck(DarkFrameLock);
+
     if (CurrentDefectMap)
     {
-        wxCriticalSectionLocker lck(DarkFrameLock);
-        DefectRemoval(img, *CurrentDefectMap);
+        RemoveDefects(img, *CurrentDefectMap);
     }
-    else
+    else if (CurrentDarkFrame)
     {
-        wxCriticalSectionLocker lck(DarkFrameLock);
-        if (CurrentDarkFrame)
-        {
-            Subtract(img, *CurrentDarkFrame);
-        }
+        Subtract(img, *CurrentDarkFrame);
     }
 }
 
