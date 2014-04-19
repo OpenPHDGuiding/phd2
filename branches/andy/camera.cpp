@@ -968,18 +968,23 @@ void GuideCamera::SelectDark(int exposureDuration)
     GetSpecificDark(exposureDuration, CurrentDarkFrame);
 }
 
-void GuideCamera::ClearDefects()
+void GuideCamera::ClearDefectMap()
 {
-    if (CurrentDefectMap && (CurrentDefectMap->numDefects>0) && (CurrentDefectMap->numDefects<65536) )
+    wxCriticalSectionLocker lck(DarkFrameLock);
+
+    if (CurrentDefectMap)
     {
         Debug.AddLine("Clearing defect map...");
-        wxCriticalSectionLocker lck(DarkFrameLock);
-        if(CurrentDefectMap->defects) {
-            free(CurrentDefectMap->defects);
-        }
-        free(CurrentDefectMap);
+        delete CurrentDefectMap;
+        CurrentDefectMap = NULL;
     }
-    CurrentDefectMap = NULL;
+}
+
+void GuideCamera::SetDefectMap(DefectMap *defectMap)
+{
+    wxCriticalSectionLocker lck(DarkFrameLock);
+    delete CurrentDefectMap;
+    CurrentDefectMap = defectMap;
 }
 
 void GuideCamera::ClearDarks()

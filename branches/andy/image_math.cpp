@@ -347,68 +347,47 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
     return median3(array);
 }
 
-void QuickSort(unsigned short *list, int left, int right)
+static int partition(unsigned short *list, int left, int right, int pivotIndex)
 {
-    if(left<right)
-    {
-        int            l          = left+1;
-        int            r          = right;
-        unsigned short pivotValue = list[left];
+    int pivotValue = list[pivotIndex];
+    swap(list[pivotIndex], list[right]);  // Move pivot to end                                                                                                                                  
+    int storeIndex = left;
+    for (int i = left; i < right; i++)
+        if (list[i] < pivotValue)
+        {
+            if (i != storeIndex)
+                swap(list[storeIndex], list[i]);
+            ++storeIndex;
+        }
+    swap(list[right], list[storeIndex]); // Move pivot to its final place                                                                                                                       
+    return storeIndex;
+}
 
-        while(l<r)
-        {
-            if(list[l]<=pivotValue)
-                l++;
-            else if(list[r]>=pivotValue)
-                r--;
-            else
-                swap(list[l], list[r]);
+// Hoare's selection algorithm                                                                                                                                                                  
+static unsigned short select_kth(unsigned short *list, int left, int right, int k)
+{
+    while (true)
+    {
+        int pivotIndex = (left + right) / 2;  // select pivotIndex between left and right                                                                                                       
+        int pivotNewIndex = partition(list, left, right, pivotIndex);
+        int pivotDist = pivotNewIndex - left + 1;
+        if (pivotDist == k)
+            return list[pivotNewIndex];
+        else if (k < pivotDist)
+            right = pivotNewIndex - 1;
+        else {
+            k = k - pivotDist;
+            left = pivotNewIndex + 1;
         }
-        if(list[l]<pivotValue)
-        {
-            swap(list[l], list[left]);
-            l--;
-        }
-        else
-        {
-            l--;
-            swap(list[l], list[left]);
-        }
-        QuickSort(list, left, l);
-        QuickSort(list, r, right);
     }
 }
 
-unsigned short ImageMedian(usImage& img)
+static unsigned short ImageMedian(const usImage& img)
 {
-    int             xsize    = img.Size.GetWidth();
-    int             ysize    = img.Size.GetHeight();
-    int             NPixels  = xsize * ysize;
-    int             mid      = NPixels / 2 ;
-    unsigned short *tmpImage = (unsigned short *) malloc(NPixels * sizeof(unsigned short));
-    int             x, y;
-    int             median;
-
-    // Duplicate Image data to temporary array
-    for (y = 0; y<ysize; y++)
-    {
-        for (x = 0; x<xsize; x++)
-        {
-            tmpImage[x + y*xsize] = img.Pixel(x, y);
-        }
-    }
-
-    QuickSort(tmpImage, 0, NPixels-1);
-
-    if( (NPixels % 2)==0 )
-    {
-        median  = (tmpImage[mid-1] + tmpImage[mid]) / 2;
-    } else
-    {
-        median  = tmpImage[mid];
-    }
-
-    return median;
+    usImage tmp;
+    tmp.Init(img.Size.GetWidth(), img.Size.GetHeight());
+    memcpy(tmp.ImageData, img.ImageData, img.NPixels * sizeof(unsigned short));
+    return select_kth(tmp.ImageData, 0, img.NPixels - 1, img.NPixels / 2);
 }
 
 bool SquarePixels(usImage& img, float xsize, float ysize)
@@ -523,69 +502,58 @@ bool Subtract(usImage& light, const usImage& dark)
     return false;
 }
 
-// DefectMap* CalculateDefectMap(usImage *dark, double dmSigmaFactor)
-void CalculateDefectMap(usImage *dark, double dmSigmaFactor, DefectMap*& defectMap)
+void CalculateDefectMap(DefectMap& defectMap, const usImage& dark, double sigmaFactor)
 {
-    int                   x, y, i;
-    int                   pixelCnt = 0;
-    double                sum = 0.0;
-    int                   mean = 0;
-    int                  *tmpimg = NULL;
-    int                   tmpInt = 0;
-    int                   median = 0;
-    int                   min = 0;
-    int                   max = 0;
-    double                tmpFloat = 0.0;
-    int                   stdev = 0;
-    int                   clipLow = 0;
-    int                   clipHigh = 65535;
-    bool                  DMUseMedian = false;              // Vestigial - maybe use median instead of mean
+    bool const DMUseMedian = false;              // Vestigial - maybe use median instead of mean
 
     Debug.AddLine("Creating defect map...");
-    // pixelCnt = dark->Size.GetHeight() * dark->Size.GetWidth();
-    pixelCnt = dark->NPixels;
+
+    int const pixelCnt = dark.NPixels;
+
+    int median = 0;
+    int mean = 0;
 
     if (DMUseMedian) {
         // Find the median of the image
-        median = (int)ImageMedian(*dark);
+        median = (int)ImageMedian(dark);
         Debug.AddLine("Dark Median is = %d", median);
     }
     else {
         // Find the mean of the image
-        sum = 0.0;
-        for (y = 0; y<dark->Size.GetHeight(); y++)
+        double sum = 0.0;
+        for (int y = 0; y < dark.Size.GetHeight(); y++)
         {
-            for (x = 0; x<dark->Size.GetWidth(); x++)
+            for (int x = 0; x < dark.Size.GetWidth(); x++)
             {
-                sum += ((double)dark->Pixel(x, y));
+                sum += ((double)dark.Pixel(x, y));
             }
         }
         mean = (int)(sum / (double)pixelCnt);
         Debug.AddLine("Dark Mean is = %d", mean);
     }
 
-
     // Determine the standard deviation from the median or the mean, depending on user choice
-    sum = 0.0;
-    for (y = 0; y<dark->Size.GetHeight(); y++)
+    double sum = 0.0;
+    for (int y = 0; y < dark.Size.GetHeight(); y++)
     {
-        for (x = 0; x<dark->Size.GetWidth(); x++)
+        for (int x = 0; x < dark.Size.GetWidth(); x++)
         {
+            double tmp;
             if (DMUseMedian)
-                tmpFloat = (double)(((int)dark->Pixel(x, y)) - median);
+                tmp = (double)(((int)dark.Pixel(x, y)) - median);
             else
-                tmpFloat = (double)(((int)dark->Pixel(x, y)) - mean);
-            sum += (tmpFloat * tmpFloat);
+                tmp = (double)(((int)dark.Pixel(x, y)) - mean);
+            sum += (tmp * tmp);
         }
     }
-    stdev = (int)sqrt(sum / ((double)pixelCnt));
+    int stdev = (int) sqrt(sum / ((double)pixelCnt));
     Debug.AddLine("Dark Standard Deviation is = %d", stdev);
 
     // Find the clipping points beyond which the pixels will be considered defects
     int midpoint = (DMUseMedian ? median : mean);
-    clipLow = midpoint - (dmSigmaFactor * stdev);
-    clipHigh = midpoint + (dmSigmaFactor * stdev);
-    if (clipLow<0)
+    int clipLow = midpoint - (sigmaFactor * stdev);
+    int clipHigh = midpoint + (sigmaFactor * stdev);
+    if (clipLow < 0)
     {
         clipLow = 0;
     }
@@ -594,42 +562,18 @@ void CalculateDefectMap(usImage *dark, double dmSigmaFactor, DefectMap*& defectM
         clipHigh = 65535;
     }
 
-    // Make a first pass to count the number of defects
-    i = 0;
-    for (y = 0; y<dark->Size.GetHeight(); y++)
-    {
-        for (x = 0; x<dark->Size.GetWidth(); x++)
-        {
-            tmpInt = (int)(dark->Pixel(x, y));
-            if ((tmpInt<clipLow) || (tmpInt>clipHigh))
-            {
-                i++;
-            }
-        }
-    }
-
-    // Allocate the defect map entries
-    defectMap = (DefectMap *)malloc(sizeof(DefectMap));
-    defectMap->numDefects = i;
-    defectMap->defects = (Defect *)malloc(i * sizeof(Defect));
-    Debug.AddLine("New defect map created, count=%d, sigmaX=%0.2f", i, dmSigmaFactor);
-
     // Assign the defect map entries
-    i = 0;
-    for (y = 0; y<dark->Size.GetHeight(); y++)
+    for (int y = 0; y < dark.Size.GetHeight(); y++)
     {
-        for (x = 0; x<dark->Size.GetWidth(); x++)
+        for (int x = 0; x < dark.Size.GetWidth(); x++)
         {
-            tmpInt = (int)(dark->Pixel(x, y));
-            if ((tmpInt<clipLow) || (tmpInt>clipHigh))
-            {
-                defectMap->defects[i].x = x;
-                defectMap->defects[i].y = y;
-                i++;
-            }
+            int val = (int)(dark.Pixel(x, y));
+            if (val < clipLow || val > clipHigh)
+                defectMap.push_back(wxPoint(x, y));
         }
     }
-    Debug.AddLine("Defect map built");
+
+    Debug.AddLine("New defect map created, count=%d, sigmaX=%0.2f", defectMap.size(), sigmaFactor);
 }
 
 bool RemoveDefects(usImage& light, const DefectMap& defectMap)
@@ -649,10 +593,10 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
 
         // Step over each defect and replace the light value
         // with the median of the surrounding pixels
-        for (int i = 0; i < defectMap.numDefects; i++)
+        for (DefectMap::const_iterator it = defectMap.begin(); it != defectMap.end(); ++it)
         {
-            int x = defectMap.defects[i].x;
-            int y = defectMap.defects[i].y;
+            int const x = it->x;
+            int const y = it->y;
             // Check to see if we are within the subframe before correcting the defect
             if ((x >= llx) && (y >= lly) && (x <= urx) && (y <= ury))
             {
@@ -664,10 +608,10 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
     {
         // Step over each defect and replace the light value
         // with the median of the surrounding pixels
-        for (int i = 0; i < defectMap.numDefects; i++)
+        for (DefectMap::const_iterator it = defectMap.begin(); it != defectMap.end(); ++it)
         {
-            int x = defectMap.defects[i].x;
-            int y = defectMap.defects[i].y;
+            int const x = it->x;
+            int const y = it->y;
             if (x >= 0 && x < light.Size.GetWidth() && y >= 0 && y < light.Size.GetHeight())
             {
                 light.Pixel(x, y) = MedianBorderingPixels(light, x, y);

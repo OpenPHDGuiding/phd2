@@ -37,14 +37,7 @@
 
 typedef std::map<int, usImage *> ExposureImgMap; // map exposure to image
 
-typedef struct {
-    int x, y;
-} Defect;
-
-typedef struct {
-    Defect *defects;
-    int     numDefects;
-} DefectMap;
+typedef std::vector<wxPoint> DefectMap;
 
 enum PropDlgType
 {
@@ -115,7 +108,6 @@ public:
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage         *CurrentDarkFrame;
     ExposureImgMap  Darks; // map exposure => dark frame
-
     DefectMap       *CurrentDefectMap;
 
     virtual bool HasNonGuiCapture(void);
@@ -140,7 +132,8 @@ public:
     void            AddDark(usImage *dark);
     void            SelectDark(int exposureDuration);
     void            GetSpecificDark(int exposureDuration, usImage*& dark);
-    void            ClearDefects(void);
+    void            SetDefectMap(DefectMap *newMap);
+    void            ClearDefectMap(void);
     void            ClearDarks(void);
 
     void            SubtractDark(usImage& img);

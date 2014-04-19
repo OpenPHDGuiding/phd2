@@ -324,11 +324,7 @@ void MyFrame::OnLoadDefectMap(wxCommandEvent& WXUNUSED(evt))
 
 void MyFrame::OnClearDefectMap(wxCommandEvent& WXUNUSED(evt))
 {
-    if (!pCamera->CurrentDefectMap)
-    {
-        return;
-    }
-    pCamera->ClearDefects();
+    pCamera->ClearDefectMap();
     SetStatusText(_("Defect map cleared"));
     UpdateDarksUIState();
 }

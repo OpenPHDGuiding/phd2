@@ -436,7 +436,7 @@ void MyFrame::SetupMenuBar(void)
     bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("Delete all\tCtrl-B"), _("Remove all bookmarks"));
 
     darks_menu = new wxMenu();
-    darks_menu->Append(MENU_TAKEDARKS, _("&Build Dark/DefectMap Library"), _("Build a dark library and/or a defect map for this profile"));
+    darks_menu->Append(MENU_TAKEDARKS, _("&Build Dark / Defect Map Library"), _("Build a dark library and/or a defect map for this profile"));
     darks_menu->Append(MENU_LOADDARK, _("&Load Dark Library"), _("Load and begin using the dark library for this profile"));
     darks_menu->Append(MENU_CLEARDARK, _("&Clear Dark Library"), _("Stop using current dark library"));
     darks_menu->FindItem(MENU_CLEARDARK)->Enable(false);
@@ -1572,29 +1572,25 @@ void MyFrame::SaveDarkLibrary(wxString note)
 
 }
 
-void MyFrame::SaveDefectMap(DefectMap* pMap)
+void MyFrame::SaveDefectMap(const DefectMap& defectMap)
 {
+    wxString filename = DefectMapFileName(pConfig->GetCurrentProfileId());
+    wxFileOutputStream oStream(filename);
+    wxTextOutputStream outText(oStream);
 
-    if (pMap)
+    if (oStream.GetLastError() == wxSTREAM_NO_ERROR)
     {
-        wxString filename = DefectMapFileName(pConfig->GetCurrentProfileId());
-        wxFileOutputStream oStream(filename);
-        wxTextOutputStream outText(oStream);
-
-        if (oStream.GetLastError() == wxSTREAM_NO_ERROR)
+        outText << wxString::Format("%d\n", defectMap.size());
+        for (DefectMap::const_iterator it = defectMap.begin(); it != defectMap.end(); ++it)
         {
-            outText << wxString::Format("%d\n", pMap->numDefects);
-            for (int i = 0; i < pMap->numDefects; i++)
-            {
-                outText << wxString::Format("%d %d\n", pMap->defects[i].x , pMap->defects[i].y);
-            }
-            oStream.Close();
-            Debug.AddLine(wxString::Format("Saved defect map to %s", filename));
+            outText << wxString::Format("%d %d\n", it->x , it->y);
         }
-        else
-        {
-            Debug.AddLine(wxString::Format("Failed to save defect map to %s", filename));
-        }
+        oStream.Close();
+        Debug.AddLine(wxString::Format("Saved defect map to %s", filename));
+    }
+    else
+    {
+        Debug.AddLine(wxString::Format("Failed to save defect map to %s", filename));
     }
 }
 
@@ -1609,30 +1605,22 @@ void MyFrame::LoadDefectMap()
         wxTextInputStream inText(iStream);
         wxInt16 numDefects, xPos, yPos;
 
-        // Check to see if a defect map already exists and clear it out if it does
-        if (pCamera->CurrentDefectMap)
-        {
-            pCamera->ClearDefects();
-        }
         // Re-initialize the defect map and parse the defect map file
-        pCamera->CurrentDefectMap = (DefectMap *)malloc(sizeof(DefectMap));
-        int counter = 0;
         if (iStream.GetLastError() == wxSTREAM_NO_ERROR)
         {
+            DefectMap *defectMap = new DefectMap();
+
             inText >> numDefects;
-            pCamera->CurrentDefectMap->numDefects = numDefects;
-            pCamera->CurrentDefectMap->defects = (Defect *)malloc(numDefects * sizeof(Defect));
-            Debug.AddLine(wxString::Format("Initializing %d defects", numDefects));
+            Debug.AddLine(wxString::Format("Loading %d defects", numDefects));
 
-
-            while (iStream.GetLastError() == wxSTREAM_NO_ERROR && counter < numDefects)
+            while (iStream.GetLastError() == wxSTREAM_NO_ERROR && defectMap->size() < numDefects)
             {
                 inText >> xPos >> yPos;
-                pCamera->CurrentDefectMap->defects[counter].x = xPos;
-                pCamera->CurrentDefectMap->defects[counter].y = yPos;
-                counter++;
+                defectMap->push_back(wxPoint(xPos, yPos));
             }
             SetStatusText(_("Defect map loaded"));
+
+            pCamera->SetDefectMap(defectMap);
         }
         else
             Debug.AddLine(wxString::Format("Unexpected eof on defect map file %s", filename));

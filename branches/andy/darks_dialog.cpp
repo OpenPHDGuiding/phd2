@@ -189,7 +189,6 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
     int defectFrameCount = m_pNumDefExposures->GetValue();
     std::vector<int> exposureDurations;
     usImage *pNewDark;
-    DefectMap *pNewDefectMap;
 
     m_pStartBtn->Enable(false);
     m_pStopBtn->Enable(true);
@@ -254,12 +253,11 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             ShowStatus(_("Operation cancelled"), false);
         else
         {
-            CalculateDefectMap(pNewDark, SigmaXFromUI(m_pSigmaX->GetValue()), pNewDefectMap);
-            if (pCamera->CurrentDefectMap)
-                pCamera->ClearDefects();
-            pFrame->SaveDefectMap(pNewDefectMap);
-            pCamera->CurrentDefectMap = pNewDefectMap;          // Put it to use
-            ShowStatus(wxString::Format(_("Defect map built, %d defects mapped"), pNewDefectMap->numDefects), false);
+            DefectMap *defectMap = new DefectMap();
+            CalculateDefectMap(*defectMap, *pNewDark, SigmaXFromUI(m_pSigmaX->GetValue()));
+            pFrame->SaveDefectMap(*defectMap);
+            pCamera->SetDefectMap(defectMap);
+            ShowStatus(wxString::Format(_("Defect map built, %d defects mapped"), defectMap->size()), false);
         }
     }
 
