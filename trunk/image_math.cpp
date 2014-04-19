@@ -35,7 +35,8 @@
 #include "phd.h"
 #include "image_math.h"
 
-int dbl_sort_func (double *first, double *second) {
+int dbl_sort_func (double *first, double *second)
+{
     if (*first < *second)
         return -1;
     else if (*first > *second)
@@ -43,16 +44,10 @@ int dbl_sort_func (double *first, double *second) {
     return 0;
 }
 
-int us_sort_func (const void *first, const void *second) {
-    if (*(unsigned short *)first < *(unsigned short *)second)
-        return -1;
-    else if (*(unsigned short *)first > *(unsigned short *)second)
-        return 1;
-    return 0;
-}
+float CalcSlope(const ArrayOfDbl& y)
+{
+    // Does a linear regression to calculate the slope
 
-float CalcSlope(ArrayOfDbl& y) {
-// Does a linear regression to calculate the slope
     int x, size;
     double s_xy, s_x, s_y, s_xx, nvalid;
     double retval;
@@ -77,14 +72,12 @@ float CalcSlope(ArrayOfDbl& y) {
     return (float) retval;
 }
 
-//
 bool QuickLRecon(usImage& img)
 {
     // Does a simple debayer of luminance data only -- sliding 2x2 window
     usImage Limg;
     int x, y;
     int xsize, ysize;
-    unsigned short *ptr0, *ptr1;
 
     xsize = img.Size.GetWidth();
     ysize = img.Size.GetHeight();
@@ -100,19 +93,18 @@ bool QuickLRecon(usImage& img)
     }
     for (x=0; x<xsize; x++)
         Limg.ImageData[x+(ysize-1)*xsize]=Limg.ImageData[x+(ysize-2)*xsize];  // Last row -- just duplicate
-    ptr0=img.ImageData;
-    ptr1=Limg.ImageData;
-    for (x=0; x<img.NPixels; x++, ptr0++, ptr1++)
-        *ptr0=(*ptr1);
-    //delete Limg;
-    Limg.Init(0,0);
 
+    img.SwapImageData(Limg);
     return false;
 }
 
 bool Median3(usImage& img)
 {
-    return Median3(img.ImageData, img.Size.GetWidth(), img.Size.GetHeight());
+    usImage tmp;
+    tmp.Init(img.Size.GetWidth(), img.Size.GetHeight());
+    bool err = Median3(tmp.ImageData, img.ImageData, img.Size.GetWidth(), img.Size.GetHeight());
+    img.SwapImageData(tmp);
+    return err;
 }
 
 inline static void swap(unsigned short& a, unsigned short& b)
@@ -122,72 +114,135 @@ inline static void swap(unsigned short& a, unsigned short& b)
     b = t;
 }
 
-static int partition(unsigned short *list, int left, int right, int pivotIndex)
+inline static unsigned short median9(const unsigned short l[9])
 {
-    int pivotValue = list[pivotIndex];
-    swap(list[pivotIndex], list[right]);  // Move pivot to end
-    int storeIndex = left;
-    for (int i = left; i < right; i++)
-        if (list[i] < pivotValue)
-        {
-            if (i != storeIndex)
-                swap(list[storeIndex], list[i]);
-            ++storeIndex;
-        }
-    swap(list[right], list[storeIndex]); // Move pivot to its final place
-    return storeIndex;
+    unsigned short l0 = l[0], l1 = l[1], l2 = l[2], l3 = l[3], l4 = l[4];
+    unsigned short x;
+    x = l[5];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    if (x < l3) swap(x, l3);
+    if (x < l4) swap(x, l4);
+    x = l[6];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    if (x < l3) swap(x, l3);
+    if (x < l4) swap(x, l4);
+    x = l[7];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    if (x < l3) swap(x, l3);
+    if (x < l4) swap(x, l4);
+    x = l[8];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    if (x < l3) swap(x, l3);
+    if (x < l4) swap(x, l4);
+
+    if (l1 > l0) l0 = l1;
+    if (l2 > l0) l0 = l2;
+    if (l3 > l0) l0 = l3;
+    if (l4 > l0) l0 = l4;
+
+    return l0;
 }
 
-// Hoare's selection algorithm
-static unsigned short select_kth(unsigned short *list, int left, int right, int k)
+inline static unsigned short median8(const unsigned short l[8])
 {
-    while (true)
-    {
-        int pivotIndex = (left + right) / 2;  // select pivotIndex between left and right
-        int pivotNewIndex = partition(list, left, right, pivotIndex);
-        int pivotDist = pivotNewIndex - left + 1;
-        if (pivotDist == k)
-            return list[pivotNewIndex];
-        else if (k < pivotDist)
-            right = pivotNewIndex - 1;
-        else {
-            k = k - pivotDist;
-            left = pivotNewIndex + 1;
-        }
-    }
+    unsigned short l0 = l[0], l1 = l[1], l2 = l[2], l3 = l[3], l4 = l[4];
+    unsigned short x;
+
+    x = l[5];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    if (x < l3) swap(x, l3);
+    if (x < l4) swap(x, l4);
+    x = l[6];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    if (x < l3) swap(x, l3);
+    if (x < l4) swap(x, l4);
+    x = l[7];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    if (x < l3) swap(x, l3);
+    if (x < l4) swap(x, l4);
+
+    if (l2 > l0) swap(l2, l0);
+    if (l2 > l1) swap(l2, l1);
+
+    if (l3 > l0) swap(l3, l0);
+    if (l3 > l1) swap(l3, l1);
+
+    if (l4 > l0) swap(l4, l0);
+    if (l4 > l1) swap(l4, l1);
+
+    return (unsigned short)(((unsigned int) l0 + (unsigned int) l1) / 2);
 }
 
-bool Median3(unsigned short ImageData [], int xsize, int ysize)
+inline static unsigned short median5(const unsigned short l[5])
 {
-    int x, y;
-    unsigned short array[9];
+    unsigned short l0 = l[0], l1 = l[1], l2 = l[2];
+    unsigned short x;
+    x = l[3];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    x = l[4];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+
+    if (l1 > l0) l0 = l1;
+    if (l2 > l0) l0 = l2;
+
+    return l0;
+}
+
+inline static unsigned short median3(const unsigned short l[3])
+{
+    unsigned short l0 = l[0], l1 = l[1], l2 = l[2];
+    if (l2 < l0) swap(l2, l0);
+    if (l2 < l1) swap(l2, l1);
+    if (l1 > l0) l0 = l1;
+    return l0;
+}
+
+bool Median3(unsigned short *dst, const unsigned short *src, int xsize, int ysize)
+{
     int NPixels = xsize * ysize;
 
-    unsigned short *tmpimg = (unsigned short *) malloc(NPixels * sizeof(unsigned short));
-
-    for (y=1; y<ysize-1; y++) {
-        for (x=1; x<xsize-1; x++) {
-            array[0] = ImageData[(x-1)+(y-1)*xsize];
-            array[1] = ImageData[(x)+(y-1)*xsize];
-            array[2] = ImageData[(x+1)+(y-1)*xsize];
-            array[3] = ImageData[(x-1)+(y)*xsize];
-            array[4] = ImageData[(x)+(y)*xsize];
-            array[5] = ImageData[(x+1)+(y)*xsize];
-            array[6] = ImageData[(x-1)+(y+1)*xsize];
-            array[7] = ImageData[(x)+(y+1)*xsize];
-            array[8] = ImageData[(x+1)+(y+1)*xsize];
-            tmpimg[x+y*xsize] = select_kth(array, 0, 9-1, 5);
+    for (int y = 1; y < ysize - 1; y++)
+    {
+        for (int x = 1; x < xsize - 1; x++)
+        {
+            unsigned short array[9];
+            array[0] = src[(x - 1) + (y - 1)*xsize];
+            array[1] = src[(x)+(y - 1)*xsize];
+            array[2] = src[(x + 1) + (y - 1)*xsize];
+            array[3] = src[(x - 1) + (y)*xsize];
+            array[4] = src[(x)+(y)*xsize];
+            array[5] = src[(x + 1) + (y)*xsize];
+            array[6] = src[(x - 1) + (y + 1)*xsize];
+            array[7] = src[(x)+(y + 1)*xsize];
+            array[8] = src[(x + 1) + (y + 1)*xsize];
+            dst[x + y * xsize] = median9(array);
         }
-        tmpimg[(xsize-1)+y*xsize] = ImageData[(xsize-1)+y*xsize];  // 1st & Last one in this row -- just grab from orig
-        tmpimg[y*xsize] = ImageData[y*xsize];
+        dst[(xsize - 1) + y * xsize] = src[(xsize - 1) + y * xsize];  // 1st & Last one in this row -- just grab from orig
+        dst[y * xsize] = src[y * xsize];
     }
-    for (x = 0; x < xsize; x++) {
-        tmpimg[x+(ysize-1)*xsize] = ImageData[x+(ysize-1)*xsize];  // Last row -- just duplicate
-        tmpimg[x] = ImageData[x];  // First row
+    for (int x = 0; x < xsize; x++)
+    {
+        dst[x + (ysize - 1) * xsize] = src[x + (ysize - 1) * xsize];  // Last row -- just duplicate
+        dst[x] = src[x];  // First row
     }
-
-    memcpy(ImageData, tmpimg, NPixels * sizeof(unsigned short));
-    free(tmpimg);
 
     return false;
 }
@@ -303,122 +358,4 @@ bool Subtract(usImage& light, const usImage& dark)
     }
 
     return false;
-}
-
-void AutoFindStar(usImage& img, int& xpos, int& ypos) {
-    // returns x and y of best star or 0 in each if nothing good found
-    float A, B1, B2, C1, C2, C3, D1, D2, D3;
-//  int score, *scores;
-    int x, y, i, linesize;
-    unsigned short *uptr;
-
-//  scores = new int[img.NPixels];
-    linesize = img.Size.GetWidth();
-    //  double PSF[6] = { 0.69, 0.37, 0.15, -0.1, -0.17, -0.26 };
-    // A, B1, B2, C1, C2, C3, D1, D2, D3
-    double PSF[14] = { 0.906, 0.584, 0.365, .117, .049, -0.05, -.064, -.074, -.094 };
-    double mean;
-    double PSF_fit;
-    double BestPSF_fit = 0.0;
-//  for (x=0; x<img.NPixels; x++)
-//      scores[x] = 0;
-
-    // OK, do seem to need to run 3x3 median first
-    Median3(img);
-
-    /* PSF Grid is:
-        D3 D3 D3 D3 D3 D3 D3 D3 D3
-        D3 D3 D3 D2 D1 D2 D3 D3 D3
-        D3 D3 C3 C2 C1 C2 C3 D3 D3
-        D3 D2 C2 B2 B1 B2 C2 D3 D3
-        D3 D1 C1 B1 A  B1 C1 D1 D3
-        D3 D2 C2 B2 B1 B2 C2 D3 D3
-        D3 D3 C3 C2 C1 C2 C3 D3 D3
-        D3 D3 D3 D2 D1 D2 D3 D3 D3
-        D3 D3 D3 D3 D3 D3 D3 D3 D3
-
-        1@A
-        4@B1, B2, C1, and C3
-        8@C2, D2
-        48 * D3
-        */
-    for (y=40; y<(img.Size.GetHeight()-40); y++) {
-        for (x=40; x<(linesize-40); x++) {
-//          score = 0;
-            A =  (float) *(img.ImageData + linesize * y + x);
-            B1 = (float) *(img.ImageData + linesize * (y-1) + x) + (float) *(img.ImageData + linesize * (y+1) + x) + (float) *(img.ImageData + linesize * y + (x + 1)) + (float) *(img.ImageData + linesize * y + (x-1));
-            B2 = (float) *(img.ImageData + linesize * (y-1) + (x-1)) + (float) *(img.ImageData + linesize * (y-1) + (x+1)) + (float) *(img.ImageData + linesize * (y+1) + (x + 1)) + (float) *(img.ImageData + linesize * (y+1) + (x-1));
-            C1 = (float) *(img.ImageData + linesize * (y-2) + x) + (float) *(img.ImageData + linesize * (y+2) + x) + (float) *(img.ImageData + linesize * y + (x + 2)) + (float) *(img.ImageData + linesize * y + (x-2));
-            C2 = (float) *(img.ImageData + linesize * (y-2) + (x-1)) + (float) *(img.ImageData + linesize * (y-2) + (x+1)) + (float) *(img.ImageData + linesize * (y+2) + (x + 1)) + (float) *(img.ImageData + linesize * (y+2) + (x-1)) +
-                (float) *(img.ImageData + linesize * (y-1) + (x-2)) + (float) *(img.ImageData + linesize * (y-1) + (x+2)) + (float) *(img.ImageData + linesize * (y+1) + (x + 2)) + (float) *(img.ImageData + linesize * (y+1) + (x-2));
-            C3 = (float) *(img.ImageData + linesize * (y-2) + (x-2)) + (float) *(img.ImageData + linesize * (y-2) + (x+2)) + (float) *(img.ImageData + linesize * (y+2) + (x + 2)) + (float) *(img.ImageData + linesize * (y+2) + (x-2));
-            D1 = (float) *(img.ImageData + linesize * (y-3) + x) + (float) *(img.ImageData + linesize * (y+3) + x) + (float) *(img.ImageData + linesize * y + (x + 3)) + (float) *(img.ImageData + linesize * y + (x-3));
-            D2 = (float) *(img.ImageData + linesize * (y-3) + (x-1)) + (float) *(img.ImageData + linesize * (y-3) + (x+1)) + (float) *(img.ImageData + linesize * (y+3) + (x + 1)) + (float) *(img.ImageData + linesize * (y+3) + (x-1)) +
-                (float) *(img.ImageData + linesize * (y-1) + (x-3)) + (float) *(img.ImageData + linesize * (y-1) + (x+3)) + (float) *(img.ImageData + linesize * (y+1) + (x + 3)) + (float) *(img.ImageData + linesize * (y+1) + (x-3));
-            D3 = 0.0;
-            uptr = img.ImageData + linesize * (y-4) + (x-4);
-            for (i=0; i<9; i++, uptr++)
-                D3 = D3 + *uptr;
-            uptr = img.ImageData + linesize * (y-3) + (x-4);
-            for (i=0; i<3; i++, uptr++)
-                D3 = D3 + *uptr;
-            uptr = uptr + 2;
-            for (i=0; i<3; i++, uptr++)
-                D3 = D3 + *uptr;
-            D3 = D3 + (float) *(img.ImageData + linesize * (y-2) + (x-4)) + (float) *(img.ImageData + linesize * (y-2) + (x+4)) + (float) *(img.ImageData + linesize * (y-2) + (x-3)) + (float) *(img.ImageData + linesize * (y-2) + (x-3)) +
-                (float) *(img.ImageData + linesize * (y+2) + (x-4)) + (float) *(img.ImageData + linesize * (y+2) + (x+4)) + (float) *(img.ImageData + linesize * (y+2) + (x - 3)) + (float) *(img.ImageData + linesize * (y+2) + (x-3)) +
-                (float) *(img.ImageData + linesize * y + (x + 4)) + (float) *(img.ImageData + linesize * y + (x-4));
-
-            uptr = img.ImageData + linesize * (y+4) + (x-4);
-            for (i=0; i<9; i++, uptr++)
-                D3 = D3 + *uptr;
-            uptr = img.ImageData + linesize * (y+3) + (x-4);
-            for (i=0; i<3; i++, uptr++)
-                D3 = D3 + *uptr;
-            uptr = uptr + 2;
-            for (i=0; i<3; i++, uptr++)
-                D3 = D3 + *uptr;
-
-            mean = (A+B1+B2+C1+C2+C3+D1+D2+D3)/85.0;
-            PSF_fit = PSF[0] * (A-mean) + PSF[1] * (B1 - 4.0*mean) + PSF[2] * (B2 - 4.0 * mean) +
-                PSF[3] * (C1 - 4.0*mean) + PSF[4] * (C2 - 8.0*mean) + PSF[5] * (C3 - 4.0 * mean) +
-                PSF[6] * (D1 - 4.0*mean) + PSF[7] * (D2 - 8.0*mean) + PSF[8] * (D3 - 48.0 * mean);
-
-
-            if (PSF_fit > BestPSF_fit) {
-                BestPSF_fit = PSF_fit;
-                xpos = x;
-                ypos = y;
-            }
-
-            /*          mean = (A + B1 + B2 + C1 + C2 + C3) / 25.0;
-            PSF_fit = PSF[0] * (A-mean) + PSF[1] * (B1 - 4.0*mean) + PSF[2] * (B2 - 4.0 * mean) +
-                PSF[3] * (C1 - 4.0*mean) + PSF[4] * (C2 - 8.0*mean) + PSF[5] * (C3 - 4.0 * mean);*/
-
-    /*      score = (int) (100.0 * PSF_fit);
-
-            if (PSF_fit > 0.0)
-                scores[x+y*linesize] = (int) PSF_fit;
-            else
-                scores[x+y*linesize] = 0;
-    */
-            //          if ( ((B1 + B2) / 8.0) < 0.3 * A) // Filter hot pixels
-            //              scores[x+y*linesize] = -1.0;
-
-
-
-        }
-    }
-/*  score = 0;
-    for (x=0; x<img.NPixels; x++) {
-//      img.ImageData[x] = (unsigned short) scores[x];
-        if (scores[x] > score) {
-            score = scores[x];
-            ypos = x / linesize;
-            xpos = x - (ypos * linesize);
-        }
-    }
-*/
-
-
 }

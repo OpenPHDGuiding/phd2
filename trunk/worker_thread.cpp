@@ -108,7 +108,7 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs)
         {
             Debug.AddLine("Handling exposure in thread");
 
-            pArgs->pImage->InitDate();
+            pArgs->pImage->InitImgStartTime();
 
             if (pCamera->Capture(pArgs->exposureDuration, *pArgs->pImage, pArgs->subframe, true))
             {

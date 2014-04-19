@@ -159,7 +159,7 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
 
         Debug.AddLine("sum1=%lld sum2=%lld sum3=%lld", sum1, sum2, sum3);
 
-        const usImage *srcPtr = &frame1;
+        usImage *srcPtr = &frame1;
 
         if (sum2 > sum1 && sum2 > sum3)
         {
@@ -175,7 +175,7 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
             throw ERROR_INFO("img.Init() failed");
         }
 
-        memcpy(img.ImageData, srcPtr->ImageData, srcPtr->NPixels * sizeof(srcPtr->ImageData[0]));
+        img.SwapImageData(*srcPtr);
     }
     catch (wxString Msg)
     {
