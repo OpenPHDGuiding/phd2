@@ -279,7 +279,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 {
                     Debug.AddLine("processing socket request SETLOCKPOSITION for (%d, %d) succeeded", x, y);
                     pFrame->SetStatusText(wxString::Format("Lock set to %d,%d",x,y));
-                    GuideLog.ServerSetLockPosition(pGuider);
+                    GuideLog.NotifySetLockPosition(pGuider);
                 }
                 else
                 {

@@ -491,7 +491,7 @@ bool GuidingLog::GuideStep(const GuideStepInfo& step)
     return bError;
 }
 
-bool GuidingLog::ServerGuidingDithered(Guider* guider, double dx, double dy)
+bool GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)
 {
     bool bError = false;
 
@@ -499,7 +499,7 @@ bool GuidingLog::ServerGuidingDithered(Guider* guider, double dx, double dy)
     {
         if (m_enabled)
         {
-            m_file.Write(wxString::Format("Server received DITHER, dithered by %.3f, %.3f, new lock pos = %.4f, %.3f\n",
+            m_file.Write(wxString::Format("DITHER by %.3f, %.3f, new lock pos = %.3f, %.3f\n",
                 dx, dy, guider->LockPosition().X, guider->LockPosition().Y));
             Flush();
         }
@@ -513,7 +513,7 @@ bool GuidingLog::ServerGuidingDithered(Guider* guider, double dx, double dy)
     return bError;
 }
 
-bool GuidingLog::ServerSetLockPosition(Guider* guider)
+bool GuidingLog::NotifySetLockPosition(Guider *guider)
 {
     bool bError = false;
 
@@ -521,7 +521,7 @@ bool GuidingLog::ServerSetLockPosition(Guider* guider)
     {
         if (m_enabled)
         {
-            m_file.Write(wxString::Format("Server received SET LOCK POSITION, new lock pos = %.4f, %.3f\n",
+            m_file.Write(wxString::Format("SET LOCK POSITION, new lock pos = %.3f, %.3f\n",
                 guider->LockPosition().X, guider->LockPosition().Y));
             m_keepFile = true;
             Flush();
