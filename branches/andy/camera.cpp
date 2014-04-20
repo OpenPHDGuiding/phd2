@@ -195,7 +195,6 @@ GuideCamera::GuideCamera(void)
 GuideCamera::~GuideCamera(void)
 {
     ClearDarks();
-    pFrame->UpdateDarksUIState();
 
     if (Connected)
     {
@@ -718,19 +717,6 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     }
 
     this->Add(pCamControls);
-
-    m_pLoadDarks = new wxCheckBox(pParent, wxID_ANY, _("Auto load dark frames"), wxDefaultPosition, wxDefaultSize);
-    DoAdd(m_pLoadDarks, _("Check to reload dark frames automatically when you connect the camera. First, you'll need to capture dark frames "
-                          "for any exposure durations you will be using via the Build Dark... menu "
-                          "option in the Darks menu. Then, when this option is selected, the dark frames will be automatically loaded whenever "
-                          "the camera is connected."));
-
-    // Additions for defect map
-    width = StringWidth(_T("0000")) + 30;
-    m_pLoadDefectMap = new wxCheckBox(pParent, wxID_ANY, _("Auto load defect map"), wxDefaultPosition, wxDefaultSize);
-    DoAdd(m_pLoadDefectMap, _("Check to reload a defect map automatically when you connect the camera. First, you'll need to build the defect map "
-                              "via the Build Dark... menu option in the Darks menu. Then, when this option is selected, the defect map will be "
-                              "automatically loaded whenever the camera is connected."));
 }
 
 CameraConfigDialogPane::~CameraConfigDialogPane(void)
@@ -826,11 +812,6 @@ void CameraConfigDialogPane::LoadValues(void)
 
     m_pPixelSize->SetValue(m_pCamera->GetCameraPixelSize());
     m_pPixelSize->Enable(!pFrame->CaptureActive);
-
-    bool autoLoadDarks = pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", DefaultLoadDarks);
-    m_pLoadDarks->SetValue(autoLoadDarks);
-    bool autoLoadDefectMap = pConfig->Profile.GetBoolean("/camera/AutoLoadDefectMap", DefaultLoadDMap);
-    m_pLoadDefectMap->SetValue(autoLoadDefectMap);
 }
 
 void CameraConfigDialogPane::UnloadValues(void)
@@ -884,13 +865,7 @@ void CameraConfigDialogPane::UnloadValues(void)
 
     double pixel_size;
     pixel_size = m_pPixelSize->GetValue();
-    m_pCamera->SetCameraPixelSize(pixel_size);
-
-    bool autoLoadDarks = m_pLoadDarks->GetValue();
-    pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", autoLoadDarks);
-    bool autoLoadDefectMap = m_pLoadDefectMap->GetValue();
-    pConfig->Profile.SetBoolean("/camera/AutoLoadDefectMap", autoLoadDefectMap);
-    pFrame->UpdateDarksUIState();
+    m_pCamera->SetCameraPixelSize(pixel_size);           
 }
 
 double CameraConfigDialogPane::GetPixelSize(void)

@@ -40,6 +40,7 @@ class DarksDialog : public wxDialog
 {
 private:
     bool m_cancelling;
+    bool m_started;
     // wx UI controls
     wxCheckBox *m_pCreateDarks;
     wxComboBox *m_pDarkMinExpTime;
@@ -52,17 +53,19 @@ private:
     wxTextCtrl *m_pNotes;
     wxGauge *m_pProgress;
     wxButton *m_pStartBtn;
+    wxButton *m_pResetBtn;
     wxStatusBar *m_pStatusBar;
     wxButton *m_pStopBtn;
+    wxArrayString m_expStrings;
     void SetUIState(void);
     void OnUseDarks(wxCommandEvent& evt);
     void OnUseDMap(wxCommandEvent& evt);
     void OnStart(wxCommandEvent& evt);
     void OnStop(wxCommandEvent& evt);
+    void OnReset(wxCommandEvent& evt);
     void SaveProfileInfo();
     void ShowStatus(const wxString msg, bool appending);
     usImage *CreateMasterDarkFrame(int expTime, int frameCount);
-    void EndModal(int retCode);
 
 public:
     DarksDialog(wxWindow *parent);

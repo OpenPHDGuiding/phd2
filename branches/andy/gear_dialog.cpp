@@ -612,18 +612,24 @@ static void AutoLoadDefectMap()
     {
         Debug.AddLine("auto-loading defect map");
         pFrame->LoadDefectMap();
+        if (pCamera->CurrentDefectMap)
+            pFrame->darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(true);
     }
+    else
+        pFrame->darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
 }
 
 static void AutoLoadDarks()
 {
     if (pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true))
     {
-
         Debug.AddLine("Auto-loading dark library");
         pFrame->LoadDarkLibrary();
-
+        if (pCamera->CurrentDarkFrame)
+            pFrame->darks_menu->FindItem(MENU_LOADDARK)->Check(true);
     }
+    else
+        pFrame->darks_menu->FindItem(MENU_LOADDARK)->Check(false);
 }
 
 void GearDialog::OnButtonSetupCamera(wxCommandEvent& event)
@@ -665,26 +671,25 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
         Debug.AddLine("HasSubFrames=%d", m_pCamera->HasSubframes);
         Debug.AddLine("ST4HasGuideOutput=%d", m_pCamera->ST4HasGuideOutput());
 
-        AutoLoadDarks();
         AutoLoadDefectMap();
 
         wxString msg = _("Camera Connected");
         if (pCamera->CurrentDefectMap)
         {
             msg += _(", defect map loaded");
-            if (pCamera->CurrentDarkFrame)
-                msg += _(", darks available");
+
         }
         else
         {
+            AutoLoadDarks();
             if (pCamera->CurrentDarkFrame)
                 msg += _(", darks loaded");
         }
-
+        pFrame->SetDarkMenuState();
         pFrame->SetStatusText(msg, 1);
         pFrame->SetStatusText(_("Camera"), 2);
-        pFrame->UpdateDarksUIState();
-    }
+     }
+
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);

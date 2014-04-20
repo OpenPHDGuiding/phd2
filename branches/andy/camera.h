@@ -57,8 +57,6 @@ class CameraConfigDialogPane : public ConfigDialogPane
     wxChoice   *m_pPortNum;
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
-    wxCheckBox *m_pLoadDarks;
-    wxCheckBox *m_pLoadDefectMap;
 
 public:
     CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);

@@ -59,11 +59,6 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
     {
         // select the best matching dark frame
         pCamera->SelectDark(m_exposureDuration);
-
-        if (pCamera->CurrentDarkFrame)
-        {
-            UpdateDarksUIState();
-        }
     }
 }
 
@@ -285,48 +280,72 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
 
         dlg.ShowModal();
         pCamera->SelectDark(RequestedExposureDuration());       // Might be req'd if user cancelled in midstream
-        UpdateDarksUIState();
+    }
+}
+
+// Outside event handler because loading a defect map will automatically unload a dark library
+void MyFrame::LoadDarkHandler(bool checkIt)
+{
+    if (!pCamera || !pCamera->Connected)
+    {
+        Alert(_("You must connect a camera before loading dark frames"));
+        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+        return;
+    }
+    pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", checkIt);
+    if (checkIt)  // enable it
+    {
+        darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
+        LoadDefectMaphandler(false);
+        LoadDarkLibrary();
+        SetStatusText(_("Dark library loaded"));
+    }
+    else
+    {
+        if (!pCamera->CurrentDarkFrame)
+        {
+            return;
+        }
+        pCamera->ClearDarks();
+        SetStatusText(_("Dark library unloaded"));
     }
 }
 
 void MyFrame::OnLoadDark(wxCommandEvent& evt)
 {
-    if (!pCamera || !pCamera->Connected)
-    {
-        Alert(_("You must connect a camera before loading dark frames"));
-        return;
-    }
-    LoadDarkLibrary();
-    SetStatusText(_("Dark library loaded"));
-    UpdateDarksUIState();
-}
-void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt))
-{
-    if (!pCamera->CurrentDarkFrame)
-    {
-        return;
-    }
-    pCamera->ClearDarks();
-    SetStatusText(_("Dark library cleared"));
-    UpdateDarksUIState();
+    LoadDarkHandler(evt.IsChecked());
 }
 
-void MyFrame::OnLoadDefectMap(wxCommandEvent& WXUNUSED(evt))
+// Outside event handler because loading a dark library will automatically unload a defect map
+void MyFrame::LoadDefectMaphandler(bool checkIt)
 {
     if (!pCamera || !pCamera->Connected)
     {
         Alert(_("You must connect a camera before loading a defect map"));
+        darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
         return;
     }
-    LoadDefectMap();            // Status msg generated internally
-    UpdateDarksUIState();
+    pConfig->Profile.SetBoolean("/camera/AutoLoadDefectMap", checkIt);
+    if (checkIt)
+    {
+        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+        LoadDarkHandler(false);
+        LoadDefectMap();            // Status msg generated internally
+    }
+    else
+    {
+        if (!pCamera->CurrentDefectMap)
+        {
+            return;
+        }
+        pCamera->ClearDefectMap();
+        SetStatusText(_("Defect map unloaded"));
+    }
 }
 
-void MyFrame::OnClearDefectMap(wxCommandEvent& WXUNUSED(evt))
+void MyFrame::OnLoadDefectMap(wxCommandEvent& evt)
 {
-    pCamera->ClearDefectMap();
-    SetStatusText(_("Defect map cleared"));
-    UpdateDarksUIState();
+    LoadDefectMaphandler(evt.IsChecked());
 }
 
 void MyFrame::OnToolBar(wxCommandEvent& evt)

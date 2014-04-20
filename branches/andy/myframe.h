@@ -136,7 +136,7 @@ private:
 
     wxAuiManager m_mgr;
     bool m_continueCapturing; // should another image be captured?
-    int m_darkMenuInx;
+    int m_takeDarksMenuInx;
 
 public:
     MyFrame(int instanceNumber, wxLocale *locale);
@@ -149,7 +149,7 @@ public:
     wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
     wxCheckBox *HotPixel_Checkbox;
-    wxButton    *Setup_Button, *Dark_Button;
+    wxButton    *Setup_Button;
     wxHtmlHelpController *help;
     wxSlider *Gamma_Slider;
     AdvancedDialog *pAdvancedDialog;
@@ -181,9 +181,7 @@ public:
     void OnLoopExposure(wxCommandEvent& evt);
     void OnButtonStop(wxCommandEvent& evt);
     void OnDark(wxCommandEvent& evt);
-    void OnClearDark(wxCommandEvent& evt);
     void OnLoadDark(wxCommandEvent& evt);
-    void OnClearDefectMap(wxCommandEvent& evt);
     void OnLoadDefectMap(wxCommandEvent& evt);
     void OnGuide(wxCommandEvent& evt);
     void OnAdvanced(wxCommandEvent& evt);
@@ -223,7 +221,6 @@ public:
     void OnMoveComplete(wxThreadEvent& evt);
     void LoadProfileSettings(void);
     void UpdateTitle(void);
-    void UpdateDarksUIState(void);
 
     void GetExposureDurations(std::vector<int> *exposure_durations);
     void GetExposureDurationStrings(wxArrayString *target);
@@ -253,6 +250,7 @@ public:
     void LoadDarkLibrary();
     void SaveDarkLibrary(const wxString& note);
     void DeleteDarkLibraryFiles(int profileID);
+    void SetDarkMenuState();
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
@@ -330,7 +328,8 @@ private:
     void SetupHelpFile(void);
     int GetTextWidth(wxControl *pControl, const wxString& string);
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
-
+    void LoadDarkHandler(bool checkIt);
+    void LoadDefectMaphandler(bool checkIt);
 
 
     // and of course, an event table
@@ -359,7 +358,6 @@ enum {
     END_STEPGUIDERS,
     BUTTON_GEAR,
     BUTTON_CAL,
-    BUTTON_DARK,
     BUTTON_LOOP,
     BUTTON_GUIDE,
     BUTTON_STOP,
@@ -411,8 +409,6 @@ enum {
     MENU_XHAIR4,
     MENU_XHAIR5,
     MENU_TAKEDARKS,
-    MENU_CLEARDARK,
-    MENU_CLEARDEFECTMAP,
     MENU_LOG,
     MENU_LOGIMAGES,
     MENU_DEBUG,

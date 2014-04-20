@@ -514,6 +514,8 @@ void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage
     double q = 0.0;
     double k = 1.0;
     double km1 = 0.0;
+    unsigned short median = 0.0;
+
     for (int i = 0; i < dark.NPixels; i++)
     {
         double x = (double) dark.ImageData[i];
@@ -526,7 +528,7 @@ void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage
     }
     double midpoint = (int)(sum / km1);
     double stdev = sqrt(q / km1);
-    unsigned short median = ImageMedian(dark);
+    // unsigned short median = ImageMedian(dark);
     Debug.AddLine("DefectMap: Dark Mean = %.f Median = %d Standard Deviation = %.f stdev*sigmaFactor = %.f", midpoint, median, stdev, stdev * sigmaFactor);
 
     info.push_back(wxString::Format("Mean: %.f", midpoint));

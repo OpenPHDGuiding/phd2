@@ -100,8 +100,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_V4LRESTORESETTINGS, MyFrame::OnRestoreSettings)
 #endif
 
-    EVT_MENU(MENU_CLEARDARK,MyFrame::OnClearDark)
-    EVT_MENU(MENU_CLEARDEFECTMAP,MyFrame::OnClearDefectMap)
     EVT_MENU(MENU_LOG,MyFrame::OnLog)
     EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
     EVT_MENU(MENU_DEBUG,MyFrame::OnLog)
@@ -120,8 +118,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(BUTTON_STOP, MyFrame::OnButtonStop) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
     EVT_MENU(BUTTON_ADVANCED, MyFrame::OnAdvanced) // Bit of a hack -- not actually on the menu but need an event to accelerate
-    EVT_BUTTON(BUTTON_DARK, MyFrame::OnDark)
-    EVT_MENU(BUTTON_DARK, MyFrame::OnDark) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_GUIDE,MyFrame::OnGuide)
     EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
@@ -438,11 +434,9 @@ void MyFrame::SetupMenuBar(void)
 
     darks_menu = new wxMenu();
     darks_menu->Append(MENU_TAKEDARKS, _("&Build Dark / Defect Map Library"), _("Build a dark library and/or a defect map for this profile"));
-    darks_menu->Append(MENU_LOADDARK, _("&Load Dark Library"), _("Load and begin using the dark library for this profile"));
-    darks_menu->Append(MENU_CLEARDARK, _("&Clear Dark Library"), _("Stop using current dark library"));
-    darks_menu->FindItem(MENU_CLEARDARK)->Enable(false);
-    darks_menu->Append(MENU_LOADDEFECTMAP, _("Load Defect Map"), _("Load and begin using the defect map for this profile"));
-    darks_menu->Append(MENU_CLEARDEFECTMAP,_("Clear Defect Map"), _("Stop using current defect map"));
+    m_takeDarksMenuInx = darks_menu->GetMenuItemCount() - 1;
+    darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
+    darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Defect &Map"), _("Use the defect map for this profile"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     wxMenu *indi_menu = new wxMenu;
@@ -479,7 +473,6 @@ void MyFrame::SetupMenuBar(void)
     Menubar->Append(tools_menu, _("&Tools"));
     Menubar->Append(view_menu, _("&View"));
     Menubar->Append(darks_menu, _("&Darks"));
-    m_darkMenuInx = Menubar->GetMenuCount() - 1;
     Menubar->Append(bookmarks_menu, _("&Bookmarks"));
     Menubar->Append(help_menu, _("&Help"));
     SetMenuBar(Menubar);
@@ -742,7 +735,6 @@ void MyFrame::SetupKeyboardShortcuts(void)
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'A', BUTTON_ADVANCED),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'C', BUTTON_GEAR),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'D', BUTTON_DARK),
         wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'C', BUTTON_GEAR),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP),
@@ -793,7 +785,11 @@ void MyFrame::UpdateButtonsStatus(void)
         need_update = true;
 
     bool dark_enabled = loop_enabled && !CaptureActive;
-    Menubar->EnableTop(m_darkMenuInx, dark_enabled);
+    if (dark_enabled ^ darks_menu->FindItemByPosition(m_takeDarksMenuInx)->IsEnabled())
+    {
+        darks_menu->FindItemByPosition(m_takeDarksMenuInx)->Enable(dark_enabled);
+        need_update = true;
+    }
 
     bool bGuideable = pGuider->GetState() == STATE_SELECTED &&
         pMount && pMount->IsConnected();
@@ -1516,23 +1512,26 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
 
 wxString static DarkLibFileName(int profileId)
 {
-    return (pFrame->GetDefaultFileDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId));
+    wxString dirpath = pFrame->GetDefaultFileDir() + PATHSEPSTR + "darks_defects";
+    if (!wxDirExists(dirpath))
+        if (!wxFileName::Mkdir(dirpath, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
+            dirpath = pFrame->GetDefaultFileDir();             // should never happen
+    return (dirpath + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId));
 }
 
 wxString static DefectMapFileName(int profileId)
 {
-    return (pFrame->GetDefaultFileDir() + PATHSEPSTR +
-        wxString::Format("PHD2_defect_map_%d.txt", profileId));
+    wxString dirpath = pFrame->GetDefaultFileDir() + PATHSEPSTR + "darks_defects";
+    if (!wxDirExists(dirpath))
+        if (!wxFileName::Mkdir(dirpath, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
+            dirpath = pFrame->GetDefaultFileDir();             // should never happen
+    return (dirpath + PATHSEPSTR + wxString::Format("PHD2_defect_map_%d.txt", profileId));
 }
 
-void MyFrame::UpdateDarksUIState()
+void MyFrame::SetDarkMenuState()
 {
-    bool darksHot = pCamera->CurrentDarkFrame != NULL;
-    bool defectsHot = pCamera->CurrentDefectMap != NULL;
-    darks_menu->FindItem(MENU_CLEARDEFECTMAP)->Enable(defectsHot);
-    darks_menu->FindItem(MENU_LOADDEFECTMAP)->Enable(!defectsHot && wxFileExists(DefectMapFileName(pConfig->GetCurrentProfileId())));
-    darks_menu->FindItem(MENU_CLEARDARK)->Enable(darksHot);
-    darks_menu->FindItem(MENU_LOADDARK)->Enable(!darksHot && wxFileExists(DarkLibFileName(pConfig->GetCurrentProfileId())));
+    darks_menu->FindItem(MENU_LOADDARK)->Enable(wxFileExists(DarkLibFileName(pConfig->GetCurrentProfileId())));
+    darks_menu->FindItem(MENU_LOADDEFECTMAP)->Enable(wxFileExists(DefectMapFileName(pConfig->GetCurrentProfileId())));
 }
 
 void MyFrame::LoadDarkLibrary()
@@ -1554,7 +1553,6 @@ void MyFrame::LoadDarkLibrary()
     {
         Debug.AddLine(wxString::Format("loaded dark library from %s", filename));
         pCamera->SelectDark(m_exposureDuration);
-        darks_menu->FindItem(MENU_CLEARDARK)->Enable(true);
         SetStatusText(_("Darks loaded"));
     }
 }
@@ -1651,7 +1649,11 @@ void MyFrame::LoadDefectMap()
             Debug.AddLine(wxString::Format("Unexpected eof on defect map file %s", filename));
     }
     else
+    {
         Debug.AddLine(wxString::Format("Defect map file not found: %s", filename));
+        SetStatusText(_("Defect map not loaded"));
+    }
+
 }
 
 // Delete both the dark library file and any defect map file for this profile
