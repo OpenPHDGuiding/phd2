@@ -88,8 +88,8 @@ public:
     bool GuideStep(const GuideStepInfo& info);
 
     bool ServerCommand(Guider* guider, const wxString& cmd);
-    bool ServerGuidingDithered(Guider* guider, double dx, double dy);
-    bool ServerSetLockPosition(Guider* guider);
+    bool NotifyGuidingDithered(Guider* guider, double dx, double dy);
+    bool NotifySetLockPosition(Guider* guider);
 
     bool SetGuidingParam(const wxString& name, double val);
     bool SetGuidingParam(const wxString& name, int val);
