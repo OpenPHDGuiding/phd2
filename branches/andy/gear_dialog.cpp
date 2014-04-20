@@ -610,7 +610,7 @@ static void AutoLoadDefectMap()
 {
     if (pConfig->Profile.GetBoolean("/camera/AutoLoadDefectMap", true))
     {
-        Debug.AddLine(_("auto-loading defect map"));
+        Debug.AddLine("auto-loading defect map");
         pFrame->LoadDefectMap();
     }
 }
@@ -620,7 +620,7 @@ static void AutoLoadDarks()
     if (pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true))
     {
 
-        Debug.AddLine(_("Auto-loading dark library"));
+        Debug.AddLine("Auto-loading dark library");
         pFrame->LoadDarkLibrary();
 
     }

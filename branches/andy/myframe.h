@@ -242,7 +242,7 @@ public:
     bool StartServer(bool state);
     bool FlipRACal();
     int RequestedExposureDuration();
-    void SaveDefectMap(const DefectMap& defectMap);
+    void SaveDefectMap(const DefectMap& defectMap, const wxArrayString& notes);
     void LoadDefectMap();
     int GetFocalLength(void);
     int GetLanguage(void);
@@ -251,7 +251,7 @@ public:
     int GetInstanceNumber() const { return m_instanceNumber; }
     wxString GetDefaultFileDir();
     void LoadDarkLibrary();
-    void SaveDarkLibrary(wxString note);
+    void SaveDarkLibrary(const wxString& note);
     void DeleteDarkLibraryFiles(int profileID);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);

@@ -40,4 +40,4 @@ extern int dbl_sort_func(double *first, double *second);
 extern bool Subtract(usImage& light, const usImage& dark);
 extern float CalcSlope(const ArrayOfDbl& y);
 extern bool RemoveDefects(usImage& light, const DefectMap& defectMap);
-extern void CalculateDefectMap(DefectMap& defectMap, const usImage& dark, double sigmaFactor);
+extern void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage& dark, double sigmaFactor);

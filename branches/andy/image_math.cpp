@@ -502,78 +502,76 @@ bool Subtract(usImage& light, const usImage& dark)
     return false;
 }
 
-void CalculateDefectMap(DefectMap& defectMap, const usImage& dark, double sigmaFactor)
+void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage& dark, double sigmaFactor)
 {
     bool const DMUseMedian = false;              // Vestigial - maybe use median instead of mean
 
-    Debug.AddLine("Creating defect map...");
+    Debug.AddLine("DefectMap: Creating defect map, sigma factor = %.2f", sigmaFactor);
 
-    int const pixelCnt = dark.NPixels;
-
-    int median = 0;
-    int mean = 0;
-
-    if (DMUseMedian) {
-        // Find the median of the image
-        median = (int)ImageMedian(dark);
-        Debug.AddLine("Dark Median is = %d", median);
-    }
-    else {
-        // Find the mean of the image
-        double sum = 0.0;
-        for (int y = 0; y < dark.Size.GetHeight(); y++)
-        {
-            for (int x = 0; x < dark.Size.GetWidth(); x++)
-            {
-                sum += ((double)dark.Pixel(x, y));
-            }
-        }
-        mean = (int)(sum / (double)pixelCnt);
-        Debug.AddLine("Dark Mean is = %d", mean);
-    }
-
-    // Determine the standard deviation from the median or the mean, depending on user choice
+    // Determine the mean and standard deviation
     double sum = 0.0;
-    for (int y = 0; y < dark.Size.GetHeight(); y++)
+    double a = 0.0;
+    double q = 0.0;
+    double k = 1.0;
+    double km1 = 0.0;
+    for (int i = 0; i < dark.NPixels; i++)
     {
-        for (int x = 0; x < dark.Size.GetWidth(); x++)
-        {
-            double tmp;
-            if (DMUseMedian)
-                tmp = (double)(((int)dark.Pixel(x, y)) - median);
-            else
-                tmp = (double)(((int)dark.Pixel(x, y)) - mean);
-            sum += (tmp * tmp);
-        }
+        double x = (double) dark.ImageData[i];
+        sum += x;
+        double a0 = a;
+        a += (x - a) / k;
+        q += (x - a0) * (x - a);
+        km1 = k;
+        k += 1.0;
     }
-    int stdev = (int) sqrt(sum / ((double)pixelCnt));
-    Debug.AddLine("Dark Standard Deviation is = %d", stdev);
+    double midpoint = (int)(sum / km1);
+    double stdev = sqrt(q / km1);
+    unsigned short median = ImageMedian(dark);
+    Debug.AddLine("DefectMap: Dark Mean = %.f Median = %d Standard Deviation = %.f stdev*sigmaFactor = %.f", midpoint, median, stdev, stdev * sigmaFactor);
+
+    info.push_back(wxString::Format("Mean: %.f", midpoint));
+    info.push_back(wxString::Format("Stdev: %.f", stdev));
+    info.push_back(wxString::Format("Median: %d", median));
+
+    if (DMUseMedian)
+    {
+        // Find the median of the image
+        midpoint = (double) median;
+        Debug.AddLine("DefectMap: Using Dark Median = %.f", midpoint);
+    }
 
     // Find the clipping points beyond which the pixels will be considered defects
-    int midpoint = (DMUseMedian ? median : mean);
-    int clipLow = midpoint - (sigmaFactor * stdev);
-    int clipHigh = midpoint + (sigmaFactor * stdev);
+    int clipLow = (int)(midpoint - (sigmaFactor * stdev));
+    int clipHigh = (int)(midpoint + (sigmaFactor * stdev));
+
+    info.push_back(wxString::Format("ClipLow: %d", clipLow));
+    info.push_back(wxString::Format("ClipHigh: %d", clipHigh));
+
     if (clipLow < 0)
     {
         clipLow = 0;
     }
-    if (clipHigh>65535)
+    if (clipHigh > 65535)
     {
         clipHigh = 65535;
     }
+    Debug.AddLine("DefectMap: clipLow = %d clipHigh = %d", clipLow, clipHigh);
 
     // Assign the defect map entries
     for (int y = 0; y < dark.Size.GetHeight(); y++)
     {
         for (int x = 0; x < dark.Size.GetWidth(); x++)
         {
-            int val = (int)(dark.Pixel(x, y));
+            int val = (int) dark.Pixel(x, y);
             if (val < clipLow || val > clipHigh)
+            {
+                Debug.AddLine("DefectMap: defect @ (%d, %d) val = %d (%+.1f sigma)", x, y, val, ((double)val - midpoint) / stdev);
                 defectMap.push_back(wxPoint(x, y));
+            }
         }
     }
 
-    Debug.AddLine("New defect map created, count=%d, sigmaX=%0.2f", defectMap.size(), sigmaFactor);
+    Debug.AddLine("New defect map created, count=%d", defectMap.size());
 }
 
 bool RemoveDefects(usImage& light, const DefectMap& defectMap)
