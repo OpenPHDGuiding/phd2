@@ -494,6 +494,8 @@ bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
             if (!m_lockPosition.IsValid() || position.X != m_lockPosition.X || position.Y != m_lockPosition.Y)
             {
                 EvtServer.NotifySetLockPosition(position);
+                if (m_state == STATE_GUIDING)
+                    GuideLog.NotifySetLockPosition(this);
                 NudgeLockTool::UpdateNudgeLockControls();
             }
             m_lockPosition.SetXY(x, y);
