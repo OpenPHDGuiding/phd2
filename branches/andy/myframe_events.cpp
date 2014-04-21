@@ -283,7 +283,7 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
     }
 }
 
-// Outside event handler because loading a defect map will automatically unload a dark library
+// Outside event handler because loading a dark library will automatically unload a defect map
 void MyFrame::LoadDarkHandler(bool checkIt)
 {
     if (!pCamera || !pCamera->Connected)
@@ -295,8 +295,9 @@ void MyFrame::LoadDarkHandler(bool checkIt)
     pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", checkIt);
     if (checkIt)  // enable it
     {
-        darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
-        LoadDefectMaphandler(false);
+        darks_menu->FindItem(MENU_LOADDARK)->Check(true);
+        if (pCamera->CurrentDefectMap)
+            LoadDefectMapHandler(false);
         LoadDarkLibrary();
         SetStatusText(_("Dark library loaded"));
     }
@@ -304,9 +305,11 @@ void MyFrame::LoadDarkHandler(bool checkIt)
     {
         if (!pCamera->CurrentDarkFrame)
         {
+            darks_menu->FindItem(MENU_LOADDARK)->Check(false);      // shouldn't have gotten here
             return;
         }
         pCamera->ClearDarks();
+        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
         SetStatusText(_("Dark library unloaded"));
     }
 }
@@ -316,8 +319,8 @@ void MyFrame::OnLoadDark(wxCommandEvent& evt)
     LoadDarkHandler(evt.IsChecked());
 }
 
-// Outside event handler because loading a dark library will automatically unload a defect map
-void MyFrame::LoadDefectMaphandler(bool checkIt)
+// Outside event handler because loading a defect map will automatically unload a dark library
+void MyFrame::LoadDefectMapHandler(bool checkIt)
 {
     if (!pCamera || !pCamera->Connected)
     {
@@ -328,24 +331,31 @@ void MyFrame::LoadDefectMaphandler(bool checkIt)
     pConfig->Profile.SetBoolean("/camera/AutoLoadDefectMap", checkIt);
     if (checkIt)
     {
-        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
-        LoadDarkHandler(false);
+        if (pCamera->CurrentDarkFrame)
+            LoadDarkHandler(false);
         LoadDefectMap();            // Status msg generated internally
+        if (pCamera->CurrentDefectMap)
+        {
+            darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+            darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(true);
+        }
     }
     else
     {
         if (!pCamera->CurrentDefectMap)
         {
+            darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);  // Shouldn't have gotten here
             return;
         }
         pCamera->ClearDefectMap();
+        darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
         SetStatusText(_("Defect map unloaded"));
     }
 }
 
 void MyFrame::OnLoadDefectMap(wxCommandEvent& evt)
 {
-    LoadDefectMaphandler(evt.IsChecked());
+    LoadDefectMapHandler(evt.IsChecked());
 }
 
 void MyFrame::OnToolBar(wxCommandEvent& evt)

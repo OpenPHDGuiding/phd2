@@ -611,12 +611,8 @@ static void AutoLoadDefectMap()
     if (pConfig->Profile.GetBoolean("/camera/AutoLoadDefectMap", true))
     {
         Debug.AddLine("auto-loading defect map");
-        pFrame->LoadDefectMap();
-        if (pCamera->CurrentDefectMap)
-            pFrame->darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(true);
+        pFrame->LoadDefectMapHandler(true);
     }
-    else
-        pFrame->darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
 }
 
 static void AutoLoadDarks()
@@ -624,12 +620,8 @@ static void AutoLoadDarks()
     if (pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true))
     {
         Debug.AddLine("Auto-loading dark library");
-        pFrame->LoadDarkLibrary();
-        if (pCamera->CurrentDarkFrame)
-            pFrame->darks_menu->FindItem(MENU_LOADDARK)->Check(true);
+        pFrame->LoadDarkHandler(true);
     }
-    else
-        pFrame->darks_menu->FindItem(MENU_LOADDARK)->Check(false);
 }
 
 void GearDialog::OnButtonSetupCamera(wxCommandEvent& event)

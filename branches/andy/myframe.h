@@ -251,6 +251,8 @@ public:
     void SaveDarkLibrary(const wxString& note);
     void DeleteDarkLibraryFiles(int profileID);
     void SetDarkMenuState();
+    void LoadDarkHandler(bool checkIt);         // Use to also set menu item states
+    void LoadDefectMapHandler(bool checkIt);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
@@ -328,9 +330,6 @@ private:
     void SetupHelpFile(void);
     int GetTextWidth(wxControl *pControl, const wxString& string);
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
-    void LoadDarkHandler(bool checkIt);
-    void LoadDefectMaphandler(bool checkIt);
-
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()
