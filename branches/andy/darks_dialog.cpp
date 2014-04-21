@@ -85,14 +85,14 @@ DarksDialog::DarksDialog(wxWindow *parent) :
     m_pDarkMinExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         expCount, &m_expStrings[0], wxCB_READONLY);
 
-    AddTableEntryPair(this, pDarkParams, "Min Exposure Time", m_pDarkMinExpTime);
+    AddTableEntryPair(this, pDarkParams, _("Min Exposure Time"), m_pDarkMinExpTime);
     m_pDarkMinExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_min_exptime", m_expStrings[0]));
     m_pDarkMinExpTime->SetToolTip(_("Minimum exposure time for darks"));
 
     m_pDarkMaxExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         expCount, &m_expStrings[0], wxCB_READONLY);
 
-    AddTableEntryPair(this, pDarkParams, "Max Exposure Time", m_pDarkMaxExpTime);
+    AddTableEntryPair(this, pDarkParams, _("Max Exposure Time"), m_pDarkMaxExpTime);
     m_pDarkMaxExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_max_exptime", m_expStrings[expCount-1]));
     m_pDarkMaxExpTime->SetToolTip(_("Maximum exposure time for darks"));
 
@@ -125,7 +125,7 @@ DarksDialog::DarksDialog(wxWindow *parent) :
     // Controls for notes and status
     wxBoxSizer *phSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText *pNoteLabel = new wxStaticText(this, wxID_ANY,  _("Notes: "), wxPoint(-1, -1), wxSize(-1, -1));
-    width = StringWidth(this, _("M"));
+    width = StringWidth(this, "M");
     m_pNotes = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition, wxSize(width * 38, -1));
     m_pNotes->SetToolTip(_("Free-form note, included in FITs header for each dark frame; max length=65"));
     m_pNotes->SetMaxLength(MaxNoteLength);
@@ -168,7 +168,7 @@ DarksDialog::DarksDialog(wxWindow *parent) :
     m_pStatusBar = new wxStatusBar(this, -1);
     int fieldWidths[] = { 500};
     m_pStatusBar->SetFieldsCount(1);
-    m_pStatusBar->SetStatusText(_("Set your parameters, click 'start' to begin"));
+    m_pStatusBar->SetStatusText(_("Set your parameters, click 'Start' to begin"));
     pvSizer->Add(m_pStatusBar, 0, wxGROW);
 
     SetAutoLayout(true);
@@ -280,9 +280,8 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             pFrame->LoadDefectMapHandler(true);         // Get the UI state set correctly
             ShowStatus(wxString::Format(_("Defect map built, %d defects mapped"), defectMap->size()), false);
             if (wrapupMsg.Length() > 0)
-                wrapupMsg += _(", defect map built");
-            else
-                wrapupMsg = _("defect map built");
+                wrapupMsg += ", ";
+            wrapupMsg += _("defect map built");
         }
     }
 
@@ -376,10 +375,10 @@ usImage *DarksDialog::CreateMasterDarkFrame(int expTime, int frameCount)
     pCamera->InitCapture();
     usImage *darkFrame = new usImage();
     darkFrame->ImgExpDur = ExpDur;
-    ShowStatus(_T("Taking dark frame #1"), true);
+    ShowStatus(_("Taking dark frame") + " #1", true);
     if (pCamera->Capture(ExpDur, *darkFrame, false))
     {
-        ShowStatus(wxString::Format(_T("%.1f s dark FAILED"), (double) ExpDur / 1000.0), true);
+        ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double) ExpDur / 1000.0), true);
         pCamera->ShutterState = false;
     }
     else
@@ -397,7 +396,7 @@ usImage *DarksDialog::CreateMasterDarkFrame(int expTime, int frameCount)
             wxYield();
             if (m_cancelling)
                 break;
-            ShowStatus(wxString::Format(_T("Taking dark frame #%d"), j + 1), true);
+            ShowStatus(_("Taking dark frame") + wxString::Format(" #%d", j + 1), true);
             wxYield();
             pCamera->Capture(ExpDur, *darkFrame, false);
             m_pProgress->SetValue(m_pProgress->GetValue() + 1);
@@ -408,7 +407,7 @@ usImage *DarksDialog::CreateMasterDarkFrame(int expTime, int frameCount)
         }
         if (!m_cancelling)
         {
-            ShowStatus(_T("Dark frames complete"), true);
+            ShowStatus(_("Dark frames complete"), true);
             iptr = avgimg;
             usptr = darkFrame->ImageData;
             for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
