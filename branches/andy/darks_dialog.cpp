@@ -139,15 +139,15 @@ DarksDialog::DarksDialog(wxWindow *parent) :
     pvSizer->Add(phSizer, wxSizerFlags().Border(wxALL, 5));
     pvSizer->Add(m_pProgress, wxSizerFlags().Border(wxLEFT, 60));
 
-	// Buttons
-	wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
+    // Buttons
+    wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
     m_pResetBtn = new wxButton(this, wxID_ANY, _("Reset"));
     m_pResetBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &DarksDialog::OnReset, this);
     m_pResetBtn->SetToolTip(_("Reset all parameters to application defaults"));
 
-	m_pStartBtn = new wxButton(this, wxID_ANY, _("Start"));	
-	m_pStartBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &DarksDialog::OnStart, this);    
-	m_pStartBtn->SetToolTip("");
+    m_pStartBtn = new wxButton(this, wxID_ANY, _("Start"));
+    m_pStartBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &DarksDialog::OnStart, this);
+    m_pStartBtn->SetToolTip("");
 
     m_pStopBtn = new wxButton(this, wxID_ANY, _("Cancel"));
     m_pStopBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &DarksDialog::OnStop, this);

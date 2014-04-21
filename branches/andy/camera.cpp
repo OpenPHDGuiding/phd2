@@ -865,7 +865,7 @@ void CameraConfigDialogPane::UnloadValues(void)
 
     double pixel_size;
     pixel_size = m_pPixelSize->GetValue();
-    m_pCamera->SetCameraPixelSize(pixel_size);           
+    m_pCamera->SetCameraPixelSize(pixel_size);
 }
 
 double CameraConfigDialogPane::GetPixelSize(void)

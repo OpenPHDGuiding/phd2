@@ -350,7 +350,7 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
 static int partition(unsigned short *list, int left, int right, int pivotIndex)
 {
     int pivotValue = list[pivotIndex];
-    swap(list[pivotIndex], list[right]);  // Move pivot to end                                                                                                                                  
+    swap(list[pivotIndex], list[right]);  // Move pivot to end
     int storeIndex = left;
     for (int i = left; i < right; i++)
         if (list[i] < pivotValue)
@@ -359,16 +359,16 @@ static int partition(unsigned short *list, int left, int right, int pivotIndex)
                 swap(list[storeIndex], list[i]);
             ++storeIndex;
         }
-    swap(list[right], list[storeIndex]); // Move pivot to its final place                                                                                                                       
+    swap(list[right], list[storeIndex]); // Move pivot to its final place
     return storeIndex;
 }
 
-// Hoare's selection algorithm                                                                                                                                                                  
+// Hoare's selection algorithm
 static unsigned short select_kth(unsigned short *list, int left, int right, int k)
 {
     while (true)
     {
-        int pivotIndex = (left + right) / 2;  // select pivotIndex between left and right                                                                                                       
+        int pivotIndex = (left + right) / 2;  // select pivotIndex between left and right
         int pivotNewIndex = partition(list, left, right, pivotIndex);
         int pivotDist = pivotNewIndex - left + 1;
         if (pivotDist == k)
