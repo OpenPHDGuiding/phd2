@@ -35,6 +35,8 @@
 #include "phd.h"
 #include "image_math.h"
 
+#include <algorithm>
+
 int dbl_sort_func (double *first, double *second)
 {
     if (*first < *second)
@@ -347,47 +349,13 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
     return median3(array);
 }
 
-static int partition(unsigned short *list, int left, int right, int pivotIndex)
-{
-    int pivotValue = list[pivotIndex];
-    swap(list[pivotIndex], list[right]);  // Move pivot to end
-    int storeIndex = left;
-    for (int i = left; i < right; i++)
-        if (list[i] < pivotValue)
-        {
-            if (i != storeIndex)
-                swap(list[storeIndex], list[i]);
-            ++storeIndex;
-        }
-    swap(list[right], list[storeIndex]); // Move pivot to its final place
-    return storeIndex;
-}
-
-// Hoare's selection algorithm
-static unsigned short select_kth(unsigned short *list, int left, int right, int k)
-{
-    while (true)
-    {
-        int pivotIndex = (left + right) / 2;  // select pivotIndex between left and right
-        int pivotNewIndex = partition(list, left, right, pivotIndex);
-        int pivotDist = pivotNewIndex - left + 1;
-        if (pivotDist == k)
-            return list[pivotNewIndex];
-        else if (k < pivotDist)
-            right = pivotNewIndex - 1;
-        else {
-            k = k - pivotDist;
-            left = pivotNewIndex + 1;
-        }
-    }
-}
-
 static unsigned short ImageMedian(const usImage& img)
 {
     usImage tmp;
     tmp.Init(img.Size.GetWidth(), img.Size.GetHeight());
     memcpy(tmp.ImageData, img.ImageData, img.NPixels * sizeof(unsigned short));
-    return select_kth(tmp.ImageData, 0, img.NPixels - 1, img.NPixels / 2);
+    std::nth_element(&tmp.ImageData[0], &tmp.ImageData[img.NPixels / 2], &tmp.ImageData[img.NPixels]);
+    return tmp.ImageData[img.NPixels / 2];
 }
 
 bool SquarePixels(usImage& img, float xsize, float ysize)
@@ -514,7 +482,6 @@ void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage
     double q = 0.0;
     double k = 1.0;
     double km1 = 0.0;
-    unsigned short median = 0.0;
 
     for (int i = 0; i < dark.NPixels; i++)
     {
@@ -526,9 +493,9 @@ void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage
         km1 = k;
         k += 1.0;
     }
-    double midpoint = (int)(sum / km1);
+    double midpoint = sum / km1;
     double stdev = sqrt(q / km1);
-    // unsigned short median = ImageMedian(dark);
+    unsigned short median = ImageMedian(dark);
     Debug.AddLine("DefectMap: Dark Mean = %.f Median = %d Standard Deviation = %.f stdev*sigmaFactor = %.f", midpoint, median, stdev, stdev * sigmaFactor);
 
     info.push_back(wxString::Format("Mean: %.f", midpoint));
@@ -537,7 +504,6 @@ void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage
 
     if (DMUseMedian)
     {
-        // Find the median of the image
         midpoint = (double) median;
         Debug.AddLine("DefectMap: Using Dark Median = %.f", midpoint);
     }
@@ -545,9 +511,6 @@ void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage
     // Find the clipping points beyond which the pixels will be considered defects
     int clipLow = (int)(midpoint - (sigmaFactor * stdev));
     int clipHigh = (int)(midpoint + (sigmaFactor * stdev));
-
-    info.push_back(wxString::Format("ClipLow: %d", clipLow));
-    info.push_back(wxString::Format("ClipHigh: %d", clipHigh));
 
     if (clipLow < 0)
     {
@@ -558,6 +521,9 @@ void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage
         clipHigh = 65535;
     }
     Debug.AddLine("DefectMap: clipLow = %d clipHigh = %d", clipLow, clipHigh);
+
+    info.push_back(wxString::Format("ClipLow: %d", clipLow));
+    info.push_back(wxString::Format("ClipHigh: %d", clipHigh));
 
     // Assign the defect map entries
     for (int y = 0; y < dark.Size.GetHeight(); y++)

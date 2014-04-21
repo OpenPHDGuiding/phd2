@@ -974,8 +974,6 @@ void GuideCamera::ClearDarks()
     CurrentDarkFrame = NULL;
 }
 
-
-
 void GuideCamera::SubtractDark(usImage& img)
 {
     // dark subtraction is done in the camera worker thread, so we need to acquire the
@@ -995,7 +993,8 @@ void GuideCamera::SubtractDark(usImage& img)
 }
 
 #ifndef OPENPHD
-bool DLLExists (wxString DLLName) {
+bool DLLExists (wxString DLLName)
+{
     wxStandardPathsBase& StdPaths = wxStandardPaths::Get();
     if (wxFileExists(StdPaths.GetExecutablePath().BeforeLast(PATHSEPCH) + PATHSEPSTR + DLLName))
         return true;
