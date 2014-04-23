@@ -686,6 +686,11 @@ void DefectMapBuilder::Init(DefectMapDarks& darks)
     Debug.AddLine("DefectMapBuilder: Loaded %d cold %d hot", m_impl->coldPx.size(), m_impl->hotPx.size());
 }
 
+const ImageStats& DefectMapBuilder::GetImageStats() const
+{
+    return m_impl->w.stats;
+}
+
 void DefectMapBuilder::SetAggressiveness(int aggrCold, int aggrHot)
 {
     m_impl->aggrCold = std::max(0, std::min(100, aggrCold));
