@@ -179,24 +179,8 @@ DarksDialog::DarksDialog(wxWindow *parent) :
     m_started = false;
 }
 
-static inline double SigmaXFromUI(int val)
-{
-    // Control of 0 to 100 means SigmaX ranges from 10.0 to 1.0
-    return 10.0 - (9.0 / 100.0) * (double) val;
-}
-
 void DarksDialog::OnStart(wxCommandEvent& evt)
 {
-    int minExpInx;
-    int maxExpInx;
-    int darkExpTime;
-    int defectExpTime;
-    int darkFrameCount = m_pDarkCount->GetValue();
-    int defectFrameCount = m_pNumDefExposures->GetValue();
-    std::vector<int> exposureDurations;
-    usImage *pNewDark;
-    wxString wrapupMsg;
-
     SaveProfileInfo();
 
     m_pStartBtn->Enable(false);
@@ -206,7 +190,6 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
     m_started = true;
     wxYield();
 
-    pFrame->GetExposureDurations(&exposureDurations);
     if (pCamera->HasShutter)
         pCamera->ShutterState = true; // dark
     else
@@ -214,34 +197,40 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
 
     m_pProgress->SetValue(0);
 
+    wxString wrapupMsg;
+
     if (m_pCreateDarks->GetValue())
     {
-        minExpInx = m_pDarkMinExpTime->GetSelection();
-        maxExpInx = m_pDarkMaxExpTime->GetSelection();
+        int darkFrameCount = m_pDarkCount->GetValue();
+        int minExpInx = m_pDarkMinExpTime->GetSelection();
+        int maxExpInx = m_pDarkMaxExpTime->GetSelection();
+
+        std::vector<int> exposureDurations;
+        pFrame->GetExposureDurations(&exposureDurations);
 
         m_pProgress->SetRange((maxExpInx - minExpInx + 1) * darkFrameCount);
 
         for (int inx = minExpInx; inx <= maxExpInx; inx++)
         {
-            darkExpTime = exposureDurations[inx];
+            int darkExpTime = exposureDurations[inx];
             if (darkExpTime >= 1000)
                 ShowStatus (wxString::Format(_("Building master dark at %.1f sec:"), (double)darkExpTime / 1000.0), false);
             else
                 ShowStatus (wxString::Format(_("Building master dark at %d mSec:"), darkExpTime), false);
-            pNewDark = CreateMasterDarkFrame(exposureDurations[inx], darkFrameCount);
+            usImage *newDark = new usImage();
+            CreateMasterDarkFrame(*newDark, exposureDurations[inx], darkFrameCount);
             wxYield();
             if (m_cancelling)
             {
-                if (pNewDark)
-                    delete pNewDark;
+                delete newDark;
                 break;
             }
             else
             {
-                pCamera->AddDark(pNewDark);
-                pNewDark = NULL;
+                pCamera->AddDark(newDark);
             }
         }
+
         if (m_cancelling)
             ShowStatus(_("Operation cancelled"), false);
         else
@@ -252,44 +241,72 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             ShowStatus(wrapupMsg, false);
         }
     }
+
     if (m_pCreateDMap->GetValue() && !m_cancelling)
     {
         // Start by computing master dark frame with longish exposure times
         ShowStatus(_("Taking darks to compute defect map: "),  false);
+
+        int defectFrameCount = m_pNumDefExposures->GetValue();
+        int defectExpTime = m_pDefectExpTime->GetValue() * 1000;
+
         m_pProgress->SetRange(defectFrameCount);
         m_pProgress->SetValue(0);
-        defectExpTime = m_pDefectExpTime->GetValue() * 1000;
-        pNewDark = CreateMasterDarkFrame(defectExpTime, defectFrameCount);
+
+        DefectMapDarks darks;
+        CreateMasterDarkFrame(darks.masterDark, defectExpTime, defectFrameCount);
+
         if (m_cancelling)
             ShowStatus(_("Operation cancelled"), false);
         else
         {
-            DefectMap *defectMap = new DefectMap();
-            double sigmaX = SigmaXFromUI(m_pSigmaX->GetValue());
-            wxArrayString mapInfo;
-            mapInfo.push_back(wxString::Format("Generated: %s", wxDateTime::UNow().FormatISOCombined(' ')));
-            mapInfo.push_back(wxString::Format("Camera: %s", pCamera->Name));
-            mapInfo.push_back(wxString::Format("Notes: %s", m_pNotes->GetValue()));
-            mapInfo.push_back(wxString::Format("Dark Exposure Time: %d ms", defectExpTime));
-            mapInfo.push_back(wxString::Format("Dark Frame Count: %d", defectFrameCount));
-            mapInfo.push_back(wxString::Format("Aggressiveness: %d", m_pSigmaX->GetValue()));
-            mapInfo.push_back(wxString::Format("Sigma Factor: %.1f", sigmaX));
-            CalculateDefectMap(*defectMap, mapInfo, *pNewDark, sigmaX);
-            pFrame->SaveDefectMap(*defectMap, mapInfo);
-            pCamera->SetDefectMap(defectMap);
-            pFrame->LoadDefectMapHandler(true);         // Get the UI state set correctly
-            ShowStatus(wxString::Format(_("Defect map built, %d defects mapped"), defectMap->size()), false);
+            ShowStatus(_("Analyzing master dark..."), false);
+
+            // create a median-filtered dark
+            darks.BuildFilteredDark();
+
+            // save the master dark and the median filtered dark
+            darks.SaveDarks(m_pNotes->GetValue());
+
+#if 0 // FIXME-bw remove this block
+            // refine darks would do:
+            DefectMapDarks darks;
+            darks.LoadDarks();
+            // then proceed with the following steps
+#endif
+            DefectMapBuilder builder;
+            builder.Init(darks);
+
+            int coldPxAggressiveness = m_pSigmaX->GetValue();
+            int hotPxAggressiveness = m_pSigmaX->GetValue();
+            builder.SetAggressiveness(coldPxAggressiveness, hotPxAggressiveness);
+
+            int coldPx = builder.GetColdPixelCnt();
+            int hotPx = builder.GetHotPixelCnt();
+            int totDefects = coldPx + hotPx;
+
+            // construct a defect map
+            DefectMap defectMap;
+            builder.BuildDefectMap(defectMap);
+
+            // save the defect map
+            pFrame->SaveDefectMap(defectMap, builder.GetMapInfo());
+
+            // load the defect map from the file and activate
+            pFrame->LoadDefectMapHandler(true);
+
+            ShowStatus(wxString::Format(_("Defect map built, %d defects mapped"), totDefects), false);
+
             if (wrapupMsg.Length() > 0)
                 wrapupMsg += ", ";
             wrapupMsg += _("defect map built");
         }
     }
 
-
-
     m_pStartBtn->Enable(true);
     m_pResetBtn->Enable(true);
     pFrame->SetDarkMenuState();         // Hard to know where we are at this point
+
     if (m_cancelling)
     {
         m_pProgress->SetValue(0);
@@ -367,57 +384,52 @@ void DarksDialog::SaveProfileInfo()
     pConfig->Profile.SetString("/camera/darks_note", m_pNotes->GetValue());
 }
 
-usImage *DarksDialog::CreateMasterDarkFrame(int expTime, int frameCount)
+void DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int frameCount)
 {
-    int ExpDur = expTime;
-    int NDarks = frameCount;
-
     pCamera->InitCapture();
-    usImage *darkFrame = new usImage();
-    darkFrame->ImgExpDur = ExpDur;
+    darkFrame.ImgExpDur = expTime;
+    darkFrame.ImgStackCnt = frameCount;
     ShowStatus(_("Taking dark frame") + " #1", true);
-    if (pCamera->Capture(ExpDur, *darkFrame, false))
+    if (pCamera->Capture(expTime, darkFrame, false))
     {
-        ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double) ExpDur / 1000.0), true);
+        ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double) expTime / 1000.0), true);
         pCamera->ShutterState = false;
     }
     else
     {
         m_pProgress->SetValue(m_pProgress->GetValue() + 1);
-        int *avgimg = new int[darkFrame->NPixels];
+        int *avgimg = new int[darkFrame.NPixels];
         int i, j;
         int *iptr = avgimg;
-        unsigned short *usptr = darkFrame->ImageData;
-        for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
+        unsigned short *usptr = darkFrame.ImageData;
+        for (i = 0; i < darkFrame.NPixels; i++, iptr++, usptr++)
             *iptr = (int)*usptr;
         wxYield();
-        for (j = 1; j < NDarks; j++)
+        for (j = 1; j < frameCount; j++)
         {
             wxYield();
             if (m_cancelling)
                 break;
             ShowStatus(_("Taking dark frame") + wxString::Format(" #%d", j + 1), true);
             wxYield();
-            pCamera->Capture(ExpDur, *darkFrame, false);
+            pCamera->Capture(expTime, darkFrame, false);
             m_pProgress->SetValue(m_pProgress->GetValue() + 1);
             iptr = avgimg;
-            usptr = darkFrame->ImageData;
-            for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
+            usptr = darkFrame.ImageData;
+            for (i = 0; i < darkFrame.NPixels; i++, iptr++, usptr++)
                 *iptr = *iptr + (int)*usptr;
         }
         if (!m_cancelling)
         {
             ShowStatus(_("Dark frames complete"), true);
             iptr = avgimg;
-            usptr = darkFrame->ImageData;
-            for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
-                *usptr = (unsigned short)(*iptr / NDarks);
+            usptr = darkFrame.ImageData;
+            for (i = 0; i < darkFrame.NPixels; i++, iptr++, usptr++)
+                *usptr = (unsigned short)(*iptr / frameCount);
         }
 
         delete[] avgimg;
     }
-
-    return darkFrame;
 }
 
 void DarksDialog::SetUIState()

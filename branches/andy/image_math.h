@@ -32,6 +32,9 @@
  *
  */
 
+#ifndef IMAGE_MATH_INCLUDED
+#define IMAGE_MATH_INCLUDED
+
 extern bool QuickLRecon(usImage& img);
 extern bool Median3(unsigned short *dst, const unsigned short *src, int xsize, int ysize);
 extern bool Median3(usImage& img);
@@ -40,4 +43,43 @@ extern int dbl_sort_func(double *first, double *second);
 extern bool Subtract(usImage& light, const usImage& dark);
 extern float CalcSlope(const ArrayOfDbl& y);
 extern bool RemoveDefects(usImage& light, const DefectMap& defectMap);
-extern void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage& dark, double sigmaFactor);
+
+struct DefectMapBuilderImpl;
+
+struct DefectMapDarks
+{
+    usImage masterDark;
+    usImage filteredDark;
+
+    void BuildFilteredDark();
+    void SaveDarks(const wxString& notes);
+    void LoadDarks();
+};
+
+struct ImageStats
+{
+    double mean;
+    double stdev;
+    unsigned short median;
+    unsigned short mad;
+};
+
+class DefectMapBuilder
+{
+    DefectMapBuilderImpl *m_impl;
+
+public:
+
+    DefectMapBuilder();
+    ~DefectMapBuilder();
+
+    void Init(DefectMapDarks& darks);
+    const ImageStats& GetImageStats() const;
+    void SetAggressiveness(int aggrCold, int aggrHot);
+    int GetColdPixelCnt() const;
+    int GetHotPixelCnt() const;
+    void BuildDefectMap(DefectMap& defectMap) const;
+    const wxArrayString& GetMapInfo() const;
+};
+
+#endif

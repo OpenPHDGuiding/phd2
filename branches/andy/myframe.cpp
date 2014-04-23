@@ -1116,7 +1116,7 @@ bool MyFrame::StartLooping(void)
             }
         }
 
-        pFrame->StartCapturing();
+        StartCapturing();
     }
     catch (wxString Msg)
     {
@@ -1366,7 +1366,7 @@ void MyFrame::LoadCalibration(void)
     }
 }
 
-static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname, const wxString note)
+static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname, const wxString& note)
 {
     bool bError = false;
 
@@ -1388,14 +1388,16 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
             float exposure = (float)img->ImgExpDur / 1000.0;
-            char keyname[] = "EXPOSURE";
-            char comment[] = "Exposure time in seconds";
+            char *keyname = "EXPOSURE";
+            char *comment = "Exposure time in seconds";
             if (!status) fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
-            char usernote[68];     // Length limited in UI
-            char keyname2[] = "USERNOTE";
-            char comment2[] = "User note from dark library construction";
-            sprintf(usernote, "%s", (const char*) note.c_str());
-            if (!status) fits_write_key(fptr, TSTRING, keyname2, usernote, comment2, &status);
+
+            if (!note.IsEmpty())
+            {
+                char *USERNOTE = "USERNOTE";
+                if (!status) fits_write_key(fptr, TSTRING, USERNOTE, const_cast<char *>(static_cast<const char *>(note)), NULL, &status);
+            }
+
             if (!status) fits_write_pix(fptr, TUSHORT, fpixel, img->NPixels, img->ImageData, &status);
             Debug.AddLine("saving dark frame exposure = %d", img->ImgExpDur);
         }
@@ -1509,23 +1511,23 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
     return bError;
 }
 
-
-wxString static DarkLibFileName(int profileId)
+wxString MyFrame::GetDarksDir()
 {
-    wxString dirpath = pFrame->GetDefaultFileDir() + PATHSEPSTR + "darks_defects";
+    wxString dirpath = GetDefaultFileDir() + PATHSEPSTR + "darks_defects";
     if (!wxDirExists(dirpath))
         if (!wxFileName::Mkdir(dirpath, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
-            dirpath = pFrame->GetDefaultFileDir();             // should never happen
-    return (dirpath + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId));
+            dirpath = GetDefaultFileDir();             // should never happen
+    return dirpath;
 }
 
-wxString static DefectMapFileName(int profileId)
+static wxString DarkLibFileName(int profileId)
 {
-    wxString dirpath = pFrame->GetDefaultFileDir() + PATHSEPSTR + "darks_defects";
-    if (!wxDirExists(dirpath))
-        if (!wxFileName::Mkdir(dirpath, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
-            dirpath = pFrame->GetDefaultFileDir();             // should never happen
-    return (dirpath + PATHSEPSTR + wxString::Format("PHD2_defect_map_%d.txt", profileId));
+    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId);
+}
+
+static wxString DefectMapFileName(int profileId)
+{
+    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_%d.txt", profileId);
 }
 
 void MyFrame::SetDarkMenuState()

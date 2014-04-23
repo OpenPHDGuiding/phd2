@@ -246,7 +246,8 @@ public:
     bool GetAutoLoadCalibration(void);
     void LoadCalibration(void);
     int GetInstanceNumber() const { return m_instanceNumber; }
-    wxString GetDefaultFileDir();
+    static wxString GetDefaultFileDir();
+    static wxString GetDarksDir();
     void LoadDarkLibrary();
     void SaveDarkLibrary(const wxString& note);
     void DeleteDarkLibraryFiles(int profileID);

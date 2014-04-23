@@ -78,22 +78,24 @@ bool QuickLRecon(usImage& img)
 {
     // Does a simple debayer of luminance data only -- sliding 2x2 window
     usImage Limg;
-    int x, y;
-    int xsize, ysize;
-
-    xsize = img.Size.GetWidth();
-    ysize = img.Size.GetHeight();
-    if (Limg.Init(xsize,ysize)) {
+    if (Limg.Init(img.Size)) {
         pFrame->Alert(_("Memory allocation error"));
         return true;
     }
-    for (y=0; y<ysize-1; y++) {
-        for (x=0; x<xsize-1; x++) {
+
+    int xsize = img.Size.GetWidth();
+    int ysize = img.Size.GetHeight();
+
+    for (int y = 0; y < ysize - 1; y++)
+    {
+        int x;
+        for (x = 0; x < xsize - 1; x++)
+        {
             Limg.ImageData[x+y*xsize] = (img.ImageData[x+y*xsize] + img.ImageData[x+1+y*xsize] + img.ImageData[x+(y+1)*xsize] + img.ImageData[x+1+(y+1)*xsize]) / 4;
         }
         Limg.ImageData[x+y*xsize]=Limg.ImageData[(x-1)+y*xsize];  // Last one in this row -- just duplicate
     }
-    for (x=0; x<xsize; x++)
+    for (int x=0; x<xsize; x++)
         Limg.ImageData[x+(ysize-1)*xsize]=Limg.ImageData[x+(ysize-2)*xsize];  // Last row -- just duplicate
 
     img.SwapImageData(Limg);
@@ -103,7 +105,7 @@ bool QuickLRecon(usImage& img)
 bool Median3(usImage& img)
 {
     usImage tmp;
-    tmp.Init(img.Size.GetWidth(), img.Size.GetHeight());
+    tmp.Init(img.Size);
     bool err = Median3(tmp.ImageData, img.ImageData, img.Size.GetWidth(), img.Size.GetHeight());
     img.SwapImageData(tmp);
     return err;
@@ -349,15 +351,6 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
     return median3(array);
 }
 
-static unsigned short ImageMedian(const usImage& img)
-{
-    usImage tmp;
-    tmp.Init(img.Size.GetWidth(), img.Size.GetHeight());
-    memcpy(tmp.ImageData, img.ImageData, img.NPixels * sizeof(unsigned short));
-    std::nth_element(&tmp.ImageData[0], &tmp.ImageData[img.NPixels / 2], &tmp.ImageData[img.NPixels]);
-    return tmp.ImageData[img.NPixels / 2];
-}
-
 bool SquarePixels(usImage& img, float xsize, float ysize)
 {
     // Stretches one dimension to square up pixels
@@ -373,7 +366,7 @@ bool SquarePixels(usImage& img, float xsize, float ysize)
     if (xsize == ysize) return false;  // nothing to do
 
     // Copy the existing data
-    if (tempimg.Init(img.Size.GetWidth(), img.Size.GetHeight())) {
+    if (tempimg.Init(img.Size)) {
         pFrame->Alert(_("Memory allocation error"));
         return true;
     }
@@ -470,11 +463,52 @@ bool Subtract(usImage& light, const usImage& dark)
     return false;
 }
 
-void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage& dark, double sigmaFactor)
+static void MedianFilter(usImage& dst, const usImage& src, int halfWidth)
 {
-    bool const DMUseMedian = false;              // Vestigial - maybe use median instead of mean
+    usImage tmp;
+    tmp.Init(2 * halfWidth + 1, 2 * halfWidth + 1);
 
-    Debug.AddLine("DefectMap: Creating defect map, sigma factor = %.2f", sigmaFactor);
+    dst.Init(src.Size);
+    unsigned short *dstPx = &dst.ImageData[0];
+
+    for (int y = 0; y < src.Size.GetHeight(); y++)
+    {
+        int top = std::max(y - halfWidth, 0);
+        int bot = std::min(y + halfWidth, src.Size.GetHeight() - 1);
+
+        for (int x = 0; x < src.Size.GetWidth(); x++)
+        {
+            int left = std::max(x - halfWidth, 0);
+            int right = std::min(x + halfWidth, src.Size.GetWidth() - 1);
+            int xsize = right - left + 1;
+
+            const unsigned short *p0 = &src.Pixel(left, top);
+            unsigned short *dst = &tmp.ImageData[0];
+            for (int yy = top; yy <= bot; yy++)
+            {
+                memcpy(dst, p0, xsize * sizeof(unsigned short));
+                dst += xsize;
+                p0 += src.Size.GetWidth();
+            }
+
+            int winPixels = (int) (dst - &tmp.ImageData[0]);
+            unsigned short *p = &tmp.ImageData[0];
+            std::nth_element(p, p + winPixels / 2, p + winPixels);
+
+            *dstPx++ = tmp.ImageData[winPixels / 2];
+        }
+    }
+}
+
+struct ImageStatsWork
+{
+    ImageStats stats;
+    usImage temp;
+};
+
+static void GetImageStats(ImageStatsWork& w, const usImage& img, const wxRect& win)
+{
+    w.temp.Init(img.Size);
 
     // Determine the mean and standard deviation
     double sum = 0.0;
@@ -483,63 +517,271 @@ void CalculateDefectMap(DefectMap& defectMap, wxArrayString& info, const usImage
     double k = 1.0;
     double km1 = 0.0;
 
-    for (int i = 0; i < dark.NPixels; i++)
+    const unsigned short *p0 = &img.Pixel(win.GetLeft(), win.GetTop());
+    unsigned short *dst = &w.temp.ImageData[0];
+    for (int y = 0; y < win.GetHeight(); y++)
     {
-        double x = (double) dark.ImageData[i];
-        sum += x;
-        double a0 = a;
-        a += (x - a) / k;
-        q += (x - a0) * (x - a);
-        km1 = k;
-        k += 1.0;
-    }
-    double midpoint = sum / km1;
-    double stdev = sqrt(q / km1);
-    unsigned short median = ImageMedian(dark);
-    Debug.AddLine("DefectMap: Dark Mean = %.f Median = %d Standard Deviation = %.f stdev*sigmaFactor = %.f", midpoint, median, stdev, stdev * sigmaFactor);
-
-    info.push_back(wxString::Format("Mean: %.f", midpoint));
-    info.push_back(wxString::Format("Stdev: %.f", stdev));
-    info.push_back(wxString::Format("Median: %d", median));
-
-    if (DMUseMedian)
-    {
-        midpoint = (double) median;
-        Debug.AddLine("DefectMap: Using Dark Median = %.f", midpoint);
+        const unsigned short *end = p0 + win.GetWidth();
+        for (const unsigned short *p = p0; p < end; p++)
+        {
+            *dst++ = *p;
+            double const x = (double) *p;
+            sum += x;
+            double const a0 = a;
+            a += (x - a) / k;
+            q += (x - a0) * (x - a);
+            km1 = k;
+            k += 1.0;
+        }
+        p0 += img.Size.GetWidth();
     }
 
-    // Find the clipping points beyond which the pixels will be considered defects
-    int clipLow = (int)(midpoint - (sigmaFactor * stdev));
-    int clipHigh = (int)(midpoint + (sigmaFactor * stdev));
+    w.stats.mean = sum / km1;
+    w.stats.stdev = sqrt(q / km1);
 
-    if (clipLow < 0)
+    int winPixels = win.GetWidth() * win.GetHeight();
+    unsigned short *tmp = &w.temp.ImageData[0];
+    std::nth_element(tmp, tmp + winPixels / 2, tmp + winPixels);
+
+    w.stats.median = tmp[winPixels / 2];
+
+    // replace each pixel with the absolute deviation from the median
+    unsigned short *p = tmp;
+    for (int i = 0; i < winPixels; i++)
     {
-        clipLow = 0;
+        unsigned short ad = (unsigned short) std::abs((int) *p - (int) w.stats.median);
+        *p++ = ad;
     }
-    if (clipHigh > 65535)
-    {
-        clipHigh = 65535;
-    }
-    Debug.AddLine("DefectMap: clipLow = %d clipHigh = %d", clipLow, clipHigh);
+    std::nth_element(tmp, tmp + winPixels / 2, tmp + winPixels);
+    w.stats.mad = tmp[winPixels / 2];
+}
 
-    info.push_back(wxString::Format("ClipLow: %d", clipLow));
-    info.push_back(wxString::Format("ClipHigh: %d", clipHigh));
+void DefectMapDarks::BuildFilteredDark()
+{
+    enum { WINDOW = 15 };
 
-    // Assign the defect map entries
+    filteredDark.Init(masterDark.Size);
+    MedianFilter(filteredDark, masterDark, WINDOW);
+}
+
+static wxString DefectMapMasterPath()
+{
+    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_master_%d.fit", pConfig->GetCurrentProfileId());
+}
+
+static wxString DefectMapFilterPath()
+{
+    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_master_filt_%d.fit", pConfig->GetCurrentProfileId());
+}
+
+void DefectMapDarks::SaveDarks(const wxString& notes)
+{
+    masterDark.Save(DefectMapMasterPath(), notes);
+    filteredDark.Save(DefectMapFilterPath());
+}
+
+void DefectMapDarks::LoadDarks()
+{
+    masterDark.Load(DefectMapMasterPath());
+    filteredDark.Load(DefectMapFilterPath());
+}
+
+struct BadPx
+{
+    unsigned short x;
+    unsigned short y;
+    int v;
+
+    BadPx();
+    BadPx(int x_, int y_, int v_) : x(x_), y(y_), v(v_) { }
+    bool operator<(const BadPx& rhs) const { return v < rhs.v; }
+};
+
+typedef std::set<BadPx> BadPxSet;
+
+struct DefectMapBuilderImpl
+{
+    DefectMapDarks *darks;
+    ImageStatsWork w;
+    wxArrayString mapInfo;
+    int aggrCold;
+    int aggrHot;
+    BadPxSet coldPx;
+    BadPxSet hotPx;
+    BadPxSet::const_iterator coldPxThresh;
+    BadPxSet::const_iterator hotPxThresh;
+    unsigned int coldPxSelected;
+    unsigned int hotPxSelected;
+    bool threshValid;
+
+    DefectMapBuilderImpl()
+        :
+        darks(0),
+        aggrCold(100),
+        aggrHot(100),
+        threshValid(false)
+    { }
+};
+
+DefectMapBuilder::DefectMapBuilder()
+    : m_impl(new DefectMapBuilderImpl())
+{
+}
+
+DefectMapBuilder::~DefectMapBuilder()
+{
+    delete m_impl;
+}
+
+inline static double AggrToSigma(int val)
+{
+    // Aggressiveness of 0 to 100 maps to signma factor from 8.0 to 0.125
+    return exp2(3.0 - (6.0 / 100.0) * (double)val);
+}
+
+void DefectMapBuilder::Init(DefectMapDarks& darks)
+{
+    m_impl->darks = &darks;
+
+    Debug.AddLine("DefectMapBuilder: Init");
+
+    ::GetImageStats(m_impl->w, darks.masterDark,
+        wxRect(0, 0, darks.masterDark.Size.GetWidth(), darks.masterDark.Size.GetHeight()));
+
+    const ImageStats& stats = m_impl->w.stats;
+
+    Debug.AddLine("DefectMapBuilder: Dark N = %d Mean = %.f Median = %d Standard Deviation = %.f MAD=%d",
+        darks.masterDark.NPixels, stats.mean, stats.median, stats.stdev, stats.mad);
+
+    // load potential defects
+
+    int thresh = (int)(AggrToSigma(100) * stats.stdev);
+
+    Debug.AddLine("DefectMapBuilder: load potential defects thresh = %d", thresh);
+
+    usImage& dark = m_impl->darks->masterDark;
+    usImage& medianFilt = m_impl->darks->filteredDark;
+
+    m_impl->coldPx.clear();
+    m_impl->hotPx.clear();
+
     for (int y = 0; y < dark.Size.GetHeight(); y++)
     {
         for (int x = 0; x < dark.Size.GetWidth(); x++)
         {
+            int filt = (int) medianFilt.Pixel(x, y);
             int val = (int) dark.Pixel(x, y);
-            if (val < clipLow || val > clipHigh)
+            int v = val - filt;
+            if (v > thresh)
             {
-                Debug.AddLine("DefectMap: defect @ (%d, %d) val = %d (%+.1f sigma)", x, y, val, ((double)val - midpoint) / stdev);
-                defectMap.push_back(wxPoint(x, y));
+                m_impl->hotPx.insert(BadPx(x, y, v));
+            }
+            else if (-v > thresh)
+            {
+                m_impl->coldPx.insert(BadPx(x, y, -v));
             }
         }
     }
 
-    Debug.AddLine("New defect map created, count=%d", defectMap.size());
+    Debug.AddLine("DefectMapBuilder: Loaded %d cold %d hot", m_impl->coldPx.size(), m_impl->hotPx.size());
+}
+
+void DefectMapBuilder::SetAggressiveness(int aggrCold, int aggrHot)
+{
+    m_impl->aggrCold = std::max(0, std::min(100, aggrCold));
+    m_impl->aggrHot = std::max(0, std::min(100, aggrHot));
+    m_impl->threshValid = false;
+}
+
+static void FindThresh(DefectMapBuilderImpl *impl)
+{
+    if (impl->threshValid)
+        return;
+
+    double multCold = AggrToSigma(impl->aggrCold);
+    double multHot = AggrToSigma(impl->aggrHot);
+
+    int coldThresh = (int) (multCold * impl->w.stats.stdev);
+    int hotThresh = (int) (multHot * impl->w.stats.stdev);
+
+    Debug.AddLine("DefectMap: find thresholds aggr:(%d,%d) sigma:(%.1f,%.1f) px:(%+d,%+d)",
+        impl->aggrCold, impl->aggrHot, multCold, multHot, -coldThresh, hotThresh);
+
+    impl->coldPxThresh = impl->coldPx.lower_bound(BadPx(0, 0, coldThresh));
+    impl->hotPxThresh = impl->hotPx.lower_bound(BadPx(0, 0, hotThresh));
+
+    impl->coldPxSelected = std::distance(impl->coldPxThresh, impl->coldPx.end());
+    impl->hotPxSelected = std::distance(impl->hotPxThresh, impl->hotPx.end());
+
+    Debug.AddLine("DefectMap: find thresholds found (%d,%d)", impl->coldPxSelected, impl->hotPxSelected);
+
+    impl->threshValid = true;
+}
+
+int DefectMapBuilder::GetColdPixelCnt() const
+{
+    FindThresh(m_impl);
+    return m_impl->coldPxSelected;
+}
+
+int DefectMapBuilder::GetHotPixelCnt() const
+{
+    FindThresh(m_impl);
+    return m_impl->hotPxSelected;
+}
+
+inline static unsigned int emit_defects(DefectMap& defectMap, BadPxSet::const_iterator p0, BadPxSet::const_iterator p1, double stdev, int sign)
+{
+    unsigned int cnt = 0;
+    for (BadPxSet::const_iterator it = p0; it != p1; ++it, ++cnt)
+    {
+        int v = sign * it->v;
+        Debug.AddLine("DefectMap: defect @ (%d, %d) val = %d (%+.1f sigma)", it->x, it->y, v, stdev > 0.1 ? (double)v / stdev : 0.0);
+        defectMap.push_back(wxPoint(it->x, it->y));
+    }
+    return cnt;
+}
+
+void DefectMapBuilder::BuildDefectMap(DefectMap& defectMap) const
+{
+    wxArrayString& info = m_impl->mapInfo;
+
+    double multCold = AggrToSigma(m_impl->aggrCold);
+    double multHot = AggrToSigma(m_impl->aggrHot);
+    const ImageStats& stats = m_impl->w.stats;
+
+    info.Clear();
+    info.push_back(wxString::Format("Generated: %s", wxDateTime::UNow().FormatISOCombined(' ')));
+    info.push_back(wxString::Format("Camera: %s", pCamera->Name));
+    info.push_back(wxString::Format("Dark Exposure Time: %d ms", m_impl->darks->masterDark.ImgExpDur));
+    info.push_back(wxString::Format("Dark Frame Count: %d", m_impl->darks->masterDark.ImgStackCnt));
+    info.push_back(wxString::Format("Aggressiveness (cold, hot): %d, %d", m_impl->aggrCold, m_impl->aggrHot));
+    info.push_back(wxString::Format("Sigma Factor (cold, hot): %.2f, %.2f", multCold, multHot));
+    info.push_back(wxString::Format("Mean: %.f", stats.mean));
+    info.push_back(wxString::Format("Stdev: %.f", stats.stdev));
+    info.push_back(wxString::Format("Median: %d", stats.median));
+    info.push_back(wxString::Format("MAD: %d", stats.mad));
+
+    int deltaCold = (int)(multCold * stats.stdev);
+    int deltaHot = (int)(multHot * stats.stdev);
+
+    info.push_back(wxString::Format("DeltaCold: %+d", -deltaCold));
+    info.push_back(wxString::Format("DeltaHot: %+d", deltaHot));
+
+    Debug.AddLine("DefectMap: deltaCold = %+d deltaHot = %+d", -deltaCold, deltaHot);
+
+    FindThresh(m_impl);
+
+    defectMap.clear();
+    unsigned int nr_cold = emit_defects(defectMap, m_impl->coldPxThresh, m_impl->coldPx.end(), stats.stdev, -1);
+    unsigned int nr_hot = emit_defects(defectMap, m_impl->hotPxThresh, m_impl->hotPx.end(), stats.stdev, +1);
+
+    Debug.AddLine("New defect map created, count=%d (cold=%d, hot=%d)", defectMap.size(), nr_cold, nr_hot);
+}
+
+const wxArrayString& DefectMapBuilder::GetMapInfo() const
+{
+    return m_impl->mapInfo;
 }
 
 bool RemoveDefects(usImage& light, const DefectMap& defectMap)

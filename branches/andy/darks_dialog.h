@@ -65,7 +65,7 @@ private:
     void OnReset(wxCommandEvent& evt);
     void SaveProfileInfo();
     void ShowStatus(const wxString msg, bool appending);
-    usImage *CreateMasterDarkFrame(int expTime, int frameCount);
+    void CreateMasterDarkFrame(usImage& dark, int expTime, int frameCount);
 
 public:
     DarksDialog(wxWindow *parent);
