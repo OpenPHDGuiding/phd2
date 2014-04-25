@@ -212,7 +212,7 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     //dc.SetBackground(wxColour(10,0,0));
     dc.Clear();
 
-    double sampling = pFrame->GetCameraPixelScale();
+    const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
 
     wxColour Grey(128,128,128);
     wxPen GreySolidPen = wxPen(Grey,1, wxSOLID);
