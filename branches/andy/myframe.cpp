@@ -41,9 +41,6 @@
 #include <wx/artprov.h>
 #include <wx/dirdlg.h>
 #include <wx/textwrapper.h>
-#include <wx/wfstream.h>
-#include <wx/txtstrm.h>
-#include <wx/tokenzr.h>
 
 static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;
@@ -1525,15 +1522,10 @@ static wxString DarkLibFileName(int profileId)
     return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId);
 }
 
-static wxString DefectMapFileName(int profileId)
-{
-    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_%d.txt", profileId);
-}
-
 void MyFrame::SetDarkMenuState()
 {
     darks_menu->FindItem(MENU_LOADDARK)->Enable(wxFileExists(DarkLibFileName(pConfig->GetCurrentProfileId())));
-    darks_menu->FindItem(MENU_LOADDEFECTMAP)->Enable(wxFileExists(DefectMapFileName(pConfig->GetCurrentProfileId())));
+    darks_menu->FindItem(MENU_LOADDEFECTMAP)->Enable(DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()));
 }
 
 void MyFrame::LoadDarkLibrary()
@@ -1571,91 +1563,18 @@ void MyFrame::SaveDarkLibrary(const wxString& note)
     }
 }
 
-void MyFrame::SaveDefectMap(const DefectMap& defectMap, const wxArrayString& info)
-{
-    wxString filename = DefectMapFileName(pConfig->GetCurrentProfileId());
-    wxFileOutputStream oStream(filename);
-    wxTextOutputStream outText(oStream);
-
-    if (oStream.GetLastError() == wxSTREAM_NO_ERROR)
-    {
-        outText << "# PHD2 Defect Map v1\n";
-
-        for (wxArrayString::const_iterator it = info.begin(); it != info.end(); ++it)
-        {
-            outText << "# " << *it << "\n";
-        }
-        outText << "# Defect count: " << defectMap.size() << "\n";
-
-        for (DefectMap::const_iterator it = defectMap.begin(); it != defectMap.end(); ++it)
-        {
-            outText << it->x << " " << it->y << "\n";
-        }
-
-        oStream.Close();
-        Debug.AddLine(wxString::Format("Saved defect map to %s", filename));
-    }
-    else
-    {
-        Debug.AddLine(wxString::Format("Failed to save defect map to %s", filename));
-    }
-}
-
 void MyFrame::LoadDefectMap()
 {
-    wxString filename = DefectMapFileName(pConfig->GetCurrentProfileId());
-    Debug.AddLine(wxString::Format("Loading defect map file %s", filename));
-
-    if (wxFileExists(filename))
+    DefectMap *defectMap = DefectMap::LoadDefectMap(pConfig->GetCurrentProfileId());
+    if (defectMap)
     {
-        wxFileInputStream iStream(filename);
-        wxTextInputStream inText(iStream);
-
-        // Re-initialize the defect map and parse the defect map file
-        if (iStream.GetLastError() == wxSTREAM_NO_ERROR)
-        {
-            DefectMap *defectMap = new DefectMap();
-
-            int linenum = 0;
-            while (!inText.GetInputStream().Eof())
-            {
-                wxString line = inText.ReadLine();
-                ++linenum;
-                line.Trim(false); // trim leading whitespace
-                if (line.IsEmpty())
-                    continue;
-                if (line.StartsWith("#"))
-                    continue;
-
-                wxStringTokenizer tok(line);
-                wxString s1 = tok.GetNextToken();
-                wxString s2 = tok.GetNextToken();
-                long x, y;
-                if (s1.ToLong(&x) && s2.ToLong(&y))
-                {
-                    defectMap->push_back(wxPoint(x, y));
-                }
-                else
-                {
-                    Debug.AddLine(wxString::Format("DefectMap: ignore junk on line %d: %s", linenum, line));
-                }
-            }
-
-            Debug.AddLine(wxString::Format("Loaded %d defects", defectMap->size()));
-
-            SetStatusText(_("Defect map loaded"));
-
-            pCamera->SetDefectMap(defectMap);
-        }
-        else
-            Debug.AddLine(wxString::Format("Unexpected eof on defect map file %s", filename));
+        SetStatusText(_("Defect map loaded"));
+        pCamera->SetDefectMap(defectMap);
     }
     else
     {
-        Debug.AddLine(wxString::Format("Defect map file not found: %s", filename));
         SetStatusText(_("Defect map not loaded"));
     }
-
 }
 
 // Delete both the dark library file and any defect map file for this profile
@@ -1668,12 +1587,8 @@ void MyFrame::DeleteDarkLibraryFiles(int profileId)
         Debug.AddLine("Removing dark library file: " + filename);
         wxRemoveFile(filename);
     }
-    filename = DefectMapFileName(profileId);
-    if (wxFileExists(filename))
-    {
-        Debug.AddLine("Removing defect map file: " + filename);
-        wxRemoveFile(filename);
-    }
+
+    DefectMap::DeleteDefectMap(profileId);
 }
 
 bool MyFrame::GetServerMode(void)

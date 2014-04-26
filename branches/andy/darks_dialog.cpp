@@ -268,12 +268,6 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             // save the master dark and the median filtered dark
             darks.SaveDarks(m_pNotes->GetValue());
 
-#if 0 // FIXME-bw remove this block
-            // refine darks would do:
-            DefectMapDarks darks;
-            darks.LoadDarks();
-            // then proceed with the following steps
-#endif
             DefectMapBuilder builder;
             builder.Init(darks);
 
@@ -290,7 +284,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             builder.BuildDefectMap(defectMap);
 
             // save the defect map
-            pFrame->SaveDefectMap(defectMap, builder.GetMapInfo());
+            defectMap.Save(builder.GetMapInfo());
 
             // load the defect map from the file and activate
             pFrame->LoadDefectMapHandler(true);

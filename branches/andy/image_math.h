@@ -35,6 +35,19 @@
 #ifndef IMAGE_MATH_INCLUDED
 #define IMAGE_MATH_INCLUDED
 
+class DefectMap : public std::vector<wxPoint>
+{
+    int m_profileId;
+    DefectMap(int profileId);
+public:
+    static void DeleteDefectMap(int profileId);
+    static bool DefectMapExists(int profileId);
+    static DefectMap *LoadDefectMap(int profileId);
+    DefectMap();
+    void Save(const wxArrayString& mapInfo) const;
+    void AddDefect(const wxPoint& pt);
+};
+
 extern bool QuickLRecon(usImage& img);
 extern bool Median3(unsigned short *dst, const unsigned short *src, int xsize, int ysize);
 extern bool Median3(usImage& img);

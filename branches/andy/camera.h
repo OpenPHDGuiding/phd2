@@ -36,8 +36,7 @@
 #define CAMERA_H_INCLUDED
 
 typedef std::map<int, usImage *> ExposureImgMap; // map exposure to image
-
-typedef std::vector<wxPoint> DefectMap;
+class DefectMap;
 
 enum PropDlgType
 {

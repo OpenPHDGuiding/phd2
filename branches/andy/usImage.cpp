@@ -392,9 +392,9 @@ bool usImage::Load(const wxString& fname)
                 ImgExpDur = (int) (exposure * 1000.0);
 
             key = "STACKCNT";
-            unsigned int stackcnt;
+            int stackcnt;
             status = 0;
-            fits_read_key(fptr, TUINT, key, &stackcnt, NULL, &status);
+            fits_read_key(fptr, TINT, key, &stackcnt, NULL, &status);
             if (status == 0)
                 ImgStackCnt = (int) stackcnt;
 

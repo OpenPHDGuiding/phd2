@@ -239,7 +239,6 @@ public:
     bool StartServer(bool state);
     bool FlipRACal();
     int RequestedExposureDuration();
-    void SaveDefectMap(const DefectMap& defectMap, const wxArrayString& notes);
     void LoadDefectMap();
     int GetFocalLength(void);
     int GetLanguage(void);

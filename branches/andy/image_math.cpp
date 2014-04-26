@@ -35,6 +35,10 @@
 #include "phd.h"
 #include "image_math.h"
 
+#include <wx/wfstream.h>
+#include <wx/txtstrm.h>
+#include <wx/tokenzr.h>
+
 #include <algorithm>
 
 int dbl_sort_func (double *first, double *second)
@@ -491,7 +495,7 @@ static void MedianFilter(usImage& dst, const usImage& src, int halfWidth)
                 p0 += src.Size.GetWidth();
             }
 
-            int winPixels = (int) (dst - &tmp.ImageData[0]);
+            int winPixels = (int)(dst - &tmp.ImageData[0]);
             unsigned short *p = &tmp.ImageData[0];
             std::nth_element(p, p + winPixels / 2, p + winPixels);
 
@@ -760,8 +764,10 @@ void DefectMapBuilder::BuildDefectMap(DefectMap& defectMap) const
     info.push_back(wxString::Format("Camera: %s", pCamera->Name));
     info.push_back(wxString::Format("Dark Exposure Time: %d ms", m_impl->darks->masterDark.ImgExpDur));
     info.push_back(wxString::Format("Dark Frame Count: %d", m_impl->darks->masterDark.ImgStackCnt));
-    info.push_back(wxString::Format("Aggressiveness (cold, hot): %d, %d", m_impl->aggrCold, m_impl->aggrHot));
-    info.push_back(wxString::Format("Sigma Factor (cold, hot): %.2f, %.2f", multCold, multHot));
+    info.push_back(wxString::Format("Aggressiveness, cold: %d", m_impl->aggrCold));
+    info.push_back(wxString::Format("Aggressiveness, hot: %d", m_impl->aggrHot));
+    info.push_back(wxString::Format("Sigma Thresh, cold: %.2f", multCold));
+    info.push_back(wxString::Format("Sigma Thresh, hot: %.2f", multHot));
     info.push_back(wxString::Format("Mean: %.f", stats.mean));
     info.push_back(wxString::Format("Stdev: %.f", stats.stdev));
     info.push_back(wxString::Format("Median: %d", stats.median));
@@ -797,23 +803,15 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
 
     if (light.Subframe.GetWidth() > 0 && light.Subframe.GetHeight() > 0)
     {
-        // Determine the extents of the sub frame
-        unsigned int llx, lly, urx, ury;
-        llx = light.Subframe.GetLeft();
-        lly = light.Subframe.GetTop();
-        urx = llx + (light.Subframe.GetWidth() - 1);
-        ury = lly + (light.Subframe.GetHeight() - 1);
-
         // Step over each defect and replace the light value
         // with the median of the surrounding pixels
         for (DefectMap::const_iterator it = defectMap.begin(); it != defectMap.end(); ++it)
         {
-            int const x = it->x;
-            int const y = it->y;
+            const wxPoint& pt = *it;
             // Check to see if we are within the subframe before correcting the defect
-            if ((x >= llx) && (y >= lly) && (x <= urx) && (y <= ury))
+            if (light.Subframe.Contains(pt))
             {
-                light.Pixel(x, y) = MedianBorderingPixels(light, x, y);
+                light.Pixel(pt.x, pt.y) = MedianBorderingPixels(light, pt.x, pt.y);
             }
         }
     }
@@ -833,4 +831,137 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
     }
 
     return false;
+}
+
+static wxString DefectMapFileName(int profileId)
+{
+    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_%d.txt", profileId);
+}
+
+bool DefectMap::DefectMapExists(int profileId)
+{
+    return wxFileExists(DefectMapFileName(profileId));
+}
+
+void DefectMap::Save(const wxArrayString& info) const
+{
+    wxString filename = DefectMapFileName(m_profileId);
+    wxFileOutputStream oStream(filename);
+    wxTextOutputStream outText(oStream);
+
+    if (oStream.GetLastError() != wxSTREAM_NO_ERROR)
+    {
+        Debug.AddLine(wxString::Format("Failed to save defect map to %s", filename));
+        return;
+    }
+
+    outText << "# PHD2 Defect Map v1\n";
+
+    for (wxArrayString::const_iterator it = info.begin(); it != info.end(); ++it)
+    {
+        outText << "# " << *it << "\n";
+    }
+    outText << "# Defect count: " << size() << "\n";
+
+    for (const_iterator it = begin(); it != end(); ++it)
+    {
+        outText << it->x << " " << it->y << "\n";
+    }
+
+    oStream.Close();
+    Debug.AddLine(wxString::Format("Saved defect map to %s", filename));
+}
+
+DefectMap::DefectMap()
+    : m_profileId(pConfig->GetCurrentProfileId())
+{
+}
+
+DefectMap::DefectMap(int profileId)
+    : m_profileId(profileId)
+{
+}
+
+void DefectMap::AddDefect(const wxPoint& pt)
+{
+    // first add the point
+    push_back(pt);
+
+    wxString filename = DefectMapFileName(m_profileId);
+    wxFile file(filename, wxFile::write_append);
+    wxFileOutputStream oStream(file);
+    wxTextOutputStream outText(oStream);
+
+    if (oStream.GetLastError() != wxSTREAM_NO_ERROR)
+    {
+        Debug.AddLine(wxString::Format("Failed to save defect map to %s", filename));
+        return;
+    }
+
+    outText << pt.x << " " << pt.y << "\n";
+
+    oStream.Close();
+    Debug.AddLine(wxString::Format("Saved defect map to %s", filename));
+}
+
+DefectMap *DefectMap::LoadDefectMap(int profileId)
+{
+    wxString filename = DefectMapFileName(profileId);
+    Debug.AddLine(wxString::Format("Loading defect map file %s", filename));
+
+    if (!wxFileExists(filename))
+    {
+        Debug.AddLine(wxString::Format("Defect map file not found: %s", filename));
+        return 0;
+    }
+
+    wxFileInputStream iStream(filename);
+    wxTextInputStream inText(iStream);
+
+    // Re-initialize the defect map and parse the defect map file
+    if (iStream.GetLastError() != wxSTREAM_NO_ERROR)
+    {
+        Debug.AddLine(wxString::Format("Unexpected eof on defect map file %s", filename));
+        return 0;
+    }
+
+    DefectMap *defectMap = new DefectMap(profileId);
+
+    int linenum = 0;
+    while (!inText.GetInputStream().Eof())
+    {
+        wxString line = inText.ReadLine();
+        ++linenum;
+        line.Trim(false); // trim leading whitespace
+        if (line.IsEmpty())
+            continue;
+        if (line.StartsWith("#"))
+            continue;
+
+        wxStringTokenizer tok(line);
+        wxString s1 = tok.GetNextToken();
+        wxString s2 = tok.GetNextToken();
+        long x, y;
+        if (s1.ToLong(&x) && s2.ToLong(&y))
+        {
+            defectMap->push_back(wxPoint(x, y));
+        }
+        else
+        {
+            Debug.AddLine(wxString::Format("DefectMap: ignore junk on line %d: %s", linenum, line));
+        }
+    }
+
+    Debug.AddLine(wxString::Format("Loaded %d defects", defectMap->size()));
+    return defectMap;
+}
+
+void DefectMap::DeleteDefectMap(int profileId)
+{
+    wxString filename = DefectMapFileName(profileId);
+    if (wxFileExists(filename))
+    {
+        Debug.AddLine("Removing defect map file: " + filename);
+        wxRemoveFile(filename);
+    }
 }
