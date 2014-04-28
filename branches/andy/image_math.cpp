@@ -823,6 +823,7 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
         {
             int const x = it->x;
             int const y = it->y;
+
             if (x >= 0 && x < light.Size.GetWidth() && y >= 0 && y < light.Size.GetHeight())
             {
                 light.Pixel(x, y) = MedianBorderingPixels(light, x, y);
@@ -833,19 +834,19 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
     return false;
 }
 
-static wxString DefectMapFileName(int profileId)
+wxString DefectMap::DefectMapFileName(int profileId)
 {
     return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_%d.txt", profileId);
 }
 
 bool DefectMap::DefectMapExists(int profileId)
 {
-    return wxFileExists(DefectMapFileName(profileId));
+    return wxFileExists(DefectMap::DefectMapFileName(profileId));
 }
 
 void DefectMap::Save(const wxArrayString& info) const
 {
-    wxString filename = DefectMapFileName(m_profileId);
+    wxString filename = DefectMap::DefectMapFileName(m_profileId);
     wxFileOutputStream oStream(filename);
     wxTextOutputStream outText(oStream);
 

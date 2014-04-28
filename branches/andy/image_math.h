@@ -43,6 +43,7 @@ public:
     static void DeleteDefectMap(int profileId);
     static bool DefectMapExists(int profileId);
     static DefectMap *LoadDefectMap(int profileId);
+    static wxString DefectMapFileName(int profileId);
     DefectMap();
     void Save(const wxArrayString& mapInfo) const;
     void AddDefect(const wxPoint& pt);

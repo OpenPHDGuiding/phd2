@@ -140,7 +140,8 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
     if (recon) SubtractDark(img);
     if (recon) {
-        QuickLRecon(img);
+        if (MeadeCam->IsColor)
+            QuickLRecon(img);
         if (MeadeCam->IsDsiII)
             SquarePixels(img,6.5,6.25);
         else if (!MeadeCam->IsDsiIII)

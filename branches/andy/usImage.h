@@ -50,12 +50,12 @@ public:
     int                 ImgStackCnt;
 
     usImage() {
-	    Min = Max = FiltMin = FiltMax = 0;
-	    NPixels = 0;
-	    ImageData = NULL;
-	    ImgStartTime = 0;
-	    ImgExpDur = 0;
-	    ImgStackCnt = 1;
+        Min = Max = FiltMin = FiltMax = 0;
+        NPixels = 0;
+        ImageData = NULL;
+        ImgStartTime = 0;
+        ImgExpDur = 0;
+        ImgStackCnt = 1;
     }
     ~usImage() { delete[] ImageData; }
 

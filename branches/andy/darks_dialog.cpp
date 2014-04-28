@@ -166,7 +166,6 @@ DarksDialog::DarksDialog(wxWindow *parent) :
 
     // status bar
     m_pStatusBar = new wxStatusBar(this, -1);
-    int fieldWidths[] = { 500};
     m_pStatusBar->SetFieldsCount(1);
     m_pStatusBar->SetStatusText(_("Set your parameters, click 'Start' to begin"));
     pvSizer->Add(m_pStatusBar, 0, wxGROW);
@@ -285,6 +284,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
 
             // save the defect map
             defectMap.Save(builder.GetMapInfo());
+            pFrame->darks_menu->FindItem(MENU_REFINEDEFECTMAP)->Enable(true);
 
             // load the defect map from the file and activate
             pFrame->LoadDefectMapHandler(true);
@@ -373,7 +373,8 @@ void DarksDialog::SaveProfileInfo()
     {
         pConfig->Profile.SetInt("/camera/dmap_exptime", m_pDefectExpTime->GetValue());
         pConfig->Profile.SetInt("/camera/dmap_num_frames", m_pNumDefExposures->GetValue());
-        pConfig->Profile.SetDouble("/camera/dmap_sigmax", m_pSigmaX->GetValue());
+        pConfig->Profile.SetInt("/camera/dmap_hot_factor", m_pSigmaX->GetValue());
+        pConfig->Profile.SetInt("/camera/dmap_cold_factor", m_pSigmaX->GetValue());      // May split them up; otherwise handled in 'Refine' dialog
     }
     pConfig->Profile.SetString("/camera/darks_note", m_pNotes->GetValue());
 }

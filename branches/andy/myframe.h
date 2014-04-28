@@ -161,6 +161,7 @@ public:
     wxWindow *pDriftTool;
     wxWindow *pManualGuide;
     wxWindow *pNudgeLock;
+    wxDialog *pRefineDefMap;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
     wxLocale *m_pLocale;
@@ -216,6 +217,7 @@ public:
     void OnBookmarksSetAtLockPos(wxCommandEvent& evt);
     void OnBookmarksSetAtCurPos(wxCommandEvent& evt);
     void OnBookmarksClearAll(wxCommandEvent& evt);
+    void OnRefineDefMap(wxCommandEvent& evt);
 
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
@@ -253,6 +255,8 @@ public:
     void SetDarkMenuState();
     void LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
+    wxString DarkLibFileName(int profileId);
+    wxString DefectMapFileName(int profileId);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
@@ -423,6 +427,7 @@ enum {
     MENU_LOADSETTINGS,
     MENU_LOADDARK,
     MENU_LOADDEFECTMAP,
+    MENU_REFINEDEFECTMAP,
     MENU_INDICONFIG,
     MENU_INDIDIALOG,
     MENU_V4LSAVESETTINGS,

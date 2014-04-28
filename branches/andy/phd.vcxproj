@@ -250,6 +250,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">phd.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Refine_DefMap.cpp" />
     <ClCompile Include="scope.cpp" />
     <ClCompile Include="scope_ascom.cpp" />
     <ClCompile Include="scope_eqmac.cpp" />
@@ -357,6 +358,7 @@
     <ClInclude Include="phdconfig.h" />
     <ClInclude Include="phdcontrol.h" />
     <ClInclude Include="point.h" />
+    <ClInclude Include="Refine_DefMap.h" />
     <ClInclude Include="scope.h" />
     <ClInclude Include="scope_ascom.h" />
     <ClInclude Include="scope_eqmac.h" />

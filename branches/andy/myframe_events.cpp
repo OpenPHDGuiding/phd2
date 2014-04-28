@@ -36,6 +36,7 @@
 #include "about_dialog.h"
 #include "image_math.h"
 #include "darks_dialog.h"
+#include "Refine_DefMap.h"
 
 #include <wx/spinctrl.h>
 #include <wx/textfile.h>
@@ -356,6 +357,20 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
 void MyFrame::OnLoadDefectMap(wxCommandEvent& evt)
 {
     LoadDefectMapHandler(evt.IsChecked());
+}
+
+void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
+{
+    if (!pMount || !pMount->IsConnected())
+    {
+        wxMessageBox(_("Please connect a mount first."), _("Refine Defect Map"));
+        return;
+    }
+
+    if (!pRefineDefMap)
+        pRefineDefMap = (wxDialog*) new RefineDefMap(this);
+
+    pRefineDefMap->Show();
 }
 
 void MyFrame::OnToolBar(wxCommandEvent& evt)

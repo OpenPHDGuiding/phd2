@@ -85,6 +85,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_BOOKMARKS_SET_AT_LOCK, MyFrame::OnBookmarksSetAtLockPos)
     EVT_MENU(MENU_BOOKMARKS_SET_AT_STAR, MyFrame::OnBookmarksSetAtCurPos)
     EVT_MENU(MENU_BOOKMARKS_CLEAR_ALL, MyFrame::OnBookmarksClearAll)
+    EVT_MENU(MENU_REFINEDEFECTMAP,MyFrame::OnRefineDefMap)
 
     EVT_CHAR_HOOK(MyFrame::OnCharHook)
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
@@ -273,6 +274,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pDriftTool = NULL;
     pManualGuide = NULL;
     pNudgeLock = NULL;
+    pRefineDefMap = NULL;
 
     tools_menu->Check(MENU_LOG,false);
 
@@ -363,6 +365,8 @@ MyFrame::~MyFrame()
     {
         pDriftTool->Destroy();
     }
+    if (pRefineDefMap)
+        pRefineDefMap->Destroy();
 
     m_mgr.UnInit();
 }
@@ -434,6 +438,7 @@ void MyFrame::SetupMenuBar(void)
     m_takeDarksMenuInx = darks_menu->GetMenuItemCount() - 1;
     darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
     darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Defect &Map"), _("Use the defect map for this profile"));
+    darks_menu->Append(MENU_REFINEDEFECTMAP, _("Refine Defect Map"), _("Adjust parameters to modify the defect map"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     wxMenu *indi_menu = new wxMenu;
@@ -1517,7 +1522,7 @@ wxString MyFrame::GetDarksDir()
     return dirpath;
 }
 
-static wxString DarkLibFileName(int profileId)
+wxString MyFrame::DarkLibFileName(int profileId)
 {
     return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId);
 }
