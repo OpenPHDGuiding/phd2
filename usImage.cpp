@@ -125,7 +125,7 @@ void usImage::CalcStats()
         Median3(dst, tmpdata, Subframe.width, Subframe.height);
 
         const unsigned short *src = dst;
-        for (int i = 0; i < pixcnt; i++)
+        for (unsigned int i = 0; i < pixcnt; i++)
         {
             int d = (int) *src++;
             if (d < FiltMin) FiltMin = d;

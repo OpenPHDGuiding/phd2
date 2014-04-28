@@ -217,8 +217,6 @@ inline static unsigned short median3(const unsigned short l[3])
 
 bool Median3(unsigned short *dst, const unsigned short *src, int xsize, int ysize)
 {
-    int NPixels = xsize * ysize;
-
     for (int y = 1; y < ysize - 1; y++)
     {
         for (int x = 1; x < xsize - 1; x++)
