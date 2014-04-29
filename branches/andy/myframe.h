@@ -255,8 +255,6 @@ public:
     void SetDarkMenuState();
     void LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
-    wxString DarkLibFileName(int profileId);
-    wxString DefectMapFileName(int profileId);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 

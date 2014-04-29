@@ -34,7 +34,6 @@
 
 #ifndef REFINEDEFMAP_H_INCLUDED
 #define REFINEDEFMAP_H_INCLUDED
-#include <wx/grid.h>
 
 class RefineDefMap : public wxDialog
 {
@@ -46,7 +45,6 @@ class RefineDefMap : public wxDialog
         wxString darkCount;
         wxString lastHotFactor;
         wxString lastColdFactor;
-
     };
 
 public:

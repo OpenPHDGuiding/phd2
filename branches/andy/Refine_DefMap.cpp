@@ -34,7 +34,6 @@
 
 #include "phd.h"
 #include "Refine_DefMap.h"
-#include <wx/grid.h>
 
 BEGIN_EVENT_TABLE(RefineDefMap, wxDialog)
 EVT_CLOSE(RefineDefMap::OnClose)
@@ -43,6 +42,7 @@ END_EVENT_TABLE()
 RefineDefMap::RefineDefMap(wxWindow *parent) :
     wxDialog(parent, wxID_ANY, _("Refine Defect Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX)
 {
+    manualPixelCount = 0;
     this->SetSize(wxSize(900, 400));
     darks.LoadDarks();
     if (darks.masterDark.ImageData && darks.filteredDark.ImageData)
@@ -320,8 +320,8 @@ void RefineDefMap::OnReset(wxCommandEvent& evt)
     pColdSlider->SetValue(initColdFactor);
     Recalc();
     ShowStatus(_("Settings restored to original values"), false);
-
 }
+
 // Show the pixel counts driven only by the aggressivness algorithms
 void RefineDefMap::ShowCounts()
 {

@@ -362,9 +362,8 @@ MyFrame::~MyFrame()
     pAdvancedDialog->Destroy();
 
     if (pDriftTool)
-    {
         pDriftTool->Destroy();
-    }
+
     if (pRefineDefMap)
         pRefineDefMap->Destroy();
 
@@ -1522,7 +1521,7 @@ wxString MyFrame::GetDarksDir()
     return dirpath;
 }
 
-wxString MyFrame::DarkLibFileName(int profileId)
+static wxString DarkLibFileName(int profileId)
 {
     return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId);
 }

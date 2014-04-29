@@ -841,12 +841,12 @@ wxString DefectMap::DefectMapFileName(int profileId)
 
 bool DefectMap::DefectMapExists(int profileId)
 {
-    return wxFileExists(DefectMap::DefectMapFileName(profileId));
+    return wxFileExists(DefectMapFileName(profileId));
 }
 
 void DefectMap::Save(const wxArrayString& info) const
 {
-    wxString filename = DefectMap::DefectMapFileName(m_profileId);
+    wxString filename = DefectMapFileName(m_profileId);
     wxFileOutputStream oStream(filename);
     wxTextOutputStream outText(oStream);
 
