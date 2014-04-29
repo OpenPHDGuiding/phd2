@@ -36,6 +36,10 @@
 #include "Refine_DefMap.h"
 #include <wx/grid.h>
 
+BEGIN_EVENT_TABLE(RefineDefMap, wxDialog)
+EVT_CLOSE(RefineDefMap::OnClose)
+END_EVENT_TABLE()
+
 RefineDefMap::RefineDefMap(wxWindow *parent) :
     wxDialog(parent, wxID_ANY, _("Refine Defect Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX)
 {
@@ -145,9 +149,11 @@ void RefineDefMap::FrameLayout()
     info.lastHotFactor.ToLong(&initHotFactor);
     pHotSlider = new wxSlider(this, wxID_ANY, initHotFactor, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pHotSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnHotChange, this);
+    pHotSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'hot'"));
     info.lastColdFactor.ToLong(&initColdFactor);
     pColdSlider = new wxSlider(this, wxID_ANY, initColdFactor, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pColdSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnColdChange, this);
+    pColdSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'cold'"));
     AddTableEntryPair(this, pAdjustmentGrid, _("Hot pixels"), pHotSlider);
     AddTableEntryPair(this, pAdjustmentGrid, _("Cold pixels"), pColdSlider);
     pAggressivenessGrp->Add(pAdjustmentGrid);
@@ -175,9 +181,6 @@ void RefineDefMap::FrameLayout()
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
     pButtonSizer->Add(
         pAddDefectBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
-    pButtonSizer->Add(
-        CreateButtonSizer(wxCANCEL),
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
 
     pVSizer->Add(pButtonSizer, wxSizerFlags().Center().Border(wxALL, 10));
@@ -225,7 +228,7 @@ void RefineDefMap::ApplyNewMap()
     pInfoGrid->SetCellValue(hotFactorLoc, wxString::Format("%d", pHotSlider->GetValue()));
     pInfoGrid->SetCellValue(coldFactorLoc, wxString::Format("%d", pColdSlider->GetValue()));
     pInfoGrid->SetCellValue(createTimeLoc, DefectMapTimeString());
-    pStatsGrid->SetCellValue(manualPixelLoc, "");          // Manual pixels will always be discarded
+    pStatsGrid->SetCellValue(manualPixelLoc, "0");          // Manual pixels will always be discarded
     pHotSlider->Enable(true);
     pColdSlider->Enable(true);
 }
@@ -316,8 +319,7 @@ void RefineDefMap::OnReset(wxCommandEvent& evt)
     pHotSlider->SetValue(initHotFactor);
     pColdSlider->SetValue(initColdFactor);
     Recalc();
-    ApplyNewMap();
-    ShowStatus(_("Original defect map now being used"), false);
+    ShowStatus(_("Settings restored to original values"), false);
 
 }
 // Show the pixel counts driven only by the aggressivness algorithms
@@ -325,6 +327,12 @@ void RefineDefMap::ShowCounts()
 {
     pStatsGrid->SetCellValue(hotPixelLoc, wxString::Format("%d", builder.GetHotPixelCnt()));
     pStatsGrid->SetCellValue(coldPixelLoc, wxString::Format("%d", builder.GetColdPixelCnt()));
+}
+// Hook the close event to tweak setting of 'build defect map' menu - mutual exclusion for now
+void RefineDefMap::OnClose(wxCloseEvent& evt)
+{
+    pFrame->darks_menu->FindItem(MENU_TAKEDARKS)->Enable(!pFrame->CaptureActive);
+    evt.Skip();
 }
 
 // We're modeless, so we need to clean up the global pointer to our dialog

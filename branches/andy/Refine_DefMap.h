@@ -81,6 +81,7 @@ private:
     void OnColdChange(wxCommandEvent& evt);
     void OnAddDefect(wxCommandEvent& evt);
     void OnReset(wxCommandEvent& evt);
+    void OnClose(wxCloseEvent& evt);
     void Recalc();
     void ApplyNewMap();
     void ShowStatus(const wxString msg, bool appending);
@@ -88,6 +89,7 @@ private:
     long initHotFactor;
     long initColdFactor;
     int manualPixelCount = 0;
+    DECLARE_EVENT_TABLE()
 };
 
 #endif REFINEDEFMAP_H_INCLUDED

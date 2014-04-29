@@ -436,9 +436,9 @@ void MyFrame::SetupMenuBar(void)
     darks_menu = new wxMenu();
     darks_menu->Append(MENU_TAKEDARKS, _("&Build Dark / Defect Map Library"), _("Build a dark library and/or a defect map for this profile"));
     m_takeDarksMenuInx = darks_menu->GetMenuItemCount() - 1;
+    darks_menu->Append(MENU_REFINEDEFECTMAP, _("Refine Defect Map"), _("Adjust parameters to modify the defect map"));
     darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
     darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Defect &Map"), _("Use the defect map for this profile"));
-    darks_menu->Append(MENU_REFINEDEFECTMAP, _("Refine Defect Map"), _("Adjust parameters to modify the defect map"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     wxMenu *indi_menu = new wxMenu;

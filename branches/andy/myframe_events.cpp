@@ -371,6 +371,10 @@ void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
         pRefineDefMap = (wxDialog*) new RefineDefMap(this);
 
     pRefineDefMap->Show();
+    // Don't let the user build a new defect map while we're trying to refine one; and it almost certainly makes sense
+    // to have a defect map loaded if the user wants to refine it
+    darks_menu->FindItemByPosition(m_takeDarksMenuInx)->Enable(false);  // Dialog restores it when its window is closed
+    LoadDefectMapHandler(true);
 }
 
 void MyFrame::OnToolBar(wxCommandEvent& evt)
