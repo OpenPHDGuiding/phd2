@@ -69,6 +69,7 @@ static inline void StartRow(int& row, int& column)
     row++;
     column = 0;
 }
+
 // Do the initial layout of the UI controls
 void RefineDefMap::FrameLayout()
 {
@@ -194,7 +195,7 @@ void RefineDefMap::FrameLayout()
     ShowStatus(_("Adjust sliders to increase/decrease pixels marked as defective"), false);
 }
 
-void RefineDefMap::ShowStatus(const wxString msg, bool appending)
+void RefineDefMap::ShowStatus(const wxString& msg, bool appending)
 {
     static wxString preamble;
 

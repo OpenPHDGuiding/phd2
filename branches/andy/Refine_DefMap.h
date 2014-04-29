@@ -82,7 +82,7 @@ private:
     void OnClose(wxCloseEvent& evt);
     void Recalc();
     void ApplyNewMap();
-    void ShowStatus(const wxString msg, bool appending);
+    void ShowStatus(const wxString& msg, bool appending);
     wxString DefectMapTimeString();
     long initHotFactor;
     long initColdFactor;
