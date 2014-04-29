@@ -368,7 +368,7 @@ void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
     }
 
     if (!pRefineDefMap)
-        pRefineDefMap = (wxDialog*) new RefineDefMap(this);
+        pRefineDefMap = new RefineDefMap(this);
 
     pRefineDefMap->Show();
     // Don't let the user build a new defect map while we're trying to refine one; and it almost certainly makes sense
