@@ -81,7 +81,7 @@ void RefineDefMap::FrameLayout()
     wxBoxSizer *pVSizer = new wxBoxSizer(wxVERTICAL);
     wxStaticBoxSizer *pInfoGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("General Information"));
     pInfoGrid = new wxGrid(this, wxID_ANY);
-    pInfoGrid->CreateGrid(4, 4);
+    pInfoGrid->CreateGrid(5, 4);
     pInfoGrid->SetRowLabelSize(1);
     pInfoGrid->SetColLabelSize(1);
     pInfoGrid->EnableEditing(false);
@@ -96,9 +96,9 @@ void RefineDefMap::FrameLayout()
     pInfoGrid->SetCellValue(info.cameraName, row, col++);
 
     StartRow(row, col);
-    pInfoGrid->SetCellValue(_("Exposure Time:"), row, col++);
+    pInfoGrid->SetCellValue(_("Master Dark Exposure Time:"), row, col++);
     pInfoGrid->SetCellValue(info.darkExposureTime, row, col++);
-    pInfoGrid->SetCellValue(_("Exposure Count:"), row, col++);
+    pInfoGrid->SetCellValue(_("Master Dark Exposure Count:"), row, col++);
     pInfoGrid->SetCellValue(info.darkCount, row, col++);
 
     StartRow(row, col);
@@ -112,13 +112,13 @@ void RefineDefMap::FrameLayout()
     StartRow(row, col);
     pInfoGrid->SetCellValue(_("Mean:"), row, col++);
     pInfoGrid->SetCellValue(wxString::Format("%.2f", stats.mean), row, col++);
-    pInfoGrid->SetCellValue(_("Sigma:"), row, col++);
+    pInfoGrid->SetCellValue(_("Standard Deviation:"), row, col++);
     pInfoGrid->SetCellValue(wxString::Format("%.2f", stats.stdev), row, col++);
     StartRow(row, col);
     pInfoGrid->SetCellValue(_("Median:"), row, col++);
-    pInfoGrid->SetCellValue(wxString::Format("%.2f", stats.median), row, col++);
-    pInfoGrid->SetCellValue(_("MAD:"), row, col++);
-    pInfoGrid->SetCellValue(wxString::Format("%.2f", stats.mad), row, col++);
+    pInfoGrid->SetCellValue(wxString::Format("%d", stats.median), row, col++);
+    pInfoGrid->SetCellValue(_("Median Absolute Deviation:"), row, col++);
+    pInfoGrid->SetCellValue(wxString::Format("%d", stats.mad), row, col++);
     pInfoGroup->Add(pInfoGrid);
     pVSizer->Add(pInfoGroup, wxSizerFlags(0).Border(wxALL, 15));
 
@@ -150,11 +150,11 @@ void RefineDefMap::FrameLayout()
     info.lastHotFactor.ToLong(&initHotFactor);
     pHotSlider = new wxSlider(this, wxID_ANY, initHotFactor, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pHotSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnHotChange, this);
-    pHotSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'hot'"));
+    pHotSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'hot', then click on 'generate' to build and load the new defect map"));
     info.lastColdFactor.ToLong(&initColdFactor);
     pColdSlider = new wxSlider(this, wxID_ANY, initColdFactor, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pColdSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnColdChange, this);
-    pColdSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'cold'"));
+    pColdSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'cold', then click on 'generate' to build and load the new defect map"));
     AddTableEntryPair(this, pAdjustmentGrid, _("Hot pixels"), pHotSlider);
     AddTableEntryPair(this, pAdjustmentGrid, _("Cold pixels"), pColdSlider);
     pAggressivenessGrp->Add(pAdjustmentGrid);
@@ -168,7 +168,7 @@ void RefineDefMap::FrameLayout()
 
     pApplyBtn = new wxButton(this, wxID_ANY, _("Generate"));
     pApplyBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &RefineDefMap::OnGenerate, this);
-    pApplyBtn->SetToolTip(_("Use the current parameters to build and load a new defect map"));
+    pApplyBtn->SetToolTip(_("Use the current aggressiveness settings to build and load a new defect map; this will discard any manually added bad pixels"));
 
     pAddDefectBtn = new wxButton(this, wxID_ANY, _("Add Defect"));
     pAddDefectBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &RefineDefMap::OnAddDefect, this);
@@ -290,7 +290,7 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
 {
     PHD_Point pixelLoc = pFrame->pGuider->CurrentPosition();
 
-    if (pFrame->pGuider->IsValidLockPosition(pixelLoc))
+    if (pFrame->pGuider->IsLocked())
     {
         wxPoint badspot((int)(pixelLoc.X + 0.5), (int)(pixelLoc.Y + 0.5));
         Debug.AddLine(wxString::Format("Current position returned as %.1f,%.1f", pixelLoc.X, pixelLoc.Y));
@@ -311,7 +311,7 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
         } // lock defect map
     }
     else
-        ShowStatus(_("Pixel position can't be marked as bad"), false);
+        ShowStatus(_("Pixel position not added - no star-like object recognized there"), false);
 }
 
 // Re-generate and load a defect map based on settings seen at app-startup; manually added pixels will be lost
