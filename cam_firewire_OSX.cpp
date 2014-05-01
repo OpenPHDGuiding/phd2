@@ -32,6 +32,7 @@
  *
  */
 
+#if defined (__APPLE__)
 #include "phd.h"
 #include "camera.h"
 #include "time.h"
@@ -350,3 +351,4 @@ bool Camera_FirewireClass::HasNonGuiCapture(void)
 {
     return true;
 }
+#endif

@@ -33,6 +33,7 @@
  */
 
 
+#if defined (__WINDOWS__)
 #include "phd.h"
 #include "camera.h"
 #include "image_math.h"
@@ -311,3 +312,4 @@ bool Camera_QHY5IIBase::CaptureFull(int duration, usImage& img) {
     return false;
 }
 */
+#endif
