@@ -1,3 +1,5 @@
+# makefile for Linux . Can be used as alternative to CMake
+
 all: phd2
 
 WX_CPPFLAGS ?= $(shell wx-config --cxxflags)
@@ -14,10 +16,10 @@ LDLIBS += -lusb-1.0
 
 CXX_SRC = $(wildcard *.cpp)
 
-# Omit some stuff for a start:
-# cam_firewire_OSX needs fixing to use libdc1394-22-dev proper
-CXX_SRC := $(filter-out cam_firewire_OSX.cpp,$(CXX_SRC))
-CXX_SRC := $(filter-out cam_QHY5IIbase.cpp,$(CXX_SRC))
+## Omit some stuff for a start:
+## cam_firewire_OSX needs fixing to use libdc1394-22-dev proper
+#CXX_SRC := $(filter-out cam_firewire_OSX.cpp,$(CXX_SRC))
+#CXX_SRC := $(filter-out cam_QHY5IIbase.cpp,$(CXX_SRC))
 
 CXX_OBJ = $(CXX_SRC:.cpp=.o)
 
