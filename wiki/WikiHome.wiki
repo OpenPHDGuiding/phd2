@@ -1,0 +1,22 @@
+#summary PHD2 wiki-homepage, link page
+#sidebar TableOfContents
+
+= open-phd-guiding / PHD2 links =
+
+  * http://openphdguiding.org/ , new PHD2 home. maintained by Andrew
+  * http://code.google.com/p/open-phd-guiding/ , vcs , bug tracker and wiki (this site)
+  * irc://irc.freenode.net/#phd , developer and user chat (irc)
+
+= Wiki pages =
+
+  * [BuildingPHD2OnWindows]
+  * [BuildingPHD2OnOSX]
+  * [BuildingPHD2OnLinux]
+
+  * [V2_Documentation]
+  * [EventMonitoring]
+  * [SocketServerInterface]
+
+  * [DriftAlignmentWithPHD2]
+  * [HardwareReadyToPort]
+  * [Screenshots]
