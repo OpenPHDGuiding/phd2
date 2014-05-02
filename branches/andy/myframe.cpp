@@ -433,11 +433,11 @@ void MyFrame::SetupMenuBar(void)
     bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("Delete all\tCtrl-B"), _("Remove all bookmarks"));
 
     darks_menu = new wxMenu();
-    darks_menu->Append(MENU_TAKEDARKS, _("&Build Dark / Defect Map Library"), _("Build a dark library and/or a defect map for this profile"));
+    darks_menu->Append(MENU_TAKEDARKS, _("&Build Dark Library"), _("Build a dark library for this profile"));
     m_takeDarksMenuInx = darks_menu->GetMenuItemCount() - 1;
-    darks_menu->Append(MENU_REFINEDEFECTMAP, _("Refine Defect Map"), _("Adjust parameters to modify the defect map"));
+    darks_menu->Append(MENU_REFINEDEFECTMAP, _("Build Bad-pixel Map"), _("Adjust parameters to create or modify the bad-pixel map"));
     darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
-    darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Defect &Map"), _("Use the defect map for this profile"));
+    darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Bad-pixel &Map"), _("Use the bad-pixel map for this profile"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     wxMenu *indi_menu = new wxMenu;
@@ -1529,7 +1529,12 @@ static wxString DarkLibFileName(int profileId)
 void MyFrame::SetDarkMenuState()
 {
     darks_menu->FindItem(MENU_LOADDARK)->Enable(wxFileExists(DarkLibFileName(pConfig->GetCurrentProfileId())));
-    darks_menu->FindItem(MENU_LOADDEFECTMAP)->Enable(DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()));
+    bool defectmap_avail = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId());
+    darks_menu->FindItem(MENU_LOADDEFECTMAP)->Enable(defectmap_avail);
+    if (defectmap_avail)
+        darks_menu->FindItem(MENU_REFINEDEFECTMAP)->SetText(_("Refine Bad-pixel Map"));
+    else
+        darks_menu->FindItem(MENU_REFINEDEFECTMAP)->SetText(_("Build Bad-pixel Map"));
 }
 
 void MyFrame::LoadDarkLibrary()

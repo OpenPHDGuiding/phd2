@@ -42,12 +42,9 @@ private:
     bool m_cancelling;
     bool m_started;
     // wx UI controls
-    wxCheckBox *m_pCreateDarks;
     wxComboBox *m_pDarkMinExpTime;
     wxComboBox *m_pDarkMaxExpTime;
     wxSpinCtrl *m_pDarkCount;
-    wxCheckBox *m_pCreateDMap;
-    wxSlider   *m_pSigmaX;
     wxSpinCtrl *m_pDefectExpTime;
     wxSpinCtrl *m_pNumDefExposures;
     wxTextCtrl *m_pNotes;
@@ -57,9 +54,6 @@ private:
     wxStatusBar *m_pStatusBar;
     wxButton *m_pStopBtn;
     wxArrayString m_expStrings;
-    void SetUIState(void);
-    void OnUseDarks(wxCommandEvent& evt);
-    void OnUseDMap(wxCommandEvent& evt);
     void OnStart(wxCommandEvent& evt);
     void OnStop(wxCommandEvent& evt);
     void OnReset(wxCommandEvent& evt);
@@ -68,10 +62,11 @@ private:
     void CreateMasterDarkFrame(usImage& dark, int expTime, int frameCount);
 
 public:
-    DarksDialog(wxWindow *parent);
+    DarksDialog(wxWindow *parent, bool darkLibrary);
     ~DarksDialog(void);
 
 private:
+    bool buildDarkLib;
 
 };
 

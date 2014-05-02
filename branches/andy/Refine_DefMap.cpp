@@ -34,26 +34,34 @@
 
 #include "phd.h"
 #include "Refine_DefMap.h"
+#include "darks_dialog.h"
 
 BEGIN_EVENT_TABLE(RefineDefMap, wxDialog)
 EVT_CLOSE(RefineDefMap::OnClose)
 END_EVENT_TABLE()
 
+static const double DefDMSigmaX = 75;
+
 RefineDefMap::RefineDefMap(wxWindow *parent) :
-    wxDialog(parent, wxID_ANY, _("Refine Defect Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX)
+    wxDialog(parent, wxID_ANY, _("Refine bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX)
 {
+
     manualPixelCount = 0;
     this->SetSize(wxSize(900, 400));
-    darks.LoadDarks();
-    if (darks.masterDark.ImageData && darks.filteredDark.ImageData)
+    if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()))
     {
-        builder.Init(darks);
+        RebuildMasterDarks();
+    }
+    if (DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()))
+    {
+        GetBaselineStats();
         FrameLayout();
-        builder.SetAggressiveness(initColdFactor, initHotFactor);
-        ShowCounts();
+        GetBadPxCounts();
     }
     else
-        Destroy();
+    {
+        Destroy();      // No master dark files to work with, user didn't build them
+    }
 };
 
 // Utility function to add the <label, ctrl> pairs to a flexgrid
@@ -78,8 +86,15 @@ void RefineDefMap::FrameLayout()
 
     GetMiscInfo(info);
     // Create the vertical sizer and first group box we're going to need
-    wxBoxSizer *pVSizer = new wxBoxSizer(wxVERTICAL);
-    wxStaticBoxSizer *pInfoGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("General Information"));
+    pVSizer = new wxBoxSizer(wxVERTICAL);
+
+    pShowDetails = new wxCheckBox(this, wxID_ANY, _("Show Details"));
+    pShowDetails->SetToolTip(_("Click to display detailed statistics of master dark frame used to compute bad-pixel map"));
+    pShowDetails->SetValue(pConfig->Profile.GetBoolean("/camera/dmap_show_details", true));
+    pShowDetails->Bind(wxEVT_CHECKBOX, &RefineDefMap::OnDetails, this);
+    pVSizer->Add(pShowDetails, wxSizerFlags(0).Border(wxALL, 10));
+
+    pInfoGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("General Information"));
     pInfoGrid = new wxGrid(this, wxID_ANY);
     pInfoGrid->CreateGrid(5, 4);
     pInfoGrid->SetRowLabelSize(1);
@@ -144,17 +159,20 @@ void RefineDefMap::FrameLayout()
     pStatsGroup->Add(pStatsGrid);
     pVSizer->Add(pStatsGroup, wxSizerFlags(0).Border(wxALL, 10));
 
+    pRebuildDarks = new wxCheckBox(this, wxID_ANY, _("Rebuild Master Dark Frame"));
+    pRebuildDarks->SetToolTip(_("Click to re-acquire the master dark frames needed to compute an initial bad-pixel map"));
+    pVSizer->Add(pRebuildDarks, wxSizerFlags(0).Border(wxALL, 10));
     // Put the aggressiveness sliders in
     wxStaticBoxSizer *pAggressivenessGrp = new wxStaticBoxSizer(wxVERTICAL, this, _("Aggressiveness"));
     pAdjustmentGrid = new wxFlexGridSizer(1, 4, 5, 15);
     info.lastHotFactor.ToLong(&initHotFactor);
     pHotSlider = new wxSlider(this, wxID_ANY, initHotFactor, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pHotSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnHotChange, this);
-    pHotSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'hot', then click on 'generate' to build and load the new defect map"));
+    pHotSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'hot', then click on 'generate' to build and load the new bad-pixel map"));
     info.lastColdFactor.ToLong(&initColdFactor);
     pColdSlider = new wxSlider(this, wxID_ANY, initColdFactor, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pColdSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnColdChange, this);
-    pColdSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'cold', then click on 'generate' to build and load the new defect map"));
+    pColdSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'cold', then click on 'generate' to build and load the new bad-pixel map"));
     AddTableEntryPair(this, pAdjustmentGrid, _("Hot pixels"), pHotSlider);
     AddTableEntryPair(this, pAdjustmentGrid, _("Cold pixels"), pColdSlider);
     pAggressivenessGrp->Add(pAdjustmentGrid);
@@ -168,11 +186,11 @@ void RefineDefMap::FrameLayout()
 
     pApplyBtn = new wxButton(this, wxID_ANY, _("Generate"));
     pApplyBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &RefineDefMap::OnGenerate, this);
-    pApplyBtn->SetToolTip(_("Use the current aggressiveness settings to build and load a new defect map; this will discard any manually added bad pixels"));
+    pApplyBtn->SetToolTip(_("Use the current aggressiveness settings to build and load a new bad-pixel map; this will discard any manually added bad pixels"));
 
-    pAddDefectBtn = new wxButton(this, wxID_ANY, _("Add Defect"));
+    pAddDefectBtn = new wxButton(this, wxID_ANY, _("Add bad pixel"));
     pAddDefectBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &RefineDefMap::OnAddDefect, this);
-    pAddDefectBtn->SetToolTip(_("Click on a bad pixel in the image display; then click on this button to add it to the in-use defect map"));
+    pAddDefectBtn->SetToolTip(_("Click on a bad pixel in the image display; then click on this button to add it to the in-use bad-pixel map"));
 
     pButtonSizer->Add(
         pResetBtn,
@@ -191,8 +209,34 @@ void RefineDefMap::FrameLayout()
     pStatusBar->SetFieldsCount(1);
     pVSizer->Add(pStatusBar, 0, wxGROW);
 
+    ShowDetailGroup(pShowDetails->GetValue());
     SetSizerAndFit(pVSizer);
-    ShowStatus(_("Adjust sliders to increase/decrease pixels marked as defective"), false);
+    ShowStatus(_("Adjust sliders to increase/decrease pixels marked as bad"), false);
+
+}
+
+bool RefineDefMap::RebuildMasterDarks()
+{
+    bool rslt = false;
+    DarksDialog dlg(this, false);
+
+    if (dlg.ShowModal() == wxOK)
+    {
+        darks.LoadDarks();
+        if (darks.filteredDark.ImageData && darks.masterDark.ImageData)
+        {
+            builder.Init(darks);
+            rslt = true;
+        }
+    }
+    return rslt;
+}
+// A comparatively expensive initialization to compute bad-pixel counts using a worst-case threshold of 100%.  Once this is
+// done, subsequent adjustments to the aggressiveness settings are inexpensive
+void RefineDefMap::GetBaselineStats()
+{
+    darks.LoadDarks();
+    builder.Init(darks);
 }
 
 void RefineDefMap::ShowStatus(const wxString& msg, bool appending)
@@ -216,13 +260,13 @@ void RefineDefMap::ApplyNewMap()
     // This can take a bit of time...
     pHotSlider->Enable(false);
     pColdSlider->Enable(false);
-    ShowStatus(_("Building new defect map"), false);
+    ShowStatus(_("Building new bad-pixel map"), false);
     builder.BuildDefectMap(newMap);
-    ShowStatus(_("Saving new defect map file"), false);
+    ShowStatus(_("Saving new bad-pixel map file"), false);
     newMap.Save(builder.GetMapInfo());
-    ShowStatus(_("Loading new defect map"), false);
+    ShowStatus(_("Loading new bad-pixel map"), false);
     pFrame->LoadDefectMapHandler(true);
-    ShowStatus(_("New defect map now being used"), false);
+    ShowStatus(_("New bad-pixel map now being used"), false);
     pConfig->Profile.SetInt("/camera/dmap_hot_factor", pHotSlider->GetValue());
     pConfig->Profile.SetInt("/camera/dmap_cold_factor", pColdSlider->GetValue());
     // Since we've saved the defect map, update the baseline info about aggressiveness settings
@@ -236,6 +280,14 @@ void RefineDefMap::ApplyNewMap()
 
 void RefineDefMap::OnGenerate(wxCommandEvent& evt)
 {
+    if (pRebuildDarks->GetValue())
+        if (RebuildMasterDarks())
+            pRebuildDarks->SetValue(false);
+        else
+        {
+            ShowStatus(_("Master dark frames NOT rebuilt"), false);
+            return;         // Couldn't do what we were asked
+        }
     ApplyNewMap();
 }
 
@@ -260,17 +312,16 @@ void RefineDefMap::GetMiscInfo(MiscInfo& info)
     info.cameraName = pCamera->Name;
     info.darkExposureTime = wxString::Format("%.1f",(darks.masterDark.ImgExpDur)/1000.0);
     info.darkCount = wxString::Format("%d", darks.masterDark.ImgStackCnt);
-    info.lastHotFactor = wxString::Format("%d", pConfig->Profile.GetInt("/camera/dmap_hot_factor", 75));
-    info.lastColdFactor = wxString::Format("%d", pConfig->Profile.GetInt("/camera/dmap_cold_factor", 75));
+    info.lastHotFactor = wxString::Format("%d", pConfig->Profile.GetInt("/camera/dmap_hot_factor", DefDMSigmaX));
+    info.lastColdFactor = wxString::Format("%d", pConfig->Profile.GetInt("/camera/dmap_cold_factor", DefDMSigmaX));
 }
 
 // Recompute hot/cold pixel counts based on current aggressiveness settings
 void RefineDefMap::Recalc()
 {
-    builder.SetAggressiveness(pColdSlider->GetValue(), pHotSlider->GetValue());
     manualPixelCount = 0;
     pStatsGrid->SetCellValue(manualPixelLoc, "0");          // Manual pixels will always be discarded
-    ShowCounts();
+    GetBadPxCounts();
 }
 
 void RefineDefMap::OnHotChange(wxCommandEvent& evt)
@@ -307,14 +358,14 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
                 pStatsGrid->SetCellValue(manualPixelLoc, wxString::Format("%d", manualPixelCount));
             }
             else
-                ShowStatus(_("You must first load a defect map"), false);
+                ShowStatus(_("You must first load a bad-pixel map"), false);
         } // lock defect map
     }
     else
         ShowStatus(_("Pixel position not added - no star-like object recognized there"), false);
 }
 
-// Re-generate and load a defect map based on settings seen at app-startup; manually added pixels will be lost
+// Re-generate a defect map based on settings seen at app-startup; manually added pixels will be lost
 void RefineDefMap::OnReset(wxCommandEvent& evt)
 {
     pHotSlider->SetValue(initHotFactor);
@@ -323,16 +374,30 @@ void RefineDefMap::OnReset(wxCommandEvent& evt)
     ShowStatus(_("Settings restored to original values"), false);
 }
 
-// Show the pixel counts driven only by the aggressivness algorithms
-void RefineDefMap::ShowCounts()
+// Get a recalculation of the bad-pixel counts based on current user aggressiveness settings
+void RefineDefMap::GetBadPxCounts()
 {
+    builder.SetAggressiveness(pColdSlider->GetValue(), pHotSlider->GetValue());
     pStatsGrid->SetCellValue(hotPixelLoc, wxString::Format("%d", builder.GetHotPixelCnt()));
     pStatsGrid->SetCellValue(coldPixelLoc, wxString::Format("%d", builder.GetColdPixelCnt()));
 }
+
+void RefineDefMap::ShowDetailGroup(bool visible)
+{
+    pInfoGroup->Show(visible);
+
+}
+void RefineDefMap::OnDetails(wxCommandEvent &ev)
+{
+    ShowDetailGroup(pShowDetails->GetValue());
+    SetSizerAndFit(pVSizer);
+}
+
 // Hook the close event to tweak setting of 'build defect map' menu - mutual exclusion for now
 void RefineDefMap::OnClose(wxCloseEvent& evt)
 {
     pFrame->darks_menu->FindItem(MENU_TAKEDARKS)->Enable(!pFrame->CaptureActive);
+    pConfig->Profile.SetBoolean("/camera/dmap_show_details", pShowDetails->GetValue());
     evt.Skip();
 }
 

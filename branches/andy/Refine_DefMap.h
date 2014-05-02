@@ -56,7 +56,7 @@ private:
     DefectMapBuilder builder;
 
     void FrameLayout();
-    void ShowCounts();
+    void GetBadPxCounts();
     wxGridCellCoords hotPixelLoc;
     wxGridCellCoords coldPixelLoc;
     wxGridCellCoords hotFactorLoc;
@@ -73,6 +73,10 @@ private:
     wxButton *pAddDefectBtn;
     wxButton *pCancelBtn;
     wxStatusBar *pStatusBar;
+    wxCheckBox *pRebuildDarks;
+    wxCheckBox *pShowDetails;
+    wxSizer *pVSizer;
+    wxStaticBoxSizer *pInfoGroup;
     void GetMiscInfo(MiscInfo& info);
     void OnGenerate(wxCommandEvent& evt);
     void OnHotChange(wxCommandEvent& evt);
@@ -80,10 +84,14 @@ private:
     void OnAddDefect(wxCommandEvent& evt);
     void OnReset(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
+    void OnDetails(wxCommandEvent &ev);
     void Recalc();
     void ApplyNewMap();
     void ShowStatus(const wxString& msg, bool appending);
     wxString DefectMapTimeString();
+    void GetBaselineStats();
+    bool RebuildMasterDarks();
+    void ShowDetailGroup(bool visible);
     long initHotFactor;
     long initColdFactor;
     int manualPixelCount = 0;

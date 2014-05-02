@@ -277,7 +277,7 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
     }
     else
     {
-        DarksDialog dlg(this);
+        DarksDialog dlg(this, true);
 
         dlg.ShowModal();
         pCamera->SelectDark(RequestedExposureDuration());       // Might be req'd if user cancelled in midstream
@@ -289,7 +289,7 @@ void MyFrame::LoadDarkHandler(bool checkIt)
 {
     if (!pCamera || !pCamera->Connected)
     {
-        Alert(_("You must connect a camera before loading dark frames"));
+        Alert(_("You must connect a camera before loading a dark library"));
         darks_menu->FindItem(MENU_LOADDARK)->Check(false);
         return;
     }
@@ -325,7 +325,7 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
 {
     if (!pCamera || !pCamera->Connected)
     {
-        Alert(_("You must connect a camera before loading a defect map"));
+        Alert(_("You must connect a camera before loading a bad-pixel map"));
         darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
         return;
     }
@@ -350,7 +350,7 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
         }
         pCamera->ClearDefectMap();
         darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
-        SetStatusText(_("Defect map unloaded"));
+        SetStatusText(_("Bad-pixel map unloaded"));
     }
 }
 
