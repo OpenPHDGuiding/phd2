@@ -6,6 +6,7 @@
   * http://openphdguiding.org/ , new PHD2 home. maintained by Andrew
   * http://code.google.com/p/open-phd-guiding/ , vcs , bug tracker and wiki (this site)
   * irc://irc.freenode.net/#phd , developer and user chat (irc)
+  * https://groups.google.com/forum/#!forum/open-phd-guiding (forum)
 
 = Wiki pages =
 
