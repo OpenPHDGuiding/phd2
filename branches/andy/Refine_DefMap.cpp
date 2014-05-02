@@ -45,18 +45,21 @@ static const double DefDMSigmaX = 75;
 RefineDefMap::RefineDefMap(wxWindow *parent) :
     wxDialog(parent, wxID_ANY, _("Refine bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX)
 {
-
+    bool firstTime = false;
     manualPixelCount = 0;
     this->SetSize(wxSize(900, 400));
     if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()))
     {
-        RebuildMasterDarks();
+        if (RebuildMasterDarks())
+            firstTime = true;       // Need to get the UI built before finishing up
     }
-    if (DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()))
+    if (DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()) || firstTime)
     {
         GetBaselineStats();
         FrameLayout();
         GetBadPxCounts();
+        if (firstTime)
+            ApplyNewMap();
     }
     else
     {
@@ -88,7 +91,11 @@ void RefineDefMap::FrameLayout()
     // Create the vertical sizer and first group box we're going to need
     pVSizer = new wxBoxSizer(wxVERTICAL);
 
-    pShowDetails = new wxCheckBox(this, wxID_ANY, _("Show Details"));
+    pRebuildDarks = new wxCheckBox(this, wxID_ANY, _("Rebuild Master Dark Frame"));
+    pRebuildDarks->SetToolTip(_("Click to re-acquire the master dark frames needed to compute an initial bad-pixel map"));
+    pVSizer->Add(pRebuildDarks, wxSizerFlags(0).Border(wxALL, 10));
+
+    pShowDetails = new wxCheckBox(this, wxID_ANY, _("Show Master Dark Details"));
     pShowDetails->SetToolTip(_("Click to display detailed statistics of master dark frame used to compute bad-pixel map"));
     pShowDetails->SetValue(pConfig->Profile.GetBoolean("/camera/dmap_show_details", true));
     pShowDetails->Bind(wxEVT_CHECKBOX, &RefineDefMap::OnDetails, this);
@@ -159,9 +166,6 @@ void RefineDefMap::FrameLayout()
     pStatsGroup->Add(pStatsGrid);
     pVSizer->Add(pStatsGroup, wxSizerFlags(0).Border(wxALL, 10));
 
-    pRebuildDarks = new wxCheckBox(this, wxID_ANY, _("Rebuild Master Dark Frame"));
-    pRebuildDarks->SetToolTip(_("Click to re-acquire the master dark frames needed to compute an initial bad-pixel map"));
-    pVSizer->Add(pRebuildDarks, wxSizerFlags(0).Border(wxALL, 10));
     // Put the aggressiveness sliders in
     wxStaticBoxSizer *pAggressivenessGrp = new wxStaticBoxSizer(wxVERTICAL, this, _("Aggressiveness"));
     pAdjustmentGrid = new wxFlexGridSizer(1, 4, 5, 15);

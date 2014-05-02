@@ -664,7 +664,8 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
         Debug.AddLine("ST4HasGuideOutput=%d", m_pCamera->ST4HasGuideOutput());
 
         AutoLoadDefectMap();
-        pFrame->darks_menu->FindItem(MENU_REFINEDEFECTMAP)->Enable(DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()));
+        pFrame->SetDarkMenuState();
+        // pFrame->darks_menu->FindItem(MENU_REFINEDEFECTMAP)->Enable(DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()));
 
         wxString msg = _("Camera Connected");
         if (pCamera->CurrentDefectMap)
