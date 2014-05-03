@@ -86,7 +86,7 @@ if (MSVC)
     endif ("${phd_SCOPES}" MATCHES ".*GUIDE_ASCOM.*")
 else (MSVC)
     set(phd_SCOPES
-#       GUIDE_INDI
+        GUIDE_INDI
        )
 endif (MSVC)
 
@@ -100,7 +100,7 @@ if (MSVC)
 else (MSVC)
     set(phd_CAMERAS
         SIMULATOR
-#       INDI_CAMERA
+        INDI_CAMERA
        )
 endif (MSVC)
 
@@ -119,6 +119,19 @@ if (MSVC)
     set(phd_SCOPES ${phd_SCOPES}
         GUIDE_ASCOM
        )
+else (MSVC)
+	set(phd_SRCS ${phd_SRCS} 
+		${CMAKE_SOURCE_DIR}/libindiclient/indi.c
+   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indigui.cpp
+   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_io.cpp
+   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_list.cpp
+   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_config.cpp
+   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indisave.cpp
+   		${CMAKE_SOURCE_DIR}/libindiclient/wx/wxled.cpp
+   		${CMAKE_SOURCE_DIR}/libindiclient/wx/wxchecktreectrl.cpp
+   		${CMAKE_SOURCE_DIR}/libindiclient/base64.c
+   		${CMAKE_SOURCE_DIR}/libindiclient/lilxml.c
+	)
 ENDIF (MSVC)
 
 if (V4L_OK)

@@ -37,26 +37,26 @@
 
 #if defined (__WINDOWS__)
 
-#define GUIDE_ONCAMERA
-#define GUIDE_ONSTEPGUIDER
-#define GUIDE_ASCOM
-#define GUIDE_GPUSB
-#define GUIDE_GPINT
+    #define GUIDE_ONCAMERA
+    #define GUIDE_ONSTEPGUIDER
+    #define GUIDE_ASCOM
+    #define GUIDE_GPUSB
+    #define GUIDE_GPINT
 
 #elif defined (__APPLE__)
 
-#define GUIDE_ONCAMERA
-#define GUIDE_GPUSB
-#define GUIDE_GCUSBST4
-#define GUIDE_EQUINOX
-//#define GUIDE_VOYAGER
-//#define GUIDE_NEB
-#define GUIDE_EQMAC
+    #define GUIDE_ONCAMERA
+    #define GUIDE_GPUSB
+    #define GUIDE_GCUSBST4
+    #define GUIDE_EQUINOX
+    //#define GUIDE_VOYAGER
+    //#define GUIDE_NEB
+    #define GUIDE_EQMAC
 
 #elif defined (__LINUX__)
 
-#define GUIDE_ONCAMERA
-#define GUIDE_ONSTEPGUIDER
+    #define GUIDE_ONCAMERA
+    #define GUIDE_ONSTEPGUIDER
 
 #endif // WINDOWS/APPLE/LINUX
 
@@ -70,5 +70,6 @@
 #include "scope_equinox.h"
 #include "scope_eqmac.h"
 #include "scope_GC_USBST4.h"
+#include "scope_INDI.h"
 
 #endif /* SCOPES_H_INCLUDED */
