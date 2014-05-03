@@ -95,6 +95,8 @@
 
 #elif defined (__LINUX__)
 # define CAM_QHY5
+// this moved to CMakeLists.txt # define INDI_CAMERA
+// if we want it here instead we need to fix the plain trunk/Makefile
 #endif
 
 // Currently unused
