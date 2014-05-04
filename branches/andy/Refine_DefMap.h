@@ -79,8 +79,8 @@ private:
     wxStaticBoxSizer *pInfoGroup;
     void GetMiscInfo(MiscInfo& info);
     void OnGenerate(wxCommandEvent& evt);
-    void OnHotChange(wxCommandEvent& evt);
-    void OnColdChange(wxCommandEvent& evt);
+    void OnHotChange(wxScrollEvent& evt);
+    void OnColdChange(wxScrollEvent& evt);
     void OnAddDefect(wxCommandEvent& evt);
     void OnReset(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);

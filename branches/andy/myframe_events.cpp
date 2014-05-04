@@ -363,7 +363,7 @@ void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
 {
     if (!pMount || !pMount->IsConnected())
     {
-        wxMessageBox(_("Please connect a mount first."), _("Refine Defect Map"));
+        wxMessageBox(_("Please connect a camera first."), _("Build Defect Map"));
         return;
     }
 

@@ -280,6 +280,7 @@ void RefineDefMap::ApplyNewMap()
     pStatsGrid->SetCellValue(manualPixelLoc, "0");          // Manual pixels will always be discarded
     pHotSlider->Enable(true);
     pColdSlider->Enable(true);
+    pFrame->SetDarkMenuState();                     // Get enabled states straightened out
 }
 
 void RefineDefMap::OnGenerate(wxCommandEvent& evt)
@@ -323,18 +324,21 @@ void RefineDefMap::GetMiscInfo(MiscInfo& info)
 // Recompute hot/cold pixel counts based on current aggressiveness settings
 void RefineDefMap::Recalc()
 {
-    manualPixelCount = 0;
-    pStatsGrid->SetCellValue(manualPixelLoc, "0");          // Manual pixels will always be discarded
+    if (manualPixelCount != 0)
+    {
+        manualPixelCount = 0;
+        pStatsGrid->SetCellValue(manualPixelLoc, "0");          // Manual pixels will always be discarded
+    }
     GetBadPxCounts();
 }
 
-void RefineDefMap::OnHotChange(wxCommandEvent& evt)
+void RefineDefMap::OnHotChange(wxScrollEvent& evt)
 {
     Recalc();
     pStatsGrid->SetCellBackgroundColour(hotPixelLoc.GetRow(), hotPixelLoc.GetCol(), "light blue");
 }
 
-void RefineDefMap::OnColdChange(wxCommandEvent& evt)
+void RefineDefMap::OnColdChange(wxScrollEvent& evt)
 {
     Recalc();
     pStatsGrid->SetCellBackgroundColour(coldPixelLoc.GetRow(), coldPixelLoc.GetCol(), "light blue");
