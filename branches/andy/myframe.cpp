@@ -677,7 +677,6 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddControl(Gamma_Slider, _("Gamma"));
     MainToolbar->AddSeparator();
     MainToolbar->AddTool(BUTTON_ADVANCED, _("Advanced parameters"), brain_bmp, _("Advanced parameters"));
-    MainToolbar->AddSpacer(40);
     MainToolbar->AddControl(Setup_Button, _("Cam Dialog"));
     MainToolbar->Realize();
     MainToolbar->EnableTool(BUTTON_LOOP,false);
