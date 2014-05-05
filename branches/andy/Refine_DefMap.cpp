@@ -172,10 +172,12 @@ void RefineDefMap::FrameLayout()
     info.lastHotFactor.ToLong(&initHotFactor);
     pHotSlider = new wxSlider(this, wxID_ANY, initHotFactor, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pHotSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnHotChange, this);
+    pHotSlider->Bind(wxEVT_SCROLL_THUMBTRACK, &RefineDefMap::OnHotChange, this);
     pHotSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'hot', then click on 'generate' to build and load the new bad-pixel map"));
     info.lastColdFactor.ToLong(&initColdFactor);
     pColdSlider = new wxSlider(this, wxID_ANY, initColdFactor, 0, 100, wxPoint(-1, -1), wxSize(200, -1), wxSL_HORIZONTAL | wxSL_VALUE_LABEL);
     pColdSlider->Bind(wxEVT_SCROLL_CHANGED, &RefineDefMap::OnColdChange, this);
+    pColdSlider->Bind(wxEVT_SCROLL_THUMBTRACK, &RefineDefMap::OnColdChange, this);
     pColdSlider->SetToolTip(_("Move this slider to increase or decrease the number of pixels that will be treated as 'cold', then click on 'generate' to build and load the new bad-pixel map"));
     AddTableEntryPair(this, pAdjustmentGrid, _("Hot pixels"), pHotSlider);
     AddTableEntryPair(this, pAdjustmentGrid, _("Cold pixels"), pColdSlider);
