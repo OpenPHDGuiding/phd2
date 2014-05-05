@@ -250,12 +250,13 @@ wxArrayString Scope::List(void)
 #endif
 #ifdef GUIDE_EQUINOX
     ScopeList.Add(_T("Equinox 6"));
-#endif
-#ifdef GUIDE_EQUINOX
     ScopeList.Add(_T("EQMAC"));
 #endif
 #ifdef GUIDE_GCUSBST4
     ScopeList.Add(_T("GC USB ST4"));
+#endif
+#ifdef GUIDE_INDI
+    ScopeList.Add(_T("INDI"));
 #endif
 
     ScopeList.Sort(&CompareNoCase);
@@ -336,7 +337,9 @@ Scope *Scope::Factory(const wxString& choice)
         }
 #endif
 #ifdef GUIDE_INDI
-        This is broken
+        else if (choice.Find(_T("INDI")) + 1) {
+            pReturn = new ScopeINDI();
+        }
 #endif
         else {
             throw ERROR_INFO("ScopeFactory: Unknown Scope choice");
