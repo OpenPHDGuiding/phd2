@@ -32,11 +32,10 @@
  *
  */
 
-
-#if defined (__WINDOWS__)
 #include "phd.h"
-#include "camera.h"
-#include "image_math.h"
+
+#if defined(QHY5II) || defined(QHY5LII)
+
 #include "cam_QHY5II.h"
 
 typedef DWORD (CALLBACK* Q5II_DW_V)(void);
@@ -312,4 +311,5 @@ bool Camera_QHY5IIBase::CaptureFull(int duration, usImage& img) {
     return false;
 }
 */
+
 #endif

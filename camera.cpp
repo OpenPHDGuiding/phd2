@@ -517,7 +517,7 @@ GuideCamera *GuideCamera::Factory(wxString choice)
 #if defined (INDI_CAMERA)
         else if (choice.Find(_T("INDI Camera")) + 1) {
             pReturn = new Camera_INDIClass();
-}
+        }
 #endif
 #if defined (V4L_CAMERA)
         else if (choice.Find(_T("V4L(2) Camera")) + 1) {
