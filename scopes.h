@@ -57,6 +57,7 @@
 
     #define GUIDE_ONCAMERA
     #define GUIDE_ONSTEPGUIDER
+    #define GUIDE_INDI
 
 #endif // WINDOWS/APPLE/LINUX
 

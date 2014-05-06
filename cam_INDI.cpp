@@ -1,5 +1,5 @@
 /*
- *  cam_INI.cpp
+ *  cam_INDI.cpp
  *  PHD Guiding
  *
  *  Created by Geoffrey Hausheer.
@@ -33,7 +33,9 @@
  */
 
 #include "phd.h"
+
 #ifdef INDI_CAMERA
+
 #include "camera.h"
 
 #include "time.h"
@@ -45,10 +47,10 @@
 
 extern long INDIport;
 extern wxString INDIhost;
+extern wxString INDICameraName;
 extern struct indi_t *INDIClient;
 
-void camera_capture_cb(struct indi_prop_t *iprop, void *data)
-{
+static void camera_capture_cb(struct indi_prop_t *iprop, void *data) {
     Camera_INDIClass *cb = (Camera_INDIClass *)(data);
     cb->blob_elem = indi_find_first_elem(iprop);
     indi_dev_enable_blob(iprop->idev, FALSE);
@@ -56,30 +58,28 @@ void camera_capture_cb(struct indi_prop_t *iprop, void *data)
     cb->modal = false;
 }
 
-Camera_INDIClass::Camera_INDIClass()
-{
-    Connected = FALSE;
-    Name=_T("INDI Camera");
-    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
-    FullSize = wxSize(640,480);
-}
-
-static void connect_cb(struct indi_prop_t *iprop, void *data)
-{
+static void connect_cb(struct indi_prop_t *iprop, void *data) {
+//printf("entering cam_INDI connect_cb\n");
     Camera_INDIClass *cb = (Camera_INDIClass *)(data);
     cb->Connected = (iprop->state == INDI_STATE_IDLE || iprop->state == INDI_STATE_OK) && indi_prop_get_switch(iprop, "CONNECT");
     printf("Camera connected state: %d\n", cb->Connected);
     cb->CheckState();
 }
 
-static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data)
-{
+static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data) {
+//printf("entering cam_INDI new_prop_cb\n");
     Camera_INDIClass *cb = (Camera_INDIClass *)(callback_data);
     return cb->NewProp(iprop);
 }
 
-void Camera_INDIClass::CheckState()
-{
+Camera_INDIClass::Camera_INDIClass() {
+    Connected = FALSE;
+    INDICameraName=_T("INDI Camera");
+    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
+    FullSize = wxSize(640,480);
+}
+
+void Camera_INDIClass::CheckState() {
     if(has_blob && Connected && (expose_prop || video_prop)) {
         if (! ready) {
             printf("Camera is ready\n");
@@ -91,8 +91,7 @@ void Camera_INDIClass::CheckState()
     }
 }
 
-void Camera_INDIClass::NewProp(struct indi_prop_t *iprop)
-{
+void Camera_INDIClass::NewProp(struct indi_prop_t *iprop) {
     /* property to set exposure */
     if (iprop->type == INDI_PROP_BLOB) {
         printf("Found BLOB property for camera %s\n", iprop->idev->name);
@@ -139,11 +138,11 @@ bool Camera_INDIClass::Connect() {
             return true;
         }
     }
-    if (Name.IsEmpty()) {
+    if (INDICameraName.IsEmpty()) {
         printf("No INDI camera is set.  Please set INDIcam in the preferences file\n");
         return true;
     }
-    indi_device_add_cb(INDIClient, Name.ToAscii(), (IndiDevCB)new_prop_cb, this);
+    indi_device_add_cb(INDIClient, INDICameraName.ToAscii(), (IndiDevCB)new_prop_cb, this);
 
     modal = true;
     msec = wxGetUTCTimeMillis();
@@ -281,8 +280,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
     }
 }
 
-bool Camera_INDIClass::HasNonGuiCapture(void)
-{
+bool Camera_INDIClass::HasNonGuiCapture(void) {
     return true;
 }
 
