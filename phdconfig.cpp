@@ -283,7 +283,7 @@ void PhdConfig::DeleteAll(void)
     if (Global.m_pConfig)
     {
         Debug.AddLine(wxString::Format("Deleting all configuration data"));
-        for (int inx = 0; inx < NumProfiles(); inx++)
+        for (int inx = 0; inx < (int) NumProfiles(); inx++)
             pFrame->DeleteDarkLibraryFiles(inx);
         Global.m_pConfig->DeleteAll();
         InitializeProfile();

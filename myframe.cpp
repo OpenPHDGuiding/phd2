@@ -44,6 +44,8 @@
 #include <wx/dirdlg.h>
 #include <wx/textwrapper.h>
 
+#include <memory>
+
 static const int DefaultNoiseReductionMethod = 0;
 static const double DefaultDitherScaleFactor = 1.00;
 static const bool DefaultDitherRaOnly = false;
