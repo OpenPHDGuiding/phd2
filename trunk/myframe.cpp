@@ -1391,13 +1391,13 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
             float exposure = (float)img->ImgExpDur / 1000.0;
-            char *keyname = "EXPOSURE";
-            char *comment = "Exposure time in seconds";
+            char *keyname = const_cast<char *>("EXPOSURE");
+            char *comment = const_cast<char *>("Exposure time in seconds");
             if (!status) fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
 
             if (!note.IsEmpty())
             {
-                char *USERNOTE = "USERNOTE";
+                char *USERNOTE = const_cast<char *>("USERNOTE");
                 if (!status) fits_write_key(fptr, TSTRING, USERNOTE, const_cast<char *>(static_cast<const char *>(note)), NULL, &status);
             }
 

@@ -915,7 +915,7 @@ void DefectMap::Save(const wxArrayString& info) const
     {
         outText << "# " << *it << "\n";
     }
-    outText << "# Defect count: " << size() << "\n";
+    outText << "# Defect count: " << ((unsigned int) size()) << "\n";
 
     for (const_iterator it = begin(); it != end(); ++it)
     {

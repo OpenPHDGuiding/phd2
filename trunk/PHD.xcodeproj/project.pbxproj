@@ -114,6 +114,8 @@
 		58EE981713CD0F74009EC68D /* SBIGUDrv.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 588167710B4DED6900BDA6D4 /* SBIGUDrv.framework */; };
 		58EE981813CD0F74009EC68D /* fcCamFw.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5828185D0B4A022A00E5E22D /* fcCamFw.framework */; };
 		A117D7151844861000F5B01F /* calrestore_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A117D7131844861000F5B01F /* calrestore_dialog.cpp */; };
+		A140805419195D4600CC55AA /* darks_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A140805219195D4600CC55AA /* darks_dialog.cpp */; };
+		A140805719195D6D00CC55AA /* Refine_DefMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A140805519195D6D00CC55AA /* Refine_DefMap.cpp */; };
 		A17B855E18AE9632004BECA0 /* nudge_lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17B855C18AE9632004BECA0 /* nudge_lock.cpp */; };
 		A1A088E31815CF63004899C0 /* drift_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088DE1815CF63004899C0 /* drift_tool.cpp */; };
 		A1A088E41815CF63004899C0 /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088E01815CF63004899C0 /* logger.cpp */; };
@@ -346,6 +348,10 @@
 		58F7157D0B20CC700056770B /* PHD2GuideHelp.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = PHD2GuideHelp.zip; sourceTree = SOURCE_ROOT; };
 		A117D7131844861000F5B01F /* calrestore_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calrestore_dialog.cpp; sourceTree = "<group>"; };
 		A117D7141844861000F5B01F /* calrestore_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calrestore_dialog.h; sourceTree = "<group>"; };
+		A140805219195D4600CC55AA /* darks_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = darks_dialog.cpp; sourceTree = "<group>"; };
+		A140805319195D4600CC55AA /* darks_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = darks_dialog.h; sourceTree = "<group>"; };
+		A140805519195D6D00CC55AA /* Refine_DefMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Refine_DefMap.cpp; sourceTree = "<group>"; };
+		A140805619195D6D00CC55AA /* Refine_DefMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Refine_DefMap.h; sourceTree = "<group>"; };
 		A17B855C18AE9632004BECA0 /* nudge_lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nudge_lock.cpp; sourceTree = "<group>"; };
 		A17B855D18AE9632004BECA0 /* nudge_lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nudge_lock.h; sourceTree = "<group>"; };
 		A1A088DD1815CF1F004899C0 /* calstep_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calstep_dialog.h; sourceTree = "<group>"; };
@@ -531,6 +537,8 @@
 				58B8CE3516E05EDB00F6E68E /* configdialog.h */,
 				580F80CE17810B1F0020900F /* confirm_dialog.cpp */,
 				580F80CF17810B1F0020900F /* confirm_dialog.h */,
+				A140805219195D4600CC55AA /* darks_dialog.cpp */,
+				A140805319195D4600CC55AA /* darks_dialog.h */,
 				58B8CE3616E05EDB00F6E68E /* debuglog.cpp */,
 				58B8CE3716E05EDB00F6E68E /* debuglog.h */,
 				A1A088DE1815CF63004899C0 /* drift_tool.cpp */,
@@ -580,6 +588,8 @@
 				58B8CE5116E05EDB00F6E68E /* point.h */,
 				58B8CE5216E05EDB00F6E68E /* precompiled_header.cpp */,
 				58339E380B1FC2BF00109891 /* Products */,
+				A140805519195D6D00CC55AA /* Refine_DefMap.cpp */,
+				A140805619195D6D00CC55AA /* Refine_DefMap.h */,
 				583291F715DA081D00D96A6D /* Scopes */,
 				58B8CE5616E05EDB00F6E68E /* serialport.cpp */,
 				58B8CE5716E05EDB00F6E68E /* serialport.h */,
@@ -827,6 +837,8 @@
 				2999515D18982F260002D9EB /* KWIQGuider_loader.cpp in Sources */,
 				2999515E18982F260002D9EB /* cam_KWIQGuider.cpp in Sources */,
 				A17B855E18AE9632004BECA0 /* nudge_lock.cpp in Sources */,
+				A140805419195D4600CC55AA /* darks_dialog.cpp in Sources */,
+				A140805719195D6D00CC55AA /* Refine_DefMap.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
