@@ -36,6 +36,8 @@
 
 #include "phd.h"
 
+#include "Refine_DefMap.h"
+
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
 #include <wx/artprov.h>
@@ -1528,9 +1530,16 @@ static wxString DarkLibFileName(int profileId)
 
 void MyFrame::SetDarkMenuState()
 {
-    darks_menu->FindItem(MENU_LOADDARK)->Enable(wxFileExists(DarkLibFileName(pConfig->GetCurrentProfileId())));
+    wxMenuItem *item = darks_menu->FindItem(MENU_LOADDARK);
+    bool haveDarkLib = wxFileExists(DarkLibFileName(pConfig->GetCurrentProfileId()));
+    item->Enable(haveDarkLib);
+    if (!haveDarkLib)
+        item->Check(false);
+    item = darks_menu->FindItem(MENU_LOADDEFECTMAP);
     bool defectmap_avail = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId());
-    darks_menu->FindItem(MENU_LOADDEFECTMAP)->Enable(defectmap_avail);
+    item->Enable(defectmap_avail);
+    if (!defectmap_avail)
+        item->Check(false);
 }
 
 void MyFrame::LoadDarkLibrary()

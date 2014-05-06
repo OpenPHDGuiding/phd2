@@ -68,6 +68,7 @@ enum LOGGED_IMAGE_FORMAT
 };
 
 class MyFrame;
+class RefineDefMap;
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
 {
@@ -161,7 +162,7 @@ public:
     wxWindow *pDriftTool;
     wxWindow *pManualGuide;
     wxWindow *pNudgeLock;
-    wxDialog *pRefineDefMap;
+    RefineDefMap *pRefineDefMap;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
     wxLocale *m_pLocale;

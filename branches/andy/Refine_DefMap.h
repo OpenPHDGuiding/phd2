@@ -47,22 +47,23 @@ class RefineDefMap : public wxDialog
         wxString lastColdFactor;
     };
 
-public:
-    RefineDefMap(wxWindow* pParent);
-    ~RefineDefMap();
+    int m_profileId;
+    DefectMapDarks m_darks;
+    DefectMapBuilder m_builder;
 
-private:
-    DefectMapDarks darks;
-    DefectMapBuilder builder;
-
-    void FrameLayout();
-    void GetBadPxCounts();
     wxGridCellCoords hotPixelLoc;
     wxGridCellCoords coldPixelLoc;
     wxGridCellCoords hotFactorLoc;
     wxGridCellCoords coldFactorLoc;
     wxGridCellCoords createTimeLoc;
+    wxGridCellCoords cameraLoc;
     wxGridCellCoords manualPixelLoc;
+    wxGridCellCoords expTimeLoc;
+    wxGridCellCoords expCntLoc;
+    wxGridCellCoords meanLoc;
+    wxGridCellCoords stdevLoc;
+    wxGridCellCoords medianLoc;
+    wxGridCellCoords madLoc;
     wxGrid *pInfoGrid;
     wxGrid *pStatsGrid;
     wxFlexGridSizer *pAdjustmentGrid;
@@ -77,6 +78,18 @@ private:
     wxCheckBox *pShowDetails;
     wxSizer *pVSizer;
     wxStaticBoxSizer *pInfoGroup;
+    long initHotFactor;
+    long initColdFactor;
+    int manualPixelCount;
+
+public:
+    RefineDefMap(wxWindow *pParent);
+    ~RefineDefMap();
+    void InitUI();
+
+private:
+    void LoadFromProfile();
+    void GetBadPxCounts();
     void GetMiscInfo(MiscInfo& info);
     void OnGenerate(wxCommandEvent& evt);
     void OnHotChange(wxScrollEvent& evt);
@@ -89,12 +102,8 @@ private:
     void ApplyNewMap();
     void ShowStatus(const wxString& msg, bool appending);
     wxString DefectMapTimeString();
-    void GetBaselineStats();
     bool RebuildMasterDarks();
-    void ShowDetailGroup(bool visible);
-    long initHotFactor;
-    long initColdFactor;
-    int manualPixelCount = 0;
+
     DECLARE_EVENT_TABLE()
 };
 
