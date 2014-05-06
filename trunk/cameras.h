@@ -95,8 +95,9 @@
 
 #elif defined (__LINUX__)
 # define CAM_QHY5
-// this moved to CMakeLists.txt # define INDI_CAMERA
-// if we want it here instead we need to fix the plain trunk/Makefile
+// TODO 1: Decide if we want INDI_CAMERA here or in CMakeLists.txt
+// TODO 2: Having INDI_CAMERA here breaks trunk/Makefile today. My proposal is to delete trunk/Makefile and go full CMakeLists.txt
+# define INDI_CAMERA
 #endif
 
 // Currently unused

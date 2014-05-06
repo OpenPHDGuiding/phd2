@@ -367,7 +367,7 @@ void IndiGui::CreateSwitchCombobox(struct indi_prop_t *iprop, int num_props)
 		struct indi_elem_t *elem = (struct indi_elem_t *)il_item(isl);
 		if(elem->value.set)
 			idx = i;
-		((IndiProp *)iprop->widget)->ctrl[wxString::FromAscii(elem->name)] = (void *)i;
+		((IndiProp *)iprop->widget)->ctrl[wxString::FromAscii(elem->name)] = (void *) (intptr_t)i;
 		choices[i++] = wxString::FromAscii(elem->label);
 	}
 	combo = new wxChoice(p, wxID_ANY, wxDefaultPosition, wxDefaultSize, num_props, choices);

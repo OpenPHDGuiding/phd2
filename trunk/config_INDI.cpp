@@ -59,6 +59,8 @@
 struct indi_t *INDIClient = NULL;
 long INDIport = 7624;
 wxString INDIhost = _T("localhost");
+wxString INDICameraName;
+wxString INDIMountName;
 
 #define MCONNECT 101
 
@@ -192,21 +194,20 @@ void INDIConfig::SaveSettings()
     config->Write(_T("INDIport"), INDIport);
 
 #if defined (INDI_CAMERA)
-    pCamera->Name = cam->GetValue();
-    config->Write(_T("INDIcam"), pCamera->Name);
+    INDICameraName = cam->GetValue();
+    config->Write(_T("INDIcam"), INDICameraName);
 
 	long tempPort;
     camport->GetValue().ToLong(&tempPort);
-    pCamera->Port = (short) tempPort;
-    config->Write(_T("INDIcami_port"), pCamera->Port);
+
+    config->Write(_T("INDIcam_port"), (short) tempPort);
 #endif
 
 #if defined (GUIDE_INDI)
-//    pScope->Name = mount->GetValue();
-//    config->Write(_T("INDImount"), pScope->Name);
+    INDIMountName = mount->GetValue();
+    config->Write(_T("INDImount"), INDIMountName);
 
-//    pScope->serial_port = mountport->GetLineText(0);
-//    config->Write(_T("INDImount_port"), pScope->serial_port);
+    config->Write(_T("INDImount_port"), mountport->GetLineText(0) );
 #endif
 }
 

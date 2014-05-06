@@ -256,7 +256,7 @@ wxArrayString Scope::List(void)
     ScopeList.Add(_T("GC USB ST4"));
 #endif
 #ifdef GUIDE_INDI
-    ScopeList.Add(_T("INDI"));
+    ScopeList.Add(_T("INDI Mount"));
 #endif
 
     ScopeList.Sort(&CompareNoCase);

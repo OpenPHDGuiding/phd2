@@ -57,22 +57,26 @@ if (NOT MSVC)
     CHECK_CXX_COMPILER_FLAG("-W" COMPILER_SUPPORTS_WARNINGS)
     CHECK_CXX_COMPILER_FLAG("-Wall" COMPILER_SUPPORTS_WALL)
     CHECK_CXX_COMPILER_FLAG("-Wextra" COMPILER_SUPPORTS_WEXTRA)
+    CHECK_CXX_COMPILER_FLAG("-Werror" COMPILER_SUPPORTS_WERROR)
     if(COMPILER_SUPPORTS_WARNINGS)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W")
-        set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -W")
+#        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W")
+#        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W")
     endif(COMPILER_SUPPORTS_WARNINGS)
     if(COMPILER_SUPPORTS_WALL)
        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-       set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
     endif(COMPILER_SUPPORTS_WALL)
     if(COMPILER_SUPPORTS_WEXTRA)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
-        set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+#        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+#        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wextra")
     endif(COMPILER_SUPPORTS_WEXTRA)
+    if(COMPILER_SUPPORTS_WERROR)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
+    endif(COMPILER_SUPPORTS_WERROR)
 	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+	#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
 endif (NOT MSVC)
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 # Scopes to use with openPHD
 if (MSVC)
@@ -86,21 +90,21 @@ if (MSVC)
     endif ("${phd_SCOPES}" MATCHES ".*GUIDE_ASCOM.*")
 else (MSVC)
     set(phd_SCOPES
-        GUIDE_INDI
+#        GUIDE_INDI
        )
 endif (MSVC)
 
 # Cameras to use with openPHD
 if (MSVC)
     set(phd_CAMERAS
-        SIMULATOR
-        ASCOM_CAMERA
-        ASCOM_LATECAMERA
+         SIMULATOR
+         ASCOM_CAMERA
+         ASCOM_LATECAMERA
        ) 
 else (MSVC)
     set(phd_CAMERAS
         SIMULATOR
-        INDI_CAMERA
+#        INDI_CAMERA
        )
 endif (MSVC)
 
