@@ -465,39 +465,95 @@ bool Subtract(usImage& light, const usImage& dark)
     return false;
 }
 
+inline static unsigned short histo_median(unsigned short histo1[256], unsigned short histo2[65536], int n)
+{
+    n /= 2;
+    unsigned int i;
+    for (i = 0; i < 256; i++)
+    {
+        if (histo1[i] > n)
+            break;
+        n -= histo1[i];
+    }
+    for (i <<= 8; i < 65536; i++)
+    {
+        if (histo2[i] > n)
+            break;
+        n -= histo2[i];
+    }
+    return i;
+}
+
 static void MedianFilter(usImage& dst, const usImage& src, int halfWidth)
 {
-    usImage tmp;
-    tmp.Init(2 * halfWidth + 1, 2 * halfWidth + 1);
-
     dst.Init(src.Size);
-    unsigned short *dstPx = &dst.ImageData[0];
+    unsigned short *d = &dst.ImageData[0];
 
-    for (int y = 0; y < src.Size.GetHeight(); y++)
+    int const width = src.Size.GetWidth();
+    int const height = src.Size.GetHeight();
+
+    for (int y = 0; y < height; y++)
     {
-        int top = std::max(y - halfWidth, 0);
-        int bot = std::min(y + halfWidth, src.Size.GetHeight() - 1);
+        int top = std::max(0, y - halfWidth);
+        int bot = std::min(y + halfWidth, height - 1);
+        int left = 0;
+        int right = halfWidth;
 
-        for (int x = 0; x < src.Size.GetWidth(); x++)
+        // TODO: we initialize the histogram at the start of each row, but we could make this faster
+        // if we scan left to right, move down, scan right to left, move down so we never need to
+        // reinitialize the histogram
+
+        // initialize 2-level histogram
+        unsigned short histo1[256];
+        unsigned short histo2[65536];
+        memset(&histo1[0], 0, sizeof(histo1));
+        memset(&histo2[0], 0, sizeof(histo2));
+
+        for (int j = top; j <= bot; j++)
         {
-            int left = std::max(x - halfWidth, 0);
-            int right = std::min(x + halfWidth, src.Size.GetWidth() - 1);
-            int xsize = right - left + 1;
-
-            const unsigned short *p0 = &src.Pixel(left, top);
-            unsigned short *dst = &tmp.ImageData[0];
-            for (int yy = top; yy <= bot; yy++)
+            const unsigned short *p = &src.Pixel(left, j);
+            for (int i = left; i <= right; i++, p++)
             {
-                memcpy(dst, p0, xsize * sizeof(unsigned short));
-                dst += xsize;
-                p0 += src.Size.GetWidth();
+                ++histo1[*p >> 8];
+                ++histo2[*p];
+            }
+        }
+        unsigned int n = (right - left + 1) * (bot - top + 1);
+
+        // read off first value for this row
+        *d++ = histo_median(histo1, histo2, n);
+
+        // loop across remaining columns for this row
+        for (int i = 1; i < width; i++)
+        {
+            left = std::max(0, i - halfWidth);
+            right = std::min(i + halfWidth, width - 1);
+
+            // remove leftmost column
+            if (left > 0)
+            {
+                const unsigned short *p = &src.Pixel(left - 1, top);
+                for (int j = top; j <= bot; j++, p += width)
+                {
+                    --histo1[*p >> 8];
+                    --histo2[*p];
+                }
+                n -= (bot - top + 1);
             }
 
-            int winPixels = (int)(dst - &tmp.ImageData[0]);
-            unsigned short *p = &tmp.ImageData[0];
-            std::nth_element(p, p + winPixels / 2, p + winPixels);
+            // add new column on right
+            if (i + halfWidth <= width - 1)
+            {
+                const unsigned short *p = &src.Pixel(right, top);
+                for (int j = top; j <= bot; j++, p += width)
+                {
+                    ++histo1[*p >> 8];
+                    ++histo2[*p];
+                }
+                n += (bot - top + 1);
+            }
 
-            *dstPx++ = tmp.ImageData[winPixels / 2];
+            *d++ = histo_median(histo1, histo2, n);
         }
     }
 }
@@ -561,7 +617,6 @@ static void GetImageStats(ImageStatsWork& w, const usImage& img, const wxRect& w
 void DefectMapDarks::BuildFilteredDark()
 {
     enum { WINDOW = 15 };
-
     filteredDark.Init(masterDark.Size);
     MedianFilter(filteredDark, masterDark, WINDOW);
 }
