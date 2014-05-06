@@ -42,6 +42,8 @@ static const int DefaultGuideCameraGain = 95;
 static const bool DefaultUseSubframes = false;
 static const double DefaultPixelSize = 0;
 static const int DefaultReadDelay = 150;
+static const bool DefaultLoadDarks = true;
+static const bool DefaultLoadDMap = false;
 
 #if defined (ATIK16)
  #include "cam_ATIK16.h"
@@ -182,6 +184,7 @@ GuideCamera::GuideCamera(void)
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
 
     CurrentDarkFrame = NULL;
+    CurrentDefectMap = NULL;
 
     int cameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
     SetCameraGain(cameraGain);
@@ -192,7 +195,6 @@ GuideCamera::GuideCamera(void)
 GuideCamera::~GuideCamera(void)
 {
     ClearDarks();
-    pFrame->UpdateDarksButton();
 
     if (Connected)
     {
@@ -632,6 +634,34 @@ CameraConfigDialogPane *GuideCamera::GetConfigDialogPane(wxWindow *pParent)
     return new CameraConfigDialogPane(pParent, this);
 }
 
+// Utility function to add the <label, input> pairs to a flexgrid
+static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)
+{
+    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "), wxPoint(-1, -1), wxSize(-1, -1));
+    pTable->Add(pLabel, 1, wxALL, 5);
+    pTable->Add(pControl, 1, wxALL, 5);
+}
+
+static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, int width, int val, int minval, int maxval, int inc,
+                                 const wxString& tooltip)
+{
+    wxSpinCtrl *pNewCtrl = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+        wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, _("Exposure time"));
+    pNewCtrl->SetValue(val);
+    pNewCtrl->SetToolTip(tooltip);
+    return pNewCtrl;
+}
+
+static wxSpinCtrlDouble *NewSpinnerDouble(wxWindow *parent, int width, double val, double minval, double maxval, double inc,
+                                          const wxString& tooltip)
+{
+    wxSpinCtrlDouble *pNewCtrl = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+        wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, inc);
+    pNewCtrl->SetDigits(2);
+    pNewCtrl->SetToolTip(tooltip);
+    return pNewCtrl;
+}
+
 CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera)
     : ConfigDialogPane(_("Camera Settings"), pParent)
 {
@@ -645,55 +675,48 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
         DoAdd(m_pUseSubframes, _("Check to only download subframes (ROIs) if your camera supports it"));
     }
 
+    int numRows = (int)m_pCamera->HasGainControl + (int)m_pCamera->HasDelayParam + (int)m_pCamera->HasPortNum + 1;
+
+    wxFlexGridSizer *pCamControls = new wxFlexGridSizer(numRows, 2, 5, 15);
+
+    int width = StringWidth(_T("0000")) + 30;
+    // Pixel size always
+    m_pPixelSize = NewSpinnerDouble(pParent, width, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
+        _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
+    AddTableEntryPair(pParent, pCamControls, "Pixel size", m_pPixelSize);
+
+    // Gain control
     if (m_pCamera->HasGainControl)
     {
-        int width = StringWidth(_T("0000"));
-        m_pCameraGain = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-                wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 100, 100,_T("CameraGain"));
-        DoAdd(_("Camera Gain"), m_pCameraGain,
-              _("Camera gain boost? Default = 95%, lower if you experience noise or wish to guide on a very bright star). Not available on all cameras."));
+        int width = StringWidth(_T("0000")) + 30;
+        m_pCameraGain = NewSpinnerInt(pParent, width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star).Not available on all cameras."));
+        AddTableEntryPair(pParent, pCamControls, "Camera gain", m_pCameraGain);
     }
 
+    // Delay parameter
     if (m_pCamera->HasDelayParam)
     {
-        int width = StringWidth(_T("0000"));
-        m_pDelay = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-                wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 250, 150,_T("Delay"));
-        DoAdd(_("LE Read Delay (ms)"), m_pDelay,
-              _("Adjust if you get dropped frames"));
+        int width = StringWidth(_T("0000")) + 30;
+        m_pDelay = NewSpinnerInt(pParent, width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
+        AddTableEntryPair(pParent, pCamControls, "Delay", m_pDelay);
     }
-
+    // Port number
     if (m_pCamera->HasPortNum)
     {
         wxString port_choices[] = {
-            _T("Port 378"),_T("Port 3BC"),_T("Port 278"),_T("COM1"),_T("COM2"),_T("COM3"),_T("COM4"),
-            _T("COM5"),_T("COM6"),_T("COM7"),_T("COM8"),_T("COM9"),_T("COM10"),_T("COM11"),_T("COM12"),
-            _T("COM13"),_T("COM14"),_T("COM15"),_T("COM16"),
+            _T("Port 378"), _T("Port 3BC"), _T("Port 278"), _T("COM1"), _T("COM2"), _T("COM3"), _T("COM4"),
+            _T("COM5"), _T("COM6"), _T("COM7"), _T("COM8"), _T("COM9"), _T("COM10"), _T("COM11"), _T("COM12"),
+            _T("COM13"), _T("COM14"), _T("COM15"), _T("COM16"),
         };
 
         int width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
-        m_pPortNum = new wxChoice(pParent, wxID_ANY,wxPoint(-1,-1),
-                wxSize(width+35,-1), WXSIZEOF(port_choices), port_choices );
-        DoAdd(_("LE Port"), m_pPortNum,
-               _("Port number for long-exposure control"));
+        m_pPortNum = new wxChoice(pParent, wxID_ANY, wxPoint(-1, -1),
+                                  wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
+        m_pPortNum->SetToolTip(_("Port number for long-exposure control"));
+        AddTableEntryPair(pParent, pCamControls, _("LE Port"), m_pPortNum);
     }
 
-    //if (m_pCamera->PixelSize == 0)
-    {
-        int width = StringWidth(_T("99.999")) + 20;
-
-        m_pPixelSize = new wxSpinCtrlDouble (pParent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
-            wxSize(width, -1), wxSP_ARROW_KEYS, 0, 99.9, m_pCamera->PixelSize, 0.1);
-        m_pPixelSize->SetDigits(2);
-        DoAdd(_("Pixel size (microns)"), m_pPixelSize,
-               _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
-    }
-
-    m_pLoadDarks = new wxCheckBox(pParent, wxID_ANY, _("Auto load dark frames"), wxDefaultPosition, wxSize(75,-1));
-    DoAdd(m_pLoadDarks, _("Check to reload dark frames automatically when you connect the camera. First, you'll need to capture dark frames "
-                          "for any exposure durations you will be using and save the dark frames to a .fit file using the Save Dark Frames "
-                          "option in the File menu. Then, when this option is selected, the dark frames will be loaded from the file whenever "
-                          "the camera is connected."));
+    this->Add(pCamControls);
 }
 
 CameraConfigDialogPane::~CameraConfigDialogPane(void)
@@ -787,9 +810,6 @@ void CameraConfigDialogPane::LoadValues(void)
 
     m_pPixelSize->SetValue(m_pCamera->GetCameraPixelSize());
     m_pPixelSize->Enable(!pFrame->CaptureActive);
-
-    bool autoLoadDarks = pConfig->Profile.GetBoolean("/camera/AutoLoadDarks", true);
-    m_pLoadDarks->SetValue(autoLoadDarks);
 }
 
 void CameraConfigDialogPane::UnloadValues(void)
@@ -844,9 +864,6 @@ void CameraConfigDialogPane::UnloadValues(void)
     double pixel_size;
     pixel_size = m_pPixelSize->GetValue();
     m_pCamera->SetCameraPixelSize(pixel_size);
-
-    bool autoLoadDarks = m_pLoadDarks->GetValue();
-    pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", autoLoadDarks);
 }
 
 double CameraConfigDialogPane::GetPixelSize(void)
@@ -873,13 +890,14 @@ wxString GuideCamera::GetSettingsSummary()
         pixelSizeStr = "unspecified";
     else
         pixelSizeStr = wxString::Format("%0.1f um", PixelSize);
-    return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s, pixel size = %s\n",
-        Name, GuideCameraGain,
-        HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
-        HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "",
-        FullSize.GetWidth(), FullSize.GetHeight(),
-        darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
-        pixelSizeStr);
+    return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s, %s, pixel size = %s\n",
+                            Name, GuideCameraGain,
+                            HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
+                            HasPortNum ? wxString::Format(", port = 0x%hx", Port) : "",
+                            FullSize.GetWidth(), FullSize.GetHeight(),
+                            darkDur ? wxString::Format("have dark, dark dur = %d", darkDur) : "no dark",
+                            (CurrentDefectMap) ? "defect map in use" : "no defect map",
+                            pixelSizeStr);
 }
 
 void GuideCamera::AddDark(usImage *dark)
@@ -908,14 +926,35 @@ void GuideCamera::SelectDark(int exposureDuration)
 {
     // select the dark frame with the smallest exposure >= the requested exposure.
     // if there are no darks with exposures > the select exposure, select the dark with the greatest exposure
+
     wxCriticalSectionLocker lck(DarkFrameLock);
-    CurrentDarkFrame = NULL;
+
+    CurrentDarkFrame = 0;
     for (ExposureImgMap::const_iterator it = Darks.begin(); it != Darks.end(); ++it)
     {
         CurrentDarkFrame = it->second;
         if (it->first >= exposureDuration)
             break;
     }
+}
+
+void GuideCamera::ClearDefectMap()
+{
+    wxCriticalSectionLocker lck(DarkFrameLock);
+
+    if (CurrentDefectMap)
+    {
+        Debug.AddLine("Clearing defect map...");
+        delete CurrentDefectMap;
+        CurrentDefectMap = NULL;
+    }
+}
+
+void GuideCamera::SetDefectMap(DefectMap *defectMap)
+{
+    wxCriticalSectionLocker lck(DarkFrameLock);
+    delete CurrentDefectMap;
+    CurrentDefectMap = defectMap;
 }
 
 void GuideCamera::ClearDarks()
@@ -935,13 +974,22 @@ void GuideCamera::SubtractDark(usImage& img)
     // dark subtraction is done in the camera worker thread, so we need to acquire the
     // DarkFrameLock to protect against the dark frame disappearing when the main
     // thread does "Load Darks" or "Clear Darks"
+
     wxCriticalSectionLocker lck(DarkFrameLock);
-    if (CurrentDarkFrame)
+
+    if (CurrentDefectMap)
+    {
+        RemoveDefects(img, *CurrentDefectMap);
+    }
+    else if (CurrentDarkFrame)
+    {
         Subtract(img, *CurrentDarkFrame);
+    }
 }
 
 #ifndef OPENPHD
-bool DLLExists (wxString DLLName) {
+bool DLLExists (wxString DLLName)
+{
     wxStandardPathsBase& StdPaths = wxStandardPaths::Get();
     if (wxFileExists(StdPaths.GetExecutablePath().BeforeLast(PATHSEPCH) + PATHSEPSTR + DLLName))
         return true;

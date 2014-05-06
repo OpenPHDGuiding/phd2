@@ -36,6 +36,7 @@
 #define CAMERA_H_INCLUDED
 
 typedef std::map<int, usImage *> ExposureImgMap; // map exposure to image
+class DefectMap;
 
 enum PropDlgType
 {
@@ -55,7 +56,7 @@ class CameraConfigDialogPane : public ConfigDialogPane
     wxChoice   *m_pPortNum;
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
-    wxCheckBox *m_pLoadDarks;
+
 public:
     CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
     virtual ~CameraConfigDialogPane(void);
@@ -104,6 +105,7 @@ public:
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage         *CurrentDarkFrame;
     ExposureImgMap  Darks; // map exposure => dark frame
+    DefectMap       *CurrentDefectMap;
 
     virtual bool HasNonGuiCapture(void);
 
@@ -124,9 +126,10 @@ public:
     virtual void    ShowPropertyDialog() { return; }
 
     virtual wxString GetSettingsSummary();
-
     void            AddDark(usImage *dark);
     void            SelectDark(int exposureDuration);
+    void            SetDefectMap(DefectMap *newMap);
+    void            ClearDefectMap(void);
     void            ClearDarks(void);
 
     void            SubtractDark(usImage& img);

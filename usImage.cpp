@@ -35,7 +35,7 @@
 #include "phd.h"
 #include "image_math.h"
 
-bool usImage::Init(int xsize, int ysize)
+bool usImage::Init(const wxSize& size)
 {
     // Allocates space for image and sets params up
     // returns true on error
@@ -44,8 +44,9 @@ bool usImage::Init(int xsize, int ysize)
         delete[] ImageData;
         ImageData = NULL;
     }
-    NPixels = xsize * ysize;
-    Size = wxSize(xsize,ysize);
+
+    NPixels = size.GetWidth() * size.GetHeight();
+    Size = size;
     Subframe = wxRect(0, 0, 0, 0);
     Min = Max = 0;
     if (NPixels) {
@@ -282,7 +283,7 @@ wxString usImage::GetImgStartTime() const
         timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);
 }
 
-bool usImage::Save(const wxString& fname)
+bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
 {
     bool bError = false;
 
@@ -300,14 +301,34 @@ bool usImage::Save(const wxString& fname)
 
         fits_create_file(&fptr, (_T("!") + fname).mb_str(wxConvUTF8), &status);
         if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
+
+        float exposure = (float) ImgExpDur / 1000.0;
+        char *keyname = "EXPOSURE";
+        char *comment = "Exposure time in seconds";
+        if (!status) fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
+
+        if (ImgStackCnt > 1)
+        {
+            keyname = "STACKCNT";
+            comment = "Stacked frame count";
+            unsigned int stackcnt = ImgStackCnt;
+            fits_write_key(fptr, TUINT, keyname, &stackcnt, comment, &status);
+        }
+
+        if (!hdrNote.IsEmpty())
+        {
+            char *USERNOTE = "USERNOTE";
+            if (!status) fits_write_key(fptr, TSTRING, USERNOTE, const_cast<char *>(static_cast<const char *>(hdrNote)), NULL, &status);
+        }
+
         if (!status) fits_write_pix(fptr, TUSHORT, fpixel, NPixels, ImageData, &status);
-        fits_close_file(fptr,&status);
+        fits_close_file(fptr, &status);
         bError = status ? true : false;
 
         if (bError)
             pFrame->SetStatusText(wxString::Format(_("%s Not saved"), fname));
         else
-            pFrame->SetStatusText(wxString::Format(_("%s saved"),fname));
+            pFrame->SetStatusText(wxString::Format(_("%s saved"), fname));
     }
     catch (wxString Msg)
     {
@@ -324,20 +345,17 @@ bool usImage::Load(const wxString& fname)
 
     try
     {
-        fitsfile *fptr;  // FITS file pointer
-        int status = 0;  // CFITSIO status value MUST be initialized to zero!
-        long fpixel[3] = {1,1,1};
-        long fsize[3];
-        int hdutype, naxis;
-        int nhdus=0;
-
         if (!wxFileExists(fname))
         {
             pFrame->Alert(_("File does not exist - cannot load ") + fname);
             throw ERROR_INFO("File does not exist");
         }
+
+        int status = 0;  // CFITSIO status value MUST be initialized to zero!
+        fitsfile *fptr;  // FITS file pointer
         if (!fits_open_diskfile(&fptr, fname.c_str(), READONLY, &status))
         {
+            int hdutype;
             if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
             {
                 pFrame->Alert(_("FITS file is not of an image: ") + fname);
@@ -345,23 +363,42 @@ bool usImage::Load(const wxString& fname)
             }
 
             // Get HDUs and size
+            int naxis = 0;
             fits_get_img_dim(fptr, &naxis, &status);
+            long fsize[3];
             fits_get_img_size(fptr, 2, fsize, &status);
-            fits_get_num_hdus(fptr,&nhdus,&status);
+            int nhdus = 0;
+            fits_get_num_hdus(fptr, &nhdus, &status);
             if ((nhdus != 1) || (naxis != 2)) {
                 pFrame->Alert(_("Unsupported type or read error loading FITS file ") + fname);
                 throw ERROR_INFO("unsupported type");
             }
-            if (Init((int) fsize[0],(int) fsize[1]))
+            if (Init((int) fsize[0], (int) fsize[1]))
             {
                 pFrame->Alert(_("Memory allocation error loading FITS file ") + fname);
                 throw ERROR_INFO("Memory Allocation failure");
             }
-            if (fits_read_pix(fptr, TUSHORT, fpixel, (int) (fsize[0] * fsize[1]), NULL, ImageData, NULL, &status) ) { // Read image
+            long fpixel[3] = { 1, 1, 1 };
+            if (fits_read_pix(fptr, TUSHORT, fpixel, (int)(fsize[0] * fsize[1]), NULL, ImageData, NULL, &status)) { // Read image
                 pFrame->Alert(_("Error reading data from FITS file ") + fname);
                 throw ERROR_INFO("Error reading");
             }
-            fits_close_file(fptr,&status);
+
+            char *key = "EXPOSURE";
+            float exposure;
+            status = 0;
+            fits_read_key(fptr, TFLOAT, key, &exposure, NULL, &status);
+            if (status == 0)
+                ImgExpDur = (int) (exposure * 1000.0);
+
+            key = "STACKCNT";
+            int stackcnt;
+            status = 0;
+            fits_read_key(fptr, TINT, key, &stackcnt, NULL, &status);
+            if (status == 0)
+                ImgStackCnt = (int) stackcnt;
+
+            fits_close_file(fptr, &status);
         }
         else
         {

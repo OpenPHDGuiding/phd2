@@ -34,7 +34,6 @@
  */
 #include "phd.h"
 #include "calrestore_dialog.h"
-#include <wx/grid.h>
 
 CalrestoreDialog::CalrestoreDialog() :
     wxDialog(pFrame, wxID_ANY, _("Restore calibration data"), wxDefaultPosition, wxSize(800, 400), wxCAPTION | wxCLOSE_BOX)

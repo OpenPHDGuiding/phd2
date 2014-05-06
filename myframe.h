@@ -68,6 +68,7 @@ enum LOGGED_IMAGE_FORMAT
 };
 
 class MyFrame;
+class RefineDefMap;
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
 {
@@ -136,6 +137,7 @@ private:
 
     wxAuiManager m_mgr;
     bool m_continueCapturing; // should another image be captured?
+    int m_takeDarksMenuInx;
 
 public:
     MyFrame(int instanceNumber, wxLocale *locale);
@@ -143,12 +145,12 @@ public:
 
     Guider *pGuider;
     wxMenuBar *Menubar;
-    wxMenu *tools_menu, *view_menu, *bookmarks_menu;
+    wxMenu *tools_menu, *view_menu, *bookmarks_menu, *darks_menu;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
     wxCheckBox *HotPixel_Checkbox;
-    wxButton    *Setup_Button, *Dark_Button;
+    wxButton    *Setup_Button;
     wxHtmlHelpController *help;
     wxSlider *Gamma_Slider;
     AdvancedDialog *pAdvancedDialog;
@@ -160,6 +162,7 @@ public:
     wxWindow *pDriftTool;
     wxWindow *pManualGuide;
     wxWindow *pNudgeLock;
+    RefineDefMap *pRefineDefMap;
     bool CaptureActive; // Is camera looping captures?
     double Stretch_gamma;
     wxLocale *m_pLocale;
@@ -180,8 +183,8 @@ public:
     void OnLoopExposure(wxCommandEvent& evt);
     void OnButtonStop(wxCommandEvent& evt);
     void OnDark(wxCommandEvent& evt);
-    void OnClearDark(wxCommandEvent& evt);
-    void OnLoadSaveDark(wxCommandEvent& evt);
+    void OnLoadDark(wxCommandEvent& evt);
+    void OnLoadDefectMap(wxCommandEvent& evt);
     void OnGuide(wxCommandEvent& evt);
     void OnAdvanced(wxCommandEvent& evt);
     void OnIdle(wxIdleEvent& evt);
@@ -215,14 +218,16 @@ public:
     void OnBookmarksSetAtLockPos(wxCommandEvent& evt);
     void OnBookmarksSetAtCurPos(wxCommandEvent& evt);
     void OnBookmarksClearAll(wxCommandEvent& evt);
+    void OnRefineDefMap(wxCommandEvent& evt);
 
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
     void LoadProfileSettings(void);
     void UpdateTitle(void);
-    void UpdateDarksButton(void);
 
     void GetExposureDurations(std::vector<int> *exposure_durations);
+    void GetExposureDurationStrings(wxArrayString *target);
+    int ExposureDurationFromSelection(const wxString& selection);
     bool SetExposureDuration(int val);
     double GetDitherScaleFactor(void);
     bool SetDitherScaleFactor(double ditherScaleFactor);
@@ -237,12 +242,20 @@ public:
     bool StartServer(bool state);
     bool FlipRACal();
     int RequestedExposureDuration();
-    void LoadDarkFrames(const wxString& filename);
+    void LoadDefectMap();
     int GetFocalLength(void);
     int GetLanguage(void);
     bool GetAutoLoadCalibration(void);
     void LoadCalibration(void);
     int GetInstanceNumber() const { return m_instanceNumber; }
+    static wxString GetDefaultFileDir();
+    static wxString GetDarksDir();
+    void LoadDarkLibrary();
+    void SaveDarkLibrary(const wxString& note);
+    void DeleteDarkLibraryFiles(int profileID);
+    void SetDarkMenuState();
+    void LoadDarkHandler(bool checkIt);         // Use to also set menu item states
+    void LoadDefectMapHandler(bool checkIt);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
@@ -321,8 +334,6 @@ private:
     int GetTextWidth(wxControl *pControl, const wxString& string);
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
 
-    int ExposureDurationFromSelection(const wxString& selection);
-
     // and of course, an event table
     DECLARE_EVENT_TABLE()
 };
@@ -349,7 +360,6 @@ enum {
     END_STEPGUIDERS,
     BUTTON_GEAR,
     BUTTON_CAL,
-    BUTTON_DARK,
     BUTTON_LOOP,
     BUTTON_GUIDE,
     BUTTON_STOP,
@@ -400,7 +410,7 @@ enum {
     MENU_XHAIR3,
     MENU_XHAIR4,
     MENU_XHAIR5,
-    MENU_CLEARDARK,
+    MENU_TAKEDARKS,
     MENU_LOG,
     MENU_LOGIMAGES,
     MENU_DEBUG,
@@ -415,7 +425,8 @@ enum {
     MENU_SAVESETTINGS,
     MENU_LOADSETTINGS,
     MENU_LOADDARK,
-    MENU_SAVEDARK,
+    MENU_LOADDEFECTMAP,
+    MENU_REFINEDEFECTMAP,
     MENU_INDICONFIG,
     MENU_INDIDIALOG,
     MENU_V4LSAVESETTINGS,

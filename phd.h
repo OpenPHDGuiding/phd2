@@ -35,42 +35,37 @@
 #ifndef PHD_H_INCLUDED
 #define PHD_H_INCLUDED
 
-#include <stdarg.h>
-
 #include <wx/wx.h>
-#include <wx/image.h>
-#include <wx/string.h>
-#include <wx/html/helpctrl.h>
-#include <wx/utils.h>
-#include <wx/textfile.h>
-#include <wx/socket.h>
-#include <wx/thread.h>
-
-#include <wx/config.h>
-#include <wx/fileconf.h>
-#include <wx/display.h>
-#include <wx/statline.h>
-#include <wx/bmpbuttn.h>
-#include <wx/tglbtn.h>
-#include <wx/spinctrl.h>
-#include <wx/stdpaths.h>
-#include <wx/splash.h>
-#include <wx/intl.h>
-#include <wx/infobar.h>
-#include <wx/minifram.h>
-#include <wx/stdpaths.h>
-#include <wx/ffile.h>
-
-#include <wx/bitmap.h>
-#include <wx/dcbuffer.h>
-#include <wx/graphics.h>
-
-#include <wx/msgqueue.h>
-
 #include <wx/aui/aui.h>
+#include <wx/bitmap.h>
+#include <wx/bmpbuttn.h>
+#include <wx/config.h>
+#include <wx/dcbuffer.h>
+#include <wx/display.h>
+#include <wx/ffile.h>
+#include <wx/fileconf.h>
+#include <wx/graphics.h>
+#include <wx/grid.h>
+#include <wx/html/helpctrl.h>
+#include <wx/image.h>
+#include <wx/infobar.h>
+#include <wx/intl.h>
+#include <wx/minifram.h>
+#include <wx/msgqueue.h>
+#include <wx/socket.h>
+#include <wx/spinctrl.h>
+#include <wx/splash.h>
+#include <wx/statline.h>
+#include <wx/stdpaths.h>
+#include <wx/string.h>
+#include <wx/textfile.h>
+#include <wx/tglbtn.h>
+#include <wx/thread.h>
+#include <wx/utils.h>
 
 #include <map>
 #include <math.h>
+#include <stdarg.h>
 
 #define APPNAME _T("PHD Guiding")
 #define PHDVERSION _T("2.2.2")

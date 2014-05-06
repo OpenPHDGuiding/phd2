@@ -47,11 +47,20 @@ public:
     int                 FiltMin, FiltMax;
     time_t              ImgStartTime;
     int                 ImgExpDur;
+    int                 ImgStackCnt;
 
-    usImage() { Min = Max = FiltMin = FiltMax = 0; NPixels = 0; ImageData = NULL; ImgStartTime = 0; ImgExpDur = 0; }
+    usImage() {
+        Min = Max = FiltMin = FiltMax = 0;
+        NPixels = 0;
+        ImageData = NULL;
+        ImgStartTime = 0;
+        ImgExpDur = 0;
+        ImgStackCnt = 1;
+    }
     ~usImage() { delete[] ImageData; }
 
-    bool                Init(int xsize, int ysize);
+    bool                Init(const wxSize& size);
+    bool                Init(int width, int height) { return Init(wxSize(width, height)); }
     void                SwapImageData(usImage& other);
     void                CalcStats();
     void                InitImgStartTime();
@@ -60,7 +69,7 @@ public:
     bool                BinnedCopyToImage(wxImage **img, int blevel, int wlevel, double power); // Does 2x2 bin during copy
     bool                CopyFromImage(const wxImage &img);
     bool                Load(const wxString& fname);
-    bool                Save(const wxString& fname);
+    bool                Save(const wxString& fname, const wxString& hdrComment = wxEmptyString) const;
     bool                Rotate(double theta, bool mirror=false);
     unsigned short&     Pixel(int x, int y) { return ImageData[y * Size.x + x]; }
     const unsigned short& Pixel(int x, int y) const { return ImageData[y * Size.x + x]; }

@@ -177,7 +177,6 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
         //return true;
     }*/
     if (recon) SubtractDark(img);
-    if (recon) QuickLRecon(img);  // pass 2x2 mean filter over it to help remove noise
 
     return false;
 }
