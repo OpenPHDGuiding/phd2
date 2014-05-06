@@ -272,16 +272,14 @@ void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
 {
     if (!pCamera || !pCamera->Connected)
     {
-        Alert(_("You must connect a camera before taking darks"));
+        wxMessageBox(_("Please connect to a camera first"), _("Info"));
         return;
     }
-    else
-    {
-        DarksDialog dlg(this, true);
 
-        dlg.ShowModal();
-        pCamera->SelectDark(RequestedExposureDuration());       // Might be req'd if user cancelled in midstream
-    }
+    DarksDialog dlg(this, true);
+    dlg.ShowModal();
+
+    pCamera->SelectDark(RequestedExposureDuration());       // Might be req'd if user cancelled in midstream
 }
 
 // Outside event handler because loading a dark library will automatically unload a defect map
@@ -361,9 +359,9 @@ void MyFrame::OnLoadDefectMap(wxCommandEvent& evt)
 
 void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
 {
-    if (!pMount || !pMount->IsConnected())
+    if (!pCamera || !pCamera->Connected)
     {
-        wxMessageBox(_("Please connect a camera first."), _("Build Defect Map"));
+        wxMessageBox(_("Please connect to a camera first"), _("Info"));
         return;
     }
 
