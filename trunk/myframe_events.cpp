@@ -35,6 +35,8 @@
 #include "phd.h"
 #include "about_dialog.h"
 #include "image_math.h"
+#include "darks_dialog.h"
+#include "Refine_DefMap.h"
 
 #include <wx/spinctrl.h>
 #include <wx/textfile.h>
@@ -58,19 +60,6 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
     {
         // select the best matching dark frame
         pCamera->SelectDark(m_exposureDuration);
-
-        if (pCamera->CurrentDarkFrame)
-        {
-            if (pCamera->CurrentDarkFrame->ImgExpDur != m_exposureDuration)
-            {
-                Dark_Button->SetBackgroundColour(wxColor(255,0,0));
-                Dark_Button->SetForegroundColour(wxColour(0,0,0));
-            }
-            else
-            {
-                Dark_Button->SetBackgroundColour(wxNullColour);
-            }
-        }
     }
 }
 
@@ -138,220 +127,6 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
     if (pGuider->SaveCurrentImage(fname))
     {
         Alert(_("The image could not be saved to ") + fname);
-    }
-}
-
-static bool save_multi(const ExposureImgMap& darks, const wxString& fname)
-{
-    bool bError = false;
-
-    try
-    {
-        fitsfile *fptr;  // FITS file pointer
-        int status = 0;  // CFITSIO status value MUST be initialized to zero!
-
-        fits_create_file(&fptr, (_T("!") + fname).mb_str(wxConvUTF8), &status);
-
-        for (ExposureImgMap::const_iterator it = darks.begin(); it != darks.end(); ++it)
-        {
-            const usImage *const img = it->second;
-            long fpixel[3] = {1,1,1};
-            long fsize[] = {
-                (long) img->Size.GetWidth(),
-                (long) img->Size.GetHeight(),
-            };
-            if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
-
-            float exposure = (float) img->ImgExpDur / 1000.0;
-            char keyname[] = "EXPOSURE";
-            char comment[] = "Exposure time in seconds";
-            if (!status) fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
-            if (!status) fits_write_pix(fptr, TUSHORT, fpixel, img->NPixels, img->ImageData, &status);
-            Debug.AddLine("saving dark frame exposure = %d", img->ImgExpDur);
-        }
-
-        fits_close_file(fptr, &status);
-        bError = status ? true : false;
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    return bError;
-}
-
-static bool load_multi(GuideCamera *camera, const wxString& fname)
-{
-    bool bError = false;
-    fitsfile *fptr = 0;
-    int status = 0;  // CFITSIO status value MUST be initialized to zero!
-
-    try
-    {
-        if (!wxFileExists(fname))
-        {
-            throw ERROR_INFO("File does not exist");
-        }
-
-        if (fits_open_diskfile(&fptr, (const char*) fname.c_str(), READONLY, &status) == 0)
-        {
-            int nhdus = 0;
-            fits_get_num_hdus(fptr, &nhdus, &status);
-
-            while (true)
-            {
-                int hdutype;
-                fits_get_hdu_type(fptr, &hdutype, &status);
-                if (hdutype != IMAGE_HDU)
-                {
-                    pFrame->Alert(_("FITS file is not of an image: ") + fname);
-                    throw ERROR_INFO("FITS file is not an image");
-                }
-
-                int naxis;
-                fits_get_img_dim(fptr, &naxis, &status);
-                if (naxis != 2)
-                {
-                    pFrame->Alert(_("Unsupported type or read error loading FITS file ") + fname);
-                    throw ERROR_INFO("unsupported type");
-                }
-
-                long fsize[2];
-                fits_get_img_size(fptr, 2, fsize, &status);
-
-                std::auto_ptr<usImage> img(new usImage());
-
-                if (img->Init((int) fsize[0], (int) fsize[1]))
-                {
-                    pFrame->Alert(_("Memory allocation error reading FITS file ") + fname);
-                    throw ERROR_INFO("Memory Allocation failure");
-                }
-
-                long fpixel[] = { 1, 1, 1 };
-                if (fits_read_pix(fptr, TUSHORT, fpixel, fsize[0] * fsize[1], NULL, img->ImageData, NULL, &status))
-                {
-                    pFrame->Alert(_("Error reading data from ") + fname);
-                    throw ERROR_INFO("Error reading");
-                }
-
-                char keyname[] = "EXPOSURE";
-                float exposure;
-                if (fits_read_key(fptr, TFLOAT, keyname, &exposure, NULL, &status))
-                {
-                    exposure = (float) pFrame->RequestedExposureDuration() / 1000.0;
-                    Debug.AddLine("missing EXPOSURE value, assume %.3f", exposure);
-                    status = 0;
-                }
-                img->ImgExpDur = (int) (exposure * 1000.0);
-
-                Debug.AddLine("loaded dark frame exposure = %d", img->ImgExpDur);
-                camera->AddDark(img.release());
-
-                // if this is the last hdu, we are done
-                int hdunr = 0;
-                fits_get_hdu_num(fptr, &hdunr);
-                if (status || hdunr >= nhdus)
-                    break;
-
-                // move to the next hdu
-                fits_movrel_hdu(fptr, +1, NULL, &status);
-            }
-        }
-        else
-        {
-            pFrame->Alert(_("Error opening FITS file ") + fname);
-            throw ERROR_INFO("error opening file");
-        }
-    }
-    catch (wxString Msg)
-    {
-        POSSIBLY_UNUSED(Msg);
-        bError = true;
-    }
-
-    if (fptr)
-    {
-        fits_close_file(fptr, &status);
-    }
-
-    return bError;
-}
-
-void MyFrame::OnLoadSaveDark(wxCommandEvent& evt)
-{
-    wxString fname;
-
-    if (evt.GetId() == MENU_SAVEDARK)
-    {
-        if (!pCamera || pCamera->Darks.empty())
-        {
-            wxMessageBox(_("You haven't captured any dark frames - nothing to save"));
-            return;
-        }
-        wxString default_path = pConfig->Global.GetString("/darkFilePath", wxEmptyString);
-        fname = wxFileSelector( _("Save darks (FITS Image)"), default_path,
-                                wxEmptyString, wxT("fit"),
-                                wxT("FITS files (*.fit)|*.fit"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT,
-                                this);
-        if (fname.IsEmpty())
-        {
-            // dialog canceled
-            return;
-        }
-
-        pConfig->Global.SetString("/darkFilePath", wxFileName(fname).GetPath());
-
-        if (!fname.EndsWith(_T(".fit")))
-        {
-            fname.Append(_T(".fit"));
-        }
-
-        if (save_multi(pCamera->Darks, fname))
-        {
-            Alert(_("Error saving darks FITS file ") + fname);
-        }
-
-        pConfig->Profile.SetString("/camera/DarksFile", fname);
-    }
-    else if (evt.GetId() == MENU_LOADDARK)
-    {
-        if (!pCamera || !pCamera->Connected)
-        {
-            Alert(_("You must connect a camera before loading dark frames"));
-            return;
-        }
-        wxString default_path = pConfig->Global.GetString("/darkFilePath", wxEmptyString);
-        fname = wxFileSelector( _("Load darks (FITS Image)"), default_path,
-                               wxEmptyString,
-                               wxT("fit"), wxT("FITS files (*.fit)|*.fit"), wxFD_OPEN | wxFD_FILE_MUST_EXIST,
-                               this);
-        if (fname.IsEmpty())
-        {
-            // dialog canceled
-            return;
-        }
-        pConfig->Global.SetString("/darkFilePath", wxFileName(fname).GetPath());
-
-        LoadDarkFrames(fname);
-    }
-}
-
-void MyFrame::LoadDarkFrames(const wxString& filename)
-{
-    if (load_multi(pCamera, filename))
-    {
-        Debug.AddLine(wxString::Format("failed to load dark frames from %s", filename));
-        SetStatusText(_("Darks not loaded"));
-    }
-    else
-    {
-        pCamera->SelectDark(m_exposureDuration);
-        tools_menu->FindItem(MENU_CLEARDARK)->Enable(true);
-        Dark_Button->SetLabel(_("Redo Dark"));
-        SetStatusText(_("Darks loaded"));
-        pConfig->Profile.SetString("/camera/DarksFile", filename);
     }
 }
 
@@ -495,88 +270,111 @@ void MyFrame::OnGammaSlider(wxScrollEvent& WXUNUSED(event))
 
 void MyFrame::OnDark(wxCommandEvent& WXUNUSED(event))
 {
-    int ExpDur = RequestedExposureDuration();
-    if (pGuider->GetState() > STATE_SELECTED) return;
     if (!pCamera || !pCamera->Connected)
     {
-        wxMessageBox(_("Please connect to a camera first"),_("Info"));
+        wxMessageBox(_("Please connect to a camera first"), _("Info"));
         return;
     }
-    if (CaptureActive) return;  // Looping an exposure already
-    Dark_Button->SetForegroundColour(wxColour(200,0,0));
-    int NDarks = 5;
 
-    SetStatusText(_("Capturing dark"));
-    if (pCamera->HasShutter)
-        pCamera->ShutterState=true; // dark
-    else
-        wxMessageBox(_("Cover guide scope"));
-    pCamera->InitCapture();
-    std::auto_ptr<usImage> darkFrame(new usImage());
-    darkFrame->ImgExpDur = ExpDur;
-    if (pCamera->Capture(ExpDur, *darkFrame, false))
+    DarksDialog dlg(this, true);
+    dlg.ShowModal();
+
+    pCamera->SelectDark(RequestedExposureDuration());       // Might be req'd if user cancelled in midstream
+}
+
+// Outside event handler because loading a dark library will automatically unload a defect map
+void MyFrame::LoadDarkHandler(bool checkIt)
+{
+    if (!pCamera || !pCamera->Connected)
     {
-        Alert(_("Error capturing dark frame"));
-        SetStatusText(wxString::Format(_T("%.1f s dark FAILED"), (double) ExpDur / 1000.0));
-        Dark_Button->SetLabel(_T("Take Dark"));
-        pCamera->ShutterState = false;
+        Alert(_("You must connect a camera before loading a dark library"));
+        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+        return;
+    }
+    pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", checkIt);
+    if (checkIt)  // enable it
+    {
+        darks_menu->FindItem(MENU_LOADDARK)->Check(true);
+        if (pCamera->CurrentDefectMap)
+            LoadDefectMapHandler(false);
+        LoadDarkLibrary();
+        SetStatusText(_("Dark library loaded"));
     }
     else
     {
-        SetStatusText(wxString::Format(_T("%.1f s dark #1 captured"), (double) ExpDur / 1000.0));
-        int *avgimg = new int[darkFrame->NPixels];
-        int i, j;
-        int *iptr = avgimg;
-        unsigned short *usptr = darkFrame->ImageData;
-        for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
-            *iptr = (int) *usptr;
-        for (j = 1; j < NDarks; j++) {
-            pCamera->Capture(ExpDur, *darkFrame, false);
-            iptr = avgimg;
-            usptr = darkFrame->ImageData;
-            for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
-                *iptr = *iptr + (int) *usptr;
-            SetStatusText(wxString::Format(_T("%.1f s dark #%d captured"), (double) ExpDur / 1000.0, j + 1));
+        if (!pCamera->CurrentDarkFrame)
+        {
+            darks_menu->FindItem(MENU_LOADDARK)->Check(false);      // shouldn't have gotten here
+            return;
         }
-        iptr = avgimg;
-        usptr = darkFrame->ImageData;
-        for (i = 0; i < darkFrame->NPixels; i++, iptr++, usptr++)
-            *usptr = (unsigned short) (*iptr / NDarks);
-
-        delete[] avgimg;
-
-        Dark_Button->SetLabel(_("Redo Dark"));
-        Dark_Button->SetBackgroundColour(wxNullColour);
-
-        pCamera->AddDark(darkFrame.release());
-        pCamera->SelectDark(ExpDur);
-        assert(pCamera->CurrentDarkFrame->ImgExpDur == ExpDur);
+        pCamera->ClearDarks();
+        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+        SetStatusText(_("Dark library unloaded"));
     }
-    SetStatusText(_("Darks done"));
-
-    if (pCamera->HasShutter)
-        pCamera->ShutterState = false; // Lights
-    else
-        wxMessageBox(_("Uncover guide scope"));
-
-    tools_menu->FindItem(MENU_CLEARDARK)->Enable(pCamera->CurrentDarkFrame ? true : false);
 }
 
-void MyFrame::OnClearDark(wxCommandEvent& WXUNUSED(evt))
+void MyFrame::OnLoadDark(wxCommandEvent& evt)
 {
-    if (!pCamera->CurrentDarkFrame)
+    LoadDarkHandler(evt.IsChecked());
+}
+
+// Outside event handler because loading a defect map will automatically unload a dark library
+void MyFrame::LoadDefectMapHandler(bool checkIt)
+{
+    if (!pCamera || !pCamera->Connected)
     {
+        Alert(_("You must connect a camera before loading a bad-pixel map"));
+        darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
         return;
     }
-    pCamera->ClearDarks();
-    UpdateDarksButton();
+    pConfig->Profile.SetBoolean("/camera/AutoLoadDefectMap", checkIt);
+    if (checkIt)
+    {
+        if (pCamera->CurrentDarkFrame)
+            LoadDarkHandler(false);
+        LoadDefectMap();            // Status msg generated internally
+        if (pCamera->CurrentDefectMap)
+        {
+            darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+            darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(true);
+        }
+    }
+    else
+    {
+        if (!pCamera->CurrentDefectMap)
+        {
+            darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);  // Shouldn't have gotten here
+            return;
+        }
+        pCamera->ClearDefectMap();
+        darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
+        SetStatusText(_("Bad-pixel map unloaded"));
+    }
 }
 
-void MyFrame::UpdateDarksButton(void)
+void MyFrame::OnLoadDefectMap(wxCommandEvent& evt)
 {
-    Dark_Button->SetLabel(_("Take Dark"));
-    Dark_Button->SetForegroundColour(wxColour(0,0,0));
-    tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
+    LoadDefectMapHandler(evt.IsChecked());
+}
+
+void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
+{
+    if (!pCamera || !pCamera->Connected)
+    {
+        wxMessageBox(_("Please connect to a camera first"), _("Info"));
+        return;
+    }
+
+    if (!pRefineDefMap)
+        pRefineDefMap = new RefineDefMap(this);
+
+    pRefineDefMap->InitUI();
+    pRefineDefMap->Show();
+
+    // Don't let the user build a new defect map while we're trying to refine one; and it almost certainly makes sense
+    // to have a defect map loaded if the user wants to refine it
+    darks_menu->FindItemByPosition(m_takeDarksMenuInx)->Enable(false);  // Dialog restores it when its window is closed
+    LoadDefectMapHandler(true);
 }
 
 void MyFrame::OnToolBar(wxCommandEvent& evt)

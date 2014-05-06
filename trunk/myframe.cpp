@@ -36,6 +36,8 @@
 
 #include "phd.h"
 
+#include "Refine_DefMap.h"
+
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
 #include <wx/artprov.h>
@@ -71,8 +73,9 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
-    EVT_MENU(MENU_LOADDARK,MyFrame::OnLoadSaveDark)
-    EVT_MENU(MENU_SAVEDARK,MyFrame::OnLoadSaveDark)
+    EVT_MENU(MENU_TAKEDARKS,MyFrame::OnDark)
+    EVT_MENU(MENU_LOADDARK,MyFrame::OnLoadDark)
+    EVT_MENU(MENU_LOADDEFECTMAP,MyFrame::OnLoadDefectMap)
     EVT_MENU(MENU_MANGUIDE, MyFrame::OnTestGuide)
     EVT_MENU(MENU_XHAIR0,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR1,MyFrame::OnOverlay)
@@ -84,6 +87,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_BOOKMARKS_SET_AT_LOCK, MyFrame::OnBookmarksSetAtLockPos)
     EVT_MENU(MENU_BOOKMARKS_SET_AT_STAR, MyFrame::OnBookmarksSetAtCurPos)
     EVT_MENU(MENU_BOOKMARKS_CLEAR_ALL, MyFrame::OnBookmarksClearAll)
+    EVT_MENU(MENU_REFINEDEFECTMAP,MyFrame::OnRefineDefMap)
 
     EVT_CHAR_HOOK(MyFrame::OnCharHook)
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
@@ -96,7 +100,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_V4LRESTORESETTINGS, MyFrame::OnRestoreSettings)
 #endif
 
-    EVT_MENU(MENU_CLEARDARK,MyFrame::OnClearDark)
     EVT_MENU(MENU_LOG,MyFrame::OnLog)
     EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
     EVT_MENU(MENU_DEBUG,MyFrame::OnLog)
@@ -115,8 +118,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(BUTTON_STOP, MyFrame::OnButtonStop) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_ADVANCED, MyFrame::OnAdvanced)
     EVT_MENU(BUTTON_ADVANCED, MyFrame::OnAdvanced) // Bit of a hack -- not actually on the menu but need an event to accelerate
-    EVT_BUTTON(BUTTON_DARK, MyFrame::OnDark)
-    EVT_MENU(BUTTON_DARK, MyFrame::OnDark) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_GUIDE,MyFrame::OnGuide)
     EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
@@ -218,21 +219,21 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     }
     else
     {
-         wxArrayString fields = wxSplit(geometry, ';');
-         if (fields[0] == "1")
-         {
-             this->Maximize();
-         }
-         else
-         {
-             long w, h, x, y;
-             fields[1].ToLong(&w);
-             fields[2].ToLong(&h);
-             fields[3].ToLong(&x);
-             fields[4].ToLong(&y);
-             this->SetSize(w, h);
-             this->SetPosition(wxPoint(x, y));
-         }
+        wxArrayString fields = wxSplit(geometry, ';');
+        if (fields[0] == "1")
+        {
+            this->Maximize();
+        }
+        else
+        {
+            long w, h, x, y;
+            fields[1].ToLong(&w);
+            fields[2].ToLong(&h);
+            fields[3].ToLong(&x);
+            fields[4].ToLong(&y);
+            this->SetSize(w, h);
+            this->SetPosition(wxPoint(x, y));
+        }
     }
 
     // Setup some keyboard shortcuts
@@ -275,6 +276,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pDriftTool = NULL;
     pManualGuide = NULL;
     pNudgeLock = NULL;
+    pRefineDefMap = NULL;
 
     tools_menu->Check(MENU_LOG,false);
 
@@ -362,9 +364,10 @@ MyFrame::~MyFrame()
     pAdvancedDialog->Destroy();
 
     if (pDriftTool)
-    {
         pDriftTool->Destroy();
-    }
+
+    if (pRefineDefMap)
+        pRefineDefMap->Destroy();
 
     m_mgr.UnInit();
 }
@@ -393,15 +396,11 @@ void MyFrame::SetupMenuBar(void)
 {
     wxMenu *file_menu = new wxMenu;
     file_menu->AppendSeparator();
-    file_menu->Append(MENU_LOADDARK, _("Load Dark Frames"), _("Load dark frames"));
-    file_menu->Append(MENU_SAVEDARK, _("Save Dark Frames"), _("Save dark frames"));
     file_menu->Append(wxID_SAVE, _("Save Image"), _("Save current image"));
     file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
-    tools_menu->Append(MENU_CLEARDARK, _("&Clear Dark Frames"), _("Erase / clear out dark frames"));
-    tools_menu->FindItem(MENU_CLEARDARK)->Enable(false);
     tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
     tools_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data"), _("Restore calibration data from last successful calibration"));
     tools_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data"), _("Manually calibrate"));
@@ -434,6 +433,14 @@ void MyFrame::SetupMenuBar(void)
     bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_LOCK, _("Bookmark Lock Pos\tShift-B"), _("Set a bookmark at the current lock position"));
     bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_STAR, _("Bookmark Star Pos"), _("Set a bookmark at the position of the currently selected star"));
     bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("Delete all\tCtrl-B"), _("Remove all bookmarks"));
+
+    darks_menu = new wxMenu();
+    darks_menu->Append(MENU_TAKEDARKS, _("&Dark Library..."), _("Build a dark library for this profile"));
+    m_takeDarksMenuInx = darks_menu->GetMenuItemCount() - 1;
+    darks_menu->Append(MENU_REFINEDEFECTMAP, _("Bad-pixel Map..."), _("Adjust parameters to create or modify the bad-pixel map"));
+    darks_menu->AppendSeparator();
+    darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
+    darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Bad-pixel &Map"), _("Use the bad-pixel map for this profile"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     wxMenu *indi_menu = new wxMenu;
@@ -469,6 +476,7 @@ void MyFrame::SetupMenuBar(void)
 
     Menubar->Append(tools_menu, _("&Tools"));
     Menubar->Append(view_menu, _("&View"));
+    Menubar->Append(darks_menu, _("&Darks"));
     Menubar->Append(bookmarks_menu, _("&Bookmarks"));
     Menubar->Append(help_menu, _("&Help"));
     SetMenuBar(Menubar);
@@ -529,6 +537,12 @@ void MyFrame::GetExposureDurations(std::vector<int> *exposure_durations)
     exposure_durations->clear();
     for (unsigned int i = 0; i < WXSIZEOF(dur_values); i++)
         exposure_durations->push_back(dur_values[i]);
+}
+
+void MyFrame::GetExposureDurationStrings(wxArrayString* target)
+{
+    for (unsigned int i = 0; i < WXSIZEOF(dur_choices); i++)
+        target->Add(dur_choices[i]);
 }
 
 static int dur_index(int duration)
@@ -656,9 +670,6 @@ void MyFrame::SetupToolBar()
     Setup_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     Setup_Button->Enable(false);
 
-    Dark_Button = new wxButton(MainToolbar,BUTTON_DARK,_("Take Dark"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
-    Dark_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
-
     MainToolbar->AddTool(BUTTON_GEAR, _("Equipment"), camera_bmp, _("Connect to equipment. Shift-click to reconnect the same equipment last connected."));
     MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus") );
     MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD)") );
@@ -668,10 +679,8 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddControl(Gamma_Slider, _("Gamma"));
     MainToolbar->AddSeparator();
     MainToolbar->AddTool(BUTTON_ADVANCED, _("Advanced parameters"), brain_bmp, _("Advanced parameters"));
-    MainToolbar->AddControl(Dark_Button, _("Take Dark"));
     MainToolbar->AddControl(Setup_Button, _("Cam Dialog"));
     MainToolbar->Realize();
-
     MainToolbar->EnableTool(BUTTON_LOOP,false);
     MainToolbar->EnableTool(BUTTON_GUIDE,false);
 }
@@ -729,7 +738,6 @@ void MyFrame::SetupKeyboardShortcuts(void)
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) '0', EEGG_CLEARCAL),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'A', BUTTON_ADVANCED),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'C', BUTTON_GEAR),
-        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'D', BUTTON_DARK),
         wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'C', BUTTON_GEAR),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'G', BUTTON_GUIDE),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP),
@@ -780,10 +788,9 @@ void MyFrame::UpdateButtonsStatus(void)
         need_update = true;
 
     bool dark_enabled = loop_enabled && !CaptureActive;
-
-    if (Dark_Button->IsEnabled() != dark_enabled)
+    if (dark_enabled ^ darks_menu->FindItemByPosition(m_takeDarksMenuInx)->IsEnabled())
     {
-        Dark_Button->Enable(dark_enabled);
+        darks_menu->FindItemByPosition(m_takeDarksMenuInx)->Enable(dark_enabled);
         need_update = true;
     }
 
@@ -1112,7 +1119,7 @@ bool MyFrame::StartLooping(void)
             }
         }
 
-        pFrame->StartCapturing();
+        StartCapturing();
     }
     catch (wxString Msg)
     {
@@ -1362,6 +1369,242 @@ void MyFrame::LoadCalibration(void)
     }
 }
 
+static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname, const wxString& note)
+{
+    bool bError = false;
+
+    try
+    {
+        fitsfile *fptr;  // FITS file pointer
+        int status = 0;  // CFITSIO status value MUST be initialized to zero!
+        // CFITSIO wants you to prepend the filename with '!' to overwrite the file :-(; and we always want an overwrite
+        fits_create_file(&fptr, (_T("!") + fname).mb_str(wxConvUTF8), &status);
+
+        for (ExposureImgMap::const_iterator it = darks.begin(); it != darks.end(); ++it)
+        {
+            const usImage *const img = it->second;
+            long fpixel[3] = { 1, 1, 1 };
+            long fsize[] = {
+                (long)img->Size.GetWidth(),
+                (long)img->Size.GetHeight(),
+            };
+            if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
+
+            float exposure = (float)img->ImgExpDur / 1000.0;
+            char *keyname = "EXPOSURE";
+            char *comment = "Exposure time in seconds";
+            if (!status) fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
+
+            if (!note.IsEmpty())
+            {
+                char *USERNOTE = "USERNOTE";
+                if (!status) fits_write_key(fptr, TSTRING, USERNOTE, const_cast<char *>(static_cast<const char *>(note)), NULL, &status);
+            }
+
+            if (!status) fits_write_pix(fptr, TUSHORT, fpixel, img->NPixels, img->ImageData, &status);
+            Debug.AddLine("saving dark frame exposure = %d", img->ImgExpDur);
+        }
+
+        fits_close_file(fptr, &status);
+        bError = status ? true : false;
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    return bError;
+}
+
+static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
+{
+    bool bError = false;
+    fitsfile *fptr = 0;
+    int status = 0;  // CFITSIO status value MUST be initialized to zero!
+
+    try
+    {
+        if (!wxFileExists(fname))
+        {
+            throw ERROR_INFO("File does not exist");
+        }
+
+        if (fits_open_diskfile(&fptr, (const char*)fname.c_str(), READONLY, &status) == 0)
+        {
+            int nhdus = 0;
+            fits_get_num_hdus(fptr, &nhdus, &status);
+
+            while (true)
+            {
+                int hdutype;
+                fits_get_hdu_type(fptr, &hdutype, &status);
+                if (hdutype != IMAGE_HDU)
+                {
+                    pFrame->Alert(_("FITS file is not of an image: ") + fname);
+                    throw ERROR_INFO("FITS file is not an image");
+                }
+
+                int naxis;
+                fits_get_img_dim(fptr, &naxis, &status);
+                if (naxis != 2)
+                {
+                    pFrame->Alert(_("Unsupported type or read error loading FITS file ") + fname);
+                    throw ERROR_INFO("unsupported type");
+                }
+
+                long fsize[2];
+                fits_get_img_size(fptr, 2, fsize, &status);
+
+                std::auto_ptr<usImage> img(new usImage());
+
+                if (img->Init((int)fsize[0], (int)fsize[1]))
+                {
+                    pFrame->Alert(_("Memory allocation error reading FITS file ") + fname);
+                    throw ERROR_INFO("Memory Allocation failure");
+                }
+
+                long fpixel[] = { 1, 1, 1 };
+                if (fits_read_pix(fptr, TUSHORT, fpixel, fsize[0] * fsize[1], NULL, img->ImageData, NULL, &status))
+                {
+                    pFrame->Alert(_("Error reading data from ") + fname);
+                    throw ERROR_INFO("Error reading");
+                }
+
+                char keyname[] = "EXPOSURE";
+                float exposure;
+                if (fits_read_key(fptr, TFLOAT, keyname, &exposure, NULL, &status))
+                {
+                    exposure = (float)pFrame->RequestedExposureDuration() / 1000.0;
+                    Debug.AddLine("missing EXPOSURE value, assume %.3f", exposure);
+                    status = 0;
+                }
+                img->ImgExpDur = (int)(exposure * 1000.0);
+
+                Debug.AddLine("loaded dark frame exposure = %d", img->ImgExpDur);
+                camera->AddDark(img.release());
+
+                // if this is the last hdu, we are done
+                int hdunr = 0;
+                fits_get_hdu_num(fptr, &hdunr);
+                if (status || hdunr >= nhdus)
+                    break;
+
+                // move to the next hdu
+                fits_movrel_hdu(fptr, +1, NULL, &status);
+            }
+        }
+        else
+        {
+            pFrame->Alert(_("Error opening FITS file ") + fname);
+            throw ERROR_INFO("error opening file");
+        }
+    }
+    catch (wxString Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+    }
+
+    if (fptr)
+    {
+        fits_close_file(fptr, &status);
+    }
+
+    return bError;
+}
+
+wxString MyFrame::GetDarksDir()
+{
+    wxString dirpath = GetDefaultFileDir() + PATHSEPSTR + "darks_defects";
+    if (!wxDirExists(dirpath))
+        if (!wxFileName::Mkdir(dirpath, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
+            dirpath = GetDefaultFileDir();             // should never happen
+    return dirpath;
+}
+
+static wxString DarkLibFileName(int profileId)
+{
+    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId);
+}
+
+void MyFrame::SetDarkMenuState()
+{
+    wxMenuItem *item = darks_menu->FindItem(MENU_LOADDARK);
+    bool haveDarkLib = wxFileExists(DarkLibFileName(pConfig->GetCurrentProfileId()));
+    item->Enable(haveDarkLib);
+    if (!haveDarkLib)
+        item->Check(false);
+    item = darks_menu->FindItem(MENU_LOADDEFECTMAP);
+    bool defectmap_avail = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId());
+    item->Enable(defectmap_avail);
+    if (!defectmap_avail)
+        item->Check(false);
+}
+
+void MyFrame::LoadDarkLibrary()
+{
+    wxString filename = DarkLibFileName(pConfig->GetCurrentProfileId());
+
+    if (!pCamera || !pCamera->Connected)
+    {
+        Alert(_("You must connect a camera before loading dark frames"));
+        return;
+    }
+
+    if (load_multi_darks(pCamera, filename))
+    {
+        Debug.AddLine(wxString::Format("failed to load dark frames from %s", filename));
+        SetStatusText(_("Darks not loaded"));
+    }
+    else
+    {
+        Debug.AddLine(wxString::Format("loaded dark library from %s", filename));
+        pCamera->SelectDark(m_exposureDuration);
+        SetStatusText(_("Darks loaded"));
+    }
+}
+
+void MyFrame::SaveDarkLibrary(const wxString& note)
+{
+    wxString filename = DarkLibFileName(pConfig->GetCurrentProfileId());
+
+    Debug.AddLine("saving dark library");
+
+    if (save_multi_darks(pCamera->Darks, filename, note))
+    {
+        Alert(_("Error saving darks FITS file ") + filename);
+    }
+}
+
+void MyFrame::LoadDefectMap()
+{
+    DefectMap *defectMap = DefectMap::LoadDefectMap(pConfig->GetCurrentProfileId());
+    if (defectMap)
+    {
+        SetStatusText(_("Defect map loaded"));
+        pCamera->SetDefectMap(defectMap);
+    }
+    else
+    {
+        SetStatusText(_("Defect map not loaded"));
+    }
+}
+
+// Delete both the dark library file and any defect map file for this profile
+void MyFrame::DeleteDarkLibraryFiles(int profileId)
+{
+    wxString filename = DarkLibFileName(profileId);
+
+    if (wxFileExists(filename))
+    {
+        Debug.AddLine("Removing dark library file: " + filename);
+        wxRemoveFile(filename);
+    }
+
+    DefectMap::DeleteDefectMap(profileId);
+}
+
 bool MyFrame::GetServerMode(void)
 {
     return m_serverMode;
@@ -1438,6 +1681,17 @@ bool MyFrame::SetFocalLength(int focalLength)
     return bError;
 }
 
+wxString MyFrame::GetDefaultFileDir()
+{
+    wxStandardPathsBase& stdpath = wxStandardPaths::Get();
+    wxString rslt = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD2";
+
+    if (!wxDirExists(rslt))
+        if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
+            rslt = stdpath.GetDocumentsDir();             // should never happen
+
+    return rslt;
+}
 double MyFrame::GetCameraPixelScale(void)
 {
     if (!pCamera || pCamera->PixelSize == 0.0 || m_focalLength == 0)

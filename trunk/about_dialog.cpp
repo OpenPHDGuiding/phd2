@@ -71,13 +71,14 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "&nbsp;&nbsp;&nbsp;&nbsp;Bruce Waddington<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Max Chen<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Carsten Przygoda<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;David Ault<br>"
         "<br>"
         "Copyright 2006-2013 Craig Stark<br>"
         "Copyright 2009 Geoffrey Hausheer<br>"
         "Copyright 2012-2013 Bret McKee<br>"
         "Copyright 2013 Sylvain Girard<br>"
         "Copyright 2013-2014 Andy Galasso<br>"
-        "Copyright 2013 Bruce Waddington<br>"
+        "Copyright 2013-2014 Bruce Waddington<br>"
         "</body></html>", APPNAME, FULLVER));
     wxHtmlWindow *pHtml;
     pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(380, 440), wxHW_SCROLLBAR_AUTO);

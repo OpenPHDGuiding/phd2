@@ -32,6 +32,23 @@
  *
  */
 
+#ifndef IMAGE_MATH_INCLUDED
+#define IMAGE_MATH_INCLUDED
+
+class DefectMap : public std::vector<wxPoint>
+{
+    int m_profileId;
+    DefectMap(int profileId);
+public:
+    static void DeleteDefectMap(int profileId);
+    static bool DefectMapExists(int profileId);
+    static DefectMap *LoadDefectMap(int profileId);
+    static wxString DefectMapFileName(int profileId);
+    DefectMap();
+    void Save(const wxArrayString& mapInfo) const;
+    void AddDefect(const wxPoint& pt);
+};
+
 extern bool QuickLRecon(usImage& img);
 extern bool Median3(unsigned short *dst, const unsigned short *src, int xsize, int ysize);
 extern bool Median3(usImage& img);
@@ -39,3 +56,44 @@ extern bool SquarePixels(usImage& img, float xsize, float ysize);
 extern int dbl_sort_func(double *first, double *second);
 extern bool Subtract(usImage& light, const usImage& dark);
 extern float CalcSlope(const ArrayOfDbl& y);
+extern bool RemoveDefects(usImage& light, const DefectMap& defectMap);
+
+struct DefectMapBuilderImpl;
+
+struct DefectMapDarks
+{
+    usImage masterDark;
+    usImage filteredDark;
+
+    void BuildFilteredDark();
+    void SaveDarks(const wxString& notes);
+    void LoadDarks();
+};
+
+struct ImageStats
+{
+    double mean;
+    double stdev;
+    unsigned short median;
+    unsigned short mad;
+};
+
+class DefectMapBuilder
+{
+    DefectMapBuilderImpl *m_impl;
+
+public:
+
+    DefectMapBuilder();
+    ~DefectMapBuilder();
+
+    void Init(DefectMapDarks& darks);
+    const ImageStats& GetImageStats() const;
+    void SetAggressiveness(int aggrCold, int aggrHot);
+    int GetColdPixelCnt() const;
+    int GetHotPixelCnt() const;
+    void BuildDefectMap(DefectMap& defectMap) const;
+    const wxArrayString& GetMapInfo() const;
+};
+
+#endif
