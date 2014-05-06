@@ -303,21 +303,21 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
         if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
         float exposure = (float) ImgExpDur / 1000.0;
-        char *keyname = "EXPOSURE";
-        char *comment = "Exposure time in seconds";
+        char *keyname = const_cast<char *>("EXPOSURE");
+        char *comment = const_cast<char *>("Exposure time in seconds");
         if (!status) fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
 
         if (ImgStackCnt > 1)
         {
-            keyname = "STACKCNT";
-            comment = "Stacked frame count";
+            keyname = const_cast<char *>("STACKCNT");
+            comment = const_cast<char *>("Stacked frame count");
             unsigned int stackcnt = ImgStackCnt;
             fits_write_key(fptr, TUINT, keyname, &stackcnt, comment, &status);
         }
 
         if (!hdrNote.IsEmpty())
         {
-            char *USERNOTE = "USERNOTE";
+            char *USERNOTE = const_cast<char *>("USERNOTE");
             if (!status) fits_write_key(fptr, TSTRING, USERNOTE, const_cast<char *>(static_cast<const char *>(hdrNote)), NULL, &status);
         }
 
@@ -384,14 +384,14 @@ bool usImage::Load(const wxString& fname)
                 throw ERROR_INFO("Error reading");
             }
 
-            char *key = "EXPOSURE";
+            char *key = const_cast<char *>("EXPOSURE");
             float exposure;
             status = 0;
             fits_read_key(fptr, TFLOAT, key, &exposure, NULL, &status);
             if (status == 0)
                 ImgExpDur = (int) (exposure * 1000.0);
 
-            key = "STACKCNT";
+            key = const_cast<char *>("STACKCNT");
             int stackcnt;
             status = 0;
             fits_read_key(fptr, TINT, key, &stackcnt, NULL, &status);
