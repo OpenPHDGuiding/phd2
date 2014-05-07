@@ -34,7 +34,9 @@
 
 #include "phd.h"
 #include <wx/cmdline.h>
-
+#ifdef  __LINUX__
+    #include <X11/Xlib.h>
+#endif // __LINUX__
 //#define WINICONS
 
 //#define DEVBUILD
@@ -86,6 +88,9 @@ PhdApp::PhdApp(void)
 {
     m_resetConfig = false;
     m_instanceNumber = 1;
+#ifdef  __LINUX__
+    XInitThreads();
+#endif // __LINUX__
 };
 
 bool PhdApp::OnInit() {

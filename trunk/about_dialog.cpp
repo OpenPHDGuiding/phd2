@@ -71,6 +71,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "&nbsp;&nbsp;&nbsp;&nbsp;Bruce Waddington<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Max Chen<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Carsten Przygoda<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Hans Lambermont<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;David Ault<br>"
         "<br>"
         "Copyright 2006-2013 Craig Stark<br>"
@@ -79,6 +80,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "Copyright 2013 Sylvain Girard<br>"
         "Copyright 2013-2014 Andy Galasso<br>"
         "Copyright 2013-2014 Bruce Waddington<br>"
+        "Copyright 2014 Hans Lambermont<br>"
         "</body></html>", APPNAME, FULLVER));
     wxHtmlWindow *pHtml;
     pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(380, 440), wxHW_SCROLLBAR_AUTO);

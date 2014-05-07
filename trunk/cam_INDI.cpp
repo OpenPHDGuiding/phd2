@@ -247,8 +247,7 @@ bool Camera_INDIClass::ReadStream(usImage& img) {
 }
 
 bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-//    unsigned short *dataptr;
-//    int i;
+    wxLongLong msec;
 
     if (expose_prop) {
         printf("Exposing for %d(ms)\n", duration);
@@ -261,8 +260,13 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
         indi_send(video_prop, indi_prop_set_switch(video_prop, "ON", TRUE));
     }
     modal = true;
-    while (modal) {
+    msec = wxGetLocalTimeMillis();
+    while(modal && wxGetLocalTimeMillis() - msec < 3 * 1000) {
         wxGetApp().Yield();
+    }
+    if (modal) {
+        printf("ERROR: Camera_INDIClass::Capture timeout, trying to continue\n");
+        return true;
     }
     if (! expose_prop) {
         indi_send(video_prop, indi_prop_set_switch(video_prop, "OFF", TRUE));
