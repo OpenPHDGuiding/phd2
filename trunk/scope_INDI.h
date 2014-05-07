@@ -38,9 +38,6 @@ struct indi_prop_t;
 class ScopeINDI : public Scope {
 public:
     ScopeINDI(void);
-//    ScopeINDI(void) {
-//        m_Name = wxString("INDI Mount");
-//    }
 
     virtual bool Connect(void);
 
@@ -60,7 +57,6 @@ private:
 public:
 	bool     modal;
     wxString serial_port;
-	bool     Connected;
 	bool     CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
 	void     InitCapture() { return; }
 	void     ShowPropertyDialog();
