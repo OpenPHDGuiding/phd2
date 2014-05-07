@@ -60,18 +60,21 @@ static void tele_new_prop_cb(struct indi_prop_t *iprop, void *callback_data) {
 static void tele_connect_cb(struct indi_prop_t *iprop, void *data) {
 //printf("entering ScopeINDI tele_connect_cb\n");
     ScopeINDI *cb = (ScopeINDI *)(data);
-    cb->Connected = (iprop->state == INDI_STATE_IDLE || iprop->state == INDI_STATE_OK) && indi_prop_get_switch(iprop, "CONNECT");
-    printf("Telescope connected state: %d\n", cb->Connected);
+    if ( (iprop->state == INDI_STATE_IDLE || iprop->state ==
+        INDI_STATE_OK) && indi_prop_get_switch(iprop, "CONNECT") ) {
+        cb->Mount::Connect();
+    }
+    printf("Telescope connected state: %d\n", cb->IsConnected() );
     cb->CheckState();
 }
 
 ScopeINDI::ScopeINDI() {
-	m_Name = wxString("INDI Mount");
+    m_Name = wxString("INDI Mount");
 }
 
 void ScopeINDI::CheckState() {
 //printf("entering ScopeINDI::CheckState\n");
-    if(Connected && (
+    if(IsConnected() && (
         (moveNS && moveEW) ||
         (pulseGuideNS && pulseGuideEW)))
     {
@@ -109,7 +112,6 @@ bool ScopeINDI::Connect() {
 
     if(! ready)
         return true;
-    Connected = true;
     return false;
 }
 
