@@ -47,12 +47,13 @@ svn checkout http://open-phd-guiding.googlecode.com/svn/trunk/ open-phd-guiding
 }}}
 
   * build phd2
-    * either via make (in-tree)
+<wiki:comment>    * either via make (in-tree)
 {{{
 cd open-phd-guiding
 make
 }}}
-    * or via cmake (out-of-tree)
+</wiki:comment>
+    * via cmake (out-of-tree)
 {{{
 mkdir open-phd-guiding-build; cd open-phd-guiding-build
 cmake ../open-phd-guiding/
