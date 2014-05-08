@@ -178,7 +178,7 @@ endif (V4L_OK)
 if (MSVC)
     target_link_libraries(phd2 ${phd_LIBS} z )
 else (MSVC)
-    target_link_libraries(phd2 ${phd_LIBS} usb-1.0 z )
+    target_link_libraries(phd2 ${phd_LIBS} X11 usb-1.0 z )
 endif (MSVC)
 
 install (TARGETS phd2 RUNTIME DESTINATION bin)
