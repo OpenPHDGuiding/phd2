@@ -73,6 +73,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "&nbsp;&nbsp;&nbsp;&nbsp;Carsten Przygoda<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Hans Lambermont<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;David Ault<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Markus Wieczorek<br>"
         "<br>"
         "Copyright 2006-2013 Craig Stark<br>"
         "Copyright 2009 Geoffrey Hausheer<br>"

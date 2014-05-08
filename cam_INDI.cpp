@@ -274,7 +274,15 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     if (strncmp(".fits",blob_elem->value.blob.fmt, 5) == 0) {
         printf("Processing fits file\n");
-        return ReadFITS(img);
+        if ( ! ReadFITS(img) ) {
+            if ( recon ) {
+                printf("Subtracting dark\n");
+                SubtractDark(img);
+            }
+            return false;
+        } else {
+            return true;
+        }
     } else if (strncmp(".stream", blob_elem->value.blob.fmt, 7) == 0) {
         printf("Processing stream file\n");
         return ReadStream(img);
