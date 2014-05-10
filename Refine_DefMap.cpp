@@ -57,7 +57,7 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
 }
 
 RefineDefMap::RefineDefMap(wxWindow *parent) :
-    wxDialog(parent, wxID_ANY, _("Refine bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX)
+    wxDialog(parent, wxID_ANY, _("Refine Bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX)
 {
     SetSize(wxSize(900, 400));
 
@@ -93,6 +93,9 @@ RefineDefMap::RefineDefMap(wxWindow *parent) :
     expTimeLoc.Set(row, col++);
     pInfoGrid->SetCellValue(_("Master Dark Exposure Count:"), row, col++);
     expCntLoc.Set(row, col++);
+    // Not convenient to use AutoSize() method because some columns are populated later
+    pInfoGrid->SetColumnWidth(0, StringWidth(this, _("Master Dark Exposure Time:")) + 5);
+    pInfoGrid->SetColumnWidth(2, StringWidth(this, _("Master Dark Exposure Count:")) + 5);
 
     StartRow(row, col);
     pInfoGrid->SetCellValue(_("Aggressiveness, hot pixels:"), row, col++);
@@ -163,7 +166,7 @@ RefineDefMap::RefineDefMap(wxWindow *parent) :
     pApplyBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &RefineDefMap::OnGenerate, this);
     pApplyBtn->SetToolTip(_("Use the current aggressiveness settings to build and load a new bad-pixel map; this will discard any manually added bad pixels"));
 
-    pAddDefectBtn = new wxButton(this, wxID_ANY, _("Add bad pixel"));
+    pAddDefectBtn = new wxButton(this, wxID_ANY, _("Add Bad Pixel"));
     pAddDefectBtn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &RefineDefMap::OnAddDefect, this);
     pAddDefectBtn->SetToolTip(_("Click on a bad pixel in the image display; then click on this button to add it to the in-use bad-pixel map"));
 
