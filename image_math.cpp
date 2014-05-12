@@ -81,28 +81,71 @@ float CalcSlope(const ArrayOfDbl& y)
 bool QuickLRecon(usImage& img)
 {
     // Does a simple debayer of luminance data only -- sliding 2x2 window
-    usImage Limg;
-    if (Limg.Init(img.Size)) {
+    usImage tmp;
+    if (tmp.Init(img.Size))
+    {
         pFrame->Alert(_("Memory allocation error"));
         return true;
     }
 
-    int xsize = img.Size.GetWidth();
-    int ysize = img.Size.GetHeight();
-
-    for (int y = 0; y < ysize - 1; y++)
+    int const W = img.Size.GetWidth();
+    int RX, RY, RW, RH;
+    if (img.Subframe.IsEmpty())
     {
-        int x;
-        for (x = 0; x < xsize - 1; x++)
-        {
-            Limg.ImageData[x+y*xsize] = (img.ImageData[x+y*xsize] + img.ImageData[x+1+y*xsize] + img.ImageData[x+(y+1)*xsize] + img.ImageData[x+1+(y+1)*xsize]) / 4;
-        }
-        Limg.ImageData[x+y*xsize]=Limg.ImageData[(x-1)+y*xsize];  // Last one in this row -- just duplicate
+        RX = RY = 0;
+        RW = img.Size.GetWidth();
+        RH = img.Size.GetHeight();
     }
-    for (int x=0; x<xsize; x++)
-        Limg.ImageData[x+(ysize-1)*xsize]=Limg.ImageData[x+(ysize-2)*xsize];  // Last row -- just duplicate
+    else
+    {
+        RX = img.Subframe.GetX();
+        RY = img.Subframe.GetY();
+        RW = img.Subframe.GetWidth();
+        RH = img.Subframe.GetHeight();
+        memset(tmp.ImageData, 0, img.NPixels * sizeof(unsigned short));
+    }
 
-    img.SwapImageData(Limg);
+#define IX(x_, y_) ((RY + (y_)) * W + RX + (x_))
+
+    unsigned short *d;
+    unsigned int t;
+
+    for (int y = 0; y <= RH - 2; y++)
+    {
+        d = &tmp.ImageData[IX(0, y)];
+
+        for (int x = 0; x <= RW - 2; x++)
+        {
+            t  = img.ImageData[IX(x    , y    )];
+            t += img.ImageData[IX(x + 1, y    )];
+            t += img.ImageData[IX(x    , y + 1)];
+            t += img.ImageData[IX(x + 1, y + 1)];
+            *d++ = (unsigned short)(t >> 2);
+        }
+
+        // last col
+        t  = img.ImageData[IX(RW - 1, y    )];
+        t += img.ImageData[IX(RW - 1, y + 1)];
+        *d = (unsigned short)(t >> 1);
+    }
+
+    // last row
+
+    d = &tmp.ImageData[IX(0, RH - 1)];
+
+    for (int x = 0; x <= RW - 2; x++)
+    {
+        t  = img.ImageData[IX(x    , RH - 1)];
+        t += img.ImageData[IX(x + 1, RH - 1)];
+        *d++ = (unsigned short)(t >> 1);
+    }
+
+    // bottom-right pixel
+    *d = img.ImageData[IX(RW - 1, RH - 1)];
+
+#undef IX
+
+    img.SwapImageData(tmp);
     return false;
 }
 
@@ -110,7 +153,19 @@ bool Median3(usImage& img)
 {
     usImage tmp;
     tmp.Init(img.Size);
-    bool err = Median3(tmp.ImageData, img.ImageData, img.Size.GetWidth(), img.Size.GetHeight());
+
+    bool err;
+
+    if (img.Subframe.IsEmpty())
+    {
+        err = Median3(tmp.ImageData, img.ImageData, img.Size, wxRect(img.Size));
+    }
+    else
+    {
+        memset(tmp.ImageData, 0, tmp.NPixels * sizeof(unsigned short));
+        err = Median3(tmp.ImageData, img.ImageData, img.Size, img.Subframe);
+    }
+
     img.SwapImageData(tmp);
     return err;
 }
@@ -195,6 +250,31 @@ inline static unsigned short median8(const unsigned short l[8])
     return (unsigned short)(((unsigned int) l0 + (unsigned int) l1) / 2);
 }
 
+inline static unsigned short median6(const unsigned short l[6])
+{
+    unsigned short l0 = l[0], l1 = l[1], l2 = l[2], l3 = l[3];
+    unsigned short x;
+
+    x = l[4];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    if (x < l3) swap(x, l3);
+    x = l[5];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+    if (x < l3) swap(x, l3);
+
+    if (l2 > l0) swap(l2, l0);
+    if (l2 > l1) swap(l2, l1);
+
+    if (l3 > l0) swap(l3, l0);
+    if (l3 > l1) swap(l3, l1);
+
+    return (unsigned short)(((unsigned int) l0 + (unsigned int) l1) / 2);
+}
+
 inline static unsigned short median5(const unsigned short l[5])
 {
     unsigned short l0 = l[0], l1 = l[1], l2 = l[2];
@@ -214,6 +294,21 @@ inline static unsigned short median5(const unsigned short l[5])
     return l0;
 }
 
+inline static unsigned short median4(const unsigned short l[4])
+{
+    unsigned short l0 = l[0], l1 = l[1], l2 = l[2];
+    unsigned short x;
+    x = l[3];
+    if (x < l0) swap(x, l0);
+    if (x < l1) swap(x, l1);
+    if (x < l2) swap(x, l2);
+
+    if (l2 > l0) swap(l2, l0);
+    if (l2 > l1) swap(l2, l1);
+
+    return (unsigned short)(((unsigned int) l0 + (unsigned int) l1) / 2);
+}
+
 inline static unsigned short median3(const unsigned short l[3])
 {
     unsigned short l0 = l[0], l1 = l[1], l2 = l[2];
@@ -223,32 +318,115 @@ inline static unsigned short median3(const unsigned short l[3])
     return l0;
 }
 
-bool Median3(unsigned short *dst, const unsigned short *src, int xsize, int ysize)
+bool Median3(unsigned short *dst, const unsigned short *src, const wxSize& size, const wxRect& rect)
 {
-    for (int y = 1; y < ysize - 1; y++)
+    int const W = size.GetWidth();
+    int const RX = rect.GetX();
+    int const RY = rect.GetY();
+    int const RW = rect.GetWidth();
+    int const RH = rect.GetHeight();
+
+    unsigned short a[9];
+    unsigned short *d;
+
+#define IX(x_, y_) ((RY + (y_)) * W + RX + (x_))
+
+    // top row
+    d = &dst[IX(0, 0)];
+
+    // top-left corner
+    a[0] = src[IX(0, 0)];
+    a[1] = src[IX(1, 0)];
+    a[2] = src[IX(0, 1)];
+    a[3] = src[IX(1, 1)];
+    *d++ = median4(a);
+
+    // top row middle pixels
+    for (int x = 1; x <= RW - 2; x++)
     {
-        for (int x = 1; x < xsize - 1; x++)
+        a[0] = src[IX(x - 1, 0)];
+        a[1] = src[IX(x,     0)];
+        a[2] = src[IX(x + 1, 0)];
+        a[3] = src[IX(x - 1, 1)];
+        a[4] = src[IX(x,     1)];
+        a[5] = src[IX(x + 1, 1)];
+        *d++ = median6(a);
+    }
+
+    // top-right corner
+    a[0] = src[IX(RW - 2, 0)];
+    a[1] = src[IX(RW - 1, 0)];
+    a[2] = src[IX(RW - 2, 1)];
+    a[3] = src[IX(RW - 1, 1)];
+    *d = median4(a);
+
+    for (int y = 1; y <= RH - 2; y++)
+    {
+        d = &dst[IX(0, y)];
+
+        // leftmost pixel
+        a[0] = src[IX(0, y - 1)];
+        a[1] = src[IX(1, y - 1)];
+        a[2] = src[IX(0, y    )];
+        a[3] = src[IX(1, y    )];
+        a[4] = src[IX(0, y + 1)];
+        a[5] = src[IX(1, y + 1)];
+        *d++ = median6(a);
+
+        for (int x = 1; x <= RW - 2; x++)
         {
-            unsigned short array[9];
-            array[0] = src[(x - 1) + (y - 1)*xsize];
-            array[1] = src[(x)+(y - 1)*xsize];
-            array[2] = src[(x + 1) + (y - 1)*xsize];
-            array[3] = src[(x - 1) + (y)*xsize];
-            array[4] = src[(x)+(y)*xsize];
-            array[5] = src[(x + 1) + (y)*xsize];
-            array[6] = src[(x - 1) + (y + 1)*xsize];
-            array[7] = src[(x)+(y + 1)*xsize];
-            array[8] = src[(x + 1) + (y + 1)*xsize];
-            dst[x + y * xsize] = median9(array);
+            a[0] = src[IX(x - 1, y - 1)];
+            a[1] = src[IX(x    , y - 1)];
+            a[2] = src[IX(x + 1, y - 1)];
+            a[3] = src[IX(x - 1, y    )];
+            a[4] = src[IX(x    , y    )];
+            a[5] = src[IX(x + 1, y    )];
+            a[6] = src[IX(x - 1, y + 1)];
+            a[7] = src[IX(x    , y + 1)];
+            a[8] = src[IX(x + 1, y + 1)];
+            *d++ = median9(a);
         }
-        dst[(xsize - 1) + y * xsize] = src[(xsize - 1) + y * xsize];  // 1st & Last one in this row -- just grab from orig
-        dst[y * xsize] = src[y * xsize];
+
+        // rightmost pixel
+        a[0] = src[IX(RW - 2, y - 1)];
+        a[1] = src[IX(RW - 1, y - 1)];
+        a[2] = src[IX(RW - 2, y    )];
+        a[3] = src[IX(RW - 1, y    )];
+        a[4] = src[IX(RW - 2, y + 1)];
+        a[5] = src[IX(RW - 1, y + 1)];
+        *d++ = median6(a);
     }
-    for (int x = 0; x < xsize; x++)
+
+    // bottom row
+    d = &dst[IX(0, RH - 1)];
+
+    // bottom-left corner
+    a[0] = src[IX(0, RH - 2)];
+    a[1] = src[IX(1, RH - 2)];
+    a[2] = src[IX(0, RH - 1)];
+    a[3] = src[IX(1, RH - 1)];
+    *d++ = median4(a);
+
+    // bottom row middle pixels
+    for (int x = 1; x <= RW - 2; x++)
     {
-        dst[x + (ysize - 1) * xsize] = src[x + (ysize - 1) * xsize];  // Last row -- just duplicate
-        dst[x] = src[x];  // First row
+        a[0] = src[IX(x - 1, RH - 2)];
+        a[1] = src[IX(x    , RH - 2)];
+        a[2] = src[IX(x + 1, RH - 2)];
+        a[3] = src[IX(x - 1, RH - 1)];
+        a[4] = src[IX(x    , RH - 1)];
+        a[5] = src[IX(x + 1, RH - 1)];
+        *d++ = median6(a);
     }
+
+    // bottom-right corner
+    a[0] = src[IX(RW - 2, RH - 2)];
+    a[1] = src[IX(RW - 1, RH - 2)];
+    a[2] = src[IX(RW - 2, RH - 1)];
+    a[3] = src[IX(RW - 1, RH - 1)];
+    *d = median4(a);
+
+#undef IX
 
     return false;
 }
@@ -409,7 +587,7 @@ bool Subtract(usImage& light, const usImage& dark)
         return true;
 
     unsigned int left, top, width, height;
-    if (light.Subframe.GetWidth() > 0 && light.Subframe.GetHeight() > 0)
+    if (!light.Subframe.IsEmpty())
     {
         left = light.Subframe.GetLeft();
         width = light.Subframe.GetWidth();
@@ -854,7 +1032,7 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
     if (!light.ImageData)
         return true;
 
-    if (light.Subframe.GetWidth() > 0 && light.Subframe.GetHeight() > 0)
+    if (!light.Subframe.IsEmpty())
     {
         // Step over each defect and replace the light value
         // with the median of the surrounding pixels

@@ -71,7 +71,7 @@ void usImage::CalcStats()
     Min = 65535; Max = 0;
     FiltMin = 65535; FiltMax = 0;
 
-    if (Subframe.width <= 0 || Subframe.height <= 0)
+    if (Subframe.IsEmpty())
     {
         // full frame, no subframe
 
@@ -87,7 +87,7 @@ void usImage::CalcStats()
 
         unsigned short *tmpdata = new unsigned short[NPixels];
 
-        Median3(tmpdata, ImageData, Size.GetWidth(), Size.GetHeight());
+        Median3(tmpdata, ImageData, Size, wxRect(Size));
 
         src = tmpdata;
         for (int i = 0; i < NPixels; i++)
@@ -123,7 +123,7 @@ void usImage::CalcStats()
 
         dst = new unsigned short[pixcnt];
 
-        Median3(dst, tmpdata, Subframe.width, Subframe.height);
+        Median3(dst, tmpdata, Subframe.GetSize(), wxRect(Subframe.GetSize()));
 
         const unsigned short *src = dst;
         for (unsigned int i = 0; i < pixcnt; i++)
