@@ -50,7 +50,7 @@ public:
 };
 
 extern bool QuickLRecon(usImage& img);
-extern bool Median3(unsigned short *dst, const unsigned short *src, int xsize, int ysize);
+extern bool Median3(unsigned short *dst, const unsigned short *src, const wxSize& size, const wxRect& rect);
 extern bool Median3(usImage& img);
 extern bool SquarePixels(usImage& img, float xsize, float ysize);
 extern int dbl_sort_func(double *first, double *second);
