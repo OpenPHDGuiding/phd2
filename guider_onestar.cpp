@@ -260,7 +260,7 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
             throw ERROR_INFO("Unable to find");
         }
 
-        if (SetLockPosition(m_star , true))
+        if (SetLockPosition(m_star))
         {
             throw ERROR_INFO("Unable to set Lock Position");
         }
@@ -521,9 +521,9 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             }
             else
             {
-                SetLockPosition(m_star, true);
-                pFrame->SetStatusText(wxString::Format(_("Selected star at (%.1f, %.1f)"),m_star.X, m_star.Y), 1);
-                pFrame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"),m_star.Mass,m_star.SNR));
+                SetLockPosition(m_star);
+                pFrame->SetStatusText(wxString::Format(_("Selected star at (%.1f, %.1f)"), m_star.X, m_star.Y), 1);
+                pFrame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR));
                 EvtServer.NotifyStarSelected(CurrentPosition());
                 SetState(STATE_SELECTED);
                 pFrame->UpdateButtonsStatus();

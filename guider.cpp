@@ -459,12 +459,7 @@ void Guider::InvalidateLockPosition(void)
     NudgeLockTool::UpdateNudgeLockControls();
 }
 
-void Guider::UpdateLockPosition(void)
-{
-    SetLockPosition(CurrentPosition(), true);
-}
-
-bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
+bool Guider::SetLockPosition(const PHD_Point& position)
 {
     bool bError = false;
 
@@ -489,26 +484,15 @@ bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
             throw ERROR_INFO("invalid y value");
         }
 
-        if (bExact)
+        if (!m_lockPosition.IsValid() || position.X != m_lockPosition.X || position.Y != m_lockPosition.Y)
         {
-            if (!m_lockPosition.IsValid() || position.X != m_lockPosition.X || position.Y != m_lockPosition.Y)
-            {
-                EvtServer.NotifySetLockPosition(position);
-                if (m_state == STATE_GUIDING)
-                    GuideLog.NotifySetLockPosition(this);
-                NudgeLockTool::UpdateNudgeLockControls();
-            }
-            m_lockPosition.SetXY(x, y);
+            EvtServer.NotifySetLockPosition(position);
+            if (m_state == STATE_GUIDING)
+                GuideLog.NotifySetLockPosition(this);
+            NudgeLockTool::UpdateNudgeLockControls();
         }
-        else
-        {
-            SetCurrentPosition(m_pCurrentImage, PHD_Point(x, y));
 
-            if (CurrentPosition().IsValid())
-            {
-                SetLockPosition(CurrentPosition());
-            }
-        }
+        m_lockPosition.SetXY(x, y);
     }
     catch (wxString Msg)
     {
@@ -517,6 +501,18 @@ bool Guider::SetLockPosition(const PHD_Point& position, bool bExact)
     }
 
     return bError;
+}
+
+bool Guider::SetLockPosToStarAtPosition(const PHD_Point& starPosHint)
+{
+    bool error = SetCurrentPosition(m_pCurrentImage, starPosHint);
+
+    if (!error && CurrentPosition().IsValid())
+    {
+        SetLockPosition(CurrentPosition());
+    }
+
+    return error;
 }
 
 MOVE_LOCK_RESULT Guider::MoveLockPosition(const PHD_Point& mountDelta)
@@ -549,7 +545,7 @@ MOVE_LOCK_RESULT Guider::MoveLockPosition(const PHD_Point& mountDelta)
             return MOVE_LOCK_REJECTED;
         }
 
-        if (SetLockPosition(newLockPosition, true))
+        if (SetLockPosition(newLockPosition))
         {
             throw ERROR_INFO("SetLockPosition failed");
         }
@@ -903,7 +899,6 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         {
             case STATE_SELECTING:
                 assert(CurrentPosition().IsValid());
-
                 SetLockPosition(CurrentPosition());
                 Debug.AddLine("CurrentPosition() valid, moving to STATE_SELECTED");
                 EvtServer.NotifyStarSelected(CurrentPosition());

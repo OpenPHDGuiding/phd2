@@ -791,7 +791,13 @@ static void set_lock_position(JObj& response, const json_value *params)
         exact = p2->int_value ? true : false;
     }
 
-    bool error = pFrame->pGuider->SetLockPosition(PHD_Point(x, y), exact);
+    bool error;
+
+    if (exact)
+        error = pFrame->pGuider->SetLockPosition(PHD_Point(x, y));
+    else
+        error = pFrame->pGuider->SetLockPosToStarAtPosition(PHD_Point(x, y));
+
     if (error)
     {
         response << jrpc_error(JSONRPC_INVALID_REQUEST, "could not set lock position");
