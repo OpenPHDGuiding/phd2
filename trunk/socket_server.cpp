@@ -275,7 +275,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                 sock->Read(&y, 2);
                 sock->Discard();  // Clean out anything else
 
-                if (pFrame->pGuider->SetLockPosition(PHD_Point(x,y), false))
+                if (!pFrame->pGuider->SetLockPosToStarAtPosition(PHD_Point(x,y)))
                 {
                     Debug.AddLine("processing socket request SETLOCKPOSITION for (%d, %d) succeeded", x, y);
                     pFrame->SetStatusText(wxString::Format("Lock set to %d,%d",x,y));

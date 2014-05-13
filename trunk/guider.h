@@ -177,7 +177,8 @@ public:
     bool DoGuide(void);
 
     MOVE_LOCK_RESULT MoveLockPosition(const PHD_Point& mountDelta);
-    bool SetLockPosition(const PHD_Point& position, bool bExact=true);
+    bool SetLockPosition(const PHD_Point& position);
+    bool SetLockPosToStarAtPosition(const PHD_Point& starPositionHint);
     void SetLockPosIsSticky(bool isSticky) { m_lockPosIsSticky = isSticky; }
     bool LockPosIsSticky(void) const { return m_lockPosIsSticky; }
     const PHD_Point& LockPosition();
@@ -212,7 +213,6 @@ public:
     // their operation
 private:
     virtual void InvalidateLockPosition(void);
-    virtual void UpdateLockPosition(void);
 public:
     virtual void LoadProfileSettings(void);
 
