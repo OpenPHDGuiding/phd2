@@ -95,6 +95,14 @@ enum MOVE_LOCK_RESULT
     MOVE_LOCK_ERROR,
 };
 
+struct LockPosShiftParams
+{
+    bool shiftEnabled;
+    PHD_Point shiftRate;
+    GRAPH_UNITS shiftUnits;
+    bool shiftIsMountCoords;
+};
+
 /*
  * The Guider class is responsible for running the state machine
  * associated with the GUIDER_STATES enumerated type.
@@ -104,7 +112,7 @@ enum MOVE_LOCK_RESULT
  *
  */
 
-class Guider: public wxWindow
+class Guider : public wxWindow
 {
     // Private member data.
 
@@ -114,7 +122,7 @@ class Guider: public wxWindow
     double m_polarAlignCircleCorrection;
     PHD_Point m_polarAlignCircleCenter;
     bool m_paused;
-    PHD_Point m_lockPosition;
+    ShiftPoint m_lockPosition;
     PHD_Point m_ditherRecenterStep;
     wxPoint m_ditherRecenterDir;
     PHD_Point m_ditherRecenterRemaining;
@@ -126,6 +134,7 @@ class Guider: public wxWindow
     bool m_scaleImage;
     bool m_lockPosIsSticky;
     bool m_fastRecenterEnabled;
+    LockPosShiftParams m_lockPosShift;
 
 protected:
     bool m_forceFullFrame;
@@ -179,9 +188,14 @@ public:
     MOVE_LOCK_RESULT MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position);
     bool SetLockPosToStarAtPosition(const PHD_Point& starPositionHint);
+    bool ShiftLockPosition(void);
+    void EnableLockPosShift(bool enable);
+    void SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool isMountCoords);
+    bool LockPosShiftEnabled(void) const { return m_lockPosShift.shiftEnabled; }
     void SetLockPosIsSticky(bool isSticky) { m_lockPosIsSticky = isSticky; }
     bool LockPosIsSticky(void) const { return m_lockPosIsSticky; }
     const PHD_Point& LockPosition();
+    const LockPosShiftParams& GetLockPosShiftParams(void) const { return m_lockPosShift; }
     void ForceFullFrame(void);
 
     bool SetOverlayMode(int newMode);
@@ -246,6 +260,7 @@ public:
     void EnableFastRecenter(bool enable);
 
 private:
+    void UpdateLockPosShiftCameraCoords(void);
     DECLARE_EVENT_TABLE()
 };
 

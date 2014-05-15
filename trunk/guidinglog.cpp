@@ -536,6 +536,39 @@ bool GuidingLog::NotifySetLockPosition(Guider *guider)
     return bError;
 }
 
+bool GuidingLog::NotifyLockShiftParams(const LockPosShiftParams& shiftParams, const PHD_Point& cameraRate)
+{
+    bool error = false;
+
+    try
+    {
+        if (m_enabled)
+        {
+            wxString details;
+            if (shiftParams.shiftEnabled)
+            {
+                details = wxString::Format("%s rate (%.2f,%.2f) %s/hr (%.3g,%.3g) px/sec",
+                                           shiftParams.shiftIsMountCoords ? "RA,Dec" : "X,Y",
+                                           shiftParams.shiftRate.IsValid() ? shiftParams.shiftRate.X : 0.0,
+                                           shiftParams.shiftRate.IsValid() ? shiftParams.shiftRate.Y : 0.0,
+                                           shiftParams.shiftUnits == UNIT_ARCSEC ? "arc-sec" : "pixels",
+                                           cameraRate.IsValid() ? cameraRate.X : 0.0,
+                                           cameraRate.IsValid() ? cameraRate.Y : 0.0);
+            }
+            m_file.Write(wxString::Format("LOCK SHIFT, enabled = %d %s\n", shiftParams.shiftEnabled, details));
+            m_keepFile = true;
+            Flush();
+        }
+    }
+    catch (const wxString& msg)
+    {
+        POSSIBLY_UNUSED(msg);
+        error = true;
+    }
+
+    return error;
+}
+
 bool GuidingLog::ServerCommand(Guider* guider, const wxString& cmd)
 {
     bool bError = false;

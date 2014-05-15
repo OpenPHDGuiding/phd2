@@ -817,6 +817,171 @@ static void flip_calibration(JObj& response, const json_value *params)
         response << jrpc_result(0);
 }
 
+static void get_lock_shift_enabled(JObj& response, const json_value *params)
+{
+    bool enabled = pFrame->pGuider->GetLockPosShiftParams().shiftEnabled;
+    response << jrpc_result(enabled);
+}
+
+static void set_lock_shift_enabled(JObj& response, const json_value *params)
+{
+    const json_value *val;
+    if (!params || (val = at(params, 0)) == 0 || val->type != JSON_BOOL)
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected enabled boolean param");
+        return;
+    }
+
+    if (!pFrame || !pFrame->pGuider) // paranoia
+    {
+        response << jrpc_error(1, "internal error");
+        return;
+    }
+
+    pFrame->pGuider->EnableLockPosShift(val->int_value ? true : false);
+
+    response << jrpc_result(0);
+}
+
+static void get_lock_shift_params(JObj& response, const json_value *params)
+{
+    const LockPosShiftParams& lockShift = pFrame->pGuider->GetLockPosShiftParams();
+    JObj rslt;
+    rslt << NV("enabled", lockShift.shiftEnabled);
+    if (lockShift.shiftRate.IsValid())
+    {
+        rslt << NV("rate", lockShift.shiftRate)
+             << NV("units", lockShift.shiftUnits == UNIT_ARCSEC ? "arcsec/hr" : "pixels/hr")
+             << NV("axes", lockShift.shiftIsMountCoords ? "RA/Dec" : "X/Y");
+    }
+    response << jrpc_result(rslt);
+}
+
+static bool get_double(double *d, const json_value *j)
+{
+    if (j->type == JSON_FLOAT)
+    {
+        *d = j->float_value;
+        return true;
+    }
+    else if (j->type == JSON_INT)
+    {
+        *d = j->int_value;
+        return true;
+    }
+    return false;
+}
+
+static bool parse_point(PHD_Point *pt, const json_value *j)
+{
+    if (j->type != JSON_ARRAY)
+        return false;
+    const json_value *jx = j->first_child;
+    if (!jx)
+        return false;
+    const json_value *jy = jx->next_sibling;
+    if (!jy || jy->next_sibling)
+        return false;
+    double x, y;
+    if (!get_double(&x, jx) || !get_double(&y, jy))
+        return false;
+    pt->SetXY(x, y);
+    return true;
+}
+
+inline static const char *string_val(const json_value *j)
+{
+    return j->type == JSON_STRING ? j->string_value : "";
+}
+
+static bool parse_lock_shift_params(LockPosShiftParams *shift, const json_value *params, wxString *error)
+{
+    // {"rate":[3.3,1.1],"units":"arcsec/hr","axes":"RA/Dec"}
+    const json_value *p0;
+    if (!params || (p0 = at(params, 0)) == 0 || p0->type != JSON_OBJECT)
+    {
+        *error = "expected lock shift object param";
+        return false;
+    }
+    shift->shiftUnits = UNIT_ARCSEC;
+    shift->shiftIsMountCoords = true;
+
+    for (const json_value *j = p0->first_child; j; j = j->next_sibling)
+    {
+        if (strcmp(j->name, "rate") == 0)
+        {
+            if (!parse_point(&shift->shiftRate, j))
+            {
+                *error = "expected rate value array";
+                return false;
+            }
+        }
+        else if (strcmp(j->name, "units") == 0)
+        {
+            const char *units = string_val(j);
+            if (wxStricmp(units, "arcsec/hr") == 0 ||
+                wxStricmp(units, "arc-sec/hr") == 0)
+            {
+                shift->shiftUnits = UNIT_ARCSEC;
+            }
+            else if (wxStricmp(units, "pixels/hr") == 0)
+            {
+                shift->shiftUnits = UNIT_PIXELS;
+            }
+            else
+            {
+                *error = "expected units 'arcsec/hr' or 'pixels/hr'";
+                return false;
+            }
+        }
+        else if (strcmp(j->name, "axes") == 0)
+        {
+            const char *axes = string_val(j);
+            if (wxStricmp(axes, "RA/Dec") == 0)
+            {
+                shift->shiftIsMountCoords = true;
+            }
+            else if (wxStricmp(axes, "X/Y") == 0)
+            {
+                shift->shiftIsMountCoords = false;
+            }
+            else
+            {
+                *error = "expected axes 'RA/Dec' or 'X/Y'";
+                return false;
+            }
+        }
+        else
+        {
+            *error = "unknown lock shift attribute name";
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static void set_lock_shift_params(JObj& response, const json_value *params)
+{
+    wxString err;
+    LockPosShiftParams shift;
+    if (!parse_lock_shift_params(&shift, params, &err))
+    {
+        response << jrpc_error(JSONRPC_INVALID_PARAMS, err);
+        return;
+    }
+
+    if (!pFrame || !pFrame->pGuider)
+    {
+        response << jrpc_error(1, "internal error");
+        return;
+    }
+
+    pFrame->pGuider->SetLockPosShiftRate(shift.shiftRate, shift.shiftUnits, shift.shiftIsMountCoords);
+
+    response << jrpc_result(0);
+}
+
 static bool parse_settle(SettleParams *settle, const json_value *j, wxString *error)
 {
     bool found_pixels = false, found_time = false, found_timeout = false;
@@ -982,6 +1147,10 @@ static bool handle_request(JObj& response, const json_value *req)
         { "get_pixel_scale", &get_pixel_scale, },
         { "get_app_state", &get_app_state, },
         { "flip_calibration", &flip_calibration, },
+        { "get_lock_shift_enabled", &get_lock_shift_enabled, },
+        { "set_lock_shift_enabled", &set_lock_shift_enabled, },
+        { "get_lock_shift_params", &get_lock_shift_params, },
+        { "set_lock_shift_params", &set_lock_shift_params, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

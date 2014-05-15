@@ -40,6 +40,7 @@
 
 class Mount;
 class Guider;
+struct LockPosShiftParams;
 
 struct GuideStepInfo
 {
@@ -87,9 +88,10 @@ public:
     bool StartGuiding();
     bool GuideStep(const GuideStepInfo& info);
 
-    bool ServerCommand(Guider* guider, const wxString& cmd);
-    bool NotifyGuidingDithered(Guider* guider, double dx, double dy);
-    bool NotifySetLockPosition(Guider* guider);
+    bool ServerCommand(Guider *guider, const wxString& cmd);
+    bool NotifyGuidingDithered(Guider *guider, double dx, double dy);
+    bool NotifySetLockPosition(Guider *guider);
+    bool NotifyLockShiftParams(const LockPosShiftParams& shiftParams, const PHD_Point& cameraRate);
 
     bool SetGuidingParam(const wxString& name, double val);
     bool SetGuidingParam(const wxString& name, int val);

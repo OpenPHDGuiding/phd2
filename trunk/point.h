@@ -39,6 +39,7 @@
 class PHD_Point
 {
     bool m_valid;
+
 public:
 
     double X;
@@ -69,7 +70,7 @@ public:
         m_valid = false;
     }
 
-    void SetXY(const double x, const double y)
+    void SetXY(double x, double y)
     {
         X = x;
         Y = y;
@@ -180,13 +181,13 @@ public:
         return *this;
     }
 
-    PHD_Point operator/(const double divisor) const
+    PHD_Point operator/(double divisor) const
     {
         assert(m_valid);
         return PHD_Point(this->X/divisor, this->Y/divisor);
     }
 
-    PHD_Point& operator/=(const double divisor)
+    PHD_Point& operator/=(double divisor)
     {
         assert(m_valid);
         this->X /= divisor;
@@ -195,13 +196,13 @@ public:
         return *this;
     }
 
-    PHD_Point operator*(const double multiplicand) const
+    PHD_Point operator*(double multiplicand) const
     {
         assert(m_valid);
         return PHD_Point(this->X * multiplicand, this->Y * multiplicand);
     }
 
-    PHD_Point& operator*=(const double multiplicand)
+    PHD_Point& operator*=(double multiplicand)
     {
         assert(m_valid);
         this->X *= multiplicand;
@@ -211,5 +212,57 @@ public:
     }
 };
 
+class ShiftPoint : public PHD_Point
+{
+    typedef PHD_Point super;
+
+    PHD_Point m_rate; // rate of change (per second)
+    double m_x0;    // initial x position
+    double m_y0;    // initial y position
+    long m_t0;      // initial time (seconds)
+
+public:
+
+    ShiftPoint() { }
+
+    void SetShiftRate(double xrate, double yrate)
+    {
+        m_rate.SetXY(xrate, yrate);
+        BeginShift();
+    }
+
+    void BeginShift()
+    {
+        if (IsValid())
+        {
+            m_x0 = X;
+            m_y0 = Y;
+            m_t0 = ::wxGetUTCTime();
+        }
+    }
+
+    void DisableShift()
+    {
+        m_rate.Invalidate();
+    }
+
+    void UpdateShift()
+    {
+        if (IsValid() && m_rate.IsValid())
+        {
+            double dt = (double)(::wxGetUTCTime() - m_t0);
+            X = m_x0 + m_rate.X * dt;
+            Y = m_y0 + m_rate.Y * dt;
+        }
+    }
+
+    void SetXY(double x, double y)
+    {
+        super::SetXY(x, y);
+        BeginShift();
+    }
+
+    const PHD_Point& ShiftRate(void) const { return m_rate; }
+};
 
 #endif /* POINT_H_INCLUDED */

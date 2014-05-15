@@ -53,6 +53,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_paused = false;
     m_starFoundTimestamp = 0;
     m_avgDistanceNeedReset = false;
+    m_lockPosShift.shiftEnabled = false;
     m_lockPosIsSticky = false;
     m_forceFullFrame = false;
     m_pCurrentImage = new usImage(); // so we always have one
@@ -828,6 +829,16 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
         assert(!pMount || !pMount->IsBusy());
 
+        // shift lock position
+        if (LockPosShiftEnabled() && m_state == STATE_GUIDING)
+        {
+            if (ShiftLockPosition())
+            {
+                pFrame->Alert(_("Shifted lock position outside allowable area. Lock Position Shift disabled."));
+                EnableLockPosShift(false);
+            }
+        }
+
         if (IsPaused())
         {
             statusMessage = _("Paused");
@@ -956,6 +967,13 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 }
                 assert(!pSecondaryMount || pSecondaryMount->IsCalibrated());
 
+                // camera angle is now known, so ok to calculate shift rate camera coords
+                UpdateLockPosShiftCameraCoords();
+                if (LockPosShiftEnabled())
+                {
+                    GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
+                }
+
                 SetState(STATE_CALIBRATED);
                 // fall through
             case STATE_CALIBRATED:
@@ -1023,6 +1041,93 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     UpdateImageDisplay(pImage);
 
     Debug.AddLine("UpdateGuideState exits:" + statusMessage);
+}
+
+bool Guider::ShiftLockPosition(void)
+{
+    m_lockPosition.UpdateShift();
+    bool isValid = IsValidLockPosition(m_lockPosition);
+    Debug.AddLine("ShiftLockPos: new pos = %.2f, %.2f valid=%d",
+                  m_lockPosition.X, m_lockPosition.Y, isValid);
+    return !isValid;
+}
+
+void Guider::SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool isMountCoords)
+{
+    Debug.AddLine("SetLockPosShiftRate: rate = %.2f,%.2f units = %d isMountCoords = %d",
+                  rate.X, rate.Y, units, isMountCoords);
+
+    m_lockPosShift.shiftRate = rate;
+    m_lockPosShift.shiftUnits = units;
+    m_lockPosShift.shiftIsMountCoords = isMountCoords;
+
+    if (m_state == STATE_CALIBRATED || m_state == STATE_GUIDING)
+    {
+        UpdateLockPosShiftCameraCoords();
+        if (LockPosShiftEnabled())
+        {
+            GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
+        }
+    }
+}
+
+void Guider::EnableLockPosShift(bool enable)
+{
+    if (enable != m_lockPosShift.shiftEnabled)
+    {
+        Debug.AddLine("EnableLockPosShift: enable = %d", enable);
+        m_lockPosShift.shiftEnabled = enable;
+        if (enable)
+        {
+            m_lockPosition.BeginShift();
+        }
+        if (m_state == STATE_CALIBRATED || m_state == STATE_GUIDING)
+        {
+            GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
+        }
+    }
+}
+
+void Guider::UpdateLockPosShiftCameraCoords(void)
+{
+    if (!m_lockPosShift.shiftRate.IsValid())
+    {
+        Debug.AddLine("UpdateLockPosShiftCameraCoords: no shift rate set");
+        m_lockPosition.DisableShift();
+        return;
+    }
+
+    PHD_Point rate;
+
+    // convert shift rate to camera coordinates
+    if (m_lockPosShift.shiftIsMountCoords)
+    {
+        Debug.AddLine("UpdateLockPosShiftCameraCoords: shift rate mount coords = %.2f,%.2f",
+                      m_lockPosShift.shiftRate.X, m_lockPosShift.shiftRate.Y);
+
+        Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
+        if (mount && !mount->IsStepGuider())
+            mount->TransformMountCoordinatesToCameraCoordinates(m_lockPosShift.shiftRate, rate);
+    }
+    else
+    {
+        rate = m_lockPosShift.shiftRate;
+    }
+
+    Debug.AddLine("UpdateLockPosShiftCameraCoords: shift rate camera coords = %.2f,%.2f %s/hr",
+                  rate.X, rate.Y, m_lockPosShift.shiftUnits == UNIT_ARCSEC ? "arcsec" : "pixels");
+
+    // convert arc-seconds to pixels
+    if (m_lockPosShift.shiftUnits == UNIT_ARCSEC)
+    {
+        rate /= pFrame->GetCameraPixelScale();
+    }
+    rate /= 3600.0;  // per hour => per second
+
+    Debug.AddLine("UpdateLockPosShiftCameraCoords: shift rate %.2g,%.2g px/sec",
+                  rate.X, rate.Y);
+
+    m_lockPosition.SetShiftRate(rate.X, rate.Y);
 }
 
 wxString Guider::GetSettingsSummary()
@@ -1200,7 +1305,7 @@ static bool BookmarkPos(const PHD_Point& pos, std::vector<wxRealPoint>& vec)
 
 void Guider::BookmarkLockPosition()
 {
-    if (BookmarkPos(m_lockPosition, m_bookmarks) && m_showBookmarks)
+    if (BookmarkPos(LockPosition(), m_bookmarks) && m_showBookmarks)
     {
         Update();
         Refresh();
@@ -1209,8 +1314,7 @@ void Guider::BookmarkLockPosition()
 
 void Guider::BookmarkCurPosition()
 {
-    PHD_Point curPos(CurrentPosition());
-    if (BookmarkPos(curPos, m_bookmarks) && m_showBookmarks)
+    if (BookmarkPos(CurrentPosition(), m_bookmarks) && m_showBookmarks)
     {
         Update();
         Refresh();
