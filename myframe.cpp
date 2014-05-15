@@ -437,8 +437,7 @@ void MyFrame::SetupMenuBar(void)
     bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("Delete all\tCtrl-B"), _("Remove all bookmarks"));
 
     darks_menu = new wxMenu();
-    darks_menu->Append(MENU_TAKEDARKS, _("&Dark Library..."), _("Build a dark library for this profile"));
-    m_takeDarksMenuInx = darks_menu->GetMenuItemCount() - 1;
+    m_takeDarksMenuItem = darks_menu->Append(MENU_TAKEDARKS, _("&Dark Library..."), _("Build a dark library for this profile"));
     darks_menu->Append(MENU_REFINEDEFECTMAP, _("Bad-pixel Map..."), _("Adjust parameters to create or modify the bad-pixel map"));
     darks_menu->AppendSeparator();
     darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
@@ -790,9 +789,9 @@ void MyFrame::UpdateButtonsStatus(void)
         need_update = true;
 
     bool dark_enabled = loop_enabled && !CaptureActive;
-    if (dark_enabled ^ darks_menu->FindItemByPosition(m_takeDarksMenuInx)->IsEnabled())
+    if (dark_enabled ^ m_takeDarksMenuItem->IsEnabled())
     {
-        darks_menu->FindItemByPosition(m_takeDarksMenuInx)->Enable(dark_enabled);
+        m_takeDarksMenuItem->Enable(dark_enabled);
         need_update = true;
     }
 

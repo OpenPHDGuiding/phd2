@@ -179,18 +179,22 @@ extern GuidingLog GuideLog;
 extern int XWinSize;
 extern int YWinSize;
 
-class PhdApp: public wxApp
+class PhdApp : public wxApp
 {
     long m_instanceNumber;
     bool m_resetConfig;
-  public:
+
+public:
+
     PhdApp(void);
     bool OnInit(void);
     int OnExit(void);
     void OnInitCmdLine(wxCmdLineParser& parser);
     bool OnCmdLineParsed(wxCmdLineParser & parser);
     virtual bool Yield(bool onlyIfNeeded=false);
+
 protected:
+
     wxLocale m_locale;
 };
 

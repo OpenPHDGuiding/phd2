@@ -395,7 +395,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessa
         {
             statusMessage = StarStatusStr(newStar);
             m_star.SetError(newStar.GetError());
-            throw ERROR_INFO("UpdateGuideState():newStar not found");
+            throw ERROR_INFO("UpdateCurrentPosition():newStar not found");
         }
 
         if (m_massChangeThresholdEnabled &&
@@ -455,7 +455,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessa
 
 bool GuiderOneStar::IsValidLockPosition(const PHD_Point& pt)
 {
-    usImage *pImage = CurrentImage();
+    const usImage *pImage = CurrentImage();
     if (!pImage)
         return false;
     // this is a bit ugly as it is tightly coupled to Star::Find

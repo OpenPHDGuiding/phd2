@@ -137,7 +137,6 @@ private:
 
     wxAuiManager m_mgr;
     bool m_continueCapturing; // should another image be captured?
-    int m_takeDarksMenuInx;
 
 public:
     MyFrame(int instanceNumber, wxLocale *locale);
@@ -146,6 +145,7 @@ public:
     Guider *pGuider;
     wxMenuBar *Menubar;
     wxMenu *tools_menu, *view_menu, *bookmarks_menu, *darks_menu;
+    wxMenuItem *m_takeDarksMenuItem;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
