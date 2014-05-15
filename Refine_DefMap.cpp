@@ -314,10 +314,14 @@ void RefineDefMap::ApplyNewMap()
 
 void RefineDefMap::OnGenerate(wxCommandEvent& evt)
 {
-    if (pRebuildDarks->GetValue()) {
-        if (RebuildMasterDarks()) {
+    if (pRebuildDarks->GetValue())
+    {
+        if (RebuildMasterDarks())
+        {
             pRebuildDarks->SetValue(false);
-		} else {
+        }
+        else
+        {
             ShowStatus(_("Master dark frames NOT rebuilt"), false);
             return;         // Couldn't do what we were asked
         }
