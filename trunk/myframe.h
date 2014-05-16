@@ -145,6 +145,10 @@ public:
     Guider *pGuider;
     wxMenuBar *Menubar;
     wxMenu *tools_menu, *view_menu, *bookmarks_menu, *darks_menu;
+    wxMenuItem *m_showBookmarksMenuItem;
+    wxMenuItem *m_bookmarkLockPosMenuItem;
+    wxAcceleratorEntry *m_showBookmarksAccel;
+    wxAcceleratorEntry *m_bookmarkLockPosAccel;
     wxMenuItem *m_takeDarksMenuItem;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
@@ -170,6 +174,7 @@ public:
     unsigned int m_loggedImageFrame;
     wxDateTime m_guidingStarted;
 
+    void RegisterTextCtrl(wxTextCtrl *ctrl);
     void OnQuit(wxCommandEvent& evt);
     void OnClose(wxCloseEvent& evt);
     void OnAbout(wxCommandEvent& evt);
@@ -199,6 +204,8 @@ public:
     void HandleSockServerInput(wxSocketBase *sock);
     void OnServerMenu(wxCommandEvent& evt);
     void OnCharHook(wxKeyEvent& evt);
+    void OnTextControlSetFocus(wxFocusEvent& evt);
+    void OnTextControlKillFocus(wxFocusEvent& evt);
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
     void OnINDIConfig(wxCommandEvent& evt);
     void OnINDIDialog(wxCommandEvent& evt);

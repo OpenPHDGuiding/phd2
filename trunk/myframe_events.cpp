@@ -662,9 +662,28 @@ void MyFrame::OnBookmarksClearAll(wxCommandEvent& evt)
     pGuider->DeleteAllBookmarks();
 }
 
+void MyFrame::OnTextControlSetFocus(wxFocusEvent& evt)
+{
+    m_showBookmarksMenuItem->SetAccel(0);
+    m_bookmarkLockPosMenuItem->SetAccel(0);
+    evt.Skip();
+}
+
+void MyFrame::OnTextControlKillFocus(wxFocusEvent& evt)
+{
+    m_showBookmarksMenuItem->SetAccel(m_showBookmarksAccel);
+    m_bookmarkLockPosMenuItem->SetAccel(m_bookmarkLockPosAccel);
+    evt.Skip();
+}
+
 void MyFrame::OnCharHook(wxKeyEvent& evt)
 {
     bool handled = false;
+
+    // This never gets called on OSX (since we moved to wxWidgets-3.0.0), so we
+    // rely on the menu accelerators on the MyFrame to provide the keyboard
+    // responses. For Windows and Linux, we keep this here so the keystrokes
+    // work when other windows like the Drift Tool window have focus.
 
     if (evt.GetKeyCode() == 'B')
     {
