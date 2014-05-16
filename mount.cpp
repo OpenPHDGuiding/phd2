@@ -1132,3 +1132,8 @@ void Mount::StartDecDrift(void)
 void Mount::EndDecDrift(void)
 {
 }
+
+bool Mount::IsDecDrifting(void) const
+{
+    return false;
+}
