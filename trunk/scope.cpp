@@ -406,6 +406,11 @@ void Scope::EndDecDrift(void)
     }
 }
 
+bool Scope::IsDecDrifting(void) const
+{
+    return m_decGuideMode == DEC_NONE;
+}
+
 Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duration)
 {
     MOVE_RESULT result = MOVE_OK;

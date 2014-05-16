@@ -223,6 +223,7 @@ public:
 
     virtual void StartDecDrift(void);
     virtual void EndDecDrift(void);
+    virtual bool IsDecDrifting(void) const;
 };
 
 inline bool Mount::DecCompensationActive(void) const

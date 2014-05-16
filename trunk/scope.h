@@ -148,6 +148,7 @@ public:
 
     virtual void StartDecDrift(void);
     virtual void EndDecDrift(void);
+    virtual bool IsDecDrifting(void) const;
 
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
