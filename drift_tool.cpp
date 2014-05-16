@@ -212,7 +212,8 @@ DriftToolWin::DriftToolWin()
     topSizer->Add(m_notesLabel, 0, wxEXPAND|wxTOP|wxLEFT, 8);
 
     m_notes = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 54), wxTE_MULTILINE);
-    topSizer->Add(m_notes, 0, wxEXPAND|wxLEFT|wxRIGHT|wxBOTTOM, 5);
+    pFrame->RegisterTextCtrl(m_notes);
+    topSizer->Add(m_notes, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
     m_notes->Bind(wxEVT_COMMAND_TEXT_UPDATED, &DriftToolWin::OnNotesText, this);
 
     // horizontal sizer for the buttons

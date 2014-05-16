@@ -430,9 +430,11 @@ void MyFrame::SetupMenuBar(void)
     view_menu->AppendRadioItem(MENU_XHAIR4, _("RA/Dec"),_("RA and Dec overlay"));
 
     bookmarks_menu = new wxMenu();
-    bookmarks_menu->AppendCheckItem(MENU_BOOKMARKS_SHOW, _("Show Bookmarks\tB"), _("Hide or show bookmarks"));
+    m_showBookmarksMenuItem = bookmarks_menu->AppendCheckItem(MENU_BOOKMARKS_SHOW, _("Show Bookmarks\tb"), _("Hide or show bookmarks"));
+    m_showBookmarksAccel = m_showBookmarksMenuItem->GetAccel();
     bookmarks_menu->Check(MENU_BOOKMARKS_SHOW, true);
-    bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_LOCK, _("Bookmark Lock Pos\tShift-B"), _("Set a bookmark at the current lock position"));
+    m_bookmarkLockPosMenuItem = bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_LOCK, _("Bookmark Lock Pos\tShift-B"), _("Set a bookmark at the current lock position"));
+    m_bookmarkLockPosAccel = m_bookmarkLockPosMenuItem->GetAccel();
     bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_STAR, _("Bookmark Star Pos"), _("Set a bookmark at the position of the currently selected star"));
     bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("Delete all\tCtrl-B"), _("Remove all bookmarks"));
 
@@ -1751,6 +1753,13 @@ bool MyFrame::SetLanguage(int language)
     pConfig->Global.SetInt("/wxLanguage", language);
 
     return bError;
+}
+
+void MyFrame::RegisterTextCtrl(wxTextCtrl *ctrl)
+{
+    // Text controls gaining focus need to disable the Bookmarks Menu accelerators
+    ctrl->Bind(wxEVT_SET_FOCUS, &MyFrame::OnTextControlSetFocus, this);
+    ctrl->Bind(wxEVT_KILL_FOCUS, &MyFrame::OnTextControlKillFocus, this);
 }
 
 MyFrameConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
