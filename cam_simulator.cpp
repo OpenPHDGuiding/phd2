@@ -204,6 +204,11 @@ bool StepGuiderSimulator::Connect(void)
 
     Debug.AddLine("AO Simulator Connected");
 
+    if (!pCamera || pCamera->Name != _T("Simulator"))
+    {
+        pFrame->Alert(_("The AO Simulator only works with the Camera Simulator. You should either disconnect the AO Simulator or connect the Camera Simulator."));
+    }
+
     return false;
 }
 
