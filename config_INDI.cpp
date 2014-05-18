@@ -177,7 +177,7 @@ void INDIConfig::OnButton(wxCommandEvent& WXUNUSED(event)) {
     if (INDIClient) {
         delete INDIClient;
     }
-    INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
+    INDIClient = indi_init(host->GetLineText(0).mb_str(wxConvUTF8).data(), atol(port->GetLineText(0).mb_str(wxConvUTF8).data()), "PHDGuiding");
     if (INDIClient)
 	indi_new_device_cb(INDIClient, (IndiPropCB)config_new_device_cb, this);
 
