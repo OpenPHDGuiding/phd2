@@ -66,7 +66,7 @@ wxSizer *ConfigDialogPane::MakeLabeledControl(const wxString& label, wxWindow *p
     pControl->SetToolTip(toolTip);
 
     wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
-    pSizer->Add(pLabel);
+    pSizer->Add(pLabel, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL));
     pSizer->Add(pControl);
     if (pControl2 != NULL)
         pSizer->Add(pControl2);

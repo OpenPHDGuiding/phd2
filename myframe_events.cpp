@@ -52,21 +52,35 @@ wxDEFINE_EVENT(APPSTATE_NOTIFY_EVENT, wxCommandEvent);
 void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
 {
     wxString sel = Dur_Choice->GetValue();
-    m_exposureDuration = ExposureDurationFromSelection(sel);
+    int duration = ExposureDurationFromSelection(sel);
+    if (duration > 0)
+    {
+        Debug.AddLine("OnExposureDurationSelected: duration = %d", duration);
+
+        m_exposureDuration = duration;
+        m_autoExp.enabled = false;
+
+        if (pCamera)
+        {
+            // select the best matching dark frame
+            pCamera->SelectDark(m_exposureDuration);
+        }
+    }
+    else
+    {
+        // Auto-exposure
+        if (!m_autoExp.enabled)
+            Debug.AddLine("AutoExp: enabled");
+        m_autoExp.enabled = true;
+    }
 
     pConfig->Profile.SetString("/ExposureDuration", sel);
-
-    if (pCamera)
-    {
-        // select the best matching dark frame
-        pCamera->SelectDark(m_exposureDuration);
-    }
 }
 
 int MyFrame::RequestedExposureDuration()
 {
     if (!pCamera || !pCamera->Connected)
-        return 0.0;
+        return 0;
 
     return m_exposureDuration;
 }
@@ -186,7 +200,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             delete pNewFrame;
 
             StopCapturing();
-            pGuider->Reset();
+            pGuider->Reset(false);
             CaptureActive = m_continueCapturing;
             UpdateButtonsStatus();
             PhdController::AbortController("Error reported capturing image");
@@ -217,6 +231,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             // when looping resumes, start with at least one full frame. This enables applications
             // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
             pGuider->ForceFullFrame();
+            ResetAutoExposure();
             UpdateButtonsStatus();
             SetStatusText(_("Stopped."), 1);
             PhdController::AbortController("Stopped capturing");
@@ -577,7 +592,7 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
-        pGuider->Reset();
+        pGuider->Reset(false);
     }
     return;
 }

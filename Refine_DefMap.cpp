@@ -1,44 +1,49 @@
 /*
-*  Refine_DefMap.cpp
-*  PHD Guiding
-*
-*  Created by Bruce Waddington in collaboration with Andy Galasso and David Ault
-*  Copyright(c) 2014 Bruce Waddington
-*  All rights reserved.
-*
-*  This source code is distributed under the following "BSD" license
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions are met:
-*    Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*    Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*    Neither the name of Craig Stark, Stark Labs nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ *  Refine_DefMap.cpp
+ *  PHD Guiding
+ *
+ *  Created by Bruce Waddington in collaboration with Andy Galasso and David Ault
+ *  Copyright(c) 2014 Bruce Waddington
+ *  All rights reserved.
+ *
+ *  This source code is distributed under the following "BSD" license
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *    Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *    Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "phd.h"
 #include "Refine_DefMap.h"
 #include "darks_dialog.h"
 
-BEGIN_EVENT_TABLE(RefineDefMap, wxDialog)
-EVT_CLOSE(RefineDefMap::OnClose)
-END_EVENT_TABLE()
+enum {
+    ID_PREVIEW = 10001,
+};
+
+wxBEGIN_EVENT_TABLE(RefineDefMap, wxDialog)
+    EVT_CHECKBOX(ID_PREVIEW, RefineDefMap::OnPreview)
+    EVT_CLOSE(RefineDefMap::OnClose)
+wxEND_EVENT_TABLE()
 
 static const double DefDMSigmaX = 75;
 
@@ -62,16 +67,25 @@ RefineDefMap::RefineDefMap(wxWindow *parent) :
     SetSize(wxSize(900, 400));
 
     // Create the vertical sizer and first group box we're going to need
+    wxSizer *pVSizer;
     pVSizer = new wxBoxSizer(wxVERTICAL);
 
     pRebuildDarks = new wxCheckBox(this, wxID_ANY, _("Rebuild Master Dark Frame"));
     pRebuildDarks->SetToolTip(_("Click to re-acquire the master dark frames needed to compute an initial bad-pixel map"));
     pVSizer->Add(pRebuildDarks, wxSizerFlags(0).Border(wxALL, 10));
 
+    wxSizer *hsizer = new wxBoxSizer(wxHORIZONTAL);
+
     pShowDetails = new wxCheckBox(this, wxID_ANY, _("Show Master Dark Details"));
     pShowDetails->SetToolTip(_("Click to display detailed statistics of master dark frame used to compute bad-pixel map"));
     pShowDetails->Bind(wxEVT_CHECKBOX, &RefineDefMap::OnDetails, this);
-    pVSizer->Add(pShowDetails, wxSizerFlags(0).Border(wxALL, 10));
+    hsizer->Add(pShowDetails, wxSizerFlags(0).Border(wxALL, 10));
+
+    pShowPreview = new wxCheckBox(this, ID_PREVIEW, _("Show defect pixels"));
+    pShowPreview->SetToolTip(_("Check to show hot/cold pixels in the main image window."));
+    hsizer->Add(pShowPreview, wxSizerFlags(0).Border(wxALL, 10));
+
+    pVSizer->Add(hsizer);
 
     pInfoGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("General Information"));
     pInfoGrid = new wxGrid(this, wxID_ANY);
@@ -194,7 +208,10 @@ RefineDefMap::RefineDefMap(wxWindow *parent) :
 void RefineDefMap::InitUI()
 {
     if (pConfig->GetCurrentProfileId() == m_profileId)
+    {
+        RefreshPreview();
         return;
+    }
 
     bool firstTime = false;
     m_profileId = pConfig->GetCurrentProfileId();
@@ -214,6 +231,8 @@ void RefineDefMap::InitUI()
     {
         Destroy();      // No master dark files to work with, user didn't build them
     }
+
+    RefreshPreview();
 }
 
 // Do the initial layout of the UI controls
@@ -253,6 +272,8 @@ void RefineDefMap::LoadFromProfile()
     pInfoGrid->SetCellValue(madLoc, wxString::Format("%d", stats.mad));
 
     GetBadPxCounts();
+
+    LoadPreview();
 }
 
 bool RefineDefMap::RebuildMasterDarks()
@@ -288,15 +309,14 @@ void RefineDefMap::ShowStatus(const wxString& msg, bool appending)
 // Build a new defect map based on current aggressiveness params; load it and update the UI
 void RefineDefMap::ApplyNewMap()
 {
-    DefectMap newMap;
     m_builder.SetAggressiveness(pColdSlider->GetValue(), pHotSlider->GetValue());
     // This can take a bit of time...
     pHotSlider->Enable(false);
     pColdSlider->Enable(false);
     ShowStatus(_("Building new bad-pixel map"), false);
-    m_builder.BuildDefectMap(newMap);
+    m_builder.BuildDefectMap(m_defectMap, true);
     ShowStatus(_("Saving new bad-pixel map file"), false);
-    newMap.Save(m_builder.GetMapInfo());
+    m_defectMap.Save(m_builder.GetMapInfo());
     ShowStatus(_("Loading new bad-pixel map"), false);
     pFrame->LoadDefectMapHandler(true);
     ShowStatus(_("New bad-pixel map now being used"), false);
@@ -362,18 +382,21 @@ void RefineDefMap::Recalc()
         pStatsGrid->SetCellValue(manualPixelLoc, "0");          // Manual pixels will always be discarded
     }
     GetBadPxCounts();
+    m_builder.BuildDefectMap(m_defectMap, false);
 }
 
 void RefineDefMap::OnHotChange(wxScrollEvent& evt)
 {
     Recalc();
     pStatsGrid->SetCellBackgroundColour(hotPixelLoc.GetRow(), hotPixelLoc.GetCol(), "light blue");
+    RefreshPreview();
 }
 
 void RefineDefMap::OnColdChange(wxScrollEvent& evt)
 {
     Recalc();
     pStatsGrid->SetCellBackgroundColour(coldPixelLoc.GetRow(), coldPixelLoc.GetCol(), "light blue");
+    RefreshPreview();
 }
 
 // Manually add a bad pixel to the currently loaded (in-memory) defect map - does NOT affect any future map generations
@@ -388,18 +411,27 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
         ShowStatus(wxString::Format(_("Bad pixel marked at %d,%d"), badspot.x, badspot.y), false);
         Debug.AddLine(wxString::Format("User adding bad pixel at %d,%d", badspot.x, badspot.y));
 
+        bool needLoadPreview = false;
+
         { // lock around changes to defect map
             wxCriticalSectionLocker lck(pCamera->DarkFrameLock);
-            DefectMap* pCurrMap = pCamera->CurrentDefectMap;
+            DefectMap *pCurrMap = pCamera->CurrentDefectMap;
             if (pCurrMap)
             {
                 pCurrMap->AddDefect(badspot);           // Changes both in-memory instance and disk file
                 manualPixelCount++;
                 pStatsGrid->SetCellValue(manualPixelLoc, wxString::Format("%d", manualPixelCount));
+                needLoadPreview = true;
             }
             else
                 ShowStatus(_("You must first load a bad-pixel map"), false);
         } // lock defect map
+
+        if (needLoadPreview)
+        {
+            LoadPreview();
+            RefreshPreview();
+        }
     }
     else
         ShowStatus(_("Pixel position not added - no star-like object recognized there"), false);
@@ -411,7 +443,33 @@ void RefineDefMap::OnReset(wxCommandEvent& evt)
     pHotSlider->SetValue(initHotFactor);
     pColdSlider->SetValue(initColdFactor);
     Recalc();
+    RefreshPreview();
     ShowStatus(_("Settings restored to original values"), false);
+}
+
+void RefineDefMap::LoadPreview()
+{
+    m_defectMap.clear();
+
+    wxCriticalSectionLocker lck(pCamera->DarkFrameLock);
+    DefectMap *curMap = pCamera->CurrentDefectMap;
+    if (curMap)
+    {
+        m_defectMap = *curMap;
+    }
+}
+
+void RefineDefMap::RefreshPreview()
+{
+    if (pShowPreview->IsChecked())
+        pFrame->pGuider->SetDefectMapPreview(&m_defectMap);
+    else
+        pFrame->pGuider->SetDefectMapPreview(0);
+}
+
+void RefineDefMap::OnPreview(wxCommandEvent& evt)
+{
+    RefreshPreview();
 }
 
 // Get a recalculation of the bad-pixel counts based on current user aggressiveness settings
@@ -432,6 +490,7 @@ void RefineDefMap::OnDetails(wxCommandEvent& ev)
 // Hook the close event to tweak setting of 'build defect map' menu - mutual exclusion for now
 void RefineDefMap::OnClose(wxCloseEvent& evt)
 {
+    pFrame->pGuider->SetDefectMapPreview(0);
     pFrame->darks_menu->FindItem(MENU_TAKEDARKS)->Enable(!pFrame->CaptureActive);
     pConfig->Profile.SetBoolean("/camera/dmap_show_details", pShowDetails->GetValue());
     evt.Skip();

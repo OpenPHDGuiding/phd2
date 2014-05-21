@@ -869,7 +869,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     // add the 'auto' button and bind it to the associated event-handler
     wxButton *pAutoDuration = new wxButton(pParent, wxID_OK, _("Calculate...") );
     pAutoDuration->SetToolTip(_("Click to open the Calibration Step Calculator to help find a good calibration step size"));
-    pAutoDuration->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnAutoDuration, this);
+    pAutoDuration->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnCalcCalibrationStep, this);
 
     DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
         _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"), pAutoDuration);
@@ -877,7 +877,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
 
     wxStaticText *lbl = new wxStaticText(pParent, wxID_ANY, "Max Duration");
-    sizer->Add(lbl, wxSizerFlags().Expand().Border(wxALL,3));
+    sizer->Add(lbl, wxSizerFlags().Expand().Border(wxALL, 3).Align(wxALIGN_CENTER_VERTICAL));
 
     width = StringWidth(_T("00000"));
     m_pMaxRaDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
@@ -908,7 +908,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
           _("Guide in declination as well?"));
 }
 
-void Scope::ScopeConfigDialogPane::OnAutoDuration(wxCommandEvent& evt)
+void Scope::ScopeConfigDialogPane::OnCalcCalibrationStep(wxCommandEvent& evt)
 {
     int focalLength = 0;
     double pixelSize = 0;

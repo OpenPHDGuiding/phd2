@@ -92,7 +92,7 @@ public:
     void SetAggressiveness(int aggrCold, int aggrHot);
     int GetColdPixelCnt() const;
     int GetHotPixelCnt() const;
-    void BuildDefectMap(DefectMap& defectMap) const;
+    void BuildDefectMap(DefectMap& defectMap, bool verbose) const;
     const wxArrayString& GetMapInfo() const;
 };
 

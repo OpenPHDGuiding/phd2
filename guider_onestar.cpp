@@ -237,19 +237,20 @@ static void SaveAutoSelectFailedImg(usImage *pImage)
     pImage->Save(wxFileName(Debug.GetLogDir(), filename).GetFullPath());
 }
 
-bool GuiderOneStar::AutoSelect(usImage *pImage)
+bool GuiderOneStar::AutoSelect(void)
 {
     bool bError = false;
 
+    usImage *pImage = CurrentImage();
+
     try
     {
-        Star newStar;
-
-        if (pImage == NULL)
+        if (!pImage || !pImage->ImageData)
         {
-            pImage = CurrentImage();
+            throw ERROR_INFO("No Current Image");
         }
 
+        Star newStar;
         if (!newStar.AutoFind(pImage))
         {
             throw ERROR_INFO("Unable to AutoFind");
@@ -277,7 +278,10 @@ bool GuiderOneStar::AutoSelect(usImage *pImage)
     }
     catch (wxString Msg)
     {
-        SaveAutoSelectFailedImg(pImage);
+        if (pImage && pImage->ImageData)
+        {
+            SaveAutoSelectFailedImg(pImage);
+        }
 
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -356,9 +360,14 @@ int GuiderOneStar::StarError(void)
     return m_star.GetError();
 }
 
-void GuiderOneStar::InvalidateCurrentPosition(void)
+void GuiderOneStar::InvalidateCurrentPosition(bool fullReset)
 {
     m_star.Invalidate();
+
+    if (fullReset)
+    {
+        m_star.X = m_star.Y = 0.0;
+    }
 }
 
 static wxString StarStatusStr(const Star& star)
@@ -419,7 +428,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessa
 
             massRatio = 1.0 - massRatio;
 
-            assert(massRatio >= 0 && massRatio < 1.0);
+            assert(massRatio >= 0.0 && massRatio < 1.0);
 
             if (massRatio > m_massChangeThreshold)
             {
@@ -442,12 +451,16 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessa
         }
 
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
+
+        pFrame->AdjustAutoExposure(m_star.SNR);
+
         statusMessage.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
     }
     catch (wxString Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
+        pFrame->ResetAutoExposure(); // use max exposure duration
     }
 
     return bError;
@@ -490,8 +503,8 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
 
         if (mevent.GetModifiers() == wxMOD_SHIFT)
         {
-            // clear them out
-            SetState(STATE_UNINITIALIZED);
+            // Deselect guide star
+            InvalidateCurrentPosition(true);
         }
         else
         {

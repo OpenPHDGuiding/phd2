@@ -53,6 +53,9 @@ static const bool DefaultServerMode = true;
 static const bool DefaultLoggingMode = false;
 static const int DefaultTimelapse = 0;
 static const int DefaultFocalLength = 0;
+static const int DefaultAutoExpMin = 1000;
+static const int DefaultAutoExpMax = 5000;
+static const double DefaultAutoExpSNR = 6.0;
 
 wxDEFINE_EVENT(REQUEST_EXPOSURE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(REQUEST_MOUNT_MOVE_EVENT, wxCommandEvent);
@@ -513,13 +516,15 @@ void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
 }
 
 static wxString dur_choices[] = {
+    _("Auto"),
     _T("0.001 s"), _T("0.002 s"), _T("0.005 s"), _T("0.01 s"),
     _T("0.05 s"), _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
     _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"),
     _T("6.0 s"), _T("7.0 s"), _T("8.0 s"), _T("9.0 s"),_T("10 s"), _T("15.0 s")
 };
-static const int DefaultDurChoiceIdx = 8;
+static const int DefaultDurChoiceIdx = 9;
 static int dur_values[] = {
+    -1,
     1, 2, 5, 10,
     50, 100, 200, 500, 1000, 1500,
     2000, 2500, 3000, 3500, 4000, 4500, 5000,
@@ -542,7 +547,7 @@ void MyFrame::GetExposureDurations(std::vector<int> *exposure_durations)
         exposure_durations->push_back(dur_values[i]);
 }
 
-void MyFrame::GetExposureDurationStrings(wxArrayString* target)
+void MyFrame::GetExposureDurationStrings(wxArrayString *target)
 {
     for (unsigned int i = 0; i < WXSIZEOF(dur_choices); i++)
         target->Add(dur_choices[i]);
@@ -565,6 +570,60 @@ bool MyFrame::SetExposureDuration(int val)
     wxCommandEvent dummy;
     OnExposureDurationSelected(dummy);
     return true;
+}
+
+void MyFrame::SetAutoExposureCfg(int minExp, int maxExp, double targetSNR)
+{
+    Debug.AddLine("AutoExp: config min = %d max = %d snr = %.2f", minExp, maxExp, targetSNR);
+
+    pConfig->Profile.SetInt("/auto_exp/exposure_min", minExp);
+    pConfig->Profile.SetInt("/auto_exp/exposure_max", maxExp);
+    pConfig->Profile.SetDouble("/auto_exp/target_snr", targetSNR);
+
+    m_autoExp.minExposure = minExp;
+    m_autoExp.maxExposure = maxExp;
+    m_autoExp.targetSNR = targetSNR;
+}
+
+void MyFrame::ResetAutoExposure(void)
+{
+    if (m_autoExp.enabled)
+    {
+        Debug.AddLine("AutoExp: reset exp to %d", m_autoExp.maxExposure);
+        m_exposureDuration = m_autoExp.maxExposure;
+    }
+}
+
+void MyFrame::AdjustAutoExposure(double curSNR)
+{
+    if (m_autoExp.enabled)
+    {
+        if (curSNR < 1.0)
+        {
+            Debug.AddLine("AutoExp: low SNR (%.2f), reset exp to %d", curSNR, m_autoExp.maxExposure);
+            m_exposureDuration = m_autoExp.maxExposure;
+        }
+        else
+        {
+            double r = m_autoExp.targetSNR / curSNR;
+            double exp = (double) m_exposureDuration;
+            // assume snr ~ sqrt(exposure)
+            double newExp = exp * r * r;
+            // use hysteresis to avoid overshooting
+            // if our snr is below target, increase exposure rapidly (weak hysteresis, large alpha)
+            // if our snr is above target, decrease exposure slowly (strong hysteresis, small alpha)
+            static double const alpha_slow = .15; // low weighting for latest sample
+            static double const alpha_fast = .20; // high weighting for latest sample
+            double alpha = curSNR < m_autoExp.targetSNR ? alpha_fast : alpha_slow;
+            exp += alpha * (newExp - exp);
+            m_exposureDuration = (int) floor(exp + 0.5);
+            if (m_exposureDuration < m_autoExp.minExposure)
+                m_exposureDuration = m_autoExp.minExposure;
+            else if (m_exposureDuration > m_autoExp.maxExposure)
+                m_exposureDuration = m_autoExp.maxExposure;
+            Debug.AddLine("AutoExp: adjust SNR=%.2f new exposure %d", curSNR, m_exposureDuration);
+        }
+    }
 }
 
 void MyFrame::EnableImageLogging(bool enable)
@@ -613,9 +672,18 @@ void MyFrame::LoadProfileSettings(void)
     int focalLength = pConfig->Profile.GetInt("/frame/focalLength", DefaultTimelapse);
     SetFocalLength(focalLength);
 
+    int minExp = pConfig->Profile.GetInt("/auto_exp/exposure_min", DefaultAutoExpMin);
+    int maxExp = pConfig->Profile.GetInt("/auto_exp/exposure_max", DefaultAutoExpMax);
+    double targetSNR = pConfig->Profile.GetDouble("/auto_exp/target_snr", DefaultAutoExpSNR);
+    SetAutoExposureCfg(minExp, maxExp, targetSNR);
+    // force reset of auto-exposure state
+    m_autoExp.enabled = true; // OnExposureDurationSelected below will set the actual value
+    ResetAutoExposure();
+
     wxString dur = pConfig->Profile.GetString("/ExposureDuration", dur_choices[DefaultDurChoiceIdx]);
     Dur_Choice->SetValue(dur);
-    m_exposureDuration = ExposureDurationFromSelection(dur);
+    wxCommandEvent dummy;
+    OnExposureDurationSelected(dummy);
 
     int val = pConfig->Profile.GetInt("/Gamma", GAMMA_DEFAULT);
     if (val < GAMMA_MIN) val = GAMMA_MIN;
@@ -1877,6 +1945,26 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 
     m_pAutoLoadCalibration = new wxCheckBox(pParent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
     DoAdd(m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
+
+    m_autoExpDurationMin = new wxComboBox(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+        WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
+    m_autoExpDurationMax = new wxComboBox(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+        WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
+
+    width = StringWidth(_T("00.0"));
+    m_autoExpSNR = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 3.5, 99.9, 0.0, 1.0);
+
+    wxBoxSizer *sz1 = new wxBoxSizer(wxHORIZONTAL);
+    sz1->Add(MakeLabeledControl(_("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")));
+    sz1->Add(MakeLabeledControl(_("Max"), m_autoExpDurationMax, _("Auto exposure maximum duration")),
+        wxSizerFlags().Border(wxLEFT, 10));
+    wxStaticBoxSizer *autoExp = new wxStaticBoxSizer(wxVERTICAL, pParent, _("Auto Exposure"));
+    autoExp->Add(sz1);
+    autoExp->Add(MakeLabeledControl(_("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")),
+        wxSizerFlags().Border(wxTOP, 10));
+
+    Add(autoExp);
 }
 
 void MyFrameConfigDialogPane::OnDirSelect(wxCommandEvent& evt)
@@ -1913,6 +2001,18 @@ void MyFrameConfigDialogPane::LoadValues(void)
     m_pLogDir->Enable(!pFrame->CaptureActive);
     m_pSelectDir->Enable(!pFrame->CaptureActive);
     m_pAutoLoadCalibration->SetValue(m_pFrame->GetAutoLoadCalibration());
+
+    const AutoExposureCfg& cfg = m_pFrame->GetAutoExposureCfg();
+    int idx = dur_index(cfg.minExposure);
+    if (idx == -1)
+        idx = dur_index(DefaultAutoExpMin);
+    m_autoExpDurationMin->SetValue(dur_choices[idx]);
+    idx = dur_index(cfg.maxExposure);
+    if (idx == -1)
+        idx = dur_index(DefaultAutoExpMax);
+    m_autoExpDurationMax->SetValue(dur_choices[idx]);
+
+    m_autoExpSNR->SetValue(cfg.targetSNR);
 }
 
 void MyFrameConfigDialogPane::UnloadValues(void)
@@ -1960,6 +2060,19 @@ void MyFrameConfigDialogPane::UnloadValues(void)
         }
 
         m_pFrame->SetAutoLoadCalibration(m_pAutoLoadCalibration->GetValue());
+
+        wxString sel = m_autoExpDurationMin->GetValue();
+        int durationMin = m_pFrame->ExposureDurationFromSelection(sel);
+        if (durationMin <= 0)
+            durationMin = DefaultAutoExpMin;
+        sel = m_autoExpDurationMax->GetValue();
+        int durationMax = m_pFrame->ExposureDurationFromSelection(sel);
+        if (durationMax <= 0)
+            durationMax = DefaultAutoExpMax;
+        if (durationMax < durationMin)
+            durationMax = durationMin;
+
+        m_pFrame->SetAutoExposureCfg(durationMin, durationMax, m_autoExpSNR->GetValue());
     }
     catch (wxString Msg)
     {

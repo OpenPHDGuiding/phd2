@@ -59,6 +59,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);
+    m_defectMapPreview = 0;
 
     m_polarAlignCircleRadius = 0.0;
     m_polarAlignCircleCorrection = 1.0;
@@ -387,6 +388,15 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
             }
         }
 
+        if (m_defectMapPreview)
+        {
+            dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxSOLID));
+            for (DefectMap::const_iterator it = m_defectMapPreview->begin(); it != m_defectMapPreview->end(); ++it)
+            {
+                dc.DrawPoint(*it);
+            }
+        }
+
         // draw the lockpoint of there is one
         if (state > STATE_SELECTED)
         {
@@ -402,7 +412,7 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:
-                    dc.SetPen(wxPen(wxColor(255,255,0),1,wxDOT));
+                    dc.SetPen(wxPen(wxColor(255,255,0),1, wxDOT));
                     break;
                 case STATE_CALIBRATED:
                 case STATE_GUIDING:
@@ -444,6 +454,13 @@ void Guider::UpdateImageDisplay(usImage *pImage)
     Debug.AddLine("UpdateImageDisplay: Size=(%d,%d) min=%d, max=%d, FiltMin=%d, FiltMax=%d",
         pImage->Size.x, pImage->Size.y, pImage->Min, pImage->Max, pImage->FiltMin, pImage->FiltMax);
 
+    Refresh();
+    Update();
+}
+
+void Guider::SetDefectMapPreview(const DefectMap *defectMap)
+{
+    m_defectMapPreview = defectMap;
     Refresh();
     Update();
 }
@@ -799,9 +816,13 @@ void Guider::StopGuiding(void)
     SetState(STATE_STOP);
 }
 
-void Guider::Reset(void)
+void Guider::Reset(bool fullReset)
 {
     SetState(STATE_UNINITIALIZED);
+    if (fullReset)
+    {
+        InvalidateCurrentPosition(true);
+    }
 }
 
 /*************  A new image is ready ************************/
@@ -873,8 +894,8 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     wxBell();
                     wxMilliSleep(100);
                     SetBackgroundColour(prevColor);
-                }
                     break;
+                }
 
                 case STATE_CALIBRATED:
                 case STATE_STOP:

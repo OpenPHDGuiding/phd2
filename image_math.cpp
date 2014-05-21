@@ -970,19 +970,22 @@ int DefectMapBuilder::GetHotPixelCnt() const
     return m_impl->hotPxSelected;
 }
 
-inline static unsigned int emit_defects(DefectMap& defectMap, BadPxSet::const_iterator p0, BadPxSet::const_iterator p1, double stdev, int sign)
+inline static unsigned int emit_defects(DefectMap& defectMap, BadPxSet::const_iterator p0, BadPxSet::const_iterator p1, double stdev, int sign, bool verbose)
 {
     unsigned int cnt = 0;
     for (BadPxSet::const_iterator it = p0; it != p1; ++it, ++cnt)
     {
-        int v = sign * it->v;
-        Debug.AddLine("DefectMap: defect @ (%d, %d) val = %d (%+.1f sigma)", it->x, it->y, v, stdev > 0.1 ? (double)v / stdev : 0.0);
+        if (verbose)
+        {
+            int v = sign * it->v;
+            Debug.AddLine("DefectMap: defect @ (%d, %d) val = %d (%+.1f sigma)", it->x, it->y, v, stdev > 0.1 ? (double)v / stdev : 0.0);
+        }
         defectMap.push_back(wxPoint(it->x, it->y));
     }
     return cnt;
 }
 
-void DefectMapBuilder::BuildDefectMap(DefectMap& defectMap) const
+void DefectMapBuilder::BuildDefectMap(DefectMap& defectMap, bool verbose) const
 {
     wxArrayString& info = m_impl->mapInfo;
 
@@ -1010,15 +1013,15 @@ void DefectMapBuilder::BuildDefectMap(DefectMap& defectMap) const
     info.push_back(wxString::Format("DeltaCold: %+d", -deltaCold));
     info.push_back(wxString::Format("DeltaHot: %+d", deltaHot));
 
-    Debug.AddLine("DefectMap: deltaCold = %+d deltaHot = %+d", -deltaCold, deltaHot);
+    if (verbose) Debug.AddLine("DefectMap: deltaCold = %+d deltaHot = %+d", -deltaCold, deltaHot);
 
     FindThresh(m_impl);
 
     defectMap.clear();
-    unsigned int nr_cold = emit_defects(defectMap, m_impl->coldPxThresh, m_impl->coldPx.end(), stats.stdev, -1);
-    unsigned int nr_hot = emit_defects(defectMap, m_impl->hotPxThresh, m_impl->hotPx.end(), stats.stdev, +1);
+    unsigned int nr_cold = emit_defects(defectMap, m_impl->coldPxThresh, m_impl->coldPx.end(), stats.stdev, -1, verbose);
+    unsigned int nr_hot = emit_defects(defectMap, m_impl->hotPxThresh, m_impl->hotPx.end(), stats.stdev, +1, verbose);
 
-    Debug.AddLine("New defect map created, count=%d (cold=%d, hot=%d)", defectMap.size(), nr_cold, nr_hot);
+    if (verbose) Debug.AddLine("New defect map created, count=%d (cold=%d, hot=%d)", defectMap.size(), nr_cold, nr_hot);
 }
 
 const wxArrayString& DefectMapBuilder::GetMapInfo() const

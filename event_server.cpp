@@ -527,6 +527,12 @@ static const json_value *at(const json_value *ary, unsigned int idx)
     return 0;
 }
 
+static void deselect_star(JObj& response, const json_value *params)
+{
+    pFrame->pGuider->Reset(true);
+    response << jrpc_result(0);
+}
+
 static void get_exposure(JObj& response, const json_value *params)
 {
     response << jrpc_result(pFrame->RequestedExposureDuration());
@@ -1126,6 +1132,7 @@ static bool handle_request(JObj& response, const json_value *req)
         const char *name;
         void (*fn)(JObj& response, const json_value *params);
     } methods[] = {
+        { "deselect_star", &deselect_star, },
         { "get_exposure", &get_exposure, },
         { "set_exposure", &set_exposure, },
         { "get_exposure_durations", &get_exposure_durations, },
