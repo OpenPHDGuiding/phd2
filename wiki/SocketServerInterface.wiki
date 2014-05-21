@@ -34,4 +34,5 @@ The available commands are given in the table below. The command and response ar
 || MSG_LOOPFRAMECOUNT || 21 ||Get the current frame counter value.|| 0 if not looping or guiding. Otherwise, the current frame counter value (capped at 255). The frame counter is incremented for each camera exposure when looping or guiding.||
 || MSG_CLEARCAL || 22 ||Clear calibration data (force re-calibration) || 0||
 || MSG_FLIP_SIM_CAMERA || 23 || When the camera simulator is active, simulate a scope meridian flip||0 ||
+|| MSG_DESELECT || 24 || De-select the currently selected guide star. If subframes are enabled, switch to full frames. This command should be sent before sending MSG_AUTOFINDSTAR to ensure a full frame is captured. For example, the following sequence could be used to select a guide star: MSG_STOP, MSG_DESELECT, MSG_LOOP, MSG_LOOPFRAMECOUNT, MSG_AUTOFINDSTAR. || 0 ||
 || || <any other value> || unknown command || 1 ||
