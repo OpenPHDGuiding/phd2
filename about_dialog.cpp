@@ -55,9 +55,10 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
     wxFileSystem::AddHandler(new wxMemoryFSHandler);
     wxMemoryFSHandler::AddFile("about.html", wxString::Format(
         "<html><body>"
-        "<h2>%s %s</h2>"
+        "<h3>%s %s</h3>"
         "<a href=\"http://openphdguiding.org\">PHD2 home page - openphdguiding.org</a><br>"
         "<a href=\"https://code.google.com/p/open-phd-guiding/\">PHD2 open source project page</a><br><br>"
+        "<font size=\"2\">"
         "Credits:<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Craig Stark<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Bret McKee<br>"
@@ -74,6 +75,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "&nbsp;&nbsp;&nbsp;&nbsp;Hans Lambermont<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;David Ault<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Markus Wieczorek<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Linkage<br>"
         "<br>"
         "Copyright 2006-2013 Craig Stark<br>"
         "Copyright 2009 Geoffrey Hausheer<br>"
@@ -82,9 +84,10 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "Copyright 2013-2014 Andy Galasso<br>"
         "Copyright 2013-2014 Bruce Waddington<br>"
         "Copyright 2014 Hans Lambermont<br>"
+        "</font>"
         "</body></html>", APPNAME, FULLVER));
     wxHtmlWindow *pHtml;
-    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(380, 440), wxHW_SCROLLBAR_AUTO);
+    pHtml = new wxHtmlWindow(this, ABOUT_LINK, wxDefaultPosition, wxSize(380, 540), wxHW_SCROLLBAR_AUTO);
     pHtml->SetBorders(0);
     pHtml->LoadPage("memory:about.html");
     pHtml->SetSize(pHtml->GetInternalRepresentation()->GetWidth(), pHtml->GetInternalRepresentation()->GetHeight());
