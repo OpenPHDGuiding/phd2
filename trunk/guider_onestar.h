@@ -86,7 +86,7 @@ public:
     virtual void OnPaint(wxPaintEvent& evt);
 
     virtual bool IsLocked(void);
-    virtual bool AutoSelect(usImage *pImage=NULL);
+    virtual bool AutoSelect(void);
     virtual const PHD_Point& CurrentPosition(void);
     virtual wxRect GetBoundingBox(void);
     virtual int GetMaxMovePixels(void);
@@ -101,7 +101,7 @@ public:
 
 private:
     virtual bool IsValidLockPosition(const PHD_Point& pt);
-    virtual void InvalidateCurrentPosition(void);
+    virtual void InvalidateCurrentPosition(bool fullReset = false);
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage);
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);
 

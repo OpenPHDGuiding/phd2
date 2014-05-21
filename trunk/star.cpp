@@ -254,21 +254,21 @@ bool Star::Find(usImage *pImg, int searchRegion)
 
 bool Star::AutoFind(usImage *pImg)
 {
-    bool bFound = false;
-    int xpos=0, ypos=0;
-
-    float A, B1, B2, C1, C2, C3, D1, D2, D3;
-    int x, y, i, linesize;
-    unsigned short *uptr;
-
-    linesize = pImg->Size.GetWidth();
-    double PSF[14] = { 0.906, 0.584, 0.365, .117, .049, -0.05, -.064, -.074, -.094 };
-    double mean;
-    double PSF_fit;
-    double BestPSF_fit = 0.0;
+    if (!pImg->Subframe.IsEmpty())
+    {
+        Debug.AddLine("Autofind called on subframe, returning error");
+        return false; // not found
+    }
 
     // OK, do seem to need to run 3x3 median first
     Median3(*pImg);
+
+    int linesize = pImg->Size.GetWidth();
+
+    const double PSF[14] = { 0.906, 0.584, 0.365, .117, .049, -0.05, -.064, -.074, -.094 };
+
+    double BestPSF_fit = 0.0;
+    int xpos = 0, ypos = 0;
 
     /* PSF Grid is:
         D3 D3 D3 D3 D3 D3 D3 D3 D3
@@ -286,11 +286,13 @@ bool Star::AutoFind(usImage *pImg)
         8@C2, D2
         48 * D3
         */
-    for (y=40; y<(pImg->Size.GetHeight()-40); y++)
+    for (int y = 40; y < pImg->Size.GetHeight() - 40; y++)
     {
-        for (x=40; x<(linesize-40); x++)
+        for (int x = 40; x < linesize - 40; x++)
         {
-            A =  (float) *(pImg->ImageData + linesize * y + x);
+            float A, B1, B2, C1, C2, C3, D1, D2, D3;
+
+            A = (float)*(pImg->ImageData + linesize * y + x);
             B1 = (float) *(pImg->ImageData + linesize * (y-1) + x) + (float) *(pImg->ImageData + linesize * (y+1) + x) + (float) *(pImg->ImageData + linesize * y + (x + 1)) + (float) *(pImg->ImageData + linesize * y + (x-1));
             B2 = (float) *(pImg->ImageData + linesize * (y-1) + (x-1)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+1)) + (float) *(pImg->ImageData + linesize * (y+1) + (x + 1)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-1));
             C1 = (float) *(pImg->ImageData + linesize * (y-2) + x) + (float) *(pImg->ImageData + linesize * (y+2) + x) + (float) *(pImg->ImageData + linesize * y + (x + 2)) + (float) *(pImg->ImageData + linesize * y + (x-2));
@@ -301,7 +303,8 @@ bool Star::AutoFind(usImage *pImg)
             D2 = (float) *(pImg->ImageData + linesize * (y-3) + (x-1)) + (float) *(pImg->ImageData + linesize * (y-3) + (x+1)) + (float) *(pImg->ImageData + linesize * (y+3) + (x + 1)) + (float) *(pImg->ImageData + linesize * (y+3) + (x-1)) +
                 (float) *(pImg->ImageData + linesize * (y-1) + (x-3)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+3)) + (float) *(pImg->ImageData + linesize * (y+1) + (x + 3)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-3));
             D3 = 0.0;
-            uptr = pImg->ImageData + linesize * (y-4) + (x-4);
+            const unsigned short *uptr = pImg->ImageData + linesize * (y-4) + (x-4);
+            int i;
             for (i=0; i<9; i++, uptr++)
                 D3 = D3 + *uptr;
             uptr = pImg->ImageData + linesize * (y-3) + (x-4);
@@ -324,11 +327,10 @@ bool Star::AutoFind(usImage *pImg)
             for (i=0; i<3; i++, uptr++)
                 D3 = D3 + *uptr;
 
-            mean = (A+B1+B2+C1+C2+C3+D1+D2+D3)/85.0;
-            PSF_fit = PSF[0] * (A-mean) + PSF[1] * (B1 - 4.0*mean) + PSF[2] * (B2 - 4.0 * mean) +
+            double mean = (A+B1+B2+C1+C2+C3+D1+D2+D3)/85.0;
+            double PSF_fit = PSF[0] * (A-mean) + PSF[1] * (B1 - 4.0*mean) + PSF[2] * (B2 - 4.0 * mean) +
                 PSF[3] * (C1 - 4.0*mean) + PSF[4] * (C2 - 8.0*mean) + PSF[5] * (C3 - 4.0 * mean) +
                 PSF[6] * (D1 - 4.0*mean) + PSF[7] * (D2 - 8.0*mean) + PSF[8] * (D3 - 48.0 * mean);
-
 
             if (PSF_fit > BestPSF_fit)
             {
@@ -339,6 +341,7 @@ bool Star::AutoFind(usImage *pImg)
         }
     }
 
+    bool bFound = false;
     if (xpos != 0 && ypos != 0)
     {
         bFound = true;

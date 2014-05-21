@@ -81,7 +81,7 @@ protected:
         wxChoice   *m_pDecMode;
         wxCheckBox *m_pNeedFlipDec;
 
-        void OnAutoDuration (wxCommandEvent& evt);  // calibration step calculator
+        void OnCalcCalibrationStep(wxCommandEvent& evt);
 
     public:
         ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);

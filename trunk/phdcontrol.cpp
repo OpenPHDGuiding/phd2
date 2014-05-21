@@ -38,6 +38,7 @@ enum State
 {
     STATE_IDLE = 0,
     STATE_SETUP,
+    STATE_ATTEMPT_START,
     STATE_SELECT_STAR,
     STATE_WAIT_SELECTED,
     STATE_CALIBRATE,
@@ -54,6 +55,7 @@ struct ControllerState
     bool forceCalibration;
     bool haveSaveSticky;
     bool saveSticky;
+    int autoFindAttemptsRemaining;
     SettleParams settle;
     bool settlePriorFrameInRange;
     wxStopWatch *settleTimeout;
@@ -156,6 +158,7 @@ static bool start_capturing(void)
     }
 
     pFrame->pGuider->ForceFullFrame(); // we need a full frame to auto-select a star
+    pFrame->ResetAutoExposure();
     pFrame->StartCapturing();
 
     return true;
@@ -180,8 +183,12 @@ void PhdController::UpdateControllerState(void)
 
         case STATE_SETUP:
             Debug.AddLine("PhdController: setup");
-
             ctrl.haveSaveSticky = false;
+            ctrl.autoFindAttemptsRemaining = 3;
+            SETSTATE(STATE_ATTEMPT_START);
+            break;
+
+        case STATE_ATTEMPT_START:
 
             if (!all_gear_connected())
             {
@@ -218,6 +225,14 @@ void PhdController::UpdateControllerState(void)
             {
                 // capture is active, no star selected
                 SETSTATE(STATE_SELECT_STAR);
+
+                // if auto-exposure is enabled, reset to max exposure duration
+                // and wait for the next camera frame
+                if (pFrame->GetAutoExposureCfg().enabled)
+                {
+                    pFrame->ResetAutoExposure();
+                    done = true;
+                }
             }
             break;
 
@@ -225,7 +240,17 @@ void PhdController::UpdateControllerState(void)
             bool error = pFrame->pGuider->AutoSelect();
             if (error)
             {
-                do_fail(_T("failed to find a suitable guide star"));
+                Debug.AddLine("auto find star failed, attempts remaining = %d", ctrl.autoFindAttemptsRemaining);
+                if (--ctrl.autoFindAttemptsRemaining == 0)
+                {
+                    do_fail(_T("failed to find a suitable guide star"));
+                }
+                else
+                {
+                    pFrame->pGuider->Reset(true);
+                    SETSTATE(STATE_ATTEMPT_START);
+                    done = true;
+                }
             }
             else
             {

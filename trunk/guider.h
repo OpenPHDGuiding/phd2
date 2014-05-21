@@ -103,6 +103,8 @@ struct LockPosShiftParams
     bool shiftIsMountCoords;
 };
 
+class DefectMap;
+
 /*
  * The Guider class is responsible for running the state machine
  * associated with the GUIDER_STATES enumerated type.
@@ -118,6 +120,7 @@ class Guider : public wxWindow
 
     wxImage *m_displayedImage;
     OVERLAY_MODE m_overlayMode;
+    const DefectMap *m_defectMapPreview;
     double m_polarAlignCircleRadius;
     double m_polarAlignCircleCorrection;
     PHD_Point m_polarAlignCircleCenter;
@@ -199,6 +202,7 @@ public:
     void ForceFullFrame(void);
 
     bool SetOverlayMode(int newMode);
+    void SetDefectMapPreview(const DefectMap *preview);
     void SetPolarAlignCircle(const PHD_Point& center, double radius);
     void SetPolarAlignCircleCorrection(double val);
     double GetPolarAlignCircleCorrection(void);
@@ -220,7 +224,7 @@ public:
     void BookmarkLockPosition();
     void BookmarkCurPosition();
 
-    void Reset(void);
+    void Reset(bool fullReset);
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
@@ -234,7 +238,7 @@ public:
 public:
     virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
 private:
-    virtual void InvalidateCurrentPosition(void) = 0;
+    virtual void InvalidateCurrentPosition(bool fullReset = false) = 0;
     virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage) = 0;
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position)=0;
 
@@ -242,7 +246,7 @@ public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;
 
     virtual bool IsLocked(void) = 0;
-    virtual bool AutoSelect(usImage *pImage=NULL)=0;
+    virtual bool AutoSelect(void) = 0;
 
     virtual const PHD_Point& CurrentPosition(void) = 0;
     virtual wxRect GetBoundingBox(void) = 0;

@@ -70,6 +70,14 @@ enum LOGGED_IMAGE_FORMAT
 class MyFrame;
 class RefineDefMap;
 
+struct AutoExposureCfg
+{
+    bool enabled;
+    int minExposure;
+    int maxExposure;
+    double targetSNR;
+};
+
 class MyFrameConfigDialogPane : public ConfigDialogPane
 {
     MyFrame *m_pFrame;
@@ -87,6 +95,9 @@ class MyFrameConfigDialogPane : public ConfigDialogPane
     wxTextCtrl *m_pLogDir;
     wxButton *m_pSelectDir;
     wxCheckBox *m_pAutoLoadCalibration;
+    wxComboBox *m_autoExpDurationMin;
+    wxComboBox *m_autoExpDurationMax;
+    wxSpinCtrlDouble *m_autoExpSNR;
 
     void OnDirSelect(wxCommandEvent& evt);
 
@@ -236,6 +247,10 @@ public:
     void GetExposureDurationStrings(wxArrayString *target);
     int ExposureDurationFromSelection(const wxString& selection);
     bool SetExposureDuration(int val);
+    const AutoExposureCfg& GetAutoExposureCfg(void) const { return m_autoExp; }
+    void SetAutoExposureCfg(int minExp, int maxExp, double targetSNR);
+    void ResetAutoExposure(void);
+    void AdjustAutoExposure(double curSNR);
     double GetDitherScaleFactor(void);
     bool SetDitherScaleFactor(double ditherScaleFactor);
     bool GetDitherRaOnly(void);
@@ -326,6 +341,7 @@ private:
     wxTimer m_statusbarTimer;
 
     int m_exposureDuration;
+    AutoExposureCfg m_autoExp;
 
     void OnSetStatusText(wxThreadEvent& event);
     void OnAlertFromThread(wxThreadEvent& event);

@@ -67,6 +67,7 @@ enum {
     MSG_LOOPFRAMECOUNT,     //21
     MSG_CLEARCAL,           //22
     MSG_FLIP_SIM_CAMERA,    //23
+    MSG_DESELECT,           //24
 };
 
 void MyFrame::OnServerMenu(wxCommandEvent &evt)
@@ -367,6 +368,11 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
                     Camera_SimClass *simcam = static_cast<Camera_SimClass *>(pCamera);
                     simcam->FlipPierSide();
                 }
+                break;
+
+            case MSG_DESELECT:
+                Debug.AddLine("processing socket request deselect");
+                pFrame->pGuider->Reset(true);
                 break;
 
             default:
