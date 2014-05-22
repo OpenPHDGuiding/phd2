@@ -1,0 +1,109 @@
+#!/usr/bin/perl
+
+# builds a Table of Contents web page (HTML) from PHD2GuideHelp.hhc
+
+use strict;
+
+my $s;
+my $have_next_tok;
+my $next_tok;
+
+sub _tok {
+    if ($have_next_tok) {
+        $have_next_tok = "";
+        return $next_tok;
+    }
+    $s =~ m,(<\s*(UL|LI|/UL|param\s+name\s*=\s*"([^"]*)"\s+value\s*=\s*"([^"]*)")\s*>),ig;
+    my ($m, $tag, $pname, $pval) = ($1, $2, $3, $4);
+    return undef unless defined $m;
+
+    $tag =~ s/\s.*$//;
+
+    my %h = ( tag => $tag );
+
+    if ($tag eq 'param') {
+        $h{name} = $pname;
+        $h{val} = $pval;
+    }
+
+    return \%h;
+}
+
+sub tok {
+    my $li;
+    while (1) {
+        my $h = _tok();
+        if (defined $li) {
+            if (defined $h && $h->{tag} eq 'param') {
+                $li->{$h->{name}} = $h->{val};
+            }
+            else {
+                $next_tok = $h;
+                $have_next_tok = 1;
+                return $li;
+            }
+        }
+        else {
+            if (defined($h) && $h->{tag} eq 'LI') {
+                $li = $h;
+            }
+            elsif (defined($h) && $h->{tag} eq 'param') {
+                # param outside LI
+                next;
+            }
+            else {
+                return $h;
+            }
+        }
+    }
+}
+
+# === main ===
+
+# get the version number
+open H, "<../phd.h";
+my ($PHDVERSION, $PHDSUBVER);
+while (<H>) {
+    if (/#\s*define\s+(PHDVERSION|PHDSUBVER)\s.*"([^"]+)"/) {
+        my ($n,$v) = ($1,$2);
+        eval "\$$n = \"$v\"";
+        last if defined($PHDVERSION) && defined($PHDSUBVER);
+    }
+}
+
+print <<EOF;
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+    <title>PHD2 v$PHDVERSION$PHDSUBVER User Manual</title>
+</HEAD><BODY>
+<h2>PHD2 v$PHDVERSION$PHDSUBVER</h2>
+EOF
+
+local $/ = undef;
+open HHC, "<PHD2GuideHelp.hhc" or die "PHD2GuideHelp.hhc: $!\n";
+$s = <HHC>;
+
+my $depth = 0;
+
+while (my $h = tok()) {
+    my $tag = $h->{tag};
+    if ($tag eq 'UL') {
+        print("\t" x $depth) if $depth > 0;
+        print "<UL>\n";
+        ++$depth;
+    }
+    elsif ($tag eq '/UL') {
+        --$depth;
+        print("\t" x $depth) if $depth > 0;
+        print "</UL>\n";
+    }
+    elsif ($tag eq 'LI') {
+        print("\t" x $depth) if $depth > 0;
+        print '<LI><a href="', $h->{Local}, '">', $h->{Name}, "</a></LI>\n";
+    }
+}
+
+print <<EOF;
+</BODY></HTML>
+EOF

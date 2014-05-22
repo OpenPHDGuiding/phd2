@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Trouble-shooting</title></head>
+<body>
+<h2>Trouble-shooting</h2><h3>Calibration and "First Use" Problems</h3>If
+you are just starting to use <span style="font-style: italic;">PHD2</span> or are connecting to new equipment
+for the first time, you may have trouble getting the guider calibration
+done. &nbsp;This problem usually takes one of two forms, each requiring
+different responses: <br><ol><li>The star moves during calibration but
+it moves "too far" or "too little." &nbsp;This is easy to fix - simply
+adjust the 'calibration step-size' parameter in the 'Mount' tab of <a href="Advanced_settings.htm">Advanced Settings</a>. The help content there describes how this parameter is used, and you should be able to resolve the problem quickly.</li><li>The
+star doesn't move at all or it moves only very small amounts and in
+unpredictable ways. &nbsp;Actually, the small movements in this
+scenario are often the result of seeing deflections and the mount isn't
+really moving at all. &nbsp;Dealing with this sort of problem is
+described next.</li></ol>In
+nearly all cases, the "no movement" problem is caused by failures in
+the hardware or, even more likely, problems in the cabling and
+connections. &nbsp;The best tool for trouble-shooting this is the
+'Manual Guide' option under the 'Tools' menu, as described in the <a href="Tools.htm">Tools</a>
+section of this help document. &nbsp;Simply use the directional
+controls in the 'Manual Guide' window to send commands directly to the
+mount. &nbsp;If the mount does not respond, you know you have either
+hardware or connectivity problems to resolve - nothing to do with <span style="font-style: italic;">PHD2</span>.
+&nbsp;If you're using a Shoestring device to connect to the mount,
+watch its indicator lights to see if the commands are reaching it.
+&nbsp;Similarly, your ST-4 compatible guide camera may have indicator
+lights to show when guide commands are being received. &nbsp;If you're
+using an ASCOM connection to the mount, be sure the COM port
+assignments are correct. &nbsp;You can also use some of the
+ASCOM-supplied tools like POTH to be sure the ASCOM driver is
+communicating correctly with the mount. &nbsp;<br><h3>Program "Hangs" and Camera Download Problems</h3>In
+some cases, you may experience problems where guider images aren't
+downloaded or displayed. &nbsp;In extreme cases, this may even cause
+<span style="font-style: italic;">PHD2</span> or other camera-related applications to be non-responsive (i.e. to
+"hang"). &nbsp;Again, this is almost always due to hardware, camera
+driver, or&nbsp;connectivity issues, with one of the most common
+culprits being a faulty USB cable or device. &nbsp;It is highly
+unlikely to be caused by an application like <span style="font-style: italic;">PHD2</span>, so you should begin
+your investigation at the lower levels of the system. You can start by
+confirming that the guide camera is working - try using a short, direct
+cable from the camera to the computer and taking exposures with the
+"native" or test application that came with the camera. &nbsp;If the
+camera is functional, you can start moving "upstream" by looking at USB
+hubs and cables, swapping them one at a time to see if you can isolate
+the problem. &nbsp;It's worth remembering that we work in a "hostile
+environment" while doing our imaging, and many of the components we use
+are not designed for cold, outdoor conditions. So something that worked
+just last week or last month may no longer be reliable.<h3>Poor Guiding Performance</h3>Once
+you've gotten everything running, you will probably get reasonably good
+guiding results almost immediately. &nbsp;You will have to decide what
+"good enough" means, and everyone's standard is likely to be different.
+&nbsp;But if you find&nbsp;your imaging results are not acceptable
+because the stars are streaked or elongated, you'll need to take a
+systematic approach to correcting the problems. &nbsp;This can be a
+complex task and not something to be covered here. &nbsp;However, you
+can get help on the web from a variety of sources, with the document by
+Craig Stark being one of the best: &nbsp;<br><span style="font-weight: bold;">http://www.cloudynights.com/item.php?item_id=2755</span>.<h3>Problem Reporting</h3>If
+you encounter application problems that&nbsp;are specific to <span style="font-style: italic;">PHD2</span>, you
+are encouraged to report them using the issue-tracking system here: <span style="font-weight: bold;">https://code.google.com/p/open-phd-guiding/issues/list</span>.
+&nbsp;Obviously, the more information you can provide, the more likely
+we will be able to resolve the problem. &nbsp;Using the following
+guidelines will help in that regard: <br><ol><li>Try to reproduce the
+problem - if we have a clear set of steps to follow, we are more likely
+to find a solution quickly. &nbsp;If you can reproduce it, try to
+reduce things to the minimum number of steps. &nbsp;Remember, we won't
+have your hardware or computer environment when we try to reproduce it
+ourselves.</li><li>Try to be complete about describing your configuration - operating system, equipment types, <span style="font-style: italic;">PHD2</span> version, etc.</li><li>Attach
+the <span style="font-style: italic;">PHD2</span>
+debug log from the session in which you encountered the
+problem. &nbsp;You can find the debug log in the PHD2 folder in your
+Documents folder.&nbsp;If you can't reproduce the problem, try to
+estimate the
+time of day when you first saw it - this could help us find evidence in
+the debug log without having to sift through hundreds of lines of
+output.</li></ol>
+<br>
+&nbsp;&nbsp;
+</body></html>
