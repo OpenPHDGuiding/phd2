@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
 # builds a Table of Contents web page (HTML) from PHD2GuideHelp.hhc
+#
+# usage: build_help_toc_html PHD_VERSION_STRING
+#
 
 use strict;
 
@@ -60,24 +63,15 @@ sub tok {
 
 # === main ===
 
-# get the version number
-open H, "<../phd.h";
-my ($PHDVERSION, $PHDSUBVER);
-while (<H>) {
-    if (/#\s*define\s+(PHDVERSION|PHDSUBVER)\s.*"([^"]+)"/) {
-        my ($n,$v) = ($1,$2);
-        eval "\$$n = \"$v\"";
-        last if defined($PHDVERSION) && defined($PHDSUBVER);
-    }
-}
+my $phdver = $ARGV[0];
 
 print <<EOF;
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-    <title>PHD2 v$PHDVERSION$PHDSUBVER User Manual</title>
+    <title>PHD2 v$phdver User Manual</title>
 </HEAD><BODY>
-<h2>PHD2 v$PHDVERSION$PHDSUBVER</h2>
+<h2>PHD2 v$phdver</h2>
 EOF
 
 local $/ = undef;

@@ -39,7 +39,8 @@ cp -p "$help"/* "$TMP"/
         echo "building web pages..."
 
         # generate the HTML table of contents page
-        "$build"/build_help_toc_html > index.html
+        phdversion=$("$build"/get_phd_version "$top"/phd.h)
+        "$build"/build_help_toc_html "$phdversion" > index.html
 
         # generate the online help files
         tar cfz "$top"/man.tar.gz *.html *.htm *.png
