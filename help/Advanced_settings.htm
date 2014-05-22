@@ -1,0 +1,327 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Advanced Settings</title></head>
+<body>
+<h2>Advanced Settings</h2>
+Advanced settings are accessed by clicking on
+the 'Brain button', a feature well-known to users of the original PHD.
+&nbsp;<span style="font-style: italic;">PHD2</span> has a considerably larger set of parameters that can be
+adjusted to optimize your guiding performance. &nbsp;Although these
+are
+called "advanced" settings, they are not particularly difficult to
+understand, and you shouldn't hesitate to explore them. &nbsp;All
+of
+the fields on these forms include "tool tips", small message windows
+that describe each&nbsp;field in some detail. &nbsp;Simply
+"hover" the
+cursor over the field to see the tool-tip. &nbsp;In many cases,
+this
+will provide all the information you need. &nbsp; Because there are
+many more settings available, the Advanced Dialog in <span style="font-style: italic;">PHD2</span> is organized
+into tabs, and the documentation will follow that model as well.
+<br><br><span style="text-decoration: underline;"><a href="#Global_Tab">Global Tab</a></span><br><span style="text-decoration: underline;"><a href="#Guiding_Tab">Guiding Tab</a><br><a href="#Camera_Tab">Camera Tab</a><br><a href="#Mount_Tab">Mount Tab</a><br><a href="#AO_Tab">AO Tab</a><br><br></span>
+<h3><a name="Global_Tab"></a>Global Tab</h3>
+<img style="width: 303px; height: 579px;" alt="" src="Advanced_global.png"><br>
+<br>
+Most of the fields on the global tab deal with overall program
+functions and behavior. &nbsp;Several of them deal with&nbsp;
+logging and debugging functions, which
+will be discussed first.&nbsp;<br>
+<h4><a name="Logging_and_Debug_Output"></a>Logging and Debug Output</h4>
+<span style="font-style: italic;">PHD2</span>
+can optionally produce two types of log files: a debug log and a
+guiding log. &nbsp;Both are highly useful for different reasons.
+&nbsp;The guiding log is similar to the one produced by PHD, but
+with
+extended information. &nbsp;It can be analyzed after the fact to
+evaluate performance and identify problems - it essentially contains a
+superset of what you see in the real-time guiding graph. &nbsp;A
+number of third-party applications can&nbsp;&nbsp;analyze these
+logs
+and produce quantitative, graphical&nbsp; results. &nbsp;The
+debug log
+has a&nbsp; complete record of everything that was done in the <span style="font-style: italic;">PHD2</span>
+session, &nbsp;so it is very helpful in isolating any problems you
+might have. &nbsp;It employs a human-friendly text format, so it's
+not
+difficult to examine the debug log to see what happened. &nbsp;If
+you
+need to report a problem with the software, you will almost certainly
+be asked to provide the debug log file. <br>
+<br>
+These two log files
+will be generated if &nbsp;'Enable Logging' is checked on the
+Global
+tab. &nbsp;The location for the files is controlled by the 'Log
+File
+Location' field further down in the dialog. &nbsp;By default, log
+files
+are stored in the OS-specific default directory for user data files.
+&nbsp;In Windows, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
+sub-folder in the "My Documents" location. &nbsp;This may not be a
+convenient location, so you can specify a different location using this
+edit field.<br>
+<br>
+In some unusual cases, you may need to capture guide
+camera images, usually to support debugging and problem resolution.
+&nbsp;This can be enabled by checking the 'Enable Star-image
+Logging'
+checkbox.<br>
+<h4><a name="General_Parameters"></a>General Parameters</h4>
+The remaining controls on the
+'Global' tab are well-described by their respective tool-tips, but they
+are summarized here for completeness:<br>
+<ul>
+<li>'<a name="Reset_Configuration"></a>Reset Configuration' - restores all settings to their
+initial values as if <span style="font-style: italic;">PHD2</span> had been freshly installed</li>
+<li>'<a name="Image_format"></a>Image format' - specifies the file format&nbsp;if
+star-image logging is enabled</li>
+<li>'<a name="Dither_RA_only"></a>Dither
+RA only' - for companion apps that use the <span style="font-style: italic;">PHD2</span> server interface,
+specifies that dithering should be done only on the RA axis</li>
+<li>'<a name="Dither_scale"></a>Dither scale' - controls the magnitude of the dithering
+operation&nbsp;</li>
+<li>'<a name="Noise_reduction"></a>Noise
+reduction' - specifies the algorithm to use for handling noisy guide
+camera images - those for which dark frames are not sufficient.
+&nbsp;Choices include None, 2x2 mean, and 3x3 median. Both 2x2 mean
+and 3x3
+median will reduce the noise considerably. 3x3 median is especially
+effective at removing hot pixels and neither will significantly affect
+guiding accuracy. &nbsp;However, &nbsp;creating a bad-pixel map is
+likely to be a better solution with less impact on your ability to
+detect faint stars.</li>
+<li>'<a name="Time_lapse"></a>Time lapse' - imposes a fixed delay between
+guide exposures. &nbsp;This can be useful if the guide exposures
+are
+very short and you don't want to overload either the mount or the
+camera
+link with very high traffic rates.</li>
+<li>'<a name="Focal_length"></a>Focal length' - provides one of
+two parameters needed by <span style="font-style: italic;">PHD2</span> to compute the image scale and thus
+report guiding performance in units of arc-seconds. &nbsp;The other
+parameter required for this is the guider pixel size, located on the
+'Camera' tab.</li>
+<li>'<a name="Language"></a>Language' - determines the language
+used in the <span style="font-style: italic;">PHD2</span> user interface, subject to available localization.
+&nbsp;Changing this will usually require a program restart</li>
+<li>'<a name="Auto_restore_calibration"></a>Auto restore calibration' - tells
+<span style="font-style: italic;">PHD2</span> to automatically reload the most recent calibration data as soon
+as the equipment is connected. &nbsp;Be sure to read the 'Auto
+calibration' section of the help file to understand the implications
+and potential risks of doing this.</li>
+</ul>
+<h3><a name="Guiding_Tab"></a>Guiding Tab</h3>
+<img style="width: 304px; height: 579px;" alt="" src="Advanced_guiding.png"><br>
+<br>
+There are relatively few parameters found on the 'Guiding' tab.
+&nbsp;Their use is as follows: <br>
+<ul>
+<li>'<a name="Always_Scale_Images"></a>Always
+Scale Images' - tells <span style="font-style: italic;">PHD2</span> to always rescale the guider image to fit
+the display window. &nbsp;<span style="font-style: italic;">PHD2</span> does this automatically in almost
+all
+cases, so you'll rarely need to do this.</li>
+<li>'<a name="Search_region"></a>Search
+region' - specifies the size of the "tracking rectangle", in units of
+pixels. &nbsp;You may need to increase this value if your mount
+does
+not perform well or, more commonly, if it's not well-aligned on the
+celestial
+pole.</li>
+<li>'<a name="Star_mass_change_detection"></a>Star mass change detection' - tells <span style="font-style: italic;">PHD2</span> to monitor the
+brightness and size of the guide star compared to the sky background.
+&nbsp;</li>
+<li>'<a name="Star_mass_tolerance"></a>Star mass tolerance' - if 'star mass change detection'
+is checked, <span style="font-style: italic;">PHD2</span> will trigger a 'lost star' error if the measured
+brightness and size varies by more than this percentage. &nbsp;This
+might be useful if you have two stars inside the tracking rectangle and
+you want to be sure that <span style="font-style: italic;">PHD2</span> doesn't mistakenly "switch stars."
+&nbsp;It can also
+prevent errors caused by thin clouds, high camera noise, or alpha
+particle "hits";
+but it may be unreliable if you are guiding on a faint star. &nbsp;</li>
+</ul>
+<h3><a name="Camera_Tab"></a>Camera Tab</h3>
+<img style="width: 308px; height: 578px;" alt="" src="Advanced_camera.png"><br>
+<br>
+The controls on the 'Camera' tab are used as follows: <br>
+<ul>
+<li>'<a name="Use_subframes"></a>Use subframes' - For&nbsp;cameras that support this
+feature, <span style="font-style: italic;">PHD2</span>
+will download only a subframe of each guide
+exposure.&nbsp;This is very useful for cameras with slow download times
+and can mean the difference between the camera being too slow
+to effectively guide and being quite responsive. When this feature is
+enabled,
+only a small subframe (100x100 pixels) will be downloaded once a star
+is selected. This feature applies to both calibration and guiding.
+&nbsp;During initial looping without a selected star, the full
+frame is downloaded, but once a star is selected, only this small
+subframe is downloaded. &nbsp; If you are using subframes but want to
+see the full frame to select a different star, just click anywhere
+outside the subframe.</li>
+<li>'<a name="Camera_gain"></a>Camera gain' - Sets the gain level for the many cameras
+that support this feature.&nbsp;If
+you really want to use a bright star and a longer exposure duration or
+if your camera makes a very noisy image, try reducing this parameter.</li>
+<li>'<a name="Pixel_size"></a>Pixel
+size' - The second of two parameters needed by <span style="font-style: italic;">PHD2</span> to compute the
+guider image scale and thus report guider statistics in units of
+arc-seconds. &nbsp;Refer to your camera documentation to determine
+the
+correct value.</li>
+
+</ul>
+<h3><a name="Mount_Tab"></a>Mount Tab</h3>
+<img style="width: 303px; height: 577px;" alt="" src="Advanced_mount.png"><br>
+<br>
+The
+mount tab is the most complex area of Advanced Settings largely because
+it has so many parameters and UI controls. &nbsp;Most of these
+settings
+are closely tied to the various guiding algorithms, and&nbsp;the
+contents of the dialog will change significantly if you
+change the algorithm selections. &nbsp;For that reason, all the
+parameters related to guide algorithms will be treated together, in a
+separate section.<br>
+<br>
+The remaining controls, the ones that are independent of the guiding
+algorithm selections, are described below. <br>
+<ul>
+<li>'<a name="Force_calibration"></a>Force calibration'
+-&nbsp;tells <span style="font-style: italic;">PHD2</span>&nbsp; you want to force another calibration
+before
+guiding is restarted. &nbsp;You might do this for a variety of
+reasons
+- you might have moved the guide camera, you might have done a meridian
+flip and want to recalibrate on the "new" side of the pier, etc.
+&nbsp;</li>
+<li>'<a name="Enable_guide_output"></a>Enable
+guide output'
+- this is normally checked because it tells <span style="font-style: italic;">PHD2</span> to send guide
+commands&nbsp;to the mount. &nbsp;But there are some
+circumstances
+where you might want to disable this, usually because you want to
+observe the uncorrected behavior of the mount. &nbsp;For example,
+you
+can disable guider output in order to see the general shape and
+amplitude of your mount's periodic error or to check the amount of
+drift from polar mis-alignment. &nbsp;</li>
+<li>'<a name="Calibration_step-size"></a>Calibration
+step-size' -&nbsp;specifes the duration of the guide pulse that
+<span style="font-style: italic;">PHD2</span>
+will use during calibration. &nbsp;Its use is described in the
+'Auto
+Calibration' section of the 'Basic Use' help page. &nbsp;You can
+adjust
+the value depending on whether the guide star is moving "too quickly"
+or
+"too slowly" during calibration. &nbsp;As a general guideline, it
+is
+good to calibrate within about 30 degrees of the celestial equator
+(declination = 0), and to use a calibration step size that will result
+in 8-14 "steps" in each direction. &nbsp; The 'calculate...' button
+to
+the right of this control will launch a dialog that can help you
+compute an appropriate value:&nbsp;</li>
+</ul><br><img style="width: 319px; height: 525px;" alt="Calc_step_dialog" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
+To
+use the <a name="Calculator_auto-step-size"></a>calculator, be sure the topmost three edit controls are
+correctly filled in. &nbsp;If you have already specified the focal
+length and
+the camera pixel size in the 'Global' and 'Camera' tabs respectively,
+those fields will already be populated in this form. &nbsp;You'll
+also need to
+select the guide speed you are using with the mount, shown as a
+multiple of sidereal speed. &nbsp;Most mounts will use something
+like
+1X or 0.5X sidereal, but you can choose something else. &nbsp;You
+can
+leave the 'calibration steps' field at the default value of 12 and you
+can optionally specify your declination if it's significantly far from
+the celestial equator. &nbsp;As you change the values in these fields,&nbsp; <span style="font-style: italic;">PHD2</span>
+will recalculate your current image scale and a recommended value for the
+calibration step-size. &nbsp;If you then click on 'Ok', that value
+will
+be inserted into the calibration step-size field of the 'Mount' dialog.
+&nbsp;Clicking 'Ok' will also populate the focal length and camera
+pixel size fields in the 'Global' and 'Camera' tabs, so any changes you
+made in the calculator will be reflected there as well. &nbsp;However,
+this will not be done if you click on 'Cancel' in the calculator
+dialog.
+<ul>
+<li>'<a name="Max_Duration_RA"></a>Max Duration RA' - specifies the maximum allowed
+guide pulse duration for right ascension. &nbsp;You might reduce
+this
+below the default value if you want to avoid "chasing" a large
+deflection that could be caused by a spurious event (e.g. a sudden 'hot
+pixel') .</li>
+<li>"<a name="Max_Duration_Declination"></a>Max Duration Declination' - specifies the
+maximum allowed guide pulse duration for declination (same as above but
+for declination). &nbsp;This can be useful to avoid
+"over-correction" and subsequent direction reversal in declination
+guiding.</li>
+<li>'<a name="Fast_recenter_after_calibration"></a>Fast recenter after calibration' -&nbsp;tells
+<span style="font-style: italic;">PHD2</span> to accelerate the "return" leg of the calibration moves in each of
+the east-west and north-south directions.&nbsp;</li>
+<li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec
+output after meridian flip' -&nbsp;tells <span style="font-style: italic;">PHD2</span> how to adjust the
+calibration data when you use the function to "flip" it. &nbsp;Some
+mounts track their 'side of pier' state and automatically reverse the
+direction of guide commands in declination. &nbsp;Others, perhaps
+most
+mounts, do not do this. &nbsp;In either case, <span style="font-style: italic;">PHD2</span> needs to know if
+the
+mount will automatically change its behavior based on
+side-of-pier. &nbsp;You may have difficulty finding information about
+how your mount behaves in this respect, so it's probably easiest to
+just run a quick experiment. &nbsp;With the checkbox disabled,
+calibrate on one side of the pier, then move the mount to the other
+side. &nbsp;Select &nbsp;'Flip Calibration' under the 'Tools' menu, and
+start guiding. &nbsp;If the guiding works normally, leave the box
+un-checked; but if you see run-away in declination, check the box and
+repeat the experiment.</li>
+</ul>
+All of the other controls in this dialog are related to the guiding
+algorithms you have chosen and are described here: <a href="Guide_algorithms.htm">Guiding Algorithms and Settings</a><br>
+<br>
+<h3><a name="AO_Tab"></a>AO Tab</h3><img style="width: 299px; height: 576px;" alt="" src="Advanced_AO.png"><br><br>Most
+of the edit controls at the top of the AO tab have the same meaning as
+their counterparts on the 'Mount' tab. &nbsp;The guiding algorithms
+apply to the control of the tip/tilt optical element in the AO device
+itself, not to the "bump" commands sent to the mount. &nbsp;Since the
+AO device is not trying to move a heavy piece of equipment, you can
+afford to be more aggressive in your guide algorithm parameters.
+&nbsp;If you use a hysteresis-based algorithm, for example, you should
+probably start with a high level of aggressiveness, perhaps 100%.
+&nbsp;Or you can choose the 'None' algorithm, which means there will be
+no damping or history-based algorithm applied at all. &nbsp;In that
+case, each correction will be based only on the most recent guide frame
+and will make a 100% correction of the most recent deflection. &nbsp;<br><br>You
+can use the four parameters at the bottom of the AO tab to control the
+calibration process and the manner in which 'bump' operations are done.
+&nbsp;The 'calibration step' field tells <span style="font-style: italic;">PHD2</span> the amount to move the
+tip/tilt element&nbsp;in each of the up/down/left/right directions, in
+units of AO steps, during calibration. &nbsp;The guide star position is measured at the
+beginning and end of each "leg" of the calibration, and the 'samples to
+average' parameter tells <span style="font-style: italic;">PHD2</span>
+how many samples to take at each of these
+points. &nbsp;Averaging images is important because the seeing will
+always cause the guide star to "bounce around" a bit. &nbsp;As
+discussed earlier, the AO unit can make corrections
+only within a limited range of guide star movement. &nbsp;You
+will&nbsp;want to initiate mount 'bump' corrections before these limits
+are actually reached, and the 'bump percentage' field is used for that
+purpose. &nbsp;To move the mount, the full bump correction is
+accomplished in&nbsp;steps - the 'bump step' field controls the size of
+these increments. &nbsp;If the bump operation has begun and the guide
+star remains outside the "bump percentage" area, <span style="font-style: italic;">PHD2</span>
+will increase the
+bump size until the guide star is back within that range.
+&nbsp;Additional movement from that point to the "center" position will
+continue at the specified "bump step size". &nbsp;This complexity is
+required in order to maintain good guiding, with no elongated stars,
+even as the mount is being bumped. &nbsp;During the bump operation, the
+AO is continuing to make corrections, so the long "mount bump" is
+continuously&nbsp;offset by adjustments in the AO.
+</body></html>
