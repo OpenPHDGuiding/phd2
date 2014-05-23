@@ -32,10 +32,18 @@
  *
  */
 
-#ifndef QHY5IIIBASE_H_INCLUDED
-#define QHY5IIIBASE_H_INCLUDED
+#ifndef QHY5IIBASE_H_INCLUDED
+#define QHY5IIBASE_H_INCLUDED
 
-class Camera_QHY5IIBase : public GuideCamera {
+class Camera_QHY5IIBase : public GuideCamera
+{
+    HINSTANCE CameraDLL;
+    unsigned char *RawBuffer;
+
+protected:
+    TCHAR *m_cameraDLLName;
+    Camera_QHY5IIBase();
+
 public:
     virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
     bool    Connect();
@@ -47,13 +55,6 @@ public:
 
     virtual bool HasNonGuiCapture(void) { return true; }
     virtual bool ST4HasNonGuiMove(void) { return true; }
-
-protected:
-    Camera_QHY5IIBase(bool QHY5L);
-private:
-    HINSTANCE CameraDLL;
-    unsigned char *RawBuffer;
-    bool m_QHY5L;
 };
 
-#endif // QHY5IIIBASE_H_INCLUDED
+#endif // QHY5IIBASE_H_INCLUDED

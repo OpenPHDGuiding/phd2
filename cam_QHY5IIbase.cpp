@@ -84,132 +84,81 @@ typedef DWORD (CALLBACK* Q5II_GC)(DWORD, DWORD, DWORD);
 Q5II_GC Q5II_GuideCommand;
 
 
-Camera_QHY5IIBase::Camera_QHY5IIBase(bool QHY5L) {
-    Connected = FALSE;
-    FullSize = wxSize(1280,1024);
+Camera_QHY5IIBase::Camera_QHY5IIBase()
+{
+    Connected = false;
     m_hasGuideOutput = true;
     HasGainControl = true;
     RawBuffer = NULL;
-    m_QHY5L = QHY5L;
 }
 
+static FARPROC WINAPI GetProc(HINSTANCE dll, LPCSTR name)
+{
+    FARPROC p = GetProcAddress(dll, name);
+    if (!p)
+    {
+        FreeLibrary(dll);
+        wxMessageBox(wxString::Format(_("Camera DLL missing entry %s"), name), _("Error"), wxOK | wxICON_ERROR);
+    }
+    return p;
+}
 
+bool Camera_QHY5IIBase::Connect()
+{
+    // returns true on error
 
-bool Camera_QHY5IIBase::Connect() {
-// returns true on error
+    CameraDLL = LoadLibrary(m_cameraDLLName);
 
-    if (m_QHY5L)
-        CameraDLL = LoadLibrary(TEXT("qhy5LIIdll"));
-    else
-        CameraDLL = LoadLibrary(TEXT("qhy5IIdll"));
-
-    if (CameraDLL == NULL) {
-        wxMessageBox(_T("Cannot load qhy5IIdll.dll"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_OpenUSB = (Q5II_DW_V)GetProcAddress(CameraDLL,"openUSB");
-    if (!Q5II_OpenUSB) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have openUSB"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_IsExposing = (Q5II_DW_V)GetProcAddress(CameraDLL,"isExposing");
-    if (!Q5II_IsExposing) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have isExposing"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_CancelExposure = (Q5II_V_V)GetProcAddress(CameraDLL,"CancelExposure");
-    if (!Q5II_CancelExposure) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have CancelExposure"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_CloseUSB = (Q5II_V_V)GetProcAddress(CameraDLL,"closeUSB");
-    if (!Q5II_CloseUSB) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have closeUSB"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_StopCapturing = (Q5II_V_V)GetProcAddress(CameraDLL,"StopCapturing");
-    if (!Q5II_StopCapturing) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have StopCapturing"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_SingleExposure = (Q5II_V_V)GetProcAddress(CameraDLL,"SingleExposure");
-    if (!Q5II_SingleExposure) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have SingleExposure"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    /*Q5II_SetAutoBlackLevel = (Q5II_V_V)GetProcAddress(CameraDLL,"SetAutoBlackLevel");
-    if (!Q5II_SetAutoBlackLevel) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have SetAutoBlackLevel"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }*/
-    Q5II_SetBlackLevel = (Q5II_V_DW)GetProcAddress(CameraDLL,"SetBlackLevel");
-    if (!Q5II_SetBlackLevel) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have SetBlackLEvel"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_SetGain = (Q5II_V_DW)GetProcAddress(CameraDLL,"SetGain");
-    if (!Q5II_SetGain) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have SetGain"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_SetExposureTime = (Q5II_V_DW)GetProcAddress(CameraDLL,"SetExposureTime");
-    if (!Q5II_SetExposureTime) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have SetExposureTime"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_SetSpeed = (Q5II_V_DW)GetProcAddress(CameraDLL,"SetSpeed");
-    if (!Q5II_SetSpeed) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have SetSpeed"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_SetHBlank = (Q5II_V_DW)GetProcAddress(CameraDLL,"SetHBlank");
-    if (!Q5II_SetHBlank) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have SetHBlank"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_GetFrameData = (Q5II_GFD)GetProcAddress(CameraDLL,"getFrameData");
-    if (!Q5II_GetFrameData) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have getFrameData"),_("Error"),wxOK | wxICON_ERROR);
-        return true;
-    }
-    Q5II_GuideCommand = (Q5II_GC)GetProcAddress(CameraDLL,"GuideCommand");
-    if (!Q5II_GuideCommand) {
-        FreeLibrary(CameraDLL);
-        wxMessageBox(_T("qhy5IIdll.dll does not have GuideCommand"),_("Error"),wxOK | wxICON_ERROR);
+    if (CameraDLL == NULL)
+    {
+        wxMessageBox(wxString::Format(_("Cannot load camera dll %s.dll"), m_cameraDLLName), _("Error"),wxOK | wxICON_ERROR);
         return true;
     }
 
-    if (!Q5II_OpenUSB()) {
-        wxMessageBox(_T("No camera"));
+#define GET_PROC(p, type, name) do { \
+    if ((p = (type) GetProc(CameraDLL, name)) == 0) \
+        return true; \
+} while (false)
+
+    GET_PROC(Q5II_OpenUSB,           Q5II_DW_V, "openUSB");
+    GET_PROC(Q5II_IsExposing,        Q5II_DW_V, "isExposing");
+    GET_PROC(Q5II_CancelExposure,    Q5II_V_V,  "CancelExposure");
+    GET_PROC(Q5II_CloseUSB,          Q5II_V_V,  "closeUSB");
+    GET_PROC(Q5II_StopCapturing,     Q5II_V_V,  "StopCapturing");
+    GET_PROC(Q5II_SingleExposure,    Q5II_V_V,  "SingleExposure");
+//  GET_PROC(Q5II_SetAutoBlackLevel, Q5II_V_V,  "SetAutoBlackLevel");
+    GET_PROC(Q5II_SetBlackLevel,     Q5II_V_DW, "SetBlackLevel");
+    GET_PROC(Q5II_SetGain,           Q5II_V_DW, "SetGain");
+    GET_PROC(Q5II_SetExposureTime,   Q5II_V_DW, "SetExposureTime");
+    GET_PROC(Q5II_SetSpeed,          Q5II_V_DW, "SetSpeed");
+    GET_PROC(Q5II_SetHBlank,         Q5II_V_DW, "SetHBlank");
+    GET_PROC(Q5II_GetFrameData,      Q5II_GFD,  "getFrameData");
+    GET_PROC(Q5II_GuideCommand,      Q5II_GC,   "GuideCommand");
+
+#undef GET_PROC
+
+    if (!Q5II_OpenUSB())
+    {
+        wxMessageBox(_("No camera"));
         return true;
     }
 
     if (RawBuffer)
         delete [] RawBuffer;
 
-    RawBuffer = new unsigned char[1280*1024];
+    size_t size = FullSize.GetWidth() * FullSize.GetHeight();
+    RawBuffer = new unsigned char[size];
 
     //Q5II_SetAutoBlackLevel();
     Q5II_SetBlackLevel(1);
     Q5II_SetSpeed(0);
     Connected = true;
+
     return false;
 }
 
-bool Camera_QHY5IIBase::ST4PulseGuideScope(int direction, int duration) {
+bool Camera_QHY5IIBase::ST4PulseGuideScope(int direction, int duration)
+{
     DWORD reg = 0;
     DWORD dur = (DWORD) duration / 10;
     DWORD ptx, pty;
@@ -227,15 +176,18 @@ bool Camera_QHY5IIBase::ST4PulseGuideScope(int direction, int duration) {
     return false;
 }
 
-void Camera_QHY5IIBase::ClearGuidePort() {
+void Camera_QHY5IIBase::ClearGuidePort()
+{
     //Q5II_CancelGuide(3); // 3 clears on both axes
 }
 
-void Camera_QHY5IIBase::InitCapture() {
+void Camera_QHY5IIBase::InitCapture()
+{
     Q5II_SetGain(GuideCameraGain);
 }
 
-bool Camera_QHY5IIBase::Disconnect() {
+bool Camera_QHY5IIBase::Disconnect()
+{
     Q5II_CloseUSB();
     Connected = false;
     if (RawBuffer)
@@ -244,10 +196,10 @@ bool Camera_QHY5IIBase::Disconnect() {
     FreeLibrary(CameraDLL);
 
     return false;
-
 }
 
-bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
 // Only does full frames still
     static int last_dur = 0;
     static int last_gain = 60;

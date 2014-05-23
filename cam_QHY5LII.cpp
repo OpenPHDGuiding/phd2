@@ -37,10 +37,11 @@
 #if defined (QHY5LII)
 #include "cam_QHY5LII.h"
 
-Camera_QHY5LIIClass::Camera_QHY5LIIClass() :
-    Camera_QHY5IIBase(true)
+Camera_QHY5LIIClass::Camera_QHY5LIIClass()
 {
-    Name=_T("QHY 5L-II");
+    Name = _T("QHY 5L-II");
+    m_cameraDLLName = _T("qhy5LIIdll");
+    FullSize = wxSize(1280, 960);
 }
 
 #endif
