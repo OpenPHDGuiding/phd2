@@ -30,12 +30,12 @@ This is important because the PHD2 xcode project file will expect to find the de
 
 If you already have a wxWidgets source tree somewhere else that you would prefer to use, you can adjust the symlink to point to that location.
 
- * Unzip the following two frameworks in extra_frameworks/
+ * Unzip the following two frameworks in extra_frameworks/ into /Library/Frameworks
 
 {{{
-  cd <top>/open-phd-guiding/extra_frameworks/
-  unzip SBIGUDrv.framework.zip
-  unzip fcCamFw.framework.zip
+  cd <top>
+  unzip open-phd-guiding/extra_frameworks/SBIGUDrv.framework.zip -d /Library/Frameworks
+  unzip open-phd-guiding/extra_frameworks/fcCamFw.framework.zip -d /Library/Frameworks
 }}}
 
 You should now be able to open the xcode project and build and run PHD2.
