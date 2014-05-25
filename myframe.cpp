@@ -516,7 +516,7 @@ void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
 }
 
 static wxString dur_choices[] = {
-    _("Auto"),
+    _T("Auto-placeholder"), // translated value provided later, cannot use _() in static initializer
     _T("0.001 s"), _T("0.002 s"), _T("0.005 s"), _T("0.01 s"),
     _T("0.05 s"), _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
     _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"),
@@ -721,6 +721,9 @@ void MyFrame::SetupToolBar()
     stop_bmp = wxBitmap(stop_icon);
     camera_bmp = wxBitmap(cam_icon);
 #endif
+
+    // provide translated strings for dur_choices here since cannot use _() in static initializer
+    dur_choices[0] = _("Auto");
 
     Dur_Choice = new wxComboBox(MainToolbar, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         WXSIZEOF(dur_choices), dur_choices, wxCB_READONLY);
