@@ -217,11 +217,13 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, boo
             return true;
         }
     }
+
     if (duration != last_dur) {
         Q5II_SetExposureTime(duration);
         last_dur = duration;
     }
-    else if (GuideCameraGain != last_gain) {
+
+    if (GuideCameraGain != last_gain) {
         Q5II_SetGain(GuideCameraGain);
         last_gain = GuideCameraGain;
     }
