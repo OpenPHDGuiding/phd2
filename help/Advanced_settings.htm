@@ -109,6 +109,24 @@ used in the <span style="font-style: italic;">PHD2</span> user interface, subjec
 as the equipment is connected. &nbsp;Be sure to read the 'Auto
 calibration' section of the help file to understand the implications
 and potential risks of doing this.</li>
+<li><a name="Auto_exposure_settings"></a>'Auto Exposure' - these are the settings that control Auto exposure time.</li>
+<ul>
+<li>Min Exposure - the minimum exposure time. PHD2 will not set the exposure time
+less than this value, even if the guide star SNR is higher than the target SNR value.
+If the min exposure time is set too low, you could end up sending excessive small
+corrections to the mount which may not give the best guiding results. Users with AO
+units would want to set this to a lower value, since rapid small corrections are often
+desirable with an AO.</li>
+<li>Max Exposure - the maximum exposure time. Before a guide star is selected, PHD2
+will set the exposure time to the maximum value. Once a guide star is selected, PHD2
+will then incrementally decrease the exposure time until the desired SNR is reached.</li>
+<li>Target SNR - this is the average SNR value that PHD2 will attempt to achieve
+by adjusting the exposure time. SNR can fluctuate from frame to frame even with a
+fixed exposure duration, so be sure to account for that when choosing a target SNR
+value. PHD2 will reject frames when SNR drops below 3.0. The default value of 6.0
+should provide enough of a cushion to prevent fluctuations from causing the SNR to
+go below 3.0.</li>
+</ul>
 </ul>
 <h3><a name="Guiding_Tab"></a>Guiding Tab</h3>
 <img style="width: 304px; height: 579px;" alt="" src="Advanced_guiding.png"><br>
