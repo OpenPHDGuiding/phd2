@@ -172,7 +172,6 @@ protected:
 
     bool PaintHelper(wxClientDC &dc, wxMemoryDC &memDC);
     void SetState(GUIDER_STATE newState);
-    usImage *CurrentImage(void);
     void UpdateCurrentDistance(double distance);
 
     void ToggleBookmark(const wxRealPoint& pt);
@@ -255,6 +254,7 @@ public:
     virtual double SNR(void) = 0;
     virtual int StarError(void) = 0;
 
+    usImage *CurrentImage(void);
     virtual wxImage *DisplayedImage(void);
     virtual double ScaleFactor(void);
 

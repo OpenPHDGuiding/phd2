@@ -125,10 +125,8 @@ void MyFrame::OnOverlay(wxCommandEvent& evt)
 
 void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
 {
-    if (CaptureActive)
-    {
-        return;  // Looping an exposure already
-    }
+    if (!pGuider->CurrentImage()->ImageData)
+        return;
 
     wxString fname = wxFileSelector( _("Save FITS Image"), (const wxChar *)NULL,
                           (const wxChar *)NULL,
