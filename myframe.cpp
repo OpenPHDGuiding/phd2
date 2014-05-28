@@ -740,13 +740,13 @@ void MyFrame::SetupToolBar()
     brain_bmp = wxBitmap(brain_icon);
 #endif
 
-    Setup_Button = new wxButton(MainToolbar,BUTTON_CAM_PROPERTIES,_("Cam Dialog"),wxPoint(-1,-1),wxSize(-1,-1),wxBU_EXACTFIT);
-    Setup_Button->SetFont(wxFont(10,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
+    Setup_Button = new wxButton(MainToolbar, BUTTON_CAM_PROPERTIES, _("Cam Dialog"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+    Setup_Button->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
     Setup_Button->Enable(false);
 
     MainToolbar->AddTool(BUTTON_GEAR, _("Equipment"), camera_bmp, _("Connect to equipment. Shift-click to reconnect the same equipment last connected."));
-    MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus") );
-    MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD)") );
+    MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus"));
+    MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD). Shift-click to force calibration."));
     MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort the current action"));
     MainToolbar->AddSeparator();
     MainToolbar->AddControl(Dur_Choice, _("Exposure duration"));
@@ -755,8 +755,8 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddTool(BUTTON_ADVANCED, _("Advanced parameters"), brain_bmp, _("Advanced parameters"));
     MainToolbar->AddControl(Setup_Button, _("Cam Dialog"));
     MainToolbar->Realize();
-    MainToolbar->EnableTool(BUTTON_LOOP,false);
-    MainToolbar->EnableTool(BUTTON_GUIDE,false);
+    MainToolbar->EnableTool(BUTTON_LOOP, false);
+    MainToolbar->EnableTool(BUTTON_GUIDE, false);
 }
 
 void MyFrame::UpdateCalibrationStatus(void)
