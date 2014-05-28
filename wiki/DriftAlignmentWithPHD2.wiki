@@ -2,6 +2,8 @@
 
 = Polar Drift Alignment with PHD2 =
 
+   <blockquote><font color="red">*Note: this document is mostly obsolete since the Drift Align Tool was added to PHD2. The Drift Align tool is described in the PHD2 help file and in [http://openphdguiding.org/man/Tools.htm#Drift_Align the online help]. Although you can still follow these instructions, many of the steps have been automated with the Drift Align tool.*</font></blockquote>
+
 Here's my workflow for drift alignment with PHD2.
 
 Prerequisites:
