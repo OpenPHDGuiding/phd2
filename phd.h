@@ -1,6 +1,6 @@
 /*
  *  phd.h
- *  PHD Guiding
+ *  PHD2 Guiding
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2006-2010 Craig Stark.
@@ -67,7 +67,7 @@
 #include <math.h>
 #include <stdarg.h>
 
-#define APPNAME _T("PHD Guiding")
+#define APPNAME _T("PHD2 Guiding")
 #define PHDVERSION _T("2.2.2")
 #define PHDSUBVER _T("h")
 #define FULLVER PHDVERSION PHDSUBVER
