@@ -65,7 +65,7 @@ bool Camera_FirewireClass::Connect() {
 
     err = dc1394_find_cameras(&cameras, &NCams);
 
-    if ((err!=DC1394_SUCCESS) && (err =! DC1394_NO_CAMERA)) {
+    if ((err != DC1394_SUCCESS) && (err != DC1394_NO_CAMERA)) {
         wxMessageBox(_T("Error looking for Firewire / IEEE1394 cameras"));
         return true;
     }
