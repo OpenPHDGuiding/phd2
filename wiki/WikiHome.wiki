@@ -3,11 +3,13 @@
 
 = open-phd-guiding / PHD2 links =
 
-  * http://openphdguiding.org/ , new PHD2 home. maintained by Andrew
-  * http://code.google.com/p/open-phd-guiding/ , vcs , bug tracker and wiki (this site)
-  * irc://irc.freenode.net/#phd , developer and user chat (irc)
-  * https://groups.google.com/forum/#!forum/open-phd-guiding (forum)
-  * http://gcc10.fsffrance.org:8011/waterfall (Continuous Integration Buildbot, reports results in the irc channel)
+  * Users home page: http://openphdguiding.org/
+  * Forum: https://groups.google.com/forum/#!forum/open-phd-guiding
+  * Bug tracker: https://code.google.com/p/open-phd-guiding/issues/list
+  * IRC developer and user chat: irc://irc.freenode.net/#phd
+  * Wiki: https://code.google.com/p/open-phd-guiding/wiki/WikiHome
+  * Source code: https://code.google.com/p/open-phd-guiding/source/checkout
+  * Buildbot: http://gcc10.fsffrance.org:8011/waterfall
 
 = Wiki pages =
 
