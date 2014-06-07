@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6)
 project(OPENPHD)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
-set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
+#set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
 set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 #TODO propose to remove this everywhere set(CMAKE_CXX_FLAGS "-DOPENPHD")
 
@@ -37,6 +37,10 @@ include (CheckCXXCompilerFlag)
 # wxWidgets
 FIND_PACKAGE(wxWidgets COMPONENTS core base net html aui adv REQUIRED)
 INCLUDE(UsewxWidgets)
+
+# INDI
+find_package(INDI REQUIRED)
+include_directories(${INDI_INCLUDE_DIR})
 
 # cfitsio
 find_package(CFITSIO REQUIRED)
@@ -165,6 +169,7 @@ endif (MSVC)
 
 target_link_libraries(phd2 ${CFITSIO_LIBRARIES} )
 target_link_libraries(phd2 ${wxWidgets_LIBRARIES} )
+target_link_libraries(phd2 ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES} )
 
 #if (V4L_OK)
 #    target_link_libraries(phd2 ${LIBUDEV_LIBRARIES})
