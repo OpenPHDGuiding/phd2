@@ -37,19 +37,21 @@
 #ifdef INDI_CAMERA
 
 #include "camera.h"
-
+#include "indiclient.h"
 #include "time.h"
 #include "image_math.h"
 #include "cam_INDI.h"
 
-#include "libindiclient/indi.h"
-#include "libindiclient/indigui.h"
+//#include "libindiclient/indi.h"
+//#include "libindiclient/indigui.h"
 
 extern long INDIport;
 extern wxString INDIhost;
 extern wxString INDICameraName;
-extern struct indi_t *INDIClient;
+//extern struct indi_t *INDIClient;
 
+MyINDIClient * INDIClient2;
+/*
 static void camera_capture_cb(struct indi_prop_t *iprop, void *data) {
     Camera_INDIClass *cb = (Camera_INDIClass *)(data);
     cb->blob_elem = indi_find_first_elem(iprop);
@@ -57,7 +59,9 @@ static void camera_capture_cb(struct indi_prop_t *iprop, void *data) {
     printf("Got camera callback\n");
     cb->modal = false;
 }
+*/
 
+/*
 static void connect_cb(struct indi_prop_t *iprop, void *data) {
 //printf("entering cam_INDI connect_cb\n");
     Camera_INDIClass *cb = (Camera_INDIClass *)(data);
@@ -65,13 +69,15 @@ static void connect_cb(struct indi_prop_t *iprop, void *data) {
     printf("Camera connected state: %d\n", cb->Connected);
     cb->CheckState();
 }
+*/
 
+/*
 static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data) {
 //printf("entering cam_INDI new_prop_cb\n");
     Camera_INDIClass *cb = (Camera_INDIClass *)(callback_data);
     return cb->NewProp(iprop);
 }
-
+*/
 Camera_INDIClass::Camera_INDIClass() {
     Connected = FALSE;
     INDICameraName=_T("INDI Camera");
@@ -79,6 +85,7 @@ Camera_INDIClass::Camera_INDIClass() {
     FullSize = wxSize(640,480);
 }
 
+/*
 void Camera_INDIClass::CheckState() {
     if(has_blob && Connected && (expose_prop || video_prop)) {
         if (! ready) {
@@ -90,9 +97,11 @@ void Camera_INDIClass::CheckState() {
         }
     }
 }
+*/
 
+/*
 void Camera_INDIClass::NewProp(struct indi_prop_t *iprop) {
-    /* property to set exposure */
+    // property to set exposure 
     if (iprop->type == INDI_PROP_BLOB) {
         printf("Found BLOB property for camera %s\n", iprop->idev->name);
         has_blob = 1;
@@ -129,8 +138,18 @@ void Camera_INDIClass::NewProp(struct indi_prop_t *iprop) {
     }
     CheckState();
 }
-
+*/
 bool Camera_INDIClass::Connect() {
+ 
+if (INDIClient2 == NULL)
+INDIClient2 = new MyINDIClient();
+INDIClient2->setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+INDIClient2->watchDevice(INDICameraName.mb_str(wxConvUTF8));
+INDIClient2->connectServer();
+INDIClient2->setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), NULL);
+ 
+  
+  /*
     wxLongLong msec;
     if (! INDIClient) {
         INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
@@ -152,21 +171,23 @@ bool Camera_INDIClass::Connect() {
     modal = false;
 
     if(! ready)
-        return true;
+        return true;*/
     Connected = true;
     return false;
-
 }
 
 bool Camera_INDIClass::Disconnect() {
+  if (INDIClient2->disconnectServer()){
     Connected = FALSE;
     return false;
+  }
+  else return true;
 }
-
+/*
 void Camera_INDIClass::ShowPropertyDialog() {
     indigui_show_dialog(INDIClient);
-}
-
+}*/
+/*
 bool Camera_INDIClass::ReadFITS(usImage& img) {
     int xsize, ysize;
     fitsfile *fptr;  // FITS file pointer
@@ -214,7 +235,9 @@ bool Camera_INDIClass::ReadFITS(usImage& img) {
     fits_close_file(fptr,&status);
     return false;
 }
+*/
 
+/*
 bool Camera_INDIClass::ReadStream(usImage& img) {
     int xsize, ysize;
     unsigned char *inptr;
@@ -245,8 +268,13 @@ bool Camera_INDIClass::ReadStream(usImage& img) {
         *outptr ++ = *inptr++;
     return false;
 }
+*/
 
 bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+  
+  if (Connected)
+    INDIClient2->setExpotime(duration);
+  /*
     wxLongLong msec;
 
     if (expose_prop) {
@@ -289,7 +317,8 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
     } else {
         pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(blob_elem->value.blob.fmt));
         return true;
-    }
+    }*/
+  return true;
 }
 
 bool Camera_INDIClass::HasNonGuiCapture(void) {

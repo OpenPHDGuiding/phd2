@@ -1,9 +1,9 @@
-/*
- *  cam_INDI.h
+ /*
+ *  indiclient.h
  *  PHD Guiding
  *
- *  Created by Geoffrey Hausheer.
- *  Copyright (c) 2009 Geoffrey Hausheer.
+ *  Created by Markus Wieczorek.
+ *  Copyright (c) 2014 Markus Wieczorek.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -31,42 +31,35 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+#ifndef _INDI_CLIENT_H_
+#define _INDI_CLIENT_H_
 
-#ifndef _CAM_INDI_H_
-#define _CAM_INDI_H_
-
-struct indi_t;
-struct indi_prop_t;
-
-class Camera_INDIClass : public GuideCamera {
-private:
-    struct indi_prop_t *expose_prop;
-    struct indi_prop_t *frame_prop;
-    struct indi_prop_t *frame_type_prop;
-    struct indi_prop_t *binning_prop;
-    struct indi_prop_t *video_prop;
-    int     img_count;
-    bool    ready;
-    bool    has_blob;
+//#include "indidevapi.h"
+//#include "indicom.h"
+#include <libindi/baseclient.h>
+class MyINDIClient : public INDI::BaseClient
+{
 public:
- //   bool    modal;
- //   wxString Port; // todo check with parent class
-
- //  bool    ReadFITS(usImage& img);
- //   bool    ReadStream(usImage& img);
- //   struct  indi_elem_t *blob_elem;
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool HasNonGuiCapture(void);
-    bool    Connect();      // Opens up and connects to cameras
-    bool    Disconnect();
-    void    InitCapture() { return; }
-  //  void    ShowPropertyDialog();
- //  void    CheckState();
- //   void    NewProp(struct indi_prop_t *iprop);
-    Camera_INDIClass();
+MyINDIClient();
+~MyINDIClient();
+void setExpotime(int duration);
+void setGain(int gain);
+//void setTemperature();
+//void takeExposure();
+protected:
+virtual void newDevice(INDI::BaseDevice *dp);
+virtual void newProperty(INDI::Property *property);
+virtual void removeProperty(INDI::Property *property) {}
+virtual void newBLOB(IBLOB *bp);
+virtual void newSwitch(ISwitchVectorProperty *svp) {}
+virtual void newNumber(INumberVectorProperty *nvp);
+virtual void newMessage(INDI::BaseDevice *dp, int messageID);
+virtual void newText(ITextVectorProperty *tvp) {}
+virtual void newLight(ILightVectorProperty *lvp) {}
+virtual void serverConnected() {}
+virtual void serverDisconnected(int exit_code) {}
+private:
+INDI::BaseDevice * indi_device;
 };
-
-extern Camera_INDIClass Camera_INDI;
 #endif
-
-
