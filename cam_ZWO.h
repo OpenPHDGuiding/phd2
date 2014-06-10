@@ -35,21 +35,21 @@
 #define CAM_ZWO_H_INCLUDED
 
 #include "camera.h"
-class Camera_ZWO : 	public GuideCamera
+class Camera_ZWO : public GuideCamera
 {
 public:
-	Camera_ZWO();
-	~Camera_ZWO();
+    Camera_ZWO();
+    ~Camera_ZWO();
 
-	virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0, 0, 0, 0), bool recon = false);
-	bool    Connect();
-	bool    Disconnect();
+    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0, 0, 0, 0), bool recon = false);
+    bool    Connect();
+    bool    Disconnect();
 
-	bool    ST4PulseGuideScope(int direction, int duration);
-	void    ClearGuidePort();
+    bool    ST4PulseGuideScope(int direction, int duration);
+    void    ClearGuidePort();
 
-	virtual bool HasNonGuiCapture(void) { return true; }
-	virtual bool ST4HasNonGuiMove(void) { return true; }
+    virtual bool HasNonGuiCapture(void) { return true; }
+    virtual bool ST4HasNonGuiMove(void) { return true; }
 
 };
 
