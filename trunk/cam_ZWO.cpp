@@ -32,6 +32,9 @@
 *
 */
 #include "phd.h"
+
+#ifdef ZWO_ASI
+
 #include "cam_ZWO.h"
 #include "cameras/AsiCamera.h"
 
@@ -200,3 +203,5 @@ void  Camera_ZWO::ClearGuidePort()
 {
 	pulseGuide(guideNorth, 0);
 }
+
+#endif // ZWO_ASI
