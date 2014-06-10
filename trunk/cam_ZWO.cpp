@@ -40,30 +40,30 @@
 
 class CaptureThread : public wxThread
 {
-	unsigned char* _buffer;
-	int _bufferSize;
-	int _maxWait;
+    unsigned char* _buffer;
+    int _bufferSize;
+    int _maxWait;
 public:
-	CaptureThread(unsigned char* buffer, int buffersize, int maxWait) : wxThread(wxTHREAD_JOINABLE)
-	{
-		_buffer = buffer;
-		_bufferSize = buffersize;
-		_maxWait = maxWait;
-	}
+    CaptureThread(unsigned char* buffer, int buffersize, int maxWait) : wxThread(wxTHREAD_JOINABLE)
+    {
+        _buffer = buffer;
+        _bufferSize = buffersize;
+        _maxWait = maxWait;
+    }
 
-	void* Entry()
-	{
-		bool gotFrame = getImageData(_buffer, _bufferSize, _maxWait);
-		return gotFrame ? (void*)1 : (void*)0;
-	}
+    void* Entry()
+    {
+        bool gotFrame = getImageData(_buffer, _bufferSize, _maxWait);
+        return gotFrame ? (void*)1 : (void*)0;
+    }
 };
 
 Camera_ZWO::Camera_ZWO()
 {
-	Connected = false;
-	m_hasGuideOutput = true;
-	//	HasGainControl = isAvailable(CONTROL_GAIN);
-	HasGainControl = true; // really ought to ask the open camera, but all known ZWO cameras have gain
+    Connected = false;
+    m_hasGuideOutput = true;
+    //	HasGainControl = isAvailable(CONTROL_GAIN);
+    HasGainControl = true; // really ought to ask the open camera, but all known ZWO cameras have gain
 }
 
 Camera_ZWO::~Camera_ZWO()
@@ -73,130 +73,130 @@ Camera_ZWO::~Camera_ZWO()
 bool Camera_ZWO::Connect()
 {
 
-	if (!openCamera(0))
-	{
-		wxMessageBox(_T("Failed to open ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
-		return true;
-	}
+    if (!openCamera(0))
+    {
+        wxMessageBox(_T("Failed to open ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
 
-	if (!initCamera())
-	{
-		wxMessageBox(_T("Failed to initialize ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
-		return true;
-	}
+    if (!initCamera())
+    {
+        wxMessageBox(_T("Failed to initialize ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
 
-	bool color = isColorCam();
-	bool supportsRGB = isImgTypeSupported(IMG_RGB24);
+    bool color = isColorCam();
+    bool supportsRGB = isImgTypeSupported(IMG_RGB24);
 
-	FullSize.x = getMaxWidth();
-	FullSize.y = getMaxHeight();
+    FullSize.x = getMaxWidth();
+    FullSize.y = getMaxHeight();
 
-	PixelSize = getPixelSize();
+    PixelSize = getPixelSize();
 
-	if (HasGainControl)
-	{
-		GuideCameraGain = (getMax(CONTROL_GAIN) + getMin(CONTROL_GAIN)) / 2;
-	}
+    if (HasGainControl)
+    {
+        GuideCameraGain = (getMax(CONTROL_GAIN) + getMin(CONTROL_GAIN)) / 2;
+    }
 
-	Connected = true;
+    Connected = true;
 
-	if (isAvailable(CONTROL_BANDWIDTHOVERLOAD))
-		setValue(CONTROL_BANDWIDTHOVERLOAD, getMin(CONTROL_BANDWIDTHOVERLOAD), false);
+    if (isAvailable(CONTROL_BANDWIDTHOVERLOAD))
+        setValue(CONTROL_BANDWIDTHOVERLOAD, getMin(CONTROL_BANDWIDTHOVERLOAD), false);
 
-	return false;
+    return false;
 }
 
 bool Camera_ZWO::Disconnect()
 {
-	closeCamera();
+    closeCamera();
 
-	Connected = false;
-	return false;
+    Connected = false;
+    return false;
 }
 
 
 bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
-	int exposureUS = duration * 1000;
+    int exposureUS = duration * 1000;
 
-	int xsize = getMaxWidth();
-	int ysize = getMaxHeight();
+    int xsize = getMaxWidth();
+    int ysize = getMaxHeight();
 
-	if (img.NPixels != (xsize*ysize)) {
-		if (img.Init(xsize, ysize)) {
-			pFrame->Alert(_("Memory allocation error during capture"));
-			Disconnect();
-			return true;
-		}
-	}
+    if (img.NPixels != (xsize*ysize)) {
+        if (img.Init(xsize, ysize)) {
+            pFrame->Alert(_("Memory allocation error during capture"));
+            Disconnect();
+            return true;
+        }
+    }
 
-	setStartPos(0, 0);
+    setStartPos(0, 0);
 
-	setImageFormat(xsize, ysize, 1, IMG_Y8);
-	startCapture();
-	
-	setValue(CONTROL_EXPOSURE, exposureUS, false);
-	setValue(CONTROL_GAIN, GuideCameraGain, false);
+    setImageFormat(xsize, ysize, 1, IMG_Y8);
+    startCapture();
 
-	int bufSize = xsize * ysize;
-	unsigned char* buffer = new unsigned char[bufSize];
+    setValue(CONTROL_EXPOSURE, exposureUS, false);
+    setValue(CONTROL_GAIN, GuideCameraGain, false);
 
-	// The getImageData is synchronous, so need to run it in a thread to avoid freezing the UI
-	CaptureThread ct(buffer, bufSize, duration * 2 + 1000);
-	ct.Run();
-	while (ct.IsAlive())
-	{
-		// Yield() frequently to keep the message pump running and the UI responsive
-		wxMilliSleep(1);
-		wxGetApp().Yield();
-	}
+    int bufSize = xsize * ysize;
+    unsigned char* buffer = new unsigned char[bufSize];
 
-	bool gotFrame = ct.Wait() != NULL;
+    // The getImageData is synchronous, so need to run it in a thread to avoid freezing the UI
+    CaptureThread ct(buffer, bufSize, duration * 2 + 1000);
+    ct.Run();
+    while (ct.IsAlive())
+    {
+        // Yield() frequently to keep the message pump running and the UI responsive
+        wxMilliSleep(1);
+        wxGetApp().Yield();
+    }
+
+    bool gotFrame = ct.Wait() != NULL;
 
 
-	if (!gotFrame)
-		return true;
+    if (!gotFrame)
+        return true;
 
-	unsigned char* src = buffer;
-	unsigned short* dest = img.ImageData;
-	for (int y = 0; y<ysize; y++) 
-	{
-		for (int x = 0; x<xsize; x++, src++, dest++) 
-		{ 
-			*dest = (unsigned short)*src;
-		}
-	}
+    unsigned char* src = buffer;
+    unsigned short* dest = img.ImageData;
+    for (int y = 0; y < ysize; y++)
+    {
+        for (int x = 0; x < xsize; x++, src++, dest++)
+        {
+            *dest = (unsigned short)*src;
+        }
+    }
 
-	delete[] buffer;
+    delete[] buffer;
 
-	if (recon) SubtractDark(img);
+    if (recon) SubtractDark(img);
 
-	return false;
+    return false;
 }
 
 GuideDirections GetDirection(int direction)
 {
-	switch (direction)
-	{
-	default:
-	case NORTH:
-		return guideNorth;
-	case EAST:
-		return guideEast;
-	case WEST:
-		return guideWest;
-	case SOUTH:
-		return guideSouth;
+    switch (direction)
+    {
+    default:
+    case NORTH:
+        return guideNorth;
+    case EAST:
+        return guideEast;
+    case WEST:
+        return guideWest;
+    case SOUTH:
+        return guideSouth;
 
-	}
-	
+    }
+
 }
 
 bool  Camera_ZWO::ST4PulseGuideScope(int direction, int duration)
 {
-	pulseGuide(GetDirection(direction), duration);
+    pulseGuide(GetDirection(direction), duration);
 
-	return false;
+    return false;
 }
 
 void  Camera_ZWO::ClearGuidePort()
