@@ -77,6 +77,10 @@ static const bool DefaultLoadDMap = false;
  #include "cam_QHY5II.h"
 #endif
 
+#if defined (ZWO_ASI)
+ #include "cam_ZWO.h"
+#endif
+
 #if defined (QHY5LII)
  #include "cam_QHY5LII.h"
 #endif
@@ -269,6 +273,9 @@ wxArrayString GuideCamera::List(void)
 #if defined (QHY5LII)
     CameraList.Add(_T("QHY 5L-II"));
 #endif
+#if defined (ZWO_ASI)
+	CameraList.Add(_T("ZWO ASI Camera"));
+#endif
 #if defined (SAC42)
     CameraList.Add(_T("SAC4-2"));
 #endif
@@ -397,6 +404,12 @@ GuideCamera *GuideCamera::Factory(wxString choice)
         else if (choice.Find(_T("QHY 5L-II")) + 1) {
             pReturn = new Camera_QHY5LIIClass();
         }
+#endif
+#if defined(ZWO_ASI)
+		else if (choice.Find(_T("ZWO ASI Camera")) + 1)
+		{
+			pReturn = new Camera_ZWO();
+		}
 #endif
 #if defined (CAM_QHY5) // must come afer other QHY 5's since this pattern would match them
         else if (choice.Find(_T("QHY 5")) + 1) {
