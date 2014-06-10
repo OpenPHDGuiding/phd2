@@ -76,6 +76,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "&nbsp;&nbsp;&nbsp;&nbsp;David Ault<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Markus Wieczorek<br>"
         "&nbsp;&nbsp;&nbsp;&nbsp;Linkage<br>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;Robin Glover<br>"
         "<br>"
         "Copyright 2006-2013 Craig Stark<br>"
         "Copyright 2009 Geoffrey Hausheer<br>"
@@ -84,6 +85,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "Copyright 2013-2014 Andy Galasso<br>"
         "Copyright 2013-2014 Bruce Waddington<br>"
         "Copyright 2014 Hans Lambermont<br>"
+        "Copyright 2014 Robin Glover<br>"
         "</font>"
         "</body></html>", APPNAME, FULLVER));
     wxHtmlWindow *pHtml;
