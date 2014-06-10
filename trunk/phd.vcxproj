@@ -92,12 +92,12 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opencv_core245d.lib;opencv_highgui245d.lib;opencv_imgproc245d.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_aui.lib;wxmsw30ud_adv.lib;wxexpatd.lib;wxzlibd.lib;wxmsw30ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase30ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;cfitsio.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30ud_propgrid.lib;DICAMSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core245d.lib;opencv_highgui245d.lib;opencv_imgproc245d.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_aui.lib;wxmsw30ud_adv.lib;wxexpatd.lib;wxzlibd.lib;wxmsw30ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase30ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;cfitsio.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30ud_propgrid.lib;DICAMSDK.lib;AsiCamera.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)\build\x64\vc10\lib;$(OPENCV_DIR)\build\x64\vc10\lib;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/phd.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
@@ -147,12 +147,12 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opencv_core245.lib;opencv_highgui245.lib;opencv_imgproc245.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_aui.lib;wxmsw30u_adv.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw30u_html.lib;wxbase30u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core245.lib;opencv_highgui245.lib;opencv_imgproc245.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_aui.lib;wxmsw30u_adv.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw30u_html.lib;wxbase30u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;AsiCamera.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Release/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)/build/x64/vc10/lib;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>opencv_core245.dll;opencv_highgui245.dll;opencv_imgproc245.dll;sbigudrv.dll;ArtemisCCD.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;FCApi.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>opencv_core245.dll;opencv_highgui245.dll;opencv_imgproc245.dll;sbigudrv.dll;ArtemisCCD.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;FCApi.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ProgramDatabaseFile>.\Release/phd.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -207,6 +207,7 @@
     <ClCompile Include="cam_VFW.cpp" />
     <ClCompile Include="cam_wdm.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="cam_ZWO.cpp" />
     <ClCompile Include="comdispatch.cpp" />
     <ClCompile Include="configdialog.cpp" />
     <ClCompile Include="confirm_dialog.cpp" />
@@ -319,6 +320,7 @@
     <ClInclude Include="cam_WDM.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cameras.h" />
+    <ClInclude Include="cam_ZWO.h" />
     <ClInclude Include="circbuf.h" />
     <ClInclude Include="comdispatch.h" />
     <ClInclude Include="configdialog.h" />

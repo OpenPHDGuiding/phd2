@@ -73,6 +73,7 @@
 # define LE_SERIAL_CAMERA
 # define LE_PARALLEL_CAMERA
 # define LE_LXUSB_CAMERA
+# define ZWO_ASI
 
 #ifdef CLOSED_SOURCE
 # define OS_PL130  // Opticstar's library is closed
