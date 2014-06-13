@@ -40,19 +40,16 @@
 //#include "vcapwin.h"
 #include "cam_VFW.h"
 
-Camera_VFWClass::Camera_VFWClass() {
-    Connected = FALSE;
-//  HaveBPMap = FALSE;
-//  NBadPixels=-1;
-    Name=_T("Windows VFW");
+Camera_VFWClass::Camera_VFWClass()
+{
+    Connected = false;
+    Name = _T("Windows VFW");
     FullSize = wxSize(640,480);  // should be overwritten
     VFW_Window = NULL; Extra_Window=NULL;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     HasDelayParam = false;
     HasPortNum = false;
 }
-
-
 
 bool Camera_VFWClass::Connect() {
 // returns true on error

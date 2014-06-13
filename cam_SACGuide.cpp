@@ -38,11 +38,10 @@
 #include "cam_SACGuide.h"
 
 // FC Labs version -- draws from SAC4-2 for all
-Camera_SACGuiderClass::Camera_SACGuiderClass() {
-    Connected = FALSE;
-    HaveBPMap = FALSE;
-    NBadPixels=-1;
-    Name=_T("SAC Guider");
+Camera_SACGuiderClass::Camera_SACGuiderClass()
+{
+    Connected = false;
+    Name = _T("SAC Guider");
     FullSize = wxSize(1280,1024);
     hDriver = NULL;
     ColorArray = true;  // Not color, but seem to still be uneven -- this fixes it with the quickL
@@ -55,11 +54,10 @@ Camera_SACGuiderClass::Camera_SACGuiderClass() {
 #elif defined (SAC_CMOS_GUIDE)
 // QHY CMOS guide camera version
 
-Camera_SACGuiderClass::Camera_SACGuiderClass() {
-    Connected = FALSE;
-    HaveBPMap = FALSE;
-    NBadPixels=-1;
-    Name=_T("SAC Guider");
+Camera_SACGuiderClass::Camera_SACGuiderClass()
+{
+    Connected = false;
+    Name = _T("SAC Guider");
     FullSize = wxSize(1280,1024);
     m_hasGuideOutput = true;
     HasGainControl = true;

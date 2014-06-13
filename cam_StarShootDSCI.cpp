@@ -39,13 +39,10 @@
 #include "image_math.h"
 #include "cam_StarShootDSCI.h"
 
-
-
-Camera_StarShootDSCIClass::Camera_StarShootDSCIClass() {
+Camera_StarShootDSCIClass::Camera_StarShootDSCIClass()
+{
     Connected = false;
-//  HaveBPMap = false;
-//  NBadPixels=-1;
-    Name=_T("StarShoot DSCI");
+    Name = _T("StarShoot DSCI");
     FullSize = wxSize(782,582);  // This is *after* squaring
     HasGainControl = true;
 

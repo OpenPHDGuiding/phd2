@@ -43,11 +43,10 @@
 #include "cam_SXV.h"
 extern Camera_SXVClass Camera_SXV;
 
-Camera_SXVClass::Camera_SXVClass() {
+Camera_SXVClass::Camera_SXVClass()
+{
     Connected = false;
-    //  HaveBPMap = false;
-    //  NBadPixels=-1;
-    Name=_T("Starlight Xpress SXV");
+    Name = _T("Starlight Xpress SXV");
     FullSize = wxSize(1280,1024);
     HasGainControl = false;
     m_hasGuideOutput = true;

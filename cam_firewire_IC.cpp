@@ -52,11 +52,10 @@
 using namespace _DSHOWLIB_NAMESPACE;
 
 
-Camera_FirewireClass::Camera_FirewireClass() {
+Camera_FirewireClass::Camera_FirewireClass()
+{
     Connected = false;
-//  HaveBPMap = false;
-//  NBadPixels=-1;
-    Name=_T("The Imaging Source");
+    Name = _T("The Imaging Source");
     FullSize = wxSize(1280,1024);
     HasGainControl = true;
     m_hasGuideOutput = false;

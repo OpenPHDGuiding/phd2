@@ -40,11 +40,10 @@
 //#include "cameras/FcApiUser.h"
 
 
-Camera_SAC42Class::Camera_SAC42Class() {
-    Connected = FALSE;
-//  HaveBPMap = FALSE;
-//  NBadPixels=-1;
-    Name=_T("SAC4-2");
+Camera_SAC42Class::Camera_SAC42Class()
+{
+    Connected = false;
+    Name = _T("SAC4-2");
     FullSize = wxSize(1280,1024);
 //  FullSize = wxSize(320,200);
     CapInfo.Gain[0]=(unsigned char) 60;  // 30 for even

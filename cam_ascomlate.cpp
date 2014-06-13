@@ -76,9 +76,7 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
     m_dwCookie = 0;
     m_choice = choice;
 
-    Connected = FALSE;
-//  HaveBPMap = FALSE;
-//  NBadPixels=-1;
+    Connected = false;
     Name = choice;
     FullSize = wxSize(100,100);
     m_hasGuideOutput = false;
