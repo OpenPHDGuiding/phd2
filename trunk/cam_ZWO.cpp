@@ -38,25 +38,7 @@
 #include "cam_ZWO.h"
 #include "cameras/AsiCamera.h"
 
-class CaptureThread : public wxThread
-{
-    unsigned char* _buffer;
-    int _bufferSize;
-    int _maxWait;
-public:
-    CaptureThread(unsigned char* buffer, int buffersize, int maxWait) : wxThread(wxTHREAD_JOINABLE)
-    {
-        _buffer = buffer;
-        _bufferSize = buffersize;
-        _maxWait = maxWait;
-    }
 
-    void* Entry()
-    {
-        bool gotFrame = getImageData(_buffer, _bufferSize, _maxWait);
-        return gotFrame ? (void*)1 : (void*)0;
-    }
-};
 
 Camera_ZWO::Camera_ZWO()
 {
@@ -141,18 +123,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
     int bufSize = xsize * ysize;
     unsigned char* buffer = new unsigned char[bufSize];
 
-    // The getImageData is synchronous, so need to run it in a thread to avoid freezing the UI
-    CaptureThread ct(buffer, bufSize, duration * 2 + 1000);
-    ct.Run();
-    while (ct.IsAlive())
-    {
-        // Yield() frequently to keep the message pump running and the UI responsive
-        wxMilliSleep(1);
-        wxGetApp().Yield();
-    }
-
-    bool gotFrame = ct.Wait() != NULL;
-
+    bool gotFrame = getImageData(buffer, bufSize, duration * 2 + 1000);
 
     if (!gotFrame)
         return true;
