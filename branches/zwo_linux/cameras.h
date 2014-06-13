@@ -97,6 +97,7 @@
 #elif defined (__LINUX__)
 # define CAM_QHY5
 # define INDI_CAMERA
+# define ZWO_ASI
 #endif
 
 // Currently unused

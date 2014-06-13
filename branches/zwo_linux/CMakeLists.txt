@@ -48,6 +48,9 @@ include_directories(${ZLIB_INCLUDE_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR})
 
+link_directories(${OPENPHD_SOURCE_DIR}/cameras)
+
+
 # we don't do the strict warnings for MSVC because the MSVC compiler
 # generates > 14,000 warnings, mostly from wx. 
 if (NOT MSVC)
@@ -163,6 +166,7 @@ else (MSVC)
     add_executable(phd2 ${phd_SRCS} )
 endif (MSVC)
 
+
 target_link_libraries(phd2 ${CFITSIO_LIBRARIES} )
 target_link_libraries(phd2 ${wxWidgets_LIBRARIES} )
 
@@ -174,7 +178,7 @@ target_link_libraries(phd2 ${wxWidgets_LIBRARIES} )
 if (MSVC)
     target_link_libraries(phd2 ${phd_LIBS} z )
 else (MSVC)
-    target_link_libraries(phd2 ${phd_LIBS} X11 usb-1.0 z )
+    target_link_libraries(phd2 ${phd_LIBS} X11 usb-1.0 ASICamera rt z )
 endif (MSVC)
 
 install (TARGETS phd2 RUNTIME DESTINATION bin)

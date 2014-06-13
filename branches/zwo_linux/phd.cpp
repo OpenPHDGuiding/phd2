@@ -43,6 +43,9 @@
 
 // Globals
 
+namespace phdglobals
+{
+
 PhdConfig *pConfig=NULL;
 Mount *pMount = NULL;
 Mount *pSecondaryMount = NULL;
@@ -54,6 +57,7 @@ GuidingLog GuideLog;
 
 int XWinSize = 640;
 int YWinSize = 512;
+}
 
 static const wxCmdLineEntryDesc cmdLineDesc[] =
 {
