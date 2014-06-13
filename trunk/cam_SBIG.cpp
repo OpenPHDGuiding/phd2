@@ -42,11 +42,10 @@
 
 #include "Cam_SBIG.h"
 
-Camera_SBIGClass::Camera_SBIGClass() {
+Camera_SBIGClass::Camera_SBIGClass()
+{
     Connected = false;
-//  HaveBPMap = false;
-//  NBadPixels=-1;
-    Name=_T("SBIG");
+    Name = _T("SBIG");
     //FullSize = wxSize(1280,1024);
     //HasGainControl = true;
     m_hasGuideOutput = true;

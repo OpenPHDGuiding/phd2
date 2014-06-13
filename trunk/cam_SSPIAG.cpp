@@ -108,11 +108,10 @@ Q5V_V Q5V_QHY5VInit;
 typedef void (CALLBACK* Q5V_GUIDE) (char*, unsigned char, unsigned char);
 Q5V_GUIDE Q5V_SendGuideCommand;
 
-Camera_SSPIAGClass::Camera_SSPIAGClass() {
-    Connected = FALSE;
-//  HaveBPMap = FALSE;
-//  NBadPixels=-1;
-    Name=_T("StarShoot PIAG");
+Camera_SSPIAGClass::Camera_SSPIAGClass()
+{
+    Connected = false;
+    Name = _T("StarShoot PIAG");
     FullSize = wxSize(752,480);
     m_hasGuideOutput = true;
     HasGainControl = true;

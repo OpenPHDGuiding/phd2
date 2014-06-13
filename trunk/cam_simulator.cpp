@@ -568,9 +568,7 @@ Camera_SimClass::Camera_SimClass()
     : sim(new SimCamState())
 {
     Connected = false;
-//  HaveBPMap = FALSE;
-//  NBadPixels = -1;
-    Name=_T("Simulator");
+    Name = _T("Simulator");
     FullSize = wxSize(640,480);
     m_hasGuideOutput = true;
     HasShutter = true;

@@ -17,10 +17,9 @@
 #include "cam_OSPL130.h"
 #include "cameras/OSPL130API.h"
 
-Camera_OpticstarPL130Class::Camera_OpticstarPL130Class() {
-    Connected = FALSE;
-//  HaveBPMap = FALSE;
-//  NBadPixels=-1;
+Camera_OpticstarPL130Class::Camera_OpticstarPL130Class()
+{
+    Connected = false;
     Name=_T("Opticstar PL-130M");
     FullSize = wxSize(1280,1024);
     m_hasGuideOutput = false;
