@@ -164,8 +164,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "confirm_dialog.h"
 #include "phdcontrol.h"
 
-namespace phdglobals
-{
 extern PhdConfig *pConfig;
 
 extern MyFrame *pFrame;
@@ -180,9 +178,6 @@ extern GuidingLog GuideLog;
 // these seem to be the windowing/display related globals
 extern int XWinSize;
 extern int YWinSize;
-}
-
-using namespace phdglobals;
 
 class PhdApp : public wxApp
 {
