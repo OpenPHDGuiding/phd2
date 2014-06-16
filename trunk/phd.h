@@ -150,6 +150,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "parallelports.h"
 #include "onboard_st4.h"
 #include "cameras.h"
+#include "camera.h"
 #include "mount.h"
 #include "scopes.h"
 #include "stepguiders.h"
