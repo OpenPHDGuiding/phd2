@@ -32,6 +32,8 @@
  *
  */
 
+#ifndef CAMERAS_INCLUDED
+
 /* Current issues:
 - Need to fix the LE webcams to either not need wxVidCapLib or need a good way
   to detect or package this
@@ -102,8 +104,8 @@
 // Currently unused
 // #define NEB_SBIG   // This is for an on-hold project that would get the guide chip data from an SBIG connected in Neb
 
-extern bool DLLExists (wxString DLLName);
+extern bool DLLExists(const wxString& DLLName);
 
 #endif /* OPENPHD */
 
-#include "camera.h"
+#endif // CAMERAS_INCLUDED

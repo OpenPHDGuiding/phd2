@@ -1001,7 +1001,8 @@ void GuideCamera::SubtractDark(usImage& img)
 }
 
 #ifndef OPENPHD
-bool DLLExists (wxString DLLName)
+
+bool DLLExists(const wxString& DLLName)
 {
     wxStandardPathsBase& StdPaths = wxStandardPaths::Get();
     if (wxFileExists(StdPaths.GetExecutablePath().BeforeLast(PATHSEPCH) + PATHSEPSTR + DLLName))

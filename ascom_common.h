@@ -49,7 +49,6 @@ class ASCOM_COMMON
 {
 protected:
     char *uni_to_ansi(OLECHAR *os);
-    bool GetDispatchID(IDispatch *pDriver, wchar_t *pName, DISPID *pId);
 };
 
 #endif // !defined(ASCOM_COMMON_H_INCLUDED) && defined (__WINDOWS__)
