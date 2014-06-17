@@ -344,6 +344,10 @@ Scope *Scope::Factory(const wxString& choice)
         else {
             throw ERROR_INFO("ScopeFactory: Unknown Scope choice");
         }
+
+        // virtual function call means we cannot do this in the Scope constructor
+        pReturn->EnableStopGuidingWhenSlewing(pConfig->Profile.GetBoolean("/scope/StopGuidingWhenSlewing",
+            pReturn->CanCheckSlewing()));
     }
     catch (wxString Msg)
     {
@@ -383,6 +387,17 @@ void Scope::SetCalibrationFlipRequiresDecFlip(bool val)
 {
     m_calibrationFlipRequiresDecFlip = val;
     pConfig->Profile.SetBoolean("/scope/CalFlipRequiresDecFlip", val);
+}
+
+void Scope::EnableStopGuidingWhenSlewing(bool enable)
+{
+    if (enable)
+        Debug.AddLine("Scope: enabling slew check, guiding will stop when slew is detected");
+    else
+        Debug.AddLine("Scope: slew check disabled");
+
+    pConfig->Profile.SetBoolean("/scope/StopGuidingWhenSlewing", enable);
+    m_stopGuidingWhenSlewing = enable;
 }
 
 void Scope::StartDecDrift(void)
@@ -898,6 +913,14 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pNeedFlipDec = new wxCheckBox(pParent, wxID_ANY, _("Reverse Dec output after meridian flip"));
     DoAdd(m_pNeedFlipDec, _("Check if your mount needs Dec output reversed after doing Flip Calibration Data"));
 
+    if (pScope->CanCheckSlewing())
+    {
+        m_pStopGuidingWhenSlewing = new wxCheckBox(pParent, wxID_ANY, _("Stop guiding when mount slews"));
+        DoAdd(m_pStopGuidingWhenSlewing, _("When checked, PHD will stop guiding if the mount starts slewing"));
+    }
+    else
+        m_pStopGuidingWhenSlewing = 0;
+
     wxString dec_choices[] = {
         _("Off"),_("Auto"),_("North"),_("South")
     };
@@ -947,6 +970,8 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
     m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
     m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
     m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
+    if (m_pStopGuidingWhenSlewing)
+        m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
 }
 
 void Scope::ScopeConfigDialogPane::UnloadValues(void)
@@ -956,6 +981,8 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
     m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
     m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
+    if (m_pStopGuidingWhenSlewing)
+        m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
 
     MountConfigDialogPane::UnloadValues();
 }

@@ -434,7 +434,6 @@ bool ScopeASCOM::Connect(void)
 
         Debug.AddLine("Scope reports its name as " + m_Name);
 
-        m_enableCheckSlewing = false;
         m_abortSlewWhenGuidingStuck = false;
 
         if (m_Name == _T("Gemini Telescope .NET"))
@@ -445,11 +444,6 @@ bool ScopeASCOM::Connect(void)
             // AbortSlew when this condition is detected.
             Debug.AddLine("ASCOM scope: enabling stuck guide pulse workaround");
             m_abortSlewWhenGuidingStuck = true;
-
-            // Check for slewing when guiding. We should enable this for more mounts, but I could
-            // only test this on Gemini2.
-            Debug.AddLine("ASCOM scope: enabling slew check, guiding will stop when slew is detected");
-            m_enableCheckSlewing = true;
         }
 
         // see if we can pulse guide
@@ -526,7 +520,7 @@ bool ScopeASCOM::Disconnect(void)
 
 #define CheckSlewing(dispobj, result) \
     do { \
-        if (m_enableCheckSlewing && IsSlewing(dispobj)) \
+        if (IsStopGuidingWhenSlewingEnabled() && IsSlewing(dispobj)) \
         { \
             *(result) = MOVE_STOP_GUIDING; \
             throw ERROR_INFO("attempt to guide while slewing"); \
@@ -737,6 +731,11 @@ void ScopeASCOM::AbortSlew(DispatchObj *scope)
     {
         pFrame->Alert(_("ASCOM driver failed calling AbortSlew"));
     }
+}
+
+bool ScopeASCOM::CanCheckSlewing(void)
+{
+    return true;
 }
 
 bool ScopeASCOM::Slewing(void)

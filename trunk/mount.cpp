@@ -456,6 +456,7 @@ Mount::Mount(void)
     m_guidingEnabled = true;
 
     ClearCalibration();
+
 #ifdef TEST_TRANSFORMS
     TestTransforms();
 #endif
@@ -1074,6 +1075,11 @@ bool Mount::CanSlew(void)
 bool Mount::SlewToCoordinates(double ra, double dec)
 {
     return true; // error
+}
+
+bool Mount::CanCheckSlewing(void)
+{
+    return false;
 }
 
 bool Mount::Slewing(void)

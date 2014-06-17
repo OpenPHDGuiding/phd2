@@ -54,7 +54,7 @@ enum PierSide {
     PIER_SIDE_WEST = 1,
 };
 
-class Mount :  public wxMessageBoxProxy
+class Mount : public wxMessageBoxProxy
 {
 private:
     bool m_connected;
@@ -214,6 +214,7 @@ public:
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
     virtual bool CanSlew(void);
     virtual bool SlewToCoordinates(double ra, double dec);
+    virtual bool CanCheckSlewing(void);
     virtual bool Slewing(void);
     virtual PierSide SideOfPier(void);
 
