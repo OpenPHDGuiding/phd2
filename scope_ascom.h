@@ -70,7 +70,6 @@ class ScopeASCOM : public Scope, private ASCOM_COMMON
     bool m_bCanGetGuideRates;
     bool m_bCanSlew;
 
-    bool m_enableCheckSlewing;
     bool m_abortSlewWhenGuidingStuck;
 
     wxString m_choice; // name of chosen scope
@@ -102,6 +101,7 @@ public:
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
     virtual bool CanSlew(void);
     virtual bool SlewToCoordinates(double ra, double dec);
+    virtual bool CanCheckSlewing(void);
     virtual bool Slewing(void);
     virtual PierSide SideOfPier(void);
 };
