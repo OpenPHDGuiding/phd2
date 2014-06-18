@@ -36,7 +36,7 @@
 #ifdef ZWO_ASI
 
 #include "cam_ZWO.h"
-#include "cameras/AsiCamera.h"
+#include "cameras/ASICamera.h"
 
 
 
@@ -67,8 +67,8 @@ bool Camera_ZWO::Connect()
         return true;
     }
 
-    bool color = isColorCam();
-    bool supportsRGB = isImgTypeSupported(IMG_RGB24);
+//    bool color = isColorCam();
+//    bool supportsRGB = isImgTypeSupported(IMG_RGB24);
 
     FullSize.x = getMaxWidth();
     FullSize.y = getMaxHeight();
