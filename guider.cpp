@@ -835,11 +835,18 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     {
         Debug.Write(wxString::Format("UpdateGuideState(): m_state=%d\n", m_state));
 
-        // switch in the new image
+        if (pImage)
+        {
+            // switch in the new image
 
-        usImage *pPrevImage = m_pCurrentImage;
-        m_pCurrentImage = pImage;
-        delete pPrevImage;
+            usImage *pPrevImage = m_pCurrentImage;
+            m_pCurrentImage = pImage;
+            delete pPrevImage;
+        }
+        else
+        {
+            pImage = m_pCurrentImage;
+        }
 
         if (bStopping)
         {

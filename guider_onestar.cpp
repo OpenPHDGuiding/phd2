@@ -266,6 +266,16 @@ bool GuiderOneStar::AutoSelect(void)
             throw ERROR_INFO("Unable to set Lock Position");
         }
 
+        if (GetState() == STATE_SELECTING)
+        {
+            // immediately advance the state machine now, rather than waiting for
+            // the next exposure to complete. Socket server clients are going to
+            // try to start guiding after selecting the star, but guiding will fail
+            // to start if state is still STATE_SELECTING
+            Debug.AddLine("AutoSelect: state = %d, call UpdateGuideState", GetState());
+            UpdateGuideState(NULL, false);
+        }
+
 #ifdef BRET_AO_DEBUG
         if (pMount && !pMount->IsCalibrated())
         {
