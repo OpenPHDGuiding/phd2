@@ -57,11 +57,10 @@ int ushort_compare (const void * a, const void * b) {
 
 
 
-Camera_QGuiderClass::Camera_QGuiderClass() {
-    Connected = FALSE;
-//  HaveBPMap = FALSE;
-//  NBadPixels=-1;
-    Name=_T("Q-Guider");
+Camera_QGuiderClass::Camera_QGuiderClass()
+{
+    Connected = false;
+    Name = _T("Q-Guider");
     FullSize = wxSize(1280,1024);
     m_hasGuideOutput = true;
     HasGainControl = true;

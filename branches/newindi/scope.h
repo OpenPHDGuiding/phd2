@@ -57,6 +57,7 @@ class Scope : public Mount
     double m_calibrationYRate;
 
     bool m_calibrationFlipRequiresDecFlip;
+    bool m_stopGuidingWhenSlewing;
 
     enum CALIBRATION_STATE
     {
@@ -80,6 +81,7 @@ protected:
         wxSpinCtrl *m_pMaxDecDuration;
         wxChoice   *m_pDecMode;
         wxCheckBox *m_pNeedFlipDec;
+        wxCheckBox *m_pStopGuidingWhenSlewing;
 
         void OnCalcCalibrationStep(wxCommandEvent& evt);
 
@@ -145,6 +147,8 @@ public:
     virtual bool RequiresStepGuider(void);
     virtual bool CalibrationFlipRequiresDecFlip(void);
     void SetCalibrationFlipRequiresDecFlip(bool val);
+    void EnableStopGuidingWhenSlewing(bool enable);
+    bool IsStopGuidingWhenSlewingEnabled(void) const;
 
     virtual void StartDecDrift(void);
     virtual void EndDecDrift(void);
@@ -164,5 +168,10 @@ private:
 private:
     virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) = 0;
 };
+
+inline bool Scope::IsStopGuidingWhenSlewingEnabled(void) const
+{
+    return m_stopGuidingWhenSlewing;
+}
 
 #endif /* SCOPE_H_INCLUDED */

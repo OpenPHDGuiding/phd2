@@ -42,10 +42,8 @@
 //#define ARTEMISDLLNAME "ArtemisCCD.dll"
 
 Camera_Atik16Class::Camera_Atik16Class() {
-    Connected = FALSE;
-//  HaveBPMap = FALSE;
-//  NBadPixels=-1;
-    Name=_T("Atik 16");
+    Connected = false;
+    Name = _T("Atik 16");
     FullSize = wxSize(1280,1024);
     m_hasGuideOutput = true;
     HasGainControl = true;

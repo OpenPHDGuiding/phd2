@@ -82,22 +82,4 @@ char *ASCOM_COMMON::uni_to_ansi(OLECHAR *os)
     return(cp);
 }
 
-bool ASCOM_COMMON::GetDispatchID(IDispatch *pDriver, wchar_t *pName, DISPID *pId)
-{
-    bool bError = false;
-
-    if(FAILED(pDriver->GetIDsOfNames(IID_NULL, &pName, 1, LOCALE_USER_DEFAULT, pId)))
-    {
-        Debug.AddLine(wxString::Format("for pDriver %p, get dispatch id for %s failed", pDriver, pName));
-        bError = true;
-    }
-    else
-    {
-        Debug.AddLine(wxString::Format("for pDriver %p, dispatch id for %s = %d", pDriver, pName, *pId));
-    }
-
-    return bError;
-}
 #endif
-
-

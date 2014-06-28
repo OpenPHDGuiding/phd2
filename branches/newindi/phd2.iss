@@ -3,7 +3,7 @@
 ; Updated to install independently of PHD1 by Andy Galasso on 2013/7/25
 
 #define APP_NAME "PHD 2"
-#define APP_VERSION "2.2.2"
+#define APP_VERSION "2.3.0"
 
 [Setup]
 AppName="{#APP_NAME}"
@@ -43,6 +43,7 @@ Source: "WinLibs\SSAGIFv4.dll";               DestDir: "{app}"; Flags: replacesa
 Source: "WinLibs\SSPIAGCAM.dll";              DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\SSPIAGUSB_WIN.dll";          DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\SXUSB.dll";                  DestDir: "{app}"; Flags: replacesameversion
+Source: "WinLibs\AsiCamera.dll";              DestDir: "{app}"; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll
 ; Missing: TIS_UDSHL09_vc10.dll
 ; Missing: TIS_UDSHL09_vc9.dll

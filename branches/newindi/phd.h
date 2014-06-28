@@ -68,8 +68,8 @@
 #include <stdarg.h>
 
 #define APPNAME _T("PHD2 Guiding")
-#define PHDVERSION _T("2.2.2")
-#define PHDSUBVER _T("h")
+#define PHDVERSION _T("2.3.0")
+#define PHDSUBVER _T("")
 #define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
@@ -150,6 +150,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "parallelports.h"
 #include "onboard_st4.h"
 #include "cameras.h"
+#include "camera.h"
 #include "mount.h"
 #include "scopes.h"
 #include "stepguiders.h"

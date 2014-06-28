@@ -65,6 +65,18 @@ static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, int width, int val, int minva
     return pNewCtrl;
 }
 
+static void GetExposureDurationStrings(wxArrayString *ary)
+{
+    pFrame->GetExposureDurationStrings(ary);
+    ary->RemoveAt(0); // remove "Auto"
+}
+
+static void GetExposureDurations(std::vector<int> *vec)
+{
+    pFrame->GetExposureDurations(vec);
+    vec->erase(vec->begin()); // remove "Auto"
+}
+
 // Dialog operates in one of two modes: 1) To create a user-requested dark library or 2) To create a master dark frame
 // and associated data files needed to construct a new defect map
 DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
@@ -74,7 +86,7 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
     int width = 72;
     if (!buildDarkLib)
         this->SetTitle(_("Acquire Master Dark Frames for Bad Pixel Map Calculation"));
-    pFrame->GetExposureDurationStrings(&m_expStrings);
+    GetExposureDurationStrings(&m_expStrings);
     int expCount = m_expStrings.GetCount();
 
     // Create overall vertical sizer
@@ -199,7 +211,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         int maxExpInx = m_pDarkMaxExpTime->GetSelection();
 
         std::vector<int> exposureDurations;
-        pFrame->GetExposureDurations(&exposureDurations);
+        GetExposureDurations(&exposureDurations);
 
         m_pProgress->SetRange((maxExpInx - minExpInx + 1) * darkFrameCount);
 

@@ -64,11 +64,10 @@ int fcUsb_cmd_setReadMode(int camNum, int DataXfrReadMode, int DataFormat) { ret
 bool fcUsb_haveCamera(void) { return FcCamFuncs::fcUsb_haveCamera(); }
 #endif
 
-Camera_StarfishClass::Camera_StarfishClass() {
+Camera_StarfishClass::Camera_StarfishClass()
+{
     Connected = false;
-//  HaveBPMap = false;
-//  NBadPixels=-1;
-    Name=_T("Fishcamp Starfish");
+    Name = _T("Fishcamp Starfish");
     FullSize = wxSize(1280,1024);
     HasGainControl = true;
     m_hasGuideOutput = true;

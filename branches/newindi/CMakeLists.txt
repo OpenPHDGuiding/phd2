@@ -50,7 +50,13 @@ include_directories(${CFITSIO_INCLUDE_DIR})
 find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIR})
 
+# zwo libraries
+if (UNIX AND NOT APPLE)
+  find_package(ZWO REQUIRED)
+endif()
+
 include_directories(${CMAKE_SOURCE_DIR})
+
 
 # we don't do the strict warnings for MSVC because the MSVC compiler
 # generates > 14,000 warnings, mostly from wx. 
@@ -167,6 +173,7 @@ else (MSVC)
     add_executable(phd2 ${phd_SRCS} )
 endif (MSVC)
 
+
 target_link_libraries(phd2 ${CFITSIO_LIBRARIES} )
 target_link_libraries(phd2 ${wxWidgets_LIBRARIES} )
 target_link_libraries(phd2 ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES} )
@@ -180,6 +187,9 @@ if (MSVC)
     target_link_libraries(phd2 ${phd_LIBS} z )
 else (MSVC)
     target_link_libraries(phd2 ${phd_LIBS} X11 usb-1.0 z )
+    if (UNIX AND NOT APPLE)
+      target_link_libraries(phd2 ${ZWO_LIBRARIES} rt)
+    endif(UNIX AND NOT APPLE)
 endif (MSVC)
 
 install (TARGETS phd2 RUNTIME DESTINATION bin)

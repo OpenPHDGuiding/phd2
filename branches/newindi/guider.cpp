@@ -835,11 +835,18 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     {
         Debug.Write(wxString::Format("UpdateGuideState(): m_state=%d\n", m_state));
 
-        // switch in the new image
+        if (pImage)
+        {
+            // switch in the new image
 
-        usImage *pPrevImage = m_pCurrentImage;
-        m_pCurrentImage = pImage;
-        delete pPrevImage;
+            usImage *pPrevImage = m_pCurrentImage;
+            m_pCurrentImage = pImage;
+            delete pPrevImage;
+        }
+        else
+        {
+            pImage = m_pCurrentImage;
+        }
 
         if (bStopping)
         {
@@ -902,6 +909,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     break;
             }
 
+            statusMessage = "star lost";
             throw THROW_INFO("unable to update current position");
         }
 
@@ -945,6 +953,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     if (pMount->UpdateCalibrationState(CurrentPosition()))
                     {
                         SetState(STATE_UNINITIALIZED);
+                        statusMessage = "calibration failed (primary)";
                         throw ERROR_INFO("Calibration failed");
                     }
 
@@ -977,6 +986,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                         if (pSecondaryMount->UpdateCalibrationState(CurrentPosition()))
                         {
                             SetState(STATE_UNINITIALIZED);
+                            statusMessage = "calibration failed (secondary)";
                             throw ERROR_INFO("Calibration failed");
                         }
                     }
