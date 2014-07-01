@@ -5,7 +5,7 @@
 
 #ifdef _WINDOWS
 #define ASICAMERA_API __declspec(dllexport)
-#elif defined __LINUX__
+#elif defined(__LINUX__) || defined(__APPLE__)
 #define ASICAMERA_API 
 #endif
 

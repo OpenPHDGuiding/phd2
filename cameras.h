@@ -95,6 +95,7 @@
 # define SXV
 # define OPENSSAG
 # define KWIQGUIDER
+# define ZWO_ASI
 
 #elif defined (__LINUX__)
 # define CAM_QHY5
