@@ -1114,11 +1114,23 @@ static void dither(JObj& response, const json_value *params)
         response << jrpc_error(1, "dither failed");
 }
 
-static bool handle_request(JObj& response, const json_value *req)
+static void dump_request(const wxSocketClient *cli, const json_value *req)
+{
+    Debug.AddLine(wxString::Format("evsrv: cli %p request: %s", cli, json_format(req)));
+}
+
+static void dump_response(const wxSocketClient *cli, const JRpcResponse& resp)
+{
+    Debug.AddLine(wxString::Format("evsrv: cli %p response: %s", cli, const_cast<JRpcResponse&>(resp).str()));
+}
+
+static bool handle_request(const wxSocketClient *cli, JObj& response, const json_value *req)
 {
     const json_value *method;
     const json_value *params;
     const json_value *id;
+
+    dump_request(cli, req);
 
     parse_request(req, &method, &params, &id);
 
@@ -1194,6 +1206,7 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
     {
         JRpcResponse response;
         response << jrpc_error(JSONRPC_PARSE_ERROR, parser_error(parser)) << jrpc_id(0);
+        dump_response(cli, response);
         do_notify1(cli, response);
         return;
     }
@@ -1210,8 +1223,9 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
         for (const json_value *req = root->first_child; req; req = req->next_sibling)
         {
             JRpcResponse response;
-            if (handle_request(response, req))
+            if (handle_request(cli, response, req))
             {
+                dump_response(cli, response);
                 ary << response;
                 found = true;
             }
@@ -1226,8 +1240,11 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
 
         const json_value *const req = root;
         JRpcResponse response;
-        if (handle_request(response, req))
+        if (handle_request(cli, response, req))
+        {
+            dump_response(cli, response);
             do_notify1(cli, response);
+        }
     }
 }
 
@@ -1336,7 +1353,7 @@ void EventServer::OnEventServerEvent(wxSocketEvent& event)
     if (!client)
         return;
 
-    Debug.AddLine("event server client connected");
+    Debug.AddLine("evsrv: cli %p connect", client);
 
     client->SetEventHandler(*this, EVENT_SERVER_CLIENT_ID);
     client->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
@@ -1355,7 +1372,7 @@ void EventServer::OnEventServerClientEvent(wxSocketEvent& event)
 
     if (event.GetSocketEvent() == wxSOCKET_LOST)
     {
-        Debug.AddLine("event server client disconnected");
+        Debug.AddLine("evsrv: cli %p disconnect", cli);
 
         unsigned int const n = m_eventServerClients.erase(cli);
         if (n != 1)
@@ -1535,7 +1552,11 @@ void EventServer::NotifySettling(double distance, double time, double settleTime
     if (m_eventServerClients.empty())
         return;
 
-    do_notify(m_eventServerClients, ev_settling(distance, time, settleTime));
+    Ev ev(ev_settling(distance, time, settleTime));
+
+    Debug.AddLine(wxString::Format("evsrv: %s", ev.str()));
+
+    do_notify(m_eventServerClients, ev);
 }
 
 void EventServer::NotifySettleDone(const wxString& errorMsg)
@@ -1543,5 +1564,9 @@ void EventServer::NotifySettleDone(const wxString& errorMsg)
     if (m_eventServerClients.empty())
         return;
 
-    do_notify(m_eventServerClients, ev_settle_done(errorMsg));
+    Ev ev(ev_settle_done(errorMsg));
+
+    Debug.AddLine(wxString::Format("evsrv: %s", ev.str()));
+
+    do_notify(m_eventServerClients, ev);
 }
