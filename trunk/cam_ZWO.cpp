@@ -44,7 +44,6 @@ Camera_ZWO::Camera_ZWO()
 {
     Connected = false;
     m_hasGuideOutput = true;
-    //	HasGainControl = isAvailable(CONTROL_GAIN);
     HasGainControl = true; // really ought to ask the open camera, but all known ZWO cameras have gain
 }
 
@@ -55,7 +54,35 @@ Camera_ZWO::~Camera_ZWO()
 bool Camera_ZWO::Connect()
 {
 
-    if (!openCamera(0))
+    // Find available cameras
+    wxArrayString USBNames;
+    int ncams = 0;
+    int devnum[10] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+    int iCameras = getNumberOfConnectedCameras();
+    if (iCameras == 0)
+    {
+        wxMessageBox(_T("No ZWO cameras detected."), _("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
+
+    for (int i = 0; i < iCameras; i++)
+    {
+        char* name = getCameraModel(i);
+        USBNames.Add(name);
+    }
+
+    int iSelected = 0;
+
+    if (USBNames.Count() > 1)
+    {
+        iSelected = wxGetSingleChoiceIndex(_("Select camera"), _("Camera name"), USBNames);
+        if (iSelected == -1) 
+        {
+            Disconnect(); return true; 
+        }
+    }
+
+    if (!openCamera(iSelected))
     {
         wxMessageBox(_T("Failed to open ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
@@ -66,9 +93,6 @@ bool Camera_ZWO::Connect()
         wxMessageBox(_T("Failed to initialize ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
-
-//    bool color = isColorCam();
-//    bool supportsRGB = isImgTypeSupported(IMG_RGB24);
 
     FullSize.x = getMaxWidth();
     FullSize.y = getMaxHeight();
@@ -172,7 +196,7 @@ bool  Camera_ZWO::ST4PulseGuideScope(int direction, int duration)
 
 void  Camera_ZWO::ClearGuidePort()
 {
-	pulseGuide(guideNorth, 0);
+    pulseGuide(guideNorth, 0);
 }
 
 #endif // ZWO_ASI
