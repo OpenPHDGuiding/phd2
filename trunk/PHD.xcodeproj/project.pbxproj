@@ -122,6 +122,8 @@
 		A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE284181CD8A4000B6085 /* manualcal_dialog.cpp */; };
 		A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE287182225E7000B6085 /* json_parser.cpp */; };
 		A1ACE28C1827567B000B6085 /* phdcontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE28A1827567B000B6085 /* phdcontrol.cpp */; };
+		A1AE6D9E1958DDD500F343D8 /* cam_ZWO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AE6D9C1958DDD500F343D8 /* cam_ZWO.cpp */; };
+		A1AE6DA01958E05D00F343D8 /* libASICamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AE6D9F1958E05D00F343D8 /* libASICamera.a */; };
 		F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */; };
 		F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */; };
 /* End PBXBuildFile section */
@@ -366,6 +368,9 @@
 		A1ACE288182225E7000B6085 /* json_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_parser.h; sourceTree = "<group>"; };
 		A1ACE28A1827567B000B6085 /* phdcontrol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = phdcontrol.cpp; sourceTree = "<group>"; };
 		A1ACE28B1827567B000B6085 /* phdcontrol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phdcontrol.h; sourceTree = "<group>"; };
+		A1AE6D9C1958DDD500F343D8 /* cam_ZWO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_ZWO.cpp; sourceTree = "<group>"; };
+		A1AE6D9D1958DDD500F343D8 /* cam_ZWO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_ZWO.h; sourceTree = "<group>"; };
+		A1AE6D9F1958E05D00F343D8 /* libASICamera.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libASICamera.a; path = cameras/zwolibs/mac/libASICamera.a; sourceTree = "<group>"; };
 		F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calstep_dialog.cpp; sourceTree = "<group>"; };
 		F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = optionsbutton.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -394,6 +399,7 @@
 				2999515118982ED90002D9EB /* libwx_osx_cocoau_propgrid-3.0.a in Frameworks */,
 				2999515218982ED90002D9EB /* libwxjpeg-3.0.a in Frameworks */,
 				2999515318982ED90002D9EB /* libwxpng-3.0.a in Frameworks */,
+				A1AE6DA01958E05D00F343D8 /* libASICamera.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,6 +486,8 @@
 				58B8CE2F16E05EDB00F6E68E /* cam_VFW.h */,
 				58B8CE3016E05EDB00F6E68E /* cam_wdm.cpp */,
 				58B8CE3116E05EDB00F6E68E /* cam_WDM.h */,
+				A1AE6D9C1958DDD500F343D8 /* cam_ZWO.cpp */,
+				A1AE6D9D1958DDD500F343D8 /* cam_ZWO.h */,
 				58339E5B0B1FC6A700109891 /* camera.cpp */,
 				58339E5C0B1FC6A700109891 /* camera.h */,
 				585E87C915E8ABC300D96E46 /* cameras.h */,
@@ -660,6 +668,7 @@
 		58B8CE9016E05F3A00F6E68E /* Libs */ = {
 			isa = PBXGroup;
 			children = (
+				A1AE6D9F1958E05D00F343D8 /* libASICamera.a */,
 				2999514218982ED90002D9EB /* libwx_baseu_net-3.0.a */,
 				2999514318982ED90002D9EB /* libwx_baseu-3.0.a */,
 				2999514418982ED90002D9EB /* libwx_osx_cocoau_adv-3.0.a */,
@@ -839,6 +848,7 @@
 				A17B855E18AE9632004BECA0 /* nudge_lock.cpp in Sources */,
 				A140805419195D4600CC55AA /* darks_dialog.cpp in Sources */,
 				A140805719195D6D00CC55AA /* Refine_DefMap.cpp in Sources */,
+				A1AE6D9E1958DDD500F343D8 /* cam_ZWO.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -901,7 +911,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(WXDIR)/Cocoa_32/lib",
 					"$(CFITSIO)",
-					./cameras,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
@@ -910,6 +919,7 @@
 					"\"$(SRCROOT)/cameras\"",
 					"$(LIBUSB)/lib",
 					"\"$(SRCROOT)/../wxWidgets-3.0.0/Cocoa_32/lib\"",
+					"\"$(SRCROOT)/cameras/zwolibs/mac\"",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/cameras\"";
@@ -985,7 +995,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(WXDIR)/Cocoa_32/lib",
 					"$(CFITSIO)",
-					./cameras,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
@@ -994,6 +1003,7 @@
 					"\"$(SRCROOT)/cameras\"",
 					"$(LIBUSB)/lib",
 					"\"$(SRCROOT)/../wxWidgets-3.0.0/Cocoa_32/lib\"",
+					"\"$(SRCROOT)/cameras/zwolibs/mac\"",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/cameras\"";
