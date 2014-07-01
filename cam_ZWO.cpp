@@ -56,8 +56,6 @@ bool Camera_ZWO::Connect()
 
     // Find available cameras
     wxArrayString USBNames;
-    int ncams = 0;
-    int devnum[10] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
     int iCameras = getNumberOfConnectedCameras();
     if (iCameras == 0)
     {
