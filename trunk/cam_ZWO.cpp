@@ -107,11 +107,17 @@ bool Camera_ZWO::Connect()
     if (isAvailable(CONTROL_BANDWIDTHOVERLOAD))
         setValue(CONTROL_BANDWIDTHOVERLOAD, getMin(CONTROL_BANDWIDTHOVERLOAD), false);
 
+    setStartPos(0, 0);
+
+    setImageFormat(FullSize.x, FullSize.y, 1, IMG_Y8);
+    startCapture();
+
     return false;
 }
 
 bool Camera_ZWO::Disconnect()
 {
+    stopCapture(); 
     closeCamera();
 
     Connected = false;
@@ -133,11 +139,6 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
             return true;
         }
     }
-
-    setStartPos(0, 0);
-
-    setImageFormat(xsize, ysize, 1, IMG_Y8);
-    startCapture();
 
     setValue(CONTROL_EXPOSURE, exposureUS, false);
     setValue(CONTROL_GAIN, GuideCameraGain, false);
