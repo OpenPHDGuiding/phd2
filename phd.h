@@ -170,6 +170,7 @@ extern PhdConfig *pConfig;
 extern MyFrame *pFrame;
 extern Mount *pMount;
 extern Mount *pSecondaryMount;
+extern Mount *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
 extern GuideCamera *pCamera;
 
 #define ALWAYS_FLUSH_DEBUGLOG

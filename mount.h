@@ -208,7 +208,8 @@ public:
 
     virtual void ClearHistory(void);
 
-    virtual double GetDeclination(void);
+    double GetDefGuidingDeclination(void);              // Don't allow overrides in subclass
+    virtual double GetGuidingDeclination(void);
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
@@ -217,6 +218,7 @@ public:
     virtual bool CanCheckSlewing(void);
     virtual bool Slewing(void);
     virtual PierSide SideOfPier(void);
+    virtual bool CanReportPosition();                   // Can report RA, Dec, side-of-pier, etc.
 
     virtual wxString GetSettingsSummary();
 

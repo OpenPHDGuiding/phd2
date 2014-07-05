@@ -832,8 +832,8 @@ GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, const wxString& 
  */
 void Mount::AdjustCalibrationForScopePointing(void)
 {
-    double newDeclination = GetDeclination();
-    PierSide newPierSide = SideOfPier();
+    double newDeclination = pPointingSource->GetGuidingDeclination();
+    PierSide newPierSide = pPointingSource->SideOfPier();
 
     Debug.AddLine(wxString::Format("AdjustCalibrationForScopePointing (%s): current dec=%.1f pierSide=%d, cal dec=%.1f pierSide=%d",
         GetMountClassName(), newDeclination * 180. / M_PI, newPierSide, m_calDeclination * 180. / M_PI, m_calPierSide));
@@ -1045,13 +1045,26 @@ void Mount::ClearHistory(void)
     }
 }
 
-double Mount::GetDeclination(void)
+// Return a default guiding declination that will "do no harm" in terms of RA rate adjustments - either the Dec
+// where the calibration was done or zero
+double Mount::GetDefGuidingDeclination()
 {
     return m_calibrated ? m_calDeclination : 0.0;
 }
 
-// Safety net - return true in case subclass can't handle guide rates
-// Convention in this class is to return true for error conditions
+// Get a value of declination, in radians, that can be used for adjusting the RA guide rate.  Normally, this will be gotten
+// from the ASCOM scope subclass, but it could also come from the 'aux' mount connection.  If this method in the base class is
+// called, we don't have any pointing info, so return a default that will do no harm.
+// Don't force clients to catch exceptions.  Callers who want the traditional ASCOM
+// dec value should use GetCoordinates().
+double Mount::GetGuidingDeclination(void)
+{
+
+    return GetDefGuidingDeclination();
+}
+
+// Baseline implementations for non-ASCOM subclasses.  Methods will
+// return a sensible default or an error (true)
 bool Mount::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     return true; // error, not implemented
@@ -1068,6 +1081,11 @@ bool Mount::GetSiteLatLong(double *latitude, double *longitude)
 }
 
 bool Mount::CanSlew(void)
+{
+    return false;
+}
+
+bool Mount::CanReportPosition()
 {
     return false;
 }
@@ -1101,7 +1119,7 @@ wxString Mount::GetSettingsSummary()
 
     double cur_ra, cur_dec, cur_st;
     wxString dec_str;
-    if (!GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+    if (!pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
     {
         dec_str = wxString::Format("%0.1f deg", cur_dec);
     }
@@ -1116,7 +1134,7 @@ wxString Mount::GetSettingsSummary()
         IsCalibrated() ? wxString::Format("xAngle = %.3f, xRate = %.4f, yAngle = %.3f, yRate = %.4f",
                 xAngle(), xRate(), yAngle(), yRate()) : "not calibrated",
                 dec_str,
-                PierSideStr(SideOfPier())
+                PierSideStr(pPointingSource->SideOfPier())
     ) + wxString::Format("X guide algorithm = %s, %s",
         algorithms[GetXGuideAlgorithm()],
         m_pXGuideAlgorithm->GetSettingsSummary()

@@ -31,11 +31,11 @@ Time and Star Selection</a></li>
 In
 order to begin guiding, <span style="font-style: italic;">PHD2</span>
 must first connect to your hardware: the
-guide camera, the mount, and, optionally, an&nbsp;adaptive optics
+guide camera, the mount, and, optionally, an 'aux' mount or adaptive optics
 (AO) device. &nbsp;When you click on the camera
 icon, you'll see a dialog that looks like this: <br>
 <br>
-<img style="width: 445px; height: 260px;" alt="" src="Gear_Dialog.png"><br>
+<img style="width: 459px; height: 289px;" alt="" src="Gear_Dialog.png"><br>
 <br>
 <h4><a name="Camera_Selection"></a>Camera Selection</h4>
 The
@@ -79,8 +79,8 @@ commands (e.g. "Move west 500 mSec") are translated by the mount
 firmware into the appropriate motor control signals to execute the
 command. &nbsp;With the ASCOM interface, <span style="font-style: italic;">PHD2</span> can also
 obtain the
-pointing position of the mount, especially the declination, which can
-be used as a factor in guider calibration.<br>
+pointing position of the mount, especially the declination and side-of-pier, which can
+be used as&nbsp;factors in guider calibration.<br>
 <p>The "Guide-port"
 interfaces use a specialized, hardware-level control port available on
 most mounts. &nbsp;To use this type of interface, there must be
@@ -98,8 +98,21 @@ this style of interface,&nbsp; <span style="font-style: italic;">PHD2</span>
 guide commands like "Move west 500
 mSec" are translated by the intermediate device (camera, Shoestring
 box, AO) into&nbsp;electrical signals necessary to drive the mount
-motor for the correct length of time. &nbsp;<br>
-<h4>Adaptive Optics Selection</h4>
+motor for the correct length of time. &nbsp;<br><h4><a name="Aux_mount_selection"></a>"Aux" Mount Selection</h4>If
+you have selected an ST-4 style of guiding in the 'mount'
+section,&nbsp;that interface cannot be used to query the pointing
+position of the telescope. &nbsp;As a consequence, &nbsp;guider
+calibration won't be automatically adjusted for declination, nor will
+it be automatically "flipped" when the side-of-pier changes. &nbsp;You
+can restore these features by specifying an "aux" mount connection that
+will be used only to get the telescope pointing information. &nbsp;An
+example is shown below: <br><br><img style="width: 459px; height: 290px;" alt="" src="Gear_Aux_Dialog.PNG"><br><br>For
+Windows users, the "aux" mount can use any of the ASCOM-compatible
+mount drivers, while Unix users can take advantage of INDI drivers.
+&nbsp;The "aux" mount choice will be used only if the primary mount
+interface cannot return pointing information - it will otherwise be
+ignored.
+ <h4>Adaptive Optics Selection</h4>
 With
 <span style="font-style: italic;">PHD2</span>, you
 now have the option of controlling the Starlight Express
@@ -192,14 +205,7 @@ to experiment to understand what works best for your situation.
 &nbsp;</li>
 </ol>
 As a starting point,&nbsp;try using exposure durations in the range
-of one to five seconds.<br>
-<br>
-There is also an Auto exposure time selection available. When exposure
-is set to Auto, PHD2 will attempt to adjust the exposure to keep the
-selected guide star at a constant signal-to-noise ratio (SNR) value.
-The Auto setting can be especially beneficial for AO users who want to
-minimize exposure time without losing the guide star. The settings to control
-Auto-exposure are on the <a href="Advanced_settings.htm#Global_Tab">Global Tab</a> of the Advanced Dialog.
+of one to five seconds.
 <h3><a name="Automatic_Calibration"></a>Automatic
 Calibration</h3>
 <h4>Conventional Mounts</h4>
@@ -292,15 +298,15 @@ under the
 &nbsp;Remember, the data are saved whenever a full calibration is
 completed or when you use the 'flip calibration data' command under the
 'Tools' menu (see below). &nbsp;If you're using a German equatorial
-mount and the ASCOM interface, the saved calibration data will include
+mount and the ASCOM interface or you have an 'aux' mount connected, the saved calibration data will include
 the side of pier where you were last guiding; so <span style="font-style: italic;">PHD2</span> will adjust
 automatically for your current pointing position. &nbsp;But if you
 are
-not using an ASCOM interface, you'll need to remember which side of the
+not using mount interfaces that can return pointing information, you'll need to remember which side of the
 pier was being used the last time you were guiding.<br>
 <br>
 If
-you're using an ASCOM mount connection, <span style="font-style: italic;">PHD2</span> will also
+you're using an ASCOM mount (or 'aux' mount) connection, <span style="font-style: italic;">PHD2</span> will also
 include the
 calibration and target declinations as part of its calculations.
 &nbsp;In that case,&nbsp; guiding moves in right ascension will
@@ -308,8 +314,7 @@ be
 automatically adjusted to account for the declination of the current
 guide star, as opposed to the&nbsp;star you used for calibration.
 &nbsp;This is really just a refinement and isn't critical in most
-situations, so mount connections through a guider port aren't
-significantly dis-advantaged. &nbsp;However, if you are concerned
+situations, so absence of pointing information is not a big problem. &nbsp;However, if you are concerned
 about
 it and are imaging near the celestial pole, you should consider
 calibrating using a star that's also at high declination.<br>
@@ -365,10 +370,10 @@ meridian. &nbsp;This means you will move the
 telescope around to the opposite side of the pier and then resume
 imaging. &nbsp;Doing this invalidates the original calibration,
 typically because the declination directions are now
-reversed. &nbsp;If you are using an ASCOM mount interface, your
+reversed. &nbsp;If you are using an ASCOM (or 'aux' ) mount interface, your
 calibration will be adjusted automatically and you can simply resume
 guiding (assuming you haven't also rotated the camera or focuser).
-&nbsp;If you aren't using the ASCOM interface, you will need to
+&nbsp;If you aren't using an interface that returns pointing position, you will need to
 take
 action to adjust the guider calibration. &nbsp;You can, of course,
 simply do another
