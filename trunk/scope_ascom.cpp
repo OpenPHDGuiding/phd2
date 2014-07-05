@@ -768,10 +768,11 @@ bool ScopeASCOM::HasNonGuiMove(void)
     return true;
 }
 
-// Warning: declination is returned in units of radians, not the decimal degrees used in the ASCOM interface
-double ScopeASCOM::GetDeclination(void)
+// Special purpose function to return the guiding declination (radians) - either the actual scope position or the
+// default values defined in mount.cpp.  Doesn't throw exceptions to callers.
+double ScopeASCOM::GetGuidingDeclination(void)
 {
-    double dReturn = Scope::GetDeclination();
+    double dReturn = Scope::GetDefGuidingDeclination();
 
     try
     {
@@ -968,6 +969,11 @@ bool ScopeASCOM::CanSlew(void)
         POSSIBLY_UNUSED(Msg);
         return false;
     }
+}
+
+bool ScopeASCOM::CanReportPosition(void)
+{
+    return true;
 }
 
 bool ScopeASCOM::SlewToCoordinates(double ra, double dec)

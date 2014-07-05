@@ -55,6 +55,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             dlg.Show();
             if (dlg.ShowModal() == wxID_OK)
             {
+                Debug.AddLine("User-requested restore calibration");
                 pFrame->LoadCalibration();
             }
         }
@@ -71,7 +72,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             double yRate  = pMount->yRate();
             double xAngle = pMount->xAngle();
             double yAngle = pMount->yAngle();
-            double declination = pMount->GetDeclination();
+            double declination = pPointingSource->GetGuidingDeclination();
 
             if (!pMount->IsCalibrated())
             {
@@ -86,7 +87,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             if (manualcal.ShowModal () == wxID_OK)
             {
                 manualcal.GetValues(&xRate, &yRate, &xAngle, &yAngle, &declination);
-                pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pMount->SideOfPier());
+                pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pPointingSource->SideOfPier());
             }
         }
     }
@@ -110,6 +111,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             double xorig = mount->xAngle() * 180. / M_PI;
             double yorig = mount->yAngle() * 180. / M_PI;
 
+            Debug.AddLine("User-requested FlipRACal");
             if (FlipRACal())
             {
                 wxMessageBox(_("Failed to flip RA calibration"));

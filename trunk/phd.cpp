@@ -46,6 +46,7 @@
 PhdConfig *pConfig=NULL;
 Mount *pMount = NULL;
 Mount *pSecondaryMount = NULL;
+Mount *pPointingSource = NULL;
 MyFrame *pFrame = NULL;
 GuideCamera *pCamera = NULL;
 

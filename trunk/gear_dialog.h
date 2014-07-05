@@ -40,6 +40,7 @@ class GearDialog : public wxDialog
     GuideCamera *m_pCamera;
     Scope       *m_pScope;
     StepGuider  *m_pStepGuider;
+    Scope       *m_pAuxScope;
 
     bool m_cameraUpdated;
     bool m_mountUpdated;
@@ -56,6 +57,10 @@ class GearDialog : public wxDialog
     wxChoice *m_pScopes;
     wxButton *m_pSetupScopeButton;
     wxToggleButton *m_pConnectScopeButton;
+
+    wxChoice *m_pAuxScopes;
+    wxButton *m_pSetupAuxScopeButton;
+    wxToggleButton *m_pConnectAuxScopeButton;
 
     wxChoice *m_pStepGuiders;
     wxButton *m_pSetupStepGuiderButton;
@@ -82,6 +87,7 @@ private:
 
     void UpdateCameraButtonState(void);
     void UpdateScopeButtonState(void);
+    void UpdateAuxScopeButtonState(void);
     void UpdateStepGuiderButtonState(void);
     void UpdateConnectAllButtonState(void);
     void UpdateDisconnectAllButtonState(void);
@@ -110,6 +116,11 @@ private:
     void OnButtonSetupScope(wxCommandEvent& event);
     void OnButtonConnectScope(wxCommandEvent& event);
     void OnButtonDisconnectScope(wxCommandEvent& event);
+
+    void OnChoiceAuxScope(wxCommandEvent& event);
+    void OnButtonSetupAuxScope(wxCommandEvent& event);
+    void OnButtonConnectAuxScope(wxCommandEvent& event);
+    void OnButtonDisconnectAuxScope(wxCommandEvent& event);
 
     void OnChoiceStepGuider(wxCommandEvent& event);
     void OnButtonSetupStepGuider(wxCommandEvent& event);

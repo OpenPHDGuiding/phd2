@@ -249,10 +249,10 @@ bool GuidingLog::StartCalibration(Mount *pCalibrationMount)
             m_file.Write("Mount = " + pCalibrationMount->Name());
 
             double cur_ra, cur_dec, cur_st;
-            if (!pCalibrationMount->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+            if (!pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
             {
                 m_file.Write(wxString::Format(", Dec = %0.1f deg, Hour angle = %0.1f hr, Pier side = %s\n", cur_dec,
-                    HourAngle (cur_ra, cur_st), PierSideStr(pCalibrationMount->SideOfPier())));
+                    HourAngle (cur_ra, cur_st), PierSideStr(pPointingSource->SideOfPier())));
             }
             else
             {

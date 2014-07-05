@@ -71,9 +71,9 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
 
     // Get the guide rate from the mount or from the config file
     m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", DEFAULT_GUIDESPEED);
-    Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
-    if (mount && mount->IsConnected() &&
-        !mount->GetGuideRates(&dGuideRateRA, &dGuideRateDec))
+    Mount *pMountInfo = pPointingSource;
+    if (pMountInfo && pMountInfo->IsConnected() &&
+        !pMountInfo->GetGuideRates(&dGuideRateRA, &dGuideRateDec))
     {
         if (dGuideRateRA >= dGuideRateDec)
             m_fGuideSpeed = dGuideRateRA * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate

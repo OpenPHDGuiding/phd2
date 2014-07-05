@@ -264,6 +264,25 @@ wxArrayString Scope::List(void)
     return ScopeList;
 }
 
+wxArrayString Scope::AuxMountList()
+{
+    wxArrayString ScopeList;
+
+    ScopeList.Add(_("None"));      // Keep this at the top of the list
+#ifdef GUIDE_ASCOM
+    wxArrayString positionAwareScopes = ScopeASCOM::EnumAscomScopes();
+    positionAwareScopes.Sort(&CompareNoCase);
+    for (unsigned int i = 0; i < positionAwareScopes.Count(); i++)
+        ScopeList.Add(positionAwareScopes[i]);
+#endif
+#ifdef GUIDE_INDI
+    scopeList.Add(_("INDI Mount"));
+#endif
+
+
+    return ScopeList;
+}
+
 Scope *Scope::Factory(const wxString& choice)
 {
     Scope *pReturn = NULL;
@@ -809,7 +828,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
             case CALIBRATION_STATE_COMPLETE:
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
                                m_calibrationXRate,  m_calibrationYRate,
-                               GetDeclination(), SideOfPier());
+                               pPointingSource->GetGuidingDeclination(), pPointingSource->SideOfPier());
                 pFrame->SetStatusText(_("calibration complete"),1);
                 GuideLog.CalibrationComplete(this);
                 EvtServer.NotifyCalibrationComplete(this);

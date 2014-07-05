@@ -131,6 +131,7 @@ public:
     virtual wxString GetMountClassName() const;
 
     static wxArrayString List(void);
+    static wxArrayString AuxMountList(void);
     static Scope *Factory(const wxString& choice);
 
 public:

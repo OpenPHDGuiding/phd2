@@ -260,13 +260,13 @@ DriftToolWin::DriftToolWin()
     // get site lat/long from scope
     double lat, lon;
     m_siteLatLong.Invalidate();
-    if (!pMount->GetSiteLatLong(&lat, &lon))
+    if (!pPointingSource->GetSiteLatLong(&lat, &lon))
     {
         m_siteLatLong.SetXY(lat, lon);
     }
 
     m_timer = NULL;
-    if (m_can_slew)
+    if (m_can_slew || pPointingSource->CanReportPosition())
     {
         enum { SCOPE_POS_POLL_MS = 1500 };
         m_timer = new wxTimer(this, ID_TIMER);
@@ -503,7 +503,7 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
     else
     {
         double cur_ra, cur_dec, cur_st;
-        if (pMount->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+        if (pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
         {
             Debug.AddLine("Drift tool: slew failed to get scope coordinates");
             return;
@@ -614,7 +614,7 @@ void DriftToolWin::UpdateScopeCoordinates(void)
     if (!pMount)
         return;
     double ra_hrs, dec_deg, st_hrs;
-    if (pMount->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
+    if (pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
         return; // error
     double ra_ofs_deg = (ra_hrs - st_hrs) * (360.0 / 24.0);
     if (ra_ofs_deg > 180.0)
