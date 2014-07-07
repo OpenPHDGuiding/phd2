@@ -181,9 +181,9 @@ GuideCamera::GuideCamera(void)
     HasPortNum = false;
     HasDelayParam = false;
     HasGainControl = false;
-    HasShutter=false;
-    ShutterState=false;
-    HasSubframes=false;
+    HasShutter = false;
+    ShutterState = false;
+    HasSubframes = false;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
 
@@ -216,7 +216,7 @@ wxArrayString GuideCamera::List(void)
 {
     wxArrayString CameraList;
 
-    CameraList.Add(_T("None"));
+    CameraList.Add(_("None"));
 #if defined (ASCOM_LATECAMERA)
     wxArrayString ascomCameras = Camera_ASCOMLateClass::EnumAscomCameras();
     for (unsigned int i = 0; i < ascomCameras.Count(); i++)
@@ -353,7 +353,7 @@ GuideCamera *GuideCamera::Factory(wxString choice)
             pReturn = new Camera_ASCOMLateClass(choice);
         }
 #endif
-        else if (choice.Find(_T("None")) + 1) {
+        else if (choice.Find(_("None")) + 1) {
         }
         else if (choice.Find(_T("Simulator")) + 1) {
             pReturn = new Camera_SimClass();

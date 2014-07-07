@@ -86,7 +86,7 @@ wxArrayString StepGuider::List(void)
 {
     wxArrayString AoList;
 
-    AoList.Add(_T("None"));
+    AoList.Add(_("None"));
 #ifdef STEPGUIDER_SXAO
     AoList.Add(_T("sxAO"));
 #endif
@@ -110,7 +110,7 @@ StepGuider *StepGuider::Factory(const wxString& choice)
 
         Debug.AddLine(wxString::Format("StepGuiderFactory(%s)", choice));
 
-        if (choice.Find(_T("None")) + 1) {
+        if (choice.Find(_("None")) + 1) {
         }
 #ifdef STEPGUIDER_SXAO
         else if (choice.Find(_T("sxAO")) + 1) {
