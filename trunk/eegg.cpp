@@ -112,6 +112,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             double yorig = mount->yAngle() * 180. / M_PI;
 
             Debug.AddLine("User-requested FlipRACal");
+
             if (FlipRACal())
             {
                 wxMessageBox(_("Failed to flip RA calibration"));

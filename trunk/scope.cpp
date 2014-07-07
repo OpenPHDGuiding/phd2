@@ -225,7 +225,7 @@ wxArrayString Scope::List(void)
 {
     wxArrayString ScopeList;
 
-    ScopeList.Add(_T("None"));
+    ScopeList.Add(_("None"));
 #ifdef GUIDE_ASCOM
     wxArrayString ascomScopes = ScopeASCOM::EnumAscomScopes();
     for (unsigned int i = 0; i < ascomScopes.Count(); i++)
@@ -269,16 +269,17 @@ wxArrayString Scope::AuxMountList()
     wxArrayString ScopeList;
 
     ScopeList.Add(_("None"));      // Keep this at the top of the list
+
 #ifdef GUIDE_ASCOM
     wxArrayString positionAwareScopes = ScopeASCOM::EnumAscomScopes();
     positionAwareScopes.Sort(&CompareNoCase);
     for (unsigned int i = 0; i < positionAwareScopes.Count(); i++)
         ScopeList.Add(positionAwareScopes[i]);
 #endif
-#ifdef GUIDE_INDI
-    scopeList.Add(_("INDI Mount"));
-#endif
 
+#ifdef GUIDE_INDI
+    scopeList.Add(_T("INDI Mount"));
+#endif
 
     return ScopeList;
 }
@@ -305,7 +306,7 @@ Scope *Scope::Factory(const wxString& choice)
             pReturn = new ScopeASCOM(choice);
         }
 #endif
-        else if (choice.Find(_T("None")) + 1) {
+        else if (choice.Find(_("None")) + 1) {
         }
 #ifdef GUIDE_ONCAMERA
         else if (choice.Find(_T("On-camera")) + 1) {
