@@ -1066,7 +1066,7 @@ void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
     wxFrame::SetStatusText("", 1);
 }
 
-void MyFrame::ScheduleExposure(int exposureDuration, wxRect subframe)
+void MyFrame::ScheduleExposure(int exposureDuration, const wxRect& subframe)
 {
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
     Debug.AddLine("ScheduleExposure(%d)", exposureDuration);

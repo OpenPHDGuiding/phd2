@@ -304,7 +304,7 @@ public:
     };
     void OnRequestMountMove(wxCommandEvent &evt);
 
-    void ScheduleExposure(int exposureDuration, wxRect subframe);
+    void ScheduleExposure(int exposureDuration, const wxRect& subframe);
 
     void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
     void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
