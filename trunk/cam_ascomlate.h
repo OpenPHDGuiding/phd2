@@ -74,7 +74,7 @@ private:
     bool ASCOM_StartExposure(double duration, bool light, EXCEPINFO *excep);
     bool ASCOM_StopExposure(EXCEPINFO *excep);
     bool ASCOM_ImageReady(bool *ready, EXCEPINFO *excep);
-    bool ASCOM_Image(usImage& Image, bool useSubframe, wxRect subframe, EXCEPINFO *excep);
+    bool ASCOM_Image(usImage& Image, bool useSubframe, const wxRect& subframe, EXCEPINFO *excep);
     bool ASCOM_IsMoving(void);
 
     bool ST4HasNonGuiMove(void);

@@ -708,7 +708,7 @@ bool Camera_ASCOMLateClass::ASCOM_ImageReady(bool *ready, EXCEPINFO *excep)
     return false;
 }
 
-bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRect subframe, EXCEPINFO *excep)
+bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, const wxRect& subframe, EXCEPINFO *excep)
 {
     // Assumes the dispid values needed are already set
     // returns true on error, false if OK
@@ -749,34 +749,37 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, wxRec
         xsize = ysize;
         ysize = ubound1;
     }
-    if(hr!=S_OK) return true;
+    if (hr != S_OK)
+        return true;
 
-    if (Image.Init((int) FullSize.GetWidth(), (int) FullSize.GetHeight())) {
+    if (Image.Init(FullSize))
+    {
         pFrame->Alert(_("Cannot allocate memory to download image from camera"));
         return true;
     }
-    unsigned short *dataptr;
-    if (takeSubframe) {
-        dataptr = Image.ImageData;
-        Image.Subframe=subframe;
-        int x, y, i;
-        for (x=0; x<Image.NPixels; x++, dataptr++) // Clear out the image
-            *dataptr = 0;
-        i=0;
-        for (y=0; y<subframe.height; y++) {
-            dataptr = Image.ImageData + (y+subframe.y)*FullSize.GetWidth() + subframe.x;
-            for (x=0; x<subframe.width; x++, dataptr++, i++)
-                *dataptr = (unsigned short) rawdata[i];
+
+    if (takeSubframe)
+    {
+        Image.Subframe = subframe;
+
+        // Clear out the image
+        memset(Image.ImageData, 0, Image.NPixels * sizeof(Image.ImageData[0]));
+
+        int i = 0;
+        for (int y = 0; y < subframe.height; y++)
+        {
+            unsigned short *dataptr = Image.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+            for (int x = 0; x < subframe.width; x++, i++)
+                *dataptr++ = (unsigned short) rawdata[i];
         }
     }
-    else {
-        dataptr = Image.ImageData;
-        int i;
-        for (i=0; i<Image.NPixels; i++, dataptr++)
-            *dataptr = (unsigned short) rawdata[i];
+    else
+    {
+        memcpy(Image.ImageData, rawdata, Image.NPixels * sizeof(Image.ImageData[0]));
     }
-    hr=SafeArrayUnaccessData(rawarray);
-    hr=SafeArrayDestroyData(rawarray);
+
+    hr = SafeArrayUnaccessData(rawarray);
+    hr = SafeArrayDestroyData(rawarray);
 
     return false;
 }
