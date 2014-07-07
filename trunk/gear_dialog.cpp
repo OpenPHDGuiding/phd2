@@ -218,7 +218,7 @@ void GearDialog::Initialize(void)
     pTopLevelSizer->Add(pGearSizer, sizerFlags);
 
     // Camera
-    pGearSizer->Add(new wxStaticText(this, wxID_ANY, _("Camera"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL), sizerLabelFlags);
+    pGearSizer->Add(new wxStaticText(this, wxID_ANY, _("Camera"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), sizerLabelFlags);
     m_pCameras = new wxChoice(this, GEAR_CHOICE_CAMERA, wxDefaultPosition, wxDefaultSize,
                               GuideCamera::List(), 0, wxDefaultValidator, _("Camera"));
     pGearSizer->Add(m_pCameras, sizerButtonFlags);
