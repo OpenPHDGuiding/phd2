@@ -647,7 +647,7 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
         {
             throw ERROR_INFO("OnSelectGear called while CaptureActive");
         }
-        pFrame->pGearDialog->ShowModal(wxGetKeyState(WXK_SHIFT));
+        pFrame->pGearDialog->ShowGearDialog(wxGetKeyState(WXK_SHIFT));
     }
     catch (wxString Msg)
     {

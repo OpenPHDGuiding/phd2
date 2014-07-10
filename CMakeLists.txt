@@ -152,13 +152,13 @@ ENDIF (MSVC)
 #       )
 #endif (V4L_OK)
 
-foreach(cam ${phd_CAMERAS} )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${cam}" )
-endforeach(cam ${phd_CAMERAS} )
+#foreach(cam ${phd_CAMERAS} )
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${cam}" )
+#endforeach(cam ${phd_CAMERAS} )
 
-foreach(scope ${phd_SCOPES} )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${scope}" )
-endforeach(scope ${phd_SCOPES} )
+#foreach(scope ${phd_SCOPES} )
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${scope}" )
+#endforeach(scope ${phd_SCOPES} )
 
 if (MSVC)
     # generate a WIN32 app, not a console app
