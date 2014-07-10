@@ -324,7 +324,7 @@ void GearDialog::LoadGearChoices(void)
     OnChoiceStepGuider(dummyEvent);
 }
 
-int GearDialog::ShowModal(bool autoConnect)
+int GearDialog::ShowGearDialog(bool autoConnect)
 {
     int ret = wxID_OK;
     int callSuper = true;

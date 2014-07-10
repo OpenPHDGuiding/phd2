@@ -940,7 +940,7 @@ void MyFrame::OnAlertFromThread(wxThreadEvent& event)
  *
  */
 
-void MyFrame::SetStatusText(const wxString& text, int number, int msToDisplay)
+void MyFrame::SetStatusText(const wxString& text, int number)
 {
     Debug.AddLine(wxString::Format("Status Line %d: %s", number, text));
 
@@ -953,7 +953,6 @@ void MyFrame::SetStatusText(const wxString& text, int number, int msToDisplay)
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
         event->SetString(text);
         event->SetInt(number);
-        event->SetExtraLong(msToDisplay);
         wxQueueEvent(this, event);
     }
 }
@@ -961,15 +960,14 @@ void MyFrame::SetStatusText(const wxString& text, int number, int msToDisplay)
 void MyFrame::OnSetStatusText(wxThreadEvent& event)
 {
     int pane = event.GetInt();
-    int duration = event.GetExtraLong();
     wxString msg(event.GetString());
 
     if (pane == 1)
     {
         // display message for 2.5s, or until the next message is displayed
-        const int MIN_DISPLAY_MS = 2500;
+        const int DISPLAY_MS = 2500;
         wxFrame::SetStatusText(msg, pane);
-        m_statusbarTimer.Start(std::max(duration, MIN_DISPLAY_MS), wxTIMER_ONE_SHOT);
+        m_statusbarTimer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
     }
     else
     {

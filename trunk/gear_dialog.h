@@ -74,7 +74,7 @@ public:
     ~GearDialog(void);
 
     void Initialize(void);
-    int ShowModal(bool autoConnect);
+    int ShowGearDialog(bool autoConnect);
     void EndModal(int retCode);
 
     bool SetProfile(int profileId, wxString *error);

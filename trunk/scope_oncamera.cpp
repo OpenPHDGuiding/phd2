@@ -48,7 +48,7 @@ ScopeOnCamera::~ScopeOnCamera(void)
 
 bool ScopeOnCamera::Connect(void)
 {
-    return ScopeOnboardST4::Connect(pCamera);
+    return ScopeOnboardST4::ConnectOnboardST4(pCamera);
 }
 
 bool ScopeOnCamera::RequiresCamera(void)
