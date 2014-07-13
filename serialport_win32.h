@@ -36,14 +36,14 @@
 #if !defined(SERIALPORT_WIN32_H_INCLUDED) && defined (__WINDOWS__)
 #define SERIALPORT_WIN32_H_INCLUDED
 
-#include "wx/msw/ole/automtn.h"
-
-class SerialPortWin32:public SerialPort
+class SerialPortWin32 : public SerialPort
 {
     HANDLE m_handle;
 
     bool SerialPortWin32::EscapeFunction(DWORD command);
+
 public:
+
     wxArrayString GetSerialPortList(void);
 
     SerialPortWin32(void);
@@ -52,10 +52,10 @@ public:
     virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
     virtual bool Disconnect(void);
 
-    virtual bool Send(const unsigned char * const pData, const unsigned count);
+    virtual bool Send(const unsigned char *pData, unsigned count);
 
     virtual bool SetReceiveTimeout(int timeoutMs);
-    virtual bool Receive(unsigned char *pData, const unsigned count);
+    virtual bool Receive(unsigned char *pData, unsigned count);
 
     virtual bool SetRTS(bool asserted);
     virtual bool SetDTR(bool asserted);

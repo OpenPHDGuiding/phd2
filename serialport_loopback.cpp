@@ -112,7 +112,7 @@ bool SerialPortLoopback::SetReceiveTimeout(int timeoutMs)
     return bError;
 }
 
-bool SerialPortLoopback::Send(const unsigned char * const pData, const unsigned count)
+bool SerialPortLoopback::Send(const unsigned char *pData, unsigned count)
 {
     bool bError = false;
 
@@ -129,7 +129,7 @@ bool SerialPortLoopback::Send(const unsigned char * const pData, const unsigned 
     return bError;
 }
 
-bool SerialPortLoopback::Receive(unsigned char *pData, const unsigned count)
+bool SerialPortLoopback::Receive(unsigned char *pData, unsigned count)
 {
     bool bError = false;
 
