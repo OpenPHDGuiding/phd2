@@ -49,6 +49,7 @@ class GearDialog : public wxDialog
     wxChoice *m_profiles;
     OptionsButton *m_btnProfileManage;
     wxMenu *m_menuProfileManage;
+    wxButton *m_pWizardButton;
 
     wxChoice *m_pCameras;
     wxButton *m_pSetupCameraButton;
@@ -126,6 +127,8 @@ private:
     void OnButtonSetupStepGuider(wxCommandEvent& event);
     void OnButtonConnectStepGuider(wxCommandEvent& event);
     void OnButtonDisconnectStepGuider(wxCommandEvent& event);
+
+    void OnButtonWizard(wxCommandEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

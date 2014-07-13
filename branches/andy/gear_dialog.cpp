@@ -33,6 +33,7 @@
  */
 
 #include "phd.h"
+#include "profile_wizard.h"
 
 BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_CHOICE(GEAR_PROFILES, GearDialog::OnProfileChoice)
@@ -43,6 +44,7 @@ BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_MENU(GEAR_PROFILE_LOAD, GearDialog::OnProfileLoad)
     EVT_MENU(GEAR_PROFILE_SAVE, GearDialog::OnProfileSave)
     EVT_MENU(BUTTON_ADVANCED, GearDialog::OnAdvanced)
+    EVT_BUTTON(GEAR_BUTTON_WIZARD, GearDialog::OnButtonWizard)
 
     EVT_BUTTON(GEAR_BUTTON_CONNECT_ALL, GearDialog::OnButtonConnectAll)
     EVT_BUTTON(GEAR_BUTTON_DISCONNECT_ALL, GearDialog::OnButtonDisconnectAll)
@@ -198,6 +200,9 @@ void GearDialog::Initialize(void)
     m_btnProfileManage = new OptionsButton(this, GEAR_PROFILE_MANAGE, _("Manage Profiles"));
     m_btnProfileManage->SetToolTip(_("Create a new Equipment Profile, or delete or rename the selected Equipment Profile"));
     profilesSizer->Add(m_btnProfileManage, sizerButtonFlags);
+
+    m_pWizardButton = new wxButton(this, GEAR_BUTTON_WIZARD, "Wizard");
+    profilesSizer->Add(m_pWizardButton, sizerButtonFlags);
 
     pTopLevelSizer->Add(profilesSizer, wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL,2));
 //    pTopLevelSizer->Add(profileOpsSizer, wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL,2));
@@ -1176,6 +1181,13 @@ void GearDialog::OnButtonProfileManage(wxCommandEvent& event)
 {
     PopupMenu(m_menuProfileManage, m_btnProfileManage->GetPosition().x,
               m_btnProfileManage->GetPosition().y + m_btnProfileManage->GetSize().GetHeight());
+}
+
+void GearDialog::OnButtonWizard(wxCommandEvent& event)
+{
+    ProfileWizard *pWiz = new ProfileWizard(this);
+
+    pWiz->ShowModal();
 }
 
 void GearDialog::OnProfileChoice(wxCommandEvent& event)
