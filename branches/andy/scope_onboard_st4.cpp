@@ -50,7 +50,7 @@ ScopeOnboardST4::~ScopeOnboardST4(void)
     m_pOnboardHost = NULL;
 }
 
-bool ScopeOnboardST4::Connect(OnboardST4 *pOnboardHost)
+bool ScopeOnboardST4::ConnectOnboardST4(OnboardST4 *pOnboardHost)
 {
     bool bError = false;
 

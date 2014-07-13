@@ -325,7 +325,7 @@ public:
     double GetCameraPixelScale(void);
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
-    virtual void SetStatusText(const wxString& text, int number=0, int msToDisplay = 0);
+    virtual void SetStatusText(const wxString& text, int number = 0);
     virtual wxString GetSettingsSummary();
 
 private:

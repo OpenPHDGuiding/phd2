@@ -54,9 +54,7 @@ wxArrayString SerialPortMac::GetSerialPortList(void) {
     return ret;
 }
 
-
-
-bool SerialPortMac::Connect(wxString portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR)
+bool SerialPortMac::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR)
 {
     bool bError = false;
 

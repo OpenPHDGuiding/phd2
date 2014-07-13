@@ -637,7 +637,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
 
         if (!msg.IsEmpty())
         {
-            pFrame->SetStatusText(msg, 1, wxMax(actualXAmount, actualYAmount));
+            pFrame->SetStatusText(msg, 1);
             Debug.AddLine(msg);
         }
 
