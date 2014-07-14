@@ -145,7 +145,6 @@ void ProfileWizard::ShowHelp(DialogState state)
 {
     wxString hText;
 
-
     switch (m_State)
     {
     case STATE_CAMERA:
@@ -170,11 +169,12 @@ void ProfileWizard::ShowHelp(DialogState state)
     case STATE_WRAPUP:
         hText = _("Your profile is complete and ready to save.  Give it a name and, optionally, build a dark library/bad-pixel map for it.  This is strongly "
             "recommended for best results in both calibration and guiding.");
+    case STATE_DONE:
+        break;
     }
 
     m_pHelpText->SetLabel(hText);
     m_pHelpText->Wrap(TextWrapPoint);
-
 }
 
 void ProfileWizard::ShowStatus(const wxString msg, bool appending)
@@ -330,6 +330,7 @@ void ProfileWizard::WrapUp()
 void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
 {
     Scope *pMount;
+
     switch (m_State)
     {
     case STATE_CAMERA:
@@ -350,6 +351,9 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         break;
     case STATE_AO:
         m_SelectedAO = m_pGearChoice->GetStringSelection();
+        break;
+    case STATE_WRAPUP:
+    case STATE_DONE:
         break;
     }
 }
