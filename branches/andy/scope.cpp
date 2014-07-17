@@ -910,7 +910,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     pAutoDuration->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnCalcCalibrationStep, this);
 
     DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
-        _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"), pAutoDuration);
+        _("How long a guide pulse should be used during calibration? Click \"Calculate\" to compute a suitable value."), pAutoDuration);
 
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -970,13 +970,13 @@ void Scope::ScopeConfigDialogPane::OnCalcCalibrationStep(wxCommandEvent& evt)
     CalstepDialog calc(m_pParent, focalLength, pixelSize);
     if (calc.ShowModal() == wxID_OK)
     {
-        int iDuration;
-        if (calc.GetResults(focalLength, pixelSize, iDuration))
+        int calibrationStep;
+        if (calc.GetResults(&focalLength, &pixelSize, &calibrationStep))
         {
             // Following sets values in the UI controls of the various dialog tabs - not underlying data values
             pAdvancedDlg->SetFocalLength(focalLength);
             pAdvancedDlg->SetPixelSize(pixelSize);
-            m_pCalibrationDuration->SetValue(iDuration);
+            m_pCalibrationDuration->SetValue(calibrationStep);
         }
     }
 }

@@ -60,14 +60,14 @@ private:
     // wx UI controls
     wxBoxSizer *m_pvSizer;
     wxStaticText *m_pInstructions;
-	wxStaticText *m_pGearLabel;
-	wxChoice *m_pGearChoice;
+    wxStaticText *m_pGearLabel;
+    wxChoice *m_pGearChoice;
     wxSpinCtrlDouble *m_pPixelSize;
-	wxSpinCtrlDouble *m_pFocalLength;
+    wxSpinCtrl *m_pFocalLength;
     wxButton *m_pPrevBtn;
     wxButton *m_pNextBtn;
-	wxButton *m_pHelpBtn;
-	wxStaticText *m_pHelpText;
+    wxButton *m_pHelpBtn;
+    wxStaticText *m_pHelpText;
     wxFlexGridSizer *m_pGearGrid;
     wxFlexGridSizer *m_pUserProperties;
     wxFlexGridSizer *m_pWrapUp;
@@ -80,7 +80,7 @@ private:
     bool m_PositionAware;
     wxString m_SelectedAuxMount;
     wxString m_SelectedAO;
-    double m_FocalLength;
+    int m_FocalLength;
     double m_PixelSize;
     wxString m_ProfileName;
     bool m_ShowingHelp;
@@ -90,20 +90,24 @@ private:
     void OnHelp(wxCommandEvent& evt);
     void OnGearChoice(wxCommandEvent& evt);
     void OnPixelSizeChange(wxSpinDoubleEvent& evt);
-    void OnFocalLengthChange(wxSpinDoubleEvent& evt);
+    void OnFocalLengthChange(wxSpinEvent& evt);
     void SaveProfileInfo();
-    void ShowStatus(const wxString msg, bool appending);
+    void ShowStatus(const wxString& msg, bool appending);
     void UpdateState(const int change);
     bool SemanticCheck(DialogState state, int change);
     void ShowHelp(DialogState state);
     void WrapUp();
 
 	DialogState m_State;
+
 public:
+
+    bool m_launchDarks;
+
     ProfileWizard(wxWindow *parent);
     ~ProfileWizard(void);
 
-DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif

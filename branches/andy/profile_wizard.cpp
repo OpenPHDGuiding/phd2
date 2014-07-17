@@ -31,20 +31,19 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 #include "phd.h"
 #include "profile_wizard.h"
+#include "calstep_dialog.h"
 
-
-BEGIN_EVENT_TABLE(ProfileWizard, wxDialog)
+wxBEGIN_EVENT_TABLE(ProfileWizard, wxDialog)
 EVT_BUTTON(ID_NEXT, ProfileWizard::OnNext)
 EVT_BUTTON(ID_HELP, ProfileWizard::OnHelp)
 EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
 EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
 EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
-EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
-
-END_EVENT_TABLE()
+EVT_SPINCTRL(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
+wxEND_EVENT_TABLE()
 
 static const int DialogWidth = 425;
 static const int TextWrapPoint = 400;
@@ -83,10 +82,9 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
     m_pPixelSize->SetDigits(1);
     m_PixelSize = m_pPixelSize->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Camera pixel size"), m_pPixelSize);
-    m_pFocalLength = new wxSpinCtrlDouble(this, ID_FOCALLENGTH, _T("foo2"), wxPoint(-1, -1),
-        wxSize(-1, -1), wxSP_ARROW_KEYS, 50.0, 3000.0, 300.0, 50.0);
-    m_pFocalLength->SetValue(300.0);
-    m_pFocalLength->SetDigits(0);
+    m_pFocalLength = new wxSpinCtrl(this, ID_FOCALLENGTH, _T("foo2"), wxDefaultPosition,
+        wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300);
+    m_pFocalLength->SetValue(300);
     m_FocalLength = m_pFocalLength->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Guider scope focal length"), m_pFocalLength);
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
@@ -131,7 +129,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
     SetAutoLayout(true);
     SetSizerAndFit(m_pvSizer);
 
-	m_State = STATE_CAMERA;
+    m_State = STATE_CAMERA;
     UpdateState(0);
 }
 
@@ -177,17 +175,12 @@ void ProfileWizard::ShowHelp(DialogState state)
     m_pHelpText->Wrap(TextWrapPoint);
 }
 
-void ProfileWizard::ShowStatus(const wxString msg, bool appending)
+void ProfileWizard::ShowStatus(const wxString& msg, bool appending)
 {
-    static wxString preamble;
-
     if (appending)
-        m_pStatusBar->SetStatusText(preamble + " " + msg);
+        m_pStatusBar->SetStatusText(m_pStatusBar->GetStatusText() + " " + msg);
     else
-    {
         m_pStatusBar->SetStatusText(msg);
-        preamble = msg;
-    }
 }
 
 // Do semantic checks for 'next' commands
@@ -220,6 +213,11 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
             bOk = m_ProfileName.length() > 0;
             if (!bOk)
                 ShowStatus(_("Please specify a name for the profile."), false);
+            if (pConfig->GetProfileId(m_ProfileName) > 0)
+            {
+                bOk = false;
+                ShowStatus(_("There is already a profile with that name. Please choose a different name."), false);
+            }
             break;
         case STATE_DONE:
             break;
@@ -317,12 +315,40 @@ void ProfileWizard::UpdateState(const int change)
     }
 }
 
+static int GetCalibrationStepSize(int focalLength, double pixelSize)
+{
+    int calibrationStep;
+    double const declination = 0.0;
+    CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, CalstepDialog::DEFAULT_GUIDESPEED,
+        CalstepDialog::DEFAULT_STEPS, declination, 0, &calibrationStep);
+    return calibrationStep;
+}
+
 // Wrapup logic - build the new profile, maybe launch the darks dialog
 void ProfileWizard::WrapUp()
 {
-    wxString debugStr = wxString::Format("Name=%s, Camera=%s, Mount=%s, AuxMount=%s, AO=%s, PixelSize=%0.1f, FocalLength=%0.1f",
-        m_ProfileName, m_SelectedCamera, m_SelectedMount, m_SelectedAuxMount, m_SelectedAO, m_PixelSize, m_FocalLength);
-    wxMessageBox(debugStr);
+    m_launchDarks = m_pLaunchDarks->GetValue();
+    int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize);
+
+    Debug.AddLine(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, AuxMount=%s, AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, LaunchDarks=%d",
+                                   m_ProfileName, m_SelectedCamera, m_SelectedMount, m_SelectedAuxMount, m_SelectedAO, m_PixelSize, m_FocalLength, calibrationStepSize, m_launchDarks));
+
+    // create the new profile
+    if (pConfig->SetCurrentProfile(m_ProfileName))
+    {
+        ShowStatus(wxString::Format(_("Could not create profile %s"), m_ProfileName), false);
+        return;
+    }
+
+    // populate the profile. The caller will load the profile.
+    pConfig->Profile.SetString("/camera/LastMenuchoice", m_SelectedCamera);
+    pConfig->Profile.SetString("/scope/LastMenuChoice", m_SelectedMount);
+    pConfig->Profile.SetString("/scope/LastAuxMenuChoice", m_SelectedAuxMount);
+    pConfig->Profile.SetString("/stepguider/LastMenuChoice", m_SelectedAO);
+    pConfig->Profile.SetInt("/frame/focalLength", m_FocalLength);
+    pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
+    pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
+
     EndModal(wxOK);
 }
 
@@ -357,18 +383,22 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         break;
     }
 }
+
 void ProfileWizard::OnPixelSizeChange(wxSpinDoubleEvent& evt)
 {
     m_PixelSize = m_pPixelSize->GetValue();
 }
-void ProfileWizard::OnFocalLengthChange(wxSpinDoubleEvent& evt)
+
+void ProfileWizard::OnFocalLengthChange(wxSpinEvent& evt)
 {
     m_FocalLength = m_pFocalLength->GetValue();
 }
+
 void ProfileWizard::OnNext(wxCommandEvent& evt)
 {
     UpdateState(1);
 }
+
 void ProfileWizard::OnHelp(wxCommandEvent& evt)
 {
     m_ShowingHelp = !m_ShowingHelp;

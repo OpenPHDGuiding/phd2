@@ -1185,9 +1185,25 @@ void GearDialog::OnButtonProfileManage(wxCommandEvent& event)
 
 void GearDialog::OnButtonWizard(wxCommandEvent& event)
 {
-    ProfileWizard *pWiz = new ProfileWizard(this);
+    ProfileWizard wiz(this);
 
-    pWiz->ShowModal();
+    if (wiz.ShowModal())
+    {
+        // a new profile was created and set as the current profile
+
+        wxArrayString profiles = pConfig->ProfileNames();
+        m_profiles->Set(profiles);
+        m_profiles->SetStringSelection(pConfig->GetCurrentProfile());
+        Layout();
+
+        wxCommandEvent dummy;
+        OnProfileChoice(dummy);
+
+        if (wiz.m_launchDarks)
+        {
+            // TODO: connect equipment and launch darks dialog
+        }
+    }
 }
 
 void GearDialog::OnProfileChoice(wxCommandEvent& event)
@@ -1382,7 +1398,7 @@ void GearDialog::OnProfileNew(wxCommandEvent& event)
 
     if (pConfig->GetProfileId(newname) > 0)
     {
-        wxMessageBox(_(wxString::Format("Cannot create profile %s, there is already a profile with that name", newname)), _("Error"));
+        wxMessageBox(wxString::Format(_("Cannot create profile %s, there is already a profile with that name"), newname), _("Error"));
         return;
     }
 
