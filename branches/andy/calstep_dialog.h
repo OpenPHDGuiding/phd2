@@ -69,7 +69,7 @@ private:
 public:
 
     enum { DEFAULT_STEPS = 12 };
-    static const double DEFAULT_GUIDESPEED = 0.5;
+    static const double DEFAULT_GUIDESPEED;
 
     CalstepDialog(wxWindow *parent, int focalLength, double pixelSize);
     ~CalstepDialog(void);

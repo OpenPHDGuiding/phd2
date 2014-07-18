@@ -46,6 +46,8 @@
 #define MIN_DECLINATION -60.0
 #define MAX_DECLINATION 60.0
 
+const double CalstepDialog::DEFAULT_GUIDESPEED = 0.5;  // 50% sidereal rate
+
 static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc)
 {
     wxSpinCtrlDouble *pNewCtrl = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
