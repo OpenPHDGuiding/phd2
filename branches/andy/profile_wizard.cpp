@@ -57,7 +57,8 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
 }
 
 ProfileWizard::ProfileWizard(wxWindow *parent) :
-    wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
+    wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
+    m_launchDarks(false)
 {
     // Create overall vertical sizer
     m_pvSizer = new wxBoxSizer(wxVERTICAL);
@@ -240,7 +241,7 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
 
 static int RangeCheck(int thisval)
 {
-    return wxMin(wxMax(thisval, 0), (int) STATE_DONE);
+    return wxMin(wxMax(thisval, 0), (int) ProfileWizard::STATE_DONE);
 }
 
 // State machine manager.  Layout and content of dialog panel will be changed here based on state.

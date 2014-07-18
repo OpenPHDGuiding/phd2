@@ -114,7 +114,8 @@ GearDialog::GearDialog(wxWindow *pParent) :
     wxDialog(pParent, wxID_ANY, _("Connect Equipment"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
     m_cameraUpdated(false),
     m_mountUpdated(false),
-    m_stepGuiderUpdated(false)
+    m_stepGuiderUpdated(false),
+    m_showDarksDialog(false)
 {
     m_pCamera              = NULL;
     m_pScope               = NULL;
@@ -417,6 +418,16 @@ void GearDialog::EndModal(int retCode)
     wxDialog::EndModal(retCode);
 
     UpdateAdvancedDialog();
+
+    if (m_showDarksDialog)
+    {
+        m_showDarksDialog = false;
+        if (pCamera && pCamera->Connected)
+        {
+            wxCommandEvent dummy;
+            pFrame->OnDark(dummy);
+        }
+    }
 }
 
 void GearDialog::UpdateCameraButtonState(void)
@@ -921,7 +932,6 @@ void GearDialog::OnChoiceAuxScope(wxCommandEvent& event)
     }
 
     UpdateButtonState();
-
 }
 
 void GearDialog::OnButtonSetupScope(wxCommandEvent& event)
@@ -1201,8 +1211,24 @@ void GearDialog::OnButtonWizard(wxCommandEvent& event)
 
         if (wiz.m_launchDarks)
         {
-            // TODO: connect equipment and launch darks dialog
+            m_showDarksDialog = true;
+            // if wizard was launched from dialog and darks are requested, connect-all and close dialog
+            if (IsVisible())
+            {
+                wxCommandEvent dummyEvent;
+                OnButtonConnectAll(dummyEvent);
+            }
         }
+    }
+}
+
+void GearDialog::ShowProfileWizard(void)
+{
+    wxCommandEvent dummy;
+    OnButtonWizard(dummy);
+    if (m_showDarksDialog)
+    {
+        ShowGearDialog(true); // connect equipment and launch darks dialog
     }
 }
 

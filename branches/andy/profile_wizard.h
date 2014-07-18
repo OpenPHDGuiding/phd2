@@ -35,27 +35,29 @@
 #ifndef ProfileWizard_h_included
 #define ProfileWizard_h_included
 
-enum DialogState
-{
-    STATE_CAMERA,
-	STATE_MOUNT,
-	STATE_AUXMOUNT,
-    STATE_AO,
-	STATE_WRAPUP,
-    STATE_DONE
-};
-
-enum CtrlIds
-{
-    ID_COMBO = 10001,
-    ID_PIXELSIZE,
-    ID_FOCALLENGTH,
-    ID_PREV,
-    ID_HELP,
-    ID_NEXT
-};
 class ProfileWizard : public wxDialog
 {
+public:
+    enum DialogState
+    {
+        STATE_CAMERA,
+        STATE_MOUNT,
+        STATE_AUXMOUNT,
+        STATE_AO,
+        STATE_WRAPUP,
+        STATE_DONE
+    };
+
+    enum CtrlIds
+    {
+        ID_COMBO = 10001,
+        ID_PIXELSIZE,
+        ID_FOCALLENGTH,
+        ID_PREV,
+        ID_HELP,
+        ID_NEXT
+    };
+
 private:
     // wx UI controls
     wxBoxSizer *m_pvSizer;
@@ -91,14 +93,13 @@ private:
     void OnGearChoice(wxCommandEvent& evt);
     void OnPixelSizeChange(wxSpinDoubleEvent& evt);
     void OnFocalLengthChange(wxSpinEvent& evt);
-    void SaveProfileInfo();
     void ShowStatus(const wxString& msg, bool appending);
     void UpdateState(const int change);
     bool SemanticCheck(DialogState state, int change);
     void ShowHelp(DialogState state);
     void WrapUp();
 
-	DialogState m_State;
+    DialogState m_State;
 
 public:
 

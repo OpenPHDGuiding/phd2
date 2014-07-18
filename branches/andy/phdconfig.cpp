@@ -251,15 +251,18 @@ void PhdConfig::Initialize(const wxString& baseConfigName, int instance)
     wxConfig *config = new wxConfig(configName);
     Global.m_pConfig = Profile.m_pConfig = config;
 
-    m_configVersion = Global.GetLong("ConfigVersion", 0);
+    m_isNewInstance = false;
 
+    m_configVersion = Global.GetLong("ConfigVersion", 0);
     if (m_configVersion == 0)
     {
+        m_isNewInstance = true;
+
         Debug.AddLine(wxString::Format("Initializing a new config, m_pConfig=%p", Global.m_pConfig));
 
         Global.SetLong("ConfigVersion", CURRENT_CONFIG_VERSION);
+        m_configVersion = CURRENT_CONFIG_VERSION;
     }
-
 }
 
 void PhdConfig::InitializeProfile(void)
@@ -290,6 +293,7 @@ void PhdConfig::DeleteAll(void)
         Global.m_pConfig->DeleteAll();
         InitializeProfile();
     }
+    m_isNewInstance = true;
 }
 
 wxString PhdConfig::GetCurrentProfile(void)

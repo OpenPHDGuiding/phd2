@@ -45,6 +45,7 @@ class GearDialog : public wxDialog
     bool m_cameraUpdated;
     bool m_mountUpdated;
     bool m_stepGuiderUpdated;
+    bool m_showDarksDialog;
 
     wxChoice *m_profiles;
     OptionsButton *m_btnProfileManage;
@@ -78,6 +79,7 @@ public:
     int ShowGearDialog(bool autoConnect);
     void EndModal(int retCode);
 
+    void ShowProfileWizard(void);
     bool SetProfile(int profileId, wxString *error);
     bool ConnectAll(wxString *error);
     bool DisconnectAll(wxString *error);
