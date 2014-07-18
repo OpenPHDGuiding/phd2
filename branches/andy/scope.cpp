@@ -39,8 +39,8 @@
 #include "calstep_dialog.h"
 
 static const int DefaultCalibrationDuration = 750;
-static const int DefaultMaxDecDuration  = 1000;
-static const int DefaultMaxRaDuration  = 1000;
+static const int DefaultMaxDecDuration = 2500;
+static const int DefaultMaxRaDuration = 2500;
 
 static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
 static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
