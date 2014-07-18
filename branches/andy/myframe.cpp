@@ -517,16 +517,16 @@ void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
 
 static wxString dur_choices[] = {
     _T("Auto-placeholder"), // translated value provided later, cannot use _() in static initializer
-    _T("0.001 s"), _T("0.002 s"), _T("0.005 s"), _T("0.01 s"),
-    _T("0.05 s"), _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
+    _T("0.01 s"), _T("0.02 s"), _T("0.05 s"),
+    _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
     _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"),
     _T("6.0 s"), _T("7.0 s"), _T("8.0 s"), _T("9.0 s"),_T("10 s"), _T("15.0 s")
 };
-static const int DefaultDurChoiceIdx = 9;
+static const int DefaultDurChoiceIdx = 7; // 1.0s
 static int dur_values[] = {
     -1,
-    1, 2, 5, 10,
-    50, 100, 200, 500, 1000, 1500,
+    10, 20, 50,
+    100, 200, 500, 1000, 1500,
     2000, 2500, 3000, 3500, 4000, 4500, 5000,
     6000, 7000, 8000, 9000, 10000, 15000,
 };
