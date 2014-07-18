@@ -1,7 +1,7 @@
 /*  profile_wizard.cpp
  *  PHD Guiding
  *
- *  Created by Bruce Waddington
+ *  Created by Bruce Waddington in collaboration with Andy Galasso
  *  Copyright (c) 2014 Bruce Waddington
  *  All rights reserved.
  *
@@ -65,14 +65,24 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
     // Build the superset of UI controls, minus state-specific labels and data
     // User instructions at top
     m_pInstructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, 40), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
-    m_pvSizer->Add(m_pInstructions, wxSizerFlags().Border(wxLEFT, 10));
+    wxFont font = m_pInstructions->GetFont();
+    font.SetWeight(wxFONTWEIGHT_BOLD);
+    m_pInstructions->SetFont(font);
+    m_pvSizer->Add(m_pInstructions, wxSizerFlags().Border(wxALL, 10));
+
+    // Verbose help block
+    wxStaticBoxSizer *pHelpGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("More Info"));
+    m_pHelpText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, 85));
+    pHelpGroup->Add(m_pHelpText, wxSizerFlags().Border(wxLEFT, 10).Border(wxBOTTOM, 10));
+    m_pvSizer->Add(pHelpGroup, wxSizerFlags().Border(wxALL, 5));
+
     // Gear label and combo box
-    m_pGearGrid = new wxFlexGridSizer(1, 2, 5, 40);
+    m_pGearGrid = new wxFlexGridSizer(1, 2, 5, 15);
     m_pGearLabel = new wxStaticText(this, wxID_ANY, "Temp:", wxDefaultPosition, wxDefaultSize);
     m_pGearChoice = new wxChoice(this, ID_COMBO, wxDefaultPosition, wxDefaultSize,
                               GuideCamera::List(), 0, wxDefaultValidator, _("Gear"));
     m_pGearGrid->Add(m_pGearLabel, 1, wxALL, 5);
-    m_pGearGrid->Add(m_pGearChoice, 1, wxALL, 5);
+    m_pGearGrid->Add(m_pGearChoice, 1, wxLEFT, 10);
     m_pvSizer->Add(m_pGearGrid, wxSizerFlags().Center().Border(wxALL, 5));
 
     // Control for pixel-size and focal length
@@ -81,20 +91,21 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
                                           wxSize(-1, -1), wxSP_ARROW_KEYS, 2.0, 15.0, 5.0, 0.1);
     m_pPixelSize->SetDigits(1);
     m_PixelSize = m_pPixelSize->GetValue();
-    AddTableEntryPair(this, m_pUserProperties, _("Camera pixel size"), m_pPixelSize);
+    AddTableEntryPair(this, m_pUserProperties, _("Guide camera pixel size (microns)"), m_pPixelSize);
     m_pFocalLength = new wxSpinCtrl(this, ID_FOCALLENGTH, _T("foo2"), wxDefaultPosition,
         wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300);
     m_pFocalLength->SetValue(300);
     m_FocalLength = m_pFocalLength->GetValue();
-    AddTableEntryPair(this, m_pUserProperties, _("Guider scope focal length"), m_pFocalLength);
+    AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
+
     // Wrapup panel
-    m_pWrapUp = new wxFlexGridSizer(1, 3, 5, 15);
-    m_pProfileName = new wxTextCtrl(this, wxID_ANY);
+    m_pWrapUp = new wxFlexGridSizer(2, 2, 5, 15);
+    m_pProfileName = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(250,-1));
     m_pLaunchDarks = new wxCheckBox(this, wxID_ANY, _("Build dark library"));
     AddTableEntryPair(this, m_pWrapUp, _("Profile Name"), m_pProfileName);
     m_pWrapUp->Add(m_pLaunchDarks, wxSizerFlags().Border(wxTOP, 5));
-    m_pvSizer->Add(m_pWrapUp, wxSizerFlags().Expand().Center());
+    m_pvSizer->Add(m_pWrapUp, wxSizerFlags().Border(wxALL, 10).Expand().Center());
 
     // Row of buttons for prev, help, next
     wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
@@ -104,6 +115,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
     m_pHelpBtn = new wxButton(this, ID_HELP, _("Hide Help"));
     m_ShowingHelp = true;
     m_pHelpBtn->SetToolTip("Show more information about this screen");
+    m_pHelpBtn->Show(false);                    // Temporary until we settle on the final UI
 
     m_pNextBtn = new wxButton(this, ID_NEXT, _("Next--->"));
     m_pNextBtn->SetToolTip("Move forward to next screen");
@@ -118,9 +130,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
         m_pNextBtn,
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
     m_pvSizer->Add(pButtonSizer, wxSizerFlags().Center().Border(wxALL, 10));
-    // Verbose help block
-    m_pHelpText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth,120));
-    m_pvSizer->Add(m_pHelpText, wxSizerFlags().Border(wxLEFT, 10));
+
     // Status bar for error messages
     m_pStatusBar = new wxStatusBar(this, -1);
     m_pStatusBar->SetFieldsCount(1);
@@ -128,7 +138,9 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
 
     SetAutoLayout(true);
     SetSizerAndFit(m_pvSizer);
-
+    // Special cases - neither AuxMount nor AO requires an explicit user choice
+    m_SelectedAuxMount = _("None");
+    m_SelectedAO = +("None");
     m_State = STATE_CAMERA;
     UpdateState(0);
 }
@@ -146,7 +158,7 @@ void ProfileWizard::ShowHelp(DialogState state)
     switch (m_State)
     {
     case STATE_CAMERA:
-        hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras will be shown. If your camera is not shown, "
+        hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
             "it is either not supported by PHD2 or its camera driver is not installed. You must also specify the pixel size of the camera and "
             "the focal length of your guide scope so that PHD2 can compute the correct image scale.");
         break;
@@ -157,7 +169,7 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     case STATE_AUXMOUNT:
         hText = _("The mount interface you chose in the previous step doesn't provide pointing information, so PHD2 will not be able to automatically adjust "
-            "guiding for side-of-pier and declination. You can restore these features by choosing an 'Aux Mount' connection that does provide pointing "
+            "guiding for side-of-pier and declination. You can enable these features by choosing an 'Aux Mount' connection that does provide pointing "
             "information.  The Aux Mount interface will be used only for that purpose and not for sending guide commands.");
         break;
     case STATE_AO:
@@ -166,7 +178,8 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     case STATE_WRAPUP:
         hText = _("Your profile is complete and ready to save.  Give it a name and, optionally, build a dark library/bad-pixel map for it.  This is strongly "
-            "recommended for best results in both calibration and guiding.");
+            "recommended for best results in both calibration and guiding. You can always change the settings in this new profile by clicking on the PHD2 camera "
+            "icon, selecting the profile name you just entered, and making your changes there.");
     case STATE_DONE:
         break;
     }
@@ -203,10 +216,8 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
                 ShowStatus(_("Please select a mount type to handle guider commands"), false);
             break;
         case STATE_AUXMOUNT:
-            m_SelectedAuxMount = m_pGearChoice->GetStringSelection();
             break;
         case STATE_AO:
-            m_SelectedAO = m_pGearChoice->GetStringSelection();
             break;
         case STATE_WRAPUP:
             m_ProfileName = m_pProfileName->GetValue();
@@ -243,7 +254,7 @@ void ProfileWizard::UpdateState(const int change)
         {
         case STATE_CAMERA:
             m_pPrevBtn->Enable(false);
-            m_pGearLabel->SetLabel(_("Camera:"));
+            m_pGearLabel->SetLabel(_("Guide Camera:"));
             m_pGearChoice->Clear();
             m_pGearChoice->Append(GuideCamera::List());
             if (m_SelectedCamera.length() > 0)
@@ -268,10 +279,6 @@ void ProfileWizard::UpdateState(const int change)
         case STATE_AUXMOUNT:
             if (m_PositionAware)                        // Skip this state if the selected mount is already position aware
             {
-                if (m_SelectedAuxMount.length() > 0)                // User might have changed his mind via prev/next functions
-                {
-                    m_SelectedAuxMount = _("None");
-                }
                 UpdateState(change);
             }
             else
@@ -279,10 +286,7 @@ void ProfileWizard::UpdateState(const int change)
                 m_pGearLabel->SetLabel(_("Aux Mount:"));
                 m_pGearChoice->Clear();
                 m_pGearChoice->Append(Scope::AuxMountList());
-                if (m_SelectedAuxMount.length() > 0)
-                    m_pGearChoice->SetStringSelection(m_SelectedAuxMount);
-                else
-                    m_pGearChoice->SetStringSelection(_("None"));
+                m_pGearChoice->SetStringSelection(m_SelectedAuxMount);      // SelectedAuxMount is never null
                 m_pInstructions->SetLabel(_("Since your primary mount connection does not report pointing position, you may want to choose an 'Aux Mount' connection"));
             }
             break;
@@ -290,17 +294,20 @@ void ProfileWizard::UpdateState(const int change)
             m_pGearLabel->SetLabel(_("AO:"));
             m_pGearChoice->Clear();
             m_pGearChoice->Append(StepGuider::List());
-            if (m_SelectedAO.length() > 0)
-                m_pGearChoice->SetStringSelection(m_SelectedAO);
-            else
-                m_pGearChoice->SetStringSelection(_("None"));
+            m_pGearChoice->SetStringSelection(m_SelectedAO);            // SelectedAO is never null
             m_pInstructions->SetLabel(_("Specify your adaptive optics device if desired"));
+            if (change == -1)                   // User is backing up in wizard dialog
+            {
+                // Assert UI state for gear selection
+                m_pGearGrid->Show(true);
+                m_pNextBtn->SetLabel("Next--->");
+                m_pWrapUp->Show(false);
+            }
             break;
         case STATE_WRAPUP:
             m_pGearGrid->Show(false);
             m_pWrapUp->Show(true);
-            m_pPrevBtn->Enable(false);
-            m_pNextBtn->SetLabel(_("Done"));
+            m_pNextBtn->SetLabel(_("Finish"));
             m_pInstructions->SetLabel(_("Enter a name for your profile and optionally launch the process to build a dark library"));
             SetSizerAndFit(m_pvSizer);
             break;
@@ -366,6 +373,10 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
         m_SelectedMount = m_pGearChoice->GetStringSelection();
         pMount = Scope::Factory(m_SelectedMount);
         m_PositionAware = (pMount && pMount->CanReportPosition());
+        if (m_PositionAware)
+        {
+            m_SelectedAuxMount = _("None");
+        }
         if (pMount)
         {
             delete pMount;
