@@ -702,7 +702,7 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     if (m_pCamera->HasGainControl)
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_pCameraGain = NewSpinnerInt(pParent, width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star).Not available on all cameras."));
+        m_pCameraGain = NewSpinnerInt(pParent, width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
         AddTableEntryPair(pParent, pCamControls, "Camera gain", m_pCameraGain);
     }
 
