@@ -44,7 +44,7 @@ BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_MENU(GEAR_PROFILE_LOAD, GearDialog::OnProfileLoad)
     EVT_MENU(GEAR_PROFILE_SAVE, GearDialog::OnProfileSave)
     EVT_MENU(BUTTON_ADVANCED, GearDialog::OnAdvanced)
-    EVT_BUTTON(GEAR_BUTTON_WIZARD, GearDialog::OnButtonWizard)
+    EVT_MENU(GEAR_PROFILE_WIZARD, GearDialog::OnButtonWizard)
 
     EVT_BUTTON(GEAR_BUTTON_CONNECT_ALL, GearDialog::OnButtonConnectAll)
     EVT_BUTTON(GEAR_BUTTON_DISCONNECT_ALL, GearDialog::OnButtonDisconnectAll)
@@ -192,6 +192,7 @@ void GearDialog::Initialize(void)
 
     m_menuProfileManage = new wxMenu();
     m_menuProfileManage->Append(GEAR_PROFILE_NEW, _("New"), _("Create a new profile, optionally copying from another profile"));
+    m_menuProfileManage->Append(GEAR_PROFILE_WIZARD, _("New using Wizard..."), _("Run the first-light wizard to create a new profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_DELETE, _("Delete"), _("Delete the selected profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_RENAME, _("Rename"), _("Rename the selected profile"));
     m_menuProfileManage->Append(GEAR_PROFILE_LOAD, _("Import..."), _("Load a profile from a file"));
@@ -201,9 +202,6 @@ void GearDialog::Initialize(void)
     m_btnProfileManage = new OptionsButton(this, GEAR_PROFILE_MANAGE, _("Manage Profiles"));
     m_btnProfileManage->SetToolTip(_("Create a new Equipment Profile, or delete or rename the selected Equipment Profile"));
     profilesSizer->Add(m_btnProfileManage, sizerButtonFlags);
-
-    m_pWizardButton = new wxButton(this, GEAR_BUTTON_WIZARD, "Wizard");
-    profilesSizer->Add(m_pWizardButton, sizerButtonFlags);
 
     pTopLevelSizer->Add(profilesSizer, wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL,2));
 //    pTopLevelSizer->Add(profileOpsSizer, wxSizerFlags().Align(wxALIGN_CENTER).Border(wxALL,2));
@@ -1195,9 +1193,9 @@ void GearDialog::OnButtonProfileManage(wxCommandEvent& event)
 
 void GearDialog::OnButtonWizard(wxCommandEvent& event)
 {
-    ProfileWizard wiz(this);
+    ProfileWizard wiz(this, event.GetId() == 0);            // Event id of 0 comes from "first light" launch; show first light UI panel only then
 
-    if (wiz.ShowModal())
+    if (wiz.ShowModal() == wxOK)
     {
         // a new profile was created and set as the current profile
 

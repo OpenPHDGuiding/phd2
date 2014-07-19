@@ -50,7 +50,6 @@ class GearDialog : public wxDialog
     wxChoice *m_profiles;
     OptionsButton *m_btnProfileManage;
     wxMenu *m_menuProfileManage;
-    wxButton *m_pWizardButton;
 
     wxChoice *m_pCameras;
     wxButton *m_pSetupCameraButton;

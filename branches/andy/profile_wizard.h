@@ -40,6 +40,7 @@ class ProfileWizard : public wxDialog
 public:
     enum DialogState
     {
+        STATE_GREETINGS,
         STATE_CAMERA,
         STATE_MOUNT,
         STATE_AUXMOUNT,
@@ -54,7 +55,6 @@ public:
         ID_PIXELSIZE,
         ID_FOCALLENGTH,
         ID_PREV,
-        ID_HELP,
         ID_NEXT
     };
 
@@ -65,10 +65,10 @@ private:
     wxStaticText *m_pGearLabel;
     wxChoice *m_pGearChoice;
     wxSpinCtrlDouble *m_pPixelSize;
-    wxSpinCtrl *m_pFocalLength;
+    wxSpinCtrlDouble *m_pFocalLength;
     wxButton *m_pPrevBtn;
     wxButton *m_pNextBtn;
-    wxButton *m_pHelpBtn;
+    wxStaticBoxSizer *m_pHelpGroup;
     wxStaticText *m_pHelpText;
     wxFlexGridSizer *m_pGearGrid;
     wxFlexGridSizer *m_pUserProperties;
@@ -89,10 +89,9 @@ private:
 
     void OnNext(wxCommandEvent& evt);
     void OnPrev(wxCommandEvent& evt);
-    void OnHelp(wxCommandEvent& evt);
     void OnGearChoice(wxCommandEvent& evt);
     void OnPixelSizeChange(wxSpinDoubleEvent& evt);
-    void OnFocalLengthChange(wxSpinEvent& evt);
+    void OnFocalLengthChange(wxSpinDoubleEvent& evt);
     void ShowStatus(const wxString& msg, bool appending);
     void UpdateState(const int change);
     bool SemanticCheck(DialogState state, int change);
@@ -100,12 +99,13 @@ private:
     void WrapUp();
 
     DialogState m_State;
+    const wxString m_TitlePrefix = _("New Profile Wizard - ");
 
 public:
 
     bool m_launchDarks;
 
-    ProfileWizard(wxWindow *parent);
+    ProfileWizard(wxWindow *parent, bool firstLight);
     ~ProfileWizard(void);
 
     wxDECLARE_EVENT_TABLE();

@@ -38,15 +38,16 @@
 
 wxBEGIN_EVENT_TABLE(ProfileWizard, wxDialog)
 EVT_BUTTON(ID_NEXT, ProfileWizard::OnNext)
-EVT_BUTTON(ID_HELP, ProfileWizard::OnHelp)
 EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
 EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
 EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
-EVT_SPINCTRL(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
+EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
 wxEND_EVENT_TABLE()
 
 static const int DialogWidth = 425;
 static const int TextWrapPoint = 400;
+static const int TallHelpHeight = 125;
+static const int NormalHelpHeight = 85;
 
 // Utility function to add the <label, input> pairs to a flexgrid
 static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)
@@ -56,9 +57,9 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
     pTable->Add(pControl, 1, wxALL, 5);
 }
 
-ProfileWizard::ProfileWizard(wxWindow *parent) :
+ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
-    m_launchDarks(false)
+    m_launchDarks(true)
 {
     // Create overall vertical sizer
     m_pvSizer = new wxBoxSizer(wxVERTICAL);
@@ -72,10 +73,10 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
     m_pvSizer->Add(m_pInstructions, wxSizerFlags().Border(wxALL, 10));
 
     // Verbose help block
-    wxStaticBoxSizer *pHelpGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("More Info"));
-    m_pHelpText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, 85));
-    pHelpGroup->Add(m_pHelpText, wxSizerFlags().Border(wxLEFT, 10).Border(wxBOTTOM, 10));
-    m_pvSizer->Add(pHelpGroup, wxSizerFlags().Border(wxALL, 5));
+    m_pHelpGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("More Info"));
+    m_pHelpText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, TallHelpHeight));
+    m_pHelpGroup->Add(m_pHelpText, wxSizerFlags().Border(wxLEFT, 10).Border(wxBOTTOM, 10));
+    m_pvSizer->Add(m_pHelpGroup, wxSizerFlags().Border(wxALL, 5));
 
     // Gear label and combo box
     m_pGearGrid = new wxFlexGridSizer(1, 2, 5, 15);
@@ -92,11 +93,16 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
                                           wxSize(-1, -1), wxSP_ARROW_KEYS, 2.0, 15.0, 5.0, 0.1);
     m_pPixelSize->SetDigits(1);
     m_PixelSize = m_pPixelSize->GetValue();
+    m_pPixelSize->SetToolTip(_("Get this value from your camera documentation or from an online source.  You can use the up/down control "
+        " or type in a value directly."));
     AddTableEntryPair(this, m_pUserProperties, _("Guide camera pixel size (microns)"), m_pPixelSize);
-    m_pFocalLength = new wxSpinCtrl(this, ID_FOCALLENGTH, _T("foo2"), wxDefaultPosition,
-        wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300);
+    m_pFocalLength = new wxSpinCtrlDouble(this, ID_FOCALLENGTH, _T("foo2"), wxDefaultPosition,
+        wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300, 50);
     m_pFocalLength->SetValue(300);
-    m_FocalLength = m_pFocalLength->GetValue();
+    m_pFocalLength->SetDigits(0);
+    m_pFocalLength->SetToolTip("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
+        " an adaptive optics device.  You can use the up/down control or type in a value directly.");
+    m_FocalLength = (int) m_pFocalLength->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
 
@@ -104,6 +110,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
     m_pWrapUp = new wxFlexGridSizer(2, 2, 5, 15);
     m_pProfileName = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(250,-1));
     m_pLaunchDarks = new wxCheckBox(this, wxID_ANY, _("Build dark library"));
+    m_pLaunchDarks->SetValue(m_launchDarks);
+    m_pLaunchDarks->SetToolTip(_("Check this to automatically start the process of building a dark library for this profile."));
     AddTableEntryPair(this, m_pWrapUp, _("Profile Name"), m_pProfileName);
     m_pWrapUp->Add(m_pLaunchDarks, wxSizerFlags().Border(wxTOP, 5));
     m_pvSizer->Add(m_pWrapUp, wxSizerFlags().Border(wxALL, 10).Expand().Center());
@@ -113,19 +121,11 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
     m_pPrevBtn = new wxButton(this, ID_PREV, _("<--- Previous"));
     m_pPrevBtn->SetToolTip(_("Back up to the previous screen"));
 
-    m_pHelpBtn = new wxButton(this, ID_HELP, _("Hide Help"));
-    m_ShowingHelp = true;
-    m_pHelpBtn->SetToolTip("Show more information about this screen");
-    m_pHelpBtn->Show(false);                    // Temporary until we settle on the final UI
-
     m_pNextBtn = new wxButton(this, ID_NEXT, _("Next--->"));
     m_pNextBtn->SetToolTip("Move forward to next screen");
 
     pButtonSizer->Add(
         m_pPrevBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
-    pButtonSizer->Add(
-        m_pHelpBtn,
         wxSizerFlags(0).Align(0).Border(wxALL, 10));
     pButtonSizer->Add(
         m_pNextBtn,
@@ -142,7 +142,10 @@ ProfileWizard::ProfileWizard(wxWindow *parent) :
     // Special cases - neither AuxMount nor AO requires an explicit user choice
     m_SelectedAuxMount = _("None");
     m_SelectedAO = +("None");
-    m_State = STATE_CAMERA;
+    if (firstLight)
+        m_State = STATE_GREETINGS;
+    else
+        m_State = STATE_CAMERA;
     UpdateState(0);
 }
 
@@ -158,6 +161,13 @@ void ProfileWizard::ShowHelp(DialogState state)
 
     switch (m_State)
     {
+    case STATE_GREETINGS:
+        hText = _("This short sequence of steps will help you identify the equipment you want to use for guiding and will associate it with a profile name of your choice. "
+            "This profile will then be available any time you run PHD2.  At a minimum, you will need to choose both the guide camera and the mount interface that PHD2 will use for guiding.  "
+            "You will also enter some information about the optical characteristics of your setup. "
+            " PHD2 will use this to create a good 'starter set' of guiding and calibration "
+            "parameters. If you are a new user, please review the ‘impatient instructions’ under the ‘help’ menu after the wizard dialog has finished.");
+        break;
     case STATE_CAMERA:
         hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
             "it is either not supported by PHD2 or its camera driver is not installed. You must also specify the pixel size of the camera and "
@@ -178,7 +188,7 @@ void ProfileWizard::ShowHelp(DialogState state)
             "while the mount interface you chose earlier will be used for larger ('bump') corrections. Calibration of both interfaces will be handled automatically.");
         break;
     case STATE_WRAPUP:
-        hText = _("Your profile is complete and ready to save.  Give it a name and, optionally, build a dark library/bad-pixel map for it.  This is strongly "
+        hText = _("Your profile is complete and ready to save.  Give it a name and, optionally, build a dark-frame library for it.  This is strongly "
             "recommended for best results in both calibration and guiding. You can always change the settings in this new profile by clicking on the PHD2 camera "
             "icon, selecting the profile name you just entered, and making your changes there.");
     case STATE_DONE:
@@ -206,6 +216,8 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
     {
         switch (state)
         {
+        case STATE_GREETINGS:
+            break;
         case STATE_CAMERA:
             bOk = (m_SelectedCamera.length() > 0 && m_PixelSize > 0 && m_FocalLength > 0 && m_SelectedCamera != _("None"));
             if (!bOk)
@@ -253,13 +265,26 @@ void ProfileWizard::UpdateState(const int change)
         m_State = (DialogState) RangeCheck(((int)m_State + change));
         switch (m_State)
         {
-        case STATE_CAMERA:
+        case STATE_GREETINGS:
+            this->SetTitle(m_TitlePrefix + _("Introduction"));
             m_pPrevBtn->Enable(false);
+            m_pGearLabel->Show(false);
+            m_pGearChoice->Show(false);
+            m_pUserProperties->Show(false);
+            m_pWrapUp->Show(false);
+            m_pInstructions->SetLabel(_("Welcome to the PHD2 'first light' wizard"));
+            SetSizerAndFit(m_pvSizer);
+            break;
+        case STATE_CAMERA:
+            this->SetTitle(m_TitlePrefix + _("Choose a Guide Camera"));
+            m_pPrevBtn->Enable(true);
             m_pGearLabel->SetLabel(_("Guide Camera:"));
             m_pGearChoice->Clear();
             m_pGearChoice->Append(GuideCamera::List());
             if (m_SelectedCamera.length() > 0)
                 m_pGearChoice->SetStringSelection(m_SelectedCamera);
+            m_pGearLabel->Show(true);
+            m_pGearChoice->Show(true);
             m_pUserProperties->Show(true);
             m_pWrapUp->Show(false);
             SetSizerAndFit(m_pvSizer);
@@ -267,6 +292,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pInstructions->Wrap(TextWrapPoint);
             break;
         case STATE_MOUNT:
+            this->SetTitle(m_TitlePrefix + _("Choose a Mount Connection"));
             m_pPrevBtn->Enable(true);
             m_pGearLabel->SetLabel(_("Mount:"));
             m_pGearChoice->Clear();
@@ -274,7 +300,6 @@ void ProfileWizard::UpdateState(const int change)
             if (m_SelectedMount.length() > 0)
                 m_pGearChoice->SetStringSelection(m_SelectedMount);
             m_pUserProperties->Show(false);
-            SetSizerAndFit(m_pvSizer);
             m_pInstructions->SetLabel(_("Select your mount connection - this will determine how guide signals are transmitted"));
             break;
         case STATE_AUXMOUNT:
@@ -284,6 +309,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             else
             {
+                this->SetTitle(m_TitlePrefix + _("Choose an Auxillary Mount Connection (optional)"));
                 m_pGearLabel->SetLabel(_("Aux Mount:"));
                 m_pGearChoice->Clear();
                 m_pGearChoice->Append(Scope::AuxMountList());
@@ -292,6 +318,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             break;
         case STATE_AO:
+            this->SetTitle(m_TitlePrefix + _("Choose an Adaptive Optics Device (optional)"));
             m_pGearLabel->SetLabel(_("AO:"));
             m_pGearChoice->Clear();
             m_pGearChoice->Append(StepGuider::List());
@@ -306,6 +333,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             break;
         case STATE_WRAPUP:
+            this->SetTitle(m_TitlePrefix + _("Finish Creating Your New Profile"));
             m_pGearGrid->Show(false);
             m_pWrapUp->Show(true);
             m_pNextBtn->SetLabel(_("Finish"));
@@ -401,9 +429,10 @@ void ProfileWizard::OnPixelSizeChange(wxSpinDoubleEvent& evt)
     m_PixelSize = m_pPixelSize->GetValue();
 }
 
-void ProfileWizard::OnFocalLengthChange(wxSpinEvent& evt)
+void ProfileWizard::OnFocalLengthChange(wxSpinDoubleEvent& evt)
 {
-    m_FocalLength = m_pFocalLength->GetValue();
+    m_FocalLength = (int) m_pFocalLength->GetValue();
+    m_pFocalLength->SetValue(m_FocalLength);                        // Rounding
 }
 
 void ProfileWizard::OnNext(wxCommandEvent& evt)
@@ -411,22 +440,6 @@ void ProfileWizard::OnNext(wxCommandEvent& evt)
     UpdateState(1);
 }
 
-void ProfileWizard::OnHelp(wxCommandEvent& evt)
-{
-    m_ShowingHelp = !m_ShowingHelp;
-    if (m_ShowingHelp)
-    {
-        m_pHelpBtn->SetLabel(_("Hide Help"));
-        ShowHelp(m_State);
-        m_pHelpText->Show(true);
-    }
-    else
-    {
-        m_pHelpBtn->SetLabel(_("Show Help"));
-        m_pHelpText->Show(false);
-    }
-    SetSizerAndFit(m_pvSizer);
-}
 void ProfileWizard::OnPrev(wxCommandEvent& evt)
 {
     UpdateState(-1);
