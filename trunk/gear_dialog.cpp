@@ -250,9 +250,9 @@ void GearDialog::Initialize(void)
 
 #if defined(GUIDE_ASCOM) || defined(GUIDE_INDI)
 #ifdef GUIDE_ASCOM
-    wxString driverName = _("ASCOM");
+    wxString driverName = _T("ASCOM");
 # else
-    wxString driverName = _("INDI");
+    wxString driverName = _T("INDI");
 #endif
     m_pAuxScopes->SetToolTip(wxString::Format(_("If you are using a guide port (On-camera or GPXXX) interface  for guiding, you can also use an 'aux' connection to your %s-compatible mount. This will "
         "be used to make automatic calibration adjustments based on declination and side-of-pier.  If you have already selected an %s driver for your 'mount', the 'aux' mount "
