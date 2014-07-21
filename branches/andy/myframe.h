@@ -322,6 +322,7 @@ public:
     void UpdateButtonsStatus(void);
     void UpdateCalibrationStatus(void);
 
+    static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm);
     double GetCameraPixelScale(void);
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
@@ -513,6 +514,11 @@ inline static int StringWidth(const wxWindow *window, const wxString& s)
 inline static wxSize StringSize(const wxWindow *window, const wxString& s, int extra = 0)
 {
     return wxSize(StringWidth(window, s) + extra, -1);
+}
+
+inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm)
+{
+    return 206.265 * pixelSizeMicrons / (double) focalLengthMm;
 }
 
 #endif /* MYFRAME_H_INCLUDED */

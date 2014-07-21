@@ -179,7 +179,7 @@ void CalstepDialog::GetCalibrationStepSize(int FocalLength, double PixelSize, do
     double Declination, double *pImageScale, int *pStepSize)
 {
     enum { CALIBRATION_PIXELS = 25 };
-    double ImageScale = 206.265 * PixelSize / (double) FocalLength; // arc-sec per pixel
+    double ImageScale = MyFrame::GetPixelScale(PixelSize, FocalLength); // arc-sec per pixel
     double totalDistance = (double) CALIBRATION_PIXELS * ImageScale; // arc-seconds
     double totalDuration = totalDistance / (15.0 * GuideSpeed);      // 15 arc-sec/sec approx sidereal rate
     double Pulse = totalDuration / DesiredSteps * 1000.0;            // milliseconds at DEC=0

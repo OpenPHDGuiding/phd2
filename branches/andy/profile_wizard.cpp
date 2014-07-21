@@ -42,6 +42,7 @@ EVT_BUTTON(ID_PREV, ProfileWizard::OnPrev)
 EVT_CHOICE(ID_COMBO, ProfileWizard::OnGearChoice)
 EVT_SPINCTRLDOUBLE(ID_PIXELSIZE, ProfileWizard::OnPixelSizeChange)
 EVT_SPINCTRLDOUBLE(ID_FOCALLENGTH, ProfileWizard::OnFocalLengthChange)
+EVT_BUTTON(ID_DETECT_PIXELSIZE, ProfileWizard::OnDetectPixelSize)
 wxEND_EVENT_TABLE()
 
 static const int DialogWidth = 425;
@@ -50,11 +51,18 @@ static const int TallHelpHeight = 125;
 static const int NormalHelpHeight = 85;
 
 // Utility function to add the <label, input> pairs to a flexgrid
-static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl)
+static void AddTableEntryPair(wxWindow *parent, wxSizer *pTable, const wxString& label, wxWindow *pControl)
 {
-    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "), wxPoint(-1, -1), wxSize(-1, -1));
+    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "));
     pTable->Add(pLabel, 1, wxALL, 5);
     pTable->Add(pControl, 1, wxALL, 5);
+}
+
+static void AddTableEntryPair(wxWindow *parent, wxSizer *pTable, const wxString& label, wxSizer *group)
+{
+    wxStaticText *pLabel = new wxStaticText(parent, wxID_ANY, label + _(": "));
+    pTable->Add(pLabel, 1, wxALL, 5);
+    pTable->Add(group, 1, wxALL, 5);
 }
 
 ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
@@ -64,13 +72,35 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     // Create overall vertical sizer
     m_pvSizer = new wxBoxSizer(wxVERTICAL);
 
+#   include "icons/phd.xpm"
+    m_bitmaps[STATE_GREETINGS] = new wxBitmap(prog_icon);
+    m_bitmaps[STATE_WRAPUP] = new wxBitmap(prog_icon);
+#   include "icons/cam2.xpm"
+    m_bitmaps[STATE_CAMERA] = new wxBitmap(cam_icon);
+    m_bitmaps[STATE_CAMERA]->SetWidth(55);
+    m_bitmaps[STATE_CAMERA]->SetHeight(55);
+#   include "icons/scope1.xpm"
+    m_bitmaps[STATE_MOUNT] = new wxBitmap(scope_icon);
+    m_bitmaps[STATE_MOUNT]->SetWidth(55);
+    m_bitmaps[STATE_MOUNT]->SetHeight(55);
+    m_bitmaps[STATE_AUXMOUNT] = new wxBitmap(scope_icon);
+    m_bitmaps[STATE_AUXMOUNT]->SetWidth(55);
+    m_bitmaps[STATE_AUXMOUNT]->SetHeight(55);
+#   include "icons/ao.xpm"
+    m_bitmaps[STATE_AO] = new wxBitmap(ao_xpm);
+
     // Build the superset of UI controls, minus state-specific labels and data
     // User instructions at top
+    wxBoxSizer *instrSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_bitmap = new wxStaticBitmap(this, wxID_ANY, *m_bitmaps[STATE_GREETINGS], wxDefaultPosition, wxSize(55, 55));
+    instrSizer->Add(m_bitmap, 0, wxALIGN_CENTER_VERTICAL | wxFIXED_MINSIZE, 5);
+
     m_pInstructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, 40), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
     wxFont font = m_pInstructions->GetFont();
     font.SetWeight(wxFONTWEIGHT_BOLD);
     m_pInstructions->SetFont(font);
-    m_pvSizer->Add(m_pInstructions, wxSizerFlags().Border(wxALL, 10));
+    instrSizer->Add(m_pInstructions, wxSizerFlags().Border(wxALL, 10));
+    m_pvSizer->Add(instrSizer);
 
     // Verbose help block
     m_pHelpGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("More Info"));
@@ -89,19 +119,25 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
 
     // Control for pixel-size and focal length
     m_pUserProperties = new wxFlexGridSizer(2, 2, 5, 15);
-    m_pPixelSize = new wxSpinCtrlDouble(this, ID_PIXELSIZE, _T("foo2"), wxPoint(-1, -1),
-                                          wxSize(-1, -1), wxSP_ARROW_KEYS, 2.0, 15.0, 5.0, 0.1);
-    m_pPixelSize->SetDigits(1);
+    m_pPixelSize = new wxSpinCtrlDouble(this, ID_PIXELSIZE, wxEmptyString, wxDefaultPosition,
+                                          wxDefaultSize, wxSP_ARROW_KEYS, 1.0, 20.0, 5.0, 0.1);
+    m_pPixelSize->SetDigits(2);
     m_PixelSize = m_pPixelSize->GetValue();
-    m_pPixelSize->SetToolTip(_("Get this value from your camera documentation or from an online source.  You can use the up/down control "
-        " or type in a value directly."));
-    AddTableEntryPair(this, m_pUserProperties, _("Guide camera pixel size (microns)"), m_pPixelSize);
+    m_pPixelSize->SetToolTip(_("Click Detect to read the pixel size from the camera. Otherwise, you can get this value from your camera documentation or from an online source.  You can use the up/down control "
+        "or type in a value directly."));
+    m_detectPixelSizeBtn = new wxButton(this, ID_DETECT_PIXELSIZE, _("Detect"));
+    m_detectPixelSizeBtn->Enable(false);
+    m_detectPixelSizeBtn->SetToolTip(_("Connect to camera and detect pixel size"));
+    wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+    sizer->Add(m_pPixelSize, 1);
+    sizer->Add(m_detectPixelSizeBtn, 0, wxLEFT, 10);
+    AddTableEntryPair(this, m_pUserProperties, _("Guide camera pixel size (microns)"), sizer);
     m_pFocalLength = new wxSpinCtrlDouble(this, ID_FOCALLENGTH, _T("foo2"), wxDefaultPosition,
         wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300, 50);
     m_pFocalLength->SetValue(300);
     m_pFocalLength->SetDigits(0);
     m_pFocalLength->SetToolTip("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
-        " an adaptive optics device.  You can use the up/down control or type in a value directly.");
+        "an adaptive optics device.  You can use the up/down control or type in a value directly.");
     m_FocalLength = (int) m_pFocalLength->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
@@ -113,24 +149,25 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_pLaunchDarks->SetValue(m_launchDarks);
     m_pLaunchDarks->SetToolTip(_("Check this to automatically start the process of building a dark library for this profile."));
     AddTableEntryPair(this, m_pWrapUp, _("Profile Name"), m_pProfileName);
-    m_pWrapUp->Add(m_pLaunchDarks, wxSizerFlags().Border(wxTOP, 5));
+    m_pWrapUp->Add(m_pLaunchDarks, wxSizerFlags().Border(wxTOP, 5).Border(wxLEFT, 10));
     m_pvSizer->Add(m_pWrapUp, wxSizerFlags().Border(wxALL, 10).Expand().Center());
 
     // Row of buttons for prev, help, next
-    wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
-    m_pPrevBtn = new wxButton(this, ID_PREV, _("<--- Previous"));
+    wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_pPrevBtn = new wxButton(this, ID_PREV, _("< Back"));
     m_pPrevBtn->SetToolTip(_("Back up to the previous screen"));
 
-    m_pNextBtn = new wxButton(this, ID_NEXT, _("Next--->"));
-    m_pNextBtn->SetToolTip("Move forward to next screen");
+    m_pNextBtn = new wxButton(this, ID_NEXT, _("Next >"));
+    m_pNextBtn->SetToolTip(_("Move forward to next screen"));
 
+    pButtonSizer->AddStretchSpacer();
     pButtonSizer->Add(
         m_pPrevBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
+        wxSizerFlags(0).Align(0).Border(wxALL, 5));
     pButtonSizer->Add(
         m_pNextBtn,
-        wxSizerFlags(0).Align(0).Border(wxALL, 10));
-    m_pvSizer->Add(pButtonSizer, wxSizerFlags().Center().Border(wxALL, 10));
+        wxSizerFlags(0).Align(0).Border(wxALL, 5));
+    m_pvSizer->Add(pButtonSizer, wxSizerFlags().Expand().Border(wxALL, 10));
 
     // Status bar for error messages
     m_pStatusBar = new wxStatusBar(this, -1);
@@ -141,7 +178,7 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     SetSizerAndFit(m_pvSizer);
     // Special cases - neither AuxMount nor AO requires an explicit user choice
     m_SelectedAuxMount = _("None");
-    m_SelectedAO = +("None");
+    m_SelectedAO = _("None");
     if (firstLight)
         m_State = STATE_GREETINGS;
     else
@@ -151,7 +188,12 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
 
 ProfileWizard::~ProfileWizard(void)
 {
-    // wxWidget objects on heap are deleted by framework
+    delete m_bitmaps[STATE_GREETINGS];
+    delete m_bitmaps[STATE_CAMERA];
+    delete m_bitmaps[STATE_MOUNT];
+    delete m_bitmaps[STATE_AUXMOUNT];
+    delete m_bitmaps[STATE_AO];
+    delete m_bitmaps[STATE_WRAPUP];
 }
 
 // Build verbose help strings based on dialog state
@@ -165,8 +207,8 @@ void ProfileWizard::ShowHelp(DialogState state)
         hText = _("This short sequence of steps will help you identify the equipment you want to use for guiding and will associate it with a profile name of your choice. "
             "This profile will then be available any time you run PHD2.  At a minimum, you will need to choose both the guide camera and the mount interface that PHD2 will use for guiding.  "
             "You will also enter some information about the optical characteristics of your setup. "
-            " PHD2 will use this to create a good 'starter set' of guiding and calibration "
-            "parameters. If you are a new user, please review the ‘impatient instructions’ under the ‘help’ menu after the wizard dialog has finished.");
+            "PHD2 will use this to create a good 'starter set' of guiding and calibration "
+            "parameters. If you are a new user, please review the ‘Impatient Instructions’ under the ‘Help’ menu after the wizard dialog has finished.");
         break;
     case STATE_CAMERA:
         hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
@@ -221,12 +263,12 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
         case STATE_CAMERA:
             bOk = (m_SelectedCamera.length() > 0 && m_PixelSize > 0 && m_FocalLength > 0 && m_SelectedCamera != _("None"));
             if (!bOk)
-                ShowStatus(_("Please specify camera type, guider focal length, and guide camera pixel size"), false);
+                ShowStatus(_("Please specify camera type, guider focal length, and guide camera pixel size"));
             break;
         case STATE_MOUNT:
             bOk = (m_SelectedMount.Length() > 0 && m_SelectedMount != _("None"));
             if (!bOk)
-                ShowStatus(_("Please select a mount type to handle guider commands"), false);
+                ShowStatus(_("Please select a mount type to handle guider commands"));
             break;
         case STATE_AUXMOUNT:
             break;
@@ -236,11 +278,11 @@ bool ProfileWizard::SemanticCheck(DialogState state, int change)
             m_ProfileName = m_pProfileName->GetValue();
             bOk = m_ProfileName.length() > 0;
             if (!bOk)
-                ShowStatus(_("Please specify a name for the profile."), false);
+                ShowStatus(_("Please specify a name for the profile."));
             if (pConfig->GetProfileId(m_ProfileName) > 0)
             {
                 bOk = false;
-                ShowStatus(_("There is already a profile with that name. Please choose a different name."), false);
+                ShowStatus(_("There is already a profile with that name. Please choose a different name."));
             }
             break;
         case STATE_DONE:
@@ -259,10 +301,18 @@ static int RangeCheck(int thisval)
 // State machine manager.  Layout and content of dialog panel will be changed here based on state.
 void ProfileWizard::UpdateState(const int change)
 {
-    ShowStatus("", false);
+    ShowStatus(wxEmptyString);
     if (SemanticCheck(m_State, change))
     {
         m_State = (DialogState) RangeCheck(((int)m_State + change));
+
+        if (m_State >= 0 && m_State < NUM_PAGES)
+        {
+            const wxBitmap& bmp = *m_bitmaps[m_State];
+            m_bitmap->SetSize(bmp.GetSize());
+            m_bitmap->SetBitmap(bmp);
+        }
+
         switch (m_State)
         {
         case STATE_GREETINGS:
@@ -328,7 +378,8 @@ void ProfileWizard::UpdateState(const int change)
             {
                 // Assert UI state for gear selection
                 m_pGearGrid->Show(true);
-                m_pNextBtn->SetLabel("Next--->");
+                m_pNextBtn->SetLabel(_("Next >"));
+                m_pNextBtn->SetToolTip(_("Move forward to next screen"));
                 m_pWrapUp->Show(false);
             }
             break;
@@ -337,6 +388,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pGearGrid->Show(false);
             m_pWrapUp->Show(true);
             m_pNextBtn->SetLabel(_("Finish"));
+            m_pNextBtn->SetToolTip(_("Finish creating the equipment profile"));
             m_pInstructions->SetLabel(_("Enter a name for your profile and optionally launch the process to build a dark library"));
             SetSizerAndFit(m_pvSizer);
             break;
@@ -361,31 +413,16 @@ static int GetCalibrationStepSize(int focalLength, double pixelSize)
 }
 
 // Set up some reasonable starting guiding parameters
-void ProfileWizard::SetGuidingParams(double imageScale)
+static void SetGuideAlgoParams(double pixelSize, int focalLength)
 {
-    double minMove;
-    const double defAggressiveness = 0.70;
-    Scope *pScope;
-    wxString mountType;
+    double imageScale = MyFrame::GetPixelScale(pixelSize, focalLength);
 
-    if (m_SelectedAO == _("None"))
-    {
-        // Following based on empirical data using a range of image scales
-        minMove = wxMax(0.1515 + 0.1548 / imageScale, 0.15);        // Don't use a ridiculously small value
-        pScope = Scope::Factory(m_SelectedMount);
-        if (pScope)
-        {
-            mountType = pScope->GetMountClassName();
-            delete pScope;
-        }
-        else
-            mountType = "scope";                // Shouldn't ever happen
-        // Min moves for hysteresis guiding in RA and resist switch in Dec
-        pConfig->Profile.SetDouble("/" + mountType + "/GuideAlgorithm/X/Hysteresis/minMove", minMove);
-        pConfig->Profile.SetDouble("/" + mountType + "/GuideAlgorithm/Y/ResistSwitch/minMove", minMove);
-        // Choose a better default for RA aggressiveness
-        pConfig->Profile.SetDouble("/" + mountType + "/GuideAlgorithm/X/Hysteresis/aggression", defAggressiveness);
-    }
+    // Following based on empirical data using a range of image scales
+    double minMove = wxMax(0.1515 + 0.1548 / imageScale, 0.15);        // Don't use a ridiculously small value
+
+    // Min moves for hysteresis guiding in RA and resist switch in Dec
+    pConfig->Profile.SetDouble("/scope/GuideAlgorithm/X/Hysteresis/minMove", minMove);
+    pConfig->Profile.SetDouble("/scope/GuideAlgorithm/Y/ResistSwitch/minMove", minMove);
 }
 
 // Wrapup logic - build the new profile, maybe launch the darks dialog
@@ -400,7 +437,7 @@ void ProfileWizard::WrapUp()
     // create the new profile
     if (pConfig->SetCurrentProfile(m_ProfileName))
     {
-        ShowStatus(wxString::Format(_("Could not create profile %s"), m_ProfileName), false);
+        ShowStatus(wxString::Format(_("Could not create profile %s"), m_ProfileName));
         return;
     }
 
@@ -413,8 +450,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
     // Construct a good baseline set of guiding parameters based on image scale
-    double imageScale = 206.265 * m_PixelSize / (double)m_FocalLength; // arc-sec per pixel
-    SetGuidingParams(imageScale);
+    SetGuideAlgoParams(m_PixelSize, m_FocalLength);
 
     EndModal(wxOK);
 }
@@ -428,6 +464,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
     {
     case STATE_CAMERA:
         m_SelectedCamera = m_pGearChoice->GetStringSelection();
+        m_detectPixelSizeBtn->Enable(!m_SelectedCamera.IsEmpty() && m_SelectedCamera != _("None"));
         break;
     case STATE_MOUNT:
         m_SelectedMount = m_pGearChoice->GetStringSelection();
@@ -452,6 +489,37 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
     case STATE_WRAPUP:
     case STATE_DONE:
         break;
+    }
+}
+
+void ProfileWizard::OnDetectPixelSize(wxCommandEvent& evt)
+{
+    GuideCamera *camera = GuideCamera::Factory(m_SelectedCamera);
+    try
+    {
+        wxBusyCursor busy;
+        if (!camera)
+            throw _("Could not initialize camera");
+        ShowStatus(_("Connecting to camera..."));
+        bool err = camera->Connect();
+        ShowStatus(wxEmptyString);
+        if (err)
+            throw _("Could not connect to camera");
+        m_pPixelSize->SetValue(camera->PixelSize);
+        wxSpinDoubleEvent dummy;
+        OnPixelSizeChange(dummy);
+    }
+    catch (const wxString& msg)
+    {
+        wxMessageBox(msg, _("Detect Pixel Size"));
+    }
+
+    if (camera)
+    {
+        if (camera->Connected)
+            if (camera->Disconnect())
+                Debug.AddLine("Camera disconnect failed!");
+        delete camera;
     }
 }
 

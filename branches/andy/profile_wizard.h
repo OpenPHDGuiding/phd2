@@ -40,19 +40,20 @@ class ProfileWizard : public wxDialog
 public:
     enum DialogState
     {
-        STATE_GREETINGS,
+        STATE_GREETINGS = 0,
         STATE_CAMERA,
         STATE_MOUNT,
         STATE_AUXMOUNT,
         STATE_AO,
         STATE_WRAPUP,
-        STATE_DONE
+        STATE_DONE, NUM_PAGES = STATE_DONE
     };
 
     enum CtrlIds
     {
         ID_COMBO = 10001,
         ID_PIXELSIZE,
+        ID_DETECT_PIXELSIZE,
         ID_FOCALLENGTH,
         ID_PREV,
         ID_NEXT
@@ -61,10 +62,12 @@ public:
 private:
     // wx UI controls
     wxBoxSizer *m_pvSizer;
+    wxStaticBitmap *m_bitmap;
     wxStaticText *m_pInstructions;
     wxStaticText *m_pGearLabel;
     wxChoice *m_pGearChoice;
     wxSpinCtrlDouble *m_pPixelSize;
+    wxButton *m_detectPixelSizeBtn;
     wxSpinCtrlDouble *m_pFocalLength;
     wxButton *m_pPrevBtn;
     wxButton *m_pNextBtn;
@@ -86,17 +89,18 @@ private:
     double m_PixelSize;
     wxString m_ProfileName;
     bool m_ShowingHelp;
+    wxBitmap *m_bitmaps[NUM_PAGES];
 
     void OnNext(wxCommandEvent& evt);
     void OnPrev(wxCommandEvent& evt);
     void OnGearChoice(wxCommandEvent& evt);
+    void OnDetectPixelSize(wxCommandEvent& evt);
     void OnPixelSizeChange(wxSpinDoubleEvent& evt);
     void OnFocalLengthChange(wxSpinDoubleEvent& evt);
-    void ShowStatus(const wxString& msg, bool appending);
+    void ShowStatus(const wxString& msg, bool appending = false);
     void UpdateState(const int change);
     bool SemanticCheck(DialogState state, int change);
     void ShowHelp(DialogState state);
-    void SetGuidingParams(double imageScale);
     void WrapUp();
 
     DialogState m_State;

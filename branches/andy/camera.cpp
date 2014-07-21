@@ -40,7 +40,7 @@
 
 static const int DefaultGuideCameraGain = 95;
 static const bool DefaultUseSubframes = false;
-static const double DefaultPixelSize = 0;
+static const double DefaultPixelSize = 0.0;
 static const int DefaultReadDelay = 150;
 static const bool DefaultLoadDarks = true;
 static const bool DefaultLoadDMap = false;
@@ -191,9 +191,9 @@ GuideCamera::GuideCamera(void)
     CurrentDefectMap = NULL;
 
     int cameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
-    SetCameraGain(cameraGain);
+    GuideCameraGain = cameraGain;
     double pixelSize = pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
-    SetCameraPixelSize(pixelSize);
+    PixelSize = pixelSize;
 }
 
 GuideCamera::~GuideCamera(void)
@@ -613,18 +613,18 @@ bool GuideCamera::SetCameraGain(int cameraGain)
     return bError;
 }
 
-float GuideCamera::GetCameraPixelSize(void)
+double GuideCamera::GetCameraPixelSize(void)
 {
     return PixelSize;
 }
 
-bool GuideCamera::SetCameraPixelSize(float pixel_size)
+bool GuideCamera::SetCameraPixelSize(double pixel_size)
 {
     bool bError = false;
 
     try
     {
-        if (pixel_size <= 0)
+        if (pixel_size <= 0.0)
         {
             throw ERROR_INFO("pixel_size <= 0");
         }
