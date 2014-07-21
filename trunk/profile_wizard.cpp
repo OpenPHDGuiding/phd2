@@ -47,7 +47,7 @@ wxEND_EVENT_TABLE()
 
 static const int DialogWidth = 425;
 static const int TextWrapPoint = 400;
-static const int TallHelpHeight = 125;
+static const int TallHelpHeight = 150;
 static const int NormalHelpHeight = 85;
 static wxString TitlePrefix;
 
