@@ -211,7 +211,7 @@ void ProfileWizard::ShowHelp(DialogState state)
             "This profile will then be available any time you run PHD2.  At a minimum, you will need to choose both the guide camera and the mount interface that PHD2 will use for guiding.  "
             "You will also enter some information about the optical characteristics of your setup. "
             "PHD2 will use this to create a good 'starter set' of guiding and calibration "
-            "parameters. If you are a new user, please review the ‘Impatient Instructions’ under the ‘Help’ menu after the wizard dialog has finished.");
+            "parameters. If you are a new user, please review the 'Impatient Instructions' under the 'Help' menu after the wizard dialog has finished.");
         break;
     case STATE_CAMERA:
         hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
@@ -489,6 +489,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
     case STATE_AO:
         m_SelectedAO = m_pGearChoice->GetStringSelection();
         break;
+    case STATE_GREETINGS:
     case STATE_WRAPUP:
     case STATE_DONE:
         break;
