@@ -41,12 +41,12 @@
 #define MAX_PIXELSIZE 25.0
 #define MIN_GUIDESPEED 0.10
 #define MAX_GUIDESPEED 2.0
-#define DEFAULT_GUIDESPEED 1.0
 #define MIN_STEPS 6.0
 #define MAX_STEPS 60.0
 #define MIN_DECLINATION -60.0
 #define MAX_DECLINATION 60.0
-#define DEFAULT_STEPS 12
+
+const double CalstepDialog::DEFAULT_GUIDESPEED = 0.5;  // 50% sidereal rate
 
 static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc)
 {
@@ -154,7 +154,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
 }
 
 // Utility function to add the <label, input> tuples to the grid including tool-tips
-void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip)
+void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl, const wxString& toolTip)
 {
     wxStaticText *pLabel = new wxStaticText(this, wxID_ANY, label + _(": "),wxPoint(-1,-1),wxSize(-1,-1));
     pTable->Add (pLabel, 1, wxALL, 5);
@@ -166,22 +166,28 @@ void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWi
 //  for a "travel" distance of MAX_CALIBRATION_DISTANCE in each direction, adjusted for declination.
 //  Result will be rounded up to the nearest 50 ms and is constrained to insure Dec calibration is at least
 //  MIN_STEPs
-static void CalcDefaultDuration (int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps,
-    double Declination, double& ImageScale, int& StepSize)
+//
+//  FocalLength = focal length in millimeters
+//  PixelSize = pixel size in microns
+//  GuideSpeed = guide rate as fraction of sidereal rate
+//  DesiredSteps = desired number of calibration steps
+//  Declination = declination in degrees
+//  pImageScale = address of computed image scale (arc-sec/pixel)
+//  pStepSize = address of computed calibration step size, milliseconds
+//
+void CalstepDialog::GetCalibrationStepSize(int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps,
+    double Declination, double *pImageScale, int *pStepSize)
 {
-    int totalDistance;            // In units of arc-secs
-    float totalDuration;
-    int iPulse;
-    int iMaxStep;
-
-    // Interim variables to ease debugging
-    ImageScale = 3438.0 * PixelSize/1000.0 * 60.0f / FocalLength;
-    totalDistance = 25.0 * ImageScale;
-    totalDuration = totalDistance / (15.0 * GuideSpeed);
-    iPulse = floor (totalDuration/DesiredSteps * 1000.0);            // milliseconds at DEC=0
-    iMaxStep = floor(totalDuration/MIN_STEPS * 1000.0);             // max step size to still get MIN steps
-    iPulse = wxMin(iMaxStep, iPulse / cos(M_PI/180 * Declination));     // UI forces abs(Dec) <= 60 degrees
-    StepSize = ((iPulse+49) / 50) * 50;                                // discourage "false precision" - round up to nearest 50 ms
+    enum { CALIBRATION_PIXELS = 25 };
+    double ImageScale = MyFrame::GetPixelScale(PixelSize, FocalLength); // arc-sec per pixel
+    double totalDistance = (double) CALIBRATION_PIXELS * ImageScale; // arc-seconds
+    double totalDuration = totalDistance / (15.0 * GuideSpeed);      // 15 arc-sec/sec approx sidereal rate
+    double Pulse = totalDuration / DesiredSteps * 1000.0;            // milliseconds at DEC=0
+    double MaxPulse = totalDuration / MIN_STEPS * 1000.0;            // max pulse size to still get MIN steps
+    Pulse = wxMin(MaxPulse, Pulse / cos(M_PI / 180.0 * Declination)); // UI forces abs(Dec) <= 60 degrees
+    if (pImageScale)
+        *pImageScale = ImageScale;
+    *pStepSize = (int) ceil(Pulse / 50.0) * 50;                      // round up to nearest 50 ms
 }
 
 void CalstepDialog::OnText(wxCommandEvent& evt)
@@ -222,7 +228,7 @@ void CalstepDialog::DoRecalc(void)
             m_status->SetLabel(wxEmptyString);
 
             // Spin controls enforce numeric ranges
-            CalcDefaultDuration (m_iFocalLength, m_fPixelSize, m_fGuideSpeed, m_iNumSteps, m_dDeclination, m_fImageScale, m_iStepSize);
+            GetCalibrationStepSize(m_iFocalLength, m_fPixelSize, m_fGuideSpeed, m_iNumSteps, m_dDeclination, &m_fImageScale, &m_iStepSize);
             m_bValidResult = true;
         }
 
@@ -239,7 +245,7 @@ void CalstepDialog::DoRecalc(void)
     }
 }
 // Public function for client to get the computed step-size along with possibly modified values for focal length and pixel size
-bool CalstepDialog::GetResults (int& focalLength, double& pixelSize, int& stepSize)
+bool CalstepDialog::GetResults(int *focalLength, double *pixelSize, int *stepSize)
 {
     if (m_bValidResult)
     {
@@ -248,12 +254,12 @@ bool CalstepDialog::GetResults (int& focalLength, double& pixelSize, int& stepSi
         pConfig->Profile.SetDouble("/CalStepCalc/CalDeclination", m_dDeclination);
         pConfig->Profile.SetInt("/CalStepCalc/NumSteps", m_iNumSteps);
 
-        focalLength = m_iFocalLength;
-        pixelSize = m_fPixelSize;
-        stepSize = m_iStepSize;
+        *focalLength = m_iFocalLength;
+        *pixelSize = m_fPixelSize;
+        *stepSize = m_iStepSize;
         long lval;
         if (m_pRslt->GetValue().ToLong(&lval) && lval > 0)
-            stepSize = (int) lval;
+            *stepSize = (int) lval;
         return true;
     }
     else

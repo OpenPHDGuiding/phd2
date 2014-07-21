@@ -37,6 +37,8 @@
 #include "camera.h"
 class Camera_ZWO : public GuideCamera
 {
+    bool m_capturing;
+
 public:
     Camera_ZWO();
     ~Camera_ZWO();

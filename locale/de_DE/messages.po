@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-19 13:53+0200\n"
+"POT-Creation-Date: 2014-07-19 23:45+0200\n"
 "PO-Revision-Date: 2014-03-16 15:28+0100\n"
 "Last-Translator: Carsten Przygoda <carsten@funnytakes.de>\n"
 "Language-Team: Carsten Przygoda <carsten@funnytakes.de>\n"
@@ -59,7 +59,7 @@ msgid "Guiding"
 msgstr "Nachführen"
 
 #: advanced_dialog.cpp:139 cam_firewire_IC.cpp:111 cam_simulator.cpp:1005
-#: gear_dialog.cpp:221 gear_dialog.cpp:223 gear_dialog.cpp:792 myframe.cpp:786
+#: gear_dialog.cpp:225 gear_dialog.cpp:227 gear_dialog.cpp:806 myframe.cpp:786
 msgid "Camera"
 msgstr "Kamera"
 
@@ -71,8 +71,8 @@ msgstr "Kamera-Einstellungen"
 msgid "No Camera Selected"
 msgstr "Keine Kamera ausgewählt"
 
-#: advanced_dialog.cpp:167 cam_simulator.cpp:1016 gear_dialog.cpp:234
-#: gear_dialog.cpp:236 testguide.cpp:149 testguide.cpp:193
+#: advanced_dialog.cpp:167 cam_simulator.cpp:1016 gear_dialog.cpp:238
+#: gear_dialog.cpp:240 testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "Montierung"
 
@@ -84,7 +84,7 @@ msgstr "Montierungs-Einstellungen"
 msgid "No Mount Selected"
 msgstr "Keine Montierung ausgewählt"
 
-#: advanced_dialog.cpp:199 gear_dialog.cpp:272 gear_dialog.cpp:274
+#: advanced_dialog.cpp:199 gear_dialog.cpp:276 gear_dialog.cpp:278
 #: myframe.cpp:788 stepguider.cpp:1077 testguide.cpp:161
 msgid "AO"
 msgstr "AO"
@@ -226,15 +226,16 @@ msgid "Calibration step, ms"
 msgstr "Kalibrationsschritt, ms"
 
 #: calstep_dialog.cpp:159 cam_simulator.cpp:912 camera.cpp:653
-#: configdialog.cpp:65 darks_dialog.cpp:53 Refine_DefMap.cpp:59
+#: configdialog.cpp:65 darks_dialog.cpp:53 profile_wizard.cpp:55
+#: Refine_DefMap.cpp:59
 msgid ": "
 msgstr ":"
 
-#: calstep_dialog.cpp:214
+#: calstep_dialog.cpp:220
 msgid "Please enter a focal length between 50 and 4000."
 msgstr ""
 
-#: calstep_dialog.cpp:218
+#: calstep_dialog.cpp:224
 msgid "Please enter a pixel size greater than zero."
 msgstr ""
 
@@ -265,16 +266,16 @@ msgstr ""
 #: cam_StarShootDSCI.cpp:105 cam_StarShootDSCI.cpp:108
 #: cam_StarShootDSCI.cpp:116 cam_SXV.cpp:151 cam_wdm.cpp:122 cam_wdm.cpp:129
 #: cam_wdm.cpp:183 cam_wdm.cpp:215 cam_wdm.cpp:222 cam_wdm.cpp:233
-#: cam_ZWO.cpp:62 cam_ZWO.cpp:85 cam_ZWO.cpp:91 gear_dialog.cpp:1373
-#: gear_dialog.cpp:1382 gear_dialog.cpp:1389 gear_dialog.cpp:1434
-#: gear_dialog.cpp:1440 scope_ascom.cpp:174 scope_ascom.cpp:180
+#: cam_ZWO.cpp:62 cam_ZWO.cpp:85 cam_ZWO.cpp:91 gear_dialog.cpp:1425
+#: gear_dialog.cpp:1434 gear_dialog.cpp:1441 gear_dialog.cpp:1486
+#: gear_dialog.cpp:1492 scope_ascom.cpp:174 scope_ascom.cpp:180
 #: scope_ascom.cpp:191 scope_ascom.cpp:295 scope_ascom.cpp:310
 #: scope_ascom.cpp:318 scope_ascom.cpp:327 scope_ascom.cpp:343
 #: scope_ascom.cpp:350 scope_ascom.cpp:419 scope_ascom.cpp:427
 #: scope_ascom.cpp:452 scope_eqmac.cpp:135 scope_eqmac.cpp:139
-#: scope_equinox.cpp:136 scope_equinox.cpp:140 scope_GC_USBST4.cpp:140
-#: scope_GC_USBST4.cpp:156 scope_GC_USBST4.cpp:169 scope_GC_USBST4.cpp:179
-#: scope_GC_USBST4.cpp:200 scope_GC_USBST4.cpp:228 scope_GC_USBST4.cpp:238
+#: scope_equinox.cpp:136 scope_equinox.cpp:140 scope_GC_USBST4.cpp:137
+#: scope_GC_USBST4.cpp:153 scope_GC_USBST4.cpp:167 scope_GC_USBST4.cpp:177
+#: scope_GC_USBST4.cpp:198 scope_GC_USBST4.cpp:226 scope_GC_USBST4.cpp:236
 #: stepguider_sxao.cpp:124
 msgid "Error"
 msgstr "Fehler"
@@ -820,10 +821,12 @@ msgstr "Kamera-Modus"
 msgid " disconnected"
 msgstr " getrennt"
 
-#: camera.cpp:219 camera.cpp:356 gear_dialog.cpp:310 gear_dialog.cpp:314
-#: gear_dialog.cpp:318 gear_dialog.cpp:322 gear_dialog.cpp:512 mount.cpp:94
-#: mount.cpp:117 myframe.cpp:1874 scope.cpp:228 scope.cpp:271 scope.cpp:309
-#: stepguider.cpp:89 stepguider.cpp:113
+#: camera.cpp:219 camera.cpp:356 gear_dialog.cpp:314 gear_dialog.cpp:318
+#: gear_dialog.cpp:322 gear_dialog.cpp:326 gear_dialog.cpp:526 mount.cpp:94
+#: mount.cpp:117 myframe.cpp:1874 profile_wizard.cpp:143
+#: profile_wizard.cpp:222 profile_wizard.cpp:227 profile_wizard.cpp:407
+#: scope.cpp:228 scope.cpp:271 scope.cpp:309 stepguider.cpp:89
+#: stepguider.cpp:113
 msgid "None"
 msgstr "kein"
 
@@ -858,7 +861,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Camera gain boost ? Default = 95 % , lower if you experience noise or wish "
-"to guide on a very bright star.Not available on all cameras."
+"to guide on a very bright star. Not available on all cameras."
 msgstr ""
 "Kamera-Verstärkung? Standard = 95%, verringern, wenn das Bild verrauscht ist "
 "oder wenn ein sehr heller Stern nachgeführt werden soll. Nicht bei allen "
@@ -882,7 +885,7 @@ msgid "Confirm"
 msgstr "Bestätigen"
 
 #: darks_dialog.cpp:83
-msgid "Dark Library Creation"
+msgid "Build Dark Library"
 msgstr ""
 
 #: darks_dialog.cpp:88
@@ -899,7 +902,9 @@ msgid "Min Exposure Time"
 msgstr "Belichtung wiederholen"
 
 #: darks_dialog.cpp:105
-msgid "Minimum exposure time for darks"
+msgid ""
+"Minimum exposure time for darks. Choose a value corresponding to the "
+"shortest camera exposure you will use for guiding."
 msgstr ""
 
 #: darks_dialog.cpp:110
@@ -908,7 +913,9 @@ msgid "Max Exposure Time"
 msgstr "Belichtung wiederholen"
 
 #: darks_dialog.cpp:112
-msgid "Maximum exposure time for darks"
+msgid ""
+"Maximum exposure time for darks. Choose a value corresponding to the longest "
+"camera exposure you will use for guiding."
 msgstr ""
 
 #: darks_dialog.cpp:114
@@ -917,7 +924,7 @@ msgstr ""
 
 #: darks_dialog.cpp:115
 msgid ""
-"Frames taken for each \n"
+"Frames to take for each \n"
 " exposure time"
 msgstr ""
 
@@ -1215,15 +1222,15 @@ msgstr "Gescheiterte Umkehrung der RA-Kalibration"
 msgid "RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"
 msgstr "RA Kalibrations-Winkel umgekehrt: (%.2f, %.2f) nach (%.2f, %.2f)"
 
-#: gear_dialog.cpp:112
+#: gear_dialog.cpp:114
 msgid "Connect Equipment"
 msgstr "Ausrüstung verbinden"
 
-#: gear_dialog.cpp:183
+#: gear_dialog.cpp:186
 msgid "Equipment profile"
 msgstr "Geräte-Profil"
 
-#: gear_dialog.cpp:185
+#: gear_dialog.cpp:188
 #, fuzzy
 msgid ""
 "Select the Equipment Profile you would like to use. PHD stores all of your "
@@ -1234,59 +1241,68 @@ msgstr ""
 "und Ausrüstung in einem Geräte-Profil. Es können mehrere Profile angelegt "
 "und zwischen diesen gewechselt werden."
 
-#: gear_dialog.cpp:191
+#: gear_dialog.cpp:194
 msgid "New"
 msgstr "Neu"
 
-#: gear_dialog.cpp:191
+#: gear_dialog.cpp:194
 msgid "Create a new profile, optionally copying from another profile"
 msgstr "Ein neues Profil anlegen, wahlweise aus einem anderen Profil kopieren"
 
-#: gear_dialog.cpp:192
+#: gear_dialog.cpp:195
+#, fuzzy
+msgid "New using Wizard..."
+msgstr "Bewegen..."
+
+#: gear_dialog.cpp:195
+msgid "Run the first-light wizard to create a new profile"
+msgstr ""
+
+#: gear_dialog.cpp:196
 msgid "Delete"
 msgstr "Löschen"
 
-#: gear_dialog.cpp:192
+#: gear_dialog.cpp:196
 msgid "Delete the selected profile"
 msgstr "Ausgewähltes Profil löschen."
 
-#: gear_dialog.cpp:193
+#: gear_dialog.cpp:197
 msgid "Rename"
 msgstr "Umbenennen"
 
-#: gear_dialog.cpp:193
+#: gear_dialog.cpp:197
 msgid "Rename the selected profile"
 msgstr "Ausgewähltes Profil umbenennen"
 
-#: gear_dialog.cpp:194
+#: gear_dialog.cpp:198
 msgid "Import..."
 msgstr "Importieren..."
 
-#: gear_dialog.cpp:194
+#: gear_dialog.cpp:198
 msgid "Load a profile from a file"
 msgstr "Profil aus einer Datei laden"
 
-#: gear_dialog.cpp:195
+#: gear_dialog.cpp:199
 msgid "Export..."
 msgstr "Exportieren..."
 
-#: gear_dialog.cpp:195
+#: gear_dialog.cpp:199
 msgid "Save the selected profile to a file"
 msgstr "Profil in eine Datei speichern"
 
-#: gear_dialog.cpp:196
+#: gear_dialog.cpp:200
 msgid "Settings..."
 msgstr "Einstellungen..."
 
-#: gear_dialog.cpp:196
+#: gear_dialog.cpp:200
 msgid "Open the advanced settings dialog"
 msgstr "Erweiterte Einstellungen öffnen"
 
-#: gear_dialog.cpp:198
+#: gear_dialog.cpp:202
 msgid "Manage Profiles"
 msgstr "Profile verwalten"
 
-#: gear_dialog.cpp:199
+#: gear_dialog.cpp:203
 msgid ""
 "Create a new Equipment Profile, or delete or rename the selected Equipment "
 "Profile"
@@ -1294,7 +1310,7 @@ msgstr ""
 "Ein neues Geräte-Profil anlegen, löschen oder das ausgewählte Profil "
 "umbenennen"
 
-#: gear_dialog.cpp:211
+#: gear_dialog.cpp:215
 msgid ""
 "Select your equipment below and click Connect All to connect, or click "
 "Disconnect All to disconnect. You can also connect or disconnect individual "
@@ -1305,26 +1321,34 @@ msgstr ""
 "die einzelnen Geräte verbinden oder trennen, indem Sie auf den Button neben "
 "dem Gerät klicken."
 
-#: gear_dialog.cpp:226
+#: gear_dialog.cpp:230
 msgid "Camera Setup"
 msgstr "Kamera-Setup"
 
-#: gear_dialog.cpp:228 gear_dialog.cpp:241 gear_dialog.cpp:266
-#: gear_dialog.cpp:279 gear_dialog.cpp:440 gear_dialog.cpp:477
-#: gear_dialog.cpp:542 gear_dialog.cpp:579
+#: gear_dialog.cpp:232 gear_dialog.cpp:245 gear_dialog.cpp:270
+#: gear_dialog.cpp:283 gear_dialog.cpp:454 gear_dialog.cpp:491
+#: gear_dialog.cpp:556 gear_dialog.cpp:593
 msgid "Disconnect"
 msgstr "trennen"
 
-#: gear_dialog.cpp:239
+#: gear_dialog.cpp:243
 msgid "Mount Setup"
 msgstr "Montierungs-Setup"
 
-#: gear_dialog.cpp:247 gear_dialog.cpp:249
+#: gear_dialog.cpp:251 gear_dialog.cpp:253
 #, fuzzy
 msgid "Aux Mount"
 msgstr "Montierung"
 
 #: gear_dialog.cpp:257
+msgid "ASCOM"
+msgstr ""
+
+#: gear_dialog.cpp:259
+msgid "INDI"
+msgstr ""
+
+#: gear_dialog.cpp:261
 #, c-format
 msgid ""
 "If you are using a guide port (On-camera or GPXXX) interface  for guiding, "
@@ -1334,162 +1358,162 @@ msgid ""
 "the 'aux' mount parameter will not be used.'"
 msgstr ""
 
-#: gear_dialog.cpp:264
+#: gear_dialog.cpp:268
 #, fuzzy
 msgid "Aux Mount Setup"
 msgstr "Montierungs-Setup"
 
-#: gear_dialog.cpp:277
+#: gear_dialog.cpp:281
 msgid "AO Setup"
 msgstr "AO-Setup"
 
-#: gear_dialog.cpp:287
+#: gear_dialog.cpp:291
 msgid "Connect All"
 msgstr "Alles verbinden"
 
-#: gear_dialog.cpp:288
+#: gear_dialog.cpp:292
 msgid "Connect all equipment and close the equipment selection window"
 msgstr "Mit Ausrüstung verbinden und das Auswahlmenü schließen."
 
-#: gear_dialog.cpp:291
+#: gear_dialog.cpp:295
 msgid "Disconnect All"
 msgstr "Alles trennen"
 
-#: gear_dialog.cpp:292
+#: gear_dialog.cpp:296
 msgid "Disconnect all equipment"
 msgstr "Alle Verbindungen trennen"
 
-#: gear_dialog.cpp:424 gear_dialog.cpp:448 gear_dialog.cpp:464
-#: gear_dialog.cpp:485 gear_dialog.cpp:529 gear_dialog.cpp:550
-#: gear_dialog.cpp:567 gear_dialog.cpp:588
+#: gear_dialog.cpp:438 gear_dialog.cpp:462 gear_dialog.cpp:478
+#: gear_dialog.cpp:499 gear_dialog.cpp:543 gear_dialog.cpp:564
+#: gear_dialog.cpp:581 gear_dialog.cpp:602
 msgid "Connect"
 msgstr "Verbinden"
 
-#: gear_dialog.cpp:426 gear_dialog.cpp:450
+#: gear_dialog.cpp:440 gear_dialog.cpp:464
 msgid "Connect to camera"
 msgstr "Mit Kamera verbinden"
 
-#: gear_dialog.cpp:442
+#: gear_dialog.cpp:456
 msgid "Disconnect from camera"
 msgstr "Kameraverbindung trennen"
 
-#: gear_dialog.cpp:466 gear_dialog.cpp:487
+#: gear_dialog.cpp:480 gear_dialog.cpp:501
 msgid "Connect to mount"
 msgstr "Montierung verbinden"
 
-#: gear_dialog.cpp:479
+#: gear_dialog.cpp:493
 msgid "Disconnect from mount"
 msgstr "Montierungsverbindung trennen"
 
-#: gear_dialog.cpp:531 gear_dialog.cpp:552
+#: gear_dialog.cpp:545 gear_dialog.cpp:566
 #, fuzzy
 msgid "Connect to aux mount"
 msgstr "Montierung verbinden"
 
-#: gear_dialog.cpp:544
+#: gear_dialog.cpp:558
 #, fuzzy
 msgid "Disconnect from aux mount"
 msgstr "Montierungsverbindung trennen"
 
-#: gear_dialog.cpp:569 gear_dialog.cpp:590
+#: gear_dialog.cpp:583 gear_dialog.cpp:604
 msgid "Connect to AO"
 msgstr "Mit AO verbinden"
 
-#: gear_dialog.cpp:581
+#: gear_dialog.cpp:595
 msgid "Disconnect from AO"
 msgstr "AO-Verbindung trennen"
 
-#: gear_dialog.cpp:755
+#: gear_dialog.cpp:769
 msgid "Connecting to Camera ..."
 msgstr "Kameraverbindung aufbauen ..."
 
-#: gear_dialog.cpp:778
+#: gear_dialog.cpp:792
 msgid "Camera Connected"
 msgstr "Kamera verbunden"
 
-#: gear_dialog.cpp:781
+#: gear_dialog.cpp:795
 msgid ", defect map loaded"
 msgstr ""
 
-#: gear_dialog.cpp:788
+#: gear_dialog.cpp:802
 #, fuzzy
 msgid ", darks loaded"
 msgstr "Dunkelbild geladen"
 
-#: gear_dialog.cpp:798
+#: gear_dialog.cpp:812
 msgid "Camera Connect Failed"
 msgstr "Kameraverbindung fehlgeschlagen"
 
-#: gear_dialog.cpp:825
+#: gear_dialog.cpp:839
 msgid "Camera Disconnected"
 msgstr "Kamerverbindung getrennt"
 
-#: gear_dialog.cpp:826 myframe.cpp:803
+#: gear_dialog.cpp:840 myframe.cpp:803
 msgid "No cam"
 msgstr "Keine Kamera"
 
-#: gear_dialog.cpp:945
+#: gear_dialog.cpp:958
 msgid "Connecting to Scope ..."
 msgstr "Montierungsverbindung aufbauen ..."
 
-#: gear_dialog.cpp:955
+#: gear_dialog.cpp:968
 msgid "Scope connected"
 msgstr "Montierung verbunden"
 
-#: gear_dialog.cpp:956 myframe.cpp:787
+#: gear_dialog.cpp:969 myframe.cpp:787
 msgid "Scope"
 msgstr "Montierung"
 
-#: gear_dialog.cpp:968
+#: gear_dialog.cpp:981
 msgid "Scope Connect Failed"
 msgstr "Montierungsverbindung fehlgeschlagen"
 
-#: gear_dialog.cpp:999
+#: gear_dialog.cpp:1012
 #, fuzzy
 msgid "AuxScope Connect Failed"
 msgstr "Montierungsverbindung fehlgeschlagen"
 
-#: gear_dialog.cpp:1020
+#: gear_dialog.cpp:1033
 msgid "Scope Disconnected"
 msgstr "Montierungsverbindung getrennt"
 
-#: gear_dialog.cpp:1109
+#: gear_dialog.cpp:1122
 msgid "Connecting to AO ..."
 msgstr "AO-Verbindung aufbauen ..."
 
-#: gear_dialog.cpp:1119
+#: gear_dialog.cpp:1132
 msgid "Adaptive Optics Connected"
 msgstr "AO-Verbindung verbunden"
 
-#: gear_dialog.cpp:1132
+#: gear_dialog.cpp:1145
 msgid "AO Connect Failed"
 msgstr "AO-Verbindung fehlgeschlagen"
 
-#: gear_dialog.cpp:1159
+#: gear_dialog.cpp:1172
 msgid "Adaptive Optics Disconnected"
 msgstr "AO-Verbindung unterbrochen"
 
-#: gear_dialog.cpp:1328
+#: gear_dialog.cpp:1380
 msgid "New Equipment Profile"
 msgstr "Neues Ausrüstungs Profil"
 
-#: gear_dialog.cpp:1335
+#: gear_dialog.cpp:1387
 msgid "Name"
 msgstr "Name"
 
-#: gear_dialog.cpp:1339
+#: gear_dialog.cpp:1391
 msgid "Enter the name of the new equipment profile"
 msgstr "Name für eine neues Ausrüstungsprofil eingeben"
 
-#: gear_dialog.cpp:1343
+#: gear_dialog.cpp:1395
 msgid "PHD Defaults"
 msgstr "PHD Voreinstellungen"
 
-#: gear_dialog.cpp:1346
+#: gear_dialog.cpp:1398
 msgid "Profile initial settings"
 msgstr "Profil Anfangseinstellungen"
 
-#: gear_dialog.cpp:1349
+#: gear_dialog.cpp:1401
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -1498,43 +1522,48 @@ msgstr ""
 "erstellen oder wählen Sie einen vorhandenen Geräte-Profil, um die "
 "Einstellungen in das neue Profil zu kopieren."
 
-#: gear_dialog.cpp:1382
+#: gear_dialog.cpp:1425
+#, fuzzy, c-format
+msgid "Cannot create profile %s, there is already a profile with that name"
+msgstr "Kann Profil %s aus Profil %s nicht erstellen"
+
+#: gear_dialog.cpp:1434
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "Kann Profil %s aus Profil %s nicht erstellen"
 
-#: gear_dialog.cpp:1389
+#: gear_dialog.cpp:1441 profile_wizard.cpp:375
 #, c-format
 msgid "Could not create profile %s"
 msgstr "Kann Profil %s nicht erstellen"
 
-#: gear_dialog.cpp:1405
+#: gear_dialog.cpp:1457
 #, c-format
 msgid "Delete profile %s?"
 msgstr "Profil löschen %s?"
 
-#: gear_dialog.cpp:1405
+#: gear_dialog.cpp:1457
 msgid "Delete Equipment Profile"
 msgstr "Ausrüstungssprofil löschen"
 
-#: gear_dialog.cpp:1424
+#: gear_dialog.cpp:1476
 #, c-format
 msgid "Rename %s"
 msgstr "Umbenennen %s"
 
-#: gear_dialog.cpp:1424
+#: gear_dialog.cpp:1476
 msgid "Rename Equipment Profile"
 msgstr "Ausrüstungssprofil umbenennen"
 
-#: gear_dialog.cpp:1440
+#: gear_dialog.cpp:1492
 msgid "Could not rename profile"
 msgstr "Profil kann nicht umbenannt werden"
 
-#: gear_dialog.cpp:1454
+#: gear_dialog.cpp:1506
 msgid "Import PHD Equipment Profiles"
 msgstr "PHD Ausrüstungsprofile importieren"
 
-#: gear_dialog.cpp:1487
+#: gear_dialog.cpp:1539
 msgid "Export PHD Equipment Profile"
 msgstr "PHD Ausrüstungsprofile exportieren"
 
@@ -2788,7 +2817,7 @@ msgstr ""
 msgid "Instructions"
 msgstr "Einführungen"
 
-#: myframe_events.cpp:112
+#: myframe_events.cpp:112 profile_wizard.cpp:269
 msgid "Introduction"
 msgstr "Einführung"
 
@@ -2924,6 +2953,219 @@ msgstr ""
 #: phdconfig.cpp:44
 msgid "My Equipment"
 msgstr "Mein Ausrüstung"
+
+#: profile_wizard.cpp:61
+msgid "New Profile Wizard"
+msgstr ""
+
+#: profile_wizard.cpp:76
+#, fuzzy
+msgid "More Info"
+msgstr "Information"
+
+#: profile_wizard.cpp:85
+#, fuzzy
+msgid "Gear"
+msgstr "Zurücksetzen"
+
+#: profile_wizard.cpp:96
+msgid ""
+"Get this value from your camera documentation or from an online source.  You "
+"can use the up/down control  or type in a value directly."
+msgstr ""
+
+#: profile_wizard.cpp:98
+#, fuzzy
+msgid "Guide camera pixel size (microns)"
+msgstr "Pixelgröße der Nachführkamera"
+
+#: profile_wizard.cpp:106
+#, fuzzy
+msgid "Guide scope focal length (mm)"
+msgstr "Leitrohr Brennweite"
+
+#: profile_wizard.cpp:112
+msgid "Build dark library"
+msgstr ""
+
+#: profile_wizard.cpp:114
+msgid ""
+"Check this to automatically start the process of building a dark library for "
+"this profile."
+msgstr ""
+
+#: profile_wizard.cpp:115
+#, fuzzy
+msgid "Profile Name"
+msgstr "Profil"
+
+#: profile_wizard.cpp:121
+msgid "<--- Previous"
+msgstr ""
+
+#: profile_wizard.cpp:122
+msgid "Back up to the previous screen"
+msgstr ""
+
+#: profile_wizard.cpp:124
+msgid "Next--->"
+msgstr ""
+
+#: profile_wizard.cpp:165
+msgid ""
+"This short sequence of steps will help you identify the equipment you want "
+"to use for guiding and will associate it with a profile name of your choice. "
+"This profile will then be available any time you run PHD2.  At a minimum, "
+"you will need to choose both the guide camera and the mount interface that "
+"PHD2 will use for guiding.  You will also enter some information about the "
+"optical characteristics of your setup.  PHD2 will use this to create a good "
+"'starter set' of guiding and calibration parameters. If you are a new user, "
+"please review the ‘impatient instructions’ under the ‘help’ menu after the "
+"wizard dialog has finished."
+msgstr ""
+
+#: profile_wizard.cpp:172
+msgid ""
+"Select your guide camera from the list.  All cameras supported by PHD2 and "
+"all installed ASCOM cameras are shown. If your camera is not shown, it is "
+"either not supported by PHD2 or its camera driver is not installed. You must "
+"also specify the pixel size of the camera and the focal length of your guide "
+"scope so that PHD2 can compute the correct image scale."
+msgstr ""
+
+#: profile_wizard.cpp:177
+msgid ""
+"Select your mount interface from the list.  This determines how PHD2 will "
+"move the telescope and get pointing information. For most modern mounts, the "
+"ASCOM interface is a good choice if you are running MS Windows.  The other "
+"interfaces are available for cases where ASCOM is not available or isn't "
+"well supported by mount firmware."
+msgstr ""
+
+#: profile_wizard.cpp:182
+msgid ""
+"The mount interface you chose in the previous step doesn't provide pointing "
+"information, so PHD2 will not be able to automatically adjust guiding for "
+"side-of-pier and declination. You can enable these features by choosing an "
+"'Aux Mount' connection that does provide pointing information.  The Aux "
+"Mount interface will be used only for that purpose and not for sending guide "
+"commands."
+msgstr ""
+
+#: profile_wizard.cpp:187
+msgid ""
+"If you have an adaptive optics (AO) device, you can select it here.  The AO "
+"device will be used for high speed, small guiding corrections, while the "
+"mount interface you chose earlier will be used for larger ('bump') "
+"corrections. Calibration of both interfaces will be handled automatically."
+msgstr ""
+
+#: profile_wizard.cpp:191
+msgid ""
+"Your profile is complete and ready to save.  Give it a name and, optionally, "
+"build a dark-frame library for it.  This is strongly recommended for best "
+"results in both calibration and guiding. You can always change the settings "
+"in this new profile by clicking on the PHD2 camera icon, selecting the "
+"profile name you just entered, and making your changes there."
+msgstr ""
+
+#: profile_wizard.cpp:224
+msgid ""
+"Please specify camera type, guider focal length, and guide camera pixel size"
+msgstr ""
+
+#: profile_wizard.cpp:229
+#, fuzzy
+msgid "Please select a mount type to handle guider commands"
+msgstr "Bitte mit einer Montierung verbinden für die  manuelle Nachführung"
+
+#: profile_wizard.cpp:239
+msgid "Please specify a name for the profile."
+msgstr ""
+
+#: profile_wizard.cpp:243
+msgid ""
+"There is already a profile with that name. Please choose a different name."
+msgstr ""
+
+#: profile_wizard.cpp:275
+msgid "Welcome to the PHD2 'first light' wizard"
+msgstr ""
+
+#: profile_wizard.cpp:279
+msgid "Choose a Guide Camera"
+msgstr ""
+
+#: profile_wizard.cpp:281
+#, fuzzy
+msgid "Guide Camera:"
+msgstr "Nachführrate"
+
+#: profile_wizard.cpp:291
+msgid ""
+"Select your guide camera and specify the optical properties of your guiding "
+"set-up"
+msgstr ""
+
+#: profile_wizard.cpp:295
+#, fuzzy
+msgid "Choose a Mount Connection"
+msgstr "Kamera-Verbindung"
+
+#: profile_wizard.cpp:297
+#, fuzzy
+msgid "Mount:"
+msgstr "Montierung"
+
+#: profile_wizard.cpp:303
+msgid ""
+"Select your mount connection - this will determine how guide signals are "
+"transmitted"
+msgstr ""
+
+#: profile_wizard.cpp:312
+msgid "Choose an Auxillary Mount Connection (optional)"
+msgstr ""
+
+#: profile_wizard.cpp:313
+#, fuzzy
+msgid "Aux Mount:"
+msgstr "Montierung"
+
+#: profile_wizard.cpp:317
+msgid ""
+"Since your primary mount connection does not report pointing position, you "
+"may want to choose an 'Aux Mount' connection"
+msgstr ""
+
+#: profile_wizard.cpp:321
+#, fuzzy
+msgid "Choose an Adaptive Optics Device (optional)"
+msgstr "Auswahl der Adaptiven Optik"
+
+#: profile_wizard.cpp:322
+#, fuzzy
+msgid "AO:"
+msgstr "AO"
+
+#: profile_wizard.cpp:326
+#, fuzzy
+msgid "Specify your adaptive optics device if desired"
+msgstr "Auswahl der Adaptiven Optik"
+
+#: profile_wizard.cpp:336
+msgid "Finish Creating Your New Profile"
+msgstr ""
+
+#: profile_wizard.cpp:339
+msgid "Finish"
+msgstr ""
+
+#: profile_wizard.cpp:340
+msgid ""
+"Enter a name for your profile and optionally launch the process to build a "
+"dark library"
+msgstr ""
 
 #: Refine_DefMap.cpp:65
 msgid "Refine Bad-pixel Map"
@@ -3186,9 +3428,10 @@ msgid "Calibration step (ms)"
 msgstr "Kalibrationsschritte (ms)"
 
 #: scope.cpp:913
+#, fuzzy
 msgid ""
-"How long a guide pulse should be used during calibration? Default = 750ms, "
-"increase for short f/l scopes and decrease for longer f/l scopes"
+"How long a guide pulse should be used during calibration? Click \"Calculate"
+"\" to compute a suitable value."
 msgstr ""
 "Wie lange eine der Nachführimpuls während der Kalibrierung gesendet werden "
 "soll? Standard = 750ms, erhöhen Sie für kurze f/l Teleskope und verkleinern "
@@ -3294,7 +3537,7 @@ msgstr ""
 msgid " not running"
 msgstr ""
 
-#: scope_GC_USBST4.cpp:120
+#: scope_GC_USBST4.cpp:119
 #, c-format
 msgid "Error writing to GC USB ST4: %s(%d)"
 msgstr ""
@@ -3550,6 +3793,11 @@ msgstr "Fehler bei der Speicherzuordnung während der Aufnahme"
 msgid "Error reading data from FITS file "
 msgstr "Fehler beim Speichern der FITS-Datei"
 
+#: profile_wizard.h:102
+#, fuzzy
+msgid "New Profile Wizard - "
+msgstr "Bewegen..."
+
 #~ msgid "Recalc"
 #~ msgstr "Berechnung wiederholen"
 
@@ -3680,9 +3928,6 @@ msgstr "Fehler beim Speichern der FITS-Datei"
 
 #~ msgid "Done"
 #~ msgstr "Erldegit"
-
-#~ msgid "Please connect a Mount to Manual Guide."
-#~ msgstr "Bitte mit einer Montierung verbinden für die  manuelle Nachführung"
 
 #~ msgid "Like PHD? Consider donating"
 #~ msgstr "Ist PHD gut? Eine Spende"
@@ -3830,9 +4075,6 @@ msgstr "Fehler beim Speichern der FITS-Datei"
 #~ msgid "About PHD Guiding"
 #~ msgstr "Über PHD Guiding"
 
-#~ msgid "Camera connection"
-#~ msgstr "Kamera-Verbindung"
-
 #~ msgid "Problem connecting to camera"
 #~ msgstr "Problem bei der Verbindung zur Kamera"
 
@@ -3874,9 +4116,6 @@ msgstr "Fehler beim Speichern der FITS-Datei"
 
 #~ msgid "Mount connected in EQMAC"
 #~ msgstr "Montierung verbinden mit EQMAC"
-
-#~ msgid "Select Adaptive Optics Device"
-#~ msgstr "Auswahl der Adaptiven Optik"
 
 #~ msgid "No Adaptive Optics"
 #~ msgstr "Keine Adaptive Optik"
