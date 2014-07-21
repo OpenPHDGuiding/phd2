@@ -517,16 +517,16 @@ void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
 
 static wxString dur_choices[] = {
     _T("Auto-placeholder"), // translated value provided later, cannot use _() in static initializer
-    _T("0.001 s"), _T("0.002 s"), _T("0.005 s"), _T("0.01 s"),
-    _T("0.05 s"), _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
+    _T("0.01 s"), _T("0.02 s"), _T("0.05 s"),
+    _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
     _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"),
     _T("6.0 s"), _T("7.0 s"), _T("8.0 s"), _T("9.0 s"),_T("10 s"), _T("15.0 s")
 };
-static const int DefaultDurChoiceIdx = 9;
+static const int DefaultDurChoiceIdx = 7; // 1.0s
 static int dur_values[] = {
     -1,
-    1, 2, 5, 10,
-    50, 100, 200, 500, 1000, 1500,
+    10, 20, 50,
+    100, 200, 500, 1000, 1500,
     2000, 2500, 3000, 3500, 4000, 4500, 5000,
     6000, 7000, 8000, 9000, 10000, 15000,
 };
@@ -696,27 +696,18 @@ void MyFrame::SetupToolBar()
 {
     MainToolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
 
-    wxBitmap camera_bmp, scope_bmp, ao_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
+    wxBitmap camera_bmp, loop_bmp, guide_bmp, stop_bmp;
 #if defined (WINICONS)
     camera_bmp.CopyFromIcon(wxIcon(_T("camera_icon")));
-    scope_bmp.CopyFromIcon(wxIcon(_T("scope_icon")));
     loop_bmp.CopyFromIcon(wxIcon(_T("loop_icon")));
-    cal_bmp.CopyFromIcon(wxIcon(_T("cal_icon")));
     guide_bmp.CopyFromIcon(wxIcon(_T("phd_icon")));
     stop_bmp.CopyFromIcon(wxIcon(_T("stop_icon")));
 #else
     #include "icons/sm_PHD.xpm"  // defines phd_icon[]
     #include "icons/stop1.xpm" // defines stop_icon[]
-    #include "icons/scope1.xpm" // defines scope_icon[]
-    #include "icons/ao.xpm" // defines ao_icon[]
-    #include "icons/measure.xpm" // defines_cal_icon[]
     #include "icons/loop3.xpm" // defines loop_icon
     #include "icons/cam2.xpm"  // cam_icon
-    #include "icons/brain1.xpm" // brain_icon[]
-    scope_bmp = wxBitmap(scope_icon);
-    ao_bmp = wxBitmap(ao_icon);
     loop_bmp = wxBitmap(loop_icon);
-    cal_bmp = wxBitmap(cal_icon);
     guide_bmp = wxBitmap(phd_icon);
     stop_bmp = wxBitmap(stop_icon);
     camera_bmp = wxBitmap(cam_icon);
@@ -737,6 +728,7 @@ void MyFrame::SetupToolBar()
 #if defined (WINICONS)
     brain_bmp.CopyFromIcon(wxIcon(_T("brain_icon")));
 #else
+#   include "icons/brain1.xpm" // brain_icon[]
     brain_bmp = wxBitmap(brain_icon);
 #endif
 
@@ -1764,12 +1756,13 @@ wxString MyFrame::GetDefaultFileDir()
 
     return rslt;
 }
+
 double MyFrame::GetCameraPixelScale(void)
 {
     if (!pCamera || pCamera->PixelSize == 0.0 || m_focalLength == 0)
         return 1.0;
 
-    return 206.265 * pCamera->PixelSize / m_focalLength;
+    return GetPixelScale(pCamera->PixelSize, m_focalLength);
 }
 
 wxString MyFrame::GetSettingsSummary()

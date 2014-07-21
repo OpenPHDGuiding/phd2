@@ -322,6 +322,7 @@ public:
     void UpdateButtonsStatus(void);
     void UpdateCalibrationStatus(void);
 
+    static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm);
     double GetCameraPixelScale(void);
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
@@ -397,6 +398,7 @@ enum {
         GEAR_PROFILE_RENAME,
         GEAR_PROFILE_LOAD,
         GEAR_PROFILE_SAVE,
+        GEAR_PROFILE_WIZARD,
 
         GEAR_CHOICE_CAMERA,
         GEAR_BUTTON_SETUP_CAMERA,
@@ -512,6 +514,11 @@ inline static int StringWidth(const wxWindow *window, const wxString& s)
 inline static wxSize StringSize(const wxWindow *window, const wxString& s, int extra = 0)
 {
     return wxSize(StringWidth(window, s) + extra, -1);
+}
+
+inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm)
+{
+    return 206.265 * pixelSizeMicrons / (double) focalLengthMm;
 }
 
 #endif /* MYFRAME_H_INCLUDED */
