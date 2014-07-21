@@ -41,6 +41,7 @@
 
 
 Camera_ZWO::Camera_ZWO()
+    : m_capturing(false)
 {
     Connected = false;
     m_hasGuideOutput = true;
@@ -110,7 +111,6 @@ bool Camera_ZWO::Connect()
     setStartPos(0, 0);
 
     setImageFormat(FullSize.x, FullSize.y, 1, IMG_Y8);
-    startCapture();
 
     return false;
 }
@@ -127,6 +127,12 @@ bool Camera_ZWO::Disconnect()
 
 bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
+    if (!m_capturing)
+    {
+        startCapture();
+        m_capturing = true;
+    }
+
     int exposureUS = duration * 1000;
 
     int xsize = getMaxWidth();
