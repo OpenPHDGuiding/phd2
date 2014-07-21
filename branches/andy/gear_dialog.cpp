@@ -716,7 +716,7 @@ void GearDialog::OnChoiceCamera(wxCommandEvent& event)
 
         if (!m_pCamera)
         {
-            throw THROW_INFO("OnChoiceCamera: m_pScope == NULL");
+            throw THROW_INFO("OnChoiceCamera: m_pCamera == NULL");
         }
     }
     catch (wxString Msg)
