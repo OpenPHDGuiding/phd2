@@ -360,6 +360,34 @@ static int GetCalibrationStepSize(int focalLength, double pixelSize)
     return calibrationStep;
 }
 
+// Set up some reasonable starting guiding parameters
+void ProfileWizard::SetGuidingParams(double imageScale)
+{
+    double minMove;
+    const double defAggressiveness = 0.70;
+    Scope *pScope;
+    wxString mountType;
+
+    if (m_SelectedAO == _("None"))
+    {
+        // Following based on empirical data using a range of image scales
+        minMove = wxMax(0.1515 + 0.1548 / imageScale, 0.15);        // Don't use a ridiculously small value
+        pScope = Scope::Factory(m_SelectedMount);
+        if (pScope)
+        {
+            mountType = pScope->GetMountClassName();
+            delete pScope;
+        }
+        else
+            mountType = "scope";                // Shouldn't ever happen
+        // Min moves for hysteresis guiding in RA and resist switch in Dec
+        pConfig->Profile.SetDouble("/" + mountType + "/GuideAlgorithm/X/Hysteresis/minMove", minMove);
+        pConfig->Profile.SetDouble("/" + mountType + "/GuideAlgorithm/Y/ResistSwitch/minMove", minMove);
+        // Choose a better default for RA aggressiveness
+        pConfig->Profile.SetDouble("/" + mountType + "/GuideAlgorithm/X/Hysteresis/aggression", defAggressiveness);
+    }
+}
+
 // Wrapup logic - build the new profile, maybe launch the darks dialog
 void ProfileWizard::WrapUp()
 {
@@ -384,6 +412,9 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetInt("/frame/focalLength", m_FocalLength);
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
+    // Construct a good baseline set of guiding parameters based on image scale
+    double imageScale = 206.265 * m_PixelSize / (double)m_FocalLength; // arc-sec per pixel
+    SetGuidingParams(imageScale);
 
     EndModal(wxOK);
 }

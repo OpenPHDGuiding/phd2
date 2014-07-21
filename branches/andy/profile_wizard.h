@@ -96,6 +96,7 @@ private:
     void UpdateState(const int change);
     bool SemanticCheck(DialogState state, int change);
     void ShowHelp(DialogState state);
+    void SetGuidingParams(double imageScale);
     void WrapUp();
 
     DialogState m_State;
