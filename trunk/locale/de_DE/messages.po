@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-19 23:45+0200\n"
+"POT-Creation-Date: 2014-07-21 20:53+0200\n"
 "PO-Revision-Date: 2014-03-16 15:28+0100\n"
 "Last-Translator: Carsten Przygoda <carsten@funnytakes.de>\n"
 "Language-Team: Carsten Przygoda <carsten@funnytakes.de>\n"
@@ -59,7 +59,7 @@ msgid "Guiding"
 msgstr "Nachführen"
 
 #: advanced_dialog.cpp:139 cam_firewire_IC.cpp:111 cam_simulator.cpp:1005
-#: gear_dialog.cpp:225 gear_dialog.cpp:227 gear_dialog.cpp:806 myframe.cpp:786
+#: gear_dialog.cpp:225 gear_dialog.cpp:227 gear_dialog.cpp:806 myframe.cpp:778
 msgid "Camera"
 msgstr "Kamera"
 
@@ -85,7 +85,7 @@ msgid "No Mount Selected"
 msgstr "Keine Montierung ausgewählt"
 
 #: advanced_dialog.cpp:199 gear_dialog.cpp:276 gear_dialog.cpp:278
-#: myframe.cpp:788 stepguider.cpp:1077 testguide.cpp:161
+#: myframe.cpp:780 stepguider.cpp:1077 testguide.cpp:161
 msgid "AO"
 msgstr "AO"
 
@@ -226,8 +226,8 @@ msgid "Calibration step, ms"
 msgstr "Kalibrationsschritt, ms"
 
 #: calstep_dialog.cpp:159 cam_simulator.cpp:912 camera.cpp:653
-#: configdialog.cpp:65 darks_dialog.cpp:53 profile_wizard.cpp:55
-#: Refine_DefMap.cpp:59
+#: configdialog.cpp:65 darks_dialog.cpp:53 profile_wizard.cpp:57
+#: profile_wizard.cpp:64 Refine_DefMap.cpp:59
 msgid ": "
 msgstr ":"
 
@@ -266,16 +266,16 @@ msgstr ""
 #: cam_StarShootDSCI.cpp:105 cam_StarShootDSCI.cpp:108
 #: cam_StarShootDSCI.cpp:116 cam_SXV.cpp:151 cam_wdm.cpp:122 cam_wdm.cpp:129
 #: cam_wdm.cpp:183 cam_wdm.cpp:215 cam_wdm.cpp:222 cam_wdm.cpp:233
-#: cam_ZWO.cpp:62 cam_ZWO.cpp:85 cam_ZWO.cpp:91 gear_dialog.cpp:1425
+#: cam_ZWO.cpp:63 cam_ZWO.cpp:86 cam_ZWO.cpp:92 gear_dialog.cpp:1425
 #: gear_dialog.cpp:1434 gear_dialog.cpp:1441 gear_dialog.cpp:1486
 #: gear_dialog.cpp:1492 scope_ascom.cpp:174 scope_ascom.cpp:180
 #: scope_ascom.cpp:191 scope_ascom.cpp:295 scope_ascom.cpp:310
 #: scope_ascom.cpp:318 scope_ascom.cpp:327 scope_ascom.cpp:343
 #: scope_ascom.cpp:350 scope_ascom.cpp:419 scope_ascom.cpp:427
 #: scope_ascom.cpp:452 scope_eqmac.cpp:135 scope_eqmac.cpp:139
-#: scope_equinox.cpp:136 scope_equinox.cpp:140 scope_GC_USBST4.cpp:137
-#: scope_GC_USBST4.cpp:153 scope_GC_USBST4.cpp:167 scope_GC_USBST4.cpp:177
-#: scope_GC_USBST4.cpp:198 scope_GC_USBST4.cpp:226 scope_GC_USBST4.cpp:236
+#: scope_equinox.cpp:136 scope_equinox.cpp:140 scope_GC_USBST4.cpp:140
+#: scope_GC_USBST4.cpp:156 scope_GC_USBST4.cpp:169 scope_GC_USBST4.cpp:179
+#: scope_GC_USBST4.cpp:200 scope_GC_USBST4.cpp:228 scope_GC_USBST4.cpp:238
 #: stepguider_sxao.cpp:124
 msgid "Error"
 msgstr "Fehler"
@@ -359,11 +359,11 @@ msgstr "Verbindung besteht schon"
 msgid "DLL error"
 msgstr "DLL Fehler"
 
-#: cam_Atik16.cpp:88 cam_ZWO.cpp:76
+#: cam_Atik16.cpp:88 cam_ZWO.cpp:77
 msgid "Select camera"
 msgstr "Kamera auswählen"
 
-#: cam_Atik16.cpp:88 cam_SBIG.cpp:129 cam_ZWO.cpp:76
+#: cam_Atik16.cpp:88 cam_SBIG.cpp:129 cam_ZWO.cpp:77
 msgid "Camera name"
 msgstr "Kameraname"
 
@@ -376,7 +376,7 @@ msgstr "Kann die Belichtung nicht beginnen"
 #: cam_OSPL130.cpp:66 cam_QGuide.cpp:145 cam_QHY5IIbase.cpp:215
 #: cam_SAC42.cpp:112 cam_SACGuide.cpp:204 cam_SBIG.cpp:333
 #: cam_Starfish.cpp:141 cam_StarShootDSCI.cpp:168 cam_SXV.cpp:345
-#: cam_VFW.cpp:133 cam_wdm.cpp:292 cam_ZWO.cpp:137
+#: cam_VFW.cpp:133 cam_wdm.cpp:292 cam_ZWO.cpp:143
 msgid "Memory allocation error during capture"
 msgstr "Fehler bei der Speicherzuordnung während der Aufnahme"
 
@@ -823,10 +823,10 @@ msgstr " getrennt"
 
 #: camera.cpp:219 camera.cpp:356 gear_dialog.cpp:314 gear_dialog.cpp:318
 #: gear_dialog.cpp:322 gear_dialog.cpp:326 gear_dialog.cpp:526 mount.cpp:94
-#: mount.cpp:117 myframe.cpp:1874 profile_wizard.cpp:143
-#: profile_wizard.cpp:222 profile_wizard.cpp:227 profile_wizard.cpp:407
-#: scope.cpp:228 scope.cpp:271 scope.cpp:309 stepguider.cpp:89
-#: stepguider.cpp:113
+#: mount.cpp:117 myframe.cpp:1867 profile_wizard.cpp:183
+#: profile_wizard.cpp:184 profile_wizard.cpp:267 profile_wizard.cpp:272
+#: profile_wizard.cpp:470 profile_wizard.cpp:478 scope.cpp:228 scope.cpp:271
+#: scope.cpp:309 stepguider.cpp:89 stepguider.cpp:113
 msgid "None"
 msgstr "kein"
 
@@ -974,7 +974,7 @@ msgstr "Sterne"
 msgid "Set your parameters, click 'Start' to begin"
 msgstr ""
 
-#: darks_dialog.cpp:193 myframe.cpp:750
+#: darks_dialog.cpp:193 myframe.cpp:742
 msgid "Stop"
 msgstr "Stopp"
 
@@ -1340,14 +1340,6 @@ msgstr "Montierungs-Setup"
 msgid "Aux Mount"
 msgstr "Montierung"
 
-#: gear_dialog.cpp:257
-msgid "ASCOM"
-msgstr ""
-
-#: gear_dialog.cpp:259
-msgid "INDI"
-msgstr ""
-
 #: gear_dialog.cpp:261
 #, c-format
 msgid ""
@@ -1448,7 +1440,7 @@ msgstr "Kameraverbindung fehlgeschlagen"
 msgid "Camera Disconnected"
 msgstr "Kamerverbindung getrennt"
 
-#: gear_dialog.cpp:840 myframe.cpp:803
+#: gear_dialog.cpp:840 myframe.cpp:795
 msgid "No cam"
 msgstr "Keine Kamera"
 
@@ -1460,7 +1452,7 @@ msgstr "Montierungsverbindung aufbauen ..."
 msgid "Scope connected"
 msgstr "Montierung verbunden"
 
-#: gear_dialog.cpp:969 myframe.cpp:787
+#: gear_dialog.cpp:969 myframe.cpp:779
 msgid "Scope"
 msgstr "Montierung"
 
@@ -1532,7 +1524,7 @@ msgstr "Kann Profil %s aus Profil %s nicht erstellen"
 msgid "Could not create profile %s from profile %s"
 msgstr "Kann Profil %s aus Profil %s nicht erstellen"
 
-#: gear_dialog.cpp:1441 profile_wizard.cpp:375
+#: gear_dialog.cpp:1441 profile_wizard.cpp:443
 #, c-format
 msgid "Could not create profile %s"
 msgstr "Kann Profil %s nicht erstellen"
@@ -1818,7 +1810,7 @@ msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
 
-#: guider.cpp:872 myframe.cpp:1157
+#: guider.cpp:872 myframe.cpp:1149
 msgid "Paused"
 msgstr "Angehalten"
 
@@ -2408,27 +2400,27 @@ msgstr "&Lesezeichen"
 msgid "&Help"
 msgstr "&Hilfe"
 
-#: myframe.cpp:726 scope.cpp:948 scope.cpp:1037 scope.cpp:1071
+#: myframe.cpp:717 scope.cpp:948 scope.cpp:1037 scope.cpp:1071
 msgid "Auto"
 msgstr "Auto"
 
-#: myframe.cpp:730
+#: myframe.cpp:721
 msgid "Camera exposure duration"
 msgstr "Belichtungszeit der Kamera"
 
-#: myframe.cpp:734
+#: myframe.cpp:725
 msgid "Screen gamma (brightness)"
 msgstr "Bildschirm-Gamma (Helligkeit)"
 
-#: myframe.cpp:743 myframe.cpp:756
+#: myframe.cpp:735 myframe.cpp:748
 msgid "Cam Dialog"
 msgstr "Kam-Dialog"
 
-#: myframe.cpp:747
+#: myframe.cpp:739
 msgid "Equipment"
 msgstr "Ausrüstung"
 
-#: myframe.cpp:747
+#: myframe.cpp:739
 msgid ""
 "Connect to equipment. Shift-click to reconnect the same equipment last "
 "connected."
@@ -2437,220 +2429,220 @@ msgstr ""
 "verwendeten AusrüstungConnect to equipment. Shift-click to reconnect the "
 "same equipment last connected."
 
-#: myframe.cpp:748
+#: myframe.cpp:740
 msgid "Loop Exposure"
 msgstr "Belichtung wiederholen"
 
-#: myframe.cpp:748
+#: myframe.cpp:740
 msgid "Begin looping exposures for frame and focus"
 msgstr "Belichtungsschleife beginnen für Sternauswahl und Fokussierung"
 
-#: myframe.cpp:749
+#: myframe.cpp:741
 msgid "Guide"
 msgstr "Nachführen"
 
-#: myframe.cpp:749
+#: myframe.cpp:741
 msgid "Begin guiding (PHD). Shift-click to force calibration."
 msgstr ""
 
-#: myframe.cpp:750
+#: myframe.cpp:742
 msgid "Abort the current action"
 msgstr "Aktuelle Aktion abbrechen"
 
-#: myframe.cpp:752
+#: myframe.cpp:744
 msgid "Exposure duration"
 msgstr "Belichtungszeit"
 
-#: myframe.cpp:753
+#: myframe.cpp:745
 msgid "Gamma"
 msgstr "Gamma"
 
-#: myframe.cpp:755
+#: myframe.cpp:747
 msgid "Advanced parameters"
 msgstr "Erweiterte Einstellungen"
 
-#: myframe.cpp:773 myframe.cpp:789
+#: myframe.cpp:765 myframe.cpp:781
 msgid "Cal +"
 msgstr "Kalibrierung +"
 
-#: myframe.cpp:773
+#: myframe.cpp:765
 msgid "Cal"
 msgstr "Kalibrierung"
 
-#: myframe.cpp:773 myframe.cpp:789
+#: myframe.cpp:765 myframe.cpp:781
 msgid "No cal"
 msgstr "Keine Kalibreriung"
 
-#: myframe.cpp:786
+#: myframe.cpp:778
 msgid "No Cam"
 msgstr "Keine Kamera"
 
-#: myframe.cpp:787
+#: myframe.cpp:779
 msgid "No Scope"
 msgstr "Kein Teleskop"
 
-#: myframe.cpp:804
+#: myframe.cpp:796
 msgid "No scope"
 msgstr "Kein Teleskop"
 
-#: myframe.cpp:836
+#: myframe.cpp:828
 msgid "Could not find help file: "
 msgstr "Kann die Hilfedatei nicht finden:"
 
-#: myframe.cpp:1147
+#: myframe.cpp:1139
 msgid "Waiting for devices before stopping..."
 msgstr "Warte auf Rückmeldung der Geräte bevor gestoppt wird..."
 
-#: myframe.cpp:1164
+#: myframe.cpp:1156
 msgid "Resumed"
 msgstr "wiederaufnehmen"
 
-#: myframe.cpp:1263
+#: myframe.cpp:1255
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr "Dither von %.2f,%.2f"
 
-#: myframe.cpp:1280
+#: myframe.cpp:1272
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr ""
 "Sind Sie sicher, dass Sie beenden wollen, während die Aufnahme aktiv ist?"
 
-#: myframe.cpp:1281
+#: myframe.cpp:1273
 msgid "Confirm Exit"
 msgstr "Beenden bestätigen"
 
-#: myframe.cpp:1516 usImage.cpp:361
+#: myframe.cpp:1508 usImage.cpp:361
 msgid "FITS file is not of an image: "
 msgstr ""
 
-#: myframe.cpp:1524 usImage.cpp:373
+#: myframe.cpp:1516 usImage.cpp:373
 msgid "Unsupported type or read error loading FITS file "
 msgstr ""
 
-#: myframe.cpp:1535
+#: myframe.cpp:1527
 #, fuzzy
 msgid "Memory allocation error reading FITS file "
 msgstr "Fehler bei der Speicherzuordnung während der Aufnahme"
 
-#: myframe.cpp:1542
+#: myframe.cpp:1534
 #, fuzzy
 msgid "Error reading data from "
 msgstr "Fehler beim Lesen des Bildes"
 
-#: myframe.cpp:1571 usImage.cpp:405
+#: myframe.cpp:1563 usImage.cpp:405
 #, fuzzy
 msgid "Error opening FITS file "
 msgstr "Fehler beim Speichern der FITS-Datei"
 
-#: myframe.cpp:1623
+#: myframe.cpp:1615
 msgid "You must connect a camera before loading dark frames"
 msgstr "Mit einer Kamera verbinden bevor das Dunkelbild geladen werden kann"
 
-#: myframe.cpp:1630
+#: myframe.cpp:1622
 msgid "Darks not loaded"
 msgstr "Dunkelbild nicht geladen"
 
-#: myframe.cpp:1636
+#: myframe.cpp:1628
 msgid "Darks loaded"
 msgstr "Dunkelbild geladen"
 
-#: myframe.cpp:1648
+#: myframe.cpp:1640
 #, fuzzy
 msgid "Error saving darks FITS file "
 msgstr "Fehler beim Speichern der FITS-Datei"
 
-#: myframe.cpp:1657
+#: myframe.cpp:1649
 #, fuzzy
 msgid "Defect map loaded"
 msgstr "Kamera-Modus auswählen"
 
-#: myframe.cpp:1662
+#: myframe.cpp:1654
 #, fuzzy
 msgid "Defect map not loaded"
 msgstr "Dunkelbild nicht geladen"
 
-#: myframe.cpp:1840
+#: myframe.cpp:1833
 msgid "Global Settings"
 msgstr "Allgemeine Einstellungen"
 
-#: myframe.cpp:1845
+#: myframe.cpp:1838
 msgid "Reset Configuration"
 msgstr "Konfiguration zurücksetzen"
 
-#: myframe.cpp:1846
+#: myframe.cpp:1839
 msgid ""
 "Reset all configuration to fresh install status -- Note: this closes PHD2"
 msgstr ""
 "Alle Konfigurationen zurücksetzen und löschen - PHD2 wird dabei beendet."
 
-#: myframe.cpp:1848
+#: myframe.cpp:1841
 msgid "Reset \"Don't Ask Again\" messages"
 msgstr "Meldung \"Nicht wieder nachfragen\" wiederherstellen"
 
-#: myframe.cpp:1849
+#: myframe.cpp:1842
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't Ask Again\"."
 msgstr ""
 "Alle Meldungen wieder herstellen, die ausgeblendet wurden \"Nicht wieder "
 "nachfragen\"."
 
-#: myframe.cpp:1853
+#: myframe.cpp:1846
 msgid "Low Q JPEG"
 msgstr "JPEG niedrige Qualität"
 
-#: myframe.cpp:1853
+#: myframe.cpp:1846
 msgid "High Q JPEG"
 msgstr "JPEG hohe Qualität"
 
-#: myframe.cpp:1853
+#: myframe.cpp:1846
 msgid "Raw FITS"
 msgstr "Rohdaten FITS"
 
-#: myframe.cpp:1859
+#: myframe.cpp:1852
 msgid "Image logging format"
 msgstr "Dateiformat des Protokollierungsbild"
 
-#: myframe.cpp:1860
+#: myframe.cpp:1853
 msgid "File format of logged images"
 msgstr "Dateiformat für das Protokollierungsbild"
 
-#: myframe.cpp:1862
+#: myframe.cpp:1855
 msgid "Dither RA only"
 msgstr "Dither nur in RA"
 
-#: myframe.cpp:1863
+#: myframe.cpp:1856
 msgid "Constrain dither to RA only?"
 msgstr "Dither nur auf RA ausgeführen?"
 
-#: myframe.cpp:1869
+#: myframe.cpp:1862
 msgid "Dither scale"
 msgstr "Dither Skalierung"
 
-#: myframe.cpp:1870
+#: myframe.cpp:1863
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr "Skalierung für Dither-Befehle: Voreinstellung = 1.0 (0.01-100.0)"
 
-#: myframe.cpp:1874
+#: myframe.cpp:1867
 msgid "2x2 mean"
 msgstr "2x2 Mittelwert"
 
-#: myframe.cpp:1874
+#: myframe.cpp:1867
 msgid "3x3 median"
 msgstr "3x3 Median"
 
-#: myframe.cpp:1880
+#: myframe.cpp:1873
 msgid "Noise Reduction"
 msgstr "Rauschreduzierung"
 
-#: myframe.cpp:1881
+#: myframe.cpp:1874
 msgid "Technique to reduce noise in images"
 msgstr "Technik, um das Bildrauschen zu reduzieren"
 
-#: myframe.cpp:1886
+#: myframe.cpp:1879
 msgid "Time Lapse (ms)"
 msgstr "Pause (ms)"
 
-#: myframe.cpp:1887
+#: myframe.cpp:1880
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -2660,11 +2652,11 @@ msgstr ""
 "nützlich, bei sehr kurzen Belichtungszeiten (zB mit einer Videokamera) um "
 "das Senden der Nachführbefehle möglich zu machen"
 
-#: myframe.cpp:1890
+#: myframe.cpp:1883
 msgid "Focal length (mm)"
 msgstr "Brennweite (mm)"
 
-#: myframe.cpp:1891
+#: myframe.cpp:1884
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -2672,43 +2664,43 @@ msgstr ""
 "Brennweite des Nachführteleskops werden zusammen mit der Pixelgröße der "
 "Nachführkamera benötigt um den Nachführfehler in Bogensekunden darzustellen."
 
-#: myframe.cpp:1897 myframe.cpp:1927
+#: myframe.cpp:1890 myframe.cpp:1920
 msgid "System default"
 msgstr "Grundeinstellung"
 
-#: myframe.cpp:1910
+#: myframe.cpp:1903
 msgid "Language-Name"
 msgstr "Deutsch"
 
-#: myframe.cpp:1930
+#: myframe.cpp:1923
 msgid "Language"
 msgstr "Sprache"
 
-#: myframe.cpp:1931
+#: myframe.cpp:1924
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "%s Sprache. Dafür muss PHD neu gestartet werden."
 
-#: myframe.cpp:1934
+#: myframe.cpp:1927
 msgid "Log File Location"
 msgstr "Speicherort der Log-Datei"
 
-#: myframe.cpp:1938
+#: myframe.cpp:1931
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr ""
 "Ordner für Nachführ-und Fehler-Protokolle; leeres Feld stellt den Standard-"
 "Speicherort wieder her."
 
-#: myframe.cpp:1939
+#: myframe.cpp:1932
 msgid "Browse..."
 msgstr "durchsuchen..."
 
-#: myframe.cpp:1947
+#: myframe.cpp:1940
 msgid "Auto restore calibration"
 msgstr "Kalibration automatisch wiederherstellen"
 
-#: myframe.cpp:1948
+#: myframe.cpp:1941
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
@@ -2716,40 +2708,40 @@ msgstr ""
 "Beim Verbindungsaufbau zur Ausrüstung werden die Kalibrationsdaten dier "
 "letzten, erfolgreichne Kalibrierung automatisch wiederhergestellt."
 
-#: myframe.cpp:1960
+#: myframe.cpp:1953
 #, fuzzy
 msgid "Min"
 msgstr "Min mo"
 
-#: myframe.cpp:1960
+#: myframe.cpp:1953
 #, fuzzy
 msgid "Auto exposure minimum duration"
 msgstr "Belichtungszeit"
 
-#: myframe.cpp:1961
+#: myframe.cpp:1954
 msgid "Max"
 msgstr ""
 
-#: myframe.cpp:1961
+#: myframe.cpp:1954
 #, fuzzy
 msgid "Auto exposure maximum duration"
 msgstr "Belichtungszeit"
 
-#: myframe.cpp:1963
+#: myframe.cpp:1956
 #, fuzzy
 msgid "Auto Exposure"
 msgstr "Belichtung wiederholen"
 
-#: myframe.cpp:1965
+#: myframe.cpp:1958
 #, fuzzy
 msgid "Target SNR"
 msgstr "Trefferverteilung"
 
-#: myframe.cpp:1965
+#: myframe.cpp:1958
 msgid "Auto exposure target SNR value"
 msgstr ""
 
-#: myframe.cpp:2025
+#: myframe.cpp:2018
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
@@ -2757,15 +2749,15 @@ msgstr ""
 "Alle Konfigurationseinstellungen in PHD2 werden gelöscht und das Programm "
 "beendet. Sind Sie sicher?"
 
-#: myframe.cpp:2025
+#: myframe.cpp:2018
 msgid "Confirmation"
 msgstr "Bestätigung"
 
-#: myframe.cpp:2053
+#: myframe.cpp:2046
 msgid "You must restart PHD for the language change to take effect."
 msgstr "PHD muss neu gestartet werden um die neue Sprachauswahl anzuwenden."
 
-#: myframe.cpp:2053 myframe_events.cpp:159 myframe_events.cpp:288
+#: myframe.cpp:2046 myframe_events.cpp:159 myframe_events.cpp:288
 #: myframe_events.cpp:377
 msgid "Info"
 msgstr "Information"
@@ -2817,7 +2809,7 @@ msgstr ""
 msgid "Instructions"
 msgstr "Einführungen"
 
-#: myframe_events.cpp:112 profile_wizard.cpp:269
+#: myframe_events.cpp:112 profile_wizard.cpp:322
 msgid "Introduction"
 msgstr "Einführung"
 
@@ -2954,77 +2946,97 @@ msgstr ""
 msgid "My Equipment"
 msgstr "Mein Ausrüstung"
 
-#: profile_wizard.cpp:61
+#: profile_wizard.cpp:70
 msgid "New Profile Wizard"
 msgstr ""
 
-#: profile_wizard.cpp:76
+#: profile_wizard.cpp:73
+#, fuzzy
+msgid "New Profile Wizard - "
+msgstr "Bewegen..."
+
+#: profile_wizard.cpp:109
 #, fuzzy
 msgid "More Info"
 msgstr "Information"
 
-#: profile_wizard.cpp:85
+#: profile_wizard.cpp:118
 #, fuzzy
 msgid "Gear"
 msgstr "Zurücksetzen"
 
-#: profile_wizard.cpp:96
+#: profile_wizard.cpp:129
 msgid ""
-"Get this value from your camera documentation or from an online source.  You "
-"can use the up/down control  or type in a value directly."
+"Click Detect to read the pixel size from the camera. Otherwise, you can get "
+"this value from your camera documentation or from an online source.  You can "
+"use the up/down control or type in a value directly."
 msgstr ""
 
-#: profile_wizard.cpp:98
+#: profile_wizard.cpp:131
+#, fuzzy
+msgid "Detect"
+msgstr "Dec"
+
+#: profile_wizard.cpp:133
+#, fuzzy
+msgid "Connect to camera and detect pixel size"
+msgstr "Pixelgröße der Nachführkamera"
+
+#: profile_wizard.cpp:137
 #, fuzzy
 msgid "Guide camera pixel size (microns)"
 msgstr "Pixelgröße der Nachführkamera"
 
-#: profile_wizard.cpp:106
+#: profile_wizard.cpp:145
 #, fuzzy
 msgid "Guide scope focal length (mm)"
 msgstr "Leitrohr Brennweite"
 
-#: profile_wizard.cpp:112
+#: profile_wizard.cpp:151
 msgid "Build dark library"
 msgstr ""
 
-#: profile_wizard.cpp:114
+#: profile_wizard.cpp:153
 msgid ""
 "Check this to automatically start the process of building a dark library for "
 "this profile."
 msgstr ""
 
-#: profile_wizard.cpp:115
+#: profile_wizard.cpp:154
 #, fuzzy
 msgid "Profile Name"
 msgstr "Profil"
 
-#: profile_wizard.cpp:121
-msgid "<--- Previous"
+#: profile_wizard.cpp:160
+msgid "< Back"
 msgstr ""
 
-#: profile_wizard.cpp:122
+#: profile_wizard.cpp:161
 msgid "Back up to the previous screen"
 msgstr ""
 
-#: profile_wizard.cpp:124
-msgid "Next--->"
+#: profile_wizard.cpp:163 profile_wizard.cpp:384
+msgid "Next >"
 msgstr ""
 
-#: profile_wizard.cpp:165
+#: profile_wizard.cpp:164 profile_wizard.cpp:385
+msgid "Move forward to next screen"
+msgstr ""
+
+#: profile_wizard.cpp:210
 msgid ""
 "This short sequence of steps will help you identify the equipment you want "
 "to use for guiding and will associate it with a profile name of your choice. "
 "This profile will then be available any time you run PHD2.  At a minimum, "
 "you will need to choose both the guide camera and the mount interface that "
 "PHD2 will use for guiding.  You will also enter some information about the "
-"optical characteristics of your setup.  PHD2 will use this to create a good "
+"optical characteristics of your setup. PHD2 will use this to create a good "
 "'starter set' of guiding and calibration parameters. If you are a new user, "
-"please review the ‘impatient instructions’ under the ‘help’ menu after the "
+"please review the 'Impatient Instructions' under the 'Help' menu after the "
 "wizard dialog has finished."
 msgstr ""
 
-#: profile_wizard.cpp:172
+#: profile_wizard.cpp:217
 msgid ""
 "Select your guide camera from the list.  All cameras supported by PHD2 and "
 "all installed ASCOM cameras are shown. If your camera is not shown, it is "
@@ -3033,7 +3045,7 @@ msgid ""
 "scope so that PHD2 can compute the correct image scale."
 msgstr ""
 
-#: profile_wizard.cpp:177
+#: profile_wizard.cpp:222
 msgid ""
 "Select your mount interface from the list.  This determines how PHD2 will "
 "move the telescope and get pointing information. For most modern mounts, the "
@@ -3042,7 +3054,7 @@ msgid ""
 "well supported by mount firmware."
 msgstr ""
 
-#: profile_wizard.cpp:182
+#: profile_wizard.cpp:227
 msgid ""
 "The mount interface you chose in the previous step doesn't provide pointing "
 "information, so PHD2 will not be able to automatically adjust guiding for "
@@ -3052,7 +3064,7 @@ msgid ""
 "commands."
 msgstr ""
 
-#: profile_wizard.cpp:187
+#: profile_wizard.cpp:232
 msgid ""
 "If you have an adaptive optics (AO) device, you can select it here.  The AO "
 "device will be used for high speed, small guiding corrections, while the "
@@ -3060,7 +3072,7 @@ msgid ""
 "corrections. Calibration of both interfaces will be handled automatically."
 msgstr ""
 
-#: profile_wizard.cpp:191
+#: profile_wizard.cpp:236
 msgid ""
 "Your profile is complete and ready to save.  Give it a name and, optionally, "
 "build a dark-frame library for it.  This is strongly recommended for best "
@@ -3069,102 +3081,126 @@ msgid ""
 "profile name you just entered, and making your changes there."
 msgstr ""
 
-#: profile_wizard.cpp:224
+#: profile_wizard.cpp:269
 msgid ""
 "Please specify camera type, guider focal length, and guide camera pixel size"
 msgstr ""
 
-#: profile_wizard.cpp:229
+#: profile_wizard.cpp:274
 #, fuzzy
 msgid "Please select a mount type to handle guider commands"
 msgstr "Bitte mit einer Montierung verbinden für die  manuelle Nachführung"
 
-#: profile_wizard.cpp:239
+#: profile_wizard.cpp:284
 msgid "Please specify a name for the profile."
 msgstr ""
 
-#: profile_wizard.cpp:243
+#: profile_wizard.cpp:288
 msgid ""
 "There is already a profile with that name. Please choose a different name."
 msgstr ""
 
-#: profile_wizard.cpp:275
+#: profile_wizard.cpp:328
 msgid "Welcome to the PHD2 'first light' wizard"
 msgstr ""
 
-#: profile_wizard.cpp:279
+#: profile_wizard.cpp:332
 msgid "Choose a Guide Camera"
 msgstr ""
 
-#: profile_wizard.cpp:281
+#: profile_wizard.cpp:334
 #, fuzzy
 msgid "Guide Camera:"
 msgstr "Nachführrate"
 
-#: profile_wizard.cpp:291
+#: profile_wizard.cpp:344
 msgid ""
 "Select your guide camera and specify the optical properties of your guiding "
 "set-up"
 msgstr ""
 
-#: profile_wizard.cpp:295
+#: profile_wizard.cpp:348
 #, fuzzy
 msgid "Choose a Mount Connection"
 msgstr "Kamera-Verbindung"
 
-#: profile_wizard.cpp:297
+#: profile_wizard.cpp:350
 #, fuzzy
 msgid "Mount:"
 msgstr "Montierung"
 
-#: profile_wizard.cpp:303
+#: profile_wizard.cpp:356
 msgid ""
 "Select your mount connection - this will determine how guide signals are "
 "transmitted"
 msgstr ""
 
-#: profile_wizard.cpp:312
+#: profile_wizard.cpp:365
 msgid "Choose an Auxillary Mount Connection (optional)"
 msgstr ""
 
-#: profile_wizard.cpp:313
+#: profile_wizard.cpp:366
 #, fuzzy
 msgid "Aux Mount:"
 msgstr "Montierung"
 
-#: profile_wizard.cpp:317
+#: profile_wizard.cpp:370
 msgid ""
 "Since your primary mount connection does not report pointing position, you "
 "may want to choose an 'Aux Mount' connection"
 msgstr ""
 
-#: profile_wizard.cpp:321
+#: profile_wizard.cpp:374
 #, fuzzy
 msgid "Choose an Adaptive Optics Device (optional)"
 msgstr "Auswahl der Adaptiven Optik"
 
-#: profile_wizard.cpp:322
+#: profile_wizard.cpp:375
 #, fuzzy
 msgid "AO:"
 msgstr "AO"
 
-#: profile_wizard.cpp:326
+#: profile_wizard.cpp:379
 #, fuzzy
 msgid "Specify your adaptive optics device if desired"
 msgstr "Auswahl der Adaptiven Optik"
 
-#: profile_wizard.cpp:336
+#: profile_wizard.cpp:390
 msgid "Finish Creating Your New Profile"
 msgstr ""
 
-#: profile_wizard.cpp:339
+#: profile_wizard.cpp:393
 msgid "Finish"
 msgstr ""
 
-#: profile_wizard.cpp:340
+#: profile_wizard.cpp:394
+#, fuzzy
+msgid "Finish creating the equipment profile"
+msgstr "Name für eine neues Ausrüstungsprofil eingeben"
+
+#: profile_wizard.cpp:395
 msgid ""
 "Enter a name for your profile and optionally launch the process to build a "
 "dark library"
+msgstr ""
+
+#: profile_wizard.cpp:506
+#, fuzzy
+msgid "Could not initialize camera"
+msgstr "kann die Nachführung nicht starten"
+
+#: profile_wizard.cpp:507
+#, fuzzy
+msgid "Connecting to camera..."
+msgstr "Kameraverbindung aufbauen ..."
+
+#: profile_wizard.cpp:511
+#, fuzzy
+msgid "Could not connect to camera"
+msgstr "Mit Kamera verbinden"
+
+#: profile_wizard.cpp:518
+msgid "Detect Pixel Size"
 msgstr ""
 
 #: Refine_DefMap.cpp:65
@@ -3537,7 +3573,7 @@ msgstr ""
 msgid " not running"
 msgstr ""
 
-#: scope_GC_USBST4.cpp:119
+#: scope_GC_USBST4.cpp:120
 #, c-format
 msgid "Error writing to GC USB ST4: %s(%d)"
 msgstr ""
@@ -3792,11 +3828,6 @@ msgstr "Fehler bei der Speicherzuordnung während der Aufnahme"
 #, fuzzy
 msgid "Error reading data from FITS file "
 msgstr "Fehler beim Speichern der FITS-Datei"
-
-#: profile_wizard.h:102
-#, fuzzy
-msgid "New Profile Wizard - "
-msgstr "Bewegen..."
 
 #~ msgid "Recalc"
 #~ msgstr "Berechnung wiederholen"
