@@ -104,7 +104,6 @@ private:
     void WrapUp();
 
     DialogState m_State;
-    const wxString m_TitlePrefix = _("New Profile Wizard - ");
 
 public:
 

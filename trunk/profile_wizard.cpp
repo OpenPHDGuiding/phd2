@@ -49,6 +49,7 @@ static const int DialogWidth = 425;
 static const int TextWrapPoint = 400;
 static const int TallHelpHeight = 125;
 static const int NormalHelpHeight = 85;
+static wxString TitlePrefix;
 
 // Utility function to add the <label, input> pairs to a flexgrid
 static void AddTableEntryPair(wxWindow *parent, wxSizer *pTable, const wxString& label, wxWindow *pControl)
@@ -69,6 +70,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
     m_launchDarks(true)
 {
+    TitlePrefix = _("New Profile Wizard - ");
+
     // Create overall vertical sizer
     m_pvSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -316,7 +319,7 @@ void ProfileWizard::UpdateState(const int change)
         switch (m_State)
         {
         case STATE_GREETINGS:
-            this->SetTitle(m_TitlePrefix + _("Introduction"));
+            SetTitle(TitlePrefix + _("Introduction"));
             m_pPrevBtn->Enable(false);
             m_pGearLabel->Show(false);
             m_pGearChoice->Show(false);
@@ -326,7 +329,7 @@ void ProfileWizard::UpdateState(const int change)
             SetSizerAndFit(m_pvSizer);
             break;
         case STATE_CAMERA:
-            this->SetTitle(m_TitlePrefix + _("Choose a Guide Camera"));
+            SetTitle(TitlePrefix + _("Choose a Guide Camera"));
             m_pPrevBtn->Enable(true);
             m_pGearLabel->SetLabel(_("Guide Camera:"));
             m_pGearChoice->Clear();
@@ -342,7 +345,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pInstructions->Wrap(TextWrapPoint);
             break;
         case STATE_MOUNT:
-            this->SetTitle(m_TitlePrefix + _("Choose a Mount Connection"));
+            SetTitle(TitlePrefix + _("Choose a Mount Connection"));
             m_pPrevBtn->Enable(true);
             m_pGearLabel->SetLabel(_("Mount:"));
             m_pGearChoice->Clear();
@@ -359,7 +362,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             else
             {
-                this->SetTitle(m_TitlePrefix + _("Choose an Auxillary Mount Connection (optional)"));
+                SetTitle(TitlePrefix + _("Choose an Auxillary Mount Connection (optional)"));
                 m_pGearLabel->SetLabel(_("Aux Mount:"));
                 m_pGearChoice->Clear();
                 m_pGearChoice->Append(Scope::AuxMountList());
@@ -368,7 +371,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             break;
         case STATE_AO:
-            this->SetTitle(m_TitlePrefix + _("Choose an Adaptive Optics Device (optional)"));
+            SetTitle(TitlePrefix + _("Choose an Adaptive Optics Device (optional)"));
             m_pGearLabel->SetLabel(_("AO:"));
             m_pGearChoice->Clear();
             m_pGearChoice->Append(StepGuider::List());
@@ -384,7 +387,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             break;
         case STATE_WRAPUP:
-            this->SetTitle(m_TitlePrefix + _("Finish Creating Your New Profile"));
+            SetTitle(TitlePrefix + _("Finish Creating Your New Profile"));
             m_pGearGrid->Show(false);
             m_pWrapUp->Show(true);
             m_pNextBtn->SetLabel(_("Finish"));
