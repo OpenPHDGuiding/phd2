@@ -77,6 +77,22 @@ static void GetExposureDurations(std::vector<int> *vec)
     vec->erase(vec->begin()); // remove "Auto"
 }
 
+static wxString MinExposureDefault()
+{
+    if (pMount && pMount->IsStepGuider())
+        return _T("0.1 s");
+    else
+        return _T("1.0 s");
+}
+
+static wxString MaxExposureDefault()
+{
+    if (pMount && pMount->IsStepGuider())
+        return _T("2.5 s");
+    else
+        return _T("6.0 s");
+}
+
 // Dialog operates in one of two modes: 1) To create a user-requested dark library or 2) To create a master dark frame
 // and associated data files needed to construct a new defect map
 DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
@@ -101,14 +117,14 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
             expCount, &m_expStrings[0], wxCB_READONLY);
 
         AddTableEntryPair(this, pDarkParams, _("Min Exposure Time"), m_pDarkMinExpTime);
-        m_pDarkMinExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_min_exptime", m_expStrings[0]));
+        m_pDarkMinExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_min_exptime", MinExposureDefault()));
         m_pDarkMinExpTime->SetToolTip(_("Minimum exposure time for darks. Choose a value corresponding to the shortest camera exposure you will use for guiding."));
 
         m_pDarkMaxExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
             expCount, &m_expStrings[0], wxCB_READONLY);
 
         AddTableEntryPair(this, pDarkParams, _("Max Exposure Time"), m_pDarkMaxExpTime);
-        m_pDarkMaxExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_max_exptime", m_expStrings[expCount - 1]));
+        m_pDarkMaxExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_max_exptime", MaxExposureDefault()));
         m_pDarkMaxExpTime->SetToolTip(_("Maximum exposure time for darks. Choose a value corresponding to the longest camera exposure you will use for guiding."));
 
         m_pDarkCount = NewSpinnerInt(this, width, pConfig->Profile.GetInt("/camera/darks_num_frames", DefDarkCount), 1, 20, 1, _("Number of dark frames for each exposure time"));
@@ -322,9 +338,9 @@ void DarksDialog::OnReset(wxCommandEvent& evt)
 {
     if (buildDarkLib)
     {
-        m_pDarkMinExpTime->SetValue(m_expStrings[0]);
+        m_pDarkMinExpTime->SetValue(MinExposureDefault());
         int expCount = m_expStrings.Count();
-        m_pDarkMaxExpTime->SetValue(m_expStrings[expCount - 1]);
+        m_pDarkMaxExpTime->SetValue(MaxExposureDefault());
         m_pDarkCount->SetValue(DefDarkCount);
     }
     else
