@@ -202,6 +202,11 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     wxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 
     m_infoBar = new wxInfoBar(guiderWin);
+    m_infoBar->Connect(BUTTON_ALERT_ACTION, wxEVT_BUTTON,
+        wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+    m_infoBar->Connect(BUTTON_ALERT_CLOSE, wxEVT_BUTTON,
+        wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+
     sizer->Add(m_infoBar, wxSizerFlags().Expand());
 
     pGuider = new GuiderOneStar(guiderWin);
@@ -896,30 +901,77 @@ static wxString WrapText(wxWindow *win, const wxString& text, int width)
     return Wrapper(win, text, width).Str();
 }
 
-static void DoAlert(wxInfoBar *infoBar, const wxString& msg, int flags)
+struct alert_params
 {
-    Debug.AddLine(wxString::Format("Alert: %s", msg));
-    infoBar->ShowMessage(pFrame ? WrapText(infoBar, msg, pFrame->GetSize().GetWidth() - 80) : msg, flags);
+    wxString msg;
+    wxString buttonLabel;
+    int flags;
+    alert_fn *fn;
+    long arg;
+};
+
+void MyFrame::OnAlertButton(wxCommandEvent& evt)
+{
+    if (evt.GetId() == BUTTON_ALERT_ACTION && m_alertFn)
+        (*m_alertFn)(m_alertFnArg);
+    m_infoBar->Dismiss();
 }
 
-void MyFrame::Alert(const wxString& msg, int flags)
+void MyFrame::DoAlert(const alert_params& params)
+{
+    Debug.AddLine(wxString::Format("Alert: %s", params.msg));
+    m_alertFn = params.fn;
+    m_alertFnArg = params.arg;
+
+    int buttonSpace = 80;
+    m_infoBar->RemoveButton(BUTTON_ALERT_ACTION);
+    m_infoBar->RemoveButton(BUTTON_ALERT_CLOSE);
+    if (params.fn)
+    {
+        m_infoBar->AddButton(BUTTON_ALERT_ACTION, params.buttonLabel);
+        m_infoBar->AddButton(BUTTON_ALERT_CLOSE, _("Close"));
+        buttonSpace = 280;
+    }
+
+    m_infoBar->ShowMessage(pFrame ? WrapText(m_infoBar, params.msg, wxMax(pFrame->GetSize().GetWidth() - buttonSpace, 100)) : params.msg, params.flags);
+}
+
+void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, int flags)
 {
     if (wxThread::IsMain())
     {
-        DoAlert(m_infoBar, msg, flags);
+        alert_params params;
+        params.msg = msg;
+        params.buttonLabel = buttonLabel;
+        params.flags = flags;
+        params.fn = fn;
+        params.arg = arg;
+        DoAlert(params);
     }
     else
     {
+        alert_params *params = new alert_params;
+        params->msg = msg;
+        params->buttonLabel = buttonLabel;
+        params->flags = flags;
+        params->fn = fn;
+        params->arg = arg;
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, ALERT_FROM_THREAD_EVENT);
-        event->SetString(msg);
-        event->SetInt(flags);
+        event->SetExtraLong((long) params);
         wxQueueEvent(this, event);
     }
 }
 
+void MyFrame::Alert(const wxString& msg, int flags)
+{
+    Alert(msg, wxEmptyString, 0, 0, flags);
+}
+
 void MyFrame::OnAlertFromThread(wxThreadEvent& event)
 {
-    DoAlert(m_infoBar, event.GetString(), event.GetInt());
+    alert_params *params = (alert_params *) event.GetExtraLong();
+    DoAlert(*params);
+    delete params;
 }
 
 /*
