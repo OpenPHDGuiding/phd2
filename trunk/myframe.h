@@ -38,6 +38,9 @@
 #define MYFRAME_H_INCLUDED
 
 class WorkerThread;
+class MyFrame;
+class RefineDefMap;
+struct alert_params;
 
 enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
@@ -67,9 +70,6 @@ enum LOGGED_IMAGE_FORMAT
     LIF_RAW_FITS
 };
 
-class MyFrame;
-class RefineDefMap;
-
 struct AutoExposureCfg
 {
     bool enabled;
@@ -77,6 +77,8 @@ struct AutoExposureCfg
     int maxExposure;
     double targetSNR;
 };
+
+typedef void alert_fn(long);
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
 {
@@ -326,6 +328,7 @@ public:
     double GetCameraPixelScale(void);
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
+    void Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, int flags = wxICON_EXCLAMATION);
     virtual void SetStatusText(const wxString& text, int number = 0);
     virtual wxString GetSettingsSummary();
 
@@ -334,9 +337,6 @@ private:
     WorkerThread *m_pPrimaryWorkerThread;
     WorkerThread *m_pSecondaryWorkerThread;
 
-    bool StartWorkerThread(WorkerThread*& pWorkerThread);
-    void StopWorkerThread(WorkerThread*& pWorkerThread);
-
     wxSocketServer *SocketServer;
 
     wxTimer m_statusbarTimer;
@@ -344,12 +344,17 @@ private:
     int m_exposureDuration;
     AutoExposureCfg m_autoExp;
 
+    alert_fn *m_alertFn;
+    long m_alertFnArg;
+
+    bool StartWorkerThread(WorkerThread*& pWorkerThread);
+    void StopWorkerThread(WorkerThread*& pWorkerThread);
     void OnSetStatusText(wxThreadEvent& event);
+    void DoAlert(const alert_params& params);
+    void OnAlertButton(wxCommandEvent& evt);
     void OnAlertFromThread(wxThreadEvent& event);
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
-
     void OnMessageBoxProxy(wxCommandEvent& evt);
-
     void SetupMenuBar(void);
     void SetupStatusBar(void);
     void SetupToolBar();
@@ -390,6 +395,8 @@ enum {
     BUTTON_DURATION,
     BUTTON_ADVANCED,
     BUTTON_CAM_PROPERTIES,
+    BUTTON_ALERT_ACTION,
+    BUTTON_ALERT_CLOSE,
     GEAR_DIALOG_IDS_BEGIN,
         GEAR_PROFILES,
         GEAR_PROFILE_MANAGE,
