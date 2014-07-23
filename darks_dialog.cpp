@@ -339,7 +339,6 @@ void DarksDialog::OnReset(wxCommandEvent& evt)
     if (buildDarkLib)
     {
         m_pDarkMinExpTime->SetValue(MinExposureDefault());
-        int expCount = m_expStrings.Count();
         m_pDarkMaxExpTime->SetValue(MaxExposureDefault());
         m_pDarkCount->SetValue(DefDarkCount);
     }
