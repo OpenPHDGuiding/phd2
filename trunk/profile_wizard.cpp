@@ -47,6 +47,7 @@ wxEND_EVENT_TABLE()
 
 static const int DialogWidth = 425;
 static const int TextWrapPoint = 400;
+// Help text heights - "tall" is for greetings page, "normal" is for gear selection panels
 static const int TallHelpHeight = 150;
 static const int NormalHelpHeight = 85;
 static wxString TitlePrefix;
@@ -107,7 +108,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
 
     // Verbose help block
     m_pHelpGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("More Info"));
-    m_pHelpText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, TallHelpHeight));
+    m_pHelpText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, -1));
+    // Vertical sizing of help text will be handled in state machine
     m_pHelpGroup->Add(m_pHelpText, wxSizerFlags().Border(wxLEFT, 10).Border(wxBOTTOM, 10));
     m_pvSizer->Add(m_pHelpGroup, wxSizerFlags().Border(wxALL, 5));
 
@@ -326,6 +328,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pUserProperties->Show(false);
             m_pWrapUp->Show(false);
             m_pInstructions->SetLabel(_("Welcome to the PHD2 'first light' wizard"));
+            m_pHelpText->SetSizeHints(wxSize(-1, TallHelpHeight));
             SetSizerAndFit(m_pvSizer);
             break;
         case STATE_CAMERA:
@@ -340,6 +343,7 @@ void ProfileWizard::UpdateState(const int change)
             m_pGearChoice->Show(true);
             m_pUserProperties->Show(true);
             m_pWrapUp->Show(false);
+            m_pHelpText->SetSizeHints(wxSize(-1, NormalHelpHeight));
             SetSizerAndFit(m_pvSizer);
             m_pInstructions->SetLabel(_("Select your guide camera and specify the optical properties of your guiding set-up"));
             m_pInstructions->Wrap(TextWrapPoint);
