@@ -88,7 +88,6 @@ private:
     int m_FocalLength;
     double m_PixelSize;
     wxString m_ProfileName;
-    bool m_ShowingHelp;
     wxBitmap *m_bitmaps[NUM_PAGES];
 
     void OnNext(wxCommandEvent& evt);

@@ -242,6 +242,7 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     }
 
+Debug.AddLine(wxString::Format("WIZ: %s\n", hText));
     m_pHelpText->SetLabel(hText);
     m_pHelpText->Wrap(TextWrapPoint);
 }
@@ -404,10 +405,8 @@ void ProfileWizard::UpdateState(const int change)
             break;
         }
     }
-    if (m_ShowingHelp)
-    {
-        ShowHelp(m_State);
-    }
+
+    ShowHelp(m_State);
 }
 
 static int GetCalibrationStepSize(int focalLength, double pixelSize)
