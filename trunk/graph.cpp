@@ -451,9 +451,9 @@ int GraphLogWindow::GetLength(void) const
 
 void GraphLogWindow::SetLength(int length)
 {
-    if (length > m_pClient->m_history.capacity())
+    if (length > (int) m_pClient->m_history.capacity())
         length = m_pClient->m_history.capacity();
-    if (length < m_pClient->m_minLength)
+    if (length < (int) m_pClient->m_minLength)
         length = m_pClient->m_minLength;
     m_pClient->m_length = length;
     m_pClient->RecalculateTrendLines();
