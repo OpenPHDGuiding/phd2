@@ -156,6 +156,14 @@ class GraphLogWindow : public wxWindow
     void UpdateRADecDxDyLabels(void);
 
 public:
+
+    enum {
+        DefaultMinLength = 50,
+        DefaultMaxLength = 400,
+        DefaultMinHeight = 1,
+        DefaultMaxHeight = 16,
+    };
+
     GraphLogWindow(wxWindow *parent);
     ~GraphLogWindow(void);
 
@@ -164,6 +172,10 @@ public:
     void SetState(bool is_active);
     void EnableTrendLines(bool enable);
     GraphLogClientWindow::GRAPH_MODE SetMode(GraphLogClientWindow::GRAPH_MODE newMode);
+    int GetLength(void) const;
+    void SetLength(int length);
+    int GetHeight(void) const;
+    void SetHeight(int height);
 
     void OnPaint(wxPaintEvent& evt);
     void OnButtonSettings(wxCommandEvent& evt);

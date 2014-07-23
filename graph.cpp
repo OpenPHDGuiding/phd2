@@ -42,11 +42,6 @@
 #include <wx/utils.h>
 #include <wx/colordlg.h>
 
-static const int DefaultMinLength =  50;
-static const int DefaultMaxLength = 400;
-static const int DefaultMinHeight =  1;
-static const int DefaultMaxHeight = 16;
-
 BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_PAINT(GraphLogWindow::OnPaint)
     EVT_BUTTON(BUTTON_GRAPH_SETTINGS,GraphLogWindow::OnButtonSettings)
@@ -445,15 +440,25 @@ void GraphLogWindow::OnMenuLength(wxCommandEvent& evt)
     for (int id = MENU_LENGTH_BEGIN; id < evt.GetId(); id++)
         val *= 2;
 
-    m_pClient->m_length = val;
-
-    m_pClient->RecalculateTrendLines();
-
-    pConfig->Global.SetInt("/graph/length", val);
-
-    m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), val));
-
+    SetLength(val);
     Refresh();
+}
+
+int GraphLogWindow::GetLength(void) const
+{
+    return m_pClient->m_length;
+}
+
+void GraphLogWindow::SetLength(int length)
+{
+    if (length > m_pClient->m_history.capacity())
+        length = m_pClient->m_history.capacity();
+    if (length < m_pClient->m_minLength)
+        length = m_pClient->m_minLength;
+    m_pClient->m_length = length;
+    m_pClient->RecalculateTrendLines();
+    m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), length));
+    pConfig->Global.SetInt("/graph/length", length);
 }
 
 void GraphLogWindow::OnButtonHeight(wxCommandEvent& WXUNUSED(evt))
@@ -483,13 +488,20 @@ void GraphLogWindow::OnMenuHeight(wxCommandEvent& evt)
     for (int id = MENU_HEIGHT_BEGIN; id < evt.GetId(); id++)
         val *= 2;
 
-    m_pClient->m_height = val;
-
-    pConfig->Global.SetInt("/graph/height", m_pClient->m_height);
-
-    UpdateHeightButtonLabel();
-
+    SetHeight(val);
     Refresh();
+}
+
+int GraphLogWindow::GetHeight(void) const
+{
+    return m_pClient->m_height;
+}
+
+void GraphLogWindow::SetHeight(int height)
+{
+    m_pClient->m_height = height;
+    UpdateHeightButtonLabel();
+    pConfig->Global.SetInt("/graph/height", height);
 }
 
 void GraphLogWindow::SetState(bool is_active)
@@ -696,16 +708,16 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
         pConfig->Global.SetString("/graph/DecColor", m_decOrDyColor.GetAsString(wxC2S_HTML_SYNTAX));
     }
 
-    int minLength = pConfig->Global.GetInt("/graph/minLength", DefaultMinLength);
+    int minLength = pConfig->Global.GetInt("/graph/minLength", GraphLogWindow::DefaultMinLength);
     SetMinLength(minLength);
 
-    int maxLength = pConfig->Global.GetInt("/graph/maxLength", DefaultMaxLength);
+    int maxLength = pConfig->Global.GetInt("/graph/maxLength", GraphLogWindow::DefaultMaxLength);
     SetMaxLength(maxLength);
 
-    int minHeight = pConfig->Global.GetInt("/graph/minHeight", DefaultMinHeight);
+    int minHeight = pConfig->Global.GetInt("/graph/minHeight", GraphLogWindow::DefaultMinHeight);
     SetMinHeight(minHeight);
 
-    int maxHeight = pConfig->Global.GetInt("/graph/maxHeight", DefaultMaxHeight);
+    int maxHeight = pConfig->Global.GetInt("/graph/maxHeight", GraphLogWindow::DefaultMaxHeight);
     SetMaxHeight(maxHeight);
 
     m_length = pConfig->Global.GetInt("/graph/length", m_minLength * 2);
@@ -757,7 +769,7 @@ bool GraphLogClientWindow::SetMinLength(unsigned int minLength)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_minLength = DefaultMinLength;
+        m_minLength = GraphLogWindow::DefaultMinLength;
     }
 
     pConfig->Global.SetInt("/graph/minLength", m_minLength);
@@ -812,7 +824,7 @@ bool GraphLogClientWindow::SetMinHeight(unsigned int minHeight)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_minHeight = DefaultMinHeight;
+        m_minHeight = GraphLogWindow::DefaultMinHeight;
     }
 
     pConfig->Global.SetInt("/graph/minHeight", m_minHeight);
@@ -836,8 +848,8 @@ bool GraphLogClientWindow::SetMaxHeight(unsigned int maxHeight)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_minHeight = DefaultMinHeight;
-        m_maxHeight = DefaultMaxHeight;
+        m_minHeight = GraphLogWindow::DefaultMinHeight;
+        m_maxHeight = GraphLogWindow::DefaultMaxHeight;
     }
 
     pConfig->Global.SetInt("/graph/maxHeight", m_maxHeight);

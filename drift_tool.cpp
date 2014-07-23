@@ -75,6 +75,8 @@ struct DriftToolWin : public wxFrame
     bool m_save_lock_pos_is_sticky;
     bool m_save_use_subframes;
     GraphLogClientWindow::GRAPH_MODE m_save_graph_mode;
+    int m_save_graph_length;
+    int m_save_graph_height;
 
     bool m_can_slew;
     bool m_slewing;
@@ -283,6 +285,13 @@ DriftToolWin::DriftToolWin()
 
     // graph must be showing RA/Dec
     m_save_graph_mode = pFrame->pGraphLog->SetMode(GraphLogClientWindow::MODE_RADEC);
+
+    // resize graph scale
+    m_save_graph_length = pFrame->pGraphLog->GetLength();
+    pFrame->pGraphLog->SetLength(pConfig->Global.GetInt("/DriftTool/GraphLength", GraphLogWindow::DefaultMaxLength));
+    m_save_graph_height = pFrame->pGraphLog->GetHeight();
+    pFrame->pGraphLog->SetHeight(pConfig->Global.GetInt("/DriftTool/GraphHeight", GraphLogWindow::DefaultMaxHeight));
+    pFrame->pGraphLog->Refresh();
 
     // we do not want sticky lock position enabled
     m_save_lock_pos_is_sticky = pFrame->pGuider->LockPosIsSticky();
@@ -586,6 +595,13 @@ void DriftToolWin::OnClose(wxCloseEvent& evt)
 
     // restore graph mode
     pFrame->pGraphLog->SetMode(m_save_graph_mode);
+
+    // restore graph scale
+    pConfig->Global.SetInt("/DriftTool/GraphLength", pFrame->pGraphLog->GetLength());
+    pFrame->pGraphLog->SetLength(m_save_graph_length);
+    pConfig->Global.SetInt("/DriftTool/GraphHeight", pFrame->pGraphLog->GetHeight());
+    pFrame->pGraphLog->SetHeight(m_save_graph_height);
+    pFrame->pGraphLog->Refresh();
 
     // turn sticky lock position back on if we disabled it
     if (m_save_lock_pos_is_sticky)
