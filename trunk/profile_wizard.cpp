@@ -242,7 +242,6 @@ void ProfileWizard::ShowHelp(DialogState state)
         break;
     }
 
-Debug.AddLine(wxString::Format("WIZ: %s\n", hText));
     m_pHelpText->SetLabel(hText);
     m_pHelpText->Wrap(TextWrapPoint);
 }
