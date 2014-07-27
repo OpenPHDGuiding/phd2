@@ -775,7 +775,8 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, const
     }
     else
     {
-        memcpy(Image.ImageData, rawdata, Image.NPixels * sizeof(Image.ImageData[0]));
+        for (int i = 0; i < Image.NPixels; i++)
+            Image.ImageData[i] = (unsigned short) rawdata[i];
     }
 
     hr = SafeArrayUnaccessData(rawarray);
