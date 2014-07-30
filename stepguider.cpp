@@ -869,7 +869,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
         pFrame->pStepGuiderGraph->AppendData(m_xOffset, m_yOffset, m_avgOffset);
 
         // consider bumping the secondary mount if this is a normal move
-        if (normalMove && pSecondaryMount)
+        if (normalMove && pSecondaryMount && pSecondaryMount->IsConnected())
         {
             int absX = abs(CurrentPosition(RIGHT));
             int absY = abs(CurrentPosition(UP));
