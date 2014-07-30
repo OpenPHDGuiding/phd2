@@ -665,7 +665,7 @@ void Guider::SetState(GUIDER_STATE newState)
                 }
                 break;
             case STATE_CALIBRATING_SECONDARY:
-                if (!pSecondaryMount)
+                if (!pSecondaryMount || !pSecondaryMount->IsConnected())
                 {
                     newState = STATE_CALIBRATED;
                 }
@@ -979,7 +979,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
                 // Fall through
             case STATE_CALIBRATING_SECONDARY:
-                if (pSecondaryMount)
+                if (pSecondaryMount && pSecondaryMount->IsConnected())
                 {
                     if (!pSecondaryMount->IsCalibrated())
                     {
@@ -996,7 +996,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                         break;
                     }
                 }
-                assert(!pSecondaryMount || pSecondaryMount->IsCalibrated());
+                assert(!pSecondaryMount || !pSecondaryMount->IsConnected() || pSecondaryMount->IsCalibrated());
 
                 // camera angle is now known, so ok to calculate shift rate camera coords
                 UpdateLockPosShiftCameraCoords();
