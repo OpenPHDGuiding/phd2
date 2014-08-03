@@ -454,6 +454,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetInt("/frame/focalLength", m_FocalLength);
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
+    GuideLog.EnableLogging();               // Especially for newbies
     // Construct a good baseline set of guiding parameters based on image scale
     SetGuideAlgoParams(m_PixelSize, m_FocalLength);
 
