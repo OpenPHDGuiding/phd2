@@ -40,7 +40,7 @@
 
 #include "point.h"
 
-class Star:public PHD_Point
+class Star : public PHD_Point
 {
 public:
     enum FindResult
