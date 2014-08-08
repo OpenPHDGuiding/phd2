@@ -406,14 +406,14 @@ void MyFrame::SetupMenuBar(void)
 {
     wxMenu *file_menu = new wxMenu;
     file_menu->AppendSeparator();
-    file_menu->Append(wxID_SAVE, _("Save Image"), _("Save current image"));
+    file_menu->Append(wxID_SAVE, _("Save Image..."), _("Save current image"));
     file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
     tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
-    tools_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data"), _("Restore calibration data from last successful calibration"));
-    tools_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data"), _("Manually calibrate"));
+    tools_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data..."), _("Restore calibration data from last successful calibration"));
+    tools_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data..."), _("Manually calibrate"));
     tools_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_DRIFTTOOL,_("Drift Align"), _("Run the Drift Alignment tool"));
@@ -588,6 +588,14 @@ void MyFrame::SetAutoExposureCfg(int minExp, int maxExp, double targetSNR)
     m_autoExp.minExposure = minExp;
     m_autoExp.maxExposure = maxExp;
     m_autoExp.targetSNR = targetSNR;
+}
+
+wxString MyFrame::ExposureDurationSummary(void) const
+{
+    if (m_autoExp.enabled)
+        return wxString::Format("Auto (min = %d ms, max = %d ms, SNR = %.2f)", m_autoExp.minExposure, m_autoExp.maxExposure, m_autoExp.targetSNR);
+    else
+        return wxString::Format("%d ms", m_exposureDuration);
 }
 
 void MyFrame::ResetAutoExposure(void)

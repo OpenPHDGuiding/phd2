@@ -238,8 +238,8 @@ public:
     virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
 private:
     virtual void InvalidateCurrentPosition(bool fullReset = false) = 0;
-    virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage) = 0;
-    virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position)=0;
+    virtual bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo) = 0;
+    virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position) = 0;
 
 public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;

@@ -481,7 +481,7 @@ void StepGuider::SetCalibration(double xAngle, double yAngle, double xRate, doub
  *  - the guider returns to the center of its travel and calibration is complete
  */
 
-bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
+bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 {
     bool bError = false;
 
@@ -572,9 +572,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationXAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
                 m_calibrationXRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                                                      (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationXAngle, m_calibrationXRate);
+                status1.Printf(_("angle=%.1f rate=%.2f"), m_calibrationXAngle * 180. / M_PI, m_calibrationXRate);
                 GuideLog.CalibrationDirectComplete(this, "Left", m_calibrationXAngle, m_calibrationXRate);
-                Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.2f rate=%.2f", m_calibrationXAngle, m_calibrationXRate));
+                Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.1f rate=%.2f", m_calibrationXAngle * 180. / M_PI, m_calibrationXRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationIterations = 0;
@@ -611,9 +611,9 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                 m_calibrationYAngle = m_calibrationAveragedLocation.Angle(m_calibrationStartingLocation);
                 m_calibrationYRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                                                      (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationYAngle, m_calibrationYRate);
-                GuideLog.CalibrationDirectComplete(this, "Left", m_calibrationYAngle, m_calibrationYRate);
-                Debug.AddLine(wxString::Format("UP calibration completes with angle=%.2f rate=%.2f", m_calibrationYAngle, m_calibrationYRate));
+                status1.Printf(_("angle=%.1f rate=%.2f"), m_calibrationYAngle * 180. / M_PI, m_calibrationYRate);
+                GuideLog.CalibrationDirectComplete(this, "Up", m_calibrationYAngle, m_calibrationYRate);
+                Debug.AddLine(wxString::Format("UP calibration completes with angle=%.1f rate=%.2f", m_calibrationYAngle * 180. / M_PI, m_calibrationYRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationState = CALIBRATION_STATE_RECENTER;
@@ -1011,15 +1011,20 @@ bool StepGuider::WouldHitLimit(GUIDE_DIRECTION direction, int steps)
     return bReturn;
 }
 
-wxString StepGuider::GetSettingsSummary() {
+wxString StepGuider::GetSettingsSummary()
+{
     // return a loggable summary of current mount settings
     return Mount::GetSettingsSummary() +
-        wxString::Format("Calibration steps = %d, Samples to average = %d, Bump percentage = %d, Bump step = %.2f\n",
-            GetCalibrationStepsPerIteration(),
-            GetSamplesToAverage(),
+        wxString::Format("Bump percentage = %d, Bump step = %.2f\n",
             GetBumpPercentage(),
             GetBumpMaxStepsPerCycle()
         );
+}
+
+wxString StepGuider::CalibrationSettingsSummary()
+{
+    return wxString::Format("Calibration steps = %d, Samples to average = %d",
+        GetCalibrationStepsPerIteration(), GetSamplesToAverage());
 }
 
 wxString StepGuider::GetMountClassName() const

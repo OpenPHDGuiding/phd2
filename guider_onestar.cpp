@@ -395,12 +395,15 @@ static wxString StarStatusStr(const Star& star)
     }
 }
 
-bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessage)
+bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo)
 {
     if (!m_star.IsValid() && m_star.X == 0.0 && m_star.Y == 0.0)
     {
         Debug.AddLine("UpdateCurrentPosition: no star selected");
-        statusMessage = _("No star selected");
+        errorInfo->starError = Star::FindResult::STAR_ERROR;
+        errorInfo->starMass = 0.0;
+        errorInfo->starSNR = 0.0;
+        errorInfo->status = _("No star selected");
         return true;
     }
 
@@ -412,7 +415,10 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessa
 
         if (!newStar.Find(pImage, m_searchRegion))
         {
-            statusMessage = StarStatusStr(newStar);
+            errorInfo->starError = newStar.GetError();
+            errorInfo->starMass = 0.0;
+            errorInfo->starSNR = 0.0;
+            errorInfo->status = StarStatusStr(newStar);
             m_star.SetError(newStar.GetError());
             throw ERROR_INFO("UpdateCurrentPosition():newStar not found");
         }
@@ -443,6 +449,10 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessa
             if (massRatio > m_massChangeThreshold)
             {
                 m_star.SetError(Star::STAR_MASSCHANGE);
+                errorInfo->starError = Star::STAR_MASSCHANGE;
+                errorInfo->starMass = newStar.Mass;
+                errorInfo->starSNR = newStar.SNR;
+                errorInfo->status = StarStatusStr(m_star);
                 pFrame->SetStatusText(wxString::Format(_("Mass: %.0f vs %.0f"), newStar.Mass, m_star.Mass), 1);
                 Debug.Write(wxString::Format("UpdateGuideState(): star mass ratio=%.1f, thresh=%.1f new=%.1f, old=%.1f\n", massRatio, m_massChangeThreshold, newStar.Mass, m_star.Mass));
                 throw THROW_INFO("massChangeThreshold error");
@@ -464,7 +474,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, wxString& statusMessa
 
         pFrame->AdjustAutoExposure(m_star.SNR);
 
-        statusMessage.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
+        errorInfo->status.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
     }
     catch (wxString Msg)
     {

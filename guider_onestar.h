@@ -102,7 +102,7 @@ public:
 private:
     virtual bool IsValidLockPosition(const PHD_Point& pt);
     virtual void InvalidateCurrentPosition(bool fullReset = false);
-    virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage);
+    virtual bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo);
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);
 
     void OnLClick(wxMouseEvent& evt);
