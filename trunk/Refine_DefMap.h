@@ -86,7 +86,7 @@ class RefineDefMap : public wxDialog
 public:
     RefineDefMap(wxWindow *pParent);
     ~RefineDefMap();
-    void InitUI();
+    bool InitUI();
 
 private:
     void LoadFromProfile();

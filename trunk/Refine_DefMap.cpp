@@ -62,7 +62,7 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
 }
 
 RefineDefMap::RefineDefMap(wxWindow *parent) :
-    wxDialog(parent, wxID_ANY, _("Refine Bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX)
+wxDialog(parent, wxID_ANY, _("Refine Bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX), m_profileId(-1)
 {
     SetSize(wxSize(900, 400));
 
@@ -205,12 +205,12 @@ RefineDefMap::RefineDefMap(wxWindow *parent) :
     ShowStatus(_("Adjust sliders to increase/decrease pixels marked as bad"), false);
 }
 
-void RefineDefMap::InitUI()
+bool RefineDefMap::InitUI()
 {
     if (pConfig->GetCurrentProfileId() == m_profileId)
     {
         RefreshPreview();
-        return;
+        return true;
     }
 
     bool firstTime = false;
@@ -226,13 +226,14 @@ void RefineDefMap::InitUI()
         LoadFromProfile();
         if (firstTime)
             ApplyNewMap();
+        RefreshPreview();
+        return true;
     }
     else
     {
-        Destroy();      // No master dark files to work with, user didn't build them
+        return false;      // No master dark files to work with, user didn't build them
     }
 
-    RefreshPreview();
 }
 
 // Do the initial layout of the UI controls
