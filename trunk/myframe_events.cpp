@@ -74,6 +74,8 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
         m_autoExp.enabled = true;
     }
 
+    GuideLog.SetGuidingParam("Exposure", ExposureDurationSummary());
+
     pConfig->Profile.SetString("/ExposureDuration", sel);
 }
 

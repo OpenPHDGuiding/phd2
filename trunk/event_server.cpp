@@ -1446,9 +1446,25 @@ void EventServer::NotifyStarSelected(const PHD_Point& pt)
     SIMPLE_NOTIFY_EV(ev_star_selected(pt));
 }
 
-void EventServer::NotifyStarLost()
+void EventServer::NotifyStarLost(const FrameDroppedInfo& info)
 {
-    SIMPLE_NOTIFY("StarLost");
+    if (m_eventServerClients.empty())
+        return;
+
+    Ev ev("StarLost");
+
+    ev << NV("Frame", info.frameNumber)
+       << NV("Time", info.time, 3)
+       << NV("StarMass", info.starMass, 0)
+       << NV("SNR", info.starSNR, 2);
+
+    if (info.starError)
+        ev << NV("ErrorCode", info.starError);
+
+    if (!info.status.IsEmpty())
+        ev << NV("Status", info.status);
+
+    do_notify(m_eventServerClients, ev);
 }
 
 void EventServer::NotifyStartGuiding()
@@ -1478,7 +1494,7 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
 
     Ev ev("GuideStep");
 
-    ev << NV("Frame", (int) pFrame->m_frameCounter)
+    ev << NV("Frame", step.frameNumber)
        << NV("Time", step.time, 3)
        << NVMount(step.mount)
        << NV("dx", step.cameraOffset->X, 3)
@@ -1508,9 +1524,8 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
     ev << NV("StarMass", step.starMass, 0)
        << NV("SNR", step.starSNR, 2);
 
-    int errorCode = pFrame->pGuider->StarError();
-    if (errorCode)
-       ev << NV("ErrorCode", errorCode);
+    if (step.starError)
+       ev << NV("ErrorCode", step.starError);
 
     do_notify(m_eventServerClients, ev);
 }

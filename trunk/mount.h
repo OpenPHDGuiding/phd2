@@ -221,6 +221,7 @@ public:
     virtual bool CanReportPosition();                   // Can report RA, Dec, side-of-pier, etc.
 
     virtual wxString GetSettingsSummary();
+    virtual wxString CalibrationSettingsSummary() { return wxEmptyString; }
 
     virtual bool CalibrationFlipRequiresDecFlip(void);
 

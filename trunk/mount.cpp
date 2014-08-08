@@ -643,7 +643,8 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
 
         GuideStepInfo info;
         info.mount = this;
-        info.time = (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0;
+        info.frameNumber = pFrame->m_frameCounter;
+        info.time = pFrame->TimeSinceGuidingStarted();
         info.cameraOffset = &cameraVectorEndpoint;
         info.mountOffset = &mountVectorEndpoint;
         info.guideDistanceRA = xDistance;
@@ -655,6 +656,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         info.aoPos = GetAoPos();
         info.starMass = pFrame->pGuider->StarMass();
         info.starSNR = pFrame->pGuider->SNR();
+        info.starError = pFrame->pGuider->StarError();
 
         GuideLog.GuideStep(info);
         EvtServer.NotifyGuideStep(info);
@@ -1127,7 +1129,8 @@ wxString Mount::GetSettingsSummary()
     {
         dec_str = "Unknown";
     }
-    return wxString::Format("Mount = %s,%s connected, guiding %s, %s, Dec = %s, Pier side = %s\n",
+    return wxString::Format("%s = %s,%s connected, guiding %s, %s, Dec = %s, Pier side = %s\n",
+        IsStepGuider() ? "AO" : "Mount",
         m_Name,
         IsConnected() ? " " : " not",
         m_guidingEnabled ? "enabled" : "disabled",

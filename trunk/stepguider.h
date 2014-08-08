@@ -119,6 +119,7 @@ protected:
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual wxString GetSettingsSummary(void);
+    virtual wxString CalibrationSettingsSummary(void);
     virtual wxString GetMountClassName(void) const;
     virtual bool IsStepGuider(void) const;
     virtual wxPoint GetAoPos(void) const;

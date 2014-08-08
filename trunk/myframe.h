@@ -330,7 +330,10 @@ public:
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
     void Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, int flags = wxICON_EXCLAMATION);
     virtual void SetStatusText(const wxString& text, int number = 0);
-    virtual wxString GetSettingsSummary();
+    wxString GetSettingsSummary();
+    wxString ExposureDurationSummary(void) const;
+
+    double TimeSinceGuidingStarted(void) const;
 
 private:
     wxCriticalSection m_CSpWorkerThread;
@@ -526,6 +529,11 @@ inline static wxSize StringSize(const wxWindow *window, const wxString& s, int e
 inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm)
 {
     return 206.265 * pixelSizeMicrons / (double) focalLengthMm;
+}
+
+inline double MyFrame::TimeSinceGuidingStarted(void) const
+{
+    return (wxDateTime::UNow() - m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0;
 }
 
 #endif /* MYFRAME_H_INCLUDED */

@@ -808,6 +808,7 @@ void Guider::StopGuiding(void)
             break;
         case STATE_GUIDING:
             EvtServer.NotifyGuidingStopped();
+            GuideLog.StopGuiding();
             break;
         case STATE_STOP:
             break;
@@ -873,8 +874,13 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             throw THROW_INFO("Skipping frame - guider is paused");
         }
 
-        if (UpdateCurrentPosition(pImage, statusMessage))
+        FrameDroppedInfo info;
+
+        if (UpdateCurrentPosition(pImage, &info))
         {
+            info.frameNumber = pFrame->m_frameCounter;
+            info.time = pFrame->TimeSinceGuidingStarted();
+
             switch (m_state)
             {
                 case STATE_UNINITIALIZED:
@@ -884,17 +890,19 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 case STATE_SELECTED:
                     // we had a current position and lost it
                     SetState(STATE_UNINITIALIZED);
-                    EvtServer.NotifyStarLost();
+                    EvtServer.NotifyStarLost(info);
                     break;
                 case STATE_CALIBRATING_PRIMARY:
                 case STATE_CALIBRATING_SECONDARY:
                     Debug.AddLine("Star lost during calibration... blundering on");
-                    EvtServer.NotifyStarLost();
+                    EvtServer.NotifyStarLost(info);
                     pFrame->SetStatusText(_("star lost"), 1);
                     break;
                 case STATE_GUIDING:
                 {
-                    EvtServer.NotifyStarLost();
+                    GuideLog.FrameDropped(info);
+                    EvtServer.NotifyStarLost(info);
+
                     wxColor prevColor = GetBackgroundColour();
                     SetBackgroundColour(wxColour(64,0,0));
                     ClearBackground();
@@ -909,9 +917,10 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     break;
             }
 
-            statusMessage = "star lost";
+            statusMessage = _("star lost");
             throw THROW_INFO("unable to update current position");
         }
+        statusMessage = info.status;
 
         // we have a star selected, so re-enable subframes
         if (m_forceFullFrame)
@@ -953,7 +962,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     if (pMount->UpdateCalibrationState(CurrentPosition()))
                     {
                         SetState(STATE_UNINITIALIZED);
-                        statusMessage = "calibration failed (primary)";
+                        statusMessage = _("calibration failed (primary)");
                         throw ERROR_INFO("Calibration failed");
                     }
 
@@ -986,7 +995,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                         if (pSecondaryMount->UpdateCalibrationState(CurrentPosition()))
                         {
                             SetState(STATE_UNINITIALIZED);
-                            statusMessage = "calibration failed (secondary)";
+                            statusMessage = _("calibration failed (secondary)");
                             throw ERROR_INFO("Calibration failed");
                         }
                     }
