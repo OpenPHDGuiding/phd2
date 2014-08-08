@@ -91,7 +91,7 @@ static wxString GetDiPropStr(HDEVINFO h, SP_DEVINFO_DATA *data, const wxString& 
     }
     else
     {
-        Debug.AddLine("SSAG failed to get SDRP_DIRVER registry property for SSAG");
+        Debug.AddLine("SSAG failed to get SDRP_DRIVER registry property for SSAG");
     }
 
     return val;
