@@ -228,7 +228,8 @@ void GuidingLog::StartCalibration(Mount *pCalibrationMount)
 
     if (pCamera)
     {
-        m_file.Write(wxString::Format("Camera = %s, Exposure = %s\n",
+        // phdlab v0.5.3 expects camera name on a line by itself
+        m_file.Write(wxString::Format("Camera = %s\nExposure = %s\n",
             pCamera->Name, pFrame->ExposureDurationSummary()));
     }
 
@@ -351,7 +352,7 @@ void GuidingLog::GuidingHeader(void)
     if (pCamera)
     {
         m_file.Write(pCamera->GetSettingsSummary());
-        m_file.Write(wxString::Format("Exposure = " + pFrame->ExposureDurationSummary() + "\n"));
+        m_file.Write("Exposure = " + pFrame->ExposureDurationSummary() + "\n");
     }
 
     if (pMount)
