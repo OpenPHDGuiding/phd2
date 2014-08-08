@@ -400,7 +400,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
     if (!m_star.IsValid() && m_star.X == 0.0 && m_star.Y == 0.0)
     {
         Debug.AddLine("UpdateCurrentPosition: no star selected");
-        errorInfo->starError = Star::FindResult::STAR_ERROR;
+        errorInfo->starError = Star::STAR_ERROR;
         errorInfo->starMass = 0.0;
         errorInfo->starSNR = 0.0;
         errorInfo->status = _("No star selected");
