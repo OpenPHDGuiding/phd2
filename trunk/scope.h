@@ -162,6 +162,7 @@ private:
     MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, bool normalMove, int *amountMoved);
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration);
     int CalibrationMoveSize(void);
+    int CalibrationTotDistance(void);
 
     void ClearCalibration(void);
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);

@@ -629,6 +629,16 @@ bool Scope::IsCalibrated(void)
     }
 }
 
+static double CalibrationDistance(void)
+{
+    return wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
+}
+
+int Scope::CalibrationTotDistance(void)
+{
+    return (int) ceil(CalibrationDistance());
+}
+
 #define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
 
 bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
@@ -641,7 +651,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
         double dX = m_calibrationStartingLocation.dX(currentLocation);
         double dY = m_calibrationStartingLocation.dY(currentLocation);
         double dist = m_calibrationStartingLocation.Distance(currentLocation);
-        double dist_crit = wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
+        double dist_crit = CalibrationDistance();
 
         switch (m_calibrationState)
         {
