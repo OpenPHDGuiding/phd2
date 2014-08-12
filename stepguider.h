@@ -153,6 +153,7 @@ private:
     MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved);
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps);
     int CalibrationMoveSize(void);
+    int CalibrationTotDistance(void);
     void InitBumpPositions(void);
 
     double CalibrationTime(int nCalibrationSteps);

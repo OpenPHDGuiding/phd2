@@ -168,6 +168,7 @@ public:
     virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved) = 0;
     virtual MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
     virtual int CalibrationMoveSize(void) = 0;
+    virtual int CalibrationTotDistance(void) = 0;
 
     // Calibration related routines
     virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;

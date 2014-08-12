@@ -766,6 +766,15 @@ int StepGuider::CalibrationMoveSize(void)
     return m_calibrationStepsPerIteration;
 }
 
+int StepGuider::CalibrationTotDistance(void)
+{
+    // we really have no way of knowing how many pixels calibration will
+    // require, since calibration is step-based and not pixel-based.
+    // For now, let's just assume 25 pixels is sufficient
+    enum { AO_CALIBRATION_PIXELS_NEEDED = 25 };
+    return AO_CALIBRATION_PIXELS_NEEDED;
+}
+
 Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool normalMove, int *amountMoved)
 {
     MOVE_RESULT result = MOVE_OK;

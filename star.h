@@ -67,7 +67,7 @@ public:
      */
     bool Find(usImage *pImg, int searchRegion);
     bool Find(usImage *pImg, int searchRegion, int X, int Y);
-    bool AutoFind(usImage *pImg);
+    bool AutoFind(usImage *pImg, int edgeAllowance);
 
     bool WasFound(FindResult result);
     bool WasFound(void);

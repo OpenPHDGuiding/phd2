@@ -250,8 +250,18 @@ bool GuiderOneStar::AutoSelect(void)
             throw ERROR_INFO("No Current Image");
         }
 
+        // If mount is not calibrated, we need to chose a star a bit farther
+        // from the egde to allow for the motion of the star during
+        // calibration
+        //
+        int edgeAllowance = 0;
+        if (pMount && pMount->IsConnected() && !pMount->IsCalibrated())
+            edgeAllowance = wxMax(edgeAllowance, pMount->CalibrationTotDistance());
+        if (pSecondaryMount && pSecondaryMount->IsConnected() && !pSecondaryMount->IsCalibrated())
+            edgeAllowance = wxMax(edgeAllowance, pSecondaryMount->CalibrationTotDistance());
+
         Star newStar;
-        if (!newStar.AutoFind(pImage))
+        if (!newStar.AutoFind(pImage, edgeAllowance))
         {
             throw ERROR_INFO("Unable to AutoFind");
         }
