@@ -114,6 +114,7 @@
 		58EE981713CD0F74009EC68D /* SBIGUDrv.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 588167710B4DED6900BDA6D4 /* SBIGUDrv.framework */; };
 		58EE981813CD0F74009EC68D /* fcCamFw.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5828185D0B4A022A00E5E22D /* fcCamFw.framework */; };
 		A10CD354197D0150006DD99F /* profile_wizard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10CD352197D0150006DD99F /* profile_wizard.cpp */; };
+		A10CD357199D1423006DD99F /* statswindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10CD355199D1423006DD99F /* statswindow.cpp */; };
 		A117D7151844861000F5B01F /* calrestore_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A117D7131844861000F5B01F /* calrestore_dialog.cpp */; };
 		A140805419195D4600CC55AA /* darks_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A140805219195D4600CC55AA /* darks_dialog.cpp */; };
 		A140805719195D6D00CC55AA /* Refine_DefMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A140805519195D6D00CC55AA /* Refine_DefMap.cpp */; };
@@ -124,7 +125,7 @@
 		A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE287182225E7000B6085 /* json_parser.cpp */; };
 		A1ACE28C1827567B000B6085 /* phdcontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE28A1827567B000B6085 /* phdcontrol.cpp */; };
 		A1AE6D9E1958DDD500F343D8 /* cam_ZWO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AE6D9C1958DDD500F343D8 /* cam_ZWO.cpp */; };
-		A1AE6DA01958E05D00F343D8 /* libASICamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AE6D9F1958E05D00F343D8 /* libASICamera.a */; };
+		A1AE6DA01958E05D00F343D8 /* libASICamera2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AE6D9F1958E05D00F343D8 /* libASICamera2.a */; };
 		F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */; };
 		F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */; };
 /* End PBXBuildFile section */
@@ -351,6 +352,8 @@
 		58F7157D0B20CC700056770B /* PHD2GuideHelp.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = PHD2GuideHelp.zip; sourceTree = SOURCE_ROOT; };
 		A10CD352197D0150006DD99F /* profile_wizard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = profile_wizard.cpp; sourceTree = "<group>"; };
 		A10CD353197D0150006DD99F /* profile_wizard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = profile_wizard.h; sourceTree = "<group>"; };
+		A10CD355199D1423006DD99F /* statswindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = statswindow.cpp; sourceTree = "<group>"; };
+		A10CD356199D1423006DD99F /* statswindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = statswindow.h; sourceTree = "<group>"; };
 		A117D7131844861000F5B01F /* calrestore_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calrestore_dialog.cpp; sourceTree = "<group>"; };
 		A117D7141844861000F5B01F /* calrestore_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calrestore_dialog.h; sourceTree = "<group>"; };
 		A140805219195D4600CC55AA /* darks_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = darks_dialog.cpp; sourceTree = "<group>"; };
@@ -373,7 +376,7 @@
 		A1ACE28B1827567B000B6085 /* phdcontrol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phdcontrol.h; sourceTree = "<group>"; };
 		A1AE6D9C1958DDD500F343D8 /* cam_ZWO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_ZWO.cpp; sourceTree = "<group>"; };
 		A1AE6D9D1958DDD500F343D8 /* cam_ZWO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_ZWO.h; sourceTree = "<group>"; };
-		A1AE6D9F1958E05D00F343D8 /* libASICamera.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libASICamera.a; path = cameras/zwolibs/mac/libASICamera.a; sourceTree = "<group>"; };
+		A1AE6D9F1958E05D00F343D8 /* libASICamera2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libASICamera2.a; path = cameras/zwolibs/mac/libASICamera2.a; sourceTree = "<group>"; };
 		F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calstep_dialog.cpp; sourceTree = "<group>"; };
 		F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = optionsbutton.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -402,7 +405,7 @@
 				2999515118982ED90002D9EB /* libwx_osx_cocoau_propgrid-3.0.a in Frameworks */,
 				2999515218982ED90002D9EB /* libwxjpeg-3.0.a in Frameworks */,
 				2999515318982ED90002D9EB /* libwxpng-3.0.a in Frameworks */,
-				A1AE6DA01958E05D00F343D8 /* libASICamera.a in Frameworks */,
+				A1AE6DA01958E05D00F343D8 /* libASICamera2.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -619,6 +622,8 @@
 				58B8CE5A16E05EDB00F6E68E /* star.h */,
 				58EC727E1749D8B300502727 /* star_profile.cpp */,
 				58EC727F1749D8B300502727 /* star_profile.h */,
+				A10CD355199D1423006DD99F /* statswindow.cpp */,
+				A10CD356199D1423006DD99F /* statswindow.h */,
 				580F80D317810B200020900F /* stepguider_simulator.h */,
 				58EC72801749D8B300502727 /* target.cpp */,
 				58EC72811749D8B300502727 /* target.h */,
@@ -673,7 +678,7 @@
 		58B8CE9016E05F3A00F6E68E /* Libs */ = {
 			isa = PBXGroup;
 			children = (
-				A1AE6D9F1958E05D00F343D8 /* libASICamera.a */,
+				A1AE6D9F1958E05D00F343D8 /* libASICamera2.a */,
 				2999514218982ED90002D9EB /* libwx_baseu_net-3.0.a */,
 				2999514318982ED90002D9EB /* libwx_baseu-3.0.a */,
 				2999514418982ED90002D9EB /* libwx_osx_cocoau_adv-3.0.a */,
@@ -855,6 +860,7 @@
 				A140805719195D6D00CC55AA /* Refine_DefMap.cpp in Sources */,
 				A1AE6D9E1958DDD500F343D8 /* cam_ZWO.cpp in Sources */,
 				A10CD354197D0150006DD99F /* profile_wizard.cpp in Sources */,
+				A10CD357199D1423006DD99F /* statswindow.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
