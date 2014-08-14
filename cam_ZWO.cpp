@@ -47,6 +47,7 @@ Camera_ZWO::Camera_ZWO()
     : m_buffer(0),
     m_capturing(false)
 {
+    Name = _T("ZWO ASI Camera");
     Connected = false;
     m_hasGuideOutput = true;
     HasSubframes = true;
@@ -178,6 +179,7 @@ bool Camera_ZWO::Connect()
 
     m_cameraId = selected;
     Connected = true;
+    Name = info.Name;
 
     FullSize.x = info.MaxWidth;
     FullSize.y = info.MaxHeight;
