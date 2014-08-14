@@ -38,8 +38,10 @@
 #include "cam_ZWO.h"
 #include "cameras/ASICamera2.h"
 
-#include <Shlwapi.h>
-#include <DelayImp.h>
+#ifdef __WINDOWS__
+# include <Shlwapi.h>
+# include <DelayImp.h>
+#endif
 
 Camera_ZWO::Camera_ZWO()
     : m_buffer(0),
@@ -216,6 +218,8 @@ bool Camera_ZWO::Connect()
                 break;
             case ASI_BANDWIDTHOVERLOAD:
                 ASISetControlValue(m_cameraId, caps.ControlID, caps.MinValue, ASI_FALSE);
+                break;
+            default:
                 break;
             }
         }

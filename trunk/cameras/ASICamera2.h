@@ -32,7 +32,7 @@ while(1)
 
 #ifdef _WINDOWS
 	#define ASICAMERA_API __declspec(dllexport)
-#elif defined _LIN
+#else
 	#define ASICAMERA_API 
 #endif
 
