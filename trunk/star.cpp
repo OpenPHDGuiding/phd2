@@ -130,7 +130,7 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
 
         unsigned long maxlval = 0;
         unsigned short max = 0, nearmax1 = 0, nearmax2 = 0;
-        unsigned long mean = 0;
+        unsigned long sum = 0;
 
         for (int y = 0; y < searchsize; y++)
         {
@@ -157,10 +157,9 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
                     nearmax1 = max;
                     max = sval;
                 }
-                mean += sval;
+                sum += sval;
             }
         }
-        mean /= (searchsize * searchsize);
 
         // should be close now, hone in by finding the weighted average position
 
@@ -203,7 +202,12 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
             }
         }
 
-        SNR = (double) max / (double) mean;
+        // SNR = max / mean = max / (sum / area) = max * area / sum
+        if (sum > 0)
+            SNR = (double) max * (double) (searchsize * searchsize) / (double) sum;
+        else
+            SNR = 0.0;
+
         Mass = mass;
 
         if (mass < 10.0) {
