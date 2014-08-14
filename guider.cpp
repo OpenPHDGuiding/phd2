@@ -902,6 +902,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 {
                     GuideLog.FrameDropped(info);
                     EvtServer.NotifyStarLost(info);
+                    pFrame->pGraphLog->AppendData(info);
 
                     wxColor prevColor = GetBackgroundColour();
                     SetBackgroundColour(wxColour(64,0,0));

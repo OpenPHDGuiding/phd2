@@ -140,6 +140,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "circbuf.h"
 #include "guidinglog.h"
 #include "graph.h"
+#include "statswindow.h"
 #include "star_profile.h"
 #include "target.h"
 #include "graph-stepguider.h"
