@@ -110,6 +110,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_DEBUG,MyFrame::OnLog)
     EVT_MENU(MENU_TOOLBAR,MyFrame::OnToolBar)
     EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
+    EVT_MENU(MENU_STATS, MyFrame::OnStats)
     EVT_MENU(MENU_AO_GRAPH, MyFrame::OnAoGraph)
     EVT_MENU(MENU_TARGET, MyFrame::OnTarget)
     EVT_MENU(MENU_SERVER, MyFrame::OnServerMenu)
@@ -264,6 +265,11 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         Name(_T("GraphLog")).Caption(_("History")).
         Hide());
 
+    pStatsWin = new StatsWindow(this);
+    m_mgr.AddPane(pStatsWin, wxAuiPaneInfo().
+        Name(_T("Stats")).Caption(_("Guide Stats")).
+        Hide());
+
     pStepGuiderGraph = new GraphStepguiderWindow(this);
     m_mgr.AddPane(pStepGuiderGraph, wxAuiPaneInfo().
         Name(_T("AOPosition")).Caption(_("AO Position")).
@@ -326,6 +332,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         m_mgr.GetPane(_T("MainToolBar")).Caption(_T("Main tool bar"));
         m_mgr.GetPane(_T("Guider")).Caption(_T("Guider"));
         m_mgr.GetPane(_T("GraphLog")).Caption(_("History"));
+        m_mgr.GetPane(_T("Stats")).Caption(_("Guide Stats"));
         m_mgr.GetPane(_T("AOPosition")).Caption(_("AO Position"));
         m_mgr.GetPane(_T("Profile")).Caption(_("Star Profile"));
         m_mgr.GetPane(_T("Target")).Caption(_("Target"));
@@ -340,6 +347,10 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     panel_state = m_mgr.GetPane(_T("GraphLog")).IsShown();
     pGraphLog->SetState(panel_state);
     Menubar->Check(MENU_GRAPH, panel_state);
+
+    panel_state = m_mgr.GetPane(_T("Stats")).IsShown();
+    pStatsWin->SetState(panel_state);
+    Menubar->Check(MENU_STATS, panel_state);
 
     panel_state = m_mgr.GetPane(_T("AOPosition")).IsShown();
     pStepGuiderGraph->SetState(panel_state);
@@ -427,7 +438,8 @@ void MyFrame::SetupMenuBar(void)
     view_menu = new wxMenu();
     view_menu->AppendCheckItem(MENU_TOOLBAR,_("Display Toolbar"),_("Enable / disable tool bar"));
     view_menu->AppendCheckItem(MENU_GRAPH,_("Display Graph"),_("Enable / disable graph"));
-    view_menu->AppendCheckItem(MENU_AO_GRAPH,_("Display AO Graph"),_("Enable / disable AO graph"));
+    view_menu->AppendCheckItem(MENU_STATS, _("Display Stats"), _("Enable / disable guide stats"));
+    view_menu->AppendCheckItem(MENU_AO_GRAPH, _("Display AO Graph"), _("Enable / disable AO graph"));
     view_menu->AppendCheckItem(MENU_TARGET,_("Display Target"),_("Enable / disable target"));
     view_menu->AppendCheckItem(MENU_STARPROFILE,_("Display Star Profile"),_("Enable / disable star profile view"));
     view_menu->AppendSeparator();

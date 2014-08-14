@@ -69,6 +69,19 @@ struct S_HISTORY
         raDur(step.durationRA), decDur(step.durationDec), starSNR(step.starSNR), starMass(step.starMass) { }
 };
 
+struct SummaryStats
+{
+    S_HISTORY cur;
+    double rms_ra;
+    double rms_dec;
+    double rms_tot;
+    double osc_index;
+    bool osc_alert;
+    double ra_peak;
+    double dec_peak;
+    unsigned int star_lost_cnt;
+};
+
 class GraphLogClientWindow : public wxWindow
 {
 public:
@@ -96,8 +109,8 @@ private:
     wxPoint *m_line2;
 
     TrendLineAccum m_trendLineAccum[4]; // dx, dy, ra, dec
-
     int m_raSameSides; // accumulator for RA osc index
+    SummaryStats m_stats;
 
     GRAPH_MODE m_mode;
 
@@ -122,8 +135,13 @@ public:
     bool SetMaxHeight(unsigned int minHeight);
 
     void AppendData(const GuideStepInfo& step);
+    void AppendData(const FrameDroppedInfo& info);
     void ResetData(void);
+
+private:
     void RecalculateTrendLines(void);
+    void UpdateStats(unsigned int nr, const S_HISTORY *cur);
+
     void OnPaint(wxPaintEvent& evt);
 
     DECLARE_EVENT_TABLE()
@@ -135,7 +153,6 @@ class GraphLogWindow : public wxWindow
     OptionsButton *m_pHeightButton;
     int m_heightButtonLabelVal; // value currently displayed on height button: <0 for arc-sec, >0 for pixels
     OptionsButton *m_pSettingsButton;
-    wxButton *m_pClearButton;
     wxCheckBox *m_pCheckboxTrendlines;
     wxCheckBox *m_pCheckboxCorrections;
     wxStaticText *RALabel;
@@ -168,6 +185,7 @@ public:
     ~GraphLogWindow(void);
 
     void AppendData(const GuideStepInfo& step);
+    void AppendData(const FrameDroppedInfo& info);
     void UpdateControls(void);
     void SetState(bool is_active);
     void EnableTrendLines(bool enable);
@@ -176,6 +194,7 @@ public:
     void SetLength(int length);
     int GetHeight(void) const;
     void SetHeight(int height);
+    wxMenu *GetLengthMenu(void);
 
     void OnPaint(wxPaintEvent& evt);
     void OnButtonSettings(wxCommandEvent& evt);
@@ -199,6 +218,8 @@ public:
 
     wxColor GetRaOrDxColor(void);
     wxColor GetDecOrDyColor(void);
+
+    const SummaryStats& Stats(void) const { return m_pClient->m_stats; }
 
     DECLARE_EVENT_TABLE()
 };

@@ -42,7 +42,7 @@
 #include <wx/utils.h>
 #include <wx/colordlg.h>
 
-BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
+wxBEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_PAINT(GraphLogWindow::OnPaint)
     EVT_BUTTON(BUTTON_GRAPH_SETTINGS,GraphLogWindow::OnButtonSettings)
     EVT_MENU_RANGE(GRAPH_RADEC, GRAPH_DXDY, GraphLogWindow::OnRADecDxDy)
@@ -58,7 +58,7 @@ BEGIN_EVENT_TABLE(GraphLogWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphLogWindow::OnButtonClear)
     EVT_CHECKBOX(CHECKBOX_GRAPH_TRENDLINES,GraphLogWindow::OnCheckboxTrendlines)
     EVT_CHECKBOX(CHECKBOX_GRAPH_CORRECTIONS,GraphLogWindow::OnCheckboxCorrections)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 #ifdef __WXOSX__
 # define OSX_SMALL_FONT(lbl) do { (lbl)->SetFont(*wxSMALL_FONT); } while (0)
@@ -126,10 +126,10 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     m_pSettingsButton->SetToolTip(_("Graph settings"));
     pButtonSizer->Add(m_pSettingsButton, wxSizerFlags().Expand());
 
-    m_pClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"));
-    m_pClearButton->SetToolTip(_("Clear graph data"));
-    m_pClearButton->SetBackgroundStyle(wxBG_STYLE_TRANSPARENT);
-    pButtonSizer->Add(m_pClearButton, wxSizerFlags().Expand());
+    wxButton *clearButton = new wxButton(this, BUTTON_GRAPH_CLEAR, _("Clear"));
+    clearButton->SetToolTip(_("Clear graph data"));
+    clearButton->SetBackgroundStyle(wxBG_STYLE_TRANSPARENT);
+    pButtonSizer->Add(clearButton, wxSizerFlags().Expand());
 
     m_pCheckboxTrendlines = new wxCheckBox(this,CHECKBOX_GRAPH_TRENDLINES,_("Trendlines"));
 #if defined(__WXOSX__)
@@ -414,7 +414,7 @@ void GraphLogWindow::OnDecDyColor(wxCommandEvent& evt)
     }
 }
 
-void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
+wxMenu *GraphLogWindow::GetLengthMenu(void)
 {
     wxMenu *menu = new wxMenu();
     unsigned int val = m_pClient->m_minLength;
@@ -427,6 +427,12 @@ void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
         if (val > m_pClient->m_history.capacity())
             break;
     }
+    return menu;
+}
+
+void GraphLogWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
+{
+    wxMenu *menu = GetLengthMenu();
 
     PopupMenu(menu, m_pLengthButton->GetPosition().x,
         m_pLengthButton->GetPosition().y + m_pLengthButton->GetSize().GetHeight());
@@ -529,6 +535,11 @@ void GraphLogWindow::AppendData(const GuideStepInfo& step)
     {
         Refresh();
     }
+}
+
+void GraphLogWindow::AppendData(const FrameDroppedInfo& info)
+{
+    m_pClient->AppendData(info);
 }
 
 void GraphLogWindow::UpdateControls()
@@ -751,6 +762,11 @@ void GraphLogClientWindow::ResetData(void)
     m_history.clear();
     reset_trend_accums(m_trendLineAccum);
     m_raSameSides = 0;
+    UpdateStats(0, 0);
+    m_stats.ra_peak = m_stats.dec_peak = 0.0;
+    m_stats.star_lost_cnt = 0;
+    if (pFrame && pFrame->pStatsWin)
+        pFrame->pStatsWin->UpdateStats();
 }
 
 bool GraphLogClientWindow::SetMinLength(unsigned int minLength)
@@ -880,6 +896,68 @@ static void update_trend(int nr, int max_nr, double newval, const double& oldval
     }
 }
 
+static double rms(unsigned int nr, const TrendLineAccum *accum)
+{
+    if (nr == 0)
+        return 0.0;
+    double const n = (double)nr;
+    double const s1 = accum->sum_y;
+    double const s2 = accum->sum_y2;
+    return sqrt(n * s2 - s1 * s1) / n;
+}
+
+void GraphLogClientWindow::UpdateStats(unsigned int nr, const S_HISTORY *cur)
+{
+    m_stats.rms_ra = rms(nr, &m_trendLineAccum[2]);
+    m_stats.rms_dec = rms(nr, &m_trendLineAccum[3]);
+    m_stats.rms_tot = hypot(m_stats.rms_ra, m_stats.rms_dec);
+
+    if (nr >= 2)
+    {
+        m_stats.osc_index = 1.0 - (double) m_raSameSides / (double)(nr - 1);
+        m_stats.osc_alert = m_stats.osc_index > 0.6 || m_stats.osc_index < 0.15;
+    }
+    else
+    {
+        m_stats.osc_index = 0.0;
+        m_stats.osc_alert = false;
+    }
+
+    if (cur)
+        m_stats.cur = *cur;
+    else
+    {
+        static S_HISTORY s_zero;
+        m_stats.cur = s_zero;
+    }
+}
+
+static double peak_ra(const circular_buffer<S_HISTORY> &history, unsigned int nr)
+{
+    double peak = 0.0;
+    const int begin = history.size() - nr;
+    const int end = history.size();
+    for (int i = begin; i < end; i++) {
+        double val = fabs(history[i].ra);
+        if (val > peak)
+            peak = val;
+    }
+    return peak;
+}
+
+static double peak_dec(const circular_buffer<S_HISTORY> &history, unsigned int nr)
+{
+    double peak = 0.0;
+    const int begin = history.size() - nr;
+    const int end = history.size();
+    for (int i = begin; i < end; i++) {
+        double val = fabs(history[i].dec);
+        if (val > peak)
+            peak = val;
+    }
+    return peak;
+}
+
 void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
 {
     unsigned int trend_items = m_length;
@@ -907,7 +985,33 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
         }
     }
 
-    m_history.push_back(S_HISTORY(step));
+    S_HISTORY cur(step);
+    m_history.push_back(cur);
+
+    unsigned int new_nr = m_history.size();
+    if (new_nr > m_length)
+        new_nr = m_length;
+    UpdateStats(new_nr, &cur);
+
+    double ax = fabs(step.mountOffset->X);
+    if (ax > m_stats.ra_peak)
+        m_stats.ra_peak = ax;
+    else if (fabs(oldest.ra) == m_stats.ra_peak)
+        m_stats.ra_peak = peak_ra(m_history, new_nr);
+
+    double ay = fabs(step.mountOffset->Y);
+    if (ay > m_stats.dec_peak)
+        m_stats.dec_peak = ay;
+    else if (fabs(oldest.dec) == m_stats.dec_peak)
+        m_stats.dec_peak = peak_dec(m_history, new_nr);
+
+    pFrame->pStatsWin->UpdateStats();
+}
+
+void GraphLogClientWindow::AppendData(const FrameDroppedInfo& info)
+{
+    ++m_stats.star_lost_cnt;
+    pFrame->pStatsWin->UpdateStats();
 }
 
 void GraphLogClientWindow::RecalculateTrendLines(void)
@@ -917,7 +1021,6 @@ void GraphLogClientWindow::RecalculateTrendLines(void)
     if (trend_items > m_length)
         trend_items = m_length;
     const int begin = m_history.size() - trend_items;
-    const int end = m_history.size() - 1;
     for (unsigned int x = 0, i = begin; x < trend_items; i++, x++) {
         const S_HISTORY& h = m_history[i];
         update_trend(x, trend_items, h.dx, 0.0, &m_trendLineAccum[0]);
@@ -928,9 +1031,27 @@ void GraphLogClientWindow::RecalculateTrendLines(void)
     // recalculate ra same side counter
     m_raSameSides = 0;
     if (trend_items >= 2)
+    {
+        const int end = m_history.size() - 1;
+        double cur = m_history[begin].ra;
         for (int i = begin; i < end; i++)
-            if (m_history[i].ra * m_history[i + 1].ra > 0.0)
+        {
+            double next = m_history[i + 1].ra;
+            if (cur * next > 0.0)
                 ++m_raSameSides;
+            cur = next;
+        }
+    }
+
+    m_stats.ra_peak = peak_ra(m_history, trend_items);
+    m_stats.dec_peak = peak_dec(m_history, trend_items);
+
+    const S_HISTORY *latest = 0;
+    if (m_history.size() > 0)
+        latest = &m_history[m_history.size() - 1];
+    UpdateStats(trend_items, latest);
+
+    pFrame->pStatsWin->UpdateStats();
 }
 
 // trendline - calculate the the trendline slope and intercept. We can do this
@@ -963,16 +1084,6 @@ struct ScaleAndTranslate
         return wxPoint(m_xorig + (int)(x * m_xmag), m_yorig + (int)(y * m_ymag));
     }
 };
-
-static double rms(unsigned int nr, const TrendLineAccum *accum)
-{
-    if (nr == 0)
-        return 0.0;
-    double const n = (double) nr;
-    double const s1 = accum->sum_y;
-    double const s2 = accum->sum_y2;
-    return sqrt(n * s2 - s1 * s1) / n;
-}
 
 static wxString rms_label(double rms, double sampling)
 {
@@ -1274,20 +1385,11 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         }
         pFrame->pGuider->SetPolarAlignCircle(pFrame->pGuider->CurrentPosition(), polarAlignCircleRadius);
 
-        double rms_ra = rms(plot_length, &m_trendLineAccum[2]);
-        double rms_dec = rms(plot_length, &m_trendLineAccum[3]);
-        double rms_tot = hypot(rms_ra, rms_dec);
-        m_pRaRMS->SetLabel(rms_label(rms_ra, sampling));
-        m_pDecRMS->SetLabel(rms_label(rms_dec, sampling));
-        m_pTotRMS->SetLabel(rms_label(rms_tot, sampling));
+        m_pRaRMS->SetLabel(rms_label(m_stats.rms_ra, sampling));
+        m_pDecRMS->SetLabel(rms_label(m_stats.rms_dec, sampling));
+        m_pTotRMS->SetLabel(rms_label(m_stats.rms_tot, sampling));
 
-        // Figure oscillation score
-
-        double osc_index = 0.0;
-        if (plot_length >= 2)
-            osc_index = 1.0 - (double) m_raSameSides / (double) (plot_length - 1);
-
-        if ((osc_index > 0.6) || (osc_index < 0.15))
+        if (m_stats.osc_alert)
         {
             m_pOscIndex->SetForegroundColour(wxColour(185,20,0));
         }
@@ -1296,7 +1398,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             m_pOscIndex->SetForegroundColour(*wxLIGHT_GREY);
         }
 
-        m_pOscIndex->SetLabel(wxString::Format("RA Osc: %4.2f", osc_index));
+        m_pOscIndex->SetLabel(wxString::Format("RA Osc: %4.2f", m_stats.osc_index));
     }
 }
 

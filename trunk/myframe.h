@@ -172,6 +172,7 @@ public:
     wxSlider *Gamma_Slider;
     AdvancedDialog *pAdvancedDialog;
     GraphLogWindow *pGraphLog;
+    StatsWindow *pStatsWin;
     GraphStepguiderWindow *pStepGuiderGraph;
     GearDialog *pGearDialog;
     ProfileWindow *pProfile;
@@ -229,6 +230,7 @@ public:
      void OnRestoreSettings(wxCommandEvent& evt);
 #endif
     void OnGraph(wxCommandEvent& evt);
+    void OnStats(wxCommandEvent& evt);
     void OnToolBar(wxCommandEvent& evt);
     void OnAoGraph(wxCommandEvent& evt);
     void OnStarProfile(wxCommandEvent& evt);
@@ -457,6 +459,7 @@ enum {
     MENU_SERVER,
     MENU_TOOLBAR,
     MENU_GRAPH,
+    MENU_STATS,
     MENU_AO_GRAPH,
     MENU_STARPROFILE,
     MENU_TARGET,

@@ -43,7 +43,7 @@ Source: "WinLibs\SSAGIFv4.dll";               DestDir: "{app}"; Flags: replacesa
 Source: "WinLibs\SSPIAGCAM.dll";              DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\SSPIAGUSB_WIN.dll";          DestDir: "{app}"; Flags: replacesameversion
 Source: "WinLibs\SXUSB.dll";                  DestDir: "{app}"; Flags: replacesameversion
-Source: "WinLibs\AsiCamera.dll";              DestDir: "{app}"; Flags: replacesameversion
+Source: "WinLibs\ASICamera2.dll";             DestDir: "{app}"; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll
 ; Missing: TIS_UDSHL09_vc10.dll
 ; Missing: TIS_UDSHL09_vc9.dll
