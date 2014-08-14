@@ -30,12 +30,12 @@ else (ZWO_INCLUDE_DIR AND ZWO_LIBRARIES)
   endif()
 
   # JM: Packages from different distributions have different suffixes
-  find_path(ZWO_INCLUDE_DIR ASICamera.h
+  find_path(ZWO_INCLUDE_DIR ASICamera2.h
     PATHS
     ${PROJECT_SOURCE_DIR}/cameras
   )
 
-  find_library(ZWO_LIBRARIES NAMES ASICamera
+  find_library(ZWO_LIBRARIES NAMES ASICamera2
     PATHS
     ${PROJECT_SOURCE_DIR}/cameras/zwolibs
     PATH_SUFFIXES ${arch}
