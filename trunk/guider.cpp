@@ -662,8 +662,9 @@ void Guider::SetState(GUIDER_STATE newState)
                         GuideLog.StartCalibration(pMount);
                         EvtServer.NotifyStartCalibration(pMount);
                     }
+                    break;
                 }
-                break;
+                // fall through
             case STATE_CALIBRATING_SECONDARY:
                 if (!pSecondaryMount || !pSecondaryMount->IsConnected())
                 {
