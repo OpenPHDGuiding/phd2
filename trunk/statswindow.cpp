@@ -47,39 +47,57 @@ StatsWindow::StatsWindow(wxWindow *parent)
 {
     SetBackgroundColour(*wxBLACK);
 
-    m_grid = new wxGrid(this, wxID_ANY);
+    m_grid1 = new wxGrid(this, wxID_ANY);
 
-    m_grid->CreateGrid(7, 3);
-    m_grid->SetRowLabelSize(1);
-    m_grid->SetColLabelSize(1);
-    m_grid->EnableEditing(false);
-    m_grid->SetCellBackgroundColour(*wxBLACK);
-    m_grid->SetCellTextColour(*wxLIGHT_GREY);
-    m_grid->SetGridLineColour(wxColour(40, 40, 40));
+    m_grid1->CreateGrid(4, 3);
+    m_grid1->SetRowLabelSize(1);
+    m_grid1->SetColLabelSize(1);
+    m_grid1->EnableEditing(false);
+    m_grid1->SetCellBackgroundColour(*wxBLACK);
+    m_grid1->SetCellTextColour(*wxLIGHT_GREY);
+    m_grid1->SetGridLineColour(wxColour(40, 40, 40));
 
     int col = 0;
     int row = 0;
-    m_grid->SetCellValue("", row, col++);
-    m_grid->SetCellValue(_("RMS"), row, col++);
-    m_grid->SetCellValue(_("Peak"), row, col++);
+    m_grid1->SetCellValue(row, col++, "");
+    m_grid1->SetCellValue(row, col++, _("RMS"));
+    m_grid1->SetCellValue(row, col++, _("Peak"));
     ++row, col = 0;
-    m_grid->SetCellValue(_("RA"), row, col++);
-    m_grid->SetCellValue(_(" MM.MM (MM.MM'')"), row, col++);
-    m_grid->SetCellValue(_(" MM.MM (MM.MM'')"), row, col++);
+    m_grid1->SetCellValue(row, col++, _("RA"));
+    m_grid1->SetCellValue(row, col++, _T(" 99.99 (99.99'')"));
+    m_grid1->SetCellValue(row, col++, _(" 99.99 (99.99'')"));
     ++row, col = 0;
-    m_grid->SetCellValue(_("Dec"), row, col++);
+    m_grid1->SetCellValue(row, col++, _("Dec"));
     ++row, col = 0;
-    m_grid->SetCellValue(_("Total"), row, col++);
-    row += 2, col = 0;
-    m_grid->SetCellValue(_("RA Osc"), row, col++);
-    ++row, col = 0;
-    m_grid->SetCellValue(_("Star lost"), row, col++);
+    m_grid1->SetCellValue(row, col++, _("Total"));
 
-    m_grid->AutoSize();
-    m_grid->ClearSelection();
+    m_grid1->AutoSize();
+    m_grid1->SetCellValue(1, 1, "");
+    m_grid1->SetCellValue(1, 2, "");
+    m_grid1->ClearSelection();
 
-    m_grid->SetCellValue(1, 1, "");
-    m_grid->SetCellValue(1, 2, "");
+    m_grid2 = new wxGrid(this, wxID_ANY);
+    m_grid2->CreateGrid(4, 2);
+    m_grid2->SetRowLabelSize(1);
+    m_grid2->SetColLabelSize(1);
+    m_grid2->EnableEditing(false);
+    m_grid2->SetCellBackgroundColour(*wxBLACK);
+    m_grid2->SetCellTextColour(*wxLIGHT_GREY);
+    m_grid2->SetGridLineColour(wxColour(40, 40, 40));
+
+    row = 0, col = 0;
+    m_grid2->SetCellValue(row, col++, _("RA Osc"));
+    ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Star lost"));
+    ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Declination"));
+    ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Pier Side"));
+    m_grid2->SetCellValue(3, 1, _T("MMMMMM"));
+
+    m_grid2->AutoSize();
+    m_grid2->SetCellValue(3, 1, _T(""));
+    m_grid2->ClearSelection();
 
     wxSizer *sizer1 = new wxBoxSizer(wxHORIZONTAL);
 
@@ -90,13 +108,15 @@ StatsWindow::StatsWindow(wxWindow *parent)
 
     m_pLengthButton = new OptionsButton(this, BUTTON_GRAPH_LENGTH, _T("XXXXXXX:888888"), wxDefaultPosition, wxSize(220, -1));
     m_pLengthButton->SetToolTip(_("Select the number of frames of history for stats and the graph"));
-    m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), dynamic_cast<MyFrame *>(parent)->pGraphLog->GetLength()));
+    m_length = dynamic_cast<MyFrame *>(parent)->pGraphLog->GetLength();
+    m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), m_length));
     sizer1->Add(m_pLengthButton, 0, wxALL, 10);
 
     wxSizer *sizer2 = new wxBoxSizer(wxVERTICAL);
 
     sizer2->Add(sizer1, 0, wxEXPAND, 10);
-    sizer2->Add(m_grid, wxSizerFlags(0).Border(wxALL, 10));
+    sizer2->Add(m_grid1, wxSizerFlags(0).Border(wxALL, 10));
+    sizer2->Add(m_grid2, wxSizerFlags(0).Border(wxALL, 10));
 
     SetSizerAndFit(sizer2);
 }
@@ -130,31 +150,48 @@ void StatsWindow::UpdateStats(void)
     if (!pFrame || !pFrame->pGraphLog)
         return;
 
-    m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), pFrame->pGraphLog->GetLength()));
+    int length = pFrame->pGraphLog->GetLength();
+    if (m_length != length)
+    {
+        m_pLengthButton->SetLabel(wxString::Format(_T("x:%3d"), length));
+        m_length = length;
+    }
 
     const SummaryStats& stats = pFrame->pGraphLog->Stats();
 
     const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
 
-    m_grid->BeginBatch();
+    m_grid1->BeginBatch();
+    m_grid2->BeginBatch();
 
     int row = 1, col = 1;
-    m_grid->SetCellValue(arcsecs(stats.rms_ra, sampling), row++, col);
-    m_grid->SetCellValue(arcsecs(stats.rms_dec, sampling), row++, col);
-    m_grid->SetCellValue(arcsecs(stats.rms_tot, sampling), row++, col);
-    ++row;
-    if (stats.osc_alert)
-        m_grid->SetCellTextColour(wxColour(185, 20, 0), row, col);
-    else
-        m_grid->SetCellTextColour(*wxLIGHT_GREY, row, col);
-    m_grid->SetCellValue(wxString::Format("% .02f", stats.osc_index), row++, col);
-    m_grid->SetCellValue(wxString::Format(" %u", stats.star_lost_cnt), row++, col);
+    m_grid1->SetCellValue(arcsecs(stats.rms_ra, sampling), row++, col);
+    m_grid1->SetCellValue(arcsecs(stats.rms_dec, sampling), row++, col);
+    m_grid1->SetCellValue(arcsecs(stats.rms_tot, sampling), row++, col);
 
     row = 1, col = 2;
-    m_grid->SetCellValue(arcsecs(stats.ra_peak, sampling), row++, col);
-    m_grid->SetCellValue(arcsecs(stats.dec_peak, sampling), row++, col);
+    m_grid1->SetCellValue(arcsecs(stats.ra_peak, sampling), row++, col);
+    m_grid1->SetCellValue(arcsecs(stats.dec_peak, sampling), row++, col);
 
-    m_grid->EndBatch();
+    row = 0, col = 1;
+    if (stats.osc_alert)
+        m_grid2->SetCellTextColour(wxColour(185, 20, 0), row, col);
+    else
+        m_grid2->SetCellTextColour(*wxLIGHT_GREY, row, col);
+    m_grid2->SetCellValue(wxString::Format("% .02f", stats.osc_index), row++, col);
+    m_grid2->SetCellValue(wxString::Format(" %u", stats.star_lost_cnt), row++, col);
+
+    m_grid1->EndBatch();
+    m_grid2->EndBatch();
+}
+
+void StatsWindow::UpdateScopePointing(double declination, PierSide pierSide)
+{
+    m_grid2->BeginBatch();
+    int row = 2, col = 1;
+    m_grid2->SetCellValue(wxString::Format("% .1f", declination), row++, col);
+    m_grid2->SetCellValue(Mount::PierSideStr(pierSide), row++, col);
+    m_grid2->EndBatch();
 }
 
 void StatsWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))

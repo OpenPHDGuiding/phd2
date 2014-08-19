@@ -63,6 +63,11 @@ inline static PierSide OppositeSide(PierSide p)
     }
 }
 
+wxString Mount::PierSideStr(PierSide p)
+{
+    return ::PierSideStr(p);
+}
+
 static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *parent)
 {
     // we need to force the guide alogorithm config pane to be large enough for
@@ -533,7 +538,7 @@ bool Mount::FlipCalibration(void)
         bool decFlipRequired = CalibrationFlipRequiresDecFlip();
 
         Debug.AddLine(wxString::Format("FlipCalibration before: x=%.2f, y=%.2f decFlipRequired=%d sideOfPier=%s",
-            origX, origY, decFlipRequired, PierSideStr(m_calPierSide)));
+            origX, origY, decFlipRequired, ::PierSideStr(m_calPierSide)));
 
         double newX = origX + M_PI;
         double newY = origY;
@@ -553,13 +558,13 @@ bool Mount::FlipCalibration(void)
         PierSide newPierSide = OppositeSide(m_calPierSide);
 
         Debug.AddLine(wxString::Format("FlipCalibration after: x=%.2f, y=%.2f sideOfPier=%s",
-            newX, newY, PierSideStr(newPierSide)));
+            newX, newY, ::PierSideStr(newPierSide)));
 
         SetCalibration(newX, newY, m_calXRate, m_yRate, m_calDeclination, newPierSide);
 
         pFrame->SetStatusText(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
-            PierSideStr(priorPierSide, ""), origX * 180. / M_PI, origY * 180. / M_PI,
-            PierSideStr(newPierSide, ""), newX * 180. / M_PI, newY * 180. / M_PI), 0);
+            ::PierSideStr(priorPierSide, ""), origX * 180. / M_PI, origY * 180. / M_PI,
+            ::PierSideStr(newPierSide, ""), newX * 180. / M_PI, newY * 180. / M_PI), 0);
     }
     catch (wxString Msg)
     {
@@ -861,7 +866,7 @@ void Mount::AdjustCalibrationForScopePointing(void)
     if (IsOppositeSide(newPierSide, m_calPierSide))
     {
         Debug.AddLine(wxString::Format("Guiding starts on opposite side of pier: calibration data "
-            "side is %s, current side is %s", PierSideStr(m_calPierSide), PierSideStr(newPierSide)));
+            "side is %s, current side is %s", ::PierSideStr(m_calPierSide), ::PierSideStr(newPierSide)));
         FlipCalibration();
     }
 }
@@ -1061,7 +1066,6 @@ double Mount::GetDefGuidingDeclination()
 // dec value should use GetCoordinates().
 double Mount::GetGuidingDeclination(void)
 {
-
     return GetDefGuidingDeclination();
 }
 
@@ -1137,7 +1141,7 @@ wxString Mount::GetSettingsSummary()
         IsCalibrated() ? wxString::Format("xAngle = %.3f, xRate = %.4f, yAngle = %.3f, yRate = %.4f",
                 xAngle(), xRate(), yAngle(), yRate()) : "not calibrated",
                 dec_str,
-                PierSideStr(pPointingSource->SideOfPier())
+                ::PierSideStr(pPointingSource->SideOfPier())
     ) + wxString::Format("X guide algorithm = %s, %s",
         algorithms[GetXGuideAlgorithm()],
         m_pXGuideAlgorithm->GetSettingsSummary()

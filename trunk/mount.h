@@ -36,6 +36,9 @@
 #ifndef MOUNT_H_INCLUDED
 #define MOUNT_H_INCLUDED
 
+#include "guide_algorithms.h"
+#include "messagebox_proxy.h"
+
 enum GUIDE_DIRECTION {
     NONE  = -1,
     UP = 0,
@@ -161,6 +164,8 @@ public:
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
 
     void AdjustCalibrationForScopePointing(void);
+
+    static wxString PierSideStr(PierSide side);
 
     // pure virutal functions -- these MUST be overridden by a subclass
 public:

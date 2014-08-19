@@ -149,7 +149,8 @@ END_EVENT_TABLE()
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
 MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
-    : wxFrame(NULL, wxID_ANY, wxEmptyString)
+    : wxFrame(NULL, wxID_ANY, wxEmptyString),
+    pStatsWin(0)
 {
     m_instanceNumber = instanceNumber;
     m_pLocale = locale;
@@ -788,6 +789,9 @@ void MyFrame::UpdateCalibrationStatus(void)
         (pSecondaryMount && pSecondaryMount->DecCompensationActive());
 
     SetStatusText(cal ? deccomp ? _("Cal +") : _("Cal") : _("No cal"), 5);
+
+    if (pStatsWin)
+        pStatsWin->UpdateScopePointing(pPointingSource->GetGuidingDeclination(), pPointingSource->SideOfPier());
 }
 
 void MyFrame::SetupStatusBar(void)
