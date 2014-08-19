@@ -127,7 +127,7 @@ GraphLogWindow::GraphLogWindow(wxWindow *parent) :
     pButtonSizer->Add(m_pSettingsButton, wxSizerFlags().Expand());
 
     wxButton *clearButton = new wxButton(this, BUTTON_GRAPH_CLEAR, _("Clear"));
-    clearButton->SetToolTip(_("Clear graph data"));
+    clearButton->SetToolTip(_("Clear graph data. You can also partially clear the graph by holding down the Ctrl key and clicking on the graph where you want the data to start."));
     clearButton->SetBackgroundStyle(wxBG_STYLE_TRANSPARENT);
     pButtonSizer->Add(clearButton, wxSizerFlags().Expand());
 
@@ -698,6 +698,7 @@ void GraphLogWindow::UpdateHeightButtonLabel(void)
 
 wxBEGIN_EVENT_TABLE(GraphLogClientWindow, wxWindow)
     EVT_PAINT(GraphLogClientWindow::OnPaint)
+    EVT_LEFT_DOWN(GraphLogClientWindow::OnLeftBtnDown)
 wxEND_EVENT_TABLE()
 
 GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
@@ -986,7 +987,7 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
     }
 
     S_HISTORY cur(step);
-    m_history.push_back(cur);
+    m_history.push_front(cur);
 
     unsigned int new_nr = m_history.size();
     if (new_nr > m_length)
@@ -1133,26 +1134,28 @@ static double GetMaxStarSNR(const circular_buffer<S_HISTORY>& history, int start
     return maxSNR;
 }
 
+enum { GRAPH_BORDER = 5 };
+
 void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 {
     //wxAutoBufferedPaintDC dc(this);
     wxPaintDC dc(this);
 
-    wxSize size = GetClientSize();
-    wxSize center(size.x/2, size.y/2);
+    wxSize size(GetClientSize());
+    wxSize center(size.x / 2, size.y / 2);
 
     const int leftEdge = 0;
-    const int rightEdge = size.x-5;
+    const int rightEdge = size.x - GRAPH_BORDER;
 
-    const int topEdge = 5;
-    const int bottomEdge = size.y-5;
+    const int topEdge = GRAPH_BORDER;
+    const int bottomEdge = size.y - GRAPH_BORDER;
 
     const int xorig = 0;
-    const int yorig = size.y/2;
+    const int yorig = size.y / 2;
 
-    const int xDivisions = m_length/m_xSamplesPerDivision-1;
-    const int xPixelsPerDivision = size.x/2/(xDivisions+1);
-    const int yPixelsPerDivision = size.y/2/(m_yDivisions+1);
+    const int xDivisions = m_length / m_xSamplesPerDivision - 1;
+    const int xPixelsPerDivision = size.x / 2 / (xDivisions + 1);
+    const int yPixelsPerDivision = size.y / 2 / (m_yDivisions + 1);
 
     const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
     GRAPH_UNITS units = m_heightUnits;
@@ -1192,22 +1195,22 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
     for (int i = 1; i <= m_yDivisions; i++)
     {
-        double div_y = center.y-i*yPixelsPerDivision;
+        double div_y = center.y - i * yPixelsPerDivision;
         dc.DrawLine(leftEdge,div_y, rightEdge, div_y);
         dc.DrawText(wxString::Format("%g%s", i * (double)m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : ""), leftEdge + 3, div_y - 13);
 
-        div_y = center.y+i*yPixelsPerDivision;
+        div_y = center.y + i * yPixelsPerDivision;
         dc.DrawLine(leftEdge, div_y, rightEdge, div_y);
         dc.DrawText(wxString::Format("%g%s", -i * (double)m_height / (m_yDivisions + 1), units == UNIT_ARCSEC ? "''" : ""), leftEdge + 3, div_y - 13);
     }
 
     for (int i = 1; i <= xDivisions; i++)
     {
-        dc.DrawLine(center.x-i*xPixelsPerDivision, topEdge, center.x-i*xPixelsPerDivision, bottomEdge);
-        dc.DrawLine(center.x+i*xPixelsPerDivision, topEdge, center.x+i*xPixelsPerDivision, bottomEdge);
+        dc.DrawLine(center.x - i * xPixelsPerDivision, topEdge, center.x - i * xPixelsPerDivision, bottomEdge);
+        dc.DrawLine(center.x + i * xPixelsPerDivision, topEdge, center.x + i * xPixelsPerDivision, bottomEdge);
     }
 
-    const double xmag = size.x / (double)m_length;
+    const double xmag = size.x / (double) m_length;
     const double ymag = yPixelsPerDivision * (double)(m_yDivisions + 1) / (double)m_height * (units == UNIT_ARCSEC ? sampling : 1.0);
 
     ScaleAndTranslate sctr(xorig, yorig, xmag, ymag);
@@ -1400,6 +1403,37 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
         m_pOscIndex->SetLabel(wxString::Format("RA Osc: %4.2f", m_stats.osc_index));
     }
+}
+
+void GraphLogClientWindow::OnLeftBtnDown(wxMouseEvent& evt)
+{
+    if (wxGetKeyState(WXK_CONTROL))
+    {
+        wxSize size(GetClientSize());
+        const int leftEdge = 0;
+        const int rightEdge = size.x - GRAPH_BORDER;
+        const int topEdge = GRAPH_BORDER;
+        const int bottomEdge = size.y - GRAPH_BORDER;
+        const int xorig = 0;
+
+        if (evt.GetX() >= leftEdge && evt.GetX() <= rightEdge && evt.GetY() >= topEdge && evt.GetY() <= bottomEdge)
+        {
+            const double xmag = size.x / (double) m_length;
+
+            unsigned int plot_length = wxMin(m_length, m_history.size());
+            unsigned int start_item = m_history.size() - plot_length;
+
+            unsigned int i = start_item + (unsigned int) floor((double)(evt.GetX() - xorig) / xmag + 0.5);
+            if (i < m_history.size())
+            {
+                m_history.pop_back(i);
+                RecalculateTrendLines();
+                Refresh();
+            }
+        }
+    }
+
+    evt.Skip();
 }
 
 GraphControlPane::GraphControlPane(wxWindow *pParent, const wxString& label)
