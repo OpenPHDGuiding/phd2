@@ -143,6 +143,7 @@ private:
     void UpdateStats(unsigned int nr, const S_HISTORY *cur);
 
     void OnPaint(wxPaintEvent& evt);
+    void OnLeftBtnDown(wxMouseEvent& evt);
 
     DECLARE_EVENT_TABLE()
 };
