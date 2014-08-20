@@ -185,13 +185,19 @@ void StatsWindow::UpdateStats(void)
     m_grid2->EndBatch();
 }
 
-void StatsWindow::UpdateScopePointing(double declination, PierSide pierSide)
+void StatsWindow::UpdateScopePointing()
 {
-    m_grid2->BeginBatch();
-    int row = 2, col = 1;
-    m_grid2->SetCellValue(wxString::Format("% .1f", declination), row++, col);
-    m_grid2->SetCellValue(Mount::PierSideStr(pierSide), row++, col);
-    m_grid2->EndBatch();
+    if (pPointingSource)
+    {
+        double declination = pPointingSource->GetGuidingDeclination() * 180. / M_PI;
+        PierSide pierSide = pPointingSource->SideOfPier();
+
+        m_grid2->BeginBatch();
+        int row = 2, col = 1;
+        m_grid2->SetCellValue(wxString::Format("% .1f deg", declination), row++, col);
+        m_grid2->SetCellValue(Mount::PierSideStr(pierSide), row++, col);
+        m_grid2->EndBatch();
+    }
 }
 
 void StatsWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))

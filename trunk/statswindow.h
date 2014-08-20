@@ -54,7 +54,7 @@ public:
     ~StatsWindow(void);
 
     void UpdateStats(void);
-    void UpdateScopePointing(double declination, PierSide newPierSide);
+    void UpdateScopePointing();
     void SetState(bool is_active);
 
     DECLARE_EVENT_TABLE()
