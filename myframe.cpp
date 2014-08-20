@@ -791,7 +791,7 @@ void MyFrame::UpdateCalibrationStatus(void)
     SetStatusText(cal ? deccomp ? _("Cal +") : _("Cal") : _("No cal"), 5);
 
     if (pStatsWin)
-        pStatsWin->UpdateScopePointing(pPointingSource->GetGuidingDeclination(), pPointingSource->SideOfPier());
+        pStatsWin->UpdateScopePointing();
 }
 
 void MyFrame::SetupStatusBar(void)
