@@ -710,7 +710,29 @@ static void set_paused(JObj& response, const json_value *params)
     }
     val = p->int_value ? true : false;
 
-    pFrame->SetPaused(val);
+    PauseType pause = PAUSE_NONE;
+
+    if (val)
+    {
+        pause = PAUSE_GUIDING;
+
+        p = at(params, 1);
+        if (p)
+        {
+            if (p->type == JSON_STRING)
+            {
+                if (strcmp(p->string_value, "full") == 0)
+                    pause = PAUSE_FULL;
+            }
+            else
+            {
+                response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected string param at index 1");
+                return;
+            }
+        }
+    }
+
+    pFrame->SetPaused(pause);
 
     response << jrpc_result(0);
 }

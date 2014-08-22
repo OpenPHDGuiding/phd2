@@ -193,7 +193,16 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
     {
         Debug.AddLine("Processing an image");
 
+        m_exposurePending = false;
+
         usImage *pNewFrame = event.GetPayload<usImage *>();
+
+        if (pGuider->GetPauseType() == PAUSE_FULL)
+        {
+            delete pNewFrame;
+            Debug.AddLine("guider is paused, ignoring frame, not scheduling exposure");
+            return;
+        }
 
         if (event.GetInt())
         {

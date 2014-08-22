@@ -50,7 +50,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
-    m_paused = false;
+    m_paused = PAUSE_NONE;
     m_starFoundTimestamp = 0;
     m_avgDistanceNeedReset = false;
     m_lockPosShift.shiftEnabled = false;
@@ -83,18 +83,12 @@ void Guider::LoadProfileSettings(void)
     SetScaleImage(scaleImage);
 }
 
-bool Guider::IsPaused()
+PauseType Guider::SetPaused(PauseType pause)
 {
-    return m_paused;
-}
-
-bool Guider::SetPaused(bool state)
-{
-    bool bReturn = m_paused;
-
-    m_paused = state;
-
-    return bReturn;
+    Debug.AddLine("Guider::SetPaused(%d)", pause);
+    PauseType prev = m_paused;
+    m_paused = pause;
+    return prev;
 }
 
 void Guider::ForceFullFrame(void)

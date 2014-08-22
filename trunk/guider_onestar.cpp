@@ -624,7 +624,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         GUIDER_STATE state = GetState();
         bool FoundStar = m_star.WasFound();
 
-        if (state == STATE_SELECTED /*|| IsPaused()*/)
+        if (state == STATE_SELECTED)
         {
             if (FoundStar)
                 dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
