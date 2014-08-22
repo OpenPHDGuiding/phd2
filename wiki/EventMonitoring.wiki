@@ -155,9 +155,15 @@ Sent after a `dither` or `guide` method invocation indicating whether settling w
 
 === `StarLost` ===
 
-The selected star has been lost.
+A frame has been dropped due to the star being lost.
 
-(no event attributes)
+|| Attribute || Type || Description ||
+|| Frame || number || frame number ||
+|| Time || number || time since guiding started, seconds ||
+|| StarMass || number || star mass value ||
+|| SNR || number || star SNR value ||
+|| ErrorCode || number || error code ||
+|| Status || string || error message ||
 
 === `GuidingStopped` ===
 
@@ -271,7 +277,7 @@ Set camera exposure (error):
 ||`set_lock_position`||X: float, Y: float, EXACT: boolean (optional, default = true) || integer (0) || When EXACT is `true`, the lock position is moved to the exact given coordinates. When `false`, the current position is moved to the given coordinates and if a guide star is in range, the lock position is set to the coordinates of the guide star. ||
 ||`set_lock_shift_enabled`||boolean: enable lock shift||integer (0)|| ||
 ||`set_lock_shift_params`||{{{ {"rate":[XRATE,YRATE],"units":UNITS,"axes":AXES} }}}||integer (0)|| UNITS = "arcsec/hr" or "pixels/hr"; AXES = "RA/Dec" or "X/Y"||
-||`set_paused`||boolean: pause||integer (0)|| ||
+||`set_paused`||PAUSED: boolean, FULL: string (optional) ||integer (0)|| When setting paused to `true`, an optional second parameter with value `"full"` can be provided to fully pause phd, including pausing looping exposures. Otherwise, exposures continue to loop, and only guide output is paused. Example: `{"method":"set_paused","params":[true,"full"],"id":42}` ||
 ||`set_profile`||integer: profile id|| integer (0) || Select an equipment profile. All equipment must be disconnected before switching profiles. ||
 ||`stop_capture`||none||integer (0)||Stop capturing (and stop guiding)||
 
