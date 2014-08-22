@@ -542,6 +542,11 @@ void GraphLogWindow::AppendData(const FrameDroppedInfo& info)
     m_pClient->AppendData(info);
 }
 
+void GraphLogWindow::AppendData(const DitherInfo& info)
+{
+    m_pClient->AppendData(info);
+}
+
 void GraphLogWindow::UpdateControls()
 {
     if (m_pXControlPane != NULL)
@@ -989,6 +994,17 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
     S_HISTORY cur(step);
     m_history.push_front(cur);
 
+    // remove any dither history entries older than the first guide step history entry
+    wxLongLong_t t0 = m_history[0].timestamp;
+    while (m_dithers.size() > 0)
+    {
+        const DitherInfo& info = m_dithers.front();
+        if (info.timestamp < t0)
+            m_dithers.pop_front();
+        else
+            break;
+    }
+
     unsigned int new_nr = m_history.size();
     if (new_nr > m_length)
         new_nr = m_length;
@@ -1013,6 +1029,11 @@ void GraphLogClientWindow::AppendData(const FrameDroppedInfo& info)
 {
     ++m_stats.star_lost_cnt;
     pFrame->pStatsWin->UpdateStats();
+}
+
+void GraphLogClientWindow::AppendData(const DitherInfo& info)
+{
+    m_dithers.push_back(info);
 }
 
 void GraphLogClientWindow::RecalculateTrendLines(void)
@@ -1304,9 +1325,24 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
             dc.DrawLines(plot_length, m_line1);
         }
 
+        std::deque<DitherInfo>::const_iterator it = m_dithers.begin();
+        { // advance to the first dither that will show on the plot
+            const S_HISTORY& h = m_history[start_item];
+            while (it != m_dithers.end() && it->timestamp < h.timestamp)
+                ++it;
+        }
+
         for (unsigned int i = start_item, j = 0; i < m_history.size(); i++, j++)
         {
             const S_HISTORY& h = m_history[i];
+
+            if (it != m_dithers.end() && it->timestamp < h.timestamp)
+            {
+                wxPoint pt(sctr.pt((double) j - 0.5, 0.0));
+                pt.y = topEdge + 6;
+                dc.DrawText(_("Dither"), pt);
+                ++it;
+            }
 
             switch (m_mode)
             {
