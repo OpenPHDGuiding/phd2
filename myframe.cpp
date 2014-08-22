@@ -320,6 +320,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     m_continueCapturing = false;
     CaptureActive     = false;
+    m_exposurePending = false;
 
     m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_VERTICAL);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
@@ -1134,6 +1135,11 @@ void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 
 void MyFrame::ScheduleExposure(int exposureDuration, const wxRect& subframe)
 {
+    assert(!m_exposurePending);
+    assert(wxThread::IsMain()); // m_exposurePending only updated in main thread
+
+    m_exposurePending = true;
+
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
     Debug.AddLine("ScheduleExposure(%d)", exposureDuration);
 
@@ -1217,18 +1223,20 @@ void MyFrame::StopCapturing(void)
     m_continueCapturing = false;
 }
 
-void MyFrame::SetPaused(bool pause)
+void MyFrame::SetPaused(PauseType pause)
 {
-    if (pause && !pGuider->IsPaused())
+    if (pause != PAUSE_NONE && !pGuider->IsPaused())
     {
-        pGuider->SetPaused(true);
+        pGuider->SetPaused(pause);
         SetStatusText(_("Paused"));
         GuideLog.ServerCommand(pGuider, "PAUSE");
         EvtServer.NotifyPaused();
     }
-    else if (!pause && pGuider->IsPaused())
+    else if (pause == PAUSE_NONE && pGuider->IsPaused())
     {
-        pGuider->SetPaused(false);
+        pGuider->SetPaused(PAUSE_NONE);
+        if (!m_exposurePending)
+            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
         SetStatusText(_("Resumed"));
         GuideLog.ServerCommand(pGuider, "RESUME");
         EvtServer.NotifyResumed();

@@ -95,6 +95,13 @@ enum MOVE_LOCK_RESULT
     MOVE_LOCK_ERROR,
 };
 
+enum PauseType
+{
+    PAUSE_NONE,     // not paused
+    PAUSE_GUIDING,  // pause guide corrections but continue looping exposures
+    PAUSE_FULL,     // pause guide corrections and pause looping exposures
+};
+
 struct LockPosShiftParams
 {
     bool shiftEnabled;
@@ -124,7 +131,7 @@ class Guider : public wxWindow
     double m_polarAlignCircleRadius;
     double m_polarAlignCircleCorrection;
     PHD_Point m_polarAlignCircleCenter;
-    bool m_paused;
+    PauseType m_paused;
     ShiftPoint m_lockPosition;
     PHD_Point m_ditherRecenterStep;
     wxPoint m_ditherRecenterDir;
@@ -177,8 +184,9 @@ protected:
     void ToggleBookmark(const wxRealPoint& pt);
 
 public:
-    bool IsPaused(void);
-    bool SetPaused(bool paused);
+    bool IsPaused(void) const;
+    PauseType GetPauseType(void) const;
+    PauseType SetPaused(PauseType pause);
     GUIDER_STATE GetState(void);
     static EXPOSED_STATE GetExposedState(void);
     bool IsCalibratingOrGuiding(void);
@@ -267,5 +275,15 @@ private:
     void UpdateLockPosShiftCameraCoords(void);
     DECLARE_EVENT_TABLE()
 };
+
+inline bool Guider::IsPaused(void) const
+{
+    return m_paused != PAUSE_NONE;
+}
+
+inline PauseType Guider::GetPauseType(void) const
+{
+    return m_paused;
+}
 
 #endif /* GUIDER_H_INCLUDED */

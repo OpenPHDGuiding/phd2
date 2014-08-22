@@ -182,6 +182,7 @@ public:
     wxWindow *pNudgeLock;
     RefineDefMap *pRefineDefMap;
     bool CaptureActive; // Is camera looping captures?
+    bool m_exposurePending; // exposure scheduled and not completed
     double Stretch_gamma;
     wxLocale *m_pLocale;
     unsigned int m_frameCounter;
@@ -317,7 +318,7 @@ public:
     void StartCapturing(void);
     void StopCapturing(void);
 
-    void SetPaused(bool paused);
+    void SetPaused(PauseType pause);
 
     bool StartLooping(void); // stop guiding and continue capturing, or, start capturing
     bool StartGuiding(void);
