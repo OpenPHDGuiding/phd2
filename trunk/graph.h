@@ -35,6 +35,8 @@
 #ifndef GRAPHCLASS
 #define GRAPHCLASS
 
+#include <deque>
+
 class GraphControlPane;
 
 enum GRAPH_UNITS
@@ -67,6 +69,13 @@ struct S_HISTORY
         : timestamp(::wxGetUTCTimeMillis().GetValue()),
         dx(step.cameraOffset->X), dy(step.cameraOffset->Y), ra(step.mountOffset->X), dec(step.mountOffset->Y),
         raDur(step.durationRA), decDur(step.durationDec), starSNR(step.starSNR), starMass(step.starMass) { }
+};
+
+struct DitherInfo
+{
+    wxLongLong_t timestamp;
+    double dRa;
+    double dDec;
 };
 
 struct SummaryStats
@@ -104,6 +113,7 @@ private:
     unsigned int m_maxHeight;
 
     circular_buffer<S_HISTORY> m_history;
+    std::deque<DitherInfo> m_dithers;
 
     wxPoint *m_line1;
     wxPoint *m_line2;
@@ -136,6 +146,8 @@ public:
 
     void AppendData(const GuideStepInfo& step);
     void AppendData(const FrameDroppedInfo& info);
+    void AppendData(const DitherInfo& info);
+
     void ResetData(void);
 
 private:
@@ -187,6 +199,8 @@ public:
 
     void AppendData(const GuideStepInfo& step);
     void AppendData(const FrameDroppedInfo& info);
+    void AppendData(const DitherInfo& info);
+
     void UpdateControls(void);
     void SetState(bool is_active);
     void EnableTrendLines(bool enable);

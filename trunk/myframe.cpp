@@ -1339,6 +1339,11 @@ bool MyFrame::Dither(double amount, bool raOnly)
         SetStatusText(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
         GuideLog.NotifyGuidingDithered(pGuider, dRa, dDec);
         EvtServer.NotifyGuidingDithered(dRa, dDec);
+        DitherInfo info;
+        info.timestamp = ::wxGetUTCTimeMillis().GetValue();
+        info.dRa = dRa;
+        info.dDec = dDec;
+        pGraphLog->AppendData(info);
     }
     catch (wxString Msg)
     {
