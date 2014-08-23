@@ -711,6 +711,8 @@ GraphLogClientWindow::GraphLogClientWindow(wxWindow *parent) :
     m_line1(0),
     m_line2(0)
 {
+    SetBackgroundStyle(wxBG_STYLE_PAINT);
+
     ResetData();
     m_mode = (GRAPH_MODE) pConfig->Global.GetInt("/graph/ScopeOrCameraUnits", (int) MODE_RADEC);
 
@@ -1159,8 +1161,7 @@ enum { GRAPH_BORDER = 5 };
 
 void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 {
-    //wxAutoBufferedPaintDC dc(this);
-    wxPaintDC dc(this);
+    wxAutoBufferedPaintDC dc(this);
 
     wxSize size(GetClientSize());
     wxSize center(size.x / 2, size.y / 2);

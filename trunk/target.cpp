@@ -177,6 +177,8 @@ END_EVENT_TABLE()
 TargetClient::TargetClient(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(201,201), wxFULL_REPAINT_ON_RESIZE )
 {
+    SetBackgroundStyle(wxBG_STYLE_PAINT);
+
     m_minLength = 50;
     m_maxLength = 400;
 
@@ -206,7 +208,7 @@ void TargetClient::AppendData(const GuideStepInfo& step)
 
 void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 {
-    wxPaintDC dc(this);
+    wxAutoBufferedPaintDC dc(this);
 
     dc.SetBackground(*wxBLACK_BRUSH);
     //dc.SetBackground(wxColour(10,0,0));

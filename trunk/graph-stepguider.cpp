@@ -43,10 +43,11 @@ BEGIN_EVENT_TABLE(GraphStepguiderWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,GraphStepguiderWindow::OnButtonClear)
 END_EVENT_TABLE()
 
-GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent):
-    //wxMiniFrame(parent,wxID_ANY,_("AO Position"),wxDefaultPosition,wxSize(610,254),(wxCAPTION & ~wxSTAY_ON_TOP) | wxRESIZE_BORDER)
-    wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, 0,_("AO Position"))
+GraphStepguiderWindow::GraphStepguiderWindow(wxWindow *parent) :
+    wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, _("AO Position"))
 {
+    SetBackgroundColour(*wxBLACK);
+
     m_visible = false;
     m_pClient = new GraphStepguiderClient(this);
 
@@ -172,9 +173,11 @@ BEGIN_EVENT_TABLE(GraphStepguiderClient, wxWindow)
 EVT_PAINT(GraphStepguiderClient::OnPaint)
 END_EVENT_TABLE()
 
-GraphStepguiderClient::GraphStepguiderClient(wxWindow *parent):
+GraphStepguiderClient::GraphStepguiderClient(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(201,201), wxFULL_REPAINT_ON_RESIZE)
 {
+    SetBackgroundStyle(wxBG_STYLE_PAINT);
+
     m_nItems = 0;
     m_length = 1;
 
@@ -224,7 +227,7 @@ void GraphStepguiderClient::AppendData(int dx, int dy, const PHD_Point& avgPos)
 
 void GraphStepguiderClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 {
-    wxPaintDC dc(this);
+    wxAutoBufferedPaintDC dc(this);
 
     dc.SetBackground(*wxBLACK_BRUSH);
     //dc.SetBackground(wxColour(10,0,0));
