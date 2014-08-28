@@ -414,8 +414,8 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
                     break;
             }
 
-            dc.DrawLine(0, LockY * m_scaleFactor, XImgSize, LockY * m_scaleFactor);
-            dc.DrawLine(LockX * m_scaleFactor, 0, LockX * m_scaleFactor, YImgSize);
+            dc.DrawLine(0, int(LockY * m_scaleFactor), XImgSize, int(LockY * m_scaleFactor));
+            dc.DrawLine(int(LockX * m_scaleFactor), 0, int(LockX * m_scaleFactor), YImgSize);
         }
 
         // draw a polar alignment circle
@@ -424,7 +424,7 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
             dc.SetBrush(*wxTRANSPARENT_BRUSH);
             wxPenStyle penStyle = m_polarAlignCircleCorrection == 1.0 ? wxPENSTYLE_DOT : wxPENSTYLE_SOLID;
             dc.SetPen(wxPen(wxColor(255,0,255), 1, penStyle));
-            int radius = (int) floor(m_polarAlignCircleRadius * m_polarAlignCircleCorrection * m_scaleFactor + 0.5);
+            int radius = ROUND(m_polarAlignCircleRadius * m_polarAlignCircleCorrection * m_scaleFactor);
             dc.DrawCircle(m_polarAlignCircleCenter.X * m_scaleFactor,
                 m_polarAlignCircleCenter.Y * m_scaleFactor, radius);
         }
@@ -863,12 +863,6 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             }
         }
 
-        if (IsPaused())
-        {
-            statusMessage = _("Paused");
-            throw THROW_INFO("Skipping frame - guider is paused");
-        }
-
         FrameDroppedInfo info;
 
         if (UpdateCurrentPosition(pImage, &info))
@@ -913,7 +907,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     break;
             }
 
-            statusMessage = _("star lost");
+            statusMessage = info.status;
             throw THROW_INFO("unable to update current position");
         }
         statusMessage = info.status;
@@ -938,6 +932,12 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
             case STATE_GUIDING:
             case STATE_STOP:
                 break;
+        }
+
+        if (IsPaused())
+        {
+            statusMessage = _("Paused");
+            throw THROW_INFO("Skipping frame - guider is paused");
         }
 
         switch (m_state)
@@ -1076,7 +1076,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
 
     UpdateImageDisplay(pImage);
 
-    Debug.AddLine("UpdateGuideState exits:" + statusMessage);
+    Debug.AddLine("UpdateGuideState exits: " + statusMessage);
 }
 
 bool Guider::ShiftLockPosition(void)
