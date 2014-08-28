@@ -46,7 +46,12 @@
 #endif
 
 static const double DefaultMassChangeThreshold = 0.5;
-static const int DefaultSearchRegion = 15;
+
+enum {
+    MIN_SEARCH_REGION = 5,
+    DEFAULT_SEARCH_REGION = 15,
+    MAX_SEARCH_REGION = 50,
+};
 
 BEGIN_EVENT_TABLE(GuiderOneStar, Guider)
     EVT_PAINT(GuiderOneStar::OnPaint)
@@ -76,7 +81,7 @@ void GuiderOneStar::LoadProfileSettings(void)
     bool massChangeThreshEnabled = pConfig->Profile.GetBoolean("/guider/onestar/MassChangeThresholdEnabled", massChangeThreshold != 1.0);
     SetMassChangeThresholdEnabled(massChangeThreshEnabled);
 
-    int searchRegion = pConfig->Profile.GetInt("/guider/onestar/SearchRegion", DefaultSearchRegion);
+    int searchRegion = pConfig->Profile.GetInt("/guider/onestar/SearchRegion", DEFAULT_SEARCH_REGION);
     SetSearchRegion(searchRegion);
 }
 
@@ -145,7 +150,7 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_searchRegion = DefaultSearchRegion;
+        m_searchRegion = DEFAULT_SEARCH_REGION;
     }
 
     pConfig->Profile.SetInt("/guider/onestar/SearchRegion", m_searchRegion);
@@ -320,8 +325,18 @@ const PHD_Point& GuiderOneStar::CurrentPosition(void)
     return m_star;
 }
 
+inline static wxRect SubframeRect(const PHD_Point& pos, int halfwidth)
+{
+    return wxRect(ROUND(pos.X - halfwidth),
+                  ROUND(pos.Y - halfwidth),
+                  2 * halfwidth + 1,
+                  2 * halfwidth + 1);
+}
+
 wxRect GuiderOneStar::GetBoundingBox(void)
 {
+    enum { SUBFRAME_BOUNDARY_PX = 0 };
+
     GUIDER_STATE state = GetState();
 
     bool subframe;
@@ -334,10 +349,17 @@ wxRect GuiderOneStar::GetBoundingBox(void)
         subframe = m_star.WasFound();
         pos = CurrentPosition();
         break;
-    case STATE_GUIDING:
-        subframe = true;
-        pos = LockPosition();
+    case STATE_GUIDING: {
+        subframe = m_star.WasFound();  // true;
+        // As long as the star is close to the lock position, keep the subframe
+        // at the lock position. Otherwise, follow the star.
+        double dist = CurrentPosition().Distance(LockPosition());
+        if ((int) dist > m_searchRegion / 3)
+            pos = CurrentPosition();
+        else
+            pos = LockPosition();
         break;
+    }
     default:
         subframe = false;
     }
@@ -349,8 +371,7 @@ wxRect GuiderOneStar::GetBoundingBox(void)
 
     if (subframe)
     {
-        wxRect box(pos.X - 3 * m_searchRegion, pos.Y - 3 * m_searchRegion,
-                6 * m_searchRegion, 6 * m_searchRegion);
+        wxRect box(SubframeRect(pos, m_searchRegion + SUBFRAME_BOUNDARY_PX));
         box.Intersect(wxRect(0, 0, pCamera->FullSize.x, pCamera->FullSize.y));
         return box;
     }
@@ -586,7 +607,7 @@ inline static void DrawBox(wxClientDC& dc, const PHD_Point& star, int halfW, dou
 {
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     double w = ROUND((halfW * 2 + 1) * scale);
-    dc.DrawRectangle(ROUND((star.X - halfW) * scale), ROUND((star.Y - halfW) * scale), w, w);
+    dc.DrawRectangle(int((star.X - halfW) * scale), int((star.Y - halfW) * scale), w, w);
 }
 
 // Define the repainting behaviour
@@ -614,7 +635,7 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
             for (std::vector<wxRealPoint>::const_iterator it = m_bookmarks.begin();
                  it != m_bookmarks.end(); ++it)
             {
-                wxPoint p((int) (it->x * m_scaleFactor), (int)(it->y * m_scaleFactor));
+                wxPoint p((int)(it->x * m_scaleFactor), (int)(it->y * m_scaleFactor));
                 dc.DrawCircle(p, 3);
                 dc.DrawCircle(p, 6);
                 dc.DrawCircle(p, 12);
@@ -627,24 +648,24 @@ void GuiderOneStar::OnPaint(wxPaintEvent& event)
         if (state == STATE_SELECTED)
         {
             if (FoundStar)
-                dc.SetPen(wxPen(wxColour(100,255,90),1,wxSOLID ));  // Draw the box around the star
+                dc.SetPen(wxPen(wxColour(100,255,90), 1, wxSOLID));  // Draw the box around the star
             else
-                dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
+                dc.SetPen(wxPen(wxColour(230,130,30), 1, wxDOT));
             DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATING_PRIMARY || state == STATE_CALIBRATING_SECONDARY)
         {
             // in the calibration process
-            dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
+            dc.SetPen(wxPen(wxColour(32,196,32), 1, wxSOLID));  // Draw the box around the star
             DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
         else if (state == STATE_CALIBRATED || state == STATE_GUIDING)
         {
             // locked and guiding
             if (FoundStar)
-                dc.SetPen(wxPen(wxColour(32,196,32),1,wxSOLID ));  // Draw the box around the star
+                dc.SetPen(wxPen(wxColour(32,196,32), 1, wxSOLID));  // Draw the box around the star
             else
-                dc.SetPen(wxPen(wxColour(230,130,30),1,wxDOT ));
+                dc.SetPen(wxPen(wxColour(230,130,30), 1, wxDOT));
             DrawBox(dc, m_star, m_searchRegion, m_scaleFactor);
         }
 
@@ -803,7 +824,7 @@ GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWi
 
     width = StringWidth(_T("0000"));
     m_pSearchRegion = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 10, 50, 15, _T("Search"));
+                                     wxSize(width+30, -1), wxSP_ARROW_KEYS, MIN_SEARCH_REGION, MAX_SEARCH_REGION, DEFAULT_SEARCH_REGION, _T("Search"));
     DoAdd(_("Search region (pixels)"), m_pSearchRegion,
           _("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
 
