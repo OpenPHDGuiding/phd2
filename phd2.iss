@@ -3,7 +3,7 @@
 ; Updated to install independently of PHD1 by Andy Galasso on 2013/7/25
 
 #define APP_NAME "PHD 2"
-#define APP_VERSION "2.3.0"
+#define APP_VERSION "2.3.1"
 
 [Setup]
 AppName="{#APP_NAME}"
