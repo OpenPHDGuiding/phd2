@@ -227,7 +227,9 @@ bool StepGuiderSimulator::Disconnect(void)
 
 bool StepGuiderSimulator::Step(GUIDE_DIRECTION direction, int steps)
 {
-    // parent class maintains x/y offsets, so nothing to do here
+    // parent class maintains x/y offsets, so nothing to do here. Just simulate a delay.
+    enum { LATENCY_MS_PER_STEP = 5 };
+    wxMilliSleep(steps * LATENCY_MS_PER_STEP);
     return false;
 }
 
