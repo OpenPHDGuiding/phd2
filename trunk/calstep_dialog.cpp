@@ -63,25 +63,28 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     double dGuideRateRA = 0.0; // initialize to suppress compiler warning
     const double dSiderealSecondPerSec = 0.9973;
 
-    // Get squared away with initial parameter values
+    // Get squared away with initial parameter values - start with values from the profile
     m_iNumSteps = pConfig->Profile.GetInt("/CalStepCalc/NumSteps", DEFAULT_STEPS);
     m_dDeclination = pConfig->Profile.GetDouble ("/CalStepCalc/CalDeclination", 0.0);
     m_iFocalLength = focalLength;
     m_fPixelSize = pixelSize;
-
-    // Get the guide rate from the mount or from the config file
     m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", DEFAULT_GUIDESPEED);
-
-    if (pPointingSource && pPointingSource->IsConnected() &&
-        !pPointingSource->GetGuideRates(&dGuideRateRA, &dGuideRateDec))
+    // Now improve on Dec and guide speed if mount/pointing info is available
+    if (pPointingSource && pPointingSource->IsConnected())
     {
-        if (dGuideRateRA >= dGuideRateDec)
-            m_fGuideSpeed = dGuideRateRA * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
-        else
-            m_fGuideSpeed = dGuideRateDec / (15.0 * dSiderealSecondPerSec);
+        if (!pPointingSource->GetGuideRates(&dGuideRateRA, &dGuideRateDec))
+        {
+            if (dGuideRateRA >= dGuideRateDec)
+                m_fGuideSpeed = dGuideRateRA * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
+            else
+                m_fGuideSpeed = dGuideRateDec / (15.0 * dSiderealSecondPerSec);
 
-        if (m_fGuideSpeed < MIN_GUIDESPEED)
-            m_fGuideSpeed = MIN_GUIDESPEED;
+            if (m_fGuideSpeed < MIN_GUIDESPEED)
+                m_fGuideSpeed = MIN_GUIDESPEED;
+        }
+        double ra_val, dec_val, st;
+        if (!pPointingSource->GetCoordinates(&ra_val, &dec_val, &st))
+            m_dDeclination = dec_val;
     }
 
     m_bValidResult = false;
