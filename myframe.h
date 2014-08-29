@@ -236,6 +236,7 @@ public:
     void OnAoGraph(wxCommandEvent& evt);
     void OnStarProfile(wxCommandEvent& evt);
     void OnTarget(wxCommandEvent& evt);
+    void OnRestoreWindows(wxCommandEvent& evt);
     void OnAutoStar(wxCommandEvent& evt);
     void OnBookmarksShow(wxCommandEvent& evt);
     void OnBookmarksSetAtLockPos(wxCommandEvent& evt);
@@ -463,6 +464,7 @@ enum {
     MENU_STATS,
     MENU_AO_GRAPH,
     MENU_STARPROFILE,
+    MENU_RESTORE_WINDOWS,
     MENU_TARGET,
     MENU_AUTOSTAR,
     MENU_DRIFTTOOL,

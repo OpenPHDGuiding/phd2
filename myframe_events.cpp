@@ -493,6 +493,23 @@ void MyFrame::OnTarget(wxCommandEvent& evt)
     m_mgr.Update();
 }
 
+// Redock windows and restore main window to size/position where everything should be readily accessible
+void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
+{
+    wxAuiPaneInfoArray& panes = m_mgr.GetAllPanes();
+
+    // Start by restoring the main window although it doesn't seem like this could be much of a problem
+    pFrame->SetSize(wxSize(800, 600));
+    pFrame->SetPosition(wxPoint(20, 20));           // Should work on any screen size
+    // Now re-dock all the windows that are being managed by wxAuiManager
+    int lim = panes.GetCount();
+    for (int i = 0; i < lim; i++)
+    {
+        panes.Item(i).Dock();                       // Already docked, shown or not, doesn't matter
+    }
+    m_mgr.Update();
+}
+
 void MyFrame::OnLog(wxCommandEvent& evt)
 {
     if (evt.GetId() == MENU_LOG)
