@@ -69,34 +69,44 @@ exposures while the primary imaging camera is downloading data.
 &nbsp;To use these capabilities with a compatible application, you
 should click on&nbsp; the '<a name="Enable_Server"></a>Enable Server' option under the 'Tools'
 menu. &nbsp;The server interface has been reworked substantially in
-<span style="font-style: italic;">PHD2</span>, and it's now possible for an application to control most aspects
-of <span style="font-style: italic;">PHD2</span>'s guiding operations. &nbsp;Documentation for the server API is
-available on the <a href="https://code.google.com/p/open-phd-guiding/w/list">PHD2 Wiki</a>.<br><br><h3><a name="Drift_Align"></a>Drift Align</h3>Drift
-alignment is a
-well-known technique for achieving polar alignment and is considered by
-many to be the "gold standard". &nbsp;The Drift Alignment tool is a
-"wizard-like" sequence of dialogs that can help you work through the
-drift alignment process and get quantifiable results. &nbsp;Once you've
-calibrated your guider, click on 'Drift Align' under the 'Tools' menu.
-&nbsp;The first Drift Align dialog will appear to help you adjust the
-azimuth on your mount. &nbsp;If you are using an ASCOM mount, you'll
-have the option of slewing to an area near the celestial equator and
-the celestial meridian. &nbsp;If you're not using an ASCOM mount,
-you'll need to slew to that location manually. &nbsp;Once the scope is
-positioned and you have a suitable star in the field of view, click on
-the 'Drift' button to begin collecting data. &nbsp;You'll see the graph
-window with a display of star deflections and corrections and, more
-importantly, two trendlines. &nbsp;Let the exposures continue until the
-declination trendline has stabilized and is no longer jumping around
-with each new exposure. &nbsp;At the bottom of the graph window, you'll
-see a measurement for the polar alignment error in azimuth. &nbsp;Now
-click on the 'Adjust' button to halt guiding, then make a&nbsp;
-mechanical adjustment in azimuth. &nbsp;Once done, click on the 'drift'
-button again to repeat the measurement. &nbsp;Continue iterating in
+<span style="font-style: italic;">PHD2</span>, and it's now possible
+for an application to control most aspects of <span style="font-style:
+italic;">PHD2</span>'s guiding operations. &nbsp;Documentation for the
+server API is available on
+the <a href="https://code.google.com/p/open-phd-guiding/w/list">PHD2
+Wiki</a>.<br><br><h3><a name="Drift_Align"></a>Drift Align</h3>Drift
+alignment is a well-known technique for achieving polar alignment and
+is considered by many to be the "gold standard". &nbsp;The Drift
+Alignment tool is a "wizard-like" sequence of dialogs that can help
+you work through the drift alignment process and get quantifiable
+results. &nbsp;Once you've calibrated your guider, click on 'Drift
+Align' under the 'Tools' menu. &nbsp;The first Drift Align dialog will
+appear to help you adjust the azimuth on your mount. &nbsp;If you are
+using an ASCOM mount, you'll have the option of slewing to an area
+near the celestial equator and the celestial meridian. &nbsp;If you're
+not using an ASCOM mount, you'll need to slew to that location
+manually. &nbsp;Once the scope is positioned and you have a suitable
+star in the field of view, click on the 'Drift' button to begin
+collecting data. &nbsp;You'll see the graph window with a display of
+star deflections and corrections and, more importantly, two
+trendlines. When the mount is precisely polar aligned in azimuth, the
+Declination trend line will be perfectly horizontal. &nbsp;Let the
+exposures continue until the declination trendline has stabilized and
+is no longer jumping around with each new exposure. &nbsp;At the
+bottom of the graph window, you'll see a measurement for the polar
+alignment error in azimuth. And, in the image window, you will see a
+magenta circle around the guide star. The circle indicates an upper
+limit on how far the guide star needs to move when azimuth is
+adjusted. (Initially, the circle may be too large to be visible on the
+screen, so you may not see it until your alignment gets closer.)<br>
+<br>
+Now click on the 'Adjust' button to halt guiding, then make a&nbsp;
+mechanical adjustment in azimuth. Watch the guide star as you make the adjustment, moving the guide star towards the magenta circle, but not beyond it.&nbsp;Once done, click on the 'drift'
+button again to repeat the measurement. If your adjustment was in the right direction and did not over-shoot, the Declination trendline will be closer to horizontal. &nbsp;Continue iterating in
 this way until you are satisfied with your azimuth accuracy. &nbsp;You
 can use the 'notes' field to record which way the drift line moves
 depending on how you make the adjustment. &nbsp;For example, you might
-note that a counter-clockwise turn of the mount altitude moves the
+note that a counter-clockwise turn of the mount azimuth knob moves the
 drift line "up." &nbsp;Since these notes are retained across <span style="font-style: italic;">PHD2</span>
 sessions, subsequent drift alignments will probably proceed more
 quickly.<br><br>Until
