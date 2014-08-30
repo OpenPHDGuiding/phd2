@@ -1414,7 +1414,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                     // From Frank Barrett, "Determining Polar Axis Alignment Accuracy"
                     // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
                     double err_arcmin = (3.82 * ddec) / (dt * cos(declination));
-                    polarAlignCircleRadius = fabs(err_arcmin * sampling * 60.0);
+                    polarAlignCircleRadius = fabs(err_arcmin * 60.0 / sampling);
                     double correction = pFrame->pGuider->GetPolarAlignCircleCorrection();
                     double err_px = polarAlignCircleRadius * correction;
                     dc.DrawText(wxString::Format("Polar alignment error: %.2f' (%s%.f px)", err_arcmin,
