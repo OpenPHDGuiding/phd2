@@ -347,11 +347,12 @@ void PhdController::UpdateControllerState(void)
             break;
 
         case STATE_SETTLE_WAIT: {
+            bool lockedOnStar = pFrame->pGuider->IsLocked();
             double currentError = pFrame->pGuider->CurrentError();
-            bool inRange = currentError <= ctrl.settle.tolerancePx;
+            bool inRange = lockedOnStar && currentError <= ctrl.settle.tolerancePx;
             long timeInRange = 0;
 
-            Debug.AddLine("PhdController: settling, distance = %.2f (%.2f)", currentError,
+            Debug.AddLine("PhdController: settling, locked = %d, distance = %.2f (%.2f)", lockedOnStar, currentError,
                 ctrl.settle.tolerancePx);
 
             if (inRange)
