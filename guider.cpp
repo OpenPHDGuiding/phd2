@@ -387,7 +387,8 @@ bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
             dc.SetPen(wxPen(wxColor(255, 0, 0), 1, wxSOLID));
             for (DefectMap::const_iterator it = m_defectMapPreview->begin(); it != m_defectMapPreview->end(); ++it)
             {
-                dc.DrawPoint(*it);
+                const wxPoint& pt = *it;
+                dc.DrawPoint((int)(pt.x * m_scaleFactor), (int)(pt.y * m_scaleFactor));
             }
         }
 
