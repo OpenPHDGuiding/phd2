@@ -46,6 +46,7 @@ public:
     static wxString DefectMapFileName(int profileId);
     DefectMap();
     void Save(const wxArrayString& mapInfo) const;
+    bool FindDefect(const wxPoint& pt) const;
     void AddDefect(const wxPoint& pt);
 };
 

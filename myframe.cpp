@@ -295,6 +295,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pManualGuide = NULL;
     pNudgeLock = NULL;
     pRefineDefMap = NULL;
+    m_starFindMode = Star::FIND_CENTROID;
 
     tools_menu->Check(MENU_LOG,false);
 
@@ -674,6 +675,14 @@ void MyFrame::SetLoggedImageFormat(LOGGED_IMAGE_FORMAT format)
 LOGGED_IMAGE_FORMAT MyFrame::GetLoggedImageFormat(void)
 {
     return m_logged_image_format;
+}
+
+Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
+{
+    Star::FindMode prev = m_starFindMode;
+    Debug.AddLine("Setting StarFindMode = %d", mode);
+    m_starFindMode = mode;
+    return prev;
 }
 
 enum {
@@ -1217,12 +1226,18 @@ void MyFrame::StartCapturing()
 
 void MyFrame::StopCapturing(void)
 {
-    Debug.AddLine("StopCapture CaptureActive=%d m_continueCapturing=%d", CaptureActive, m_continueCapturing);
+    Debug.AddLine("StopCapture CaptureActive=%d m_continueCapturing=%d exposurePending=%d", CaptureActive, m_continueCapturing, m_exposurePending);
     if (m_continueCapturing)
     {
         SetStatusText(_("Waiting for devices before stopping..."), 1);
+        m_continueCapturing = false;
+
+        if (!m_exposurePending)
+        {
+            CaptureActive = false;
+            FinishStop();
+        }
     }
-    m_continueCapturing = false;
 }
 
 void MyFrame::SetPaused(PauseType pause)

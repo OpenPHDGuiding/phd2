@@ -1117,6 +1117,11 @@ DefectMap::DefectMap(int profileId)
 {
 }
 
+bool DefectMap::FindDefect(const wxPoint& pt) const
+{
+    return std::find(begin(), end(), pt) != end();
+}
+
 void DefectMap::AddDefect(const wxPoint& pt)
 {
     // first add the point

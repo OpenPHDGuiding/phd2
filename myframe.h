@@ -188,6 +188,7 @@ public:
     unsigned int m_frameCounter;
     unsigned int m_loggedImageFrame;
     wxDateTime m_guidingStarted;
+    Star::FindMode m_starFindMode;
 
     void RegisterTextCtrl(wxTextCtrl *ctrl);
     void OnQuit(wxCommandEvent& evt);
@@ -266,6 +267,8 @@ public:
     bool IsImageLoggingEnabled(void);
     void SetLoggedImageFormat(LOGGED_IMAGE_FORMAT val);
     LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
+    Star::FindMode GetStarFindMode(void) const;
+    Star::FindMode SetStarFindMode(Star::FindMode mode);
 
     bool StartServer(bool state);
     bool FlipRACal();
@@ -369,6 +372,7 @@ private:
     void SetupHelpFile(void);
     int GetTextWidth(wxControl *pControl, const wxString& string);
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
+    void FinishStop(void);
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()
@@ -540,6 +544,11 @@ inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm)
 inline double MyFrame::TimeSinceGuidingStarted(void) const
 {
     return (wxDateTime::UNow() - m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0;
+}
+
+inline Star::FindMode MyFrame::GetStarFindMode(void) const
+{
+    return m_starFindMode;
 }
 
 #endif /* MYFRAME_H_INCLUDED */

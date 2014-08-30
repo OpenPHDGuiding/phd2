@@ -79,7 +79,7 @@ void Star::SetError(FindResult error)
     m_lastFindResult = error;
 }
 
-bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
+bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode)
 {
     FindResult Result = STAR_OK;
     double newX = base_x;
@@ -142,9 +142,9 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
         unsigned short max = 0, nearmax1 = 0, nearmax2 = 0;
         unsigned long sum = 0;
 
-        for (int y = start_y; y <= end_y; y++)
+        for (int y = start_y + 1; y <= end_y - 1; y++)
         {
-            for (int x = start_x; x <= end_x; x++)
+            for (int x = start_x + 1; x <= end_x - 1; x++)
             {
                 unsigned long lval;
 
@@ -179,56 +179,66 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
         else
             SNR = 0.0;
 
-        // should be close now, hone in by finding the weighted average position
-
-        const int hft_range = 7;
-
-        // we try these thresholds in this order trying to get a mass >= 10
-        double thresholds[] =
+        if (mode == FIND_PEAK)
         {
-            localmean + ((double) max + localmin - localmean) / 10.0,  // Note: max already has localmin pulled from it
-            localmean,
-            (double) localmin
-        };
-
-        int startx1 = wxMax(start_x, base_x - hft_range);
-        int starty1 = wxMax(start_y, base_y - hft_range);
-        int endx1 = wxMin(end_x, base_x + hft_range);
-        int endy1 = wxMin(end_y, base_y + hft_range);
-
-        double mass = 0.0, mx = 0.0, my = 0.0;
-
-        for (unsigned int i = 0; i < WXSIZEOF(thresholds) && mass < 10.0; i++)
+            // only finding the peak, we are done. Fill in an arbitrary Mass value
+            newX = base_x;
+            newY = base_y;
+            Mass = max;
+        }
+        else
         {
-            mass = mx = my = 0.000001;
-            double threshold = thresholds[i];
-            for (int y = starty1; y <= endy1; y++)
+            // should be close now, hone in by finding the weighted average position
+
+            const int hft_range = 7;
+
+            // we try these thresholds in this order trying to get a mass >= 10
+            double thresholds[] =
             {
-                for (int x = startx1; x <= endx1; x++)
+                localmean + ((double) max + localmin - localmean) / 10.0,  // Note: max already has localmin pulled from it
+                localmean,
+                (double) localmin
+            };
+
+            int startx1 = wxMax(start_x, base_x - hft_range);
+            int starty1 = wxMax(start_y, base_y - hft_range);
+            int endx1 = wxMin(end_x, base_x + hft_range);
+            int endy1 = wxMin(end_y, base_y + hft_range);
+
+            double mass = 0.0, mx = 0.0, my = 0.0;
+
+            for (unsigned int i = 0; i < WXSIZEOF(thresholds) && mass < 10.0; i++)
+            {
+                mass = mx = my = 0.000001;
+                double threshold = thresholds[i];
+                for (int y = starty1; y <= endy1; y++)
                 {
-                    double val = (double) *(dataptr + x + rowsize * y) - threshold;
-                    if (val > 0.0)
+                    for (int x = startx1; x <= endx1; x++)
                     {
-                        mx += (double) x * val;
-                        my += (double) y * val;
-                        mass += val;
+                        double val = (double) *(dataptr + x + rowsize * y) - threshold;
+                        if (val > 0.0)
+                        {
+                            mx += (double) x * val;
+                            my += (double) y * val;
+                            mass += val;
+                        }
                     }
                 }
             }
-        }
 
-        Mass = mass;
+            Mass = mass;
 
-        if (mass < 10.0)
-            Result = STAR_LOWMASS;
-        else if (SNR < 3.0)
-            Result = STAR_LOWSNR;
-        else
-        {
-            newX = mx / mass;
-            newY = my / mass;
-            if (max == nearmax2)
-                Result = STAR_SATURATED;
+            if (mass < 10.0)
+                Result = STAR_LOWMASS;
+            else if (SNR < 3.0)
+                Result = STAR_LOWSNR;
+            else
+            {
+                newX = mx / mass;
+                newY = my / mass;
+                if (max == nearmax2)
+                    Result = STAR_SATURATED;
+            }
         }
     }
     catch (wxString Msg)
@@ -258,9 +268,9 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y)
     return bReturn;
 }
 
-bool Star::Find(usImage *pImg, int searchRegion)
+bool Star::Find(usImage *pImg, int searchRegion, FindMode mode)
 {
-    return Find(pImg, searchRegion, X, Y);
+    return Find(pImg, searchRegion, X, Y, mode);
 }
 
 bool Star::AutoFind(usImage *pImg, int extraEdgeAllowance)
