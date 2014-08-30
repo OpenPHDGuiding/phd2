@@ -175,6 +175,18 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+void MyFrame::FinishStop(void)
+{
+    // when looping resumes, start with at least one full frame. This enables applications
+    // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
+    assert(!CaptureActive);
+    pGuider->ForceFullFrame();
+    ResetAutoExposure();
+    UpdateButtonsStatus();
+    SetStatusText(_("Stopped."), 1);
+    PhdController::AbortController("Stopped capturing");
+}
+
 /*
  * OnExposeComplete is the dispatch routine that is called when an image has been taken
  * by the background thread.
@@ -237,13 +249,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
         }
         else
         {
-            // when looping resumes, start with at least one full frame. This enables applications
-            // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
-            pGuider->ForceFullFrame();
-            ResetAutoExposure();
-            UpdateButtonsStatus();
-            SetStatusText(_("Stopped."), 1);
-            PhdController::AbortController("Stopped capturing");
+            FinishStop();
         }
     }
     catch (wxString Msg)

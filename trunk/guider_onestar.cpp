@@ -184,7 +184,7 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
             throw ERROR_INFO("invalid y value");
         }
 
-        bError = !m_star.Find(pImage, m_searchRegion, x, y);
+        bError = !m_star.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode());
     }
     catch (wxString Msg)
     {
@@ -271,7 +271,7 @@ bool GuiderOneStar::AutoSelect(void)
             throw ERROR_INFO("Unable to AutoFind");
         }
 
-        if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y))
+        if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID))
         {
             throw ERROR_INFO("Unable to find");
         }
@@ -444,7 +444,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
     {
         Star newStar(m_star);
 
-        if (!newStar.Find(pImage, m_searchRegion))
+        if (!newStar.Find(pImage, m_searchRegion, pFrame->GetStarFindMode()))
         {
             errorInfo->starError = newStar.GetError();
             errorInfo->starMass = 0.0;
