@@ -56,6 +56,7 @@ struct ControllerState
     bool haveSaveSticky;
     bool saveSticky;
     int autoFindAttemptsRemaining;
+    int waitSelectedRemaining;
     SettleParams settle;
     bool settlePriorFrameInRange;
     wxStopWatch *settleTimeout;
@@ -258,6 +259,7 @@ void PhdController::UpdateControllerState(void)
             else
             {
                 SETSTATE(STATE_WAIT_SELECTED);
+                ctrl.waitSelectedRemaining = 3;
                 done = true;
             }
             break;
@@ -270,6 +272,11 @@ void PhdController::UpdateControllerState(void)
             }
             else
             {
+                Debug.AddLine("waiting for star selected, attempts remaining = %d", ctrl.waitSelectedRemaining);
+                if (--ctrl.waitSelectedRemaining == 0)
+                {
+                    SETSTATE(STATE_ATTEMPT_START);
+                }
                 done = true;
             }
             break;
