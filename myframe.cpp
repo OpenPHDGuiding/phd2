@@ -1235,6 +1235,11 @@ void MyFrame::StopCapturing(void)
         if (!m_exposurePending)
         {
             CaptureActive = false;
+            if (pGuider->IsCalibratingOrGuiding())
+            {
+                pGuider->StopGuiding();
+                pGuider->UpdateImageDisplay();
+            }
             FinishStop();
         }
     }
