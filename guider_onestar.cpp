@@ -291,6 +291,8 @@ bool GuiderOneStar::AutoSelect(void)
             UpdateGuideState(NULL, false);
         }
 
+        UpdateImageDisplay();
+
 #ifdef BRET_AO_DEBUG
         if (pMount && !pMount->IsCalibrated())
         {
