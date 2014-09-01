@@ -1,5 +1,9 @@
 #summary working area for new documentation that will talk about v2's features and how to use them
 
+=THIS IS NOT THE PHD2 MANUAL, JUST A WORKING DOCUMENT THAT IS NOW OBSOLETE=
+== If you are looking for the PHD2 Manual, use the Help menu in PHD2, or [http://openphdguiding.org/man/ view the official manual online] ==
+= NOT THE PHD2 MANUAL =
+
 ** to get started I have ported the existing help file's content below. Over time I/we will massage it into a version that is up-to-date w.r.t. v2. **
 
 == Dave's To-Do List ==
