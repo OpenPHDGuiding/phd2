@@ -341,8 +341,9 @@ bool Star::AutoFind(usImage *pImg, int extraEdgeAllowance)
             for (i=0; i<3; i++, uptr++)
                 D3 += *uptr;
             D3 += (float) *(pImg->ImageData + linesize * (y-2) + (x-4)) + (float) *(pImg->ImageData + linesize * (y-2) + (x+4)) + (float) *(pImg->ImageData + linesize * (y-2) + (x-3)) + (float) *(pImg->ImageData + linesize * (y-2) + (x+3)) +
-                (float) *(pImg->ImageData + linesize * (y+2) + (x-4)) + (float) *(pImg->ImageData + linesize * (y+2) + (x+4)) + (float) *(pImg->ImageData + linesize * (y+2) + (x - 3)) + (float) *(pImg->ImageData + linesize * (y+2) + (x+3)) +
-                (float) *(pImg->ImageData + linesize * y + (x + 4)) + (float) *(pImg->ImageData + linesize * y + (x-4));
+                  (float) *(pImg->ImageData + linesize * (y+2) + (x-4)) + (float) *(pImg->ImageData + linesize * (y+2) + (x+4)) + (float) *(pImg->ImageData + linesize * (y+2) + (x-3)) + (float) *(pImg->ImageData + linesize * (y+2) + (x+3)) +
+                  (float) *(pImg->ImageData + linesize *  y    + (x+4)) + (float) *(pImg->ImageData + linesize *  y    + (x-4)) +
+                  (float) *(pImg->ImageData + linesize * (y-1) + (x-4)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+4)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-4)) + (float) *(pImg->ImageData + linesize * (y+1) + (x+4));
 
             uptr = pImg->ImageData + linesize * (y+4) + (x-4);
             for (i=0; i<9; i++, uptr++)
