@@ -36,11 +36,12 @@
 #include "phd.h"
 
 #ifdef SIMULATOR
+
 #include "camera.h"
-#include "time.h"
 #include "image_math.h"
 #include "cam_simulator.h"
 
+#include <wx/dir.h>
 #include <wx/gdicmn.h>
 #include <wx/stopwatch.h>
 #include <wx/radiobut.h>
@@ -292,6 +293,11 @@ struct SimCamState {
     double last_dec_move;
 #endif
 
+#if SIMMODE == 1
+    wxDir dir;
+    bool ReadNextImage(usImage& img, const wxRect& subframe);
+#endif
+
     void Initialize();
     void FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset);
 };
@@ -330,6 +336,113 @@ void SimCamState::Initialize()
     DebugFile.Write ("PE, Drift, RA_Seeing, Dec_Seeing, Total_X, Total_Y, RA_Ofs, Dec_Ofs, \n");
 #endif
 }
+
+#if SIMMODE == 1
+bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
+{
+    wxString filename;
+
+    if (!dir.IsOpened())
+    {
+        dir.Open(wxFileName(Debug.GetLogDir(), "sim_images").GetFullPath());
+    }
+    if (dir.IsOpened())
+    {
+        if (!dir.GetNext(&filename))
+            dir.GetFirst(&filename, "*.fit", wxDIR_FILES);
+    }
+    if (filename.IsEmpty())
+    {
+        return true;
+    }
+
+    fitsfile *fptr;  // FITS file pointer
+    int status = 0;  // CFITSIO status value MUST be initialized to zero!
+
+    if (fits_open_diskfile(&fptr, wxFileName(dir.GetName(), filename).GetFullPath(), READONLY, &status))
+        return true;
+
+    int hdutype;
+    if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
+    {
+        pFrame->Alert(_("FITS file is not of an image"));
+        fits_close_file(fptr, &status);
+        return true;
+    }
+
+    int naxis;
+    fits_get_img_dim(fptr, &naxis, &status);
+
+    int nhdus;
+    fits_get_num_hdus(fptr, &nhdus, &status);
+    if ((nhdus != 1) || (naxis != 2)) {
+        pFrame->Alert(_("Unsupported type or read error loading FITS file"));
+        fits_close_file(fptr, &status);
+        return true;
+    }
+
+    long fits_size[2];
+    fits_get_img_size(fptr, 2, fits_size, &status);
+
+    int xsize = (int) fits_size[0];
+    int ysize = (int) fits_size[1];
+
+    if (img.NPixels != xsize * ysize)
+    {
+        if (img.Init(xsize, ysize)) {
+            pFrame->Alert(_("Memory allocation error"));
+            fits_close_file(fptr, &status);
+            return true;
+        }
+    }
+
+    unsigned short *buf = new unsigned short[img.NPixels];
+
+    bool useSubframe = !subframe.IsEmpty();
+    wxRect frame;
+    if (useSubframe)
+        frame = subframe;
+    else
+        frame = wxRect(0, 0, xsize, ysize);
+
+    long inc[] = { 1, 1 };
+    long fpixel[] = { frame.GetLeft() + 1, frame.GetTop() + 1 };
+    long lpixel[] = { frame.GetRight() + 1, frame.GetBottom() + 1 };
+    if (fits_read_subset(fptr, TUSHORT, fpixel, lpixel, inc, NULL, buf, NULL, &status))
+    {
+        pFrame->Alert(_("Error reading data"));
+        fits_close_file(fptr, &status);
+        return true;
+    }
+
+    if (useSubframe)
+    {
+        img.Subframe = subframe;
+
+        // Clear out the image
+        memset(img.ImageData, 0, img.NPixels * sizeof(img.ImageData[0]));
+
+        int i = 0;
+        for (int y = 0; y < subframe.height; y++)
+        {
+            unsigned short *dst = img.ImageData + (y + subframe.y) * xsize + subframe.x;
+            for (int x = 0; x < subframe.width; x++, i++)
+                *dst++ = (unsigned short) buf[i];
+        }
+    }
+    else
+    {
+        for (int i = 0; i < img.NPixels; i++)
+            img.ImageData[i] = (unsigned short) buf[i];
+    }
+
+    delete[] buf;
+
+    fits_close_file(fptr, &status);
+
+    return false;
+}
+#endif // SIMMODE == 1
 
 // get a pair of normally-distributed independent random values - Box-Muller algorithm, sigma=1
 static void rand_normal(double r[2])
@@ -603,55 +716,6 @@ Camera_SimClass::~Camera_SimClass()
     delete sim;
 }
 
-#if SIMMODE==1
-bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool recon) {
-    int xsize, ysize;
-//  unsigned short *dataptr;
-//  int i;
-    fitsfile *fptr;  // FITS file pointer
-    int status = 0;  // CFITSIO status value MUST be initialized to zero!
-    int hdutype, naxis;
-    int nhdus=0;
-    long fits_size[2];
-    long fpixel[3] = {1,1,1};
-//  char keyname[15];
-//  char keystrval[80];
-
-#if defined (__APPLE__)
-    if ( !fits_open_file(&fptr, "/Users/stark/dev/PHD/simimage.fit", READONLY, &status) ) {
-#else
-    if ( !fits_open_diskfile(&fptr, "phd011412.fit", READONLY, &status) ) {
-#endif
-        if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-            pFrame->Alert(_("FITS file is not of an image"));
-            return true;
-        }
-
-       // Get HDUs and size
-        fits_get_img_dim(fptr, &naxis, &status);
-        fits_get_img_size(fptr, 2, fits_size, &status);
-        xsize = (int) fits_size[0];
-        ysize = (int) fits_size[1];
-        fits_get_num_hdus(fptr,&nhdus,&status);
-        if ((nhdus != 1) || (naxis != 2)) {
-           pFrame->Alert(_("Unsupported type or read error loading FITS file"));
-           return true;
-        }
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error"));
-            return true;
-        }
-        if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { // Read image
-            pFrame->Alert(_("Error reading data"));
-            return true;
-        }
-        fits_close_file(fptr,&status);
-    }
-    return false;
-
-}
-#endif
-
 #if SIMMODE==2
 bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img) {
     int xsize, ysize;
@@ -684,8 +748,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img) {
 }
 #endif
 
-#if SIMMODE==3
-
+#if SIMMODE == 3
 static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
     unsigned short *p0 = &img.Pixel(subframe.GetLeft(), subframe.GetTop());
@@ -696,10 +759,23 @@ static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int ga
             *p = (unsigned short) (SimCamParams::noise_multiplier * ((double) gain / 10.0 * offset * exptime / 100.0 + (rand() % (gain * 100))));
     }
 }
+#endif // SIMMODE == 3
 
 bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
     long long start = wxGetUTCTimeMillis().GetValue();
+
+#if SIMMODE == 1
+
+    if (!UseSubframes)
+        subframe = wxRect();
+
+    if (sim->ReadNextImage(img, subframe))
+        return true;
+
+    FullSize = img.Size;
+
+#else
 
     FullSize = wxSize(sim->width, sim->height);
 
@@ -731,6 +807,8 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         img.Subframe = subframe;
 
     if (recon) SubtractDark(img);
+
+#endif // SIMMODE == 1
 
     long long now = wxGetUTCTimeMillis().GetValue();
     if (now < start + duration)
@@ -781,8 +859,6 @@ void Camera_SimClass::FlipPierSide(void)
         SimCamParams::cam_angle -= 360.0;
     Debug.AddLine("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f", SimCamParams::pier_side, SimCamParams::cam_angle);
 }
-
-#endif // SIMMODE==3
 
 #if SIMMODE == 4
 bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool recon) {
@@ -840,7 +916,7 @@ bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool rec
     return false;
 
 }
-#endif
+#endif // SIMMODE == 4
 
 struct SimCamDialog : public wxDialog
 {
@@ -1192,4 +1268,4 @@ void Camera_SimClass::ShowPropertyDialog()
     }
 }
 
-#endif
+#endif // SIMULATOR
