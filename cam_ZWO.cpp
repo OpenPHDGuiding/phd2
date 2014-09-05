@@ -397,7 +397,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
         img.Subframe = subframe;
 
         // Clear out the image
-        memset(img.ImageData, 0, img.NPixels * sizeof(img.ImageData[0]));
+        img.Clear();
 
         for (int y = 0; y < subframe.height; y++)
         {

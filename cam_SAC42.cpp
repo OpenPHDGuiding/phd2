@@ -107,13 +107,11 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
     CapInfo.OffsetX = xpos;
     CapInfo.OffsetY = ypos;
 
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            delete[] buffer;
-            return true;
-        }
+    if (img.Init(FullSize)) {
+        pFrame->Alert(_("Memory allocation error during capture"));
+        Disconnect();
+        delete[] buffer;
+        return true;
     }
     while (duration > 0) { // still have frames to grab
         if (duration <= chunksize) { // grab a single frame

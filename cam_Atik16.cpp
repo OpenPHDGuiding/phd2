@@ -219,12 +219,10 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
     }
     int data_x,data_y,data_w,data_h,data_binx,data_biny;
     ArtemisGetImageData(Cam_Handle, &data_x, &data_y, &data_w, &data_h, &data_binx, &data_biny);
-    if (img.NPixels != (FullSize.GetWidth()*FullSize.GetHeight())) {
-        if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+    if (img.Init(FullSize)) {
+        pFrame->Alert(_("Memory allocation error during capture"));
+        Disconnect();
+        return true;
     }
 
     if (TakeSubframe) {

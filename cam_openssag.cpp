@@ -99,11 +99,12 @@ bool Camera_OpenSSAGClass::Disconnect() {
     return false;
 }
 
-bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
 
-    if (img.Init(xsize,ysize)) {
+    if (img.Init(FullSize)) {
         wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
         Disconnect();
         return true;

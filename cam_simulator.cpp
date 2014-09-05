@@ -387,13 +387,10 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     int xsize = (int) fits_size[0];
     int ysize = (int) fits_size[1];
 
-    if (img.NPixels != xsize * ysize)
-    {
-        if (img.Init(xsize, ysize)) {
-            pFrame->Alert(_("Memory allocation error"));
-            fits_close_file(fptr, &status);
-            return true;
-        }
+    if (img.Init(xsize, ysize)) {
+        pFrame->Alert(_("Memory allocation error"));
+        fits_close_file(fptr, &status);
+        return true;
     }
 
     unsigned short *buf = new unsigned short[img.NPixels];
@@ -420,7 +417,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
         img.Subframe = subframe;
 
         // Clear out the image
-        memset(img.ImageData, 0, img.NPixels * sizeof(img.ImageData[0]));
+        img.Clear();
 
         int i = 0;
         for (int y = 0; y < subframe.height; y++)
@@ -789,15 +786,13 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     int const gain = 30;
     int const offset = 100;
 
-    if (img.NPixels != (int)(sim->width * sim->height)) {
-        if (img.Init(sim->width, sim->height)) {
-            pFrame->Alert(_("Memory allocation error"));
-            return true;
-        }
+    if (img.Init(sim->width, sim->height)) {
+        pFrame->Alert(_("Memory allocation error"));
+        return true;
     }
 
     if (usingSubframe)
-        memset(img.ImageData, 0, img.NPixels * sizeof(unsigned short));
+        img.Clear();
 
     fill_noise(img, subframe, exptime, gain, offset);
 

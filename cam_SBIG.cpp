@@ -329,7 +329,8 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
 
     // init memory
-    if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
+    if (img.Init(FullSize))
+    {
         pFrame->Alert(_("Memory allocation error during capture"));
         Disconnect();
         return true;

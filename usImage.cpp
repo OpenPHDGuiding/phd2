@@ -40,19 +40,29 @@ bool usImage::Init(const wxSize& size)
     // Allocates space for image and sets params up
     // returns true on error
 
-    if (ImageData) {
-        delete[] ImageData;
-        ImageData = NULL;
-    }
-
+    int prev = NPixels;
     NPixels = size.GetWidth() * size.GetHeight();
     Size = size;
     Subframe = wxRect(0, 0, 0, 0);
     Min = Max = 0;
-    if (NPixels) {
-        ImageData = new unsigned short[NPixels];
-        if (!ImageData) return true;
+
+    if (NPixels != prev)
+    {
+        delete[] ImageData;
+
+        if (NPixels)
+        {
+            ImageData = new unsigned short[NPixels];
+            if (!ImageData)
+            {
+                NPixels = 0;
+                return true;
+            }
+        }
+        else
+            ImageData = NULL;
     }
+
     return false;
 }
 
@@ -142,13 +152,9 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
 {
     wxImage *img = *rawimg;
 
-    if (!img->Ok() || (img->GetWidth() != Size.GetWidth()) || (img->GetHeight() != Size.GetHeight()) ) // can't reuse bitmap
+    if (!img || !img->Ok() || (img->GetWidth() != Size.GetWidth()) || (img->GetHeight() != Size.GetHeight()) ) // can't reuse bitmap
     {
-        if (img->Ok())
-        {
-            delete img;  // Clear out current image if it exists
-            img = (wxImage *) NULL;
-        }
+        delete img;
         img = new wxImage(Size.GetWidth(), Size.GetHeight(), false);
     }
 
@@ -196,7 +202,8 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
     return false;
 }
 
-bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double power) {
+bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double power)
+{
     wxImage *img;
     unsigned char *ImgPtr;
     unsigned short *RawPtr;
@@ -415,9 +422,17 @@ bool usImage::Load(const wxString& fname)
     return bError;
 }
 
+bool usImage::CopyFrom(const usImage& src)
+{
+    if (Init(src.Size))
+        return true;
+    memcpy(ImageData, src.ImageData, NPixels * sizeof(unsigned short));
+    return false;
+}
+
 bool usImage::Rotate(double theta, bool mirror)
 {
-    wxImage *pImg = new wxImage();
+    wxImage *pImg = 0;
 
     CalcStats();
 
@@ -439,30 +454,16 @@ bool usImage::Rotate(double theta, bool mirror)
     return false;
 }
 
-bool usImage::CopyFromImage(const wxImage &img)
+bool usImage::CopyFromImage(const wxImage& img)
 {
-    Init(img.GetWidth(), img.GetHeight());
+    Init(img.GetSize());
 
-    unsigned char *pSrc = img.GetData();
+    const unsigned char *pSrc = img.GetData();
     unsigned short *pDest = ImageData;
 
-    for (int i=0; i<NPixels;i++)
+    for (int i = 0; i < NPixels; i++)
     {
-        double val = *pSrc;
-
-        val *=255.0;
-
-        if (val < 0)
-        {
-            val = 0.0;
-        }
-        else if (val > 65535.0)
-        {
-            val = 65535;
-        }
-
-        *pDest++ = (unsigned short)val;
-
+        *pDest++ = ((unsigned short) *pSrc) << 8;
         pSrc += 3;
     }
 

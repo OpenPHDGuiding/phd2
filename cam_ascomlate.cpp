@@ -752,7 +752,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, const
     if (hr != S_OK)
         return true;
 
-    if (Image.Init(FullSize))
+    if (Image.Init(xsize, ysize))
     {
         pFrame->Alert(_("Cannot allocate memory to download image from camera"));
         return true;
@@ -763,7 +763,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, const
         Image.Subframe = subframe;
 
         // Clear out the image
-        memset(Image.ImageData, 0, Image.NPixels * sizeof(Image.ImageData[0]));
+        Image.Clear();
 
         int i = 0;
         for (int y = 0; y < subframe.height; y++)

@@ -279,23 +279,16 @@ bool Camera_WDMClass::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
 
     try
     {
-        int xsize, ysize;
-        xsize = FullSize.GetWidth();
-        ysize = FullSize.GetHeight();
-
         assert(captureMode == CAPTURE_ONE_FRAME || captureMode == CAPTURE_STACK_FRAMES);
 
-        if (img.NPixels != (xsize*ysize))
+        if (img.Init(FullSize))
         {
-            if (img.Init(xsize,ysize))
-            {
-                pFrame->Alert(_("Memory allocation error during capture"));
-                Disconnect();
-                throw ERROR_INFO("img.Init() failed");
-            }
+            pFrame->Alert(_("Memory allocation error during capture"));
+            Disconnect();
+            throw ERROR_INFO("img.Init() failed");
         }
 
-        memset(img.ImageData, 0, img.NPixels * sizeof(unsigned short));
+        img.Clear();
 
         m_nFrames = 0;
         m_nAttempts = 0;

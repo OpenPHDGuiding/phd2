@@ -275,11 +275,10 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
     xsize = FullSize.GetWidth();
     ysize = FullSize.GetHeight();
 
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error"));
-            return true;
-        }
+    if (img.Init(FullSize))
+    {
+        pFrame->Alert(_("Memory allocation error"));
+        return true;
     }
     dataptr = img.ImageData;
 
