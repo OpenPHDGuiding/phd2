@@ -136,13 +136,12 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
     int ypos = 0;
 
     // init memory
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+    if (img.Init(FullSize)) {
+        pFrame->Alert(_("Memory allocation error during capture"));
+        Disconnect();
+        return true;
     }
+
     // set ROI
     rval = fcUsb_cmd_setRoi(CamNum,(unsigned short) xpos, (unsigned short) ypos, (unsigned short) (xpos + xsize - 1), (unsigned short) (ypos + ysize - 1));
     if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 1")); return true; }

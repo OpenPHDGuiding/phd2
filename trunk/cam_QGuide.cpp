@@ -122,14 +122,11 @@ bool Camera_QGuiderClass::Disconnect() {
 
 }
 
-bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
 // Only does full frames still
 
-//  unsigned char *bptr;
     unsigned short *dptr;
-    //int  i;
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
     bool firstimg = true;
 
     //qglogfile->AddLine(wxString::Format("Capturing dur %d",duration)); //qglogfile->Write();
@@ -140,12 +137,10 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
     while (isExposing())
         wxMilliSleep(10);
 */
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+    if (img.Init(FullSize)) {
+        pFrame->Alert(_("Memory allocation error during capture"));
+        Disconnect();
+        return true;
     }
 //  ThreadedExposure(duration, buffer);
     ThreadedExposure(duration, NULL);

@@ -118,7 +118,7 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
     int ysize = FullSize.GetHeight();
     DS_CAMERA_STATUS rval;
     int ntries = 1;
-    if (img.Init(xsize,ysize)) {
+    if (img.Init(FullSize)) {
         pFrame->Alert(_("Memory allocation error during capture"));
         Disconnect();
         return true;

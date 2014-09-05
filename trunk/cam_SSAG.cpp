@@ -361,14 +361,11 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     _SSAG_ProgramCamera(0, 0, 1280, 1024, (GuideCameraGain * 63 / 100));
 
-    if (img.NPixels != (xsize*ysize))
+    if (img.Init(FullSize))
     {
-        if (img.Init(xsize,ysize))
-        {
-            pFrame->Alert(_T("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+        pFrame->Alert(_T("Memory allocation error during capture"));
+        Disconnect();
+        return true;
     }
 
     _SSAG_ThreadedExposure(duration, NULL);

@@ -210,12 +210,11 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, boo
     int ysize = FullSize.GetHeight();
 //  bool firstimg = true;
 
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+    if (img.Init(FullSize))
+    {
+        pFrame->Alert(_("Memory allocation error during capture"));
+        Disconnect();
+        return true;
     }
 
     if (duration != last_dur) {

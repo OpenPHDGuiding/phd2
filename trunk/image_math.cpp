@@ -102,7 +102,7 @@ bool QuickLRecon(usImage& img)
         RY = img.Subframe.GetY();
         RW = img.Subframe.GetWidth();
         RH = img.Subframe.GetHeight();
-        memset(tmp.ImageData, 0, img.NPixels * sizeof(unsigned short));
+        tmp.Clear();
     }
 
 #define IX(x_, y_) ((RY + (y_)) * W + RX + (x_))
@@ -162,7 +162,7 @@ bool Median3(usImage& img)
     }
     else
     {
-        memset(tmp.ImageData, 0, tmp.NPixels * sizeof(unsigned short));
+        tmp.Clear();
         err = Median3(tmp.ImageData, img.ImageData, img.Size, img.Subframe);
     }
 
