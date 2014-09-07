@@ -360,8 +360,11 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
             Debug.AddLine("ZWO: setStartPos(%d,%d) => %d", frame.GetLeft(), frame.GetTop(), status);
     }
 
-    if (size_change || pos_change || gain_change || exp_change)
-        flush_buffered_image(m_cameraId, img);
+    // the camera and/or driver will buffer frames and return the oldest frame,
+    // which could be quite stale. read out all buffered frames so the frame we
+    // get is current
+
+    flush_buffered_image(m_cameraId, img);
 
     if (!m_capturing)
     {
