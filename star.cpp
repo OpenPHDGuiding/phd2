@@ -79,7 +79,7 @@ void Star::SetError(FindResult error)
     m_lastFindResult = error;
 }
 
-bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode)
+bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, FindMode mode)
 {
     FindResult Result = STAR_OK;
     double newX = base_x;
@@ -271,115 +271,442 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y, FindMod
     return bReturn;
 }
 
-bool Star::Find(usImage *pImg, int searchRegion, FindMode mode)
+bool Star::Find(const usImage *pImg, int searchRegion, FindMode mode)
 {
     return Find(pImg, searchRegion, X, Y, mode);
 }
 
-bool Star::AutoFind(usImage *pImg, int extraEdgeAllowance)
+struct FloatImg
 {
-    if (!pImg->Subframe.IsEmpty())
+    float *px;
+    wxSize Size;
+    int NPixels;
+
+    FloatImg() : px(0) { }
+    FloatImg(const wxSize& size) : px(0) { Init(size); }
+    FloatImg(const usImage& img) : px(0) {
+        Init(img.Size);
+        for (int i = 0; i < NPixels; i++)
+            px[i] = (float) img.ImageData[i];
+    }
+    ~FloatImg() { delete[] px; }
+    void Init(const wxSize& sz) { delete[] px;  Size = sz; NPixels = Size.GetWidth() * Size.GetHeight(); px = new float[NPixels]; }
+    void Swap(FloatImg& other) { std::swap(px, other.px); std::swap(Size, other.Size); std::swap(NPixels, other.NPixels); }
+};
+
+static void GetStats(double *mean, double *stdev, const FloatImg& img, const wxRect& win)
+{
+    // Determine the mean and standard deviation
+    double sum = 0.0;
+    double a = 0.0;
+    double q = 0.0;
+    double k = 1.0;
+    double km1 = 0.0;
+
+    const int width = img.Size.GetWidth();
+    const float *p0 = &img.px[win.GetTop() * width + win.GetLeft()];
+    for (int y = 0; y < win.GetHeight(); y++)
     {
-        Debug.AddLine("Autofind called on subframe, returning error");
-        return false; // not found
+        const float *end = p0 + win.GetWidth();
+        for (const float *p = p0; p < end; p++)
+        {
+            double const x = (double) *p;
+            sum += x;
+            double const a0 = a;
+            a += (x - a) / k;
+            q += (x - a0) * (x - a);
+            km1 = k;
+            k += 1.0;
+        }
+        p0 += width;
     }
 
-    Debug.AddLine(wxString::Format("Star::AutoFind called with edgeAllowance = %d", extraEdgeAllowance));
+    *mean = sum / km1;
+    *stdev = sqrt(q / km1);
+}
 
-    // OK, do seem to need to run 3x3 median first
-    Median3(*pImg);
+// un-comment to save the intermediate autofind image
+//#define SAVE_AUTOFIND_IMG
 
-    int linesize = pImg->Size.GetWidth();
+static void SaveImage(const FloatImg& img, const char *name)
+{
+#ifdef SAVE_AUTOFIND_IMG
+    float maxv = img.px[0];
+    float minv = img.px[0];
 
+    for (int i = 1; i < img.NPixels; i++)
+    {
+        if (img.px[i] > maxv)
+            maxv = img.px[i];
+        if (img.px[i] < minv)
+            minv = img.px[i];
+    }
+
+    usImage tmp;
+    tmp.Init(img.Size);
+    for (int i = 0; i < tmp.NPixels; i++)
+    {
+        tmp.ImageData[i] = (unsigned short)(((double) img.px[i] - minv) * 65535.0 / (maxv - minv));
+    }
+
+    tmp.Save(wxFileName(Debug.GetLogDir(), name).GetFullPath());
+#endif // SAVE_AUTOFIND_IMG
+}
+
+static void psf_conv(FloatImg& dst, const FloatImg& src)
+{
+    dst.Init(src.Size);
+
+    //                       A      B1     B2    C1     C2    C3     D1     D2     D3
     const double PSF[] = { 0.906, 0.584, 0.365, .117, .049, -0.05, -.064, -.074, -.094 };
 
-    double BestPSF_fit = 0.0;
-    int xpos = 0, ypos = 0;
+    int const width = src.Size.GetWidth();
+    int const height = src.Size.GetHeight();
+
+    memset(dst.px, 0, src.NPixels * sizeof(float));
 
     /* PSF Grid is:
-        D3 D3 D3 D3 D3 D3 D3 D3 D3
-        D3 D3 D3 D2 D1 D2 D3 D3 D3
-        D3 D3 C3 C2 C1 C2 C3 D3 D3
-        D3 D2 C2 B2 B1 B2 C2 D2 D3
-        D3 D1 C1 B1 A  B1 C1 D1 D3
-        D3 D2 C2 B2 B1 B2 C2 D2 D3
-        D3 D3 C3 C2 C1 C2 C3 D3 D3
-        D3 D3 D3 D2 D1 D2 D3 D3 D3
-        D3 D3 D3 D3 D3 D3 D3 D3 D3
+    D3 D3 D3 D3 D3 D3 D3 D3 D3
+    D3 D3 D3 D2 D1 D2 D3 D3 D3
+    D3 D3 C3 C2 C1 C2 C3 D3 D3
+    D3 D2 C2 B2 B1 B2 C2 D2 D3
+    D3 D1 C1 B1 A  B1 C1 D1 D3
+    D3 D2 C2 B2 B1 B2 C2 D2 D3
+    D3 D3 C3 C2 C1 C2 C3 D3 D3
+    D3 D3 D3 D2 D1 D2 D3 D3 D3
+    D3 D3 D3 D3 D3 D3 D3 D3 D3
 
-        1@A
-        4@B1, B2, C1, C3, D1
-        8@C2, D2
-        44 * D3
-        */
+    1@A
+    4@B1, B2, C1, C3, D1
+    8@C2, D2
+    44 * D3
+    */
 
-    enum { MIN_EDGE_DIST = 40 };
-    int edgeDist = MIN_EDGE_DIST + extraEdgeAllowance;
+    int psf_size = 4;
 
-    for (int y = edgeDist; y < pImg->Size.GetHeight() - edgeDist; y++)
+    for (int y = psf_size; y < height - psf_size; y++)
     {
-        for (int x = edgeDist; x < linesize - edgeDist; x++)
+        for (int x = psf_size; x < width - psf_size; x++)
         {
             float A, B1, B2, C1, C2, C3, D1, D2, D3;
 
-            A = (float) *(pImg->ImageData + linesize * y + x);
-            B1 = (float) *(pImg->ImageData + linesize * (y-1) +  x)    + (float) *(pImg->ImageData + linesize * (y+1) +  x)    + (float) *(pImg->ImageData + linesize *  y +    (x + 1)) + (float) *(pImg->ImageData + linesize *  y +    (x-1));
-            B2 = (float) *(pImg->ImageData + linesize * (y-1) + (x-1)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+1)) + (float) *(pImg->ImageData + linesize * (y+1) + (x + 1)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-1));
-            C1 = (float) *(pImg->ImageData + linesize * (y-2) +  x)    + (float) *(pImg->ImageData + linesize * (y+2) +  x)    + (float) *(pImg->ImageData + linesize *  y +    (x + 2)) + (float) *(pImg->ImageData + linesize *  y +    (x-2));
-            C2 = (float) *(pImg->ImageData + linesize * (y-2) + (x-1)) + (float) *(pImg->ImageData + linesize * (y-2) + (x+1)) + (float) *(pImg->ImageData + linesize * (y+2) + (x + 1)) + (float) *(pImg->ImageData + linesize * (y+2) + (x-1)) +
-                 (float) *(pImg->ImageData + linesize * (y-1) + (x-2)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+2)) + (float) *(pImg->ImageData + linesize * (y+1) + (x + 2)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-2));
-            C3 = (float) *(pImg->ImageData + linesize * (y-2) + (x-2)) + (float) *(pImg->ImageData + linesize * (y-2) + (x+2)) + (float) *(pImg->ImageData + linesize * (y+2) + (x + 2)) + (float) *(pImg->ImageData + linesize * (y+2) + (x-2));
-            D1 = (float) *(pImg->ImageData + linesize * (y-3) +  x)    + (float) *(pImg->ImageData + linesize * (y+3) +  x)    + (float) *(pImg->ImageData + linesize *  y +    (x + 3)) + (float) *(pImg->ImageData + linesize *  y +    (x-3));
-            D2 = (float) *(pImg->ImageData + linesize * (y-3) + (x-1)) + (float) *(pImg->ImageData + linesize * (y-3) + (x+1)) + (float) *(pImg->ImageData + linesize * (y+3) + (x + 1)) + (float) *(pImg->ImageData + linesize * (y+3) + (x-1)) +
-                 (float) *(pImg->ImageData + linesize * (y-1) + (x-3)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+3)) + (float) *(pImg->ImageData + linesize * (y+1) + (x + 3)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-3));
-            D3 = 0.0;
-            const unsigned short *uptr = pImg->ImageData + linesize * (y-4) + (x-4);
+#define PX(dx, dy) *(src.px + width * (y + (dy)) + x + (dx))
+            A =  PX(+0, +0);
+            B1 = PX(+0, -1) + PX(+0, +1) + PX(+1, +0) + PX(-1, +0);
+            B2 = PX(-1, -1) + PX(+1, -1) + PX(-1, +1) + PX(+1, +1);
+            C1 = PX(+0, -2) + PX(-2, +0) + PX(+2, +0) + PX(+0, +2);
+            C2 = PX(-1, -2) + PX(+1, -2) + PX(-2, -1) + PX(+2, -1) + PX(-2, +1) + PX(+2, +1) + PX(-1, +2) + PX(+1, +2);
+            C3 = PX(-2, -2) + PX(+2, -2) + PX(-2, +2) + PX(+2, +2);
+            D1 = PX(+0, -3) + PX(-3, +0) + PX(+3, +0) + PX(+0, +3);
+            D2 = PX(-1, -3) + PX(+1, -3) + PX(-3, -1) + PX(+3, -1) + PX(-3, +1) + PX(+3, +1) + PX(-1, +3) + PX(+1, +3);
+            D3 = PX(-4, -2) + PX(-3, -2) + PX(+3, -2) + PX(+4, -2) + PX(-4, -1) + PX(+4, -1) + PX(-4, +0) + PX(+4, +0) + PX(-4, +1) + PX(+4, +1) + PX(-4, +2) + PX(-3, +2) + PX(+3, +2) + PX(+4, +2);
+#undef PX
             int i;
-            for (i=0; i<9; i++, uptr++)
-                D3 += *uptr;
-            uptr = pImg->ImageData + linesize * (y-3) + (x-4);
-            for (i=0; i<3; i++, uptr++)
-                D3 += *uptr;
-            uptr += 3;
-            for (i=0; i<3; i++, uptr++)
-                D3 += *uptr;
-            D3 += (float) *(pImg->ImageData + linesize * (y-2) + (x-4)) + (float) *(pImg->ImageData + linesize * (y-2) + (x+4)) + (float) *(pImg->ImageData + linesize * (y-2) + (x-3)) + (float) *(pImg->ImageData + linesize * (y-2) + (x+3)) +
-                  (float) *(pImg->ImageData + linesize * (y+2) + (x-4)) + (float) *(pImg->ImageData + linesize * (y+2) + (x+4)) + (float) *(pImg->ImageData + linesize * (y+2) + (x-3)) + (float) *(pImg->ImageData + linesize * (y+2) + (x+3)) +
-                  (float) *(pImg->ImageData + linesize *  y    + (x+4)) + (float) *(pImg->ImageData + linesize *  y    + (x-4)) +
-                  (float) *(pImg->ImageData + linesize * (y-1) + (x-4)) + (float) *(pImg->ImageData + linesize * (y-1) + (x+4)) + (float) *(pImg->ImageData + linesize * (y+1) + (x-4)) + (float) *(pImg->ImageData + linesize * (y+1) + (x+4));
+            const float *uptr;
 
-            uptr = pImg->ImageData + linesize * (y+4) + (x-4);
-            for (i=0; i<9; i++, uptr++)
-                D3 += *uptr;
-            uptr = pImg->ImageData + linesize * (y+3) + (x-4);
-            for (i=0; i<3; i++, uptr++)
-                D3 += *uptr;
+            uptr = src.px + width * (y - 4) + (x - 4);
+            for (i = 0; i < 9; i++)
+                D3 += *uptr++;
+
+            uptr = src.px + width * (y - 3) + (x - 4);
+            for (i = 0; i < 3; i++)
+                D3 += *uptr++;
             uptr += 3;
-            for (i=0; i<3; i++, uptr++)
-                D3 += *uptr;
+            for (i = 0; i < 3; i++)
+                D3 += *uptr++;
+
+            uptr = src.px + width * (y + 3) + (x - 4);
+            for (i = 0; i < 3; i++)
+                D3 += *uptr++;
+            uptr += 3;
+            for (i = 0; i < 3; i++)
+                D3 += *uptr++;
+
+            uptr = src.px + width * (y + 4) + (x - 4);
+            for (i = 0; i < 9; i++)
+                D3 += *uptr++;
 
             double mean = (A + B1 + B2 + C1 + C2 + C3 + D1 + D2 + D3) / 81.0;
             double PSF_fit = PSF[0] * (A - mean) + PSF[1] * (B1 - 4.0 * mean) + PSF[2] * (B2 - 4.0 * mean) +
                 PSF[3] * (C1 - 4.0 * mean) + PSF[4] * (C2 - 8.0 * mean) + PSF[5] * (C3 - 4.0 * mean) +
                 PSF[6] * (D1 - 4.0 * mean) + PSF[7] * (D2 - 8.0 * mean) + PSF[8] * (D3 - 44.0 * mean);
 
-            if (PSF_fit > BestPSF_fit)
+            dst.px[width * y + x] = (float) PSF_fit;
+        }
+    }
+}
+
+static void Downsample(FloatImg& dst, const FloatImg& src, int downsample)
+{
+    int width = src.Size.GetWidth();
+    int dw = src.Size.GetWidth() / downsample;
+    int dh = src.Size.GetHeight() / downsample;
+
+    dst.Init(wxSize(dw, dh));
+
+    for (int yy = 0; yy < dh; yy++)
+    {
+        for (int xx = 0; xx < dw; xx++)
+        {
+            float sum = 0.0;
+            for (int j = 0; j < downsample; j++)
+                for (int i = 0; i < downsample; i++)
+                    sum += src.px[(yy * downsample + j) * width + xx * downsample + i];
+            float val = sum / (downsample * downsample);
+            dst.px[yy * dw + xx] = val;
+        }
+    }
+}
+
+struct Peak
+{
+    float val;
+    int x;
+    int y;
+
+    Peak() { }
+    Peak(int x_, int y_, float val_) : x(x_), y(y_), val(val_) { }
+    bool operator<(const Peak& rhs) const { return val < rhs.val; }
+};
+
+static void RemoveItems(std::set<Peak>& stars, const std::set<int>& to_erase)
+{
+    int n = 0;
+    for (std::set<Peak>::iterator it = stars.begin(); it != stars.end(); n++)
+    {
+        if (to_erase.find(n) != to_erase.end())
+        {
+            std::set<Peak>::iterator next = it;
+            ++next;
+            stars.erase(it);
+            it = next;
+        }
+        else
+            ++it;
+    }
+}
+
+bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegion)
+{
+    if (!image.Subframe.IsEmpty())
+    {
+        Debug.AddLine("Autofind called on subframe, returning error");
+        return false; // not found
+    }
+
+    wxBusyCursor busy;
+
+    Debug.AddLine(wxString::Format("Star::AutoFind called with edgeAllowance = %d searchRegion = %d", extraEdgeAllowance, searchRegion));
+
+    // run a 3x3 median first to eliminate hot pixels
+    usImage smoothed;
+    smoothed.CopyFrom(image);
+    Median3(smoothed);
+
+    // convert to floating point
+    FloatImg conv(smoothed);
+
+    // downsample the source image
+    const int downsample = 1;
+    if (downsample > 1)
+    {
+        FloatImg tmp;
+        Downsample(tmp, conv, downsample);
+        conv.Swap(tmp);
+    }
+
+    // run the PSF convolution
+    {
+        FloatImg tmp;
+        psf_conv(tmp, conv);
+        conv.Swap(tmp);
+    }
+
+    enum { CONV_RADIUS = 4 };
+    int dw = conv.Size.GetWidth();      // width of the downsampled image
+    int dh = conv.Size.GetHeight();     // height of the downsampled image
+    wxRect convRect(CONV_RADIUS, CONV_RADIUS, dw - 2 * CONV_RADIUS, dh - 2 * CONV_RADIUS);  // region containing valid data
+
+    SaveImage(conv, "PHD2_AutoFind.fit");
+
+    enum { TOP_N = 100 };  // keep track of the brightest stars
+    std::set<Peak> stars;  // sorted by ascending intensity
+
+    double global_mean, global_stdev;
+    GetStats(&global_mean, &global_stdev, conv, convRect);
+
+    Debug.AddLine("AutoFind: global mean = %.1f, stdev %.1f", global_mean, global_stdev);
+
+    const double thresholds[] = { 3.0, 2.0, 1.5, 1.25, };
+    for (int n = 0; n < WXSIZEOF(thresholds) && stars.size() == 0; n++)
+    {
+        const double thresh = thresholds[n];
+        Debug.AddLine("AutoFind: trying threshold = %.1f", thresh);
+
+        // find each local maximum
+        int srch = 1;
+        for (int y = convRect.GetTop() + srch; y <= convRect.GetBottom() - srch; y++)
+        {
+            for (int x = convRect.GetLeft() + srch; x <= convRect.GetRight() - srch; x++)
             {
-                BestPSF_fit = PSF_fit;
-                xpos = x;
-                ypos = y;
+                float val = conv.px[dw * y + x];
+                bool ismax = false;
+                if (val > 0.0)
+                {
+                    ismax = true;
+                    for (int j = -srch; j <= srch; j++)
+                    {
+                        for (int i = -srch; i <= srch; i++)
+                        {
+                            if (i == 0 && j == 0)
+                                continue;
+                            if (conv.px[dw * (y + j) + (x + i)] > val)
+                            {
+                                ismax = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!ismax)
+                    continue;
+
+                // compare local maximum to mean value of surrounding pixels
+                const int local = 7;
+                double local_mean, local_stdev;
+                wxRect localRect(x - local, y - local, 2 * local + 1, 2 * local + 1);
+                localRect.Intersect(convRect);
+                GetStats(&local_mean, &local_stdev, conv, localRect);
+
+                // this is our measure of star intensity
+                double h = (val - local_mean) / global_stdev;
+
+                if (h < thresh)
+                {
+                    //  Debug.AddLine(wxString::Format("AG: local max REJECT [%d, %d] PSF %.1f SNR %.1f", imgx, imgy, val, SNR));
+                    continue;
+                }
+
+                // coordinates on the original image
+                int imgx = x * downsample + downsample / 2;
+                int imgy = y * downsample + downsample / 2;
+
+                Debug.AddLine("AutoFind: local max [%d, %d] img [%d, %d] PSF %.1f mean %.1f h %.1f", x, y, imgx, imgy, val, local_mean, h);
+
+                stars.insert(Peak(imgx, imgy, h));
+                if (stars.size() > TOP_N)
+                    stars.erase(stars.begin());
             }
         }
     }
 
-    bool bFound = false;
-    if (xpos != 0 && ypos != 0)
+    // merge stars that are very close into a single star
     {
-        bFound = true;
-        SetXY(xpos, ypos);
+        const int minlimitsq = 5 * 5;
+    repeat:
+        for (std::set<Peak>::const_iterator a = stars.begin(); a != stars.end(); ++a)
+        {
+            std::set<Peak>::const_iterator b = a;
+            ++b;
+            for (; b != stars.end(); ++b)
+            {
+                int dx = a->x - b->x;
+                int dy = a->y - b->y;
+                int d2 = dx * dx + dy * dy;
+                if (d2 < minlimitsq)
+                {
+                    // very close, treat as single star
+                    Debug.AddLine("AutoFind: merge [%d, %d] %.1f - [%d, %d] %.1f", a->x, a->y, a->val, b->x, b->y, b->val);
+                    // erase the dimmer one
+                    stars.erase(a);
+                    goto repeat;
+                }
+            }
+        }
     }
 
-    Debug.AddLine(wxString::Format("Autofind returns %d, xpos=%d, ypos=%d", bFound, xpos, ypos));
+    // exclude stars that would fit within a single searchRegion box
+    {
+        // build a list of stars to be excluded
+        std::set<int> to_erase;
+        const int extra = 5; // extra safety margin
+        const int fullw = searchRegion + extra;
+        for (std::set<Peak>::const_iterator a = stars.begin(); a != stars.end(); ++a)
+        {
+            std::set<Peak>::const_iterator b = a;
+            ++b;
+            for (; b != stars.end(); ++b)
+            {
+                int dx = abs(a->x - b->x);
+                int dy = abs(a->y - b->y);
+                if (dx <= fullw && dy <= fullw)
+                {
+                    // stars closer than search region, exclude them both
+                    // but do not let a very dim star eliminate a very bright star
+                    if (b->val / a->val >= 5.0)
+                    {
+                        Debug.AddLine("AutoFind: close dim-bright [%d, %d] %.1f - [%d, %d] %.1f", a->x, a->y, a->val, b->x, b->y, b->val);
+                    }
+                    else
+                    {
+                        Debug.AddLine("AutoFind: too close [%d, %d] %.1f - [%d, %d] %.1f", a->x, a->y, a->val, b->x, b->y, b->val);
+                        to_erase.insert(std::distance(stars.begin(), a));
+                        to_erase.insert(std::distance(stars.begin(), b));
+                    }
+                }
+            }
+        }
+        RemoveItems(stars, to_erase);
+    }
 
-    return bFound;
+    // exclude stars too close to the edge
+    {
+        enum { MIN_EDGE_DIST = 40 };
+        int edgeDist = MIN_EDGE_DIST + extraEdgeAllowance;
+
+        std::set<Peak>::iterator it = stars.begin();
+        while (it != stars.end())
+        {
+            std::set<Peak>::iterator next = it;
+            ++next;
+            if (it->x <= edgeDist || it->x >= image.Size.GetWidth() - edgeDist ||
+                it->y <= edgeDist || it->y >= image.Size.GetHeight() - edgeDist)
+            {
+                Debug.AddLine("AutoFind: too close to edge [%d, %d] %.1f", it->x, it->y, it->val);
+                stars.erase(it);
+            }
+            it = next;
+        }
+    }
+
+    // At first I tried running Star::Find on the survivors to find the best
+    // star. This had the unfortunate effect of locating hot pixels which the
+    // psf convolution so nicely avoids. So, don't do that! -ag
+
+    // find the brightest non-saturated star. If no non-saturated stars, settle for a saturated star.
+    bool allowSaturated = false;
+    for (int i = 1; i <= 2; i++, allowSaturated = true)
+    {
+        for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
+        {
+            Star tmp;
+            tmp.Find(&image, searchRegion, it->x, it->y, FIND_CENTROID);
+            if (tmp.WasFound())
+            {
+                if (tmp.GetError() == STAR_SATURATED && !allowSaturated)
+                {
+                    Debug.AddLine("Autofind: star saturated [%d, %d] %.1f Mass %.f SNR %.1f", it->x, it->y, it->val, tmp.Mass, tmp.SNR);
+                    continue;
+                }
+                SetXY(it->x, it->y);
+                Debug.AddLine("Autofind returns star at [%d, %d] %.1f Mass %.f SNR %.1f", it->x, it->y, it->val, tmp.Mass, tmp.SNR);
+                return true;
+            }
+        }
+        if (!allowSaturated)
+            Debug.AddLine("AutoFind: could not find a non-saturated star!");
+    }
+
+    Debug.AddLine("Autofind: no star found");
+    return false;
 }
