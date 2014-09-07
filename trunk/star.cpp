@@ -162,14 +162,15 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y, FindMod
                     maxlval = lval;
                 }
 
-                unsigned int sval = *(dataptr + x + rowsize * y) - localmin;
-                if (sval >= max)
-                {
-                    nearmax2 = nearmax1;
-                    nearmax1 = max;
-                    max = sval;
-                }
+                unsigned short sval = *(dataptr + x + rowsize * y) - localmin;
                 sum += sval;
+
+                if (sval > max)
+                    std::swap(sval, max);
+                if (sval > nearmax1)
+                    std::swap(sval, nearmax1);
+                if (sval > nearmax2)
+                    std::swap(sval, nearmax2);
             }
         }
 
@@ -236,7 +237,9 @@ bool Star::Find(usImage *pImg, int searchRegion, int base_x, int base_y, FindMod
             {
                 newX = mx / mass;
                 newY = my / mass;
-                if (max == nearmax2)
+                // even at saturation, the max values may vary a bit due to noise
+                // Call it saturated if the the top three values are within 32 parts per 65535 of max
+                if ((unsigned int)(max - nearmax2) * 65535U < 32U * (unsigned int) max)
                     Result = STAR_SATURATED;
             }
         }
