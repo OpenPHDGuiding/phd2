@@ -460,9 +460,9 @@ static void Downsample(FloatImg& dst, const FloatImg& src, int downsample)
 
 struct Peak
 {
-    float val;
     int x;
     int y;
+    float val;
 
     Peak() { }
     Peak(int x_, int y_, float val_) : x(x_), y(y_), val(val_) { }
@@ -538,7 +538,7 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
     Debug.AddLine("AutoFind: global mean = %.1f, stdev %.1f", global_mean, global_stdev);
 
     const double thresholds[] = { 3.0, 2.0, 1.5, 1.25, };
-    for (int n = 0; n < WXSIZEOF(thresholds) && stars.size() == 0; n++)
+    for (unsigned int n = 0; n < WXSIZEOF(thresholds) && stars.size() == 0; n++)
     {
         const double thresh = thresholds[n];
         Debug.AddLine("AutoFind: trying threshold = %.1f", thresh);
