@@ -266,7 +266,7 @@ bool GuiderOneStar::AutoSelect(void)
             edgeAllowance = wxMax(edgeAllowance, pSecondaryMount->CalibrationTotDistance());
 
         Star newStar;
-        if (!newStar.AutoFind(pImage, edgeAllowance))
+        if (!newStar.AutoFind(*pImage, edgeAllowance, m_searchRegion))
         {
             throw ERROR_INFO("Unable to AutoFind");
         }
@@ -292,6 +292,7 @@ bool GuiderOneStar::AutoSelect(void)
         }
 
         UpdateImageDisplay();
+        pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
 
 #ifdef BRET_AO_DEBUG
         if (pMount && !pMount->IsCalibrated())
@@ -593,6 +594,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
                 EvtServer.NotifyStarSelected(CurrentPosition());
                 SetState(STATE_SELECTED);
                 pFrame->UpdateButtonsStatus();
+                pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
             }
 
             Refresh();

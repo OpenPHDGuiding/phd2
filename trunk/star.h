@@ -71,9 +71,9 @@ public:
      *       a boolean indicating success instead of a boolean indicating an
      *       error
      */
-    bool Find(usImage *pImg, int searchRegion, FindMode mode);
-    bool Find(usImage *pImg, int searchRegion, int X, int Y, FindMode mode);
-    bool AutoFind(usImage *pImg, int edgeAllowance);
+    bool Find(const usImage *pImg, int searchRegion, FindMode mode);
+    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode);
+    bool AutoFind(const usImage& image, int edgeAllowance, int searchRegion);
 
     bool WasFound(FindResult result);
     bool WasFound(void);
