@@ -273,7 +273,7 @@ struct BacklashVal {
 
 struct SimStar {
     wxRealPoint pos;
-    int inten;
+    double inten;
 };
 
 struct SimCamState {
@@ -316,7 +316,16 @@ void SimCamState::Initialize()
         // generate stars in ra/dec coordinates
         stars[i].pos.x = (double)(rand() % (width - 2 * border)) - 0.5 * width;
         stars[i].pos.y = (double)(rand() % (height - 2 * border)) - 0.5 * height;
-        stars[i].inten = 20 + rand() % 80;
+        double r = (double) (rand() % 90) / 3.0; // 0..30
+        stars[i].inten = 0.1 + (double) (r * r * r) / 9000.0;
+
+        // force a couple stars to be close together. This is a useful test for Star::AutoFind
+        if (i == 3)
+        {
+            stars[i].pos.x = stars[i - 1].pos.x + 8;
+            stars[i].pos.y = stars[i - 1].pos.y + 8;
+            stars[i].inten = stars[i - 1].inten;
+        }
     }
     // generate hot pixels
     unsigned int const nr_hot = SimCamParams::nr_hot_pixels;
@@ -481,7 +490,7 @@ inline static void incr_pixel(usImage& img, int x, int y, unsigned int val)
     }
 }
 
-static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint& p, int inten)
+static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint& p, double inten)
 {
     enum { WIDTH = 5 };
     double STAR[][WIDTH] = {{ 0.0,  0.8,   2.2,  0.8, 0.0, },
@@ -506,8 +515,7 @@ static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint&
             double s = STAR[i][j];
             if (s > 0.0)
             {
-                s *= (double) inten;
-                s /= 256.0;
+                s *= inten / 256.0;
                 d[i][j] += f00 * s;
                 d[i+1][j] += f10 * s;
                 d[i][j+1] += f01 * s;
@@ -660,10 +668,12 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     {
         for (unsigned int i = 0; i < nr_stars; i++)
         {
-            unsigned short const newval =
-                stars[i].inten * exptime * gain + (int)((double) gain / 10.0 * offset * exptime / 100.0 + (rand() % (gain * 100)));
+            double star = stars[i].inten * exptime * gain;
+            double dark = (double) gain / 10.0 * offset * exptime / 100.0;
+            double noise = (double)(rand() % (gain * 100));
+            double inten = star + dark + noise;
 
-            render_star(img, subframe, cc[i], newval);
+            render_star(img, subframe, cc[i], inten);
         }
     }
 
