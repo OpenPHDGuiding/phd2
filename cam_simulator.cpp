@@ -295,6 +295,7 @@ struct SimCamState {
 
 #if SIMMODE == 1
     wxDir dir;
+    bool dirStarted;
     bool ReadNextImage(usImage& img, const wxRect& subframe);
 #endif
 
@@ -340,6 +341,10 @@ void SimCamState::Initialize()
     cum_dec_drift = 0.;
     last_exposure_time = 0;
 
+#if SIMMODE == 1
+    dirStarted = false;
+#endif
+
 #ifdef SIMDEBUG
     DebugFile.Open ("Sim_Debug.txt", "w");
     DebugFile.Write ("PE, Drift, RA_Seeing, Dec_Seeing, Total_X, Total_Y, RA_Ofs, Dec_Ofs, \n");
@@ -357,8 +362,16 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     }
     if (dir.IsOpened())
     {
-        if (!dir.GetNext(&filename))
+        if (!dirStarted)
+        {
             dir.GetFirst(&filename, "*.fit", wxDIR_FILES);
+            dirStarted = true;
+        }
+        else
+        {
+            if (!dir.GetNext(&filename))
+                dir.GetFirst(&filename, "*.fit", wxDIR_FILES);
+        }
     }
     if (filename.IsEmpty())
     {
