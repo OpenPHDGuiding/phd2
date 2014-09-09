@@ -61,6 +61,21 @@ include_directories(${wxWidgets_INCLUDE_DIRS})
 
 set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 
+# Gaussian Process
+
+set(gp_SRC
+    ${phd_src_dir}/gaussian_process/GPImpl.cpp
+    ${phd_src_dir}/gaussian_process/GPImpl.h
+    )
+add_library(GP ${gp_SRC})
+
+target_include_directories(GP PRIVATE ${EIGEN_SRC})
+
+# Test for the GP
+
+add_executable(GPTest ${phd_src_dir}/test/gaussian_process/main.cpp)
+target_link_libraries(GPTest GP gtest)
+add_test(GPTest1 GPTest)
 
 # main project
 

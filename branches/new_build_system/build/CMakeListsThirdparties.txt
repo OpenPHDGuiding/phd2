@@ -181,6 +181,29 @@ set(libUSB_SRC
 
   )
 
+# the Eigen library
+set(EIGEN eigen-eigen-36bf2ceaf8f5)
+if(NOT EXISTS ${thirdparties_dir}/${EIGEN})
+  # untar the dependency
+  execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparties_dir}/${EIGEN}.tar.bz2
+    WORKING_DIRECTORY ${thirdparties_dir})
+endif()
+
+set(EIGEN_SRC ${thirdparties_dir}/${EIGEN})
+
+# Google test
+set(GTEST gtest-1.7.0)
+if(NOT EXISTS ${thirdparties_dir}/${GTEST})
+  # unzip the dependency
+  execute_process(
+      COMMAND ${CMAKE_COMMAND} -E unzip ${thirdparties_dir}/${GTEST}.zip
+    WORKING_DIRECTORY ${thirdparties_dir})
+endif()
+
+set(GTEST_HEADERS ${thirdparties_dir}/${GTEST}/include)
+add_subdirectory(${thirdparties_dir}/${GTEST})
+
 # platform dependent files
 if(APPLE)
   set(libUSB_SRC ${libUSB_SRC}  
