@@ -3,8 +3,15 @@ On Linux
 Needed: wx3.0
 
 In a shell
-sudo apt-get install wx3.0-i18n
-sudo apt-get install wx3.0-headers
+#sudo apt-get install wx3.0-i18n
+#sudo apt-get install wx3.0-headers
+
+wget http://cznic.dl.sourceforge.net/project/wxwindows/3.0.1/wxWidgets-3.0.1.tar.bz2
+tar xjf wxWidgets-3.0.1.tar.bz2 wxWidgets-3.0.1/
+cd wxWidgets-3.0.1/
+
+# for madeira, remove jbig and lzma support. May be left.
+./configure --with-libpng=builtin --with-regex=builtin --with-libjpeg=builtin --with-libtiff=builtin --with-expat=builtin --disable-shared  --without-libjbig --without-liblzma 
  
  
  
