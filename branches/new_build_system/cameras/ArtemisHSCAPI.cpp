@@ -1433,7 +1433,7 @@ int artfn ArtemisGetDescription(char * recv, int info, int unit)
 // Returns true if loaded ok.
 bool artfn ArtemisLoadDLL(char *FileName)
 {
-    hArtemisDLL=LoadLibrary(TEXT(FileName));
+    hArtemisDLL=LoadLibraryA(FileName);
     if (hArtemisDLL==NULL)
         return false;
     for (int i=0; i<NFUNCS; i++)
