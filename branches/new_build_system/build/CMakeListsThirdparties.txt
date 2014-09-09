@@ -197,33 +197,54 @@ if(APPLE)
     execute_process(${CMAKE_COMMAND} -E tar xzf "${thirdparties_dir}/HID Utilities Source.zip")
   endif()  
 
-  set(libhid_include_dir "${thirdparties_dir}/HID Utilities Source/")
+  #set(libhid_include_dir "${thirdparties_dir}/HID Utilities Source/")
+  set(libhid_include_dir "${thirdparties_dir}/HID_Utilities/")
   set(libhid_src_dir ${libhid_include_dir})
   include_directories(${libhid_include_dir})
   
+  #set(libHID_SRC
+  #  ${libhid_src_dir}/HID_CFM.c
+  #  ${libhid_src_dir}/HID_Config_Utilities.c
+  #  ${libhid_src_dir}/HID_Config_Utilities.h
+  #  ${libhid_src_dir}/HID_Error_Handler.c
+  #  ${libhid_src_dir}/HID_Error_Handler.h
+  #  ${libhid_src_dir}/HID_Name_Lookup.c
+  #  ${libhid_src_dir}/HID_Name_Lookup.h
+  #  ${libhid_src_dir}/HID_Queue_Utilities.c
+  #  ${libhid_src_dir}/HID_Queue_Utilities.h
+  #  ${libhid_src_dir}/HID_Transaction_Utilities.c
+  #  ${libhid_src_dir}/HID_Transaction_Utilities.h
+  #  ${libhid_src_dir}/HID_Utilities_CFM.h
+  #  ${libhid_src_dir}/HID_Utilities_External.h
+  #  ${libhid_src_dir}/HID_Utilities_Internal.h
+  #  ${libhid_src_dir}/HID_Utilities.c
+  #  ${libhid_src_dir}/HID_Utilities.h
+  #  ${libhid_src_dir}/HID.bundle
+  #  ${libhid_src_dir}/HIDLib.h
+  #  ${libhid_src_dir}/IOHIDPowerUsage.h
+  #  ${libhid_src_dir}/PID.h
+  #)
+  
   set(libHID_SRC
-    ${libhid_src_dir}/HID_CFM.c
     ${libhid_src_dir}/HID_Config_Utilities.c
-    ${libhid_src_dir}/HID_Config_Utilities.h
     ${libhid_src_dir}/HID_Error_Handler.c
-    ${libhid_src_dir}/HID_Error_Handler.h
     ${libhid_src_dir}/HID_Name_Lookup.c
-    ${libhid_src_dir}/HID_Name_Lookup.h
     ${libhid_src_dir}/HID_Queue_Utilities.c
-    ${libhid_src_dir}/HID_Queue_Utilities.h
-    ${libhid_src_dir}/HID_Transaction_Utilities.c
-    ${libhid_src_dir}/HID_Transaction_Utilities.h
-    ${libhid_src_dir}/HID_Utilities_CFM.h
     ${libhid_src_dir}/HID_Utilities_External.h
-    ${libhid_src_dir}/HID_Utilities_Internal.h
     ${libhid_src_dir}/HID_Utilities.c
-    ${libhid_src_dir}/HID_Utilities.h
-    ${libhid_src_dir}/HID.bundle
-    ${libhid_src_dir}/HIDLib.h
-    ${libhid_src_dir}/IOHIDPowerUsage.h
-    ${libhid_src_dir}/PID.h
-  )
+    
+    
+    ${libhid_src_dir}/IOHIDManager/ImmrHIDUtilAddOn.c
+    ${libhid_src_dir}/IOHIDManager/ImmrHIDUtilAddOn.h
+    ${libhid_src_dir}/IOHIDManager/IOHIDDevice_.c
+    ${libhid_src_dir}/IOHIDManager/IOHIDDevice_.h
+    ${libhid_src_dir}/IOHIDManager/IOHIDElement_.c
+    ${libhid_src_dir}/IOHIDManager/IOHIDElement_.h
+    ${libhid_src_dir}/IOHIDManager/IOHIDLib_.h
+  )  
+  
   add_library(hid ${libHID_SRC})
+  target_include_directories(hid PRIVATE ${libhid_src_dir}/IOHIDManager)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} hid)
   
   
