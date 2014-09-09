@@ -54,10 +54,11 @@ public:
 
 
     Camera_FirewireClass();
-//  ~Camera_FirewireClass();
+    ~Camera_FirewireClass();
 private:
 //  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
 #if defined (__APPLE__)
+    dc1394_t *m_dcContext;
     dc1394camera_t *camera;
 #elif defined (CLOSED_SOURCE)
     DShowLib::Grabber* m_pGrabber;

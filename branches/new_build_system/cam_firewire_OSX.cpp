@@ -47,7 +47,7 @@ bool DCAM_start_stop_mode = true;
 
 #include "cam_firewire.h"
 
-Camera_FirewireClass::Camera_FirewireClass() {
+Camera_FirewireClass::Camera_FirewireClass() : m_dcContext(0), camera(0) {
     Connected = false;
 //  HaveBPMap = false;
 //  NBadPixels=-1;
@@ -57,15 +57,31 @@ Camera_FirewireClass::Camera_FirewireClass() {
     m_hasGuideOutput = false;
 }
 
+Camera_FirewireClass::~Camera_FirewireClass()
+{
+  if(m_dcContext)
+  {
+      dc1394_free(m_dcContext);
+      m_dcContext = 0;
+  }
+}
+
 bool Camera_FirewireClass::Connect() {
     int err, CamNum;
     uint32_t i;
-    //dc1394camera_t **cameras;
     dc1394video_mode_t vidmode;
 
-    dc1394_t *d = dc1394_new();
+    if(m_dcContext == 0)
+    { 
+        m_dcContext = dc1394_new();
+    }
+    if(m_dcContext == 0)
+    {
+        wxMessageBox(_T("Error looking for Firewire / IEEE1394 cameras (internal error)"));
+        return true;
+    }
     dc1394camera_list_t * cameras;
-    err = dc1394_camera_enumerate(d, &cameras);
+    err = dc1394_camera_enumerate(m_dcContext, &cameras);
 
     if ((err != DC1394_SUCCESS)){// && (err != DC1394_NO_CAMERA)) {
         wxMessageBox(_T("Error looking for Firewire / IEEE1394 cameras"));
@@ -82,7 +98,7 @@ bool Camera_FirewireClass::Connect() {
         wxArrayString CamNames;
         for (i=0; i<cameras->num; i++)
         {
-            dc1394camera_t *current_camera = dc1394_camera_new(d, cameras->ids[i].guid);
+            dc1394camera_t *current_camera = dc1394_camera_new(m_dcContext, cameras->ids[i].guid);
             CamNames.Add(wxString(current_camera->model));
             dc1394_camera_free(current_camera);
         }
@@ -95,10 +111,10 @@ bool Camera_FirewireClass::Connect() {
     
     uint64_t camera_guid = cameras->ids[CamNum].guid;
     
-    // Free unused cameras
+    // Free unused cameras, open the one with the guid above.
     dc1394_camera_free_list(cameras);
 
-    this->camera = dc1394_camera_new(d, camera_guid);
+    this->camera = dc1394_camera_new(m_dcContext, camera_guid);
 
     // Get the highest-res mono mode
     uint32_t w, h, max;
@@ -228,6 +244,7 @@ bool Camera_FirewireClass::Disconnect() {
     if (camera) {
         dc1394_video_set_transmission(camera,DC1394_OFF);
         dc1394_camera_free(camera);
+        camera = 0;
     }
     Connected = false;
     return false;
