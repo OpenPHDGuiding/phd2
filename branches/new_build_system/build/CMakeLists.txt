@@ -7,6 +7,10 @@ cmake_minimum_required(VERSION 2.8.11)
 project(PhD2)
 
 
+set(VERSION_MAJOR 2)
+set(VERSION_MINOR 3)
+set(VERSION_PATCH 0)
+
 # root directory of the project
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR}/..)
 
@@ -30,11 +34,7 @@ else()
   # c++11 options
   check_cxx_compiler_flag(-std=c++11 HAS_CXX11_FLAG)
   check_cxx_compiler_flag(-std=c++0x HAS_CXX0X_FLAG)
-  # pthread options
-  check_cxx_compiler_flag(-pthread   HAS_MINUS_PTHREAD)
-  # visbility options 
-  check_cxx_compiler_flag(-fvisibility=hidden         HAS_VISIBILITY_HIDDEN)
-  check_cxx_compiler_flag(-fvisibility-inlines-hidden HAS_VISIBILITY_INLINE_HIDDEN)
+
   if(HAS_CXX11_FLAG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   elseif(HAS_CXX0X_FLAG)
@@ -59,9 +59,6 @@ set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 
 
 # main project
-
-# headers search path
-#../HID\\ Utilities\\ Source/ 
 
 set(cam_KWIQGuider_SRC
   ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.cpp
@@ -292,28 +289,74 @@ message("compilation options ${wxWidgets_CXX_FLAGS}")
 include_directories(${phd_src_dir}/cam_KWIQGuider/)
 include_directories(${phd_src_dir}/cameras/)
 
-add_executable(
-  Phd2
-  MACOSX_BUNDLE
-  ${scopes_SRC}
-  ${cam_SRC}
-  ${cam_KWIQGuider_SRC}
-  ${guiding_SRC}
-  ${phd2_SRC})
-  
 
-target_link_libraries(
-  Phd2 ${PHD_LINK_EXTERNAL})
+if(APPLE)
+
+  # bundle definitions
+  # please edit the copyrights
+  set( MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME} )
+  set( MACOSX_BUNDLE_GUI_IDENTIFIER "com.open-phd-guiding.PHD2" )
+  set( MACOSX_BUNDLE_ICON_FILE PHD_OSX_icon.icns )
+  set( MACOSX_BUNDLE_INFO_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2014 Phd2 Guiding team" )
+  set( MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
+  set( MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+  set( MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+  set( MACOSX_BUNDLE_COPYRIGHT "(C) 2010-2014 Phd2 Guiding team" )
+
+
+
+  add_executable(
+    Phd2
+    MACOSX_BUNDLE
+    ${scopes_SRC}
+    ${cam_SRC}
+    ${cam_KWIQGuider_SRC}
+    ${guiding_SRC}
+    ${phd2_SRC})
+  set_target_properties(
+    Phd2
+    PROPERTIES 
+      #MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/PHD-Info.plist
+      COMPILE_OPTIONS "-include;${CARBON_INCLUDE_DIR}/Carbon.h"
+      )
+      
+      
+  # Allows for bundle re-creation just by running "make". Also installs bundle icon
+  add_custom_target( osx_bundle_dirs
+    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/Phd2.app/Contents/Resources
+    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/Phd2.app/Contents/MacOS
+    COMMAND cp ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE} ${CMAKE_CURRENT_BINARY_DIR}/Phd2.app/Contents/Resources/${MACOSX_BUNDLE_ICON_FILE}
+   )
+  add_dependencies(Phd2 osx_bundle_dirs)
+  
+  
+  # This tells cmake where to place files inside the bundle
+  #set_source_files_properties( ${ProjectName_RESOURCES} ${ProjectName_TRANSLATIONS}
+  #  PROPERTIES MACOSX_PACKAGE_LOCATION Resources )      
+
+elseif(WIN32)
+  add_executable(
+    Phd2
+    WIN32 
+    ${scopes_SRC}
+    ${cam_SRC}
+    ${cam_KWIQGuider_SRC}
+    ${guiding_SRC}
+    ${phd2_SRC})
+endif()
+
+# properties of the project common to all platforms
+target_compile_definitions(Phd2 PRIVATE "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS")
 set_target_properties(
   Phd2
   PROPERTIES 
-    MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/PHD-Info.plist
-    COMPILE_DEFINITIONS "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS"  # osX HAVE_TYPE_TRAITS
-    COMPILE_OPTIONS "${wxWidgets_CXX_FLAGS};-include;${CARBON_INCLUDE_DIR}/Carbon.h"
+    COMPILE_OPTIONS "${wxWidgets_CXX_FLAGS};"
     )
+
+target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
     
   
-#MACOSX_FRAMEWORK_INFO_PLIST
+
 
 # link dependencies on OSX
 #-lz
