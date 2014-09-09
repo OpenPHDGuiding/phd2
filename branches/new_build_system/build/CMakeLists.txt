@@ -240,6 +240,10 @@ set(phd2_SRC
   ${phd_src_dir}/phd.cpp
   ${phd_src_dir}/phd.h
   ${phd_src_dir}/PHD2GuideHelp.zip
+
+  ${phd_src_dir}/phdconfig.cpp
+  ${phd_src_dir}/phdconfig.h
+
   ${phd_src_dir}/phdcontrol.cpp
   ${phd_src_dir}/phdcontrol.h
   ${phd_src_dir}/point.h

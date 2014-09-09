@@ -13,11 +13,38 @@ if(APPLE)
   find_library(webkitFramework    Webkit)
   find_library(audioToolboxFramework AudioToolbox)
   find_library(openGLFramework    OpenGL)
+  
+  
+  
+  
+  
+  
+  #############################################
+  # Camera frameworks
+  #
+  find_library( sbigudFramework
+                NAMES SBIGUDrv
+                PATHS ${thirdparties_dir}/frameworks	)
+  if(NOT sbigudFramework)
+    message(FATAL_ERROR "Cannot find the SBIGUDrv drivers")
+  endif()
+  include_directories(${sbigudFramework})
 
-  set(PHD_LINK_EXTERNAL ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL})
+  ### 
+  find_library( fcCamFramework
+                NAMES fcCamFw
+                PATHS ${thirdparties_dir}/frameworks	)
+  if(NOT fcCamFramework)
+    message(FATAL_ERROR "Cannot find the fcCamFw drivers")
+  endif()
+  include_directories(${fcCamFramework})
+
+  set(PHD_LINK_EXTERNAL ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL} ${sbigudFramework} ${fcCamFramework})
   
   find_path(CARBON_INCLUDE_DIR Carbon.h)
   message(STATUS "Carbon header found at ${CARBON_INCLUDE_DIR}")
+  
+  
   
   
   
@@ -36,6 +63,7 @@ if(APPLE)
     message(FATAL_ERROR "WxWidget cannot be found. Please use wx-config prefix")
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
+  message("wxLibraries ${wxWidgets_LIBRARIES}")
   
   
   
@@ -114,12 +142,12 @@ if(APPLE)
   #############################################
   # Camera frameworks
   #
-  find_library(SBIGUDrvFramework
-    SBIGUDrv
-    PATHS ${thirdparties_dir}/frameworks)
-    #CMAKE_FIND_FRAMEWORK "ONLY")
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} SBIGUDrvFramework)
-  include_directories(${SBIGUDrvFramework})
+  #find_library(SBIGUDrvFramework
+  #  SBIGUDrv
+  #  PATHS ${thirdparties_dir}/frameworks)
+  #  #CMAKE_FIND_FRAMEWORK "ONLY")
+  #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} SBIGUDrvFramework)
+  #include_directories(${SBIGUDrvFramework})
 
 
   #############################################
