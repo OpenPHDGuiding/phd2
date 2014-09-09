@@ -103,6 +103,7 @@
 # define CAM_QHY5
 # define INDI_CAMERA
 # define ZWO_ASI
+# define SIMULATOR
 #endif
 
 // Currently unused

@@ -37,7 +37,7 @@
 
 #if defined(CAM_QHY5)
 
-#include <libusb-1.0/libusb.h>
+#include <libusb.h>
 #include "camera.h"
 #include "image_math.h"
 

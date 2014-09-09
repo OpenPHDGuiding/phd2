@@ -147,6 +147,11 @@ if(WIN32)
     ${cfitsio_LIB_NAME}
     PRIVATE FF_NO_UNISTD_H
     PRIVATE _CRT_SECURE_NO_WARNINGS)
+elseif(UNIX AND NOT APPLE)
+  find_library(mathlib NAMES m)
+  # we cannot do that because the project cfitsio is built in another directory
+  #target_link_libraries(${cfitsio_LIB_NAME} ${mathlib})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
 endif()
 
 
@@ -637,6 +642,7 @@ if(UNIX)
     message(FATAL_ERROR "Cannot find the asiCamera drivers")
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera} USB) # to clean: USB should also appear after these lib, otherwise some references are not found
+  #target_link_libraries(${asiCamera} USB)
   message("zwo libraries found at ${ZWO_INCLUDE_DIR} + ${asiCamera}")
 
 
