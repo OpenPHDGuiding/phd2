@@ -8,6 +8,9 @@ project(PhD2)
 
 enable_testing()
 
+set(USE_FOLDERS TRUE)
+set(BUILD_SHARED_LIBS FALSE)
+
 set(VERSION_MAJOR 2)
 set(VERSION_MINOR 3)
 set(VERSION_PATCH 0)
@@ -50,15 +53,13 @@ else()
 endif()
 
 
-
-
-
 # to be changed in add_subdirectory
 include(build/CMakeListsThirdparties.txt)
 
-
+# Adding the wxWidgets include definitions. Maybe narrowed to Phd2 project only
 include_directories(${wxWidgets_INCLUDE_DIRS})
 
+# Adding the gaussian process headers
 include_directories(${phd_src_dir}/gaussian_process)
 
 set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
@@ -69,17 +70,15 @@ set(gp_SRC
     ${phd_src_dir}/gaussian_process/GPImpl.cpp
     ${phd_src_dir}/gaussian_process/GPImpl.h
     )
-add_library(GP ${gp_SRC})
-
+add_library(GP STATIC ${gp_SRC})
 target_include_directories(GP PUBLIC ${EIGEN_SRC})
 
 # Test for the GP
-
 add_executable(GPTest ${phd_src_dir}/tests/gaussian_process/main.cpp)
 target_link_libraries(GPTest GP gtest)
 target_include_directories(GPTest PRIVATE ${phd_src_dir}/gaussian_process
                                   PRIVATE ${GTEST_HEADERS})
-
+set_property(TARGET GPTest PROPERTY FOLDER "Unit tests/")
 add_test(GPTest1 GPTest)
 
 # main project
@@ -469,3 +468,8 @@ set_target_properties(
 target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
 
 
+# convenient way to edit additional files
+add_custom_target(CmakeAdditionalFiles
+  SOURCES
+  ${phd_src_dir}/build/CMakeListsThirdparties.txt
+)
