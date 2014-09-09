@@ -428,7 +428,8 @@ elseif(UNIX)
    ${phd2IndiClient_SRC}
    ${guiding_SRC}                                                                   
    ${phd2_SRC}                                                         
-   )                                                                                
+   )
+  target_link_libraries(Phd2 m)                                                                                
 else()
   message(FATAL_ERROR "Unsupported platform")
  
