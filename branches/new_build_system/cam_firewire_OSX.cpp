@@ -59,43 +59,46 @@ Camera_FirewireClass::Camera_FirewireClass() {
 
 bool Camera_FirewireClass::Connect() {
     int err, CamNum;
-    uint32_t i, NCams;
-    dc1394camera_t **cameras;
+    uint32_t i;
+    //dc1394camera_t **cameras;
     dc1394video_mode_t vidmode;
 
-    err = dc1394_find_cameras(&cameras, &NCams);
+    dc1394_t *d = dc1394_new();
+    dc1394camera_list_t * cameras;
+    err = dc1394_camera_enumerate(d, &cameras);
 
-    if ((err != DC1394_SUCCESS) && (err != DC1394_NO_CAMERA)) {
+    if ((err != DC1394_SUCCESS)){// && (err != DC1394_NO_CAMERA)) {
         wxMessageBox(_T("Error looking for Firewire / IEEE1394 cameras"));
         return true;
     }
-    if (NCams == 0) {
+    if (cameras->num == 0) {
         wxMessageBox(_T("No Firewire / IEEE1394 camera found"));
         return true;
     }
 
     // Choose camera
     CamNum = 0;
-    if (NCams > 1) {
+    if (cameras->num > 1) {
         wxArrayString CamNames;
-        for (i=0; i<NCams; i++)
-            CamNames.Add(wxString(cameras[i]->model));
+        for (i=0; i<cameras->num; i++)
+        {
+            dc1394camera_t *current_camera = dc1394_camera_new(d, cameras->ids[i].guid);
+            CamNames.Add(wxString(current_camera->model));
+            dc1394_camera_free(current_camera);
+        }
         CamNum = wxGetSingleChoiceIndex(_T("Select Firewire camera"),("Camera name"),CamNames);
         if (CamNum == -1) {
-            for (i=0; i<NCams; i++)
-                dc1394_free_camera(cameras[i]);
-            free(cameras);
+            dc1394_camera_free_list(cameras);
             return true;
         }
     }
-    camera = cameras[CamNum];
-
+    
+    uint64_t camera_guid = cameras->ids[CamNum].guid;
+    
     // Free unused cameras
-    for (i=0; i<NCams; i++)
-        if (CamNum != i)
-            dc1394_free_camera(cameras[i]);
-    free(cameras);
+    dc1394_camera_free_list(cameras);
 
+    this->camera = dc1394_camera_new(d, camera_guid);
 
     // Get the highest-res mono mode
     uint32_t w, h, max;
@@ -118,13 +121,13 @@ bool Camera_FirewireClass::Connect() {
     }
     if (!HaveValid) {
         wxMessageBox(_T("Cannot find a suitable monochrome video mode"));
-        dc1394_free_camera(camera);
+        dc1394_camera_free(camera);
         return true;
     }
 
     if (dc1394_video_set_framerate(camera,DC1394_FRAMERATE_7_5)) {
         wxMessageBox(_T("Cannot set to 7.5 FPS"));
-        dc1394_free_camera(camera);
+        dc1394_camera_free(camera);
         return true;
     }
 
@@ -137,7 +140,7 @@ bool Camera_FirewireClass::Connect() {
     // Setup DMA buffers for capture
     if (dc1394_capture_setup(camera,4,DC1394_CAPTURE_FLAGS_DEFAULT)) {
         wxMessageBox(_T("Cannot setup DMA buffers"));
-        dc1394_free_camera(camera);
+        dc1394_camera_free(camera);
         return true;
     }
 
@@ -147,7 +150,7 @@ bool Camera_FirewireClass::Connect() {
     swatch.Start();
     if (dc1394_video_set_transmission(camera, DC1394_ON) !=DC1394_SUCCESS) {
         wxMessageBox(_T("Cannot start transmission"));
-        dc1394_free_camera(camera);
+        dc1394_camera_free(camera);
         return true;
     }
     dc1394switch_t status = DC1394_OFF;
@@ -159,7 +162,7 @@ bool Camera_FirewireClass::Connect() {
     t1 = swatch.Time();
     if (i==5) {
         wxMessageBox(_T("Transmission failed to start"));
-        dc1394_free_camera(camera);
+        dc1394_camera_free(camera);
     }
 //  dc1394_video_set_transmission(camera, DC1394_OFF); // turn it back off for now
 
@@ -224,7 +227,7 @@ void Camera_FirewireClass::InitCapture() {
 bool Camera_FirewireClass::Disconnect() {
     if (camera) {
         dc1394_video_set_transmission(camera,DC1394_OFF);
-        dc1394_free_camera(camera);
+        dc1394_camera_free(camera);
     }
     Connected = false;
     return false;
