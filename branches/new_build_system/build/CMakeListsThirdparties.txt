@@ -192,6 +192,7 @@ endif()
 
 set(EIGEN_SRC ${thirdparties_dir}/${EIGEN})
 
+# ---------------------------------------------------------------
 # Google test
 set(GTEST gtest-1.7.0)
 if(NOT EXISTS ${thirdparties_dir}/${GTEST})
@@ -201,6 +202,12 @@ if(NOT EXISTS ${thirdparties_dir}/${GTEST})
     WORKING_DIRECTORY ${thirdparties_dir})
 endif()
 
+if(MSVC)
+  # do not replace default things, basically this line avoids gtest to replace
+  # default compilation options (which ends up with messing the link options) for the CRT
+  # As the name DOES NOT suggest, it does not force the shared crt. It forces the use of default things.
+  set(gtest_force_shared_crt ON CACHE INTERNAL "Gtest crt configuration" FORCE)
+endif()
 set(GTEST_HEADERS ${thirdparties_dir}/${GTEST}/include)
 add_subdirectory(${thirdparties_dir}/${GTEST})
 
