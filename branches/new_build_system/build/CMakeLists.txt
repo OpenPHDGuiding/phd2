@@ -51,19 +51,10 @@ include_directories(${wxWidgets_INCLUDE_DIRS})
 
 set(phd_src_dir ${CMAKE_SOURCE_DIR}/..)
 
-
-
 # main project
 
 # headers search path
-#$(CFITSIO)
-#$(LIBDC)
 #../HID\\ Utilities\\ Source/ 
-#$(LIBUSB)/include
-#./cameras
-
-# prefix header
-# $(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h
 
 set(cam_KWIQGuider_SRC
   ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.cpp
@@ -314,15 +305,7 @@ set_target_properties(
 #MACOSX_FRAMEWORK_INFO_PLIST
 
 # link dependencies on OSX
-#-framework QuickTime
-#-framework IOKit
-#-framework Carbon
-#-framework Cocoa
-#-framework System
-#-framework AudioToolbox
-#-framework WebKit
 #-lz
 #-lpthread
-#-lusb
 #-lusb-1.0
 #-liconv
