@@ -130,7 +130,7 @@ endif()
 
 set(BUILD_SHARED_LIBS OFF)
 set(USE_PTHREADS OFF)
-add_subdirectory(${thirdparties_dir}/cfitsio)
+add_subdirectory(${thirdparties_dir}/cfitsio EXCLUDE_FROM_ALL)
 
 if(WIN32)
   set(cfitsio_LIB_NAME cfitsio)
