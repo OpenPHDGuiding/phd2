@@ -28,8 +28,12 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 include(CheckCXXCompilerFlag)
 
 
+
+
 # general defines
 if(WIN32)
+  set(FIND_LIBRARY_USE_LIB64_PATHS FALSE)
+  #set(CMAKE_LIBRARY_ARCHITECTURE x86)
 else()
   # c++11 options
   check_cxx_compiler_flag(-std=c++11 HAS_CXX11_FLAG)
@@ -335,6 +339,14 @@ if(APPLE)
   #  PROPERTIES MACOSX_PACKAGE_LOCATION Resources )      
 
 elseif(WIN32)
+
+  set(phd2_WIN_SRC
+    ${phd_src_dir}/comdispatch.h
+    ${phd_src_dir}/comdispatch.cpp
+    ${phd_src_dir}/phd.rc  )   # resource file
+    
+
+
   add_executable(
     Phd2
     WIN32 
@@ -343,8 +355,11 @@ elseif(WIN32)
     #${cam_KWIQGuider_SRC} # not included in the win32 projects
     ${guiding_SRC}
     ${phd2_SRC}
-    ${phd_src_dir}/phd.rc  # resource file
+    ${phd2_WIN_SRC}
     )
+    
+    
+    link_directories(${phd_src_dir}/WinLibs)
 endif()
 
 # properties of the project common to all platforms
