@@ -193,15 +193,17 @@ if(WIN32)
     DOC 
       "Video for Windows library, x86"
     NO_DEFAULT_PATH)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${vfwLIB})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} vfw32.lib)#${vfwLIB})
     #"${MS_PLATFORMSDK_ROOT}/Lib"
     #
     #)
   message("Video for Windows = ${vfwLIB}")
   
   # directshow
-  set(directshow1LIB "$(WindowsSDK_LibraryPath_86)/Strmiids.lib")
-  set(directshow2LIB "$(WindowsSDK_LibraryPath_86)/Quartz.lib")
+  #set(directshow1LIB "$(WindowsSDK_LibraryPath_x86)/Strmiids.lib")
+  #set(directshow2LIB "$(WindowsSDK_LibraryPath_x86)/Quartz.lib")
+  set(directshow1LIB "Strmiids.lib")
+  set(directshow2LIB "Quartz.lib")
   #find_library(directshow1LIB Strmiids
   #  "${MS_PLATFORMSDK_ROOT}/Lib"
   #  DOC "Where can the DirectShow strmiids library be found"
@@ -213,12 +215,12 @@ if(WIN32)
   
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${directshow1LIB} ${directshow2LIB})
   
-  find_library(winmmLIB winmm
-    "${MS_PLATFORMSDK_ROOT}/Lib"
-    DOC "Where can the DirectShow strmiids library be found"
-    NO_DEFAULT_PATH)
+  # find_library(winmmLIB winmm
+    # "${MS_PLATFORMSDK_ROOT}/Lib"
+    # DOC "Where can the DirectShow strmiids library be found"
+    # NO_DEFAULT_PATH)
 
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${winmmLIB})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} winmm.lib)#${winmmLIB})
   
   
   # gpusb
