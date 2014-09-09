@@ -117,18 +117,23 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
 #############################################
 if(WIN32)
 
+  get_filename_component( MS_PLATFORMSDK_ROOT
+    "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" ABSOLUTE
+  )  
+  message("Platform SDK root is ${MS_PLATFORMSDK_ROOT}")
+
   # wxWidgets
   set(wxWidgets_CONFIGURATION msw)
   set(wxWidgets_ROOT_DIR "D:/Code/tmp_code/wxWidgets-3.0.1")
   set(wxWidgets_USE_STATIC ON)
   set(wxWidgets_USE_DEBUG ON)
   set(wxWidgets_USE_UNICODE ON)
-  find_package(wxWidgets REQUIRED)
+  find_package(wxWidgets REQUIRED COMPONENTS propgrid base core aui adv html net)
   include(${wxWidgets_USE_FILE})
 
   
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
-  
+  message("wxWidgets_LIBRARIES = ${wxWidgets_LIBRARIES}")
   
   
   # openCV
@@ -157,7 +162,8 @@ if(WIN32)
   
   
   # apparently this is the way cmake works... did not know, the OpenCVConfig.cmake file is enough for the configuration
-  set(OpenCV_DIR ${opencv_root}/build/)
+  set(OpenCV_DIR ${opencv_root}/build/ CACHE PATH "Location of the OpenCV configuration directory")
+  set(BUILD_SHARED_LIBS ON)
   find_package(OpenCV REQUIRED)
   
   if(NOT OpenCV_INCLUDE_DIRS)
@@ -172,6 +178,130 @@ if(WIN32)
   set(vidcap_dir ${PHD_PROJECT_ROOT_DIR}/cameras/VidCapture)
   include_directories(${vidcap_dir})
   message("include ${vidcap_dir}")
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${vidcap_dir}/VidCapLib.lib) # better compile this one
+  
+  
+  FIND_PATH(DIRECTSHOW_INCLUDE_DIR dshow.h)  
+  message("direct show ${DIRECTSHOW_INCLUDE_DIR}")
+  
+  
+  find_library(vfwLIB 
+    NAMES vfw32
+    PATHS 
+      ${DIRECTSHOW_INCLUDE_DIR}/../../Lib/winv6.3/um/
+      ${DIRECTSHOW_INCLUDE_DIR}/../../Lib/winv6.3/um/x86
+    DOC 
+      "Video for Windows library, x86"
+    NO_DEFAULT_PATH)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${vfwLIB})
+    #"${MS_PLATFORMSDK_ROOT}/Lib"
+    #
+    #)
+  message("Video for Windows = ${vfwLIB}")
+  
+  # directshow
+  set(directshow1LIB "$(WindowsSDK_LibraryPath_86)/Strmiids.lib")
+  set(directshow2LIB "$(WindowsSDK_LibraryPath_86)/Quartz.lib")
+  #find_library(directshow1LIB Strmiids
+  #  "${MS_PLATFORMSDK_ROOT}/Lib"
+  #  DOC "Where can the DirectShow strmiids library be found"
+  #  NO_DEFAULT_PATH)
+  #find_library(directshow2LIB Quartz
+  #  "${MS_PLATFORMSDK_ROOT}/Lib"
+  #  DOC "Where can the DirectShow strmiids library be found"
+  #  NO_DEFAULT_PATH)
+  
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${directshow1LIB} ${directshow2LIB})
+  
+  find_library(winmmLIB winmm
+    "${MS_PLATFORMSDK_ROOT}/Lib"
+    DOC "Where can the DirectShow strmiids library be found"
+    NO_DEFAULT_PATH)
+
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${winmmLIB})
+  
+  
+  # gpusb
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringGPUSB_DLL.lib)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
+  
+  
+  # asi cameras
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/AsiCamera.lib)
+  
+  
+  # DsiDevice
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/DsiDevice.lib)
+  
+  # SBIGUDrv
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/SBIGUDrv.lib)
+  
+  # DICAMSDK
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/DICAMSDK.lib)
+  
+  # SSAGIF
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/SSAGIF.lib)
+  
+  # FCLib
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/FCLib.lib)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/FcApi.lib)
+  
+  # SXUSB
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/SXUSB.lib)
+  
+  # astroDLL
+  #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/astroDLLQHY5V.lib)
+  
+  # CMOSDLL
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/CMOSDLL.lib)
+  
+  
+  # inpout32 ?
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/inpout32.lib)
+  
+  
+  
+  
+  
+# wxexpatd.lib
+# wxpngd.lib
+# wxzlibd.lib
+# wxjpegd.lib
+# # opencv_core245d.lib
+# # opencv_highgui245d.lib
+# # opencv_imgproc245d.lib
+# # wxmsw30ud_core.lib
+# # wxbase30ud.lib
+# # wxmsw30ud_propgrid.lib
+# # wxmsw30ud_aui.lib
+# # wxmsw30ud_adv.lib
+# # wxmsw30ud_html.lib
+# # wxbase30ud_net.lib
+# winmm.lib
+# comctl32.lib
+# rpcrt4.lib
+# wsock32.lib
+# oleacc.lib
+# odbc32.lib
+# # FcApi.lib
+# # VidCapLib.lib
+# wxVidCapLib_wx29.lib
+# # vfw32.lib
+# cfitsio.lib   ### compiled
+# # DsiDevice.lib
+# setupapi.lib
+# # SBIGUDrv.lib
+# # CMOSDll.lib
+# # SSAGIF.lib
+# # FCLib.lib
+# # SXUSB.lib
+# # Strmiids.lib
+# # Quartz.lib
+# # ShoestringGPUSB_DLL.lib
+# # ShoestringLXUSB_DLL.lib
+# # inpout32.lib
+# # DICAMSDK.lib
+# # AsiCamera.lib
   
   
 endif()
