@@ -147,11 +147,11 @@ if(WIN32)
     ${cfitsio_LIB_NAME}
     PRIVATE FF_NO_UNISTD_H
     PRIVATE _CRT_SECURE_NO_WARNINGS)
-elseif(UNIX AND NOT APPLE)
-  find_library(mathlib NAMES m)
-  # we cannot do that because the project cfitsio is built in another directory
-  #target_link_libraries(${cfitsio_LIB_NAME} ${mathlib})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
+#elseif(UNIX AND NOT APPLE)
+#  find_library(mathlib NAMES m)
+#  # we cannot do that because the project cfitsio is built in another directory
+#  #target_link_libraries(${cfitsio_LIB_NAME} ${mathlib})
+#  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
 endif()
 
 
@@ -646,7 +646,14 @@ if(UNIX)
   message("zwo libraries found at ${ZWO_INCLUDE_DIR} + ${asiCamera}")
 
 
+  # math library is needed, and should be one of the last things to link to here
+  find_library(mathlib NAMES m)  
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
+
   message("Current dependencies are ${PHD_LINK_EXTERNAL}")
+
+
+
 
 
 endif(UNIX) 

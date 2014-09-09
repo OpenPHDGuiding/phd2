@@ -225,6 +225,7 @@ source_group(Guiding FILES ${guiding_SRC})
 set(indiClient_SRC
   ${phd_src_dir}/libindiclient/indi.c
   ${phd_src_dir}/libindiclient/wx/indigui.cpp
+  ${phd_src_dir}/libindiclient/wx/indi_io.cpp
   ${phd_src_dir}/libindiclient/wx/indi_list.cpp
   ${phd_src_dir}/libindiclient/wx/indi_config.cpp
   ${phd_src_dir}/libindiclient/wx/indisave.cpp
@@ -431,7 +432,7 @@ elseif(UNIX)
    ${guiding_SRC}
    ${phd2_SRC}
    )
-  target_link_libraries(Phd2 m)
+  #target_link_libraries(Phd2 ${mathlib})
 else()
   message(FATAL_ERROR "Unsupported platform")
 
