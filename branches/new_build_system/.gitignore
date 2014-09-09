@@ -12,3 +12,4 @@ tags
 cscope.out
 Debug
 Release
+build/tmp
