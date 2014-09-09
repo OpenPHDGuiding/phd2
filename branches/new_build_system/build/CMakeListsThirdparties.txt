@@ -39,8 +39,8 @@ if(NOT EXISTS ${thirdparties_dir}/${LIBUSB})
     WORKING_DIRECTORY ${thirdparties_dir})
 endif()  
 
-
-set(libusb_dir ${thirdparties_dir}/${LIBUSB}/libusb)
+set(libusb_root ${thirdparties_dir}/${LIBUSB})
+set(libusb_dir ${libusb_root}/libusb)
 include_directories(${libusb_dir})
 set(libUSB_SRC
   ${libusb_dir}/core.c
@@ -53,31 +53,61 @@ set(libUSB_SRC
   )
 if(APPLE)
   set(libUSB_SRC ${libUSB_SRC}  
+  
+    # platform specific configuration file
+    ${thirdparties_dir}/include/${LIBUSB}
+  
+    # platform specific implementation
     ${libusb_dir}/os/darwin_usb.h
     ${libusb_dir}/os/darwin_usb.c
     
     ${libusb_dir}/os/threads_posix.h 
     ${libusb_dir}/os/threads_posix.c
    )
+   
+  set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
 elseif(WIN32)
   set(libUSB_SRC ${libUSB_SRC}  
+  
+    # platform specific configuration files
+    ${libusb_root}/msvc/stdint.h
+    ${libusb_root}/msvc/inttypes.h
+    ${libusb_root}/msvc/config.h
+  
+    # platform specific implementation
     ${libusb_dir}/os/windows_usb.h
     ${libusb_dir}/os/windows_usb.c
     
     ${libusb_dir}/os/threads_windows.h
     ${libusb_dir}/os/threads_windows.c
+    
+    ${libusb_dir}/os/poll_windows.h
+    ${libusb_dir}/os/poll_windows.c
    )
+   
+  set(${LIBUSB}_additional_include_dir ${libusb_root}/msvc/)
 endif()
 add_library(USB ${libUSB_SRC})
-target_include_directories(USB PRIVATE ${thirdparties_dir}/include/${LIBUSB})
-target_compile_definitions(
-  USB
-  PRIVATE LIBUSB_DESCRIBE "")
+
+target_include_directories(USB PRIVATE ${${LIBUSB}_additional_include_dir})
+
+if(NOT WIN32)
+  target_compile_definitions(
+    USB
+    PRIVATE LIBUSB_DESCRIBE "")
+endif()
 set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
 
 
 
+
+
+
+#############################################
+#
 # externals on Windows
+#
+#############################################
 if(WIN32)
   set(wxWidgets_CONFIGURATION msw)
   set(wxWidgets_ROOT_DIR "D:/Code/tmp_code/wxWidgets-3.0.1")
@@ -92,6 +122,11 @@ if(WIN32)
 endif()
 
 
+#############################################
+#
+# externals on Apple
+#
+#############################################
 if(APPLE)
   find_library(quicktimeFramework QuickTime)
   find_library(iokitFramework     IOKit)
