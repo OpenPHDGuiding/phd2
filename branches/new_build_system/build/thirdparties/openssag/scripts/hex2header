@@ -1,0 +1,21 @@
+#!/usr/bin/python
+
+# Converts intel hex records to a C array
+
+import sys
+
+input = open(sys.argv[1], "r")
+lines = input.readlines()
+input.close()
+
+for line in lines:
+    byte_count = line[1:3]
+    address = [line[i:i+2] for i in range(3, 7, 2)]
+    address.reverse()
+    bytes = [line[i:i+2] for i in range(9, len(line) - 4, 2)]
+    print "0x" + byte_count + ",",
+    for i in address:
+        print "0x" + i + ",",
+    for i in bytes:
+        print "0x" + i + ",",
+    print "\\"
