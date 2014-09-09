@@ -304,7 +304,7 @@ set_target_properties(
   PROPERTIES 
     MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/PHD-Info.plist
     COMPILE_DEFINITIONS "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS"  # osX HAVE_TYPE_TRAITS
-    COMPILE_OPTIONS ${wxWidgets_CXX_FLAGS}
+    COMPILE_OPTIONS "${wxWidgets_CXX_FLAGS};-include;${CARBON_INCLUDE_DIR}/Carbon.h"
     )
     
   

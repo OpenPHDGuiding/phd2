@@ -20,6 +20,7 @@ if(APPLE)
   endif()
   
   find_path(CARBON_INCLUDE_DIR Carbon.h)
+  message(STATUS "Carbon header found at ${CARBON_INCLUDE_DIR}")
   
   #set(wxWidgets_CONFIG_OPTIONS --prefix=/Users/raffi/Code/EI/usr/local)
   
