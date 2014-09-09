@@ -1,0 +1,40 @@
+
+
+
+# compilation of libUSB
+if(APPLE)
+  find_library(quicktimeFramework 
+               NAME QuickTime)
+  find_library(iokitFramework 
+               NAME IOKit)
+  find_library(carbonFramework 
+               NAME Carbon)
+  find_library(cocoaFramework 
+               NAME Cocoa)
+  find_library(systemFramework 
+               NAME System)
+  find_library(webkitFramework 
+               NAME Webkit)
+  find_library(audioToolboxFramework 
+               NAME AudioToolbox)
+  find_library(openGLFramework 
+               NAME OpenGL)
+
+  find_program(wxWidgets_CONFIG_EXECUTABLE NAMES "wx-config" PATHS /Users/raffi/Code/EI/usr/local/bin NO_DEFAULT_PATH)
+  if(NOT wxWidgets_CONFIG_EXECUTABLE)
+    message(FATAL_ERROR "Cannot find wxWidgets_CONFIG_EXECUTABLE: ${wxWidgets_CONFIG_EXECUTABLE}")
+  endif()
+  
+  #set(wxWidgets_CONFIG_OPTIONS --prefix=/Users/raffi/Code/EI/usr/local)
+  
+  find_package(wxWidgets)
+  if(NOT wxWidgets_FOUND)
+    message(FATAL_ERROR "WxWidget cannot be found. Please use wx-config prefix")
+  endif()
+  
+  
+  
+
+endif()
+
+
