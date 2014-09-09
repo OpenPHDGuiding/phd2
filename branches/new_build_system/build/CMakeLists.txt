@@ -295,8 +295,10 @@ add_executable(
   ${cam_KWIQGuider_SRC}
   ${guiding_SRC}
   ${phd2_SRC})
+  
+
 target_link_libraries(
-  Phd2 quicktimeFramework iokitFramework carbonFramework cocoaFramework systemFramework webkitFramework audioToolboxFramework)
+  Phd2 ${PHD_LINK_EXTERNAL})
 set_target_properties(
   Phd2
   PROPERTIES 
