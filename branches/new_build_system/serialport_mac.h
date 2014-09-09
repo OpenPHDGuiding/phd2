@@ -38,7 +38,8 @@
 
 #include <sys/ioctl.h>
 #include <termios.h>
-
+#include <IOKit/serial/IOSerialKeys.h>
+#include <IOKit/IOKitLib.h>
 
 class SerialPortMac:public SerialPort
 {

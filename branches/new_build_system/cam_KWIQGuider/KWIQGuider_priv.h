@@ -15,12 +15,15 @@
 //#endif
 
 #include <libusb.h>
+#include <cassert>
 
 //#include <usb.h>
 
 #ifdef __WIN32__
 #   include "windows.h"
 #   define sleep(n) Sleep(1000 * n)
+#else
+#   include <unistd.h>
 #endif
 
 
