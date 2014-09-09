@@ -117,11 +117,6 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
 #############################################
 if(WIN32)
 
-  get_filename_component( MS_PLATFORMSDK_ROOT
-    "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" ABSOLUTE
-  )  
-  message("Platform SDK root is ${MS_PLATFORMSDK_ROOT}")
-
   # wxWidgets
   set(wxWidgets_CONFIGURATION msw)
   set(wxWidgets_ROOT_DIR "D:/Code/tmp_code/wxWidgets-3.0.1")
@@ -180,46 +175,14 @@ if(WIN32)
   message("include ${vidcap_dir}")
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${vidcap_dir}/VidCapLib.lib) # better compile this one
   
-  
-  FIND_PATH(DIRECTSHOW_INCLUDE_DIR dshow.h)  
-  message("direct show ${DIRECTSHOW_INCLUDE_DIR}")
-  
-  
-  find_library(vfwLIB 
-    NAMES vfw32
-    PATHS 
-      ${DIRECTSHOW_INCLUDE_DIR}/../../Lib/winv6.3/um/
-      ${DIRECTSHOW_INCLUDE_DIR}/../../Lib/winv6.3/um/x86
-    DOC 
-      "Video for Windows library, x86"
-    NO_DEFAULT_PATH)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} vfw32.lib)#${vfwLIB})
-    #"${MS_PLATFORMSDK_ROOT}/Lib"
-    #
-    #)
-  message("Video for Windows = ${vfwLIB}")
+
+  # Video for Windows
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} vfw32.lib)
   
   # directshow
-  #set(directshow1LIB "$(WindowsSDK_LibraryPath_x86)/Strmiids.lib")
-  #set(directshow2LIB "$(WindowsSDK_LibraryPath_x86)/Quartz.lib")
-  set(directshow1LIB "Strmiids.lib")
-  set(directshow2LIB "Quartz.lib")
-  #find_library(directshow1LIB Strmiids
-  #  "${MS_PLATFORMSDK_ROOT}/Lib"
-  #  DOC "Where can the DirectShow strmiids library be found"
-  #  NO_DEFAULT_PATH)
-  #find_library(directshow2LIB Quartz
-  #  "${MS_PLATFORMSDK_ROOT}/Lib"
-  #  DOC "Where can the DirectShow strmiids library be found"
-  #  NO_DEFAULT_PATH)
-  
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${directshow1LIB} ${directshow2LIB})
-  
-  # find_library(winmmLIB winmm
-    # "${MS_PLATFORMSDK_ROOT}/Lib"
-    # DOC "Where can the DirectShow strmiids library be found"
-    # NO_DEFAULT_PATH)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} "Strmiids.lib" "Quartz.lib")
 
+  # Windows media
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} winmm.lib)#${winmmLIB})
   
   
