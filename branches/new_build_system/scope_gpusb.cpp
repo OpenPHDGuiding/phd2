@@ -42,7 +42,6 @@
 #include "HID_Utilities_External.h"
 #include <IOKit/hid/IOHIDLib.h>
 IOHIDDeviceRef pGPUSB = NULL;
-IOHIDDeviceInterface *pGPUSB_interface = NULL;
 int GPUSB_Model = 0;
 
 
@@ -305,7 +304,6 @@ bool GPUSB_Close() {
         wxMessageBox ("GPUSB_Close: error while closing the device",_("Error"));
     }
     
-    CFRelease(pGPUSB_interface);
     CFRelease(pGPUSB);
     return ioReturnValue == kIOReturnSuccess;
 }
