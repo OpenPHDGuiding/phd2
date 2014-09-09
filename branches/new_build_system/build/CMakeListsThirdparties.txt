@@ -210,9 +210,6 @@ if(APPLE)
     ${libdc_dir}/log.c
     ${libdc_dir}/log.h
     
-    ${libdc_dir}/macosx.c
-    ${libdc_dir}/macosx.h
-
     ${libdc_dir}/offsets.h
     ${libdc_dir}/platform.h
     
@@ -224,10 +221,24 @@ if(APPLE)
     ${libdc_dir}/utils.h
     
     ${libdc_dir}/video.h
+    
+    # USB backend
+    ${libdc_dir}//usb/capture.c
+    ${libdc_dir}//usb/control.c
+    ${libdc_dir}//usb/usb.h
+
+    # mac specific
+    ${libdc_dir}/macosx.c
+    ${libdc_dir}/macosx.h
+    ${libdc_dir}/macosx/control.c
+    ${libdc_dir}/macosx/capture.c
+    ${libdc_dir}/macosx/macosx.h
+
   )
   
   add_library(dc ${libDC_SRC})
   target_include_directories(dc PRIVATE ${thirdparties_dir}/include/${LIBDC})
+  target_compile_definitions(dc PRIVATE HAVE_LIBUSB HAVE_MACOSX)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} dc)
   
 
