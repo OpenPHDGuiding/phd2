@@ -39,7 +39,7 @@
 #if defined (__WINDOWS__)
 #include "ShoestringGPUSB_DLL.h"
 #elif defined (__APPLE__) // ------------------------------  Apple routines ----------------------------
-#include "HID_Utilities_External.h"
+//#include "HID_Utilities_External.h"
 #include <IOKit/hid/IOHIDLib.h>
 IOHIDDeviceRef pGPUSB = NULL;
 int GPUSB_Model = 0;
