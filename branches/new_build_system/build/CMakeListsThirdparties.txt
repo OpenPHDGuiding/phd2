@@ -256,14 +256,10 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
 
 
 
-
 #############################################
-#
-# externals on Windows
-#
-#############################################
+# wxWidgets
+# The usage is a bit different on all the platforms. For having version >= 3.0, new version of cmake should be used on Windows.
 if(WIN32)
-
   # wxWidgets
   set(wxWidgets_CONFIGURATION msw)
   set(wxWidgets_ROOT_DIR "D:/Code/tmp_code/wxWidgets-3.0.1")  ### TODO FIXME
@@ -276,9 +272,33 @@ if(WIN32)
 
   
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
+else()
+  if(wxWidgets_PREFIX_DIRECTORY)
+    set(wxWidgets_CONFIG_OPTIONS --prefix=${wxWidgets_PREFIX_DIRECTORY})
   
+    find_program(wxWidgets_CONFIG_EXECUTABLE NAMES "wx-config" PATHS ${wxWidgets_PREFIX_DIRECTORY}/bin NO_DEFAULT_PATH)
+    if(NOT wxWidgets_CONFIG_EXECUTABLE)
+      message(FATAL_ERROR "Cannot find wxWidgets_CONFIG_EXECUTABLE from the given directory ${wxWidgets_PREFIX_DIRECTORY}")
+    endif()  
+  endif()
+  
+  find_package(wxWidgets REQUIRED)
+  if(NOT wxWidgets_FOUND)
+    message(FATAL_ERROR "WxWidget cannot be found. Please use wx-config prefix")
+  endif()
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES} wx_osx_cocoau_aui-3.0)
+  message("wxLibraries ${wxWidgets_LIBRARIES}")
+endif()
 
-  
+
+
+#############################################
+#
+# externals on Windows
+#
+#############################################
+if(WIN32)
+
   # openCV
   # openCV should be installed somewhere defined on the command line. If this is not the case, an error message is printed and 
   # the build is aborted.
@@ -431,7 +451,7 @@ if(APPLE)
   #
   find_library( sbigudFramework
                 NAMES SBIGUDrv
-                PATHS ${thirdparties_dir}/frameworks	)
+                PATHS ${thirdparties_dir}/frameworks)
   if(NOT sbigudFramework)
     message(FATAL_ERROR "Cannot find the SBIGUDrv drivers")
   endif()
@@ -441,7 +461,7 @@ if(APPLE)
   ### 
   find_library( fcCamFramework
                 NAMES fcCamFw
-                PATHS ${thirdparties_dir}/frameworks	)
+                PATHS ${thirdparties_dir}/frameworks)
   if(NOT fcCamFramework)
     message(FATAL_ERROR "Cannot find the fcCamFw drivers")
   endif()
@@ -450,7 +470,7 @@ if(APPLE)
 
   find_library( dsiMeadeLibrary
                 NAMES DsiDevice
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras	)
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras)
   if(NOT dsiMeadeLibrary)
     message(FATAL_ERROR "Cannot find the dsiMeadeLibrary drivers")
   endif()
@@ -459,7 +479,7 @@ if(APPLE)
 
   find_library( sxMac
                 NAMES SXMacLib
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras	)
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras)
   if(NOT sxMac)
     message(FATAL_ERROR "Cannot find the sxMac drivers")
   endif()
@@ -467,35 +487,12 @@ if(APPLE)
 
   find_library( asiCamera
                 NAMES ASICamera
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/x86	)
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/x86)
   if(NOT asiCamera)
     message(FATAL_ERROR "Cannot find the asiCamera drivers")
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera})
   
-  
-  #############################################
-  # wxWidgets
-  
-  if(wxWidgets_PREFIX_DIRECTORY)
-    set(wxWidgets_CONFIG_OPTIONS --prefix=${wxWidgets_PREFIX_DIRECTORY})
-  
-    find_program(wxWidgets_CONFIG_EXECUTABLE NAMES "wx-config" PATHS ${wxWidgets_PREFIX_DIRECTORY}/bin NO_DEFAULT_PATH)
-    if(NOT wxWidgets_CONFIG_EXECUTABLE)
-      message(FATAL_ERROR "Cannot find wxWidgets_CONFIG_EXECUTABLE from the given directory ${wxWidgets_PREFIX_DIRECTORY}")
-    endif()  
-  endif()
-  
-  find_package(wxWidgets REQUIRED)
-  if(NOT wxWidgets_FOUND)
-    message(FATAL_ERROR "WxWidget cannot be found. Please use wx-config prefix")
-  endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES} wx_osx_cocoau_aui-3.0)
-  message("wxLibraries ${wxWidgets_LIBRARIES}")
-  
-  
-  
-
   
 
 
