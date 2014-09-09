@@ -242,7 +242,7 @@ if(WIN32)
 # # wxmsw30ud_adv.lib
 # # wxmsw30ud_html.lib
 # # wxbase30ud_net.lib
-# winmm.lib
+# # winmm.lib
 # comctl32.lib
 # rpcrt4.lib
 # wsock32.lib

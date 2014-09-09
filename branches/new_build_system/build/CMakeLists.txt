@@ -135,6 +135,24 @@ set(cam_SRC
 )
 source_group(Cameras FILES ${cam_SRC})
 
+if(WIN32)
+  set(cam_SRC
+    ${cam_SRC}
+    ${phd_src_dir}/cam_LEParallelWebcam.cpp
+    ${phd_src_dir}/cam_LEParallelWebcam.h
+    ${phd_src_dir}/cam_LESerialWebcam.cpp
+    ${phd_src_dir}/cam_LESerialWebcam.h
+    
+    ${phd_src_dir}/cam_Atik16.cpp
+    ${phd_src_dir}/cam_Atik16.h
+    
+    ${phd_src_dir}/cameras/ArtemisHSCAPI.h
+    ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
+  )
+
+endif()
+
+
 set(scopes_SRC
   ${phd_src_dir}/mount.h
   ${phd_src_dir}/scope.cpp
@@ -341,6 +359,14 @@ if(APPLE)
 elseif(WIN32)
 
   set(phd2_WIN_SRC
+  
+    ${phd_src_dir}/parallelports.h
+    ${phd_src_dir}/parallelport.h
+    ${phd_src_dir}/parallelport.cpp
+    
+    ${phd_src_dir}/parallelport_win32.h
+    ${phd_src_dir}/parallelport_win32.cpp
+  
     ${phd_src_dir}/comdispatch.h
     ${phd_src_dir}/comdispatch.cpp
     ${phd_src_dir}/phd.rc  )   # resource file
