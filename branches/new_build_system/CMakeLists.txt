@@ -15,7 +15,7 @@ set(VERSION_PATCH 0)
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
 
 
-# build type, by default to release (with optimisations) 
+# build type, by default to release (with optimisations)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
@@ -101,7 +101,7 @@ set(cam_SRC
   ${phd_src_dir}/cam_OSPL130.h
   ${phd_src_dir}/cam_QGuide.cpp
   ${phd_src_dir}/cam_QGuide.h
-  
+
   ${phd_src_dir}/cam_QHY5II.cpp
   ${phd_src_dir}/cam_QHY5II.h
   ${phd_src_dir}/cam_QHY5LII.cpp
@@ -148,16 +148,16 @@ if(WIN32)
     ${phd_src_dir}/cam_LESerialWebcam.h
     ${phd_src_dir}/cam_LELXUSBWebcam.cpp
     ${phd_src_dir}/cam_LELXUSBWebcam.h
-    
+
     ${phd_src_dir}/cam_Atik16.cpp
     ${phd_src_dir}/cam_Atik16.h
-    
+
     ${phd_src_dir}/cameras/ArtemisHSCAPI.h
     ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
-    
+
     ${phd_src_dir}/cam_QHY5IIbase.cpp
     ${phd_src_dir}/cam_QHY5IIbase.h
-    
+
   )
 
 endif()
@@ -222,7 +222,7 @@ set(guiding_SRC
 source_group(Guiding FILES ${guiding_SRC})
 
 
-set(phd2IndiClient_SRC
+set(indiClient_SRC
   ${phd_src_dir}/libindiclient/indi.c
   ${phd_src_dir}/libindiclient/wx/indigui.cpp
   ${phd_src_dir}/libindiclient/wx/indi_list.cpp
@@ -233,7 +233,7 @@ set(phd2IndiClient_SRC
   ${phd_src_dir}/libindiclient/base64.c
   ${phd_src_dir}/libindiclient/lilxml.c
 )
-
+source_group(IndiClient FILES ${indiClient_SRC})
 
 set(phd2_SRC
   ${phd_src_dir}/about_dialog.cpp
@@ -363,12 +363,12 @@ if(APPLE)
     ${phd2_SRC})
   set_target_properties(
     Phd2
-    PROPERTIES 
+    PROPERTIES
       #MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/PHD-Info.plist
       COMPILE_OPTIONS "-include;${CARBON_INCLUDE_DIR}/Carbon.h"
       )
-      
-      
+
+
   # Allows for bundle re-creation just by running "make". Also installs bundle icon
   add_custom_target( osx_bundle_dirs
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/Phd2.app/Contents/Resources
@@ -376,32 +376,32 @@ if(APPLE)
     COMMAND cp ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE} ${CMAKE_CURRENT_BINARY_DIR}/Phd2.app/Contents/Resources/${MACOSX_BUNDLE_ICON_FILE}
    )
   add_dependencies(Phd2 osx_bundle_dirs)
-  
-  
+
+
   # This tells cmake where to place files inside the bundle
   #set_source_files_properties( ${ProjectName_RESOURCES} ${ProjectName_TRANSLATIONS}
-  #  PROPERTIES MACOSX_PACKAGE_LOCATION Resources )      
+  #  PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 
 elseif(WIN32)
 
   set(phd2_WIN_SRC
-  
+
     ${phd_src_dir}/parallelports.h
     ${phd_src_dir}/parallelport.h
     ${phd_src_dir}/parallelport.cpp
-    
+
     ${phd_src_dir}/parallelport_win32.h
     ${phd_src_dir}/parallelport_win32.cpp
-  
+
     ${phd_src_dir}/comdispatch.h
     ${phd_src_dir}/comdispatch.cpp
     ${phd_src_dir}/phd.rc  )   # resource file
-    
+
 
 
   add_executable(
     Phd2
-    WIN32 
+    WIN32
     ${scopes_SRC}
     ${cam_SRC}
     #${cam_KWIQGuider_SRC} # not included in the win32 projects
@@ -409,39 +409,39 @@ elseif(WIN32)
     ${phd2_SRC}
     ${phd2_WIN_SRC}
     )
-  
+
   set_target_properties(
     Phd2
-    PROPERTIES 
+    PROPERTIES
       LINK_FLAGS "/DELAYLOAD:sbigudrv.dll"
       )
   # Delayed load for all these in the original project. Now using delay load only for the necessary stuff
   #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
-    
+
   #link_directories(${phd_src_dir}/WinLibs)
   copy_dependency_with_config(Phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
-  
+
 elseif(UNIX)
   # should be linux there
-  add_executable(                                                                    
-   Phd2                                                                                                                                                  
-   ${scopes_SRC}                                                                    
+  add_executable(
+   Phd2
+   ${scopes_SRC}
    ${cam_SRC}
-   ${phd2IndiClient_SRC}
-   ${guiding_SRC}                                                                   
-   ${phd2_SRC}                                                         
+   ${indiClient_SRC}
+   ${guiding_SRC}
+   ${phd2_SRC}
    )
-  target_link_libraries(Phd2 m)                                                                                
+  target_link_libraries(Phd2 m)
 else()
   message(FATAL_ERROR "Unsupported platform")
- 
+
 endif()
 
 # properties of the project common to all platforms
 target_compile_definitions(Phd2 PRIVATE "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS")
 set_target_properties(
   Phd2
-  PROPERTIES 
+  PROPERTIES
     COMPILE_OPTIONS "${wxWidgets_CXX_FLAGS};"
     )
 
