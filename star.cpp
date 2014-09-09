@@ -537,68 +537,65 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
 
     Debug.AddLine("AutoFind: global mean = %.1f, stdev %.1f", global_mean, global_stdev);
 
-    const double thresholds[] = { 3.0, 2.0, 1.5, 1.25, };
-    for (unsigned int n = 0; n < WXSIZEOF(thresholds) && stars.size() == 0; n++)
-    {
-        const double thresh = thresholds[n];
-        Debug.AddLine("AutoFind: trying threshold = %.1f", thresh);
+    const double threshold = 0.1;
+    Debug.AddLine("AutoFind: using threshold = %.1f", threshold);
 
-        // find each local maximum
-        int srch = 1;
-        for (int y = convRect.GetTop() + srch; y <= convRect.GetBottom() - srch; y++)
+    // find each local maximum
+    int srch = 4;
+    for (int y = convRect.GetTop() + srch; y <= convRect.GetBottom() - srch; y++)
+    {
+        for (int x = convRect.GetLeft() + srch; x <= convRect.GetRight() - srch; x++)
         {
-            for (int x = convRect.GetLeft() + srch; x <= convRect.GetRight() - srch; x++)
+            float val = conv.px[dw * y + x];
+            bool ismax = false;
+            if (val > 0.0)
             {
-                float val = conv.px[dw * y + x];
-                bool ismax = false;
-                if (val > 0.0)
+                ismax = true;
+                for (int j = -srch; j <= srch; j++)
                 {
-                    ismax = true;
-                    for (int j = -srch; j <= srch; j++)
+                    for (int i = -srch; i <= srch; i++)
                     {
-                        for (int i = -srch; i <= srch; i++)
+                        if (i == 0 && j == 0)
+                            continue;
+                        if (conv.px[dw * (y + j) + (x + i)] > val)
                         {
-                            if (i == 0 && j == 0)
-                                continue;
-                            if (conv.px[dw * (y + j) + (x + i)] > val)
-                            {
-                                ismax = false;
-                                break;
-                            }
+                            ismax = false;
+                            break;
                         }
                     }
                 }
-                if (!ismax)
-                    continue;
-
-                // compare local maximum to mean value of surrounding pixels
-                const int local = 7;
-                double local_mean, local_stdev;
-                wxRect localRect(x - local, y - local, 2 * local + 1, 2 * local + 1);
-                localRect.Intersect(convRect);
-                GetStats(&local_mean, &local_stdev, conv, localRect);
-
-                // this is our measure of star intensity
-                double h = (val - local_mean) / global_stdev;
-
-                if (h < thresh)
-                {
-                    //  Debug.AddLine(wxString::Format("AG: local max REJECT [%d, %d] PSF %.1f SNR %.1f", imgx, imgy, val, SNR));
-                    continue;
-                }
-
-                // coordinates on the original image
-                int imgx = x * downsample + downsample / 2;
-                int imgy = y * downsample + downsample / 2;
-
-                Debug.AddLine("AutoFind: local max [%d, %d] img [%d, %d] PSF %.1f mean %.1f h %.1f", x, y, imgx, imgy, val, local_mean, h);
-
-                stars.insert(Peak(imgx, imgy, h));
-                if (stars.size() > TOP_N)
-                    stars.erase(stars.begin());
             }
+            if (!ismax)
+                continue;
+
+            // compare local maximum to mean value of surrounding pixels
+            const int local = 7;
+            double local_mean, local_stdev;
+            wxRect localRect(x - local, y - local, 2 * local + 1, 2 * local + 1);
+            localRect.Intersect(convRect);
+            GetStats(&local_mean, &local_stdev, conv, localRect);
+
+            // this is our measure of star intensity
+            double h = (val - local_mean) / global_stdev;
+
+            if (h < threshold)
+            {
+                //  Debug.AddLine(wxString::Format("AG: local max REJECT [%d, %d] PSF %.1f SNR %.1f", imgx, imgy, val, SNR));
+                continue;
+            }
+
+            // coordinates on the original image
+            int imgx = x * downsample + downsample / 2;
+            int imgy = y * downsample + downsample / 2;
+
+            stars.insert(Peak(imgx, imgy, h));
+            if (stars.size() > TOP_N)
+                stars.erase(stars.begin());
         }
     }
+
+    for (std::set<Peak>::const_reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
+        Debug.AddLine("AutoFind: local max [%d, %d] %.1f", it->x, it->y, it->val);
 
     // merge stars that are very close into a single star
     {
@@ -680,13 +677,15 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
     }
 
     // At first I tried running Star::Find on the survivors to find the best
-    // star. This had the unfortunate effect of locating hot pixels which the
-    // psf convolution so nicely avoids. So, don't do that! -ag
+    // star. This had the unfortunate effect of locating hot pixels which
+    // the psf convolution so nicely avoids. So, don't do that!  -ag
 
     // find the brightest non-saturated star. If no non-saturated stars, settle for a saturated star.
     bool allowSaturated = false;
-    for (int i = 1; i <= 2; i++, allowSaturated = true)
+    while (true)
     {
+        Debug.AddLine("AutoSelect: finding best star allowSaturated = %d", allowSaturated);
+
         for (std::set<Peak>::reverse_iterator it = stars.rbegin(); it != stars.rend(); ++it)
         {
             Star tmp;
@@ -703,8 +702,13 @@ bool Star::AutoFind(const usImage& image, int extraEdgeAllowance, int searchRegi
                 return true;
             }
         }
-        if (!allowSaturated)
-            Debug.AddLine("AutoFind: could not find a non-saturated star!");
+
+        if (allowSaturated)
+            break; // no stars found
+
+        Debug.AddLine("AutoFind: could not find a non-saturated star!");
+
+        allowSaturated = true;
     }
 
     Debug.AddLine("Autofind: no star found");
