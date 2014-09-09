@@ -18,7 +18,7 @@
 /* Loader PID for loading firmware */
 #define SSAG_LOADER_PRODUCT_ID 0x0011
 
-typedef struct usb_dev_handle usb_dev_handle;
+typedef struct libusb_device_handle libusb_device_handle;
 
 #ifdef __cplusplus
 namespace OpenSSAG
@@ -65,7 +65,7 @@ namespace OpenSSAG
         unsigned int gain;
 
         /* Handle to the device */
-        usb_dev_handle *handle;
+        libusb_device_handle *handle;
     public:
         /* Constructor */
         SSAG();
@@ -125,7 +125,7 @@ namespace OpenSSAG
         bool Upload(unsigned char *data);
 
         /* Handle to the cypress device */
-        usb_dev_handle *handle;
+        libusb_device_handle *handle;
     public:
         /* Connects to SSAG Base */
         bool Connect();

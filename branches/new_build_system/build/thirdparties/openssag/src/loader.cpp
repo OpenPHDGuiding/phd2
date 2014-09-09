@@ -12,7 +12,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <usb.h>
+#include <libusb.h>
+#ifdef __APPLE__
+  #include <unistd.h>
+#endif
 
 #include "openssag.h"
 #include "openssag_priv.h"
@@ -46,27 +49,90 @@ bool Loader::Connect()
 void Loader::Disconnect()
 {
     if (this->handle)
-        usb_close(this->handle);
+        libusb_close(this->handle);
     this->handle = NULL;
 }
 
 void Loader::EnterResetMode()
 {
     char data = 0x01;
-    usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, 0x7f92, 0, &data, 1, 5000);
-    usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, CPUCS_ADDRESS, 0, &data, 1, 5000);
+    //usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, 0x7f92, 0, &data, 1, 5000);
+    int r = libusb_control_transfer(
+        this->handle, 
+        0x40 & 0xff,
+        USB_RQ_LOAD_FIRMWARE & 0xff, 
+        0x7f92 & 0xffff, 
+        0 & 0xffff, 
+        (unsigned char*)&data, 
+        1,
+        5000);
+    
+    if (r < 0)
+    {
+        DBG("Loader::EnterResetMode: error sending command (1)");
+    }           
+    
+    
+    //usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, CPUCS_ADDRESS, 0, &data, 1, 5000);
+    r = libusb_control_transfer(
+        this->handle, 
+        0x40 & 0xff,
+        USB_RQ_LOAD_FIRMWARE & 0xff, 
+        CPUCS_ADDRESS & 0xffff, 
+        0 & 0xffff, 
+        (unsigned char*)&data, 
+        1,
+        5000);
+    
+    if (r < 0)
+    {
+        DBG("Loader::EnterResetMode: error sending command (2)");
+    }        
 }
 
 void Loader::ExitResetMode()
 {
     char data = 0x00;
-    usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, 0x7f92, 0, &data, 1, 5000);
-    usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, CPUCS_ADDRESS, 0, &data, 1, 5000);
+    //usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, 0x7f92, 0, &data, 1, 5000);
+    int r = libusb_control_transfer(
+        this->handle, 
+        0x40 & 0xff,
+        USB_RQ_LOAD_FIRMWARE & 0xff, 
+        0x7f92 & 0xffff, 
+        0 & 0xffff, 
+        (unsigned char*)&data, 
+        1,
+        5000);
+    
+    if (r < 0)
+    {
+        DBG("Loader::ExitResetMode: error sending command (1)");
+    }             
+    
+    
+    //usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, CPUCS_ADDRESS, 0, &data, 1, 5000);
+    r = libusb_control_transfer(
+        this->handle, 
+        0x40 & 0xff,
+        USB_RQ_LOAD_FIRMWARE & 0xff, 
+        CPUCS_ADDRESS & 0xffff, 
+        0 & 0xffff, 
+        (unsigned char*)&data, 
+        1,
+        5000);
+    
+    if (r < 0)
+    {
+        DBG("Loader::ExitResetMode: error sending command (2)");
+    }        
+    
 }
 
 bool Loader::Upload(unsigned char *data)
 {
     for (;;) {
+    
+        /*
         unsigned char byte_count = *data;
         if (byte_count == 0)
             break;
@@ -77,6 +143,38 @@ bool Loader::Upload(unsigned char *data)
             return false;
         }
         data += byte_count + 3;
+        */
+        
+        
+        unsigned char byte_count = *data;
+        if (byte_count == 0)
+            break;
+        unsigned short address = *(unsigned int *)(data+1);
+        int received = 0;
+        
+        //usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, address, 0, (char *)(data+3), byte_count, 5000))
+        received = libusb_control_transfer(
+            this->handle, 
+            0x40 & 0xff,
+            USB_RQ_LOAD_FIRMWARE & 0xff, 
+            address & 0xffff, 
+            0 & 0xffff, 
+            (unsigned char*)(data+3), 
+            byte_count,
+            5000);
+        
+        
+        //if ((received = usb_control_msg(this->handle, 0x40, USB_RQ_LOAD_FIRMWARE, address, 0, (char *)(data+3), byte_count, 5000)) != byte_count) {
+
+        if (received != byte_count) {
+
+            DBG("ERROR:  Tried to send %d bytes of data but device reported back with %d\n", byte_count, received);
+            return false;
+        }
+        data += byte_count + 3;
+        
+        
+        
     }
     return true;
 }
@@ -112,7 +210,19 @@ bool Loader::LoadEEPROM()
 {
     size_t length = *eeprom;
     char *data = (char *)(eeprom+3);
-    usb_control_msg(this->handle, 0x40, USB_RQ_WRITE_SMALL_EEPROM, 0x00, 0xBEEF, data, length, 5000);
-
+    //usb_control_msg(this->handle, 0x40, USB_RQ_WRITE_SMALL_EEPROM, 0x00, 0xBEEF, data, length, 5000);
+    int received = libusb_control_transfer(
+            this->handle, 
+            0x40 & 0xff,
+            USB_RQ_WRITE_SMALL_EEPROM & 0xff, 
+            0x00 & 0xffff, 
+            0xBEEF & 0xffff, 
+            (unsigned char*)(data), 
+            length,
+            5000);
+    if(received != length)
+    {
+        DBG("ERROR: during the loading of the EEPROM");
+    }
     return true;
 }
