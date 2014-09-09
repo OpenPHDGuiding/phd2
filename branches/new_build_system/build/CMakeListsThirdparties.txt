@@ -37,7 +37,7 @@ endif()
 
 
 #############################################
-# libusb
+# libusb / win32 / apple
 set(LIBUSB libusb-1.0.9)
 if(NOT EXISTS ${thirdparties_dir}/${LIBUSB})
   # untar the dependency
@@ -116,6 +116,8 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
 #
 #############################################
 if(WIN32)
+
+  # wxWidgets
   set(wxWidgets_CONFIGURATION msw)
   set(wxWidgets_ROOT_DIR "D:/Code/tmp_code/wxWidgets-3.0.1")
   set(wxWidgets_USE_STATIC ON)
@@ -126,6 +128,52 @@ if(WIN32)
 
   
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
+  
+  
+  
+  # openCV
+  # openCV should be installed somewhere defined on the command line. If this is not the case, an error message is printed and 
+  # the build is aborted.
+  if(NOT OpenCVRoot)
+    message(FATAL_ERROR "OpenCVRoot is not defined. OpenCVRoot should be defined with the option -DOpenCVRoot=<root-to-opencv>")
+  endif()
+  
+  set(opencv_root ${OpenCVRoot})
+  if(EXISTS ${opencv_root}/opencv)
+    set(opencv_root ${opencv_root}/opencv)
+  endif()
+  
+  if(NOT EXISTS ${opencv_root}/build)
+    message(FATAL_ERROR "Cannot find the build directory of open cv. Please ensure you have decompressed the version for windows")
+  endif()
+  
+  if(NOT EXISTS ${opencv_root}/build/include)
+    message(FATAL_ERROR "Cannot find the header directory of open cv. Please ensure you have decompressed the version for windows")
+  endif()
+  
+  if(NOT EXISTS ${opencv_root}/build/include)
+    message(FATAL_ERROR "Cannot find the header directory of open cv. Please ensure you have decompressed the version for windows")
+  endif()
+  
+  
+  # apparently this is the way cmake works... did not know, the OpenCVConfig.cmake file is enough for the configuration
+  set(OpenCV_DIR ${opencv_root}/build/)
+  find_package(OpenCV REQUIRED)
+  
+  if(NOT OpenCV_INCLUDE_DIRS)
+    message(FATAL_ERROR "Cannot add the OpenCV include directories")
+  endif()
+  
+  include_directories(${OpenCV_INCLUDE_DIRS})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${OpenCV_LIBS}) # Raffi: maybe reduce a bit the number of libraries to link against
+  
+  
+  # VidCapture
+  set(vidcap_dir ${PHD_PROJECT_ROOT_DIR}/cameras/VidCapture)
+  include_directories(${vidcap_dir})
+  message("include ${vidcap_dir}")
+  
+  
 endif()
 
 
