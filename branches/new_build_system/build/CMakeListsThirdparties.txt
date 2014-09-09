@@ -1,5 +1,7 @@
 
 
+set(thirdparties_dir ${CMAKE_SOURCE_DIR}/thirdparties)
+
 
 # compilation of libUSB
 if(APPLE)
@@ -13,11 +15,6 @@ if(APPLE)
   find_library(openGLFramework    OpenGL)
 
   set(PHD_LINK_EXTERNAL ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL})
-
-  find_program(wxWidgets_CONFIG_EXECUTABLE NAMES "wx-config" PATHS /Users/raffi/Code/EI/usr/local/bin NO_DEFAULT_PATH)
-  if(NOT wxWidgets_CONFIG_EXECUTABLE)
-    message(FATAL_ERROR "Cannot find wxWidgets_CONFIG_EXECUTABLE: ${wxWidgets_CONFIG_EXECUTABLE}")
-  endif()
   
   find_path(CARBON_INCLUDE_DIR Carbon.h)
   message(STATUS "Carbon header found at ${CARBON_INCLUDE_DIR}")
@@ -27,7 +24,12 @@ if(APPLE)
   
   #############################################
   # wxWidgets
-  #set(wxWidgets_CONFIG_OPTIONS --prefix=/Users/raffi/Code/EI/usr/local)
+  set(wxWidgets_CONFIG_OPTIONS --prefix=/Users/raffi/Code/EI/usr/local)
+  
+  find_program(wxWidgets_CONFIG_EXECUTABLE NAMES "wx-config" PATHS /Users/raffi/Code/EI/usr/local/bin NO_DEFAULT_PATH)
+  if(NOT wxWidgets_CONFIG_EXECUTABLE)
+    message(FATAL_ERROR "Cannot find wxWidgets_CONFIG_EXECUTABLE: ${wxWidgets_CONFIG_EXECUTABLE}")
+  endif()  
   
   find_package(wxWidgets)
   if(NOT wxWidgets_FOUND)
@@ -39,14 +41,14 @@ if(APPLE)
   
   #############################################
   # cfitsio
-  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/cfitsio)
+  if(NOT EXISTS ${thirdparties_dir}/cfitsio)
     # untar the dependency
-    execute_process(${CMAKE_COMMAND} -E tar xzf ${CMAKE_SOURCE_DIR}/thirdparties/cfitsio3370.tar)
+    execute_process(${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/cfitsio3370.tar)
   endif()
   
   set(BUILD_SHARED_LIBS OFF)
   set(USE_PTHREADS OFF)
-  add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparties/cfitsio)
+  add_subdirectory(${thirdparties_dir}/cfitsio)
   
   if(WIN32)
     set(cfitsio_LIB_NAME cfitsio)
@@ -54,19 +56,20 @@ if(APPLE)
     set(cfitsio_LIB_NAME libcfitsio)
   endif()
   
-  include_directories(${CMAKE_SOURCE_DIR}/thirdparties/cfitsio)
+  include_directories(${thirdparties_dir}/cfitsio)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${cfitsio_LIB_NAME})
   
   
   #############################################
   # libusb & libusbcompat
-  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/libusb-1.0.9)
+  set(LIBUSB libusb-1.0.9)
+  if(NOT EXISTS ${thirdparties_dir}/${LIBUSB})
     # untar the dependency
-    execute_process(${CMAKE_COMMAND} -E tar xjf ${CMAKE_SOURCE_DIR}/thirdparties/libusb-1.0.9.tar.bz2)
+    execute_process(${CMAKE_COMMAND} -E tar xjf ${thirdparties_dir}/${LIBUSB}.tar.bz2)
   endif()  
   
 
-  set(libusb_dir ${CMAKE_SOURCE_DIR}/thirdparties/libusb-1.0.9/libusb)
+  set(libusb_dir ${thirdparties_dir}/${LIBUSB}/libusb)
   include_directories(${libusb_dir})
   set(libUSB_SRC
     ${libusb_dir}/core.c
@@ -82,24 +85,29 @@ if(APPLE)
     ${libusb_dir}/os/threads_posix.h 
     ${libusb_dir}/os/threads_posix.c
     )
-  add_library(libUSB ${libUSB_SRC})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${libUSB})
+  add_library(USB ${libUSB_SRC})
+  target_include_directories(USB PRIVATE ${thirdparties_dir}/include/${LIBUSB})
+  target_compile_definitions(
+    USB
+    PRIVATE LIBUSB_DESCRIBE "")
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
     
+   
+  # let's get rid of this one
+  #if(NOT EXISTS ${thirdparties_dir}/libusb-compat-0.1.4)
+  #  # untar the dependency
+  #  execute_process(${CMAKE_COMMAND} -E tar xjf ${thirdparties_dir}/libusb-compat-0.1.4.tar.bz2)
+  #endif()  
     
-  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/libusb-compat-0.1.4)
-    # untar the dependency
-    execute_process(${CMAKE_COMMAND} -E tar xjf ${CMAKE_SOURCE_DIR}/thirdparties/libusb-compat-0.1.4.tar.bz2)
-  endif()  
-    
-  set(libusbcompath_dir ${CMAKE_SOURCE_DIR}/thirdparties/libusb-compat-0.1.4/libusb)
-  include_directories(${libusbcompath_dir})
-  set(libUSBCompat_SRC
-    ${libusb_dir}/core.c
-    ${libusb_dir}/libusb.h
-    ${libusb_dir}/libusbi.h
-  )
-  add_library(libUSBCompat ${libUSBCompat_SRC})  
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${libUSBCompat})
+  #set(libusbcompath_dir ${thirdparties_dir}/libusb-compat-0.1.4/libusb)
+  #include_directories(${libusbcompath_dir})
+  #set(libUSBCompat_SRC
+  #  ${libusb_dir}/core.c
+  #  ${libusb_dir}/libusb.h
+  #  ${libusb_dir}/libusbi.h
+  #)
+  #add_library(USBCompat ${libUSBCompat_SRC})  
+  #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USBCompat)
 
 
 
@@ -108,22 +116,23 @@ if(APPLE)
   #
   find_library(SBIGUDrvFramework
     SBIGUDrv
-    PATHS ${CMAKE_SOURCE_DIR}/thirdparties/frameworks)
+    PATHS ${thirdparties_dir}/frameworks)
     #CMAKE_FIND_FRAMEWORK "ONLY")
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${SBIGUDrvFramework})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} SBIGUDrvFramework)
   include_directories(${SBIGUDrvFramework})
 
 
   #############################################
   # libDC
   #
-  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/libdc1394-2.2.2)
+  set(LIBDC libdc1394-2.2.2)
+  if(NOT EXISTS ${thirdparties_dir}/${LIBDC})
     # untar the dependency
-    execute_process(${CMAKE_COMMAND} -E tar xzf ${CMAKE_SOURCE_DIR}/thirdparties/libdc1394-2.2.2.tar.gz)
+    execute_process(${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/${LIBDC}.tar.gz)
   endif()  
   
 
-  set(libdc_include_dir ${CMAKE_SOURCE_DIR}/thirdparties/libdc1394-2.2.2)
+  set(libdc_include_dir ${thirdparties_dir}/${LIBDC})
   set(libdc_dir ${libdc_include_dir}/dc1394)
   include_directories(${libdc_dir})
   include_directories(${libdc_include_dir})
@@ -174,8 +183,50 @@ if(APPLE)
   )
   
   add_library(dc ${libDC_SRC})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${dc})
+  target_include_directories(dc PRIVATE ${thirdparties_dir}/include/${LIBDC})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} dc)
   
-endif()
+
+
+
+  #############################################
+  # HID Utils
+  #
+    if(NOT EXISTS "${thirdparties_dir}/HID Utilities Source")
+    # untar the dependency
+    execute_process(${CMAKE_COMMAND} -E tar xzf "${thirdparties_dir}/HID Utilities Source.zip")
+  endif()  
+
+  set(libhid_include_dir "${thirdparties_dir}/HID Utilities Source/")
+  set(libhid_src_dir ${libhid_include_dir})
+  include_directories(${libhid_include_dir})
+  
+  set(libHID_SRC
+    ${libhid_src_dir}/HID_CFM.c
+    ${libhid_src_dir}/HID_Config_Utilities.c
+    ${libhid_src_dir}/HID_Config_Utilities.h
+    ${libhid_src_dir}/HID_Error_Handler.c
+    ${libhid_src_dir}/HID_Error_Handler.h
+    ${libhid_src_dir}/HID_Name_Lookup.c
+    ${libhid_src_dir}/HID_Name_Lookup.h
+    ${libhid_src_dir}/HID_Queue_Utilities.c
+    ${libhid_src_dir}/HID_Queue_Utilities.h
+    ${libhid_src_dir}/HID_Transaction_Utilities.c
+    ${libhid_src_dir}/HID_Transaction_Utilities.h
+    ${libhid_src_dir}/HID_Utilities_CFM.h
+    ${libhid_src_dir}/HID_Utilities_External.h
+    ${libhid_src_dir}/HID_Utilities_Internal.h
+    ${libhid_src_dir}/HID_Utilities.c
+    ${libhid_src_dir}/HID_Utilities.h
+    ${libhid_src_dir}/HID.bundle
+    ${libhid_src_dir}/HIDLib.h
+    ${libhid_src_dir}/IOHIDPowerUsage.h
+    ${libhid_src_dir}/PID.h
+  )
+  add_library(hid ${libHID_SRC})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} hid)
+  
+  
+endif()  # APPLE
 
 
