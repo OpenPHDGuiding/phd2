@@ -117,9 +117,64 @@ if(APPLE)
   #############################################
   # libDC
   #
+  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/libdc1394-2.2.2)
+    # untar the dependency
+    execute_process(${CMAKE_COMMAND} -E tar xzf ${CMAKE_SOURCE_DIR}/thirdparties/libdc1394-2.2.2.tar.gz)
+  endif()  
   
+
+  set(libdc_include_dir ${CMAKE_SOURCE_DIR}/thirdparties/libdc1394-2.2.2)
+  set(libdc_dir ${libdc_include_dir}/dc1394)
+  include_directories(${libdc_dir})
+  include_directories(${libdc_include_dir})
   
+  set(libDC_SRC
+    ${libdc_dir}/dc1394.h
+
+    ${libdc_dir}/bayer.c
+    ${libdc_dir}/camera.h
+
+    ${libdc_dir}/capture.c
+    ${libdc_dir}/capture.h
+
+    ${libdc_dir}/control.c
+    ${libdc_dir}/control.h
+    
+    ${libdc_dir}/conversions.c
+    ${libdc_dir}/conversions.h
+        
+    ${libdc_dir}/enumeration.c
+    
+    ${libdc_dir}/format7.c
+    ${libdc_dir}/format7.h
+    
+    ${libdc_dir}/internal.c
+    ${libdc_dir}/internal.h
+    
+    ${libdc_dir}/iso.c
+    ${libdc_dir}/iso.h
+    
+    ${libdc_dir}/log.c
+    ${libdc_dir}/log.h
+    
+    ${libdc_dir}/macosx.c
+    ${libdc_dir}/macosx.h
+
+    ${libdc_dir}/offsets.h
+    ${libdc_dir}/platform.h
+    
+    ${libdc_dir}/register.c
+    ${libdc_dir}/register.h
+    ${libdc_dir}/types.h
+    
+    ${libdc_dir}/utils.c
+    ${libdc_dir}/utils.h
+    
+    ${libdc_dir}/video.h
+  )
   
+  add_library(dc ${libDC_SRC})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${dc})
   
 endif()
 
