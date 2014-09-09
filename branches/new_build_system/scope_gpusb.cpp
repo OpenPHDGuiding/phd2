@@ -75,7 +75,7 @@ IOHIDDeviceRef FindDevice(IOHIDManagerRef manager, long vendorId, long productId
 
     IOHIDManagerSetDeviceMatching(manager, dictionary);
     CFSetRef foundDevices = IOHIDManagerCopyDevices(manager);
-    CFIndex foundCount = CFSetGetCount(foundDevices);
+    CFIndex foundCount = foundDevices ? CFSetGetCount(foundDevices) : 0; // what the API does not say is that it could be null
     if(foundCount > 0) 
     {
         CFTypeRef* array = new CFTypeRef[foundCount]; // array of IOHIDDeviceRef
@@ -86,7 +86,10 @@ IOHIDDeviceRef FindDevice(IOHIDManagerRef manager, long vendorId, long productId
         delete [] array;
     }
 
-    CFRelease(foundDevices);
+    if(foundDevices)
+    {
+        CFRelease(foundDevices);
+    }
     CFRelease(dictionary);
 
     return theDevice;
