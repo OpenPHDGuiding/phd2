@@ -39,6 +39,8 @@
 #ifndef CAM_OPENCV_H_INCLUDED
 #define CAM_OPENCV_H_INCLUDED
 
+#include <opencv/cv.h>
+
 class Camera_OpenCVClass : public GuideCamera {
     int     DeviceNum;
 protected:
