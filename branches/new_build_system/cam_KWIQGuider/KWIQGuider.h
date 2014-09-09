@@ -20,7 +20,7 @@
 #define SSAG_PRODUCT_ID 0x0012
 
 
-typedef struct usb_dev_handle usb_dev_handle;
+typedef struct libusb_device_handle libusb_device_handle;
 
 #ifdef __cplusplus
 namespace KWIQ
@@ -67,7 +67,7 @@ namespace KWIQ
         unsigned int gain;
 
         /* Handle to the device */
-        usb_dev_handle *handle;
+        libusb_device_handle *handle;
     public:
         /* Constructor */
         KWIQGuider();
@@ -127,7 +127,7 @@ namespace KWIQ
         bool Upload(unsigned char *data);
 
         /* Handle to the cypress device */
-        usb_dev_handle *handle;
+        libusb_device_handle *handle;
     public:
         /* Connects to SSAG Base */
         bool Connect();
