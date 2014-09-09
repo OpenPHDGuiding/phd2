@@ -617,4 +617,31 @@ if(APPLE)
   
 endif()  # APPLE
 
+if(UNIX)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8) 
+    set(arch "x64") 
+  else() 
+    set(arch "x86") 
+  endif()
+  
+  
+  find_path(ZWO_INCLUDE_DIR ASICamera.h
+    PATHS
+    ${PHD_PROJECT_ROOT_DIR}/cameras
+  )  
+  
+  find_library(asiCamera
+                NAMES ASICamera
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/${arch})
+  if(NOT asiCamera)
+    message(FATAL_ERROR "Cannot find the asiCamera drivers")
+  endif()
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera} USB) # to clean: USB should also appear after these lib, otherwise some references are not found
+  message("zwo libraries found at ${ZWO_INCLUDE_DIR} + ${asiCamera}")
+
+
+  message("Current dependencies are ${PHD_LINK_EXTERNAL}")
+
+
+endif(UNIX) 
 

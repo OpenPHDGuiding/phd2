@@ -187,6 +187,8 @@ set(scopes_SRC
   ${phd_src_dir}/scope_onstepguider.h
   ${phd_src_dir}/scope_voyager.cpp
   ${phd_src_dir}/scope_voyager.h
+  ${phd_src_dir}/scope_INDI.h
+  ${phd_src_dir}/scope_INDI.cpp
   ${phd_src_dir}/scopes.h
 )
 source_group(Scopes FILES ${scopes_SRC})
