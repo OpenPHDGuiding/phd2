@@ -28,6 +28,13 @@ include_directories(${thirdparties_dir}/cfitsio)
 set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${cfitsio_LIB_NAME})
 
 
+if(WIN32)
+  target_compile_definitions(
+    ${cfitsio_LIB_NAME}
+    PRIVATE FF_NO_UNISTD_H)
+endif()
+
+
 
 #############################################
 # libusb
