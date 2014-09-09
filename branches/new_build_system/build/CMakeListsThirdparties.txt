@@ -1,6 +1,6 @@
 
 
-set(thirdparties_dir ${CMAKE_SOURCE_DIR}/thirdparties)
+set(thirdparties_dir ${CMAKE_SOURCE_DIR}/build/thirdparties)
 
 
 set(PHD_LINK_EXTERNAL)
@@ -441,13 +441,6 @@ if(APPLE)
     message(FATAL_ERROR "Cannot find the asiCamera drivers")
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera})
-
-
-  
-  
-  
-  
-  
   
   
   #############################################

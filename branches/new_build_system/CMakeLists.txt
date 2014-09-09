@@ -12,7 +12,7 @@ set(VERSION_MINOR 3)
 set(VERSION_PATCH 0)
 
 # root directory of the project
-set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR}/..)
+set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
 
 
 # build type, by default to release (with optimisations) 
@@ -53,7 +53,7 @@ endif()
 
 
 # to be changed in add_subdirectory
-include(CMakeListsThirdparties.txt)
+include(build/CMakeListsThirdparties.txt)
 
 
 include_directories(${wxWidgets_INCLUDE_DIRS})
