@@ -192,15 +192,16 @@ if(APPLE)
   #############################################
   # HID Utils
   #
-    if(NOT EXISTS "${thirdparties_dir}/HID Utilities Source")
-    # untar the dependency
-    execute_process(${CMAKE_COMMAND} -E tar xzf "${thirdparties_dir}/HID Utilities Source.zip")
-  endif()  
+  #if(NOT EXISTS "${thirdparties_dir}/HID Utilities Source")
+  #  # untar the dependency
+  #  execute_process(${CMAKE_COMMAND} -E tar xzf "${thirdparties_dir}/HID Utilities Source.zip")
+  #endif()  
 
   #set(libhid_include_dir "${thirdparties_dir}/HID Utilities Source/")
   set(libhid_include_dir "${thirdparties_dir}/HID_Utilities/")
   set(libhid_src_dir ${libhid_include_dir})
   include_directories(${libhid_include_dir})
+  include_directories(${libhid_include_dir}/IOHIDManager)
   
   #set(libHID_SRC
   #  ${libhid_src_dir}/HID_CFM.c
@@ -244,7 +245,7 @@ if(APPLE)
   )  
   
   add_library(hid ${libHID_SRC})
-  target_include_directories(hid PRIVATE ${libhid_src_dir}/IOHIDManager)
+  #target_include_directories(hid PRIVATE ${libhid_src_dir}/IOHIDManager)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} hid)
   
   
