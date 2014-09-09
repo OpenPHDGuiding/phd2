@@ -6,7 +6,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 project(PhD2)
 
-include(CTest)
 enable_testing()
 
 set(VERSION_MAJOR 2)

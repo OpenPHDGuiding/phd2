@@ -124,24 +124,22 @@ endmacro(copy_dependency_with_config)
 if(NOT EXISTS ${thirdparties_dir}/cfitsio)
   # untar the dependency
   message(STATUS "Untarring cfitsio")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${thirdparties_dir}/cfitsio3370.tar
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/cfitsio3370_modified.tar.bz2
                     WORKING_DIRECTORY ${thirdparties_dir})
 endif()
 
 set(BUILD_SHARED_LIBS OFF)
 set(USE_PTHREADS OFF)
-add_subdirectory(${thirdparties_dir}/cfitsio)
-set_target_properties(FPack Funpack PROPERTIES EXCLUDE_FROM_ALL TRUE)
+add_subdirectory(${thirdparties_dir}/cfitsio EXCLUDE_FROM_ALL)
+#set_target_properties(FPack Funpack PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
-if(WIN32)
-  set(cfitsio_LIB_NAME cfitsio)
-else()
-  set(cfitsio_LIB_NAME libcfitsio)
-endif()
 
 include_directories(${thirdparties_dir}/cfitsio)
-set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${cfitsio_LIB_NAME})
-
+set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} cfitsio)
+#if(UNIX)
+#  find_library(mathlib NAMES m)
+#  target_link_libraries(${cfitsio_LIB_NAME} ${mathlib})
+#endif()
 
 if(WIN32)
   target_compile_definitions(
