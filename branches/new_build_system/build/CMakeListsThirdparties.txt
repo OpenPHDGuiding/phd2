@@ -22,6 +22,11 @@ if(APPLE)
   find_path(CARBON_INCLUDE_DIR Carbon.h)
   message(STATUS "Carbon header found at ${CARBON_INCLUDE_DIR}")
   
+  
+  
+  
+  #############################################
+  # wxWidgets
   #set(wxWidgets_CONFIG_OPTIONS --prefix=/Users/raffi/Code/EI/usr/local)
   
   find_package(wxWidgets)
@@ -30,6 +35,9 @@ if(APPLE)
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
   
+  
+  
+  #############################################
   # cfitsio
   if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/cfitsio)
     # untar the dependency
@@ -49,6 +57,47 @@ if(APPLE)
   include_directories(${CMAKE_SOURCE_DIR}/thirdparties/cfitsio)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${cfitsio_LIB_NAME})
   
+  
+  #############################################
+  # libusb  
+  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/libusb-1.0.9)
+    # untar the dependency
+    execute_process(${CMAKE_COMMAND} -E tar xjf ${CMAKE_SOURCE_DIR}/thirdparties/libusb-1.0.9.tar.bz2)
+  endif()  
+  
+
+  set(libusb_dir ${CMAKE_SOURCE_DIR}/thirdparties/libusb-1.0.9/libusb)
+  include_directories(${libusb_dir})
+  set(libUSB_SRC
+    ${libusb_dir}/core.c
+    ${libusb_dir}/descriptor.c
+    ${libusb_dir}/io.c
+    ${libusb_dir}/sync.c
+    ${libusb_dir}/libusb.h
+    ${libusb_dir}/libusbi.h
+    
+    ${libusb_dir}/os/darwin_usb.c
+    ${libusb_dir}/os/darwin_usb.h
+    
+    ${libusb_dir}/os/threads_posix.h 
+    ${libusb_dir}/os/threads_posix.c
+    )
+  add_library(libUSB ${libUSB_SRC})
+    
+    
+  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/libusb-compat-0.1.4)
+    # untar the dependency
+    execute_process(${CMAKE_COMMAND} -E tar xjf ${CMAKE_SOURCE_DIR}/thirdparties/libusb-compat-0.1.4.tar.bz2)
+  endif()  
+    
+  set(libusbcompath_dir ${CMAKE_SOURCE_DIR}/thirdparties/libusb-compat-0.1.4/libusb)
+  include_directories(${libusbcompath_dir})
+  set(libUSBCompat_SRC
+    ${libusb_dir}/core.c
+    ${libusb_dir}/libusb.h
+    ${libusb_dir}/libusbi.h
+  )
+  add_library(libUSBCompat ${libUSBCompat_SRC})  
   
 
 endif()
