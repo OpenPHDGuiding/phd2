@@ -56,14 +56,11 @@ set(phd_src_dir ${CMAKE_SOURCE_DIR}/..)
 # main project
 
 # headers search path
-#$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-3.0 
-#$(WXDIR)/include 
 #$(CFITSIO)
 #$(LIBDC)
 #../HID\\ Utilities\\ Source/ 
 #$(LIBUSB)/include
 #./cameras
-
 
 # prefix header
 # $(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h
@@ -75,7 +72,7 @@ set(cam_KWIQGuider_SRC
   ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_loader.cpp
   ${phd_src_dir}/cam_KWIQGuider/KWIQGuider_priv.h
 )
-source_group(Cameras/cam_KWIQGuider FILES ${cam_KWIQGuider_SRC})
+source_group(Cameras\\cam_KWIQGuider FILES ${cam_KWIQGuider_SRC})
 
 set(cam_SRC
   ${phd_src_dir}/cam_ascomlate.cpp
@@ -304,9 +301,11 @@ set_target_properties(
   Phd2
   PROPERTIES 
     MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/PHD-Info.plist
-    COMPILE_DEFINITIONS "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS"
+    COMPILE_DEFINITIONS "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS"  # osX HAVE_TYPE_TRAITS
     COMPILE_OPTIONS ${wxWidgets_CXX_FLAGS}
     )
+    
+  
 #MACOSX_FRAMEWORK_INFO_PLIST
 
 # link dependencies on OSX

@@ -13,3 +13,4 @@ cscope.out
 Debug
 Release
 build/tmp
+build/thirdparties/cfitsio

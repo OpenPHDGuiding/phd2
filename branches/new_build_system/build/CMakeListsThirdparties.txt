@@ -33,6 +33,24 @@ if(APPLE)
   endif()
   
   
+  # cfitsio
+  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/cfitsio)
+    # untar the dependency
+    execute_process(${CMAKE_COMMAND} -E tar xzf ${CMAKE_SOURCE_DIR}/thirdparties/cfitsio3370.tar)
+  endif()
+  
+  set(BUILD_SHARED_LIBS OFF)
+  set(USE_PTHREADS ON)
+  add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparties/cfitsio)
+  
+  if(WIN32)
+    set(cfitsio_LIB_NAME cfitsio)
+  else()
+    set(cfitsio_LIB_NAME libcfitsio)
+  endif()
+  
+  include_directories(${CMAKE_SOURCE_DIR}/thirdparties/cfitsio)
+  
   
 
 endif()
