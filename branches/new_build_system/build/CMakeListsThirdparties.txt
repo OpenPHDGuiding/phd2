@@ -164,6 +164,8 @@ endif()
 set(libusb_root ${thirdparties_dir}/${LIBUSB})
 set(libusb_dir ${libusb_root}/libusb)
 include_directories(${libusb_dir})
+
+# core files
 set(libUSB_SRC
   ${libusb_dir}/core.c
   ${libusb_dir}/descriptor.c
@@ -173,6 +175,8 @@ set(libUSB_SRC
   ${libusb_dir}/libusbi.h
 
   )
+
+# platform dependent files
 if(APPLE)
   set(libUSB_SRC ${libUSB_SRC}  
   
@@ -186,7 +190,7 @@ if(APPLE)
     ${libusb_dir}/os/threads_posix.h 
     ${libusb_dir}/os/threads_posix.c
    )
-   
+  set(${LIBUSB}_additional_compile_definition "OS_DARWIN=1") 
   set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
 elseif(WIN32)
   set(libUSB_SRC ${libUSB_SRC}  
@@ -206,12 +210,39 @@ elseif(WIN32)
     ${libusb_dir}/os/poll_windows.h
     ${libusb_dir}/os/poll_windows.c
    )
-   
+  set(${LIBUSB}_additional_compile_definition "OS_WINDOWS=1")
   set(${LIBUSB}_additional_include_dir ${libusb_root}/msvc/)
-endif()
-add_library(USB ${libUSB_SRC})
+elseif(UNIX)
+  # here it really depends on what we want. I (Raffi) personally prefer having the same version
+  # for all platforms. Otherwise, we can just find_library libusb and include it into PHD_LINK_EXTERNAL
+  # variable. 
 
+ set(libUSB_SRC ${libUSB_SRC}               
+                                            
+   # platform specific configuration file   
+   ${thirdparties_dir}/include/${LIBUSB}
+                                            
+   # platform specific implementation       
+   ${libusb_dir}/os/linux_usbfs.c 
+   ${libusb_dir}/os/linux_usbfs.h           
+                                            
+   ${libusb_dir}/os/threads_posix.h         
+   ${libusb_dir}/os/threads_posix.c         
+  )                                         
+                                            
+  set(${LIBUSB}_additional_compile_definition "OS_LINUX=1") 
+  set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
+
+
+else()
+  message(FATAL_ERROR "libUSB unsupported platform")
+
+endif()
+
+# libUSB compilation
+add_library(USB ${libUSB_SRC})
 target_include_directories(USB PRIVATE ${${LIBUSB}_additional_include_dir})
+target_compile_definitions(USB PUBLIC ${${LIBUSB}_additional_compile_definition})
 
 if(NOT WIN32)
   target_compile_definitions(USB PRIVATE LIBUSB_DESCRIBE "")

@@ -81,8 +81,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_firewire.h
   ${phd_src_dir}/cam_firewire_IC.cpp
   ${phd_src_dir}/cam_firewire_OSX.cpp
-  ${phd_src_dir}/cam_indi.cpp
-  ${phd_src_dir}/cam_indi.h
+  ${phd_src_dir}/cam_INDI.cpp
+  ${phd_src_dir}/cam_INDI.h
   ${phd_src_dir}/cam_INovaPLC.cpp
   ${phd_src_dir}/cam_INovaPLC.h
   ${phd_src_dir}/cam_KWIQGuider.cpp
@@ -218,6 +218,20 @@ set(guiding_SRC
   ${phd_src_dir}/stepguiders.h
 )
 source_group(Guiding FILES ${guiding_SRC})
+
+
+set(phd2IndiClient_SRC
+  ${phd_src_dir}/libindiclient/indi.c
+  ${phd_src_dir}/libindiclient/wx/indigui.cpp
+  ${phd_src_dir}/libindiclient/wx/indi_list.cpp
+  ${phd_src_dir}/libindiclient/wx/indi_config.cpp
+  ${phd_src_dir}/libindiclient/wx/indisave.cpp
+  ${phd_src_dir}/libindiclient/wx/wxled.cpp
+  ${phd_src_dir}/libindiclient/wx/wxchecktreectrl.cpp
+  ${phd_src_dir}/libindiclient/base64.c
+  ${phd_src_dir}/libindiclient/lilxml.c
+)
+
 
 set(phd2_SRC
   ${phd_src_dir}/about_dialog.cpp
@@ -405,7 +419,19 @@ elseif(WIN32)
   #link_directories(${phd_src_dir}/WinLibs)
   copy_dependency_with_config(Phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
   
-  
+elseif(UNIX)
+  # should be linux there
+  add_executable(                                                                    
+   Phd2                                                                                                                                                  
+   ${scopes_SRC}                                                                    
+   ${cam_SRC}
+   ${phd2IndiClient_SRC}
+   ${guiding_SRC}                                                                   
+   ${phd2_SRC}                                                         
+   )                                                                                
+else()
+  message(FATAL_ERROR "Unsupported platform")
+ 
 endif()
 
 # properties of the project common to all platforms
@@ -417,12 +443,5 @@ set_target_properties(
     )
 
 target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
-    
-  
 
 
-# link dependencies on OSX
-#-lz
-#-lpthread
-#-lusb-1.0
-#-liconv

@@ -60,7 +60,7 @@
 /* #undef NO_MINUS_C_MINUS_O */
 
 /* Darwin backend */
-#define OS_DARWIN 1
+/* #undef OS_DARWIN */
 
 /* Linux backend */
 /* #undef OS_LINUX */
