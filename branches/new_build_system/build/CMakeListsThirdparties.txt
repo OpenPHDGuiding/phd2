@@ -59,7 +59,7 @@ if(APPLE)
   
   
   #############################################
-  # libusb  
+  # libusb & libusbcompat
   if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/libusb-1.0.9)
     # untar the dependency
     execute_process(${CMAKE_COMMAND} -E tar xjf ${CMAKE_SOURCE_DIR}/thirdparties/libusb-1.0.9.tar.bz2)
@@ -83,6 +83,7 @@ if(APPLE)
     ${libusb_dir}/os/threads_posix.c
     )
   add_library(libUSB ${libUSB_SRC})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${libUSB})
     
     
   if(NOT EXISTS ${CMAKE_SOURCE_DIR}/thirdparties/libusb-compat-0.1.4)
@@ -98,8 +99,28 @@ if(APPLE)
     ${libusb_dir}/libusbi.h
   )
   add_library(libUSBCompat ${libUSBCompat_SRC})  
-  
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${libUSBCompat})
 
+
+
+  #############################################
+  # Camera frameworks
+  #
+  find_library(SBIGUDrvFramework
+    SBIGUDrv
+    PATHS ${CMAKE_SOURCE_DIR}/thirdparties/frameworks)
+    #CMAKE_FIND_FRAMEWORK "ONLY")
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${SBIGUDrvFramework})
+  include_directories(${SBIGUDrvFramework})
+
+
+  #############################################
+  # libDC
+  #
+  
+  
+  
+  
 endif()
 
 

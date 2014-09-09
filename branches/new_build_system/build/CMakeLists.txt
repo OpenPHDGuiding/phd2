@@ -287,6 +287,9 @@ message("compilation definitions ${wxWidgets_DEFINITIONS}")
 message("compilation options ${wxWidgets_CXX_FLAGS}")
 
 
+include_directories(${phd_src_dir}/cam_KWIQGuider/)
+include_directories(${phd_src_dir}/cameras/)
+
 add_executable(
   Phd2
   MACOSX_BUNDLE
