@@ -101,8 +101,12 @@ set(cam_SRC
   ${phd_src_dir}/cam_OSPL130.h
   ${phd_src_dir}/cam_QGuide.cpp
   ${phd_src_dir}/cam_QGuide.h
+  
   ${phd_src_dir}/cam_QHY5II.cpp
   ${phd_src_dir}/cam_QHY5II.h
+  ${phd_src_dir}/cam_QHY5LII.cpp
+  ${phd_src_dir}/cam_QHY5LII.h
+
   ${phd_src_dir}/cam_SAC42.cpp
   ${phd_src_dir}/cam_SAC42.h
   ${phd_src_dir}/cam_SACGuide.cpp
@@ -142,12 +146,18 @@ if(WIN32)
     ${phd_src_dir}/cam_LEParallelWebcam.h
     ${phd_src_dir}/cam_LESerialWebcam.cpp
     ${phd_src_dir}/cam_LESerialWebcam.h
+    ${phd_src_dir}/cam_LELXUSBWebcam.cpp
+    ${phd_src_dir}/cam_LELXUSBWebcam.h
     
     ${phd_src_dir}/cam_Atik16.cpp
     ${phd_src_dir}/cam_Atik16.h
     
     ${phd_src_dir}/cameras/ArtemisHSCAPI.h
     ${phd_src_dir}/cameras/ArtemisHSCAPI.cpp
+    
+    ${phd_src_dir}/cam_QHY5IIbase.cpp
+    ${phd_src_dir}/cam_QHY5IIbase.h
+    
   )
 
 endif()
@@ -383,9 +393,19 @@ elseif(WIN32)
     ${phd2_SRC}
     ${phd2_WIN_SRC}
     )
+  
+  set_target_properties(
+    Phd2
+    PROPERTIES 
+      LINK_FLAGS "/DELAYLOAD:sbigudrv.dll"
+      )
+  # Delayed load for all these in the original project. Now using delay load only for the necessary stuff
+  #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
     
-    
-    link_directories(${phd_src_dir}/WinLibs)
+  #link_directories(${phd_src_dir}/WinLibs)
+  copy_dependency_with_config(Phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
+  
+  
 endif()
 
 # properties of the project common to all platforms

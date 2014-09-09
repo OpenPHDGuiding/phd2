@@ -3,6 +3,120 @@
 set(thirdparties_dir ${CMAKE_SOURCE_DIR}/thirdparties)
 
 
+set(PHD_LINK_EXTERNAL)
+set(PHD_COPY_EXTERNAL_ALL)
+set(PHD_COPY_EXTERNAL_DBG)
+set(PHD_COPY_EXTERNAL_REL)
+
+
+#
+# copies the dependency files into the target output directory
+#
+macro(copy_dependency_with_config target_name dependency_list_all dependency_list_dbg dependency_list_release)
+
+  
+  set(dependency_list_dbg_with_all ${${dependency_list_dbg}} ${${dependency_list_all}})
+  set(dependency_list_dbg_with_all_cleaned)
+  foreach(_element ${dependency_list_dbg_with_all})
+    if(NOT EXISTS ${_element})
+      message(FATAL_ERROR "Dependency ${_element} does not exist")
+    endif()
+    #message(STATUS "copyX ${_element}")
+    get_filename_component(_element1 ${_element} REALPATH)
+    set(dependency_list_dbg_with_all_cleaned ${dependency_list_dbg_with_all_cleaned} ${_element1})
+    unset(_element1)
+  endforeach()
+  
+  list(REMOVE_DUPLICATES dependency_list_dbg_with_all_cleaned)
+  set(dependency_list_dbg_with_all ${dependency_list_dbg_with_all_cleaned})
+  unset(dependency_list_dbg_with_all_cleaned)
+  unset(_element)
+  
+  foreach(_element ${dependency_list_dbg_with_all})
+    get_filename_component(_element_name ${_element} NAME)
+    add_custom_command(
+      TARGET ${target_name}
+      PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E 
+        $<$<CONFIG:Debug>:echo>
+        $<$<CONFIG:Debug>:"Copy ${_element_name} to $<TARGET_FILE_DIR:${target_name}>/.">
+        $<$<NOT:$<CONFIG:Debug>>:echo_append>
+        $<$<NOT:$<CONFIG:Debug>>:".">
+      COMMAND ${CMAKE_COMMAND} -E 
+        $<$<CONFIG:Debug>:copy_if_different> 
+        $<$<CONFIG:Debug>:${_element}> 
+        $<$<CONFIG:Debug>:$<TARGET_FILE_DIR:${target_name}>/.>
+        $<$<NOT:$<CONFIG:Debug>>:echo_append>
+        $<$<NOT:$<CONFIG:Debug>>:"">
+      COMMENT "Copy ${target_name} dependencies into the output folder")
+
+
+
+      #message(STATUS "copy ${_element_name}")
+    # add_custom_command(
+      # TARGET ${target_name}
+      # PRE_BUILD
+      # COMMAND ${CMAKE_COMMAND} -E echo Copy ${_element_name} into $<TARGET_FILE_DIR:${target_name}>/.
+    
+      # COMMAND ${CMAKE_COMMAND} -E $<$<CONFIG:Debug>:copy_if_different>$<$<NOT:$<CONFIG:Debug>>:echo> ${_element} $<TARGET_FILE_DIR:${target_name}>/.
+      # COMMENT "Copy ${target_name} dependencies into the output folder")
+    
+    unset(_element_name)
+  endforeach()
+  unset(dependency_list_dbg_with_all)
+  unset(_element)
+  
+
+  set(dependency_list_release_with_all ${${dependency_list_release}} ${${dependency_list_all}})
+  set(dependency_list_release_with_all_cleaned)
+  foreach(_element ${dependency_list_release_with_all})
+    if(NOT EXISTS ${_element})
+      message(FATAL_ERROR "Dependency ${_element} does not exist")
+    endif()
+    get_filename_component(_element1 ${_element} REALPATH)
+    set(dependency_list_release_with_all_cleaned ${dependency_list_release_with_all_cleaned} ${_element1})
+    unset(_element1)
+  endforeach()
+  list(REMOVE_DUPLICATES dependency_list_release_with_all_cleaned)
+  set(dependency_list_release_with_all ${dependency_list_release_with_all_cleaned})
+  unset(dependency_list_release_with_all_cleaned)
+  unset(_element)
+  
+  foreach(_element ${dependency_list_release_with_all})
+    get_filename_component(_element_name ${_element} NAME)
+    add_custom_command(
+      TARGET ${target_name}
+      PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E 
+        $<$<CONFIG:Release>:echo> #$<$<NOT:$<CONFIG:Release>>:echo> ${_element} $<TARGET_FILE_DIR:${target_name}>/.
+        $<$<CONFIG:Release>:"Copy ${_element_name} to $<TARGET_FILE_DIR:${target_name}>/.">
+        $<$<NOT:$<CONFIG:Release>>:echo_append>
+        $<$<NOT:$<CONFIG:Release>>:".">
+      COMMAND ${CMAKE_COMMAND} -E 
+        $<$<CONFIG:Release>:copy_if_different> 
+        $<$<CONFIG:Release>:${_element}> 
+        $<$<CONFIG:Release>:$<TARGET_FILE_DIR:${target_name}>/.>
+        $<$<NOT:$<CONFIG:Release>>:echo_append>
+        $<$<NOT:$<CONFIG:Release>>:"">
+      COMMENT "Copy ${target_name} dependencies into the output folder")
+    unset(_element_name)      
+  endforeach()
+  unset(dependency_list_release_with_all)
+  unset(_element)
+
+  # we can also use this thing to install external stuff
+  #install( FILES ${dependency_name_debug}
+  #          DESTINATION bin
+  #          CONFIGURATIONS Debug)
+  #install( FILES ${dependency_name_non_debug}
+  #          DESTINATION bin
+  #          CONFIGURATIONS Release)
+            
+
+endmacro(copy_dependency_with_config)
+
+
+
 
 # external rules common to all platforms
 #############################################
@@ -31,7 +145,8 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${cfitsio_LIB_NAME})
 if(WIN32)
   target_compile_definitions(
     ${cfitsio_LIB_NAME}
-    PRIVATE FF_NO_UNISTD_H)
+    PRIVATE FF_NO_UNISTD_H
+    PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
 
@@ -99,9 +214,10 @@ add_library(USB ${libUSB_SRC})
 target_include_directories(USB PRIVATE ${${LIBUSB}_additional_include_dir})
 
 if(NOT WIN32)
-  target_compile_definitions(
-    USB
-    PRIVATE LIBUSB_DESCRIBE "")
+  target_compile_definitions(USB PRIVATE LIBUSB_DESCRIBE "")
+else()
+  # silencing the warnings on externals for win32
+  target_compile_definitions(USB PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
 
@@ -119,17 +235,18 @@ if(WIN32)
 
   # wxWidgets
   set(wxWidgets_CONFIGURATION msw)
-  set(wxWidgets_ROOT_DIR "D:/Code/tmp_code/wxWidgets-3.0.1")
+  set(wxWidgets_ROOT_DIR "D:/Code/tmp_code/wxWidgets-3.0.1")  ### TODO FIXME
   set(wxWidgets_USE_STATIC ON)
   set(wxWidgets_USE_DEBUG ON)
-  set(wxWidgets_USE_UNICODE ON)
+  set(wxWidgets_USE_UNICODE OFF)
   find_package(wxWidgets REQUIRED COMPONENTS propgrid base core aui adv html net)
   include(${wxWidgets_USE_FILE})
+  message(${wxWidgets_USE_FILE})
 
   
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
-  message("wxWidgets_LIBRARIES = ${wxWidgets_LIBRARIES}")
   
+
   
   # openCV
   # openCV should be installed somewhere defined on the command line. If this is not the case, an error message is printed and 
@@ -158,6 +275,8 @@ if(WIN32)
   
   # apparently this is the way cmake works... did not know, the OpenCVConfig.cmake file is enough for the configuration
   set(OpenCV_DIR ${opencv_root}/build/ CACHE PATH "Location of the OpenCV configuration directory")
+  set(OpenCV_SHARED ON)
+  set(OpenCV_STATIC OFF)
   set(BUILD_SHARED_LIBS ON)
   find_package(OpenCV REQUIRED)
   
@@ -165,10 +284,26 @@ if(WIN32)
     message(FATAL_ERROR "Cannot add the OpenCV include directories")
   endif()
   
+  list(REMOVE_DUPLICATES OpenCV_LIB_DIR)
+  list(LENGTH OpenCV_LIB_DIR list_lenght)
+  if(${list_lenght} GREATER 1)
+    list(GET OpenCV_LIB_DIR 0 OpenCV_LIB_DIR)
+  endif()
+  set(OpenCV_BIN_DIR ${OpenCV_LIB_DIR}/../bin)
+  get_filename_component(OpenCV_BIN_DIR ${OpenCV_BIN_DIR} ABSOLUTE)
+  
   include_directories(${OpenCV_INCLUDE_DIRS})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${OpenCV_LIBS}) # Raffi: maybe reduce a bit the number of libraries to link against
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_imgproc249d.dll)
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_imgproc249.dll)
   
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_highgui249d.dll)
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_highgui249.dll)
   
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_core249d.dll)
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_core249.dll)
+  
+
   # VidCapture
   set(vidcap_dir ${PHD_PROJECT_ROOT_DIR}/cameras/VidCapture)
   include_directories(${vidcap_dir})
@@ -176,33 +311,32 @@ if(WIN32)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${vidcap_dir}/VidCapLib.lib) # better compile this one
   
 
-  # Video for Windows
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} vfw32.lib)
-  
-  # directshow
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} "Strmiids.lib" "Quartz.lib")
-
-  # Windows media
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} winmm.lib)#${winmmLIB})
+  # Video for Windows, directshow and windows media
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} vfw32.lib Strmiids.lib Quartz.lib winmm.lib)
   
   
   # gpusb
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringGPUSB_DLL.lib)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
-  
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringGPUSB_DLL.dll)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringLXUSB_DLL.dll)
   
   # asi cameras
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/AsiCamera.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera.dll)
   
   
   # DsiDevice
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/DsiDevice.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/DSCI.dll)
   
   # SBIGUDrv
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/SBIGUDrv.lib)
+  #set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/SBIGUDrv.dll) # this is delay load
   
   # DICAMSDK
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/DICAMSDK.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/DICAMSDK.dll)
   
   # SSAGIF
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/SSAGIF.lib)
@@ -210,64 +344,31 @@ if(WIN32)
   # FCLib
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/FCLib.lib)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/FcApi.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/FCAPI.dll)
   
   # SXUSB
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/SXUSB.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/SXUSB.dll)
   
   # astroDLL
   #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/astroDLLQHY5V.lib)
   
   # CMOSDLL
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/CMOSDLL.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/CMOSDLL.dll)
   
   
   # inpout32 ?
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/inpout32.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/inpout32.dll)
   
+ 
+  # some other that are explicitly loaded at runtime
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhy5IIdll.dll)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhy5LIIdll.dll)
   
-  
-  
-  
-# wxexpatd.lib
-# wxpngd.lib
-# wxzlibd.lib
-# wxjpegd.lib
-# # opencv_core245d.lib
-# # opencv_highgui245d.lib
-# # opencv_imgproc245d.lib
-# # wxmsw30ud_core.lib
-# # wxbase30ud.lib
-# # wxmsw30ud_propgrid.lib
-# # wxmsw30ud_aui.lib
-# # wxmsw30ud_adv.lib
-# # wxmsw30ud_html.lib
-# # wxbase30ud_net.lib
-# # winmm.lib
-# comctl32.lib
-# rpcrt4.lib
-# wsock32.lib
-# oleacc.lib
-# odbc32.lib
-# # FcApi.lib
-# # VidCapLib.lib
-# wxVidCapLib_wx29.lib
-# # vfw32.lib
-# cfitsio.lib   ### compiled
-# # DsiDevice.lib
-# setupapi.lib
-# # SBIGUDrv.lib
-# # CMOSDll.lib
-# # SSAGIF.lib
-# # FCLib.lib
-# # SXUSB.lib
-# # Strmiids.lib
-# # Quartz.lib
-# # ShoestringGPUSB_DLL.lib
-# # ShoestringLXUSB_DLL.lib
-# # inpout32.lib
-# # DICAMSDK.lib
-# # AsiCamera.lib
-  
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLsspiag.dll)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGCAM.dll)
   
 endif()
 
@@ -286,7 +387,7 @@ if(APPLE)
   find_library(webkitFramework    Webkit)
   find_library(audioToolboxFramework AudioToolbox)
   find_library(openGLFramework    OpenGL)
-  set(PHD_LINK_EXTERNAL ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL})
   
   find_path(CARBON_INCLUDE_DIR Carbon.h)
   message(STATUS "Carbon header found at ${CARBON_INCLUDE_DIR}")
