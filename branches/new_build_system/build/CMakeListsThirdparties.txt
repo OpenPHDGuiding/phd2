@@ -319,9 +319,6 @@ if(WIN32)
     message(FATAL_ERROR "Cannot find the header directory of open cv. Please ensure you have decompressed the version for windows")
   endif()
   
-  if(NOT EXISTS ${opencv_root}/build/include)
-    message(FATAL_ERROR "Cannot find the header directory of open cv. Please ensure you have decompressed the version for windows")
-  endif()
   
   
   # apparently this is the way cmake works... did not know, the OpenCVConfig.cmake file is enough for the configuration
@@ -555,9 +552,9 @@ if(APPLE)
     ${libdc_dir}/video.h
     
     # USB backend
-    ${libdc_dir}//usb/capture.c
-    ${libdc_dir}//usb/control.c
-    ${libdc_dir}//usb/usb.h
+    ${libdc_dir}/usb/capture.c
+    ${libdc_dir}/usb/control.c
+    ${libdc_dir}/usb/usb.h
 
     # mac specific
     ${libdc_dir}/macosx.c
@@ -570,7 +567,8 @@ if(APPLE)
   
   add_library(dc ${libDC_SRC})
   target_include_directories(dc PRIVATE ${thirdparties_dir}/include/${LIBDC})
-  target_compile_definitions(dc PRIVATE HAVE_LIBUSB HAVE_MACOSX)
+  # the following line generated too many warnings. The macros are already defined in the config.h of this library
+  # target_compile_definitions(dc PRIVATE HAVE_LIBUSB HAVE_MACOSX) 
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} dc)
   
 
@@ -584,57 +582,7 @@ if(APPLE)
   #  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "${thirdparties_dir}/HID Utilities Source.zip")
   #endif()  
 
-  #set(libhid_include_dir "${thirdparties_dir}/HID Utilities Source/")
-  set(libhid_include_dir "${thirdparties_dir}/HID_Utilities/")
-  set(libhid_src_dir ${libhid_include_dir})
-  include_directories(${libhid_include_dir})
-  include_directories(${libhid_include_dir}/IOHIDManager)
-  
-  #set(libHID_SRC
-  #  ${libhid_src_dir}/HID_CFM.c
-  #  ${libhid_src_dir}/HID_Config_Utilities.c
-  #  ${libhid_src_dir}/HID_Config_Utilities.h
-  #  ${libhid_src_dir}/HID_Error_Handler.c
-  #  ${libhid_src_dir}/HID_Error_Handler.h
-  #  ${libhid_src_dir}/HID_Name_Lookup.c
-  #  ${libhid_src_dir}/HID_Name_Lookup.h
-  #  ${libhid_src_dir}/HID_Queue_Utilities.c
-  #  ${libhid_src_dir}/HID_Queue_Utilities.h
-  #  ${libhid_src_dir}/HID_Transaction_Utilities.c
-  #  ${libhid_src_dir}/HID_Transaction_Utilities.h
-  #  ${libhid_src_dir}/HID_Utilities_CFM.h
-  #  ${libhid_src_dir}/HID_Utilities_External.h
-  #  ${libhid_src_dir}/HID_Utilities_Internal.h
-  #  ${libhid_src_dir}/HID_Utilities.c
-  #  ${libhid_src_dir}/HID_Utilities.h
-  #  ${libhid_src_dir}/HID.bundle
-  #  ${libhid_src_dir}/HIDLib.h
-  #  ${libhid_src_dir}/IOHIDPowerUsage.h
-  #  ${libhid_src_dir}/PID.h
-  #)
-  
-  set(libHID_SRC
-    ${libhid_src_dir}/HID_Config_Utilities.c
-    ${libhid_src_dir}/HID_Error_Handler.c
-    ${libhid_src_dir}/HID_Name_Lookup.c
-    ${libhid_src_dir}/HID_Queue_Utilities.c
-    ${libhid_src_dir}/HID_Utilities_External.h
-    ${libhid_src_dir}/HID_Utilities.c
-    
-    
-    ${libhid_src_dir}/IOHIDManager/ImmrHIDUtilAddOn.c
-    ${libhid_src_dir}/IOHIDManager/ImmrHIDUtilAddOn.h
-    ${libhid_src_dir}/IOHIDManager/IOHIDDevice_.c
-    ${libhid_src_dir}/IOHIDManager/IOHIDDevice_.h
-    ${libhid_src_dir}/IOHIDManager/IOHIDElement_.c
-    ${libhid_src_dir}/IOHIDManager/IOHIDElement_.h
-    ${libhid_src_dir}/IOHIDManager/IOHIDLib_.h
-  )  
-  
-  add_library(hid ${libHID_SRC})
-  #target_include_directories(hid PRIVATE ${libhid_src_dir}/IOHIDManager)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} hid)
-  
+  # library removed
   
   
   ### does not work on x64
