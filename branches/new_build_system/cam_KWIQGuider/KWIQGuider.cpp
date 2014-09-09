@@ -255,10 +255,10 @@ void KWIQGuider::InitSequence()
 {
     char init_packet[18] = {
         /* Gain settings */
-        0x00, this->gain, /* G1 Gain */
-        0x00, this->gain, /* B  Gain */
-        0x00, this->gain, /* R  Gain */
-        0x00, this->gain, /* G2 Gain */
+        0x00, static_cast<char>(this->gain), /* G1 Gain */
+        0x00, static_cast<char>(this->gain), /* B  Gain */
+        0x00, static_cast<char>(this->gain), /* R  Gain */
+        0x00, static_cast<char>(this->gain), /* G2 Gain */
 
         /* Vertical Offset. Reg0x01 */
         ROW_START >> 8, ROW_START & 0xff,
@@ -267,10 +267,10 @@ void KWIQGuider::InitSequence()
         COLUMN_START >> 8, COLUMN_START & 0xff,
 
         /* Image height - 1. Reg0x03 */
-        (IMAGE_HEIGHT - 1) >> 8, (IMAGE_HEIGHT - 1) & 0xff,
+        (IMAGE_HEIGHT - 1) >> 8, static_cast<char>((IMAGE_HEIGHT - 1) & 0xff),
 
         /* Image width - 1. Reg0x04 */
-        (IMAGE_WIDTH - 1) >> 8, (IMAGE_WIDTH - 1) & 0xff,
+        (IMAGE_WIDTH - 1) >> 8, static_cast<char>((IMAGE_WIDTH - 1) & 0xff),
 
         /* Shutter Width. Reg0x09 */
         SHUTTER_WIDTH >> 8, SHUTTER_WIDTH & 0xff
