@@ -8,10 +8,6 @@
 
 
 
-#ifndef __APPLE__
-#include "phd.h"
-#endif
-
 #include "GPImpl.h"
 #include <iostream>
 

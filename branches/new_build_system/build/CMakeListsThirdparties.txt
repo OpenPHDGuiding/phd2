@@ -197,7 +197,7 @@ set(GTEST gtest-1.7.0)
 if(NOT EXISTS ${thirdparties_dir}/${GTEST})
   # unzip the dependency
   execute_process(
-      COMMAND ${CMAKE_COMMAND} -E unzip ${thirdparties_dir}/${GTEST}.zip
+      COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/${GTEST}.zip
     WORKING_DIRECTORY ${thirdparties_dir})
 endif()
 

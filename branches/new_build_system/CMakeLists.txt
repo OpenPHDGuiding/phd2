@@ -6,6 +6,8 @@
 cmake_minimum_required(VERSION 2.8.11)
 project(PhD2)
 
+include(CTest)
+enable_testing()
 
 set(VERSION_MAJOR 2)
 set(VERSION_MINOR 3)
@@ -58,6 +60,7 @@ include(build/CMakeListsThirdparties.txt)
 
 include_directories(${wxWidgets_INCLUDE_DIRS})
 
+include_directories(${phd_src_dir}/gaussian_process)
 
 set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 
@@ -69,12 +72,15 @@ set(gp_SRC
     )
 add_library(GP ${gp_SRC})
 
-target_include_directories(GP PRIVATE ${EIGEN_SRC})
+target_include_directories(GP PUBLIC ${EIGEN_SRC})
 
 # Test for the GP
 
-add_executable(GPTest ${phd_src_dir}/test/gaussian_process/main.cpp)
+add_executable(GPTest ${phd_src_dir}/tests/gaussian_process/main.cpp)
 target_link_libraries(GPTest GP gtest)
+target_include_directories(GPTest PRIVATE ${phd_src_dir}/gaussian_process
+                                  PRIVATE ${GTEST_HEADERS})
+
 add_test(GPTest1 GPTest)
 
 # main project
