@@ -130,7 +130,8 @@ endif()
 
 set(BUILD_SHARED_LIBS OFF)
 set(USE_PTHREADS OFF)
-add_subdirectory(${thirdparties_dir}/cfitsio EXCLUDE_FROM_ALL)
+add_subdirectory(${thirdparties_dir}/cfitsio)
+set_target_properties(FPack Funpack PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 if(WIN32)
   set(cfitsio_LIB_NAME cfitsio)
@@ -181,6 +182,8 @@ set(libUSB_SRC
 
   )
 
+
+# ---------------------------------------------------------------
 # the Eigen library
 set(EIGEN eigen-eigen-36bf2ceaf8f5)
 if(NOT EXISTS ${thirdparties_dir}/${EIGEN})
