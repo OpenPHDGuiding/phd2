@@ -340,9 +340,11 @@ elseif(WIN32)
     WIN32 
     ${scopes_SRC}
     ${cam_SRC}
-    ${cam_KWIQGuider_SRC}
+    #${cam_KWIQGuider_SRC} # not included in the win32 projects
     ${guiding_SRC}
-    ${phd2_SRC})
+    ${phd2_SRC}
+    ${phd_src_dir}/phd.rc  # resource file
+    )
 endif()
 
 # properties of the project common to all platforms
