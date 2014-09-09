@@ -17,11 +17,27 @@ endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+include(CheckCXXCompilerFlag)
 
 
 # general defines
 if(WIN32)
 else()
+  # c++11 options
+  check_cxx_compiler_flag(-std=c++11 HAS_CXX11_FLAG)
+  check_cxx_compiler_flag(-std=c++0x HAS_CXX0X_FLAG)
+  # pthread options
+  check_cxx_compiler_flag(-pthread   HAS_MINUS_PTHREAD)
+  # visbility options 
+  check_cxx_compiler_flag(-fvisibility=hidden         HAS_VISIBILITY_HIDDEN)
+  check_cxx_compiler_flag(-fvisibility-inlines-hidden HAS_VISIBILITY_INLINE_HIDDEN)
+  if(HAS_CXX11_FLAG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  elseif(HAS_CXX0X_FLAG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  endif()
+
+
 endif()
 
 
@@ -270,6 +286,9 @@ set(phd2_SRC
 source_group(src FILES ${phd2_SRC})
 
 
+message("compilation definitions ${wxWidgets_DEFINITIONS}")
+message("compilation options ${wxWidgets_CXX_FLAGS}")
+
 
 add_executable(
   Phd2
@@ -284,7 +303,10 @@ target_link_libraries(
 set_target_properties(
   Phd2
   PROPERTIES 
-    MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/PHD-Info.plist)
+    MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/PHD-Info.plist
+    COMPILE_DEFINITIONS "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS"
+    COMPILE_OPTIONS ${wxWidgets_CXX_FLAGS}
+    )
 #MACOSX_FRAMEWORK_INFO_PLIST
 
 # link dependencies on OSX
