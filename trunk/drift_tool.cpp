@@ -54,6 +54,7 @@ enum Mode
 enum CtrlIds
 {
     ID_SLEW = 10001,
+    ID_SAVE,
     ID_DRIFT,
     ID_ADJUST,
     ID_PHASE,
@@ -91,6 +92,7 @@ struct DriftToolWin : public wxFrame
     wxSpinCtrl *m_raSlew;
     wxSpinCtrl *m_decSlew;
     wxButton *m_slew;
+    wxButton *m_saveCoords;
     wxStaticText *m_notesLabel;
     wxTextCtrl *m_notes;
     wxButton *m_drift;
@@ -102,6 +104,7 @@ struct DriftToolWin : public wxFrame
     void EnableSlew(bool enable);
 
     void OnSlew(wxCommandEvent& evt);
+    void OnSaveCoords(wxCommandEvent& evt);
     void OnNotesText(wxCommandEvent& evt);
     void OnDrift(wxCommandEvent& evt);
     void OnAdjust(wxCommandEvent& evt);
@@ -117,6 +120,7 @@ struct DriftToolWin : public wxFrame
 
 BEGIN_EVENT_TABLE(DriftToolWin, wxFrame)
     EVT_BUTTON(ID_SLEW, DriftToolWin::OnSlew)
+    EVT_BUTTON(ID_SAVE, DriftToolWin::OnSaveCoords)
     EVT_BUTTON(ID_DRIFT, DriftToolWin::OnDrift)
     EVT_BUTTON(ID_ADJUST, DriftToolWin::OnAdjust)
     EVT_BUTTON(ID_PHASE, DriftToolWin::OnPhase)
@@ -181,24 +185,32 @@ DriftToolWin::DriftToolWin()
     gbSizer->Add(txt, wxGBPosition(1, 0), wxGBSpan(1, 1), wxALL, 5);
 
     m_raCurrent = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(m_raCurrent, wxGBPosition(1, 1), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(m_raCurrent, wxGBPosition(1, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     m_decCurrent = new wxTextCtrl(this, wxID_ANY, _T("--"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    gbSizer->Add(m_decCurrent, wxGBPosition(1, 2), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(m_decCurrent, wxGBPosition(1, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     txt = new wxStaticText(this, wxID_ANY, _("Slew To"), wxDefaultPosition, wxDefaultSize, 0);
     txt->Wrap(-1);
     gbSizer->Add(txt, wxGBPosition(2, 0), wxGBSpan(1, 1), wxALL, 5);
 
     m_raSlew = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -90, 90);
-    gbSizer->Add(m_raSlew, wxGBPosition(2, 1), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(m_raSlew, wxGBPosition(2, 1), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     m_decSlew = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -90, 90);
-    gbSizer->Add(m_decSlew, wxGBPosition(2, 2), wxGBSpan(1, 1), wxALL, 5);
+    gbSizer->Add(m_decSlew, wxGBPosition(2, 2), wxGBSpan(1, 1), wxEXPAND | wxALL, 5);
 
     m_slew = new wxButton(this, ID_SLEW, _("Slew"), wxDefaultPosition, wxDefaultSize, 0);
-    m_slew->SetToolTip(_("Click to slew to given coordinates. Shift-click to save the coordinates without slewing."));
+    m_slew->SetToolTip(_("Click to slew to given coordinates."));
     gbSizer->Add(m_slew, wxGBPosition(2, 3), wxGBSpan(1, 1), wxALL, 5);
+
+    wxString label = _("Save");
+    wxSize sz(GetTextExtent(label));
+    sz.SetHeight(-1);
+    sz.IncBy(16, 0);
+    m_saveCoords = new wxButton(this, ID_SAVE, label, wxDefaultPosition, sz, 0);
+    m_saveCoords->SetToolTip(_("Click to save these coordinates as the default location for this axis adjustment."));
+    gbSizer->Add(m_saveCoords, wxGBPosition(2, 4), wxGBSpan(1, 1), wxTOP | wxBOTTOM | wxRIGHT, 5);
 
     // add grid bag sizer to static sizer
     sbSizer->Add(gbSizer, 1, wxALIGN_CENTER, 5);
@@ -319,6 +331,7 @@ void DriftToolWin::EnableSlew(bool enable)
     m_raSlew->Enable(enable);
     m_decSlew->Enable(enable);
     m_slew->Enable(enable && !m_slewing);
+    m_saveCoords->Enable(enable);
 }
 
 static void LoadRADec(Phase phase, double *ra, double *dec)
@@ -504,37 +517,38 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
     double raSlew = (double) m_raSlew->GetValue();
     double decSlew = (double) m_decSlew->GetValue();
 
-    if (wxGetKeyState(WXK_SHIFT))
+    double cur_ra, cur_dec, cur_st;
+    if (pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
     {
-        SaveRADec(m_phase, raSlew, decSlew);
-        SetStatusText(_("Coordinates saved."));
+        Debug.AddLine("Drift tool: slew failed to get scope coordinates");
+        return;
     }
-    else
+    double slew_ra = cur_st + (raSlew * 24.0 / 360.0);
+    if (slew_ra >= 24.0)
+        slew_ra -= 24.0;
+    else if (slew_ra < 0.0)
+        slew_ra += 24.0;
+    Debug.AddLine(wxString::Format("Drift tool slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f", cur_ra, cur_dec, slew_ra, decSlew));
+    m_slewing = true;
+    m_slew->Enable(false);
+    GetStatusBar()->PushStatusText(_("Slewing ..."));
+    if (pMount->SlewToCoordinates(slew_ra, decSlew))
     {
-        double cur_ra, cur_dec, cur_st;
-        if (pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
-        {
-            Debug.AddLine("Drift tool: slew failed to get scope coordinates");
-            return;
-        }
-        double slew_ra = cur_st + (raSlew * 24.0 / 360.0);
-        if (slew_ra >= 24.0)
-            slew_ra -= 24.0;
-        else if (slew_ra < 0.0)
-            slew_ra += 24.0;
-        Debug.AddLine(wxString::Format("Drift tool slew from ra %.2f, dec %.1f to ra %.2f, dec %.1f", cur_ra, cur_dec, slew_ra, decSlew));
-        m_slewing = true;
-        m_slew->Enable(false);
-        GetStatusBar()->PushStatusText(_("Slewing ..."));
-        if (pMount->SlewToCoordinates(slew_ra, decSlew))
-        {
-            GetStatusBar()->PopStatusText();
-            m_slewing = false;
-            m_slew->Enable(true);
-            Debug.AddLine("Drift tool: slew failed");
-        }
-        SaveRADec(m_phase, raSlew, decSlew);
+        GetStatusBar()->PopStatusText();
+        m_slewing = false;
+        m_slew->Enable(true);
+        Debug.AddLine("Drift tool: slew failed");
     }
+    SaveRADec(m_phase, raSlew, decSlew);
+}
+
+void DriftToolWin::OnSaveCoords(wxCommandEvent& evt)
+{
+    double raSlew = (double) m_raSlew->GetValue();
+    double decSlew = (double) m_decSlew->GetValue();
+
+    SaveRADec(m_phase, raSlew, decSlew);
+    SetStatusText(_("Coordinates saved."));
 }
 
 void DriftToolWin::OnNotesText(wxCommandEvent& evt)
