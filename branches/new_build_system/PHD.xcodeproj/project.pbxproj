@@ -624,7 +624,9 @@
 				58B8CE6216E05EDB00F6E68E /* worker_thread.cpp */,
 				58B8CE6316E05EDB00F6E68E /* worker_thread.h */,
 			);
+			indentWidth = 4;
 			sourceTree = "<group>";
+			tabWidth = 4;
 		};
 		58339E380B1FC2BF00109891 /* Products */ = {
 			isa = PBXGroup;
