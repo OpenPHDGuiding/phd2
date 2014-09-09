@@ -283,6 +283,26 @@ wxArrayString Scope::AuxMountList()
     return ScopeList;
 }
 
+
+wxArrayString Scope::AuxMountList()
+{
+    wxArrayString ScopeList;
+
+    ScopeList.Add(_("None"));      // Keep this at the top of the list
+#ifdef GUIDE_ASCOM
+    wxArrayString positionAwareScopes = ScopeASCOM::EnumAscomScopes();
+    positionAwareScopes.Sort(&CompareNoCase);
+    for (unsigned int i = 0; i < positionAwareScopes.Count(); i++)
+        ScopeList.Add(positionAwareScopes[i]);
+#endif
+#ifdef GUIDE_INDI
+    ScopeList.Add(_("INDI Mount"));
+#endif
+
+
+    return ScopeList;
+}
+
 Scope *Scope::Factory(const wxString& choice)
 {
     Scope *pReturn = NULL;

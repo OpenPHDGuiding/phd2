@@ -38,7 +38,7 @@
 
 #include "socket_server.h"
 #include "cam_simulator.h"
-
+#include <algorithm>
 #include <functional>
 
 static std::set<wxSocketBase *> s_clients;
