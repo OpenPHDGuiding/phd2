@@ -89,7 +89,7 @@ if(APPLE)
   if(NOT wxWidgets_FOUND)
     message(FATAL_ERROR "WxWidget cannot be found. Please use wx-config prefix")
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES} wx_osx_cocoau_aui-3.0)
   message("wxLibraries ${wxWidgets_LIBRARIES}")
   
   
