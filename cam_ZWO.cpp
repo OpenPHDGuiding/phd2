@@ -310,24 +310,20 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
     long exposureUS = duration * 1000;
     ASI_BOOL tmp;
     long cur_exp;
-//    bool exp_change = false;
     if (ASIGetControlValue(m_cameraId, m_exposureControlId, &cur_exp, &tmp) == ASI_SUCCESS &&
         cur_exp != exposureUS)
     {
         Debug.AddLine("ZWO: set CONTROL_EXPOSURE %d", exposureUS);
         ASISetControlValue(m_cameraId, m_exposureControlId, exposureUS, ASI_FALSE);
-//        exp_change = true;
     }
 
     long new_gain = cam_gain(m_minGain, m_maxGain, GuideCameraGain);
     long cur_gain;
-//    bool gain_change = false;
     if (ASIGetControlValue(m_cameraId, m_gainControlId, &cur_gain, &tmp) == ASI_SUCCESS &&
         new_gain != cur_gain)
     {
         Debug.AddLine("ZWO: set CONTROL_GAIN %d%% %d", GuideCameraGain, new_gain);
         ASISetControlValue(m_cameraId, m_gainControlId, new_gain, ASI_FALSE);
-//        gain_change = true;
     }
 
     bool size_change = frame.GetSize() != m_frame.GetSize();
