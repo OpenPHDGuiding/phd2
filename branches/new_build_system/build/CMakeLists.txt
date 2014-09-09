@@ -7,6 +7,10 @@ cmake_minimum_required(VERSION 2.8.11)
 project(PhD2)
 
 
+# root directory of the project
+set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR}/..)
+
+
 # build type, by default to release (with optimisations) 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
@@ -42,6 +46,8 @@ endif()
 
 
 
+
+
 # to be changed in add_subdirectory
 include(CMakeListsThirdparties.txt)
 
@@ -49,7 +55,8 @@ include(CMakeListsThirdparties.txt)
 include_directories(${wxWidgets_INCLUDE_DIRS})
 
 
-set(phd_src_dir ${CMAKE_SOURCE_DIR}/..)
+set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
+
 
 # main project
 

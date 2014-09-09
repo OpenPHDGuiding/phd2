@@ -277,6 +277,34 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} hid)
   
   
+  
+  ### does not work on x64
+  #find_library( openssag
+  #              NAMES openssag
+  #              PATHS ${PHD_PROJECT_ROOT_DIR}/cameras	)
+  #if(NOT openssag)
+  #  message(FATAL_ERROR "Cannot find the openssag drivers")
+  #endif()
+  #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${openssag})
+
+  set(LIBOPENSSAG openssag)
+  set(libopenssag_dir ${thirdparties_dir}/${LIBOPENSSAG}/src)
+  include_directories(${libopenssag_dir})
+  set(libOPENSSAG_SRC
+    ${libopenssag_dir}/firmware.h
+    ${libopenssag_dir}/loader.cpp
+    ${libopenssag_dir}/openssag_priv.h
+    ${libopenssag_dir}/openssag.cpp
+    ${libopenssag_dir}/openssag.h
+    )
+  add_library(OpenSSAG ${libOPENSSAG_SRC})
+  target_link_libraries(OpenSSAG USB)
+  target_include_directories(OpenSSAG PRIVATE ${thirdparties_dir}/${LIBOPENSSAG}/src)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} OpenSSAG)
+    
+  
+  
+  
 endif()  # APPLE
 
 
