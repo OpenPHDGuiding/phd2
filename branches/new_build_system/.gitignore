@@ -23,3 +23,7 @@ build/thirdparties/gtest-1.7.0.kdev4
 MPGuide.kdev4
 temp/
 *.kate-swp
+
+build/thirdparties/eigen-eigen-36bf2ceaf8f5
+build/thirdparties/gtest-1.7.0
+build_make
