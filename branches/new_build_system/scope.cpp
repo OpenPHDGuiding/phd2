@@ -829,7 +829,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
             case CALIBRATION_STATE_COMPLETE:
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
                                m_calibrationXRate,  m_calibrationYRate,
-                               GetDeclination(), SideOfPier());
+                               pPointingSource->GetGuidingDeclination(), pPointingSource->SideOfPier());
                 pFrame->SetStatusText(_("calibration complete"),1);
                 GuideLog.CalibrationComplete(this);
                 EvtServer.NotifyCalibrationComplete(this);
