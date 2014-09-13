@@ -150,7 +150,7 @@ public:
     // by a subclass
 private:
     virtual MOVE_RESULT Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved);
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, MoveResultInfo *moveResultInfo);
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps);
     int CalibrationMoveSize(void);
     int CalibrationTotDistance(void);

@@ -77,7 +77,7 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid1->ClearSelection();
 
     m_grid2 = new wxGrid(this, wxID_ANY);
-    m_grid2->CreateGrid(4, 2);
+    m_grid2->CreateGrid(6, 2);
     m_grid2->SetRowLabelSize(1);
     m_grid2->SetColLabelSize(1);
     m_grid2->EnableEditing(false);
@@ -87,6 +87,10 @@ StatsWindow::StatsWindow(wxWindow *parent)
 
     row = 0, col = 0;
     m_grid2->SetCellValue(row, col++, _("RA Osc"));
+    ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("RA Limited"));
+    ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Dec Limited"));
     ++row, col = 0;
     m_grid2->SetCellValue(row, col++, _("Star lost"));
     ++row, col = 0;
@@ -179,6 +183,20 @@ void StatsWindow::UpdateStats(void)
     else
         m_grid2->SetCellTextColour(*wxLIGHT_GREY, row, col);
     m_grid2->SetCellValue(wxString::Format("% .02f", stats.osc_index), row++, col);
+
+    unsigned int historyItems = wxMax(pFrame->pGraphLog->GetHistoryItemCount(), 1); // avoid divide-by-zero
+    if (stats.ra_limit_cnt > 0)
+        m_grid2->SetCellTextColour(wxColour(185, 20, 0), row, col);
+    else
+        m_grid2->SetCellTextColour(*wxLIGHT_GREY, row, col);
+    m_grid2->SetCellValue(wxString::Format(" %u (%.f%%)", stats.ra_limit_cnt, stats.ra_limit_cnt * 100. / historyItems), row++, col);
+
+    if (stats.dec_limit_cnt > 0)
+        m_grid2->SetCellTextColour(wxColour(185, 20, 0), row, col);
+    else
+        m_grid2->SetCellTextColour(*wxLIGHT_GREY, row, col);
+    m_grid2->SetCellValue(wxString::Format(" %u (%.f%%)", stats.dec_limit_cnt, stats.dec_limit_cnt * 100. / historyItems), row++, col);
+
     m_grid2->SetCellValue(wxString::Format(" %u", stats.star_lost_cnt), row++, col);
 
     m_grid1->EndBatch();
@@ -193,7 +211,7 @@ void StatsWindow::UpdateScopePointing()
         PierSide pierSide = pPointingSource->SideOfPier();
 
         m_grid2->BeginBatch();
-        int row = 2, col = 1;
+        int row = 4, col = 1;
         m_grid2->SetCellValue(wxString::Format("% .1f deg", declination), row++, col);
         m_grid2->SetCellValue(Mount::PierSideStr(pierSide), row++, col);
         m_grid2->EndBatch();

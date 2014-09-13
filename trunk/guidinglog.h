@@ -53,6 +53,8 @@ struct GuideStepInfo
     double guideDistanceDec;
     int durationRA;
     int durationDec;
+    bool raLimited;
+    bool decLimited;
     // TODO: the following two members are GUIDE_DIRECTION, but we have circular
     // dependencies in our header files so cannot use GUIDE_DIRECTION here
     int directionRA;
