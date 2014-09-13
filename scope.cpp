@@ -456,8 +456,8 @@ Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duratio
 
     try
     {
-        int amountMoved;
-        result = Move(direction, duration, false, &amountMoved);
+        MoveResultInfo move;
+        result = Move(direction, duration, false, &move);
 
         if (result != MOVE_OK)
         {
@@ -477,9 +477,10 @@ int Scope::CalibrationMoveSize(void)
     return m_calibrationDuration;
 }
 
-Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool normalMove, int *amountMoved)
+Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool normalMove, MoveResultInfo *moveResult)
 {
     MOVE_RESULT result = MOVE_OK;
+    bool limitReached = false;
 
     try
     {
@@ -512,6 +513,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
                     {
                         duration = m_maxDecDuration;
                         Debug.AddLine("duration set to %d by maxDecDuration", duration);
+                        limitReached = true;
                     }
                 }
                 break;
@@ -525,6 +527,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
                     {
                         duration = m_maxRaDuration;
                         Debug.AddLine("duration set to %d by maxRaDuration", duration);
+                        limitReached = true;
                     }
                 }
 
@@ -545,7 +548,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         if (result == MOVE_OK)
@@ -555,8 +558,11 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
 
     Debug.AddLine(wxString::Format("Move returns status %d, amount %d", result, duration));
 
-    if (amountMoved)
-        *amountMoved = duration;
+    if (moveResult)
+    {
+        moveResult->amountMoved = duration;
+        moveResult->limited = limitReached;
+    }
 
     return result;
 }

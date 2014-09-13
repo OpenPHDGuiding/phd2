@@ -614,29 +614,29 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         GUIDE_DIRECTION yDirection = yDistance > 0.0 ? DOWN : UP;
 
         int requestedXAmount = (int) floor(fabs(xDistance / m_xRate) + 0.5);
-        int actualXAmount = 0;
-        result = Move(xDirection, requestedXAmount, normalMove, &actualXAmount);
+        MoveResultInfo xMoveResult;
+        result = Move(xDirection, requestedXAmount, normalMove, &xMoveResult);
 
         wxString msg;
 
-        if (actualXAmount > 0)
+        if (xMoveResult.amountMoved > 0)
         {
             msg = wxString::Format(_("%s %5.2f px %3d ms"), xDirection == EAST ? _("East") : _("West"),
-                fabs(xDistance), actualXAmount);
+                fabs(xDistance), xMoveResult.amountMoved);
         }
 
-        int actualYAmount = 0;
+        MoveResultInfo yMoveResult;
         if (result == MOVE_OK || result == MOVE_ERROR)
         {
             int requestedYAmount = (int) floor(fabs(yDistance / m_yRate) + 0.5);
-            result = Move(yDirection, requestedYAmount, normalMove, &actualYAmount);
+            result = Move(yDirection, requestedYAmount, normalMove, &yMoveResult);
 
-            if (actualYAmount > 0)
+            if (yMoveResult.amountMoved > 0)
             {
                 msg = wxString::Format(_("%s%*s%s %.2f px %d ms"), msg,
                     msg.IsEmpty() ? 42 : msg.Len() < 30 ? 30 - msg.Len() : 1, "",
                     yDirection == SOUTH ? _("South") : _("North"),
-                    fabs(yDistance), actualYAmount);
+                    fabs(yDistance), yMoveResult.amountMoved);
             }
         }
 
@@ -654,10 +654,12 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         info.mountOffset = &mountVectorEndpoint;
         info.guideDistanceRA = xDistance;
         info.guideDistanceDec = yDistance;
-        info.durationRA = actualXAmount;
+        info.durationRA = xMoveResult.amountMoved;
         info.directionRA = xDirection;
-        info.durationDec = actualYAmount;
+        info.durationDec = yMoveResult.amountMoved;
         info.directionDec = yDirection;
+        info.raLimited = xMoveResult.limited;
+        info.decLimited = yMoveResult.limited;
         info.aoPos = GetAoPos();
         info.starMass = pFrame->pGuider->StarMass();
         info.starSNR = pFrame->pGuider->SNR();

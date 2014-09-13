@@ -455,6 +455,11 @@ int GraphLogWindow::GetLength(void) const
     return m_pClient->m_length;
 }
 
+unsigned int GraphLogWindow::GetHistoryItemCount(void) const
+{
+    return m_pClient->GetItemCount();
+}
+
 void GraphLogWindow::SetLength(int length)
 {
     if (length > (int) m_pClient->m_history.capacity())
@@ -773,6 +778,7 @@ void GraphLogClientWindow::ResetData(void)
     UpdateStats(0, 0);
     m_stats.ra_peak = m_stats.dec_peak = 0.0;
     m_stats.star_lost_cnt = 0;
+    m_stats.ra_limit_cnt = m_stats.dec_limit_cnt = 0;
     if (pFrame && pFrame->pStatsWin)
         pFrame->pStatsWin->UpdateStats();
 }
@@ -943,8 +949,8 @@ void GraphLogClientWindow::UpdateStats(unsigned int nr, const S_HISTORY *cur)
 static double peak_ra(const circular_buffer<S_HISTORY> &history, unsigned int nr)
 {
     double peak = 0.0;
-    const int begin = history.size() - nr;
     const int end = history.size();
+    const int begin = end - nr;
     for (int i = begin; i < end; i++) {
         double val = fabs(history[i].ra);
         if (val > peak)
@@ -956,8 +962,8 @@ static double peak_ra(const circular_buffer<S_HISTORY> &history, unsigned int nr
 static double peak_dec(const circular_buffer<S_HISTORY> &history, unsigned int nr)
 {
     double peak = 0.0;
-    const int begin = history.size() - nr;
     const int end = history.size();
+    const int begin = end - nr;
     for (int i = begin; i < end; i++) {
         double val = fabs(history[i].dec);
         if (val > peak)
@@ -968,9 +974,7 @@ static double peak_dec(const circular_buffer<S_HISTORY> &history, unsigned int n
 
 void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
 {
-    unsigned int trend_items = m_length;
-    if (trend_items > m_history.size())
-        trend_items = m_history.size();
+    unsigned int trend_items = GetItemCount();
     const int oldest_idx = m_history.size() - trend_items;
 
     S_HISTORY oldest;
@@ -993,6 +997,9 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
         }
     }
 
+    m_stats.ra_limit_cnt += (step.raLimited ? 1 : 0) - ((trend_items >= m_length && oldest.raLimited) ? 1 : 0);
+    m_stats.dec_limit_cnt += (step.decLimited ? 1 : 0) - ((trend_items >= m_length && oldest.decLimited) ? 1 : 0);
+
     S_HISTORY cur(step);
     m_history.push_front(cur);
 
@@ -1007,9 +1014,7 @@ void GraphLogClientWindow::AppendData(const GuideStepInfo& step)
             break;
     }
 
-    unsigned int new_nr = m_history.size();
-    if (new_nr > m_length)
-        new_nr = m_length;
+    unsigned int new_nr = GetItemCount();
     UpdateStats(new_nr, &cur);
 
     double ax = fabs(step.mountOffset->X);
@@ -1041,9 +1046,7 @@ void GraphLogClientWindow::AppendData(const DitherInfo& info)
 void GraphLogClientWindow::RecalculateTrendLines(void)
 {
     reset_trend_accums(m_trendLineAccum);
-    unsigned int trend_items = m_history.size();
-    if (trend_items > m_length)
-        trend_items = m_length;
+    unsigned int trend_items = GetItemCount();
     const int begin = m_history.size() - trend_items;
     for (unsigned int x = 0, i = begin; x < trend_items; i++, x++) {
         const S_HISTORY& h = m_history[i];
@@ -1069,6 +1072,22 @@ void GraphLogClientWindow::RecalculateTrendLines(void)
 
     m_stats.ra_peak = peak_ra(m_history, trend_items);
     m_stats.dec_peak = peak_dec(m_history, trend_items);
+
+    {
+        unsigned int raLimitedCnt = 0;
+        unsigned int decLimitedCnt = 0;
+        const int end = m_history.size();
+        for (int i = begin; i < end; i++)
+        {
+            const S_HISTORY& h = m_history[i];
+            if (h.raLimited)
+                ++raLimitedCnt;
+            if (h.decLimited)
+                ++decLimitedCnt;
+        }
+        m_stats.ra_limit_cnt = raLimitedCnt;
+        m_stats.dec_limit_cnt = raLimitedCnt;
+    }
 
     const S_HISTORY *latest = 0;
     if (m_history.size() > 0)
@@ -1240,12 +1259,7 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     // Draw data
     if (m_history.size() > 0)
     {
-        unsigned int plot_length = m_length;
-        if (plot_length > m_history.size())
-        {
-            plot_length = m_history.size();
-        }
-
+        unsigned int plot_length = GetItemCount();
         unsigned int start_item = m_history.size() - plot_length;
 
         if (m_showCorrections)
@@ -1457,7 +1471,7 @@ void GraphLogClientWindow::OnLeftBtnDown(wxMouseEvent& evt)
         {
             const double xmag = size.x / (double) m_length;
 
-            unsigned int plot_length = wxMin(m_length, m_history.size());
+            unsigned int plot_length = GetItemCount();
             unsigned int start_item = m_history.size() - plot_length;
 
             unsigned int i = start_item + (unsigned int) floor((double)(evt.GetX() - xorig) / xmag + 0.5);

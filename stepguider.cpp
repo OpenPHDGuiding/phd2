@@ -345,9 +345,9 @@ bool StepGuider::MoveToCenter()
 
         if (positionUpDown > 0)
         {
-            int amountMoved = 0;
-            Move(DOWN, positionUpDown, true, &amountMoved);
-            if (amountMoved != positionUpDown)
+            MoveResultInfo result;
+            Move(DOWN, positionUpDown, true, &result);
+            if (result.amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step DOWN");
             }
@@ -356,9 +356,9 @@ bool StepGuider::MoveToCenter()
         {
             positionUpDown = -positionUpDown;
 
-            int amountMoved = 0;
-            Move(UP, positionUpDown, true, &amountMoved);
-            if (amountMoved != positionUpDown)
+            MoveResultInfo result;
+            Move(UP, positionUpDown, true, &result);
+            if (result.amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step UP");
             }
@@ -368,9 +368,9 @@ bool StepGuider::MoveToCenter()
 
         if (positionLeftRight > 0)
         {
-            int amountMoved = 0;
-            Move(RIGHT, positionLeftRight, true, &amountMoved);
-            if (amountMoved != positionLeftRight)
+            MoveResultInfo result;
+            Move(RIGHT, positionLeftRight, true, &result);
+            if (result.amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step RIGHT");
             }
@@ -379,9 +379,9 @@ bool StepGuider::MoveToCenter()
         {
             positionLeftRight = -positionLeftRight;
 
-            int amountMoved = 0;
-            Move(LEFT, positionLeftRight, true, &amountMoved);
-            if (amountMoved != positionLeftRight)
+            MoveResultInfo result;
+            Move(LEFT, positionLeftRight, true, &result);
+            if (result.amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step LEFT");
             }
@@ -743,10 +743,10 @@ Mount::MOVE_RESULT StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int st
 
     try
     {
-        int stepsTaken = 0;
-        result = Move(direction, steps, false, &stepsTaken);
+        MoveResultInfo move;
+        result = Move(direction, steps, false, &move);
 
-        if (stepsTaken != steps)
+        if (move.amountMoved != steps)
         {
             throw THROW_INFO("stepsTaken != m_calibrationStepsPerIteration");
         }
@@ -775,9 +775,10 @@ int StepGuider::CalibrationTotDistance(void)
     return AO_CALIBRATION_PIXELS_NEEDED;
 }
 
-Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool normalMove, int *amountMoved)
+Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool normalMove, MoveResultInfo *moveResult)
 {
     MOVE_RESULT result = MOVE_OK;
+    bool limitReached = false;
 
     try
     {
@@ -823,6 +824,7 @@ Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool n
                     int new_steps = MaxPosition(direction) - 1 - CurrentPosition(direction);
                     Debug.AddLine(wxString::Format("StepGuider step would hit limit: truncate move direction=%d steps=%d => %d", direction, steps, new_steps));
                     steps = new_steps;
+                    limitReached = true;
                 }
 
                 if (steps > 0)
@@ -847,8 +849,11 @@ Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool n
         result = MOVE_ERROR;
     }
 
-    if (amountMoved)
-        *amountMoved = steps;
+    if (moveResult)
+    {
+        moveResult->amountMoved = steps;
+        moveResult->limited = limitReached;
+    }
 
     return result;
 }

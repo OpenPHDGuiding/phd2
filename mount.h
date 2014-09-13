@@ -57,6 +57,14 @@ enum PierSide {
     PIER_SIDE_WEST = 1,
 };
 
+struct MoveResultInfo
+{
+    int amountMoved;
+    bool limited;
+
+    MoveResultInfo() : amountMoved(0), limited(false) { }
+};
+
 class Mount : public wxMessageBoxProxy
 {
 private:
@@ -170,7 +178,7 @@ public:
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
-    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved) = 0;
+    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, MoveResultInfo *moveResultInfo) = 0;
     virtual MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
     virtual int CalibrationMoveSize(void) = 0;
     virtual int CalibrationTotDistance(void) = 0;

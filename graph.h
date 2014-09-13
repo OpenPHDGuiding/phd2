@@ -64,11 +64,14 @@ struct S_HISTORY
     int decDur;
     double starSNR;
     double starMass;
+    bool raLimited;
+    bool decLimited;
     S_HISTORY() { }
     S_HISTORY(const GuideStepInfo& step)
         : timestamp(::wxGetUTCTimeMillis().GetValue()),
         dx(step.cameraOffset->X), dy(step.cameraOffset->Y), ra(step.mountOffset->X), dec(step.mountOffset->Y),
-        raDur(step.durationRA), decDur(step.durationDec), starSNR(step.starSNR), starMass(step.starMass) { }
+        raDur(step.durationRA), decDur(step.durationDec), starSNR(step.starSNR), starMass(step.starMass),
+        raLimited(step.raLimited), decLimited(step.decLimited) { }
 };
 
 struct DitherInfo
@@ -89,6 +92,8 @@ struct SummaryStats
     double ra_peak;
     double dec_peak;
     unsigned int star_lost_cnt;
+    unsigned int ra_limit_cnt;
+    unsigned int dec_limit_cnt;
 };
 
 class GraphLogClientWindow : public wxWindow
@@ -148,6 +153,8 @@ public:
     void AppendData(const FrameDroppedInfo& info);
     void AppendData(const DitherInfo& info);
 
+    unsigned int GetItemCount() const;
+
     void ResetData(void);
 
 private:
@@ -159,6 +166,11 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
+
+inline unsigned int GraphLogClientWindow::GetItemCount() const
+{
+    return wxMin(m_history.size(), m_length);
+}
 
 class GraphLogWindow : public wxWindow
 {
@@ -210,6 +222,7 @@ public:
     int GetHeight(void) const;
     void SetHeight(int height);
     wxMenu *GetLengthMenu(void);
+    unsigned int GetHistoryItemCount(void) const;
 
     void OnPaint(wxPaintEvent& evt);
     void OnButtonSettings(wxCommandEvent& evt);

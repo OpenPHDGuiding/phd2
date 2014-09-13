@@ -204,7 +204,7 @@ bool Guider::IsCalibratingOrGuiding(void)
     return m_state >= STATE_CALIBRATING_PRIMARY && m_state <= STATE_GUIDING;
 }
 
-void Guider::OnErase(wxEraseEvent &evt)
+void Guider::OnErase(wxEraseEvent& evt)
 {
     evt.Skip();
 }
@@ -214,7 +214,7 @@ void Guider::OnClose(wxCloseEvent& evt)
     Destroy();
 }
 
-bool Guider::PaintHelper(wxClientDC &dc, wxMemoryDC &memDC)
+bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
 {
     bool bError = false;
 
