@@ -1086,7 +1086,7 @@ void GraphLogClientWindow::RecalculateTrendLines(void)
                 ++decLimitedCnt;
         }
         m_stats.ra_limit_cnt = raLimitedCnt;
-        m_stats.dec_limit_cnt = raLimitedCnt;
+        m_stats.dec_limit_cnt = decLimitedCnt;
     }
 
     const S_HISTORY *latest = 0;
