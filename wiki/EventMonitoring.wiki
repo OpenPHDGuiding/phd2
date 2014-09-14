@@ -197,6 +197,8 @@ This event corresponds to a line in the PHD Guide Log. The event is sent for eac
 ||DECDirection||string||"S" or "N"||
 ||StarMass||number||the Star Mass value of the guide star||
 ||SNR||number||the computed Signal-to-noise ratio of the guide star||
+||RALimited||boolean||true if step was limited by the Max RA setting (attribute omitted if step was not limited)||
+||DecLimited||boolean||true if step was limited by the Max Dec setting (attribute omitted if step was not limited)||
 ||ErrorCode||number||the star finder error code||
 
 === `GuidingDithered` ===
