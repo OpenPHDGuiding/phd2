@@ -1549,6 +1549,12 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
     if (step.starError)
        ev << NV("ErrorCode", step.starError);
 
+    if (step.raLimited)
+        ev << NV("RALimited", true);
+
+    if (step.decLimited)
+        ev << NV("DecLimited", true);
+
     do_notify(m_eventServerClients, ev);
 }
 
