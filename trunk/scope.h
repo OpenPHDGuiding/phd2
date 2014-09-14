@@ -43,6 +43,8 @@ class Scope : public Mount
     int m_maxRaDuration;
     DEC_GUIDE_MODE m_decGuideMode;
     DEC_GUIDE_MODE m_saveDecGuideMode;
+    int m_raLimitReachedCount;
+    int m_decLimitReachedCount;
 
     // Calibration variables
     int m_calibrationSteps;
