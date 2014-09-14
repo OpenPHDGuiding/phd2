@@ -50,8 +50,12 @@ static const double DEC_BACKLASH_DISTANCE = 3.0;
 static const int MAX_CALIBRATION_STEPS = 60;
 static const double MAX_CALIBRATION_DISTANCE = 25.0;
 
+static int LIMIT_REACHED_WARN_COUNT = 5;
+
 Scope::Scope(void)
-    : m_raLimitReachedCount(0),
+    : m_raLimitReachedDirection(NONE),
+      m_raLimitReachedCount(0),
+      m_decLimitReachedDirection(NONE),
       m_decLimitReachedCount(0)
 {
     m_calibrationSteps = 0;
@@ -494,10 +498,16 @@ static void AlertLimitReached(GuideAxis axis)
 {
     if (pConfig->Global.GetBoolean(LimitReachedWarningKey(axis), true))
     {
-        wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
-        pFrame->Alert(wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
-            "Increasing the %s will allow PHD to make the needed corrections."), s, s),
-            _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
+        static time_t s_lastLogged;
+        time_t now = time(0);
+        if (s_lastLogged == 0 || now - s_lastLogged > 30)
+        {
+            s_lastLogged = now;
+            wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
+            pFrame->Alert(wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
+                "Increasing the %s will allow PHD to make the needed corrections."), s, s),
+                _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
+        }
     }
 }
 
@@ -538,12 +548,20 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
                         duration = m_maxDecDuration;
                         Debug.AddLine("duration set to %d by maxDecDuration", duration);
                         limitReached = true;
+                    }
 
-                        if (++m_decLimitReachedCount >= 3)
+                    if (limitReached && direction == m_decLimitReachedDirection)
+                    {
+                        if (++m_decLimitReachedCount >= LIMIT_REACHED_WARN_COUNT)
                             AlertLimitReached(GUIDE_DEC);
                     }
                     else
                         m_decLimitReachedCount = 0;
+
+                    if (limitReached)
+                        m_decLimitReachedDirection = direction;
+                    else
+                        m_decLimitReachedDirection = NONE;
                 }
                 break;
             case EAST:
@@ -557,12 +575,20 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
                         duration = m_maxRaDuration;
                         Debug.AddLine("duration set to %d by maxRaDuration", duration);
                         limitReached = true;
+                    }
 
-                        if (++m_raLimitReachedCount >= 3)
+                    if (limitReached && direction == m_raLimitReachedDirection)
+                    {
+                        if (++m_raLimitReachedCount >= LIMIT_REACHED_WARN_COUNT)
                             AlertLimitReached(GUIDE_RA);
                     }
                     else
                         m_raLimitReachedCount = 0;
+
+                    if (limitReached)
+                        m_raLimitReachedDirection = direction;
+                    else
+                        m_raLimitReachedDirection = NONE;
                 }
                 break;
 
