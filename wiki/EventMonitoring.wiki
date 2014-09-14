@@ -105,7 +105,7 @@ The state attribute can be one of the following:
 || Selected || A star is selected but PHD is neither looping exposures, calibrating, or guiding ||
 || Calibrating || PHD is calibrating ||
 || Guiding || PHD is guiding ||
-|| LostLock  || PHD has lost its lock position ||
+|| !LostLock  || PHD has lost its lock position ||
 || Paused || PHD is paused ||
 || Looping || PHD is looping exposures ||
 
