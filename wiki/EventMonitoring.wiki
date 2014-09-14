@@ -143,7 +143,7 @@ Sent for each exposure frame after a `dither` or `guide` method invocation until
 || Attribute || Type || Description ||
 || Distance || number || the current distance between the guide star and lock position ||
 || Time || number || the elapsed time that the distance has been below the settling tolerance distance (the `pixels` attribute of the `SETTLE` parameter) ||
-|| SettleTime || number || the requested settle time (the `time` attribute of the `SETTLE` parameter) ||
+|| !SettleTime || number || the requested settle time (the `time` attribute of the `SETTLE` parameter) ||
 
 === `SettleDone` ===
 
@@ -160,9 +160,9 @@ A frame has been dropped due to the star being lost.
 || Attribute || Type || Description ||
 || Frame || number || frame number ||
 || Time || number || time since guiding started, seconds ||
-|| StarMass || number || star mass value ||
+|| !StarMass || number || star mass value ||
 || SNR || number || star SNR value ||
-|| ErrorCode || number || error code ||
+|| !ErrorCode || number || error code ||
 || Status || string || error message ||
 
 === `GuidingStopped` ===
@@ -188,18 +188,18 @@ This event corresponds to a line in the PHD Guide Log. The event is sent for eac
 ||dx||number||the X-offset in pixels||
 ||dy||number||the Y-offset in pixels||
 ||RADistanceRaw||number||the RA distance in pixels of the guide offset vector||
-||DecDistanceRaw||number||the Dec distance in pixels of the guide offset vector||
+||!DecDistanceRaw||number||the Dec distance in pixels of the guide offset vector||
 ||RADistanceGuide||number||the guide algorithm-modified RA distance in pixels of the guide offset vector||
-||DecDistanceGuide||number||the guide algorithm-modified Dec distance in pixels of the guide offset vector||
+||!DecDistanceGuide||number||the guide algorithm-modified Dec distance in pixels of the guide offset vector||
 ||RADuration||number||the RA guide pulse duration in milliseconds||
 ||RADirection||string||"E" or "W"||
 ||DECDuration||number||the Dec guide pulse duration in milliseconds||
 ||DECDirection||string||"S" or "N"||
-||StarMass||number||the Star Mass value of the guide star||
+||!StarMass||number||the Star Mass value of the guide star||
 ||SNR||number||the computed Signal-to-noise ratio of the guide star||
 ||RALimited||boolean||true if step was limited by the Max RA setting (attribute omitted if step was not limited)||
-||DecLimited||boolean||true if step was limited by the Max Dec setting (attribute omitted if step was not limited)||
-||ErrorCode||number||the star finder error code||
+||!DecLimited||boolean||true if step was limited by the Max Dec setting (attribute omitted if step was not limited)||
+||!ErrorCode||number||the star finder error code||
 
 === `GuidingDithered` ===
 
