@@ -215,6 +215,14 @@ The lock position has been lost.
 
 (no attributes)
 
+=== `Alert` ===
+
+An alert message was displayed in PHD2.
+
+|| Attribute || Type || Description ||
+||Msg||string||the text of the alert message||
+||Type||string||The type of alert: "info", "question", "warning", or "error"||
+
 == Initial Event Messages ==
 
 When a client first connects, PHD sends a series of event messages to the client. The first event is
