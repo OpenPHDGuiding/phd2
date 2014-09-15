@@ -1613,3 +1613,34 @@ void EventServer::NotifySettleDone(const wxString& errorMsg)
 
     do_notify(m_eventServerClients, ev);
 }
+
+void EventServer::NotifyAlert(const wxString& msg, int type)
+{
+    if (m_eventServerClients.empty())
+        return;
+
+    Ev ev("Alert");
+    ev << NV("Msg", msg);
+    
+    wxString s;
+    switch (type)
+    {
+    case wxICON_NONE:
+    case wxICON_INFORMATION:
+    default:
+        s = "info";
+        break;
+    case wxICON_QUESTION:
+        s = "question";
+        break;
+    case wxICON_WARNING:
+        s = "warning";
+        break;
+    case wxICON_ERROR:
+        s = "error";
+        break;
+    }
+    ev << NV("Type", s);
+
+    do_notify(m_eventServerClients, ev);
+}
