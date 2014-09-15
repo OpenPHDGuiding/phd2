@@ -75,6 +75,7 @@ public:
     void NotifyAppState();
     void NotifySettling(double distance, double time, double settleTime);
     void NotifySettleDone(const wxString& errorMsg);
+    void NotifyAlert(const wxString& msg, int type);
 
 private:
     void OnEventServerEvent(wxSocketEvent& evt);
