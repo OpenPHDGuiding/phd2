@@ -178,7 +178,15 @@ if(WIN32)
     ${phd_src_dir}/cam_QHY5IIbase.h
 
   )
-
+elseif(UNIX AND (NOT APPLE))
+  set(cam_SRC
+      ${cam_SRC}
+      #${phd_src_dir}/cam_simulator.h
+      #${phd_src_dir}/cam_simulator.cpp
+      
+      ${phd_src_dir}/cam_qhy5.h
+      ${phd_src_dir}/cam_qhy5.cpp
+     )
 endif()
 
 
@@ -347,6 +355,12 @@ set(phd2_SRC
   ${phd_src_dir}/worker_thread.cpp
   ${phd_src_dir}/worker_thread.h
 )
+if(UNIX AND NOT APPLE)
+  set(phd2_SRC 
+      ${phd2_SRC}
+      ${phd_src_dir}/config_INDI.cpp
+     )
+endif()
 source_group(src FILES ${phd2_SRC})
 
 
