@@ -523,6 +523,9 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
         Debug.AddLine("Drift tool: slew failed to get scope coordinates");
         return;
     }
+
+    wxBusyCursor busy;
+
     double slew_ra = cur_st + (raSlew * 24.0 / 360.0);
     if (slew_ra >= 24.0)
         slew_ra -= 24.0;
