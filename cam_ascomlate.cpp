@@ -752,7 +752,7 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, const
     if (hr != S_OK)
         return true;
 
-    if (Image.Init(xsize, ysize))
+    if (Image.Init(FullSize))
     {
         pFrame->Alert(_("Cannot allocate memory to download image from camera"));
         return true;
