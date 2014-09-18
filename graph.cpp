@@ -517,12 +517,12 @@ void GraphLogWindow::SetHeight(int height)
 
 void GraphLogWindow::SetState(bool is_active)
 {
-    this->m_visible = is_active;
+    m_visible = is_active;
     if (is_active)
     {
         UpdateControls();
     }
-    this->Show(is_active);
+    Show(is_active);
 }
 
 void GraphLogWindow::EnableTrendLines(bool enable)

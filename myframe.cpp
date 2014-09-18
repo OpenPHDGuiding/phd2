@@ -345,7 +345,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     bool panel_state;
 
     panel_state = m_mgr.GetPane(_T("MainToolBar")).IsShown();
-    pGraphLog->SetState(panel_state);
     Menubar->Check(MENU_TOOLBAR, panel_state);
 
     panel_state = m_mgr.GetPane(_T("GraphLog")).IsShown();

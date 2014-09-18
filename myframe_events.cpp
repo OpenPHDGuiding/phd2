@@ -421,7 +421,6 @@ void MyFrame::OnToolBar(wxCommandEvent& evt)
     {
         m_mgr.GetPane(_T("MainToolBar")).Hide();
     }
-    this->pGraphLog->SetState(evt.IsChecked());
     m_mgr.Update();
 }
 
@@ -435,7 +434,7 @@ void MyFrame::OnGraph(wxCommandEvent& evt)
     {
         m_mgr.GetPane(_T("GraphLog")).Hide();
     }
-    this->pGraphLog->SetState(evt.IsChecked());
+    pGraphLog->SetState(evt.IsChecked());
     m_mgr.Update();
 }
 
@@ -455,7 +454,7 @@ void MyFrame::OnStats(wxCommandEvent& evt)
 
 void MyFrame::OnAoGraph(wxCommandEvent& evt)
 {
-    if (this->pStepGuiderGraph->SetState(evt.IsChecked()))
+    if (pStepGuiderGraph->SetState(evt.IsChecked()))
     {
         m_mgr.GetPane(_T("AOPosition")).Show().Right().Position(1).MinSize(293,208);
     }
@@ -481,7 +480,7 @@ void MyFrame::OnStarProfile(wxCommandEvent& evt)
     {
         m_mgr.GetPane(_T("Profile")).Hide();
     }
-    this->pProfile->SetState(evt.IsChecked());
+    pProfile->SetState(evt.IsChecked());
     m_mgr.Update();
 }
 
@@ -495,7 +494,7 @@ void MyFrame::OnTarget(wxCommandEvent& evt)
     {
         m_mgr.GetPane(_T("Target")).Hide();
     }
-    this->pTarget->SetState(evt.IsChecked());
+    pTarget->SetState(evt.IsChecked());
     m_mgr.Update();
 }
 
@@ -693,32 +692,31 @@ void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
     if (p->name == _T("MainToolBar"))
     {
         Menubar->Check(MENU_TOOLBAR, false);
-        this->pGraphLog->SetState(false);
     }
     if (p->name == _T("GraphLog"))
     {
         Menubar->Check(MENU_GRAPH, false);
-        this->pGraphLog->SetState(false);
+        pGraphLog->SetState(false);
     }
     if (p->name == _T("Stats"))
     {
         Menubar->Check(MENU_STATS, false);
-        this->pGraphLog->SetState(false);
+        pStatsWin->SetState(false);
     }
     if (p->name == _T("Profile"))
     {
         Menubar->Check(MENU_STARPROFILE, false);
-        this->pProfile->SetState(false);
+        pProfile->SetState(false);
     }
     if (p->name == _T("AOPosition"))
     {
         Menubar->Check(MENU_AO_GRAPH, false);
-        this->pStepGuiderGraph->SetState(false);
+        pStepGuiderGraph->SetState(false);
     }
     if (p->name == _T("Target"))
     {
         Menubar->Check(MENU_TARGET, false);
-        this->pTarget->SetState(false);
+        pTarget->SetState(false);
     }
 }
 
