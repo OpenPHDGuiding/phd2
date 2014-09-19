@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 open-phd-guiding. All rights reserved.
 //
 
+#include "phd.h"
 #include "GPImpl.h"
 #include <iostream>
 
@@ -148,15 +149,3 @@ GPImpl::combinedKernelCovariance(const Eigen::Vector4d &params
     
     return std::make_pair(K, derivatives);
 }
-
-
-
-
-
-
-
-
-
-
-
-
