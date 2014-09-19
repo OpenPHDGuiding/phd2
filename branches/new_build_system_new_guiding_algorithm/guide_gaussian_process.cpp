@@ -7,7 +7,6 @@
 //
 
 #include "guide_gaussian_process.h"
-#include "phd.h"
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis)
@@ -15,10 +14,21 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     reset();
 }
 
+GuideGaussianProcess::~GuideGaussianProcess(void)
+{
+}
+
+GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
+{
+    return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
+}
 
 double GuideGaussianProcess::result(double input)
 {
+    double result = 0.0;
     
+    
+    return result;
 }
 
 
