@@ -11,7 +11,6 @@
 #include <gtest/gtest.h>
 
 
-typedef std::pair<Eigen::MatrixXd, Eigen::MatrixXd> MatrixPair;
 
 class GPImplTest : public ::testing::Test
 {
@@ -154,12 +153,30 @@ TEST_F(GPImplTest, CombinedKernelCovarianceTest)
 TEST_F(GPImplTest, CovarianceDiracTest)
 {
     Eigen::MatrixXd m = Eigen::MatrixXd::Random(6, 4);
-    MatrixPair result1   = impl.covarianceDirac(log(1), m, m);
+    GPImpl::MatrixPair result1   = impl.covarianceDirac(log(1), m, m);
     Eigen::MatrixXd identity  = Eigen::MatrixXd::Identity(m.rows(), m.rows());
     EXPECT_EQ(result1.first, identity);
     EXPECT_EQ(result1.second, 2 * identity);
 }
 
+
+TEST_F(GPImplTest, CovarianceTest)
+{
+    auto result = impl.covariance(impl.hyperParams, c, c);
+
+    // Check that we really pushed the last derivative on to the vector
+    // Checked in Matlab that none of the derivatives actually is all 0s 
+    EXPECT_EQ(result.second.size(), 5);
+    for (auto elem : result.second)
+    {
+        EXPECT_FALSE((elem.array() == 0).all());
+    }
+
+    // Matlab showed, that the last derivative of covariance(hyp,c,sqdistc)
+    // is all 0s
+    auto result2 = impl.covariance(impl.hyperParams, c, sqdistc);
+    EXPECT_TRUE((result2.second[4].array() == 0).all());
+}
 
 int main(int argc, char ** argv)
 {

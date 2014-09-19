@@ -116,7 +116,7 @@ Eigen::MatrixXd GPImpl::squareDistance(const Eigen::MatrixXd &a)
  y is not given. These cases are never reached, though. So they are left out 
  at first.
  */
-std::pair< Eigen::MatrixXd, std::vector<Eigen::MatrixXd> >
+GPImpl::MatrixStdVecPair
 GPImpl::combinedKernelCovariance(const Eigen::Vector4d &params
                                  , const Eigen::MatrixXd &x
                                  , const Eigen::MatrixXd &y)
@@ -160,9 +160,9 @@ GPImpl::combinedKernelCovariance(const Eigen::Vector4d &params
 /**
  
  */
-std::pair<Eigen::MatrixXd, Eigen::MatrixXd>
-GPImpl::covarianceDirac(const double tau, const Eigen::MatrixXd &x1
-                                        , const Eigen::MatrixXd &x2)
+GPImpl::MatrixPair
+GPImpl::covarianceDirac(const double tau , const Eigen::MatrixXd &x1
+                                         , const Eigen::MatrixXd &x2)
 {
     double tauSquared = exp(tau * 2);
 
@@ -182,4 +182,33 @@ GPImpl::covarianceDirac(const double tau, const Eigen::MatrixXd &x1
 
     return std::make_pair(covariance, derivative);
 }
+
+
+/**
+ 
+ */
+GPImpl::MatrixStdVecPair
+GPImpl::covariance(const Eigen::VectorXd &params
+                   , const Eigen::MatrixXd &x1
+                   , const Eigen::MatrixXd &x2)
+{
+    MatrixStdVecPair cov1 = combinedKernelCovariance(params.head(4)
+                                                     , x1.col(1)
+                                                     , x2.col(1));
+    MatrixPair cov2 = covarianceDirac(params(TauIndex), x1, x2);
+
+    Eigen::MatrixXd covariance = cov1.first + cov2.first;
+    auto derivative = cov1.second;
+    derivative.push_back(cov2.second);
+
+    return std::make_pair(covariance, derivative);
+}
+
+
+
+
+
+
+
+
 
