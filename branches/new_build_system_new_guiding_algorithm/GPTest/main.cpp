@@ -10,6 +10,9 @@
 #include "GPImpl.h"
 #include <gtest/gtest.h>
 
+
+typedef std::pair<Eigen::MatrixXd, Eigen::MatrixXd> MatrixPair;
+
 class GPImplTest : public ::testing::Test
 {
 public:
@@ -148,6 +151,14 @@ TEST_F(GPImplTest, CombinedKernelCovarianceTest)
 
 }
 
+TEST_F(GPImplTest, CovarianceDiracTest)
+{
+    Eigen::MatrixXd m = Eigen::MatrixXd::Random(6, 4);
+    MatrixPair result1   = impl.covarianceDirac(log(1), m, m);
+    Eigen::MatrixXd identity  = Eigen::MatrixXd::Identity(m.rows(), m.rows());
+    EXPECT_EQ(result1.first, identity);
+    EXPECT_EQ(result1.second, 2 * identity);
+}
 
 
 int main(int argc, char ** argv)

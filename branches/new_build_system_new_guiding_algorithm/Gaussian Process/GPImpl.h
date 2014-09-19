@@ -15,11 +15,11 @@
 
 class GPImpl {
     
-    enum paramIndices { LengthScaleP
-                      , PeriodLengthP
-                      , SignalVarianceP
-                      , LengthScaleSE
-                      , Tau
+    enum paramIndices { LengthScalePIndex
+                      , PeriodLengthPIndex
+                      , SignalVariancePIndex
+                      , LengthScaleSEIndex
+                      , TauIndex
                       };
     
 public:
@@ -69,6 +69,26 @@ public:
     combinedKernelCovariance (const Eigen::Vector4d &params
                                 , const Eigen::MatrixXd &x
                                 , const Eigen::MatrixXd &y);
+
+    /**
+     Covariance function
+     
+     TODO Documentation
+
+     @param tau
+
+     
+     @param x,y
+        Two matrices
+     
+     @result 
+        A Pair consisting of the covariance matrix and the derivative 
+        of the matrix
+     */
+    std::pair<Eigen::MatrixXd, Eigen::MatrixXd>
+    covarianceDirac (const double tau, const Eigen::MatrixXd &x1
+                                     , const Eigen::MatrixXd &x2);
+
 
 
 

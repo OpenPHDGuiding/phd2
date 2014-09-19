@@ -6,7 +6,12 @@
 //  Copyright (c) 2014 open-phd-guiding. All rights reserved.
 //
 
+
+
+#ifndef __APPLE__
 #include "phd.h"
+#endif
+
 #include "GPImpl.h"
 #include <iostream>
 
@@ -116,18 +121,18 @@ GPImpl::combinedKernelCovariance(const Eigen::Vector4d &params
                                  , const Eigen::MatrixXd &x
                                  , const Eigen::MatrixXd &y)
 {
-    double lsP  = exp(params(LengthScaleP));
-    double plP  = exp(params(PeriodLengthP));
-    double svP  = exp(2*params(SignalVarianceP)); // signal variance is squared
-    double lsSE = exp(params(LengthScaleSE));
+    double lsP  = exp(params(LengthScalePIndex));
+    double plP  = exp(params(PeriodLengthPIndex));
+    double svP  = exp(2*params(SignalVariancePIndex)); // signal variance is squared
+    double lsSE = exp(params(LengthScaleSEIndex));
 
     // Compute Distances
-    auto squareDistanceXY = squareDistance(x.transpose(), y.transpose());
-    auto distanceXY = squareDistanceXY.array().sqrt();
+    Eigen::MatrixXd squareDistanceXY = squareDistance(x.transpose(), y.transpose());
+    Eigen::MatrixXd distanceXY = squareDistanceXY.array().sqrt();
 
     // Periodic Kernel
-    auto P1 = M_PI * distanceXY / plP;
-    auto S1 = P1.sin();
+    auto P1 = (M_PI * distanceXY / plP).array();
+    auto S1 = P1.array().sin();
     auto Q1 = S1.square();
     auto K1 = (-2 * Q1).exp() * svP;
 
@@ -148,4 +153,33 @@ GPImpl::combinedKernelCovariance(const Eigen::Vector4d &params
     derivatives[3] = K2.array() * E2.array() * K1;
     
     return std::make_pair(K, derivatives);
+
 }
+
+
+/**
+ 
+ */
+std::pair<Eigen::MatrixXd, Eigen::MatrixXd>
+GPImpl::covarianceDirac(const double tau, const Eigen::MatrixXd &x1
+                                        , const Eigen::MatrixXd &x2)
+{
+    double tauSquared = exp(tau * 2);
+
+    Eigen::VectorXd x1Col = x1.col(1);
+    Eigen::VectorXd x2Col = x2.col(1);
+    Eigen::MatrixXd covariance(x1Col.size(),x2Col.size());
+
+    for (auto rows = 0; rows < covariance.rows(); rows++)
+    {
+        for (auto cols = 0; cols < covariance.cols(); cols++)
+        {
+            covariance(rows,cols) = x1Col(rows) == x2Col(cols) ? tauSquared : 0;
+        }
+    }
+
+    auto derivative = 2 * covariance;
+
+    return std::make_pair(covariance, derivative);
+}
+
