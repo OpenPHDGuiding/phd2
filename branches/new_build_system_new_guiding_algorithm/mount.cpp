@@ -91,7 +91,7 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     DoAdd(chkSizer);
 
     wxString xAlgorithms[] = {
-        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch")
+        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch"),_("Gaussian Process")
     };
 
     width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
@@ -114,7 +114,7 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     }
 
     wxString yAlgorithms[] = {
-        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch")
+        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch"),_("Gaussian Proces")
     };
 
     width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
@@ -310,6 +310,7 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
             case GUIDE_ALGORITHM_LOWPASS:
             case GUIDE_ALGORITHM_LOWPASS2:
             case GUIDE_ALGORITHM_RESIST_SWITCH:
+            case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
                 break;
             case GUIDE_ALGORITHM_NONE:
             default:
@@ -340,6 +341,9 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
             break;
         case GUIDE_ALGORITHM_RESIST_SWITCH:
             *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmResistSwitch(mount, axis);
+            break;
+        case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
+            *ppAlgorithm = (GuideAlgorithm *)new GuideGaussianProcess(mount,axis);
             break;
         case GUIDE_ALGORITHM_NONE:
         default:

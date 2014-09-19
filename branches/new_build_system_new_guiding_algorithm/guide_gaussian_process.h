@@ -9,11 +9,20 @@
 #ifndef __PHD__guide_gaussian_process__
 #define __PHD__guide_gaussian_process__
 
-#include "phd.h"
 
 class GuideGaussianProcess : public GuideAlgorithm
 {
 protected:
+    class GuideGaussianProcessDialogPane : public ConfigDialogPane
+    {
+        GuideGaussianProcess *m_pGuideAlgorithm;
+    public:
+        GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm);
+        virtual ~GuideGaussianProcessDialogPane(void);
+        
+        virtual void LoadValues(void);
+        virtual void UnloadValues(void);
+    };
     
     
     
@@ -22,8 +31,11 @@ public:
     virtual ~GuideGaussianProcess(void);
     virtual GUIDE_ALGORITHM Algorithm(void);
     
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual double result(double input);
     virtual void reset();
+    virtual wxString GetSettingsSummary() { return "\n"; }
+    virtual wxString GetGuideAlgorithmClassName(void) const { return "Gaussian Process"; }
     
 };
 

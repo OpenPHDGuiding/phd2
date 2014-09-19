@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 open-phd-guiding. All rights reserved.
 //
 
+#include "phd.h"
 #include "guide_gaussian_process.h"
 #include "matlab_interaction.h"
 
@@ -18,6 +19,41 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
 GuideGaussianProcess::~GuideGaussianProcess(void)
 {
 }
+
+
+ConfigDialogPane *GuideGaussianProcess::GetConfigDialogPane(wxWindow *pParent)
+{
+    return new GuideGaussianProcessDialogPane(pParent, this);
+}
+
+
+GuideGaussianProcess::
+GuideGaussianProcessDialogPane::
+GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm)
+    : ConfigDialogPane(_("Gaussian Process Guide Algorithm"),pParent)
+{
+    m_pGuideAlgorithm = pGuideAlgorithm;
+    DoAdd(new wxStaticText(pParent, wxID_ANY, _("Nothing to Configure"),wxPoint(-1,-1),wxSize(-1,-1)));
+}
+
+GuideGaussianProcess::
+GuideGaussianProcessDialogPane::
+~GuideGaussianProcessDialogPane()
+{
+}
+
+void GuideGaussianProcess::
+    GuideGaussianProcessDialogPane::
+    UnloadValues(void)
+{
+}
+
+void GuideGaussianProcess::
+    GuideGaussianProcessDialogPane::
+    LoadValues(void)
+{
+}
+
 
 GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
 {
