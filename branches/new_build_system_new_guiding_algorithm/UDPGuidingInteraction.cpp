@@ -1,5 +1,5 @@
 //
-//  guide_gaussian_process.h
+//  matlab_interaction.cpp
 //  PHD
 //
 //  Created by Stephan Wenninger
@@ -32,42 +32,55 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GUIDE_GAUSSIAN_PROCESS
-#define GUIDE_GAUSSIAN_PROCESS
 
+#include "phd.h"
 #include "UDPGuidingInteraction.h"
 
+#include "wx/string.h"
+#include "wx/socket.h"
 
-class GuideGaussianProcess : public GuideAlgorithm
+
+UDPGuidingInteraction::UDPGuidingInteraction(wxString host, wxString sendPort, wxString rcvPort)
+: host(host), sendPort(sendPort), rcvPort(rcvPort)
 {
-private:
-    UDPGuidingInteraction udpInteraction;
 
-protected:
-    class GuideGaussianProcessDialogPane : public ConfigDialogPane
-    {
-        GuideGaussianProcess *m_pGuideAlgorithm;
-    public:
-        GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm);
-        virtual ~GuideGaussianProcessDialogPane(void);
-        
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-    };
-    
-    
-    
-public:
-    GuideGaussianProcess(Mount *pMount, GuideAxis axis);
-    virtual ~GuideGaussianProcess(void);
-    virtual GUIDE_ALGORITHM Algorithm(void);
-    
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual double result(double input);
-    virtual void reset();
-    virtual wxString GetSettingsSummary() { return "\n"; }
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Gaussian Process"; }
-    
-};
+}
 
-#endif /* defined(GUIDE_GAUSSIAN_PROCESS) */
+UDPGuidingInteraction::~UDPGuidingInteraction()
+{
+    
+}
+
+
+bool UDPGuidingInteraction::sendToUDPPort(const void *buf, wxUint32 len)
+{
+    wxIPV4address server;
+    wxIPV4address client;
+    client.Hostname(_T("localhost"));               // configures client to local host...
+    client.Service(0);
+    
+    if (!server.Hostname(host))           // validates destination host using DNS
+        return false;
+    
+    if (!server.Service(sendPort))        // ensure port is valid
+        return false;
+    
+    wxDatagramSocket udpSocket(client,wxSOCKET_BLOCK); // define the local port
+    udpSocket.SendTo(server, buf, len);
+    return !udpSocket.Error();
+    
+    udpSocket.SendTo(server, buf, len);
+    return !udpSocket.Error();
+}
+
+bool UDPGuidingInteraction::receiveFromUDPPort(void * buf, wxUint32 len)
+{
+    wxIPV4address client;
+    client.AnyAddress();               // configures client to local host...
+    client.Service(rcvPort);
+    
+    wxDatagramSocket  udpSocket(client,wxSOCKET_BLOCK); // define the local port
+
+    udpSocket.RecvFrom(client, buf, len);
+    return !udpSocket.Error();
+}

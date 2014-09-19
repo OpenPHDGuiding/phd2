@@ -1,5 +1,5 @@
 //
-//  guide_gaussian_process.h
+//  matlab_interaction.h
 //  PHD
 //
 //  Created by Stephan Wenninger
@@ -32,42 +32,26 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GUIDE_GAUSSIAN_PROCESS
-#define GUIDE_GAUSSIAN_PROCESS
+#ifndef UDP_GUIDING_INTERACTION
+#define UDP_GUIDING_INTERACTION
 
-#include "UDPGuidingInteraction.h"
+#include "wx/defs.h"
+class wxString;
 
 
-class GuideGaussianProcess : public GuideAlgorithm
-{
+class UDPGuidingInteraction {
 private:
-    UDPGuidingInteraction udpInteraction;
-
-protected:
-    class GuideGaussianProcessDialogPane : public ConfigDialogPane
-    {
-        GuideGaussianProcess *m_pGuideAlgorithm;
-    public:
-        GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm);
-        virtual ~GuideGaussianProcessDialogPane(void);
-        
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-    };
     
-    
+    wxString host;
+    wxString sendPort;
+    wxString rcvPort;
     
 public:
-    GuideGaussianProcess(Mount *pMount, GuideAxis axis);
-    virtual ~GuideGaussianProcess(void);
-    virtual GUIDE_ALGORITHM Algorithm(void);
+    UDPGuidingInteraction(wxString host, wxString sendPort, wxString rcvPort);
+    ~UDPGuidingInteraction();
     
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual double result(double input);
-    virtual void reset();
-    virtual wxString GetSettingsSummary() { return "\n"; }
-    virtual wxString GetGuideAlgorithmClassName(void) const { return "Gaussian Process"; }
-    
+    bool sendToUDPPort(const void * buf, wxUint32 len);
+	bool receiveFromUDPPort(void * buf, wxUint32 len);
 };
 
-#endif /* defined(GUIDE_GAUSSIAN_PROCESS) */
+#endif /* defined(UDP_GUIDING_INTERACTION) */
