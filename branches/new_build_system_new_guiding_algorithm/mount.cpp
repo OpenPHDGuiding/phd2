@@ -595,6 +595,9 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
 
             if (m_pXGuideAlgorithm)
             {
+                
+                // Put Matlab Interaction into a Subclass of GuideAlgorithm
+                
                 xDistance = m_pXGuideAlgorithm->result(xDistance);
             }
 
