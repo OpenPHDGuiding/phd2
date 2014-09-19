@@ -7,6 +7,7 @@
 //
 
 #include "guide_gaussian_process.h"
+#include "matlab_interaction.h"
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis)
@@ -25,10 +26,12 @@ GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
 
 double GuideGaussianProcess::result(double input)
 {
-    double result = 0.0;
+    double buf[] = {input};
     
-    
-    return result;
+    MatlabInteraction::sendToUDPPort(_T("localhost"),_T("1308"),buf, sizeof(buf));
+    MatlabInteraction::receiveFromUDPPort(_T("1309"),buf); // this command blocks until matlab sends back something
+
+    return buf[0];
 }
 
 
