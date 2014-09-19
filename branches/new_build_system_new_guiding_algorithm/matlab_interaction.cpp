@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 open-phd-guiding. All rights reserved.
 //
 
+#include "phd.h"
 #include "matlab_interaction.h"
 
 #include "wx/string.h"
