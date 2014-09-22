@@ -646,6 +646,7 @@ void DriftToolWin::UpdateScopeCoordinates(void)
 {
     if (!pMount)
         return;
+
     double ra_hrs, dec_deg, st_hrs;
     if (pPointingSource->GetCoordinates(&ra_hrs, &dec_deg, &st_hrs))
         return; // error
@@ -679,8 +680,34 @@ void DriftToolWin::UpdateScopeCoordinates(void)
         }
         else
         {
-            // altitude correction - scale by cos(angle from meridian)
-            correction = cos(ra_ofs_deg * M_PI / 180.);
+            // altitude correction:
+            //     convert scope coordinates (RA = a, Dec = d) to cartesian coords:
+            //     x = cos a cos d
+            //     y = sin a cos d
+            //     z = sin d
+            // altitude adjustment is rotation about x-axis, so correction factor is radius of
+            // circle of projection of scope vector onto the plane of the meridian (y-z plane)
+            //     r^2 = y^2 + z^2
+            // substitute y and z above and use a = 90 - h   (h = hour angle)
+            //
+            //  -ag
+            //
+            double ha_r = ra_ofs_deg * M_PI / 180.;
+            double cos_dec = cos(dec_deg * M_PI / 180.);
+            double cos_ha = cos(ha_r);
+            correction = sqrt(1. + cos_dec * cos_dec * (cos_ha * cos_ha - 1.));
+
+            // drift rate for the altitude measurement is assumed to be measured at the horizon,
+            // but rate decreases as we move away from the horizon - Measuring Polar Axis Alignment
+            // Error, Frank Barrett 2nd Edition 2 / 19 / 2010, Equation (2)
+            if (fabs(ra_ofs_deg) > 15.)
+            {
+                correction /= fabs(sin(ha_r));
+            }
+            else
+            {
+                correction = 1.0;
+            }
         }
 
         pFrame->pGuider->SetPolarAlignCircleCorrection(correction);
