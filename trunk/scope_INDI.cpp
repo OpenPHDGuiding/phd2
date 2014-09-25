@@ -161,7 +161,8 @@ void ScopeINDI::NewProp(struct indi_prop_t *iprop) {
 Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration_msec) {
 //printf("entering ScopeINDI::Guide\n");
 
-    double duration = duration_msec / 1000.0;
+    // despite what is sayed in INDI standard properties description, every telescope driver expect the guided time in msec.  
+    double duration = duration_msec; 
     switch (direction) {
         case EAST:
             indi_send(pulseGuideEW,
