@@ -1082,8 +1082,11 @@ static void guide(JObj& response, const json_value *params)
         recalibrate = p1->int_value ? true : false;
     }
 
-    PhdController::Guide(recalibrate, settle);
-    response << jrpc_result(0);
+    wxString err;
+    if (PhdController::Guide(recalibrate, settle, &err))
+        response << jrpc_result(0);
+    else
+        response << jrpc_error(1, err);
 }
 
 static void dither(JObj& response, const json_value *params)
@@ -1130,10 +1133,11 @@ static void dither(JObj& response, const json_value *params)
         return;
     }
 
-    if (PhdController::Dither(fabs(ditherAmt), raOnly, settle))
+    wxString error;
+    if (PhdController::Dither(fabs(ditherAmt), raOnly, settle, &error))
         response << jrpc_result(0);
     else
-        response << jrpc_error(1, "dither failed");
+        response << jrpc_error(1, error);
 }
 
 static void dump_request(const wxSocketClient *cli, const json_value *req)
