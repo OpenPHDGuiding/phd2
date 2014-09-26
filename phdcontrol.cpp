@@ -49,6 +49,12 @@ enum State
     STATE_FINISH,
 };
 
+enum SettleOp
+{
+    OP_DITHER,
+    OP_GUIDE,
+};
+
 struct ControllerState
 {
     State state;
@@ -57,6 +63,7 @@ struct ControllerState
     bool saveSticky;
     int autoFindAttemptsRemaining;
     int waitSelectedRemaining;
+    SettleOp settleOp;
     SettleParams settle;
     bool settlePriorFrameInRange;
     wxStopWatch *settleTimeout;
@@ -86,13 +93,27 @@ void PhdController::OnAppExit()
     ctrl.state = newstate; \
 } while (false)
 
-void PhdController::Guide(bool recalibrate, const SettleParams& settle)
+static wxString ReentrancyError(const char *op)
 {
+    return wxString::Format("Cannot initiate %s while %s is in progress", op, ctrl.settleOp == OP_DITHER ? "dither" : "guide");
+}
+
+bool PhdController::Guide(bool recalibrate, const SettleParams& settle, wxString *error)
+{
+    if (ctrl.state != STATE_IDLE)
+    {
+        Debug.AddLine("PhdController::Guide reentrancy state = %d op = %d", ctrl.state, ctrl.settleOp);
+        *error = ReentrancyError("guide");
+        return false;
+    }
+
     Debug.AddLine("PhdController::Guide begins");
     ctrl.forceCalibration = recalibrate;
+    ctrl.settleOp = OP_GUIDE;
     ctrl.settle = settle;
     SETSTATE(STATE_SETUP);
     UpdateControllerState();
+    return true;
 }
 
 static void do_fail(const wxString& msg)
@@ -103,17 +124,26 @@ static void do_fail(const wxString& msg)
     SETSTATE(STATE_FINISH);
 }
 
-bool PhdController::Dither(double pixels, bool raOnly, const SettleParams& settle)
+bool PhdController::Dither(double pixels, bool raOnly, const SettleParams& settle, wxString *errMsg)
 {
+    if (ctrl.state != STATE_IDLE)
+    {
+        Debug.AddLine("PhdController::Dither reentrancy state = %d op = %d", ctrl.state, ctrl.settleOp);
+        *errMsg = ReentrancyError("dither");
+        return false;
+    }
+
     Debug.AddLine("PhdController::Dither begins");
 
     bool error = pFrame->Dither(pixels, raOnly);
     if (error)
     {
         Debug.AddLine("PhdController::Dither pFrame->Dither failed");
+        *errMsg = _T("Dither error");
         return false;
     }
 
+    ctrl.settleOp = OP_DITHER;
     ctrl.settle = settle;
     SETSTATE(STATE_SETTLE_BEGIN);
     UpdateControllerState();
