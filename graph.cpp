@@ -1424,7 +1424,8 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                     const S_HISTORY& h0 = m_history[start_item];
                     const S_HISTORY& h1 = m_history[m_history.size() - 1];
                     double dt = (double)(h1.timestamp - h0.timestamp) / (1000.0 * 60.0); // time span in minutes
-                    double ddec = (double) (plot_length - 1) * trendDecOrDy.first;
+                    double ddec = (double) (plot_length - 1) * trendDecOrDy.first;  // dec drift (pixels)
+                    ddec *= sampling;  // convert pixels to arc-seconds
                     // From Frank Barrett, "Determining Polar Axis Alignment Accuracy"
                     // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
                     double err_arcmin = (3.82 * ddec) / (dt * cos(declination));
