@@ -1147,13 +1147,14 @@ void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 
 void MyFrame::ScheduleExposure(int exposureDuration, const wxRect& subframe)
 {
-    assert(!m_exposurePending);
+    Debug.AddLine("ScheduleExposure(%d)", exposureDuration);
+
     assert(wxThread::IsMain()); // m_exposurePending only updated in main thread
+    assert(!m_exposurePending);
 
     m_exposurePending = true;
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
-    Debug.AddLine("ScheduleExposure(%d)", exposureDuration);
 
     assert(m_pPrimaryWorkerThread);
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
