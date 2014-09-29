@@ -491,6 +491,10 @@ repeat:
         {
             // stop guiding but continue looping
             pFrame->OnLoopExposure(dummy);
+
+            // Set the lock position to the where the star has drifted to. This will be the center of the polar align circle.
+            pFrame->pGuider->SetLockPosition(pFrame->pGuider->CurrentPosition());
+            pFrame->pGraphLog->Refresh();  // polar align circle is updated in graph window's OnPaint handler
         }
     }
     else // MODE_IDLE

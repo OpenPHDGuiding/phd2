@@ -1438,7 +1438,11 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
                 }
             }
         }
-        pFrame->pGuider->SetPolarAlignCircle(pFrame->pGuider->CurrentPosition(), polarAlignCircleRadius);
+        // when drifting, center the polar align circle on the star; when adjusting, center the polar
+        // align circle at the lock position
+        const PHD_Point& center = pFrame->pGuider->IsCalibratingOrGuiding() ?
+            pFrame->pGuider->CurrentPosition() : pFrame->pGuider->LockPosition();
+        pFrame->pGuider->SetPolarAlignCircle(center, polarAlignCircleRadius);
 
         m_pRaRMS->SetLabel(rms_label(m_stats.rms_ra, sampling));
         m_pDecRMS->SetLabel(rms_label(m_stats.rms_dec, sampling));
