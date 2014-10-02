@@ -706,7 +706,7 @@ void MyFrame::LoadProfileSettings(void)
 
     SetAutoLoadCalibration(pConfig->Profile.GetBoolean("/AutoLoadCalibration", false));
 
-    int focalLength = pConfig->Profile.GetInt("/frame/focalLength", DefaultTimelapse);
+    int focalLength = pConfig->Profile.GetInt("/frame/focalLength", DefaultFocalLength);
     SetFocalLength(focalLength);
 
     int minExp = pConfig->Profile.GetInt("/auto_exp/exposure_min", DefaultAutoExpMin);

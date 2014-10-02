@@ -98,10 +98,10 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Input Parameters"));
 
     // Note that "min" values in fp validators don't work right - so leave them out
-    // Focal length - int <= 4000
+    // Focal length - any positive int, same as global tab
     int width = StringWidth(this, "00000") + 10;
     wxIntegerValidator <int> valFocalLength (&m_iFocalLength, 0);
-    valFocalLength.SetRange (0, 3500);
+    valFocalLength.SetRange(0, wxINT32_MAX);
     m_pFocalLength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valFocalLength);
     m_pFocalLength->Enable(!pFrame->CaptureActive);
     m_pFocalLength->Bind(wxEVT_TEXT, &CalstepDialog::OnText, this);
@@ -218,9 +218,9 @@ void CalstepDialog::DoRecalc(void)
         m_iNumSteps = m_pNumSteps->GetValue();
         m_dDeclination = abs(m_pDeclination->GetValue());
 
-        if (m_iFocalLength < 50 || m_iFocalLength > 4000)
+        if (m_iFocalLength < 50)
         {
-            m_status->SetLabel(_("Please enter a focal length between 50 and 4000."));
+            m_status->SetLabel(_("Please enter a focal length of at least 50"));
         }
         else if (m_fPixelSize <= 0.0)
         {
