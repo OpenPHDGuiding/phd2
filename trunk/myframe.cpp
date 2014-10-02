@@ -1861,11 +1861,11 @@ bool MyFrame::SetFocalLength(int focalLength)
 wxString MyFrame::GetDefaultFileDir()
 {
     wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-    wxString rslt = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD2";
+    wxString rslt = stdpath.GetUserLocalDataDir();          // Automatically includes app name
 
     if (!wxDirExists(rslt))
         if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
-            rslt = stdpath.GetDocumentsDir();             // should never happen
+            rslt = stdpath.GetUserLocalDataDir();             // should never happen
 
     return rslt;
 }
