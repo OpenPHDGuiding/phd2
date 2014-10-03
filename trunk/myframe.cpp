@@ -1147,7 +1147,7 @@ void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 
 void MyFrame::ScheduleExposure(int exposureDuration, const wxRect& subframe)
 {
-    Debug.AddLine("ScheduleExposure(%d)", exposureDuration);
+    Debug.AddLine("ScheduleExposure(%d) exposurePending=%d", exposureDuration, m_exposurePending);
 
     assert(wxThread::IsMain()); // m_exposurePending only updated in main thread
     assert(!m_exposurePending);
@@ -1209,7 +1209,7 @@ void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direc
 
 void MyFrame::StartCapturing()
 {
-    Debug.AddLine("StartCapture() CaptureActive=%d m_continueCapturing=%d", CaptureActive, m_continueCapturing);
+    Debug.AddLine("StartCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d", CaptureActive, m_continueCapturing, m_exposurePending);
 
     if (!CaptureActive)
     {
@@ -1228,7 +1228,8 @@ void MyFrame::StartCapturing()
 
 void MyFrame::StopCapturing(void)
 {
-    Debug.AddLine("StopCapture CaptureActive=%d m_continueCapturing=%d exposurePending=%d", CaptureActive, m_continueCapturing, m_exposurePending);
+    Debug.AddLine("StopCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d", CaptureActive, m_continueCapturing, m_exposurePending);
+
     if (m_continueCapturing)
     {
         SetStatusText(_("Waiting for devices before stopping..."), 1);
@@ -1249,14 +1250,18 @@ void MyFrame::StopCapturing(void)
 
 void MyFrame::SetPaused(PauseType pause)
 {
-    if (pause != PAUSE_NONE && !pGuider->IsPaused())
+    bool const isPaused = pGuider->IsPaused();
+
+    Debug.AddLine("SetPaused type=%d isPaused=%d exposurePending=%d", pause, isPaused, m_exposurePending);
+
+    if (pause != PAUSE_NONE && !isPaused)
     {
         pGuider->SetPaused(pause);
         SetStatusText(_("Paused"));
         GuideLog.ServerCommand(pGuider, "PAUSE");
         EvtServer.NotifyPaused();
     }
-    else if (pause == PAUSE_NONE && pGuider->IsPaused())
+    else if (pause == PAUSE_NONE && isPaused)
     {
         pGuider->SetPaused(PAUSE_NONE);
         if (!m_exposurePending)
