@@ -493,6 +493,8 @@ enum {
         GRAPH_RADX_COLOR,
         GRAPH_DECDY_COLOR,
     BUTTON_GRAPH_CLEAR,
+    TARGET_ENABLE_REF_CIRCLE,
+    TARGET_REF_CIRCLE_RADIUS,
     MENU_LENGTH_BEGIN, // a range of ids for history size selection popup menus
     MENU_LENGTH_END = MENU_LENGTH_BEGIN + 10,
     MENU_HEIGHT_BEGIN, // a range of ids for height size selection popup menus
