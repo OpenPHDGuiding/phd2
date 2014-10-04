@@ -426,9 +426,12 @@ void MyFrame::SetupMenuBar(void)
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
     tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
-    tools_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data..."), _("Restore calibration data from last successful calibration"));
-    tools_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data..."), _("Manually calibrate"));
-    tools_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
+    wxMenu *calib_menu = new wxMenu;
+    calib_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data..."), _("Restore calibration data from last successful calibration"));
+    calib_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data..."), _("Manually calibrate"));
+    calib_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
+    calib_menu->Append(EEGG_CLEARCAL, _("Clear Calibration Data..."), _("Clear calibration data currently in use"));
+    m_calibrationMenuItem = tools_menu->AppendSubMenu(calib_menu, _("Calibration"));
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_DRIFTTOOL,_("Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
@@ -897,6 +900,13 @@ void MyFrame::UpdateButtonsStatus(void)
     if (dark_enabled ^ m_takeDarksMenuItem->IsEnabled())
     {
         m_takeDarksMenuItem->Enable(dark_enabled);
+        need_update = true;
+    }
+
+    bool guiding_active = pGuider && pGuider->IsCalibratingOrGuiding();         // Not the same as 'bGuideable below
+    if (!guiding_active ^ m_calibrationMenuItem->IsEnabled())
+    {
+        m_calibrationMenuItem->Enable(!guiding_active);
         need_update = true;
     }
 

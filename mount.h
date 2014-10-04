@@ -98,7 +98,7 @@ protected:
     class MountConfigDialogPane : public wxEvtHandler, public ConfigDialogPane
     {
         Mount *m_pMount;
-        wxCheckBox *m_pRecalibrate;
+        wxCheckBox *m_pClearCalibration;
         wxCheckBox *m_pEnableGuide;
         wxChoice   *m_pXGuideAlgorithmChoice;
         wxChoice   *m_pYGuideAlgorithmChoice;
