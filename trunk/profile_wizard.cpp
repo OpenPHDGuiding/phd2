@@ -86,14 +86,14 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_bitmaps[STATE_AUXMOUNT] = new wxBitmap(scope_icon);
 #   include "icons/ao.xpm"
     m_bitmaps[STATE_AO] = new wxBitmap(ao_xpm);
-#ifndef  __WXGTK__  // this resizing make a later crash in UpdateState with wxGtk  
+#ifndef  __WXGTK__  // this resizing make a later crash in UpdateState with wxGtk
     m_bitmaps[STATE_CAMERA]->SetWidth(55);
     m_bitmaps[STATE_CAMERA]->SetHeight(55);
     m_bitmaps[STATE_MOUNT]->SetWidth(55);
     m_bitmaps[STATE_MOUNT]->SetHeight(55);
     m_bitmaps[STATE_AUXMOUNT]->SetWidth(55);
     m_bitmaps[STATE_AUXMOUNT]->SetHeight(55);
-#endif // __WXGTK__    
+#endif // __WXGTK__
 
     // Build the superset of UI controls, minus state-specific labels and data
     // User instructions at top

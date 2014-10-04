@@ -76,7 +76,7 @@ public:
     bool GetResults(int *focalLength, double *pixelSize, int *stepSize);
 
     static void GetCalibrationStepSize(int focalLength, double pixelSize, double guideSpeed, int desiredSteps,
-				       double declination, double *imageScale, int *stepSize);
+                       double declination, double *imageScale, int *stepSize);
 
 private:
     void OnText(wxCommandEvent& evt);

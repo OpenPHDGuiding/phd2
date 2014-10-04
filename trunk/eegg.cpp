@@ -93,14 +93,31 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
     }
     else if (evt.GetId() == EEGG_CLEARCAL)
     {
-        if (pMount)
-        {
-            pMount->ClearCalibration();
-        }
-        if (pSecondaryMount)
-        {
-            pSecondaryMount->ClearCalibration();
-        }
+        wxString devicestr = "";
+        if (!(pGuider && pGuider->IsCalibratingOrGuiding()))
+            if (pMount)
+            {
+                if (pMount->IsStepGuider())
+                    devicestr = _("AO");
+                else
+                    devicestr = _("Mount");
+            }
+            if (pSecondaryMount)
+            {
+                devicestr += _(", Mount");
+            }
+            if (devicestr.Length() > 0)
+            {
+                if (wxMessageBox(wxString::Format(_("%s calibration will be cleared - calibration will be re-done when guiding is started."), devicestr),
+                    _("Clear Calibration"), wxOK | wxCANCEL) == wxOK)
+                {
+                    if (pMount)
+                        pMount->ClearCalibration();
+                    if (pSecondaryMount)
+                        pSecondaryMount->ClearCalibration();
+                    Debug.AddLine("User cleared calibration on " + devicestr);
+                }
+            }
     }
     else if (evt.GetId() == EEGG_FLIPRACAL)
     {

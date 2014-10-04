@@ -85,14 +85,13 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
 
     wxBoxSizer *chkSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_("Force calibration"));
-    m_pRecalibrate->SetToolTip(_("Check to clear any previous calibration and force PHD to recalibrate"));
-
-    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_("Enable Guide Output"));
+    m_pClearCalibration = new wxCheckBox(pParent, wxID_ANY, _("Clear calibration"));
+    m_pClearCalibration->SetToolTip(("Clear the current calibration data - calibration will be re-done when guiding is started"));
+    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY, _("Enable Guide Output"), wxDefaultPosition, wxSize(150, -1), 0);
     m_pEnableGuide->SetToolTip(_("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
 
-    chkSizer->Add(m_pRecalibrate);
     chkSizer->Add(m_pEnableGuide);
+    chkSizer->Add(m_pClearCalibration);
     DoAdd(chkSizer);
 
     wxString xAlgorithms[] = {
@@ -175,9 +174,8 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 
 void Mount::MountConfigDialogPane::LoadValues(void)
 {
-    m_pRecalibrate->SetValue(!m_pMount->IsCalibrated());
-    m_pRecalibrate->Enable(!pFrame->CaptureActive);
-
+    m_pClearCalibration->Enable(m_pMount->IsCalibrated());
+    m_pClearCalibration->SetValue(false);
     m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithm();
     m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
     m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
@@ -199,9 +197,10 @@ void Mount::MountConfigDialogPane::LoadValues(void)
 
 void Mount::MountConfigDialogPane::UnloadValues(void)
 {
-    if (m_pRecalibrate->GetValue())
+    if (m_pClearCalibration->IsChecked())
     {
         m_pMount->ClearCalibration();
+        Debug.AddLine(wxString::Format("User cleared %s calibration", m_pMount->IsStepGuider() ? "AO" : "Mount"));
     }
 
     m_pMount->SetGuidingEnabled(m_pEnableGuide->GetValue());

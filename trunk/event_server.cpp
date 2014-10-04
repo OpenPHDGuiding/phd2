@@ -1625,7 +1625,7 @@ void EventServer::NotifyAlert(const wxString& msg, int type)
 
     Ev ev("Alert");
     ev << NV("Msg", msg);
-    
+
     wxString s;
     switch (type)
     {
