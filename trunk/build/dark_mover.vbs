@@ -8,8 +8,10 @@ Dim oFolder
 Dim oMyDocsFolderItem
 Dim oAppDataFolderItem
 Dim startLoc
+Dim retCode
 Dim endLoc
 
+On Error Resume Next
 set oShell = CreateObject("Shell.Application")
 set oFolder = oShell.Namespace(MY_DOCUMENTS)
 set oMyDocsFolderItem = oFolder.Self
@@ -23,16 +25,37 @@ set oFSO = CreateObject("scripting.FileSystemObject")
 if (oFSO.FolderExists(startLoc)) then
 	' Need to build top-level destination folder structure ourselves
 	if (not oFSO.FolderExists(endLoc)) then
-		' msgbox("Creating AppData\Local\PHD2 directory")
+	    ' msgbox("Creating AppData\Local\PHD2 directory")
 	    set oFolder = oFSO.CreateFolder(endLoc)
 	end if
-	if (not oFSO.FolderExists(endLoc & "\darks_defects")) then
-		oFSO.MoveFolder startLoc, endLoc & "\"
-		' msgbox("Dark calibration files moved to new location...")
-	' else
-		' msgbox("Files already in new location...")
+        endLoc = endLoc & "\darks_defects"
+        if (not oFSO.FolderExists(endLoc)) then
+            ' msgbox("Creating dark_defects folder")
+            set oFolder = oFSO.CreateFolder(endLoc)
+        end if
+	if (Err.Number = 0) then
+	    ' msgbox("Doing CopyFolder: " & startLoc & "->" & endLoc)
+	    oFSO.CopyFolder startLoc, endLoc
+            if (Err.Number = 0) then
+	        ' msgbox("Dark calibration files copied to new location, now deleting source directory...")
+                oFSO.DeleteFolder(startLoc)
+                if (Err.Number = 0) then 
+                    ' msgbox("Deleted old directory...")
+                    retCode = 0
+                else
+                    ' msgbox("Delete old directory failed: " + Err.Description)
+                         retCode = 1
+                end if
+            else
+                ' msgbox("Copy got hosed: " + Err.Description)
+                    retCode = 2
+            end if
+	else
+	    ' msgbox("Could not create folder hierarchy: " + Err.Description)
+            retCode =3
 	end if
-' else
+else
 	' msgbox("No files present...")
+        retCode = 4
 end if
-
+WScript.Quit retCode
