@@ -53,9 +53,13 @@ successfully. &nbsp;The use of the calibration data has been described
 elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
 including &nbsp;options for restoring calibration data from an earlier
 time or "flipping" it after a meridian flip. &nbsp;You access these
-functions using&nbsp;the 'Tools' menu. &nbsp;One other
-calibration-related item is also shown there, namely the option to
-enter calibration data manually. &nbsp;You should use this only under
+functions using&nbsp;the 'Tools' menu. &nbsp;Two other
+calibration-related items are also shown there, namely the options to
+clear the current data or to enter calibration data manually. &nbsp;The
+"clear" option accomplishes the same thing as the 'Clear calibration'
+checkbox in the Advanced Dialog - it will force a recalibration
+whenever guiding is resumed. &nbsp;The 'Enter calibration data'
+option&nbsp;should be used&nbsp;only under
 very unusual circumstances and only if you're sure you know what you're
 doing; but it is available as a matter of completeness. &nbsp;If you
 click on the 'Enter calibration data' item, you'll see a dialog box
@@ -70,8 +74,7 @@ exposures while the primary imaging camera is downloading data.
 should click on&nbsp; the '<a name="Enable_Server"></a>Enable Server' option under the 'Tools'
 menu. &nbsp;The server interface has been reworked substantially in
 <span style="font-style: italic;">PHD2</span>, and it's now possible
-for an application to control most aspects of <span style="font-style:
-italic;">PHD2</span>'s guiding operations. &nbsp;Documentation for the
+for an application to control most aspects of <span style="font-style: italic;">PHD2</span>'s guiding operations. &nbsp;Documentation for the
 server API is available on
 the <a href="https://code.google.com/p/open-phd-guiding/w/list">PHD2
 Wiki</a>.<br><br><h3><a name="Drift_Align"></a>Drift Align</h3>Drift
@@ -99,10 +102,13 @@ magenta circle around the guide star. The circle indicates an upper
 limit on how far the guide star needs to move when azimuth is
 adjusted. (Initially, the circle may be too large to be visible on the
 screen, so you may not see it until your alignment gets closer.)<br>
-<br>
-Now click on the 'Adjust' button to halt guiding, then make a&nbsp;
-mechanical adjustment in azimuth. Watch the guide star as you make the adjustment, moving the guide star towards the magenta circle, but not beyond it.&nbsp;Once done, click on the 'drift'
-button again to repeat the measurement. If your adjustment was in the right direction and did not over-shoot, the Declination trendline will be closer to horizontal. &nbsp;Continue iterating in
+<br>Now click on the 'Adjust' button to halt guiding, then make a&nbsp;
+mechanical adjustment in azimuth. Watch the guide star as you make the
+adjustment, moving the guide star towards the magenta circle, but not
+beyond it.&nbsp;Once done, click on the 'drift'
+button again to repeat the measurement. If your adjustment was in the
+right direction and did not over-shoot, the Declination trendline will
+be closer to horizontal. &nbsp;Continue iterating in
 this way until you are satisfied with your azimuth accuracy. &nbsp;You
 can use the 'notes' field to record which way the drift line moves
 depending on how you make the adjustment. &nbsp;For example, you might
