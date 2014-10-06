@@ -163,11 +163,11 @@ bool usImage::CopyToImage(wxImage **rawimg, int blevel, int wlevel, double power
 
     if (power == 1.0 || blevel >= wlevel)
     {
-        float range = wlevel;  // Go 0-max
+        float range = (float) wxMax(1, wlevel);  // Go 0-max
         for (int i = 0; i < NPixels; i++, RawPtr++)
         {
             float d;
-            if (*RawPtr >= wlevel)
+            if (*RawPtr >= range)
                 d = 255.0;
             else
                 d = ((float) (*RawPtr) / range) * 255.0;
@@ -330,12 +330,8 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
 
         if (!status) fits_write_pix(fptr, TUSHORT, fpixel, NPixels, ImageData, &status);
         fits_close_file(fptr, &status);
-        bError = status ? true : false;
 
-        if (bError)
-            pFrame->SetStatusText(wxString::Format(_("%s Not saved"), fname));
-        else
-            pFrame->SetStatusText(wxString::Format(_("%s saved"), fname));
+        bError = status ? true : false;
     }
     catch (wxString Msg)
     {
