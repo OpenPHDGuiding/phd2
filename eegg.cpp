@@ -38,7 +38,7 @@
 #include "calrestore_dialog.h"
 #include "nudge_lock.h"
 
-void MyFrame::OnEEGG(wxCommandEvent &evt)
+void MyFrame::OnEEGG(wxCommandEvent& evt)
 {
     if (evt.GetId() == EEGG_RESTORECAL)
     {

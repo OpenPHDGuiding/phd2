@@ -223,12 +223,10 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
         GUIDER_STATE state = GetState();
         GetSize(&XWinSize, &YWinSize);
 
-        if (m_pCurrentImage->ImageData != NULL)
+        if (m_pCurrentImage->ImageData)
         {
-            int blevel, wlevel;
-
-            blevel = m_pCurrentImage->FiltMin;
-            wlevel = m_pCurrentImage->FiltMax;
+            int blevel = m_pCurrentImage->FiltMin;
+            int wlevel = m_pCurrentImage->FiltMax;
             m_pCurrentImage->CopyToImage(&m_displayedImage, blevel, wlevel, pFrame->Stretch_gamma);
         }
 

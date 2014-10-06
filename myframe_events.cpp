@@ -140,7 +140,11 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
 
     if (pGuider->SaveCurrentImage(fname))
     {
-        Alert(_("The image could not be saved to ") + fname);
+        Alert(wxString::Format(_("The image could not be saved to %s"), fname));
+    }
+    else
+    {
+        pFrame->SetStatusText(wxString::Format(_("%s saved"), wxFileName(fname).GetFullName()));
     }
 }
 
