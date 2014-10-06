@@ -1010,6 +1010,34 @@ static void set_lock_shift_params(JObj& response, const json_value *params)
     response << jrpc_result(0);
 }
 
+static void save_image(JObj& response, const json_value *params)
+{
+    if (!pFrame || ! pFrame->pGuider)
+    {
+        response << jrpc_error(1, "internal error");
+        return;
+    }
+
+    if (!pFrame->pGuider->CurrentImage()->ImageData)
+    {
+        response << jrpc_error(2, "no image available");
+        return;
+    }
+
+    wxString fname = wxFileName::CreateTempFileName(MyFrame::GetDefaultFileDir() + PATHSEPSTR + "save_image_");
+
+    if (pFrame->pGuider->SaveCurrentImage(fname))
+    {
+        ::wxRemove(fname);
+        response << jrpc_error(3, "error saving image");
+        return;
+    }
+
+    JObj rslt;
+    rslt << NV("filename", fname);
+    response << jrpc_result(rslt);
+}
+
 static bool parse_settle(SettleParams *settle, const json_value *j, wxString *error)
 {
     bool found_pixels = false, found_time = false, found_timeout = false;
@@ -1196,6 +1224,7 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "set_lock_shift_enabled", &set_lock_shift_enabled, },
         { "get_lock_shift_params", &get_lock_shift_params, },
         { "set_lock_shift_params", &set_lock_shift_params, },
+        { "save_image", &save_image, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
