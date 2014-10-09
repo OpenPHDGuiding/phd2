@@ -1230,9 +1230,15 @@ void MyFrame::StartCapturing()
 
         UpdateButtonsStatus();
 
-        pCamera->InitCapture();
+        // m_exposurePending should always be false here since CaptureActive is cleared on exposure
+        // completion, but be paranoid and check it anyway
 
-        ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
+        if (!m_exposurePending)
+        {
+            pCamera->InitCapture();
+
+            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
+        }
     }
 }
 
@@ -1274,7 +1280,7 @@ void MyFrame::SetPaused(PauseType pause)
     else if (pause == PAUSE_NONE && isPaused)
     {
         pGuider->SetPaused(PAUSE_NONE);
-        if (!m_exposurePending)
+        if (m_continueCapturing && !m_exposurePending)
             ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
         SetStatusText(_("Resumed"));
         GuideLog.ServerCommand(pGuider, "RESUME");
