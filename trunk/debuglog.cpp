@@ -1,5 +1,5 @@
 /*
- *  phdlog.cpp
+ *  debuglog.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -34,6 +34,8 @@
  */
 
 #include "phd.h"
+
+#define ALWAYS_FLUSH_DEBUGLOG
 
 void DebugLog::InitVars(void)
 {

@@ -56,12 +56,26 @@ class MyFrame;
  *
  */
 
-class WorkerThread: public wxThread
+class WorkerThread : public wxThread
 {
     MyFrame *m_pFrame;
+
 public:
+
+    enum InterruptBits {
+        _BITNR_STOP,
+        _BITNR_TERMINATE,
+
+        INT_STOP = (1 << _BITNR_STOP),
+        INT_TERMINATE = (1 << _BITNR_TERMINATE),
+
+        INT_ANY = (INT_STOP | INT_TERMINATE),
+    };
+
     WorkerThread(MyFrame *pFrame);
     ~WorkerThread(void);
+
+    static WorkerThread *This(void);
 
 private:
     wxThread::ExitCode Entry();
@@ -87,7 +101,13 @@ private:
 
     /*************      Terminate      **************************/
 public:
+    void RequestStop(void);
     void EnqueueWorkerThreadTerminateRequest(void);
+    static unsigned int InterruptRequested(void);
+    static unsigned int StopRequested(void);
+    static unsigned int TerminateRequested(void);
+    static unsigned int MilliSleep(int ms, unsigned int checkInterrupts = INT_TERMINATE);
+
 protected:
     // there is no struct ARGS_TERMINATE
     // there is no HandleTerminate(ARGS_TERMINATE *pArgs) routine
@@ -144,9 +164,48 @@ protected:
 
     void EnqueueMessage(const WORKER_THREAD_REQUEST& message);
 
+    volatile unsigned int m_interruptRequested;
     wxMessageQueue<bool> m_wakeupQueue;
     wxMessageQueue<WORKER_THREAD_REQUEST> m_highPriorityQueue;
     wxMessageQueue<WORKER_THREAD_REQUEST> m_lowPriorityQueue;
 };
+
+inline void WorkerThread::RequestStop(void)
+{
+    m_interruptRequested |= INT_STOP;
+}
+
+inline WorkerThread *WorkerThread::This(void)
+{
+    return static_cast<WorkerThread *>(wxThread::This());
+}
+
+inline unsigned int WorkerThread::InterruptRequested(void)
+{
+    WorkerThread *thr = WorkerThread::This();
+    return thr ? thr->m_interruptRequested : 0;
+}
+
+inline unsigned int WorkerThread::StopRequested(void)
+{
+    return InterruptRequested() & INT_STOP;
+}
+
+inline unsigned int WorkerThread::TerminateRequested(void)
+{
+    return InterruptRequested() & INT_TERMINATE;
+}
+
+class Watchdog : public wxStopWatch
+{
+    long m_timeout_ms;
+public:
+    Watchdog(unsigned int timeout_ms, unsigned int grace_period_ms = 5000) : m_timeout_ms(timeout_ms + grace_period_ms)
+        { }
+    bool Expired(void) const { return Time() > m_timeout_ms; }
+};
+
+typedef Watchdog CameraWatchdog;
+typedef Watchdog MountWatchdog;
 
 #endif /* WORKER_THREAD_H_INCLUDED */

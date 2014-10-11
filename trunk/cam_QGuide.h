@@ -36,7 +36,7 @@
 #include "cmosDLL.h"
 class Camera_QGuiderClass : public GuideCamera {
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
     bool    Connect();
     bool    Disconnect();
     void    InitCapture();
@@ -46,6 +46,8 @@ public:
     void    ClearGuidePort();
     //bool  SetColorGain(unsigned char r_gain, unsigned char g_gain, unsigned char b_gain);
     //int   FindCameras(int DevNums[8]);
+    bool    HasNonGuiCapture(void) { return true; }
+    bool    ST4HasNonGuiMove(void) { return true; }
 
     Camera_QGuiderClass();
 private:

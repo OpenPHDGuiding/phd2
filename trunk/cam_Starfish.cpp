@@ -125,15 +125,17 @@ void Camera_StarfishClass::InitCapture() {
     fcUsb_cmd_setRegister(CamNum,0x35,Gain);
 
 }
-bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-    bool still_going=true;
-    bool debug = true;
-    IOReturn rval;
 
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
-    int xpos = 0;
-    int ypos = 0;
+static bool StopExposure(int camNum)
+{
+    Debug.AddLine("Starfish: StopExposure");
+    int ret = fcUsb_cmd_abortExposure(camNum);
+    return ret == kIOReturnSuccess;
+}
+
+bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
+    bool debug = true;
 
     // init memory
     if (img.Init(FullSize)) {
@@ -142,55 +144,60 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
         return true;
     }
 
+    int xsize = FullSize.GetWidth();
+    int ysize = FullSize.GetHeight();
+    int xpos = 0;
+    int ypos = 0;
+
     // set ROI
-    rval = fcUsb_cmd_setRoi(CamNum,(unsigned short) xpos, (unsigned short) ypos, (unsigned short) (xpos + xsize - 1), (unsigned short) (ypos + ysize - 1));
+    IOReturn rval = fcUsb_cmd_setRoi(CamNum, (unsigned short)xpos, (unsigned short)ypos, (unsigned short)(xpos + xsize - 1), (unsigned short)(ypos + ysize - 1));
     if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 1")); return true; }
     // set duratinon
     fcUsb_cmd_setIntegrationTime(CamNum, (unsigned int) duration);
 
     rval = fcUsb_cmd_startExposure(CamNum);
     if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 2")); return true; }
+
+    CameraWatchdog watchdog(duration);
+
     if (duration > 100) {
-        wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxGetApp().Yield();
-    }
-    int i=0;
-    while (still_going) {  // wait for image to finish and d/l
-        wxMilliSleep(50);
-        still_going = fcUsb_cmd_getState(CamNum) > 0;
-        wxGetApp().Yield();
-        i++;
-        if (i>50) {
-            still_going=false;
-//          if (debuglog) { debug << "Starfish timeout - " << fcUsb_cmd_getState(CamNum) << "\n"; debugstr.Sync(); }
-//          wxMessageBox (wxString::Format("timeout code %d",(int)  fcUsb_cmd_getState(CamNum)));
-            Debug.AddLine("Fishcamp timeout");
-            wxBell();
+        // wait until near end of exposure
+        if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY) &&
+            (WorkerThread::TerminateRequested() || StopExposure(CamNum)))
+        {
+            return true;
         }
     }
 
-    rval = fcUsb_cmd_getRawFrame(CamNum,(unsigned short) ysize,(unsigned short) xsize,img.ImageData);
-/*  if (rval != kIOReturnSuccess) {
+    // wait for image to finish and d/l
+    while (fcUsb_cmd_getState(CamNum) != 0)
+    {
+        wxMilliSleep(50);
+        if (WorkerThread::InterruptRequested() &&
+            (WorkerThread::TerminateRequested() || StopExposure(CamNum)))
+        {
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            pFrame->Alert(_("Camera timeout during capure"));
+            Disconnect();
+            return true;
+        }
+    }
+
+    rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short) ysize, (unsigned short) xsize, img.ImageData);
+
+    /*  if (rval != kIOReturnSuccess) {
         if (debug) pFrame->Alert(wxString::Format("Starfish Err 3 %d",rval));
         //return true;
     }*/
+
     if (recon) SubtractDark(img);
 
     return false;
 }
 
-/*bool Camera_StarfishClass::CaptureCrop(int duration, usImage& img) {
-    GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_StarfishClass::CaptureFull(int duration, usImage& img) {
-    GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
-    return false;
-}
-*/
 bool Camera_StarfishClass::ST4PulseGuideScope(int direction, int duration) {
 
     if (direction == WEST) direction = EAST;  // my ENUM and theirs are flipped
@@ -201,4 +208,5 @@ bool Camera_StarfishClass::ST4PulseGuideScope(int direction, int duration) {
 
     return false;
 }
+
 #endif

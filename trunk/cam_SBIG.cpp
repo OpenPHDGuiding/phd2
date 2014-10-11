@@ -42,6 +42,21 @@
 
 #include "Cam_SBIG.h"
 
+static unsigned long bcd2long(unsigned long bcd)
+{
+    int pos = sizeof(bcd) * 8;
+    int digit;
+    unsigned long val = 0;
+
+    do {
+        pos -= 4;
+        digit = (bcd >> pos) & 0xf;
+        val = val * 10 + digit;
+    } while (pos > 0);
+
+    return val;
+}
+
 Camera_SBIGClass::Camera_SBIGClass()
 {
     Connected = false;
@@ -54,7 +69,8 @@ Camera_SBIGClass::Camera_SBIGClass()
     HasSubframes = true;
 }
 
-bool Camera_SBIGClass::LoadDriver() {
+static bool LoadDriver()
+{
     short err;
 
 #if defined (__WINDOWS__)
@@ -73,7 +89,8 @@ bool Camera_SBIGClass::LoadDriver() {
     return false;
 }
 
-bool Camera_SBIGClass::Connect() {
+bool Camera_SBIGClass::Connect()
+{
     // DEAL WITH PIXEL ASPECT RATIO
     // DEAL WITH ASKING ABOUT WHICH INTERFACE
 // returns true on error
@@ -242,40 +259,27 @@ bool Camera_SBIGClass::Connect() {
     return false;
 }
 
-unsigned long Camera_SBIGClass::bcd2long(unsigned long bcd)
+bool Camera_SBIGClass::Disconnect()
 {
-    int pos = sizeof(bcd) * 8;
-    int digit;
-    unsigned long val = 0;
-
-    do {
-        pos -= 4;
-        digit = (bcd >> pos) & 0xf;
-        val = val * 10 + digit;
-    } while (pos > 0);
-
-    return val;
-}
-
-bool Camera_SBIGClass::Disconnect() {
     SBIGUnivDrvCommand(CC_CLOSE_DEVICE, NULL, NULL);
     SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
     Connected = false;
     return false;
 }
-void Camera_SBIGClass::InitCapture() {
+
+void Camera_SBIGClass::InitCapture()
+{
     // Set gain
 }
 
-bool Camera_SBIGClass::HasNonGuiCapture(void)
+static bool StopExposure(EndExposureParams *eep)
 {
-    return true;
+    short err = SBIGUnivDrvCommand(CC_END_EXPOSURE, eep, NULL);
+    return err == CE_NO_ERROR;
 }
 
-bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-    bool still_going=true;
-    short  err;
-    unsigned short *dataptr;
+bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
     bool TakeSubframe = UseSubframes;
 
     if (subframe.width <= 0 || subframe.height <= 0)
@@ -327,7 +331,6 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         sep.height=(unsigned short) FullSize.GetHeight();
     }
 
-
     // init memory
     if (img.Init(FullSize))
     {
@@ -336,22 +339,28 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         return true;
     }
 
-
     // Start exposure
 
-
-    err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
+    short err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
     if (err != CE_NO_ERROR) {
         pFrame->Alert(_("Cannot start exposure"));
         Disconnect();
         return true;
     }
+
+    CameraWatchdog watchdog(duration);
+
     if (duration > 100) {
-        wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxGetApp().Yield();
+        // wait until near end of exposure
+        if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY) &&
+            (WorkerThread::TerminateRequested() || StopExposure(&eep)))
+        {
+            return true;
+        }
     }
+
     qcsp.command = CC_START_EXPOSURE;
-    while (still_going) {  // wait for image to finish and d/l
+    while (true) {  // wait for image to finish and d/l
         wxMilliSleep(20);
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR) {
@@ -362,23 +371,36 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         if (UseTrackingCCD)
             qcsr.status = qcsr.status >> 2;
         if (qcsr.status == CS_INTEGRATION_COMPLETE)
-            still_going = false;
-        wxGetApp().Yield();
+            break;
+        if (WorkerThread::InterruptRequested())
+        {
+            StopExposure(&eep);
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            StopExposure(&eep);
+            pFrame->Alert(_("Camera timeout during capure"));
+            Disconnect();
+            return true;
+        }
     }
+
     // End exposure
-    err = SBIGUnivDrvCommand(CC_END_EXPOSURE, &eep, NULL);
-    if (err != CE_NO_ERROR) {
+    if (!StopExposure(&eep))
+    {
         pFrame->Alert(_("Cannot stop exposure"));
         Disconnect();
         return true;
     }
 
     // Get data
-    dataptr = img.ImageData;
-    int y;
+
     rlp.readoutMode = 0;
-    if (TakeSubframe) {
-        img.Subframe=subframe;
+
+    if (TakeSubframe)
+    {
+        img.Subframe = subframe;
 
         // dump the lines above the one we want
         dlp.lineLength = subframe.y;
@@ -389,12 +411,10 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         rlp.pixelStart  = subframe.x;
         rlp.pixelLength = subframe.width;
 
-        dataptr = img.ImageData;
-        for (y=0; y<img.NPixels; y++, dataptr++)
-            *dataptr = 0;
+        img.Clear();
 
-        for (y=0; y<subframe.height; y++) {
-            dataptr = img.ImageData + subframe.x + (y+subframe.y)*FullSize.GetWidth();
+        for (int y=0; y<subframe.height; y++) {
+            unsigned short *dataptr = img.ImageData + subframe.x + (y+subframe.y)*FullSize.GetWidth();
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             if (err != CE_NO_ERROR) {
                 pFrame->Alert(_("Error downloading data"));
@@ -403,10 +423,12 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             }
         }
     }
-    else {
+    else
+    {
         rlp.pixelStart  = 0;
         rlp.pixelLength = (unsigned short) FullSize.GetWidth();
-        for (y=0; y<FullSize.GetHeight(); y++) {
+        unsigned short *dataptr = img.ImageData;
+        for (int y = 0; y<FullSize.GetHeight(); y++) {
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             dataptr += FullSize.GetWidth();
             if (err != CE_NO_ERROR) {
@@ -417,41 +439,16 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         }
     }
 
-
     if (recon) SubtractDark(img);
 
-    //QuickLRecon(img);  // pass 2x2 mean filter over it to help remove noise
-
     return false;
 }
 
-/*bool Camera_SBIGClass::CaptureCrop(int duration, usImage& img) {
-    GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_SBIGClass::CaptureFull(int duration, usImage& img) {
-    GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
-    return false;
-}
-*/
-
-bool Camera_SBIGClass::ST4HasNonGuiMove(void)
+bool Camera_SBIGClass::ST4PulseGuideScope(int direction, int duration)
 {
-    return true;
-}
-
-bool Camera_SBIGClass::ST4PulseGuideScope(int direction, int duration) {
     ActivateRelayParams rp;
-    QueryCommandStatusParams qcsp;
-    QueryCommandStatusResults qcsr;
-    short err;
-    unsigned short dur = duration / 10;
-    bool still_going = true;
-
     rp.tXMinus = rp.tXPlus = rp.tYMinus = rp.tYPlus = 0;
+    unsigned short dur = duration / 10;
     switch (direction) {
         case WEST: rp.tXMinus = dur; break;
         case EAST: rp.tXPlus = dur; break;
@@ -459,21 +456,36 @@ bool Camera_SBIGClass::ST4PulseGuideScope(int direction, int duration) {
         case SOUTH: rp.tYPlus = dur; break;
     }
 
-    err = SBIGUnivDrvCommand(CC_ACTIVATE_RELAY, &rp, NULL);
+    short err = SBIGUnivDrvCommand(CC_ACTIVATE_RELAY, &rp, NULL);
     if (err != CE_NO_ERROR) return true;
 
     if (duration > 60) wxMilliSleep(duration - 50);
+
+    QueryCommandStatusParams qcsp;
     qcsp.command = CC_ACTIVATE_RELAY;
-    while (still_going) {  // wait for pulse to finish
+
+    MountWatchdog watchdog(duration);
+
+    while (true) {  // wait for pulse to finish
         wxMilliSleep(10);
+        QueryCommandStatusResults qcsr;
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR) {
             pFrame->Alert(_("Cannot check SBIG relay status"));
             return true;
         }
-        if (!qcsr.status) still_going = false;
+        if (!qcsr.status)
+            break;
+        if (WorkerThread::TerminateRequested())
+            return true;
+        if (watchdog.Expired())
+        {
+            pFrame->Alert(_("Timeout expired waiting for guide pulse to complete."));
+            return true;
+        }
     }
 
     return false;
 }
+
 #endif

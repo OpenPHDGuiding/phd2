@@ -160,23 +160,17 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "advanced_dialog.h"
 #include "gear_dialog.h"
 #include "myframe.h"
-#include "worker_thread.h"
 #include "debuglog.h"
+#include "worker_thread.h"
 #include "event_server.h"
 #include "confirm_dialog.h"
 #include "phdcontrol.h"
+#include "runinbg.h"
 
-extern PhdConfig *pConfig;
-
-extern MyFrame *pFrame;
 extern Mount *pMount;
 extern Mount *pSecondaryMount;
 extern Mount *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
 extern GuideCamera *pCamera;
-
-#define ALWAYS_FLUSH_DEBUGLOG
-extern DebugLog Debug;
-extern GuidingLog GuideLog;
 
 // these seem to be the windowing/display related globals
 extern int XWinSize;

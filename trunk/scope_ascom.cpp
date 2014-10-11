@@ -412,10 +412,29 @@ bool ScopeASCOM::Connect(void)
             dispid_abortslew = DISPID_UNKNOWN;
         }
 
-        // ... set the Connected property to true....
-        if (!pScopeDriver.PutProp(dispid_connected, true))
+        struct ConnectInBg : public ConnectMountInBg
         {
-            wxMessageBox(_T("ASCOM driver problem during connection: ") + wxString(pScopeDriver.Excep().bstrDescription),
+            ScopeASCOM *sa;
+            ConnectInBg(ScopeASCOM *sa_) : sa(sa_) { }
+            bool Entry()
+            {
+                AutoASCOMDriver pScopeDriver(sa->m_pIGlobalInterfaceTable, sa->m_dwCookie);
+                DispatchObj scope(pScopeDriver, NULL);
+                // ... set the Connected property to true....
+                if (!scope.PutProp(sa->dispid_connected, true))
+                {
+                    SetErrorMsg(scope.Excep().bstrDescription);
+                    return true;
+                }
+                return false;
+            }
+        };
+        ConnectInBg bg(this);
+
+        // set the Connected property to true in a background thread
+        if (bg.Run())
+        {
+            wxMessageBox(_T("ASCOM driver problem during connection: ") + bg.GetErrorMsg(),
                 _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not set Connected property to true");
         }
@@ -588,7 +607,7 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         dispParms.rgdispidNamedArgs = NULL;
 
         wxStopWatch swatch;
-        swatch.Start();
+
         HRESULT hr;
         EXCEPINFO excep;
         VARIANT vRes;
@@ -606,7 +625,8 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 
             Debug.AddLine("PulseGuide returned control before completion, sleep %lu", rem + 10);
 
-            ::wxMilliSleep(rem + 10);
+            if (WorkerThread::MilliSleep(rem + 10))
+                throw ERROR_INFO("ASCOM Scope: thread terminate requested");
         }
 
         if (IsGuiding(&scope))
@@ -625,6 +645,9 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
             while (true)
             {
                 ::wxMilliSleep(20);
+
+                if (WorkerThread::InterruptRequested())
+                    throw ERROR_INFO("ASCOM Scope: thread interrupt requested");
 
                 CheckSlewing(&scope, &result);
 

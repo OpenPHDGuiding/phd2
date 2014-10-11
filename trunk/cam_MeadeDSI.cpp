@@ -36,21 +36,25 @@
 
 
 #include "phd.h"
+
 #ifdef MEADE_DSI
+
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
 #include "cam_MeadeDSI.h"
 
+#include "DsiDevice.h"
 
-
-Camera_DSIClass::Camera_DSIClass() {
+Camera_DSIClass::Camera_DSIClass()
+{
     Name=_T("Meade DSI");
     FullSize = wxSize(768,505); // CURRENTLY ULTRA-RAW
     HasGainControl = true;
 }
 
-bool Camera_DSIClass::Connect() {
+bool Camera_DSIClass::Connect()
+{
     bool retval = false;
 //  MeadeCam = gcnew DSI_Class;
 //  retval = MeadeCam->DSI_Connect();
@@ -103,7 +107,8 @@ bool Camera_DSIClass::Connect() {
 #endif
     return retval;
 }
-bool Camera_DSIClass::Disconnect() {
+bool Camera_DSIClass::Disconnect()
+{
 #ifdef MEADE_DSI
     MeadeCam->Close();
     Connected = false;
@@ -112,9 +117,8 @@ bool Camera_DSIClass::Disconnect() {
     return false;
 }
 
-bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-    bool retval;
-    bool still_going = true;
+bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
 #ifdef MEADE_DSI
     MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
     MeadeCam->SetExposureTime(duration);
@@ -124,16 +128,23 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         Disconnect();
         return true;
     }
-    retval = MeadeCam->GetImage(img.ImageData,true);
+    bool retval = MeadeCam->GetImage(img.ImageData,true);
     if (!retval) return true;
+    CameraWatchdog watchdog(duration);
     if (duration > 100) {
-        wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxGetApp().Yield();
+        if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY)) // wait until near end of exposure
+            return true;
     }
-    while (still_going) {  // wait for image to finish and d/l
+    while (!MeadeCam->ImageReady) {  // wait for image to finish and d/l
         wxMilliSleep(20);
-        still_going = !(MeadeCam->ImageReady);
-        wxGetApp().Yield();
+        if (WorkerThread::InterruptRequested())
+            return true;
+        if (watchdog.Expired())
+        {
+            pFrame->Alert(_("Camera timeout during capure"));
+            Disconnect();
+            return true;
+        }
     }
 
     if (recon) SubtractDark(img);
@@ -146,6 +157,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
             SquarePixels(img,9.6,7.5);
     }
 #endif
+
     return false;
 }
 

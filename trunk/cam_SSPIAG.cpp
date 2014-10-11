@@ -308,7 +308,7 @@ bool Camera_SSPIAGClass::ST4PulseGuideScope(int direction, int duration) {
         default: return true; // bad direction passed in
     }
     Q5V_SendGuideCommand("QHY5V-0", reg,dur);
-    wxMilliSleep(duration + 10);
+    WorkerThread::MilliSleep(duration + 10);
     return false;
 }
 void Camera_SSPIAGClass::ClearGuidePort() {
@@ -376,18 +376,5 @@ bool Camera_SSPIAGClass::Capture(int duration, usImage& img, wxRect subframe, bo
     QuickLRecon(img);
     return false;
 }
-
-/*bool Camera_SSPIAGClass::CaptureCrop(int duration, usImage& img) {
-    GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_SSPIAGClass::CaptureFull(int duration, usImage& img) {
-    GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
-    return false;
-}
-*/
 
 #endif

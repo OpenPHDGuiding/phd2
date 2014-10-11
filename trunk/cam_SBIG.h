@@ -35,29 +35,27 @@
 
 #ifndef SBIGDEF
 #define SBIGDEF
+
 #if defined (__APPLE__)
 #include <SBIGUDrv/sbigudrv.h>
 #else
 #include "cameras/Sbigudrv.h"
 #endif
 
-class Camera_SBIGClass : public GuideCamera {
-public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture();
-    bool    ST4PulseGuideScope(int direction, int duration);
-    bool ST4HasNonGuiMove(void);
+class Camera_SBIGClass : public GuideCamera
+{
+    bool UseTrackingCCD;
 
+public:
+    bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    bool Connect();
+    bool Disconnect();
+    void InitCapture();
+    bool ST4PulseGuideScope(int direction, int duration);
+    bool ST4HasNonGuiMove(void) { return true; }
+    bool HasNonGuiCapture(void) { return true; }
 
     Camera_SBIGClass();
-private:
-    bool UseTrackingCCD;
-    bool LoadDriver();
-
-    virtual bool HasNonGuiCapture(void);
-
-    unsigned long bcd2long(unsigned long bcd);
 };
+
 #endif

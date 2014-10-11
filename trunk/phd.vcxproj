@@ -253,6 +253,7 @@
     </ClCompile>
     <ClCompile Include="profile_wizard.cpp" />
     <ClCompile Include="Refine_DefMap.cpp" />
+    <ClCompile Include="runinbg.cpp" />
     <ClCompile Include="scope.cpp" />
     <ClCompile Include="scope_ascom.cpp" />
     <ClCompile Include="scope_eqmac.cpp" />
@@ -364,6 +365,7 @@
     <ClInclude Include="point.h" />
     <ClInclude Include="profile_wizard.h" />
     <ClInclude Include="Refine_DefMap.h" />
+    <ClInclude Include="runinbg.h" />
     <ClInclude Include="scope.h" />
     <ClInclude Include="scope_ascom.h" />
     <ClInclude Include="scope_eqmac.h" />

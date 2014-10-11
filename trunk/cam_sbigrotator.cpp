@@ -81,7 +81,7 @@ bool Camera_SBIGRotatorClass::Connect()
 
         m_pSubcamera = new Camera_SBIGClass();
 
-        m_pSubcamera->Connect();
+        bError = m_pSubcamera->Connect();
         Connected = m_pSubcamera->Connected;
 
         FullSize = m_pSubcamera->FullSize;

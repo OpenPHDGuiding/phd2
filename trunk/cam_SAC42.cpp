@@ -153,16 +153,4 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
     return false;
 }
 
-/*bool Camera_SAC42Class::CaptureCrop(int duration, usImage& img) {
-    GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_SAC42Class::CaptureFull(int duration, usImage& img) {
-    GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
-    return false;
-}*/
-
 #endif

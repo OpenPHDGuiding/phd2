@@ -129,6 +129,8 @@ static double range_check(double thisval, double minval, double maxval)
 
 static void load_sim_params()
 {
+    SimCamParams::inverse_imagescale = 1.0 / pFrame->GetCameraPixelScale();
+
     SimCamParams::nr_stars = pConfig->Profile.GetInt("/SimCam/nr_stars", NR_STARS_DEFAULT);
     SimCamParams::nr_hot_pixels = pConfig->Profile.GetInt("/SimCam/nr_hot_pixels", NR_HOT_PIXELS_DEFAULT);
     SimCamParams::noise_multiplier = pConfig->Profile.GetDouble("/SimCam/noise", NOISE_DEFAULT);
@@ -714,12 +716,32 @@ Camera_SimClass::Camera_SimClass()
 
 bool Camera_SimClass::Connect()
 {
-    SimCamParams::inverse_imagescale = 1.0/pFrame->GetCameraPixelScale();
     load_sim_params();
     sim->Initialize();
-    Connected = true;
 
-    return false;
+    struct ConnectInBg : public ConnectCameraInBg
+    {
+        Camera_SimClass *cam;
+        ConnectInBg(Camera_SimClass *cam_) : cam(cam_) { }
+        bool Entry()
+        {
+#ifdef TEST_SLOW_CONNECT
+            for (int i = 0; i < 50; i++)
+            {
+                wxMilliSleep(100);
+                if (IsCanceled())
+                    return true;
+            }
+#endif
+            return false;
+        }
+    };
+
+    bool err = ConnectInBg(this).Run();
+    if (!err)
+        Connected = true;
+
+    return err;
 }
 
 bool Camera_SimClass::Disconnect()
@@ -737,7 +759,7 @@ Camera_SimClass::~Camera_SimClass()
 }
 
 #if SIMMODE==2
-bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img) {
+bool Camera_SimClass::Capture(int WXUNUSED(duration), usImage& img) {
     int xsize, ysize;
     wxImage disk_image;
     unsigned short *dataptr;
@@ -783,7 +805,7 @@ static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int ga
 
 bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
-    long long start = wxGetUTCTimeMillis().GetValue();
+    CameraWatchdog watchdog(duration);
 
 #if SIMMODE == 1
 
@@ -828,9 +850,18 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
 #endif // SIMMODE == 1
 
-    long long now = wxGetUTCTimeMillis().GetValue();
-    if (now < start + duration)
-        wxMilliSleep(start + duration - now);
+    long elapsed = watchdog.Time();
+    if (elapsed < duration)
+    {
+        if (WorkerThread::MilliSleep(duration - elapsed, WorkerThread::INT_ANY))
+            return true;
+        if (watchdog.Expired())
+        {
+            pFrame->Alert(_("Camera timeout during capure"));
+            Disconnect();
+            return true;
+        }
+    }
 
     return false;
 }
@@ -855,7 +886,7 @@ bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
     case SOUTH:   sim->dec_ofs.incr(-d); break;
     default: return true;
     }
-    wxMilliSleep(duration);
+    WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
     return false;
 }
 
@@ -879,7 +910,7 @@ void Camera_SimClass::FlipPierSide(void)
 }
 
 #if SIMMODE == 4
-bool Camera_SimClass::CaptureFull(int WXUNUSED(duration), usImage& img, bool recon) {
+bool Camera_SimClass::Capture(int WXUNUSED(duration), usImage& img, bool recon) {
     int xsize, ysize;
     //  unsigned short *dataptr;
     //  int i;
