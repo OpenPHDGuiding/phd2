@@ -71,6 +71,9 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
 
     bool Run()
     {
+#ifndef __APPLE__
+        // TODO: this does not work on OSX :(
+
         bool err = false;
 
         wxBusyCursor busy;
@@ -119,6 +122,11 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
             m_parent->SetCursor(wxCURSOR_ARROW);
 
         return err;
+
+#else // __APPLE__
+        wxBusyCursor busy;
+        return m_bg->Entry();
+#endif // __APPLE__
     }
 
     void Notify() // timer notification
