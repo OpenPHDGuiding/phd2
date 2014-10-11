@@ -164,12 +164,16 @@ bool Camera_ZWO::Connect()
             return true;
     }
 
+    wxYield();
+
     ASI_CAMERA_INFO info;
     if (ASIGetCameraProperty(&info, selected) != ASI_SUCCESS)
     {
         wxMessageBox(_("Failed to get camera properties for ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
+
+    wxYield();
 
     if (ASIOpenCamera(selected) != ASI_SUCCESS)
     {
@@ -188,6 +192,8 @@ bool Camera_ZWO::Connect()
     m_buffer = new unsigned char[FullSize.x * FullSize.y];
 
     PixelSize = info.PixelSize;
+
+    wxYield();
 
     int numControls;
     if (ASIGetNumOfControls(m_cameraId, &numControls) != ASI_SUCCESS)
@@ -228,6 +234,8 @@ bool Camera_ZWO::Connect()
 
     }
 
+    wxYield();
+
     m_frame = wxRect(FullSize);
     Debug.AddLine("ZWO: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
 
@@ -237,10 +245,20 @@ bool Camera_ZWO::Connect()
     return false;
 }
 
+bool Camera_ZWO::StopCapture(void)
+{
+    if (m_capturing)
+    {
+        Debug.AddLine("ZWO: stopcapture");
+        ASIStopVideoCapture(m_cameraId);
+        m_capturing = false;
+    }
+    return true;
+}
+
 bool Camera_ZWO::Disconnect()
 {
-    ASIStopVideoCapture(m_cameraId);
-    m_capturing = false;
+    StopCapture();
     ASICloseCamera(m_cameraId);
 
     Connected = false;
@@ -337,12 +355,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
 
     if (size_change)
     {
-        if (m_capturing)
-        {
-            Debug.AddLine("ZWO: stopcapture");
-            ASIStopVideoCapture(m_cameraId);
-            m_capturing = false;
-        }
+        StopCapture();
 
         ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), 1, ASI_IMG_Y8);
         if (status != ASI_SUCCESS)
@@ -371,24 +384,34 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
 
     int frameSize = frame.GetWidth() * frame.GetHeight();
 
-    long timeout = duration * 2 + 15000;
     int poll = wxMin(duration, 100);
 
-    wxStopWatch timer;
+    CameraWatchdog watchdog(duration, duration + 15000); // total timeout is 2 * duration + 15s
 
-    ::wxMilliSleep(duration);
-
-    ASI_ERROR_CODE status;
-
-    do
+    if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
+        (WorkerThread::TerminateRequested() || StopCapture()))
     {
-        status = ASIGetVideoData(m_cameraId, m_buffer, frameSize, poll);
-    } while (status != ASI_SUCCESS && timer.Time() <= timeout);
-
-    if (status != ASI_SUCCESS)
-    {
-        Debug.AddLine("ZWO: getimagedata ret %d", status);
         return true;
+    }
+
+    while (true)
+    {
+        ASI_ERROR_CODE status = ASIGetVideoData(m_cameraId, m_buffer, frameSize, poll);
+        if (status == ASI_SUCCESS)
+            break;
+        if (WorkerThread::InterruptRequested())
+        {
+            StopCapture();
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            Debug.AddLine("ZWO: getimagedata ret %d", status);
+            StopCapture();
+            pFrame->Alert(_("Camera timeout during capure"));
+            Disconnect();
+            return true;
+        }
     }
 
     if (useSubframe)
@@ -437,7 +460,7 @@ bool Camera_ZWO::ST4PulseGuideScope(int direction, int duration)
 {
     ASI_GUIDE_DIRECTION d = GetASIDirection(direction);
     ASIPulseGuideOn(m_cameraId, d);
-    wxMilliSleep(duration);
+    WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
     ASIPulseGuideOff(m_cameraId, d);
 
     return false;

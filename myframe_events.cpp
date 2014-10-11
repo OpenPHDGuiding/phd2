@@ -187,7 +187,7 @@ void MyFrame::FinishStop(void)
     pGuider->ForceFullFrame();
     ResetAutoExposure();
     UpdateButtonsStatus();
-    SetStatusText(_("Stopped."), 1);
+    SetStatusText(_("Stopped."));
     PhdController::AbortController("Stopped capturing");
 }
 
@@ -229,9 +229,13 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             CaptureActive = m_continueCapturing;
             UpdateButtonsStatus();
             PhdController::AbortController("Error reported capturing image");
-            SetStatusText(_("Stopped."), 1);
+            SetStatusText(_("Stopped."));
 
             Debug.Write("OnExposeComplete(): Capture Error reported\n");
+
+            // some camera drivers disconnect the camera on error
+            if (!pCamera->Connected)
+                SetStatusText(wxEmptyString, 2);
 
             throw ERROR_INFO("Error reported capturing image");
         }

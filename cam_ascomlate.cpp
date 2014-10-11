@@ -292,9 +292,28 @@ bool Camera_ASCOMLateClass::Connect()
         return true;
     }
 
-    if (!driver.PutProp(L"Connected", true))
+    struct ConnectInBg : public ConnectCameraInBg
     {
-        pFrame->Alert(ExcepMsg(_("ASCOM driver problem: Connect"), driver.Excep()));
+        Camera_ASCOMLateClass *cam;
+        ConnectInBg(Camera_ASCOMLateClass *cam_) : cam(cam_) { }
+        bool Entry()
+        {
+            AutoASCOMDriver driver(cam->m_pIGlobalInterfaceTable, cam->m_dwCookie);
+            DispatchObj dobj(driver, NULL);
+            // ... set the Connected property to true....
+            if (!dobj.PutProp(L"Connected", true))
+            {
+                SetErrorMsg(ExcepMsg(dobj.Excep()));
+                return true;
+            }
+            return false;
+        }
+    };
+    ConnectInBg bg(this);
+
+    if (bg.Run())
+    {
+        pFrame->Alert(_("ASCOM driver problem: Connect") + ":\n" + bg.GetErrorMsg());
         return true;
     }
 
@@ -451,19 +470,27 @@ void Camera_ASCOMLateClass::ShowPropertyDialog(void)
     }
 }
 
+bool Camera_ASCOMLateClass::StopExposure(void)
+{
+    EXCEPINFO excep;
+    bool err = ASCOM_StopExposure(&excep);
+    Debug.AddLine("ASCOM_StopExposure returns err = %d", err);
+    return !err;
+}
+
 bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
     bool retval = false;
-    bool still_going = true;
-    bool TakeSubframe = UseSubframes;
+    bool takeSubframe = UseSubframes;
 
     if (subframe.width <= 0 || subframe.height <= 0)
     {
-        TakeSubframe = false;
+        takeSubframe = false;
     }
 
     // Program the size
-    if (!TakeSubframe) {
+    if (!takeSubframe)
+    {
         subframe = wxRect(0,0,FullSize.GetWidth(),FullSize.GetHeight());
     }
 
@@ -473,34 +500,54 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     bool takeDark = HasShutter && ShutterState;
 
     // Start the exposure
-    if (ASCOM_StartExposure((double) duration / 1000.0, takeDark, &excep)) {
+    if (ASCOM_StartExposure((double) duration / 1000.0, takeDark, &excep))
+    {
         Debug.AddLine(ExcepMsg("ASCOM_StartExposure failed", excep));
         pFrame->Alert(ExcepMsg(_("ASCOM error -- Cannot start exposure with given parameters"), excep));
         return true;
     }
 
-    if (duration > 100) {
-        wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxGetApp().Yield();
+    CameraWatchdog watchdog(duration);
+
+    if (duration > 100)
+    {
+        // wait until near end of exposure
+        if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY) &&
+            (WorkerThread::TerminateRequested() || StopExposure()))
+        {
+            return true;
+        }
     }
-    while (still_going) {  // wait for image to finish and d/l
+
+    while (true)  // wait for image to finish and d/l
+    {
         wxMilliSleep(20);
-        bool ready = false;
+        bool ready;
         EXCEPINFO excep;
-        if (ASCOM_ImageReady(&ready, &excep)) {
+        if (ASCOM_ImageReady(&ready, &excep))
+        {
             Debug.AddLine(ExcepMsg("ASCOM_ImageReady failed", excep));
             pFrame->Alert(ExcepMsg(_("Exception thrown polling camera"), excep));
-            still_going = false;
-            retval = true;
+            return true;
         }
-        if (ready) still_going = false;
-        wxGetApp().Yield();
+        if (ready)
+            break;
+        if (WorkerThread::InterruptRequested() &&
+            (WorkerThread::TerminateRequested() || StopExposure()))
+        {
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            pFrame->Alert(_("Camera timeout during capure"));
+            Disconnect();
+            return true;
+        }
     }
-    if (retval)
-        return true;
 
     // Get the image
-    if (ASCOM_Image(img, TakeSubframe, subframe, &excep)) {
+    if (ASCOM_Image(img, takeSubframe, subframe, &excep))
+    {
         Debug.AddLine(ExcepMsg(_T("ASCOM_Image failed"), excep));
         pFrame->Alert(ExcepMsg(_("Error reading image"), excep));
         return true;
@@ -521,7 +568,6 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
 
     AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
 
-    wxStopWatch swatch;
     DISPPARAMS dispParms;
     VARIANTARG rgvarg[2];
     EXCEPINFO excep;
@@ -537,16 +583,27 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs =NULL;
-    swatch.Start();
+
+    MountWatchdog watchdog(duration);
+
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
                                     &dispParms,&vRes,&excep,NULL)))
     {
         return true;
     }
 
-    if (swatch.Time() < duration) {  // likely returned right away and not after move - enter poll loop
-        while (ASCOM_IsMoving()) {
+    if (watchdog.Time() < duration)  // likely returned right away and not after move - enter poll loop
+    {
+        while (ASCOM_IsMoving())
+        {
             wxMilliSleep(50);
+            if (WorkerThread::TerminateRequested())
+                return true;
+            if (watchdog.Expired())
+            {
+                Debug.AddLine("Mount watchdog timed-out waiting for ASCOM_IsMoving to clear");
+                return true;
+            }
         }
     }
 
@@ -644,7 +701,7 @@ bool Camera_ASCOMLateClass::ASCOM_StopExposure(EXCEPINFO *excep)
     dispParms.cArgs = 0;
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs =NULL;
+    dispParms.rgdispidNamedArgs = NULL;
 
     AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
 
@@ -822,4 +879,5 @@ bool Camera_ASCOMLateClass::ST4HasNonGuiMove(void)
 {
     return true;
 }
+
 #endif

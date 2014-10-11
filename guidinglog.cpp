@@ -182,7 +182,7 @@ void GuidingLog::Close(void)
 
     if (!m_keepFile)            // Delete the file if nothing useful was logged
     {
-        wxRemoveFile(m_fileName);
+        wxRemove(m_fileName);
     }
 }
 

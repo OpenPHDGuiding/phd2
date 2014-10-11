@@ -57,8 +57,10 @@ public:
     static wxArrayString EnumAscomCameras();
 
 private:
+
 #ifdef __WINDOWS__
-    IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
+
+    IGlobalInterfaceTable *m_pIGlobalInterfaceTable;
     DWORD m_dwCookie;
     DISPID dispid_setxbin, dispid_setybin;  // Frequently used IDs
     DISPID dispid_startx, dispid_starty;
@@ -76,6 +78,7 @@ private:
     bool ASCOM_ImageReady(bool *ready, EXCEPINFO *excep);
     bool ASCOM_Image(usImage& Image, bool useSubframe, const wxRect& subframe, EXCEPINFO *excep);
     bool ASCOM_IsMoving(void);
+    bool StopExposure(void);
 
     bool ST4HasNonGuiMove(void);
 
@@ -85,6 +88,7 @@ private:
 
 #endif
 };
+
 #endif // defined (ASCOM_LATECAMERA)
 
 #endif //CAM_ASCOMLATE_H_INCLUDED

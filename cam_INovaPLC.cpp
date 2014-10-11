@@ -101,7 +101,7 @@ bool Camera_INovaPLCClass::ST4PulseGuideScope(int direction, int duration) {
         default: return true; // bad direction passed in
     }
     DSCameraSetGuidingPort(dircode);
-    wxMilliSleep(duration);
+    WorkerThread::MilliSleep(duration);
     DSCameraSetGuidingPort(0);
     return false;
 }

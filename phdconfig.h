@@ -140,4 +140,6 @@ public:
     ConfigSection Profile;
 };
 
+extern PhdConfig *pConfig;
+
 #endif /* PHDCONFIG_H_INCLUDED */

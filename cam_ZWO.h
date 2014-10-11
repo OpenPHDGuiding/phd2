@@ -60,6 +60,9 @@ public:
 
     virtual bool HasNonGuiCapture(void) { return true; }
     virtual bool ST4HasNonGuiMove(void) { return true; }
+
+private:
+    bool StopCapture(void);
 };
 
 #endif

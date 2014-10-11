@@ -372,16 +372,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
 MyFrame::~MyFrame()
 {
-    if (pMount && pMount->IsConnected())
-    {
-        pMount->Disconnect();
-    }
-
-    if (pCamera && pCamera->Connected)
-    {
-        pCamera->Disconnect();
-    }
-
     delete pGearDialog;
     pGearDialog = NULL;
 
@@ -818,8 +808,8 @@ void MyFrame::SetupStatusBar(void)
     int statusWidths[statusBarFields] = {
         -3,
         -5,
-        wxMax(GetTextWidth(pControl, _("Camera")), GetTextWidth(pControl, _("No Cam"))),
-        wxMax(GetTextWidth(pControl, _("Scope")),  GetTextWidth(pControl, _("No Scope"))),
+        GetTextWidth(pControl, _("Camera")),
+        GetTextWidth(pControl, _("Mount")),
         GetTextWidth(pControl, _("AO")),
         wxMax(GetTextWidth(pControl, _("No cal")),  GetTextWidth(pControl, _("Cal +"))),
     };
@@ -834,10 +824,12 @@ void MyFrame::SetupStatusBar(void)
         }
     }
 
-    SetStatusWidths(6,statusWidths);
-    SetStatusText(_("No cam"),2);
-    SetStatusText(_("No scope"),3);
-    SetStatusText(_T(""),4);
+    SetStatusWidths(6, statusWidths);
+
+    SetStatusText(wxEmptyString, 2);
+    SetStatusText(wxEmptyString, 3);
+    SetStatusText(wxEmptyString, 4);
+
     UpdateCalibrationStatus();
 }
 
@@ -1104,8 +1096,10 @@ bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
     return bError;
 }
 
-void MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
+bool MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
 {
+    bool killed = false;
+
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     Debug.AddLine(wxString::Format("StopWorkerThread(0x%p) begins", pWorkerThread));
@@ -1113,14 +1107,31 @@ void MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
     if (pWorkerThread && pWorkerThread->IsRunning())
     {
         pWorkerThread->EnqueueWorkerThreadTerminateRequest();
-        wxThread::ExitCode threadExitCode = pWorkerThread->Wait();
-        Debug.AddLine("StopWorkerThread() threadExitCode=%d", threadExitCode);
+
+        enum { TIMEOUT_MS = 1000 };
+        wxStopWatch swatch;
+        while (pWorkerThread->IsAlive() && swatch.Time() < TIMEOUT_MS)
+            wxGetApp().Yield();
+
+        if (pWorkerThread->IsAlive())
+        {
+            Debug.AddLine("StopWorkerThread(0x%p) thread did not terminate, force kill", pWorkerThread);
+            pWorkerThread->Kill();
+            killed = true;
+        }
+        else
+        {
+            wxThread::ExitCode threadExitCode = pWorkerThread->Wait();
+            Debug.AddLine("StopWorkerThread() threadExitCode=%d", threadExitCode);
+        }
     }
 
     Debug.AddLine(wxString::Format("StopWorkerThread(0x%p) ends", pWorkerThread));
 
     delete pWorkerThread;
     pWorkerThread = NULL;
+
+    return killed;
 }
 
 void MyFrame::OnRequestExposure(wxCommandEvent& evt)
@@ -1152,7 +1163,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 {
-    wxFrame::SetStatusText("", 1);
+    wxFrame::SetStatusText(wxEmptyString, 1);
 }
 
 void MyFrame::ScheduleExposure(int exposureDuration, const wxRect& subframe)
@@ -1229,6 +1240,7 @@ void MyFrame::StartCapturing()
         m_loggedImageFrame = 0;
 
         UpdateButtonsStatus();
+        SetStatusText(wxEmptyString);
 
         // m_exposurePending should always be false here since CaptureActive is cleared on exposure
         // completion, but be paranoid and check it anyway
@@ -1248,10 +1260,14 @@ void MyFrame::StopCapturing(void)
 
     if (m_continueCapturing)
     {
-        SetStatusText(_("Waiting for devices before stopping..."), 1);
+        SetStatusText(_("Waiting for devices..."));
         m_continueCapturing = false;
 
-        if (!m_exposurePending)
+        if (m_exposurePending)
+        {
+            m_pPrimaryWorkerThread->RequestStop();
+        }
+        else
         {
             CaptureActive = false;
             if (pGuider->IsCalibratingOrGuiding())
@@ -1415,15 +1431,16 @@ void MyFrame::OnClose(wxCloseEvent& event)
 
     StopCapturing();
 
-    StopWorkerThread(m_pPrimaryWorkerThread);
-    StopWorkerThread(m_pSecondaryWorkerThread);
+    bool killed = StopWorkerThread(m_pPrimaryWorkerThread);
+    if (StopWorkerThread(m_pSecondaryWorkerThread))
+        killed = true;
 
-    if (pMount && pMount->IsConnected())
+    if (pMount && pMount->IsConnected() && !killed)
     {
         pMount->Disconnect();
     }
 
-    if (pCamera && pCamera->Connected)
+    if (pCamera && pCamera->Connected && !killed)
     {
         pCamera->Disconnect();
     }
@@ -1442,6 +1459,7 @@ void MyFrame::OnClose(wxCloseEvent& event)
 
     help->Quit();
     delete help;
+
     Destroy();
 }
 
@@ -2009,7 +2027,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 
     width = StringWidth(_T("00000"));
     m_pTimeLapse = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 0,_T("TimeLapse"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 0, _T("TimeLapse"));
     DoAdd(_("Time Lapse (ms)"), m_pTimeLapse,
           _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 

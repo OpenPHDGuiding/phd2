@@ -359,7 +359,7 @@ private:
     long m_alertFnArg;
 
     bool StartWorkerThread(WorkerThread*& pWorkerThread);
-    void StopWorkerThread(WorkerThread*& pWorkerThread);
+    bool StopWorkerThread(WorkerThread*& pWorkerThread);
     void OnSetStatusText(wxThreadEvent& event);
     void DoAlert(const alert_params& params);
     void OnAlertButton(wxCommandEvent& evt);
@@ -378,6 +378,8 @@ private:
     // and of course, an event table
     DECLARE_EVENT_TABLE()
 };
+
+extern MyFrame *pFrame;
 
 enum {
     MENU_SHOWHELP = 101,

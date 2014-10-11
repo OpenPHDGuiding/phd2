@@ -312,7 +312,7 @@ void Camera_WDMClass::EndCapture(void)
     // wait to for the capture callback to run successfully
     while ((m_captureMode == CAPTURE_ONE_FRAME || m_captureMode == CAPTURE_STACK_FRAMES) && m_nFrames == 0 && m_nAttempts < 3)
     {
-        if (iterations++ > 100)
+        if (iterations++ > 100 || WorkerThread::InterruptRequested())
         {
             Debug.AddLine("breaking out of lower loop");
             break;
@@ -345,7 +345,8 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool 
             throw ERROR_INFO("BeingCapture() failed");
         }
 
-        wxMilliSleep(duration);  // accumulate for the requested duration
+        // accumulate for the requested duration
+        WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
 
         EndCapture();
 

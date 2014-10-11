@@ -131,7 +131,7 @@ void Camera_INDIClass::NewProp(struct indi_prop_t *iprop) {
 }
 
 bool Camera_INDIClass::Connect() {
-    wxLongLong msec;
+
     if (! INDIClient) {
         INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
         if (! INDIClient) {
@@ -142,11 +142,12 @@ bool Camera_INDIClass::Connect() {
         printf("No INDI camera is set.  Please set INDIcam in the preferences file\n");
         return true;
     }
-    indi_device_add_cb(INDIClient, INDICameraName.ToAscii(), (IndiDevCB)new_prop_cb, this);
 
     modal = true;
-    msec = wxGetUTCTimeMillis();
-    while(modal && wxGetUTCTimeMillis() - msec < 10 * 1000) {
+    indi_device_add_cb(INDIClient, INDICameraName.ToAscii(), (IndiDevCB)new_prop_cb, this);
+
+    wxLongLong msec = wxGetUTCTimeMillis();
+    while (modal && wxGetUTCTimeMillis() - msec < 10 * 1000) {
         ::wxSafeYield();
     }
     modal = false;
@@ -246,9 +247,9 @@ bool Camera_INDIClass::ReadStream(usImage& img) {
     return false;
 }
 
-bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-    wxLongLong msec;
-    unsigned long loopwait;
+bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
+    modal = true;
 
     if (expose_prop) {
         printf("Exposing for %d(ms)\n", duration);
@@ -260,20 +261,23 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
         indi_dev_enable_blob(expose_prop->idev, TRUE);
         indi_send(video_prop, indi_prop_set_switch(video_prop, "ON", TRUE));
     }
-    modal = true;
-    msec = wxGetLocalTimeMillis();
-    if (duration > 100) { 
-        loopwait=10;
-    } else {
-        loopwait=1;
-    }	
-    while(modal && wxGetLocalTimeMillis() - msec < (duration + 5 * 1000)) {
-        wxMilliSleep(loopwait);    //  do not eat all the processor 
+
+    unsigned long loopwait = duration > 100 ? 10 : 1;
+
+    CameraWatchdog watchdog(duration);
+
+    while (modal) {
+        wxMilliSleep(loopwait);
+        if (WorkerThread::TerminateRequested())
+            return true;
+        if (watchdog.Expired())
+        {
+            pFrame->Alert(_("Camera timeout during capure"));
+            Disconnect();
+            return true;
+        }
     }
-    if (modal) {
-        printf("ERROR: Camera_INDIClass::Capture timeout, trying to continue\n");
-        return true;
-    }
+
     if (! expose_prop) {
         indi_send(video_prop, indi_prop_set_switch(video_prop, "OFF", TRUE));
     }

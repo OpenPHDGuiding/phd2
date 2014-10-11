@@ -125,4 +125,6 @@ inline bool GuidingLog::IsEnabled(void) const
     return m_enabled;
 }
 
+extern GuidingLog GuideLog;
+
 #endif

@@ -172,7 +172,7 @@ bool Camera_QHY5IIBase::ST4PulseGuideScope(int direction, int duration)
         default: return true; // bad direction passed in
     }
     Q5II_GuideCommand(reg,ptx,pty);
-    wxMilliSleep(duration + 10);
+    WorkerThread::MilliSleep(duration + 10);
     return false;
 }
 
@@ -196,6 +196,13 @@ bool Camera_QHY5IIBase::Disconnect()
     FreeLibrary(CameraDLL);
 
     return false;
+}
+
+static bool StopExposure()
+{
+    Debug.AddLine("Q5II: cancel exposure");
+    Q5II_CancelExposure();
+    return true;
 }
 
 bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, bool recon)
@@ -228,12 +235,29 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, boo
     }
 
     Q5II_SingleExposure();
-    wxMilliSleep(duration);
-    //int foo = 0;
-    while (Q5II_IsExposing()) {
-        //pFrame->SetStatusText(wxString::Format("%d",foo));
+
+    CameraWatchdog watchdog(duration);
+
+    if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
+        (WorkerThread::TerminateRequested() || StopExposure()))
+    {
+        return true;
+    }
+
+    while (Q5II_IsExposing())
+    {
         wxMilliSleep(100);
-        //foo++;
+        if (WorkerThread::InterruptRequested() &&
+            (WorkerThread::TerminateRequested() || StopExposure()))
+        {
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            pFrame->Alert(_("Camera timeout during capure"));
+            Disconnect();
+            return true;
+        }
     }
 
     Q5II_GetFrameData(RawBuffer,xsize*ysize);
@@ -251,18 +275,5 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, boo
 
     return false;
 }
-
-/*bool Camera_QHY5IIBase::CaptureCrop(int duration, usImage& img) {
-    GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_QHY5IIBase::CaptureFull(int duration, usImage& img) {
-    GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
-    return false;
-}
-*/
 
 #endif

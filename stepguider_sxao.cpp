@@ -76,12 +76,16 @@ bool StepGuiderSxAO::Connect(void)
             throw ERROR_INFO("StepGuiderSxAO::Connect: serial port connect failed");
         }
 
+        wxYield();
+
         pConfig->Profile.SetString("/stepguider/sxao/serialport", m_serialPortName);
 
         if (m_pSerialPort->SetReceiveTimeout(DefaultTimeout))
         {
             throw ERROR_INFO("StepGuiderSxAO::Connect: SetReceiveTimeout failed");
         }
+
+        wxYield();
 
         unsigned version;
 
@@ -90,13 +94,19 @@ bool StepGuiderSxAO::Connect(void)
             throw ERROR_INFO("StepGuiderSxAO::Connect: unable to get firmware version");
         }
 
+        wxYield();
+
         if (Center())
         {
+            wxYield();
+
             if (Unjam())
             {
                 throw ERROR_INFO("StepGuiderSxAO::Connect: unable to center or Unjam");
             }
         }
+
+        wxYield();
 
         StepGuider::Connect();
     }
@@ -581,7 +591,7 @@ bool StepGuiderSxAO::ST4PulseGuideScope(int direction, int duration)
 
         // The Step function is asynchronous, and there is no way to wait for it, so we just
         // wait
-        wxMilliSleep(duration);
+        WorkerThread::MilliSleep(duration);
     }
     catch (wxString Msg)
     {
