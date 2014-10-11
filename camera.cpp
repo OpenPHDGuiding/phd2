@@ -199,12 +199,6 @@ GuideCamera::GuideCamera(void)
 GuideCamera::~GuideCamera(void)
 {
     ClearDarks();
-
-    if (Connected)
-    {
-        pFrame->SetStatusText(pCamera->Name + _(" disconnected"));
-        pCamera->Disconnect();
-    }
 }
 
 static int CompareNoCase(const wxString& first, const wxString& second)
