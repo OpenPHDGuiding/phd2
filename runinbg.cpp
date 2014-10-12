@@ -71,15 +71,15 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
 
     bool Run()
     {
-#ifndef __APPLE__
-        // TODO: this does not work on OSX :(
-
         bool err = false;
 
         wxBusyCursor busy;
         if (m_parent)
             m_parent->SetCursor(wxCURSOR_WAIT); // need to do this too!
+#ifndef __APPLE__
+        // this makes the progress window inaccessible on OSX
         wxWindowDisabler wd;
+#endif // __APPLE__
 
         CreateThread();
         wxThread *thread = GetThread();
@@ -122,11 +122,6 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
             m_parent->SetCursor(wxCURSOR_ARROW);
 
         return err;
-
-#else // __APPLE__
-        wxBusyCursor busy;
-        return m_bg->Entry();
-#endif // __APPLE__
     }
 
     void Notify() // timer notification
