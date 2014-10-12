@@ -62,8 +62,8 @@ struct RunInBgImpl : public wxTimer, public wxThreadHelper
         m_parent(parent),
         m_title(title),
         m_message(message),
-        m_shown(false),
         m_win(0),
+        m_shown(false),
         m_done(false),
         m_canceled(false)
     {
