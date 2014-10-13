@@ -162,6 +162,7 @@ A frame has been dropped due to the star being lost.
 || Time || number || time since guiding started, seconds ||
 || !StarMass || number || star mass value ||
 || SNR || number || star SNR value ||
+|| !AvgDist || number ||a smoothed average of the guide distance in pixels (equivalent to value returned by socket server MSG_REQDIST)||
 || !ErrorCode || number || error code ||
 || Status || string || error message ||
 
@@ -197,6 +198,7 @@ This event corresponds to a line in the PHD Guide Log. The event is sent for eac
 ||DECDirection||string||"S" or "N"||
 ||!StarMass||number||the Star Mass value of the guide star||
 ||SNR||number||the computed Signal-to-noise ratio of the guide star||
+||!AvgDist||number||a smoothed average of the guide distance in pixels (equivalent to value returned by socket server MSG_REQDIST)||
 ||RALimited||boolean||true if step was limited by the Max RA setting (attribute omitted if step was not limited)||
 ||!DecLimited||boolean||true if step was limited by the Max Dec setting (attribute omitted if step was not limited)||
 ||!ErrorCode||number||the star finder error code||
