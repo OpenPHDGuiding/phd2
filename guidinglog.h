@@ -62,6 +62,7 @@ struct GuideStepInfo
     wxPoint aoPos;
     double starMass;
     double starSNR;
+    double avgDist;
     int starError;
 };
 
@@ -71,6 +72,7 @@ struct FrameDroppedInfo
     double time;
     double starMass;
     double starSNR;
+    double avgDist;
     int starError;
     wxString status;
 };

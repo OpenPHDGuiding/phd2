@@ -868,6 +868,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         {
             info.frameNumber = pFrame->m_frameCounter;
             info.time = pFrame->TimeSinceGuidingStarted();
+            info.avgDist = CurrentError();
 
             switch (m_state)
             {

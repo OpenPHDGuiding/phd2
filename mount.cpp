@@ -662,6 +662,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         info.aoPos = GetAoPos();
         info.starMass = pFrame->pGuider->StarMass();
         info.starSNR = pFrame->pGuider->SNR();
+        info.avgDist = pFrame->pGuider->CurrentError();
         info.starError = pFrame->pGuider->StarError();
 
         GuideLog.GuideStep(info);
