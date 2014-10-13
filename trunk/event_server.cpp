@@ -1511,7 +1511,8 @@ void EventServer::NotifyStarLost(const FrameDroppedInfo& info)
     ev << NV("Frame", info.frameNumber)
        << NV("Time", info.time, 3)
        << NV("StarMass", info.starMass, 0)
-       << NV("SNR", info.starSNR, 2);
+       << NV("SNR", info.starSNR, 2)
+       << NV("AvgDist", info.avgDist, 2);
 
     if (info.starError)
         ev << NV("ErrorCode", info.starError);
@@ -1577,7 +1578,8 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
     }
 
     ev << NV("StarMass", step.starMass, 0)
-       << NV("SNR", step.starSNR, 2);
+       << NV("SNR", step.starSNR, 2)
+       << NV("AvgDist", step.avgDist, 2);
 
     if (step.starError)
        ev << NV("ErrorCode", step.starError);
