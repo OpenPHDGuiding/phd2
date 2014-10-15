@@ -167,7 +167,6 @@ wxString DebugLog::Write(const wxString& str)
                                                               (unsigned long) wxThread::GetCurrentId(),
                                                               str);
 
-
         wxFFile::Write(outputLine);
 #if defined(ALWAYS_FLUSH_DEBUGLOG)
         wxFFile::Flush();

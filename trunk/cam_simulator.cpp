@@ -725,8 +725,9 @@ bool Camera_SimClass::Connect()
         ConnectInBg(Camera_SimClass *cam_) : cam(cam_) { }
         bool Entry()
         {
+//#define TEST_SLOW_CONNECT
 #ifdef TEST_SLOW_CONNECT
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 100; i++)
             {
                 wxMilliSleep(100);
                 if (IsCanceled())
