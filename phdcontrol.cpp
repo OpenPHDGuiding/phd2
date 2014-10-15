@@ -171,13 +171,15 @@ static void do_notify(void)
 {
     if (ctrl.succeeded)
     {
-        Debug.AddLine("PhdController complete: succeess");
+        Debug.AddLine("PhdController complete: success");
         EvtServer.NotifySettleDone(wxEmptyString);
+        GuideLog.NotifySettlingStateChange("Settling complete");
     }
     else
     {
         Debug.AddLine(wxString::Format("PHDController complete: fail: %s", ctrl.errorMsg));
         EvtServer.NotifySettleDone(ctrl.errorMsg);
+        GuideLog.NotifySettlingStateChange("Settling failed");
     }
 }
 
@@ -373,6 +375,7 @@ void PhdController::UpdateControllerState(void)
             ctrl.settlePriorFrameInRange = false;
             ctrl.settleTimeout->Start();
             SETSTATE(STATE_SETTLE_WAIT);
+            GuideLog.NotifySettlingStateChange("Settling started");
             done = true;
             break;
 

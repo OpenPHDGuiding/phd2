@@ -427,6 +427,12 @@ void GuidingLog::NotifyGuidingDithered(Guider *guider, double dx, double dy)
     Flush();
 }
 
+void GuidingLog::NotifySettlingStateChange(const wxString& msg)
+{
+    m_file.Write(wxString::Format("INFO: SETTLING STATE CHANGE, %s\n", msg));
+    Flush();
+}
+
 void GuidingLog::NotifySetLockPosition(Guider *guider)
 {
     if (!m_enabled || !m_isGuiding)
