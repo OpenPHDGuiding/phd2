@@ -45,6 +45,101 @@
 #define wxPENSTYLE_DOT wxDOT
 #endif
 
+class MassChecker
+{
+    enum { DefaultTimeWindowMs = 15000 };
+
+    struct Entry
+    {
+        wxLongLong_t time;
+        double mass;
+    };
+
+    std::deque<Entry> m_data;
+    unsigned long m_timeWindow;
+    double *m_tmp;
+    size_t m_tmpSize;
+    int m_lastExposure;
+
+public:
+
+    MassChecker()
+        : m_tmp(0),
+          m_tmpSize(0),
+          m_lastExposure(0)
+    {
+        SetTimeWindow(DefaultTimeWindowMs);
+    }
+
+    ~MassChecker()
+    {
+        delete[] m_tmp;
+    }
+
+    void SetTimeWindow(unsigned int milliseconds)
+    {
+        // an abrupt change in mass will affect the median after approx m_timeWindow/2
+        m_timeWindow = milliseconds * 2;
+    }
+
+    void SetExposure(int exposure)
+    {
+        if (exposure != m_lastExposure)
+        {
+            m_lastExposure = exposure;
+            Reset();
+        }
+    }
+
+    void AppendData(double mass)
+    {
+        wxLongLong_t now = ::wxGetUTCTimeMillis().GetValue();
+        wxLongLong_t oldest = now - m_timeWindow;
+
+        while (m_data.size() > 0 && m_data.front().time < oldest)
+            m_data.pop_front();
+
+        Entry entry;
+        entry.time = now;
+        entry.mass = mass;
+        m_data.push_back(entry);
+    }
+
+    bool CheckMass(double mass, double threshold, double limits[3])
+    {
+        if (m_data.size() < 3)
+            return false;
+
+        if (m_tmpSize < m_data.size())
+        {
+            delete[] m_tmp;
+            m_tmpSize = m_data.size() + 10;
+            m_tmp = new double[m_tmpSize];
+        }
+
+        std::deque<Entry>::const_iterator it = m_data.begin();
+        std::deque<Entry>::const_iterator end = m_data.end();
+        double *p = &m_tmp[0];
+        for (; it != end; ++it)
+            *p++ = it->mass;
+
+        size_t mid = m_data.size() / 2;
+        std::nth_element(&m_tmp[0], &m_tmp[mid], &m_tmp[m_data.size()]);
+        double med = m_tmp[mid];
+
+        limits[0] = med * (1. - threshold);
+        limits[1] = med;
+        limits[2] = med * (1. + threshold);
+
+        return mass < limits[0] || mass > limits[2];
+    }
+
+    void Reset(void)
+    {
+        m_data.clear();
+    }
+};
+
 static const double DefaultMassChangeThreshold = 0.5;
 
 enum {
@@ -59,15 +154,16 @@ BEGIN_EVENT_TABLE(GuiderOneStar, Guider)
 END_EVENT_TABLE()
 
 // Define a constructor for the guide canvas
-GuiderOneStar::GuiderOneStar(wxWindow *parent):
-    Guider(parent, XWinSize, YWinSize)
+GuiderOneStar::GuiderOneStar(wxWindow *parent)
+    : Guider(parent, XWinSize, YWinSize),
+      m_massChecker(new MassChecker())
 {
     SetState(STATE_UNINITIALIZED);
-    m_badMassCount = 0;
 }
 
 GuiderOneStar::~GuiderOneStar()
 {
+    delete m_massChecker;
 }
 
 void GuiderOneStar::LoadProfileSettings(void)
@@ -93,7 +189,6 @@ bool GuiderOneStar::GetMassChangeThresholdEnabled(void)
 void GuiderOneStar::SetMassChangeThresholdEnabled(bool enable)
 {
     m_massChangeThresholdEnabled = enable;
-    m_badMassCount = 0;
     pConfig->Profile.SetBoolean("/guider/onestar/MassChangeThresholdEnabled", enable);
 }
 
@@ -123,7 +218,6 @@ bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
         m_massChangeThreshold = DefaultMassChangeThreshold;
     }
 
-    m_badMassCount = 0;
     pConfig->Profile.SetDouble("/guider/onestar/MassChangeThreshold", m_massChangeThreshold);
 
     return bError;
@@ -184,6 +278,7 @@ bool GuiderOneStar::SetCurrentPosition(usImage *pImage, const PHD_Point& positio
             throw ERROR_INFO("invalid y value");
         }
 
+        m_massChecker->Reset();
         bError = !m_star.Find(pImage, m_searchRegion, x, y, pFrame->GetStarFindMode());
     }
     catch (wxString Msg)
@@ -270,6 +365,8 @@ bool GuiderOneStar::AutoSelect(void)
         {
             throw ERROR_INFO("Unable to AutoFind");
         }
+
+        m_massChecker->Reset();
 
         if (!m_star.Find(pImage, m_searchRegion, newStar.X, newStar.Y, Star::FIND_CENTROID))
         {
@@ -457,45 +554,28 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
             throw ERROR_INFO("UpdateCurrentPosition():newStar not found");
         }
 
+        // check to see if it seems like the star we just found was the
+        // same as the original star.  We do this by comparing the
+        // mass
+        m_massChecker->SetExposure(pFrame->RequestedExposureDuration());
+        double limits[3];
         if (m_massChangeThresholdEnabled &&
-            m_star.Mass > 0.0 &&
-            newStar.Mass > 0.0 &&
-            m_badMassCount++ < 2)
+            m_massChecker->CheckMass(newStar.Mass, m_massChangeThreshold, limits))
         {
-            // check to see if it seems like the star we just found was the
-            // same as the orignial star.  We do this by comparing the
-            // mass
-            double massRatio;
-
-            if (newStar.Mass > m_star.Mass)
-            {
-                massRatio = m_star.Mass / newStar.Mass;
-            }
-            else
-            {
-                massRatio = newStar.Mass / m_star.Mass;
-            }
-
-            massRatio = 1.0 - massRatio;
-
-            assert(massRatio >= 0.0 && massRatio < 1.0);
-
-            if (massRatio > m_massChangeThreshold)
-            {
-                m_star.SetError(Star::STAR_MASSCHANGE);
-                errorInfo->starError = Star::STAR_MASSCHANGE;
-                errorInfo->starMass = newStar.Mass;
-                errorInfo->starSNR = newStar.SNR;
-                errorInfo->status = StarStatusStr(m_star);
-                pFrame->SetStatusText(wxString::Format(_("Mass: %.0f vs %.0f"), newStar.Mass, m_star.Mass), 1);
-                Debug.Write(wxString::Format("UpdateGuideState(): star mass ratio=%.1f, thresh=%.1f new=%.1f, old=%.1f\n", massRatio, m_massChangeThreshold, newStar.Mass, m_star.Mass));
-                throw THROW_INFO("massChangeThreshold error");
-            }
+            m_star.SetError(Star::STAR_MASSCHANGE);
+            errorInfo->starError = Star::STAR_MASSCHANGE;
+            errorInfo->starMass = newStar.Mass;
+            errorInfo->starSNR = newStar.SNR;
+            errorInfo->status = StarStatusStr(m_star);
+            pFrame->SetStatusText(wxString::Format(_("Mass: %.0f vs %.0f"), newStar.Mass, limits[1]), 1);
+            Debug.Write(wxString::Format("UpdateGuideState(): star mass new=%.1f exp=%.1f thresh=%.0f%% range=(%.1f, %.1f)\n", newStar.Mass, limits[1], m_massChangeThreshold * 100, limits[0], limits[2]));
+            m_massChecker->AppendData(newStar.Mass);
+            throw THROW_INFO("massChangeThreshold error");
         }
 
         // update the star position, mass, etc.
         m_star = newStar;
-        m_badMassCount = 0;
+        m_massChecker->AppendData(newStar.Mass);
 
         const PHD_Point& lockPos = LockPosition();
         if (lockPos.IsValid())

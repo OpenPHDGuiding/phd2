@@ -241,7 +241,7 @@ private:
 public:
     virtual void LoadProfileSettings(void);
 
-    // pure virutal functions -- these MUST be overridden by a subclass
+    // pure virtual functions -- these MUST be overridden by a subclass
 public:
     virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
 private:

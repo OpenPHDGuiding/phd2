@@ -438,13 +438,14 @@ void MyFrame::SetupMenuBar(void)
     view_menu->AppendCheckItem(MENU_AO_GRAPH, _("Display AO Graph"), _("Enable / disable AO graph"));
     view_menu->AppendCheckItem(MENU_TARGET,_("Display Target"),_("Enable / disable target"));
     view_menu->AppendCheckItem(MENU_STARPROFILE,_("Display Star Profile"),_("Enable / disable star profile view"));
-    view_menu->Append(MENU_RESTORE_WINDOWS, _("Restore window positions"), _("Restore all windows to their default/docked positions"));
     view_menu->AppendSeparator();
     view_menu->AppendRadioItem(MENU_XHAIR0, _("No Overlay"),_("No additional crosshairs"));
     view_menu->AppendRadioItem(MENU_XHAIR1, _("Bullseye"),_("Centered bullseye overlay"));
     view_menu->AppendRadioItem(MENU_XHAIR2, _("Fine Grid"),_("Grid overlay"));
     view_menu->AppendRadioItem(MENU_XHAIR3, _("Coarse Grid"),_("Grid overlay"));
     view_menu->AppendRadioItem(MENU_XHAIR4, _("RA/Dec"),_("RA and Dec overlay"));
+    view_menu->AppendSeparator();
+    view_menu->Append(MENU_RESTORE_WINDOWS, _("Restore window positions"), _("Restore all windows to their default/docked positions"));
 
     bookmarks_menu = new wxMenu();
     m_showBookmarksMenuItem = bookmarks_menu->AppendCheckItem(MENU_BOOKMARKS_SHOW, _("Show Bookmarks\tb"), _("Hide or show bookmarks"));

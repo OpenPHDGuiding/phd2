@@ -55,8 +55,9 @@ public:
         iterator& operator++() { ++m_pos; return *this; }
         iterator operator++(int) { iterator it(*this); m_pos++; return it; }
         bool operator==(const iterator& rhs) const { assert(&m_cb == &rhs.m_cb); return m_pos == rhs.m_pos; }
-        T& operator*() const { return m_cb.ary[m_pos % m_cb.m_capacity]; }
-        T& operator->() const { return m_cb.ary[m_pos % m_cb.m_capacity]; }
+        bool operator!=(const iterator& rhs) const { assert(&m_cb == &rhs.m_cb); return m_pos != rhs.m_pos; }
+        T& operator*() const { return m_cb.m_ary[m_pos % m_cb.m_capacity]; }
+        T* operator->() const { return &m_cb.m_ary[m_pos % m_cb.m_capacity]; }
     };
     friend class circular_buffer<T>::iterator;
     circular_buffer();
@@ -70,7 +71,7 @@ public:
     unsigned int size() const { return m_size; }
     unsigned int capacity() const { return m_capacity; }
     iterator begin() { return iterator(*this, m_tail); }
-    iterator end() { return iterator(*this, m_head); }
+    iterator end() { return iterator(*this, m_tail + m_size); }
 };
 
 template<typename T>
