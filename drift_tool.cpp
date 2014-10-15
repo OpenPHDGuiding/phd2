@@ -269,7 +269,7 @@ DriftToolWin::DriftToolWin()
         Move(xpos, ypos);
 
     // can mount slew?
-    m_can_slew = pMount && pMount->CanSlew();
+    m_can_slew = pPointingSource && pPointingSource->CanSlew();
 
     // get site lat/long from scope
     double lat, lon;
@@ -539,7 +539,7 @@ void DriftToolWin::OnSlew(wxCommandEvent& evt)
     m_slewing = true;
     m_slew->Enable(false);
     GetStatusBar()->PushStatusText(_("Slewing ..."));
-    if (pMount->SlewToCoordinates(slew_ra, decSlew))
+    if (pPointingSource->SlewToCoordinates(slew_ra, decSlew))
     {
         GetStatusBar()->PopStatusText();
         m_slewing = false;
@@ -724,7 +724,7 @@ void DriftToolWin::OnTimer(wxTimerEvent& evt)
 
     if (m_slewing)
     {
-        if (!pMount || !pMount->Slewing())
+        if (!pPointingSource || !pPointingSource->Slewing())
         {
             m_slew->Enable(true);
             m_slewing = false;
