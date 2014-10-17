@@ -51,6 +51,8 @@ static const int MAX_CALIBRATION_STEPS = 60;
 static const double MAX_CALIBRATION_DISTANCE = 25.0;
 
 static int LIMIT_REACHED_WARN_COUNT = 5;
+static int MAX_NUDGES = 3;
+static double NUDGE_TOLERANCE = 2.0;
 
 Scope::Scope(void)
     : m_raLimitReachedDirection(NONE),
@@ -706,6 +708,17 @@ int Scope::CalibrationTotDistance(void)
 
 #define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
 
+// Compute dec distance needed for final 'nudging' back to starting position
+static double SouthDistance(const PHD_Point& cameraVector, double xCalibAngle, double yCalibAngle)
+{
+    double hyp = cameraVector.Distance();
+    double cameraTheta = cameraVector.Angle();
+    double yAngleError = (xCalibAngle - yCalibAngle) + M_PI / 2;
+    yAngleError = atan2(sin(yAngleError), cos(yAngleError));
+    double yAngle = cameraTheta - (xCalibAngle + yAngleError);
+    return hyp * sin(yAngle);
+}
+
 bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 {
     bool bError = false;
@@ -892,10 +905,34 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
+                    m_lastSouthDistance = SouthDistance(currentLocation - m_calibrationStartingLocation, m_calibrationXAngle, m_calibrationYAngle);
 
                     pFrame->ScheduleCalibrationMove(this, SOUTH, duration);
                     break;
                 }
+                // Rules for restoring star position: move only in Dec, get within 2 px of north/south starting point, don't try more than 3 times,
+                // use only south (same-direction) guide pulses
+                if (m_calibrationSteps <= MAX_NUDGES && abs(currentLocation.Distance(m_calibrationStartingLocation)) > NUDGE_TOLERANCE && m_decGuideMode != DEC_NONE)
+                {
+                    double decAmt = SouthDistance(currentLocation - m_calibrationStartingLocation, m_calibrationXAngle, m_calibrationYAngle);
+                    Debug.AddLine(wxString::Format("Final nudging, decAmt = %.3f, lastSouthDistance = %.3f", decAmt, m_lastSouthDistance));
+                    if (decAmt * m_lastSouthDistance > 0)           // still in the same direction
+                    {
+                        decAmt = abs(decAmt);           // Sign doesn't matter now, we're always moving south
+                        decAmt = wxMin(decAmt, pFrame->pGuider->GetMaxMovePixels());
+                        int pulseAmt = (int)floor((double)decAmt / m_calibrationYRate);
+                        //Debug.AddLine(wxString::Format("Current loc = {%.3f,%.3f}, wanting {%.3f,%.3f}", currentLocation.X, currentLocation.Y,
+                        //    m_calibrationStartingLocation.X, m_calibrationStartingLocation.Y));
+                        Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d mSec", pulseAmt));
+                        m_calibrationSteps++;
+                        status0.Printf(_("Final Nudge %3d"), m_calibrationSteps);
+                        GuideLog.CalibrationStep(this, "NudgeSouth", 0, dX, dY, currentLocation, dist);
+                        pFrame->ScheduleCalibrationMove(this, SOUTH, pulseAmt);
+                        break;
+                    }
+                }
+                Debug.AddLine(wxString::Format("Final nudging status: Current loc = {%.3f,%.3f}, targeting {%.3f,%.3f}", currentLocation.X, currentLocation.Y,
+                    m_calibrationStartingLocation.X, m_calibrationStartingLocation.Y));
                 m_calibrationState = CALIBRATION_STATE_COMPLETE;
                 // fall through
                 Debug.AddLine("Falling Through to state CALIBRATION_COMPLETE");

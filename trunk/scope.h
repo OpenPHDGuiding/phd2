@@ -54,6 +54,7 @@ class Scope : public Mount
     int m_recenterRemaining;
     int m_recenterDuration;
     PHD_Point m_calibrationStartingLocation;
+    double m_lastSouthDistance;
 
     double m_calibrationXAngle;
     double m_calibrationXRate;
