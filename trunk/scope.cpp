@@ -918,9 +918,9 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     Debug.AddLine(wxString::Format("Final nudging, decAmt = %.3f, lastSouthDistance = %.3f", decAmt, m_lastSouthDistance));
                     if (decAmt * m_lastSouthDistance > 0)           // still in the same direction
                     {
-                        decAmt = abs(decAmt);           // Sign doesn't matter now, we're always moving south
+                        decAmt = fabs(decAmt);           // Sign doesn't matter now, we're always moving south
                         decAmt = wxMin(decAmt, pFrame->pGuider->GetMaxMovePixels());
-                        int pulseAmt = (int)floor((double)decAmt / m_calibrationYRate);
+                        int pulseAmt = (int)floor(decAmt / m_calibrationYRate);
                         //Debug.AddLine(wxString::Format("Current loc = {%.3f,%.3f}, wanting {%.3f,%.3f}", currentLocation.X, currentLocation.Y,
                         //    m_calibrationStartingLocation.X, m_calibrationStartingLocation.Y));
                         Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d mSec", pulseAmt));
