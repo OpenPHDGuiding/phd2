@@ -76,11 +76,11 @@ struct CometToolWin : public wxDialog
     void UpdateStatus();
 };
 
-static wxString TITLE = _("Comet Tracking");
-static wxString TITLE_TRAINING = _("Comet Tracking - Training Active");
+static wxString TITLE = wxTRANSLATE("Comet Tracking");
+static wxString TITLE_TRAINING = wxTRANSLATE("Comet Tracking - Training Active");
 
 CometToolWin::CometToolWin()
-    : wxDialog(pFrame, wxID_ANY, TITLE, wxPoint(-1,-1), wxSize(300,300)),
+    : wxDialog(pFrame, wxID_ANY, wxGetTranslation(TITLE), wxPoint(-1,-1), wxSize(300,300)),
       m_training(false),
       m_timer(this)
 {
@@ -244,7 +244,7 @@ void CometToolWin::OnStart(wxCommandEvent& event)
     m_timer.Start(500);
     m_training = true;
 
-    SetTitle(TITLE_TRAINING);
+    SetTitle(wxGetTranslation(TITLE_TRAINING));
     UpdateStatus();
 }
 
@@ -258,7 +258,7 @@ void CometToolWin::OnStop(wxCommandEvent& event)
     m_units->Enable(true);
     m_axes->Enable(true);
 
-    SetTitle(TITLE);
+    SetTitle(wxGetTranslation(TITLE));
     UpdateStatus();
 }
 
