@@ -73,6 +73,9 @@ struct SimCamParams
     static bool use_default_pe_params;
     static double custom_pe_amp;
     static double custom_pe_period;
+    static bool show_comet;
+    static double comet_rate_x;
+    static double comet_rate_y;
 };
 
 unsigned int SimCamParams::width = 752;          // simulated camera image width
@@ -89,12 +92,15 @@ double SimCamParams::cam_angle;                  // simulated camera angle (degr
 double SimCamParams::guide_rate;                 // guide rate, pixels per second
 PierSide SimCamParams::pier_side;                // side of pier
 bool SimCamParams::reverse_dec_pulse_on_west_side; // reverse dec pulse on west side of pier, like ASCOM pulse guided equatorial mounts
-unsigned int SimCamParams::clouds_inten;          // clouds intensity blocking out stars
+unsigned int SimCamParams::clouds_inten;         // clouds intensity blocking out stars
 double SimCamParams::inverse_imagescale;         // pixel per arc-sec
 bool SimCamParams::use_pe;
 bool SimCamParams::use_default_pe_params;
 double SimCamParams::custom_pe_amp;
 double SimCamParams::custom_pe_period;
+bool SimCamParams::show_comet;
+double SimCamParams::comet_rate_x;
+double SimCamParams::comet_rate_y;
 
 // Note: these are all in units appropriate for the UI
 #define NR_STARS_DEFAULT 20
@@ -120,6 +126,9 @@ double SimCamParams::custom_pe_period;
 #define USE_PE_DEFAULT_PARAMS true
 #define PE_CUSTOM_AMP_DEFAULT 2.0               // Give them a trivial 2 a-s 4 min smooth curve
 #define PE_CUSTOM_PERIOD_DEFAULT 240.0
+#define SHOW_COMET_DEFAULT false
+#define COMET_RATE_X_DEFAULT 555.0              // pixels per hour
+#define COMET_RATE_Y_DEFAULT -123.4              // pixels per hour
 
 // Needed to handle legacy registry values that may no longer be in correct units or range
 static double range_check(double thisval, double minval, double maxval)
@@ -151,6 +160,10 @@ static void load_sim_params()
     SimCamParams::guide_rate = range_check(pConfig->Profile.GetDouble("/SimCam/guide_rate", GUIDE_RATE_DEFAULT), 0, GUIDE_RATE_MAX);
     SimCamParams::pier_side = (PierSide) pConfig->Profile.GetInt("/SimCam/pier_side", PIER_SIDE_DEFAULT);
     SimCamParams::reverse_dec_pulse_on_west_side = pConfig->Profile.GetBoolean("/SimCam/reverse_dec_pulse_on_west_side", REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT);
+
+    SimCamParams::show_comet = pConfig->Profile.GetBoolean("/SimCam/show_comet", SHOW_COMET_DEFAULT);
+    SimCamParams::comet_rate_x = pConfig->Profile.GetDouble("/SimCam/comet_rate_x", COMET_RATE_X_DEFAULT);
+    SimCamParams::comet_rate_y = pConfig->Profile.GetDouble("/SimCam/comet_rate_y", COMET_RATE_Y_DEFAULT);
 }
 
 static void save_sim_params()
@@ -170,6 +183,9 @@ static void save_sim_params()
     pConfig->Profile.SetDouble("/SimCam/guide_rate", SimCamParams::guide_rate);
     pConfig->Profile.SetInt("/SimCam/pier_side", (int) SimCamParams::pier_side);
     pConfig->Profile.SetBoolean("/SimCam/reverse_dec_pulse_on_west_side", SimCamParams::reverse_dec_pulse_on_west_side);
+    pConfig->Profile.SetBoolean("/SimCam/show_comet", SimCamParams::show_comet);
+    pConfig->Profile.SetDouble("/SimCam/comet_rate_x", SimCamParams::comet_rate_x);
+    pConfig->Profile.SetDouble("/SimCam/comet_rate_y", SimCamParams::comet_rate_y);
 }
 
 #ifdef STEPGUIDER_SIMULATOR
@@ -315,7 +331,8 @@ void SimCamState::Initialize()
     unsigned int const border = SimCamParams::border;
 
     srand(2); // always generate the same stars
-    for (unsigned int i = 0; i < nr_stars; i++) {
+    for (unsigned int i = 0; i < nr_stars; i++)
+    {
         // generate stars in ra/dec coordinates
         stars[i].pos.x = (double)(rand() % (width - 2 * border)) - 0.5 * width;
         stars[i].pos.y = (double)(rand() % (height - 2 * border)) - 0.5 * height;
@@ -330,6 +347,7 @@ void SimCamState::Initialize()
             stars[i].inten = stars[i - 1].inten;
         }
     }
+
     // generate hot pixels
     unsigned int const nr_hot = SimCamParams::nr_hot_pixels;
     hotpx.resize(nr_hot);
@@ -690,6 +708,23 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 
             render_star(img, subframe, cc[i], inten);
         }
+
+        if (SimCamParams::show_comet)
+        {
+            double x = total_shift_x + now * SimCamParams::comet_rate_x / 3600.;
+            double y = total_shift_y + now * SimCamParams::comet_rate_y / 3600.;
+            double cx = x * cos_t - y * sin_t + width / 2.0;
+            double cy = x * sin_t + y * cos_t + height / 2.0;
+
+            double inten = 3.0;
+            double star = inten * exptime * gain;
+            double dark = (double) gain / 10.0 * offset * exptime / 100.0;
+            double noise = (double)(rand() % (gain * 100));
+            inten = star + dark + noise;
+
+            render_star(img, subframe, wxRealPoint(cx, cy), inten);
+            render_star(img, subframe, wxRealPoint(cx + 2.0, cy), inten / 2.0);
+        }
     }
 
     if (SimCamParams::clouds_inten)
@@ -978,6 +1013,7 @@ struct SimCamDialog : public wxDialog
     wxSpinCtrlDouble *pGuideRateSpin;
     wxSpinCtrlDouble *pCameraAngleSpin;
     wxSpinCtrlDouble *pSeeingSpin;
+    wxCheckBox* showComet;
     wxCheckBox* pCloudsCbx;
     wxCheckBox *pUsePECbx;
     wxCheckBox *pReverseDecPulseCbx;
@@ -1206,9 +1242,12 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     AddTableEntryPair(this, pSessionTable, _("Camera angle"), pCameraAngleSpin);
     pSeeingSpin = NewSpinner(this, SimCamParams::seeing_scale, 0, SEEING_MAX, 0.5, _("Seeing, FWHM arc-sec"));
     AddTableEntryPair(this, pSessionTable, _("Seeing"), pSeeingSpin);
+    showComet = new wxCheckBox(this, wxID_ANY, _("Comet"));
+    showComet->SetValue(SimCamParams::show_comet);
     pCloudsCbx = new wxCheckBox(this, wxID_ANY, _("Star fading due to clouds"));
     pCloudsCbx->SetValue(SimCamParams::clouds_inten > 0);
     pSessionGroup->Add(pSessionTable);
+    pSessionGroup->Add(showComet);
     pSessionGroup->Add(pCloudsCbx);
 
     pVSizer->Add(pCamGroup, wxSizerFlags().Border(wxALL, 10).Expand());
@@ -1265,6 +1304,7 @@ void SimCamDialog::OnReset(wxCommandEvent& event)
     pPierSide = PIER_SIDE_DEFAULT;
     SetRBState( this, USE_PE_DEFAULT_PARAMS);
     UpdatePierSideLabel();
+    showComet->SetValue(SHOW_COMET_DEFAULT);
     pCloudsCbx->SetValue(false);
 }
 
@@ -1312,6 +1352,7 @@ void Camera_SimClass::ShowPropertyDialog()
         SimCamParams::guide_rate =       (double) dlg.pGuideRateSpin->GetValue() * 15.0;
         SimCamParams::pier_side = dlg.pPierSide;
         SimCamParams::reverse_dec_pulse_on_west_side = dlg.pReverseDecPulseCbx->GetValue();
+        SimCamParams::show_comet = dlg.showComet->GetValue();
         SimCamParams::clouds_inten = dlg.pCloudsCbx->GetValue() ? CLOUDS_INTEN_DEFAULT : 0;
         save_sim_params();
         sim->Initialize();

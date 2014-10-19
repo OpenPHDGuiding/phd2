@@ -37,6 +37,7 @@
 #include "phd.h"
 
 #include "Refine_DefMap.h"
+#include "comet_tool.h"
 
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
@@ -75,7 +76,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
     EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
-    EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
+    EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
+    EVT_MENU(wxID_HELP_PROCEDURES, MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
     EVT_MENU(MENU_TAKEDARKS,MyFrame::OnDark)
@@ -294,6 +296,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pDriftTool = NULL;
     pManualGuide = NULL;
     pNudgeLock = NULL;
+    pCometTool = NULL;
     pRefineDefMap = NULL;
     m_starFindMode = Star::FIND_CENTROID;
 
@@ -423,7 +426,8 @@ void MyFrame::SetupMenuBar(void)
     calib_menu->Append(EEGG_CLEARCAL, _("Clear Calibration Data..."), _("Clear calibration data currently in use"));
     m_calibrationMenuItem = tools_menu->AppendSubMenu(calib_menu, _("Calibration"));
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust Lock Position"), _("Adjust the lock position"));
-    tools_menu->Append(MENU_DRIFTTOOL,_("Drift Align"), _("Run the Drift Alignment tool"));
+    tools_menu->Append(MENU_COMETTOOL, _("Comet Tracking"), _("Run the Comet Tracking tool"));
+    tools_menu->Append(MENU_DRIFTTOOL, _("Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_LOG,_("Enable Guide &Log\tAlt-L"),_("Enable guide log file"));
     tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug Log"),_("Enable debug log file"));
@@ -917,6 +921,9 @@ void MyFrame::UpdateButtonsStatus(void)
         wxPostEvent(pDriftTool, event);
     }
 
+    if (pCometTool)
+        CometTool::UpdateCometToolControls();
+
     if (need_update)
     {
         Update();
@@ -1363,7 +1370,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
 
     try
     {
-        if (pGuider->GetState() != STATE_GUIDING)
+        if (!pGuider->IsGuiding())
         {
             throw ERROR_INFO("cannot dither if not guiding");
         }

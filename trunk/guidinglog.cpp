@@ -82,7 +82,7 @@ bool GuidingLog::EnableLogging(void)
         pConfig->Global.SetBoolean("/LoggingMode", m_enabled);
 
         // dump guiding header if logging enabled during guide
-        if (pFrame && pFrame->pGuider->GetState() == STATE_GUIDING)
+        if (pFrame && pFrame->pGuider->IsGuiding())
             GuidingHeader();
     }
     catch (wxString Msg)

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -209,6 +209,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cam_ZWO.cpp" />
     <ClCompile Include="comdispatch.cpp" />
+    <ClCompile Include="comet_tool.cpp" />
     <ClCompile Include="configdialog.cpp" />
     <ClCompile Include="confirm_dialog.cpp" />
     <ClCompile Include="darks_dialog.cpp" />
@@ -326,6 +327,7 @@
     <ClInclude Include="cam_ZWO.h" />
     <ClInclude Include="circbuf.h" />
     <ClInclude Include="comdispatch.h" />
+    <ClInclude Include="comet_tool.h" />
     <ClInclude Include="configdialog.h" />
     <ClInclude Include="confirm_dialog.h" />
     <ClInclude Include="darks_dialog.h" />

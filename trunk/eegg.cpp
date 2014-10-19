@@ -37,6 +37,7 @@
 #include "manualcal_dialog.h"
 #include "calrestore_dialog.h"
 #include "nudge_lock.h"
+#include "comet_tool.h"
 
 void MyFrame::OnEEGG(wxCommandEvent& evt)
 {
@@ -173,5 +174,18 @@ void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(evt))
     if (pDriftTool)
     {
         pDriftTool->Show();
+    }
+}
+
+void MyFrame::OnCometTool(wxCommandEvent& WXUNUSED(evt))
+{
+    if (!pCometTool)
+    {
+        pCometTool = CometTool::CreateCometToolWindow();
+    }
+
+    if (pCometTool)
+    {
+        pCometTool->Show();
     }
 }

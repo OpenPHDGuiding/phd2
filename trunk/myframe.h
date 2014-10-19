@@ -181,6 +181,7 @@ public:
     wxWindow *pDriftTool;
     wxWindow *pManualGuide;
     wxWindow *pNudgeLock;
+    wxWindow *pCometTool;
     RefineDefMap *pRefineDefMap;
     bool CaptureActive; // Is camera looping captures?
     bool m_exposurePending; // exposure scheduled and not completed
@@ -213,6 +214,7 @@ public:
     void OnTestGuide(wxCommandEvent& evt);
     void OnEEGG(wxCommandEvent& evt);
     void OnDriftTool(wxCommandEvent& evt);
+    void OnCometTool(wxCommandEvent& evt);
     void OnSetupCamera(wxCommandEvent& evt);
     void OnExposureDurationSelected(wxCommandEvent& evt);
     void OnGammaSlider(wxScrollEvent& evt);
@@ -475,6 +477,7 @@ enum {
     MENU_TARGET,
     MENU_AUTOSTAR,
     MENU_DRIFTTOOL,
+    MENU_COMETTOOL,
     MENU_SAVESETTINGS,
     MENU_LOADSETTINGS,
     MENU_LOADDARK,
@@ -511,6 +514,7 @@ enum {
     EEGG_MANUALCAL,
     EEGG_CLEARCAL,
     EEGG_MANUALLOCK,
+    EEGG_COMET_TOOL,
     EEGG_STICKY_LOCK,
     EEGG_FLIPRACAL,
     STAR_MASS_ENABLE,

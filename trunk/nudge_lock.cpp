@@ -34,11 +34,13 @@
 
 #include "phd.h"
 #include "nudge_lock.h"
+#include "comet_tool.h"
 
 #include <wx/valnum.h>
 
 struct NudgeLockDialog : public wxDialog
 {
+    wxToggleButton *stayOnTop;
     wxButton *upButton, *downButton, *leftButton, *rightButton;
     wxSlider *nudgeAmountSlider;
     wxCheckBox *stickyLockPos;
@@ -54,6 +56,7 @@ struct NudgeLockDialog : public wxDialog
     NudgeLockDialog();
     ~NudgeLockDialog();
 
+    void OnStayOnTopToggled(wxCommandEvent& event);
     void OnButton(wxCommandEvent& evt);
     void OnNudgeAmountSlider(wxCommandEvent& evt);
     void OnStickyChecked(wxCommandEvent& evt);
@@ -75,6 +78,7 @@ enum
     ID_DOWN_BTN,
     ID_LEFT_BTN,
     ID_RIGHT_BTN,
+    ID_STAY_ON_TOP,
     ID_NUDGE_AMOUNT,
     ID_STICKY,
     ID_SET_LOCK_POS,
@@ -83,6 +87,7 @@ enum
 };
 
 wxBEGIN_EVENT_TABLE(NudgeLockDialog, wxDialog)
+    EVT_TOGGLEBUTTON(ID_STAY_ON_TOP, NudgeLockDialog::OnStayOnTopToggled)
     EVT_BUTTON(ID_UP_BTN, NudgeLockDialog::OnButton)
     EVT_BUTTON(ID_DOWN_BTN, NudgeLockDialog::OnButton)
     EVT_BUTTON(ID_LEFT_BTN, NudgeLockDialog::OnButton)
@@ -111,6 +116,9 @@ static int IncrIdx(double incr)
 NudgeLockDialog::NudgeLockDialog()
     : wxDialog(pFrame, wxID_ANY, _("Adjust Lock Position"), wxPoint(-1,-1), wxSize(300,300))
 {
+    stayOnTop = new wxToggleButton(this, ID_STAY_ON_TOP, wxEmptyString, wxDefaultPosition, wxSize(18, 18));
+    stayOnTop->SetToolTip(_("Always on top"));
+
     upButton = new wxButton(this, ID_UP_BTN, _("Up"));
     downButton = new wxButton(this, ID_DOWN_BTN, _("Down"));
     leftButton = new wxButton(this, ID_LEFT_BTN, _("Left"));
@@ -128,6 +136,12 @@ NudgeLockDialog::NudgeLockDialog()
 
     sz1->AddStretchSpacer();
     sz1->Add(downButton, wxSizerFlags().Expand().Border(wxALL,1));
+
+    wxBoxSizer *sz0 = new wxBoxSizer(wxHORIZONTAL);
+    sz0->AddStretchSpacer();
+    sz0->Add(sz1);
+    sz0->AddStretchSpacer();
+    sz0->Add(stayOnTop, wxSizerFlags().Right());
 
     wxSizer *sz2 = new wxBoxSizer(wxHORIZONTAL);
 
@@ -180,7 +194,7 @@ NudgeLockDialog::NudgeLockDialog()
     sz3->Add(restoreLockPosButton, wxSizerFlags().Border(wxRIGHT, 5).Align(wxALIGN_CENTER_VERTICAL));
 
     wxBoxSizer *outerSizer = new wxBoxSizer(wxVERTICAL);
-    outerSizer->Add(sz1, wxSizerFlags().Border(wxALL,3).Center());
+    outerSizer->Add(sz0, wxSizerFlags().Border(wxALL,3).Expand());
     outerSizer->Add(sz2, wxSizerFlags().Border(wxALL,3).Expand());
     outerSizer->Add(sz3, wxSizerFlags().Border(wxALL,3));
 
@@ -239,6 +253,7 @@ static bool UpdateLockPos(const PHD_Point& newPos)
     {
         pFrame->pGuider->SetLockPosition(newPos);
         pFrame->Refresh();
+        CometTool::NotifyUpdateLockPos();
         return true;
     }
     return false;
@@ -250,6 +265,15 @@ static void DoMove(double dx, double dy)
     newPos.X += dx;
     newPos.Y += dy;
     UpdateLockPos(newPos);
+}
+
+void NudgeLockDialog::OnStayOnTopToggled(wxCommandEvent& event)
+{
+    long style = GetWindowStyle();
+    if (event.IsChecked())
+        SetWindowStyle(style | wxSTAY_ON_TOP);
+    else
+        SetWindowStyle(style & ~wxSTAY_ON_TOP);
 }
 
 void NudgeLockDialog::OnButton(wxCommandEvent &evt)
