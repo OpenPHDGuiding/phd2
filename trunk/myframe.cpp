@@ -978,7 +978,7 @@ void MyFrame::DoAlert(const alert_params& params)
         buttonSpace = 280;
     }
 
-    m_infoBar->ShowMessage(pFrame ? WrapText(m_infoBar, params.msg, wxMax(pFrame->GetSize().GetWidth() - buttonSpace, 100)) : params.msg, params.flags);
+    m_infoBar->ShowMessage(pFrame && pFrame->pGuider ? WrapText(m_infoBar, params.msg, wxMax(pFrame->pGuider->GetSize().GetWidth() - buttonSpace, 100)) : params.msg, params.flags);
 
     EvtServer.NotifyAlert(params.msg, params.flags);
 }
