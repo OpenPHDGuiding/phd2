@@ -236,7 +236,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_REQDIST:
             {
                 Debug.AddLine("processing socket request REQDIST");
-                if (pGuider->GetState() != STATE_GUIDING)
+                if (!pGuider->IsGuiding())
                 {
                     throw ERROR_INFO("cannot request distance if not guiding");
                 }

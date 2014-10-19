@@ -190,6 +190,7 @@ public:
     GUIDER_STATE GetState(void);
     static EXPOSED_STATE GetExposedState(void);
     bool IsCalibratingOrGuiding(void);
+    bool IsGuiding(void) const;
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
     void UpdateImageDisplay(usImage *pImage=NULL);
@@ -284,6 +285,11 @@ inline bool Guider::IsPaused(void) const
 inline PauseType Guider::GetPauseType(void) const
 {
     return m_paused;
+}
+
+inline bool Guider::IsGuiding(void) const
+{
+    return m_state == STATE_GUIDING;
 }
 
 #endif /* GUIDER_H_INCLUDED */

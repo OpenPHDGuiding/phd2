@@ -133,6 +133,10 @@
 			<param name="Local" value="Tools.htm#Lock_Positions">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Comet Tracking">
+			<param name="Local" value="Tools.htm#Comet_Tracking">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Equipment Profiles">
 			<param name="Local" value="Tools.htm#Managing_Equipment_Profiles">
 			</OBJECT>

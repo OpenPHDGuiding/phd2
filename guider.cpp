@@ -34,6 +34,7 @@
 
 #include "phd.h"
 #include "nudge_lock.h"
+#include "comet_tool.h"
 
 static const int DefaultOverlayMode  = OVERLAY_NONE;
 static const bool DefaultScaleImage  = false;
@@ -54,6 +55,9 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_starFoundTimestamp = 0;
     m_avgDistanceNeedReset = false;
     m_lockPosShift.shiftEnabled = false;
+    m_lockPosShift.shiftRate.SetXY(0., 0.);
+    m_lockPosShift.shiftUnits = UNIT_ARCSEC;
+    m_lockPosShift.shiftIsMountCoords = true;
     m_lockPosIsSticky = false;
     m_forceFullFrame = false;
     m_pCurrentImage = new usImage(); // so we always have one
@@ -723,7 +727,7 @@ void Guider::UpdateCurrentDistance(double distance)
 {
     m_starFoundTimestamp = wxDateTime::GetTimeNow();
 
-    if (GetState() == STATE_GUIDING)
+    if (IsGuiding())
     {
         // update moving average distance
         static double const alpha = .3; // moderately high weighting for latest sample
@@ -853,13 +857,14 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
         assert(!pMount || !pMount->IsBusy());
 
         // shift lock position
-        if (LockPosShiftEnabled() && m_state == STATE_GUIDING)
+        if (LockPosShiftEnabled() && IsGuiding())
         {
             if (ShiftLockPosition())
             {
                 pFrame->Alert(_("Shifted lock position outside allowable area. Lock Position Shift disabled."));
                 EnableLockPosShift(false);
             }
+            NudgeLockTool::UpdateNudgeLockControls();
         }
 
         FrameDroppedInfo info;
@@ -1097,6 +1102,8 @@ void Guider::SetLockPosShiftRate(const PHD_Point& rate, GRAPH_UNITS units, bool 
     m_lockPosShift.shiftUnits = units;
     m_lockPosShift.shiftIsMountCoords = isMountCoords;
 
+    CometTool::UpdateCometToolControls();
+
     if (m_state == STATE_CALIBRATED || m_state == STATE_GUIDING)
     {
         UpdateLockPosShiftCameraCoords();
@@ -1121,6 +1128,8 @@ void Guider::EnableLockPosShift(bool enable)
         {
             GuideLog.NotifyLockShiftParams(m_lockPosShift, m_lockPosition.ShiftRate());
         }
+
+        CometTool::UpdateCometToolControls();
     }
 }
 

@@ -487,7 +487,7 @@ repeat:
         // use full frames for adjust phase
         pCamera->UseSubframes = false;
 
-        if (pFrame->pGuider->GetState() == STATE_GUIDING)
+        if (pFrame->pGuider->IsGuiding())
         {
             // stop guiding but continue looping
             pFrame->OnLoopExposure(dummy);
@@ -508,7 +508,7 @@ repeat:
         // restore subframes setting
         pCamera->UseSubframes = m_save_use_subframes;
 
-        if (pFrame->pGuider->GetState() == STATE_GUIDING)
+        if (pFrame->pGuider->IsGuiding())
         {
             // stop guiding but continue looping
             pFrame->OnLoopExposure(dummy);
