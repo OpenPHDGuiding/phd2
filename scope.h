@@ -53,8 +53,9 @@ class Scope : public Mount
     int m_calibrationSteps;
     int m_recenterRemaining;
     int m_recenterDuration;
-    PHD_Point m_calibrationStartingLocation;
-    double m_lastSouthDistance;
+    PHD_Point m_calibrationInitialLocation;   // initial position of guide star
+    PHD_Point m_calibrationStartingLocation;  // position of guide star at start of calibration measurement (after clear backlash etc.)
+    PHD_Point m_lastLocation;
 
     double m_calibrationXAngle;
     double m_calibrationXRate;
