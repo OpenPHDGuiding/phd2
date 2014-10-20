@@ -653,7 +653,7 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
 
         ClearCalibration();
         m_calibrationSteps = 0;
-        m_calibrationStartingLocation = currentLocation;
+        m_calibrationInitialLocation = m_calibrationStartingLocation = currentLocation;
         m_calibrationState = CALIBRATION_STATE_GO_WEST;
     }
     catch (wxString Msg)
@@ -708,15 +708,16 @@ int Scope::CalibrationTotDistance(void)
 
 #define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
 
-// Compute dec distance needed for final 'nudging' back to starting position
-static double SouthDistance(const PHD_Point& cameraVector, double xCalibAngle, double yCalibAngle)
+// Convert camera coords to mount coords
+static PHD_Point MountCoords(const PHD_Point& cameraVector, double xCalibAngle, double yCalibAngle)
 {
     double hyp = cameraVector.Distance();
     double cameraTheta = cameraVector.Angle();
     double yAngleError = (xCalibAngle - yCalibAngle) + M_PI / 2;
     yAngleError = atan2(sin(yAngleError), cos(yAngleError));
+    double xAngle = cameraTheta - xCalibAngle;
     double yAngle = cameraTheta - (xCalibAngle + yAngleError);
-    return hyp * sin(yAngle);
+    return PHD_Point(hyp * cos(xAngle), hyp * sin(yAngle));
 }
 
 bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
@@ -797,10 +798,13 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
+                    m_lastLocation = currentLocation;
 
                     pFrame->ScheduleCalibrationMove(this, EAST, duration);
                     break;
                 }
+
+                // setup for clear backlash
 
                 m_calibrationSteps = 0; dist = 0.0;
                 m_calibrationStartingLocation = currentLocation;
@@ -861,7 +865,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     break;
                 }
 
-                // note: this calculation is reversed from the ra calculation, becase
+                // note: this calculation is reversed from the ra calculation, because
                 // that one was calibrating WEST, but the angle is really relative
                 // to EAST
                 m_calibrationYAngle = currentLocation.Angle(m_calibrationStartingLocation);
@@ -905,32 +909,35 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
-                    m_lastSouthDistance = SouthDistance(currentLocation - m_calibrationStartingLocation, m_calibrationXAngle, m_calibrationYAngle);
+                    m_lastLocation = currentLocation;
 
                     pFrame->ScheduleCalibrationMove(this, SOUTH, duration);
                     break;
                 }
-                // Rules for restoring star position: move only in Dec, get within 2 px of north/south starting point, don't try more than 3 times,
-                // use only south (same-direction) guide pulses
-                if (m_calibrationSteps <= MAX_NUDGES && abs(currentLocation.Distance(m_calibrationStartingLocation)) > NUDGE_TOLERANCE && m_decGuideMode != DEC_NONE)
+
+                // Nudge further South on Dec, get within 2 px North/South of starting point, don't try more than 3 times.
+                if (m_calibrationSteps <= MAX_NUDGES && currentLocation.Distance(m_calibrationInitialLocation) > NUDGE_TOLERANCE)
                 {
-                    double decAmt = SouthDistance(currentLocation - m_calibrationStartingLocation, m_calibrationXAngle, m_calibrationYAngle);
-                    Debug.AddLine(wxString::Format("Final nudging, decAmt = %.3f, lastSouthDistance = %.3f", decAmt, m_lastSouthDistance));
-                    if (decAmt * m_lastSouthDistance > 0.0)           // still in the same direction
+                    double firstDecAmt = MountCoords(m_lastLocation - m_calibrationInitialLocation, m_calibrationXAngle, m_calibrationYAngle).Y;
+                    double decAmt = MountCoords(currentLocation - m_calibrationInitialLocation, m_calibrationXAngle, m_calibrationYAngle).Y;
+                    Debug.AddLine(wxString::Format("Final nudging, decAmt = %.3f, lastSouthDistance = %.3f", decAmt, firstDecAmt));
+                    if (decAmt * firstDecAmt > 0.0)           // still in the same direction
                     {
                         decAmt = fabs(decAmt);           // Sign doesn't matter now, we're always moving south
-                        decAmt = wxMin(decAmt, (double)pFrame->pGuider->GetMaxMovePixels());
-                        int pulseAmt = (int)floor(decAmt / m_calibrationYRate);
-                        Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d mSec", pulseAmt));
-                        m_calibrationSteps++;
-                        status0.Printf(_("Final Nudge %3d"), m_calibrationSteps);
+                        decAmt = wxMin(decAmt, (double) pFrame->pGuider->GetMaxMovePixels());
+                        int pulseAmt = (int) floor(decAmt / m_calibrationYRate);
+                        Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d ms", pulseAmt));
+                        ++m_calibrationSteps;
+                        status0.Printf(_("Final Nudge South %3d"), m_calibrationSteps);
                         GuideLog.CalibrationStep(this, "NudgeSouth", 0, dX, dY, currentLocation, dist);
                         pFrame->ScheduleCalibrationMove(this, SOUTH, pulseAmt);
                         break;
                     }
                 }
+
                 Debug.AddLine(wxString::Format("Final nudging status: Current loc = {%.3f,%.3f}, targeting {%.3f,%.3f}", currentLocation.X, currentLocation.Y,
-                    m_calibrationStartingLocation.X, m_calibrationStartingLocation.Y));
+                    m_calibrationInitialLocation.X, m_calibrationInitialLocation.Y));
+
                 m_calibrationState = CALIBRATION_STATE_COMPLETE;
                 // fall through
                 Debug.AddLine("Falling Through to state CALIBRATION_COMPLETE");
