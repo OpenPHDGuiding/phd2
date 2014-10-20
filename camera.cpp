@@ -690,14 +690,14 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     // Pixel size always
     m_pPixelSize = NewSpinnerDouble(pParent, width, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
         _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
-    AddTableEntryPair(pParent, pCamControls, "Pixel size", m_pPixelSize);
+    AddTableEntryPair(pParent, pCamControls, _("Pixel size"), m_pPixelSize);
 
     // Gain control
     if (m_pCamera->HasGainControl)
     {
         int width = StringWidth(_T("0000")) + 30;
         m_pCameraGain = NewSpinnerInt(pParent, width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
-        AddTableEntryPair(pParent, pCamControls, "Camera gain", m_pCameraGain);
+        AddTableEntryPair(pParent, pCamControls, _("Camera gain"), m_pCameraGain);
     }
 
     // Delay parameter
@@ -705,7 +705,7 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     {
         int width = StringWidth(_T("0000")) + 30;
         m_pDelay = NewSpinnerInt(pParent, width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
-        AddTableEntryPair(pParent, pCamControls, "Delay", m_pDelay);
+        AddTableEntryPair(pParent, pCamControls, _("Delay"), m_pDelay);
     }
     // Port number
     if (m_pCamera->HasPortNum)
