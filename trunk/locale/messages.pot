@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-19 01:27-0400\n"
+"POT-Creation-Date: 2014-10-20 00:20-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -857,14 +857,26 @@ msgid ""
 "length to display guiding error in arc-seconds."
 msgstr ""
 
+#: camera.cpp:693
+msgid "Pixel size"
+msgstr ""
+
 #: camera.cpp:699
 msgid ""
 "Camera gain boost ? Default = 95 % , lower if you experience noise or wish "
 "to guide on a very bright star. Not available on all cameras."
 msgstr ""
 
+#: camera.cpp:700
+msgid "Camera gain"
+msgstr ""
+
 #: camera.cpp:707
 msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
+msgstr ""
+
+#: camera.cpp:708
+msgid "Delay"
 msgstr ""
 
 #: camera.cpp:722
@@ -963,11 +975,11 @@ msgid ""
 msgstr ""
 
 #: comet_tool.cpp:305 graph.cpp:157 graph.cpp:184 graph.cpp:320
-#: guide_algorithm.cpp:48 scope.cpp:1037 statswindow.cpp:66 target.cpp:336
+#: guide_algorithm.cpp:48 scope.cpp:1065 statswindow.cpp:66 target.cpp:336
 msgid "RA"
 msgstr ""
 
-#: comet_tool.cpp:306 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:1044
+#: comet_tool.cpp:306 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:1072
 #: statswindow.cpp:70 target.cpp:337
 msgid "Dec"
 msgstr ""
@@ -2065,12 +2077,12 @@ msgstr ""
 msgid "%s%*s%s %.2f px %d ms"
 msgstr ""
 
-#: mount.cpp:637 scope.cpp:1062 scope.cpp:1151 scope.cpp:1185
+#: mount.cpp:637 scope.cpp:1090 scope.cpp:1179 scope.cpp:1213
 #: testguide.cpp:152
 msgid "South"
 msgstr ""
 
-#: mount.cpp:637 scope.cpp:1062 scope.cpp:1151 scope.cpp:1185
+#: mount.cpp:637 scope.cpp:1090 scope.cpp:1179 scope.cpp:1213
 #: testguide.cpp:152
 msgid "North"
 msgstr ""
@@ -2472,7 +2484,7 @@ msgstr ""
 msgid "&Help"
 msgstr ""
 
-#: myframe.cpp:752 scope.cpp:1062 scope.cpp:1151 scope.cpp:1185
+#: myframe.cpp:752 scope.cpp:1090 scope.cpp:1179 scope.cpp:1213
 msgid "Auto"
 msgstr ""
 
@@ -3402,129 +3414,134 @@ msgid ""
 "star locked. Increasing the %s will allow PHD to make the needed corrections."
 msgstr ""
 
-#: scope.cpp:745
+#: scope.cpp:746
 msgid "RA Calibration Failed: star did not move enough"
 msgstr ""
 
-#: scope.cpp:752
+#: scope.cpp:753
 #, c-format
 msgid "West step %3d"
 msgstr ""
 
-#: scope.cpp:781 scope.cpp:889
+#: scope.cpp:782 scope.cpp:915
 #, c-format
 msgid "angle=%.1f rate=%.4f"
 msgstr ""
 
-#: scope.cpp:791
+#: scope.cpp:792
 #, c-format
 msgid "East step %3d"
 msgstr ""
 
-#: scope.cpp:827
+#: scope.cpp:819
+#, c-format
+msgid "Final Nudge East %3d"
+msgstr ""
+
+#: scope.cpp:853
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr ""
 
-#: scope.cpp:834
+#: scope.cpp:860
 #, c-format
 msgid "Clear backlash step %3d"
 msgstr ""
 
-#: scope.cpp:851
+#: scope.cpp:877
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr ""
 
-#: scope.cpp:858
+#: scope.cpp:884
 #, c-format
 msgid "North step %3d"
 msgstr ""
 
-#: scope.cpp:899
+#: scope.cpp:925
 #, c-format
 msgid "South step %3d"
 msgstr ""
 
-#: scope.cpp:926
+#: scope.cpp:952
 #, c-format
-msgid "Final Nudge %3d"
+msgid "Final Nudge South %3d"
 msgstr ""
 
-#: scope.cpp:942
+#: scope.cpp:970
 msgid "calibration complete"
 msgstr ""
 
-#: scope.cpp:957
+#: scope.cpp:985
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1022
+#: scope.cpp:1050
 msgid "Calculate..."
 msgstr ""
 
-#: scope.cpp:1023
+#: scope.cpp:1051
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
 msgstr ""
 
-#: scope.cpp:1026
+#: scope.cpp:1054
 msgid "Calibration step (ms)"
 msgstr ""
 
-#: scope.cpp:1027
+#: scope.cpp:1055
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
 msgstr ""
 
-#: scope.cpp:1038
+#: scope.cpp:1066
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 1000 ms."
 msgstr ""
 
-#: scope.cpp:1045
+#: scope.cpp:1073
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 1000 ms.  Increase if drift is fast."
 msgstr ""
 
-#: scope.cpp:1050
+#: scope.cpp:1078
 msgid "Reverse Dec output after meridian flip"
 msgstr ""
 
-#: scope.cpp:1051
+#: scope.cpp:1079
 msgid ""
 "Check if your mount needs Dec output reversed after doing Flip Calibration "
 "Data"
 msgstr ""
 
-#: scope.cpp:1055
+#: scope.cpp:1083
 msgid "Stop guiding when mount slews"
 msgstr ""
 
-#: scope.cpp:1056
+#: scope.cpp:1084
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr ""
 
-#: scope.cpp:1062 scope.cpp:1151 scope.cpp:1185
+#: scope.cpp:1090 scope.cpp:1179 scope.cpp:1213
 msgid "Off"
 msgstr ""
 
-#: scope.cpp:1067
+#: scope.cpp:1095
 msgid "Dec guide mode"
 msgstr ""
 
-#: scope.cpp:1068
+#: scope.cpp:1096
 msgid "Guide in declination as well?"
 msgstr ""
 
-#: scope.cpp:1143
+#: scope.cpp:1171
 msgid "Mx RA"
 msgstr ""
 
-#: scope.cpp:1149
+#: scope.cpp:1177
 msgid "Mx DEC"
 msgstr ""
 
