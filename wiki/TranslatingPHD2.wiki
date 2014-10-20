@@ -1,4 +1,4 @@
-#summary Instructions of translators
+#summary Instructions for translators
 
 = Introduction =
 
