@@ -17,6 +17,7 @@
   * [BuildingPHD2OnOSX]
   * [BuildingPHD2OnLinux]
 
+  * [TranslatingPHD2]
   * [V2_Documentation]
   * [EventMonitoring]
   * [SocketServerInterface]
