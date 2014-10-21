@@ -4,6 +4,7 @@
 = open-phd-guiding / PHD2 links =
 
   * Users home page: http://openphdguiding.org/
+  * Manual: http://openphdguiding.org/man/
   * Forum: https://groups.google.com/forum/#!forum/open-phd-guiding
   * Bug tracker: https://code.google.com/p/open-phd-guiding/issues/list
   * IRC developer and user chat: irc://irc.freenode.net/#phd
@@ -18,7 +19,6 @@
   * [BuildingPHD2OnLinux]
 
   * [TranslatingPHD2]
-  * [V2_Documentation]
   * [EventMonitoring]
   * [SocketServerInterface]
 
