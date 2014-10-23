@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.2.2a\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-20 00:20-0400\n"
+"POT-Creation-Date: 2014-10-23 14:09-0400\n"
 "PO-Revision-Date: 2014-05-21 13:23+0800\n"
 "Last-Translator: Linkage <Linkage@163.com>\n"
 "Language-Team: Linkage <Linkage@163.com>\n"
@@ -837,8 +837,8 @@ msgstr ""
 #: gear_dialog.cpp:322 gear_dialog.cpp:326 gear_dialog.cpp:527 mount.cpp:98
 #: mount.cpp:121 myframe.cpp:2027 profile_wizard.cpp:187
 #: profile_wizard.cpp:188 profile_wizard.cpp:271 profile_wizard.cpp:276
-#: profile_wizard.cpp:475 profile_wizard.cpp:483 scope.cpp:235 scope.cpp:278
-#: scope.cpp:316 stepguider.cpp:89 stepguider.cpp:113
+#: profile_wizard.cpp:475 profile_wizard.cpp:483 scope.cpp:240 scope.cpp:283
+#: scope.cpp:321 stepguider.cpp:89 stepguider.cpp:113
 msgid "None"
 msgstr "*无"
 
@@ -996,11 +996,11 @@ msgid ""
 msgstr ""
 
 #: comet_tool.cpp:305 graph.cpp:157 graph.cpp:184 graph.cpp:320
-#: guide_algorithm.cpp:48 scope.cpp:1065 statswindow.cpp:66 target.cpp:336
+#: guide_algorithm.cpp:48 scope.cpp:1087 statswindow.cpp:66 target.cpp:336
 msgid "RA"
 msgstr "赤经"
 
-#: comet_tool.cpp:306 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:1072
+#: comet_tool.cpp:306 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:1094
 #: statswindow.cpp:70 target.cpp:337
 msgid "Dec"
 msgstr "赤纬"
@@ -2172,21 +2172,21 @@ msgstr "%s %5.2f 像素 %3.0f 毫秒"
 msgid "%s%*s%s %.2f px %d ms"
 msgstr "%s%*s%s %.2f 像素 %.0f 毫秒"
 
-#: mount.cpp:637 scope.cpp:1090 scope.cpp:1179 scope.cpp:1213
+#: mount.cpp:637 scope.cpp:1116 scope.cpp:1207 scope.cpp:1241
 #: testguide.cpp:152
 msgid "South"
 msgstr "南向"
 
-#: mount.cpp:637 scope.cpp:1090 scope.cpp:1179 scope.cpp:1213
+#: mount.cpp:637 scope.cpp:1116 scope.cpp:1207 scope.cpp:1241
 #: testguide.cpp:152
 msgid "North"
 msgstr "北向"
 
-#: mount.cpp:821
+#: mount.cpp:820
 msgid "RA:"
 msgstr "赤经："
 
-#: mount.cpp:826
+#: mount.cpp:825
 msgid "DEC:"
 msgstr "赤纬："
 
@@ -2593,7 +2593,7 @@ msgstr "标记"
 msgid "&Help"
 msgstr "帮助"
 
-#: myframe.cpp:752 scope.cpp:1090 scope.cpp:1179 scope.cpp:1213
+#: myframe.cpp:752 scope.cpp:1116 scope.cpp:1207 scope.cpp:1241
 msgid "Auto"
 msgstr "自动"
 
@@ -3033,7 +3033,7 @@ msgid ""
 "build a Dark Library or Bad-pixel Map."
 msgstr ""
 
-#: myframe_events.cpp:624 scope.cpp:511
+#: myframe_events.cpp:624 scope.cpp:522
 #, fuzzy
 msgid ""
 "Don't show\n"
@@ -3581,87 +3581,82 @@ msgstr ""
 msgid "The operation was canceled"
 msgstr ""
 
-#: scope.cpp:508
+#: scope.cpp:519
 msgid "Max RA Duration setting"
 msgstr ""
 
-#: scope.cpp:508
+#: scope.cpp:519
 msgid "Max Dec Duration setting"
 msgstr ""
 
-#: scope.cpp:509
+#: scope.cpp:520
 #, c-format
 msgid ""
 "Your %s is preventing PHD from making adequate corrections to keep the guide "
 "star locked. Increasing the %s will allow PHD to make the needed corrections."
 msgstr ""
 
-#: scope.cpp:746
+#: scope.cpp:774
 msgid "RA Calibration Failed: star did not move enough"
 msgstr "赤经校准失败：星点未能移动足够的距离"
 
-#: scope.cpp:753
+#: scope.cpp:781
 #, c-format
 msgid "West step %3d"
 msgstr "西 %3d"
 
-#: scope.cpp:782 scope.cpp:915
+#: scope.cpp:810 scope.cpp:935
 #, fuzzy, c-format
 msgid "angle=%.1f rate=%.4f"
 msgstr "角度=%.2f 速率=%.4f"
 
-#: scope.cpp:792
+#: scope.cpp:820
 #, c-format
 msgid "East step %3d"
 msgstr "东 %3d"
 
-#: scope.cpp:819
-#, c-format
-msgid "Final Nudge East %3d"
-msgstr ""
-
-#: scope.cpp:853
+#: scope.cpp:858
 msgid "Backlash Clearing Failed: star did not move enough"
 msgstr "回差消除失败：星点未能移动足够的距离。"
 
-#: scope.cpp:860
+#: scope.cpp:865
 #, c-format
 msgid "Clear backlash step %3d"
 msgstr "消除回差 %3d"
 
-#: scope.cpp:877
+#: scope.cpp:882
 msgid "DEC Calibration Failed: star did not move enough"
 msgstr "赤纬校准失败：星点未能移动足够的距离"
 
-#: scope.cpp:884
+#: scope.cpp:889
 #, c-format
 msgid "North step %3d"
 msgstr "北 %3d"
 
-#: scope.cpp:925
+#: scope.cpp:945
 #, c-format
 msgid "South step %3d"
 msgstr "南 %3d"
 
-#: scope.cpp:952
+#: scope.cpp:973
 #, c-format
 msgid "Final Nudge South %3d"
 msgstr ""
 
-#: scope.cpp:970
+#: scope.cpp:991
 msgid "calibration complete"
 msgstr "校准成功"
 
-#: scope.cpp:985
+#: scope.cpp:1006
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
 msgstr "dx=%4.1f dy=%4.1f dist=%4.1f"
 
-#: scope.cpp:1050
+#: scope.cpp:1072
 msgid "Calculate..."
 msgstr "计算器..."
 
-#: scope.cpp:1051
+#: scope.cpp:1073
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
@@ -3669,11 +3664,11 @@ msgstr ""
 "*Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
 
-#: scope.cpp:1054
+#: scope.cpp:1076
 msgid "Calibration step (ms)"
 msgstr "校准时长 (毫秒)"
 
-#: scope.cpp:1055
+#: scope.cpp:1077
 #, fuzzy
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
@@ -3682,7 +3677,7 @@ msgstr ""
 "*How long a guide pulse should be used during calibration? Default = 750ms, "
 "increase for short f/l scopes and decrease for longer f/l scopes"
 
-#: scope.cpp:1066
+#: scope.cpp:1088
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 1000 ms."
@@ -3690,7 +3685,7 @@ msgstr ""
 "*Longest length of pulse to send in RA\n"
 "Default = 1000 ms."
 
-#: scope.cpp:1073
+#: scope.cpp:1095
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 1000 ms.  Increase if drift is fast."
@@ -3698,11 +3693,11 @@ msgstr ""
 "*Longest length of pulse to send in declination\n"
 "Default = 1000 ms.  Increase if drift is fast."
 
-#: scope.cpp:1078
+#: scope.cpp:1100
 msgid "Reverse Dec output after meridian flip"
 msgstr "中天翻转后反转赤纬数据"
 
-#: scope.cpp:1079
+#: scope.cpp:1101
 msgid ""
 "Check if your mount needs Dec output reversed after doing Flip Calibration "
 "Data"
@@ -3710,31 +3705,42 @@ msgstr ""
 "*Check if your mount needs Dec output reversed after doing Flip Calibration "
 "Data"
 
-#: scope.cpp:1083
+#: scope.cpp:1105
 msgid "Stop guiding when mount slews"
 msgstr ""
 
-#: scope.cpp:1084
+#: scope.cpp:1106
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr ""
 
-#: scope.cpp:1090 scope.cpp:1179 scope.cpp:1213
+#: scope.cpp:1112
+msgid "Assume Dec orthogonal to RA"
+msgstr ""
+
+#: scope.cpp:1113
+msgid ""
+"Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
+"Prevents RA periodic error from affecting Dec calibration. Option takes "
+"effect when calibrating DEC."
+msgstr ""
+
+#: scope.cpp:1116 scope.cpp:1207 scope.cpp:1241
 msgid "Off"
 msgstr "关"
 
-#: scope.cpp:1095
+#: scope.cpp:1121
 msgid "Dec guide mode"
 msgstr "赤纬导星模式"
 
-#: scope.cpp:1096
+#: scope.cpp:1122
 msgid "Guide in declination as well?"
 msgstr "*Guide in declination as well?"
 
-#: scope.cpp:1171
+#: scope.cpp:1199
 msgid "Mx RA"
 msgstr ""
 
-#: scope.cpp:1177
+#: scope.cpp:1205
 msgid "Mx DEC"
 msgstr ""
 
