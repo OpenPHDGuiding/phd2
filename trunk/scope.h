@@ -59,9 +59,9 @@ class Scope : public Mount
 
     double m_calibrationXAngle;
     double m_calibrationXRate;
-
     double m_calibrationYAngle;
     double m_calibrationYRate;
+    bool m_assumeOrthogonal;
 
     bool m_calibrationFlipRequiresDecFlip;
     bool m_stopGuidingWhenSlewing;
@@ -89,6 +89,7 @@ protected:
         wxChoice   *m_pDecMode;
         wxCheckBox *m_pNeedFlipDec;
         wxCheckBox *m_pStopGuidingWhenSlewing;
+        wxCheckBox *m_assumeOrthogonal;
 
         void OnCalcCalibrationStep(wxCommandEvent& evt);
 
@@ -158,6 +159,8 @@ public:
     void SetCalibrationFlipRequiresDecFlip(bool val);
     void EnableStopGuidingWhenSlewing(bool enable);
     bool IsStopGuidingWhenSlewingEnabled(void) const;
+    void SetAssumeOrthogonal(bool val);
+    bool IsAssumeOrthogonal(void) const;
 
     virtual void StartDecDrift(void);
     virtual void EndDecDrift(void);
@@ -182,6 +185,11 @@ private:
 inline bool Scope::IsStopGuidingWhenSlewingEnabled(void) const
 {
     return m_stopGuidingWhenSlewing;
+}
+
+inline bool Scope::IsAssumeOrthogonal(void) const
+{
+    return m_assumeOrthogonal;
 }
 
 #endif /* SCOPE_H_INCLUDED */

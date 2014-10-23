@@ -536,8 +536,8 @@ bool Mount::FlipCalibration(void)
 
         bool decFlipRequired = CalibrationFlipRequiresDecFlip();
 
-        Debug.AddLine(wxString::Format("FlipCalibration before: x=%.2f, y=%.2f decFlipRequired=%d sideOfPier=%s",
-            origX, origY, decFlipRequired, ::PierSideStr(m_calPierSide)));
+        Debug.AddLine(wxString::Format("FlipCalibration before: x=%.1f, y=%.1f decFlipRequired=%d sideOfPier=%s",
+            origX * 180. / M_PI, origY * 180. / M_PI, decFlipRequired, ::PierSideStr(m_calPierSide)));
 
         double newX = origX + M_PI;
         double newY = origY;
@@ -547,7 +547,7 @@ bool Mount::FlipCalibration(void)
             newY += M_PI;
         }
 
-        Debug.AddLine("FlipCalibration pre-normalize: x=%.2f, y=%.2f", newX, newY);
+        Debug.AddLine("FlipCalibration pre-normalize: x=%.1f, y=%.1f", newX * 180. / M_PI, newY * 180. / M_PI);
 
         // normalize
         newX = atan2(sin(newX), cos(newX));
@@ -556,8 +556,8 @@ bool Mount::FlipCalibration(void)
         PierSide priorPierSide = m_calPierSide;
         PierSide newPierSide = OppositeSide(m_calPierSide);
 
-        Debug.AddLine(wxString::Format("FlipCalibration after: x=%.2f, y=%.2f sideOfPier=%s",
-            newX, newY, ::PierSideStr(newPierSide)));
+        Debug.AddLine(wxString::Format("FlipCalibration after: x=%.1f, y=%.1f sideOfPier=%s",
+            newX * 180. / M_PI, newY * 180. / M_PI, ::PierSideStr(newPierSide)));
 
         SetCalibration(newX, newY, m_calXRate, m_yRate, m_calDeclination, newPierSide);
 
@@ -804,7 +804,6 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
         Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f",
                 mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
                 cameraVectorEndpoint.Angle());
-
     }
     catch (wxString Msg)
     {
@@ -980,8 +979,8 @@ void Mount::ClearCalibration(void)
 
 void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide)
 {
-    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.2f yAngle=%.2f xRate=%.4f yRate=%.4f dec=%.2f pierSide=%d",
-        GetMountClassName(), xAngle, yAngle, xRate, yRate, declination, pierSide));
+    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.4f yRate=%.4f dec=%.1f pierSide=%d",
+        GetMountClassName(), xAngle * 180. / M_PI, yAngle * 180. / M_PI, xRate, yRate, declination, pierSide));
 
     // we do the rates first, since they just get stored
     m_yRate  = yRate;
@@ -997,8 +996,8 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
 
     m_yAngleError = atan2(sin(m_yAngleError), cos(m_yAngleError));
 
-    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- sets m_xAngle=%.2f m_yAngleError=%.2f",
-        GetMountClassName(), m_xAngle, m_yAngleError));
+    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- sets m_xAngle=%.1f m_yAngleError=%.1f",
+        GetMountClassName(), m_xAngle * 180. / M_PI, m_yAngleError * 180. / M_PI));
 
     m_calibrated = true;
     if (pFrame) pFrame->UpdateCalibrationStatus();
@@ -1140,8 +1139,8 @@ wxString Mount::GetSettingsSummary()
         m_Name,
         IsConnected() ? " " : " not",
         m_guidingEnabled ? "enabled" : "disabled",
-        IsCalibrated() ? wxString::Format("xAngle = %.3f, xRate = %.4f, yAngle = %.3f, yRate = %.4f",
-                xAngle(), xRate(), yAngle(), yRate()) : "not calibrated",
+        IsCalibrated() ? wxString::Format("xAngle = %.1f, xRate = %.4f, yAngle = %.1f, yRate = %.4f",
+                xAngle() * 180. / M_PI, xRate(), yAngle() * 180. / M_PI, yRate()) : "not calibrated",
                 dec_str,
                 ::PierSideStr(pPointingSource->SideOfPier())
     ) + wxString::Format("X guide algorithm = %s, %s",
