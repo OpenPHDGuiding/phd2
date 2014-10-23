@@ -38,6 +38,8 @@
 #include "socket_server.h"
 #include "calstep_dialog.h"
 
+#define CALIBRATION_RATE_UNCALIBRATED 123e4
+
 static const int DefaultCalibrationDuration = 750;
 static const int DefaultMaxDecDuration = 2500;
 static const int DefaultMaxRaDuration = 2500;
@@ -84,6 +86,9 @@ Scope::Scope(void)
 
     bool val = pConfig->Profile.GetBoolean(prefix + "/CalFlipRequiresDecFlip", false);
     SetCalibrationFlipRequiresDecFlip(val);
+
+    val = pConfig->Profile.GetBoolean(prefix + "/AssumeOrthogonal", false);
+    SetAssumeOrthogonal(val);
 }
 
 Scope::~Scope(void)
@@ -419,6 +424,12 @@ void Scope::SetCalibrationFlipRequiresDecFlip(bool val)
     pConfig->Profile.SetBoolean("/scope/CalFlipRequiresDecFlip", val);
 }
 
+void Scope::SetAssumeOrthogonal(bool val)
+{
+    m_assumeOrthogonal = val;
+    pConfig->Profile.SetBoolean("/scope/AssumeOrthogonal", val);
+}
+
 void Scope::EnableStopGuidingWhenSlewing(bool enable)
 {
     if (enable)
@@ -687,7 +698,7 @@ bool Scope::IsCalibrated(void)
     case DEC_NORTH:
     case DEC_SOUTH:
         {
-            bool have_ns_calibration = m_calibrationYAngle != 0.0 || m_calibrationYRate != 1.0;
+            bool have_ns_calibration = m_calibrationYRate != CALIBRATION_RATE_UNCALIBRATED;
             return have_ns_calibration;
         }
     default:
@@ -707,6 +718,23 @@ int Scope::CalibrationTotDistance(void)
 }
 
 #define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
+
+inline static double norm(double val, double start, double end)
+{
+    double const range = end - start;
+    double const ofs = val - start;
+    return val - floor(ofs / range) * range;
+}
+
+inline static double norm_angle(double val)
+{
+    return norm(val, -M_PI, M_PI);
+}
+
+inline static double degrees(double radians)
+{
+    return radians * 180. / M_PI;
+}
 
 // Convert camera coords to mount coords
 static PHD_Point MountCoords(const PHD_Point& cameraVector, double xCalibAngle, double yCalibAngle)
@@ -812,10 +840,9 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 if (m_decGuideMode == DEC_NONE)
                 {
                     m_calibrationState = CALIBRATION_STATE_COMPLETE;
-                    // these values uniquely indicate lack of Dec calibration data.
-                    // If you change them, you need to update Scope::IsCalibrated.
-                    m_calibrationYAngle = 0.0;
-                    m_calibrationYRate = 1.0;
+                    m_calibrationYAngle = norm_angle(m_calibrationXAngle + M_PI / 2.); // choose an arbitrary angle perpendicular to xAngle
+                    // indicate lack of Dec calibration data, see Scope::IsCalibrated.
+                    m_calibrationYRate = CALIBRATION_RATE_UNCALIBRATED;
                     break;
                 }
 
@@ -868,8 +895,23 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 // note: this calculation is reversed from the ra calculation, because
                 // that one was calibrating WEST, but the angle is really relative
                 // to EAST
-                m_calibrationYAngle = currentLocation.Angle(m_calibrationStartingLocation);
-                m_calibrationYRate = dist / (m_calibrationSteps * m_calibrationDuration);
+                if (m_assumeOrthogonal)
+                {
+                    double a1 = norm_angle(m_calibrationXAngle + M_PI / 2.);
+                    double a2 = norm_angle(m_calibrationXAngle - M_PI / 2.);
+                    double yAngle = currentLocation.Angle(m_calibrationStartingLocation);
+                    m_calibrationYAngle = fabs(norm_angle(a1 - yAngle)) < fabs(norm_angle(a2 - yAngle)) ? a1 : a2;
+                    double dec_dist = dist * cos(yAngle - m_calibrationYAngle);
+                    m_calibrationYRate = dec_dist / (m_calibrationSteps * m_calibrationDuration);
+
+                    Debug.AddLine("Assuming orthogonal axes: measured Y angle = %.1f, X angle = %.1f, orthogonal = %.1f, %.1f, best = %.1f, dist = %.2f, dec_dist = %.2f",
+                        degrees(yAngle), degrees(m_calibrationXAngle), degrees(a1), degrees(a2), degrees(m_calibrationYAngle), dist, dec_dist);
+                }
+                else
+                {
+                    m_calibrationYAngle = currentLocation.Angle(m_calibrationStartingLocation);
+                    m_calibrationYRate = dist / (m_calibrationSteps * m_calibrationDuration);
+                }
 
                 // for GO_SOUTH m_recenterRemaining contains the total remaining duration.
                 // Choose the largest pulse size that will not lose the guide star or exceed
@@ -1001,7 +1043,8 @@ wxString Scope::GetSettingsSummary()
 
 wxString Scope::CalibrationSettingsSummary()
 {
-    return wxString::Format("Calibration Step = %d ms", GetCalibrationDuration());
+    return wxString::Format("Calibration Step = %d ms, Assume orthogonal axes = %s", GetCalibrationDuration(),
+        IsAssumeOrthogonal() ? "yes" : "no");
 }
 
 wxString Scope::GetMountClassName() const
@@ -1065,6 +1108,10 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     else
         m_pStopGuidingWhenSlewing = 0;
 
+    m_assumeOrthogonal = new wxCheckBox(pParent, wxID_ANY,
+        _("Assume Dec orthogonal to RA"));
+    DoAdd(m_assumeOrthogonal, _("Assume Dec axis is perpendicular to RA axis, regardless of calibration. Prevents RA periodic error from affecting Dec calibration. Option takes effect when calibrating DEC."));
+
     wxString dec_choices[] = {
         _("Off"),_("Auto"),_("North"),_("South")
     };
@@ -1116,6 +1163,7 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
     m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
+    m_assumeOrthogonal->SetValue(m_pScope->IsAssumeOrthogonal());
 }
 
 void Scope::ScopeConfigDialogPane::UnloadValues(void)
@@ -1127,6 +1175,7 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
+    m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
 
     MountConfigDialogPane::UnloadValues();
 }
