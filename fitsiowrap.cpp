@@ -44,7 +44,7 @@ class FitsFname
 #endif
 
 public:
-    FitsFname(const wxString& str, bool overwrite = false);
+    FitsFname(const wxString& str, bool create, bool clobber);
 
     ~FitsFname() {
 #ifdef __WINDOWS__
@@ -55,9 +55,22 @@ public:
     operator const char *() { return m_str; }
 };
 
-FitsFname::FitsFname(const wxString& path, bool clobber)
+FitsFname::FitsFname(const wxString& path, bool create, bool clobber)
 {
 #ifdef __WINDOWS__
+
+    if (create)
+    {
+        if (!clobber && wxFileExists(path))
+        {
+            m_str = new char[1];
+            *m_str = 0;
+            return;
+        }
+
+        int fd = wxOpen(path, O_BINARY | O_WRONLY | O_CREAT, wxS_DEFAULT);
+        wxClose(fd);
+    }
 
     // use the short DOS 8.3 path name to avoid problems converting UTF-16 filenames to the ANSI filenames expected by CFITTSIO
 
@@ -70,7 +83,7 @@ FitsFname::FitsFname(const wxString& path, bool clobber)
         int slen = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath, shortlen, 0, 0, 0, 0);
         m_str = new char[slen + 1];
         char *str = m_str;
-        if (clobber)
+        if (create)
             *str++ = '!';
         WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath, shortlen, str, slen, 0, 0);
         delete[] shortpath;
@@ -94,10 +107,10 @@ FitsFname::FitsFname(const wxString& path, bool clobber)
 
 int PHD_fits_open_diskfile(fitsfile **fptr, const wxString& filename, int iomode, int *status)
 {
-    return fits_open_diskfile(fptr, FitsFname(filename, false), iomode, status);
+    return fits_open_diskfile(fptr, FitsFname(filename, false, false), iomode, status);
 }
 
 int PHD_fits_create_file(fitsfile **fptr, const wxString& filename, bool clobber, int *status)
 {
-    return fits_create_file(fptr, FitsFname(filename, clobber), status);
+    return fits_create_file(fptr, FitsFname(filename, true, clobber), status);
 }
