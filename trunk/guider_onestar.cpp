@@ -835,8 +835,9 @@ void GuiderOneStar::SaveStarFITS()
     fsize[0] = 60;
     fsize[1] = 60;
     fsize[2] = 0;
-    fits_create_file(&fptr,(const char*) fname.mb_str(wxConvUTF8),&status);
-    if (!status) {
+    PHD_fits_create_file(&fptr, fname, false, &status);
+    if (!status)
+    {
         fits_create_img(fptr,output_format, 2, fsize, &status);
 
         time_t now;

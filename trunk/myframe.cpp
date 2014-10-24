@@ -1601,8 +1601,10 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
     {
         fitsfile *fptr;  // FITS file pointer
         int status = 0;  // CFITSIO status value MUST be initialized to zero!
-        // CFITSIO wants you to prepend the filename with '!' to overwrite the file :-(; and we always want an overwrite
-        fits_create_file(&fptr, (_T("!") + fname).mb_str(wxConvUTF8), &status);
+
+        PHD_fits_create_file(&fptr, fname, true, &status);
+        if (status)
+            throw ERROR_INFO("fits_create_file failed");
 
         for (ExposureImgMap::const_iterator it = darks.begin(); it != darks.end(); ++it)
         {
@@ -1612,7 +1614,8 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
                 (long)img->Size.GetWidth(),
                 (long)img->Size.GetHeight(),
             };
-            if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
+            if (!status)
+                fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
             float exposure = (float)img->ImgExpDur / 1000.0;
             char *keyname = const_cast<char *>("EXPOSURE");
@@ -1654,7 +1657,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
             throw ERROR_INFO("File does not exist");
         }
 
-        if (fits_open_diskfile(&fptr, (const char*)fname.c_str(), READONLY, &status) == 0)
+        if (PHD_fits_open_diskfile(&fptr, fname, READONLY, &status) == 0)
         {
             int nhdus = 0;
             fits_get_num_hdus(fptr, &nhdus, &status);

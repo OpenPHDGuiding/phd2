@@ -166,6 +166,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "confirm_dialog.h"
 #include "phdcontrol.h"
 #include "runinbg.h"
+#include "fitsiowrap.h"
 
 extern Mount *pMount;
 extern Mount *pSecondaryMount;
