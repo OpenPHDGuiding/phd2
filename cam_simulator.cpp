@@ -401,7 +401,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     fitsfile *fptr;  // FITS file pointer
     int status = 0;  // CFITSIO status value MUST be initialized to zero!
 
-    if (fits_open_diskfile(&fptr, wxFileName(dir.GetName(), filename).GetFullPath(), READONLY, &status))
+    if (PHD_fits_open_diskfile(&fptr, wxFileName(dir.GetName(), filename).GetFullPath(), READONLY, &status))
         return true;
 
     int hdutype;
@@ -962,7 +962,8 @@ bool Camera_SimClass::Capture(int WXUNUSED(duration), usImage& img, bool recon) 
     static int step = 1;
     char fname[256];
     sprintf(fname,"/Users/stark/dev/PHD/simimg/DriftSim_%d.fit",frame);
-    if ( !fits_open_file(&fptr, fname, READONLY, &status) ) {
+    if (!PHD_fits_open_diskfile(&fptr, fname, READONLY, &status))
+    {
         if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
             pFrame->Alert(_("FITS file is not of an image"));
             return true;

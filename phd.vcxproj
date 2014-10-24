@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -217,6 +217,7 @@
     <ClCompile Include="drift_tool.cpp" />
     <ClCompile Include="eegg.cpp" />
     <ClCompile Include="event_server.cpp" />
+    <ClCompile Include="fitsiowrap.cpp" />
     <ClCompile Include="gear_dialog.cpp" />
     <ClCompile Include="graph-stepguider.cpp" />
     <ClCompile Include="graph.cpp" />
@@ -334,6 +335,7 @@
     <ClInclude Include="debuglog.h" />
     <ClInclude Include="drift_tool.h" />
     <ClInclude Include="event_server.h" />
+    <ClInclude Include="fitsiowrap.h" />
     <ClInclude Include="gear_dialog.h" />
     <ClInclude Include="graph-stepguider.h" />
     <ClInclude Include="graph.h" />

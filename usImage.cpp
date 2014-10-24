@@ -306,7 +306,7 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
         fitsfile *fptr;  // FITS file pointer
         int status = 0;  // CFITSIO status value MUST be initialized to zero!
 
-        fits_create_file(&fptr, (_T("!") + fname).mb_str(wxConvUTF8), &status);
+        PHD_fits_create_file(&fptr, fname, true, &status);
         if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
         float exposure = (float) ImgExpDur / 1000.0;
@@ -319,7 +319,7 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
             keyname = const_cast<char *>("STACKCNT");
             comment = const_cast<char *>("Stacked frame count");
             unsigned int stackcnt = ImgStackCnt;
-            fits_write_key(fptr, TUINT, keyname, &stackcnt, comment, &status);
+            if (!status) fits_write_key(fptr, TUINT, keyname, &stackcnt, comment, &status);
         }
 
         if (!hdrNote.IsEmpty())
@@ -356,7 +356,7 @@ bool usImage::Load(const wxString& fname)
 
         int status = 0;  // CFITSIO status value MUST be initialized to zero!
         fitsfile *fptr;  // FITS file pointer
-        if (!fits_open_diskfile(&fptr, fname.c_str(), READONLY, &status))
+        if (!PHD_fits_open_diskfile(&fptr, fname, READONLY, &status))
         {
             int hdutype;
             if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
