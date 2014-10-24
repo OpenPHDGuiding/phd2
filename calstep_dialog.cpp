@@ -116,14 +116,15 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     // Guide speed
     m_pGuideSpeed = NewSpinner (this, 1.5*width, m_fGuideSpeed, MIN_GUIDESPEED, MAX_GUIDESPEED, 0.25);
     m_pGuideSpeed->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
-    AddTableEntry (m_pInputTableSizer, _("Guide speed, n.nn x sidereal"), m_pGuideSpeed, _("Guide speed, multiple of sidereal rate; to guide at ") +
-        _("50% sidereal rate, enter 0.5"));
+    AddTableEntry (m_pInputTableSizer, _("Guide speed, n.nn x sidereal"), m_pGuideSpeed,
+                   _("Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% sidereal rate, enter 0.5"));
 
     // Number of steps
     m_pNumSteps = NewSpinner (this, 1.5*width, m_iNumSteps, MIN_STEPS, MAX_STEPS, 1);
     m_pNumSteps->SetDigits (0);
     m_pNumSteps->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
-    AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps, _("Targeted # steps in each direction"));
+    AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps,
+                   wxString::Format(_("Targeted number of steps in each direction. The default value (%d) works fine for most setups."), (int) DEFAULT_STEPS));
 
     // Calibration declination
     m_pDeclination = NewSpinner(this, 1.5*width, m_dDeclination, MIN_DECLINATION, MAX_DECLINATION, 5.0);
