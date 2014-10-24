@@ -97,9 +97,9 @@ FitsFname::FitsFname(const wxString& path, bool create, bool clobber)
 #else // __WINDOWS__
 
     if (clobber)
-        m_str = (wxT("!") + path).mb_str(wxConvUTF8);
+        m_str = (wxT("!") + path).fn_str();
     else
-        m_str = path.mb_str(wxConvUTF8);
+        m_str = path.fn_str();
 
 #endif // __WINDOWS__
 }
