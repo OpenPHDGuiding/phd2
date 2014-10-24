@@ -128,6 +128,7 @@
 		A1AE6DA01958E05D00F343D8 /* libASICamera2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AE6D9F1958E05D00F343D8 /* libASICamera2.a */; };
 		A1C8EDFB19E9BA1600B8EACB /* runinbg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDF919E9BA1600B8EACB /* runinbg.cpp */; };
 		A1C8EDFE19F38C7500B8EACB /* comet_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDFC19F38C7500B8EACB /* comet_tool.cpp */; };
+		A1C8EE0119FA309200B8EACB /* fitsiowrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */; };
 		F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */; };
 		F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */; };
 /* End PBXBuildFile section */
@@ -383,6 +384,8 @@
 		A1C8EDFA19E9BA1600B8EACB /* runinbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = runinbg.h; sourceTree = "<group>"; };
 		A1C8EDFC19F38C7500B8EACB /* comet_tool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = comet_tool.cpp; sourceTree = "<group>"; };
 		A1C8EDFD19F38C7500B8EACB /* comet_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = comet_tool.h; sourceTree = "<group>"; };
+		A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitsiowrap.cpp; sourceTree = "<group>"; };
+		A1C8EE0019FA309200B8EACB /* fitsiowrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fitsiowrap.h; sourceTree = "<group>"; };
 		F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calstep_dialog.cpp; sourceTree = "<group>"; };
 		F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = optionsbutton.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -568,6 +571,8 @@
 				58339E600B1FC6A700109891 /* eegg.cpp */,
 				580F80D017810B1F0020900F /* event_server.cpp */,
 				580F80D117810B1F0020900F /* event_server.h */,
+				A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */,
+				A1C8EE0019FA309200B8EACB /* fitsiowrap.h */,
 				582818990B4A050700E5E22D /* Frameworks */,
 				58CA526117C1CAE2002A20D1 /* gear_dialog.cpp */,
 				58CA526217C1CAE2002A20D1 /* gear_dialog.h */,
@@ -873,6 +878,7 @@
 				A10CD357199D1423006DD99F /* statswindow.cpp in Sources */,
 				A1C8EDFB19E9BA1600B8EACB /* runinbg.cpp in Sources */,
 				A1C8EDFE19F38C7500B8EACB /* comet_tool.cpp in Sources */,
+				A1C8EE0119FA309200B8EACB /* fitsiowrap.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
