@@ -69,6 +69,18 @@ static wxString state_name(EXPOSED_STATE st)
     }
 }
 
+static wxString json_escape(const wxString& s)
+{
+    wxString t(s);
+    static const wxString BACKSLASH("\\");
+    static const wxString BACKSLASHBACKSLASH("\\\\");
+    static const wxString DQUOT("\"");
+    static const wxString BACKSLASHDQUOT("\\\"");
+    t.Replace(BACKSLASH, BACKSLASHBACKSLASH);
+    t.Replace(DQUOT, BACKSLASHDQUOT);
+    return t;
+}
+
 template<char LDELIM, char RDELIM>
 struct JSeq
 {
@@ -89,7 +101,7 @@ static JAry& operator<<(JAry& a, const wxString& str)
         a.m_first = false;
     else
         a.m_s << ',';
-    a.m_s << str;
+    a.m_s << json_escape(str);
     return a;
 }
 
@@ -101,18 +113,6 @@ static JAry& operator<<(JAry& a, double d)
 static JAry& operator<<(JAry& a, int i)
 {
     return a << wxString::Format("%d", i);
-}
-
-static wxString json_escape(const wxString& s)
-{
-    wxString t(s);
-    static const wxString BACKSLASH("\\");
-    static const wxString BACKSLASHBACKSLASH("\\\\");
-    static const wxString DQUOT("\"");
-    static const wxString BACKSLASHDQUOT("\\\"");
-    t.Replace(BACKSLASH, BACKSLASHBACKSLASH);
-    t.Replace(DQUOT, BACKSLASHDQUOT);
-    return t;
 }
 
 static wxString json_format(const json_value *j)
@@ -165,9 +165,9 @@ struct NV
 {
     wxString n;
     wxString v;
-    NV(const wxString& n_, const wxString& v_) : n(n_), v('"'+v_+'"') { }
-    NV(const wxString& n_, const char *v_) : n(n_), v('"'+wxString(v_)+'"') { }
-    NV(const wxString& n_, const wchar_t *v_) : n(n_), v('"'+wxString(v_)+'"') { }
+    NV(const wxString& n_, const wxString& v_) : n(n_), v('"' + json_escape(v_) + '"') { }
+    NV(const wxString& n_, const char *v_) : n(n_), v('"' + json_escape(v_) + '"') { }
+    NV(const wxString& n_, const wchar_t *v_) : n(n_), v('"' + json_escape(v_) + '"') { }
     NV(const wxString& n_, int v_) : n(n_), v(wxString::Format("%d", v_)) { }
     NV(const wxString& n_, double v_) : n(n_), v(wxString::Format("%g", v_)) { }
     NV(const wxString& n_, double v_, int prec) : n(n_), v(wxString::Format("%.*f", prec, v_)) { }
@@ -461,7 +461,7 @@ enum {
 static NV jrpc_error(int code, const wxString& msg)
 {
     JObj err;
-    err << NV("code", code) << NV("message", json_escape(msg));
+    err << NV("code", code) << NV("message", msg);
     return NV("error", err);
 }
 
