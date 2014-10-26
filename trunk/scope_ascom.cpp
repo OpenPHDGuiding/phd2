@@ -560,12 +560,14 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         {
             throw ERROR_INFO("ASCOM Scope: attempt to guide when not connected");
         }
+
         if (!m_bCanPulseGuide)
         {
             // Could happen if move command is issued on the Aux mount or CanPulseGuide property got changed on the fly
             pFrame->Alert(_("ASCOM driver does not support PulseGuide"));
             throw ERROR_INFO("ASCOM scope: guide command issued but PulseGuide not supported");
         }
+
         AutoASCOMDriver pScopeDriver(m_pIGlobalInterfaceTable, m_dwCookie);
         DispatchObj scope(pScopeDriver, NULL);
 
@@ -623,13 +625,12 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
                                         &dispParms,&vRes,&excep,NULL)))
         {
             // Make sure nothing got by us and the mount can really handle pulse guide - HIGHLY unlikely
-            if (scope.GetProp(&vRes, L"CanPulseGuide"))
-                if (!vRes.boolVal)
-                {
-                    Debug.AddLine("Tried to guide mount that has no PulseGuide support");
-                    // This will trigger a nice alert the next time through Guide
-                    m_bCanPulseGuide = false;
-                }
+            if (scope.GetProp(&vRes, L"CanPulseGuide") && !vRes.boolVal)
+            {
+                Debug.AddLine("Tried to guide mount that has no PulseGuide support");
+                // This will trigger a nice alert the next time through Guide
+                m_bCanPulseGuide = false;
+            }
             throw ERROR_INFO("ASCOM Scope: pulseguide command failed");
         }
 

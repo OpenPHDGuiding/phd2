@@ -884,6 +884,7 @@ void GearDialog::OnChoiceScope(wxCommandEvent& event)
         {
             throw THROW_INFO("OnChoiceScope: m_pScope == NULL");
         }
+
         m_ascomScopeSelected = choice.Contains("ASCOM");
     }
     catch (wxString Msg)
@@ -955,14 +956,12 @@ void GearDialog::OnButtonConnectScope(wxCommandEvent& event)
                 throw THROW_INFO("OnButtonConnectScope: connect failed");
             }
 
-            if (m_pScope && m_ascomScopeSelected)
-                if (!m_pScope->CanPulseGuide())
-                {
-                    delete m_pScope;
-                    m_pScope = NULL;
-                    wxMessageBox(wxString::Format(_("Mount does not support the required PulseGuide interface"), _("Error")));
-                    throw THROW_INFO("OnButtonConnectScope: PulseGuide commands not supported");
-                }
+            if (m_pScope && m_ascomScopeSelected && !m_pScope->CanPulseGuide())
+            {
+                m_pScope->Disconnect();
+                wxMessageBox(wxString::Format(_("Mount does not support the required PulseGuide interface"), _("Error")));
+                throw THROW_INFO("OnButtonConnectScope: PulseGuide commands not supported");
+            }
 
             pFrame->SetStatusText(_("Mount Connected"));
             pFrame->SetStatusText(_("Mount"), 3);
