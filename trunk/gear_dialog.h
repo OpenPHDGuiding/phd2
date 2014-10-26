@@ -46,6 +46,7 @@ class GearDialog : public wxDialog
     bool m_mountUpdated;
     bool m_stepGuiderUpdated;
     bool m_showDarksDialog;
+    bool m_ascomScopeSelected;
 
     wxChoice *m_profiles;
     OptionsButton *m_btnProfileManage;

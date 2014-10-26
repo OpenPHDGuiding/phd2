@@ -1097,6 +1097,10 @@ bool Mount::CanReportPosition()
     return false;
 }
 
+bool Mount::CanPulseGuide()
+{
+    return false;
+}
 bool Mount::SlewToCoordinates(double ra, double dec)
 {
     return true; // error

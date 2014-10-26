@@ -233,6 +233,7 @@ public:
     virtual bool Slewing(void);
     virtual PierSide SideOfPier(void);
     virtual bool CanReportPosition();                   // Can report RA, Dec, side-of-pier, etc.
+    virtual bool CanPulseGuide();                       // For ASCOM mounts
 
     virtual wxString GetSettingsSummary();
     virtual wxString CalibrationSettingsSummary() { return wxEmptyString; }
