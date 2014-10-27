@@ -17,12 +17,12 @@ sudo yum install subversion gtk2-devel cfitsio-devel opencv-devel libusb1-devel 
 sudo apt-get install build-essential libgtk2.0-dev libcfitsio3-dev libopencv-dev libusb-1.0-0-dev subversion cmake libudev-dev libv4l-dev
 }}}
 
-=== wxWidgets-3.0.0 ===
+=== wxWidgets-3.0.2 ===
 
- * download and extract wxWidgets 3.0.0 or later from http://wxwidgets.org
+ * download and extract wxWidgets 3.0.2 or later from http://wxwidgets.org
 {{{
 # cd into the extracted wx 
-cd wxWidgets-3.0.0/
+cd wxWidgets-3.0.2/
 
 # change files to have unix newlines, this is needed for at least all python and shell scripts
 find . -type f -print -exec perl -p -i -e "s/\r\n/\n/" {} \;
