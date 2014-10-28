@@ -27,6 +27,22 @@
 #   define DBG(...)
 #endif
 
+#undef SSAG_VENDOR_ID
+#undef SSAG_PRODUCT_ID
+#undef SSAG_LOADER_VENDOR_ID
+#undef SSAG_LOADER_PRODUCT_ID
+
+/* Orion Telescopes VID */
+#define SSAG_VENDOR_ID 0x1856
+/* SSAG IO PID */
+#define SSAG_PRODUCT_ID 0x0012
+
+/* Orion Telescopes VID */
+#define SSAG_LOADER_VENDOR_ID 0x1856
+/* Loader PID for loading firmware */
+#define SSAG_LOADER_PRODUCT_ID 0x0011
+
+
 /* Opens a usb_dev_handle based on the vendor id and product id */
 static inline int usb_open_device(libusb_device_handle **device, int vendorID, int productId, const char *serial)
 {

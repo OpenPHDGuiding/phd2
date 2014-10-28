@@ -8,15 +8,7 @@
 #ifndef __OPEN_SSAG_H__ 
 #define __OPEN_SSAG_H__ 
 
-/* Orion Telescopes VID */
-#define SSAG_VENDOR_ID 0x1856
-/* SSAG IO PID */
-#define SSAG_PRODUCT_ID 0x0012
 
-/* Orion Telescopes VID */
-#define SSAG_LOADER_VENDOR_ID 0x1856
-/* Loader PID for loading firmware */
-#define SSAG_LOADER_PRODUCT_ID 0x0011
 
 typedef struct libusb_device_handle libusb_device_handle;
 

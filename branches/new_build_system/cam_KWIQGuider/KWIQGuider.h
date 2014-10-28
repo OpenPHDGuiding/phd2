@@ -7,17 +7,7 @@
 #ifndef __KWIQGuider_H__
 #define __KWIQGuider_H__
 
-/**********************************************/
-/****** LOADER_*_ID's are presented when device first plugged in ******/
-/**********************************************/
-/* KWIQGuider Loader VID/PID for loading firmware */
-#define SSAG_LOADER_VENDOR_ID 0x1618
-#define SSAG_LOADER_PRODUCT_ID 0x0901
 
-
-/* SSAG VID/PID */
-#define SSAG_VENDOR_ID 0x1856
-#define SSAG_PRODUCT_ID 0x0012
 
 
 typedef struct libusb_device_handle libusb_device_handle;
