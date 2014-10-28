@@ -364,8 +364,8 @@ endif()
 source_group(src FILES ${phd2_SRC})
 
 
-message("compilation definitions ${wxWidgets_DEFINITIONS}")
-message("compilation options ${wxWidgets_CXX_FLAGS}")
+#message("compilation definitions ${wxWidgets_DEFINITIONS}")
+#message("compilation options ${wxWidgets_CXX_FLAGS}")
 
 
 include_directories(${phd_src_dir}/cam_KWIQGuider/)
@@ -376,14 +376,14 @@ if(APPLE)
 
   # bundle definitions
   # please edit the copyrights
-  set( MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME} )
-  set( MACOSX_BUNDLE_GUI_IDENTIFIER "com.open-phd-guiding.PHD2" )
-  set( MACOSX_BUNDLE_ICON_FILE PHD_OSX_icon.icns )
-  set( MACOSX_BUNDLE_INFO_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2014 Phd2 Guiding team" )
+  set( MACOSX_BUNDLE_BUNDLE_NAME          ${PROJECT_NAME} )
+  set( MACOSX_BUNDLE_GUI_IDENTIFIER       "com.open-phd-guiding.PHD2" )
+  set( MACOSX_BUNDLE_ICON_FILE            PHD_OSX_icon.icns )
+  set( MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2014 Phd2 Guiding team" )
   set( MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
-  set( MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  set( MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  set( MACOSX_BUNDLE_COPYRIGHT "(C) 2010-2014 Phd2 Guiding team" )
+  set( MACOSX_BUNDLE_LONG_VERSION_STRING  "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+  set( MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+  set( MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2014 Phd2 Guiding team" )
 
 
 
@@ -394,29 +394,37 @@ if(APPLE)
     ${cam_SRC}
     ${cam_KWIQGuider_SRC}
     ${guiding_SRC}
-    ${phd2_SRC})
-  set_target_properties(
+    ${phd2_SRC}
+    
+    # ressources of the bundle
+    ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
+    ${phd_src_dir}/PHD2GuideHelp.zip
+    
+    # extra frameworks
+    ${sbigudFramework}
+    ${fcCamFramework}
+  )
+  target_include_directories(
     Phd2
-    PROPERTIES
-      #MACOSX_BUNDLE_INFO_PLIST ${phd_src_dir}/PHD-Info.plist
-      COMPILE_OPTIONS "-include;${CARBON_INCLUDE_DIR}/Carbon.h"
-      )
+    PRIVATE ${CARBON_INCLUDE_DIR}/Carbon.h
+  )
+      
+  set_source_files_properties(
+    ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE} 
+    ${phd_src_dir}/PHD2GuideHelp.zip
+      PROPERTIES 
+        MACOSX_PACKAGE_LOCATION Resources
+  )
+  set_source_files_properties(
+    ${fcCamFramework}
+      PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks
+  )  
+  set_source_files_properties(
+    ${sbigudFramework}
+      PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks
+  )
 
-
-  # Allows for bundle re-creation just by running "make". Also installs bundle icon
-  add_custom_target( osx_bundle_dirs
-    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/Phd2.app/Contents/Resources
-    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/Phd2.app/Contents/MacOS
-    COMMAND cp ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE} ${CMAKE_CURRENT_BINARY_DIR}/Phd2.app/Contents/Resources/${MACOSX_BUNDLE_ICON_FILE}
-   )
-  add_dependencies(Phd2 osx_bundle_dirs)
-
-
-  # This tells cmake where to place files inside the bundle
-  #set_source_files_properties( ${ProjectName_RESOURCES} ${ProjectName_TRANSLATIONS}
-  #  PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
-
-elseif(WIN32)
+ elseif(WIN32)
 
   set(phd2_WIN_SRC
 
