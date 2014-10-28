@@ -1,9 +1,14 @@
 #summary Unified cross-platform CMake build system
 
+*Work in progress*
+
+<wiki:toc max_depth="3" />
+
+
 = Introduction =
 
-Work in progress.
-<wiki:toc max_depth="1" />
+
+
 
 = Details =
 
