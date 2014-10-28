@@ -3,7 +3,7 @@
 = Introduction =
 
 Work in progress.
-
+<wiki:toc max_depth="1" />
 
 = Details =
 
@@ -11,3 +11,33 @@ Add your content here.  Format your content with:
   * Text in *bold* or _italic_
   * Headings, paragraphs, and lists
   * Automatic links to other wiki pages
+
+== Project dependencies ==
+
+The cmake build system depends only on
+  * wxWidget on all platforms
+  * openCV on Windows
+
+=== Building wxWidgets ===
+We assume `$wxPREFIX` being an environment variable that points to the installation prefix of your dependencies.
+
+==== OSX ====
+The configuration on OSX looks a little bit complicated. We are using XCode 5 and above, which is shipped with Clang 3+.
+{{{
+../configure --enable-universal_binary=i386,x86_64 --disable-shared --with-libpng=builtin --with-cocoa --prefix=$wxPREFIX \
+             --with-macosx-sdk=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/ \
+             --with-macosx-version-min=10.7 \
+             CXXFLAGS="-stdlib=libc++ -std=c++11" \
+             OBJCXXFLAGS="-stdlib=libc++ -std=c++11" \
+             CPPFLAGS="-stdlib=libc++"  \
+             LDFLAGS="-stdlib=libc++" CXX=clang++ CXXCPP="clang++ -E" CC=clang CPP="clang -E"
+make
+make install
+}}}
+
+== Creating the XCode project on OSX ==
+{{{
+mkdir tmp
+cd tmp
+cmake -G Xcode -DwxWidgets_PREFIX_DIRECTORY=$wxPREFIX -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 ..
+}}}
