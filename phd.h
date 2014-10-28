@@ -168,6 +168,8 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "runinbg.h"
 #include "fitsiowrap.h"
 
+class wxSingleInstanceChecker;
+
 extern Mount *pMount;
 extern Mount *pSecondaryMount;
 extern Mount *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
@@ -179,6 +181,7 @@ extern int YWinSize;
 
 class PhdApp : public wxApp
 {
+    wxSingleInstanceChecker *m_instanceChecker;
     long m_instanceNumber;
     bool m_resetConfig;
 

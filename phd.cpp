@@ -33,7 +33,10 @@
  */
 
 #include "phd.h"
+
 #include <wx/cmdline.h>
+#include <wx/snglinst.h>
+
 #ifdef  __LINUX__
     #include <X11/Xlib.h>
 #endif // __LINUX__
@@ -98,6 +101,16 @@ bool PhdApp::OnInit()
 {
     if (!wxApp::OnInit())
     {
+        return false;
+    }
+
+    m_instanceChecker = new wxSingleInstanceChecker(wxString::Format("%s.%ld", GetAppName(), m_instanceNumber));
+    if (m_instanceChecker->IsAnotherRunning())
+    {
+        wxLogError(wxString::Format(_("PHD2 instance %ld is already running. Use the "
+            "-i INSTANCE_NUM command-line option to start a different instance."), m_instanceNumber));
+        delete m_instanceChecker; // OnExit() won't be called if we return false
+        m_instanceChecker = 0;
         return false;
     }
 
@@ -169,6 +182,9 @@ int PhdApp::OnExit(void)
 
     delete pConfig;
     pConfig = NULL;
+
+    delete m_instanceChecker; // OnExit() won't be called if we return false
+    m_instanceChecker = 0;
 
     return wxApp::OnExit();
 }
