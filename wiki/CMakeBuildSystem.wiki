@@ -23,12 +23,30 @@ The cmake build system depends only on
   * wxWidget on all platforms
   * openCV on Windows
 
+Other dependencies are:
+  * openSSAG
+  * libdc
+  * libusb
+  * cfitsio
+  * and many more
+
 === Building wxWidgets ===
-We assume `$wxPREFIX` being an environment variable that points to the installation prefix of your dependencies.
+We assume 
+  * `$WXWIDGET_BASE_DIR` being a variable that points to the untarred sources of wxWidgets.
+  * `$wxPREFIX` being a variable that points to the installation prefix of your dependencies.
+
+==== Win32 ====
+Open a Visual Studio console and emit the following commands, respectively for the Debug and Release versions of the libraries.
+{{{
+cd $WXWIDGET_BASE_DIR\build\msw
+msbuild wx_vc12.sln /p:configuration=Debug /p:platform=win32 /m:8
+msbuild wx_vc12.sln /p:configuration=Release /p:platform=win32 /m:8
+}}}
 
 ==== OSX ====
 The configuration on OSX looks a little bit complicated. We are using XCode 5 and above, which is shipped with Clang 3+.
 {{{
+cd $WXWIDGET_BASE_DIR
 ../configure --enable-universal_binary=i386,x86_64 --disable-shared --with-libpng=builtin --with-cocoa --prefix=$wxPREFIX \
              --with-macosx-sdk=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/ \
              --with-macosx-version-min=10.7 \
@@ -38,6 +56,13 @@ The configuration on OSX looks a little bit complicated. We are using XCode 5 an
              LDFLAGS="-stdlib=libc++" CXX=clang++ CXXCPP="clang++ -E" CC=clang CPP="clang -E"
 make
 make install
+}}}
+
+=== Building openCV ===
+We recall that the dependency on openCV is needed only on Win32 platforms. Nothing really needs to be built since the OpenCV
+zip contains libraries already built for Windows.
+{{{
+check again this part
 }}}
 
 == Creating the XCode project on OSX ==
