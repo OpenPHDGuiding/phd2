@@ -18,6 +18,7 @@
   * [BuildingPHD2OnOSX]
   * [BuildingPHD2OnLinux]
 
+  * [CMakeBuildSystem]
   * [TranslatingPHD2]
   * [EventMonitoring]
   * [SocketServerInterface]
