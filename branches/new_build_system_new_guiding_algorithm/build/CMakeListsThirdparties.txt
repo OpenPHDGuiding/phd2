@@ -130,7 +130,7 @@ endif()
 
 set(BUILD_SHARED_LIBS OFF)
 set(USE_PTHREADS OFF)
-add_subdirectory(${thirdparties_dir}/cfitsio EXCLUDE_FROM_ALL)
+add_subdirectory(${thirdparties_dir}/cfitsio)
 #set_target_properties(FPack Funpack PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set_property(TARGET cfitsio PROPERTY FOLDER "Thirdparty/")
 
@@ -396,7 +396,7 @@ if(WIN32)
   # VidCapture
   set(vidcap_dir ${PHD_PROJECT_ROOT_DIR}/cameras/VidCapture)
   include_directories(${vidcap_dir})
-  message("include ${vidcap_dir}")
+  #message("include ${vidcap_dir}")
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${vidcap_dir}/VidCapLib.lib) # better compile this one
   
 
@@ -479,7 +479,7 @@ if(APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL})
   
   find_path(CARBON_INCLUDE_DIR Carbon.h)
-  message(STATUS "Carbon header found at ${CARBON_INCLUDE_DIR}")
+  #message(STATUS "Carbon header found at ${CARBON_INCLUDE_DIR}")
   
   
   
@@ -678,14 +678,14 @@ if(UNIX)
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera} USB) # to clean: USB should also appear after these lib, otherwise some references are not found
   #target_link_libraries(${asiCamera} USB)
-  message("zwo libraries found at ${ZWO_INCLUDE_DIR} + ${asiCamera}")
+  #message("zwo libraries found at ${ZWO_INCLUDE_DIR} + ${asiCamera}")
 
 
   # math library is needed, and should be one of the last things to link to here
   find_library(mathlib NAMES m)  
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
 
-  message("Current dependencies are ${PHD_LINK_EXTERNAL}")
+  #message("Current dependencies are ${PHD_LINK_EXTERNAL}")
 
 
 

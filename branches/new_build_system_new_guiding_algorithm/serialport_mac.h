@@ -49,7 +49,7 @@ public:
     SerialPortMac(void);
     virtual ~SerialPortMac(void);
 
-    virtual bool Connect(wxString portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
+    virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
     virtual bool Disconnect(void);
 
     virtual bool Send(const unsigned char * const pData, const unsigned count);

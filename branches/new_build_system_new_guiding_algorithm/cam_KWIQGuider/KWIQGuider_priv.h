@@ -33,6 +33,26 @@
 #   define DBG(...)
 #endif
 
+#ifdef SSAG_LOADER_VENDOR_ID
+  #error should not happen
+  #undef SSAG_LOADER_VENDOR_ID
+#endif 
+#undef SSAG_LOADER_PRODUCT_ID
+#undef SSAG_VENDOR_ID
+#undef SSAG_PRODUCT_ID
+
+/**********************************************/
+/****** LOADER_*_ID's are presented when device first plugged in ******/
+/**********************************************/
+/* KWIQGuider Loader VID/PID for loading firmware */
+#define SSAG_LOADER_VENDOR_ID 0x1618
+#define SSAG_LOADER_PRODUCT_ID 0x0901
+
+
+/* SSAG VID/PID */
+#define SSAG_VENDOR_ID 0x1856
+#define SSAG_PRODUCT_ID 0x0012
+
 /* Opens a usb_dev_handle based on the vendor id and product id */
 static inline int usb_open_device(libusb_device_handle **device, int vendorID, int productId, const char *serial)
 {
