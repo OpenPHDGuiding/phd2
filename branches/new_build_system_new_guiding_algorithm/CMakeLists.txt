@@ -245,6 +245,10 @@ set(guiding_SRC
   ${phd_src_dir}/stepguider.cpp
   ${phd_src_dir}/stepguider.h
   ${phd_src_dir}/stepguiders.h
+  ${phd_src_dir}/UDPGuidingInteraction.cpp
+  ${phd_src_dir}/UDPGuidingInteraction.h
+  ${phd_src_dir}/guide_gaussian_process.cpp
+  ${phd_src_dir}/guide_gaussian_process.h
 )
 source_group(Guiding FILES ${guiding_SRC})
 
