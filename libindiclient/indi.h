@@ -140,6 +140,7 @@ extern void indi_prop_add_cb(struct indi_prop_t *iprop,
                       void (* cb_func)(void *iprop, void *callback_data),
                       void *callback_data);
 extern struct indi_t *indi_init(const char *hostname, int port, const char *config);
+extern void indi_close(struct indi_t *indi);
 
 extern void indi_new_device_cb(struct indi_t *indi,
                      void (* cb_func)(void *idev, void *cb_data),
