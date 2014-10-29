@@ -175,6 +175,7 @@ END_EVENT_TABLE()
 
 void INDIConfig::OnButton(wxCommandEvent& WXUNUSED(event)) {
     if (INDIClient) {
+        indi_close(INDIClient);
         delete INDIClient;
     }
     INDIClient = indi_init(host->GetLineText(0).mb_str(wxConvUTF8).data(), atol(port->GetLineText(0).mb_str(wxConvUTF8).data()), "PHDGuiding");

@@ -814,3 +814,9 @@ struct indi_t *indi_init(const char *hostname, int port, const char *config)
 	return indi;
 }
 
+void indi_close(struct indi_t *indi)
+{
+	if (indi) {
+	  io_indi_close_server(indi->fh); 
+	}  
+}
