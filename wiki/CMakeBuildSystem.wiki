@@ -7,7 +7,7 @@
 [http://www.cmake.org CMake] is a cross-platform meta-build system. The tool translates the rules for building, checking and installing the !OpenPhdGuiding project, written in the cmake language, 
 into rules specific to your development environment and platform. The same script is used for creating Visual Studio or XCode project, or Makefile. 
 The advantages of cmake are many, among which one can cite:
-  * the maintenance of only one language for addressing the build of !OpenPhdGuiding on all platform
+  * the maintenance of only one language for addressing the build of !OpenPhdGuiding on all platforms
   * the possibility to manage big projects and complex dependencies
   * the possibility to add unit tests and installation procedures
 
@@ -21,6 +21,23 @@ The full build of the project in made in three steps
 
 
 = Preliminary notes =
+
+== Checking out the code ==
+The code is hosted on an SVN server located here: http://open-phd-guiding.googlecode.com/svn/. 
+The branch that supports the cmake configuration is named *`new_build_system`*. The checkout command is then the following
+
+{{{
+svn checkout http://open-phd-guiding.googlecode.com/svn/branches/new_build_system open-phd-guiding
+}}}
+
+For that to work, you need an SVN client. 
+
+  * On Debian/Ubuntu, the installation would be
+    {{{
+    sudo apt-get install build-essential subversion
+    }}}
+  * On OSX, the svn client should be shipped with the OS (accessible from the terminal), 
+  * and on Windows, there is TortoiseSVN that can be installed
 
 == Development environments ==
 The following development environment have been tested with the current `cmake` build system:
@@ -135,6 +152,7 @@ The last line opens the solution in Visual Studio.
 == Creating the XCode project on OSX ==
 
 {{{
+cd $OPG_SRC
 mkdir tmp
 cd tmp
 cmake -G Xcode -DwxWidgets_PREFIX_DIRECTORY=$wxPREFIX -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 ..
@@ -147,6 +165,7 @@ The last line opens the project in XCode.
 == Creating the XCode project on Linux ==
 
 {{{
+cd $OPG_SRC
 mkdir tmp
 cd tmp
 cmake -DwxWidgets_PREFIX_DIRECTORY=$wxPREFIX ..
