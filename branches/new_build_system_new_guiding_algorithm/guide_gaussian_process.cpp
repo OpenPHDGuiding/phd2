@@ -101,5 +101,8 @@ double GuideGaussianProcess::result(double input)
 
 void GuideGaussianProcess::reset()
 {
+    timestamps_.clear();
+    measurements_.clear();
+    modifiedMeasurements_.clear();
     return;
 }

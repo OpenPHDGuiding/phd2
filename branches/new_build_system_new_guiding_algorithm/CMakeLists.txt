@@ -69,6 +69,7 @@ set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 set(gp_SRC
     ${phd_src_dir}/gaussian_process/GPImpl.cpp
     ${phd_src_dir}/gaussian_process/GPImpl.h
+    ${phd_src_dir}/circular_buffer.h
     )
 add_library(GP STATIC ${gp_SRC})
 target_include_directories(GP PUBLIC ${EIGEN_SRC})
@@ -367,6 +368,13 @@ if(UNIX AND NOT APPLE)
 endif()
 source_group(src FILES ${phd2_SRC})
 
+# Test for the CircularBuffer
+add_executable(CircularBufferTest ${phd_src_dir}/tests/circular_buffer/circular_buffer_test.cpp)
+target_link_libraries(CircularBufferTest GP gtest)
+target_include_directories(CircularBufferTest PRIVATE ${phd_src_dir}/
+                                              PRIVATE ${GTEST_HEADERS})
+set_property(TARGET CircularBufferTest PROPERTY FOLDER "Unit tests/")
+add_test(CircularBufferTest1 CircularBufferTest)
 
 #message("compilation definitions ${wxWidgets_DEFINITIONS}")
 #message("compilation options ${wxWidgets_CXX_FLAGS}")

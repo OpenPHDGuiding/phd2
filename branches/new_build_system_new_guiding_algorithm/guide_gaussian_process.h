@@ -37,11 +37,25 @@
 
 #include "UDPGuidingInteraction.h"
 
+#include "circular_buffer.h"
 
 class GuideGaussianProcess : public GuideAlgorithm
 {
 private:
     UDPGuidingInteraction udpInteraction;
+    /*
+     * Needed:
+     * Circular Buffers for:
+     * - time stamps
+     * - measurements
+     * - modified measurements
+     *
+     */
+    CircularDoubleBuffer timestamps_;
+    CircularDoubleBuffer measurements_;
+    CircularDoubleBuffer modifiedMeasurements_;
+
+
 
 protected:
     class GuideGaussianProcessDialogPane : public ConfigDialogPane
