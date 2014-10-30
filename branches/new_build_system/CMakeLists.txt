@@ -473,7 +473,7 @@ elseif(UNIX)
    ${guiding_SRC}
    ${phd2_SRC}
    )
-  #target_link_libraries(Phd2 ${mathlib})
+  target_link_libraries(Phd2 X11)
 else()
   message(FATAL_ERROR "Unsupported platform")
 
