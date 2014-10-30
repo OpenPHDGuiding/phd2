@@ -4,14 +4,14 @@
 
 <wiki:toc max_depth="3" />
 
-[http://www.cmake.org CMake] is a cross-platform meta-build system. The tool translates the rules for building, checking and installing the OpenPhdGuiding project, written in the cmake language, 
+[http://www.cmake.org CMake] is a cross-platform meta-build system. The tool translates the rules for building, checking and installing the !OpenPhdGuiding project, written in the cmake language, 
 into rules specific to your development environment and platform. The same script is used for creating Visual Studio or XCode project, or Makefile. 
 The advantages of cmake are many, among which one can cite:
-  * the maintenance of only one language for addressing the build of OpenPhdGuiding on all platform
+  * the maintenance of only one language for addressing the build of !OpenPhdGuiding on all platform
   * the possibility to manage big projects and complex dependencies
   * the possibility to add unit tests and installation procedures
 
-This page describes the steps to configure the OpenPhdGuiding for your specific platform. If you need more information about CMake, a lot of information are available on the Internet. 
+This page describes the steps to configure the !OpenPhdGuiding for your specific platform. If you need more information about CMake, a lot of information are available on the Internet. 
 
 = Introduction =
 The full build of the project in made in three steps
@@ -22,14 +22,25 @@ The full build of the project in made in three steps
 
 = Details =
 
+== Preliminary notes ==
+
+=== Visual Studio versions ===
+In the document, we suppose for Windows user that Visual Studio is installed. We will refer to _Visual Studio 12_, but "12" does not stand for the 2012 but rather to version 12 of VS. The mapping is the following:
+  * VS 12: Visual Studio 2013
+  * VS 11: Visual Studio 2012
+  * VS 10: Visual Studio 2010
+
 
 == Project dependencies ==
-The cmake construction of OpenPhdGuiding depends only on these two external dependencies
+The cmake construction of !OpenPhdGuiding depends only on these external dependencies
+  * CMake
   * wxWidget on all platforms
   * openCV on Windows
 
+
+
 This means that these dependencies should be available in order to be able to construct the project, and cmake should know where to find these dependencies. 
-OpenPhdGuiding has in fact many more dependencies, but they are shipped with the project and built within the project automatically. These dependencies are:
+!OpenPhdGuiding has in fact many more dependencies, but they are shipped with the project and built within the project automatically. These dependencies are:
   * openSSAG
   * libdc
   * libusb
@@ -42,12 +53,14 @@ We assume
   * `$wxPREFIX` being a variable that points to the installation prefix of your dependencies.
 
 ==== Win32 ====
-Open a Visual Studio console and emit the following commands, respectively for the Debug and Release versions of the libraries.
+Open a Visual Studio console and type the following commands, respectively for the Debug and Release versions of the libraries.
 {{{
 cd $WXWIDGET_BASE_DIR\build\msw
 msbuild wx_vc12.sln /p:configuration=Debug /p:platform=win32 /m:8
 msbuild wx_vc12.sln /p:configuration=Release /p:platform=win32 /m:8
 }}}
+
+The `wx_vc12.sln` Visual Studio solution is for Visual Studio 12 (Visual 2013). It should be replaced by the proper version of Visual you have on your system (see [#Visual_Studio_versions]).
 
 ==== OSX ====
 The configuration on OSX looks a little bit complicated. We are using XCode 5 and above, which is shipped with Clang 3+.
@@ -77,7 +90,7 @@ zip contains libraries already built for Windows, and also certainly for your pl
 or [http://sourceforge.net/projects/opencvlibrary/ SourceForge].
 
 
-= Configuring the OpenPhdGuiding project =
+= Configuring the !OpenPhdGuiding project =
 Once the dependencies available on your system, you are able to build the project. For that, you should inform the location of these dependencies to cmake, passed as options to cmake.
 The basic scheme is
   # open a terminal. Under Windows, the terminal should be the one provided by the Visual Studio command line tool, which has the proper environment variables defining the compiler and the SDKs
