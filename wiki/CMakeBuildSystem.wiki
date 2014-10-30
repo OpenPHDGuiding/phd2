@@ -20,18 +20,19 @@ The full build of the project in made in three steps
   # build the project
 
 
-= Details =
+= Preliminary notes =
 
-== Preliminary notes ==
-
-=== Development environments ===
+== Development environments ==
 The following development environment have been tested with the current `cmake` build system:
-  * Windows: Visual Studio 2012
+  * Windows: Visual Studio 2012 Express Edition
   * OSX: XCode 5, clang 5, and make
   * Linux: gcc4.6, make
 
+== Supported architectures ==
+Currently on Windows and OSX, the supported architecture is 32 bits only. This is because of the external libraries used in the project for driving specific astronomy hardware. Most of this specificity
+is handled in the cmake script. However, the wxWidgets should be built accordingly. 
 
-=== Visual Studio versions ===
+== Visual Studio versions ==
 In the document, we suppose for Windows user that Visual Studio is installed. We will refer to _Visual Studio 12_, but "12" does not stand for the 2012 but rather to version 12 of VS. The mapping is the following:
   * VS 12: Visual Studio 2013
   * VS 11: Visual Studio 2012
@@ -40,7 +41,7 @@ In the document, we suppose for Windows user that Visual Studio is installed. We
 
 
 
-== Project dependencies ==
+= Project dependencies =
 The cmake construction of !OpenPhdGuiding depends only on these external dependencies
   * CMake
   * wxWidget on all platforms
@@ -57,18 +58,18 @@ This means that these dependencies should be available in order to be able to co
   * and many more
 
 
-=== Installing CMake ===
+== Installing CMake ==
 [http://www.cmake.org CMake] provides binary installers for Windows and OSX. On Linux, you should be able to install `cmake` via the package manager
 {{{
 sudo apt-get install cmake
 }}}
 
-=== Building and installing wxWidgets ===
+== Building and installing wxWidgets ==
 We assume 
   * `$WXWIDGET_BASE_DIR` being a variable that points to the untarred sources of wxWidgets.
   * `$wxPREFIX` being a variable that points to the installation prefix of your dependencies.
 
-==== Win32 ====
+=== Win32 ===
 Open a Visual Studio console and type the following commands, respectively for the Debug and Release versions of the libraries.
 {{{
 cd $WXWIDGET_BASE_DIR\build\msw
@@ -78,7 +79,7 @@ msbuild wx_vc12.sln /p:configuration=Release /p:platform=win32 /m:8
 
 The `wx_vc12.sln` Visual Studio solution is for Visual Studio 12 (Visual 2013). It should be replaced by the proper version of Visual you have on your system (see [#Visual_Studio_versions here]).
 
-==== OSX ====
+=== OSX ===
 The configuration on OSX looks a little bit complicated. We are using XCode 5 and above, which is shipped with Clang 3+.
 {{{
 cd $WXWIDGET_BASE_DIR
@@ -93,18 +94,19 @@ make
 make install
 }}}
 
-==== Linux ====
+=== Linux ===
 Under Linux, the wxWidget should be available through the package manager.
 {{{
 sudo apt-get install wxWindows
 
 }}}
 
-=== Building and installing OpenCV ===
+== Building and installing OpenCV ==
 We recall that the dependency on openCV is needed on Win32 platforms only. Nothing really needs to be built since the OpenCV
 zip contains libraries already built for Windows, and also certainly for your platform. Just download OpenCV from [http://www.opencv.org the official website]
 or [http://sourceforge.net/projects/opencvlibrary/ SourceForge].
 
+We assume `$OpenCVRoot` being a variable that points to the location where OpenCV was deflated. 
 
 = Configuring the !OpenPhdGuiding project =
 Once the dependencies available on your system, you are able to build the project. For that, you should inform the location of these dependencies to cmake, passed as options to cmake.
@@ -118,7 +120,7 @@ The basic scheme is
 We suppose you have 
   * CMake
   * Visual Studio 12 installed (see [#Visual_Studio_versions here] for more details)
-  * build properly wxWidgets and OpenCV
+  * build properly [#Building_and_installing_wxWidgets  wxWidgets] and [#Building_and_installing_OpenCV OpenCV]
 
 {{{
 cd $OPG_SRC
@@ -136,4 +138,17 @@ The last line opens the solution in Visual Studio.
 mkdir tmp
 cd tmp
 cmake -G Xcode -DwxWidgets_PREFIX_DIRECTORY=$wxPREFIX -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 ..
+open PhD2.xcodeproj
+}}}
+
+The last line opens the project in XCode.
+
+
+== Creating the XCode project on Linux ==
+
+{{{
+mkdir tmp
+cd tmp
+cmake -DwxWidgets_PREFIX_DIRECTORY=$wxPREFIX ..
+make -j 4
 }}}
