@@ -59,11 +59,9 @@ make install
 }}}
 
 === Building openCV ===
-We recall that the dependency on openCV is needed only on Win32 platforms. Nothing really needs to be built since the OpenCV
-zip contains libraries already built for Windows.
-{{{
-check again this part
-}}}
+We recall that the dependency on openCV is needed on Win32 platforms only. Nothing really needs to be built since the OpenCV
+zip contains libraries already built for Windows, and also certainly for your platform. Just download OpenCV from [http://www.opencv.org the official website]
+or [http://sourceforge.net/projects/opencvlibrary/ SourceForge].
 
 == Creating the XCode project on OSX ==
 {{{
