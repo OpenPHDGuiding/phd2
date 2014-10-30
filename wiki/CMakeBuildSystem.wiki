@@ -39,9 +39,11 @@ For that to work, you need an SVN client.
   * On OSX, the svn client should be shipped with the OS (accessible from the terminal), 
   * and on Windows, there is TortoiseSVN that can be installed
 
+From now on, we suppose the code has been checked out in *`$OPG_SRC`* (the `open-phd-guiding` path above).
+
 == Development environments ==
 The following development environment have been tested with the current `cmake` build system:
-  * Windows: Visual Studio 2012 Express Edition
+  * Windows: Visual Studio 2013 Express Edition
   * OSX: XCode 5, clang 5, and make
   * Linux: gcc4.6, make
 
@@ -129,7 +131,7 @@ We assume `$OpenCVRoot` being a variable that points to the location where OpenC
 Once the dependencies available on your system, you are able to build the project. For that, you should inform the location of these dependencies to cmake, passed as options to cmake.
 The basic scheme is
   # open a terminal. Under Windows, the terminal should be the one provided by the Visual Studio command line tool, which has the proper environment variables defining the compiler and the SDKs
-  # go to the source directory and create a subdirectory where the project will be built
+  # go to the source directory *`$OPG_SRC`* and create a subdirectory where the project will be built
   # emit the cmake command line with the proper options
   # open the generated project or make the project in place
 
@@ -150,6 +152,10 @@ PhD2.sln
 The last line opens the solution in Visual Studio.
 
 == Creating the XCode project on OSX ==
+We suppose you have 
+  * CMake
+  * XCode installed
+  * build properly [#Building_and_installing_wxWidgets  wxWidgets]
 
 {{{
 cd $OPG_SRC
@@ -163,6 +169,10 @@ The last line opens the project in XCode.
 
 
 == Creating the XCode project on Linux ==
+We suppose you have 
+  * CMake
+  * a compilation toolchain (eg. `gcc`, `ld`, `make`...)
+  * build properly [#Building_and_installing_wxWidgets  wxWidgets]
 
 {{{
 cd $OPG_SRC
