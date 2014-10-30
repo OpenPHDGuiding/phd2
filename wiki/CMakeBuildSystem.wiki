@@ -14,8 +14,10 @@ The advantages of cmake are many, among which one can cite:
 This page describes the steps to configure the OpenPhdGuiding for your specific platform. If you need more information about CMake, a lot of information are available on the Internet. 
 
 = Introduction =
-
-
+The full build of the project in made in three steps
+  # build and/or install the dependencies
+  # configure cmake
+  # build the project
 
 
 = Details =
@@ -34,7 +36,7 @@ OpenPhdGuiding has in fact many more dependencies, but they are shipped with the
   * cfitsio
   * and many more
 
-=== Building wxWidgets ===
+=== Building and installing wxWidgets ===
 We assume 
   * `$WXWIDGET_BASE_DIR` being a variable that points to the untarred sources of wxWidgets.
   * `$wxPREFIX` being a variable that points to the installation prefix of your dependencies.
@@ -62,12 +64,38 @@ make
 make install
 }}}
 
-=== Building openCV ===
+==== Linux ====
+Under Linux, the wxWidget should be available through the package manager.
+{{{
+sudo apt-get install wxWindows
+
+}}}
+
+=== Building and installing OpenCV ===
 We recall that the dependency on openCV is needed on Win32 platforms only. Nothing really needs to be built since the OpenCV
 zip contains libraries already built for Windows, and also certainly for your platform. Just download OpenCV from [http://www.opencv.org the official website]
 or [http://sourceforge.net/projects/opencvlibrary/ SourceForge].
 
+
+= Configuring the OpenPhdGuiding project =
+Once the dependencies available on your system, you are able to build the project. For that, you should inform the location of these dependencies to cmake, passed as options to cmake.
+The basic scheme is
+  # open a terminal. Under Windows, the terminal should be the one provided by the Visual Studio command line tool, which has the proper environment variables defining the compiler and the SDKs
+  # go to the source directory and create a subdirectory where the project will be built
+  # emit the cmake command line with the proper options
+  # open the generated project or make the project in place
+
+== Creating the Visual Studio project ==
+
+{{{
+cd $OPG_SRC
+mkdir tmp
+cd tmp
+cmake -G "Visual Studio 12" -DwxWidgets_ROOT_DIR=$wxPREFIX  -DOpenCVRoot=$opencvPREFIX\opencv\build ..
+}}}
+
 == Creating the XCode project on OSX ==
+
 {{{
 mkdir tmp
 cd tmp
