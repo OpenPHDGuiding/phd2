@@ -112,9 +112,9 @@ make install
 }}}
 
 === Linux ===
-Under Linux, the wxWidget should be available through the package manager.
+Under Linux, the wxWidget should be available through the package manager. You need the _developer_ package using GTK:
 {{{
-sudo apt-get install wxWindows
+sudo apt-get install libwxgtk3.0-dev wx-common wx3.0-i18n
 
 }}}
 
