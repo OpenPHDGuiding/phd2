@@ -166,17 +166,25 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration_msec
     switch (direction) {
         case EAST:
             indi_send(pulseGuideEW,
+                      indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_W", 0));
+            indi_send(pulseGuideEW,
                       indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_E", duration));
             break;
         case WEST:
+            indi_send(pulseGuideEW,
+                      indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_E", 0));
             indi_send(pulseGuideEW,
                       indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_W", duration));
             break;
         case NORTH:
             indi_send(pulseGuideNS,
+                      indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_S", 0));
+            indi_send(pulseGuideNS,
                       indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_N", duration));
             break;
         case SOUTH:
+            indi_send(pulseGuideNS,
+                      indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_N", 0));
             indi_send(pulseGuideNS,
                       indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_S", duration));
             break;
