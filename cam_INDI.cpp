@@ -36,6 +36,7 @@
 
 #ifdef INDI_CAMERA
 
+#include "config_INDI.h"
 #include "camera.h"
 
 #include "time.h"
@@ -75,7 +76,7 @@ static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data) {
 Camera_INDIClass::Camera_INDIClass() {
     Connected = FALSE;
     INDICameraName=_T("INDI Camera");
-    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
+    PropertyDialogType = PROPDLG_ANY;
     FullSize = wxSize(640,480);
 }
 
@@ -132,15 +133,22 @@ void Camera_INDIClass::NewProp(struct indi_prop_t *iprop) {
 
 bool Camera_INDIClass::Connect() {
 
+    bool ShowConfig = false;
+
     if (! INDIClient) {
-        INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
-        if (! INDIClient) {
-            return true;
-        }
+	ShowConfig = true;
     }
-    if (INDICameraName.IsEmpty()) {
-        printf("No INDI camera is set.  Please set INDIcam in the preferences file\n");
-        return true;
+    
+    if (INDICameraName.IsEmpty() || INDICameraName.IsSameAs(_T("INDI Camera"))) {
+	ShowConfig = true;
+    }
+
+    if (ShowConfig) {
+	INDI_Setup();
+	if (! INDIClient || INDICameraName.IsEmpty() || INDICameraName.IsSameAs(_T("INDI Camera"))) {
+		printf("No INDI camera is set.  Please set INDIcam in the preferences file\n");
+		return true;
+	}
     }
 
     modal = true;
@@ -155,17 +163,26 @@ bool Camera_INDIClass::Connect() {
     if(! ready)
         return true;
     Connected = true;
+    INDIClient->ClientCount++;
     return false;
 
 }
 
 bool Camera_INDIClass::Disconnect() {
-    Connected = FALSE;
+    if (Connected) INDIClient->ClientCount--;
+    ready = false;
+    Connected = false;
     return false;
 }
 
 void Camera_INDIClass::ShowPropertyDialog() {
-    indigui_show_dialog(INDIClient);
+    // INDI GUI is unresponsive when called from the modal gear_dialog
+    if (Connected) {
+      INDI_Dialog();
+    }
+    else {
+      INDI_Setup();
+    }
 }
 
 bool Camera_INDIClass::ReadFITS(usImage& img) {

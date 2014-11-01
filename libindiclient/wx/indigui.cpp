@@ -668,7 +668,8 @@ void IndiGui::OnQuit(wxCloseEvent& WXUNUSED(event))
 		
 void indigui_show_dialog(void * /*data*/)
 {
+    if (indiGui) {
 	indiGui->child_window = true;
 	indiGui->Show(true);
+    }
 }
-

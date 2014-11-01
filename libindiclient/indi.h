@@ -122,6 +122,7 @@ struct indi_t {
 	indi_list *dev_cb_list;
 	void *window;
 	void *config;
+	int ClientCount;
 };
 
 extern struct indi_device_t *indi_find_device(struct indi_t *indi, const char *dev);
