@@ -253,6 +253,7 @@ void INDI_Setup()
     	indiDlg->SaveSettings();
     }
     indiDlg->Destroy();
+    delete indiDlg;
 }
 
 void INDI_Dialog()

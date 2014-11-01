@@ -384,7 +384,7 @@ static int indi_blob_decode(void *data)
 	int src_len;
 	int pos = ielem->value.blob.ptr - ielem->value.blob.data;
 
-	printf("Decoding from %d - %p\n", pos, ielem->iprop->root);
+	//printf("Decoding from %d - %p\n", pos, ielem->iprop->root);
 	if (ielem->value.blob.compressed) {
 		if(! ielem->value.blob.zstrm)
 			ielem->value.blob.zstrm = (z_stream *)calloc(1, sizeof(z_stream));
@@ -481,7 +481,7 @@ static int indi_convert_data(struct indi_elem_t *ielem, int type, const char *da
 		ielem->value.blob.ptr = ielem->value.blob.data;
 		ielem->value.blob.orig_data = data;
 		ielem->value.blob.orig_size = data_size;
-		printf("Found blob type: %s size: %lu\n", ielem->value.blob.fmt, (unsigned long)ielem->value.blob.size);
+		//printf("Found blob type: %s size: %lu\n", ielem->value.blob.fmt, (unsigned long)ielem->value.blob.size);
 		ielem->value.blob.compressed = (ielem->value.blob.fmt[strlen(ielem->value.blob.fmt)-2] == '.'
 			 && ielem->value.blob.fmt[strlen(ielem->value.blob.fmt)-1] == 'z')
 			 ? 1 : 0;
