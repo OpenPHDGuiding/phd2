@@ -36,6 +36,8 @@
 #include "camera.h"
 #include "scope.h"
 
+#include "config_INDI.h"
+
 #if defined (INDI_CAMERA) || defined (GUIDE_INDI)
 
 #if defined (INDI_CAMERA)
@@ -73,12 +75,14 @@ class INDIConfig : public wxDialog
 public:
     INDIConfig(wxWindow *parent);
     void SaveSettings();
-    void UpdateDevices(wxConfig *config);
+    void UpdateDevices();
+    void ConnectServer();
 private:
     void FillDevices(wxComboBox *combo, wxString str);
     void OnButton(wxCommandEvent& evt);
     wxTextCtrl *host;
     wxTextCtrl *port;
+    wxStaticText *connect_status;
 #if defined (INDI_CAMERA)
     wxComboBox *cam;
     wxTextCtrl *camport;
@@ -89,7 +93,6 @@ private:
 #endif
     DECLARE_EVENT_TABLE()
 };
-
 
 void INDIConfig::FillDevices(wxComboBox *combo, wxString str)
 {
@@ -108,33 +111,34 @@ void INDIConfig::FillDevices(wxComboBox *combo, wxString str)
     combo->SetSelection(0);
 }
 
-void INDIConfig::UpdateDevices(wxConfig *config)
+void INDIConfig::UpdateDevices()
 {
 #if defined (INDI_CAMERA)
-	FillDevices(cam, config->Read(_T("INDIcam"), _T("")));
+	FillDevices(cam, pConfig->Profile.GetString("/indi/INDIcam", _T("")));
 #endif
 #if defined (GUIDE_INDI)
-	FillDevices(mount, config->Read(_T("INDImount"), _T("")));
+	FillDevices(mount, pConfig->Profile.GetString("/indi/INDImount", _T("")));
 #endif
 }
 
 INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, (const wxString)_T("INDI Configuration"))
 {
     int pos;
-    wxConfig *config = new wxConfig(_T("PHDGuiding"));
     wxGridBagSizer *gbs = new wxGridBagSizer(0, 20);
     wxBoxSizer *sizer;
 
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Hostname:")),
              POS(0, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    host = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDIhost"), _T("localhost")));
+    host = new wxTextCtrl(this, wxID_ANY, pConfig->Profile.GetString("/indi/INDIhost",_T("localhost")));
     gbs->Add(host, POS(0, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Port:")),
              POS(1, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    port = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDIport"), _T("7624")));
+    port = new wxTextCtrl(this, wxID_ANY, pConfig->Profile.GetString("/indi/INDIport", _T("7624")));
     gbs->Add(port, POS(1, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
-    gbs->Add(new wxButton(this, MCONNECT, _T("Connect")), POS(2, 0), SPAN(1, 2), wxALIGN_LEFT | wxALL | wxEXPAND);
+    connect_status = new wxStaticText(this, wxID_ANY, _T("Disconnected"));
+    gbs->Add(connect_status,POS(2, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+    gbs->Add(new wxButton(this, MCONNECT, _T("Connect")), POS(2, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
     pos = 3;
 #if defined (INDI_CAMERA)
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Camera Driver:")),
@@ -144,7 +148,7 @@ INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, (const wxS
 
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Camera Port:")),
              POS(pos + 1, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    camport = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDIcam_port"), _T("")));
+    camport = new wxTextCtrl(this, wxID_ANY, pConfig->Profile.GetString("/indi/INDIcam_port", _T("")));
     gbs->Add(camport, POS(pos+ 1, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
     pos += 2;
 #endif
@@ -157,10 +161,10 @@ INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, (const wxS
 
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Telescope Port:")),
              POS(pos + 1, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    mountport = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDImount_port"), _T("")));
+    mountport = new wxTextCtrl(this, wxID_ANY, pConfig->Profile.GetString("/indi/INDImount_port", _T("")));
     gbs->Add(mountport, POS(pos + 1, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 #endif
-    UpdateDevices(config);
+    UpdateDevices();
 
     sizer = new wxBoxSizer(wxVERTICAL) ;
     sizer->Add(gbs);
@@ -174,72 +178,90 @@ EVT_BUTTON(MCONNECT, INDIConfig::OnButton)
 END_EVENT_TABLE()
 
 void INDIConfig::OnButton(wxCommandEvent& WXUNUSED(event)) {
-    if (INDIClient) {
-        indi_close(INDIClient);
-        delete INDIClient;
-    }
-    INDIClient = indi_init(host->GetLineText(0).mb_str(wxConvUTF8).data(), atol(port->GetLineText(0).mb_str(wxConvUTF8).data()), "PHDGuiding");
-    if (INDIClient)
-	indi_new_device_cb(INDIClient, (IndiPropCB)config_new_device_cb, this);
+    ConnectServer();
+}
 
+void INDIConfig::ConnectServer()
+{
+    if (INDIClient) {
+	if (INDIClient->ClientCount > 0) {
+		connect_status->SetLabel(_T("Connected"));
+		return;
+	}
+	indi_remove_cb(INDIClient, (IndiPropCB)config_new_device_cb);
+	indi_close(INDIClient);
+	delete INDIClient;
+	INDIClient = 0;
+    } 
+    if (! INDIClient) {
+	INDIClient = indi_init(host->GetLineText(0).mb_str(wxConvUTF8).data(), atol(port->GetLineText(0).mb_str(wxConvUTF8).data()), "PHDGuiding");
+    }
+    if (INDIClient) {
+	indi_new_device_cb(INDIClient, (IndiPropCB)config_new_device_cb, this);
+	connect_status->SetLabel(_T("Connected"));
+    }
 }
 
 void INDIConfig::SaveSettings()
 {
-    wxConfig *config = new wxConfig(_T("PHDGuiding"));
-
     INDIhost = host->GetLineText(0);
-    config->Write(_T("INDIhost"), INDIhost);
+    pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
 
     port->GetLineText(0).ToLong(&INDIport);
-    config->Write(_T("INDIport"), INDIport);
+    pConfig->Profile.SetLong("/indi/INDIport", INDIport);
 
 #if defined (INDI_CAMERA)
     INDICameraName = cam->GetValue();
-    config->Write(_T("INDIcam"), INDICameraName);
+    pConfig->Profile.SetString("/indi/INDIcam", INDICameraName);
 
-	long tempPort;
+/*	long tempPort;
     camport->GetValue().ToLong(&tempPort);
 
-    config->Write(_T("INDIcam_port"), (short) tempPort);
+    config->Write(_T("INDIcam_port"), (short) tempPort);*/
+    pConfig->Profile.SetString("/indi/INDIcam_port",camport->GetLineText(0));
 #endif
 
 #if defined (GUIDE_INDI)
     INDIMountName = mount->GetValue();
-    config->Write(_T("INDImount"), INDIMountName);
+    pConfig->Profile.SetString("/indi/INDImount", INDIMountName);
 
-    config->Write(_T("INDImount_port"), mountport->GetLineText(0) );
+    pConfig->Profile.SetString("/indi/INDImount_port", mountport->GetLineText(0) );
 #endif
 }
 
 void MyFrame::OnINDIConfig(wxCommandEvent& WXUNUSED(event))
 {
-    INDIConfig *indiDlg = new INDIConfig(this);
-    if (indiDlg->ShowModal() == wxID_OK) {
-        indiDlg->SaveSettings();
-    }
-    if (INDIClient)
-        indi_remove_cb(INDIClient, (IndiPropCB)config_new_device_cb);
-    indiDlg->Destroy();
+   INDI_Setup();
 }
 
 void MyFrame::OnINDIDialog(wxCommandEvent& WXUNUSED(event))
 {
-    if (! INDIClient) {
-        INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
-        if (! INDIClient) {
-            return;
-        }
-    }
-    indigui_show_dialog(INDIClient);
+   INDI_Dialog();
 }
 
 void config_new_device_cb(struct indi_device_t * /*idev */, void *data)
 {
-    wxConfig *config = new wxConfig(_T("PHDGuiding"));
-
     INDIConfig *indi_config = (INDIConfig *)data;
-    indi_config->UpdateDevices(config);
+    indi_config->UpdateDevices();
+}
+
+void INDI_Setup()
+{
+    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow());
+    indiDlg->ConnectServer();
+    if (indiDlg->ShowModal() == wxID_OK) {
+    	indiDlg->SaveSettings();
+    }
+    indiDlg->Destroy();
+}
+
+void INDI_Dialog()
+{
+    if (! INDIClient) INDI_Setup();
+    if (INDIClient) 
+    {
+       indigui_show_dialog(INDIClient);
+    }
 }
 
 #endif

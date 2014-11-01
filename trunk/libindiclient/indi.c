@@ -798,6 +798,7 @@ struct indi_t *indi_init(const char *hostname, int port, const char *config)
 
 	indi = (struct indi_t *)calloc(1, sizeof(struct indi_t));
 
+	indi->ClientCount = 0;
 	indi->window = indigui_create_window(indi);
 	indi->config = ic_init(indi, config);
 

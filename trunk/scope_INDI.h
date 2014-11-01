@@ -60,6 +60,8 @@ public:
 	bool     CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
 	void     InitCapture() { return; }
 	void     ShowPropertyDialog();
+	bool     HasSetupDialog(void) const;
+	void     SetupDialog();
 	void     CheckState();
 	void     NewProp(struct indi_prop_t *iprop);
     void     StartMove(int direction);

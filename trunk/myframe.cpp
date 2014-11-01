@@ -468,9 +468,10 @@ void MyFrame::SetupMenuBar(void)
     darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Bad-pixel &Map"), _("Use the bad-pixel map for this profile"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-    wxMenu *indi_menu = new wxMenu;
-    indi_menu->Append(MENU_INDICONFIG, _("&Configure..."), _("Configure INDI settings"));
-    indi_menu->Append(MENU_INDIDIALOG, _("&Controls..."), _("Show INDI controls for available devices"));
+   /* Now in gear manager */ 
+   /* wxMenu *indi_menu = new wxMenu; */
+   /* indi_menu->Append(MENU_INDICONFIG, _("&Configure..."), _("Configure INDI settings")); */
+   /* indi_menu->Append(MENU_INDIDIALOG, _("&Controls..."), _("Show INDI controls for available devices")); */
 #endif
 
 #if defined (V4L_CAMERA)
@@ -489,7 +490,8 @@ void MyFrame::SetupMenuBar(void)
     Menubar->Append(file_menu, _("&File"));
 
 #if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-    Menubar->Append(indi_menu, _T("&INDI"));
+    /* Now in gear manager */ 
+    /* Menubar->Append(indi_menu, _T("&INDI")); */
 #endif
 
 #if defined (V4L_CAMERA)
