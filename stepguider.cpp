@@ -449,7 +449,7 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
 
         ClearCalibration();
         m_calibrationState = CALIBRATION_STATE_GOTO_LOWER_RIGHT_CORNER;
-        m_calibrationStartingLocation = currentLocation;
+        m_calibrationStartingLocation.Invalidate();
     }
     catch (wxString Msg)
     {
@@ -487,6 +487,12 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 
     try
     {
+        if (!m_calibrationStartingLocation.IsValid())
+        {
+            m_calibrationStartingLocation = currentLocation;
+            Debug.AddLine(wxString::Format("Stepguider::UpdateCalibrationstate: starting location = %.2f,%.2f", currentLocation.X, currentLocation.Y));
+        }
+
         wxString status0, status1;
         int stepsRemainingUp = MaxPosition(UP) - CurrentPosition(UP);
         int stepsRemainingDown = MaxPosition(DOWN) - CurrentPosition(DOWN);
