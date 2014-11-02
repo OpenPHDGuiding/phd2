@@ -267,13 +267,16 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                 newWidth /= newScaleFactor;
                 newHeight /= newScaleFactor;
 
-                newScaleFactor = 1.0/newScaleFactor;
+                newScaleFactor = 1.0 / newScaleFactor;
 
                 m_scaleFactor = newScaleFactor;
 
                 Debug.AddLine("Resizing image to %d,%d", newWidth, newHeight);
 
-                m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_HIGH);
+                if (newWidth > 0 && newHeight > 0)
+                {
+                    m_displayedImage->Rescale(newWidth, newHeight, wxIMAGE_QUALITY_HIGH);
+                }
             }
             else
             {

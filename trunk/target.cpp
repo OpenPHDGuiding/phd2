@@ -287,6 +287,9 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     int topEdge = center.y - radius_max;
     radius_max -= 18;
 
+    if (radius_max < 10)
+        radius_max = 10;
+
     const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
     double scale = radius_max / 2 * sampling;
 
