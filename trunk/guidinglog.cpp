@@ -232,6 +232,7 @@ void GuidingLog::StartCalibration(Mount *pCalibrationMount)
         m_file.Write(wxString::Format("Camera = %s\nExposure = %s\n",
             pCamera->Name, pFrame->ExposureDurationSummary()));
     }
+    m_file.Write(pFrame->PixelScaleSummary() + "\n");
 
     m_file.Write("Mount = " + pCalibrationMount->Name());
     wxString calSettings = pCalibrationMount->CalibrationSettingsSummary();
