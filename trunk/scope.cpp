@@ -664,7 +664,8 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
 
         ClearCalibration();
         m_calibrationSteps = 0;
-        m_calibrationInitialLocation = m_calibrationStartingLocation = currentLocation;
+        m_calibrationInitialLocation = currentLocation;
+        m_calibrationStartingLocation.Invalidate();
         m_calibrationState = CALIBRATION_STATE_GO_WEST;
     }
     catch (wxString Msg)
@@ -755,6 +756,13 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
     try
     {
         wxString status0, status1;
+
+        if (!m_calibrationStartingLocation.IsValid())
+        {
+            m_calibrationStartingLocation = currentLocation;
+            Debug.AddLine(wxString::Format("Scope::UpdateCalibrationstate: starting location = %.2f,%.2f", currentLocation.X, currentLocation.Y));
+        }
+
         double dX = m_calibrationStartingLocation.dX(currentLocation);
         double dY = m_calibrationStartingLocation.dY(currentLocation);
         double dist = m_calibrationStartingLocation.Distance(currentLocation);
@@ -767,6 +775,10 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 break;
 
             case CALIBRATION_STATE_GO_WEST:
+
+                // step number in the log is the step that just finished
+                GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (dist < dist_crit)
                 {
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
@@ -779,13 +791,16 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         throw ERROR_INFO("RA calibration failed");
                     }
                     status0.Printf(_("West step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, WEST, m_calibrationDuration);
                     break;
                 }
 
                 m_calibrationXAngle = m_calibrationStartingLocation.Angle(currentLocation);
                 m_calibrationXRate = dist / (m_calibrationSteps * m_calibrationDuration);
+
+                Debug.AddLine(wxString::Format("WEST calibration completes with steps=%d angle=%.1f rate=%.4f", m_calibrationSteps, m_calibrationXAngle * 180. / M_PI, m_calibrationXRate));
+                status1.Printf(_("angle=%.1f rate=%.4f"), m_calibrationXAngle * 180. / M_PI, m_calibrationXRate);
+                GuideLog.CalibrationDirectComplete(this, "West", m_calibrationXAngle, m_calibrationXRate);
 
                 // for GO_EAST m_recenterRemaining contains the total remaining duration.
                 // Choose the largest pulse size that will not lose the guide star or exceed
@@ -805,24 +820,22 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     m_recenterDuration = m_calibrationDuration;
 
                 m_calibrationSteps = DIV_ROUND_UP(m_recenterRemaining, m_recenterDuration);
-
-                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.1f rate=%.4f", m_calibrationXAngle * 180. / M_PI, m_calibrationXRate));
-                status1.Printf(_("angle=%.1f rate=%.4f"), m_calibrationXAngle * 180. / M_PI, m_calibrationXRate);
-                GuideLog.CalibrationDirectComplete(this, "West", m_calibrationXAngle, m_calibrationXRate);
-
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
+
                 // fall through
                 Debug.AddLine("Falling Through to state GO_EAST");
 
             case CALIBRATION_STATE_GO_EAST:
+
+                GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (m_recenterRemaining > 0)
                 {
-                    status0.Printf(_("East step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
-
                     int duration = m_recenterDuration;
                     if (duration > m_recenterRemaining)
                         duration = m_recenterRemaining;
+
+                    status0.Printf(_("East step %3d"), m_calibrationSteps);
 
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
@@ -834,7 +847,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 // setup for clear backlash
 
-                m_calibrationSteps = 0; dist = 0.0;
+                m_calibrationSteps = 0;
+                dist = dX = dY = 0.0;
                 m_calibrationStartingLocation = currentLocation;
 
                 if (m_decGuideMode == DEC_NONE)
@@ -847,10 +861,14 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 }
 
                 m_calibrationState = CALIBRATION_STATE_CLEAR_BACKLASH;
+
                 // fall through
                 Debug.AddLine("Falling Through to state CLEAR_BACKLASH");
 
             case CALIBRATION_STATE_CLEAR_BACKLASH:
+
+                GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (dist < DEC_BACKLASH_DISTANCE)
                 {
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
@@ -863,18 +881,22 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         throw ERROR_INFO("Clear backlash failed");
                     }
                     status0.Printf(_("Clear backlash step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                     break;
                 }
+
                 m_calibrationSteps = 0;
-                dist = 0.0;
+                dist = dX = dY = 0.0;
                 m_calibrationStartingLocation = currentLocation;
                 m_calibrationState = CALIBRATION_STATE_GO_NORTH;
+
                 // fall through
                 Debug.AddLine("Falling Through to state GO_NORTH");
 
             case CALIBRATION_STATE_GO_NORTH:
+
+                GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (dist < dist_crit)
                 {
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
@@ -887,7 +909,6 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         throw ERROR_INFO("Dec calibration failed");
                     }
                     status0.Printf(_("North step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                     break;
                 }
@@ -913,6 +934,10 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     m_calibrationYRate = dist / (m_calibrationSteps * m_calibrationDuration);
                 }
 
+                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.1f rate=%.4f", m_calibrationYAngle * 180. / M_PI, m_calibrationYRate));
+                status1.Printf(_("angle=%.1f rate=%.4f"), m_calibrationYAngle * 180. / M_PI, m_calibrationYRate);
+                GuideLog.CalibrationDirectComplete(this, "North", m_calibrationYAngle, m_calibrationYRate);
+
                 // for GO_SOUTH m_recenterRemaining contains the total remaining duration.
                 // Choose the largest pulse size that will not lose the guide star or exceed
                 // the user-specified max pulse
@@ -930,24 +955,22 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     m_recenterDuration = m_calibrationDuration;
 
                 m_calibrationSteps = DIV_ROUND_UP(m_recenterRemaining, m_recenterDuration);
-
-                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.1f rate=%.4f", m_calibrationYAngle * 180. / M_PI, m_calibrationYRate));
-                status1.Printf(_("angle=%.1f rate=%.4f"), m_calibrationYAngle * 180. / M_PI, m_calibrationYRate);
-                GuideLog.CalibrationDirectComplete(this, "North", m_calibrationYAngle, m_calibrationYRate);
-
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
+
                 // fall through
                 Debug.AddLine("Falling Through to state GO_SOUTH");
 
             case CALIBRATION_STATE_GO_SOUTH:
+
+                GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (m_recenterRemaining > 0)
                 {
-                    status0.Printf(_("South step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
-
                     int duration = m_recenterDuration;
                     if (duration > m_recenterRemaining)
                         duration = m_recenterRemaining;
+
+                    status0.Printf(_("South step %3d"), m_calibrationSteps);
 
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
@@ -971,7 +994,6 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d ms", pulseAmt));
                         ++m_calibrationSteps;
                         status0.Printf(_("Final Nudge South %3d"), m_calibrationSteps);
-                        GuideLog.CalibrationStep(this, "NudgeSouth", 0, dX, dY, currentLocation, dist);
                         pFrame->ScheduleCalibrationMove(this, SOUTH, pulseAmt);
                         break;
                     }
