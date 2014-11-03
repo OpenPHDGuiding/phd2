@@ -69,8 +69,10 @@ set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 set(gp_SRC
     ${phd_src_dir}/gaussian_process/GPImpl.cpp
     ${phd_src_dir}/gaussian_process/GPImpl.h
-    ${phd_src_dir}/gaussian_process/circular_buffer.h
-    ${phd_src_dir}/gaussian_process/circular_buffer.cpp)
+    ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
+    ${phd_src_dir}/gaussian_process/tools/math_tools.h
+    ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
+    ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp)
 add_library(GP STATIC ${gp_SRC})
 target_include_directories(GP PUBLIC ${EIGEN_SRC})
 
@@ -360,8 +362,13 @@ set(phd2_SRC
   ${phd_src_dir}/worker_thread.cpp
   ${phd_src_dir}/worker_thread.h
 
-  ${phd_src_dir}/gaussian_process/circular_buffer.cpp
-  ${phd_src_dir}/gaussian_process/circular_buffer.h
+
+  ####### TODO: when merging the complete GP into the project, these can probably go elsewhere  
+  ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp
+  ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
+  ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
+  ${phd_src_dir}/gaussian_process/tools/math_tools.h
+  #######
 
 )
 if(UNIX AND NOT APPLE)

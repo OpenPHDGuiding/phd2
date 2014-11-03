@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Max Planck Society
 
 #include <gtest/gtest.h>
-#include "gaussian_process/circular_buffer.h"
+#include "gaussian_process/tools/circular_buffer.h"
 
 TEST(CircularBufferTest, noDataPointsDeletedTest) {
   int max_size = 5;
@@ -41,12 +41,27 @@ TEST(CircularBufferTest, overflow3TimesTest) {
   int i = 0;
   while (i < 3 * max_size) {
     buffer.append(i);
+
+    EXPECT_EQ(buffer.getLastElement(), i);
+    if (i > 1) {
+      EXPECT_EQ(buffer.getSecondLastElement(), i - 1);
+    }
     ++i;
   }
 
   for (int j = 0; j < max_size; j++) {
     EXPECT_EQ(buffer.get(j), 2 * max_size + j);
   }
+}
+
+TEST(CircularBufferTest, getTest) {
+  int max_size = 10;
+  CircularDoubleBuffer buffer(max_size);
+  for (int i = 0; i < max_size + 1; ++i) {
+    buffer.append(i);
+  }
+  EXPECT_EQ(buffer.getLastElement(), max_size);
+  EXPECT_EQ(buffer.getSecondLastElement(), max_size - 1);
 }
 
 TEST(CircularBufferTest, clearTest) {
@@ -60,7 +75,7 @@ TEST(CircularBufferTest, clearTest) {
     buffer.clear();
     buffer.append(3);
 
-    EXPECT_EQ(buffer.get(buffer.lastElementIndex()), 3);
+    EXPECT_EQ(buffer.getLastElement(), 3);
 
     for (int j = 1; j < max_size; ++j) {
         EXPECT_EQ(buffer.get(j), 0.0);
@@ -72,10 +87,10 @@ TEST(CircularBufferTest, lastElementIndexTest) {
     CircularDoubleBuffer buffer(max_size);
 
     buffer.append(1);
-    EXPECT_EQ(buffer.get(buffer.lastElementIndex()), 1);
+    EXPECT_EQ(buffer.getLastElement(), 1);
     buffer.append(2);
-    EXPECT_EQ(buffer.get(buffer.lastElementIndex()), 2);
-    EXPECT_EQ(buffer.get(buffer.lastElementIndex() - 1), 1);
+    EXPECT_EQ(buffer.getLastElement(), 2);
+    EXPECT_EQ(buffer.getSecondLastElement(), 1);
 }
 
 TEST(CircularBufferTest, getEigenVectorTest) {

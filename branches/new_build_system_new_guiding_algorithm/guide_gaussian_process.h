@@ -39,22 +39,22 @@
 
 #include "gaussian_process/circular_buffer.h"
 
+class wxStopWatch;
+
 class GuideGaussianProcess : public GuideAlgorithm
 {
 private:
     UDPGuidingInteraction udpInteraction;
-    /*
-     * Needed:
-     * Circular Buffers for:
-     * - time stamps
-     * - measurements
-     * - modified measurements
-     *
-     */
     CircularDoubleBuffer timestamps_;
     CircularDoubleBuffer measurements_;
     CircularDoubleBuffer modified_measurements_;
-
+    bool is_first_datapoint_;
+    wxStopWatch timer_;
+    double elapsed_time_ms_;
+    double delta_measurement_time_ms_;
+    double controller_time_ms_;
+    double control_gain_;
+    double control_signal_;
 
 
 protected:

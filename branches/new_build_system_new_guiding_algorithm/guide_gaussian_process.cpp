@@ -34,6 +34,8 @@
 
 #include "phd.h"
 #include "guide_gaussian_process.h"
+#include <wx/stopwatch.h>
+#include "gaussian_process/tools/math_tools.h"
 #include "UDPGuidingInteraction.h"
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
@@ -41,9 +43,16 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
       udpInteraction(_T("localhost"),_T("1308"),_T("1309")),
       timestamps_(180),
       measurements_(180),
-      modified_measurements_(180)
+      modified_measurements_(180),
+      is_first_datapoint_(true),
+      timer_(),
+      control_signal(0.0)
 {
-    reset();
+    // Initialise measurement_ vector with first random measurement
+    double sigma = 0.25;  //The daytime indoor measurement noise SD is 0.25-0.35
+    double first_measurement =
+        sigma * math_tools::generate_normal_random_double();
+    measurements_.append(first_measurement);
 }
 
 GuideGaussianProcess::~GuideGaussianProcess(void)
@@ -92,15 +101,39 @@ GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
 
 double GuideGaussianProcess::result(double input)
 {
+    measurements_.append(input);
+    handleTimestamps();
+    double new_modified_measurement =
+        control_signal_ +
+        measurements_.getSecondLastElement() * (1 - control_gain_) -
+        measurements_.getLastElement();
+
+    modified_measurements_.append(new_modified_measurement);
+
+    
+
     double buf[] = {input};
     
     udpInteraction.sendToUDPPort(buf, sizeof(buf));
     udpInteraction.receiveFromUDPPort(buf, sizeof(buf)); // this command blocks until matlab sends back something
 
     return buf[0];
+}
 
+void GuideGaussianProcess::handleTimestamps() {
+    if(is_first_datapoint_) {
+        timer_.start();
 
-    
+        // TODO check if this is equivalent to the matlab code
+        timestamps_.append(controllerTime_ / 2);
+
+        is_first_datapoint_ = false;
+    } else {
+        double time_now = timer_.Time();
+        delta_measurement_time_ms_ = time_now - elapsed_time_ms_;
+        elapsed_time_ms_ = time_now;
+        timestamps_.append(elapsed_time_ms_ - delta_measurement_time_ms_ / 2);
+    }
 }
 
 
@@ -109,5 +142,7 @@ void GuideGaussianProcess::reset()
     timestamps_.clear();
     measurements_.clear();
     modified_measurements_.clear();
+    is_first_datapoint_ = true;
+
     return;
 }
