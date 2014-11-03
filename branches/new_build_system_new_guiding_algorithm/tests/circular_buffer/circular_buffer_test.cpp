@@ -1,5 +1,7 @@
+// Copyright (c) 2014 Max Planck Society
+
 #include <gtest/gtest.h>
-#include "circular_buffer.h"
+#include "gaussian_process/circular_buffer.h"
 
 TEST(CircularBufferTest, noDataPointsDeletedTest) {
   int max_size = 5;
@@ -74,6 +76,43 @@ TEST(CircularBufferTest, lastElementIndexTest) {
     buffer.append(2);
     EXPECT_EQ(buffer.get(buffer.lastElementIndex()), 2);
     EXPECT_EQ(buffer.get(buffer.lastElementIndex() - 1), 1);
+}
+
+TEST(CircularBufferTest, getEigenVectorTest) {
+  int max_size = 10;
+
+  CircularDoubleBuffer buffer(max_size);
+  buffer.append(1);
+  buffer.append(2);
+  buffer.append(3);
+  buffer.append(4);
+
+  Eigen::VectorXd* vec = buffer.getEigenVector();
+
+  EXPECT_EQ(vec->size(), 4);
+
+  for (int i = 0; i < 4; ++i) {
+    EXPECT_EQ((*vec)[i], i + 1);
+  }
+
+  buffer.append(5);
+  buffer.append(6);
+  buffer.append(7);
+  buffer.append(8);
+  buffer.append(9);
+  buffer.append(10);
+  buffer.append(11);
+  buffer.append(12);
+
+  vec = buffer.getEigenVector();
+  EXPECT_EQ(vec->size(), 10);
+
+  /*
+   * Test if getEigenVector really only returns a pointer or if there is any
+   * copying involved.
+   */
+  (*vec)(0) = 4;
+  EXPECT_EQ((*vec)(0), buffer.get(0));
 }
 
 int main(int argc, char ** argv) {

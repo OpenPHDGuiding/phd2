@@ -69,8 +69,8 @@ set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 set(gp_SRC
     ${phd_src_dir}/gaussian_process/GPImpl.cpp
     ${phd_src_dir}/gaussian_process/GPImpl.h
-    ${phd_src_dir}/circular_buffer.h
-    )
+    ${phd_src_dir}/gaussian_process/circular_buffer.h
+    ${phd_src_dir}/gaussian_process/circular_buffer.cpp)
 add_library(GP STATIC ${gp_SRC})
 target_include_directories(GP PUBLIC ${EIGEN_SRC})
 
@@ -359,6 +359,10 @@ set(phd2_SRC
   ${phd_src_dir}/usImage.h
   ${phd_src_dir}/worker_thread.cpp
   ${phd_src_dir}/worker_thread.h
+
+  ${phd_src_dir}/gaussian_process/circular_buffer.cpp
+  ${phd_src_dir}/gaussian_process/circular_buffer.h
+
 )
 if(UNIX AND NOT APPLE)
   set(phd2_SRC 
@@ -371,7 +375,7 @@ source_group(src FILES ${phd2_SRC})
 # Test for the CircularBuffer
 add_executable(CircularBufferTest ${phd_src_dir}/tests/circular_buffer/circular_buffer_test.cpp)
 target_link_libraries(CircularBufferTest GP gtest)
-target_include_directories(CircularBufferTest PRIVATE ${phd_src_dir}/
+target_include_directories(CircularBufferTest PRIVATE ${phd_src_dir}
                                               PRIVATE ${GTEST_HEADERS})
 set_property(TARGET CircularBufferTest PROPERTY FOLDER "Unit tests/")
 add_test(CircularBufferTest1 CircularBufferTest)
@@ -485,11 +489,15 @@ elseif(UNIX)
    ${guiding_SRC}
    ${phd2_SRC}
    )
+  find_package(X11 REQUIRED)
+  target_link_libraries(Phd2 X11)
   #target_link_libraries(Phd2 ${mathlib})
 else()
   message(FATAL_ERROR "Unsupported platform")
 
 endif()
+
+target_include_directories(Phd2 PUBLIC ${EIGEN_SRC})
 
 # properties of the project common to all platforms
 target_compile_definitions(Phd2 PRIVATE "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS")

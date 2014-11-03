@@ -37,10 +37,12 @@
 #include "UDPGuidingInteraction.h"
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis)
-    , udpInteraction(_T("localhost"),_T("1308"),_T("1309"))
+    : GuideAlgorithm(pMount, axis),
+      udpInteraction(_T("localhost"),_T("1308"),_T("1309")),
+      timestamps_(180),
+      measurements_(180),
+      modified_measurements_(180)
 {
-    
     reset();
 }
 
@@ -96,6 +98,9 @@ double GuideGaussianProcess::result(double input)
     udpInteraction.receiveFromUDPPort(buf, sizeof(buf)); // this command blocks until matlab sends back something
 
     return buf[0];
+
+
+    
 }
 
 
@@ -103,6 +108,6 @@ void GuideGaussianProcess::reset()
 {
     timestamps_.clear();
     measurements_.clear();
-    modifiedMeasurements_.clear();
+    modified_measurements_.clear();
     return;
 }

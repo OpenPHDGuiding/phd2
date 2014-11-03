@@ -37,7 +37,7 @@
 
 #include "UDPGuidingInteraction.h"
 
-#include "circular_buffer.h"
+#include "gaussian_process/circular_buffer.h"
 
 class GuideGaussianProcess : public GuideAlgorithm
 {
@@ -53,7 +53,7 @@ private:
      */
     CircularDoubleBuffer timestamps_;
     CircularDoubleBuffer measurements_;
-    CircularDoubleBuffer modifiedMeasurements_;
+    CircularDoubleBuffer modified_measurements_;
 
 
 
