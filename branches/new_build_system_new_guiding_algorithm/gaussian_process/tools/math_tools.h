@@ -85,7 +85,7 @@ Eigen::MatrixXd generate_normal_random_matrix(
 
 
 //! Returns a single random double drawn from the standard normal distribution
-double generate_standard_normal_random_double();
+double generate_normal_random_double();
 
 /*!
  * Checks if a value is NaN by comparing it with itself.

@@ -198,7 +198,7 @@ Eigen::MatrixXd generate_normal_random_matrix(
   return result;
 }
 
-double generate_standard_normal_random_double() {
+double generate_normal_random_double() {
   Eigen::MatrixXd randomMatrix = generate_normal_random_matrix(1, 1);
   return randomMatrix(0,0);
 }
