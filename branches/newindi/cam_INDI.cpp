@@ -36,6 +36,7 @@
 
 #ifdef INDI_CAMERA
 
+#include "config_INDI.h"
 #include "camera.h"
 #include "indiclient.h"
 #include "time.h"
@@ -81,7 +82,7 @@ static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data) {
 Camera_INDIClass::Camera_INDIClass() {
     Connected = FALSE;
     INDICameraName=_T("INDI Camera");
-    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
+    PropertyDialogType = PROPDLG_ANY;
     FullSize = wxSize(640,480);
 }
 
@@ -147,25 +148,32 @@ INDIClient2->setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
 INDIClient2->watchDevice(INDICameraName.mb_str(wxConvUTF8));
 INDIClient2->connectServer();
 INDIClient2->setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), NULL);
- 
   
   /*
-    wxLongLong msec;
+
+    bool ShowConfig = false;
+
     if (! INDIClient) {
-        INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
-        if (! INDIClient) {
-            return true;
-        }
+	ShowConfig = true;
     }
-    if (INDICameraName.IsEmpty()) {
-        printf("No INDI camera is set.  Please set INDIcam in the preferences file\n");
-        return true;
+    
+    if (INDICameraName.IsEmpty() || INDICameraName.IsSameAs(_T("INDI Camera"))) {
+	ShowConfig = true;
     }
-    indi_device_add_cb(INDIClient, INDICameraName.ToAscii(), (IndiDevCB)new_prop_cb, this);
+
+    if (ShowConfig) {
+	INDI_Setup();
+	if (! INDIClient || INDICameraName.IsEmpty() || INDICameraName.IsSameAs(_T("INDI Camera"))) {
+		printf("No INDI camera is set.  Please set INDIcam in the preferences file\n");
+		return true;
+	}
+    }
 
     modal = true;
-    msec = wxGetUTCTimeMillis();
-    while(modal && wxGetUTCTimeMillis() - msec < 10 * 1000) {
+    indi_device_add_cb(INDIClient, INDICameraName.ToAscii(), (IndiDevCB)new_prop_cb, this);
+
+    wxLongLong msec = wxGetUTCTimeMillis();
+    while (modal && wxGetUTCTimeMillis() - msec < 10 * 1000) {
         ::wxSafeYield();
     }
     modal = false;
@@ -173,6 +181,7 @@ INDIClient2->setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), NULL);
     if(! ready)
         return true;*/
     Connected = true;
+//    INDIClient->ClientCount++;
     return false;
 }
 
@@ -182,10 +191,23 @@ bool Camera_INDIClass::Disconnect() {
     return false;
   }
   else return true;
+/*
+    if (Connected) INDIClient->ClientCount--;
+    ready = false;
+    Connected = false;
+    return false;
+*/
 }
+
 /*
 void Camera_INDIClass::ShowPropertyDialog() {
-    indigui_show_dialog(INDIClient);
+    // INDI GUI is unresponsive when called from the modal gear_dialog
+    if (Connected) {
+      INDI_Dialog();
+    }
+    else {
+      INDI_Setup();
+    }
 }*/
 /*
 bool Camera_INDIClass::ReadFITS(usImage& img) {
@@ -270,12 +292,12 @@ bool Camera_INDIClass::ReadStream(usImage& img) {
 }
 */
 
-bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-  
+bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
   if (Connected)
     INDIClient2->setExpotime(duration);
   /*
-    wxLongLong msec;
+    modal = true;
 
     if (expose_prop) {
         printf("Exposing for %d(ms)\n", duration);
@@ -287,15 +309,23 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
         indi_dev_enable_blob(expose_prop->idev, TRUE);
         indi_send(video_prop, indi_prop_set_switch(video_prop, "ON", TRUE));
     }
-    modal = true;
-    msec = wxGetLocalTimeMillis();
-    while(modal && wxGetLocalTimeMillis() - msec < 3 * 1000) {
-        wxGetApp().Yield();
+
+    unsigned long loopwait = duration > 100 ? 10 : 1;
+
+    CameraWatchdog watchdog(duration);
+
+    while (modal) {
+        wxMilliSleep(loopwait);
+        if (WorkerThread::TerminateRequested())
+            return true;
+        if (watchdog.Expired())
+        {
+            pFrame->Alert(_("Camera timeout during capure"));
+            Disconnect();
+            return true;
+        }
     }
-    if (modal) {
-        printf("ERROR: Camera_INDIClass::Capture timeout, trying to continue\n");
-        return true;
-    }
+
     if (! expose_prop) {
         indi_send(video_prop, indi_prop_set_switch(video_prop, "OFF", TRUE));
     }

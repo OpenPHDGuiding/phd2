@@ -38,9 +38,11 @@
 #include "socket_server.h"
 #include "calstep_dialog.h"
 
+#define CALIBRATION_RATE_UNCALIBRATED 123e4
+
 static const int DefaultCalibrationDuration = 750;
-static const int DefaultMaxDecDuration  = 1000;
-static const int DefaultMaxRaDuration  = 1000;
+static const int DefaultMaxDecDuration = 2500;
+static const int DefaultMaxRaDuration = 2500;
 
 static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
 static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
@@ -50,7 +52,15 @@ static const double DEC_BACKLASH_DISTANCE = 3.0;
 static const int MAX_CALIBRATION_STEPS = 60;
 static const double MAX_CALIBRATION_DISTANCE = 25.0;
 
+static int LIMIT_REACHED_WARN_COUNT = 5;
+static int MAX_NUDGES = 3;
+static double NUDGE_TOLERANCE = 2.0;
+
 Scope::Scope(void)
+    : m_raLimitReachedDirection(NONE),
+      m_raLimitReachedCount(0),
+      m_decLimitReachedDirection(NONE),
+      m_decLimitReachedCount(0)
 {
     m_calibrationSteps = 0;
     m_graphControlPane = NULL;
@@ -76,6 +86,9 @@ Scope::Scope(void)
 
     bool val = pConfig->Profile.GetBoolean(prefix + "/CalFlipRequiresDecFlip", false);
     SetCalibrationFlipRequiresDecFlip(val);
+
+    val = pConfig->Profile.GetBoolean(prefix + "/AssumeOrthogonal", false);
+    SetAssumeOrthogonal(val);
 }
 
 Scope::~Scope(void)
@@ -97,13 +110,12 @@ bool Scope::SetCalibrationDuration(int calibrationDuration)
 
     try
     {
-        if (calibrationDuration <= 0.0)
+        if (calibrationDuration <= 0)
         {
             throw ERROR_INFO("invalid calibrationDuration");
         }
 
         m_calibrationDuration = calibrationDuration;
-
     }
     catch (wxString Msg)
     {
@@ -225,7 +237,7 @@ wxArrayString Scope::List(void)
 {
     wxArrayString ScopeList;
 
-    ScopeList.Add(_T("None"));
+    ScopeList.Add(_("None"));
 #ifdef GUIDE_ASCOM
     wxArrayString ascomScopes = ScopeASCOM::EnumAscomScopes();
     for (unsigned int i = 0; i < ascomScopes.Count(); i++)
@@ -264,6 +276,26 @@ wxArrayString Scope::List(void)
     return ScopeList;
 }
 
+wxArrayString Scope::AuxMountList()
+{
+    wxArrayString scopeList;
+
+    scopeList.Add(_("None"));      // Keep this at the top of the list
+
+#ifdef GUIDE_ASCOM
+    wxArrayString positionAwareScopes = ScopeASCOM::EnumAscomScopes();
+    positionAwareScopes.Sort(&CompareNoCase);
+    for (unsigned int i = 0; i < positionAwareScopes.Count(); i++)
+        scopeList.Add(positionAwareScopes[i]);
+#endif
+
+#ifdef GUIDE_INDI
+    scopeList.Add(_T("INDI Mount"));
+#endif
+
+    return scopeList;
+}
+
 Scope *Scope::Factory(const wxString& choice)
 {
     Scope *pReturn = NULL;
@@ -286,7 +318,7 @@ Scope *Scope::Factory(const wxString& choice)
             pReturn = new ScopeASCOM(choice);
         }
 #endif
-        else if (choice.Find(_T("None")) + 1) {
+        else if (choice.Find(_("None")) + 1) {
         }
 #ifdef GUIDE_ONCAMERA
         else if (choice.Find(_T("On-camera")) + 1) {
@@ -392,6 +424,12 @@ void Scope::SetCalibrationFlipRequiresDecFlip(bool val)
     pConfig->Profile.SetBoolean("/scope/CalFlipRequiresDecFlip", val);
 }
 
+void Scope::SetAssumeOrthogonal(bool val)
+{
+    m_assumeOrthogonal = val;
+    pConfig->Profile.SetBoolean("/scope/AssumeOrthogonal", val);
+}
+
 void Scope::EnableStopGuidingWhenSlewing(bool enable)
 {
     if (enable)
@@ -437,8 +475,8 @@ Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duratio
 
     try
     {
-        int amountMoved;
-        result = Move(direction, duration, false, &amountMoved);
+        MoveResultInfo move;
+        result = Move(direction, duration, false, &move);
 
         if (result != MOVE_OK)
         {
@@ -458,9 +496,38 @@ int Scope::CalibrationMoveSize(void)
     return m_calibrationDuration;
 }
 
-Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool normalMove, int *amountMoved)
+static wxString LimitReachedWarningKey(long axis)
+{
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting to be per-profile
+    return wxString::Format("/Confirm/%d/Max%sLimitWarningEnabled", pConfig->GetCurrentProfileId(), axis == GUIDE_RA ? "RA" : "Dec");
+}
+
+static void SuppressLimitReachedWarning(long axis)
+{
+    pConfig->Global.SetBoolean(LimitReachedWarningKey(axis), false);
+}
+
+static void AlertLimitReached(GuideAxis axis)
+{
+    if (pConfig->Global.GetBoolean(LimitReachedWarningKey(axis), true))
+    {
+        static time_t s_lastLogged;
+        time_t now = time(0);
+        if (s_lastLogged == 0 || now - s_lastLogged > 30)
+        {
+            s_lastLogged = now;
+            wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
+            pFrame->Alert(wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
+                "Increasing the %s will allow PHD to make the needed corrections."), s, s),
+                _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
+        }
+    }
+}
+
+Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool normalMove, MoveResultInfo *moveResult)
 {
     MOVE_RESULT result = MOVE_OK;
+    bool limitReached = false;
 
     try
     {
@@ -489,11 +556,25 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
                         Debug.AddLine("duration set to 0 by GuideMode");
                     }
 
-                    if  (duration > m_maxDecDuration)
+                    if (duration > m_maxDecDuration)
                     {
                         duration = m_maxDecDuration;
                         Debug.AddLine("duration set to %d by maxDecDuration", duration);
+                        limitReached = true;
                     }
+
+                    if (limitReached && direction == m_decLimitReachedDirection)
+                    {
+                        if (++m_decLimitReachedCount >= LIMIT_REACHED_WARN_COUNT)
+                            AlertLimitReached(GUIDE_DEC);
+                    }
+                    else
+                        m_decLimitReachedCount = 0;
+
+                    if (limitReached)
+                        m_decLimitReachedDirection = direction;
+                    else
+                        m_decLimitReachedDirection = NONE;
                 }
                 break;
             case EAST:
@@ -506,9 +587,22 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
                     {
                         duration = m_maxRaDuration;
                         Debug.AddLine("duration set to %d by maxRaDuration", duration);
+                        limitReached = true;
                     }
-                }
 
+                    if (limitReached && direction == m_raLimitReachedDirection)
+                    {
+                        if (++m_raLimitReachedCount >= LIMIT_REACHED_WARN_COUNT)
+                            AlertLimitReached(GUIDE_RA);
+                    }
+                    else
+                        m_raLimitReachedCount = 0;
+
+                    if (limitReached)
+                        m_raLimitReachedDirection = direction;
+                    else
+                        m_raLimitReachedDirection = NONE;
+                }
                 break;
 
             case NONE:
@@ -526,7 +620,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         if (result == MOVE_OK)
@@ -536,8 +630,11 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
 
     Debug.AddLine(wxString::Format("Move returns status %d, amount %d", result, duration));
 
-    if (amountMoved)
-        *amountMoved = duration;
+    if (moveResult)
+    {
+        moveResult->amountMoved = duration;
+        moveResult->limited = limitReached;
+    }
 
     return result;
 }
@@ -567,7 +664,8 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
 
         ClearCalibration();
         m_calibrationSteps = 0;
-        m_calibrationStartingLocation = currentLocation;
+        m_calibrationInitialLocation = currentLocation;
+        m_calibrationStartingLocation.Invalidate();
         m_calibrationState = CALIBRATION_STATE_GO_WEST;
     }
     catch (wxString Msg)
@@ -601,7 +699,7 @@ bool Scope::IsCalibrated(void)
     case DEC_NORTH:
     case DEC_SOUTH:
         {
-            bool have_ns_calibration = m_calibrationYAngle != 0.0 || m_calibrationYRate != 1.0;
+            bool have_ns_calibration = m_calibrationYRate != CALIBRATION_RATE_UNCALIBRATED;
             return have_ns_calibration;
         }
     default:
@@ -610,7 +708,46 @@ bool Scope::IsCalibrated(void)
     }
 }
 
+static double CalibrationDistance(void)
+{
+    return wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
+}
+
+int Scope::CalibrationTotDistance(void)
+{
+    return (int) ceil(CalibrationDistance());
+}
+
 #define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
+
+inline static double norm(double val, double start, double end)
+{
+    double const range = end - start;
+    double const ofs = val - start;
+    return val - floor(ofs / range) * range;
+}
+
+inline static double norm_angle(double val)
+{
+    return norm(val, -M_PI, M_PI);
+}
+
+inline static double degrees(double radians)
+{
+    return radians * 180. / M_PI;
+}
+
+// Convert camera coords to mount coords
+static PHD_Point MountCoords(const PHD_Point& cameraVector, double xCalibAngle, double yCalibAngle)
+{
+    double hyp = cameraVector.Distance();
+    double cameraTheta = cameraVector.Angle();
+    double yAngleError = (xCalibAngle - yCalibAngle) + M_PI / 2;
+    yAngleError = atan2(sin(yAngleError), cos(yAngleError));
+    double xAngle = cameraTheta - xCalibAngle;
+    double yAngle = cameraTheta - (xCalibAngle + yAngleError);
+    return PHD_Point(hyp * cos(xAngle), hyp * sin(yAngle));
+}
 
 bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 {
@@ -619,10 +756,17 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
     try
     {
         wxString status0, status1;
+
+        if (!m_calibrationStartingLocation.IsValid())
+        {
+            m_calibrationStartingLocation = currentLocation;
+            Debug.AddLine(wxString::Format("Scope::UpdateCalibrationstate: starting location = %.2f,%.2f", currentLocation.X, currentLocation.Y));
+        }
+
         double dX = m_calibrationStartingLocation.dX(currentLocation);
         double dY = m_calibrationStartingLocation.dY(currentLocation);
         double dist = m_calibrationStartingLocation.Distance(currentLocation);
-        double dist_crit = wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
+        double dist_crit = CalibrationDistance();
 
         switch (m_calibrationState)
         {
@@ -631,6 +775,10 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 break;
 
             case CALIBRATION_STATE_GO_WEST:
+
+                // step number in the log is the step that just finished
+                GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (dist < dist_crit)
                 {
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
@@ -643,13 +791,16 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         throw ERROR_INFO("RA calibration failed");
                     }
                     status0.Printf(_("West step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, WEST, m_calibrationDuration);
                     break;
                 }
 
                 m_calibrationXAngle = m_calibrationStartingLocation.Angle(currentLocation);
                 m_calibrationXRate = dist / (m_calibrationSteps * m_calibrationDuration);
+
+                Debug.AddLine(wxString::Format("WEST calibration completes with steps=%d angle=%.1f rate=%.4f", m_calibrationSteps, m_calibrationXAngle * 180. / M_PI, m_calibrationXRate));
+                status1.Printf(_("angle=%.1f rate=%.4f"), m_calibrationXAngle * 180. / M_PI, m_calibrationXRate);
+                GuideLog.CalibrationDirectComplete(this, "West", m_calibrationXAngle, m_calibrationXRate);
 
                 // for GO_EAST m_recenterRemaining contains the total remaining duration.
                 // Choose the largest pulse size that will not lose the guide star or exceed
@@ -669,50 +820,55 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     m_recenterDuration = m_calibrationDuration;
 
                 m_calibrationSteps = DIV_ROUND_UP(m_recenterRemaining, m_recenterDuration);
-
-                Debug.AddLine(wxString::Format("WEST calibration completes with angle=%.2f rate=%.4f", m_calibrationXAngle, m_calibrationXRate));
-                status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationXAngle, m_calibrationXRate);
-                GuideLog.CalibrationDirectComplete(this, "West", m_calibrationXAngle, m_calibrationXRate);
-
                 m_calibrationState = CALIBRATION_STATE_GO_EAST;
+
                 // fall through
                 Debug.AddLine("Falling Through to state GO_EAST");
 
             case CALIBRATION_STATE_GO_EAST:
+
+                GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (m_recenterRemaining > 0)
                 {
-                    status0.Printf(_("East step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
-
                     int duration = m_recenterDuration;
                     if (duration > m_recenterRemaining)
                         duration = m_recenterRemaining;
 
+                    status0.Printf(_("East step %3d"), m_calibrationSteps);
+
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
+                    m_lastLocation = currentLocation;
 
                     pFrame->ScheduleCalibrationMove(this, EAST, duration);
                     break;
                 }
 
-                m_calibrationSteps = 0; dist = 0.0;
+                // setup for clear backlash
+
+                m_calibrationSteps = 0;
+                dist = dX = dY = 0.0;
                 m_calibrationStartingLocation = currentLocation;
 
                 if (m_decGuideMode == DEC_NONE)
                 {
                     m_calibrationState = CALIBRATION_STATE_COMPLETE;
-                    // these values uniquely indicate lack of Dec calibration data.
-                    // If you change them, you need to update Scope::IsCalibrated.
-                    m_calibrationYAngle = 0.0;
-                    m_calibrationYRate = 1.0;
+                    m_calibrationYAngle = norm_angle(m_calibrationXAngle + M_PI / 2.); // choose an arbitrary angle perpendicular to xAngle
+                    // indicate lack of Dec calibration data, see Scope::IsCalibrated.
+                    m_calibrationYRate = CALIBRATION_RATE_UNCALIBRATED;
                     break;
                 }
 
                 m_calibrationState = CALIBRATION_STATE_CLEAR_BACKLASH;
+
                 // fall through
                 Debug.AddLine("Falling Through to state CLEAR_BACKLASH");
 
             case CALIBRATION_STATE_CLEAR_BACKLASH:
+
+                GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (dist < DEC_BACKLASH_DISTANCE)
                 {
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
@@ -725,18 +881,22 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         throw ERROR_INFO("Clear backlash failed");
                     }
                     status0.Printf(_("Clear backlash step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                     break;
                 }
+
                 m_calibrationSteps = 0;
-                dist = 0.0;
+                dist = dX = dY = 0.0;
                 m_calibrationStartingLocation = currentLocation;
                 m_calibrationState = CALIBRATION_STATE_GO_NORTH;
+
                 // fall through
                 Debug.AddLine("Falling Through to state GO_NORTH");
 
             case CALIBRATION_STATE_GO_NORTH:
+
+                GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (dist < dist_crit)
                 {
                     if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
@@ -749,16 +909,34 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         throw ERROR_INFO("Dec calibration failed");
                     }
                     status0.Printf(_("North step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
                     pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                     break;
                 }
 
-                // note: this calculation is reversed from the ra calculation, becase
+                // note: this calculation is reversed from the ra calculation, because
                 // that one was calibrating WEST, but the angle is really relative
                 // to EAST
-                m_calibrationYAngle = currentLocation.Angle(m_calibrationStartingLocation);
-                m_calibrationYRate = dist / (m_calibrationSteps * m_calibrationDuration);
+                if (m_assumeOrthogonal)
+                {
+                    double a1 = norm_angle(m_calibrationXAngle + M_PI / 2.);
+                    double a2 = norm_angle(m_calibrationXAngle - M_PI / 2.);
+                    double yAngle = currentLocation.Angle(m_calibrationStartingLocation);
+                    m_calibrationYAngle = fabs(norm_angle(a1 - yAngle)) < fabs(norm_angle(a2 - yAngle)) ? a1 : a2;
+                    double dec_dist = dist * cos(yAngle - m_calibrationYAngle);
+                    m_calibrationYRate = dec_dist / (m_calibrationSteps * m_calibrationDuration);
+
+                    Debug.AddLine("Assuming orthogonal axes: measured Y angle = %.1f, X angle = %.1f, orthogonal = %.1f, %.1f, best = %.1f, dist = %.2f, dec_dist = %.2f",
+                        degrees(yAngle), degrees(m_calibrationXAngle), degrees(a1), degrees(a2), degrees(m_calibrationYAngle), dist, dec_dist);
+                }
+                else
+                {
+                    m_calibrationYAngle = currentLocation.Angle(m_calibrationStartingLocation);
+                    m_calibrationYRate = dist / (m_calibrationSteps * m_calibrationDuration);
+                }
+
+                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.1f rate=%.4f", m_calibrationYAngle * 180. / M_PI, m_calibrationYRate));
+                status1.Printf(_("angle=%.1f rate=%.4f"), m_calibrationYAngle * 180. / M_PI, m_calibrationYRate);
+                GuideLog.CalibrationDirectComplete(this, "North", m_calibrationYAngle, m_calibrationYRate);
 
                 // for GO_SOUTH m_recenterRemaining contains the total remaining duration.
                 // Choose the largest pulse size that will not lose the guide star or exceed
@@ -777,31 +955,53 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     m_recenterDuration = m_calibrationDuration;
 
                 m_calibrationSteps = DIV_ROUND_UP(m_recenterRemaining, m_recenterDuration);
-
-                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.2f rate=%.4f", m_calibrationYAngle, m_calibrationYRate));
-                status1.Printf(_("angle=%.2f rate=%.4f"), m_calibrationYAngle, m_calibrationYRate);
-                GuideLog.CalibrationDirectComplete(this, "North", m_calibrationYAngle, m_calibrationYRate);
-
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
+
                 // fall through
                 Debug.AddLine("Falling Through to state GO_SOUTH");
 
             case CALIBRATION_STATE_GO_SOUTH:
+
+                GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
+
                 if (m_recenterRemaining > 0)
                 {
-                    status0.Printf(_("South step %3d"), m_calibrationSteps);
-                    GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
-
                     int duration = m_recenterDuration;
                     if (duration > m_recenterRemaining)
                         duration = m_recenterRemaining;
 
+                    status0.Printf(_("South step %3d"), m_calibrationSteps);
+
                     m_recenterRemaining -= duration;
                     --m_calibrationSteps;
+                    m_lastLocation = currentLocation;
 
                     pFrame->ScheduleCalibrationMove(this, SOUTH, duration);
                     break;
                 }
+
+                // Nudge further South on Dec, get within 2 px North/South of starting point, don't try more than 3 times.
+                if (m_calibrationSteps <= MAX_NUDGES && currentLocation.Distance(m_calibrationInitialLocation) > NUDGE_TOLERANCE)
+                {
+                    double firstDecAmt = MountCoords(m_lastLocation - m_calibrationInitialLocation, m_calibrationXAngle, m_calibrationYAngle).Y;
+                    double decAmt = MountCoords(currentLocation - m_calibrationInitialLocation, m_calibrationXAngle, m_calibrationYAngle).Y;
+                    Debug.AddLine(wxString::Format("Final nudging, decAmt = %.3f, lastSouthDistance = %.3f", decAmt, firstDecAmt));
+                    if (decAmt * firstDecAmt > 0.0)           // still in the same direction
+                    {
+                        decAmt = fabs(decAmt);           // Sign doesn't matter now, we're always moving south
+                        decAmt = wxMin(decAmt, (double) pFrame->pGuider->GetMaxMovePixels());
+                        int pulseAmt = (int) floor(decAmt / m_calibrationYRate);
+                        Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d ms", pulseAmt));
+                        ++m_calibrationSteps;
+                        status0.Printf(_("Final Nudge South %3d"), m_calibrationSteps);
+                        pFrame->ScheduleCalibrationMove(this, SOUTH, pulseAmt);
+                        break;
+                    }
+                }
+
+                Debug.AddLine(wxString::Format("Final nudging status: Current loc = {%.3f,%.3f}, targeting {%.3f,%.3f}", currentLocation.X, currentLocation.Y,
+                    m_calibrationInitialLocation.X, m_calibrationInitialLocation.Y));
+
                 m_calibrationState = CALIBRATION_STATE_COMPLETE;
                 // fall through
                 Debug.AddLine("Falling Through to state CALIBRATION_COMPLETE");
@@ -809,7 +1009,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
             case CALIBRATION_STATE_COMPLETE:
                 SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
                                m_calibrationXRate,  m_calibrationYRate,
-                               GetDeclination(), SideOfPier());
+                               pPointingSource->GetGuidingDeclination(), pPointingSource->SideOfPier());
                 pFrame->SetStatusText(_("calibration complete"),1);
                 GuideLog.CalibrationComplete(this);
                 EvtServer.NotifyCalibrationComplete(this);
@@ -851,16 +1051,22 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
     return bError;
 }
 
-wxString Scope::GetSettingsSummary() {
+wxString Scope::GetSettingsSummary()
+{
     // return a loggable summary of current mount settings
     return Mount::GetSettingsSummary() +
-        wxString::Format("Calibration step = %d, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
-            GetCalibrationDuration(),
+        wxString::Format("Calibration step = phdlab_placeholder, Max RA duration = %d, Max DEC duration = %d, DEC guide mode = %s\n",
             GetMaxRaDuration(),
             GetMaxDecDuration(),
-            GetDecGuideMode() == DEC_NONE ? "off" : GetDecGuideMode() == DEC_AUTO ? "Auto" :
-            GetDecGuideMode() == DEC_NORTH ? "north" : "south"
+            GetDecGuideMode() == DEC_NONE ? "Off" : GetDecGuideMode() == DEC_AUTO ? "Auto" :
+            GetDecGuideMode() == DEC_NORTH ? "North" : "South"
         );
+}
+
+wxString Scope::CalibrationSettingsSummary()
+{
+    return wxString::Format("Calibration Step = %d ms, Assume orthogonal axes = %s", GetCalibrationDuration(),
+        IsAssumeOrthogonal() ? "yes" : "no");
 }
 
 wxString Scope::GetMountClassName() const
@@ -890,7 +1096,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     pAutoDuration->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &Scope::ScopeConfigDialogPane::OnCalcCalibrationStep, this);
 
     DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
-        _("How long a guide pulse should be used during calibration? Default = 750ms, increase for short f/l scopes and decrease for longer f/l scopes"), pAutoDuration);
+        _("How long a guide pulse should be used during calibration? Click \"Calculate\" to compute a suitable value."), pAutoDuration);
 
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -924,6 +1130,10 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     else
         m_pStopGuidingWhenSlewing = 0;
 
+    m_assumeOrthogonal = new wxCheckBox(pParent, wxID_ANY,
+        _("Assume Dec orthogonal to RA"));
+    DoAdd(m_assumeOrthogonal, _("Assume Dec axis is perpendicular to RA axis, regardless of calibration. Prevents RA periodic error from affecting Dec calibration. Option takes effect when calibrating DEC."));
+
     wxString dec_choices[] = {
         _("Off"),_("Auto"),_("North"),_("South")
     };
@@ -950,13 +1160,13 @@ void Scope::ScopeConfigDialogPane::OnCalcCalibrationStep(wxCommandEvent& evt)
     CalstepDialog calc(m_pParent, focalLength, pixelSize);
     if (calc.ShowModal() == wxID_OK)
     {
-        int iDuration;
-        if (calc.GetResults(focalLength, pixelSize, iDuration))
+        int calibrationStep;
+        if (calc.GetResults(&focalLength, &pixelSize, &calibrationStep))
         {
             // Following sets values in the UI controls of the various dialog tabs - not underlying data values
             pAdvancedDlg->SetFocalLength(focalLength);
             pAdvancedDlg->SetPixelSize(pixelSize);
-            m_pCalibrationDuration->SetValue(iDuration);
+            m_pCalibrationDuration->SetValue(calibrationStep);
         }
     }
 }
@@ -975,6 +1185,7 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
     m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
+    m_assumeOrthogonal->SetValue(m_pScope->IsAssumeOrthogonal());
 }
 
 void Scope::ScopeConfigDialogPane::UnloadValues(void)
@@ -986,6 +1197,7 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
+    m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
 
     MountConfigDialogPane::UnloadValues();
 }

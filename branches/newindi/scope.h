@@ -44,17 +44,24 @@ class Scope : public Mount
     DEC_GUIDE_MODE m_decGuideMode;
     DEC_GUIDE_MODE m_saveDecGuideMode;
 
+    GUIDE_DIRECTION m_raLimitReachedDirection;
+    int m_raLimitReachedCount;
+    GUIDE_DIRECTION m_decLimitReachedDirection;
+    int m_decLimitReachedCount;
+
     // Calibration variables
     int m_calibrationSteps;
     int m_recenterRemaining;
     int m_recenterDuration;
-    PHD_Point m_calibrationStartingLocation;
+    PHD_Point m_calibrationInitialLocation;   // initial position of guide star
+    PHD_Point m_calibrationStartingLocation;  // position of guide star at start of calibration measurement (after clear backlash etc.)
+    PHD_Point m_lastLocation;
 
     double m_calibrationXAngle;
     double m_calibrationXRate;
-
     double m_calibrationYAngle;
     double m_calibrationYRate;
+    bool m_assumeOrthogonal;
 
     bool m_calibrationFlipRequiresDecFlip;
     bool m_stopGuidingWhenSlewing;
@@ -82,6 +89,7 @@ protected:
         wxChoice   *m_pDecMode;
         wxCheckBox *m_pNeedFlipDec;
         wxCheckBox *m_pStopGuidingWhenSlewing;
+        wxCheckBox *m_assumeOrthogonal;
 
         void OnCalcCalibrationStep(wxCommandEvent& evt);
 
@@ -113,6 +121,10 @@ protected:
     };
     ScopeGraphControlPane *m_graphControlPane;
 
+    friend class GraphLogWindow;
+
+public:
+
     virtual int GetCalibrationDuration(void);
     virtual bool SetCalibrationDuration(int calibrationDuration);
     virtual int GetMaxDecDuration(void);
@@ -122,18 +134,16 @@ protected:
     virtual DEC_GUIDE_MODE GetDecGuideMode(void);
     virtual bool SetDecGuideMode(int decGuideMode);
 
-    friend class GraphLogWindow;
-
-public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();
+    virtual wxString CalibrationSettingsSummary();
     virtual wxString GetMountClassName() const;
 
     static wxArrayString List(void);
+    static wxArrayString AuxMountList(void);
     static Scope *Factory(const wxString& choice);
 
-public:
     Scope(void);
     virtual ~Scope(void);
 
@@ -149,6 +159,8 @@ public:
     void SetCalibrationFlipRequiresDecFlip(bool val);
     void EnableStopGuidingWhenSlewing(bool enable);
     bool IsStopGuidingWhenSlewingEnabled(void) const;
+    void SetAssumeOrthogonal(bool val);
+    bool IsAssumeOrthogonal(void) const;
 
     virtual void StartDecDrift(void);
     virtual void EndDecDrift(void);
@@ -157,9 +169,10 @@ public:
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, bool normalMove, int *amountMoved);
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, bool normalMove, MoveResultInfo *moveResultInfo);
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration);
     int CalibrationMoveSize(void);
+    int CalibrationTotDistance(void);
 
     void ClearCalibration(void);
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
@@ -172,6 +185,11 @@ private:
 inline bool Scope::IsStopGuidingWhenSlewingEnabled(void) const
 {
     return m_stopGuidingWhenSlewing;
+}
+
+inline bool Scope::IsAssumeOrthogonal(void) const
+{
+    return m_assumeOrthogonal;
 }
 
 #endif /* SCOPE_H_INCLUDED */

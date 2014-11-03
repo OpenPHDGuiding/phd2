@@ -46,12 +46,12 @@
 #define _U(String)  wxString(String, wxConvUTF8).c_str()
 
 #ifdef __APPLE__
-#include    <IOKit/serial/IOSerialKeys.h>
+
+#include <IOKit/serial/IOSerialKeys.h>
 
 #define IOSSDATALAT    _IOW('T', 0, unsigned long)
 
-
-kern_return_t ScopeGCUSBST4::createSerialIterator(io_iterator_t *serialIterator)
+static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
 {
     kern_return_t   kernResult;
     mach_port_t     masterPort;
@@ -78,7 +78,8 @@ kern_return_t ScopeGCUSBST4::createSerialIterator(io_iterator_t *serialIterator)
     return kernResult;
 }
 
-char * ScopeGCUSBST4::getRegistryString(io_object_t sObj, char *propName) {
+static char *getRegistryString(io_object_t sObj, const char *propName)
+{
     static char resultStr[256];
     //   CFTypeRef  nameCFstring;
     CFStringRef nameCFstring;
@@ -121,12 +122,14 @@ Mount::MOVE_RESULT ScopeGCUSBST4::Guide(GUIDE_DIRECTION direction, int duration)
 //      return false;
     }
 //  wxMessageBox(wxString::Format("send %d vs %d",strlen(buf),num_bytes));
-    wxMilliSleep(duration + 50);
+    WorkerThread::MilliSleep(duration + 50);
     return MOVE_OK;
 }
 
-bool ScopeGCUSBST4::Connect() {
+bool ScopeGCUSBST4::Connect()
+{
 #ifdef __APPLE__
+
     wxArrayString DeviceNames;
     wxArrayString PortNames;
     char tempstr[256];
@@ -140,9 +143,9 @@ bool ScopeGCUSBST4::Connect() {
     bool found_device = false;
     while (theObject = IOIteratorNext(theSerialIterator)) {  // Find the device   should be usbmodem1*
 
-        strcpy(tempstr,  getRegistryString(theObject, (char *) kIOTTYDeviceKey));
+        strcpy(tempstr,  getRegistryString(theObject, kIOTTYDeviceKey));
         if (strstr(tempstr,(char *) "usbmodem")) {
-            strcpy(tempstr, getRegistryString(theObject, (char *) kIODialinDeviceKey));
+            strcpy(tempstr, getRegistryString(theObject, kIODialinDeviceKey));
             found_device = true;
             break;
         }
@@ -155,7 +158,6 @@ bool ScopeGCUSBST4::Connect() {
     }
 
 #endif   //__APPLE__
-
 
 #ifdef  __LINUX__
        char tempstr[256] = "/dev/ttyACM0";

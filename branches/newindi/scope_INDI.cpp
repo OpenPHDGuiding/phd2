@@ -34,6 +34,8 @@
 
 #ifdef GUIDE_INDI
 
+#include "config_INDI.h"
+
 extern "C" {
     #include "libindiclient/indi.h"
     #include "libindiclient/indigui.h"
@@ -88,19 +90,37 @@ void ScopeINDI::CheckState() {
     }
 }
 
+bool ScopeINDI::HasSetupDialog(void) const
+{
+    return true;
+}
+
+void ScopeINDI::SetupDialog() {
+    // INDI GUI is unresponsive when called from the modal gear_dialog
+    INDI_Setup();
+}
+
 bool ScopeINDI::Connect() {
 //printf("entering ScopeINDI::Connect\n");
     wxLongLong msec;
+    bool ShowConfig = false;
+    
     if (! INDIClient) {
-        INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
-        if (! INDIClient) {
-            return true;
-        }
+	ShowConfig = true;
     }
-    if (INDIMountName.IsEmpty()) {
-        printf("No INDI telescope is set.  Please set INDImount in the preferences file\n");
-        return true;
+    
+    if (INDIMountName.IsEmpty() || INDIMountName.IsSameAs(_T("INDI Mount"))) {
+	ShowConfig = true;
     }
+    
+    if (ShowConfig) {
+	INDI_Setup();
+	if (! INDIClient || INDIMountName.IsEmpty() || INDIMountName.IsSameAs(_T("INDI Mount"))) {
+		printf("No INDI telescope is set.  Please set INDImount in the preferences file\n");
+		return true;
+	}
+    }
+    
     indi_device_add_cb(INDIClient, INDIMountName.ToAscii(), (IndiDevCB)tele_new_prop_cb, this);
 
     modal = true;
@@ -112,11 +132,15 @@ bool ScopeINDI::Connect() {
 
     if(! ready)
         return true;
+    if (IsConnected()) INDIClient->ClientCount++;
     return false;
 }
 
 bool ScopeINDI::Disconnect() {
 //printf("entering ScopeINDI::Disconnect\n");
+    if (IsConnected()) INDIClient->ClientCount--;
+    Scope::Disconnect();
+    ready = false;
     return false;
 }
 
@@ -161,21 +185,30 @@ void ScopeINDI::NewProp(struct indi_prop_t *iprop) {
 Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration_msec) {
 //printf("entering ScopeINDI::Guide\n");
 
-    double duration = duration_msec / 1000.0;
+    // despite what is sayed in INDI standard properties description, every telescope driver expect the guided time in msec.  
+    double duration = duration_msec; 
     switch (direction) {
         case EAST:
+            indi_send(pulseGuideEW,
+                      indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_W", 0));
             indi_send(pulseGuideEW,
                       indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_E", duration));
             break;
         case WEST:
             indi_send(pulseGuideEW,
+                      indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_E", 0));
+            indi_send(pulseGuideEW,
                       indi_prop_set_number(pulseGuideEW, "TIMED_GUIDE_W", duration));
             break;
         case NORTH:
             indi_send(pulseGuideNS,
+                      indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_S", 0));
+            indi_send(pulseGuideNS,
                       indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_N", duration));
             break;
         case SOUTH:
+            indi_send(pulseGuideNS,
+                      indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_N", 0));
             indi_send(pulseGuideNS,
                       indi_prop_set_number(pulseGuideNS, "TIMED_GUIDE_S", duration));
             break;

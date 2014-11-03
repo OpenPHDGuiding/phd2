@@ -39,8 +39,10 @@
 class ScopeOnboardST4 : public Scope
 {
     OnboardST4 *m_pOnboardHost;
+
 protected:
-    virtual bool Connect(OnboardST4 *pOnboardHost);
+    virtual bool ConnectOnboardST4(OnboardST4 *pOnboardHost);
+
 public:
     ScopeOnboardST4(void);
     virtual ~ScopeOnboardST4(void);

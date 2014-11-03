@@ -60,6 +60,7 @@ class TargetClient : public wxWindow
     unsigned int m_nItems;    // # of items in the history
     unsigned int m_length;     // # of items to display
     double m_zoom;
+    double m_refCircleRadius;
 
     void AppendData(const GuideStepInfo& step);
 
@@ -72,28 +73,28 @@ class TargetClient : public wxWindow
 
 class TargetWindow : public wxWindow
 {
+    OptionsButton *m_lengthButton;
+    wxCheckBox *m_enableRefCircle;
+    wxSpinCtrlDouble *m_refCircleRadius;
+    TargetClient *m_pClient;
+    bool m_visible;
+
 public:
     TargetWindow(wxWindow *parent);
     ~TargetWindow(void);
 
+    void AppendData(const GuideStepInfo& step);
+    void SetState(bool is_active);
+    void UpdateControls(void);
+
+private:
     void OnButtonLength(wxCommandEvent& evt);
     void OnMenuLength(wxCommandEvent& evt);
     void OnButtonClear(wxCommandEvent& evt);
     void OnButtonZoomIn(wxCommandEvent& evt);
     void OnButtonZoomOut(wxCommandEvent& evt);
-
-    void AppendData(const GuideStepInfo& step);
-    void SetState(bool is_active);
-
-private:
-    OptionsButton *LengthButton;
-    wxButton *ClearButton;
-    wxButton *ZoomInButton;
-    wxButton *ZoomOutButton;
-
-    TargetClient *m_pClient;
-
-    bool m_visible;
+    void OnCheckBoxRefCircle(wxCommandEvent& event);
+    void OnRefCircleRadius(wxSpinDoubleEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

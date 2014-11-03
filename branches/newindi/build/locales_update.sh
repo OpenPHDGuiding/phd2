@@ -13,7 +13,11 @@
 
 set -x
 
-xgettext *.cpp -C --from-code=CP1252 --keyword="_" --keyword="wxPLURAL:1,2" --keyword="wxTRANSLATE"
+here=$(cd "$(dirname $0)"; /bin/pwd)
+SRC=$(cd "$here"/..; /bin/pwd)
+
+cd $SRC
+xgettext *.cpp *.h -C --from-code=CP1252 --keyword="_" --keyword="wxPLURAL:1,2" --keyword="wxTRANSLATE"
 cd locale
 cp messages.pot messages-old.pot
 msgmerge messages-old.pot ../messages.po -o messages.pot

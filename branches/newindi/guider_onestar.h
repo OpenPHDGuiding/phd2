@@ -40,16 +40,17 @@
 #ifndef GUIDER_ONESTAR_H_INCLUDED
 #define GUIDER_ONESTAR_H_INCLUDED
 
-// Canvas area for image -- can take events
-class GuiderOneStar: public Guider
+class MassChecker;
+
+class GuiderOneStar : public Guider
 {
 private:
     Star m_star;
+    MassChecker *m_massChecker;
 
     // parameters
     bool m_massChangeThresholdEnabled;
     double m_massChangeThreshold;
-    int m_badMassCount;
     int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
 
 protected:
@@ -102,7 +103,7 @@ public:
 private:
     virtual bool IsValidLockPosition(const PHD_Point& pt);
     virtual void InvalidateCurrentPosition(bool fullReset = false);
-    virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage);
+    virtual bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo);
     virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);
 
     void OnLClick(wxMouseEvent& evt);

@@ -36,6 +36,9 @@
 #ifndef MOUNT_H_INCLUDED
 #define MOUNT_H_INCLUDED
 
+#include "guide_algorithms.h"
+#include "messagebox_proxy.h"
+
 enum GUIDE_DIRECTION {
     NONE  = -1,
     UP = 0,
@@ -52,6 +55,14 @@ enum PierSide {
     PIER_SIDE_UNKNOWN = -1,
     PIER_SIDE_EAST = 0,
     PIER_SIDE_WEST = 1,
+};
+
+struct MoveResultInfo
+{
+    int amountMoved;
+    bool limited;
+
+    MoveResultInfo() : amountMoved(0), limited(false) { }
 };
 
 class Mount : public wxMessageBoxProxy
@@ -87,7 +98,7 @@ protected:
     class MountConfigDialogPane : public wxEvtHandler, public ConfigDialogPane
     {
         Mount *m_pMount;
-        wxCheckBox *m_pRecalibrate;
+        wxCheckBox *m_pClearCalibration;
         wxCheckBox *m_pEnableGuide;
         wxChoice   *m_pXGuideAlgorithmChoice;
         wxChoice   *m_pYGuideAlgorithmChoice;
@@ -162,12 +173,15 @@ public:
 
     void AdjustCalibrationForScopePointing(void);
 
+    static wxString PierSideStr(PierSide side);
+
     // pure virutal functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
-    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved) = 0;
+    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, MoveResultInfo *moveResultInfo) = 0;
     virtual MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
     virtual int CalibrationMoveSize(void) = 0;
+    virtual int CalibrationTotDistance(void) = 0;
 
     // Calibration related routines
     virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;
@@ -208,7 +222,8 @@ public:
 
     virtual void ClearHistory(void);
 
-    virtual double GetDeclination(void);
+    double GetDefGuidingDeclination(void);              // Don't allow overrides in subclass
+    virtual double GetGuidingDeclination(void);
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
@@ -217,8 +232,11 @@ public:
     virtual bool CanCheckSlewing(void);
     virtual bool Slewing(void);
     virtual PierSide SideOfPier(void);
+    virtual bool CanReportPosition();                   // Can report RA, Dec, side-of-pier, etc.
+    virtual bool CanPulseGuide();                       // For ASCOM mounts
 
     virtual wxString GetSettingsSummary();
+    virtual wxString CalibrationSettingsSummary() { return wxEmptyString; }
 
     virtual bool CalibrationFlipRequiresDecFlip(void);
 

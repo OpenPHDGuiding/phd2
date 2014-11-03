@@ -95,8 +95,10 @@
 # define SXV
 # define OPENSSAG
 # define KWIQGUIDER
+# define ZWO_ASI
 
 #elif defined (__LINUX__)
+# define SIMULATOR
 # define CAM_QHY5
 # define INDI_CAMERA
 # define ZWO_ASI

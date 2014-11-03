@@ -147,3 +147,11 @@ void io_indi_idle_callback(int (*cb)(void *data), void *data)
 	indiCB->data = data;
 	idle.push_back(indiCB);
 }
+
+void io_indi_close_server(void *fh)
+{
+	if (fh) {
+	  wxSocketBase *m_sock = (wxSocketBase *)fh;
+	  m_sock->Close();
+	} 
+}  

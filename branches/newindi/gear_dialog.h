@@ -40,10 +40,13 @@ class GearDialog : public wxDialog
     GuideCamera *m_pCamera;
     Scope       *m_pScope;
     StepGuider  *m_pStepGuider;
+    Scope       *m_pAuxScope;
 
     bool m_cameraUpdated;
     bool m_mountUpdated;
     bool m_stepGuiderUpdated;
+    bool m_showDarksDialog;
+    bool m_ascomScopeSelected;
 
     wxChoice *m_profiles;
     OptionsButton *m_btnProfileManage;
@@ -57,6 +60,10 @@ class GearDialog : public wxDialog
     wxButton *m_pSetupScopeButton;
     wxToggleButton *m_pConnectScopeButton;
 
+    wxChoice *m_pAuxScopes;
+    wxButton *m_pSetupAuxScopeButton;
+    wxToggleButton *m_pConnectAuxScopeButton;
+
     wxChoice *m_pStepGuiders;
     wxButton *m_pSetupStepGuiderButton;
     wxToggleButton *m_pConnectStepGuiderButton;
@@ -69,9 +76,10 @@ public:
     ~GearDialog(void);
 
     void Initialize(void);
-    int ShowModal(bool autoConnect);
+    int ShowGearDialog(bool autoConnect);
     void EndModal(int retCode);
 
+    void ShowProfileWizard(void);
     bool SetProfile(int profileId, wxString *error);
     bool ConnectAll(wxString *error);
     bool DisconnectAll(wxString *error);
@@ -82,6 +90,7 @@ private:
 
     void UpdateCameraButtonState(void);
     void UpdateScopeButtonState(void);
+    void UpdateAuxScopeButtonState(void);
     void UpdateStepGuiderButtonState(void);
     void UpdateConnectAllButtonState(void);
     void UpdateDisconnectAllButtonState(void);
@@ -111,10 +120,17 @@ private:
     void OnButtonConnectScope(wxCommandEvent& event);
     void OnButtonDisconnectScope(wxCommandEvent& event);
 
+    void OnChoiceAuxScope(wxCommandEvent& event);
+    void OnButtonSetupAuxScope(wxCommandEvent& event);
+    void OnButtonConnectAuxScope(wxCommandEvent& event);
+    void OnButtonDisconnectAuxScope(wxCommandEvent& event);
+
     void OnChoiceStepGuider(wxCommandEvent& event);
     void OnButtonSetupStepGuider(wxCommandEvent& event);
     void OnButtonConnectStepGuider(wxCommandEvent& event);
     void OnButtonDisconnectStepGuider(wxCommandEvent& event);
+
+    void OnButtonWizard(wxCommandEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

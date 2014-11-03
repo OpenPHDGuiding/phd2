@@ -69,6 +69,7 @@ class ScopeASCOM : public Scope, private ASCOM_COMMON
     bool m_bCanGetCoordinates;
     bool m_bCanGetGuideRates;
     bool m_bCanSlew;
+    bool m_bCanPulseGuide;
 
     bool m_abortSlewWhenGuidingStuck;
 
@@ -95,11 +96,13 @@ public:
 
     virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs);
 
-    virtual double GetDeclination(void);
+    virtual double GetGuidingDeclination(void);
     virtual bool GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
     virtual bool GetCoordinates(double *ra, double *dec, double *siderealTime);
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
     virtual bool CanSlew(void);
+    virtual bool CanReportPosition(void);
+    virtual bool CanPulseGuide(void);
     virtual bool SlewToCoordinates(double ra, double dec);
     virtual bool CanCheckSlewing(void);
     virtual bool Slewing(void);

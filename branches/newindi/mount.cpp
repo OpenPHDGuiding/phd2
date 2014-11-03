@@ -63,6 +63,11 @@ inline static PierSide OppositeSide(PierSide p)
     }
 }
 
+wxString Mount::PierSideStr(PierSide p)
+{
+    return ::PierSideStr(p);
+}
+
 static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *parent)
 {
     // we need to force the guide alogorithm config pane to be large enough for
@@ -80,14 +85,13 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
 
     wxBoxSizer *chkSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    m_pRecalibrate = new wxCheckBox(pParent ,wxID_ANY,_("Force calibration"));
-    m_pRecalibrate->SetToolTip(_("Check to clear any previous calibration and force PHD to recalibrate"));
-
-    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY,_("Enable Guide Output"));
+    m_pClearCalibration = new wxCheckBox(pParent, wxID_ANY, _("Clear calibration"));
+    m_pClearCalibration->SetToolTip(("Clear the current calibration data - calibration will be re-done when guiding is started"));
+    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY, _("Enable Guide Output"), wxDefaultPosition, wxSize(150, -1), 0);
     m_pEnableGuide->SetToolTip(_("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
 
-    chkSizer->Add(m_pRecalibrate);
     chkSizer->Add(m_pEnableGuide);
+    chkSizer->Add(m_pClearCalibration);
     DoAdd(chkSizer);
 
     wxString xAlgorithms[] = {
@@ -170,9 +174,8 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 
 void Mount::MountConfigDialogPane::LoadValues(void)
 {
-    m_pRecalibrate->SetValue(!m_pMount->IsCalibrated());
-    m_pRecalibrate->Enable(!pFrame->CaptureActive);
-
+    m_pClearCalibration->Enable(m_pMount->IsCalibrated());
+    m_pClearCalibration->SetValue(false);
     m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithm();
     m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
     m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
@@ -194,9 +197,10 @@ void Mount::MountConfigDialogPane::LoadValues(void)
 
 void Mount::MountConfigDialogPane::UnloadValues(void)
 {
-    if (m_pRecalibrate->GetValue())
+    if (m_pClearCalibration->IsChecked())
     {
         m_pMount->ClearCalibration();
+        Debug.AddLine(wxString::Format("User cleared %s calibration", m_pMount->IsStepGuider() ? "AO" : "Mount"));
     }
 
     m_pMount->SetGuidingEnabled(m_pEnableGuide->GetValue());
@@ -532,8 +536,8 @@ bool Mount::FlipCalibration(void)
 
         bool decFlipRequired = CalibrationFlipRequiresDecFlip();
 
-        Debug.AddLine(wxString::Format("FlipCalibration before: x=%.2f, y=%.2f decFlipRequired=%d sideOfPier=%s",
-            origX, origY, decFlipRequired, PierSideStr(m_calPierSide)));
+        Debug.AddLine(wxString::Format("FlipCalibration before: x=%.1f, y=%.1f decFlipRequired=%d sideOfPier=%s",
+            origX * 180. / M_PI, origY * 180. / M_PI, decFlipRequired, ::PierSideStr(m_calPierSide)));
 
         double newX = origX + M_PI;
         double newY = origY;
@@ -543,7 +547,7 @@ bool Mount::FlipCalibration(void)
             newY += M_PI;
         }
 
-        Debug.AddLine("FlipCalibration pre-normalize: x=%.2f, y=%.2f", newX, newY);
+        Debug.AddLine("FlipCalibration pre-normalize: x=%.1f, y=%.1f", newX * 180. / M_PI, newY * 180. / M_PI);
 
         // normalize
         newX = atan2(sin(newX), cos(newX));
@@ -552,14 +556,14 @@ bool Mount::FlipCalibration(void)
         PierSide priorPierSide = m_calPierSide;
         PierSide newPierSide = OppositeSide(m_calPierSide);
 
-        Debug.AddLine(wxString::Format("FlipCalibration after: x=%.2f, y=%.2f sideOfPier=%s",
-            newX, newY, PierSideStr(newPierSide)));
+        Debug.AddLine(wxString::Format("FlipCalibration after: x=%.1f, y=%.1f sideOfPier=%s",
+            newX * 180. / M_PI, newY * 180. / M_PI, ::PierSideStr(newPierSide)));
 
         SetCalibration(newX, newY, m_calXRate, m_yRate, m_calDeclination, newPierSide);
 
         pFrame->SetStatusText(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
-            PierSideStr(priorPierSide, ""), origX * 180. / M_PI, origY * 180. / M_PI,
-            PierSideStr(newPierSide, ""), newX * 180. / M_PI, newY * 180. / M_PI), 0);
+            ::PierSideStr(priorPierSide, ""), origX * 180. / M_PI, origY * 180. / M_PI,
+            ::PierSideStr(newPierSide, ""), newX * 180. / M_PI, newY * 180. / M_PI), 0);
     }
     catch (wxString Msg)
     {
@@ -609,52 +613,57 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         GUIDE_DIRECTION yDirection = yDistance > 0.0 ? DOWN : UP;
 
         int requestedXAmount = (int) floor(fabs(xDistance / m_xRate) + 0.5);
-        int actualXAmount = 0;
-        result = Move(xDirection, requestedXAmount, normalMove, &actualXAmount);
+        MoveResultInfo xMoveResult;
+        result = Move(xDirection, requestedXAmount, normalMove, &xMoveResult);
 
         wxString msg;
 
-        if (actualXAmount > 0)
+        if (xMoveResult.amountMoved > 0)
         {
             msg = wxString::Format(_("%s %5.2f px %3d ms"), xDirection == EAST ? _("East") : _("West"),
-                fabs(xDistance), actualXAmount);
+                fabs(xDistance), xMoveResult.amountMoved);
         }
 
-        int actualYAmount = 0;
+        MoveResultInfo yMoveResult;
         if (result == MOVE_OK || result == MOVE_ERROR)
         {
             int requestedYAmount = (int) floor(fabs(yDistance / m_yRate) + 0.5);
-            result = Move(yDirection, requestedYAmount, normalMove, &actualYAmount);
+            result = Move(yDirection, requestedYAmount, normalMove, &yMoveResult);
 
-            if (actualYAmount > 0)
+            if (yMoveResult.amountMoved > 0)
             {
                 msg = wxString::Format(_("%s%*s%s %.2f px %d ms"), msg,
                     msg.IsEmpty() ? 42 : msg.Len() < 30 ? 30 - msg.Len() : 1, "",
                     yDirection == SOUTH ? _("South") : _("North"),
-                    fabs(yDistance), actualYAmount);
+                    fabs(yDistance), yMoveResult.amountMoved);
             }
         }
 
         if (!msg.IsEmpty())
         {
-            pFrame->SetStatusText(msg, 1, wxMax(actualXAmount, actualYAmount));
+            pFrame->SetStatusText(msg, 1);
             Debug.AddLine(msg);
         }
 
         GuideStepInfo info;
         info.mount = this;
-        info.time = (wxDateTime::UNow() - pFrame->m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0;
+        info.frameNumber = pFrame->m_frameCounter;
+        info.time = pFrame->TimeSinceGuidingStarted();
         info.cameraOffset = &cameraVectorEndpoint;
         info.mountOffset = &mountVectorEndpoint;
         info.guideDistanceRA = xDistance;
         info.guideDistanceDec = yDistance;
-        info.durationRA = actualXAmount;
+        info.durationRA = xMoveResult.amountMoved;
         info.directionRA = xDirection;
-        info.durationDec = actualYAmount;
+        info.durationDec = yMoveResult.amountMoved;
         info.directionDec = yDirection;
+        info.raLimited = xMoveResult.limited;
+        info.decLimited = yMoveResult.limited;
         info.aoPos = GetAoPos();
         info.starMass = pFrame->pGuider->StarMass();
         info.starSNR = pFrame->pGuider->SNR();
+        info.avgDist = pFrame->pGuider->CurrentError();
+        info.starError = pFrame->pGuider->StarError();
 
         GuideLog.GuideStep(info);
         EvtServer.NotifyGuideStep(info);
@@ -795,7 +804,6 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
         Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f",
                 mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
                 cameraVectorEndpoint.Angle());
-
     }
     catch (wxString Msg)
     {
@@ -832,8 +840,8 @@ GraphControlPane *Mount::GetGraphControlPane(wxWindow *pParent, const wxString& 
  */
 void Mount::AdjustCalibrationForScopePointing(void)
 {
-    double newDeclination = GetDeclination();
-    PierSide newPierSide = SideOfPier();
+    double newDeclination = pPointingSource->GetGuidingDeclination();
+    PierSide newPierSide = pPointingSource->SideOfPier();
 
     Debug.AddLine(wxString::Format("AdjustCalibrationForScopePointing (%s): current dec=%.1f pierSide=%d, cal dec=%.1f pierSide=%d",
         GetMountClassName(), newDeclination * 180. / M_PI, newPierSide, m_calDeclination * 180. / M_PI, m_calPierSide));
@@ -859,7 +867,7 @@ void Mount::AdjustCalibrationForScopePointing(void)
     if (IsOppositeSide(newPierSide, m_calPierSide))
     {
         Debug.AddLine(wxString::Format("Guiding starts on opposite side of pier: calibration data "
-            "side is %s, current side is %s", PierSideStr(m_calPierSide), PierSideStr(newPierSide)));
+            "side is %s, current side is %s", ::PierSideStr(m_calPierSide), ::PierSideStr(newPierSide)));
         FlipCalibration();
     }
 }
@@ -971,8 +979,8 @@ void Mount::ClearCalibration(void)
 
 void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide)
 {
-    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.2f yAngle=%.2f xRate=%.4f yRate=%.4f dec=%.2f pierSide=%d",
-        GetMountClassName(), xAngle, yAngle, xRate, yRate, declination, pierSide));
+    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.4f yRate=%.4f dec=%.1f pierSide=%d",
+        GetMountClassName(), xAngle * 180. / M_PI, yAngle * 180. / M_PI, xRate, yRate, declination, pierSide));
 
     // we do the rates first, since they just get stored
     m_yRate  = yRate;
@@ -988,8 +996,8 @@ void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yR
 
     m_yAngleError = atan2(sin(m_yAngleError), cos(m_yAngleError));
 
-    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- sets m_xAngle=%.2f m_yAngleError=%.2f",
-        GetMountClassName(), m_xAngle, m_yAngleError));
+    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- sets m_xAngle=%.1f m_yAngleError=%.1f",
+        GetMountClassName(), m_xAngle * 180. / M_PI, m_yAngleError * 180. / M_PI));
 
     m_calibrated = true;
     if (pFrame) pFrame->UpdateCalibrationStatus();
@@ -1045,13 +1053,25 @@ void Mount::ClearHistory(void)
     }
 }
 
-double Mount::GetDeclination(void)
+// Return a default guiding declination that will "do no harm" in terms of RA rate adjustments - either the Dec
+// where the calibration was done or zero
+double Mount::GetDefGuidingDeclination()
 {
     return m_calibrated ? m_calDeclination : 0.0;
 }
 
-// Safety net - return true in case subclass can't handle guide rates
-// Convention in this class is to return true for error conditions
+// Get a value of declination, in radians, that can be used for adjusting the RA guide rate.  Normally, this will be gotten
+// from the ASCOM scope subclass, but it could also come from the 'aux' mount connection.  If this method in the base class is
+// called, we don't have any pointing info, so return a default that will do no harm.
+// Don't force clients to catch exceptions.  Callers who want the traditional ASCOM
+// dec value should use GetCoordinates().
+double Mount::GetGuidingDeclination(void)
+{
+    return GetDefGuidingDeclination();
+}
+
+// Baseline implementations for non-ASCOM subclasses.  Methods will
+// return a sensible default or an error (true)
 bool Mount::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
     return true; // error, not implemented
@@ -1068,6 +1088,16 @@ bool Mount::GetSiteLatLong(double *latitude, double *longitude)
 }
 
 bool Mount::CanSlew(void)
+{
+    return false;
+}
+
+bool Mount::CanReportPosition()
+{
+    return false;
+}
+
+bool Mount::CanPulseGuide()
 {
     return false;
 }
@@ -1101,7 +1131,7 @@ wxString Mount::GetSettingsSummary()
 
     double cur_ra, cur_dec, cur_st;
     wxString dec_str;
-    if (!GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+    if (!pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
     {
         dec_str = wxString::Format("%0.1f deg", cur_dec);
     }
@@ -1109,14 +1139,15 @@ wxString Mount::GetSettingsSummary()
     {
         dec_str = "Unknown";
     }
-    return wxString::Format("Mount = %s,%s connected, guiding %s, %s, Dec = %s, Pier side = %s\n",
+    return wxString::Format("%s = %s,%s connected, guiding %s, %s, Dec = %s, Pier side = %s\n",
+        IsStepGuider() ? "AO" : "Mount",
         m_Name,
         IsConnected() ? " " : " not",
         m_guidingEnabled ? "enabled" : "disabled",
-        IsCalibrated() ? wxString::Format("xAngle = %.3f, xRate = %.4f, yAngle = %.3f, yRate = %.4f",
-                xAngle(), xRate(), yAngle(), yRate()) : "not calibrated",
+        IsCalibrated() ? wxString::Format("xAngle = %.1f, xRate = %.4f, yAngle = %.1f, yRate = %.4f",
+                xAngle() * 180. / M_PI, xRate(), yAngle() * 180. / M_PI, yRate()) : "not calibrated",
                 dec_str,
-                PierSideStr(SideOfPier())
+                ::PierSideStr(pPointingSource->SideOfPier())
     ) + wxString::Format("X guide algorithm = %s, %s",
         algorithms[GetXGuideAlgorithm()],
         m_pXGuideAlgorithm->GetSettingsSummary()

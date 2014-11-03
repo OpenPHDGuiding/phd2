@@ -37,8 +37,9 @@
 #include "manualcal_dialog.h"
 #include "calrestore_dialog.h"
 #include "nudge_lock.h"
+#include "comet_tool.h"
 
-void MyFrame::OnEEGG(wxCommandEvent &evt)
+void MyFrame::OnEEGG(wxCommandEvent& evt)
 {
     if (evt.GetId() == EEGG_RESTORECAL)
     {
@@ -55,6 +56,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             dlg.Show();
             if (dlg.ShowModal() == wxID_OK)
             {
+                Debug.AddLine("User-requested restore calibration");
                 pFrame->LoadCalibration();
             }
         }
@@ -71,7 +73,7 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             double yRate  = pMount->yRate();
             double xAngle = pMount->xAngle();
             double yAngle = pMount->yAngle();
-            double declination = pMount->GetDeclination();
+            double declination = pPointingSource->GetGuidingDeclination();
 
             if (!pMount->IsCalibrated())
             {
@@ -86,20 +88,37 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             if (manualcal.ShowModal () == wxID_OK)
             {
                 manualcal.GetValues(&xRate, &yRate, &xAngle, &yAngle, &declination);
-                pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pMount->SideOfPier());
+                pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pPointingSource->SideOfPier());
             }
         }
     }
     else if (evt.GetId() == EEGG_CLEARCAL)
     {
-        if (pMount)
-        {
-            pMount->ClearCalibration();
-        }
-        if (pSecondaryMount)
-        {
-            pSecondaryMount->ClearCalibration();
-        }
+        wxString devicestr = "";
+        if (!(pGuider && pGuider->IsCalibratingOrGuiding()))
+            if (pMount)
+            {
+                if (pMount->IsStepGuider())
+                    devicestr = _("AO");
+                else
+                    devicestr = _("Mount");
+            }
+            if (pSecondaryMount)
+            {
+                devicestr += _(", Mount");
+            }
+            if (devicestr.Length() > 0)
+            {
+                if (wxMessageBox(wxString::Format(_("%s calibration will be cleared - calibration will be re-done when guiding is started."), devicestr),
+                    _("Clear Calibration"), wxOK | wxCANCEL) == wxOK)
+                {
+                    if (pMount)
+                        pMount->ClearCalibration();
+                    if (pSecondaryMount)
+                        pSecondaryMount->ClearCalibration();
+                    Debug.AddLine("User cleared calibration on " + devicestr);
+                }
+            }
     }
     else if (evt.GetId() == EEGG_FLIPRACAL)
     {
@@ -109,6 +128,8 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
         {
             double xorig = mount->xAngle() * 180. / M_PI;
             double yorig = mount->yAngle() * 180. / M_PI;
+
+            Debug.AddLine("User-requested FlipRACal");
 
             if (FlipRACal())
             {
@@ -153,5 +174,18 @@ void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(evt))
     if (pDriftTool)
     {
         pDriftTool->Show();
+    }
+}
+
+void MyFrame::OnCometTool(wxCommandEvent& WXUNUSED(evt))
+{
+    if (!pCometTool)
+    {
+        pCometTool = CometTool::CreateCometToolWindow();
+    }
+
+    if (pCometTool)
+    {
+        pCometTool->Show();
     }
 }

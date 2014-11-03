@@ -69,6 +69,18 @@ static wxString state_name(EXPOSED_STATE st)
     }
 }
 
+static wxString json_escape(const wxString& s)
+{
+    wxString t(s);
+    static const wxString BACKSLASH("\\");
+    static const wxString BACKSLASHBACKSLASH("\\\\");
+    static const wxString DQUOT("\"");
+    static const wxString BACKSLASHDQUOT("\\\"");
+    t.Replace(BACKSLASH, BACKSLASHBACKSLASH);
+    t.Replace(DQUOT, BACKSLASHDQUOT);
+    return t;
+}
+
 template<char LDELIM, char RDELIM>
 struct JSeq
 {
@@ -89,7 +101,7 @@ static JAry& operator<<(JAry& a, const wxString& str)
         a.m_first = false;
     else
         a.m_s << ',';
-    a.m_s << str;
+    a.m_s << json_escape(str);
     return a;
 }
 
@@ -101,18 +113,6 @@ static JAry& operator<<(JAry& a, double d)
 static JAry& operator<<(JAry& a, int i)
 {
     return a << wxString::Format("%d", i);
-}
-
-static wxString json_escape(const wxString& s)
-{
-    wxString t(s);
-    static const wxString BACKSLASH("\\");
-    static const wxString BACKSLASHBACKSLASH("\\\\");
-    static const wxString DQUOT("\"");
-    static const wxString BACKSLASHDQUOT("\\\"");
-    t.Replace(BACKSLASH, BACKSLASHBACKSLASH);
-    t.Replace(DQUOT, BACKSLASHDQUOT);
-    return t;
 }
 
 static wxString json_format(const json_value *j)
@@ -165,9 +165,9 @@ struct NV
 {
     wxString n;
     wxString v;
-    NV(const wxString& n_, const wxString& v_) : n(n_), v('"'+v_+'"') { }
-    NV(const wxString& n_, const char *v_) : n(n_), v('"'+wxString(v_)+'"') { }
-    NV(const wxString& n_, const wchar_t *v_) : n(n_), v('"'+wxString(v_)+'"') { }
+    NV(const wxString& n_, const wxString& v_) : n(n_), v('"' + json_escape(v_) + '"') { }
+    NV(const wxString& n_, const char *v_) : n(n_), v('"' + json_escape(v_) + '"') { }
+    NV(const wxString& n_, const wchar_t *v_) : n(n_), v('"' + json_escape(v_) + '"') { }
     NV(const wxString& n_, int v_) : n(n_), v(wxString::Format("%d", v_)) { }
     NV(const wxString& n_, double v_) : n(n_), v(wxString::Format("%g", v_)) { }
     NV(const wxString& n_, double v_, int prec) : n(n_), v(wxString::Format("%.*f", prec, v_)) { }
@@ -461,7 +461,7 @@ enum {
 static NV jrpc_error(int code, const wxString& msg)
 {
     JObj err;
-    err << NV("code", code) << NV("message", json_escape(msg));
+    err << NV("code", code) << NV("message", msg);
     return NV("error", err);
 }
 
@@ -710,7 +710,29 @@ static void set_paused(JObj& response, const json_value *params)
     }
     val = p->int_value ? true : false;
 
-    pFrame->SetPaused(val);
+    PauseType pause = PAUSE_NONE;
+
+    if (val)
+    {
+        pause = PAUSE_GUIDING;
+
+        p = at(params, 1);
+        if (p)
+        {
+            if (p->type == JSON_STRING)
+            {
+                if (strcmp(p->string_value, "full") == 0)
+                    pause = PAUSE_FULL;
+            }
+            else
+            {
+                response << jrpc_error(JSONRPC_INVALID_PARAMS, "expected string param at index 1");
+                return;
+            }
+        }
+    }
+
+    pFrame->SetPaused(pause);
 
     response << jrpc_result(0);
 }
@@ -988,6 +1010,34 @@ static void set_lock_shift_params(JObj& response, const json_value *params)
     response << jrpc_result(0);
 }
 
+static void save_image(JObj& response, const json_value *params)
+{
+    if (!pFrame || ! pFrame->pGuider)
+    {
+        response << jrpc_error(1, "internal error");
+        return;
+    }
+
+    if (!pFrame->pGuider->CurrentImage()->ImageData)
+    {
+        response << jrpc_error(2, "no image available");
+        return;
+    }
+
+    wxString fname = wxFileName::CreateTempFileName(MyFrame::GetDefaultFileDir() + PATHSEPSTR + "save_image_");
+
+    if (pFrame->pGuider->SaveCurrentImage(fname))
+    {
+        ::wxRemove(fname);
+        response << jrpc_error(3, "error saving image");
+        return;
+    }
+
+    JObj rslt;
+    rslt << NV("filename", fname);
+    response << jrpc_result(rslt);
+}
+
 static bool parse_settle(SettleParams *settle, const json_value *j, wxString *error)
 {
     bool found_pixels = false, found_time = false, found_timeout = false;
@@ -1060,8 +1110,11 @@ static void guide(JObj& response, const json_value *params)
         recalibrate = p1->int_value ? true : false;
     }
 
-    PhdController::Guide(recalibrate, settle);
-    response << jrpc_result(0);
+    wxString err;
+    if (PhdController::Guide(recalibrate, settle, &err))
+        response << jrpc_result(0);
+    else
+        response << jrpc_error(1, err);
 }
 
 static void dither(JObj& response, const json_value *params)
@@ -1108,17 +1161,30 @@ static void dither(JObj& response, const json_value *params)
         return;
     }
 
-    if (PhdController::Dither(fabs(ditherAmt), raOnly, settle))
+    wxString error;
+    if (PhdController::Dither(fabs(ditherAmt), raOnly, settle, &error))
         response << jrpc_result(0);
     else
-        response << jrpc_error(1, "dither failed");
+        response << jrpc_error(1, error);
 }
 
-static bool handle_request(JObj& response, const json_value *req)
+static void dump_request(const wxSocketClient *cli, const json_value *req)
+{
+    Debug.AddLine(wxString::Format("evsrv: cli %p request: %s", cli, json_format(req)));
+}
+
+static void dump_response(const wxSocketClient *cli, const JRpcResponse& resp)
+{
+    Debug.AddLine(wxString::Format("evsrv: cli %p response: %s", cli, const_cast<JRpcResponse&>(resp).str()));
+}
+
+static bool handle_request(const wxSocketClient *cli, JObj& response, const json_value *req)
 {
     const json_value *method;
     const json_value *params;
     const json_value *id;
+
+    dump_request(cli, req);
 
     parse_request(req, &method, &params, &id);
 
@@ -1158,6 +1224,7 @@ static bool handle_request(JObj& response, const json_value *req)
         { "set_lock_shift_enabled", &set_lock_shift_enabled, },
         { "get_lock_shift_params", &get_lock_shift_params, },
         { "set_lock_shift_params", &set_lock_shift_params, },
+        { "save_image", &save_image, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)
@@ -1194,6 +1261,7 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
     {
         JRpcResponse response;
         response << jrpc_error(JSONRPC_PARSE_ERROR, parser_error(parser)) << jrpc_id(0);
+        dump_response(cli, response);
         do_notify1(cli, response);
         return;
     }
@@ -1210,8 +1278,9 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
         for (const json_value *req = root->first_child; req; req = req->next_sibling)
         {
             JRpcResponse response;
-            if (handle_request(response, req))
+            if (handle_request(cli, response, req))
             {
+                dump_response(cli, response);
                 ary << response;
                 found = true;
             }
@@ -1226,8 +1295,11 @@ static void handle_cli_input_complete(wxSocketClient *cli, char *input, JsonPars
 
         const json_value *const req = root;
         JRpcResponse response;
-        if (handle_request(response, req))
+        if (handle_request(cli, response, req))
+        {
+            dump_response(cli, response);
             do_notify1(cli, response);
+        }
     }
 }
 
@@ -1336,7 +1408,7 @@ void EventServer::OnEventServerEvent(wxSocketEvent& event)
     if (!client)
         return;
 
-    Debug.AddLine("event server client connected");
+    Debug.AddLine("evsrv: cli %p connect", client);
 
     client->SetEventHandler(*this, EVENT_SERVER_CLIENT_ID);
     client->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
@@ -1355,7 +1427,7 @@ void EventServer::OnEventServerClientEvent(wxSocketEvent& event)
 
     if (event.GetSocketEvent() == wxSOCKET_LOST)
     {
-        Debug.AddLine("event server client disconnected");
+        Debug.AddLine("evsrv: cli %p disconnect", cli);
 
         unsigned int const n = m_eventServerClients.erase(cli);
         if (n != 1)
@@ -1429,9 +1501,26 @@ void EventServer::NotifyStarSelected(const PHD_Point& pt)
     SIMPLE_NOTIFY_EV(ev_star_selected(pt));
 }
 
-void EventServer::NotifyStarLost()
+void EventServer::NotifyStarLost(const FrameDroppedInfo& info)
 {
-    SIMPLE_NOTIFY("StarLost");
+    if (m_eventServerClients.empty())
+        return;
+
+    Ev ev("StarLost");
+
+    ev << NV("Frame", info.frameNumber)
+       << NV("Time", info.time, 3)
+       << NV("StarMass", info.starMass, 0)
+       << NV("SNR", info.starSNR, 2)
+       << NV("AvgDist", info.avgDist, 2);
+
+    if (info.starError)
+        ev << NV("ErrorCode", info.starError);
+
+    if (!info.status.IsEmpty())
+        ev << NV("Status", info.status);
+
+    do_notify(m_eventServerClients, ev);
 }
 
 void EventServer::NotifyStartGuiding()
@@ -1461,7 +1550,7 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
 
     Ev ev("GuideStep");
 
-    ev << NV("Frame", (int) pFrame->m_frameCounter)
+    ev << NV("Frame", step.frameNumber)
        << NV("Time", step.time, 3)
        << NVMount(step.mount)
        << NV("dx", step.cameraOffset->X, 3)
@@ -1489,11 +1578,17 @@ void EventServer::NotifyGuideStep(const GuideStepInfo& step)
     }
 
     ev << NV("StarMass", step.starMass, 0)
-       << NV("SNR", step.starSNR, 2);
+       << NV("SNR", step.starSNR, 2)
+       << NV("AvgDist", step.avgDist, 2);
 
-    int errorCode = pFrame->pGuider->StarError();
-    if (errorCode)
-       ev << NV("ErrorCode", errorCode);
+    if (step.starError)
+       ev << NV("ErrorCode", step.starError);
+
+    if (step.raLimited)
+        ev << NV("RALimited", true);
+
+    if (step.decLimited)
+        ev << NV("DecLimited", true);
 
     do_notify(m_eventServerClients, ev);
 }
@@ -1535,7 +1630,11 @@ void EventServer::NotifySettling(double distance, double time, double settleTime
     if (m_eventServerClients.empty())
         return;
 
-    do_notify(m_eventServerClients, ev_settling(distance, time, settleTime));
+    Ev ev(ev_settling(distance, time, settleTime));
+
+    Debug.AddLine(wxString::Format("evsrv: %s", ev.str()));
+
+    do_notify(m_eventServerClients, ev);
 }
 
 void EventServer::NotifySettleDone(const wxString& errorMsg)
@@ -1543,5 +1642,40 @@ void EventServer::NotifySettleDone(const wxString& errorMsg)
     if (m_eventServerClients.empty())
         return;
 
-    do_notify(m_eventServerClients, ev_settle_done(errorMsg));
+    Ev ev(ev_settle_done(errorMsg));
+
+    Debug.AddLine(wxString::Format("evsrv: %s", ev.str()));
+
+    do_notify(m_eventServerClients, ev);
+}
+
+void EventServer::NotifyAlert(const wxString& msg, int type)
+{
+    if (m_eventServerClients.empty())
+        return;
+
+    Ev ev("Alert");
+    ev << NV("Msg", msg);
+
+    wxString s;
+    switch (type)
+    {
+    case wxICON_NONE:
+    case wxICON_INFORMATION:
+    default:
+        s = "info";
+        break;
+    case wxICON_QUESTION:
+        s = "question";
+        break;
+    case wxICON_WARNING:
+        s = "warning";
+        break;
+    case wxICON_ERROR:
+        s = "error";
+        break;
+    }
+    ev << NV("Type", s);
+
+    do_notify(m_eventServerClients, ev);
 }

@@ -68,8 +68,8 @@
 #include <stdarg.h>
 
 #define APPNAME _T("PHD2 Guiding")
-#define PHDVERSION _T("2.3.0")
-#define PHDSUBVER _T("")
+#define PHDVERSION _T("2.3.1")
+#define PHDSUBVER _T("o")
 #define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
@@ -140,6 +140,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "circbuf.h"
 #include "guidinglog.h"
 #include "graph.h"
+#include "statswindow.h"
 #include "star_profile.h"
 #include "target.h"
 #include "graph-stepguider.h"
@@ -159,22 +160,20 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "advanced_dialog.h"
 #include "gear_dialog.h"
 #include "myframe.h"
-#include "worker_thread.h"
 #include "debuglog.h"
+#include "worker_thread.h"
 #include "event_server.h"
 #include "confirm_dialog.h"
 #include "phdcontrol.h"
+#include "runinbg.h"
+#include "fitsiowrap.h"
 
-extern PhdConfig *pConfig;
+class wxSingleInstanceChecker;
 
-extern MyFrame *pFrame;
 extern Mount *pMount;
 extern Mount *pSecondaryMount;
+extern Mount *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
 extern GuideCamera *pCamera;
-
-#define ALWAYS_FLUSH_DEBUGLOG
-extern DebugLog Debug;
-extern GuidingLog GuideLog;
 
 // these seem to be the windowing/display related globals
 extern int XWinSize;
@@ -182,6 +181,7 @@ extern int YWinSize;
 
 class PhdApp : public wxApp
 {
+    wxSingleInstanceChecker *m_instanceChecker;
     long m_instanceNumber;
     bool m_resetConfig;
 

@@ -55,21 +55,23 @@ public:
         iterator& operator++() { ++m_pos; return *this; }
         iterator operator++(int) { iterator it(*this); m_pos++; return it; }
         bool operator==(const iterator& rhs) const { assert(&m_cb == &rhs.m_cb); return m_pos == rhs.m_pos; }
-        T& operator*() const { return m_cb.ary[m_pos % m_cb.m_capacity]; }
-        T& operator->() const { return m_cb.ary[m_pos % m_cb.m_capacity]; }
+        bool operator!=(const iterator& rhs) const { assert(&m_cb == &rhs.m_cb); return m_pos != rhs.m_pos; }
+        T& operator*() const { return m_cb.m_ary[m_pos % m_cb.m_capacity]; }
+        T* operator->() const { return &m_cb.m_ary[m_pos % m_cb.m_capacity]; }
     };
     friend class circular_buffer<T>::iterator;
     circular_buffer();
     circular_buffer(unsigned int capacity);
     ~circular_buffer();
     void resize(unsigned int capacity);
-    void push_back(const T& t);
+    void push_front(const T& t);
+    void pop_back(unsigned int n = 1);
     void clear();
     T& operator[](unsigned int n) const;
     unsigned int size() const { return m_size; }
     unsigned int capacity() const { return m_capacity; }
     iterator begin() { return iterator(*this, m_tail); }
-    iterator end() { return iterator(*this, m_head); }
+    iterator end() { return iterator(*this, m_tail + m_size); }
 };
 
 template<typename T>
@@ -115,7 +117,7 @@ void circular_buffer<T>::clear()
 }
 
 template<typename T>
-void circular_buffer<T>::push_back(const T& t)
+void circular_buffer<T>::push_front(const T& t)
 {
     m_ary[m_head] = t;
     m_head = (m_head + 1) % m_capacity;
@@ -127,6 +129,14 @@ void circular_buffer<T>::push_back(const T& t)
     {
         ++m_size;
     }
+}
+
+template<typename T>
+void circular_buffer<T>::pop_back(unsigned int n)
+{
+    assert(m_size >= n);
+    m_tail = (m_tail + n) % m_capacity;
+    m_size -= n;
 }
 
 template<typename T>

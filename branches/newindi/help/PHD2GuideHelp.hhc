@@ -109,11 +109,7 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Dark Frames">
-			<param name="Local" value="Tools.htm#Dark_Frames">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Maual Mount Control">
+			<param name="Name" value="Manual Mount Control">
 			<param name="Local" value="Tools.htm#Manual_Guide">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
@@ -135,6 +131,10 @@
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Lock Positions">
 			<param name="Local" value="Tools.htm#Lock_Positions">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Comet Tracking">
+			<param name="Local" value="Tools.htm#Comet_Tracking">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Equipment Profiles">

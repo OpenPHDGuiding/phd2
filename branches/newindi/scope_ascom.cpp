@@ -74,6 +74,7 @@ ScopeASCOM::ScopeASCOM(const wxString& choice)
     m_pIGlobalInterfaceTable = NULL;
     m_dwCookie = 0;
     m_choice = choice;
+    m_bCanPulseGuide = false;                           // will get updated in Connect()
 
     dispid_connected = DISPID_UNKNOWN;
     dispid_ispulseguiding = DISPID_UNKNOWN;
@@ -412,10 +413,29 @@ bool ScopeASCOM::Connect(void)
             dispid_abortslew = DISPID_UNKNOWN;
         }
 
-        // ... set the Connected property to true....
-        if (!pScopeDriver.PutProp(dispid_connected, true))
+        struct ConnectInBg : public ConnectMountInBg
         {
-            wxMessageBox(_T("ASCOM driver problem during connection: ") + wxString(pScopeDriver.Excep().bstrDescription),
+            ScopeASCOM *sa;
+            ConnectInBg(ScopeASCOM *sa_) : sa(sa_) { }
+            bool Entry()
+            {
+                AutoASCOMDriver pScopeDriver(sa->m_pIGlobalInterfaceTable, sa->m_dwCookie);
+                DispatchObj scope(pScopeDriver, NULL);
+                // ... set the Connected property to true....
+                if (!scope.PutProp(sa->dispid_connected, true))
+                {
+                    SetErrorMsg(scope.Excep().bstrDescription);
+                    return true;
+                }
+                return false;
+            }
+        };
+        ConnectInBg bg(this);
+
+        // set the Connected property to true in a background thread
+        if (bg.Run())
+        {
+            wxMessageBox(_T("ASCOM driver problem during connection: ") + bg.GetErrorMsg(),
                 _("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("ASCOM Scope: Could not set Connected property to true");
         }
@@ -447,10 +467,11 @@ bool ScopeASCOM::Connect(void)
         }
 
         // see if we can pulse guide
+        m_bCanPulseGuide = true;
         if (!pScopeDriver.GetProp(&vRes, L"CanPulseGuide") || !vRes.boolVal)
         {
-            wxMessageBox(_T("ASCOM driver does not support the needed Pulse Guide method."),_("Error"), wxOK | wxICON_ERROR);
-            throw ERROR_INFO("ASCOM Scope: Cannot pulseguide");
+            Debug.AddLine("Connecting to ASCOM scope that does not support PulseGuide");
+            m_bCanPulseGuide = false;
         }
 
         // see if we can slew
@@ -540,6 +561,13 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
             throw ERROR_INFO("ASCOM Scope: attempt to guide when not connected");
         }
 
+        if (!m_bCanPulseGuide)
+        {
+            // Could happen if move command is issued on the Aux mount or CanPulseGuide property got changed on the fly
+            pFrame->Alert(_("ASCOM driver does not support PulseGuide"));
+            throw ERROR_INFO("ASCOM scope: guide command issued but PulseGuide not supported");
+        }
+
         AutoASCOMDriver pScopeDriver(m_pIGlobalInterfaceTable, m_dwCookie);
         DispatchObj scope(pScopeDriver, NULL);
 
@@ -588,7 +616,7 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         dispParms.rgdispidNamedArgs = NULL;
 
         wxStopWatch swatch;
-        swatch.Start();
+
         HRESULT hr;
         EXCEPINFO excep;
         VARIANT vRes;
@@ -596,6 +624,13 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         if (FAILED(hr = pScopeDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
                                         &dispParms,&vRes,&excep,NULL)))
         {
+            // Make sure nothing got by us and the mount can really handle pulse guide - HIGHLY unlikely
+            if (scope.GetProp(&vRes, L"CanPulseGuide") && !vRes.boolVal)
+            {
+                Debug.AddLine("Tried to guide mount that has no PulseGuide support");
+                // This will trigger a nice alert the next time through Guide
+                m_bCanPulseGuide = false;
+            }
             throw ERROR_INFO("ASCOM Scope: pulseguide command failed");
         }
 
@@ -606,7 +641,8 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 
             Debug.AddLine("PulseGuide returned control before completion, sleep %lu", rem + 10);
 
-            ::wxMilliSleep(rem + 10);
+            if (WorkerThread::MilliSleep(rem + 10))
+                throw ERROR_INFO("ASCOM Scope: thread terminate requested");
         }
 
         if (IsGuiding(&scope))
@@ -625,6 +661,9 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
             while (true)
             {
                 ::wxMilliSleep(20);
+
+                if (WorkerThread::InterruptRequested())
+                    throw ERROR_INFO("ASCOM Scope: thread interrupt requested");
 
                 CheckSlewing(&scope, &result);
 
@@ -768,10 +807,11 @@ bool ScopeASCOM::HasNonGuiMove(void)
     return true;
 }
 
-// Warning: declination is returned in units of radians, not the decimal degrees used in the ASCOM interface
-double ScopeASCOM::GetDeclination(void)
+// Special purpose function to return the guiding declination (radians) - either the actual scope position or the
+// default values defined in mount.cpp.  Doesn't throw exceptions to callers.
+double ScopeASCOM::GetGuidingDeclination(void)
 {
-    double dReturn = Scope::GetDeclination();
+    double dReturn = Scope::GetDefGuidingDeclination();
 
     try
     {
@@ -968,6 +1008,16 @@ bool ScopeASCOM::CanSlew(void)
         POSSIBLY_UNUSED(Msg);
         return false;
     }
+}
+
+bool ScopeASCOM::CanReportPosition(void)
+{
+    return true;
+}
+
+bool ScopeASCOM::CanPulseGuide(void)
+{
+    return m_bCanPulseGuide;
 }
 
 bool ScopeASCOM::SlewToCoordinates(double ra, double dec)

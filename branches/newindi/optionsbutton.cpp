@@ -150,7 +150,11 @@ void OptionsButton::OnMouseLeave(wxMouseEvent& event)
 void OptionsButton::OnClick(wxMouseEvent& event)
 {
     wxCommandEvent cmd(wxEVT_COMMAND_BUTTON_CLICKED, GetId());
+#ifdef  __WXGTK__  // Process the event as in wxgtk_button_clicked_callback()
+    HandleWindowEvent(cmd);
+#else
     ::wxPostEvent(GetParent(), cmd);
+#endif
     m_highlighted = false;
     Refresh();
 }

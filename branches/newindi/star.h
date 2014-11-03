@@ -40,9 +40,15 @@
 
 #include "point.h"
 
-class Star:public PHD_Point
+class Star : public PHD_Point
 {
 public:
+    enum FindMode
+    {
+        FIND_CENTROID,
+        FIND_PEAK,
+    };
+
     enum FindResult
     {
         STAR_OK=0,
@@ -65,9 +71,9 @@ public:
      *       a boolean indicating success instead of a boolean indicating an
      *       error
      */
-    bool Find(usImage *pImg, int searchRegion);
-    bool Find(usImage *pImg, int searchRegion, int X, int Y);
-    bool AutoFind(usImage *pImg);
+    bool Find(const usImage *pImg, int searchRegion, FindMode mode);
+    bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode);
+    bool AutoFind(const usImage& image, int edgeAllowance, int searchRegion);
 
     bool WasFound(FindResult result);
     bool WasFound(void);
