@@ -5,6 +5,10 @@
  *  Created by Geoffrey Hausheer.
  *  Copyright (c) 2009 Geoffrey Hausheer.
  *  All rights reserved.
+ * 
+ *  Redraw for libindi/baseclient by Patrick Chevalley
+ *  Copyright (c) 2014 Patrick Chevalley
+ *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without
@@ -36,31 +40,34 @@
 
 #ifdef INDI_CAMERA
 
+#include <iostream>
+#include <fstream>
+
 #include "config_INDI.h"
 #include "camera.h"
-#include "indiclient.h"
 #include "time.h"
 #include "image_math.h"
 #include "cam_INDI.h"
 
-//#include "libindiclient/indi.h"
-//#include "libindiclient/indigui.h"
-
-extern long INDIport;
-extern wxString INDIhost;
-extern wxString INDICameraName;
-//extern struct indi_t *INDIClient;
-
-MyINDIClient * INDIClient2;
-/*
-static void camera_capture_cb(struct indi_prop_t *iprop, void *data) {
-    Camera_INDIClass *cb = (Camera_INDIClass *)(data);
+void  Camera_INDIClass::newBLOB(IBLOB *bp)
+{
+  printf("Got camera blob %s \n",bp->name);
+  
+  if (strcmp(bp->format, ".fits") == 0) {
+  // Save FITS file to disk
+  ofstream myfile;
+  myfile.open ("/tmp/ccd_simulator.fits", ios::out | ios::binary);
+  myfile.write(static_cast<char *> (bp->blob), bp->bloblen);
+  myfile.close();
+  }
+  
+  modal = false;
+  
+    /*Camera_INDIClass *cb = (Camera_INDIClass *)(data);
     cb->blob_elem = indi_find_first_elem(iprop);
     indi_dev_enable_blob(iprop->idev, FALSE);
-    printf("Got camera callback\n");
-    cb->modal = false;
+    cb->modal = false; */
 }
-*/
 
 /*
 static void connect_cb(struct indi_prop_t *iprop, void *data) {
@@ -79,15 +86,27 @@ static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data) {
     return cb->NewProp(iprop);
 }
 */
-Camera_INDIClass::Camera_INDIClass() {
-    Connected = FALSE;
-    INDICameraName=_T("INDI Camera");
+Camera_INDIClass::Camera_INDIClass() 
+{
+    expose_prop = NULL;
+    frame_prop = NULL;
+    frame_type_prop = NULL;
+    binning_prop = NULL;
+    video_prop = NULL;
+    camera_device = NULL;
+    Connected = false;
+    ready = false;
+    INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
+    INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
+    INDICameraName = pConfig->Profile.GetString("/indi/INDIcam", _T("INDI Camera"));
+    INDICameraPort = pConfig->Profile.GetString("/indi/INDIcam_port",_T(""));
     PropertyDialogType = PROPDLG_ANY;
     FullSize = wxSize(640,480);
 }
 
-/*
-void Camera_INDIClass::CheckState() {
+
+void Camera_INDIClass::CheckState() 
+{
     if(has_blob && Connected && (expose_prop || video_prop)) {
         if (! ready) {
             printf("Camera is ready\n");
@@ -98,57 +117,95 @@ void Camera_INDIClass::CheckState() {
         }
     }
 }
-*/
 
-/*
-void Camera_INDIClass::NewProp(struct indi_prop_t *iprop) {
-    // property to set exposure 
-    if (iprop->type == INDI_PROP_BLOB) {
-        printf("Found BLOB property for camera %s\n", iprop->idev->name);
+void Camera_INDIClass::newDevice(INDI::BaseDevice *dp)
+{
+   camera_device = dp;
+}
+
+void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
+{
+    printf("Receving Switch: %s = %i\n", svp->name, svp->sp->s);
+}
+
+void Camera_INDIClass::newMessage(INDI::BaseDevice *dp, int messageID)
+{
+    printf("Receving message: %s\n", dp->messageQueue(messageID));
+}
+
+void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
+{
+    printf("Receving Number: %s = %g\n", nvp->name, nvp->np[0].value);
+}
+
+void Camera_INDIClass::newProperty(INDI::Property *property) 
+{
+   const char* PropName = property->getName();
+   INDI_TYPE Proptype = property->getType();
+   printf("Property: %s\n",PropName);
+    
+    if (Proptype == INDI_BLOB) {
+        printf("Found BLOB property for camera %s\n", PropName);
         has_blob = 1;
-        indi_prop_add_cb(iprop, (IndiPropCB)camera_capture_cb, this);
     }
-    else if (strcmp(iprop->name, "CCD_EXPOSURE") == 0) {
-        printf("Found CCD_EXPOSURE for camera %s\n", iprop->idev->name);
-        expose_prop = iprop;
+    else if (strcmp(PropName, "CCD_EXPOSURE") == 0) {
+	printf("Found CCD_EXPOSURE for camera %s\n", PropName);
+	expose_prop = property;
     }
-    else if (strcmp(iprop->name, "CCD_FRAME") == 0) {
-        printf("Found CCD_FRAME for camera %s\n", iprop->idev->name);
-        frame_prop = iprop;
+    else if (strcmp(PropName, "CCD_FRAME") == 0) {
+	printf("Found CCD_FRAME for camera %s\n", PropName);
+	frame_prop = property;
     }
-    else if (strcmp(iprop->name, "CCD_FRAME_TYPE") == 0) {
-        printf("Found CCD_FRAME_TYPE for camera %s\n", iprop->idev->name);
-        frame_type_prop = iprop;
+    else if (strcmp(PropName, "CCD_FRAME_TYPE") == 0) {
+	printf("Found CCD_FRAME_TYPE for camera %s\n", PropName);
+	frame_type_prop = property;
     }
-    else if (strcmp(iprop->name, "CCD_BINNING") == 0) {
-        printf("Found CCD_BINNING for camera %s\n", iprop->idev->name);
-        binning_prop = iprop;
+    else if (strcmp(PropName, "CCD_BINNING") == 0) {
+	printf("Found CCD_BINNING for camera %s\n", PropName);
+	binning_prop = property;
     }
-    else if (strcmp(iprop->name, "VIDEO_STREAM") == 0) {
-        printf("Found Video Camera %s\n", iprop->idev->name);
-        video_prop = iprop;
+    else if (strcmp(PropName, "VIDEO_STREAM") == 0) {
+	printf("Found Video Camera %s\n", PropName);
+	video_prop = property;
     }
-    else if (strcmp(iprop->name, "DEVICE_PORT") == 0 && Port.Length()) {
-        indi_send(iprop, indi_prop_set_string(iprop, "PORT", Port.ToAscii()));
-        indi_dev_set_switch(iprop->idev, "CONNECTION", "CONNECT", TRUE);
+    else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT && INDICameraPort.Length()) {
+	char* porttext = (const_cast<char*>((const char*)INDICameraPort.mb_str()));
+	printf("Set port for camera %s\n", porttext);
+	property->getText()->tp->text = porttext;
+	sendNewText(property->getText());
     }
-    else if (strcmp(iprop->name, "CONNECTION") == 0) {
-        printf("Found CONNECTION for camera %s\n", iprop->idev->name);
-        indi_send(iprop, indi_prop_set_switch(iprop, "CONNECT", TRUE));
-        indi_prop_add_cb(iprop, (IndiPropCB)connect_cb, this);
+    else if (strcmp(PropName, "CONNECTION") == 0 && Proptype == INDI_SWITCH) {
+	printf("Found CONNECTION for camera %s\n", PropName);
+	property->getSwitch()->sp->s = ISS_ON;
+	sendNewSwitch(property->getSwitch());
+Connected = true;
     }
     CheckState();
 }
-*/
-bool Camera_INDIClass::Connect() {
- 
-if (INDIClient2 == NULL)
-INDIClient2 = new MyINDIClient();
-INDIClient2->setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
-INDIClient2->watchDevice(INDICameraName.mb_str(wxConvUTF8));
-INDIClient2->connectServer();
-INDIClient2->setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), NULL);
-  
+
+bool Camera_INDIClass::Connect() 
+{
+    setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+    watchDevice(INDICameraName.mb_str(wxConvUTF8));
+    if (connectServer()) {
+	setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), NULL);
+	modal = true;
+	wxLongLong msec = wxGetUTCTimeMillis();
+	while (modal && wxGetUTCTimeMillis() - msec < 10 * 1000) {
+	    ::wxSafeYield();
+	}
+	modal = false;
+	if(! ready) {
+	    Disconnect();
+	    Connected = false;
+	    return true;
+	}
+	Connected = true;
+	return false;
+    }
+    else {
+	return true;
+    }
   /*
 
     bool ShowConfig = false;
@@ -179,36 +236,62 @@ INDIClient2->setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), NULL);
     modal = false;
 
     if(! ready)
-        return true;*/
+        return true;
     Connected = true;
-//    INDIClient->ClientCount++;
-    return false;
+    INDIClient->ClientCount++;
+    return false;*/
 }
 
-bool Camera_INDIClass::Disconnect() {
-  if (INDIClient2->disconnectServer()){
-    Connected = FALSE;
-    return false;
-  }
-  else return true;
-/*
-    if (Connected) INDIClient->ClientCount--;
-    ready = false;
-    Connected = false;
-    return false;
-*/
+bool Camera_INDIClass::Disconnect() 
+{
+    if (disconnectServer()){
+	ready = false;
+	Connected = false;
+	return false;
+    }
+    else return true;
 }
 
-/*
-void Camera_INDIClass::ShowPropertyDialog() {
-    // INDI GUI is unresponsive when called from the modal gear_dialog
+void Camera_INDIClass::ShowPropertyDialog() 
+{
     if (Connected) {
-      INDI_Dialog();
+      CameraDialog();
     }
     else {
-      INDI_Setup();
+      CameraSetup();
     }
-}*/
+}
+
+void Camera_INDIClass::CameraDialog() 
+{
+}
+
+void Camera_INDIClass::CameraSetup() 
+{
+    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow());
+    indiDlg->DevName = _T("Camera");
+    indiDlg->INDIhost = INDIhost;
+    indiDlg->INDIport = INDIport;
+    indiDlg->INDIDevName = INDICameraName;
+    indiDlg->INDIDevPort = INDICameraPort;
+    indiDlg->SetSettings();
+    indiDlg->Connect();
+    if (indiDlg->ShowModal() == wxID_OK) {
+	indiDlg->SaveSettings();
+	INDIhost = indiDlg->INDIhost;
+	INDIport = indiDlg->INDIport;
+	INDICameraName = indiDlg->INDIDevName;
+	INDICameraPort = indiDlg->INDIDevPort;
+	pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
+	pConfig->Profile.SetLong("/indi/INDIport", INDIport);
+	pConfig->Profile.SetString("/indi/INDIcam", INDICameraName);
+	pConfig->Profile.SetString("/indi/INDIcam_port",INDICameraPort);
+    }
+    indiDlg->Disconnect();
+    indiDlg->Destroy();
+    delete indiDlg;
+}
+
 /*
 bool Camera_INDIClass::ReadFITS(usImage& img) {
     int xsize, ysize;
@@ -294,8 +377,51 @@ bool Camera_INDIClass::ReadStream(usImage& img) {
 
 bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
-  if (Connected)
-    INDIClient2->setExpotime(duration);
+  if (Connected) {
+      if (expose_prop) {
+	  printf("Exposing for %d(ms)\n", duration);
+	  expose_prop->getNumber()->np->value = duration/1000;
+	  sendNewNumber(expose_prop->getNumber());
+      }
+      else if (video_prop){
+	  printf("Enabling video capture\n");
+	  video_prop->getSwitch()->sp->s = ISS_ON;
+	  sendNewSwitch(video_prop->getSwitch());
+      }
+      else {
+	  return true;
+      }
+
+      modal = true;
+      
+      unsigned long loopwait = duration > 100 ? 10 : 1;
+      
+      CameraWatchdog watchdog(duration);
+      
+      while (modal) {
+	  wxMilliSleep(loopwait);
+	  if (WorkerThread::TerminateRequested())
+	      return true;
+	  if (watchdog.Expired())
+	  {
+	      pFrame->Alert(_("Camera timeout during capure"));
+	      Disconnect();
+	      return true;
+	  }
+      }
+      
+      if (video_prop) {
+	  printf("Stop video capture\n");
+	  video_prop->getSwitch()->sp->s = ISS_OFF;
+	  sendNewSwitch(video_prop->getSwitch());
+      }
+      
+     
+     printf("Exposure end\n");
+  }
+  else {
+      return true;
+  }
   /*
     modal = true;
 
@@ -351,7 +477,8 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
   return true;
 }
 
-bool Camera_INDIClass::HasNonGuiCapture(void) {
+bool Camera_INDIClass::HasNonGuiCapture(void) 
+{
     return true;
 }
 

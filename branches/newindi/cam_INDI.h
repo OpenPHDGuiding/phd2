@@ -5,6 +5,10 @@
  *  Created by Geoffrey Hausheer.
  *  Copyright (c) 2009 Geoffrey Hausheer.
  *  All rights reserved.
+ * 
+ *  Redraw for libindi/baseclient by Patrick Chevalley
+ *  Copyright (c) 2014 Patrick Chevalley
+ *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without
@@ -35,23 +39,43 @@
 #ifndef _CAM_INDI_H_
 #define _CAM_INDI_H_
 
-struct indi_t;
-struct indi_prop_t;
+#include <libindi/baseclient.h>
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
 
-class Camera_INDIClass : public GuideCamera {
+class Camera_INDIClass : public GuideCamera, INDI::BaseClient {
 private:
-    struct indi_prop_t *expose_prop;
-    struct indi_prop_t *frame_prop;
-    struct indi_prop_t *frame_type_prop;
-    struct indi_prop_t *binning_prop;
-    struct indi_prop_t *video_prop;
-    int     img_count;
-    bool    ready;
-    bool    has_blob;
+    INDI::Property *expose_prop;
+    INDI::Property *frame_prop;
+    INDI::Property *frame_type_prop;
+    INDI::Property *binning_prop;
+    INDI::Property *video_prop;
+    INDI::BaseDevice * camera_device;    
+    bool     has_blob;
+    bool     modal;
+    bool     ready;
+    long     INDIport;
+    wxString INDIhost;
+    wxString INDICameraName;
+    wxString INDICameraPort;
+    void     CameraDialog();
+    void     CameraSetup();
+    
+protected:
+    virtual void newDevice(INDI::BaseDevice *dp);
+    virtual void newProperty(INDI::Property *property);
+    virtual void removeProperty(INDI::Property *property) {}
+    virtual void newBLOB(IBLOB *bp);
+    virtual void newSwitch(ISwitchVectorProperty *svp);
+    virtual void newNumber(INumberVectorProperty *nvp);
+    virtual void newMessage(INDI::BaseDevice *dp, int messageID);
+    virtual void newText(ITextVectorProperty *tvp) {}
+    virtual void newLight(ILightVectorProperty *lvp) {}
+    virtual void serverConnected() {}
+    virtual void serverDisconnected(int exit_code) {}
+    
 public:
- //   volatile bool modal;
- //   wxString Port; // todo check with parent class
-
+    Camera_INDIClass();
  //   bool    ReadFITS(usImage& img);
  //   bool    ReadStream(usImage& img);
  //   struct  indi_elem_t *blob_elem;
@@ -60,13 +84,12 @@ public:
     bool    Connect();      // Opens up and connects to cameras
     bool    Disconnect();
     void    InitCapture() { return; }
- //   void    ShowPropertyDialog();
- //   void    CheckState();
- //   void    NewProp(struct indi_prop_t *iprop);
-    Camera_INDIClass();
+    void    ShowPropertyDialog();
+    void    CheckState();
 };
 
 extern Camera_INDIClass Camera_INDI;
+
 #endif
 
 

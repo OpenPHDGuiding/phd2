@@ -41,10 +41,10 @@ extern "C" {
     #include "libindiclient/indigui.h"
 }
 
-extern struct indi_t *INDIClient;
-extern long INDIport;
-extern wxString INDIhost;
-extern wxString INDIMountName;
+ struct indi_t *INDIClient;
+ long INDIport;
+ wxString INDIhost;
+ wxString INDIMountName;
 
 static void tele_move_cb(struct indi_prop_t * /*iprop*/, void *callback_data) {
 //printf("entering ScopeINDI tele_move_cb\n");
@@ -97,7 +97,7 @@ bool ScopeINDI::HasSetupDialog(void) const
 
 void ScopeINDI::SetupDialog() {
     // INDI GUI is unresponsive when called from the modal gear_dialog
-    INDI_Setup();
+    //INDI_Setup();
 }
 
 bool ScopeINDI::Connect() {
@@ -114,7 +114,7 @@ bool ScopeINDI::Connect() {
     }
     
     if (ShowConfig) {
-	INDI_Setup();
+	//INDI_Setup();
 	if (! INDIClient || INDIMountName.IsEmpty() || INDIMountName.IsSameAs(_T("INDI Mount"))) {
 		printf("No INDI telescope is set.  Please set INDImount in the preferences file\n");
 		return true;
