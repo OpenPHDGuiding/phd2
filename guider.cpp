@@ -646,6 +646,7 @@ void Guider::SetState(GUIDER_STATE newState)
             case STATE_SELECTED:
                 if (pMount)
                 {
+                    Debug.AddLine("Guider::SetState: clearing mount guide algorithm history");
                     pMount->ClearHistory();
                 }
                 break;
