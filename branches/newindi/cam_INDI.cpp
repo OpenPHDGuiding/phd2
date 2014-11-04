@@ -52,21 +52,8 @@
 void  Camera_INDIClass::newBLOB(IBLOB *bp)
 {
   printf("Got camera blob %s \n",bp->name);
-  
-  if (strcmp(bp->format, ".fits") == 0) {
-  // Save FITS file to disk
-  ofstream myfile;
-  myfile.open ("/tmp/ccd_simulator.fits", ios::out | ios::binary);
-  myfile.write(static_cast<char *> (bp->blob), bp->bloblen);
-  myfile.close();
-  }
-  
+  cam_bp = bp;
   modal = false;
-  
-    /*Camera_INDIClass *cb = (Camera_INDIClass *)(data);
-    cb->blob_elem = indi_find_first_elem(iprop);
-    indi_dev_enable_blob(iprop->idev, FALSE);
-    cb->modal = false; */
 }
 
 /*
@@ -292,7 +279,6 @@ void Camera_INDIClass::CameraSetup()
     delete indiDlg;
 }
 
-/*
 bool Camera_INDIClass::ReadFITS(usImage& img) {
     int xsize, ysize;
     fitsfile *fptr;  // FITS file pointer
@@ -301,16 +287,19 @@ bool Camera_INDIClass::ReadFITS(usImage& img) {
     int nhdus=0;
     long fits_size[2];
     long fpixel[3] = {1,1,1};
-
+    size_t bsize = static_cast<size_t>(cam_bp->bloblen);
+    
     if (fits_open_memfile(&fptr,
             "",
             READONLY,
-            ((void **)(&blob_elem->value.blob.data)),
-            &(blob_elem->value.blob.size),
+            &(cam_bp->blob),
+            &bsize,
             0,
             NULL,
             &status) )
     {
+        // Got status 252 with libindiclient from Debian, the first four character of blob 
+        // are overwriten. Work with INDI trunk.
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
         return true;
     }
@@ -340,7 +329,6 @@ bool Camera_INDIClass::ReadFITS(usImage& img) {
     fits_close_file(fptr,&status);
     return false;
 }
-*/
 
 /*
 bool Camera_INDIClass::ReadStream(usImage& img) {
@@ -415,9 +403,28 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
 	  video_prop->getSwitch()->sp->s = ISS_OFF;
 	  sendNewSwitch(video_prop->getSwitch());
       }
+
+      printf("Exposure end\n");
       
-     
-     printf("Exposure end\n");
+      if (strcmp(cam_bp->format, ".fits") == 0) {
+	 printf("Processing fits file\n");
+	 if ( ! ReadFITS(img) ) {
+	    if ( recon ) {
+	       printf("Subtracting dark\n");
+	       SubtractDark(img);
+	    }
+	    return false;
+	 } else {
+	    return true;
+	 }
+      } /*else if (strncmp(".stream", blob_elem->value.blob.fmt, 7) == 0) {
+	 printf("Processing stream file\n");
+	 return ReadStream(img);
+      } */else {
+	 pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(cam_bp->format));
+	 return true;
+      }
+
   }
   else {
       return true;

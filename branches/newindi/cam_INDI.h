@@ -51,6 +51,7 @@ private:
     INDI::Property *binning_prop;
     INDI::Property *video_prop;
     INDI::BaseDevice * camera_device;    
+    IBLOB    *cam_bp;
     bool     has_blob;
     bool     modal;
     bool     ready;
@@ -76,7 +77,7 @@ protected:
     
 public:
     Camera_INDIClass();
- //   bool    ReadFITS(usImage& img);
+    bool    ReadFITS(usImage& img);
  //   bool    ReadStream(usImage& img);
  //   struct  indi_elem_t *blob_elem;
     bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
