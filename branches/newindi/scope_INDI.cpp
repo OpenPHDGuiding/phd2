@@ -36,17 +36,12 @@
 
 #include "config_INDI.h"
 
-extern "C" {
-    #include "libindiclient/indi.h"
-    #include "libindiclient/indigui.h"
-}
-
  struct indi_t *INDIClient;
  long INDIport;
  wxString INDIhost;
  wxString INDIMountName;
 
-static void tele_move_cb(struct indi_prop_t * /*iprop*/, void *callback_data) {
+/*static void tele_move_cb(struct indi_prop_t * , void *callback_data) {
 //printf("entering ScopeINDI tele_move_cb\n");
     //We don't actually need to keep track of movement at the moment
     ScopeINDI *cb = (ScopeINDI *)(callback_data);
@@ -68,7 +63,7 @@ static void tele_connect_cb(struct indi_prop_t *iprop, void *data) {
     }
     printf("Telescope connected state: %d\n", cb->IsConnected() );
     cb->CheckState();
-}
+}*/
 
 ScopeINDI::ScopeINDI() {
     m_Name = wxString("INDI Mount");
@@ -102,7 +97,7 @@ void ScopeINDI::SetupDialog() {
 
 bool ScopeINDI::Connect() {
 //printf("entering ScopeINDI::Connect\n");
-    wxLongLong msec;
+/*    wxLongLong msec;
     bool ShowConfig = false;
     
     if (! INDIClient) {
@@ -132,21 +127,21 @@ bool ScopeINDI::Connect() {
 
     if(! ready)
         return true;
-    if (IsConnected()) INDIClient->ClientCount++;
+    if (IsConnected()) INDIClient->ClientCount++;*/
     return false;
 }
 
 bool ScopeINDI::Disconnect() {
 //printf("entering ScopeINDI::Disconnect\n");
-    if (IsConnected()) INDIClient->ClientCount--;
+/*    if (IsConnected()) INDIClient->ClientCount--;
     Scope::Disconnect();
-    ready = false;
+    ready = false;*/
     return false;
 }
 
 void ScopeINDI::NewProp(struct indi_prop_t *iprop) {
 //printf("entering ScopeINDI::NewProp\n");
-    if (strcmp(iprop->name, "EQUATORIAL_EOD_COORD_REQUEST") == 0) {
+/*    if (strcmp(iprop->name, "EQUATORIAL_EOD_COORD_REQUEST") == 0) {
         coord_set_prop = iprop;
     }
     else if (strcmp(iprop->name, "EQUATORIAL_EOD_COORD") == 0) {
@@ -179,14 +174,14 @@ void ScopeINDI::NewProp(struct indi_prop_t *iprop) {
         indi_prop_add_cb(iprop, (IndiPropCB)tele_connect_cb, this);
         indi_send(iprop, indi_prop_set_switch(iprop, "CONNECT", TRUE));
     }
-    CheckState();
+    CheckState();*/
 }
 
 Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration_msec) {
 //printf("entering ScopeINDI::Guide\n");
 
     // despite what is sayed in INDI standard properties description, every telescope driver expect the guided time in msec.  
-    double duration = duration_msec; 
+/*    double duration = duration_msec; 
     switch (direction) {
         case EAST:
             indi_send(pulseGuideEW,
@@ -217,7 +212,7 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration_msec
             break;
     }
     wxMilliSleep(duration);
-
+*/
     return MOVE_OK;
 }
 

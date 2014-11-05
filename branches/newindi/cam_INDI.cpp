@@ -298,8 +298,6 @@ bool Camera_INDIClass::ReadFITS(usImage& img) {
             NULL,
             &status) )
     {
-        // Got status 252 with libindiclient from Debian, the first four character of blob 
-        // are overwriten. Work with INDI trunk.
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
         return true;
     }
