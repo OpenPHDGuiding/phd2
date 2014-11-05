@@ -110,7 +110,12 @@ void  Camera_INDIClass::newBLOB(IBLOB *bp)
 {
     printf("Got camera blob %s \n",bp->name);
     cam_bp = bp;
-    modal = false;
+    if (expose_prop) {
+       modal = false;
+    }
+    else if (video_prop){
+       // TODO : add the frames received during exposure
+    }
 }
 
 void Camera_INDIClass::newProperty(INDI::Property *property) 
@@ -123,25 +128,25 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
         printf("Found BLOB property for camera %s\n", PropName);
         has_blob = 1;
     }
-    else if (strcmp(PropName, "CCD_EXPOSURE") == 0) {
+    else if ((strcmp(PropName, "CCD_EXPOSURE") == 0) && Proptype == INDI_NUMBER) {
 	printf("Found CCD_EXPOSURE for camera %s\n", PropName);
-	expose_prop = property;
+	expose_prop = property->getNumber();
     }
-    else if (strcmp(PropName, "CCD_FRAME") == 0) {
+    else if ((strcmp(PropName, "CCD_FRAME") == 0) && Proptype == INDI_NUMBER) {
 	printf("Found CCD_FRAME for camera %s\n", PropName);
-	frame_prop = property;
+	frame_prop = property->getNumber();
     }
-    else if (strcmp(PropName, "CCD_FRAME_TYPE") == 0) {
+    else if ((strcmp(PropName, "CCD_FRAME_TYPE") == 0) && Proptype == INDI_SWITCH) {
 	printf("Found CCD_FRAME_TYPE for camera %s\n", PropName);
-	frame_type_prop = property;
+	frame_type_prop = property->getSwitch();
     }
-    else if (strcmp(PropName, "CCD_BINNING") == 0) {
+    else if ((strcmp(PropName, "CCD_BINNING") == 0) && Proptype == INDI_NUMBER) {
 	printf("Found CCD_BINNING for camera %s\n", PropName);
-	binning_prop = property;
+	binning_prop = property->getNumber();
     }
-    else if (strcmp(PropName, "VIDEO_STREAM") == 0) {
+    else if ((strcmp(PropName, "VIDEO_STREAM") == 0) && Proptype == INDI_SWITCH) {
 	printf("Found Video Camera %s\n", PropName);
-	video_prop = property;
+	video_prop = property->getSwitch();
     }
     else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT && INDICameraPort.Length()) {
 	char* porttext = (const_cast<char*>((const char*)INDICameraPort.mb_str()));
@@ -290,78 +295,77 @@ bool Camera_INDIClass::ReadFITS(usImage& img) {
     return false;
 }
 
-/*
 bool Camera_INDIClass::ReadStream(usImage& img) {
     int xsize, ysize;
     unsigned char *inptr;
     unsigned short *outptr;
-    struct indi_elem_t *elem;
 
     if (! frame_prop) {
         pFrame->Alert(_("Failed to determine image dimensions"));
         return true;
     }
-    if (! (elem = indi_find_elem(frame_prop, "WIDTH"))) {
+    
+ /*   if (! (elem = indi_find_elem(frame_prop, "WIDTH"))) {
         pFrame->Alert(_("Failed to determine image dimensions"));
         return true;
-    }
-    xsize = elem->value.num.value;
-    if (! (elem = indi_find_elem(frame_prop, "HEIGHT"))) {
+    }*/
+    xsize = frame_prop->np[2].value;
+/*    if (! (elem = indi_find_elem(frame_prop, "HEIGHT"))) {
         pFrame->Alert(_("Failed to determine image dimensions"));
         return true;
-    }
-    ysize = elem->value.num.value;
+    }*/
+    ysize = frame_prop->np[3].value;
     if (img.Init(xsize,ysize)) {
         pFrame->Alert(_("Memory allocation error"));
         return true;
     }
     outptr = img.ImageData;
-    inptr = (unsigned char *)blob_elem->value.blob.data;
+    inptr = (unsigned char *) cam_bp->blob;
     for (int i = 0; i < xsize * ysize; i++)
         *outptr ++ = *inptr++;
     return false;
 }
-*/
 
 bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
   if (Connected) {
       if (expose_prop) {
 	  printf("Exposing for %d(ms)\n", duration);
-	  expose_prop->getNumber()->np->value = duration/1000;
-	  sendNewNumber(expose_prop->getNumber());
+	  expose_prop->np->value = duration/1000;
+	  sendNewNumber(expose_prop);
+	  modal = true;
+	  
+	  unsigned long loopwait = duration > 100 ? 10 : 1;
+	  
+	  CameraWatchdog watchdog(duration);
+	  
+	  while (modal) {
+	     wxMilliSleep(loopwait);
+	     if (WorkerThread::TerminateRequested())
+		return true;
+	     if (watchdog.Expired())
+	     {
+		pFrame->Alert(_("Camera timeout during capure"));
+		Disconnect();
+		return true;
+	     }
+	  }
       }
       else if (video_prop){
 	  printf("Enabling video capture\n");
-	  video_prop->getSwitch()->sp->s = ISS_ON;
-	  sendNewSwitch(video_prop->getSwitch());
+	  video_prop->sp[0].s = ISS_ON;
+	  video_prop->sp[1].s = ISS_OFF;
+	  sendNewSwitch(video_prop);
+	  
+	  wxMilliSleep(duration); // TODO : add the frames received during exposure
+
+	  printf("Stop video capture\n");
+	  video_prop->sp[0].s = ISS_OFF;
+	  video_prop->sp[1].s = ISS_ON;
+	  sendNewSwitch(video_prop);
       }
       else {
 	  return true;
-      }
-
-      modal = true;
-      
-      unsigned long loopwait = duration > 100 ? 10 : 1;
-      
-      CameraWatchdog watchdog(duration);
-      
-      while (modal) {
-	  wxMilliSleep(loopwait);
-	  if (WorkerThread::TerminateRequested())
-	      return true;
-	  if (watchdog.Expired())
-	  {
-	      pFrame->Alert(_("Camera timeout during capure"));
-	      Disconnect();
-	      return true;
-	  }
-      }
-      
-      if (video_prop) {
-	  printf("Stop video capture\n");
-	  video_prop->getSwitch()->sp->s = ISS_OFF;
-	  sendNewSwitch(video_prop->getSwitch());
       }
 
       printf("Exposure end\n");
@@ -377,10 +381,10 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
 	 } else {
 	    return true;
 	 }
-      } /*else if (strncmp(".stream", blob_elem->value.blob.fmt, 7) == 0) {
+      } else if (strcmp(cam_bp->format, ".stream") == 0) {
 	 printf("Processing stream file\n");
 	 return ReadStream(img);
-      } */else {
+      } else {
 	 pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(cam_bp->format));
 	 return true;
       }
@@ -389,58 +393,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
   else {
       return true;
   }
-  /*
-    modal = true;
 
-    if (expose_prop) {
-        printf("Exposing for %d(ms)\n", duration);
-        indi_dev_enable_blob(expose_prop->idev, TRUE);
-        indi_prop_set_number(expose_prop, "CCD_EXPOSURE_VALUE", duration / 1000.0);
-        indi_send(expose_prop, NULL);
-    } else {
-        printf("Enabling video capture\n");
-        indi_dev_enable_blob(expose_prop->idev, TRUE);
-        indi_send(video_prop, indi_prop_set_switch(video_prop, "ON", TRUE));
-    }
-
-    unsigned long loopwait = duration > 100 ? 10 : 1;
-
-    CameraWatchdog watchdog(duration);
-
-    while (modal) {
-        wxMilliSleep(loopwait);
-        if (WorkerThread::TerminateRequested())
-            return true;
-        if (watchdog.Expired())
-        {
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
-            return true;
-        }
-    }
-
-    if (! expose_prop) {
-        indi_send(video_prop, indi_prop_set_switch(video_prop, "OFF", TRUE));
-    }
-
-    if (strncmp(".fits",blob_elem->value.blob.fmt, 5) == 0) {
-        printf("Processing fits file\n");
-        if ( ! ReadFITS(img) ) {
-            if ( recon ) {
-                printf("Subtracting dark\n");
-                SubtractDark(img);
-            }
-            return false;
-        } else {
-            return true;
-        }
-    } else if (strncmp(".stream", blob_elem->value.blob.fmt, 7) == 0) {
-        printf("Processing stream file\n");
-        return ReadStream(img);
-    } else {
-        pFrame->Alert(_("Unknown image format: ") + wxString::FromAscii(blob_elem->value.blob.fmt));
-        return true;
-    }*/
   return true;
 }
 

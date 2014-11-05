@@ -42,13 +42,13 @@
 
 class ScopeINDI : public Scope, INDI::BaseClient {
 private:
-    INDI::Property *coord_set_prop;
-    INDI::Property *abort_prop;
-    INDI::Property *MotionRate;
-    INDI::Property *moveNS;
-    INDI::Property *moveEW;
-    INDI::Property *pulseGuideNS;
-    INDI::Property *pulseGuideEW;
+    INumberVectorProperty *coord_set_prop;
+    ISwitchVectorProperty *abort_prop;
+    INumberVectorProperty *MotionRate;
+    ISwitchVectorProperty *moveNS;
+    ISwitchVectorProperty *moveEW;
+    INumberVectorProperty *pulseGuideNS;
+    INumberVectorProperty *pulseGuideEW;
     INDI::BaseDevice * scope_device;
     long     INDIport;
     wxString INDIhost;

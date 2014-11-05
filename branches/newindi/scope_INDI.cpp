@@ -179,29 +179,26 @@ void ScopeINDI::newProperty(INDI::Property *property)
     INDI_TYPE Proptype = property->getType();
     printf("Mount Property: %s\n",PropName);
     
-    if (strcmp(PropName, "EQUATORIAL_EOD_COORD_REQUEST") == 0) {
-	coord_set_prop = property;
+    if ((strcmp(PropName, "EQUATORIAL_EOD_COORD") == 0) && Proptype == INDI_NUMBER){
+       coord_set_prop = property->getNumber();
     }
-    else if (strcmp(PropName, "EQUATORIAL_EOD_COORD") == 0) {
-        
+    else if ((strcmp(PropName, "ABORT") == 0) && Proptype == INDI_SWITCH){
+       abort_prop = property->getSwitch();
     }
-    else if (strcmp(PropName, "ABORT") == 0) {
-	abort_prop = property;
+    else if ((strcmp(PropName, "TELESCOPE_MOTION_RATE") == 0) && Proptype == INDI_NUMBER){
+       MotionRate = property->getNumber();
     }
-    else if (strcmp(PropName, "TELESCOPE_MOTION_RATE") == 0) {
-	MotionRate = property;
+    else if ((strcmp(PropName, "TELESCOPE_MOTION_NS") == 0) && Proptype == INDI_SWITCH){
+       moveNS = property->getSwitch();
     }
-    else if (strcmp(PropName, "TELESCOPE_MOTION_NS") == 0) {
-	moveNS = property;
+    else if ((strcmp(PropName, "TELESCOPE_MOTION_WE") == 0) && Proptype == INDI_SWITCH){
+       moveEW = property->getSwitch();
     }
-    else if (strcmp(PropName, "TELESCOPE_MOTION_WE") == 0) {
-	moveEW = property;
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_NS") == 0) && Proptype == INDI_SWITCH){
+       pulseGuideNS = property->getNumber();
     }
-    else if (strcmp(PropName, "TELESCOPE_TIMED_GUIDE_NS") == 0) {
-	pulseGuideNS = property;
-    }
-    else if (strcmp(PropName, "TELESCOPE_TIMED_GUIDE_WE") == 0) {
-	pulseGuideEW = property;
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_WE") == 0) && Proptype == INDI_SWITCH){
+       pulseGuideEW = property->getNumber();
     }
     else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT && INDIMountPort.Length()) {    
 	char* porttext = (const_cast<char*>((const char*)INDIMountPort.mb_str()));
@@ -223,24 +220,24 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration_msec
     // despite what is sayed in INDI standard properties description, every telescope driver expect the guided time in msec.  
     switch (direction) {
         case EAST:
-	    pulseGuideEW->getNumber()->np[0].value=duration_msec;
-	    pulseGuideEW->getNumber()->np[1].value=0;
-	    sendNewNumber(pulseGuideEW->getNumber());
+	    pulseGuideEW->np[0].value=duration_msec;
+	    pulseGuideEW->np[1].value=0;
+	    sendNewNumber(pulseGuideEW);
             break;
         case WEST:
-	    pulseGuideEW->getNumber()->np[0].value=0;
-	    pulseGuideEW->getNumber()->np[1].value=duration_msec;
-	    sendNewNumber(pulseGuideEW->getNumber());
+	    pulseGuideEW->np[0].value=0;
+	    pulseGuideEW->np[1].value=duration_msec;
+	    sendNewNumber(pulseGuideEW);
             break;
         case NORTH:
-	    pulseGuideNS->getNumber()->np[0].value=duration_msec;
-	    pulseGuideNS->getNumber()->np[1].value=0;
-	    sendNewNumber(pulseGuideNS->getNumber());
+	    pulseGuideNS->np[0].value=duration_msec;
+	    pulseGuideNS->np[1].value=0;
+	    sendNewNumber(pulseGuideNS);
             break;
         case SOUTH:
-	    pulseGuideNS->getNumber()->np[0].value=0;
-	    pulseGuideNS->getNumber()->np[1].value=duration_msec;
-	    sendNewNumber(pulseGuideNS->getNumber());
+	    pulseGuideNS->np[0].value=0;
+	    pulseGuideNS->np[1].value=duration_msec;
+	    sendNewNumber(pulseGuideNS);
             break;
         case NONE:
 			printf("error ScopeINDI::Guide NONE\n");
@@ -250,44 +247,44 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration_msec
     return MOVE_OK;
   }
   else if (MotionRate && moveNS && moveEW) {
-      MotionRate->getNumber()->np->value=0.3 * 15;
-      sendNewNumber(MotionRate->getNumber());
+      MotionRate->np->value=0.3 * 15;
+      sendNewNumber(MotionRate);
       switch (direction) {
 	  case EAST:
-	      moveEW->getSwitch()->sp[0].s=ISS_OFF;
-	      moveEW->getSwitch()->sp[1].s=ISS_ON;
-	      sendNewSwitch(moveEW->getSwitch());
+	      moveEW->sp[0].s=ISS_OFF;
+	      moveEW->sp[1].s=ISS_ON;
+	      sendNewSwitch(moveEW);
 	      wxMilliSleep(duration_msec);
-	      moveEW->getSwitch()->sp[0].s=ISS_OFF;
-	      moveEW->getSwitch()->sp[1].s=ISS_OFF;
-	      sendNewSwitch(moveEW->getSwitch());
+	      moveEW->sp[0].s=ISS_OFF;
+	      moveEW->sp[1].s=ISS_OFF;
+	      sendNewSwitch(moveEW);
 	      break;
 	  case WEST:
-	      moveEW->getSwitch()->sp[0].s=ISS_ON;
-	      moveEW->getSwitch()->sp[1].s=ISS_OFF;
-	      sendNewSwitch(moveEW->getSwitch());
+	      moveEW->sp[0].s=ISS_ON;
+	      moveEW->sp[1].s=ISS_OFF;
+	      sendNewSwitch(moveEW);
 	      wxMilliSleep(duration_msec);
-	      moveEW->getSwitch()->sp[0].s=ISS_OFF;
-	      moveEW->getSwitch()->sp[1].s=ISS_OFF;
-	      sendNewSwitch(moveEW->getSwitch());
+	      moveEW->sp[0].s=ISS_OFF;
+	      moveEW->sp[1].s=ISS_OFF;
+	      sendNewSwitch(moveEW);
 	      break;
 	  case NORTH:
-	      moveNS->getSwitch()->sp[0].s=ISS_ON;
-	      moveNS->getSwitch()->sp[1].s=ISS_OFF;
-	      sendNewSwitch(moveNS->getSwitch());
+	      moveNS->sp[0].s=ISS_ON;
+	      moveNS->sp[1].s=ISS_OFF;
+	      sendNewSwitch(moveNS);
 	      wxMilliSleep(duration_msec);
-	      moveNS->getSwitch()->sp[0].s=ISS_OFF;
-	      moveNS->getSwitch()->sp[1].s=ISS_OFF;
-	      sendNewSwitch(moveNS->getSwitch());
+	      moveNS->sp[0].s=ISS_OFF;
+	      moveNS->sp[1].s=ISS_OFF;
+	      sendNewSwitch(moveNS);
 	      break;
 	  case SOUTH:
-	      moveNS->getSwitch()->sp[0].s=ISS_OFF;
-	      moveNS->getSwitch()->sp[1].s=ISS_ON;
-	      sendNewSwitch(moveNS->getSwitch());
+	      moveNS->sp[0].s=ISS_OFF;
+	      moveNS->sp[1].s=ISS_ON;
+	      sendNewSwitch(moveNS);
 	      wxMilliSleep(duration_msec);
-	      moveNS->getSwitch()->sp[0].s=ISS_OFF;
-	      moveNS->getSwitch()->sp[1].s=ISS_OFF;
-	      sendNewSwitch(moveNS->getSwitch());
+	      moveNS->sp[0].s=ISS_OFF;
+	      moveNS->sp[1].s=ISS_OFF;
+	      sendNewSwitch(moveNS);
 	      break;
 	  case NONE:
 	      printf("error ScopeINDI::Guide NONE\n");

@@ -45,11 +45,11 @@
 
 class Camera_INDIClass : public GuideCamera, INDI::BaseClient {
 private:
-    INDI::Property *expose_prop;
-    INDI::Property *frame_prop;
-    INDI::Property *frame_type_prop;
-    INDI::Property *binning_prop;
-    INDI::Property *video_prop;
+    INumberVectorProperty *expose_prop;
+    INumberVectorProperty *frame_prop;
+    ISwitchVectorProperty *frame_type_prop;
+    INumberVectorProperty *binning_prop;
+    ISwitchVectorProperty *video_prop;
     INDI::BaseDevice * camera_device;    
     IBLOB    *cam_bp;
     bool     has_blob;
@@ -78,7 +78,7 @@ protected:
 public:
     Camera_INDIClass();
     bool    ReadFITS(usImage& img);
- //   bool    ReadStream(usImage& img);
+    bool    ReadStream(usImage& img);
     bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
     bool    HasNonGuiCapture(void);
     bool    Connect();      // Opens up and connects to cameras
