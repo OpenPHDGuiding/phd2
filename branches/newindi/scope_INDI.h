@@ -5,6 +5,10 @@
  *  Ported by Hans Lambermont in 2014 from tele_INDI.h which has Copyright (c) 2009 Geoffrey Hausheer.
  *  All rights reserved.
  *
+ *  Redraw for libindi/baseclient by Patrick Chevalley
+ *  Copyright (c) 2014 Patrick Chevalley
+ *  All rights reserved.
+ * 
  *  This source code is distributed under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -32,44 +36,61 @@
  */
 #ifdef  GUIDE_INDI
 
-struct indi_t;
-struct indi_prop_t;
+#include <libindi/baseclient.h>
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
 
-class ScopeINDI : public Scope {
-public:
-    ScopeINDI(void);
-
-    virtual bool Connect(void);
-
-    virtual bool Disconnect(void);
-
-    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
-
+class ScopeINDI : public Scope, INDI::BaseClient {
 private:
-	struct indi_prop_t *coord_set_prop;
-	struct indi_prop_t *abort_prop;
-	struct indi_prop_t *moveNS;
-	struct indi_prop_t *moveEW;
-	struct indi_prop_t *pulseGuideNS;
-	struct indi_prop_t *pulseGuideEW;
-	bool    ready;
+    INDI::Property *coord_set_prop;
+    INDI::Property *abort_prop;
+    INDI::Property *MotionRate;
+    INDI::Property *moveNS;
+    INDI::Property *moveEW;
+    INDI::Property *pulseGuideNS;
+    INDI::Property *pulseGuideEW;
+    INDI::BaseDevice * scope_device;
+    long     INDIport;
+    wxString INDIhost;
+    wxString INDIMountName;
+    wxString INDIMountPort;
+    bool     modal;
+    bool     ready;
 
+protected:
+    virtual void newDevice(INDI::BaseDevice *dp);
+    virtual void newProperty(INDI::Property *property);
+    virtual void removeProperty(INDI::Property *property) {}
+    virtual void newBLOB(IBLOB *bp) {}
+    virtual void newSwitch(ISwitchVectorProperty *svp);
+    virtual void newNumber(INumberVectorProperty *nvp);
+    virtual void newMessage(INDI::BaseDevice *dp, int messageID);
+    virtual void newText(ITextVectorProperty *tvp);
+    virtual void newLight(ILightVectorProperty *lvp) {}
+    virtual void serverConnected();
+    virtual void serverDisconnected(int exit_code);
+    
 public:
-	bool     modal;
+    ScopeINDI();
+
+    bool Connect(void);
+    bool Disconnect(void);
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
+
     wxString serial_port;
-	bool     CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	void     InitCapture() { return; }
-	void     ShowPropertyDialog();
-	bool     HasSetupDialog(void) const;
-	void     SetupDialog();
-	void     CheckState();
-	void     NewProp(struct indi_prop_t *iprop);
+    bool     CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
+    void     InitCapture() { return; }
+    void     ShowPropertyDialog();
+    bool     HasSetupDialog(void) const;
+    void     SetupDialog();
+    void     CheckState();
+    void     NewProp(struct indi_prop_t *iprop);
     void     StartMove(int direction);
     void     StopMove(int direction);
-	void     PulseGuide(int direction, int duration);
-	bool     IsReady() {return ready;};
-	bool     CanPulseGuide() { return pulseGuideNS && pulseGuideEW;};
-	void     DoGuiding(int direction, int duration_msec);
+    void     PulseGuide(int direction, int duration);
+    bool     IsReady() {return ready;};
+    bool     CanPulseGuide() { return pulseGuideNS && pulseGuideEW;};
+    void     DoGuiding(int direction, int duration_msec);
 };
 
 #endif /* GUIDE_INDI */

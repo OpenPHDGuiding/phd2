@@ -49,30 +49,6 @@
 #include "image_math.h"
 #include "cam_INDI.h"
 
-void  Camera_INDIClass::newBLOB(IBLOB *bp)
-{
-  printf("Got camera blob %s \n",bp->name);
-  cam_bp = bp;
-  modal = false;
-}
-
-/*
-static void connect_cb(struct indi_prop_t *iprop, void *data) {
-//printf("entering cam_INDI connect_cb\n");
-    Camera_INDIClass *cb = (Camera_INDIClass *)(data);
-    cb->Connected = (iprop->state == INDI_STATE_IDLE || iprop->state == INDI_STATE_OK) && indi_prop_get_switch(iprop, "CONNECT");
-    printf("Camera connected state: %d\n", cb->Connected);
-    cb->CheckState();
-}
-*/
-
-/*
-static void new_prop_cb(struct indi_prop_t *iprop, void *callback_data) {
-//printf("entering cam_INDI new_prop_cb\n");
-    Camera_INDIClass *cb = (Camera_INDIClass *)(callback_data);
-    return cb->NewProp(iprop);
-}
-*/
 Camera_INDIClass::Camera_INDIClass() 
 {
     expose_prop = NULL;
@@ -112,24 +88,36 @@ void Camera_INDIClass::newDevice(INDI::BaseDevice *dp)
 
 void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
 {
-    printf("Receving Switch: %s = %i\n", svp->name, svp->sp->s);
+    printf("Camera Receving Switch: %s = %i\n", svp->name, svp->sp->s);
 }
 
 void Camera_INDIClass::newMessage(INDI::BaseDevice *dp, int messageID)
 {
-    printf("Receving message: %s\n", dp->messageQueue(messageID));
+    printf("Camera Receving message: %s\n", dp->messageQueue(messageID));
 }
 
 void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
 {
-    printf("Receving Number: %s = %g\n", nvp->name, nvp->np[0].value);
+    printf("Camera Receving Number: %s = %g\n", nvp->name, nvp->np[0].value);
+}
+
+void Camera_INDIClass::newText(ITextVectorProperty *tvp)
+{
+    printf("Camera Receving Text: %s = %s\n", tvp->name, tvp->tp[0].text);
+}
+
+void  Camera_INDIClass::newBLOB(IBLOB *bp)
+{
+    printf("Got camera blob %s \n",bp->name);
+    cam_bp = bp;
+    modal = false;
 }
 
 void Camera_INDIClass::newProperty(INDI::Property *property) 
 {
    const char* PropName = property->getName();
    INDI_TYPE Proptype = property->getType();
-   printf("Property: %s\n",PropName);
+   printf("Camera Property: %s\n",PropName);
     
     if (Proptype == INDI_BLOB) {
         printf("Found BLOB property for camera %s\n", PropName);
@@ -165,7 +153,7 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
 	printf("Found CONNECTION for camera %s\n", PropName);
 	property->getSwitch()->sp->s = ISS_ON;
 	sendNewSwitch(property->getSwitch());
-Connected = true;
+	Connected = true;
     }
     CheckState();
 }
@@ -193,40 +181,6 @@ bool Camera_INDIClass::Connect()
     else {
 	return true;
     }
-  /*
-
-    bool ShowConfig = false;
-
-    if (! INDIClient) {
-	ShowConfig = true;
-    }
-    
-    if (INDICameraName.IsEmpty() || INDICameraName.IsSameAs(_T("INDI Camera"))) {
-	ShowConfig = true;
-    }
-
-    if (ShowConfig) {
-	INDI_Setup();
-	if (! INDIClient || INDICameraName.IsEmpty() || INDICameraName.IsSameAs(_T("INDI Camera"))) {
-		printf("No INDI camera is set.  Please set INDIcam in the preferences file\n");
-		return true;
-	}
-    }
-
-    modal = true;
-    indi_device_add_cb(INDIClient, INDICameraName.ToAscii(), (IndiDevCB)new_prop_cb, this);
-
-    wxLongLong msec = wxGetUTCTimeMillis();
-    while (modal && wxGetUTCTimeMillis() - msec < 10 * 1000) {
-        ::wxSafeYield();
-    }
-    modal = false;
-
-    if(! ready)
-        return true;
-    Connected = true;
-    INDIClient->ClientCount++;
-    return false;*/
 }
 
 bool Camera_INDIClass::Disconnect() 
@@ -237,6 +191,14 @@ bool Camera_INDIClass::Disconnect()
 	return false;
     }
     else return true;
+}
+
+void Camera_INDIClass::serverConnected()
+{
+}
+
+void Camera_INDIClass::serverDisconnected(int exit_code)
+{
 }
 
 void Camera_INDIClass::ShowPropertyDialog() 

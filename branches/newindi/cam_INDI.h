@@ -70,16 +70,15 @@ protected:
     virtual void newSwitch(ISwitchVectorProperty *svp);
     virtual void newNumber(INumberVectorProperty *nvp);
     virtual void newMessage(INDI::BaseDevice *dp, int messageID);
-    virtual void newText(ITextVectorProperty *tvp) {}
+    virtual void newText(ITextVectorProperty *tvp);
     virtual void newLight(ILightVectorProperty *lvp) {}
-    virtual void serverConnected() {}
-    virtual void serverDisconnected(int exit_code) {}
+    virtual void serverConnected();
+    virtual void serverDisconnected(int exit_code);
     
 public:
     Camera_INDIClass();
     bool    ReadFITS(usImage& img);
  //   bool    ReadStream(usImage& img);
- //   struct  indi_elem_t *blob_elem;
     bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
     bool    HasNonGuiCapture(void);
     bool    Connect();      // Opens up and connects to cameras
@@ -88,8 +87,6 @@ public:
     void    ShowPropertyDialog();
     void    CheckState();
 };
-
-extern Camera_INDIClass Camera_INDI;
 
 #endif
 
