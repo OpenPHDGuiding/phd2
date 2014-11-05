@@ -223,13 +223,13 @@ Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration_msec
     // despite what is sayed in INDI standard properties description, every telescope driver expect the guided time in msec.  
     switch (direction) {
         case EAST:
-	    pulseGuideEW->getNumber()->np[0].value=0;
-	    pulseGuideEW->getNumber()->np[1].value=duration_msec;
+	    pulseGuideEW->getNumber()->np[0].value=duration_msec;
+	    pulseGuideEW->getNumber()->np[1].value=0;
 	    sendNewNumber(pulseGuideEW->getNumber());
             break;
         case WEST:
-	    pulseGuideEW->getNumber()->np[0].value=duration_msec;
-	    pulseGuideEW->getNumber()->np[1].value=0;
+	    pulseGuideEW->getNumber()->np[0].value=0;
+	    pulseGuideEW->getNumber()->np[1].value=duration_msec;
 	    sendNewNumber(pulseGuideEW->getNumber());
             break;
         case NORTH:
