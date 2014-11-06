@@ -46,16 +46,26 @@ private:
     ISwitchVectorProperty *abort_prop;
     INumberVectorProperty *MotionRate;
     ISwitchVectorProperty *moveNS;
+    ISwitch               *moveN;
+    ISwitch               *moveS;
     ISwitchVectorProperty *moveEW;
+    ISwitch               *moveE;
+    ISwitch               *moveW;
     INumberVectorProperty *pulseGuideNS;
+    INumber               *pulseN;
+    INumber               *pulseS;
     INumberVectorProperty *pulseGuideEW;
-    INDI::BaseDevice * scope_device;
+    INumber               *pulseE;
+    INumber               *pulseW;
+    ITextVectorProperty   *scope_port;
+    INDI::BaseDevice      *scope_device;
     long     INDIport;
     wxString INDIhost;
     wxString INDIMountName;
     wxString INDIMountPort;
     bool     modal;
     bool     ready;
+    void     ClearStatus();
 
 protected:
     virtual void newDevice(INDI::BaseDevice *dp);
@@ -73,13 +83,8 @@ protected:
 public:
     ScopeINDI();
 
-    bool Connect(void);
-    bool Disconnect(void);
-    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
-
-    wxString serial_port;
-    bool     CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-    void     InitCapture() { return; }
+    bool     Connect(void);
+    bool     Disconnect(void);
     void     ShowPropertyDialog();
     bool     HasSetupDialog(void) const;
     void     SetupDialog();
@@ -91,6 +96,7 @@ public:
     bool     IsReady() {return ready;};
     bool     CanPulseGuide() { return pulseGuideNS && pulseGuideEW;};
     void     DoGuiding(int direction, int duration_msec);
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
 };
 
 #endif /* GUIDE_INDI */

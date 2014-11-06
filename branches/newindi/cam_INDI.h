@@ -50,7 +50,8 @@ private:
     ISwitchVectorProperty *frame_type_prop;
     INumberVectorProperty *binning_prop;
     ISwitchVectorProperty *video_prop;
-    INDI::BaseDevice * camera_device;    
+    ITextVectorProperty   *camera_port;
+    INDI::BaseDevice      *camera_device;    
     IBLOB    *cam_bp;
     bool     has_blob;
     bool     modal;
@@ -59,6 +60,7 @@ private:
     wxString INDIhost;
     wxString INDICameraName;
     wxString INDICameraPort;
+    void     ClearStatus(); 
     void     CameraDialog();
     void     CameraSetup();
     

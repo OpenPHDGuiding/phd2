@@ -43,6 +43,17 @@
 ScopeINDI::ScopeINDI() 
 {
     m_Name = wxString("INDI Mount");
+    ClearStatus();
+    // load the values from the current profile
+    INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
+    INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
+    INDIMountName = pConfig->Profile.GetString("/indi/INDImount", _T("INDI Mount"));
+    INDIMountPort = pConfig->Profile.GetString("/indi/INDImount_port",_T(""));
+}
+
+void ScopeINDI::ClearStatus()
+{
+    // reset properties pointer
     coord_set_prop = NULL;
     abort_prop = NULL;
     moveNS = NULL;
@@ -50,16 +61,14 @@ ScopeINDI::ScopeINDI()
     pulseGuideNS = NULL;
     pulseGuideEW = NULL;
     scope_device = NULL;
+    scope_port = NULL;
+    // reset connection status
     ready = false;
-    INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
-    INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
-    INDIMountName = pConfig->Profile.GetString("/indi/INDImount", _T("INDI Mount"));
-    INDIMountPort = pConfig->Profile.GetString("/indi/INDImount_port",_T(""));
 }
 
 void ScopeINDI::CheckState() 
 {
-//printf("entering ScopeINDI::CheckState\n");
+    // Check if the device has all the required properties for our usage.
     if(IsConnected() && (
 	(MotionRate && moveNS && moveEW) ||
         (pulseGuideNS && pulseGuideEW)))
@@ -81,15 +90,20 @@ bool ScopeINDI::HasSetupDialog(void) const
 
 void ScopeINDI::SetupDialog() 
 {
+    // contrary to camera the telescope setup dialog is called only when not connected
+    // show the server and device configuration
     INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow());
     indiDlg->DevName = _T("Mount");
     indiDlg->INDIhost = INDIhost;
     indiDlg->INDIport = INDIport;
     indiDlg->INDIDevName = INDIMountName;
     indiDlg->INDIDevPort = INDIMountPort;
+    // initialize with actual values
     indiDlg->SetSettings();
+    // try to connect to server
     indiDlg->Connect();
     if (indiDlg->ShowModal() == wxID_OK) {
+	// if OK save the values to the current profile
 	indiDlg->SaveSettings();
 	INDIhost = indiDlg->INDIhost;
 	INDIport = indiDlg->INDIport;
@@ -107,32 +121,23 @@ void ScopeINDI::SetupDialog()
 
 bool ScopeINDI::Connect() 
 {
+    // define server to connect to.
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+    // Receive messages only for our mount.
     watchDevice(INDIMountName.mb_str(wxConvUTF8));
+    // Connect to server.
     if (connectServer()) {
-	setBLOBMode(B_NEVER, INDIMountName.mb_str(wxConvUTF8), NULL);
-	modal = true;
-	wxLongLong msec = wxGetUTCTimeMillis();
-	while (modal && wxGetUTCTimeMillis() - msec < 10 * 1000) {
-	    ::wxSafeYield();
-	}
-	modal = false;
-	if(! ready) {
-	    Disconnect();
-	    return true;
-	}
 	return false;
     }
     else {
 	return true;
-    }    
+    }
 }
 
 bool ScopeINDI::Disconnect() 
 {
+    // Disconnect from server
     if (disconnectServer()){
-	Scope::Disconnect();
-	ready = false;
 	return false;
     }
     else return true;
@@ -140,41 +145,86 @@ bool ScopeINDI::Disconnect()
 
 void ScopeINDI::serverConnected()
 {
+    // After connection to the server
+    // set option to receive only the messages, no blob
+    setBLOBMode(B_NEVER, INDIMountName.mb_str(wxConvUTF8), NULL);
+    modal = true; 
+    // wait for the device port property
+    wxLongLong msec;
+    msec = wxGetUTCTimeMillis();
+    while ((!scope_port) && wxGetUTCTimeMillis() - msec < 2 * 1000) {
+	::wxSafeYield();
+    }
+    // Set the port, this must be done before to try to connect the device
+    if (scope_port && INDIMountPort.Length()) {  // the mount port is not mandatory
+	char* porttext = (const_cast<char*>((const char*)INDIMountPort.mb_str()));
+	scope_port->tp->text = porttext;
+	sendNewText(scope_port); 
+    }
+    // Connect the mount device
+    connectDevice(INDIMountName.mb_str(wxConvUTF8));
+    
+    msec = wxGetUTCTimeMillis();
+    while (modal && wxGetUTCTimeMillis() - msec < 5 * 1000) {
+	::wxSafeYield();
+    }
+    modal = false;
+    // In case we not get all the required properties or connection to the device failed
+    if(! ready) {
+	Disconnect();
+    }
     Scope::Connect();
 }
 
 void ScopeINDI::serverDisconnected(int exit_code)
 {
+    // after disconnection we reset the connection status and the properties pointers
     Scope::Disconnect();
+    ClearStatus();
 }
 
 void ScopeINDI::newDevice(INDI::BaseDevice *dp)
 {
-    scope_device = dp;
+    if (strcmp(dp->getDeviceName(), INDIMountName.mb_str(wxConvUTF8)) == 0) {
+	// The mount object, maybe this can be useful in the future
+	scope_device = dp;
+    }
 }
 
 void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
 {
+    // we go here every time a Switch state change
     printf("Mount Receving Switch: %s = %i\n", svp->name, svp->sp->s);
+    if (strcmp(svp->name, "CONNECTION") == 0) {
+	ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
+	if (connectswitch->s == ISS_ON) Scope::Connect();
+    }
+    
 }
 
 void ScopeINDI::newMessage(INDI::BaseDevice *dp, int messageID)
 {
+    // we go here every time the mount driver send a message
     printf("Mount Receving message: %s\n", dp->messageQueue(messageID));
 }
 
 void ScopeINDI::newNumber(INumberVectorProperty *nvp)
 {
-    printf("Mount Receving Number: %s = %g\n", nvp->name, nvp->np[0].value);
+    // we go here every time a Number value change
+    printf("Mount Receving Number: %s = %g\n", nvp->name, nvp->np->value);
 }
 
 void ScopeINDI::newText(ITextVectorProperty *tvp)
 {
-    printf("Mount Receving Text: %s = %s\n", tvp->name, tvp->tp[0].text);
+    // we go here every time a Text value change
+    printf("Mount Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
 }
 
 void ScopeINDI::newProperty(INDI::Property *property) 
 {
+    // Here we receive a list of all the properties after the connection
+    // Updated values are not received here but in the newTYPE() functions above.
+    // We keep the vector for each interesting property to send some data later.
     const char* PropName = property->getName();
     INDI_TYPE Proptype = property->getType();
     printf("Mount Property: %s\n",PropName);
@@ -194,96 +244,100 @@ void ScopeINDI::newProperty(INDI::Property *property)
     else if ((strcmp(PropName, "TELESCOPE_MOTION_WE") == 0) && Proptype == INDI_SWITCH){
        moveEW = property->getSwitch();
     }
-    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_NS") == 0) && Proptype == INDI_SWITCH){
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_NS") == 0) && Proptype == INDI_NUMBER){
        pulseGuideNS = property->getNumber();
+       pulseN = IUFindNumber(pulseGuideNS,"TIMED_GUIDE_N");
+       pulseS = IUFindNumber(pulseGuideNS,"TIMED_GUIDE_S");
     }
-    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_WE") == 0) && Proptype == INDI_SWITCH){
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_WE") == 0) && Proptype == INDI_NUMBER){
        pulseGuideEW = property->getNumber();
+       pulseW = IUFindNumber(pulseGuideEW,"TIMED_GUIDE_W");
+       pulseE = IUFindNumber(pulseGuideEW,"TIMED_GUIDE_E");
     }
-    else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT && INDIMountPort.Length()) {    
-	char* porttext = (const_cast<char*>((const char*)INDIMountPort.mb_str()));
-	printf("Set port for mount %s\n", porttext);
-	property->getText()->tp->text = porttext;
-	sendNewText(property->getText());
+    else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT) {    
+	scope_port = property->getText();
     }
     else if (strcmp(PropName, "CONNECTION") == 0 && Proptype == INDI_SWITCH) {
-	printf("Found CONNECTION for mount %s\n", PropName);
-	property->getSwitch()->sp->s = ISS_ON;
-	sendNewSwitch(property->getSwitch());
+	// Check the value here in case the device is already connected
+	ISwitch *connectswitch = IUFindSwitch(property->getSwitch(),"CONNECT");
+	if (connectswitch->s == ISS_ON) Scope::Connect();
     }
     CheckState();
 }
 
-Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration_msec) 
+Mount::MOVE_RESULT ScopeINDI::Guide(GUIDE_DIRECTION direction, int duration) 
 {
+  // guide using timed pulse guide 
   if (pulseGuideNS && pulseGuideEW) {
     // despite what is sayed in INDI standard properties description, every telescope driver expect the guided time in msec.  
     switch (direction) {
         case EAST:
-	    pulseGuideEW->np[0].value=duration_msec;
-	    pulseGuideEW->np[1].value=0;
+	    pulseE->value = duration;
+	    pulseW->value = 0;
 	    sendNewNumber(pulseGuideEW);
             break;
         case WEST:
-	    pulseGuideEW->np[0].value=0;
-	    pulseGuideEW->np[1].value=duration_msec;
+	    pulseE->value = 0;
+	    pulseW->value = duration;
 	    sendNewNumber(pulseGuideEW);
             break;
         case NORTH:
-	    pulseGuideNS->np[0].value=duration_msec;
-	    pulseGuideNS->np[1].value=0;
+	    pulseN->value = duration;
+	    pulseS->value = 0;
 	    sendNewNumber(pulseGuideNS);
             break;
         case SOUTH:
-	    pulseGuideNS->np[0].value=0;
-	    pulseGuideNS->np[1].value=duration_msec;
+	    pulseN->value = 0;
+	    pulseS->value = duration;
 	    sendNewNumber(pulseGuideNS);
             break;
         case NONE:
-			printf("error ScopeINDI::Guide NONE\n");
+	    printf("error ScopeINDI::Guide NONE\n");
             break;
     }
-    wxMilliSleep(duration_msec);
+    wxMilliSleep(duration);
     return MOVE_OK;
   }
+  // guide using motion rate and telescope motion
+  // !!! untested as no driver implement TELESCOPE_MOTION_RATE at the moment (INDI 0.9.9) !!!
   else if (MotionRate && moveNS && moveEW) {
-      MotionRate->np->value=0.3 * 15;
+      MotionRate->np->value = 0.3 * 15 / 60;  // set 0.3 sidereal in arcmin/sec
       sendNewNumber(MotionRate);
       switch (direction) {
 	  case EAST:
-	      moveEW->sp[0].s=ISS_OFF;
-	      moveEW->sp[1].s=ISS_ON;
+	      moveW->s = ISS_OFF;
+	      moveE->s = ISS_ON;
 	      sendNewSwitch(moveEW);
-	      wxMilliSleep(duration_msec);
-	      moveEW->sp[0].s=ISS_OFF;
-	      moveEW->sp[1].s=ISS_OFF;
+	      wxMilliSleep(duration);
+	      moveW->s = ISS_OFF;
+	      moveE->s = ISS_OFF;
 	      sendNewSwitch(moveEW);
 	      break;
 	  case WEST:
-	      moveEW->sp[0].s=ISS_ON;
-	      moveEW->sp[1].s=ISS_OFF;
+	      moveW->s = ISS_ON;
+	      moveE->s = ISS_OFF;
 	      sendNewSwitch(moveEW);
-	      wxMilliSleep(duration_msec);
-	      moveEW->sp[0].s=ISS_OFF;
-	      moveEW->sp[1].s=ISS_OFF;
+	      wxMilliSleep(duration);
+	      moveW->s = ISS_OFF;
+	      moveE->s = ISS_OFF;
 	      sendNewSwitch(moveEW);
 	      break;
 	  case NORTH:
-	      moveNS->sp[0].s=ISS_ON;
-	      moveNS->sp[1].s=ISS_OFF;
+	      moveN->s = ISS_ON;
+	      moveS->s = ISS_OFF;
 	      sendNewSwitch(moveNS);
-	      wxMilliSleep(duration_msec);
-	      moveNS->sp[0].s=ISS_OFF;
-	      moveNS->sp[1].s=ISS_OFF;
+	      wxMilliSleep(duration);
+	      moveN->s = ISS_OFF;
+	      moveS->s = ISS_OFF;
 	      sendNewSwitch(moveNS);
 	      break;
 	  case SOUTH:
-	      moveNS->sp[0].s=ISS_OFF;
-	      moveNS->sp[1].s=ISS_ON;
+	      moveN->s = ISS_OFF;
+	      moveS->s = ISS_ON;
 	      sendNewSwitch(moveNS);
-	      wxMilliSleep(duration_msec);
-	      moveNS->sp[0].s=ISS_OFF;
-	      moveNS->sp[1].s=ISS_OFF;
+	      wxMilliSleep(duration);
+	      moveN->s = ISS_OFF;
+	      moveS->s = ISS_OFF;
 	      sendNewSwitch(moveNS);
 	      break;
 	  case NONE:
