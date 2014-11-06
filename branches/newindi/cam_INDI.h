@@ -43,6 +43,8 @@
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
+#include "indi_gui.h"
+
 class Camera_INDIClass : public GuideCamera, INDI::BaseClient {
 private:
     INumberVectorProperty *expose_prop;

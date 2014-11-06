@@ -266,7 +266,10 @@ void Camera_INDIClass::ShowPropertyDialog()
 
 void Camera_INDIClass::CameraDialog() 
 {
-    // TODO
+   IndiGui *gui = new IndiGui();
+   gui->child_window = false;
+   // gui->ConnectServer();
+   gui->Show(true);
 }
 
 void Camera_INDIClass::CameraSetup() 
