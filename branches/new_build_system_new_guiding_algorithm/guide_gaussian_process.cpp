@@ -46,9 +46,10 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
       timestamps_(180),
       measurements_(180),
       modified_measurements_(180),
-      is_first_datapoint_(true),
       timer_(),
-      control_signal_(0.0)
+      delta_controller_time_(3.0),
+      control_signal_(0.0),
+      number_of_measurements_(0)
 {
     wxString configPath = GetConfigPath();
     double control_gain = pConfig->Profile.GetDouble(configPath + "/controlGain",
@@ -163,17 +164,15 @@ double GuideGaussianProcess::result(double input)
         timer_.Start();
         // TODO check if this is equivalent to the matlab code
         timestamps_.append(delta_controller_time_ / 2);
-
-        is_first_datapoint_ = false;
     } else {
         // Measurements
         measurements_.append(input);
 
         // Handle timestamps
         double time_now = timer_.Time();
-        delta_measurement_time_ms_ = time_now - elapsed_time_ms_;
+        double delta_measurement_time_ms = time_now - elapsed_time_ms_;
         elapsed_time_ms_ = time_now;
-        timestamps_.append(elapsed_time_ms_ - delta_measurement_time_ms_ / 2);
+        timestamps_.append(elapsed_time_ms_ - delta_measurement_time_ms / 2);
 
         // Modified measurements
         double new_modified_measurement =

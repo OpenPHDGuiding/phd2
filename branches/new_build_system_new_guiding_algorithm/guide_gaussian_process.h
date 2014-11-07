@@ -47,14 +47,12 @@ private:
     CircularDoubleBuffer timestamps_;
     CircularDoubleBuffer measurements_;
     CircularDoubleBuffer modified_measurements_;
-    bool is_first_datapoint_;
     wxStopWatch timer_;
-    double elapsed_time_ms_;
-    double delta_measurement_time_ms_;
     double delta_controller_time_;
-    double control_gain_;
     double control_signal_;
     int number_of_measurements_;
+    double control_gain_;
+    double elapsed_time_ms_;
 
 protected:
     class GuideGaussianProcessDialogPane : public ConfigDialogPane
