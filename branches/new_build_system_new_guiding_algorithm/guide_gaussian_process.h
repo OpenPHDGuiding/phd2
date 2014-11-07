@@ -37,7 +37,7 @@
 
 #include "UDPGuidingInteraction.h"
 
-#include "gaussian_process/circular_buffer.h"
+#include "gaussian_process/tools/circular_buffer.h"
 
 class wxStopWatch;
 
@@ -55,6 +55,13 @@ private:
     double controller_time_ms_;
     double control_gain_;
     double control_signal_;
+
+    /*!
+     * Is called whenever @code result(double) @endcode is called. Handles
+     * storing the timestamps into the @code timestamps_ @endcode 
+     * CircularBuffer.
+     */
+    void handleTimeStamps();
 
 
 protected:

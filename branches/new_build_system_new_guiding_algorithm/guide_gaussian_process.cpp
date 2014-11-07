@@ -46,7 +46,7 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
       modified_measurements_(180),
       is_first_datapoint_(true),
       timer_(),
-      control_signal(0.0)
+      control_signal_(0.0)
 {
     // Initialise measurement_ vector with first random measurement
     double sigma = 0.25;  //The daytime indoor measurement noise SD is 0.25-0.35
@@ -102,7 +102,7 @@ GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
 double GuideGaussianProcess::result(double input)
 {
     measurements_.append(input);
-    handleTimestamps();
+    handleTimeStamps();
     double new_modified_measurement =
         control_signal_ +
         measurements_.getSecondLastElement() * (1 - control_gain_) -
@@ -120,12 +120,12 @@ double GuideGaussianProcess::result(double input)
     return buf[0];
 }
 
-void GuideGaussianProcess::handleTimestamps() {
+void GuideGaussianProcess::handleTimeStamps() {
     if(is_first_datapoint_) {
-        timer_.start();
+        timer_.Start();
 
         // TODO check if this is equivalent to the matlab code
-        timestamps_.append(controllerTime_ / 2);
+        timestamps_.append(controller_time_ms_ / 2);
 
         is_first_datapoint_ = false;
     } else {
