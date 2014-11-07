@@ -36,7 +36,6 @@
 #define GUIDE_GAUSSIAN_PROCESS
 
 #include "UDPGuidingInteraction.h"
-
 #include "gaussian_process/tools/circular_buffer.h"
 
 class wxStopWatch;
@@ -52,22 +51,17 @@ private:
     wxStopWatch timer_;
     double elapsed_time_ms_;
     double delta_measurement_time_ms_;
-    double controller_time_ms_;
+    double delta_controller_time_;
     double control_gain_;
     double control_signal_;
-
-    /*!
-     * Is called whenever @code result(double) @endcode is called. Handles
-     * storing the timestamps into the @code timestamps_ @endcode 
-     * CircularBuffer.
-     */
-    void handleTimeStamps();
-
+    int number_of_measurements_;
 
 protected:
     class GuideGaussianProcessDialogPane : public ConfigDialogPane
     {
         GuideGaussianProcess *m_pGuideAlgorithm;
+        wxSpinCtrlDouble *m_pControlGain;
+
     public:
         GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm);
         virtual ~GuideGaussianProcessDialogPane(void);
@@ -75,9 +69,11 @@ protected:
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
     };
-    
-    
-    
+
+
+    virtual double GetControlGain();
+    virtual bool SetControlGain(double control_gain);
+
 public:
     GuideGaussianProcess(Mount *pMount, GuideAxis axis);
     virtual ~GuideGaussianProcess(void);
@@ -86,7 +82,7 @@ public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual double result(double input);
     virtual void reset();
-    virtual wxString GetSettingsSummary() { return "\n"; }
+    virtual wxString GetSettingsSummary();
     virtual wxString GetGuideAlgorithmClassName(void) const { return "Gaussian Process"; }
     
 };

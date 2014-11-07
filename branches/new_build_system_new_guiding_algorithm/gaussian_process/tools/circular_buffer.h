@@ -88,21 +88,18 @@ class CircularDoubleBuffer {
   void append(double data);
 
   /*!
-   * Returns the index where the last element was appended to.
-   */
-  //int lastElementIndex();
-
-
-  /*!
    * Clears the buffer, by setting all values to 0.0 and resetting the current
    * position to 0
    */
   void clear();
 
   /*!
-   * Returns (a pointer to) the underlying Eigen::VectorXd object. If max_size_
-   * has not been exceeded so far, the vector is trimmed to represent only the
-   * vector of already appended data.
+   * Returns (a pointer to) the underlying @code Eigen::VectorXd @endcode 
+   * object. If max_size_ has not been exceeded so far, the vector is trimmed to
+   * represent only the vector of already appended data.
+   * 
+   * We need this function in order to pass the CircularBuffer object to a
+   * function that expects a @code Eigen::VectorXd @endcode
    */
   Eigen::VectorXd* getEigenVector();
 };

@@ -51,13 +51,6 @@ void CircularDoubleBuffer::clear() {
   max_size_exceeded_ = false;
 }
 
-/*
-int CircularDoubleBuffer::lastElementIndex() {
-  int ind
-  return (current_position_ - 1) % max_size_;
-}
- */
-
 Eigen::VectorXd* CircularDoubleBuffer::getEigenVector() {
   if (max_size_exceeded_) {
     return &buffer_;
