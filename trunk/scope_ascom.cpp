@@ -106,6 +106,11 @@ ScopeASCOM::~ScopeASCOM(void)
     }
 }
 
+static wxString ExcepMsg(const EXCEPINFO& excep)
+{
+    return wxString::Format("(%s) %s", excep.bstrSource, excep.bstrDescription);
+}
+
 static wxString displayName(const wxString& ascomName)
 {
     if (ascomName.Find(_T("ASCOM")) != wxNOT_FOUND)
@@ -125,18 +130,18 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
     {
         DispatchObj profile;
         if (!profile.Create(L"ASCOM.Utilities.Profile"))
-            throw ERROR_INFO("ASCOM Camera: could not instantiate ASCOM profile class");
+            throw ERROR_INFO("ASCOM Camera: could not instantiate ASCOM profile class: " + ExcepMsg(profile.Excep()));
 
         VARIANT res;
         if (!profile.InvokeMethod(&res, L"RegisteredDevices", L"Telescope"))
-            throw ERROR_INFO("ASCOM Camera: could not query registered telescope devices");
+            throw ERROR_INFO("ASCOM Camera: could not query registered telescope devices: " + ExcepMsg(profile.Excep()));
 
         DispatchClass ilist_class;
         DispatchObj ilist(res.pdispVal, &ilist_class);
 
         VARIANT vcnt;
         if (!ilist.GetProp(&vcnt, L"Count"))
-            throw ERROR_INFO("ASCOM Camera: could not query registered telescopes");
+            throw ERROR_INFO("ASCOM Camera: could not query registered telescopes: " + ExcepMsg(ilist.Excep()));
 
         unsigned int const count = vcnt.intVal;
         DispatchClass kvpair_class;
@@ -172,12 +177,14 @@ static bool ChooseASCOMScope(BSTR *res)
     DispatchObj chooser;
     if (!chooser.Create(L"DriverHelper.Chooser"))
     {
+        Debug.AddLine("Chooser instantiate failed: " + ExcepMsg(chooser.Excep()));
         wxMessageBox(_("Failed to find the ASCOM Chooser. Make sure it is installed"), _("Error"), wxOK | wxICON_ERROR);
         return false;
     }
 
     if (!chooser.PutProp(L"DeviceType", L"Telescope"))
     {
+        Debug.AddLine("Chooser put prop failed: " + ExcepMsg(chooser.Excep()));
         wxMessageBox(_("Failed to set the Chooser's type to Telescope. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
         return false;
     }
@@ -424,7 +431,7 @@ bool ScopeASCOM::Connect(void)
                 // ... set the Connected property to true....
                 if (!scope.PutProp(sa->dispid_connected, true))
                 {
-                    SetErrorMsg(scope.Excep().bstrDescription);
+                    SetErrorMsg(ExcepMsg(scope.Excep()));
                     return true;
                 }
                 return false;
@@ -445,7 +452,7 @@ bool ScopeASCOM::Connect(void)
         if (!pScopeDriver.GetProp(&vRes, L"Name"))
         {
             wxMessageBox(_T("ASCOM driver problem getting Name property"), _("Error"), wxOK | wxICON_ERROR);
-            throw ERROR_INFO("ASCOM Scope: Could not get the scope name");
+            throw ERROR_INFO("ASCOM Scope: Could not get the scope name: " + ExcepMsg(pScopeDriver.Excep()));
         }
 
         char *cp = uni_to_ansi(vRes.bstrVal); // Get ProgID in ANSI
@@ -479,7 +486,7 @@ bool ScopeASCOM::Connect(void)
         {
             if (!pScopeDriver.GetProp(&vRes, L"CanSlew"))
             {
-                Debug.AddLine("ASCOM scope got error invoking CanSlew");
+                Debug.AddLine("ASCOM scope got error invoking CanSlew: " + ExcepMsg(pScopeDriver.Excep()));
                 m_bCanSlew = false;
             }
             else if (!vRes.boolVal)
@@ -523,7 +530,7 @@ bool ScopeASCOM::Disconnect(void)
         if (!scope.PutProp(dispid_connected, false))
         {
             pFrame->Alert(_("ASCOM driver problem during disconnect"));
-            throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false");
+            throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false: " + ExcepMsg(scope.Excep()));
         }
 
         Debug.AddLine("Disconnected Successfully");
@@ -631,7 +638,7 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
                 // This will trigger a nice alert the next time through Guide
                 m_bCanPulseGuide = false;
             }
-            throw ERROR_INFO("ASCOM Scope: pulseguide command failed");
+            throw ERROR_INFO("ASCOM Scope: pulseguide command failed: " + ExcepMsg(excep));
         }
 
         long elapsed = swatch.Time();
@@ -730,7 +737,7 @@ bool ScopeASCOM::IsGuiding(DispatchObj *scope)
         if (!scope->GetProp(&vRes, dispid_ispulseguiding))
         {
             pFrame->Alert(_("ASCOM driver failed checking IsPulseGuiding"));
-            throw ERROR_INFO("ASCOM Scope: IsGuiding - IsPulseGuiding failed");
+            throw ERROR_INFO("ASCOM Scope: IsGuiding - IsPulseGuiding failed: " + ExcepMsg(scope->Excep()));
         }
 
         bReturn = vRes.boolVal == VARIANT_TRUE;
@@ -751,6 +758,7 @@ bool ScopeASCOM::IsSlewing(DispatchObj *scope)
     VARIANT vRes;
     if (!scope->GetProp(&vRes, dispid_isslewing))
     {
+        Debug.AddLine("ScopeASCOM::IsSlewing failed: " + ExcepMsg(scope->Excep()));
         pFrame->Alert(_("ASCOM driver failed checking Slewing"));
         return false;
     }
@@ -831,7 +839,7 @@ double ScopeASCOM::GetGuidingDeclination(void)
         VARIANT vRes;
         if (!scope.GetProp(&vRes, dispid_declination))
         {
-            throw ERROR_INFO("GetDeclination() fails");
+            throw ERROR_INFO("GetDeclination() fails: " + ExcepMsg(scope.Excep()));
         }
 
         dReturn = vRes.dblVal / 180.0 * M_PI;
@@ -872,14 +880,14 @@ bool ScopeASCOM::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 
         if (!scope.GetProp(&vRes, dispid_decguiderate))
         {
-            throw ERROR_INFO("ASCOM Scope: GuideRateDec() failed");
+            throw ERROR_INFO("ASCOM Scope: GuideRateDec() failed: " + ExcepMsg(scope.Excep()));
         }
 
         *pDecGuideRate = vRes.dblVal;
 
         if (!scope.GetProp(&vRes, dispid_raguiderate))
         {
-            throw ERROR_INFO("ASCOM Scope: GuideRateRA() failed");
+            throw ERROR_INFO("ASCOM Scope: GuideRateRA() failed: " + ExcepMsg(scope.Excep()));
         }
 
         *pRAGuideRate = vRes.dblVal;
@@ -919,21 +927,21 @@ bool ScopeASCOM::GetCoordinates(double *ra, double *dec, double *siderealTime)
 
         if (!scope.GetProp(&vRA, dispid_rightascension))
         {
-            throw ERROR_INFO("ASCOM Scope: get right ascension failed");
+            throw ERROR_INFO("ASCOM Scope: get right ascension failed: " + ExcepMsg(scope.Excep()));
         }
 
         VARIANT vDec;
 
         if (!scope.GetProp(&vDec, dispid_declination))
         {
-            throw ERROR_INFO("ASCOM Scope: get declination failed");
+            throw ERROR_INFO("ASCOM Scope: get declination failed: " + ExcepMsg(scope.Excep()));
         }
 
         VARIANT vST;
 
         if (!scope.GetProp(&vST, dispid_siderealtime))
         {
-            throw ERROR_INFO("ASCOM Scope: get sidereal time failed");
+            throw ERROR_INFO("ASCOM Scope: get sidereal time failed: " + ExcepMsg(scope.Excep()));
         }
 
         *ra = vRA.dblVal;
@@ -970,14 +978,14 @@ bool ScopeASCOM::GetSiteLatLong(double *latitude, double *longitude)
 
         if (!scope.GetProp(&vLat, dispid_sitelatitude))
         {
-            throw ERROR_INFO("ASCOM Scope: get site latitude failed"); // fixme excepinfo
+            throw ERROR_INFO("ASCOM Scope: get site latitude failed: " + ExcepMsg(scope.Excep()));
         }
 
         VARIANT vLong;
 
         if (!scope.GetProp(&vLong, dispid_sitelongitude))
         {
-            throw ERROR_INFO("ASCOM Scope: get site longitude failed");
+            throw ERROR_INFO("ASCOM Scope: get site longitude failed: " + ExcepMsg(scope.Excep()));
         }
 
         *latitude = vLat.dblVal;
@@ -1078,7 +1086,7 @@ PierSide ScopeASCOM::SideOfPier(void)
 
         if (!scope.GetProp(&vRes, dispid_sideofpier))
         {
-            throw ERROR_INFO("ASCOM Scope: SideOfPier failed");
+            throw ERROR_INFO("ASCOM Scope: SideOfPier failed: " + ExcepMsg(scope.Excep()));
         }
 
         switch (vRes.intVal) {
