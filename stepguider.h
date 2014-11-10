@@ -169,7 +169,7 @@ private:
     // consider whether they need to call the base class functions as part of
     // their operation
 public:
-    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit);
+    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool *atLimit);
     virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
     virtual bool MoveToCenter(void);
