@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-10 03:07-0500\n"
-"PO-Revision-Date: 2014-11-07 09:04+0300\n"
+"PO-Revision-Date: 2014-11-10 23:36+0300\n"
 "Last-Translator: Konstantin Menshkoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -190,11 +190,13 @@ msgid "Guide speed, n.nn x sidereal"
 msgstr "Скорость гидирования, n.nn солнечной"
 
 #: calstep_dialog.cpp:120
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Guide speed, multiple of sidereal rate; if your mount's guide speed is "
 "50% sidereal rate, enter 0.5"
-msgstr "Скорость гидирования, кратная солнечной"
+msgstr ""
+"Скорость гидирования, кратная солнечной, например, для 50% солнечной введите "
+"0.5"
 
 #: calstep_dialog.cpp:126
 msgid "Calibration steps"
@@ -206,6 +208,8 @@ msgid ""
 "Targeted number of steps in each direction. The default value (%d) works "
 "fine for most setups."
 msgstr ""
+"Количество шагов в каждом направлении. В большинстве случаев подходит "
+"значение по умолчанию (%d)."
 
 #: calstep_dialog.cpp:133
 msgid "Calibration declination, degrees"
@@ -635,7 +639,7 @@ msgstr "Горячие пиксели"
 #: cam_simulator.cpp:1176
 #, c-format
 msgid "% Simulated noise"
-msgstr ""
+msgstr "% имитированного шума"
 
 #: cam_simulator.cpp:1177
 msgid "Noise"
@@ -1057,7 +1061,7 @@ msgstr ""
 
 #: darks_dialog.cpp:130
 msgid "Number of dark frames for each exposure time"
-msgstr ""
+msgstr "Количество темновых кадров для каждого времени экспозиции"
 
 #: darks_dialog.cpp:131
 msgid ""
@@ -1192,7 +1196,7 @@ msgstr "Текущее"
 
 #: drift_tool.cpp:193
 msgid "Slew To"
-msgstr "Двигаться к"
+msgstr "Наводиться на"
 
 #: drift_tool.cpp:203
 msgid "Slew"
@@ -1240,7 +1244,8 @@ msgstr ""
 "Нажмите 'Дрейф'.\n"
 "Нажмите 'Установить' и установите азимут монтировки.\n"
 "Повторяйте до завершения выравнивания.\n"
-"Нажмите 'Высоту' для повторения выравнивания по высоте."
+"Нажмите 'Высоту' для повторения выравнивания \n"
+"по высоте."
 
 #: drift_tool.cpp:382
 msgid "Azimuth adjustment notes"
@@ -1577,7 +1582,7 @@ msgstr "Подключение монтировки..."
 
 #: gear_dialog.cpp:962
 msgid "Mount does not support the required PulseGuide interface"
-msgstr ""
+msgstr "Монтировка не поддерживает требуемый интерфейс PulseGuide"
 
 #: gear_dialog.cpp:966
 msgid "Mount Connected"
@@ -1721,6 +1726,8 @@ msgid ""
 "Clear graph data. You can also partially clear the graph by holding down the "
 "Ctrl key and clicking on the graph where you want the data to start."
 msgstr ""
+"Очистка графиков. Их также можно очистить выборочно с помощью мыши при "
+"нажатой кнопке Ctrl."
 
 #: graph.cpp:134
 msgid "Trendlines"
@@ -1859,6 +1866,8 @@ msgid ""
 "How much history of previous guide pulses should be applied\n"
 "Default = 10%, increase to smooth out guiding commands"
 msgstr ""
+"Количество используемых для расчётов предыдущих импульсов\n"
+"По умолчанию 10%, можно увеличить для сглаживания команд гидирования"
 
 #: guide_algorithm_hysteresis.cpp:224
 msgid "Aggression"
@@ -1869,6 +1878,8 @@ msgid ""
 "What percent of the measured error should be applied? Default = 100%, adjust "
 "if responding too much or too slowly?"
 msgstr ""
+"Какой процент ошибок изменения приемлем? По умолчанию 100%, измените, если "
+"отклик слишком быстрый или медленный"
 
 #: guide_algorithm_hysteresis.cpp:232 guide_algorithm_lowpass.cpp:207
 #: guide_algorithm_resistswitch.cpp:216
@@ -1908,7 +1919,7 @@ msgstr "Алгоритм сглаживающего гидирования"
 
 #: guide_algorithm_lowpass.cpp:199
 msgid "Slope Weight"
-msgstr ""
+msgstr "Взвешивание"
 
 #: guide_algorithm_lowpass.cpp:200
 msgid "Weighting of slope parameter in lowpass auto-dec"
@@ -1973,7 +1984,7 @@ msgstr "Всегда масштабировать изображения на п
 
 #: guider.cpp:1200
 msgid "Fast recenter after calibration or dither"
-msgstr ""
+msgstr "Быстрая центровка после калибровки или подвижек"
 
 #: guider.cpp:1201
 msgid ""
@@ -2045,9 +2056,9 @@ msgid ""
 "when the guide star mass changes by an amount greater than the Star mass "
 "tolerance setting."
 msgstr ""
-"Отметьте, чтобы включить проверку изменения звёздной величины. В этом случае "
-"кадры, где величина гидируемой звезды меняется больше заданного допуска, "
-"будут пропущены."
+"Включить проверку изменения звёздной величины. В этом случае кадры, где "
+"величина гидируемой звезды меняется больше заданного допуска, будут "
+"пропущены."
 
 #: guider_onestar.cpp:926
 msgid "Star mass tolerance"
@@ -2096,13 +2107,15 @@ msgstr "Сброс калибровки"
 
 #: mount.cpp:90
 msgid "Enable Guide Output"
-msgstr "Включить гидирующие импульсы"
+msgstr "Вкл гид. импульсы"
 
 #: mount.cpp:91
 msgid ""
 "Keep this checked for guiding. Un-check to disable all mount guide commands "
 "and allow the mount to run un-guided"
 msgstr ""
+"Для гидирования необходимо отметить этот пункт. Снятие отметки отменит все "
+"команды гидирования."
 
 #: mount.cpp:98 mount.cpp:121
 msgid "Lowpass"
@@ -2736,7 +2749,7 @@ msgstr "Делать подвижки только по RA"
 
 #: myframe.cpp:2037
 msgid "Constrain dither to RA only?"
-msgstr "Ограничить подвижки осью RA?"
+msgstr "Ограничить подвижки осью RA"
 
 #: myframe.cpp:2043
 msgid "Dither scale"
@@ -2852,7 +2865,7 @@ msgstr "Автоэкспозиция"
 
 #: myframe.cpp:2139
 msgid "Target SNR"
-msgstr ""
+msgstr "Cигнал/шум звезды"
 
 #: myframe.cpp:2139
 msgid "Auto exposure target SNR value"
@@ -3105,6 +3118,9 @@ msgid ""
 "this value from your camera documentation or from an online source.  You can "
 "use the up/down control or type in a value directly."
 msgstr ""
+"Шёлкните \"Определить\", чтобы узнать от камеры размер её пикселей. Это "
+"также можно узнать из документации или сетевых ресурсов. Можно ввести "
+"значение или выбрать его стрелками."
 
 #: profile_wizard.cpp:135
 msgid "Detect"
@@ -3130,7 +3146,7 @@ msgstr "Построить темновую библиотеку"
 msgid ""
 "Check this to automatically start the process of building a dark library for "
 "this profile."
-msgstr ""
+msgstr "Автоматически построить темновую библиотеку для этого профиля."
 
 #: profile_wizard.cpp:158
 msgid "Profile Name"
@@ -3258,7 +3274,7 @@ msgstr "Профиль с таким названием уже существу�
 
 #: profile_wizard.cpp:332
 msgid "Welcome to the PHD2 'first light' wizard"
-msgstr ""
+msgstr "Помощник 'первого света' приветствует вас! "
 
 #: profile_wizard.cpp:337
 msgid "Choose a Guide Camera"
@@ -3553,11 +3569,11 @@ msgstr "Операция отменена"
 
 #: scope.cpp:519
 msgid "Max RA Duration setting"
-msgstr ""
+msgstr "Установка максимального времени по RA"
 
 #: scope.cpp:519
 msgid "Max Dec Duration setting"
-msgstr ""
+msgstr "Установка максимального времени по Dec"
 
 #: scope.cpp:520
 #, c-format
@@ -3662,13 +3678,13 @@ msgstr ""
 
 #: scope.cpp:1122
 msgid "Reverse Dec output after meridian flip"
-msgstr "Переложить импульсы Dec после перекладывания меридиана"
+msgstr "Инвертировать импульсы Dec после перекладывания меридиана"
 
 #: scope.cpp:1123
 msgid ""
 "Check if your mount needs Dec output reversed after doing Flip Calibration "
 "Data"
-msgstr ""
+msgstr "Нужно ли инвертировать импульсы по Dec после перекладывания калибровки"
 
 #: scope.cpp:1127
 msgid "Stop guiding when mount slews"
@@ -3688,6 +3704,8 @@ msgid ""
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
 "effect when calibrating DEC."
 msgstr ""
+"Считаем оси Dec и RA перпендикулярными, независимо от калибровки. "
+"Предохраняет периодическую ошибку RA от воздействия калибровки по оси Dec."
 
 #: scope.cpp:1138 scope.cpp:1229 scope.cpp:1263
 msgid "Off"
@@ -3703,11 +3721,11 @@ msgstr "Гидировать также по склонению?"
 
 #: scope.cpp:1221
 msgid "Mx RA"
-msgstr ""
+msgstr "Макс. RA"
 
 #: scope.cpp:1227
 msgid "Mx DEC"
-msgstr ""
+msgstr "Макс. DEC"
 
 #: scope_ascom.cpp:188
 msgid ""
@@ -3727,7 +3745,6 @@ msgid "ASCOM driver problem during disconnect"
 msgstr "Проблема драйвера ASCOM при отключении"
 
 #: scope_ascom.cpp:574
-#, fuzzy
 msgid "ASCOM driver does not support PulseGuide"
 msgstr "Драйвер ASCOM не может проверить IsPulseGuiding"
 
@@ -3795,7 +3812,7 @@ msgstr "Пик"
 
 #: statswindow.cpp:68
 msgid " 99.99 (99.99'')"
-msgstr ""
+msgstr " 99.99 (99.99'')"
 
 #: statswindow.cpp:72
 msgid "Total"
@@ -3803,7 +3820,7 @@ msgstr "Всего"
 
 #: statswindow.cpp:89
 msgid "RA Osc"
-msgstr ""
+msgstr "Колебания RA"
 
 #: statswindow.cpp:91
 msgid "RA Limited"
@@ -3861,7 +3878,7 @@ msgstr ""
 #: stepguider.cpp:630
 #, c-format
 msgid "Finish Calibration: %3d"
-msgstr ""
+msgstr "Конец калибровки: %3d"
 
 #: stepguider.cpp:928
 msgid ""
@@ -3896,7 +3913,7 @@ msgstr ""
 
 #: stepguider.cpp:1126
 msgid "Bump Percentage"
-msgstr ""
+msgstr "Процент силы удара"
 
 #: stepguider.cpp:1127
 #, c-format
@@ -3907,7 +3924,7 @@ msgstr ""
 
 #: stepguider.cpp:1133
 msgid "Bump Step"
-msgstr ""
+msgstr "Шаг удара"
 
 #: stepguider.cpp:1134
 #, c-format
@@ -3929,9 +3946,8 @@ msgid ""
 msgstr ""
 
 #: stepguider_sxao.cpp:107
-#, fuzzy
 msgid "Warning"
-msgstr "Проверка скорости"
+msgstr "Внимание!"
 
 #: stepguider_sxao.cpp:153
 msgid "Select serial port"
@@ -3978,26 +3994,28 @@ msgid ""
 "Reset the manual guide pulse duration to the default value. The default "
 "value is the calibration step size."
 msgstr ""
+"Сбросить продолжительность импульсов ручного гидирования к величине по "
+"умолчанию - шагу калибровки."
 
 #: testguide.cpp:109
 msgid "MOVE1 (+/- 0.5)"
-msgstr ""
+msgstr "Шаг1 (+/- 0.5)"
 
 #: testguide.cpp:110
 msgid "MOVE2 (+/- 1.0)"
-msgstr ""
+msgstr "Шаг2 (+/- 1.0)"
 
 #: testguide.cpp:111
 msgid "MOVE3 (+/- 2.0)"
-msgstr ""
+msgstr "Шаг3 (+/- 2.0)"
 
 #: testguide.cpp:112
 msgid "MOVE4 (+/- 3.0)"
-msgstr ""
+msgstr "Шаг4 (+/- 3.0)"
 
 #: testguide.cpp:113
 msgid "MOVE5 (+/- 5.0)"
-msgstr ""
+msgstr "Шаг5 (+/- 5.0)"
 
 #: testguide.cpp:116
 msgid ""
