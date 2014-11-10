@@ -48,61 +48,153 @@
 #include <wx/choice.h>
 #include <wx/menu.h>
 
+WX_DECLARE_STRING_HASH_MAP( void *, ptrHash );
 
-class IndiGui : public wxFrame , INDI::BaseClient
+wxDECLARE_EVENT(INDIGUI_THREAD_NEWDEVICE_EVENT, wxThreadEvent);
+wxDECLARE_EVENT(INDIGUI_THREAD_NEWPROPERTY_EVENT, wxThreadEvent);
+wxDECLARE_EVENT(INDIGUI_THREAD_NEWNUMBER_EVENT, wxThreadEvent);
+wxDECLARE_EVENT(INDIGUI_THREAD_NEWTEXT_EVENT, wxThreadEvent);
+wxDECLARE_EVENT(INDIGUI_THREAD_NEWSWITCH_EVENT, wxThreadEvent);
+wxDECLARE_EVENT(INDIGUI_THREAD_NEWMESSAGE_EVENT, wxThreadEvent);
+wxDECLARE_EVENT(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, wxThreadEvent);
+
+/*
+ *  Status LED
+ */
+class IndiStatus : public wxLed
+{
+public:
+   IndiStatus(wxWindow *parent, wxWindowID id, IPState state) : wxLed(parent, id)
+   {
+      SetState(state);
+      Enable();
+   }
+   void SetState(int state)
+   {
+      static const char indi_state[4][6] = {
+	 "Idle",
+	 "Ok",
+	 "Busy",
+	 "Alert",
+      };
+      switch(state) {
+	 case IPS_IDLE:  SetColor("808080"); break;
+	 case IPS_OK:    SetColor("008000"); break;
+	 case IPS_BUSY:  SetColor("FFFF00"); break;
+	 case IPS_ALERT: SetColor("FF0000"); break;
+      }
+      SetToolTip(wxString::FromAscii(indi_state[state]));
+   }
+};
+
+
+enum {
+   SWITCH_CHECKBOX,
+   SWITCH_BUTTON,
+   SWITCH_COMBOBOX,
+};
+
+enum {
+   ID_Save = 1,
+};
+
+/*
+ *  A device page and related properties
+ */
+class IndiDev
+{
+public:
+   wxNotebook		*page;
+   INDI::BaseDevice	*dp;
+   ptrHash		groups;
+   ptrHash		properties;
+};
+
+/*
+ *  Property Information
+ */
+class IndiProp
+{
+public:
+   ptrHash		ctrl;
+   ptrHash		entry;
+   IndiStatus		*state;
+   wxStaticText		*name;
+   wxPanel		*page;
+   wxGridBagSizer	*gbs;
+   INDI::Property	*property;
+   IndiDev		*idev;
+};
+
+/*
+ *  INDI gui windows
+ */
+class IndiGui : public wxFrame , public INDI::BaseClient
 {
 
 private:
-   void CreateTextWidget(INDI::Property *property, int num_props);
-   void CreateSwitchWidget(INDI::Property *property, int num_props);
-   void CreateNumberWidget(INDI::Property *property, int num_props);
-   void CreateLightWidget(INDI::Property *property, int num_props);
-   void CreateBlobWidget(INDI::Property *property, int num_props);
+   // Main thread events called from INDI thread
+   void OnNewDeviceFromThread(wxThreadEvent& event);
+   void OnNewPropertyFromThread(wxThreadEvent& event);
+   void OnNewNumberFromThread(wxThreadEvent& event);
+   void OnNewTextFromThread(wxThreadEvent& event);
+   void OnNewSwitchFromThread(wxThreadEvent& event);
+   void OnNewMessageFromThread(wxThreadEvent& event);
+   void OnRemovePropertyFromThread(wxThreadEvent& event);
    
-   //More switch stuff
-   int GetSwitchType(INDI::Property *property);
-   void CreateSwitchCombobox(INDI::Property *property, int num_props);
-   void CreateSwitchCheckbox(INDI::Property *property, int num_props);
-   void CreateSwitchButton(INDI::Property *property, int num_props);
+   // Widget creation 
+   void BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiProp *indiProp);
+   void CreateTextWidget(INDI::Property *property, IndiProp *indiProp);
+   void CreateSwitchWidget(INDI::Property *property, IndiProp *indiProp);
+   void CreateNumberWidget(INDI::Property *property, IndiProp *indiProp);
+   void CreateLightWidget(INDI::Property *property, IndiProp *indiProp);
+   void CreateBlobWidget(INDI::Property *property, IndiProp *indiProp);
+   void CreateUnknowWidget(INDI::Property *property, IndiProp *indiProp);
+   // More switch stuff
+   int GetSwitchType(ISwitchVectorProperty *svp);
+   void CreateSwitchCombobox(ISwitchVectorProperty *svp, IndiProp *indiProp);
+   void CreateSwitchCheckbox(ISwitchVectorProperty *svp, IndiProp *indiProp);
+   void CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp);
    
-   void BuildPropWidget(INDI::Property *property, wxPanel *parent);
-   
+   // Button events
    void SetButtonEvent(wxCommandEvent & event);
    void SetComboboxEvent(wxCommandEvent & event);
    void SetToggleButtonEvent(wxCommandEvent & event);
    void SetCheckboxEvent(wxCommandEvent & event);
+   
    void OnQuit(wxCloseEvent& WXUNUSED(event));
-   void SaveDialog(wxCommandEvent& WXUNUSED(event));
    
    wxPanel *panel;
    wxBoxSizer *sizer;
    wxNotebook *parent_notebook;
    wxTextCtrl *textbuffer;
    
-   struct indi_t *indi;
+   ptrHash	devlist;
+   
    DECLARE_EVENT_TABLE()
    
 protected:
-   virtual void newDevice(INDI::BaseDevice *dp){}
-   virtual void newProperty(INDI::Property *property){}
-   virtual void removeProperty(INDI::Property *property) {}
+   //////////////////////////////////////////////////////////////////////
+   // Functions running in the INDI client thread
+   //////////////////////////////////////////////////////////////////////
+   virtual void newDevice(INDI::BaseDevice *dp);
+   virtual void newProperty(INDI::Property *property);
+   virtual void removeProperty(INDI::Property *property);
    virtual void newBLOB(IBLOB *bp){}
-   virtual void newSwitch(ISwitchVectorProperty *svp){}
-   virtual void newNumber(INumberVectorProperty *nvp){}
-   virtual void newMessage(INDI::BaseDevice *dp, int messageID){}
-   virtual void newText(ITextVectorProperty *tvp){}
+   virtual void newSwitch(ISwitchVectorProperty *svp);
+   virtual void newNumber(INumberVectorProperty *nvp);
+   virtual void newMessage(INDI::BaseDevice *dp, int messageID);
+   virtual void newText(ITextVectorProperty *tvp);
    virtual void newLight(ILightVectorProperty *lvp) {}
-   virtual void serverConnected(){}
+   virtual void serverConnected();
    virtual void serverDisconnected(int exit_code){}
    
 public:
    IndiGui();
    //~IndiGui();
    
-   void MakeDevicePage(INDI::BaseDevice *dp);
-   void UpdateWidget(INDI::Property *property);
+   void ConnectServer(wxString INDIhost, long INDIport);
    void ShowMessage(const char *message);
-   void AddProp(INDI::BaseDevice *dp, const wxString groupname, INDI::Property *property);
    void DeleteProp(INDI::Property *property);
    bool child_window;   
 };

@@ -51,6 +51,7 @@
 
 Camera_INDIClass::Camera_INDIClass() 
 {
+    gui = NULL;
     ClearStatus();
     // load the values from the current profile
     INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
@@ -82,7 +83,7 @@ void Camera_INDIClass::CheckState()
     // Check if the device has all the required properties for our usage.
     if(has_blob && Connected && (expose_prop || video_prop)) {
         if (! ready) {
-            printf("Camera is ready\n");
+            //printf("Camera is ready\n");
             ready = true;
             if (modal) {
                 modal = false;
@@ -102,7 +103,7 @@ void Camera_INDIClass::newDevice(INDI::BaseDevice *dp)
 void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
 {
     // we go here every time a Switch state change
-    printf("Camera Receving Switch: %s = %i\n", svp->name, svp->sp->s);
+    //printf("Camera Receving Switch: %s = %i\n", svp->name, svp->sp->s);
     if (strcmp(svp->name, "CONNECTION") == 0) {
 	ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
 	Connected = (connectswitch->s == ISS_ON);
@@ -112,26 +113,26 @@ void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
 void Camera_INDIClass::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the camera driver send a message
-    printf("Camera Receving message: %s\n", dp->messageQueue(messageID));
+    //printf("Camera Receving message: %s\n", dp->messageQueue(messageID));
 }
 
 void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
 {
     // we go here every time a Number value change
-    printf("Camera Receving Number: %s = %g\n", nvp->name, nvp->np->value);
+    //printf("Camera Receving Number: %s = %g\n", nvp->name, nvp->np->value);
 }
 
 void Camera_INDIClass::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
-    printf("Camera Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
+    //printf("Camera Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
 }
 
 void  Camera_INDIClass::newBLOB(IBLOB *bp)
 {
     // we go here every time a new blob is available
     // this is normally the image from the camera
-    printf("Got camera blob %s \n",bp->name);
+    //printf("Got camera blob %s \n",bp->name);
     // TODO filter by name for camera with multiple sensors
     cam_bp = bp;
     if (expose_prop) {
@@ -147,41 +148,41 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     // Here we receive a list of all the properties after the connection
     // Updated values are not received here but in the newTYPE() functions above.
     // We keep the vector for each interesting property to send some data later.
-    const char* DeviName = property->getDeviceName();
+    //const char* DeviName = property->getDeviceName();
     const char* PropName = property->getName();
     INDI_TYPE Proptype = property->getType();
-    printf("Camera Property: %s\n",PropName);
+    //printf("Camera Property: %s\n",PropName);
     
     if (Proptype == INDI_BLOB) {
-        printf("Found BLOB property for %s %s\n", DeviName, PropName);
+        //printf("Found BLOB property for %s %s\n", DeviName, PropName);
         has_blob = 1;
     }
     else if ((strcmp(PropName, "CCD_EXPOSURE") == 0) && Proptype == INDI_NUMBER) {
-	printf("Found CCD_EXPOSURE for %s %s\n", DeviName, PropName);
+	//printf("Found CCD_EXPOSURE for %s %s\n", DeviName, PropName);
 	expose_prop = property->getNumber();
     }
     else if ((strcmp(PropName, "CCD_FRAME") == 0) && Proptype == INDI_NUMBER) {
-	printf("Found CCD_FRAME for %s %s\n", DeviName, PropName);
+	//printf("Found CCD_FRAME for %s %s\n", DeviName, PropName);
 	frame_prop = property->getNumber();
     }
     else if ((strcmp(PropName, "CCD_FRAME_TYPE") == 0) && Proptype == INDI_SWITCH) {
-	printf("Found CCD_FRAME_TYPE for %s %s\n", DeviName, PropName);
+	//printf("Found CCD_FRAME_TYPE for %s %s\n", DeviName, PropName);
 	frame_type_prop = property->getSwitch();
     }
     else if ((strcmp(PropName, "CCD_BINNING") == 0) && Proptype == INDI_NUMBER) {
-	printf("Found CCD_BINNING for %s %s\n",DeviName, PropName);
+	//printf("Found CCD_BINNING for %s %s\n",DeviName, PropName);
 	binning_prop = property->getNumber();
     }
     else if ((strcmp(PropName, "VIDEO_STREAM") == 0) && Proptype == INDI_SWITCH) {
-	printf("Found Video %s %s\n",DeviName, PropName);
+	//printf("Found Video %s %s\n",DeviName, PropName);
 	video_prop = property->getSwitch();
     }
     else if (strcmp(PropName, "DEVICE_PORT") == 0 && Proptype == INDI_TEXT) {
-	printf("Found device port for %s \n",DeviName);
+	//printf("Found device port for %s \n",DeviName);
 	camera_port = property->getText();
     }
     else if (strcmp(PropName, "CONNECTION") == 0 && Proptype == INDI_SWITCH) {
-	printf("Found CONNECTION for %s %s\n",DeviName, PropName);
+	//printf("Found CONNECTION for %s %s\n",DeviName, PropName);
 	// Check the value here in case the device is already connected
 	ISwitch *connectswitch = IUFindSwitch(property->getSwitch(),"CONNECT");
 	Connected = (connectswitch->s == ISS_ON);
@@ -222,7 +223,7 @@ void Camera_INDIClass::serverConnected()
     // wait for the device port property
     wxLongLong msec;
     msec = wxGetUTCTimeMillis();
-    while ((!camera_port) && wxGetUTCTimeMillis() - msec < 2 * 1000) {
+    while ((!camera_port) && wxGetUTCTimeMillis() - msec < 1 * 1000) {
 	::wxSafeYield();
     }
     // Set the port, this must be done before to try to connect the device
@@ -266,10 +267,15 @@ void Camera_INDIClass::ShowPropertyDialog()
 
 void Camera_INDIClass::CameraDialog() 
 {
-   IndiGui *gui = new IndiGui();
-   gui->child_window = false;
-   // gui->ConnectServer();
-   gui->Show(true);
+   if (gui) {
+      gui->Show();
+   }
+   else {
+      gui = new IndiGui();
+      gui->child_window = true;
+      gui->ConnectServer(INDIhost, INDIport);
+      gui->Show();
+   }
 }
 
 void Camera_INDIClass::CameraSetup() 
@@ -399,7 +405,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
   if (Connected) {
       // we can set the exposure time directly in the camera
       if (expose_prop) {
-	  printf("Exposing for %d(ms)\n", duration);
+	  //printf("Exposing for %d(ms)\n", duration);
 	  
 	  // set the exposure time, this immediately start the exposure
 	  expose_prop->np->value = duration/1000;
@@ -425,7 +431,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
       }
       // for video camera without exposure time setting
       else if (video_prop){
-	  printf("Enabling video capture\n");
+	  //printf("Enabling video capture\n");
 	  ISwitch *v_on = IUFindSwitch(video_prop,"ON");
 	  ISwitch *v_off = IUFindSwitch(video_prop,"OFF");
 	  v_on->s = ISS_ON;
@@ -436,7 +442,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
 	  // wait the required time
 	  wxMilliSleep(duration); // TODO : add the frames received during exposure
 
-	  printf("Stop video capture\n");
+	  //printf("Stop video capture\n");
 	  v_on->s = ISS_OFF;
 	  v_off->s = ISS_ON;
 	  sendNewSwitch(video_prop);
@@ -445,14 +451,14 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
 	  return true;
       }
 
-      printf("Exposure end\n");
+      //printf("Exposure end\n");
       
       if (strcmp(cam_bp->format, ".fits") == 0) {
-	 printf("Processing fits file\n");
+	 //printf("Processing fits file\n");
 	 // for CCD camera
 	 if ( ! ReadFITS(img) ) {
 	    if ( recon ) {
-	       printf("Subtracting dark\n");
+	       //printf("Subtracting dark\n");
 	       SubtractDark(img);
 	    }
 	    return false;
@@ -460,7 +466,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
 	    return true;
 	 }
       } else if (strcmp(cam_bp->format, ".stream") == 0) {
-	 printf("Processing stream file\n");
+	 //printf("Processing stream file\n");
 	 // for video camera
 	 return ReadStream(img);
       } else {

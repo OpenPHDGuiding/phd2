@@ -74,7 +74,7 @@ void ScopeINDI::CheckState()
         (pulseGuideNS && pulseGuideEW)))
     {
         if (! ready) {
-            printf("Telescope is ready\n");
+            //printf("Telescope is ready\n");
             ready = true;
             if (modal) {
                 modal = false;
@@ -194,7 +194,7 @@ void ScopeINDI::newDevice(INDI::BaseDevice *dp)
 void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
 {
     // we go here every time a Switch state change
-    printf("Mount Receving Switch: %s = %i\n", svp->name, svp->sp->s);
+    //printf("Mount Receving Switch: %s = %i\n", svp->name, svp->sp->s);
     if (strcmp(svp->name, "CONNECTION") == 0) {
 	ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
 	if (connectswitch->s == ISS_ON) Scope::Connect();
@@ -205,19 +205,19 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
 void ScopeINDI::newMessage(INDI::BaseDevice *dp, int messageID)
 {
     // we go here every time the mount driver send a message
-    printf("Mount Receving message: %s\n", dp->messageQueue(messageID));
+    //printf("Mount Receving message: %s\n", dp->messageQueue(messageID));
 }
 
 void ScopeINDI::newNumber(INumberVectorProperty *nvp)
 {
     // we go here every time a Number value change
-    printf("Mount Receving Number: %s = %g\n", nvp->name, nvp->np->value);
+    //printf("Mount Receving Number: %s = %g\n", nvp->name, nvp->np->value);
 }
 
 void ScopeINDI::newText(ITextVectorProperty *tvp)
 {
     // we go here every time a Text value change
-    printf("Mount Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
+    //printf("Mount Receving Text: %s = %s\n", tvp->name, tvp->tp->text);
 }
 
 void ScopeINDI::newProperty(INDI::Property *property) 
@@ -227,7 +227,7 @@ void ScopeINDI::newProperty(INDI::Property *property)
     // We keep the vector for each interesting property to send some data later.
     const char* PropName = property->getName();
     INDI_TYPE Proptype = property->getType();
-    printf("Mount Property: %s\n",PropName);
+    //printf("Mount Property: %s\n",PropName);
     
     if ((strcmp(PropName, "EQUATORIAL_EOD_COORD") == 0) && Proptype == INDI_NUMBER){
        coord_set_prop = property->getNumber();

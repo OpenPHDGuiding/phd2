@@ -45,7 +45,7 @@
 #include <libindi/indiproperty.h>
 
 
-class INDIConfig : public wxDialog , INDI::BaseClient {
+class INDIConfig : public wxDialog , public INDI::BaseClient {
 public:
     INDIConfig(wxWindow *parent);
     long     INDIport;

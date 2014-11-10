@@ -45,7 +45,7 @@
 
 #include "indi_gui.h"
 
-class Camera_INDIClass : public GuideCamera, INDI::BaseClient {
+class Camera_INDIClass : public GuideCamera, public INDI::BaseClient {
 private:
     INumberVectorProperty *expose_prop;
     INumberVectorProperty *frame_prop;
@@ -54,6 +54,7 @@ private:
     ISwitchVectorProperty *video_prop;
     ITextVectorProperty   *camera_port;
     INDI::BaseDevice      *camera_device;    
+    IndiGui  *gui ;
     IBLOB    *cam_bp;
     bool     has_blob;
     bool     modal;

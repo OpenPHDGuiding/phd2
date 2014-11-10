@@ -40,7 +40,7 @@
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
-class ScopeINDI : public Scope, INDI::BaseClient {
+class ScopeINDI : public Scope, public INDI::BaseClient {
 private:
     INumberVectorProperty *coord_set_prop;
     ISwitchVectorProperty *abort_prop;
