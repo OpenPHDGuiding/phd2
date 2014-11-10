@@ -1009,9 +1009,9 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
     return result;
 }
 
-bool StepGuider::IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit)
+bool StepGuider::IsAtLimit(GUIDE_DIRECTION direction, bool *atLimit)
 {
-    atLimit = CurrentPosition(direction) == MaxPosition(direction) - 1;
+    *atLimit = CurrentPosition(direction) == MaxPosition(direction) - 1;
     return false;
 }
 
