@@ -47,9 +47,9 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
       measurements_(180),
       modified_measurements_(180),
       timer_(),
-      delta_controller_time_(3.0),
       control_signal_(0.0),
-      number_of_measurements_(0)
+      number_of_measurements_(0),
+      elapsed_time_ms_(0.0)
 {
     wxString configPath = GetConfigPath();
     double control_gain = pConfig->Profile.GetDouble(configPath + "/controlGain",
@@ -149,46 +149,91 @@ GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
     return GUIDE_ALGORITHM_GAUSSIAN_PROCESS;
 }
 
-double GuideGaussianProcess::result(double input)
+void GuideGaussianProcess::HandleTimestamps()
 {
-    if (number_of_measurements_ == 0) {
-        // Add first random measurement
+    if (number_of_measurements_ == 0)
+    {
+        timer_.Start();
+    }
+    double time_now = timer_.Time();
+    double delta_measurement_time_ms = time_now - elapsed_time_ms_;
+    elapsed_time_ms_ = time_now;
+    timestamps_.append(elapsed_time_ms_ - delta_measurement_time_ms / 2);
+}
 
+void GuideGaussianProcess::HandleMeasurements(double input)
+{
+    measurements_.append(input);
+}
+
+void GuideGaussianProcess::HandleModifiedMeasurements(double input)
+{
+    // If there is no previous measurement, a random one is generated.
+    if(number_of_measurements_ == 0)
+    {
         //The daytime indoor measurement noise SD is 0.25-0.35
         double indoor_noise_standard_deviation = 0.25;
-        double first_measurement = indoor_noise_standard_deviation *
-                                   math_tools::generate_normal_random_double();
-        measurements_.append(first_measurement);
-
-        // (Re)start the timer and add first timestamp
-        timer_.Start();
-        // TODO check if this is equivalent to the matlab code
-        timestamps_.append(delta_controller_time_ / 2);
-    } else {
-        // Measurements
-        measurements_.append(input);
-
-        // Handle timestamps
-        double time_now = timer_.Time();
-        double delta_measurement_time_ms = time_now - elapsed_time_ms_;
-        elapsed_time_ms_ = time_now;
-        timestamps_.append(elapsed_time_ms_ - delta_measurement_time_ms / 2);
-
-        // Modified measurements
+        double first_random_measurement = indoor_noise_standard_deviation *
+            math_tools::generate_normal_random_double();
+        double new_modified_measurement =
+            control_signal_ +
+            first_random_measurement * (1 - control_gain_) -
+            input;
+        modified_measurements_.append(new_modified_measurement);
+    }
+    else
+    {
         double new_modified_measurement =
             control_signal_ +
             measurements_.getSecondLastElement() * (1 - control_gain_) -
             measurements_.getLastElement();
         modified_measurements_.append(new_modified_measurement);
     }
+}
+
+double GuideGaussianProcess::result(double input)
+{
+    HandleTimestamps();
+    HandleMeasurements(input);
+    HandleModifiedMeasurements(input);
     number_of_measurements_++;
 
-    if (number_of_measurements_ > 5) {
-        // TODO GP->infer(timestamps_.getEigenVector(),
-        //                modified_measurements_.getEigenVector());
-        // Update control_signal_
-    } else {
-        control_signal_ = -input / delta_controller_time_;
+    /*
+     * Need to read this value here because it is not loaded at the construction
+     * time of this object.
+     */
+    double delta_controller_time_ms = pFrame->RequestedExposureDuration();
+
+    if (number_of_measurements_ > 5)
+    {
+        /*
+        // Inference
+        gp_->infer(*timestamps_.getEigenVector(),
+                   *modified_measurements_.getEigenVector());
+        // Prediction of new control_signal_
+        Eigen::VectorXd prediction =
+            gp_->predict(elapsed_time_ms_ + delta_controller_time_ms / 2) -
+            control_gain_ * input / delta_controller_time_ms;
+        control_signal_ = prediction(0);
+         */
+    }
+    else
+    {
+        control_signal_ = -input / delta_controller_time_ms;
+    }
+
+    if (number_of_measurements_ > 30) {
+        std::cout << *measurements_.getEigenVector() << std::endl;
+        std::cout << measurements_.getEigenVector()->size() << std::endl;
+        std::cout << "\n" << std::endl;
+
+        std::cout << *modified_measurements_.getEigenVector() << std::endl;
+        std::cout << modified_measurements_.getEigenVector()->size() << std::endl;
+        std::cout << "\n" << std::endl;
+
+        std::cout << *timestamps_.getEigenVector() << std::endl;
+        std::cout << timestamps_.getEigenVector()->size() << std::endl;
+        std::cout << "\n" << std::endl;
     }
 
     return control_signal_;
