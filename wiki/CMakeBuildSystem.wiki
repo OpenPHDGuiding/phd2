@@ -52,12 +52,10 @@ Currently on Windows and OSX, the supported architecture is 32 bits only. This i
 is handled in the cmake script. However, the wxWidgets should be built accordingly. 
 
 == Visual Studio versions ==
-In the document, we suppose for Windows user that Visual Studio is installed. We will refer to _Visual Studio 12_, but "12" does not stand for the 2012 but rather to version 12 of VS. The mapping is the following:
-  * VS 12: Visual Studio 2013
-  * VS 11: Visual Studio 2012
-  * VS 10: Visual Studio 2010
+We suppose _Visual Studio 2013_ installed for Windows developers. The code name in _cmake_ for this version of Visual Studio is _Visual Studio 12_ ("12" stands for the version, which is _Visual Studio 2013_). 
 
-
+== XCode versions ===
+We suppose XCode 5 installed for Mac OSX developers. XCode 5 comes with _clang_ C++ compiler, which makes the compilation of _wxWidgets_ slightly more difficult than usual. 
 
 
 = Project dependencies =
@@ -85,7 +83,7 @@ sudo apt-get install cmake
 
 == Building and installing wxWidgets ==
 We assume 
-  * `$WXWIDGET_BASE_DIR` being a variable that points to the untarred sources of wxWidgets.
+  * `$WXWIDGET_BASE_DIR` being a variable that points to the untarred sources of _wxWidgets_.
   * `$wxPREFIX` being a variable that points to the installation prefix of your dependencies.
 
 === Win32 ===
@@ -96,7 +94,7 @@ msbuild wx_vc12.sln /p:configuration=Debug /p:platform=win32 /m:8
 msbuild wx_vc12.sln /p:configuration=Release /p:platform=win32 /m:8
 }}}
 
-The `wx_vc12.sln` Visual Studio solution is for Visual Studio 12 (Visual 2013). It should be replaced by the proper version of Visual you have on your system (see [#Visual_Studio_versions here]).
+The `wx_vc12.sln` Visual Studio solution is for Visual Studio 12 (Visual 2013, see [#Visual_Studio_versions here]). 
 
 === OSX ===
 The configuration on OSX looks a little bit complicated. We are using XCode 5 and above, which is shipped with Clang 3+.
