@@ -82,6 +82,7 @@ protected:
     
 public:
     Camera_INDIClass();
+    ~Camera_INDIClass();
     bool    ReadFITS(usImage& img);
     bool    ReadStream(usImage& img);
     bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);

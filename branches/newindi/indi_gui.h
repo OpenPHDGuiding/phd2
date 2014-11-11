@@ -191,12 +191,13 @@ protected:
    
 public:
    IndiGui();
-   //~IndiGui();
+   ~IndiGui();
    
    void ConnectServer(wxString INDIhost, long INDIport);
    void ShowMessage(const char *message);
    void DeleteProp(INDI::Property *property);
-   bool child_window;   
+   bool child_window; 
+   bool allow_connect_disconnect;
 };
 
 #endif //_INDIGUI_H_

@@ -110,6 +110,11 @@ BEGIN_EVENT_TABLE(INDIConfig, wxDialog)
 EVT_BUTTON(MCONNECT, INDIConfig::OnButton)
 END_EVENT_TABLE()
 
+INDIConfig::~INDIConfig()
+{
+    disconnectServer();    
+}
+    
 void INDIConfig::OnButton(wxCommandEvent& WXUNUSED(event)) 
 {
     Connect();

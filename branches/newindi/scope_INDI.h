@@ -82,6 +82,7 @@ protected:
     
 public:
     ScopeINDI();
+    ~ScopeINDI();
 
     bool     Connect(void);
     bool     Disconnect(void);

@@ -48,6 +48,7 @@
 class INDIConfig : public wxDialog , public INDI::BaseClient {
 public:
     INDIConfig(wxWindow *parent);
+    ~INDIConfig();
     long     INDIport;
     wxString INDIhost;
     wxString INDIDevName;

@@ -62,6 +62,11 @@ Camera_INDIClass::Camera_INDIClass()
     FullSize = wxSize(640,480);
 }
 
+Camera_INDIClass::~Camera_INDIClass() 
+{
+  disconnectServer();    
+}
+
 void Camera_INDIClass::ClearStatus()
 {
     // reset properties pointer
@@ -273,6 +278,7 @@ void Camera_INDIClass::CameraDialog()
    else {
       gui = new IndiGui();
       gui->child_window = true;
+      gui->allow_connect_disconnect = false;
       gui->ConnectServer(INDIhost, INDIport);
       gui->Show();
    }

@@ -51,6 +51,11 @@ ScopeINDI::ScopeINDI()
     INDIMountPort = pConfig->Profile.GetString("/indi/INDImount_port",_T(""));
 }
 
+ScopeINDI::~ScopeINDI() 
+{
+    disconnectServer();
+}
+
 void ScopeINDI::ClearStatus()
 {
     // reset properties pointer

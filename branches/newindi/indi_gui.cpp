@@ -176,6 +176,7 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
     }
     
     gbs = (wxGridBagSizer *)page->GetSizer();
+    gbs->Layout();
     next_free_row = gbs->GetRows();
     BuildPropWidget(property, page, indiProp);
     
@@ -190,6 +191,7 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
     indiDev->page->Fit();
     indiDev->page->Layout();
     indiDev->page->Show();
+    sizer->Layout();
 }
 
 void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiProp *indiProp)
@@ -545,6 +547,13 @@ void IndiGui::SetToggleButtonEvent(wxCommandEvent & event)
    IndiProp *indiProp = (IndiProp *) button->GetClientData();
    if (! indiProp) return;
    ISwitchVectorProperty *svp = indiProp->property->getSwitch();
+
+   if (!allow_connect_disconnect && strcmp(svp->name,"CONNECTION")==0) {
+      // Prevent device disconnection from this window.
+      // Use Gear manager instead.
+      return;
+   }
+      
    ptrHash::iterator it;
    for( it = indiProp->ctrl.begin(); it !=indiProp->ctrl.end(); ++it )
    {
@@ -627,35 +636,42 @@ void IndiGui::SetCheckboxEvent(wxCommandEvent & event)
 
 void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)
 {
-   IndiProp *indiProp = (IndiProp *)event.GetExtraLong();
-   if (! indiProp) return;
-   IndiDev *indiDev = (IndiDev *) indiProp->idev;
-   if (! indiDev) return;
-   wxString propname = indiProp->name->GetLabel();
-   
-   for (int y = 0; y < indiProp->gbs->GetRows(); y++) {
-      for (int x = 0; x < indiProp->gbs->GetCols(); x++) {
-	 wxGBSizerItem *item = indiProp->gbs->FindItemAtPosition(POS(y, x));
-	 if (item)
-	    item->GetWindow()->Destroy();
-      }
-   }
-   if (indiProp->name)
-      indiProp->name->Destroy();
-   if (indiProp->state)
-      indiProp->state->Destroy();
-   if (indiProp->page->GetChildren().GetCount() == 0) {
-      for (unsigned int i = 0; i < indiDev->page->GetPageCount(); i++) {
-	 if (indiProp->page == indiDev->page->GetPage(i)) {
-	    indiDev->groups.erase(indiDev->page->GetPageText(i));
-	    indiDev->page->DeletePage(i);
-	    break;
-	 }
-      }
-   }
-   delete indiProp;
-   indiDev->properties.erase(propname);
+    IndiProp *indiProp = (IndiProp *)event.GetExtraLong();
+    if (! indiProp) return;
+    IndiDev *indiDev = (IndiDev *) indiProp->idev;
+    if (! indiDev) return;
+    wxString propname = indiProp->name->GetLabel();
+    
+    for (int y = 0; y < indiProp->gbs->GetRows(); y++) {
+	for (int x = 0; x < indiProp->gbs->GetCols(); x++) {
+	    wxGBSizerItem *item = indiProp->gbs->FindItemAtPosition(POS(y, x));
+	    if (item){
+	        indiProp->gbs->Remove(item->GetId());
+		item->GetWindow()->Destroy();
+		indiProp->gbs->Layout();
+	    }
+	}
+    }
+    if (indiProp->name)
+	indiProp->name->Destroy();
+    if (indiProp->state)
+	indiProp->state->Destroy();
+    if (indiProp->page->GetChildren().GetCount() == 0) {
+	for (unsigned int i = 0; i < indiDev->page->GetPageCount(); i++) {
+	    if (indiProp->page == indiDev->page->GetPage(i)) {
+		indiDev->groups.erase(indiDev->page->GetPageText(i));
+		indiDev->page->DeletePage(i);
+		break;
+	    }
+	}
+    }
+    delete indiProp;
+    indiDev->properties.erase(propname);
+    indiDev->page->Layout();
+    indiDev->page->Fit();
+    sizer->Layout();
 }
+
 
 IndiGui::IndiGui() : wxFrame((wxFrame *)wxTheApp->GetTopWindow(), wxID_ANY,
                              _("INDI Options"),
@@ -675,8 +691,30 @@ void IndiGui::OnQuit(wxCloseEvent& WXUNUSED(event))
    if (child_window) {
 	Show(false);
    } else {
-        disconnectServer();
-        // TODO iterate all the ptrHash to destroy the list objects
 	Destroy();
    }
 }
+
+IndiGui::~IndiGui()
+{
+    disconnectServer();
+    ptrHash::iterator itdev;
+    for( itdev = devlist.begin(); itdev !=devlist.end(); ++itdev )
+    {
+	IndiDev *indiDev = (IndiDev *) itdev->second;
+	
+	ptrHash::iterator itprop;
+	for( itprop =indiDev->properties.begin(); itprop !=indiDev->properties.end(); ++itprop )
+	{
+	    IndiProp *indiProp = (IndiProp *) itprop->second;
+	    indiProp->ctrl.clear();
+	    indiProp->entry.clear();
+	    delete indiProp;
+	}
+	indiDev->properties.clear();
+	indiDev->groups.clear();
+	delete indiDev;
+    }
+     
+}
+
