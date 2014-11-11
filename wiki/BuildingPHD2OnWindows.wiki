@@ -21,6 +21,8 @@ http://www.visualstudio.com/en-us/downloads
 
 The download you want is "Visual Studio Express 2013 for Windows Desktop".
 
+Visual Studio 2013 requires Windows 7 SP1 or later; it will not install on Windows XP.
+
 2. Download and install Visual Leak Detector (VLD) Version 2.3.0 from https://vld.codeplex.com/
 
 The VC++ project files assume you have VLD installed in the default
