@@ -57,7 +57,9 @@ Camera_INDIClass::Camera_INDIClass()
     INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
     INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
     INDICameraName = pConfig->Profile.GetString("/indi/INDIcam", _T("INDI Camera"));
+    INDICameraCCD = pConfig->Profile.GetLong("/indi/INDIcam_ccd", 0);
     INDICameraPort = pConfig->Profile.GetString("/indi/INDIcam_port",_T(""));
+    SetCCDdevice();
     PropertyDialogType = PROPDLG_ANY;
     FullSize = wxSize(640,480);
 }
@@ -138,13 +140,15 @@ void  Camera_INDIClass::newBLOB(IBLOB *bp)
     // we go here every time a new blob is available
     // this is normally the image from the camera
     //printf("Got camera blob %s \n",bp->name);
-    // TODO filter by name for camera with multiple sensors
-    cam_bp = bp;
     if (expose_prop) {
-       modal = false;
+	if (strcmp(bp->name,INDICameraBlobName)==0){
+	cam_bp = bp;
+	modal = false;
+	}
     }
     else if (video_prop){
-       // TODO : cumulate the frames received during exposure
+	cam_bp = bp;
+	// TODO : cumulate the frames received during exposure
     }
 }
 
@@ -162,19 +166,19 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
         //printf("Found BLOB property for %s %s\n", DeviName, PropName);
         has_blob = 1;
     }
-    else if ((strcmp(PropName, "CCD_EXPOSURE") == 0) && Proptype == INDI_NUMBER) {
+    else if ((strcmp(PropName, INDICameraCCDCmd+"EXPOSURE") == 0) && Proptype == INDI_NUMBER) {
 	//printf("Found CCD_EXPOSURE for %s %s\n", DeviName, PropName);
 	expose_prop = property->getNumber();
     }
-    else if ((strcmp(PropName, "CCD_FRAME") == 0) && Proptype == INDI_NUMBER) {
+    else if ((strcmp(PropName, INDICameraCCDCmd+"FRAME") == 0) && Proptype == INDI_NUMBER) {
 	//printf("Found CCD_FRAME for %s %s\n", DeviName, PropName);
 	frame_prop = property->getNumber();
     }
-    else if ((strcmp(PropName, "CCD_FRAME_TYPE") == 0) && Proptype == INDI_SWITCH) {
+    else if ((strcmp(PropName, INDICameraCCDCmd+"FRAME_TYPE") == 0) && Proptype == INDI_SWITCH) {
 	//printf("Found CCD_FRAME_TYPE for %s %s\n", DeviName, PropName);
 	frame_type_prop = property->getSwitch();
     }
-    else if ((strcmp(PropName, "CCD_BINNING") == 0) && Proptype == INDI_NUMBER) {
+    else if ((strcmp(PropName, INDICameraCCDCmd+"BINNING") == 0) && Proptype == INDI_NUMBER) {
 	//printf("Found CCD_BINNING for %s %s\n",DeviName, PropName);
 	binning_prop = property->getNumber();
     }
@@ -222,8 +226,8 @@ bool Camera_INDIClass::Disconnect()
 void Camera_INDIClass::serverConnected()
 {
     // After connection to the server
-    // set option to receive blob and messages
-    setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), NULL);
+    // set option to receive blob and messages for the selected CCD
+    setBLOBMode(B_ALSO, INDICameraName.mb_str(wxConvUTF8), INDICameraBlobName.mb_str(wxConvUTF8));
     modal = true; 
     // wait for the device port property
     wxLongLong msec;
@@ -287,11 +291,11 @@ void Camera_INDIClass::CameraDialog()
 void Camera_INDIClass::CameraSetup() 
 {
     // show the server and device configuration
-    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow());
-    indiDlg->DevName = _T("Camera");
+    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow(),TYPE_CAMERA);
     indiDlg->INDIhost = INDIhost;
     indiDlg->INDIport = INDIport;
     indiDlg->INDIDevName = INDICameraName;
+    indiDlg->INDIDevCCD = INDICameraCCD; 
     indiDlg->INDIDevPort = INDICameraPort;
     // initialize with actual values
     indiDlg->SetSettings();
@@ -303,15 +307,30 @@ void Camera_INDIClass::CameraSetup()
 	INDIhost = indiDlg->INDIhost;
 	INDIport = indiDlg->INDIport;
 	INDICameraName = indiDlg->INDIDevName;
+	INDICameraCCD = indiDlg->INDIDevCCD;
 	INDICameraPort = indiDlg->INDIDevPort;
 	pConfig->Profile.SetString("/indi/INDIhost", INDIhost);
 	pConfig->Profile.SetLong("/indi/INDIport", INDIport);
 	pConfig->Profile.SetString("/indi/INDIcam", INDICameraName);
+	pConfig->Profile.SetLong("/indi/INDIcam_ccd",INDICameraCCD);
 	pConfig->Profile.SetString("/indi/INDIcam_port",INDICameraPort);
+	SetCCDdevice();
     }
     indiDlg->Disconnect();
     indiDlg->Destroy();
     delete indiDlg;
+}
+
+void  Camera_INDIClass::SetCCDdevice()
+{
+    if (INDICameraCCD == 0) {
+	INDICameraBlobName = "CCD1";
+	INDICameraCCDCmd = "CCD_";
+    } 
+    else {
+	INDICameraBlobName = "CCD2";
+	INDICameraCCDCmd = "GUIDER_";
+    } 
 }
 
 bool Camera_INDIClass::ReadFITS(usImage& img) 

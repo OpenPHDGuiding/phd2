@@ -97,8 +97,7 @@ void ScopeINDI::SetupDialog()
 {
     // contrary to camera the telescope setup dialog is called only when not connected
     // show the server and device configuration
-    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow());
-    indiDlg->DevName = _T("Mount");
+    INDIConfig *indiDlg = new INDIConfig(wxGetActiveWindow(),TYPE_MOUNT);
     indiDlg->INDIhost = INDIhost;
     indiDlg->INDIport = INDIport;
     indiDlg->INDIDevName = INDIMountName;

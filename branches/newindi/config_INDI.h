@@ -44,16 +44,20 @@
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
 
+enum {
+    TYPE_CAMERA,
+    TYPE_MOUNT,
+};
 
 class INDIConfig : public wxDialog , public INDI::BaseClient {
 public:
-    INDIConfig(wxWindow *parent);
+    INDIConfig(wxWindow *parent, int devtype);
     ~INDIConfig();
     long     INDIport;
     wxString INDIhost;
     wxString INDIDevName;
+    long     INDIDevCCD;
     wxString INDIDevPort;
-    wxString DevName;
     void Connect();
     void Disconnect();
     void SetSettings();
@@ -66,7 +70,9 @@ private:
     wxStaticText *connect_status;
     wxStaticText *devlabel;
     wxComboBox *dev;
+    wxComboBox *ccd;
     wxTextCtrl *devport;
+    int dev_type;
     DECLARE_EVENT_TABLE()
     
 protected:

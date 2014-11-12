@@ -57,8 +57,9 @@
 #define POS(r, c)        wxGBPosition(r,c)
 #define SPAN(r, c)       wxGBSpan(r,c)
 
-INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, (const wxString)_T("INDI Configuration"))
+INDIConfig::INDIConfig(wxWindow *parent, int devtype) : wxDialog(parent, wxID_ANY, (const wxString)_T("INDI Configuration"))
 {
+    dev_type = devtype;
     int pos;
     wxGridBagSizer *gbs = new wxGridBagSizer(0, 20);
     wxBoxSizer *sizer;
@@ -85,6 +86,12 @@ INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, (const wxS
 	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
     devlabel = new wxStaticText(this, wxID_ANY, _T("Device"));
     gbs->Add(devlabel,POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+    if (devtype == TYPE_CAMERA) {
+	devlabel->SetLabel(_T("Camera"));
+    }
+    else if (devtype == TYPE_MOUNT) {
+	devlabel->SetLabel(_T("Mount"));
+    }
     
     pos ++;
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Driver:")),
@@ -92,6 +99,16 @@ INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, (const wxS
     dev =  new wxComboBox(this, wxID_ANY, _T(""));
     gbs->Add(dev, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 
+    if (devtype == TYPE_CAMERA) {
+	pos ++;
+	gbs->Add(new wxStaticText(this, wxID_ANY, _T("CCD:")),
+		 POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+	ccd =  new wxComboBox(this, wxID_ANY, _T(""));
+	gbs->Add(ccd, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+	ccd->Append(_T("Main imager"));
+	ccd->Append(_T("Guider"));
+    }
+    
     pos ++;
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Port:")),
 	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
@@ -155,7 +172,9 @@ void INDIConfig::SetSettings()
     host->WriteText(INDIhost);
     dev->SetValue(INDIDevName);
     devport->SetValue(INDIDevPort);
-    devlabel->SetLabel(DevName);
+    if (dev_type == TYPE_CAMERA) {
+	ccd->SetSelection(INDIDevCCD);
+    }
 }
 
 void INDIConfig::SaveSettings()
@@ -164,6 +183,9 @@ void INDIConfig::SaveSettings()
     port->GetLineText(0).ToLong(&INDIport);
     INDIDevName = dev->GetValue();
     INDIDevPort = devport->GetValue();
+    if (dev_type == TYPE_CAMERA) {
+	INDIDevCCD = ccd->GetSelection();
+    }
 }
 
 #endif

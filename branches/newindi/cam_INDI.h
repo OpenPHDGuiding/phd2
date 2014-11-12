@@ -62,7 +62,11 @@ private:
     long     INDIport;
     wxString INDIhost;
     wxString INDICameraName;
+    long     INDICameraCCD;
+    wxString INDICameraCCDCmd;
+    wxString INDICameraBlobName;
     wxString INDICameraPort;
+    void     SetCCDdevice();
     void     ClearStatus(); 
     void     CameraDialog();
     void     CameraSetup();
