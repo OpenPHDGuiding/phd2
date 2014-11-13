@@ -183,6 +183,7 @@ public:
     wxWindow *pNudgeLock;
     wxWindow *pCometTool;
     RefineDefMap *pRefineDefMap;
+    wxDialog *pCalSanityCheckDlg;
     bool CaptureActive; // Is camera looping captures?
     bool m_exposurePending; // exposure scheduled and not completed
     double Stretch_gamma;

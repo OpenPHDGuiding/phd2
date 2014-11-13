@@ -31,10 +31,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #include "phd.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
+
+// #define capture_deflections
 
 static const int DefaultOverlayMode  = OVERLAY_NONE;
 static const bool DefaultScaleImage  = false;
@@ -70,12 +71,25 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 
     SetBackgroundStyle(wxBG_STYLE_CUSTOM);
     SetBackgroundColour(wxColour((unsigned char) 30, (unsigned char) 30,(unsigned char) 30));
+
+#if defined(capture_deflections)
+    wxDateTime now = wxDateTime::UNow();
+    wxString pathname = "star_displacements" + now.Format(_T("_%Y-%m-%d")) + now.Format(_T("_%H%M%S")) + ".csv";
+    m_csvDebug.Create(pathname);
+    m_csvCount = 0;
+#endif
+
+
 }
 
 Guider::~Guider(void)
 {
     delete m_displayedImage;
     delete m_pCurrentImage;
+#if defined(capture_deflections)
+    m_csvDebug.Write();
+#endif
+
 }
 
 void Guider::LoadProfileSettings(void)
@@ -1060,6 +1074,22 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 }
                 else
                 {
+#if defined(capture_deflections)
+                    PHD_Point mountpt;
+                    if (m_csvCount == 0)
+                    {
+                        pMount->TransformCameraCoordinatesToMountCoordinates(CurrentPosition() - LockPosition(), mountpt);
+                        m_csvDebug.AddLine(wxString::Format("DeltaRA, DeltaDec, Scale=%0.2f", pFrame->GetCameraPixelScale()));
+                        if (pMount->GetGuidingEnabled())
+                            pFrame->Alert("GUIDING IS ACTIVE!!!  Star displacements will be useless!");
+                    }
+                    else
+                        pMount->TransformCameraCoordinatesToMountCoordinates(CurrentPosition() - m_csvLastPosition, mountpt);
+
+                    m_csvDebug.AddLine(wxString::Format("%0.2f,%0.2f", mountpt.X, mountpt.Y));
+                    m_csvLastPosition = CurrentPosition();
+                    ++m_csvCount;
+#endif
                     // ordinary guide step
                     pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
                 }

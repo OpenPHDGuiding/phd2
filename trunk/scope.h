@@ -36,6 +36,25 @@
 #ifndef SCOPE_H_INCLUDED
 #define SCOPE_H_INCLUDED
 
+struct Calibration_Params
+{
+    wxString TimeStamp;
+    double XRate;
+    double YRate;
+    double XAngle;
+    double YAngle;
+    double Declination;
+    int PierSide;
+};
+enum Calibration_Issues
+{
+    CI_None,
+    CI_Steps,
+    CI_Angle,
+    CI_Rates,
+    CI_Different
+};
+
 class Scope : public Mount
 {
     int m_calibrationDuration;
@@ -62,9 +81,13 @@ class Scope : public Mount
     double m_calibrationYAngle;
     double m_calibrationYRate;
     bool m_assumeOrthogonal;
+    int m_raSteps;
+    int m_decSteps;
 
     bool m_calibrationFlipRequiresDecFlip;
     bool m_stopGuidingWhenSlewing;
+    Calibration_Params m_prevCalibrationParams;
+    Calibration_Issues m_lastCalibrationIssue;
 
     enum CALIBRATION_STATE
     {
@@ -161,6 +184,9 @@ public:
     bool IsStopGuidingWhenSlewingEnabled(void) const;
     void SetAssumeOrthogonal(bool val);
     bool IsAssumeOrthogonal(void) const;
+    bool GetLastCalibrationParams(Calibration_Params* params);
+    void HandleSanityCheckDialog();
+    void SetCalibrationWarning(Calibration_Issues etype, bool val);
 
     virtual void StartDecDrift(void);
     virtual void EndDecDrift(void);
@@ -176,6 +202,7 @@ private:
 
     void ClearCalibration(void);
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
+    void SanityCheckCalibration(const Calibration_Params *pOld, const Calibration_Params *pNew, int xSteps, int ySteps);
 
 // these MUST be supplied by a subclass
 private:
