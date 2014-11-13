@@ -124,13 +124,12 @@ static std::map<wxString, wxString> s_progid;
 wxArrayString ScopeASCOM::EnumAscomScopes()
 {
     wxArrayString list;
-    list.Add(_T("ASCOM Telescope Chooser"));
 
     try
     {
         DispatchObj profile;
         if (!profile.Create(L"ASCOM.Utilities.Profile"))
-            throw ERROR_INFO("ASCOM Camera: could not instantiate ASCOM profile class: " + ExcepMsg(profile.Excep()));
+            throw ERROR_INFO("ASCOM Camera: could not instantiate ASCOM profile class ASCOM.Utilities.Profile. Is ASCOM installed?");
 
         VARIANT res;
         if (!profile.InvokeMethod(&res, L"RegisteredDevices", L"Telescope"))
@@ -142,6 +141,9 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
         VARIANT vcnt;
         if (!ilist.GetProp(&vcnt, L"Count"))
             throw ERROR_INFO("ASCOM Camera: could not query registered telescopes: " + ExcepMsg(ilist.Excep()));
+
+        // if we made it this far ASCOM is installed and apprears sane, so add the chooser
+        list.Add(_T("ASCOM Telescope Chooser"));
 
         unsigned int const count = vcnt.intVal;
         DispatchClass kvpair_class;

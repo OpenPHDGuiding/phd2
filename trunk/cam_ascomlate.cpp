@@ -114,7 +114,6 @@ static std::map<wxString, wxString> s_progid;
 wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
 {
     wxArrayString list;
-    list.Add(_T("ASCOM Camera Chooser"));
 
     try
     {
@@ -132,6 +131,9 @@ wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
         VARIANT vcnt;
         if (!ilist.GetProp(&vcnt, L"Count"))
             throw ERROR_INFO("ASCOM Camera: could not query registered cameras");
+
+        // if we made it this far, ASCOM is installed and apparently sane, so add the ASCOM chooser
+        list.Add(_T("ASCOM Camera Chooser"));
 
         unsigned int const count = vcnt.intVal;
         DispatchClass kvpair_class;
