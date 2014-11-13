@@ -42,6 +42,14 @@ INCLUDE(UsewxWidgets)
 find_package(INDI REQUIRED)
 include_directories(${INDI_INCLUDE_DIR})
 
+# Nova
+find_package(Nova)
+if (NOVA_FOUND)
+    include_directories(${NOVA_INCLUDE_DIR})
+else ()
+    message(WARNING "libnova not found! Considere to install libnova-dev ")
+endif (NOVA_FOUND)   
+
 # cfitsio
 find_package(CFITSIO REQUIRED)
 include_directories(${CFITSIO_INCLUDE_DIR})
@@ -166,6 +174,10 @@ endif (MSVC)
 target_link_libraries(phd2 ${CFITSIO_LIBRARIES} )
 target_link_libraries(phd2 ${wxWidgets_LIBRARIES} )
 target_link_libraries(phd2 ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES} )
+if (NOVA_FOUND)
+    target_link_libraries(phd2 ${NOVA_LIBRARIES} )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIBNOVA" )
+endif (NOVA_FOUND)   
 
 #if (V4L_OK)
 #    target_link_libraries(phd2 ${LIBUDEV_LIBRARIES})

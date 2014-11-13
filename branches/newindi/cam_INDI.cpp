@@ -79,10 +79,13 @@ void Camera_INDIClass::ClearStatus()
     video_prop = NULL;
     camera_port = NULL;
     camera_device = NULL;
+    pulseGuideNS_prop = NULL;
+    pulseGuideEW_prop = NULL;
     // reset connection status
     has_blob = false;
     Connected = false;
     ready = false;
+    m_hasGuideOutput = false;
 }
 
 void Camera_INDIClass::CheckState() 
@@ -196,11 +199,28 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
 	ISwitch *connectswitch = IUFindSwitch(property->getSwitch(),"CONNECT");
 	Connected = (connectswitch->s == ISS_ON);
     }
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_NS") == 0) && Proptype == INDI_NUMBER){
+	pulseGuideNS_prop = property->getNumber();
+	pulseN_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_N");
+	pulseS_prop = IUFindNumber(pulseGuideNS_prop,"TIMED_GUIDE_S");
+    }
+    else if ((strcmp(PropName, "TELESCOPE_TIMED_GUIDE_WE") == 0) && Proptype == INDI_NUMBER){
+	pulseGuideEW_prop = property->getNumber();
+	pulseW_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_W");
+	pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
+    }
+    else if (strcmp(PropName, "CCD_INFO") == 0 && Proptype == INDI_NUMBER) {
+        PixelSize = IUFindNumber(property->getNumber(),"CCD_PIXEL_SIZE")->value;
+	FullSize = wxSize(IUFindNumber(property->getNumber(),"CCD_MAX_Y")->value,IUFindNumber(property->getNumber(),"CCD_MAX_X")->value);
+    }
+    
     CheckState();
 }
 
 bool Camera_INDIClass::Connect() 
 {
+    // If not configured open the setup dialog
+    if (strcmp(INDICameraName,"INDI Camera")==0) CameraSetup();
     // define server to connect to.
     setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
     // Receive messages only for our camera.
@@ -210,7 +230,16 @@ bool Camera_INDIClass::Connect()
 	return false;
     }
     else {
-	return true;
+       // last chance to fix the setup
+       CameraSetup();
+       setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+       watchDevice(INDICameraName.mb_str(wxConvUTF8));
+       if (connectServer()) {
+	  return false;
+       }
+       else {
+	  return true;
+      }
     }
 }
 
@@ -250,10 +279,16 @@ void Camera_INDIClass::serverConnected()
     }
     modal = false;
     // In case we not get all the required properties or connection to the device failed
-    if(! ready) {
+    if(ready) 
+    {
+	Connected = true;
+	m_hasGuideOutput = (pulseGuideNS_prop && pulseGuideEW_prop);
+    }
+    else {
+	pFrame->Alert(_("Cannot connect to camera ")+INDICameraName);
+	Connected = false;
 	Disconnect();
     }
-    Connected = true;
 }
 
 void Camera_INDIClass::serverDisconnected(int exit_code)
@@ -513,4 +548,46 @@ bool Camera_INDIClass::HasNonGuiCapture(void)
     return true;
 }
 
+// Camera ST4 port
+
+bool Camera_INDIClass::ST4HasNonGuiMove(void)
+{
+    return true;
+}
+
+bool Camera_INDIClass::ST4PulseGuideScope(int direction, int duration)
+{
+    if (pulseGuideNS_prop && pulseGuideEW_prop) {
+	switch (direction) {
+	    case EAST:
+		pulseE_prop->value = duration;
+		pulseW_prop->value = 0;
+		sendNewNumber(pulseGuideEW_prop);
+		break;
+	    case WEST:
+		pulseE_prop->value = 0;
+		pulseW_prop->value = duration;
+		sendNewNumber(pulseGuideEW_prop);
+		break;
+	    case NORTH:
+		pulseN_prop->value = duration;
+		pulseS_prop->value = 0;
+		sendNewNumber(pulseGuideNS_prop);
+		break;
+	    case SOUTH:
+		pulseN_prop->value = 0;
+		pulseS_prop->value = duration;
+		sendNewNumber(pulseGuideNS_prop);
+		break;
+	    case NONE:
+		printf("error CameraINDI::Guide NONE\n");
+		break;
+	}
+	wxMilliSleep(duration);
+	return false;
+    }
+    else return true;
+}
+   
+    
 #endif

@@ -53,7 +53,13 @@ private:
     INumberVectorProperty *binning_prop;
     ISwitchVectorProperty *video_prop;
     ITextVectorProperty   *camera_port;
-    INDI::BaseDevice      *camera_device;    
+    INDI::BaseDevice      *camera_device;
+    INumberVectorProperty *pulseGuideNS_prop;
+    INumber               *pulseN_prop;
+    INumber               *pulseS_prop;
+    INumberVectorProperty *pulseGuideEW_prop;
+    INumber               *pulseE_prop;
+    INumber               *pulseW_prop;
     IndiGui  *gui ;
     IBLOB    *cam_bp;
     bool     has_blob;
@@ -68,8 +74,11 @@ private:
     wxString INDICameraPort;
     void     SetCCDdevice();
     void     ClearStatus(); 
+    void     CheckState();
     void     CameraDialog();
     void     CameraSetup();
+    bool     ReadFITS(usImage& img);
+    bool     ReadStream(usImage& img);
     
 protected:
     virtual void newDevice(INDI::BaseDevice *dp);
@@ -87,15 +96,16 @@ protected:
 public:
     Camera_INDIClass();
     ~Camera_INDIClass();
-    bool    ReadFITS(usImage& img);
-    bool    ReadStream(usImage& img);
-    bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    HasNonGuiCapture(void);
     bool    Connect();      // Opens up and connects to cameras
     bool    Disconnect();
-    void    InitCapture() { return; }
+    bool    HasNonGuiCapture(void);
     void    ShowPropertyDialog();
-    void    CheckState();
+    
+    void    InitCapture() { return; }
+    bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    
+    bool    ST4PulseGuideScope(int direction, int duration);
+    bool    ST4HasNonGuiMove(void);
 };
 
 #endif

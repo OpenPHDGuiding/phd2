@@ -42,21 +42,28 @@
 
 class ScopeINDI : public Scope, public INDI::BaseClient {
 private:
-    INumberVectorProperty *coord_set_prop;
+    INumberVectorProperty *coord_prop;    
     ISwitchVectorProperty *abort_prop;
-    INumberVectorProperty *MotionRate;
-    ISwitchVectorProperty *moveNS;
-    ISwitch               *moveN;
-    ISwitch               *moveS;
-    ISwitchVectorProperty *moveEW;
-    ISwitch               *moveE;
-    ISwitch               *moveW;
-    INumberVectorProperty *pulseGuideNS;
-    INumber               *pulseN;
-    INumber               *pulseS;
-    INumberVectorProperty *pulseGuideEW;
-    INumber               *pulseE;
-    INumber               *pulseW;
+    INumberVectorProperty *MotionRate_prop;
+    ISwitchVectorProperty *moveNS_prop;
+    ISwitch               *moveN_prop;
+    ISwitch               *moveS_prop;
+    ISwitchVectorProperty *moveEW_prop;
+    ISwitch               *moveE_prop;
+    ISwitch               *moveW_prop;
+    INumberVectorProperty *GuideRate_prop;
+    INumberVectorProperty *pulseGuideNS_prop;
+    INumber               *pulseN_prop;
+    INumber               *pulseS_prop;
+    INumberVectorProperty *pulseGuideEW_prop;
+    INumber               *pulseE_prop;
+    INumber               *pulseW_prop;
+    ISwitchVectorProperty *oncoordset_prop;
+    ISwitch               *setslew_prop;
+    ISwitch               *settrack_prop;
+    ISwitch               *setsync_prop;
+    INumberVectorProperty *GeographicCoord_prop;
+    INumberVectorProperty *SiderealTime_prop;
     ITextVectorProperty   *scope_port;
     INDI::BaseDevice      *scope_device;
     long     INDIport;
@@ -65,8 +72,10 @@ private:
     wxString INDIMountPort;
     bool     modal;
     bool     ready;
+    bool     eod_coord;
     void     ClearStatus();
-
+    void     CheckState();
+    
 protected:
     virtual void newDevice(INDI::BaseDevice *dp);
     virtual void newProperty(INDI::Property *property);
@@ -86,18 +95,22 @@ public:
 
     bool     Connect(void);
     bool     Disconnect(void);
-    void     ShowPropertyDialog();
     bool     HasSetupDialog(void) const;
     void     SetupDialog();
-    void     CheckState();
-    void     NewProp(struct indi_prop_t *iprop);
-    void     StartMove(int direction);
-    void     StopMove(int direction);
-    void     PulseGuide(int direction, int duration);
-    bool     IsReady() {return ready;};
-    bool     CanPulseGuide() { return pulseGuideNS && pulseGuideEW;};
-    void     DoGuiding(int direction, int duration_msec);
+
     MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
+
+    bool   CanPulseGuide() { return (pulseGuideNS_prop && pulseGuideEW_prop);}
+    bool   CanReportPosition(void) { return (coord_prop); }
+    bool   CanSlew(void) { return (coord_prop);}
+    bool   CanCheckSlewing(void) { return (coord_prop); }
+
+    double GetGuidingDeclination(void);
+    bool   GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
+    bool   GetCoordinates(double *ra, double *dec, double *siderealTime);
+    bool   GetSiteLatLong(double *latitude, double *longitude);
+    bool   SlewToCoordinates(double ra, double dec);
+    bool   Slewing(void);
 };
 
 #endif /* GUIDE_INDI */
