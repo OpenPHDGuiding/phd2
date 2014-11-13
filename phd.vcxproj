@@ -171,6 +171,7 @@
     <ClCompile Include="advanced_dialog.cpp" />
     <ClCompile Include="ascom_common.cpp" />
     <ClCompile Include="calrestore_dialog.cpp" />
+    <ClCompile Include="calsanity_dialog.cpp" />
     <ClCompile Include="calstep_dialog.cpp" />
     <ClCompile Include="cameras\ArtemisHSCAPI.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -292,6 +293,7 @@
     <ClInclude Include="advanced_dialog.h" />
     <ClInclude Include="ascom_common.h" />
     <ClInclude Include="calrestore_dialog.h" />
+    <ClInclude Include="calsanity_dialog.h" />
     <ClInclude Include="calstep_dialog.h" />
     <ClInclude Include="cam_ascomlate.h" />
     <ClInclude Include="cam_Atik16.h" />

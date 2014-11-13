@@ -298,6 +298,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pNudgeLock = NULL;
     pCometTool = NULL;
     pRefineDefMap = NULL;
+    pCalSanityCheckDlg = NULL;
     m_starFindMode = Star::FIND_CENTROID;
 
     tools_menu->Check(MENU_LOG,false);
@@ -385,6 +386,8 @@ MyFrame::~MyFrame()
 
     if (pRefineDefMap)
         pRefineDefMap->Destroy();
+    if (pCalSanityCheckDlg)
+        pCalSanityCheckDlg->Destroy();
 
     m_mgr.UnInit();
 }
