@@ -66,18 +66,22 @@ DispatchObj::DispatchObj()
     : m_class(0),
       m_idisp(0)
 {
+    memset(&m_excep, 0, sizeof(m_excep));
 }
 
 DispatchObj::DispatchObj(DispatchClass *cls)
     : m_class(cls),
       m_idisp(0)
 {
+    memset(&m_excep, 0, sizeof(m_excep));
 }
 
 DispatchObj::DispatchObj(IDispatch *idisp, DispatchClass *cls)
     : m_class(cls),
       m_idisp(idisp)
 {
+    memset(&m_excep, 0, sizeof(m_excep));
+
     if (m_idisp)
         m_idisp->AddRef();
 }
