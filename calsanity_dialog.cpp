@@ -84,6 +84,8 @@ void CalSanityDialog::BuildMessage(wxStaticText* pText, Calibration_Issues etype
             "This could mean the calibration is inaccurate, perhaps because of small or erratic star movement during the calibration."), 
             m_newParams.Declination * 180.0 / M_PI, cos(m_newParams.Declination) * 100.0, m_newParams.XRate / m_newParams.YRate * 100.0);
         break;
+    default:
+        msg = _("");
     }
     pText->SetLabel(msg);
     pText->Wrap(380);
@@ -145,12 +147,12 @@ CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Param
     pGrid->SetCellValue(raSteps, row, col++);
     pGrid->SetCellValue(_("Steps, Dec:"), row, col++);
     pGrid->SetCellValue(decSteps, row, col++);
-    if (issue == CI_Steps)
-    if (raSteps <= decSteps)
-        HighlightCell(pGrid, row, 1);
-    else
-        HighlightCell(pGrid, row, 3);
-
+    if (issue == CI_Steps){
+      if (raSteps <= decSteps)
+         HighlightCell(pGrid, row, 1);
+      else
+         HighlightCell(pGrid, row, 3);
+    }
     row++;
     col = 0;
     pGrid->SetCellValue(_("Orthogonality error:"), row, col++);
