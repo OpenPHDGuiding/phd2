@@ -68,9 +68,6 @@ bool UDPGuidingInteraction::sendToUDPPort(const void *buf, wxUint32 len)
     wxDatagramSocket udpSocket(client,wxSOCKET_BLOCK); // define the local port
     udpSocket.SendTo(server, buf, len);
     return !udpSocket.Error();
-    
-    udpSocket.SendTo(server, buf, len);
-    return !udpSocket.Error();
 }
 
 bool UDPGuidingInteraction::receiveFromUDPPort(void * buf, wxUint32 len)

@@ -159,6 +159,8 @@ void GuideGaussianProcess::HandleTimestamps()
     double delta_measurement_time_ms = time_now - elapsed_time_ms_;
     elapsed_time_ms_ = time_now;
     timestamps_.append(elapsed_time_ms_ - delta_measurement_time_ms / 2);
+
+    std::cout << timestamps_.getLastElement() << std::endl;
 }
 
 void GuideGaussianProcess::HandleMeasurements(double input)
@@ -189,6 +191,8 @@ void GuideGaussianProcess::HandleModifiedMeasurements(double input)
             measurements_.getLastElement();
         modified_measurements_.append(new_modified_measurement);
     }
+
+    std::cout << modified_measurements_.getLastElement() << std::endl;
 }
 
 double GuideGaussianProcess::result(double input)
@@ -204,9 +208,68 @@ double GuideGaussianProcess::result(double input)
      */
     double delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
+
+    // Send the timestamps and the modified measurements to Matlab
+    double* timestamp_data = timestamps_.getEigenVector()->data();
+    double* modified_measurement_data =
+        modified_measurements_.getEigenVector()->data();
+    double result;
+    double wait_time = 500;
+
+    bool sent = false;
+    bool received = false;
+
+    // Send the input
+    double input_buf[] = { input };
+    sent = udpInteraction.sendToUDPPort(input_buf, 8);
+    //wxMilliSleep(wait_time);
+    received = udpInteraction.receiveFromUDPPort(&result, 8);
+    wxMilliSleep(wait_time);
+
+    std::cout << "Sent input: " << sent << std::endl;
+    std::cout << "Received input: " << received << std::endl;
+
+    // Send the size of the buffer
+    int size = timestamps_.getEigenVector()->size();
+    double size_buf[] = { static_cast<double>(size) };
+    sent = udpInteraction.sendToUDPPort(size_buf, 8);
+    //wxMilliSleep(wait_time);
+    received = udpInteraction.receiveFromUDPPort(&result, 8);
+    wxMilliSleep(wait_time);
+
+    std::cout << "Sent size: " << sent << std::endl;
+    std::cout << "Received size: " << received << std::endl;
+
+
+    // Send modified measurements
+    sent = udpInteraction.sendToUDPPort(modified_measurement_data, size * 8);
+    //wxMilliSleep(wait_time);
+    received = udpInteraction.receiveFromUDPPort(&result, 8);
+    wxMilliSleep(wait_time);
+
+
+    std::cout << "Sent measurement: " << sent << std::endl;
+    std::cout << "Received measurement: " << received << std::endl;
+
+
+    // Send timestamps
+    sent = udpInteraction.sendToUDPPort(timestamp_data, size * 8);
+    //wxMilliSleep(wait_time);
+
+    std::cout << "Sent timestamp: " << sent << std::endl;
+
+    // Receive the final control signal
+    received = udpInteraction.receiveFromUDPPort(&result, sizeof(result));
+
+    std::cout << "Received control signal: " << received << std::endl;
+
+    return result;
+
+
+    /*
     if (number_of_measurements_ > 5)
     {
-        /*
+
         // Inference
         gp_->infer(*timestamps_.getEigenVector(),
                    *modified_measurements_.getEigenVector());
@@ -215,7 +278,7 @@ double GuideGaussianProcess::result(double input)
             gp_->predict(elapsed_time_ms_ + delta_controller_time_ms / 2) -
             control_gain_ * input / delta_controller_time_ms;
         control_signal_ = prediction(0);
-         */
+
     }
     else
     {
@@ -237,6 +300,8 @@ double GuideGaussianProcess::result(double input)
     }
 
     return control_signal_;
+
+        */
 
     // Old UDP Interaction
     /*
