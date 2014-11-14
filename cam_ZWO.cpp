@@ -281,14 +281,18 @@ inline static int round_up(int v, int m)
 
 static void flush_buffered_image(int cameraId, usImage& img)
 {
-    // clear buffered image?
-    ASI_ERROR_CODE status;
-    do
+    enum { NUM_IMAGE_BUFFERS = 2 }; // camera has 2 internal frame buffers
+
+    // clear buffered frames if any
+
+    for (unsigned int num_cleared = 0; num_cleared < NUM_IMAGE_BUFFERS; num_cleared++)
     {
-        status = ASIGetVideoData(cameraId, (unsigned char *) img.ImageData, img.NPixels * sizeof(unsigned short), 0);
-        if (status == ASI_SUCCESS)
-            Debug.AddLine("ZWO: getimagedata clearbuf ret %d", status);
-    } while (status == ASI_SUCCESS);
+        ASI_ERROR_CODE status = ASIGetVideoData(cameraId, (unsigned char *) img.ImageData, img.NPixels * sizeof(unsigned short), 0);
+        if (status != ASI_SUCCESS)
+            break; // no more buffered frames
+
+        Debug.AddLine("ZWO: getimagedata clearbuf %u ret %d", num_cleared + 1, status);
+    }
 }
 
 bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon)
