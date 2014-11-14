@@ -146,10 +146,6 @@ class Guider : public wxWindow
     bool m_fastRecenterEnabled;
     LockPosShiftParams m_lockPosShift;
 
-    wxTextFile m_csvDebug;
-    PHD_Point m_csvLastPosition;
-    int m_csvCount;
-
 protected:
     bool m_forceFullFrame;
     double m_scaleFactor;
