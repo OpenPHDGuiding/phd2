@@ -51,7 +51,6 @@
 
 Camera_INDIClass::Camera_INDIClass() 
 {
-    gui = NULL;
     ClearStatus();
     // load the values from the current profile
     INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
@@ -81,6 +80,8 @@ void Camera_INDIClass::ClearStatus()
     camera_device = NULL;
     pulseGuideNS_prop = NULL;
     pulseGuideEW_prop = NULL;
+    // gui self destroy on lost connection
+    gui = NULL;
     // reset connection status
     has_blob = false;
     Connected = false;
@@ -227,7 +228,7 @@ bool Camera_INDIClass::Connect()
     watchDevice(INDICameraName.mb_str(wxConvUTF8));
     // Connect to server.
     if (connectServer()) {
-	return false;
+       return !ready;
     }
     else {
        // last chance to fix the setup
@@ -235,7 +236,7 @@ bool Camera_INDIClass::Connect()
        setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
        watchDevice(INDICameraName.mb_str(wxConvUTF8));
        if (connectServer()) {
-	  return false;
+	  return !ready;
        }
        else {
 	  return true;
@@ -293,8 +294,10 @@ void Camera_INDIClass::serverConnected()
 
 void Camera_INDIClass::serverDisconnected(int exit_code)
 {
-    // after disconnection we reset the connection status and the properties pointers
-    ClearStatus();
+   // in case the connection lost we must reset the client socket
+   Disconnect();
+   // after disconnection we reset the connection status and the properties pointers
+   ClearStatus();
 }
 
 void Camera_INDIClass::ShowPropertyDialog() 

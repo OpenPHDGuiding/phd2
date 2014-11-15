@@ -133,6 +133,12 @@ void IndiGui::serverConnected()
     setBLOBMode(B_NEVER, "", NULL);
 }
 
+void IndiGui::serverDisconnected(int exit_code)
+{
+   // connection to server is lost, destroy ourself 
+   Destroy();
+}
+
 void IndiGui::OnNewDeviceFromThread(wxThreadEvent& event)
 {
     INDI::BaseDevice *dp = (INDI::BaseDevice *) event.GetExtraLong();

@@ -146,7 +146,7 @@ bool ScopeINDI::Connect()
     watchDevice(INDIMountName.mb_str(wxConvUTF8));
     // Connect to server.
    if (connectServer()) {
-      return false;
+      return !ready;
    }
    else {
       // last chance to fix the setup
@@ -154,7 +154,7 @@ bool ScopeINDI::Connect()
       setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
       watchDevice(INDIMountName.mb_str(wxConvUTF8));
       if (connectServer()) {
-	 return false;
+	 return !ready; 
       }
       else {
 	 return true;
@@ -166,6 +166,7 @@ bool ScopeINDI::Disconnect()
 {
     // Disconnect from server
     if (disconnectServer()){
+        Scope::Disconnect();
 	return false;
     }
     else return true;
@@ -198,16 +199,20 @@ void ScopeINDI::serverConnected()
     }
     modal = false;
     // In case we not get all the required properties or connection to the device failed
-    if(! ready) {
-	Disconnect();
+    if( ready) {
+       Scope::Connect();
     }
-    Scope::Connect();
+    else {
+       Disconnect();
+    }
 }
 
 void ScopeINDI::serverDisconnected(int exit_code)
 {
-    // after disconnection we reset the connection status and the properties pointers
+    // in case the connection lost we must reset the client socket
+    Disconnect();
     Scope::Disconnect();
+    // after disconnection we reset the connection status and the properties pointers
     ClearStatus();
 }
 

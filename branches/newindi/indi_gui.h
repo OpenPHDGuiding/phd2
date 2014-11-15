@@ -187,7 +187,7 @@ protected:
    virtual void newText(ITextVectorProperty *tvp);
    virtual void newLight(ILightVectorProperty *lvp) {}
    virtual void serverConnected();
-   virtual void serverDisconnected(int exit_code){}
+   virtual void serverDisconnected(int exit_code);
    
 public:
    IndiGui();
