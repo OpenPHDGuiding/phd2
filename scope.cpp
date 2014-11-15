@@ -805,8 +805,8 @@ void Scope::SanityCheckCalibration(const Calibration_Params *pOld, const Calibra
             break;
         case CI_Rates:
             alertMsg = _("The RA and Dec rates vary by an unexpected amount");
-        default: 
-            alertMsg = _("");    
+        default:
+            break;
         }
         if (pConfig->Global.GetBoolean(CalibrationWarningKey(m_lastCalibrationIssue), true))        // User hasn't disabled this type of alert
         {

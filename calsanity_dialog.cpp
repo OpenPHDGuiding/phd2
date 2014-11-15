@@ -81,16 +81,17 @@ void CalSanityDialog::BuildMessage(wxStaticText* pText, Calibration_Issues etype
     case CI_Rates:
         msg = wxString::Format(_("The RA and Declination guiding rates differ by an unexpected amount.  For your declination of %0.0f degrees, "
             "the RA rate should be about %0.0f%% of the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  "
-            "This could mean the calibration is inaccurate, perhaps because of small or erratic star movement during the calibration."), 
+            "This could mean the calibration is inaccurate, perhaps because of small or erratic star movement during the calibration."),
             m_newParams.Declination * 180.0 / M_PI, cos(m_newParams.Declination) * 100.0, m_newParams.XRate / m_newParams.YRate * 100.0);
         break;
     default:
-        msg = _("");
+        break;
     }
     pText->SetLabel(msg);
     pText->Wrap(380);
 }
-CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Params newParams, 
+
+CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Params newParams,
     int lastRASteps, int lastDecSteps, Calibration_Issues issue, Scope *pScope) :
     wxDialog(pFrame, wxID_ANY, _("Calibration Sanity Check"), wxDefaultPosition, wxSize(800, 400), wxCAPTION | wxCLOSE_BOX)
 {
@@ -102,7 +103,7 @@ CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Param
     double imageScale = pFrame->GetCameraPixelScale();
     bool oldValid = (oldParams.TimeStamp.Length() > 0);
     m_newParams = newParams;
-   
+
     // Compute the orthogonality stuff
     double nonOrtho = fabs(fabs(norm_angle(m_newParams.XAngle - m_newParams.YAngle)) - M_PI / 2.) * 180.0 / M_PI;         // Delta from the nearest multiple of 90 degrees
     m_newAngleDelta = wxString::Format("%0.1f", nonOrtho);
@@ -113,7 +114,7 @@ CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Param
     }
     else
         oldAngleDelta = _("Unknown");
-    
+
     if (m_newParams.YRate != 0 && oldParams.YRate != 0)
         m_oldNewDifference = wxString::Format("%0.1f", fabs(1.0 - m_newParams.YRate / oldParams.YRate) * 100.0);
     else
@@ -194,7 +195,7 @@ CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Param
     pGridGrp->Add(pGrid);
     pVSizer->Add(pGridGrp, wxSizerFlags(0).Border(wxALL, 10));
 
-    // Checkboxes for being quiet 
+    // Checkboxes for being quiet
     m_pBlockThis = new wxCheckBox(this, wxID_ANY, _("Don't show calibration alerts of this type"));
     pVSizer->Add(m_pBlockThis, wxSizerFlags(0).Border(wxALL, 15));
 
@@ -220,7 +221,7 @@ CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Param
         pRecal,
         wxSizerFlags(0).Align(0).Border(wxRIGHT | wxLEFT | wxBOTTOM, 10));
     pButtonSizer->Add(
-        pRestore, 
+        pRestore,
         wxSizerFlags(0).Align(0).Border(wxRIGHT | wxLEFT | wxBOTTOM, 10));
 
      //position the buttons centered with no border
@@ -237,6 +238,7 @@ CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Param
 CalSanityDialog::~CalSanityDialog(void)
 {
 }
+
 // Handle the user choices for blocking/restoring future alerts
 void CalSanityDialog::SaveBlockingOptions()
 {
@@ -250,20 +252,22 @@ void CalSanityDialog::ShutDown()
     wxDialog::Close();
 }
 
-void CalSanityDialog::OnIgnore(wxCommandEvent &evt)
+void CalSanityDialog::OnIgnore(wxCommandEvent& evt)
 {
     ShutDown();
 }
+
 // Stop guiding if it's active, then clear the calibration - recal will be triggered with the next guide-start
-void CalSanityDialog::OnRecal(wxCommandEvent &evt)
+void CalSanityDialog::OnRecal(wxCommandEvent& evt)
 {
     if (pFrame->pGuider && pFrame->pGuider->IsCalibratingOrGuiding())
         pFrame->StopCapturing();
     pMount->ClearCalibration();
     ShutDown();
 }
+
 // Stop guiding if it's active, then restore the data from the previous calibration
-void CalSanityDialog::OnRestore(wxCommandEvent &evt)
+void CalSanityDialog::OnRestore(wxCommandEvent& evt)
 {
     if (pFrame->pGuider && pFrame->pGuider->IsCalibratingOrGuiding())
         pFrame->StopCapturing();
@@ -276,4 +280,3 @@ void CalSanityDialog::OnRestore(wxCommandEvent &evt)
     pFrame->LoadCalibration();
     ShutDown();
 }
-
