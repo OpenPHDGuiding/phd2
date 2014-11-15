@@ -129,6 +129,7 @@
 		A1C8EDFB19E9BA1600B8EACB /* runinbg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDF919E9BA1600B8EACB /* runinbg.cpp */; };
 		A1C8EDFE19F38C7500B8EACB /* comet_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDFC19F38C7500B8EACB /* comet_tool.cpp */; };
 		A1C8EE0119FA309200B8EACB /* fitsiowrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */; };
+		A1C8EE041A17275300B8EACB /* calsanity_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EE021A17275300B8EACB /* calsanity_dialog.cpp */; };
 		F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */; };
 		F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */; };
 /* End PBXBuildFile section */
@@ -386,6 +387,8 @@
 		A1C8EDFD19F38C7500B8EACB /* comet_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = comet_tool.h; sourceTree = "<group>"; };
 		A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitsiowrap.cpp; sourceTree = "<group>"; };
 		A1C8EE0019FA309200B8EACB /* fitsiowrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fitsiowrap.h; sourceTree = "<group>"; };
+		A1C8EE021A17275300B8EACB /* calsanity_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calsanity_dialog.cpp; sourceTree = "<group>"; };
+		A1C8EE031A17275300B8EACB /* calsanity_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calsanity_dialog.h; sourceTree = "<group>"; };
 		F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calstep_dialog.cpp; sourceTree = "<group>"; };
 		F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = optionsbutton.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -552,6 +555,8 @@
 				58B8CE1016E05EDB00F6E68E /* ascom_common.h */,
 				A117D7131844861000F5B01F /* calrestore_dialog.cpp */,
 				A117D7141844861000F5B01F /* calrestore_dialog.h */,
+				A1C8EE021A17275300B8EACB /* calsanity_dialog.cpp */,
+				A1C8EE031A17275300B8EACB /* calsanity_dialog.h */,
 				F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */,
 				A1A088DD1815CF1F004899C0 /* calstep_dialog.h */,
 				583291DB15DA042400D96A6D /* Cameras */,
@@ -879,6 +884,7 @@
 				A1C8EDFB19E9BA1600B8EACB /* runinbg.cpp in Sources */,
 				A1C8EDFE19F38C7500B8EACB /* comet_tool.cpp in Sources */,
 				A1C8EE0119FA309200B8EACB /* fitsiowrap.cpp in Sources */,
+				A1C8EE041A17275300B8EACB /* calsanity_dialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
