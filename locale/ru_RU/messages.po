@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-15 01:19-0500\n"
-"PO-Revision-Date: 2014-11-10 23:36+0300\n"
+"PO-Revision-Date: 2014-11-15 18:25+0300\n"
 "Last-Translator: Konstantin Menshkoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -144,7 +144,7 @@ msgstr "Размер пикселей гида:"
 
 #: calrestore_dialog.cpp:106
 msgid "Side of pier:"
-msgstr "Сторона колонны:"
+msgstr "Сторона от меридиана:"
 
 #: calrestore_dialog.cpp:108
 msgid "Declination "
@@ -169,6 +169,10 @@ msgid ""
 "step parameter until you see at least 8 steps in each direction.  The "
 "'calculator' feature in the 'Mount' configuration tab can help you with this."
 msgstr ""
+"Калибровка проведена с очень малым числом шагов, что может повлечь "
+"неточности гидирования. Подумайте, а не уменьшить ли величину шага до тех "
+"пор, пока в каждом направлении не будет сделано как минимум 8 шагов. Кнопка "
+"'Вычислить' в настройках монтировки поможет в этом."
 
 #: calsanity_dialog.cpp:72
 #, c-format
@@ -179,6 +183,11 @@ msgid ""
 "error was %s degrees. This could mean the calibration is inaccurate, perhaps "
 "because of small or erratic star movement during the calibration."
 msgstr ""
+"Истинность вычисленных во время калибровки углы прямого восхождения и "
+"склонения сомнительна. Обычно эти углы почти перпендикулярны с 'ошибкой "
+"ортогональности' не более 10 градусов. Для этой калибровки ошибка составляет "
+"%s градусов. Это значит, что калибровка неточна, возможно из-за малого или "
+"беспорядочного движения звезды во время калибровки."
 
 #: calsanity_dialog.cpp:77
 #, c-format
@@ -189,6 +198,9 @@ msgid ""
 "you to switch back and forth between configurations and still retain earlier "
 "settings and calibration results."
 msgstr ""
+"Данные последней калибровки отличаются от предыдущей на %s%%. Если это из-за "
+"изменения настроек, то, возможно, имеет смысл использовать новый профиль, "
+"что позволит переключаться между профилями, сохранив старые настройки."
 
 #: calsanity_dialog.cpp:82
 #, c-format
@@ -199,86 +211,87 @@ msgid ""
 "the calibration is inaccurate, perhaps because of small or erratic star "
 "movement during the calibration."
 msgstr ""
+"Скорость гидирования по склонению отличается от скорости гидирования по "
+"прямому восхождению. Для склонения %0.0f градусов скорость по RA должна быть "
+"примерно %0.0f%% от скорости по склонению, но сейчас она составляет %0.0f%%. "
+"Поэтому калибровка неточна, возможно, из-за малого или беспорядочного "
+"движения звежды во время калибровки. "
 
 #: calsanity_dialog.cpp:96
-#, fuzzy
 msgid "Calibration Sanity Check"
-msgstr "Шаги калибровки"
+msgstr "Проверка калибровки"
 
 #: calsanity_dialog.cpp:125
-#, fuzzy
 msgid "Explanation"
-msgstr "Склонение"
+msgstr "Объяснение"
 
 #: calsanity_dialog.cpp:138
 msgid "Details"
-msgstr ""
+msgstr "Подробности"
 
 #: calsanity_dialog.cpp:147
 msgid "Steps, RA:"
-msgstr ""
+msgstr "Шагов по RA:"
 
 #: calsanity_dialog.cpp:149
 msgid "Steps, Dec:"
-msgstr ""
+msgstr "Шагов по Dec:"
 
 #: calsanity_dialog.cpp:159
 msgid "Orthogonality error:"
-msgstr ""
+msgstr "Ошибка ортогональности:"
 
 #: calsanity_dialog.cpp:161
 msgid "Previous orthogonality error:"
-msgstr ""
+msgstr "Предыдущая ошибка ортогональности:"
 
 #: calsanity_dialog.cpp:173
-#, fuzzy
 msgid "This declination rate:"
-msgstr "Склонение"
+msgstr "Скорость по склонению:"
 
 #: calsanity_dialog.cpp:175
-#, fuzzy
 msgid "Previous declination rate:"
-msgstr "Калибровка склонения, градусы"
+msgstr "Предыдущая скорость по склонению"
 
 #: calsanity_dialog.cpp:184
-#, fuzzy
 msgid "Declination rate:"
-msgstr "Склонение"
+msgstr "Скорость по склонению:"
 
 #: calsanity_dialog.cpp:199
 msgid "Don't show calibration alerts of this type"
-msgstr ""
+msgstr "Не показывать предупреждения калибровки этого типа"
 
 #: calsanity_dialog.cpp:206
-#, fuzzy
 msgid "Accept calibration"
-msgstr "С калибровкой"
+msgstr "Принять калибровку"
 
 #: calsanity_dialog.cpp:207
 msgid "Accept the calibration as being valid and continue guiding"
-msgstr ""
+msgstr "Принять результаты калибровки и продолжить гидирование"
 
 #: calsanity_dialog.cpp:209
-#, fuzzy
 msgid "Discard calibration"
-msgstr "Сброс калибровки"
+msgstr "Отменить калибровку"
 
 #: calsanity_dialog.cpp:210
 msgid ""
 "Stop guiding and discard the most recent calibration.  Calibration will be "
 "re-done the next time you start guiding"
 msgstr ""
+"Остановить гидирование и сбросить данные последней калибровки. Калибровка "
+"будет проведена при запуске следующего гидирования"
 
 #: calsanity_dialog.cpp:212
-#, fuzzy
 msgid "Restore old calibration"
-msgstr "Сбросить данные калибровки"
+msgstr "Восстановить старую калибровку"
 
 #: calsanity_dialog.cpp:213
 msgid ""
 "Stop guiding, discard the most recent calibration, then load the previous "
 "(good) calibration"
 msgstr ""
+"Остановить гидирование, сбросить данные последней калибровки и загрузить "
+"предыдущие"
 
 #: calstep_dialog.cpp:60
 msgid "Calibration Step Calculator"
@@ -842,7 +855,7 @@ msgstr "Период в сек"
 
 #: cam_simulator.cpp:1228
 msgid "Reverse Dec pulse on West side of pier"
-msgstr "Переложить импульсы по Dec на западной стороне колонны"
+msgstr "Инвертировать импульсы по Dec к западу от меридиана"
 
 #: cam_simulator.cpp:1229
 msgid ""
@@ -856,7 +869,7 @@ msgstr ""
 
 #: cam_simulator.cpp:1233
 msgid "Pier Flip"
-msgstr ""
+msgstr "Переложить меридиан"
 
 #: cam_simulator.cpp:1240
 msgid "Session"
@@ -1419,7 +1432,7 @@ msgstr "Пожалуйста, откалибруйиесь, прежде чем 
 
 #: drift_tool.cpp:438
 msgid "Start Looping..."
-msgstr ""
+msgstr "Начало серии..."
 
 #: drift_tool.cpp:448
 msgid "Auto-selecting a star"
@@ -1887,7 +1900,7 @@ msgstr ""
 
 #: graph.cpp:222
 msgid "RA Osc: 0.00"
-msgstr ""
+msgstr "Колеб. RA: 0.0"
 
 #: graph.cpp:267
 msgid "Plot mode"
@@ -2024,6 +2037,8 @@ msgid ""
 "How many (fractional) pixels must the star move to trigger a guide pulse? "
 "Default = 0.15"
 msgstr ""
+"Количество пикселей, на которое должна сдвинуться звезда, чтобы вызвать "
+"гидирующий импульс. По умолчанию 0.15"
 
 #: guide_algorithm_hysteresis.cpp:281
 msgid "Agr"
@@ -2210,7 +2225,7 @@ msgstr "Ручная калибровка"
 
 #: manualcal_dialog.cpp:46
 msgid "RA rate (e.g. 0.005):"
-msgstr ""
+msgstr "Скорость по RA (напр. 0.005):"
 
 #: manualcal_dialog.cpp:52
 msgid "Dec rate (e.g. 0.005):"
@@ -2713,11 +2728,11 @@ msgstr ""
 
 #: myframe.cpp:780
 msgid "Loop Exposure"
-msgstr ""
+msgstr "Серийная съёмка"
 
 #: myframe.cpp:780
 msgid "Begin looping exposures for frame and focus"
-msgstr ""
+msgstr "Начать серийную съёмку"
 
 #: myframe.cpp:781
 msgid "Guide"
@@ -2731,7 +2746,7 @@ msgstr ""
 
 #: myframe.cpp:782
 msgid "Abort the current action"
-msgstr "Отмена текущего действия"
+msgstr "Отменить текущее действие"
 
 #: myframe.cpp:784
 msgid "Exposure duration"
@@ -2842,7 +2857,7 @@ msgstr "Сброс конфигурации"
 #: myframe.cpp:2023
 msgid ""
 "Reset all configuration to fresh install status -- Note: this closes PHD2"
-msgstr ""
+msgstr "Сбросить все настройки. Завершить PHD2."
 
 #: myframe.cpp:2025
 msgid "Reset \"Don't Ask Again\" messages"
@@ -3136,7 +3151,7 @@ msgstr "Вы уверены, что хотите провести принуди
 
 #: myframe_events.cpp:663
 msgid "Force Recalibration"
-msgstr "С калибровкой"
+msgstr "Принудительная калибровка"
 
 #: myframe_events.cpp:687 testguide.cpp:146
 msgid "Manual Guide"
@@ -3716,7 +3731,7 @@ msgstr ""
 
 #: scope.cpp:797
 msgid "Calibration is based on very few steps, so accuracy is questionable"
-msgstr ""
+msgstr " Сделано очень мало шагов калибровки, поэтому точность под вопросом  "
 
 #: scope.cpp:800
 msgid "Calibration computed RA/Dec axis angles that are questionable"
@@ -3727,15 +3742,15 @@ msgid ""
 "This calibration is substantially different from the previous one - have you "
 "changed configurations?"
 msgstr ""
+"Калибровка существенно отличается от предыдущей - были изменены настройки?"
 
 #: scope.cpp:806
 msgid "The RA and Dec rates vary by an unexpected amount"
 msgstr ""
 
 #: scope.cpp:813
-#, fuzzy
 msgid "Details..."
-msgstr "Настройки..."
+msgstr "Подробности..."
 
 #: scope.cpp:948
 msgid "RA Calibration Failed: star did not move enough"
@@ -3995,7 +4010,7 @@ msgstr "Склонение"
 
 #: statswindow.cpp:99
 msgid "Pier Side"
-msgstr "Сторона колонны"
+msgstr "Сторона от меридиана"
 
 #: statswindow.cpp:109
 msgid "Clear graph data and stats"
