@@ -1,11 +1,11 @@
-# 
+#
 #  fr\messages.po
 #  PHD Guiding
-# 
+#
 #  Created by Sylvain Girard
 #  Copyright (c) 2013 Sylvain Girard
 #  All rights reserved.
-# 
+#
 #  This source code is distributed under the following "BSD" license
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
 #     contributors may be used to endorse or promote products derived from
 #     this software without specific prior written permission.
-# 
+#
 #  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 #  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 #  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,22 +29,23 @@
 #  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 #  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #  POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+#
+#
+# , 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-15 01:19-0500\n"
-"PO-Revision-Date: 2014-07-21 21:00+0100\n"
-"Last-Translator: Sylvain Girard <sylvain.girard@zesly.net>\n"
-"Language-Team: Français\n"
+"PO-Revision-Date: 2014-11-15 12:48+0100\n"
+"Last-Translator: Patrick Chevalley <pch@ap-i.net> \n"
+"Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.6.4\n"
+"X-Generator: Lokalize 1.5\n"
 
 #: advanced_dialog.cpp:53
 msgid "Advanced setup"
@@ -168,6 +169,10 @@ msgid ""
 "step parameter until you see at least 8 steps in each direction.  The "
 "'calculator' feature in the 'Mount' configuration tab can help you with this."
 msgstr ""
+"La calibration a été réalisé avec un très petit nombre d'étapes, ce qui peut "
+"produire des résultats inexacts. Envisagez de réduire le pas de calibration "
+"jusqu'à ce que vous voyez au moins 8 étapes dans chaque direction. La "
+"fonction 'Calculer' de l'onglet 'Monture' peut vous aider."
 
 #: calsanity_dialog.cpp:72
 #, c-format
@@ -178,6 +183,11 @@ msgid ""
 "error was %s degrees. This could mean the calibration is inaccurate, perhaps "
 "because of small or erratic star movement during the calibration."
 msgstr ""
+"Les angles de AD et Dec calculés lors de la calibration sont discutables."
+"Normalement, ces angles sont presque perpendiculaires, avec une 'erreur "
+"d'orthogonalité' de moins de 10 degrés. Pour cette calibration, l'erreur est "
+"de %s degrés. Cela peut signifier que la calibration est inexacte, peut-être "
+"en raison de mouvement erratique de l'étoile lors de la calibration."
 
 #: calsanity_dialog.cpp:77
 #, c-format
@@ -188,6 +198,11 @@ msgid ""
 "you to switch back and forth between configurations and still retain earlier "
 "settings and calibration results."
 msgstr ""
+"Les résultats de la dernière calibration sont%s %% différent du précédent. Si "
+"cela est due à un changement de configuration de votre équipement, vous "
+"pouvez plutôt utiliser des profils différents. Cela permettra de passer d'une "
+"configuration à l'autre en conservant les paramètres et les résultats de "
+"calibration."
 
 #: calsanity_dialog.cpp:82
 #, c-format
@@ -198,86 +213,88 @@ msgid ""
 "the calibration is inaccurate, perhaps because of small or erratic star "
 "movement during the calibration."
 msgstr ""
+"Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. Pour "
+"la déclinaison de %0.0f degrés, la vitesse en AD devrait être d'environ %0.0f "
+"%% de la vitesse Dec. Mais votre vitesse en AD est de %0.0f %% de celui en "
+"Dec. Cela peut indiquer que la calibration est inexacte, peut-être en raison "
+"de mouvement erratique de l'étoile lors de la calibration."
 
 #: calsanity_dialog.cpp:96
-#, fuzzy
 msgid "Calibration Sanity Check"
-msgstr "Nb Pas de Calibration"
+msgstr "Contrôle de qualité de la calibration"
 
 #: calsanity_dialog.cpp:125
-#, fuzzy
 msgid "Explanation"
-msgstr "Déclinaison"
+msgstr "Explication"
 
 #: calsanity_dialog.cpp:138
 msgid "Details"
-msgstr ""
+msgstr "Détails"
 
 #: calsanity_dialog.cpp:147
 msgid "Steps, RA:"
-msgstr ""
+msgstr "Étapes, AD:"
 
 #: calsanity_dialog.cpp:149
 msgid "Steps, Dec:"
-msgstr ""
+msgstr "Étapes, Dec:"
 
 #: calsanity_dialog.cpp:159
 msgid "Orthogonality error:"
-msgstr ""
+msgstr "Erreur d'orthogonalité:"
 
 #: calsanity_dialog.cpp:161
 msgid "Previous orthogonality error:"
-msgstr ""
+msgstr "Erreur d'orthogonalité précédente:"
 
 #: calsanity_dialog.cpp:173
-#, fuzzy
 msgid "This declination rate:"
-msgstr "Déclinaison"
+msgstr "Vitesse en déclinaison:"
 
 #: calsanity_dialog.cpp:175
-#, fuzzy
 msgid "Previous declination rate:"
-msgstr "Déclinaison de la calibration, en degrés"
+msgstr "Vitesse en déclinaison précédente:"
 
 #: calsanity_dialog.cpp:184
-#, fuzzy
 msgid "Declination rate:"
-msgstr "Déclinaison"
+msgstr "Vitesse en déclinaison:"
 
 #: calsanity_dialog.cpp:199
 msgid "Don't show calibration alerts of this type"
-msgstr ""
+msgstr "Ne pas indiquer les erreurs de calibration de ce type"
 
 #: calsanity_dialog.cpp:206
-#, fuzzy
 msgid "Accept calibration"
-msgstr "Forcer Recalibration"
+msgstr "Accepter la calibration"
 
 #: calsanity_dialog.cpp:207
 msgid "Accept the calibration as being valid and continue guiding"
-msgstr ""
+msgstr "Accepter la calibration comme valide et commencer le guidage"
 
 #: calsanity_dialog.cpp:209
-#, fuzzy
 msgid "Discard calibration"
-msgstr "Forcer calibration"
+msgstr "Rejeter la calibration"
 
 #: calsanity_dialog.cpp:210
 msgid ""
 "Stop guiding and discard the most recent calibration.  Calibration will be "
 "re-done the next time you start guiding"
 msgstr ""
+"Arrêter le guidage et effacer la calibration la plus récente. La calibration "
+"sera"
+"refaite la prochaine fois que vous démarrez le guidage"
 
 #: calsanity_dialog.cpp:212
-#, fuzzy
 msgid "Restore old calibration"
-msgstr "Restaurer données de calibration"
+msgstr "Restaurer l'anciennes calibration"
 
 #: calsanity_dialog.cpp:213
 msgid ""
 "Stop guiding, discard the most recent calibration, then load the previous "
 "(good) calibration"
 msgstr ""
+"Arrêter le guidage et effacer la calibration la plus récente, puis recharger "
+"la dernière bonne calibration"
 
 #: calstep_dialog.cpp:60
 msgid "Calibration Step Calculator"
@@ -308,11 +325,13 @@ msgid "Guide speed, n.nn x sidereal"
 msgstr "Vitesse de guidage, n.nn x sidérale"
 
 #: calstep_dialog.cpp:120
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Guide speed, multiple of sidereal rate; if your mount's guide speed is "
 "50% sidereal rate, enter 0.5"
-msgstr "Vitesse de guidage, multiple de la vitesse sidérale ; "
+msgstr ""
+"Vitesse de guidage, multiple de la vitesse sidérale ; si la vitesse de "
+"guidage de votre monture est 50% de la vitesse sidérale, entrer 0.5"
 
 #: calstep_dialog.cpp:126
 msgid "Calibration steps"
@@ -324,6 +343,8 @@ msgid ""
 "Targeted number of steps in each direction. The default value (%d) works "
 "fine for most setups."
 msgstr ""
+"Nombre de pas désirés dans chaque direction. La valeur par défaut (%d) "
+"convient pour la plupart des configurations."
 
 #: calstep_dialog.cpp:133
 msgid "Calibration declination, degrees"
@@ -352,9 +373,8 @@ msgid ": "
 msgstr " : "
 
 #: calstep_dialog.cpp:224
-#, fuzzy
 msgid "Please enter a focal length of at least 50"
-msgstr "S'il vous plaît, entrez une longueur focale comprise entre 50 et 4000."
+msgstr "S'il vous plaît, entrez une longueur focale d'au moins 50"
 
 #: calstep_dialog.cpp:228
 msgid "Please enter a pixel size greater than zero."
@@ -461,9 +481,8 @@ msgstr "Exception levée pendant le polling de la caméra"
 #: cam_MeadeDSI.cpp:151 cam_QGuide.cpp:182 cam_QHY5IIbase.cpp:257
 #: cam_SBIG.cpp:385 cam_simulator.cpp:896 cam_SSAG.cpp:413
 #: cam_Starfish.cpp:184 cam_ZWO.cpp:415
-#, fuzzy
 msgid "Camera timeout during capure"
-msgstr "Erreur d'allocation mémoire pendant la capture"
+msgstr "Délai d'attente dépassé pendant la capture"
 
 #: cam_ascomlate.cpp:554
 msgid "Error reading image"
@@ -692,7 +711,7 @@ msgstr "Impossible de récupérer le statut des relais"
 
 #: cam_SBIG.cpp:485
 msgid "Timeout expired waiting for guide pulse to complete."
-msgstr ""
+msgstr "Délai d'attente dépassé pour l'impulsion de guidage"
 
 #: cam_sbigrotator.cpp:62
 msgid "Enter RA Angle (in degrees)"
@@ -889,7 +908,7 @@ msgstr "Seeing"
 
 #: cam_simulator.cpp:1246
 msgid "Comet"
-msgstr ""
+msgstr "Comète"
 
 #: cam_simulator.cpp:1248
 msgid "Star fading due to clouds"
@@ -907,11 +926,11 @@ msgstr ""
 
 #: cam_simulator.cpp:1266
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: cam_simulator.cpp:1272 darks_dialog.cpp:175 darks_dialog.cpp:310
 msgid "Cancel"
-msgstr ""
+msgstr "Abandon"
 
 #: cam_StarShootDSCI.cpp:145
 msgid "Problem sending register to StarShoot"
@@ -932,6 +951,7 @@ msgstr "Choix caméra"
 #: cam_SXV.cpp:206
 msgid "Connect failed: could not retrieve camera parameters."
 msgstr ""
+"Erreur de connexion:  impossible de récupérer les paramètres de la caméra."
 
 #: cam_VFW.cpp:82
 msgid "Select capture device"
@@ -950,9 +970,9 @@ msgid "Camera mode"
 msgstr "Mode caméra"
 
 #: cam_ZWO.cpp:90
-#, fuzzy, c-format
+#, c-format
 msgid "Could not load DLL %s"
-msgstr "Impossible de créer le profil %s"
+msgstr "Impossible de charger la DLL %s"
 
 #: cam_ZWO.cpp:93
 msgid ""
@@ -960,14 +980,17 @@ msgid ""
 "Redistributable Package (x86), available at http://www.microsoft.com/en-us/"
 "download/details.aspx?id=29"
 msgstr ""
+"Le pilote de la caméra ASI demande l'installation de 'Microsoft Visual C++ "
+"2008 Redistributable Package (x86)', disponible depuis: "
+"http://www.microsoft.com/en-us/download/details.aspx?id=29"
 
 #: cam_ZWO.cpp:172 cam_ZWO.cpp:202
 msgid "Failed to get camera properties for ZWO ASI Camera."
-msgstr ""
+msgstr "Impossible d'obtenir les propriétés de la caméra ZWO ASI."
 
 #: cam_ZWO.cpp:180
 msgid "Failed to open ZWO ASI Camera."
-msgstr ""
+msgstr "Impossible de connecter la caméra ZWO ASI."
 
 #: camera.cpp:213 camera.cpp:350 gear_dialog.cpp:314 gear_dialog.cpp:318
 #: gear_dialog.cpp:322 gear_dialog.cpp:326 gear_dialog.cpp:527 mount.cpp:98
@@ -1006,9 +1029,8 @@ msgstr ""
 "en arc-sec."
 
 #: camera.cpp:702
-#, fuzzy
 msgid "Pixel size"
-msgstr "Pixels"
+msgstr "Taille des pixels"
 
 #: camera.cpp:708
 msgid ""
@@ -1020,7 +1042,6 @@ msgstr ""
 "pour toutes les caméras."
 
 #: camera.cpp:709
-#, fuzzy
 msgid "Camera gain"
 msgstr "Gain caméra"
 
@@ -1030,7 +1051,7 @@ msgstr "LE Delai de lecture (ms) , Ajustez si vous ratez des images"
 
 #: camera.cpp:717
 msgid "Delay"
-msgstr ""
+msgstr "Délai"
 
 #: camera.cpp:732
 msgid "Port number for long-exposure control"
@@ -1041,69 +1062,68 @@ msgid ""
 "The camera will be disconnected if it fails to respond for this long. The "
 "default value, 5 seconds, should be appropriate for most cameras."
 msgstr ""
+"La caméra sera déconnecté si elle ne parvient pas à répondre dans ce délai. "
+"La valeur par défaut, 5 secondes, doit être adaptée à la plupart des caméras."
 
 #: camera.cpp:740
 msgid ""
 "Disconnect nonresponsive\n"
 "camera after (seconds)"
 msgstr ""
+"Déconnecter une caméra\n"
+"sans réponse après  (seconds)"
 
 #: comet_tool.cpp:79 myframe.cpp:432
 msgid "Comet Tracking"
-msgstr ""
+msgstr "Suivit d'une comète"
 
 #: comet_tool.cpp:80
 msgid "Comet Tracking - Training Active"
-msgstr ""
+msgstr "Suivit d'une comète - apprentissage actif"
 
 #: comet_tool.cpp:89
-#, fuzzy
 msgid "Enable"
-msgstr "Activer le Serveur"
+msgstr "Activer"
 
 #: comet_tool.cpp:90
 msgid "Toggle comet tracking on or off."
-msgstr ""
+msgstr "Activer ou désactiver le suivi de la comète."
 
 #: comet_tool.cpp:98 comet_tool.cpp:100
 msgid "Comet tracking rate"
-msgstr ""
+msgstr "Vitesse de suivit de la comète"
 
 #: comet_tool.cpp:102
-#, fuzzy
 msgid "Pixels/hr"
-msgstr "Pixels"
+msgstr "Pixels/heure"
 
 #: comet_tool.cpp:102
 msgid "Arcsec/hr"
-msgstr ""
+msgstr "Arcsec/heure"
 
 #: comet_tool.cpp:104
 msgid "Units"
-msgstr ""
+msgstr "Unités"
 
 #: comet_tool.cpp:106
 msgid "Tracking rate units"
-msgstr ""
+msgstr "Unités de vitesse de guidage"
 
 #: comet_tool.cpp:108
-#, fuzzy
 msgid "Camera (X/Y)"
-msgstr "Caméra"
+msgstr "Caméra (X/Y)"
 
 #: comet_tool.cpp:108
-#, fuzzy
 msgid "Mount (RA/Dec)"
-msgstr "AD/Dec"
+msgstr "Monture (AD/Dec)"
 
 #: comet_tool.cpp:110
 msgid "Axes"
-msgstr ""
+msgstr "Axes"
 
 #: comet_tool.cpp:112
-#, fuzzy
 msgid "Tracking rate axes"
-msgstr "Acquisition images de dark"
+msgstr "Apprentissage des vitesses de guidage"
 
 #: comet_tool.cpp:114 darks_dialog.cpp:171
 msgid "Start"
@@ -1111,25 +1131,23 @@ msgstr "Démarrer"
 
 #: comet_tool.cpp:115
 msgid "Start training the tracking rate."
-msgstr ""
+msgstr "Commencer l'apprentissage de la vitesse de guidage."
 
 #: comet_tool.cpp:116 darks_dialog.cpp:209 myframe.cpp:782
 msgid "Stop"
-msgstr "Stop"
+msgstr "Arrêter"
 
 #: comet_tool.cpp:117
-#, fuzzy
 msgid "Stop training"
-msgstr "Guidage Arrété"
+msgstr "Arrêt de la calibration"
 
 #: comet_tool.cpp:137
 msgid "Rates"
-msgstr ""
+msgstr "Vitesses"
 
 #: comet_tool.cpp:149
-#, fuzzy
 msgid "Rate Training"
-msgstr "Avertissement"
+msgstr "Apprentissage des vitesses"
 
 #: comet_tool.cpp:281
 #, c-format
@@ -1138,6 +1156,10 @@ msgid ""
 "Use the \"Adjust Lock Position\" controls to center the comet\n"
 "in the imaging camera and click Stop to complete training."
 msgstr ""
+"Apprentissage, temps écoulé %l s. \n"
+"Utilisez la fonction \"Ajuster la position de verrouillage\" pour centrer la "
+"comète \n"
+"dans la caméra et cliquez sur Arrêter pour terminer l'apprentissage."
 
 #: comet_tool.cpp:288
 msgid ""
@@ -1145,6 +1167,9 @@ msgid ""
 "Select a guide star and start Guiding.\n"
 "Then, click Start to begin training."
 msgstr ""
+"Centrez de la comète dans la caméra. \n"
+"Sélectionnez une étoile guide et commencez le guidage. \n"
+"Ensuite, cliquez sur Démarrer pour commencer l'apprentissage."
 
 #: comet_tool.cpp:305 graph.cpp:157 graph.cpp:184 graph.cpp:320
 #: guide_algorithm.cpp:48 scope.cpp:1278 statswindow.cpp:66 target.cpp:339
@@ -1158,11 +1183,11 @@ msgstr "Dec"
 
 #: comet_tool.cpp:311
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: comet_tool.cpp:312
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: confirm_dialog.cpp:40
 msgid "Don't ask again"
@@ -1352,9 +1377,8 @@ msgid "Slew"
 msgstr "Pointer"
 
 #: drift_tool.cpp:204
-#, fuzzy
 msgid "Click to slew to given coordinates."
-msgstr "Verrouiller la position coordonnée X"
+msgstr "Clic pour se déplacer aux coordonnées indiquées."
 
 #: drift_tool.cpp:207 nudge_lock.cpp:180 nudge_lock.cpp:189
 msgid "Save"
@@ -1365,6 +1389,8 @@ msgid ""
 "Click to save these coordinates as the default location for this axis "
 "adjustment."
 msgstr ""
+"Clic pour enregistrer ces coordonnées comme le défaut pour le réglage de cet "
+"axe."
 
 #: drift_tool.cpp:224 drift_tool.cpp:396
 msgid "Altitude adjustment notes"
@@ -1491,16 +1517,15 @@ msgstr ""
 
 #: eegg.cpp:49
 msgid "There is no calibration data available."
-msgstr "Il n'ya pas de données de calibration disponibles."
+msgstr "Il n'y a pas de données de calibration disponibles."
 
 #: eegg.cpp:65 myframe_events.cpp:687
 msgid "Please connect a mount first."
 msgstr "S'il vous plait, connectez une monture d'abord"
 
 #: eegg.cpp:108
-#, fuzzy
 msgid ", Mount"
-msgstr "Monture"
+msgstr ",Monture"
 
 #: eegg.cpp:112
 #, c-format
@@ -1508,11 +1533,12 @@ msgid ""
 "%s calibration will be cleared - calibration will be re-done when guiding is "
 "started."
 msgstr ""
+"la calibration %s sera effacée - la calibration sera refaite la prochaine "
+"fois que vous démarrez le guidage."
 
 #: eegg.cpp:113
-#, fuzzy
 msgid "Clear Calibration"
-msgstr "Calibration Manuelle"
+msgstr "Effacer la calibration"
 
 #: eegg.cpp:136
 msgid "Failed to flip RA calibration"
@@ -1736,66 +1762,56 @@ msgid "Camera Disconnected"
 msgstr "Caméra Déconnectée"
 
 #: gear_dialog.cpp:952
-#, fuzzy
 msgid "Connecting to Mount ..."
-msgstr "Connection à l'AO"
+msgstr "Connexion de la monture ..."
 
 #: gear_dialog.cpp:962
 msgid "Mount does not support the required PulseGuide interface"
-msgstr ""
+msgstr "La monture ne supporte pas l'interface PulseGuide qui est requis"
 
 #: gear_dialog.cpp:966
-#, fuzzy
 msgid "Mount Connected"
-msgstr " connectée"
+msgstr "Monture connectée"
 
 #: gear_dialog.cpp:979
-#, fuzzy
 msgid "Mount Connect Failed"
-msgstr "Echec Connexion AO"
+msgstr "Échec de connexion de la monture"
 
 #: gear_dialog.cpp:998
-#, fuzzy
 msgid "Connecting to Aux Mount ..."
-msgstr "Connection à l'AO"
+msgstr "Connexion à la monture auxiliaire ..."
 
 #: gear_dialog.cpp:1005
-#, fuzzy
 msgid "Aux Mount Connected"
-msgstr "AO non connecté"
+msgstr "Monture auxiliaire connectée"
 
 #: gear_dialog.cpp:1013
-#, fuzzy
 msgid "Aux Mount Connect Failed"
-msgstr "Echec Connexion Scope Aux"
+msgstr "Échec de connexion de la monture auxiliaire"
 
 #: gear_dialog.cpp:1034
-#, fuzzy
 msgid "Mount Disconnected"
-msgstr "Scope Déconnecté"
+msgstr "Monture déconnectée"
 
 #: gear_dialog.cpp:1065
-#, fuzzy
 msgid "Aux Mount Disconnected"
-msgstr "AO non connecté"
+msgstr "Monture auxiliaire déconnectée"
 
 #: gear_dialog.cpp:1123
 msgid "Connecting to AO ..."
 msgstr "Connection à l'AO"
 
 #: gear_dialog.cpp:1133
-#, fuzzy
 msgid "AO Connected"
-msgstr "Echec Connexion AO"
+msgstr "AO connecté"
 
 #: gear_dialog.cpp:1146
 msgid "AO Connect Failed"
-msgstr "Echec Connexion AO"
+msgstr "Échec de connexion de l'AO"
 
 #: gear_dialog.cpp:1173
-#, fuzzy
 msgid "AO Disconnected"
-msgstr " déconnectée"
+msgstr "AO déconnecté"
 
 #: gear_dialog.cpp:1381
 msgid "New Equipment Profile"
@@ -1896,6 +1912,9 @@ msgid ""
 "Clear graph data. You can also partially clear the graph by holding down the "
 "Ctrl key and clicking on the graph where you want the data to start."
 msgstr ""
+"Effacer les données du graphique. Vous pouvez également effacer partiellement "
+"le graphique en maintenant la touche Ctrl enfoncée et en cliquant sur le "
+"graphique où vous souhaitez que les données commencent."
 
 #: graph.cpp:134
 msgid "Trendlines"
@@ -2131,14 +2150,12 @@ msgid "Paused"
 msgstr "Pause"
 
 #: guider.cpp:1032
-#, fuzzy
 msgid "calibration failed (primary)"
-msgstr "Pas de Calibration (ms)"
+msgstr "Échec de la calibration (primaire)"
 
 #: guider.cpp:1065
-#, fuzzy
 msgid "calibration failed (secondary)"
-msgstr "Pas de Calibration (ms)"
+msgstr "Échec de la calibration (secondaire)"
 
 #: guider.cpp:1089
 msgid "Guiding..."
@@ -2266,14 +2283,12 @@ msgid "Dec rate (e.g. 0.005):"
 msgstr "Taux Dec (ex. : 0.005) :"
 
 #: manualcal_dialog.cpp:58
-#, fuzzy
 msgid "RA angle (degrees):"
-msgstr "Entrez l'Angle AD (en degrés)"
+msgstr "angle AD (degrés):"
 
 #: manualcal_dialog.cpp:64
-#, fuzzy
 msgid "Dec angle (degrees):"
-msgstr "Angle Dec (ex. : 2.1) :"
+msgstr "angle Dec (degrés) :"
 
 #: manualcal_dialog.cpp:70
 msgid "Declination (e.g. 2.1):"
@@ -2285,9 +2300,8 @@ msgid "%s Settings"
 msgstr "Réglages %s"
 
 #: mount.cpp:88
-#, fuzzy
 msgid "Clear calibration"
-msgstr "Forcer calibration"
+msgstr "Effacer la calibration"
 
 #: mount.cpp:90
 msgid "Enable Guide Output"
@@ -2367,13 +2381,12 @@ msgid "History"
 msgstr "Historique"
 
 #: myframe.cpp:274 myframe.cpp:343
-#, fuzzy
 msgid "Guide Stats"
-msgstr "Réglage Guideur"
+msgstr "Statistiques de guidage"
 
 #: myframe.cpp:284 myframe.cpp:345
 msgid "Star Profile"
-msgstr "Profil Etoile"
+msgstr "Profile étoile"
 
 #: myframe.cpp:289 myframe.cpp:346 target.cpp:51
 msgid "Target"
@@ -2392,9 +2405,8 @@ msgid " (log active)"
 msgstr " (log activé)"
 
 #: myframe.cpp:419
-#, fuzzy
 msgid "Save Image..."
-msgstr "Enregistrer Image"
+msgstr "Enregistrer l'image..."
 
 #: myframe.cpp:419
 msgid "Save current image"
@@ -2425,9 +2437,8 @@ msgid "Automatically select star"
 msgstr "Selectionne une étoile automatiquement"
 
 #: myframe.cpp:426
-#, fuzzy
 msgid "Restore Calibration Data..."
-msgstr "Restaurer Données de Calibration"
+msgstr "Restaurer les données de calibration..."
 
 #: myframe.cpp:426
 msgid "Restore calibration data from last successful calibration"
@@ -2435,9 +2446,8 @@ msgstr ""
 "Restaurer les données de calibration de la dernière calibration réussie"
 
 #: myframe.cpp:427
-#, fuzzy
 msgid "Enter Calibration Data..."
-msgstr "Entrer Données de Calibration"
+msgstr "Entrer les données de calibration..."
 
 #: myframe.cpp:427
 msgid "Manually calibrate"
@@ -2452,19 +2462,16 @@ msgid "Flip RA calibration vector"
 msgstr "Inverser le vecteur de calibration AD"
 
 #: myframe.cpp:429
-#, fuzzy
 msgid "Clear Calibration Data..."
-msgstr "Entrer Données de Calibration"
+msgstr "Effacer les données de calibration..."
 
 #: myframe.cpp:429
-#, fuzzy
 msgid "Clear calibration data currently in use"
-msgstr "Restaurer données de calibration"
+msgstr "Effacer les données de calibration actuellement utilisées"
 
 #: myframe.cpp:430
-#, fuzzy
 msgid "Calibration"
-msgstr "Pas de calibration"
+msgstr "Calibration"
 
 #: myframe.cpp:431 nudge_lock.cpp:117
 msgid "Adjust Lock Position"
@@ -2475,9 +2482,8 @@ msgid "Adjust the lock position"
 msgstr "Ajuster la position de vérouillage"
 
 #: myframe.cpp:432
-#, fuzzy
 msgid "Run the Comet Tracking tool"
-msgstr "Lancer l'outil d'Alignement de la Dérive (Drift Alignment)"
+msgstr "Lancer l'outil de suivit des comètes"
 
 #: myframe.cpp:433
 msgid "Run the Drift Alignment tool"
@@ -2540,14 +2546,12 @@ msgid "Enable / disable graph"
 msgstr "Activer / Désactiver le graphe"
 
 #: myframe.cpp:444
-#, fuzzy
 msgid "Display Stats"
-msgstr "Afficher la Cible"
+msgstr "Afficher les statistiques"
 
 #: myframe.cpp:444
-#, fuzzy
 msgid "Enable / disable guide stats"
-msgstr "Activer / Désactiver la cible"
+msgstr "Activer / Désactiver les statistiques de guidage"
 
 #: myframe.cpp:445
 msgid "Display AO Graph"
@@ -2610,14 +2614,12 @@ msgid "RA and Dec overlay"
 msgstr "Motif AD et Dec"
 
 #: myframe.cpp:455
-#, fuzzy
 msgid "Restore window positions"
-msgstr "Restaurer la position de vérouillage enregistrée"
+msgstr "Restaurer la position des fenêtres"
 
 #: myframe.cpp:455
-#, fuzzy
 msgid "Restore all windows to their default/docked positions"
-msgstr "Restaurer la position de vérouillage enregistrée"
+msgstr "Restaurer la position par défaut des fenêtres"
 
 #: myframe.cpp:458
 msgid "Show Bookmarks\tb"
@@ -2827,12 +2829,11 @@ msgstr "Fichier d'aide non trouvé : "
 
 #: myframe.cpp:982
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: myframe.cpp:1276
-#, fuzzy
 msgid "Waiting for devices..."
-msgstr "Attente du matériel avant d'arréter..."
+msgstr "Attente du matériel ..."
 
 #: myframe.cpp:1319
 msgid "Resumed"
@@ -3156,9 +3157,9 @@ msgid "Save FITS Image"
 msgstr "Enregistrer Image FITS"
 
 #: myframe_events.cpp:143
-#, fuzzy, c-format
+#, c-format
 msgid "The image could not be saved to %s"
-msgstr "L'image n'a pas pu être enregistrée dans "
+msgstr "L'image n'a pas pu être enregistrée dans %s"
 
 #: myframe_events.cpp:147
 #, c-format
@@ -3198,13 +3199,19 @@ msgid ""
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
 "build a Dark Library or Bad-pixel Map."
 msgstr ""
+"Pour de meilleurs résultats, utiliser une bibliothèque de darks ou une carte "
+"des pixels défectueux pour le guidage. Cela évitera que PHD guide sur un "
+"pixel chaud. Utilisez le menu Darks"
+" pour construire une bibliothèque des darks ou une carte des pixels "
+"défectueux."
 
 #: myframe_events.cpp:624 scope.cpp:548
-#, fuzzy
 msgid ""
 "Don't show\n"
 "this again"
-msgstr "Ne plus demander"
+msgstr ""
+"Ne plus \n"
+"montrer cela"
 
 #: myframe_events.cpp:662
 msgid "Are you sure you want force recalibration?"
@@ -3220,7 +3227,7 @@ msgstr "Guidage Manuel"
 
 #: nudge_lock.cpp:120
 msgid "Always on top"
-msgstr ""
+msgstr "Toujours devant"
 
 #: nudge_lock.cpp:122 testguide.cpp:151
 msgid "Up"
@@ -3303,6 +3310,8 @@ msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
 "option to start a different instance."
 msgstr ""
+"Une instance de PHD %ld est déjà exécutée. Utilisez l'option de ligne de "
+"commande -i INSTANCE_NUM  pour lancer une nouvelle instance."
 
 #: phdconfig.cpp:44
 msgid "My Equipment"
@@ -3806,19 +3815,16 @@ msgid "Settings restored to original values"
 msgstr "Paramètres restaurés aux valeurs d'origine"
 
 #: runinbg.cpp:110
-#, fuzzy
 msgid "The operation was canceled"
-msgstr "Opération annulée"
+msgstr "L'opération est annulée"
 
 #: scope.cpp:545
-#, fuzzy
 msgid "Max RA Duration setting"
-msgstr "Durée AD Max"
+msgstr "Réglage durée AD Max"
 
 #: scope.cpp:545
-#, fuzzy
 msgid "Max Dec Duration setting"
-msgstr "Durée Dec Max"
+msgstr "Réglage durée Dec Max"
 
 #: scope.cpp:546
 #, c-format
@@ -3826,29 +3832,35 @@ msgid ""
 "Your %s is preventing PHD from making adequate corrections to keep the guide "
 "star locked. Increasing the %s will allow PHD to make the needed corrections."
 msgstr ""
+"Votre %s empêche PHD de faire les corrections adéquates pour maintenir "
+"l'étoiles guide verrouillée. Augmenter %s permettra à PHD d'apporter les "
+"corrections nécessaires."
 
 #: scope.cpp:797
 msgid "Calibration is based on very few steps, so accuracy is questionable"
 msgstr ""
+"La calibration est basée sur très peu d'étapes, de sorte que la précision est "
+"douteuse"
 
 #: scope.cpp:800
 msgid "Calibration computed RA/Dec axis angles that are questionable"
-msgstr ""
+msgstr "Les angles AD/Dec calculés par la calibration sont incertains"
 
 #: scope.cpp:803
 msgid ""
 "This calibration is substantially different from the previous one - have you "
 "changed configurations?"
 msgstr ""
+"Cette calibration est sensiblement différente de la précédente - avez-vous"
+"changé de configuration?"
 
 #: scope.cpp:806
 msgid "The RA and Dec rates vary by an unexpected amount"
-msgstr ""
+msgstr "La vitesse AD et Dec varient d'une quantité inattendue"
 
 #: scope.cpp:813
-#, fuzzy
 msgid "Details..."
-msgstr "Réglages..."
+msgstr "Détails..."
 
 #: scope.cpp:948
 msgid "RA Calibration Failed: star did not move enough"
@@ -3860,9 +3872,9 @@ msgid "West step %3d"
 msgstr "Ouest pas %3d"
 
 #: scope.cpp:964 scope.cpp:1102
-#, fuzzy, c-format
+#, c-format
 msgid "angle=%.1f rate=%.4f"
-msgstr "angle=%.2f taux=%.4f"
+msgstr "angle=%.1f taux=%.4f"
 
 #: scope.cpp:1001
 #, c-format
@@ -3885,17 +3897,17 @@ msgstr "Echec Calibration DEC : l'étoile n'a pas assez bougé"
 #: scope.cpp:1074
 #, c-format
 msgid "North step %3d"
-msgstr "Nord pas %3d"
+msgstr "Incrément vers le nord %3d"
 
 #: scope.cpp:1137
 #, c-format
 msgid "South step %3d"
-msgstr "Sud pas %3d"
+msgstr "Incrément vers le sud %3d"
 
 #: scope.cpp:1160
 #, c-format
 msgid "Final Nudge South %3d"
-msgstr ""
+msgstr "Incrément final vers le sud %3d"
 
 #: scope.cpp:1182
 msgid "calibration complete"
@@ -3970,7 +3982,7 @@ msgstr ""
 
 #: scope.cpp:1303
 msgid "Assume Dec orthogonal to RA"
-msgstr ""
+msgstr "Supposer Dec orthogonale à AD"
 
 #: scope.cpp:1304
 msgid ""
@@ -3978,6 +3990,10 @@ msgid ""
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
 "effect when calibrating DEC."
 msgstr ""
+"Supposer que l'axe Dec est perpendiculaire à l'axe AD, indépendamment de la "
+"calibration. Empêche l'erreur périodique en AD d'affecter la calibration en "
+"Dec. Cette option prend"
+"effet lors de la calibration en Dec."
 
 #: scope.cpp:1307 scope.cpp:1398 scope.cpp:1432
 msgid "Off"
@@ -4020,17 +4036,16 @@ msgid "ASCOM driver problem during disconnect"
 msgstr "Problème de driver ASCOM à la déconnexion"
 
 #: scope_ascom.cpp:576
-#, fuzzy
 msgid "ASCOM driver does not support PulseGuide"
-msgstr "Echec du driver ASCOM sur la propriété IsPulseGuiding"
+msgstr "Le pilote ASCOM ne supporte pas PulseGuide"
 
 #: scope_ascom.cpp:718
 msgid "Guiding stopped: the scope started slewing."
-msgstr "Guidage arrèter : le scope a commencé à bouger."
+msgstr "Arrêter le guidage: le télescope a commencé à bouger."
 
 #: scope_ascom.cpp:764
 msgid "ASCOM driver failed checking Slewing"
-msgstr "Echec du driver ASCOM sur la propriété IsSlewing"
+msgstr "Echec du driver ASCOM sur la propriété Slewing"
 
 #: scope_ascom.cpp:781
 msgid "ASCOM driver failed calling AbortSlew"
@@ -4080,58 +4095,51 @@ msgstr "FWHM: %.2f"
 
 #: statswindow.cpp:63
 msgid "RMS"
-msgstr ""
+msgstr "RMS"
 
 #: statswindow.cpp:64
 msgid "Peak"
-msgstr ""
+msgstr "Pic"
 
 #: statswindow.cpp:68
 msgid " 99.99 (99.99'')"
-msgstr ""
+msgstr " 99.99 (99.99'')"
 
 #: statswindow.cpp:72
 msgid "Total"
-msgstr ""
+msgstr "Total"
 
 #: statswindow.cpp:89
-#, fuzzy
 msgid "RA Osc"
-msgstr "Osc AD: 0.00"
+msgstr "Osc AD"
 
 #: statswindow.cpp:91
 msgid "RA Limited"
-msgstr ""
+msgstr "limité AD"
 
 #: statswindow.cpp:93
-#, fuzzy
 msgid "Dec Limited"
-msgstr "Taux Dec :"
+msgstr "limité Dec"
 
 #: statswindow.cpp:95
-#, fuzzy
 msgid "Star lost"
 msgstr "étoile perdue"
 
 #: statswindow.cpp:97
-#, fuzzy
 msgid "Declination"
 msgstr "Déclinaison"
 
 #: statswindow.cpp:99
-#, fuzzy
 msgid "Pier Side"
-msgstr "Retournement au méridien"
+msgstr "Côté du pied"
 
 #: statswindow.cpp:109
-#, fuzzy
 msgid "Clear graph data and stats"
-msgstr "Effacer les données du graph"
+msgstr "Effacer les données du graph et stats"
 
 #: statswindow.cpp:114
-#, fuzzy
 msgid "Select the number of frames of history for stats and the graph"
-msgstr "Sélectionner le nombre d'images de l'historique a afficher sur l'axe X"
+msgstr "Sélectionner le nombre d'images de l'historique pour le graph et stats"
 
 #: stepguider.cpp:526
 #, c-format
@@ -4149,9 +4157,9 @@ msgid "Left Calibration: %3d"
 msgstr "Calibration Gauche : %3d"
 
 #: stepguider.cpp:581 stepguider.cpp:620
-#, fuzzy, c-format
+#, c-format
 msgid "angle=%.1f rate=%.2f"
-msgstr "angle=%.2f taux=%.2f"
+msgstr "angle=%.1f taux=%.2f"
 
 #: stepguider.cpp:594
 #, c-format
@@ -4240,7 +4248,6 @@ msgid ""
 msgstr ""
 
 #: stepguider_sxao.cpp:107
-#, fuzzy
 msgid "Warning"
 msgstr "Avertissement"
 
@@ -4262,19 +4269,19 @@ msgstr "Zoom arrière"
 
 #: target.cpp:82
 msgid "Reference Circle"
-msgstr ""
+msgstr "Cercle de référence"
 
 #: target.cpp:83
 msgid "Check to display a reference circle"
-msgstr ""
+msgstr "Cocher pour afficher le cercle de référence"
 
 #: target.cpp:91
 msgid "Radius:"
-msgstr ""
+msgstr "Rayon:"
 
 #: target.cpp:98
 msgid "Reference circle radius"
-msgstr ""
+msgstr "Rayon de cercle de référence"
 
 #: testguide.cpp:90
 msgid "Guide Pulse Duration (ms):"
@@ -4370,19 +4377,16 @@ msgid "Error reading data from FITS file "
 msgstr "Impossible de lire des données du fichier FITS"
 
 #: runinbg.h:79
-#, fuzzy
 msgid "Connecting to Mount..."
-msgstr "Connection à l'AO"
+msgstr "Connexion à la monture..."
 
 #: runinbg.h:85
-#, fuzzy
 msgid "Connecting to AO..."
-msgstr "Connection à l'AO"
+msgstr "Connexion à l'AO..."
 
 #: runinbg.h:91
-#, fuzzy
 msgid "Connecting to Camera..."
-msgstr "Connexion à la caméra"
+msgstr "Connexion à la caméra..."
 
 #~ msgid "&Configure..."
 #~ msgstr "&Configure..."
