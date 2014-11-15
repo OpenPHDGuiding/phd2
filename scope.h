@@ -184,7 +184,7 @@ public:
     bool IsStopGuidingWhenSlewingEnabled(void) const;
     void SetAssumeOrthogonal(bool val);
     bool IsAssumeOrthogonal(void) const;
-    bool GetLastCalibrationParams(Calibration_Params* params);
+    bool GetLastCalibrationParams(Calibration_Params *params);
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(Calibration_Issues etype, bool val);
 

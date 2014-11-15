@@ -158,9 +158,10 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
     rval = fcUsb_cmd_startExposure(CamNum);
     if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 2")); return true; }
 
-    CameraWatchdog watchdog(duration);
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
 
-    if (duration > 100) {
+    if (duration > 100)
+    {
         // wait until near end of exposure
         if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY) &&
             (WorkerThread::TerminateRequested() || StopExposure(CamNum)))

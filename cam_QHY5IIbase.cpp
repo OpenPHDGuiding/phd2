@@ -236,7 +236,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, boo
 
     Q5II_SingleExposure();
 
-    CameraWatchdog watchdog(duration);
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
 
     if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
         (WorkerThread::TerminateRequested() || StopExposure()))

@@ -48,7 +48,7 @@
 
 Camera_DSIClass::Camera_DSIClass()
 {
-    Name=_T("Meade DSI");
+    Name = _T("Meade DSI");
     FullSize = wxSize(768,505); // CURRENTLY ULTRA-RAW
     HasGainControl = true;
 }
@@ -59,7 +59,7 @@ bool Camera_DSIClass::Connect()
 //  MeadeCam = gcnew DSI_Class;
 //  retval = MeadeCam->DSI_Connect();
     //if (!retval)
-#ifdef MEADE_DSI
+
     MeadeCam = new DsiDevice();
     unsigned int NDevices = MeadeCam->EnumDsiDevices();
     unsigned int DevNum = 1;
@@ -104,38 +104,45 @@ bool Camera_DSIClass::Connect()
         MeadeCam->SetFastReadoutSpeed(true);
         Connected = true;
     }
-#endif
+
     return retval;
 }
 bool Camera_DSIClass::Disconnect()
 {
-#ifdef MEADE_DSI
     MeadeCam->Close();
     Connected = false;
     delete MeadeCam;
-#endif
+
     return false;
 }
 
 bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
-#ifdef MEADE_DSI
     MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
     MeadeCam->SetExposureTime(duration);
-//  pFrame->SetStatusText(wxString::Format("%u %d",(unsigned int) (GuideCameraGain * 63 / 100),duration));
-    if (img.Init(MeadeCam->GetWidth(),MeadeCam->GetHeight())) {
-        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
+
+    if (img.Init(MeadeCam->GetWidth(),MeadeCam->GetHeight()))
+    {
+        wxMessageBox(_("Memory allocation error during capture"), _("Error"), wxOK | wxICON_ERROR);
         Disconnect();
         return true;
     }
-    bool retval = MeadeCam->GetImage(img.ImageData,true);
-    if (!retval) return true;
-    CameraWatchdog watchdog(duration);
-    if (duration > 100) {
+
+    bool retval = MeadeCam->GetImage(img.ImageData, true);
+    if (!retval)
+        return true;
+
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
+
+    if (duration > 100)
+    {
         if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY)) // wait until near end of exposure
             return true;
     }
-    while (!MeadeCam->ImageReady) {  // wait for image to finish and d/l
+
+    // wait for image to finish and d/l
+    while (!MeadeCam->ImageReady)
+    {
         wxMilliSleep(20);
         if (WorkerThread::InterruptRequested())
             return true;
@@ -148,15 +155,16 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     }
 
     if (recon) SubtractDark(img);
-    if (recon) {
+
+    if (recon)
+    {
         if (MeadeCam->IsColor)
             QuickLRecon(img);
         if (MeadeCam->IsDsiII)
-            SquarePixels(img,6.5,6.25);
+            SquarePixels(img, 6.5, 6.25);
         else if (!MeadeCam->IsDsiIII)
-            SquarePixels(img,9.6,7.5);
+            SquarePixels(img, 9.6, 7.5);
     }
-#endif
 
     return false;
 }
@@ -166,4 +174,4 @@ bool Camera_DSIClass::HasNonGuiCapture(void)
     return true;
 }
 
-#endif
+#endif // MEADE_DSI

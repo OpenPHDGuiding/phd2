@@ -509,7 +509,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         return true;
     }
 
-    CameraWatchdog watchdog(duration);
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
 
     if (duration > 100)
     {
@@ -586,7 +586,7 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs =NULL;
 
-    MountWatchdog watchdog(duration);
+    MountWatchdog watchdog(duration, 5000);
 
     if (FAILED(hr = ASCOMDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
                                     &dispParms,&vRes,&excep,NULL)))

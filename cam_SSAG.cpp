@@ -385,7 +385,7 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         return true;
     }
 
-    CameraWatchdog watchdog(duration);
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
 
     _SSAG_ThreadedExposure(duration, NULL);
 

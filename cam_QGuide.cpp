@@ -157,7 +157,7 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
     ThreadedExposure(duration, NULL);
     //qglogfile->AddLine("Exposure programmed"); //qglogfile->Write();
 
-    CameraWatchdog watchdog(duration, 6000);
+    CameraWatchdog watchdog(duration, GetTimeoutMs() + 1000); // typically 6 second timeout
 
     if (duration > 100)
     {

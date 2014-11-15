@@ -53,6 +53,7 @@ class CameraConfigDialogPane : public ConfigDialogPane
     GuideCamera *m_pCamera;
     wxCheckBox *m_pUseSubframes;
     wxSpinCtrl *m_pCameraGain;
+    wxSpinCtrl *m_timeoutVal;
     wxChoice   *m_pPortNum;
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
@@ -74,6 +75,8 @@ protected:
 
     virtual int GetCameraGain(void);
     virtual bool SetCameraGain(int cameraGain);
+    int GetTimeoutMs(void) const;
+    void SetTimeoutMs(int timeoutMs);
     virtual double GetCameraPixelSize(void);
     virtual bool SetCameraPixelSize(double pixel_size);
 
@@ -81,6 +84,7 @@ protected:
 
 protected:
     bool            m_hasGuideOutput;
+    int             m_timeoutMs;
 
 public:
     int             GuideCameraGain;
@@ -137,5 +141,10 @@ public:
     GuideCamera(void);
     virtual ~GuideCamera(void);
 };
+
+inline int GuideCamera::GetTimeoutMs(void) const
+{
+    return m_timeoutMs;
+}
 
 #endif /* CAMERA_H_INCLUDED */
