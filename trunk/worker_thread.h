@@ -200,7 +200,7 @@ class Watchdog : public wxStopWatch
 {
     long m_timeout_ms;
 public:
-    Watchdog(unsigned int timeout_ms, unsigned int grace_period_ms = 5000) : m_timeout_ms(timeout_ms + grace_period_ms)
+    Watchdog(unsigned int timeout_ms, unsigned int grace_period_ms) : m_timeout_ms(timeout_ms + grace_period_ms)
         { }
     bool Expired(void) const { return Time() > m_timeout_ms; }
 };

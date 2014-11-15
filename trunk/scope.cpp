@@ -95,7 +95,6 @@ Scope::Scope(void)
 
     val = pConfig->Profile.GetBoolean(prefix + "/AssumeOrthogonal", false);
     SetAssumeOrthogonal(val);
-    // GetLastCalibrationParams(&m_prevCalibrationParams);
 }
 
 Scope::~Scope(void)

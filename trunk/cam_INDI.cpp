@@ -281,7 +281,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     unsigned long loopwait = duration > 100 ? 10 : 1;
 
-    CameraWatchdog watchdog(duration);
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
 
     while (modal) {
         wxMilliSleep(loopwait);

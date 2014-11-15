@@ -218,7 +218,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
         return true;
     }
 
-    CameraWatchdog watchdog(duration);
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
 
     while (ArtemisCameraState(Cam_Handle) > CAMERA_IDLE)
     {

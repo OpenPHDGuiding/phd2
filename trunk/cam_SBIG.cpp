@@ -342,15 +342,17 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     // Start exposure
 
     short err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
-    if (err != CE_NO_ERROR) {
+    if (err != CE_NO_ERROR)
+    {
         pFrame->Alert(_("Cannot start exposure"));
         Disconnect();
         return true;
     }
 
-    CameraWatchdog watchdog(duration);
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
 
-    if (duration > 100) {
+    if (duration > 100)
+    {
         // wait until near end of exposure
         if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY) &&
             (WorkerThread::TerminateRequested() || StopExposure(&eep)))
@@ -464,7 +466,7 @@ bool Camera_SBIGClass::ST4PulseGuideScope(int direction, int duration)
     QueryCommandStatusParams qcsp;
     qcsp.command = CC_ACTIVATE_RELAY;
 
-    MountWatchdog watchdog(duration);
+    MountWatchdog watchdog(duration, 5000);
 
     while (true) {  // wait for pulse to finish
         wxMilliSleep(10);

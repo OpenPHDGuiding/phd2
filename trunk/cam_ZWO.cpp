@@ -390,7 +390,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
 
     int poll = wxMin(duration, 100);
 
-    CameraWatchdog watchdog(duration, duration + 15000); // total timeout is 2 * duration + 15s
+    CameraWatchdog watchdog(duration, duration + GetTimeoutMs() + 10000); // total timeout is 2 * duration + 15s (typically)
 
     if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
         (WorkerThread::TerminateRequested() || StopCapture()))
