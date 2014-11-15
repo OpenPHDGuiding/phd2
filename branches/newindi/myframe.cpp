@@ -294,6 +294,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pNudgeLock = NULL;
     pCometTool = NULL;
     pRefineDefMap = NULL;
+    pCalSanityCheckDlg = NULL;
     m_starFindMode = Star::FIND_CENTROID;
 
     tools_menu->Check(MENU_LOG,false);
@@ -381,6 +382,8 @@ MyFrame::~MyFrame()
 
     if (pRefineDefMap)
         pRefineDefMap->Destroy();
+    if (pCalSanityCheckDlg)
+        pCalSanityCheckDlg->Destroy();
 
     m_mgr.UnInit();
 }
@@ -1290,6 +1293,11 @@ void MyFrame::SetPaused(PauseType pause)
     else if (pause == PAUSE_NONE && isPaused)
     {
         pGuider->SetPaused(PAUSE_NONE);
+        if (pMount)
+        {
+            Debug.AddLine("un-pause: clearing mount guide algorithm history");
+            pMount->ClearHistory();
+        }
         if (m_continueCapturing && !m_exposurePending)
             ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
         SetStatusText(_("Resumed"));
@@ -1390,6 +1398,11 @@ bool MyFrame::Dither(double amount, bool raOnly)
             // lock pos was rejected (too close to the edge), try again
             Debug.AddLine("dither lock pos rejected, try again");
         }
+
+        // Reset guide algorithm history.
+        // For algorithms like Resist Switch, the dither invalidates the state, so start again from scratch.
+        Debug.AddLine("dither: clearing mount guide algorithm history");
+        pMount->ClearHistory();
 
         SetStatusText(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
         GuideLog.NotifyGuidingDithered(pGuider, dRa, dDec);

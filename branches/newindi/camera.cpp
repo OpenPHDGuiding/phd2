@@ -39,6 +39,7 @@
 #include <wx/stdpaths.h>
 
 static const int DefaultGuideCameraGain = 95;
+static const int DefaultGuideCameraTimeoutMs = 5000;
 static const bool DefaultUseSubframes = false;
 static const double DefaultPixelSize = 0.0;
 static const int DefaultReadDelay = 150;
@@ -190,10 +191,9 @@ GuideCamera::GuideCamera(void)
     CurrentDarkFrame = NULL;
     CurrentDefectMap = NULL;
 
-    int cameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
-    GuideCameraGain = cameraGain;
-    double pixelSize = pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
-    PixelSize = pixelSize;
+    GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
+    m_timeoutMs = pConfig->Profile.GetInt("/camera/TimeoutMs", DefaultGuideCameraTimeoutMs);
+    PixelSize = pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
 }
 
 GuideCamera::~GuideCamera(void)
@@ -607,6 +607,15 @@ bool GuideCamera::SetCameraGain(int cameraGain)
     return bError;
 }
 
+void GuideCamera::SetTimeoutMs(int ms)
+{
+    static const int MIN_TIMEOUT_MS = 5000;
+
+    m_timeoutMs = wxMax(ms, MIN_TIMEOUT_MS);
+
+    pConfig->Profile.SetInt("/camera/TimeoutMs", m_timeoutMs);
+}
+
 double GuideCamera::GetCameraPixelSize(void)
 {
     return PixelSize;
@@ -707,6 +716,7 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
         m_pDelay = NewSpinnerInt(pParent, width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
         AddTableEntryPair(pParent, pCamControls, _("Delay"), m_pDelay);
     }
+
     // Port number
     if (m_pCamera->HasPortNum)
     {
@@ -723,7 +733,14 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
         AddTableEntryPair(pParent, pCamControls, _("LE Port"), m_pPortNum);
     }
 
-    this->Add(pCamControls);
+    // Watchdog timeout
+    {
+        int width = StringWidth(_T("0000")) + 30;
+        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, _("The camera will be disconnected if it fails to respond for this long. The default value, 5 seconds, should be appropriate for most cameras."));
+        AddTableEntryPair(pParent, pCamControls, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal);
+    }
+
+    Add(pCamControls);
 }
 
 CameraConfigDialogPane::~CameraConfigDialogPane(void)
@@ -743,6 +760,8 @@ void CameraConfigDialogPane::LoadValues(void)
     {
         m_pCameraGain->SetValue(m_pCamera->GetCameraGain());
     }
+
+    m_timeoutVal->SetValue(m_pCamera->GetTimeoutMs() / 1000);
 
     if (m_pCamera->HasDelayParam)
     {
@@ -833,6 +852,8 @@ void CameraConfigDialogPane::UnloadValues(void)
     {
         m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
     }
+
+    m_pCamera->SetTimeoutMs(m_timeoutVal->GetValue() * 1000);
 
     if (m_pCamera->HasDelayParam)
     {

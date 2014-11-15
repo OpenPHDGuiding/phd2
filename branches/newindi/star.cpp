@@ -266,7 +266,8 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         SNR = 0.0;
     }
 
-    Debug.AddLine(wxString::Format("Star::Find returns %d, X=%.2f, Y=%.2f", bReturn, newX, newY));
+    Debug.AddLine(wxString::Format("Star::Find returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f",
+        bReturn, Result, newX, newY, Mass, SNR));
 
     return bReturn;
 }

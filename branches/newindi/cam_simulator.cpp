@@ -841,7 +841,7 @@ static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int ga
 
 bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
-    CameraWatchdog watchdog(duration);
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
 
 #if SIMMODE == 1
 
