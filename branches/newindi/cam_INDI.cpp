@@ -471,7 +471,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
 	  //printf("Exposing for %d(ms)\n", duration);
 	  
 	  // set the exposure time, this immediately start the exposure
-	  expose_prop->np->value = duration/1000;
+	  expose_prop->np->value = (double)duration/1000;
 	  sendNewNumber(expose_prop);
 	  
 	  modal = true;  // will be reset when the image blob is received

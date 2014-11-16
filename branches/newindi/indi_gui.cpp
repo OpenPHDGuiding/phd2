@@ -131,12 +131,13 @@ void IndiGui::ConnectServer(wxString INDIhost, long INDIport)
 void IndiGui::serverConnected()
 {
     setBLOBMode(B_NEVER, "", NULL);
+    ready = true;
 }
 
 void IndiGui::serverDisconnected(int exit_code)
 {
    // connection to server is lost, destroy ourself 
-   Destroy();
+   if (ready) Destroy();
 }
 
 void IndiGui::OnNewDeviceFromThread(wxThreadEvent& event)
@@ -703,24 +704,28 @@ void IndiGui::OnQuit(wxCloseEvent& WXUNUSED(event))
 
 IndiGui::~IndiGui()
 {
+    ready = false;   
     disconnectServer();
     ptrHash::iterator itdev;
+    if (!devlist.empty()) {
     for( itdev = devlist.begin(); itdev !=devlist.end(); ++itdev )
     {
 	IndiDev *indiDev = (IndiDev *) itdev->second;
-	
-	ptrHash::iterator itprop;
-	for( itprop =indiDev->properties.begin(); itprop !=indiDev->properties.end(); ++itprop )
-	{
-	    IndiProp *indiProp = (IndiProp *) itprop->second;
-	    indiProp->ctrl.clear();
-	    indiProp->entry.clear();
-	    delete indiProp;
+	if (indiDev) {
+	   ptrHash::iterator itprop;
+	   for( itprop =indiDev->properties.begin(); itprop !=indiDev->properties.end(); ++itprop )
+	    {
+	       IndiProp *indiProp = (IndiProp *) itprop->second;
+	       indiProp->ctrl.clear();
+	       indiProp->entry.clear();
+	       delete indiProp;
+	    }
+	    indiDev->properties.clear();
+	    indiDev->groups.clear();
+	    delete indiDev;
 	}
-	indiDev->properties.clear();
-	indiDev->groups.clear();
-	delete indiDev;
     }
-     
-}
+    } 
+}     
+
 

@@ -170,6 +170,7 @@ private:
    wxTextCtrl *textbuffer;
    
    ptrHash	devlist;
+   bool		ready;
    
    DECLARE_EVENT_TABLE()
    
