@@ -164,8 +164,7 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
         still_going = OCP_Exposing();
     }
     if (img.Init(RawX,RawY)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
     rawptr = OCP_ProcessedBuffer();  // Copy raw data in

@@ -130,8 +130,7 @@ bool Camera_VFWClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
     //gNumFrames = 0;
     if (img.Init(FullSize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 

@@ -893,8 +893,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
             return true;
         if (watchdog.Expired())
         {
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }

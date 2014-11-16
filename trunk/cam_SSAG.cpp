@@ -380,8 +380,7 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     if (img.Init(FullSize))
     {
-        pFrame->Alert(_T("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
@@ -410,8 +409,7 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         }
         if (watchdog.Expired())
         {
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }
