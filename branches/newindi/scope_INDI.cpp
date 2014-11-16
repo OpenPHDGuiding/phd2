@@ -60,7 +60,8 @@ ScopeINDI::ScopeINDI()
 
 ScopeINDI::~ScopeINDI() 
 {
-    disconnectServer();
+   ready = false;
+   Disconnect();
 }
 
 void ScopeINDI::ClearStatus()
@@ -166,8 +167,11 @@ bool ScopeINDI::Disconnect()
 {
     // Disconnect from server
     if (disconnectServer()){
-        Scope::Disconnect();
-	return false;
+       if (ready) {
+	  ready = false;
+	  Scope::Disconnect();
+       }
+       return false;
     }
     else return true;
 }
@@ -210,8 +214,11 @@ void ScopeINDI::serverConnected()
 void ScopeINDI::serverDisconnected(int exit_code)
 {
     // in case the connection lost we must reset the client socket
-    Disconnect();
-    Scope::Disconnect();
+   Disconnect();
+   if (ready) {
+       ready = false;
+       Scope::Disconnect();
+    }
     // after disconnection we reset the connection status and the properties pointers
     ClearStatus();
 }
