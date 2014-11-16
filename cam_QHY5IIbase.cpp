@@ -219,8 +219,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, boo
 
     if (img.Init(FullSize))
     {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
@@ -254,8 +253,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, boo
         }
         if (watchdog.Expired())
         {
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }

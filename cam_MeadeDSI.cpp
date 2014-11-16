@@ -123,8 +123,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
     if (img.Init(MeadeCam->GetWidth(),MeadeCam->GetHeight()))
     {
-        wxMessageBox(_("Memory allocation error during capture"), _("Error"), wxOK | wxICON_ERROR);
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
@@ -148,8 +147,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
             return true;
         if (watchdog.Expired())
         {
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }

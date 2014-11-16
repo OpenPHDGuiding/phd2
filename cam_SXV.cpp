@@ -342,8 +342,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     if (CameraModel == 39)  // the CMOS guider
         output_xsize = output_xsize - 16;  // crop off 16 from one side
     if (img.Init(output_xsize,output_ysize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 

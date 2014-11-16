@@ -71,15 +71,6 @@ public:
 
 class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 {
-protected:
-
-    virtual int GetCameraGain(void);
-    virtual bool SetCameraGain(int cameraGain);
-    int GetTimeoutMs(void) const;
-    void SetTimeoutMs(int timeoutMs);
-    virtual double GetCameraPixelSize(void);
-    virtual bool SetCameraPixelSize(double pixel_size);
-
     friend class CameraConfigDialogPane;
 
 protected:
@@ -103,13 +94,16 @@ public:
     bool            UseSubframes;
     double          PixelSize;
 
-    static wxArrayString List(void);
-    static GuideCamera *Factory(wxString choice);
-
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
     usImage         *CurrentDarkFrame;
     ExposureImgMap  Darks; // map exposure => dark frame
     DefectMap       *CurrentDefectMap;
+
+    static wxArrayString List(void);
+    static GuideCamera *Factory(const wxString& choice);
+
+    GuideCamera(void);
+    virtual ~GuideCamera(void);
 
     virtual bool HasNonGuiCapture(void);
 
@@ -138,8 +132,21 @@ public:
 
     void            SubtractDark(usImage& img);
 
-    GuideCamera(void);
-    virtual ~GuideCamera(void);
+protected:
+
+    virtual int GetCameraGain(void);
+    virtual bool SetCameraGain(int cameraGain);
+    int GetTimeoutMs(void) const;
+    void SetTimeoutMs(int timeoutMs);
+    virtual double GetCameraPixelSize(void);
+    virtual bool SetCameraPixelSize(double pixel_size);
+
+    enum CaptureFailType {
+        CAPT_FAIL_MEMORY,
+        CAPT_FAIL_TIMEOUT,
+    };
+    void DisconnectWithAlert(CaptureFailType type);
+    void DisconnectWithAlert(const wxString& msg);
 };
 
 inline int GuideCamera::GetTimeoutMs(void) const

@@ -148,8 +148,7 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
         wxMilliSleep(10);
 */
     if (img.Init(FullSize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
@@ -179,8 +178,7 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
         }
         if (watchdog.Expired())
         {
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }

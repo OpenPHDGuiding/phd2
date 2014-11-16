@@ -139,8 +139,7 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
 
     // init memory
     if (img.Init(FullSize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
@@ -181,8 +180,7 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
         }
         if (watchdog.Expired())
         {
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }
