@@ -56,7 +56,7 @@ static const int CAL_ALERT_MINSTEPS = 4;
 static const double CAL_ALERT_ORTHOGONALITY_TOLERANCE = 10.;                // Degrees
 static const double CAL_ALERT_DECRATE_DIFFERENCE = 0.20;                    // Ratio tolerance
 static const double CAL_ALERT_AXISRATES_TOLERANCE = 0.20;                   // Ratio tolerance
-static const bool SANITY_CHECKING_ACTIVE = false;                           // Disable calibration sanity checks for now
+static const bool SANITY_CHECKING_ACTIVE = true;                            // Control calibration sanity checking
 
 static int LIMIT_REACHED_WARN_COUNT = 5;
 static int MAX_NUDGES = 3;
@@ -816,6 +816,8 @@ void Scope::SanityCheckCalibration(const Calibration_Params *pOld, const Calibra
             Debug.AddLine(wxString::Format("Alert detected in scope calibration but not shown to user - suppressed message was: %s", alertMsg));
         Debug.AddLine(wxString::Format("Calibration alert details: %s", detailInfo));
     }
+    else
+        Debug.AddLine("Calibration passed sanity checks...");
 }
 
 void Scope::ClearCalibration(void)
