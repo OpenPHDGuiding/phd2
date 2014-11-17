@@ -58,6 +58,7 @@ Camera_INDIClass::Camera_INDIClass()
     INDICameraName = pConfig->Profile.GetString("/indi/INDIcam", _T("INDI Camera"));
     INDICameraCCD = pConfig->Profile.GetLong("/indi/INDIcam_ccd", 0);
     INDICameraPort = pConfig->Profile.GetString("/indi/INDIcam_port",_T(""));
+    Name = INDICameraName;
     SetCCDdevice();
     PropertyDialogType = PROPDLG_ANY;
     FullSize = wxSize(640,480);
@@ -352,6 +353,7 @@ void Camera_INDIClass::CameraSetup()
 	pConfig->Profile.SetString("/indi/INDIcam", INDICameraName);
 	pConfig->Profile.SetLong("/indi/INDIcam_ccd",INDICameraCCD);
 	pConfig->Profile.SetString("/indi/INDIcam_port",INDICameraPort);
+	Name = INDICameraName;
 	SetCCDdevice();
     }
     indiDlg->Disconnect();

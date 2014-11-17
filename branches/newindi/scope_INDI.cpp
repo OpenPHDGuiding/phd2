@@ -45,17 +45,15 @@
   #include <libnova/julian_day.h>
 #endif  
 
-const double dSiderealSecondPerSec = 0.9973;
-
 ScopeINDI::ScopeINDI() 
 {
-    m_Name = wxString("INDI Mount");
     ClearStatus();
     // load the values from the current profile
     INDIhost = pConfig->Profile.GetString("/indi/INDIhost", _T("localhost"));
     INDIport = pConfig->Profile.GetLong("/indi/INDIport", 7624);
     INDIMountName = pConfig->Profile.GetString("/indi/INDImount", _T("INDI Mount"));
     INDIMountPort = pConfig->Profile.GetString("/indi/INDImount_port",_T(""));
+    m_Name = INDIMountName;
 }
 
 ScopeINDI::~ScopeINDI() 
@@ -131,6 +129,7 @@ void ScopeINDI::SetupDialog()
 	pConfig->Profile.SetLong("/indi/INDIport", INDIport);
 	pConfig->Profile.SetString("/indi/INDImount", INDIMountName);
 	pConfig->Profile.SetString("/indi/INDImount_port",INDIMountPort);
+	m_Name = INDIMountName;
     }
     indiDlg->Disconnect();
     indiDlg->Destroy();
@@ -431,6 +430,7 @@ double ScopeINDI::GetGuidingDeclination(void)
 
 bool   ScopeINDI::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 {
+    const double dSiderealSecondPerSec = 0.9973;
     bool ok;
     double gra,gdec;
     ok = true;
