@@ -1,42 +1,41 @@
-# 
-#  fr\messages.po
-#  PHD Guiding
-# 
-#  Created by Sylvain Girard
-#  Copyright (c) 2013 Sylvain Girard
-#  All rights reserved.
-# 
-#  This source code is distributed under the following "BSD" license
-#  Redistribution and use in source and binary forms, with or without
-#  modification, are permitted provided that the following conditions are met:
-#    Redistributions of source code must retain the above copyright notice,
-#     this list of conditions and the following disclaimer.
-#    Redistributions in binary form must reproduce the above copyright notice,
-#     this list of conditions and the following disclaimer in the
-#     documentation and/or other materials provided with the distribution.
-#    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
-#     contributors may be used to endorse or promote products derived from
-#     this software without specific prior written permission.
-# 
-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-#  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-#  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-#  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-#  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-#  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-#  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-#  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-#  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-#  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-#  POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+# fr\messages.po
+# PHD Guiding
+#
+# Created by Sylvain Girard
+# Copyright (c) 2013 Sylvain Girard
+# All rights reserved.
+#
+# This source code is distributed under the following "BSD" license
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+# Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the
+# documentation and/or other materials provided with the distribution.
+# Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
+# contributors may be used to endorse or promote products derived from
+# this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: PHD2 2.2.2a\n"
+"Project-Id-Version: PHD2 2.3.1n\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-17 01:22-0500\n"
-"PO-Revision-Date: 2014-05-21 13:23+0800\n"
+"POT-Creation-Date: 2014-11-17 17:40-0500\n"
+"PO-Revision-Date: 2014-11-04 15:50+0800\n"
 "Last-Translator: Linkage <Linkage@163.com>\n"
 "Language-Team: Linkage <Linkage@163.com>\n"
 "Language: zh_CN\n"
@@ -207,7 +206,7 @@ msgstr "校准步数"
 #: calsanity_dialog.cpp:125
 #, fuzzy
 msgid "Explanation"
-msgstr "赤纬算法"
+msgstr "*赤纬*"
 
 #: calsanity_dialog.cpp:138
 msgid "Details"
@@ -237,12 +236,12 @@ msgstr "*Guide in declination as well?"
 #: calsanity_dialog.cpp:175
 #, fuzzy
 msgid "Previous declination rate:"
-msgstr "校准偏角, 度"
+msgstr "校准星赤纬, 度"
 
 #: calsanity_dialog.cpp:184
 #, fuzzy
 msgid "Declination rate:"
-msgstr "赤纬算法"
+msgstr "*赤纬*"
 
 #: calsanity_dialog.cpp:199
 msgid "Don't show calibration alerts of this type"
@@ -308,11 +307,11 @@ msgid "Guide speed, n.nn x sidereal"
 msgstr "导星速率, n.nn x 恒星时"
 
 #: calstep_dialog.cpp:120
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Guide speed, multiple of sidereal rate; if your mount's guide speed is "
 "50% sidereal rate, enter 0.5"
-msgstr "导星速率，支持多种速率；如果"
+msgstr ""
 
 #: calstep_dialog.cpp:126
 msgid "Calibration steps"
@@ -327,7 +326,7 @@ msgstr ""
 
 #: calstep_dialog.cpp:133
 msgid "Calibration declination, degrees"
-msgstr "校准偏角, 度"
+msgstr "校准星赤纬, 度"
 
 #: calstep_dialog.cpp:133
 msgid "Approximate declination where you will do calibration"
@@ -352,9 +351,8 @@ msgid ": "
 msgstr ":"
 
 #: calstep_dialog.cpp:224
-#, fuzzy
 msgid "Please enter a focal length of at least 50"
-msgstr "焦距的有效范围从50～4000."
+msgstr "请输入至少50毫米的焦距。"
 
 #: calstep_dialog.cpp:228
 msgid "Please enter a pixel size greater than zero."
@@ -575,9 +573,8 @@ msgid "No serial ports found"
 msgstr "串口未找到"
 
 #: cam_LESerialWebcam.cpp:316
-#, fuzzy
 msgid "Port pins"
-msgstr "热燥"
+msgstr "端口引脚"
 
 #: cam_LESerialWebcam.cpp:352
 msgid "Inverted logic"
@@ -588,14 +585,12 @@ msgid "Use Amp"
 msgstr ""
 
 #: cam_LESerialWebcam.cpp:365
-#, fuzzy
 msgid "Defaults"
 msgstr "PHD缺省值"
 
 #: cam_LESerialWebcam.cpp:369
-#, fuzzy
 msgid "Webcam settings"
-msgstr "图形设置"
+msgstr "摄像头设置"
 
 #: cam_MeadeDSI.cpp:84
 msgid "Which DSI camera?"
@@ -611,12 +606,11 @@ msgid "Camera DLL missing entry %s"
 msgstr ""
 
 #: cam_QHY5IIbase.cpp:114
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot load camera dll %s.dll"
-msgstr "不能打开相机"
+msgstr "不能装载相机动态库 %s.dll"
 
 #: cam_QHY5IIbase.cpp:142
-#, fuzzy
 msgid "No camera"
 msgstr "无相机"
 
@@ -742,7 +736,7 @@ msgstr "热燥"
 #: cam_simulator.cpp:1175
 #, c-format
 msgid "% Simulated noise"
-msgstr "模拟噪点百分比"
+msgstr ""
 
 #: cam_simulator.cpp:1176
 msgid "Noise"
@@ -861,7 +855,7 @@ msgstr "视宁度"
 
 #: cam_simulator.cpp:1245
 msgid "Comet"
-msgstr ""
+msgstr "彗星"
 
 #: cam_simulator.cpp:1247
 msgid "Star fading due to clouds"
@@ -921,9 +915,9 @@ msgid "Camera mode"
 msgstr "相机模式"
 
 #: cam_ZWO.cpp:90
-#, fuzzy, c-format
+#, c-format
 msgid "Could not load DLL %s"
-msgstr "不能创建配置文件 %s"
+msgstr "不能装载动态库 %s"
 
 #: cam_ZWO.cpp:93
 msgid ""
@@ -954,7 +948,6 @@ msgid "Select your camera"
 msgstr "选择你的相机"
 
 #: camera.cpp:665 darks_dialog.cpp:62
-#, fuzzy
 msgid "Exposure time"
 msgstr "曝光时间"
 
@@ -973,12 +966,10 @@ msgid ""
 msgstr "导星相机的像素尺寸(微米)。结合导星相机焦距，显示导星误差为 角秒。"
 
 #: camera.cpp:702
-#, fuzzy
 msgid "Pixel size"
-msgstr "像素"
+msgstr "像素尺寸"
 
 #: camera.cpp:708
-#, fuzzy
 msgid ""
 "Camera gain boost ? Default = 95 % , lower if you experience noise or wish "
 "to guide on a very bright star. Not available on all cameras."
@@ -987,14 +978,12 @@ msgstr ""
 "并不是所有相机都支持。"
 
 #: camera.cpp:709
-#, fuzzy
 msgid "Camera gain"
 msgstr "相机增益"
 
 #: camera.cpp:716
-#, fuzzy
 msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
-msgstr "如果丢帧，可以调节该参数"
+msgstr "如果丢帧，可以调节该参数。"
 
 #: camera.cpp:717
 msgid "Delay"
@@ -1023,7 +1012,7 @@ msgstr "拍摄时分配内存错误"
 #: camera.cpp:1025
 #, fuzzy
 msgid "Camera timeout during capture"
-msgstr "拍摄时分配内存错误"
+msgstr "相机反应超时"
 
 #: camera.cpp:1033
 msgid ""
@@ -1033,16 +1022,15 @@ msgstr ""
 
 #: comet_tool.cpp:79 myframe.cpp:432
 msgid "Comet Tracking"
-msgstr ""
+msgstr "彗星跟踪"
 
 #: comet_tool.cpp:80
 msgid "Comet Tracking - Training Active"
-msgstr ""
+msgstr "彗星跟踪 - 检测中"
 
 #: comet_tool.cpp:89
-#, fuzzy
 msgid "Enable"
-msgstr "开启服务器模式"
+msgstr "启用"
 
 #: comet_tool.cpp:90
 msgid "Toggle comet tracking on or off."
@@ -1050,48 +1038,43 @@ msgstr ""
 
 #: comet_tool.cpp:98 comet_tool.cpp:100
 msgid "Comet tracking rate"
-msgstr ""
+msgstr "彗星跟踪速率"
 
 #: comet_tool.cpp:102
-#, fuzzy
 msgid "Pixels/hr"
-msgstr "像素"
+msgstr "像素/小时"
 
 #: comet_tool.cpp:102
 msgid "Arcsec/hr"
-msgstr ""
+msgstr "角秒/小时"
 
 #: comet_tool.cpp:104
 msgid "Units"
-msgstr ""
+msgstr "单位"
 
 #: comet_tool.cpp:106
 msgid "Tracking rate units"
 msgstr ""
 
 #: comet_tool.cpp:108
-#, fuzzy
 msgid "Camera (X/Y)"
-msgstr "相机"
+msgstr "相机 (X/Y)"
 
 #: comet_tool.cpp:108
-#, fuzzy
 msgid "Mount (RA/Dec)"
-msgstr "赤经赤纬线"
+msgstr "赤道仪(赤经/赤纬)"
 
 #: comet_tool.cpp:110
 msgid "Axes"
 msgstr ""
 
 #: comet_tool.cpp:112
-#, fuzzy
 msgid "Tracking rate axes"
-msgstr "读取暗场文件"
+msgstr "轴跟踪速率"
 
 #: comet_tool.cpp:114 darks_dialog.cpp:171
-#, fuzzy
 msgid "Start"
-msgstr "星点"
+msgstr "开始"
 
 #: comet_tool.cpp:115
 msgid "Start training the tracking rate."
@@ -1102,13 +1085,12 @@ msgid "Stop"
 msgstr "停止"
 
 #: comet_tool.cpp:117
-#, fuzzy
 msgid "Stop training"
-msgstr "导星已停止"
+msgstr "停止训练"
 
 #: comet_tool.cpp:137
 msgid "Rates"
-msgstr ""
+msgstr "跟踪速率"
 
 #: comet_tool.cpp:149
 msgid "Rate Training"
@@ -1128,6 +1110,9 @@ msgid ""
 "Select a guide star and start Guiding.\n"
 "Then, click Start to begin training."
 msgstr ""
+"1.移动彗星至图像中心。\n"
+"2.选择一个被导星并开始导星。\n"
+"3.点击开始按钮进行检测。"
 
 #: comet_tool.cpp:305 graph.cpp:157 graph.cpp:184 graph.cpp:320
 #: guide_algorithm.cpp:48 scope.cpp:1280 statswindow.cpp:66 target.cpp:339
@@ -1157,7 +1142,7 @@ msgstr "确认"
 
 #: darks_dialog.cpp:99
 msgid "Build Dark Library"
-msgstr ""
+msgstr "创建暗场库"
 
 #: darks_dialog.cpp:104
 msgid "Acquire Master Dark Frames for Bad Pixel Map Calculation"
@@ -1168,9 +1153,8 @@ msgid "Dark Library"
 msgstr ""
 
 #: darks_dialog.cpp:119
-#, fuzzy
 msgid "Min Exposure Time"
-msgstr "连续曝光"
+msgstr "最小曝光时间"
 
 #: darks_dialog.cpp:121
 msgid ""
@@ -1179,9 +1163,8 @@ msgid ""
 msgstr ""
 
 #: darks_dialog.cpp:126
-#, fuzzy
 msgid "Max Exposure Time"
-msgstr "连续曝光"
+msgstr "最大曝光时间"
 
 #: darks_dialog.cpp:128
 msgid ""
@@ -1198,18 +1181,18 @@ msgid ""
 "Frames to take for each \n"
 " exposure time"
 msgstr ""
+"每种曝光时间\n"
+"    拍摄帧数"
 
 #: darks_dialog.cpp:138
-#, fuzzy
 msgid "Dark Frame Settings"
-msgstr "相机设置"
+msgstr "暗场设置"
 
 #: darks_dialog.cpp:140
 msgid "Exposure time for building defect map"
 msgstr ""
 
 #: darks_dialog.cpp:141
-#, fuzzy
 msgid "Exposure Time"
 msgstr "曝光时间"
 
@@ -1218,27 +1201,25 @@ msgid "Number of exposures for building defect map"
 msgstr ""
 
 #: darks_dialog.cpp:143
-#, fuzzy
 msgid "Number of Exposures"
-msgstr "热燥数量"
+msgstr "拍摄数量"
 
 #: darks_dialog.cpp:150
 msgid "Notes: "
-msgstr ""
+msgstr "备注:"
 
 #: darks_dialog.cpp:153
 msgid ""
 "Free-form note, included in FITs header for each dark frame; max length=65"
-msgstr ""
+msgstr "可以自由备注，将记录在每个暗场文件的FITs头当中，最大长度65字符。"
 
 #: darks_dialog.cpp:169
-#, fuzzy
 msgid "Reset all parameters to application defaults"
-msgstr "重置所有的参数为程序缺省设置"
+msgstr "还原所有参数的缺省设置"
 
 #: darks_dialog.cpp:193
 msgid "Set your parameters, click 'Start' to begin"
-msgstr ""
+msgstr "设置你的参数，点击\"开始\"按钮。"
 
 #: darks_dialog.cpp:217
 msgid "Cover guide scope"
@@ -1256,11 +1237,11 @@ msgstr ""
 
 #: darks_dialog.cpp:256 darks_dialog.cpp:281
 msgid "Operation cancelled"
-msgstr ""
+msgstr "操作已取消"
 
 #: darks_dialog.cpp:261
 msgid "dark library built"
-msgstr ""
+msgstr "暗场库已创建"
 
 #: darks_dialog.cpp:269
 msgid "Taking darks to compute defect map: "
@@ -1275,26 +1256,25 @@ msgid "Master dark data files built"
 msgstr ""
 
 #: darks_dialog.cpp:318
-#, fuzzy
 msgid ""
 "Uncover guide scope\n"
 "\n"
-msgstr "打开导星镜镜头盖"
+msgstr ""
+"打开导星镜镜头盖\n"
+"\n"
 
 #: darks_dialog.cpp:319
-#, fuzzy, c-format
+#, c-format
 msgid "Operation complete: %s"
-msgstr "校准成功"
+msgstr "操作完成: %s"
 
 #: darks_dialog.cpp:331
-#, fuzzy
 msgid "Cancelling..."
-msgstr "取消"
+msgstr "正在取消"
 
 #: darks_dialog.cpp:387 darks_dialog.cpp:408
-#, fuzzy
 msgid "Taking dark frame"
-msgstr "读取暗场文件"
+msgstr "获取暗场文件"
 
 #: darks_dialog.cpp:390
 #, c-format
@@ -1302,9 +1282,8 @@ msgid "%.1f s dark FAILED"
 msgstr ""
 
 #: darks_dialog.cpp:419
-#, fuzzy
 msgid "Dark frames complete"
-msgstr "校准成功"
+msgstr "暗场成功"
 
 #: drift_tool.cpp:133 myframe.cpp:433
 msgid "Drift Align"
@@ -1312,7 +1291,7 @@ msgstr "漂移校准"
 
 #: drift_tool.cpp:166
 msgid "Scope Pointing"
-msgstr ""
+msgstr "望远镜指向"
 
 #: drift_tool.cpp:175
 msgid "Meridian Offset (deg)"
@@ -1320,7 +1299,7 @@ msgstr "中天偏移量 (度)"
 
 #: drift_tool.cpp:179
 msgid "Declination (deg)"
-msgstr ""
+msgstr "*赤纬(度)"
 
 #: drift_tool.cpp:183
 msgid "Current"
@@ -1335,9 +1314,8 @@ msgid "Slew"
 msgstr "指向"
 
 #: drift_tool.cpp:204
-#, fuzzy
 msgid "Click to slew to given coordinates."
-msgstr "*Lock position X coordinate"
+msgstr "Goto至给定的坐标"
 
 #: drift_tool.cpp:207 nudge_lock.cpp:180 nudge_lock.cpp:189
 msgid "Save"
@@ -1480,9 +1458,8 @@ msgid "Please connect a mount first."
 msgstr "请先连接赤道仪。"
 
 #: eegg.cpp:108
-#, fuzzy
 msgid ", Mount"
-msgstr "赤道仪"
+msgstr ", 赤道仪"
 
 #: eegg.cpp:112
 #, c-format
@@ -1492,9 +1469,8 @@ msgid ""
 msgstr ""
 
 #: eegg.cpp:113
-#, fuzzy
 msgid "Clear Calibration"
-msgstr "手工校准"
+msgstr "强制校准"
 
 #: eegg.cpp:136
 msgid "Failed to flip RA calibration"
@@ -1514,7 +1490,6 @@ msgid "Equipment profile"
 msgstr "设备配置文件"
 
 #: gear_dialog.cpp:188
-#, fuzzy
 msgid ""
 "Select the Equipment Profile you would like to use. PHD stores all of your "
 "settings and equipment selections in an Equipment Profile. You can create "
@@ -1532,9 +1507,8 @@ msgid "Create a new profile, optionally copying from another profile"
 msgstr "新建一个设备配置文件，可以选择从其他设备配置文件复制。"
 
 #: gear_dialog.cpp:195
-#, fuzzy
 msgid "New using Wizard..."
-msgstr "指向中 ..."
+msgstr "使用向导新建配置文件..."
 
 #: gear_dialog.cpp:195
 msgid "Run the first-light wizard to create a new profile"
@@ -1615,9 +1589,8 @@ msgid "Mount Setup"
 msgstr "赤道仪设置"
 
 #: gear_dialog.cpp:251 gear_dialog.cpp:253
-#, fuzzy
 msgid "Aux Mount"
-msgstr "赤道仪"
+msgstr "Aux赤道仪"
 
 #: gear_dialog.cpp:261
 #, c-format
@@ -1630,9 +1603,8 @@ msgid ""
 msgstr ""
 
 #: gear_dialog.cpp:268
-#, fuzzy
 msgid "Aux Mount Setup"
-msgstr "赤道仪设置"
+msgstr "Aux赤道仪设置"
 
 #: gear_dialog.cpp:281
 msgid "AO Setup"
@@ -1678,14 +1650,12 @@ msgid "Disconnect from mount"
 msgstr "断开赤道仪"
 
 #: gear_dialog.cpp:546 gear_dialog.cpp:567
-#, fuzzy
 msgid "Connect to aux mount"
-msgstr "连接赤道仪"
+msgstr "连接Aux赤道仪"
 
 #: gear_dialog.cpp:559
-#, fuzzy
 msgid "Disconnect from aux mount"
-msgstr "断开赤道仪"
+msgstr "断开Aux赤道仪"
 
 #: gear_dialog.cpp:584 gear_dialog.cpp:605
 msgid "Connect to AO"
@@ -1712,66 +1682,56 @@ msgid "Camera Disconnected"
 msgstr "相机已连接"
 
 #: gear_dialog.cpp:952
-#, fuzzy
 msgid "Connecting to Mount ..."
-msgstr "正在连接AO ..."
+msgstr "正在连接赤道仪 ..."
 
 #: gear_dialog.cpp:962
 msgid "Mount does not support the required PulseGuide interface"
 msgstr ""
 
 #: gear_dialog.cpp:966
-#, fuzzy
 msgid "Mount Connected"
-msgstr " 已连接"
+msgstr "赤道仪已连接"
 
 #: gear_dialog.cpp:979
-#, fuzzy
 msgid "Mount Connect Failed"
-msgstr "AO连接失败"
+msgstr "赤道仪连接失败"
 
 #: gear_dialog.cpp:998
-#, fuzzy
 msgid "Connecting to Aux Mount ..."
-msgstr "正在连接AO ..."
+msgstr "正在连接Aux赤道仪 ..."
 
 #: gear_dialog.cpp:1005
-#, fuzzy
 msgid "Aux Mount Connected"
-msgstr "AO未连接"
+msgstr "Aux赤道仪已连接"
 
 #: gear_dialog.cpp:1013
-#, fuzzy
 msgid "Aux Mount Connect Failed"
-msgstr "赤道仪连接错误"
+msgstr "Aux赤道仪连接错误"
 
 #: gear_dialog.cpp:1034
-#, fuzzy
 msgid "Mount Disconnected"
 msgstr "赤道仪已断开"
 
 #: gear_dialog.cpp:1065
-#, fuzzy
 msgid "Aux Mount Disconnected"
-msgstr "AO未连接"
+msgstr "Aux赤道仪已断开"
 
 #: gear_dialog.cpp:1123
 msgid "Connecting to AO ..."
 msgstr "正在连接AO ..."
 
 #: gear_dialog.cpp:1133
-#, fuzzy
 msgid "AO Connected"
-msgstr "AO连接失败"
+msgstr "AO已连接"
 
 #: gear_dialog.cpp:1146
 msgid "AO Connect Failed"
 msgstr "AO连接失败"
 
 #: gear_dialog.cpp:1173
-#, fuzzy
 msgid "AO Disconnected"
-msgstr " 已断开"
+msgstr "AO已断开"
 
 #: gear_dialog.cpp:1381
 msgid "New Equipment Profile"
@@ -1802,9 +1762,9 @@ msgstr ""
 "置文件创建你的新配置文件。"
 
 #: gear_dialog.cpp:1426
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
-msgstr "不能创建配置文件 %s，从 %s"
+msgstr "不能创建配置文件 %s，已经存在同名配置文件。"
 
 #: gear_dialog.cpp:1435
 #, c-format
@@ -2102,14 +2062,12 @@ msgid "Paused"
 msgstr "暂停"
 
 #: guider.cpp:1032
-#, fuzzy
 msgid "calibration failed (primary)"
-msgstr "校准时长 (毫秒)"
+msgstr "校准失败(第一次)"
 
 #: guider.cpp:1065
-#, fuzzy
 msgid "calibration failed (secondary)"
-msgstr "校准时长 (毫秒)"
+msgstr "校准失败(第二次)"
 
 #: guider.cpp:1089
 msgid "Guiding..."
@@ -2232,14 +2190,12 @@ msgid "Dec rate (e.g. 0.005):"
 msgstr "赤纬速率(例如：0.005)："
 
 #: manualcal_dialog.cpp:58
-#, fuzzy
 msgid "RA angle (degrees):"
-msgstr "输入赤经角度( 度 )"
+msgstr "赤经角(度)"
 
 #: manualcal_dialog.cpp:64
-#, fuzzy
 msgid "Dec angle (degrees):"
-msgstr "赤纬角度(例如： 2.1)："
+msgstr "赤纬角(度)："
 
 #: manualcal_dialog.cpp:70
 msgid "Declination (e.g. 2.1):"
@@ -2251,7 +2207,6 @@ msgid "%s Settings"
 msgstr "%s 设置"
 
 #: mount.cpp:88
-#, fuzzy
 msgid "Clear calibration"
 msgstr "强制校准"
 
@@ -2301,14 +2256,14 @@ msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
 msgstr "校: %s(%.f,%.f)->%s(%.f,%.f)"
 
 #: mount.cpp:623
-#, fuzzy, c-format
+#, c-format
 msgid "%s %5.2f px %3d ms"
-msgstr "%s %5.2f 像素 %3.0f 毫秒"
+msgstr ""
 
 #: mount.cpp:635
-#, fuzzy, c-format
+#, c-format
 msgid "%s%*s%s %.2f px %d ms"
-msgstr "%s%*s%s %.2f 像素 %.0f 毫秒"
+msgstr ""
 
 #: mount.cpp:637 scope.cpp:1309 scope.cpp:1400 scope.cpp:1434
 #: testguide.cpp:152
@@ -2333,9 +2288,8 @@ msgid "History"
 msgstr "历史"
 
 #: myframe.cpp:274 myframe.cpp:343
-#, fuzzy
 msgid "Guide Stats"
-msgstr "导星设置"
+msgstr "被导星"
 
 #: myframe.cpp:284 myframe.cpp:345
 msgid "Star Profile"
@@ -2358,9 +2312,8 @@ msgid " (log active)"
 msgstr " (日志记录中)"
 
 #: myframe.cpp:419
-#, fuzzy
 msgid "Save Image..."
-msgstr "保存图像"
+msgstr "保存图像..."
 
 #: myframe.cpp:419
 msgid "Save current image"
@@ -2391,18 +2344,16 @@ msgid "Automatically select star"
 msgstr "自动选择被导星"
 
 #: myframe.cpp:426
-#, fuzzy
 msgid "Restore Calibration Data..."
-msgstr "恢复校准数据"
+msgstr "恢复校准数据..."
 
 #: myframe.cpp:426
 msgid "Restore calibration data from last successful calibration"
 msgstr "恢复至从上一次成功的校准数据"
 
 #: myframe.cpp:427
-#, fuzzy
 msgid "Enter Calibration Data..."
-msgstr "手工校准数据"
+msgstr "手工输入校准数据"
 
 #: myframe.cpp:427
 msgid "Manually calibrate"
@@ -2417,19 +2368,16 @@ msgid "Flip RA calibration vector"
 msgstr "翻转赤经校准方向"
 
 #: myframe.cpp:429
-#, fuzzy
 msgid "Clear Calibration Data..."
-msgstr "手工校准数据"
+msgstr "清除校准数据..."
 
 #: myframe.cpp:429
-#, fuzzy
 msgid "Clear calibration data currently in use"
-msgstr "恢复校准数据"
+msgstr "清除当前的校准数据"
 
 #: myframe.cpp:430
-#, fuzzy
 msgid "Calibration"
-msgstr "校准步数"
+msgstr "校准"
 
 #: myframe.cpp:431 nudge_lock.cpp:117
 msgid "Adjust Lock Position"
@@ -2440,9 +2388,8 @@ msgid "Adjust the lock position"
 msgstr "调整锁定框"
 
 #: myframe.cpp:432
-#, fuzzy
 msgid "Run the Comet Tracking tool"
-msgstr "运行漂移校准工具"
+msgstr "运行彗星跟踪工具"
 
 #: myframe.cpp:433
 msgid "Run the Drift Alignment tool"
@@ -2505,14 +2452,12 @@ msgid "Enable / disable graph"
 msgstr "*Enable / disable graph"
 
 #: myframe.cpp:444
-#, fuzzy
 msgid "Display Stats"
 msgstr "显示散点图"
 
 #: myframe.cpp:444
-#, fuzzy
 msgid "Enable / disable guide stats"
-msgstr "*Enable / disable target"
+msgstr "启用 / 关闭 星点图"
 
 #: myframe.cpp:445
 msgid "Display AO Graph"
@@ -2575,17 +2520,14 @@ msgid "RA and Dec overlay"
 msgstr "*RA and Dec overlay"
 
 #: myframe.cpp:455
-#, fuzzy
 msgid "Restore window positions"
-msgstr "*Restore the saved lock position"
+msgstr "恢复窗口位置"
 
 #: myframe.cpp:455
-#, fuzzy
 msgid "Restore all windows to their default/docked positions"
-msgstr "*Restore the saved lock position"
+msgstr "还原所有窗口的默认/停靠位置"
 
 #: myframe.cpp:458
-#, fuzzy
 msgid "Show Bookmarks\tb"
 msgstr "显示标记\tB"
 
@@ -2619,15 +2561,15 @@ msgstr "Remove all bookmarks"
 
 #: myframe.cpp:467
 msgid "&Dark Library..."
-msgstr ""
+msgstr "暗场库"
 
 #: myframe.cpp:467
 msgid "Build a dark library for this profile"
-msgstr ""
+msgstr "为这个配置文件创建暗场库"
 
 #: myframe.cpp:468
 msgid "Bad-pixel Map..."
-msgstr ""
+msgstr "坏点映射图"
 
 #: myframe.cpp:468
 msgid "Adjust parameters to create or modify the bad-pixel map"
@@ -2635,7 +2577,7 @@ msgstr ""
 
 #: myframe.cpp:470
 msgid "&Use Dark Library"
-msgstr ""
+msgstr "使用暗场库"
 
 #: myframe.cpp:470
 msgid "Use the the dark library for this profile"
@@ -2643,11 +2585,11 @@ msgstr ""
 
 #: myframe.cpp:471
 msgid "Use Bad-pixel &Map"
-msgstr ""
+msgstr "使用坏点映射图"
 
 #: myframe.cpp:471
 msgid "Use the bad-pixel map for this profile"
-msgstr ""
+msgstr "为本配置文件使用坏点映射图"
 
 #: myframe.cpp:483
 msgid "&Save settings"
@@ -2703,9 +2645,8 @@ msgid "&View"
 msgstr "查看"
 
 #: myframe.cpp:509
-#, fuzzy
 msgid "&Darks"
-msgstr "标记"
+msgstr "暗场"
 
 #: myframe.cpp:510
 msgid "&Bookmarks"
@@ -2796,9 +2737,8 @@ msgid "Close"
 msgstr ""
 
 #: myframe.cpp:1276
-#, fuzzy
 msgid "Waiting for devices..."
-msgstr "*Waiting for devices before stopping..."
+msgstr "等待设备..."
 
 #: myframe.cpp:1319
 msgid "Resumed"
@@ -2854,14 +2794,12 @@ msgid "Error saving darks FITS file "
 msgstr "保存暗场FITS文件失败"
 
 #: myframe.cpp:1827
-#, fuzzy
 msgid "Defect map loaded"
-msgstr "选择相机模式"
+msgstr "检测图已装载"
 
 #: myframe.cpp:1832
-#, fuzzy
 msgid "Defect map not loaded"
-msgstr "暗场未能读取"
+msgstr "检测图未装载"
 
 #: myframe.cpp:2017
 msgid "Global Settings"
@@ -2879,7 +2817,7 @@ msgstr ""
 
 #: myframe.cpp:2025
 msgid "Reset \"Don't Ask Again\" messages"
-msgstr "重置\"不在询问\"信息"
+msgstr "重置\"不再询问\"信息"
 
 #: myframe.cpp:2026
 msgid ""
@@ -2917,7 +2855,7 @@ msgstr "*Constrain dither to RA only?"
 
 #: myframe.cpp:2046
 msgid "Dither scale"
-msgstr "抖动范围"
+msgstr "抖动幅度"
 
 #: myframe.cpp:2047
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
@@ -2999,50 +2937,44 @@ msgstr "浏览..."
 
 #: myframe.cpp:2124
 msgid "Auto restore calibration"
-msgstr "自动恢复校准"
+msgstr "自动使用上一次校准数据"
 
 #: myframe.cpp:2125
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
-msgstr ""
-"*Automatically restore calibration data from last successful calibration "
-"when connecting equipment."
+msgstr "当连接设备的时候，自动使用上一次成功的校准数据。"
 
 #: myframe.cpp:2137
-#, fuzzy
 msgid "Min"
-msgstr "侦测"
+msgstr "最小"
 
 #: myframe.cpp:2137
-#, fuzzy
 msgid "Auto exposure minimum duration"
-msgstr "曝光时间"
+msgstr "自动曝光最小时间"
 
 #: myframe.cpp:2138
 msgid "Max"
-msgstr ""
+msgstr "最大"
 
 #: myframe.cpp:2138
-#, fuzzy
 msgid "Auto exposure maximum duration"
-msgstr "曝光时间"
+msgstr "自动曝光最大时间"
 
 #: myframe.cpp:2140
-#, fuzzy
 msgid "Auto Exposure"
-msgstr "连续曝光"
+msgstr "自动曝光"
 
 #: myframe.cpp:2142
-#, fuzzy
 msgid "Target SNR"
-msgstr "散点图"
+msgstr "信噪比"
 
 #: myframe.cpp:2142
 msgid "Auto exposure target SNR value"
 msgstr ""
 
 #: myframe.cpp:2202
+#, fuzzy
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
@@ -3062,6 +2994,7 @@ msgid "Info"
 msgstr "提示"
 
 #: myframe_events.cpp:97
+#, fuzzy
 msgid ""
 "Welcome to PHD2 (Push Here Dummy, Gen2) Guiding\n"
 "\n"
@@ -3086,11 +3019,11 @@ msgstr ""
 "\n"
 "操作相当的简单(这就是“PHD”)\n"
 "\n"
-"   1) 点击\"相机\"按钮，选择你的相机以及赤道仪，点击\"连接所有设备\"按钮\n"
-"   2) 从下拉列表框中选择一个合适的曝光时间。\n"
-"   3) 点击“连续曝光”按钮，调整焦距。(如果已合焦，请忽略该步骤)\n"
-"   4) 选择一颗远离边缘的星点，或者使用Alt+S“自动选星”功能.\n"
-"   5) 点击PHD按钮(“箭靶”图标)\n"
+" 1) 点击\"相机\"按钮，选择你的相机以及赤道仪，点击\"连接所有设备\"按钮\n"
+" 2) 从下拉列表框中选择一个合适的曝光时间。\n"
+" 3) 点击“连续曝光”按钮，调整焦距。(如果已合焦，请忽略该步骤)\n"
+" 4) 选择一颗远离边缘的星点，或者使用Alt+S“自动选星”功能.\n"
+" 5) 点击PHD按钮(“箭靶”图标)\n"
 "\n"
 " PHD2将自动进行校准并开始导星。 就是这么简单！！！\n"
 "\n"
@@ -3112,9 +3045,9 @@ msgid "Save FITS Image"
 msgstr "保存FITS图像"
 
 #: myframe_events.cpp:143
-#, fuzzy, c-format
+#, c-format
 msgid "The image could not be saved to %s"
-msgstr "*The image could not be saved to "
+msgstr "*The image could not be saved to %s"
 
 #: myframe_events.cpp:147
 #, c-format
@@ -3130,19 +3063,16 @@ msgid "Stopped."
 msgstr "已停止。"
 
 #: myframe_events.cpp:328
-#, fuzzy
 msgid "You must connect a camera before loading a dark library"
-msgstr "读取暗场之间必须先连接相机"
+msgstr "装载暗场库之前必须先连接相机"
 
 #: myframe_events.cpp:349
-#, fuzzy
 msgid "Dark library unloaded"
-msgstr "暗场已读取"
+msgstr "暗场库不能读取"
 
 #: myframe_events.cpp:363
-#, fuzzy
 msgid "You must connect a camera before loading a bad-pixel map"
-msgstr "读取暗场之间必须先连接相机"
+msgstr "装载坏点映射图之前必须先连接相机"
 
 #: myframe_events.cpp:388
 msgid "Bad-pixel map unloaded"
@@ -3156,7 +3086,6 @@ msgid ""
 msgstr ""
 
 #: myframe_events.cpp:624 scope.cpp:548
-#, fuzzy
 msgid ""
 "Don't show\n"
 "this again"
@@ -3267,19 +3196,16 @@ msgid "New Profile Wizard"
 msgstr ""
 
 #: profile_wizard.cpp:74
-#, fuzzy
 msgid "New Profile Wizard - "
-msgstr "指向中 ..."
+msgstr "新配置文件向导 -"
 
 #: profile_wizard.cpp:112
-#, fuzzy
 msgid "More Info"
-msgstr "提示"
+msgstr "更多信息"
 
 #: profile_wizard.cpp:122
-#, fuzzy
 msgid "Gear"
-msgstr "清除"
+msgstr "*蜗轮"
 
 #: profile_wizard.cpp:133
 msgid ""
@@ -3289,28 +3215,24 @@ msgid ""
 msgstr ""
 
 #: profile_wizard.cpp:135
-#, fuzzy
 msgid "Detect"
-msgstr "赤纬"
+msgstr "侦测"
 
 #: profile_wizard.cpp:137
-#, fuzzy
 msgid "Connect to camera and detect pixel size"
-msgstr "导星相机像素尺寸"
+msgstr "连接相机并检测像素尺寸"
 
 #: profile_wizard.cpp:141
-#, fuzzy
 msgid "Guide camera pixel size (microns)"
-msgstr "导星相机像素尺寸"
+msgstr "导星相机像素尺寸(微米)"
 
 #: profile_wizard.cpp:149
-#, fuzzy
 msgid "Guide scope focal length (mm)"
-msgstr "导星镜焦距"
+msgstr "导星镜焦距(毫米)"
 
 #: profile_wizard.cpp:155
 msgid "Build dark library"
-msgstr ""
+msgstr "创建暗场库"
 
 #: profile_wizard.cpp:157
 msgid ""
@@ -3319,7 +3241,6 @@ msgid ""
 msgstr ""
 
 #: profile_wizard.cpp:158
-#, fuzzy
 msgid "Profile Name"
 msgstr "配置文件"
 
@@ -3424,9 +3345,8 @@ msgid "Choose a Guide Camera"
 msgstr ""
 
 #: profile_wizard.cpp:339
-#, fuzzy
 msgid "Guide Camera:"
-msgstr "导星速率"
+msgstr "导星相机:"
 
 #: profile_wizard.cpp:350
 msgid ""
@@ -3435,14 +3355,12 @@ msgid ""
 msgstr ""
 
 #: profile_wizard.cpp:354
-#, fuzzy
 msgid "Choose a Mount Connection"
-msgstr "显示赤道仪修正"
+msgstr "选择一个赤道仪"
 
 #: profile_wizard.cpp:356
-#, fuzzy
 msgid "Mount:"
-msgstr "赤道仪"
+msgstr "赤道仪:"
 
 #: profile_wizard.cpp:362
 msgid ""
@@ -3455,9 +3373,8 @@ msgid "Choose an Auxillary Mount Connection (optional)"
 msgstr ""
 
 #: profile_wizard.cpp:372
-#, fuzzy
 msgid "Aux Mount:"
-msgstr "赤道仪"
+msgstr "Aux赤道仪:"
 
 #: profile_wizard.cpp:376
 msgid ""
@@ -3470,9 +3387,8 @@ msgid "Choose an Adaptive Optics Device (optional)"
 msgstr ""
 
 #: profile_wizard.cpp:381
-#, fuzzy
 msgid "AO:"
-msgstr "AO"
+msgstr "AO:"
 
 #: profile_wizard.cpp:385
 msgid "Specify your adaptive optics device if desired"
@@ -3487,9 +3403,8 @@ msgid "Finish"
 msgstr ""
 
 #: profile_wizard.cpp:400
-#, fuzzy
 msgid "Finish creating the equipment profile"
-msgstr "输入新建的设备配置文件名"
+msgstr "设备配置文件创建完毕"
 
 #: profile_wizard.cpp:401
 msgid ""
@@ -3498,19 +3413,16 @@ msgid ""
 msgstr ""
 
 #: profile_wizard.cpp:511
-#, fuzzy
 msgid "Could not initialize camera"
-msgstr "不能开启视频流"
+msgstr "不能初始化相机"
 
 #: profile_wizard.cpp:512
-#, fuzzy
 msgid "Connecting to camera..."
 msgstr "正在连接相机 ..."
 
 #: profile_wizard.cpp:516
-#, fuzzy
 msgid "Could not connect to camera"
-msgstr "连接相机"
+msgstr "不能连接相机"
 
 #: profile_wizard.cpp:523
 msgid "Detect Pixel Size"
@@ -3521,9 +3433,8 @@ msgid "Refine Bad-pixel Map"
 msgstr ""
 
 #: Refine_DefMap.cpp:73
-#, fuzzy
 msgid "Rebuild Master Dark Frame"
-msgstr "清除暗场文件"
+msgstr "重建主暗场文件"
 
 #: Refine_DefMap.cpp:74
 msgid ""
@@ -3542,9 +3453,8 @@ msgid ""
 msgstr ""
 
 #: Refine_DefMap.cpp:84
-#, fuzzy
 msgid "Show defect pixels"
-msgstr "热燥"
+msgstr "*显示检测像素*"
 
 #: Refine_DefMap.cpp:85
 msgid "Check to show hot/cold pixels in the main image window."
@@ -3555,14 +3465,12 @@ msgid "General Information"
 msgstr ""
 
 #: Refine_DefMap.cpp:100
-#, fuzzy
 msgid "Time:"
 msgstr "时间戳:"
 
 #: Refine_DefMap.cpp:102
-#, fuzzy
 msgid "Camera:"
-msgstr "相机"
+msgstr "相机:"
 
 #: Refine_DefMap.cpp:106 Refine_DefMap.cpp:111
 msgid "Master Dark Exposure Time:"
@@ -3597,28 +3505,24 @@ msgid "Median Absolute Deviation:"
 msgstr ""
 
 #: Refine_DefMap.cpp:136
-#, fuzzy
 msgid "Results"
-msgstr "重置"
+msgstr "*结果*"
 
 #: Refine_DefMap.cpp:146
-#, fuzzy
 msgid "Hot pixel count:"
-msgstr "热燥"
+msgstr "热燥统计:"
 
 #: Refine_DefMap.cpp:148
 msgid "Cold pixel count:"
 msgstr ""
 
 #: Refine_DefMap.cpp:152
-#, fuzzy
 msgid "Manually added pixels"
-msgstr "手工校准"
+msgstr "手工增加像素"
 
 #: Refine_DefMap.cpp:158
-#, fuzzy
 msgid "Aggressiveness"
-msgstr "修正度"
+msgstr "修正强度"
 
 #: Refine_DefMap.cpp:163
 msgid ""
@@ -3635,9 +3539,8 @@ msgid ""
 msgstr ""
 
 #: Refine_DefMap.cpp:169
-#, fuzzy
 msgid "Cold pixels"
-msgstr "热燥"
+msgstr "冷噪"
 
 #: Refine_DefMap.cpp:177
 msgid "Reset parameters to starting point"
@@ -3685,9 +3588,8 @@ msgid "New bad-pixel map now being used"
 msgstr ""
 
 #: Refine_DefMap.cpp:349
-#, fuzzy
 msgid "Master dark frames NOT rebuilt"
-msgstr "保存暗场文件"
+msgstr "主暗场文件未重建"
 
 #: Refine_DefMap.cpp:415
 #, c-format
@@ -3758,7 +3660,7 @@ msgid "West step %3d"
 msgstr "西 %3d"
 
 #: scope.cpp:966 scope.cpp:1104
-#, fuzzy, c-format
+#, c-format
 msgid "angle=%.1f rate=%.4f"
 msgstr "角度=%.2f 速率=%.4f"
 
@@ -3821,13 +3723,12 @@ msgid "Calibration step (ms)"
 msgstr "校准时长 (毫秒)"
 
 #: scope.cpp:1270
-#, fuzzy
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
 msgstr ""
-"*How long a guide pulse should be used during calibration? Default = 750ms, "
-"increase for short f/l scopes and decrease for longer f/l scopes"
+"*How long a guide pulse should be used during calibration? Click \"Calculate"
+"\" to compute a suitable value."
 
 #: scope.cpp:1281
 msgid ""
@@ -3838,12 +3739,13 @@ msgstr ""
 "Default = 1000 ms."
 
 #: scope.cpp:1288
+#, fuzzy
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 1000 ms.  Increase if drift is fast."
 msgstr ""
 "*Longest length of pulse to send in declination\n"
-"Default = 1000 ms.  Increase if drift is fast."
+"Default = 1000 ms. Increase if drift is fast."
 
 #: scope.cpp:1293
 msgid "Reverse Dec output after meridian flip"
@@ -3914,9 +3816,8 @@ msgid "ASCOM driver problem during disconnect"
 msgstr "ASCOM驱动问题 : 断开连接。"
 
 #: scope_ascom.cpp:576
-#, fuzzy
 msgid "ASCOM driver does not support PulseGuide"
-msgstr "ASCOM驱动无法检查IsPulseGuiding属性"
+msgstr "ASCOM驱动不支持脉冲导星"
 
 #: scope_ascom.cpp:718
 msgid "Guiding stopped: the scope started slewing."
@@ -3927,9 +3828,8 @@ msgid "ASCOM driver failed checking Slewing"
 msgstr "ASCOM驱动无法检查指向状态"
 
 #: scope_ascom.cpp:781
-#, fuzzy
 msgid "ASCOM driver failed calling AbortSlew"
-msgstr "ASCOM驱动无法检查指向状态"
+msgstr "ASCOM驱动调用AbortSlew方法失败"
 
 #: scope_eqmac.cpp:170 scope_equinox.cpp:172
 msgid " responded it's not connected to a mount"
@@ -3990,43 +3890,36 @@ msgid "Total"
 msgstr ""
 
 #: statswindow.cpp:89
-#, fuzzy
 msgid "RA Osc"
-msgstr "赤经震荡: 0.00"
+msgstr "赤经震荡"
 
 #: statswindow.cpp:91
 msgid "RA Limited"
 msgstr ""
 
 #: statswindow.cpp:93
-#, fuzzy
 msgid "Dec Limited"
-msgstr "赤纬速率:"
+msgstr "赤纬限制"
 
 #: statswindow.cpp:95
-#, fuzzy
 msgid "Star lost"
 msgstr "被导星丢失"
 
 #: statswindow.cpp:97
-#, fuzzy
 msgid "Declination"
-msgstr "赤纬算法"
+msgstr "*赤纬*"
 
 #: statswindow.cpp:99
-#, fuzzy
 msgid "Pier Side"
-msgstr "翻转"
+msgstr "赤道仪方位"
 
 #: statswindow.cpp:109
-#, fuzzy
 msgid "Clear graph data and stats"
 msgstr "清除图形数据"
 
 #: statswindow.cpp:114
-#, fuzzy
 msgid "Select the number of frames of history for stats and the graph"
-msgstr "选择X轴历史帧数显示"
+msgstr "选择图形的历史显示数"
 
 #: stepguider.cpp:526
 #, c-format
@@ -4044,7 +3937,7 @@ msgid "Left Calibration: %3d"
 msgstr "左向校准: %3d"
 
 #: stepguider.cpp:581 stepguider.cpp:620
-#, fuzzy, c-format
+#, c-format
 msgid "angle=%.1f rate=%.2f"
 msgstr "角度=%.2f 速率=%.2f"
 
@@ -4151,7 +4044,7 @@ msgstr "缩小"
 
 #: target.cpp:82
 msgid "Reference Circle"
-msgstr ""
+msgstr "参考圆"
 
 #: target.cpp:83
 msgid "Check to display a reference circle"
@@ -4159,11 +4052,11 @@ msgstr ""
 
 #: target.cpp:91
 msgid "Radius:"
-msgstr ""
+msgstr "半径:"
 
 #: target.cpp:98
 msgid "Reference circle radius"
-msgstr ""
+msgstr "参考圆半径"
 
 #: testguide.cpp:90
 msgid "Guide Pulse Duration (ms):"
@@ -4256,17 +4149,14 @@ msgid "Error reading data from FITS file "
 msgstr "从FITS文件中读取数据失败"
 
 #: runinbg.h:79
-#, fuzzy
 msgid "Connecting to Mount..."
-msgstr "正在连接AO ..."
+msgstr "正在连接赤道仪 ..."
 
 #: runinbg.h:85
-#, fuzzy
 msgid "Connecting to AO..."
 msgstr "正在连接AO ..."
 
 #: runinbg.h:91
-#, fuzzy
 msgid "Connecting to Camera..."
 msgstr "正在连接相机 ..."
 
