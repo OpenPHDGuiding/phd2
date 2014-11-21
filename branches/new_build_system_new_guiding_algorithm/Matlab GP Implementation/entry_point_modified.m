@@ -65,7 +65,7 @@ meanfunc = @(x1) 0;
 dtc = 3; % controller time
 TEND = 1500;
 T0 = 0:dtc:TEND; % initialise the time vector
-dtm = 3; % measurement time
+dtm = 2; % measurement time
 
 global A B C
 A = 0;
@@ -136,9 +136,9 @@ for i=1:length(T0) %iterate over all timepoints
            measurement = typecast(message, 'double');
 
            % Send random value back to C++, so C++ continues
-           pause(0.1);
+           pause(0.01);
            judp('send', 1309, '127.0.0.1', typecast(4.0, 'int8'));
-           pause(0.1);
+           pause(0.01);
        catch err
             if strcmp(strtrim(err.message), 'judp.m--Failed to receive UDP packet; connection timed out.')
                 disp '.Input'; % do nothing
@@ -159,14 +159,15 @@ for i=1:length(T0) %iterate over all timepoints
            nMeasurements = typecast(message, 'double');
 
            % Send random value back to C++, so C++ continues
-           pause(0.1);
+           pause(0.01);
            judp('send', 1309, '127.0.0.1', typecast(4.0, 'int8'));
-           pause(0.1);
+           pause(0.01);
        catch err
             if strcmp(strtrim(err.message), 'judp.m--Failed to receive UDP packet; connection timed out.')
                 disp '.Size'; % do nothing
                 % judp('send', 1309, '127.0.0.1', typecast(-dtc*u/as_px, 'int8'));
             else
+                disp(err.message);
                 rethrow(err);
             end
        end
@@ -186,14 +187,15 @@ for i=1:length(T0) %iterate over all timepoints
               measurements = [measurements, typecast(block, 'double')];
            end
            % Send random value back to C++, so C++ continues
-           pause(0.1);
+           pause(0.01);
            judp('send', 1309, '127.0.0.1', typecast(4.0, 'int8'));
-           pause(0.1);
+           pause(0.01);
        catch err
             if strcmp(strtrim(err.message), 'judp.m--Failed to receive UDP packet; connection timed out.')
                 disp '.Measurements'; % do nothing
                 %judp('send', 1309, '127.0.0.1', typecast(-dtc*u/as_px, 'int8'));
             else
+                disp('Measurement receive error');
                 rethrow(err);
             end
        end
@@ -220,6 +222,7 @@ for i=1:length(T0) %iterate over all timepoints
                 disp '.Timestamps'; % do nothing
                 %judp('send', 1309, '127.0.0.1', typecast(-dtc*u/as_px, 'int8'));
             else
+                disp(err.message);
                 rethrow(err);
             end
        end
@@ -264,13 +267,19 @@ for i=1:length(T0) %iterate over all timepoints
     OutputData(i) = u;
 
     %% send control to telescope
-    try
-        judp('send', 1309, '127.0.0.1', typecast(-dtc*u/as_px, 'int8'));
-    catch err
-        if strcmp(strtrim(err.message), 'judp.m--Failed to receive UDP packet; connection timed out.')
-            disp '.Sending'; % do nothing
-        else
-            rethrow(err);
+    sent = false;
+    while not(sent)
+        try
+            judp('send', 1309, '127.0.0.1', typecast(-dtc*u/as_px, 'int8'));
+            sent = true;
+        catch err
+            if strncmp(strtrim(err.message), 'judp.m--Failed to send UDP packet.' , 32)
+                disp('.Sending failed'); % do nothing
+                disp(err.message);
+
+            else
+                rethrow(err);
+            end
         end
     end
     

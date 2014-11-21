@@ -215,7 +215,7 @@ double GuideGaussianProcess::result(double input)
     double* modified_measurement_data =
         modified_measurements_.getEigenVector()->data();
     double result;
-    double wait_time = 300;
+    double wait_time = 500;
 
     bool sent = false;
     bool received = false;
@@ -223,34 +223,39 @@ double GuideGaussianProcess::result(double input)
     // Send the input
     double input_buf[] = { input };
     sent = udpInteraction.sendToUDPPort(input_buf, 8);
+    std::cout << "Sent input: " << sent << std::endl;
+
     //wxMilliSleep(wait_time);
     received = udpInteraction.receiveFromUDPPort(&result, 8);
+    std::cout << "Received input: " << received << std::endl;
     wxMilliSleep(wait_time);
 
-    std::cout << "Sent input: " << sent << std::endl;
-    std::cout << "Received input: " << received << std::endl;
 
     // Send the size of the buffer
     double size = timestamps_.getEigenVector()->size();
     double size_buf[] = { size };
     sent = udpInteraction.sendToUDPPort(size_buf, 8);
+    std::cout << "Sent size: " << sent << std::endl;
+
     //wxMilliSleep(wait_time);
     received = udpInteraction.receiveFromUDPPort(&result, 8);
+    std::cout << "Received size: " << received << std::endl;
+
     wxMilliSleep(wait_time);
 
-    std::cout << "Sent size: " << sent << std::endl;
-    std::cout << "Received size: " << received << std::endl;
 
 
     // Send modified measurements
     sent = udpInteraction.sendToUDPPort(modified_measurement_data, size * 8);
+    std::cout << "Sent measurement: " << sent << std::endl;
+
     //wxMilliSleep(wait_time);
     received = udpInteraction.receiveFromUDPPort(&result, 8);
+    std::cout << "Received measurement: " << received << std::endl;
+
     wxMilliSleep(wait_time);
 
 
-    std::cout << "Sent measurement: " << sent << std::endl;
-    std::cout << "Received measurement: " << received << std::endl;
 
 
     // Send timestamps
@@ -260,7 +265,7 @@ double GuideGaussianProcess::result(double input)
     std::cout << "Sent timestamp: " << sent << std::endl;
 
     // Receive the final control signal
-    received = udpInteraction.receiveFromUDPPort(&result, sizeof(result));
+    received = udpInteraction.receiveFromUDPPort(&result, 8);
 
     std::cout << "Received control signal: " << received << std::endl;
 

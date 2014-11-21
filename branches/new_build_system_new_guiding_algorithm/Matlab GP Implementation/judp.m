@@ -121,6 +121,7 @@ if action == SEND
         socket.send(packet);
         socket.close;
     catch sendPacketError
+        disp('error while sending');
         try
             socket.close;
         catch closeError
