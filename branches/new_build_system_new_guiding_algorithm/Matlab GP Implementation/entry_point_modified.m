@@ -121,18 +121,19 @@ OutputData = zeros(1,length(T0));
 
 for i=1:length(T0) %iterate over all timepoints
     
+    % Set these back to zero every iteration
     timestamps = [];
     measurements = [];
     nMeasurements = 0;
-    input = 0;
+    measurement = 0;
     
-    % Receive input
-     received = false;
+    %% Receive input
+    received = false;
     while not(received)
        try
            message = judp('receive', 1308, 8, 3000);
            received = true;
-           input = typecast(message, 'double');
+           measurement = typecast(message, 'double');
 
            % Send random value back to C++, so C++ continues
            pause(0.1);
@@ -149,7 +150,7 @@ for i=1:length(T0) %iterate over all timepoints
        end
     end
 
-    % Receive the amount of elements
+    %% Receive the amount of elements
     received = false;
     while not(received)
        try
@@ -172,14 +173,16 @@ for i=1:length(T0) %iterate over all timepoints
 
     end
 
-    % Receive measurements
+    %% Receive measurements
     received = false;
     while not(received)
        try
            message = judp('receive', 1308, nMeasurements*8, 3000);
            received = true;
            for j=0:(nMeasurements-1)
-              block = message(j * 8 + 1 : (j + 1) * 8)
+              % Get one double value a time (one double consists of 8 int8
+              % values)
+              block = message(j * 8 + 1 : (j + 1) * 8);
               measurements = [measurements, typecast(block, 'double')];
            end
            % Send random value back to C++, so C++ continues
@@ -197,15 +200,19 @@ for i=1:length(T0) %iterate over all timepoints
 
     end
 
-    % Receive timestamps
+    %% Receive timestamps
     received = false;
     while not(received)
        try
            message = judp('receive', 1308, nMeasurements*8, 3000);
            received = true;
            for j=0:(nMeasurements-1)
-              block = message(j * 8 + 1 : (j + 1) * 8)
-              timestamps = [timestamps, typecast(block, 'double')];
+              % Get one double value a time (one double consists of 8 int8
+              % values)
+              block = message(j * 8 + 1 : (j + 1) * 8);
+              % cast message to double and divide by 1000 in order to get
+              % from milliseconds to seconds
+              timestamps = [timestamps, typecast(block, 'double') / 1000];
            end
 
        catch err
@@ -218,32 +225,31 @@ for i=1:length(T0) %iterate over all timepoints
        end
 
     end
-
-    measurements;
-    timestamps;
     
-    Z = timestamps';
+    %% Handle the received values
+    % Set the vectors that go into the covariance function
+    Z = timestamps'; % we need the vectors transposed
     Y1 = measurements';
     l = nMeasurements;
     
-    %% estimation of the affine part
-    t = timestamps(end) + 2 * dtm;
-    t = t / 1000; % Recompute passed time
-    Tc = [Tc, t]; % Control-Time Vector
-    U = [U, u]; % Vector of control signals
+    % Get index of the latest timestamp (needed because we?re sending a circular buffer)
+    bufferSize = 100;  % Need to set this according to the size of the circular buffers in C++
+    if i > bufferSize
+        lastTimestampIndex = mod(i, nMeasurements);
+        if lastTimestampIndex == 0;   % Matlab counts vector indices from 1
+           lastTimestampIndex = nMeasurements;
+        end
+    else
+       lastTimestampIndex = i;
+    end
+    
+    t = timestamps(lastTimestampIndex) + 2 * dtm; % Recompute passed time
+    x = measurement; % this is the noisy measurement
+    Tc = [Tc, t];         % Update Control-Time Vector
+    M = [M, measurement]; % Update measurement vector
+    U = [U, u];           % Update control signals vector
 
-
-    %% estimate current error
-    x = input; % this is the noisy measurement
-    X = [X, x]
-    M = [M, input];
-
-
-    %% prediction of the affine part
-    % Not done in ilc
-
-
-
+    % X = [X, x] Only needed for simulation
 
     %% controller       
     if l>5
@@ -319,19 +325,20 @@ for i=1:length(T0) %iterate over all timepoints
         %% plotting
         subplot(2,1,1,'replace')
         hold on
-        plot(Tc,X,'+b');
+        plot(Tc,X,'+b');         % blue plus-sign in upper plot. only used in simulation
         %% plot(Tm,F,'--c');
-        plot(Tc,M,'+r');
-        stairs(Tc(1:end),[U(2:end),U(end)],':m');
+        plot(Tc,M,'+r');         % red plus-sign in upper plot. shows the measurements
+        stairs(Tc(1:end),[U(2:end),U(end)],':m'); % Dotted stairs in upper plot
 
         if l>1
             subplot(2,1,2,'replace')
             hold off
-            plot(Z,Y1,'+k')
+            plot(Z,Y1,'+k') % black plus-sign in lower plot
             hold on
             f = [m1+2*s1; flipdim(m1-2*s1,1)];
-            fill([z0; flipdim(z0,1)], f, [0 0 1],'FaceAlpha',.1,'EdgeColor','b', 'EdgeAlpha', .4);
-            plot(z0,m1,'-b', 'LineWidth', 1);        
+            % Contour plot in lower plot showing the uncertainty
+            fill([z0; flipdim(z0,1)], f, [0 0 1],'FaceAlpha',.1,'EdgeColor','b', 'EdgeAlpha', .4); 
+            plot(z0,m1,'-b', 'LineWidth', 1);   % solid blue line in lower plot     
             xlim([min(Tp) max(Tp)])
 
         end

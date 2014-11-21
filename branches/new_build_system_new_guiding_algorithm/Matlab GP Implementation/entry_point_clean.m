@@ -121,7 +121,7 @@ OutputData = zeros(1,length(T0));
 
 for i=1:length(T0) %iterate over all timepoints
 
-    HW = 0; % 0 = simulation, 1 = hardware
+    HW = 1; % 0 = simulation, 1 = hardware
     switch HW
         case 0
             %% simulation

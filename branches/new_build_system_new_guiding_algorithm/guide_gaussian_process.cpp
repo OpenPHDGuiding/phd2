@@ -43,9 +43,9 @@ static const double DefaultControlGain = 1.0;
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
       udpInteraction(_T("localhost"),_T("1308"),_T("1309")),
-      timestamps_(180),
-      measurements_(180),
-      modified_measurements_(180),
+      timestamps_(100),
+      measurements_(100),
+      modified_measurements_(100),
       timer_(),
       control_signal_(0.0),
       number_of_measurements_(0),
@@ -86,7 +86,7 @@ GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAl
 
 
     //
-    // TODO Add description of the control part!
+    // TODO Add description of the control gain!
     //
     DoAdd(_("Control Gain"), m_pControlGain,
           _("Description of the control gain. Default = 1.0"));
@@ -197,6 +197,7 @@ void GuideGaussianProcess::HandleModifiedMeasurements(double input)
 
 double GuideGaussianProcess::result(double input)
 {
+
     HandleTimestamps();
     HandleMeasurements(input);
     HandleModifiedMeasurements(input);
@@ -214,7 +215,7 @@ double GuideGaussianProcess::result(double input)
     double* modified_measurement_data =
         modified_measurements_.getEigenVector()->data();
     double result;
-    double wait_time = 500;
+    double wait_time = 300;
 
     bool sent = false;
     bool received = false;
@@ -230,8 +231,8 @@ double GuideGaussianProcess::result(double input)
     std::cout << "Received input: " << received << std::endl;
 
     // Send the size of the buffer
-    int size = timestamps_.getEigenVector()->size();
-    double size_buf[] = { static_cast<double>(size) };
+    double size = timestamps_.getEigenVector()->size();
+    double size_buf[] = { size };
     sent = udpInteraction.sendToUDPPort(size_buf, 8);
     //wxMilliSleep(wait_time);
     received = udpInteraction.receiveFromUDPPort(&result, 8);
@@ -264,6 +265,8 @@ double GuideGaussianProcess::result(double input)
     std::cout << "Received control signal: " << received << std::endl;
 
     return result;
+
+
 
 
     /*
@@ -303,15 +306,16 @@ double GuideGaussianProcess::result(double input)
 
         */
 
-    // Old UDP Interaction
     /*
+    // Old UDP Interaction
+
      double buf[] = {input};
 
      udpInteraction.sendToUDPPort(buf, sizeof(buf));
      udpInteraction.receiveFromUDPPort(buf, sizeof(buf)); // this command blocks until matlab sends back something
 
      return buf[0];
-     */
+*/
 }
 
 
