@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-17 01:22-0500\n"
-"PO-Revision-Date: 2014-11-15 18:25+0300\n"
+"PO-Revision-Date: 2014-11-22 22:40+0300\n"
 "Last-Translator: Konstantin Menshkoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -542,7 +542,7 @@ msgstr "Ошибка получения изображения: %d (%d)"
 
 #: cam_firewire_OSX.cpp:331
 msgid "Cannot get a frame from the queue"
-msgstr ""
+msgstr "Невозможно взять кадр из очереди"
 
 #: cam_INDI.cpp:206 cam_INDI.cpp:221 cam_simulator.cpp:421
 msgid "Unsupported type or read error loading FITS file"
@@ -1028,6 +1028,8 @@ msgid ""
 "The camera will be disconnected if it fails to respond for this long. The "
 "default value, 5 seconds, should be appropriate for most cameras."
 msgstr ""
+"Камера будет отключена, если не ответит в течение этого времени. Значение по "
+"умолчанию, 5 секунд, подходит для большинства камер."
 
 #: camera.cpp:740
 msgid ""
@@ -1049,6 +1051,7 @@ msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
 msgstr ""
+"Камера была отключена. Решите приведшую к этому проблему и подключите снова."
 
 #: comet_tool.cpp:79 myframe.cpp:432
 msgid "Comet Tracking"
@@ -1116,7 +1119,7 @@ msgstr "Прервать"
 
 #: comet_tool.cpp:117
 msgid "Stop training"
-msgstr ""
+msgstr "Закончить подготовку"
 
 #: comet_tool.cpp:137
 msgid "Rates"
@@ -2048,7 +2051,7 @@ msgstr "Агр."
 
 #: guide_algorithm_hysteresis.cpp:289
 msgid "Hys"
-msgstr ""
+msgstr "Гис"
 
 #: guide_algorithm_hysteresis.cpp:297 guide_algorithm_lowpass.cpp:260
 msgid "Min mo"
@@ -3818,7 +3821,7 @@ msgstr "Вычислить..."
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
-msgstr ""
+msgstr "Щёлкните, чтобы рассчитать подходящую величину шага калибровки"
 
 #: scope.cpp:1269
 msgid "Calibration step (ms)"
@@ -4020,7 +4023,7 @@ msgstr "Очистить графические данные и статисти
 
 #: statswindow.cpp:114
 msgid "Select the number of frames of history for stats and the graph"
-msgstr ""
+msgstr "Выбрать количество кадров, используемых для статистики и графиков"
 
 #: stepguider.cpp:526
 #, c-format
