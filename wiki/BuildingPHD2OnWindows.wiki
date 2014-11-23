@@ -115,6 +115,6 @@ PHD2 has runtime dependencies on several camera support libraries (DLLs). In ord
 
 One solution is to download and install an official PHD2 release build, and then add the install location to the PATH environment variable.
 
-An alternate approach is to manually copy the DLLs from !WinLibs\ to the Release\ and Debug\ directories.
+An alternate approach is to manually copy cfitsio.dll and the DLLs from !WinLibs\ to the Release\ and Debug\ directories.
 
 Once you do one of those steps, you should be able to run PHD2 from Visual Studio.
