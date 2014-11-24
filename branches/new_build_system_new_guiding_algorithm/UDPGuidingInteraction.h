@@ -35,23 +35,31 @@
 #ifndef UDP_GUIDING_INTERACTION
 #define UDP_GUIDING_INTERACTION
 
-#include "wx/defs.h"
-class wxString;
+#include <wx/defs.h>
+#include <wx/string.h>
+#include <wx/socket.h>
+
 
 
 class UDPGuidingInteraction {
 private:
-    
     wxString host;
     wxString sendPort;
     wxString rcvPort;
-    
+
+    wxIPV4address server;
+    wxIPV4address sendClient;
+    wxIPV4address receiveClient;
+
+    wxDatagramSocket* sendSocket;
+    wxDatagramSocket* receiveSocket;
+
 public:
     UDPGuidingInteraction(wxString host, wxString sendPort, wxString rcvPort);
     ~UDPGuidingInteraction();
-    
-    bool sendToUDPPort(const void * buf, wxUint32 len);
-	bool receiveFromUDPPort(void * buf, wxUint32 len);
+
+    bool SendToUDPPort(const void * buf, wxUint32 len);
+	bool ReceiveFromUDPPort(void * buf, wxUint32 len);
 };
 
 #endif /* defined(UDP_GUIDING_INTERACTION) */

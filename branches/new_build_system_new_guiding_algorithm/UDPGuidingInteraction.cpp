@@ -33,51 +33,54 @@
  */
 
 
-#include "phd.h"
 #include "UDPGuidingInteraction.h"
 
 #include "wx/string.h"
 #include "wx/socket.h"
 
 
-UDPGuidingInteraction::UDPGuidingInteraction(wxString host, wxString sendPort, wxString rcvPort)
-: host(host), sendPort(sendPort), rcvPort(rcvPort)
-{
+UDPGuidingInteraction::UDPGuidingInteraction(wxString host,
+                                             wxString sendPort,
+                                             wxString rcvPort)
+: host(host),
+  sendPort(sendPort),
+  rcvPort(rcvPort),
+  server(),
+  sendClient(),
+  receiveClient() {
+    // Configure Sending
+    sendClient.Hostname("localhost");     // configures client to local host...
+    sendClient.Service(0);
 
+    if (server.Hostname(host)) {             // validates destination host using DNS
+        if (server.Service(sendPort)) {      // ensure port is valid
+            sendSocket = new wxDatagramSocket(sendClient,wxSOCKET_NONE); // define the local port
+            sendSocket->SetTimeout(1);
+        }
+    }
+
+    // Configure Receiving
+    receiveClient.AnyAddress();     // configures client to local host...
+    receiveClient.Service(rcvPort);
+
+    receiveSocket = new wxDatagramSocket(receiveClient,wxSOCKET_NONE); // define the local port
+    receiveSocket->SetTimeout(2);
 }
 
-UDPGuidingInteraction::~UDPGuidingInteraction()
-{
-    
+UDPGuidingInteraction::~UDPGuidingInteraction() {
 }
 
 
-bool UDPGuidingInteraction::sendToUDPPort(const void *buf, wxUint32 len)
-{
-    wxIPV4address server;
-    wxIPV4address client;
-    client.Hostname(_T("localhost"));               // configures client to local host...
-    client.Service(0);
-    
-    if (!server.Hostname(host))           // validates destination host using DNS
-        return false;
-    
-    if (!server.Service(sendPort))        // ensure port is valid
-        return false;
-    
-    wxDatagramSocket udpSocket(client,wxSOCKET_BLOCK); // define the local port
-    udpSocket.SendTo(server, buf, len);
-    return !udpSocket.Error();
+bool UDPGuidingInteraction::SendToUDPPort(const void *buf, wxUint32 len) {
+    while (!sendSocket->WaitForWrite()) {
+    }
+    sendSocket->SendTo(server, buf, len);
+    return !sendSocket->Error();
 }
 
-bool UDPGuidingInteraction::receiveFromUDPPort(void * buf, wxUint32 len)
-{
-    wxIPV4address client;
-    client.AnyAddress();               // configures client to local host...
-    client.Service(rcvPort);
-    
-    wxDatagramSocket  udpSocket(client,wxSOCKET_BLOCK); // define the local port
-
-    udpSocket.RecvFrom(client, buf, len);
-    return !udpSocket.Error();
+bool UDPGuidingInteraction::ReceiveFromUDPPort(void * buf, wxUint32 len) {
+    while (!receiveSocket->WaitForRead()) {
+    }
+    receiveSocket->RecvFrom(receiveClient, buf, len);
+    return !receiveSocket->Error();
 }
