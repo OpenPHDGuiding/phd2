@@ -108,11 +108,11 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
     CapInfo.OffsetY = ypos;
 
     if (img.Init(FullSize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         delete[] buffer;
         return true;
     }
+
     while (duration > 0) { // still have frames to grab
         if (duration <= chunksize) { // grab a single frame
             CapInfo.Exposure = duration;
@@ -124,8 +124,7 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
         }
         retval = FclGetOneFrame(hDriver,CapInfo);  // get the frame
         if (retval) {
-            pFrame->Alert(_("Error capturing data from camera"));
-            Disconnect();
+            DisconnectWithAlert(_("Error capturing data from camera"));
             delete[] buffer;
             return true;
         }

@@ -325,7 +325,7 @@ wxArrayString GuideCamera::List(void)
     return CameraList;
 }
 
-GuideCamera *GuideCamera::Factory(wxString choice)
+GuideCamera *GuideCamera::Factory(const wxString& choice)
 {
     GuideCamera *pReturn = NULL;
 
@@ -1013,6 +1013,24 @@ void GuideCamera::SubtractDark(usImage& img)
     {
         Subtract(img, *CurrentDarkFrame);
     }
+}
+
+void GuideCamera::DisconnectWithAlert(CaptureFailType type)
+{
+    wxString msg;
+    switch (type) {
+    case CAPT_FAIL_MEMORY:
+        msg = _("Memory allocation error during capture"); break;
+    case CAPT_FAIL_TIMEOUT:
+        msg = _("Camera timeout during capture"); break;
+    }
+    DisconnectWithAlert(msg);
+}
+
+void GuideCamera::DisconnectWithAlert(const wxString& msg)
+{
+    Disconnect();
+    pFrame->Alert(msg + "\n" + _("The camera has been disconnected. Please resolve the problem and re-connect the camera."));
 }
 
 #ifndef OPENPHD

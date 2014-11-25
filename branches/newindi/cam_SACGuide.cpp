@@ -201,8 +201,7 @@ bool Camera_SACGuiderClass::GenericCapture(int duration, usImage& img, int xsize
     //buffer = new unsigned char[9000000];
     GetFrame(DevName,raw_imgsize,(unsigned long) duration,buffer);
     if (img.Init(FullSize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         delete[] buffer;
         return true;
     }

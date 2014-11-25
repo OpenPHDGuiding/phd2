@@ -64,8 +64,7 @@ bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subf
     int mode = 3 * (int) Color;
     if (img.Init(FullSize))
     {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
     if (OSPL130_Capture(mode,duration)) {

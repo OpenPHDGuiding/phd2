@@ -86,8 +86,11 @@ bool Camera_Atik16Class::Connect()
     else if (ncams == 0)
         return true;
     else {
-        i=wxGetSingleChoiceIndex(_("Select camera"),_("Camera name"),USBNames);
-        if (i == -1) { Disconnect(); return true; }
+        i = wxGetSingleChoiceIndex(_("Select camera"),_("Camera name"), USBNames);
+        if (i == -1) {
+            Disconnect();
+            return true;
+        }
     }
 
     Cam_Handle = ArtemisConnect(devnum[i]); // Connect to first avail camera
@@ -233,8 +236,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
         }
         if (watchdog.Expired())
         {
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }
@@ -242,9 +244,9 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
     int data_x,data_y,data_w,data_h,data_binx,data_biny;
     ArtemisGetImageData(Cam_Handle, &data_x, &data_y, &data_w, &data_h, &data_binx, &data_biny);
 
-    if (img.Init(FullSize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+    if (img.Init(FullSize))
+    {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 

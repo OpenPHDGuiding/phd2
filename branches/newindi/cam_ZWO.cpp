@@ -299,8 +299,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
 {
     if (img.Init(FullSize))
     {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
@@ -412,8 +411,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
         {
             Debug.AddLine("ZWO: getimagedata ret %d", status);
             StopCapture();
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }

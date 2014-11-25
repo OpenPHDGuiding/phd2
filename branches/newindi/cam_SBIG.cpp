@@ -121,10 +121,16 @@ bool Camera_SBIGClass::Connect()
             NULL, wxDefaultCoord, wxDefaultCoord, true, wxCHOICE_WIDTH, wxCHOICE_HEIGHT,
             resp);
 
+    if (resp == -1)
+    {
+        // user hit cancel
+        Disconnect();
+        return true;
+    }
+
     wxString IPstr;
     wxString tmpstr;
     unsigned long ip,tmp;
-    if (resp == -1) { Disconnect(); return true; }  // user hit cancel
 
     pConfig->Profile.SetInt("/camera/sbig/interface", resp);
 
@@ -334,8 +340,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     // init memory
     if (img.Init(FullSize))
     {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
@@ -344,8 +349,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     short err = SBIGUnivDrvCommand(CC_START_EXPOSURE2, &sep, NULL);
     if (err != CE_NO_ERROR)
     {
-        pFrame->Alert(_("Cannot start exposure"));
-        Disconnect();
+        DisconnectWithAlert(_("Cannot start exposure"));
         return true;
     }
 
@@ -366,8 +370,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         wxMilliSleep(20);
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
         if (err != CE_NO_ERROR) {
-            pFrame->Alert(_("Cannot poll exposure"));
-            Disconnect();
+            DisconnectWithAlert(_("Cannot poll exposure"));
             return true;
         }
         if (UseTrackingCCD)
@@ -382,8 +385,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         if (watchdog.Expired())
         {
             StopExposure(&eep);
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }
@@ -391,8 +393,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     // End exposure
     if (!StopExposure(&eep))
     {
-        pFrame->Alert(_("Cannot stop exposure"));
-        Disconnect();
+        DisconnectWithAlert(_("Cannot stop exposure"));
         return true;
     }
 
@@ -419,8 +420,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             unsigned short *dataptr = img.ImageData + subframe.x + (y+subframe.y)*FullSize.GetWidth();
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             if (err != CE_NO_ERROR) {
-                pFrame->Alert(_("Error downloading data"));
-                Disconnect();
+                DisconnectWithAlert(_("Error downloading data"));
                 return true;
             }
         }
@@ -434,8 +434,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             dataptr += FullSize.GetWidth();
             if (err != CE_NO_ERROR) {
-                pFrame->Alert(_("Error downloading data"));
-                Disconnect();
+                DisconnectWithAlert(_("Error downloading data"));
                 return true;
             }
         }

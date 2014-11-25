@@ -541,8 +541,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         }
         if (watchdog.Expired())
         {
-            pFrame->Alert(_("Camera timeout during capure"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }

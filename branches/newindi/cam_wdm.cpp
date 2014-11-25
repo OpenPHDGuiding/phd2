@@ -283,8 +283,7 @@ bool Camera_WDMClass::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
 
         if (img.Init(FullSize))
         {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
+            DisconnectWithAlert(CAPT_FAIL_MEMORY);
             throw ERROR_INFO("img.Init() failed");
         }
 

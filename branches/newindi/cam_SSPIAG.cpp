@@ -343,8 +343,7 @@ bool Camera_SSPIAGClass::Capture(int duration, usImage& img, wxRect subframe, bo
 //  bool firstimg = true;
 
     if (img.Init(FullSize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 

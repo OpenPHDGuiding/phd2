@@ -65,8 +65,7 @@ bool Camera_NebSBIGClass::Capture(int duration, usImage& img, wxRect subframe, b
 {
     if (img.Init(FullSize))
     {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
     bool retval = ServerReqFrame(duration, img);
