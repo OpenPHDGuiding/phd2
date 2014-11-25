@@ -97,10 +97,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_REFINEDEFECTMAP,MyFrame::OnRefineDefMap)
 
     EVT_CHAR_HOOK(MyFrame::OnCharHook)
-#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-    EVT_MENU(MENU_INDICONFIG,MyFrame::OnINDIConfig)
-    EVT_MENU(MENU_INDIDIALOG,MyFrame::OnINDIDialog)
-#endif
 
 #if defined (V4L_CAMERA)
     EVT_MENU(MENU_V4LSAVESETTINGS, MyFrame::OnSaveSettings)
@@ -470,13 +466,6 @@ void MyFrame::SetupMenuBar(void)
     darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
     darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Bad-pixel &Map"), _("Use the bad-pixel map for this profile"));
 
-#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-   /* Now in gear manager */ 
-   /* wxMenu *indi_menu = new wxMenu; */
-   /* indi_menu->Append(MENU_INDICONFIG, _("&Configure..."), _("Configure INDI settings")); */
-   /* indi_menu->Append(MENU_INDIDIALOG, _("&Controls..."), _("Show INDI controls for available devices")); */
-#endif
-
 #if defined (V4L_CAMERA)
     wxMenu *v4l_menu = new wxMenu();
 
@@ -491,11 +480,6 @@ void MyFrame::SetupMenuBar(void)
 
     Menubar = new wxMenuBar();
     Menubar->Append(file_menu, _("&File"));
-
-#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-    /* Now in gear manager */ 
-    /* Menubar->Append(indi_menu, _T("&INDI")); */
-#endif
 
 #if defined (V4L_CAMERA)
     Menubar->Append(v4l_menu, _T("&V4L"));
