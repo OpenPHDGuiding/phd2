@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6)
 project(OPENPHD)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
-set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
+#set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
 set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 #TODO propose to remove this everywhere set(CMAKE_CXX_FLAGS "-DOPENPHD")
 
@@ -37,6 +37,18 @@ include (CheckCXXCompilerFlag)
 # wxWidgets
 FIND_PACKAGE(wxWidgets COMPONENTS core base net html aui adv REQUIRED)
 INCLUDE(UsewxWidgets)
+
+# INDI
+find_package(INDI REQUIRED)
+include_directories(${INDI_INCLUDE_DIR})
+
+# Nova
+find_package(Nova)
+if (NOVA_FOUND)
+    include_directories(${NOVA_INCLUDE_DIR})
+else ()
+    message(WARNING "libnova not found! Considere to install libnova-dev ")
+endif (NOVA_FOUND)   
 
 # cfitsio
 find_package(CFITSIO REQUIRED)
@@ -126,18 +138,7 @@ if (MSVC)
         GUIDE_ASCOM
        )
 else (MSVC)
-	set(phd_SRCS ${phd_SRCS} 
-		${CMAKE_SOURCE_DIR}/libindiclient/indi.c
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indigui.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_io.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_list.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_config.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indisave.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/wxled.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/wxchecktreectrl.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/base64.c
-   		${CMAKE_SOURCE_DIR}/libindiclient/lilxml.c
-	)
+
 ENDIF (MSVC)
 
 #if (V4L_OK)
@@ -172,6 +173,11 @@ endif (MSVC)
 
 target_link_libraries(phd2 ${CFITSIO_LIBRARIES} )
 target_link_libraries(phd2 ${wxWidgets_LIBRARIES} )
+target_link_libraries(phd2 ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES} )
+if (NOVA_FOUND)
+    target_link_libraries(phd2 ${NOVA_LIBRARIES} )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIBNOVA" )
+endif (NOVA_FOUND)   
 
 #if (V4L_OK)
 #    target_link_libraries(phd2 ${LIBUDEV_LIBRARIES})
