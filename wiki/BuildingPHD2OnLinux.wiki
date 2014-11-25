@@ -7,14 +7,14 @@
 
  * install dependencies (commands for a Fedora-like system; your system may vary)
 {{{
-sudo yum install subversion gtk2-devel cfitsio-devel opencv-devel libusb1-devel cmake libudev-devel libv4l-devel
+sudo yum install subversion gtk2-devel cfitsio-devel opencv-devel libusb1-devel cmake libudev-devel libv4l-devel libindi-devel libnova-devel
 }}}
 
 === Ubuntu ===
 
- * install dependencies (tested on 13.10)
+ * install dependencies (tested on 14.04 and 14.10)
 {{{
-sudo apt-get install build-essential libgtk2.0-dev libcfitsio3-dev libopencv-dev libusb-1.0-0-dev subversion cmake libudev-dev libv4l-dev
+sudo apt-get install build-essential libgtk2.0-dev libcfitsio3-dev libopencv-dev libusb-1.0-0-dev subversion cmake libudev-dev libv4l-dev libindi-dev libnova-dev
 }}}
 
 === wxWidgets-3.0.2 ===
