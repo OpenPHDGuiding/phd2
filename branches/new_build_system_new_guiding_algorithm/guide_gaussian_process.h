@@ -53,6 +53,11 @@ private:
     double control_gain_;
     double elapsed_time_ms_;
 
+
+    wxStopWatch result_timer_;
+
+
+
     void HandleTimestamps();
     void HandleMeasurements(double input);
     void HandleModifiedMeasurements(double input);

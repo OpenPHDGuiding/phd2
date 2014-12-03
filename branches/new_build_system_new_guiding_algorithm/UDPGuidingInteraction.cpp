@@ -35,6 +35,12 @@
 
 #include "UDPGuidingInteraction.h"
 
+
+
+#include <iostream>
+
+
+
 #include "wx/string.h"
 #include "wx/socket.h"
 
@@ -52,6 +58,10 @@ UDPGuidingInteraction::UDPGuidingInteraction(wxString host,
     sendClient.Hostname("localhost");     // configures client to local host...
     sendClient.Service(0);
 
+    /* 
+     * If these don´t work, we get uninitialized sendSocket which will then 
+     * crash when using SendToUDPPort 
+     */
     if (server.Hostname(host)) {             // validates destination host using DNS
         if (server.Service(sendPort)) {      // ensure port is valid
             sendSocket = new wxDatagramSocket(sendClient,wxSOCKET_NONE); // define the local port
@@ -64,22 +74,32 @@ UDPGuidingInteraction::UDPGuidingInteraction(wxString host,
     receiveClient.Service(rcvPort);
 
     receiveSocket = new wxDatagramSocket(receiveClient,wxSOCKET_NONE); // define the local port
-    receiveSocket->SetTimeout(2);
+    receiveSocket->SetTimeout(1);
 }
 
 UDPGuidingInteraction::~UDPGuidingInteraction() {
 }
 
 
-bool UDPGuidingInteraction::SendToUDPPort(const void *buf, wxUint32 len) {
+bool UDPGuidingInteraction::SendToUDPPort(void *buf, wxUint32 len) {
     while (!sendSocket->WaitForWrite()) {
+        std::cout << "Socket not ready to write!" << std::endl;
     }
     sendSocket->SendTo(server, buf, len);
+
+    // Store the buffer in order to be able to resend it.
+    // NOTE: This only works if the buffer is not deleted by the caller
+    // after sending it.
+    this->last_sent_buffer = buf;
+    this->last_sent_buffer_length = len;
+    
     return !sendSocket->Error();
 }
 
 bool UDPGuidingInteraction::ReceiveFromUDPPort(void * buf, wxUint32 len) {
     while (!receiveSocket->WaitForRead()) {
+        std::cout << "Socket not ready to read from, resending last buffer" << std::endl;
+        SendToUDPPort(this->last_sent_buffer, this->last_sent_buffer_length);
     }
     receiveSocket->RecvFrom(receiveClient, buf, len);
     return !receiveSocket->Error();

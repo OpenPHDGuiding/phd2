@@ -65,7 +65,7 @@ meanfunc = @(x1) 0;
 dtc = 3; % controller time
 TEND = 1500;
 T0 = 0:dtc:TEND; % initialise the time vector
-dtm = 2; % measurement time
+dtm = 3; % measurement time
 
 global A B C
 A = 0;

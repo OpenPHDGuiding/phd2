@@ -49,7 +49,8 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
       timer_(),
       control_signal_(0.0),
       number_of_measurements_(0),
-      elapsed_time_ms_(0.0)
+      elapsed_time_ms_(0.0),
+      result_timer_()
 {
     wxString configPath = GetConfigPath();
     double control_gain = pConfig->Profile.GetDouble(configPath + "/controlGain",
@@ -124,7 +125,8 @@ double GuideGaussianProcess::GetControlGain()
     return control_gain_;
 }
 
-wxString GuideGaussianProcess::GetSettingsSummary() {
+wxString GuideGaussianProcess::GetSettingsSummary()
+{
     return wxString::Format("Control Gain = %.3f\n",
                             GetControlGain());
 }
@@ -159,8 +161,6 @@ void GuideGaussianProcess::HandleTimestamps()
     double delta_measurement_time_ms = time_now - elapsed_time_ms_;
     elapsed_time_ms_ = time_now;
     timestamps_.append(elapsed_time_ms_ - delta_measurement_time_ms / 2);
-
-    std::cout << timestamps_.getLastElement() << std::endl;
 }
 
 void GuideGaussianProcess::HandleMeasurements(double input)
@@ -191,13 +191,11 @@ void GuideGaussianProcess::HandleModifiedMeasurements(double input)
             measurements_.getLastElement();
         modified_measurements_.append(new_modified_measurement);
     }
-
-    std::cout << modified_measurements_.getLastElement() << std::endl;
 }
 
 double GuideGaussianProcess::result(double input)
 {
-
+    result_timer_.Start();
     HandleTimestamps();
     HandleMeasurements(input);
     HandleModifiedMeasurements(input);
@@ -215,18 +213,18 @@ double GuideGaussianProcess::result(double input)
     double* modified_measurement_data =
         modified_measurements_.getEigenVector()->data();
     double result;
-    double wait_time = 500;
+    double wait_time = 100;
 
     bool sent = false;
     bool received = false;
 
     // Send the input
     double input_buf[] = { input };
-    sent = udpInteraction.sendToUDPPort(input_buf, 8);
+    sent = udpInteraction.SendToUDPPort(input_buf, 8);
     std::cout << "Sent input: " << sent << std::endl;
 
     //wxMilliSleep(wait_time);
-    received = udpInteraction.receiveFromUDPPort(&result, 8);
+    received = udpInteraction.ReceiveFromUDPPort(&result, 8);
     std::cout << "Received input: " << received << std::endl;
     wxMilliSleep(wait_time);
 
@@ -234,11 +232,11 @@ double GuideGaussianProcess::result(double input)
     // Send the size of the buffer
     double size = timestamps_.getEigenVector()->size();
     double size_buf[] = { size };
-    sent = udpInteraction.sendToUDPPort(size_buf, 8);
+    sent = udpInteraction.SendToUDPPort(size_buf, 8);
     std::cout << "Sent size: " << sent << std::endl;
 
     //wxMilliSleep(wait_time);
-    received = udpInteraction.receiveFromUDPPort(&result, 8);
+    received = udpInteraction.ReceiveFromUDPPort(&result, 8);
     std::cout << "Received size: " << received << std::endl;
 
     wxMilliSleep(wait_time);
@@ -246,11 +244,11 @@ double GuideGaussianProcess::result(double input)
 
 
     // Send modified measurements
-    sent = udpInteraction.sendToUDPPort(modified_measurement_data, size * 8);
+    sent = udpInteraction.SendToUDPPort(modified_measurement_data, size * 8);
     std::cout << "Sent measurement: " << sent << std::endl;
 
     //wxMilliSleep(wait_time);
-    received = udpInteraction.receiveFromUDPPort(&result, 8);
+    received = udpInteraction.ReceiveFromUDPPort(&result, 8);
     std::cout << "Received measurement: " << received << std::endl;
 
     wxMilliSleep(wait_time);
@@ -259,16 +257,17 @@ double GuideGaussianProcess::result(double input)
 
 
     // Send timestamps
-    sent = udpInteraction.sendToUDPPort(timestamp_data, size * 8);
+    sent = udpInteraction.SendToUDPPort(timestamp_data, size * 8);
     //wxMilliSleep(wait_time);
 
     std::cout << "Sent timestamp: " << sent << std::endl;
 
     // Receive the final control signal
-    received = udpInteraction.receiveFromUDPPort(&result, 8);
+    received = udpInteraction.ReceiveFromUDPPort(&result, 8);
 
     std::cout << "Received control signal: " << received << std::endl;
-
+    std::cout << "Number of inputs: " << number_of_measurements_ << std::endl;
+    std::cout << "Getting the result took: " << result_timer_.Time() << "ms" << std::endl;
     return result;
 
 

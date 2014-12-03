@@ -54,11 +54,16 @@ private:
     wxDatagramSocket* sendSocket;
     wxDatagramSocket* receiveSocket;
 
+
+    void* last_sent_buffer;
+    wxUint32 last_sent_buffer_length;
+
+
 public:
     UDPGuidingInteraction(wxString host, wxString sendPort, wxString rcvPort);
     ~UDPGuidingInteraction();
 
-    bool SendToUDPPort(const void * buf, wxUint32 len);
+    bool SendToUDPPort(void * buf, wxUint32 len);
 	bool ReceiveFromUDPPort(void * buf, wxUint32 len);
 };
 
