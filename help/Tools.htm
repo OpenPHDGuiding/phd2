@@ -59,18 +59,25 @@ your imaging camera is not in the middle of an exposure.<br>
 <h3><a name="Auto-Select_Star"></a>Auto-Select Star</h3>
 Clicking on 'Auto-select Star' under the 'Tools' menu, or using the keyboard
 shortcut of &lt;Alt&gt;S, tells <span style="font-style: italic;">PHD2</span> to scan the current guide image
-and identify a star suitable for guiding. &nbsp;This operation requires
-that 'Looping' is active. &nbsp;The selection process is based on the
-shape and brightness of the star but it doesn't consider close
-proximity to other stars.
+and identify a star suitable for guiding. &nbsp;PHD2 will try to select a star of sufficient brightness that is not
+near another star and not too close to the edge of the frame. &nbsp;The
+selected star may appear overly dim on the screen, but this is usually
+not a problem. &nbsp;You can use the&nbsp;<a href="Visualization.htm#Star_Profile_and_Target_Displays">Star Profile</a>&nbsp;tool
+to examine the properties of the selected star - it should be
+non-saturated with a sharp profile, the same properties you should look
+for when choosing a guide star manually.&nbsp; The auto-select process is not
+infallible, so you may need to select a star yourself if you don't like
+the automated result. &nbsp;If you want to use Auto-Select, you should
+definitely use either a bad-pixel map or dark library to reduce the
+likelihood of PHD2 mistakenly choosing a hot pixel.
 <h3><a name="Manual_Control_of_Calibration_Data"></a>Manual Control of Calibration Data</h3>
 Calibration data is saved automatically each time a calibration sequence completes
 successfully. &nbsp;The use of the calibration data has been described
 elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
 including &nbsp;options for restoring calibration data from an earlier
 time or "flipping" it after a meridian flip. &nbsp;You access these
-functions using&nbsp;the 'Tools' menu. &nbsp;Two other
-calibration-related items are also shown there, namely the options to
+functions using the 'Calibration' sub-menu under the 'Tools' menu. &nbsp;Two other
+calibration-related items are&nbsp; shown there, namely the options to
 clear the current data or to enter calibration data manually. &nbsp;The
 "clear" option accomplishes the same thing as the 'Clear calibration'
 checkbox in the Advanced Dialog - it will force a recalibration
@@ -169,8 +176,22 @@ go back to the 'azimuth' measurement and repeat that procedure.
 &nbsp;If you work through these procedures systematically, you'll
 converge on a good polar alignment with a known degree of accuracy.
 &nbsp;A good polar alignment will&nbsp;help your guiding performance,
-especially in declination.<br>
-<br>
+especially in declination.<br><br>The
+drift alignment tool is easiest to use when you are using an ASCOM
+connection to your mount (including an 'Aux' connection). &nbsp;Even if
+you subsequently want to use
+ST-4 style guiding, you should use the ASCOM connection for drift
+alignment. &nbsp;If you can't do that for some reason, the following
+features will be impaired:<br><ul><li>Scope position data and slewing functions will not be available - you'll have to slew the scope yourself</li><li>The
+magenta circle that identifies the "target" for moving the star will be
+inaccurate and will be displayed as a dashed line. &nbsp;This dashed
+circle will identify only an upper bound to the adjustment, so you will
+probably
+want to make smaller adjustments to avoid over-shooting.</li></ul>
+A very complete step-by-step tutorial for drift alignment is available
+on the Openphdguiding web site, and first-time users are strongly
+encouraged to study it.
+(https://sites.google.com/site/openphdguiding/phd2-drift-alignment)<br>
 <h3><a name="Lock_Positions"></a>Lock Positions</h3>
 <span style="font-style: italic;">PHD2</span> normally
 sets a 'lock position' where the guide star is located at the end of
@@ -256,7 +277,10 @@ the menu items there, you can create a new profile
 or&nbsp;edit/rename/delete an existing one. &nbsp;Each profile holds
 all the settings that were active at the time the profile was last
 used. &nbsp;If you create a new profile, you can import these settings
-from either the <span style="font-style: italic;">PHD2</span> defaults or from an existing profile. &nbsp;To
+from either the <span style="font-style: italic;">PHD2</span>
+generic defaults or from an existing profile. &nbsp;You can also use the
+'Wizard' option to have PHD2 establish settings that are specific to
+your equipment configuration. &nbsp;To
 edit the settings in an existing profile, you first select it in the
 equipment profile drop-down list, then click on 'Settings' under the
 '<a name="Manage_Profiles"></a>Manage Profiles' pull-down. &nbsp;This will take you to the 'Brain'
@@ -275,7 +299,7 @@ order to get the benefits of simulation. &nbsp;As you become more
 interested in the details of the simulation, you can use the 'Cam
 Dialog' button on the main display to adjust the simulation parameters:<br>
 <br>
-<img style="width: 775px; height: 412px;" alt="" src="Tools_simulator.png"><br>
+<img style="width: 775px; height: 428px;" alt="" src="Tools_simulator.png"><br>
 <br>
 <br>
 You can adjust simulated mount behaviors for declination backlash, drift
@@ -286,5 +310,4 @@ these parameters one-by-one, you'll see how they affect star
 deflections and how the different guide algorithms react to those
 movements. &nbsp;Of course, you're dealing with a "nearly perfect" mount in
 these scenarios (except for backlash), so the simulation can't be entirely realistic.
-</body>
-</html>
+</body></html>
