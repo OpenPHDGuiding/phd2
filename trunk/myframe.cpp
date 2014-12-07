@@ -847,9 +847,17 @@ void MyFrame::SetupHelpFile(void)
 {
     wxFileSystem::AddHandler(new wxZipFSHandler);
     bool retval;
-    wxString filename = wxStandardPaths::Get().GetResourcesDir()
-        + wxFILE_SEP_PATH
+    wxString filename;
+    // first try to find locale-specific help file
+    filename = wxStandardPaths::Get().GetResourcesDir() + wxFILE_SEP_PATH
+        + _T("locale") + wxFILE_SEP_PATH
+        + wxLocale::GetLanguageCanonicalName(m_pLocale->GetLanguage()) + wxFILE_SEP_PATH
         + _T("PHD2GuideHelp.zip");
+    if (!wxFileExists(filename))
+    {
+        filename = wxStandardPaths::Get().GetResourcesDir() + wxFILE_SEP_PATH
+            + _T("PHD2GuideHelp.zip");
+    }
     help = new wxHtmlHelpController;
     retval = help->AddBook(filename);
     if (!retval)
