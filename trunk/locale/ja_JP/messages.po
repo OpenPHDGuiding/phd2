@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-07 22:22-0500\n"
+"POT-Creation-Date: 2014-12-08 18:10-0500\n"
 "PO-Revision-Date: 2014-12-08 13:54+0900\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
@@ -320,9 +320,10 @@ msgid "Guide speed, n.nn x sidereal"
 msgstr "ガイドスピード, n.nn x 恒星時"
 
 #: calstep_dialog.cpp:120
+#, fuzzy, c-format
 msgid ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
-"sidereal rate, enter 0.5"
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
+"50% sidereal rate, enter 0.5"
 msgstr ""
 "ガイド速度の恒星時に対する割合; もしマウントのガイド速度が50%の追尾レートな"
 "ら、0.5と入力"
@@ -781,6 +782,7 @@ msgid "Hot pixels"
 msgstr "ホットピクセル"
 
 #: cam_simulator.cpp:1305
+#, fuzzy, c-format
 msgid "% Simulated noise"
 msgstr "% シミュレートされたノイズ"
 
@@ -992,7 +994,7 @@ msgstr "ZWO ASIカメラのオープンに失敗"
 
 #: camera.cpp:213 camera.cpp:350 gear_dialog.cpp:314 gear_dialog.cpp:318
 #: gear_dialog.cpp:322 gear_dialog.cpp:326 gear_dialog.cpp:527 mount.cpp:98
-#: mount.cpp:121 myframe.cpp:2043 profile_wizard.cpp:187
+#: mount.cpp:121 myframe.cpp:2053 profile_wizard.cpp:187
 #: profile_wizard.cpp:188 profile_wizard.cpp:271 profile_wizard.cpp:276
 #: profile_wizard.cpp:475 profile_wizard.cpp:483 scope.cpp:246 scope.cpp:289
 #: scope.cpp:327 stepguider.cpp:89 stepguider.cpp:113
@@ -2144,7 +2146,7 @@ msgstr "許容される範囲外に移ったロック位置。ロック位置の
 msgid "star lost"
 msgstr "ガイド星を見失う"
 
-#: guider.cpp:1010 myframe.cpp:1297
+#: guider.cpp:1010 myframe.cpp:1307
 msgid "Paused"
 msgstr "一時停止"
 
@@ -2824,152 +2826,152 @@ msgstr "ヘルプファイルが見当たりません:"
 msgid "Close"
 msgstr "クローズ"
 
-#: myframe.cpp:1268
+#: myframe.cpp:1278
 msgid "Waiting for devices..."
 msgstr "デバイス待ち..."
 
-#: myframe.cpp:1311
+#: myframe.cpp:1321
 msgid "Resumed"
 msgstr "再開"
 
-#: myframe.cpp:1415
+#: myframe.cpp:1425
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr "Dither by %.2f,%.2f"
 
-#: myframe.cpp:1437
+#: myframe.cpp:1447
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr "キャプチャがアクティブのままですが本当に終了しますか?"
 
-#: myframe.cpp:1438
+#: myframe.cpp:1448
 msgid "Confirm Exit"
 msgstr "終了確認"
 
-#: myframe.cpp:1678 usImage.cpp:364
+#: myframe.cpp:1688 usImage.cpp:364
 msgid "FITS file is not of an image: "
 msgstr "画像でないFITSファイル:"
 
-#: myframe.cpp:1686 usImage.cpp:376
+#: myframe.cpp:1696 usImage.cpp:376
 msgid "Unsupported type or read error loading FITS file "
 msgstr "サポートされていない、または読込み時エラーとなるFITSファイ"
 
-#: myframe.cpp:1697
+#: myframe.cpp:1707
 msgid "Memory allocation error reading FITS file "
 msgstr "読込み時メモリー割当てエラーとなるFITSファイル"
 
-#: myframe.cpp:1704
+#: myframe.cpp:1714
 msgid "Error reading data from "
 msgstr "読込みデータエラー"
 
-#: myframe.cpp:1733 usImage.cpp:408
+#: myframe.cpp:1743 usImage.cpp:408
 msgid "Error opening FITS file "
 msgstr "FITSファイルオープンエラー"
 
-#: myframe.cpp:1785
+#: myframe.cpp:1795
 msgid "You must connect a camera before loading dark frames"
 msgstr "ダークフレームを読込む前にカメラと接続する必要があります"
 
-#: myframe.cpp:1792
+#: myframe.cpp:1802
 msgid "Darks not loaded"
 msgstr "ダークが読込まれていない"
 
-#: myframe.cpp:1798
+#: myframe.cpp:1808
 msgid "Darks loaded"
 msgstr "ダーク読込み"
 
-#: myframe.cpp:1810
+#: myframe.cpp:1820
 msgid "Error saving darks FITS file "
 msgstr "ダークFITファイル保存エラー"
 
-#: myframe.cpp:1819
+#: myframe.cpp:1829
 msgid "Defect map loaded"
 msgstr "欠陥マップを読込みました"
 
-#: myframe.cpp:1824
+#: myframe.cpp:1834
 msgid "Defect map not loaded"
 msgstr "欠陥マップが読込まれていない"
 
-#: myframe.cpp:2009
+#: myframe.cpp:2019
 msgid "Global Settings"
 msgstr "全体設定"
 
-#: myframe.cpp:2014
+#: myframe.cpp:2024
 msgid "Reset Configuration"
 msgstr "設定リセット"
 
-#: myframe.cpp:2015
+#: myframe.cpp:2025
 msgid ""
 "Reset all configuration to fresh install status -- Note: this closes PHD2"
 msgstr ""
 "初期状態に戻すために設定を全てリセットします。ノート: PHD2は終了します。"
 
-#: myframe.cpp:2017
+#: myframe.cpp:2027
 msgid "Reset \"Don't Ask Again\" messages"
 msgstr "\"再度問合せはしない\"を再表示させる"
 
-#: myframe.cpp:2018
+#: myframe.cpp:2028
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't Ask Again\"."
 msgstr ""
 "\"再度問合せはしない\"をチェックして表示しなくなったメッセージを再表示させる"
 
-#: myframe.cpp:2022
+#: myframe.cpp:2032
 msgid "Low Q JPEG"
 msgstr "Low Q JPEG"
 
-#: myframe.cpp:2022
+#: myframe.cpp:2032
 msgid "High Q JPEG"
 msgstr "High Q JPEG"
 
-#: myframe.cpp:2022
+#: myframe.cpp:2032
 msgid "Raw FITS"
 msgstr "Raw FITS"
 
-#: myframe.cpp:2028
+#: myframe.cpp:2038
 msgid "Image logging format"
 msgstr "画像記録フォーマット"
 
-#: myframe.cpp:2029
+#: myframe.cpp:2039
 msgid "File format of logged images"
 msgstr "記録画像ファイルのフォーマット"
 
-#: myframe.cpp:2031
+#: myframe.cpp:2041
 msgid "Dither RA only"
 msgstr "赤経(RA)のみディザー処理"
 
-#: myframe.cpp:2032
+#: myframe.cpp:2042
 msgid "Constrain dither to RA only?"
 msgstr "赤経のみディザーを抑制しますか?"
 
-#: myframe.cpp:2038
+#: myframe.cpp:2048
 msgid "Dither scale"
 msgstr "ディザー処理スケール"
 
-#: myframe.cpp:2039
+#: myframe.cpp:2049
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr "ディザーコマンドのスケール。デフォルト= 1.0 (0.01-100.0)"
 
-#: myframe.cpp:2043
+#: myframe.cpp:2053
 msgid "2x2 mean"
 msgstr "2x2 mean"
 
-#: myframe.cpp:2043
+#: myframe.cpp:2053
 msgid "3x3 median"
 msgstr "3x3 median"
 
-#: myframe.cpp:2049
+#: myframe.cpp:2059
 msgid "Noise Reduction"
 msgstr "ノイズ低減"
 
-#: myframe.cpp:2050
+#: myframe.cpp:2060
 msgid "Technique to reduce noise in images"
 msgstr "画像のノイズを低減する手法"
 
-#: myframe.cpp:2055
+#: myframe.cpp:2065
 msgid "Time Lapse (ms)"
 msgstr "間欠動作(ms)"
 
-#: myframe.cpp:2056
+#: myframe.cpp:2066
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -2979,11 +2981,11 @@ msgstr ""
 "=0ms、 非常に短い露出(例えば、ビデオカメラ)を使う場合、それほど頻繁にガイドコ"
 "マンドを送らずに待っています。"
 
-#: myframe.cpp:2059
+#: myframe.cpp:2069
 msgid "Focal length (mm)"
 msgstr "焦点距離(mm)"
 
-#: myframe.cpp:2060
+#: myframe.cpp:2070
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -2991,41 +2993,41 @@ msgstr ""
 "ガイド用望遠鏡の焦点距離で、秒(arc-sec)でガイドエラーを表示するのに カメラピ"
 "クセルサイズといっしょに使います。"
 
-#: myframe.cpp:2066 myframe.cpp:2096
+#: myframe.cpp:2076 myframe.cpp:2106
 msgid "System default"
 msgstr "システムデフォルト"
 
-#: myframe.cpp:2079
+#: myframe.cpp:2089
 msgid "Language-Name"
 msgstr "日本語"
 
-#: myframe.cpp:2099
+#: myframe.cpp:2109
 msgid "Language"
 msgstr "言語"
 
-#: myframe.cpp:2100
+#: myframe.cpp:2110
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "%s 言語  反映させるにはPHDを再起動する必要があります。"
 
-#: myframe.cpp:2103
+#: myframe.cpp:2113
 msgid "Log File Location"
 msgstr "ログファイル保存場所"
 
-#: myframe.cpp:2107
+#: myframe.cpp:2117
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr "ガイドおよびデバッグログ保存フォルダを指定します。"
 
-#: myframe.cpp:2108
+#: myframe.cpp:2118
 msgid "Browse..."
 msgstr "参照..."
 
-#: myframe.cpp:2116
+#: myframe.cpp:2126
 msgid "Auto restore calibration"
 msgstr "自動的にキャリブレーションを読込"
 
-#: myframe.cpp:2117
+#: myframe.cpp:2127
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
@@ -3033,49 +3035,49 @@ msgstr ""
 "接続している機器で成功したキャリブレーションの直近データを \n"
 "自動的に再読込みします。"
 
-#: myframe.cpp:2129
+#: myframe.cpp:2139
 msgid "Min"
 msgstr "最小"
 
-#: myframe.cpp:2129
+#: myframe.cpp:2139
 msgid "Auto exposure minimum duration"
 msgstr "自動露出の最小時間"
 
-#: myframe.cpp:2130
+#: myframe.cpp:2140
 msgid "Max"
 msgstr "最大"
 
-#: myframe.cpp:2130
+#: myframe.cpp:2140
 msgid "Auto exposure maximum duration"
 msgstr "自動露出の最大時間"
 
-#: myframe.cpp:2132
+#: myframe.cpp:2142
 msgid "Auto Exposure"
 msgstr "自動露出"
 
-#: myframe.cpp:2134
+#: myframe.cpp:2144
 msgid "Target SNR"
 msgstr "ターゲットのS/N比"
 
-#: myframe.cpp:2134
+#: myframe.cpp:2144
 msgid "Auto exposure target SNR value"
 msgstr "自動露出ターゲットのS/N比値"
 
-#: myframe.cpp:2194
+#: myframe.cpp:2204
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
 msgstr "PHD2の設定値を全てリセットしてプログラムを終了しますが、いいですか?"
 
-#: myframe.cpp:2194
+#: myframe.cpp:2204
 msgid "Confirmation"
 msgstr "確認"
 
-#: myframe.cpp:2222
+#: myframe.cpp:2232
 msgid "You must restart PHD for the language change to take effect."
 msgstr "言語の変更を有効にするにはPHDを再起動する必要があります。"
 
-#: myframe.cpp:2222 myframe_events.cpp:165 myframe_events.cpp:313
+#: myframe.cpp:2232 myframe_events.cpp:165 myframe_events.cpp:313
 #: myframe_events.cpp:401
 msgid "Info"
 msgstr "情報"

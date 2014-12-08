@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-07 22:22-0500\n"
+"POT-Creation-Date: 2014-12-08 18:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -932,7 +932,7 @@ msgstr ""
 
 #: camera.cpp:213 camera.cpp:350 gear_dialog.cpp:314 gear_dialog.cpp:318
 #: gear_dialog.cpp:322 gear_dialog.cpp:326 gear_dialog.cpp:527 mount.cpp:98
-#: mount.cpp:121 myframe.cpp:2043 profile_wizard.cpp:187
+#: mount.cpp:121 myframe.cpp:2053 profile_wizard.cpp:187
 #: profile_wizard.cpp:188 profile_wizard.cpp:271 profile_wizard.cpp:276
 #: profile_wizard.cpp:475 profile_wizard.cpp:483 scope.cpp:246 scope.cpp:289
 #: scope.cpp:327 stepguider.cpp:89 stepguider.cpp:113
@@ -2015,7 +2015,7 @@ msgstr ""
 msgid "star lost"
 msgstr ""
 
-#: guider.cpp:1010 myframe.cpp:1297
+#: guider.cpp:1010 myframe.cpp:1307
 msgid "Paused"
 msgstr ""
 
@@ -2679,249 +2679,249 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: myframe.cpp:1268
+#: myframe.cpp:1278
 msgid "Waiting for devices..."
 msgstr ""
 
-#: myframe.cpp:1311
+#: myframe.cpp:1321
 msgid "Resumed"
 msgstr ""
 
-#: myframe.cpp:1415
+#: myframe.cpp:1425
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr ""
 
-#: myframe.cpp:1437
+#: myframe.cpp:1447
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr ""
 
-#: myframe.cpp:1438
+#: myframe.cpp:1448
 msgid "Confirm Exit"
 msgstr ""
 
-#: myframe.cpp:1678 usImage.cpp:364
+#: myframe.cpp:1688 usImage.cpp:364
 msgid "FITS file is not of an image: "
 msgstr ""
 
-#: myframe.cpp:1686 usImage.cpp:376
+#: myframe.cpp:1696 usImage.cpp:376
 msgid "Unsupported type or read error loading FITS file "
 msgstr ""
 
-#: myframe.cpp:1697
+#: myframe.cpp:1707
 msgid "Memory allocation error reading FITS file "
 msgstr ""
 
-#: myframe.cpp:1704
+#: myframe.cpp:1714
 msgid "Error reading data from "
 msgstr ""
 
-#: myframe.cpp:1733 usImage.cpp:408
+#: myframe.cpp:1743 usImage.cpp:408
 msgid "Error opening FITS file "
 msgstr ""
 
-#: myframe.cpp:1785
+#: myframe.cpp:1795
 msgid "You must connect a camera before loading dark frames"
 msgstr ""
 
-#: myframe.cpp:1792
+#: myframe.cpp:1802
 msgid "Darks not loaded"
 msgstr ""
 
-#: myframe.cpp:1798
+#: myframe.cpp:1808
 msgid "Darks loaded"
 msgstr ""
 
-#: myframe.cpp:1810
+#: myframe.cpp:1820
 msgid "Error saving darks FITS file "
 msgstr ""
 
-#: myframe.cpp:1819
+#: myframe.cpp:1829
 msgid "Defect map loaded"
 msgstr ""
 
-#: myframe.cpp:1824
+#: myframe.cpp:1834
 msgid "Defect map not loaded"
 msgstr ""
 
-#: myframe.cpp:2009
+#: myframe.cpp:2019
 msgid "Global Settings"
 msgstr ""
 
-#: myframe.cpp:2014
+#: myframe.cpp:2024
 msgid "Reset Configuration"
 msgstr ""
 
-#: myframe.cpp:2015
+#: myframe.cpp:2025
 msgid ""
 "Reset all configuration to fresh install status -- Note: this closes PHD2"
 msgstr ""
 
-#: myframe.cpp:2017
+#: myframe.cpp:2027
 msgid "Reset \"Don't Ask Again\" messages"
 msgstr ""
 
-#: myframe.cpp:2018
+#: myframe.cpp:2028
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't Ask Again\"."
 msgstr ""
 
-#: myframe.cpp:2022
+#: myframe.cpp:2032
 msgid "Low Q JPEG"
 msgstr ""
 
-#: myframe.cpp:2022
+#: myframe.cpp:2032
 msgid "High Q JPEG"
 msgstr ""
 
-#: myframe.cpp:2022
+#: myframe.cpp:2032
 msgid "Raw FITS"
 msgstr ""
 
-#: myframe.cpp:2028
+#: myframe.cpp:2038
 msgid "Image logging format"
 msgstr ""
 
-#: myframe.cpp:2029
+#: myframe.cpp:2039
 msgid "File format of logged images"
 msgstr ""
 
-#: myframe.cpp:2031
+#: myframe.cpp:2041
 msgid "Dither RA only"
 msgstr ""
 
-#: myframe.cpp:2032
+#: myframe.cpp:2042
 msgid "Constrain dither to RA only?"
 msgstr ""
 
-#: myframe.cpp:2038
+#: myframe.cpp:2048
 msgid "Dither scale"
 msgstr ""
 
-#: myframe.cpp:2039
+#: myframe.cpp:2049
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr ""
 
-#: myframe.cpp:2043
+#: myframe.cpp:2053
 msgid "2x2 mean"
 msgstr ""
 
-#: myframe.cpp:2043
+#: myframe.cpp:2053
 msgid "3x3 median"
 msgstr ""
 
-#: myframe.cpp:2049
+#: myframe.cpp:2059
 msgid "Noise Reduction"
 msgstr ""
 
-#: myframe.cpp:2050
+#: myframe.cpp:2060
 msgid "Technique to reduce noise in images"
 msgstr ""
 
-#: myframe.cpp:2055
+#: myframe.cpp:2065
 msgid "Time Lapse (ms)"
 msgstr ""
 
-#: myframe.cpp:2056
+#: myframe.cpp:2066
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
 "guide commands less frequently"
 msgstr ""
 
-#: myframe.cpp:2059
+#: myframe.cpp:2069
 msgid "Focal length (mm)"
 msgstr ""
 
-#: myframe.cpp:2060
+#: myframe.cpp:2070
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
 msgstr ""
 
-#: myframe.cpp:2066 myframe.cpp:2096
+#: myframe.cpp:2076 myframe.cpp:2106
 msgid "System default"
 msgstr ""
 
-#: myframe.cpp:2079
+#: myframe.cpp:2089
 msgid "Language-Name"
 msgstr ""
 
-#: myframe.cpp:2099
+#: myframe.cpp:2109
 msgid "Language"
 msgstr ""
 
-#: myframe.cpp:2100
+#: myframe.cpp:2110
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr ""
 
-#: myframe.cpp:2103
+#: myframe.cpp:2113
 msgid "Log File Location"
 msgstr ""
 
-#: myframe.cpp:2107
+#: myframe.cpp:2117
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr ""
 
-#: myframe.cpp:2108
+#: myframe.cpp:2118
 msgid "Browse..."
 msgstr ""
 
-#: myframe.cpp:2116
+#: myframe.cpp:2126
 msgid "Auto restore calibration"
 msgstr ""
 
-#: myframe.cpp:2117
+#: myframe.cpp:2127
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
 msgstr ""
 
-#: myframe.cpp:2129
+#: myframe.cpp:2139
 msgid "Min"
 msgstr ""
 
-#: myframe.cpp:2129
+#: myframe.cpp:2139
 msgid "Auto exposure minimum duration"
 msgstr ""
 
-#: myframe.cpp:2130
+#: myframe.cpp:2140
 msgid "Max"
 msgstr ""
 
-#: myframe.cpp:2130
+#: myframe.cpp:2140
 msgid "Auto exposure maximum duration"
 msgstr ""
 
-#: myframe.cpp:2132
+#: myframe.cpp:2142
 msgid "Auto Exposure"
 msgstr ""
 
-#: myframe.cpp:2134
+#: myframe.cpp:2144
 msgid "Target SNR"
 msgstr ""
 
-#: myframe.cpp:2134
+#: myframe.cpp:2144
 msgid "Auto exposure target SNR value"
 msgstr ""
 
-#: myframe.cpp:2194
+#: myframe.cpp:2204
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
 msgstr ""
 
-#: myframe.cpp:2194
+#: myframe.cpp:2204
 msgid "Confirmation"
 msgstr ""
 
-#: myframe.cpp:2222
+#: myframe.cpp:2232
 msgid "You must restart PHD for the language change to take effect."
 msgstr ""
 
-#: myframe.cpp:2222 myframe_events.cpp:165 myframe_events.cpp:313
+#: myframe.cpp:2232 myframe_events.cpp:165 myframe_events.cpp:313
 #: myframe_events.cpp:401
 msgid "Info"
 msgstr ""

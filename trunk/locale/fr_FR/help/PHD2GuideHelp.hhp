@@ -1,0 +1,24 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=PHD2_Help.chm
+Contents file=PHD2GuideHelp.hhc
+Default topic=Introduction.htm
+Display compile progress=No
+Index file=PHD2GuideHelp.hhk
+Language=0x409 English (United States)
+Title=PHD2 Guiding
+
+
+[FILES]
+MainScreen.htm
+Basic_use.htm
+Visualization.htm
+Advanced_settings.htm
+Guide_algorithms.htm
+Tools.htm
+Introduction.htm
+Trouble_shooting.htm
+Darks_BadPixel_Maps.htm
+
+[INFOTYPES]
+
