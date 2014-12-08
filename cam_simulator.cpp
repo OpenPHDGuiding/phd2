@@ -1451,7 +1451,7 @@ void SimCamDialog::OnPierFlip(wxCommandEvent& event)
 
 void SimCamDialog::UpdatePierSideLabel()
 {
-    pPiersideLabel->SetLabel(wxString::Format("Side of pier: %s", pPierSide == PIER_SIDE_EAST ? _("East") : _("West")));
+    pPiersideLabel->SetLabel(wxString::Format(_("Side of pier: %s"), pPierSide == PIER_SIDE_EAST ? _("East") : _("West")));
 }
 
 void Camera_SimClass::ShowPropertyDialog()

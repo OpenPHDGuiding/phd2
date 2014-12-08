@@ -78,7 +78,7 @@ static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *
 }
 
 Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount)
-    : ConfigDialogPane(wxString::Format(_("%s Settings"),title), pParent)
+    : ConfigDialogPane(title, pParent)
 {
     int width;
     m_pMount = pMount;

@@ -1099,7 +1099,7 @@ ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
 }
 
 StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider)
-    : MountConfigDialogPane(pParent, _("AO"), pStepGuider)
+    : MountConfigDialogPane(pParent, _("AO Settings"), pStepGuider)
 {
     int width;
 

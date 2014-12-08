@@ -1251,7 +1251,7 @@ ConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)
 }
 
 Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope)
-    : MountConfigDialogPane(pParent, "Mount", pScope)
+    : MountConfigDialogPane(pParent, _("Mount Settings"), pScope)
 {
     int width;
 
@@ -1271,7 +1271,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
 
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
 
-    wxStaticText *lbl = new wxStaticText(pParent, wxID_ANY, "Max Duration");
+    wxStaticText *lbl = new wxStaticText(pParent, wxID_ANY, _("Max Duration"));
     sizer->Add(lbl, wxSizerFlags().Expand().Border(wxALL, 3).Align(wxALIGN_CENTER_VERTICAL));
 
     width = StringWidth(_T("00000"));
