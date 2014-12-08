@@ -145,7 +145,7 @@ NudgeLockDialog::NudgeLockDialog()
 
     wxSizer *sz2 = new wxBoxSizer(wxHORIZONTAL);
 
-    sz2->Add(new wxStaticText(this, wxID_ANY, _T("Step")), wxSizerFlags().Right().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
+    sz2->Add(new wxStaticText(this, wxID_ANY, _("Step")), wxSizerFlags().Right().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
 
     double incr = pConfig->Global.GetDouble("/NudgeLock/Amount", NudgeIncrements[2]);
     int idx = IncrIdx(incr);
@@ -162,7 +162,7 @@ NudgeLockDialog::NudgeLockDialog()
     sz2->Add(stickyLockPos, wxSizerFlags().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
 
     wxSizer *sz3 = new wxBoxSizer(wxHORIZONTAL);
-    sz3->Add(new wxStaticText(this, wxID_ANY, _T("Lock Pos:")), wxSizerFlags().Right().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
+    sz3->Add(new wxStaticText(this, wxID_ANY, _("Lock Pos:")), wxSizerFlags().Right().Border(wxALL, 5).Align(wxALIGN_CENTER_VERTICAL));
 
     wxFloatingPointValidator<double> valX(2, &lockPosX, wxNUM_VAL_ZERO_AS_BLANK);
     valX.SetMin(0.0);
