@@ -121,7 +121,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
     MeadeCam->SetExposureTime(duration);
 
-    if (img.Init(MeadeCam->GetWidth(),MeadeCam->GetHeight()))
+    if (img.Init(MeadeCam->GetWidth(), MeadeCam->GetHeight()))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
@@ -131,26 +131,42 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     if (!retval)
         return true;
 
+// DSI users report windows crashing (BSOD) if this code is enabled. Disable
+// hang check for now until we have a chance to test with a DSI camera.
+#if 0
     CameraWatchdog watchdog(duration, GetTimeoutMs());
-
-    if (duration > 100)
-    {
-        if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY)) // wait until near end of exposure
-            return true;
-    }
 
     // wait for image to finish and d/l
     while (!MeadeCam->ImageReady)
     {
         wxMilliSleep(20);
         if (WorkerThread::InterruptRequested())
+        {
+            MeadeCam->AbortImage();
             return true;
+        }
         if (watchdog.Expired())
         {
+            MeadeCam->AbortImage();
             DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }
+#else // old code
+
+    // We also need to prevent the thread from being killed when phd2 is closed
+    WorkerThreadKillGuard _guard;
+
+    if (duration > 100) {
+        wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
+    }
+    bool still_going = true;
+    while (still_going) {  // wait for image to finish and d/l
+        wxMilliSleep(20);
+        still_going = !(MeadeCam->ImageReady);
+    }
+
+#endif // old code
 
     if (recon) SubtractDark(img);
 
