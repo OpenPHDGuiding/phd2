@@ -1120,9 +1120,19 @@ bool MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
 
         if (pWorkerThread->IsAlive())
         {
-            Debug.AddLine("StopWorkerThread(0x%p) thread did not terminate, force kill", pWorkerThread);
-            pWorkerThread->Kill();
-            killed = true;
+            while (pWorkerThread->IsAlive() && !pWorkerThread->IsKillable())
+            {
+                Debug.AddLine("Worker thread 0x%p is not killable, waiting...", pWorkerThread);
+                wxStopWatch swatch2;
+                while (pWorkerThread->IsAlive() && !pWorkerThread->IsKillable() && swatch2.Time() < TIMEOUT_MS)
+                    wxGetApp().Yield();
+            }
+            if (pWorkerThread->IsAlive())
+            {
+                Debug.AddLine("StopWorkerThread(0x%p) thread did not terminate, force kill", pWorkerThread);
+                pWorkerThread->Kill();
+                killed = true;
+            }
         }
         else
         {

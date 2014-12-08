@@ -58,7 +58,42 @@ class MyFrame;
 
 class WorkerThread : public wxThread
 {
+    // types and routines for the server->worker message queue
+    enum WORKER_REQUEST_TYPE
+    {
+        REQUEST_NONE,       // not used
+        REQUEST_TERMINATE,
+        REQUEST_EXPOSE,
+        REQUEST_MOVE,
+    };
+
+    /*
+    * a union containing all the possible argument types for thread work
+    * requests
+    */
+    struct WORKER_REQUEST_ARGS
+    {
+        // there is no ARGS_TERMINATE terminate;
+        MyFrame::EXPOSE_REQUEST expose;
+        MyFrame::PHD_MOVE_REQUEST move;
+    };
+
+    /*
+    * this struct is passed through the message queue to the worker thread
+    * to request work
+    */
+    struct WORKER_THREAD_REQUEST
+    {
+        WORKER_REQUEST_TYPE request;
+        WORKER_REQUEST_ARGS args;
+    };
+
     MyFrame *m_pFrame;
+    volatile unsigned int m_interruptRequested;
+    volatile bool m_killable;
+    wxMessageQueue<bool> m_wakeupQueue;
+    wxMessageQueue<WORKER_THREAD_REQUEST> m_highPriorityQueue;
+    wxMessageQueue<WORKER_THREAD_REQUEST> m_lowPriorityQueue;
 
 public:
 
@@ -108,6 +143,9 @@ public:
     static unsigned int TerminateRequested(void);
     static unsigned int MilliSleep(int ms, unsigned int checkInterrupts = INT_TERMINATE);
 
+    bool IsKillable() const;
+    bool SetKillable(bool killable);
+
 protected:
     // there is no struct ARGS_TERMINATE
     // there is no HandleTerminate(ARGS_TERMINATE *pArgs) routine
@@ -132,42 +170,7 @@ protected:
     void SendWorkerThreadMoveComplete(Mount *pMount, Mount::MOVE_RESULT moveResult);
     // in the frame class: void MyFrame::OnWorkerThreadGuideComplete(wxThreadEvent& event);
 
-    // types and routines for the server->worker message queue
-    enum WORKER_REQUEST_TYPE
-    {
-        REQUEST_NONE,       // not used
-        REQUEST_TERMINATE,
-        REQUEST_EXPOSE,
-        REQUEST_MOVE,
-    };
-
-    /*
-     * a union containing all the possible argument types for thread work
-     * requests
-     */
-    struct WORKER_REQUEST_ARGS
-    {
-        // there is no ARGS_TERMINATE terminate;
-        MyFrame::EXPOSE_REQUEST expose;
-        MyFrame::PHD_MOVE_REQUEST move;
-    };
-
-    /*
-     * this struct is passed through the message queue to the worker thread
-     * to request work
-     */
-    struct WORKER_THREAD_REQUEST
-    {
-        WORKER_REQUEST_TYPE request;
-        WORKER_REQUEST_ARGS args;
-    };
-
     void EnqueueMessage(const WORKER_THREAD_REQUEST& message);
-
-    volatile unsigned int m_interruptRequested;
-    wxMessageQueue<bool> m_wakeupQueue;
-    wxMessageQueue<WORKER_THREAD_REQUEST> m_highPriorityQueue;
-    wxMessageQueue<WORKER_THREAD_REQUEST> m_lowPriorityQueue;
 };
 
 inline void WorkerThread::RequestStop(void)
@@ -195,6 +198,33 @@ inline unsigned int WorkerThread::TerminateRequested(void)
 {
     return InterruptRequested() & INT_TERMINATE;
 }
+
+inline bool WorkerThread::IsKillable(void) const
+{
+    return m_killable;
+}
+
+inline bool WorkerThread::SetKillable(bool killable)
+{
+    bool prev = m_killable;
+    m_killable = killable;
+    return prev;
+}
+
+class WorkerThreadKillGuard
+{
+    WorkerThread *m_thread;
+    bool m_prev;
+public:
+    WorkerThreadKillGuard(WorkerThread *thread = WorkerThread::This()) : m_thread(thread)
+    {
+        m_prev = m_thread->SetKillable(false);
+    }
+    ~WorkerThreadKillGuard()
+    {
+        m_thread->SetKillable(m_prev);
+    }
+};
 
 class Watchdog : public wxStopWatch
 {

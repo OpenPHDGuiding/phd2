@@ -37,7 +37,8 @@
 
 WorkerThread::WorkerThread(MyFrame *pFrame)
     : wxThread(wxTHREAD_JOINABLE),
-      m_interruptRequested(0)
+      m_interruptRequested(0),
+      m_killable(true)
 {
     m_pFrame = pFrame;
     Debug.AddLine("WorkerThread constructor called");
