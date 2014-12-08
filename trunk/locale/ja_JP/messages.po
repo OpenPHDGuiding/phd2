@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-07 22:22-0500\n"
-"PO-Revision-Date: 2014-12-08 09:14+0900\n"
+"PO-Revision-Date: 2014-12-08 13:54+0900\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -320,12 +320,11 @@ msgid "Guide speed, n.nn x sidereal"
 msgstr "ガイドスピード, n.nn x 恒星時"
 
 #: calstep_dialog.cpp:120
-#, fuzzy, c-format
 msgid ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
-"50% sidereal rate, enter 0.5"
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
+"sidereal rate, enter 0.5"
 msgstr ""
-"ガイド速度,恒星時に対する割合; もしマウントのガイド速度が50%の追尾レートな"
+"ガイド速度の恒星時に対する割合; もしマウントのガイド速度が50%の追尾レートな"
 "ら、0.5と入力"
 
 #: calstep_dialog.cpp:126
@@ -542,7 +541,6 @@ msgid "Cannot get a frame from the queue"
 msgstr "キューからのフレーム取得ができません。"
 
 #: cam_INDI.cpp:290
-#, fuzzy
 msgid "Cannot connect to camera "
 msgstr "カメラと接続できません"
 
@@ -559,24 +557,20 @@ msgid "Error reading data"
 msgstr "読込みデータエラー"
 
 #: cam_INDI.cpp:435
-#, fuzzy
 msgid "No CCD_FRAME property, failed to determine image dimensions"
-msgstr "画像の次元を決定することができません。"
+msgstr "CCD_FRAMEのプロパティが無いため画像次元の決定に失敗しました。"
 
 #: cam_INDI.cpp:442
-#, fuzzy
 msgid "No WIDTH value, failed to determine image dimensions"
-msgstr "画像の次元を決定することができません。"
+msgstr "横幅情報が無いため画像次元の決定に失敗しました。"
 
 #: cam_INDI.cpp:450
-#, fuzzy
 msgid "No HEIGHT value, failed to determine image dimensions"
-msgstr "画像の次元を決定することができません。"
+msgstr "縦幅情報が無いため画像次元の決定に失敗しました。"
 
 #: cam_INDI.cpp:457
-#, fuzzy
 msgid "CCD stream: memory allocation error"
-msgstr "メモリ割当てエラー"
+msgstr "CCDストリーム: メモリ割当てエラー"
 
 #: cam_INDI.cpp:537
 msgid "Unknown image format: "
@@ -787,7 +781,6 @@ msgid "Hot pixels"
 msgstr "ホットピクセル"
 
 #: cam_simulator.cpp:1305
-#, fuzzy, c-format
 msgid "% Simulated noise"
 msgstr "% シミュレートされたノイズ"
 
@@ -934,9 +927,9 @@ msgid "Cancel"
 msgstr "キャンセル"
 
 #: cam_simulator.cpp:1454
-#, fuzzy, c-format
+#, c-format
 msgid "Side of pier: %s"
-msgstr "支柱の側"
+msgstr "支柱の側: %s"
 
 #: cam_StarShootDSCI.cpp:145
 msgid "Problem sending register to StarShoot"
@@ -3225,9 +3218,8 @@ msgid "Right"
 msgstr "Right"
 
 #: nudge_lock.cpp:148
-#, fuzzy
 msgid "Step"
-msgstr "Bumpステップ"
+msgstr "ステップ"
 
 #: nudge_lock.cpp:153
 msgid ""
@@ -3247,7 +3239,7 @@ msgstr ""
 
 #: nudge_lock.cpp:165
 msgid "Lock Pos:"
-msgstr ""
+msgstr "ロック位置:"
 
 #: nudge_lock.cpp:170
 msgid "Lock position X coordinate"
@@ -3902,9 +3894,8 @@ msgstr ""
 "[計算]をクリックすると最適値を計算します"
 
 #: scope.cpp:1274
-#, fuzzy
 msgid "Max Duration"
-msgstr "赤経(RA)最大持続時間設定"
+msgstr "最大持続時間"
 
 #: scope.cpp:1281
 msgid ""
@@ -4342,6 +4333,3 @@ msgstr "AOと接続中..."
 #: runinbg.h:91
 msgid "Connecting to Camera..."
 msgstr "カメラと接続中..."
-
-#~ msgid "%s Settings"
-#~ msgstr "マウント設定"
