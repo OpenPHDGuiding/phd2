@@ -3,7 +3,7 @@
 ; Updated to install independently of PHD1 by Andy Galasso on 2013/7/25
 
 #define APP_NAME "PHD 2"
-#define APP_VERSION "2.4.0"
+#define APP_VERSION "2.4.1"
 
 [Setup]
 AppName={#APP_NAME}
@@ -19,7 +19,7 @@ DirExistsWarning=no
 
 [Files]
 Source: Release\phd2.exe; DestDir: {app}; Flags: replacesameversion
-Source: locale\*; Excludes: *-old.*; DestDir: {app}\locale; Flags: recursesubdirs replacesameversion
+Source: locale\*; Excludes: *-old.* help; DestDir: {app}\locale; Flags: recursesubdirs replacesameversion
 Source: PHD2GuideHelp.zip; DestDir: {app}; Flags: replacesameversion
 Source: README-PHD2.txt; DestDir: {app}; Flags: isreadme replacesameversion
 Source: WinLibs\astroDLLGeneric.dll; DestDir: {app}; Flags: replacesameversion

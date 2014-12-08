@@ -17,36 +17,41 @@ fi
 
 build=$(cd $(dirname $0); /bin/pwd)
 top="$build/.."
-help="$top/help"
 
 TMP=/tmp/phd2help$$
-mkdir "$TMP"
 trap "rm -rf $TMP" 2 3 15
 
-cp -p "$help"/* "$TMP"/
+for help in "$top/help" "$top"/locale/*/help; do
 
-(
-    cd "$TMP"
+    dest="$help"/..
 
-    # generate the hhk (index) file
-    "$build"/build_help_hhk
+    mkdir "$TMP"
 
-    # rebuild the help zip file
-    rm -f "$top"/PHD2GuideHelp.zip
-    zip -r "$top"/PHD2GuideHelp.zip .
+    cp -p "$help"/* "$TMP"/
 
-    if [ -n "$do_web" ]; then
-        echo "building web pages..."
+    (
+        cd "$TMP"
 
-        # generate the HTML table of contents page
-        phdversion=$("$build"/get_phd_version "$top"/phd.h)
-        "$build"/build_help_toc_html "$phdversion" > index.html
+        # generate the hhk (index) file
+        "$build"/build_help_hhk
 
-        # generate the online help files
-        tar cfz "$top"/man.tar.gz *.html *.htm *.png
+        # rebuild the help zip file
+        rm -f "$dest"/PHD2GuideHelp.zip
+        zip -r "$dest"/PHD2GuideHelp.zip .
 
-        echo "done"
-    fi
-)
+        if [ -n "$do_web" ]; then
+            echo "building web pages..."
 
-rm -rf "$TMP"
+            # generate the HTML table of contents page
+            phdversion=$("$build"/get_phd_version "$top"/phd.h)
+            "$build"/build_help_toc_html "$phdversion" > index.html
+
+            # generate the online help files
+            tar cfz "$dest"/man.tar.gz *.html *.htm *.png
+
+            echo "done"
+        fi
+    )
+
+    rm -rf "$TMP"
+done
