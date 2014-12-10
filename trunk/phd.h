@@ -130,6 +130,19 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include <opencv/cv.h>
 #endif
 
+#if defined (__WINDOWS__)
+#define PHD_MESSAGES_CATALOG "messages"
+#endif
+
+#if defined (__APPLE__)
+#define PHD_MESSAGES_CATALOG "messages"
+#endif
+
+#if defined (__LINUX__)
+// On Linux the messages catalogs for all the applications are in the same directory
+// in /usr/share/locale, so the catalog name must be the application name.
+#define PHD_MESSAGES_CATALOG "phd2"
+#endif
 
 #include "phdconfig.h"
 #include "configdialog.h"

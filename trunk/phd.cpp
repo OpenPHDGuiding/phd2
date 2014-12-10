@@ -147,7 +147,7 @@ bool PhdApp::OnInit()
 
     wxLocale::AddCatalogLookupPathPrefix(_T("locale"));
     m_locale.Init(pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
-    if (!m_locale.AddCatalog("messages"))
+    if (!m_locale.AddCatalog(PHD_MESSAGES_CATALOG))
     {
         Debug.AddLine("locale.AddCatalog failed");
     }

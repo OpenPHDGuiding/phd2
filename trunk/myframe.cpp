@@ -1995,8 +1995,8 @@ bool MyFrame::SetLanguage(int language)
 
     //wxTranslations *pTrans = wxTranslations::Get();
     //pTrans->SetLanguage((wxLanguage)language);
-    //if (!pTrans->IsLoaded("messages"))
-    //    pTrans->AddCatalog("messages");
+    //if (!pTrans->IsLoaded(PHD_MESSAGES_CATALOG))
+    //    pTrans->AddCatalog(PHD_MESSAGES_CATALOG);
 
     pConfig->Global.SetInt("/wxLanguage", language);
 
@@ -2071,7 +2071,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 
     int currentLanguage = m_pFrame->m_pLocale->GetLanguage();
     wxTranslations *pTrans = wxTranslations::Get();
-    wxArrayString availableTranslations = pTrans->GetAvailableTranslations("messages");
+    wxArrayString availableTranslations = pTrans->GetAvailableTranslations(PHD_MESSAGES_CATALOG);
     wxArrayString languages;
     languages.Add(_("System default"));
     languages.Add("English");
