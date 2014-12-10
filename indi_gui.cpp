@@ -464,6 +464,7 @@ void IndiGui::OnNewSwitchFromThread(wxThreadEvent& event)
     IndiProp *indiProp = (IndiProp *) indiDev->properties[propname];
     switch (swtype) {
 	case SWITCH_COMBOBOX: {
+	    idx=0;
 	    for (i = 0; i < svp->nsp; i++){
 		if(svp->sp[i].s == ISS_ON)
 		    idx = i;
