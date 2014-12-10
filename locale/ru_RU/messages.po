@@ -36,14 +36,14 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-08 18:10-0500\n"
-"PO-Revision-Date: 2014-11-22 22:40+0300\n"
-"Last-Translator: Konstantin Menshkoff <konstantin.menshikoff@gmail.com>\n"
+"PO-Revision-Date: 2014-12-10 20:34+0400\n"
+"Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.10\n"
+"X-Generator: Poedit 1.7.1\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
@@ -1072,7 +1072,7 @@ msgstr ""
 msgid ""
 "Disconnect nonresponsive\n"
 "camera after (seconds)"
-msgstr ""
+msgstr "Отключить не отвечающую камеру через (сек)"
 
 #: camera.cpp:1023
 msgid "Memory allocation error during capture"
@@ -2002,11 +2002,11 @@ msgstr ""
 
 #: graph.cpp:390
 msgid "RA or dx Color"
-msgstr ""
+msgstr "Цвет RA или dx"
 
 #: graph.cpp:406
 msgid "Dec or dy Color"
-msgstr ""
+msgstr "Цвет Dec или dy"
 
 #: graph.cpp:698
 msgid "Select the Y-axis scale, pixels per Y division"
@@ -2263,7 +2263,7 @@ msgstr ""
 
 #: indi_gui.cpp:684
 msgid "INDI Options"
-msgstr ""
+msgstr "Настройки INDI"
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -3303,7 +3303,7 @@ msgstr "Помощник нового профиля"
 
 #: profile_wizard.cpp:112
 msgid "More Info"
-msgstr "Больше сведений"
+msgstr "Дополнительные сведения"
 
 #: profile_wizard.cpp:122
 msgid "Gear"
@@ -3881,9 +3881,8 @@ msgstr ""
 "расчёта подходящего значения"
 
 #: scope.cpp:1274
-#, fuzzy
 msgid "Max Duration"
-msgstr "Установка максимального времени по RA"
+msgstr "Максимальная длительность"
 
 #: scope.cpp:1281
 msgid ""
@@ -4127,7 +4126,7 @@ msgstr ""
 
 #: stepguider.cpp:1119
 msgid "Samples to Average"
-msgstr ""
+msgstr "Образцы для усреднения"
 
 #: stepguider.cpp:1120
 #, c-format
