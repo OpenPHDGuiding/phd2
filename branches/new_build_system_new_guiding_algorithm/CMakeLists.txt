@@ -75,12 +75,12 @@ add_library(GP STATIC ${gp_SRC})
 target_include_directories(GP PUBLIC ${EIGEN_SRC})
 
 # Test for the GP
-add_executable(GPTest ${phd_src_dir}/tests/gaussian_process/main.cpp)
-target_link_libraries(GPTest GP gtest)
-target_include_directories(GPTest PRIVATE ${phd_src_dir}/gaussian_process
-                                  PRIVATE ${GTEST_HEADERS})
-set_property(TARGET GPTest PROPERTY FOLDER "Unit tests/")
-add_test(GPTest1 GPTest)
+# add_executable(GPTest ${phd_src_dir}/tests/gaussian_process/main.cpp)
+# target_link_libraries(GPTest GP gtest)
+# target_include_directories(GPTest PRIVATE ${phd_src_dir}/gaussian_process
+#                                   PRIVATE ${GTEST_HEADERS})
+# set_property(TARGET GPTest PROPERTY FOLDER "Unit tests/")
+# add_test(GPTest1 GPTest)
 
 # main project
 
