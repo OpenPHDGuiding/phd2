@@ -53,11 +53,6 @@ private:
     double control_gain_;
     double elapsed_time_ms_;
 
-
-    wxStopWatch result_timer_;
-
-
-
     void HandleTimestamps();
     void HandleMeasurements(double input);
     void HandleModifiedMeasurements(double input);
@@ -71,8 +66,14 @@ protected:
     public:
         GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm);
         virtual ~GuideGaussianProcessDialogPane(void);
-        
+
+        /*
+         * Fill the GUI with the parameters that are currently chosen in the
+         * guiding algorithm
+         */
         virtual void LoadValues(void);
+
+        // Set the parameters chosen in the GUI in the actual guiding algorithm
         virtual void UnloadValues(void);
     };
 
@@ -93,4 +94,4 @@ public:
     
 };
 
-#endif /* defined(GUIDE_GAUSSIAN_PROCESS) */
+#endif  // GUIDE_GAUSSIAN_PROCESS

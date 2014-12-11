@@ -49,8 +49,7 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
       timer_(),
       control_signal_(0.0),
       number_of_measurements_(0),
-      elapsed_time_ms_(0.0),
-      result_timer_()
+      elapsed_time_ms_(0.0)
 {
     wxString configPath = GetConfigPath();
     double control_gain = pConfig->Profile.GetDouble(configPath + "/controlGain",
@@ -195,7 +194,6 @@ void GuideGaussianProcess::HandleModifiedMeasurements(double input)
 
 double GuideGaussianProcess::result(double input)
 {
-    result_timer_.Start();
     HandleTimestamps();
     HandleMeasurements(input);
     HandleModifiedMeasurements(input);
