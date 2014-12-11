@@ -276,7 +276,7 @@ double GuideGaussianProcess::result(double input)
     }
     else
     {
-        // Simpler control signal computation for
+        // Simpler prediction when there are not enough data points for the GP
         control_signal_ = -input / delta_controller_time_ms;
     }
 

@@ -67,8 +67,6 @@ set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 # Gaussian Process
 
 set(gp_SRC
-    ${phd_src_dir}/gaussian_process/GPImpl.cpp
-    ${phd_src_dir}/gaussian_process/GPImpl.h
     ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
     ${phd_src_dir}/gaussian_process/tools/math_tools.h
     ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
