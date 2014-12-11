@@ -218,11 +218,12 @@ class WorkerThreadKillGuard
 public:
     WorkerThreadKillGuard(WorkerThread *thread = WorkerThread::This()) : m_thread(thread)
     {
-        m_prev = m_thread->SetKillable(false);
+        m_prev = m_thread ? m_thread->SetKillable(false) : true;
     }
     ~WorkerThreadKillGuard()
     {
-        m_thread->SetKillable(m_prev);
+        if (m_thread)
+            m_thread->SetKillable(m_prev);
     }
 };
 
