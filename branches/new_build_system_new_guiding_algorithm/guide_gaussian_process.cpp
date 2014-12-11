@@ -204,11 +204,16 @@ double GuideGaussianProcess::result(double input)
     /*
      * Need to read this value here because it is not loaded at the construction
      * time of this object.
+     * 
+     *
+     * Not used when testing the Code with Matlab, will be used in the actual GP
      */
     double delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
 
-    // Send the timestamps and the modified measurements to Matlab
+
+    // This is the Code sending the circular buffers to Matlab:
+
     double* timestamp_data = timestamps_.getEigenVector()->data();
     double* modified_measurement_data =
         modified_measurements_.getEigenVector()->data();
@@ -221,59 +226,41 @@ double GuideGaussianProcess::result(double input)
     // Send the input
     double input_buf[] = { input };
     sent = udpInteraction.SendToUDPPort(input_buf, 8);
-    std::cout << "Sent input: " << sent << std::endl;
-
-    //wxMilliSleep(wait_time);
     received = udpInteraction.ReceiveFromUDPPort(&result, 8);
-    std::cout << "Received input: " << received << std::endl;
     wxMilliSleep(wait_time);
-
 
     // Send the size of the buffer
     double size = timestamps_.getEigenVector()->size();
     double size_buf[] = { size };
     sent = udpInteraction.SendToUDPPort(size_buf, 8);
-    std::cout << "Sent size: " << sent << std::endl;
-
-    //wxMilliSleep(wait_time);
     received = udpInteraction.ReceiveFromUDPPort(&result, 8);
-    std::cout << "Received size: " << received << std::endl;
-
     wxMilliSleep(wait_time);
-
-
 
     // Send modified measurements
     sent = udpInteraction.SendToUDPPort(modified_measurement_data, size * 8);
-    std::cout << "Sent measurement: " << sent << std::endl;
-
-    //wxMilliSleep(wait_time);
     received = udpInteraction.ReceiveFromUDPPort(&result, 8);
-    std::cout << "Received measurement: " << received << std::endl;
-
     wxMilliSleep(wait_time);
-
-
-
 
     // Send timestamps
     sent = udpInteraction.SendToUDPPort(timestamp_data, size * 8);
-    //wxMilliSleep(wait_time);
-
-    std::cout << "Sent timestamp: " << sent << std::endl;
-
     // Receive the final control signal
     received = udpInteraction.ReceiveFromUDPPort(&result, 8);
 
-    std::cout << "Received control signal: " << received << std::endl;
-    std::cout << "Number of inputs: " << number_of_measurements_ << std::endl;
-    std::cout << "Getting the result took: " << result_timer_.Time() << "ms" << std::endl;
     return result;
 
 
+    /*
+     * This is the code running the actual GP
+     *
+     * TODO: 
+     * - Let GP class be a member of this Guiding Class
+     * - Call the GP´s BFGS Optimizer every once in a while (how often?)
+     *
+     */
 
 
     /*
+
     if (number_of_measurements_ > 5)
     {
 
@@ -289,37 +276,13 @@ double GuideGaussianProcess::result(double input)
     }
     else
     {
+        // Simpler control signal computation for
         control_signal_ = -input / delta_controller_time_ms;
-    }
-
-    if (number_of_measurements_ > 30) {
-        std::cout << *measurements_.getEigenVector() << std::endl;
-        std::cout << measurements_.getEigenVector()->size() << std::endl;
-        std::cout << "\n" << std::endl;
-
-        std::cout << *modified_measurements_.getEigenVector() << std::endl;
-        std::cout << modified_measurements_.getEigenVector()->size() << std::endl;
-        std::cout << "\n" << std::endl;
-
-        std::cout << *timestamps_.getEigenVector() << std::endl;
-        std::cout << timestamps_.getEigenVector()->size() << std::endl;
-        std::cout << "\n" << std::endl;
     }
 
     return control_signal_;
 
-        */
-
-    /*
-    // Old UDP Interaction
-
-     double buf[] = {input};
-
-     udpInteraction.sendToUDPPort(buf, sizeof(buf));
-     udpInteraction.receiveFromUDPPort(buf, sizeof(buf)); // this command blocks until matlab sends back something
-
-     return buf[0];
-*/
+     */
 }
 
 

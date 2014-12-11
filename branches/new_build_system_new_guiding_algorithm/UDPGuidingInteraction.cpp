@@ -78,6 +78,8 @@ UDPGuidingInteraction::UDPGuidingInteraction(wxString host,
 }
 
 UDPGuidingInteraction::~UDPGuidingInteraction() {
+    sendSocket->Destroy();
+    receiveSocket->Destroy();
 }
 
 
