@@ -69,7 +69,7 @@
 
 #define APPNAME _T("PHD2 Guiding")
 #define PHDVERSION _T("2.4.1")
-#define PHDSUBVER _T("")
+#define PHDSUBVER _T("a")
 #define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
