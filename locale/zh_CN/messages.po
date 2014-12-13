@@ -34,14 +34,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PHD2 2.3.1n\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-08 18:10-0500\n"
+"POT-Creation-Date: 2014-12-13 20:29+0100\n"
 "PO-Revision-Date: 2014-11-04 15:50+0800\n"
 "Last-Translator: Linkage <Linkage@163.com>\n"
 "Language-Team: Linkage <Linkage@163.com>\n"
-"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
 "X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
@@ -309,8 +309,8 @@ msgstr "导星速率, n.nn x 恒星时"
 #: calstep_dialog.cpp:120
 #, c-format
 msgid ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
-"50% sidereal rate, enter 0.5"
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
+"sidereal rate, enter 0.5"
 msgstr ""
 
 #: calstep_dialog.cpp:126
@@ -1843,6 +1843,26 @@ msgstr "导入PHD设备配置文件"
 msgid "Export PHD Equipment Profile"
 msgstr "导出PHD设备配置文件"
 
+#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
+msgid "AO Position"
+msgstr "AO位置"
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "选择历史帧数显示"
+
+#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:108 target.cpp:79
+msgid "Clear"
+msgstr "清除"
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr "清除图形数据"
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr "AO未连接"
+
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr "赤道仪："
@@ -1858,10 +1878,6 @@ msgstr "设置"
 #: graph.cpp:126
 msgid "Graph settings"
 msgstr "图形设置"
-
-#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:108 target.cpp:79
-msgid "Clear"
-msgstr "清除"
 
 #: graph.cpp:130
 msgid ""
@@ -1972,22 +1988,6 @@ msgstr "选择Y轴刻度，角秒/每格"
 #: graph.cpp:1358 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "抖动"
-
-#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
-msgid "AO Position"
-msgstr "AO位置"
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr "选择历史帧数显示"
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr "清除图形数据"
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
-msgstr "AO未连接"
 
 #: guide_algorithm.cpp:48
 msgid "DEC"
@@ -2214,7 +2214,7 @@ msgstr ""
 "(less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
 "If star mass change detection is not enabled then this setting is ignored."
 
-#: indi_gui.cpp:684
+#: indi_gui.cpp:685
 msgid "INDI Options"
 msgstr ""
 

@@ -35,14 +35,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-08 18:10-0500\n"
+"POT-Creation-Date: 2014-12-13 20:29+0100\n"
 "PO-Revision-Date: 2014-11-30 13:32+0100\n"
 "Last-Translator: Carsten Przygoda <carsten@funnytakes.de>\n"
 "Language-Team: Carsten Przygoda <carsten@funnytakes.de>\n"
-"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.4\n"
 
@@ -327,8 +327,8 @@ msgstr "Nachführgeschwindigkeit, n.nn x sideral"
 #: calstep_dialog.cpp:120
 #, c-format
 msgid ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
-"50% sidereal rate, enter 0.5"
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
+"sidereal rate, enter 0.5"
 msgstr ""
 "Auto-Guide-Speed der Montierung übernehmen; wenn 50% sidereal rate, dann 0.5"
 
@@ -1925,6 +1925,26 @@ msgstr "PHD Ausrüstungsprofile importieren"
 msgid "Export PHD Equipment Profile"
 msgstr "PHD Ausrüstungsprofile exportieren"
 
+#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
+msgid "AO Position"
+msgstr "AO Position"
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "Wählen Sie die Anzahl der Bilder, die im Verlauf angezeigt werden"
+
+#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:108 target.cpp:79
+msgid "Clear"
+msgstr "Zurücksetzen"
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr "Grafik zurücksetzen"
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr "AO nicht verbunden"
+
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr "Teleskop:"
@@ -1941,10 +1961,6 @@ msgstr "Einstellungen"
 #: graph.cpp:126
 msgid "Graph settings"
 msgstr "Grafik-Einstellungen"
-
-#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:108 target.cpp:79
-msgid "Clear"
-msgstr "Zurücksetzen"
 
 #: graph.cpp:130
 msgid ""
@@ -2058,22 +2074,6 @@ msgstr "Wählen Sie die Y-Achsen-Skala, Bogensekunden pro Y Division"
 #: graph.cpp:1358 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Dither"
-
-#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
-msgid "AO Position"
-msgstr "AO Position"
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr "Wählen Sie die Anzahl der Bilder, die im Verlauf angezeigt werden"
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr "Grafik zurücksetzen"
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
-msgstr "AO nicht verbunden"
 
 #: guide_algorithm.cpp:48
 msgid "DEC"
@@ -2308,7 +2308,7 @@ msgstr ""
 "Massenänderungserkennung nicht aktiviert ist, dann wird diese Einstellung "
 "ignoriert."
 
-#: indi_gui.cpp:684
+#: indi_gui.cpp:685
 msgid "INDI Options"
 msgstr ""
 

@@ -8,11 +8,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-08 18:10-0500\n"
+"POT-Creation-Date: 2014-12-13 20:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -273,8 +272,8 @@ msgstr ""
 #: calstep_dialog.cpp:120
 #, c-format
 msgid ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
-"50% sidereal rate, enter 0.5"
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
+"sidereal rate, enter 0.5"
 msgstr ""
 
 #: calstep_dialog.cpp:126
@@ -1768,6 +1767,26 @@ msgstr ""
 msgid "Export PHD Equipment Profile"
 msgstr ""
 
+#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
+msgid "AO Position"
+msgstr ""
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr ""
+
+#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:108 target.cpp:79
+msgid "Clear"
+msgstr ""
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr ""
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr ""
+
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr ""
@@ -1782,10 +1801,6 @@ msgstr ""
 
 #: graph.cpp:126
 msgid "Graph settings"
-msgstr ""
-
-#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:108 target.cpp:79
-msgid "Clear"
 msgstr ""
 
 #: graph.cpp:130
@@ -1896,22 +1911,6 @@ msgstr ""
 
 #: graph.cpp:1358 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
-msgstr ""
-
-#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
-msgid "AO Position"
-msgstr ""
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr ""
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr ""
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
 msgstr ""
 
 #: guide_algorithm.cpp:48
@@ -2125,7 +2124,7 @@ msgid ""
 "If star mass change detection is not enabled then this setting is ignored."
 msgstr ""
 
-#: indi_gui.cpp:684
+#: indi_gui.cpp:685
 msgid "INDI Options"
 msgstr ""
 

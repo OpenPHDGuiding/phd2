@@ -36,16 +36,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-08 18:10-0500\n"
-"PO-Revision-Date: 2014-11-15 12:48+0100\n"
-"Last-Translator: Patrick Chevalley <pch@ap-i.net> \n"
+"POT-Creation-Date: 2014-12-13 20:29+0100\n"
+"PO-Revision-Date: 2014-12-13 20:43+0100\n"
+"Last-Translator: Sylvain Girard <sylvain.girard@zesly.net>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
-"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Poedit 1.6.6\n"
 
 #: advanced_dialog.cpp:53
 msgid "Advanced setup"
@@ -543,16 +543,15 @@ msgid "Could not start video stream"
 msgstr "Impossible de démarrer le flux vidéo"
 
 #: cam_firewire_IC.cpp:313
-#, fuzzy, c-format
+#, c-format
 msgid "Error capturing image: %d (%d) %s"
-msgstr "Erreur a la capture de l'image : %d (%d)"
+msgstr "Erreur a la capture de l'image : %d (%d) %s"
 
 #: cam_firewire_OSX.cpp:331
 msgid "Cannot get a frame from the queue"
-msgstr ""
+msgstr "Impossible d'obtenir une image de la file d'attente"
 
 #: cam_INDI.cpp:290
-#, fuzzy
 msgid "Cannot connect to camera "
 msgstr "Impossible de se connecter à la caméra"
 
@@ -569,24 +568,24 @@ msgid "Error reading data"
 msgstr "Erreur de lecture de données"
 
 #: cam_INDI.cpp:435
-#, fuzzy
 msgid "No CCD_FRAME property, failed to determine image dimensions"
-msgstr "Impossible de déterminer les dimensions de l'image"
+msgstr ""
+"Aucune propriété CCD_FRAME, impossible de déterminer les dimensions de "
+"l'image"
 
 #: cam_INDI.cpp:442
-#, fuzzy
 msgid "No WIDTH value, failed to determine image dimensions"
-msgstr "Impossible de déterminer les dimensions de l'image"
+msgstr ""
+"Aucune valeur WIDTH, impossible de déterminer les dimensions de l'image"
 
 #: cam_INDI.cpp:450
-#, fuzzy
 msgid "No HEIGHT value, failed to determine image dimensions"
-msgstr "Impossible de déterminer les dimensions de l'image"
+msgstr ""
+"Aucune valeur HEIGHT, impossible de déterminer les dimensions de l'image"
 
 #: cam_INDI.cpp:457
-#, fuzzy
 msgid "CCD stream: memory allocation error"
-msgstr "Erreur d'allocation mémoire"
+msgstr "Flux CCD : erreur d'allocation mémoire"
 
 #: cam_INDI.cpp:537
 msgid "Unknown image format: "
@@ -750,15 +749,17 @@ msgstr ""
 
 #: cam_simulator.cpp:387
 msgid "Choose a star displacements file"
-msgstr ""
+msgstr "Choisissez un fichier de déplacements étoiles"
 
 #: cam_simulator.cpp:395
 msgid "Can't use this file for star displacements"
-msgstr ""
+msgstr "Impossible d'utiliser ce fichier pour les déplacements étoiles"
 
 #: cam_simulator.cpp:399
 msgid "Can't simulate any star movement without a displacement file"
 msgstr ""
+"Imossible de simuler un quelconque mouvement d'étoiles sans un fichier de "
+"déplacements"
 
 #: cam_simulator.cpp:937
 msgid "Cannot load simulated image"
@@ -951,9 +952,9 @@ msgid "Cancel"
 msgstr "Abandon"
 
 #: cam_simulator.cpp:1454
-#, fuzzy, c-format
+#, c-format
 msgid "Side of pier: %s"
-msgstr "Côté du méridien : "
+msgstr "Côté du méridien : %s"
 
 #: cam_StarShootDSCI.cpp:145
 msgid "Problem sending register to StarShoot"
@@ -1101,15 +1102,16 @@ msgid "Memory allocation error during capture"
 msgstr "Erreur d'allocation mémoire pendant la capture"
 
 #: camera.cpp:1025
-#, fuzzy
 msgid "Camera timeout during capture"
-msgstr "Délai d'attente dépassé pendant la capture"
+msgstr "Délai d'attente de la caméra dépassé pendant la capture"
 
 #: camera.cpp:1033
 msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
 msgstr ""
+"La caméra a été déconnecté. Veuillez résoudre le problème et re-connectez la "
+"caméra."
 
 #: comet_tool.cpp:79 myframe.cpp:428
 msgid "Comet Tracking"
@@ -1925,6 +1927,26 @@ msgstr "Importer Profils d'Equipement PHD"
 msgid "Export PHD Equipment Profile"
 msgstr "Exporter un Profil d'Equipement PHD"
 
+#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
+msgid "AO Position"
+msgstr "Position AO"
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "Sélectionner le nombre d'images de l'historique a afficher"
+
+#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:108 target.cpp:79
+msgid "Clear"
+msgstr "Effacer"
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr "Effacer les données du graph"
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr "AO non connecté"
+
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr "Scope :"
@@ -1940,10 +1962,6 @@ msgstr "Réglages"
 #: graph.cpp:126
 msgid "Graph settings"
 msgstr "Réglages du graph"
-
-#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:108 target.cpp:79
-msgid "Clear"
-msgstr "Effacer"
 
 #: graph.cpp:130
 msgid ""
@@ -2057,22 +2075,6 @@ msgstr "Sélectionner l'échelle de l'axe Y, en secondes d'arc pas division"
 #: graph.cpp:1358 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Dithering"
-
-#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
-msgid "AO Position"
-msgstr "Position AO"
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr "Sélectionner le nombre d'images de l'historique a afficher"
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr "Effacer les données du graph"
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
-msgstr "AO non connecté"
 
 #: guide_algorithm.cpp:48
 msgid "DEC"
@@ -2308,9 +2310,9 @@ msgstr ""
 "est 50. Si la détection de changement de masse de l'étoile n'est pas activé "
 "ce paramètre est ignoré."
 
-#: indi_gui.cpp:684
+#: indi_gui.cpp:685
 msgid "INDI Options"
-msgstr ""
+msgstr "Options INDI"
 
 #: manualcal_dialog.cpp:40
 msgid "Manual Calibration"
@@ -3282,9 +3284,8 @@ msgid "Right"
 msgstr "Gauche"
 
 #: nudge_lock.cpp:148
-#, fuzzy
 msgid "Step"
-msgstr "Pas du saut"
+msgstr "Pas"
 
 #: nudge_lock.cpp:153
 msgid ""
@@ -3304,7 +3305,7 @@ msgstr ""
 
 #: nudge_lock.cpp:165
 msgid "Lock Pos:"
-msgstr ""
+msgstr "Verouillage Pos :"
 
 #: nudge_lock.cpp:170
 msgid "Lock position X coordinate"
@@ -3988,9 +3989,8 @@ msgstr ""
 "calibration ? Cliquez \"Calculer\" pour déterminer une valeur approprié."
 
 #: scope.cpp:1274
-#, fuzzy
 msgid "Max Duration"
-msgstr "Réglage durée AD Max"
+msgstr "Durée Max"
 
 #: scope.cpp:1281
 msgid ""
@@ -4295,6 +4295,12 @@ msgid ""
 "downloads,\n"
 "contains the v101 firmware."
 msgstr ""
+"Cette version du firmware de l'AO (% 03u) limite la plage de déplacement de "
+"l'AO, et peut\n"
+"causer un échec de la calibration. Il est recommandé de charger la version "
+"101 ou plus\n"
+"récente du firmware. L'utilitaire SXV-AO v104 ou plus récent, disponible à\n"
+"http://www.sxccd.com/drivers-downloads, contient le firmware V101."
 
 #: stepguider_sxao.cpp:107
 msgid "Warning"

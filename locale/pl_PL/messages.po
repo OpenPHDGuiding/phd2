@@ -35,14 +35,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-08 18:10-0500\n"
+"POT-Creation-Date: 2014-12-13 20:29+0100\n"
 "PO-Revision-Date: 2014-10-28 15:44+0100\n"
 "Last-Translator: Jakub Bartas <jakub.bartas@gmail.com>\n"
 "Language-Team: Jakub Bartas <jakub.bartas@gmail.com>\n"
-"Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: pl_PL\n"
 "X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
@@ -311,8 +311,8 @@ msgstr "Prędkość guidingu, n.nn x p. gwiazdowa"
 #: calstep_dialog.cpp:120
 #, fuzzy, c-format
 msgid ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
-"50% sidereal rate, enter 0.5"
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
+"sidereal rate, enter 0.5"
 msgstr "Prędkość guidingu, wielokrotność prędkości gwiazdowej; "
 
 #: calstep_dialog.cpp:126
@@ -1878,6 +1878,26 @@ msgstr "Importuj profilu sprzętowe PHD"
 msgid "Export PHD Equipment Profile"
 msgstr "Eksportuj profilu sprzętowe PHD"
 
+#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
+msgid "AO Position"
+msgstr "Pozycja AO"
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "Wybierz liczbę pokazywanych klatek"
+
+#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:108 target.cpp:79
+msgid "Clear"
+msgstr "Wyczyść"
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr "Wyczyść wykres"
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr "AO nie jest podłączona"
+
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr "Teleskop:"
@@ -1893,10 +1913,6 @@ msgstr "Ustawienia"
 #: graph.cpp:126
 msgid "Graph settings"
 msgstr "Ustawienia wykresu"
-
-#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:108 target.cpp:79
-msgid "Clear"
-msgstr "Wyczyść"
 
 #: graph.cpp:130
 msgid ""
@@ -2010,22 +2026,6 @@ msgstr "Wybierz skalę osi Y, arc-sec na region"
 #: graph.cpp:1358 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Dithering"
-
-#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
-msgid "AO Position"
-msgstr "Pozycja AO"
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr "Wybierz liczbę pokazywanych klatek"
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr "Wyczyść wykres"
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
-msgstr "AO nie jest podłączona"
 
 #: guide_algorithm.cpp:48
 msgid "DEC"
@@ -2259,7 +2259,7 @@ msgstr ""
 "10-100, domyślnie 50. Jeśli wykrywanie zmian nie jest aktywne, ten parametr "
 "jest pomijany."
 
-#: indi_gui.cpp:684
+#: indi_gui.cpp:685
 msgid "INDI Options"
 msgstr ""
 
