@@ -35,17 +35,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-08 18:10-0500\n"
+"POT-Creation-Date: 2014-12-13 20:29+0100\n"
 "PO-Revision-Date: 2014-12-10 20:34+0400\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
-"Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: ru_RU\n"
 "X-Generator: Poedit 1.7.1\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: advanced_dialog.cpp:53
 msgid "Advanced setup"
@@ -324,8 +324,8 @@ msgstr "Скорость гидирования, n.nn солнечной"
 #: calstep_dialog.cpp:120
 #, c-format
 msgid ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
-"50% sidereal rate, enter 0.5"
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
+"sidereal rate, enter 0.5"
 msgstr ""
 "Скорость гидирования, кратная солнечной, например, для 50% солнечной введите "
 "0.5"
@@ -1888,6 +1888,26 @@ msgstr "Импорт профилей оборудования PHD"
 msgid "Export PHD Equipment Profile"
 msgstr "Экспортировать профиль оборудования PHD"
 
+#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
+msgid "AO Position"
+msgstr "Позиция АО"
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "Выбрать отображаемое в истории количество кадров"
+
+#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:108 target.cpp:79
+msgid "Clear"
+msgstr "Очистить"
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr "Очистить графические данные"
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr "АО не подсоединена"
+
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr "Телескоп:"
@@ -1903,10 +1923,6 @@ msgstr "Настройки"
 #: graph.cpp:126
 msgid "Graph settings"
 msgstr "Настройки графика"
-
-#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:108 target.cpp:79
-msgid "Clear"
-msgstr "Очистить"
 
 #: graph.cpp:130
 msgid ""
@@ -2019,22 +2035,6 @@ msgstr ""
 #: graph.cpp:1358 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
 msgstr "Подвижка"
-
-#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
-msgid "AO Position"
-msgstr "Позиция АО"
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr "Выбрать отображаемое в истории количество кадров"
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr "Очистить графические данные"
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
-msgstr "АО не подсоединена"
 
 #: guide_algorithm.cpp:48
 msgid "DEC"
@@ -2261,7 +2261,7 @@ msgid ""
 "If star mass change detection is not enabled then this setting is ignored."
 msgstr ""
 
-#: indi_gui.cpp:684
+#: indi_gui.cpp:685
 msgid "INDI Options"
 msgstr "Настройки INDI"
 
