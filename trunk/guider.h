@@ -194,7 +194,6 @@ public:
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
     void UpdateImageDisplay(usImage *pImage=NULL);
-    bool DoGuide(void);
 
     MOVE_LOCK_RESULT MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position);
