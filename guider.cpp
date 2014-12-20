@@ -154,6 +154,13 @@ PauseType Guider::SetPaused(PauseType pause)
     Debug.AddLine("Guider::SetPaused(%d)", pause);
     PauseType prev = m_paused;
     m_paused = pause;
+
+    if (prev == PAUSE_FULL && pause != prev)
+    {
+        Debug.AddLine("Guider::SetPaused: resetting avg dist filter");
+        m_avgDistanceNeedReset = true;
+    }
+
     return prev;
 }
 
