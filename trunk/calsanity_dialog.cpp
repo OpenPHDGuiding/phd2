@@ -254,6 +254,7 @@ void CalSanityDialog::ShutDown()
 
 void CalSanityDialog::OnIgnore(wxCommandEvent& evt)
 {
+    Debug.AddLine("Calibration sanity check: user chose to ignore alert");
     ShutDown();
 }
 
@@ -262,6 +263,7 @@ void CalSanityDialog::OnRecal(wxCommandEvent& evt)
 {
     if (pFrame->pGuider && pFrame->pGuider->IsCalibratingOrGuiding())
         pFrame->StopCapturing();
+    Debug.AddLine("Calibration sanity check: user discarded bad calibration");
     pMount->ClearCalibration();
     ShutDown();
 }
@@ -278,5 +280,6 @@ void CalSanityDialog::OnRestore(wxCommandEvent& evt)
     m_pScope->SetCalibration(m_priorCalibrationData.XAngle, m_priorCalibrationData.YAngle, m_priorCalibrationData.XRate,
         m_priorCalibrationData.YRate, m_priorCalibrationData.Declination, pierSide);
     pFrame->LoadCalibration();
+    Debug.AddLine("Calibration sanity check: user chose to restore old calibration");
     ShutDown();
 }
