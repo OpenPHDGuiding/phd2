@@ -103,6 +103,16 @@ bool Camera_DSIClass::Connect()
         MeadeCam->SetOffset(255);
         MeadeCam->SetFastReadoutSpeed(true);
         Connected = true;
+        // Set the PixelSize property for cients.  If the pixels aren't square, use the smaller dimension because the image 
+        // is "squared up" by scaling to the smaller dimension
+        if (MeadeCam->IsDsiIII)
+            PixelSize = 6.6;
+        else
+        if (MeadeCam->IsDsiII)
+            PixelSize = 8.3;
+        else
+            PixelSize = 7.5;
+
     }
 
     return retval;
@@ -131,9 +141,9 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     if (!retval)
         return true;
 
-// DSI users report windows crashing (BSOD) if this code is enabled. Disable
-// hang check for now until we have a chance to test with a DSI camera.
-#if 0
+// The AbortImage method does not appear to work with the DSI camera.  If abort is called and the thread is terminated, the 
+// pending image is still downloaded and PHD2 will crash
+#if AbortActuallyWorks
     CameraWatchdog watchdog(duration, GetTimeoutMs());
 
     // wait for image to finish and d/l
@@ -152,7 +162,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
             return true;
         }
     }
-#else // old code
+#else // handle the pending image download, regardless
 
     // We also need to prevent the thread from being killed when phd2 is closed
     WorkerThreadKillGuard _guard;
@@ -166,7 +176,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         still_going = !(MeadeCam->ImageReady);
     }
 
-#endif // old code
+#endif // end of waiting for the image
 
     if (recon) SubtractDark(img);
 
@@ -175,8 +185,8 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         if (MeadeCam->IsColor)
             QuickLRecon(img);
         if (MeadeCam->IsDsiII)
-            SquarePixels(img, 6.5, 6.25);
-        else if (!MeadeCam->IsDsiIII)
+            SquarePixels(img, 8.6, 8.3);
+        else if (!MeadeCam->IsDsiIII)           // Original DSI
             SquarePixels(img, 9.6, 7.5);
     }
 
