@@ -74,6 +74,7 @@ class Scope : public Mount
     int m_recenterDuration;
     PHD_Point m_calibrationInitialLocation;   // initial position of guide star
     PHD_Point m_calibrationStartingLocation;  // position of guide star at start of calibration measurement (after clear backlash etc.)
+    PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
     PHD_Point m_lastLocation;
 
     double m_calibrationXAngle;

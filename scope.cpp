@@ -53,7 +53,7 @@ static const double DEC_BACKLASH_DISTANCE = 3.0;
 static const int MAX_CALIBRATION_STEPS = 60;
 static const double MAX_CALIBRATION_DISTANCE = 25.0;
 static const int CAL_ALERT_MINSTEPS = 4;
-static const double CAL_ALERT_ORTHOGONALITY_TOLERANCE = 10.;                // Degrees
+static const double CAL_ALERT_ORTHOGONALITY_TOLERANCE = 12.5;               // Degrees
 static const double CAL_ALERT_DECRATE_DIFFERENCE = 0.20;                    // Ratio tolerance
 static const double CAL_ALERT_AXISRATES_TOLERANCE = 0.20;                   // Ratio tolerance
 static const bool SANITY_CHECKING_ACTIVE = true;                            // Control calibration sanity checking
@@ -1122,6 +1122,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 m_calibrationSteps = DIV_ROUND_UP(m_recenterRemaining, m_recenterDuration);
                 m_calibrationState = CALIBRATION_STATE_GO_SOUTH;
+                m_southStartingLocation = currentLocation;
 
                 // fall through
                 Debug.AddLine("Falling Through to state GO_SOUTH");
@@ -1149,10 +1150,12 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 // Nudge further South on Dec, get within 2 px North/South of starting point, don't try more than 3 times.
                 if (m_calibrationSteps <= MAX_NUDGES && currentLocation.Distance(m_calibrationInitialLocation) > NUDGE_TOLERANCE)
                 {
-                    double firstDecAmt = MountCoords(m_lastLocation - m_calibrationInitialLocation, m_calibrationXAngle, m_calibrationYAngle).Y;
+                    // Get the sign convention for the total of the 'south' moves we originally made
+                    double totalSouthAmt = MountCoords(m_southStartingLocation - m_lastLocation, m_calibrationXAngle, m_calibrationYAngle).Y;
+                    // Compute how much more south we need to go
                     double decAmt = MountCoords(currentLocation - m_calibrationInitialLocation, m_calibrationXAngle, m_calibrationYAngle).Y;
-                    Debug.AddLine(wxString::Format("Final nudging, decAmt = %.3f, lastSouthDistance = %.3f", decAmt, firstDecAmt));
-                    if (decAmt * firstDecAmt > 0.0)           // still in the same direction
+                    Debug.AddLine(wxString::Format("Final nudging, decAmt = %.3f, Normal south moves = %.3f", decAmt, totalSouthAmt));
+                    if (decAmt * totalSouthAmt > 0.0)           // still need to move south to reach target
                     {
                         decAmt = fabs(decAmt);           // Sign doesn't matter now, we're always moving south
                         decAmt = wxMin(decAmt, (double) pFrame->pGuider->GetMaxMovePixels());
