@@ -58,5 +58,7 @@ private:
     int CamNum;
     int NCams;
     bool DriverLoaded;
+    usImage subImage;
+    wxRect lastSubFrame;
 };
 #endif  //STARFISHDEF

@@ -69,6 +69,7 @@ Camera_StarfishClass::Camera_StarfishClass()
     Connected = false;
     Name = _T("Fishcamp Starfish");
     FullSize = wxSize(1280,1024);
+    HasSubframes = true;
     HasGainControl = true;
     m_hasGuideOutput = true;
     DriverLoaded = false;
@@ -99,6 +100,7 @@ bool Camera_StarfishClass::Connect() {
         if (fcUsb_cmd_getTECInPowerOK(CamNum))
             fcUsb_cmd_setTemperature(CamNum,10);
     }
+    lastSubFrame = wxRect(wxSize(1, 1));        // To differentiate between full-frame "null" subframe
     Connected = true;
     return false;
 }
@@ -136,6 +138,9 @@ static bool StopExposure(int camNum)
 bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
     bool debug = true;
+    int xsize, ysize, xpos, ypos;
+    bool usingSubFrames = UseSubframes && subframe.GetWidth() > 0 && subframe.GetHeight() > 0;
+    IOReturn rval;
 
     // init memory
     if (img.Init(FullSize)) {
@@ -143,15 +148,35 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
         return true;
     }
 
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
-    int xpos = 0;
-    int ypos = 0;
 
-    // set ROI
-    IOReturn rval = fcUsb_cmd_setRoi(CamNum, (unsigned short)xpos, (unsigned short)ypos, (unsigned short)(xpos + xsize - 1), (unsigned short)(ypos + ysize - 1));
-    if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 1")); return true; }
-    // set duratinon
+    if (usingSubFrames)
+    {
+        xsize = subframe.GetWidth();
+        ysize = subframe.GetHeight();
+        xpos = subframe.GetLeft();
+        ypos = subframe.GetTop();
+        subImage.Init(xsize, ysize);
+        subImage.Clear();
+    }
+    else
+    {
+        xsize = FullSize.GetWidth();
+        ysize = FullSize.GetHeight();
+        xpos = 0;
+        ypos = 0;
+    }
+    img.Clear();  
+
+    // set ROI if something has changed
+    if (lastSubFrame != subframe)
+    {
+        rval = fcUsb_cmd_setRoi(CamNum, (unsigned short)xpos, (unsigned short)ypos, (unsigned short)(xpos + xsize - 1), (unsigned short)(ypos + ysize - 1));
+        //Debug.AddLine(wxString::Format("Starfish: using %s", usingSubFrames ? " sub-frames" : " full frames"));
+        //Debug.AddLine(wxString::Format("Starfish: ROI set from {%d,%d} to {%d,%d)", xpos, ypos, xpos + xsize - 1, ypos + ysize - 1));
+        if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 1")); return true; }
+        lastSubFrame = subframe;
+    }
+    // set duration
     fcUsb_cmd_setIntegrationTime(CamNum, (unsigned int) duration);
 
     rval = fcUsb_cmd_startExposure(CamNum);
@@ -185,7 +210,24 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
         }
     }
 
-    rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short) ysize, (unsigned short) xsize, img.ImageData);
+    if (usingSubFrames)
+    {
+        rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short)ysize, (unsigned short)xsize, subImage.ImageData);
+        // Transfer the subframe to the corresponding location in the full-size frame
+        for (int y = 0; y < ysize; y++)
+        {
+            const unsigned short *pSrc = subImage.ImageData + y * xsize;
+            unsigned short *pDest = img.ImageData + (ypos + y) * FullSize.GetWidth() + xpos;
+            for (int x = 0; x < xsize; x++)
+                *pDest++ = *pSrc++;
+        }
+        img.Subframe = subframe;
+    }
+    else
+    {
+        rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short)ysize, (unsigned short)xsize, img.ImageData);
+
+    }
 
     /*  if (rval != kIOReturnSuccess) {
         if (debug) pFrame->Alert(wxString::Format("Starfish Err 3 %d",rval));
