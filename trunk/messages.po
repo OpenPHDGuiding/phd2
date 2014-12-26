@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-13 20:29+0100\n"
+"POT-Creation-Date: 2014-12-26 01:08-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -47,7 +48,7 @@ msgstr ""
 msgid "Mount"
 msgstr ""
 
-#: advanced_dialog.cpp:185 scope.cpp:1254
+#: advanced_dialog.cpp:185 scope.cpp:1257
 msgid "Mount Settings"
 msgstr ""
 
@@ -272,8 +273,8 @@ msgstr ""
 #: calstep_dialog.cpp:120
 #, c-format
 msgid ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
-"sidereal rate, enter 0.5"
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
+"50% sidereal rate, enter 0.5"
 msgstr ""
 
 #: calstep_dialog.cpp:126
@@ -1104,11 +1105,11 @@ msgid ""
 msgstr ""
 
 #: comet_tool.cpp:305 graph.cpp:157 graph.cpp:184 graph.cpp:320
-#: guide_algorithm.cpp:48 scope.cpp:1280 statswindow.cpp:66 target.cpp:339
+#: guide_algorithm.cpp:48 scope.cpp:1283 statswindow.cpp:66 target.cpp:339
 msgid "RA"
 msgstr ""
 
-#: comet_tool.cpp:306 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:1287
+#: comet_tool.cpp:306 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:1290
 #: statswindow.cpp:70 target.cpp:340
 msgid "Dec"
 msgstr ""
@@ -1125,7 +1126,7 @@ msgstr ""
 msgid "Don't ask again"
 msgstr ""
 
-#: confirm_dialog.cpp:73 drift_tool.cpp:750 guider.cpp:1366
+#: confirm_dialog.cpp:73 drift_tool.cpp:750 guider.cpp:1373
 msgid "Confirm"
 msgstr ""
 
@@ -1767,26 +1768,6 @@ msgstr ""
 msgid "Export PHD Equipment Profile"
 msgstr ""
 
-#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
-msgid "AO Position"
-msgstr ""
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr ""
-
-#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:108 target.cpp:79
-msgid "Clear"
-msgstr ""
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr ""
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
-msgstr ""
-
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr ""
@@ -1801,6 +1782,10 @@ msgstr ""
 
 #: graph.cpp:126
 msgid "Graph settings"
+msgstr ""
+
+#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:108 target.cpp:79
+msgid "Clear"
 msgstr ""
 
 #: graph.cpp:130
@@ -1913,6 +1898,22 @@ msgstr ""
 msgid "Dither"
 msgstr ""
 
+#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
+msgid "AO Position"
+msgstr ""
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr ""
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr ""
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr ""
+
 #: guide_algorithm.cpp:48
 msgid "DEC"
 msgstr ""
@@ -1997,63 +1998,63 @@ msgstr ""
 msgid "ResistSwitch Guide Algorithm"
 msgstr ""
 
-#: guider.cpp:871
+#: guider.cpp:878
 msgid "Calibration manually stopped"
 msgstr ""
 
-#: guider.cpp:919
+#: guider.cpp:926
 msgid "Stopped Guiding"
 msgstr ""
 
-#: guider.cpp:930
+#: guider.cpp:937
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
 
-#: guider.cpp:959
+#: guider.cpp:966
 msgid "star lost"
 msgstr ""
 
-#: guider.cpp:1010 myframe.cpp:1307
+#: guider.cpp:1017 myframe.cpp:1307
 msgid "Paused"
 msgstr ""
 
-#: guider.cpp:1032
+#: guider.cpp:1039
 msgid "calibration failed (primary)"
 msgstr ""
 
-#: guider.cpp:1065
+#: guider.cpp:1072
 msgid "calibration failed (secondary)"
 msgstr ""
 
-#: guider.cpp:1089
+#: guider.cpp:1096
 msgid "Guiding..."
 msgstr ""
 
-#: guider.cpp:1257
+#: guider.cpp:1264
 msgid "Guider Settings"
 msgstr ""
 
-#: guider.cpp:1260
+#: guider.cpp:1267
 msgid "Always Scale Images"
 msgstr ""
 
-#: guider.cpp:1261
+#: guider.cpp:1268
 msgid "Always scale images to fill window"
 msgstr ""
 
-#: guider.cpp:1263
+#: guider.cpp:1270
 msgid "Fast recenter after calibration or dither"
 msgstr ""
 
-#: guider.cpp:1264
+#: guider.cpp:1271
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
 "recentering after calibration or dither."
 msgstr ""
 
-#: guider.cpp:1365
+#: guider.cpp:1372
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr ""
 
@@ -2209,12 +2210,12 @@ msgstr ""
 msgid "%s%*s%s %.2f px %d ms"
 msgstr ""
 
-#: mount.cpp:637 scope.cpp:1309 scope.cpp:1400 scope.cpp:1434
+#: mount.cpp:637 scope.cpp:1312 scope.cpp:1403 scope.cpp:1437
 #: testguide.cpp:152
 msgid "South"
 msgstr ""
 
-#: mount.cpp:637 scope.cpp:1309 scope.cpp:1400 scope.cpp:1434
+#: mount.cpp:637 scope.cpp:1312 scope.cpp:1403 scope.cpp:1437
 #: testguide.cpp:152
 msgid "North"
 msgstr ""
@@ -2600,7 +2601,7 @@ msgstr ""
 msgid "&Help"
 msgstr ""
 
-#: myframe.cpp:741 scope.cpp:1309 scope.cpp:1400 scope.cpp:1434
+#: myframe.cpp:741 scope.cpp:1312 scope.cpp:1403 scope.cpp:1437
 msgid "Auto"
 msgstr ""
 
@@ -3604,107 +3605,107 @@ msgstr ""
 msgid "North step %3d"
 msgstr ""
 
-#: scope.cpp:1139
+#: scope.cpp:1140
 #, c-format
 msgid "South step %3d"
 msgstr ""
 
-#: scope.cpp:1162
+#: scope.cpp:1165
 #, c-format
 msgid "Final Nudge South %3d"
 msgstr ""
 
-#: scope.cpp:1184
+#: scope.cpp:1187
 msgid "calibration complete"
 msgstr ""
 
-#: scope.cpp:1199
+#: scope.cpp:1202
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
 msgstr ""
 
-#: scope.cpp:1265
+#: scope.cpp:1268
 msgid "Calculate..."
 msgstr ""
 
-#: scope.cpp:1266
+#: scope.cpp:1269
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
 msgstr ""
 
-#: scope.cpp:1269
+#: scope.cpp:1272
 msgid "Calibration step (ms)"
 msgstr ""
 
-#: scope.cpp:1270
+#: scope.cpp:1273
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
 msgstr ""
 
-#: scope.cpp:1274
+#: scope.cpp:1277
 msgid "Max Duration"
 msgstr ""
 
-#: scope.cpp:1281
+#: scope.cpp:1284
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 1000 ms."
 msgstr ""
 
-#: scope.cpp:1288
+#: scope.cpp:1291
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 1000 ms.  Increase if drift is fast."
 msgstr ""
 
-#: scope.cpp:1293
+#: scope.cpp:1296
 msgid "Reverse Dec output after meridian flip"
 msgstr ""
 
-#: scope.cpp:1294
+#: scope.cpp:1297
 msgid ""
 "Check if your mount needs Dec output reversed after doing Flip Calibration "
 "Data"
 msgstr ""
 
-#: scope.cpp:1298
+#: scope.cpp:1301
 msgid "Stop guiding when mount slews"
 msgstr ""
 
-#: scope.cpp:1299
+#: scope.cpp:1302
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr ""
 
-#: scope.cpp:1305
+#: scope.cpp:1308
 msgid "Assume Dec orthogonal to RA"
 msgstr ""
 
-#: scope.cpp:1306
+#: scope.cpp:1309
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
 "effect when calibrating DEC."
 msgstr ""
 
-#: scope.cpp:1309 scope.cpp:1400 scope.cpp:1434
+#: scope.cpp:1312 scope.cpp:1403 scope.cpp:1437
 msgid "Off"
 msgstr ""
 
-#: scope.cpp:1314
+#: scope.cpp:1317
 msgid "Dec guide mode"
 msgstr ""
 
-#: scope.cpp:1315
+#: scope.cpp:1318
 msgid "Guide in declination as well?"
 msgstr ""
 
-#: scope.cpp:1392
+#: scope.cpp:1395
 msgid "Mx RA"
 msgstr ""
 
-#: scope.cpp:1398
+#: scope.cpp:1401
 msgid "Mx DEC"
 msgstr ""
 
