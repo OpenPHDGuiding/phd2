@@ -1,11 +1,11 @@
-#
+# 
 #  fr\messages.po
 #  PHD Guiding
-#
+# 
 #  Created by Sylvain Girard
 #  Copyright (c) 2013 Sylvain Girard
 #  All rights reserved.
-#
+# 
 #  This source code is distributed under the following "BSD" license
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #    Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names of its
 #     contributors may be used to endorse or promote products derived from
 #     this software without specific prior written permission.
-#
+# 
 #  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 #  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 #  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,20 +29,20 @@
 #  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 #  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #  POSSIBILITY OF SUCH DAMAGE.
-#
-#
+# 
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-13 20:29+0100\n"
+"POT-Creation-Date: 2014-12-26 01:08-0500\n"
 "PO-Revision-Date: 2014-12-08 13:54+0900\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ja_JP\n"
 "X-Generator: Poedit 1.6.5\n"
 
 #: advanced_dialog.cpp:53
@@ -76,7 +76,7 @@ msgstr "カメラが選択されていません"
 msgid "Mount"
 msgstr "マウント"
 
-#: advanced_dialog.cpp:185 scope.cpp:1254
+#: advanced_dialog.cpp:185 scope.cpp:1257
 msgid "Mount Settings"
 msgstr "マウント設定"
 
@@ -322,8 +322,8 @@ msgstr "ガイドスピード, n.nn x 恒星時"
 #: calstep_dialog.cpp:120
 #, fuzzy, c-format
 msgid ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% "
-"sidereal rate, enter 0.5"
+"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
+"50% sidereal rate, enter 0.5"
 msgstr ""
 "ガイド速度の恒星時に対する割合; もしマウントのガイド速度が50%の追尾レートな"
 "ら、0.5と入力"
@@ -1184,11 +1184,11 @@ msgstr ""
 "開始をクリックするとトレーニングが始まる。"
 
 #: comet_tool.cpp:305 graph.cpp:157 graph.cpp:184 graph.cpp:320
-#: guide_algorithm.cpp:48 scope.cpp:1280 statswindow.cpp:66 target.cpp:339
+#: guide_algorithm.cpp:48 scope.cpp:1283 statswindow.cpp:66 target.cpp:339
 msgid "RA"
 msgstr "RA"
 
-#: comet_tool.cpp:306 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:1287
+#: comet_tool.cpp:306 graph.cpp:162 graph.cpp:197 graph.cpp:321 scope.cpp:1290
 #: statswindow.cpp:70 target.cpp:340
 msgid "Dec"
 msgstr "Dec"
@@ -1205,7 +1205,7 @@ msgstr "Y"
 msgid "Don't ask again"
 msgstr "再度問い合わせをしない"
 
-#: confirm_dialog.cpp:73 drift_tool.cpp:750 guider.cpp:1366
+#: confirm_dialog.cpp:73 drift_tool.cpp:750 guider.cpp:1373
 msgid "Confirm"
 msgstr "確認"
 
@@ -1891,26 +1891,6 @@ msgstr "PHD機器プロファイルの取込み"
 msgid "Export PHD Equipment Profile"
 msgstr "PHD機器プロファイルの書出し"
 
-#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
-msgid "AO Position"
-msgstr "AO位置"
-
-#: graph-stepguider.cpp:62 target.cpp:66
-msgid "Select the number of frames of history to display"
-msgstr "ディスプレイのフレーム履歴数の選択"
-
-#: graph-stepguider.cpp:64 graph.cpp:129 statswindow.cpp:108 target.cpp:79
-msgid "Clear"
-msgstr "クリア"
-
-#: graph-stepguider.cpp:65 target.cpp:80
-msgid "Clear graph data"
-msgstr "グラフデータクリア"
-
-#: graph-stepguider.cpp:240
-msgid "AO not connected"
-msgstr "AO接続なし"
-
 #: graph.cpp:87 graph.cpp:579
 msgid "Scope:"
 msgstr "Scope:"
@@ -1926,6 +1906,10 @@ msgstr "設定"
 #: graph.cpp:126
 msgid "Graph settings"
 msgstr "グラフ設定"
+
+#: graph.cpp:129 graph-stepguider.cpp:64 statswindow.cpp:108 target.cpp:79
+msgid "Clear"
+msgstr "クリア"
 
 #: graph.cpp:130
 msgid ""
@@ -2039,6 +2023,22 @@ msgstr "Y軸のスケール、秒(arc-sec)/Yを選択します"
 msgid "Dither"
 msgstr "ディザー"
 
+#: graph-stepguider.cpp:47 myframe.cpp:275 myframe.cpp:340
+msgid "AO Position"
+msgstr "AO位置"
+
+#: graph-stepguider.cpp:62 target.cpp:66
+msgid "Select the number of frames of history to display"
+msgstr "ディスプレイのフレーム履歴数の選択"
+
+#: graph-stepguider.cpp:65 target.cpp:80
+msgid "Clear graph data"
+msgstr "グラフデータクリア"
+
+#: graph-stepguider.cpp:240
+msgid "AO not connected"
+msgstr "AO接続なし"
+
 #: guide_algorithm.cpp:48
 msgid "DEC"
 msgstr "DEC"
@@ -2129,56 +2129,56 @@ msgstr "ローパス2・ガイド・アルゴリズム"
 msgid "ResistSwitch Guide Algorithm"
 msgstr "レジストスィッチ・ガイド・アルゴリズム"
 
-#: guider.cpp:871
+#: guider.cpp:878
 msgid "Calibration manually stopped"
 msgstr "キャリブレーション手動停止"
 
-#: guider.cpp:919
+#: guider.cpp:926
 msgid "Stopped Guiding"
 msgstr "ガイド停止"
 
-#: guider.cpp:930
+#: guider.cpp:937
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr "許容される範囲外に移ったロック位置。ロック位置の移動は不可"
 
-#: guider.cpp:959
+#: guider.cpp:966
 msgid "star lost"
 msgstr "ガイド星を見失う"
 
-#: guider.cpp:1010 myframe.cpp:1307
+#: guider.cpp:1017 myframe.cpp:1307
 msgid "Paused"
 msgstr "一時停止"
 
-#: guider.cpp:1032
+#: guider.cpp:1039
 msgid "calibration failed (primary)"
 msgstr "キャリブレーション失敗(プライマリー)"
 
-#: guider.cpp:1065
+#: guider.cpp:1072
 msgid "calibration failed (secondary)"
 msgstr "キャリブレーション失敗(セコンダリー)"
 
-#: guider.cpp:1089
+#: guider.cpp:1096
 msgid "Guiding..."
 msgstr "ガイド中..."
 
-#: guider.cpp:1257
+#: guider.cpp:1264
 msgid "Guider Settings"
 msgstr "ガイダー設定"
 
-#: guider.cpp:1260
+#: guider.cpp:1267
 msgid "Always Scale Images"
 msgstr "常に画像を合わせる"
 
-#: guider.cpp:1261
+#: guider.cpp:1268
 msgid "Always scale images to fill window"
 msgstr "常に枠いっぱいに画像を合わせる"
 
-#: guider.cpp:1263
+#: guider.cpp:1270
 msgid "Fast recenter after calibration or dither"
 msgstr "中央に戻した後キャリブレーションまたはディザーする"
 
-#: guider.cpp:1264
+#: guider.cpp:1271
 msgid ""
 "Speed up calibration and dithering by using larger guide pulses to return "
 "the star to the center position. Un-check to use the old, slower method of "
@@ -2189,7 +2189,7 @@ msgstr ""
 "キャリブレーションやディザリング処理後に中心に戻す、古くて遅い \n"
 "方法を使う場合はチェックを外します。"
 
-#: guider.cpp:1365
+#: guider.cpp:1372
 msgid "Are you sure you want to delete all Bookmarks?"
 msgstr "本当にブックマークをすべて削除してもいいですね?"
 
@@ -2355,12 +2355,12 @@ msgstr ""
 msgid "%s%*s%s %.2f px %d ms"
 msgstr ""
 
-#: mount.cpp:637 scope.cpp:1309 scope.cpp:1400 scope.cpp:1434
+#: mount.cpp:637 scope.cpp:1312 scope.cpp:1403 scope.cpp:1437
 #: testguide.cpp:152
 msgid "South"
 msgstr "South"
 
-#: mount.cpp:637 scope.cpp:1309 scope.cpp:1400 scope.cpp:1434
+#: mount.cpp:637 scope.cpp:1312 scope.cpp:1403 scope.cpp:1437
 #: testguide.cpp:152
 msgid "North"
 msgstr "North"
@@ -2746,7 +2746,7 @@ msgstr "&ブックマーク"
 msgid "&Help"
 msgstr "&ヘルプ"
 
-#: myframe.cpp:741 scope.cpp:1309 scope.cpp:1400 scope.cpp:1434
+#: myframe.cpp:741 scope.cpp:1312 scope.cpp:1403 scope.cpp:1437
 msgid "Auto"
 msgstr "Auto"
 
@@ -3852,30 +3852,30 @@ msgstr "赤緯(DEC)キャリブレーション失敗: ガイド星が十分に�
 msgid "North step %3d"
 msgstr "North step %3d"
 
-#: scope.cpp:1139
+#: scope.cpp:1140
 #, c-format
 msgid "South step %3d"
 msgstr "South step %3d"
 
-#: scope.cpp:1162
+#: scope.cpp:1165
 #, c-format
 msgid "Final Nudge South %3d"
 msgstr "Final Nudge South %3d"
 
-#: scope.cpp:1184
+#: scope.cpp:1187
 msgid "calibration complete"
 msgstr "キャリブレーション終了"
 
-#: scope.cpp:1199
+#: scope.cpp:1202
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
 msgstr "dx=%4.1f dy=%4.1f dist=%4.1f"
 
-#: scope.cpp:1265
+#: scope.cpp:1268
 msgid "Calculate..."
 msgstr "計算..."
 
-#: scope.cpp:1266
+#: scope.cpp:1269
 msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
@@ -3883,11 +3883,11 @@ msgstr ""
 "よいキャリブレーションステップを見つけるのを支援する計算機能です。 クリックし"
 "て起動します。"
 
-#: scope.cpp:1269
+#: scope.cpp:1272
 msgid "Calibration step (ms)"
 msgstr "キャリブレーションステップ(ms)"
 
-#: scope.cpp:1270
+#: scope.cpp:1273
 msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
@@ -3895,11 +3895,11 @@ msgstr ""
 "キャリブレーション時のガイドパルスの長さをいくらにしますか? \n"
 "[計算]をクリックすると最適値を計算します"
 
-#: scope.cpp:1274
+#: scope.cpp:1277
 msgid "Max Duration"
 msgstr "最大持続時間"
 
-#: scope.cpp:1281
+#: scope.cpp:1284
 msgid ""
 "Longest length of pulse to send in RA\n"
 "Default = 1000 ms."
@@ -3907,7 +3907,7 @@ msgstr ""
 "赤経(RA)に出力するパルスの最大持続時間\n"
 "デフォルト = 1000 ms."
 
-#: scope.cpp:1288
+#: scope.cpp:1291
 msgid ""
 "Longest length of pulse to send in declination\n"
 "Default = 1000 ms.  Increase if drift is fast."
@@ -3915,11 +3915,11 @@ msgstr ""
 "赤緯(Dec)に出力するパルスの最大持続時間\n"
 "デフォルト = 1000 ms. 移動が速い様なら増やします。"
 
-#: scope.cpp:1293
+#: scope.cpp:1296
 msgid "Reverse Dec output after meridian flip"
 msgstr "子午線を超えたら赤緯(Dec)出力を逆転する"
 
-#: scope.cpp:1294
+#: scope.cpp:1297
 msgid ""
 "Check if your mount needs Dec output reversed after doing Flip Calibration "
 "Data"
@@ -3927,19 +3927,19 @@ msgstr ""
 "マウントがキャリブレーションデータ反転後、赤緯出力の逆転を必要とするなら"
 "チェックします。"
 
-#: scope.cpp:1298
+#: scope.cpp:1301
 msgid "Stop guiding when mount slews"
 msgstr "マウントが旋回したらガイド停止"
 
-#: scope.cpp:1299
+#: scope.cpp:1302
 msgid "When checked, PHD will stop guiding if the mount starts slewing"
 msgstr "マウントが旋回を開始したらPHDはガイドを停止するよう監視します。"
 
-#: scope.cpp:1305
+#: scope.cpp:1308
 msgid "Assume Dec orthogonal to RA"
 msgstr "赤経に直交する赤緯を想定"
 
-#: scope.cpp:1306
+#: scope.cpp:1309
 msgid ""
 "Assume Dec axis is perpendicular to RA axis, regardless of calibration. "
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
@@ -3949,23 +3949,23 @@ msgstr ""
 "ピリオデックエラーが赤緯キャリブレーションに影響することを防止します。赤緯の"
 "キャリブレート時にオプションは実施されます。"
 
-#: scope.cpp:1309 scope.cpp:1400 scope.cpp:1434
+#: scope.cpp:1312 scope.cpp:1403 scope.cpp:1437
 msgid "Off"
 msgstr "Off"
 
-#: scope.cpp:1314
+#: scope.cpp:1317
 msgid "Dec guide mode"
 msgstr "赤緯(Dec)ガイドモード"
 
-#: scope.cpp:1315
+#: scope.cpp:1318
 msgid "Guide in declination as well?"
 msgstr "赤緯も同様にガイドしますか?"
 
-#: scope.cpp:1392
+#: scope.cpp:1395
 msgid "Mx RA"
 msgstr "Mx RA"
 
-#: scope.cpp:1398
+#: scope.cpp:1401
 msgid "Mx DEC"
 msgstr "Mx DEC"
 
