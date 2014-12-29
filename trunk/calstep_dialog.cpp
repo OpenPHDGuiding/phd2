@@ -46,7 +46,7 @@
 #define MIN_DECLINATION -60.0
 #define MAX_DECLINATION 60.0
 
-const double CalstepDialog::DEFAULT_GUIDESPEED = 0.5;  // 50% sidereal rate
+const double CalstepDialog::DEFAULT_GUIDESPEED = 1.0;       // 100% sidereal rate, help insure we don't end up with too few steps
 
 static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc)
 {

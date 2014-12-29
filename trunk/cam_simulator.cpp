@@ -120,7 +120,7 @@ double SimCamParams::comet_rate_y;
 #define SEEING_MAX 5.0
 #define CAM_ANGLE_DEFAULT 15.0
 #define CAM_ANGLE_MAX 360.0
-#define GUIDE_RATE_DEFAULT (0.5 * 15.0)           // multiples of sidereal rate, a-s/sec
+#define GUIDE_RATE_DEFAULT (1.0 * 15.0)           // multiples of sidereal rate, a-s/sec
 #define GUIDE_RATE_MAX (1.0 * 15.0)
 #define PIER_SIDE_DEFAULT PIER_SIDE_EAST
 #define REVERSE_DEC_PULSE_ON_WEST_SIDE_DEFAULT true
@@ -773,6 +773,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
         total_shift_x += seeing[0];
         total_shift_y += seeing[1];
     }
+
 #endif
     for (unsigned int i = 0; i < nr_stars; i++)
     {
@@ -1033,7 +1034,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
 bool Camera_SimClass::ST4PulseGuideScope(int direction, int duration)
 {
-    double d = SimCamParams::guide_rate * duration / 1000.0;
+    double d = (SimCamParams::guide_rate * duration / 1000.0) * SimCamParams::inverse_imagescale;
 
     if (SimCamParams::pier_side == PIER_SIDE_WEST && SimCamParams::reverse_dec_pulse_on_west_side)
     {
