@@ -78,6 +78,7 @@ struct CometToolWin : public wxDialog
 
 static wxString TITLE = wxTRANSLATE("Comet Tracking");
 static wxString TITLE_TRAINING = wxTRANSLATE("Comet Tracking - Training Active");
+static wxString TITLE_ACTIVE = wxTRANSLATE("Comet Tracking - Active");
 
 CometToolWin::CometToolWin()
     : wxDialog(pFrame, wxID_ANY, wxGetTranslation(TITLE), wxPoint(-1,-1), wxSize(300,300)),
@@ -189,9 +190,25 @@ CometToolWin::~CometToolWin(void)
     pFrame->pCometTool = 0;
 }
 
+static void SetEnabledState(CometToolWin* win, bool active)
+{
+    if (active)
+    {
+        win->SetTitle(wxGetTranslation(TITLE_ACTIVE));
+        win->m_enable->SetLabel(_("Disable"));
+    }
+    else
+    {
+        win->SetTitle(wxGetTranslation(TITLE));
+        win->m_enable->SetLabel(_("Enable"));
+    }
+}
+
 void CometToolWin::OnEnableToggled(wxCommandEvent& event)
 {
-    pFrame->pGuider->EnableLockPosShift(m_enable->GetValue());
+    bool active = m_enable->GetValue();
+    pFrame->pGuider->EnableLockPosShift(active);
+    SetEnabledState(this, active);
 }
 
 void CometToolWin::UpdateGuiderShift()
@@ -295,6 +312,7 @@ void CometToolWin::OnAppStateNotify(wxCommandEvent& WXUNUSED(event))
     const LockPosShiftParams& shift = pFrame->pGuider->GetLockPosShiftParams();
 
     m_enable->SetValue(shift.shiftEnabled);
+    SetEnabledState(this, m_enable->GetValue());
 
     m_xRate->SetValue(shift.shiftRate.X);
     m_yRate->SetValue(shift.shiftRate.Y);
