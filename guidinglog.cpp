@@ -127,9 +127,7 @@ bool GuidingLog::ChangeDirLog(const wxString& newdir)
 
     if (bEnabled)
     {
-        DisableLogging();                  // shut down the old log in its existing location
         Close();
-        m_file.Close();                    // above doesn't *really* close the file
     }
     if (!SetLogDir(newdir))
     {
@@ -137,7 +135,9 @@ bool GuidingLog::ChangeDirLog(const wxString& newdir)
         bOk = false;
     }
     if (bEnabled)                    // if SetLogDir failed, no harm no foul, stay with original. Otherwise
+    {
         EnableLogging();             // start fresh...
+    }
 
     return bOk;
 }
@@ -179,6 +179,7 @@ void GuidingLog::Close(void)
     m_file.Write("Log closed at " + now.Format(_T("%Y-%m-%d %H:%M:%S")) + "\n");
     Flush();
     m_file.Close();
+    m_enabled = false;
 
     if (!m_keepFile)            // Delete the file if nothing useful was logged
     {
