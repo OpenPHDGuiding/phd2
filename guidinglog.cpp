@@ -454,13 +454,13 @@ void GuidingLog::NotifyLockShiftParams(const LockPosShiftParams& shiftParams, co
     wxString details;
     if (shiftParams.shiftEnabled)
     {
-        details = wxString::Format("%s rate (%.2f,%.2f) %s/hr (%.3g,%.3g) px/sec",
+        details = wxString::Format("%s rate (%.2f,%.2f) %s/hr (%.2f,%.2f) px/hr",
                                     shiftParams.shiftIsMountCoords ? "RA,Dec" : "X,Y",
                                     shiftParams.shiftRate.IsValid() ? shiftParams.shiftRate.X : 0.0,
                                     shiftParams.shiftRate.IsValid() ? shiftParams.shiftRate.Y : 0.0,
                                     shiftParams.shiftUnits == UNIT_ARCSEC ? "arc-sec" : "pixels",
-                                    cameraRate.IsValid() ? cameraRate.X : 0.0,
-                                    cameraRate.IsValid() ? cameraRate.Y : 0.0);
+                                    cameraRate.IsValid() ? cameraRate.X * 3600.0 : 0.0,
+                                    cameraRate.IsValid() ? cameraRate.Y * 3600.0 : 0.0);
     }
     m_file.Write(wxString::Format("INFO: LOCK SHIFT, enabled = %d %s\n", shiftParams.shiftEnabled, details));
     m_keepFile = true;
