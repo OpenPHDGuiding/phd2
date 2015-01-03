@@ -265,12 +265,54 @@ int StepGuiderSimulator::MaxPosition(GUIDE_DIRECTION direction) const
 
 #endif // STEPGUIDER_SIMULATOR
 
+#ifdef ROTATOR_SIMULATOR
+
+RotatorSimulator::RotatorSimulator(void)
+{
+}
+
+RotatorSimulator::~RotatorSimulator(void)
+{
+}
+
+bool RotatorSimulator::Connect(void)
+{
+    if (!pCamera || pCamera->Name != _T("Simulator"))
+    {
+        pFrame->Alert(_("The Rotator Simulator only works with the Camera Simulator. You must either disconnect the Rotator Simulator or connect the Camera Simulator."));
+        return true;
+    }
+
+    Rotator::Connect();
+    return false;
+}
+
+bool RotatorSimulator::Disconnect(void)
+{
+    Rotator::Disconnect();
+    return false;
+}
+
+wxString RotatorSimulator::Name(void) const
+{
+    return _T("Simulator");
+}
+
+float RotatorSimulator::Position(void) const
+{
+    assert(IsConnected());
+    return SimCamParams::cam_angle;
+}
+
+#endif // ROTATOR_SIMULATOR
+
 // value with backlash
 //   There is an index value, and a lower and upper limit separated by the
 //   backlash amount. When the index moves past the upper limit, it carries
 //   both limits along, likewise for the lower limit. The current value is
 //   the value of the upper limit.
-struct BacklashVal {
+struct BacklashVal
+{
     double cur;    // current index value
     double upper;  // upper limit
     double amount; // backlash amount (lower limit is upper - amount)
@@ -295,12 +337,14 @@ struct BacklashVal {
     }
 };
 
-struct SimStar {
+struct SimStar
+{
     wxRealPoint pos;
     double inten;
 };
 
-struct SimCamState {
+struct SimCamState
+{
     unsigned int width;
     unsigned int height;
     wxVector<SimStar> stars; // star positions and intensities (ra, dec)
@@ -317,6 +361,13 @@ struct SimCamState {
     double last_dec_move;
 #endif
 
+#ifdef SIM_FILE_DISPLACEMENTS
+    wxFileInputStream* pIStream;
+    wxTextInputStream* pText;
+    double scaleConversion;
+    void ReadDisplacements(double& cumX, double& cumY);
+#endif
+
 #if SIMMODE == 1
     wxDir dir;
     bool dirStarted;
@@ -325,12 +376,6 @@ struct SimCamState {
 
     void Initialize();
     void FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset);
-#ifdef SIM_FILE_DISPLACEMENTS
-    wxFileInputStream* pIStream;
-    wxTextInputStream* pText;
-    void ReadDisplacements(double& cumX, double& cumY);
-    double scaleConversion;
-#endif
 };
 
 void SimCamState::Initialize()
@@ -715,7 +760,6 @@ void SimCamState::ReadDisplacements(double& incX, double& incY)
             }
             line = pText->ReadLine();
             line.Trim(false);
-
         }
 
         tok.SetString(line, ", ");
@@ -773,7 +817,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             dec_ofs.incr(inc_y);
         }
     }
-#else
+#else // SIM_FILE_DISPLACEMENTS
     long const cur_time = timer.Time();
     long const delta_time_ms = last_exposure_time - cur_time;
     last_exposure_time = cur_time;
@@ -824,7 +868,8 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
         total_shift_y += seeing[1];
     }
 
-#endif
+#endif // SIM_FILE_DISPLACEMENTS
+
     for (unsigned int i = 0; i < nr_stars; i++)
     {
         pos[i].x += total_shift_x;
@@ -844,7 +889,9 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 
     // convert to camera coordinates
     wxVector<wxRealPoint> cc(nr_stars);
-    double const angle = SimCamParams::cam_angle * M_PI / 180.;
+    double angle = radians(SimCamParams::cam_angle);
+    if (SimCamParams::pier_side == PIER_SIDE_WEST)
+        angle += M_PI;
     double const cos_t = cos(angle);
     double const sin_t = sin(angle);
     for (unsigned int i = 0; i < nr_stars; i++) {
@@ -855,7 +902,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 #ifdef STEPGUIDER_SIMULATOR
     // add-in AO offset
     if (s_sim_ao) {
-        double const ao_angle = SimAoParams::angle * M_PI / 180.;
+        double const ao_angle = radians(SimAoParams::angle);
         double const cos_a = cos(ao_angle);
         double const sin_a = sin(ao_angle);
         double const ao_x = (double) s_sim_ao->CurrentPosition(RIGHT) * SimAoParams::scale;
@@ -1118,9 +1165,6 @@ static PierSide OtherSide(PierSide side)
 void Camera_SimClass::FlipPierSide(void)
 {
     SimCamParams::pier_side = OtherSide(SimCamParams::pier_side);
-    SimCamParams::cam_angle += 180.0;
-    if (SimCamParams::cam_angle >= 360.0)
-        SimCamParams::cam_angle -= 360.0;
     Debug.AddLine("CamSimulator FlipPierSide: side = %d  cam_angle = %.1f", SimCamParams::pier_side, SimCamParams::cam_angle);
 }
 

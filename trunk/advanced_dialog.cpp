@@ -47,6 +47,7 @@ enum {
     CAMERA_PAGE,
     MOUNT_PAGE,
     AO_PAGE,
+    ROTATOR_PAGE,
 };
 
 AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
@@ -85,6 +86,9 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     m_pNotebook = new wxNotebook(this, wxID_ANY);
 #endif
 
+    m_aoPage = 0;
+    m_rotatorPage = 0;
+
     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
     // build tabs -- each needs the tab, and a sizer.  Once built
@@ -118,6 +122,9 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
 
     // Build AO tab
     AddAoPage();
+
+    // Add page for rotator
+    AddRotatorPage();
 
     wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
     pTopLevelSizer->Add(m_pNotebook, wxSizerFlags(0).Expand().Border(wxALL, 5));
@@ -191,31 +198,58 @@ void AdvancedDialog::AddMountPage(void)
 
 void AdvancedDialog::AddAoPage(void)
 {
-    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
-
-    wxPanel *pAoSettingsPanel = new wxPanel(m_pNotebook);
-    wxBoxSizer *pAoTabSizer = new wxBoxSizer(wxVERTICAL);
-    pAoSettingsPanel->SetSizer(pAoTabSizer);
-    m_pNotebook->InsertPage(AO_PAGE, pAoSettingsPanel, _("AO"));
-
-    m_pAoPane = NULL;
+    wxASSERT(!m_aoPage);
 
     if (pMount && pMount->IsStepGuider())
     {
-        // We have an AO connected
+        // We have an AO selected
+
+        wxPanel *pAoSettingsPanel = new wxPanel(m_pNotebook);
+        wxBoxSizer *pAoTabSizer = new wxBoxSizer(wxVERTICAL);
+        pAoSettingsPanel->SetSizer(pAoTabSizer);
+        m_pNotebook->InsertPage(AO_PAGE, pAoSettingsPanel, _("AO"));
+
         m_pAoPane = pMount->GetConfigDialogPane(pAoSettingsPanel);
 
         // and the primary mount config goes on the Adaptive Optics tab
+        wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 2).Expand();
         pAoTabSizer->Add(m_pAoPane, sizer_flags);
+
+        m_aoPage = pAoSettingsPanel;
     }
     else
     {
-        // Add a text box to the AO tab informing the user there is no AO
+        m_pAoPane = NULL;
+    }
+}
 
-        wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pAoSettingsPanel, wxID_ANY, _("AO Settings")), wxVERTICAL);
-        wxStaticText *pText = new wxStaticText(pAoSettingsPanel, wxID_ANY, _("No AO Selected"),wxPoint(-1,-1),wxSize(-1,-1));
-        pBox->Add(pText);
-        pAoTabSizer->Add(pBox, sizer_flags);
+void AdvancedDialog::AddRotatorPage(void)
+{
+    wxASSERT(!m_rotatorPage);
+
+    if (pRotator)
+    {
+        // We have a rotator selected
+
+        wxPanel *rotatorPanel = new wxPanel(m_pNotebook);
+        wxBoxSizer *rotatorTabSizer = new wxBoxSizer(wxVERTICAL);
+        rotatorPanel->SetSizer(rotatorTabSizer);
+        int idx = ROTATOR_PAGE;
+        if (!m_aoPage)
+            --idx;
+        m_pNotebook->InsertPage(idx, rotatorPanel, _("Rotator"));
+
+        m_rotatorPane = pRotator->GetConfigDialogPane(rotatorPanel);
+
+        // and the primary mount config goes on the Adaptive Optics tab
+        wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 2).Expand();
+        rotatorTabSizer->Add(m_rotatorPane, sizer_flags);
+
+        m_rotatorPage = rotatorPanel;
+    }
+    else
+    {
+        m_rotatorPane = 0;
     }
 }
 
@@ -237,16 +271,38 @@ void AdvancedDialog::UpdateMountPage(void)
 
 void AdvancedDialog::UpdateAoPage(void)
 {
+    if (m_aoPage)
+    {
+        int idx = m_pNotebook->FindPage(m_aoPage);
+        wxASSERT(idx != wxNOT_FOUND);
+        m_pNotebook->DeletePage(idx);
+        m_aoPage = 0;
+    }
     AddAoPage();
-    m_pNotebook->DeletePage(AO_PAGE + 1);
-    m_pNotebook->GetPage(AO_PAGE)->Layout();
+    if (m_aoPage)
+        m_aoPage->Layout();
+    GetSizer()->Fit(this);
+}
+
+void AdvancedDialog::UpdateRotatorPage(void)
+{
+    if (m_rotatorPage)
+    {
+        int idx = m_pNotebook->FindPage(m_rotatorPage);
+        wxASSERT(idx != wxNOT_FOUND);
+        m_pNotebook->DeletePage(idx);
+        m_rotatorPage = 0;
+    }
+    AddRotatorPage();
+    if (m_rotatorPage)
+        m_rotatorPage->Layout();
     GetSizer()->Fit(this);
 }
 
 void AdvancedDialog::LoadValues(void)
 {
     ConfigDialogPane *const panes[] =
-        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane };
+        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane, m_rotatorPane };
 
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {
@@ -262,7 +318,7 @@ void AdvancedDialog::LoadValues(void)
 void AdvancedDialog::UnloadValues(void)
 {
     ConfigDialogPane *const panes[] =
-        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane };
+        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane, m_rotatorPane };
 
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {
@@ -275,7 +331,7 @@ void AdvancedDialog::UnloadValues(void)
 void AdvancedDialog::Undo(void)
 {
     ConfigDialogPane *const panes[] =
-        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane };
+        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane, m_rotatorPane };
 
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {

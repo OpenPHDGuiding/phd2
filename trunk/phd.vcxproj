@@ -169,7 +169,6 @@
   <ItemGroup>
     <ClCompile Include="about_dialog.cpp" />
     <ClCompile Include="advanced_dialog.cpp" />
-    <ClCompile Include="ascom_common.cpp" />
     <ClCompile Include="calrestore_dialog.cpp" />
     <ClCompile Include="calsanity_dialog.cpp" />
     <ClCompile Include="calstep_dialog.cpp" />
@@ -256,6 +255,8 @@
     </ClCompile>
     <ClCompile Include="profile_wizard.cpp" />
     <ClCompile Include="Refine_DefMap.cpp" />
+    <ClCompile Include="rotator.cpp" />
+    <ClCompile Include="rotator_ascom.cpp" />
     <ClCompile Include="runinbg.cpp" />
     <ClCompile Include="scope.cpp" />
     <ClCompile Include="scope_ascom.cpp" />
@@ -291,7 +292,6 @@
   <ItemGroup>
     <ClInclude Include="about_dialog.h" />
     <ClInclude Include="advanced_dialog.h" />
-    <ClInclude Include="ascom_common.h" />
     <ClInclude Include="calrestore_dialog.h" />
     <ClInclude Include="calsanity_dialog.h" />
     <ClInclude Include="calstep_dialog.h" />
@@ -371,6 +371,10 @@
     <ClInclude Include="point.h" />
     <ClInclude Include="profile_wizard.h" />
     <ClInclude Include="Refine_DefMap.h" />
+    <ClInclude Include="rotator.h" />
+    <ClInclude Include="rotators.h" />
+    <ClInclude Include="rotator_ascom.h" />
+    <ClInclude Include="rotator_simulator.h" />
     <ClInclude Include="runinbg.h" />
     <ClInclude Include="scope.h" />
     <ClInclude Include="scope_ascom.h" />

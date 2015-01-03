@@ -36,16 +36,6 @@
 #ifndef SCOPE_H_INCLUDED
 #define SCOPE_H_INCLUDED
 
-struct Calibration_Params
-{
-    wxString TimeStamp;
-    double XRate;
-    double YRate;
-    double XAngle;
-    double YAngle;
-    double Declination;
-    int PierSide;
-};
 enum Calibration_Issues
 {
     CI_None,
@@ -77,17 +67,14 @@ class Scope : public Mount
     PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
     PHD_Point m_lastLocation;
 
-    double m_calibrationXAngle;
-    double m_calibrationXRate;
-    double m_calibrationYAngle;
-    double m_calibrationYRate;
+    Calibration m_calibration;
     bool m_assumeOrthogonal;
     int m_raSteps;
     int m_decSteps;
 
     bool m_calibrationFlipRequiresDecFlip;
     bool m_stopGuidingWhenSlewing;
-    Calibration_Params m_prevCalibrationParams;
+    Calibration m_prevCalibrationParams;
     Calibration_Issues m_lastCalibrationIssue;
 
     enum CALIBRATION_STATE
@@ -171,7 +158,7 @@ public:
     Scope(void);
     virtual ~Scope(void);
 
-    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide);
+    virtual void SetCalibration(const Calibration& cal);
     virtual bool IsCalibrated(void);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
@@ -185,7 +172,7 @@ public:
     bool IsStopGuidingWhenSlewingEnabled(void) const;
     void SetAssumeOrthogonal(bool val);
     bool IsAssumeOrthogonal(void) const;
-    bool GetLastCalibrationParams(Calibration_Params *params);
+    bool GetLastCalibrationParams(Calibration *params);
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(Calibration_Issues etype, bool val);
 
@@ -203,7 +190,7 @@ private:
 
     void ClearCalibration(void);
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
-    void SanityCheckCalibration(const Calibration_Params *pOld, const Calibration_Params *pNew, int xSteps, int ySteps);
+    void SanityCheckCalibration(const Calibration& oldCal, const Calibration& newCal, int xSteps, int ySteps);
 
 // these MUST be supplied by a subclass
 private:

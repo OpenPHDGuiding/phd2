@@ -1587,15 +1587,19 @@ static void load_calibration(Mount *mnt)
     wxString prefix = "/" + mnt->GetMountClassName() + "/calibration/";
     if (!pConfig->Profile.HasEntry(prefix + "timestamp"))
         return;
-    double xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
-    double yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
-    double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
-    double yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", M_PI/2.0);
-    double declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
+
+    Calibration cal;
+    cal.xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
+    cal.yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+    cal.xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
+    cal.yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", M_PI / 2.0);
+    cal.declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
     int t = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
-    PierSide pierSide = t == PIER_SIDE_EAST ? PIER_SIDE_EAST :
+    cal.pierSide = t == PIER_SIDE_EAST ? PIER_SIDE_EAST :
         t == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
-    mnt->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pierSide);
+    cal.rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
+
+    mnt->SetCalibration(cal);
 }
 
 void MyFrame::LoadCalibration(void)

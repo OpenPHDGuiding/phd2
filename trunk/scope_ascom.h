@@ -37,16 +37,16 @@
  *
  */
 
+#ifndef SCOPE_ASCOM_INCLUDED
+#define SCOPE_ASCOM_INCLUDED
+
 #ifdef GUIDE_ASCOM
 
-#include "ascom_common.h"
+#include "comdispatch.h"
 
-class DispatchObj;
-
-class ScopeASCOM : public Scope, private ASCOM_COMMON
+class ScopeASCOM : public Scope
 {
-    IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
-    DWORD m_dwCookie;
+    GITEntry m_gitEntry;
 
     // DISPIDs we reuse
     DISPID dispid_connected;
@@ -109,4 +109,5 @@ public:
     virtual PierSide SideOfPier(void);
 };
 
-#endif /* GUIDE_ASCOM */
+#endif // GUIDE_ASCOM
+#endif // SCOPE_ASCOM_INCLUDED

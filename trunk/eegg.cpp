@@ -69,26 +69,29 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
     {
         if (pMount)
         {
-            double xRate  = pMount->xRate();
-            double yRate  = pMount->yRate();
-            double xAngle = pMount->xAngle();
-            double yAngle = pMount->yAngle();
-            double declination = pPointingSource->GetGuidingDeclination();
+            Calibration cal;
+            cal.xRate  = pMount->xRate();
+            cal.yRate  = pMount->yRate();
+            cal.xAngle = pMount->xAngle();
+            cal.yAngle = pMount->yAngle();
+            cal.declination = pPointingSource->GetGuidingDeclination();
+            cal.pierSide = pPointingSource->SideOfPier();
+            cal.rotatorAngle = Rotator::RotatorPosition();
 
             if (!pMount->IsCalibrated())
             {
-                xRate       = 1.0;
-                yRate       = 1.0;
-                xAngle      = 0.0;
-                yAngle      = M_PI/2;
-                declination = 0.0;
+                cal.xRate       = 1.0;
+                cal.yRate       = 1.0;
+                cal.xAngle      = 0.0;
+                cal.yAngle      = M_PI / 2.;
+                cal.declination = 0.0;
             }
 
-            ManualCalDialog manualcal(xRate, yRate, xAngle, yAngle, declination);
+            ManualCalDialog manualcal(cal);
             if (manualcal.ShowModal () == wxID_OK)
             {
-                manualcal.GetValues(&xRate, &yRate, &xAngle, &yAngle, &declination);
-                pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pPointingSource->SideOfPier());
+                manualcal.GetValues(&cal);
+                pMount->SetCalibration(cal);
             }
         }
     }
@@ -126,8 +129,8 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
 
         if (mount)
         {
-            double xorig = mount->xAngle() * 180. / M_PI;
-            double yorig = mount->yAngle() * 180. / M_PI;
+            double xorig = degrees(mount->xAngle());
+            double yorig = degrees(mount->yAngle());
 
             Debug.AddLine("User-requested FlipRACal");
 
@@ -137,8 +140,8 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             }
             else
             {
-                double xnew = mount->xAngle() * 180. / M_PI;
-                double ynew = mount->yAngle() * 180. / M_PI;
+                double xnew = degrees(mount->xAngle());
+                double ynew = degrees(mount->yAngle());
                 wxMessageBox(wxString::Format(_("RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"),
                     xorig, yorig, xnew, ynew));
             }

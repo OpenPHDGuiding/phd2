@@ -460,13 +460,10 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
     return bError;
 }
 
-void StepGuider::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide)
+void StepGuider::SetCalibration(const Calibration& cal)
 {
-    m_calibrationXAngle = xAngle;
-    m_calibrationXRate = xRate;
-    m_calibrationYAngle = yAngle;
-    m_calibrationYRate = yRate;
-    Mount::SetCalibration(xAngle, yAngle, xRate, yRate, declination, pierSide);
+    m_calibration = cal;
+    Mount::SetCalibration(cal);
 }
 
 /*
@@ -501,8 +498,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 
         stepsRemainingUp /= m_calibrationStepsPerIteration;
         stepsRemainingDown /= m_calibrationStepsPerIteration;
-        stepsRemainingRight  /= m_calibrationStepsPerIteration;
-        stepsRemainingLeft  /= m_calibrationStepsPerIteration;
+        stepsRemainingRight /= m_calibrationStepsPerIteration;
+        stepsRemainingLeft /= m_calibrationStepsPerIteration;
 
         int stepsRemainingDownAndRight = wxMax(stepsRemainingDown, stepsRemainingRight);
 
@@ -537,7 +534,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
             case CALIBRATION_STATE_AVERAGE_STARTING_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
-                status0.Printf(_("Averaging: %3d"), m_samplesToAverage -m_calibrationAverageSamples+1);
+                status0.Printf(_("Averaging: %3d"), m_samplesToAverage - m_calibrationAverageSamples + 1);
                 if (m_calibrationAverageSamples < m_samplesToAverage )
                 {
                     break;
@@ -575,12 +572,12 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
-                m_calibrationXAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
-                m_calibrationXRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
+                m_calibration.xAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
+                m_calibration.xRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                                                      (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.1f rate=%.2f"), m_calibrationXAngle * 180. / M_PI, m_calibrationXRate);
-                GuideLog.CalibrationDirectComplete(this, "Left", m_calibrationXAngle, m_calibrationXRate);
-                Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.1f rate=%.2f", m_calibrationXAngle * 180. / M_PI, m_calibrationXRate));
+                status1.Printf(_("angle=%.1f rate=%.2f"), m_calibration.xAngle * 180. / M_PI, m_calibration.xRate);
+                GuideLog.CalibrationDirectComplete(this, "Left", m_calibration.xAngle, m_calibration.xRate);
+                Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.1f rate=%.2f", m_calibration.xAngle * 180. / M_PI, m_calibration.xRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationIterations = 0;
@@ -614,12 +611,12 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
-                m_calibrationYAngle = m_calibrationAveragedLocation.Angle(m_calibrationStartingLocation);
-                m_calibrationYRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
+                m_calibration.yAngle = m_calibrationAveragedLocation.Angle(m_calibrationStartingLocation);
+                m_calibration.yRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                                                      (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.1f rate=%.2f"), m_calibrationYAngle * 180. / M_PI, m_calibrationYRate);
-                GuideLog.CalibrationDirectComplete(this, "Up", m_calibrationYAngle, m_calibrationYRate);
-                Debug.AddLine(wxString::Format("UP calibration completes with angle=%.1f rate=%.2f", m_calibrationYAngle * 180. / M_PI, m_calibrationYRate));
+                status1.Printf(_("angle=%.1f rate=%.2f"), m_calibration.yAngle * 180. / M_PI, m_calibration.yRate);
+                GuideLog.CalibrationDirectComplete(this, "Up", m_calibration.yAngle, m_calibration.yRate);
+                Debug.AddLine(wxString::Format("UP calibration completes with angle=%.1f rate=%.2f", m_calibration.yAngle * 180. / M_PI, m_calibration.yRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationState = CALIBRATION_STATE_RECENTER;
@@ -640,9 +637,10 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                                                 currentLocation.X, currentLocation.Y));
                 // fall through
             case CALIBRATION_STATE_COMPLETE:
-                SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
-                               m_calibrationXRate,  m_calibrationYRate,
-                               0.0, PIER_SIDE_UNKNOWN);
+                m_calibration.declination = 0.;
+                m_calibration.pierSide = PIER_SIDE_UNKNOWN;
+                m_calibration.rotatorAngle = Rotator::RotatorPosition();
+                SetCalibration(m_calibration);
                 status1 = _T("calibration complete");
                 GuideLog.CalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");
@@ -978,8 +976,8 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
 
             Debug.AddLine("incremental bump (%.3f, %.3f) isValid = %d", bumpVec.X, bumpVec.Y, bumpVec.IsValid());
 
-            double maxBumpPixelsX = m_calibrationXRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
-            double maxBumpPixelsY = m_calibrationYRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
+            double maxBumpPixelsX = m_calibration.xRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
+            double maxBumpPixelsY = m_calibration.yRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
             double len = bumpVec.Distance();
             double xBumpSize = bumpVec.X * maxBumpPixelsX / len;
             double yBumpSize = bumpVec.Y * maxBumpPixelsY / len;

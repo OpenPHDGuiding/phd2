@@ -199,16 +199,32 @@ static const char *PierSideStr(PierSide p, const char *unknown = _("Unknown"))
 
 static double HourAngle(double ra, double lst)
 {
-    double delta = 0;
+    return norm(lst - ra, -12.0, 12.0);
+}
 
-    delta = lst - ra;
-    if (delta > 12)
-        delta = delta - 24;
+static wxString RotatorPosStr(void)
+{
+    if (!pRotator)
+        return "N/A";
+    double pos = Rotator::RotatorPosition();
+    if (pos == Rotator::POSITION_UNKNOWN)
+        return "Unknown";
     else
-        if (delta < -12)
-            delta = delta + 24;
+        return wxString::Format("%.1f", norm(pos, 0.0, 360.0));
+}
 
-    return delta;
+static wxString PointingInfo(void)
+{
+    double cur_ra, cur_dec, cur_st;
+    if (!pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+    {
+        return wxString::Format("Dec = %0.1f deg, Hour angle = %0.2f hr, Pier side = %s, Rotator pos = %s",
+            cur_dec, HourAngle(cur_ra, cur_st), PierSideStr(pPointingSource->SideOfPier()), RotatorPosStr());
+    }
+    else
+    {
+        return wxString::Format("Dec = Unknown, Hour angle = Unknown, Pier side = Unknown, Rotator pos = %s", RotatorPosStr());
+    }
 }
 
 void GuidingLog::StartCalibration(Mount *pCalibrationMount)
@@ -241,16 +257,7 @@ void GuidingLog::StartCalibration(Mount *pCalibrationMount)
         m_file.Write(", " + calSettings);
     m_file.Write("\n");
 
-    double cur_ra, cur_dec, cur_st;
-    if (!pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
-    {
-        m_file.Write(wxString::Format("Dec = %0.1f deg, Hour angle = %0.2f hr, Pier side = %s\n", cur_dec,
-            HourAngle(cur_ra, cur_st), PierSideStr(pPointingSource->SideOfPier())));
-    }
-    else
-    {
-        m_file.Write("Dec = Unknown, Hour angle = Unknown, Pier side = Unknown\n");
-    }
+    m_file.Write(wxString::Format("%s\n", PointingInfo()));
 
     m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f\n",
                 pFrame->pGuider->LockPosition().X,
@@ -298,8 +305,8 @@ void GuidingLog::CalibrationDirectComplete(Mount *pCalibrationMount, const wxStr
         return;
 
     assert(m_file.IsOpened());
-    m_file.Write(wxString::Format("%s calibration complete. Angle = %.1f deg, Rate = %.4f\n",
-        direction, angle * 180. / M_PI, rate));
+    m_file.Write(wxString::Format("%s calibration complete. Angle = %.1f deg, Rate = %.3f\n",
+        direction, degrees(angle), rate * 1000.0));
     Flush();
 }
 
@@ -363,11 +370,14 @@ void GuidingLog::GuidingHeader(void)
     if (pSecondaryMount)
         m_file.Write(pSecondaryMount->GetSettingsSummary());
 
+    m_file.Write(wxString::Format("%s\n", PointingInfo()));
+
     m_file.Write(wxString::Format("Lock position = %.3f, %.3f, Star position = %.3f, %.3f\n",
                 pFrame->pGuider->LockPosition().X,
                 pFrame->pGuider->LockPosition().Y,
                 pFrame->pGuider->CurrentPosition().X,
                 pFrame->pGuider->CurrentPosition().Y));
+
     m_file.Write("Frame,Time,mount,dx,dy,RARawDistance,DECRawDistance,RAGuideDistance,DECGuideDistance,RADuration,RADirection,DECDuration,DECDirection,XStep,YStep,StarMass,SNR,ErrorCode\n");
 
     Flush();

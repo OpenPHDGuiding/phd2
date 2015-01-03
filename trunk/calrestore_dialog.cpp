@@ -59,16 +59,15 @@ CalrestoreDialog::CalrestoreDialog() :
         wxString prefix = "/" + pMount->GetMountClassName() + "/calibration/";
         dXRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0) * 1000.0;       // pixels per millisecond
         dYRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0) * 1000.0;
-        double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0) * 180.0/M_PI;
+        double xAngle = degrees(pConfig->Profile.GetDouble(prefix + "xAngle", 0.0));
         if (xAngle < 0.0) xAngle += 360.0;
         sCamAngle = wxString::Format("%0.1f deg", xAngle);
         dDeclination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
-        if (dDeclination == 0.0)
+        if (dDeclination == 0.0 && fabs(dYRate) > 0.00001 && fabs(dXRate / dYRate) <= 1.0)
         {
-            dDeclination = acos(dXRate/dYRate);        // cos(dec) = Dec_Rate/RA_Rate
+            dDeclination = degrees(acos(dXRate / dYRate));        // cos(dec) = Dec_Rate/RA_Rate
             bDecEstimated = true;
         }
-        dDeclination *= 180.0 / M_PI;
 
         int iSide = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
         sPierSide = iSide == PIER_SIDE_EAST ? _("East") :
@@ -113,9 +112,9 @@ CalrestoreDialog::CalrestoreDialog() :
     pVSizer->Add(pGrid, wxSizerFlags(0).Border(wxALL, 20));
 
     // Now deal with the buttons
-    wxBoxSizer *pButtonSizer = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    wxButton *pRestore = new wxButton( this, wxID_OK, _("Restore") );
+    wxButton *pRestore = new wxButton(this, wxID_OK, _("Restore"));
     pButtonSizer->Add(
         pRestore,
         wxSizerFlags(0).Align(0).Border(wxRIGHT | wxLEFT | wxBOTTOM, 10));
@@ -123,11 +122,10 @@ CalrestoreDialog::CalrestoreDialog() :
         CreateButtonSizer(wxCANCEL),
         wxSizerFlags(0).Align(0).Border(wxRIGHT | wxLEFT | wxBOTTOM, 10));
 
-     //position the buttons centered with no border
-     pVSizer->Add(
-        pButtonSizer,
-        wxSizerFlags(0).Center() );
-    SetSizerAndFit (pVSizer);
+    //position the buttons centered with no border
+    pVSizer->Add(pButtonSizer, wxSizerFlags(0).Center());
+
+    SetSizerAndFit(pVSizer);
 }
 
 CalrestoreDialog::~CalrestoreDialog(void)

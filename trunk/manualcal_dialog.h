@@ -49,10 +49,10 @@ private:
     int StringWidth(const wxString& string);
 
 public:
-    ManualCalDialog(double xRate, double yRate, double xAngle, double yAngle, double declination);
+    ManualCalDialog(const Calibration& cal);
     ~ManualCalDialog(void);
 
-    void GetValues(double *xRate, double *yRate, double *xAngle, double *yAngle, double *declination);
+    void GetValues(Calibration *cal);
 };
 
 #endif

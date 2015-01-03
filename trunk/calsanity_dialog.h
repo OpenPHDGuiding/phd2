@@ -41,7 +41,7 @@ class CalSanityDialog : public wxDialog
 {
 
 public:
-    CalSanityDialog(Calibration_Params oldParams, Calibration_Params newParams, 
+    CalSanityDialog(const Calibration& oldParams, const Calibration& newParams, 
         int lastRASteps, int lastDecSteps, Calibration_Issues issue, Scope *pScope);
     ~CalSanityDialog(void);
 
@@ -53,8 +53,8 @@ private:
     void BuildMessage(wxStaticText* pText, Calibration_Issues etype);
     void ShutDown();
     wxCheckBox *m_pBlockThis;
-    Calibration_Params m_priorCalibrationData;
-    Calibration_Params m_newParams;
+    Calibration m_priorCalibration;
+    Calibration m_newParams;
     Calibration_Issues m_issue;
     wxString m_newAngleDelta;
     wxString m_oldNewDifference;

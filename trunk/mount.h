@@ -51,10 +51,24 @@ enum GUIDE_DIRECTION {
     WEST = LEFT     // RA+
 };
 
-enum PierSide {
+enum PierSide
+{
     PIER_SIDE_UNKNOWN = -1,
     PIER_SIDE_EAST = 0,
     PIER_SIDE_WEST = 1,
+};
+
+#define INVALID_DECLINATION  999.0
+
+struct Calibration
+{
+    double xRate;
+    double yRate;
+    double xAngle;
+    double yAngle;
+    double declination;
+    PierSide pierSide;
+    double rotatorAngle;
 };
 
 struct MoveResultInfo
@@ -67,21 +81,13 @@ struct MoveResultInfo
 
 class Mount : public wxMessageBoxProxy
 {
-private:
     bool m_connected;
     int m_requestCount;
 
     bool m_calibrated;
-
-    double m_xRate;
-    double m_yRate;
-
-    double m_xAngle;
+    Calibration m_cal;
+    double m_xRate;         // rate adjusted for declination
     double m_yAngleError;
-
-    double m_calXRate;
-    double m_calDeclination;
-    PierSide m_calPierSide;
 
     double m_currentDeclination;
 
@@ -214,7 +220,7 @@ public:
 
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
-    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide side);
+    virtual void SetCalibration(const Calibration& cal);
 
     virtual bool IsConnected(void);
     virtual bool Connect(void);
@@ -247,7 +253,7 @@ public:
 
 inline bool Mount::DecCompensationActive(void) const
 {
-    return m_currentDeclination != m_calDeclination;
+    return m_currentDeclination != m_cal.declination;
 }
 
 #endif /* MOUNT_H_INCLUDED */

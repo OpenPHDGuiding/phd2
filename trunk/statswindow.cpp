@@ -77,7 +77,7 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid1->ClearSelection();
 
     m_grid2 = new wxGrid(this, wxID_ANY);
-    m_grid2->CreateGrid(6, 2);
+    m_grid2->CreateGrid(7, 2);
     m_grid2->SetRowLabelSize(1);
     m_grid2->SetColLabelSize(1);
     m_grid2->EnableEditing(false);
@@ -98,6 +98,8 @@ StatsWindow::StatsWindow(wxWindow *parent)
     ++row, col = 0;
     m_grid2->SetCellValue(row, col++, _("Pier Side"));
     m_grid2->SetCellValue(3, 1, _T("MMMMMM"));
+    ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Rotator Pos"));
 
     m_grid2->AutoSize();
     m_grid2->SetCellValue(3, 1, _T(""));
@@ -203,17 +205,29 @@ void StatsWindow::UpdateStats(void)
     m_grid2->EndBatch();
 }
 
+static wxString RotatorPosStr()
+{
+    if (!pRotator)
+        return _("N/A");
+    double pos = Rotator::RotatorPosition();
+    if (pos == Rotator::POSITION_UNKNOWN)
+        return _("Unknown");
+    else
+        return wxString::Format("%5.1f", norm(pos, 0.0, 360.0));
+}
+
 void StatsWindow::UpdateScopePointing()
 {
     if (pPointingSource)
     {
-        double declination = pPointingSource->GetGuidingDeclination() * 180. / M_PI;
+        double declination = pPointingSource->GetGuidingDeclination();
         PierSide pierSide = pPointingSource->SideOfPier();
 
         m_grid2->BeginBatch();
         int row = 4, col = 1;
-        m_grid2->SetCellValue(wxString::Format("% .1f deg", declination), row++, col);
+        m_grid2->SetCellValue(wxString::Format("% .1f deg", degrees(declination)), row++, col);
         m_grid2->SetCellValue(Mount::PierSideStr(pierSide), row++, col);
+        m_grid2->SetCellValue(RotatorPosStr(), row++, col);
         m_grid2->EndBatch();
     }
 }

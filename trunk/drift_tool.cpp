@@ -671,11 +671,11 @@ void DriftToolWin::UpdateScopeCoordinates(void)
         if (m_phase == PHASE_ADJUST_AZ)
         {
             // azimuth correction from "Star Offset Positioning for Polar Axis Alignment", Frank Barrett, 2/19/2010
-            double dec_r = dec_deg * M_PI / 180.;
+            double dec_r = radians(dec_deg);
             if (fabs(dec_r) < Mount::DEC_COMP_LIMIT)
             {
-                double alt_deg = 90.0 - m_siteLatLong.X + dec_deg;
-                correction = cos(alt_deg * M_PI / 180.) / cos(dec_r);
+                double alt_r = radians(90.0 - m_siteLatLong.X + dec_deg);
+                correction = cos(alt_r) / cos(dec_r);
             }
             else
             {
@@ -696,8 +696,8 @@ void DriftToolWin::UpdateScopeCoordinates(void)
             //
             //  -ag
             //
-            double ha_r = ra_ofs_deg * M_PI / 180.;
-            double cos_dec = cos(dec_deg * M_PI / 180.);
+            double ha_r = radians(ra_ofs_deg);
+            double cos_dec = cos(radians(dec_deg));
             double cos_ha = cos(ha_r);
             correction = sqrt(1. + cos_dec * cos_dec * (cos_ha * cos_ha - 1.));
 

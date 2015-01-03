@@ -91,4 +91,10 @@ public:
     ConnectCameraInBg(wxWindow *parent = GetConnectGearParentWindow()) : RunInBg(parent, _("Connect"), _("Connecting to Camera...")) { }
 };
 
+class ConnectRotatorInBg : public RunInBg
+{
+public:
+    ConnectRotatorInBg(wxWindow *parent = GetConnectGearParentWindow()) : RunInBg(parent, _("Connect"), _("Connecting to Rotator...")) { }
+};
+
 #endif // RUNINBG_INLCUDED

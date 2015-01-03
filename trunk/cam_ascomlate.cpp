@@ -34,6 +34,7 @@
 
 
 #include "phd.h"
+
 #if defined (ASCOM_LATECAMERA)
 #include "camera.h"
 #include "comdispatch.h"
@@ -46,24 +47,7 @@
 
 #include "cam_ascomlate.h"
 #include <wx/msw/ole/oleutils.h>
-
-struct AutoASCOMDriver
-{
-    IDispatch *m_driver;
-    AutoASCOMDriver(IGlobalInterfaceTable *igit, DWORD cookie)
-    {
-        if (FAILED(igit->GetInterfaceFromGlobal(cookie, IID_IDispatch, (LPVOID *) &m_driver)))
-        {
-            throw ERROR_INFO("ASCOM Camera: Cannot get interface with Global Interface Table");
-        }
-    }
-    ~AutoASCOMDriver()
-    {
-        m_driver->Release();
-    }
-    operator IDispatch *() const { return m_driver; }
-    IDispatch *operator->() const { return m_driver; }
-};
+#include <comdef.h>
 
 static bool IsChooser(const wxString& choice)
 {
@@ -72,8 +56,6 @@ static bool IsChooser(const wxString& choice)
 
 Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
 {
-    m_pIGlobalInterfaceTable = NULL;
-    m_dwCookie = 0;
     m_choice = choice;
 
     Connected = false;
@@ -89,16 +71,6 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
 
 Camera_ASCOMLateClass::~Camera_ASCOMLateClass()
 {
-    if (m_pIGlobalInterfaceTable)
-    {
-        if (m_dwCookie)
-        {
-            m_pIGlobalInterfaceTable->RevokeInterfaceFromGlobal(m_dwCookie);
-            m_dwCookie = 0;
-        }
-        m_pIGlobalInterfaceTable->Release();
-        m_pIGlobalInterfaceTable = NULL;
-    }
 }
 
 static wxString displayName(const wxString& ascomName)
@@ -147,9 +119,9 @@ wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
                 VARIANT vkey, vval;
                 if (kvpair.GetProp(&vkey, L"Key") && kvpair.GetProp(&vval, L"Value"))
                 {
-                    wxString ascomName = wxBasicString(vval.bstrVal).Get();
+                    wxString ascomName = vval.bstrVal;
                     wxString displName = displayName(ascomName);
-                    wxString progid = wxBasicString(vkey.bstrVal).Get();
+                    wxString progid = vkey.bstrVal;
                     s_progid[displName] = progid;
                     list.Add(displName);
                 }
@@ -186,7 +158,7 @@ static bool ChooseASCOMCamera(BSTR *res)
     VARIANT vchoice;
     if (!chooser.InvokeMethod(&vchoice, L"Choose", bstr_ProgID))
     {
-        wxMessageBox(_("Failed to run the Scope Chooser. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("Failed to run the Camera Chooser. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
         return false;
     }
 
@@ -217,14 +189,9 @@ static bool GetDriverProgId(BSTR *progid, const wxString& choice)
 
 bool Camera_ASCOMLateClass::Create(DispatchObj *obj, DispatchClass *cls)
 {
-    if (m_dwCookie)
+    IDispatch *idisp = m_gitEntry.Get();
+    if (idisp)
     {
-        IDispatch *idisp;
-        if (FAILED(m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (LPVOID *) &idisp)))
-        {
-            Debug.AddLine("Camera_ASCOMLateClass: m_dwCookie is non-zero but GetInterfaceFromGlobal failed!");
-            return false;
-        }
         obj->Attach(idisp, cls);
         return true;
     }
@@ -239,26 +206,7 @@ bool Camera_ASCOMLateClass::Create(DispatchObj *obj, DispatchClass *cls)
         return false;
     }
 
-    // create global interface table if it does not already exist
-    if (m_pIGlobalInterfaceTable == NULL)
-    {
-        if (FAILED(::CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_IGlobalInterfaceTable,
-                (void **)&m_pIGlobalInterfaceTable)))
-        {
-            Debug.AddLine("ASCOM Camera: Cannot CoCreateInstance of Global Interface Table");
-            return false;
-        }
-        assert(m_pIGlobalInterfaceTable);
-    }
-
-    // Add the interface. Any errors from this point on must remove the interface from the global table
-    if (FAILED(m_pIGlobalInterfaceTable->RegisterInterfaceInGlobal(obj->IDisp(), IID_IDispatch, &m_dwCookie)))
-    {
-        Debug.AddLine("ASCOM Camera: Cannot register with Global Interface Table");
-        return false;
-    }
-    assert(m_dwCookie);
-
+    m_gitEntry.Register(*obj);
     return true;
 }
 
@@ -270,16 +218,6 @@ static bool GetDispid(DISPID *pid, DispatchObj& obj, OLECHAR *name)
         return false;
     }
     return true;
-}
-
-static wxString ExcepMsg(const EXCEPINFO& excep)
-{
-    return wxString::Format("(%s) %s", excep.bstrSource, excep.bstrDescription);
-}
-
-static wxString ExcepMsg(const wxString& prefix, const EXCEPINFO& excep)
-{
-    return prefix + ":\n" + ExcepMsg(excep);
 }
 
 bool Camera_ASCOMLateClass::Connect()
@@ -300,8 +238,7 @@ bool Camera_ASCOMLateClass::Connect()
         ConnectInBg(Camera_ASCOMLateClass *cam_) : cam(cam_) { }
         bool Entry()
         {
-            AutoASCOMDriver driver(cam->m_pIGlobalInterfaceTable, cam->m_dwCookie);
-            DispatchObj dobj(driver, NULL);
+            GITObjRef dobj(cam->m_gitEntry);
             // ... set the Connected property to true....
             if (!dobj.PutProp(L"Connected", true))
             {
@@ -444,13 +381,12 @@ bool Camera_ASCOMLateClass::Disconnect()
         return false;
     }
 
-    AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
-    DispatchObj driver(ASCOMDriver, NULL);
+    GITObjRef cam(m_gitEntry);
 
-    if (!driver.PutProp(L"Connected", false))
+    if (!cam.PutProp(L"Connected", false))
     {
-        Debug.AddLine(ExcepMsg("ASCOM disconnect", driver.Excep()));
-        pFrame->Alert(ExcepMsg(_("ASCOM driver problem -- cannot disconnect"), driver.Excep()));
+        Debug.AddLine(ExcepMsg("ASCOM disconnect", cam.Excep()));
+        pFrame->Alert(ExcepMsg(_("ASCOM driver problem -- cannot disconnect"), cam.Excep()));
         return true;
     }
 
@@ -567,19 +503,16 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
     if (!m_hasGuideOutput)
         return true;
 
-    AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
-
-    DISPPARAMS dispParms;
-    VARIANTARG rgvarg[2];
-    EXCEPINFO excep;
-    VARIANT vRes;
-    HRESULT hr;
+    GITObjRef cam(m_gitEntry);
 
     // Start the motion (which may stop on its own)
+    VARIANTARG rgvarg[2];
     rgvarg[1].vt = VT_I2;
     rgvarg[1].iVal =  direction;
     rgvarg[0].vt = VT_I4;
     rgvarg[0].lVal = (long) duration;
+
+    DISPPARAMS dispParms;
     dispParms.cArgs = 2;
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 0;
@@ -587,9 +520,13 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
 
     MountWatchdog watchdog(duration, 5000);
 
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
-                                    &dispParms,&vRes,&excep,NULL)))
+    EXCEPINFO excep;
+    VARIANT vRes;
+    HRESULT hr;
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_pulseguide, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
+        &dispParms,&vRes,&excep,NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke pulseguide: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
 
@@ -629,16 +566,18 @@ bool Camera_ASCOMLateClass::ASCOM_SetBin(int mode, EXCEPINFO *excep)
     dispParms.cNamedArgs = 1;                   // PropPut kludge
     dispParms.rgdispidNamedArgs = &dispidNamed;
 
-    AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+    GITObjRef cam(m_gitEntry);
 
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_setxbin,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_setxbin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
         &dispParms, &vRes, excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke setxbin: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_setybin,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_setybin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
         &dispParms, &vRes, excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke setybin: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
 
@@ -662,29 +601,33 @@ bool Camera_ASCOMLateClass::ASCOM_SetROI(int startx, int starty, int numx, int n
     dispParms.cNamedArgs = 1;                   // PropPut kludge
     dispParms.rgdispidNamedArgs = &dispidNamed;
 
-    AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+    GITObjRef cam(m_gitEntry);
 
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_startx,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_startx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
         &dispParms, &vRes, excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke startx: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
     rgvarg[0].lVal = (long) starty;
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_starty,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_starty, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
         &dispParms, &vRes, excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke starty: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
     rgvarg[0].lVal = (long) numx;
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_numx,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_numx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
         &dispParms, &vRes, excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke numx: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
     rgvarg[0].lVal = (long) numy;
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_numy,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYPUT,
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_numy, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
         &dispParms, &vRes, excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke numy: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
     return false;
@@ -704,11 +647,12 @@ bool Camera_ASCOMLateClass::ASCOM_StopExposure(EXCEPINFO *excep)
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
 
-    AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+    GITObjRef cam(m_gitEntry);
 
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_stopexposure,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_stopexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
         &dispParms, &vRes, excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke stopexposure: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
     return false;
@@ -732,11 +676,12 @@ bool Camera_ASCOMLateClass::ASCOM_StartExposure(double duration, bool dark, EXCE
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs =NULL;
 
-    AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+    GITObjRef cam(m_gitEntry);
 
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_startexposure,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
-                                    &dispParms,&vRes,excep,NULL)))
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_startexposure,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
+        &dispParms,&vRes,excep,NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke startexposure: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
     return false;
@@ -755,11 +700,12 @@ bool Camera_ASCOMLateClass::ASCOM_ImageReady(bool *ready, EXCEPINFO *excep)
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
 
-    AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+    GITObjRef cam(m_gitEntry);
 
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_imageready,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_imageready,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
         &dispParms, &vRes, excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke imageready: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
     *ready = vRes.boolVal != VARIANT_FALSE;
@@ -781,11 +727,12 @@ bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, const
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
 
-    AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+    GITObjRef cam(m_gitEntry);
 
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_imagearray,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_imagearray, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
         &dispParms, &vRes, excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke imagearray: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return true;
     }
 
@@ -857,10 +804,11 @@ bool Camera_ASCOMLateClass::ASCOM_IsMoving(void)
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
 
-    AutoASCOMDriver ASCOMDriver(m_pIGlobalInterfaceTable, m_dwCookie);
+    GITObjRef cam(m_gitEntry);
 
-    if (FAILED(hr = ASCOMDriver->Invoke(dispid_ispulseguiding,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,&dispParms,&vRes,&excep, NULL)))
+    if (FAILED(hr = cam.IDisp()->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
     {
+        Debug.AddLine(wxString::Format("invoke ispulseguiding: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         Debug.AddLine(ExcepMsg("ASCOM driver failed checking IsPulseGuiding", excep));
         pFrame->Alert(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding"), excep));
         return false;
