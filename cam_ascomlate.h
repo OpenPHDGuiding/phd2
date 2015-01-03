@@ -40,7 +40,7 @@
 class DispatchObj;
 class DispatchClass;
 
-class Camera_ASCOMLateClass : public GuideCamera, protected ASCOM_COMMON
+class Camera_ASCOMLateClass : public GuideCamera
 {
 public:
     virtual bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
@@ -60,8 +60,8 @@ private:
 
 #ifdef __WINDOWS__
 
-    IGlobalInterfaceTable *m_pIGlobalInterfaceTable;
-    DWORD m_dwCookie;
+    GITEntry m_gitEntry;
+
     DISPID dispid_setxbin, dispid_setybin;  // Frequently used IDs
     DISPID dispid_startx, dispid_starty;
     DISPID dispid_numx, dispid_numy;

@@ -476,23 +476,6 @@ bool Scope::IsDecDrifting(void) const
 // Useful utility functions
 #define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
 
-inline static double norm(double val, double start, double end)
-{
-    double const range = end - start;
-    double const ofs = val - start;
-    return val - floor(ofs / range) * range;
-}
-
-inline static double norm_angle(double val)
-{
-    return norm(val, -M_PI, M_PI);
-}
-
-inline static double degrees(double radians)
-{
-    return radians * 180. / M_PI;
-}
-
 Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duration)
 {
     MOVE_RESULT result = MOVE_OK;
@@ -665,23 +648,32 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
     return result;
 }
 
-bool Scope::GetLastCalibrationParams(Calibration_Params* params)
+inline static PierSide pier_side(int val)
 {
-    wxString prefix = "/" + GetMountClassName() +"/calibration/";
-    wxString sTimestamp = pConfig->Profile.GetString("/scope/calibration/timestamp", wxEmptyString);
-    params->TimeStamp = sTimestamp;
+    return val == PIER_SIDE_EAST ? PIER_SIDE_EAST : val == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
+}
+
+bool Scope::GetLastCalibrationParams(Calibration *params)
+{
+    wxString prefix = "/scope/calibration/";
+    wxString sTimestamp = pConfig->Profile.GetString(prefix + "timestamp", wxEmptyString);
+
     if (sTimestamp.Length() > 0)
     {
-        params->XRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0); 
-        params->YRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
-        params->XAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
-        params->YAngle = pConfig->Profile.GetDouble(prefix + "yAngle", 0.0);
-        params->Declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
-        params->PierSide = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
+        params->xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0); 
+        params->yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+        params->xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
+        params->yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", 0.0);
+        params->declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
+        params->pierSide = pier_side(pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN));
+        params->rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
         return true;
     }
     else
+    {
+        params->declination = INVALID_DECLINATION; // indicate invalid calibration
         return false;
+    }
 }
 
 static wxString CalibrationWarningKey(Calibration_Issues etype)
@@ -724,7 +716,7 @@ static void ShowCalibrationIssues(long scopeptr)
 // Handle the "details" dialog for the calibration sanity check
 void Scope::HandleSanityCheckDialog()
 {
-    Calibration_Params newParams;
+    Calibration newParams;
     
     if (pFrame->pCalSanityCheckDlg)
         pFrame->pCalSanityCheckDlg->Destroy();
@@ -736,7 +728,7 @@ void Scope::HandleSanityCheckDialog()
 
 // Do some basic sanity checking on the just-completed calibration, looking for things that are fishy.  Do the checking in the order of 
 // importance/confidence, since we only alert about a single condition
-void Scope::SanityCheckCalibration(const Calibration_Params *pOld, const Calibration_Params *pNew, int xSteps, int ySteps)
+void Scope::SanityCheckCalibration(const Calibration& oldCal, const Calibration& newCal, int xSteps, int ySteps)
 {
     wxString detailInfo;
     m_lastCalibrationIssue = CI_None;
@@ -750,39 +742,41 @@ void Scope::SanityCheckCalibration(const Calibration_Params *pOld, const Calibra
     else
     {
         // Non-orthogonal RA/Dec axes
-        double nonOrtho = fabs(fabs(norm_angle(pNew->XAngle - pNew->YAngle)) - M_PI/2.) * 180.0/ M_PI;         // Delta from the nearest multiple of 90 degrees
+        double nonOrtho = degrees(fabs(fabs(norm_angle(newCal.xAngle - newCal.yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
         if (nonOrtho >  CAL_ALERT_ORTHOGONALITY_TOLERANCE)
         {
             m_lastCalibrationIssue = CI_Angle;
             detailInfo = wxString::Format("Non-orthogonality = %0.3f", nonOrtho);
         }
         else
-            // RA/Dec rates should be related by cos(dec) but don't check if Dec is too high or Dec guiding is disabled
-            if (pNew->Declination != 0.0 && pNew->YRate != 0 && fabs(pNew->Declination) <= (M_PI / 2.0 * 2.0 / 3.0))
-                {
-                    double expectedRatio = cos(pNew->Declination);
-                    double actualRatio = pNew->XRate / pNew->YRate;
-                    if (fabs(expectedRatio - actualRatio) > CAL_ALERT_AXISRATES_TOLERANCE)
-                    {
-                        m_lastCalibrationIssue = CI_Rates;
-                        detailInfo = wxString::Format("Expected ratio at dec=&0.1f is %0.3f, actual is %0.3f", pNew->Declination * 180.0/M_PI, actualRatio);
-                    }
-                }
-
-        // Finally check for a dec rate that is more than nn% different than the last accepted calibration
-        if (m_lastCalibrationIssue == CI_None && pOld->TimeStamp.Length() > 0)
         {
-            double newDecRate = pNew->YRate;
-            if (newDecRate != 0)
+            // RA/Dec rates should be related by cos(dec) but don't check if Dec is too high or Dec guiding is disabled
+            if (newCal.declination != 0.0 && newCal.yRate != 0 && fabs(newCal.declination) <= Mount::DEC_COMP_LIMIT)
             {
-                if (fabs(1.0 - (pOld->YRate / newDecRate)) > CAL_ALERT_DECRATE_DIFFERENCE)
+                double expectedRatio = cos(newCal.declination);
+                double actualRatio = newCal.xRate / newCal.yRate;
+                if (fabs(expectedRatio - actualRatio) > CAL_ALERT_AXISRATES_TOLERANCE)
                 {
-                    m_lastCalibrationIssue = CI_Different;
-                    detailInfo = wxString::Format("Current/previous Dec rate ratio is %0.3f", pOld->YRate / newDecRate);
+                    m_lastCalibrationIssue = CI_Rates;
+                    detailInfo = wxString::Format("Expected ratio at dec=&0.1f is %0.3f, actual is %0.3f", degrees(newCal.declination), actualRatio);
                 }
             }
-            else 
-                if (pOld->YRate != 0)                   // Might have had Dec guiding disabled
+        }
+
+        // Finally check for a dec rate that is more than nn% different than the last accepted calibration
+        if (m_lastCalibrationIssue == CI_None && oldCal.declination < INVALID_DECLINATION)
+        {
+            double newDecRate = newCal.yRate;
+            if (newDecRate != 0.)
+            {
+                if (fabs(1.0 - (oldCal.yRate / newDecRate)) > CAL_ALERT_DECRATE_DIFFERENCE)
+                {
+                    m_lastCalibrationIssue = CI_Different;
+                    detailInfo = wxString::Format("Current/previous Dec rate ratio is %0.3f", oldCal.yRate / newDecRate);
+                }
+            }
+            else
+                if (oldCal.yRate != 0.)                   // Might have had Dec guiding disabled
                     m_lastCalibrationIssue = CI_Different;
         }
     }
@@ -858,13 +852,10 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
     return bError;
 }
 
-void Scope::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide)
+void Scope::SetCalibration(const Calibration& cal)
 {
-    m_calibrationXAngle = xAngle;
-    m_calibrationXRate = xRate;
-    m_calibrationYAngle = yAngle;
-    m_calibrationYRate = yRate;
-    Mount::SetCalibration(xAngle, yAngle, xRate, yRate, declination, pierSide);
+    m_calibration = cal;
+    Mount::SetCalibration(cal);
 }
 
 bool Scope::IsCalibrated(void)
@@ -880,7 +871,7 @@ bool Scope::IsCalibrated(void)
     case DEC_NORTH:
     case DEC_SOUTH:
         {
-            bool have_ns_calibration = m_calibrationYRate != CALIBRATION_RATE_UNCALIBRATED;
+            bool have_ns_calibration = m_calibration.yRate != CALIBRATION_RATE_UNCALIBRATED;
             return have_ns_calibration;
         }
     default:
@@ -899,15 +890,12 @@ int Scope::CalibrationTotDistance(void)
     return (int) ceil(CalibrationDistance());
 }
 
-
-
 // Convert camera coords to mount coords
 static PHD_Point MountCoords(const PHD_Point& cameraVector, double xCalibAngle, double yCalibAngle)
 {
     double hyp = cameraVector.Distance();
     double cameraTheta = cameraVector.Angle();
-    double yAngleError = (xCalibAngle - yCalibAngle) + M_PI / 2;
-    yAngleError = atan2(sin(yAngleError), cos(yAngleError));
+    double yAngleError = norm_angle((xCalibAngle - yCalibAngle) + M_PI / 2);
     double xAngle = cameraTheta - xCalibAngle;
     double yAngle = cameraTheta - (xCalibAngle + yAngleError);
     return PHD_Point(hyp * cos(xAngle), hyp * sin(yAngle));
@@ -959,13 +947,13 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     break;
                 }
 
-                m_calibrationXAngle = m_calibrationStartingLocation.Angle(currentLocation);
-                m_calibrationXRate = dist / (m_calibrationSteps * m_calibrationDuration);
+                m_calibration.xAngle = m_calibrationStartingLocation.Angle(currentLocation);
+                m_calibration.xRate = dist / (m_calibrationSteps * m_calibrationDuration);
 
-                Debug.AddLine(wxString::Format("WEST calibration completes with steps=%d angle=%.1f rate=%.4f", m_calibrationSteps, m_calibrationXAngle * 180. / M_PI, m_calibrationXRate));
-                status1.Printf(_("angle=%.1f rate=%.4f"), m_calibrationXAngle * 180. / M_PI, m_calibrationXRate);
+                Debug.AddLine(wxString::Format("WEST calibration completes with steps=%d angle=%.1f rate=%.3f", m_calibrationSteps, degrees(m_calibration.xAngle), m_calibration.xRate * 1000.0));
+                status1.Printf(_("angle=%.1f rate=%.3f"), degrees(m_calibration.xAngle), m_calibration.xRate * 1000.0);
                 m_raSteps = m_calibrationSteps;
-                GuideLog.CalibrationDirectComplete(this, "West", m_calibrationXAngle, m_calibrationXRate);
+                GuideLog.CalibrationDirectComplete(this, "West", m_calibration.xAngle, m_calibration.xRate);
 
                 // for GO_EAST m_recenterRemaining contains the total remaining duration.
                 // Choose the largest pulse size that will not lose the guide star or exceed
@@ -975,7 +963,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 if (pFrame->pGuider->IsFastRecenterEnabled())
                 {
-                    m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibrationXRate);
+                    m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibration.xRate);
                     if (m_recenterDuration > m_maxRaDuration)
                         m_recenterDuration = m_maxRaDuration;
                     if (m_recenterDuration < m_calibrationDuration)
@@ -1019,9 +1007,9 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 if (m_decGuideMode == DEC_NONE)
                 {
                     m_calibrationState = CALIBRATION_STATE_COMPLETE;
-                    m_calibrationYAngle = norm_angle(m_calibrationXAngle + M_PI / 2.); // choose an arbitrary angle perpendicular to xAngle
+                    m_calibration.yAngle = norm_angle(m_calibration.xAngle + M_PI / 2.); // choose an arbitrary angle perpendicular to xAngle
                     // indicate lack of Dec calibration data, see Scope::IsCalibrated.
-                    m_calibrationYRate = CALIBRATION_RATE_UNCALIBRATED;
+                    m_calibration.yRate = CALIBRATION_RATE_UNCALIBRATED;
                     break;
                 }
 
@@ -1083,26 +1071,27 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 // to EAST
                 if (m_assumeOrthogonal)
                 {
-                    double a1 = norm_angle(m_calibrationXAngle + M_PI / 2.);
-                    double a2 = norm_angle(m_calibrationXAngle - M_PI / 2.);
+                    double a1 = norm_angle(m_calibration.xAngle + M_PI / 2.);
+                    double a2 = norm_angle(m_calibration.xAngle - M_PI / 2.);
                     double yAngle = currentLocation.Angle(m_calibrationStartingLocation);
-                    m_calibrationYAngle = fabs(norm_angle(a1 - yAngle)) < fabs(norm_angle(a2 - yAngle)) ? a1 : a2;
-                    double dec_dist = dist * cos(yAngle - m_calibrationYAngle);
-                    m_calibrationYRate = dec_dist / (m_calibrationSteps * m_calibrationDuration);
+                    m_calibration.yAngle = fabs(norm_angle(a1 - yAngle)) < fabs(norm_angle(a2 - yAngle)) ? a1 : a2;
+                    double dec_dist = dist * cos(yAngle - m_calibration.yAngle);
+                    m_calibration.yRate = dec_dist / (m_calibrationSteps * m_calibrationDuration);
 
                     Debug.AddLine("Assuming orthogonal axes: measured Y angle = %.1f, X angle = %.1f, orthogonal = %.1f, %.1f, best = %.1f, dist = %.2f, dec_dist = %.2f",
-                        degrees(yAngle), degrees(m_calibrationXAngle), degrees(a1), degrees(a2), degrees(m_calibrationYAngle), dist, dec_dist);
+                        degrees(yAngle), degrees(m_calibration.xAngle), degrees(a1), degrees(a2), degrees(m_calibration.yAngle), dist, dec_dist);
                 }
                 else
                 {
-                    m_calibrationYAngle = currentLocation.Angle(m_calibrationStartingLocation);
-                    m_calibrationYRate = dist / (m_calibrationSteps * m_calibrationDuration);
+                    m_calibration.yAngle = currentLocation.Angle(m_calibrationStartingLocation);
+                    m_calibration.yRate = dist / (m_calibrationSteps * m_calibrationDuration);
                 }
 
-                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.1f rate=%.4f", m_calibrationYAngle * 180. / M_PI, m_calibrationYRate));
                 m_decSteps = m_calibrationSteps;
-                status1.Printf(_("angle=%.1f rate=%.4f"), m_calibrationYAngle * 180. / M_PI, m_calibrationYRate);
-                GuideLog.CalibrationDirectComplete(this, "North", m_calibrationYAngle, m_calibrationYRate);
+
+                Debug.AddLine(wxString::Format("NORTH calibration completes with angle=%.1f rate=%.3f", degrees(m_calibration.yAngle), m_calibration.yRate * 1000.0));
+                status1.Printf(_("angle=%.1f rate=%.3f"), degrees(m_calibration.yAngle), m_calibration.yRate * 1000.0);
+                GuideLog.CalibrationDirectComplete(this, "North", m_calibration.yAngle, m_calibration.yRate);
 
                 // for GO_SOUTH m_recenterRemaining contains the total remaining duration.
                 // Choose the largest pulse size that will not lose the guide star or exceed
@@ -1111,7 +1100,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 if (pFrame->pGuider->IsFastRecenterEnabled())
                 {
-                    m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibrationYRate);
+                    m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibration.yRate);
                     if (m_recenterDuration > m_maxDecDuration)
                         m_recenterDuration = m_maxDecDuration;
                     if (m_recenterDuration < m_calibrationDuration)
@@ -1151,15 +1140,17 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 if (m_calibrationSteps <= MAX_NUDGES && currentLocation.Distance(m_calibrationInitialLocation) > NUDGE_TOLERANCE)
                 {
                     // Get the sign convention for the total of the 'south' moves we originally made
-                    double totalSouthAmt = MountCoords(m_southStartingLocation - m_lastLocation, m_calibrationXAngle, m_calibrationYAngle).Y;
+                    double totalSouthAmt = MountCoords(m_southStartingLocation - m_lastLocation, m_calibration.xAngle, m_calibration.yAngle).Y;
                     // Compute how much more south we need to go
-                    double decAmt = MountCoords(currentLocation - m_calibrationInitialLocation, m_calibrationXAngle, m_calibrationYAngle).Y;
+                    double decAmt = MountCoords(currentLocation - m_calibrationInitialLocation, m_calibration.xAngle, m_calibration.yAngle).Y;
+
                     Debug.AddLine(wxString::Format("Final nudging, decAmt = %.3f, Normal south moves = %.3f", decAmt, totalSouthAmt));
+
                     if (decAmt * totalSouthAmt > 0.0)           // still need to move south to reach target
                     {
                         decAmt = fabs(decAmt);           // Sign doesn't matter now, we're always moving south
                         decAmt = wxMin(decAmt, (double) pFrame->pGuider->GetMaxMovePixels());
-                        int pulseAmt = (int) floor(decAmt / m_calibrationYRate);
+                        int pulseAmt = (int) floor(decAmt / m_calibration.yRate);
                         Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d ms", pulseAmt));
                         ++m_calibrationSteps;
                         status0.Printf(_("Final Nudge South %3d"), m_calibrationSteps);
@@ -1177,14 +1168,16 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
             case CALIBRATION_STATE_COMPLETE:
                 GetLastCalibrationParams(&m_prevCalibrationParams);
-                SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
-                               m_calibrationXRate,  m_calibrationYRate,
-                               pPointingSource->GetGuidingDeclination(), pPointingSource->SideOfPier());
-                Calibration_Params newParams;
+                Calibration cal(m_calibration);
+                cal.declination = pPointingSource->GetGuidingDeclination();
+                cal.pierSide = pPointingSource->SideOfPier();
+                cal.rotatorAngle = Rotator::RotatorPosition();
+                SetCalibration(cal);
+                Calibration newParams;
                 GetLastCalibrationParams(&newParams);
                 if (SANITY_CHECKING_ACTIVE)
-                    SanityCheckCalibration(&m_prevCalibrationParams, &newParams, m_raSteps, m_decSteps);
-                pFrame->SetStatusText(_("calibration complete"),1);
+                    SanityCheckCalibration(m_prevCalibrationParams, newParams, m_raSteps, m_decSteps);
+                pFrame->SetStatusText(_("calibration complete"), 1);
                 GuideLog.CalibrationComplete(this);
                 EvtServer.NotifyCalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");

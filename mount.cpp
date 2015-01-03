@@ -472,45 +472,9 @@ Mount::~Mount()
     delete m_pYGuideAlgorithm;
 }
 
-double Mount::yAngle()
-{
-    double dReturn = 0;
-
-    if (IsCalibrated())
-    {
-        dReturn = m_xAngle - m_yAngleError + M_PI/2;
-    }
-
-    return dReturn;
-}
-
-double Mount::yRate()
-{
-    double dReturn = 0;
-
-    if (IsCalibrated())
-    {
-        dReturn = m_yRate;
-    }
-
-    return dReturn;
-}
-
-double Mount::xAngle()
-{
-    double dReturn = 0;
-
-    if (IsCalibrated())
-    {
-        dReturn = m_xAngle;
-    }
-
-    return dReturn;
-}
-
 double Mount::xRate()
 {
-    double dReturn = 0;
+    double dReturn = 0.;
 
     if (IsCalibrated())
     {
@@ -518,6 +482,49 @@ double Mount::xRate()
     }
 
     return dReturn;
+}
+
+double Mount::yRate()
+{
+    double dReturn = 0.;
+
+    if (IsCalibrated())
+    {
+        dReturn = m_cal.yRate;
+    }
+
+    return dReturn;
+}
+
+double Mount::xAngle()
+{
+    double dReturn = 0.;
+
+    if (IsCalibrated())
+    {
+        dReturn = m_cal.xAngle;
+    }
+
+    return dReturn;
+}
+
+double Mount::yAngle()
+{
+    double dReturn = 0.;
+
+    if (IsCalibrated())
+    {
+        dReturn = m_cal.xAngle - m_yAngleError + M_PI / 2.;
+    }
+
+    return dReturn;
+}
+
+static wxString RotAngleStr(double rotAngle)
+{
+    if (rotAngle == Rotator::POSITION_UNKNOWN)
+        return _("None");
+    return wxString::Format("%.1f", rotAngle);
 }
 
 bool Mount::FlipCalibration(void)
@@ -536,8 +543,8 @@ bool Mount::FlipCalibration(void)
 
         bool decFlipRequired = CalibrationFlipRequiresDecFlip();
 
-        Debug.AddLine(wxString::Format("FlipCalibration before: x=%.1f, y=%.1f decFlipRequired=%d sideOfPier=%s",
-            origX * 180. / M_PI, origY * 180. / M_PI, decFlipRequired, ::PierSideStr(m_calPierSide)));
+        Debug.AddLine(wxString::Format("FlipCalibration before: x=%.1f, y=%.1f decFlipRequired=%d sideOfPier=%s rotAngle=%s",
+            degrees(origX), degrees(origY), decFlipRequired, ::PierSideStr(m_cal.pierSide), RotAngleStr(m_cal.rotatorAngle)));
 
         double newX = origX + M_PI;
         double newY = origY;
@@ -547,23 +554,32 @@ bool Mount::FlipCalibration(void)
             newY += M_PI;
         }
 
-        Debug.AddLine("FlipCalibration pre-normalize: x=%.1f, y=%.1f", newX * 180. / M_PI, newY * 180. / M_PI);
+        Debug.AddLine("FlipCalibration pre-normalize: x=%.1f, y=%.1f", degrees(newX), degrees(newY));
 
         // normalize
-        newX = atan2(sin(newX), cos(newX));
-        newY = atan2(sin(newY), cos(newY));
+        newX = norm_angle(newX);
+        newY = norm_angle(newY);
 
-        PierSide priorPierSide = m_calPierSide;
-        PierSide newPierSide = OppositeSide(m_calPierSide);
+        PierSide priorPierSide = m_cal.pierSide;
+        PierSide newPierSide = OppositeSide(m_cal.pierSide);
 
         Debug.AddLine(wxString::Format("FlipCalibration after: x=%.1f, y=%.1f sideOfPier=%s",
-            newX * 180. / M_PI, newY * 180. / M_PI, ::PierSideStr(newPierSide)));
+            degrees(newX), degrees(newY), ::PierSideStr(newPierSide)));
 
-        SetCalibration(newX, newY, m_calXRate, m_yRate, m_calDeclination, newPierSide);
+        Calibration cal;
+        cal.xAngle = newX;
+        cal.yAngle = newY;
+        cal.xRate = m_cal.xRate;
+        cal.yRate = m_cal.yRate;
+        cal.declination = m_cal.declination;
+        cal.pierSide = newPierSide;
+        cal.rotatorAngle = m_cal.rotatorAngle;
+
+        SetCalibration(cal);
 
         pFrame->SetStatusText(wxString::Format(_("CAL: %s(%.f,%.f)->%s(%.f,%.f)"),
-            ::PierSideStr(priorPierSide, ""), origX * 180. / M_PI, origY * 180. / M_PI,
-            ::PierSideStr(newPierSide, ""), newX * 180. / M_PI, newY * 180. / M_PI), 0);
+            ::PierSideStr(priorPierSide, ""), degrees(origX), degrees(origY),
+            ::PierSideStr(newPierSide, ""), degrees(newX), degrees(newY)), 0);
     }
     catch (wxString Msg)
     {
@@ -627,7 +643,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         MoveResultInfo yMoveResult;
         if (result == MOVE_OK || result == MOVE_ERROR)
         {
-            int requestedYAmount = (int) floor(fabs(yDistance / m_yRate) + 0.5);
+            int requestedYAmount = (int) floor(fabs(yDistance / m_cal.yRate) + 0.5);
             result = Move(yDirection, requestedYAmount, normalMove, &yMoveResult);
 
             if (yMoveResult.amountMoved > 0)
@@ -744,8 +760,8 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
         double hyp   = cameraVectorEndpoint.Distance();
         double cameraTheta = cameraVectorEndpoint.Angle();
 
-        double xAngle = cameraTheta - m_xAngle;
-        double yAngle = cameraTheta - (m_xAngle + m_yAngleError);
+        double xAngle = cameraTheta - m_cal.xAngle;
+        double yAngle = cameraTheta - (m_cal.xAngle + m_yAngleError);
 
         // Convert theta and hyp into X and Y
 
@@ -755,9 +771,9 @@ bool Mount::TransformCameraCoordinatesToMountCoordinates(const PHD_Point& camera
             );
 
         Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - m_xAngle (%.2f) = xAngle (%.2f = %.2f)",
-                cameraTheta, m_xAngle, xAngle, atan2(sin(xAngle), cos(xAngle)));
+                cameraTheta, m_cal.xAngle, xAngle, norm_angle(xAngle));
         Debug.AddLine("CameraToMount -- cameraTheta (%.2f) - (m_xAngle (%.2f) + m_yAngleError (%.2f)) = yAngle (%.2f = %.2f)",
-                cameraTheta, m_xAngle, m_yAngleError, yAngle, atan2(sin(yAngle), cos(yAngle)));
+                cameraTheta, m_cal.xAngle, m_yAngleError, yAngle, norm_angle(yAngle));
         Debug.AddLine("CameraToMount -- cameraX=%.2f cameraY=%.2f hyp=%.2f cameraTheta=%.2f mountX=%.2f mountY=%.2f, mountTheta=%.2f",
                 cameraVectorEndpoint.X, cameraVectorEndpoint.Y, hyp, cameraTheta, mountVectorEndpoint.X, mountVectorEndpoint.Y,
                 mountVectorEndpoint.Angle());
@@ -787,12 +803,12 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
         double hyp = mountVectorEndpoint.Distance();
         double mountTheta = mountVectorEndpoint.Angle();
 
-        if (fabs(m_yAngleError) > M_PI/2)
+        if (fabs(m_yAngleError) > M_PI / 2.)
         {
             mountTheta = -mountTheta;
         }
 
-        double xAngle = mountTheta + m_xAngle;
+        double xAngle = mountTheta + m_cal.xAngle;
 
         cameraVectorEndpoint.SetXY(
                 cos(xAngle) * hyp,
@@ -800,7 +816,7 @@ bool Mount::TransformMountCoordinatesToCameraCoordinates(const PHD_Point& mountV
                 );
 
         Debug.AddLine("MountToCamera -- mountTheta (%.2f) + m_xAngle (%.2f) = xAngle (%.2f = %.2f)",
-                mountTheta, m_xAngle, xAngle, atan2(sin(xAngle), cos(xAngle)));
+                mountTheta, m_cal.xAngle, xAngle, norm_angle(xAngle));
         Debug.AddLine("MountToCamera -- mountX=%.2f mountY=%.2f hyp=%.2f mountTheta=%.2f cameraX=%.2f, cameraY=%.2f cameraTheta=%.2f",
                 mountVectorEndpoint.X, mountVectorEndpoint.Y, hyp, mountTheta, cameraVectorEndpoint.X, cameraVectorEndpoint.Y,
                 cameraVectorEndpoint.Angle());
@@ -842,33 +858,61 @@ void Mount::AdjustCalibrationForScopePointing(void)
 {
     double newDeclination = pPointingSource->GetGuidingDeclination();
     PierSide newPierSide = pPointingSource->SideOfPier();
+    double newRotatorAngle = Rotator::RotatorPosition();
 
-    Debug.AddLine(wxString::Format("AdjustCalibrationForScopePointing (%s): current dec=%.1f pierSide=%d, cal dec=%.1f pierSide=%d",
-        GetMountClassName(), newDeclination * 180. / M_PI, newPierSide, m_calDeclination * 180. / M_PI, m_calPierSide));
+    Debug.AddLine(wxString::Format("AdjustCalibrationForScopePointing (%s): current dec=%.1f pierSide=%d, cal dec=%.1f pierSide=%d rotAngle=%s",
+        GetMountClassName(), degrees(newDeclination), newPierSide, degrees(m_cal.declination), m_cal.pierSide,
+        RotAngleStr(newRotatorAngle)));
 
-    if (newDeclination != m_calDeclination)             // Compensation required
+    if (newDeclination != m_cal.declination)             // Compensation required
     {
         // avoid division by zero and gross errors.  If the user didn't calibrate
         // somewhere near the celestial equator, we don't do this
-        if (fabs(m_calDeclination) > DEC_COMP_LIMIT)
+        if (fabs(m_cal.declination) > DEC_COMP_LIMIT)
         {
             Debug.AddLine("skipping declination adjustment: initial calibration too far from equator");
         }
         else
         {
-            m_xRate = (m_calXRate / cos(m_calDeclination)) * cos(newDeclination);
+            m_xRate = (m_cal.xRate / cos(m_cal.declination)) * cos(newDeclination);
             m_currentDeclination = newDeclination;
-            Debug.AddLine("Dec comp: XRate %.4f -> %.4f for dec %.2f -> dec %.2f",
-                m_calXRate, m_xRate, m_calDeclination, newDeclination);
-            if (pFrame) pFrame->UpdateCalibrationStatus();
+            Debug.AddLine("Dec comp: XRate %.3f -> %.3f for dec %.1f -> dec %.1f",
+                          m_cal.xRate * 1000.0, m_xRate * 1000.0, degrees(m_cal.declination), degrees(newDeclination));
+            if (pFrame)
+                pFrame->UpdateCalibrationStatus();
         }
     }
 
-    if (IsOppositeSide(newPierSide, m_calPierSide))
+    if (IsOppositeSide(newPierSide, m_cal.pierSide))
     {
         Debug.AddLine(wxString::Format("Guiding starts on opposite side of pier: calibration data "
-            "side is %s, current side is %s", ::PierSideStr(m_calPierSide), ::PierSideStr(newPierSide)));
+            "side is %s, current side is %s", ::PierSideStr(m_cal.pierSide), ::PierSideStr(newPierSide)));
         FlipCalibration();
+    }
+
+    if (newRotatorAngle != Rotator::POSITION_UNKNOWN)
+    {
+        if (m_cal.rotatorAngle == Rotator::POSITION_UNKNOWN)
+        {
+            // we do not know the rotator position at calibration time so cannot automatically adjust calibration
+            pFrame->Alert(_("Rotator position has changed, recalibration is needed."));
+            m_cal.rotatorAngle = newRotatorAngle;
+        }
+        else
+        {
+            double da = newRotatorAngle - m_cal.rotatorAngle;
+
+            Debug.AddLine("New rotator position %.1f deg, prev = %.1f deg, delta = %.1f deg", newRotatorAngle, m_cal.rotatorAngle, da);
+
+            da = radians(da);
+
+            Calibration cal(m_cal);
+            cal.xAngle = norm_angle(cal.xAngle + da);
+            cal.yAngle = norm_angle(cal.yAngle + da);
+            cal.rotatorAngle = newRotatorAngle;
+
+            SetCalibration(cal);
+        }
     }
 }
 
@@ -977,40 +1021,43 @@ void Mount::ClearCalibration(void)
     if (pFrame) pFrame->UpdateCalibrationStatus();
 }
 
-void Mount::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide)
+void Mount::SetCalibration(const Calibration& cal)
 {
-    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.4f yRate=%.4f dec=%.1f pierSide=%d",
-        GetMountClassName(), xAngle * 180. / M_PI, yAngle * 180. / M_PI, xRate, yRate, declination, pierSide));
+    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.3f yRate=%.3f dec=%.1f pierSide=%d rotAng=%s",
+        GetMountClassName(), degrees(cal.xAngle), degrees(cal.yAngle), cal.xRate * 1000.0, cal.yRate * 1000.0, cal.declination, cal.pierSide, RotAngleStr(cal.rotatorAngle)));
 
     // we do the rates first, since they just get stored
-    m_yRate  = yRate;
-    m_calXRate = xRate;
-    m_calDeclination = declination;
-    m_calPierSide = pierSide;
-    m_xRate  = m_calXRate;
-    m_currentDeclination = declination;
+    m_cal.yRate  = cal.yRate;
+    m_cal.xRate = cal.xRate;
+    m_cal.declination = cal.declination;
+    m_cal.pierSide = cal.pierSide;
+    m_cal.rotatorAngle = cal.rotatorAngle;
+
+    m_xRate  = cal.xRate;
+    m_currentDeclination = cal.declination;
 
     // the angles are more difficult because we have to turn yAngle into a yError.
-    m_xAngle = xAngle;
-    m_yAngleError = (xAngle-yAngle) + M_PI/2;
-
-    m_yAngleError = atan2(sin(m_yAngleError), cos(m_yAngleError));
+    m_cal.xAngle = cal.xAngle;
+    m_cal.yAngle = cal.yAngle;
+    m_yAngleError = norm_angle(cal.xAngle - cal.yAngle + M_PI / 2.);
 
     Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- sets m_xAngle=%.1f m_yAngleError=%.1f",
-        GetMountClassName(), m_xAngle * 180. / M_PI, m_yAngleError * 180. / M_PI));
+        GetMountClassName(), degrees(m_cal.xAngle), degrees(m_yAngleError)));
 
     m_calibrated = true;
+
     if (pFrame) pFrame->UpdateCalibrationStatus();
 
     // store calibration data
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
     pConfig->Profile.SetString(prefix + "timestamp", wxDateTime::Now().Format());
-    pConfig->Profile.SetDouble(prefix + "xAngle", xAngle);
-    pConfig->Profile.SetDouble(prefix + "yAngle", yAngle);
-    pConfig->Profile.SetDouble(prefix + "xRate", xRate);
-    pConfig->Profile.SetDouble(prefix + "yRate", yRate);
-    pConfig->Profile.SetDouble(prefix + "declination", declination);
-    pConfig->Profile.SetInt(prefix + "pierSide", pierSide);
+    pConfig->Profile.SetDouble(prefix + "xAngle", m_cal.xAngle);
+    pConfig->Profile.SetDouble(prefix + "yAngle", m_cal.yAngle);
+    pConfig->Profile.SetDouble(prefix + "xRate", m_cal.xRate);
+    pConfig->Profile.SetDouble(prefix + "yRate", m_cal.yRate);
+    pConfig->Profile.SetDouble(prefix + "declination", m_cal.declination);
+    pConfig->Profile.SetInt(prefix + "pierSide", m_cal.pierSide);
+    pConfig->Profile.SetDouble(prefix + "rotatorAngle", m_cal.rotatorAngle);
 }
 
 bool Mount::IsConnected()
@@ -1057,7 +1104,7 @@ void Mount::ClearHistory(void)
 // where the calibration was done or zero
 double Mount::GetDefGuidingDeclination()
 {
-    return m_calibrated ? m_calDeclination : 0.0;
+    return m_calibrated ? m_cal.declination : 0.0;
 }
 
 // Get a value of declination, in radians, that can be used for adjusting the RA guide rate.  Normally, this will be gotten
@@ -1129,25 +1176,13 @@ wxString Mount::GetSettingsSummary()
         _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
 
-    double cur_ra, cur_dec, cur_st;
-    wxString dec_str;
-    if (!pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
-    {
-        dec_str = wxString::Format("%0.1f deg", cur_dec);
-    }
-    else
-    {
-        dec_str = "Unknown";
-    }
-    return wxString::Format("%s = %s,%s connected, guiding %s, %s, Dec = %s, Pier side = %s\n",
+    return wxString::Format("%s = %s,%s connected, guiding %s, %s\n",
         IsStepGuider() ? "AO" : "Mount",
         m_Name,
         IsConnected() ? " " : " not",
         m_guidingEnabled ? "enabled" : "disabled",
-        IsCalibrated() ? wxString::Format("xAngle = %.1f, xRate = %.4f, yAngle = %.1f, yRate = %.4f",
-                xAngle() * 180. / M_PI, xRate(), yAngle() * 180. / M_PI, yRate()) : "not calibrated",
-                dec_str,
-                ::PierSideStr(pPointingSource->SideOfPier())
+        IsCalibrated() ? wxString::Format("xAngle = %.1f, xRate = %.3f, yAngle = %.1f, yRate = %.3f",
+                degrees(xAngle()), xRate() * 1000.0, degrees(yAngle()), yRate() * 1000.0) : "not calibrated"
     ) + wxString::Format("X guide algorithm = %s, %s",
         algorithms[GetXGuideAlgorithm()],
         m_pXGuideAlgorithm->GetSettingsSummary()

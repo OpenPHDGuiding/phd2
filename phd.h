@@ -168,6 +168,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "mount.h"
 #include "scopes.h"
 #include "stepguiders.h"
+#include "rotators.h"
 #include "image_math.h"
 #include "testguide.h"
 #include "advanced_dialog.h"

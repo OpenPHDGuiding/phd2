@@ -37,27 +37,13 @@
 
 static const int MESSAGE_HEIGHT = 100;
 
-
-
-inline static double norm(double val, double start, double end)
-{
-    double const range = end - start;
-    double const ofs = val - start;
-    return val - floor(ofs / range) * range;
-}
-
-inline static double norm_angle(double val)
-{
-    return norm(val, -M_PI, M_PI);
-}
-
 static void HighlightCell(wxGrid *pGrid, int row, int col)
 {
     pGrid->SetCellBackgroundColour(row, col, "DARK SLATE GREY");
     pGrid->SetCellTextColour(row, col, "white");
 }
 
-void CalSanityDialog::BuildMessage(wxStaticText* pText, Calibration_Issues etype)
+void CalSanityDialog::BuildMessage(wxStaticText *pText, Calibration_Issues etype)
 {
     wxString msg;
 
@@ -82,7 +68,7 @@ void CalSanityDialog::BuildMessage(wxStaticText* pText, Calibration_Issues etype
         msg = wxString::Format(_("The RA and Declination guiding rates differ by an unexpected amount.  For your declination of %0.0f degrees, "
             "the RA rate should be about %0.0f%% of the Dec rate.  But your RA rate is %0.0f%% of the Dec rate.  "
             "This could mean the calibration is inaccurate, perhaps because of small or erratic star movement during the calibration."),
-            m_newParams.Declination * 180.0 / M_PI, cos(m_newParams.Declination) * 100.0, m_newParams.XRate / m_newParams.YRate * 100.0);
+            degrees(m_newParams.declination), cos(m_newParams.declination) * 100.0, m_newParams.xRate / m_newParams.yRate * 100.0);
         break;
     default:
         break;
@@ -91,32 +77,32 @@ void CalSanityDialog::BuildMessage(wxStaticText* pText, Calibration_Issues etype
     pText->Wrap(380);
 }
 
-CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Params newParams,
+CalSanityDialog::CalSanityDialog(const Calibration& oldParams, const Calibration& newParams,
     int lastRASteps, int lastDecSteps, Calibration_Issues issue, Scope *pScope) :
     wxDialog(pFrame, wxID_ANY, _("Calibration Sanity Check"), wxDefaultPosition, wxSize(800, 400), wxCAPTION | wxCLOSE_BOX)
 {
     wxString raSteps = wxString::Format("%d", lastRASteps);
     wxString decSteps = wxString::Format("%d", lastDecSteps);
     wxString oldAngleDelta;
-    double newRARate = newParams.XRate * 1000;                          // px per sec for UI purposes
-    double newDecRate = newParams.YRate * 1000;
+    double newRARate = newParams.xRate * 1000;                          // px per sec for UI purposes
+    double newDecRate = newParams.yRate * 1000;
     double imageScale = pFrame->GetCameraPixelScale();
-    bool oldValid = (oldParams.TimeStamp.Length() > 0);
+    bool oldValid = oldParams.declination < INVALID_DECLINATION;
     m_newParams = newParams;
 
     // Compute the orthogonality stuff
-    double nonOrtho = fabs(fabs(norm_angle(m_newParams.XAngle - m_newParams.YAngle)) - M_PI / 2.) * 180.0 / M_PI;         // Delta from the nearest multiple of 90 degrees
+    double nonOrtho = degrees(fabs(fabs(norm_angle(m_newParams.xAngle - m_newParams.yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
     m_newAngleDelta = wxString::Format("%0.1f", nonOrtho);
     if (oldValid)
     {
-        nonOrtho = fabs(fabs(norm_angle(oldParams.XAngle - oldParams.YAngle)) - M_PI / 2.) * 180.0 / M_PI;
+        nonOrtho = degrees(fabs(fabs(norm_angle(oldParams.xAngle - oldParams.yAngle)) - M_PI / 2.));
         oldAngleDelta = wxString::Format("%0.1f", nonOrtho);
     }
     else
         oldAngleDelta = _("Unknown");
 
-    if (m_newParams.YRate != 0 && oldParams.YRate != 0)
-        m_oldNewDifference = wxString::Format("%0.1f", fabs(1.0 - m_newParams.YRate / oldParams.YRate) * 100.0);
+    if (m_newParams.yRate != 0. && oldParams.yRate != 0.)
+        m_oldNewDifference = wxString::Format("%0.1f", fabs(1.0 - m_newParams.yRate / oldParams.yRate) * 100.0);
     else
         m_oldNewDifference = "";
 
@@ -173,7 +159,7 @@ CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Param
         pGrid->SetCellValue(_("This declination rate:"), row, col++);
         pGrid->SetCellValue(wxString::Format("%0.3f ''/sec\n%0.3f px/sec", newDecRate * imageScale, newDecRate), row, col++);
         pGrid->SetCellValue(_("Previous declination rate:"), row, col++);
-        pGrid->SetCellValue(wxString::Format("\n%0.3f px/sec", oldParams.YRate * 1000), row, col++);
+        pGrid->SetCellValue(wxString::Format("\n%0.3f px/sec", oldParams.yRate * 1000), row, col++);
         HighlightCell(pGrid, row, 1);
         HighlightCell(pGrid, row, 3);
     }
@@ -230,7 +216,7 @@ CalSanityDialog::CalSanityDialog(Calibration_Params oldParams, Calibration_Param
         wxSizerFlags(0).Center() );
     SetSizerAndFit (pVSizer);
 
-    m_priorCalibrationData = oldParams;
+    m_priorCalibration = oldParams;
     m_issue = issue;
     m_pScope = pScope;
 }
@@ -273,12 +259,9 @@ void CalSanityDialog::OnRestore(wxCommandEvent& evt)
 {
     if (pFrame->pGuider && pFrame->pGuider->IsCalibratingOrGuiding())
         pFrame->StopCapturing();
-    int pside = m_priorCalibrationData.PierSide;
-    PierSide pierSide = pside == PIER_SIDE_EAST ? PIER_SIDE_EAST :
-        pside == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
 
-    m_pScope->SetCalibration(m_priorCalibrationData.XAngle, m_priorCalibrationData.YAngle, m_priorCalibrationData.XRate,
-        m_priorCalibrationData.YRate, m_priorCalibrationData.Declination, pierSide);
+    m_pScope->SetCalibration(m_priorCalibration);
+
     pFrame->LoadCalibration();
     Debug.AddLine("Calibration sanity check: user chose to restore old calibration");
     ShutDown();

@@ -1,13 +1,9 @@
 /*
- *  ascom_common.cpp
+ *  rotators.h
  *  PHD Guiding
  *
- *  Created by Bret McKee
- *  Copyright (c) 2012 Bret McKee
- *  All rights reserved.
- *
- *  Based upon work by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
+ *  Created by Andy Galasso
+ *  Copyright (c) 2015 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -18,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -37,49 +32,17 @@
  *
  */
 
-#include "ascom_common.h"
-#include "phd.h"
+#ifndef ROTATORS_INCLUDED
+#define ROTATORS_INCLUDED
 
-/* provides common ASCOM functionality */
-
-// Lifted from the ASCOM sample Utilities.cpp
-// -------------
-// uni_to_ansi() - Convert unicode to ANSI, return pointer to new[]'ed string
-// -------------
-//
-#ifdef __WINDOWS__
-char *ASCOM_COMMON::uni_to_ansi(OLECHAR *os)
-{
-    char *cp;
-
-    // Is this the right way??? (it works)
-    int len = WideCharToMultiByte(CP_ACP,
-                                0,
-                                os,
-                                -1,
-                                NULL,
-                                0,
-                                NULL,
-                                NULL);
-    cp = new char[len + 5];
-    if(cp == NULL)
-        return NULL;
-
-    if (0 == WideCharToMultiByte(CP_ACP,
-                                    0,
-                                    os,
-                                    -1,
-                                    cp,
-                                    len,
-                                    NULL,
-                                    NULL))
-    {
-        delete [] cp;
-        return NULL;
-    }
-
-    cp[len] = '\0';
-    return(cp);
-}
-
+#if defined(__WINDOWS__)
+# define ROTATOR_ASCOM
 #endif
+
+#define ROTATOR_SIMULATOR
+
+#include "rotator.h"
+#include "rotator_ascom.h"
+#include "rotator_simulator.h"
+
+#endif // ROTATORS_INCLUDED

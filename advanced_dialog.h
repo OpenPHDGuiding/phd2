@@ -42,11 +42,14 @@ class CameraConfigDialogPane;
 class AdvancedDialog : public wxDialog
 {
     wxBookCtrlBase *m_pNotebook;
+    wxWindow *m_aoPage;
+    wxWindow *m_rotatorPage;
     MyFrameConfigDialogPane *m_pGlobalPane;
     ConfigDialogPane *m_pGuiderPane;
     CameraConfigDialogPane *m_pCameraPane;
     ConfigDialogPane *m_pMountPane;
     ConfigDialogPane *m_pAoPane;
+    ConfigDialogPane *m_rotatorPane;
 
 public:
     AdvancedDialog(MyFrame *pFrame);
@@ -57,6 +60,7 @@ public:
     void UpdateCameraPage(void);
     void UpdateMountPage(void);
     void UpdateAoPage(void);
+    void UpdateRotatorPage(void);
 
     void LoadValues(void);
     void UnloadValues(void);
@@ -71,6 +75,7 @@ private:
     void AddCameraPage(void);
     void AddMountPage(void);
     void AddAoPage(void);
+    void AddRotatorPage(void);
 };
 
 #endif // ADVANCED_DIALOG_H_INCLUDED
