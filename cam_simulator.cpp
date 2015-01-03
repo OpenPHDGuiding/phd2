@@ -567,6 +567,56 @@ inline static void incr_pixel(usImage& img, int x, int y, unsigned int val)
     }
 }
 
+static void render_comet(usImage& img, const wxRect& subframe, const wxRealPoint& p, double inten)
+{
+    enum { WIDTH = 5 };
+    double STAR[][WIDTH] = { { 0.0, 0.8, 2.2, 0.8, 0.0, },
+                             { 0.8, 16.6, 46.1, 16.6, 0.8, },
+                             { 2.2, 46.1, 128.0, 46.1, 2.2, },
+                             { 0.8, 16.6, 46.1, 16.6, 0.8, },
+                             { 0.0, 0.8, 2.2, 0.8, 0.0, },
+                            };
+
+    wxRealPoint intpart;
+    double fx = modf(p.x, &intpart.x);
+    double fy = modf(p.y, &intpart.y);
+    double f00 = (1.0 - fx) * (1.0 - fy);
+    double f01 = (1.0 - fx) * fy;
+    double f10 = fx * (1.0 - fy);
+    double f11 = fx * fy;
+
+    double d[WIDTH + 1][WIDTH + 1] = { { 0.0 } };
+    for (unsigned int i = 0; i < WIDTH; i++)
+    for (unsigned int j = 0; j < WIDTH; j++)
+    {
+        double s = STAR[i][j];
+        if (s > 0.0)
+        {
+            s *= inten / 256.0;
+            d[i][j] += f00 * s;
+            d[i + 1][j] += f10 * s;
+            d[i][j + 1] += f01 * s;
+            d[i + 1][j + 1] += f11 * s;
+        }
+    }
+
+    wxPoint c((int)intpart.x - (WIDTH - 1) / 2,
+        (int)intpart.y - (WIDTH - 1) / 2);
+
+    for (unsigned int x_inc = 0; x_inc < 10; x_inc++)
+    {
+        for (double y = -1; y < 1.5; y += 0.5)
+        {
+            int const cx = c.x + x_inc;
+            int const cy = c.y + y * x_inc;
+            if (cx < subframe.GetRight() && cy < subframe.GetBottom() && cy > subframe.GetTop())
+                incr_pixel(img, cx, cy, (int)d[2][2]);
+        }
+
+    }
+
+}
+
 static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint& p, double inten)
 {
     enum { WIDTH = 5 };
@@ -846,8 +896,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             double noise = (double)(rand() % (gain * 100));
             inten = star + dark + noise;
 
-            render_star(img, subframe, wxRealPoint(cx, cy), inten);
-            render_star(img, subframe, wxRealPoint(cx + 2.0, cy), inten / 2.0);
+            render_comet(img, subframe, wxRealPoint(cx, cy), inten);
         }
 #endif
     }
