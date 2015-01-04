@@ -68,6 +68,10 @@ CalrestoreDialog::CalrestoreDialog() :
             dDeclination = degrees(acos(dXRate / dYRate));        // cos(dec) = Dec_Rate/RA_Rate
             bDecEstimated = true;
         }
+        else
+        {
+            dDeclination = degrees(dDeclination);
+        }
 
         int iSide = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
         sPierSide = iSide == PIER_SIDE_EAST ? _("East") :
