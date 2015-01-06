@@ -96,6 +96,7 @@ public:
     bool SetProfile(int profileId, wxString *error);
     bool ConnectAll(wxString *error);
     bool DisconnectAll(wxString *error);
+    void Shutdown(bool forced);
 
 private:
     void LoadGearChoices(void);

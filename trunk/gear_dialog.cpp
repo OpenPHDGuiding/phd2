@@ -1583,6 +1583,43 @@ bool GearDialog::DisconnectAll(wxString *error)
     return false;
 }
 
+void GearDialog::Shutdown(bool forced)
+{
+    Debug.AddLine("Shutdown: forced=%d", forced);
+
+    if (!forced && m_pScope && m_pScope->IsConnected())
+    {
+        Debug.AddLine("Shutdown: disconnect scope");
+        m_pScope->Disconnect();
+    }
+
+    if (m_pAuxScope && m_pAuxScope->IsConnected())
+    {
+        Debug.AddLine("Shutdown: disconnect aux scope");
+        m_pAuxScope->Disconnect();
+    }
+
+    if (!forced && m_pCamera && m_pCamera->Connected)
+    {
+        Debug.AddLine("Shutdown: disconnect camera");
+        m_pCamera->Disconnect();
+    }
+
+    if (!forced && m_pStepGuider && m_pStepGuider->IsConnected())
+    {
+        Debug.AddLine("Shutdown: disconnect stepguider");
+        m_pStepGuider->Disconnect();
+    }
+
+    if (m_pRotator && m_pRotator->IsConnected())
+    {
+        Debug.AddLine("Shutdown: disconnect rotator");
+        m_pRotator->Disconnect();
+    }
+
+    Debug.AddLine("Shutdown complete");
+}
+
 struct NewProfileDialog : public wxDialog
 {
     wxTextCtrl *m_name;
