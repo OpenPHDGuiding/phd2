@@ -1460,15 +1460,8 @@ void MyFrame::OnClose(wxCloseEvent& event)
     if (StopWorkerThread(m_pSecondaryWorkerThread))
         killed = true;
 
-    if (pMount && pMount->IsConnected() && !killed)
-    {
-        pMount->Disconnect();
-    }
-
-    if (pCamera && pCamera->Connected && !killed)
-    {
-        pCamera->Disconnect();
-    }
+    // disconnect all gear
+    pGearDialog->Shutdown(killed);
 
     // stop the socket server and event server
     StartServer(false);
