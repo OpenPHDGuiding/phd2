@@ -38,6 +38,7 @@
 
 #include "phd.h"
 #include <wx/dir.h>
+#include <algorithm>
 
 #define SCALE_UP_SMALL  // Currently problematic as the box for the star is drawn in the wrong spot.
 
