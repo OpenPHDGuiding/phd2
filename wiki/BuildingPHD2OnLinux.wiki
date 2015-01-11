@@ -85,11 +85,11 @@ If you want to sign the package (required for uploading) you need to setup a gpg
 
 We need to start with a copy of the source code located in a directory named with the full version name, here 2.4.1 is used as an example, you must replace it by the current version in all the following commands. This directory must not include any subversion information. For that we use the "svn export" command:
 {{{
-svn export http://open-phd-guiding.googlecode.com/svn/trunk phd2-2.4.1
+svn export http://open-phd-guiding.googlecode.com/svn/trunk phd2_2.4.1
 }}}
 Then we remove some files not used by Linux:
 {{{
-cd phd2-2.4.1
+cd phd2_2.4.1
 rm -rf extra_frameworks WinLibs *.a
 }}}
 Ensure the help file is updated for all the languages:
@@ -97,21 +97,21 @@ Ensure the help file is updated for all the languages:
 cd build
 ./build_help.sh
 }}}
-Update the files in the phd2-2.4.1/debian directory. Be careful that every character in this files is important for the build process. Refer to the Debian documentation if your are not familiar with this files.
+Update the files in the phd2_2.4.1/debian directory. Be careful that every character in this files is important for the build process. Refer to the Debian documentation if your are not familiar with this files.
   * The file "changelog" must be updated to include the new version you package and the target system you want to build. 
   * The file "control"  must be checked to add every new build dependency.
   * The file "copyright" must be updated to match the content of the PHD2 About dialog.
 
 Create the versioned source tar:
 {{{
-tar cvzf phd2_2.4.1.orig.tar.gz phd2-2.4.1
+tar cvzf phd2_2.4.1.orig.tar.gz phd2_2.4.1
 }}}
 
 == Build the package locally ==
 
 Even if you plan to upload the source package it is a good idea to test if it build correctly on your system.
 {{{
-cd phd2-2.4.1
+cd phd2_2.4.1
 debuild -us -uc
 }}}
 You can now test the resulting .deb on your system.
@@ -122,7 +122,7 @@ We need to build a source package that is later uploaded to the PPA and compiled
 
 Only the first package build for a new version must include the source tar `*`.orig.tar.gz. Use the following command to build it:
 {{{
-cd phd2-2.4.1
+cd phd2_2.4.1
 debuild -S -sa
 }}}
 
