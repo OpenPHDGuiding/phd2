@@ -274,13 +274,13 @@ DriftToolWin::DriftToolWin()
     // get site lat/long from scope
     double lat, lon;
     m_siteLatLong.Invalidate();
-    if (!pPointingSource->GetSiteLatLong(&lat, &lon))
+    if (pPointingSource && !pPointingSource->GetSiteLatLong(&lat, &lon))
     {
         m_siteLatLong.SetXY(lat, lon);
     }
 
     m_timer = NULL;
-    if (m_can_slew || pPointingSource->CanReportPosition())
+    if (m_can_slew || (pPointingSource && pPointingSource->CanReportPosition()))
     {
         enum { SCOPE_POS_POLL_MS = 1500 };
         m_timer = new wxTimer(this, ID_TIMER);
