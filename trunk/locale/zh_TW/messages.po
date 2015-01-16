@@ -32,12 +32,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PHD2 2.3.1n\n"
+"Project-Id-Version: PHD2 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-26 01:08-0500\n"
-"PO-Revision-Date: 2015-01-10 15:41+0800\n"
+"PO-Revision-Date: 2015-01-16 16:39+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
-"Language-Team: Linkage <Linkage@163.com>\n"
+"Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -169,7 +169,7 @@ msgid ""
 "'calculator' feature in the 'Mount' configuration tab can help you with this."
 msgstr ""
 "校準步數太小, 可能產生不精確的結果, 請考慮降低校準步數參數直到每個方向均最少"
-"有 8 個步數為止, 在\"赤道儀\"設定項目中的\"估算器\"可以幫助你來設定該參數。"
+"有 8 個步數為止, 在【赤道儀】設定項目中的【計算機】可以幫助你設定該參數。"
 
 #: calsanity_dialog.cpp:72
 #, c-format
@@ -180,6 +180,9 @@ msgid ""
 "error was %s degrees. This could mean the calibration is inaccurate, perhaps "
 "because of small or erratic star movement during the calibration."
 msgstr ""
+"校準所計算出的赤經及赤緯角度有問題，通常這個角度需接近垂直, 正直誤差"
+"(Aothogonality Error)需小於 10 度，而此校準過程所或的的正值誤差為 %s 度，也就"
+"是說此次校準並不正確，可能是校準過程中星點位移異常所造成的。"
 
 #: calsanity_dialog.cpp:77
 #, c-format
@@ -190,6 +193,9 @@ msgid ""
 "you to switch back and forth between configurations and still retain earlier "
 "settings and calibration results."
 msgstr ""
+"最近一次的校準結果為 %s%% ，與上次的不一樣，如果是因為你變更了設備組態，你可"
+"能就要使用不同的設備配置檔案，這樣可以讓你在不同設備配置檔案間切換並且保留設"
+"定即校準相關資料。"
 
 #: calsanity_dialog.cpp:82
 #, c-format
@@ -200,6 +206,9 @@ msgid ""
 "the calibration is inaccurate, perhaps because of small or erratic star "
 "movement during the calibration."
 msgstr ""
+"赤經及赤緯導星速率因赤道儀異常而導致不同，赤緯速率為 %0.0f 的話，赤經速率需約"
+"為赤緯速率的 %0.0f%%，但是目前你的赤經速率為赤緯速率的 %0.0f%%，可能是因為星"
+"點異常移動或微量誤導致校準不正確所致。"
 
 #: calsanity_dialog.cpp:96
 msgid "Calibration Sanity Check"
@@ -227,7 +236,7 @@ msgstr "垂直誤差:"
 
 #: calsanity_dialog.cpp:161
 msgid "Previous orthogonality error:"
-msgstr "先前的垂直誤差:"
+msgstr "先前的正直誤差:"
 
 #: calsanity_dialog.cpp:173
 msgid "This declination rate:"
@@ -758,7 +767,7 @@ msgstr "熱燥數量"
 
 #: cam_simulator.cpp:1304 Refine_DefMap.cpp:168
 msgid "Hot pixels"
-msgstr "熱燥"
+msgstr "熱噪"
 
 #: cam_simulator.cpp:1305
 #, c-format
@@ -1140,6 +1149,9 @@ msgid ""
 "Use the \"Adjust Lock Position\" controls to center the comet\n"
 "in the imaging camera and click Stop to complete training."
 msgstr ""
+"調校中，延遲時間 %lus.\n"
+"使用【調整鎖定位置】控制鈕將彗星調整至相機拍攝的影像中心\n"
+"並點擊【停止】鈕以完成調校工作。"
 
 #: comet_tool.cpp:288
 msgid ""
@@ -1505,6 +1517,8 @@ msgid ""
 "%s calibration will be cleared - calibration will be re-done when guiding is "
 "started."
 msgstr ""
+"%s calibration will be cleared - calibration will be re-done when guiding is "
+"started."
 
 #: eegg.cpp:113
 msgid "Clear Calibration"
@@ -1639,6 +1653,9 @@ msgid ""
 "side-of-pier.  If you have already selected an %s driver for your 'mount', "
 "the 'aux' mount parameter will not be used.'"
 msgstr ""
+"如果你使用導星埠 (On-Camera 或 GPXXX) 介面來導星，在你的 %s-相容赤道儀上，你"
+"一樣可以使用【aux】連接，這樣就可以自動地依照赤道儀東西向位置及赤緯值來做校"
+"準；如果你已經選擇使用 %s 赤道儀，【aux】參數就不可以使用。"
 
 #: gear_dialog.cpp:268
 msgid "Aux Mount Setup"
@@ -2092,6 +2109,8 @@ msgstr "導星已停止"
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
+"偏移鎖定位置所容許的範圍，關閉鎖定位置偏移 (Shifted lock position outside "
+"allowable area. Lock Position Shift disabled.)"
 
 #: guider.cpp:966
 msgid "star lost"
@@ -3111,6 +3130,8 @@ msgid ""
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
 "build a Dark Library or Bad-pixel Map."
 msgstr ""
+"位取得最佳的結果，建議在導星時使用暗場影像或壞點影像庫，如此可以避免 PHD 選到"
+"熱噪點當導星星體，請利用【暗場】功能表項來建立暗場或壞點影像庫"
 
 #: myframe_events.cpp:624 scope.cpp:548
 msgid ""
@@ -3217,6 +3238,7 @@ msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
 "option to start a different instance."
 msgstr ""
+"PHD2 程序 %ld 執行當中，你可以使用 -i INSTANCE_NUM 命令行選項以開啟另一個程序"
 
 #: phdconfig.cpp:44
 msgid "My Equipment"
@@ -3244,6 +3266,8 @@ msgid ""
 "this value from your camera documentation or from an online source.  You can "
 "use the up/down control or type in a value directly."
 msgstr ""
+"點擊【偵測】由相機讀取向素大小資訊，也可以由相機說明書或網路上資源取得該數"
+"值，利用上下調整鈕或直接輸入數值均可。"
 
 #: profile_wizard.cpp:135
 msgid "Detect"
@@ -3269,7 +3293,7 @@ msgstr "建立暗場影像庫"
 msgid ""
 "Check this to automatically start the process of building a dark library for "
 "this profile."
-msgstr ""
+msgstr "檢核此選項可自動建立供此設備配置檔使用的暗場影像庫"
 
 #: profile_wizard.cpp:158
 msgid "Profile Name"
@@ -3303,6 +3327,15 @@ msgid ""
 "please review the 'Impatient Instructions' under the 'Help' menu after the "
 "wizard dialog has finished."
 msgstr ""
+"This short sequence of steps will help you identify the equipment you want "
+"to use for guiding and will associate it with a profile name of your choice. "
+"This profile will then be available any time you run PHD2.  At a minimum, "
+"you will need to choose both the guide camera and the mount interface that "
+"PHD2 will use for guiding.  You will also enter some information about the "
+"optical characteristics of your setup. PHD2 will use this to create a good "
+"'starter set' of guiding and calibration parameters. If you are a new user, "
+"please review the 'Impatient Instructions' under the 'Help' menu after the "
+"wizard dialog has finished."
 
 #: profile_wizard.cpp:221
 msgid ""
@@ -3312,6 +3345,9 @@ msgid ""
 "also specify the pixel size of the camera and the focal length of your guide "
 "scope so that PHD2 can compute the correct image scale."
 msgstr ""
+"由表單中選擇你的導星相機，所有 PHD2 支援的相機及 ASCOM 相機都在列表上，如果你"
+"所使用的相機不再這個列表上，有可能 PHD2 不支援或沒有安裝該有的驅動程式，你必"
+"須設定相機的向素大小和導星鏡的焦長資料以讓 PHD2 計算出正確的影像大小。"
 
 #: profile_wizard.cpp:226
 msgid ""
@@ -3321,6 +3357,10 @@ msgid ""
 "interfaces are available for cases where ASCOM is not available or isn't "
 "well supported by mount firmware."
 msgstr ""
+"由表單中選擇你的赤道儀型號，這會決定 PHD2 如何轉動望遠鏡及取得望遠鏡指向天球"
+"位置的資訊，如果你使用 MS Windows，現在，目前大多數赤道儀都支援 ASCOM 介面平"
+"台可選用，如果沒有 ASCOM 介面，也可以選用其他種或直接為 PHD2 所支援的赤道儀介"
+"面。"
 
 #: profile_wizard.cpp:231
 msgid ""
@@ -3331,6 +3371,10 @@ msgid ""
 "Mount interface will be used only for that purpose and not for sending guide "
 "commands."
 msgstr ""
+"你之前所選擇的赤道儀介面並不提供指向相關資訊，因此 PHD2 無法自動地調整赤道儀"
+"方向以及赤緯軸的導星，你可以利用選取可提供資訊的 【Aux 赤道儀】連接來處理該問"
+"題，Aux赤道儀本身只作為提供赤道儀目前指向天球那個位置的資訊，不能將導星訊號送"
+"到該輔助赤道儀上。"
 
 #: profile_wizard.cpp:236
 msgid ""
@@ -3339,6 +3383,9 @@ msgid ""
 "mount interface you chose earlier will be used for larger ('bump') "
 "corrections. Calibration of both interfaces will be handled automatically."
 msgstr ""
+"如果你有 AO 設備, 你可以在此選擇你的設備型號，AO 設備是用在高速，微量修正導星"
+"的環境，前面選擇的赤道儀介面則是用來作較大修正(跳動)使用，在校準過程中會自動"
+"使用並控制這兩種導星介面。"
 
 #: profile_wizard.cpp:240
 msgid ""
@@ -3348,15 +3395,18 @@ msgid ""
 "in this new profile by clicking on the PHD2 camera icon, selecting the "
 "profile name you just entered, and making your changes there."
 msgstr ""
+"你的設備配置檔以完成並可儲存，請指定一個名稱並選擇性地建立暗場影像庫，此動作"
+"對於校準及導星非常重要，因此最好進行該程序，你可以隨時以點擊 PHD2 中的【相"
+"機】圖示後選擇你剛輸入的檔名來更改設定"
 
 #: profile_wizard.cpp:273
 msgid ""
 "Please specify camera type, guider focal length, and guide camera pixel size"
-msgstr ""
+msgstr "請指定相機機型，導星鏡焦長以及導星相機的像素大小等參數"
 
 #: profile_wizard.cpp:278
 msgid "Please select a mount type to handle guider commands"
-msgstr ""
+msgstr "請選擇用以執行導星命令的赤道儀機款"
 
 #: profile_wizard.cpp:288
 msgid "Please specify a name for the profile."
@@ -3412,7 +3462,7 @@ msgid ""
 "Since your primary mount connection does not report pointing position, you "
 "may want to choose an 'Aux Mount' connection"
 msgstr ""
-"由於您的煮赤道儀連接不會提供指向天求得位置，您可能會選擇一個【輔助赤道儀】連"
+"由於您的主赤道儀連接不會提供指向天球的位置，您可能會選擇一個【輔助赤道儀】連"
 "接"
 
 #: profile_wizard.cpp:380
@@ -3443,7 +3493,7 @@ msgstr "設備配置檔案建立完成"
 msgid ""
 "Enter a name for your profile and optionally launch the process to build a "
 "dark library"
-msgstr ""
+msgstr "為你的設備配置檔案命名並執行建立暗場影像庫程序"
 
 #: profile_wizard.cpp:511
 msgid "Could not initialize camera"
@@ -3463,7 +3513,7 @@ msgstr "壞像素大小"
 
 #: Refine_DefMap.cpp:65
 msgid "Refine Bad-pixel Map"
-msgstr "完善壞像素圖型"
+msgstr "完善壞像素影像"
 
 #: Refine_DefMap.cpp:73
 msgid "Rebuild Master Dark Frame"
@@ -3473,7 +3523,7 @@ msgstr "重建主暗場影像"
 msgid ""
 "Click to re-acquire the master dark frames needed to compute an initial bad-"
 "pixel map"
-msgstr ""
+msgstr "點擊進行重做主暗場影像是計算最原始壞像素影像所必需的"
 
 #: Refine_DefMap.cpp:79
 msgid "Show Master Dark Details"
@@ -3483,7 +3533,7 @@ msgstr "顯示主暗場影像細節"
 msgid ""
 "Click to display detailed statistics of master dark frame used to compute "
 "bad-pixel map"
-msgstr ""
+msgstr "點擊以顯示用來計算壞像素影像的主暗場影像詳細統計資訊"
 
 #: Refine_DefMap.cpp:84
 msgid "Show defect pixels"
@@ -3491,7 +3541,7 @@ msgstr "顯示壞像素"
 
 #: Refine_DefMap.cpp:85
 msgid "Check to show hot/cold pixels in the main image window."
-msgstr ""
+msgstr "選核該項以在主影像視窗中顯示熱/冷噪像素"
 
 #: Refine_DefMap.cpp:90
 msgid "General Information"
@@ -3766,8 +3816,7 @@ msgid ""
 "How long a guide pulse should be used during calibration? Click \"Calculate"
 "\" to compute a suitable value."
 msgstr ""
-"*How long a guide pulse should be used during calibration? Click \"Calculate"
-"\" to compute a suitable value."
+"導星校準過程中導星訊號送出的週期長度為何? 點擊【計算】來計算出恰當的數值。"
 
 #: scope.cpp:1277
 msgid "Max Duration"
@@ -3817,6 +3866,8 @@ msgid ""
 "Prevents RA periodic error from affecting Dec calibration. Option takes "
 "effect when calibrating DEC."
 msgstr ""
+"假設赤緯軸正直於赤經軸，想避免赤經軸的週期性誤差影響赤緯校準，在校準赤委實可"
+"以檢核該選項"
 
 #: scope.cpp:1312 scope.cpp:1403 scope.cpp:1437
 msgid "Off"
@@ -4011,8 +4062,7 @@ msgid ""
 "How many steps should be issued per calibration cycle. Default = %d, "
 "increase for short f/l scopes and decrease for longer f/l scopes"
 msgstr ""
-"*How many steps should be issued per calibration cycle. Default = %d, "
-"increase for short f/l scopes and decrease for longer f/l scopes"
+"執行校準時會發出多少步數，預設值 = %d，導星較焦長越短，此數值越大，反之亦然"
 
 #: stepguider.cpp:1119
 msgid "Samples to Average"
@@ -4024,8 +4074,8 @@ msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
 "increase for worse seeing and small imaging scales"
 msgstr ""
-"*When calibrating, how many samples should be averaged. Default = %d, "
-"increase for worse seeing and small imaging scales"
+"執行校準時要平均多少個取樣，預設值為 = %d，視寧度差或者使用較小影像時增加此數"
+"值"
 
 #: stepguider.cpp:1126
 msgid "Bump Percentage"
@@ -4036,9 +4086,7 @@ msgstr "跳動比率"
 msgid ""
 "What percentage of the AO travel can be used before bumping the mount. "
 "Default = %d"
-msgstr ""
-"*What percentage of the AO travel can be used before bumping the mount. "
-"Default = %d"
+msgstr "在赤道儀跳動前有使用多少百分比的 AO travel，預設值為 %d"
 
 #: stepguider.cpp:1133
 msgid "Bump Step"
@@ -4050,8 +4098,8 @@ msgid ""
 "How far should a mount bump move the mount between images (in AO steps). "
 "Default = %.2f, decrease if mount bumps cause spikes on the graph"
 msgstr ""
-"*How far should a mount bump move the mount between images (in AO steps). "
-"Default = %.2f, decrease if mount bumps cause spikes on the graph"
+"單次赤道儀跳動(bump) 需在影像間移動赤道儀距離值，預設值為 (AO在影像中 %.2f, "
+"如果因為赤道儀跳動而導致影像發生閃爍的現象，請降低該數值。"
 
 #: stepguider_sxao.cpp:103
 #, c-format
@@ -4064,6 +4112,9 @@ msgid ""
 "downloads,\n"
 "contains the v101 firmware."
 msgstr ""
+"這個版本的 AO 韌體 (%03u)  限制 AO 的 travel 範圍並可能造成校準發生錯誤\n"
+"建議使用 v101 或更早期的版本；內含有 v104 韌體得 SXV-AO 公用程式可以在\n"
+" http://www.sxccd.com/drivers-downloads 下載得到。"
 
 #: stepguider_sxao.cpp:107
 msgid "Warning"
@@ -4113,9 +4164,7 @@ msgstr "手動導星時導星訊號週期 (毫秒)"
 msgid ""
 "Reset the manual guide pulse duration to the default value. The default "
 "value is the calibration step size."
-msgstr ""
-"*Reset the manual guide pulse duration to the default value. The default "
-"value is the calibration step size."
+msgstr "重置手動導星訊號週期長度為預設值，預設值微笑準步數大小。"
 
 #: testguide.cpp:109
 msgid "MOVE1 (+/- 0.5)"
@@ -4141,13 +4190,11 @@ msgstr "MOVE5 (+/- 5.0)"
 msgid ""
 "Select the dither amount type. Imaging applications have the option of "
 "sending each of these dither amounts to PHD."
-msgstr ""
-"*Select the dither amount type. Imaging applications have the option of "
-"sending each of these dither amounts to PHD."
+msgstr "選擇抖動量型態，影像應用程式會有送出此抖動量給 PHD 的相對選項"
 
 #: testguide.cpp:119
 msgid "Scale"
-msgstr "Scale"
+msgstr "尺度"
 
 #: testguide.cpp:124
 msgid ""
@@ -4155,9 +4202,8 @@ msgid ""
 "value to get the actual dither amount. Changing the value here affects both "
 "manual dithering and dithering from imaging applications connected to PHD."
 msgstr ""
-"*Scale factor for dithering. The dither amount type is multiplied by this "
-"value to get the actual dither amount. Changing the value here affects both "
-"manual dithering and dithering from imaging applications connected to PHD."
+"抖動尺度參數，此數值乘以實際抖動量獲得的職稱為抖動量型態(Dither amount type)"
+"變更這個數值同時會影響到手動抖動和連接到 PHD 的影像應用程式所產生的抖動"
 
 #: testguide.cpp:127
 msgid "RA Only"
@@ -4168,16 +4214,16 @@ msgid ""
 "Dither on RA axis only. Changing the value here affects both manual "
 "dithering and dithering from imaging applications connected to PHD."
 msgstr ""
-"*Dither on RA axis only. Changing the value here affects both manual "
-"dithering and dithering from imaging applications connected to PHD."
+"僅赤經軸向做抖動，變更這個數值同時會影響到手動抖動和連接到 PHD 的影像應用程式"
+"所產生的抖動"
 
 #: testguide.cpp:133
 msgid ""
 "Move the guider lock position a random amount on each axis, up to the "
 "maximum value determined by the dither type and the dither scale factor."
 msgstr ""
-"*Move the guider lock position a random amount on each axis, up to the "
-"maximum value determined by the dither type and the dither scale factor."
+"隨機移動每個軸向的導星鏡鎖定位置一段距離到達由抖動型態和大小參數所決定出的一"
+"段距離"
 
 #: usImage.cpp:353
 msgid "File does not exist - cannot load "
@@ -4204,86 +4250,83 @@ msgid "Connecting to Camera..."
 msgstr "正在連接相機 ..."
 
 #~ msgid "%s Settings"
-#~ msgstr "%s 设置"
+#~ msgstr "%s 設定"
 
 #~ msgid "&Configure..."
-#~ msgstr "配置..."
+#~ msgstr "組態設定..."
 
 #~ msgid "Configure INDI settings"
-#~ msgstr "*Configure INDI settings"
+#~ msgstr "設定 INDI 相關設定"
 
 #~ msgid "&Controls..."
 #~ msgstr "控制..."
 
 #~ msgid "Show INDI controls for available devices"
-#~ msgstr "*Show INDI controls for available devices"
+#~ msgstr "顯示可用設備 INDI 相關的控制項目"
 
 #~ msgid "50% sidereal rate, enter 0.5"
-#~ msgstr "需要50%的恒星速，请输入0.5"
+#~ msgstr "需要 50% 恆星時速率, 請輸入 0.5"
 
 #~ msgid "Targeted # steps in each direction"
-#~ msgstr "每个方向上的步数"
+#~ msgstr "每個方向上的步數"
 
 #~ msgid ""
 #~ "Click to slew to given coordinates. Shift-click to save the coordinates "
 #~ "without slewing."
-#~ msgstr ""
-#~ "*Click to slew to given coordinates. Shift-click to save the coordinates "
-#~ "without slewing."
+#~ msgstr "點擊【轉向】輸入座標. 按 【Shift-click】 來儲存座標 而不進行轉向."
 
 #, fuzzy
 #~ msgid ", darks loaded"
-#~ msgstr "暗场已读取"
+#~ msgstr "已載入暗場影像"
 
 #~ msgid "No cam"
-#~ msgstr "无相机"
+#~ msgstr "無相機"
 
 #~ msgid "Connecting to Scope ..."
-#~ msgstr "正在连接赤道仪 ..."
+#~ msgstr "正在連接赤道儀..."
 
 #~ msgid "Scope connected"
-#~ msgstr "赤道仪已连接"
+#~ msgstr "赤道儀已連接"
 
 #~ msgid "Scope"
-#~ msgstr "*Scope*"
+#~ msgstr "赤道儀"
 
 #~ msgid "Scope Connect Failed"
-#~ msgstr "赤道仪连接错误"
+#~ msgstr "赤道儀連接發生錯誤"
 
 #~ msgid "Adaptive Optics Connected"
-#~ msgstr "AO已连接"
+#~ msgstr "AO 已連接"
 
 #~ msgid "Adaptive Optics Disconnected"
-#~ msgstr "AO已断开"
+#~ msgstr "AO 已切斷"
 
 #~ msgid "RA angle (e.g. 0.5):"
-#~ msgstr "赤经角度(例如：0.5)："
+#~ msgstr "赤經角度 (例如: 0.5):"
 
 #~ msgid "Check to clear any previous calibration and force PHD to recalibrate"
-#~ msgstr ""
-#~ "*Check to clear any previous calibration and force PHD to recalibrate"
+#~ msgstr "核選該項以清除任何之前的校準資料並強制 PHD 重新執行校準"
 
 #~ msgid "No Cam"
-#~ msgstr "无相机"
+#~ msgstr "無相機"
 
 #~ msgid "No Scope"
-#~ msgstr "无赤道仪"
+#~ msgstr "無赤道儀"
 
 #~ msgid "No scope"
-#~ msgstr "无赤道仪"
+#~ msgstr "無赤道儀"
 
 #, fuzzy
 #~ msgid "Dark library loaded"
-#~ msgstr "暗场已读取"
+#~ msgstr "已載入暗場影像"
 
 #~ msgid "LE Read Delay (ms)"
-#~ msgstr "LE读取延迟(毫秒)"
+#~ msgstr "LE 讀取延遲時間 (ms)"
 
 #~ msgid "Pixel size (microns)"
-#~ msgstr "像素尺寸(微米)"
+#~ msgstr "像素 (microns)"
 
 #~ msgid "Auto load dark frames"
-#~ msgstr "自动读取暗场"
+#~ msgstr "自動載入暗場影像"
 
 #~ msgid ""
 #~ "Check to reload dark frames automatically when you connect the camera. "
@@ -4292,42 +4335,42 @@ msgstr "正在連接相機 ..."
 #~ "Frames option in the File menu. Then, when this option is selected, the "
 #~ "dark frames will be loaded from the file whenever the camera is connected."
 #~ msgstr ""
-#~ "选中后，当你连接相机是会自动读取上一次的暗场。首先，你需要使用\"拍摄暗场"
-#~ "\"功能，并利用文件菜单中的\"保存暗场文件\"来保存它。然后，当该选项选中后，"
-#~ "每次相机连接时会自动的读取该暗场文件。"
+#~ "核選該項，當你連接相機時會自動重新載入暗場影像。首先，你得按照平常使用的曝"
+#~ "光時間，利用【拍攝暗場】拍攝暗場影像，並利用功能表中【儲存暗場檔案】選項來"
+#~ "儲存該影像庫，此後, 每次相機連接時都會自動載入該案場影像庫。"
 
 #~ msgid "Load Dark Frames"
-#~ msgstr "读取暗场文件"
+#~ msgstr "載入暗場檔案"
 
 #~ msgid "Save Dark Frames"
-#~ msgstr "保存暗场文件"
+#~ msgstr "儲存暗場檔案"
 
 #~ msgid "Erase / clear out dark frames"
-#~ msgstr "删除/清除暗场文件"
+#~ msgstr "刪除/清除暗場檔案"
 
 #~ msgid "Take Dark"
-#~ msgstr "拍摄暗场"
+#~ msgstr "拍攝暗場"
 
 #~ msgid "Begin guiding (PHD)"
-#~ msgstr "Begin guiding (PHD)"
+#~ msgstr "開始導星 (PHD)"
 
 #~ msgid "You haven't captured any dark frames - nothing to save"
-#~ msgstr "*You haven't captured any dark frames - nothing to save"
+#~ msgstr "您尚未拍攝任何暗場影像, 沒有必要儲存"
 
 #~ msgid "Save darks (FITS Image)"
-#~ msgstr "保存暗场(FITS图像文件)"
+#~ msgstr "儲存暗場(FITS影像檔案)"
 
 #~ msgid "Load darks (FITS Image)"
-#~ msgstr "读取暗场(FITS图像文件)"
+#~ msgstr "讀取暗場(FITS影像檔案)"
 
 #~ msgid "Redo Dark"
-#~ msgstr "重做暗场"
+#~ msgstr "重新拍攝暗場"
 
 #~ msgid "Capturing dark"
-#~ msgstr "拍摄暗场"
+#~ msgstr "拍攝暗場"
 
 #~ msgid "Error capturing dark frame"
-#~ msgstr "录制暗场失败"
+#~ msgstr "拍攝暗場發生錯誤"
 
 #~ msgid "Darks done"
-#~ msgstr "暗场完成"
+#~ msgstr "暗場拍攝完成"
