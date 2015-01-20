@@ -68,6 +68,7 @@ class Scope : public Mount
     PHD_Point m_lastLocation;
 
     Calibration m_calibration;
+    CalibrationDetails m_calibrationDetails;
     bool m_assumeOrthogonal;
     int m_raSteps;
     int m_decSteps;
@@ -75,6 +76,7 @@ class Scope : public Mount
     bool m_calibrationFlipRequiresDecFlip;
     bool m_stopGuidingWhenSlewing;
     Calibration m_prevCalibrationParams;
+    CalibrationDetails m_prevCalibrationDetails;
     Calibration_Issues m_lastCalibrationIssue;
 
     enum CALIBRATION_STATE
@@ -159,6 +161,7 @@ public:
     virtual ~Scope(void);
 
     virtual void SetCalibration(const Calibration& cal);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle) override;
     virtual bool IsCalibrated(void);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
@@ -172,7 +175,6 @@ public:
     bool IsStopGuidingWhenSlewingEnabled(void) const;
     void SetAssumeOrthogonal(bool val);
     bool IsAssumeOrthogonal(void) const;
-    bool GetLastCalibrationParams(Calibration *params);
     void HandleSanityCheckDialog();
     void SetCalibrationWarning(Calibration_Issues etype, bool val);
 
@@ -190,7 +192,7 @@ private:
 
     void ClearCalibration(void);
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
-    void SanityCheckCalibration(const Calibration& oldCal, const Calibration& newCal, int xSteps, int ySteps);
+    void SanityCheckCalibration(const Calibration& oldCal, const CalibrationDetails& oldDetails);
 
 // these MUST be supplied by a subclass
 private:

@@ -34,6 +34,7 @@
  */
 
 #include "phd.h"
+#include <wx/tokenzr.h>
 
 // enable dec compensation when calibration declination is less than this
 const double Mount::DEC_COMP_LIMIT = M_PI / 2.0 * 2.0 / 3.0;
@@ -1060,6 +1061,115 @@ void Mount::SetCalibration(const Calibration& cal)
     pConfig->Profile.SetDouble(prefix + "rotatorAngle", m_cal.rotatorAngle);
 }
 
+void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle)
+{
+    wxString prefix = "/" + GetMountClassName() + "/calibration/";
+    wxString stepStr = "";
+
+    pConfig->Profile.SetInt(prefix + "focal_length", calDetails.focalLength);
+    pConfig->Profile.SetDouble(prefix + "image_scale", calDetails.imageScale);
+    pConfig->Profile.SetDouble(prefix + "ra_guide_rate", calDetails.raGuideRate);
+    pConfig->Profile.SetDouble(prefix + "dec_guide_rate", calDetails.decGuideRate);
+    pConfig->Profile.SetDouble(prefix + "ortho_error", calDetails.orthoError);
+
+    for each (wxRealPoint pt in calDetails.raSteps)
+    {
+        stepStr += wxString::Format("{%0.1f %0.1f}, ", pt.x, pt.y);
+    }
+    stepStr = stepStr.Left(stepStr.length() - 2);
+    pConfig->Profile.SetString(prefix + "ra_steps", stepStr);
+
+    stepStr = "";
+    for each (wxRealPoint pt in calDetails.decSteps)
+    {
+        stepStr += wxString::Format("{%0.1f %0.1f}, ", pt.x, pt.y);
+    }
+    stepStr = stepStr.Left(stepStr.length() - 2);
+    pConfig->Profile.SetString(prefix + "dec_steps", stepStr);
+
+    pConfig->Profile.SetInt(prefix + "ra_step_count", calDetails.raStepCount);
+    pConfig->Profile.SetInt(prefix + "dec_step_count", calDetails.decStepCount);
+}
+
+inline static PierSide pier_side(int val)
+{
+    return val == PIER_SIDE_EAST ? PIER_SIDE_EAST : val == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
+}
+
+bool Mount::GetLastCalibrationParams(Calibration *params)
+{
+    wxString prefix = "/" + GetMountClassName() + "/calibration/";
+    wxString sTimestamp = pConfig->Profile.GetString(prefix + "timestamp", wxEmptyString);
+
+    if (sTimestamp.Length() > 0)
+    {
+        params->xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
+        params->yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+        params->xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
+        params->yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", 0.0);
+        params->declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
+        params->pierSide = pier_side(pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN));
+        params->rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
+        params->timestamp = sTimestamp;
+        return true;
+    }
+    else
+    {
+        params->declination = INVALID_DECLINATION; // indicate invalid calibration
+        return false;
+    }
+}
+void Mount::GetCalibrationDetails(CalibrationDetails *details)
+{
+    wxStringTokenizer tok;
+    wxString prefix = "/" + GetMountClassName() + "/calibration/";
+    wxString stepStr;
+    bool err = false;
+
+    details->focalLength = pConfig->Profile.GetInt(prefix + "focal_length", 0);
+    details->imageScale = pConfig->Profile.GetDouble(prefix + "image_scale", 1);
+    details->raGuideRate = pConfig->Profile.GetDouble(prefix + "ra_guide_rate", -1);
+    details->decGuideRate = pConfig->Profile.GetDouble(prefix + "dec_guide_rate", -1);
+    details->orthoError = pConfig->Profile.GetDouble(prefix + "ortho_error", 0);
+    details->raStepCount = pConfig->Profile.GetInt(prefix + "ra_step_count", 0);
+    details->decStepCount = pConfig->Profile.GetInt(prefix + "dec_step_count", 0);
+    // Populate raSteps
+    stepStr = pConfig->Profile.GetString(prefix + "ra_steps", "");
+    tok.SetString(stepStr, "},", wxTOKEN_STRTOK);
+    details->raSteps.clear();
+    while (tok.HasMoreTokens() && !err)
+    {
+        wxString tk = (tok.GetNextToken()).Trim(false);           // looks like {x y, left-trimmed
+        int blankLoc = tk.find(" ");
+        double x;
+        double y;
+        if (!tk.Mid(1, blankLoc-1).ToDouble(&x))
+            err = true;
+        tk = tk.Mid(blankLoc + 1);
+        if (!tk.ToDouble(&y))
+            err = true;
+        if (!err)
+            details->raSteps.push_back(wxRealPoint(x, y));
+        }
+    // Do the same for decSteps
+    stepStr = pConfig->Profile.GetString(prefix + "dec_steps", "");
+    tok.SetString(stepStr, "},", wxTOKEN_STRTOK);
+    details->decSteps.clear();
+    while (tok.HasMoreTokens() && !err)
+    {
+        wxString tk = (tok.GetNextToken()).Trim(false);
+        int blankLoc = tk.find(" ");
+        double x;
+        double y;
+        if (!tk.Mid(1, blankLoc - 1).ToDouble(&x))
+            err = true;
+        tk = tk.Mid(blankLoc + 1);
+        if (!tk.ToDouble(&y))
+            err = true;
+        if (!err)
+            details->decSteps.push_back(wxRealPoint(x, y));
+    }
+}
 bool Mount::IsConnected()
 {
     bool bReturn = m_connected;

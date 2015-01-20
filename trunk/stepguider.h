@@ -66,6 +66,7 @@ class StepGuider : public Mount, public OnboardST4
     PHD_Point m_calibrationAveragedLocation;
 
     Calibration m_calibration;
+    CalibrationDetails m_calibrationDetails;
 
     enum CALIBRATION_STATE
     {
@@ -131,6 +132,7 @@ public:
     static StepGuider *Factory(const wxString& choice);
 
     virtual void SetCalibration(const Calibration& cal);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle) override;
     virtual bool BeginCalibration(const PHD_Point& currentLocation);
     bool UpdateCalibrationState(const PHD_Point& currentLocation);
     virtual void ClearCalibration(void);

@@ -37,7 +37,7 @@
 #include "wx/textfile.h"
 #include "socket_server.h"
 #include "calstep_dialog.h"
-#include "calsanity_dialog.h"
+#include "calreview_dialog.h"
 
 #define CALIBRATION_RATE_UNCALIBRATED 123e4
 
@@ -648,34 +648,6 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
     return result;
 }
 
-inline static PierSide pier_side(int val)
-{
-    return val == PIER_SIDE_EAST ? PIER_SIDE_EAST : val == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
-}
-
-bool Scope::GetLastCalibrationParams(Calibration *params)
-{
-    wxString prefix = "/scope/calibration/";
-    wxString sTimestamp = pConfig->Profile.GetString(prefix + "timestamp", wxEmptyString);
-
-    if (sTimestamp.Length() > 0)
-    {
-        params->xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0); 
-        params->yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
-        params->xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
-        params->yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", 0.0);
-        params->declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
-        params->pierSide = pier_side(pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN));
-        params->rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
-        return true;
-    }
-    else
-    {
-        params->declination = INVALID_DECLINATION; // indicate invalid calibration
-        return false;
-    }
-}
-
 static wxString CalibrationWarningKey(Calibration_Issues etype)
 {
     wxString qual;
@@ -711,27 +683,32 @@ static void ShowCalibrationIssues(long scopeptr)
 {
     Scope *pscope = (Scope*)scopeptr;
     pscope->HandleSanityCheckDialog();
-    
+
 }
 // Handle the "details" dialog for the calibration sanity check
 void Scope::HandleSanityCheckDialog()
 {
-    Calibration newParams;
-    
     if (pFrame->pCalSanityCheckDlg)
         pFrame->pCalSanityCheckDlg->Destroy();
 
-    GetLastCalibrationParams(&newParams);
-    pFrame->pCalSanityCheckDlg = new CalSanityDialog(m_prevCalibrationParams, newParams, m_raSteps, m_decSteps, m_lastCalibrationIssue, this);
+    pFrame->pCalSanityCheckDlg = new CalSanityDialog(pFrame, m_prevCalibrationParams, m_prevCalibrationDetails, m_lastCalibrationIssue);
     pFrame->pCalSanityCheckDlg->Show();
 }
 
-// Do some basic sanity checking on the just-completed calibration, looking for things that are fishy.  Do the checking in the order of 
+// Do some basic sanity checking on the just-completed calibration, looking for things that are fishy.  Do the checking in the order of
 // importance/confidence, since we only alert about a single condition
-void Scope::SanityCheckCalibration(const Calibration& oldCal, const Calibration& newCal, int xSteps, int ySteps)
+void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationDetails& oldDetails)
 {
     wxString detailInfo;
+    Calibration newCal;
+    CalibrationDetails newDetails;
+
+    GetLastCalibrationParams(&newCal);
+    GetCalibrationDetails(&newDetails);
+
     m_lastCalibrationIssue = CI_None;
+    int xSteps = newDetails.raStepCount;
+    int ySteps = newDetails.decStepCount;
 
     // Too few steps
     if (xSteps < CAL_ALERT_MINSTEPS || ySteps < CAL_ALERT_MINSTEPS)
@@ -763,8 +740,10 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const Calibration&
             }
         }
 
-        // Finally check for a dec rate that is more than nn% different than the last accepted calibration
-        if (m_lastCalibrationIssue == CI_None && oldCal.declination < INVALID_DECLINATION)
+        // Finally check for a significantly different result but don't be stupid - ignore differences if the configuration looks quite different
+        // Can't do straight equality checks because of rounding - the "old" values have passed through the registry get/set routines
+        if (m_lastCalibrationIssue == CI_None && oldCal.declination < INVALID_DECLINATION &&
+            fabs(oldDetails.imageScale - newDetails.imageScale) < 0.1 && (fabs(degrees(oldCal.xAngle - newCal.xAngle)) < 5.0))
         {
             double newDecRate = newCal.yRate;
             if (newDecRate != 0.)
@@ -842,6 +821,8 @@ bool Scope::BeginCalibration(const PHD_Point& currentLocation)
         m_calibrationInitialLocation = currentLocation;
         m_calibrationStartingLocation.Invalidate();
         m_calibrationState = CALIBRATION_STATE_GO_WEST;
+        m_calibrationDetails.raSteps.clear();
+        m_calibrationDetails.decSteps.clear();
     }
     catch (wxString Msg)
     {
@@ -856,6 +837,26 @@ void Scope::SetCalibration(const Calibration& cal)
 {
     m_calibration = cal;
     Mount::SetCalibration(cal);
+}
+
+void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle)
+{
+    m_calibrationDetails = calDetails;
+    double ra_rate;
+    double dec_rate;
+    if (pPointingSource->GetGuideRates(&ra_rate, &dec_rate))        // true means error
+    {
+        ra_rate = -1.0;
+        dec_rate = -1.0;
+    }
+    m_calibrationDetails.raGuideRate = ra_rate;
+    m_calibrationDetails.decGuideRate = dec_rate;
+    m_calibrationDetails.focalLength = pFrame->GetFocalLength();
+    m_calibrationDetails.imageScale = pFrame->GetCameraPixelScale();
+    m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
+    m_calibrationDetails.raStepCount = m_calibrationDetails.raSteps.size();
+    m_calibrationDetails.decStepCount = m_calibrationDetails.decSteps.size();
+    Mount::SetCalibrationDetails(m_calibrationDetails, xAngle, yAngle);
 }
 
 bool Scope::IsCalibrated(void)
@@ -930,6 +931,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 // step number in the log is the step that just finished
                 GuideLog.CalibrationStep(this, "West", m_calibrationSteps, dX, dY, currentLocation, dist);
+                m_calibrationDetails.raSteps.push_back(wxRealPoint(dX, dY));
 
                 if (dist < dist_crit)
                 {
@@ -1049,6 +1051,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
             case CALIBRATION_STATE_GO_NORTH:
 
                 GuideLog.CalibrationStep(this, "North", m_calibrationSteps, dX, dY, currentLocation, dist);
+                m_calibrationDetails.decSteps.push_back(wxRealPoint(dX, dY));
 
                 if (dist < dist_crit)
                 {
@@ -1168,15 +1171,15 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
             case CALIBRATION_STATE_COMPLETE:
                 GetLastCalibrationParams(&m_prevCalibrationParams);
+                GetCalibrationDetails(&m_prevCalibrationDetails);
                 Calibration cal(m_calibration);
                 cal.declination = pPointingSource->GetGuidingDeclination();
                 cal.pierSide = pPointingSource->SideOfPier();
                 cal.rotatorAngle = Rotator::RotatorPosition();
                 SetCalibration(cal);
-                Calibration newParams;
-                GetLastCalibrationParams(&newParams);
+                SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle);
                 if (SANITY_CHECKING_ACTIVE)
-                    SanityCheckCalibration(m_prevCalibrationParams, newParams, m_raSteps, m_decSteps);
+                    SanityCheckCalibration(m_prevCalibrationParams, m_prevCalibrationDetails);  // method gets "new" info itself
                 pFrame->SetStatusText(_("calibration complete"), 1);
                 GuideLog.CalibrationComplete(this);
                 EvtServer.NotifyCalibrationComplete(this);

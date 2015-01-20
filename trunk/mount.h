@@ -38,6 +38,7 @@
 
 #include "guide_algorithms.h"
 #include "messagebox_proxy.h"
+#include "image_math.h"
 
 enum GUIDE_DIRECTION {
     NONE  = -1,
@@ -69,6 +70,20 @@ struct Calibration
     double declination;
     PierSide pierSide;
     double rotatorAngle;
+    wxString timestamp;
+};
+
+struct CalibrationDetails
+{
+    int focalLength;
+    double imageScale;
+    double raGuideRate;
+    double decGuideRate;
+    double orthoError;
+    std::vector <wxRealPoint> raSteps;
+    std::vector <wxRealPoint> decSteps;
+    int raStepCount;
+    int decStepCount;
 };
 
 struct MoveResultInfo
@@ -181,7 +196,7 @@ public:
 
     static wxString PierSideStr(PierSide side);
 
-    // pure virutal functions -- these MUST be overridden by a subclass
+    // pure virtual functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
     virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, MoveResultInfo *moveResultInfo) = 0;
@@ -221,6 +236,9 @@ public:
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
     virtual void SetCalibration(const Calibration& cal);
+    bool GetLastCalibrationParams(Calibration *params);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle);
+    void GetCalibrationDetails(CalibrationDetails *calDetails);
 
     virtual bool IsConnected(void);
     virtual bool Connect(void);
