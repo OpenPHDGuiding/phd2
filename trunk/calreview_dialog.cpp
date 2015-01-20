@@ -164,7 +164,6 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     bool decEstimated = false;
     double guideRaSiderealX = 0;
     double guideDecSiderealX = 0;
-    double normalRARate = 0;
 
     if (!pSecondaryMount)
     {
@@ -263,12 +262,12 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     {
         calGrid->SetCellValue(_("Expected RA rate:"), row, col++);
         if (!decEstimated && fabs(degrees(calBaseline.declination)) < 65.0)
-            calGrid->SetCellValue(wxString::Format("%0.1f a-s/sec", guideDecSiderealX * 15.0 * dSiderealSecondPerSec * cos(calBaseline.declination) * 
+            calGrid->SetCellValue(wxString::Format("%0.1f a-s/sec", guideDecSiderealX * 15.0 * dSiderealSecondPerSec * cos(calBaseline.declination) *
             guideRaSiderealX / guideDecSiderealX), row, col++);
         else
             calGrid->SetCellValue(NA_STR, row, col++);
         calGrid->SetCellValue(_("Expected Dec rate:"), row, col++);
-        calGrid->SetCellValue(wxString::Format("%0.1f a-s/sec", guideDecSiderealX * 15.0 * dSiderealSecondPerSec, row, col++), row, col++);
+        calGrid->SetCellValue(wxString::Format("%0.1f a-s/sec", guideDecSiderealX * 15.0 * dSiderealSecondPerSec, row, col), row, col);
     }
 
     calGrid->AutoSize();
@@ -394,17 +393,16 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
 
     // Find the max excursion from the origin in order to scale the points to fit the bitmap
     double biggestVal = -100.0;
-    for each (wxRealPoint pt in calDetails.raSteps)
+    for (std::vector<wxRealPoint>::const_iterator it = calDetails.raSteps.begin(); it != calDetails.raSteps.end(); ++it)
     {
-        biggestVal = wxMax(biggestVal, fabs(pt.x));
-        biggestVal = wxMax(biggestVal, fabs(pt.y));
+        biggestVal = wxMax(biggestVal, fabs(it->x));
+        biggestVal = wxMax(biggestVal, fabs(it->y));
     }
 
-
-    for each (wxRealPoint pt in calDetails.decSteps)
+    for (std::vector<wxRealPoint>::const_iterator it = calDetails.decSteps.begin(); it != calDetails.decSteps.end(); ++it)
     {
-        biggestVal = wxMax(biggestVal, fabs(pt.x));
-        biggestVal = wxMax(biggestVal, fabs(pt.y));
+        biggestVal = wxMax(biggestVal, fabs(it->x));
+        biggestVal = wxMax(biggestVal, fabs(it->y));
     }
     if (biggestVal > 0)
         scaleFactor = (CALREVIEW_BITMAP_SIZE / 2) / biggestVal;
