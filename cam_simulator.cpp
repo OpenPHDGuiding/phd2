@@ -134,7 +134,7 @@ double SimCamParams::comet_rate_y;
 #define SHOW_COMET_DEFAULT false
 #define COMET_RATE_X_DEFAULT 555.0              // pixels per hour
 #define COMET_RATE_Y_DEFAULT -123.4              // pixels per hour
-#define SIM_FILE_DISPLACEMENTS_DEFAULT "star_displacements.csv"             
+#define SIM_FILE_DISPLACEMENTS_DEFAULT "star_displacements.csv"
 
 // Needed to handle legacy registry values that may no longer be in correct units or range
 static double range_check(double thisval, double minval, double maxval)
@@ -449,7 +449,7 @@ void SimCamState::Initialize()
         pText = NULL;                   // User cancelled open dialog or file is useless
     scaleConversion = 1.0;          // safe default
 #endif
-    
+
 #ifdef SIMDEBUG
     DebugFile.Open ("Sim_Debug.txt", "w");
 #ifdef SIM_FILE_DISPLACEMENTS
@@ -734,12 +734,12 @@ void SimCamState::ReadDisplacements(double& incX, double& incY)
 {
     wxStringTokenizer tok;
 
-    // If we reach the EOF, just start over - we don't want to suddenly reverse direction on linear drifts, and the 
+    // If we reach the EOF, just start over - we don't want to suddenly reverse direction on linear drifts, and the
     // underlying seeing behavior is sufficiently random that a simple replay is warranted
     if (pIStream->Eof())
         pIStream->SeekI(wxFileOffset(0));
 
-    if (!pIStream->Eof())             
+    if (!pIStream->Eof())
     {
         wxString line = pText->ReadLine();
         line.Trim(false); // trim leading whitespace
@@ -777,7 +777,7 @@ void SimCamState::ReadDisplacements(double& incX, double& incY)
         }
     }
 }
-#endif 
+#endif
 
 void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, int gain, int offset)
 {
@@ -809,7 +809,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
         ReadDisplacements(inc_x, inc_y);
         total_shift_x = ra_ofs + inc_x;
         total_shift_y = dec_ofs.val() + inc_y;
-        // If user has disabled guiding, let him see the raw behavior of the displacement data - the 
+        // If user has disabled guiding, let him see the raw behavior of the displacement data - the
         // ra_ofs and dec_ofs variables are normally updated in the ST-4 guide function
         if (!pMount->GetGuidingEnabled())
         {

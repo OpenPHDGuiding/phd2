@@ -72,6 +72,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_RESTORECAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
+    EVT_MENU(EEGG_REVIEWCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
@@ -295,6 +296,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pCometTool = NULL;
     pRefineDefMap = NULL;
     pCalSanityCheckDlg = NULL;
+    pCalReviewDlg = NULL;
     m_starFindMode = Star::FIND_CENTROID;
 
     tools_menu->Check(MENU_LOG,false);
@@ -384,6 +386,8 @@ MyFrame::~MyFrame()
         pRefineDefMap->Destroy();
     if (pCalSanityCheckDlg)
         pCalSanityCheckDlg->Destroy();
+    if (pCalReviewDlg)
+        pCalReviewDlg->Destroy();
 
     m_mgr.UnInit();
 }
@@ -418,12 +422,13 @@ void MyFrame::SetupMenuBar(void)
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
     tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
+    tools_menu->Append(EEGG_REVIEWCAL, _("Review &Calibration Data...\tAlt-C"), _("Review calibration data from last successful calibration"));
     wxMenu *calib_menu = new wxMenu;
     calib_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data..."), _("Restore calibration data from last successful calibration"));
     calib_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data..."), _("Manually calibrate"));
     calib_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
     calib_menu->Append(EEGG_CLEARCAL, _("Clear Calibration Data..."), _("Clear calibration data currently in use"));
-    m_calibrationMenuItem = tools_menu->AppendSubMenu(calib_menu, _("Calibration"));
+    m_calibrationMenuItem = tools_menu->AppendSubMenu(calib_menu, _("Modify Calibration"));
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_COMETTOOL, _("Comet Tracking"), _("Run the Comet Tracking tool"));
     tools_menu->Append(MENU_DRIFTTOOL, _("Drift Align"), _("Run the Drift Alignment tool"));

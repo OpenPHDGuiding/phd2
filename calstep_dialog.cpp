@@ -77,7 +77,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
             if (dGuideRateRA >= dGuideRateDec)
                 m_fGuideSpeed = dGuideRateRA * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
             else
-                m_fGuideSpeed = dGuideRateDec / (15.0 * dSiderealSecondPerSec);
+                m_fGuideSpeed = dGuideRateDec * 3600.0 / (15.0 * dSiderealSecondPerSec);
 
             if (m_fGuideSpeed < MIN_GUIDESPEED)
                 m_fGuideSpeed = MIN_GUIDESPEED;

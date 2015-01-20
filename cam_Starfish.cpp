@@ -165,7 +165,7 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
         xpos = 0;
         ypos = 0;
     }
-    img.Clear();  
+    img.Clear();
 
     // set ROI if something has changed
     if (lastSubFrame != subframe)

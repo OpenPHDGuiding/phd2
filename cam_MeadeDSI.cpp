@@ -103,7 +103,7 @@ bool Camera_DSIClass::Connect()
         MeadeCam->SetOffset(255);
         MeadeCam->SetFastReadoutSpeed(true);
         Connected = true;
-        // Set the PixelSize property for cients.  If the pixels aren't square, use the smaller dimension because the image 
+        // Set the PixelSize property for cients.  If the pixels aren't square, use the smaller dimension because the image
         // is "squared up" by scaling to the smaller dimension
         if (MeadeCam->IsDsiIII)
             PixelSize = 6.6;
@@ -141,7 +141,7 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     if (!retval)
         return true;
 
-// The AbortImage method does not appear to work with the DSI camera.  If abort is called and the thread is terminated, the 
+// The AbortImage method does not appear to work with the DSI camera.  If abort is called and the thread is terminated, the
 // pending image is still downloaded and PHD2 will crash
 #if AbortActuallyWorks
     CameraWatchdog watchdog(duration, GetTimeoutMs());

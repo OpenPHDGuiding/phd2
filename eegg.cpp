@@ -35,29 +35,36 @@
 #include "phd.h"
 #include "drift_tool.h"
 #include "manualcal_dialog.h"
-#include "calrestore_dialog.h"
+#include "calreview_dialog.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
 
 void MyFrame::OnEEGG(wxCommandEvent& evt)
 {
-    if (evt.GetId() == EEGG_RESTORECAL)
+    if (evt.GetId() == EEGG_RESTORECAL || evt.GetId() == EEGG_REVIEWCAL)
     {
         wxString savedCal = pConfig->Profile.GetString("/scope/calibration/timestamp", wxEmptyString);
+        bool restoring = evt.GetId() == EEGG_RESTORECAL;
         if (savedCal.IsEmpty())
         {
             wxMessageBox(_("There is no calibration data available."));
             return;
         }
 
-        if (pMount)
+        if (pMount && pMount->IsConnected())
         {
-            CalrestoreDialog dlg;
-            dlg.Show();
-            if (dlg.ShowModal() == wxID_OK)
+            if (restoring)                                                  // Restore dialog is modal
             {
-                Debug.AddLine("User-requested restore calibration");
-                pFrame->LoadCalibration();
+                CalRestoreDialog dlg(this);
+                dlg.ShowModal();
+            }
+            else
+            {
+                if (pCalReviewDlg)                                          // Review dialog is non-modal
+                    pCalReviewDlg->Destroy();
+                pCalReviewDlg = new CalReviewDialog(this);
+                pCalReviewDlg->Show();
+
             }
         }
         else

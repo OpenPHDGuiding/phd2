@@ -184,6 +184,7 @@ public:
     wxWindow *pCometTool;
     RefineDefMap *pRefineDefMap;
     wxDialog *pCalSanityCheckDlg;
+    wxDialog *pCalReviewDlg;
     bool CaptureActive; // Is camera looping captures?
     bool m_exposurePending; // exposure scheduled and not completed
     double Stretch_gamma;
@@ -522,6 +523,7 @@ enum {
     EEGG_RESTORECAL,
     EEGG_MANUALCAL,
     EEGG_CLEARCAL,
+    EEGG_REVIEWCAL,
     EEGG_MANUALLOCK,
     EEGG_COMET_TOOL,
     EEGG_STICKY_LOCK,
