@@ -1072,17 +1072,18 @@ void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
     pConfig->Profile.SetDouble(prefix + "dec_guide_rate", calDetails.decGuideRate);
     pConfig->Profile.SetDouble(prefix + "ortho_error", calDetails.orthoError);
 
-    for each (wxRealPoint pt in calDetails.raSteps)
+    for (std::vector<wxRealPoint>::const_iterator it = calDetails.raSteps.begin(); it != calDetails.raSteps.end(); ++it)
     {
-        stepStr += wxString::Format("{%0.1f %0.1f}, ", pt.x, pt.y);
+        stepStr += wxString::Format("{%0.1f %0.1f}, ", it->x, it->y);
     }
     stepStr = stepStr.Left(stepStr.length() - 2);
     pConfig->Profile.SetString(prefix + "ra_steps", stepStr);
 
     stepStr = "";
-    for each (wxRealPoint pt in calDetails.decSteps)
+
+    for (std::vector<wxRealPoint>::const_iterator it = calDetails.decSteps.begin(); it != calDetails.decSteps.end(); ++it)
     {
-        stepStr += wxString::Format("{%0.1f %0.1f}, ", pt.x, pt.y);
+        stepStr += wxString::Format("{%0.1f %0.1f}, ", it->x, it->y);
     }
     stepStr = stepStr.Left(stepStr.length() - 2);
     pConfig->Profile.SetString(prefix + "dec_steps", stepStr);
