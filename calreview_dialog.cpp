@@ -35,8 +35,7 @@
 
 #include "phd.h"
 #include "calreview_dialog.h"
-
-
+#include "scope.h"
 
 // Event handling for base class - derived classes handle their own bindings
 BEGIN_EVENT_TABLE( CalReviewDialog, wxDialog )
@@ -250,10 +249,16 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         calGrid->SetCellValue(_("Dec rate:"), row, col++);
     else
         calGrid->SetCellValue(_("Y rate:"), row, col++);
-    if (validDetails)
-        calGrid->SetCellValue(wxString::Format("%0.3f a-s/sec\n%0.3f px/sec", calBaseline.yRate * 1000 * calDetails.imageScale, calBaseline.yRate * 1000), row, col++);
+    if (calBaseline.yRate != CALIBRATION_RATE_UNCALIBRATED)
+    {
+        if (validDetails)
+            calGrid->SetCellValue(wxString::Format("%0.3f a-s/sec\n%0.3f px/sec", calBaseline.yRate * 1000 * calDetails.imageScale, calBaseline.yRate * 1000), row, col++);
+        else
+            calGrid->SetCellValue(wxString::Format("%0.3f px/sec", calBaseline.yRate * 1000), row, col++);      // just px/sec with no image scale data
+    }
     else
-        calGrid->SetCellValue(wxString::Format("%0.3f px/sec", calBaseline.yRate * 1000), row, col++);      // just px/sec with no image scale data
+        calGrid->SetCellValue(NA_STR, row, col++);
+
 
     row++;
     col = 0;
@@ -640,9 +645,15 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         if (m_issue == CI_Different)
         {
             pGrid->SetCellValue(_("This declination rate:"), row, col++);
-            pGrid->SetCellValue(wxString::Format("%0.3f ''/sec\n%0.3f px/sec", newDecRate * imageScale, newDecRate), row, col++);
+            if (newDecRate != CALIBRATION_RATE_UNCALIBRATED)
+                pGrid->SetCellValue(wxString::Format("%0.3f ''/sec\n%0.3f px/sec", newDecRate * imageScale, newDecRate), row, col++);
+            else
+                pGrid->SetCellValue(NA_STR, row, col++);
             pGrid->SetCellValue(_("Previous declination rate:"), row, col++);
-            pGrid->SetCellValue(wxString::Format("\n%0.3f px/sec", m_oldParams.yRate * 1000), row, col++);
+            if (m_oldParams.yRate != CALIBRATION_RATE_UNCALIBRATED)
+                pGrid->SetCellValue(wxString::Format("\n%0.3f px/sec", m_oldParams.yRate * 1000), row, col++);
+            else
+                pGrid->SetCellValue(NA_STR, row, col++);
             HighlightCell(pGrid, row, 1);
             HighlightCell(pGrid, row, 3);
         }
@@ -651,7 +662,10 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
             pGrid->SetCellValue(_("RA rate:"), row, col++);
             pGrid->SetCellValue(wxString::Format("%0.3f a-s/sec\n%0.3f px/sec", newRARate * imageScale, newRARate), row, col++);
             pGrid->SetCellValue(_("Declination rate:"), row, col++);
-            pGrid->SetCellValue(wxString::Format("%0.3f a-s/sec\n%0.3f px/sec", newDecRate * imageScale, newDecRate), row, col++);
+            if (newDecRate != CALIBRATION_RATE_UNCALIBRATED)
+                pGrid->SetCellValue(wxString::Format("%0.3f a-s/sec\n%0.3f px/sec", newDecRate * imageScale, newDecRate), row, col++);
+            else
+                pGrid->SetCellValue(NA_STR, row, col++);
             if (m_issue == CI_Rates)
             {
                 HighlightCell(pGrid, row, 1);
