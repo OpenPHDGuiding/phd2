@@ -45,6 +45,8 @@ enum Calibration_Issues
     CI_Different
 };
 
+#define CALIBRATION_RATE_UNCALIBRATED 123e4
+
 class Scope : public Mount
 {
     int m_calibrationDuration;
@@ -66,6 +68,7 @@ class Scope : public Mount
     PHD_Point m_calibrationStartingLocation;  // position of guide star at start of calibration measurement (after clear backlash etc.)
     PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
     PHD_Point m_lastLocation;
+    double m_totalSouthAmt;
 
     Calibration m_calibration;
     CalibrationDetails m_calibrationDetails;
@@ -87,6 +90,7 @@ class Scope : public Mount
         CALIBRATION_STATE_CLEAR_BACKLASH,
         CALIBRATION_STATE_GO_NORTH,
         CALIBRATION_STATE_GO_SOUTH,
+        CALIBRATION_STATE_NUDGE_SOUTH,
         CALIBRATION_STATE_COMPLETE
     } m_calibrationState;
 
