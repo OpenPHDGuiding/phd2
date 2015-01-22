@@ -33,7 +33,7 @@
 */
 
 #include "phd.h"
-#include "guide_gaussian_process.h"
+#include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
 #include "gaussian_process/tools/math_tools.h"
 #include "UDPGuidingInteraction.h"

@@ -57,6 +57,6 @@ enum GUIDE_ALGORITHM
 #include "guide_algorithm_lowpass.h"
 #include "guide_algorithm_lowpass2.h"
 #include "guide_algorithm_resistswitch.h"
-#include "guide_gaussian_process.h"
+#include "guide_algorithm_gaussian_process.h"
 
 #endif /* GUIDE_ALGORITHMS_H_INCLUDED */
