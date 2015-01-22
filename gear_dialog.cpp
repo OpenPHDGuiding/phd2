@@ -405,6 +405,7 @@ int GearDialog::ShowGearDialog(bool autoConnect)
     {
         UpdateButtonState();
 
+        GetSizer()->Fit(this);
         CenterOnParent();
         ret = wxDialog::ShowModal();
     }
