@@ -268,6 +268,17 @@ set(indiClient_SRC
 )
 source_group(IndiClient FILES ${indiClient_SRC})
 
+
+set(gaussian_process_SRC
+  ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp
+  ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
+  ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
+  ${phd_src_dir}/gaussian_process/tools/math_tools.h
+)
+source_group(GaussianProcess FILES ${gaussian_process_SRC})
+
+
+
 set(phd2_SRC
   ${phd_src_dir}/about_dialog.cpp
   ${phd_src_dir}/about_dialog.h
@@ -361,13 +372,6 @@ set(phd2_SRC
   ${phd_src_dir}/worker_thread.h
 
 
-  ####### TODO: when merging the complete GP into the project, these can probably go elsewhere  
-  ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp
-  ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
-  ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
-  ${phd_src_dir}/gaussian_process/tools/math_tools.h
-  #######
-
 )
 if(UNIX AND NOT APPLE)
   set(phd2_SRC 
@@ -385,8 +389,7 @@ target_include_directories(CircularBufferTest PRIVATE ${phd_src_dir}
 set_property(TARGET CircularBufferTest PROPERTY FOLDER "Unit tests/")
 add_test(CircularBufferTest1 CircularBufferTest)
 
-#message("compilation definitions ${wxWidgets_DEFINITIONS}")
-#message("compilation options ${wxWidgets_CXX_FLAGS}")
+
 
 
 include_directories(${phd_src_dir}/cam_KWIQGuider/)
@@ -415,6 +418,7 @@ if(APPLE)
     ${cam_SRC}
     ${cam_KWIQGuider_SRC}
     ${guiding_SRC}
+    ${gaussian_process_SRC}
     ${phd2_SRC}
     
     # ressources of the bundle
@@ -470,6 +474,7 @@ if(APPLE)
     #${cam_KWIQGuider_SRC} # not included in the win32 projects
     ${guiding_SRC}
     ${phd2_SRC}
+    ${gaussian_process_SRC}
     ${phd2_WIN_SRC}
     )
 
