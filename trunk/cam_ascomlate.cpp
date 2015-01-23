@@ -32,10 +32,10 @@
  *
  */
 
-
 #include "phd.h"
 
-#if defined (ASCOM_LATECAMERA)
+#if defined(ASCOM_LATECAMERA)
+
 #include "camera.h"
 #include "comdispatch.h"
 #include "time.h"
@@ -48,6 +48,297 @@
 #include "cam_ascomlate.h"
 #include <wx/msw/ole/oleutils.h>
 #include <comdef.h>
+
+// Frequently used IDs
+static DISPID dispid_setxbin, dispid_setybin, dispid_startx, dispid_starty,
+    dispid_numx, dispid_numy,
+    dispid_startexposure, dispid_abortexposure, dispid_stopexposure,
+    dispid_imageready, dispid_imagearray,
+    dispid_ispulseguiding, dispid_pulseguide;
+
+inline static void LogExcep(HRESULT hr, const wxString& prefix, const EXCEPINFO& excep)
+{
+    Debug.AddLine(wxString::Format("%s: [%x] %s", prefix, hr, _com_error(hr).ErrorMessage()));
+    if (hr == DISP_E_EXCEPTION)
+        Debug.AddLine(ExcepMsg(prefix, excep));
+}
+
+static bool ASCOM_SetBin(IDispatch *cam, int mode, EXCEPINFO *excep)
+{
+    // returns true on error, false if OK
+
+    VARIANTARG rgvarg[1];
+    rgvarg[0].vt = VT_I2;
+    rgvarg[0].iVal = (short) mode;
+
+    DISPID dispidNamed = DISPID_PROPERTYPUT;
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 1;
+    dispParms.rgvarg = rgvarg;
+    dispParms.cNamedArgs = 1;                   // PropPut kludge
+    dispParms.rgdispidNamedArgs = &dispidNamed;
+
+    VARIANT vRes;
+    HRESULT hr;
+
+    if (FAILED(hr = cam->Invoke(dispid_setxbin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "invoke setxbin", *excep);
+        return true;
+    }
+    if (FAILED(hr = cam->Invoke(dispid_setybin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "invoke setybin", *excep);
+        return true;
+    }
+
+    return false;
+}
+
+static bool ASCOM_SetROI(IDispatch *cam, const wxRect& roi, EXCEPINFO *excep)
+{
+    // returns true on error, false if OK
+
+    VARIANTARG rgvarg[1];
+    rgvarg[0].vt = VT_I4;
+
+    DISPID dispidNamed = DISPID_PROPERTYPUT;
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 1;
+    dispParms.rgvarg = rgvarg;
+    dispParms.cNamedArgs = 1;                   // PropPut kludge
+    dispParms.rgdispidNamedArgs = &dispidNamed;
+
+    VARIANT vRes;
+    HRESULT hr;
+
+    rgvarg[0].lVal = roi.GetLeft();
+    if (FAILED(hr = cam->Invoke(dispid_startx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "set startx", *excep);
+        return true;
+    }
+
+    rgvarg[0].lVal = roi.GetTop();
+    if (FAILED(hr = cam->Invoke(dispid_starty, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "set starty", *excep);
+        return true;
+    }
+
+    rgvarg[0].lVal = roi.GetWidth();
+    if (FAILED(hr = cam->Invoke(dispid_numx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "set numx", *excep);
+        return true;
+    }
+
+    rgvarg[0].lVal = roi.GetHeight();
+    if (FAILED(hr = cam->Invoke(dispid_numy, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "set numy", *excep);
+        return true;
+    }
+
+    return false;
+}
+
+static bool ASCOM_AbortExposure(IDispatch *cam, EXCEPINFO *excep)
+{
+    // returns true on error, false if OK
+
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 0;
+    dispParms.rgvarg = NULL;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+
+    VARIANT vRes;
+    HRESULT hr;
+
+    if (FAILED(hr = cam->Invoke(dispid_abortexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "invoke abortexposure", *excep);
+        return true;
+    }
+
+    return false;
+}
+
+static bool ASCOM_StopExposure(IDispatch *cam, EXCEPINFO *excep)
+{
+    // returns true on error, false if OK
+
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 0;
+    dispParms.rgvarg = NULL;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+
+    VARIANT vRes;
+    HRESULT hr;
+
+    if (FAILED(hr = cam->Invoke(dispid_stopexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "invoke stopexposure", *excep);
+        return true;
+    }
+
+    return false;
+}
+
+static bool ASCOM_StartExposure(IDispatch *cam, double duration, bool dark, EXCEPINFO *excep)
+{
+    // returns true on error, false if OK
+
+    VARIANTARG rgvarg[2];
+    rgvarg[1].vt = VT_R8;
+    rgvarg[1].dblVal =  duration;
+    rgvarg[0].vt = VT_BOOL;
+    rgvarg[0].boolVal = (VARIANT_BOOL) !dark;
+
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 2;
+    dispParms.rgvarg = rgvarg;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+
+    VARIANT vRes;
+    HRESULT hr;
+
+    if (FAILED(hr = cam->Invoke(dispid_startexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "invoke startexposure", *excep);
+        return true;
+    }
+
+    return false;
+}
+
+static bool ASCOM_ImageReady(IDispatch *cam, bool *ready, EXCEPINFO *excep)
+{
+    // returns true on error, false if OK
+
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 0;
+    dispParms.rgvarg = NULL;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+
+    VARIANT vRes;
+    HRESULT hr;
+
+    if (FAILED(hr = cam->Invoke(dispid_imageready, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "invoke imageready", *excep);
+        return true;
+    }
+    *ready = vRes.boolVal != VARIANT_FALSE;
+
+    return false;
+}
+
+static bool ASCOM_Image(IDispatch *cam, usImage& Image, bool takeSubframe, const wxRect& subframe, EXCEPINFO *excep)
+{
+    // returns true on error, false if OK
+
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 0;
+    dispParms.rgvarg = NULL;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+
+    VARIANT vRes;
+    HRESULT hr;
+
+    if (FAILED(hr = cam->Invoke(dispid_imagearray, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
+        &dispParms, &vRes, excep, NULL)))
+    {
+        LogExcep(hr, "invoke imagearray", *excep);
+        return true;
+    }
+
+    SAFEARRAY *rawarray = vRes.parray;
+
+    long ubound1, ubound2, lbound1, lbound2;
+    SafeArrayGetUBound(rawarray, 1, &ubound1);
+    SafeArrayGetUBound(rawarray, 2, &ubound2);
+    SafeArrayGetLBound(rawarray, 1, &lbound1);
+    SafeArrayGetLBound(rawarray, 2, &lbound2);
+
+    long *rawdata;
+    hr = SafeArrayAccessData(rawarray, (void**)&rawdata);
+    if (hr != S_OK)
+    {
+        hr = SafeArrayDestroyData(rawarray);
+        return true;
+    }
+
+    long xsize = ubound1 - lbound1 + 1;
+    long ysize = ubound2 - lbound2 + 1;
+    if ((xsize < ysize) && (Image.Size.GetWidth() > Image.Size.GetHeight())) // array has dim #'s switched, Tom..
+    {
+        std::swap(xsize, ysize);
+    }
+
+    if (takeSubframe)
+    {
+        Image.Subframe = subframe;
+
+        // Clear out the image
+        Image.Clear();
+
+        int i = 0;
+        for (int y = 0; y < subframe.height; y++)
+        {
+            unsigned short *dataptr = Image.ImageData + (y + subframe.y) * Image.Size.GetWidth() + subframe.x;
+            for (int x = 0; x < subframe.width; x++, i++)
+                *dataptr++ = (unsigned short) rawdata[i];
+        }
+    }
+    else
+    {
+        for (int i = 0; i < Image.NPixels; i++)
+            Image.ImageData[i] = (unsigned short) rawdata[i];
+    }
+
+    hr = SafeArrayUnaccessData(rawarray);
+    hr = SafeArrayDestroyData(rawarray);
+
+    return false;
+}
+
+static bool ASCOM_IsMoving(IDispatch *cam)
+{
+    DISPPARAMS dispParms;
+    dispParms.cArgs = 0;
+    dispParms.rgvarg = NULL;
+    dispParms.cNamedArgs = 0;
+    dispParms.rgdispidNamedArgs = NULL;
+
+    HRESULT hr;
+    EXCEPINFO excep;
+    VARIANT vRes;
+
+    if (FAILED(hr = cam->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
+    {
+        LogExcep(hr, "invoke ispulseguiding", excep);
+        pFrame->Alert(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding"), excep));
+        return false;
+    }
+
+    return vRes.boolVal == VARIANT_TRUE;
+}
 
 static bool IsChooser(const wxString& choice)
 {
@@ -267,10 +558,27 @@ bool Camera_ASCOMLateClass::Connect()
     VARIANT vRes;
     if (!driver.GetProp(&vRes, L"CanPulseGuide"))
     {
+        Debug.AddLine(ExcepMsg("CanPulseGuide", driver.Excep()));
         pFrame->Alert(_("ASCOM driver missing the CanPulseGuide property"));
         return true;
     }
     m_hasGuideOutput = ((vRes.boolVal != VARIANT_FALSE) ? true : false);
+
+    if (!driver.GetProp(&vRes, L"CanAbortExposure"))
+    {
+        Debug.AddLine(ExcepMsg("CanAbortExposure", driver.Excep()));
+        pFrame->Alert(_("ASCOM driver missing the CanAbortExposure property"));
+        return true;
+    }
+    m_canAbortExposure = vRes.boolVal != VARIANT_FALSE ? true : false;
+
+    if (!driver.GetProp(&vRes, L"CanStopExposure"))
+    {
+        Debug.AddLine(ExcepMsg("CanStopExposure", driver.Excep()));
+        pFrame->Alert(_("ASCOM driver missing the CanStopExposure property"));
+        return true;
+    }
+    m_canStopExposure = vRes.boolVal != VARIANT_FALSE ? true : false;
 
     // Check if we have a shutter
     if (driver.GetProp(&vRes, L"HasShutter"))
@@ -282,6 +590,7 @@ bool Camera_ASCOMLateClass::Connect()
 
     if (!driver.GetProp(&vRes, L"CameraXSize"))
     {
+        Debug.AddLine(ExcepMsg("CameraXSize", driver.Excep()));
         pFrame->Alert(_("ASCOM driver missing the CameraXSize property"));
         return true;
     }
@@ -289,6 +598,7 @@ bool Camera_ASCOMLateClass::Connect()
 
     if (!driver.GetProp(&vRes, L"CameraYSize"))
     {
+        Debug.AddLine(ExcepMsg("CameraYSize", driver.Excep()));
         pFrame->Alert(_("ASCOM driver missing the CameraYSize property"));
         return true;
     }
@@ -313,6 +623,7 @@ bool Camera_ASCOMLateClass::Connect()
 
     if (!driver.GetProp(&vRes, L"PixelSizeX"))
     {
+        Debug.AddLine(ExcepMsg("PixelSizeX", driver.Excep()));
         pFrame->Alert(_("ASCOM driver missing the PixelSizeX property"));
         return true;
     }
@@ -320,6 +631,7 @@ bool Camera_ASCOMLateClass::Connect()
 
     if (!driver.GetProp(&vRes, L"PixelSizeY"))
     {
+        Debug.AddLine(ExcepMsg("PixelSizeY", driver.Excep()));
         pFrame->Alert(_("ASCOM driver missing the PixelSizeY property"));
         return true;
     }
@@ -354,6 +666,9 @@ bool Camera_ASCOMLateClass::Connect()
     if (!GetDispid(&dispid_startexposure, driver, L"StartExposure"))
         return true;
 
+    if (!GetDispid(&dispid_abortexposure, driver, L"AbortExposure"))
+        return true;
+
     if (!GetDispid(&dispid_stopexposure, driver, L"StopExposure"))
         return true;
 
@@ -365,8 +680,9 @@ bool Camera_ASCOMLateClass::Connect()
 
     // Program some defaults -- full size and 1x1 bin
     EXCEPINFO excep;
-    ASCOM_SetBin(1, &excep);
-    ASCOM_SetROI(0, 0, FullSize.GetWidth(), FullSize.GetHeight(), &excep);
+    ASCOM_SetBin(driver.IDisp(), 1, &excep);
+    m_roi = FullSize;
+    ASCOM_SetROI(driver.IDisp(), FullSize, &excep);
 
     Connected = true;
 
@@ -408,12 +724,26 @@ void Camera_ASCOMLateClass::ShowPropertyDialog(void)
     }
 }
 
-bool Camera_ASCOMLateClass::StopExposure(void)
+bool Camera_ASCOMLateClass::AbortExposure(void)
 {
+    if (!(m_canAbortExposure || m_canStopExposure))
+        return false;
+
+    GITObjRef cam(m_gitEntry);
     EXCEPINFO excep;
-    bool err = ASCOM_StopExposure(&excep);
-    Debug.AddLine("ASCOM_StopExposure returns err = %d", err);
-    return !err;
+
+    if (m_canAbortExposure)
+    {
+        bool err = ASCOM_AbortExposure(cam.IDisp(), &excep);
+        Debug.AddLine("ASCOM_AbortExposure returns err = %d", err);
+        return !err;
+    }
+    else
+    {
+        bool err = ASCOM_StopExposure(cam.IDisp(), &excep);
+        Debug.AddLine("ASCOM_StopExposure returns err = %d", err);
+        return !err;
+    }
 }
 
 bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
@@ -429,16 +759,28 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     // Program the size
     if (!takeSubframe)
     {
-        subframe = wxRect(0,0,FullSize.GetWidth(),FullSize.GetHeight());
+        subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
     }
 
+    if (img.Init(FullSize))
+    {
+        pFrame->Alert(_("Cannot allocate memory to download image from camera"));
+        return true;
+    }
+
+    GITObjRef cam(m_gitEntry);
+
     EXCEPINFO excep;
-    ASCOM_SetROI(subframe.x, subframe.y, subframe.width, subframe.height, &excep);
+    if (subframe != m_roi)
+    {
+        ASCOM_SetROI(cam.IDisp(), subframe, &excep);
+        m_roi = subframe;
+    }
 
     bool takeDark = HasShutter && ShutterState;
 
     // Start the exposure
-    if (ASCOM_StartExposure((double) duration / 1000.0, takeDark, &excep))
+    if (ASCOM_StartExposure(cam.IDisp(), (double)duration / 1000.0, takeDark, &excep))
     {
         Debug.AddLine(ExcepMsg("ASCOM_StartExposure failed", excep));
         pFrame->Alert(ExcepMsg(_("ASCOM error -- Cannot start exposure with given parameters"), excep));
@@ -451,7 +793,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     {
         // wait until near end of exposure
         if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY) &&
-            (WorkerThread::TerminateRequested() || StopExposure()))
+            (WorkerThread::TerminateRequested() || AbortExposure()))
         {
             return true;
         }
@@ -462,7 +804,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         wxMilliSleep(20);
         bool ready;
         EXCEPINFO excep;
-        if (ASCOM_ImageReady(&ready, &excep))
+        if (ASCOM_ImageReady(cam.IDisp(), &ready, &excep))
         {
             Debug.AddLine(ExcepMsg("ASCOM_ImageReady failed", excep));
             pFrame->Alert(ExcepMsg(_("Exception thrown polling camera"), excep));
@@ -471,7 +813,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         if (ready)
             break;
         if (WorkerThread::InterruptRequested() &&
-            (WorkerThread::TerminateRequested() || StopExposure()))
+            (WorkerThread::TerminateRequested() || AbortExposure()))
         {
             return true;
         }
@@ -483,7 +825,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
     }
 
     // Get the image
-    if (ASCOM_Image(img, takeSubframe, subframe, &excep))
+    if (ASCOM_Image(cam.IDisp(), img, takeSubframe, subframe, &excep))
     {
         Debug.AddLine(ExcepMsg(_T("ASCOM_Image failed"), excep));
         pFrame->Alert(ExcepMsg(_("Error reading image"), excep));
@@ -502,6 +844,8 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
 {
     if (!m_hasGuideOutput)
         return true;
+
+    if (!pMount || !pMount->IsConnected()) return false;
 
     GITObjRef cam(m_gitEntry);
 
@@ -523,16 +867,17 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
     EXCEPINFO excep;
     VARIANT vRes;
     HRESULT hr;
+
     if (FAILED(hr = cam.IDisp()->Invoke(dispid_pulseguide, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
         &dispParms,&vRes,&excep,NULL)))
     {
-        Debug.AddLine(wxString::Format("invoke pulseguide: [%x] %s", hr, _com_error(hr).ErrorMessage()));
+        LogExcep(hr, "invoke pulseguide", excep);
         return true;
     }
 
     if (watchdog.Time() < duration)  // likely returned right away and not after move - enter poll loop
     {
-        while (ASCOM_IsMoving())
+        while (ASCOM_IsMoving(cam.IDisp()))
         {
             wxMilliSleep(50);
             if (WorkerThread::TerminateRequested())
@@ -545,277 +890,6 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
         }
     }
 
-    return false;
-}
-
-bool Camera_ASCOMLateClass::ASCOM_SetBin(int mode, EXCEPINFO *excep)
-{
-    // Assumes the dispid values needed are already set
-    // returns true on error, false if OK
-
-    DISPID dispidNamed = DISPID_PROPERTYPUT;
-    DISPPARAMS dispParms;
-    VARIANTARG rgvarg[1];
-    VARIANT vRes;
-    HRESULT hr;
-
-    rgvarg[0].vt = VT_I2;
-    rgvarg[0].iVal = (short) mode;
-    dispParms.cArgs = 1;
-    dispParms.rgvarg = rgvarg;
-    dispParms.cNamedArgs = 1;                   // PropPut kludge
-    dispParms.rgdispidNamedArgs = &dispidNamed;
-
-    GITObjRef cam(m_gitEntry);
-
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_setxbin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke setxbin: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_setybin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke setybin: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-
-    return false;
-}
-
-bool Camera_ASCOMLateClass::ASCOM_SetROI(int startx, int starty, int numx, int numy, EXCEPINFO *excep)
-{
-    // assumes the needed dispids have been set
-    // returns true on error, false if OK
-    DISPID dispidNamed = DISPID_PROPERTYPUT;
-    DISPPARAMS dispParms;
-    VARIANTARG rgvarg[1];
-    VARIANT vRes;
-    HRESULT hr;
-
-    rgvarg[0].vt = VT_I4;
-    rgvarg[0].lVal = (long) startx;
-    dispParms.cArgs = 1;
-    dispParms.rgvarg = rgvarg;
-    dispParms.cNamedArgs = 1;                   // PropPut kludge
-    dispParms.rgdispidNamedArgs = &dispidNamed;
-
-    GITObjRef cam(m_gitEntry);
-
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_startx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke startx: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-    rgvarg[0].lVal = (long) starty;
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_starty, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke starty: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-    rgvarg[0].lVal = (long) numx;
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_numx, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke numx: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-    rgvarg[0].lVal = (long) numy;
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_numy, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
-        &dispParms, &vRes, excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke numy: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-    return false;
-}
-
-bool Camera_ASCOMLateClass::ASCOM_StopExposure(EXCEPINFO *excep)
-{
-    // Assumes the dispid values needed are already set
-    // returns true on error, false if OK
-    DISPPARAMS dispParms;
-    VARIANTARG rgvarg[1];
-    VARIANT vRes;
-    HRESULT hr;
-
-    dispParms.cArgs = 0;
-    dispParms.rgvarg = rgvarg;
-    dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
-
-    GITObjRef cam(m_gitEntry);
-
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_stopexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
-        &dispParms, &vRes, excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke stopexposure: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-    return false;
-}
-
-bool Camera_ASCOMLateClass::ASCOM_StartExposure(double duration, bool dark, EXCEPINFO *excep)
-{
-    // Assumes the dispid values needed are already set
-    // returns true on error, false if OK
-    DISPPARAMS dispParms;
-    VARIANTARG rgvarg[2];
-    VARIANT vRes;
-    HRESULT hr;
-
-    rgvarg[1].vt = VT_R8;
-    rgvarg[1].dblVal =  duration;
-    rgvarg[0].vt = VT_BOOL;
-    rgvarg[0].boolVal = (VARIANT_BOOL) !dark;
-    dispParms.cArgs = 2;
-    dispParms.rgvarg = rgvarg;
-    dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs =NULL;
-
-    GITObjRef cam(m_gitEntry);
-
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_startexposure,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
-        &dispParms,&vRes,excep,NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke startexposure: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-    return false;
-}
-
-bool Camera_ASCOMLateClass::ASCOM_ImageReady(bool *ready, EXCEPINFO *excep)
-{
-    // Assumes the dispid values needed are already set
-    // returns true on error, false if OK
-    DISPPARAMS dispParms;
-    VARIANT vRes;
-    HRESULT hr;
-
-    dispParms.cArgs = 0;
-    dispParms.rgvarg = NULL;
-    dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
-
-    GITObjRef cam(m_gitEntry);
-
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_imageready,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_PROPERTYGET,
-        &dispParms, &vRes, excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke imageready: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-    *ready = vRes.boolVal != VARIANT_FALSE;
-    return false;
-}
-
-bool Camera_ASCOMLateClass::ASCOM_Image(usImage& Image, bool takeSubframe, const wxRect& subframe, EXCEPINFO *excep)
-{
-    // Assumes the dispid values needed are already set
-    // returns true on error, false if OK
-    DISPPARAMS dispParms;
-    VARIANT vRes;
-    HRESULT hr;
-    SAFEARRAY *rawarray;
-
-    // Get the pointer to the image array
-    dispParms.cArgs = 0;
-    dispParms.rgvarg = NULL;
-    dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
-
-    GITObjRef cam(m_gitEntry);
-
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_imagearray, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
-        &dispParms, &vRes, excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke imagearray: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        return true;
-    }
-
-    rawarray = vRes.parray;
-    int dims = SafeArrayGetDim(rawarray);
-    long ubound1, ubound2, lbound1, lbound2;
-    long xsize, ysize;
-    long *rawdata;
-
-    SafeArrayGetUBound(rawarray,1,&ubound1);
-    SafeArrayGetUBound(rawarray,2,&ubound2);
-    SafeArrayGetLBound(rawarray,1,&lbound1);
-    SafeArrayGetLBound(rawarray,2,&lbound2);
-    hr = SafeArrayAccessData(rawarray,(void**)&rawdata);
-    xsize = (ubound1 - lbound1) + 1;
-    ysize = (ubound2 - lbound2) + 1;
-    if ((xsize < ysize) && (FullSize.GetWidth() > FullSize.GetHeight())) { // array has dim #'s switched, Tom..
-        ubound1 = xsize;
-        xsize = ysize;
-        ysize = ubound1;
-    }
-    if (hr != S_OK)
-        return true;
-
-    if (Image.Init(FullSize))
-    {
-        pFrame->Alert(_("Cannot allocate memory to download image from camera"));
-        return true;
-    }
-
-    if (takeSubframe)
-    {
-        Image.Subframe = subframe;
-
-        // Clear out the image
-        Image.Clear();
-
-        int i = 0;
-        for (int y = 0; y < subframe.height; y++)
-        {
-            unsigned short *dataptr = Image.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
-            for (int x = 0; x < subframe.width; x++, i++)
-                *dataptr++ = (unsigned short) rawdata[i];
-        }
-    }
-    else
-    {
-        for (int i = 0; i < Image.NPixels; i++)
-            Image.ImageData[i] = (unsigned short) rawdata[i];
-    }
-
-    hr = SafeArrayUnaccessData(rawarray);
-    hr = SafeArrayDestroyData(rawarray);
-
-    return false;
-}
-
-bool Camera_ASCOMLateClass::ASCOM_IsMoving(void)
-{
-    DISPPARAMS dispParms;
-    HRESULT hr;
-    EXCEPINFO excep;
-    VARIANT vRes;
-
-    if (!pMount || !pMount->IsConnected()) return false;
-
-    dispParms.cArgs = 0;
-    dispParms.rgvarg = NULL;
-    dispParms.cNamedArgs = 0;
-    dispParms.rgdispidNamedArgs = NULL;
-
-    GITObjRef cam(m_gitEntry);
-
-    if (FAILED(hr = cam.IDisp()->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
-    {
-        Debug.AddLine(wxString::Format("invoke ispulseguiding: [%x] %s", hr, _com_error(hr).ErrorMessage()));
-        Debug.AddLine(ExcepMsg("ASCOM driver failed checking IsPulseGuiding", excep));
-        pFrame->Alert(ExcepMsg(_("ASCOM driver failed checking IsPulseGuiding"), excep));
-        return false;
-    }
-    if (vRes.boolVal == VARIANT_TRUE) {
-        return true;
-    }
     return false;
 }
 
