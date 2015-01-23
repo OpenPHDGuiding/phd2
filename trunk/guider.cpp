@@ -400,8 +400,9 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                     else
                     {
                         double r=30.0;
-                        double cos_angle = cos(pMount->xAngle());
-                        double sin_angle = sin(pMount->xAngle());
+                        double xAngle = pMount->IsCalibrated() ? pMount->xAngle() : 0.0;
+                        double cos_angle = cos(xAngle);
+                        double sin_angle = sin(xAngle);
                         double StarX = CurrentPosition().X;
                         double StarY = CurrentPosition().Y;
 
@@ -410,8 +411,9 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                         dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                             ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
                         dc.SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),2,wxPENSTYLE_DOT));
-                        cos_angle = cos(pMount->yAngle());
-                        sin_angle = sin(pMount->yAngle());
+                        double yAngle = pMount->IsCalibrated() ? pMount->yAngle() : M_PI / 2.0;
+                        cos_angle = cos(yAngle);
+                        sin_angle = sin(yAngle);
                         dc.DrawLine(ROUND(StarX*m_scaleFactor+r*cos_angle),ROUND(StarY*m_scaleFactor+r*sin_angle),
                             ROUND(StarX*m_scaleFactor-r*cos_angle),ROUND(StarY*m_scaleFactor-r*sin_angle));
 
@@ -423,11 +425,11 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
 
                         double MidX = (double) XImgSize / 2.0;
                         double MidY = (double) YImgSize / 2.0;
-                        gc->Rotate(pMount->xAngle());
+                        gc->Rotate(xAngle);
                         gc->GetTransform().TransformPoint(&MidX, &MidY);
-                        gc->Rotate(-pMount->xAngle());
+                        gc->Rotate(-xAngle);
                         gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
-                        gc->Rotate(pMount->xAngle());
+                        gc->Rotate(xAngle);
                         for (i=-2; i<12; i++) {
                             gc->StrokeLine(0.0,step * (double) i,
                                 (double) XImgSize, step * (double) i);
@@ -435,12 +437,12 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
 
                         MidX = (double) XImgSize / 2.0;
                         MidY = (double) YImgSize / 2.0;
-                        gc->Rotate(-pMount->xAngle());
-                        gc->Rotate(pMount->yAngle());
+                        gc->Rotate(-xAngle);
+                        gc->Rotate(yAngle);
                         gc->GetTransform().TransformPoint(&MidX, &MidY);
-                        gc->Rotate(-pMount->yAngle());
+                        gc->Rotate(-yAngle);
                         gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
-                        gc->Rotate(pMount->yAngle());
+                        gc->Rotate(yAngle);
                         gc->SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),1,wxPENSTYLE_DOT ));
                         for (i=-2; i<12; i++) {
                             gc->StrokeLine(0.0,step * (double) i,
