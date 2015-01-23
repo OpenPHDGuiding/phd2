@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+
+use strict;
+
+# get the phd version number string from phd.h
+
+my ($PHDVERSION, $PHDSUBVER);
+while (<>) {
+    if (/#\s*define\s+(PHDVERSION|PHDSUBVER)\s.*"([^"]+)"/) {
+        my ($n,$v) = ($1,$2);
+        eval "\$$n = \"$v\"";
+        last if defined($PHDVERSION) && defined($PHDSUBVER);
+    }
+}
+
+print "$PHDVERSION$PHDSUBVER\n";
