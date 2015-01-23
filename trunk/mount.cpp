@@ -1068,8 +1068,8 @@ void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
 
     pConfig->Profile.SetInt(prefix + "focal_length", calDetails.focalLength);
     pConfig->Profile.SetDouble(prefix + "image_scale", calDetails.imageScale);
-    pConfig->Profile.SetDouble(prefix + "ra_guide_rate", calDetails.raGuideRate);
-    pConfig->Profile.SetDouble(prefix + "dec_guide_rate", calDetails.decGuideRate);
+    pConfig->Profile.SetDouble(prefix + "ra_guide_rate", calDetails.raGuideSpeed);
+    pConfig->Profile.SetDouble(prefix + "dec_guide_rate", calDetails.decGuideSpeed);
     pConfig->Profile.SetDouble(prefix + "ortho_error", calDetails.orthoError);
 
     for (std::vector<wxRealPoint>::const_iterator it = calDetails.raSteps.begin(); it != calDetails.raSteps.end(); ++it)
@@ -1129,8 +1129,8 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details)
 
     details->focalLength = pConfig->Profile.GetInt(prefix + "focal_length", 0);
     details->imageScale = pConfig->Profile.GetDouble(prefix + "image_scale", 1);
-    details->raGuideRate = pConfig->Profile.GetDouble(prefix + "ra_guide_rate", -1);
-    details->decGuideRate = pConfig->Profile.GetDouble(prefix + "dec_guide_rate", -1);
+    details->raGuideSpeed = pConfig->Profile.GetDouble(prefix + "ra_guide_rate", -1);
+    details->decGuideSpeed = pConfig->Profile.GetDouble(prefix + "dec_guide_rate", -1);
     details->orthoError = pConfig->Profile.GetDouble(prefix + "ortho_error", 0);
     details->raStepCount = pConfig->Profile.GetInt(prefix + "ra_step_count", 0);
     details->decStepCount = pConfig->Profile.GetInt(prefix + "dec_step_count", 0);

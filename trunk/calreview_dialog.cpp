@@ -107,9 +107,9 @@ void CalReviewDialog::CreateControls()
 // the global pointer is nulled
 void CalReviewDialog::AddButtons(CalReviewDialog* parentDialog, wxBoxSizer* parentVSizer)
 {
-    wxButton* buttonClose = new wxButton(parentDialog, wxID_ANY, _("&Close"), wxDefaultPosition, wxDefaultSize, 0);
-    buttonClose->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalRestoreDialog::OnCancelClick, this);
-    parentVSizer->Add(buttonClose, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
+    //wxButton* buttonClose = new wxButton(parentDialog, wxID_ANY, _("&Close"), wxDefaultPosition, wxDefaultSize, 0);
+    //buttonClose->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalRestoreDialog::OnCancelClick, this);
+    //parentVSizer->Add(buttonClose, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 }
 
 // Populate one of the panels in the wxNotebook
@@ -160,7 +160,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     CalibrationDetails calDetails;
     const double dSiderealSecondPerSec = 0.9973;
     bool validDetails = false;
-    bool decEstimated = false;
+    bool validAscomInfo = false;
     double guideRaSiderealX = 0;
     double guideDecSiderealX = 0;
 
@@ -189,6 +189,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     int row = 0;
     int col = 0;
     validDetails = calDetails.raStepCount > 0;                                             // true for non-AO with pointing source info and "recent" calibration
+    validAscomInfo = calBaseline.declination != 0.0;
 
     // Build the upper frame and grid for data from the last calibration
     wxStaticBox* staticBoxLastCal = new wxStaticBox(parentPanel, wxID_ANY, _("Last Mount Calibration"));
@@ -231,8 +232,8 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     
     if (validDetails)
     {
-        guideRaSiderealX = calDetails.raGuideRate * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
-        guideDecSiderealX = calDetails.decGuideRate * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
+        guideRaSiderealX = calDetails.raGuideSpeed * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
+        guideDecSiderealX = calDetails.decGuideSpeed * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
     }
 
     if (!AO)
@@ -266,13 +267,16 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     if (validDetails && calBaseline.yRate > 0)
     {
         calGrid->SetCellValue(_("Expected RA rate:"), row, col++);
-        if (!decEstimated && fabs(degrees(calBaseline.declination)) < 65.0)
+        if (validAscomInfo && fabs(degrees(calBaseline.declination)) < 65.0)
             calGrid->SetCellValue(wxString::Format("%0.1f a-s/sec", guideDecSiderealX * 15.0 * dSiderealSecondPerSec * cos(calBaseline.declination) *
             guideRaSiderealX / guideDecSiderealX), row, col++);
         else
             calGrid->SetCellValue(NA_STR, row, col++);
         calGrid->SetCellValue(_("Expected Dec rate:"), row, col++);
-        calGrid->SetCellValue(wxString::Format("%0.1f a-s/sec", guideDecSiderealX * 15.0 * dSiderealSecondPerSec, row, col), row, col);
+        if (validAscomInfo)
+            calGrid->SetCellValue(wxString::Format("%0.1f a-s/sec", guideDecSiderealX * 15.0 * dSiderealSecondPerSec, row, col), row, col);
+        else
+            calGrid->SetCellValue(NA_STR, row, col++);
     }
 
     calGrid->AutoSize();
@@ -315,15 +319,15 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         row++;
         col = 0;
 
-        cfgGrid->SetCellValue(_("RA Guide setting:"), row, col++);
-        if (validDetails)                                                // Do the RA guide setting
+        cfgGrid->SetCellValue(_("RA Guide speed:"), row, col++);
+        if (validAscomInfo)                                                // Do the RA guide setting
         {
             cfgGrid->SetCellValue(wxString::Format("%0.2fx", guideRaSiderealX), row, col++);
         }
         else
             cfgGrid->SetCellValue(NA_STR, row, col++);
-        cfgGrid->SetCellValue(_("Dec Guide setting:"), row, col++);
-        if (validDetails)                                                // Do the Dec guide setting
+        cfgGrid->SetCellValue(_("Dec Guide speed:"), row, col++);
+        if (validAscomInfo)                                                // Do the Dec guide setting
         {
             cfgGrid->SetCellValue(wxString::Format("%0.2fx", guideDecSiderealX), row, col++);
         }
@@ -336,9 +340,8 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         // dec may be gotten from mount or imputed
         double dec = calBaseline.declination;
 
-        if (dec == 0.0)
+        if (!validAscomInfo)
         {
-            decEstimated = true;
             if (fabs(calBaseline.yRate) > 0.00001 && fabs(calBaseline.xRate / calBaseline.yRate) <= 1.0)
                 dec = degrees(acos(calBaseline.xRate / calBaseline.yRate));        // RA_Rate = Dec_Rate * cos(dec)
         }
@@ -347,10 +350,11 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
             dec = degrees(dec);
         }
         cfgGrid->SetCellValue(_("Declination"), row, col++);
-        if (decEstimated)
-            cfgGrid->SetCellValue(wxString::Format("%0.1f", dec) + _(" (est)"), row, col++);
-        else
+        if (validAscomInfo)
             cfgGrid->SetCellValue(wxString::Format("%0.1f", dec), row, col++);
+        else
+            cfgGrid->SetCellValue(wxString::Format("%0.1f", dec) + _(" (est)"), row, col++);
+
 
         cfgGrid->SetCellValue(_("Rotator position:"), row, col++);
         bool valid_rotator = fabs(calBaseline.rotatorAngle) < 360.0;
@@ -587,7 +591,7 @@ void CalSanityDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
             oldAngleDelta = wxString::Format("%0.1f", m_oldDetails.orthoError);
         }
         else
-            oldAngleDelta = _("Unknown");
+            oldAngleDelta = NA_STR;
 
         if (m_newParams.yRate != 0. && m_oldParams.yRate != 0.)
             m_oldNewDifference = wxString::Format("%0.1f", fabs(1.0 - m_newParams.yRate / m_oldParams.yRate) * 100.0);

@@ -847,8 +847,8 @@ void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
         ra_rate = -1.0;
         dec_rate = -1.0;
     }
-    m_calibrationDetails.raGuideRate = ra_rate;
-    m_calibrationDetails.decGuideRate = dec_rate;
+    m_calibrationDetails.raGuideSpeed = ra_rate;
+    m_calibrationDetails.decGuideSpeed = dec_rate;
     m_calibrationDetails.focalLength = pFrame->GetFocalLength();
     m_calibrationDetails.imageScale = pFrame->GetCameraPixelScale();
     m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
