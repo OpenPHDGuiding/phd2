@@ -225,6 +225,11 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             delete pNewFrame;
 
             StopCapturing();
+            if (pGuider->IsCalibratingOrGuiding())
+            {
+                pGuider->StopGuiding();
+                pGuider->UpdateImageDisplay();
+            }
             pGuider->Reset(false);
             CaptureActive = m_continueCapturing;
             UpdateButtonsStatus();
