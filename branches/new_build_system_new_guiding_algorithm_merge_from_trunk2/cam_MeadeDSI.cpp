@@ -36,26 +36,30 @@
 
 
 #include "phd.h"
+
 #ifdef MEADE_DSI
+
 #include "camera.h"
 #include "time.h"
 #include "image_math.h"
 #include "cam_MeadeDSI.h"
 
+#include "DsiDevice.h"
 
-
-Camera_DSIClass::Camera_DSIClass() {
-    Name=_T("Meade DSI");
+Camera_DSIClass::Camera_DSIClass()
+{
+    Name = _T("Meade DSI");
     FullSize = wxSize(768,505); // CURRENTLY ULTRA-RAW
     HasGainControl = true;
 }
 
-bool Camera_DSIClass::Connect() {
+bool Camera_DSIClass::Connect()
+{
     bool retval = false;
 //  MeadeCam = gcnew DSI_Class;
 //  retval = MeadeCam->DSI_Connect();
     //if (!retval)
-#ifdef MEADE_DSI
+
     MeadeCam = new DsiDevice();
     unsigned int NDevices = MeadeCam->EnumDsiDevices();
     unsigned int DevNum = 1;
@@ -99,55 +103,93 @@ bool Camera_DSIClass::Connect() {
         MeadeCam->SetOffset(255);
         MeadeCam->SetFastReadoutSpeed(true);
         Connected = true;
+        // Set the PixelSize property for cients.  If the pixels aren't square, use the smaller dimension because the image
+        // is "squared up" by scaling to the smaller dimension
+        if (MeadeCam->IsDsiIII)
+            PixelSize = 6.6;
+        else
+        if (MeadeCam->IsDsiII)
+            PixelSize = 8.3;
+        else
+            PixelSize = 7.5;
+
     }
-#endif
+
     return retval;
 }
-bool Camera_DSIClass::Disconnect() {
-#ifdef MEADE_DSI
+bool Camera_DSIClass::Disconnect()
+{
     MeadeCam->Close();
     Connected = false;
     delete MeadeCam;
-#endif
+
     return false;
 }
 
-bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-    bool retval;
-    bool still_going = true;
-#ifdef MEADE_DSI
+bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
     MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
     MeadeCam->SetExposureTime(duration);
-//  pFrame->SetStatusText(wxString::Format("%u %d",(unsigned int) (GuideCameraGain * 63 / 100),duration));
-    if ((unsigned)img.NPixels != MeadeCam->GetWidth() * MeadeCam->GetHeight()) {
-        if (img.Init(MeadeCam->GetWidth(),MeadeCam->GetHeight())) {
-            wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
-            Disconnect();
+
+    if (img.Init(MeadeCam->GetWidth(), MeadeCam->GetHeight()))
+    {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
+    }
+
+    bool retval = MeadeCam->GetImage(img.ImageData, true);
+    if (!retval)
+        return true;
+
+// The AbortImage method does not appear to work with the DSI camera.  If abort is called and the thread is terminated, the
+// pending image is still downloaded and PHD2 will crash
+#if AbortActuallyWorks
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
+
+    // wait for image to finish and d/l
+    while (!MeadeCam->ImageReady)
+    {
+        wxMilliSleep(20);
+        if (WorkerThread::InterruptRequested())
+        {
+            MeadeCam->AbortImage();
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            MeadeCam->AbortImage();
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }
-    retval = MeadeCam->GetImage(img.ImageData,true);
-    if (!retval) return true;
+#else // handle the pending image download, regardless
+
+    // We also need to prevent the thread from being killed when phd2 is closed
+    WorkerThreadKillGuard _guard;
+
     if (duration > 100) {
         wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxGetApp().Yield();
     }
+    bool still_going = true;
     while (still_going) {  // wait for image to finish and d/l
         wxMilliSleep(20);
         still_going = !(MeadeCam->ImageReady);
-        wxGetApp().Yield();
     }
 
+#endif // end of waiting for the image
+
     if (recon) SubtractDark(img);
-    if (recon) {
+
+    if (recon)
+    {
         if (MeadeCam->IsColor)
             QuickLRecon(img);
         if (MeadeCam->IsDsiII)
-            SquarePixels(img,6.5,6.25);
-        else if (!MeadeCam->IsDsiIII)
-            SquarePixels(img,9.6,7.5);
+            SquarePixels(img, 8.6, 8.3);
+        else if (!MeadeCam->IsDsiIII)           // Original DSI
+            SquarePixels(img, 9.6, 7.5);
     }
-#endif
+
     return false;
 }
 
@@ -156,4 +198,4 @@ bool Camera_DSIClass::HasNonGuiCapture(void)
     return true;
 }
 
-#endif
+#endif // MEADE_DSI

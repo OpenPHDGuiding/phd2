@@ -1,8 +1,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><title>Tools and Utilities</title></head>
 <body>
-<h2>Tools and Utilities</h2><a href="#Manual_Guide">Manual Guide</a><br><a href="#Auto-Select_Star">Auto-Select Star</a><br><a href="#Manual_Control_of_Calibration_Data">Calibration Data</a><br><a href="#PHD2_Server">PHD2 Server</a><br><a href="#Drift_Align">Drift Alignment</a><br><a href="#Lock_Positions">Lock Positions</a><br><a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br><a href="#Advanced_Settings_for_the_Simulators">Simulator Parameters</a><br><h3><a name="Manual_Guide"></a>Manual Guide</h3><br><img style="width: 437px; height: 251px;" alt="" src="ManualGuide.png"><br><br>If
-you are connecting to a new mount and are encountering calibration
+  <h2>Tools and Utilities</h2><a href="#Manual_Guide">Manual Guide</a><br>
+  <a href="#Auto-Select_Star">Auto-Select Star</a><br>
+  <a href="#Manual_Control_of_Calibration_Data">Calibration Data</a><br>
+  <a href="#PHD2_Server">PHD2 Server</a><br>
+  <a href="#Drift_Align">Drift Alignment</a><br>
+  <a href="#Lock_Positions">Lock Positions</a><br>
+  <a href="#Comet_Tracking">Comet Tracking</a><br>
+  <a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br>
+  <a href="#Advanced_Settings_for_the_Simulators">Simulator Parameters</a><br>
+
+<h3><a name="Manual_Guide"></a>Manual Guide</h3><br>
+<img style="width: 437px; height: 251px;" alt="" src="ManualGuide.png"><br>
+<br>
+If you are connecting to a new mount and are encountering calibration
 problems, you will probably want to be sure that <span style="font-style: italic;">PHD2</span>'s
 commands are
 actually getting to the mount. Or you may want to nudge the mount or
@@ -26,7 +38,9 @@ motors themselves or
 attaching a laser pointer to your scope and aiming it at something
 fairly far away (to amplify your motions). &nbsp;If you have an
 adaptive optics device attached, you'll see separate move buttons for
-both the AO and the secondary mount. &nbsp;<br><br><a name="Dithering"></a>Dithering
+both the AO and the secondary mount. &nbsp;<br>
+<br>
+<a name="Dithering"></a>Dithering
 is used primarily with image capture or automation applications,
 usually through the PHD2 server interface. &nbsp;However, you can do
 manual dithering or experiment with dither settings using the controls
@@ -41,27 +55,43 @@ that is less than or equal to the limit you have set, in one of the
 north/south/east/west directions. &nbsp;The 'RA Only' checkbox will
 constrain the dither adjustments to only east or west. &nbsp;Obviously,
 if you are doing a manual dither in this way, you'll want to be sure
-your imaging camera is not in the middle of an exposure.<br><h3><a name="Auto-Select_Star"></a>Auto-Select Star</h3>Clicking
-on 'Auto-select Star' under the 'Tools' menu, or using the keyboard
+your imaging camera is not in the middle of an exposure.<br>
+<h3><a name="Auto-Select_Star"></a>Auto-Select Star</h3>
+Clicking on 'Auto-select Star' under the 'Tools' menu, or using the keyboard
 shortcut of &lt;Alt&gt;S, tells <span style="font-style: italic;">PHD2</span> to scan the current guide image
-and identify a star suitable for guiding. &nbsp;This operation requires
-that 'Looping' is active. &nbsp;The selection process is based on the
-shape and brightness of the star but it doesn't consider close
-proximity to other stars.<h3><a name="Manual_Control_of_Calibration_Data"></a>Manual Control of Calibration Data</h3>Calibration
-data is saved automatically each time a calibration sequence completes
+and identify a star suitable for guiding. &nbsp;PHD2 will try to select a star of sufficient brightness that is not
+near another star and not too close to the edge of the frame. &nbsp;The
+selected star may appear overly dim on the screen, but this is usually
+not a problem. &nbsp;You can use the&nbsp;<a href="Visualization.htm#Star_Profile_and_Target_Displays">Star Profile</a>&nbsp;tool
+to examine the properties of the selected star - it should be
+non-saturated with a sharp profile, the same properties you should look
+for when choosing a guide star manually.&nbsp; The auto-select process is not
+infallible, so you may need to select a star yourself if you don't like
+the automated result. &nbsp;If you want to use Auto-Select, you should
+definitely use either a bad-pixel map or dark library to reduce the
+likelihood of PHD2 mistakenly choosing a hot pixel.
+<h3><a name="Manual_Control_of_Calibration_Data"></a>Manual Control of Calibration Data</h3>
+Calibration data is saved automatically each time a calibration sequence completes
 successfully. &nbsp;The use of the calibration data has been described
 elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
 including &nbsp;options for restoring calibration data from an earlier
 time or "flipping" it after a meridian flip. &nbsp;You access these
-functions using&nbsp;the 'Tools' menu. &nbsp;One other
-calibration-related item is also shown there, namely the option to
-enter calibration data manually. &nbsp;You should use this only under
+functions using the 'Calibration' sub-menu under the 'Tools' menu. &nbsp;Two other
+calibration-related items are&nbsp; shown there, namely the options to
+clear the current data or to enter calibration data manually. &nbsp;The
+"clear" option accomplishes the same thing as the 'Clear calibration'
+checkbox in the Advanced Dialog - it will force a recalibration
+whenever guiding is resumed. &nbsp;The 'Enter calibration data'
+option&nbsp;should be used&nbsp;only under
 very unusual circumstances and only if you're sure you know what you're
 doing; but it is available as a matter of completeness. &nbsp;If you
 click on the 'Enter calibration data' item, you'll see a dialog box
 that allows input of relatively low-level calibration data. &nbsp;This
 data might come from a much earlier session, perhaps extracted from the
-<span style="font-style: italic;">PHD2</span> guiding log file.<br><br><h3><a name="PHD2_Server"></a><span style="font-style: italic;">PHD2</span> Server</h3><span style="font-style: italic;">PHD2</span> supports third-party imaging and automation applications that need to control the guiding process. &nbsp;Stark Labs' <span style="font-style: italic;">Nebulosity </span>program
+<span style="font-style: italic;">PHD2</span> guiding log file.<br>
+<br>
+<h3><a name="PHD2_Server"></a><span style="font-style: italic;">PHD2</span> Server</h3>
+<span style="font-style: italic;">PHD2</span> supports third-party imaging and automation applications that need to control the guiding process. &nbsp;Stark Labs' <span style="font-style: italic;">Nebulosity </span>program
 was the first to do this, but other applications have subsequently been
 produced. &nbsp;By using the <span style="font-style: italic;">PHD2</span> server process, image capture
 programs can control dithering between exposures or suspend guide
@@ -69,62 +99,101 @@ exposures while the primary imaging camera is downloading data.
 &nbsp;To use these capabilities with a compatible application, you
 should click on&nbsp; the '<a name="Enable_Server"></a>Enable Server' option under the 'Tools'
 menu. &nbsp;The server interface has been reworked substantially in
-<span style="font-style: italic;">PHD2</span>, and it's now possible for an application to control most aspects
-of <span style="font-style: italic;">PHD2</span>'s guiding operations. &nbsp;Documentation for the server API is
-available on the <a href="https://code.google.com/p/open-phd-guiding/w/list">PHD2 Wiki</a>.<br><br><h3><a name="Drift_Align"></a>Drift Align</h3>Drift
-alignment is a
-well-known technique for achieving polar alignment and is considered by
-many to be the "gold standard". &nbsp;The Drift Alignment tool is a
-"wizard-like" sequence of dialogs that can help you work through the
-drift alignment process and get quantifiable results. &nbsp;Once you've
-calibrated your guider, click on 'Drift Align' under the 'Tools' menu.
-&nbsp;The first Drift Align dialog will appear to help you adjust the
-azimuth on your mount. &nbsp;If you are using an ASCOM mount, you'll
-have the option of slewing to an area near the celestial equator and
-the celestial meridian. &nbsp;If you're not using an ASCOM mount,
-you'll need to slew to that location manually. &nbsp;Once the scope is
-positioned and you have a suitable star in the field of view, click on
-the 'Drift' button to begin collecting data. &nbsp;You'll see the graph
-window with a display of star deflections and corrections and, more
-importantly, two trendlines. &nbsp;Let the exposures continue until the
-declination trendline has stabilized and is no longer jumping around
-with each new exposure. &nbsp;At the bottom of the graph window, you'll
-see a measurement for the polar alignment error in azimuth. &nbsp;Now
-click on the 'Adjust' button to halt guiding, then make a&nbsp;
-mechanical adjustment in azimuth. &nbsp;Once done, click on the 'drift'
-button again to repeat the measurement. &nbsp;Continue iterating in
+<span style="font-style: italic;">PHD2</span>, and it's now possible
+for an application to control most aspects of <span style="font-style: italic;">PHD2</span>'s guiding operations. &nbsp;Documentation for the
+server API is available on
+the <a href="https://code.google.com/p/open-phd-guiding/w/list">PHD2
+Wiki</a>.<br>
+<br>
+<h3><a name="Drift_Align"></a>Drift Align</h3>
+Drift alignment is a well-known technique for achieving polar alignment and
+is considered by many to be the "gold standard". &nbsp;The Drift
+Alignment tool is a "wizard-like" sequence of dialogs that can help
+you work through the drift alignment process and get quantifiable
+results. &nbsp;Once you've calibrated your guider, click on 'Drift
+Align' under the 'Tools' menu. &nbsp;The first Drift Align dialog will
+appear to help you adjust the azimuth on your mount. &nbsp;If you are
+using an ASCOM mount, you'll have the option of slewing to an area
+near the celestial equator and the celestial meridian. &nbsp;If you're
+not using an ASCOM mount, you'll need to slew to that location
+manually. &nbsp;Once the scope is positioned and you have a suitable
+star in the field of view, click on the 'Drift' button to begin
+collecting data. &nbsp;You'll see the graph window with a display of
+star deflections and corrections and, more importantly, two
+trendlines. When the mount is precisely polar aligned in azimuth, the
+Declination trend line will be perfectly horizontal. &nbsp;Let the
+exposures continue until the declination trendline has stabilized and
+is no longer jumping around with each new exposure. &nbsp;At the
+bottom of the graph window, you'll see a measurement for the polar
+alignment error in azimuth. And, in the image window, you will see a
+magenta circle around the guide star. The circle indicates an upper
+limit on how far the guide star needs to move when azimuth is
+adjusted. (Initially, the circle may be too large to be visible on the
+screen, so you may not see it until your alignment gets closer.)<br>
+<br>
+Now click on the 'Adjust' button to halt guiding, then make a&nbsp;
+mechanical adjustment in azimuth. Watch the guide star as you make the
+adjustment, moving the guide star towards the magenta circle, but not
+beyond it.&nbsp;Once done, click on the 'drift'
+button again to repeat the measurement. If your adjustment was in the
+right direction and did not over-shoot, the Declination trendline will
+be closer to horizontal. &nbsp;Continue iterating in
 this way until you are satisfied with your azimuth accuracy. &nbsp;You
 can use the 'notes' field to record which way the drift line moves
 depending on how you make the adjustment. &nbsp;For example, you might
-note that a counter-clockwise turn of the mount altitude moves the
+note that a counter-clockwise turn of the mount azimuth knob moves the
 drift line "up." &nbsp;Since these notes are retained across <span style="font-style: italic;">PHD2</span>
 sessions, subsequent drift alignments will probably proceed more
-quickly.<br><br>Until
-you are experienced with drift aligning your particular mount, the
+quickly.<br>
+<br>
+Until you are experienced with drift aligning your particular mount, the
 'adjustment' part of the process can be a bit tedious. &nbsp;At first,
 you'll have to determine how to adjust a knob on the mount to achieve
 the desired effect: "how much" and "what direction." &nbsp;To help with
 this, the <span style="font-style: italic;">PHD2</span> drift align
 tool supports "bookmarks". &nbsp;These are a handy way to record the
 positions of the guide star before and after you've made an adjustment.
-&nbsp;<a name="Bookmarks"></a>Bookmarks are accessed using the Bookmarks menu, or keyboard shortcuts, as follows: <br><ul><li>b&nbsp;: toggle/show bookmarks&nbsp;</li><li>Shift-b : set a bookark at the current guide star position (the "lock position")</li><li>Ctrl-b : clear all bookmarks&nbsp;</li><li>Ctrl-click somewhere on the image : set a bookmark at that position, or remove the bookmark that's already there</li></ul>By
-setting a bookmark before you make a mount adjustment, you can get a
-clear view of how the adjustment has moved the star on the guide frame.
-<br>Next,
-click on the 'Altitude' button.
+&nbsp;<a name="Bookmarks"></a>Bookmarks are accessed using the Bookmarks menu, or keyboard shortcuts, as follows: <br>
+<ul>
+  <li>b&nbsp;: toggle/show bookmarks&nbsp;</li>
+  <li>Shift-b : set a bookark at the current guide star position (the "lock position")</li>
+  <li>Ctrl-b : clear all bookmarks&nbsp;</li>
+  <li>Ctrl-click somewhere on the image: set a bookmark at that position, or remove the bookmark that's already there</li>
+</ul>
+By setting a bookmark before you make a mount adjustment, you can get a
+clear view of how the adjustment has moved the star on the guide frame.<br>
+<br>
+Next, click on the 'Altitude' button.
 &nbsp;Then slew the scope to a position near the celestial equator and
 25-30 degrees above the horizon. &nbsp;Click on the 'drift' button to
 begin collecting data for the altitude part of the alignment process.
 &nbsp;As before, you will iterate between making adjustments and
 measuring your alignment until you are satisfied with the result,
 keeping notes as you go about how mount adjustments affect the behavior
-of the drift line.
+of the declination drift line.
 &nbsp;If you make substantial adjustments in altitude, you'll need to
 go back to the 'azimuth' measurement and repeat that procedure.
 &nbsp;If you work through these procedures systematically, you'll
 converge on a good polar alignment with a known degree of accuracy.
 &nbsp;A good polar alignment will&nbsp;help your guiding performance,
-especially in declination.<br><br><h3><a name="Lock_Positions"></a>Lock Positions</h3><span style="font-style: italic;">PHD2</span> normally
+especially in declination.<br><br>The
+drift alignment tool is easiest to use when you are using an ASCOM
+connection to your mount (including an 'Aux' connection). &nbsp;Even if
+you subsequently want to use
+ST-4 style guiding, you should use the ASCOM connection for drift
+alignment. &nbsp;If you can't do that for some reason, the following
+features will be impaired:<br><ul><li>Scope position data and slewing functions will not be available - you'll have to slew the scope yourself</li><li>The
+magenta circle that identifies the "target" for moving the star will be
+inaccurate and will be displayed as a dashed line. &nbsp;This dashed
+circle will identify only an upper bound to the adjustment, so you will
+probably
+want to make smaller adjustments to avoid over-shooting.</li></ul>
+A very complete step-by-step tutorial for drift alignment is available
+on the Openphdguiding web site, and first-time users are strongly
+encouraged to study it.
+(https://sites.google.com/site/openphdguiding/phd2-drift-alignment)<br>
+<h3><a name="Lock_Positions"></a>Lock Positions</h3>
+<span style="font-style: italic;">PHD2</span> normally
 sets a 'lock position' where the guide star is located at the end of
 calibration. &nbsp;Depending on the details of the calibration
 sequence, this may not be exactly where the star was located at the
@@ -140,7 +209,67 @@ scope at guide speed. &nbsp;The sticky lock position will continue to
 be used even as guiding is stopped and subsequently resumed.
 &nbsp;Again, this insures a rigorous positioning of the guide star (and
 presumably your image target) at the expense of delays needed for <span style="font-style: italic;">PHD2</span>
-to reposition the mount.<h3><a name="Managing_Equipment_Profiles"></a>Managing Equipment Profiles</h3>Equipment profiles were introduced in the section on <a href="Basic_use.htm">Basic Use</a>
+to reposition the mount.
+<h3><a name="Comet_Tracking"></a>Comet Tracking</h3>
+
+One way to image a comet is to have PHD2 use the comet as the guide
+"star", but this approach may not always work. For example, the head
+of the comet may not present a star-like center suitable for
+guiding. Or, when using an off-axis guider, the comet may not even be
+visible in the guide camera.<br>
+<br>
+PHD2 provides a Comet Tracking tool for use when guiding on the comet
+itself is not feasible.  The idea is to guide on an ordinary star, but
+to gradually shift the lock position to match the comet's motion,
+or <i>tracking rate</i>.<br>
+<br>
+There are a three different ways to provide the comet tracking rate to PHD2.<br>
+<br>
+<ul>
+  <li>Some planetarium applications, like Cartes du Ciel, can send the rate directly to PHD2;</li>
+  <li>You can enter the tracking rate manually, or,</li>
+  <li>You can train the rate in PHD2 by following the comet for a period of time in the imaging camera.</li>
+</ul>
+<br>
+<br>
+<img style="width: 426px; height: 408px;" alt="" src="CometTrackingTool.png"><br>
+<br>
+<br>
+To enter the rate manually, you would select "Arcsec/hr" for units and
+"RA/Dec" for axes, then enter the rates from the comet's ephemeris.<br>
+<br>
+Comet rate training works like this:<br>
+<br>
+First, center the comet in your imaging camera. If your imaging
+application has some kind of reticle display, you should use that to
+note the precise position of the comet on the imaging sensor. Once
+this is ready, select a guide star in PHD2 and start guiding. Next
+click "Start" in the Comet Tracking tool to begin training.<br>
+<br>
+Take a continuous series of short exposures in your imaging camera
+using your imaging application's Frame and Focus feature. Over time,
+the comet will drift away from the starting location. Use PHD2's
+"Adjust Lock Position" controls to move the comet back to the starting
+location. You may have to experiment a bit to determine which way the
+comet moves on the imaging camera sensor in response to the
+Up/Down/Left/Right controls in PHD2. You may find it useful to enable
+the "Always on top" button in the Adjust Lock Position window so the
+controls stay visible on top of your imaging application.<br>
+<br>
+PHD2 will quickly learn the comet tracking rate as you re-center the
+comet. Once you are satisfied that PHD2 is tracking the comet, you can
+click Stop to end the training. PHD2 will continue shifting the lock
+position to track the comet until you disable comet tracking by
+toggling the Enable button.<br>
+<br>
+You can practice the comet training technique using the built-in
+camera simulator. Check the "Comet" option in the Cam Dialog, and the
+simulator will display a comet. Use a bookmark to mark the comet's
+starting location, and use the Adjust Lock Position controls to move
+the comet back to the bookmark location.
+<br>
+<h3><a name="Managing_Equipment_Profiles"></a>Managing Equipment Profiles</h3>
+Equipment profiles were introduced in the section on <a href="Basic_use.htm">Basic Use</a>
 where they are used as part of the 'Connect Equipment' dialog. &nbsp;If
 you want to manage multiple profiles, you will probably want to use the
 'Manage Profiles' button in the 'Connect Equipment' dialog. &nbsp;Using
@@ -148,7 +277,10 @@ the menu items there, you can create a new profile
 or&nbsp;edit/rename/delete an existing one. &nbsp;Each profile holds
 all the settings that were active at the time the profile was last
 used. &nbsp;If you create a new profile, you can import these settings
-from either the <span style="font-style: italic;">PHD2</span> defaults or from an existing profile. &nbsp;To
+from either the <span style="font-style: italic;">PHD2</span>
+generic defaults or from an existing profile. &nbsp;You can also use the
+'Wizard' option to have PHD2 establish settings that are specific to
+your equipment configuration. &nbsp;To
 edit the settings in an existing profile, you first select it in the
 equipment profile drop-down list, then click on 'Settings' under the
 '<a name="Manage_Profiles"></a>Manage Profiles' pull-down. &nbsp;This will take you to the 'Brain'
@@ -156,19 +288,26 @@ dialog, where you can make whatever changes you want. &nbsp;Remember
 than profiles are automatically updated anytime settings are changed
 during a <span style="font-style: italic;">PHD2</span> session. &nbsp;Finally, you can import and export
 profiles for purposes of debugging, backup, or even exchange with other
-<span style="font-style: italic;">PHD2</span> users.<br><br><h3><a name="Advanced_Settings_for_the_Simulators"></a>Advanced Settings for the Simulators</h3>The device simulators were introduced in the <a href="Basic_use.htm">Basic Use</a>
+<span style="font-style: italic;">PHD2</span> users.<br>
+<br>
+<h3><a name="Advanced_Settings_for_the_Simulators"></a>Advanced Settings for the Simulators</h3>
+The device simulators were introduced in the <a href="Basic_use.htm">Basic Use</a>
 section as useful tools&nbsp;for you to experiment with <span style="font-style: italic;">PHD2</span> and become
 famliar with its features. &nbsp;Remember that you must choose
 'Simulator' as the camera type and 'On-camera' as the mount type in
 order to get the benefits of simulation. &nbsp;As you become more
 interested in the details of the simulation, you can use the 'Cam
-Dialog' button on the main display to adjust the simulation parameters:
-<br><br><img style="width: 775px; height: 412px;" alt="" src="Tools_simulator.png"><br><br><br>You
-can adjust simulated mount behaviors for declination backlash, drift
+Dialog' button on the main display to adjust the simulation parameters:<br>
+<br>
+<img style="width: 775px; height: 428px;" alt="" src="Tools_simulator.png"><br>
+<br>
+<br>
+You can adjust simulated mount behaviors for declination backlash, drift
 due to polar mis-alignment, and periodic error. &nbsp;You can also
 adjust the 'seeing' level, which will create fairly realistic guide
 star deflections that look like seeing effects. &nbsp;If you adjust
 these parameters one-by-one, you'll see how they affect star
 deflections and how the different guide algorithms react to those
 movements. &nbsp;Of course, you're dealing with a "nearly perfect" mount in
-these scenarios (except for backlash), so the simulation can't be entirely realistic. &nbsp;</body></html>
+these scenarios (except for backlash), so the simulation can't be entirely realistic.
+</body></html>

@@ -67,15 +67,22 @@ private:
     double m_dDeclination;
 
 public:
+
+    enum { DEFAULT_STEPS = 12 };
+    static const double DEFAULT_GUIDESPEED;
+
     CalstepDialog(wxWindow *parent, int focalLength, double pixelSize);
     ~CalstepDialog(void);
-    bool GetResults (int& focalLength, double& pixelSize, int& stepSize);
+    bool GetResults(int *focalLength, double *pixelSize, int *stepSize);
+
+    static void GetCalibrationStepSize(int focalLength, double pixelSize, double guideSpeed, int desiredSteps,
+                       double declination, double *imageScale, int *stepSize);
 
 private:
     void OnText(wxCommandEvent& evt);
     void OnSpinCtrlDouble(wxSpinDoubleEvent& evt);
-    void AddTableEntry (wxFlexGridSizer *pTable, wxString label, wxWindow *pControl, wxString toolTip);
-    void DoRecalc (void);
+    void AddTableEntry(wxFlexGridSizer *pTable, const wxString& label, wxWindow *pControl, const wxString& toolTip);
+    void DoRecalc(void);
 };
 
 #endif

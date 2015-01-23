@@ -279,23 +279,15 @@ bool Camera_WDMClass::BeginCapture(usImage& img, E_CAPTURE_MODE captureMode)
 
     try
     {
-        int xsize, ysize;
-        xsize = FullSize.GetWidth();
-        ysize = FullSize.GetHeight();
-
         assert(captureMode == CAPTURE_ONE_FRAME || captureMode == CAPTURE_STACK_FRAMES);
 
-        if (img.NPixels != (xsize*ysize))
+        if (img.Init(FullSize))
         {
-            if (img.Init(xsize,ysize))
-            {
-                pFrame->Alert(_("Memory allocation error during capture"));
-                Disconnect();
-                throw ERROR_INFO("img.Init() failed");
-            }
+            DisconnectWithAlert(CAPT_FAIL_MEMORY);
+            throw ERROR_INFO("img.Init() failed");
         }
 
-        memset(img.ImageData, 0, img.NPixels * sizeof(unsigned short));
+        img.Clear();
 
         m_nFrames = 0;
         m_nAttempts = 0;
@@ -319,7 +311,7 @@ void Camera_WDMClass::EndCapture(void)
     // wait to for the capture callback to run successfully
     while ((m_captureMode == CAPTURE_ONE_FRAME || m_captureMode == CAPTURE_STACK_FRAMES) && m_nFrames == 0 && m_nAttempts < 3)
     {
-        if (iterations++ > 100)
+        if (iterations++ > 100 || WorkerThread::InterruptRequested())
         {
             Debug.AddLine("breaking out of lower loop");
             break;
@@ -352,7 +344,8 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool 
             throw ERROR_INFO("BeingCapture() failed");
         }
 
-        wxMilliSleep(duration);  // accumulate for the requested duration
+        // accumulate for the requested duration
+        WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
 
         EndCapture();
 

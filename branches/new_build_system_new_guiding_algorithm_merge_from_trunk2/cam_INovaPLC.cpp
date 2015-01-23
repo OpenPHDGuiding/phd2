@@ -101,7 +101,7 @@ bool Camera_INovaPLCClass::ST4PulseGuideScope(int direction, int duration) {
         default: return true; // bad direction passed in
     }
     DSCameraSetGuidingPort(dircode);
-    wxMilliSleep(duration);
+    WorkerThread::MilliSleep(duration);
     DSCameraSetGuidingPort(0);
     return false;
 }
@@ -113,14 +113,14 @@ bool Camera_INovaPLCClass::Disconnect() {
     return false;
 }
 
-bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
     DS_CAMERA_STATUS rval;
     int ntries = 1;
-    if (img.Init(xsize,ysize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+    if (img.Init(FullSize)) {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
     int ExpDur = pFrame->RequestedExposureDuration();

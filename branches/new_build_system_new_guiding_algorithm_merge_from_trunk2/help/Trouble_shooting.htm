@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><title>Trouble-shooting</title></head>
 <body>
-<h2>Trouble-shooting</h2><h3>Calibration and "First Use" Problems</h3>If
+<h2>Trouble-shooting and Analysis</h2><h3>Calibration and "First Use" Problems</h3>If
 you are just starting to use <span style="font-style: italic;">PHD2</span> or are connecting to new equipment
 for the first time, you may have trouble getting the guider calibration
 done. &nbsp;This problem usually takes one of two forms, each requiring
@@ -28,7 +28,46 @@ lights to show when guide commands are being received. &nbsp;If you're
 using an ASCOM connection to the mount, be sure the COM port
 assignments are correct. &nbsp;You can also use some of the
 ASCOM-supplied tools like POTH to be sure the ASCOM driver is
-communicating correctly with the mount. &nbsp;<br><h3>Program "Hangs" and Camera Download Problems</h3>In
+communicating correctly with the mount.<br><br><a name="Calibration_sanity_check"></a><span style="font-weight: bold;">Calibration Sanity-Checks</span><br>It is also possible that the calibration process will complete but PHD2 will post a "calibration
+sanity-check" alert message saying that some of the results are
+questionable. &nbsp;This "sanity check" dialog will show an explanation
+of the issue and some details of the calibration results: <br><br><img style="width: 468px; height: 374px;" alt="" src="Calib_Sanity.png"><br><br>In the initial release (2.4.0), there are four things checked by PHD2: <br><ul><li>Too
+few steps (shown above) - resolving this issue is quite easy.
+&nbsp;Just adjust the calibration step-size downward until you get at
+least 8 steps in both the west and north calibrations. &nbsp;</li><li>Non-orthogonal
+camera axes - the camera axes are normally computed independently even
+though they&nbsp;<span style="font-style: italic;">should</span> be perpendicular. &nbsp;The angle calculations do not require
+great precision, but if they are signfiicantly non-orthogonal, you
+should repeat the calibration. &nbsp;Alternatively, you can set the
+option to'Assume Dec orthogonal to RA' in the 'Mount' tab of the Advanced Setup dialog. &nbsp; </li><li>Suspicious
+RA and Dec rates - the guide rate for right ascension should be related
+to the declination guiding rate by approximately a factor
+of&nbsp;cosine(Declination). &nbsp;In other words, the RA rate gets
+smaller as you move the scope further away from the celestial equator
+(Dec=0). &nbsp;In this initial release, PHD2 won't try to identify
+which rate is incorrect - it is simply alerting you that something
+looks wrong with the rates. &nbsp;You can sanity check these rates
+yourself quite simply. &nbsp;If you are guiding at 1X sidereal rate,
+your declination guide rate should be approximately 15 arc-sec/sec;
+with a guide rate of 0.5X sidereal, the declination rate would be 7.5 arc-sec/sec,
+etc.</li><li>Inconsistent results - if the calibration results are
+significantly different from your last-used calibration, an alert
+message will be generated. &nbsp;This may happen because you've made a
+change in your configuration. &nbsp;That doesn't imply a real problem,
+but you should probably consider creating a separate profile for the
+new configuration. &nbsp;By doing so,&nbsp; PHD2 will remember settings
+for each of your profiles, letting you switch between them easily.
+&nbsp;If you haven't made a configuration change, you will probably
+want to determine why the results are so different.</li></ul>With any
+of these alerts, the relevant data field will be highlighted based on the
+type of message. &nbsp;You can choose to ignore the warning ('Accept
+calibration'), re-run the calibration ('Discard calibration'), or
+restore your last good calibration ('Restore old calibration').
+&nbsp;With the third option, you can defer calibration until later and
+start guiding with your last good calibration data. &nbsp;If you see
+repeated alerts on the same topic and are convinced there really
+isn't&nbsp; a problem, you can use the 'don't show' checkbox to block
+future alerts of that type. <h3>Program "Hangs" and Camera Download Problems</h3>In
 some cases, you may experience problems where guider images aren't
 downloaded or displayed. &nbsp;In extreme cases, this may even cause
 <span style="font-style: italic;">PHD2</span> or other camera-related applications to be non-responsive (i.e. to
@@ -54,9 +93,90 @@ because the stars are streaked or elongated, you'll need to take a
 systematic approach to correcting the problems. &nbsp;This can be a
 complex task and not something to be covered here. &nbsp;However, you
 can get help on the web from a variety of sources, with the document by
-Craig Stark being one of the best: &nbsp;<br><span style="font-weight: bold;">http://www.cloudynights.com/item.php?item_id=2755</span>.<h3>Problem Reporting</h3>If
+Craig Stark being one of the best: &nbsp;<br><span style="font-weight: bold;">http://www.cloudynights.com/page/articles/cat/fishing-for-photons/what-to-do-when-phd-guiding-isnt-push-here-dummy-r2677</span>.<br><h3><a name="Log_analysis"></a>Log Analysis</h3>Any
+sort of problem isolation or "tuning" will invariably require use of
+the PHD2 log files. &nbsp;Both are formatted for straightforward
+interpretation by a human reader, and the guide log is constructed to
+enable easy import into other applications. &nbsp;As mentioned in the
+'Advanced Settings' section, applications such as PHDLab or Excel can
+be used to visualize overall&nbsp;performance, compute performance
+statistics, and scrutinize time periods when guiding was problematic.
+&nbsp;With Excel or similar applications, simply specify that the guide
+log uses a comma as a column separator.<br><h4>Guiding Log Contents</h4>The
+contents of the guiding log will continue to evolve as new capabilities
+are added. &nbsp;But the basic content is stable, and considerable care
+is taken to not "break" applications that parse it. &nbsp;If you wish
+to analyze the log yourself, the following information will be helpful.
+&nbsp;<br><br>
+
+<p class="MsoNormal">The PHD2 guide log will contain zero or more sequences of
+calibration and zero or more sequences of guiding.<span style="">&nbsp; </span>Each of these "sections" has a
+header that provides most of the information about the guiding algorithms being
+used and the internal parameters used by PHD2 for guiding.<span style="">&nbsp;&nbsp;</span>At the start of either a calibration run or
+a guiding sequence, the last line of the header information defines a set of
+column headings.<span style="">&nbsp;&nbsp; </span>The meanings of those
+columns are shown below:</p>
+
+
+
+<p class="MsoNormal"><b style=""><o:p>&nbsp;</o:p>Calibration columns:<o:p></o:p></b></p>
+
+
+
+
+
+<ul><li>dx, dy<span style="">&nbsp;
+</span>are offsets from the starting position, in pixels, in the camera coordinate
+system</li><li>x, y are the camera x/y coordinates of the guide
+star at the end of each calibration step</li><li>Dist is the total distance moved in the camera
+coordinate system (dist = sqrt(dx*dx + dy*dy).<span style="">&nbsp;
+</span>This is the value used by PHD2 to compute the calibration parameters<o:p></o:p></li></ul><o:p>&nbsp;</o:p><b style="">Guiding columns:<o:p></o:p></b>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ul><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>dx, dy are the same as for calibration - offsets
+from the "lock position" of the guide star in the camera coordinate
+system</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;</span></span></span>RARawDistance and DECRawDistance - these are the
+transforms of dx and dy into the mount coordinates - in other words, they use
+the arbitrary angle of the guide camera to map from X/Y on the camera to RA/Dec
+on the mount</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;</span></span></span>RAGuideDistance and DECGuideDistance - these are
+the outputs from the various guiding algorithms.<span style="">&nbsp; </span>The guide algorithms operate on the
+"raw" distances and decide how far, if any, the telescope position
+should be adjusted in each axis.<span style="">&nbsp; </span>For
+example, with a "minimum move" parameter set, the "guide"
+distances can be zero even when the "raw" distances are non-zero.</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>RADuration, RADirection, DECDuration, DECDirection
+- these are the values determined by the two "guide" distances
+above.<span style="">&nbsp; </span>The "durations" are the
+lengths of the guide pulses, in milliseconds, needed to move the mount by the
+distances specified by RAGuideDistance and DECGuideDistance</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>XStep, YStep - step-adjustment durations for the
+adaptive optics device if one is being used</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>StarMass - a brightness measure of the guide
+star image</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>SNR - an internal "signal-to-noise"
+ratio used by PHD2</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>ErrorCode - an indication that some error
+occurred, typically a "guide star faded" error</li></ul>
+
+
+
+<p class="MsoNormal">All "distance" values are in units of pixels.<span style="">&nbsp; </span>The header for the guiding section will show
+the image scale as it is known by PHD2, and that can be used to scale the pixel
+distance values into units of arc-seconds if desired.</p><h3>Problem Reporting</h3>If
 you encounter application problems that&nbsp;are specific to <span style="font-style: italic;">PHD2</span>, you
-are encouraged to report them using the issue-tracking system here: <span style="font-weight: bold;">https://code.google.com/p/open-phd-guiding/issues/list</span>.
+are encouraged to report them to the open-phd-guiding Google group: <span style="font-weight: bold;">https://groups.google.com/forum/?fromgroups=#!forum/open-phd-guiding</span>.
 &nbsp;Obviously, the more information you can provide, the more likely
 we will be able to resolve the problem. &nbsp;Using the following
 guidelines will help in that regard: <br><ol><li>Try to reproduce the

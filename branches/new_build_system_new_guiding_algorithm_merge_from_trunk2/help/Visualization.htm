@@ -5,7 +5,7 @@
 <span style="font-style: italic;">PHD2</span> provides numerous&nbsp;visualization and
 display tools to help you see how your guider is performing.
 &nbsp;All
-of these tools are accessed under the 'View' pull-down menu and are described below.<br><ul><li><a href="#Overlays">Overlays</a></li><li><a href="#Graphical_Display">Graphical Display</a></li><li><a href="#Star_Profile_and_Target_Displays">Star Profile and Target Displays</a></li><li><a href="#Adaptive_Optics_AO_Graph">AO Graph</a></li><li><a href="#DockableMoveable_Graphical_Windows">Dockable Windows</a></li></ul>
+of these tools are accessed under the 'View' pull-down menu and are described below.<br><ul><li><a href="#Overlays">Overlays</a></li><li><a href="#Graphical_Display">Graphical Display</a></li><li><a href="#Stats_Display">Stats Display</a></li><li><a href="#Star_Profile_and_Target_Displays">Star Profile and Target Displays</a></li><li><a href="#Adaptive_Optics_AO_Graph">AO Graph</a></li><li><a href="#DockableMoveable_Graphical_Windows">Dockable Windows</a></li></ul>
 <h3><a name="Overlays"></a>Overlays</h3>
 The
 simplest display tools are&nbsp;grid overlays superimposed over the
@@ -64,12 +64,19 @@ are shown as the vertical red and green lines appearing at irregular
 intervals along the horizontal axis. &nbsp;This shows you how "busy"
 the guiding is - under optimal conditions, you should expect to see
 extended intervals when no guide commands are sent at all. &nbsp;The
-other checkbox, labelled '<a name="Trendlines"></a>Trendlines', will superimpose trend lines in
+other checkbox, labelled '<a name="Trendlines"></a>Trendlines',
+will superimpose trend lines in
 both axes to show if there is a consistent overall drift in the star
 position. &nbsp;This is primarily useful for drift aligning where the
 declination trendline is used extensively. &nbsp;But the RA trendline
-can show if your mount is tracking systematically slow or fast and can
-help if you are trying to set up custom tracking rates.<br><br>The recommended way to look at guiding
+can show if your mount is tracking systematically slow or fast (or is
+seeing the effects of flexure) and can
+help if you are trying to set up custom tracking rates. &nbsp;If
+dithering commands are issued, usually by an external imaging
+application, a 'dithering' label will be superimposed on the graph in
+the appropriate time interval. &nbsp;This tells you that the star
+displacements being graphed are being influenced by the dithering
+operation.<br><br>The recommended way to look at guiding
 performance is to use units of arc-seconds rather than pixels.
 &nbsp;Doing this allows an equipment-independent way of evaluating
 performance because it transcends questions of focal length and image
@@ -87,7 +94,12 @@ made will control which controls are shown. &nbsp;These controls have
 the same
 effect as those in the 'Brain' dialog, and they eliminate the
 need&nbsp;to stop guiding and navigate to another window to adjust
-guiding parameters.
+guiding parameters.<br><h3><a name="Stats_Display"></a>Stats</h3><img style="width: 227px; height: 257px;" alt="Stats_window" src="Stats_window.PNG"><br><br>If
+you want to monitor guiding performance without necessarily having the
+graph window open, you can click on&nbsp; the "Stats" menu item.
+&nbsp;That will display the salient statistics with controls for
+clearing the data or changing the number of guide exposures used to
+compute the statistics.
 <h3><a name="Star_Profile_and_Target_Displays"></a>Star Profile and Target Displays</h3><img style="width: 395px; height: 247px;" alt="" src="Star_profile.png"><br><br>The
 star profile display shows the cross-section of the guide star along
 with a measurement of its full-width-half-maximum (<a name="FWHM"></a>FWHM). &nbsp;If you
@@ -123,5 +135,12 @@ will often let you get a better view of the details being shown in the
 graphs. &nbsp;They can be "re-docked" by dragging the title bar to the
 general region in which you want them docked - bottom, right, etc.
 &nbsp;With just a bit of practice, it's easy to place them where they
-are most convenient.
+are most convenient.<br><br>There is also a menu item under the 'View" pulldown menu&nbsp;labeled <a name="Restore_window_positions"></a>'Restore
+window positions.' &nbsp;Clicking on this menu item will automatically
+restore all of the dockable/moveable windows to their default, docked
+positions. &nbsp;This can be useful , for example, if you are switching
+between screens with different resolutions and one or more of the
+dockable windows has been "lost." &nbsp;This function also restores the
+main PHD2 window to its default size, with a position near the upper
+lefthand corner of the screen.
 </body></html>

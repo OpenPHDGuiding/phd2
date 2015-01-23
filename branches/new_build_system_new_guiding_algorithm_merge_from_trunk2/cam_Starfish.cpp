@@ -69,6 +69,7 @@ Camera_StarfishClass::Camera_StarfishClass()
     Connected = false;
     Name = _T("Fishcamp Starfish");
     FullSize = wxSize(1280,1024);
+    HasSubframes = true;
     HasGainControl = true;
     m_hasGuideOutput = true;
     DriverLoaded = false;
@@ -99,6 +100,7 @@ bool Camera_StarfishClass::Connect() {
         if (fcUsb_cmd_getTECInPowerOK(CamNum))
             fcUsb_cmd_setTemperature(CamNum,10);
     }
+    lastSubFrame = wxRect(wxSize(1, 1));        // To differentiate between full-frame "null" subframe
     Connected = true;
     return false;
 }
@@ -125,73 +127,118 @@ void Camera_StarfishClass::InitCapture() {
     fcUsb_cmd_setRegister(CamNum,0x35,Gain);
 
 }
-bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-    bool still_going=true;
+
+static bool StopExposure(int camNum)
+{
+    Debug.AddLine("Starfish: StopExposure");
+    int ret = fcUsb_cmd_abortExposure(camNum);
+    return ret == kIOReturnSuccess;
+}
+
+bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
     bool debug = true;
+    int xsize, ysize, xpos, ypos;
+    bool usingSubFrames = UseSubframes && subframe.GetWidth() > 0 && subframe.GetHeight() > 0;
     IOReturn rval;
 
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
-    int xpos = 0;
-    int ypos = 0;
-
     // init memory
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+    if (img.Init(FullSize)) {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
     }
-    // set ROI
-    rval = fcUsb_cmd_setRoi(CamNum,(unsigned short) xpos, (unsigned short) ypos, (unsigned short) (xpos + xsize - 1), (unsigned short) (ypos + ysize - 1));
-    if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 1")); return true; }
-    // set duratinon
+
+
+    if (usingSubFrames)
+    {
+        xsize = subframe.GetWidth();
+        ysize = subframe.GetHeight();
+        xpos = subframe.GetLeft();
+        ypos = subframe.GetTop();
+        subImage.Init(xsize, ysize);
+        subImage.Clear();
+    }
+    else
+    {
+        xsize = FullSize.GetWidth();
+        ysize = FullSize.GetHeight();
+        xpos = 0;
+        ypos = 0;
+    }
+    img.Clear();
+
+    // set ROI if something has changed
+    if (lastSubFrame != subframe)
+    {
+        rval = fcUsb_cmd_setRoi(CamNum, (unsigned short)xpos, (unsigned short)ypos, (unsigned short)(xpos + xsize - 1), (unsigned short)(ypos + ysize - 1));
+        //Debug.AddLine(wxString::Format("Starfish: using %s", usingSubFrames ? " sub-frames" : " full frames"));
+        //Debug.AddLine(wxString::Format("Starfish: ROI set from {%d,%d} to {%d,%d)", xpos, ypos, xpos + xsize - 1, ypos + ysize - 1));
+        if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 1")); return true; }
+        lastSubFrame = subframe;
+    }
+    // set duration
     fcUsb_cmd_setIntegrationTime(CamNum, (unsigned int) duration);
 
     rval = fcUsb_cmd_startExposure(CamNum);
     if (rval != kIOReturnSuccess) { if (debug) pFrame->Alert(_T("Starfish Err 2")); return true; }
-    if (duration > 100) {
-        wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-        wxGetApp().Yield();
-    }
-    int i=0;
-    while (still_going) {  // wait for image to finish and d/l
-        wxMilliSleep(50);
-        still_going = fcUsb_cmd_getState(CamNum) > 0;
-        wxGetApp().Yield();
-        i++;
-        if (i>50) {
-            still_going=false;
-//          if (debuglog) { debug << "Starfish timeout - " << fcUsb_cmd_getState(CamNum) << "\n"; debugstr.Sync(); }
-//          wxMessageBox (wxString::Format("timeout code %d",(int)  fcUsb_cmd_getState(CamNum)));
-            Debug.AddLine("Fishcamp timeout");
-            wxBell();
+
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
+
+    if (duration > 100)
+    {
+        // wait until near end of exposure
+        if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY) &&
+            (WorkerThread::TerminateRequested() || StopExposure(CamNum)))
+        {
+            return true;
         }
     }
 
-    rval = fcUsb_cmd_getRawFrame(CamNum,(unsigned short) ysize,(unsigned short) xsize,img.ImageData);
-/*  if (rval != kIOReturnSuccess) {
+    // wait for image to finish and d/l
+    while (fcUsb_cmd_getState(CamNum) != 0)
+    {
+        wxMilliSleep(50);
+        if (WorkerThread::InterruptRequested() &&
+            (WorkerThread::TerminateRequested() || StopExposure(CamNum)))
+        {
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+            return true;
+        }
+    }
+
+    if (usingSubFrames)
+    {
+        rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short)ysize, (unsigned short)xsize, subImage.ImageData);
+        // Transfer the subframe to the corresponding location in the full-size frame
+        for (int y = 0; y < ysize; y++)
+        {
+            const unsigned short *pSrc = subImage.ImageData + y * xsize;
+            unsigned short *pDest = img.ImageData + (ypos + y) * FullSize.GetWidth() + xpos;
+            for (int x = 0; x < xsize; x++)
+                *pDest++ = *pSrc++;
+        }
+        img.Subframe = subframe;
+    }
+    else
+    {
+        rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short)ysize, (unsigned short)xsize, img.ImageData);
+
+    }
+
+    /*  if (rval != kIOReturnSuccess) {
         if (debug) pFrame->Alert(wxString::Format("Starfish Err 3 %d",rval));
         //return true;
     }*/
+
     if (recon) SubtractDark(img);
 
     return false;
 }
 
-/*bool Camera_StarfishClass::CaptureCrop(int duration, usImage& img) {
-    GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_StarfishClass::CaptureFull(int duration, usImage& img) {
-    GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
-    return false;
-}
-*/
 bool Camera_StarfishClass::ST4PulseGuideScope(int direction, int duration) {
 
     if (direction == WEST) direction = EAST;  // my ENUM and theirs are flipped
@@ -202,4 +249,5 @@ bool Camera_StarfishClass::ST4PulseGuideScope(int direction, int duration) {
 
     return false;
 }
+
 #endif

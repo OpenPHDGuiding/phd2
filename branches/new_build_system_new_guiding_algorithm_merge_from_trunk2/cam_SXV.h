@@ -35,38 +35,49 @@
 
 #ifndef SXVDEF
 #define SXVDEF
+
 #if defined (__WINDOWS__)
 #include "cameras/SXUSB.h"
 #else
 #include "cameras/SXMacLib.h"
 #endif
-class Camera_SXVClass : public GuideCamera {
+
+class Camera_SXVClass : public GuideCamera
+{
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture();
+    Camera_SXVClass();
+
+    bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0, 0, 0, 0), bool recon = false);
+    bool Connect();
+    bool Disconnect();
+    void InitCapture();
+
+    bool HasNonGuiCapture(void) { return true; }
+    bool ST4HasNonGuiMove(void) { return true; }
 
     //  bool    SetGlobalGain(unsigned char gain);
-    bool    ST4PulseGuideScope(int direction, int duration);
+    bool ST4PulseGuideScope(int direction, int duration);
     //  void    ClearGuidePort();
+
 #if defined (__WINDOWS__)
     HANDLE hCam;
 #else
     void      *hCam;
 #endif
-    Camera_SXVClass();
 
 private:
+
 #if defined (__WINDOWS__)
     struct t_sxccd_params CCDParams;
 #else
     struct sxccd_params_t CCDParams;
 #endif
+
     unsigned short CameraModel;
     unsigned short *RawData;
     unsigned short SubType;
     bool Interlaced;
     bool ColorSensor;
 };
+
 #endif  //SXVDEF

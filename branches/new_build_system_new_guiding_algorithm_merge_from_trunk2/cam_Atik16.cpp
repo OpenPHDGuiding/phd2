@@ -41,7 +41,8 @@
 #include "cam_Atik16.h"
 //#define ARTEMISDLLNAME "ArtemisCCD.dll"
 
-Camera_Atik16Class::Camera_Atik16Class() {
+Camera_Atik16Class::Camera_Atik16Class()
+{
     Connected = false;
     Name = _T("Atik 16");
     FullSize = wxSize(1280,1024);
@@ -53,9 +54,9 @@ Camera_Atik16Class::Camera_Atik16Class() {
     HasSubframes = true;
 }
 
-
-bool Camera_Atik16Class::Connect() {
-// returns true on error
+bool Camera_Atik16Class::Connect()
+{
+    // returns true on error
 
     if (Cam_Handle) {
         wxMessageBox(_("Already connected"));
@@ -85,8 +86,11 @@ bool Camera_Atik16Class::Connect() {
     else if (ncams == 0)
         return true;
     else {
-        i=wxGetSingleChoiceIndex(_("Select camera"),_("Camera name"),USBNames);
-        if (i == -1) { Disconnect(); return true; }
+        i = wxGetSingleChoiceIndex(_("Select camera"),_("Camera name"), USBNames);
+        if (i == -1) {
+            Disconnect();
+            return true;
+        }
     }
 
     Cam_Handle = ArtemisConnect(devnum[i]); // Connect to first avail camera
@@ -132,8 +136,8 @@ bool Camera_Atik16Class::Connect() {
     return false;
 }
 
-bool Camera_Atik16Class::ST4PulseGuideScope(int direction, int duration) {
-
+bool Camera_Atik16Class::ST4PulseGuideScope(int direction, int duration)
+{
     int axis;
     //wxStopWatch swatch;
 
@@ -160,13 +164,17 @@ bool Camera_Atik16Class::ST4PulseGuideScope(int direction, int duration) {
     //wxMilliSleep(duration + 10);
     return false;
 }
-void Camera_Atik16Class::ClearGuidePort() {
+
+void Camera_Atik16Class::ClearGuidePort()
+{
     ArtemisStopGuiding(Cam_Handle);
 }
+
 /*void Camera_Atik16Class::InitCapture() {
 }*/
 
-bool Camera_Atik16Class::Disconnect() {
+bool Camera_Atik16Class::Disconnect()
+{
     if (ArtemisIsConnected(Cam_Handle))
         ArtemisDisconnect(Cam_Handle);
     wxMilliSleep(100);
@@ -177,11 +185,15 @@ bool Camera_Atik16Class::Disconnect() {
     return false;
 }
 
-bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-// Only does full frames still
-    unsigned short *rawptr;
-    unsigned short *dptr;
-    int  i;
+static bool StopCapture(ArtemisHandle h)
+{
+    Debug.AddLine("Atik16: cancel exposure");
+    int ret = ArtemisAbortExposure(h);
+    return ret == ARTEMIS_OK;
+}
+
+bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
     bool TakeSubframe = UseSubframes;
 
     if (subframe.width <= 0 || subframe.height <= 0)
@@ -197,7 +209,7 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
     }
     else {
         ArtemisSubframe(Cam_Handle, 0,0,FullSize.GetWidth(),FullSize.GetHeight());
-        img.Subframe=wxRect(0,0, 0, 0);
+        img.Subframe = wxRect(0, 0, 0, 0);
     }
     if (duration > 2500)
         ArtemisSetAmplifierSwitched(Cam_Handle,true); // Set the amp-off parameter
@@ -209,49 +221,59 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
         return true;
     }
 
-    while (ArtemisCameraState(Cam_Handle) > CAMERA_IDLE ) {
-        if (duration > 100) {
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
+
+    while (ArtemisCameraState(Cam_Handle) > CAMERA_IDLE)
+    {
+        if (duration > 100)
             wxMilliSleep(100);
-            wxGetApp().Yield();
-        }
         else
             wxMilliSleep(30);
-    }
-    int data_x,data_y,data_w,data_h,data_binx,data_biny;
-    ArtemisGetImageData(Cam_Handle, &data_x, &data_y, &data_w, &data_h, &data_binx, &data_biny);
-    if (img.NPixels != (FullSize.GetWidth()*FullSize.GetHeight())) {
-        if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
+        if (WorkerThread::InterruptRequested() &&
+            (WorkerThread::TerminateRequested() || StopCapture(Cam_Handle)))
+        {
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
             return true;
         }
     }
 
+    int data_x,data_y,data_w,data_h,data_binx,data_biny;
+    ArtemisGetImageData(Cam_Handle, &data_x, &data_y, &data_w, &data_h, &data_binx, &data_biny);
+
+    if (img.Init(FullSize))
+    {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
+    }
+
     if (TakeSubframe) {
-        dptr = img.ImageData;
+        unsigned short *dptr = img.ImageData;
         img.Subframe = subframe;
-        for (i=0; i<img.NPixels; i++, dptr++)
+        for (int i=0; i<img.NPixels; i++, dptr++)
             *dptr = 0;
-        int x, y;
-        rawptr = (unsigned short*)ArtemisImageBuffer(Cam_Handle);
-        for (y=0; y<subframe.height; y++) {
+        unsigned short *rawptr = (unsigned short *) ArtemisImageBuffer(Cam_Handle);
+        for (int y=0; y<subframe.height; y++) {
             dptr = img.ImageData + (y+subframe.y)*FullSize.GetWidth() + subframe.x;
-            for (x=0; x<subframe.width; x++, dptr++, rawptr++)
+            for (int x=0; x<subframe.width; x++, dptr++, rawptr++)
                 *dptr = *rawptr;
         }
     }
     else {
-        dptr = img.ImageData;
-        rawptr = (unsigned short*)ArtemisImageBuffer(Cam_Handle);
-        for (i=0; i<img.NPixels; i++,dptr++, rawptr++) {
+        unsigned short *dptr = img.ImageData;
+        unsigned short *rawptr = (unsigned short *) ArtemisImageBuffer(Cam_Handle);
+        for (int i=0; i<img.NPixels; i++,dptr++, rawptr++) {
             *dptr = *rawptr;
         }
     }
 
-
     // Do quick L recon to remove bayer array
     if (recon) SubtractDark(img);
     if (Color && recon) QuickLRecon(img);
+
 //  RemoveLines(img);
     return false;
 }
@@ -300,4 +322,5 @@ bool Camera_Atik16Class::ST4HasNonGuiMove(void)
 {
     return true;
 }
+
 #endif

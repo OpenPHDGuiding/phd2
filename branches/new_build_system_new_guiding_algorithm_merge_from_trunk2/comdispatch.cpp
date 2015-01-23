@@ -33,15 +33,32 @@
  */
 
 #include "phd.h"
-#include "comdispatch.h"
 
 // windows only ASCOM helper code
 #if defined(__WINDOWS__)
 
+#include "comdispatch.h"
+#include <comdef.h>
+
+wxString ExcepMsg(const EXCEPINFO& excep)
+{
+    if (excep.bstrSource || excep.bstrDescription)
+        return wxString::Format("(%s) %s", excep.bstrSource, excep.bstrDescription);
+    else
+        return _("A COM Error occurred. There may be more info in the Debug Log.");
+}
+
+wxString ExcepMsg(const wxString& prefix, const EXCEPINFO& excep)
+{
+    return prefix + ":\n" + ExcepMsg(excep);
+}
+
 bool DispatchClass::dispid(DISPID *ret, IDispatch *idisp, OLECHAR *wname)
 {
     HRESULT hr = idisp->GetIDsOfNames(IID_NULL, &wname, 1, LOCALE_USER_DEFAULT, ret);
-    return !FAILED(hr);
+    if (FAILED(hr))
+        Debug.AddLine(wxString::Format("dispid(%s): [%x] %s", wname, hr, _com_error(hr).ErrorMessage()));
+    return SUCCEEDED(hr);
 }
 
 bool DispatchClass::dispid_cached(DISPID *ret, IDispatch *idisp, OLECHAR *wname)
@@ -66,18 +83,22 @@ DispatchObj::DispatchObj()
     : m_class(0),
       m_idisp(0)
 {
+    memset(&m_excep, 0, sizeof(m_excep));
 }
 
 DispatchObj::DispatchObj(DispatchClass *cls)
     : m_class(cls),
       m_idisp(0)
 {
+    memset(&m_excep, 0, sizeof(m_excep));
 }
 
 DispatchObj::DispatchObj(IDispatch *idisp, DispatchClass *cls)
     : m_class(cls),
       m_idisp(idisp)
 {
+    memset(&m_excep, 0, sizeof(m_excep));
+
     if (m_idisp)
         m_idisp->AddRef();
 }
@@ -102,8 +123,12 @@ bool DispatchObj::Create(OLECHAR *progid)
     if (FAILED(CLSIDFromProgID(progid, &clsid)))
         return false;
     IDispatch *idisp;
-    if (FAILED(CoCreateInstance(clsid, NULL, CLSCTX_SERVER, IID_IDispatch, (LPVOID *)&idisp)))
+    HRESULT hr;
+    if (FAILED(hr = CoCreateInstance(clsid, NULL, CLSCTX_SERVER, IID_IDispatch, (LPVOID *)&idisp)))
+    {
+        Debug.AddLine(wxString::Format("CoCreateInstance: [%x] %s", hr, _com_error(hr).ErrorMessage()));
         return false;
+    }
     m_idisp = idisp;
     return true;
 }
@@ -124,7 +149,9 @@ bool DispatchObj::GetProp(VARIANT *res, DISPID dispid)
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, res, &m_excep, NULL);
-    return !FAILED(hr);
+    if (FAILED(hr))
+        Debug.AddLine(wxString::Format("invoke: [%x] %s", hr, _com_error(hr).ErrorMessage()));
+    return SUCCEEDED(hr);
 }
 
 bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name)
@@ -152,7 +179,10 @@ bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name, int arg)
     dispParms.rgdispidNamedArgs = NULL;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, res, &m_excep, NULL);
 
-    return !FAILED(hr);
+    if (FAILED(hr))
+        Debug.AddLine(wxString::Format("getprop: [%x] %s", hr, _com_error(hr).ErrorMessage()));
+
+    return SUCCEEDED(hr);
 }
 
 bool DispatchObj::PutProp(OLECHAR *name, OLECHAR *val)
@@ -161,9 +191,10 @@ bool DispatchObj::PutProp(OLECHAR *name, OLECHAR *val)
     if (!GetDispatchId(&dispid, name))
         return false;
 
+    BSTR bs = SysAllocString(val);
     VARIANTARG rgvarg[1];
     rgvarg[0].vt = VT_BSTR;
-    rgvarg[0].bstrVal = SysAllocString(val);
+    rgvarg[0].bstrVal = bs;
     DISPID dispidNamed = DISPID_PROPERTYPUT;
     DISPPARAMS dispParms;
     dispParms.cArgs = 1;
@@ -172,9 +203,12 @@ bool DispatchObj::PutProp(OLECHAR *name, OLECHAR *val)
     dispParms.rgdispidNamedArgs = &dispidNamed;
     VARIANT res;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &res, &m_excep, NULL);
-    SysFreeString(rgvarg[0].bstrVal);
+    SysFreeString(bs);
 
-    return !FAILED(hr);
+    if (FAILED(hr))
+        Debug.AddLine(wxString::Format("putprop: [%x] %s", hr, _com_error(hr).ErrorMessage()));
+
+    return SUCCEEDED(hr);
 }
 
 bool DispatchObj::PutProp(DISPID dispid, bool val)
@@ -190,7 +224,9 @@ bool DispatchObj::PutProp(DISPID dispid, bool val)
     dispParms.rgdispidNamedArgs = &dispidNamed;
     VARIANT res;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &res, &m_excep, NULL);
-    return !FAILED(hr);
+    if (FAILED(hr))
+        Debug.AddLine(wxString::Format("putprop: [%x] %s", hr, _com_error(hr).ErrorMessage()));
+    return SUCCEEDED(hr);
 }
 
 bool DispatchObj::PutProp(OLECHAR *name, bool val)
@@ -216,14 +252,11 @@ bool DispatchObj::InvokeMethod(VARIANT *res, OLECHAR *name, OLECHAR *arg)
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
-    HRESULT hr;
-    if (FAILED(hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, res, &m_excep, NULL)))
-    {
-        SysFreeString(bs);
-        return false;
-    }
+    HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, res, &m_excep, NULL);
     SysFreeString(bs);
-    return true;
+    if (FAILED(hr))
+        Debug.AddLine(wxString::Format("invoke(%s): [%x] %s", name, hr, _com_error(hr).ErrorMessage()));
+    return SUCCEEDED(hr);
 }
 
 bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid, double arg1, double arg2)
@@ -239,7 +272,9 @@ bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid, double arg1, double 
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, res, &m_excep, NULL);
-    return !FAILED(hr);
+    if (FAILED(hr))
+        Debug.AddLine(wxString::Format("invoke: [%x] %s", hr, _com_error(hr).ErrorMessage()));
+    return SUCCEEDED(hr);
 }
 
 bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid)
@@ -250,7 +285,9 @@ bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid)
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispParms, res, &m_excep, NULL);
-    return !FAILED(hr);
+    if (FAILED(hr))
+        Debug.AddLine(wxString::Format("invoke: [%x] %s", hr, _com_error(hr).ErrorMessage()));
+    return SUCCEEDED(hr);
 }
 
 bool DispatchObj::InvokeMethod(VARIANT *res, OLECHAR *name)
@@ -259,6 +296,53 @@ bool DispatchObj::InvokeMethod(VARIANT *res, OLECHAR *name)
     if (!GetDispatchId(&dispid, name))
         return false;
     return InvokeMethod(res, dispid);
+}
+
+GITEntry::GITEntry()
+    : m_pIGlobalInterfaceTable(0), m_dwCookie(0)
+{
+}
+
+GITEntry::~GITEntry()
+{
+    Unregister();
+}
+
+void GITEntry::Register(IDispatch *idisp)
+{
+    if (!m_pIGlobalInterfaceTable)
+    {
+        // first find the global table
+        HRESULT hr;
+        if (FAILED(hr = ::CoCreateInstance(CLSID_StdGlobalInterfaceTable, NULL, CLSCTX_INPROC_SERVER, IID_IGlobalInterfaceTable,
+            (void **)&m_pIGlobalInterfaceTable)))
+        {
+            Debug.AddLine(wxString::Format("create global interface table: [%x] %s", hr, _com_error(hr).ErrorMessage()));
+            throw ERROR_INFO("Cannot CoCreateInstance of Global Interface Table");
+        }
+    }
+
+    // add the Interface to the global table. Any errors past this point need to remove the interface from the global table.
+    HRESULT hr;
+    if (FAILED(hr = m_pIGlobalInterfaceTable->RegisterInterfaceInGlobal(idisp, IID_IDispatch, &m_dwCookie)))
+    {
+        Debug.AddLine(wxString::Format("register in global interface table: [%x] %s", hr, _com_error(hr).ErrorMessage()));
+        throw ERROR_INFO("Cannot register object in Global Interface Table");
+    }
+}
+
+void GITEntry::Unregister()
+{
+    if (m_pIGlobalInterfaceTable)
+    {
+        if (m_dwCookie)
+        {
+            m_pIGlobalInterfaceTable->RevokeInterfaceFromGlobal(m_dwCookie);
+            m_dwCookie = 0;
+        }
+        m_pIGlobalInterfaceTable->Release();
+        m_pIGlobalInterfaceTable = 0;
+    }
 }
 
 #endif // __WINDOWS__

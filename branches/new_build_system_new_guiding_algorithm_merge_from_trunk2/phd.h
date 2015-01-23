@@ -68,8 +68,8 @@
 #include <stdarg.h>
 
 #define APPNAME _T("PHD2 Guiding")
-#define PHDVERSION _T("2.3.0")
-#define PHDSUBVER _T("a")
+#define PHDVERSION _T("2.4.1")
+#define PHDSUBVER _T("c")
 #define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
@@ -130,6 +130,19 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 //#include <opencv/cv.h>
 #endif
 
+#if defined (__WINDOWS__)
+#define PHD_MESSAGES_CATALOG "messages"
+#endif
+
+#if defined (__APPLE__)
+#define PHD_MESSAGES_CATALOG "messages"
+#endif
+
+#if defined (__LINUX__)
+// On Linux the messages catalogs for all the applications are in the same directory
+// in /usr/share/locale, so the catalog name must be the application name.
+#define PHD_MESSAGES_CATALOG "phd2"
+#endif
 
 #include "phdconfig.h"
 #include "configdialog.h"
@@ -140,6 +153,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "circbuf.h"
 #include "guidinglog.h"
 #include "graph.h"
+#include "statswindow.h"
 #include "star_profile.h"
 #include "target.h"
 #include "graph-stepguider.h"
@@ -154,28 +168,26 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "mount.h"
 #include "scopes.h"
 #include "stepguiders.h"
+#include "rotators.h"
 #include "image_math.h"
 #include "testguide.h"
 #include "advanced_dialog.h"
 #include "gear_dialog.h"
 #include "myframe.h"
-#include "worker_thread.h"
 #include "debuglog.h"
+#include "worker_thread.h"
 #include "event_server.h"
 #include "confirm_dialog.h"
 #include "phdcontrol.h"
+#include "runinbg.h"
+#include "fitsiowrap.h"
 
-extern PhdConfig *pConfig;
+class wxSingleInstanceChecker;
 
-extern MyFrame *pFrame;
 extern Mount *pMount;
 extern Mount *pSecondaryMount;
 extern Mount *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
 extern GuideCamera *pCamera;
-
-#define ALWAYS_FLUSH_DEBUGLOG
-extern DebugLog Debug;
-extern GuidingLog GuideLog;
 
 // these seem to be the windowing/display related globals
 extern int XWinSize;
@@ -183,6 +195,7 @@ extern int YWinSize;
 
 class PhdApp : public wxApp
 {
+    wxSingleInstanceChecker *m_instanceChecker;
     long m_instanceNumber;
     bool m_resetConfig;
 

@@ -46,8 +46,8 @@ class PhdController
 {
 public:
 
-    static void Guide(bool recalibrate, const SettleParams& settle);
-    static bool Dither(double pixels, bool raOnly, const SettleParams& settle);
+    static bool Guide(bool recalibrate, const SettleParams& settle, wxString *error);
+    static bool Dither(double pixels, bool raOnly, const SettleParams& settle, wxString *error);
 
     static void AbortController(const wxString& reason);
     static void UpdateControllerState(void);

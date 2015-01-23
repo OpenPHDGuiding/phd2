@@ -35,7 +35,7 @@ displayed in the main window. &nbsp;If guiding is subsequently started,
 clicking on the 'loop' icon again will pause guiding while continuing
 to take guide exposures.</li><li>The guide/target icon - used to start calibration, if needed, and then to start guiding on the selected star. &nbsp;</li><li>The stop icon - used to stop both guiding and&nbsp;looping </li></ol><ol type="1">
 </ol>To the right of the stop icon is a pull-down list of exposure
-durations (0.001s - 15s). &nbsp;You use this control to quickly set the guide
+durations (0.01s - 15s). &nbsp;You use this control to quickly set the guide
 camera's exposure duration. &nbsp;If your camera does not support an
 exposure duration, <span style="font-style: italic;">PHD2</span> will do its best to emulate that duration.
 &nbsp;For example, if you use a short-exposure webcam, your maximum
@@ -45,11 +45,17 @@ acquire images for one second and stack them on the fly to create a
 composite image for guiding.
 <p>The next control to the right is a slider for adjusting screen
 stretch and contrast, essentially a "gamma" adjustment. &nbsp;<span style="font-style: italic;">PHD2</span>
-adjusts this automatically, but there may be situations where you want
-to adjust it yourself to better see the stars in the field of view.
+automatically adjusts the display accounting for the darkest and
+brightest pixels in the image, and the slider is used to fine-tune the
+display to better see the stars in the field of view.
 &nbsp;This may be useful, for example, if you are trying to focus the
 guide camera for the first time and need to see the large, out-of-focus
-star image.</p>
+star image. Moving the gamma slider only makes the display brighter or
+dimmer for your viewing. <span style="font-style: italic;">PHD2</span>
+always uses the raw pixels from the camera for guiding, and moving the
+gamma slider has no effect on guiding. &nbsp;A display of "completely
+white" or "completely black" is usually an indication that no stars are
+available in the field of view.</p>
 <p>Next to the gamma slider is the so-called "brain button." &nbsp;This button brings up an <a href="Advanced_settings.htm">Advanced Dialog </a>for making detailed adjustments to <span style="font-style: italic;">PHD2</span>'s guiding operations. &nbsp;A major
 design goal of the program is to minimize your need to change these
 parameters, but "the brain" is&nbsp;nothing to be feared - there are

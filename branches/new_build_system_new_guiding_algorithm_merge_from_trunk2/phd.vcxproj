@@ -92,12 +92,12 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opencv_core245d.lib;opencv_highgui245d.lib;opencv_imgproc245d.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_aui.lib;wxmsw30ud_adv.lib;wxexpatd.lib;wxzlibd.lib;wxmsw30ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase30ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;cfitsio.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30ud_propgrid.lib;DICAMSDK.lib;AsiCamera.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core245d.lib;opencv_highgui245d.lib;opencv_imgproc245d.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_aui.lib;wxmsw30ud_adv.lib;wxexpatd.lib;wxzlibd.lib;wxmsw30ud_html.lib;wxpngd.lib;wxjpegd.lib;wxbase30ud_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;cfitsio.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30ud_propgrid.lib;DICAMSDK.lib;AsiCamera2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)\build\x64\vc10\lib;$(OPENCV_DIR)\build\x64\vc10\lib;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera2.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/phd.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
@@ -147,12 +147,12 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opencv_core245.lib;opencv_highgui245.lib;opencv_imgproc245.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_aui.lib;wxmsw30u_adv.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw30u_html.lib;wxbase30u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;AsiCamera.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core245.lib;opencv_highgui245.lib;opencv_imgproc245.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_aui.lib;wxmsw30u_adv.lib;wxexpat.lib;wxzlib.lib;wxjpeg.lib;wxpng.lib;wxmsw30u_html.lib;wxbase30u_net.lib;winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;odbc32.lib;FcApi.lib;VidCapLib.lib;wxVidCapLib_wx29.lib;vfw32.lib;DsiDevice.lib;setupapi.lib;SBIGUDrv.lib;CMOSDll.lib;SSAGIF.lib;FCLib.lib;SXUSB.lib;Strmiids.lib;Quartz.lib;ShoestringGPUSB_DLL.lib;ShoestringLXUSB_DLL.lib;inpout32.lib;wxmsw30u_propgrid.lib;cfitsio.lib;DICAMSDK.lib;AsiCamera2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Release/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)/build/x64/vc10/lib;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>opencv_core245.dll;opencv_highgui245.dll;opencv_imgproc245.dll;sbigudrv.dll;ArtemisCCD.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;FCApi.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>opencv_core245.dll;opencv_highgui245.dll;opencv_imgproc245.dll;sbigudrv.dll;ArtemisCCD.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;FCApi.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera2.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <ProgramDatabaseFile>.\Release/phd.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -169,8 +169,7 @@
   <ItemGroup>
     <ClCompile Include="about_dialog.cpp" />
     <ClCompile Include="advanced_dialog.cpp" />
-    <ClCompile Include="ascom_common.cpp" />
-    <ClCompile Include="calrestore_dialog.cpp" />
+    <ClCompile Include="calreview_dialog.cpp" />
     <ClCompile Include="calstep_dialog.cpp" />
     <ClCompile Include="cameras\ArtemisHSCAPI.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -209,6 +208,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cam_ZWO.cpp" />
     <ClCompile Include="comdispatch.cpp" />
+    <ClCompile Include="comet_tool.cpp" />
     <ClCompile Include="configdialog.cpp" />
     <ClCompile Include="confirm_dialog.cpp" />
     <ClCompile Include="darks_dialog.cpp" />
@@ -216,6 +216,7 @@
     <ClCompile Include="drift_tool.cpp" />
     <ClCompile Include="eegg.cpp" />
     <ClCompile Include="event_server.cpp" />
+    <ClCompile Include="fitsiowrap.cpp" />
     <ClCompile Include="gear_dialog.cpp" />
     <ClCompile Include="graph-stepguider.cpp" />
     <ClCompile Include="graph.cpp" />
@@ -251,7 +252,11 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">phd.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="profile_wizard.cpp" />
     <ClCompile Include="Refine_DefMap.cpp" />
+    <ClCompile Include="rotator.cpp" />
+    <ClCompile Include="rotator_ascom.cpp" />
+    <ClCompile Include="runinbg.cpp" />
     <ClCompile Include="scope.cpp" />
     <ClCompile Include="scope_ascom.cpp" />
     <ClCompile Include="scope_eqmac.cpp" />
@@ -269,6 +274,7 @@
     <ClCompile Include="socket_server.cpp" />
     <ClCompile Include="star.cpp" />
     <ClCompile Include="star_profile.cpp" />
+    <ClCompile Include="statswindow.cpp" />
     <ClCompile Include="stepguider.cpp" />
     <ClCompile Include="stepguider_sxao.cpp" />
     <ClCompile Include="target.cpp" />
@@ -285,8 +291,7 @@
   <ItemGroup>
     <ClInclude Include="about_dialog.h" />
     <ClInclude Include="advanced_dialog.h" />
-    <ClInclude Include="ascom_common.h" />
-    <ClInclude Include="calrestore_dialog.h" />
+    <ClInclude Include="calreview_dialog.h" />
     <ClInclude Include="calstep_dialog.h" />
     <ClInclude Include="cam_ascomlate.h" />
     <ClInclude Include="cam_Atik16.h" />
@@ -323,12 +328,14 @@
     <ClInclude Include="cam_ZWO.h" />
     <ClInclude Include="circbuf.h" />
     <ClInclude Include="comdispatch.h" />
+    <ClInclude Include="comet_tool.h" />
     <ClInclude Include="configdialog.h" />
     <ClInclude Include="confirm_dialog.h" />
     <ClInclude Include="darks_dialog.h" />
     <ClInclude Include="debuglog.h" />
     <ClInclude Include="drift_tool.h" />
     <ClInclude Include="event_server.h" />
+    <ClInclude Include="fitsiowrap.h" />
     <ClInclude Include="gear_dialog.h" />
     <ClInclude Include="graph-stepguider.h" />
     <ClInclude Include="graph.h" />
@@ -360,7 +367,13 @@
     <ClInclude Include="phdconfig.h" />
     <ClInclude Include="phdcontrol.h" />
     <ClInclude Include="point.h" />
+    <ClInclude Include="profile_wizard.h" />
     <ClInclude Include="Refine_DefMap.h" />
+    <ClInclude Include="rotator.h" />
+    <ClInclude Include="rotators.h" />
+    <ClInclude Include="rotator_ascom.h" />
+    <ClInclude Include="rotator_simulator.h" />
+    <ClInclude Include="runinbg.h" />
     <ClInclude Include="scope.h" />
     <ClInclude Include="scope_ascom.h" />
     <ClInclude Include="scope_eqmac.h" />
@@ -380,6 +393,7 @@
     <ClInclude Include="socket_server.h" />
     <ClInclude Include="star.h" />
     <ClInclude Include="star_profile.h" />
+    <ClInclude Include="statswindow.h" />
     <ClInclude Include="stepguider.h" />
     <ClInclude Include="stepguiders.h" />
     <ClInclude Include="stepguider_simulator.h" />

@@ -32,21 +32,25 @@ can optionally produce two types of log files: a debug log and a
 guiding log. &nbsp;Both are highly useful for different reasons.
 &nbsp;The guiding log is similar to the one produced by PHD, but
 with
-extended information. &nbsp;It can be analyzed after the fact to
-evaluate performance and identify problems - it essentially contains a
-superset of what you see in the real-time guiding graph. &nbsp;A
-number of third-party applications can&nbsp;&nbsp;analyze these
-logs
-and produce quantitative, graphical&nbsp; results. &nbsp;The
+extended information. &nbsp;<span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;;">The guide log is intentionally formatted to
+allow easy interpretation by either a human reader or an external
+application.<span style="">&nbsp; </span>For example, the PHDLab application (not
+part of the PHD2 project) can produce a variety of graphs and summary
+statistics based on data in the PHD2 guide log.<span style="">&nbsp;&nbsp; </span>But the log can also be easily imported into
+Excel or other applications for analysis and graphing.<span style="">&nbsp;
+</span>When importing into Excel, just specify that a comma should be used as a
+column separator</span> &nbsp;The
 debug log
 has a&nbsp; complete record of everything that was done in the <span style="font-style: italic;">PHD2</span>
-session, &nbsp;so it is very helpful in isolating any problems you
-might have. &nbsp;It employs a human-friendly text format, so it's
+session, &nbsp;so it is very helpful in isolating any problems
+you&nbsp; have. &nbsp;It also employs a human-friendly (albeit verbose)
+text format, so it's
 not
 difficult to examine the debug log to see what happened. &nbsp;If
 you
 need to report a problem with the software, you will almost certainly
-be asked to provide the debug log file. <br>
+be asked to provide the debug log file. &nbsp;If you have neither log
+file available, you are unlikely to get any&nbsp;help.<br>
 <br>
 These two log files
 will be generated if &nbsp;'Enable Logging' is checked on the
@@ -55,18 +59,17 @@ tab. &nbsp;The location for the files is controlled by the 'Log
 File
 Location' field further down in the dialog. &nbsp;By default, log
 files
-are stored in the OS-specific default directory for user data files.
-&nbsp;In Windows, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
-sub-folder in the "My Documents" location. &nbsp;This may not be a
-convenient location, so you can specify a different location using this
+are stored in the OS-specific default directory for application data files.
+&nbsp;In Windows7, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
+sub-folder in the "AppData\Local" location. &nbsp;This may not be a
+convenient location, so you can specify a different folder using this
 edit field.<br>
 <br>
 In some unusual cases, you may need to capture guide
 camera images, usually to support debugging and problem resolution.
 &nbsp;This can be enabled by checking the 'Enable Star-image
 Logging'
-checkbox.<br>
-<h4><a name="General_Parameters"></a>General Parameters</h4>
+checkbox.<br><br><br><h4><a name="General_Parameters"></a>General Parameters</h4>
 The remaining controls on the
 'Global' tab are well-described by their respective tool-tips, but they
 are summarized here for completeness:<br>
@@ -96,18 +99,17 @@ are
 very short and you don't want to overload either the mount or the
 camera
 link with very high traffic rates.</li>
-<li>'<a name="Focal_length"></a>Focal length' - provides one of
+<li>'<a name="Focal_length"></a>Focal length' - the focal length of the guide scope (millimeters). This provides one of
 two parameters needed by <span style="font-style: italic;">PHD2</span> to compute the image scale and thus
 report guiding performance in units of arc-seconds. &nbsp;The other
-parameter required for this is the guider pixel size, located on the
+parameter required for this is the guide camera pixel size, located on the
 'Camera' tab.</li>
 <li>'<a name="Language"></a>Language' - determines the language
 used in the <span style="font-style: italic;">PHD2</span> user interface, subject to available localization.
 &nbsp;Changing this will usually require a program restart</li>
 <li>'<a name="Auto_restore_calibration"></a>Auto restore calibration' - tells
 <span style="font-style: italic;">PHD2</span> to automatically reload the most recent calibration data as soon
-as the equipment is connected. &nbsp;Be sure to read the 'Auto
-calibration' section of the help file to understand the implications
+as the equipment is connected. &nbsp;Be sure to read the <a href="Basic_use.htm#Automatic_Calibration">Auto calibration</a> section to understand the implications
 and potential risks of doing this.</li>
 <li><a name="Auto_exposure_settings"></a>'Auto Exposure' - these are the settings that control Auto exposure time.</li>
 <ul>
@@ -129,7 +131,7 @@ go below 3.0.</li>
 </ul>
 </ul>
 <h3><a name="Guiding_Tab"></a>Guiding Tab</h3>
-<img style="width: 304px; height: 579px;" alt="" src="Advanced_guiding.png"><br>
+<img style="width: 300px; height: 580px;" alt="" src="Advanced_guiding.png"><br>
 <br>
 There are relatively few parameters found on the 'Guiding' tab.
 &nbsp;Their use is as follows: <br>
@@ -138,7 +140,14 @@ There are relatively few parameters found on the 'Guiding' tab.
 Scale Images' - tells <span style="font-style: italic;">PHD2</span> to always rescale the guider image to fit
 the display window. &nbsp;<span style="font-style: italic;">PHD2</span> does this automatically in almost
 all
-cases, so you'll rarely need to do this.</li>
+cases, so you'll rarely need to do this.</li><li>'<a name="Fast_Re-center"></a>Fast
+re-center after calibration or dither' - during calibration or
+dithering, the mount may be moved a significant distance from the
+initial "lock" position. &nbsp;If you click this checkbox, PHD2 will
+move the mount&nbsp;back to the lock position as quickly as possible,
+using the largest guide commands permitted by the 'Max Duration' settings of
+your guide algorithms. &nbsp;This is only an optimization, so the use
+of this checkbox is completely optional.</li>
 <li>'<a name="Search_region"></a>Search
 region' - specifies the size of the "tracking rectangle", in units of
 pixels. &nbsp;You may need to increase this value if your mount
@@ -151,16 +160,21 @@ brightness and size of the guide star compared to the sky background.
 &nbsp;</li>
 <li>'<a name="Star_mass_tolerance"></a>Star mass tolerance' - if 'star mass change detection'
 is checked, <span style="font-style: italic;">PHD2</span> will trigger a 'lost star' error if the measured
-brightness and size varies by more than this percentage. &nbsp;This
+brightness and size vary by more than this percentage. &nbsp;This
 might be useful if you have two stars inside the tracking rectangle and
-you want to be sure that <span style="font-style: italic;">PHD2</span> doesn't mistakenly "switch stars."
+you want to be sure that <span style="font-style: italic;">PHD2</span>
+doesn't mistakenly "switch stars."
 &nbsp;It can also
 prevent errors caused by thin clouds, high camera noise, or alpha
 particle "hits";
-but it may be unreliable if you are guiding on a faint star. &nbsp;</li>
+but it may be unreliable if you are guiding on a faint star. &nbsp;If
+you are getting too many 'lost star' errors when the star is plainly
+visible on the display, try increasing the value of this setting.
+&nbsp;Setting the value to 100 effectively disables the warnings
+entirely.</li>
 </ul>
 <h3><a name="Camera_Tab"></a>Camera Tab</h3>
-<img style="width: 308px; height: 578px;" alt="" src="Advanced_camera.png"><br>
+<img style="width: 297px; height: 578px;" alt="" src="Advanced_camera.png"><br>
 <br>
 The controls on the 'Camera' tab are used as follows: <br>
 <ul>
@@ -177,21 +191,44 @@ is selected. This feature applies to both calibration and guiding.
 frame is downloaded, but once a star is selected, only this small
 subframe is downloaded. &nbsp; If you are using subframes but want to
 see the full frame to select a different star, just click anywhere
-outside the subframe.</li>
-<li>'<a name="Camera_gain"></a>Camera gain' - Sets the gain level for the many cameras
-that support this feature.&nbsp;If
-you really want to use a bright star and a longer exposure duration or
-if your camera makes a very noisy image, try reducing this parameter.</li>
-<li>'<a name="Pixel_size"></a>Pixel
-size' - The second of two parameters needed by <span style="font-style: italic;">PHD2</span> to compute the
+outside the subframe.</li><li>'<a name="Pixel_size"></a>Pixel
+size' - The guide camera pixel size in microns. This is the second of two parameters needed by <span style="font-style: italic;">PHD2</span> to compute the
 guider image scale and thus report guider statistics in units of
 arc-seconds. &nbsp;Refer to your camera documentation to determine
 the
 correct value.</li>
+<li>'<a name="Camera_gain"></a>Camera gain' - Sets the gain level for the many cameras
+that support this feature.&nbsp;If
+you really want to use a bright star and a longer exposure duration or
+if your camera makes a very noisy image, try reducing this parameter.</li>
+<li>'<a name="Disconnect_nonresponsive_camera"></a>Disconnect
+nonresponsive camera after (seconds) - Camera malfunctions will
+sometimes occur, often because of faulty USB connections. &nbsp;In many
+cases, the camera will not return the requested image data, and PHD2
+will appear to "hang." &nbsp;This parameter determines
+how long PHD2 should wait for a response after the expected exposure
+time has expired. &nbsp;For example, a timeout value of 5 seconds in
+conjunction with an exposure time of 2 seconds will tell PHD2 to wait
+up to 7 seconds for a response. &nbsp;If the data are not received
+within that period, PHD2 will attempt to halt the operation, disconnect
+the camera, and display an alert message in the main window.
+&nbsp;Since a hardware problem is likely the underlying issue, this
+recovery attempt won't always succeed. &nbsp;It is advisable to be
+&nbsp;"generous" with these timeout values to avoid spurious recovery
+actions. &nbsp;Also, if you are using a guide camera that shares
+electronics with the main imaging camera, you should set this timeout
+to a large
+value, well above the maximum expected time for a full-frame download
+from the main imager. &nbsp;At this time, this affects users of
+the&nbsp;SBIG driver that is packaged with Sequence Generator Pro.
+&nbsp;Regardless of whether PHD2 is able to handle the situation
+gracefully, the underlying problem is almost certainly in&nbsp;the
+hardware or the camera driver and will need to be resolved before
+guiding is continued.<br></li>
 
 </ul>
 <h3><a name="Mount_Tab"></a>Mount Tab</h3>
-<img style="width: 303px; height: 577px;" alt="" src="Advanced_mount.png"><br>
+<img style="width: 302px; height: 578px;" alt="" src="Advanced_mount.png"><br>
 <br>
 The
 mount tab is the most complex area of Advanced Settings largely because
@@ -206,14 +243,17 @@ separate section.<br>
 The remaining controls, the ones that are independent of the guiding
 algorithm selections, are described below. <br>
 <ul>
-<li>'<a name="Force_calibration"></a>Force calibration'
--&nbsp;tells <span style="font-style: italic;">PHD2</span>&nbsp; you want to force another calibration
+<li>'<a name="Clear_calibration"></a>Clear calibration'
+-&nbsp;tells <span style="font-style: italic;">PHD2</span>&nbsp;
+you want to clear the calibration data currently being used and
+re-calibrate
 before
 guiding is restarted. &nbsp;You might do this for a variety of
 reasons
 - you might have moved the guide camera, you might have done a meridian
 flip and want to recalibrate on the "new" side of the pier, etc.
-&nbsp;</li>
+&nbsp;You can also accomplish the same result by doing a Shift-Click on
+the guiding icon on the main page, which will force a re-calibration.</li>
 <li>'<a name="Enable_guide_output"></a>Enable
 guide output'
 - this is normally checked because it tells <span style="font-style: italic;">PHD2</span> to send guide
@@ -244,20 +284,25 @@ the right of this control will launch a dialog that can help you
 compute an appropriate value:&nbsp;</li>
 </ul><br><img style="width: 319px; height: 525px;" alt="Calc_step_dialog" src="Advanced_calstep_calculator.png"><br><span style="font-size: 10pt; font-family: Arial;"></span><br>
 To
-use the <a name="Calculator_auto-step-size"></a>calculator, be sure the topmost three edit controls are
+use the <a name="Calculator_auto-step-size"></a>calculator,
+be sure the topmost three edit controls are
 correctly filled in. &nbsp;If you have already specified the focal
 length and
 the camera pixel size in the 'Global' and 'Camera' tabs respectively,
-those fields will already be populated in this form. &nbsp;You'll
-also need to
-select the guide speed you are using with the mount, shown as a
-multiple of sidereal speed. &nbsp;Most mounts will use something
+those fields will already be populated in this form. &nbsp;If you are
+using an ASCOM connection to your mount, the fields for "Guide speed"
+and "Calibration declination" will also have the correct values.
+&nbsp;Otherwise, you'll need to supply them yourself. &nbsp;The guide
+speed is specified as a multiple of sidereal speed - most mounts will
+use something
 like
 1X or 0.5X sidereal, but you can choose something else. &nbsp;You
 can
-leave the 'calibration steps' field at the default value of 12 and you
-can optionally specify your declination if it's significantly far from
-the celestial equator. &nbsp;As you change the values in these fields,&nbsp; <span style="font-style: italic;">PHD2</span>
+leave the 'calibration steps' field at the default value of 12, which
+is likely to result in a good calibration. &nbsp;Use of a significantly
+smaller value raises the likelihood that seeing errors or small mount
+errors will cause calibration errors . &nbsp;As you change the values
+in these fields,&nbsp; <span style="font-style: italic;">PHD2</span>
 will recalculate your current image scale and a recommended value for the
 calibration step-size. &nbsp;If you then click on 'Ok', that value
 will
@@ -274,14 +319,12 @@ this
 below the default value if you want to avoid "chasing" a large
 deflection that could be caused by a spurious event (e.g. a sudden 'hot
 pixel') .</li>
+
 <li>"<a name="Max_Duration_Declination"></a>Max Duration Declination' - specifies the
 maximum allowed guide pulse duration for declination (same as above but
 for declination). &nbsp;This can be useful to avoid
 "over-correction" and subsequent direction reversal in declination
 guiding.</li>
-<li>'<a name="Fast_recenter_after_calibration"></a>Fast recenter after calibration' -&nbsp;tells
-<span style="font-style: italic;">PHD2</span> to accelerate the "return" leg of the calibration moves in each of
-the east-west and north-south directions.&nbsp;</li>
 <li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec
 output after meridian flip' -&nbsp;tells <span style="font-style: italic;">PHD2</span> how to adjust the
 calibration data when you use the function to "flip" it. &nbsp;Some
@@ -298,7 +341,16 @@ calibrate on one side of the pier, then move the mount to the other
 side. &nbsp;Select &nbsp;'Flip Calibration' under the 'Tools' menu, and
 start guiding. &nbsp;If the guiding works normally, leave the box
 un-checked; but if you see run-away in declination, check the box and
-repeat the experiment.</li>
+repeat the experiment.</li><li>'<a name="Assert_Dec_Orthogonal"></a>Assume
+Dec orthogonal to RA' - Normally, the calibration process independently
+computes the camera angles for both right ascension and declination.
+&nbsp;There is no need for great precision on these values, and the
+default behavior normally works well. &nbsp;However, if your mount has
+very high periodic error or you are dealing with very bad seeing
+conditions, you may want to force the RA and Declination angles to be
+perpendicular. &nbsp;If you choose that option, PHD2 will compute the
+camera angle for RA, then assert a declination angle that is orthogonal
+to it.</li>
 </ul>
 All of the other controls in this dialog are related to the guiding
 algorithms you have chosen and are described here: <a href="Guide_algorithms.htm">Guiding Algorithms and Settings</a><br>

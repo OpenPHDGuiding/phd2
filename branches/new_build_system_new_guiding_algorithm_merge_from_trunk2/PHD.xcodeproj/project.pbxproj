@@ -36,7 +36,6 @@
 		58B8BBFB171FA6DB00BA1A38 /* phdconfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8BBF9171FA6DB00BA1A38 /* phdconfig.cpp */; };
 		58B8BC05171FB3E300BA1A38 /* serialport_mac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8BC04171FB3E300BA1A38 /* serialport_mac.cpp */; };
 		58B8CE6416E05EDB00F6E68E /* advanced_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE0D16E05EDB00F6E68E /* advanced_dialog.cpp */; };
-		58B8CE6516E05EDB00F6E68E /* ascom_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE0F16E05EDB00F6E68E /* ascom_common.cpp */; };
 		58B8CE6716E05EDB00F6E68E /* cam_ascomlate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE1316E05EDB00F6E68E /* cam_ascomlate.cpp */; };
 		58B8CE6816E05EDB00F6E68E /* cam_Atik16.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE1516E05EDB00F6E68E /* cam_Atik16.cpp */; };
 		58B8CE6916E05EDB00F6E68E /* cam_firewire_IC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58B8CE1716E05EDB00F6E68E /* cam_firewire_IC.cpp */; };
@@ -113,17 +112,24 @@
 		58EE981513CD0F74009EC68D /* PHD2GuideHelp.zip in CopyFiles */ = {isa = PBXBuildFile; fileRef = 58F7157D0B20CC700056770B /* PHD2GuideHelp.zip */; };
 		58EE981713CD0F74009EC68D /* SBIGUDrv.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 588167710B4DED6900BDA6D4 /* SBIGUDrv.framework */; };
 		58EE981813CD0F74009EC68D /* fcCamFw.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5828185D0B4A022A00E5E22D /* fcCamFw.framework */; };
+		A10CD354197D0150006DD99F /* profile_wizard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10CD352197D0150006DD99F /* profile_wizard.cpp */; };
+		A10CD357199D1423006DD99F /* statswindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10CD355199D1423006DD99F /* statswindow.cpp */; };
 		A117D7151844861000F5B01F /* calrestore_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A117D7131844861000F5B01F /* calrestore_dialog.cpp */; };
 		A140805419195D4600CC55AA /* darks_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A140805219195D4600CC55AA /* darks_dialog.cpp */; };
 		A140805719195D6D00CC55AA /* Refine_DefMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A140805519195D6D00CC55AA /* Refine_DefMap.cpp */; };
 		A17B855E18AE9632004BECA0 /* nudge_lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17B855C18AE9632004BECA0 /* nudge_lock.cpp */; };
 		A1A088E31815CF63004899C0 /* drift_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088DE1815CF63004899C0 /* drift_tool.cpp */; };
 		A1A088E41815CF63004899C0 /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088E01815CF63004899C0 /* logger.cpp */; };
+		A1AC13F81A57C1450078CE9E /* rotator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AC13F51A57C1450078CE9E /* rotator.cpp */; };
 		A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE284181CD8A4000B6085 /* manualcal_dialog.cpp */; };
 		A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE287182225E7000B6085 /* json_parser.cpp */; };
 		A1ACE28C1827567B000B6085 /* phdcontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE28A1827567B000B6085 /* phdcontrol.cpp */; };
 		A1AE6D9E1958DDD500F343D8 /* cam_ZWO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AE6D9C1958DDD500F343D8 /* cam_ZWO.cpp */; };
-		A1AE6DA01958E05D00F343D8 /* libASICamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AE6D9F1958E05D00F343D8 /* libASICamera.a */; };
+		A1AE6DA01958E05D00F343D8 /* libASICamera2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1AE6D9F1958E05D00F343D8 /* libASICamera2.a */; };
+		A1C8EDFB19E9BA1600B8EACB /* runinbg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDF919E9BA1600B8EACB /* runinbg.cpp */; };
+		A1C8EDFE19F38C7500B8EACB /* comet_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDFC19F38C7500B8EACB /* comet_tool.cpp */; };
+		A1C8EE0119FA309200B8EACB /* fitsiowrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */; };
+		A1C8EE041A17275300B8EACB /* calsanity_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EE021A17275300B8EACB /* calsanity_dialog.cpp */; };
 		F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */; };
 		F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */; };
 /* End PBXBuildFile section */
@@ -153,15 +159,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2999514218982ED90002D9EB /* libwx_baseu_net-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_baseu_net-3.0.a"; path = "../wxWidgets-3.0.0/Cocoa_32/lib/libwx_baseu_net-3.0.a"; sourceTree = "<group>"; };
-		2999514318982ED90002D9EB /* libwx_baseu-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_baseu-3.0.a"; path = "../wxWidgets-3.0.0/Cocoa_32/lib/libwx_baseu-3.0.a"; sourceTree = "<group>"; };
-		2999514418982ED90002D9EB /* libwx_osx_cocoau_adv-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_adv-3.0.a"; path = "../wxWidgets-3.0.0/Cocoa_32/lib/libwx_osx_cocoau_adv-3.0.a"; sourceTree = "<group>"; };
-		2999514518982ED90002D9EB /* libwx_osx_cocoau_aui-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_aui-3.0.a"; path = "../wxWidgets-3.0.0/Cocoa_32/lib/libwx_osx_cocoau_aui-3.0.a"; sourceTree = "<group>"; };
-		2999514618982ED90002D9EB /* libwx_osx_cocoau_core-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_core-3.0.a"; path = "../wxWidgets-3.0.0/Cocoa_32/lib/libwx_osx_cocoau_core-3.0.a"; sourceTree = "<group>"; };
-		2999514718982ED90002D9EB /* libwx_osx_cocoau_html-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_html-3.0.a"; path = "../wxWidgets-3.0.0/Cocoa_32/lib/libwx_osx_cocoau_html-3.0.a"; sourceTree = "<group>"; };
-		2999514818982ED90002D9EB /* libwx_osx_cocoau_propgrid-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_propgrid-3.0.a"; path = "../wxWidgets-3.0.0/Cocoa_32/lib/libwx_osx_cocoau_propgrid-3.0.a"; sourceTree = "<group>"; };
-		2999514918982ED90002D9EB /* libwxjpeg-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwxjpeg-3.0.a"; path = "../wxWidgets-3.0.0/Cocoa_32/lib/libwxjpeg-3.0.a"; sourceTree = "<group>"; };
-		2999514A18982ED90002D9EB /* libwxpng-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwxpng-3.0.a"; path = "../wxWidgets-3.0.0/Cocoa_32/lib/libwxpng-3.0.a"; sourceTree = "<group>"; };
+		2999514218982ED90002D9EB /* libwx_baseu_net-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_baseu_net-3.0.a"; path = "../wxWidgets/Cocoa_32/lib/libwx_baseu_net-3.0.a"; sourceTree = "<group>"; };
+		2999514318982ED90002D9EB /* libwx_baseu-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_baseu-3.0.a"; path = "../wxWidgets/Cocoa_32/lib/libwx_baseu-3.0.a"; sourceTree = "<group>"; };
+		2999514418982ED90002D9EB /* libwx_osx_cocoau_adv-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_adv-3.0.a"; path = "../wxWidgets/Cocoa_32/lib/libwx_osx_cocoau_adv-3.0.a"; sourceTree = "<group>"; };
+		2999514518982ED90002D9EB /* libwx_osx_cocoau_aui-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_aui-3.0.a"; path = "../wxWidgets/Cocoa_32/lib/libwx_osx_cocoau_aui-3.0.a"; sourceTree = "<group>"; };
+		2999514618982ED90002D9EB /* libwx_osx_cocoau_core-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_core-3.0.a"; path = "../wxWidgets/Cocoa_32/lib/libwx_osx_cocoau_core-3.0.a"; sourceTree = "<group>"; };
+		2999514718982ED90002D9EB /* libwx_osx_cocoau_html-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_html-3.0.a"; path = "../wxWidgets/Cocoa_32/lib/libwx_osx_cocoau_html-3.0.a"; sourceTree = "<group>"; };
+		2999514818982ED90002D9EB /* libwx_osx_cocoau_propgrid-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwx_osx_cocoau_propgrid-3.0.a"; path = "../wxWidgets/Cocoa_32/lib/libwx_osx_cocoau_propgrid-3.0.a"; sourceTree = "<group>"; };
+		2999514918982ED90002D9EB /* libwxjpeg-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwxjpeg-3.0.a"; path = "../wxWidgets/Cocoa_32/lib/libwxjpeg-3.0.a"; sourceTree = "<group>"; };
+		2999514A18982ED90002D9EB /* libwxpng-3.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libwxpng-3.0.a"; path = "../wxWidgets/Cocoa_32/lib/libwxpng-3.0.a"; sourceTree = "<group>"; };
 		2999515518982F260002D9EB /* KWIQGuider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KWIQGuider.cpp; sourceTree = "<group>"; };
 		2999515618982F260002D9EB /* KWIQGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KWIQGuider.h; sourceTree = "<group>"; };
 		2999515718982F260002D9EB /* KWIQGuider_firmware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KWIQGuider_firmware.h; sourceTree = "<group>"; };
@@ -241,8 +247,6 @@
 		58B8BC06171FB3FB00BA1A38 /* serialport_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = serialport_mac.h; sourceTree = "<group>"; };
 		58B8CE0D16E05EDB00F6E68E /* advanced_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = advanced_dialog.cpp; sourceTree = "<group>"; };
 		58B8CE0E16E05EDB00F6E68E /* advanced_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = advanced_dialog.h; sourceTree = "<group>"; };
-		58B8CE0F16E05EDB00F6E68E /* ascom_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ascom_common.cpp; sourceTree = "<group>"; };
-		58B8CE1016E05EDB00F6E68E /* ascom_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ascom_common.h; sourceTree = "<group>"; };
 		58B8CE1316E05EDB00F6E68E /* cam_ascomlate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_ascomlate.cpp; sourceTree = "<group>"; };
 		58B8CE1416E05EDB00F6E68E /* cam_ascomlate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_ascomlate.h; sourceTree = "<group>"; };
 		58B8CE1516E05EDB00F6E68E /* cam_Atik16.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_Atik16.cpp; sourceTree = "<group>"; };
@@ -348,6 +352,10 @@
 		58EC72811749D8B300502727 /* target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = target.h; sourceTree = "<group>"; };
 		58EE981C13CD0F74009EC68D /* PHD2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PHD2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58F7157D0B20CC700056770B /* PHD2GuideHelp.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = PHD2GuideHelp.zip; sourceTree = SOURCE_ROOT; };
+		A10CD352197D0150006DD99F /* profile_wizard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = profile_wizard.cpp; sourceTree = "<group>"; };
+		A10CD353197D0150006DD99F /* profile_wizard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = profile_wizard.h; sourceTree = "<group>"; };
+		A10CD355199D1423006DD99F /* statswindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = statswindow.cpp; sourceTree = "<group>"; };
+		A10CD356199D1423006DD99F /* statswindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = statswindow.h; sourceTree = "<group>"; };
 		A117D7131844861000F5B01F /* calrestore_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calrestore_dialog.cpp; sourceTree = "<group>"; };
 		A117D7141844861000F5B01F /* calrestore_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calrestore_dialog.h; sourceTree = "<group>"; };
 		A140805219195D4600CC55AA /* darks_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = darks_dialog.cpp; sourceTree = "<group>"; };
@@ -362,6 +370,10 @@
 		A1A088E01815CF63004899C0 /* logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = logger.cpp; sourceTree = "<group>"; };
 		A1A088E11815CF63004899C0 /* logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = logger.h; sourceTree = "<group>"; };
 		A1A088E21815CF63004899C0 /* optionsbutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = optionsbutton.h; sourceTree = "<group>"; };
+		A1AC13F41A57C1450078CE9E /* rotator_simulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rotator_simulator.h; sourceTree = "<group>"; };
+		A1AC13F51A57C1450078CE9E /* rotator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rotator.cpp; sourceTree = "<group>"; };
+		A1AC13F61A57C1450078CE9E /* rotator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rotator.h; sourceTree = "<group>"; };
+		A1AC13F71A57C1450078CE9E /* rotators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rotators.h; sourceTree = "<group>"; };
 		A1ACE284181CD8A4000B6085 /* manualcal_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = manualcal_dialog.cpp; sourceTree = "<group>"; };
 		A1ACE285181CD8A4000B6085 /* manualcal_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = manualcal_dialog.h; sourceTree = "<group>"; };
 		A1ACE287182225E7000B6085 /* json_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_parser.cpp; sourceTree = "<group>"; };
@@ -370,7 +382,15 @@
 		A1ACE28B1827567B000B6085 /* phdcontrol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phdcontrol.h; sourceTree = "<group>"; };
 		A1AE6D9C1958DDD500F343D8 /* cam_ZWO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cam_ZWO.cpp; sourceTree = "<group>"; };
 		A1AE6D9D1958DDD500F343D8 /* cam_ZWO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cam_ZWO.h; sourceTree = "<group>"; };
-		A1AE6D9F1958E05D00F343D8 /* libASICamera.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libASICamera.a; path = cameras/zwolibs/mac/libASICamera.a; sourceTree = "<group>"; };
+		A1AE6D9F1958E05D00F343D8 /* libASICamera2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libASICamera2.a; path = cameras/zwolibs/mac/libASICamera2.a; sourceTree = "<group>"; };
+		A1C8EDF919E9BA1600B8EACB /* runinbg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = runinbg.cpp; sourceTree = "<group>"; };
+		A1C8EDFA19E9BA1600B8EACB /* runinbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = runinbg.h; sourceTree = "<group>"; };
+		A1C8EDFC19F38C7500B8EACB /* comet_tool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = comet_tool.cpp; sourceTree = "<group>"; };
+		A1C8EDFD19F38C7500B8EACB /* comet_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = comet_tool.h; sourceTree = "<group>"; };
+		A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitsiowrap.cpp; sourceTree = "<group>"; };
+		A1C8EE0019FA309200B8EACB /* fitsiowrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fitsiowrap.h; sourceTree = "<group>"; };
+		A1C8EE021A17275300B8EACB /* calsanity_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calsanity_dialog.cpp; sourceTree = "<group>"; };
+		A1C8EE031A17275300B8EACB /* calsanity_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calsanity_dialog.h; sourceTree = "<group>"; };
 		F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calstep_dialog.cpp; sourceTree = "<group>"; };
 		F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = optionsbutton.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -399,7 +419,7 @@
 				2999515118982ED90002D9EB /* libwx_osx_cocoau_propgrid-3.0.a in Frameworks */,
 				2999515218982ED90002D9EB /* libwxjpeg-3.0.a in Frameworks */,
 				2999515318982ED90002D9EB /* libwxpng-3.0.a in Frameworks */,
-				A1AE6DA01958E05D00F343D8 /* libASICamera.a in Frameworks */,
+				A1AE6DA01958E05D00F343D8 /* libASICamera2.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -533,14 +553,16 @@
 				580F80CB17810B1F0020900F /* about_dialog.h */,
 				58B8CE0D16E05EDB00F6E68E /* advanced_dialog.cpp */,
 				58B8CE0E16E05EDB00F6E68E /* advanced_dialog.h */,
-				58B8CE0F16E05EDB00F6E68E /* ascom_common.cpp */,
-				58B8CE1016E05EDB00F6E68E /* ascom_common.h */,
 				A117D7131844861000F5B01F /* calrestore_dialog.cpp */,
 				A117D7141844861000F5B01F /* calrestore_dialog.h */,
+				A1C8EE021A17275300B8EACB /* calsanity_dialog.cpp */,
+				A1C8EE031A17275300B8EACB /* calsanity_dialog.h */,
 				F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */,
 				A1A088DD1815CF1F004899C0 /* calstep_dialog.h */,
 				583291DB15DA042400D96A6D /* Cameras */,
 				58CA526017C1CAE2002A20D1 /* circbuf.h */,
+				A1C8EDFC19F38C7500B8EACB /* comet_tool.cpp */,
+				A1C8EDFD19F38C7500B8EACB /* comet_tool.h */,
 				58B8CE3416E05EDB00F6E68E /* configdialog.cpp */,
 				58B8CE3516E05EDB00F6E68E /* configdialog.h */,
 				580F80CE17810B1F0020900F /* confirm_dialog.cpp */,
@@ -554,6 +576,8 @@
 				58339E600B1FC6A700109891 /* eegg.cpp */,
 				580F80D017810B1F0020900F /* event_server.cpp */,
 				580F80D117810B1F0020900F /* event_server.h */,
+				A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */,
+				A1C8EE0019FA309200B8EACB /* fitsiowrap.h */,
 				582818990B4A050700E5E22D /* Frameworks */,
 				58CA526117C1CAE2002A20D1 /* gear_dialog.cpp */,
 				58CA526217C1CAE2002A20D1 /* gear_dialog.h */,
@@ -596,8 +620,16 @@
 				58B8CE5116E05EDB00F6E68E /* point.h */,
 				58B8CE5216E05EDB00F6E68E /* precompiled_header.cpp */,
 				58339E380B1FC2BF00109891 /* Products */,
+				A10CD352197D0150006DD99F /* profile_wizard.cpp */,
+				A10CD353197D0150006DD99F /* profile_wizard.h */,
 				A140805519195D6D00CC55AA /* Refine_DefMap.cpp */,
 				A140805619195D6D00CC55AA /* Refine_DefMap.h */,
+				A1AC13F51A57C1450078CE9E /* rotator.cpp */,
+				A1AC13F61A57C1450078CE9E /* rotator.h */,
+				A1AC13F41A57C1450078CE9E /* rotator_simulator.h */,
+				A1AC13F71A57C1450078CE9E /* rotators.h */,
+				A1C8EDF919E9BA1600B8EACB /* runinbg.cpp */,
+				A1C8EDFA19E9BA1600B8EACB /* runinbg.h */,
 				583291F715DA081D00D96A6D /* Scopes */,
 				58B8CE5616E05EDB00F6E68E /* serialport.cpp */,
 				58B8CE5716E05EDB00F6E68E /* serialport.h */,
@@ -614,6 +646,8 @@
 				58B8CE5A16E05EDB00F6E68E /* star.h */,
 				58EC727E1749D8B300502727 /* star_profile.cpp */,
 				58EC727F1749D8B300502727 /* star_profile.h */,
+				A10CD355199D1423006DD99F /* statswindow.cpp */,
+				A10CD356199D1423006DD99F /* statswindow.h */,
 				580F80D317810B200020900F /* stepguider_simulator.h */,
 				58EC72801749D8B300502727 /* target.cpp */,
 				58EC72811749D8B300502727 /* target.h */,
@@ -670,7 +704,7 @@
 		58B8CE9016E05F3A00F6E68E /* Libs */ = {
 			isa = PBXGroup;
 			children = (
-				A1AE6D9F1958E05D00F343D8 /* libASICamera.a */,
+				A1AE6D9F1958E05D00F343D8 /* libASICamera2.a */,
 				2999514218982ED90002D9EB /* libwx_baseu_net-3.0.a */,
 				2999514318982ED90002D9EB /* libwx_baseu-3.0.a */,
 				2999514418982ED90002D9EB /* libwx_osx_cocoau_adv-3.0.a */,
@@ -782,7 +816,6 @@
 				583291F615DA081200D96A6D /* scope_GC_USBST4.cpp in Sources */,
 				5832920415DA143E00D96A6D /* scope_eqmac.cpp in Sources */,
 				58B8CE6416E05EDB00F6E68E /* advanced_dialog.cpp in Sources */,
-				58B8CE6516E05EDB00F6E68E /* ascom_common.cpp in Sources */,
 				58B8CE6716E05EDB00F6E68E /* cam_ascomlate.cpp in Sources */,
 				58B8CE6816E05EDB00F6E68E /* cam_Atik16.cpp in Sources */,
 				58B8CE6916E05EDB00F6E68E /* cam_firewire_IC.cpp in Sources */,
@@ -851,6 +884,13 @@
 				A140805419195D4600CC55AA /* darks_dialog.cpp in Sources */,
 				A140805719195D6D00CC55AA /* Refine_DefMap.cpp in Sources */,
 				A1AE6D9E1958DDD500F343D8 /* cam_ZWO.cpp in Sources */,
+				A10CD354197D0150006DD99F /* profile_wizard.cpp in Sources */,
+				A10CD357199D1423006DD99F /* statswindow.cpp in Sources */,
+				A1C8EDFB19E9BA1600B8EACB /* runinbg.cpp in Sources */,
+				A1C8EDFE19F38C7500B8EACB /* comet_tool.cpp in Sources */,
+				A1C8EE0119FA309200B8EACB /* fitsiowrap.cpp in Sources */,
+				A1C8EE041A17275300B8EACB /* calsanity_dialog.cpp in Sources */,
+				A1AC13F81A57C1450078CE9E /* rotator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -920,7 +960,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_5)",
 					"\"$(SRCROOT)/cameras\"",
 					"$(LIBUSB)/lib",
-					"\"$(SRCROOT)/../wxWidgets-3.0.0/Cocoa_32/lib\"",
+					"\"$(SRCROOT)/../wxWidgets/Cocoa_32/lib\"",
 					"\"$(SRCROOT)/cameras/zwolibs/mac\"",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
@@ -1004,7 +1044,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_5)",
 					"\"$(SRCROOT)/cameras\"",
 					"$(LIBUSB)/lib",
-					"\"$(SRCROOT)/../wxWidgets-3.0.0/Cocoa_32/lib\"",
+					"\"$(SRCROOT)/../wxWidgets/Cocoa_32/lib\"",
 					"\"$(SRCROOT)/cameras/zwolibs/mac\"",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";

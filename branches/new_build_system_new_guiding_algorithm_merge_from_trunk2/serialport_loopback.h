@@ -36,13 +36,13 @@
 #if !defined(SERIALPORT_LOOPBACK_H_INCLUDED)
 #define SERIALPORT_LOOPBACK_H_INCLUDED
 
-#include "wx/msw/ole/automtn.h"
-
-class SerialPortLoopback:public SerialPort
+class SerialPortLoopback : public SerialPort
 {
     const static int MaxDataSize = 128;
     char m_data;
+
 public:
+
     wxArrayString GetSerialPortList(void);
 
     SerialPortLoopback(void);
@@ -51,10 +51,10 @@ public:
     virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
     virtual bool Disconnect(void);
 
-    virtual bool Send(const unsigned char * const pData, const unsigned count);
+    virtual bool Send(const unsigned char *pData, unsigned count);
 
     virtual bool SetReceiveTimeout(int timeoutMs);
-    virtual bool Receive(unsigned char *pData, const unsigned count);
+    virtual bool Receive(unsigned char *pData, unsigned count);
 };
 
 #endif // SERIALPORT_LOOPBACK_H_INCLUDED

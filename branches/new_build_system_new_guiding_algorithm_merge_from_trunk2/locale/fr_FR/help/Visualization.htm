@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Outils de visualisation</title></head>
+<body>
+<h2>Outils de visualisation</h2>
+<span style="font-style: italic;">PHD2</span> offre de nombreux outils de visualisation pour vous aider à évaluer les performances d'autoguidage. Tous ces outils peuvent être appelés par le menu 'Affichage' et sont décrits ci-dessous.
+<br><ul><li><a href="#Overlays">Calques</a></li><li><a href="#Graphical_Display">Graphiques</a></li><li><a href="#Star_Profile_and_Target_Displays">
+Profil d'étoile et affichage de cible</a></li><li><a href="#Adaptive_Optics_AO_Graph">
+Graphique AO</a></li><li><a href="#DockableMoveable_Graphical_Windows">Fenêtres flottantes</a></li></ul>
+<h3><a name="Overlays"></a>Calques</h3>Les outils de visualisation les plus simples sont les calques.
+Ceux-ci sont superposés à l'image provenant de la caméra, dans la fenêtre principale.
+Plusieurs choix sont possibles:<br>
+<ul>
+<li>Cible à réticule</li>
+<li>Quadrillage fin</li>
+<li>Quadrillage large</li>
+<li>RA/Dec - cette vue affiche comment sont alignés les axes par rapport au capteur de la caméra.</li>
+<li>Aucun</li>
+</ul>
+Cliquez sur un des choix pour afficher le calque.
+<h3><a name="Graphical_Display"></a>Graphiques</h3>
+Les graphiques et leurs courbes sont le meilleur moyen d'évaluer les performances de l'autoguidage.
+Voici un exemple typique de graphiques: <br><br><img alt="" src="Guider_Graph.PNG"><br><br><br>
+La plus grand partie de la fenêtre montre les déplacements de l'étoile-guide à chaque pose du capteur de guidage. Les courbes évoluent de la gauche vers la droite.
+Par défaut, une courbe indique le déplacement en AD, l'autre en DEC mais vous pouvez appuyer sur le bouton 'paramètres' pour sélectionner les axes X et Y de la caméra.
+Ce bouton permet également de basculer l'affichage de 'arc-secondes' en 'pixels', ou de changer les couleurs des courbes. 
+L'échelle de l'axe vertical peut être contrôlée par le second bouton en partant du haut, celui qui affiche y:+/-4" dans notre example.
+L'échelle de l'axe horizontal - le nombre de captures d'autoguidage affichées - est contrôlé par le bouton du haut, celui qui affiche x:100 dans l'example.
+ 
+Cette échelle détermine aussi la taille de l'échantillon utilisé pour calculer les <a name="statistics"></a>statistiques affichées en bas à gauche de la fenêtre.
+Ces valeurs indiquent la déviation standard moyennée (RMS) des mouvements de chaque axe, ainsi que le total pour les deux axes.
+Ces valeurs donnent la meilleure indication des performances de l'autoguidage 
+car elles correspondent directement à la taille apparente des étoiles sur les images (FWHM) et aux conditions de turbulence.
+<br> La valeur '<a name="RA_Osc"></a>RA Osc'  indique la probabilité que le mouvement actuel en AD est en sens inverse du précédent.
+ Si l'agressivité est trop élevée et les corrections trop importantes, ce nombre tendra vers 1.0 et la courbe oscillera sans cesse autour de la moyenne.
+ Si les corrections sont de bonne amplitude, cette valeur est théoriquement de 0.5   
+Dans la pratique, à cause de l'erreur périodique des montures une valeur de 0.3 est considérée comme idéale. 
+Une valeur très basse indique que vous devez augmenter l'aggressivité ou diminuer la latence.
+ Une valeur très élevée demande de diminuer l'agressivité ou augmenter la latence.
+ Les deux cases à cocher sur la gauche aident également à évaluer les performances.
+<br>Cliquer sur '<a name="Corrections"></a>Corrections' affiche un calque montrant les corrections envoyées à la monture, leur direction et amplitude.
+Dans l'exemple il s'agit des lignes verticales rouges et vertes présentes à certains endroits sur l'axe horizontal.
+Cela vous indique la 'charge de travail' de PHD2. 
+Dans de très bonnes conditions, ces lignes ne sont présentes que sporadiquement sur l'axe horizontal.
+Les zones vides entre deux lignes indiquent une période pendant laquelle aucune correction n'était nécessaire. 
+ L'autre case, marquée '<a name="Trendlines"></a>Tendances', affiche deux lignes qui indiquent la dérive moyenne de l'étoile-guide.
+ Cet outil est particulièrement utile pour affiner la mise en station à l'aide de la ligne de DEC.
+Cependant la ligne d'AD peut vous indiquer si votre monture suit trop vite ou trop lentement, par exemple si vous pouvez ajuster la vitesse du moteur.
+<br><br>Il est recommandé d'évaluer les performances en arc secondes au lieu de pixels.
+Cette façon de faire est indépendante de l'équipement (focale, taille des pixels,...). On peut donc comparer facilement les valeurs.
+Pour un calcul correct en arc secondes vous devez indiquer à <span style="font-style: italic;">PHD2</span> 
+l'échantillonnage de votre appareil d'autoguidage. A savoir, la focale de l'optique et la taille des pixels.
+ Ces paramètres se trouvent dans le dialogue 'cerveau', dans les onglets 'Global' et 'Caméra'.
+ Si vous ne les spécifiez pas, <span style="font-style: italic;">PHD2</span>
+utilisera une valeur par défaut de 1.0 et les valeurs affichées le seront toujours en unité de pixels.
+<br><br>
+Le bas de la fenêtre des graphiques donne l'occasion d'ajuster les paramètres d'autoguidage en temps réel.
+Il s'agit des mêmes valeurs que dans le 'cerveau' mais peuvent être modifées sans devoir interrompre l'autoguidage.
+
+<h3><a name="Star_Profile_and_Target_Displays"></a>Profil d'étoile et affichage de cible</h3><img alt="" src="Star_profile.PNG"><br><br>
+Le profil d'étoile affiche une vue en coupe de l'étoile-guide ainsi que sa largeur à mi-hauteur (<a name="FWHM"></a>FWHM). 
+  De grosses fluctuations de cette valeur peuvent indiquer une étoile trop faible ou un temps d'exposition trop court.  
+<br><br><img alt="" src="Target_display.PNG"><br><br>
+L'affichage de cible est une autre façon de visualiser les performances d'autoguidage.
+Le 'X' rouge montre le déplacement de l'étoile lors de la dernière exposition de guidage tandis que les points bleus concernent l'historique récent.
+Vous pouvez zoomer avec les contrôles en haut à gauche ou changer le nombre de point affichés dans l'historique.
+ 
+<h3><a name="Adaptive_Optics_AO_Graph"></a>Graphique AO</h3><img alt="AO Graph Image" src="AO_graph.PNG"><br><br>
+Le graphique d'AO est équivalent à l'affichage de cible mais il concerne les corrections de votre appareil d'optique adaptative, si vous en possédez un.
+ Le rectangle rouge montre les bords de l'AO et le rectangle jaune montre la zone des sauts.  
+Si l'étoile sort du rectangle intérieur jaune, <span style="font-style: italic;">PHD2</span> ordonnera un saut de monture pour remettre l'étoile au centre.
+Dans ce cas, des lignes vertes et bleues indiquent le saut initial et celui qui reste à effectuer.
+ Le point blanc indique la position actuelle de l'AO et le cercle vert (rouge lors d'un saut) montre la position moyenne de l'AO.
+Le bouton en haut à gauche contrôle combien de points participent à l'historique.
+
+<h3><a name="DockableMoveable_Graphical_Windows"></a>Fenêtres flottantes</h3>
+Les diverses fenêtres indiquant les performances sont initialement rangées dans la fenêtre principale.
+Elles sont donc arrangées de façon automatique dans le cadre de <span style="font-style: italic;">PHD2</span>.
+ Vous pouvez cependant les déplacer à votre guise en cliquant et déplaçant leur barre de titre.
+ C'est très utile pour mieux voir les détails des graphiques.
+Replacez les fenêtres dans le cadre d'origine en les déplaçant à l'endroit désiré.
+ Un peu d'entraînement suffit à organiser les fenêtres selon vos préférences.
+</body></html>

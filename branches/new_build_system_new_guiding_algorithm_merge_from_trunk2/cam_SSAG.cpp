@@ -91,7 +91,7 @@ static wxString GetDiPropStr(HDEVINFO h, SP_DEVINFO_DATA *data, const wxString& 
     }
     else
     {
-        Debug.AddLine("SSAG failed to get SDRP_DIRVER registry property for SSAG");
+        Debug.AddLine("SSAG failed to get SDRP_DRIVER registry property for SSAG");
     }
 
     return val;
@@ -288,17 +288,23 @@ bool Camera_SSAGClass::Connect()
     if (!LoadSSAGIFDll())
         return true;
 
+    wxYield();
+
     if (!_SSAG_openUSB())
     {
         UnloadSSAGIFDll();
         return true;
     }
 
+    wxYield();
+
     _SSAG_SETBUFFERMODE(0);
     Connected = true;
 
     //qglogfile = new wxTextFile(Debug.GetLogDir() + PATHSEPSTR + _T("PHD_QGuide_log.txt"));
     //qglogfile->AddLine(wxNow() + ": QGuide connected"); //qglogfile->Write();
+
+    wxYield();
 
     return false;
 }
@@ -322,7 +328,7 @@ bool Camera_SSAGClass::ST4PulseGuideScope(int direction, int duration)
     }
     _SSAG_GuideCommand(reg, dur);
 
-    wxMilliSleep(duration + 10);
+    WorkerThread::MilliSleep(duration + 10);
 
     //qglogfile->AddLine("Done"); //qglogfile->Write();
 
@@ -348,6 +354,17 @@ bool Camera_SSAGClass::Disconnect()
     return false;
 }
 
+static bool StopExposure()
+{
+    // the v2 DLL has a function _SSAG_CancelExposure, and v4 has CancelExposure
+    // though I am not sure if they have any parameters or return values. Testing
+    // my SSAG with the v4 lib seems to work fine without calling this, so I'm
+    // leaving it alone for now.
+    Debug.AddLine("SSAG: StopExposure");
+    // _SSAG_CancelExposure();
+    return true;
+}
+
 bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
 {
     // Only does full frames
@@ -361,27 +378,41 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
 
     _SSAG_ProgramCamera(0, 0, 1280, 1024, (GuideCameraGain * 63 / 100));
 
-    if (img.NPixels != (xsize*ysize))
+    if (img.Init(FullSize))
     {
-        if (img.Init(xsize,ysize))
-        {
-            pFrame->Alert(_T("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
     }
+
+    CameraWatchdog watchdog(duration, GetTimeoutMs());
 
     _SSAG_ThreadedExposure(duration, NULL);
 
     //qglogfile->AddLine("Exposure programmed"); //qglogfile->Write();
 
-    if (duration > 100) {
-        wxMilliSleep(duration - 100);
-        wxGetApp().Yield();
+    if (duration > 100)
+    {
+        if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY) &&
+            (WorkerThread::TerminateRequested() || StopExposure()))
+        {
+            return true;
+        }
     }
 
     while (_SSAG_isExposing())
+    {
         wxMilliSleep(50);
+        if (WorkerThread::InterruptRequested() &&
+            (WorkerThread::TerminateRequested() || StopExposure()))
+        {
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+            return true;
+        }
+    }
 
     //qglogfile->AddLine("Exposure done"); //qglogfile->Write();
 
@@ -393,8 +424,8 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     //qglogfile->AddLine("Image loaded"); //qglogfile->Write();
 
     // Do quick L recon to remove bayer array
-//  QuickLRecon(img);
-//  RemoveLines(img);
+//      QuickLRecon(img);
+//      RemoveLines(img);
 
     return false;
 }

@@ -36,7 +36,9 @@
 #include "phd.h"
 
 WorkerThread::WorkerThread(MyFrame *pFrame)
-    :wxThread(wxTHREAD_JOINABLE)
+    : wxThread(wxTHREAD_JOINABLE),
+      m_interruptRequested(0),
+      m_killable(true)
 {
     m_pFrame = pFrame;
     Debug.AddLine("WorkerThread constructor called");
@@ -71,6 +73,8 @@ void WorkerThread::EnqueueMessage(const WORKER_THREAD_REQUEST& message)
 
 void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
 {
+    m_interruptRequested = INT_STOP | INT_TERMINATE;
+
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
@@ -82,6 +86,8 @@ void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
 
 void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, const wxRect& subframe)
 {
+    m_interruptRequested &= ~INT_STOP;
+
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
@@ -96,13 +102,42 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposur
     EnqueueMessage(message);
 }
 
+unsigned int WorkerThread::MilliSleep(int ms, unsigned int checkInterrupts)
+{
+    enum { MAX_SLEEP = 100 };
+
+    if (ms <= MAX_SLEEP)
+    {
+        if (ms > 0)
+            wxMilliSleep(ms);
+        return WorkerThread::InterruptRequested() & checkInterrupts;
+    }
+
+    WorkerThread *thr = WorkerThread::This();
+    wxStopWatch swatch;
+
+    long elapsed = 0;
+    do {
+        wxMilliSleep(wxMin((long) ms - elapsed, (long) MAX_SLEEP));
+        unsigned int val = thr ? (thr->m_interruptRequested & checkInterrupts) : 0;
+        if (val)
+            return val;
+        elapsed = swatch.Time();
+    } while (elapsed < ms);
+
+    return 0;
+}
+
 bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs)
 {
     bool bError = false;
 
     try
     {
-        wxMilliSleep(m_pFrame->GetTimeLapse());
+        if (WorkerThread::MilliSleep(m_pFrame->GetTimeLapse(), INT_ANY))
+        {
+            throw ERROR_INFO("Time lapse interrupted");
+        }
 
         if (pCamera->HasNonGuiCapture())
         {
@@ -112,7 +147,7 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs)
 
             if (pCamera->Capture(pArgs->exposureDuration, *pArgs->pImage, pArgs->subframe, true))
             {
-                throw ERROR_INFO("CaptureFull failed");
+                throw ERROR_INFO("Capture failed");
             }
         }
         else
@@ -172,6 +207,8 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 
 void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
 {
+    m_interruptRequested &= ~INT_STOP;
+
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
@@ -189,6 +226,8 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point
 
 void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction, int duration)
 {
+    m_interruptRequested &= ~INT_STOP;
+
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
@@ -284,6 +323,7 @@ void WorkerThread::SendWorkerThreadMoveComplete(Mount *pMount, Mount::MOVE_RESUL
     event->SetPayload<Mount *>(pMount);
     wxQueueEvent(m_pFrame, event);
 }
+
 /*
  * entry point for the background thread
  */

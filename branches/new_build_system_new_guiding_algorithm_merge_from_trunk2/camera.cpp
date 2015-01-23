@@ -39,8 +39,9 @@
 #include <wx/stdpaths.h>
 
 static const int DefaultGuideCameraGain = 95;
+static const int DefaultGuideCameraTimeoutMs = 5000;
 static const bool DefaultUseSubframes = false;
-static const double DefaultPixelSize = 0;
+static const double DefaultPixelSize = 0.0;
 static const int DefaultReadDelay = 150;
 static const bool DefaultLoadDarks = true;
 static const bool DefaultLoadDMap = false;
@@ -181,30 +182,23 @@ GuideCamera::GuideCamera(void)
     HasPortNum = false;
     HasDelayParam = false;
     HasGainControl = false;
-    HasShutter=false;
-    ShutterState=false;
-    HasSubframes=false;
+    HasShutter = false;
+    ShutterState = false;
+    HasSubframes = false;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
 
     CurrentDarkFrame = NULL;
     CurrentDefectMap = NULL;
 
-    int cameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
-    SetCameraGain(cameraGain);
-    double pixelSize = pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
-    SetCameraPixelSize(pixelSize);
+    GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
+    m_timeoutMs = pConfig->Profile.GetInt("/camera/TimeoutMs", DefaultGuideCameraTimeoutMs);
+    PixelSize = pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
 }
 
 GuideCamera::~GuideCamera(void)
 {
     ClearDarks();
-
-    if (Connected)
-    {
-        pFrame->SetStatusText(pCamera->Name + _(" disconnected"));
-        pCamera->Disconnect();
-    }
 }
 
 static int CompareNoCase(const wxString& first, const wxString& second)
@@ -216,7 +210,7 @@ wxArrayString GuideCamera::List(void)
 {
     wxArrayString CameraList;
 
-    CameraList.Add(_T("None"));
+    CameraList.Add(_("None"));
 #if defined (ASCOM_LATECAMERA)
     wxArrayString ascomCameras = Camera_ASCOMLateClass::EnumAscomCameras();
     for (unsigned int i = 0; i < ascomCameras.Count(); i++)
@@ -331,7 +325,7 @@ wxArrayString GuideCamera::List(void)
     return CameraList;
 }
 
-GuideCamera *GuideCamera::Factory(wxString choice)
+GuideCamera *GuideCamera::Factory(const wxString& choice)
 {
     GuideCamera *pReturn = NULL;
 
@@ -353,7 +347,7 @@ GuideCamera *GuideCamera::Factory(wxString choice)
             pReturn = new Camera_ASCOMLateClass(choice);
         }
 #endif
-        else if (choice.Find(_T("None")) + 1) {
+        else if (choice.Find(_("None")) + 1) {
         }
         else if (choice.Find(_T("Simulator")) + 1) {
             pReturn = new Camera_SimClass();
@@ -613,18 +607,27 @@ bool GuideCamera::SetCameraGain(int cameraGain)
     return bError;
 }
 
-float GuideCamera::GetCameraPixelSize(void)
+void GuideCamera::SetTimeoutMs(int ms)
+{
+    static const int MIN_TIMEOUT_MS = 5000;
+
+    m_timeoutMs = wxMax(ms, MIN_TIMEOUT_MS);
+
+    pConfig->Profile.SetInt("/camera/TimeoutMs", m_timeoutMs);
+}
+
+double GuideCamera::GetCameraPixelSize(void)
 {
     return PixelSize;
 }
 
-bool GuideCamera::SetCameraPixelSize(float pixel_size)
+bool GuideCamera::SetCameraPixelSize(double pixel_size)
 {
     bool bError = false;
 
     try
     {
-        if (pixel_size <= 0)
+        if (pixel_size <= 0.0)
         {
             throw ERROR_INFO("pixel_size <= 0");
         }
@@ -696,14 +699,14 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     // Pixel size always
     m_pPixelSize = NewSpinnerDouble(pParent, width, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
         _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
-    AddTableEntryPair(pParent, pCamControls, "Pixel size", m_pPixelSize);
+    AddTableEntryPair(pParent, pCamControls, _("Pixel size"), m_pPixelSize);
 
     // Gain control
     if (m_pCamera->HasGainControl)
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_pCameraGain = NewSpinnerInt(pParent, width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star).Not available on all cameras."));
-        AddTableEntryPair(pParent, pCamControls, "Camera gain", m_pCameraGain);
+        m_pCameraGain = NewSpinnerInt(pParent, width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
+        AddTableEntryPair(pParent, pCamControls, _("Camera gain"), m_pCameraGain);
     }
 
     // Delay parameter
@@ -711,8 +714,9 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     {
         int width = StringWidth(_T("0000")) + 30;
         m_pDelay = NewSpinnerInt(pParent, width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
-        AddTableEntryPair(pParent, pCamControls, "Delay", m_pDelay);
+        AddTableEntryPair(pParent, pCamControls, _("Delay"), m_pDelay);
     }
+
     // Port number
     if (m_pCamera->HasPortNum)
     {
@@ -729,7 +733,14 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
         AddTableEntryPair(pParent, pCamControls, _("LE Port"), m_pPortNum);
     }
 
-    this->Add(pCamControls);
+    // Watchdog timeout
+    {
+        int width = StringWidth(_T("0000")) + 30;
+        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, _("The camera will be disconnected if it fails to respond for this long. The default value, 5 seconds, should be appropriate for most cameras."));
+        AddTableEntryPair(pParent, pCamControls, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal);
+    }
+
+    Add(pCamControls);
 }
 
 CameraConfigDialogPane::~CameraConfigDialogPane(void)
@@ -749,6 +760,8 @@ void CameraConfigDialogPane::LoadValues(void)
     {
         m_pCameraGain->SetValue(m_pCamera->GetCameraGain());
     }
+
+    m_timeoutVal->SetValue(m_pCamera->GetTimeoutMs() / 1000);
 
     if (m_pCamera->HasDelayParam)
     {
@@ -839,6 +852,8 @@ void CameraConfigDialogPane::UnloadValues(void)
     {
         m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
     }
+
+    m_pCamera->SetTimeoutMs(m_timeoutVal->GetValue() * 1000);
 
     if (m_pCamera->HasDelayParam)
     {
@@ -998,6 +1013,24 @@ void GuideCamera::SubtractDark(usImage& img)
     {
         Subtract(img, *CurrentDarkFrame);
     }
+}
+
+void GuideCamera::DisconnectWithAlert(CaptureFailType type)
+{
+    wxString msg;
+    switch (type) {
+    case CAPT_FAIL_MEMORY:
+        msg = _("Memory allocation error during capture"); break;
+    case CAPT_FAIL_TIMEOUT:
+        msg = _("Camera timeout during capture"); break;
+    }
+    DisconnectWithAlert(msg);
+}
+
+void GuideCamera::DisconnectWithAlert(const wxString& msg)
+{
+    Disconnect();
+    pFrame->Alert(msg + "\n" + _("The camera has been disconnected. Please resolve the problem and re-connect the camera."));
 }
 
 #ifndef OPENPHD
