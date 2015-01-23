@@ -503,7 +503,7 @@ target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
 # Additional files in the workspace, ti improve maintainability 
 add_custom_target(CmakeAdditionalFiles
   SOURCES
-  ${phd_src_dir}/build/CMakeListsThirdparties.txt)
+  ${phd_src_dir}/build/CMakeListsThirdparties.txt
   ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
   ${phd_src_dir}/cmake_modules/FindINDI.cmake
   ${phd_src_dir}/cmake_modules/FindNova.cmake)

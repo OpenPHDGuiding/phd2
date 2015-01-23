@@ -5,10 +5,11 @@
 
 set(thirdparties_dir ${CMAKE_SOURCE_DIR}/build/thirdparties)
 
-# custom cmake packages
+# custom cmake packages, should have lower priority than the ones bundled with cmake
 set(CMAKE_MODULE_PATH 
-    ${CMAKE_SOURCE_DIR}/cmake_modules/ 
-    ${CMAKE_MODULE_PATH})
+    ${CMAKE_MODULE_PATH}
+    ${CMAKE_SOURCE_DIR}/cmake_modules/ )
+
 
 
 # these variables allow to specify to which the main project will link and
@@ -329,7 +330,7 @@ set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
 
 #############################################
 # wxWidgets
-# The usage is a bit different on all the platforms. For having version >= 3.0, new version of cmake should be used on Windows (on Linux/OSX it works properly this way).
+# The usage is a bit different on all the platforms. For having version >= 3.0, a version of cmake >= 3.0 should be used on Windows (on Linux/OSX it works properly this way).
 if(WIN32)
   # wxWidgets
   set(wxWidgets_CONFIGURATION msw)
@@ -342,7 +343,6 @@ if(WIN32)
   #message(${wxWidgets_USE_FILE})
 
   
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 else()
   if(wxWidgets_PREFIX_DIRECTORY)
     set(wxWidgets_CONFIG_OPTIONS --prefix=${wxWidgets_PREFIX_DIRECTORY})
@@ -357,12 +357,13 @@ else()
   if(NOT wxWidgets_FOUND)
     message(FATAL_ERROR "WxWidget cannot be found. Please use wx-config prefix")
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
   #if(APPLE)
   #  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} wx_osx_cocoau_aui-3.0)
   #endif()
   #message("wxLibraries ${wxWidgets_LIBRARIES}")
 endif()
+
+set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 
 
 
