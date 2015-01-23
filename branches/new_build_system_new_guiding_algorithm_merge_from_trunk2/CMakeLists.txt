@@ -4,8 +4,14 @@
 # XXX)
 
 cmake_minimum_required(VERSION 2.8.11)
-project(PhD2)
 
+if(COMMAND cmake_policy)
+    cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
+
+
+project(PhD2)
 enable_testing()
 
 set(USE_FOLDERS TRUE)
@@ -26,26 +32,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   # Set the possible values of build type for cmake-gui
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
-
-
-
-# should be placed in the thirdparties cmake
-# INDI
-find_package(INDI REQUIRED)
-include_directories(${INDI_INCLUDE_DIR})
-
-# Nova
-find_package(Nova)
-if (NOVA_FOUND)
-    include_directories(${NOVA_INCLUDE_DIR})
-else ()
-    message(WARNING "libnova not found! Considere to install libnova-dev ")
-endif (NOVA_FOUND)   
-
-if (NOVA_FOUND)
-    target_link_libraries(phd2 ${NOVA_LIBRARIES} )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIBNOVA" )
-endif (NOVA_FOUND)   
 
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -69,42 +55,25 @@ else()
   elseif(HAS_CXX0X_FLAG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
   endif()
-
-
 endif()
 
 
 # to be changed in add_subdirectory
 include(build/CMakeListsThirdparties.txt)
 
+
+
 # Adding the wxWidgets include definitions. Maybe narrowed to Phd2 project only
 include_directories(${wxWidgets_INCLUDE_DIRS})
 
-# Adding the gaussian process headers
-include_directories(${phd_src_dir}/gaussian_process)
+
 
 set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 
-# Gaussian Process
 
-set(gp_SRC
-    ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
-    ${phd_src_dir}/gaussian_process/tools/math_tools.h
-    ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
-    ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp)
-add_library(GP STATIC ${gp_SRC})
-target_include_directories(GP PUBLIC ${EIGEN_SRC})
 
-# Test for the GP
-# add_executable(GPTest ${phd_src_dir}/tests/gaussian_process/main.cpp)
-# target_link_libraries(GPTest GP gtest)
-# target_include_directories(GPTest PRIVATE ${phd_src_dir}/gaussian_process
-#                                   PRIVATE ${GTEST_HEADERS})
-# set_property(TARGET GPTest PROPERTY FOLDER "Unit tests/")
-# add_test(GPTest1 GPTest)
 
 # main project
-
 set(cam_KWIQGuider_SRC
   ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.cpp
   ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.h
@@ -117,10 +86,6 @@ source_group(Cameras\\cam_KWIQGuider FILES ${cam_KWIQGuider_SRC})
 set(cam_SRC
   ${phd_src_dir}/cam_ascomlate.cpp
   ${phd_src_dir}/cam_ascomlate.h
-
-  ${phd_src_dir}/cam_ascom.cpp
-  ${phd_src_dir}/ascom.cpp
-  ${phd_src_dir}/extras/cam_ascomlate.cpp
 
   ${phd_src_dir}/cam_Atik16.cpp
   ${phd_src_dir}/cam_Atik16.h
@@ -185,6 +150,8 @@ set(cam_SRC
 )
 source_group(Cameras FILES ${cam_SRC})
 
+
+# windows specific cameras
 if(WIN32)
   set(cam_SRC
     ${cam_SRC}
@@ -203,6 +170,12 @@ if(WIN32)
 
     ${phd_src_dir}/cam_QHY5IIbase.cpp
     ${phd_src_dir}/cam_QHY5IIbase.h
+    
+    # ascom
+    ${phd_src_dir}/cam_ascom.cpp
+    ${phd_src_dir}/ascom.cpp
+    ${phd_src_dir}/extras/cam_ascomlate.cpp
+    
 
   )
 elseif(UNIX AND (NOT APPLE))
@@ -282,19 +255,7 @@ set(guiding_SRC
 source_group(Guiding FILES ${guiding_SRC})
 
 
-set(indiClient_SRC
-  ${phd_src_dir}/libindiclient/indi.c
-  ${phd_src_dir}/libindiclient/wx/indigui.cpp
-  ${phd_src_dir}/libindiclient/wx/indi_io.cpp
-  ${phd_src_dir}/libindiclient/wx/indi_list.cpp
-  ${phd_src_dir}/libindiclient/wx/indi_config.cpp
-  ${phd_src_dir}/libindiclient/wx/indisave.cpp
-  ${phd_src_dir}/libindiclient/wx/wxled.cpp
-  ${phd_src_dir}/libindiclient/wx/wxchecktreectrl.cpp
-  ${phd_src_dir}/libindiclient/base64.c
-  ${phd_src_dir}/libindiclient/lilxml.c
-)
-source_group(IndiClient FILES ${indiClient_SRC})
+
 
 
 set(gaussian_process_SRC
@@ -409,13 +370,6 @@ if(UNIX AND NOT APPLE)
 endif()
 source_group(src FILES ${phd2_SRC})
 
-# Test for the CircularBuffer
-add_executable(CircularBufferTest ${phd_src_dir}/tests/circular_buffer/circular_buffer_test.cpp)
-target_link_libraries(CircularBufferTest GP gtest)
-target_include_directories(CircularBufferTest PRIVATE ${phd_src_dir}
-                                              PRIVATE ${GTEST_HEADERS})
-set_property(TARGET CircularBufferTest PROPERTY FOLDER "Unit tests/")
-add_test(CircularBufferTest1 CircularBufferTest)
 
 
 
@@ -449,7 +403,7 @@ if(APPLE)
     ${gaussian_process_SRC}
     ${phd2_SRC}
     
-    # ressources of the bundle
+    # resources of the bundle
     ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
     ${phd_src_dir}/PHD2GuideHelp.zip
     
@@ -523,7 +477,6 @@ elseif(UNIX)
    Phd2
    ${scopes_SRC}
    ${cam_SRC}
-   ${indiClient_SRC}
    ${guiding_SRC}
    ${gaussian_process_SRC}
    ${phd2_SRC}
@@ -531,52 +484,96 @@ elseif(UNIX)
   target_link_libraries(Phd2 X11)
 else()
   message(FATAL_ERROR "Unsupported platform")
-
 endif()
 
-target_include_directories(Phd2 PUBLIC ${EIGEN_SRC})
+
+
 
 # properties of the project common to all platforms
-target_compile_definitions(Phd2 PRIVATE "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS")
-set_target_properties(
-  Phd2
-  PROPERTIES
-    COMPILE_OPTIONS "${wxWidgets_CXX_FLAGS};"
-    )
 
+target_include_directories( Phd2 PUBLIC  ${EIGEN_SRC} ${phd_src_dir}/gaussian_process)
+target_compile_definitions( Phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
+target_compile_options(     Phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
 
 
-# convenient way to edit additional files
+
+
+
+# Additional files in the workspace, ti improve maintainability 
 add_custom_target(CmakeAdditionalFiles
   SOURCES
-  ${phd_src_dir}/build/CMakeListsThirdparties.txt
-)
+  ${phd_src_dir}/build/CMakeListsThirdparties.txt)
+  ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
+  ${phd_src_dir}/cmake_modules/FindINDI.cmake
+  ${phd_src_dir}/cmake_modules/FindNova.cmake)
 
 
+
+
+
+################################################################
+#
+# Installation and packaging
+#
 
 
 install (TARGETS phd2 RUNTIME DESTINATION bin)
-install (FILES "${PROJECT_SOURCE_DIR}/icons/phd2.png" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pixmaps/" )
-install (FILES "${PROJECT_SOURCE_DIR}/phd2.desktop" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications/" )
-install (FILES "${PROJECT_SOURCE_DIR}/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/" )
-# install language help files
-install (FILES "${PROJECT_SOURCE_DIR}/locale/de_DE/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/de_DE/" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/es_ES/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/es_ES/" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/fr_FR/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/fr_FR/" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/ja_JP/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/ja_JP/" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/pl_PL/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/pl_PL/" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/ru_RU/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/ru_RU/" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/uk_UA/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/uk_UA/" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/zh_CN/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/zh_CN/" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/zh_TW/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/zh_TW/" OPTIONAL)
-# install translation in standard system location
-install (FILES "${PROJECT_SOURCE_DIR}/locale/de_DE/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/de/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/es_ES/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/es/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/fr_FR/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/fr/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/ja_JP/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/ja/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/pl_PL/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/pl/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/ru_RU/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/ru/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/uk_UA/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/uk/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/zh_CN/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/zh_CN/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
-install (FILES "${PROJECT_SOURCE_DIR}/locale/zh_TW/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/zh_TW/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
+
+if(UNIX AND NOT APPLE)
+  install (FILES ${phd_src_dir}/icons/phd2.png    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ )
+  install (FILES ${phd_src_dir}/phd2.desktop      DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
+  install (FILES ${phd_src_dir}/PHD2GuideHelp.zip DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/ )
+
+
+  # install language help files
+  set(locales_help de_DE es_ES fr_FR ja_JP pl_PL ru_RU uk_UA zh_CN zh_TW)
+  set(locales_help_msg de es fr ja pl ru uk zh_CN zh_TW)
+  list(LENGTH locales_help _len)
+  foreach(_index RANGE ${_len})
+
+    list(GET locales_help       ${_len} _var1)
+    list(GET locales_help_msg   ${_len} _var2)
+
+    install(FILES       ${phd_src_dir}/locale/${_var1}/PHD2GuideHelp.zip 
+            DESTINATION   ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${_var1}/ 
+            OPTIONAL)
+            
+    install(FILES       ${phd_src_dir}/locale/${_var1}/messages.mo 
+             DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${_var2}/LC_MESSAGES/ 
+             RENAME "phd2.mo" 
+             OPTIONAL)          
+            
+  endforeach()
+endif()
+
+
+################################################################
+#
+# Unit tests
+#
+
+
+# CircularBuffer: to remove
+
+
+# Gaussian Process
+set(gp_SRC
+    ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
+    ${phd_src_dir}/gaussian_process/tools/math_tools.h
+    ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
+    ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp)
+add_library(GP STATIC ${gp_SRC})
+target_include_directories(GP PUBLIC ${EIGEN_SRC})
+
+
+add_executable(CircularBufferTest ${phd_src_dir}/tests/circular_buffer/circular_buffer_test.cpp)
+target_link_libraries(CircularBufferTest GP gtest)
+target_include_directories(CircularBufferTest PRIVATE ${phd_src_dir}
+                                              PRIVATE ${GTEST_HEADERS})
+set_property(TARGET CircularBufferTest PROPERTY FOLDER "Unit tests/")
+add_test(CircularBufferTest1 CircularBufferTest)
+
+
+
+
