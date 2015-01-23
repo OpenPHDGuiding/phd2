@@ -171,10 +171,11 @@ if(WIN32)
     ${phd_src_dir}/cam_QHY5IIbase.cpp
     ${phd_src_dir}/cam_QHY5IIbase.h
     
-    # ascom
-    ${phd_src_dir}/cam_ascom.cpp
-    ${phd_src_dir}/ascom.cpp
-    ${phd_src_dir}/extras/cam_ascomlate.cpp
+    # ascom, not there in the sln project -> commented for now 
+    # see also the thirdparties cmake to activate/deactivate any call the the findascom.cmake extension
+    #${phd_src_dir}/cam_ascom.cpp
+    #${phd_src_dir}/ascom.cpp
+    #${phd_src_dir}/extras/cam_ascomlate.cpp
     
 
   )
@@ -267,19 +268,23 @@ set(gaussian_process_SRC
 source_group(GaussianProcess FILES ${gaussian_process_SRC})
 
 
-
+# it would ease if files are organised in an alphabetical order
 set(phd2_SRC
   ${phd_src_dir}/about_dialog.cpp
   ${phd_src_dir}/about_dialog.h
   ${phd_src_dir}/advanced_dialog.cpp
   ${phd_src_dir}/advanced_dialog.h
-  ${phd_src_dir}/ascom_common.cpp
-  ${phd_src_dir}/ascom_common.h
-  ${phd_src_dir}/calrestore_dialog.cpp
-  ${phd_src_dir}/calrestore_dialog.h
+
+  ${phd_src_dir}/calreview_dialog.cpp
+  ${phd_src_dir}/calreview_dialog.h
+  
   ${phd_src_dir}/calstep_dialog.cpp
   ${phd_src_dir}/calstep_dialog.h
   ${phd_src_dir}/circbuf.h
+  
+  ${phd_src_dir}/comet_tool.cpp
+  ${phd_src_dir}/comet_tool.h
+  
   ${phd_src_dir}/configdialog.cpp
   ${phd_src_dir}/configdialog.h
   ${phd_src_dir}/confirm_dialog.cpp
@@ -294,6 +299,9 @@ set(phd2_SRC
   ${phd_src_dir}/event_server.cpp
   ${phd_src_dir}/event_server.h
 
+  ${phd_src_dir}/fitsiowrap.cpp
+  ${phd_src_dir}/fitsiowrap.h
+  
   ${phd_src_dir}/gear_dialog.cpp
   ${phd_src_dir}/gear_dialog.h
   ${phd_src_dir}/graph-stepguider.cpp
@@ -331,10 +339,30 @@ set(phd2_SRC
 
   ${phd_src_dir}/phdcontrol.cpp
   ${phd_src_dir}/phdcontrol.h
+  
+  ${phd_src_dir}/profile_wizard.h
+  ${phd_src_dir}/profile_wizard.cpp
+  
   ${phd_src_dir}/point.h
   ${phd_src_dir}/precompiled_header.cpp
   ${phd_src_dir}/Refine_DefMap.cpp
   ${phd_src_dir}/Refine_DefMap.h
+  
+  # rotators
+  ${phd_src_dir}/rotators.h
+  
+  ${phd_src_dir}/rotator.cpp
+  ${phd_src_dir}/rotator.h
+  
+  ${phd_src_dir}/rotator_ascom.cpp
+  ${phd_src_dir}/rotator_ascom.h
+  
+  ${phd_src_dir}/rotator_simulator.h
+  ###
+  
+  ${phd_src_dir}/runinbg.cpp
+  ${phd_src_dir}/runinbg.h
+  
   ${phd_src_dir}/serialport.cpp
   ${phd_src_dir}/serialport.h
   ${phd_src_dir}/serialport_loopback.cpp
@@ -346,6 +374,10 @@ set(phd2_SRC
   ${phd_src_dir}/serialports.h
   ${phd_src_dir}/socket_server.cpp
   ${phd_src_dir}/socket_server.h
+  
+  ${phd_src_dir}/statswindow.cpp
+  ${phd_src_dir}/statswindow.h
+  
   ${phd_src_dir}/star.cpp
   ${phd_src_dir}/star.h
   ${phd_src_dir}/star_profile.cpp
@@ -366,6 +398,13 @@ if(UNIX AND NOT APPLE)
   set(phd2_SRC 
       ${phd2_SRC}
       ${phd_src_dir}/config_INDI.cpp
+      ${phd_src_dir}/config_INDI.h
+      
+      ${phd_src_dir}/indi_gui.cpp
+      ${phd_src_dir}/indi_gui.h
+      
+      ${phd_src_dir}/wxled.cpp
+      ${phd_src_dir}/wxled.h
      )
 endif()
 source_group(src FILES ${phd2_SRC})
@@ -518,7 +557,7 @@ add_custom_target(CmakeAdditionalFiles
 #
 
 
-install (TARGETS phd2 RUNTIME DESTINATION bin)
+install (TARGETS Phd2 RUNTIME DESTINATION bin)
 
 if(UNIX AND NOT APPLE)
   install (FILES ${phd_src_dir}/icons/phd2.png    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ )
