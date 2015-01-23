@@ -422,7 +422,7 @@ void MyFrame::SetupMenuBar(void)
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
     tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
-    tools_menu->Append(EEGG_REVIEWCAL, _("Review &Calibration Data...\tAlt-C"), _("Review calibration data from last successful calibration"));
+    tools_menu->Append(EEGG_REVIEWCAL, _("Review &Calibration Data\tAlt-C"), _("Review calibration data from last successful calibration"));
     wxMenu *calib_menu = new wxMenu;
     calib_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data..."), _("Restore calibration data from last successful calibration"));
     calib_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data..."), _("Manually calibrate"));

@@ -77,8 +77,8 @@ struct CalibrationDetails
 {
     int focalLength;
     double imageScale;
-    double raGuideRate;
-    double decGuideRate;
+    double raGuideSpeed;
+    double decGuideSpeed;
     double orthoError;
     std::vector <wxRealPoint> raSteps;
     std::vector <wxRealPoint> decSteps;

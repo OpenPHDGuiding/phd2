@@ -472,8 +472,8 @@ void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, dou
 {
     m_calibrationDetails = calDetails;
 
-    m_calibrationDetails.raGuideRate = -1.0;
-    m_calibrationDetails.decGuideRate = -1.0;
+    m_calibrationDetails.raGuideSpeed = -1.0;
+    m_calibrationDetails.decGuideSpeed = -1.0;
     m_calibrationDetails.focalLength = pFrame->GetFocalLength();
     m_calibrationDetails.imageScale = pFrame->GetCameraPixelScale();
     m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
