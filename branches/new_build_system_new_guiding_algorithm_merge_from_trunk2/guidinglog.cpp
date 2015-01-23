@@ -216,7 +216,7 @@ static wxString RotatorPosStr(void)
 static wxString PointingInfo(void)
 {
     double cur_ra, cur_dec, cur_st;
-    if (!pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
+    if (pPointingSource && !pPointingSource->GetCoordinates(&cur_ra, &cur_dec, &cur_st))
     {
         return wxString::Format("Dec = %0.1f deg, Hour angle = %0.2f hr, Pier side = %s, Rotator pos = %s",
             cur_dec, HourAngle(cur_ra, cur_st), PierSideStr(pPointingSource->SideOfPier()), RotatorPosStr());
