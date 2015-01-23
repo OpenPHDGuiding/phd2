@@ -475,50 +475,22 @@ Mount::~Mount()
 
 double Mount::xRate()
 {
-    double dReturn = 0.;
-
-    if (IsCalibrated())
-    {
-        dReturn = m_xRate;
-    }
-
-    return dReturn;
+    return m_xRate;
 }
 
 double Mount::yRate()
 {
-    double dReturn = 0.;
-
-    if (IsCalibrated())
-    {
-        dReturn = m_cal.yRate;
-    }
-
-    return dReturn;
+    return m_cal.yRate;
 }
 
 double Mount::xAngle()
 {
-    double dReturn = 0.;
-
-    if (IsCalibrated())
-    {
-        dReturn = m_cal.xAngle;
-    }
-
-    return dReturn;
+    return m_cal.xAngle;
 }
 
 double Mount::yAngle()
 {
-    double dReturn = 0.;
-
-    if (IsCalibrated())
-    {
-        dReturn = m_cal.xAngle - m_yAngleError + M_PI / 2.;
-    }
-
-    return dReturn;
+    return m_cal.xAngle - m_yAngleError + M_PI / 2.;
 }
 
 static wxString RotAngleStr(double rotAngle)
@@ -1128,10 +1100,10 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details)
     bool err = false;
 
     details->focalLength = pConfig->Profile.GetInt(prefix + "focal_length", 0);
-    details->imageScale = pConfig->Profile.GetDouble(prefix + "image_scale", 1);
-    details->raGuideSpeed = pConfig->Profile.GetDouble(prefix + "ra_guide_rate", -1);
-    details->decGuideSpeed = pConfig->Profile.GetDouble(prefix + "dec_guide_rate", -1);
-    details->orthoError = pConfig->Profile.GetDouble(prefix + "ortho_error", 0);
+    details->imageScale = pConfig->Profile.GetDouble(prefix + "image_scale", 1.0);
+    details->raGuideSpeed = pConfig->Profile.GetDouble(prefix + "ra_guide_rate", -1.0);
+    details->decGuideSpeed = pConfig->Profile.GetDouble(prefix + "dec_guide_rate", -1.0);
+    details->orthoError = pConfig->Profile.GetDouble(prefix + "ortho_error", 0.0);
     details->raStepCount = pConfig->Profile.GetInt(prefix + "ra_step_count", 0);
     details->decStepCount = pConfig->Profile.GetInt(prefix + "dec_step_count", 0);
     // Populate raSteps
