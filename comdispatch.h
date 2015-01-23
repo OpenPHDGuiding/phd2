@@ -100,8 +100,8 @@ public:
 struct GITObjRef : public DispatchObj
 {
     GITObjRef(const GITEntry& gitentry)
-        : DispatchObj(gitentry.Get(), 0)
     {
+        Attach(gitentry.Get(), 0);
     }
 };
 
