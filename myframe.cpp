@@ -1651,7 +1651,7 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             Debug.AddLine("saving dark frame exposure = %d", img->ImgExpDur);
         }
 
-        fits_close_file(fptr, &status);
+        PHD_fits_close_file(fptr);
         bError = status ? true : false;
     }
     catch (wxString Msg)
@@ -1754,7 +1754,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
 
     if (fptr)
     {
-        fits_close_file(fptr, &status);
+        PHD_fits_close_file(fptr);
     }
 
     return bError;

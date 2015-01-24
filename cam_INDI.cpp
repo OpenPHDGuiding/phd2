@@ -383,7 +383,7 @@ bool Camera_INDIClass::ReadFITS(usImage& img)
     long fits_size[2];
     long fpixel[3] = {1,1,1};
     size_t bsize = static_cast<size_t>(cam_bp->bloblen);
-    
+
     // load blob to CFITSIO
     if (fits_open_memfile(&fptr,
             "",
@@ -399,6 +399,7 @@ bool Camera_INDIClass::ReadFITS(usImage& img)
     }
     if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
         pFrame->Alert(_("FITS file is not of an image"));
+        PHD_fits_close_file(fptr);
         return true;
     }
 
@@ -410,18 +411,21 @@ bool Camera_INDIClass::ReadFITS(usImage& img)
     fits_get_num_hdus(fptr,&nhdus,&status);
     if ((nhdus != 1) || (naxis != 2)) {
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
+        PHD_fits_close_file(fptr);
         return true;
     }
     if (img.Init(xsize,ysize)) {
         pFrame->Alert(_("Memory allocation error"));
+        PHD_fits_close_file(fptr);
         return true;
     }
     // Read image
     if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { 
         pFrame->Alert(_("Error reading data"));
+        PHD_fits_close_file(fptr);
         return true;
     }
-    fits_close_file(fptr,&status);
+    PHD_fits_close_file(fptr);
     return false;
 }
 
