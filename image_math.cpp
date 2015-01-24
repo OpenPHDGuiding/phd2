@@ -50,32 +50,27 @@ int dbl_sort_func (double *first, double *second)
     return 0;
 }
 
-float CalcSlope(const ArrayOfDbl& y)
+double CalcSlope(const ArrayOfDbl& y)
 {
     // Does a linear regression to calculate the slope
 
-    int x, size;
-    double s_xy, s_x, s_y, s_xx, nvalid;
-    double retval;
-    size = (int) y.GetCount();
-    nvalid = 0.0;
-    s_xy = 0.0;
-    s_xx = 0.0;
-    s_x = 0.0;
-    s_y = 0.0;
+    int nn = (int) y.GetCount();
 
-    for (x=1; x<=size; x++) {
-        if (1) {
-            nvalid = nvalid + 1;
-            s_xy = s_xy + (double) x * y[x-1];
-            s_x = s_x + (double) x;
-            s_y = s_y + y[x-1];
-            s_xx = s_xx + (double) x * (double) x;
-        }
+    double s_xy = 0.0;
+    double s_y = 0.0;
+
+    for (int x = 0; x < nn; x++)
+    {
+        s_xy += (double)(x + 1) * y[x];
+        s_y += y[x];
     }
 
-    retval = (nvalid * s_xy - (s_x * s_y)) / (nvalid * s_xx - (s_x * s_x));
-    return (float) retval;
+    int sx = (nn * (nn + 1)) / 2;
+    int sxx = sx * (2 * nn + 1) / 3;
+    double s_x = (double) sx;
+    double s_xx = (double) sxx;
+    double n = (double) nn;
+    return (n * s_xy - (s_x * s_y)) / (n * s_xx - (s_x * s_x));
 }
 
 bool QuickLRecon(usImage& img)

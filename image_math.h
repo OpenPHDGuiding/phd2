@@ -57,7 +57,7 @@ extern bool Median3(usImage& img);
 extern bool SquarePixels(usImage& img, float xsize, float ysize);
 extern int dbl_sort_func(double *first, double *second);
 extern bool Subtract(usImage& light, const usImage& dark);
-extern float CalcSlope(const ArrayOfDbl& y);
+extern double CalcSlope(const ArrayOfDbl& y);
 extern bool RemoveDefects(usImage& light, const DefectMap& defectMap);
 
 struct DefectMapBuilderImpl;
