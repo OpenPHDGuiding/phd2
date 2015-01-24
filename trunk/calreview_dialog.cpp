@@ -161,8 +161,8 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     const double dSiderealSecondPerSec = 0.9973;
     bool validDetails = false;
     bool validAscomInfo = false;
-    double guideRaSiderealX = 0;
-    double guideDecSiderealX = 0;
+    double guideRaSiderealX = 0.0;
+    double guideDecSiderealX = 0.0;
 
     if (!pSecondaryMount)
     {
