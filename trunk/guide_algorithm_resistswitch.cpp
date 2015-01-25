@@ -234,7 +234,7 @@ bool GuideAlgorithmResistSwitch::SetAggression(double aggr)
 void GuideAlgorithmResistSwitch::SetFastSwitchEnabled(bool enable)
 {
     m_fastSwitchEnabled = enable;
-    pConfig->Profile.SetDouble(GetConfigPath() + "/fastSwitch", m_fastSwitchEnabled);
+    pConfig->Profile.SetBoolean(GetConfigPath() + "/fastSwitch", m_fastSwitchEnabled);
     Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::SetFastSwitchEnabled(%d)\n", m_fastSwitchEnabled));
 }
 
@@ -264,7 +264,7 @@ GuideAlgorithmResistSwitch::
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggression"));
     m_pAggression->SetDigits(0);
 
-    DoAdd(_("Aggression (pct)"), m_pAggression,
+    DoAdd(_("Aggression"), m_pAggression,
         wxString::Format(_("Aggression factor, percent. Default = %.f%%"), DefaultAggression * 100.0));
 
     width = StringWidth(_T("00.00"));
