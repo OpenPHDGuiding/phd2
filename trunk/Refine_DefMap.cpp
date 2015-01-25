@@ -35,6 +35,7 @@
 #include "phd.h"
 #include "Refine_DefMap.h"
 #include "darks_dialog.h"
+#include "wx/busyinfo.h"
 
 enum {
     ID_PREVIEW = 10001,
@@ -219,12 +220,12 @@ bool RefineDefMap::InitUI()
     bool firstTime = false;
     m_profileId = pConfig->GetCurrentProfileId();
     manualPixelCount = 0;
-    if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()))
+    if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId(), false))
     {
         if (RebuildMasterDarks())
             firstTime = true;       // Need to get the UI built before finishing up
     }
-    if (DefectMap::DefectMapExists(m_profileId) || firstTime)
+    if (DefectMap::DefectMapExists(m_profileId, false) || firstTime)
     {
         LoadFromProfile();
         if (firstTime)
@@ -242,7 +243,8 @@ bool RefineDefMap::InitUI()
 // Do the initial layout of the UI controls
 void RefineDefMap::LoadFromProfile()
 {
-    wxBusyCursor busy;
+    // Let the user know this might take some time...
+    wxBusyInfo busyMsg(_("Please wait while image statistics are being computed..."), this);
 
     m_darks.LoadDarks();
     m_builder.Init(m_darks);

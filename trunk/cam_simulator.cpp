@@ -962,7 +962,7 @@ Camera_SimClass::Camera_SimClass()
 {
     Connected = false;
     Name = _T("Simulator");
-    FullSize = wxSize(640,480);
+    FullSize = wxSize(752,580);
     m_hasGuideOutput = true;
     HasShutter = true;
     HasGainControl = true;

@@ -1068,9 +1068,31 @@ wxString DefectMap::DefectMapFileName(int profileId)
     return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_%d.txt", profileId);
 }
 
-bool DefectMap::DefectMapExists(int profileId)
+bool DefectMap::DefectMapExists(int profileId, bool showAlert)
 {
-    return wxFileExists(DefectMapFileName(profileId));
+    bool bOk = false;
+    fitsfile *fptr = 0;
+    int status = 0;  // CFITSIO status value MUST be initialized to zero!
+
+    if (wxFileExists(DefectMapFileName(profileId)))
+    {
+        wxString fName = DefectMapMasterPath();
+        wxSize sensorSize = pCamera->FullSize;
+        if (PHD_fits_open_diskfile(&fptr, fName, READONLY, &status) == 0)
+        {
+            long fsize[2];
+            fits_get_img_size(fptr, 2, fsize, &status);
+            if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
+                bOk = true;
+            else
+            {
+                if (showAlert)
+                    pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be rebuilt."));
+            }
+            PHD_fits_close_file(fptr);
+        }
+    }
+    return bOk;
 }
 
 void DefectMap::Save(const wxArrayString& info) const

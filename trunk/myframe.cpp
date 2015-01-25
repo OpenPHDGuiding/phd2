@@ -1774,10 +1774,38 @@ static wxString DarkLibFileName(int profileId)
     return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId);
 }
 
+bool MyFrame::DarkLibExists(int profileId, bool showAlert)
+{
+    bool bOk = false;
+    fitsfile *fptr = 0;
+    int status = 0;  // CFITSIO status value MUST be initialized to zero!
+    wxString fileName = DarkLibFileName(profileId);
+
+    if (wxFileExists(fileName))
+    {
+        wxSize sensorSize = pCamera->FullSize;
+        if (PHD_fits_open_diskfile(&fptr, fileName, READONLY, &status) == 0)
+        {
+            long fsize[2];
+            fits_get_img_size(fptr, 2, fsize, &status);
+            if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
+                bOk = true;
+            else
+            {
+                if (showAlert)
+                    Alert(_("Dark library does not match the camera in this profile - it needs to be rebuilt."));
+            }
+            PHD_fits_close_file(fptr);
+        }
+    }
+    return bOk;
+}
+
+
 void MyFrame::SetDarkMenuState()
 {
     wxMenuItem *item = darks_menu->FindItem(MENU_LOADDARK);
-    bool haveDarkLib = wxFileExists(DarkLibFileName(pConfig->GetCurrentProfileId()));
+    bool haveDarkLib = DarkLibExists(pConfig->GetCurrentProfileId());
     item->Enable(haveDarkLib);
     if (!haveDarkLib)
         item->Check(false);
