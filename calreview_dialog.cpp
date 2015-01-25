@@ -103,13 +103,11 @@ void CalReviewDialog::CreateControls()
     AddButtons(this, topVSizer);                              // virtual function
 }
 
-// Base class version of buttons - just the 'close' button.  We handle this explicitly in order to insure the dialog is destroyed and 
-// the global pointer is nulled
+// Base class version of buttons - subclasses can put their own buttons if needed. No buttons for the base class because it is non-modal -
+// but the window close event is hooked in order to force a destroy() and null of the global pointer
 void CalReviewDialog::AddButtons(CalReviewDialog* parentDialog, wxBoxSizer* parentVSizer)
 {
-    //wxButton* buttonClose = new wxButton(parentDialog, wxID_ANY, _("&Close"), wxDefaultPosition, wxDefaultSize, 0);
-    //buttonClose->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CalRestoreDialog::OnCancelClick, this);
-    //parentVSizer->Add(buttonClose, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
+
 }
 
 // Populate one of the panels in the wxNotebook
@@ -205,7 +203,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     else
         calGrid->CreateGrid(4, 4);
     calGrid->EnableEditing(false);
-    
+
     calGrid->SetCellValue(_("RA steps:"), row, col++);
     if (validDetails)
         calGrid->SetCellValue(wxString::Format("%d", calDetails.raStepCount), row, col++);
@@ -229,7 +227,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
 
     row++;
     col = 0;
-    
+
     if (validDetails)
     {
         guideRaSiderealX = calDetails.raGuideSpeed * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
@@ -287,9 +285,9 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         // Build the upper frame and grid for configuration data
         wxStaticBox* staticBoxMount = new wxStaticBox(parentPanel, wxID_ANY, _("Mount Configuration"));
         wxStaticBoxSizer* configFrame = new wxStaticBoxSizer(staticBoxMount, wxVERTICAL);
-        panelGridVSizer->Add(configFrame, 0, wxALIGN_LEFT | wxALL, 5);        
+        panelGridVSizer->Add(configFrame, 0, wxALIGN_LEFT | wxALL, 5);
 
-        wxGrid* cfgGrid = new wxGrid(parentPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxHSCROLL | wxVSCROLL);      
+        wxGrid* cfgGrid = new wxGrid(parentPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxHSCROLL | wxVSCROLL);
         row = 0;
         col = 0;
         cfgGrid->SetColLabelSize(0);
