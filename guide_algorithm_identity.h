@@ -40,7 +40,7 @@
 #ifndef GUIDE_ALGORITHM_IDENTITY_H_INCLUDED
 #define GUIDE_ALGORITHM_IDENTITY_H_INCLUDED
 
-class GuideAlgorithmIdentity:GuideAlgorithm
+class GuideAlgorithmIdentity : public GuideAlgorithm
 {
 protected:
     class GuideAlgorithmIdentityConfigDialogPane : public ConfigDialogPane

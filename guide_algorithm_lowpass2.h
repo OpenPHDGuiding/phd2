@@ -40,7 +40,7 @@
 #ifndef GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED
 #define GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED
 
-class GuideAlgorithmLowpass2:GuideAlgorithm
+class GuideAlgorithmLowpass2 : public GuideAlgorithm
 {
     static const unsigned int HISTORY_SIZE = 10;
 

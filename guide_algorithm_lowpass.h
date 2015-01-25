@@ -40,7 +40,7 @@
 #ifndef GUIDE_ALGORITHM_LOWPASS_H_INCLUDED
 #define GUIDE_ALGORITHM_LOWPASS_H_INCLUDED
 
-class GuideAlgorithmLowpass:GuideAlgorithm
+class GuideAlgorithmLowpass : public GuideAlgorithm
 {
     static const unsigned int HISTORY_SIZE = 10;
 
@@ -66,7 +66,7 @@ protected:
     class GuideAlgorithmLowpassGraphControlPane : public GraphControlPane
     {
     public:
-        GuideAlgorithmLowpassGraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm, wxString label);
+        GuideAlgorithmLowpassGraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm, const wxString& label);
         ~GuideAlgorithmLowpassGraphControlPane(void);
 
     private:
@@ -78,10 +78,10 @@ protected:
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    virtual double GetMinMove(void);
-    virtual bool SetMinMove(double minMove);
-    virtual double GetSlopeWeight(void);
-    virtual bool SetSlopeWeight(double SlopeWeight);
+    double GetMinMove(void);
+    bool SetMinMove(double minMove);
+    double GetSlopeWeight(void);
+    bool SetSlopeWeight(double SlopeWeight);
 
     friend class GuideAlgorithmLowpassConfigDialogPane;
 
