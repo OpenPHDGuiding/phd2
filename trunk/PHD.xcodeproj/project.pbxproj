@@ -729,6 +729,7 @@
 				58EE980013CD0F74009EC68D /* Frameworks */,
 				58EE981413CD0F74009EC68D /* CopyFiles */,
 				58EE981613CD0F74009EC68D /* CopyFiles */,
+				A1AC13FD1A74A94C0078CE9E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -777,6 +778,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A1AC13FD1A74A94C0078CE9E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\necho \"SRCROOT = $SRCROOT\"\necho \"RESOURCES = $BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\ncd \"$SRCROOT\"\nfind locale \\( -name '*.[mp]o' -o -name PHD2GuideHelp.zip \\) -print0 |\n  cpio -p0dmu \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		58EE97EA13CD0F74009EC68D /* Sources */ = {
