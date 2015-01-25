@@ -40,7 +40,7 @@
 #ifndef GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED
 #define GUIDE_ALGORITHM_HYSTERESIS_H_INCLUDED
 
-class GuideAlgorithmHysteresis : GuideAlgorithm
+class GuideAlgorithmHysteresis : public GuideAlgorithm
 {
     double m_minMove;
     double m_hysteresis;
@@ -65,7 +65,7 @@ protected:
     class GuideAlgorithmHysteresisGraphControlPane : public GraphControlPane
     {
     public:
-        GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm, wxString label);
+        GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHysteresis *pGuideAlgorithm, const wxString& label);
         ~GuideAlgorithmHysteresisGraphControlPane(void);
 
     private:
@@ -79,12 +79,12 @@ protected:
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    virtual double GetMinMove(void);
-    virtual bool SetMinMove(double minMove);
-    virtual double GetHysteresis(void);
-    virtual bool SetHysteresis(double minMove);
-    virtual double GetAggression(void);
-    virtual bool SetAggression(double minMove);
+    double GetMinMove(void);
+    bool SetMinMove(double minMove);
+    double GetHysteresis(void);
+    bool SetHysteresis(double minMove);
+    double GetAggression(void);
+    bool SetAggression(double minMove);
 
     friend class GuideAlgorithmHysteresisConfigDialogPane;
     friend class GraphLogWindow;
