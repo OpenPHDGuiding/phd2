@@ -1078,6 +1078,9 @@ bool DefectMap::DefectMapExists(int profileId, bool showAlert)
     {
         wxString fName = DefectMapMasterPath();
         wxSize sensorSize = pCamera->FullSize;
+        if (sensorSize == UNDEFINED_FULL_FRAME_SIZE)
+            bOk = true;
+        else
         if (PHD_fits_open_diskfile(&fptr, fName, READONLY, &status) == 0)
         {
             long fsize[2];
@@ -1085,10 +1088,8 @@ bool DefectMap::DefectMapExists(int profileId, bool showAlert)
             if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
                 bOk = true;
             else
-            {
-                if (showAlert)
-                    pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be rebuilt."));
-            }
+            if (showAlert)
+                pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be rebuilt."));
             PHD_fits_close_file(fptr);
         }
     }

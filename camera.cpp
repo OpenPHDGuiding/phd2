@@ -185,6 +185,7 @@ GuideCamera::GuideCamera(void)
     HasShutter = false;
     ShutterState = false;
     HasSubframes = false;
+    FullSize = UNDEFINED_FULL_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
 
