@@ -578,7 +578,7 @@ bool Subtract(usImage& light, const usImage& dark)
 {
     if ((!light.ImageData) || (!dark.ImageData))
         return true;
-    if (light.NPixels != dark.NPixels)
+    if (light.Size != dark.Size)
         return true;
 
     unsigned int left, top, width, height;
@@ -1071,28 +1071,34 @@ wxString DefectMap::DefectMapFileName(int profileId)
 bool DefectMap::DefectMapExists(int profileId, bool showAlert)
 {
     bool bOk = false;
-    fitsfile *fptr = 0;
-    int status = 0;  // CFITSIO status value MUST be initialized to zero!
 
     if (wxFileExists(DefectMapFileName(profileId)))
     {
         wxString fName = DefectMapMasterPath();
-        wxSize sensorSize = pCamera->FullSize;
+        const wxSize& sensorSize = pCamera->FullSize;
         if (sensorSize == UNDEFINED_FULL_FRAME_SIZE)
-            bOk = true;
-        else
-        if (PHD_fits_open_diskfile(&fptr, fName, READONLY, &status) == 0)
         {
-            long fsize[2];
-            fits_get_img_size(fptr, 2, fsize, &status);
-            if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
-                bOk = true;
-            else
-            if (showAlert)
-                pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be rebuilt."));
-            PHD_fits_close_file(fptr);
+            bOk = true;
+        }
+        else
+        {
+            fitsfile *fptr;
+            int status = 0;  // CFITSIO status value MUST be initialized to zero!
+
+            if (PHD_fits_open_diskfile(&fptr, fName, READONLY, &status) == 0)
+            {
+                long fsize[2];
+                fits_get_img_size(fptr, 2, fsize, &status);
+                if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
+                    bOk = true;
+                else if (showAlert)
+                    pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be rebuilt."));
+
+                PHD_fits_close_file(fptr);
+            }
         }
     }
+
     return bOk;
 }
 
