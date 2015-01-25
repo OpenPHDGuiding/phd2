@@ -1776,31 +1776,36 @@ static wxString DarkLibFileName(int profileId)
 bool MyFrame::DarkLibExists(int profileId, bool showAlert)
 {
     bool bOk = false;
-    fitsfile *fptr = 0;
-    int status = 0;  // CFITSIO status value MUST be initialized to zero!
     wxString fileName = DarkLibFileName(profileId);
 
     if (wxFileExists(fileName))
     {
-        wxSize sensorSize = pCamera->FullSize;
+        const wxSize& sensorSize = pCamera->FullSize;
         if (sensorSize == UNDEFINED_FULL_FRAME_SIZE)
-            bOk = true;
-        else
-        if (PHD_fits_open_diskfile(&fptr, fileName, READONLY, &status) == 0)
         {
-            long fsize[2];
-            fits_get_img_size(fptr, 2, fsize, &status);
-            if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
-                bOk = true;
-            else
-            if (showAlert)
-                Alert(_("Dark library does not match the camera in this profile - it needs to be rebuilt."));
-            PHD_fits_close_file(fptr);
+            bOk = true;
+        }
+        else
+        {
+            fitsfile *fptr;
+            int status = 0;  // CFITSIO status value MUST be initialized to zero!
+
+            if (PHD_fits_open_diskfile(&fptr, fileName, READONLY, &status) == 0)
+            {
+                long fsize[2];
+                fits_get_img_size(fptr, 2, fsize, &status);
+                if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
+                    bOk = true;
+                else if (showAlert)
+                    Alert(_("Dark library does not match the camera in this profile - it needs to be rebuilt."));
+
+                PHD_fits_close_file(fptr);
+            }
         }
     }
+
     return bOk;
 }
-
 
 void MyFrame::SetDarkMenuState()
 {
