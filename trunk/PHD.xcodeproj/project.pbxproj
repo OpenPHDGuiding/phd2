@@ -114,13 +114,13 @@
 		58EE981813CD0F74009EC68D /* fcCamFw.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5828185D0B4A022A00E5E22D /* fcCamFw.framework */; };
 		A10CD354197D0150006DD99F /* profile_wizard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10CD352197D0150006DD99F /* profile_wizard.cpp */; };
 		A10CD357199D1423006DD99F /* statswindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A10CD355199D1423006DD99F /* statswindow.cpp */; };
-		A117D7151844861000F5B01F /* calrestore_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A117D7131844861000F5B01F /* calrestore_dialog.cpp */; };
 		A140805419195D4600CC55AA /* darks_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A140805219195D4600CC55AA /* darks_dialog.cpp */; };
 		A140805719195D6D00CC55AA /* Refine_DefMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A140805519195D6D00CC55AA /* Refine_DefMap.cpp */; };
 		A17B855E18AE9632004BECA0 /* nudge_lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17B855C18AE9632004BECA0 /* nudge_lock.cpp */; };
 		A1A088E31815CF63004899C0 /* drift_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088DE1815CF63004899C0 /* drift_tool.cpp */; };
 		A1A088E41815CF63004899C0 /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088E01815CF63004899C0 /* logger.cpp */; };
 		A1AC13F81A57C1450078CE9E /* rotator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AC13F51A57C1450078CE9E /* rotator.cpp */; };
+		A1AC13FB1A7498C50078CE9E /* calreview_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AC13F91A7498C40078CE9E /* calreview_dialog.cpp */; };
 		A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE284181CD8A4000B6085 /* manualcal_dialog.cpp */; };
 		A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE287182225E7000B6085 /* json_parser.cpp */; };
 		A1ACE28C1827567B000B6085 /* phdcontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1ACE28A1827567B000B6085 /* phdcontrol.cpp */; };
@@ -129,7 +129,6 @@
 		A1C8EDFB19E9BA1600B8EACB /* runinbg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDF919E9BA1600B8EACB /* runinbg.cpp */; };
 		A1C8EDFE19F38C7500B8EACB /* comet_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDFC19F38C7500B8EACB /* comet_tool.cpp */; };
 		A1C8EE0119FA309200B8EACB /* fitsiowrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */; };
-		A1C8EE041A17275300B8EACB /* calsanity_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1C8EE021A17275300B8EACB /* calsanity_dialog.cpp */; };
 		F4B88DE717ED3BDC003ED742 /* calstep_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */; };
 		F4B88DEB17ED3C8C003ED742 /* optionsbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */; };
 /* End PBXBuildFile section */
@@ -356,8 +355,6 @@
 		A10CD353197D0150006DD99F /* profile_wizard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = profile_wizard.h; sourceTree = "<group>"; };
 		A10CD355199D1423006DD99F /* statswindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = statswindow.cpp; sourceTree = "<group>"; };
 		A10CD356199D1423006DD99F /* statswindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = statswindow.h; sourceTree = "<group>"; };
-		A117D7131844861000F5B01F /* calrestore_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calrestore_dialog.cpp; sourceTree = "<group>"; };
-		A117D7141844861000F5B01F /* calrestore_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calrestore_dialog.h; sourceTree = "<group>"; };
 		A140805219195D4600CC55AA /* darks_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = darks_dialog.cpp; sourceTree = "<group>"; };
 		A140805319195D4600CC55AA /* darks_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = darks_dialog.h; sourceTree = "<group>"; };
 		A140805519195D6D00CC55AA /* Refine_DefMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Refine_DefMap.cpp; sourceTree = "<group>"; };
@@ -374,6 +371,8 @@
 		A1AC13F51A57C1450078CE9E /* rotator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rotator.cpp; sourceTree = "<group>"; };
 		A1AC13F61A57C1450078CE9E /* rotator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rotator.h; sourceTree = "<group>"; };
 		A1AC13F71A57C1450078CE9E /* rotators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rotators.h; sourceTree = "<group>"; };
+		A1AC13F91A7498C40078CE9E /* calreview_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calreview_dialog.cpp; sourceTree = "<group>"; };
+		A1AC13FA1A7498C50078CE9E /* calreview_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calreview_dialog.h; sourceTree = "<group>"; };
 		A1ACE284181CD8A4000B6085 /* manualcal_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = manualcal_dialog.cpp; sourceTree = "<group>"; };
 		A1ACE285181CD8A4000B6085 /* manualcal_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = manualcal_dialog.h; sourceTree = "<group>"; };
 		A1ACE287182225E7000B6085 /* json_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_parser.cpp; sourceTree = "<group>"; };
@@ -389,8 +388,6 @@
 		A1C8EDFD19F38C7500B8EACB /* comet_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = comet_tool.h; sourceTree = "<group>"; };
 		A1C8EDFF19FA309200B8EACB /* fitsiowrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fitsiowrap.cpp; sourceTree = "<group>"; };
 		A1C8EE0019FA309200B8EACB /* fitsiowrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fitsiowrap.h; sourceTree = "<group>"; };
-		A1C8EE021A17275300B8EACB /* calsanity_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = calsanity_dialog.cpp; sourceTree = "<group>"; };
-		A1C8EE031A17275300B8EACB /* calsanity_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calsanity_dialog.h; sourceTree = "<group>"; };
 		F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = calstep_dialog.cpp; sourceTree = "<group>"; };
 		F4B88DEA17ED3C8C003ED742 /* optionsbutton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = optionsbutton.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -553,10 +550,8 @@
 				580F80CB17810B1F0020900F /* about_dialog.h */,
 				58B8CE0D16E05EDB00F6E68E /* advanced_dialog.cpp */,
 				58B8CE0E16E05EDB00F6E68E /* advanced_dialog.h */,
-				A117D7131844861000F5B01F /* calrestore_dialog.cpp */,
-				A117D7141844861000F5B01F /* calrestore_dialog.h */,
-				A1C8EE021A17275300B8EACB /* calsanity_dialog.cpp */,
-				A1C8EE031A17275300B8EACB /* calsanity_dialog.h */,
+				A1AC13F91A7498C40078CE9E /* calreview_dialog.cpp */,
+				A1AC13FA1A7498C50078CE9E /* calreview_dialog.h */,
 				F4B88DE617ED3BDC003ED742 /* calstep_dialog.cpp */,
 				A1A088DD1815CF1F004899C0 /* calstep_dialog.h */,
 				583291DB15DA042400D96A6D /* Cameras */,
@@ -874,7 +869,6 @@
 				A1ACE286181CD8A4000B6085 /* manualcal_dialog.cpp in Sources */,
 				A1ACE289182225E8000B6085 /* json_parser.cpp in Sources */,
 				A1ACE28C1827567B000B6085 /* phdcontrol.cpp in Sources */,
-				A117D7151844861000F5B01F /* calrestore_dialog.cpp in Sources */,
 				2999515C18982F260002D9EB /* KWIQGuider.cpp in Sources */,
 				2999515D18982F260002D9EB /* KWIQGuider_loader.cpp in Sources */,
 				2999515E18982F260002D9EB /* cam_KWIQGuider.cpp in Sources */,
@@ -887,8 +881,8 @@
 				A1C8EDFB19E9BA1600B8EACB /* runinbg.cpp in Sources */,
 				A1C8EDFE19F38C7500B8EACB /* comet_tool.cpp in Sources */,
 				A1C8EE0119FA309200B8EACB /* fitsiowrap.cpp in Sources */,
-				A1C8EE041A17275300B8EACB /* calsanity_dialog.cpp in Sources */,
 				A1AC13F81A57C1450078CE9E /* rotator.cpp in Sources */,
+				A1AC13FB1A7498C50078CE9E /* calreview_dialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
