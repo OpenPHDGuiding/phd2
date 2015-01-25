@@ -854,8 +854,7 @@ void MyFrame::SetupHelpFile(void)
     bool retval;
     wxString filename;
     // first try to find locale-specific help file
-    filename = wxStandardPaths::Get().GetResourcesDir() + wxFILE_SEP_PATH
-        + _T("locale") + wxFILE_SEP_PATH
+    filename = wxGetApp().GetLocaleDir() + wxFILE_SEP_PATH
         + wxLocale::GetLanguageCanonicalName(m_pLocale->GetLanguage()) + wxFILE_SEP_PATH
         + _T("PHD2GuideHelp.zip");
     if (!wxFileExists(filename))
@@ -2111,8 +2110,9 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
     {
         bool bLanguageNameOk = false;
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
-#ifdef __WINDOWS__
-        wxString catalogFile = "locale\\" + pLanguageInfo->CanonicalName + "\\messages.mo";
+        wxString catalogFile = wxGetApp().GetLocaleDir() +
+            PATHSEPSTR + pLanguageInfo->CanonicalName +
+            PATHSEPSTR "messages.mo";
         wxMsgCatalog *pCat = wxMsgCatalog::CreateFromFile(catalogFile, "messages");
         if (pCat != NULL)
         {
@@ -2124,7 +2124,6 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
             }
             delete pCat;
         }
-#endif
         if (!bLanguageNameOk)
         {
             languages.Add(pLanguageInfo->Description);

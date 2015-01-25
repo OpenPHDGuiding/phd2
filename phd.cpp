@@ -145,7 +145,17 @@ bool PhdApp::OnInit()
         pConfig->DeleteAll();
     }
 
-    wxLocale::AddCatalogLookupPathPrefix(_T("locale"));
+    wxString ldir = wxStandardPaths::Get().GetResourcesDir() + PATHSEPSTR "locale";
+    if (!wxDirExists(ldir))
+    {
+        // for development environments
+        ldir = _T("locale");
+    }
+    bool ex = wxDirExists(ldir);
+    Debug.AddLine(wxString::Format("Using Locale Dir %s exists=%d", ldir, ex));
+    wxLocale::AddCatalogLookupPathPrefix(ldir);
+    m_localeDir = ldir;
+
     m_locale.Init(pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
     if (!m_locale.AddCatalog(PHD_MESSAGES_CATALOG))
     {

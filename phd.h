@@ -198,6 +198,11 @@ class PhdApp : public wxApp
     wxSingleInstanceChecker *m_instanceChecker;
     long m_instanceNumber;
     bool m_resetConfig;
+    wxString m_localeDir;
+
+protected:
+
+    wxLocale m_locale;
 
 public:
 
@@ -207,10 +212,7 @@ public:
     void OnInitCmdLine(wxCmdLineParser& parser);
     bool OnCmdLineParsed(wxCmdLineParser & parser);
     virtual bool Yield(bool onlyIfNeeded=false);
-
-protected:
-
-    wxLocale m_locale;
+    wxString GetLocaleDir() const { return m_localeDir; }
 };
 
 wxDECLARE_APP(PhdApp);
