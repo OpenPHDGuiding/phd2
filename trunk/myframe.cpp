@@ -1783,6 +1783,9 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
     if (wxFileExists(fileName))
     {
         wxSize sensorSize = pCamera->FullSize;
+        if (sensorSize == UNDEFINED_FULL_FRAME_SIZE)
+            bOk = true;
+        else
         if (PHD_fits_open_diskfile(&fptr, fileName, READONLY, &status) == 0)
         {
             long fsize[2];
@@ -1790,10 +1793,8 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
             if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
                 bOk = true;
             else
-            {
-                if (showAlert)
-                    Alert(_("Dark library does not match the camera in this profile - it needs to be rebuilt."));
-            }
+            if (showAlert)
+                Alert(_("Dark library does not match the camera in this profile - it needs to be rebuilt."));
             PHD_fits_close_file(fptr);
         }
     }

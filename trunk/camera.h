@@ -46,6 +46,8 @@ enum PropDlgType
     PROPDLG_ANY = (PROPDLG_WHEN_CONNECTED | PROPDLG_WHEN_DISCONNECTED),
 };
 
+#define UNDEFINED_FULL_FRAME_SIZE wxSize(0,0)
+
 class GuideCamera;
 
 class CameraConfigDialogPane : public ConfigDialogPane
