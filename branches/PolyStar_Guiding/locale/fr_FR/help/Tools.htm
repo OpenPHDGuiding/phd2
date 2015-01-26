@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Tools and Utilities</title></head>
+<body>
+<h2>Outils et utilitaires</h2><a href="#Dark_Frames">Darks</a><br><a href="#Manual_Guide">Guidage manuel</a><br>
+<a href="#Auto-Select_Star">Sélection automatique d'étoile</a><br><a href="#Manual_Control_of_Calibration_Data">Données de calibration</a><br>
+<a href="#PHD2_Server">Serveur PHD2</a><br><a href="#Drift_Align">Mise en station</a><br><a href="#Lock_Positions">Verrouillage de cible</a><br>
+<a href="#Managing_Equipment_Profiles">Profils de matériel</a><br><a href="#Advanced_Settings_for_the_Simulators">Paramètres du simulateur</a><h3><a name="Dark_Frames"></a>
+Darks</h3>Normalement, <span style="font-style: italic;">PHD2</span> sauvegarde
+les darks automatiquement quand on appelle la fonction 'capturer un dark'.
+On peut aussi capturer des darks de durées différentes. 
+Cependant, ces darks sont perdus lorsqu'on ferme <span style="font-style: italic;">PHD2</span>. 
+&nbsp;Si vous voulez conserver ces darks dans une librairie, vous devez capturer des darks pour toutes les durées d'expositions que vous comptez utiliser.
+Cliquez ensuite sur 
+'<a name="Save_Dark_Frames"></a>Enregistrer les darks' &nbsp;dans le menu 'Outils'. &nbsp;
+L'ensemble des images sera stocké dans un fichier unique à l'endroit de votre choix.
+&nbsp;Lors d'une prochaine session de <span style="font-style: italic;">PHD2</span>, vous pourrez recharger ce fichier et 
+<span style="font-style: italic;">PHD2</span> utilisera le dark approprié au temps de pose sélectionné.
+&nbsp;Cette procédure peut aussi être automatisée depuis l'onglet 'Caméra' des <a href="Advanced_settings.htm">Paramètres avancés</a>.
+Comme les darks servent surtout à diminuer le bruit thermique il est intéressant de conserver des fichiers pour différentes températures, 
+par exemple un fichier hiver et un fichier été. &nbsp;
+<br><h3><a name="Manual_Guide"></a>Guidage manuel</h3><br><img alt="" src="ManualGuide.PNG"><br><br>
+Si vous essayez une nouvelle monture et que la calibration échoue, vous devriez vérifier que les commandes de <span style="font-style: italic;">PHD2</span>
+arrivent bien à la monture. Ou peut-être voulez-vous appliquer du 'dithering' manuel? Cliquez sur 'guidage manuel' dans le menu 'Outils'
+<span style="font-weight: bold;"><span style="font-weight: bold;"></span></span>
+et un dialogue apparaîtra afin de déplacer la monture dans n'importe quelle direction.
+Chaque pression sur un bouton envoie une impulsion de la durée indiquée dans 'Durée d'impulsion'. 
+&nbsp;La valeur par défaut correspond au 'pas de calibration' spécifié dans le dialogue de paramètres avancés. 
+&nbsp;Si vous diagnostiquez des soucis de calibration, écoutez la monture au lieu de la regarder afin de vérifier si les commandes de <span style="font-style: italic;">PHD2</span>
+sont appliquées. Vous ne verrez rien bouger à la vitesse d'autoguidage, le mouvement est trop faible.
+Vous pouvez aussi observer les moteurs eux-mêmes ou attacher un pointeur laser pour voir si la tache projetée sur une cible lointaine bouge.
+&nbsp;Si vous possédez une otique adaptative, vous verrez des boutons séparés pour l'OA et la monture.
+ &nbsp;<br><br><a name="Dithering"></a>Le 'dithering' sert en imagerie et pour l'automatisation, le plus souvent via le serveur de PHD2.
+Cepdnant, vous pouvez faire du dithering manuel à l'aide des boutons au bas de ce dialogue.
+&nbsp;Le paramètre 'dither' contrôle l'amplitude du déplacement en pixels. Vous pouvez l'augmenter en le multipliant par la constante d'échelle située à côté.
+&nbsp;Ces contrôles déterminent un mouvement maximum.&nbsp; 
+Quand vous cliquez sur 'Dither', PHD2 applique un mouvement aléatoire inférieur ou  égal à cette valeur dans une des directions nord/sud/est/ouest.
+La case 'AD seulement' limite les déplacements à l'axe est-ouest.&nbsp;
+Bien sûr, n'utilisez le dithering que si votre imageur n'est pas en train de capturer une image.
+<br><h3><a name="Auto-Select_Star"></a>Sélection automatique d'étoile</h3>
+Cliquez sur 'Sélection automatique d'étoile' dans le menu 'Outils' ou via le raccourci au clavier &lt;Alt&gt;S. 
+<span style="font-style: italic;">PHD2</span> va examiner l'image affichée et choisir une étoile adaptée à l'autoguidage.
+&nbsp;Le mode 'boucle' doit bien sûr être activé.&nbsp;
+La sélection est basée sur la forme et la brillance de l'étoile mais la proximité d'autres astres n'est pas prise en compte.
+<h3><a name="Manual_Control_of_Calibration_Data"></a>Données de calibration</h3>Les données de calibration 
+sont enregistrées automatiquement après chaque calibration réussie. L'utilisation des données de calibration a été décrite ailleurs
+ (<a href="Basic_use.htm">Usage de PHD</a>),
+y compris la &nbsp; possibilité de récupérer les données de la dernière session ou de 'retourner' les axes après le passage du méridien.
+Vous accédez à ces fonctions via le menu 'Outils'. &nbsp; Ce menu permet également d'entrer soi-même les données de calibration.
+Cette possibilité est offerte mais ne devrait être utile que très rarement.
+Cliquez sur 'Entrer les données de calibration' pour ouvrir le dialogue.
+Les données peuvent provenir d'une ancienne session, 
+par exemple après extraction du journal d'autoguidage de <span style="font-style: italic;">PHD2</span>.
+<br><br><h3><a name="PHD2_Server"></a>Serveur <span style="font-style: italic;">PHD2</span></h3><span style="font-style: italic;">
+PHD2</span> interface avec les logiciels tiers qui nécessitent un contrôle de l'autoguidage.
+&nbsp;Le programme <span style="font-style: italic;">Nebulosity </span> de Stark Labs était le premier à offrir cette possibilité
+mais d'autres logiciels ont entre-temps été produits.
+&nbsp;Le serveur de <span style="font-style: italic;">PHD2</span> permet aux programmes de capture de contrôler le 'dithering'
+ entre chaque pose ou d'interrompre l'autoguidage, par exemple pendant que l'imageur transfère ses données.
+&nbsp;Cliquez sur l'option &nbsp; '<a name="Enable_Server"></a>Activer le serveur' du menu 'Outils'.
+L'interface du serveur a été considérablement remaniée dans 
+<span style="font-style: italic;">PHD2</span>. 
+Il est désormais possible pour les applications de contrôler de nombreuses fonctions de
+<span style="font-style: italic;">PHD2</span>. &nbsp;La documentation destinée aux programmeurs qui veulent se connecter au serveur est disponible
+sur le <a href="https://code.google.com/p/open-phd-guiding/w/list">Wiki PHD2</a>.<br><br>
+<h3><a name="Drift_Align"></a>Mise en station</h3>La mise en station par dérive est une excellente façon d'obtenir un alignement polaire correct.
+Pour certains c'est même une référence.
+L'outil de mise en station propose une série de dialogues pour vous aider dans cette procédure.
+Quand l'autoguidage est calibré, cliquez sur 'Mise en station' dans le menu 'Outils'.
+Le premier dialogue vous aidera à ajuster l'azimut de la monture.
+Si votre monture est compatible ASCOM vous aurez la possibilité de la déplacer vers une zone proche de l'équateur et du méridien céleste. &nbsp;
+Si vous n'utilisez pas une monture ASCOM, vous devrez le faire manuellement.
+Quand le télescope est en position et que vous avez une étoile-guide dans le champ, cliquez sur 'Dériver' pour 
+commencer à enregistrer les données.
+Vous verrez le graphique évoluer et surtout, deux lignes de tendances. 
+Attendez assez longtemps pour que la ligne en DEC se stabilise. Elle ne doit plus bouger à chaque nouvelle image.
+Au bas de la fenêtre du graphique vous verrez la mesure d'erreur d'alignement en azimut.
+
+Appuyez maintenant sur 'ajuster' pour interrompre l'autoguidage puis ajustez mécaniquement l'azimut de la monture.
+Cliquez ensuite sur 'dériver' pour répéter la mesure. Continuez de cette façon pour obtenir la plus petite erreur possible.
+Vous pouvez utiliser le champ 'notes' pour indiquer dans 
+quel sens les lignes bougent selon que vous avez tourné les vis à doite ou à gauche, par exemple.
+Ces notes sont conservées entre chaque session de <span style="font-style: italic;">PHD2</span>
+, ce qui facilite les mises en station suivantes.
+<br><br>
+Tant que vous n'aurez pas l'habitude de la mise en station, celle-ci vous paraîtra fastidieuse.
+Vous devrez déterminer dans quel sens tourner les vis pour obtenir l'effet désiré: combien et dans quelle direction?
+Afin de vous aider, <span style="font-style: italic;">PHD2</span> vous propose des 'marqueurs'. &nbsp;
+Ceux-ci sont pratiques pour marquer l'emplacement de l'étoile-guide avant et après les ajustements.
+
+
+&nbsp;<a name="Bookmarks"></a>Accédez aux marqueurs via les raccourcis suivants: <br>
+<ul>
+<li>b&nbsp;: montrer/cacher les marqueurs&nbsp;</li>
+<li>Shift-b : nouveau marqueur à la position de l'étoile-guide (position de verrouillage)</li>
+<li>Ctrl-b : effacer tous les marqueurs&nbsp;</li>
+<li>Ctrl-clic sur l'image : nouveau marqueur à cette position, ou effacement du marqueur se trouvant là</li>
+</ul>
+
+En ajoutant un marqueur avant d'ajuster la monture, vous pouvez voir comment et combien l'opération a déplacé la monture.
+
+<br>Ensuite, cliquez sur le bouton 'altitude' et pointez le télescope en direction de l'équateur céleste et 25 à 30° au-dessus de l'horizon.
+Cliquez sur 'dériver' pour collecter les données.
+Comme pour l'azimut, vous allez procéder à répétition pour affiner les résultats.
+Prenez des notes pour conserver une trace de comment les ajustements modifient la ligne de tendance.
+Si vous avez fait des changements importants en altitude, vous devrez recommencer la partie 'azimut'.
+Une approche systématique de ces réglages permet d'obtenir une précision inégalable.
+Une bonne mise en station est essentielle pour garantir un autoguidage de qualité, en particulier pour l'axe DEC.
+
+
+<br><br><h3><a name="Lock_Positions"></a>Verrouillage de cible</h3><span style="font-style: italic;">PHD2</span> enregistre un 'verrouillage de position'
+là où se trouve l'étoile-guide en fin de calibration.
+En fonction du déroulement de la séquence de calibration, cet endroit n'est pas forcément le même 
+qu'au début de la calibration. Un écart de plusieurs pixels peut être constaté.
+Si vous essayez de centrer précisément votre sujet, il peut être intéressant de verrouiller sa position exacte.
+Cliquez sur l'étoile-guide <span style="font-style: italic;">avant la calibration</span>, puis activez le 'verouillage de cible' dans le menu 'Outils'.
+En fin de calibration, <span style="font-style: italic;">PHD2</span> déplacera la monture vers ce point à la vitesse de correction.
+Cette opération peut entraîner un délai supplémentaire. Le verrouillage de cible reste actif même si l'autoguidage est interrompu puis remis en route.
+De cette façon, un emplacement rigoureux de l'étoile-guide (et donc de votre sujet sur l'image) est assuré, 
+au prix d'un délai supplémentaire pendant que <span style="font-style: italic;">PHD2</span>
+recentre la monture.
+
+<h3><a name="Managing_Equipment_Profiles"></a>Profils de matériel</h3>Les profils de matériel ont été expliqués dans <a href="Basic_use.htm">Usage de base</a>.
+Ils sont utilisés dans le dialogue 'Connecter l'équipement'.
+Pour gérer plusieurs installations de matériel, utilisez le gestionaire de profils dans ce dialogue.
+Avec l'option 'Profils de matériel' du menu 'Outils', vous pouvez créer un nouveau profil mais aussi supprimer, renommer ou modifier un profil existant. 
+Chaque profil 'retient' la configuration valable la dernière fois qu'il a été activé.
+Lors de la création d'un nouveau profil, importez une configuration soit des valeurs par défaut de <span style="font-style: italic;">PHD2</span>, 
+soit d'un profil existant.
+Pour éditer un profil existant, sélectionnez-le d'abord dans la liste déroulante 
+des profils d'équipement, puis cliquez sur 'paramètres' dans le menu déroulant
+'<a name="Manage_Profiles"></a>Gestionnaire des profils'. &nbsp;Ceci vous emmènera au dialogue 'cerveau', que vous pourrez modifier à votre guise. 
+Souvenez-vous que les profils sont automatiquement mis à jour chaque fois qu'un paramètre est modifié pendant une session de 
+<span style="font-style: italic;">PHD2</span>. &nbsp;
+Enfin, vous pouvez importer et exporter les profils à des fins de diagnostic, 
+sauvegarde ou même échange avec d'autres utilisateurs de <span style="font-style: italic;">PHD2</span>.
+<br><br>
+<h3><a name="Advanced_Settings_for_the_Simulators"></a>Paramètres du simulateur</h3>Les simulateurs de matériel ont 
+été expliqués dans <a href="Basic_use.htm">Usage de base</a>. Ce sont des outils permettant d'expérimenter avec <span style="font-style: italic;">PHD2</span>,
+ de découvrir ses possibilités et de se familiariser avec son fonctionnement.
+ Vous devez choisir 'Simulateur' comme type de caméra ainsi que la monture 'Sur caméra' pour activer le simulateur.
+ 
+Pour aller plus loin dans la découverte du simulateur, ouvrez le dialogue de caméra 
+de l'affichage principal pour modifier les paramètres de simulation:
+<br><br><img alt="" src="Tools_simulator.PNG"><br><br><br>
+
+Vous pouvez spécifier le comportement de 'backlash', de dérive d'alignement et même l'erreur périodique de la monture simulée. 
+
+Le paramètre 'Turbulence' causera des mouvements aléatoires de l'étoile-guide, comme dans la réalité.
+En modifiant ces paramètres un par un vous constaterez leur impact sur 
+la qualité de l'autoguidage et comment les différents algorithmes réagissent à ces situations.
+Bien entendu, vous simulez une monture 'parfaite', à l'exception du backlash, donc la simulation ne peut être 100% réaliste.&nbsp;</body></html>
