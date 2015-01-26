@@ -2116,6 +2116,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
     {
         bool bLanguageNameOk = false;
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
+#ifndef __LINUX__  // See issue 83
         wxString catalogFile = wxGetApp().GetLocaleDir() +
             PATHSEPSTR + pLanguageInfo->CanonicalName +
             PATHSEPSTR "messages.mo";
@@ -2130,6 +2131,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
             }
             delete pCat;
         }
+#endif
         if (!bLanguageNameOk)
         {
             languages.Add(pLanguageInfo->Description);
