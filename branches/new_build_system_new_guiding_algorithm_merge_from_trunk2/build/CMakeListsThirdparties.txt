@@ -5,6 +5,14 @@
 
 set(thirdparties_dir ${CMAKE_SOURCE_DIR}/build/thirdparties)
 
+# the location where the archives will be deflated
+set(thirdparties_deflate_directory ${CMAKE_BINARY_DIR}/external_libs_deflate)
+if(NOT EXISTS ${thirdparties_deflate_directory})
+  file(MAKE_DIRECTORY ${thirdparties_deflate_directory})
+endif()
+
+
+
 # custom cmake packages, should have lower priority than the ones bundled with cmake
 set(CMAKE_MODULE_PATH 
     ${CMAKE_MODULE_PATH}
@@ -143,37 +151,29 @@ endmacro(copy_dependency_with_config)
 ##############################################
 # cfitsio
 
-if(NOT EXISTS ${thirdparties_dir}/cfitsio)
+set(libcfitsio_root ${thirdparties_deflate_directory}/cfitsio)
+
+if(NOT EXISTS ${libcfitsio_root})
   # untar the dependency
   message(STATUS "Untarring cfitsio")
   execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/cfitsio3370_modified.tar.bz2
-                    WORKING_DIRECTORY ${thirdparties_dir})
+                    WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
 set(BUILD_SHARED_LIBS OFF)
 set(USE_PTHREADS OFF)
-add_subdirectory(${thirdparties_dir}/cfitsio)
-#set_target_properties(FPack Funpack PROPERTIES EXCLUDE_FROM_ALL TRUE)
+add_subdirectory(${libcfitsio_root})
 set_property(TARGET cfitsio PROPERTY FOLDER "Thirdparty/")
 
-
-include_directories(${thirdparties_dir}/cfitsio)
+include_directories(${libcfitsio_root})
 set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} cfitsio)
-#if(UNIX)
-#  find_library(mathlib NAMES m)
-#  target_link_libraries(${cfitsio_LIB_NAME} ${mathlib})
-#endif()
+
 
 if(WIN32)
   target_compile_definitions(
     cfitsio
     PRIVATE FF_NO_UNISTD_H
     PRIVATE _CRT_SECURE_NO_WARNINGS)
-#elseif(UNIX AND NOT APPLE)
-#  find_library(mathlib NAMES m)
-#  # we cannot do that because the project cfitsio is built in another directory
-#  #target_link_libraries(${cfitsio_LIB_NAME} ${mathlib})
-#  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
 endif()
 
 
@@ -182,14 +182,15 @@ endif()
 # libusb / win32 / apple
 
 set(LIBUSB libusb-1.0.9)
-if(NOT EXISTS ${thirdparties_dir}/${LIBUSB})
+set(libusb_root ${thirdparties_deflate_directory}/${LIBUSB})
+
+if(NOT EXISTS ${libusb_root})
   # untar the dependency
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparties_dir}/${LIBUSB}.tar.bz2
-    WORKING_DIRECTORY ${thirdparties_dir})
+    WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()  
 
-set(libusb_root ${thirdparties_dir}/${LIBUSB})
 set(libusb_dir ${libusb_root}/libusb)
 include_directories(${libusb_dir})
 
@@ -242,8 +243,8 @@ elseif(WIN32)
   set(${LIBUSB}_additional_include_dir ${libusb_root}/msvc/)
 elseif(UNIX)
   # here it really depends on what we want. I (Raffi) personally prefer having the same version
-  # for all platforms. Otherwise, we can just find_library libusb and include it into PHD_LINK_EXTERNAL
-  # variable. 
+  # for all platforms. However USB is already needed by libindi/libnova, so I leave it as an existing 
+  # dependency on the system. 
 
  set(libUSB_SRC ${libUSB_SRC}               
                                             
@@ -264,23 +265,24 @@ elseif(UNIX)
 
 else()
   message(FATAL_ERROR "libUSB unsupported platform")
-
 endif()
 
-# libUSB compilation
-add_library(USB ${libUSB_SRC})
-target_include_directories(USB PRIVATE ${${LIBUSB}_additional_include_dir})
-target_compile_definitions(USB PUBLIC ${${LIBUSB}_additional_compile_definition})
 
-if(NOT WIN32)
-  target_compile_definitions(USB PRIVATE LIBUSB_DESCRIBE "")
-else()
-  # silencing the warnings on externals for win32
-  target_compile_definitions(USB PRIVATE _CRT_SECURE_NO_WARNINGS)
+if(NOT UNIX OR APPLE)
+  # libUSB compilation for OSX and Win32 (not Linux)
+  add_library(USB ${libUSB_SRC})
+  target_include_directories(USB PRIVATE ${${LIBUSB}_additional_include_dir})
+  target_compile_definitions(USB PUBLIC ${${LIBUSB}_additional_compile_definition})
+
+  if(NOT WIN32)
+    target_compile_definitions(USB PRIVATE LIBUSB_DESCRIBE "")
+  else()
+    # silencing the warnings on externals for win32
+    target_compile_definitions(USB PRIVATE _CRT_SECURE_NO_WARNINGS)
+  endif()
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
+  set_property(TARGET USB PROPERTY FOLDER "Thirdparty/")
 endif()
-set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
-set_property(TARGET USB PROPERTY FOLDER "Thirdparty/")
-
 
 
 
@@ -288,14 +290,15 @@ set_property(TARGET USB PROPERTY FOLDER "Thirdparty/")
 # the Eigen library
 
 set(EIGEN eigen-eigen-36bf2ceaf8f5)
-if(NOT EXISTS ${thirdparties_dir}/${EIGEN})
+set(eigen_root ${thirdparties_deflate_directory}/${EIGEN})
+if(NOT EXISTS ${eigen_root})
   # untar the dependency
   execute_process(
       COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparties_dir}/${EIGEN}.tar.bz2
-    WORKING_DIRECTORY ${thirdparties_dir})
+    WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
-set(EIGEN_SRC ${thirdparties_dir}/${EIGEN})
+set(EIGEN_SRC ${eigen_root})
 
 
 
@@ -305,11 +308,12 @@ set(EIGEN_SRC ${thirdparties_dir}/${EIGEN})
 # Google test
 
 set(GTEST gtest-1.7.0)
-if(NOT EXISTS ${thirdparties_dir}/${GTEST})
+set(gtest_root ${thirdparties_deflate_directory}/${GTEST})
+if(NOT EXISTS ${gtest_root})
   # unzip the dependency
   execute_process(
       COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/${GTEST}.zip
-    WORKING_DIRECTORY ${thirdparties_dir})
+    WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
 if(MSVC)
@@ -318,8 +322,8 @@ if(MSVC)
   # As the name DOES NOT suggest, it does not force the shared crt. It forces the use of default things.
   set(gtest_force_shared_crt ON CACHE INTERNAL "Gtest crt configuration" FORCE)
 endif()
-set(GTEST_HEADERS ${thirdparties_dir}/${GTEST}/include)
-add_subdirectory(${thirdparties_dir}/${GTEST})
+set(GTEST_HEADERS ${gtest_root}/include)
+add_subdirectory(${gtest_root})
 set_property(TARGET gtest PROPERTY FOLDER "Thirdparty/")
 set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
 
@@ -584,16 +588,18 @@ if(APPLE)
   #############################################
   # libDC
   #
+  
   set(LIBDC libdc1394-2.2.2)
-  if(NOT EXISTS ${thirdparties_dir}/${LIBDC})
+  set(libdc_root ${thirdparties_deflate_directory}/${LIBDC})
+  if(NOT EXISTS ${libdc_root})
     # untar the dependency
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/${LIBDC}.tar.gz
-      WORKING_DIRECTORY ${thirdparties_dir})
+      WORKING_DIRECTORY ${thirdparties_deflate_directory})
   endif()  
   
 
-  set(libdc_include_dir ${thirdparties_dir}/${LIBDC})
+  set(libdc_include_dir ${libdc_root})
   set(libdc_dir ${libdc_include_dir}/dc1394)
   include_directories(${libdc_dir})
   include_directories(${libdc_include_dir})
