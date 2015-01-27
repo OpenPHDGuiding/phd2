@@ -717,7 +717,7 @@ endif()  # APPLE
 # - 
 #
 #############################################
-if(UNIX)
+if(UNIX AND NOT APPLE)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8) 
     set(arch "x64") 
   else() 
