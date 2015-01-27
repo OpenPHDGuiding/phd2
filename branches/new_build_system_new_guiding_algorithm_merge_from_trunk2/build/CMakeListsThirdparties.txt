@@ -725,13 +725,13 @@ if(UNIX AND NOT APPLE)
   endif()
   
   
-  find_path(ZWO_INCLUDE_DIR ASICamera.h
+  find_path(ZWO_INCLUDE_DIR ASICamera2.h
     PATHS
     ${PHD_PROJECT_ROOT_DIR}/cameras
   )  
   
   find_library(asiCamera2
-                NAMES asiCamera2
+                NAMES ASICamera2
                 PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/${arch})
   if(NOT asiCamera2)
     message(FATAL_ERROR "Cannot find the asiCamera2 drivers")

@@ -562,9 +562,10 @@ if(UNIX AND NOT APPLE)
 
 
   # install language help files
-  set(locales_help de_DE es_ES fr_FR ja_JP pl_PL ru_RU uk_UA zh_CN zh_TW)
-  set(locales_help_msg de es fr ja pl ru uk zh_CN zh_TW)
+  set(locales_help     de_DE es_ES fr_FR ja_JP pl_PL ru_RU uk_UA zh_CN zh_TW)
+  set(locales_help_msg de    es    fr    ja    pl    ru    uk    zh_CN zh_TW)
   list(LENGTH locales_help _len)
+  math(EXPR _len "${_len} - 1")
   foreach(_index RANGE ${_len})
 
     list(GET locales_help       ${_len} _var1)
