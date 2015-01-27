@@ -461,14 +461,8 @@ if(APPLE)
       PROPERTIES 
         MACOSX_PACKAGE_LOCATION Resources
   )
-  set_source_files_properties(
-    ${fcCamFramework}
-      PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks
-  )  
-  set_source_files_properties(
-    ${sbigudFramework}
-      PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks
-  )
+  set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
+  set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
 
  elseif(WIN32)
 
@@ -557,7 +551,9 @@ add_custom_target(CmakeAdditionalFiles
 #
 
 
-install (TARGETS Phd2 RUNTIME DESTINATION bin)
+if(NOT APPLE)
+  install (TARGETS Phd2 RUNTIME DESTINATION bin)
+endif()
 
 if(UNIX AND NOT APPLE)
   install (FILES ${phd_src_dir}/icons/phd2.png    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ )
