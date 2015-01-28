@@ -250,7 +250,7 @@ elseif(UNIX)
   include_directories(${USB_STATIC_INCLUDE_DIRS})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_LIBRARIES})
 
-message(FATAL_ERROR "lib usb is located ${USB_STATIC_INCLUDE_DIRS}")
+  #message(FATAL_ERROR "lib usb is located ${USB_LIBRARIES}")
 
 
 
