@@ -162,7 +162,7 @@ endif()
 
 set(BUILD_SHARED_LIBS OFF)
 set(USE_PTHREADS OFF)
-add_subdirectory(${libcfitsio_root})
+add_subdirectory(${libcfitsio_root} tmp_cmakecfitsio)
 set_property(TARGET cfitsio PROPERTY FOLDER "Thirdparty/")
 
 include_directories(${libcfitsio_root})
@@ -263,6 +263,7 @@ elseif(UNIX)
   set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
 
 
+
 else()
   message(FATAL_ERROR "libUSB unsupported platform")
 endif()
@@ -323,7 +324,7 @@ if(MSVC)
   set(gtest_force_shared_crt ON CACHE INTERNAL "Gtest crt configuration" FORCE)
 endif()
 set(GTEST_HEADERS ${gtest_root}/include)
-add_subdirectory(${gtest_root})
+add_subdirectory(${gtest_root} tmp_cmakegtest)
 set_property(TARGET gtest PROPERTY FOLDER "Thirdparty/")
 set_property(TARGET gtest_main PROPERTY FOLDER "Thirdparty/")
 
