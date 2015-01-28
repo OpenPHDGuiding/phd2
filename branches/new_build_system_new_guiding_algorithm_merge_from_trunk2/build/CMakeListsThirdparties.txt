@@ -192,8 +192,6 @@ if(NOT EXISTS ${libusb_root})
 endif()  
 
 set(libusb_dir ${libusb_root}/libusb)
-include_directories(${libusb_dir})
-
 # core files
 set(libUSB_SRC
   ${libusb_dir}/core.c
@@ -246,21 +244,31 @@ elseif(UNIX)
   # for all platforms. However USB is already needed by libindi/libnova, so I leave it as an existing 
   # dependency on the system. 
 
- set(libUSB_SRC ${libUSB_SRC}               
+  find_package(PkgConfig)
+  pkg_check_modules(USB libusb REQUIRED)
+
+  include_directories(${USB_STATIC_INCLUDE_DIRS})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_LIBRARIES})
+
+message(FATAL_ERROR "lib usb is located ${USB_STATIC_INCLUDE_DIRS}")
+
+
+
+ #set(libUSB_SRC ${libUSB_SRC}
+ #
+ #  # platform specific configuration file
+ #  ${thirdparties_dir}/include/${LIBUSB}
+ #
+ #  # platform specific implementation
+ #  ${libusb_dir}/os/linux_usbfs.c
+ #  ${libusb_dir}/os/linux_usbfs.h
+ #
+ #  ${libusb_dir}/os/threads_posix.h
+ #  ${libusb_dir}/os/threads_posix.c
+ # )
                                             
-   # platform specific configuration file   
-   ${thirdparties_dir}/include/${LIBUSB}
-                                            
-   # platform specific implementation       
-   ${libusb_dir}/os/linux_usbfs.c 
-   ${libusb_dir}/os/linux_usbfs.h           
-                                            
-   ${libusb_dir}/os/threads_posix.h         
-   ${libusb_dir}/os/threads_posix.c         
-  )                                         
-                                            
-  set(${LIBUSB}_additional_compile_definition "OS_LINUX=1") 
-  set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
+ # set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
+ # set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
 
 
 
@@ -270,6 +278,8 @@ endif()
 
 
 if(NOT UNIX OR APPLE)
+  include_directories(${libusb_dir})
+
   # libUSB compilation for OSX and Win32 (not Linux)
   add_library(USB ${libUSB_SRC})
   target_include_directories(USB PRIVATE ${${LIBUSB}_additional_include_dir})
@@ -751,7 +761,8 @@ if(UNIX AND NOT APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
 
   # INDI
-  find_package(INDI REQUIRED)
+  # some features for indi >= 0.9 are used apparently
+  find_package(INDI 0.9 REQUIRED)
   include_directories(${INDI_INCLUDE_DIR})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
 
