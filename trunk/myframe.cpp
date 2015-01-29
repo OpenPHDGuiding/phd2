@@ -1770,7 +1770,9 @@ wxString MyFrame::GetDarksDir()
 
 static wxString DarkLibFileName(int profileId)
 {
-    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId);
+    int inst = pFrame->GetInstanceNumber();
+    return MyFrame::GetDarksDir() + PATHSEPSTR +
+        wxString::Format("PHD2_dark_lib%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
 }
 
 bool MyFrame::DarkLibExists(int profileId, bool showAlert)
