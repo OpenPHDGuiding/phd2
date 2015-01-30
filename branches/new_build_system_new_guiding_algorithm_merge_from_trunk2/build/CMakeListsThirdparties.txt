@@ -30,7 +30,10 @@ set(PHD_COPY_EXTERNAL_DBG)      # copy for debug only
 set(PHD_COPY_EXTERNAL_REL)      # copy for release only
 
 
-
+# this module will be used to find system installed libraries on Linux
+if(UNIX and NOT APPLE)
+  find_package(PkgConfig)
+endif()
 
 
 #
@@ -242,33 +245,35 @@ elseif(WIN32)
 elseif(UNIX)
   # libUSB is already an indirect requirement/dependency for PhD (through libindi). 
   # I (Raffi) personally prefer having the same version
-  # for all platforms. 
+  # for all platforms, but it should in theory always be better to link against existing libraries
+  # compiled ans shipped by skilled people.
 
   # this would find the libUSB module that is installed on the system. 
-  #find_package(PkgConfig)
-  #pkg_check_modules(USB libusb REQUIRED)
+  # It requires "sudo apt-get install libusb-1.0-0-dev"
+  find_package(PkgConfig)
+  pkg_check_modules(USB libusb-1.0 REQUIRED)
 
-  #include_directories(${USB_STATIC_INCLUDE_DIRS})
-  #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_LIBRARIES})
+  include_directories(${USB_INCLUDE_DIRS})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_LIBRARIES})
 
 
   # Apparently libindi and PhD are using different versions of libUSB. The one below is the one that
   # will be included in the PhD project. 
-  set(libUSB_SRC ${libUSB_SRC}
-  
-    # platform specific configuration file
-    ${thirdparties_dir}/include/${LIBUSB}
-  
-    # platform specific implementation
-    ${libusb_dir}/os/linux_usbfs.c
-    ${libusb_dir}/os/linux_usbfs.h
-  
-    ${libusb_dir}/os/threads_posix.h
-    ${libusb_dir}/os/threads_posix.c
-   )
+  #set(libUSB_SRC ${libUSB_SRC}
+  #
+  #  # platform specific configuration file
+  #  ${thirdparties_dir}/include/${LIBUSB}
+  # 
+  #  # platform specific implementation
+  #  ${libusb_dir}/os/linux_usbfs.c
+  #  ${libusb_dir}/os/linux_usbfs.h
+  #
+  #  ${libusb_dir}/os/threads_posix.h
+  #  ${libusb_dir}/os/threads_posix.c
+  # )
                                             
-  set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
-  set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
+  #set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
+  #set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
 
 
 
@@ -277,7 +282,7 @@ else()
 endif()
 
 
-#if(NOT UNIX OR APPLE)
+if(NOT UNIX OR APPLE)
   include_directories(${libusb_dir})
 
   # libUSB compilation for OSX and Win32 (not Linux)
@@ -293,7 +298,7 @@ endif()
   endif()
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
   set_property(TARGET USB PROPERTY FOLDER "Thirdparty/")
-#endif()
+endif()
 
 
 
