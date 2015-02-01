@@ -132,6 +132,8 @@ bool PhdApp::OnInit()
 #if defined(CV_VERSION)
     Debug.AddLine(wxString::Format("   opencv %s", CV_VERSION));
 #endif
+	// KOR - 12-Nov-14 - mark multi-star test mode
+	Debug.AddLine(wxString::Format("   Multi-Star devel"));
 
 #if defined(__WINDOWS__)
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
