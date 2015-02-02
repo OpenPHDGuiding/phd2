@@ -282,6 +282,9 @@ bool GuiderPolyStar::SetLockPosition(const PolyStar& poly_star)
 //******************************************************************************
 bool GuiderPolyStar::IsLocked(void)
 {
+	if (m_guideOneStar)
+		return GuiderOneStar::IsLocked();
+
 	// TODO: Add test for lastFindResult on each star.  See Star::wasFound()
 	if (m_polyStar.IsValid())
 		return true;

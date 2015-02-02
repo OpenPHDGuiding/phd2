@@ -375,7 +375,7 @@ void PolyStar::markStars(wxClientDC &dc, wxColour color, int searchRegion, doubl
 		{
 			char	SNR_label[64];
 			_snprintf(SNR_label, sizeof(SNR_label), "%.1f:%d", m_starList[pos].SNR, (int)m_starList[pos].Mass);
-			dc.DrawText(SNR_label, p.x + 5, p.y - 7);
+			dc.DrawText(SNR_label, p.x + SR_scaled + 5, p.y - 7);
 		}
 
 	}
