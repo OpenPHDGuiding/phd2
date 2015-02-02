@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Max Planck Society
 
 #include <gtest/gtest.h>
-#include "gaussian_process/tools/circular_buffer.h"
+#include "circular_buffer.h"
 
 TEST(CircularBufferTest, noDataPointsDeletedTest) {
   int max_size = 5;

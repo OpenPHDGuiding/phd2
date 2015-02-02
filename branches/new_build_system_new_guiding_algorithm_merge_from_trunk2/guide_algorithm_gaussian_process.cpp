@@ -35,11 +35,11 @@
 #include "phd.h"
 
 #include "UDPGuidingInteraction.h"
-#include "gaussian_process/tools/circular_buffer.h"
+#include "tools/circular_buffer.h"
 
 #include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
-#include "gaussian_process/tools/math_tools.h"
+#include "tools/math_tools.h"
 #include "UDPGuidingInteraction.h"
 
 

@@ -76,7 +76,7 @@ include(build/CMakeListsThirdparties.txt)
 #
 # contributions
 if(${GUIDING_GAUSSIAN_PROCESS})
-  add_subdirectory(gaussian_process tmp_gaussian_process)
+  add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
   message(STATUS "[configuration] PHD2 includes the Gaussian Process guiding algorithm")
 endif()
 

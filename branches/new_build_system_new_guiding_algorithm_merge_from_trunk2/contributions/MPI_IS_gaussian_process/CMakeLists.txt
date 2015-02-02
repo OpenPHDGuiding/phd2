@@ -5,15 +5,19 @@
 
 project(GaussianProcess)
 
+set(gaussian_process_root_dir ${CMAKE_CURRENT_SOURCE_DIR})
+
+
+
 # Gaussian Process
 set(gp_SRC
-    ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
-    ${phd_src_dir}/gaussian_process/tools/math_tools.h
-    ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
-    ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp)
+    ${gaussian_process_root_dir}/tools/math_tools.cpp
+    ${gaussian_process_root_dir}/tools/math_tools.h
+    ${gaussian_process_root_dir}/tools/circular_buffer.h
+    ${gaussian_process_root_dir}/tools/circular_buffer.cpp)
 add_library(MPIIS_GP STATIC ${gp_SRC})
 target_include_directories(MPIIS_GP PUBLIC ${EIGEN_SRC} 
-                                           ${phd_src_dir}/gaussian_process/)
+                                           ${gaussian_process_root_dir})
 set_property(TARGET MPIIS_GP PROPERTY FOLDER "Contributions/")
 
 
@@ -28,11 +32,11 @@ set_property(TARGET MPIIS_GP PROPERTY FOLDER "Contributions/")
 # CircularBuffer: to remove
 # this is a specific circular buffer for the MPIIS_GP project. This should be replaced by the already existing one 
 # in the open-phd project.
-add_executable(CircularBufferTest ${phd_src_dir}/tests/circular_buffer/circular_buffer_test.cpp)
+add_executable(CircularBufferTest ${CMAKE_CURRENT_SOURCE_DIR}/tests/circular_buffer/circular_buffer_test.cpp)
 target_link_libraries(CircularBufferTest MPIIS_GP gtest)
-target_include_directories(CircularBufferTest PRIVATE ${phd_src_dir}
+target_include_directories(CircularBufferTest PRIVATE ${gaussian_process_root_dir}/tools
                                               PRIVATE ${GTEST_HEADERS})
-set_property(TARGET CircularBufferTest PROPERTY FOLDER "Unit tests/")
+set_property(TARGET CircularBufferTest PROPERTY FOLDER "Unit tests/Contribution")
 add_test(CircularBufferTest1 CircularBufferTest)
 
 
