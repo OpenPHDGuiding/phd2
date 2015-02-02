@@ -536,7 +536,6 @@ endif()
 
 
 # properties of the project common to all platforms
-target_include_directories( Phd2 PRIVATE  ${EIGEN_SRC} ${phd_src_dir}/gaussian_process)
 target_compile_definitions( Phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(     Phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
