@@ -31,7 +31,7 @@ set(PHD_COPY_EXTERNAL_REL)      # copy for release only
 
 
 # this module will be used to find system installed libraries on Linux
-if(UNIX and NOT APPLE)
+if(UNIX AND NOT APPLE)
   find_package(PkgConfig)
 endif()
 
@@ -250,7 +250,6 @@ elseif(UNIX)
 
   # this would find the libUSB module that is installed on the system. 
   # It requires "sudo apt-get install libusb-1.0-0-dev"
-  find_package(PkgConfig)
   pkg_check_modules(USB libusb-1.0 REQUIRED)
 
   include_directories(${USB_INCLUDE_DIRS})
