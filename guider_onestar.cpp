@@ -695,19 +695,38 @@ inline static void DrawBox(wxClientDC& dc, const PHD_Point& star, int halfW, dou
     dc.DrawRectangle(int((star.X - halfW) * scale), int((star.Y - halfW) * scale), w, w);
 }
 
-// Define the repainting behaviour
+// KOR - 20-Dec-14 - Split this into two functions so I can call the painting part from 
+//   GuiderPolyStar.  Apparently, the new dc loses what I've set up to already paint.
+//   The orgininal call will be to this function.  And the PolyStar call will be to the
+//   one that passes in a reference to the existing, and already painted, dc.
+/// Define the repainting behaviour
 void GuiderOneStar::OnPaint(wxPaintEvent& event)
 {
     //wxAutoBufferedPaintDC dc(this);
     wxClientDC dc(this);
     wxMemoryDC memDC;
 
+	try
+	{
+		if (PaintHelper(dc, memDC))
+		{
+			throw ERROR_INFO("PaintHelper failed");
+		}
+	}
+	catch (wxString Msg)
+	{
+		POSSIBLY_UNUSED(Msg);
+	}
+
+	return OnPaint(dc, memDC);
+}
+
+// KOR - 20-Dec-14 - Add this call so we can paint some stuff in GuiderPolyStar and then
+//   let the original code finish it up.
+void GuiderOneStar::OnPaint(wxClientDC& dc, wxMemoryDC& memDC)
+{
     try
     {
-        if (PaintHelper(dc, memDC))
-        {
-            throw ERROR_INFO("PaintHelper failed");
-        }
         // PaintHelper drew the image and any overlays
         // now decorate the image to show the selection
 

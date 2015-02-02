@@ -38,5 +38,6 @@
 
 #include "guider.h"
 #include "guider_onestar.h"
+#include "guider_polystar.h"					// KOR - 01-Feb-15 - Merging from PolyStar devel trunk
 
 #endif /* GUIDERS_H_INCLUDED */

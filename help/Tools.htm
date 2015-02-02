@@ -70,7 +70,7 @@ infallible, so you may need to select a star yourself if you don't like
 the automated result. &nbsp;If you want to use Auto-Select, you should
 definitely use either a bad-pixel map or dark library to reduce the
 likelihood of PHD2 mistakenly choosing a hot pixel.
-<h3><a name="Manual_Control_of_Calibration_Data"></a>Manual Control of Calibration Data</h3>
+<h3><a name="Calibration_Details"></a>Calibration Data Details</h3>
 Calibration data is saved automatically each time a calibration sequence completes
 successfully. &nbsp;The use of the calibration data has been described
 elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
@@ -88,8 +88,29 @@ doing; but it is available as a matter of completeness. &nbsp;If you
 click on the 'Enter calibration data' item, you'll see a dialog box
 that allows input of relatively low-level calibration data. &nbsp;This
 data might come from a much earlier session, perhaps extracted from the
-<span style="font-style: italic;">PHD2</span> guiding log file.<br>
-<br>
+<span style="font-style: italic;">PHD2</span> guiding log file.<br><br>Most of the calibration-related windows, including calibration sanity-checks, will open a window that looks something like this:<br><br><img style="width: 730px; height: 382px;" alt="" src="Calib_Review.PNG"><br><br>The
+first thing to look at is the graph to the left, which shows what star
+movements resulted from the guide pulses that PHD2 sent during
+calibration. &nbsp;The lines represent the RA and Dec guide rates that
+were computed as a result of the calibration, and these lines should be
+roughly perpendicular. &nbsp;The data points will never be perfectly
+aligned, but they should not have major&nbsp;curves, sharp inflections,
+or reversals in direction. &nbsp;The tabular information to the right
+shows what was known about the pointing position of the scope and the
+various ASCOM settings that relate to guiding. &nbsp;If you are not
+using an ASCOM mount and don't have an "Aux mount" specified, some of
+this information will be missing. &nbsp;The table will also show
+the&nbsp;expected guiding rates&nbsp;for a "perfect" calibration using
+the same sky position and guide speed settings you used. &nbsp;You will
+almost never achieve these ideal values, and you shouldn't worry about
+them unless your values are very different. &nbsp;If you didn't see an
+alert message when the calibration completed, your results are probably
+good enough. &nbsp; If you want to re-use a calibration for an extended
+time, &nbsp;it is probably worth a few extra minutes&nbsp;to check this
+information and confirm that the calibration went
+reasonably well and produced sensible results. &nbsp;Bad calibrations
+can occur even for very experienced imagers using high-end mounts, so
+it is good to check.<br><br>
 <h3><a name="PHD2_Server"></a><span style="font-style: italic;">PHD2</span> Server</h3>
 <span style="font-style: italic;">PHD2</span> supports third-party imaging and automation applications that need to control the guiding process. &nbsp;Stark Labs' <span style="font-style: italic;">Nebulosity </span>program
 was the first to do this, but other applications have subsequently been
@@ -108,7 +129,7 @@ Wiki</a>.<br>
 <h3><a name="Drift_Align"></a>Drift Align</h3>
 Drift alignment is a well-known technique for achieving polar alignment and
 is considered by many to be the "gold standard". &nbsp;The Drift
-Alignment tool is a "wizard-like" sequence of dialogs that can help
+Alignment tool is a&nbsp;wizard-like sequence of dialogs that can help
 you work through the drift alignment process and get quantifiable
 results. &nbsp;Once you've calibrated your guider, click on 'Drift
 Align' under the 'Tools' menu. &nbsp;The first Drift Align dialog will
@@ -183,7 +204,7 @@ you subsequently want to use
 ST-4 style guiding, you should use the ASCOM connection for drift
 alignment. &nbsp;If you can't do that for some reason, the following
 features will be impaired:<br><ul><li>Scope position data and slewing functions will not be available - you'll have to slew the scope yourself</li><li>The
-magenta circle that identifies the "target" for moving the star will be
+magenta circle that identifies the&nbsp;target for moving the star will be
 inaccurate and will be displayed as a dashed line. &nbsp;This dashed
 circle will identify only an upper bound to the adjustment, so you will
 probably
@@ -260,7 +281,7 @@ PHD2 will quickly learn the comet tracking rate as you re-center the
 comet. Once you are satisfied that PHD2 is tracking the comet, you can
 click Stop to end the training. PHD2 will continue shifting the lock
 position to track the comet until you disable comet tracking by
-toggling the Enable button.<br>
+toggling the Enable/Disable button.<br>
 <br>
 You can practice the comet training technique using the built-in
 camera simulator. Check the "Comet" option in the Cam Dialog, and the

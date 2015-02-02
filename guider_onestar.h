@@ -85,6 +85,7 @@ public:
     virtual ~GuiderOneStar(void);
 
     virtual void OnPaint(wxPaintEvent& evt);
+	virtual void OnPaint(wxClientDC& dc, wxMemoryDC& memDC);		// KOR - 20-Dec-14 - allow GuiderPolyStar to continue its OnPaint
 
     virtual bool IsLocked(void);
     virtual bool AutoSelect(void);
@@ -100,7 +101,9 @@ public:
 
     virtual void LoadProfileSettings(void);
 
-private:
+	// KOR - 18-Dec-14 - Change to protected so GuiderPolyStar can fail over to GuiderOneStar
+// private:
+protected:
     virtual bool IsValidLockPosition(const PHD_Point& pt);
     virtual void InvalidateCurrentPosition(bool fullReset = false);
     virtual bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo);

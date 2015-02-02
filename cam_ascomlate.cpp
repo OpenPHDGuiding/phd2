@@ -203,7 +203,7 @@ static bool ASCOM_StartExposure(IDispatch *cam, double duration, bool dark, EXCE
     rgvarg[1].vt = VT_R8;
     rgvarg[1].dblVal =  duration;
     rgvarg[0].vt = VT_BOOL;
-    rgvarg[0].boolVal = (VARIANT_BOOL) !dark;
+    rgvarg[0].boolVal = dark ? VARIANT_FALSE : VARIANT_TRUE;
 
     DISPPARAMS dispParms;
     dispParms.cArgs = 2;
