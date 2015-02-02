@@ -84,7 +84,7 @@ sudo apt-get install cmake
 == Building and installing wxWidgets ==
 We assume 
   * `$WXWIDGET_BASE_DIR` being a variable that points to the untarred sources of _wxWidgets_.
-  * `$wxPREFIX` being a variable that points to the installation prefix of your dependencies.
+  * `$WXWIN` being a variable that points to the installation prefix of your dependencies.
 
 === Win32 ===
 Open a Visual Studio console and type the following commands, respectively for the Debug and Release versions of the libraries.
@@ -100,7 +100,7 @@ The `wx_vc12.sln` Visual Studio solution is for Visual Studio 12 (Visual 2013, s
 The configuration on OSX looks a little bit complicated. We are using XCode 5 and above, which is shipped with Clang 3+.
 {{{
 cd $WXWIDGET_BASE_DIR
-../configure --enable-universal_binary=i386,x86_64 --disable-shared --with-libpng=builtin --with-cocoa --prefix=$wxPREFIX \
+../configure --enable-universal_binary=i386,x86_64 --disable-shared --with-libpng=builtin --with-cocoa --prefix=$WXWIN \
              --with-macosx-sdk=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/ \
              --with-macosx-version-min=10.7 \
              CXXFLAGS="-stdlib=libc++ -std=c++11" \
@@ -115,7 +115,6 @@ make install
 Under Linux, the wxWidget should be available through the package manager. You need the _developer_ package using GTK:
 {{{
 sudo apt-get install libwxgtk3.0-dev wx-common wx3.0-i18n
-
 }}}
 
 == Building and installing OpenCV ==
@@ -143,7 +142,7 @@ We suppose you have
 cd $OPG_SRC
 mkdir tmp
 cd tmp
-cmake -G "Visual Studio 12" -DwxWidgets_ROOT_DIR=$wxPREFIX  -DOpenCVRoot=$opencvPREFIX\opencv\build ..
+cmake -G "Visual Studio 12" -DwxWidgets_ROOT_DIR=$WXWIN  -DOpenCVRoot=$opencvPREFIX\opencv\build ..
 PhD2.sln
 }}}
 
@@ -159,7 +158,7 @@ We suppose you have
 cd $OPG_SRC
 mkdir tmp
 cd tmp
-cmake -G Xcode -DwxWidgets_PREFIX_DIRECTORY=$wxPREFIX -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 ..
+cmake -G Xcode -DwxWidgets_PREFIX_DIRECTORY=$WXWIN -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 ..
 open PhD2.xcodeproj
 }}}
 
@@ -176,6 +175,6 @@ We suppose you have
 cd $OPG_SRC
 mkdir tmp
 cd tmp
-cmake -DwxWidgets_PREFIX_DIRECTORY=$wxPREFIX ..
+cmake -DwxWidgets_PREFIX_DIRECTORY=$WXWIN ..
 make -j 4
 }}}
