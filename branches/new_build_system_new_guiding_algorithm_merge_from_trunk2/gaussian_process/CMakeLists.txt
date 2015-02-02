@@ -12,7 +12,7 @@ set(gp_SRC
     ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
     ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp)
 add_library(MPIIS_GP STATIC ${gp_SRC})
-target_include_directories(MPIIS_GP PUBLIC ${EIGEN_SRC})
+target_include_directories(MPIIS_GP PRIVATE ${EIGEN_SRC})
 set_property(TARGET MPIIS_GP PROPERTY FOLDER "Contributions/")
 
 

@@ -16,6 +16,7 @@ enable_testing()
 
 set(USE_FOLDERS TRUE)
 set(BUILD_SHARED_LIBS FALSE)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(VERSION_MAJOR 2)
 set(VERSION_MINOR 3)
@@ -23,6 +24,11 @@ set(VERSION_PATCH 0)
 
 # root directory of the project
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
+set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
+
+
+# options
+option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm" OFF)
 
 
 # build type, by default to release (with optimisations)
@@ -33,14 +39,11 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
 include(CheckCXXCompilerFlag)
 
 
-
-
+#################################################################################
+#
 # general defines
 if(WIN32)
   set(FIND_LIBRARY_USE_LIB64_PATHS FALSE)
@@ -58,8 +61,24 @@ else()
 endif()
 
 
+
+
+#################################################################################
+#
+# external libraries
 # to be changed in add_subdirectory
 include(build/CMakeListsThirdparties.txt)
+
+
+
+
+#################################################################################
+#
+# contributions
+if(${GUIDING_GAUSSIAN_PROCESS})
+  add_subdirectory(gaussian_process tmp_gaussian_process)
+  message(STATUS "[configuration] PHD2 includes the Gaussian Process guiding algorithm")
+endif()
 
 
 
@@ -68,11 +87,10 @@ include_directories(${wxWidgets_INCLUDE_DIRS})
 
 
 
-set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 
 
-
-
+#################################################################################
+#
 # main project
 set(cam_KWIQGuider_SRC
   ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.cpp
@@ -247,25 +265,22 @@ set(guiding_SRC
   ${phd_src_dir}/stepguider.h
   ${phd_src_dir}/stepguiders.h
 
-  # gaussian process
-  ${phd_src_dir}/UDPGuidingInteraction.cpp
-  ${phd_src_dir}/UDPGuidingInteraction.h
-  ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
-  ${phd_src_dir}/guide_algorithm_gaussian_process.h
 )
+
+# gaussian process, also the main project should link to the GP project in the contrib dir
+if(${GUIDING_GAUSSIAN_PROCESS})
+  set(guiding_SRC 
+      ${guiding_SRC}
+      ${phd_src_dir}/UDPGuidingInteraction.cpp
+      ${phd_src_dir}/UDPGuidingInteraction.h
+      ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
+      ${phd_src_dir}/guide_algorithm_gaussian_process.h)
+endif()
+
 source_group(Guiding FILES ${guiding_SRC})
 
 
 
-
-
-set(gaussian_process_SRC
-  ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp
-  ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
-  ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
-  ${phd_src_dir}/gaussian_process/tools/math_tools.h
-)
-source_group(GaussianProcess FILES ${gaussian_process_SRC})
 
 
 # it would ease if files are organised in an alphabetical order
@@ -439,7 +454,6 @@ if(APPLE)
     ${cam_SRC}
     ${cam_KWIQGuider_SRC}
     ${guiding_SRC}
-    ${gaussian_process_SRC}
     ${phd2_SRC}
     
     # resources of the bundle
@@ -477,7 +491,8 @@ if(APPLE)
 
     ${phd_src_dir}/comdispatch.h
     ${phd_src_dir}/comdispatch.cpp
-    ${phd_src_dir}/phd.rc  )   # resource file
+    ${phd_src_dir}/phd.rc   # resource file
+  )
 
 
 
@@ -489,7 +504,6 @@ if(APPLE)
     #${cam_KWIQGuider_SRC} # not included in the win32 projects
     ${guiding_SRC}
     ${phd2_SRC}
-    ${gaussian_process_SRC}
     ${phd2_WIN_SRC}
     )
 
@@ -511,7 +525,6 @@ elseif(UNIX)
    ${scopes_SRC}
    ${cam_SRC}
    ${guiding_SRC}
-   ${gaussian_process_SRC}
    ${phd2_SRC}
    )
   target_link_libraries(Phd2 X11)
@@ -523,17 +536,20 @@ endif()
 
 
 # properties of the project common to all platforms
-
-target_include_directories( Phd2 PUBLIC  ${EIGEN_SRC} ${phd_src_dir}/gaussian_process)
+target_include_directories( Phd2 PRIVATE  ${EIGEN_SRC} ${phd_src_dir}/gaussian_process)
 target_compile_definitions( Phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(     Phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
 
+# option configurations parts
+if(${GUIDING_GAUSSIAN_PROCESS})
+  target_link_libraries(Phd2 MPIIS_GP)
+  target_compile_definitions(Phd2 PRIVATE "-DMPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__")
+endif()
 
 
 
-
-# Additional files in the workspace, ti improve maintainability 
+# Additional files in the workspace, To improve maintainability 
 add_custom_target(CmakeAdditionalFiles
   SOURCES
   ${phd_src_dir}/build/CMakeListsThirdparties.txt
@@ -583,32 +599,6 @@ if(UNIX AND NOT APPLE)
   endforeach()
 endif()
 
-
-################################################################
-#
-# Unit tests
-#
-
-
-# CircularBuffer: to remove
-
-
-# Gaussian Process
-set(gp_SRC
-    ${phd_src_dir}/gaussian_process/tools/math_tools.cpp
-    ${phd_src_dir}/gaussian_process/tools/math_tools.h
-    ${phd_src_dir}/gaussian_process/tools/circular_buffer.h
-    ${phd_src_dir}/gaussian_process/tools/circular_buffer.cpp)
-add_library(GP STATIC ${gp_SRC})
-target_include_directories(GP PUBLIC ${EIGEN_SRC})
-
-
-add_executable(CircularBufferTest ${phd_src_dir}/tests/circular_buffer/circular_buffer_test.cpp)
-target_link_libraries(CircularBufferTest GP gtest)
-target_include_directories(CircularBufferTest PRIVATE ${phd_src_dir}
-                                              PRIVATE ${GTEST_HEADERS})
-set_property(TARGET CircularBufferTest PROPERTY FOLDER "Unit tests/")
-add_test(CircularBufferTest1 CircularBufferTest)
 
 
 
