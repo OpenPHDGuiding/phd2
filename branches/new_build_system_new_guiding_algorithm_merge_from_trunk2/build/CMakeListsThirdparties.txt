@@ -186,6 +186,7 @@ endif()
 
 set(LIBUSB libusb-1.0.9)
 set(libusb_root ${thirdparties_deflate_directory}/${LIBUSB})
+set(USB_build TRUE) # indicates that the USB library is part of the project. Set to FALSE if already existing on the system
 
 if(NOT EXISTS ${libusb_root})
   # untar the dependency
@@ -250,38 +251,38 @@ elseif(UNIX)
 
   # this would find the libUSB module that is installed on the system. 
   # It requires "sudo apt-get install libusb-1.0-0-dev"
-  pkg_check_modules(USB libusb-1.0 REQUIRED)
+  pkg_check_modules(USB_pkg libusb-1.0)
+  if(USB_pkg_FOUND)
+    include_directories(${USB_pkg_INCLUDE_DIRS})
+    set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_pkg_LIBRARIES})
+    set(USB_build FALSE)
+  else()
 
-  include_directories(${USB_INCLUDE_DIRS})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_LIBRARIES})
+    # in case the library is not installed on the system (as I have on my machines)
+    # try by building the library ourselves
+  
+    set(libUSB_SRC ${libUSB_SRC}
+    
+     # platform specific configuration file
+     ${thirdparties_dir}/include/${LIBUSB}
+    
+     # platform specific implementation
+     ${libusb_dir}/os/linux_usbfs.c
+     ${libusb_dir}/os/linux_usbfs.h
+    
+     ${libusb_dir}/os/threads_posix.h
+     ${libusb_dir}/os/threads_posix.c
+    )
 
-
-  # Apparently libindi and PhD are using different versions of libUSB. The one below is the one that
-  # will be included in the PhD project. 
-  #set(libUSB_SRC ${libUSB_SRC}
-  #
-  #  # platform specific configuration file
-  #  ${thirdparties_dir}/include/${LIBUSB}
-  # 
-  #  # platform specific implementation
-  #  ${libusb_dir}/os/linux_usbfs.c
-  #  ${libusb_dir}/os/linux_usbfs.h
-  #
-  #  ${libusb_dir}/os/threads_posix.h
-  #  ${libusb_dir}/os/threads_posix.c
-  # )
-                                            
-  #set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
-  #set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
-
-
+    set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
+    set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
+  endif()
 
 else()
   message(FATAL_ERROR "libUSB unsupported platform")
 endif()
 
-
-if(NOT UNIX OR APPLE)
+if(${USB_build})
   include_directories(${libusb_dir})
 
   # libUSB compilation for OSX and Win32 (not Linux)
@@ -302,7 +303,7 @@ endif()
 
 
 #############################################
-# the Eigen library
+# the Eigen library, mostly header only
 
 set(EIGEN eigen-eigen-36bf2ceaf8f5)
 set(eigen_root ${thirdparties_deflate_directory}/${EIGEN})
@@ -320,7 +321,7 @@ set(EIGEN_SRC ${eigen_root})
 
 
 #############################################
-# Google test
+# Google test, easily built
 
 set(GTEST gtest-1.7.0)
 set(gtest_root ${thirdparties_deflate_directory}/${GTEST})
@@ -398,6 +399,9 @@ set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${wxWidgets_LIBRARIES})
 # - VidCap
 # - ASCOM camera stuff
 #############################################
+
+
+# OPENCV specific
 if(WIN32)
 
   # openCV
@@ -451,8 +455,11 @@ if(WIN32)
   
   set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_core249d.dll)
   set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_core249.dll)
+endif()
   
 
+# Various camera libraries
+if(WIN32)
   # VidCapture
   set(vidcap_dir ${PHD_PROJECT_ROOT_DIR}/cameras/VidCapture)
   include_directories(${vidcap_dir})
@@ -460,63 +467,63 @@ if(WIN32)
   
 
   # Video for Windows, directshow and windows media
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} vfw32.lib Strmiids.lib Quartz.lib winmm.lib)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL} vfw32.lib Strmiids.lib Quartz.lib winmm.lib)
   
   
   # gpusb
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringGPUSB_DLL.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringGPUSB_DLL.dll)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringLXUSB_DLL.dll)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringGPUSB_DLL.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringGPUSB_DLL.dll)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringLXUSB_DLL.dll)
   
   # asi cameras
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/AsiCamera2.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera2.dll)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/AsiCamera2.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera2.dll)
   
   
   # DsiDevice
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/DsiDevice.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/DSCI.dll)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/DsiDevice.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/DSCI.dll)
   
   # SBIGUDrv
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/SBIGUDrv.lib)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SBIGUDrv.lib)
   #set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/SBIGUDrv.dll) # this is delay load, the dll does not exist in the sources
   
   # DICAMSDK
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/DICAMSDK.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/DICAMSDK.dll)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/DICAMSDK.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/DICAMSDK.dll)
   
   # SSAGIF
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/SSAGIF.lib)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SSAGIF.lib)
   
   # FCLib
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/FCLib.lib)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/FcApi.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/FCAPI.dll)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/FCLib.lib)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/FcApi.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/FCAPI.dll)
   
   # SXUSB
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/SXUSB.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/SXUSB.dll)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/SXUSB.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SXUSB.dll)
   
   # astroDLL
   #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/astroDLLQHY5V.lib)
   
   # CMOSDLL
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/CMOSDLL.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/CMOSDLL.dll)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/CMOSDLL.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/CMOSDLL.dll)
   
   
   # inpout32 ?
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${PHD_PROJECT_ROOT_DIR}/cameras/inpout32.lib)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/inpout32.dll)
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/inpout32.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/inpout32.dll)
   
  
   # some other that are explicitly loaded at runtime
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhy5IIdll.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhy5LIIdll.dll)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhy5IIdll.dll)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhy5LIIdll.dll)
   
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLsspiag.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL} ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGCAM.dll)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLsspiag.dll)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGCAM.dll)
   
 
   # ASCOM, 
