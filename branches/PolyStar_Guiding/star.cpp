@@ -48,6 +48,22 @@ Star::~Star(void)
 {
 }
 
+// KOR - 26-Nov-14 - needed equality for polystar guiding (StarList Class)
+bool Star::operator==(const Star& rhs)
+{
+	if ((*this).Mass != rhs.Mass)
+		return false;
+	if ((*this).SNR != rhs.SNR)
+		return false;
+	if ((*this).X != rhs.X)
+		return false;
+	if ((*this).Y != rhs.Y)
+		return false;
+	if ((*this).IsValid() != rhs.IsValid())
+		return false;
+	return true;
+}
+
 bool Star::WasFound(FindResult result)
 {
     bool bReturn = false;

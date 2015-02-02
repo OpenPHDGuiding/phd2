@@ -99,7 +99,7 @@
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera2.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/phd.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Debug/$(ProjectName).pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
@@ -153,13 +153,14 @@
       <AdditionalLibraryDirectories>$(OPENCV_DIR)/build/x64/vc10/lib;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>opencv_core245.dll;opencv_highgui245.dll;opencv_imgproc245.dll;sbigudrv.dll;ArtemisCCD.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;FCApi.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera2.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ProgramDatabaseFile>.\Release/phd.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Release/$(ProjectName).pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -222,6 +223,7 @@
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="guider.cpp" />
     <ClCompile Include="guider_onestar.cpp" />
+    <ClCompile Include="guider_polystar.cpp" />
     <ClCompile Include="guide_algorithm.cpp" />
     <ClCompile Include="guide_algorithm_hysteresis.cpp" />
     <ClCompile Include="guide_algorithm_identity.cpp" />
@@ -247,6 +249,8 @@
     </ClCompile>
     <ClCompile Include="phdconfig.cpp" />
     <ClCompile Include="phdcontrol.cpp" />
+    <ClCompile Include="polystar.cpp" />
+    <ClCompile Include="polystarlog.cpp" />
     <ClCompile Include="precompiled_header.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">phd.h</PrecompiledHeaderFile>
@@ -273,6 +277,7 @@
     <ClCompile Include="serialport_win32.cpp" />
     <ClCompile Include="socket_server.cpp" />
     <ClCompile Include="star.cpp" />
+    <ClCompile Include="starlist.cpp" />
     <ClCompile Include="star_profile.cpp" />
     <ClCompile Include="statswindow.cpp" />
     <ClCompile Include="stepguider.cpp" />
@@ -342,6 +347,7 @@
     <ClInclude Include="guider.h" />
     <ClInclude Include="guiders.h" />
     <ClInclude Include="guider_onestar.h" />
+    <ClInclude Include="guider_polystar.h" />
     <ClInclude Include="guide_algorithm.h" />
     <ClInclude Include="guide_algorithms.h" />
     <ClInclude Include="guide_algorithm_hysteresis.h" />
@@ -367,6 +373,8 @@
     <ClInclude Include="phdconfig.h" />
     <ClInclude Include="phdcontrol.h" />
     <ClInclude Include="point.h" />
+    <ClInclude Include="polystar.h" />
+    <ClInclude Include="polystarlog.h" />
     <ClInclude Include="profile_wizard.h" />
     <ClInclude Include="Refine_DefMap.h" />
     <ClInclude Include="rotator.h" />
@@ -392,6 +400,7 @@
     <ClInclude Include="serialport_win32.h" />
     <ClInclude Include="socket_server.h" />
     <ClInclude Include="star.h" />
+    <ClInclude Include="starlist.h" />
     <ClInclude Include="star_profile.h" />
     <ClInclude Include="statswindow.h" />
     <ClInclude Include="stepguider.h" />

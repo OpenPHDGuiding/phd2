@@ -69,7 +69,7 @@
 
 #define APPNAME _T("PHD2 Guiding")
 #define PHDVERSION _T("2.4.1")
-#define PHDSUBVER _T("d")
+#define PHDSUBVER _T("e")
 #define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
@@ -181,6 +181,9 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #include "phdcontrol.h"
 #include "runinbg.h"
 #include "fitsiowrap.h"
+#include "polystar.h"					// KOR - 01-Feb-15 - Merging from PolyStar devel trunk
+#include "starlist.h"					// KOR - 01-Feb-15 - Merging from PolyStar devel trunk
+#include "polystarlog.h"				// KOR - 01-Feb-15 - Merging from PolyStar devel trunk
 
 class wxSingleInstanceChecker;
 

@@ -35,14 +35,21 @@
  *
  */
 
-#ifndef STAR_H_INCLUDED
-#define STAR_H_INCLUDED
+#ifndef POLYSTAR_H_INCLUDED
+#define POLYSTAR_H_INCLUDED
 
 #include "point.h"
+#include "star.h"
+#include "starlist.h"
 
-class Star : public PHD_Point
+class PolyStar : public PHD_Point
 {
 public:
+	const int	CENTROID_MARKER_RADIUS	= 15;
+	const int	CENTROID_MARKER_TAB_LEN = 5;
+	const int	CENTROID_PEN_WIDTH		= 1;
+
+#ifdef KOR_OUT
     enum FindMode
     {
         FIND_CENTROID,
@@ -62,10 +69,41 @@ public:
 
     double Mass;
     double SNR;
+#endif
 
-    Star(void);
-    ~Star();
+	PolyStar(void);
+	PolyStar(const PolyStar &poly_star);
+	PolyStar(std::vector<Star> starList, int maxStars);
+	~PolyStar();
 
+	PolyStar&	operator=(const PolyStar& rhs);
+
+	int			AddStar(Star star);
+	bool		RemoveStar(Star star, int distance);
+	int			len(void) const;
+
+	bool		IsValid(void) const;
+    void		Invalidate(void);
+	void		RemoveStars(void);
+
+	PHD_Point	getCentroid(void) const;
+	double		getMass(void) const;
+	double		getSNR(void) const;
+
+// KOR_OUT    bool		AutoFind(const usImage& image, int edgeAllowance, int searchRegion, double scaleFactor, bool rotation);
+	bool		Find(const usImage *pImg, int searchRegion, Star::FindMode mode);
+	void		markStars(wxClientDC &dc, wxColor color, int searchRegion, double scaleFactor, bool mark_SNR_MASS);
+	void		markCentroid(wxClientDC &dc, wxColor color, int searchRegion, double scaleFactor);
+	void		makePolygon(void);
+	void		makeCentroid(void);
+
+	Star		GetStar(const size_t star_num);
+
+	void		LogGuiding(bool includeHeader, PHD_Point& lockPosition);
+
+	static void		debugDump(const char* label, const PolyStar &poly_star);
+
+#ifdef KOR_OUT
     /*
      * Note: contrary to most boolean PHD functions, the star find functions return
      *       a boolean indicating success instead of a boolean indicating an
@@ -73,23 +111,30 @@ public:
      */
     bool Find(const usImage *pImg, int searchRegion, FindMode mode);
     bool Find(const usImage *pImg, int searchRegion, int X, int Y, FindMode mode);
-    bool AutoFind(const usImage& image, int edgeAllowance, int searchRegion);
-
     bool WasFound(FindResult result);
     bool WasFound(void);
-    void Invalidate(void);
+
     void SetError(FindResult error);
     FindResult GetError(void) const;
-	bool operator==(const Star& rhs);		// KOR - 26-Nov-14 - needed for PolyStar guiding
-	bool operator!=(const Star& rhs)	{ return !(*this == rhs); }
+#endif
+
+
 
 private:
+	std::vector<Star>	m_starList;
+	PHD_Point			m_centroid;
+	double				m_mass;
+	double				m_SNR;
+
+#ifdef KOR_OUT
     FindResult m_lastFindResult;
+#endif
 };
 
-inline Star::FindResult Star::GetError(void) const
+#ifdef KOR_OUT
+inline PolyStar::FindResult PolyStar::GetError(void) const
 {
     return m_lastFindResult;
 }
-
-#endif /* STAR_H_INCLUDED */
+#endif
+#endif /* POLYSTAR_H_INCLUDED */

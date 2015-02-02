@@ -116,7 +116,7 @@ double GuideAlgorithmResistSwitch::result(double input)
                 Debug.Write(wxString::Format("resist switch: large excursion: input %.2f thresh %.2f direction from %d to %d\n", input, thresh, m_currentSide, sign(input)));
                 // force switch
                 m_currentSide = 0;
-                int i;
+                unsigned int i;
                 for (i = 0; i < HISTORY_SIZE - 3; i++)
                     m_history[i] = 0.0;
                 for (; i < HISTORY_SIZE; i++)

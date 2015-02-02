@@ -55,6 +55,7 @@ GuideCamera *pCamera = NULL;
 
 DebugLog Debug;
 GuidingLog GuideLog;
+PolyStarLog	PolystarLog;				// KOR - 01-Feb-2015 - Merging from PolyStar devel trunk
 
 int XWinSize = 640;
 int YWinSize = 512;
@@ -124,6 +125,7 @@ bool PhdApp::OnInit()
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
     Debug.Init("debug", pConfig->Global.GetBoolean("/EnableDebugLog", true));
+	PolystarLog.Init();				// KOR - 01-Feb-2015 - Merging from PolyStar devel trunk
 
     Debug.AddLine(wxString::Format("PHD2 version %s begins execution with:", FULLVER));
     Debug.AddLine(wxString::Format("   %s", wxVERSION_STRING));

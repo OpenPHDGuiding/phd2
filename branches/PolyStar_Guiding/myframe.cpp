@@ -211,8 +211,11 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     sizer->Add(m_infoBar, wxSizerFlags().Expand());
 
-    pGuider = new GuiderOneStar(guiderWin);
-    sizer->Add(pGuider, wxSizerFlags().Proportion(1).Expand());
+    // KOR - 01-Feb-15 - Merge PolyStar devel trunk
+	//     - replace GuiderOneStar with GuiderPolyStar
+	// pGuider = new GuiderOneStar(guiderWin);
+	pGuider = new GuiderPolyStar(guiderWin);
+	sizer->Add(pGuider, wxSizerFlags().Proportion(1).Expand());
 
     guiderWin->SetSizer(sizer);
 
@@ -1770,7 +1773,9 @@ wxString MyFrame::GetDarksDir()
 
 static wxString DarkLibFileName(int profileId)
 {
-    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId);
+    int inst = pFrame->GetInstanceNumber();
+    return MyFrame::GetDarksDir() + PATHSEPSTR +
+        wxString::Format("PHD2_dark_lib%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
 }
 
 bool MyFrame::DarkLibExists(int profileId, bool showAlert)
@@ -2116,6 +2121,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
     {
         bool bLanguageNameOk = false;
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
+#ifndef __LINUX__  // See issue 83
         wxString catalogFile = wxGetApp().GetLocaleDir() +
             PATHSEPSTR + pLanguageInfo->CanonicalName +
             PATHSEPSTR "messages.mo";
@@ -2130,6 +2136,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
             }
             delete pCat;
         }
+#endif
         if (!bLanguageNameOk)
         {
             languages.Add(pLanguageInfo->Description);

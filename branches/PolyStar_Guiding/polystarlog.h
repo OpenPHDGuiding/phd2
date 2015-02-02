@@ -1,6 +1,8 @@
 /*
- *  debuglog.h
+ *  polystarlog.h
  *  PHD Guiding
+ *
+ *  Adapted by KOR from debuglog.h by Brek McKee
  *
  *  Created by Bret McKee
  *  Copyright (c) 2012 Bret McKee
@@ -33,47 +35,46 @@
  *
  */
 
-#ifndef DEBUGLOG_INCLUDED
-#define DEBUGLOG_INCLUDED
+#ifndef POLYSTARLOG_INCLUDED
+#define POLYSTARLOG_INCLUDED
 
 #include "logger.h"
+#include "polystar.h"
+//#include "debuglog.h"
 
-class DebugLog : public wxFFile, public Logger
+class PolyStarLog : public wxFFile, public Logger
+//class PolyStarLog : public DebugLog
 {
 private:
-    bool m_bEnabled;
-    wxCriticalSection m_criticalSection;
-    wxDateTime m_lastWriteTime;
-    wxString m_pPathName;
+	bool m_bEnabled;
+	wxCriticalSection	m_criticalSection;
+	wxDateTime			m_lastWriteTime;
+	wxString			m_pPathName;
 
-    void InitVars(void);
+	wxString			m_line;
 
 public:
-    DebugLog(void);
-    DebugLog(const char *pName, bool bEnabled);
-    ~DebugLog(void);
+    PolyStarLog(void);
+//    PolyStarLog(const char *pName, bool bEnabled);
+    ~PolyStarLog(void);
 
-    bool Enable(bool bEnabled);
-    bool IsEnabled(void);
-    bool Init(const char *pName, bool bEnable, bool bForceOpen = false);
-    wxString AddLine(const char *format, ...); // adds a newline
-    wxString AddBytes(const wxString& str, const unsigned char *pBytes, unsigned count);
-    wxString Write(const wxString& str);
-    bool Flush(void);
+	bool Enable(const bool bEnabled);
+	bool IsEnabled(void);
+    bool Init(const bool bEnable = true, const bool bForceOpen = false);
 
-    bool ChangeDirLog(const wxString& newdir);
+	void AddHeaderLine(PolyStar& polystar);	
+	void AddStar(Star& star);
+	void AddPoint(double X, double Y);
+
+	void ClearLine(void);
+	void LogLine(void);
 };
 
-extern DebugLog& operator<< (DebugLog& out, const wxString &str);
-extern DebugLog& operator<< (DebugLog& out, const char *str);
-extern DebugLog& operator<< (DebugLog& out, const int i);
-extern DebugLog& operator<< (DebugLog& out, const double d);
-
-inline bool DebugLog::IsEnabled(void)
+inline bool PolyStarLog::IsEnabled(void)
 {
     return m_bEnabled;
 }
 
-extern DebugLog Debug;
+extern PolyStarLog PolystarLog;
 
 #endif
