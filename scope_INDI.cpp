@@ -422,6 +422,8 @@ double ScopeINDI::GetGuidingDeclination(void)
 	INumber *decprop = IUFindNumber(coord_prop,"DEC");
 	if (decprop) {
 	    dec = decprop->value;     // Degrees
+	    if (dec>89) dec = 89;     // avoid crash when dividing by cos(dec) 
+	    if (dec<-89) dec = -89; 
 	    dec = dec * M_PI / 180;  // Radians
 	}
     }
