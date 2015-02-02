@@ -35,48 +35,23 @@
 #ifndef GUIDE_GAUSSIAN_PROCESS
 #define GUIDE_GAUSSIAN_PROCESS
 
-#include "UDPGuidingInteraction.h"
-#include "gaussian_process/tools/circular_buffer.h"
+#include "guide_algorithm.h"
 
 class wxStopWatch;
 
 class GuideGaussianProcess : public GuideAlgorithm
 {
 private:
-    UDPGuidingInteraction udpInteraction;
-    CircularDoubleBuffer timestamps_;
-    CircularDoubleBuffer measurements_;
-    CircularDoubleBuffer modified_measurements_;
-    wxStopWatch timer_;
-    double control_signal_;
-    int number_of_measurements_;
-    double control_gain_;
-    double elapsed_time_ms_;
+    struct gp_guide_parameters;
+    class GuideGaussianProcessDialogPane;
+
+    gp_guide_parameters* parameters;
 
     void HandleTimestamps();
     void HandleMeasurements(double input);
     void HandleModifiedMeasurements(double input);
 
 protected:
-    class GuideGaussianProcessDialogPane : public ConfigDialogPane
-    {
-        GuideGaussianProcess *m_pGuideAlgorithm;
-        wxSpinCtrlDouble *m_pControlGain;
-
-    public:
-        GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm);
-        virtual ~GuideGaussianProcessDialogPane(void);
-
-        /*
-         * Fill the GUI with the parameters that are currently chosen in the
-         * guiding algorithm
-         */
-        virtual void LoadValues(void);
-
-        // Set the parameters chosen in the GUI in the actual guiding algorithm
-        virtual void UnloadValues(void);
-    };
-
 
     virtual double GetControlGain();
     virtual bool SetControlGain(double control_gain);

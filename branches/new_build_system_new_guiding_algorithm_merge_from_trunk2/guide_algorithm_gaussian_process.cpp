@@ -33,16 +33,78 @@
 */
 
 #include "phd.h"
+
+#include "UDPGuidingInteraction.h"
+#include "gaussian_process/tools/circular_buffer.h"
+
 #include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
 #include "gaussian_process/tools/math_tools.h"
 #include "UDPGuidingInteraction.h"
 
-static const double DefaultControlGain = 1.0;
 
-GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
-    : GuideAlgorithm(pMount, axis),
-      udpInteraction(_T("localhost"),_T("1308"),_T("1309")),
+class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialogPane
+{
+    GuideGaussianProcess *m_pGuideAlgorithm;
+    wxSpinCtrlDouble *m_pControlGain;
+
+public:
+    GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm)
+      : ConfigDialogPane(_("Gaussian Process Guide Algorithm"),pParent)
+    {
+        m_pGuideAlgorithm = pGuideAlgorithm;
+
+        int width = StringWidth(_T("000.00"));
+        m_pControlGain = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
+                                              wxPoint(-1,-1),wxSize(width+30, -1),
+                                              wxSP_ARROW_KEYS, 0.0, 1.0, 0.0, 0.05,
+                                              _T("Control Gain"));
+        m_pControlGain->SetDigits(2);
+
+
+        //
+        // TODO Add description of the control gain!
+        //
+        DoAdd(_("Control Gain"), m_pControlGain,
+              _("Description of the control gain. Default = 1.0"));
+    }
+
+    virtual ~GuideGaussianProcessDialogPane(void) 
+    {}
+
+    /* Fill the GUI with the parameters that are currently chosen in the
+      * guiding algorithm
+      */
+    virtual void LoadValues(void)
+    {
+      m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
+    }
+
+    // Set the parameters chosen in the GUI in the actual guiding algorithm
+    virtual void UnloadValues(void)
+    {
+      m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
+    }
+
+};
+
+
+
+// parameters of the GP guiding algorithm
+struct GuideGaussianProcess::gp_guide_parameters
+{
+    UDPGuidingInteraction udpInteraction;
+    CircularDoubleBuffer timestamps_;
+    CircularDoubleBuffer measurements_;
+    CircularDoubleBuffer modified_measurements_;
+    wxStopWatch timer_;
+    double control_signal_;
+    int number_of_measurements_;
+    double control_gain_;
+    double elapsed_time_ms_;
+
+    gp_guide_parameters() :
+      udpInteraction(_T("localhost"), _T("1308"), _T("1309")),
       timestamps_(100),
       measurements_(100),
       modified_measurements_(100),
@@ -50,10 +112,34 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
       control_signal_(0.0),
       number_of_measurements_(0),
       elapsed_time_ms_(0.0)
+    {
+
+    }
+
+
+
+    void clear()
+    {
+        timestamps_.clear();
+        measurements_.clear();
+        modified_measurements_.clear();
+        number_of_measurements_ = 0;
+    }
+
+};
+
+
+
+
+static const double DefaultControlGain = 1.0;
+
+GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
+    : GuideAlgorithm(pMount, axis),
+      parameters(0)
 {
+    parameters = new gp_guide_parameters();
     wxString configPath = GetConfigPath();
-    double control_gain = pConfig->Profile.GetDouble(configPath + "/controlGain",
-                                                     DefaultControlGain);
+    double control_gain = pConfig->Profile.GetDouble(configPath + "/controlGain", DefaultControlGain);
     SetControlGain(control_gain);
 
     reset();
@@ -61,6 +147,7 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
 
 GuideGaussianProcess::~GuideGaussianProcess(void)
 {
+  delete parameters;
 }
 
 
@@ -70,79 +157,42 @@ ConfigDialogPane *GuideGaussianProcess::GetConfigDialogPane(wxWindow *pParent)
 }
 
 
-GuideGaussianProcess::
-GuideGaussianProcessDialogPane::
-GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm)
-    : ConfigDialogPane(_("Gaussian Process Guide Algorithm"),pParent)
-{
-    m_pGuideAlgorithm = pGuideAlgorithm;
-
-    int width = StringWidth(_T("000.00"));
-    m_pControlGain = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-                                          wxPoint(-1,-1),wxSize(width+30, -1),
-                                          wxSP_ARROW_KEYS, 0.0, 1.0, 0.0, 0.05,
-                                          _T("Control Gain"));
-    m_pControlGain->SetDigits(2);
-
-
-    //
-    // TODO Add description of the control gain!
-    //
-    DoAdd(_("Control Gain"), m_pControlGain,
-          _("Description of the control gain. Default = 1.0"));
-}
-
-GuideGaussianProcess::
-GuideGaussianProcessDialogPane::
-~GuideGaussianProcessDialogPane()
-{
-}
 
 bool GuideGaussianProcess::SetControlGain(double control_gain)
 {
     bool error = false;
 
-    try {
-        if (control_gain < 0) {
+    try 
+    {
+        if (control_gain < 0) 
+        {
             throw ERROR_INFO("invalid controlGain");
         }
 
-        control_gain_ = control_gain;
-    } catch (wxString Msg) {
+        parameters->control_gain_ = control_gain;
+    }
+    catch (wxString Msg) 
+    {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        control_gain_ = DefaultControlGain;
+        parameters->control_gain_ = DefaultControlGain;
     }
 
-    pConfig->Profile.SetDouble(GetConfigPath() + "/controlGain", control_gain_);
+    pConfig->Profile.SetDouble(GetConfigPath() + "/controlGain", parameters->control_gain_);
 
     return error;
 }
 
 double GuideGaussianProcess::GetControlGain()
 {
-    return control_gain_;
+    return parameters->control_gain_;
 }
 
 wxString GuideGaussianProcess::GetSettingsSummary()
 {
-    return wxString::Format("Control Gain = %.3f\n",
-                            GetControlGain());
+    return wxString::Format("Control Gain = %.3f\n", GetControlGain());
 }
 
-void GuideGaussianProcess::
-    GuideGaussianProcessDialogPane::
-    UnloadValues(void)
-{
-    m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
-}
-
-void GuideGaussianProcess::
-    GuideGaussianProcessDialogPane::
-    LoadValues(void)
-{
-    m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
-}
 
 
 GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
@@ -152,43 +202,43 @@ GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
 
 void GuideGaussianProcess::HandleTimestamps()
 {
-    if (number_of_measurements_ == 0)
+    if (parameters->number_of_measurements_ == 0)
     {
-        timer_.Start();
+        parameters->timer_.Start();
     }
-    double time_now = timer_.Time();
-    double delta_measurement_time_ms = time_now - elapsed_time_ms_;
-    elapsed_time_ms_ = time_now;
-    timestamps_.append(elapsed_time_ms_ - delta_measurement_time_ms / 2);
+    double time_now = parameters->timer_.Time();
+    double delta_measurement_time_ms = time_now - parameters->elapsed_time_ms_;
+    parameters->elapsed_time_ms_ = time_now;
+    parameters->timestamps_.append(parameters->elapsed_time_ms_ - delta_measurement_time_ms / 2);
 }
 
 void GuideGaussianProcess::HandleMeasurements(double input)
 {
-    measurements_.append(input);
+    parameters->measurements_.append(input);
 }
 
 void GuideGaussianProcess::HandleModifiedMeasurements(double input)
 {
     // If there is no previous measurement, a random one is generated.
-    if(number_of_measurements_ == 0)
+    if(parameters->number_of_measurements_ == 0)
     {
         //The daytime indoor measurement noise SD is 0.25-0.35
         double indoor_noise_standard_deviation = 0.25;
         double first_random_measurement = indoor_noise_standard_deviation *
             math_tools::generate_normal_random_double();
         double new_modified_measurement =
-            control_signal_ +
-            first_random_measurement * (1 - control_gain_) -
+            parameters->control_signal_ +
+            first_random_measurement * (1 - parameters->control_gain_) -
             input;
-        modified_measurements_.append(new_modified_measurement);
+        parameters->modified_measurements_.append(new_modified_measurement);
     }
     else
     {
         double new_modified_measurement =
-            control_signal_ +
-            measurements_.getSecondLastElement() * (1 - control_gain_) -
-            measurements_.getLastElement();
-        modified_measurements_.append(new_modified_measurement);
+            parameters->control_signal_ +
+            parameters->measurements_.getSecondLastElement() * (1 - parameters->control_gain_) -
+            parameters->measurements_.getLastElement();
+        parameters->modified_measurements_.append(new_modified_measurement);
     }
 }
 
@@ -197,7 +247,7 @@ double GuideGaussianProcess::result(double input)
     HandleTimestamps();
     HandleMeasurements(input);
     HandleModifiedMeasurements(input);
-    number_of_measurements_++;
+    parameters->number_of_measurements_++;
 
     /*
      * Need to read this value here because it is not loaded at the construction
@@ -212,9 +262,8 @@ double GuideGaussianProcess::result(double input)
 
     // This is the Code sending the circular buffers to Matlab:
 
-    double* timestamp_data = timestamps_.getEigenVector()->data();
-    double* modified_measurement_data =
-        modified_measurements_.getEigenVector()->data();
+    double* timestamp_data = parameters->timestamps_.getEigenVector()->data();
+    double* modified_measurement_data = parameters->modified_measurements_.getEigenVector()->data();
     double result;
     double wait_time = 100;
 
@@ -223,26 +272,26 @@ double GuideGaussianProcess::result(double input)
 
     // Send the input
     double input_buf[] = { input };
-    sent = udpInteraction.SendToUDPPort(input_buf, 8);
-    received = udpInteraction.ReceiveFromUDPPort(&result, 8);
+    sent = parameters->udpInteraction.SendToUDPPort(input_buf, 8);
+    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
     wxMilliSleep(wait_time);
 
     // Send the size of the buffer
-    double size = timestamps_.getEigenVector()->size();
+    double size = parameters->timestamps_.getEigenVector()->size();
     double size_buf[] = { size };
-    sent = udpInteraction.SendToUDPPort(size_buf, 8);
-    received = udpInteraction.ReceiveFromUDPPort(&result, 8);
+    sent = parameters->udpInteraction.SendToUDPPort(size_buf, 8);
+    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
     wxMilliSleep(wait_time);
 
     // Send modified measurements
-    sent = udpInteraction.SendToUDPPort(modified_measurement_data, size * 8);
-    received = udpInteraction.ReceiveFromUDPPort(&result, 8);
+    sent = parameters->udpInteraction.SendToUDPPort(modified_measurement_data, size * 8);
+    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
     wxMilliSleep(wait_time);
 
     // Send timestamps
-    sent = udpInteraction.SendToUDPPort(timestamp_data, size * 8);
+    sent = parameters->udpInteraction.SendToUDPPort(timestamp_data, size * 8);
     // Receive the final control signal
-    received = udpInteraction.ReceiveFromUDPPort(&result, 8);
+    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
 
     return result;
 
@@ -286,9 +335,6 @@ double GuideGaussianProcess::result(double input)
 
 void GuideGaussianProcess::reset()
 {
-    timestamps_.clear();
-    measurements_.clear();
-    modified_measurements_.clear();
-    number_of_measurements_ = 0;
+    parameters->clear();
     return;
 }
