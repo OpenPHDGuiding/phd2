@@ -213,7 +213,7 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     }
     else if (strcmp(PropName, "CCD_INFO") == 0 && Proptype == INDI_NUMBER) {
         PixelSize = IUFindNumber(property->getNumber(),"CCD_PIXEL_SIZE")->value;
-	FullSize = wxSize(IUFindNumber(property->getNumber(),"CCD_MAX_Y")->value,IUFindNumber(property->getNumber(),"CCD_MAX_X")->value);
+	FullSize = wxSize(IUFindNumber(property->getNumber(),"CCD_MAX_X")->value,IUFindNumber(property->getNumber(),"CCD_MAX_Y")->value);
     }
     
     CheckState();
