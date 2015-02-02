@@ -315,7 +315,9 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
             case GUIDE_ALGORITHM_LOWPASS:
             case GUIDE_ALGORITHM_LOWPASS2:
             case GUIDE_ALGORITHM_RESIST_SWITCH:
+#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
             case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
+#endif
                 break;
             case GUIDE_ALGORITHM_NONE:
             default:
@@ -347,9 +349,13 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
         case GUIDE_ALGORITHM_RESIST_SWITCH:
             *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmResistSwitch(mount, axis);
             break;
+            
+#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
         case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
             *ppAlgorithm = (GuideAlgorithm *)new GuideGaussianProcess(mount,axis);
             break;
+#endif
+
         case GUIDE_ALGORITHM_NONE:
         default:
             assert(false);
