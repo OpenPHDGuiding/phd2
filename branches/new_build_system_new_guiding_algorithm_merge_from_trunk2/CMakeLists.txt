@@ -83,7 +83,7 @@ endif()
 
 
 # Adding the wxWidgets include definitions. Maybe narrowed to Phd2 project only
-include_directories(${wxWidgets_INCLUDE_DIRS})
+#include_directories(${wxWidgets_INCLUDE_DIRS})
 
 
 
@@ -539,6 +539,7 @@ endif()
 target_compile_definitions( Phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(     Phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
+target_include_directories(Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
 
 # option configurations parts
 if(${GUIDING_GAUSSIAN_PROCESS})
