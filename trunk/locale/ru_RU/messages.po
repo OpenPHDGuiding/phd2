@@ -1,11 +1,11 @@
-# 
+#
 # fr\messages.po
 # PHD Guiding
-# 
+#
 # Created by Sylvain Girard
 # Copyright (c) 2013 Sylvain Girard
 # All rights reserved.
-# 
+#
 # This source code is distributed under the following "BSD" license
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -17,7 +17,7 @@
 # Neither the name of Bret McKee, Dad Dog Development Ltd, nor the names
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,27 +29,27 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-26 01:08-0500\n"
-"PO-Revision-Date: 2014-12-10 20:34+0400\n"
+"PO-Revision-Date: 2015-02-03 07:10+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.1\n"
+"X-Generator: Poedit 1.7.4\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: advanced_dialog.cpp:53
 msgid "Advanced setup"
-msgstr "Дополнительные настройки"
+msgstr "Настройки"
 
 #: advanced_dialog.cpp:97
 msgid "Global"
@@ -2925,7 +2925,7 @@ msgstr "Сырой FITS"
 
 #: myframe.cpp:2038
 msgid "Image logging format"
-msgstr "Формат логгирования изображений:"
+msgstr "Формат логгирования изображений"
 
 #: myframe.cpp:2039
 msgid "File format of logged images"
@@ -3219,9 +3219,8 @@ msgid "Right"
 msgstr "Вправо"
 
 #: nudge_lock.cpp:148
-#, fuzzy
 msgid "Step"
-msgstr "Шаг удара"
+msgstr "Шаг"
 
 #: nudge_lock.cpp:153
 msgid ""
@@ -3394,7 +3393,7 @@ msgid ""
 msgstr ""
 "Выберите гидирующую камеру из списка, содержащего все поддержииваемые PHD2 "
 "камеры и все установленные камеры ASCOM. Если камеры нет в списке, она либо "
-"не поддерживается HD2, либо её драйвер не установлен. Также необходимо "
+"не поддерживается PHD2, либо её драйвер не установлен. Также необходимо "
 "указать размер пикселей камеры и фокусное расстояние гидирующего телескопа."
 
 #: profile_wizard.cpp:226
