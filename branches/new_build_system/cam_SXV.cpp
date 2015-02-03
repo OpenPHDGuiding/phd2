@@ -79,8 +79,7 @@ bool Camera_SXVClass::Connect() {
     HANDLE hCams[SXCCD_MAX_CAMS];
     int ncams = sxOpen(hCams);
     if (ncams == 0) return true;  // No cameras
-//  wxMessageBox(wxString::Format("%d",ncams));
-//  return true;
+
     // Dialog to choose which Cam if # > 1  (note 0-indexed)
     if (ncams > 1) {
         wxString tmp_name;
@@ -201,6 +200,13 @@ bool Camera_SXVClass::Connect() {
 
     // Load parameters
     sxGetCameraParams(hCam,0,&CCDParams);
+
+    if (CCDParams.width == 0 || CCDParams.height == 0)
+    {
+        pFrame->Alert(_("Connect failed: could not retrieve camera parameters."));
+        return true;
+    }
+
     FullSize = wxSize(CCDParams.width, CCDParams.height);
 //  PixelSize[0] = CCDParams.pix_width;
 //  PixelSize[1] = CCDParams.pix_height;
@@ -295,7 +301,6 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         wxMilliSleep(200);
     }
 
-    wxStopWatch swatch;
     // Do exposure
     if (UseInternalTimer) {
         sxClearPixels(hCam,SXCCD_EXP_FLAGS_NOWIPE_FRAME,0);
@@ -303,16 +308,13 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     }
     else {
         sxClearPixels(hCam,0,0);
-        swatch.Start();
-        if (duration > 100) {
-            wxMilliSleep(duration - 100); // wait until near end of exposure, nicely
-            wxGetApp().Yield();
-        }
-        while (swatch.Time() < duration) {
-            wxMilliSleep(10);
-        }
+        WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
         sxLatchPixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, 0, 0,0 , xsize, ysize, 1,1);
     }
+
+    // do not return without reading pixels or camera will hang
+    // if (WorkerThread::InterruptRequested())
+    //    return true;
 
     int NPixelsToRead = xsize * ysize;
 
@@ -334,18 +336,14 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         wxMilliSleep(200);
     }
 
-
     // Re-assemble image
     int output_xsize = FullSize.GetWidth();
     int output_ysize = FullSize.GetHeight();
     if (CameraModel == 39)  // the CMOS guider
         output_xsize = output_xsize - 16;  // crop off 16 from one side
-    if (img.NPixels != (output_xsize*output_ysize)) {
-        if (img.Init(output_xsize,output_ysize)) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+    if (img.Init(output_xsize,output_ysize)) {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
     }
 
     rawptr = RawData;
@@ -408,8 +406,8 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     return false;
 }
 
-
-bool Camera_SXVClass::ST4PulseGuideScope(int direction, int duration) {
+bool Camera_SXVClass::ST4PulseGuideScope(int direction, int duration)
+{
     // Guide port values
     // West = 1
     // East = 8
@@ -431,22 +429,11 @@ bool Camera_SXVClass::ST4PulseGuideScope(int direction, int duration) {
             break;
     }
     sxSetSTAR2000(hCam,dircmd);
-    wxMilliSleep(duration);
+    WorkerThread::MilliSleep(duration);
     dircmd = 0;
     sxSetSTAR2000(hCam,dircmd);
 
     return false;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 #endif // SXV

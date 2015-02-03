@@ -57,10 +57,10 @@ public:
     virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR) = 0;
     virtual bool Disconnect(void) = 0;
 
-    virtual bool Send(const unsigned char * const pData, const unsigned count) = 0;
+    virtual bool Send(const unsigned char *pData, unsigned count) = 0;
 
     virtual bool SetReceiveTimeout(int timeoutMs) = 0;
-    virtual bool Receive(unsigned char *pData, const unsigned count) = 0;
+    virtual bool Receive(unsigned char *pData, unsigned count) = 0;
 
     virtual bool SetRTS(bool asserted) = 0;
     virtual bool SetDTR(bool asserted) = 0;

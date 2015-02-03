@@ -1,5 +1,5 @@
 /*
- *  phdlog.h
+ *  debuglog.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -32,6 +32,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#ifndef DEBUGLOG_INCLUDED
+#define DEBUGLOG_INCLUDED
 
 #include "logger.h"
 
@@ -70,3 +73,7 @@ inline bool DebugLog::IsEnabled(void)
 {
     return m_bEnabled;
 }
+
+extern DebugLog Debug;
+
+#endif

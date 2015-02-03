@@ -554,7 +554,7 @@ Mount::MOVE_RESULT ScopeGpUsb::Guide(GUIDE_DIRECTION direction, int duration)
         case EAST: GPUSB_RAMAssert(); break;
         case WEST: GPUSB_RAPAssert(); break;
     }
-    wxMilliSleep(duration);
+    WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
     GPUSB_AllDirDeassert();
     GPUSB_LEDRed();
     return MOVE_OK;

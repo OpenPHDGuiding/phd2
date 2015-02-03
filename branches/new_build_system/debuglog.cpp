@@ -1,5 +1,5 @@
 /*
- *  phdlog.cpp
+ *  debuglog.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -34,6 +34,8 @@
  */
 
 #include "phd.h"
+
+#define ALWAYS_FLUSH_DEBUGLOG
 
 void DebugLog::InitVars(void)
 {
@@ -160,11 +162,10 @@ wxString DebugLog::Write(const wxString& str)
         wxDateTime now = wxDateTime::UNow();
         wxTimeSpan deltaTime = now - m_lastWriteTime;
         m_lastWriteTime = now;
-        wxString outputLine = wxString::Format("%s %s %d %s", now.Format("%H:%M:%S.%l"),
+        wxString outputLine = wxString::Format("%s %s %lu %s", now.Format("%H:%M:%S.%l"),
                                                               deltaTime.Format("%S.%l"),
-                                                              wxThread::GetCurrentId(),
+                                                              (unsigned long) wxThread::GetCurrentId(),
                                                               str);
-
 
         wxFFile::Write(outputLine);
 #if defined(ALWAYS_FLUSH_DEBUGLOG)

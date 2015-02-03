@@ -36,6 +36,17 @@
 #ifndef SCOPE_H_INCLUDED
 #define SCOPE_H_INCLUDED
 
+enum Calibration_Issues
+{
+    CI_None,
+    CI_Steps,
+    CI_Angle,
+    CI_Rates,
+    CI_Different
+};
+
+#define CALIBRATION_RATE_UNCALIBRATED 123e4
+
 class Scope : public Mount
 {
     int m_calibrationDuration;
@@ -44,20 +55,32 @@ class Scope : public Mount
     DEC_GUIDE_MODE m_decGuideMode;
     DEC_GUIDE_MODE m_saveDecGuideMode;
 
+    GUIDE_DIRECTION m_raLimitReachedDirection;
+    int m_raLimitReachedCount;
+    GUIDE_DIRECTION m_decLimitReachedDirection;
+    int m_decLimitReachedCount;
+
     // Calibration variables
     int m_calibrationSteps;
     int m_recenterRemaining;
     int m_recenterDuration;
-    PHD_Point m_calibrationStartingLocation;
+    PHD_Point m_calibrationInitialLocation;   // initial position of guide star
+    PHD_Point m_calibrationStartingLocation;  // position of guide star at start of calibration measurement (after clear backlash etc.)
+    PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
+    PHD_Point m_lastLocation;
+    double m_totalSouthAmt;
 
-    double m_calibrationXAngle;
-    double m_calibrationXRate;
-
-    double m_calibrationYAngle;
-    double m_calibrationYRate;
+    Calibration m_calibration;
+    CalibrationDetails m_calibrationDetails;
+    bool m_assumeOrthogonal;
+    int m_raSteps;
+    int m_decSteps;
 
     bool m_calibrationFlipRequiresDecFlip;
     bool m_stopGuidingWhenSlewing;
+    Calibration m_prevCalibrationParams;
+    CalibrationDetails m_prevCalibrationDetails;
+    Calibration_Issues m_lastCalibrationIssue;
 
     enum CALIBRATION_STATE
     {
@@ -67,6 +90,7 @@ class Scope : public Mount
         CALIBRATION_STATE_CLEAR_BACKLASH,
         CALIBRATION_STATE_GO_NORTH,
         CALIBRATION_STATE_GO_SOUTH,
+        CALIBRATION_STATE_NUDGE_SOUTH,
         CALIBRATION_STATE_COMPLETE
     } m_calibrationState;
 
@@ -82,6 +106,7 @@ protected:
         wxChoice   *m_pDecMode;
         wxCheckBox *m_pNeedFlipDec;
         wxCheckBox *m_pStopGuidingWhenSlewing;
+        wxCheckBox *m_assumeOrthogonal;
 
         void OnCalcCalibrationStep(wxCommandEvent& evt);
 
@@ -113,6 +138,10 @@ protected:
     };
     ScopeGraphControlPane *m_graphControlPane;
 
+    friend class GraphLogWindow;
+
+public:
+
     virtual int GetCalibrationDuration(void);
     virtual bool SetCalibrationDuration(int calibrationDuration);
     virtual int GetMaxDecDuration(void);
@@ -122,23 +151,21 @@ protected:
     virtual DEC_GUIDE_MODE GetDecGuideMode(void);
     virtual bool SetDecGuideMode(int decGuideMode);
 
-    friend class GraphLogWindow;
-
-public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();
+    virtual wxString CalibrationSettingsSummary();
     virtual wxString GetMountClassName() const;
 
     static wxArrayString List(void);
     static wxArrayString AuxMountList(void);
     static Scope *Factory(const wxString& choice);
 
-public:
     Scope(void);
     virtual ~Scope(void);
 
-    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide);
+    virtual void SetCalibration(const Calibration& cal);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle);
     virtual bool IsCalibrated(void);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
@@ -150,6 +177,10 @@ public:
     void SetCalibrationFlipRequiresDecFlip(bool val);
     void EnableStopGuidingWhenSlewing(bool enable);
     bool IsStopGuidingWhenSlewingEnabled(void) const;
+    void SetAssumeOrthogonal(bool val);
+    bool IsAssumeOrthogonal(void) const;
+    void HandleSanityCheckDialog();
+    void SetCalibrationWarning(Calibration_Issues etype, bool val);
 
     virtual void StartDecDrift(void);
     virtual void EndDecDrift(void);
@@ -158,12 +189,14 @@ public:
 private:
     // functions with an implemenation in Scope that cannot be over-ridden
     // by a subclass
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, bool normalMove, int *amountMoved);
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int durationMs, bool normalMove, MoveResultInfo *moveResultInfo);
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration);
     int CalibrationMoveSize(void);
+    int CalibrationTotDistance(void);
 
     void ClearCalibration(void);
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
+    void SanityCheckCalibration(const Calibration& oldCal, const CalibrationDetails& oldDetails);
 
 // these MUST be supplied by a subclass
 private:
@@ -173,6 +206,11 @@ private:
 inline bool Scope::IsStopGuidingWhenSlewingEnabled(void) const
 {
     return m_stopGuidingWhenSlewing;
+}
+
+inline bool Scope::IsAssumeOrthogonal(void) const
+{
+    return m_assumeOrthogonal;
 }
 
 #endif /* SCOPE_H_INCLUDED */

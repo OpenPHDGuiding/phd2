@@ -56,17 +56,16 @@ bool Camera_OpticstarPL130Class::Disconnect() {
     return false;
 }
 
-bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
 //  bool retval;
     bool still_going = true;
 
     int mode = 3 * (int) Color;
-    if (img.NPixels != (FullSize.GetWidth()*FullSize.GetHeight())) {
-        if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+    if (img.Init(FullSize))
+    {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
     }
     if (OSPL130_Capture(mode,duration)) {
         pFrame->Alert(_("Cannot start exposure"));

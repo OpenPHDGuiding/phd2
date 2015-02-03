@@ -50,7 +50,7 @@ camera drivers are available from the ASCOM web site or from the camera
 manufacturer, and the drop-down list will show only those ASCOM cameras
 that are already installed on your system, if any.<br><br>The
 list of supported cameras at the time of writing is shown below - but
-users should&nbsp;consult web resources to see updates (e.g. <a href="http://www.stark-labs.com/phdguiding.html">Stark Labs</a>)<br><br>Supported cameras, December 2013:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras (Windows)</li><li>Atik 16 series, 3xx, 4xx, 4000, 11000  (Windows)</li><li>CCD-Labs Q-Guider (Windows)</li><li>DCAM compliant Firewire (OS X) </li><li>Fishcamp Starfish (Windows and OS X)</li><li>Meade DSI series: I-III, color and Pro (Windows and OS X)</li><li>MagZero MZ-5 (Windows)</li><li>Orion StarShoot DSCI (Windows)</li><li>Orion Starshoot Autoguider (Windows)</li><li>Orion Starshoot Planetary Imager and Autoguider (Windows)</li><li>Opticstar PL-130 / PL-130C (Windows)</li><li>SAC4-2 (Windows)</li><li>SBIG (Windows and OS X, but see Help for details)</li><li>Starlight Xpress SXF / SXVF / Lodestar (Windows and OS X)</li><li>The Imaging Source (Windows and if Firewire, OS X)</li><li>Webcams (short and long-exposure - parallel port, serial port or LXUSB, Windows). </li></ul><br>
+users should&nbsp;consult web resources to see updates (e.g. <a href="http://www.stark-labs.com/phdguiding.html">Stark Labs</a>)<br><br>Supported cameras, December 2014:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><br>
 <h4><a name="Mount_Selection"></a>Mount Selection</h4>
 The Mount drop-down list displays&nbsp;options for connecting to
 your mount. &nbsp;There are generally two ways to do this:<br>
@@ -89,7 +89,7 @@ device in the link between <span style="font-style: italic;">PHD2</span>
 and the mount:</p>
 <ol>
 <li>Any of the guide cameras which have an ST-4 compatible
-"on-board" guider interface</li>
+"on-camera" guider interface. Use the 'on camera' mount choice for these setups.</li>
 <li>Any of the Shoestring GP-xxx devices</li>
 <li>A supported AO device with a guide port interface</li>
 </ol>
@@ -106,9 +106,9 @@ calibration won't be automatically adjusted for declination, nor will
 it be automatically "flipped" when the side-of-pier changes. &nbsp;You
 can restore these features by specifying an "aux" mount connection that
 will be used only to get the telescope pointing information. &nbsp;An
-example is shown below: <br><br><img style="width: 459px; height: 290px;" alt="" src="Gear_Aux_Dialog.PNG"><br><br>For
+example is shown below: <br><br><img style="width: 459px; height: 290px;" alt="" src="Gear_Aux_Dialog.png"><br><br>For
 Windows users, the "aux" mount can use any of the ASCOM-compatible
-mount drivers, while Unix users can take advantage of INDI drivers.
+mount drivers, while Linux users can take advantage of INDI drivers.
 &nbsp;The "aux" mount choice will be used only if the primary mount
 interface cannot return pointing information - it will otherwise be
 ignored.
@@ -164,7 +164,17 @@ reloaded.
 &nbsp;Once you've established the profiles you need - perhaps only
 the
 default one - you can simply click on the 'Connect All' button and
-you're ready to move ahead.<br>
+you're ready to move ahead.<br><br>The
+recommended way to create a new profile is to use the "<a name="New_profile_wizard"></a>Wizard"
+capability. &nbsp;The wizard takes you through a sequence of dialogs
+that&nbsp;explain the various settings and help you decide how to set
+them. &nbsp;It will also calculate a recommended set of guiding
+algorithm settings that are likely to get reasonable results right
+away. &nbsp; When you run PHD2 for the first time on your system, this
+wizard will be automatically launched. &nbsp;Subsequently, you can use
+the new-profile wizard by clicking on the 'Manage Profiles' field in
+the 'Connect Equipment' dialog, then &nbsp;choosing 'New using
+wizard...'.<br>
 <br>
 If
 you already have a suitable default equipment profile and you simply
@@ -205,7 +215,14 @@ to experiment to understand what works best for your situation.
 &nbsp;</li>
 </ol>
 As a starting point,&nbsp;try using exposure durations in the range
-of one to five seconds.
+of one to five seconds. &nbsp;Rather than choosing the star yourself with a mouse-click, you can let PHD2 <a href="Tools.htm#Auto-Select_Star">Auto-select</a>&nbsp;the guide star&nbsp;by using the Alt-S keyboard shortcut after stars are visible in the main display. &nbsp;<br>
+<br>
+There is also an Auto exposure time selection available. When exposure
+is set to Auto, PHD2 will attempt to adjust the exposure to keep the
+selected guide star at a constant signal-to-noise ratio (SNR) value.
+The Auto setting can be especially beneficial for AO users who want to
+minimize exposure time without losing the guide star. The settings to control
+Auto-exposure are on the <a href="Advanced_settings.htm#Global_Tab">Global Tab</a> of the Advanced Dialog.
 <h3><a name="Automatic_Calibration"></a>Automatic
 Calibration</h3>
 <h4>Conventional Mounts</h4>
@@ -317,8 +334,14 @@ guide star, as opposed to the&nbsp;star you used for calibration.
 situations, so absence of pointing information is not a big problem. &nbsp;However, if you are concerned
 about
 it and are imaging near the celestial pole, you should consider
-calibrating using a star that's also at high declination.<br>
-<br>
+calibrating using a star that's also at high declination.<br><br>After
+a calibration is completed, PHD2 will&nbsp;<a href="Trouble_shooting.htm#Calibration_sanity_check">"sanity check"</a> the results to be
+sure the calculations at least look reasonable. &nbsp;If they don't,
+you will see an 'alert' message at the top of the main window that
+describes the calibration result that looks questionable. &nbsp;You can
+choose to ignore the alert or click on 'Details' to get more
+information. &nbsp;It is generally advisable to pay attention to these
+alerts because there is no point in trying to proceed using calibration results that are significantly in error.<br>
 <h4><a name="Adaptive_Optics_Devices"></a>Adaptive Optics Devices</h4>
 If
 you are using an adaptive optics device, there are actually two
@@ -361,7 +384,12 @@ you'll need to identify the source of the problem and fix it.
 moving the telescope around in an attempt to relocate the guide star.
 &nbsp;It will simply continue to take exposures and look for the
 guide
-star to reappear within the bounds of the current tracking rectangle.<br>
+star to reappear within the bounds of the current tracking rectangle.
+&nbsp;When you first start guiding, you may see an 'alert' dialog at
+the top of the window if no dark library or bad-pixel map is being
+used. &nbsp;You can choose to ignore this warning and continue with
+guiding, but you are likely to get better results if you spend the few
+minutes needed to construct a dark library for future use.<br>
 <br>
 If
 you are using a <a name="German_equatorial_mount"></a>German equatorial mount (GEM), you will usually have to
@@ -389,14 +417,12 @@ rotated
 the guide camera as part of resolving a cable problem. &nbsp;You
 can do
 this by clicking on the 'Brain button', &nbsp;moving to the 'Mount'
-tab, and clicking the 'Force Calibration' checkbox. &nbsp;Or, you
+tab, and clicking the 'Clear Calibration' checkbox. &nbsp;Or, you
 can
 simply do a &lt;shift&gt;click on the&nbsp; 'Guide' button
 on the main
 screen and <span style="font-style: italic;">PHD2</span>
-will start a calibration run. &nbsp;The 'Force
-Calibration' checkbox will be cleared automatically, so you don't need
-to worry about resetting it.<br>
+will start a calibration run. &nbsp;<br>
 <br>
 Once
 you have started guiding, you will almost certainly want to know how
@@ -405,7 +431,14 @@ guide
 camera display but in many cases you won't be able to see all the small
 adjustments that are taking place. &nbsp;But <span style="font-style: italic;">PHD2</span> provides many
 tools
-for measuring and displaying your performance, as described in the <a href="Visualization.htm">Visualization </a>section.<br>
+for measuring and displaying your performance, as described in the <a href="Visualization.htm">Visualization </a>section.
+&nbsp;Several of the guiding algorithms have limit settings for the
+maximum guide correction that can be issued with a single command.
+&nbsp;If these values are smaller than what is needed to correct the
+mount's position, you will see an alert dialog at the top of the main window
+advising you of the situation. &nbsp;If this is a recurring problem,
+you may want to increase the values for these settings or otherwise
+solve the underlying problem.<br>
 <br>
 &nbsp;<br>
 <br>

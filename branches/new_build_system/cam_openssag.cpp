@@ -44,7 +44,8 @@
 
 using namespace OpenSSAG;
 
-Camera_OpenSSAGClass::Camera_OpenSSAGClass() {
+Camera_OpenSSAGClass::Camera_OpenSSAGClass()
+{
     Connected = FALSE;
     Name=_T("StarShoot Autoguider (OpenSSAG)");
     FullSize = wxSize(1280,1024);  // Current size of a full frame
@@ -55,13 +56,21 @@ Camera_OpenSSAGClass::Camera_OpenSSAGClass() {
     ssag = new SSAG();
 }
 
-bool Camera_OpenSSAGClass::Connect() {
- /*   if (pFrame->mount_menu->IsChecked(SCOPE_CAMERA)) {
-        ScopeConnected = SCOPE_CAMERA;
-        pFrame->SetStatusText(_T("Scope"),4);
-    }
-    */
-    if (!ssag->Connect()) {
+bool Camera_OpenSSAGClass::Connect()
+{
+    struct ConnectInBg : public ConnectCameraInBg
+    {
+        SSAG *ssag;
+        ConnectInBg(SSAG *ssag_) : ssag(ssag_) { }
+        bool Entry()
+        {
+            bool err = !ssag->Connect();
+            return err;
+        }
+    };
+
+    if (ConnectInBg(ssag).Run())
+    {
         wxMessageBox(_T("Could not connect to StarShoot Autoguider"), _("Error"));
         return true;
     }
@@ -93,19 +102,20 @@ bool Camera_OpenSSAGClass::ST4PulseGuideScope(int direction, int duration) {
     return false;
 }
 
-bool Camera_OpenSSAGClass::Disconnect() {
+bool Camera_OpenSSAGClass::Disconnect()
+{
     Connected = false;
     ssag->Disconnect();
     return false;
 }
 
-bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
 
-    if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
-        Disconnect();
+    if (img.Init(FullSize)) {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 

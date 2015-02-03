@@ -32,8 +32,12 @@
  *
  */
 #ifndef COMDISPATCH_INCLUDED
+#define COMDISPATCH_INCLUDED
 
 #if defined(__WINDOWS__)
+
+wxString ExcepMsg(const EXCEPINFO& excep);
+wxString ExcepMsg(const wxString& prefix, const EXCEPINFO& excep);
 
 class DispatchClass
 {
@@ -71,6 +75,34 @@ public:
     bool InvokeMethod(VARIANT *res, DISPID dispid);
     const EXCEPINFO& Excep() const { return m_excep; }
     IDispatch *IDisp() const { return m_idisp; }
+};
+
+// IGlobalInterfaceTable wrapper
+class GITEntry
+{
+    IGlobalInterfaceTable *m_pIGlobalInterfaceTable;
+    DWORD m_dwCookie;
+public:
+    GITEntry();
+    ~GITEntry();
+    void Register(IDispatch *idisp);
+    void Register(const DispatchObj& obj) { Register(obj.IDisp()); }
+    void Unregister();
+    IDispatch *Get() const
+    {
+        IDispatch *idisp = 0;
+        if (m_dwCookie)
+            m_pIGlobalInterfaceTable->GetInterfaceFromGlobal(m_dwCookie, IID_IDispatch, (LPVOID *)&idisp);
+        return idisp;
+    }
+};
+
+struct GITObjRef : public DispatchObj
+{
+    GITObjRef(const GITEntry& gitentry)
+    {
+        Attach(gitentry.Get(), 0);
+    }
 };
 
 #endif

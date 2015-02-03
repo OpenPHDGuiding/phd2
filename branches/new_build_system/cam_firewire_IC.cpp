@@ -275,11 +275,10 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
     xsize = FullSize.GetWidth();
     ysize = FullSize.GetHeight();
 
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error"));
-            return true;
-        }
+    if (img.Init(FullSize))
+    {
+        pFrame->Alert(_("Memory allocation error"));
+        return true;
     }
     dataptr = img.ImageData;
 
@@ -309,9 +308,9 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
         err = pSink->snapImages( 1,15000 );
     }
 
-    if( err.isError() ) {
-        pFrame->Alert(wxString::Format(_("Error capturing image: %d (%d)"),(int) err.getVal(), (int)  eTIMEOUT_PREMATURLY_ELAPSED) + wxString(err.c_str()));
-        Disconnect();
+    if (err.isError())
+    {
+        DisconnectWithAlert(wxString::Format(_("Error capturing image: %d (%d) %s"), (int) err.getVal(), (int) eTIMEOUT_PREMATURLY_ELAPSED, wxString(err.c_str())));
         return true;
     }
     imgptr = (unsigned char *) pSink->getLastAcqMemBuffer()->getPtr();
@@ -320,8 +319,7 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
         *dataptr = (unsigned short) *imgptr;
 
 /*  if (dc1394_capture_dequeue(camera, DC1394_CAPTURE_POLICY_WAIT, &vframe)!=DC1394_SUCCESS) {
-        pFrame->Alert(_("Cannot get a frame from the queue"));
-        Disconnect();
+        DisconnectWithAlert(_("Cannot get a frame from the queue"));
         return true;
     }
     imgptr = vpFrame->image;

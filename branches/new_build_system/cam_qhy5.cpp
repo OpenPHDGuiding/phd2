@@ -189,14 +189,10 @@ bool Camera_QHY5Class::Capture(int duration, usImage& img, wxRect subframe, bool
     int gain, gain_val, gain_lut_sz = (int)(sizeof(gain_lut) / sizeof(int));
     int ret, result;
 
-    if (img.NPixels != (xsize * ysize))
+    if (img.Init(xsize, ysize))
     {
-        if (img.Init(xsize, ysize))
-        {
-            wxMessageBox(_T("Memory allocation error during capture"), _("Error"), wxOK | wxICON_ERROR);
-            Disconnect();
-            return true;
-        }
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
     }
 
     if (GuideCameraGain != last_gain)

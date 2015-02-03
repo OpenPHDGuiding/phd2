@@ -208,7 +208,7 @@ bool SerialPortWin32::SetReceiveTimeout(int timeoutMs)
     return bError;
 }
 
-bool SerialPortWin32::Send(const unsigned char * const pData, const unsigned count)
+bool SerialPortWin32::Send(const unsigned char *pData, unsigned count)
 {
     bool bError = false;
 
@@ -238,7 +238,7 @@ bool SerialPortWin32::Send(const unsigned char * const pData, const unsigned cou
     return bError;
 }
 
-bool SerialPortWin32::Receive(unsigned char *pData, const unsigned count)
+bool SerialPortWin32::Receive(unsigned char *pData, unsigned count)
 {
     bool bError = false;
 

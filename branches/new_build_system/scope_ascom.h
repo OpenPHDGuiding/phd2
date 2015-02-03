@@ -37,16 +37,16 @@
  *
  */
 
+#ifndef SCOPE_ASCOM_INCLUDED
+#define SCOPE_ASCOM_INCLUDED
+
 #ifdef GUIDE_ASCOM
 
-#include "ascom_common.h"
+#include "comdispatch.h"
 
-class DispatchObj;
-
-class ScopeASCOM : public Scope, private ASCOM_COMMON
+class ScopeASCOM : public Scope
 {
-    IGlobalInterfaceTable* m_pIGlobalInterfaceTable;
-    DWORD m_dwCookie;
+    GITEntry m_gitEntry;
 
     // DISPIDs we reuse
     DISPID dispid_connected;
@@ -69,6 +69,7 @@ class ScopeASCOM : public Scope, private ASCOM_COMMON
     bool m_bCanGetCoordinates;
     bool m_bCanGetGuideRates;
     bool m_bCanSlew;
+    bool m_bCanPulseGuide;
 
     bool m_abortSlewWhenGuidingStuck;
 
@@ -101,10 +102,12 @@ public:
     virtual bool GetSiteLatLong(double *latitude, double *longitude);
     virtual bool CanSlew(void);
     virtual bool CanReportPosition(void);
+    virtual bool CanPulseGuide(void);
     virtual bool SlewToCoordinates(double ra, double dec);
     virtual bool CanCheckSlewing(void);
     virtual bool Slewing(void);
     virtual PierSide SideOfPier(void);
 };
 
-#endif /* GUIDE_ASCOM */
+#endif // GUIDE_ASCOM
+#endif // SCOPE_ASCOM_INCLUDED

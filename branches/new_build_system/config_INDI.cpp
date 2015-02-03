@@ -6,6 +6,10 @@
  *  Copyright (c) 2006, 2007, 2008, 2009 Craig Stark.
  *  All rights reserved.
  *
+ *  Redraw for libindi/baseclient by Patrick Chevalley
+ *  Copyright (c) 2014 Patrick Chevalley
+ *  All rights reserved.
+ *
  *  This source code is distributed under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without 
  *  modification, are permitted provided that the following conditions are met:
@@ -36,18 +40,10 @@
 #include "camera.h"
 #include "scope.h"
 
+
 #if defined (INDI_CAMERA) || defined (GUIDE_INDI)
 
-#if defined (INDI_CAMERA)
-#include "cam_INDI.h"
-#endif
-
-//#if defined (GUIDE_INDI)
-//	#include "scope_INDI.h"
-//#endif
-
-#include "libindiclient/indi.h"
-#include "libindiclient/indigui.h"
+#include "config_INDI.h"
 
 #include <wx/sizer.h>
 #include <wx/gbsizer.h>
@@ -56,111 +52,69 @@
 #include <wx/textctrl.h>
 #include <wx/dialog.h>
 
-struct indi_t *INDIClient = NULL;
-long INDIport = 7624;
-wxString INDIhost = _T("localhost");
-wxString INDICameraName;
-wxString INDIMountName;
-
 #define MCONNECT 101
 
 #define POS(r, c)        wxGBPosition(r,c)
 #define SPAN(r, c)       wxGBSpan(r,c)
-static void config_new_device_cb(struct indi_device_t * /*idev */, void *data);
 
-class INDIConfig : public wxDialog
+INDIConfig::INDIConfig(wxWindow *parent, int devtype) : wxDialog(parent, wxID_ANY, (const wxString)_T("INDI Configuration"))
 {
-public:
-    INDIConfig(wxWindow *parent);
-    void SaveSettings();
-    void UpdateDevices(wxConfig *config);
-private:
-    void FillDevices(wxComboBox *combo, wxString str);
-    void OnButton(wxCommandEvent& evt);
-    wxTextCtrl *host;
-    wxTextCtrl *port;
-#if defined (INDI_CAMERA)
-    wxComboBox *cam;
-    wxTextCtrl *camport;
-#endif
-#if defined (GUIDE_INDI)
-    wxComboBox *mount;
-    wxTextCtrl *mountport;
-#endif
-    DECLARE_EVENT_TABLE()
-};
-
-
-void INDIConfig::FillDevices(wxComboBox *combo, wxString str)
-{
-    indi_list *isl;
-
-    combo->Clear();
-    combo->Append(str);
-    if (INDIClient) {
-        for (isl = il_iter(INDIClient->devices); ! il_is_last(isl); isl = il_next(isl)) {
-            struct indi_device_t *idev = (struct indi_device_t *)il_item(isl);
-            wxString name = wxString::FromAscii(idev->name);
-            if (name != str)
-                combo->Append(wxString::FromAscii(idev->name));
-        }
-    }
-    combo->SetSelection(0);
-}
-
-void INDIConfig::UpdateDevices(wxConfig *config)
-{
-#if defined (INDI_CAMERA)
-	FillDevices(cam, config->Read(_T("INDIcam"), _T("")));
-#endif
-#if defined (GUIDE_INDI)
-	FillDevices(mount, config->Read(_T("INDImount"), _T("")));
-#endif
-}
-
-INDIConfig::INDIConfig(wxWindow *parent) : wxDialog(parent, wxID_ANY, (const wxString)_T("INDI Configuration"))
-{
+    dev_type = devtype;
     int pos;
-    wxConfig *config = new wxConfig(_T("PHDGuiding"));
     wxGridBagSizer *gbs = new wxGridBagSizer(0, 20);
     wxBoxSizer *sizer;
 
+    pos = 0;
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Hostname:")),
-             POS(0, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    host = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDIhost"), _T("localhost")));
-    gbs->Add(host, POS(0, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+    host = new wxTextCtrl(this, wxID_ANY);
+    gbs->Add(host, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 
+    pos ++;
     gbs->Add(new wxStaticText(this, wxID_ANY, _T("Port:")),
-             POS(1, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    port = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDIport"), _T("7624")));
-    gbs->Add(port, POS(1, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
-    gbs->Add(new wxButton(this, MCONNECT, _T("Connect")), POS(2, 0), SPAN(1, 2), wxALIGN_LEFT | wxALL | wxEXPAND);
-    pos = 3;
-#if defined (INDI_CAMERA)
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Camera Driver:")),
-             POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    cam =  new wxComboBox(this, wxID_ANY, _T(""));
-    gbs->Add(cam, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+    port = new wxTextCtrl(this, wxID_ANY);
+    gbs->Add(port, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    
+    pos ++;
+    connect_status = new wxStaticText(this, wxID_ANY, _T("Disconnected"));
+    gbs->Add(connect_status,POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+    gbs->Add(new wxButton(this, MCONNECT, _T("Connect")), POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    
+    pos ++;
+    gbs->Add(new wxStaticText(this, wxID_ANY, _T("========")),
+	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+    devlabel = new wxStaticText(this, wxID_ANY, _T("Device"));
+    gbs->Add(devlabel,POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL);
+    if (devtype == TYPE_CAMERA) {
+	devlabel->SetLabel(_T("Camera"));
+    }
+    else if (devtype == TYPE_MOUNT) {
+	devlabel->SetLabel(_T("Mount"));
+    }
+    
+    pos ++;
+    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Driver:")),
+	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+    dev =  new wxComboBox(this, wxID_ANY, _T(""));
+    gbs->Add(dev, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Camera Port:")),
-             POS(pos + 1, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    camport = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDIcam_port"), _T("")));
-    gbs->Add(camport, POS(pos+ 1, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
-    pos += 2;
-#endif
-
-#if defined (GUIDE_INDI)
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Telescope Driver:")),
-             POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    mount =  new wxComboBox(this, wxID_ANY, _T(""));
-    gbs->Add(mount, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
-
-    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Telescope Port:")),
-             POS(pos + 1, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    mountport = new wxTextCtrl(this, wxID_ANY, config->Read(_T("INDImount_port"), _T("")));
-    gbs->Add(mountport, POS(pos + 1, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
-#endif
-    UpdateDevices(config);
+    if (devtype == TYPE_CAMERA) {
+	pos ++;
+	gbs->Add(new wxStaticText(this, wxID_ANY, _T("CCD:")),
+		 POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+	ccd =  new wxComboBox(this, wxID_ANY, _T(""));
+	gbs->Add(ccd, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+	ccd->Append(_T("Main imager"));
+	ccd->Append(_T("Guider"));
+    }
+    
+    pos ++;
+    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Port:")),
+	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+    devport = new wxTextCtrl(this, wxID_ANY);
+    gbs->Add(devport, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
+    
 
     sizer = new wxBoxSizer(wxVERTICAL) ;
     sizer->Add(gbs);
@@ -173,72 +127,65 @@ BEGIN_EVENT_TABLE(INDIConfig, wxDialog)
 EVT_BUTTON(MCONNECT, INDIConfig::OnButton)
 END_EVENT_TABLE()
 
-void INDIConfig::OnButton(wxCommandEvent& WXUNUSED(event)) {
-    if (INDIClient) {
-        delete INDIClient;
-    }
-    INDIClient = indi_init(host->GetLineText(0).mb_str(wxConvUTF8).data(), atol(port->GetLineText(0).mb_str(wxConvUTF8).data()), "PHDGuiding");
-    if (INDIClient)
-	indi_new_device_cb(INDIClient, (IndiPropCB)config_new_device_cb, this);
+INDIConfig::~INDIConfig()
+{
+    disconnectServer();    
+}
+    
+void INDIConfig::OnButton(wxCommandEvent& WXUNUSED(event)) 
+{
+    Connect();
+}
 
+void INDIConfig::Connect()
+{
+    dev->Clear();
+    Disconnect();
+    INDIhost = host->GetLineText(0);
+    port->GetLineText(0).ToLong(&INDIport);
+    setServer(INDIhost.mb_str(wxConvUTF8), INDIport);
+    if (connectServer()) {
+	connect_status->SetLabel(_T("Connected"));
+    }
+}
+
+void INDIConfig::Disconnect() 
+{
+   disconnectServer();
+   connect_status->SetLabel(_T("Disconnected"));
+}
+
+void INDIConfig::newDevice(INDI::BaseDevice *dp)
+{
+   const char * d_name = dp->getDeviceName();
+   dev->Append(d_name);
+   if (strcmp(d_name, INDIDevName) == 0){
+      dev->SetValue(INDIDevName);
+   }
+}
+
+void INDIConfig::SetSettings()
+{
+    char str[80];
+    sprintf(str, "%d", (int)INDIport);
+    port->WriteText(str);
+    host->WriteText(INDIhost);
+    dev->SetValue(INDIDevName);
+    devport->SetValue(INDIDevPort);
+    if (dev_type == TYPE_CAMERA) {
+	ccd->SetSelection(INDIDevCCD);
+    }
 }
 
 void INDIConfig::SaveSettings()
 {
-    wxConfig *config = new wxConfig(_T("PHDGuiding"));
-
     INDIhost = host->GetLineText(0);
-    config->Write(_T("INDIhost"), INDIhost);
-
     port->GetLineText(0).ToLong(&INDIport);
-    config->Write(_T("INDIport"), INDIport);
-
-#if defined (INDI_CAMERA)
-    INDICameraName = cam->GetValue();
-    config->Write(_T("INDIcam"), INDICameraName);
-
-	long tempPort;
-    camport->GetValue().ToLong(&tempPort);
-
-    config->Write(_T("INDIcam_port"), (short) tempPort);
-#endif
-
-#if defined (GUIDE_INDI)
-    INDIMountName = mount->GetValue();
-    config->Write(_T("INDImount"), INDIMountName);
-
-    config->Write(_T("INDImount_port"), mountport->GetLineText(0) );
-#endif
-}
-
-void MyFrame::OnINDIConfig(wxCommandEvent& WXUNUSED(event))
-{
-    INDIConfig *indiDlg = new INDIConfig(this);
-    if (indiDlg->ShowModal() == wxID_OK) {
-        indiDlg->SaveSettings();
+    INDIDevName = dev->GetValue();
+    INDIDevPort = devport->GetValue();
+    if (dev_type == TYPE_CAMERA) {
+	INDIDevCCD = ccd->GetSelection();
     }
-    if (INDIClient)
-        indi_remove_cb(INDIClient, (IndiPropCB)config_new_device_cb);
-    indiDlg->Destroy();
-}
-
-void MyFrame::OnINDIDialog(wxCommandEvent& WXUNUSED(event))
-{
-    if (! INDIClient) {
-        INDIClient = indi_init(INDIhost.ToAscii(), INDIport, "PHDGuiding");
-        if (! INDIClient) {
-            return;
-        }
-    }
-    indigui_show_dialog(INDIClient);
-}
-
-void config_new_device_cb(struct indi_device_t * /*idev */, void *data)
-{
-    wxConfig *config = new wxConfig(_T("PHDGuiding"));
-
-    INDIConfig *indi_config = (INDIConfig *)data;
-    indi_config->UpdateDevices(config);
 }
 
 #endif

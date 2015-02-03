@@ -57,7 +57,7 @@ bool ScopeOnStepGuider::Connect(void)
             throw ERROR_INFO("ScopeOnStepGuider::ScopeOnStepGuider() called with pSecondaryMount == NULL");
         }
 
-        bError = ScopeOnboardST4::Connect((StepGuider*)pMount);
+        bError = ScopeOnboardST4::ConnectOnboardST4(dynamic_cast<StepGuider *>(pMount));
     }
     catch (wxString Msg)
     {

@@ -37,6 +37,7 @@
 #include "phd.h"
 
 #include "Refine_DefMap.h"
+#include "comet_tool.h"
 
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
@@ -71,11 +72,13 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_RESTORECAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_MANUALCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_CLEARCAL, MyFrame::OnEEGG)
+    EVT_MENU(EEGG_REVIEWCAL, MyFrame::OnEEGG)
     EVT_MENU(EEGG_MANUALLOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_STICKY_LOCK, MyFrame::OnEEGG)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
     EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
-    EVT_MENU(wxID_HELP_PROCEDURES,MyFrame::OnInstructions)
+    EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
+    EVT_MENU(wxID_HELP_PROCEDURES, MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
     EVT_MENU(MENU_TAKEDARKS,MyFrame::OnDark)
@@ -95,10 +98,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_REFINEDEFECTMAP,MyFrame::OnRefineDefMap)
 
     EVT_CHAR_HOOK(MyFrame::OnCharHook)
-#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-    EVT_MENU(MENU_INDICONFIG,MyFrame::OnINDIConfig)
-    EVT_MENU(MENU_INDIDIALOG,MyFrame::OnINDIDialog)
-#endif
 
 #if defined (V4L_CAMERA)
     EVT_MENU(MENU_V4LSAVESETTINGS, MyFrame::OnSaveSettings)
@@ -110,10 +109,12 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_DEBUG,MyFrame::OnLog)
     EVT_MENU(MENU_TOOLBAR,MyFrame::OnToolBar)
     EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
+    EVT_MENU(MENU_STATS, MyFrame::OnStats)
     EVT_MENU(MENU_AO_GRAPH, MyFrame::OnAoGraph)
     EVT_MENU(MENU_TARGET, MyFrame::OnTarget)
     EVT_MENU(MENU_SERVER, MyFrame::OnServerMenu)
     EVT_MENU(MENU_STARPROFILE, MyFrame::OnStarProfile)
+    EVT_MENU(MENU_RESTORE_WINDOWS, MyFrame::OnRestoreWindows)
     EVT_MENU(MENU_AUTOSTAR,MyFrame::OnAutoStar)
     EVT_TOOL(BUTTON_GEAR,MyFrame::OnSelectGear)
     EVT_MENU(BUTTON_GEAR,MyFrame::OnSelectGear) // Bit of a hack -- not actually on the menu but need an event to accelerate
@@ -148,7 +149,8 @@ END_EVENT_TABLE()
 // ---------------------- Main Frame -------------------------------------
 // frame constructor
 MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
-    : wxFrame(NULL, wxID_ANY, wxEmptyString)
+    : wxFrame(NULL, wxID_ANY, wxEmptyString),
+    pStatsWin(0)
 {
     m_instanceNumber = instanceNumber;
     m_pLocale = locale;
@@ -202,6 +204,11 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     wxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 
     m_infoBar = new wxInfoBar(guiderWin);
+    m_infoBar->Connect(BUTTON_ALERT_ACTION, wxEVT_BUTTON,
+        wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+    m_infoBar->Connect(BUTTON_ALERT_CLOSE, wxEVT_BUTTON,
+        wxCommandEventHandler(MyFrame::OnAlertButton), NULL, this);
+
     sizer->Add(m_infoBar, wxSizerFlags().Expand());
 
     pGuider = new GuiderOneStar(guiderWin);
@@ -259,6 +266,11 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         Name(_T("GraphLog")).Caption(_("History")).
         Hide());
 
+    pStatsWin = new StatsWindow(this);
+    m_mgr.AddPane(pStatsWin, wxAuiPaneInfo().
+        Name(_T("Stats")).Caption(_("Guide Stats")).
+        Hide());
+
     pStepGuiderGraph = new GraphStepguiderWindow(this);
     m_mgr.AddPane(pStepGuiderGraph, wxAuiPaneInfo().
         Name(_T("AOPosition")).Caption(_("AO Position")).
@@ -281,7 +293,11 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pDriftTool = NULL;
     pManualGuide = NULL;
     pNudgeLock = NULL;
+    pCometTool = NULL;
     pRefineDefMap = NULL;
+    pCalSanityCheckDlg = NULL;
+    pCalReviewDlg = NULL;
+    m_starFindMode = Star::FIND_CENTROID;
 
     tools_menu->Check(MENU_LOG,false);
 
@@ -308,6 +324,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     m_continueCapturing = false;
     CaptureActive     = false;
+    m_exposurePending = false;
 
     m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_VERTICAL);
     m_mgr.GetArtProvider()->SetColor(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour(0, 153, 255));
@@ -321,6 +338,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         m_mgr.GetPane(_T("MainToolBar")).Caption(_T("Main tool bar"));
         m_mgr.GetPane(_T("Guider")).Caption(_T("Guider"));
         m_mgr.GetPane(_T("GraphLog")).Caption(_("History"));
+        m_mgr.GetPane(_T("Stats")).Caption(_("Guide Stats"));
         m_mgr.GetPane(_T("AOPosition")).Caption(_("AO Position"));
         m_mgr.GetPane(_T("Profile")).Caption(_("Star Profile"));
         m_mgr.GetPane(_T("Target")).Caption(_("Target"));
@@ -329,12 +347,15 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     bool panel_state;
 
     panel_state = m_mgr.GetPane(_T("MainToolBar")).IsShown();
-    pGraphLog->SetState(panel_state);
     Menubar->Check(MENU_TOOLBAR, panel_state);
 
     panel_state = m_mgr.GetPane(_T("GraphLog")).IsShown();
     pGraphLog->SetState(panel_state);
     Menubar->Check(MENU_GRAPH, panel_state);
+
+    panel_state = m_mgr.GetPane(_T("Stats")).IsShown();
+    pStatsWin->SetState(panel_state);
+    Menubar->Check(MENU_STATS, panel_state);
 
     panel_state = m_mgr.GetPane(_T("AOPosition")).IsShown();
     pStepGuiderGraph->SetState(panel_state);
@@ -353,16 +374,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
 MyFrame::~MyFrame()
 {
-    if (pMount && pMount->IsConnected())
-    {
-        pMount->Disconnect();
-    }
-
-    if (pCamera && pCamera->Connected)
-    {
-        pCamera->Disconnect();
-    }
-
     delete pGearDialog;
     pGearDialog = NULL;
 
@@ -373,6 +384,10 @@ MyFrame::~MyFrame()
 
     if (pRefineDefMap)
         pRefineDefMap->Destroy();
+    if (pCalSanityCheckDlg)
+        pCalSanityCheckDlg->Destroy();
+    if (pCalReviewDlg)
+        pCalReviewDlg->Destroy();
 
     m_mgr.UnInit();
 }
@@ -401,17 +416,22 @@ void MyFrame::SetupMenuBar(void)
 {
     wxMenu *file_menu = new wxMenu;
     file_menu->AppendSeparator();
-    file_menu->Append(wxID_SAVE, _("Save Image"), _("Save current image"));
+    file_menu->Append(wxID_SAVE, _("Save Image..."), _("Save current image"));
     file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
     tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
-    tools_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data"), _("Restore calibration data from last successful calibration"));
-    tools_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data"), _("Manually calibrate"));
-    tools_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
+    tools_menu->Append(EEGG_REVIEWCAL, _("Review &Calibration Data\tAlt-C"), _("Review calibration data from last successful calibration"));
+    wxMenu *calib_menu = new wxMenu;
+    calib_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data..."), _("Restore calibration data from last successful calibration"));
+    calib_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data..."), _("Manually calibrate"));
+    calib_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
+    calib_menu->Append(EEGG_CLEARCAL, _("Clear Calibration Data..."), _("Clear calibration data currently in use"));
+    m_calibrationMenuItem = tools_menu->AppendSubMenu(calib_menu, _("Modify Calibration"));
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust Lock Position"), _("Adjust the lock position"));
-    tools_menu->Append(MENU_DRIFTTOOL,_("Drift Align"), _("Run the Drift Alignment tool"));
+    tools_menu->Append(MENU_COMETTOOL, _("Comet Tracking"), _("Run the Comet Tracking tool"));
+    tools_menu->Append(MENU_DRIFTTOOL, _("Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_LOG,_("Enable Guide &Log\tAlt-L"),_("Enable guide log file"));
     tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug Log"),_("Enable debug log file"));
@@ -422,7 +442,8 @@ void MyFrame::SetupMenuBar(void)
     view_menu = new wxMenu();
     view_menu->AppendCheckItem(MENU_TOOLBAR,_("Display Toolbar"),_("Enable / disable tool bar"));
     view_menu->AppendCheckItem(MENU_GRAPH,_("Display Graph"),_("Enable / disable graph"));
-    view_menu->AppendCheckItem(MENU_AO_GRAPH,_("Display AO Graph"),_("Enable / disable AO graph"));
+    view_menu->AppendCheckItem(MENU_STATS, _("Display Stats"), _("Enable / disable guide stats"));
+    view_menu->AppendCheckItem(MENU_AO_GRAPH, _("Display AO Graph"), _("Enable / disable AO graph"));
     view_menu->AppendCheckItem(MENU_TARGET,_("Display Target"),_("Enable / disable target"));
     view_menu->AppendCheckItem(MENU_STARPROFILE,_("Display Star Profile"),_("Enable / disable star profile view"));
     view_menu->AppendSeparator();
@@ -431,6 +452,8 @@ void MyFrame::SetupMenuBar(void)
     view_menu->AppendRadioItem(MENU_XHAIR2, _("Fine Grid"),_("Grid overlay"));
     view_menu->AppendRadioItem(MENU_XHAIR3, _("Coarse Grid"),_("Grid overlay"));
     view_menu->AppendRadioItem(MENU_XHAIR4, _("RA/Dec"),_("RA and Dec overlay"));
+    view_menu->AppendSeparator();
+    view_menu->Append(MENU_RESTORE_WINDOWS, _("Restore window positions"), _("Restore all windows to their default/docked positions"));
 
     bookmarks_menu = new wxMenu();
     m_showBookmarksMenuItem = bookmarks_menu->AppendCheckItem(MENU_BOOKMARKS_SHOW, _("Show Bookmarks\tb"), _("Hide or show bookmarks"));
@@ -448,12 +471,6 @@ void MyFrame::SetupMenuBar(void)
     darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
     darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Bad-pixel &Map"), _("Use the bad-pixel map for this profile"));
 
-#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-    wxMenu *indi_menu = new wxMenu;
-    indi_menu->Append(MENU_INDICONFIG, _("&Configure..."), _("Configure INDI settings"));
-    indi_menu->Append(MENU_INDIDIALOG, _("&Controls..."), _("Show INDI controls for available devices"));
-#endif
-
 #if defined (V4L_CAMERA)
     wxMenu *v4l_menu = new wxMenu();
 
@@ -468,10 +485,6 @@ void MyFrame::SetupMenuBar(void)
 
     Menubar = new wxMenuBar();
     Menubar->Append(file_menu, _("&File"));
-
-#if defined (GUIDE_INDI) || defined (INDI_CAMERA)
-    Menubar->Append(indi_menu, _T("&INDI"));
-#endif
 
 #if defined (V4L_CAMERA)
     Menubar->Append(v4l_menu, _T("&V4L"));
@@ -517,16 +530,16 @@ void MyFrame::SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra)
 
 static wxString dur_choices[] = {
     _T("Auto-placeholder"), // translated value provided later, cannot use _() in static initializer
-    _T("0.001 s"), _T("0.002 s"), _T("0.005 s"), _T("0.01 s"),
-    _T("0.05 s"), _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
+    _T("0.01 s"), _T("0.02 s"), _T("0.05 s"),
+    _T("0.1 s"), _T("0.2 s"), _T("0.5 s"), _T("1.0 s"), _T("1.5 s"),
     _T("2.0 s"), _T("2.5 s"), _T("3.0 s"), _T("3.5 s"), _T("4.0 s"), _T("4.5 s"), _T("5.0 s"),
     _T("6.0 s"), _T("7.0 s"), _T("8.0 s"), _T("9.0 s"),_T("10 s"), _T("15.0 s")
 };
-static const int DefaultDurChoiceIdx = 9;
+static const int DefaultDurChoiceIdx = 7; // 1.0s
 static int dur_values[] = {
     -1,
-    1, 2, 5, 10,
-    50, 100, 200, 500, 1000, 1500,
+    10, 20, 50,
+    100, 200, 500, 1000, 1500,
     2000, 2500, 3000, 3500, 4000, 4500, 5000,
     6000, 7000, 8000, 9000, 10000, 15000,
 };
@@ -583,6 +596,14 @@ void MyFrame::SetAutoExposureCfg(int minExp, int maxExp, double targetSNR)
     m_autoExp.minExposure = minExp;
     m_autoExp.maxExposure = maxExp;
     m_autoExp.targetSNR = targetSNR;
+}
+
+wxString MyFrame::ExposureDurationSummary(void) const
+{
+    if (m_autoExp.enabled)
+        return wxString::Format("Auto (min = %d ms, max = %d ms, SNR = %.2f)", m_autoExp.minExposure, m_autoExp.maxExposure, m_autoExp.targetSNR);
+    else
+        return wxString::Format("%d ms", m_exposureDuration);
 }
 
 void MyFrame::ResetAutoExposure(void)
@@ -647,6 +668,14 @@ LOGGED_IMAGE_FORMAT MyFrame::GetLoggedImageFormat(void)
     return m_logged_image_format;
 }
 
+Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
+{
+    Star::FindMode prev = m_starFindMode;
+    Debug.AddLine("Setting StarFindMode = %d", mode);
+    m_starFindMode = mode;
+    return prev;
+}
+
 enum {
     GAMMA_MIN = 10,
     GAMMA_MAX = 300,
@@ -669,7 +698,7 @@ void MyFrame::LoadProfileSettings(void)
 
     SetAutoLoadCalibration(pConfig->Profile.GetBoolean("/AutoLoadCalibration", false));
 
-    int focalLength = pConfig->Profile.GetInt("/frame/focalLength", DefaultTimelapse);
+    int focalLength = pConfig->Profile.GetInt("/frame/focalLength", DefaultFocalLength);
     SetFocalLength(focalLength);
 
     int minExp = pConfig->Profile.GetInt("/auto_exp/exposure_min", DefaultAutoExpMin);
@@ -696,27 +725,18 @@ void MyFrame::SetupToolBar()
 {
     MainToolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
 
-    wxBitmap camera_bmp, scope_bmp, ao_bmp, loop_bmp, cal_bmp, guide_bmp, stop_bmp;
+    wxBitmap camera_bmp, loop_bmp, guide_bmp, stop_bmp;
 #if defined (WINICONS)
     camera_bmp.CopyFromIcon(wxIcon(_T("camera_icon")));
-    scope_bmp.CopyFromIcon(wxIcon(_T("scope_icon")));
     loop_bmp.CopyFromIcon(wxIcon(_T("loop_icon")));
-    cal_bmp.CopyFromIcon(wxIcon(_T("cal_icon")));
     guide_bmp.CopyFromIcon(wxIcon(_T("phd_icon")));
     stop_bmp.CopyFromIcon(wxIcon(_T("stop_icon")));
 #else
     #include "icons/sm_PHD.xpm"  // defines phd_icon[]
     #include "icons/stop1.xpm" // defines stop_icon[]
-    #include "icons/scope1.xpm" // defines scope_icon[]
-    #include "icons/ao.xpm" // defines ao_icon[]
-    #include "icons/measure.xpm" // defines_cal_icon[]
     #include "icons/loop3.xpm" // defines loop_icon
     #include "icons/cam2.xpm"  // cam_icon
-    #include "icons/brain1.xpm" // brain_icon[]
-    scope_bmp = wxBitmap(scope_icon);
-    ao_bmp = wxBitmap(ao_icon);
     loop_bmp = wxBitmap(loop_icon);
-    cal_bmp = wxBitmap(cal_icon);
     guide_bmp = wxBitmap(phd_icon);
     stop_bmp = wxBitmap(stop_icon);
     camera_bmp = wxBitmap(cam_icon);
@@ -737,6 +757,7 @@ void MyFrame::SetupToolBar()
 #if defined (WINICONS)
     brain_bmp.CopyFromIcon(wxIcon(_T("brain_icon")));
 #else
+#   include "icons/brain1.xpm" // brain_icon[]
     brain_bmp = wxBitmap(brain_icon);
 #endif
 
@@ -771,6 +792,9 @@ void MyFrame::UpdateCalibrationStatus(void)
         (pSecondaryMount && pSecondaryMount->DecCompensationActive());
 
     SetStatusText(cal ? deccomp ? _("Cal +") : _("Cal") : _("No cal"), 5);
+
+    if (pStatsWin)
+        pStatsWin->UpdateScopePointing();
 }
 
 void MyFrame::SetupStatusBar(void)
@@ -783,8 +807,8 @@ void MyFrame::SetupStatusBar(void)
     int statusWidths[statusBarFields] = {
         -3,
         -5,
-        wxMax(GetTextWidth(pControl, _("Camera")), GetTextWidth(pControl, _("No Cam"))),
-        wxMax(GetTextWidth(pControl, _("Scope")),  GetTextWidth(pControl, _("No Scope"))),
+        GetTextWidth(pControl, _("Camera")),
+        GetTextWidth(pControl, _("Mount")),
         GetTextWidth(pControl, _("AO")),
         wxMax(GetTextWidth(pControl, _("No cal")),  GetTextWidth(pControl, _("Cal +"))),
     };
@@ -799,10 +823,12 @@ void MyFrame::SetupStatusBar(void)
         }
     }
 
-    SetStatusWidths(6,statusWidths);
-    SetStatusText(_("No cam"),2);
-    SetStatusText(_("No scope"),3);
-    SetStatusText(_T(""),4);
+    SetStatusWidths(6, statusWidths);
+
+    SetStatusText(wxEmptyString, 2);
+    SetStatusText(wxEmptyString, 3);
+    SetStatusText(wxEmptyString, 4);
+
     UpdateCalibrationStatus();
 }
 
@@ -826,9 +852,17 @@ void MyFrame::SetupHelpFile(void)
 {
     wxFileSystem::AddHandler(new wxZipFSHandler);
     bool retval;
-    wxString filename = wxStandardPaths::Get().GetResourcesDir()
-        + wxFILE_SEP_PATH
+    wxString filename;
+    // first try to find locale-specific help file
+    filename = wxStandardPaths::Get().GetResourcesDir() + wxFILE_SEP_PATH
+        + _T("locale") + wxFILE_SEP_PATH
+        + wxLocale::GetLanguageCanonicalName(m_pLocale->GetLanguage()) + wxFILE_SEP_PATH
         + _T("PHD2GuideHelp.zip");
+    if (!wxFileExists(filename))
+    {
+        filename = wxStandardPaths::Get().GetResourcesDir() + wxFILE_SEP_PATH
+            + _T("PHD2GuideHelp.zip");
+    }
     help = new wxHtmlHelpController;
     retval = help->AddBook(filename);
     if (!retval)
@@ -868,6 +902,13 @@ void MyFrame::UpdateButtonsStatus(void)
         need_update = true;
     }
 
+    bool guiding_active = pGuider && pGuider->IsCalibratingOrGuiding();         // Not the same as 'bGuideable below
+    if (!guiding_active ^ m_calibrationMenuItem->IsEnabled())
+    {
+        m_calibrationMenuItem->Enable(!guiding_active);
+        need_update = true;
+    }
+
     bool bGuideable = pGuider->GetState() == STATE_SELECTED &&
         pMount && pMount->IsConnected();
 
@@ -881,6 +922,9 @@ void MyFrame::UpdateButtonsStatus(void)
         event.SetEventObject(this);
         wxPostEvent(pDriftTool, event);
     }
+
+    if (pCometTool)
+        CometTool::UpdateCometToolControls();
 
     if (need_update)
     {
@@ -904,30 +948,79 @@ static wxString WrapText(wxWindow *win, const wxString& text, int width)
     return Wrapper(win, text, width).Str();
 }
 
-static void DoAlert(wxInfoBar *infoBar, const wxString& msg, int flags)
+struct alert_params
 {
-    Debug.AddLine(wxString::Format("Alert: %s", msg));
-    infoBar->ShowMessage(pFrame ? WrapText(infoBar, msg, pFrame->GetSize().GetWidth() - 80) : msg, flags);
+    wxString msg;
+    wxString buttonLabel;
+    int flags;
+    alert_fn *fn;
+    long arg;
+};
+
+void MyFrame::OnAlertButton(wxCommandEvent& evt)
+{
+    if (evt.GetId() == BUTTON_ALERT_ACTION && m_alertFn)
+        (*m_alertFn)(m_alertFnArg);
+    m_infoBar->Dismiss();
 }
 
-void MyFrame::Alert(const wxString& msg, int flags)
+void MyFrame::DoAlert(const alert_params& params)
+{
+    Debug.AddLine(wxString::Format("Alert: %s", params.msg));
+    m_alertFn = params.fn;
+    m_alertFnArg = params.arg;
+
+    int buttonSpace = 80;
+    m_infoBar->RemoveButton(BUTTON_ALERT_ACTION);
+    m_infoBar->RemoveButton(BUTTON_ALERT_CLOSE);
+    if (params.fn)
+    {
+        m_infoBar->AddButton(BUTTON_ALERT_ACTION, params.buttonLabel);
+        m_infoBar->AddButton(BUTTON_ALERT_CLOSE, _("Close"));
+        buttonSpace = 280;
+    }
+
+    m_infoBar->ShowMessage(pFrame && pFrame->pGuider ? WrapText(m_infoBar, params.msg, wxMax(pFrame->pGuider->GetSize().GetWidth() - buttonSpace, 100)) : params.msg, params.flags);
+
+    EvtServer.NotifyAlert(params.msg, params.flags);
+}
+
+void MyFrame::Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, int flags)
 {
     if (wxThread::IsMain())
     {
-        DoAlert(m_infoBar, msg, flags);
+        alert_params params;
+        params.msg = msg;
+        params.buttonLabel = buttonLabel;
+        params.flags = flags;
+        params.fn = fn;
+        params.arg = arg;
+        DoAlert(params);
     }
     else
     {
+        alert_params *params = new alert_params;
+        params->msg = msg;
+        params->buttonLabel = buttonLabel;
+        params->flags = flags;
+        params->fn = fn;
+        params->arg = arg;
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, ALERT_FROM_THREAD_EVENT);
-        event->SetString(msg);
-        event->SetInt(flags);
+        event->SetExtraLong((long) params);
         wxQueueEvent(this, event);
     }
 }
 
+void MyFrame::Alert(const wxString& msg, int flags)
+{
+    Alert(msg, wxEmptyString, 0, 0, flags);
+}
+
 void MyFrame::OnAlertFromThread(wxThreadEvent& event)
 {
-    DoAlert(m_infoBar, event.GetString(), event.GetInt());
+    alert_params *params = (alert_params *) event.GetExtraLong();
+    DoAlert(*params);
+    delete params;
 }
 
 /*
@@ -940,7 +1033,7 @@ void MyFrame::OnAlertFromThread(wxThreadEvent& event)
  *
  */
 
-void MyFrame::SetStatusText(const wxString& text, int number, int msToDisplay)
+void MyFrame::SetStatusText(const wxString& text, int number)
 {
     Debug.AddLine(wxString::Format("Status Line %d: %s", number, text));
 
@@ -953,7 +1046,6 @@ void MyFrame::SetStatusText(const wxString& text, int number, int msToDisplay)
         wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, SET_STATUS_TEXT_EVENT);
         event->SetString(text);
         event->SetInt(number);
-        event->SetExtraLong(msToDisplay);
         wxQueueEvent(this, event);
     }
 }
@@ -961,15 +1053,14 @@ void MyFrame::SetStatusText(const wxString& text, int number, int msToDisplay)
 void MyFrame::OnSetStatusText(wxThreadEvent& event)
 {
     int pane = event.GetInt();
-    int duration = event.GetExtraLong();
     wxString msg(event.GetString());
 
     if (pane == 1)
     {
         // display message for 2.5s, or until the next message is displayed
-        const int MIN_DISPLAY_MS = 2500;
+        const int DISPLAY_MS = 2500;
         wxFrame::SetStatusText(msg, pane);
-        m_statusbarTimer.Start(std::max(duration, MIN_DISPLAY_MS), wxTIMER_ONE_SHOT);
+        m_statusbarTimer.Start(DISPLAY_MS, wxTIMER_ONE_SHOT);
     }
     else
     {
@@ -1015,8 +1106,10 @@ bool MyFrame::StartWorkerThread(WorkerThread*& pWorkerThread)
     return bError;
 }
 
-void MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
+bool MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
 {
+    bool killed = false;
+
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     Debug.AddLine(wxString::Format("StopWorkerThread(0x%p) begins", pWorkerThread));
@@ -1024,14 +1117,41 @@ void MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
     if (pWorkerThread && pWorkerThread->IsRunning())
     {
         pWorkerThread->EnqueueWorkerThreadTerminateRequest();
-        wxThread::ExitCode threadExitCode = pWorkerThread->Wait();
-        Debug.AddLine("StopWorkerThread() threadExitCode=%d", threadExitCode);
+
+        enum { TIMEOUT_MS = 1000 };
+        wxStopWatch swatch;
+        while (pWorkerThread->IsAlive() && swatch.Time() < TIMEOUT_MS)
+            wxGetApp().Yield();
+
+        if (pWorkerThread->IsAlive())
+        {
+            while (pWorkerThread->IsAlive() && !pWorkerThread->IsKillable())
+            {
+                Debug.AddLine("Worker thread 0x%p is not killable, waiting...", pWorkerThread);
+                wxStopWatch swatch2;
+                while (pWorkerThread->IsAlive() && !pWorkerThread->IsKillable() && swatch2.Time() < TIMEOUT_MS)
+                    wxGetApp().Yield();
+            }
+            if (pWorkerThread->IsAlive())
+            {
+                Debug.AddLine("StopWorkerThread(0x%p) thread did not terminate, force kill", pWorkerThread);
+                pWorkerThread->Kill();
+                killed = true;
+            }
+        }
+        else
+        {
+            wxThread::ExitCode threadExitCode = pWorkerThread->Wait();
+            Debug.AddLine("StopWorkerThread() threadExitCode=%d", threadExitCode);
+        }
     }
 
     Debug.AddLine(wxString::Format("StopWorkerThread(0x%p) ends", pWorkerThread));
 
     delete pWorkerThread;
     pWorkerThread = NULL;
+
+    return killed;
 }
 
 void MyFrame::OnRequestExposure(wxCommandEvent& evt)
@@ -1063,13 +1183,19 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
 {
-    wxFrame::SetStatusText("", 1);
+    wxFrame::SetStatusText(wxEmptyString, 1);
 }
 
-void MyFrame::ScheduleExposure(int exposureDuration, wxRect subframe)
+void MyFrame::ScheduleExposure(int exposureDuration, const wxRect& subframe)
 {
+    Debug.AddLine("ScheduleExposure(%d) exposurePending=%d", exposureDuration, m_exposurePending);
+
+    assert(wxThread::IsMain()); // m_exposurePending only updated in main thread
+    assert(!m_exposurePending);
+
+    m_exposurePending = true;
+
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
-    Debug.AddLine("ScheduleExposure(%d)", exposureDuration);
 
     assert(m_pPrimaryWorkerThread);
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
@@ -1124,7 +1250,7 @@ void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direc
 
 void MyFrame::StartCapturing()
 {
-    Debug.AddLine("StartCapture() CaptureActive=%d m_continueCapturing=%d", CaptureActive, m_continueCapturing);
+    Debug.AddLine("StartCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d", CaptureActive, m_continueCapturing, m_exposurePending);
 
     if (!CaptureActive)
     {
@@ -1134,35 +1260,69 @@ void MyFrame::StartCapturing()
         m_loggedImageFrame = 0;
 
         UpdateButtonsStatus();
+        SetStatusText(wxEmptyString);
 
-        pCamera->InitCapture();
+        // m_exposurePending should always be false here since CaptureActive is cleared on exposure
+        // completion, but be paranoid and check it anyway
 
-        ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
+        if (!m_exposurePending)
+        {
+            pCamera->InitCapture();
+
+            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
+        }
     }
 }
 
 void MyFrame::StopCapturing(void)
 {
-    Debug.AddLine("StopCapture CaptureActive=%d m_continueCapturing=%d", CaptureActive, m_continueCapturing);
+    Debug.AddLine("StopCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d", CaptureActive, m_continueCapturing, m_exposurePending);
+
     if (m_continueCapturing)
     {
-        SetStatusText(_("Waiting for devices before stopping..."), 1);
+        SetStatusText(_("Waiting for devices..."));
+        m_continueCapturing = false;
+
+        if (m_exposurePending)
+        {
+            m_pPrimaryWorkerThread->RequestStop();
+        }
+        else
+        {
+            CaptureActive = false;
+            if (pGuider->IsCalibratingOrGuiding())
+            {
+                pGuider->StopGuiding();
+                pGuider->UpdateImageDisplay();
+            }
+            FinishStop();
+        }
     }
-    m_continueCapturing = false;
 }
 
-void MyFrame::SetPaused(bool pause)
+void MyFrame::SetPaused(PauseType pause)
 {
-    if (pause && !pGuider->IsPaused())
+    bool const isPaused = pGuider->IsPaused();
+
+    Debug.AddLine("SetPaused type=%d isPaused=%d exposurePending=%d", pause, isPaused, m_exposurePending);
+
+    if (pause != PAUSE_NONE && !isPaused)
     {
-        pGuider->SetPaused(true);
+        pGuider->SetPaused(pause);
         SetStatusText(_("Paused"));
         GuideLog.ServerCommand(pGuider, "PAUSE");
         EvtServer.NotifyPaused();
     }
-    else if (!pause && pGuider->IsPaused())
+    else if (pause == PAUSE_NONE && isPaused)
     {
-        pGuider->SetPaused(false);
+        pGuider->SetPaused(PAUSE_NONE);
+        if (pMount)
+        {
+            Debug.AddLine("un-pause: clearing mount guide algorithm history");
+            pMount->ClearHistory();
+        }
+        if (m_continueCapturing && !m_exposurePending)
+            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
         SetStatusText(_("Resumed"));
         GuideLog.ServerCommand(pGuider, "RESUME");
         EvtServer.NotifyResumed();
@@ -1227,7 +1387,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
 
     try
     {
-        if (pGuider->GetState() != STATE_GUIDING)
+        if (!pGuider->IsGuiding())
         {
             throw ERROR_INFO("cannot dither if not guiding");
         }
@@ -1262,9 +1422,19 @@ bool MyFrame::Dither(double amount, bool raOnly)
             Debug.AddLine("dither lock pos rejected, try again");
         }
 
+        // Reset guide algorithm history.
+        // For algorithms like Resist Switch, the dither invalidates the state, so start again from scratch.
+        Debug.AddLine("dither: clearing mount guide algorithm history");
+        pMount->ClearHistory();
+
         SetStatusText(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
         GuideLog.NotifyGuidingDithered(pGuider, dRa, dDec);
         EvtServer.NotifyGuidingDithered(dRa, dDec);
+        DitherInfo info;
+        info.timestamp = ::wxGetUTCTimeMillis().GetValue();
+        info.dRa = dRa;
+        info.dDec = dDec;
+        pGraphLog->AppendData(info);
     }
     catch (wxString Msg)
     {
@@ -1291,18 +1461,12 @@ void MyFrame::OnClose(wxCloseEvent& event)
 
     StopCapturing();
 
-    StopWorkerThread(m_pPrimaryWorkerThread);
-    StopWorkerThread(m_pSecondaryWorkerThread);
+    bool killed = StopWorkerThread(m_pPrimaryWorkerThread);
+    if (StopWorkerThread(m_pSecondaryWorkerThread))
+        killed = true;
 
-    if (pMount && pMount->IsConnected())
-    {
-        pMount->Disconnect();
-    }
-
-    if (pCamera && pCamera->Connected)
-    {
-        pCamera->Disconnect();
-    }
+    // disconnect all gear
+    pGearDialog->Shutdown(killed);
 
     // stop the socket server and event server
     StartServer(false);
@@ -1318,6 +1482,7 @@ void MyFrame::OnClose(wxCloseEvent& event)
 
     help->Quit();
     delete help;
+
     Destroy();
 }
 
@@ -1420,15 +1585,19 @@ static void load_calibration(Mount *mnt)
     wxString prefix = "/" + mnt->GetMountClassName() + "/calibration/";
     if (!pConfig->Profile.HasEntry(prefix + "timestamp"))
         return;
-    double xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
-    double yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
-    double xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
-    double yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", M_PI/2.0);
-    double declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
+
+    Calibration cal;
+    cal.xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
+    cal.yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+    cal.xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
+    cal.yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", M_PI / 2.0);
+    cal.declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
     int t = pConfig->Profile.GetInt(prefix + "pierSide", PIER_SIDE_UNKNOWN);
-    PierSide pierSide = t == PIER_SIDE_EAST ? PIER_SIDE_EAST :
+    cal.pierSide = t == PIER_SIDE_EAST ? PIER_SIDE_EAST :
         t == PIER_SIDE_WEST ? PIER_SIDE_WEST : PIER_SIDE_UNKNOWN;
-    mnt->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pierSide);
+    cal.rotatorAngle = pConfig->Profile.GetDouble(prefix + "rotatorAngle", Rotator::POSITION_UNKNOWN);
+
+    mnt->SetCalibration(cal);
 }
 
 void MyFrame::LoadCalibration(void)
@@ -1451,8 +1620,10 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
     {
         fitsfile *fptr;  // FITS file pointer
         int status = 0;  // CFITSIO status value MUST be initialized to zero!
-        // CFITSIO wants you to prepend the filename with '!' to overwrite the file :-(; and we always want an overwrite
-        fits_create_file(&fptr, (_T("!") + fname).mb_str(wxConvUTF8), &status);
+
+        PHD_fits_create_file(&fptr, fname, true, &status);
+        if (status)
+            throw ERROR_INFO("fits_create_file failed");
 
         for (ExposureImgMap::const_iterator it = darks.begin(); it != darks.end(); ++it)
         {
@@ -1462,7 +1633,8 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
                 (long)img->Size.GetWidth(),
                 (long)img->Size.GetHeight(),
             };
-            if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
+            if (!status)
+                fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
             float exposure = (float)img->ImgExpDur / 1000.0;
             char *keyname = const_cast<char *>("EXPOSURE");
@@ -1504,7 +1676,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
             throw ERROR_INFO("File does not exist");
         }
 
-        if (fits_open_diskfile(&fptr, (const char*)fname.c_str(), READONLY, &status) == 0)
+        if (PHD_fits_open_diskfile(&fptr, fname, READONLY, &status) == 0)
         {
             int nhdus = 0;
             fits_get_num_hdus(fptr, &nhdus, &status);
@@ -1758,25 +1930,25 @@ bool MyFrame::SetFocalLength(int focalLength)
 wxString MyFrame::GetDefaultFileDir()
 {
     wxStandardPathsBase& stdpath = wxStandardPaths::Get();
-    wxString rslt = stdpath.GetDocumentsDir() + PATHSEPSTR + "PHD2";
+    wxString rslt = stdpath.GetUserLocalDataDir();          // Automatically includes app name
 
     if (!wxDirExists(rslt))
         if (!wxFileName::Mkdir(rslt, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
-            rslt = stdpath.GetDocumentsDir();             // should never happen
+            rslt = stdpath.GetUserLocalDataDir();             // should never happen
 
     return rslt;
 }
-double MyFrame::GetCameraPixelScale(void)
+
+double MyFrame::GetCameraPixelScale(void) const
 {
     if (!pCamera || pCamera->PixelSize == 0.0 || m_focalLength == 0)
         return 1.0;
 
-    return 206.265 * pCamera->PixelSize / m_focalLength;
+    return GetPixelScale(pCamera->PixelSize, m_focalLength);
 }
 
-wxString MyFrame::GetSettingsSummary()
+wxString MyFrame::PixelScaleSummary(void) const
 {
-    // return a loggable summary of current global configs managed by MyFrame
     double pixelScale = GetCameraPixelScale();
     wxString scaleStr;
     if (pixelScale == 1.0)
@@ -1789,14 +1961,21 @@ wxString MyFrame::GetSettingsSummary()
     else
         focalLengthStr = wxString::Format("%d", m_focalLength) + " mm";
 
+    return wxString::Format("Pixel scale = %s, Focal length = %s",
+        scaleStr, focalLengthStr);
+}
+
+wxString MyFrame::GetSettingsSummary()
+{
+    // return a loggable summary of current global configs managed by MyFrame
     return wxString::Format("Dither = %s, Dither scale = %.3f, Image noise reduction = %s, Guide-frame time lapse = %d, Server %s\n"
-        "Pixel scale = %s, Focal length = %s\n",
+        "%s\n",
         m_ditherRaOnly ? "RA only" : "both axes",
         m_ditherScaleFactor,
         m_noiseReductionMethod == NR_NONE ? "none" : m_noiseReductionMethod == NR_2x2MEAN ? "2x2 mean" : "3x3 mean",
         m_timeLapse,
         m_serverMode ? "enabled" : "disabled",
-        scaleStr, focalLengthStr
+        PixelScaleSummary()
     );
 }
 
@@ -1818,8 +1997,8 @@ bool MyFrame::SetLanguage(int language)
 
     //wxTranslations *pTrans = wxTranslations::Get();
     //pTrans->SetLanguage((wxLanguage)language);
-    //if (!pTrans->IsLoaded("messages"))
-    //    pTrans->AddCatalog("messages");
+    //if (!pTrans->IsLoaded(PHD_MESSAGES_CATALOG))
+    //    pTrans->AddCatalog(PHD_MESSAGES_CATALOG);
 
     pConfig->Global.SetInt("/wxLanguage", language);
 
@@ -1884,7 +2063,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 
     width = StringWidth(_T("00000"));
     m_pTimeLapse = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 0,_T("TimeLapse"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 0, _T("TimeLapse"));
     DoAdd(_("Time Lapse (ms)"), m_pTimeLapse,
           _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
@@ -1894,7 +2073,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 
     int currentLanguage = m_pFrame->m_pLocale->GetLanguage();
     wxTranslations *pTrans = wxTranslations::Get();
-    wxArrayString availableTranslations = pTrans->GetAvailableTranslations("messages");
+    wxArrayString availableTranslations = pTrans->GetAvailableTranslations(PHD_MESSAGES_CATALOG);
     wxArrayString languages;
     languages.Add(_("System default"));
     languages.Add("English");

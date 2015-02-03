@@ -100,9 +100,13 @@ public:
 
 class PhdConfig
 {
-    static const long CURRENT_CONFIG_VERSION=2001;
+    static const long CURRENT_CONFIG_VERSION = 2001;
+
     long m_configVersion;
+    bool m_isNewInstance;
     int m_currentProfileId;
+
+    void Initialize(const wxString& baseConfigName, int instance);
 
 public:
     PhdConfig(void);
@@ -111,7 +115,6 @@ public:
 
     static wxString DefaultProfileName;
 
-    void Initialize(const wxString& baseConfigName, int instance);
     void DeleteAll(void);
 
     void InitializeProfile(void);
@@ -131,9 +134,12 @@ public:
     bool ReadProfile(const wxString& filename);
     wxArrayString ProfileNames(void);
     unsigned int NumProfiles(void);
+    bool IsNewInstance(void) const { return m_isNewInstance; }
 
     ConfigSection Global;
     ConfigSection Profile;
 };
+
+extern PhdConfig *pConfig;
 
 #endif /* PHDCONFIG_H_INCLUDED */

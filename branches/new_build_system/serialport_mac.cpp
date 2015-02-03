@@ -33,9 +33,59 @@
  */
 
 #ifdef __APPLE__
-#include "phd.h"
-#include    <IOKit/serial/IOSerialKeys.h>
 
+#include "phd.h"
+
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <IOKit/serial/IOSerialKeys.h>
+
+static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
+{
+    kern_return_t   kernResult;
+    mach_port_t     masterPort;
+    CFMutableDictionaryRef  classesToMatch;
+
+    if ((kernResult=IOMasterPort(NULL, &masterPort)) != KERN_SUCCESS)
+    {
+        printf("IOMasterPort returned %d\n", kernResult);
+        return kernResult;
+    }
+
+    if ((classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue)) == NULL)
+    {
+        printf("IOServiceMatching returned NULL\n");
+        return kernResult;
+    }
+
+    CFDictionarySetValue(classesToMatch, CFSTR(kIOSerialBSDTypeKey),
+                         CFSTR(kIOSerialBSDRS232Type));
+//                         CFSTR(kIOSerialBSDModemType));
+    kernResult = IOServiceGetMatchingServices(masterPort, classesToMatch, serialIterator);
+    if (kernResult != KERN_SUCCESS)
+    {
+        printf("IOServiceGetMatchingServices returned %d\n", kernResult);
+    }
+
+    return kernResult;
+}
+
+static const char *getRegistryString(io_object_t sObj, const char *propName)
+{
+    static char resultStr[256];
+    //   CFTypeRef  nameCFstring;
+    CFStringRef nameCFstring;
+    resultStr[0] = 0;
+    nameCFstring = (CFStringRef) IORegistryEntryCreateCFProperty(sObj,
+                                                                 CFStringCreateWithCString(kCFAllocatorDefault, propName, kCFStringEncodingASCII),
+                                                                 kCFAllocatorDefault, 0);
+    if (nameCFstring) {
+        CFStringGetCString(nameCFstring, resultStr, sizeof(resultStr),
+                           kCFStringEncodingASCII);
+        CFRelease(nameCFstring);
+    }
+    return resultStr;
+}
 
 SerialPortMac::SerialPortMac(void) {
     m_PortFID = 0;
@@ -150,7 +200,7 @@ bool SerialPortMac::SetReceiveTimeout(int timeoutMs) {
     return bError;
 }
 
-bool SerialPortMac::Send(const unsigned char * const pData, const unsigned count)
+bool SerialPortMac::Send(const unsigned char *pData, unsigned count)
 {
     bool bError = false;
     /*
@@ -180,7 +230,7 @@ bool SerialPortMac::Send(const unsigned char * const pData, const unsigned count
     return bError;
 }
 
-bool SerialPortMac::Receive(unsigned char *pData, const unsigned count)
+bool SerialPortMac::Receive(unsigned char *pData, unsigned count)
 {
     bool bError = false;
     /*
@@ -208,53 +258,5 @@ bool SerialPortMac::Receive(unsigned char *pData, const unsigned count)
     */
     return bError;
 }
-
-
-
-kern_return_t SerialPortMac::createSerialIterator(io_iterator_t *serialIterator)
-{
-    kern_return_t   kernResult;
-    mach_port_t     masterPort;
-    CFMutableDictionaryRef  classesToMatch;
-
-    if ((kernResult=IOMasterPort(NULL, &masterPort)) != KERN_SUCCESS)
-    {
-        printf("IOMasterPort returned %d\n", kernResult);
-        return kernResult;
-    }
-
-    if ((classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue)) == NULL)
-    {
-        printf("IOServiceMatching returned NULL\n");
-        return kernResult;
-    }
-
-    CFDictionarySetValue(classesToMatch, CFSTR(kIOSerialBSDTypeKey),
-                         CFSTR(kIOSerialBSDRS232Type));
-//                         CFSTR(kIOSerialBSDModemType));
-    kernResult = IOServiceGetMatchingServices(masterPort, classesToMatch, serialIterator);
-    if (kernResult != KERN_SUCCESS)
-    {
-        printf("IOServiceGetMatchingServices returned %d\n", kernResult);
-    }
-    return kernResult;
-}
-
-char * SerialPortMac::getRegistryString(io_object_t sObj, char *propName) {
-    static char resultStr[256];
-    //   CFTypeRef  nameCFstring;
-    CFStringRef nameCFstring;
-    resultStr[0] = 0;
-    nameCFstring = (CFStringRef) IORegistryEntryCreateCFProperty(sObj,
-                                                                 CFStringCreateWithCString(kCFAllocatorDefault, propName, kCFStringEncodingASCII),
-                                                                 kCFAllocatorDefault, 0);
-    if (nameCFstring) {
-        CFStringGetCString(nameCFstring, resultStr, sizeof(resultStr),
-                           kCFStringEncodingASCII);
-        CFRelease(nameCFstring);
-    }
-    return resultStr;
-}
-
 
 #endif // _APPLE_

@@ -36,14 +36,17 @@
 #if !defined(SERIALPORT_MAC_H_INCLUDED) && defined (__APPLE__)
 #define SERIALPORT_MAC_H_INCLUDED
 
-#include <sys/ioctl.h>
-#include <termios.h>
+
 #include <IOKit/serial/IOSerialKeys.h>
 #include <IOKit/IOKitLib.h>
 
-class SerialPortMac:public SerialPort
+
+class SerialPortMac : public SerialPort
 {
+    int m_PortFID;
+
 public:
+
     wxArrayString GetSerialPortList(void);
 
     SerialPortMac(void);
@@ -52,16 +55,10 @@ public:
     virtual bool Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR);
     virtual bool Disconnect(void);
 
-    virtual bool Send(const unsigned char * const pData, const unsigned count);
+    virtual bool Send(const unsigned char *pData, unsigned count);
 
     virtual bool SetReceiveTimeout(int timeoutMs);
-    virtual bool Receive(unsigned char *pData, const unsigned count);
-
-private:
-    int m_PortFID;
-    kern_return_t createSerialIterator(io_iterator_t *serialIterator);
-    char *getRegistryString(io_object_t sObj, char *propName);
-
+    virtual bool Receive(unsigned char *pData, unsigned count);
 };
 
 #endif  // SERIALPORT_MAC_H_INCLUDED

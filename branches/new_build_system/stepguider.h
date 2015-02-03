@@ -65,11 +65,8 @@ class StepGuider : public Mount, public OnboardST4
     int   m_calibrationAverageSamples;
     PHD_Point m_calibrationAveragedLocation;
 
-    double m_calibrationXAngle;
-    double m_calibrationXRate;
-
-    double m_calibrationYAngle;
-    double m_calibrationYRate;
+    Calibration m_calibration;
+    CalibrationDetails m_calibrationDetails;
 
     enum CALIBRATION_STATE
     {
@@ -119,6 +116,7 @@ protected:
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual wxString GetSettingsSummary(void);
+    virtual wxString CalibrationSettingsSummary(void);
     virtual wxString GetMountClassName(void) const;
     virtual bool IsStepGuider(void) const;
     virtual wxPoint GetAoPos(void) const;
@@ -133,7 +131,8 @@ public:
     static wxArrayString List(void);
     static StepGuider *Factory(const wxString& choice);
 
-    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide);
+    virtual void SetCalibration(const Calibration& cal);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle);
     virtual bool BeginCalibration(const PHD_Point& currentLocation);
     bool UpdateCalibrationState(const PHD_Point& currentLocation);
     virtual void ClearCalibration(void);
@@ -149,9 +148,10 @@ public:
     // by a subclass
 private:
     virtual MOVE_RESULT Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved);
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, MoveResultInfo *moveResultInfo);
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps);
     int CalibrationMoveSize(void);
+    int CalibrationTotDistance(void);
     void InitBumpPositions(void);
 
     double CalibrationTime(int nCalibrationSteps);
@@ -167,7 +167,7 @@ private:
     // consider whether they need to call the base class functions as part of
     // their operation
 public:
-    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit);
+    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool *atLimit);
     virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
     virtual bool MoveToCenter(void);

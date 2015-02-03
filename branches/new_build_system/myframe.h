@@ -38,6 +38,9 @@
 #define MYFRAME_H_INCLUDED
 
 class WorkerThread;
+class MyFrame;
+class RefineDefMap;
+struct alert_params;
 
 enum E_MYFRAME_WORKER_THREAD_MESSAGES
 {
@@ -67,9 +70,6 @@ enum LOGGED_IMAGE_FORMAT
     LIF_RAW_FITS
 };
 
-class MyFrame;
-class RefineDefMap;
-
 struct AutoExposureCfg
 {
     bool enabled;
@@ -77,6 +77,8 @@ struct AutoExposureCfg
     int maxExposure;
     double targetSNR;
 };
+
+typedef void alert_fn(long);
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
 {
@@ -161,6 +163,7 @@ public:
     wxAcceleratorEntry *m_showBookmarksAccel;
     wxAcceleratorEntry *m_bookmarkLockPosAccel;
     wxMenuItem *m_takeDarksMenuItem;
+    wxMenuItem *m_calibrationMenuItem;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
@@ -170,6 +173,7 @@ public:
     wxSlider *Gamma_Slider;
     AdvancedDialog *pAdvancedDialog;
     GraphLogWindow *pGraphLog;
+    StatsWindow *pStatsWin;
     GraphStepguiderWindow *pStepGuiderGraph;
     GearDialog *pGearDialog;
     ProfileWindow *pProfile;
@@ -177,13 +181,18 @@ public:
     wxWindow *pDriftTool;
     wxWindow *pManualGuide;
     wxWindow *pNudgeLock;
+    wxWindow *pCometTool;
     RefineDefMap *pRefineDefMap;
+    wxDialog *pCalSanityCheckDlg;
+    wxDialog *pCalReviewDlg;
     bool CaptureActive; // Is camera looping captures?
+    bool m_exposurePending; // exposure scheduled and not completed
     double Stretch_gamma;
     wxLocale *m_pLocale;
     unsigned int m_frameCounter;
     unsigned int m_loggedImageFrame;
     wxDateTime m_guidingStarted;
+    Star::FindMode m_starFindMode;
 
     void RegisterTextCtrl(wxTextCtrl *ctrl);
     void OnQuit(wxCommandEvent& evt);
@@ -207,6 +216,7 @@ public:
     void OnTestGuide(wxCommandEvent& evt);
     void OnEEGG(wxCommandEvent& evt);
     void OnDriftTool(wxCommandEvent& evt);
+    void OnCometTool(wxCommandEvent& evt);
     void OnSetupCamera(wxCommandEvent& evt);
     void OnExposureDurationSelected(wxCommandEvent& evt);
     void OnGammaSlider(wxScrollEvent& evt);
@@ -227,10 +237,12 @@ public:
      void OnRestoreSettings(wxCommandEvent& evt);
 #endif
     void OnGraph(wxCommandEvent& evt);
+    void OnStats(wxCommandEvent& evt);
     void OnToolBar(wxCommandEvent& evt);
     void OnAoGraph(wxCommandEvent& evt);
     void OnStarProfile(wxCommandEvent& evt);
     void OnTarget(wxCommandEvent& evt);
+    void OnRestoreWindows(wxCommandEvent& evt);
     void OnAutoStar(wxCommandEvent& evt);
     void OnBookmarksShow(wxCommandEvent& evt);
     void OnBookmarksSetAtLockPos(wxCommandEvent& evt);
@@ -260,6 +272,8 @@ public:
     bool IsImageLoggingEnabled(void);
     void SetLoggedImageFormat(LOGGED_IMAGE_FORMAT val);
     LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
+    Star::FindMode GetStarFindMode(void) const;
+    Star::FindMode SetStarFindMode(Star::FindMode mode);
 
     bool StartServer(bool state);
     bool FlipRACal();
@@ -304,7 +318,7 @@ public:
     };
     void OnRequestMountMove(wxCommandEvent &evt);
 
-    void ScheduleExposure(int exposureDuration, wxRect subframe);
+    void ScheduleExposure(int exposureDuration, const wxRect& subframe);
 
     void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
     void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
@@ -313,7 +327,7 @@ public:
     void StartCapturing(void);
     void StopCapturing(void);
 
-    void SetPaused(bool paused);
+    void SetPaused(PauseType pause);
 
     bool StartLooping(void); // stop guiding and continue capturing, or, start capturing
     bool StartGuiding(void);
@@ -322,19 +336,22 @@ public:
     void UpdateButtonsStatus(void);
     void UpdateCalibrationStatus(void);
 
-    double GetCameraPixelScale(void);
+    static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm);
+    double GetCameraPixelScale(void) const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
-    virtual void SetStatusText(const wxString& text, int number=0, int msToDisplay = 0);
-    virtual wxString GetSettingsSummary();
+    void Alert(const wxString& msg, const wxString& buttonLabel, alert_fn *fn, long arg, int flags = wxICON_EXCLAMATION);
+    virtual void SetStatusText(const wxString& text, int number = 0);
+    wxString GetSettingsSummary();
+    wxString ExposureDurationSummary(void) const;
+    wxString PixelScaleSummary(void) const;
+
+    double TimeSinceGuidingStarted(void) const;
 
 private:
     wxCriticalSection m_CSpWorkerThread;
     WorkerThread *m_pPrimaryWorkerThread;
     WorkerThread *m_pSecondaryWorkerThread;
-
-    bool StartWorkerThread(WorkerThread*& pWorkerThread);
-    void StopWorkerThread(WorkerThread*& pWorkerThread);
 
     wxSocketServer *SocketServer;
 
@@ -343,12 +360,17 @@ private:
     int m_exposureDuration;
     AutoExposureCfg m_autoExp;
 
+    alert_fn *m_alertFn;
+    long m_alertFnArg;
+
+    bool StartWorkerThread(WorkerThread*& pWorkerThread);
+    bool StopWorkerThread(WorkerThread*& pWorkerThread);
     void OnSetStatusText(wxThreadEvent& event);
+    void DoAlert(const alert_params& params);
+    void OnAlertButton(wxCommandEvent& evt);
     void OnAlertFromThread(wxThreadEvent& event);
     void OnStatusbarTimerEvent(wxTimerEvent& evt);
-
     void OnMessageBoxProxy(wxCommandEvent& evt);
-
     void SetupMenuBar(void);
     void SetupStatusBar(void);
     void SetupToolBar();
@@ -356,10 +378,13 @@ private:
     void SetupHelpFile(void);
     int GetTextWidth(wxControl *pControl, const wxString& string);
     void SetComboBoxWidth(wxComboBox *pComboBox, unsigned int extra);
+    void FinishStop(void);
 
     // and of course, an event table
     DECLARE_EVENT_TABLE()
 };
+
+extern MyFrame *pFrame;
 
 enum {
     MENU_SHOWHELP = 101,
@@ -389,6 +414,8 @@ enum {
     BUTTON_DURATION,
     BUTTON_ADVANCED,
     BUTTON_CAM_PROPERTIES,
+    BUTTON_ALERT_ACTION,
+    BUTTON_ALERT_CLOSE,
     GEAR_DIALOG_IDS_BEGIN,
         GEAR_PROFILES,
         GEAR_PROFILE_MANAGE,
@@ -397,6 +424,7 @@ enum {
         GEAR_PROFILE_RENAME,
         GEAR_PROFILE_LOAD,
         GEAR_PROFILE_SAVE,
+        GEAR_PROFILE_WIZARD,
 
         GEAR_CHOICE_CAMERA,
         GEAR_BUTTON_SETUP_CAMERA,
@@ -413,10 +441,17 @@ enum {
         GEAR_BUTTON_CONNECT_AUXSCOPE,
         GEAR_BUTTON_DISCONNECT_AUXSCOPE,
 
+        GEAR_BUTTON_MORE,
+
         GEAR_CHOICE_STEPGUIDER,
         GEAR_BUTTON_SETUP_STEPGUIDER,
         GEAR_BUTTON_CONNECT_STEPGUIDER,
         GEAR_BUTTON_DISCONNECT_STEPGUIDER,
+
+        GEAR_CHOICE_ROTATOR,
+        GEAR_BUTTON_SETUP_ROTATOR,
+        GEAR_BUTTON_CONNECT_ROTATOR,
+        GEAR_BUTTON_DISCONNECT_ROTATOR,
 
         GEAR_BUTTON_CONNECT_ALL,
         GEAR_BUTTON_DISCONNECT_ALL,
@@ -445,11 +480,14 @@ enum {
     MENU_SERVER,
     MENU_TOOLBAR,
     MENU_GRAPH,
+    MENU_STATS,
     MENU_AO_GRAPH,
     MENU_STARPROFILE,
+    MENU_RESTORE_WINDOWS,
     MENU_TARGET,
     MENU_AUTOSTAR,
     MENU_DRIFTTOOL,
+    MENU_COMETTOOL,
     MENU_SAVESETTINGS,
     MENU_LOADSETTINGS,
     MENU_LOADDARK,
@@ -471,6 +509,8 @@ enum {
         GRAPH_RADX_COLOR,
         GRAPH_DECDY_COLOR,
     BUTTON_GRAPH_CLEAR,
+    TARGET_ENABLE_REF_CIRCLE,
+    TARGET_REF_CIRCLE_RADIUS,
     MENU_LENGTH_BEGIN, // a range of ids for history size selection popup menus
     MENU_LENGTH_END = MENU_LENGTH_BEGIN + 10,
     MENU_HEIGHT_BEGIN, // a range of ids for height size selection popup menus
@@ -483,7 +523,9 @@ enum {
     EEGG_RESTORECAL,
     EEGG_MANUALCAL,
     EEGG_CLEARCAL,
+    EEGG_REVIEWCAL,
     EEGG_MANUALLOCK,
+    EEGG_COMET_TOOL,
     EEGG_STICKY_LOCK,
     EEGG_FLIPRACAL,
     STAR_MASS_ENABLE,
@@ -512,6 +554,21 @@ inline static int StringWidth(const wxWindow *window, const wxString& s)
 inline static wxSize StringSize(const wxWindow *window, const wxString& s, int extra = 0)
 {
     return wxSize(StringWidth(window, s) + extra, -1);
+}
+
+inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm)
+{
+    return 206.265 * pixelSizeMicrons / (double) focalLengthMm;
+}
+
+inline double MyFrame::TimeSinceGuidingStarted(void) const
+{
+    return (wxDateTime::UNow() - m_guidingStarted).GetMilliseconds().ToDouble() / 1000.0;
+}
+
+inline Star::FindMode MyFrame::GetStarFindMode(void) const
+{
+    return m_starFindMode;
 }
 
 #endif /* MYFRAME_H_INCLUDED */

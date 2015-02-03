@@ -55,8 +55,6 @@ int ushort_compare (const void * a, const void * b) {
 // QHY CMOS guide camera version
 // Tom's driver
 
-
-
 Camera_QGuiderClass::Camera_QGuiderClass()
 {
     Connected = false;
@@ -66,9 +64,8 @@ Camera_QGuiderClass::Camera_QGuiderClass()
     HasGainControl = true;
 }
 
-
-
-bool Camera_QGuiderClass::Connect() {
+bool Camera_QGuiderClass::Connect()
+{
 // returns true on error
 //  CameraReset();
     if (!openUSB(0)) {
@@ -85,7 +82,8 @@ bool Camera_QGuiderClass::Connect() {
     return false;
 }
 
-bool Camera_QGuiderClass::ST4PulseGuideScope(int direction, int duration) {
+bool Camera_QGuiderClass::ST4PulseGuideScope(int direction, int duration)
+{
     int reg = 0;
     int dur = duration / 10;
 
@@ -101,35 +99,44 @@ bool Camera_QGuiderClass::ST4PulseGuideScope(int direction, int duration) {
     }
     GuideCommand(reg,dur);
     //if (duration > 50) wxMilliSleep(duration - 50);  // wait until it's mostly done
-    wxMilliSleep(duration + 10);
+    WorkerThread::MilliSleep(duration + 10);
     //qglogfile->AddLine("Done"); //qglogfile->Write();
     return false;
 }
-void Camera_QGuiderClass::ClearGuidePort() {
+
+void Camera_QGuiderClass::ClearGuidePort()
+{
 //  SendGuideCommand(DevName,0,0);
 }
-void Camera_QGuiderClass::InitCapture() {
+
+void Camera_QGuiderClass::InitCapture()
+{
 //  CameraReset();
     ProgramCamera(0,0,1280,1024, (GuideCameraGain * 63 / 100) );
 //  SetNoiseReduction(0);
 }
-bool Camera_QGuiderClass::Disconnect() {
+
+bool Camera_QGuiderClass::Disconnect()
+{
     closeUSB();
 //  delete [] buffer;
     Connected = false;
     //qglogfile->AddLine(wxNow() + ": Disconnecting"); //qglogfile->Write(); //qglogfile->Close();
     return false;
-
 }
 
-bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+static bool StopExposure()
+{
+    Debug.AddLine("QGuide: stop exposure");
+    CancelExposure();
+    return true;
+}
+
+bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+{
 // Only does full frames still
 
-//  unsigned char *bptr;
     unsigned short *dptr;
-    //int  i;
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
     bool firstimg = true;
 
     //qglogfile->AddLine(wxString::Format("Capturing dur %d",duration)); //qglogfile->Write();
@@ -140,30 +147,42 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
     while (isExposing())
         wxMilliSleep(10);
 */
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
+    if (img.Init(FullSize)) {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
+    }
+
+    //  ThreadedExposure(duration, buffer);
+    ThreadedExposure(duration, NULL);
+    //qglogfile->AddLine("Exposure programmed"); //qglogfile->Write();
+
+    CameraWatchdog watchdog(duration, GetTimeoutMs() + 1000); // typically 6 second timeout
+
+    if (duration > 100)
+    {
+        // Shift to > duration
+        if (WorkerThread::MilliSleep(duration + 100) &&
+            (WorkerThread::TerminateRequested() || StopExposure()))
+        {
             return true;
         }
     }
-//  ThreadedExposure(duration, buffer);
-    ThreadedExposure(duration, NULL);
-    //qglogfile->AddLine("Exposure programmed"); //qglogfile->Write();
-    if (duration > 100) {
-        wxMilliSleep(duration + 100);  // Shift to > duration
-        wxGetApp().Yield();
+
+    while (isExposing())
+    {
+        wxMilliSleep(200);
+        if (WorkerThread::InterruptRequested() &&
+            (WorkerThread::TerminateRequested() || StopExposure()))
+        {
+            return true;
+        }
+        if (watchdog.Expired())
+        {
+            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
+            return true;
+        }
     }
 
-    int nloops = 0;
-    while (isExposing()) {
-        wxMilliSleep(200);
-        if (++nloops > 30)
-            break;
-    }
-    if (nloops > 30) {
-        return false;
-    }
     //qglogfile->AddLine("Exposure done"); //qglogfile->Write();
 
 /*  dptr = img.ImageData;
@@ -188,18 +207,6 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
     return false;
 }
 
-/*bool Camera_QGuiderClass::CaptureCrop(int duration, usImage& img) {
-    GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_QGuiderClass::CaptureFull(int duration, usImage& img) {
-    GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
-    return false;
-}
-*/
 void Camera_QGuiderClass::RemoveLines(usImage& img) {
     int i, j, val;
     unsigned short data[21];

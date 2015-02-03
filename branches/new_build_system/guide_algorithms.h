@@ -48,6 +48,11 @@ enum GUIDE_ALGORITHM
     GUIDE_ALGORITHM_LOWPASS,
     GUIDE_ALGORITHM_LOWPASS2,
     GUIDE_ALGORITHM_RESIST_SWITCH,
+
+#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
+    GUIDE_ALGORITHM_GAUSSIAN_PROCESS,
+#endif
+
 };
 
 #include "guide_algorithm.h"
@@ -56,5 +61,9 @@ enum GUIDE_ALGORITHM
 #include "guide_algorithm_lowpass.h"
 #include "guide_algorithm_lowpass2.h"
 #include "guide_algorithm_resistswitch.h"
+
+#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
+  #include "guide_algorithm_gaussian_process.h"
+#endif
 
 #endif /* GUIDE_ALGORITHMS_H_INCLUDED */

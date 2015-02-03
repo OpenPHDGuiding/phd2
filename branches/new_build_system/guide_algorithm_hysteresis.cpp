@@ -39,9 +39,9 @@
 
 #include "phd.h"
 
-static const double DefaultMinMove      = 0.2;
-static const double DefaultHysteresis   = 0.1;
-static const double DefaultAggression = 1.00;
+static const double DefaultMinMove    = 0.2;
+static const double DefaultHysteresis = 0.1;
+static const double DefaultAggression = 0.7;
 
 GuideAlgorithmHysteresis::GuideAlgorithmHysteresis(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis)

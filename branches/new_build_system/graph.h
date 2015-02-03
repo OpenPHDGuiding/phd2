@@ -35,6 +35,8 @@
 #ifndef GRAPHCLASS
 #define GRAPHCLASS
 
+#include <deque>
+
 class GraphControlPane;
 
 enum GRAPH_UNITS
@@ -62,11 +64,36 @@ struct S_HISTORY
     int decDur;
     double starSNR;
     double starMass;
+    bool raLimited;
+    bool decLimited;
     S_HISTORY() { }
     S_HISTORY(const GuideStepInfo& step)
         : timestamp(::wxGetUTCTimeMillis().GetValue()),
         dx(step.cameraOffset->X), dy(step.cameraOffset->Y), ra(step.mountOffset->X), dec(step.mountOffset->Y),
-        raDur(step.durationRA), decDur(step.durationDec), starSNR(step.starSNR), starMass(step.starMass) { }
+        raDur(step.durationRA), decDur(step.durationDec), starSNR(step.starSNR), starMass(step.starMass),
+        raLimited(step.raLimited), decLimited(step.decLimited) { }
+};
+
+struct DitherInfo
+{
+    wxLongLong_t timestamp;
+    double dRa;
+    double dDec;
+};
+
+struct SummaryStats
+{
+    S_HISTORY cur;
+    double rms_ra;
+    double rms_dec;
+    double rms_tot;
+    double osc_index;
+    bool osc_alert;
+    double ra_peak;
+    double dec_peak;
+    unsigned int star_lost_cnt;
+    unsigned int ra_limit_cnt;
+    unsigned int dec_limit_cnt;
 };
 
 class GraphLogClientWindow : public wxWindow
@@ -91,13 +118,14 @@ private:
     unsigned int m_maxHeight;
 
     circular_buffer<S_HISTORY> m_history;
+    std::deque<DitherInfo> m_dithers;
 
     wxPoint *m_line1;
     wxPoint *m_line2;
 
     TrendLineAccum m_trendLineAccum[4]; // dx, dy, ra, dec
-
     int m_raSameSides; // accumulator for RA osc index
+    SummaryStats m_stats;
 
     GRAPH_MODE m_mode;
 
@@ -122,12 +150,27 @@ public:
     bool SetMaxHeight(unsigned int minHeight);
 
     void AppendData(const GuideStepInfo& step);
+    void AppendData(const FrameDroppedInfo& info);
+    void AppendData(const DitherInfo& info);
+
+    unsigned int GetItemCount() const;
+
     void ResetData(void);
+
+private:
     void RecalculateTrendLines(void);
+    void UpdateStats(unsigned int nr, const S_HISTORY *cur);
+
     void OnPaint(wxPaintEvent& evt);
+    void OnLeftBtnDown(wxMouseEvent& evt);
 
     DECLARE_EVENT_TABLE()
 };
+
+inline unsigned int GraphLogClientWindow::GetItemCount() const
+{
+    return wxMin(m_history.size(), m_length);
+}
 
 class GraphLogWindow : public wxWindow
 {
@@ -135,7 +178,6 @@ class GraphLogWindow : public wxWindow
     OptionsButton *m_pHeightButton;
     int m_heightButtonLabelVal; // value currently displayed on height button: <0 for arc-sec, >0 for pixels
     OptionsButton *m_pSettingsButton;
-    wxButton *m_pClearButton;
     wxCheckBox *m_pCheckboxTrendlines;
     wxCheckBox *m_pCheckboxCorrections;
     wxStaticText *RALabel;
@@ -156,14 +198,31 @@ class GraphLogWindow : public wxWindow
     void UpdateRADecDxDyLabels(void);
 
 public:
+
+    enum {
+        DefaultMinLength = 50,
+        DefaultMaxLength = 400,
+        DefaultMinHeight = 1,
+        DefaultMaxHeight = 16,
+    };
+
     GraphLogWindow(wxWindow *parent);
     ~GraphLogWindow(void);
 
     void AppendData(const GuideStepInfo& step);
+    void AppendData(const FrameDroppedInfo& info);
+    void AppendData(const DitherInfo& info);
+
     void UpdateControls(void);
     void SetState(bool is_active);
     void EnableTrendLines(bool enable);
     GraphLogClientWindow::GRAPH_MODE SetMode(GraphLogClientWindow::GRAPH_MODE newMode);
+    int GetLength(void) const;
+    void SetLength(int length);
+    int GetHeight(void) const;
+    void SetHeight(int height);
+    wxMenu *GetLengthMenu(void);
+    unsigned int GetHistoryItemCount(void) const;
 
     void OnPaint(wxPaintEvent& evt);
     void OnButtonSettings(wxCommandEvent& evt);
@@ -187,6 +246,8 @@ public:
 
     wxColor GetRaOrDxColor(void);
     wxColor GetDecOrDyColor(void);
+
+    const SummaryStats& Stats(void) const { return m_pClient->m_stats; }
 
     DECLARE_EVENT_TABLE()
 };

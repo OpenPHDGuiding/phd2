@@ -40,6 +40,7 @@
 #include "cam_simulator.h"
 #include <algorithm>
 #include <functional>
+#include <algorithm>
 
 static std::set<wxSocketBase *> s_clients;
 
@@ -190,13 +191,13 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_PAUSE:
             case 'p':
                 Debug.AddLine("processing socket request PAUSE");
-                SetPaused(true);
+                SetPaused(PAUSE_GUIDING);
                 break;
 
             case MSG_RESUME:
             case 'r':
                 Debug.AddLine("processing socket request RESUME");
-                SetPaused(false);
+                SetPaused(PAUSE_NONE);
                 break;
 
             case MSG_MOVE1:  // +/- 0.5
@@ -236,7 +237,7 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_REQDIST:
             {
                 Debug.AddLine("processing socket request REQDIST");
-                if (pGuider->GetState() != STATE_GUIDING)
+                if (!pGuider->IsGuiding())
                 {
                     throw ERROR_INFO("cannot request distance if not guiding");
                 }
@@ -292,14 +293,14 @@ void MyFrame::HandleSockServerInput(wxSocketBase *sock)
             case MSG_FLIPRACAL:
             {
                 Debug.AddLine("processing socket request FLIPRACAL");
-                bool wasPaused = pGuider->SetPaused(true);
+                PauseType prev = pGuider->SetPaused(PAUSE_GUIDING);
                 // return 1 for success, 0 for failure
                 rval = 1;
                 if (FlipRACal())
                 {
                     rval = 0;
                 }
-                pGuider->SetPaused(wasPaused);
+                pGuider->SetPaused(prev);
                 GuideLog.ServerCommand(pGuider, "FLIP RA CAL");
                 break;
             }

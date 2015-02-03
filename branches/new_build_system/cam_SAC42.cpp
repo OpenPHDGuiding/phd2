@@ -107,14 +107,12 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
     CapInfo.OffsetX = xpos;
     CapInfo.OffsetY = ypos;
 
-    if (img.NPixels != (xsize*ysize)) {
-        if (img.Init(xsize,ysize)) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            delete[] buffer;
-            return true;
-        }
+    if (img.Init(FullSize)) {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        delete[] buffer;
+        return true;
     }
+
     while (duration > 0) { // still have frames to grab
         if (duration <= chunksize) { // grab a single frame
             CapInfo.Exposure = duration;
@@ -126,8 +124,7 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
         }
         retval = FclGetOneFrame(hDriver,CapInfo);  // get the frame
         if (retval) {
-            pFrame->Alert(_("Error capturing data from camera"));
-            Disconnect();
+            DisconnectWithAlert(_("Error capturing data from camera"));
             delete[] buffer;
             return true;
         }
@@ -154,17 +151,5 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
 #endif
     return false;
 }
-
-/*bool Camera_SAC42Class::CaptureCrop(int duration, usImage& img) {
-    GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
-}
-
-bool Camera_SAC42Class::CaptureFull(int duration, usImage& img) {
-    GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
-    return false;
-}*/
 
 #endif

@@ -4,12 +4,19 @@
 # XXX)
 
 cmake_minimum_required(VERSION 2.8.11)
-project(PhD2)
 
+if(COMMAND cmake_policy)
+    cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
+
+
+project(PhD2)
 enable_testing()
 
 set(USE_FOLDERS TRUE)
 set(BUILD_SHARED_LIBS FALSE)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(VERSION_MAJOR 2)
 set(VERSION_MINOR 3)
@@ -17,6 +24,11 @@ set(VERSION_PATCH 0)
 
 # root directory of the project
 set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
+set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
+
+
+# options
+option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm" OFF)
 
 
 # build type, by default to release (with optimisations)
@@ -27,13 +39,11 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
 include(CheckCXXCompilerFlag)
 
 
-
-
+#################################################################################
+#
 # general defines
 if(WIN32)
   set(FIND_LIBRARY_USE_LIB64_PATHS FALSE)
@@ -48,41 +58,40 @@ else()
   elseif(HAS_CXX0X_FLAG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
   endif()
-
-
 endif()
 
 
+
+
+#################################################################################
+#
+# external libraries
 # to be changed in add_subdirectory
 include(build/CMakeListsThirdparties.txt)
 
+
+
+
+#################################################################################
+#
+# contributions
+if(${GUIDING_GAUSSIAN_PROCESS})
+  add_subdirectory(contributions/MPI_IS_gaussian_process tmp_gaussian_process)
+  message(STATUS "[configuration] PHD2 includes the Gaussian Process guiding algorithm")
+endif()
+
+
+
 # Adding the wxWidgets include definitions. Maybe narrowed to Phd2 project only
-include_directories(${wxWidgets_INCLUDE_DIRS})
+#include_directories(${wxWidgets_INCLUDE_DIRS})
 
-# Adding the gaussian process headers
-include_directories(${phd_src_dir}/gaussian_process)
 
-set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 
-# Gaussian Process
 
-set(gp_SRC
-    ${phd_src_dir}/gaussian_process/GPImpl.cpp
-    ${phd_src_dir}/gaussian_process/GPImpl.h
-    )
-add_library(GP STATIC ${gp_SRC})
-target_include_directories(GP PUBLIC ${EIGEN_SRC})
 
-# Test for the GP
-add_executable(GPTest ${phd_src_dir}/tests/gaussian_process/main.cpp)
-target_link_libraries(GPTest GP gtest)
-target_include_directories(GPTest PRIVATE ${phd_src_dir}/gaussian_process
-                                  PRIVATE ${GTEST_HEADERS})
-set_property(TARGET GPTest PROPERTY FOLDER "Unit tests/")
-add_test(GPTest1 GPTest)
-
+#################################################################################
+#
 # main project
-
 set(cam_KWIQGuider_SRC
   ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.cpp
   ${phd_src_dir}/cam_KWIQGuider/KWIQGuider.h
@@ -95,6 +104,7 @@ source_group(Cameras\\cam_KWIQGuider FILES ${cam_KWIQGuider_SRC})
 set(cam_SRC
   ${phd_src_dir}/cam_ascomlate.cpp
   ${phd_src_dir}/cam_ascomlate.h
+
   ${phd_src_dir}/cam_Atik16.cpp
   ${phd_src_dir}/cam_Atik16.h
   ${phd_src_dir}/cam_firewire.h
@@ -158,6 +168,8 @@ set(cam_SRC
 )
 source_group(Cameras FILES ${cam_SRC})
 
+
+# windows specific cameras
 if(WIN32)
   set(cam_SRC
     ${cam_SRC}
@@ -176,6 +188,13 @@ if(WIN32)
 
     ${phd_src_dir}/cam_QHY5IIbase.cpp
     ${phd_src_dir}/cam_QHY5IIbase.h
+    
+    # ascom, not there in the sln project -> commented for now 
+    # see also the thirdparties cmake to activate/deactivate any call the the findascom.cmake extension
+    #${phd_src_dir}/cam_ascom.cpp
+    #${phd_src_dir}/ascom.cpp
+    #${phd_src_dir}/extras/cam_ascomlate.cpp
+    
 
   )
 elseif(UNIX AND (NOT APPLE))
@@ -245,36 +264,42 @@ set(guiding_SRC
   ${phd_src_dir}/stepguider.cpp
   ${phd_src_dir}/stepguider.h
   ${phd_src_dir}/stepguiders.h
+
 )
+
+# gaussian process, also the main project should link to the GP project in the contrib dir
+if(${GUIDING_GAUSSIAN_PROCESS})
+  set(guiding_SRC 
+      ${guiding_SRC}
+      ${phd_src_dir}/UDPGuidingInteraction.cpp
+      ${phd_src_dir}/UDPGuidingInteraction.h
+      ${phd_src_dir}/guide_algorithm_gaussian_process.cpp
+      ${phd_src_dir}/guide_algorithm_gaussian_process.h)
+endif()
+
 source_group(Guiding FILES ${guiding_SRC})
 
 
-set(indiClient_SRC
-  ${phd_src_dir}/libindiclient/indi.c
-  ${phd_src_dir}/libindiclient/wx/indigui.cpp
-  ${phd_src_dir}/libindiclient/wx/indi_io.cpp
-  ${phd_src_dir}/libindiclient/wx/indi_list.cpp
-  ${phd_src_dir}/libindiclient/wx/indi_config.cpp
-  ${phd_src_dir}/libindiclient/wx/indisave.cpp
-  ${phd_src_dir}/libindiclient/wx/wxled.cpp
-  ${phd_src_dir}/libindiclient/wx/wxchecktreectrl.cpp
-  ${phd_src_dir}/libindiclient/base64.c
-  ${phd_src_dir}/libindiclient/lilxml.c
-)
-source_group(IndiClient FILES ${indiClient_SRC})
 
+
+
+# it would ease if files are organised in an alphabetical order
 set(phd2_SRC
   ${phd_src_dir}/about_dialog.cpp
   ${phd_src_dir}/about_dialog.h
   ${phd_src_dir}/advanced_dialog.cpp
   ${phd_src_dir}/advanced_dialog.h
-  ${phd_src_dir}/ascom_common.cpp
-  ${phd_src_dir}/ascom_common.h
-  ${phd_src_dir}/calrestore_dialog.cpp
-  ${phd_src_dir}/calrestore_dialog.h
+
+  ${phd_src_dir}/calreview_dialog.cpp
+  ${phd_src_dir}/calreview_dialog.h
+  
   ${phd_src_dir}/calstep_dialog.cpp
   ${phd_src_dir}/calstep_dialog.h
   ${phd_src_dir}/circbuf.h
+  
+  ${phd_src_dir}/comet_tool.cpp
+  ${phd_src_dir}/comet_tool.h
+  
   ${phd_src_dir}/configdialog.cpp
   ${phd_src_dir}/configdialog.h
   ${phd_src_dir}/confirm_dialog.cpp
@@ -289,6 +314,9 @@ set(phd2_SRC
   ${phd_src_dir}/event_server.cpp
   ${phd_src_dir}/event_server.h
 
+  ${phd_src_dir}/fitsiowrap.cpp
+  ${phd_src_dir}/fitsiowrap.h
+  
   ${phd_src_dir}/gear_dialog.cpp
   ${phd_src_dir}/gear_dialog.h
   ${phd_src_dir}/graph-stepguider.cpp
@@ -326,10 +354,30 @@ set(phd2_SRC
 
   ${phd_src_dir}/phdcontrol.cpp
   ${phd_src_dir}/phdcontrol.h
+  
+  ${phd_src_dir}/profile_wizard.h
+  ${phd_src_dir}/profile_wizard.cpp
+  
   ${phd_src_dir}/point.h
   ${phd_src_dir}/precompiled_header.cpp
   ${phd_src_dir}/Refine_DefMap.cpp
   ${phd_src_dir}/Refine_DefMap.h
+  
+  # rotators
+  ${phd_src_dir}/rotators.h
+  
+  ${phd_src_dir}/rotator.cpp
+  ${phd_src_dir}/rotator.h
+  
+  ${phd_src_dir}/rotator_ascom.cpp
+  ${phd_src_dir}/rotator_ascom.h
+  
+  ${phd_src_dir}/rotator_simulator.h
+  ###
+  
+  ${phd_src_dir}/runinbg.cpp
+  ${phd_src_dir}/runinbg.h
+  
   ${phd_src_dir}/serialport.cpp
   ${phd_src_dir}/serialport.h
   ${phd_src_dir}/serialport_loopback.cpp
@@ -341,6 +389,10 @@ set(phd2_SRC
   ${phd_src_dir}/serialports.h
   ${phd_src_dir}/socket_server.cpp
   ${phd_src_dir}/socket_server.h
+  
+  ${phd_src_dir}/statswindow.cpp
+  ${phd_src_dir}/statswindow.h
+  
   ${phd_src_dir}/star.cpp
   ${phd_src_dir}/star.h
   ${phd_src_dir}/star_profile.cpp
@@ -354,18 +406,26 @@ set(phd2_SRC
   ${phd_src_dir}/usImage.h
   ${phd_src_dir}/worker_thread.cpp
   ${phd_src_dir}/worker_thread.h
+
+
 )
 if(UNIX AND NOT APPLE)
   set(phd2_SRC 
       ${phd2_SRC}
       ${phd_src_dir}/config_INDI.cpp
+      ${phd_src_dir}/config_INDI.h
+      
+      ${phd_src_dir}/indi_gui.cpp
+      ${phd_src_dir}/indi_gui.h
+      
+      ${phd_src_dir}/wxled.cpp
+      ${phd_src_dir}/wxled.h
      )
 endif()
 source_group(src FILES ${phd2_SRC})
 
 
-#message("compilation definitions ${wxWidgets_DEFINITIONS}")
-#message("compilation options ${wxWidgets_CXX_FLAGS}")
+
 
 
 include_directories(${phd_src_dir}/cam_KWIQGuider/)
@@ -396,7 +456,7 @@ if(APPLE)
     ${guiding_SRC}
     ${phd2_SRC}
     
-    # ressources of the bundle
+    # resources of the bundle
     ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE}
     ${phd_src_dir}/PHD2GuideHelp.zip
     
@@ -415,14 +475,8 @@ if(APPLE)
       PROPERTIES 
         MACOSX_PACKAGE_LOCATION Resources
   )
-  set_source_files_properties(
-    ${fcCamFramework}
-      PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks
-  )  
-  set_source_files_properties(
-    ${sbigudFramework}
-      PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks
-  )
+  set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
+  set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
 
  elseif(WIN32)
 
@@ -437,7 +491,8 @@ if(APPLE)
 
     ${phd_src_dir}/comdispatch.h
     ${phd_src_dir}/comdispatch.cpp
-    ${phd_src_dir}/phd.rc  )   # resource file
+    ${phd_src_dir}/phd.rc   # resource file
+  )
 
 
 
@@ -469,29 +524,82 @@ elseif(UNIX)
    Phd2
    ${scopes_SRC}
    ${cam_SRC}
-   ${indiClient_SRC}
    ${guiding_SRC}
    ${phd2_SRC}
    )
   target_link_libraries(Phd2 X11)
 else()
   message(FATAL_ERROR "Unsupported platform")
-
 endif()
 
+
+
+
 # properties of the project common to all platforms
-target_compile_definitions(Phd2 PRIVATE "${wxWidgets_DEFINITIONS};HAVE_TYPE_TRAITS")
-set_target_properties(
-  Phd2
-  PROPERTIES
-    COMPILE_OPTIONS "${wxWidgets_CXX_FLAGS};"
-    )
-
+target_compile_definitions( Phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
+target_compile_options(     Phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
 target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
+target_include_directories(Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
+
+# option configurations parts
+if(${GUIDING_GAUSSIAN_PROCESS})
+  target_link_libraries(Phd2 MPIIS_GP)
+  target_compile_definitions(Phd2 PRIVATE "-DMPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__")
+endif()
 
 
-# convenient way to edit additional files
+
+# Additional files in the workspace, To improve maintainability 
 add_custom_target(CmakeAdditionalFiles
   SOURCES
   ${phd_src_dir}/build/CMakeListsThirdparties.txt
-)
+  ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
+  ${phd_src_dir}/cmake_modules/FindINDI.cmake
+  ${phd_src_dir}/cmake_modules/FindNova.cmake)
+
+
+
+
+
+################################################################
+#
+# Installation and packaging
+#
+
+
+if(NOT APPLE)
+  install (TARGETS Phd2 RUNTIME DESTINATION bin)
+endif()
+
+if(UNIX AND NOT APPLE)
+  install (FILES ${phd_src_dir}/icons/phd2.png    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ )
+  install (FILES ${phd_src_dir}/phd2.desktop      DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
+  install (FILES ${phd_src_dir}/PHD2GuideHelp.zip DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/ )
+
+
+  # install language help files
+  set(locales_help     de_DE es_ES fr_FR ja_JP pl_PL ru_RU uk_UA zh_CN zh_TW)
+  set(locales_help_msg de    es    fr    ja    pl    ru    uk    zh_CN zh_TW)
+  list(LENGTH locales_help _len)
+  math(EXPR _len "${_len} - 1")
+  foreach(_index RANGE ${_len})
+
+    list(GET locales_help       ${_len} _var1)
+    list(GET locales_help_msg   ${_len} _var2)
+
+    install(FILES       ${phd_src_dir}/locale/${_var1}/PHD2GuideHelp.zip 
+            DESTINATION   ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${_var1}/ 
+            OPTIONAL)
+            
+    install(FILES       ${phd_src_dir}/locale/${_var1}/messages.mo 
+             DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${_var2}/LC_MESSAGES/ 
+             RENAME "phd2.mo" 
+             OPTIONAL)          
+            
+  endforeach()
+endif()
+
+
+
+
+

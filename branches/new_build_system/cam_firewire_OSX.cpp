@@ -347,9 +347,8 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
 */
 
     // grab the next frame
-    if (dc1394_capture_dequeue(camera, DC1394_CAPTURE_POLICY_WAIT, &vframe)!=DC1394_SUCCESS) {
-        wxMessageBox(_T("Cannot get a frame from the queue"));
-        Disconnect();
+    if (dc1394_capture_dequeue(camera, DC1394_CAPTURE_POLICY_WAIT, &vframe) != DC1394_SUCCESS) {
+        DisconnectWithAlert(_("Cannot get a frame from the queue"));
         return true;
     }
     imgptr = vframe->image;

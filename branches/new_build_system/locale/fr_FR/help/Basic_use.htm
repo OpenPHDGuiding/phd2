@@ -1,0 +1,335 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 TRANSITIONAL//EN">
+<html><head><title>Using PHD Guiding</title></head>
+<body>
+<h2>Utilisation de <span style="font-style: italic;">PHD2</span>
+Guiding</h2>Il y a cinq étapes basiques pour démarrer l'autoguidage.
+<ol type="1">
+<li>Cliquer sur l'icône caméra et connecter la camera de guidage et la monture.</li>
+<li>Choisir le temps de poses de la camera de guidage dans la liste déroulante.</li>
+<li>Cliquer sur le bouton de prise de vue en boucle et vérifier la
+présence d'étoiles. Ajuster la mise au point si nécessaire. Si besoin,
+déplacer la monture et ajuster le temps de pose afin de trouver
+une étoile guide satisfaisante.</li>
+<li>Cliquer sur une étoile non saturée et pas trop près du bord de l'image pour la sélectionner comme l'étoile guide à utiliser.</li>
+<li>Cliquer sur le bouton de guidage <span style="font-style: italic;">PHD2</span>.</li>
+</ol>Pour le détail de ces opérations reportez-vous aux paragraphes ci-dessous.<br>
+<ul>
+<li><a href="#Equipment_Connection">Connexion des équipements</a></li>
+<li><a href="#Exposure_Time_and_Star_Selection">Temps de pose et sélection de l'étoile guide</a></li>
+<li><a href="#Automatic_Calibration">Calibration</a></li>
+<li><a href="#Guiding">Autoguidage</a></li>
+</ul>
+<br>
+<h3><a name="Equipment_Connection"></a>Connexion des équipements</h3>Afin
+de pouvoir démarrer l'autoguidage, PHD2 doit d'abord être connecté à
+vos équipements : La caméra de guidage, la monture et si vous en avez
+un, à l'optique active (AO).<br>Pour connecter les équipements, cliquer
+sur l'icône camera (en bas à gauche), une boite de dialogue similaire à
+celle-ci apparaitra: <br>
+<br>
+<img alt="" src="Gear_Dialog.png"><br>
+<br>
+<h4><a name="Camera_Selection"></a>Sélection de la camera</h4>La liste déroulante de choix de la camera de guidage, contient toutes les caméras supportées par
+<span style="font-style: italic;">PHD2</span>.
+A l'exception des caméras compatibles ascom, tous les drivers de caméra sont inclus dans <span style="font-style: italic;">PHD2</span>
+et seront installés sur l'ordinateur une fois PHD2 installé. Les
+drivers de caméra compatibles ASCOM sont disponibles soit à partir du
+site ASCOM, soit auprès du fabricant de la camera. La liste des caméras
+ASCOM ne contiendra que les camera dont le driver ASCOM a été installé
+sur votre ordinateur.<br><br>La liste des caméras supportées à la date
+de rédaction est indiqué ci-dessous - mais les utilisateurs sont
+invités à consulter les sites webs pour d'éventuelles mise à jours (par
+ex. <a href="http://www.stark-labs.com/phdguiding.html">Stark Labs</a>)<br><br>Les caméras supportées en décembre 2013 sont:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras (Windows)</li><li>Atik 16 series, 3xx, 4xx, 4000, 11000  (Windows)</li><li>CCD-Labs Q-Guider (Windows)</li><li>DCAM compliant Firewire (OS X) </li><li>Fishcamp Starfish (Windows and OS X)</li><li>Meade DSI series: I-III, color and Pro (Windows and OS X)</li><li>MagZero MZ-5 (Windows)</li><li>Orion StarShoot DSCI (Windows)</li><li>Orion Starshoot Autoguider (Windows)</li><li>Orion Starshoot Planetary Imager and Autoguider (Windows)</li><li>Opticstar PL-130 / PL-130C (Windows)</li><li>SAC4-2 (Windows)</li><li>SBIG (Windows and OS X, but see Help for details)</li><li>Starlight Xpress SXF / SXVF / Lodestar (Windows and OS X)</li><li>The Imaging Source (Windows and if Firewire, OS X)</li><li>Webcams (short and long-exposure - parallel port, serial port or LXUSB, Windows). </li></ul><br>
+<h4><a name="Mount_Selection"></a>Sélection de la monture</h4>
+La liste déroulante de sélection de la monture donne les différentes
+options de connexion à la monture. Il y a généralement deux façons de
+le faire :<br>
+<ol>
+<li>Utiliser un driver de monture compatible ASCOM qui envoie les
+commandes d'autoguidage directement à la monture à partir de
+l'ordinateur par un câble série ou USB ou autre (ethernet...)</li>
+<li>Utiliser un port d'autoguidage compatible ST-4 sur la monture et le
+connecter par un câble ST4 à une camera de guidage possédant un port
+ST4 ou à une interface ST4 telle que le boitier Shoestring. ou l'USB
+guider ST4.</li>
+</ol>L'interface
+<a name="ASCOM"></a>ASCOM s'appuie sur des drivers de parties tierces
+pour communiquer avec la monture. Ces drivers sont disponibles soit sur
+le site web d'ASCOM(<a href="http://www.ascom-standards.org/">ASCOM Standards</a>)
+soit auprès du fabricant de la monture - ils ne sont pas distribués par <span style="font-style: italic;">PHD2</span>.
+La liste déroulante des montures ASCOM ne contiendra donc que les
+montures dont vous aurez installé les drivers ASCOM sur votre
+ordinateur. Le driver ASCOM utilisé doit avoir la
+fonctionnalité'PulseGuide', qui est une obligation pour obtenir
+la compatibilité
+ASCOM et est implémenté courrament depuis longtemps. Avec cette méthode
+de contrôle de la monture, les commandes d'autoguidage sont envoyées
+directement par PHD2 à la monture par une liaison série (ou USB ou
+ethernet). Les commandes de haut niveau de<span style="font-style: italic;">PHD2</span>
+(par ex. "déplacement Ouest de 500 mSec") sont traduitespar le
+logiciel interne de la monture en ordres de commandes des moteurs de
+durée appropriée. Grace à l'interface ASCOM, <span style="font-style: italic;">PHD2</span>
+peut aussi obtenir les coordonnées équatoriales de pointage de la
+monture, en particulier la déclinaison, qui peut être utilisée comme
+donnée lors de la calibration.<br>
+<p>Les interfaces de ports d'autoguidage utilisent une électronique
+dédiée qui contrôle directement l'électronique de la monture par un
+port d'autoguidage présent sur la pluspar des montures. Pour
+utiliser ce type d'interface, on doit avoir un équipement
+supplémentaire dans la chaîne entre PHD2 et la monture:</p>
+<ol>
+<li>Toute camera de guidage possédant un port d'autoguidage compatible ST4</li>
+<li>Tout boitier d'interface possédant un port d'autoguidage compatible
+ST4Any comme les Shoestring GP-xxx ou les "USB guider" ST4</li>
+<li>Une optique active (AO) compatible possédant un port d'autoguidage compatible ST4</li>
+</ol>Avec ce type d'interface, les commandes de haut niveau de<span style="font-style: italic;">PHD2</span>
+(par ex. "déplacement Ouest de 500 mSec") sont traduitespar
+l'équipement intermédiaire ST4 (camera, boitier Shoestring, AO) en
+signaux électriques tout ou rien de commande des moteurs de durée
+appropriée. <br>
+<h4>Sélection de l'optique active (AO)</h4>
+Avec <span style="font-style: italic;">PHD2</span>,
+vous avez maintenant la possibilité de contrôler l'optique active
+Starlight Express SXV AO. Si vous n'avez pas cet équpement, laissez le
+le choix de l'AO à "aucun". La compatibilité avec d'autres AO
+sera ajoutée dans le futur..<br>
+<h4><a name="Simulators"></a>Simulateurs</h4>Tous les équipements connectables à <span style="font-style: italic;">PHD2</span>
+-
+camera, monture, AO - ont des simulateurs intégrés à PHD2. Vous
+pouvez utiliser ces simulateurs pour explorer le fonctionnement
+dePHD2 et décider de quelle façon vous voudrez utiliserer le
+programme. Il n'y a aucune raison de gacher du temps de pose
+sur un bon ciel en commençant l'apprentissage de <span style="font-style: italic;">PHD2 </span>sur le terrain!
+Virtuellement, toutes les fonctionnalités de <span style="font-style: italic;">PHD2</span>'s,
+incluant la calibration complète ainsi que toutes les options
+d'affichage graphiques, fonctionneront correctement lors de
+l'utilisation des simulateurs d'équipement. Vous visualiserez
+même un fonctionnement réaliste d'autoguidage, qui vous donnera une
+bonne idée de ce que vous obtiendrez sur le terrain. Pour
+utiliser les simulateurs, choisissez "Simulateur" comme type de caméra
+et "sur la caméra" pour le type de monture.<br>
+<h4><a name="Equipment_Profile"></a>Profil d'équipement</h4>En haut de
+la fenêtre de connexion de l'équipement, il y a des touches de gestions
+des profils d'équipement. Tous les paramètres de l'équipement
+d'autoguidage dans<span style="font-style: italic;">PHD2</span>,
+par défaut ou autre, sont automatiquement enregistrés comme partie
+intégrante du profil. Si vous n'avez qu'une seule configuration
+d'autoguidage - que vous utilisez toujours la même caméra et le même
+tube guide - vous n'aurez besoin que d'un seul profil; et bien sur,
+vous pouvez utiliser le profil par défaut. Mais si vous avez
+plusieurs configurations d'autoguidage - par exemple, un guidage par
+diviseur optique pour les longues focales et un autre système par
+lunette guide pour vos focales plus courtes, les réglages de <span style="font-style: italic;">PHD2</span>
+risquent fort d'être différents pour ces configurations, et vous
+souhaiterez probablement utiliser des profils différents. Les touches
+en haut de la fenêtre de sélection des équipements vous permettent de
+choisir le profil que vous souhaiter utiliser/éditer/supprimer.
+Quand vous sélectionnez un profil et que vous le connectez à son
+équipement associé, tous les derniers réglages faits avec ce
+profil seront automatiquement re-chargés.
+Une fois que vous aurez définit les profils dont vous avez besoin
+- peut être juste le profil par défaut - vous aurez juste à cliquer sur
+le bouton 'Tout Connecter' et ça sera prêt à fonctionner.<br>
+<br>
+Si vous avez déjà un profil adéquat par défaut et que vous voulez
+simplement connecter vos équipement comme précédement, vous pouvez
+simplement faire un
+shift-clic sur l'icone caméra dans la fenêtre principale et <span style="font-style: italic;">PHD2</span> se reconnectera automatiquement à tout les équipements.
+<h3><a name="Exposure_Time_and_Star_Selection"></a>Sélection du temps de pose et de l'étoile guide</h3>L'étoile
+guide peut être sélectionnée (en cliquant dessus) pendant la prise
+d'image en boucle - en fait, c'est la méthode recommandée. Elle
+peut aussi être sélectionnée, après avoir stopé la prise d'image en
+boucle, mais au risque que l'étoile ait bougée depuis la dernière
+capture. Pas besoin de cliquer avec une grande précisionsur
+l'étoile guide -<span style="font-style: italic;">PHD2</span>
+trouvera tout seul l'étoile la plus proche du pointeur de la souris.
+une fois que vous avez cliqué dessus, un carré vert va entourer
+l'étoile. Si vous sélectionnez une étoile trop brillante, un
+message d'erreur vous indiquera que l'étoile est "saturée", et vous
+devrez soit choisir une autre étoile, soit diminuer le temps
+de pose.
+Le choix du temps de pose dépend entièrement de votre
+équipement, des conditions météo, et des étoiles disponnibles. Le
+temps de pose choisit à deux implications majeures : <br>
+<ol>
+<li>Celà joue sur la force du signal (la luminosité) de l'étoile
+sélectionnée - une étoile plus lumineuse va mieux ressortir du fond du
+ciel et produira généralement un meilleur résultat de guidage tant
+qu'elle n'est pas saturée.</li>
+<li>Celà détermine aussi à quelle fréquence sont envoyés les ordres de
+correction de guidage à la monture - Les ordres de correction ne
+peuvent êtres envoyés plus fréquement qu'une fois par cycle de capture
+d'image. Certaines montures marchent mieux avec des petites
+corrections plus fréquentes alors que d'autres non - vous devrez
+expérimenter pour trouver quelle configuration marche le
+mieuxdans votre cas.
+</li>
+</ol>Un bon point de départ, est d'essayer de temps de pose
+d'une à cinq secondes. Une durée un peu plus longue moyenne mieux la
+turbulence, mais nécéssite un meilleur suivit de la monture.
+<h3><a name="Automatic_Calibration"></a>Calibration automatique</h3>
+<h4>Montures Conventionnelles</h4>Deux choses doivent être mesurées par <span style="font-style: italic;">PHD2</span> lors de la calibration : <br>
+<ol>
+<li>L'angle de la caméra relativement aux axes de déplacement du télescope</li>
+<li>La durée de l'impulsion d'autoguidage nécessaire à un mouvement donné</li>
+</ol>
+<span style="font-style: italic;">PHD2</span> effectue ces mesures
+automatiquement par l'envoi d'impulsions de guidage à la monture et
+l'observation du déplacement de l'étoile en distance et en direction
+d'une pause à l'autre de la caméra de guidage. Ce processus
+démarre une fois que vous avez sélectionné une étoile guide et cliqué
+sur l'icône "Autoguidage".
+Une mire jaune va apparaitre sur la position initiale de votre
+étoile guide etPHD2 va successivement déplacer la monture dans
+différentes directions, en surveillant la façon dont l'étoile se
+déplace en fonction des commandes de déplacement envoyées à la monture.
+Les commandes envoyées à la monture seront affichées dans la barre
+d'état, ainsi que les itérations successives de déplacement de l'étoile
+guide par rapport à sa position de départ.
+<span style="font-style: italic;">PHD2</span>
+fera cela sur les deux axes, d'abord en déplaçant vers l'est, vers l'ouest, puis vers le nord en enfin vers le sud. <span style="font-style: italic;">PHD2</span>
+cherchera à déplacer l'étoile jusqu'à25 pixels dans chaque
+direction afin d'obtenir une calibration précise. Une fois que
+c'est fait, la mire passera au vert et l'autoguidage commencera
+automatiquement.. <br>
+<br>Dans la plus part des cas, la calibration s'effectue
+automatiquement sans l'intervention de l'utilisateur. Evidemment,
+cela suppose que la monture et tout le câblage fonctionnent
+correctement. Si ce n'est pas le cas, il est très probable que la
+calibration échoue avec un message "l'étoile guide n'a pas suffisamment
+bougé" ; et là vous aurez à investiguer.
+Si l'étoile guide n'a visiblement pas bougé dans une ou plusieurs
+directions, vous devrez vérifier en premier le câblage et les réactions
+de la monture. La fonction de "guidage manuel" du menu "Outils" peut
+vous aider ainsi que la section <a href="Trouble_shooting.htm">trouble-shooting</a>
+de ce document.  Mais si l'étoile a bougé significativement dans
+chacune des directions, vous pourriez avoir à ajuster un paramètre de
+calibration appelé "taille du pas de calibration". <span style="font-style: italic;">PHD2</span>
+utilise ce paramètre pendant la calibration comme durée fixe de
+déplacement de la monture. La valeur par défaut a été choisie
+pour couvrir une grande variété de lunettes guides et configurations,
+mais vous aurez peut-être à l'ajuster suivant votre configuration.
+Par exemple, un guidage au diviseur optique avec une longue
+focale, ou un guidage au chercheur avec très courte focale, nécessitera
+probablement une valeur différente de la valeur par défaut.  Pour
+l'ajuster, allez dans la fenêtre des paramètres du "cerveau" (<a href="Advanced_settings.htm">Advanced Settings</a>)<big><span style="font-weight: bold;"><span style="font-weight: bold;"></span> </span></big>et
+cliquez sur l'onglet "Monture". Dans cet onglet, vous trouverez
+l'option "pas de calibration en (ms)", et c'est cette valeur que vous
+ajusterez.
+Il y a même un bouton "Calcul" qui vous aidera à choisir une
+valeur optimale pour votre configuration. Une fois que vous aurez
+rentré cette valeur, elle sera mémorisée comme part entière de votre
+profil d'équipement et vous n'aurez probablement jamais à l'ajuster de
+nouveau.<br>
+<br>Vous pourrez aussi avoir un échec de calibration si vous utilisez
+une étoile trop proche du pole céleste. Dans cette région, les
+déplacementsen ascension droite, de durée prédéfinie, génèrent
+souvent de très petits déplacements de l'étoile.
+Dans ce cas, déplacez-vous sur une étoile plus proche de
+l'équateur, idéalement dans la zone entre -30 et +30 degrés de
+déclinaison, et refaites la calibration. Mais si ce n'est pas
+faisable, alors vous pouvez juste augmenter le "pas de calibration"
+jusqu'à ce que la calibration réussisse.<br>
+<br>Comme tous les autres paramètres de guidage, les données de
+calibration sont automatiquement sauvegardées en tant que partie
+intégrante de votre profil d'équipement. Si rien a changé dans
+votre configuration d'une session à l'autre - même après une longue
+période - vous pouvez recharger les données de calibrations et
+recommencer à guider immédiatement. Cette fonction se trouve dans
+le menu "Outils" et s'appelle "<a name="Restore_Calibration_Data"></a>Recharger
+les données de calibration".
+Rappelez-vous que les données sont sauvegardées à chaque fois
+qu'une calibration complète est effectuée ou quand vous utilisez la
+fonction "retournement des données de calibration" du menu "Outils"
+(voir ci-dessous). Si vous utilisez une monture équatoriale
+Allemande commandée par ASCOM, les données de calibration sauvegardées
+incluront aussi le coté du méridien auquel vous guidiez en dernier;
+donc<span style="font-style: italic;">PHD2</span>
+s'adaptera automatiquement à votre position courante. Mais si
+vous n'utilisez pas une monture commandée parASCOM, vous devrez
+vous rappeler de quel côté du méridien vous guidiez lors de la dernière
+utilisation.<br>
+<br>
+Si vous utilisez une monture commandée par ASCOM, <span style="font-style: italic;">PHD2</span>
+inclura automatiquement la calibration et la déclinaison de la cible
+comme part entière de ses calculs.
+Dans ce cas, les déplacements en ascension droite seront
+automatiquement ajustés pour tenir compte de la déclinaison de l'étoile
+guide courante, par opposition à l'étoile guide utilisée pour la
+calibration.
+C'est juste une correction fine et ce n'est pas critique dans la
+plus part des cas,les configurations d'autoguidage par le port
+d'autoguidage ne sont donc que peu désavantagées. Néanmoins, si
+vous aviez une inquiétude avec ça et que vous imagez près du pôle
+céleste, vous pourriez re-calibrer en utilisant une étoile ayant une
+déclinaison aussi élevée.<br>
+<br>
+<h4><a name="Adaptive_Optics_Devices"></a>Optiques Actives (AO)</h4>Si
+vous utilisez une optique active, il y a en fait deux séquences de
+calibration à effectuer. La première gère la calibration de la
+lentille de "tip/tilt"de l'AO et calcule l'importance et la
+direction des ajustements à faire en fonction des déplacements de
+l'étoile guide. La deuxième séquence de calibration est celle
+décrite ci-dessus, qui gère les commandes d'autoguidage devant être
+envoyées à la monture. Plus connues sous le nom de commandes de
+déplacement "bump", ces commandes seront envoyées quand l'étoile guide
+aura dépassé la limite de ce que peut corriger l'AO seul.
+<br>
+<br>
+<h3><a name="Guiding"></a>Autoguidage</h3>Une fois l'autoguidage
+démarré, les messages d'information seront affichés dans la barre
+d'état afin de montrer quelle commande est envoyée à la monture.<span style="font-style: italic;">PHD2</span>
+continuera à autoguider jusqu'à ce que vous cliquiez sur l'icône
+"stop". Pour redémarrer l'autoguidage, il suffit de cliquer sur
+l'icône de prise d'image en boucle, cliquer sur votre étoile guide pour
+la sélectionner et cliquer sur l'icône d'autoguidage. Vous n'aurez pas
+besoin de refaire la calibration pour redémarrer l'autoguidage.
+Dans certains cas, <span style="font-style: italic;">PHD2</span> peut "perdre" l'étoile guide et vous préviendra par un bip et une mire clignotante orange sur l'étoile guide.
+Cela pourrait arriver pourplusieurs raisons : <br>
+<ol>
+<li>Quelque chose peut masquer l'étoile - des nuages, le toit de l'observatoire, un arbre, etc.</li>
+<li>L'étoile peut être soudainement déplacée en dehors du rectangle de
+recherche, à cause une d'interférence mécanique qui aurait bloqué la
+monture/la camera/le câblage - un embrouillamini de câbles est une
+cause fréquente</li>
+<li>L'étoile peut s'être atténuée trop pour une autre raison, peut-êtreparce qu'elle estvraiment trop faible</li>
+</ol>Évidemment, vous aurez besoin d'identifier la source du problème et y remédier.
+Cependant, il est important de comprendre que<span style="font-style: italic;">PHD2</span> ne vas<span style="font-weight: bold;">pas </span>bouger
+le télescope dans une tentative de retrouver l'étoile guide.
+Il va simplement continuer à prendre des images en boucle et à chercher
+la réapparition d'une étoile guide dans le rectangle de recherche.<br>
+<br>Si vous utilisez une <a name="German_equatorial_mount"></a>monture équatoriale Allemande (German Equatorial Mount), vous devrez probablement faire un "<a name="meridian_flip"></a>retournement
+au méridien" à peu près à l'heure à laquelle votre cible passe le
+méridien (i.e. barre de contrepoids horizontale). Cela signifie
+que vous aurez à déplacer le télescope du côté opposé du pied (est -
+ouest) de la monture puis recommencer les prises de vues. Faire
+cela invalide la calibration, typiquement parce que les
+mouvements en déclinaison sont inversés. Si vous utilisez une
+monture commandée par ASCOM, votre calibration sera ajustée
+automatiquement et vous aurez simplement à redémarrer l'autoguidage (en
+supposant bien sur que vous n'ayez pas tourné la camera ou le porte
+oculaire).
+Si vous n'utilisez pas de monture commandée par ASCOM, alors il
+vous faudra agir pour corriger la calibration. Bien sur vous
+pouvez refaire une calibration complète de ce nouveau coté du pied, ce
+qui vous prendra seulement quelques minutes. Mais vous pouvez
+aussi utiliser une option du menu "Outils" pour "<a name="flip_calibration_data"></a>renverser les données de calibration" et redémarrer immédiatement l'autoguidage. <br>
+<br>Dans certains cas, vous pourriez avoir envie de forcer une nouvelle
+calibration. Par exemple, après avoir tourné la camera dans le
+porte oculaire lors d'une optimisation du câblage. Vous pouvez
+forcer la calibration en cliquant sur l'icône "Cerveau", puis
+sélectionnez l'onglet "Monture" et cliquez sur l'option "Forcer la
+calibration". Ou vous pouvez simplement faire un
+&lt;shift&gt;clic sur l'icône "autoguidage" de l'écran principal et <span style="font-style: italic;">PHD2</span>
+démarrera une nouvelle séquence de calibration. L'option "Forcer
+la calibration" est automatiquement désactivée, donc pas besoin de
+penser à la désactiver par la suite..<br>
+<br>Une fois que vous avez démarré l'autoguidage, vous aurez
+certainement envie de savoir comment ça se passe...Bien sur vous pouvez
+observer l'étoile guide sur les images de la caméra, mais dans la plus
+part des cas vous ne pourrez voir les petits ajustements effectués.
+Mais <span style="font-style: italic;">PHD2</span> fournit de nombreux outils pour mesurer et afficher les performances, ce qui est décrit dans la section <a href="Visualization.htm">Visualization</a>.<br>
+<br>
+<br>
+<br>
+</body></html>

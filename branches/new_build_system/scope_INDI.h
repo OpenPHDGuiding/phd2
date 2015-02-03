@@ -5,6 +5,10 @@
  *  Ported by Hans Lambermont in 2014 from tele_INDI.h which has Copyright (c) 2009 Geoffrey Hausheer.
  *  All rights reserved.
  *
+ *  Redraw for libindi/baseclient by Patrick Chevalley
+ *  Copyright (c) 2014 Patrick Chevalley
+ *  All rights reserved.
+ * 
  *  This source code is distributed under the following "BSD" license
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -32,42 +36,81 @@
  */
 #ifdef  GUIDE_INDI
 
-struct indi_t;
-struct indi_prop_t;
+#include <libindi/baseclient.h>
+#include <libindi/basedevice.h>
+#include <libindi/indiproperty.h>
 
-class ScopeINDI : public Scope {
-public:
-    ScopeINDI(void);
-
-    virtual bool Connect(void);
-
-    virtual bool Disconnect(void);
-
-    virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
-
+class ScopeINDI : public Scope, public INDI::BaseClient {
 private:
-	struct indi_prop_t *coord_set_prop;
-	struct indi_prop_t *abort_prop;
-	struct indi_prop_t *moveNS;
-	struct indi_prop_t *moveEW;
-	struct indi_prop_t *pulseGuideNS;
-	struct indi_prop_t *pulseGuideEW;
-	bool    ready;
-
+    INumberVectorProperty *coord_prop;    
+    ISwitchVectorProperty *abort_prop;
+    INumberVectorProperty *MotionRate_prop;
+    ISwitchVectorProperty *moveNS_prop;
+    ISwitch               *moveN_prop;
+    ISwitch               *moveS_prop;
+    ISwitchVectorProperty *moveEW_prop;
+    ISwitch               *moveE_prop;
+    ISwitch               *moveW_prop;
+    INumberVectorProperty *GuideRate_prop;
+    INumberVectorProperty *pulseGuideNS_prop;
+    INumber               *pulseN_prop;
+    INumber               *pulseS_prop;
+    INumberVectorProperty *pulseGuideEW_prop;
+    INumber               *pulseE_prop;
+    INumber               *pulseW_prop;
+    ISwitchVectorProperty *oncoordset_prop;
+    ISwitch               *setslew_prop;
+    ISwitch               *settrack_prop;
+    ISwitch               *setsync_prop;
+    INumberVectorProperty *GeographicCoord_prop;
+    INumberVectorProperty *SiderealTime_prop;
+    ITextVectorProperty   *scope_port;
+    INDI::BaseDevice      *scope_device;
+    long     INDIport;
+    wxString INDIhost;
+    wxString INDIMountName;
+    wxString INDIMountPort;
+    bool     modal;
+    bool     ready;
+    bool     eod_coord;
+    void     ClearStatus();
+    void     CheckState();
+    
+protected:
+    virtual void newDevice(INDI::BaseDevice *dp);
+    virtual void newProperty(INDI::Property *property);
+    virtual void removeProperty(INDI::Property *property) {}
+    virtual void newBLOB(IBLOB *bp) {}
+    virtual void newSwitch(ISwitchVectorProperty *svp);
+    virtual void newNumber(INumberVectorProperty *nvp);
+    virtual void newMessage(INDI::BaseDevice *dp, int messageID);
+    virtual void newText(ITextVectorProperty *tvp);
+    virtual void newLight(ILightVectorProperty *lvp) {}
+    virtual void serverConnected();
+    virtual void serverDisconnected(int exit_code);
+    
 public:
-	bool     modal;
-    wxString serial_port;
-	bool     CaptureFull(int duration, usImage& img, bool recon);	// Captures a full-res shot
-	void     InitCapture() { return; }
-	void     ShowPropertyDialog();
-	void     CheckState();
-	void     NewProp(struct indi_prop_t *iprop);
-    void     StartMove(int direction);
-    void     StopMove(int direction);
-	void     PulseGuide(int direction, int duration);
-	bool     IsReady() {return ready;};
-	bool     CanPulseGuide() { return pulseGuideNS && pulseGuideEW;};
-	void     DoGuiding(int direction, int duration_msec);
+    ScopeINDI();
+    ~ScopeINDI();
+
+    bool     Connect(void);
+    bool     Disconnect(void);
+    bool     HasSetupDialog(void) const;
+    void     SetupDialog();
+
+    MOVE_RESULT Guide(GUIDE_DIRECTION direction, int duration);
+
+    bool   CanPulseGuide() { return (pulseGuideNS_prop && pulseGuideEW_prop);}
+    bool   CanReportPosition(void) { return (coord_prop); }
+    bool   CanSlew(void) { return (coord_prop);}
+    bool   CanCheckSlewing(void) { return (coord_prop); }
+
+    double GetGuidingDeclination(void);
+    bool   GetGuideRates(double *pRAGuideRate, double *pDecGuideRate);
+    bool   GetCoordinates(double *ra, double *dec, double *siderealTime);
+    bool   GetSiteLatLong(double *latitude, double *longitude);
+    bool   SlewToCoordinates(double ra, double dec);
+    bool   Slewing(void);
 };
 
 #endif /* GUIDE_INDI */
