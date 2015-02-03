@@ -12,7 +12,8 @@ The advantages of cmake are many, among which one can cite:
   * the possibility to manage big projects and complex dependencies
   * the possibility to add unit tests and installation procedures
 
-This page describes the steps to configure the !OpenPhdGuiding for your specific platform. If you need more information about CMake, a lot of information are available on the Internet. 
+This page describes the steps to configure the !OpenPhdGuiding for your specific platform, as well as some hints and best practices for new `cmake` developers. 
+If you need more information about CMake, you may first consult the CMake documentation online. Also, a lot of resources are available on the Internet. 
 
 = Introduction =
 The full build of the project in made in three steps
@@ -235,7 +236,7 @@ To address that issue, it is often more efficient to close the solution, regener
 
 Note that the changes on the `cmake` configuration may have very minimal impact on the changes on the projects, if written that way. 
 To have minimal impacts on the project, 
-  # avoid changing definitions or include paths that are seen by all targets. For instance, the following line
+  * avoid changing definitions or include paths that are seen by all targets. For instance, the following line
 {{{
 include_directories(${wxWidgets_INCLUDE_DIRS})
 }}}
@@ -246,9 +247,5 @@ target_include_directories(Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
 }}}
   which makes the include of the wxWidgets path local to the PhD2 target. `PUBLIC` visibility (instead of `PRIVATE` as shown here) 
   propagates to the dependent targets. 
-  # Same goes for definitions.
+  * Same goes for definitions.
     
-    
-
-
-
