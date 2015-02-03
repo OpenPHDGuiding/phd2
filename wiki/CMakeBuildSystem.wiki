@@ -35,9 +35,9 @@ svn checkout http://open-phd-guiding.googlecode.com/svn/branches/new_build_syste
 For that to work, you need an SVN client:
 
   * On Debian/Ubuntu, the installation would be
-    {{{
-    sudo apt-get install build-essential subversion
-    }}}
+{{{
+sudo apt-get install build-essential subversion
+}}}
   * On OSX, the svn client should be shipped with the OS (accessible from the terminal), 
   * and on Windows, there is TortoiseSVN that can be installed
 
@@ -249,3 +249,8 @@ target_include_directories(Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
   propagates to the dependent targets. 
   * Same goes for definitions.
     
+== Avoid using "globs" ==
+GLOBS in the `cmake` take everything according to a pattern from a directory. This functionality is fine when those files should be included
+in every platform the same way. This is however often not the case, and a file is likely to be included while it should be. 
+The [https://www.python.org/dev/peps/pep-0020/ "Zen of Python"] to this regard, in particular "Explicit is better than implicit", is a good principle 
+to follow.
