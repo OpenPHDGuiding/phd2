@@ -34,7 +34,7 @@
 
 
 #include "UDPGuidingInteraction.h"
-
+#include "phd.h"
 
 
 #include <iostream>
@@ -65,6 +65,10 @@ UDPGuidingInteraction::UDPGuidingInteraction(wxString host,
     if (server.Hostname(host)) {             // validates destination host using DNS
         if (server.Service(sendPort)) {      // ensure port is valid
             sendSocket = new wxDatagramSocket(sendClient,wxSOCKET_NONE); // define the local port
+            if(!sendSocket->IsOk())
+            {
+              ERROR_INFO("[UDP] the send socket is not valid");
+            }
             sendSocket->SetTimeout(1);
         }
     }
@@ -74,6 +78,11 @@ UDPGuidingInteraction::UDPGuidingInteraction(wxString host,
     receiveClient.Service(rcvPort);
 
     receiveSocket = new wxDatagramSocket(receiveClient,wxSOCKET_NONE); // define the local port
+
+    if(!receiveSocket->IsOk())
+    {
+      ERROR_INFO("[UDP] the reception socket is not valid");
+    }
     receiveSocket->SetTimeout(1);
 }
 
@@ -85,7 +94,7 @@ UDPGuidingInteraction::~UDPGuidingInteraction() {
 
 bool UDPGuidingInteraction::SendToUDPPort(void *buf, wxUint32 len) {
     while (!sendSocket->WaitForWrite()) {
-        std::cout << "Socket not ready to write!" << std::endl;
+        LOG_INFO("Socket not ready to write!");
     }
     sendSocket->SendTo(server, buf, len);
 
@@ -100,7 +109,7 @@ bool UDPGuidingInteraction::SendToUDPPort(void *buf, wxUint32 len) {
 
 bool UDPGuidingInteraction::ReceiveFromUDPPort(void * buf, wxUint32 len) {
     while (!receiveSocket->WaitForRead()) {
-        std::cout << "Socket not ready to read from, resending last buffer" << std::endl;
+        LOG_INFO("Socket not ready to read from, resending last buffer");
         SendToUDPPort(this->last_sent_buffer, this->last_sent_buffer_length);
     }
     receiveSocket->RecvFrom(receiveClient, buf, len);
