@@ -238,6 +238,7 @@ To have minimal impacts on the project,
     {{{
     include_directories(${wxWidgets_INCLUDE_DIRS})
     }}}
+    
     has an incidence on all targets that are defined in the CMakeLists.txt and below by the `add_subdirectory` directive. Instead, once the 
     PhD2 target is defined, one can do the following:
     {{{
