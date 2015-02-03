@@ -246,7 +246,6 @@ To have minimal impacts on the project,
     }}}
     which makes the include of the wxWidgets path local to the PhD2 target. `PUBLIC` visibility (instead of `PRIVATE` as shown here) 
     propagates to the dependent targets. 
-    
   # Same goes for definitions.
     
     
