@@ -53,8 +53,20 @@ private:
 
 protected:
 
-    virtual double GetControlGain();
-    virtual bool SetControlGain(double control_gain);
+    double GetControlGain() const;
+    bool SetControlGain(double control_gain);
+
+    // minimum amount of points for starting the inference
+    bool SetNbElementForInference(int nb_elements);
+    int GetNbMeasurementsMin() const;
+
+    // minimum amount of points between consecutive calls to the optimisation
+    int GetNbPointsBetweenOptimisation() const;
+    bool SetNbPointsBetweenOptimisation(int );
+
+    bool SetGPHyperparameters(std::vector<double> const& hyperparameters);
+    std::vector<double> GetGPHyperparameters() const;
+
 
 public:
     GuideGaussianProcess(Mount *pMount, GuideAxis axis);
