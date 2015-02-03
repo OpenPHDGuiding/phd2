@@ -30,7 +30,7 @@ The branch that supports the cmake configuration is named *`new_build_system`*. 
 svn checkout http://open-phd-guiding.googlecode.com/svn/branches/new_build_system open-phd-guiding
 }}}
 
-For that to work, you need an SVN client. 
+For that to work, you need an SVN client:
 
   * On Debian/Ubuntu, the installation would be
     {{{
@@ -63,11 +63,12 @@ The cmake construction of !OpenPhdGuiding depends only on these external depende
   * CMake
   * wxWidget on all platforms
   * openCV on Windows
+  * The [http://www.indilib.org/ Indi] and [http://libnova.sourceforge.net/ Nova] library packages on Ubuntu
 
 
-
-This means that these dependencies should be available in order to be able to construct the project, and cmake should know where to find these dependencies. 
-!OpenPhdGuiding has in fact many more dependencies, but they are shipped with the project and built within the project automatically. These dependencies are:
+This means that these dependencies should be available in order to be able to construct the project, and `cmake` should know where to find these dependencies. 
+!OpenPhdGuiding has in fact many more dependencies, but they are shipped with the project and built within the project automatically (or chosen from the 
+system wide installed libraries). These dependencies are:
   * openSSAG
   * libdc
   * libusb
@@ -117,19 +118,29 @@ Under Linux, the wxWidget should be available through the package manager. You n
 sudo apt-get install libwxgtk3.0-dev wx-common wx3.0-i18n
 }}}
 
+
+== Installing Indi and Nova ==
+On Linux, the Indi and Nova library packages should be available for the project. Simply run the following command to install them:
+
+{{{
+sudo apt-get install libindi-dev libnova-dev
+}}}
+
+
+
 == Building and installing OpenCV ==
 We recall that the dependency on openCV is needed on Win32 platforms only. Nothing really needs to be built since the OpenCV
 zip contains libraries already built for Windows, and also certainly for your platform. Just download OpenCV from [http://www.opencv.org the official website]
 or [http://sourceforge.net/projects/opencvlibrary/ SourceForge].
 
-We assume `$OpenCVRoot` being a variable that points to the location where OpenCV was deflated. 
+We assume `$OPENCV_DIR` being a variable that points to the location where OpenCV was deflated. 
 
 = Configuring the !OpenPhdGuiding project =
 Once the dependencies available on your system, you are able to build the project. For that, you should inform the location of these dependencies to cmake, passed as options to cmake.
 The basic scheme is
   # open a terminal. Under Windows, the terminal should be the one provided by the Visual Studio command line tool, which has the proper environment variables defining the compiler and the SDKs
   # go to the source directory *`$OPG_SRC`* and create a subdirectory where the project will be built
-  # emit the cmake command line with the proper options
+  # type the `cmake` command line with the proper options
   # open the generated project or make the project in place
 
 == Creating the Visual Studio project ==
@@ -142,7 +153,7 @@ We suppose you have
 cd $OPG_SRC
 mkdir tmp
 cd tmp
-cmake -G "Visual Studio 12" -DwxWidgets_ROOT_DIR=$WXWIN  -DOpenCVRoot=$opencvPREFIX\opencv\build ..
+cmake -G "Visual Studio 12" -DwxWidgets_ROOT_DIR=$WXWIN  -DOpenCVRoot=$OPENCV_DIR\opencv\build ..
 PhD2.sln
 }}}
 
@@ -165,11 +176,12 @@ open PhD2.xcodeproj
 The last line opens the project in XCode.
 
 
-== Creating the XCode project on Linux ==
+== Creating the Makefiles on Linux ==
 We suppose you have 
   * CMake
   * a compilation toolchain (eg. `gcc`, `ld`, `make`...)
-  * build properly [#Building_and_installing_wxWidgets  wxWidgets]
+  * installed [#Building_and_installing_wxWidgets  wxWidgets]
+  * installed [#Installing_Indi_and_Nova Indi and Nova] library packages
 
 {{{
 cd $OPG_SRC
