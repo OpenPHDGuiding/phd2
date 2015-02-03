@@ -211,7 +211,7 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
 	pulseW_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_W");
 	pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
     }
-    else if (strcmp(PropName, "CCD_INFO") == 0 && Proptype == INDI_NUMBER) {
+    else if (strcmp(PropName, INDICameraCCDCmd+"INFO") == 0 && Proptype == INDI_NUMBER) {
         PixelSize = IUFindNumber(property->getNumber(),"CCD_PIXEL_SIZE")->value;
 	FullSize = wxSize(IUFindNumber(property->getNumber(),"CCD_MAX_X")->value,IUFindNumber(property->getNumber(),"CCD_MAX_Y")->value);
     }
