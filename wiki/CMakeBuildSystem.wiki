@@ -1,4 +1,5 @@
 #summary Unified cross-platform CMake build system
+#sidebar
 
 *Work in progress*
 
