@@ -141,7 +141,7 @@ bool DispatchObj::GetDispatchId(DISPID *ret, OLECHAR *name)
         return DispatchClass::dispid(ret, m_idisp, name);
 }
 
-bool DispatchObj::GetProp(VARIANT *res, DISPID dispid)
+bool DispatchObj::GetProp(Variant *res, DISPID dispid)
 {
     DISPPARAMS dispParms;
     dispParms.cArgs = 0;
@@ -154,7 +154,7 @@ bool DispatchObj::GetProp(VARIANT *res, DISPID dispid)
     return SUCCEEDED(hr);
 }
 
-bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name)
+bool DispatchObj::GetProp(Variant *res, OLECHAR *name)
 {
     DISPID dispid;
     if (!GetDispatchId(&dispid, name))
@@ -163,7 +163,7 @@ bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name)
     return GetProp(res, dispid);
 }
 
-bool DispatchObj::GetProp(VARIANT *res, OLECHAR *name, int arg)
+bool DispatchObj::GetProp(Variant *res, OLECHAR *name, int arg)
 {
     DISPID dispid;
     if (!GetDispatchId(&dispid, name))
@@ -201,7 +201,7 @@ bool DispatchObj::PutProp(OLECHAR *name, OLECHAR *val)
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 1;
     dispParms.rgdispidNamedArgs = &dispidNamed;
-    VARIANT res;
+    Variant res;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &res, &m_excep, NULL);
     SysFreeString(bs);
 
@@ -222,7 +222,7 @@ bool DispatchObj::PutProp(DISPID dispid, bool val)
     dispParms.rgvarg = rgvarg;
     dispParms.cNamedArgs = 1;
     dispParms.rgdispidNamedArgs = &dispidNamed;
-    VARIANT res;
+    Variant res;
     HRESULT hr = m_idisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &dispParms, &res, &m_excep, NULL);
     if (FAILED(hr))
         Debug.AddLine(wxString::Format("putprop: [%x] %s", hr, _com_error(hr).ErrorMessage()));
@@ -237,7 +237,7 @@ bool DispatchObj::PutProp(OLECHAR *name, bool val)
     return PutProp(dispid, val);
 }
 
-bool DispatchObj::InvokeMethod(VARIANT *res, OLECHAR *name, OLECHAR *arg)
+bool DispatchObj::InvokeMethod(Variant *res, OLECHAR *name, OLECHAR *arg)
 {
     DISPID dispid;
     if (!GetDispatchId(&dispid, name))
@@ -259,7 +259,7 @@ bool DispatchObj::InvokeMethod(VARIANT *res, OLECHAR *name, OLECHAR *arg)
     return SUCCEEDED(hr);
 }
 
-bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid, double arg1, double arg2)
+bool DispatchObj::InvokeMethod(Variant *res, DISPID dispid, double arg1, double arg2)
 {
     VARIANTARG rgvarg[2];
     rgvarg[0].vt = VT_R8;
@@ -277,7 +277,7 @@ bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid, double arg1, double 
     return SUCCEEDED(hr);
 }
 
-bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid)
+bool DispatchObj::InvokeMethod(Variant *res, DISPID dispid)
 {
     DISPPARAMS dispParms;
     dispParms.cArgs = 0;
@@ -290,7 +290,7 @@ bool DispatchObj::InvokeMethod(VARIANT *res, DISPID dispid)
     return SUCCEEDED(hr);
 }
 
-bool DispatchObj::InvokeMethod(VARIANT *res, OLECHAR *name)
+bool DispatchObj::InvokeMethod(Variant *res, OLECHAR *name)
 {
     DISPID dispid;
     if (!GetDispatchId(&dispid, name))
