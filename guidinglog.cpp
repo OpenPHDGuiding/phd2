@@ -492,7 +492,7 @@ void GuidingLog::SetGuidingParam(const wxString& name, double val)
     if (!m_enabled || !m_isGuiding)
         return;
 
-    m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %f\n", name, val));
+    m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %.2f\n", name, val));
     m_keepFile = true;
     Flush();
 }
