@@ -236,9 +236,14 @@ To address that issue, it is often more efficient to close the solution, regener
 Note that the changes on the `cmake` configuration may have very minimal impact on the changes on the projects, if written that way. 
 To have minimal impacts on the project, 
   # avoid changing definitions or include paths that are seen by all targets. For instance, the following line
-    {{{include_directories(${wxWidgets_INCLUDE_DIRS})}}}
+{{{
+include_directories(${wxWidgets_INCLUDE_DIRS})
+}}}
     has an incidence on all targets that are defined in the CMakeLists.txt and below by the `add_subdirectory` directive. Instead, once the 
-    PhD2 target is defined, one can do the following:{{{target_include_directories(Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})}}}
+    PhD2 target is defined, one can do the following:
+{{{
+target_include_directories(Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
+}}}
     which makes the include of the wxWidgets path local to the PhD2 target. `PUBLIC` visibility (instead of `PRIVATE` as shown here) 
     propagates to the dependent targets. 
   # Same goes for definitions.
