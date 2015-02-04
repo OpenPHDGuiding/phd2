@@ -67,7 +67,7 @@ endif()
 #
 # external libraries
 # to be changed in add_subdirectory
-include(thirdparty/CMakeListsThirdparties.txt)
+include(thirdparty/thirdparty.cmake)
 
 
 
