@@ -3,7 +3,7 @@
 # (See accompanying file LICENSE.txt or copy at
 # XXX)
 
-set(thirdparties_dir ${CMAKE_SOURCE_DIR}/build/thirdparties)
+set(thirdparty_dir ${CMAKE_SOURCE_DIR}/thirdparty)
 
 # the location where the archives will be deflated
 set(thirdparties_deflate_directory ${CMAKE_BINARY_DIR}/external_libs_deflate)
@@ -159,7 +159,7 @@ set(libcfitsio_root ${thirdparties_deflate_directory}/cfitsio)
 if(NOT EXISTS ${libcfitsio_root})
   # untar the dependency
   message(STATUS "Untarring cfitsio")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/cfitsio3370_modified.tar.bz2
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/cfitsio3370_modified.tar.bz2
                     WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
@@ -191,7 +191,7 @@ set(USB_build TRUE) # indicates that the USB library is part of the project. Set
 if(NOT EXISTS ${libusb_root})
   # untar the dependency
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparties_dir}/${LIBUSB}.tar.bz2
+    COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${LIBUSB}.tar.bz2
     WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()  
 
@@ -212,7 +212,7 @@ if(APPLE)
   set(libUSB_SRC ${libUSB_SRC}  
   
     # platform specific configuration file
-    ${thirdparties_dir}/include/${LIBUSB}
+    ${thirdparty_dir}/include/${LIBUSB}
   
     # platform specific implementation
     ${libusb_dir}/os/darwin_usb.h
@@ -222,7 +222,7 @@ if(APPLE)
     ${libusb_dir}/os/threads_posix.c
    )
   set(${LIBUSB}_additional_compile_definition "OS_DARWIN=1") 
-  set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
+  set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
 elseif(WIN32)
   set(libUSB_SRC ${libUSB_SRC}  
   
@@ -264,7 +264,7 @@ elseif(UNIX)
     set(libUSB_SRC ${libUSB_SRC}
     
      # platform specific configuration file
-     ${thirdparties_dir}/include/${LIBUSB}
+     ${thirdparty_dir}/include/${LIBUSB}
     
      # platform specific implementation
      ${libusb_dir}/os/linux_usbfs.c
@@ -275,7 +275,7 @@ elseif(UNIX)
     )
 
     set(${LIBUSB}_additional_compile_definition "OS_LINUX=1")
-    set(${LIBUSB}_additional_include_dir ${thirdparties_dir}/include/${LIBUSB})
+    set(${LIBUSB}_additional_include_dir ${thirdparty_dir}/include/${LIBUSB})
   endif()
 
 else()
@@ -310,7 +310,7 @@ set(eigen_root ${thirdparties_deflate_directory}/${EIGEN})
 if(NOT EXISTS ${eigen_root})
   # untar the dependency
   execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparties_dir}/${EIGEN}.tar.bz2
+      COMMAND ${CMAKE_COMMAND} -E tar xjf ${thirdparty_dir}/${EIGEN}.tar.bz2
     WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
@@ -328,7 +328,7 @@ set(gtest_root ${thirdparties_deflate_directory}/${GTEST})
 if(NOT EXISTS ${gtest_root})
   # unzip the dependency
   execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/${GTEST}.zip
+      COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${GTEST}.zip
     WORKING_DIRECTORY ${thirdparties_deflate_directory})
 endif()
 
@@ -567,7 +567,7 @@ if(APPLE)
   #
   find_library( sbigudFramework
                 NAMES SBIGUDrv
-                PATHS ${thirdparties_dir}/frameworks)
+                PATHS ${thirdparty_dir}/frameworks)
   if(NOT sbigudFramework)
     message(FATAL_ERROR "Cannot find the SBIGUDrv drivers")
   endif()
@@ -577,7 +577,7 @@ if(APPLE)
   ### 
   find_library( fcCamFramework
                 NAMES fcCamFw
-                PATHS ${thirdparties_dir}/frameworks)
+                PATHS ${thirdparty_dir}/frameworks)
   if(NOT fcCamFramework)
     message(FATAL_ERROR "Cannot find the fcCamFw drivers")
   endif()
@@ -621,7 +621,7 @@ if(APPLE)
   if(NOT EXISTS ${libdc_root})
     # untar the dependency
     execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparties_dir}/${LIBDC}.tar.gz
+      COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/${LIBDC}.tar.gz
       WORKING_DIRECTORY ${thirdparties_deflate_directory})
   endif()  
   
@@ -687,7 +687,7 @@ if(APPLE)
   )
   
   add_library(dc ${libDC_SRC})
-  target_include_directories(dc PRIVATE ${thirdparties_dir}/include/${LIBDC})
+  target_include_directories(dc PRIVATE ${thirdparty_dir}/include/${LIBDC})
   set_property(TARGET dc PROPERTY FOLDER "Thirdparty/")
   # the following line generated too many warnings. The macros are already defined in the config.h of this library
   # target_compile_definitions(dc PRIVATE HAVE_LIBUSB HAVE_MACOSX) 
@@ -699,9 +699,9 @@ if(APPLE)
   #############################################
   # HID Utils
   #
-  #if(NOT EXISTS "${thirdparties_dir}/HID Utilities Source")
+  #if(NOT EXISTS "${thirdparty_dir}/HID Utilities Source")
   #  # untar the dependency
-  #  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "${thirdparties_dir}/HID Utilities Source.zip")
+  #  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "${thirdparty_dir}/HID Utilities Source.zip")
   #endif()  
 
   # library removed
@@ -717,7 +717,7 @@ if(APPLE)
   #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${openssag})
 
   set(LIBOPENSSAG openssag)
-  set(libopenssag_dir ${thirdparties_dir}/${LIBOPENSSAG}/src)
+  set(libopenssag_dir ${thirdparty_dir}/${LIBOPENSSAG}/src)
   include_directories(${libopenssag_dir})
   set(libOPENSSAG_SRC
     ${libopenssag_dir}/firmware.h
@@ -728,7 +728,7 @@ if(APPLE)
     )
   add_library(OpenSSAG ${libOPENSSAG_SRC})
   target_link_libraries(OpenSSAG USB)
-  target_include_directories(OpenSSAG PRIVATE ${thirdparties_dir}/${LIBOPENSSAG}/src)
+  target_include_directories(OpenSSAG PRIVATE ${thirdparty_dir}/${LIBOPENSSAG}/src)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} OpenSSAG)
   set_property(TARGET OpenSSAG PROPERTY FOLDER "Thirdparty/")
     
