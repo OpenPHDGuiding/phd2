@@ -552,7 +552,7 @@ endif()
 # Additional files in the workspace, To improve maintainability 
 add_custom_target(CmakeAdditionalFiles
   SOURCES
-  ${phd_src_dir}/build/CMakeListsThirdparties.txt
+  ${phd_src_dir}/build/thirdparty.cmake
   ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
   ${phd_src_dir}/cmake_modules/FindINDI.cmake
   ${phd_src_dir}/cmake_modules/FindNova.cmake)
