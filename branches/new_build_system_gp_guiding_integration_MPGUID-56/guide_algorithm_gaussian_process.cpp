@@ -35,12 +35,15 @@
 #include "phd.h"
 
 #include "UDPGuidingInteraction.h"
-#include "tools/circular_buffer.h"
 
 #include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
-#include "tools/math_tools.h"
-#include "UDPGuidingInteraction.h"
+
+
+#include "math_tools.h" 
+
+// Should be removed
+#include "circular_buffer.h"
 
 
 class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialogPane

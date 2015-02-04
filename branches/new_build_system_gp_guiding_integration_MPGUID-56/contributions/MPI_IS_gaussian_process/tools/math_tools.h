@@ -7,8 +7,7 @@
  *
  * @date    2014-09-14
  *
- * @detail
- *  This file provides mathematical tools needed for the Gaussian process toolbox.
+ * @brief provides mathematical tools needed for the Gaussian process toolbox.
  * 
  */
 
@@ -86,6 +85,9 @@ Eigen::MatrixXd generate_normal_random_matrix(
 
 //! Returns a single random double drawn from the standard normal distribution
 double generate_normal_random_double();
+
+//! Returns a single random double drawn from the uniform distribution
+double generate_uniform_random_double();
 
 /*!
  * Checks if a value is NaN by comparing it with itself.

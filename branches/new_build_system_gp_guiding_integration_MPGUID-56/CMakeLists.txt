@@ -60,6 +60,9 @@ endif()
 include(CheckCXXCompilerFlag)
 if(WIN32)
   set(FIND_LIBRARY_USE_LIB64_PATHS FALSE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+  
   #set(CMAKE_LIBRARY_ARCHITECTURE x86)
 else()
   # c++11 options

@@ -5,8 +5,7 @@
  *
  * @date    2014-10-30
  *
- * @brief
- * The file holds a CircularBuffer class.
+ * @brief The file holds a CircularBuffer class.
  *
  */
 

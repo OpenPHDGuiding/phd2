@@ -203,6 +203,11 @@ double generate_normal_random_double() {
   return randomMatrix(0,0);
 }
 
+double generate_uniform_random_double() {
+  Eigen::MatrixXd randomMatrix = generate_uniform_random_matrix_0_1(1, 1);
+  return randomMatrix(0,0);
+}
+
 }  // namespace math_tools
 
 
