@@ -168,17 +168,17 @@ We suppose you have
   * XCode installed
   * build properly [#Building_and_installing_wxWidgets  wxWidgets]
 
-To construct the XCode project, follow the instructions below. Note that the project is built with 32 bits architecture,
-as some dependencies are not available for 64 bits architecture. 
+To construct the XCode project, type the commands below:
 {{{
 cd $OPG_SRC
 mkdir tmp
 cd tmp
-cmake -G Xcode -DwxWidgets_PREFIX_DIRECTORY=$WXWIN -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 ..
+cmake -G Xcode -DwxWidgets_PREFIX_DIRECTORY=$WXWIN ..
 open PhD2.xcodeproj
 }}}
 
-The last line opens the project in XCode.
+The last line opens the project in XCode. Note that the project is built only for 32 bits architecture,
+as some dependencies are not available for 64 bits architecture.
 
 
 == Creating the Makefiles on Linux ==
