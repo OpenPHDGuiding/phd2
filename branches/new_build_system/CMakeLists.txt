@@ -5,30 +5,47 @@
 
 cmake_minimum_required(VERSION 2.8.11)
 
+
 if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
-
-
-
-project(PhD2)
-enable_testing()
-
-set(USE_FOLDERS TRUE)
-set(BUILD_SHARED_LIBS FALSE)
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(VERSION_MAJOR 2)
 set(VERSION_MINOR 3)
 set(VERSION_PATCH 0)
 
-# root directory of the project
-set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
-set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
+#################################################################################
+#
+# general defines
+if(APPLE)
+  # should be done *before* declaring project.
+  set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "build architecture for OSX" FORCE)
+  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -m32"   CACHE STRING "Flags used by the compiler during all build types")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32" CACHE STRING "Flags used by the compiler during all build types")
+endif()
+
+set(USE_FOLDERS TRUE)
+set(BUILD_SHARED_LIBS FALSE)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
 # options
 option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm" OFF)
+
+
+
+#################################################################################
+#
+# main project
+# this should appear after setting the architecture
+project(PhD2)
+enable_testing()
+
+
+
+# root directory of the project
+set(PHD_PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
+set(phd_src_dir ${PHD_PROJECT_ROOT_DIR})
 
 
 # build type, by default to release (with optimisations)
@@ -39,12 +56,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
+# compiler capabilities
 include(CheckCXXCompilerFlag)
-
-
-#################################################################################
-#
-# general defines
 if(WIN32)
   set(FIND_LIBRARY_USE_LIB64_PATHS FALSE)
   #set(CMAKE_LIBRARY_ARCHITECTURE x86)
