@@ -1,5 +1,4 @@
 #summary Unified cross-platform CMake build system
-#sidebar
 
 *Work in progress*
 
@@ -87,12 +86,17 @@ sudo apt-get install cmake
 == Building and installing wxWidgets ==
 We assume 
   * `$WXWIDGET_BASE_DIR` being a variable that points to the untarred sources of _wxWidgets_.
-  * `$WXWIN` being a variable that points to the installation prefix of your dependencies.
+  * `$WXWIN` being a variable that points to the installation prefix of the wxWidget dependency. 
 
 === Win32 ===
-Open a Visual Studio console and type the following commands, respectively for the Debug and Release versions of the libraries.
+On Windows, the produced libraries go to `$WXWIDGET_BASE_DIR\lib` and the headers are already in `$WXWIDGET_BASE_DIR\include`,
+`$WXWIDGET_BASE_DIR` is exactly as an installation folder. The variables `$WXWIN` and `$WXWIDGET_BASE_DIR` are hence considered equivalent
+for the Win32 platform.
+
+To build the wxWidgets library, open a Visual Studio console and type the following commands, 
+respectively for the Debug and Release versions of the libraries.
 {{{
-cd $WXWIDGET_BASE_DIR\build\msw
+cd $WXWIN\build\msw
 msbuild wx_vc12.sln /p:configuration=Debug /p:platform=win32 /m:8
 msbuild wx_vc12.sln /p:configuration=Release /p:platform=win32 /m:8
 }}}
