@@ -727,7 +727,7 @@ if(APPLE)
     ${libopenssag_dir}/openssag.h
     )
   add_library(OpenSSAG ${libOPENSSAG_SRC})
-  target_link_libraries(OpenSSAG USB)
+  target_link_libraries(OpenSSAG openphd_libusb)
   target_include_directories(OpenSSAG PRIVATE ${thirdparty_dir}/${LIBOPENSSAG}/src)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} OpenSSAG)
   set_property(TARGET OpenSSAG PROPERTY FOLDER "Thirdparty/")
