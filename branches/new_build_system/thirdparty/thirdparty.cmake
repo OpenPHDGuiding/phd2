@@ -285,19 +285,19 @@ endif()
 if(${USB_build})
   include_directories(${libusb_dir})
 
-  # libUSB compilation for OSX and Win32 (not Linux)
-  add_library(USB ${libUSB_SRC})
-  target_include_directories(USB PRIVATE ${${LIBUSB}_additional_include_dir})
-  target_compile_definitions(USB PUBLIC ${${LIBUSB}_additional_compile_definition})
+  # libUSB compilation if OSX or Win32 or not installed on Linux
+  add_library(openphd_libusb ${libUSB_SRC})
+  target_include_directories(openphd_libusb PRIVATE ${${LIBUSB}_additional_include_dir})
+  target_compile_definitions(openphd_libusb PUBLIC ${${LIBUSB}_additional_compile_definition})
 
   if(NOT WIN32)
-    target_compile_definitions(USB PRIVATE LIBUSB_DESCRIBE "")
+    target_compile_definitions(openphd_libusb PRIVATE LIBUSB_DESCRIBE "")
   else()
     # silencing the warnings on externals for win32
-    target_compile_definitions(USB PRIVATE _CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(openphd_libusb PRIVATE _CRT_SECURE_NO_WARNINGS)
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} USB)
-  set_property(TARGET USB PROPERTY FOLDER "Thirdparty/")
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} openphd_libusb)
+  set_property(TARGET openphd_libusb PROPERTY FOLDER "Thirdparty/")
 endif()
 
 
@@ -769,7 +769,7 @@ if(UNIX AND NOT APPLE)
   if(NOT asiCamera2)
     message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
   endif()
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2} USB) # to clean: USB should also appear after these lib, otherwise some references are not found
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${asiCamera2})
 
 
   # math library is needed, and should be one of the last things to link to here
@@ -781,6 +781,10 @@ if(UNIX AND NOT APPLE)
   find_package(INDI 0.9 REQUIRED)
   include_directories(${INDI_INCLUDE_DIR})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
+
+  # INDI depends on libz
+  find_package(ZLIB REQUIRED)
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
 
   
   # Nova
