@@ -460,14 +460,14 @@ if(APPLE)
 
   # bundle definitions
   # please edit the copyrights
-  set( MACOSX_BUNDLE_BUNDLE_NAME          ${PROJECT_NAME} )
+  set( MACOSX_BUNDLE_BUNDLE_NAME          PHD2 )
   set( MACOSX_BUNDLE_GUI_IDENTIFIER       "com.open-phd-guiding.PHD2" )
   set( MACOSX_BUNDLE_ICON_FILE            PHD_OSX_icon.icns )
-  set( MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2014 Phd2 Guiding team" )
+  set( MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2015 Open-phd-guiding team" )
   set( MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
   set( MACOSX_BUNDLE_LONG_VERSION_STRING  "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
   set( MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
-  set( MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2014 Phd2 Guiding team" )
+  set( MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2015 Open-phd-guiding team" )
 
 
 
@@ -488,6 +488,10 @@ if(APPLE)
     ${sbigudFramework}
     ${fcCamFramework}
   )
+  set_target_properties(
+    Phd2 
+    PROPERTIES OUTPUT_NAME PHD2)
+  
   target_include_directories(
     Phd2
     PRIVATE ${CARBON_INCLUDE_DIR}/Carbon.h
@@ -530,6 +534,11 @@ if(APPLE)
     ${phd2_SRC}
     ${phd2_WIN_SRC}
     )
+    
+  set_target_properties(
+    Phd2 
+    PROPERTIES OUTPUT_NAME phd2)
+    
 
   set_target_properties(
     Phd2
@@ -552,6 +561,11 @@ elseif(UNIX)
    ${phd2_SRC}
    )
   target_link_libraries(Phd2 X11)
+  
+  set_target_properties(
+    Phd2 
+    PROPERTIES OUTPUT_NAME phd2)  
+  
 else()
   message(FATAL_ERROR "Unsupported platform")
 endif()
@@ -562,8 +576,8 @@ endif()
 # properties of the project common to all platforms
 target_compile_definitions( Phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
 target_compile_options(     Phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
-target_link_libraries(Phd2 ${PHD_LINK_EXTERNAL})
-target_include_directories(Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_include_directories( Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_link_libraries(      Phd2 ${PHD_LINK_EXTERNAL})
 
 # option configurations parts
 if(${GUIDING_GAUSSIAN_PROCESS})
