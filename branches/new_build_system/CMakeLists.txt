@@ -372,7 +372,7 @@ set(phd2_SRC
   ${phd_src_dir}/profile_wizard.cpp
   
   ${phd_src_dir}/point.h
-  ${phd_src_dir}/precompiled_header.cpp
+
   ${phd_src_dir}/Refine_DefMap.cpp
   ${phd_src_dir}/Refine_DefMap.h
   
@@ -435,6 +435,17 @@ if(UNIX AND NOT APPLE)
       ${phd_src_dir}/wxled.h
      )
 endif()
+
+if(WIN32)
+
+  # precompiled headers. Should assign specific property to this file in order to benefit from
+  # the speedup.
+  set(phd2_SRC
+      ${phd2_SRC}
+      ${phd_src_dir}/precompiled_header.cpp
+  )
+endif()
+
 source_group(src FILES ${phd2_SRC})
 
 
