@@ -27,66 +27,42 @@ Excel и другие приложения.<span style="">&nbsp;
 &nbsp;поэтому он очень полезен при обнаружении проблем. &nbsp;Его формат также легко читаем пользователем, поэтому ему нетрудно
 понять, что именно происходит. &nbsp; Когда вам нужно сообщить о проблеме, вас почти всегда попросят предъявить отладочный
 лог-файл,&nbsp;без которого вам вряд ли смогут помочь.<br>
+<br>Местоположение лога задаётся в поле 'Расположение лог-файла'. &nbsp;По умолчанию лог-файлы записываются
+в каталоге файлов данных используемой операционной системы.  
+&nbsp;Например, в Windows7 файлы будут сохранены в подкаталоге '<span style="font-style: italic;">PHD2</span>'
+каталога "AppData\Local". &nbsp;С помощью этого поля можно задать иное местонахождение лог-файлов.<br>
 <br>
-Эти два лога создаются если &nbsp;'Enable Logging' is checked on the
-Global
-tab. &nbsp;The location for the files is controlled by the 'Log
-File
-Location' field further down in the dialog. &nbsp;By default, log
-files
-are stored in the OS-specific default directory for application data files.
-&nbsp;In Windows7, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
-sub-folder in the "AppData\Local" location. &nbsp;This may not be a
-convenient location, so you can specify a different folder using this
-edit field.<br>
-<br>
-In some unusual cases, you may need to capture guide
-camera images, usually to support debugging and problem resolution.
-&nbsp;This can be enabled by checking the 'Enable Star-image
-Logging'
-checkbox.<br><br><br><h4><a name="General_Parameters"></a>General Parameters</h4>
-The remaining controls on the
-'Global' tab are well-described by their respective tool-tips, but they
-are summarized here for completeness:<br>
+В некоторых особенных случаях может понадобиться сохранить кадры гидирования, как правило для выявления проблем с графическим разрешением.  
+<br><br><br><h4><a name="General_Parameters"></a>Основные настройки</h4>
+Остальные настройки в закладке 'Общие'
+хорошо описаны своими подсказками, но для полноты приводятся и здесь:<br>
 <ul>
-<li>'<a name="Reset_Configuration"></a>Reset Configuration' - restores all settings to their
-initial values as if <span style="font-style: italic;">PHD2</span> had been freshly installed</li>
-<li>'<a name="Image_format"></a>Image format' - specifies the file format&nbsp;if
-star-image logging is enabled</li>
-<li>'<a name="Dither_RA_only"></a>Dither
-RA only' - for companion apps that use the <span style="font-style: italic;">PHD2</span> server interface,
-specifies that dithering should be done only on the RA axis</li>
-<li>'<a name="Dither_scale"></a>Dither scale' - controls the magnitude of the dithering
-operation&nbsp;</li>
-<li>'<a name="Noise_reduction"></a>Noise
-reduction' - specifies the algorithm to use for handling noisy guide
-camera images - those for which dark frames are not sufficient.
-&nbsp;Choices include None, 2x2 mean, and 3x3 median. Both 2x2 mean
-and 3x3
-median will reduce the noise considerably. 3x3 median is especially
-effective at removing hot pixels and neither will significantly affect
-guiding accuracy. &nbsp;However, &nbsp;creating a bad-pixel map is
-likely to be a better solution with less impact on your ability to
-detect faint stars.</li>
-<li>'<a name="Time_lapse"></a>Time lapse' - imposes a fixed delay between
-guide exposures. &nbsp;This can be useful if the guide exposures
-are
-very short and you don't want to overload either the mount or the
-camera
-link with very high traffic rates.</li>
-<li>'<a name="Focal_length"></a>Focal length' - the focal length of the guide scope (millimeters). This provides one of
-two parameters needed by <span style="font-style: italic;">PHD2</span> to compute the image scale and thus
-report guiding performance in units of arc-seconds. &nbsp;The other
-parameter required for this is the guide camera pixel size, located on the
-'Camera' tab.</li>
-<li>'<a name="Language"></a>Language' - determines the language
-used in the <span style="font-style: italic;">PHD2</span> user interface, subject to available localization.
-&nbsp;Changing this will usually require a program restart</li>
-<li>'<a name="Auto_restore_calibration"></a>Auto restore calibration' - tells
-<span style="font-style: italic;">PHD2</span> to automatically reload the most recent calibration data as soon
-as the equipment is connected. &nbsp;Be sure to read the <a href="Basic_use.htm#Automatic_Calibration">Auto calibration</a> section to understand the implications
-and potential risks of doing this.</li>
-<li><a name="Auto_exposure_settings"></a>'Auto Exposure' - these are the settings that control Auto exposure time.</li>
+<li>'<a name="Reset_Configuration"></a>Сброс конфигурации' - сбрасывает все настройки к их начальным на момент установки
+ <span style="font-style: italic;">PHD2</span> значениям</li>
+<li>'<a name="Image_format"></a>Формат логгирования изображений' - задаёт формат файлов&nbsp;при логгировании
+звёздных изображений</li>
+<li>'<a name="Dither_RA_only"></a>Делать подвижки только по RA' - для использующего сервер <span style="font-style: italic;">PHD2</span> 
+  внешнего приложения разрешает подвижки только по оси прямого восхождения</li>
+<li>'<a name="Dither_scale"></a>Масштаб подвижек' - управляет величиной подвижек&nbsp;</li>
+<li>'<a name="Noise_reduction"></a>Уменьшение шума' - задаёт алгоритм уменьшения шумов камеры, если недостаточно использования темновых кадров.
+&nbsp;Возможные варианты: Нет, 2x2 среднее и 3x3 медиана. Оба алгоритма значительно уменьшают шум. 3x3 медиана
+особенно эффективен при удалении горячих пикселей и не оказывает существенного влияния на точность гидирования.
+&nbsp;Однако, &nbsp;создание карты битых пикселей более эффективно и меньше влияет на 
+способность распознавания слабых звёзд.</li>
+<li>'<a name="Time_lapse"></a>Частота замедленной видеосъёмки' - задаёт задержку между гидирующими кадрами. 
+&nbsp;Это может быть полезно, когда кадры очень короткие, чтобы не перегружать камеру и монтировку 
+передачей большого объёма данных.</li>
+<li>'<a name="Focal_length"></a>Фокусное расстояние' - фокусное расстояние гидирующего телескопа в миллиметрах.
+Этот параметр нужен для подсчёта <span style="font-style: italic;">PHD2</span> масштаба изображения 
+и определения производительности гидирования в угловых секундах. &nbsp;Другой необходимый для этого параметр
+определяет размер сенсора гидирующей камеры в пикселях и находится в закладке 'Камера'.</li>
+<li>'<a name="Language"></a>Язык' - определяет язык, используемый в <span style="font-style: italic;">PHD2</span>.
+&nbsp;Изменение языка обычно требует перезагрузки программы/li>
+<li>'<a name="Auto_restore_calibration"></a>Автовосстановление калибровки' - автоматическая загрузка последних 
+калибровочных данных при подключении оборудования. &nbsp;Почитайте раздел <a href="Basic_use.htm#Automatic_Calibration">Автокалибровка</a> 
+чтобы понять её смысл и возможные риски.</li>
+<li><a name="Auto_exposure_settings"></a>'Автоэкспозиция' - задаются настройки управления 
+временем автоэкспозиции.</li>
 <ul>
 <li>Min Exposure - the minimum exposure time. PHD2 will not set the exposure time
 less than this value, even if the guide star SNR is higher than the target SNR value.
