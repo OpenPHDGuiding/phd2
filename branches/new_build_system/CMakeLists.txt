@@ -622,8 +622,8 @@ if(UNIX AND NOT APPLE)
   math(EXPR _len "${_len} - 1")
   foreach(_index RANGE ${_len})
 
-    list(GET locales_help       ${_len} _var1)
-    list(GET locales_help_msg   ${_len} _var2)
+    list(GET locales_help       ${_index} _var1)
+    list(GET locales_help_msg   ${_index} _var2)
 
     install(FILES       ${phd_src_dir}/locale/${_var1}/PHD2GuideHelp.zip 
             DESTINATION   ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${_var1}/ 
