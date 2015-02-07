@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-26 01:08-0500\n"
-"PO-Revision-Date: 2015-02-03 07:10+0300\n"
+"PO-Revision-Date: 2015-02-07 11:54+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -535,9 +535,9 @@ msgid "Could not start video stream"
 msgstr "Невозможно начать запись видео"
 
 #: cam_firewire_IC.cpp:313
-#, fuzzy, c-format
+#, c-format
 msgid "Error capturing image: %d (%d) %s"
-msgstr "Ошибка получения изображения: %d (%d)"
+msgstr "Ошибка получения изображения: %d (%d) %s"
 
 #: cam_firewire_OSX.cpp:331
 msgid "Cannot get a frame from the queue"
@@ -566,19 +566,16 @@ msgid "No CCD_FRAME property, failed to determine image dimensions"
 msgstr "Сбой определения размера изображения"
 
 #: cam_INDI.cpp:442
-#, fuzzy
 msgid "No WIDTH value, failed to determine image dimensions"
-msgstr "Сбой определения размера изображения"
+msgstr "Не задано значение WIDTH, невозможно определить размер изображения"
 
 #: cam_INDI.cpp:450
-#, fuzzy
 msgid "No HEIGHT value, failed to determine image dimensions"
-msgstr "Сбой определения размера изображения"
+msgstr "Не задано значение HEIGHT, невозможно определить размер изображения"
 
 #: cam_INDI.cpp:457
-#, fuzzy
 msgid "CCD stream: memory allocation error"
-msgstr "Ошибка выделения памяти"
+msgstr "Поток CCD: ошибка выделения памяти"
 
 #: cam_INDI.cpp:537
 msgid "Unknown image format: "
@@ -881,6 +878,8 @@ msgid ""
 "Simulate a mount that reverses guide pulse direction after a meridian flip, "
 "like an ASCOM pulse-guided mount."
 msgstr ""
+"Имитация монтировки, меняющей направление импульсов после перекладки "
+"меридиана, такой как ASCOM импульсно-управляемой монтировки."
 
 #: cam_simulator.cpp:1360
 msgid "Side of Pier: MMMMM"
@@ -2237,7 +2236,7 @@ msgstr ""
 
 #: guider_onestar.cpp:916
 msgid "Star mass change detection"
-msgstr "Определение изменения звёздной величины"
+msgstr "Слежение за изменением звёздной величины"
 
 #: guider_onestar.cpp:917
 msgid ""
@@ -3287,6 +3286,8 @@ msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
 "option to start a different instance."
 msgstr ""
+"PHD2 экземпляр% LD уже запущен. Используйте параметр командной строки -i "
+"INSTANCE_NUM для запуска другого экземпляра."
 
 #: phdconfig.cpp:44
 msgid "My Equipment"
