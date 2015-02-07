@@ -163,6 +163,7 @@ public:
     wxAcceleratorEntry *m_showBookmarksAccel;
     wxAcceleratorEntry *m_bookmarkLockPosAccel;
     wxMenuItem *m_takeDarksMenuItem;
+    wxMenuItem *m_refineDefMapMenuItem;
     wxMenuItem *m_calibrationMenuItem;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
