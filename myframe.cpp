@@ -466,7 +466,7 @@ void MyFrame::SetupMenuBar(void)
 
     darks_menu = new wxMenu();
     m_takeDarksMenuItem = darks_menu->Append(MENU_TAKEDARKS, _("&Dark Library..."), _("Build a dark library for this profile"));
-    darks_menu->Append(MENU_REFINEDEFECTMAP, _("Bad-pixel Map..."), _("Adjust parameters to create or modify the bad-pixel map"));
+    m_refineDefMapMenuItem = darks_menu->Append(MENU_REFINEDEFECTMAP, _("Bad-pixel Map..."), _("Adjust parameters to create or modify the bad-pixel map"));
     darks_menu->AppendSeparator();
     darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
     darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Bad-pixel &Map"), _("Use the bad-pixel map for this profile"));
@@ -905,6 +905,11 @@ void MyFrame::UpdateButtonsStatus(void)
     if (!guiding_active ^ m_calibrationMenuItem->IsEnabled())
     {
         m_calibrationMenuItem->Enable(!guiding_active);
+        need_update = true;
+    }
+    if (!guiding_active ^ m_refineDefMapMenuItem->IsEnabled())
+    {
+        m_refineDefMapMenuItem->Enable(!guiding_active);
         need_update = true;
     }
 
@@ -1366,6 +1371,12 @@ bool MyFrame::StartLooping(void)
 bool MyFrame::StartGuiding(void)
 {
     bool error = true;
+
+    if (pRefineDefMap && pRefineDefMap->IsShown())
+    {
+        Alert(_("Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-pixel Map window."));
+        return error;
+    }
 
     if (pMount && pMount->IsConnected() &&
         pCamera && pCamera->Connected &&
