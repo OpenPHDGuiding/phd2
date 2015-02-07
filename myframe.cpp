@@ -1402,6 +1402,22 @@ bool MyFrame::Dither(double amount, bool raOnly)
             throw ERROR_INFO("cannot dither if not guiding");
         }
 
+        if (m_ditherRaOnly)
+        {
+            raOnly = true;
+        }
+
+        if (!raOnly && !pMount->IsStepGuider())
+        {
+            Scope *scope = dynamic_cast<Scope *>(pMount);
+            DEC_GUIDE_MODE dgm = scope->GetDecGuideMode();
+            if (dgm != DEC_AUTO)
+            {
+                Debug.AddLine("forcing dither RA-only since Dec guide mode is %d", dgm);
+                raOnly = true;
+            }
+        }
+
         amount *= m_ditherScaleFactor;
 
         double dRa, dDec;
@@ -1409,12 +1425,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
         while (true)
         {
             dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
-            dDec =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
-
-            if (raOnly || m_ditherRaOnly)
-            {
-                dDec = 0.;
-            }
+            dDec =  raOnly ? 0.0 : amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
 
             Debug.AddLine("dither: size=%.2f, dRA=%.2f dDec=%.2f", amount, dRa, dDec);
 
