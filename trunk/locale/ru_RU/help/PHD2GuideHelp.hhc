@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <HTML>
 <HEAD>
-<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1; charset=UTF-8" http-equiv="content-type">
 <!-- Sitemap 1.0 -->
 </HEAD><BODY>
 <OBJECT type="text/site properties">
@@ -9,15 +9,15 @@
 </OBJECT>
 <UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Introduction">
+		<param name="Name" value="Введение">
 		<param name="Local" value="Introduction.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Main Screen">
+		<param name="Name" value="Главный экран">
 		<param name="Local" value="MainScreen.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Basic Use">
+		<param name="Name" value="Основы использования">
 		<param name="Local" value="Basic_use.htm">
 		</OBJECT>
 	<UL>
@@ -40,11 +40,11 @@
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Darks and Bad-pixel Maps">
+		<param name="Name" value="Темновые кадры и карты битых пикселей">
 		<param name="Local" value="Darks_BadPixel_Maps.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Visualization Tools">
+		<param name="Name" value="Средства визуализации">
 		<param name="Local" value="Visualization.htm">
 		</OBJECT>
 	<UL>
@@ -74,37 +74,37 @@
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Advanced Settings">
+		<param name="Name" value="Настройки">
 		<param name="Local" value="Advanced_settings.htm">
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Global Parameters">
+			<param name="Name" value="Общие параметры">
 			<param name="Local" value="Advanced_settings.htm#Global_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Guiding Parameters">
+			<param name="Name" value="Параметры гидирования">
 			<param name="Local" value="Advanced_settings.htm#Guiding_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Camera Parameters">
+			<param name="Name" value="Параметры камеры">
 			<param name="Local" value="Advanced_settings.htm#Camera_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Mount Parameters">
+			<param name="Name" value="Параметры монтировки">
 			<param name="Local" value="Advanced_settings.htm#Mount_Tab">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="AO Parameters">
+			<param name="Name" value="Параметры адаптивной оптики">
 			<param name="Local" value="Advanced_settings.htm#AO_Tab">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Guide Algorithms">
+		<param name="Name" value="Алгоритмы гидирования">
 		<param name="Local" value="Guide_algorithms.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Tools and Utilities">
+		<param name="Name" value="Инструменты">
 		<param name="Local" value="Tools.htm">
 		</OBJECT>
 	<UL>
@@ -146,7 +146,7 @@
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Trouble-shooting and Analysis">
+		<param name="Name" value="Анализ и решение проблем">
 		<param name="Local" value="Trouble_shooting.htm">
 		</OBJECT>
 </UL>

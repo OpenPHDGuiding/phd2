@@ -1,57 +1,46 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 TRANSITIONAL//EN">
-<html><head><title>Using PHD Guiding</title></head>
+<html><head><meta content="text/html; charset=UTF-8" http-equiv="content-type"><title>Использование PHD Guiding</title></head>
 <body>
-<h2>Using <span style="font-style: italic;">PHD2</span>
+<h2>Использование <span style="font-style: italic;">PHD2</span>
 Guiding</h2>
-There are five basic steps to start guiding.
+Пять шагов для начала гидирования:
 <ol type="1">
-<li>Press the camera button and connect to your guide camera
-and mount.</li>
-<li>Pick an exposure duration from the drop-down list.</li>
-<li>Hit
-the loop button and look at the available stars, adjusting focus if
-necessary. Move the mount or adjust the exposure duration as needed to
-find a suitable guide star.</li>
-<li>Click on a non-saturated star that's not very near an edge
-for use as the guide star.</li>
-<li>Press the <span style="font-style: italic;">PHD2</span>
-Guide button.</li>
+<li>Нажмите кнопку 'Камера' и подключите гидирующую камеру и монтировку.</li>
+<li>Установите длину экспозиции в выпадающем меню.</li>
+<li>Нажмите кнопку 'Петля' и сфокусируйтесь, если необходимо, на звёздах.
+Возможно, чтобы выбрать подходящую звезду для гидирования,
+придётся навестись в другое место или изменить аремя экспозиции.</li>
+<li>Выберите в качестве гидируемой неокрашенную звезду не очень близко от края.</li>
+<li>Нажмите кнопку с надписью <span style="font-style: italic;">PHD2</span>.</li>
 </ol>
-Details of these operations will be described in the sections below.<br>
+Подробнее эти операции описаны ниже.<br>
 <ul>
-<li><a href="#Equipment_Connection">Equipment
-Connection</a></li>
-<li><a href="#Exposure_Time_and_Star_Selection">Exposure
-Time and Star Selection</a></li>
-<li><a href="#Automatic_Calibration">Calibration</a></li>
-<li><a href="#Guiding">Guiding</a></li>
+<li><a href="#Equipment_Connection">Подключение оборудования</a></li>
+<li><a href="#Exposure_Time_and_Star_Selection">Время экспозиции и выбор звезды</a></li>
+<li><a href="#Automatic_Calibration">Калибровка</a></li>
+<li><a href="#Guiding">Гидирование</a></li>
 </ul>
 <br>
-<h3><a name="Equipment_Connection"></a>Equipment Connection</h3>
-In
-order to begin guiding, <span style="font-style: italic;">PHD2</span>
-must first connect to your hardware: the
-guide camera, the mount, and, optionally, an 'aux' mount or adaptive optics
-(AO) device. &nbsp;When you click on the camera
-icon, you'll see a dialog that looks like this: <br>
+<h3><a name="Equipment_Connection"></a>Подключение оборудования</h3>
+Чтобы начать гидирование, <span style="font-style: italic;">PHD2</span>
+сперва должен подключить оборудование: 
+гидирующую камеру, монтировку и, необязательные 'дополнительную' монтировку и устройство адаптивной оптики (АО).
+&nbsp;Нажав на кнопку 'Камера', вы увидите диалоговое окно, которое выглядит примерно так: <br>
 <br>
 <img style="width: 459px; height: 289px;" alt="" src="Gear_Dialog.png"><br>
 <br>
-<h4><a name="Camera_Selection"></a>Camera Selection</h4>
-The
-Camera drop-down list shows all the camera types currently supported by
-<span style="font-style: italic;">PHD2</span>.
-&nbsp;With the exception of ASCOM-compatible cameras, the
-camera&nbsp;drivers are bundled with&nbsp; <span style="font-style: italic;">PHD2</span>&nbsp; and
-will reside
-on your system after the <span style="font-style: italic;">PHD2</span>
-installation. &nbsp;ASCOM-compatible
-camera drivers are available from the ASCOM web site or from the camera
-manufacturer, and the drop-down list will show only those ASCOM cameras
-that are already installed on your system, if any.<br><br>The
-list of supported cameras at the time of writing is shown below - but
-users should&nbsp;consult web resources to see updates (e.g. <a href="http://www.stark-labs.com/phdguiding.html">Stark Labs</a>)<br><br>Supported cameras, December 2014:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><br>
-<h4><a name="Mount_Selection"></a>Mount Selection</h4>
+<h4><a name="Camera_Selection"></a>Выбор камеры</h4>
+Раскрывающееся меню показывает камеры, которые поддерживаются 
+<span style="font-style: italic;">PHD2</span> в настоящее время.
+&nbsp;За исключением ASCOM-совместимых камер, драйверы камер
+устанавливаются вместе с &nbsp; <span style="font-style: italic;">PHD2</span>. &nbsp;ASCOM-совместимые
+драйверы камер доступны на сайтах ASCOM или производителей камер, 
+и раскрывающееся меню показывает только уже установленные камеры ASCOM,
+если таковые имеются.<br><br>Список
+поддерживаемых камер на момент написания приведён ниже, но пользователям 
+следует&nbsp;проверить наличие обновлений в сети (например, <a href="http://www.stark-labs.com/phdguiding.html">Stark Labs</a>)<br><br>Поддерживаемые камеры на декабрь 2014:<br>
+  <br>Windows:<br><ul class="circle"><li>ASCOM v5/6 совместимые камеры</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><br>
+<h4><a name="Mount_Selection"></a>Выбор монтировки</h4>
 The Mount drop-down list displays&nbsp;options for connecting to
 your mount. &nbsp;There are generally two ways to do this:<br>
 <ol>
