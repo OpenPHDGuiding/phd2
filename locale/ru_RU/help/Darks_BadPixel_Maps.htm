@@ -1,18 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Darks_BadPixel_Maps</title></head>
-<body><h2>Dark Frames and Bad-pixel Maps</h2><br><h3>Introduction</h3>Cameras
-used for guiding are typically not temperature-regulated and may
-produce&nbsp;images that appear quite "noisy." &nbsp;As a result, guide
-exposures frequently show obvious "defects" in the form of &nbsp;"hot"
-("stuck") pixels or regions with spurious brightness levels. &nbsp;If
-there are too many of these defects, you may have trouble identifying
-and selecting a good guide star - trying to calibrate on a hot pixel is
-a common problem for beginners. &nbsp;Even after guiding has begun, a
-spurious hot pixel close to the guide star can disrupt the calculations
-needed for smooth guiding and may case the software to "jump" between
-the real star and the hot pixel. &nbsp;These sorts of problems can be
-mitigated by using either of two approaches in PHD2: dark frames and
-bad pixel maps. &nbsp;All functions related to dark frames and bad-pixel maps are located under the top-level 'Darks' menu.<br><br>&nbsp;&nbsp;<h3><a name="Dark_Frames"></a>Dark Frames</h3>PHD2 will
+<html><head><meta content="text/html; charset=UTF-8" http-equiv="content-type"><title>Темновые кадры и карты битых пикселей</title></head>
+<body><h2>Темновые кадры и карты битых пикселей</h2><br><h3>Введение</h3>Температура
+используемых для гидирования камер обычно не регулируется, поэтому изображения могут быть довольно "шумными". 
+&nbsp;Часто на кадрах кидирования видны дефекты в виде &nbsp;"горячих"
+пикселей или областей с неестественным уровнем яркости. &nbsp;
+Когда таких дефектов много, найти и выбрать подходящую для гидирования звезду бывает непросто - 
+калибровка с горячими пикселями представляет известную проблему для новичков. 
+&nbsp;Даже после начала гидирования наличие горячего пикселя около гидируемой звезды 
+может привести к тому, что программа перескочит с настоящей звезды на этот
+горячий пиксель.
+&nbsp;Такого рода проблем можно избежать, используя темновые кадры или 
+карты битых пикселей. &nbsp;
+Все действия, относящиеся к темновым кадрам и картам битых пикселей, находятся 
+в меню 'Темновые кадры'.<br><br>&nbsp;&nbsp;<h3><a name="Dark_Frames"></a>Темновые кадры</h3>PHD2 will
 build and use a "library" of dark frames that match the range of
 exposures you use for guiding. &nbsp;Once the library is built, it will
 be saved automatically and will be available for use across multiple
