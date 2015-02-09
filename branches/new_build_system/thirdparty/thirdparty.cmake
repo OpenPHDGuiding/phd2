@@ -256,6 +256,7 @@ elseif(UNIX)
     include_directories(${USB_pkg_INCLUDE_DIRS})
     set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${USB_pkg_LIBRARIES})
     set(USB_build FALSE)
+    set(openphd_libusb ${USB_pkg_LIBRARIES})
   else()
 
     # in case the library is not installed on the system (as I have on my machines)

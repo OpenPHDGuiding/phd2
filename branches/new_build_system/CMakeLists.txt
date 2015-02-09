@@ -38,7 +38,7 @@ option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm
 #
 # main project
 # this should appear after setting the architecture
-project(PhD2)
+project(PHD2)
 enable_testing()
 
 
@@ -95,7 +95,7 @@ endif()
 
 
 
-# Adding the wxWidgets include definitions. Maybe narrowed to Phd2 project only
+# Adding the wxWidgets include definitions. Maybe narrowed to PHD2 project only
 #include_directories(${wxWidgets_INCLUDE_DIRS})
 
 
@@ -472,7 +472,7 @@ if(APPLE)
 
 
   add_executable(
-    Phd2
+    PHD2
     MACOSX_BUNDLE
     ${scopes_SRC}
     ${cam_SRC}
@@ -489,11 +489,13 @@ if(APPLE)
     ${fcCamFramework}
   )
   set_target_properties(
-    Phd2 
-    PROPERTIES OUTPUT_NAME PHD2)
+    PHD2 
+    PROPERTIES 
+      OUTPUT_NAME PHD2  # upper case on OSX
+    )
   
   target_include_directories(
-    Phd2
+    PHD2
     PRIVATE ${CARBON_INCLUDE_DIR}/Carbon.h
   )
       
@@ -525,7 +527,7 @@ if(APPLE)
 
 
   add_executable(
-    Phd2
+    PHD2
     WIN32
     ${scopes_SRC}
     ${cam_SRC}
@@ -536,35 +538,33 @@ if(APPLE)
     )
     
   set_target_properties(
-    Phd2 
-    PROPERTIES OUTPUT_NAME phd2)
-    
-
-  set_target_properties(
-    Phd2
-    PROPERTIES
+    PHD2 
+    PROPERTIES 
+      OUTPUT_NAME phd2  # lower case on Win32
       LINK_FLAGS "/DELAYLOAD:sbigudrv.dll"
-      )
-  # Delayed load for all these in the original project. Now using delay load only for the necessary stuff
+    )
+  # Delayed load for all DLLs below in the original project. Now using delay load only for the necessary stuff
   #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
 
-  #link_directories(${phd_src_dir}/WinLibs)
-  copy_dependency_with_config(Phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
+  copy_dependency_with_config(PHD2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
 
 elseif(UNIX)
+  
   # should be linux there
   add_executable(
-   Phd2
+   PHD2
    ${scopes_SRC}
    ${cam_SRC}
    ${guiding_SRC}
    ${phd2_SRC}
    )
-  target_link_libraries(Phd2 X11)
+  target_link_libraries(PHD2 X11)
   
   set_target_properties(
-    Phd2 
-    PROPERTIES OUTPUT_NAME phd2)  
+    PHD2 
+    PROPERTIES 
+      OUTPUT_NAME phd2  # lower case on linux
+    )  
   
 else()
   message(FATAL_ERROR "Unsupported platform")
@@ -574,15 +574,15 @@ endif()
 
 
 # properties of the project common to all platforms
-target_compile_definitions( Phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
-target_compile_options(     Phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
-target_include_directories( Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(      Phd2 ${PHD_LINK_EXTERNAL})
+target_compile_definitions(PHD2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
+target_compile_options(PHD2 PRIVATE "${wxWidgets_CXX_FLAGS};")
+target_include_directories(PHD2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_link_libraries(PHD2 ${PHD_LINK_EXTERNAL})
 
 # option configurations parts
 if(${GUIDING_GAUSSIAN_PROCESS})
-  target_link_libraries(Phd2 MPIIS_GP)
-  target_compile_definitions(Phd2 PRIVATE "-DMPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__")
+  target_link_libraries(PHD2 MPIIS_GP)
+  target_compile_definitions(PHD2 PRIVATE "-DMPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__")
 endif()
 
 
@@ -606,7 +606,7 @@ add_custom_target(CmakeAdditionalFiles
 
 
 if(NOT APPLE)
-  install (TARGETS Phd2 RUNTIME DESTINATION bin)
+  install (TARGETS PHD2 RUNTIME DESTINATION bin)
 endif()
 
 if(UNIX AND NOT APPLE)
