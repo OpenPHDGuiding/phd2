@@ -852,8 +852,6 @@ void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
     m_calibrationDetails.focalLength = pFrame->GetFocalLength();
     m_calibrationDetails.imageScale = pFrame->GetCameraPixelScale();
     m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
-    m_calibrationDetails.raStepCount = m_calibrationDetails.raSteps.size();
-    m_calibrationDetails.decStepCount = m_calibrationDetails.decSteps.size();
     Mount::SetCalibrationDetails(m_calibrationDetails, xAngle, yAngle);
 }
 
@@ -982,7 +980,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
             case CALIBRATION_STATE_GO_EAST:
 
                 GuideLog.CalibrationStep(this, "East", m_calibrationSteps, dX, dY, currentLocation, dist);
-
+                m_calibrationDetails.raSteps.push_back(wxRealPoint(dX, dY));
                 if (m_recenterRemaining > 0)
                 {
                     int duration = m_recenterDuration;
@@ -1121,7 +1119,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
             case CALIBRATION_STATE_GO_SOUTH:
 
                 GuideLog.CalibrationStep(this, "South", m_calibrationSteps, dX, dY, currentLocation, dist);
-
+                m_calibrationDetails.decSteps.push_back(wxRealPoint(dX, dY));
                 if (m_recenterRemaining > 0)
                 {
                     int duration = m_recenterDuration;
@@ -1145,7 +1143,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 Debug.AddLine("Falling Through to state CALIBRATION_STATE_NUDGE_SOUTH");
 
             case CALIBRATION_STATE_NUDGE_SOUTH:
-                // Nudge further South on Dec, get within 2 px North/South of starting point, don't try more than 3 times and don't do nudging at all if 
+                // Nudge further South on Dec, get within 2 px North/South of starting point, don't try more than 3 times and don't do nudging at all if
                 // we're starting too far away from the target
                 nudge_amt = currentLocation.Distance(m_calibrationInitialLocation);
                 if (m_calibrationSteps <= MAX_NUDGES && nudge_amt > NUDGE_TOLERANCE && nudge_amt < MAX_CALIBRATION_DISTANCE)
@@ -1184,6 +1182,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 cal.pierSide = pPointingSource->SideOfPier();
                 cal.rotatorAngle = Rotator::RotatorPosition();
                 SetCalibration(cal);
+                m_calibrationDetails.raStepCount = m_raSteps;
+                m_calibrationDetails.decStepCount = m_decSteps;
                 SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle);
                 if (SANITY_CHECKING_ACTIVE)
                     SanityCheckCalibration(m_prevCalibrationParams, m_prevCalibrationDetails);  // method gets "new" info itself

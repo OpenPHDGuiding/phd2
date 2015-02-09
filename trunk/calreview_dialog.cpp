@@ -375,12 +375,12 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
     wxBitmap bmp(CALREVIEW_BITMAP_SIZE, CALREVIEW_BITMAP_SIZE, -1);
     wxPen axisPen("BLACK", 3, wxCROSS_HATCH);
     wxPen redPen("RED", 3, wxSOLID);
-    wxPen redPenDashed("RED", 3, wxDOT);
     wxPen bluePen("BLUE", 3, wxSOLID);
     wxBrush redBrush("RED", wxSOLID);
     wxBrush blueBrush("BLUE", wxSOLID);
     CalibrationDetails calDetails;
     double scaleFactor;
+    int ptRadius;
 
     if (!pSecondaryMount)
     {
@@ -412,7 +412,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         biggestVal = wxMax(biggestVal, fabs(it->y));
     }
     if (biggestVal > 0)
-        scaleFactor = (CALREVIEW_BITMAP_SIZE / 2) / biggestVal;
+        scaleFactor = ((CALREVIEW_BITMAP_SIZE - 5) / 2) / biggestVal;           // Leave room for circular point
     else
         scaleFactor = 1.0;
 
@@ -430,27 +430,43 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         // Draw the RA data
         memDC.SetPen(redPen);
         memDC.SetBrush(redBrush);
+        ptRadius = 2;
 
         // Scale the points, then plot them individually
-        for (int i = 0; i < calDetails.raStepCount; i++)
+        for (int i = 0; i < calDetails.raSteps.size(); i++)
         {
-            memDC.DrawCircle(IntPoint(calDetails.raSteps.at(i), scaleFactor), 2);
+            if (i == calDetails.raStepCount + 2)        // Safe even for "single-step" calibration
+            {
+                memDC.SetPen(wxPen("Red", 1));         // 1-pixel-thick red outline
+                memDC.SetBrush(wxNullBrush);           // Outline only for "return" data points
+                ptRadius = 3;
+            }
+            memDC.DrawCircle(IntPoint(calDetails.raSteps.at(i), scaleFactor), ptRadius);
         }
         // Show the line PHD2 will use for the rate
-        memDC.DrawLine(IntPoint(calDetails.raSteps.at(0), scaleFactor), IntPoint(calDetails.raSteps.at(calDetails.raStepCount - 1), scaleFactor));
+        memDC.SetPen(redPen);
+        memDC.DrawLine(IntPoint(calDetails.raSteps.at(0), scaleFactor), IntPoint(calDetails.raSteps.at(calDetails.raStepCount), scaleFactor));
     }
 
     // Handle the Dec data
     memDC.SetPen(bluePen);
     memDC.SetBrush(blueBrush);
+    ptRadius = 2;
     if (calDetails.decStepCount > 0)
     {
-        for (int i = 0; i < calDetails.decStepCount; i++)
+        for (int i = 0; i < calDetails.decSteps.size(); i++)
         {
-            memDC.DrawCircle(IntPoint(calDetails.decSteps.at(i), scaleFactor), 2);
+            if (i == calDetails.decStepCount + 2)
+            {
+                memDC.SetPen(wxPen("Blue", 1));         // 1-pixel-thick red outline
+                memDC.SetBrush(wxNullBrush);           // Outline only for "return" data points
+                ptRadius = 3;
+            }
+            memDC.DrawCircle(IntPoint(calDetails.decSteps.at(i), scaleFactor), ptRadius);
         }
         // Show the line PHD2 will use for the rate
-        memDC.DrawLine(IntPoint(calDetails.decSteps.at(0), scaleFactor), IntPoint(calDetails.decSteps.at(calDetails.decStepCount - 1), scaleFactor));
+        memDC.SetPen(bluePen);
+        memDC.DrawLine(IntPoint(calDetails.decSteps.at(0), scaleFactor), IntPoint(calDetails.decSteps.at(calDetails.decStepCount), scaleFactor));
     }
 
     memDC.SelectObject(wxNullBitmap);
