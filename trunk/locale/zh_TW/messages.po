@@ -35,14 +35,14 @@ msgstr ""
 "Project-Id-Version: PHD2 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-07 16:03-0500\n"
-"PO-Revision-Date: 2015-01-16 16:39+0800\n"
+"PO-Revision-Date: 2015-02-09 20:37+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7\n"
+"X-Generator: Poedit 1.7.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -92,15 +92,15 @@ msgstr "AO"
 
 #: advanced_dialog.cpp:240 gear_dialog.cpp:311 gear_dialog.cpp:312
 msgid "Rotator"
-msgstr ""
+msgstr "相場旋轉器"
 
 #: calreview_dialog.cpp:47 statswindow.cpp:211
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: calreview_dialog.cpp:132 calreview_dialog.cpp:137
 msgid "Right Ascension"
-msgstr ""
+msgstr "赤經"
 
 #: calreview_dialog.cpp:140 calreview_dialog.cpp:145 calreview_dialog.cpp:350
 #: statswindow.cpp:97
@@ -108,23 +108,20 @@ msgid "Declination"
 msgstr "赤緯"
 
 #: calreview_dialog.cpp:193
-#, fuzzy
 msgid "Last Mount Calibration"
-msgstr "手動校準"
+msgstr "最終赤道儀校準"
 
 #: calreview_dialog.cpp:195
-#, fuzzy
 msgid "Last AO Calibration"
-msgstr "校準"
+msgstr "最終 AO 校準"
 
 #: calreview_dialog.cpp:207
 msgid "RA steps:"
-msgstr ""
+msgstr "赤經步數:"
 
 #: calreview_dialog.cpp:212
-#, fuzzy
 msgid "Dec steps:"
-msgstr "赤緯速率:"
+msgstr "赤緯步數:"
 
 #: calreview_dialog.cpp:219
 msgid "Camera angle:"
@@ -139,52 +136,44 @@ msgid "RA rate:"
 msgstr "赤經速率:"
 
 #: calreview_dialog.cpp:242
-#, fuzzy
 msgid "X rate:"
-msgstr "赤經速率:"
+msgstr "X 速率:"
 
 #: calreview_dialog.cpp:248
 msgid "Dec rate:"
 msgstr "赤緯速率:"
 
 #: calreview_dialog.cpp:250
-#, fuzzy
 msgid "Y rate:"
-msgstr "赤經速率:"
+msgstr "Y 速率:"
 
 #: calreview_dialog.cpp:267
-#, fuzzy
 msgid "Expected RA rate:"
-msgstr "赤經速率:"
+msgstr "預期赤經速率:"
 
 #: calreview_dialog.cpp:273
-#, fuzzy
 msgid "Expected Dec rate:"
-msgstr "赤緯速率:"
+msgstr "預期赤緯速率:"
 
 #: calreview_dialog.cpp:286
-#, fuzzy
 msgid "Mount Configuration"
-msgstr "重置所有的設定"
+msgstr "赤道儀組態"
 
 #: calreview_dialog.cpp:298
 msgid "Timestamp:"
 msgstr "時間戳記:"
 
 #: calreview_dialog.cpp:300
-#, fuzzy
 msgid "Focal length:"
-msgstr "焦長, mm"
+msgstr "焦長, mm："
 
 #: calreview_dialog.cpp:307
-#, fuzzy
 msgid "Image scale:"
-msgstr "影像解析度, 角秒/像素"
+msgstr "影像解析度："
 
 #: calreview_dialog.cpp:312
-#, fuzzy
 msgid "Side-of-pier:"
-msgstr "赤道儀方向:"
+msgstr "赤道儀方向"
 
 #: calreview_dialog.cpp:313 cam_simulator.cpp:1552 guidinglog.cpp:194
 #: mount.cpp:52 mount.cpp:612 testguide.cpp:152
@@ -197,32 +186,28 @@ msgid "West"
 msgstr "西"
 
 #: calreview_dialog.cpp:320
-#, fuzzy
 msgid "RA Guide speed:"
-msgstr "導星設備像素大小:"
+msgstr "赤經導星速率"
 
 #: calreview_dialog.cpp:327
-#, fuzzy
 msgid "Dec Guide speed:"
-msgstr "赤緯導星模式"
+msgstr "赤緯導星速率:"
 
 #: calreview_dialog.cpp:354
 msgid " (est)"
-msgstr ""
+msgstr "(est)"
 
 #: calreview_dialog.cpp:357
-#, fuzzy
 msgid "Rotator position:"
-msgstr "恢復視窗位置"
+msgstr "相場旋轉器位置"
 
 #: calreview_dialog.cpp:488 nudge_lock.cpp:181 nudge_lock.cpp:192
 msgid "Restore"
 msgstr "恢復"
 
 #: calreview_dialog.cpp:503
-#, fuzzy
 msgid "Calibration restored"
-msgstr "校準步數"
+msgstr "校準被恢復"
 
 #: calreview_dialog.cpp:521
 msgid "Calibration Sanity Check"
@@ -235,8 +220,8 @@ msgid ""
 "step parameter until you see at least 8 steps in each direction.  The "
 "'calculator' feature in the 'Mount' configuration tab can help you with this."
 msgstr ""
-"校準步數太小, 可能產生不精確的結果, 請考慮降低校準步數參數直到每個方向均最少"
-"有 8 個步數為止, 在【赤道儀】設定項目中的【計算機】可以幫助你設定該參數。"
+"校準步數太小, 有可能產生不精確的結果, 請考慮降低校準步數參數直到每個方向均最"
+"少有 8 個步數為止, 在【赤道儀】設定項目中的【計算機】可以幫助你設定該參數。"
 
 #: calreview_dialog.cpp:549
 #, c-format
@@ -342,9 +327,8 @@ msgid ""
 msgstr "停止導星並捨棄最近的校準資料, 然後載入之前良好的校準資料"
 
 #: calreview_dialog.cpp:745
-#, fuzzy
 msgid "Previous calibration restored"
-msgstr "先前的赤緯速率:"
+msgstr "先前恢復的校準:"
 
 #: calstep_dialog.cpp:60
 msgid "Calibration Step Calculator"
@@ -419,7 +403,7 @@ msgstr "校準步數, ms"
 #: configdialog.cpp:65 darks_dialog.cpp:53 profile_wizard.cpp:58
 #: profile_wizard.cpp:65 Refine_DefMap.cpp:60
 msgid ": "
-msgstr ":"
+msgstr ": "
 
 #: calstep_dialog.cpp:224
 msgid "Please enter a focal length of at least 50"
@@ -478,9 +462,8 @@ msgid ""
 msgstr "無法設定 ASCOM 相機, ASCOM 發生錯誤。"
 
 #: cam_ascomlate.cpp:452
-#, fuzzy
 msgid "Failed to run the Camera Chooser. Something is wrong with ASCOM"
-msgstr "ASCOM 發生錯誤, 赤道儀無法運作。"
+msgstr "ASCOM 發生錯誤, 無法執行相機選擇器。"
 
 #: cam_ascomlate.cpp:508
 msgid "ASCOM Camera Driver missing required property "
@@ -499,14 +482,12 @@ msgid "ASCOM driver missing the CanPulseGuide property"
 msgstr "ASCOM 驅動程式缺少 CanPulseGuide 屬性"
 
 #: cam_ascomlate.cpp:570
-#, fuzzy
 msgid "ASCOM driver missing the CanAbortExposure property"
-msgstr "ASCOM 驅動程式缺少 CanPulseGuide 屬性"
+msgstr "ASCOM 驅動程式缺少 CanAbortExposure 屬性"
 
 #: cam_ascomlate.cpp:578
-#, fuzzy
 msgid "ASCOM driver missing the CanStopExposure property"
-msgstr "ASCOM 驅動程式缺少 CanPulseGuide 屬性"
+msgstr "ASCOM 驅動程式缺少 CanStopExposure 屬性"
 
 #: cam_ascomlate.cpp:594
 msgid "ASCOM driver missing the CameraXSize property"
@@ -797,13 +778,12 @@ msgstr ""
 "使用。"
 
 #: cam_simulator.cpp:282
-#, fuzzy
 msgid ""
 "The Rotator Simulator only works with the Camera Simulator. You must either "
 "disconnect the Rotator Simulator or connect the Camera Simulator."
 msgstr ""
-"AO 模擬器僅能搭配相機模擬器使用, 你需在斷開 AO 模擬器或連線使用相機模擬器擇一"
-"使用。"
+"相場旋轉模擬器僅能搭配相機模擬器使用, 你需在斷開相場旋轉模擬器或連線使用相機"
+"模擬器擇一使用。"
 
 #: cam_simulator.cpp:432
 msgid "Choose a star displacements file"
@@ -956,7 +936,7 @@ msgstr "翻轉"
 
 #: cam_simulator.cpp:1467
 msgid "Session"
-msgstr "Session"
+msgstr "程序"
 
 #: cam_simulator.cpp:1469
 msgid "Camera angle, degrees"
@@ -1154,7 +1134,7 @@ msgstr "相機已被中斷連線, 請解決該問題並重新連接相機。"
 
 #: comdispatch.cpp:48
 msgid "A COM Error occurred. There may be more info in the Debug Log."
-msgstr ""
+msgstr "COM 埠發生錯誤, 請檢視除錯日誌中的詳細資訊。"
 
 #: comet_tool.cpp:79 myframe.cpp:433
 msgid "Comet Tracking"
@@ -1165,9 +1145,8 @@ msgid "Comet Tracking - Training Active"
 msgstr "彗星追蹤 - Training Active"
 
 #: comet_tool.cpp:81
-#, fuzzy
 msgid "Comet Tracking - Active"
-msgstr "彗星追蹤 - Training Active"
+msgstr "彗星追蹤 - Active"
 
 #: comet_tool.cpp:90 comet_tool.cpp:203
 msgid "Enable"
@@ -1238,9 +1217,8 @@ msgid "Rate Training"
 msgstr "速率調校"
 
 #: comet_tool.cpp:198
-#, fuzzy
 msgid "Disable"
-msgstr "啟用"
+msgstr "關閉"
 
 #: comet_tool.cpp:298
 #, c-format
@@ -1616,9 +1594,7 @@ msgstr ", 赤道儀"
 msgid ""
 "%s calibration will be cleared - calibration will be re-done when guiding is "
 "started."
-msgstr ""
-"%s calibration will be cleared - calibration will be re-done when guiding is "
-"started."
+msgstr "%s 校準資料將會被清除-在導星動作開始時會重新做校準動作。"
 
 #: eegg.cpp:123
 msgid "Clear Calibration"
@@ -1767,9 +1743,8 @@ msgid "AO Setup"
 msgstr "設定 AO"
 
 #: gear_dialog.cpp:315
-#, fuzzy
 msgid "Rotator Setup"
-msgstr "設定赤道儀"
+msgstr "設定相場旋轉器"
 
 #: gear_dialog.cpp:325
 msgid "Connect All"
@@ -1827,14 +1802,12 @@ msgid "Disconnect from AO"
 msgstr "中斷 AO"
 
 #: gear_dialog.cpp:664 gear_dialog.cpp:685
-#, fuzzy
 msgid "Connect to Rotator"
-msgstr "連接赤道儀"
+msgstr "連接相場旋轉器"
 
 #: gear_dialog.cpp:676
-#, fuzzy
 msgid "Disconnect from Rotator"
-msgstr "中斷赤道儀"
+msgstr "中斷相場旋轉器..."
 
 #: gear_dialog.cpp:857
 msgid "Connecting to Camera ..."
@@ -1890,12 +1863,11 @@ msgstr "AUX 赤道儀已中斷"
 
 #: gear_dialog.cpp:1163
 msgid "Hide"
-msgstr ""
+msgstr "隱藏"
 
 #: gear_dialog.cpp:1169
-#, fuzzy
 msgid "More Equipment ..."
-msgstr "我的設備"
+msgstr "其他裝置"
 
 #: gear_dialog.cpp:1229
 msgid "Connecting to AO ..."
@@ -1914,24 +1886,20 @@ msgid "AO Disconnected"
 msgstr "AO 已中斷"
 
 #: gear_dialog.cpp:1343
-#, fuzzy
 msgid "Connecting to Rotator ..."
-msgstr "正在連接赤道儀..."
+msgstr "正在連接相場旋轉器..."
 
 #: gear_dialog.cpp:1353
-#, fuzzy
 msgid "Rotator Connected"
-msgstr "赤道儀連接成功"
+msgstr "相場旋轉器連接成功"
 
 #: gear_dialog.cpp:1366
-#, fuzzy
 msgid "Rotator Connect Failed"
-msgstr "赤道儀連接失敗"
+msgstr "相場旋轉器連接失敗"
 
 #: gear_dialog.cpp:1388
-#, fuzzy
 msgid "Rotator Disconnected"
-msgstr "赤道儀已切斷"
+msgstr "相場旋轉器已切斷"
 
 #: gear_dialog.cpp:1633
 msgid "New Equipment Profile"
@@ -2166,27 +2134,26 @@ msgid "Hysteresis"
 msgstr "延後"
 
 #: guide_algorithm_hysteresis.cpp:217
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "How much history of previous guide pulses should be applied\n"
 "Default = %.f%%, increase to smooth out guiding commands"
 msgstr ""
 "要使用多少歷史導星訊號\n"
-"預設值 = 10%, 增加該參數以讓導星曲線趨於平滑。"
+"預設值 = %.f%%,, 增加該參數以讓導星曲線趨於平滑。"
 
 #: guide_algorithm_hysteresis.cpp:224 guide_algorithm_resistswitch.cpp:267
 msgid "Aggression"
 msgstr "修正量"
 
 #: guide_algorithm_hysteresis.cpp:225
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "What percent of the measured error should be applied? Default = %.f%%, "
 "adjust if responding too much or too slowly"
 msgstr ""
-"量測到誤差的多少百分比要為導星演算法所使用? 預設值 = 100%，您可以依據實際狀況"
-"來調整該數值大小，讓導星趨勢線趨於平滑。若趨勢線上下震盪太大，請減少該值。調"
-"整該數值可以讓導星反應速度變快或變慢。"
+"量測到誤差的多少百分比要為導星演算法所使用? 預設值 = %.f%%，您可以依據實際狀"
+"況來調整該數值可以讓導星反應速度變快或變慢。"
 
 #: guide_algorithm_hysteresis.cpp:232 guide_algorithm_lowpass.cpp:208
 #: guide_algorithm_resistswitch.cpp:275
@@ -2194,11 +2161,11 @@ msgid "Minimum Move (pixels)"
 msgstr "星點最少移動量 (像素)"
 
 #: guide_algorithm_hysteresis.cpp:233 guide_algorithm_resistswitch.cpp:276
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "How many (fractional) pixels must the star move to trigger a guide pulse? "
 "Default = %.2f"
-msgstr "觸發導星訊號的最小移動單位, 預設值 = 0.15 像素。"
+msgstr "觸發導星訊號的最小移動單位, 預設值 = %.2f 像素。"
 
 #: guide_algorithm_hysteresis.cpp:281
 msgid "Agr"
@@ -2210,7 +2177,7 @@ msgstr "Hys"
 
 #: guide_algorithm_hysteresis.cpp:297 guide_algorithm_lowpass.cpp:261
 msgid "MnMo"
-msgstr ""
+msgstr "MnMo"
 
 #: guide_algorithm_identity.cpp:77
 msgid "Guide Algorithm"
@@ -2253,11 +2220,11 @@ msgstr "ResistSwitch 導星演算法"
 #: guide_algorithm_resistswitch.cpp:268
 #, c-format
 msgid "Aggression factor, percent. Default = %.f%%"
-msgstr ""
+msgstr "修正度百分比; 預設 = %.f%%"
 
 #: guide_algorithm_resistswitch.cpp:278
 msgid "Fast switch for large deflections"
-msgstr ""
+msgstr "偏差大時啟用快速切換"
 
 #: guide_algorithm_resistswitch.cpp:279
 msgid ""
@@ -2266,6 +2233,9 @@ msgid ""
 "immediately if it sees a very large deflection. Enable this option if your "
 "mount has a substantial amount of backlash and PHD2 sometimes overcorrects."
 msgstr ""
+"平常, 阻抗切換演算法會等待一些截圖後再進行切換方向, 當啟用快速切換狀態下, "
+"PHD2 會在檢測到有較大的偏差發生時立即切換方向, 如果赤道儀一直有回差或 PHD2 有"
+"過度修正情形發生時, 你可以啟用這個選項來修正這些問題。"
 
 #: guider.cpp:880
 msgid "Calibration manually stopped"
@@ -2412,7 +2382,7 @@ msgstr "未知"
 msgid ""
 "Bad-pixel map does not match the camera in this profile - it needs to be "
 "rebuilt."
-msgstr ""
+msgstr "壞點影像與設備組態檔中的相機不符, 需重新建立壞點影像。"
 
 #: indi_gui.cpp:685
 msgid "INDI Options"
@@ -2423,14 +2393,12 @@ msgid "Manual Calibration"
 msgstr "手動校準"
 
 #: manualcal_dialog.cpp:46
-#, fuzzy
 msgid "RA rate, px/sec (e.g. 5.0):"
-msgstr "赤經速率 (如: 0.005):"
+msgstr "赤經速率, px/sec (如: 5.0):"
 
 #: manualcal_dialog.cpp:52
-#, fuzzy
 msgid "Dec rate, px/sec (e.g. 5.0):"
-msgstr "赤緯速率 (如: 0.005):"
+msgstr "赤經速率, px/sec (如: 5.0):"
 
 #: manualcal_dialog.cpp:58
 msgid "RA angle (degrees):"
@@ -2523,7 +2491,7 @@ msgstr "赤緯:"
 
 #: mount.cpp:871
 msgid "Rotator position has changed, recalibration is needed."
-msgstr ""
+msgstr "因為相場旋轉器位置改變, 必須要重新校準。"
 
 #: myframe.cpp:266 myframe.cpp:340
 msgid "History"
@@ -2586,14 +2554,12 @@ msgid "Automatically select star"
 msgstr "自動選擇被導星體"
 
 #: myframe.cpp:425
-#, fuzzy
 msgid "Review &Calibration Data\tAlt-C"
-msgstr "翻轉校準資料"
+msgstr "檢視校準資料\tAlt-C"
 
 #: myframe.cpp:425
-#, fuzzy
 msgid "Review calibration data from last successful calibration"
-msgstr "由上回校準成功資料中恢復"
+msgstr "檢視上回成功的校準資料"
 
 #: myframe.cpp:427
 msgid "Restore Calibration Data..."
@@ -2628,9 +2594,8 @@ msgid "Clear calibration data currently in use"
 msgstr "清除目前使用中的較準資料"
 
 #: myframe.cpp:431
-#, fuzzy
 msgid "Modify Calibration"
-msgstr "校準"
+msgstr "修改校準資料"
 
 #: myframe.cpp:432 nudge_lock.cpp:117
 msgid "Adjust Lock Position"
@@ -2999,7 +2964,7 @@ msgstr "重啟"
 msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
-msgstr ""
+msgstr "在微調壞點影像時無法進行導星, 請將微調壞點影像視窗關閉。"
 
 #: myframe.cpp:1451
 #, c-format
@@ -3038,7 +3003,7 @@ msgstr "打開 FITS 檔案發生錯誤"
 msgid ""
 "Dark library does not match the camera in this profile - it needs to be "
 "rebuilt."
-msgstr ""
+msgstr "暗場影像與設備組態檔中的相機不符, 需重新建立暗場影像。"
 
 #: myframe.cpp:1854
 msgid "You must connect a camera before loading dark frames"
@@ -3168,11 +3133,11 @@ msgstr "系統預設"
 
 #: myframe.cpp:2150
 msgid "Language-Name"
-msgstr "語言名稱"
+msgstr "正體中文(台灣)"
 
 #: myframe.cpp:2170
 msgid "Language"
-msgstr "語言"
+msgstr "正體中文(台灣)"
 
 #: myframe.cpp:2171
 #, c-format
@@ -3870,7 +3835,7 @@ msgstr "拉動滑軌增加或降低被標示為壞點的像數數量"
 
 #: Refine_DefMap.cpp:247
 msgid "Please wait while image statistics are being computed..."
-msgstr ""
+msgstr "影像統計計算中, 請稍待..."
 
 #: Refine_DefMap.cpp:322
 msgid "Building new bad-pixel map"
@@ -3910,38 +3875,33 @@ msgid "Settings restored to original values"
 msgstr "設定回復到初始值"
 
 #: rotator.cpp:150
-#, fuzzy
 msgid "Rotator Settings"
-msgstr "赤道儀設定"
+msgstr "相場選轉器設定"
 
 #: rotator.cpp:152
 msgid "Reversed"
-msgstr ""
+msgstr "反向"
 
 #: rotator.cpp:153
 msgid "Check to use the reverse of the angle reported by the rotator"
-msgstr ""
+msgstr "核選以使用與相場旋轉器所回報角度相反的方向"
 
 #: rotator_ascom.cpp:135
-#, fuzzy
 msgid ""
 "Failed to set the Chooser's type to Rotator. Something is wrong with ASCOM"
-msgstr "無法設定 ASCOM 相機, ASCOM 發生錯誤。"
+msgstr "ASCOM 發生錯誤, 無法設定 ASCOM 相場旋轉器。"
 
 #: rotator_ascom.cpp:146
-#, fuzzy
 msgid "Failed to run the Rotator Chooser. Something is wrong with ASCOM"
-msgstr "ASCOM 發生錯誤, 赤道儀無法運作。"
+msgstr "ASCOM 發生錯誤, 無法選擇相場旋轉器。"
 
 #: rotator_ascom.cpp:211
-#, fuzzy
 msgid "Could not create ASCOM rotator object"
-msgstr "無法建立 ASCOM 相機物件"
+msgstr "無法建立 ASCOM 相場旋轉器物件"
 
 #: rotator_ascom.cpp:296
-#, fuzzy
 msgid "ASCOM driver problem -- cannot get rotator position"
-msgstr "ASCOM 驅動程式異常: 無法切斷"
+msgstr "ASCOM 驅動程式異常: 無法取得相場旋轉器位置"
 
 #: runinbg.cpp:110
 msgid "The operation was canceled"
@@ -3996,9 +3956,9 @@ msgid "West step %3d"
 msgstr "西 %3d"
 
 #: scope.cpp:955 scope.cpp:1095
-#, fuzzy, c-format
+#, c-format
 msgid "angle=%.1f rate=%.3f"
-msgstr "角度=%.2f 速率=%.4f"
+msgstr "角度=%.1f 速率=%.3f"
 
 #: scope.cpp:992
 #, c-format
@@ -4029,9 +3989,9 @@ msgid "South step %3d"
 msgstr "南 %3d"
 
 #: scope.cpp:1166
-#, fuzzy, c-format
+#, c-format
 msgid "Nudge South %3d"
-msgstr "最終南向微調 %3d"
+msgstr "南向微調 %3d"
 
 #: scope.cpp:1190
 msgid "calibration complete"
@@ -4051,8 +4011,7 @@ msgid ""
 "Click to open the Calibration Step Calculator to help find a good "
 "calibration step size"
 msgstr ""
-"*Click to open the Calibration Step Calculator to help find a good "
-"calibration step size"
+"點擊以開啟校準步數計算器來依據你所使用的硬體設備估算出適當的校準步數大小"
 
 #: scope.cpp:1275
 msgid "Calibration step (ms)"
@@ -4249,7 +4208,7 @@ msgstr "赤道儀方向"
 
 #: statswindow.cpp:102
 msgid "Rotator Pos"
-msgstr ""
+msgstr "相場旋轉器位置"
 
 #: statswindow.cpp:111
 msgid "Clear graph data and stats"
@@ -4489,14 +4448,12 @@ msgid "Error reading data from FITS file "
 msgstr "載入 FTIS 檔案時發生錯誤"
 
 #: calreview_dialog.h:48
-#, fuzzy
 msgid "Review Calibration"
-msgstr "校準"
+msgstr "檢視校準"
 
 #: calreview_dialog.h:75
-#, fuzzy
 msgid "Restore Calibration"
-msgstr "恢復舊有效準資料"
+msgstr "恢復舊有校準資料"
 
 #: runinbg.h:79
 msgid "Connecting to Mount..."
@@ -4511,9 +4468,8 @@ msgid "Connecting to Camera..."
 msgstr "正在連接相機 ..."
 
 #: runinbg.h:97
-#, fuzzy
 msgid "Connecting to Rotator..."
-msgstr "正在連接赤道儀 ..."
+msgstr "正在連接相場旋轉器 ..."
 
 #~ msgid "No AO Selected"
 #~ msgstr "未選擇AO設備"
