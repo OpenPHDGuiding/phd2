@@ -433,7 +433,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         ptRadius = 2;
 
         // Scale the points, then plot them individually
-        for (int i = 0; i < calDetails.raSteps.size(); i++)
+        for (int i = 0; i < (int) calDetails.raSteps.size(); i++)
         {
             if (i == calDetails.raStepCount + 2)        // Safe even for "single-step" calibration
             {
@@ -454,7 +454,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
     ptRadius = 2;
     if (calDetails.decStepCount > 0)
     {
-        for (int i = 0; i < calDetails.decSteps.size(); i++)
+	for (int i = 0; i < (int) calDetails.decSteps.size(); i++)
         {
             if (i == calDetails.decStepCount + 2)
             {
