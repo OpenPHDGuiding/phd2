@@ -15,7 +15,7 @@
       <li>Нажмите кнопку 'Петля' и сфокусируйтесь, если необходимо, на
         звёздах. Возможно, чтобы выбрать подходящую звезду для
         гидирования, придётся навестись в другое место или изменить
-        аремя экспозиции.</li>
+        время экспозиции.</li>
       <li>Выберите в качестве гидируемой неокрашенную звезду не очень
         близко от края.</li>
       <li>Нажмите кнопку с надписью <span style="font-style: italic;">PHD2</span>.</li>
@@ -51,6 +51,11 @@
     Список поддерживаемых камер на момент написания приведён ниже, но
     пользователям следует&nbsp;проверить наличие обновлений в сети
     (например, <a href="http://www.stark-labs.com/phdguiding.html">Stark
+
+
+
+
+
 
 
 
@@ -203,6 +208,7 @@
     используемого в этом профиле, загрузятся .<br>
     <br>
     Проще всего создать новый профиль с "<a name="New_profile_wizard"></a>Помощником".
+
     &nbsp;Он предоставит вам последовательность диалоговых окон,
     объясняющих различные настройки и поможет вам решить, как их
     назначить.&nbsp; Он также определит желательные настройки алгоритма
@@ -219,237 +225,214 @@
     соединение с оборудованием.
     <h3><a name="Exposure_Time_and_Star_Selection"></a>Время экспозиции
       и выбор звезды</h3>
-    The guide star can be selected (clicked on) while "looping" is
-    active - in fact, this is the recommended method. &nbsp;It can also
-    be selected after looping has been stopped, but this opens the
-    possibility that the star might have moved since the last exposure.
-    &nbsp;No great precision is required in clicking on the star -&nbsp;<span
-      style="font-style: italic;">PHD2</span> will find the star nearest
-    to the cursor. &nbsp;After you do this, a green box will appear to
-    frame the star. &nbsp;If you pick a star that is too bright, a
-    message box will tell you the star is "saturated", and you should
-    either use a different star or decrease the exposure duration.
-    &nbsp;The choice of exposure time will depend entirely on your
-    equipment, sky conditions, and the available stars. &nbsp;The
-    exposure time you choose has two major implications: <br>
+    Лучше всего выбрать гидирующую звезду (щёлкнув по ней), когда
+    серийная съёмка включена.&nbsp; Можно выбрать её и по окончании
+    съёмки, однако, при этом существует вероятность, что звезда
+    сместится со времени последней экспозиции.&nbsp; Большая точность не
+    нужна -&nbsp;<span style="font-style: italic;">PHD2</span> найдёт
+    ближайшую к курсору звезду.&nbsp; После выбора звезды вокруг неё
+    появится зелёный прямоугольник.&nbsp; Если звезда слишком яркая,
+    появится сообщение, что она "окрашена"; в этом случае надо выбрать
+    другую звезду или уменьшить выдержку.&nbsp; Выбор выдержки полностью
+    зависит от оборудования, качества неба и доступных звёзд.&nbsp; При
+    этом нужно учесть следующее: <br>
     <ol>
-      <li>It affects the signal strength (brightness) of the selected
-        star - a brighter star will stand out better from the background
-        and will generally produce better guiding results so long as it
-        is not saturated.</li>
-      <li>It also determines the frequency with which guide commands are
-        sent to the mount -&nbsp;guide commands cannot be sent any more
-        frequently than once for each exposure cycle. &nbsp;Some mounts
-        benefit from frequent small guiding adjustments while others do
-        not - you may need to experiment to understand what works best
-        for your situation. &nbsp;</li>
+      <li>При длинной выдержке (пока звезда не станет "окрашенной")
+        звезда будет ярче, а, значит, и результаты гидирования будут
+        лучше.</li>
+      <li>Гидирующие команды не могут посылаться чаще, чем единожды за
+        время экспозиции.&nbsp; Для некоторых монтировок
+        предпочтительнее частые небольшие гидирующие команды, для других
+        нет - можно поэкспериментировать, чтобы понять, как лучше
+        поступать с вашей. &nbsp;</li>
     </ol>
-    As a starting point,&nbsp;try using exposure durations in the range
-    of one to five seconds. &nbsp;Rather than choosing the star yourself
-    with a mouse-click, you can let PHD2 <a
-      href="Tools.htm#Auto-Select_Star">Auto-select</a>&nbsp;the guide
-    star&nbsp;by using the Alt-S keyboard shortcut after stars are
-    visible in the main display. &nbsp;<br>
+    Для начала попробуйте задать выдержки от одной до пяти секунд.&nbsp;
+    Вместо того, чтобы выбирать звезду вручную, можно позволить сделать
+    это&nbsp; PHD2 <a href="Tools.htm#Auto-Select_Star">автоматически</a>,&nbsp;нажав
+
+    Alt-S после того, как звёзды появятся на экране. &nbsp;<br>
     <br>
-    There is also an Auto exposure time selection available. When
-    exposure is set to Auto, PHD2 will attempt to adjust the exposure to
-    keep the selected guide star at a constant signal-to-noise ratio
-    (SNR) value. The Auto setting can be especially beneficial for AO
-    users who want to minimize exposure time without losing the guide
-    star. The settings to control Auto-exposure are on the <a
-      href="Advanced_settings.htm#Global_Tab">Global Tab</a> of the
-    Advanced Dialog.
+    Время выдержки также может быть выбрано автоматически. При этом PHD2
+    будет определять его с таким расчётом, чтобы соотношение сигнал/шум
+    было постоянным. Автоматические настройки могут быть особенно
+    полезны пользователям устройств адаптивной оптики, которые хотят
+    минимизировать время экспозиции, не теряя при этом гидируемую
+    звезду. Настройки управления автоматической выдержкой находятся во
+    вкладке&nbsp; <a href="Advanced_settings.htm#Global_Tab">Общие</a>.
     <h3><a name="Automatic_Calibration"></a>Автоматическая калибровка</h3>
-    <h4>Conventional Mounts</h4>
-    Two things need to be measured by <span style="font-style: italic;">PHD2</span>
-    as part of guider calibration: <br>
+    <h4>Обычные монтировки<br>
+    </h4>
+    Во время калибровки <span style="font-style: italic;">PHD2</span>
+    определяет следующее : <br>
     <ol>
-      <li>The angle of the camera relative to the telescope axes&nbsp;</li>
-      <li>The length of the guide pulse needed to move the telescope by
-        a specific amount</li>
+      <li>Угол позиционирования камеры относительно осей монтировки <br>
+      </li>
+      <li>Продолжительность гидирующих импульсов, необходимых, чтобы
+        переместить телескоп на заданное расстояние</li>
     </ol>
-    <span style="font-style: italic;">PHD2</span> handles these
-    measurements automatically by sending guide pulses to the mount and
-    "watching" how far and in which direction the star moves between
-    guide camera images. &nbsp;This process begins after you have
-    selected a star and then clicked on the Guide icon button.
-    &nbsp;Yellow cross-hairs will appear over the original location of
-    your guide star and PHD2 will start to move the mount in various
-    directions, tracking how the star moves as a function of what move
-    commands were sent to the mount. &nbsp;The status bar will display
-    the commands as they are sent to the mount, along with the
-    incremental movements of the guide star relative to its starting
-    position. &nbsp;<span style="font-style: italic;">PHD2</span> will
-    do this on both axes, first moving east and west, then north and
-    south. &nbsp;<span style="font-style: italic;">PHD2</span> wants to
-    move the star up to 25 pixels in each direction in order to get an
-    accurate calibration. &nbsp;Once this is complete, the crosshairs
-    will turn green and guiding will start automatically.. &nbsp;<br>
+    <span style="font-style: italic;">PHD2</span> определяет эти
+    значения автоматически, посылая гидирующие импульсы монтировке
+    и"наблюдает", в каком направлении и насколько сместились звёзды на
+    очередном гидирующем кадре.&nbsp; Процесс стартует после выбора
+    звезды и нажатия кнопки гидирования.&nbsp; Вокруг исходного
+    положения звезды появится жёлтое перекрестье and PHD2 начнёт
+    перемещать монтировку в различных направлениях, отслеживая
+    перемещение звезды. Команды гидирования и координаты перемещаемой
+    звезды относительно её исходного положения будут выводиться на
+    панели состояния. &nbsp;<span style="font-style: italic;">PHD2</span>
+    осуществляет подвижки по обеим осям, сначала перемещая монтировку на
+    восток и запад, затем на север и юг. &nbsp;<span style="font-style:
+      italic;">PHD2</span> перемещает звезду на расстояние до 25
+    пикселей в каждом направлении, чтобы добиться точной
+    калибровки.&nbsp; После её завершения перекрестье станет зелёным и
+    начнётся автоматическое гидирование. &nbsp;<br>
     <br>
-    In most cases, calibration will complete automatically without any
-    user involvement. &nbsp;Obviously, this assumes that the mount and
-    all the cable connections are working correctly. &nbsp;If they are
-    not, the calibration is likely to fail with a message that the "star
-    did not move enough";&nbsp; and you'll need to do some
-    trouble-shooting. &nbsp;If the star has basically not moved at all
-    in one or more directions, you should look first at the cable
-    connections and mount behavior. The "manual guide" function under
-    the 'Tools' menu can help with this as can the <a
-      href="Trouble_shooting.htm">trouble-shooting</a> section of this
-    document. &nbsp; But if the star has moved by some amount in each
-    direction, you may need to adjust a calibration setting called the
-    calibration step-size. &nbsp;<span style="font-style: italic;">PHD2</span>
-    uses this parameter during calibration as a fixed-size duration of
-    movement. &nbsp;The default value has been chosen to cover a wide
-    range of typical guide scope set-ups, but you may need to adjust it
-    for your situation. &nbsp;For example,&nbsp;an off-axis-guider on a
-    long focal length scope will probably need a setting that's
-    different from the default value. &nbsp; To adjust it, go into the
-    "brain dialog" (<a href="Advanced_settings.htm">Advanced Settings</a>)<big><span
-        style="font-weight: bold;"><span style="font-weight: bold;"></span>
-      </span></big>and click on the 'Mount' tab. &nbsp;On that tab,
-    you'll find a setting for 'Calibration step(ms)', and that's where
-    you change the value. &nbsp;There's even a 'Calculate' button that
-    will help you choose an optimal value for the parameter. &nbsp;Once
-    you've set this value, it will be remembered as part of your
-    equipment profile and you probably won't have to adjust it again.<br>
+    В большинстве случаев калибровка завершится автоматически без
+    участия пользователя.&nbsp; Очевидно, что для этого монтировка и все
+    кабельные соединения должны работать корректно.&nbsp; В противном
+    случае калибровка может завершиться аварийно с сообщением "star did
+    not move enough".&nbsp; Если звезда вообще не перемещалась ни в
+    одном из направлений, необъодимо прежде всего проверить кабельные
+    соединения и монтировку. Здесь может помочь ручное гидирование
+    (пункт 'Ручное гидирование' в меню 'Инструменты'), как описано в
+    секции <a href="Trouble_shooting.htm">Анализ и решение проблем</a>
+    этого документа. Если же звезда передвигалась, необходимо проверить
+    параметр 'Шаг калибровки' вкладки 'Монтировка'. &nbsp;<span
+      style="font-style: italic;">PHD2</span> использует его во время
+    калибровки для как заданную продолжительность движения. Значение по
+    умолчанию покрывает множество типичных устройств гидирования, но,
+    возможно, его придётся изменить для конкретной ситуации.&nbsp;
+    Например, для внеосевика на телескопе с большим фокусным
+    расстоянием. Справа от поля ввода упомянутого выше параметра 'Шаг
+    калибровки' есть кнопка 'Вычислить', которая поможет подобрать
+    оптимальное для этого параметра значение.&nbsp; Когда этот параметр
+    будет задан, он сохранится в профиле оборудования и снова его
+    указывать не придётся.<br>
     <br>
-    You may also see&nbsp;a calibration failure if you're using a star
-    too close to&nbsp;the celestial pole. &nbsp;In those locations,
-    fixed-length movements in right ascension often move the star only a
-    very small distance. &nbsp;In that case, move to a star location
-    closer to the equator, ideally somewhere in the range of -30 to +30
-    degrees declination, and re-run the calibration. &nbsp;But if this
-    is not feasible, you can adjust the calibration step-size upward
-    until calibration succeeds.<br>
+    Сбой калибровки может произойти и в том случае, если выбранная
+    звезда находится слишком близко к небесному полюсу, когда звезда
+    перемещается на недостаточное расстояние.&nbsp; В таком случае
+    следует выбрать свезду поближе к экватору, лучше всего в пределах от
+    -30 до +30 склонения и повторить калибровку. Если это невозможно,
+    следует увеличивать величину шага до тех пор, пока калибровка не
+    пройдёт успешно.<br>
     <br>
-    Like all other guide settings, the calibration data is automatically
-    saved as part of your current equipment profile. &nbsp;If nothing
-    has changed in your configuration from one session to the next -
-    even over an extended time period - you can restore the previous
-    calibration data and start guiding immediately. &nbsp;This function
-    is&nbsp;located under the 'Tools' menu and is labelled '<a
-      name="Restore_Calibration_Data"></a>Restore Calibration Data.'
-    &nbsp;Remember, the data are saved whenever a full calibration is
-    completed or when you use the 'flip calibration data' command under
-    the 'Tools' menu (see below). &nbsp;If you're using a German
-    equatorial mount and the ASCOM interface or you have an 'aux' mount
-    connected, the saved calibration data will include the side of pier
-    where you were last guiding; so <span style="font-style: italic;">PHD2</span>
-    will adjust automatically for your current pointing position.
-    &nbsp;But if you are not using mount interfaces that can return
-    pointing information, you'll need to remember which side of the pier
-    was being used the last time you were guiding.<br>
+    Как и другие настройки гидирования, данные калибровки автоматически
+    попадут в текущий профиль оборудования. &nbsp;Если между сессиями
+    конфигурация не будет изменена - даже в течении длительного времени
+    - можно будет загрузить данные предыдущей калибровки и сразу же
+    начать гидирование.&nbsp; Эта функция находится в меню 'Инструменты'
+    и называется '<a name="Restore_Calibration_Data"></a>Изменить
+    калибровку -&gt; Восстановить данные калибровки.'&nbsp; Данные
+    сохраняются после успешного завершения калибровки или выбора пункта
+    меню 'Инструменты -&gt; Изменить калибровку -&gt; 'Переложить
+    откалиброванные данные' (см. ниже).&nbsp; При использовании немецкой
+    экваториальной монтировки и интерфейса ASCOM или 'дополнительной'
+    монтировки сохранённые данные калибровки будут содержать данные о
+    положении относительно меридиана во время последнего гидирования и,
+    таким образом, <span style="font-style: italic;">PHD2</span>
+    автоматически определит текущее положение.&nbsp; В противном случае
+    положение относительно меридиана во время последнего гидирования
+    должен помнить сам пользователь.<br>
     <br>
-    If you're using an ASCOM mount (or 'aux' mount) connection, <span
-      style="font-style: italic;">PHD2</span> will also include the
-    calibration and target declinations as part of its calculations.
-    &nbsp;In that case,&nbsp; guiding moves in right ascension will be
-    automatically adjusted to account for the declination of the current
-    guide star, as opposed to the&nbsp;star you used for calibration.
-    &nbsp;This is really just a refinement and isn't critical in most
-    situations, so absence of pointing information is not a big problem.
-    &nbsp;However, if you are concerned about it and are imaging near
-    the celestial pole, you should consider calibrating using a star
-    that's also at high declination.<br>
+    При использовании монтировки ASCOM (или 'дополнительной'), <span
+      style="font-style: italic;">PHD2</span> при вычислениях будет
+    также учитывать склонение.&nbsp; В этом случае гидирующие движения
+    по прямому восхождению будут автоматически скорректированы с учётом
+    склонения текущей гидируемой звезды, в отличие от звезды,
+    использованной для калибровки.&nbsp; Эта оптимизация в большинстве
+    случаев некритична, поэтому отсутствие данных о положении не будет
+    проблемой.&nbsp; Однако, если съёмка ведётся неподалёку от небесного
+    полюса, калибровка также должна быть проведена в той же области.<br>
     <br>
-    After a calibration is completed, PHD2 will&nbsp;<a
-      href="Trouble_shooting.htm#Calibration_sanity_check">"sanity
-      check"</a> the results to be sure the calculations at least look
-    reasonable. &nbsp;If they don't, you will see an 'alert' message at
-    the top of the main window that describes the calibration result
-    that looks questionable. &nbsp;You can choose to ignore the alert or
-    click on 'Details' to get more information. &nbsp;It is generally
-    advisable to pay attention to these alerts because there is no point
-    in trying to proceed using calibration results that are
-    significantly in error.<br>
+    После завершения калибровки PHD2 проведёт <a
+      href="Trouble_shooting.htm#Calibration_sanity_check">"проверку
+      калибровки"</a>, чтобы знать, что вычисления были верными.&nbsp;
+    Если проверка не пройдёт, сверху главного экрана появится сообщение
+    с предупреждением, что результаты калибровки сомнительны.&nbsp; Его
+    можно проигнорировать (что лучше не делать, чтобы не гидировать по
+    ошибочным данным) или нажать кнопку 'Подробности', чтоб получить
+    больше информации.&nbsp; <br>
     <h4><a name="Adaptive_Optics_Devices"></a>Устройства адаптивной
       оптики<br>
     </h4>
-    If you are using an adaptive optics device, there are actually two
-    calibration processes that must complete. &nbsp;The first handles
-    calibration of the tip/tilt mirror in the AO and calculates the
-    magnitude and direction of the adjustments as they relate to
-    displacements of the guide star. &nbsp;The second calibration is the
-    one described above, dealing with guide commands that need to be
-    sent to the mount. &nbsp;Known as "bump" commands, these will be
-    issued&nbsp;when the guide star has moved beyond the range of
-    corrections that can be achieved with the AO alone. <br>
+    При использовании устройств адаптивной оптики калибровку нужно
+    проводить дважды: первый раз для адаптивного зеркала, чтобы
+    вычислить величину и направление корректировки по отношению к
+    смещению опорной звезды; вторая калибровка относится к командам
+    гидирования монтировки и описана выше.&nbsp; Команды будут посланы
+    когда гидируемая звезда выйдет за пределы поправок, которые могут
+    быть применены только с использованем адаптивной оптики. <br>
     <br>
     <h3><a name="Guiding"></a>Гидирование</h3>
-    Once guiding has begun, diagnostic messages will be displayed in the
-    status bar to show what guide commanda are being sent to the mount.
-    <span style="font-style: italic;">PHD2</span> will continue guiding
-    until you click on the 'stop' icon. &nbsp;To resume guiding, simply
-    start looping exposures again, select your star, and click on the
-    'Guide' button. &nbsp;You will not need to repeat the calibration in
-    order to resume guiding. &nbsp;In some cases, <span
-      style="font-style: italic;">PHD2</span> may "lose" the guide star
-    and you'll be alerted by an audible beep and flashing orange
-    crosshairs. &nbsp;There are several reasons this might occur: <br>
+    После начала гидирования на статусной панели появятся
+    диагностические сообщения о подаваемых на монтировку командах. <span
+      style="font-style: italic;">PHD2</span> будет осуществлять
+    гидирование до тех пор, пока не юудет нажата кнопка 'STOP'.&nbsp;
+    Чтобы возобновить гидирование, снова начните серийную съёмку,
+    выберите звезду и нажмите кнопку гидирования. Заново делать
+    калибровку не нужно.&nbsp; В некоторых случаях <span
+      style="font-style: italic;">PHD2</span> может "потерять" опорную
+    звезду, о чём сообщит звуковым сигналом и мигающим оранжевым
+    перекрестьем.&nbsp; Это может произойти по следующим причинам: <br>
     <ol>
-      <li>Something&nbsp;may be obscuring the star - clouds, the
-        observatory roof, a tree, etc.</li>
-      <li>The star may have abruptly moved out of the tracking rectangle
-        because something shifted in the mount/camera/cabling
-        infrastructure - cable "snags" often cause this</li>
-      <li>The star may have "faded" for some other reason, perhaps
-        because it is overly faint</li>
+      <li>Звезда может быть чем-нибудь закрыта - облаками, куполом
+        обсерватории, деревом и т.д.</li>
+      <li>Звезда внезапно покинула прямоугольник гидирования из-за
+        неполадок монтировки/камеры/соединительных кабелей <br>
+      </li>
+      <li>Звезда может "исчезнуть" по другой причине, например, потому
+        что она слишком слаба<br>
+      </li>
     </ol>
-    Obviously, you'll need to identify the source of the problem and fix
-    it. &nbsp;However, it's important to understand that <span
-      style="font-style: italic;">PHD2</span> will <span
-      style="font-weight: bold;">not </span>start moving the telescope
-    around in an attempt to relocate the guide star. &nbsp;It will
-    simply continue to take exposures and look for the guide star to
-    reappear within the bounds of the current tracking rectangle.
-    &nbsp;When you first start guiding, you may see an 'alert' dialog at
-    the top of the window if no dark library or bad-pixel map is being
-    used. &nbsp;You can choose to ignore this warning and continue with
-    guiding, but you are likely to get better results if you spend the
-    few minutes needed to construct a dark library for future use.<br>
+    Разумеется, причина должна быть найдена и проблема решена.&nbsp;
+    Однако, важно понять, что <span style="font-style: italic;">PHD2</span>&nbsp;
+    <span style="font-weight: bold;">не </span>будет двигать телескоп,
+    пытаясь поймать убежавшую звезду.&nbsp; Съёмка будет продолжена в
+    надежде снова обнаружить звезду внутри прямоугольника
+    гидирования.&nbsp; Начиная гидирование, вы можете увидеть в верхней
+    части экрана предложение построить библиотеку темновых кадров или
+    карту битых пикселей, если таковая ещё не используется.&nbsp; Его
+    можно проигнорировать, но, если вы потратите несколько минут на
+    создание библиотеки темновых кадров, оезультаты гидирования могут
+    быть лучше.<br>
     <br>
-    If you are using a <a name="German_equatorial_mount"></a>German
-    equatorial mount (GEM), you will usually have to do a "<a
-      name="meridian_flip"></a>meridian flip" around the time your image
-    target crosses the meridian. &nbsp;This means you will move the
-    telescope around to the opposite side of the pier and then resume
-    imaging. &nbsp;Doing this invalidates the original calibration,
-    typically because the declination directions are now reversed.
-    &nbsp;If you are using an ASCOM (or 'aux' ) mount interface, your
-    calibration will be adjusted automatically and you can simply resume
-    guiding (assuming you haven't also rotated the camera or focuser).
-    &nbsp;If you aren't using an interface that returns pointing
-    position, you will need to take action to adjust the guider
-    calibration. &nbsp;You can, of course, simply do another calibration
-    on the "new" side of the pier, a process that will typically take
-    only a couple of minutes. &nbsp;Or, you can&nbsp;use the pull-down
-    menu item under 'Tools' to "<a name="flip_calibration_data"></a>flip
-    calibration data" and then resume guiding immediately. &nbsp;<br>
+    Используя <a name="German_equatorial_mount"></a>немецкую
+    экваториальную монтировку (GEM), вам обычно нужно "<a
+      name="meridian_flip"></a>перекладываться" в то время, когда цель
+    проходит меридиан.&nbsp; Телескоп перемещается на другую сторону от
+    монтировки, после чего съёмка продолжается.&nbsp; Это сбивает
+    калибровку, поскольку направление склонения меняется на
+    противоположное.&nbsp; При использоваании совместимой с ASCOM или
+    'дополнительной' монтировки калибровка будет восстановлена
+    автоматиччески (если камера или фокусёр не вращались).&nbsp; В
+    противном случае калибровка должна быть проведена заново (что займёт
+    пару минут) или воспользоваться меню '"<a
+      name="flip_calibration_data"></a>Инструменты -&gt;&nbsp; Изменить
+    калибровку -&gt; Переложить откалиброванные данные", после чего
+    возобновить гидирование. &nbsp;<br>
     <br>
-    In some cases, you may want to force a re-calibration. &nbsp;For
-    example, you may have rotated the guide camera as part of resolving
-    a cable problem. &nbsp;You can do this by clicking on the 'Brain
-    button', &nbsp;moving to the 'Mount' tab, and clicking the 'Clear
-    Calibration' checkbox. &nbsp;Or, you can simply do a
-    &lt;shift&gt;click on the&nbsp; 'Guide' button on the main screen
-    and <span style="font-style: italic;">PHD2</span> will start a
-    calibration run. &nbsp;<br>
+    В некоторых случаях калибровку нужно провести заново.&nbsp;
+    Например, решая проблему с кабелем, вы могли случайно повернуть
+    камеру.&nbsp; Это можно сделать в меню 'Инструменты -&gt; Изменить
+    калибровку -&gt; Очистить калибровочные данные', или просто,
+    удерживая &lt;shift&gt;, нажать кнопку гидирования на главном
+    экране, после чего&nbsp; <span style="font-style: italic;">PHD2</span>
+    начнёт калибровку. &nbsp;<br>
     <br>
-    Once you have started guiding, you will almost certainly want to
-    know how things are going. &nbsp;You can of course watch the star in
-    the guide camera display but in many cases you won't be able to see
-    all the small adjustments that are taking place. &nbsp;But <span
-      style="font-style: italic;">PHD2</span> provides many tools for
-    measuring and displaying your performance, as described in the <a
-      href="Visualization.htm">Visualization </a>section. &nbsp;Several
-    of the guiding algorithms have limit settings for the maximum guide
-    correction that can be issued with a single command. &nbsp;If these
-    values are smaller than what is needed to correct the mount's
-    position, you will see an alert dialog at the top of the main window
-    advising you of the situation. &nbsp;If this is a recurring problem,
-    you may want to increase the values for these settings or otherwise
-    solve the underlying problem.<br>
+    Начав гидирование, хочется знать, как именно оно проходит.&nbsp;
+    Можно, конечно, наблюдать за звездой на экране, но, в большинстве
+    случаев, подвижки бывают настолько небольшими, что не видны. К
+    счастью, <span style="font-style: italic;">PHD2</span>
+    предоставляет немало инструментов для измерения и показа
+    производительности, что описано в секции <a
+      href="Visualization.htm">Средства визуализации</a>.&nbsp;
+    Некоторые из алгоритмов гидирования имеют ограничения на
+    максимальную коррекцию одной командой.&nbsp; Если этого недостаточно
+    для исправления позиции монтировки, наверху экрана появится
+    сообщение, подсказывающее, что делать в этой ситуации. Если проблема
+    повторится, можно попробовать увеличить значения соответствующих
+    параметров или решить проблему на более низком уровне.<br>
     <br>
     &nbsp;<br>
     <br>
