@@ -146,6 +146,10 @@
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Keyboard Shortcuts">
+		<param name="Local" value="KeyboardShortcuts.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Trouble-shooting and Analysis">
 		<param name="Local" value="Trouble_shooting.htm">
 		</OBJECT>

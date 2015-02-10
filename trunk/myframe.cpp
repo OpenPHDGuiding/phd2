@@ -126,6 +126,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(BUTTON_ADVANCED, MyFrame::OnAdvanced) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_GUIDE,MyFrame::OnGuide)
     EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
+    EVT_MENU(BUTTON_ALERT_CLOSE,MyFrame::OnAlertButton) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
     EVT_COMMAND_SCROLL(CTRL_GAMMA, MyFrame::OnGammaSlider)
     EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
@@ -843,6 +844,7 @@ void MyFrame::SetupKeyboardShortcuts(void)
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP),
         wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'M', EEGG_MANUALCAL),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'D', BUTTON_ALERT_CLOSE),
     };
     wxAcceleratorTable accel(WXSIZEOF(entries), entries);
     SetAcceleratorTable(accel);
