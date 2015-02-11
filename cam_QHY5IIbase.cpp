@@ -90,6 +90,7 @@ Camera_QHY5IIBase::Camera_QHY5IIBase()
     m_hasGuideOutput = true;
     HasGainControl = true;
     RawBuffer = NULL;
+    Color = false;
 }
 
 static FARPROC WINAPI GetProc(HINSTANCE dll, LPCSTR name)
@@ -270,6 +271,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, wxRect subframe, boo
     }
 
     if (recon) SubtractDark(img);
+    if (Color) QuickLRecon(img);
 
     return false;
 }
