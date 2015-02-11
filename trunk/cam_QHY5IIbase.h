@@ -42,6 +42,8 @@ class Camera_QHY5IIBase : public GuideCamera
 
 protected:
     TCHAR *m_cameraDLLName;
+    bool Color;
+
     Camera_QHY5IIBase();
 
 public:

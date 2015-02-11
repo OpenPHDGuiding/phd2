@@ -266,7 +266,8 @@ wxArrayString GuideCamera::List(void)
     CameraList.Add(_T("QHY 5-II"));
 #endif
 #if defined (QHY5LII)
-    CameraList.Add(_T("QHY 5L-II"));
+    CameraList.Add(_T("QHY 5L-II Mono"));
+    CameraList.Add(_T("QHY 5L-II Color"));
 #endif
 #if defined (ZWO_ASI)
     CameraList.Add(_T("ZWO ASI Camera"));
@@ -396,9 +397,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         }
 #endif
 #if defined (QHY5LII)
-        else if (choice.Find(_T("QHY 5L-II")) + 1) {
-            pReturn = new Camera_QHY5LIIClass();
-        }
+        else if (choice.Find(_T("QHY 5L-II Mono")) != wxString::npos)
+            pReturn = new Camera_QHY5LIIM();
+        else if (choice.Find(_T("QHY 5L-II Color")) != wxString::npos )
+            pReturn = new Camera_QHY5LIIC();
 #endif
 #if defined(ZWO_ASI)
         else if (choice.Find(_T("ZWO ASI Camera")) + 1)
