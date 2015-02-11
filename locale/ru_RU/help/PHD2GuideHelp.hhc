@@ -22,20 +22,20 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Equipment Connection">
+			<param name="Name" value="Подключение оборудования">
 			<param name="Local" value="Basic_use.htm#Equipment_Connection">
 			<param name="URL" value="Basic_use.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Exposure Time &amp; Star Selection">
+			<param name="Name" value="Время экспозиции и выбор звезды">
 			<param name="Local" value="Basic_use.htm#Exposure_Time_and_Star_Selection">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Calibration">
+			<param name="Name" value="Калибровка">
 			<param name="Local" value="Basic_use.htm#Automatic_Calibration">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Guiding">
+			<param name="Name" value="Гидирование">
 			<param name="Local" value="Basic_use.htm#Guiding">
 			</OBJECT>
 	</UL>
