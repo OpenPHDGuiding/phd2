@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-07 16:03-0500\n"
-"PO-Revision-Date: 2015-02-12 17:38+0300\n"
+"PO-Revision-Date: 2015-02-13 14:48+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -875,7 +875,7 @@ msgstr "Дрейф по Dec"
 
 #: cam_simulator.cpp:1414
 msgid "Guide rate, x sidereal"
-msgstr "Скорость гидирования, x звёздной"
+msgstr "Скорость гидирования, кратная звёздной"
 
 #: cam_simulator.cpp:1415
 msgid "Guide rate"
@@ -2635,7 +2635,7 @@ msgstr "Изменить калибровку"
 
 #: myframe.cpp:432 nudge_lock.cpp:117
 msgid "Adjust Lock Position"
-msgstr "Подтвердить выбранную позицию"
+msgstr "Подтвердить выбранное положение"
 
 #: myframe.cpp:432
 msgid "Adjust the lock position"
@@ -3425,7 +3425,7 @@ msgstr ""
 
 #: nudge_lock.cpp:165
 msgid "Lock Pos:"
-msgstr ""
+msgstr "Положение:"
 
 #: nudge_lock.cpp:170
 msgid "Lock position X coordinate"
@@ -3437,7 +3437,7 @@ msgstr "Выберите координату Y"
 
 #: nudge_lock.cpp:179 nudge_lock.cpp:186
 msgid "Set"
-msgstr ""
+msgstr "Установить"
 
 #: nudge_lock.cpp:187
 msgid "Set the lock position to the entered coordinates"
@@ -4036,9 +4036,9 @@ msgid "West step %3d"
 msgstr "на запад %3d"
 
 #: scope.cpp:955 scope.cpp:1095
-#, fuzzy, c-format
+#, c-format
 msgid "angle=%.1f rate=%.3f"
-msgstr "угол=%.1f скорость=%.4f"
+msgstr "угол=%.1f скорость=%.3f"
 
 #: scope.cpp:992
 #, c-format
@@ -4474,6 +4474,8 @@ msgid ""
 "Select the dither amount type. Imaging applications have the option of "
 "sending each of these dither amounts to PHD."
 msgstr ""
+"Введите величину подвижки. Внешние приложения могут посылать такие команды "
+"PHD"
 
 #: testguide.cpp:119
 msgid "Scale"
@@ -4485,6 +4487,8 @@ msgid ""
 "value to get the actual dither amount. Changing the value here affects both "
 "manual dithering and dithering from imaging applications connected to PHD."
 msgstr ""
+"Масштаб подвижки. Реальная величина подвижки равна произведению значения "
+"параметра 'Подвижка' на это значение"
 
 #: testguide.cpp:127
 msgid "RA Only"
@@ -4503,6 +4507,8 @@ msgid ""
 "Move the guider lock position a random amount on each axis, up to the "
 "maximum value determined by the dither type and the dither scale factor."
 msgstr ""
+"Сделать подвижку на случайное расстояние по обеим осям до максимального "
+"значения, определяемого параметрами 'Подвижка' и 'Масштаб'."
 
 #: usImage.cpp:354
 msgid "File does not exist - cannot load "
