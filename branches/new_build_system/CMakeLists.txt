@@ -22,6 +22,7 @@ if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "build architecture for OSX" FORCE)
   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -m32"   CACHE STRING "Flags used by the compiler during all build types")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32" CACHE STRING "Flags used by the compiler during all build types")
+  set(CMAKE_MACOSX_RPATH TRUE)
 endif()
 
 set(USE_FOLDERS TRUE)
@@ -70,6 +71,14 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   elseif(HAS_CXX0X_FLAG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  endif()
+  
+  if(APPLE)
+    check_cxx_compiler_flag(-stdlib=libc++ HAS_LIBCXX11_FLAG)
+    
+    if(HAS_LIBCXX11_FLAG)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    endif()
   endif()
 endif()
 
