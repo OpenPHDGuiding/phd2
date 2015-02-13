@@ -107,7 +107,7 @@ The `wx_vc12.sln` Visual Studio solution is for Visual Studio 12 (Visual 2013, s
 The configuration on OSX looks a little bit complicated. We are using XCode 5 and above, which is shipped with Clang 3+.
 {{{
 cd $WXWIDGET_BASE_DIR
-../configure --enable-universal_binary=i386,x86_64 --disable-shared --with-libpng=builtin --with-cocoa --prefix=$WXWIN \
+./configure --enable-universal_binary=i386,x86_64 --disable-shared --with-libpng=builtin --with-cocoa --prefix=$WXWIN \
              --with-macosx-sdk=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/ \
              --with-macosx-version-min=10.7 \
              CXXFLAGS="-stdlib=libc++ -std=c++11" \
