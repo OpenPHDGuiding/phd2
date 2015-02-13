@@ -1,79 +1,98 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html><head>
-<meta name="GENERATOR" content="Microsoft� HTML Help Workshop 4.1"><title>Main Screen</title></head>
-<body>
-<h2>Main Screen</h2>
-The <span style="font-style: italic;">PHD2</span> main window is designed for ease of use and clarity.
-&nbsp;Its intent is to support a quick and natural sequence of
-interactions to start and control guiding. &nbsp;The basic steps
-for doing this are as follows:<br>
-<ol>
-<li>Connect to your guide camera and mount</li>
-<li>Start a sequence of guide exposures to see what stars are
-available in the field of view</li>
-<li>Choose a guide star and calibrate the guider</li>
-<li>Continue guiding on the target star while using various
-display tools to see how things are going</li>
-<li>Stop and resume guiding as necessary</li>
-</ol>
-<img style="width: 690px; height: 591px;" alt="" src="Main_Screen.png"><br>
-<p>The majority of the screen is taken up by the display of the star
-field from your guide camera. &nbsp;The display is automatically
-adjusted for size, brightness, and contrast so you can have a clear
-view of available stars. &nbsp;However, these adjustments are done only
-for display purposes. &nbsp;Internally, <span style="font-style: italic;">PHD2</span> operates on the raw,
-un-adjusted data in order to maximize guiding accuracy. &nbsp;This
-display is also used to select a guide star by simply clicking on it.<br></p>
-<h3><a name="Basic_control"></a>Basic control</h3>Near the bottom of the screen are the main
-controls. &nbsp;<span style="font-style: italic;">PHD2</span> is largely controlled by these buttons and
-sliders, with additional pull-down menus at the top of the window for
-more detailed functions. &nbsp;Moving from left to right in the
-window, the primary buttons are as follows: <br><ol><li>The camera icon - used to connect to your camera and mount devices</li><li>The
-loop icon - used to start a sequence of repeated exposures with the
-guide camera ("looping"), with each resultant image (guide frame) being
-displayed in the main window. &nbsp;If guiding is subsequently started,
-clicking on the 'loop' icon again will pause guiding while continuing
-to take guide exposures.</li><li>The guide/target icon - used to start calibration, if needed, and then to start guiding on the selected star. &nbsp;</li><li>The stop icon - used to stop both guiding and&nbsp;looping </li></ol><ol type="1">
-</ol>To the right of the stop icon is a pull-down list of exposure
-durations (0.01s - 15s). &nbsp;You use this control to quickly set the guide
-camera's exposure duration. &nbsp;If your camera does not support an
-exposure duration, <span style="font-style: italic;">PHD2</span> will do its best to emulate that duration.
-&nbsp;For example, if you use a short-exposure webcam, your maximum
-true exposure duration might be only 1/30th of a second. &nbsp;If you
-select one second as the desired exposure time, <span style="font-style: italic;">PHD2</span> will automatically
-acquire images for one second and stack them on the fly to create a
-composite image for guiding.
-<p>The next control to the right is a slider for adjusting screen
-stretch and contrast, essentially a "gamma" adjustment. &nbsp;<span style="font-style: italic;">PHD2</span>
-automatically adjusts the display accounting for the darkest and
-brightest pixels in the image, and the slider is used to fine-tune the
-display to better see the stars in the field of view.
-&nbsp;This may be useful, for example, if you are trying to focus the
-guide camera for the first time and need to see the large, out-of-focus
-star image. Moving the gamma slider only makes the display brighter or
-dimmer for your viewing. <span style="font-style: italic;">PHD2</span>
-always uses the raw pixels from the camera for guiding, and moving the
-gamma slider has no effect on guiding. &nbsp;A display of "completely
-white" or "completely black" is usually an indication that no stars are
-available in the field of view.</p>
-<p>Next to the gamma slider is the so-called "brain button." &nbsp;This button brings up an <a href="Advanced_settings.htm">Advanced Dialog </a>for making detailed adjustments to <span style="font-style: italic;">PHD2</span>'s guiding operations. &nbsp;A major
-design goal of the program is to minimize your need to change these
-parameters, but "the brain" is&nbsp;nothing to be feared - there are
-adjustments available here that can significantly improve your
-experience. &nbsp;Over a period of time, you should take a look at this
-dialog and learn what it can do for you.
-</p>The rightmost control in this row is a "camera
-dialog" button. &nbsp;This may be disabled ("grayed out") depending on
-the type of guide camera you have selected. &nbsp;If it is enabled, you
-can click on it to set various parameters that are unique to that type
-of camera - binning and specialized gain settings are examples of such parameters, but there
-could be others depending on the camera.
-<h3><a name="Menus"></a>Menus</h3>The pull-down menus above the main guider display are used to access a variety of functions. &nbsp;These are described in the <a href="Darks_BadPixel_Maps.htm">Darks</a>, <a href="Tools.htm">Tools and Utilities</a><big><big><span style="font-weight: bold;">, </span></big></big>and <a href="Visualization.htm">Visualization&nbsp;</a><span style="font-weight: bold;"></span>sections of this help document.
-<h3><a name="Status_Bar"></a>Status Bar</h3>The status bar at the bottom of the main window is
-used to display messages and status information that will help you keep
-track of guiding operations. &nbsp;For example, the rightmost three
-panels on the status bar will show you whether the camera and mount are
-connected and whether the guider has been successfully calibrated.
-&nbsp;
-<p></p>
-</body></html>
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="GENERATOR" content="Microsoft® HTML Help Workshop 4.1">
+    <title>Main Screen</title>
+  </head>
+  <body>
+    <h2>Главный экран<br>
+    </h2>
+    Предназначение главного окна <span style="font-style: italic;">PHD2</span>
+    в том, чтобы обеспечить простую и ясную последовательность действия
+    для гидирования. Основные шаги следующие:<br>
+    <ol>
+      <li>Подключение монтировки и гидирующей камеры </li>
+      <li>Запуск серийной съёмки для обнаружения пригодных для
+        гидирования звёзд</li>
+      <li>Выбор звезды для гидирования и калибровка гида<br>
+      </li>
+      <li>Гидирование с использованием различных средств визуализации</li>
+      <li>При необходимости остановка и продолжение гидирования<br>
+      </li>
+    </ol>
+    <img style="width: 699px; height: 653px;" alt=""
+      src="Main_Screen.png"><br>
+    <p>Большую часть окна занимает изображение звёздных полей,
+      полученное с помощью гидирующей камеры.&nbsp; Экран автоматически
+      подстраивается под размер, яркость и контрастность, чтобы звёзды
+      выглядели наиболее чёткими.&nbsp; Однако, эти настройки относятся
+      только к изображению.&nbsp; Сам <span style="font-style: italic;">PHD2</span>,&nbsp;
+
+      чтобы гидирование было наиболее эффективным, имеет дело с сырыми
+      необработанными данными, . Экран используется также и для выбора
+      гидируемой звезды.<br>
+    </p>
+    <h3><a name="Basic_control"></a>Основные инструменты управления<br>
+    </h3>
+    Они находятся в нижней части экрана.&nbsp; Вот из перечисление в том
+    порядке, как они расположены - слева направо: <br>
+    <ol>
+      <li>Кнопка камеры - для подключения камеры, монтировки и
+        дополнительного оборудования <br>
+      </li>
+      <li>Кнопка серийной съёмки - для съёмки гидирующей камерой
+        последовательности повторяющихся кадров, отображающихся в
+        главном окне программы.&nbsp; Нажатие на эту кнопку во время
+        гидирования остановит его, но серийная съёмка будет продолжена.</li>
+      <li>Кнопка гидирования - для калибровки (если нужно) и
+        последующего гидирования. &nbsp;</li>
+      <li>Кнопка останова - для завершения гидирования и серийной съёмки
+      </li>
+    </ol>
+    <ol type="1">
+    </ol>
+    Справа от кнопки останова находится раскрывающийся список выдержек
+    (0.01сек - 15сек).&nbsp; Если камера не поддерживает выбранную
+    выдержку, <span style="font-style: italic;">PHD2</span> её
+    имитирует.&nbsp; Возьмём, к примеру, веб-камеру с максимальной
+    выдержкой 1/30 секунды.&nbsp; Если выбрана секундная выдержка, <span
+      style="font-style: italic;">PHD2</span> на лету автоматически
+    сложит кадры с суммарным временем экспозиции в одну секунду.
+    <p>Следующий элемент - ползунок для управления уровнем яркости.
+      &nbsp;<span style="font-style: italic;">PHD2</span> автоматически
+      осуществляет грубую настройку, а ползунок может понадобиться для
+      тонкой настройки.&nbsp; Это может быть полезным, например, при
+      фокусировке гидирующей камеры по звёздам, чтобы сделать поярче их
+      расфокусированные изображения. Ещё раз напомним, что изменение
+      яркости относится только к изображению, но не к данным, с которыми
+      работает <span style="font-style: italic;">PHD2</span>.&nbsp; <br>
+    </p>
+    <p>Далее находится кнопка "мозг".&nbsp; Она относится к&nbsp; <a
+        href="Advanced_settings.htm">Настройкам</a> <span
+        style="font-style: italic;">PHD2</span>.&nbsp; Программа
+      разрабатывалась таким образом, чтобы минимизировать необходимость
+      их использования, однако в настройках нет ничего страшного -
+      изучение их может заметно повысить ваш опыт, чем вам и следует
+      заняться спустя некоторое время после начала освоения <span
+        style="font-style: italic;">PHD2</span>. </p>
+    Крайний справа инструмент - кнопка "Камера".&nbsp; В зависимости от
+    выбранного типа гидирующей камеры, она может быть неактивной
+    (серой).&nbsp; Когда кнопка активна, с её помощью можно установить
+    значения уникальных для камеры выбранного типа параметров -
+    например, биннинг или настройки чувствительности.Меню
+    <h3><a name="Menus"></a>Меню</h3>
+    Выпадающие меню наверху главного экрана используются для доступа к
+    различным функциям.&nbsp; Подробные сведения о них содержатся в
+    разделах '<a href="Darks_BadPixel_Maps.htm">Темновые кадры</a>', '<a
+      href="Tools.htm">Инструменты</a>' и '<a href="Visualization.htm">Средства&nbsp;визуализации</a>'<span
+      style="font-weight: bold;"></span>.
+    <h3><a name="Status_Bar"></a>Панель состояния<br>
+    </h3>
+    Панель состояния внизу главного окна используется для отображения
+    сообщений и информации для отслеживания процесса гидирования.
+    Например, справа в трёх крайних позициях отображается информация о
+    том, подключены ли камера и монтировка и проведена ли калибровка.
+    &nbsp;
+  </body>
+</html>
