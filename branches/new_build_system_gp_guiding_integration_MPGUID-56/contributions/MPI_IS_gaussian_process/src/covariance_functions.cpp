@@ -29,9 +29,9 @@
  *
  */
  
- /* Created by Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de> and 
-  * Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
-  */
+/* Created by Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de> and 
+ * Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
+ */
  
 #include <Eigen/Dense>
 #include <vector>
