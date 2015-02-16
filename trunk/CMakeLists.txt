@@ -1,6 +1,6 @@
 # CMake build system
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 project(OPENPHD)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
@@ -174,6 +174,10 @@ endif (MSVC)
 target_link_libraries(phd2 ${CFITSIO_LIBRARIES} )
 target_link_libraries(phd2 ${wxWidgets_LIBRARIES} )
 target_link_libraries(phd2 ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES} )
+if (${PC_INDI_VERSION} VERSION_LESS "1.0.0")
+   # pre 1.0.0 libindiclient as incompatibilities to check 
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOLDINDI" )
+endif (${PC_INDI_VERSION} VERSION_LESS "1.0.0")
 if (NOVA_FOUND)
     target_link_libraries(phd2 ${NOVA_LIBRARIES} )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIBNOVA" )
