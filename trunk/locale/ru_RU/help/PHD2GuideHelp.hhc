@@ -109,23 +109,23 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Manual Mount Control">
+			<param name="Name" value="Ручное управление монтировкой">
 			<param name="Local" value="Tools.htm#Manual_Guide">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Auto-select Star">
+			<param name="Name" value="Автоматический выбор звезды">
 			<param name="Local" value="Tools.htm#Auto-Select_Star">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Calibration Data">
+			<param name="Name" value="Калибровочные данные">
 			<param name="Local" value="Tools.htm#Manual_Control_of_Calibration_Data">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Server">
+			<param name="Name" value="Сервер">
 			<param name="Local" value="Tools.htm#PHD2_Server">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Drift Alignment">
+			<param name="Name" value="Установка полюса выравниванием">
 			<param name="Local" value="Tools.htm#Drift_Align">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
