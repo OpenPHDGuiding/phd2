@@ -445,7 +445,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         }
         // Show the line PHD2 will use for the rate
         memDC.SetPen(redPen);
-        if (calDetails.raSteps.size() > calDetails.raStepCount)         // New calib, includes return values
+        if ((int)calDetails.raSteps.size() > calDetails.raStepCount)         // New calib, includes return values
             memDC.DrawLine(IntPoint(calDetails.raSteps.at(0), scaleFactor), IntPoint(calDetails.raSteps.at(calDetails.raStepCount), scaleFactor));
         else
             memDC.DrawLine(IntPoint(calDetails.raSteps.at(0), scaleFactor), IntPoint(calDetails.raSteps.at(calDetails.raStepCount - 1), scaleFactor));
@@ -469,7 +469,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         }
         // Show the line PHD2 will use for the rate
         memDC.SetPen(bluePen);
-        if (calDetails.decSteps.size() > calDetails.decStepCount)         // New calib, includes return values
+        if ((int)calDetails.decSteps.size() > calDetails.decStepCount)         // New calib, includes return values
             memDC.DrawLine(IntPoint(calDetails.decSteps.at(0), scaleFactor), IntPoint(calDetails.decSteps.at(calDetails.decStepCount), scaleFactor));
         else
         memDC.DrawLine(IntPoint(calDetails.decSteps.at(0), scaleFactor), IntPoint(calDetails.decSteps.at(calDetails.decStepCount - 1), scaleFactor));
