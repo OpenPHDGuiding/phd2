@@ -435,7 +435,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         // Scale the points, then plot them individually
         for (int i = 0; i < (int) calDetails.raSteps.size(); i++)
         {
-            if (i == calDetails.raStepCount + 2)        // Safe even for "single-step" calibration
+            if (i == calDetails.raStepCount + 2)        // Valid even for "single-step" calibration
             {
                 memDC.SetPen(wxPen("Red", 1));         // 1-pixel-thick red outline
                 memDC.SetBrush(wxNullBrush);           // Outline only for "return" data points
@@ -445,7 +445,10 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         }
         // Show the line PHD2 will use for the rate
         memDC.SetPen(redPen);
-        memDC.DrawLine(IntPoint(calDetails.raSteps.at(0), scaleFactor), IntPoint(calDetails.raSteps.at(calDetails.raStepCount), scaleFactor));
+        if (calDetails.raSteps.size() > calDetails.raStepCount)         // New calib, includes return values
+            memDC.DrawLine(IntPoint(calDetails.raSteps.at(0), scaleFactor), IntPoint(calDetails.raSteps.at(calDetails.raStepCount), scaleFactor));
+        else
+            memDC.DrawLine(IntPoint(calDetails.raSteps.at(0), scaleFactor), IntPoint(calDetails.raSteps.at(calDetails.raStepCount - 1), scaleFactor));
     }
 
     // Handle the Dec data
@@ -466,7 +469,10 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
         }
         // Show the line PHD2 will use for the rate
         memDC.SetPen(bluePen);
-        memDC.DrawLine(IntPoint(calDetails.decSteps.at(0), scaleFactor), IntPoint(calDetails.decSteps.at(calDetails.decStepCount), scaleFactor));
+        if (calDetails.decSteps.size() > calDetails.decStepCount)         // New calib, includes return values
+            memDC.DrawLine(IntPoint(calDetails.decSteps.at(0), scaleFactor), IntPoint(calDetails.decSteps.at(calDetails.decStepCount), scaleFactor));
+        else
+        memDC.DrawLine(IntPoint(calDetails.decSteps.at(0), scaleFactor), IntPoint(calDetails.decSteps.at(calDetails.decStepCount - 1), scaleFactor));
     }
 
     memDC.SelectObject(wxNullBitmap);
