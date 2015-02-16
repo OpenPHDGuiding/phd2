@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-07 16:03-0500\n"
-"PO-Revision-Date: 2015-02-13 14:48+0300\n"
+"PO-Revision-Date: 2015-02-16 16:08+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -1564,7 +1564,7 @@ msgstr "Начало гидирования..."
 
 #: drift_tool.cpp:468
 msgid "Drifting... click Adjust when done drifting"
-msgstr ""
+msgstr "Дрейф.. Нажмите 'Установить' по его завершению"
 
 #: drift_tool.cpp:484
 msgid "Adjust azimuth, click Drift when done"

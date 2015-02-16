@@ -33,6 +33,9 @@
       style="font-weight: bold;"><span style="font-weight: bold;"></span></span>вы
 
 
+
+
+
     увидите окно, инструменты которого позволят перемещать монтировку со
     скоростью гидирования в любом направлении. Каждый раз при нажатии
     кнопок направления посылается импульс длительность которого задана
@@ -64,150 +67,130 @@
     быть уверены, что основная камера не находится в процессе съёмки.<br>
     <h3><a name="Auto-Select_Star"></a>Автоматический выбор звезды<br>
     </h3>
-    Clicking on 'Auto-select Star' under the 'Tools' menu, or using the
-    keyboard shortcut of &lt;Alt&gt;S, tells <span style="font-style:
-      italic;">PHD2</span> to scan the current guide image and identify
-    a star suitable for guiding. &nbsp;PHD2 will try to select a star of
-    sufficient brightness that is not near another star and not too
-    close to the edge of the frame. &nbsp;The selected star may appear
-    overly dim on the screen, but this is usually not a problem.
-    &nbsp;You can use the&nbsp;<a
-      href="Visualization.htm#Star_Profile_and_Target_Displays">Star
-      Profile</a>&nbsp;tool to examine the properties of the selected
-    star - it should be non-saturated with a sharp profile, the same
-    properties you should look for when choosing a guide star
-    manually.&nbsp; The auto-select process is not infallible, so you
-    may need to select a star yourself if you don't like the automated
-    result. &nbsp;If you want to use Auto-Select, you should definitely
-    use either a bad-pixel map or dark library to reduce the likelihood
-    of PHD2 mistakenly choosing a hot pixel.
+    Нажатие кнопки 'Автоматический выбор звезды' в меню 'Инструменты'
+    или горячих клавиш &lt;Alt&gt;S запустит процесс сканирования
+    изображения на предмет определения пригодной для гидирования звезды.
+    &nbsp;PHD2 попытается найти звезду подходящей яркости, находящуюся
+    не очень близко от края кадра и других звёзд.&nbsp; Выбранная звезда
+    может показаться слишком тусклой, но обычно это не является
+    проблемой.&nbsp; Инструмент <a
+      href="Visualization.htm#Star_Profile_and_Target_Displays">Профиль
+      звезды</a> показывает её свлйства -звезда должна быть резкой и не
+    окрашенной,так же, как и при ручном выборе.&nbsp; Автоматический
+    выбор не является непогрешимым и если его результат не устраивает,
+    звезду можно выбрать вручную.&nbsp; При автоматическом выборе лучше
+    использовать карту плохих пикселей или темновую библиотеку, чтобы
+    уменьшить вероятность выбора горячего пикселя вместо звезды.
     <h3><a name="Manual_Control_of_Calibration_Data"></a>Ручное
       управление калибровочными данными<br>
     </h3>
-    Calibration data is saved automatically each time a calibration
-    sequence completes successfully. &nbsp;The use of the calibration
-    data has been described elsewhere (<a href="Basic_use.htm">Using PHD
-      Guiding</a>), including &nbsp;options for restoring calibration
-    data from an earlier time or "flipping" it after a meridian flip.
-    &nbsp;You access these functions using the 'Calibration' sub-menu
-    under the 'Tools' menu. &nbsp;Two other calibration-related items
-    are&nbsp; shown there, namely the options to clear the current data
-    or to enter calibration data manually. &nbsp;The "clear" option
-    accomplishes the same thing as the 'Clear calibration' checkbox in
-    the Advanced Dialog - it will force a recalibration whenever guiding
-    is resumed. &nbsp;The 'Enter calibration data' option&nbsp;should be
-    used&nbsp;only under very unusual circumstances and only if you're
-    sure you know what you're doing; but it is available as a matter of
-    completeness. &nbsp;If you click on the 'Enter calibration data'
-    item, you'll see a dialog box that allows input of relatively
-    low-level calibration data. &nbsp;This data might come from a much
-    earlier session, perhaps extracted from the <span
-      style="font-style: italic;">PHD2</span> guiding log file.<br>
+    Калибровочные данные автоматически запоминаются при успешно
+    осуществлённой калибровке.&nbsp; Их использование описано в другом
+    месте (<a href="Basic_use.htm">Основы использования</a>), включая
+    восстановление данных предыдущей калибровки или их 'перекладки'
+    после перекладки меридиана.&nbsp; Эти функции доступны через подменю
+    'Изменить калибровку' меню 'Инструменты'.&nbsp; Пункт 'Очистить
+    калибровочные данные' соответствует флажку 'Сброс калибровки' во
+    вкладке 'Монтировка' настроек PHD2, а именно, делает принудительную
+    калибровку после возобновления гидирования.&nbsp; Пункт 'Ввести
+    данные калибровки' должен использоваться лишь в особых случаях и
+    только если вы знаете, что делаете.&nbsp; При выборе этого пункта
+    появится окошко, позволяющее ввести низкоуровневые калибровочные
+    данные.&nbsp; Они могут браться из старой сессии, возможно, из лога
+    гидирования <span style="font-style: italic;">PHD2</span>.<br>
     <br>
     <h3><a name="PHD2_Server"></a>Сервер<span style="font-style:
         italic;"> PHD2</span> </h3>
-    <span style="font-style: italic;">PHD2</span> supports third-party
-    imaging and automation applications that need to control the guiding
-    process. &nbsp;Stark Labs' <span style="font-style: italic;">Nebulosity
+    <span style="font-style: italic;">PHD2</span> позволяет внешним
+    приложениям управлять процессом гидирования. Первой из таких
+    программ была&nbsp; <span style="font-style: italic;">Nebulosity </span>компании
 
 
-
-
-    </span>program was the first to do this, but other applications have
-    subsequently been produced. &nbsp;By using the <span
-      style="font-style: italic;">PHD2</span> server process, image
-    capture programs can control dithering between exposures or suspend
-    guide exposures while the primary imaging camera is downloading
-    data. &nbsp;To use these capabilities with a compatible application,
-    you should click on&nbsp; the '<a name="Enable_Server"></a>Enable
-    Server' option under the 'Tools' menu. &nbsp;The server interface
-    has been reworked substantially in <span style="font-style:
-      italic;">PHD2</span>, and it's now possible for an application to
-    control most aspects of <span style="font-style: italic;">PHD2</span>'s
-
-
-
-    guiding operations. &nbsp;Documentation for the server API is
-    available on the <a
+    Stark Labs, но в настоящее время существуют и другие.&nbsp;
+    Используя сервер <span style="font-style: italic;">PHD2</span>
+    можно управлять подвижками между экспозициями или приостанавливать
+    гидирующую съёмку во время передачи данных с основной камеры.&nbsp;
+    Для задействования этих возможностей нужно установить флажок'<a
+      name="Enable_Server"></a>Включить сервер' в меню
+    'Инструменты'.&nbsp; Серверный интерфейс был значительно переработан
+    в&nbsp; <span style="font-style: italic;">PHD2</span>, и теперь
+    позволяет внешним приложениям управлять большинством аспектов
+    гидирования.&nbsp; Документация по программному интерфейсу сервера
+    находится на <a
       href="https://code.google.com/p/open-phd-guiding/w/list">PHD2 Wiki</a>.<br>
     <br>
     <h3><a name="Drift_Align"></a>Установка полюса</h3>
-    Drift alignment is a well-known technique for achieving polar
-    alignment and is considered by many to be the "gold standard".
-    &nbsp;The Drift Alignment tool is a "wizard-like" sequence of
-    dialogs that can help you work through the drift alignment process
-    and get quantifiable results. &nbsp;Once you've calibrated your
-    guider, click on 'Drift Align' under the 'Tools' menu. &nbsp;The
-    first Drift Align dialog will appear to help you adjust the azimuth
-    on your mount. &nbsp;If you are using an ASCOM mount, you'll have
-    the option of slewing to an area near the celestial equator and the
-    celestial meridian. &nbsp;If you're not using an ASCOM mount, you'll
-    need to slew to that location manually. &nbsp;Once the scope is
-    positioned and you have a suitable star in the field of view, click
-    on the 'Drift' button to begin collecting data. &nbsp;You'll see the
-    graph window with a display of star deflections and corrections and,
-    more importantly, two trendlines. When the mount is precisely polar
-    aligned in azimuth, the Declination trend line will be perfectly
-    horizontal. &nbsp;Let the exposures continue until the declination
-    trendline has stabilized and is no longer jumping around with each
-    new exposure. &nbsp;At the bottom of the graph window, you'll see a
-    measurement for the polar alignment error in azimuth. And, in the
-    image window, you will see a magenta circle around the guide star.
-    The circle indicates an upper limit on how far the guide star needs
-    to move when azimuth is adjusted. (Initially, the circle may be too
-    large to be visible on the screen, so you may not see it until your
-    alignment gets closer.)<br>
+    Метод дрейфа - хорошо известный способ установки полюса, "золотой
+    стандарт" по мнению многих.&nbsp; Инструмент Установка Полюса&nbsp;
+    - это последовательность диалогов, которые облегчают процесс
+    установки полюса дрейфом.&nbsp; После завершения калибровки выберите
+    пункт 'Установка полюса' в меню 'Инструменты'.&nbsp; Появится первый
+    диалог, предлагающий установить азимут монтировки.&nbsp; В случае
+    совместимой с ASCOM монтировки вам будет предоставлена возможность
+    навестись на область у небесного экватора и небесного меридиана; в
+    противном случае наводиться придётся вручную.&nbsp; После этого,
+    если на экране видны подходящие звёзды, нажмите кнопку
+    'Дрейф'.&nbsp; Появится окно с графиком, показывающим отклонения
+    звезды и их корректировки и, что самое главное, две направляющие.
+    Когда полюс выставлен точно по азимуту, направляющая склонения будет
+    идеально горизонтальной.&nbsp; Подождите, пока направляющая
+    склонения стабилизируется и перестанет прыгать туда-сюда с каждым
+    новым кадром. Вокруг гидируемой звезды вы увидите пурпурную
+    окружность, а в нижней части экрана сообщение о величине ошибки
+    выравнивания по азимуту. Окружность показывает максимальное
+    значение, на которое можно переместить звезду, чтобы выровнять
+    азимут (в начале выравнивания окружность может быть настолько
+    большой, что не поместится на экране, пока вы не выравняете азимут
+    ближе к полюсу).<br>
     <br>
-    Now click on the 'Adjust' button to halt guiding, then make a&nbsp;
-    mechanical adjustment in azimuth. Watch the guide star as you make
-    the adjustment, moving the guide star towards the magenta circle,
-    but not beyond it.&nbsp;Once done, click on the 'drift' button again
-    to repeat the measurement. If your adjustment was in the right
-    direction and did not over-shoot, the Declination trendline will be
-    closer to horizontal. &nbsp;Continue iterating in this way until you
-    are satisfied with your azimuth accuracy. &nbsp;You can use the
-    'notes' field to record which way the drift line moves depending on
-    how you make the adjustment. &nbsp;For example, you might note that
-    a counter-clockwise turn of the mount azimuth knob moves the drift
-    line "up." &nbsp;Since these notes are retained across <span
-      style="font-style: italic;">PHD2</span> sessions, subsequent drift
-    alignments will probably proceed more quickly.<br>
+    Нажмите кнопку&nbsp; 'Установить', чтобы прервать гидирование и
+    выровняйте полюс по азимуту. Звезда должна переместиться в
+    направлении окружности, но не выходя за неё. Затем снова нажмите
+    кнопку 'Дрейф', чтобы повторить изменения. Если предыдущее
+    выравнивание было в правильном направлении, направляющая склонения
+    станет более горизонтальной.&nbsp; Продолжайте итерации до тех пор,
+    пока качество выравнивания вас не удовлетворит.&nbsp; По ходу
+    действия вы можете оставлять примечания о результатах выравнивания;
+    например, что при вращении ручки регулировки азимута против часовой
+    стрелки линия дрейфа "поднимается". Поскольку эти заметки
+    сохранятся,&nbsp; выравнивание в последующих сессиях сможет пройти
+    быстрее.<br>
     <br>
-    Until you are experienced with drift aligning your particular mount,
-    the 'adjustment' part of the process can be a bit tedious. &nbsp;At
-    first, you'll have to determine how to adjust a knob on the mount to
-    achieve the desired effect: "how much" and "what direction."
-    &nbsp;To help with this, the <span style="font-style: italic;">PHD2</span>
-    drift align tool supports "bookmarks". &nbsp;These are a handy way
-    to record the positions of the guide star before and after you've
-    made an adjustment. &nbsp;<a name="Bookmarks"></a>Bookmarks are
-    accessed using the Bookmarks menu, or keyboard shortcuts, as
-    follows: <br>
+    Пока вы не приобретёте опыт установки полюса дрейфом на своей
+    монтировке, выравнивание может показаться довольно нудным
+    делом.&nbsp; Для начала определитесь с ручками: в каком направлении
+    и насколько нужно их крутить, чтобы добиться нужного эффекта.&nbsp;
+    Для облегчения процесса вы можете воспользоваться
+    "закладками".&nbsp; Это удобный способ записать положения гидируемой
+    звезды.&nbsp; <a name="Bookmarks"></a>Закладки доступны через
+    соответствующее меню или с помощью горячих клавиш:<br>
     <ul>
-      <li>b&nbsp;: toggle/show bookmarks&nbsp;</li>
-      <li>Shift-b : set a bookark at the current guide star position
-        (the "lock position")</li>
-      <li>Ctrl-b : clear all bookmarks&nbsp;</li>
-      <li>Ctrl-click somewhere on the image: set a bookmark at that
-        position, or remove the bookmark that's already there</li>
+      <li>b&nbsp;: показать/скрыть закладки<br>
+      </li>
+      <li>Shift-b : запомнить текущее положение звезды</li>
+      <li>Ctrl-b : сбросить все закладки <br>
+      </li>
+      <li>Ctrl-click где-нибудь на изображении: установить закладку на
+        эту позицию или сбросить если закладка была уже здесь
+        установлена</li>
     </ul>
-    By setting a bookmark before you make a mount adjustment, you can
-    get a clear view of how the adjustment has moved the star on the
-    guide frame.<br>
+    По установленным закладкам вы будете видеть, как двигалась звезда в
+    процессе выравнивания. <br>
     <br>
-    Next, click on the 'Altitude' button. &nbsp;Then slew the scope to a
-    position near the celestial equator and 25-30 degrees above the
-    horizon. &nbsp;Click on the 'drift' button to begin collecting data
-    for the altitude part of the alignment process. &nbsp;As before, you
-    will iterate between making adjustments and measuring your alignment
-    until you are satisfied with the result, keeping notes as you go
-    about how mount adjustments affect the behavior of the declination
-    drift line. &nbsp;If you make substantial adjustments in altitude,
-    you'll need to go back to the 'azimuth' measurement and repeat that
-    procedure. &nbsp;If you work through these procedures
-    systematically, you'll converge on a good polar alignment with a
-    known degree of accuracy. &nbsp;A good polar alignment
-    will&nbsp;help your guiding performance, especially in declination.<br>
+    После завершения выравнивания по азимуту нажмите кнопку
+    'Высота'.&nbsp; Затем наведитесь на область у небесного экватора на
+    высоте 25-30 градусов от горизонта. &nbsp;Click on the 'drift'
+    button to begin collecting data for the altitude part of the
+    alignment process. &nbsp;As before, you will iterate between making
+    adjustments and measuring your alignment until you are satisfied
+    with the result, keeping notes as you go about how mount adjustments
+    affect the behavior of the declination drift line. &nbsp;If you make
+    substantial adjustments in altitude, you'll need to go back to the
+    'azimuth' measurement and repeat that procedure. &nbsp;If you work
+    through these procedures systematically, you'll converge on a good
+    polar alignment with a known degree of accuracy. &nbsp;A good polar
+    alignment will&nbsp;help your guiding performance, especially in
+    declination.<br>
     <br>
     The drift alignment tool is easiest to use when you are using an
     ASCOM connection to your mount (including an 'Aux' connection).
