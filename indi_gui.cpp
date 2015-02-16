@@ -100,7 +100,11 @@ void IndiGui::newText(ITextVectorProperty *tvp)
 void IndiGui::newMessage(INDI::BaseDevice *dp, int messageID)
 {
    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWMESSAGE_EVENT);
+#ifdef OLDINDI   
    const char *msg = dp->messageQueue(messageID);
+#else   
+   const char *msg = dp->messageQueue(messageID).c_str(); // http://sourceforge.net/p/indi/code/1803/
+#endif   
    event->SetExtraLong((long) msg);
    wxQueueEvent(this, event);
 }
@@ -503,8 +507,9 @@ void IndiGui::OnNewMessageFromThread(wxThreadEvent& event)
       textbuffer->WriteText(wxString::FromAscii(message));
       textbuffer->WriteText(_T("\n"));
    }
-   
-   delete message;
+#ifdef OLDINDI
+   delete message; //http://sourceforge.net/p/indi/code/1803/
+#endif   
 }
 
 void IndiGui::SetButtonEvent(wxCommandEvent & event)
