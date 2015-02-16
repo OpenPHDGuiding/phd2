@@ -111,7 +111,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "</tr>"
         "<tr>"
         "<td>Tsung-Chi Wu</td>"
-        "<td></td>"
+        "<td>Raffi Enficiaud</td>"
         "</tr>"
         "</table><br>"
         "<br>"
@@ -124,6 +124,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "Copyright 2013-2014 Bruce Waddington<br>"
         "Copyright 2014 Hans Lambermont<br>"
         "Copyright 2014 Robin Glover<br>"
+        "Copyright 2014-2015 Max Planck Society<br>"
         "</font>"
         "</body></html>", APPNAME, FULLVER));
     wxHtmlWindow *pHtml;
