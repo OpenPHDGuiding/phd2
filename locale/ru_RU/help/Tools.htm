@@ -13,10 +13,11 @@
       калибровочными данными</a><br>
     <a href="#PHD2_Server">Сервер PHD2</a><br>
     <a href="#Drift_Align">Установка полюса</a><br>
-    <a href="#Lock_Positions">Lock Positions</a><br>
-    <a href="#Comet_Tracking">Comet Tracking</a><br>
-    <a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br>
-    <a href="#Advanced_Settings_for_the_Simulators">Simulator Parameters</a><br>
+    <a href="#Lock_Positions">Сохранение положения звезды</a><br>
+    <a href="#Comet_Tracking">Отслеживание комет</a><br>
+    <a href="#Managing_Equipment_Profiles">Профили оборудования</a><br>
+    <a href="#Advanced_Settings_for_the_Simulators">Настройки
+      симуляторов</a><br>
     <h3><a name="Manual_Guide"></a>Ручное гидирование<br>
     </h3>
     <br>
@@ -31,9 +32,6 @@
     (например, при экспериментах с подвижками).&nbsp; Выбрав пункт
     'Ручное гидирование' в меню 'Инструменты', <span
       style="font-weight: bold;"><span style="font-weight: bold;"></span></span>вы
-
-
-
 
 
     увидите окно, инструменты которого позволят перемещать монтировку со
@@ -105,7 +103,6 @@
     приложениям управлять процессом гидирования. Первой из таких
     программ была&nbsp; <span style="font-style: italic;">Nebulosity </span>компании
 
-
     Stark Labs, но в настоящее время существуют и другие.&nbsp;
     Используя сервер <span style="font-style: italic;">PHD2</span>
     можно управлять подвижками между экспозициями или приостанавливать
@@ -174,174 +171,166 @@
         эту позицию или сбросить если закладка была уже здесь
         установлена</li>
     </ul>
-    По установленным закладкам вы будете видеть, как двигалась звезда в
-    процессе выравнивания. <br>
+    Установленные вами закладки наглядно показывают, как двигалась
+    звезда в процессе выравнивания. <br>
     <br>
     После завершения выравнивания по азимуту нажмите кнопку
     'Высота'.&nbsp; Затем наведитесь на область у небесного экватора на
-    высоте 25-30 градусов от горизонта. &nbsp;Click on the 'drift'
-    button to begin collecting data for the altitude part of the
-    alignment process. &nbsp;As before, you will iterate between making
-    adjustments and measuring your alignment until you are satisfied
-    with the result, keeping notes as you go about how mount adjustments
-    affect the behavior of the declination drift line. &nbsp;If you make
-    substantial adjustments in altitude, you'll need to go back to the
-    'azimuth' measurement and repeat that procedure. &nbsp;If you work
-    through these procedures systematically, you'll converge on a good
-    polar alignment with a known degree of accuracy. &nbsp;A good polar
-    alignment will&nbsp;help your guiding performance, especially in
-    declination.<br>
+    высоте 25-30 градусов от горизонта.&nbsp; Нажатие кнопки 'Высота'
+    начинает сбор данных для второй части установки полюса -
+    выравнивания по высоте.&nbsp; Как и прежде, процесс состоит из
+    итераций сдвигов монтировки и замеров результатов выравнивания до
+    тех пор, пока вы не будете удовлетворены результатом.&nbsp; После
+    значительного выравнивания по высоте нужно вернуться к измерению
+    азимута и повторить процедуру.&nbsp; Систематически повторяя эти
+    действия, вы получите хорошо установленный полюс.&nbsp; Аккуратное
+    полярное выравнивание улучшит производительность гидирования,
+    особенно по склонению.<br>
     <br>
-    The drift alignment tool is easiest to use when you are using an
-    ASCOM connection to your mount (including an 'Aux' connection).
-    &nbsp;Even if you subsequently want to use ST-4 style guiding, you
-    should use the ASCOM connection for drift alignment. &nbsp;If you
-    can't do that for some reason, the following features will be
-    impaired:<br>
+    Проще всего проводить выравнивание дрейфом, если монтировка
+    совместима с&nbsp; ASCOM (включая 'дополнительное'
+    соединение).&nbsp; Даже если вы хотите гидировать чере порт ST-4,
+    для выравнивания дрейфом следует использовать соединение ASCOM,
+    поскольку, в противном случае, вы столкнётесь со следующими
+    проблемами:<br>
     <ul>
-      <li>Scope position data and slewing functions will not be
-        available - you'll have to slew the scope yourself</li>
-      <li>The magenta circle that identifies the "target" for moving the
-        star will be inaccurate and will be displayed as a dashed line.
-        &nbsp;This dashed circle will identify only an upper bound to
-        the adjustment, so you will probably want to make smaller
-        adjustments to avoid over-shooting.</li>
+      <li>Данные о положении телескопа и функции наведения будут
+        недоступны - наводиться придётся вручную</li>
+      <li>Пурпурная окружность, обозначающая цель для движения звезды,
+        будет приблизительной и потому будет нарисована пунктиром.&nbsp;
+        Она обозначит только верхнюю границу выравнивания, а потому
+        придётся делать небольшие выравнивания, чтобы избежать&nbsp;
+        избыточного сдвига.<br>
+      </li>
     </ul>
-    A very complete step-by-step tutorial for drift alignment is
-    available on the Openphdguiding web site, and first-time users are
-    strongly encouraged to study it.
-    (https://sites.google.com/site/openphdguiding/phd2-drift-alignment)<br>
-    <h3><a name="Lock_Positions"></a>Lock Positions</h3>
-    <span style="font-style: italic;">PHD2</span> normally sets a 'lock
-    position' where the guide star is located at the end of calibration.
-    &nbsp;Depending on the details of the calibration sequence, this may
-    not be exactly where the star was located at the start of
-    calibration - it could be off by a few pixels. &nbsp;If you are
-    trying to precisely center your target, you may want to use a
-    'sticky lock position.' &nbsp;You do this by clicking on your guide
-    star <span style="font-style: italic;">before calibration</span>,
-    then setting the 'Sticky Lock Position' under the 'Tools' menu.
-    &nbsp;After calibration is complete, <span style="font-style:
-      italic;">PHD2</span> will continue to move the mount until the
-    star is located at the sticky lock&nbsp;position. &nbsp;So you may
-    see an additional delay after the calibration while <span
-      style="font-style: italic;">PHD2</span> repositions the scope at
-    guide speed. &nbsp;The sticky lock position will continue to be used
-    even as guiding is stopped and subsequently resumed. &nbsp;Again,
-    this insures a rigorous positioning of the guide star (and
-    presumably your image target) at the expense of delays needed for <span
-      style="font-style: italic;">PHD2</span> to reposition the mount.
-    <h3><a name="Comet_Tracking"></a>Comet Tracking</h3>
-    One way to image a comet is to have PHD2 use the comet as the guide
-    "star", but this approach may not always work. For example, the head
-    of the comet may not present a star-like center suitable for
-    guiding. Or, when using an off-axis guider, the comet may not even
-    be visible in the guide camera.<br>
+    Очень подробное руководство по выравниванию дрейфом доступно на
+    веб-сайте Openphdguiding, и новичкам крайне желательно было бы его
+    изучить (<a
+      href="https://sites.google.com/site/openphdguiding/phd2-drift-alignment">https://sites.google.com/site/openphdguiding/phd2-drift-alignment</a>)<br>
+    <h3><a name="Lock_Positions"></a>Сохранение положения звезды<br>
+    </h3>
+    В зависимости от особенностей последовательности действий при
+    калибровке положение звезды после её завершения может отличаться от
+    её начального положения на несколько пикселей.&nbsp; Если Вы хотите,
+    чтобы положение звезды оставалось неизменным, в меню 'Инструменты'
+    установите флажок 'Сохранять положение звезды'.&nbsp; При этом после
+    завершения калибровки возможна небольшая задержка, когда&nbsp; <span
+      style="font-style: italic;">PHD2</span> со скоростью гидирования
+    восстанавливает положение звезды.&nbsp; Оно останется неизменным
+    даже при остановке и возобновлении гидирования.&nbsp; Строгое
+    позиционирование опорной звезды осуществляется за счёт задержек, во
+    время которых&nbsp; <span style="font-style: italic;">PHD2</span>
+    компенсирует её смещение; при этом на монтировку подаются
+    соответствующие команды.
+    <h3><a name="Comet_Tracking"></a>Отслеживание комет</h3>
+    Одним из способов получить неподвижное изображение кометы для съёмки
+    является использование в качестве гидируемой "звезды"её самой. К
+    сожалению, это не всегда получается: например, ядро кометы может
+    быть выглядеть недостаточно "звездообразным" для гидирования; или,
+    при использовании внеосевика комета может находиться вне поля зрения
+    гида.<br>
     <br>
-    PHD2 provides a Comet Tracking tool for use when guiding on the
-    comet itself is not feasible. The idea is to guide on an ordinary
-    star, but to gradually shift the lock position to match the comet's
-    motion, or <i>tracking rate</i>.<br>
+    PHD2 предоставляет средство отслеживания комет для случаев, когда
+    гидирование по комете невозможно. Для гидирования используется
+    обычная звезда, постепенно смещаемая в соответствии с движением
+    кометы&nbsp; (<i>скоростью отслеживания</i>).<br>
     <br>
-    There are a three different ways to provide the comet tracking rate
-    to PHD2.<br>
+    PHD2 может отслеживать движение кометы тремя различными способами:<br>
     <br>
     <ul>
-      <li>Some planetarium applications, like Cartes du Ciel, can send
-        the rate directly to PHD2;</li>
-      <li>You can enter the tracking rate manually, or,</li>
-      <li>You can train the rate in PHD2 by following the comet for a
-        period of time in the imaging camera.</li>
+      <li>Электронные планетарии, такие как Cartes du Ciel, могут
+        посылать команды, соответствующие смещению кометы, напрямую в
+        PHD2;</li>
+      <li>Величину смещения можно задать вручную; <br>
+      </li>
+      <li>Можно обучить PHD2 вычислить скорость смещения, следуя за
+        кометой в течение некоторого промежутка времени.</li>
     </ul>
     <br>
     <br>
-    <img style="width: 426px; height: 408px;" alt=""
+    <img style="width: 428px; height: 411px;" alt=""
       src="CometTrackingTool.png"><br>
     <br>
     <br>
-    To enter the rate manually, you would select "Arcsec/hr" for units
-    and "RA/Dec" for axes, then enter the rates from the comet's
-    ephemeris.<br>
+    Чтобы ввести скорость вручную, нужно выбрать "Угл.сек./сек" для
+    устройств и "RA/Dec" для осей монтировки, затем ввести значения из
+    кометных эфемерид.<br>
     <br>
-    Comet rate training works like this:<br>
+    Обучение осуществляется следующим образом:<br>
     <br>
-    First, center the comet in your imaging camera. If your imaging
-    application has some kind of reticle display, you should use that to
-    note the precise position of the comet on the imaging sensor. Once
-    this is ready, select a guide star in PHD2 and start guiding. Next
-    click "Start" in the Comet Tracking tool to begin training.<br>
+    Поместите комету в центр изображения фотокамеры. Если ваше
+    приложение имеет возможность показывать перекрестье, используйте его
+    для более точного позиционирования кометы. Затем, выбрав опорную
+    звезду в PHD2, приступите к гидированию, после чего нажмите кнопку
+    "Начать" в окне отслеживания кометы. Начнётся процесс обучения.<br>
     <br>
-    Take a continuous series of short exposures in your imaging camera
-    using your imaging application's Frame and Focus feature. Over time,
-    the comet will drift away from the starting location. Use PHD2's
-    "Adjust Lock Position" controls to move the comet back to the
-    starting location. You may have to experiment a bit to determine
-    which way the comet moves on the imaging camera sensor in response
-    to the Up/Down/Left/Right controls in PHD2. You may find it useful
-    to enable the "Always on top" button in the Adjust Lock Position
-    window so the controls stay visible on top of your imaging
-    application.<br>
+    Сделайте непрерывную серию коротких экспозиций фотокамеры. Со
+    временем комета сместится с места своего первоначального
+    местоположения. Используйте пункт "Подтвердить выбранное положение"
+    меню "Инструменты", чтобы вернуть комету на первоначальное место.
+    Можно немного поэкспериментировать, выясняя, как изменяется
+    положение кометы в фотокамере при нажатии навигационных кнопок в
+    PHD2. Чтобы они были всегда видны, в окне подтверждения выбранного
+    положения можно установить флажок "Всегда поверх".<br>
     <br>
-    PHD2 will quickly learn the comet tracking rate as you re-center the
-    comet. Once you are satisfied that PHD2 is tracking the comet, you
-    can click Stop to end the training. PHD2 will continue shifting the
-    lock position to track the comet until you disable comet tracking by
-    toggling the Enable button.<br>
+    После того, как вы снова поместите комету в центр кадра, PHD2 быстро
+    подсчитает скорость её смещения. Если результаты вас удовлетворят,
+    нажмите кнопку 'Остановить', чтобы прекратить обучение. PHD2 будет
+    отслеживать комету до тех пор, пока вы не нажмёте кнопку
+    'Отключить'.<br>
     <br>
-    You can practice the comet training technique using the built-in
-    camera simulator. Check the "Comet" option in the Cam Dialog, and
-    the simulator will display a comet. Use a bookmark to mark the
-    comet's starting location, and use the Adjust Lock Position controls
-    to move the comet back to the bookmark location. <br>
-    <h3><a name="Managing_Equipment_Profiles"></a>Managing Equipment
-      Profiles</h3>
-    Equipment profiles were introduced in the section on <a
-      href="Basic_use.htm">Basic Use</a> where they are used as part of
-    the 'Connect Equipment' dialog. &nbsp;If you want to manage multiple
-    profiles, you will probably want to use the 'Manage Profiles' button
-    in the 'Connect Equipment' dialog. &nbsp;Using the menu items there,
-    you can create a new profile or&nbsp;edit/rename/delete an existing
-    one. &nbsp;Each profile holds all the settings that were active at
-    the time the profile was last used. &nbsp;If you create a new
-    profile, you can import these settings from either the <span
-      style="font-style: italic;">PHD2</span> generic defaults or from
-    an existing profile. &nbsp;You can also use the 'Wizard' option to
-    have PHD2 establish settings that are specific to your equipment
-    configuration. &nbsp;To edit the settings in an existing profile,
-    you first select it in the equipment profile drop-down list, then
-    click on 'Settings' under the '<a name="Manage_Profiles"></a>Manage
-    Profiles' pull-down. &nbsp;This will take you to the 'Brain' dialog,
-    where you can make whatever changes you want. &nbsp;Remember than
-    profiles are automatically updated anytime settings are changed
-    during a <span style="font-style: italic;">PHD2</span> session.
-    &nbsp;Finally, you can import and export profiles for purposes of
-    debugging, backup, or even exchange with other <span
-      style="font-style: italic;">PHD2</span> users.<br>
+    Можно попрактиковаться с отслеживанием комет, используя встроенный
+    симулятор камеры. Отметьте флажок "Комета" в диалоговом окне
+    'Симулятор камеры' и на искусственном изображении появится комета.
+    Отметить начальное положение кометы можно с помощью закладки, а
+    вернуть комету к нему можно с помощью навигационных кнопок в окне
+    подтверждения выбранного положения. <br>
+    <h3><a name="Managing_Equipment_Profiles"></a>Управление профилями
+      оборудования</h3>
+    Профили оборудования были представлены в разделе <a
+      href="Basic_use.htm">Основы использования</a> как часть диалога
+    'Подключить оборудование'.&nbsp; Если вы хотите управлять
+    несколькими профилями, используйте меню 'Управление профилями'
+    диалогового окна 'Подключить оборудование'.&nbsp; Используя
+    различные пункты меню, можно создать новый профиль или
+    изменить/переименовать/удалить существующий.&nbsp; Настройки
+    профилей сохраняются со времени, когда профиль использовался в
+    последний раз.&nbsp; При создании нового профиля его настройки могут
+    быть взяты по умолчанию или из существующего профиля.&nbsp; Можно
+    также создать профиль с использованием&nbsp; 'Помощника', задавая
+    специфические для вашего оборудования настройки.&nbsp; Чтобы
+    изменить настройки существующего профиля, нужно сперва выбрать его в
+    меню 'Профиль оборудования', затем выбрать пункт 'Настройки' меню '<a
+      name="Manage_Profiles"></a>Управление профилями'.&nbsp; Откроется
+    диалоговое окно настроек, где можно сделать необходимые
+    изменения.&nbsp; Помните, что профили автоматически обновляются
+    всякий раз при изменении настроек.&nbsp; Наконец, профили можно
+    импортировать и экспортировать для отладки, резервного копирования
+    или даже обмена с другими пользователями <span style="font-style:
+      italic;">PHD2</span>.<br>
     <br>
-    <h3><a name="Advanced_Settings_for_the_Simulators"></a>Advanced
-      Settings for the Simulators</h3>
-    The device simulators were introduced in the <a
-      href="Basic_use.htm">Basic Use</a> section as useful
-    tools&nbsp;for you to experiment with <span style="font-style:
-      italic;">PHD2</span> and become famliar with its features.
-    &nbsp;Remember that you must choose 'Simulator' as the camera type
-    and 'On-camera' as the mount type in order to get the benefits of
-    simulation. &nbsp;As you become more interested in the details of
-    the simulation, you can use the 'Cam Dialog' button on the main
-    display to adjust the simulation parameters:<br>
+    <h3><a name="Advanced_Settings_for_the_Simulators"></a>Настройки
+      симуляторов</h3>
+    Симуляторы устройств были представлены в разделе <a
+      href="Basic_use.htm">Основы использования</a> как полезное
+    средство для изучения особенностей&nbsp; <span style="font-style:
+      italic;">PHD2</span>.&nbsp; Для их использования при подключении
+    устройств необходимо выбрать камеру 'Simulator' и монтировку
+    'On-camera'.&nbsp; Настройки симуляторов можно посмотреть, нажав
+    кнопку 'Камера' на основном экране:<br>
     <br>
-    <img style="width: 775px; height: 428px;" alt=""
+    <img style="width: 897px; height: 436px;" alt=""
       src="Tools_simulator.png"><br>
     <br>
     <br>
-    You can adjust simulated mount behaviors for declination backlash,
-    drift due to polar mis-alignment, and periodic error. &nbsp;You can
-    also adjust the 'seeing' level, which will create fairly realistic
-    guide star deflections that look like seeing effects. &nbsp;If you
-    adjust these parameters one-by-one, you'll see how they affect star
-    deflections and how the different guide algorithms react to those
-    movements. &nbsp;Of course, you're dealing with a "nearly perfect"
-    mount in these scenarios (except for backlash), so the simulation
-    can't be entirely realistic.
+    Можно задать такие параметры для симулятора монтировки, как люфт
+    склонения, величину отклонения от полюса и периодическую
+    ошибку.&nbsp; МОжно также задать уровень турбулентности (параметр
+    'Видимость'), дабы получить реалистичное для данных условий
+    видимости изображение звезды.&nbsp; Задавая эти параметры по одному,
+    можно наблюдать за изменениями отклонений звезды и как различные
+    алгоритмы гидирования реагируют на них. Разумеется, в этих сценариях
+    (кроме люфта) поведение монтировки почти идеально, поэтому имитация
+    не может быть полностью реалистичной.
   </body>
 </html>
