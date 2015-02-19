@@ -129,19 +129,19 @@
 			<param name="Local" value="Tools.htm#Drift_Align">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Lock Positions">
+			<param name="Name" value="Сохранение положения звезды">
 			<param name="Local" value="Tools.htm#Lock_Positions">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Comet Tracking">
+			<param name="Name" value="Отслеживание комет">
 			<param name="Local" value="Tools.htm#Comet_Tracking">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Equipment Profiles">
+			<param name="Name" value="Профили оборудования">
 			<param name="Local" value="Tools.htm#Managing_Equipment_Profiles">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Simulator Controls">
+			<param name="Name" value="Управление симуляторами">
 			<param name="Local" value="Tools.htm#Advanced_Settings_for_the_Simulators">
 			</OBJECT>
 	</UL>
@@ -150,7 +150,7 @@
 		<param name="Local" value="KeyboardShortcuts.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Анализ и решение проблем">
+		<param name="Name" value="Поиск и анализ неисправностей">
 		<param name="Local" value="Trouble_shooting.htm">
 		</OBJECT>
 </UL>

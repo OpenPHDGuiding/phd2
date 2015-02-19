@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-07 16:03-0500\n"
-"PO-Revision-Date: 2015-02-16 16:08+0300\n"
+"PO-Revision-Date: 2015-02-19 13:46+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -1162,7 +1162,7 @@ msgstr "Отслеживание комет"
 
 #: comet_tool.cpp:80
 msgid "Comet Tracking - Training Active"
-msgstr ""
+msgstr "Обучение отслеживанию кометы - активно"
 
 #: comet_tool.cpp:81
 msgid "Comet Tracking - Active"
@@ -1194,7 +1194,7 @@ msgstr ""
 
 #: comet_tool.cpp:107
 msgid "Tracking rate units"
-msgstr ""
+msgstr "Скорость отслеживания для устройств"
 
 #: comet_tool.cpp:109
 msgid "Camera (X/Y)"
@@ -1210,7 +1210,7 @@ msgstr "Углы"
 
 #: comet_tool.cpp:113
 msgid "Tracking rate axes"
-msgstr ""
+msgstr "Скорость отслеживания для осей"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:171
 msgid "Start"
@@ -1222,7 +1222,7 @@ msgstr "Начать проверку скорости слежения."
 
 #: comet_tool.cpp:117 darks_dialog.cpp:209 myframe.cpp:771
 msgid "Stop"
-msgstr "Прервать"
+msgstr "Остановить"
 
 #: comet_tool.cpp:118
 msgid "Stop training"
@@ -1247,6 +1247,9 @@ msgid ""
 "Use the \"Adjust Lock Position\" controls to center the comet\n"
 "in the imaging camera and click Stop to complete training."
 msgstr ""
+"Обучение, затраченное время %lu сек.\n"
+"Используйте навигационные кнопки для центровки кометы\n"
+" в поле фотокамеры; для завершения нажмите 'Остановить'."
 
 #: comet_tool.cpp:305
 msgid ""
@@ -2683,7 +2686,7 @@ msgstr "Включить/выключить связь с Nebulosity"
 
 #: myframe.cpp:440 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
-msgstr "Сохранять выбранное положение"
+msgstr "Сохранять положение звезды"
 
 #: myframe.cpp:440
 msgid "Keep the same lock position when guiding starts"
@@ -3387,7 +3390,7 @@ msgstr "Ручное гидирование"
 
 #: nudge_lock.cpp:120
 msgid "Always on top"
-msgstr "Всегда поверху"
+msgstr "Всегда поверх"
 
 #: nudge_lock.cpp:122 testguide.cpp:151
 msgid "Up"
@@ -4002,6 +4005,9 @@ msgid ""
 "Your %s is preventing PHD from making adequate corrections to keep the guide "
 "star locked. Increasing the %s will allow PHD to make the needed corrections."
 msgstr ""
+"Значение параметра '%s' мешает PHD2 сделать адекватные поправки, чтобы "
+"удержать гидируемую звезду. Увеличение значения '%s' позволит PHD2 сделать "
+"необходимые поправки."
 
 #: scope.cpp:768
 msgid "Calibration is based on very few steps, so accuracy is questionable"
