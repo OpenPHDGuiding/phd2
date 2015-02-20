@@ -49,27 +49,27 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Overlays">
+			<param name="Name" value="Наложения">
 			<param name="Local" value="Visualization.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Guiding Performance Graph">
+			<param name="Name" value="График производительности гидирования">
 			<param name="Local" value="Visualization.htm#Graphical_Display">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Star Profile Display">
+			<param name="Name" value="Экран профиля звезды">
 			<param name="Local" value="Visualization.htm#Star_Profile_and_Target_Displays">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Target Display">
+			<param name="Name" value="Экран прицела">
 			<param name="Local" value="Visualization.htm#Star_Profile_and_Target_Displays">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="AO Graph">
+			<param name="Name" value="График адаптивной оптики">
 			<param name="Local" value="Visualization.htm#Adaptive_Optics_AO_Graph">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Dockable Windows">
+			<param name="Name" value="Закреплённые окна">
 			<param name="Local" value="Visualization.htm#DockableMoveable_Graphical_Windows">
 			</OBJECT>
 	</UL>
