@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-07 16:03-0500\n"
-"PO-Revision-Date: 2015-02-19 13:46+0300\n"
+"PO-Revision-Date: 2015-02-20 14:25+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -2032,7 +2032,7 @@ msgstr ""
 
 #: graph.cpp:134
 msgid "Trendlines"
-msgstr "Апроксимация"
+msgstr "Направляющие"
 
 #: graph.cpp:141
 msgid "Plot trend lines"
@@ -2052,7 +2052,7 @@ msgstr "Среднеквадратичная ошибка:"
 
 #: graph.cpp:210
 msgid "Tot"
-msgstr ""
+msgstr "Общ."
 
 #: graph.cpp:222
 msgid "RA Osc: 0.00"
@@ -2742,7 +2742,7 @@ msgstr "Включить/выключить просмотр звёздного 
 
 #: myframe.cpp:450
 msgid "No Overlay"
-msgstr "Без наложения"
+msgstr "Без сетки"
 
 #: myframe.cpp:450
 msgid "No additional crosshairs"
