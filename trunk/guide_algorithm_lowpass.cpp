@@ -88,7 +88,7 @@ double GuideAlgorithmLowpass::result(double input)
 
     if (fabs(dReturn) > fabs(input))
     {
-        Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() input %.2f is > calculated value %.2f, using input\n", input, dReturn));
+        Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() input %.2f is < calculated value %.2f, using input\n", input, dReturn));
         dReturn = input;
     }
 

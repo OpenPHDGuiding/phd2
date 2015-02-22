@@ -457,7 +457,7 @@ wxBitmap CalReviewDialog::CreateGraph(bool AO)
     ptRadius = 2;
     if (calDetails.decStepCount > 0)
     {
-	for (int i = 0; i < (int) calDetails.decSteps.size(); i++)
+    for (int i = 0; i < (int) calDetails.decSteps.size(); i++)
         {
             if (i == calDetails.decStepCount + 2)
             {
