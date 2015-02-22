@@ -56,6 +56,9 @@ double CalcSlope(const ArrayOfDbl& y)
 
     int nn = (int) y.GetCount();
 
+    if (nn == 0)
+        return 0.;
+
     double s_xy = 0.0;
     double s_y = 0.0;
 
