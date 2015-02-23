@@ -421,70 +421,70 @@ TEST_F(GPTest, gamma_prior_test) {
 }
 
 // FIXME This test does not work, yet
-// TEST_F(GPTest, parameter_identification_test) {
-//
-//   // Set up the GP with the true parameters
-//   Eigen::VectorXd trueHyperParams(5);
-//   trueHyperParams = (trueHyperParams << 0.01, 5, 100, 10,
-//       2000).finished().array().log();
-//   gp_.setHyperParameters(trueHyperParams);
-//
-//   // This is where the system converges to in we start at the true parameters
-//   Eigen::VectorXd expectedHyperParams(5);
-//   expectedHyperParams = (expectedHyperParams <<
-//   0.00989354,    2.18489,    99.8336,    3.17103,    1059.32
-//   ).finished().array().log();
-//
-//   // Draw some data points randomly from the true GP
-//   int N = 250;
-//   Eigen::VectorXd location =
-//       400*math_tools::generate_uniform_random_matrix_0_1(N,1)
-//           - 200*Eigen::MatrixXd::Ones(N,1);
-//   Eigen::VectorXd output = gp_.drawSample(location);
-//   gp_.infer(location, output);
-//
-//   // Set up the optimizer with prior and wrong starting point
-//   Eigen::VectorXd initialGuess(5);
-//   initialGuess = (initialGuess << 0.1, 15, 700, 25,
-//       5000).finished().array().log();
-//   gp_.setHyperParameters(initialGuess);
-//
-//   Eigen::VectorXd prior_parameters(2);
-//   prior_parameters << 0.1, 0.1;
-//   parameter_priors::GammaPrior noise_prior(prior_parameters);
-//   gp_.setHyperPrior(noise_prior,0);
-//   prior_parameters << 10, 1;
-//   parameter_priors::GammaPrior length_scale_prior(prior_parameters);
-//   gp_.setHyperPrior(noise_prior,1);
-//   prior_parameters << 100, 1;
-//   parameter_priors::GammaPrior periodicity_prior(prior_parameters);
-//   gp_.setHyperPrior(periodicity_prior,2);
-//   prior_parameters << 5, 1;
-//   parameter_priors::GammaPrior signal_variance_prior(prior_parameters);
-//   gp_.setHyperPrior(signal_variance_prior,2);
-//   prior_parameters << 1000, 100;
-//   parameter_priors::GammaPrior long_term_prior(prior_parameters);
-//   gp_.setHyperPrior(long_term_prior,4);
-//
-//   Eigen::VectorXi mask(5);
-//   mask << 0, 0, 1, 0, 0;
-//   gp_.setOptimizationMask(mask);
-//   Eigen::VectorXd optim = gp_.optimizeHyperParameters(10);
-//   gp_.setHyperParameters(optim);
-//   optim = gp_.optimizeHyperParameters(10);
-//   gp_.setHyperParameters(optim);
-//   gp_.clearOptimizationMask();
-//   optim = gp_.optimizeHyperParameters(10);
-//   gp_.setHyperParameters(optim);
-//
-//   std::cout << optim.array().exp().transpose() << std::endl;
-//
-//   EXPECT_NEAR(std::exp(optim[0]), std::exp(expectedHyperParams[0]), 1e-3);
-//   EXPECT_NEAR(std::exp(optim[1]), std::exp(expectedHyperParams[1]), 1e-1);
-//   EXPECT_NEAR(std::exp(optim[2]), std::exp(expectedHyperParams[2]), 2e0);
-//   EXPECT_NEAR(std::exp(optim[3]), std::exp(expectedHyperParams[3]), 1e-1);
-//   EXPECT_NEAR(std::exp(optim[4]), std::exp(expectedHyperParams[4]), 1e2);
-// }
+TEST_F(GPTest, parameter_identification_test) {
+
+  // Set up the GP with the true parameters
+  Eigen::VectorXd trueHyperParams(5);
+  trueHyperParams = (trueHyperParams << 0.01, 5, 100, 10,
+      2000).finished().array().log();
+  gp_.setHyperParameters(trueHyperParams);
+
+  // This is where the system converges to in we start at the true parameters
+  Eigen::VectorXd expectedHyperParams(5);
+  expectedHyperParams = 
+    (expectedHyperParams << 0.00989354,    2.18489,    99.8336,    3.17103,    1059.32
+    ).finished().array().log();
+
+  // Draw some data points randomly from the true GP
+  int N = 250;
+  Eigen::VectorXd location =
+      400*math_tools::generate_uniform_random_matrix_0_1(N,1)
+          - 200*Eigen::MatrixXd::Ones(N,1);
+  Eigen::VectorXd output = gp_.drawSample(location);
+  gp_.infer(location, output);
+
+  // Set up the optimizer with prior and wrong starting point
+  Eigen::VectorXd initialGuess(5);
+  initialGuess = (initialGuess << 0.1, 15, 700, 25,
+      5000).finished().array().log();
+  gp_.setHyperParameters(initialGuess);
+
+  Eigen::VectorXd prior_parameters(2);
+  prior_parameters << 0.1, 0.1;
+  parameter_priors::GammaPrior noise_prior(prior_parameters);
+  gp_.setHyperPrior(noise_prior,0);
+  prior_parameters << 10, 1;
+  parameter_priors::GammaPrior length_scale_prior(prior_parameters);
+  gp_.setHyperPrior(noise_prior,1);
+  prior_parameters << 100, 1;
+  parameter_priors::GammaPrior periodicity_prior(prior_parameters);
+  gp_.setHyperPrior(periodicity_prior,2);
+  prior_parameters << 5, 1;
+  parameter_priors::GammaPrior signal_variance_prior(prior_parameters);
+  gp_.setHyperPrior(signal_variance_prior,2);
+  prior_parameters << 1000, 100;
+  parameter_priors::GammaPrior long_term_prior(prior_parameters);
+  gp_.setHyperPrior(long_term_prior,4);
+
+  Eigen::VectorXi mask(5);
+  mask << 0, 0, 1, 0, 0;
+  gp_.setOptimizationMask(mask);
+  Eigen::VectorXd optim = gp_.optimizeHyperParameters(10);
+  gp_.setHyperParameters(optim);
+  optim = gp_.optimizeHyperParameters(10);
+  gp_.setHyperParameters(optim);
+  gp_.clearOptimizationMask();
+  optim = gp_.optimizeHyperParameters(10);
+  gp_.setHyperParameters(optim);
+
+  std::cout << optim.array().exp().transpose() << std::endl;
+
+  EXPECT_NEAR(std::exp(optim[0]), std::exp(expectedHyperParams[0]), 1e-3);
+  EXPECT_NEAR(std::exp(optim[1]), std::exp(expectedHyperParams[1]), 1e-1);
+  EXPECT_NEAR(std::exp(optim[2]), std::exp(expectedHyperParams[2]), 2e0);
+  EXPECT_NEAR(std::exp(optim[3]), std::exp(expectedHyperParams[3]), 1e-1);
+  EXPECT_NEAR(std::exp(optim[4]), std::exp(expectedHyperParams[4]), 1e2);
+}
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

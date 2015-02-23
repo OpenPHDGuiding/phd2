@@ -34,7 +34,7 @@
 
 #include "phd.h"
 
-#include "UDPGuidingInteraction.h"
+//#include "UDPGuidingInteraction.h"
 
 #include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
@@ -92,41 +92,67 @@ public:
 };
 
 
+struct gp_guiding_circular_datapoints
+{
+  double timestamp;
+  double measurement;
+  double modified_measurements;
+};
+
 
 // parameters of the GP guiding algorithm
 struct GuideGaussianProcess::gp_guide_parameters
 {
-    UDPGuidingInteraction udpInteraction;
-    CircularDoubleBuffer timestamps_;
-    CircularDoubleBuffer measurements_;
-    CircularDoubleBuffer modified_measurements_;
+    //UDPGuidingInteraction udpInteraction;
+    //CircularDoubleBuffer timestamps_;
+    //CircularDoubleBuffer measurements_;
+    //CircularDoubleBuffer modified_measurements_;
+
+    typedef gp_guiding_circular_datapoints data_points;
+    circular_buffer<data_points> circular_buffer_parameters;
+
     wxStopWatch timer_;
     double control_signal_;
-    int number_of_measurements_;
+    //int number_of_measurements_;
     double control_gain_;
     double elapsed_time_ms_;
 
     gp_guide_parameters() :
-      udpInteraction(_T("localhost"), _T("1308"), _T("1309")),
-      timestamps_(100),
-      measurements_(100),
-      modified_measurements_(100),
+      circular_buffer_parameters(100),
+      //udpInteraction(_T("localhost"), _T("1308"), _T("1309")),
+      //timestamps_(100),
+      //measurements_(100),
+      //modified_measurements_(100),
       timer_(),
       control_signal_(0.0),
-      number_of_measurements_(0),
+//      number_of_measurements_(0),
       elapsed_time_ms_(0.0)
     {
 
     }
 
+    data_points& get_last_point() 
+    {
+      return circular_buffer_parameters[circular_buffer_parameters.size() - 1];
+    }
 
+    data_points& get_second_last_point() 
+    {
+      return circular_buffer_parameters[circular_buffer_parameters.size() - 2];
+    }
+
+    size_t get_number_of_measurements() const
+    {
+      return circular_buffer_parameters.size();
+    }
+
+    void add_one_point()
+    {
+      circular_buffer_parameters.push_front(data_points());
+    }
 
     void clear()
     {
-        timestamps_.clear();
-        measurements_.clear();
-        modified_measurements_.clear();
-        number_of_measurements_ = 0;
     }
 
 };
@@ -205,25 +231,26 @@ GUIDE_ALGORITHM GuideGaussianProcess::Algorithm(void)
 
 void GuideGaussianProcess::HandleTimestamps()
 {
-    if (parameters->number_of_measurements_ == 0)
+    if (parameters->get_number_of_measurements() == 0)
     {
         parameters->timer_.Start();
     }
     double time_now = parameters->timer_.Time();
     double delta_measurement_time_ms = time_now - parameters->elapsed_time_ms_;
     parameters->elapsed_time_ms_ = time_now;
-    parameters->timestamps_.append(parameters->elapsed_time_ms_ - delta_measurement_time_ms / 2);
+    parameters->get_last_point().timestamp = parameters->elapsed_time_ms_ - delta_measurement_time_ms / 2;
 }
 
 void GuideGaussianProcess::HandleMeasurements(double input)
 {
-    parameters->measurements_.append(input);
+    parameters->add_one_point();
+    parameters->get_last_point().measurement = input;
 }
 
 void GuideGaussianProcess::HandleModifiedMeasurements(double input)
 {
     // If there is no previous measurement, a random one is generated.
-    if(parameters->number_of_measurements_ == 0)
+    if(parameters->get_number_of_measurements() == 0)
     {
         //The daytime indoor measurement noise SD is 0.25-0.35
         double indoor_noise_standard_deviation = 0.25;
@@ -233,15 +260,16 @@ void GuideGaussianProcess::HandleModifiedMeasurements(double input)
             parameters->control_signal_ +
             first_random_measurement * (1 - parameters->control_gain_) -
             input;
-        parameters->modified_measurements_.append(new_modified_measurement);
+        parameters->get_last_point().modified_measurements = new_modified_measurement;
     }
     else
     {
+        gp_guide_parameters::data_points &last_point = parameters->get_last_point();
         double new_modified_measurement =
             parameters->control_signal_ +
-            parameters->measurements_.getSecondLastElement() * (1 - parameters->control_gain_) -
-            parameters->measurements_.getLastElement();
-        parameters->modified_measurements_.append(new_modified_measurement);
+            parameters->get_second_last_point().measurement * (1 - parameters->control_gain_) -
+            last_point.measurement;
+        last_point.modified_measurements = new_modified_measurement;
     }
 }
 
@@ -250,7 +278,6 @@ double GuideGaussianProcess::result(double input)
     HandleTimestamps();
     HandleMeasurements(input);
     HandleModifiedMeasurements(input);
-    parameters->number_of_measurements_++;
 
     /*
      * Need to read this value here because it is not loaded at the construction
@@ -265,6 +292,7 @@ double GuideGaussianProcess::result(double input)
 
     // This is the Code sending the circular buffers to Matlab:
 
+#if 0
     double* timestamp_data = parameters->timestamps_.getEigenVector()->data();
     double* modified_measurement_data = parameters->modified_measurements_.getEigenVector()->data();
     double result;
@@ -272,6 +300,7 @@ double GuideGaussianProcess::result(double input)
 
     bool sent = false;
     bool received = false;
+
 
     // Send the input
     double input_buf[] = { input };
@@ -297,6 +326,7 @@ double GuideGaussianProcess::result(double input)
     received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
 
     return result;
+#endif
 
 
     /*
@@ -309,9 +339,7 @@ double GuideGaussianProcess::result(double input)
      */
 
 
-    /*
-
-    if (number_of_measurements_ > 5)
+    if (parameters->get_number_of_measurements() > 5)
     {
 
         // Inference
@@ -320,19 +348,17 @@ double GuideGaussianProcess::result(double input)
         // Prediction of new control_signal_
         Eigen::VectorXd prediction =
             gp_->predict(elapsed_time_ms_ + delta_controller_time_ms / 2) -
-            control_gain_ * input / delta_controller_time_ms;
-        control_signal_ = prediction(0);
+            parameters->control_gain_ * input / delta_controller_time_ms;
+        parameters->control_signal_ = prediction(0);
 
     }
     else
     {
         // Simpler prediction when there are not enough data points for the GP
-        control_signal_ = -input / delta_controller_time_ms;
+        parameters->control_signal_ = -input / delta_controller_time_ms;
     }
 
-    return control_signal_;
-
-     */
+    return parameters->control_signal_;
 }
 
 

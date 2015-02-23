@@ -54,7 +54,9 @@ GP::GP() : covFunc_(0), // initialize pointer to null
   gram_matrix_(Eigen::MatrixXd()),
   alpha_(Eigen::VectorXd()),
   chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
-  log_noise_sd_(-1E20), optimization_mask_(Eigen::VectorXi()) { }
+  log_noise_sd_(-1E20), 
+  optimization_mask_(Eigen::VectorXi()) 
+{ }
 
 GP::GP(const covariance_functions::CovFunc& covFunc) :
   covFunc_(covFunc.clone()),
@@ -63,8 +65,10 @@ GP::GP(const covariance_functions::CovFunc& covFunc) :
   gram_matrix_(Eigen::MatrixXd()),
   alpha_(Eigen::VectorXd()),
   chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
-  log_noise_sd_(-1E20), optimization_mask_(Eigen::VectorXi()),
-  prior_vector_(covFunc.getParameterCount() + 1) { }
+  log_noise_sd_(-1E20), 
+  optimization_mask_(Eigen::VectorXi()),
+  prior_vector_(covFunc.getParameterCount() + 1, 0)
+{ }
 
 GP::GP(const double noise_variance,
        const covariance_functions::CovFunc& covFunc) :
@@ -76,7 +80,8 @@ GP::GP(const double noise_variance,
   chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
   log_noise_sd_(std::log(noise_variance)),
   optimization_mask_(Eigen::VectorXi()),
-  prior_vector_(covFunc.getParameterCount() + 1) { }
+  prior_vector_(covFunc.getParameterCount() + 1, 0) 
+{ }
 
 GP::~GP() {
   delete this->covFunc_; // tidy up since we are responsible for the covFunc.
@@ -96,7 +101,8 @@ GP::GP(const GP& that) :
   alpha_(that.alpha_),
   chol_gram_matrix_(that.chol_gram_matrix_),
   log_noise_sd_(that.log_noise_sd_),
-  optimization_mask_(that.optimization_mask_) {
+  optimization_mask_(that.optimization_mask_) 
+{
   covFunc_ = that.covFunc_->clone();
   for(size_t i = 0; i < that.prior_vector_.size(); ++i) {
     if(that.prior_vector_[i] != 0) {
@@ -182,7 +188,7 @@ void GP::infer() {
   // The data covariance matrix
   covariance_functions::MatrixStdVecPair cov_result =
                                        covFunc_->evaluate(data_loc_, data_loc_);
-  Eigen::MatrixXd data_cov = cov_result.first;
+  Eigen::MatrixXd const& data_cov = cov_result.first;
 
   Eigen::MatrixXd noise_derivative = 2*std::exp(2*log_noise_sd_) *
                                      Eigen::MatrixXd::Identity(data_cov.rows(), data_cov.cols());

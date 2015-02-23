@@ -43,18 +43,14 @@
 #include "math_tools.h"
 
 namespace covariance_functions {
-MatrixStdVecPair
-covariance(const Eigen::VectorXd& params
-           , const Eigen::MatrixXd& x1
-           , const Eigen::MatrixXd& x2) {
-  covariance_functions::CovFunc* covFuncPSE = new
-    covariance_functions::PeriodicSquareExponential( params.head(4));
-  covariance_functions::CovFunc* covFuncD = new
-    covariance_functions::DiracDelta(params.tail(1));
-  MatrixStdVecPair cov1 = covFuncPSE->evaluate(x1.col(0),
-                          x2.col(0));
+MatrixStdVecPair covariance(const Eigen::VectorXd& params,
+                            const Eigen::MatrixXd& x1, 
+                            const Eigen::MatrixXd& x2) {
+  covariance_functions::PeriodicSquareExponential covFuncPSE(params.head(4));
+  covariance_functions::DiracDelta covFuncD(params.tail(1));
+  MatrixStdVecPair cov1 = covFuncPSE.evaluate(x1.col(0),x2.col(0));
 
-  MatrixStdVecPair cov2 = covFuncD->evaluate(x1.col(0), x2.col(0));
+  MatrixStdVecPair cov2 = covFuncD.evaluate(x1.col(0), x2.col(0));
 
   Eigen::MatrixXd covariance = cov1.first + cov2.first;
   std::vector < Eigen::MatrixXd > derivative = cov1.second;
@@ -63,19 +59,17 @@ covariance(const Eigen::VectorXd& params
   return std::make_pair(covariance, derivative);
 }
 
-CovFunc::CovFunc() {
-}
 
 PeriodicSquareExponential::PeriodicSquareExponential() :
     hyperParameters(Eigen::VectorXd()){ }
 
-PeriodicSquareExponential::PeriodicSquareExponential(const Eigen::VectorXd
-    &hyperParameters) {
+PeriodicSquareExponential::PeriodicSquareExponential(const Eigen::VectorXd &hyperParameters) {
   this->hyperParameters = hyperParameters;
 }
 
-MatrixStdVecPair PeriodicSquareExponential::evaluate
-    (const Eigen::VectorXd& x , const Eigen::VectorXd& y) {
+MatrixStdVecPair PeriodicSquareExponential::evaluate(
+  const Eigen::VectorXd& x, 
+  const Eigen::VectorXd& y) {
   double lsP  = exp(hyperParameters(LengthScalePIndex));
   double plP  = exp(hyperParameters(PeriodLengthPIndex));
   // signal variance is squared
@@ -119,7 +113,7 @@ void PeriodicSquareExponential::setParameters(const Eigen::VectorXd& params) {
   this->hyperParameters = params;
 }
 
-const Eigen::VectorXd PeriodicSquareExponential::getParameters() const {
+const Eigen::VectorXd& PeriodicSquareExponential::getParameters() const {
   return this->hyperParameters;
 }
 
@@ -135,8 +129,8 @@ MatrixStdVecPair DiracDelta::evaluate(const Eigen::VectorXd& x1,
                                       const Eigen::VectorXd& x2) {
   double sigma2 = exp(hyperParameters[0] * 2);
 
-  Eigen::VectorXd x1Col = x1.col(0);
-  Eigen::VectorXd x2Col = x2.col(0);
+  const Eigen::VectorXd::ConstColXpr x1Col = x1.col(0);
+  const Eigen::VectorXd::ConstColXpr x2Col = x2.col(0);
   Eigen::MatrixXd covariance(x1Col.size(), x2Col.size());
 
   for (int rows = 0; rows < covariance.rows(); rows++) {
@@ -155,7 +149,7 @@ void DiracDelta::setParameters(const Eigen::VectorXd& params) {
   this->hyperParameters = params;
 }
 
-const Eigen::VectorXd DiracDelta::getParameters() const {
+const Eigen::VectorXd& DiracDelta::getParameters() const {
   return this->hyperParameters;
 }
 
