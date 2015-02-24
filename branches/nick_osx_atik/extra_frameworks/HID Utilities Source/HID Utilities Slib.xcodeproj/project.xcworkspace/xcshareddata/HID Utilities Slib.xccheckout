@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>1BB84914-409E-4756-B17B-2A7B5DB1F09C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>HID Utilities Slib</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>a4fd5c06-7e29-11de-b8ac-f508f1a2864c++505</key>
+		<string>http://open-phd-guiding.googlecode.com/svn/trunk</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>extra_frameworks/HID Utilities Source/HID Utilities Slib.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>a4fd5c06-7e29-11de-b8ac-f508f1a2864c++505</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>a4fd5c06-7e29-11de-b8ac-f508f1a2864c++505</key>
+		<string>http://open-phd-guiding.googlecode.com/svn</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>http://open-phd-guiding.googlecode.com/svn/trunk/extra_frameworks/HID%20Utilities%20Source/HID%20Utilities%20Slib.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>a4fd5c06-7e29-11de-b8ac-f508f1a2864c++505</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>a4fd5c06-7e29-11de-b8ac-f508f1a2864c++505</string>
+			<key>IDESourceControlWCCName</key>
+			<string>open-phd-guiding-read-only</string>
+		</dict>
+	</array>
+</dict>
+</plist>

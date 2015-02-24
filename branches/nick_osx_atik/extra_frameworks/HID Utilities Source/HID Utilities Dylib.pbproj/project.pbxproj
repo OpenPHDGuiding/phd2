@@ -1,0 +1,397 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 39;
+	objects = {
+		113C04D4036742320CCB177F = {
+			includeInIndex = 1;
+			isa = PBXFileReference;
+			lastKnownFileType = folder;
+			path = English.lproj;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		113C04D9036742400CCB177F = {
+			children = (
+				113C04D4036742320CCB177F,
+			);
+			isa = PBXGroup;
+			name = Resources;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+//110
+//111
+//112
+//113
+//114
+//F50
+//F51
+//F52
+//F53
+//F54
+		F52EA6FF0249076B01CA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.rtf;
+			path = "HID Utilities Read Me.rtf";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F52EA700024907CA01CA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = HID_Name_Lookup.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F52EA701024907CA01CA2316 = {
+			fileRef = F52EA700024907CA01CA2316;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F52EA702024907D501CA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = HID_Name_Lookup.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F52EA703024907D501CA2316 = {
+			fileRef = F52EA702024907D501CA2316;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//F50
+//F51
+//F52
+//F53
+//F54
+//F60
+//F61
+//F62
+//F63
+//F64
+		F65F9D7E01B4915C01CA2317 = {
+			children = (
+				F65F9D7F01B4915C01CA2317,
+				F65F9D8001B4915C01CA2317,
+			);
+			isa = PBXGroup;
+			name = "Libraries and Frameworks";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F65F9D7F01B4915C01CA2317 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = CoreFoundation.framework;
+			path = /System/Library/Frameworks/CoreFoundation.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		F65F9D8001B4915C01CA2317 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = IOKit.framework;
+			path = /System/Library/Frameworks/IOKit.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		F65F9D8101B4915C01CA2317 = {
+			fileRef = F65F9D7F01B4915C01CA2317;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F65F9D8201B4915C01CA2317 = {
+			fileRef = F65F9D8001B4915C01CA2317;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//F60
+//F61
+//F62
+//F63
+//F64
+//F90
+//F91
+//F92
+//F93
+//F94
+		F94745C901B2DAC40ACA2316 = {
+			buildSettings = {
+			};
+			buildStyles = (
+				F94745CB01B2DAC40ACA2316,
+				F94745CC01B2DAC40ACA2316,
+			);
+			hasScannedForEncodings = 0;
+			isa = PBXProject;
+			mainGroup = F94745CA01B2DAC40ACA2316;
+			productRefGroup = F94745CF01B2DB060ACA2316;
+			projectDirPath = "";
+			targets = (
+				F94745D101B2DB060ACA2316,
+			);
+		};
+		F94745CA01B2DAC40ACA2316 = {
+			children = (
+				F52EA6FF0249076B01CA2316,
+				F94745CE01B2DB060ACA2316,
+				F94745CD01B2DB060ACA2316,
+				F94745E201B2DB720ACA2316,
+				113C04D9036742400CCB177F,
+				F65F9D7E01B4915C01CA2317,
+				F94745CF01B2DB060ACA2316,
+			);
+			isa = PBXGroup;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745CB01B2DAC40ACA2316 = {
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ZERO_LINK = YES;
+			};
+			isa = PBXBuildStyle;
+			name = Development;
+		};
+		F94745CC01B2DAC40ACA2316 = {
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				ZERO_LINK = NO;
+			};
+			isa = PBXBuildStyle;
+			name = Deployment;
+		};
+		F94745CD01B2DB060ACA2316 = {
+			children = (
+				F52EA702024907D501CA2316,
+				F94745EB01B2E50A0ACA2316,
+				F94745F001B301760ACA2316,
+			);
+			isa = PBXGroup;
+			name = "Internal Headers";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745CE01B2DB060ACA2316 = {
+			children = (
+				F52EA700024907CA01CA2316,
+				F94745D601B2DB130ACA2316,
+				F94745F301B3062C0ACA2316,
+				F94745DA01B2DB130ACA2316,
+				F94745E601B2DB720ACA2316,
+			);
+			isa = PBXGroup;
+			name = Source;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745CF01B2DB060ACA2316 = {
+			children = (
+				F94745D001B2DB060ACA2316,
+			);
+			isa = PBXGroup;
+			name = Products;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745D001B2DB060ACA2316 = {
+			explicitFileType = "compiled.mach-o.dylib";
+			isa = PBXFileReference;
+			path = libHIDUtilities.dylib;
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F94745D101B2DB060ACA2316 = {
+			buildPhases = (
+				F94745D201B2DB060ACA2316,
+				F94745D301B2DB060ACA2316,
+				F94745D401B2DB060ACA2316,
+				F94745D501B2DB060ACA2316,
+			);
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				LIBRARY_STYLE = DYNAMIC;
+				OTHER_LDFLAGS = "-seg1addr 0x90000";
+				OTHER_LIBTOOL_FLAGS = "";
+				OTHER_REZFLAGS = "";
+				PREBINDING = YES;
+				PREFIX_HEADER = HIDLib.h;
+				PRODUCT_NAME = libHIDUtilities.dylib;
+				REZ_EXECUTABLE = YES;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+			};
+			dependencies = (
+			);
+			isa = PBXLibraryTarget;
+			name = libHIDUtilities.dylib;
+			productInstallPath = "@executable_path/../Frameworks";
+			productName = libHIDUtilities.a;
+			productReference = F94745D001B2DB060ACA2316;
+		};
+		F94745D201B2DB060ACA2316 = {
+			buildActionMask = 2147483647;
+			files = (
+				F94745EC01B2E50A0ACA2316,
+				F94745F201B301760ACA2316,
+				F52EA703024907D501CA2316,
+			);
+			isa = PBXHeadersBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F94745D301B2DB060ACA2316 = {
+			buildActionMask = 2147483647;
+			files = (
+				F94745DF01B2DB140ACA2316,
+				F94745E101B2DB140ACA2316,
+				F94745EA01B2DB720ACA2316,
+				F94745F401B3062C0ACA2316,
+				F52EA701024907CA01CA2316,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F94745D401B2DB060ACA2316 = {
+			buildActionMask = 2147483647;
+			files = (
+				F65F9D8101B4915C01CA2317,
+				F65F9D8201B4915C01CA2317,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F94745D501B2DB060ACA2316 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXRezBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F94745D601B2DB130ACA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = HID_Config_Utilities.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745DA01B2DB130ACA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = HID_Queue_Utilities.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745DF01B2DB140ACA2316 = {
+			fileRef = F94745D601B2DB130ACA2316;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F94745E101B2DB140ACA2316 = {
+			fileRef = F94745DA01B2DB130ACA2316;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F94745E201B2DB720ACA2316 = {
+			children = (
+				F94745E301B2DB720ACA2316,
+				F94745E401B2DB720ACA2316,
+				F94745EF01B301760ACA2316,
+			);
+			isa = PBXGroup;
+			name = "External Headers";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745E301B2DB720ACA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = IOHIDPowerUsage.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745E401B2DB720ACA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = PID.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745E601B2DB720ACA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = HID_Utilities.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745EA01B2DB720ACA2316 = {
+			fileRef = F94745E601B2DB720ACA2316;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F94745EB01B2E50A0ACA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = HIDLib.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745EC01B2E50A0ACA2316 = {
+			fileRef = F94745EB01B2E50A0ACA2316;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F94745EF01B301760ACA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = HID_Utilities_External.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745F001B301760ACA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = HID_Utilities_Internal.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745F201B301760ACA2316 = {
+			fileRef = F94745F001B301760ACA2316;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F94745F301B3062C0ACA2316 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = HID_Error_Handler.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F94745F401B3062C0ACA2316 = {
+			fileRef = F94745F301B3062C0ACA2316;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+	};
+	rootObject = F94745C901B2DAC40ACA2316;
+}
