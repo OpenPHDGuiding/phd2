@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-07 16:03-0500\n"
-"PO-Revision-Date: 2015-02-20 14:25+0300\n"
+"PO-Revision-Date: 2015-02-24 12:06+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -2036,7 +2036,7 @@ msgstr "Направляющие"
 
 #: graph.cpp:141
 msgid "Plot trend lines"
-msgstr ""
+msgstr "Показывать направляющие"
 
 #: graph.cpp:144
 msgid "Corrections"
@@ -2124,11 +2124,11 @@ msgstr "Цвет Dec или dy"
 
 #: graph.cpp:698
 msgid "Select the Y-axis scale, pixels per Y division"
-msgstr ""
+msgstr "Выбрать масштаб по оси Y в пикселях"
 
 #: graph.cpp:703
 msgid "Select the Y-axis scale, arc-seconds per Y division"
-msgstr ""
+msgstr "Выбрать масштаб по оси Y в угловых секундах"
 
 #: graph.cpp:1355 testguide.cpp:107 testguide.cpp:132
 msgid "Dither"
@@ -2204,11 +2204,11 @@ msgstr "Агр."
 
 #: guide_algorithm_hysteresis.cpp:289
 msgid "Hys"
-msgstr "Гис"
+msgstr "Гистер."
 
 #: guide_algorithm_hysteresis.cpp:297 guide_algorithm_lowpass.cpp:261
 msgid "MnMo"
-msgstr ""
+msgstr "Мин. ход"
 
 #: guide_algorithm_identity.cpp:77
 msgid "Guide Algorithm"
@@ -2546,7 +2546,7 @@ msgstr "Звёздный профиль"
 
 #: myframe.cpp:286 myframe.cpp:344 target.cpp:51
 msgid "Target"
-msgstr "Цель"
+msgstr "Мишень"
 
 #: myframe.cpp:312
 msgid "Server start failed"
@@ -2973,7 +2973,7 @@ msgstr ""
 
 #: myframe.cpp:776
 msgid "Advanced parameters"
-msgstr "Дополнительные параметры"
+msgstr "Настройки"
 
 #: myframe.cpp:794 myframe.cpp:813
 msgid "Cal +"
@@ -4016,6 +4016,8 @@ msgstr " Сделано очень мало шагов калибровки, п�
 #: scope.cpp:771
 msgid "Calibration computed RA/Dec axis angles that are questionable"
 msgstr ""
+"Подсчитанные во время калибровки углы осей прямого восхождения и склонения "
+"сомнительны"
 
 #: scope.cpp:774
 msgid ""
@@ -4241,7 +4243,7 @@ msgstr "Профиль"
 
 #: star_profile.cpp:129
 msgid "Mid row"
-msgstr ""
+msgstr "Средн."
 
 #: star_profile.cpp:133
 msgid "Avg row"
@@ -4254,7 +4256,7 @@ msgstr "Ср. столбец"
 #: star_profile.cpp:199
 #, c-format
 msgid "FWHM: %.2f"
-msgstr ""
+msgstr "полуширина: %.2f"
 
 #: statswindow.cpp:63
 msgid "RMS"
@@ -4425,11 +4427,11 @@ msgstr "Уменьшить"
 
 #: target.cpp:82
 msgid "Reference Circle"
-msgstr ""
+msgstr "Подсветка мишени"
 
 #: target.cpp:83
 msgid "Check to display a reference circle"
-msgstr ""
+msgstr "Устанивить подсветку мишени"
 
 #: target.cpp:91
 msgid "Radius:"
@@ -4437,7 +4439,7 @@ msgstr "Радиус:"
 
 #: target.cpp:98
 msgid "Reference circle radius"
-msgstr ""
+msgstr "Радиус подсветки мишени"
 
 #: testguide.cpp:90
 msgid "Guide Pulse Duration (ms):"
