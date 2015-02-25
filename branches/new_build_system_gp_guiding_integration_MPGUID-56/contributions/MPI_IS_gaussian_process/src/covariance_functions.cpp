@@ -53,19 +53,18 @@ MatrixStdVecPair covariance(const Eigen::VectorXd& params,
   MatrixStdVecPair cov2 = covFuncD.evaluate(x1.col(0), x2.col(0));
 
   Eigen::MatrixXd covariance = cov1.first + cov2.first;
-  std::vector < Eigen::MatrixXd > derivative = cov1.second;
-  derivative.push_back(cov2.second[0]);
+  std::vector< Eigen::MatrixXd > &derivative = cov1.second;
+  derivative.push_back(*cov2.second.begin());
 
   return std::make_pair(covariance, derivative);
 }
 
 
-PeriodicSquareExponential::PeriodicSquareExponential() :
-    hyperParameters(Eigen::VectorXd()){ }
+PeriodicSquareExponential::PeriodicSquareExponential() : 
+    hyperParameters(Eigen::VectorXd::Zero(4)) { }
 
-PeriodicSquareExponential::PeriodicSquareExponential(const Eigen::VectorXd &hyperParameters) {
-  this->hyperParameters = hyperParameters;
-}
+PeriodicSquareExponential::PeriodicSquareExponential(const Eigen::VectorXd &hyperParameters_) : 
+    hyperParameters(hyperParameters_) { }
 
 MatrixStdVecPair PeriodicSquareExponential::evaluate(
   const Eigen::VectorXd& x, 

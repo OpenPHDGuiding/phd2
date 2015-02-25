@@ -43,14 +43,16 @@
 
 #include <Eigen/Dense>
 #include <vector>
+#include <list>
 #include <utility>
 #include <cstdint>
 
 namespace covariance_functions {
 
 typedef std::pair<Eigen::MatrixXd, Eigen::MatrixXd> MatrixPair;
-typedef std::pair< Eigen::MatrixXd, std::vector<Eigen::MatrixXd> >
-        MatrixStdVecPair;
+typedef std::pair< 
+            Eigen::MatrixXd, 
+            std::vector< Eigen::MatrixXd> > MatrixStdVecPair;
 
 enum paramIndices { LengthScalePIndex,
                     PeriodLengthPIndex,
@@ -101,13 +103,9 @@ MatrixStdVecPair covariance(const Eigen::VectorXd& params,
 /*!@brief Base class definition for covariance functions
  */
 class CovFunc {
-protected:
-  Eigen::VectorXd hyperParameters;
-
 public:
   CovFunc() {}
   virtual ~CovFunc() {}
-  explicit CovFunc(const Eigen::VectorXd& hyperParameters);
 
   //! The evaluation returns the kernel matrix from two input vectors.
   virtual covariance_functions::MatrixStdVecPair evaluate(
@@ -175,6 +173,7 @@ public:
 class PeriodicSquareExponential : public CovFunc {
 private:
   Eigen::VectorXd hyperParameters;
+
 public:
   PeriodicSquareExponential();
   explicit PeriodicSquareExponential(const Eigen::VectorXd& hyperParameters);

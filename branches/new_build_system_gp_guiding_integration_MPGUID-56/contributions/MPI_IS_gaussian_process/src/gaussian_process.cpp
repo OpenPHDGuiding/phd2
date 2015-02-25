@@ -55,7 +55,8 @@ GP::GP() : covFunc_(0), // initialize pointer to null
   alpha_(Eigen::VectorXd()),
   chol_gram_matrix_(Eigen::LDLT<Eigen::MatrixXd>()),
   log_noise_sd_(-1E20), 
-  optimization_mask_(Eigen::VectorXi()) 
+  optimization_mask_(Eigen::VectorXi()),
+  prior_vector_(1, 0)
 { }
 
 GP::GP(const covariance_functions::CovFunc& covFunc) :
@@ -111,6 +112,21 @@ GP::GP(const GP& that) :
       prior_vector_.push_back(0);
     }
   }
+}
+
+
+bool GP::setCovarianceFunction(const covariance_functions::CovFunc& covFunc)
+{
+  if(data_loc_.size() != 0 || data_out_.size() != 0 || prior_vector_.size() != 1)
+    return false;
+  delete covFunc_;
+  covFunc_ = covFunc.clone();
+  
+  // to fix: we cannot do the call twice because of this. We should find a more 
+  // appropriate way of testing that (all zeros maybe?)
+  prior_vector_.resize(covFunc_->getParameterCount() + 1, 0);
+
+  return true;
 }
 
 GP& GP::operator=(const GP& that) {
@@ -188,19 +204,21 @@ void GP::infer() {
   // The data covariance matrix
   covariance_functions::MatrixStdVecPair cov_result =
                                        covFunc_->evaluate(data_loc_, data_loc_);
-  Eigen::MatrixXd const& data_cov = cov_result.first;
+  Eigen::MatrixXd & data_cov = cov_result.first;
 
-  Eigen::MatrixXd noise_derivative = 2*std::exp(2*log_noise_sd_) *
+  gram_matrix_derivatives_.resize(cov_result.second.size() + 1);
+  for(size_t i = 0; i < cov_result.second.size(); i++)
+  {
+    gram_matrix_derivatives_[i+1].swap(cov_result.second[i]);
+  }
+  // noise derivative first
+  gram_matrix_derivatives_[0] = 2*std::exp(2*log_noise_sd_) *
                                      Eigen::MatrixXd::Identity(data_cov.rows(), data_cov.cols());
 
-  gram_matrix_derivatives_ = cov_result.second;
-  // I know insert is costly, but in this case it is the simplest solution
-  gram_matrix_derivatives_.insert(gram_matrix_derivatives_.begin(),
-                                  noise_derivative);
-
   // compute and store the Gram matrix
-  gram_matrix_ = data_cov + (std::exp(2*log_noise_sd_) + JITTER) *
-                            Eigen::MatrixXd::Identity(data_cov.rows(), data_cov.cols());
+  gram_matrix_.swap(data_cov);
+  gram_matrix_ += (std::exp(2*log_noise_sd_) + JITTER) *
+                            Eigen::MatrixXd::Identity(gram_matrix_.rows(), gram_matrix_.cols());
 
   // compute the Cholesky decomposition of the Gram matrix
   chol_gram_matrix_ = gram_matrix_.ldlt();
@@ -230,8 +248,7 @@ GP::VectorMatrixPair GP::predict(const Eigen::VectorXd& locations) const {
                                 locations, locations).first;
 
   if(data_loc_.rows() == 0) { // check if the data is empty
-    Eigen::VectorXd prior_mean = 0*locations;
-    return std::make_pair(prior_mean, prior_cov);
+    return std::make_pair(Eigen::VectorXd::Zero(locations.size()), prior_cov);
   } else {
 
     // The mixed covariance matrix (test and data points)
@@ -258,7 +275,7 @@ double GP::neg_log_posterior() const {
   Eigen::VectorXd hyperParameters = getHyperParameters();
   for(size_t i = 0; i < prior_vector_.size(); ++i) {
     if(prior_vector_[i] != 0) {
-      result -= prior_vector_[i]->neg_log_prob(hyperParameters[i]);
+      result += prior_vector_[i]->neg_log_prob(hyperParameters[i]);
     }
   }
   return result;
@@ -271,7 +288,7 @@ Eigen::VectorXd GP::neg_log_posterior_gradient() const {
   for(size_t i = 0; i < prior_vector_.size(); ++i) {
     if(optimization_mask_.size() == 0 || optimization_mask_[i] == 1) {
       if(prior_vector_[i] != 0) {
-        result[j] -=
+        result[j] +=
             prior_vector_[i]->neg_log_prob_derivative(hyperParameters[i]);
       }
       ++j;

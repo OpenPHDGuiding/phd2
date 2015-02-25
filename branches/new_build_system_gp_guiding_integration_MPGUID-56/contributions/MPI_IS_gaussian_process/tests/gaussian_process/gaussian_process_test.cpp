@@ -131,6 +131,58 @@ TEST_F(GPTest, drawSamples_prior_covariance_test) {
   }
 }
 
+
+TEST_F(GPTest, setCovarianceFunction)
+{
+  Eigen::VectorXd hyperparams(5);
+  hyperparams << 0.1, 15, 700, 25, 5000;
+
+  GP instance_gp;
+  EXPECT_TRUE(instance_gp.setCovarianceFunction(covariance_functions::PeriodicSquareExponential(hyperparams.tail(4))));
+
+  GP instance_gp2 = GP(covariance_functions::PeriodicSquareExponential(Eigen::VectorXd::Zero(4)));
+  instance_gp2.setHyperParameters(hyperparams);
+
+  for(int i = 1; i < 5; i++) // first element is different (non set)
+  {
+    EXPECT_NEAR(instance_gp.getHyperParameters()[i], instance_gp2.getHyperParameters()[i], 1e-8);
+  }
+}
+
+
+
+TEST_F(GPTest, setCovarianceFunction_notworking_after_inference)
+{
+  Eigen::VectorXd hyperparams(5);
+  hyperparams << 0.1, 15, 700, 25, 5000;
+
+  GP instance_gp;
+  EXPECT_TRUE(instance_gp.setCovarianceFunction(covariance_functions::PeriodicSquareExponential(hyperparams.tail(4))));
+
+  int N = 250;
+  Eigen::VectorXd location =
+      400*math_tools::generate_uniform_random_matrix_0_1(N,1)
+          - 200*Eigen::MatrixXd::Ones(N,1);
+
+  Eigen::VectorXd output_from_converged_hyperparams = instance_gp.drawSample(location);
+
+  instance_gp.infer(location, output_from_converged_hyperparams);
+  EXPECT_FALSE(instance_gp.setCovarianceFunction(covariance_functions::PeriodicSquareExponential(hyperparams.tail(4))));
+}
+
+// to be moved to some other file
+TEST_F(GPTest, periodic_covariance_function_test)
+{
+  covariance_functions::PeriodicSquareExponential u;
+  EXPECT_EQ(u.getParameterCount(), 4);
+
+  GP instance_gp = GP(covariance_functions::PeriodicSquareExponential());
+  ASSERT_EQ(instance_gp.getHyperParameters().size(), 5);
+  instance_gp.setHyperParameters(Eigen::VectorXd::Zero(5)); // should not assert
+}
+
+
+
 TEST_F(GPTest, infer_prediction_clear_test) {
   Eigen::VectorXd data_loc(1);
   data_loc << 1;
@@ -412,13 +464,31 @@ TEST_F(GPTest, gamma_prior_test) {
   gammaParameters << 1, 1;
   parameter_priors::GammaPrior gamma_prior(gammaParameters);
 
-  double expected_log_prob = -12.4171;
-  double expected_log_prob_derivative = -14.5205;
+  // for this mode and variance, we should have: theta = (-1 + \sqrt{5})/2 and 
+  // k = 2 / (-1 + \sqrt{5}) + 1. The associated probability at point exp(2.3) is proportional to
+  // exp(2.3)^(2 / (-1 + \sqrt{5}))) \exp{-exp(2.3) * 2 / (-1 + \sqrt{5})}
+  // the negative of the log of the previous expression is returned. 
 
-  EXPECT_NEAR(expected_log_prob, gamma_prior.neg_log_prob(2.3), 1E-2);
-  EXPECT_NEAR(expected_log_prob_derivative,
+  double expected_neg_log_prob = 12.4171;
+  double expected_neg_log_prob_derivative = 14.5205;
+
+  EXPECT_NEAR(expected_neg_log_prob, gamma_prior.neg_log_prob(2.3), 1E-2);
+  EXPECT_NEAR(expected_neg_log_prob_derivative,
               gamma_prior.neg_log_prob_derivative(2.3), 1E-2);
 }
+
+
+TEST_F(GPTest, gamma_prior_test_set_get_parameters) {
+  Eigen::VectorXd gammaParameters(2);
+  gammaParameters << 3, 7;
+  parameter_priors::GammaPrior gamma_prior(gammaParameters);
+
+  ASSERT_EQ(gamma_prior.getParameterCount(), 2);
+  EXPECT_NEAR(gamma_prior.getParameters()[0], 3, 1E-8);
+  EXPECT_NEAR(gamma_prior.getParameters()[1], 7, 1E-8);
+
+}
+
 
 // FIXME This test does not work, yet
 TEST_F(GPTest, parameter_identification_test) {
@@ -429,55 +499,68 @@ TEST_F(GPTest, parameter_identification_test) {
       2000).finished().array().log();
   gp_.setHyperParameters(trueHyperParams);
 
+  // Draw some data points randomly from the true GP
+  int N = 250;
+  Eigen::VectorXd location =
+      400*math_tools::generate_uniform_random_matrix_0_1(N,1)
+          - 200*Eigen::MatrixXd::Ones(N,1);
+  Eigen::VectorXd output_from_converged_hyperparams = gp_.drawSample(location);
+
+
+
+
+
+  // Set up the optimizer with prior and wrong starting point
+  GP gp_infered;
+  gp_infered.setCovarianceFunction(covariance_functions::PeriodicSquareExponential());
+  Eigen::VectorXd initialGuess(5);
+  initialGuess = (initialGuess << 0.1, 15, 700, 25,
+      5000).finished().array().log();
+  gp_infered.setHyperParameters(initialGuess);
+
+  // infer from the generated locations and samples from the true hyperparameters
+  gp_infered.infer(location, output_from_converged_hyperparams);
+
+
+
+  // set up the priors
+  Eigen::VectorXd prior_parameters(2);
+  prior_parameters << 0.1, 0.1;
+  parameter_priors::GammaPrior noise_prior(prior_parameters);
+  gp_infered.setHyperPrior(noise_prior,0);
+  prior_parameters << 10, 1;
+  parameter_priors::GammaPrior length_scale_prior(prior_parameters);
+  gp_infered.setHyperPrior(length_scale_prior,1);
+  prior_parameters << 100, 1;
+  parameter_priors::GammaPrior periodicity_prior(prior_parameters);
+  gp_infered.setHyperPrior(periodicity_prior,2);
+  prior_parameters << 5, 1;
+  parameter_priors::GammaPrior signal_variance_prior(prior_parameters);
+  gp_infered.setHyperPrior(signal_variance_prior,3);
+  prior_parameters << 1000, 100;
+  parameter_priors::GammaPrior long_term_prior(prior_parameters);
+  gp_infered.setHyperPrior(long_term_prior,4);
+
+  Eigen::VectorXi mask(5);
+  mask << 0, 0, 1, 0, 0;
+  gp_infered.setOptimizationMask(mask);
+  Eigen::VectorXd optim = gp_infered.optimizeHyperParameters(10);
+  gp_infered.setHyperParameters(optim);
+  optim = gp_.optimizeHyperParameters(10);
+  gp_infered.setHyperParameters(optim);
+  gp_infered.clearOptimizationMask();
+  optim = gp_infered.optimizeHyperParameters(10);
+  gp_infered.setHyperParameters(optim);
+
+  std::cout << optim.array().exp().transpose() << std::endl;
+
+
   // This is where the system converges to in we start at the true parameters
   Eigen::VectorXd expectedHyperParams(5);
   expectedHyperParams = 
     (expectedHyperParams << 0.00989354,    2.18489,    99.8336,    3.17103,    1059.32
     ).finished().array().log();
 
-  // Draw some data points randomly from the true GP
-  int N = 250;
-  Eigen::VectorXd location =
-      400*math_tools::generate_uniform_random_matrix_0_1(N,1)
-          - 200*Eigen::MatrixXd::Ones(N,1);
-  Eigen::VectorXd output = gp_.drawSample(location);
-  gp_.infer(location, output);
-
-  // Set up the optimizer with prior and wrong starting point
-  Eigen::VectorXd initialGuess(5);
-  initialGuess = (initialGuess << 0.1, 15, 700, 25,
-      5000).finished().array().log();
-  gp_.setHyperParameters(initialGuess);
-
-  Eigen::VectorXd prior_parameters(2);
-  prior_parameters << 0.1, 0.1;
-  parameter_priors::GammaPrior noise_prior(prior_parameters);
-  gp_.setHyperPrior(noise_prior,0);
-  prior_parameters << 10, 1;
-  parameter_priors::GammaPrior length_scale_prior(prior_parameters);
-  gp_.setHyperPrior(noise_prior,1);
-  prior_parameters << 100, 1;
-  parameter_priors::GammaPrior periodicity_prior(prior_parameters);
-  gp_.setHyperPrior(periodicity_prior,2);
-  prior_parameters << 5, 1;
-  parameter_priors::GammaPrior signal_variance_prior(prior_parameters);
-  gp_.setHyperPrior(signal_variance_prior,2);
-  prior_parameters << 1000, 100;
-  parameter_priors::GammaPrior long_term_prior(prior_parameters);
-  gp_.setHyperPrior(long_term_prior,4);
-
-  Eigen::VectorXi mask(5);
-  mask << 0, 0, 1, 0, 0;
-  gp_.setOptimizationMask(mask);
-  Eigen::VectorXd optim = gp_.optimizeHyperParameters(10);
-  gp_.setHyperParameters(optim);
-  optim = gp_.optimizeHyperParameters(10);
-  gp_.setHyperParameters(optim);
-  gp_.clearOptimizationMask();
-  optim = gp_.optimizeHyperParameters(10);
-  gp_.setHyperParameters(optim);
-
-  std::cout << optim.array().exp().transpose() << std::endl;
 
   EXPECT_NEAR(std::exp(optim[0]), std::exp(expectedHyperParams[0]), 1e-3);
   EXPECT_NEAR(std::exp(optim[1]), std::exp(expectedHyperParams[1]), 1e-1);

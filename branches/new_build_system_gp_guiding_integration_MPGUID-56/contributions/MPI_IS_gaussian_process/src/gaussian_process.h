@@ -43,6 +43,7 @@
 
 #include <Eigen/Dense>
 #include <vector>
+#include <list>
 #include <memory>
 #include <utility>
 #include <cstdint>
@@ -72,12 +73,21 @@ public:
   typedef std::pair<Eigen::VectorXd, Eigen::MatrixXd> VectorMatrixPair;
 
   GP(); // allowing the standard constructor makes the use so much easier!
-  explicit GP(const covariance_functions::CovFunc& covFunc);
-  explicit GP(const double noise_variance,
-              const covariance_functions::CovFunc& covFunc);
+  GP(const covariance_functions::CovFunc& covFunc);
+  GP(const double noise_variance,
+     const covariance_functions::CovFunc& covFunc);
   ~GP(); // Need to tidy up
-  explicit GP(const GP& that);
+  
+  GP(const GP& that);
   GP& operator=(const GP& that);
+
+  /*! Sets the covariance function
+   *
+   * This operation is possible only if there is not inference going on in the
+   * current instance. This is useful after initialisation.
+   */
+  bool setCovarianceFunction(const covariance_functions::CovFunc& covFunc);
+
 
   /*!
    * Returns a GP sample for the given locations.
@@ -110,7 +120,7 @@ public:
 
   /*!
    * Sets the GP back to the prior:
-   * Removes datapoints, emties the Gram matrix.
+   * Removes datapoints, empties the Gram matrix.
    */
   void clear();
 
@@ -217,6 +227,9 @@ public:
    * Removes a hyperprior for a given parameter index.
    */
   void clearHyperPrior(int index);
+
+
+
 };
 
 #endif  // ifndef GAUSSIAN_PROCESS_H

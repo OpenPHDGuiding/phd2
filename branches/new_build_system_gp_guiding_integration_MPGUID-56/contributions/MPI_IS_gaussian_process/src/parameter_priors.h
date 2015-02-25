@@ -47,40 +47,34 @@
 
 namespace parameter_priors {
 
-typedef std::pair< double, Eigen::VectorXd > DoubleVecPair;
 
+/*! Base class for encoding a prior distribution.
+ */
 class ParameterPrior {
-protected:
-  Eigen::VectorXd parameters_;
-
 public:
-  ParameterPrior() {};
-  virtual ~ParameterPrior() {};
+  ParameterPrior() {}
+  virtual ~ParameterPrior() {}
 
-  /*!
-   * Returns the prior probability of this parameter coming from the prior
-   * distribution. Note that there is one prior for every hyper parameter.
+  /*! Returns the negative logarithm of the probability at the given point.
    */
-  virtual double neg_log_prob(const double) const = 0;
+  virtual double neg_log_prob(double point) const = 0;
 
-  /*!
-   * Returns the derivative with respect to the hyperparameter of the prior
-   * probability of this parameter coming from the prior distribution.
+  /*! Returns the derivative of the negative logarithm probability at the given input point.
    */
-  virtual double neg_log_prob_derivative(const double) const = 0;
+  virtual double neg_log_prob_derivative(double point) const = 0;
 
-  /**
-   * Method to set the hyper-parameters.
+  /*! Sets the hyper-parameters.
+   * 
+   * The way this class is parametrized is specific to the real instance of the
+   * prior. However it naturally corresponds to the getParameter method. 
    */
   virtual void setParameters(const Eigen::VectorXd& params) = 0;
 
-  /**
-   * Returns the hyper-parameters.
+  /*! Returns the parameters of the prior.
    */
-  virtual const Eigen::VectorXd getParameters() const = 0;
+  virtual Eigen::VectorXd getParameters() const = 0;
 
-  /**
-   * Returns the number of hyper-parameters.
+  /*! Returns the number of parameters.
    */
   virtual int getParameterCount() const = 0;
 
@@ -91,10 +85,18 @@ public:
 };
 
 
-/*
- * The GammaPrior is a prior that allows for positive values only.
- * The GammaPrior is based on the gamma distribution that is defined by
- * \f$ \frac{1}{\Gamma(k)\theta^k}x^{k-1}e^{-\frac{x}{\theta}} \f$.
+/*! Gamma prior distribution.
+ *
+ * This prior allows for positive values only. It is encoded as a classical
+ * gamma distribution, defined as
+ * @f[ 
+ * \frac{x^{k-1} e^{-\frac{x}{\theta}} }{ \Gamma(k)\theta^k }
+ * @f]
+ *
+ * Hence the parameters of this distribution are @f$\theta@f$ and @f$k@f$. 
+ * Those parameters are fully qualified by giving as input parameters the mode and
+ * standard deviation.
+ *
  * The input to the log probability functions is also in log space.
  */
 class GammaPrior : public ParameterPrior {
@@ -103,40 +105,31 @@ private:
   // http://en.wikipedia.org/wiki/Gamma_distribution
   double theta_;
   double k_;
+  GammaPrior();
 
 public:
-  GammaPrior();
-  virtual ~GammaPrior() {};
+  
+  virtual ~GammaPrior() {}
   explicit GammaPrior(const Eigen::VectorXd& parameters);
 
-  /*!
-   * Returns the prior probability of this parameter coming from the prior
-   * distribution. Note that there is one prior for every hyper parameter.
-   */
-  virtual double neg_log_prob(const double hyperParameter) const;
-
-  /*!
-   * Returns the derivative with respect to the hyperparameter of the prior
-   * probability of this parameter coming from the prior distribution.
-   */
-  virtual double neg_log_prob_derivative(const double hyperParameter) const;
+  virtual double neg_log_prob(double hyperParameter) const;
+  virtual double neg_log_prob_derivative(double hyperParameter) const;
 
   /**
    * Method to set the prior parameters. The first element is the mode of the
-   * gamma distribution, the second parameter is the standard deviation. Note
+   * gamma distribution, the second parameter is the variance. Note
    * that the gamma distribution is not symmetric.
    */
   virtual void setParameters(const Eigen::VectorXd& params);
 
-  /**
-   * Returns the hyper-parameters.
-   */
-  virtual const Eigen::VectorXd getParameters() const;
+  //! The parameters are the mode and the variance. 
+  virtual Eigen::VectorXd getParameters() const;
 
-  /**
-   * Returns the number of hyper-parameters.
+  /*! Returns the number of parameters.
    */
-  virtual int getParameterCount() const;
+  virtual int getParameterCount() const {
+    return 2;
+  }
 
   /**
    * Produces a clone to be able to copy the object.
