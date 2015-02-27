@@ -5,13 +5,13 @@
 <wiki:toc max_depth="3" />
 
 [http://www.cmake.org CMake] is a cross-platform meta-build system. The tool translates the rules for building, checking and installing the !OpenPhdGuiding project, written in the cmake language, 
-into rules specific to your development environment and platform. The same script is used for creating Visual Studio or XCode project, or Makefile. 
+into rules specific to your development environment and platform. The same script is used for creating Visual Studio, XCode or Makefile projects.
 The advantages of cmake are many, among which one can cite:
   * the maintenance of only one language for addressing the build of !OpenPhdGuiding on all platforms
   * the possibility to manage big projects and complex dependencies
   * the possibility to add unit tests and installation procedures
 
-This page describes the steps to configure the !OpenPhdGuiding for your specific platform, as well as some hints and best practices for new `cmake` developers. 
+This page describes the steps to configure PHD2 (!OpenPhdGuiding) for your specific platform, as well as some hints and best practices for new `cmake` developers. 
 If you need more information about CMake, you may first consult the CMake documentation online. Also, a lot of resources are available on the Internet. 
 
 = Introduction =
@@ -24,7 +24,7 @@ The full build of the project in made in three steps
 = Preliminary notes =
 
 == Checking out the code ==
-The code is hosted on an SVN server located here: http://open-phd-guiding.googlecode.com/svn/. 
+The PHD2 code is hosted on the SVN server located here: http://open-phd-guiding.googlecode.com/svn/. 
 The branch that supports the cmake configuration is named *`new_build_system`*. The checkout command is then the following
 
 {{{
@@ -38,31 +38,30 @@ For that to work, you need an SVN client:
 sudo apt-get install build-essential subversion
 }}}
   * On OSX, the svn client should be shipped with the OS (accessible from the terminal), 
-  * and on Windows, there is TortoiseSVN that can be installed
+  * On Windows, there are several free and commercial SVN clients. Popular choices are TortoiseSVN, or the svn command-line tool available with [http://cygwin.com/ cygwin].
 
-From now on, we suppose the code has been checked out in *`$OPG_SRC`* (the `open-phd-guiding` path above).
+From now on, we suppose the code has been checked out in *`$PHD2_SRC`* (the `open-phd-guiding` path above).
 
 == Development environments ==
 The following development environment have been tested with the current `cmake` build system:
-  * Windows: Visual Studio 2013 Express Edition
-  * OSX: XCode 5, clang 5, and make
+  * Windows: Visual Studio 2013. Express or Community Editions are OK.
+  * OSX: official builds are done with XCode4. XCode 5 will also work.
   * Linux: gcc4.6, make
 
 == Supported architectures ==
 Currently on Windows and OSX, the supported architecture is 32 bits only. This is because of the external libraries used in the project for driving specific astronomy hardware. Most of this specificity
-is handled in the cmake script. However, the wxWidgets should be built accordingly. 
+is handled in the cmake script. However, wxWidgets should be built accordingly. 
 
 == Visual Studio versions ==
 We suppose _Visual Studio 2013_ installed for Windows developers. The code name in _cmake_ for this version of Visual Studio is _Visual Studio 12_ ("12" stands for the version, which is _Visual Studio 2013_). 
 
 == XCode versions ===
-We suppose XCode 5 installed for Mac OSX developers. XCode 5 comes with _clang_ C++ compiler, which makes the compilation of _wxWidgets_ slightly more difficult than usual. 
-
+We suppose XCode 4 or XCode 5 installed for Mac OSX developers.
 
 = Project dependencies =
-The cmake construction of !OpenPhdGuiding depends only on these external dependencies
+The cmake construction of !PHD2 depends only on these external dependencies
   * CMake
-  * wxWidget on all platforms
+  * wxWidgets
   * openCV on Windows
   * The [http://www.indilib.org/ Indi] and [http://libnova.sourceforge.net/ Nova] library packages on Ubuntu
 
@@ -74,7 +73,7 @@ system wide installed libraries). These dependencies are:
   * libdc
   * libusb
   * cfitsio
-  * and many more
+  * and several more
 
 
 == Installing CMake ==
@@ -84,14 +83,10 @@ sudo apt-get install cmake
 }}}
 
 == Building and installing wxWidgets ==
-We assume 
-  * `$WXWIDGET_BASE_DIR` being a variable that points to the untarred sources of _wxWidgets_.
-  * `$WXWIN` being a variable that points to the installation prefix of the wxWidget dependency. 
 
 === Win32 ===
-On Windows, the produced libraries go to `$WXWIDGET_BASE_DIR\lib` and the headers are already in `$WXWIDGET_BASE_DIR\include`,
-`$WXWIDGET_BASE_DIR` is exactly as an installation folder. The variables `$WXWIN` and `$WXWIDGET_BASE_DIR` are hence considered equivalent
-for the Win32 platform.
+
+We will assume you have installed the wxWidgets files in a directory $WXWIN.
 
 To build the wxWidgets library, open a Visual Studio console and type the following commands, 
 respectively for the Debug and Release versions of the libraries.
@@ -104,9 +99,11 @@ msbuild wx_vc12.sln /p:configuration=Release /p:platform=win32 /m:8
 The `wx_vc12.sln` Visual Studio solution is for Visual Studio 12 (Visual 2013, see [#Visual_Studio_versions here]). 
 
 === OSX ===
-The configuration on OSX looks a little bit complicated. We are using XCode 5 and above, which is shipped with Clang 3+.
+
+We assume you have un-tarred the wxWidgets sources in a directory `$WXWIDGETS_SRC`, and will install the headers and libraries in a directory `$WXWIN`.
+
 {{{
-cd $WXWIDGET_BASE_DIR
+cd $WXWIDGETS_SRC
 ./configure --enable-universal_binary=i386,x86_64 --disable-shared --with-libpng=builtin --with-cocoa --prefix=$WXWIN \
              --with-macosx-sdk=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/ \
              --with-macosx-version-min=10.7 \
@@ -119,7 +116,7 @@ make install
 }}}
 
 === Linux ===
-Under Linux, the wxWidget should be available through the package manager. You need the _developer_ package using GTK:
+Under Linux, wxWidgets should be available through your package manager. You need the _developer_ package using GTK:
 {{{
 sudo apt-get install libwxgtk3.0-dev wx-common wx3.0-i18n
 }}}
@@ -136,28 +133,28 @@ sudo apt-get install libindi-dev libnova-dev
 The `cmake` configuration should find these packages. It is required to have libindi-dev >= 0.9. 
 
 == Building and installing OpenCV ==
-We recall that the dependency on openCV is needed on Win32 platforms only. Nothing really needs to be built since the OpenCV
-zip contains libraries already built for Windows, and also certainly for your platform. Just download OpenCV from [http://www.opencv.org the official website]
+OpenCV is needed on Win32 platforms only. Nothing needs to be built since the OpenCV
+zip file contains libraries already built for Windows. Just download OpenCV from [http://www.opencv.org the official website]
 or [http://sourceforge.net/projects/opencvlibrary/ SourceForge].
 
-We assume `$OPENCV_DIR` being a variable that points to the location where OpenCV was deflated. 
+We assume `$OPENCV_DIR` being a variable that points to the location where OpenCV was extracted. 
 
 = Configuring the !OpenPhdGuiding project =
-Once the dependencies available on your system, you are able to build the project. For that, you should inform the location of these dependencies to cmake, passed as options to cmake.
+Once the dependencies available on your system, you are able to build the PHD2. For that, you will give the location of the dependencies as options to cmake.
 The basic scheme is
   # open a terminal. Under Windows, the terminal should be the one provided by the Visual Studio command line tool, which has the proper environment variables defining the compiler and the SDKs
-  # go to the source directory *`$OPG_SRC`* and create a subdirectory where the project will be built
+  # go to the source directory *`$PHD2_SRC`* and create a subdirectory where the project will be built
   # type the `cmake` command line with the proper options
-  # open the generated project or make the project in place
+  # open the generated project or build the project in place
 
 == Creating the Visual Studio project ==
 We suppose you have 
   * CMake
   * Visual Studio 12 installed (see [#Visual_Studio_versions here] for more details)
-  * build properly [#Building_and_installing_wxWidgets  wxWidgets] and [#Building_and_installing_OpenCV OpenCV]
+  * [#Building_and_installing_wxWidgets  wxWidgets] and [#Building_and_installing_OpenCV OpenCV] built and installed
 
 {{{
-cd $OPG_SRC
+cd $PHD2_SRC
 mkdir tmp
 cd tmp
 cmake -G "Visual Studio 12" -DwxWidgets_ROOT_DIR=$WXWIN -DOpenCVRoot=$OPENCV_DIR\opencv\build ..
@@ -170,18 +167,18 @@ The last line opens the solution in Visual Studio.
 We suppose you have 
   * CMake
   * XCode installed
-  * build properly [#Building_and_installing_wxWidgets  wxWidgets]
+  * [#Building_and_installing_wxWidgets  wxWidgets] built and installed
 
 To construct the XCode project, type the commands below:
 {{{
-cd $OPG_SRC
+cd $PHD2_SRC
 mkdir tmp
 cd tmp
 cmake -G Xcode -DwxWidgets_PREFIX_DIRECTORY=$WXWIN ..
 open PhD2.xcodeproj
 }}}
 
-The last line opens the project in XCode. Note that the project is built only for 32 bits architecture,
+The last line opens the project in XCode. Note that the project is built only for 32 bit architecture,
 as some dependencies are not available for 64 bits architecture.
 
 
@@ -189,24 +186,24 @@ as some dependencies are not available for 64 bits architecture.
 We suppose you have 
   * CMake
   * a compilation toolchain (eg. `gcc`, `ld`, `make`...)
-  * installed [#Building_and_installing_wxWidgets  wxWidgets]
-  * installed [#Installing_Indi_and_Nova Indi and Nova] library packages
+  * [#Building_and_installing_wxWidgets  wxWidgets] installed
+  * [#Installing_Indi_and_Nova Indi and Nova] library packages installed
 
 {{{
-cd $OPG_SRC
+cd $PHD2_SRC
 mkdir tmp
 cd tmp
 cmake ..
 make -j 4
 }}}
 
-As for the other platforms, it is possible to specify another wxWidget distribution by providing the location of the installation prefix on the `cmake` command line:
+As for the other platforms, it is possible to specify another wxWidgets distribution by providing the location of the installation prefix on the `cmake` command line:
 
 {{{
 cmake -DwxWidgets_PREFIX_DIRECTORY=$WXWIN ..
 }}}
 
-However if the wxWidget packages have been installed properly, the default `cmake` command should just run fine.
+However if the wxWidgets package has been installed properly, the default `cmake` command should just run fine.
 
 
 
@@ -218,7 +215,7 @@ We provide here some tips for being able to develop with `cmake`.
 As mentioned earlier, `cmake` is a program that generates for you a Visual Studio solution, an XCode workspace or a bunch of Makefiles. 
 One of the major benefit is that there is only one build configuration to maintain, contained in one or more text files.
 
-== Avoid creating the `cmake` project along the sources ==
+== Avoid building the `cmake` project in the sources tree ==
 To keep the source tree clean from the files generated by the `cmake` step, it is a good habit to separate the /cmake binary tree/ from the sources
 that are under version control. Also, putting `cmake` generated files under version control is discouraged, which means that Visual Studio solutions
 or XCode workspaces should not be added to the repository (as they can be generated). 
@@ -234,9 +231,9 @@ a `cmake` specific target called `ZERO_CHECK`. This target checks if the solutio
 desired target.
 
 Most of the time, building the `ZERO_CHECK` target directly from the solution explorer will bring the `cmake` changes to the solution/workspace. 
-Under Visual, each project of the solution that is modified should be unloaded and then reloaded into the solution: these changes are automatically detected by Visual, 
+In Visual Studio, each project of the solution that is modified should be unloaded and then reloaded into the solution: these changes are automatically detected by Visual Studio, 
 so there is no requirement for manual intervention. However, when the number of changed project is high, this unload/reload process can sometimes be time consuming.
-To address that issue, it is often more efficient to close the solution, regenerate the `cmake` configuration from the command line directly, and open the solution back again.
+To address that issue, it is often more efficient to close the solution, regenerate the `cmake` configuration from the command line directly, and reopen the solution.
 
 Note that the changes on the `cmake` configuration may have very minimal impact on the changes on the projects, if written that way. 
 To have minimal impacts on the project, 
@@ -245,16 +242,16 @@ To have minimal impacts on the project,
 include_directories(${wxWidgets_INCLUDE_DIRS})
 }}}
   has an incidence on all targets that are defined in the CMakeLists.txt and below by the `add_subdirectory` directive. Instead, once the 
-  !PhD2 target is defined, one can do the following:
+  !PHD2 target is defined, one can do the following:
 {{{
-target_include_directories(Phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_include_directories(PHD2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
 }}}
-  which makes the include of the wxWidgets path local to the !PhD2 target. `PUBLIC` visibility (instead of `PRIVATE` as shown here) 
+  which makes the include of the wxWidgets path local to the !PHD2 target. `PUBLIC` visibility (instead of `PRIVATE` as shown here) 
   propagates to the dependent targets. 
   * Same goes for definitions.
     
 == Avoid using "globs" ==
-GLOBS in the `cmake` take everything according to a pattern from a directory. This functionality is fine when those files should be included
-in every platform the same way. This is however often not the case, and a file is likely to be included while it should be. 
+GLOBS in the `cmake` files take everything according to a pattern from a directory. This functionality is fine when those files should be included
+in every platform the same way. This is however often not the case, and a file is likely to be included when it should not be. 
 The [https://www.python.org/dev/peps/pep-0020/ "Zen of Python"] to this regard, in particular "Explicit is better than implicit", is a good principle 
 to follow.
