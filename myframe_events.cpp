@@ -37,6 +37,7 @@
 #include "image_math.h"
 #include "darks_dialog.h"
 #include "Refine_DefMap.h"
+#include "camcal_import_dialog.h"
 
 #include <wx/spinctrl.h>
 #include <wx/textfile.h>
@@ -421,6 +422,13 @@ void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
     }
     else
         pRefineDefMap->Destroy();                       // user cancelled out before starting the process
+}
+
+void MyFrame::OnImportCamCal(wxCommandEvent& evt)
+{
+    CamCalImportDialog dlg(this);
+
+    dlg.ShowModal();
 }
 
 void MyFrame::OnToolBar(wxCommandEvent& evt)

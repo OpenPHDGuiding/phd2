@@ -45,10 +45,12 @@ public:
     static bool DefectMapExists(int profileId, bool showAlert = true);
     static DefectMap *LoadDefectMap(int profileId);
     static wxString DefectMapFileName(int profileId);
+    static bool ImportFromProfile(int sourceId, int destId);
     DefectMap();
     void Save(const wxArrayString& mapInfo) const;
     bool FindDefect(const wxPoint& pt) const;
     void AddDefect(const wxPoint& pt);
+
 };
 
 extern bool QuickLRecon(usImage& img);

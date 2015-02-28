@@ -96,6 +96,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_BOOKMARKS_SET_AT_STAR, MyFrame::OnBookmarksSetAtCurPos)
     EVT_MENU(MENU_BOOKMARKS_CLEAR_ALL, MyFrame::OnBookmarksClearAll)
     EVT_MENU(MENU_REFINEDEFECTMAP,MyFrame::OnRefineDefMap)
+    EVT_MENU(MENU_IMPORTCAMCAL,MyFrame::OnImportCamCal)
 
     EVT_CHAR_HOOK(MyFrame::OnCharHook)
 
@@ -468,6 +469,7 @@ void MyFrame::SetupMenuBar(void)
     darks_menu = new wxMenu();
     m_takeDarksMenuItem = darks_menu->Append(MENU_TAKEDARKS, _("&Dark Library..."), _("Build a dark library for this profile"));
     m_refineDefMapMenuItem = darks_menu->Append(MENU_REFINEDEFECTMAP, _("Bad-pixel Map..."), _("Adjust parameters to create or modify the bad-pixel map"));
+    m_importCamCalMenuItem = darks_menu->Append(MENU_IMPORTCAMCAL, _("Import from profile...", _("Import existing dark library/bad-pixel map from a different profile")));
     darks_menu->AppendSeparator();
     darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
     darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Bad-pixel &Map"), _("Use the bad-pixel map for this profile"));
@@ -1792,7 +1794,7 @@ wxString MyFrame::GetDarksDir()
     return dirpath;
 }
 
-static wxString DarkLibFileName(int profileId)
+wxString MyFrame::DarkLibFileName(int profileId)
 {
     int inst = pFrame->GetInstanceNumber();
     return MyFrame::GetDarksDir() + PATHSEPSTR +

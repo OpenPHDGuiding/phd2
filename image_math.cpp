@@ -797,18 +797,26 @@ void DefectMapDarks::BuildFilteredDark()
     MedianFilter(filteredDark, masterDark, WINDOW);
 }
 
+static wxString DefectMapMasterPath(int profileId)
+{
+    int inst = pFrame->GetInstanceNumber();
+    return MyFrame::GetDarksDir() + PATHSEPSTR +
+        wxString::Format("PHD2_defect_map_master%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
+}
 static wxString DefectMapMasterPath()
 {
-    int inst = pFrame->GetInstanceNumber();
-    return MyFrame::GetDarksDir() + PATHSEPSTR +
-        wxString::Format("PHD2_defect_map_master%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", pConfig->GetCurrentProfileId());
+    return DefectMapMasterPath(pConfig->GetCurrentProfileId());
 }
 
-static wxString DefectMapFilterPath()
+static wxString DefectMapFilterPath(int profileId)
 {
     int inst = pFrame->GetInstanceNumber();
     return MyFrame::GetDarksDir() + PATHSEPSTR +
-        wxString::Format("PHD2_defect_map_master_filt%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", pConfig->GetCurrentProfileId());
+        wxString::Format("PHD2_defect_map_master_filt%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
+}
+static wxString DefectMapFilterPath()
+{
+    return DefectMapFilterPath(pConfig->GetCurrentProfileId());
 }
 
 void DefectMapDarks::SaveDarks(const wxString& notes)
@@ -1077,13 +1085,46 @@ wxString DefectMap::DefectMapFileName(int profileId)
         wxString::Format("PHD2_defect_map%s_%d.txt", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
 }
 
+bool DefectMap::ImportFromProfile(int srcId, int destId)
+{
+    wxString sourceName;
+    wxString destName;
+    int rslt;
+    
+    sourceName = DefectMapFileName(srcId);
+    destName = DefectMapFileName(destId);
+    rslt = wxCopyFile(sourceName, destName, true);
+    if (rslt != 1)
+    {
+        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map copy of %s to %s\n", sourceName, destName));
+        return false;
+    }
+    sourceName = DefectMapMasterPath(srcId);
+    destName = DefectMapMasterPath(destId);
+    rslt = wxCopyFile(sourceName, destName, true);
+    if (rslt != 1)
+    {
+        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map master dark copy of %s to %s\n", sourceName, destName));
+        return false;
+    }
+    sourceName = DefectMapFilterPath(srcId);
+    destName = DefectMapFilterPath(destId);
+    rslt = wxCopyFile(sourceName, destName, true);
+    if (rslt != 1)
+    {
+        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map master filtered dark copy of %s to %s\n", sourceName, destName));
+        return false;
+    }
+    return (true);
+}
+
 bool DefectMap::DefectMapExists(int profileId, bool showAlert)
 {
     bool bOk = false;
 
     if (wxFileExists(DefectMapFileName(profileId)))
     {
-        wxString fName = DefectMapMasterPath();
+        wxString fName = DefectMapMasterPath(profileId);
         const wxSize& sensorSize = pCamera->FullSize;
         if (sensorSize == UNDEFINED_FULL_FRAME_SIZE)
         {
@@ -1238,3 +1279,5 @@ void DefectMap::DeleteDefectMap(int profileId)
         wxRemoveFile(filename);
     }
 }
+
+

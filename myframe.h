@@ -165,6 +165,7 @@ public:
     wxMenuItem *m_takeDarksMenuItem;
     wxMenuItem *m_refineDefMapMenuItem;
     wxMenuItem *m_calibrationMenuItem;
+    wxMenuItem *m_importCamCalMenuItem;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
@@ -250,6 +251,7 @@ public:
     void OnBookmarksSetAtCurPos(wxCommandEvent& evt);
     void OnBookmarksClearAll(wxCommandEvent& evt);
     void OnRefineDefMap(wxCommandEvent& evt);
+    void OnImportCamCal(wxCommandEvent& evt);
 
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
@@ -291,6 +293,7 @@ public:
     void LoadDarkLibrary();
     void SaveDarkLibrary(const wxString& note);
     void DeleteDarkLibraryFiles(int profileID);
+    wxString DarkLibFileName(int profileId);
     void SetDarkMenuState();
     void LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
@@ -495,6 +498,7 @@ enum {
     MENU_LOADDARK,
     MENU_LOADDEFECTMAP,
     MENU_REFINEDEFECTMAP,
+    MENU_IMPORTCAMCAL,
     MENU_INDICONFIG,
     MENU_INDIDIALOG,
     MENU_V4LSAVESETTINGS,
