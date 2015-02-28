@@ -163,7 +163,9 @@ public:
     wxAcceleratorEntry *m_showBookmarksAccel;
     wxAcceleratorEntry *m_bookmarkLockPosAccel;
     wxMenuItem *m_takeDarksMenuItem;
+    wxMenuItem *m_useDarksMenuItem;
     wxMenuItem *m_refineDefMapMenuItem;
+    wxMenuItem *m_useDefectMapMenuItem;
     wxMenuItem *m_calibrationMenuItem;
     wxMenuItem *m_importCamCalMenuItem;
     wxAuiToolBar *MainToolbar;
@@ -297,6 +299,7 @@ public:
     void SetDarkMenuState();
     void LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
+    void CheckGeometry();
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
