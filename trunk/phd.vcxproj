@@ -172,6 +172,7 @@
     <ClCompile Include="advanced_dialog.cpp" />
     <ClCompile Include="calreview_dialog.cpp" />
     <ClCompile Include="calstep_dialog.cpp" />
+    <ClCompile Include="camcal_import_dialog.cpp" />
     <ClCompile Include="cameras\ArtemisHSCAPI.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -294,6 +295,7 @@
     <ClInclude Include="advanced_dialog.h" />
     <ClInclude Include="calreview_dialog.h" />
     <ClInclude Include="calstep_dialog.h" />
+    <ClInclude Include="camcal_import_dialog.h" />
     <ClInclude Include="cam_ascomlate.h" />
     <ClInclude Include="cam_Atik16.h" />
     <ClInclude Include="cam_firewire.h" />
