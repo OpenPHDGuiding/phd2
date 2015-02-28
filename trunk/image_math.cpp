@@ -1142,7 +1142,7 @@ bool DefectMap::DefectMapExists(int profileId, bool showAlert)
                 if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
                     bOk = true;
                 else if (showAlert)
-                    pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be rebuilt."));
+                    pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be replaced."));
 
                 PHD_fits_close_file(fptr);
             }
