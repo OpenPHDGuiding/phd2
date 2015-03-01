@@ -61,7 +61,7 @@ We suppose XCode 4 or XCode 5 installed for Mac OSX developers.
 = Project dependencies =
 The cmake construction of !PHD2 depends only on these external dependencies
   * CMake
-  * wxWidgets-3.0.2
+  * wxWidgets 3.0.2
   * OpenCV 2.4.10 on Windows
   * The [http://www.indilib.org/ Indi] and [http://libnova.sourceforge.net/ Nova] library packages on Ubuntu
 
@@ -156,7 +156,7 @@ We suppose you have
 cd %PHD2_SRC%
 mkdir tmp
 cd tmp
-cmake -G "Visual Studio 12" -DwxWidgets_PREFIX_DIRECTORY=%WXWIN% -DOpenCVRoot=%OPENCV_DIR%\opencv\build ..
+cmake -G "Visual Studio 12" -DwxWidgets_PREFIX_DIRECTORY=%WXWIN% -DOpenCVRoot=%OPENCV_DIR% ..
 PHD2.sln
 }}}
 
