@@ -475,25 +475,29 @@ if(UNIX AND NOT APPLE)
      )
 endif()
 
-if(WIN32)
-
-  # precompiled headers. Should assign specific property to this file in order to benefit from
-  # the speedup.
-  set(phd2_SRC
-      ${phd2_SRC}
-      ${phd_src_dir}/precompiled_header.cpp
-  )
-endif()
-
 source_group(src FILES ${phd2_SRC})
-
-
-
 
 
 include_directories(${phd_src_dir}/cam_KWIQGuider/)
 include_directories(${phd_src_dir}/cameras/)
 
+MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
+  IF(MSVC)
+    GET_FILENAME_COMPONENT(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
+    SET(PrecompiledBinary "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
+    SET(Sources ${${SourcesVar}})
+
+    SET_SOURCE_FILES_PROPERTIES(${PrecompiledSource}
+                                PROPERTIES COMPILE_FLAGS "/Yc\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
+                                           OBJECT_OUTPUTS "${PrecompiledBinary}")
+    SET_SOURCE_FILES_PROPERTIES(${Sources}
+                                PROPERTIES COMPILE_FLAGS "/Yu\"${PrecompiledHeader}\" /FI\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
+                                           OBJECT_DEPENDS "${PrecompiledBinary}")
+
+    # Add precompiled header to SourcesVar
+    LIST(APPEND ${SourcesVar} ${PrecompiledSource})
+  ENDIF(MSVC)
+ENDMACRO(ADD_MSVC_PRECOMPILED_HEADER)
 
 if(APPLE)
 
@@ -507,8 +511,6 @@ if(APPLE)
   set( MACOSX_BUNDLE_LONG_VERSION_STRING  "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
   set( MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
   set( MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2015 Open-phd-guiding team" )
-
-
 
   add_executable(
     PHD2
@@ -547,10 +549,18 @@ if(APPLE)
   set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
   set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
 
- elseif(WIN32)
+elseif(WIN32)
 
   set(phd2_WIN_SRC
 
+    ${scopes_SRC}
+    ${cam_SRC}
+    #${cam_KWIQGuider_SRC} # not included in the win32 projects
+    ${guiding_SRC}
+    ${phd2_SRC}
+
+    # windows-only sources
+    
     ${phd_src_dir}/parallelports.h
     ${phd_src_dir}/parallelport.h
     ${phd_src_dir}/parallelport.cpp
@@ -563,16 +573,11 @@ if(APPLE)
     ${phd_src_dir}/phd.rc   # resource file
   )
 
-
+  ADD_MSVC_PRECOMPILED_HEADER("phd.h" "precompiled_header.cpp" phd2_WIN_SRC)
 
   add_executable(
     PHD2
     WIN32
-    ${scopes_SRC}
-    ${cam_SRC}
-    #${cam_KWIQGuider_SRC} # not included in the win32 projects
-    ${guiding_SRC}
-    ${phd2_SRC}
     ${phd2_WIN_SRC}
     )
     
