@@ -469,7 +469,7 @@ void MyFrame::SetupMenuBar(void)
     darks_menu = new wxMenu();
     m_takeDarksMenuItem = darks_menu->Append(MENU_TAKEDARKS, _("&Dark Library..."), _("Build a dark library for this profile"));
     m_refineDefMapMenuItem = darks_menu->Append(MENU_REFINEDEFECTMAP, _("Bad-pixel Map..."), _("Adjust parameters to create or modify the bad-pixel map"));
-    m_importCamCalMenuItem = darks_menu->Append(MENU_IMPORTCAMCAL, _("Import from profile...", _("Import existing dark library/bad-pixel map from a different profile")));
+    m_importCamCalMenuItem = darks_menu->Append(MENU_IMPORTCAMCAL, _("Import from profile..."), _("Import existing dark library/bad-pixel map from a different profile"));
     darks_menu->AppendSeparator();
     m_useDarksMenuItem =  darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
     m_useDefectMapMenuItem = darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Bad-pixel &Map"), _("Use the bad-pixel map for this profile"));
