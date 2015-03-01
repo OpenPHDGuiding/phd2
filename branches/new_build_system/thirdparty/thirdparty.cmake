@@ -443,27 +443,22 @@ if(WIN32)
   endif()
   
   set(opencv_root ${OpenCVRoot})
-  if(EXISTS ${opencv_root}/opencv)
-    set(opencv_root ${opencv_root}/opencv)
-  endif()
   
-  #if(NOT EXISTS ${opencv_root}/build)
-  #  message(FATAL_ERROR "Cannot find the build directory of open cv. Please ensure you have decompressed the version for windows")
-  #endif()
-  
-  if(NOT EXISTS ${opencv_root}/include)
+  if(NOT EXISTS ${opencv_root}/build/include)
     message(FATAL_ERROR "Cannot find the header directory of open cv. Please ensure you have decompressed the version for windows")
   endif()
-  
-  
-  
+
+  if(NOT EXISTS ${opencv_root}/build/OpenCVConfig.cmake)
+    message(FATAL_ERROR "Cannot find the header directory of open cvOpenCVConfig.cmake. Please ensure you have decompressed the version for windows")
+  endif()
+
   # apparently this is the way cmake works... did not know, the OpenCVConfig.cmake file is enough for the configuration
-  set(OpenCV_DIR ${opencv_root}/ CACHE PATH "Location of the OpenCV configuration directory")
+  set(OpenCV_DIR ${opencv_root}/build CACHE PATH "Location of the OpenCV configuration directory")
   set(OpenCV_SHARED ON)
   set(OpenCV_STATIC OFF)
   set(BUILD_SHARED_LIBS ON)
   find_package(OpenCV REQUIRED)
-  
+
   if(NOT OpenCV_INCLUDE_DIRS)
     message(FATAL_ERROR "Cannot add the OpenCV include directories")
   endif()
@@ -477,15 +472,16 @@ if(WIN32)
   get_filename_component(OpenCV_BIN_DIR ${OpenCV_BIN_DIR} ABSOLUTE)
   
   include_directories(${OpenCV_INCLUDE_DIRS})
+  set(OPENCV_VER "2410")
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${OpenCV_LIBS}) # Raffi: maybe reduce a bit the number of libraries to link against
-  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_imgproc249d.dll)
-  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_imgproc249.dll)
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_imgproc${OPENCV_VER}d.dll)
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_imgproc${OPENCV_VER}.dll)
   
-  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_highgui249d.dll)
-  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_highgui249.dll)
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_highgui${OPENCV_VER}d.dll)
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_highgui${OPENCV_VER}.dll)
   
-  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_core249d.dll)
-  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_core249.dll)
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${OpenCV_BIN_DIR}/opencv_core${OPENCV_VER}d.dll)
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${OpenCV_BIN_DIR}/opencv_core${OPENCV_VER}.dll)
 endif()
   
 
