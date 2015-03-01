@@ -61,8 +61,8 @@ We suppose XCode 4 or XCode 5 installed for Mac OSX developers.
 = Project dependencies =
 The cmake construction of !PHD2 depends only on these external dependencies
   * CMake
-  * wxWidgets
-  * openCV on Windows
+  * wxWidgets-3.0.2
+  * OpenCV 2.4.10 on Windows
   * The [http://www.indilib.org/ Indi] and [http://libnova.sourceforge.net/ Nova] library packages on Ubuntu
 
 
@@ -86,12 +86,11 @@ sudo apt-get install cmake
 
 === Win32 ===
 
-We will assume you have installed the wxWidgets files in a directory $WXWIN.
+We will assume you have installed the wxWidgets files in a directory $WXWIN. C:\wxWidgets-3.0.2\ is the standard location.
 
-To build the wxWidgets library, open a Visual Studio console and type the following commands, 
-respectively for the Debug and Release versions of the libraries.
+To build the wxWidgets library, open a Visual Studio console ("VS2013 x86 Native Tools Command Prompt") and run the following commands to build both the Debug and Release versions of the libraries.
 {{{
-cd $WXWIN\build\msw
+cd %WXWIN%\build\msw
 msbuild wx_vc12.sln /p:configuration=Debug /p:platform=win32 /m:8
 msbuild wx_vc12.sln /p:configuration=Release /p:platform=win32 /m:8
 }}}
@@ -134,7 +133,7 @@ The `cmake` configuration should find these packages. It is required to have lib
 
 == Building and installing OpenCV ==
 OpenCV is needed on Win32 platforms only. Nothing needs to be built since the OpenCV
-zip file contains libraries already built for Windows. Just download OpenCV from [http://www.opencv.org the official website]
+zip file contains libraries already built for Windows. Just download and install OpenCV 2.4.10 from [http://www.opencv.org the official website]
 or [http://sourceforge.net/projects/opencvlibrary/ SourceForge].
 
 We assume `$OPENCV_DIR` being a variable that points to the location where OpenCV was extracted. 
@@ -154,11 +153,11 @@ We suppose you have
   * [#Building_and_installing_wxWidgets  wxWidgets] and [#Building_and_installing_OpenCV OpenCV] built and installed
 
 {{{
-cd $PHD2_SRC
+cd %PHD2_SRC%
 mkdir tmp
 cd tmp
-cmake -G "Visual Studio 12" -DwxWidgets_ROOT_DIR=$WXWIN -DOpenCVRoot=$OPENCV_DIR\opencv\build ..
-PhD2.sln
+cmake -G "Visual Studio 12" -DwxWidgets_PREFIX_DIRECTORY=%WXWIN% -DOpenCVRoot=%OPENCV_DIR%\opencv\build ..
+PHD2.sln
 }}}
 
 The last line opens the solution in Visual Studio.
