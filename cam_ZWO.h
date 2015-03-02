@@ -42,8 +42,6 @@ class Camera_ZWO : public GuideCamera
     unsigned char *m_buffer;
     bool m_capturing;
     int m_cameraId;
-    int m_gainControlId;
-    int m_exposureControlId;
     int m_minGain;
     int m_maxGain;
 
