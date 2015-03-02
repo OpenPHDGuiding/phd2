@@ -136,7 +136,7 @@ CamCalImportDialog::~CamCalImportDialog(void)
 void CamCalImportDialog::FindCompatibleDarks(wxArrayString* pResults)
 {
 
-    for (int i = 0; i < (int)m_profileNames.GetCount(); i++)
+    for (unsigned int i = 0; i < m_profileNames.GetCount(); i++)
     {
         int profileId = pConfig->GetProfileId(m_profileNames[i]);
         if (profileId != m_thisProfileId)
@@ -148,7 +148,7 @@ void CamCalImportDialog::FindCompatibleDarks(wxArrayString* pResults)
 
 void CamCalImportDialog::FindCompatibleBPMs(wxArrayString* pResults)
 {
-    for (int i = 0; i < (int)m_profileNames.GetCount(); i++)
+    for (unsigned int i = 0; i < m_profileNames.GetCount(); i++)
     {
         int profileId = pConfig->GetProfileId(m_profileNames[i]);
         if (profileId != m_thisProfileId)

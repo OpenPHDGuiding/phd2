@@ -72,7 +72,7 @@ void GuideAlgorithmLowpass2::reset(void)
 double GuideAlgorithmLowpass2::result(double input)
 {
     m_history.Add(input);
-    int numpts = m_history.GetCount();
+    unsigned int numpts = m_history.GetCount();
     double dReturn;
     double attenuation = m_aggressiveness / 100.;
 
@@ -88,7 +88,7 @@ double GuideAlgorithmLowpass2::result(double input)
             Debug.Write("Lowpass2 history cleared, outlier deflection\n");
         }
         else
-            dReturn = CalcSlope(m_history) * numpts * attenuation;
+            dReturn = CalcSlope(m_history) * (double) numpts * attenuation;
     }
 
     if (numpts == HISTORY_SIZE)                 // History is fully populated
