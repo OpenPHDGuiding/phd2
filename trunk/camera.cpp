@@ -397,9 +397,9 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         }
 #endif
 #if defined (QHY5LII)
-        else if (choice.Find(_T("QHY 5L-II Mono")) != wxString::npos)
+        else if (choice.Find(_T("QHY 5L-II Mono")) != wxNOT_FOUND)
             pReturn = new Camera_QHY5LIIM();
-        else if (choice.Find(_T("QHY 5L-II Color")) != wxString::npos )
+        else if (choice.Find(_T("QHY 5L-II Color")) != wxNOT_FOUND)
             pReturn = new Camera_QHY5LIIC();
 #endif
 #if defined(ZWO_ASI)
