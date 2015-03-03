@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-03 00:30-0500\n"
-"PO-Revision-Date: 2015-02-09 20:37+0800\n"
+"PO-Revision-Date: 2015-03-03 16:17+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -1045,16 +1045,15 @@ msgstr "無法開啟 ZWO ASI 相機"
 
 #: camcal_import_dialog.cpp:53
 msgid "Import Dark Library and Bad Pixel Map"
-msgstr ""
+msgstr "匯入暗場影像及壞點影像圖庫"
 
 #: camcal_import_dialog.cpp:61 darks_dialog.cpp:113
 msgid "Dark Library"
 msgstr "暗場影像庫"
 
 #: camcal_import_dialog.cpp:63
-#, fuzzy
 msgid "Choose the profile with the dark library you want to use:"
-msgstr "讓配置檔使用此暗場影像庫"
+msgstr "選擇你想使用內含暗場影像庫的配置檔"
 
 #: camcal_import_dialog.cpp:68 camcal_import_dialog.cpp:94
 #: camcal_import_dialog.cpp:163 camcal_import_dialog.cpp:167
@@ -1070,55 +1069,48 @@ msgid "None"
 msgstr "無"
 
 #: camcal_import_dialog.cpp:74
-#, fuzzy
 msgid "Darks Profiles"
-msgstr "星點狀態"
+msgstr "暗場配置檔"
 
 #: camcal_import_dialog.cpp:77 camcal_import_dialog.cpp:103
-#, fuzzy
 msgid "Import profile"
-msgstr "匯入 PHD 設備配置檔案"
+msgstr "匯入配置檔"
 
 #: camcal_import_dialog.cpp:79 camcal_import_dialog.cpp:105
-#, fuzzy
 msgid "Camera in profile"
-msgstr "相機角度"
+msgstr "配置檔中指定的相機"
 
 #: camcal_import_dialog.cpp:83
-#, fuzzy
 msgid "There are no compatible dark libraries available"
-msgstr "無校準資料"
+msgstr "相容的暗場影像庫不存在"
 
 #: camcal_import_dialog.cpp:87
-#, fuzzy
 msgid "Bad-pixel Map"
-msgstr "壞點影像..."
+msgstr "壞點影像"
 
 #: camcal_import_dialog.cpp:89
 msgid "Choose the profile with the bad-pixel map you want to use:"
-msgstr ""
+msgstr "選擇你要使用內含壞點影像庫的配置檔"
 
 #: camcal_import_dialog.cpp:100
-#, fuzzy
 msgid "Bad-pix Map Profiles"
-msgstr "管理設備配置檔"
+msgstr "壞點影像庫配置檔"
 
 #: camcal_import_dialog.cpp:109
-#, fuzzy
 msgid "There are no compatible bad-pixel maps available"
-msgstr "無校準資料"
+msgstr "相容的壞點影像庫不存在"
 
 #: camcal_import_dialog.cpp:117
 msgid "Ok"
-msgstr ""
+msgstr "OK"
 
 #: camcal_import_dialog.cpp:214
 msgid "Bad-pixel map could not be imported because of errors in file/copy"
-msgstr ""
+msgstr "因為儲存/複製過程發生錯誤導致壞點影像庫匯入失敗"
 
 #: camcal_import_dialog.cpp:233
 msgid "Dark library could not be imported because of errors in file/copy"
-msgstr ""
+msgstr "因為儲存/複製過程發生錯誤導致暗場影像庫匯入失敗"
 
 #: camera.cpp:551
 msgid "Select your camera"
@@ -2188,49 +2180,44 @@ msgstr "AO 未連接"
 
 #: guidability_tool.cpp:143 myframe.cpp:439
 msgid "Guidability Check"
-msgstr ""
+msgstr "導星能力檢查"
 
 #: guidability_tool.cpp:144
 msgid "Guidability Check - In Progress"
-msgstr ""
+msgstr "導星能力檢查 - 進行中"
 
 #: guidability_tool.cpp:159
 msgid "Start measuring (disables guiding)"
-msgstr ""
+msgstr "開始測量 (停用導星)"
 
 #: guidability_tool.cpp:164
 msgid "Stop measuring and re-enable guiding"
-msgstr ""
+msgstr "結束測量並重新導星"
 
 #: guidability_tool.cpp:173
 msgid "Report"
-msgstr ""
+msgstr "報表"
 
 #: guidability_tool.cpp:178
 msgid "Courier"
-msgstr ""
+msgstr "Courier"
 
 #: guidability_tool.cpp:246
 msgid "Measurement in progress, guide output is disabled"
-msgstr ""
+msgstr "測量進行中, 導星訊號暫停輸出"
 
 #: guidability_tool.cpp:284
-#, fuzzy
 msgid "Guiding stopped"
-msgstr "導星"
+msgstr "導星終止"
 
 #: guidability_tool.cpp:292
 msgid "Click Start to begin measurement."
-msgstr ""
+msgstr "點擊『開始』進行測量"
 
 #: guidability_tool.cpp:294
-#, fuzzy
 msgid ""
 "Select a guide star and start guiding, then click Start to begin measurement."
-msgstr ""
-"將彗星置於影像中央。\n"
-"選擇導星星體並開始導星。\n"
-"然後, 點選【開始】按鈕開始調校。"
+msgstr "選擇一顆導星星體開始導星動作後, 點選【開始】按鈕開始測量。"
 
 #: guide_algorithm.cpp:48
 msgid "DEC"
@@ -2331,14 +2318,13 @@ msgid "Aggressiveness"
 msgstr "修正強度"
 
 #: guide_algorithm_lowpass2.cpp:209
-#, fuzzy, c-format
+#, c-format
 msgid "Aggressiveness factor, percent. Default = %.f%%"
-msgstr "修正度百分比; 預設 = %.f%%"
+msgstr "延滯度百分比; 預設 = %.f%%"
 
 #: guide_algorithm_lowpass2.cpp:261
-#, fuzzy
 msgid "Agg"
-msgstr "Agr"
+msgstr "Agg"
 
 #: guide_algorithm_resistswitch.cpp:256
 msgid "ResistSwitch Guide Algorithm"
@@ -2506,11 +2492,10 @@ msgid "Unknown"
 msgstr "未知"
 
 #: image_math.cpp:1145
-#, fuzzy
 msgid ""
 "Bad-pixel map does not match the camera in this profile - it needs to be "
 "replaced."
-msgstr "壞點影像與設備組態檔中的相機不符, 需重新建立壞點影像。"
+msgstr "壞點影像與設備組態檔中的相機不符, 必需重新建立壞點影像。"
 
 #: indi_gui.cpp:690
 msgid "INDI Options"
@@ -2739,7 +2724,7 @@ msgstr "執行彗星追蹤工具"
 
 #: myframe.cpp:439
 msgid "Run the Guidability Check tool"
-msgstr ""
+msgstr "執行導星能力檢查工具"
 
 #: myframe.cpp:440
 msgid "Run the Drift Alignment tool"
@@ -2927,11 +2912,11 @@ msgstr "調整參數以建立或修改壞像素影像"
 
 #: myframe.cpp:476
 msgid "Import from profile..."
-msgstr ""
+msgstr "由配置檔案匯入"
 
 #: myframe.cpp:476
 msgid "Import existing dark library/bad-pixel map from a different profile"
-msgstr ""
+msgstr "由不同的組態檔案匯入已經存在的暗場影像庫/壞點影像庫"
 
 #: myframe.cpp:478
 msgid "&Use Dark Library"
@@ -3140,17 +3125,16 @@ msgid "Error opening FITS file "
 msgstr "打開 FITS 檔案發生錯誤"
 
 #: myframe.cpp:1836
-#, fuzzy
 msgid ""
 "Dark library does not match the camera in this profile - it needs to be "
 "replaced."
-msgstr "暗場影像與設備組態檔中的相機不符, 需重新建立暗場影像。"
+msgstr "暗場影像庫與目前所使用的相機不相符, 兩者均需重建。"
 
 #: myframe.cpp:1874
 msgid ""
 "Dark library and bad-pixel maps are incompatible with the current camera - "
 "both need to be replaced"
-msgstr ""
+msgstr "暗場影像庫及壞點影像庫與目前所使用的相機不相符, 兩者均需重建。"
 
 #: myframe.cpp:1899
 msgid "You must connect a camera before loading dark frames"
