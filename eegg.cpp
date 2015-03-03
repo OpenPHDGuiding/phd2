@@ -38,6 +38,7 @@
 #include "calreview_dialog.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
+#include "guidability_tool.h"
 
 void MyFrame::OnEEGG(wxCommandEvent& evt)
 {
@@ -197,5 +198,18 @@ void MyFrame::OnCometTool(wxCommandEvent& WXUNUSED(evt))
     if (pCometTool)
     {
         pCometTool->Show();
+    }
+}
+
+void MyFrame::OnGuidabilityTool(wxCommandEvent& WXUNUSED(evt))
+{
+    if (!pGuidabilityTool)
+    {
+        pGuidabilityTool = GuidabilityTool::CreateGuidabilityToolWindow();
+    }
+
+    if (pGuidabilityTool)
+    {
+        pGuidabilityTool->Show();
     }
 }

@@ -362,7 +362,7 @@ void CometToolWin::OnClose(wxCloseEvent& evt)
     pConfig->Global.SetInt("/CometTool/pos.x", x);
     pConfig->Global.SetInt("/CometTool/pos.y", y);
 
-    evt.Skip();
+    Destroy();
 }
 
 wxWindow *CometTool::CreateCometToolWindow()

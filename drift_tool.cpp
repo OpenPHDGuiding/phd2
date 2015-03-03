@@ -643,7 +643,7 @@ void DriftToolWin::OnClose(wxCloseEvent& evt)
     // restore polar align circle correction factor
     pFrame->pGuider->SetPolarAlignCircleCorrection(1.0);
 
-    evt.Skip();
+    Destroy();
 }
 
 void DriftToolWin::UpdateScopeCoordinates(void)

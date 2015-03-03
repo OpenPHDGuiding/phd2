@@ -34,6 +34,8 @@
  */
 
 #include "phd.h"
+#include "guidability_tool.h"
+
 #include <wx/tokenzr.h>
 
 // enable dec compensation when calibration declination is less than this
@@ -288,7 +290,12 @@ bool Mount::GetGuidingEnabled(void)
 
 void Mount::SetGuidingEnabled(bool guidingEnabled)
 {
-    m_guidingEnabled = guidingEnabled;
+    if (guidingEnabled != m_guidingEnabled)
+    {
+        const char *s = IsStepGuider() ? "AOGuidingEnabled" : "MountGuidingEnabled";
+        GuideLog.SetGuidingParam(s, guidingEnabled ? "true" : "false");
+        m_guidingEnabled = guidingEnabled;
+    }
 }
 
 GUIDE_ALGORITHM Mount::GetGuideAlgorithm(GuideAlgorithm *pAlgorithm)
@@ -661,6 +668,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         {
             pFrame->pGraphLog->AppendData(info);
             pFrame->pTarget->AppendData(info);
+            GuidabilityTool::NotifyGuideStep(info);
         }
     }
     catch (wxString errMsg)

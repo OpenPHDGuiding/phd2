@@ -34,6 +34,7 @@
 #include "phd.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
+#include "guidability_tool.h"
 
 // un-comment to log star deflections to a file
 //#define CAPTURE_DEFLECTIONS
@@ -971,6 +972,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 {
                     GuideLog.FrameDropped(info);
                     EvtServer.NotifyStarLost(info);
+                    GuidabilityTool::NotifyFrameDropped(info);
                     pFrame->pGraphLog->AppendData(info);
 
                     wxColor prevColor = GetBackgroundColour();
