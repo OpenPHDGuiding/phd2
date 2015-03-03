@@ -146,8 +146,6 @@ protected:
     virtual GUIDE_ALGORITHM GetYGuideAlgorithm(void);
     virtual void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
 
-    void SetGuidingEnabled(bool guidingEnabled);
-
     friend class GraphLogWindow;
 
     GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
@@ -180,6 +178,7 @@ public:
 
     bool FlipCalibration(void);
     bool GetGuidingEnabled(void);
+    void SetGuidingEnabled(bool guidingEnabled);
 
     virtual MOVE_RESULT Move(const PHD_Point& cameraVectorEndpoint, bool normalMove=true);
     bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,

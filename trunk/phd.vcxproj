@@ -222,6 +222,7 @@
     <ClCompile Include="gear_dialog.cpp" />
     <ClCompile Include="graph-stepguider.cpp" />
     <ClCompile Include="graph.cpp" />
+    <ClCompile Include="guidability_tool.cpp" />
     <ClCompile Include="guider.cpp" />
     <ClCompile Include="guider_onestar.cpp" />
     <ClCompile Include="guide_algorithm.cpp" />
@@ -342,6 +343,7 @@
     <ClInclude Include="gear_dialog.h" />
     <ClInclude Include="graph-stepguider.h" />
     <ClInclude Include="graph.h" />
+    <ClInclude Include="guidability_tool.h" />
     <ClInclude Include="guider.h" />
     <ClInclude Include="guiders.h" />
     <ClInclude Include="guider_onestar.h" />
