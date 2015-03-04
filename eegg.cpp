@@ -205,7 +205,21 @@ void MyFrame::OnGuidabilityTool(wxCommandEvent& WXUNUSED(evt))
 {
     if (!pGuidabilityTool)
     {
-        pGuidabilityTool = GuidabilityTool::CreateGuidabilityToolWindow();
+        bool ok = true;
+
+        if (pFrame->pGuider->IsGuiding())
+        {
+            ok = ConfirmDialog::Confirm(_(
+                "The Guidability Check Tool will disable guide output and\n"
+                "allow the guide star to drift.\n"
+                "\n"
+                "Ok to disable guide output?"
+                ),
+                "/guidability_tool_while_guiding", _("Confirm Disable Guiding"));
+        }
+
+        if (ok)
+            pGuidabilityTool = GuidabilityTool::CreateGuidabilityToolWindow();
     }
 
     if (pGuidabilityTool)
