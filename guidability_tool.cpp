@@ -106,7 +106,7 @@ struct Stats
     }
 };
 
-struct GuidabilityToolWin : public wxFrame
+struct GuidabilityToolWin : public wxDialog
 {
     wxButton *m_start;
     wxButton *m_stop;
@@ -144,7 +144,7 @@ static wxString TITLE = wxTRANSLATE("Guidability Check");
 static wxString TITLE_ACTIVE = wxTRANSLATE("Guidability Check - In Progress");
 
 GuidabilityToolWin::GuidabilityToolWin()
-    : wxFrame(pFrame, wxID_ANY, wxGetTranslation(TITLE), wxPoint(-1, -1), wxSize(500, 340)),
+    : wxDialog(pFrame, wxID_ANY, wxGetTranslation(TITLE), wxPoint(-1, -1), wxSize(500, 340)),
     m_measuring(false)
 {
     SetSizeHints(wxDefaultSize, wxDefaultSize);
@@ -181,9 +181,11 @@ GuidabilityToolWin::GuidabilityToolWin()
 
     sizer1->Add(m_report, 1, wxALL | wxEXPAND, 5);
 
-    SetSizer(sizer1);
+    m_statusBar = new wxStatusBar(this, wxID_ANY, wxST_SIZEGRIP);
+    m_statusBar->SetFieldsCount(1);
+    sizer1->Add(m_statusBar, 0, wxALL | wxEXPAND, 1);
 
-    m_statusBar = CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
+    SetSizer(sizer1);
     Layout();
 
     Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(GuidabilityToolWin::OnClose));
