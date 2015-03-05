@@ -1,0 +1,16 @@
+Source: phd2
+Section: education
+Priority: optional
+Maintainer: Patrick Chevalley <pch@ap-i.net>
+Build-Depends: debhelper (>= 9), cmake, libwxgtk3.0-dev, libgtk2.0-dev, libcfitsio3-dev, libopencv-dev, libusb-1.0-0-dev, libudev-dev, libv4l-dev, libindi-dev, libnova-dev
+Standards-Version: 3.9.5
+Homepage: http://openphdguiding.org/
+
+Package: phd2
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: indi-bin
+Description: PHD Guiding, auto-guiding of your telescope
+ PHD Guiding is designed to be "Push Here Dummy" simple, yet provide powerful, 
+ intelligent auto-guiding of your telescope. 
+ Connect your mount, your camera, select a star, and start guiding. That's it!

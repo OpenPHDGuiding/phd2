@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html><head>
+<meta name="GENERATOR" content="Microsoft® HTML Help Workshop 4.1"><title>Ecran principal</title></head>
+<body>
+<h2>Ecran principal</h2>
+L'écran principal de  <span style="font-style: italic;">PHD2</span> est conçu pour être simple et convivial. 
+Il permet de démarrer et contrôler rapidement l'autoguidage par une séquence naturelle d'actions. 
+La procédure de base est simple:
+<br>
+<ol>
+<li>Connecter la caméra d'autoguidage et la monture</li>
+<li>Démarrer une séquence de poses d'autoguidage afin de repérer une étoile-guide dans le champ</li>
+<li>Choisir une étoile-guide et calibrer l'autoguidage</li>
+<li>Autoguider tout en utilisant différents outils d'affichage afin de surveiller la qualité de l'autoguidage</li>
+<li>Interrompre ou reprendre l'autoguidage</li>
+</ol>
+<img alt="" src="Main_Screen.PNG"><br>
+<p>La majorité de l'écran est couverte par l'affichage du champ vu par la caméra. 
+La taille, la luminosité et le contraste de cet affichage sont ajustés automatiquement pour vous donner une vue claire des étoiles disponibles.
+Cependant, ces ajustements ne concernent que l'affichage. 
+Afin de garantir la qualité du suivi, <span style="font-style: italic;">PHD2</span> travaille directement sur les images brutes pour le calcul de l'autoguidage.
+Utilisez cet affichage pour sélectionner une étoile, simplement en cliquant dessus.<br></p>
+<h3><a name="Basic_control"></a>Contrôles de base</h3>Les contrôles de base se trouvent en bas de l'écran. 
+<span style="font-style: italic;">PHD2</span> se contrôle depuis ces curseurs et boutons, ainsi que depuis les menus additionnels en haut de la fenêtre.
+Les contrôles sont organisés comme suite, de gauche à droite:
+<br><ol><li>L'icône Caméra - pour connecter le matériel</li><li>L'icône Boucle - pour démarrer les poses de la caméra en continu. 
+Chaque image est successivement affichée dans l'écran principal.
+Pendant l'autoguidage, le fait de cliquer sur cette icône interromp le suivi sans arrêter la caméra.
+</li><li>L'icône Cible - sert à lancer la calibration si nécessaire et/ou à démarrer l'autoguidage. 
+</li><li>L'icône Stop - sert à arrêter l'autoguidage et la caméra.</li></ol><ol type="1">
+</ol>A droite de l'icône Stop se trouve une liste déroulante de temps de pose (0.001s - 15s). Utilisez cette commande pour régler le temps de pose.
+Si votre caméra ne permet pas le réglage de l'exposition, <span style="font-style: italic;">PHD2</span> fera de son mieux pour émuler l'exposition choisie.
+Par exemple, si vous utilisez une webcam non modifiée le temps maximum de pose est de l'ordre d'un trentième de seconde. En choisissant un réglage d'une seconde dans la liste, 
+<span style="font-style: italic;">PHD2</span> empilera automatiquement des captures pendant une seconde afin de créer une image composite de qualité pour l'autoguidage.
+<p>La commande suivante permet de régler la dynamique et le contraste ('gamma') de l'affichage. <span style="font-style: italic;">PHD2</span>
+le fait automatiquement mais parfois il peut être nécessaire de forcer un autre réglage pour une meilleure visibilité des étoiles.
+Cela peut être très utile à la première utilisation, alors que la mise au point de la caméra n'est pas encore réalisée.
+De cette façon, vous pouvez facilement voir l'image floue et agrandie des étoiles.</p>
+<p>A côté du réglage de gamma se trouve le bouton 'cerveau'.
+Ce bouton fait apparaître un <a href="Advanced_settings.htm">Dialogue avancé</a> permettant un contrôle fin de <span style="font-style: italic;">PHD2</span>. 
+Le programme est conçu pour fonctionner sans devoir rien modifier.
+Cependant, il ne faut pas avoir peur de modifier les paramètres dans le cerveau afin d'améliorer encore les performances de l'autoguidage.
+Le temps aidant, parcourez ces options et découvrez leur utilité.
+</p>
+<p>A droite du cerveau se trouve un bouton en vue de capturer des 'darks'.
+Quand il fait chaud, les caméras non refroidies causent un bruit thermique sur l'image sous la forme de 'pixels chauds'.
+Capturer un jeu de 'darks' augmente les performances.
+Cliquez sur le bouton pour acquérir automatiquement une séquence de 5 darks pour le temps de poses sélectionné.
+Ces captures seront automatiquement empilées pour former un dark-maître qui sera soustrait des images tant que le temps de pose ne change pas.
+Si vous prenez des darks pour différents temps de pose, <span style="font-style: italic;">PHD2</span>
+choisira la durée correspondant au mieux à la durée de pose sélectionnée pendant l'autoguidage 
+Si votre caméra ne possède pas d'obturateur, <span style="font-style: italic;">PHD2</span> vous demandera d'abord de couvrir l'optique d'autoguidage avant de démarrer la capture des darks.
+Le label sur le bouton des darks change afin d'indiquer comment le dark est utilisé:</p><ul>
+<li>"<a name="Take_Dark"></a>Prendre un Dark" - il n'y a pas encore de dark pour le temps de pose sélectionnée</li>
+<li>"<a name="Redo_Dark"></a>Refaire Dark" - un dark est actif pour ce temps de pose.
+Cliquez sur le bouton pour remplacer le dark par un nouveau.</li>
+<li>"Refaire Dark" en rouge - Il n'y a pas de dark pour ce temps de pose et <span style="font-style: italic;">PHD2</span> utilise un dark d'une durée approchante.</li></ul>
+<p>La commande la plus à droite est le "dialogue de caméra" (Cam Dialog).
+Celle-ci peut éventuellement être désactivée (grisée), selon le type de caméra dont vous disposez.
+Cliquez pour modifier les paramètres spécifiques propres à votre caméra. Par exemple le binning, des réglages de gain spéciaux ou d'autres fonctions.</p>
+<h3><a name="Menus"></a>Menus</h3>
+Les menus déroulants en haut de l'écran donnent accès à une variété de fonctions décrites dans 
+<a href="Tools.htm">Outils et utilitaires</a><span style="font-weight: bold;"></span><big><big><span style="font-weight: bold;"> </span></big></big>ainsi que <a href="Visualization.htm">Visualisation</a><span style="font-weight: bold;"></span>.
+<h3><a name="Status_Bar"></a>Barre de statut</h3>
+La barre de statut en bas de la fenêtre sert à afficher des messages concernant l'état des opérations d'autoguidage. 
+Par exemple, les trois cases de droite indiquent si la caméra et la monture sont connectés et si l'autoguidage a été calibré.
+
+<p></p>
+</body></html>
