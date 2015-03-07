@@ -2,8 +2,8 @@
 *  guiding_assistant.cpp
 *  PHD Guiding
 *
-*  Created by Andy Galasso
-*  Copyright (c) 2015 Andy Galasso
+*  Created by Andy Galasso and Bruce Waddington
+*  Copyright (c) 2015 Andy Galasso and Bruce Waddington
 *  All rights reserved.
 *
 *  This source code is distributed under the following "BSD" license
@@ -72,7 +72,7 @@ struct Stats
         else
         {
             hpf = alpha * (hpf + x - xprev);
-            lpf += alpha * (x - xprev);
+            lpf += (1.0 - alpha) * (x - xprev);
         }
 
         if (n >= 1)
@@ -172,6 +172,8 @@ struct GuidingAsstWin : public wxDialog
     double sumMass;
     double minRA;
     double maxRA;
+    double m_lastTime;
+    double maxRateRA; // arc-sec per second
 
     bool m_savePrimaryMountEnabled;
     bool m_saveSecondaryMountEnabled;
@@ -181,6 +183,7 @@ struct GuidingAsstWin : public wxDialog
     ~GuidingAsstWin();
 
     void OnClose(wxCloseEvent& event);
+    void OnMouseMove(wxMouseEvent&);
     void OnAppStateNotify(wxCommandEvent& event);
     void OnStart(wxCommandEvent& event);
     void DoStop(const wxString& status = wxEmptyString);
@@ -200,11 +203,20 @@ static void MakeBold(wxControl* ctrl)
     font.SetWeight(wxFONTWEIGHT_BOLD);
     ctrl->SetFont(font);
 }
+
 static void HighlightCell(wxGrid *pGrid, wxGridCellCoords where)
 {
     pGrid->SetCellBackgroundColour(where.GetRow(), where.GetCol(), "DARK SLATE GREY");
     pGrid->SetCellTextColour(where.GetRow(), where.GetCol(), "white");
 }
+
+struct GridTooltipInfo : public wxObject
+{
+    wxGrid *grid;
+    int gridNum;
+    wxGridCellCoords prevCoords;
+    GridTooltipInfo(wxGrid *g, int i) : grid(g), gridNum(i) { }
+};
 
 GuidingAsstWin::GuidingAsstWin()
 : wxDialog(pFrame, wxID_ANY, wxGetTranslation(_("Guiding Assistant")), wxPoint(-1, -1), wxDefaultSize),
@@ -223,6 +235,7 @@ GuidingAsstWin::GuidingAsstWin()
     wxStaticBoxSizer* status_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Measurement Status"));
     m_statusgrid = new wxGrid(this, wxID_ANY);
     m_statusgrid->CreateGrid(3, 4);
+    m_statusgrid->GetGridWindow()->Bind(wxEVT_MOTION, &GuidingAsstWin::OnMouseMove, this, wxID_ANY, wxID_ANY, new GridTooltipInfo(m_statusgrid, 1));
     m_statusgrid->SetRowLabelSize(1);
     m_statusgrid->SetColLabelSize(1);
     m_statusgrid->EnableEditing(false);
@@ -259,6 +272,7 @@ GuidingAsstWin::GuidingAsstWin()
     wxStaticBoxSizer* displacement_group = new wxStaticBoxSizer(wxVERTICAL, this, _("High-frequency Star Motion"));
     m_displacementgrid = new wxGrid(this, wxID_ANY);
     m_displacementgrid->CreateGrid(2, 3);
+    m_displacementgrid->GetGridWindow()->Bind(wxEVT_MOTION, &GuidingAsstWin::OnMouseMove, this, wxID_ANY, wxID_ANY, new GridTooltipInfo(m_displacementgrid, 2));
     m_displacementgrid->SetRowLabelSize(1);
     m_displacementgrid->SetColLabelSize(1);
     m_displacementgrid->EnableEditing(false);
@@ -288,6 +302,7 @@ GuidingAsstWin::GuidingAsstWin()
     wxStaticBoxSizer* other_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Other Star Motion"));
     m_othergrid = new wxGrid(this, wxID_ANY);
     m_othergrid->CreateGrid(5, 3);
+    m_othergrid->GetGridWindow()->Bind(wxEVT_MOTION, &GuidingAsstWin::OnMouseMove, this, wxID_ANY, wxID_ANY, new GridTooltipInfo(m_othergrid, 3));
     m_othergrid->SetRowLabelSize(1);
     m_othergrid->SetColLabelSize(1);
     m_othergrid->EnableEditing(false);
@@ -374,6 +389,46 @@ GuidingAsstWin::GuidingAsstWin()
     {
         OnStart(dummy);
     }
+}
+
+static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString *s)
+{
+    if (coords.GetCol() != 0)
+        return false;
+
+    switch (gridNum * 100 + coords.GetRow())
+    {
+        // status grid
+        case 100: *s = _("tooltip grid 1 row 0"); break;
+
+        // displacement grid
+        case 200: *s = _("tooltip grid 2 row 0"); break;
+
+        // other grid
+        case 300: *s = _("tooltip grid 3 row 0"); break;
+        case 301: *s = _("tooltip grid 3 row 1"); break;
+        case 302: *s = _("tooltip grid 3 row 1"); break;
+
+        default: return false;
+    }
+
+    return true;
+}
+
+void GuidingAsstWin::OnMouseMove(wxMouseEvent& ev)
+{
+    GridTooltipInfo *info = static_cast<GridTooltipInfo *>(ev.GetEventUserData());
+    wxGridCellCoords coords(info->grid->XYToCell(info->grid->CalcUnscrolledPosition(ev.GetPosition())));
+    if (coords != info->prevCoords)
+    {
+        info->prevCoords = coords;
+        wxString s;
+        if (GetGridToolTip(info->gridNum, coords, &s))
+            info->grid->GetGridWindow()->SetToolTip(s);
+        else
+            info->grid->GetGridWindow()->UnsetToolTip();
+    }
+    ev.Skip();
 }
 
 void GuidingAsstWin::FillInstructions(DialogState eState)
@@ -480,7 +535,7 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
         return;
 
     double exposure = (double) pFrame->RequestedExposureDuration() / 1000.0;
-    double cutoff = wxMax(3.0, 3.0 * exposure);
+    double cutoff = wxMax(6.0, 3.0 * exposure);
     m_freqThresh = 1.0 / cutoff;
     m_statsRA.InitStats(cutoff, exposure);
     m_statsDec.InitStats(cutoff, exposure);
@@ -579,6 +634,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 {
     double ra = info.mountOffset->X;
     double dec = info.mountOffset->Y;
+    double prevRAlpf = m_statsRA.lpf;
 
     m_statsRA.AddSample(ra);
     m_statsDec.AddSample(dec);
@@ -587,6 +643,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     {
         minRA = maxRA = ra;
         m_startPos = *info.mountOffset;
+        maxRateRA = 0.0;
     }
     else
     {
@@ -594,11 +651,20 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
             minRA = ra;
         if (ra > maxRA)
             maxRA = ra;
+
+        double dt = info.time - m_lastTime;
+        if (dt > 0.0001)
+        {
+            double raRate = fabs(m_statsRA.lpf - prevRAlpf) / dt;
+            if (raRate > maxRateRA)
+                maxRateRA = raRate;
+        }
     }
     double rangeRA = maxRA - minRA;
     double driftRA = ra - m_startPos.X;
     double driftDec = dec - m_startPos.Y;
 
+    m_lastTime = info.time;
     sumSNR += info.starSNR;
     sumMass += info.starMass;
 
@@ -617,6 +683,10 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 
     double raDriftRate = driftRA / elapsed * 60.0;
     double decDriftRate = driftDec / elapsed * 60.0;
+
+    // For Bruce:
+    Debug.AddLine(wxString::Format("Peak RA drift rate: %.1f px/sec, %.1f\"/sec   MaxExp: %.1fs",
+                                   maxRateRA, maxRateRA * pxscale, rarms / (maxRateRA * pxscale)));
 
     m_statusgrid->SetCellValue(m_timestamp_loc, startStr);
     m_statusgrid->SetCellValue(m_exposuretime_loc, wxString::Format("%gs", (double)pFrame->RequestedExposureDuration() / 1000.0));
