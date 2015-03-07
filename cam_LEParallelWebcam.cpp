@@ -47,8 +47,8 @@ void _stdcall Out32(short PortAddress, short data);
 
 using namespace cv;
 
-Camera_LEParallelWebcamClass::Camera_LEParallelWebcamClass(int devNumber)
-    : Camera_LEWebcamClass(devNumber)
+Camera_LEParallelWebcamClass::Camera_LEParallelWebcamClass(void)
+    : Camera_LEWebcamClass()
 {
     Name=_T("Parallel LE Webcam");
     m_pParallelPort = NULL;

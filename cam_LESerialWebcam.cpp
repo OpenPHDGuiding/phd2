@@ -54,8 +54,8 @@
 
 using namespace cv;
 
-Camera_LESerialWebcamClass::Camera_LESerialWebcamClass(int devNumber)
-    : Camera_LEWebcamClass(devNumber)
+Camera_LESerialWebcamClass::Camera_LESerialWebcamClass(void)
+    : Camera_LEWebcamClass()
 {
     Name = _T("Serial LE Webcam");
     PropertyDialogType = PROPDLG_ANY;
@@ -376,7 +376,12 @@ LEWebcamDialog::LEWebcamDialog(wxWindow *parent, CVVidCapture *vc)
 
 void Camera_LESerialWebcamClass::ShowPropertyDialog()
 {
-    LEWebcamDialog dlg(pFrame, m_pVidCap);
+    wxWindow *parent = pFrame;
+    if (pFrame->pGearDialog->IsActive())
+        parent = pFrame->pGearDialog;
+
+    LEWebcamDialog dlg(parent, m_pVidCap);
+
     if (dlg.ShowModal() == wxID_OK)
     {
         pConfig->Profile.SetString("/camera/serialLEWebcam/serialport", dlg.m_pPortNum->GetStringSelection());
@@ -398,6 +403,11 @@ void Camera_LESerialWebcamClass::ShowPropertyDialog()
         pConfig->Profile.SetInt("/camera/serialLEWebcam/SignalConfig", m_signalConfig );
         pConfig->Profile.SetBoolean("/camera/serialLEWebcam/InvertedLogic", m_InvertedLogic);
         pConfig->Profile.SetBoolean("/camera/serialLEWebcam/UseAmp", m_UseAmp);
+
+        if (!Connected)
+        {
+            Camera_LEWebcamClass::ShowPropertyDialog();
+        }
     }
 }
 

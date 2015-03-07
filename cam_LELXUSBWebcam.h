@@ -43,7 +43,7 @@ class Camera_LELxUsbWebcamClass : public Camera_LEWebcamClass
 {
     bool m_isOpen;
 public:
-    Camera_LELxUsbWebcamClass(int devNumber=0);
+    Camera_LELxUsbWebcamClass(void);
     virtual ~Camera_LELxUsbWebcamClass(void);
 
     virtual bool    Connect();
