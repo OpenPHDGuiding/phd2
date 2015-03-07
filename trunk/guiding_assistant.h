@@ -1,5 +1,5 @@
 /*
-*  guidability_tool.h
+*  guiding_assistant.h
 *  PHD Guiding
 *
 *  Created by Andy Galasso
@@ -32,17 +32,17 @@
 *
 */
 
-#ifndef GUIDABILITY_TOOL_INCLUDED
-#define GUIDABILITY_TOOL_INCLUDED
+#ifndef GUIDING_ASSISTANT_INCLUDED
+#define GUIDING_ASSISTANT_INCLUDED
 
-class GuidabilityTool
-{
-    GuidabilityTool(); // not implemented
+class GuidingAssistant
+{   
+    GuidingAssistant(); // not implemented
 public:
-    static wxWindow *CreateGuidabilityToolWindow();
+    static wxWindow *CreateDialogBox();
     static void NotifyGuideStep(const GuideStepInfo& info);
     static void NotifyFrameDropped(const FrameDroppedInfo& info);
-    static void UpdateGuidabilityToolControls();
+    static void UpdateUIControls();
 };
 
 #endif

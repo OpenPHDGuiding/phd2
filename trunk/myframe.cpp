@@ -38,7 +38,7 @@
 
 #include "Refine_DefMap.h"
 #include "comet_tool.h"
-#include "guidability_tool.h"
+#include "guiding_assistant.h"
 
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
@@ -79,7 +79,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
     EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
     EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
-    EVT_MENU(MENU_GUIDABILTYTOOL, MyFrame::OnGuidabilityTool)
+    EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
     EVT_MENU(wxID_HELP_PROCEDURES, MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
@@ -298,7 +298,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pManualGuide = NULL;
     pNudgeLock = NULL;
     pCometTool = NULL;
-    pGuidabilityTool = NULL;
+    pGuidingAssistant = NULL;
     pRefineDefMap = NULL;
     pCalSanityCheckDlg = NULL;
     pCalReviewDlg = NULL;
@@ -436,7 +436,7 @@ void MyFrame::SetupMenuBar(void)
     m_calibrationMenuItem = tools_menu->AppendSubMenu(calib_menu, _("Modify Calibration"));
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_COMETTOOL, _("Comet Tracking"), _("Run the Comet Tracking tool"));
-    tools_menu->Append(MENU_GUIDABILTYTOOL, _("Guidability Check"), _("Run the Guidability Check tool"));
+    tools_menu->Append(MENU_GUIDING_ASSISTANT, _("Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
     tools_menu->AppendCheckItem(MENU_LOG,_("Enable Guide &Log\tAlt-L"),_("Enable guide log file"));
@@ -938,8 +938,8 @@ void MyFrame::UpdateButtonsStatus(void)
     if (pCometTool)
         CometTool::UpdateCometToolControls();
 
-    if (pGuidabilityTool)
-        GuidabilityTool::UpdateGuidabilityToolControls();
+    if (pGuidingAssistant)
+        GuidingAssistant::UpdateUIControls();
 
     if (need_update)
     {

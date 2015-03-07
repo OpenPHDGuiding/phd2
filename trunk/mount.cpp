@@ -34,7 +34,7 @@
  */
 
 #include "phd.h"
-#include "guidability_tool.h"
+#include "guiding_assistant.h"
 
 #include <wx/tokenzr.h>
 
@@ -668,7 +668,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         {
             pFrame->pGraphLog->AppendData(info);
             pFrame->pTarget->AppendData(info);
-            GuidabilityTool::NotifyGuideStep(info);
+            GuidingAssistant::NotifyGuideStep(info);
         }
     }
     catch (wxString errMsg)
