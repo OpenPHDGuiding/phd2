@@ -497,7 +497,6 @@ void GuidingAsstWin::MakeRecommendations()
     double ramean;
     double decrms;
     double decmean;
-    double bestMinMove;
 
     m_statsRA.GetMeanAndStdev(&ramean, &rarms);
     m_statsDec.GetMeanAndStdev(&decmean, &decrms);
@@ -686,7 +685,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 
     // For Bruce:
     Debug.AddLine(wxString::Format("Peak RA drift rate: %.1f px/sec, %.1f\"/sec   MaxExp: %.1fs",
-                                   maxRateRA, maxRateRA * pxscale, rarms / (maxRateRA * pxscale)));
+                                   maxRateRA, maxRateRA * pxscale, rarms / maxRateRA));
 
     m_statusgrid->SetCellValue(m_timestamp_loc, startStr);
     m_statusgrid->SetCellValue(m_exposuretime_loc, wxString::Format("%gs", (double)pFrame->RequestedExposureDuration() / 1000.0));
