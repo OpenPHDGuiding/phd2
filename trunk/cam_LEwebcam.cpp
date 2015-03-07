@@ -43,10 +43,11 @@
 
 using namespace cv;
 
-Camera_LEWebcamClass::Camera_LEWebcamClass(int devNumber)
-     :Camera_WDMClass(devNumber)
+Camera_LEWebcamClass::Camera_LEWebcamClass(void)
+     : Camera_WDMClass()
 {
-    Name=_T("Generic LE Webcam");
+    Name = _T("Generic LE Webcam");
+    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     HasDelayParam = true;
 }
 

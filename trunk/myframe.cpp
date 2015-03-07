@@ -1862,6 +1862,7 @@ void MyFrame::CheckGeometry()
             badBPM = true;
         }
     }
+
     if (darksMenu->IsEnabled())
     {
         if (!DarkLibExists(pConfig->GetCurrentProfileId(), true))
@@ -1876,6 +1877,7 @@ void MyFrame::CheckGeometry()
         }
     }
 }
+
 void MyFrame::SetDarkMenuState()
 {
     wxMenuItem *item = m_useDarksMenuItem;

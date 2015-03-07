@@ -61,12 +61,12 @@ public:
     virtual bool    Connect();      // Opens up and connects to cameras
     virtual bool    Disconnect();
     virtual void    InitCapture() { return; }
-    Camera_LEWebcamClass(int devNumber=-1);
+    Camera_LEWebcamClass(void);
     ~Camera_LEWebcamClass(void);
     virtual bool HasNonGuiCapture(void) { return true; }
 
 private:
-    virtual bool LEControl(int actions)=0;
+    virtual bool LEControl(int actions) = 0;
 };
 
 #endif //CAM_LESERIALWEBCAM_H_INCLUDED

@@ -44,8 +44,8 @@
 
 using namespace cv;
 
-Camera_LELxUsbWebcamClass::Camera_LELxUsbWebcamClass(int devNumber)
-    : Camera_LEWebcamClass(devNumber)
+Camera_LELxUsbWebcamClass::Camera_LELxUsbWebcamClass(void)
+    : Camera_LEWebcamClass()
 {
     m_isOpen = false;
     Name = _T("Usb USB Webcam");
