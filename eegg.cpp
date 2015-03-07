@@ -38,7 +38,7 @@
 #include "calreview_dialog.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
-#include "guidability_tool.h"
+#include "guiding_assistant.h"
 
 void MyFrame::OnEEGG(wxCommandEvent& evt)
 {
@@ -201,29 +201,33 @@ void MyFrame::OnCometTool(wxCommandEvent& WXUNUSED(evt))
     }
 }
 
-void MyFrame::OnGuidabilityTool(wxCommandEvent& WXUNUSED(evt))
+void MyFrame::OnGuidingAssistant(wxCommandEvent& WXUNUSED(evt))
 {
-    if (!pGuidabilityTool)
+    if (pGuidingAssistant)
+    {
+        pGuidingAssistant->Show();
+    }
+    if (!pGuidingAssistant)
     {
         bool ok = true;
 
         if (pFrame->pGuider->IsGuiding())
         {
             ok = ConfirmDialog::Confirm(_(
-                "The Guidability Check Tool will disable guide output and\n"
+                "The Guiding Assitant will disable guide output and\n"
                 "allow the guide star to drift.\n"
                 "\n"
                 "Ok to disable guide output?"
                 ),
-                "/guidability_tool_while_guiding", _("Confirm Disable Guiding"));
+                "/guiding_assistant_while_guiding", _("Confirm Disable Guiding"));
         }
 
         if (ok)
-            pGuidabilityTool = GuidabilityTool::CreateGuidabilityToolWindow();
+            pGuidingAssistant = GuidingAssistant::CreateDialogBox();
     }
 
-    if (pGuidabilityTool)
+    if (pGuidingAssistant)
     {
-        pGuidabilityTool->Show();
+        pGuidingAssistant->Show();
     }
 }

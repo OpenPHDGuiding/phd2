@@ -222,7 +222,6 @@
     <ClCompile Include="gear_dialog.cpp" />
     <ClCompile Include="graph-stepguider.cpp" />
     <ClCompile Include="graph.cpp" />
-    <ClCompile Include="guidability_tool.cpp" />
     <ClCompile Include="guider.cpp" />
     <ClCompile Include="guider_onestar.cpp" />
     <ClCompile Include="guide_algorithm.cpp" />
@@ -232,6 +231,7 @@
     <ClCompile Include="guide_algorithm_lowpass2.cpp" />
     <ClCompile Include="guide_algorithm_resistswitch.cpp" />
     <ClCompile Include="guidinglog.cpp" />
+    <ClCompile Include="guiding_assistant.cpp" />
     <ClCompile Include="image_math.cpp" />
     <ClCompile Include="json_parser.cpp" />
     <ClCompile Include="logger.cpp" />
@@ -343,7 +343,6 @@
     <ClInclude Include="gear_dialog.h" />
     <ClInclude Include="graph-stepguider.h" />
     <ClInclude Include="graph.h" />
-    <ClInclude Include="guidability_tool.h" />
     <ClInclude Include="guider.h" />
     <ClInclude Include="guiders.h" />
     <ClInclude Include="guider_onestar.h" />
@@ -355,6 +354,7 @@
     <ClInclude Include="guide_algorithm_lowpass2.h" />
     <ClInclude Include="guide_algorithm_resistswitch.h" />
     <ClInclude Include="guidinglog.h" />
+    <ClInclude Include="guiding_assistant.h" />
     <ClInclude Include="image_math.h" />
     <ClInclude Include="json_parser.h" />
     <ClInclude Include="logger.h" />

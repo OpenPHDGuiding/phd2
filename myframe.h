@@ -186,7 +186,7 @@ public:
     wxWindow *pManualGuide;
     wxWindow *pNudgeLock;
     wxWindow *pCometTool;
-    wxWindow *pGuidabilityTool;
+    wxWindow *pGuidingAssistant;
     RefineDefMap *pRefineDefMap;
     wxDialog *pCalSanityCheckDlg;
     wxDialog *pCalReviewDlg;
@@ -222,7 +222,7 @@ public:
     void OnEEGG(wxCommandEvent& evt);
     void OnDriftTool(wxCommandEvent& evt);
     void OnCometTool(wxCommandEvent& evt);
-    void OnGuidabilityTool(wxCommandEvent& evt);
+    void OnGuidingAssistant(wxCommandEvent& evt);
     void OnSetupCamera(wxCommandEvent& evt);
     void OnExposureDurationSelected(wxCommandEvent& evt);
     void OnGammaSlider(wxScrollEvent& evt);
@@ -498,7 +498,7 @@ enum {
     MENU_AUTOSTAR,
     MENU_DRIFTTOOL,
     MENU_COMETTOOL,
-    MENU_GUIDABILTYTOOL,
+    MENU_GUIDING_ASSISTANT,
     MENU_SAVESETTINGS,
     MENU_LOADSETTINGS,
     MENU_LOADDARK,
