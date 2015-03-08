@@ -81,8 +81,8 @@ protected:
         void OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    double GetMinMove(void) const;
-    bool SetMinMove(double minMove);
+    virtual double GetMinMove(void);
+    virtual bool SetMinMove(double minMove);
     double GetAggression(void) const;
     bool SetAggression(double aggr);
     bool GetFastSwitchEnabled(void) const;
@@ -103,7 +103,7 @@ public:
     virtual wxString GetGuideAlgorithmClassName(void) const { return "ResistSwitch"; }
 };
 
-inline double GuideAlgorithmResistSwitch::GetMinMove(void) const
+inline double GuideAlgorithmResistSwitch::GetMinMove(void)
 {
     return m_minMove;
 }

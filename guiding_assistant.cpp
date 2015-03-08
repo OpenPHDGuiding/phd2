@@ -112,6 +112,7 @@ inline static void StartRow(int& row, int& column)
     column = 0;
 }
 
+// Encapsulated struct for implementing the dialog box
 struct GuidingAsstWin : public wxDialog
 {
     enum DialogState
@@ -130,8 +131,8 @@ struct GuidingAsstWin : public wxDialog
     wxGrid *m_displacementgrid;
     wxGrid *m_othergrid;
     wxGridSizer *m_recommendgrid;
-    wxBoxSizer* vSizer;
-    wxStaticBoxSizer* recommend_group;
+    wxBoxSizer* m_vSizer;
+    wxStaticBoxSizer* m_recommend_group;
 
     wxGridCellCoords m_timestamp_loc;
     wxGridCellCoords m_starmass_loc;
@@ -156,9 +157,13 @@ struct GuidingAsstWin : public wxDialog
     wxGridCellCoords m_ra_drift_as_loc;
     wxGridCellCoords m_dec_drift_px_loc;
     wxGridCellCoords m_dec_drift_as_loc;
-    wxStaticText* ra_msg;
-    wxStaticText* dec_msg;
-    wxStaticText* snr_msg;
+    wxGridCellCoords m_ra_peak_drift_px_loc;
+    wxGridCellCoords m_ra_peak_drift_as_loc;
+    wxButton* m_raMinMoveButton;
+    wxButton* m_decMinMoveButton;
+    wxStaticText* m_ra_msg;
+    wxStaticText* m_dec_msg;
+    wxStaticText* m_snr_msg;
 
     DialogState m_dlgState;
     bool m_measuring;
@@ -191,7 +196,8 @@ struct GuidingAsstWin : public wxDialog
     void OnRAMinMove(wxCommandEvent& event);
     void OnDecMinMove(wxCommandEvent& event);
 
-    wxStaticText* AddRecommendationEntry(wxString msg, wxObjectEventFunction handler);
+    wxStaticText* AddRecommendationEntry(wxString msg, wxObjectEventFunction handler, wxButton** ppButton);
+    wxStaticText* AddRecommendationEntry(wxString msg);
     void UpdateInfo(const GuideStepInfo& info);
     void FillInstructions(DialogState eState);
     void MakeRecommendations();
@@ -218,19 +224,19 @@ struct GridTooltipInfo : public wxObject
     GridTooltipInfo(wxGrid *g, int i) : grid(g), gridNum(i) { }
 };
 
+// Constructor 
 GuidingAsstWin::GuidingAsstWin()
 : wxDialog(pFrame, wxID_ANY, wxGetTranslation(_("Guiding Assistant")), wxPoint(-1, -1), wxDefaultSize),
     m_measuring(false), m_measurementsTaken(false)
 {
-    vSizer = new wxBoxSizer(wxVERTICAL);
+    m_vSizer = new wxBoxSizer(wxVERTICAL);
     
     m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 40), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
-    //wxFont font = m_instructions->GetFont();
-    //font.SetWeight(wxFONTWEIGHT_BOLD);
-    //m_instructions->SetFont(font);
     MakeBold(m_instructions);
-    vSizer->Add(m_instructions, wxSizerFlags(0).Border(wxALL, 8).Center());
+    m_vSizer->Add(m_instructions, wxSizerFlags(0).Border(wxALL, 8).Center());
  
+    // Grids have either 3 or 4 columns, so compute width of largest label as scaling term for column widths 
+    double minCol = wxMax(160, StringWidth(this, _("Right ascension Max Drift Rate")) + 10);
     // Start of status group
     wxStaticBoxSizer* status_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Measurement Status"));
     m_statusgrid = new wxGrid(this, wxID_ANY);
@@ -239,7 +245,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_statusgrid->SetRowLabelSize(1);
     m_statusgrid->SetColLabelSize(1);
     m_statusgrid->EnableEditing(false);
-    m_statusgrid->SetDefaultColSize(120);
+    m_statusgrid->SetDefaultColSize((round(3.0 * minCol / 4.0) + 0.5));
  
     int col = 0;
     int row = 0;
@@ -261,22 +267,22 @@ GuidingAsstWin::GuidingAsstWin()
     m_samplecount_loc.Set(row, col++);
 
     //StartRow(row, col);
-    //m_statusgrid->SetCellValue(_("Frequency cut-off:"), row, col++);
+    //m_statusgrid->SetCellValue(_("Frequency cut-off:"), row, col++);   // Leave out for now, probably not useful to users
     //m_hfcutoff_loc.Set(row, col++);
     
     status_group->Add(m_statusgrid);
-    vSizer->Add(status_group, wxSizerFlags(0).Border(wxALL, 8));
+    m_vSizer->Add(status_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of status group
     
     // Start of star displacement group
     wxStaticBoxSizer* displacement_group = new wxStaticBoxSizer(wxVERTICAL, this, _("High-frequency Star Motion"));
     m_displacementgrid = new wxGrid(this, wxID_ANY);
-    m_displacementgrid->CreateGrid(2, 3);
+    m_displacementgrid->CreateGrid(3, 3);
     m_displacementgrid->GetGridWindow()->Bind(wxEVT_MOTION, &GuidingAsstWin::OnMouseMove, this, wxID_ANY, wxID_ANY, new GridTooltipInfo(m_displacementgrid, 2));
     m_displacementgrid->SetRowLabelSize(1);
     m_displacementgrid->SetColLabelSize(1);
     m_displacementgrid->EnableEditing(false);
-    m_displacementgrid->SetDefaultColSize(160);  
+    m_displacementgrid->SetDefaultColSize(minCol);
     
     row = 0;
     col = 0;
@@ -295,18 +301,18 @@ GuidingAsstWin::GuidingAsstWin()
     m_total_rms_as_loc.Set(row, col++);
     
     displacement_group->Add(m_displacementgrid);
-    vSizer->Add(displacement_group, wxSizerFlags(0).Border(wxALL, 8));
+    m_vSizer->Add(displacement_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of displacement group
 
     // Start of "Other" (peak and drift) group
     wxStaticBoxSizer* other_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Other Star Motion"));
     m_othergrid = new wxGrid(this, wxID_ANY);
-    m_othergrid->CreateGrid(5, 3);
+    m_othergrid->CreateGrid(6, 3);
     m_othergrid->GetGridWindow()->Bind(wxEVT_MOTION, &GuidingAsstWin::OnMouseMove, this, wxID_ANY, wxID_ANY, new GridTooltipInfo(m_othergrid, 3));
     m_othergrid->SetRowLabelSize(1);
     m_othergrid->SetColLabelSize(1);
     m_othergrid->EnableEditing(false);
-    m_othergrid->SetDefaultColSize(160);      
+    m_othergrid->SetDefaultColSize(minCol);
  
     row = 0;
     col = 0;
@@ -328,25 +334,20 @@ GuidingAsstWin::GuidingAsstWin()
     m_othergrid->SetCellValue(_("Right ascension Drift Rate"), row, col++);
     m_ra_drift_px_loc.Set(row, col++);
     m_ra_drift_as_loc.Set(row, col++); 
-    
+ 
+    StartRow(row, col);
+    m_othergrid->SetCellValue(_("Right ascension Max Drift Rate"), row, col++);
+    m_ra_peak_drift_px_loc.Set(row, col++);
+    m_ra_peak_drift_as_loc.Set(row, col++);
+
     StartRow(row, col);
     m_othergrid->SetCellValue(_("Declination Drift Rate"), row, col++);
     m_dec_drift_px_loc.Set(row, col++);
     m_dec_drift_as_loc.Set(row, col++);     
     
     other_group->Add(m_othergrid);
-    vSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));    
+    m_vSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));    
     // End of peak and drift group
- 
-    // Start of Recommendations group - just a place-holder for layout, populated in MakeRecommendations
-    recommend_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Recommendations"));
-    m_recommendgrid = new wxGridSizer(5, 2, 0, 0);
-    ra_msg = NULL;
-    dec_msg = NULL;
-    snr_msg = NULL;
-
-    recommend_group->Add(m_recommendgrid);
-    // End of recommendations
 
     wxBoxSizer *btnSizer = new wxBoxSizer(wxHORIZONTAL);
     btnSizer->Add(0, 0, 1, wxEXPAND, 5);
@@ -362,13 +363,23 @@ GuidingAsstWin::GuidingAsstWin()
 
     btnSizer->Add(m_stop, 0, wxALL, 5);
     btnSizer->Add(0, 0, 1, wxEXPAND, 5);
-    vSizer->Add(btnSizer, 0, wxEXPAND, 5);
+    m_vSizer->Add(btnSizer, 0, wxEXPAND, 5);
 
-    vSizer->Add(recommend_group, wxSizerFlags(0).Border(wxALL, 8));
-    recommend_group->Show(false);
+    // Start of Recommendations group - just a place-holder for layout, populated in MakeRecommendations
+    m_recommend_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Recommendations"));
+    m_recommendgrid = new wxGridSizer(5, 2, 0, 0);
+    m_ra_msg = NULL;
+    m_dec_msg = NULL;
+    m_snr_msg = NULL;
+
+    m_recommend_group->Add(m_recommendgrid);
+    // Put the recommendation block at the bottom so it can be hidden/shown
+    m_vSizer->Add(m_recommend_group, wxSizerFlags(0).Border(wxALL, 8));
+    m_recommend_group->Show(false);
+    // End of recommendations
 
     SetAutoLayout(true);
-    SetSizerAndFit(vSizer);
+    SetSizerAndFit(m_vSizer);
 
     Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(GuidingAsstWin::OnClose));
     Connect(APPSTATE_NOTIFY_EVENT, wxCommandEventHandler(GuidingAsstWin::OnAppStateNotify));
@@ -383,31 +394,47 @@ GuidingAsstWin::GuidingAsstWin()
         Move(xpos, ypos);
 
     wxCommandEvent dummy;
-    OnAppStateNotify(dummy); // init controls
+    OnAppStateNotify(dummy); // init state-dependent controls
 
     if (pFrame->pGuider->IsGuiding())
     {
-        OnStart(dummy);
+        OnStart(dummy);             // Auto-start if we're already guiding
     }
 }
 
 static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString *s)
 {
-    if (coords.GetCol() != 0)
+    int col = coords.GetCol();
+
+    if (gridNum > 1 && col != 0)
+        return false;
+    else
+    if (col != 0 && col != 2)
         return false;
 
     switch (gridNum * 100 + coords.GetRow())
     {
         // status grid
-        case 100: *s = _("tooltip grid 1 row 0"); break;
+    case 101:
+    {
+        if (col == 0)
+            *s = _("Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from the sky/noise background");
+        else
+            *s = _("Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-s) to choose the star.");
+        break;
+    }
 
         // displacement grid
-        case 200: *s = _("tooltip grid 2 row 0"); break;
+        case 200: *s = _("Measure of typical high-frequency right ascension star movements; guiding usually cannot correct for fluctuations this small."); break;
+        case 201: *s = _("Measure of typical high-frequency declination star movements; guiding usually cannot correct for fluctuations this small."); break;
 
         // other grid
-        case 300: *s = _("tooltip grid 3 row 0"); break;
-        case 301: *s = _("tooltip grid 3 row 1"); break;
-        case 302: *s = _("tooltip grid 3 row 1"); break;
+        case 300: *s = _("Maximum sample-sample deflection seen in right ascension."); break;
+        case 301: *s = _("Maximum sample-sample deflection seen in declination."); break;
+        case 302: *s = _("Maximum peak-peak deflection seen in right ascension during sampling period."); break;
+        case 303: *s = _("Estimated overall drift rate in right ascension."); break;
+        case 304: *s = _("Maximum drift rate in right ascension during sampling period; may be useful for setting exposure time."); break;
+        case 305: *s = _("Estimated overall drift rate in declination."); break;
 
         default: return false;
     }
@@ -447,7 +474,7 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
             instr = m_instructions->GetLabel();
         break;
     case STATE_MEASURING:
-        instr = _("Guiding output is disabled and star movement is being measured.  Click on 'Stop' when the RMS values have stabilized.");
+        instr = _("Guiding output is disabled and star movement is being measured.  Click on 'Stop' when the RMS values have stabilized (at least 1 minute).");
         break;
     case STATE_STOPPED:
         instr = _("Guiding has been resumed. Look at the recommendations and make any desired changes.  Click 'Start' to repeat the measurements or close the window to continue guiding.");
@@ -461,26 +488,72 @@ GuidingAsstWin::~GuidingAsstWin(void)
     pFrame->pGuidingAssistant = 0;
 }
 
+// Event handlers for applying recommendations
 void GuidingAsstWin::OnRAMinMove(wxCommandEvent& event)
 {
-    int test = 1;
+    double ramean;
+    double rarms;
+    GuideAlgorithm *raAlgo = pMount->m_pXGuideAlgorithm;
+
+    if (raAlgo)
+    {
+        m_statsRA.GetMeanAndStdev(&ramean, &rarms);
+        rarms = (round((rarms * 100) / 5.0) * 5) / 100.0;
+        if (raAlgo->GetMinMove() >= 0)
+        {
+            if (!raAlgo->SetMinMove(rarms))
+            {
+                Debug.Write(wxString::Format("GuideAssistant changed RA_MinMove to %0.2f\n", rarms));
+                pFrame->pGraphLog->UpdateControls();
+                GuideLog.SetGuidingParam("RA " + raAlgo->GetGuideAlgorithmClassName() + " MinMove ", rarms);
+                m_raMinMoveButton->Enable(false);
+            }
+            else
+                Debug.Write("GuideAssistant could not change RA_MinMove\n");
+        }
+        else
+            Debug.Write("GuideAssistant logic flaw, RA algorithm has no MinMove property");
+    }
 }
 
 void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
 {
-    int test = 1;
+    double decmean;
+    double decrms;
+    GuideAlgorithm *decAlgo = pMount->m_pYGuideAlgorithm;
+
+    if (decAlgo)
+    {
+        m_statsDec.GetMeanAndStdev(&decmean, &decrms);
+        decrms = (round((decrms * 100) / 5.0) * 5) / 100.0;
+        if (decAlgo->GetMinMove() >= 0)
+        {
+            if (!decAlgo->SetMinMove(decrms))
+            {
+                Debug.Write(wxString::Format("GuideAssistant changed Dec_MinMove to %0.2f\n", decrms));
+                pFrame->pGraphLog->UpdateControls();
+                GuideLog.SetGuidingParam("Declination " + decAlgo->GetGuideAlgorithmClassName() + " MinMove ", decrms);
+                m_decMinMoveButton->Enable(false);
+            }
+            else
+                Debug.Write("GuideAssistant could not change Dec_MinMove\n");
+        }
+        else
+            Debug.Write("GuideAssistant logic flaw, Dec algorithm has no MinMove property");
+    }
 }
 
-// Adds a recommendation string and possibly a button bound to the passed event handler
-wxStaticText* GuidingAsstWin::AddRecommendationEntry(wxString msg, wxObjectEventFunction handler)
+
+// Adds a recommendation string and a button bound to the passed event handler
+wxStaticText* GuidingAsstWin::AddRecommendationEntry(wxString msg, wxObjectEventFunction handler, wxButton** ppButton)
 {
     wxStaticText* rec_label = new wxStaticText(this, wxID_ANY, msg, wxPoint(-1, -1), wxSize(300, -1));
     m_recommendgrid->Add(rec_label, 0, wxALIGN_LEFT | wxALL, 5);
     if (handler != NULL)
     {
-        wxButton* rec_button = new wxButton(this, wxID_ANY, _("Apply"), wxDefaultPosition, wxDefaultSize, 0);
-        m_recommendgrid->Add(rec_button, 0, wxALIGN_RIGHT | wxALL, 5);
-        rec_button->Connect(wxEVT_COMMAND_BUTTON_CLICKED, handler, NULL, this);
+        *ppButton = new wxButton(this, wxID_ANY, _("Apply"), wxDefaultPosition, wxDefaultSize, 0);
+        m_recommendgrid->Add(*ppButton, 0, wxALIGN_RIGHT | wxALL, 5);
+        (*ppButton)->Connect(wxEVT_COMMAND_BUTTON_CLICKED, handler, NULL, this);
     }
     else
     {
@@ -488,6 +561,11 @@ wxStaticText* GuidingAsstWin::AddRecommendationEntry(wxString msg, wxObjectEvent
         m_recommendgrid->Add(rec_tmp, 0, wxALL, 5);
     }
     return rec_label;
+}
+// Jacket for simple addition of a text-only recommendation
+wxStaticText* GuidingAsstWin::AddRecommendationEntry(wxString msg)
+{
+    return AddRecommendationEntry(msg, NULL, NULL);
 }
 
 void GuidingAsstWin::MakeRecommendations()
@@ -497,35 +575,48 @@ void GuidingAsstWin::MakeRecommendations()
     double ramean;
     double decrms;
     double decmean;
+    double rounded_rarms;
+    double rounded_decrms;
 
     m_statsRA.GetMeanAndStdev(&ramean, &rarms);
     m_statsDec.GetMeanAndStdev(&decmean, &decrms);
+    // Don't over-state the accuracy here - set things to the nearest .05
+    rounded_rarms = (round((rarms * 100) / 5.0) * 5) / 100.0;
+    rounded_decrms = (round((decrms * 100) / 5.0) * 5) / 100.0;
 
-    recommend_group->Show(true);
+    m_recommend_group->Show(true);
 
-    if (ra_msg == NULL)
-        ra_msg = AddRecommendationEntry(wxString::Format(_("Try setting RA min-move to %0.2f"), rarms),
-            wxCommandEventHandler(GuidingAsstWin::OnRAMinMove));
-    else
-        ra_msg->SetLabel(wxString::Format(_("Try setting RA min-move to %0.2f"), rarms));
-    if (dec_msg == NULL)
-        dec_msg = AddRecommendationEntry(wxString::Format(_("Try setting Dec min-move to %0.2f"), decrms),
-            wxCommandEventHandler(GuidingAsstWin::OnDecMinMove));
-    else
-        dec_msg->SetLabel(wxString::Format(_("Try setting Dec min-move to %0.2f"), decrms));
+    if (pMount->m_pXGuideAlgorithm && pMount->m_pXGuideAlgorithm->GetMinMove() >= 0)
+        if (m_ra_msg == NULL)
+            m_ra_msg = AddRecommendationEntry(wxString::Format(_("Try setting RA min-move to %0.2f"), rounded_rarms),
+                wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
+        else
+        {
+            m_ra_msg->SetLabel(wxString::Format(_("Try setting RA min-move to %0.2f"), rounded_rarms));
+            m_raMinMoveButton->Enable(true);
+        }
+        if (pMount->m_pYGuideAlgorithm && pMount->m_pYGuideAlgorithm->GetMinMove() >= 0)
+            if (m_dec_msg == NULL)
+                m_dec_msg = AddRecommendationEntry(wxString::Format(_("Try setting Dec min-move to %0.2f"), rounded_decrms),
+                    wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
+            else
+            {
+                m_dec_msg->SetLabel(wxString::Format(_("Try setting Dec min-move to %0.2f"), rounded_decrms));
+                m_decMinMoveButton->Enable(true);
+            }
   
     if ((sumSNR / (double)m_statsRA.n) < 10)
     {
-        if (snr_msg == NULL)
-            snr_msg = AddRecommendationEntry(_("Consider using a brighter star or increasing the exposure time"), NULL);
+        if (m_snr_msg == NULL)
+            m_snr_msg = AddRecommendationEntry(_("Consider using a brighter star or increasing the exposure time"));
         else
-            snr_msg->SetLabel(_("Consider using a brighter star or increasing the exposure time"));
+            m_snr_msg->SetLabel(_("Consider using a brighter star or increasing the exposure time"));
     }
     else
-        if (snr_msg != NULL)
-            snr_msg->SetLabel(wxEmptyString);
+        if (m_snr_msg != NULL)
+            m_snr_msg->SetLabel(wxEmptyString);
 
-    SetSizerAndFit(vSizer);
+    SetSizerAndFit(m_vSizer);
 }
 
 void GuidingAsstWin::OnStart(wxCommandEvent& event)
@@ -545,9 +636,10 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     m_stop->Enable(true);
     m_dlgState = STATE_MEASURING;
     FillInstructions(m_dlgState);
-    recommend_group->Show(false);
+    m_recommend_group->Show(false);
     HighlightCell(m_displacementgrid, m_ra_rms_px_loc);
     HighlightCell(m_displacementgrid, m_dec_rms_px_loc);
+    HighlightCell(m_displacementgrid, m_total_rms_px_loc);
 
     Debug.AddLine("GuidingAssistant: Disabling guide output");
 
@@ -565,7 +657,7 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
     startStr = wxDateTime::Now().FormatISOCombined(' ');
     m_measuring = true;
     m_startTime = ::wxGetUTCTimeMillis().GetValue();
-    SetSizerAndFit(vSizer);
+    SetSizerAndFit(m_vSizer);
 }
 
 void GuidingAsstWin::DoStop(const wxString& status)
@@ -683,9 +775,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     double raDriftRate = driftRA / elapsed * 60.0;
     double decDriftRate = driftDec / elapsed * 60.0;
 
-    // For Bruce:
-    Debug.AddLine(wxString::Format("Peak RA drift rate: %.1f px/sec, %.1f\"/sec   MaxExp: %.1fs",
-                                   maxRateRA, maxRateRA * pxscale, rarms / maxRateRA));
+
 
     m_statusgrid->SetCellValue(m_timestamp_loc, startStr);
     m_statusgrid->SetCellValue(m_exposuretime_loc, wxString::Format("%gs", (double)pFrame->RequestedExposureDuration() / 1000.0));
@@ -709,9 +799,12 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     m_othergrid->SetCellValue(m_ra_peakpeak_px_loc, wxString::Format("%.1f px", rangeRA));
     m_othergrid->SetCellValue(m_ra_peakpeak_as_loc, wxString::Format("%.1f arc-sec", rangeRA * pxscale));
     m_othergrid->SetCellValue(m_ra_drift_px_loc, wxString::Format("%.1f px/min", raDriftRate));
-    m_othergrid->SetCellValue(m_ra_drift_as_loc, wxString::Format("%.1f as/min", raDriftRate * pxscale));
+    m_othergrid->SetCellValue(m_ra_drift_as_loc, wxString::Format("%.1f arc-sec/min", raDriftRate * pxscale));
+    m_othergrid->SetCellValue(m_ra_peak_drift_px_loc, wxString::Format("%0.1f px/sec", maxRateRA));
+    m_othergrid->SetCellValue(m_ra_peak_drift_as_loc, wxString::Format("%0.1f arc-sec/sec (MaxExp: %0.1f)", maxRateRA * pxscale, 
+        maxRateRA > 0 ? rarms/maxRateRA : 0));
     m_othergrid->SetCellValue(m_dec_drift_px_loc, wxString::Format("%.1f px/min", decDriftRate));
-    m_othergrid->SetCellValue(m_dec_drift_as_loc, wxString::Format("%.1f as/min", decDriftRate * pxscale));    
+    m_othergrid->SetCellValue(m_dec_drift_as_loc, wxString::Format("%.1f arc-sec/min", decDriftRate * pxscale));    
 }
 
 wxWindow *GuidingAssistant::CreateDialogBox()
@@ -726,12 +819,6 @@ void GuidingAssistant::NotifyGuideStep(const GuideStepInfo& info)
         GuidingAsstWin *win = static_cast<GuidingAsstWin *>(pFrame->pGuidingAssistant);
         if (win->m_measuring)
             win->UpdateInfo(info);
-        //else
-        //if (!win->m_start->IsEnabled())
-        //{
-        //    wxCommandEvent dummy;
-        //    win->OnAppStateNotify(dummy); // init controls
-        //}
     }
 }
 

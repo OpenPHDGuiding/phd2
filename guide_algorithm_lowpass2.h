@@ -77,8 +77,6 @@ protected:
         void OnMinMoveSpinCtrlDouble(wxSpinDoubleEvent& evt);
     };
 
-    double GetMinMove(void);
-    bool SetMinMove(double minMove);
     double GetAggressiveness(void);
     bool SetAggressiveness(double aggressiveness);
 
@@ -95,6 +93,8 @@ public:
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();
     virtual wxString GetGuideAlgorithmClassName(void) const { return "Lowpass2"; }
+    virtual double GetMinMove(void);
+    virtual bool SetMinMove(double minMove);
 };
 
 #endif /* GUIDE_ALGORITHM_LOWPASS2_H_INCLUDED */

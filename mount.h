@@ -147,6 +147,7 @@ protected:
     virtual void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
 
     friend class GraphLogWindow;
+    friend class GuidingAsstWin;
 
     GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     static bool CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm);
