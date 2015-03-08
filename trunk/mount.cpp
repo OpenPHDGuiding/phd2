@@ -179,10 +179,10 @@ void Mount::MountConfigDialogPane::LoadValues(void)
 {
     m_pClearCalibration->Enable(m_pMount->IsCalibrated());
     m_pClearCalibration->SetValue(false);
-    m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithm();
+    m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithmSelection();
     m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
     m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
-    m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithm();
+    m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithmSelection();
     m_pYGuideAlgorithmChoice->SetSelection(m_initYGuideAlgorithmSelection);
     m_pYGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
     m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
@@ -241,7 +241,7 @@ void Mount::MountConfigDialogPane::Undo(void)
     m_pMount->SetYGuideAlgorithm(m_initYGuideAlgorithmSelection);
 }
 
-GUIDE_ALGORITHM Mount::GetXGuideAlgorithm(void)
+GUIDE_ALGORITHM Mount::GetXGuideAlgorithmSelection(void)
 {
     return GetGuideAlgorithm(m_pXGuideAlgorithm);
 }
@@ -262,7 +262,7 @@ void Mount::SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgori
     }
 }
 
-GUIDE_ALGORITHM Mount::GetYGuideAlgorithm(void)
+GUIDE_ALGORITHM Mount::GetYGuideAlgorithmSelection(void)
 {
     return GetGuideAlgorithm(m_pYGuideAlgorithm);
 }
@@ -300,13 +300,7 @@ void Mount::SetGuidingEnabled(bool guidingEnabled)
 
 GUIDE_ALGORITHM Mount::GetGuideAlgorithm(GuideAlgorithm *pAlgorithm)
 {
-    GUIDE_ALGORITHM ret = GUIDE_ALGORITHM_NONE;
-
-    if (pAlgorithm)
-    {
-        ret = pAlgorithm->Algorithm();
-    }
-    return ret;
+    return pAlgorithm ? pAlgorithm->Algorithm() : GUIDE_ALGORITHM_NONE;
 }
 
 bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm** ppAlgorithm)
@@ -1275,10 +1269,10 @@ wxString Mount::GetSettingsSummary()
         IsCalibrated() ? wxString::Format("xAngle = %.1f, xRate = %.3f, yAngle = %.1f, yRate = %.3f",
                 degrees(xAngle()), xRate() * 1000.0, degrees(yAngle()), yRate() * 1000.0) : "not calibrated"
     ) + wxString::Format("X guide algorithm = %s, %s",
-        algorithms[GetXGuideAlgorithm()],
+        algorithms[GetXGuideAlgorithmSelection()],
         m_pXGuideAlgorithm->GetSettingsSummary()
     ) + wxString::Format("Y guide algorithm = %s, %s",
-        algorithms[GetYGuideAlgorithm()],
+        algorithms[GetYGuideAlgorithmSelection()],
         m_pYGuideAlgorithm->GetSettingsSummary()
     );
 }
