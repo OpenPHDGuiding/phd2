@@ -121,7 +121,7 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
 
     wxButton* btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0);
     btnHSizer->Add(btnCancel, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
- 
+
     //PopulateLBs(darksLB, bpmLB);
     SetSizerAndFit(vSizer);
 
@@ -143,7 +143,7 @@ void CamCalImportDialog::FindCompatibleDarks(wxArrayString* pResults)
             if (pFrame->DarkLibExists(profileId, false))
                 pResults->Add(m_profileNames[i]);
     }
-        
+
 }
 
 void CamCalImportDialog::FindCompatibleBPMs(wxArrayString* pResults)
