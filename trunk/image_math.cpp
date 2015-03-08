@@ -532,48 +532,41 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
 bool SquarePixels(usImage& img, float xsize, float ysize)
 {
     // Stretches one dimension to square up pixels
-    int x,y;
-    int newsize;
-    usImage tempimg;
-    unsigned short *ptr;
-    unsigned short *optr;
-    double ratio, oldposition;
-
     if (!img.ImageData)
         return true;
-    if (xsize == ysize) return false;  // nothing to do
 
-    // Copy the existing data
-    if (tempimg.Init(img.Size)) {
+    if (xsize <= ysize)
+        return false;
+
+    // Move the existing data to a temp image
+    usImage tempimg;
+    if (tempimg.Init(img.Size))
+    {
         pFrame->Alert(_("Memory allocation error"));
         return true;
     }
-    ptr = tempimg.ImageData;
-    optr = img.ImageData;
-    for (x=0; x<img.NPixels; x++, ptr++, optr++) {
-        *ptr=*optr;
-    }
+    tempimg.SwapImageData(img);
 
-    float weight;
-    int ind1, ind2, linesize;
     // if X > Y, when viewing stock, Y is unnaturally stretched, so stretch X to match
-    if (xsize > ysize) {
-        ratio = ysize / xsize;
-        newsize = ROUND((float) tempimg.Size.GetWidth() * (1.0/ratio));  // make new image correct size
-        img.Init(newsize,tempimg.Size.GetHeight());
-        optr=img.ImageData;
-        linesize = tempimg.Size.GetWidth();  // size of an original line
-        for (y=0; y<img.Size.GetHeight(); y++) {
-            for (x=0; x<newsize; x++, optr++) {
-                oldposition = x * ratio;
-                ind1 = (unsigned int) floor(oldposition);
-                ind2 = (unsigned int) ceil(oldposition);
-                if (ind2 > (tempimg.Size.GetWidth() - 1)) ind2 = tempimg.Size.GetWidth() - 1;
-                weight = ceil(oldposition) - oldposition;
-                *optr = (unsigned short) (((float) *(tempimg.ImageData + y*linesize + ind1) * weight) + ((float) *(tempimg.ImageData + y*linesize + ind1) * (1.0 - weight)));
-            }
+    double ratio = ysize / xsize;
+    int newsize = ROUND((float) tempimg.Size.GetWidth() * (1.0/ratio));  // make new image correct size
+    img.Init(newsize,tempimg.Size.GetHeight());
+    unsigned short *optr = img.ImageData;
+    int linesize = tempimg.Size.GetWidth();  // size of an original line
+    for (int y = 0; y < img.Size.GetHeight(); y++)
+    {
+        for (int x = 0; x < newsize; x++, optr++)
+        {
+            double oldposition = x * ratio;
+            int ind1 = (unsigned int) floor(oldposition);
+            int ind2 = (unsigned int) ceil(oldposition);
+            if (ind2 > (tempimg.Size.GetWidth() - 1))
+                ind2 = tempimg.Size.GetWidth() - 1;
+            double weight = ceil(oldposition) - oldposition;
+            *optr = (unsigned short) (((float) *(tempimg.ImageData + y*linesize + ind1) * weight) + ((float) *(tempimg.ImageData + y*linesize + ind1) * (1.0 - weight)));
         }
     }
+
     return false;
 }
 
