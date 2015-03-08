@@ -36,7 +36,7 @@
 #define GUIDING_ASSISTANT_INCLUDED
 
 class GuidingAssistant
-{   
+{
     GuidingAssistant(); // not implemented
 public:
     static wxWindow *CreateDialogBox();

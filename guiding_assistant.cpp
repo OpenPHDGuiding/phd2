@@ -230,12 +230,12 @@ GuidingAsstWin::GuidingAsstWin()
     m_measuring(false), m_measurementsTaken(false)
 {
     m_vSizer = new wxBoxSizer(wxVERTICAL);
-    
+
     m_instructions = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 40), wxALIGN_LEFT | wxST_NO_AUTORESIZE);
     MakeBold(m_instructions);
     m_vSizer->Add(m_instructions, wxSizerFlags(0).Border(wxALL, 8).Center());
- 
-    // Grids have either 3 or 4 columns, so compute width of largest label as scaling term for column widths 
+
+    // Grids have either 3 or 4 columns, so compute width of largest label as scaling term for column widths
     double minCol = wxMax(160, StringWidth(this, _("Right ascension Max Drift Rate")) + 10);
     // Start of status group
     wxStaticBoxSizer* status_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Measurement Status"));
@@ -246,19 +246,19 @@ GuidingAsstWin::GuidingAsstWin()
     m_statusgrid->SetColLabelSize(1);
     m_statusgrid->EnableEditing(false);
     m_statusgrid->SetDefaultColSize((round(3.0 * minCol / 4.0) + 0.5));
- 
+
     int col = 0;
     int row = 0;
     m_statusgrid->SetCellValue(_("Start time"), row, col++);
     m_timestamp_loc.Set(row, col++);
     m_statusgrid->SetCellValue(_("Exposure time"), row, col++);
     m_exposuretime_loc.Set(row, col++);
-    
+
     StartRow(row, col);
     m_statusgrid->SetCellValue(_("SNR"), row, col++);
     m_snr_loc.Set(row, col++);
     m_statusgrid->SetCellValue(_("Star mass"), row, col++);
-    m_starmass_loc.Set(row, col++);    
+    m_starmass_loc.Set(row, col++);
 
     StartRow(row, col);
     m_statusgrid->SetCellValue(_("Elapsed time"), row, col++);
@@ -269,11 +269,11 @@ GuidingAsstWin::GuidingAsstWin()
     //StartRow(row, col);
     //m_statusgrid->SetCellValue(_("Frequency cut-off:"), row, col++);   // Leave out for now, probably not useful to users
     //m_hfcutoff_loc.Set(row, col++);
-    
+
     status_group->Add(m_statusgrid);
     m_vSizer->Add(status_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of status group
-    
+
     // Start of star displacement group
     wxStaticBoxSizer* displacement_group = new wxStaticBoxSizer(wxVERTICAL, this, _("High-frequency Star Motion"));
     m_displacementgrid = new wxGrid(this, wxID_ANY);
@@ -283,13 +283,13 @@ GuidingAsstWin::GuidingAsstWin()
     m_displacementgrid->SetColLabelSize(1);
     m_displacementgrid->EnableEditing(false);
     m_displacementgrid->SetDefaultColSize(minCol);
-    
+
     row = 0;
     col = 0;
     m_displacementgrid->SetCellValue(_("Right ascension, RMS"), row, col++);
     m_ra_rms_px_loc.Set(row, col++);
     m_ra_rms_as_loc.Set(row, col++);
- 
+
     StartRow(row, col);
     m_displacementgrid->SetCellValue(_("Declination, RMS"), row, col++);
     m_dec_rms_px_loc.Set(row, col++);
@@ -299,7 +299,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_displacementgrid->SetCellValue(_("Total, RMS"), row, col++);
     m_total_rms_px_loc.Set(row, col++);
     m_total_rms_as_loc.Set(row, col++);
-    
+
     displacement_group->Add(m_displacementgrid);
     m_vSizer->Add(displacement_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of displacement group
@@ -313,28 +313,28 @@ GuidingAsstWin::GuidingAsstWin()
     m_othergrid->SetColLabelSize(1);
     m_othergrid->EnableEditing(false);
     m_othergrid->SetDefaultColSize(minCol);
- 
+
     row = 0;
     col = 0;
     m_othergrid->SetCellValue(_("Right ascension, Peak"), row, col++);
     m_ra_peak_px_loc.Set(row, col++);
-    m_ra_peak_as_loc.Set(row, col++); 
-    
+    m_ra_peak_as_loc.Set(row, col++);
+
     StartRow(row, col);
     m_othergrid->SetCellValue(_("Declination, Peak"), row, col++);
     m_dec_peak_px_loc.Set(row, col++);
-    m_dec_peak_as_loc.Set(row, col++);   
-    
+    m_dec_peak_as_loc.Set(row, col++);
+
     StartRow(row, col);
     m_othergrid->SetCellValue(_("Right ascension, Peak-Peak"), row, col++);
     m_ra_peakpeak_px_loc.Set(row, col++);
-    m_ra_peakpeak_as_loc.Set(row, col++);     
-    
+    m_ra_peakpeak_as_loc.Set(row, col++);
+
     StartRow(row, col);
     m_othergrid->SetCellValue(_("Right ascension Drift Rate"), row, col++);
     m_ra_drift_px_loc.Set(row, col++);
-    m_ra_drift_as_loc.Set(row, col++); 
- 
+    m_ra_drift_as_loc.Set(row, col++);
+
     StartRow(row, col);
     m_othergrid->SetCellValue(_("Right ascension Max Drift Rate"), row, col++);
     m_ra_peak_drift_px_loc.Set(row, col++);
@@ -343,10 +343,10 @@ GuidingAsstWin::GuidingAsstWin()
     StartRow(row, col);
     m_othergrid->SetCellValue(_("Declination Drift Rate"), row, col++);
     m_dec_drift_px_loc.Set(row, col++);
-    m_dec_drift_as_loc.Set(row, col++);     
-    
+    m_dec_drift_as_loc.Set(row, col++);
+
     other_group->Add(m_othergrid);
-    m_vSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));    
+    m_vSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of peak and drift group
 
     wxBoxSizer *btnSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -461,15 +461,15 @@ void GuidingAsstWin::OnMouseMove(wxMouseEvent& ev)
 void GuidingAsstWin::FillInstructions(DialogState eState)
 {
     wxString instr;
-    
+
     switch (eState)
     {
     case STATE_NO_STAR:
-        instr = _("Choose a non-saturated star with a good SNR (>10) and begin guiding; then click 'Start'");
+        instr = _("Choose a non-saturated star with a good SNR (>10) and begin guiding");
         break;
     case STATE_START_READY:
         if (!m_measurementsTaken)
-            instr = _("Click on 'Start' to begin measurements");
+            instr = _("Click 'Start' to begin measurements.  Guiding will be disabled during this time, so the star will move around.");
         else
             instr = m_instructions->GetLabel();
         break;
@@ -795,14 +795,14 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     m_statusgrid->SetCellValue(m_elapsedtime_loc, wxString::Format("%us", (unsigned int)(elapsedms / 1000)));
     m_statusgrid->SetCellValue(m_samplecount_loc, wxString::Format("%.0f", n));
     //m_statusgrid->SetCellValue(m_hfcutoff_loc, wxString::Format("%.2f Hz", m_freqThresh));
-    
+
     m_displacementgrid->SetCellValue(m_ra_rms_px_loc, wxString::Format("%6.2f px", rarms));
     m_displacementgrid->SetCellValue(m_ra_rms_as_loc, wxString::Format("%6.2f arc-sec", rarms * pxscale));
     m_displacementgrid->SetCellValue(m_dec_rms_px_loc, wxString::Format("%6.2f px", decrms));
     m_displacementgrid->SetCellValue(m_dec_rms_as_loc, wxString::Format("%6.2f arc-sec", decrms * pxscale));
     m_displacementgrid->SetCellValue(m_total_rms_px_loc, wxString::Format("%6.2f px", combined));
     m_displacementgrid->SetCellValue(m_total_rms_as_loc, wxString::Format("%6.2f arc-sec", combined * pxscale));
-    
+
     m_othergrid->SetCellValue(m_ra_peak_px_loc, wxString::Format("%.1f px", m_statsRA.peakRawDx));
     m_othergrid->SetCellValue(m_ra_peak_as_loc, wxString::Format("%.1f arc-sec", m_statsRA.peakRawDx * pxscale));
     m_othergrid->SetCellValue(m_dec_peak_px_loc, wxString::Format("%.1f px", m_statsDec.peakRawDx));
@@ -812,10 +812,10 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     m_othergrid->SetCellValue(m_ra_drift_px_loc, wxString::Format("%.1f px/min", raDriftRate));
     m_othergrid->SetCellValue(m_ra_drift_as_loc, wxString::Format("%.1f arc-sec/min", raDriftRate * pxscale));
     m_othergrid->SetCellValue(m_ra_peak_drift_px_loc, wxString::Format("%0.1f px/sec", maxRateRA));
-    m_othergrid->SetCellValue(m_ra_peak_drift_as_loc, wxString::Format("%0.1f arc-sec/sec (MaxExp: %0.1f)", maxRateRA * pxscale, 
+    m_othergrid->SetCellValue(m_ra_peak_drift_as_loc, wxString::Format("%0.1f arc-sec/sec (MaxExp: %0.1f)", maxRateRA * pxscale,
         maxRateRA > 0 ? rarms/maxRateRA : 0));
     m_othergrid->SetCellValue(m_dec_drift_px_loc, wxString::Format("%.1f px/min", decDriftRate));
-    m_othergrid->SetCellValue(m_dec_drift_as_loc, wxString::Format("%.1f arc-sec/min", decDriftRate * pxscale));    
+    m_othergrid->SetCellValue(m_dec_drift_as_loc, wxString::Format("%.1f arc-sec/min", decDriftRate * pxscale));
 }
 
 wxWindow *GuidingAssistant::CreateDialogBox()

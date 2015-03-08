@@ -1090,7 +1090,7 @@ bool DefectMap::ImportFromProfile(int srcId, int destId)
     wxString sourceName;
     wxString destName;
     int rslt;
-    
+
     sourceName = DefectMapFileName(srcId);
     destName = DefectMapFileName(destId);
     rslt = wxCopyFile(sourceName, destName, true);
