@@ -196,8 +196,8 @@ struct GuidingAsstWin : public wxDialog
     void OnRAMinMove(wxCommandEvent& event);
     void OnDecMinMove(wxCommandEvent& event);
 
-    wxStaticText* AddRecommendationEntry(wxString msg, wxObjectEventFunction handler, wxButton** ppButton);
-    wxStaticText* AddRecommendationEntry(wxString msg);
+    wxStaticText* AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton** ppButton);
+    wxStaticText* AddRecommendationEntry(const wxString& msg);
     void UpdateInfo(const GuideStepInfo& info);
     void FillInstructions(DialogState eState);
     void MakeRecommendations();
@@ -224,7 +224,7 @@ struct GridTooltipInfo : public wxObject
     GridTooltipInfo(wxGrid *g, int i) : grid(g), gridNum(i) { }
 };
 
-// Constructor 
+// Constructor
 GuidingAsstWin::GuidingAsstWin()
 : wxDialog(pFrame, wxID_ANY, wxGetTranslation(_("Guiding Assistant")), wxPoint(-1, -1), wxDefaultSize),
     m_measuring(false), m_measurementsTaken(false)
@@ -367,7 +367,7 @@ GuidingAsstWin::GuidingAsstWin()
 
     // Start of Recommendations group - just a place-holder for layout, populated in MakeRecommendations
     m_recommend_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Recommendations"));
-    m_recommendgrid = new wxGridSizer(5, 2, 0, 0);
+    m_recommendgrid = new wxGridSizer(2, 0, 0);
     m_ra_msg = NULL;
     m_dec_msg = NULL;
     m_snr_msg = NULL;
@@ -493,7 +493,7 @@ void GuidingAsstWin::OnRAMinMove(wxCommandEvent& event)
 {
     double ramean;
     double rarms;
-    GuideAlgorithm *raAlgo = pMount->m_pXGuideAlgorithm;
+    GuideAlgorithm *raAlgo = pMount->GetXGuideAlgorithm();
 
     if (raAlgo)
     {
@@ -520,7 +520,7 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
 {
     double decmean;
     double decrms;
-    GuideAlgorithm *decAlgo = pMount->m_pYGuideAlgorithm;
+    GuideAlgorithm *decAlgo = pMount->GetYGuideAlgorithm();
 
     if (decAlgo)
     {
@@ -545,7 +545,7 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
 
 
 // Adds a recommendation string and a button bound to the passed event handler
-wxStaticText* GuidingAsstWin::AddRecommendationEntry(wxString msg, wxObjectEventFunction handler, wxButton** ppButton)
+wxStaticText* GuidingAsstWin::AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton** ppButton)
 {
     wxStaticText* rec_label = new wxStaticText(this, wxID_ANY, msg, wxPoint(-1, -1), wxSize(300, -1));
     m_recommendgrid->Add(rec_label, 0, wxALIGN_LEFT | wxALL, 5);
@@ -562,8 +562,9 @@ wxStaticText* GuidingAsstWin::AddRecommendationEntry(wxString msg, wxObjectEvent
     }
     return rec_label;
 }
+
 // Jacket for simple addition of a text-only recommendation
-wxStaticText* GuidingAsstWin::AddRecommendationEntry(wxString msg)
+wxStaticText* GuidingAsstWin::AddRecommendationEntry(const wxString& msg)
 {
     return AddRecommendationEntry(msg, NULL, NULL);
 }
@@ -586,25 +587,34 @@ void GuidingAsstWin::MakeRecommendations()
 
     m_recommend_group->Show(true);
 
-    if (pMount->m_pXGuideAlgorithm && pMount->m_pXGuideAlgorithm->GetMinMove() >= 0)
+    if (pMount->GetXGuideAlgorithm() && pMount->GetXGuideAlgorithm()->GetMinMove() >= 0)
+    {
         if (m_ra_msg == NULL)
+        {
             m_ra_msg = AddRecommendationEntry(wxString::Format(_("Try setting RA min-move to %0.2f"), rounded_rarms),
                 wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
+        }
         else
         {
             m_ra_msg->SetLabel(wxString::Format(_("Try setting RA min-move to %0.2f"), rounded_rarms));
             m_raMinMoveButton->Enable(true);
         }
-        if (pMount->m_pYGuideAlgorithm && pMount->m_pYGuideAlgorithm->GetMinMove() >= 0)
-            if (m_dec_msg == NULL)
-                m_dec_msg = AddRecommendationEntry(wxString::Format(_("Try setting Dec min-move to %0.2f"), rounded_decrms),
-                    wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
-            else
-            {
-                m_dec_msg->SetLabel(wxString::Format(_("Try setting Dec min-move to %0.2f"), rounded_decrms));
-                m_decMinMoveButton->Enable(true);
-            }
-  
+    }
+
+    if (pMount->GetYGuideAlgorithm() && pMount->GetYGuideAlgorithm()->GetMinMove() >= 0)
+    {
+        if (m_dec_msg == NULL)
+        {
+            m_dec_msg = AddRecommendationEntry(wxString::Format(_("Try setting Dec min-move to %0.2f"), rounded_decrms),
+                wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
+        }
+        else
+        {
+            m_dec_msg->SetLabel(wxString::Format(_("Try setting Dec min-move to %0.2f"), rounded_decrms));
+            m_decMinMoveButton->Enable(true);
+        }
+    }
+
     if ((sumSNR / (double)m_statsRA.n) < 10)
     {
         if (m_snr_msg == NULL)
@@ -616,7 +626,8 @@ void GuidingAsstWin::MakeRecommendations()
         if (m_snr_msg != NULL)
             m_snr_msg->SetLabel(wxEmptyString);
 
-    SetSizerAndFit(m_vSizer);
+    Layout();
+    GetSizer()->Fit(this);
 }
 
 void GuidingAsstWin::OnStart(wxCommandEvent& event)

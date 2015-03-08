@@ -140,16 +140,13 @@ protected:
         void OnYAlgorithmSelected(wxCommandEvent& evt);
     };
 
-    virtual GUIDE_ALGORITHM GetXGuideAlgorithm(void);
-    virtual void SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
+    GUIDE_ALGORITHM GetXGuideAlgorithmSelection(void);
+    GUIDE_ALGORITHM GetYGuideAlgorithmSelection(void);
 
-    virtual GUIDE_ALGORITHM GetYGuideAlgorithm(void);
-    virtual void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
+    void SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
+    void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
 
-    friend class GraphLogWindow;
-    friend class GuidingAsstWin;
-
-    GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
+    static GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     static bool CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm);
 
 #ifdef TEST_TRANSFORMS
@@ -213,6 +210,9 @@ public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
     virtual wxString GetMountClassName() const = 0;
 
+    GuideAlgorithm *GetXGuideAlgorithm(void) const;
+    GuideAlgorithm *GetYGuideAlgorithm(void) const;
+
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation
@@ -272,6 +272,16 @@ public:
 inline bool Mount::DecCompensationActive(void) const
 {
     return m_currentDeclination != m_cal.declination;
+}
+
+inline GuideAlgorithm *Mount::GetXGuideAlgorithm(void) const
+{
+    return m_pXGuideAlgorithm;
+}
+
+inline GuideAlgorithm *Mount::GetYGuideAlgorithm(void) const
+{
+    return m_pYGuideAlgorithm;
 }
 
 #endif /* MOUNT_H_INCLUDED */
