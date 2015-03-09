@@ -579,6 +579,8 @@ void GuidingAsstWin::MakeRecommendations()
     double rounded_rarms;
     double rounded_decrms;
 
+    POSSIBLY_UNUSED(remInx);
+
     m_statsRA.GetMeanAndStdev(&ramean, &rarms);
     m_statsDec.GetMeanAndStdev(&decmean, &decrms);
     // Don't over-state the accuracy here - set things to the nearest .05
