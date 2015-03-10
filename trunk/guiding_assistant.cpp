@@ -571,15 +571,12 @@ wxStaticText* GuidingAsstWin::AddRecommendationEntry(const wxString& msg)
 
 void GuidingAsstWin::MakeRecommendations()
 {
-    int remInx = 0;
     double rarms;
     double ramean;
     double decrms;
     double decmean;
     double rounded_rarms;
     double rounded_decrms;
-
-    POSSIBLY_UNUSED(remInx);
 
     m_statsRA.GetMeanAndStdev(&ramean, &rarms);
     m_statsDec.GetMeanAndStdev(&decmean, &decrms);
