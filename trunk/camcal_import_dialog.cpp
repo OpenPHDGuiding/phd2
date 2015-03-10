@@ -114,7 +114,7 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
     wxBoxSizer* btnHSizer = new wxBoxSizer(wxHORIZONTAL);
     vSizer->Add(btnHSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
 
-    wxButton* btnOk = new wxButton(this, wxID_ANY, _("Ok"), wxDefaultPosition, wxDefaultSize, 0);
+    wxButton* btnOk = new wxButton(this, wxID_ANY, _("OK"), wxDefaultPosition, wxDefaultSize, 0);
     btnOk->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CamCalImportDialog::OnOk, this);
     btnOk->SetDefault();
     btnHSizer->Add(btnOk, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
