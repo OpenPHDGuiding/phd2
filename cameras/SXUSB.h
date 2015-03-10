@@ -85,7 +85,11 @@
 /*
  * Limits.
  */
-#define SXCCD_MAX_CAMS                  2
+/* The version of this file we got from SX has SXCCD_MAX_CAMS as 2, but
+   sxOpen() can return more than that! We'll set it to 20 to avoid stack
+   overruns when we allocate arrays of HANDLE on the stack to pass to
+   sxOpen() - ag 2015/03/06 */
+#define SXCCD_MAX_CAMS                  20
 struct t_sxccd_params
 {
     USHORT hfront_porch;
