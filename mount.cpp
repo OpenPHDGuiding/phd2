@@ -89,7 +89,7 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     wxBoxSizer *chkSizer = new wxBoxSizer(wxHORIZONTAL);
 
     m_pClearCalibration = new wxCheckBox(pParent, wxID_ANY, _("Clear calibration"));
-    m_pClearCalibration->SetToolTip(("Clear the current calibration data - calibration will be re-done when guiding is started"));
+    m_pClearCalibration->SetToolTip(_("Clear the current calibration data - calibration will be re-done when guiding is started"));
     m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY, _("Enable Guide Output"), wxDefaultPosition, wxSize(150, -1), 0);
     m_pEnableGuide->SetToolTip(_("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
 

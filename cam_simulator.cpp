@@ -1426,7 +1426,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     pPEDefaultRb->SetToolTip(_("Use a built-in PE curve that has some steep and smooth sections."));
     pPEDefaultRb->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbDefaultPE, this);                // Event handler binding
     wxStaticText *pSliderLabel = new wxStaticText(this, wxID_ANY, _("Amplitude: "),wxPoint(-1,-1),wxSize(-1,-1));
-    pPEDefScale = NewSpinner(this, SimCamParams::pe_scale, 0, PE_SCALE_MAX, 0.5, "PE Amplitude, arc-secs");
+    pPEDefScale = NewSpinner(this, SimCamParams::pe_scale, 0, PE_SCALE_MAX, 0.5, _("PE Amplitude, arc-secs"));
 
     int hor_spacing = StringWidth(this, "9");
     pPEDefaults->Add(pPEDefaultRb);
