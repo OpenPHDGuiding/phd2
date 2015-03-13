@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-12 17:57-0400\n"
-"PO-Revision-Date: 2015-03-13 16:11+0300\n"
+"PO-Revision-Date: 2015-03-13 16:14+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -1264,7 +1264,7 @@ msgstr "Угл. сек./час"
 
 #: comet_tool.cpp:105
 msgid "Units"
-msgstr ""
+msgstr "Единицы измерения"
 
 #: comet_tool.cpp:107
 msgid "Tracking rate units"
