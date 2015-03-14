@@ -506,7 +506,7 @@ static bool InitImgInterlacedInterp(usImage& img, const wxSize& FullSize, bool s
 }
 
 static bool InitImgInterlacedSquare(usImage& img, const wxSize& FullSize, bool subframe, const wxRect& frame,
-                                    const t_sxccd_params& ccdparams, const usImage& tmp)
+                                    const sxccd_params_t& ccdparams, const usImage& tmp)
 {
     // pixels are vertically binned. resample to create square, un-binned pixels
     //

@@ -37,21 +37,21 @@
 #define SXVDEF
 
 #if defined (__WINDOWS__)
-#include "cameras/SXUSB.h"
+# include "cameras/SXUSB.h"
+typedef struct t_sxccd_params sxccd_params_t;
 #else
-#include "cameras/SXMacLib.h"
+# include "cameras/SXMacLib.h"
 #endif
 
 class Camera_SXVClass : public GuideCamera
 {
 #if defined (__WINDOWS__)
     HANDLE hCam;
-    struct t_sxccd_params CCDParams;
 #else
     void *hCam;
-    struct sxccd_params_t CCDParams;
 #endif
 
+    sxccd_params_t CCDParams;
     unsigned short *RawData;
     usImage tmpImg;
     unsigned short CameraModel;
