@@ -112,7 +112,7 @@ Camera_SXVClass::Camera_SXVClass()
 {
     Connected = false;
     Name = _T("Starlight Xpress SXV");
-    FullSize = wxSize(1280,1024);
+    FullSize = m_darkFrameSize = wxSize(1280, 1024);
     HasGainControl = false;
     m_hasGuideOutput = true;
     Interlaced = false;
@@ -350,18 +350,22 @@ bool Camera_SXVClass::Connect()
 
     if (Interlaced)
     {
-        FullSize.SetWidth(CCDParams.width);
-
+        // The interlaced CCDs report the size of a field for the height
+        m_darkFrameSize = wxSize(CCDParams.width, CCDParams.height);
         if (SquarePixels)
         {
-            // The interlaced CCDs report the size of a field; this is the final height after squaring pixels.
-            FullSize.SetHeight((int) floor((float) CCDParams.height * CCDParams.pix_height / CCDParams.pix_width));
+            FullSize.SetWidth(CCDParams.width);
+            // This is the height after squaring pixels.
+            FullSize.SetHeight((int)floor((float)CCDParams.height * CCDParams.pix_height / CCDParams.pix_width));
         }
         else
-            FullSize.SetHeight(CCDParams.height * 2);
+            FullSize = wxSize(CCDParams.width, CCDParams.height * 2);
     }
     else
+    {
         FullSize = wxSize(CCDParams.width, CCDParams.height);
+        m_darkFrameSize = FullSize;
+    }
 
     if (CCDParams.extra_caps & 0x20)
         HasShutter = true;
@@ -369,7 +373,15 @@ bool Camera_SXVClass::Connect()
     if (CameraModel == 39) // cmos guider
         HasSubframes = false;
 
-    RawData = new unsigned short[FullSize.GetHeight() * FullSize.GetWidth()];
+    RawData = new unsigned short[CCDParams.width * CCDParams.height];
+
+    if (tmpImg.Init(CCDParams.width, CCDParams.height))
+    {
+        Debug.AddLine("SX camera: tmpImg Init failed!");
+        delete [] RawData;
+        RawData = 0;
+        retval = true;
+    }
 
     Debug.AddLine("SX Camera: " + Name);
     Debug.AddLine(wxString::Format("SX Camera Params: %u x %u (reported as %u x %u) PixSz: %.2f x %.2f; #Pix: %u Array color type: %u,%u Interlaced: %d Model: %u, Subype: %u, Porch: %u,%u %u,%u Extras: %u",
@@ -403,11 +415,7 @@ bool Camera_SXVClass::Disconnect()
     return false;
 }
 
-void Camera_SXVClass::InitCapture()
-{
-}
-
-static bool InitImgCMOSGuider(usImage& img, unsigned int xofs, unsigned int yofs, unsigned int xsize, unsigned int ysize, bool subframe, const wxSize& FullSize, const unsigned short *raw)
+static bool InitImgCMOSGuider(usImage& img, const wxSize& FullSize, const unsigned short *raw)
 {
     // CMOS guider -- crop and clean
 
@@ -448,8 +456,7 @@ static bool InitImgCMOSGuider(usImage& img, unsigned int xofs, unsigned int yofs
     return false;
 }
 
-static bool InitImgInterlacedInterp(usImage& img, unsigned int xofs, unsigned int yofs, unsigned int xsize, unsigned int ysize,
-    const wxSize& FullSize, bool subframe, const wxRect& frame, const unsigned short *raw)
+static bool InitImgInterlacedInterp(usImage& img, const wxSize& FullSize, bool subframe, const wxRect& frame, const usImage& tmp)
 {
     if (img.Init(FullSize))
         return true;
@@ -460,41 +467,46 @@ static bool InitImgInterlacedInterp(usImage& img, unsigned int xofs, unsigned in
         img.Clear();
     }
 
+    const unsigned short *raw = tmp.ImageData;
+    int const fullw = FullSize.GetWidth();
+    int const framew = frame.GetWidth();
+    int const xofs = frame.GetLeft();
+
     int end = frame.GetBottom();
     if ((end & 1) && end == FullSize.GetHeight() - 1)
         --end;
 
     for (int y = frame.GetTop(); y <= end; y++)
     {
-        unsigned short *dst = img.ImageData + y * FullSize.GetWidth() + frame.GetLeft();
+        unsigned short *dst = img.ImageData + y * fullw + xofs;
         if ((y & 1) == 0)
         {
             // even row - copy directly
-            const unsigned short *src = raw + ((y / 2) - yofs) * frame.GetWidth();
-            memcpy(dst, src, frame.GetWidth() * sizeof(unsigned short));
+            const unsigned short *src = raw + (y / 2) * fullw + xofs;
+            memcpy(dst, src, framew * sizeof(unsigned short));
         }
         else
         {
             // odd row - interpolate
-            const unsigned short *src0 = raw + ((y / 2) - yofs) * frame.GetWidth();
-            const unsigned short *src1 = src0 + frame.GetWidth();
-            for (int x = 0; x < frame.GetWidth(); x++)
+            const unsigned short *src0 = raw + (y / 2) * fullw + xofs;
+            const unsigned short *src1 = src0 + fullw;
+            for (int x = 0; x < framew; x++)
                 *dst++ = (*src0++ + *src1++) / 2;
         }
     }
 
     if ((frame.GetBottom() & 1) && frame.GetBottom() == FullSize.GetHeight() - 1)
     {
-        unsigned short *dst = img.ImageData + frame.GetBottom() * FullSize.GetWidth() + frame.GetLeft();
-        const unsigned short *src = dst - frame.GetWidth();
-        memcpy(dst, src, frame.GetWidth() * sizeof(unsigned short));
+        unsigned short *dst = img.ImageData + frame.GetBottom() * fullw + xofs;
+        const unsigned short *src = dst - fullw;
+        memcpy(dst, src, framew * sizeof(unsigned short));
     }
 
     return false;
 }
 
-static bool InitImgInterlacedSquare(usImage& img, unsigned int xofs, unsigned int yofs, unsigned int xsize, unsigned int ysize,
-    const wxSize& FullSize, bool subframe, const wxRect& frame, const t_sxccd_params& ccdparams, const unsigned short *raw)
+static bool InitImgInterlacedSquare(usImage& img, const wxSize& FullSize, bool subframe, const wxRect& frame,
+                                    const t_sxccd_params& ccdparams, const usImage& tmp)
 {
     // pixels are vertically binned. resample to create square, un-binned pixels
     //
@@ -514,30 +526,35 @@ static bool InitImgInterlacedSquare(usImage& img, unsigned int xofs, unsigned in
         img.Clear();
     }
 
+    const unsigned short *raw = tmp.ImageData;
+    int const fullw = FullSize.GetWidth();
+    int const framew = frame.GetWidth();
+    int const xofs = frame.GetLeft();
+
     float y0 = frame.GetTop() * pw;
     float y1 = y0 + pw;
     int p0 = (int) floor(y0 / ph);
-    int const p00 = p0;
+
     for (int row = frame.GetTop(); row <= frame.GetBottom(); row++)
     {
         float yp1 = floor(y1 / ph);
         int p1 = (int) yp1;
         yp1 *= ph;
 
-        unsigned short *dst = img.ImageData + row * ccdparams.width + frame.GetLeft();
+        unsigned short *dst = img.ImageData + row * fullw + xofs;
         if (p1 == p0)
         {
-            const unsigned short *src = raw + (p0 - p00) * xsize;
-            for (int x = 0; x < xsize; x++)
+            const unsigned short *src = raw + p0 * fullw + xofs;
+            for (int x = 0; x < framew; x++)
                 *dst++ = (unsigned short)(r0 * (float) *src++);
         }
         else
         {
             float const r0 = (yp1 - y0) / ph;
             float const r1 = (y1 - yp1) / ph;
-            const unsigned short *src0 = raw + (p0 - p00) * xsize;
-            const unsigned short *src1 = raw + (p1 - p00) * xsize;
-            for (int x = 0; x < xsize; x++)
+            const unsigned short *src0 = raw + p0 * fullw + xofs;
+            const unsigned short *src1 = raw + p1 * fullw + xofs;
+            for (int x = 0; x < framew; x++)
                 *dst++ = (unsigned short)(r0 * (float)*src0++ + r1 * (float)*src1++);
         }
 
@@ -581,16 +598,24 @@ static bool InitImgProgressive(usImage& img, unsigned int xofs, unsigned int yof
 # define ReadPixels(hCam, RawData, NPixelsToRead) sxReadPixels((hCam), (UInt8 *)(RawData), (NPixelsToRead), sizeof(unsigned short))
 #endif
 
-bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+inline static void swap(unsigned short *&a, unsigned short *&b)
+{
+    unsigned short *tmp = a;
+    a = b;
+    b = tmp;
+}
+
+bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
     bool takeSubframe = UseSubframes;
+    wxRect subframe(subframeArg);
 
     if (subframe.width <= 0 || subframe.height <= 0)
     {
         takeSubframe = false;
     }
 
-    if (HasShutter && ShutterState)
+    if (HasShutter && ShutterClosed)
     {
         sxSetShutter(hCam, 1);  // Close the shutter if needed
         wxMilliSleep(200);
@@ -607,24 +632,38 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         {
             // Interlaced cams are run in "high speed" mode (vertically binned)
 
-            if (SquarePixels)
+            if (options & CAPTURE_RECON)
             {
-                //  incoming subframe coordinates are in squared pixel coordinate system, convert to camera pixel coordinates
-                float r = CCDParams.pix_width / CCDParams.pix_height;
-                unsigned int y0 = (unsigned int) floor(subframe.GetTop() * r);
-                unsigned int y1 = (unsigned int) floor(subframe.GetBottom() * r);
-                yofs = y0;
-                ysize = y1 - y0 + 1;
+                if (SquarePixels)
+                {
+                    //  incoming subframe coordinates are in squared pixel coordinate system, convert to camera pixel coordinates
+                    float r = CCDParams.pix_width / CCDParams.pix_height;
+                    unsigned int y0 = (unsigned int)floor(subframe.GetTop() * r);
+                    unsigned int y1 = (unsigned int)floor(subframe.GetBottom() * r);
+                    yofs = y0;
+                    ysize = y1 - y0 + 1;
+                }
+                else
+                {
+                    unsigned int y0 = (unsigned int)subframe.GetTop() / 2;
+                    // interpolation may require the next row
+                    unsigned int y1 = (unsigned int)(subframe.GetBottom() + 1) / 2;
+                    if (y1 >= CCDParams.height)
+                        y1 = CCDParams.height - 1;
+                    yofs = y0;
+                    ysize = y1 - y0 + 1;
+                }
             }
             else
             {
-                unsigned int y0 = (unsigned int) subframe.GetTop() / 2;
-                // interpolation may require the next row
-                unsigned int y1 = (unsigned int) (subframe.GetBottom() + 1) / 2;
-                if (y1 >= CCDParams.height)
-                    y1 = CCDParams.height;
-                yofs = y0;
-                ysize = y1 - y0 + 1;
+                tmpImg.Clear();
+
+                // subframe represents actual binned pixels
+                yofs = (unsigned int) subframe.GetTop();
+                unsigned int y1 = (unsigned int) subframe.GetBottom();
+                if (y1 > CCDParams.height - 1)
+                    y1 = CCDParams.height - 1;
+                ysize = y1 - yofs + 1;
             }
         }
         else
@@ -667,33 +706,86 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
     ReadPixels(hCam, RawData, NPixelsToRead);  // stop exposure and read but only the one frame
 
-    if (HasShutter && ShutterState)
+    if (HasShutter && ShutterClosed)
     {
         sxSetShutter(hCam, 0);  // Open it back up
         wxMilliSleep(200);
     }
 
     // Re-assemble image
-    bool error;
-    if (CameraModel == 39)
-        error = InitImgCMOSGuider(img, xofs, yofs, xsize, ysize, takeSubframe, FullSize, RawData);
-    else if (Interlaced)
+
+    if (!Interlaced)
     {
-        if (SquarePixels)
-            error = InitImgInterlacedSquare(img, xofs, yofs, xsize, ysize, FullSize, takeSubframe, subframe, CCDParams, RawData);
+        bool error;
+
+        if (CameraModel == 39)
+            error = InitImgCMOSGuider(img, FullSize, RawData);
         else
-            error = InitImgInterlacedInterp(img, xofs, yofs, xsize, ysize, FullSize, takeSubframe, subframe, RawData);
+            error = InitImgProgressive(img, xofs, yofs, xsize, ysize, takeSubframe, FullSize, RawData);
+
+        if (error)
+        {
+            DisconnectWithAlert(CAPT_FAIL_MEMORY);
+            return true;
+        }
+
+        if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+
+        return false;
+    }
+
+    // interlaced
+
+    // prepare to for dark subtraction by copying the camera frame to the appropriate location in tmpImg
+
+    if (takeSubframe)
+    {
+        const unsigned short *src = RawData;
+        for (int y = 0; y < ysize; y++)
+        {
+            unsigned short *dst = tmpImg.ImageData + (yofs + y) * FullSize.GetWidth() + xofs;
+            memcpy(dst, src, xsize * sizeof(unsigned short));
+            src += xsize;
+        }
+        tmpImg.Subframe = wxRect(xofs, yofs, xsize, ysize);
     }
     else
-        error = InitImgProgressive(img, xofs, yofs, xsize, ysize, takeSubframe, FullSize, RawData);
-
-    if (error)
     {
-        DisconnectWithAlert(CAPT_FAIL_MEMORY);
-        return true;
+        swap(RawData, tmpImg.ImageData);
+        tmpImg.Subframe = wxRect();
     }
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(tmpImg);
+
+    if (options & CAPTURE_RECON)
+    {
+        bool error;
+
+        if (SquarePixels)
+            error = InitImgInterlacedSquare(img, FullSize, takeSubframe, subframe, CCDParams, tmpImg);
+        else
+            error = InitImgInterlacedInterp(img, FullSize, takeSubframe, subframe, tmpImg);
+
+        if (error)
+        {
+            DisconnectWithAlert(CAPT_FAIL_MEMORY);
+            return true;
+        }
+    }
+    else
+    {
+        if (img.Init(tmpImg.Size))
+        {
+            DisconnectWithAlert(CAPT_FAIL_MEMORY);
+            return true;
+        }
+
+        if (takeSubframe)
+            img.Subframe = tmpImg.Subframe;
+
+        img.SwapImageData(tmpImg);
+    }
 
     return false;
 }

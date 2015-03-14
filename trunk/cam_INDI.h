@@ -92,7 +92,7 @@ protected:
     virtual void newLight(ILightVectorProperty *lvp) {}
     virtual void serverConnected();
     virtual void serverDisconnected(int exit_code);
-    
+
 public:
     Camera_INDIClass();
     ~Camera_INDIClass();
@@ -100,10 +100,9 @@ public:
     bool    Disconnect();
     bool    HasNonGuiCapture(void);
     void    ShowPropertyDialog();
-    
-    void    InitCapture() { return; }
-    bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+
     bool    ST4PulseGuideScope(int direction, int duration);
     bool    ST4HasNonGuiMove(void);
 };

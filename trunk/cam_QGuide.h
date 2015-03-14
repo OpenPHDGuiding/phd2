@@ -33,26 +33,27 @@
  */
 #ifndef QGUIDEDEF
 #define QGUIDEDEF
+
 #include "cmosDLL.h"
-class Camera_QGuiderClass : public GuideCamera {
+
+class Camera_QGuiderClass : public GuideCamera
+{
+    unsigned char *buffer;
+
 public:
-    bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    Camera_QGuiderClass();
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect();
     bool    Disconnect();
     void    InitCapture();
 
-//  bool    SetGlobalGain(unsigned char gain);
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
-    //bool  SetColorGain(unsigned char r_gain, unsigned char g_gain, unsigned char b_gain);
-    //int   FindCameras(int DevNums[8]);
     bool    HasNonGuiCapture(void) { return true; }
     bool    ST4HasNonGuiMove(void) { return true; }
 
-    Camera_QGuiderClass();
 private:
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
-    unsigned char *buffer;
     void RemoveLines(usImage& img);
 };
 #endif  //QGUIDEDEF

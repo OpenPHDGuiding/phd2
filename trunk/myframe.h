@@ -198,6 +198,8 @@ public:
     unsigned int m_loggedImageFrame;
     wxDateTime m_guidingStarted;
     Star::FindMode m_starFindMode;
+    bool m_rawImageMode;
+    bool m_rawImageModeWarningDone;
 
     void RegisterTextCtrl(wxTextCtrl *ctrl);
     void OnQuit(wxCommandEvent& evt);
@@ -205,6 +207,7 @@ public:
     void OnAbout(wxCommandEvent& evt);
     void OnHelp(wxCommandEvent& evt);
     void OnOverlay(wxCommandEvent& evt);
+    void OnOverlaySlitCoords(wxCommandEvent& evt);
     void OnInstructions(wxCommandEvent& evt);
     void OnSave(wxCommandEvent& evt);
     void OnSettings(wxCommandEvent& evt);
@@ -281,6 +284,8 @@ public:
     LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
     Star::FindMode GetStarFindMode(void) const;
     Star::FindMode SetStarFindMode(Star::FindMode mode);
+    bool GetRawImageMode(void) const;
+    bool SetRawImageMode(bool force);
 
     bool StartServer(bool state);
     bool FlipRACal();
@@ -307,13 +312,14 @@ public:
 
     struct EXPOSE_REQUEST
     {
-        usImage          *pImage;
+        usImage         *pImage;
         int              exposureDuration;
+        int              options;
         wxRect           subframe;
-        bool             bError;
-        wxSemaphore      *pSemaphore;
+        bool             error;
+        wxSemaphore     *pSemaphore;
     };
-    void OnRequestExposure(wxCommandEvent &evt);
+    void OnRequestExposure(wxCommandEvent& evt);
 
     struct PHD_MOVE_REQUEST
     {
@@ -326,9 +332,9 @@ public:
         PHD_Point       vectorEndpoint;
         wxSemaphore     *pSemaphore;
     };
-    void OnRequestMountMove(wxCommandEvent &evt);
+    void OnRequestMountMove(wxCommandEvent& evt);
 
-    void ScheduleExposure(int exposureDuration, const wxRect& subframe);
+    void ScheduleExposure(void);
 
     void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
     void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
@@ -483,6 +489,7 @@ enum {
     MENU_XHAIR3,
     MENU_XHAIR4,
     MENU_XHAIR5,
+    MENU_SLIT_OVERLAY_COORDS,
     MENU_TAKEDARKS,
     MENU_LOG,
     MENU_LOGIMAGES,
@@ -581,6 +588,11 @@ inline double MyFrame::TimeSinceGuidingStarted(void) const
 inline Star::FindMode MyFrame::GetStarFindMode(void) const
 {
     return m_starFindMode;
+}
+
+inline bool MyFrame::GetRawImageMode(void) const
+{
+    return m_rawImageMode;
 }
 
 #endif /* MYFRAME_H_INCLUDED */

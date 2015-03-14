@@ -469,7 +469,7 @@ bool Camera_INDIClass::ReadStream(usImage& img)
     return false;
 }
 
-bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
   if (Connected) {
       // we can set the exposure time directly in the camera
@@ -525,7 +525,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
 	 //printf("Processing fits file\n");
 	 // for CCD camera
 	 if ( ! ReadFITS(img) ) {
-	    if ( recon ) {
+         if (options & CAPTURE_SUBTRACT_DARK) {
 	       //printf("Subtracting dark\n");
 	       SubtractDark(img);
 	    }

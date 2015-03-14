@@ -126,7 +126,7 @@ bool Camera_DSIClass::Disconnect()
     return false;
 }
 
-bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_DSIClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     MeadeCam->SetGain((unsigned int) (GuideCameraGain * 63 / 100));
     MeadeCam->SetExposureTime(duration);
@@ -178,9 +178,9 @@ bool Camera_DSIClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
 #endif // end of waiting for the image
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
-    if (recon)
+    if (options & CAPTURE_RECON)
     {
         if (MeadeCam->IsColor)
             QuickLRecon(img);

@@ -47,13 +47,11 @@ private:
 public:
     Camera_SBIGRotatorClass();
     ~Camera_SBIGRotatorClass();
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
 
-    virtual bool    ST4PulseGuideScope (int direction, int duration);
-
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    ST4PulseGuideScope (int direction, int duration);
     bool    Connect();      // Opens up and connects to cameras
     bool    Disconnect();
-    void    InitCapture() { return; }
 };
 
 #endif //defined(SBIGROTATOR_CAMERA_H_INCLUDED) and defined(SBIG)

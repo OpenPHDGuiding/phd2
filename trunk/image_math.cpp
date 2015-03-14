@@ -1118,8 +1118,8 @@ bool DefectMap::DefectMapExists(int profileId, bool showAlert)
     if (wxFileExists(DefectMapFileName(profileId)))
     {
         wxString fName = DefectMapMasterPath(profileId);
-        const wxSize& sensorSize = pCamera->FullSize;
-        if (sensorSize == UNDEFINED_FULL_FRAME_SIZE)
+        const wxSize& sensorSize = pCamera->DarkFrameSize();
+        if (sensorSize == UNDEFINED_FRAME_SIZE)
         {
             bOk = true;
         }

@@ -407,7 +407,11 @@ int GearDialog::ShowGearDialog(bool autoConnect)
 
         GetSizer()->Fit(this);
         CenterOnParent();
+
+        wxWindow *top = wxGetApp().GetTopWindow();
+        wxGetApp().SetTopWindow(this);
         ret = wxDialog::ShowModal();
+        wxGetApp().SetTopWindow(top);
     }
     else
     {

@@ -34,20 +34,18 @@
 #ifndef OSPL130DEF
 #define OSPL130DEF
 
-class Camera_OpticstarPL130Class : public GuideCamera {
-public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-//  void    InitCapture();
-
-//  bool    ST4PulseGuideScope(int direction, int duration);
-//  void    ClearGuidePort();
-    bool    Color;
-    Camera_OpticstarPL130Class();
-private:
+class Camera_OpticstarPL130Class : public GuideCamera
+{
     unsigned char *RawData;
 
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+public:
+    Camera_OpticstarPL130Class();
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect();
+    bool    Disconnect();
+
+    bool    Color;
 };
+
 #endif  //OSPL130DEF

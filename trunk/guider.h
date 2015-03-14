@@ -76,7 +76,7 @@ enum DEC_GUDING_ALGORITHM
 {
     DEC_LOWPASS = 0,
     DEC_RESISTSWITCH,
-    DEC_LOWPASS2
+    DEC_LOWPASS2,
 };
 
 enum OVERLAY_MODE
@@ -85,7 +85,16 @@ enum OVERLAY_MODE
     OVERLAY_BULLSEYE,
     OVERLAY_GRID_FINE,
     OVERLAY_GRID_COARSE,
-    OVERLAY_RADEC
+    OVERLAY_RADEC,
+    OVERLAY_SLIT,
+};
+
+struct OverlaySlitCoords
+{
+    wxPoint center;
+    wxSize size;
+    int angle;
+    wxPoint corners[5];
 };
 
 enum MOVE_LOCK_RESULT
@@ -127,6 +136,7 @@ class Guider : public wxWindow
 
     wxImage *m_displayedImage;
     OVERLAY_MODE m_overlayMode;
+    OverlaySlitCoords m_overlaySlitCoords;
     const DefectMap *m_defectMapPreview;
     double m_polarAlignCircleRadius;
     double m_polarAlignCircleCorrection;
@@ -209,6 +219,8 @@ public:
     void ForceFullFrame(void);
 
     bool SetOverlayMode(int newMode);
+    void GetOverlaySlitCoords(wxPoint *center, wxSize *size, int *angle);
+    void SetOverlaySlitCoords(const wxPoint& center, const wxSize& size, int angle);
     void SetDefectMapPreview(const DefectMap *preview);
     void SetPolarAlignCircle(const PHD_Point& center, double radius);
     void SetPolarAlignCircleCorrection(double val);

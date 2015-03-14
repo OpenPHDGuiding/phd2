@@ -132,7 +132,7 @@ static bool StopExposure()
     return true;
 }
 
-bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_QGuiderClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
 // Only does full frames still
 
@@ -191,23 +191,14 @@ bool Camera_QGuiderClass::Capture(int duration, usImage& img, wxRect subframe, b
     }
 */
     dptr = img.ImageData;
-    GETBUFFER(dptr,img.NPixels*2);
-    if (recon) SubtractDark(img);
+    GETBUFFER(dptr, img.NPixels * 2);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
-/*  bptr = buffer;
-    for (i=0; i<img.NPixels; i++,dptr++, bptr++) {
-        *dptr = (unsigned short) (*bptr);
-    }
-*/
-    //qglogfile->AddLine("Image loaded"); //qglogfile->Write();
-
-    // Do quick L recon to remove bayer array
-//  QuickLRecon(img);
-//  RemoveLines(img);
     return false;
 }
 
-void Camera_QGuiderClass::RemoveLines(usImage& img) {
+void Camera_QGuiderClass::RemoveLines(usImage& img)
+{
     int i, j, val;
     unsigned short data[21];
     unsigned short *ptr1, *ptr2;

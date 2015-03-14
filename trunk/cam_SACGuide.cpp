@@ -217,11 +217,10 @@ bool Camera_SACGuiderClass::GenericCapture(int duration, usImage& img, int xsize
         }
     }
 
-
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
     // Do quick L recon to remove bayer array
-//  if (ColorArray) QuickLRecon(img);
-    if (recon) SubtractDark(img);
-    QuickLRecon(img);
+    if (options & CAPTURE_RECON) QuickLRecon(img);
+
     delete[] buffer;
 
     return false;

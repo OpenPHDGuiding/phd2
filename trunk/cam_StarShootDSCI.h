@@ -37,14 +37,8 @@
 #define SSDEF
 #include "StarShootDLL.h"
 
-class Camera_StarShootDSCIClass : public GuideCamera {
-public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture() { return; }
-    Camera_StarShootDSCIClass();
-private:
+class Camera_StarShootDSCIClass : public GuideCamera
+{
     bool USB2;  // Is it a USB2 connection?
     int RawX;  // Raw size of array
     int RawY;
@@ -57,5 +51,12 @@ private:
     B_I_DLLFUNC OCP_Exposure;
     B_V_DLLFUNC OCP_Exposing;
     USP_V_DLLFUNC OCP_ProcessedBuffer;
+
+public:
+    Camera_StarShootDSCIClass();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect();
+    bool    Disconnect();
+    void    InitCapture() { return; }
 };
 #endif

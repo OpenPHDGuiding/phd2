@@ -35,14 +35,16 @@
 
 #ifndef NEBSBIGDEF
 #define NEBSBIGDEF
-class Camera_NebSBIGClass : public GuideCamera {
+
+class Camera_NebSBIGClass : public GuideCamera
+{
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool HasNonGuiCapture(void);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    HasNonGuiCapture(void);
     bool    Connect();      // Opens up and connects to cameras
     bool    Disconnect();
-    void    InitCapture() { return; }
     bool    ST4PulseGuideScope(int direction, int duration);
     Camera_NebSBIGClass();
 };
+
 #endif

@@ -41,22 +41,8 @@ public:
 };
 
 #elif defined (SAC_CMOS_GUIDE)
-class Camera_SACGuiderClass : public GuideCamera {
-public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture();
-
-    bool    SetGlobalGain(unsigned char gain);
-    bool    ST4PulseGuideScope(int direction, int duration);
-    void    ClearGuidePort();
-    //bool  SetColorGain(unsigned char r_gain, unsigned char g_gain, unsigned char b_gain);
-    //int   FindCameras(int DevNums[8]);
-
-    Camera_SACGuiderClass();
-private:
-    bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+class Camera_SACGuiderClass : public GuideCamera
+{
     B_V_DLLFUNC CloseUSB;
     B_Cp_DLLFUNC OpenUSB;
     V_Cp_DLLFUNC CmosReset;
@@ -65,6 +51,23 @@ private:
     GUIDEREG_DLLFUNC GetFrame;
     HINSTANCE CameraDLL;
     char DevName[32];
+
+public:
+
+    Camera_SACGuiderClass();
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect();
+    bool    Disconnect();
+    void    InitCapture();
+
+    bool    SetGlobalGain(unsigned char gain);
+    bool    ST4PulseGuideScope(int direction, int duration);
+    void    ClearGuidePort();
+
+private:
+    bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
 };
+
 #endif
 

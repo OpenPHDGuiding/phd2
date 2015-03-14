@@ -210,6 +210,7 @@ bool RefineDefMap::InitUI()
 {
     // change the star finding mode to select peaks, not centroids
     m_saveStarFindMode = pFrame->SetStarFindMode(Star::FIND_PEAK);
+    pFrame->SetRawImageMode(true); // no "recon" (debayer/deinterlace)
 
     if (pConfig->GetCurrentProfileId() == m_profileId)
     {
@@ -414,7 +415,6 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
     {
         wxPoint badspot((int)(pixelLoc.X + 0.5), (int)(pixelLoc.Y + 0.5));
         Debug.AddLine(wxString::Format("Current position returned as %.1f,%.1f", pixelLoc.X, pixelLoc.Y));
-        ShowStatus(wxString::Format(_("Bad pixel marked at %d,%d"), badspot.x, badspot.y), false);
         Debug.AddLine(wxString::Format("User adding bad pixel at %d,%d", badspot.x, badspot.y));
 
         bool needLoadPreview = false;
@@ -438,6 +438,7 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
 
         if (needLoadPreview)
         {
+            ShowStatus(wxString::Format(_("Bad pixel marked at %d,%d"), badspot.x, badspot.y), false);
             LoadPreview();
             RefreshPreview();
         }
@@ -499,6 +500,7 @@ void RefineDefMap::OnDetails(wxCommandEvent& ev)
 // Hook the close event to tweak setting of 'build defect map' menu - mutual exclusion for now
 void RefineDefMap::OnClose(wxCloseEvent& evt)
 {
+    pFrame->SetRawImageMode(false); // raw images not needed any more
     pFrame->SetStarFindMode(m_saveStarFindMode);
     pFrame->pGuider->SetDefectMapPreview(0);
     pFrame->darks_menu->FindItem(MENU_TAKEDARKS)->Enable(!pFrame->CaptureActive);

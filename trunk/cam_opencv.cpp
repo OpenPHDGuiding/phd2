@@ -106,7 +106,7 @@ bool Camera_OpenCVClass::Disconnect()
 }
 
 
-bool Camera_OpenCVClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_OpenCVClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool bError = false;
 

@@ -192,7 +192,7 @@ static bool StopCapture(ArtemisHandle h)
     return ret == ARTEMIS_OK;
 }
 
-bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool TakeSubframe = UseSubframes;
 
@@ -202,9 +202,9 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
     }
 
     if (HasShutter)
-        ArtemisSetDarkMode(Cam_Handle,ShutterState);
+        ArtemisSetDarkMode(Cam_Handle, ShutterClosed);
     if (TakeSubframe) {
-        ArtemisSubframe(Cam_Handle, subframe.x,subframe.y,subframe.width,subframe.height);
+        ArtemisSubframe(Cam_Handle, subframe.x, subframe.y, subframe.width, subframe.height);
         img.Subframe = subframe;
     }
     else {
@@ -271,10 +271,9 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
     }
 
     // Do quick L recon to remove bayer array
-    if (recon) SubtractDark(img);
-    if (Color && recon) QuickLRecon(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (Color && (options & CAPTURE_RECON)) QuickLRecon(img);
 
-//  RemoveLines(img);
     return false;
 }
 

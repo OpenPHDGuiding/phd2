@@ -84,7 +84,7 @@ void WorkerThread::EnqueueWorkerThreadTerminateRequest(void)
 
 /*************      Expose      **************************/
 
-void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, const wxRect& subframe)
+void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, int exposureOptions, const wxRect& subframe)
 {
     m_interruptRequested &= ~INT_STOP;
 
@@ -96,7 +96,8 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposur
     message.request                      = REQUEST_EXPOSE;
     message.args.expose.pImage           = pImage;
     message.args.expose.exposureDuration = exposureDuration;
-    message.args.expose.subframe         = subframe;
+    message.args.expose.options          = exposureOptions;
+    message.args.expose.subframe = subframe;
     message.args.expose.pSemaphore       = NULL;
 
     EnqueueMessage(message);
@@ -141,20 +142,20 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *req)
 
         if (pCamera->HasNonGuiCapture())
         {
-            Debug.Write(wxString::Format("Handling exposure in thread, d=%d r=(%d,%d,%d,%d)\n", req->exposureDuration,
-                                         req->subframe.x, req->subframe.y, req->subframe.width, req->subframe.height));
+            Debug.Write(wxString::Format("Handling exposure in thread, d=%d o=%x r=(%d,%d,%d,%d)\n", req->exposureDuration,
+                                         req->options, req->subframe.x, req->subframe.y, req->subframe.width, req->subframe.height));
 
             req->pImage->InitImgStartTime();
 
-            if (pCamera->Capture(req->exposureDuration, *req->pImage, req->subframe, true))
+            if (pCamera->Capture(req->exposureDuration, *req->pImage, req->options, req->subframe))
             {
                 throw ERROR_INFO("Capture failed");
             }
         }
         else
         {
-            Debug.Write(wxString::Format("Handling exposure in myFrame, d=%d r=(%d,%d,%d,%d)\n", req->exposureDuration,
-                                         req->subframe.x, req->subframe.y, req->subframe.width, req->subframe.height));
+            Debug.Write(wxString::Format("Handling exposure in myFrame, d=%d o=%x r=(%d,%d,%d,%d)\n", req->exposureDuration,
+                                         req->options, req->subframe.x, req->subframe.y, req->subframe.width, req->subframe.height));
 
             wxSemaphore semaphore;
             req->pSemaphore = &semaphore;
@@ -166,7 +167,7 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *req)
             // wait for the request to complete
             req->pSemaphore->Wait();
 
-            bError = req->bError;
+            bError = req->error;
             req->pSemaphore = NULL;
         }
 
@@ -186,7 +187,7 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *req)
                     break;
             }
 
-           req->pImage->CalcStats();
+            req->pImage->CalcStats();
         }
     }
     catch (wxString Msg)

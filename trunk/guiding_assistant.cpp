@@ -415,14 +415,14 @@ static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString
     switch (gridNum * 100 + coords.GetRow())
     {
         // status grid
-    case 101:
-    {
-        if (col == 0)
-            *s = _("Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from the sky/noise background");
-        else
-            *s = _("Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-s) to choose the star.");
-        break;
-    }
+        case 101:
+        {
+            if (col == 0)
+                *s = _("Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from the sky/noise background");
+            else
+                *s = _("Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-S) to choose the star.");
+            break;
+        }
 
         // displacement grid
         case 200: *s = _("Measure of typical high-frequency right ascension star movements; guiding usually cannot correct for fluctuations this small."); break;
@@ -469,15 +469,15 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
         break;
     case STATE_START_READY:
         if (!m_measurementsTaken)
-            instr = _("Click 'Start' to begin measurements.  Guiding will be disabled during this time, so the star will move around.");
+            instr = _("Click Start to begin measurements.  Guiding will be disabled during this time, so the star will move around.");
         else
             instr = m_instructions->GetLabel();
         break;
     case STATE_MEASURING:
-        instr = _("Guiding output is disabled and star movement is being measured.  Click on 'Stop' when the RMS values have stabilized (at least 1 minute).");
+        instr = _("Guiding output is disabled and star movement is being measured.  Click Stop when the RMS values have stabilized (at least 1 minute).");
         break;
     case STATE_STOPPED:
-        instr = _("Guiding has been resumed. Look at the recommendations and make any desired changes.  Click 'Start' to repeat the measurements or close the window to continue guiding.");
+        instr = _("Guiding has been resumed. Look at the recommendations and make any desired changes.  Click Start to repeat the measurements, or close the window to continue guiding.");
         break;
     }
     m_instructions->SetLabel(instr);
@@ -491,12 +491,12 @@ GuidingAsstWin::~GuidingAsstWin(void)
 // Event handlers for applying recommendations
 void GuidingAsstWin::OnRAMinMove(wxCommandEvent& event)
 {
-    double ramean;
-    double rarms;
     GuideAlgorithm *raAlgo = pMount->GetXGuideAlgorithm();
 
     if (raAlgo)
     {
+        double ramean;
+        double rarms;
         m_statsRA.GetMeanAndStdev(&ramean, &rarms);
         rarms = (round((rarms * 100) / 5.0) * 5) / 100.0;
         if (raAlgo->GetMinMove() >= 0)
@@ -802,19 +802,19 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     m_displacementgrid->SetCellValue(m_total_rms_px_loc, wxString::Format("%6.2f px", combined));
     m_displacementgrid->SetCellValue(m_total_rms_as_loc, wxString::Format("%6.2f arc-sec", combined * pxscale));
 
-    m_othergrid->SetCellValue(m_ra_peak_px_loc, wxString::Format("%.1f px", m_statsRA.peakRawDx));
-    m_othergrid->SetCellValue(m_ra_peak_as_loc, wxString::Format("%.1f arc-sec", m_statsRA.peakRawDx * pxscale));
-    m_othergrid->SetCellValue(m_dec_peak_px_loc, wxString::Format("%.1f px", m_statsDec.peakRawDx));
-    m_othergrid->SetCellValue(m_dec_peak_as_loc, wxString::Format("%.1f arc-sec", m_statsRA.peakRawDx * pxscale));
-    m_othergrid->SetCellValue(m_ra_peakpeak_px_loc, wxString::Format("%.1f px", rangeRA));
-    m_othergrid->SetCellValue(m_ra_peakpeak_as_loc, wxString::Format("%.1f arc-sec", rangeRA * pxscale));
-    m_othergrid->SetCellValue(m_ra_drift_px_loc, wxString::Format("%.1f px/min", raDriftRate));
-    m_othergrid->SetCellValue(m_ra_drift_as_loc, wxString::Format("%.1f arc-sec/min", raDriftRate * pxscale));
-    m_othergrid->SetCellValue(m_ra_peak_drift_px_loc, wxString::Format("%0.1f px/sec", maxRateRA));
-    m_othergrid->SetCellValue(m_ra_peak_drift_as_loc, wxString::Format("%0.1f arc-sec/sec (MaxExp: %0.1f)", maxRateRA * pxscale,
-        maxRateRA > 0 ? rarms/maxRateRA : 0));
-    m_othergrid->SetCellValue(m_dec_drift_px_loc, wxString::Format("%.1f px/min", decDriftRate));
-    m_othergrid->SetCellValue(m_dec_drift_as_loc, wxString::Format("%.1f arc-sec/min", decDriftRate * pxscale));
+    m_othergrid->SetCellValue(m_ra_peak_px_loc, wxString::Format("% .1f px", m_statsRA.peakRawDx));
+    m_othergrid->SetCellValue(m_ra_peak_as_loc, wxString::Format("% .1f arc-sec", m_statsRA.peakRawDx * pxscale));
+    m_othergrid->SetCellValue(m_dec_peak_px_loc, wxString::Format("% .1f px", m_statsDec.peakRawDx));
+    m_othergrid->SetCellValue(m_dec_peak_as_loc, wxString::Format("% .1f arc-sec", m_statsRA.peakRawDx * pxscale));
+    m_othergrid->SetCellValue(m_ra_peakpeak_px_loc, wxString::Format("% .1f px", rangeRA));
+    m_othergrid->SetCellValue(m_ra_peakpeak_as_loc, wxString::Format("% .1f arc-sec", rangeRA * pxscale));
+    m_othergrid->SetCellValue(m_ra_drift_px_loc, wxString::Format("% .1f px/min", raDriftRate));
+    m_othergrid->SetCellValue(m_ra_drift_as_loc, wxString::Format("% .1f arc-sec/min", raDriftRate * pxscale));
+    m_othergrid->SetCellValue(m_ra_peak_drift_px_loc, wxString::Format("% .1f px/sec", maxRateRA));
+    m_othergrid->SetCellValue(m_ra_peak_drift_as_loc, wxString::Format("% .1f arc-sec/sec (Max Exp: %.1fs)",
+        maxRateRA * pxscale, maxRateRA > 0.0 ? rarms / maxRateRA : 0.0));
+    m_othergrid->SetCellValue(m_dec_drift_px_loc, wxString::Format("% .1f px/min", decDriftRate));
+    m_othergrid->SetCellValue(m_dec_drift_as_loc, wxString::Format("% .1f arc-sec/min", decDriftRate * pxscale));
 }
 
 wxWindow *GuidingAssistant::CreateDialogBox()

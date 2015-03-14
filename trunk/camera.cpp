@@ -46,6 +46,8 @@ static const int DefaultReadDelay = 150;
 static const bool DefaultLoadDarks = true;
 static const bool DefaultLoadDMap = false;
 
+wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
+
 #if defined (ATIK16)
  #include "cam_ATIK16.h"
 #endif
@@ -183,9 +185,9 @@ GuideCamera::GuideCamera(void)
     HasDelayParam = false;
     HasGainControl = false;
     HasShutter = false;
-    ShutterState = false;
+    ShutterClosed = false;
     HasSubframes = false;
-    FullSize = UNDEFINED_FULL_FRAME_SIZE;
+    FullSize = UNDEFINED_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
 
@@ -910,6 +912,7 @@ void CameraConfigDialogPane::SetPixelSize(double val)
 wxString GuideCamera::GetSettingsSummary()
 {
     int darkDur;
+
     { // lock scope
         wxCriticalSectionLocker lck(DarkFrameLock);
         darkDur = CurrentDarkFrame ? CurrentDarkFrame->ImgExpDur : 0;
@@ -921,6 +924,7 @@ wxString GuideCamera::GetSettingsSummary()
         pixelSizeStr = "unspecified";
     else
         pixelSizeStr = wxString::Format("%0.1f um", PixelSize);
+
     return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s, %s, pixel size = %s\n",
                             Name, GuideCameraGain,
                             HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
