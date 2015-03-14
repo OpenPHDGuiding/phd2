@@ -43,20 +43,19 @@
 #include "tisudshl.h"
 #endif
 
-class Camera_FirewireClass : public GuideCamera {
+class Camera_FirewireClass : public GuideCamera
+{
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool HasNonGuiCapture(void);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    HasNonGuiCapture(void);
     bool    Connect();
     bool    Disconnect();
     void    InitCapture();
-//  bool    ST4PulseGuideScope(int direction, int duration);
-
 
     Camera_FirewireClass();
-//  ~Camera_FirewireClass();
+
 private:
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+
 #if defined (__APPLE__)
     dc1394camera_t *camera;
 #elif defined (CLOSED_SOURCE)

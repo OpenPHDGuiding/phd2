@@ -293,7 +293,7 @@ static void flush_buffered_image(int cameraId, usImage& img)
     }
 }
 
-bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     if (img.Init(FullSize))
     {
@@ -435,7 +435,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
             img.ImageData[i] = m_buffer[i];
     }
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
 }

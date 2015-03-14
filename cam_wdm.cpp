@@ -390,7 +390,7 @@ void Camera_WDMClass::EndCapture(void)
     }
 }
 
-bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_WDMClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool bError = false;
 
@@ -408,7 +408,7 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool 
 
         pFrame->SetStatusText(wxString::Format("%d frames", m_nFrames),1);
 
-        if (recon)
+        if (options & CAPTURE_SUBTRACT_DARK)
         {
             SubtractDark(img);
         }
@@ -422,7 +422,7 @@ bool Camera_WDMClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     return bError;
 }
 
-bool Camera_WDMClass::CaptureOneFrame(usImage& img, wxRect subframe, bool recon)
+bool Camera_WDMClass::CaptureOneFrame(usImage& img, int options, const wxRect& subframe)
 {
     bool bError = false;
 
@@ -435,7 +435,7 @@ bool Camera_WDMClass::CaptureOneFrame(usImage& img, wxRect subframe, bool recon)
 
         EndCapture();
 
-        if (recon)
+        if (options & CAPTURE_SUBTRACT_DARK)
         {
             SubtractDark(img);
         }

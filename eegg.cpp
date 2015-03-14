@@ -45,32 +45,28 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
     if (evt.GetId() == EEGG_RESTORECAL || evt.GetId() == EEGG_REVIEWCAL)
     {
         wxString savedCal = pConfig->Profile.GetString("/scope/calibration/timestamp", wxEmptyString);
-        bool restoring = evt.GetId() == EEGG_RESTORECAL;
         if (savedCal.IsEmpty())
         {
             wxMessageBox(_("There is no calibration data available."));
             return;
         }
 
-        if (pMount && pMount->IsConnected())
+        if (!pMount || !pMount->IsConnected())
         {
-            if (restoring)                                                  // Restore dialog is modal
-            {
-                CalRestoreDialog dlg(this);
-                dlg.ShowModal();
-            }
-            else
-            {
-                if (pCalReviewDlg)                                          // Review dialog is non-modal
-                    pCalReviewDlg->Destroy();
-                pCalReviewDlg = new CalReviewDialog(this);
-                pCalReviewDlg->Show();
+            wxMessageBox(_("Please connect a mount first."));
+            return;
+        }
 
-            }
+        if (evt.GetId() == EEGG_RESTORECAL)
+        {
+            CalRestoreDialog(this).ShowModal();
         }
         else
         {
-            wxMessageBox(_("Please connect a mount first."));
+            if (pCalReviewDlg)                                          // Review dialog is non-modal
+                pCalReviewDlg->Destroy();
+            pCalReviewDlg = new CalReviewDialog(this);
+            pCalReviewDlg->Show();
         }
     }
     else if (evt.GetId() == EEGG_MANUALCAL)

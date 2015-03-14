@@ -61,7 +61,7 @@ bool Camera_NebSBIGClass::Disconnect() {
     return false;
 }
 
-bool Camera_NebSBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_NebSBIGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     if (img.Init(FullSize))
     {
@@ -69,7 +69,7 @@ bool Camera_NebSBIGClass::Capture(int duration, usImage& img, wxRect subframe, b
         return true;
     }
     bool retval = ServerReqFrame(duration, img);
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return retval;
 

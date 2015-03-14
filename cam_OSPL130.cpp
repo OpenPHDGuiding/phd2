@@ -56,9 +56,8 @@ bool Camera_OpticstarPL130Class::Disconnect() {
     return false;
 }
 
-bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-//  bool retval;
     bool still_going = true;
 
     int mode = 3 * (int) Color;
@@ -85,21 +84,16 @@ bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subf
         wxGetApp().Yield();
     }
     // Download
-//  rawptr = RawData;
     OSPL130_GetRawImage(0,0,FullSize.GetWidth(),FullSize.GetHeight(), (void *) img.ImageData);
     unsigned short *dataptr;
     dataptr = img.ImageData;
     // byte swap
 
-    if (recon) SubtractDark(img);
-    if (Color)
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (Color && (options & CAPTURE_RECON))
         QuickLRecon(img);
-
-    if (recon) {
-        ;
-    }
-
 
     return false;
 }
+
 #endif

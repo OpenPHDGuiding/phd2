@@ -33,20 +33,22 @@
  */
 #ifndef VFWDEF
 #define VFWDEF
+
 #include "vcapwin.h"
 #include <wx/splitter.h>
-class Camera_VFWClass : public GuideCamera {
+
+class Camera_VFWClass : public GuideCamera
+{
+    wxVideoCaptureWindow *VFW_Window;
+    wxSplitterWindow     *Extra_Window;
+
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    Camera_VFWClass();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect();
     bool    Disconnect();
     void    ShowPropertyDialog();
     void    InitCapture() { return; }
-    Camera_VFWClass();
-private:
-    wxVideoCaptureWindow *VFW_Window;
-    wxSplitterWindow    *Extra_Window;
-
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
 };
+
 #endif

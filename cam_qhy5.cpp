@@ -171,7 +171,7 @@ bool Camera_QHY5Class::Disconnect()
 
 }
 
-bool Camera_QHY5Class::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_QHY5Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
 // Only does full frames still
     //static int last_dur = 0;
@@ -267,7 +267,7 @@ bool Camera_QHY5Class::Capture(int duration, usImage& img, wxRect subframe, bool
         }
     }
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
 }

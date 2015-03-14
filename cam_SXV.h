@@ -53,21 +53,23 @@ class Camera_SXVClass : public GuideCamera
 #endif
 
     unsigned short *RawData;
+    usImage tmpImg;
     unsigned short CameraModel;
     unsigned short SubType;
     bool Interlaced;
     bool ColorSensor;
     bool SquarePixels;
+    wxSize m_darkFrameSize;
 
 public:
 
     Camera_SXVClass();
 
-    bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0, 0, 0, 0), bool recon = false);
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool Connect();
     bool Disconnect();
-    void InitCapture();
     void ShowPropertyDialog();
+    const wxSize& DarkFrameSize() { return m_darkFrameSize; }
 
     bool HasNonGuiCapture(void) { return true; }
     bool ST4HasNonGuiMove(void) { return true; }

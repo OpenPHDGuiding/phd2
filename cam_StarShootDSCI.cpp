@@ -123,10 +123,9 @@ bool Camera_StarShootDSCIClass::Connect() {
     return false;
 }
 
-
-bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)  {
+bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     bool ampoff=true;
-//  unsigned int i,x,y, exp_dur;
     int i;
     unsigned char retval = 0;
     unsigned short *rawptr, *rawptr2;

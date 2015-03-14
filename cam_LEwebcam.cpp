@@ -86,7 +86,7 @@ bool Camera_LEWebcamClass::Disconnect()
     return bError;
 }
 
-bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_LEWebcamClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool bError = false;
 
@@ -122,19 +122,19 @@ bool Camera_LEWebcamClass::Capture(int duration, usImage& img, wxRect subframe, 
         // now record the frame.
         // Start by grabbing three frames
         usImage frame1;
-        if (CaptureOneFrame(frame1, subframe, recon))
+        if (CaptureOneFrame(frame1, options, subframe))
         {
             throw ERROR_INFO("CaptureOneFrame(frame1) failed");
         }
 
         usImage frame2;
-        if (CaptureOneFrame(frame2, subframe, recon))
+        if (CaptureOneFrame(frame2, options, subframe))
         {
             throw ERROR_INFO("CaptureOneFrame(frame2) failed");
         }
 
         usImage frame3;
-        if (CaptureOneFrame(frame3, subframe, recon))
+        if (CaptureOneFrame(frame3, options, subframe))
         {
             throw ERROR_INFO("CaptureOneFrame(frame3) failed");
         }

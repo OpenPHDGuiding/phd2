@@ -917,7 +917,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 #endif // STEPGUIDER_SIMULATOR
 
     // render each star
-    if (!pCamera->ShutterState)
+    if (!pCamera->ShutterClosed)
     {
         for (unsigned int i = 0; i < nr_stars; i++)
         {
@@ -1022,7 +1022,8 @@ Camera_SimClass::~Camera_SimClass()
 }
 
 #if SIMMODE==2
-bool Camera_SimClass::Capture(int WXUNUSED(duration), usImage& img) {
+bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     int xsize, ysize;
     wxImage disk_image;
     unsigned short *dataptr;
@@ -1066,8 +1067,9 @@ static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int ga
 }
 #endif // SIMMODE == 3
 
-bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
+    wxRect subframe(subframeArg);
     CameraWatchdog watchdog(duration, GetTimeoutMs());
 
 #if SIMMODE == 1
@@ -1109,7 +1111,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     if (usingSubframe)
         img.Subframe = subframe;
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
 #endif // SIMMODE == 1
 
@@ -1169,7 +1171,8 @@ void Camera_SimClass::FlipPierSide(void)
 }
 
 #if SIMMODE == 4
-bool Camera_SimClass::Capture(int WXUNUSED(duration), usImage& img, bool recon) {
+bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     int xsize, ysize;
     //  unsigned short *dataptr;
     //  int i;

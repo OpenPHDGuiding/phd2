@@ -746,10 +746,11 @@ bool Camera_ASCOMLateClass::AbortExposure(void)
     }
 }
 
-bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
     bool retval = false;
     bool takeSubframe = UseSubframes;
+    wxRect subframe(subframeArg);
 
     if (subframe.width <= 0 || subframe.height <= 0)
     {
@@ -777,7 +778,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         m_roi = subframe;
     }
 
-    bool takeDark = HasShutter && ShutterState;
+    bool takeDark = HasShutter && ShutterClosed;
 
     // Start the exposure
     if (ASCOM_StartExposure(cam.IDisp(), (double)duration / 1000.0, takeDark, &excep))
@@ -832,9 +833,9 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         return true;
     }
 
-    if (recon)
+    if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (Color)
+    if (Color && (options & CAPTURE_RECON))
         QuickLRecon(img);
 
     return false;

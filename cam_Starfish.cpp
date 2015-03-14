@@ -135,7 +135,7 @@ static bool StopExposure(int camNum)
     return ret == kIOReturnSuccess;
 }
 
-bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_StarfishClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool debug = true;
     int xsize, ysize, xpos, ypos;
@@ -234,7 +234,7 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, wxRect subframe, 
         //return true;
     }*/
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
 }

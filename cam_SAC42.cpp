@@ -81,11 +81,14 @@ bool Camera_SAC42Class::Disconnect() {
 #endif
     return false;
 }
-void Camera_SAC42Class::InitCapture() {
-    CapInfo.Gain[0] = CapInfo.Gain[1] = CapInfo.Gain[2] = (unsigned char) (GuideCameraGain * 63 / 100);
 
+void Camera_SAC42Class::InitCapture()
+{
+    CapInfo.Gain[0] = CapInfo.Gain[1] = CapInfo.Gain[2] = (unsigned char) (GuideCameraGain * 63 / 100);
 }
-bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+
+bool Camera_SAC42Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     // Recode to allow ROIs
 #ifdef SAC42
     unsigned char *bptr;
@@ -144,11 +147,12 @@ bool Camera_SAC42Class::Capture(int duration, usImage& img, wxRect subframe, boo
         }
     }
     // Do quick L recon to remove bayer array
-    if (recon) SubtractDark(img);
-    if (ColorArray && recon) QuickLRecon(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (ColorArray && (options & CAPTURE_RECON)) QuickLRecon(img);
 
     delete[] buffer;
 #endif
+
     return false;
 }
 
