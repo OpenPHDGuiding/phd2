@@ -118,7 +118,7 @@
 		A140805719195D6D00CC55AA /* Refine_DefMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A140805519195D6D00CC55AA /* Refine_DefMap.cpp */; };
 		A17B855E18AE9632004BECA0 /* nudge_lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A17B855C18AE9632004BECA0 /* nudge_lock.cpp */; };
 		A19355BD1AA4C3540098C5D9 /* camcal_import_dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19355BB1AA4C3540098C5D9 /* camcal_import_dialog.cpp */; };
-		A19355C01AA57E120098C5D9 /* guidability_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19355BE1AA57E120098C5D9 /* guidability_tool.cpp */; };
+		A19355C31AB3F7660098C5D9 /* guiding_assistant.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A19355C11AB3F7660098C5D9 /* guiding_assistant.cpp */; };
 		A1A088E31815CF63004899C0 /* drift_tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088DE1815CF63004899C0 /* drift_tool.cpp */; };
 		A1A088E41815CF63004899C0 /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1A088E01815CF63004899C0 /* logger.cpp */; };
 		A1AC13F81A57C1450078CE9E /* rotator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1AC13F51A57C1450078CE9E /* rotator.cpp */; };
@@ -365,8 +365,8 @@
 		A17B855D18AE9632004BECA0 /* nudge_lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nudge_lock.h; sourceTree = "<group>"; };
 		A19355BB1AA4C3540098C5D9 /* camcal_import_dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = camcal_import_dialog.cpp; sourceTree = "<group>"; };
 		A19355BC1AA4C3540098C5D9 /* camcal_import_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = camcal_import_dialog.h; sourceTree = "<group>"; };
-		A19355BE1AA57E120098C5D9 /* guidability_tool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = guidability_tool.cpp; sourceTree = "<group>"; };
-		A19355BF1AA57E120098C5D9 /* guidability_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = guidability_tool.h; sourceTree = "<group>"; };
+		A19355C11AB3F7660098C5D9 /* guiding_assistant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = guiding_assistant.cpp; sourceTree = "<group>"; };
+		A19355C21AB3F7660098C5D9 /* guiding_assistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = guiding_assistant.h; sourceTree = "<group>"; };
 		A1A088DD1815CF1F004899C0 /* calstep_dialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = calstep_dialog.h; sourceTree = "<group>"; };
 		A1A088DE1815CF63004899C0 /* drift_tool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = drift_tool.cpp; sourceTree = "<group>"; };
 		A1A088DF1815CF63004899C0 /* drift_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = drift_tool.h; sourceTree = "<group>"; };
@@ -588,10 +588,10 @@
 				58EC727B1749D8B300502727 /* graph-stepguider.h */,
 				585544770D8706C300666090 /* graph.cpp */,
 				585544780D8706C300666090 /* graph.h */,
-				A19355BE1AA57E120098C5D9 /* guidability_tool.cpp */,
-				A19355BF1AA57E120098C5D9 /* guidability_tool.h */,
 				580F80D217810B1F0020900F /* guide_algorithm.cpp */,
 				58B8CE8F16E05EFD00F6E68E /* Guiding */,
+				A19355C11AB3F7660098C5D9 /* guiding_assistant.cpp */,
+				A19355C21AB3F7660098C5D9 /* guiding_assistant.h */,
 				58339E630B1FC6A700109891 /* image_math.cpp */,
 				58339E640B1FC6A700109891 /* image_math.h */,
 				A1ACE287182225E7000B6085 /* json_parser.cpp */,
@@ -911,7 +911,7 @@
 				A1AC13F81A57C1450078CE9E /* rotator.cpp in Sources */,
 				A1AC13FB1A7498C50078CE9E /* calreview_dialog.cpp in Sources */,
 				A19355BD1AA4C3540098C5D9 /* camcal_import_dialog.cpp in Sources */,
-				A19355C01AA57E120098C5D9 /* guidability_tool.cpp in Sources */,
+				A19355C31AB3F7660098C5D9 /* guiding_assistant.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
