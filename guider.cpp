@@ -532,6 +532,7 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
 
                 case OVERLAY_SLIT:
                     if (m_overlaySlitCoords.size.GetWidth() > 0 && m_overlaySlitCoords.size.GetHeight() > 0)
+                    {
                         if (m_scaleFactor == 1.0)
                         {
                             dc.DrawLines(5, m_overlaySlitCoords.corners);
@@ -546,6 +547,7 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                             }
                             dc.DrawLines(5, pt);
                         }
+                    }
                     break;
 
                 case OVERLAY_NONE:
