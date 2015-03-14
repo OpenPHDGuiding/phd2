@@ -3,7 +3,7 @@
 <body><h2>Dark Frames and Bad-pixel Maps</h2><br><h3>Introduction</h3>Cameras
 used for guiding are typically not temperature-regulated and may
 produce&nbsp;images that appear quite&nbsp;noisy. &nbsp;As a result, guide
-exposures frequently show obvious&nbsp;defects in the form of &nbsp;"hot"
+exposures frequently show obvious&nbsp;defects in the form of &nbsp;hot
 ("stuck") pixels or regions with spurious brightness levels. &nbsp;If
 there are too many of these defects, you may have trouble identifying
 and selecting a good guide star - trying to calibrate on a hot pixel is
@@ -182,4 +182,23 @@ you are currently using. &nbsp;If it does not, you will see an alert message tel
 used and must be rebuilt. &nbsp;This can happen when you've changed cameras
 inside an existing equipment profile, something you shouldn't do unless
 you have upgraded your guide camera and have no plan to revert to use
-of the old camera.<br><br></body></html>
+of the old camera. &nbsp;<br><br><h3><a name="reuse_dark_library"></a>Reusing Dark Frames and Bad-pixel Maps</h3>If
+you're using the same camera in multiple profiles, you may want to
+re-use the dark libraries or bad-pixel maps you built for that camera.
+&nbsp;This can be accomplished by importing the camera-related data
+files into a profile that doesn't already have those files. &nbsp;For
+example, suppose you built an original profile - call it Profile1 -
+that uses your Lodestar guide camera, and you built both a dark library
+and bad-pixel map for it. Some time later, you create a new profile,
+Profile2, that has different mount or focal length properties but still
+uses the original Lodestar camera. &nbsp;In that case, you would
+connect your gear using Profile2, then use the 'Import From Profile...'
+menu item under the top-level 'Darks' menu. &nbsp;You would select
+Profile1 as the source of the import function for the dark library,
+bad-pixel map, or both. &nbsp;You will be shown only those profiles
+that have a camera with compatible sensor geometry (size and pixel
+size). &nbsp;Clicking on 'Ok' will copy the dark/bad-pixel map files
+and will associated them with your new profile, Profile2. &nbsp;Since
+they are copies, changing the data files in one profile will not affect
+other profiles. &nbsp;Keeping them synchronized, if that is what you
+want to do, will require a subsequent 'import' operation.<br></body></html>
