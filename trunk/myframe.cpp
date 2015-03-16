@@ -155,6 +155,8 @@ END_EVENT_TABLE()
 // frame constructor
 MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     : wxFrame(NULL, wxID_ANY, wxEmptyString),
+    m_showBookmarksAccel(0),
+    m_bookmarkLockPosAccel(0),
     pStatsWin(0)
 {
     m_instanceNumber = instanceNumber;
@@ -398,6 +400,9 @@ MyFrame::~MyFrame()
         pCalReviewDlg->Destroy();
 
     m_mgr.UnInit();
+
+    delete m_showBookmarksAccel;
+    delete m_bookmarkLockPosAccel;
 }
 
 void MyFrame::UpdateTitle(void)
