@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-14 01:46-0400\n"
-"PO-Revision-Date: 2015-03-13 16:14+0300\n"
+"PO-Revision-Date: 2015-03-17 17:10+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -655,7 +655,7 @@ msgstr "Невозможно открыть устройство LXUSB"
 
 #: cam_LESerialWebcam.cpp:274
 msgid "Serial LE Webcam"
-msgstr ""
+msgstr "Посдедовательная вебкамера с длинными выдержками"
 
 #: cam_LESerialWebcam.cpp:279 camera.cpp:738
 msgid "LE Port"
@@ -1016,9 +1016,8 @@ msgid "Error starting exposure"
 msgstr "Ошибка начала экспозиции"
 
 #: cam_SXV.cpp:130
-#, fuzzy
 msgid "SX Camera Settings"
-msgstr "Настройки камеры"
+msgstr "Настройки камеры SX"
 
 #: cam_SXV.cpp:141 graph.cpp:125
 msgid "Settings"
@@ -1480,11 +1479,8 @@ msgid "Master dark data files built"
 msgstr "Созданы файлы главных темновых данных"
 
 #: darks_dialog.cpp:320
-#, fuzzy
 msgid "Uncover guide scope"
-msgstr ""
-"Откройте объектив гидирующего телескопа\n"
-"\n"
+msgstr "Откройте объектив гидирующего телескопа"
 
 #: darks_dialog.cpp:321
 #, c-format
@@ -1716,7 +1712,7 @@ msgstr ""
 
 #: eegg.cpp:218
 msgid "Confirm Disable Guiding"
-msgstr ""
+msgstr "Подтвердить выключение гидирования"
 
 #: gear_dialog.cpp:123
 msgid "Connect Equipment"
@@ -2504,14 +2500,12 @@ msgstr ""
 "слежение за изменением звёздной величины выключено, параметр игнорируется."
 
 #: guiding_assistant.cpp:229
-#, fuzzy
 msgid "Guiding Assistant"
-msgstr "Гидирование остановлено"
+msgstr "Сведения о гидировании"
 
 #: guiding_assistant.cpp:239 guiding_assistant.cpp:339
-#, fuzzy
 msgid "Right ascension Max Drift Rate"
-msgstr "Прямое восхождение"
+msgstr "Максимальная скорость дрейфа по прямому восхождению"
 
 #: guiding_assistant.cpp:241
 msgid "Measurement Status"
@@ -2523,12 +2517,11 @@ msgstr "Начальное время"
 
 #: guiding_assistant.cpp:258
 msgid "SNR"
-msgstr ""
+msgstr "Сигнал/шум"
 
 #: guiding_assistant.cpp:260
-#, fuzzy
 msgid "Star mass"
-msgstr "Звёздная величина"
+msgstr "Звёздная величинa"
 
 #: guiding_assistant.cpp:264
 msgid "Elapsed time"
@@ -2543,48 +2536,40 @@ msgid "High-frequency Star Motion"
 msgstr ""
 
 #: guiding_assistant.cpp:289
-#, fuzzy
 msgid "Right ascension, RMS"
-msgstr "Прямое восхождение"
+msgstr "Прямое восхождение, ср.квадр."
 
 #: guiding_assistant.cpp:294
-#, fuzzy
 msgid "Declination, RMS"
-msgstr "Склонение"
+msgstr "Склонение, ср.квадр."
 
 #: guiding_assistant.cpp:299
-#, fuzzy
 msgid "Total, RMS"
-msgstr "Всего"
+msgstr "Всего, ср.квадр."
 
 #: guiding_assistant.cpp:308
 msgid "Other Star Motion"
 msgstr ""
 
 #: guiding_assistant.cpp:319
-#, fuzzy
 msgid "Right ascension, Peak"
-msgstr "Прямое восхождение"
+msgstr "Прямое восхождение, пик"
 
 #: guiding_assistant.cpp:324
-#, fuzzy
 msgid "Declination, Peak"
-msgstr "Склонение"
+msgstr "Склонение, пик"
 
 #: guiding_assistant.cpp:329
-#, fuzzy
 msgid "Right ascension, Peak-Peak"
-msgstr "Прямое восхождение"
+msgstr "Прямое восхождение, разброс"
 
 #: guiding_assistant.cpp:334
-#, fuzzy
 msgid "Right ascension Drift Rate"
-msgstr "Прямое восхождение"
+msgstr "Скорость дрейфа по прямому восхождению"
 
 #: guiding_assistant.cpp:344
-#, fuzzy
 msgid "Declination Drift Rate"
-msgstr "Скорость по склонению:"
+msgstr "Скорость дрейфа по склонению:"
 
 #: guiding_assistant.cpp:356
 msgid "Start measuring (disables guiding)"
@@ -2639,7 +2624,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:435
 msgid "Estimated overall drift rate in right ascension."
-msgstr ""
+msgstr "Оценочная общая скорость дрейфа по прямому восхождению"
 
 #: guiding_assistant.cpp:436
 msgid ""
@@ -2649,7 +2634,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:437
 msgid "Estimated overall drift rate in declination."
-msgstr ""
+msgstr "Общая скорость дрейфа по склонению."
 
 #: guiding_assistant.cpp:468
 msgid "Choose a non-saturated star with a good SNR (>10) and begin guiding"
@@ -2855,7 +2840,6 @@ msgid " (log active)"
 msgstr "(лог активен')"
 
 #: myframe.cpp:427
-#, fuzzy
 msgid "&Save Image..."
 msgstr "Сохранить изображение..."
 
@@ -2880,18 +2864,16 @@ msgid "Manual / test guide dialog"
 msgstr "Ручной/тестовый диалог гидирования"
 
 #: myframe.cpp:432
-#, fuzzy
 msgid "&Auto-select Star\tAlt-S"
-msgstr "&Автоматический выбор звезды"
+msgstr "Автоматический выбор звезды"
 
 #: myframe.cpp:432
 msgid "Automatically select star"
 msgstr "Выбрать звезду автоматически"
 
 #: myframe.cpp:433
-#, fuzzy
 msgid "&Review Calibration Data\tAlt-C"
-msgstr "Проверить откалиброванные данные"
+msgstr "Проверить данные калибровки"
 
 #: myframe.cpp:433
 msgid "Review calibration data from last successful calibration"
@@ -2934,7 +2916,6 @@ msgid "Modify Calibration"
 msgstr "Изменить калибровку"
 
 #: myframe.cpp:442
-#, fuzzy
 msgid "Adjust &Lock Position"
 msgstr "Подтвердить выбранное положение"
 
@@ -2943,7 +2924,6 @@ msgid "Adjust the lock position"
 msgstr "Задать выбранную позицию"
 
 #: myframe.cpp:443
-#, fuzzy
 msgid "&Comet Tracking"
 msgstr "Отслеживание комет"
 
@@ -2952,18 +2932,16 @@ msgid "Run the Comet Tracking tool"
 msgstr "Запустить отслеживание комет"
 
 #: myframe.cpp:444
-#, fuzzy
 msgid "&Guiding Assistant"
-msgstr "Гидирование остановлено"
+msgstr "Сведения о гидировании"
 
 #: myframe.cpp:444
 msgid "Run the Guiding Assistant"
 msgstr ""
 
 #: myframe.cpp:445
-#, fuzzy
 msgid "&Drift Align"
-msgstr "Установка полюса"
+msgstr "Установка полюса дрейфом"
 
 #: myframe.cpp:445
 msgid "Run the Drift Alignment tool"
@@ -2971,7 +2949,7 @@ msgstr "Запустить установку полюса"
 
 #: myframe.cpp:447
 msgid "Enable Guide &Log\tAlt-L"
-msgstr "Включить &лог гидирования\tAlt-Л"
+msgstr "Включить &лог гидирования"
 
 #: myframe.cpp:447
 msgid "Enable guide log file"
@@ -3018,7 +2996,6 @@ msgid "Enable / disable tool bar"
 msgstr "Включить/выключить панель инструментов"
 
 #: myframe.cpp:455
-#, fuzzy
 msgid "Display &Graph"
 msgstr "Показать график"
 
@@ -3027,7 +3004,6 @@ msgid "Enable / disable graph"
 msgstr "Включить/выключить графику"
 
 #: myframe.cpp:456
-#, fuzzy
 msgid "Display &Stats"
 msgstr "Показать статистику"
 
@@ -3036,7 +3012,6 @@ msgid "Enable / disable guide stats"
 msgstr "Включить/выключить статистику гидирования"
 
 #: myframe.cpp:457
-#, fuzzy
 msgid "Display &AO Graph"
 msgstr "Показать график АО"
 
@@ -3045,7 +3020,6 @@ msgid "Enable / disable AO graph"
 msgstr "Включить/выключить график АО"
 
 #: myframe.cpp:458
-#, fuzzy
 msgid "Display &Target"
 msgstr "Показать цель"
 
@@ -3054,7 +3028,6 @@ msgid "Enable / disable target"
 msgstr "Включить/выключить цель"
 
 #: myframe.cpp:459
-#, fuzzy
 msgid "Display Star &Profile"
 msgstr "Показать профиль звезды"
 
@@ -3063,7 +3036,6 @@ msgid "Enable / disable star profile view"
 msgstr "Включить/выключить просмотр звёздного профиля"
 
 #: myframe.cpp:461
-#, fuzzy
 msgid "&No Overlay"
 msgstr "Без сетки"
 
@@ -3072,7 +3044,6 @@ msgid "No additional crosshairs"
 msgstr "Без дополнительного перекрестия"
 
 #: myframe.cpp:462
-#, fuzzy
 msgid "&Bullseye"
 msgstr "Мишень"
 
@@ -3081,7 +3052,6 @@ msgid "Centered bullseye overlay"
 msgstr "Мишень по центру кадра"
 
 #: myframe.cpp:463
-#, fuzzy
 msgid "&Fine Grid"
 msgstr "Мелкая сетка"
 
@@ -3090,14 +3060,12 @@ msgid "Grid overlay"
 msgstr "Сетка"
 
 #: myframe.cpp:464
-#, fuzzy
 msgid "&Coarse Grid"
 msgstr "Крупная сетка"
 
 #: myframe.cpp:465
-#, fuzzy
 msgid "&RA/Dec"
-msgstr "Сетка RA/Dec"
+msgstr "Пр. восх./Скл."
 
 #: myframe.cpp:465
 msgid "RA and Dec overlay"
@@ -3112,9 +3080,8 @@ msgid "Spectrograph slit overlay"
 msgstr ""
 
 #: myframe.cpp:468
-#, fuzzy
 msgid "Slit Position..."
-msgstr "Позиция АО"
+msgstr ""
 
 #: myframe.cpp:470
 msgid "Restore window positions"
@@ -3125,16 +3092,14 @@ msgid "Restore all windows to their default/docked positions"
 msgstr "Восстановить расположение всех окон"
 
 #: myframe.cpp:473
-#, fuzzy
 msgid "Dark &Library..."
-msgstr "&Библиотека темновых кадров"
+msgstr "Библиотека темновых кадров"
 
 #: myframe.cpp:473
 msgid "Build a dark library for this profile"
 msgstr "Создать темновую библиотеку для этого профиля"
 
 #: myframe.cpp:474
-#, fuzzy
 msgid "Bad-pixel &Map..."
 msgstr "Карта дефектных пикселей..."
 
@@ -3153,18 +3118,16 @@ msgstr ""
 "другого профиля"
 
 #: myframe.cpp:477
-#, fuzzy
 msgid "Use &Dark Library"
-msgstr "&Использовать библиотеку темновых кадров"
+msgstr "Использовать библиотеку темновых кадров"
 
 #: myframe.cpp:477
 msgid "Use the the dark library for this profile"
 msgstr "Использовать библиотеку темновых кадров для этого профиля"
 
 #: myframe.cpp:478
-#, fuzzy
 msgid "Use &Bad-pixel Map"
-msgstr "&Использовать карту дефектных пикселей"
+msgstr "Использовать карту дефектных пикселей"
 
 #: myframe.cpp:478
 msgid "Use the bad-pixel map for this profile"
@@ -3187,7 +3150,6 @@ msgid "Restore camera settings"
 msgstr "Восстановить настройки камеры"
 
 #: myframe.cpp:488
-#, fuzzy
 msgid "Show &Bookmarks\tb"
 msgstr "Показать закладки"
 
@@ -3196,27 +3158,24 @@ msgid "Hide or show bookmarks"
 msgstr "Скрывать или показывать закладки"
 
 #: myframe.cpp:491
-#, fuzzy
 msgid "Bookmark &Lock Pos\tShift-B"
-msgstr "Запомнить выбранную позицию"
+msgstr "Запомнить выбранное положение"
 
 #: myframe.cpp:491
 msgid "Set a bookmark at the current lock position"
 msgstr "Запомнить текущую выбранную позицию"
 
 #: myframe.cpp:493
-#, fuzzy
 msgid "Bookmark &Star Pos"
-msgstr "Запомнить позицию звезды"
+msgstr "Запомнить положение звезды"
 
 #: myframe.cpp:493
 msgid "Set a bookmark at the position of the currently selected star"
 msgstr "Запомнить позицию выбранной сейчас звезды"
 
 #: myframe.cpp:494
-#, fuzzy
 msgid "&Delete all\tCtrl-B"
-msgstr "Удалить всё\tCtrl-B"
+msgstr "Удалить всё"
 
 #: myframe.cpp:494
 msgid "Remove all bookmarks"
@@ -3232,7 +3191,6 @@ msgid "About %s"
 msgstr "О программе %s"
 
 #: myframe.cpp:498
-#, fuzzy
 msgid "&Contents"
 msgstr "Оглавление"
 
@@ -3695,25 +3653,23 @@ msgstr ""
 
 #: myframe_events.cpp:148
 msgid "Position (Center)"
-msgstr ""
+msgstr "Положение (центр)"
 
 #: myframe_events.cpp:164
 msgid "Size"
-msgstr ""
+msgstr "Размер"
 
 #: myframe_events.cpp:166
 msgid "Width"
-msgstr ""
+msgstr "Ширина"
 
 #: myframe_events.cpp:173
-#, fuzzy
 msgid "Height"
-msgstr "Вправо"
+msgstr "Высота"
 
 #: myframe_events.cpp:182
-#, fuzzy
 msgid "Angle (degrees)"
-msgstr "Угол RA в градусах:"
+msgstr "Угол в градусах:"
 
 #: myframe_events.cpp:244
 msgid "Save FITS Image"
