@@ -785,36 +785,43 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
     double raDriftRate = driftRA / elapsed * 60.0;
     double decDriftRate = driftDec / elapsed * 60.0;
 
-
+    wxString SEC(_("s"));
+    wxString PX(_("px"));
+    wxString ARCSEC(_("arc-sec"));
+    wxString PXPERMIN(_("px/min"));
+    wxString PXPERSEC(_("px/sec"));
+    wxString ARCSECPERMIN(_("arc-sec/min"));
+    wxString ARCSECPERSEC(_("arc-sec/sec"));
+    //wxString HZ(_("Hz"));
 
     m_statusgrid->SetCellValue(m_timestamp_loc, startStr);
-    m_statusgrid->SetCellValue(m_exposuretime_loc, wxString::Format("%gs", (double)pFrame->RequestedExposureDuration() / 1000.0));
+    m_statusgrid->SetCellValue(m_exposuretime_loc, wxString::Format("%g%s", (double)pFrame->RequestedExposureDuration() / 1000.0, SEC));
     m_statusgrid->SetCellValue(m_snr_loc, wxString::Format("%.1f", sumSNR / n));
     m_statusgrid->SetCellValue(m_starmass_loc, wxString::Format("%.1f", sumMass / n));
-    m_statusgrid->SetCellValue(m_elapsedtime_loc, wxString::Format("%us", (unsigned int)(elapsedms / 1000)));
+    m_statusgrid->SetCellValue(m_elapsedtime_loc, wxString::Format("%u%s", (unsigned int)(elapsedms / 1000), SEC));
     m_statusgrid->SetCellValue(m_samplecount_loc, wxString::Format("%.0f", n));
-    //m_statusgrid->SetCellValue(m_hfcutoff_loc, wxString::Format("%.2f Hz", m_freqThresh));
+    //m_statusgrid->SetCellValue(m_hfcutoff_loc, wxString::Format("%.2f %s", m_freqThresh, HZ));
 
-    m_displacementgrid->SetCellValue(m_ra_rms_px_loc, wxString::Format("%6.2f px", rarms));
-    m_displacementgrid->SetCellValue(m_ra_rms_as_loc, wxString::Format("%6.2f arc-sec", rarms * pxscale));
-    m_displacementgrid->SetCellValue(m_dec_rms_px_loc, wxString::Format("%6.2f px", decrms));
-    m_displacementgrid->SetCellValue(m_dec_rms_as_loc, wxString::Format("%6.2f arc-sec", decrms * pxscale));
-    m_displacementgrid->SetCellValue(m_total_rms_px_loc, wxString::Format("%6.2f px", combined));
-    m_displacementgrid->SetCellValue(m_total_rms_as_loc, wxString::Format("%6.2f arc-sec", combined * pxscale));
+    m_displacementgrid->SetCellValue(m_ra_rms_px_loc, wxString::Format("%6.2f %s", rarms, PX));
+    m_displacementgrid->SetCellValue(m_ra_rms_as_loc, wxString::Format("%6.2f %s", rarms * pxscale, ARCSEC));
+    m_displacementgrid->SetCellValue(m_dec_rms_px_loc, wxString::Format("%6.2f %s", decrms, PX));
+    m_displacementgrid->SetCellValue(m_dec_rms_as_loc, wxString::Format("%6.2f %s", decrms * pxscale, ARCSEC));
+    m_displacementgrid->SetCellValue(m_total_rms_px_loc, wxString::Format("%6.2f %s", combined, PX));
+    m_displacementgrid->SetCellValue(m_total_rms_as_loc, wxString::Format("%6.2f %s", combined * pxscale, ARCSEC));
 
-    m_othergrid->SetCellValue(m_ra_peak_px_loc, wxString::Format("% .1f px", m_statsRA.peakRawDx));
-    m_othergrid->SetCellValue(m_ra_peak_as_loc, wxString::Format("% .1f arc-sec", m_statsRA.peakRawDx * pxscale));
-    m_othergrid->SetCellValue(m_dec_peak_px_loc, wxString::Format("% .1f px", m_statsDec.peakRawDx));
-    m_othergrid->SetCellValue(m_dec_peak_as_loc, wxString::Format("% .1f arc-sec", m_statsRA.peakRawDx * pxscale));
-    m_othergrid->SetCellValue(m_ra_peakpeak_px_loc, wxString::Format("% .1f px", rangeRA));
-    m_othergrid->SetCellValue(m_ra_peakpeak_as_loc, wxString::Format("% .1f arc-sec", rangeRA * pxscale));
-    m_othergrid->SetCellValue(m_ra_drift_px_loc, wxString::Format("% .1f px/min", raDriftRate));
-    m_othergrid->SetCellValue(m_ra_drift_as_loc, wxString::Format("% .1f arc-sec/min", raDriftRate * pxscale));
-    m_othergrid->SetCellValue(m_ra_peak_drift_px_loc, wxString::Format("% .1f px/sec", maxRateRA));
-    m_othergrid->SetCellValue(m_ra_peak_drift_as_loc, wxString::Format("% .1f arc-sec/sec (Max Exp: %.1fs)",
-        maxRateRA * pxscale, maxRateRA > 0.0 ? rarms / maxRateRA : 0.0));
-    m_othergrid->SetCellValue(m_dec_drift_px_loc, wxString::Format("% .1f px/min", decDriftRate));
-    m_othergrid->SetCellValue(m_dec_drift_as_loc, wxString::Format("% .1f arc-sec/min", decDriftRate * pxscale));
+    m_othergrid->SetCellValue(m_ra_peak_px_loc, wxString::Format("% .1f %s", m_statsRA.peakRawDx, PX));
+    m_othergrid->SetCellValue(m_ra_peak_as_loc, wxString::Format("% .1f %s", m_statsRA.peakRawDx * pxscale, ARCSEC));
+    m_othergrid->SetCellValue(m_dec_peak_px_loc, wxString::Format("% .1f %s", m_statsDec.peakRawDx, PX));
+    m_othergrid->SetCellValue(m_dec_peak_as_loc, wxString::Format("% .1f %s", m_statsRA.peakRawDx * pxscale, ARCSEC));
+    m_othergrid->SetCellValue(m_ra_peakpeak_px_loc, wxString::Format("% .1f %s", rangeRA, PX));
+    m_othergrid->SetCellValue(m_ra_peakpeak_as_loc, wxString::Format("% .1f %s", rangeRA * pxscale, ARCSEC));
+    m_othergrid->SetCellValue(m_ra_drift_px_loc, wxString::Format("% .1f %s", raDriftRate, PXPERMIN));
+    m_othergrid->SetCellValue(m_ra_drift_as_loc, wxString::Format("% .1f %s", raDriftRate * pxscale, ARCSECPERMIN));
+    m_othergrid->SetCellValue(m_ra_peak_drift_px_loc, wxString::Format("% .1f %s", maxRateRA, PXPERSEC));
+    m_othergrid->SetCellValue(m_ra_peak_drift_as_loc, wxString::Format("% .1f %s (%s: %.1f%s)",
+        maxRateRA * pxscale, ARCSECPERSEC, _("Max Exp"), maxRateRA > 0.0 ? rarms / maxRateRA : 0.0, SEC));
+    m_othergrid->SetCellValue(m_dec_drift_px_loc, wxString::Format("% .1f %s", decDriftRate, PXPERMIN));
+    m_othergrid->SetCellValue(m_dec_drift_as_loc, wxString::Format("% .1f %s", decDriftRate * pxscale, ARCSECPERMIN));
 }
 
 wxWindow *GuidingAssistant::CreateDialogBox()
