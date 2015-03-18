@@ -35,7 +35,7 @@ msgstr ""
 "Project-Id-Version: PHD2 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-17 11:40-0400\n"
-"PO-Revision-Date: 2015-03-03 16:17+0800\n"
+"PO-Revision-Date: 2015-03-18 11:28+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -892,9 +892,8 @@ msgid "Amplitude: "
 msgstr "振幅:"
 
 #: cam_simulator.cpp:1432
-#, fuzzy
 msgid "PE Amplitude, arc-secs"
-msgstr "振幅, 角秒"
+msgstr "PE 振幅, 角秒"
 
 #: cam_simulator.cpp:1440
 msgid "Custom curve"
@@ -999,9 +998,8 @@ msgid "Error starting exposure"
 msgstr "開始曝光時發生錯誤"
 
 #: cam_SXV.cpp:130
-#, fuzzy
 msgid "SX Camera Settings"
-msgstr "相機設定"
+msgstr "SX 相機設定"
 
 #: cam_SXV.cpp:141 graph.cpp:125
 msgid "Settings"
@@ -1451,11 +1449,8 @@ msgid "Master dark data files built"
 msgstr "主要暗場資料檔案已建立"
 
 #: darks_dialog.cpp:320
-#, fuzzy
 msgid "Uncover guide scope"
-msgstr ""
-"打開導星鏡鏡頭蓋\n"
-"\n"
+msgstr "打開導星鏡鏡頭蓋"
 
 #: darks_dialog.cpp:321
 #, c-format
@@ -1682,10 +1677,13 @@ msgid ""
 "\n"
 "Ok to disable guide output?"
 msgstr ""
+"導星小幫手會關閉導星訊號輸出並\n"
+"讓導星星體飄移。\n"
+"按下【OK]】關閉導星訊號輸出？"
 
 #: eegg.cpp:218
 msgid "Confirm Disable Guiding"
-msgstr ""
+msgstr "確認關閉導星動作"
 
 #: gear_dialog.cpp:123
 msgid "Connect Equipment"
@@ -2129,7 +2127,7 @@ msgstr "像素"
 
 #: graph.cpp:291
 msgid "Star Mass"
-msgstr "Star Mass"
+msgstr "星點質心"
 
 #: graph.cpp:293
 msgid "Star SNR"
@@ -2464,89 +2462,76 @@ msgstr ""
 "個參數會被忽略。"
 
 #: guiding_assistant.cpp:229
-#, fuzzy
 msgid "Guiding Assistant"
-msgstr "導星終止"
+msgstr "導星小幫手"
 
 #: guiding_assistant.cpp:239 guiding_assistant.cpp:339
-#, fuzzy
 msgid "Right ascension Max Drift Rate"
-msgstr "赤經"
+msgstr "赤經最大飄移率"
 
 #: guiding_assistant.cpp:241
 msgid "Measurement Status"
-msgstr ""
+msgstr "評量的狀態"
 
 #: guiding_assistant.cpp:252
-#, fuzzy
 msgid "Start time"
-msgstr "開始"
+msgstr "開始時間"
 
 #: guiding_assistant.cpp:258
 msgid "SNR"
-msgstr ""
+msgstr "SNR"
 
 #: guiding_assistant.cpp:260
-#, fuzzy
 msgid "Star mass"
-msgstr "Star Mass"
+msgstr "星體質心"
 
 #: guiding_assistant.cpp:264
-#, fuzzy
 msgid "Elapsed time"
-msgstr "曝光時間"
+msgstr "延遲時間"
 
 #: guiding_assistant.cpp:266
 msgid "Sample count"
-msgstr ""
+msgstr "簡易計數"
 
 #: guiding_assistant.cpp:278
 msgid "High-frequency Star Motion"
-msgstr ""
+msgstr "高頻率的星點位移"
 
 #: guiding_assistant.cpp:289
-#, fuzzy
 msgid "Right ascension, RMS"
-msgstr "赤經"
+msgstr "赤經, RMS"
 
 #: guiding_assistant.cpp:294
-#, fuzzy
 msgid "Declination, RMS"
-msgstr "赤緯"
+msgstr "赤緯, RMS"
 
 #: guiding_assistant.cpp:299
-#, fuzzy
 msgid "Total, RMS"
-msgstr "總和"
+msgstr "總和, RMS"
 
 #: guiding_assistant.cpp:308
 msgid "Other Star Motion"
-msgstr ""
+msgstr "其他的星點位移"
 
 #: guiding_assistant.cpp:319
-#, fuzzy
 msgid "Right ascension, Peak"
-msgstr "赤經"
+msgstr "赤經, 峰值"
 
 #: guiding_assistant.cpp:324
-#, fuzzy
 msgid "Declination, Peak"
-msgstr "赤緯"
+msgstr "赤緯, 峰值"
 
 #: guiding_assistant.cpp:329
-#, fuzzy
 msgid "Right ascension, Peak-Peak"
-msgstr "赤經"
+msgstr "赤經, Peak-Peak"
 
 #: guiding_assistant.cpp:334
-#, fuzzy
 msgid "Right ascension Drift Rate"
-msgstr "赤經"
+msgstr "赤經飄移率"
 
 #: guiding_assistant.cpp:344
-#, fuzzy
 msgid "Declination Drift Rate"
-msgstr "赤緯速率:"
+msgstr "赤緯飄移率"
 
 #: guiding_assistant.cpp:356
 msgid "Start measuring (disables guiding)"
@@ -2557,76 +2542,82 @@ msgid "Stop measuring and re-enable guiding"
 msgstr "結束測量並重新導星"
 
 #: guiding_assistant.cpp:369
-#, fuzzy
 msgid "Recommendations"
-msgstr "赤緯"
+msgstr "建議值"
 
 #: guiding_assistant.cpp:421
 msgid ""
 "Signal-to-noise ratio; a measure of how well PHD2 can isolate the star from "
 "the sky/noise background"
 msgstr ""
+"訊號相對於訊噪的比率(SNR); PHD2 依照此數值來評量星點與天空或背景訊噪辨識率。"
 
 #: guiding_assistant.cpp:423
 msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
-msgstr ""
+msgstr "評估導星星體的總亮度, 請使用「自動選擇導星星體 (Alt-S)」來選擇導星星體"
 
 #: guiding_assistant.cpp:428
 msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
 msgstr ""
+"評估典型的高頻率赤經方向星體位移量；導星通常無法修正這類極小的擾動現象。"
 
 #: guiding_assistant.cpp:429
 msgid ""
 "Measure of typical high-frequency declination star movements; guiding "
 "usually cannot correct for fluctuations this small."
 msgstr ""
+"評估典型的高頻率赤緯方向星體位移量；導星通常無法修正這類極小的擾動現象。"
 
 #: guiding_assistant.cpp:432
 msgid "Maximum sample-sample deflection seen in right ascension."
-msgstr ""
+msgstr "赤經方向的最大取樣間偏差值。"
 
 #: guiding_assistant.cpp:433
 msgid "Maximum sample-sample deflection seen in declination."
-msgstr ""
+msgstr "赤緯方向的最大取樣間偏差值。"
 
 #: guiding_assistant.cpp:434
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
-msgstr ""
+msgstr "在取樣週期內, 赤經方向的最大 Peak-Peak 偏差值。"
 
 #: guiding_assistant.cpp:435
 msgid "Estimated overall drift rate in right ascension."
-msgstr ""
+msgstr "評估在赤經方向的總飄移量"
 
 #: guiding_assistant.cpp:436
 msgid ""
 "Maximum drift rate in right ascension during sampling period; may be useful "
 "for setting exposure time."
-msgstr ""
+msgstr "在取樣週期內, 赤經方向的最大飄移量。此數值對設定曝光時間會有所幫助。"
 
 #: guiding_assistant.cpp:437
 msgid "Estimated overall drift rate in declination."
-msgstr ""
+msgstr "評估在赤緯方向的總飄移量"
 
 #: guiding_assistant.cpp:468
 msgid "Choose a non-saturated star with a good SNR (>10) and begin guiding"
 msgstr ""
+"選擇 SNR>10 , 亮度不要過高的星體 (non-saturated star) 作為導星星體然後開始導"
+"星。"
 
 #: guiding_assistant.cpp:472
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
-msgstr ""
+msgstr "點擊【開始】進行評量，這段時間導星動作會暫停，因此星體會發生偏移。"
 
 #: guiding_assistant.cpp:477
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS values have stabilized (at least 1 minute)."
 msgstr ""
+"導星訊號關閉並開始評估星點的位移量，當 RMS 數值漸趨穩定(至少需一分鐘以上的時"
+"間)後點擊【停止】按鈕"
 
 #: guiding_assistant.cpp:480
 msgid ""
@@ -2634,25 +2625,26 @@ msgid ""
 "changes.  Click Start to repeat the measurements, or close the window to "
 "continue guiding."
 msgstr ""
+"重新開始導星，請檢視建議值並依你的需求更改數值。點擊【開始】以重複評量動作或"
+"者關閉本視窗繼續導星動作。"
 
 #: guiding_assistant.cpp:554
-#, fuzzy
 msgid "Apply"
-msgstr "套用週期誤差"
+msgstr "套用"
 
 #: guiding_assistant.cpp:593 guiding_assistant.cpp:598
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
-msgstr ""
+msgstr "嘗試設定 RA min-move 為 %0.2f"
 
 #: guiding_assistant.cpp:607 guiding_assistant.cpp:612
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
-msgstr ""
+msgstr "嘗試設定 Dec min-move 為 %0.2f"
 
 #: guiding_assistant.cpp:620 guiding_assistant.cpp:622
 msgid "Consider using a brighter star or increasing the exposure time"
-msgstr ""
+msgstr "請選用較明亮的導星星體或者增加曝光時間"
 
 #: guiding_assistant.cpp:706
 msgid "Guiding stopped"
@@ -2660,38 +2652,35 @@ msgstr "導星終止"
 
 #: guiding_assistant.cpp:788
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: guiding_assistant.cpp:789
 msgid "px"
-msgstr ""
+msgstr "px"
 
 #: guiding_assistant.cpp:790
-#, fuzzy
 msgid "arc-sec"
 msgstr "角秒"
 
 #: guiding_assistant.cpp:791
 msgid "px/min"
-msgstr ""
+msgstr "px/min"
 
 #: guiding_assistant.cpp:792
 msgid "px/sec"
-msgstr ""
+msgstr "px/sec"
 
 #: guiding_assistant.cpp:793
-#, fuzzy
 msgid "arc-sec/min"
-msgstr "赤緯偏移, 角秒/分鐘"
+msgstr "角秒/分鐘"
 
 #: guiding_assistant.cpp:794
-#, fuzzy
 msgid "arc-sec/sec"
-msgstr "角秒"
+msgstr "角秒/秒"
 
 #: guiding_assistant.cpp:822
 msgid "Max Exp"
-msgstr ""
+msgstr "最長曝光時間"
 
 #: guidinglog.cpp:190 guidinglog.cpp:196 mount.cpp:51 statswindow.cpp:214
 msgid "Unknown"
@@ -2736,11 +2725,10 @@ msgid "Clear calibration"
 msgstr "清除校準"
 
 #: mount.cpp:92
-#, fuzzy
 msgid ""
 "Clear the current calibration data - calibration will be re-done when "
 "guiding is started"
-msgstr "%s 校準資料將會被清除-在導星動作開始時會重新做校準動作。"
+msgstr "清除目前校準資料-在導星動作開始時會重新做校準動作。"
 
 #: mount.cpp:93
 msgid "Enable Guide Output"
@@ -2848,7 +2836,6 @@ msgid " (log active)"
 msgstr "(日誌記錄中)"
 
 #: myframe.cpp:432
-#, fuzzy
 msgid "&Save Image..."
 msgstr "儲存影像..."
 
@@ -2873,7 +2860,6 @@ msgid "Manual / test guide dialog"
 msgstr "手動/測試導星交談框"
 
 #: myframe.cpp:437
-#, fuzzy
 msgid "&Auto-select Star\tAlt-S"
 msgstr "自動選星\tAlt-S"
 
@@ -2882,7 +2868,6 @@ msgid "Automatically select star"
 msgstr "自動選擇被導星體"
 
 #: myframe.cpp:438
-#, fuzzy
 msgid "&Review Calibration Data\tAlt-C"
 msgstr "檢視校準資料\tAlt-C"
 
@@ -2927,7 +2912,6 @@ msgid "Modify Calibration"
 msgstr "修改校準資料"
 
 #: myframe.cpp:447
-#, fuzzy
 msgid "Adjust &Lock Position"
 msgstr "調整鎖定位置"
 
@@ -2936,7 +2920,6 @@ msgid "Adjust the lock position"
 msgstr "調整鎖定位置"
 
 #: myframe.cpp:448
-#, fuzzy
 msgid "&Comet Tracking"
 msgstr "彗星追蹤"
 
@@ -2945,18 +2928,16 @@ msgid "Run the Comet Tracking tool"
 msgstr "執行彗星追蹤工具"
 
 #: myframe.cpp:449
-#, fuzzy
 msgid "&Guiding Assistant"
-msgstr "導星終止"
+msgstr "導星小幫手"
 
 #: myframe.cpp:449
 msgid "Run the Guiding Assistant"
-msgstr ""
+msgstr "執行導星小幫手"
 
 #: myframe.cpp:450
-#, fuzzy
 msgid "&Drift Align"
-msgstr "飄移極軸校準"
+msgstr "飄移法極軸校準"
 
 #: myframe.cpp:450
 msgid "Run the Drift Alignment tool"
@@ -3011,7 +2992,6 @@ msgid "Enable / disable tool bar"
 msgstr "啟用/關閉顯示工具列"
 
 #: myframe.cpp:460
-#, fuzzy
 msgid "Display &Graph"
 msgstr "顯示圖型"
 
@@ -3020,7 +3000,6 @@ msgid "Enable / disable graph"
 msgstr "啟用/關閉顯示圖型"
 
 #: myframe.cpp:461
-#, fuzzy
 msgid "Display &Stats"
 msgstr "顯示狀態"
 
@@ -3029,7 +3008,6 @@ msgid "Enable / disable guide stats"
 msgstr "啟用/關閉顯示狀態"
 
 #: myframe.cpp:462
-#, fuzzy
 msgid "Display &AO Graph"
 msgstr "顯示 AO 狀態圖型"
 
@@ -3038,7 +3016,6 @@ msgid "Enable / disable AO graph"
 msgstr "啟用/關閉顯示 AO 狀態圖型"
 
 #: myframe.cpp:463
-#, fuzzy
 msgid "Display &Target"
 msgstr "顯示星點分布圖"
 
@@ -3047,7 +3024,6 @@ msgid "Enable / disable target"
 msgstr "啟用/關閉顯示星點分布圖"
 
 #: myframe.cpp:464
-#, fuzzy
 msgid "Display Star &Profile"
 msgstr "顯示星點狀態圖"
 
@@ -3056,7 +3032,6 @@ msgid "Enable / disable star profile view"
 msgstr "啟用/關閉顯示星點狀態圖"
 
 #: myframe.cpp:466
-#, fuzzy
 msgid "&No Overlay"
 msgstr "無底圖"
 
@@ -3065,7 +3040,6 @@ msgid "No additional crosshairs"
 msgstr "無額外的十字線"
 
 #: myframe.cpp:467
-#, fuzzy
 msgid "&Bullseye"
 msgstr "標靶線"
 
@@ -3074,7 +3048,6 @@ msgid "Centered bullseye overlay"
 msgstr "標靶線底圖"
 
 #: myframe.cpp:468
-#, fuzzy
 msgid "&Fine Grid"
 msgstr "細網格線"
 
@@ -3083,12 +3056,10 @@ msgid "Grid overlay"
 msgstr "網格線底圖"
 
 #: myframe.cpp:469
-#, fuzzy
 msgid "&Coarse Grid"
 msgstr "粗網格線"
 
 #: myframe.cpp:470
-#, fuzzy
 msgid "&RA/Dec"
 msgstr "赤經/赤緯線"
 
@@ -3098,16 +3069,15 @@ msgstr "赤經及赤緯線底圖"
 
 #: myframe.cpp:471
 msgid "Spectrograph S&lit"
-msgstr ""
+msgstr "光譜儀狹縫"
 
 #: myframe.cpp:471
 msgid "Spectrograph slit overlay"
-msgstr ""
+msgstr "光譜儀狹縫覆蓋"
 
 #: myframe.cpp:473
-#, fuzzy
 msgid "Slit Position..."
-msgstr "AO 位置"
+msgstr "狹縫位置"
 
 #: myframe.cpp:475
 msgid "Restore window positions"
@@ -3118,7 +3088,6 @@ msgid "Restore all windows to their default/docked positions"
 msgstr "將所有視窗回復到預設的位置及擺放點"
 
 #: myframe.cpp:478
-#, fuzzy
 msgid "Dark &Library..."
 msgstr "暗場影像庫"
 
@@ -3127,7 +3096,6 @@ msgid "Build a dark library for this profile"
 msgstr "將暗場影像庫套用至配置檔案中"
 
 #: myframe.cpp:479
-#, fuzzy
 msgid "Bad-pixel &Map..."
 msgstr "壞點影像..."
 
@@ -3144,7 +3112,6 @@ msgid "Import existing dark library/bad-pixel map from a different profile"
 msgstr "由不同的組態檔案匯入已經存在的暗場影像庫/壞點影像庫"
 
 #: myframe.cpp:482
-#, fuzzy
 msgid "Use &Dark Library"
 msgstr "使用暗場影像庫"
 
@@ -3153,7 +3120,6 @@ msgid "Use the the dark library for this profile"
 msgstr "讓配置檔使用此暗場影像庫"
 
 #: myframe.cpp:483
-#, fuzzy
 msgid "Use &Bad-pixel Map"
 msgstr "使用壞點影像庫"
 
@@ -3178,7 +3144,6 @@ msgid "Restore camera settings"
 msgstr "恢復相機設定"
 
 #: myframe.cpp:493
-#, fuzzy
 msgid "Show &Bookmarks\tb"
 msgstr "顯示標記\tB"
 
@@ -3187,7 +3152,6 @@ msgid "Hide or show bookmarks"
 msgstr "顯示或隱藏標記"
 
 #: myframe.cpp:496
-#, fuzzy
 msgid "Bookmark &Lock Pos\tShift-B"
 msgstr "鎖定位置標記\tShift-B"
 
@@ -3196,7 +3160,6 @@ msgid "Set a bookmark at the current lock position"
 msgstr "在目前鎖定位置設定一個標記"
 
 #: myframe.cpp:498
-#, fuzzy
 msgid "Bookmark &Star Pos"
 msgstr "標記星點位置"
 
@@ -3205,7 +3168,6 @@ msgid "Set a bookmark at the position of the currently selected star"
 msgstr "將所選擇星點位置設置一個標記"
 
 #: myframe.cpp:499
-#, fuzzy
 msgid "&Delete all\tCtrl-B"
 msgstr "刪除全部標記\tCtrl-B"
 
@@ -3223,7 +3185,6 @@ msgid "About %s"
 msgstr "關於 %s"
 
 #: myframe.cpp:503
-#, fuzzy
 msgid "&Contents"
 msgstr "內容"
 
@@ -3657,29 +3618,27 @@ msgstr "說明"
 
 #: myframe_events.cpp:137
 msgid "Spectrograph Slit Overlay"
-msgstr ""
+msgstr "光譜儀狹縫覆蓋"
 
 #: myframe_events.cpp:148
 msgid "Position (Center)"
-msgstr ""
+msgstr "位置(中央"
 
 #: myframe_events.cpp:164
 msgid "Size"
-msgstr ""
+msgstr "大小"
 
 #: myframe_events.cpp:166
 msgid "Width"
-msgstr ""
+msgstr "寬度"
 
 #: myframe_events.cpp:173
-#, fuzzy
 msgid "Height"
-msgstr "右"
+msgstr "高度"
 
 #: myframe_events.cpp:182
-#, fuzzy
 msgid "Angle (degrees)"
-msgstr "赤經角度(度):"
+msgstr "赤經角度(度)"
 
 #: myframe_events.cpp:244
 msgid "Save FITS Image"
@@ -3709,6 +3668,8 @@ msgid ""
 "frames, which are a different size from ordinary guide frames for this "
 "camera."
 msgstr ""
+"為優化壞點影像, PHD2 現顯示相機的基礎影像檔, 此檔案與此相機平常作為導星用的影"
+"像大小不同。"
 
 #: myframe_events.cpp:322 myframe_events.cpp:775 scope.cpp:529
 msgid ""
@@ -3888,14 +3849,13 @@ msgid "Guide camera pixel size (microns)"
 msgstr "導星相機像素大小 (微米)"
 
 #: profile_wizard.cpp:146
-#, fuzzy
 msgid ""
 "This is the focal length of the guide scope - or the imaging scope if you "
 "are using an off-axis-guider or an adaptive optics device.  You can use the "
 "up/down control or type in a value directly."
 msgstr ""
-"點擊【偵測】由相機讀取向素大小資訊，也可以由相機說明書或網路上資源取得該數"
-"值，利用上下調整鈕或直接輸入數值均可。"
+"此數值為導星鏡的焦長或是拍攝時所用望遠鏡的焦長(如果你是使用離軸導星或 AO 裝置"
+"的話), 你可以點擊【上】【】控制扭或直接輸入數值來進行調整。"
 
 #: profile_wizard.cpp:149
 msgid "Guide scope focal length (mm)"
@@ -4442,7 +4402,7 @@ msgstr "dx=%4.1f dy=%4.1f dist=%4.1f"
 
 #: scope.cpp:1271
 msgid "Calculate..."
-msgstr "計算中..."
+msgstr "計算機"
 
 #: scope.cpp:1272
 msgid ""
