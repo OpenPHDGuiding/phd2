@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-17 11:40-0400\n"
-"PO-Revision-Date: 2015-03-17 17:10+0300\n"
+"PO-Revision-Date: 2015-03-18 15:19+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -801,15 +801,15 @@ msgstr ""
 
 #: cam_simulator.cpp:432
 msgid "Choose a star displacements file"
-msgstr ""
+msgstr "Выбрать файл замены звезды"
 
 #: cam_simulator.cpp:440
 msgid "Can't use this file for star displacements"
-msgstr ""
+msgstr "Невозможно использовать этот файл для замены звезды"
 
 #: cam_simulator.cpp:444
 msgid "Can't simulate any star movement without a displacement file"
-msgstr ""
+msgstr "Невозможно сымитировать какое-либо движение звезды без файла замены"
 
 #: cam_simulator.cpp:1035
 msgid "Cannot load simulated image"
@@ -950,7 +950,7 @@ msgstr ""
 
 #: cam_simulator.cpp:1461
 msgid "Side of Pier: MMMMM"
-msgstr ""
+msgstr "Сторона от меридиана: MMMMM"
 
 #: cam_simulator.cpp:1463
 msgid "Pier Flip"
@@ -1187,6 +1187,7 @@ msgstr "Чувствительность камеры"
 #: camera.cpp:721
 msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
 msgstr ""
+"Задержка чтения длинных экспозиций (мсек). Используйте при пропущенных кадрах"
 
 #: camera.cpp:722
 msgid "Delay"
@@ -1259,7 +1260,7 @@ msgstr "Пикс/час"
 
 #: comet_tool.cpp:103
 msgid "Arcsec/hr"
-msgstr "Угл. сек./час"
+msgstr "Угл. сек/час"
 
 #: comet_tool.cpp:105
 msgid "Units"
@@ -1633,7 +1634,7 @@ msgstr "Начало гидирования..."
 
 #: drift_tool.cpp:468
 msgid "Drifting... click Adjust when done drifting"
-msgstr "Дрейф.. Нажмите 'Установить' по его завершению"
+msgstr "Дрейф.. нажмите 'Установить' по его завершению"
 
 #: drift_tool.cpp:484
 msgid "Adjust azimuth, click Drift when done"
@@ -1709,6 +1710,10 @@ msgid ""
 "\n"
 "Ok to disable guide output?"
 msgstr ""
+"Гидирование будет отключено,\n"
+"поэтому звезда будет перемещаться.\n"
+"\n"
+"Вы этого хотите?"
 
 #: eegg.cpp:218
 msgid "Confirm Disable Guiding"
@@ -2134,7 +2139,7 @@ msgstr "Колеб. RA: 0.0"
 
 #: graph.cpp:267
 msgid "Plot mode"
-msgstr ""
+msgstr "Графический режим"
 
 #: graph.cpp:269
 msgid "RA / Dec"
@@ -2501,7 +2506,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:229
 msgid "Guiding Assistant"
-msgstr "Сведения о гидировании"
+msgstr "Помощник гидирования"
 
 #: guiding_assistant.cpp:239 guiding_assistant.cpp:339
 msgid "Right ascension Max Drift Rate"
@@ -2509,7 +2514,7 @@ msgstr "Максимальная скорость дрейфа по прямом
 
 #: guiding_assistant.cpp:241
 msgid "Measurement Status"
-msgstr ""
+msgstr "Состояние измерений"
 
 #: guiding_assistant.cpp:252
 msgid "Start time"
@@ -2529,11 +2534,11 @@ msgstr "Затраченное время"
 
 #: guiding_assistant.cpp:266
 msgid "Sample count"
-msgstr ""
+msgstr "Количество измерений"
 
 #: guiding_assistant.cpp:278
 msgid "High-frequency Star Motion"
-msgstr ""
+msgstr "Высокочастотные движения звезды"
 
 #: guiding_assistant.cpp:289
 msgid "Right ascension, RMS"
@@ -2549,7 +2554,7 @@ msgstr "Всего, ср.квадр."
 
 #: guiding_assistant.cpp:308
 msgid "Other Star Motion"
-msgstr ""
+msgstr "Прочие движения звезды"
 
 #: guiding_assistant.cpp:319
 msgid "Right ascension, Peak"
@@ -2577,7 +2582,7 @@ msgstr "Начать измерения (выключает гидировани
 
 #: guiding_assistant.cpp:361
 msgid "Stop measuring and re-enable guiding"
-msgstr ""
+msgstr "Закончить измерения и возобновить гидирование"
 
 #: guiding_assistant.cpp:369
 msgid "Recommendations"
@@ -2602,25 +2607,29 @@ msgid ""
 "Measure of typical high-frequency right ascension star movements; guiding "
 "usually cannot correct for fluctuations this small."
 msgstr ""
+"Измерение типичных высокочастотных движений звезды по прямому восхождению; "
+"гидирование обычно не способно их исправить."
 
 #: guiding_assistant.cpp:429
 msgid ""
 "Measure of typical high-frequency declination star movements; guiding "
 "usually cannot correct for fluctuations this small."
 msgstr ""
+"Измерение типичных высокочастотных движений звезды по склонению; гидирование "
+"обычно не способно их исправить."
 
 #: guiding_assistant.cpp:432
 msgid "Maximum sample-sample deflection seen in right ascension."
-msgstr ""
+msgstr "Максимальное межкадровое отклонение по прямому восхождению"
 
 #: guiding_assistant.cpp:433
 msgid "Maximum sample-sample deflection seen in declination."
-msgstr ""
+msgstr "Максимальное межкадровое отклонение по склонению"
 
 #: guiding_assistant.cpp:434
 msgid ""
 "Maximum peak-peak deflection seen in right ascension during sampling period."
-msgstr ""
+msgstr "Максимальный разброс по прямому восхождению за выбранный период."
 
 #: guiding_assistant.cpp:435
 msgid "Estimated overall drift rate in right ascension."
@@ -2631,6 +2640,8 @@ msgid ""
 "Maximum drift rate in right ascension during sampling period; may be useful "
 "for setting exposure time."
 msgstr ""
+"Максимальная скорость дрейфа по прямому восхождению за измеряемый период; "
+"может быть полезна при задании времени экспозиции."
 
 #: guiding_assistant.cpp:437
 msgid "Estimated overall drift rate in declination."
@@ -2639,18 +2650,24 @@ msgstr "Общая скорость дрейфа по склонению."
 #: guiding_assistant.cpp:468
 msgid "Choose a non-saturated star with a good SNR (>10) and begin guiding"
 msgstr ""
+"Выберите неокрашенную звезду с хорошим соотношением сигнал/шум (>10) и "
+"начните гидирование"
 
 #: guiding_assistant.cpp:472
 msgid ""
 "Click Start to begin measurements.  Guiding will be disabled during this "
 "time, so the star will move around."
 msgstr ""
+"Нажмите 'Начать', чтобы произвести измерения. В это время гидирование будет "
+"отключено, поэтому звезда будет перемещаться."
 
 #: guiding_assistant.cpp:477
 msgid ""
 "Guiding output is disabled and star movement is being measured.  Click Stop "
 "when the RMS values have stabilized (at least 1 minute)."
 msgstr ""
+"Гидирование отключено для измерения движений звезды. Нажмите 'Остановить', "
+"когда среднеквадратичные значения стабилизируются (не менее одной минуты)."
 
 #: guiding_assistant.cpp:480
 msgid ""
@@ -2658,6 +2675,9 @@ msgid ""
 "changes.  Click Start to repeat the measurements, or close the window to "
 "continue guiding."
 msgstr ""
+"Гидирование возобновлено. Прислушайтесь к советам и сделайте необходимые "
+"изменения. Чтобы повторить измерения, нажмите 'Начать', чтобы продолжить "
+"гидирование, закройте окно."
 
 #: guiding_assistant.cpp:554
 msgid "Apply"
@@ -2667,15 +2687,16 @@ msgstr "Применить"
 #, c-format
 msgid "Try setting RA min-move to %0.2f"
 msgstr ""
+"Попробовать установить минимальное движение по прямому восхождению в %0.2f"
 
 #: guiding_assistant.cpp:607 guiding_assistant.cpp:612
 #, c-format
 msgid "Try setting Dec min-move to %0.2f"
-msgstr ""
+msgstr "Попробовать установить минимальное движение по склонению в %0.2f"
 
 #: guiding_assistant.cpp:620 guiding_assistant.cpp:622
 msgid "Consider using a brighter star or increasing the exposure time"
-msgstr ""
+msgstr "Подумайте о выборе звезды поярче или увеличьте выдержку"
 
 #: guiding_assistant.cpp:706
 msgid "Guiding stopped"
@@ -2683,38 +2704,35 @@ msgstr "Гидирование остановлено"
 
 #: guiding_assistant.cpp:788
 msgid "s"
-msgstr ""
+msgstr "сек"
 
 #: guiding_assistant.cpp:789
 msgid "px"
-msgstr ""
+msgstr "пикс"
 
 #: guiding_assistant.cpp:790
-#, fuzzy
 msgid "arc-sec"
-msgstr "Угл. сек."
+msgstr "угл. сек"
 
 #: guiding_assistant.cpp:791
 msgid "px/min"
-msgstr ""
+msgstr "пикс/мин"
 
 #: guiding_assistant.cpp:792
 msgid "px/sec"
-msgstr ""
+msgstr "пикс/сек"
 
 #: guiding_assistant.cpp:793
-#, fuzzy
 msgid "arc-sec/min"
-msgstr "Дрейф по Dec, угл. сек/мин"
+msgstr "угл. сек/мин"
 
 #: guiding_assistant.cpp:794
-#, fuzzy
 msgid "arc-sec/sec"
-msgstr "Угл. сек."
+msgstr "угл. сек/сек"
 
 #: guiding_assistant.cpp:822
 msgid "Max Exp"
-msgstr ""
+msgstr "Макс. эксп."
 
 #: guidinglog.cpp:190 guidinglog.cpp:196 mount.cpp:51 statswindow.cpp:214
 msgid "Unknown"
@@ -2968,11 +2986,11 @@ msgstr "Запустить отслеживание комет"
 
 #: myframe.cpp:449
 msgid "&Guiding Assistant"
-msgstr "Сведения о гидировании"
+msgstr "Помощник гидирования"
 
 #: myframe.cpp:449
 msgid "Run the Guiding Assistant"
-msgstr ""
+msgstr "Запустить помощник гидирования"
 
 #: myframe.cpp:450
 msgid "&Drift Align"
@@ -3100,7 +3118,7 @@ msgstr "Крупная сетка"
 
 #: myframe.cpp:470
 msgid "&RA/Dec"
-msgstr "Пр. восх./Скл."
+msgstr "Сеть координат"
 
 #: myframe.cpp:470
 msgid "RA and Dec overlay"
@@ -3108,15 +3126,15 @@ msgstr "Линии RA и Dec"
 
 #: myframe.cpp:471
 msgid "Spectrograph S&lit"
-msgstr ""
+msgstr "Щель спектрографа"
 
 #: myframe.cpp:471
 msgid "Spectrograph slit overlay"
-msgstr ""
+msgstr "Наложение щели спектрографа"
 
 #: myframe.cpp:473
 msgid "Slit Position..."
-msgstr ""
+msgstr "Положение щели..."
 
 #: myframe.cpp:475
 msgid "Restore window positions"
@@ -3684,7 +3702,7 @@ msgstr "Введение"
 
 #: myframe_events.cpp:137
 msgid "Spectrograph Slit Overlay"
-msgstr ""
+msgstr "Наложение щели спектрографа"
 
 #: myframe_events.cpp:148
 msgid "Position (Center)"
@@ -3734,6 +3752,9 @@ msgid ""
 "frames, which are a different size from ordinary guide frames for this "
 "camera."
 msgstr ""
+"Теперь для улучшения карты битых пикселей PHD2 показывает сырые кадры "
+"камеры, размеры которых отличаются от обычных кадров гидирования для этой "
+"камеры."
 
 #: myframe_events.cpp:322 myframe_events.cpp:775 scope.cpp:529
 msgid ""
@@ -4429,6 +4450,8 @@ msgstr ""
 #: scope.cpp:777
 msgid "The RA and Dec rates vary by an unexpected amount"
 msgstr ""
+"Скорости по прямому восхождению и склонению изменяются на непредвиденные "
+"величины"
 
 #: scope.cpp:784
 msgid "Details..."
@@ -4770,6 +4793,8 @@ msgid ""
 "When calibrating, how many samples should be averaged. Default = %d, "
 "increase for worse seeing and small imaging scales"
 msgstr ""
+"Количество образцов, усредняемых при калибровке. По умолчанию %d, увеличьте "
+"при сильной турбулентности и малом масштабе изображения"
 
 #: stepguider.cpp:1149
 msgid "Bump Percentage"
