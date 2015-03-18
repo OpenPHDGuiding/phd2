@@ -51,6 +51,8 @@ class GearDialog : public wxDialog
     bool m_rotatorUpdated;
     bool m_showDarksDialog;
     bool m_ascomScopeSelected;
+    wxString m_lastCamera;
+    bool m_camWarningIssued;
 
     wxGridBagSizer *m_gearSizer;
 
@@ -93,10 +95,12 @@ public:
     void EndModal(int retCode);
 
     void ShowProfileWizard(void);
+    void ShowProfileWizard(wxCommandEvent& evt);
     bool SetProfile(int profileId, wxString *error);
     bool ConnectAll(wxString *error);
     bool DisconnectAll(wxString *error);
     void Shutdown(bool forced);
+    bool IsEmptyProfile();
 
 private:
     void LoadGearChoices(void);

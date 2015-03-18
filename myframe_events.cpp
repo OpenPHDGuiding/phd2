@@ -881,13 +881,24 @@ void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
 
 void MyFrame::OnSelectGear(wxCommandEvent& evt)
 {
+    bool useWizard = false;
+
     try
     {
         if (CaptureActive)
         {
             throw ERROR_INFO("OnSelectGear called while CaptureActive");
         }
-        pFrame->pGearDialog->ShowGearDialog(wxGetKeyState(WXK_SHIFT));
+        if (pConfig->NumProfiles() == 1 && pGearDialog->IsEmptyProfile())
+        {
+            useWizard = ConfirmDialog::Confirm(_("It looks like this is a first-time connection to your camera and mount.  The Setup Wizard can help \nyou with that and will "
+                "also establish baseline guiding parameters for your new configuration.\nWould you like to use the Setup Wizard now?"  ),
+                "/use_new_profile_wizard", _("Setup Wizard Recommendation"), _("Yes"), _("No"));
+            if (useWizard)
+                pGearDialog->ShowProfileWizard(evt);
+        }
+        if (!useWizard)
+            pGearDialog->ShowGearDialog(wxGetKeyState(WXK_SHIFT));
     }
     catch (wxString Msg)
     {
