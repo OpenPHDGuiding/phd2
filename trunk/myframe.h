@@ -290,7 +290,6 @@ public:
     bool StartServer(bool state);
     bool FlipRACal();
     int RequestedExposureDuration();
-    void LoadDefectMap();
     int GetFocalLength(void);
     int GetLanguage(void);
     bool GetAutoLoadCalibration(void);
@@ -298,11 +297,11 @@ public:
     int GetInstanceNumber() const { return m_instanceNumber; }
     static wxString GetDefaultFileDir();
     static wxString GetDarksDir();
-    bool DarkLibExists(int profileId, bool showAlert = true);
+    bool DarkLibExists(int profileId, bool showAlert);
     void LoadDarkLibrary();
     void SaveDarkLibrary(const wxString& note);
     void DeleteDarkLibraryFiles(int profileID);
-    wxString DarkLibFileName(int profileId);
+    static wxString DarkLibFileName(int profileId);
     void SetDarkMenuState();
     void LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);

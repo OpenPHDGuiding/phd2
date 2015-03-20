@@ -44,17 +44,19 @@ ConfirmDialog::ConfirmDialog(const wxString& prompt, const wxString& title, cons
     sizer->Add(txt, wxSizerFlags(0).Border(wxALL, 10));
     sizer->Add(dont_ask_again, wxSizerFlags(0).Border(wxALL, 10));
 
-
-    // Let CreateButtonSizer create platform-neutral OK/Cancel buttons with correct yes/no and EndModal event behavior - then relabel the buttons if
-    // client wants something other than OK and Cancel
     wxBoxSizer *topLevelSizer = new wxBoxSizer(wxVERTICAL);
     topLevelSizer->Add(sizer, wxSizerFlags(0).Expand());
+
+    // Let CreateButtonSizer create platform-neutral OK/Cancel buttons
+    // with correct yes/no and EndModal event behavior - then relabel
+    // the buttons if client wants something other than OK and Cancel
 
     topLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 10));
     if (!affirmLabel.IsEmpty())
         FindWindow(wxID_OK)->SetLabel(affirmLabel);
     if (!negativeLabel.IsEmpty())
         FindWindow(wxID_CANCEL)->SetLabel(negativeLabel);
+
     SetSizerAndFit(topLevelSizer);
 }
 
@@ -67,7 +69,7 @@ static wxString ConfigKey(const wxString& name)
     return "/Confirm" + name;
 }
 
-bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, const wxString& title_arg, const wxString& affirmLabel, const wxString& negativeLabel)
+bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, const wxString& affirmLabel, const wxString& negativeLabel, const wxString& title_arg)
 {
     wxString key(ConfigKey(config_key));
 
@@ -88,6 +90,11 @@ bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, 
     }
 
     return false;
+}
+
+bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, const wxString& title_arg)
+{
+    return Confirm(prompt, config_key, wxEmptyString, wxEmptyString, title_arg);
 }
 
 void ConfirmDialog::ResetAllDontAskAgain(void)

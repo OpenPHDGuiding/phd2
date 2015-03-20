@@ -470,13 +470,13 @@ void MyFrame::LoadDarkHandler(bool checkIt)
     if (!pCamera || !pCamera->Connected)
     {
         Alert(_("You must connect a camera before loading a dark library"));
-        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+        m_useDarksMenuItem->Check(false);
         return;
     }
     pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", checkIt);
     if (checkIt)  // enable it
     {
-        darks_menu->FindItem(MENU_LOADDARK)->Check(true);
+        m_useDarksMenuItem->Check(true);
         if (pCamera->CurrentDefectMap)
             LoadDefectMapHandler(false);
         LoadDarkLibrary();
@@ -485,11 +485,11 @@ void MyFrame::LoadDarkHandler(bool checkIt)
     {
         if (!pCamera->CurrentDarkFrame)
         {
-            darks_menu->FindItem(MENU_LOADDARK)->Check(false);      // shouldn't have gotten here
+            m_useDarksMenuItem->Check(false);      // shouldn't have gotten here
             return;
         }
         pCamera->ClearDarks();
-        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+        m_useDarksMenuItem->Check(false);
         SetStatusText(_("Dark library unloaded"));
     }
 }
@@ -511,24 +511,30 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
     pConfig->Profile.SetBoolean("/camera/AutoLoadDefectMap", checkIt);
     if (checkIt)
     {
-        if (pCamera->CurrentDarkFrame)
-            LoadDarkHandler(false);
-        LoadDefectMap();            // Status msg generated internally
-        if (pCamera->CurrentDefectMap)
+        DefectMap *defectMap = DefectMap::LoadDefectMap(pConfig->GetCurrentProfileId());
+        if (defectMap)
         {
-            darks_menu->FindItem(MENU_LOADDARK)->Check(false);
-            darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(true);
+            if (pCamera->CurrentDarkFrame)
+                LoadDarkHandler(false);
+            pCamera->SetDefectMap(defectMap);
+            m_useDarksMenuItem->Check(false);
+            m_useDefectMapMenuItem->Check(true);
+            SetStatusText(_("Defect map loaded"));
+        }
+        else
+        {
+            SetStatusText(_("Defect map not loaded"));
         }
     }
     else
     {
         if (!pCamera->CurrentDefectMap)
         {
-            darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);  // Shouldn't have gotten here
+            m_useDefectMapMenuItem->Check(false);  // Shouldn't have gotten here
             return;
         }
         pCamera->ClearDefectMap();
-        darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
+        m_useDefectMapMenuItem->Check(false);
         SetStatusText(_("Bad-pixel map unloaded"));
     }
 }
@@ -881,24 +887,27 @@ void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
 
 void MyFrame::OnSelectGear(wxCommandEvent& evt)
 {
-    bool useWizard = false;
-
     try
     {
         if (CaptureActive)
         {
             throw ERROR_INFO("OnSelectGear called while CaptureActive");
         }
+
         if (pConfig->NumProfiles() == 1 && pGearDialog->IsEmptyProfile())
         {
-            useWizard = ConfirmDialog::Confirm(_("It looks like this is a first-time connection to your camera and mount.  The Setup Wizard can help \nyou with that and will "
-                "also establish baseline guiding parameters for your new configuration.\nWould you like to use the Setup Wizard now?"  ),
-                "/use_new_profile_wizard", _("Setup Wizard Recommendation"), _("Yes"), _("No"));
-            if (useWizard)
+            if (ConfirmDialog::Confirm(
+                _("It looks like this is a first-time connection to your camera and mount. The Setup Wizard can help\n"
+                  "you with that and will also establish baseline guiding parameters for your new configuration.\n"
+                  "Would you like to use the Setup Wizard now?"),
+                  "/use_new_profile_wizard", _("Yes"), _("No"), _("Setup Wizard Recommendation")))
+            {
                 pGearDialog->ShowProfileWizard(evt);
+                return;
+            }
         }
-        if (!useWizard)
-            pGearDialog->ShowGearDialog(wxGetKeyState(WXK_SHIFT));
+
+        pGearDialog->ShowGearDialog(wxGetKeyState(WXK_SHIFT));
     }
     catch (wxString Msg)
     {

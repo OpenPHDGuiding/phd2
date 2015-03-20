@@ -50,9 +50,11 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
 }
 
 CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
-    wxDialog(parent, wxID_ANY, _("Import Dark Library and Bad Pixel Map"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
+    wxDialog(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     wxBoxSizer* vSizer = new wxBoxSizer(wxVERTICAL);
+
+    SetTitle(wxString::Format(_("Import Darks to Profile %s"), pConfig->GetCurrentProfile()));
 
     m_thisProfileId = pConfig->GetCurrentProfileId();
     m_profileNames = pConfig->ProfileNames();
@@ -74,7 +76,7 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
         m_darksChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, drkChoices, 0, wxDefaultValidator, _("Darks Profiles"));
         m_darksChoice->SetSelection(0);
         m_darksChoice->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &CamCalImportDialog::OnDarkProfileChoice, this);
-        AddTableEntryPair(this, drkGrid, _("Import profile"), m_darksChoice);
+        AddTableEntryPair(this, drkGrid, _("Import from profile"), m_darksChoice);
         m_darkCameraChoice = new wxStaticText(this, wxID_ANY, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1));
         AddTableEntryPair(this, drkGrid, _("Camera in profile"), m_darkCameraChoice);
         darksGroup->Add(drkGrid, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
@@ -88,7 +90,6 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
 
     wxStaticText* bpmLabel = new wxStaticText(this, wxID_STATIC, _("Choose the profile with the bad-pixel map you want to use:"), wxDefaultPosition, wxDefaultSize, 0);
     bpmGroup->Add(bpmLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxADJUST_MINSIZE, 10);
-    wxFlexGridSizer* bpmGrid = new wxFlexGridSizer(2, 2, 0, 0);
 
     wxArrayString bpmChoices;
     bpmChoices.Add(_("None"));
@@ -100,7 +101,8 @@ CamCalImportDialog::CamCalImportDialog(wxWindow *parent) :
         m_bpmChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, bpmChoices, 0, wxDefaultValidator, _("Bad-pix Map Profiles"));
         m_bpmChoice->SetSelection(0);
         m_bpmChoice->Bind(wxEVT_COMMAND_CHOICE_SELECTED, &CamCalImportDialog::OnBPMProfileChoice, this);
-        AddTableEntryPair(this, bpmGrid, _("Import profile"), m_bpmChoice);
+        wxFlexGridSizer *bpmGrid = new wxFlexGridSizer(2, 2, 0, 0);
+        AddTableEntryPair(this, bpmGrid, _("Import from profile"), m_bpmChoice);
         m_bpmCameraChoice = new wxStaticText(this, wxID_ANY, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1));
         AddTableEntryPair(this, bpmGrid, _("Camera in profile"), m_bpmCameraChoice);
         bpmGroup->Add(bpmGrid, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
@@ -217,8 +219,8 @@ void CamCalImportDialog::OnOk(wxCommandEvent& evt)
 
     if (m_sourceDarksProfileId != -1)
     {
-        sourceName = pFrame->DarkLibFileName(m_sourceDarksProfileId);
-        destName = pFrame->DarkLibFileName(m_thisProfileId);
+        sourceName = MyFrame::DarkLibFileName(m_sourceDarksProfileId);
+        destName = MyFrame::DarkLibFileName(m_thisProfileId);
         if (wxCopyFile(sourceName, destName, true))
         {
             Debug.Write(wxString::Format("Dark library imported from profile %d to profile %d\n", m_sourceDarksProfileId, m_thisProfileId));

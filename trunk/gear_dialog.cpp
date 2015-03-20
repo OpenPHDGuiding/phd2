@@ -736,7 +736,9 @@ void GearDialog::UpdateButtonState(void)
 
 void GearDialog::OnButtonConnectAll(wxCommandEvent& event)
 {
-    OnButtonConnectCamera(event);
+    bool canceled = DoConnectCamera();
+    if (canceled)
+        return;
     OnButtonConnectStepGuider(event);
     OnButtonConnectScope(event);
     OnButtonConnectAuxScope(event);
@@ -836,25 +838,27 @@ void GearDialog::OnButtonSetupCamera(wxCommandEvent& event)
     m_pCamera->ShowPropertyDialog();
 }
 
-void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
+bool GearDialog::DoConnectCamera(void)
 {
-    int currProfileId = pConfig->GetCurrentProfileId();
-    wxString newCam = m_pCameras->GetStringSelection();
+    bool canceled = false;
+
     try
     {
         if (m_pCamera == NULL)
         {
-            throw ERROR_INFO("OnButtonConnectCamera called with m_pCamera == NULL");
+            throw ERROR_INFO("DoConnectCamera called with m_pCamera == NULL");
         }
 
         if (m_pCamera->Connected)
         {
-            throw THROW_INFO("OnButtonConnectCamera: called when connected");
+            throw THROW_INFO("DoConnectCamera: called when connected");
         }
 
+        wxString newCam = m_pCameras->GetStringSelection();
         if (!m_camWarningIssued && m_lastCamera != _("None") && newCam != _("None") && m_lastCamera != newCam)
         {
-            wxString darkName = pFrame->DarkLibFileName(currProfileId);
+            int currProfileId = pConfig->GetCurrentProfileId();
+            wxString darkName = MyFrame::DarkLibFileName(currProfileId);
             wxString bpmName = DefectMap::DefectMapFileName(currProfileId);
 
             // Can't use standard checks because we don't want to consider sensor-size
@@ -872,7 +876,8 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
                     m_pCameras->SetStringSelection(m_lastCamera);
                     wxCommandEvent dummy;
                     OnChoiceCamera(dummy);
-                    throw THROW_INFO("OnButtonConnectCamera: user cancelled after camera-change warning");
+                    canceled = true;
+                    throw THROW_INFO("DoConnectCamera: user cancelled after camera-change warning");
                 }
             }
         }
@@ -880,7 +885,7 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
 
         if (m_pCamera->Connect())
         {
-            throw THROW_INFO("OnButtonConnectCamera: connect failed");
+            throw THROW_INFO("DoConnectCamera: connect failed");
         }
 
         Debug.AddLine("Connected Camera:" + m_pCamera->Name);
@@ -914,6 +919,13 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
     }
 
     UpdateButtonState();
+
+    return canceled;
+}
+
+void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
+{
+    DoConnectCamera();
 }
 
 void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
@@ -1484,7 +1496,7 @@ bool GearDialog::IsEmptyProfile(void)
 {
     wxString lastCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
     wxString lastScope = pConfig->Profile.GetString("/scope/LastMenuChoice", _("None"));
-    return (lastCamera == _("None") || lastScope == _("None"));
+    return lastCamera == _("None") && lastScope == _("None");
 }
 
 void GearDialog::OnProfileChoice(wxCommandEvent& event)

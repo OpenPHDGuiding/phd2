@@ -452,7 +452,7 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->AppendCheckItem(MENU_LOG,_("Enable Guide &Log\tAlt-L"),_("Enable guide log file"));
     tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug Log"),_("Enable debug log file"));
     tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image Logging"),_("Enable logging of star images"));
-    tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable / disable link to Nebulosity"));
+    tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable PHD2 server capability"));
     tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky Lock Position"),_("Keep the same lock position when guiding starts"));
 
     view_menu = new wxMenu();
@@ -472,12 +472,12 @@ void MyFrame::SetupMenuBar(void)
     view_menu->AppendSeparator();
     view_menu->Append(MENU_SLIT_OVERLAY_COORDS, _("Slit Position..."));
     view_menu->AppendSeparator();
-    view_menu->Append(MENU_RESTORE_WINDOWS, _("Restore window positions"), _("Restore all windows to their default/docked positions"));
+    view_menu->Append(MENU_RESTORE_WINDOWS, _("Restore Window Positions"), _("Restore all windows to their default/docked positions"));
 
     darks_menu = new wxMenu();
     m_takeDarksMenuItem = darks_menu->Append(MENU_TAKEDARKS, _("Dark &Library..."), _("Build a dark library for this profile"));
     m_refineDefMapMenuItem = darks_menu->Append(MENU_REFINEDEFECTMAP, _("Bad-pixel &Map..."), _("Adjust parameters to create or modify the bad-pixel map"));
-    m_importCamCalMenuItem = darks_menu->Append(MENU_IMPORTCAMCAL, _("Import from profile..."), _("Import existing dark library/bad-pixel map from a different profile"));
+    m_importCamCalMenuItem = darks_menu->Append(MENU_IMPORTCAMCAL, _("Import From Profile..."), _("Import existing dark library/bad-pixel map from a different profile"));
     darks_menu->AppendSeparator();
     m_useDarksMenuItem =  darks_menu->AppendCheckItem(MENU_LOADDARK, _("Use &Dark Library"), _("Use the the dark library for this profile"));
     m_useDefectMapMenuItem = darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use &Bad-pixel Map"), _("Use the bad-pixel map for this profile"));
@@ -798,7 +798,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddTool(BUTTON_GEAR, _("Equipment"), camera_bmp, _("Connect to equipment. Shift-click to reconnect the same equipment last connected."));
     MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus"));
     MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD). Shift-click to force calibration."));
-    MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort the current action"));
+    MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Stop looping and guiding"));
     MainToolbar->AddSeparator();
     MainToolbar->AddControl(Dur_Choice, _("Exposure duration"));
     MainToolbar->AddControl(Gamma_Slider, _("Gamma"));
@@ -808,6 +808,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->Realize();
     MainToolbar->EnableTool(BUTTON_LOOP, false);
     MainToolbar->EnableTool(BUTTON_GUIDE, false);
+    MainToolbar->EnableTool(BUTTON_STOP, false);
 }
 
 void MyFrame::UpdateCalibrationStatus(void)
@@ -923,6 +924,9 @@ void MyFrame::UpdateButtonsStatus(void)
         need_update = true;
 
     if (cond_update_tool(MainToolbar, BUTTON_GEAR, !CaptureActive))
+        need_update = true;
+
+    if (cond_update_tool(MainToolbar, BUTTON_STOP, CaptureActive))
         need_update = true;
 
     bool dark_enabled = loop_enabled && !CaptureActive;
@@ -1840,7 +1844,7 @@ wxString MyFrame::DarkLibFileName(int profileId)
 bool MyFrame::DarkLibExists(int profileId, bool showAlert)
 {
     bool bOk = false;
-    wxString fileName = DarkLibFileName(profileId);
+    wxString fileName = MyFrame::DarkLibFileName(profileId);
 
     if (wxFileExists(fileName))
     {
@@ -1909,7 +1913,7 @@ void MyFrame::CheckGeometry()
 void MyFrame::SetDarkMenuState()
 {
     wxMenuItem *item = m_useDarksMenuItem;
-    bool haveDarkLib = DarkLibExists(pConfig->GetCurrentProfileId());
+    bool haveDarkLib = DarkLibExists(pConfig->GetCurrentProfileId(), true);
     item->Enable(haveDarkLib);
     if (!haveDarkLib)
         item->Check(false);
@@ -1922,7 +1926,7 @@ void MyFrame::SetDarkMenuState()
 
 void MyFrame::LoadDarkLibrary()
 {
-    wxString filename = DarkLibFileName(pConfig->GetCurrentProfileId());
+    wxString filename = MyFrame::DarkLibFileName(pConfig->GetCurrentProfileId());
 
     if (!pCamera || !pCamera->Connected)
     {
@@ -1945,7 +1949,7 @@ void MyFrame::LoadDarkLibrary()
 
 void MyFrame::SaveDarkLibrary(const wxString& note)
 {
-    wxString filename = DarkLibFileName(pConfig->GetCurrentProfileId());
+    wxString filename = MyFrame::DarkLibFileName(pConfig->GetCurrentProfileId());
 
     Debug.AddLine("saving dark library");
 
@@ -1955,24 +1959,10 @@ void MyFrame::SaveDarkLibrary(const wxString& note)
     }
 }
 
-void MyFrame::LoadDefectMap()
-{
-    DefectMap *defectMap = DefectMap::LoadDefectMap(pConfig->GetCurrentProfileId());
-    if (defectMap)
-    {
-        SetStatusText(_("Defect map loaded"));
-        pCamera->SetDefectMap(defectMap);
-    }
-    else
-    {
-        SetStatusText(_("Defect map not loaded"));
-    }
-}
-
 // Delete both the dark library file and any defect map file for this profile
 void MyFrame::DeleteDarkLibraryFiles(int profileId)
 {
-    wxString filename = DarkLibFileName(profileId);
+    wxString filename = MyFrame::DarkLibFileName(profileId);
 
     if (wxFileExists(filename))
     {
