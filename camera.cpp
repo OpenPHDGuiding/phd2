@@ -202,6 +202,7 @@ GuideCamera::GuideCamera(void)
 GuideCamera::~GuideCamera(void)
 {
     ClearDarks();
+    ClearDefectMap();
 }
 
 static int CompareNoCase(const wxString& first, const wxString& second)

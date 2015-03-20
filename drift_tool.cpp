@@ -747,7 +747,7 @@ wxWindow *DriftTool::CreateDriftToolWindow()
             "Enter your camera pixel size on the Camera tab in the Brain.\n"
             "\n"
             "Would you like to run the drift tool anyway?"),
-                "/drift_tool_without_pixscale", _("Confirm"));
+                "/drift_tool_without_pixscale");
 
         if (!confirmed)
         {

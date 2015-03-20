@@ -1470,7 +1470,7 @@ void Guider::DeleteAllBookmarks()
     if (m_bookmarks.size())
     {
         bool confirmed = ConfirmDialog::Confirm(_("Are you sure you want to delete all Bookmarks?"),
-            "/delete_all_bookmarks_ok", _("Confirm"));
+            "/delete_all_bookmarks_ok");
         if (confirmed)
         {
             m_bookmarks.clear();
