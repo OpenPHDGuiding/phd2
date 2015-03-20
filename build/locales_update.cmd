@@ -12,11 +12,11 @@ REM
 xgettext *.cpp *.h -C --from-code=CP1252 --keyword="_" --keyword="wxPLURAL:1,2" --keyword="wxTRANSLATE"
 cd locale
 copy /Y messages.pot messages-old.pot
-msgmerge messages-old.pot ..\messages.po -o messages.pot
+msgmerge -N -o messages.pot messages-old.pot ..\messages.po
 for /D %%d in (*.*) do (
     cd %%d
     copy /Y messages.po messages-old.po
-    msgmerge messages-old.po ..\messages.pot -o messages.po
+    msgmerge -N -o messages.po messages-old.po ..\messages.pot
     cd ..
 )
 
