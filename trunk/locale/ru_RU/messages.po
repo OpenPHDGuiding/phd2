@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-17 11:40-0400\n"
+"POT-Creation-Date: 2015-03-20 02:35-0400\n"
 "PO-Revision-Date: 2015-03-18 15:19+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
@@ -60,11 +60,11 @@ msgid "Guiding"
 msgstr "Гидирование"
 
 #: advanced_dialog.cpp:146 cam_firewire_IC.cpp:111 cam_simulator.cpp:1400
-#: gear_dialog.cpp:244 gear_dialog.cpp:246 gear_dialog.cpp:889 myframe.cpp:840
+#: gear_dialog.cpp:228 gear_dialog.cpp:230 gear_dialog.cpp:912 myframe.cpp:841
 msgid "Camera"
 msgstr "Камера"
 
-#: advanced_dialog.cpp:160 camera.cpp:687
+#: advanced_dialog.cpp:160 camera.cpp:688
 msgid "Camera Settings"
 msgstr "Настройки камеры"
 
@@ -73,8 +73,8 @@ msgid "No Camera Selected"
 msgstr "Камера не выбрана"
 
 #: advanced_dialog.cpp:174 calreview_dialog.cpp:92 cam_simulator.cpp:1411
-#: eegg.cpp:111 gear_dialog.cpp:257 gear_dialog.cpp:259 gear_dialog.cpp:1053
-#: myframe.cpp:841 testguide.cpp:149 testguide.cpp:193
+#: eegg.cpp:111 gear_dialog.cpp:241 gear_dialog.cpp:243 gear_dialog.cpp:1083
+#: myframe.cpp:842 testguide.cpp:149 testguide.cpp:193
 msgid "Mount"
 msgstr "Монтировка"
 
@@ -87,11 +87,11 @@ msgid "No Mount Selected"
 msgstr "Монтировка не выбрана"
 
 #: advanced_dialog.cpp:210 calreview_dialog.cpp:99 eegg.cpp:109
-#: gear_dialog.cpp:298 gear_dialog.cpp:300 myframe.cpp:842 testguide.cpp:161
+#: gear_dialog.cpp:282 gear_dialog.cpp:284 myframe.cpp:843 testguide.cpp:161
 msgid "AO"
 msgstr "АО"
 
-#: advanced_dialog.cpp:240 gear_dialog.cpp:311 gear_dialog.cpp:312
+#: advanced_dialog.cpp:240 gear_dialog.cpp:295 gear_dialog.cpp:296
 msgid "Rotator"
 msgstr "Поворотное устройство"
 
@@ -412,7 +412,7 @@ msgid "Calibration step, ms"
 msgstr "Шаг калибровки, мс"
 
 #: calstep_dialog.cpp:163 cam_simulator.cpp:1307 camcal_import_dialog.cpp:47
-#: camera.cpp:661 configdialog.cpp:65 darks_dialog.cpp:53
+#: camera.cpp:662 configdialog.cpp:65 darks_dialog.cpp:53
 #: profile_wizard.cpp:58 profile_wizard.cpp:65 Refine_DefMap.cpp:60
 msgid ": "
 msgstr ""
@@ -454,9 +454,9 @@ msgstr "Невозможно найти ASCOM Chooser. Проверьте, чт�
 #: cam_wdm.cpp:123 cam_wdm.cpp:132 cam_wdm.cpp:170 cam_wdm.cpp:242
 #: cam_wdm.cpp:265 cam_wdm.cpp:271 cam_wdm.cpp:279 cam_wdm.cpp:290
 #: cam_ZWO.cpp:138 cam_ZWO.cpp:146 cam_ZWO.cpp:172 cam_ZWO.cpp:180
-#: cam_ZWO.cpp:202 gear_dialog.cpp:1048 gear_dialog.cpp:1682
-#: gear_dialog.cpp:1691 gear_dialog.cpp:1698 gear_dialog.cpp:1743
-#: gear_dialog.cpp:1749 rotator_ascom.cpp:129 rotator_ascom.cpp:135
+#: cam_ZWO.cpp:202 gear_dialog.cpp:1078 gear_dialog.cpp:1736
+#: gear_dialog.cpp:1745 gear_dialog.cpp:1752 gear_dialog.cpp:1797
+#: gear_dialog.cpp:1803 rotator_ascom.cpp:129 rotator_ascom.cpp:135
 #: rotator_ascom.cpp:146 scope_ascom.cpp:148 scope_ascom.cpp:155
 #: scope_ascom.cpp:166 scope_ascom.cpp:251 scope_ascom.cpp:266
 #: scope_ascom.cpp:274 scope_ascom.cpp:283 scope_ascom.cpp:299
@@ -657,7 +657,7 @@ msgstr "Невозможно открыть устройство LXUSB"
 msgid "Serial LE Webcam"
 msgstr "Посдедовательная вебкамера с длинными выдержками"
 
-#: cam_LESerialWebcam.cpp:279 camera.cpp:738
+#: cam_LESerialWebcam.cpp:279 camera.cpp:739
 msgid "LE Port"
 msgstr "Порт LE"
 
@@ -993,11 +993,11 @@ msgstr "Сбросить"
 msgid "Reset all values to application defaults"
 msgstr "Сбросить все значения к используемым по умолчанию"
 
-#: cam_simulator.cpp:1496 camcal_import_dialog.cpp:117
+#: cam_simulator.cpp:1496 camcal_import_dialog.cpp:119
 msgid "OK"
 msgstr "Принять"
 
-#: cam_simulator.cpp:1502 camcal_import_dialog.cpp:122 darks_dialog.cpp:175
+#: cam_simulator.cpp:1502 camcal_import_dialog.cpp:124 darks_dialog.cpp:175
 #: darks_dialog.cpp:313
 msgid "Cancel"
 msgstr "Отменить"
@@ -1074,93 +1074,95 @@ msgstr "Сбой получения настроек камеры ZWO ASI."
 msgid "Failed to open ZWO ASI Camera."
 msgstr "Сбой доступа к камере ZWP ASI."
 
-#: camcal_import_dialog.cpp:53
-msgid "Import Dark Library and Bad Pixel Map"
-msgstr "Импортировать темновую библиотеку и карту дефектных пикселей"
+#: camcal_import_dialog.cpp:57
+#, c-format
+msgid "Import Darks to Profile %s"
+msgstr ""
 
-#: camcal_import_dialog.cpp:61 darks_dialog.cpp:113
+#: camcal_import_dialog.cpp:63 darks_dialog.cpp:113
 msgid "Dark Library"
 msgstr "Библиотека темновых кадров"
 
-#: camcal_import_dialog.cpp:63
+#: camcal_import_dialog.cpp:65
 msgid "Choose the profile with the dark library you want to use:"
 msgstr ""
 "Выбрать профиль для библиотеки темновых кадров, которую хотите использовать:"
 
-#: camcal_import_dialog.cpp:68 camcal_import_dialog.cpp:94
-#: camcal_import_dialog.cpp:163 camcal_import_dialog.cpp:167
-#: camcal_import_dialog.cpp:182 camcal_import_dialog.cpp:186 camera.cpp:216
-#: camera.cpp:354 gear_dialog.cpp:350 gear_dialog.cpp:354 gear_dialog.cpp:358
-#: gear_dialog.cpp:362 gear_dialog.cpp:366 gear_dialog.cpp:573 mount.cpp:101
-#: mount.cpp:124 mount.cpp:500 myframe.cpp:2187 profile_wizard.cpp:187
-#: profile_wizard.cpp:188 profile_wizard.cpp:271 profile_wizard.cpp:276
-#: profile_wizard.cpp:475 profile_wizard.cpp:483 rotator.cpp:47 rotator.cpp:82
-#: scope.cpp:244 scope.cpp:287 scope.cpp:325 stepguider.cpp:89
-#: stepguider.cpp:113
+#: camcal_import_dialog.cpp:70 camcal_import_dialog.cpp:95
+#: camcal_import_dialog.cpp:165 camcal_import_dialog.cpp:169
+#: camcal_import_dialog.cpp:184 camcal_import_dialog.cpp:188 camera.cpp:217
+#: camera.cpp:355 gear_dialog.cpp:337 gear_dialog.cpp:341 gear_dialog.cpp:345
+#: gear_dialog.cpp:349 gear_dialog.cpp:353 gear_dialog.cpp:563
+#: gear_dialog.cpp:858 gear_dialog.cpp:1497 gear_dialog.cpp:1498
+#: gear_dialog.cpp:1499 mount.cpp:101 mount.cpp:124 mount.cpp:500
+#: myframe.cpp:2177 profile_wizard.cpp:187 profile_wizard.cpp:188
+#: profile_wizard.cpp:271 profile_wizard.cpp:276 profile_wizard.cpp:475
+#: profile_wizard.cpp:483 rotator.cpp:47 rotator.cpp:82 scope.cpp:244
+#: scope.cpp:287 scope.cpp:325 stepguider.cpp:89 stepguider.cpp:113
 msgid "None"
 msgstr "Нет"
 
-#: camcal_import_dialog.cpp:74
+#: camcal_import_dialog.cpp:76
 msgid "Darks Profiles"
 msgstr "Темновые профили"
 
-#: camcal_import_dialog.cpp:77 camcal_import_dialog.cpp:103
-msgid "Import profile"
-msgstr "Импорт профиля"
-
 #: camcal_import_dialog.cpp:79 camcal_import_dialog.cpp:105
+msgid "Import from profile"
+msgstr ""
+
+#: camcal_import_dialog.cpp:81 camcal_import_dialog.cpp:107
 msgid "Camera in profile"
 msgstr "Профиль камеры"
 
-#: camcal_import_dialog.cpp:83
+#: camcal_import_dialog.cpp:85
 msgid "There are no compatible dark libraries available"
 msgstr "Не найдены совместимые темновые библиотеки."
 
-#: camcal_import_dialog.cpp:87
+#: camcal_import_dialog.cpp:89
 msgid "Bad-pixel Map"
 msgstr "Карта дефектных пикселей"
 
-#: camcal_import_dialog.cpp:89
+#: camcal_import_dialog.cpp:91
 msgid "Choose the profile with the bad-pixel map you want to use:"
 msgstr "Выберите профиль с желаемой картой дефектных пикселей:"
 
-#: camcal_import_dialog.cpp:100
+#: camcal_import_dialog.cpp:101
 msgid "Bad-pix Map Profiles"
 msgstr "Профили карты дефектных пикселей"
 
-#: camcal_import_dialog.cpp:109
+#: camcal_import_dialog.cpp:111
 msgid "There are no compatible bad-pixel maps available"
 msgstr "Не найдены совместимые карты дефектных пикселей"
 
-#: camcal_import_dialog.cpp:214
+#: camcal_import_dialog.cpp:216
 msgid "Bad-pixel map could not be imported because of errors in file/copy"
 msgstr ""
 "Карта битых пикселей не может быть импортирована из-за ошибок данных/"
 "копирования"
 
-#: camcal_import_dialog.cpp:233
+#: camcal_import_dialog.cpp:235
 msgid "Dark library could not be imported because of errors in file/copy"
 msgstr ""
 "Темновая библиотека не может быть импортирована из-за ошибок данных/"
 "копирования"
 
-#: camera.cpp:553
+#: camera.cpp:554
 msgid "Select your camera"
 msgstr "Выберите камеру"
 
-#: camera.cpp:670 darks_dialog.cpp:62 guiding_assistant.cpp:254
+#: camera.cpp:671 darks_dialog.cpp:62 guiding_assistant.cpp:254
 msgid "Exposure time"
 msgstr "Время экспозиции"
 
-#: camera.cpp:695
+#: camera.cpp:696
 msgid "Use Subframes"
 msgstr "Использовать подкадры"
 
-#: camera.cpp:696
+#: camera.cpp:697
 msgid "Check to only download subframes (ROIs) if your camera supports it"
 msgstr "Включите только если камера поддерживает подкадры"
 
-#: camera.cpp:706
+#: camera.cpp:707
 msgid ""
 "Guide camera pixel size in microns. Used with the guide telescope focal "
 "length to display guiding error in arc-seconds."
@@ -1168,11 +1170,11 @@ msgstr ""
 "Размер пикселей гидирующей камеры. Используется с фокусным расстоянием "
 "гидирующего телескопа для отображения ошибки гидирования в угловых секундах"
 
-#: camera.cpp:707
+#: camera.cpp:708
 msgid "Pixel size"
 msgstr "Размер пикселей"
 
-#: camera.cpp:713
+#: camera.cpp:714
 msgid ""
 "Camera gain boost ? Default = 95 % , lower if you experience noise or wish "
 "to guide on a very bright star. Not available on all cameras."
@@ -1180,24 +1182,24 @@ msgstr ""
 "Чувствительность камеры по умолчанию 95%, уменьшите в случае шумов или "
 "гидирования по очень яркой звезде. Доступно не для всех камер."
 
-#: camera.cpp:714
+#: camera.cpp:715
 msgid "Camera gain"
 msgstr "Чувствительность камеры"
 
-#: camera.cpp:721
+#: camera.cpp:722
 msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
 msgstr ""
 "Задержка чтения длинных экспозиций (мсек). Используйте при пропущенных кадрах"
 
-#: camera.cpp:722
+#: camera.cpp:723
 msgid "Delay"
 msgstr "Задержка"
 
-#: camera.cpp:737
+#: camera.cpp:738
 msgid "Port number for long-exposure control"
 msgstr "Номер порта для управления длинными экспозициями"
 
-#: camera.cpp:744
+#: camera.cpp:745
 msgid ""
 "The camera will be disconnected if it fails to respond for this long. The "
 "default value, 5 seconds, should be appropriate for most cameras."
@@ -1205,21 +1207,21 @@ msgstr ""
 "Камера будет отключена, если не ответит в течение этого времени. Значение по "
 "умолчанию, 5 секунд, подходит для большинства камер."
 
-#: camera.cpp:745
+#: camera.cpp:746
 msgid ""
 "Disconnect nonresponsive\n"
 "camera after (seconds)"
 msgstr "Отключить не отвечающую камеру через (сек)"
 
-#: camera.cpp:1030
+#: camera.cpp:1031
 msgid "Memory allocation error during capture"
 msgstr "Ошибка выделения памяти во время захвата"
 
-#: camera.cpp:1032
+#: camera.cpp:1033
 msgid "Camera timeout during capture"
 msgstr "Таймаут камеры во время экспозиции"
 
-#: camera.cpp:1040
+#: camera.cpp:1041
 msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
@@ -1358,7 +1360,7 @@ msgstr "Y"
 msgid "Don't ask again"
 msgstr "Больше не спрашивать"
 
-#: confirm_dialog.cpp:73 drift_tool.cpp:750 guider.cpp:1473
+#: confirm_dialog.cpp:82
 msgid "Confirm"
 msgstr "Подтвердить"
 
@@ -1675,7 +1677,7 @@ msgstr ""
 msgid "There is no calibration data available."
 msgstr "Калибровочные данные не найдены."
 
-#: eegg.cpp:56 myframe_events.cpp:838
+#: eegg.cpp:56 myframe_events.cpp:844
 msgid "Please connect a mount first."
 msgstr "Пожалуйста, сначала подключите камеру"
 
@@ -1723,11 +1725,11 @@ msgstr "Подтвердить выключение гидирования"
 msgid "Connect Equipment"
 msgstr "Подключить оборудование "
 
-#: gear_dialog.cpp:206
+#: gear_dialog.cpp:190
 msgid "Equipment profile"
 msgstr "Профиль оборудования"
 
-#: gear_dialog.cpp:208
+#: gear_dialog.cpp:192
 msgid ""
 "Select the Equipment Profile you would like to use. PHD stores all of your "
 "settings and equipment selections in an Equipment Profile. You can create "
@@ -1736,74 +1738,74 @@ msgstr ""
 "Укажите профиль оборудования, который будете использовать.  Можно создать "
 "несколько профилей и переключаться между ними."
 
-#: gear_dialog.cpp:214
+#: gear_dialog.cpp:198
 msgid "New"
 msgstr "Новый"
 
-#: gear_dialog.cpp:214
+#: gear_dialog.cpp:198
 msgid "Create a new profile, optionally copying from another profile"
 msgstr "Создать новый профиль, возможно, копированием старого"
 
-#: gear_dialog.cpp:215
+#: gear_dialog.cpp:199
 msgid "New using Wizard..."
 msgstr "Новый с Помощником"
 
-#: gear_dialog.cpp:215
+#: gear_dialog.cpp:199
 msgid "Run the first-light wizard to create a new profile"
 msgstr "Запуск помощника создания нового профиля"
 
-#: gear_dialog.cpp:216
+#: gear_dialog.cpp:200
 msgid "Delete"
 msgstr "Удалить"
 
-#: gear_dialog.cpp:216
+#: gear_dialog.cpp:200
 msgid "Delete the selected profile"
 msgstr "Удалить выбранный профиль"
 
-#: gear_dialog.cpp:217
+#: gear_dialog.cpp:201
 msgid "Rename"
 msgstr "Переименовать"
 
-#: gear_dialog.cpp:217
+#: gear_dialog.cpp:201
 msgid "Rename the selected profile"
 msgstr "Переименовать выбранный профиль"
 
-#: gear_dialog.cpp:218
+#: gear_dialog.cpp:202
 msgid "Import..."
 msgstr "Импорт..."
 
-#: gear_dialog.cpp:218
+#: gear_dialog.cpp:202
 msgid "Load a profile from a file"
 msgstr "Загрузить профиль из файла"
 
-#: gear_dialog.cpp:219
+#: gear_dialog.cpp:203
 msgid "Export..."
 msgstr "Экспорт"
 
-#: gear_dialog.cpp:219
+#: gear_dialog.cpp:203
 msgid "Save the selected profile to a file"
 msgstr "Сохранить выбранный профиль в файл"
 
-#: gear_dialog.cpp:220
+#: gear_dialog.cpp:204
 msgid "Settings..."
 msgstr "Настройки..."
 
-#: gear_dialog.cpp:220
+#: gear_dialog.cpp:204
 msgid "Open the advanced settings dialog"
 msgstr "Открыть дополнительные настройки"
 
-#: gear_dialog.cpp:222
+#: gear_dialog.cpp:206
 msgid "Manage Profiles"
 msgstr "Управление профилями"
 
-#: gear_dialog.cpp:223
+#: gear_dialog.cpp:207
 msgid ""
 "Create a new Equipment Profile, or delete or rename the selected Equipment "
 "Profile"
 msgstr ""
 "Создать новый профиль оборудования или удалить или переименовать выбранный"
 
-#: gear_dialog.cpp:234
+#: gear_dialog.cpp:218
 msgid ""
 "Select your equipment below and click Connect All to connect, or click "
 "Disconnect All to disconnect. You can also connect or disconnect individual "
@@ -1813,26 +1815,26 @@ msgstr ""
 "подключать и отключать конкретное оборудование, нажав на кнопку справа от "
 "него."
 
-#: gear_dialog.cpp:249
+#: gear_dialog.cpp:233
 msgid "Camera Setup"
 msgstr "Настройки камеры"
 
-#: gear_dialog.cpp:251 gear_dialog.cpp:264 gear_dialog.cpp:289
-#: gear_dialog.cpp:305 gear_dialog.cpp:317 gear_dialog.cpp:501
-#: gear_dialog.cpp:538 gear_dialog.cpp:603 gear_dialog.cpp:640
-#: gear_dialog.cpp:678
+#: gear_dialog.cpp:235 gear_dialog.cpp:248 gear_dialog.cpp:273
+#: gear_dialog.cpp:289 gear_dialog.cpp:301 gear_dialog.cpp:491
+#: gear_dialog.cpp:528 gear_dialog.cpp:593 gear_dialog.cpp:630
+#: gear_dialog.cpp:668
 msgid "Disconnect"
 msgstr "Отключить"
 
-#: gear_dialog.cpp:262
+#: gear_dialog.cpp:246
 msgid "Mount Setup"
 msgstr "Настройки монтировки"
 
-#: gear_dialog.cpp:270 gear_dialog.cpp:272
+#: gear_dialog.cpp:254 gear_dialog.cpp:256
 msgid "Aux Mount"
 msgstr "Доп. монтировка"
 
-#: gear_dialog.cpp:280
+#: gear_dialog.cpp:264
 #, c-format
 msgid ""
 "If you are using a guide port (On-camera or GPXXX) interface  for guiding, "
@@ -1845,194 +1847,209 @@ msgstr ""
 "монтировку. Если Вы уже выбрали драйвер %s для своей монтировки, "
 "'дополнительную' монтировку нельзя будет использовать."
 
-#: gear_dialog.cpp:287
+#: gear_dialog.cpp:271
 msgid "Aux Mount Setup"
 msgstr "Настройки доп. монтировки"
 
-#: gear_dialog.cpp:303
+#: gear_dialog.cpp:287
 msgid "AO Setup"
 msgstr "Настройки АО"
 
-#: gear_dialog.cpp:315
+#: gear_dialog.cpp:299
 msgid "Rotator Setup"
 msgstr "Настройка поворотного устройства"
 
-#: gear_dialog.cpp:325
+#: gear_dialog.cpp:309
 msgid "Connect All"
 msgstr "Подключить всё"
 
-#: gear_dialog.cpp:326
+#: gear_dialog.cpp:310
 msgid "Connect all equipment and close the equipment selection window"
 msgstr "Подключить всё оборудование и закрыть окно выбора оборудования"
 
-#: gear_dialog.cpp:329
+#: gear_dialog.cpp:313
 msgid "Disconnect All"
 msgstr "Отключить всё"
 
-#: gear_dialog.cpp:330
+#: gear_dialog.cpp:314
 msgid "Disconnect all equipment"
 msgstr "Отключить всё оборудование"
 
-#: gear_dialog.cpp:485 gear_dialog.cpp:509 gear_dialog.cpp:525
-#: gear_dialog.cpp:546 gear_dialog.cpp:590 gear_dialog.cpp:611
-#: gear_dialog.cpp:628 gear_dialog.cpp:649 gear_dialog.cpp:666
-#: gear_dialog.cpp:687 runinbg.h:79 runinbg.h:85 runinbg.h:91 runinbg.h:97
+#: gear_dialog.cpp:317 myframe.cpp:1021
+msgid "Close"
+msgstr "Закрыть"
+
+#: gear_dialog.cpp:475 gear_dialog.cpp:499 gear_dialog.cpp:515
+#: gear_dialog.cpp:536 gear_dialog.cpp:580 gear_dialog.cpp:601
+#: gear_dialog.cpp:618 gear_dialog.cpp:639 gear_dialog.cpp:656
+#: gear_dialog.cpp:677 runinbg.h:79 runinbg.h:85 runinbg.h:91 runinbg.h:97
 msgid "Connect"
 msgstr "Подключить"
 
-#: gear_dialog.cpp:487 gear_dialog.cpp:511
+#: gear_dialog.cpp:477 gear_dialog.cpp:501
 msgid "Connect to camera"
 msgstr "Подключение камеры"
 
-#: gear_dialog.cpp:503
+#: gear_dialog.cpp:493
 msgid "Disconnect from camera"
 msgstr "Отключение камеры"
 
-#: gear_dialog.cpp:527 gear_dialog.cpp:548
+#: gear_dialog.cpp:517 gear_dialog.cpp:538
 msgid "Connect to mount"
 msgstr "Подключить монтировку"
 
-#: gear_dialog.cpp:540
+#: gear_dialog.cpp:530
 msgid "Disconnect from mount"
 msgstr "Отключение монтировки"
 
-#: gear_dialog.cpp:592 gear_dialog.cpp:613
+#: gear_dialog.cpp:582 gear_dialog.cpp:603
 msgid "Connect to aux mount"
 msgstr "Подключить доп. монтировку"
 
-#: gear_dialog.cpp:605
+#: gear_dialog.cpp:595
 msgid "Disconnect from aux mount"
 msgstr "Отключить доп. монтировку"
 
-#: gear_dialog.cpp:630 gear_dialog.cpp:651
+#: gear_dialog.cpp:620 gear_dialog.cpp:641
 msgid "Connect to AO"
 msgstr "Подключить АО"
 
-#: gear_dialog.cpp:642
+#: gear_dialog.cpp:632
 msgid "Disconnect from AO"
 msgstr "Отключить АО"
 
-#: gear_dialog.cpp:668 gear_dialog.cpp:689
+#: gear_dialog.cpp:658 gear_dialog.cpp:679
 msgid "Connect to Rotator"
 msgstr "Подключиться к поворотному устройству"
 
-#: gear_dialog.cpp:680
+#: gear_dialog.cpp:670
 msgid "Disconnect from Rotator"
 msgstr "Отключение поворотного устройства"
 
-#: gear_dialog.cpp:861
+#: gear_dialog.cpp:867
+msgid ""
+"By changing cameras in this profile, you won't be able to use the existing "
+"dark library or bad-pixel maps. You should consider creating a new profile "
+"for this set-up.  Do you want to proceed with changes to this profile?"
+msgstr ""
+
+#: gear_dialog.cpp:869
+msgid "Camera Change Warning"
+msgstr ""
+
+#: gear_dialog.cpp:884
 msgid "Connecting to Camera ..."
 msgstr "Подключение камеры..."
 
-#: gear_dialog.cpp:888
+#: gear_dialog.cpp:911
 msgid "Camera Connected"
 msgstr "Камера подключена"
 
-#: gear_dialog.cpp:895
+#: gear_dialog.cpp:918
 msgid "Camera Connect Failed"
 msgstr "Сбой подключения камеры"
 
-#: gear_dialog.cpp:922
+#: gear_dialog.cpp:952
 msgid "Camera Disconnected"
 msgstr "Камера отключена"
 
-#: gear_dialog.cpp:1038
+#: gear_dialog.cpp:1068
 msgid "Connecting to Mount ..."
 msgstr "Подключение монтировки..."
 
-#: gear_dialog.cpp:1048
+#: gear_dialog.cpp:1078
 msgid "Mount does not support the required PulseGuide interface"
 msgstr "Монтировка не поддерживает требуемый интерфейс PulseGuide"
 
-#: gear_dialog.cpp:1052
+#: gear_dialog.cpp:1082
 msgid "Mount Connected"
 msgstr "Монтировка подключена"
 
-#: gear_dialog.cpp:1065
+#: gear_dialog.cpp:1095
 msgid "Mount Connect Failed"
 msgstr "Сбой подключения монтировки"
 
-#: gear_dialog.cpp:1084
+#: gear_dialog.cpp:1114
 msgid "Connecting to Aux Mount ..."
 msgstr "Подключение доп. монтировки..."
 
-#: gear_dialog.cpp:1091
+#: gear_dialog.cpp:1121
 msgid "Aux Mount Connected"
 msgstr "Доп. монтировка подключена"
 
-#: gear_dialog.cpp:1099
+#: gear_dialog.cpp:1129
 msgid "Aux Mount Connect Failed"
 msgstr "Сбой подключения доп. монтировки"
 
-#: gear_dialog.cpp:1120
+#: gear_dialog.cpp:1150
 msgid "Mount Disconnected"
 msgstr "Монтировка отключена"
 
-#: gear_dialog.cpp:1151
+#: gear_dialog.cpp:1181
 msgid "Aux Mount Disconnected"
 msgstr "Доп. монтировка отключена"
 
-#: gear_dialog.cpp:1167
+#: gear_dialog.cpp:1197
 msgid "Hide"
 msgstr "Скрыть"
 
-#: gear_dialog.cpp:1173
+#: gear_dialog.cpp:1203
 msgid "More Equipment ..."
 msgstr "Дополнительное оборудование"
 
-#: gear_dialog.cpp:1233
+#: gear_dialog.cpp:1263
 msgid "Connecting to AO ..."
 msgstr "Подключение АО..."
 
-#: gear_dialog.cpp:1243
+#: gear_dialog.cpp:1273
 msgid "AO Connected"
 msgstr "АО подключена"
 
-#: gear_dialog.cpp:1256
+#: gear_dialog.cpp:1286
 msgid "AO Connect Failed"
 msgstr "Сбой подключения АО"
 
-#: gear_dialog.cpp:1283
+#: gear_dialog.cpp:1313
 msgid "AO Disconnected"
 msgstr "АО отключена"
 
-#: gear_dialog.cpp:1347
+#: gear_dialog.cpp:1377
 msgid "Connecting to Rotator ..."
 msgstr "Подключение поворотного устройства..."
 
-#: gear_dialog.cpp:1357
+#: gear_dialog.cpp:1387
 msgid "Rotator Connected"
 msgstr "Поворотное устройство подключено"
 
-#: gear_dialog.cpp:1370
+#: gear_dialog.cpp:1400
 msgid "Rotator Connect Failed"
 msgstr "Сбой подключения поворотного устройства"
 
-#: gear_dialog.cpp:1392
+#: gear_dialog.cpp:1422
 msgid "Rotator Disconnected"
 msgstr "Поворотное устройство отключено"
 
-#: gear_dialog.cpp:1637
+#: gear_dialog.cpp:1691
 msgid "New Equipment Profile"
 msgstr "Новый профиль оборудования"
 
-#: gear_dialog.cpp:1644
+#: gear_dialog.cpp:1698
 msgid "Name"
 msgstr "Название"
 
-#: gear_dialog.cpp:1648
+#: gear_dialog.cpp:1702
 msgid "Enter the name of the new equipment profile"
 msgstr "Ввести название нового профиля оборудования"
 
-#: gear_dialog.cpp:1652
+#: gear_dialog.cpp:1706
 msgid "PHD Defaults"
 msgstr "Значения по умолчанию"
 
-#: gear_dialog.cpp:1655
+#: gear_dialog.cpp:1709
 msgid "Profile initial settings"
 msgstr "Первоначальные настройки профиля"
 
-#: gear_dialog.cpp:1658
+#: gear_dialog.cpp:1712
 msgid ""
 "Select PHD Defaults to create a profile with default PHD settings, or select "
 "an existing Equipment Profile to copy its settings into your new profile."
@@ -2040,48 +2057,48 @@ msgstr ""
 "Выберите умолчания для создания профилями с настройками PHD по умолчанию или "
 "скопируйте настройки из существующего профиля оборудования. "
 
-#: gear_dialog.cpp:1682
+#: gear_dialog.cpp:1736
 #, c-format
 msgid "Cannot create profile %s, there is already a profile with that name"
 msgstr "Профиль с названием %s уже существует"
 
-#: gear_dialog.cpp:1691
+#: gear_dialog.cpp:1745
 #, c-format
 msgid "Could not create profile %s from profile %s"
 msgstr "Невозможно создать профиль %s из профиля %s"
 
-#: gear_dialog.cpp:1698 profile_wizard.cpp:447
+#: gear_dialog.cpp:1752 profile_wizard.cpp:447
 #, c-format
 msgid "Could not create profile %s"
 msgstr "Невозможно создать профиль %s"
 
-#: gear_dialog.cpp:1714
+#: gear_dialog.cpp:1768
 #, c-format
 msgid "Delete profile %s?"
 msgstr "Удалить профиль %s?"
 
-#: gear_dialog.cpp:1714
+#: gear_dialog.cpp:1768
 msgid "Delete Equipment Profile"
 msgstr "Удалить профиль оборудования"
 
-#: gear_dialog.cpp:1733
+#: gear_dialog.cpp:1787
 #, c-format
 msgid "Rename %s"
 msgstr "Переименовать %s"
 
-#: gear_dialog.cpp:1733
+#: gear_dialog.cpp:1787
 msgid "Rename Equipment Profile"
 msgstr "Переименовать профиль оборудования"
 
-#: gear_dialog.cpp:1749
+#: gear_dialog.cpp:1803
 msgid "Could not rename profile"
 msgstr "Невозможно переименовать профиль"
 
-#: gear_dialog.cpp:1763
+#: gear_dialog.cpp:1817
 msgid "Import PHD Equipment Profiles"
 msgstr "Импорт профилей оборудования PHD"
 
-#: gear_dialog.cpp:1796
+#: gear_dialog.cpp:1850
 msgid "Export PHD Equipment Profile"
 msgstr "Экспортировать профиль оборудования PHD"
 
@@ -2383,7 +2400,7 @@ msgstr ""
 msgid "star lost"
 msgstr "звезда потеряна"
 
-#: guider.cpp:1117 myframe.cpp:1356
+#: guider.cpp:1117 myframe.cpp:1360
 msgid "Paused"
 msgstr "Остановлено"
 
@@ -3029,8 +3046,8 @@ msgid "Enable Server"
 msgstr "Включить сервер"
 
 #: myframe.cpp:455
-msgid "Enable / disable link to Nebulosity"
-msgstr "Включить/выключить связь с Nebulosity"
+msgid "Enable PHD2 server capability"
+msgstr ""
 
 #: myframe.cpp:456 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
@@ -3137,8 +3154,8 @@ msgid "Slit Position..."
 msgstr "Положение щели..."
 
 #: myframe.cpp:475
-msgid "Restore window positions"
-msgstr "Восстановить расположение окон"
+msgid "Restore Window Positions"
+msgstr ""
 
 #: myframe.cpp:475
 msgid "Restore all windows to their default/docked positions"
@@ -3161,8 +3178,8 @@ msgid "Adjust parameters to create or modify the bad-pixel map"
 msgstr "Задать параметры для создания или изменения карты битых пикселей"
 
 #: myframe.cpp:480
-msgid "Import from profile..."
-msgstr "Импорт из профиля..."
+msgid "Import From Profile..."
+msgstr ""
 
 #: myframe.cpp:480
 msgid "Import existing dark library/bad-pixel map from a different profile"
@@ -3330,8 +3347,8 @@ msgstr ""
 "принудительная калибровка "
 
 #: myframe.cpp:801
-msgid "Abort the current action"
-msgstr "Отменить текущее действие"
+msgid "Stop looping and guiding"
+msgstr ""
 
 #: myframe.cpp:803
 msgid "Exposure duration"
@@ -3345,35 +3362,31 @@ msgstr ""
 msgid "Advanced parameters"
 msgstr "Настройки"
 
-#: myframe.cpp:824 myframe.cpp:843
+#: myframe.cpp:825 myframe.cpp:844
 msgid "Cal +"
 msgstr ""
 
-#: myframe.cpp:824
+#: myframe.cpp:825
 msgid "Cal"
 msgstr "Откалибровано"
 
-#: myframe.cpp:824 myframe.cpp:843
+#: myframe.cpp:825 myframe.cpp:844
 msgid "No cal"
 msgstr "Не откалибровано"
 
-#: myframe.cpp:900
+#: myframe.cpp:901
 msgid "Could not find help file: "
 msgstr "Невозможно найти файл справки:"
 
-#: myframe.cpp:1017
-msgid "Close"
-msgstr "Закрыть"
-
-#: myframe.cpp:1327
+#: myframe.cpp:1331
 msgid "Waiting for devices..."
 msgstr "Поиск устройств..."
 
-#: myframe.cpp:1370
+#: myframe.cpp:1374
 msgid "Resumed"
 msgstr "Возобновлено"
 
-#: myframe.cpp:1417
+#: myframe.cpp:1421
 msgid ""
 "Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-"
 "pixel Map window."
@@ -3381,40 +3394,40 @@ msgstr ""
 "Гидирование невозможно во время улучшения карты битых пикселей. Закройте "
 "окно улучшения карты битых пикселей."
 
-#: myframe.cpp:1491
+#: myframe.cpp:1495
 #, c-format
 msgid "Dither by %.2f,%.2f"
 msgstr "Подвижка на %.2f,%.2f"
 
-#: myframe.cpp:1513
+#: myframe.cpp:1517
 msgid "Are you sure you want to exit while capturing is active?"
 msgstr "Вы уверены, что хотите выйти при активном захвате?"
 
-#: myframe.cpp:1514
+#: myframe.cpp:1518
 msgid "Confirm Exit"
 msgstr "Подтвердить выход"
 
-#: myframe.cpp:1751 usImage.cpp:365
+#: myframe.cpp:1755 usImage.cpp:365
 msgid "FITS file is not of an image: "
 msgstr "Файл FITS не содержит изображение:"
 
-#: myframe.cpp:1759 usImage.cpp:377
+#: myframe.cpp:1763 usImage.cpp:377
 msgid "Unsupported type or read error loading FITS file "
 msgstr "Неподдерживаемый тип или ошибка чтения файла FITS"
 
-#: myframe.cpp:1770
+#: myframe.cpp:1774
 msgid "Memory allocation error reading FITS file "
 msgstr "Ошибка выделения памяти при чтении файла FITS"
 
-#: myframe.cpp:1777
+#: myframe.cpp:1781
 msgid "Error reading data from "
 msgstr "Ошибка чтения данных из"
 
-#: myframe.cpp:1806 usImage.cpp:409
+#: myframe.cpp:1810 usImage.cpp:409
 msgid "Error opening FITS file "
 msgstr "Ошибка при открытии файла FITS"
 
-#: myframe.cpp:1864
+#: myframe.cpp:1868
 msgid ""
 "Dark library does not match the camera in this profile - it needs to be "
 "replaced."
@@ -3422,7 +3435,7 @@ msgstr ""
 "Библиотека темновых кадров не соответствует камере профиля  и должна быть "
 "пересобрана."
 
-#: myframe.cpp:1903
+#: myframe.cpp:1907
 msgid ""
 "Dark library and bad-pixel maps are incompatible with the current camera - "
 "both need to be replaced"
@@ -3430,112 +3443,104 @@ msgstr ""
 "Карты темновых кадров и дефектных пикселей несовместимы с текущей камерой и "
 "должны быть заменены"
 
-#: myframe.cpp:1929
+#: myframe.cpp:1933
 msgid "You must connect a camera before loading dark frames"
 msgstr ""
 "Перед загрузкой библиотеки темновых кадров необходимо подключить камеру"
 
-#: myframe.cpp:1936
+#: myframe.cpp:1940
 msgid "Darks not loaded"
 msgstr "Темновые кадры не загружены"
 
-#: myframe.cpp:1942
+#: myframe.cpp:1946
 msgid "Darks loaded"
 msgstr "Темновые кадры загружены"
 
-#: myframe.cpp:1954
+#: myframe.cpp:1958
 msgid "Error saving darks FITS file "
 msgstr "Ошибка сохранения темнового файла FITS"
 
-#: myframe.cpp:1963
-msgid "Defect map loaded"
-msgstr "Карта дефектов загружена"
-
-#: myframe.cpp:1968
-msgid "Defect map not loaded"
-msgstr "Карта дефектов не загружена"
-
-#: myframe.cpp:2153
+#: myframe.cpp:2143
 msgid "Global Settings"
 msgstr "Общие настройки"
 
-#: myframe.cpp:2158
+#: myframe.cpp:2148
 msgid "Reset Configuration"
 msgstr "Сброс конфигурации"
 
-#: myframe.cpp:2159
+#: myframe.cpp:2149
 msgid ""
 "Reset all configuration to fresh install status -- Note: this closes PHD2"
 msgstr "Сбросить все настройки. Завершить PHD2."
 
-#: myframe.cpp:2161
+#: myframe.cpp:2151
 msgid "Reset \"Don't Ask Again\" messages"
 msgstr "Сброс сообщения \"Больше не спрашивать\""
 
-#: myframe.cpp:2162
+#: myframe.cpp:2152
 msgid ""
 "Restore any messages that were hidden when you checked \"Don't Ask Again\"."
 msgstr ""
 "Восстановить сообщения, которые были скрыты при нажатии \"Больше не "
 "показывать\"."
 
-#: myframe.cpp:2166
+#: myframe.cpp:2156
 msgid "Low Q JPEG"
 msgstr "JPEG низкого качества"
 
-#: myframe.cpp:2166
+#: myframe.cpp:2156
 msgid "High Q JPEG"
 msgstr "JPEG высокого качества"
 
-#: myframe.cpp:2166
+#: myframe.cpp:2156
 msgid "Raw FITS"
 msgstr "Сырой FITS"
 
-#: myframe.cpp:2172
+#: myframe.cpp:2162
 msgid "Image logging format"
 msgstr "Формат логгирования изображений"
 
-#: myframe.cpp:2173
+#: myframe.cpp:2163
 msgid "File format of logged images"
 msgstr "Формат файла лога изображений"
 
-#: myframe.cpp:2175
+#: myframe.cpp:2165
 msgid "Dither RA only"
 msgstr "Делать подвижки только по RA"
 
-#: myframe.cpp:2176
+#: myframe.cpp:2166
 msgid "Constrain dither to RA only?"
 msgstr "Ограничить подвижки осью RA"
 
-#: myframe.cpp:2182
+#: myframe.cpp:2172
 msgid "Dither scale"
 msgstr "Масштаб подвижек"
 
-#: myframe.cpp:2183
+#: myframe.cpp:2173
 msgid "Scaling for dither commands. Default = 1.0 (0.01-100.0)"
 msgstr "Коэфф. подвижек. По умолчанию 1.0 (0.01  - 100.0)"
 
-#: myframe.cpp:2187
+#: myframe.cpp:2177
 msgid "2x2 mean"
 msgstr "2x2 среднее"
 
-#: myframe.cpp:2187
+#: myframe.cpp:2177
 msgid "3x3 median"
 msgstr "3x3 медиана"
 
-#: myframe.cpp:2193
+#: myframe.cpp:2183
 msgid "Noise Reduction"
 msgstr "Уменьшение шума"
 
-#: myframe.cpp:2194
+#: myframe.cpp:2184
 msgid "Technique to reduce noise in images"
 msgstr "Способ уменьшения шумов изображения"
 
-#: myframe.cpp:2199
+#: myframe.cpp:2189
 msgid "Time Lapse (ms)"
 msgstr "Частота замедленной видеосъёмки (мсек)"
 
-#: myframe.cpp:2200
+#: myframe.cpp:2190
 msgid ""
 "How long should PHD wait between guide frames? Default = 0ms, useful when "
 "using very short exposures (e.g., using a video camera) but wanting to send "
@@ -3545,11 +3550,11 @@ msgstr ""
 "экспозициях (например, при съёмках видеокамерой), но при этом команды "
 "гидирования будут посылаться реже"
 
-#: myframe.cpp:2203
+#: myframe.cpp:2193
 msgid "Focal length (mm)"
 msgstr "Фокусное расстояние в мм"
 
-#: myframe.cpp:2204
+#: myframe.cpp:2194
 msgid ""
 "Guider telescope focal length, used with the camera pixel size to display "
 "guiding error in arc-sec."
@@ -3557,41 +3562,41 @@ msgstr ""
 "Фокусное расстояние гидирующего телескопа, используется вместе с размером "
 "пикселей камеры для показа ошибки гидирования в арксек."
 
-#: myframe.cpp:2210 myframe.cpp:2242
+#: myframe.cpp:2200 myframe.cpp:2232
 msgid "System default"
 msgstr "Настройки системы по умолчанию"
 
-#: myframe.cpp:2225
+#: myframe.cpp:2215
 msgid "Language-Name"
 msgstr "Русский"
 
-#: myframe.cpp:2245
+#: myframe.cpp:2235
 msgid "Language"
 msgstr "Язык"
 
-#: myframe.cpp:2246
+#: myframe.cpp:2236
 #, c-format
 msgid "%s Language. You'll have to restart PHD to take effect."
 msgstr "Язык: %s. Перегрузитесь, чтобы изменения вступили в силу."
 
-#: myframe.cpp:2249
+#: myframe.cpp:2239
 msgid "Log File Location"
 msgstr "Расположение лог-файла"
 
-#: myframe.cpp:2253
+#: myframe.cpp:2243
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr "Место для логов гидирования и отладки; если не указано - по умолчанию"
 
-#: myframe.cpp:2254
+#: myframe.cpp:2244
 msgid "Browse..."
 msgstr "Просмотр..."
 
-#: myframe.cpp:2262
+#: myframe.cpp:2252
 msgid "Auto restore calibration"
 msgstr "Автовосстановление калибровки"
 
-#: myframe.cpp:2263
+#: myframe.cpp:2253
 msgid ""
 "Automatically restore calibration data from last successful calibration when "
 "connecting equipment."
@@ -3599,35 +3604,35 @@ msgstr ""
 "Восстановить данные из последней успешной калибровки во время подключения "
 "оборудования."
 
-#: myframe.cpp:2275
+#: myframe.cpp:2265
 msgid "Min"
 msgstr "Мин."
 
-#: myframe.cpp:2275
+#: myframe.cpp:2265
 msgid "Auto exposure minimum duration"
 msgstr "Минимальная продолжительность автоэкспозиции"
 
-#: myframe.cpp:2276
+#: myframe.cpp:2266
 msgid "Max"
 msgstr "Макс."
 
-#: myframe.cpp:2276
+#: myframe.cpp:2266
 msgid "Auto exposure maximum duration"
 msgstr "Максимальная продолжительность автоэкспозиции"
 
-#: myframe.cpp:2278
+#: myframe.cpp:2268
 msgid "Auto Exposure"
 msgstr "Автоэкспозиция"
 
-#: myframe.cpp:2280
+#: myframe.cpp:2270
 msgid "Target SNR"
 msgstr "Cигнал/шум звезды"
 
-#: myframe.cpp:2280
+#: myframe.cpp:2270
 msgid "Auto exposure target SNR value"
 msgstr "Соотношение сигнал/шум при автоэкспозиции"
 
-#: myframe.cpp:2340
+#: myframe.cpp:2330
 msgid ""
 "This will reset all PHD2 configuration values and exit the program.  Are you "
 "sure?"
@@ -3635,16 +3640,16 @@ msgstr ""
 "Все настройки PHD2 сбросятся и программа завершится. Вы уверены, что хотите "
 "этого?"
 
-#: myframe.cpp:2340
+#: myframe.cpp:2330
 msgid "Confirmation"
 msgstr "Подтверждение"
 
-#: myframe.cpp:2368
+#: myframe.cpp:2358
 msgid "You must restart PHD for the language change to take effect."
 msgstr "Перегрузите PHD, чтобы изменение языка вступило в силу."
 
-#: myframe.cpp:2368 myframe_events.cpp:276 myframe_events.cpp:457
-#: myframe_events.cpp:545
+#: myframe.cpp:2358 myframe_events.cpp:276 myframe_events.cpp:457
+#: myframe_events.cpp:551
 msgid "Info"
 msgstr "Сведения"
 
@@ -3738,7 +3743,7 @@ msgstr "Изображение не может быть сохранено в %s
 msgid "%s saved"
 msgstr "%s сохранено"
 
-#: myframe_events.cpp:276 myframe_events.cpp:457 myframe_events.cpp:545
+#: myframe_events.cpp:276 myframe_events.cpp:457 myframe_events.cpp:551
 msgid "Please connect to a camera first"
 msgstr "Сперва подключите камеру"
 
@@ -3756,7 +3761,7 @@ msgstr ""
 "камеры, размеры которых отличаются от обычных кадров гидирования для этой "
 "камеры."
 
-#: myframe_events.cpp:322 myframe_events.cpp:775 scope.cpp:529
+#: myframe_events.cpp:322 myframe_events.cpp:781 scope.cpp:529
 msgid ""
 "Don't show\n"
 "this again"
@@ -3775,11 +3780,19 @@ msgstr "Темновая библиотека выгружена"
 msgid "You must connect a camera before loading a bad-pixel map"
 msgstr "Перед загрузкой карты битых пикселей необходимо подключить камеру"
 
-#: myframe_events.cpp:532
+#: myframe_events.cpp:522
+msgid "Defect map loaded"
+msgstr "Карта дефектов загружена"
+
+#: myframe_events.cpp:526
+msgid "Defect map not loaded"
+msgstr "Карта дефектов не загружена"
+
+#: myframe_events.cpp:538
 msgid "Bad-pixel map unloaded"
 msgstr "Карта дефектных пикселей выгружена"
 
-#: myframe_events.cpp:772
+#: myframe_events.cpp:778
 msgid ""
 "For best results, use a Dark Library or a Bad-pixel Map while guiding. This "
 "will help prevent PHD from locking on to a hot pixel. Use the Darks menu to "
@@ -3788,17 +3801,38 @@ msgstr ""
 "Использование карты битых пикселей предотвратит попытку гидирования по "
 "горячему пикселю. Создайте её через меню \"Темновые кадры\"."
 
-#: myframe_events.cpp:813
+#: myframe_events.cpp:819
 msgid "Are you sure you want force recalibration?"
 msgstr "Вы уверены, что хотите провести принудительную калибровку?"
 
-#: myframe_events.cpp:814
+#: myframe_events.cpp:820
 msgid "Force Recalibration"
 msgstr "Принудительная калибровка"
 
-#: myframe_events.cpp:838 testguide.cpp:146
+#: myframe_events.cpp:844 testguide.cpp:146
 msgid "Manual Guide"
 msgstr "Ручное гидирование"
+
+#: myframe_events.cpp:900
+msgid ""
+"It looks like this is a first-time connection to your camera and mount. The "
+"Setup Wizard can help\n"
+"you with that and will also establish baseline guiding parameters for your "
+"new configuration.\n"
+"Would you like to use the Setup Wizard now?"
+msgstr ""
+
+#: myframe_events.cpp:903
+msgid "Yes"
+msgstr ""
+
+#: myframe_events.cpp:903
+msgid "No"
+msgstr ""
+
+#: myframe_events.cpp:903
+msgid "Setup Wizard Recommendation"
+msgstr ""
 
 #: nudge_lock.cpp:117
 msgid "Adjust Lock Position"
@@ -4978,6 +5012,24 @@ msgstr "Подключение камеры..."
 #: runinbg.h:97
 msgid "Connecting to Rotator..."
 msgstr "Подключение к поворотному устройству..."
+
+#~ msgid "Import Dark Library and Bad Pixel Map"
+#~ msgstr "Импортировать темновую библиотеку и карту дефектных пикселей"
+
+#~ msgid "Import profile"
+#~ msgstr "Импорт профиля"
+
+#~ msgid "Restore window positions"
+#~ msgstr "Восстановить расположение окон"
+
+#~ msgid "Import from profile..."
+#~ msgstr "Импорт из профиля..."
+
+#~ msgid "Enable / disable link to Nebulosity"
+#~ msgstr "Включить/выключить связь с Nebulosity"
+
+#~ msgid "Abort the current action"
+#~ msgstr "Отменить текущее действие"
 
 #~ msgid "Guidability Check"
 #~ msgstr "Проверка гидируемости"
