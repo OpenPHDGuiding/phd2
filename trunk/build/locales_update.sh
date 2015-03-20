@@ -20,11 +20,11 @@ cd $SRC
 xgettext *.cpp *.h -C --from-code=CP1252 --keyword="_" --keyword="wxPLURAL:1,2" --keyword="wxTRANSLATE"
 cd locale
 cp messages.pot messages-old.pot
-msgmerge messages-old.pot ../messages.po -o messages.pot
+msgmerge -N -o messages.pot messages-old.pot ../messages.po
 for f in */messages.po; do
     (
         cd $(dirname "$f")
         cp messages.po messages-old.po
-        msgmerge messages-old.po ../messages.pot -o messages.po
+        msgmerge -N -o messages.po messages-old.po ../messages.pot
     )
 done
