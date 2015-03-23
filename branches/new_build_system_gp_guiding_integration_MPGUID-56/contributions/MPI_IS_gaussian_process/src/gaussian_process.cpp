@@ -301,6 +301,7 @@ double GP::neg_log_likelihood() const {
   double result = 0;
   if(gram_matrix_.rows() > 0) {
     // Implmented according to Equation (5.8) in Rasmussen & Williams, 2006
+    Eigen::MatrixXd Z = chol_gram_matrix_.matrixL();
     result = data_out_.transpose()*chol_gram_matrix_.solve(data_out_);
     result += chol_gram_matrix_.vectorD().array().log().sum();
     result += data_out_.rows()*std::log(2*M_PI);
@@ -389,11 +390,19 @@ Eigen::VectorXd GP::optimizeHyperParameters(int number_of_linesearches) const {
   GP this_copy(*this);
   GPObjective gpo(&this_copy);
 
+
+
+
+
+  // optimisation
   bfgs_optimizer::BFGS bfgs(&gpo, number_of_linesearches);
 
   Eigen::VectorXd result =
       this_copy.unmask(bfgs.minimize(this_copy.mask(getHyperParameters())));
+
+#if 0
   this_copy.setHyperParameters(result);
+
 
   int periodicity_index_ = 2; // FIXME!
   double current_likelihood_value = this_copy.neg_log_posterior();
@@ -420,7 +429,7 @@ Eigen::VectorXd GP::optimizeHyperParameters(int number_of_linesearches) const {
   }
   // it was too small before, so we multiply by 2 again
   result(periodicity_index_) += std::log(2);
-
+#endif
   return result;
 }
 

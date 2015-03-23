@@ -539,6 +539,8 @@ TEST_F(GPTest, parameter_identification_test) {
           - 200*Eigen::MatrixXd::Ones(N,1);
   Eigen::VectorXd output_sample_from_true_hyperparams = gp_.drawSample(location);
 
+
+#if 0
   std::ofstream toto("toto.txt");
 
   ASSERT_TRUE(toto.is_open());
@@ -547,7 +549,7 @@ TEST_F(GPTest, parameter_identification_test) {
     toto << location[i] << "\t" << output_sample_from_true_hyperparams[i] << std::endl;
   }
   toto.close();
-
+#endif
 
 
 
@@ -593,8 +595,11 @@ TEST_F(GPTest, parameter_identification_test) {
   gp_infered.setOptimizationMask(mask);
   Eigen::VectorXd optim = gp_infered.optimizeHyperParameters(10);
   gp_infered.setHyperParameters(optim);
-  optim = gp_.optimizeHyperParameters(10);
-  gp_infered.setHyperParameters(optim);
+  
+  //mask << 0, 1, 0, 0, 0;
+  //optim = gp_infered.optimizeHyperParameters(10);
+  //gp_infered.setHyperParameters(optim);
+
   gp_infered.clearOptimizationMask();
   optim = gp_infered.optimizeHyperParameters(10);
   gp_infered.setHyperParameters(optim);
