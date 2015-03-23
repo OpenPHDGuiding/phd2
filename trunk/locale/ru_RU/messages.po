@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-20 02:35-0400\n"
-"PO-Revision-Date: 2015-03-18 15:19+0300\n"
+"PO-Revision-Date: 2015-03-23 13:46+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -1077,7 +1077,7 @@ msgstr "Сбой доступа к камере ZWP ASI."
 #: camcal_import_dialog.cpp:57
 #, c-format
 msgid "Import Darks to Profile %s"
-msgstr ""
+msgstr "Импортировать темновые кадры в профиль %s"
 
 #: camcal_import_dialog.cpp:63 darks_dialog.cpp:113
 msgid "Dark Library"
@@ -1108,7 +1108,7 @@ msgstr "Темновые профили"
 
 #: camcal_import_dialog.cpp:79 camcal_import_dialog.cpp:105
 msgid "Import from profile"
-msgstr ""
+msgstr "Импортировать из профиля"
 
 #: camcal_import_dialog.cpp:81 camcal_import_dialog.cpp:107
 msgid "Camera in profile"
@@ -1548,6 +1548,8 @@ msgid ""
 "Click to save these coordinates as the default location for this axis "
 "adjustment."
 msgstr ""
+"Нажмите, чтобы сохранить координаты как используемые по умолчанию положения "
+"осей"
 
 #: drift_tool.cpp:224 drift_tool.cpp:396
 msgid "Altitude adjustment notes"
@@ -1932,10 +1934,13 @@ msgid ""
 "dark library or bad-pixel maps. You should consider creating a new profile "
 "for this set-up.  Do you want to proceed with changes to this profile?"
 msgstr ""
+"При изменении камеры профиля использование существующих библиотек - темновой "
+"и плохих пикселей - невозможно. Подумайте о создании нового профиля. Или же "
+"вы всё-таки хотите изменить существующий?"
 
 #: gear_dialog.cpp:869
 msgid "Camera Change Warning"
-msgstr ""
+msgstr "Предупреждение о смене камеры"
 
 #: gear_dialog.cpp:884
 msgid "Connecting to Camera ..."
@@ -2168,7 +2173,7 @@ msgstr ""
 
 #: graph.cpp:278
 msgid "Y-axis units"
-msgstr ""
+msgstr "Ед. изм. по оси Y"
 
 #: graph.cpp:280
 msgid "Arc-seconds"
@@ -3047,7 +3052,7 @@ msgstr "Включить сервер"
 
 #: myframe.cpp:455
 msgid "Enable PHD2 server capability"
-msgstr ""
+msgstr "Включить сервер PHD2"
 
 #: myframe.cpp:456 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
@@ -3155,7 +3160,7 @@ msgstr "Положение щели..."
 
 #: myframe.cpp:475
 msgid "Restore Window Positions"
-msgstr ""
+msgstr "Восстановить положение окон"
 
 #: myframe.cpp:475
 msgid "Restore all windows to their default/docked positions"
@@ -3179,7 +3184,7 @@ msgstr "Задать параметры для создания или изме�
 
 #: myframe.cpp:480
 msgid "Import From Profile..."
-msgstr ""
+msgstr "Импортировать из профиля"
 
 #: myframe.cpp:480
 msgid "Import existing dark library/bad-pixel map from a different profile"
@@ -3348,7 +3353,7 @@ msgstr ""
 
 #: myframe.cpp:801
 msgid "Stop looping and guiding"
-msgstr ""
+msgstr "Остановить съёмку и гидирование"
 
 #: myframe.cpp:803
 msgid "Exposure duration"
@@ -3821,18 +3826,22 @@ msgid ""
 "new configuration.\n"
 "Would you like to use the Setup Wizard now?"
 msgstr ""
+"Похоже, что это первое подключение ваших камеры и монтировки. Помощник "
+"установки\n"
+"может помочь установить основные параметры новой конфигурации.\n"
+"Хотите ли вы использовать помощника установки?"
 
 #: myframe_events.cpp:903
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: myframe_events.cpp:903
 msgid "No"
-msgstr ""
+msgstr "Нет"
 
 #: myframe_events.cpp:903
 msgid "Setup Wizard Recommendation"
-msgstr ""
+msgstr "Совет помощника установки"
 
 #: nudge_lock.cpp:117
 msgid "Adjust Lock Position"
@@ -4422,7 +4431,7 @@ msgstr "Инвертировано"
 
 #: rotator.cpp:153
 msgid "Check to use the reverse of the angle reported by the rotator"
-msgstr ""
+msgstr "Нажмите, чтобы инвертировать используемый поворотным устройством угол"
 
 #: rotator_ascom.cpp:135
 msgid ""
@@ -4753,7 +4762,7 @@ msgstr "Сторона от меридиана"
 
 #: statswindow.cpp:102
 msgid "Rotator Pos"
-msgstr ""
+msgstr "Положение поворотного устройства"
 
 #: statswindow.cpp:111
 msgid "Clear graph data and stats"
