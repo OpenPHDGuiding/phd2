@@ -42,6 +42,8 @@
 #include "gaussian_process.h"
 #include "covariance_functions.h"
 
+#include <fstream>
+
 class GPTest : public ::testing::Test {
 public:
   GPTest(): random_vector_(11), location_vector_(11), hyper_parameters_(4) {
@@ -490,6 +492,37 @@ TEST_F(GPTest, gamma_prior_test_set_get_parameters) {
 }
 
 
+
+// initial guess
+Eigen::VectorXd initial_guess(GP const & gp)
+{
+  
+  Eigen::VectorXd original_parameters = gp.getHyperParameters();
+  double original_score = gp.neg_log_posterior();
+
+  Eigen::VectorXd next_proposal = original_parameters;
+  next_proposal(2) -= log(2);
+  GP gp_next(gp);
+  gp_next.setHyperParameters(next_proposal);
+  double next_score = gp_next.neg_log_posterior();
+
+  while(next_score < original_score)
+  {
+    original_parameters = next_proposal;
+    original_score = next_score;
+    //gp = gp_next;
+
+    //next_proposal = original_parameters;
+    next_proposal(2) -= log(2);
+    //GP gp_next(gp);
+    gp_next.setHyperParameters(next_proposal);
+    next_score = gp_next.neg_log_posterior();
+  }
+
+  return original_parameters;
+}
+
+
 // FIXME This test does not work, yet
 TEST_F(GPTest, parameter_identification_test) {
 
@@ -504,7 +537,16 @@ TEST_F(GPTest, parameter_identification_test) {
   Eigen::VectorXd location =
       400*math_tools::generate_uniform_random_matrix_0_1(N,1)
           - 200*Eigen::MatrixXd::Ones(N,1);
-  Eigen::VectorXd output_from_converged_hyperparams = gp_.drawSample(location);
+  Eigen::VectorXd output_sample_from_true_hyperparams = gp_.drawSample(location);
+
+  std::ofstream toto("toto.txt");
+
+  ASSERT_TRUE(toto.is_open());
+  for(int i = 0; i < N; i++)
+  {
+    toto << location[i] << "\t" << output_sample_from_true_hyperparams[i] << std::endl;
+  }
+  toto.close();
 
 
 
@@ -519,7 +561,7 @@ TEST_F(GPTest, parameter_identification_test) {
   gp_infered.setHyperParameters(initialGuess);
 
   // infer from the generated locations and samples from the true hyperparameters
-  gp_infered.infer(location, output_from_converged_hyperparams);
+  gp_infered.infer(location, output_sample_from_true_hyperparams);
 
 
 
@@ -540,6 +582,11 @@ TEST_F(GPTest, parameter_identification_test) {
   prior_parameters << 1000, 100;
   parameter_priors::GammaPrior long_term_prior(prior_parameters);
   gp_infered.setHyperPrior(long_term_prior,4);
+
+
+  Eigen::VectorXd initial_guessed = initial_guess(gp_infered);
+
+  gp_infered.setHyperParameters(initial_guessed);
 
   Eigen::VectorXi mask(5);
   mask << 0, 0, 1, 0, 0;

@@ -79,7 +79,7 @@ public:
   virtual int getParameterCount() const = 0;
 
   /**
-   * Produces a clone to be able to copy the object.
+   * Returns a copy of this instance.
    */
   virtual ParameterPrior* clone() const = 0;
 };
@@ -131,9 +131,6 @@ public:
     return 2;
   }
 
-  /**
-   * Produces a clone to be able to copy the object.
-   */
   virtual ParameterPrior* clone() const {
     return new GammaPrior(*this);
   }
