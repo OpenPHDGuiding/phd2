@@ -454,6 +454,10 @@ if(WIN32)
 
   # apparently this is the way cmake works... did not know, the OpenCVConfig.cmake file is enough for the configuration
   set(OpenCV_DIR ${opencv_root}/build CACHE PATH "Location of the OpenCV configuration directory")
+  if(NOT OpenCV_DIR STREQUAL ${opencv_root}/build)
+    set(OpenCV_DIR ${opencv_root}/build CACHE PATH "Location of the OpenCV configuration directory" FORCE)
+  endif()
+  
   set(OpenCV_SHARED ON)
   set(OpenCV_STATIC OFF)
   set(BUILD_SHARED_LIBS ON)
