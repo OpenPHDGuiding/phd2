@@ -305,7 +305,8 @@ public:
     void SetDarkMenuState();
     void LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
-    void CheckGeometry();
+    void CheckDarkFrameGeometry();
+    static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 

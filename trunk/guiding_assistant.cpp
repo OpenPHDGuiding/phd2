@@ -388,10 +388,7 @@ GuidingAsstWin::GuidingAsstWin()
 
     int xpos = pConfig->Global.GetInt("/GuidingAssistant/pos.x", -1);
     int ypos = pConfig->Global.GetInt("/GuidingAssistant/pos.y", -1);
-    if (xpos == -1 || ypos == -1)
-        Centre(wxBOTH);
-    else
-        Move(xpos, ypos);
+    MyFrame::PlaceWindowOnScreen(this, xpos, ypos);
 
     wxCommandEvent dummy;
     OnAppStateNotify(dummy); // init state-dependent controls
@@ -573,16 +570,15 @@ void GuidingAsstWin::MakeRecommendations()
 {
     double rarms;
     double ramean;
+    m_statsRA.GetMeanAndStdev(&ramean, &rarms);
+
     double decrms;
     double decmean;
-    double rounded_rarms;
-    double rounded_decrms;
-
-    m_statsRA.GetMeanAndStdev(&ramean, &rarms);
     m_statsDec.GetMeanAndStdev(&decmean, &decrms);
+
     // Don't over-state the accuracy here - set things to the nearest .05
-    rounded_rarms = (round((rarms * 100) / 5.0) * 5) / 100.0;
-    rounded_decrms = (round((decrms * 100) / 5.0) * 5) / 100.0;
+    double rounded_rarms = round(rarms * 20.0) / 20.0;
+    double rounded_decrms = round(decrms * 20.0) / 20.0;
 
     m_recommend_group->Show(true);
 
