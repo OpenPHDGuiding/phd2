@@ -357,13 +357,18 @@ bool Camera_SXVClass::Connect()
             FullSize.SetWidth(CCDParams.width);
             // This is the height after squaring pixels.
             FullSize.SetHeight((int)floor((float)CCDParams.height * CCDParams.pix_height / CCDParams.pix_width));
+            PixelSize = CCDParams.pix_height / 2.0;
         }
         else
+        {
             FullSize = wxSize(CCDParams.width, CCDParams.height * 2);
+            PixelSize = std::min(CCDParams.pix_width, CCDParams.pix_height / 2.f);
+        }
     }
     else
     {
         FullSize = wxSize(CCDParams.width, CCDParams.height);
+        PixelSize = std::min(CCDParams.pix_width, CCDParams.pix_height);
         m_darkFrameSize = FullSize;
     }
 
