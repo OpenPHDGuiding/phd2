@@ -496,8 +496,6 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
 
                         wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
                         gc->SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(),1,wxPENSTYLE_DOT ));
-                        wxGraphicsPath path = gc->CreatePath();
-                        int i;
                         double step = (double) YImgSize / 10.0;
 
                         double MidX = (double) XImgSize / 2.0;
@@ -507,7 +505,7 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                         gc->Rotate(-xAngle);
                         gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
                         gc->Rotate(xAngle);
-                        for (i=-2; i<12; i++) {
+                        for (int i = -2; i < 12; i++) {
                             gc->StrokeLine(0.0,step * (double) i,
                                 (double) XImgSize, step * (double) i);
                         }
@@ -520,8 +518,8 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                         gc->Rotate(-yAngle);
                         gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
                         gc->Rotate(yAngle);
-                        gc->SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),1,wxPENSTYLE_DOT ));
-                        for (i=-2; i<12; i++) {
+                        gc->SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),1,wxPENSTYLE_DOT));
+                        for (int i = -2; i < 12; i++) {
                             gc->StrokeLine(0.0,step * (double) i,
                                 (double) XImgSize, step * (double) i);
                         }
