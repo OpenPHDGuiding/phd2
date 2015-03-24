@@ -26,7 +26,7 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# File created by Raffi Enficiaud
+# File created by Raffi Enficiaud 
 
 cmake_minimum_required(VERSION 2.8.11)
 
