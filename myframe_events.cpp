@@ -678,6 +678,15 @@ void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
         panes.Item(i).Dock();                       // Already docked, shown or not, doesn't matter
     }
     m_mgr.Update();
+
+    if (pCometTool)
+        pCometTool->Center();
+    if (pDriftTool)
+        pDriftTool->Center();
+    if (pGuidingAssistant)
+        pGuidingAssistant->Center();
+    if (pNudgeLock)
+        pNudgeLock->Center();
 }
 
 void MyFrame::OnLog(wxCommandEvent& evt)

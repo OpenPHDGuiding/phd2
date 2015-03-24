@@ -1307,7 +1307,7 @@ void MyFrame::StartCapturing()
         m_frameCounter = 0;
         m_loggedImageFrame = 0;
 
-        CheckGeometry();
+        CheckDarkFrameGeometry();
         UpdateButtonsStatus();
         SetStatusText(wxEmptyString);
 
@@ -1877,7 +1877,7 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
 
 // Confirm that in-use darks or bpms have the same sensor size as the current camera.  Added to protect against
 // surprise changes in binning
-void MyFrame::CheckGeometry()
+void MyFrame::CheckDarkFrameGeometry()
 {
     wxMenuItem *darksMenu = m_useDarksMenuItem;
     wxMenuItem *bpmMenu = m_useDefectMapMenuItem;
@@ -1890,7 +1890,7 @@ void MyFrame::CheckGeometry()
             if (bpmMenu->IsChecked())
                 LoadDefectMapHandler(false);
             bpmMenu->Enable(false);
-            Debug.Write("CheckGeometry: BPM incompatibility found");
+            Debug.Write("CheckDarkFrameGeometry: BPM incompatibility found");
             badBPM = true;
         }
     }
@@ -1902,7 +1902,7 @@ void MyFrame::CheckGeometry()
             if (darksMenu->IsChecked())
                 LoadDarkHandler(false);
             darksMenu->Enable(false);
-            Debug.Write("CheckGeometry: Dark lib incompatibility found");
+            Debug.Write("CheckDarkFrameGeometry: Dark lib incompatibility found");
             if (badBPM)
                 pFrame->Alert(_("Dark library and bad-pixel maps are incompatible with the current camera - both need to be replaced"));
 
@@ -2397,4 +2397,15 @@ int MyFrameConfigDialogPane::GetFocalLength(void)
 void MyFrameConfigDialogPane::SetFocalLength(int val)
 {
     m_pFocalLength->SetValue(wxString::Format(_T("%d"), val));
+}
+
+void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)
+{
+    if (x < 0 || x > wxSystemSettings::GetMetric(wxSYS_SCREEN_X) - 20 ||
+        y < 0 || y > wxSystemSettings::GetMetric(wxSYS_SCREEN_Y) - 20)
+    {
+        win->Centre(wxBOTH);
+    }
+    else
+        win->Move(x, y);
 }
