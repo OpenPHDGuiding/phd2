@@ -43,7 +43,11 @@
 #include "math_tools.h" 
 
 // Should be removed
-#include "circular_buffer.h"
+//#include "circular_buffer.h"
+
+#include "math_tools.h"
+#include "gaussian_process.h"
+#include "covariance_functions.h"
 
 
 class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialogPane
@@ -117,6 +121,10 @@ struct GuideGaussianProcess::gp_guide_parameters
     double control_gain_;
     double elapsed_time_ms_;
 
+
+    covariance_functions::PeriodicSquareExponential covariance_function_;
+    GP gp_;
+
     gp_guide_parameters() :
       circular_buffer_parameters(100),
       //udpInteraction(_T("localhost"), _T("1308"), _T("1309")),
@@ -126,7 +134,8 @@ struct GuideGaussianProcess::gp_guide_parameters
       timer_(),
       control_signal_(0.0),
 //      number_of_measurements_(0),
-      elapsed_time_ms_(0.0)
+      elapsed_time_ms_(0.0),
+      gp_(covariance_function_)
     {
 
     }
@@ -341,15 +350,37 @@ double GuideGaussianProcess::result(double input)
 
     if (parameters->get_number_of_measurements() > 5)
     {
+        Eigen::VectorXd timestamps(parameters->get_number_of_measurements());
+        Eigen::VectorXd measurements(parameters->get_number_of_measurements());
 
-        // Inference
-        gp_->infer(*timestamps_.getEigenVector(),
-                   *modified_measurements_.getEigenVector());
+        for(size_t i = 0; i < parameters->get_number_of_measurements(); i++)
+        {
+          timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
+          measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+        }
+
+        // inference of the hyperparameters
+        parameters->gp_.infer(
+          timestamps,
+          measurements);
+
+
+#if 0
+        // prediction of the next
+        Eigen::VectorXd prediction =
+            parameters->gp_.predict(
+            parameters->elapsed_time_ms_ + delta_controller_time_ms / 2) -
+            parameters->control_gain_ * input / delta_controller_time_ms;
+#endif
+
+
+#if 0
         // Prediction of new control_signal_
         Eigen::VectorXd prediction =
             gp_->predict(elapsed_time_ms_ + delta_controller_time_ms / 2) -
             parameters->control_gain_ * input / delta_controller_time_ms;
         parameters->control_signal_ = prediction(0);
+#endif
 
     }
     else
