@@ -98,6 +98,10 @@
 			<param name="Name" value="Параметры адаптивной оптики">
 			<param name="Local" value="Advanced_settings.htm#AO_Tab">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Параметры поворотного устройства">
+			<param name="Local" value="Advanced_settings.htm#Rotator_Tab">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Алгоритмы гидирования">
@@ -125,6 +129,10 @@
 			<param name="Local" value="Tools.htm#PHD2_Server">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Логгирование">
+			<param name="Local" value="Tools.htm#Logging_and_Debug_Output">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Установка полюса выравниванием">
 			<param name="Local" value="Tools.htm#Drift_Align">
 			</OBJECT>
@@ -137,12 +145,20 @@
 			<param name="Local" value="Tools.htm#Comet_Tracking">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Помощник гидирования">
+			<param name="Local" value="Tools.htm#Guiding_Assistant">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Профили оборудования">
 			<param name="Local" value="Tools.htm#Managing_Equipment_Profiles">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Управление симуляторами">
 			<param name="Local" value="Tools.htm#Advanced_Settings_for_the_Simulators">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Горячие клавиши">
+			<param name="Local" value="Tools.htm#Keyboard_Shortcuts">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
