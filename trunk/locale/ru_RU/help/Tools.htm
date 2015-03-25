@@ -9,15 +9,17 @@
     </h2>
     <a href="#Manual_Guide">Ручное гидирование</a><br>
     <a href="#Auto-Select_Star">Автоматический выбор звезды</a><br>
-    <a href="#Manual_Control_of_Calibration_Data">Управление
-      калибровочными данными</a><br>
+    <a href="#Manual_Control_of_Calibration_Data">Калибровочные данные</a><br>
     <a href="#PHD2_Server">Сервер PHD2</a><br>
+    <a href="#Logging_and_Debug_Output">Аудит и отладка</a><br>
     <a href="#Drift_Align">Установка полюса</a><br>
     <a href="#Lock_Positions">Сохранение положения звезды</a><br>
     <a href="#Comet_Tracking">Отслеживание комет</a><br>
+    <a href="#Guiding_Assistant">Помощник гидирования</a><br>
     <a href="#Managing_Equipment_Profiles">Профили оборудования</a><br>
     <a href="#Advanced_Settings_for_the_Simulators">Настройки
       симуляторов</a><br>
+    <a href="#Keyboard_Shortcuts">Горячие клавиши</a><br>
     <h3><a name="Manual_Guide"></a>Ручное гидирование<br>
     </h3>
     <br>
@@ -79,8 +81,8 @@
     звезду можно выбрать вручную.&nbsp; При автоматическом выборе лучше
     использовать карту плохих пикселей или темновую библиотеку, чтобы
     уменьшить вероятность выбора горячего пикселя вместо звезды.
-    <h3><a name="Manual_Control_of_Calibration_Data"></a>Ручное
-      управление калибровочными данными<br>
+    <h3><a name="Manual_Control_of_Calibration_Data"></a>Калибровочные
+      данные<br>
     </h3>
     Калибровочные данные автоматически запоминаются при успешно
     осуществлённой калибровке.&nbsp; Их использование описано в другом
@@ -96,12 +98,53 @@
     появится окошко, позволяющее ввести низкоуровневые калибровочные
     данные.&nbsp; Они могут браться из старой сессии, возможно, из лога
     гидирования <span style="font-style: italic;">PHD2</span>.<br>
+    При выборе инструмента 'Проверить данные калибровки' будет открыто
+    такое окно: <br>
+    <br>
+    <img style="width: 902px; height: 382px;" alt=""
+      src="Calib_Review.png"><br>
+    <br>
+    График в его левой части показывает перемещения звезды в результате
+    гидирующих импульсов во время калибровки.&nbsp; Линии показывают
+    скорости по осям прямого восхождения и склонения, которые были
+    вычислены во время калибровки. Они должны быть примерно
+    перпендикулярными.&nbsp; При увеличении фокусного расстояния
+    гидирующего телескопа точки часто показывают значительный разброс
+    относительно линий, но это нормально.&nbsp; Жирные точки (импульсы
+    западного и серверного направлений) используются для вычисления
+    скоростей по осям прямого восхождения и склонения, а прозрачные
+    показывают перемещения назад в восточном и южном направлениях.&nbsp;
+    График позволяет оценить влияние турбулентности и люфтов.&nbsp; При
+    использовании параметра&nbsp; настроек гидирования "быстрая
+    центровка" точек в восточном и северном направлениях будет заметно
+    меньше.&nbsp; В таблицах справа находятся данные о последней
+    проведённой калибровке, положении телескопа и имеющие отношение к
+    гидированию настройки ASCOM.&nbsp; Этих настроек не будет, если
+    монтировка подключена не через ASCOM и "дополнительная монтировка"
+    не подключена. Здесь также будут ожидаемые значения скоростей
+    гидирования для "идеальной" при текущем наведении и параметрах
+    скорости гидирования калибровки. You will almost never achieve these
+    ideal values, and you shouldn't worry about them unless your values
+    are very different. Если после завершения калибровки не появится
+    предупреждающее сообщение,&nbsp; то, по всей вероятности,
+    результаты&nbsp; достаточно хороши. &nbsp; Если вы собираетесь
+    использовать данные калибровки в течение продолжительного времени,
+    желательно потратить пару минут на проверку этой информации, чтобы
+    убедиться в том, что калибровка прошла удачно с хорошими
+    данными.&nbsp; Неудачные калибровки бывают даже у очень опытных
+    астрофотографов, которые используют монтировки высшего класса,
+    поэтому проверить никогда не помешает.<br>
+    <br>
     <br>
     <h3><a name="PHD2_Server"></a>Сервер<span style="font-style:
         italic;"> PHD2</span> </h3>
     <span style="font-style: italic;">PHD2</span> позволяет внешним
     приложениям управлять процессом гидирования. Первой из таких
     программ была&nbsp; <span style="font-style: italic;">Nebulosity </span>компании
+
+
+
+
 
     Stark Labs, но в настоящее время существуют и другие.&nbsp;
     Используя сервер <span style="font-style: italic;">PHD2</span>
@@ -115,6 +158,46 @@
     гидирования.&nbsp; Документация по программному интерфейсу сервера
     находится на <a
       href="https://code.google.com/p/open-phd-guiding/w/list">PHD2 Wiki</a>.<br>
+    <br>
+    <br>
+    <h3><a name="Logging_and_Debug_Output"></a>Аудит и отладка</h3>
+    <span style="font-style: italic;">PHD2</span> может иметь два типа
+    лог-файлов: отладочный и гидирования. &nbsp;Лог гидирования похож на
+    использующийся в PHD, но содержит и дополнительную информацию.
+    &nbsp;Его формат легко читаем как человеком, так и внешним
+    приложением.<span style="">&nbsp; </span> Например, приложение
+    PHDLab, не являющееся частью проекта PHD2, может строить различные
+    графики и считать статистику на основе данных лога гидирования PHD2.<span
+      style="">&nbsp;&nbsp; </span>Кроме того, лог легко может быть
+    экспортирован в Excel и другие приложения.<span style="">&nbsp; </span>При
+
+
+
+    экспорте в Excel нужно указать, что для разделения полей
+    используется запятая. &nbsp;Лог отладки содержит сведения о всех
+    событиях сессии <span style="font-style: italic;">PHD2</span>
+    &nbsp;поэтому он очень полезен при обнаружении проблем. &nbsp;Его
+    формат также легко читаем пользователем, поэтому ему нетрудно
+    понять, что именно происходит. &nbsp; Когда вам нужно сообщить о
+    проблеме, вас почти всегда попросят предъявить отладочный
+    лог-файл,&nbsp;без которого вам вряд ли смогут помочь.<br>
+    <br>
+    Местоположение лога задаётся в поле 'Расположение лог-файла'.
+    &nbsp;По умолчанию лог-файлы записываются в каталоге файлов данных
+    используемой операционной системы. &nbsp;Например, в Windows7 файлы
+    будут сохранены в подкаталоге '<span style="font-style: italic;">PHD2</span>'
+    каталога "AppData\Local". &nbsp;С помощью этого поля можно задать
+    иное местонахождение лог-файлов.<br>
+    <br>
+    В некоторых особенных случаях может понадобиться сохранить кадры
+    гидирования, как правило для выявления проблем с графическим
+    разрешением. Этот режим включается установкой флажка 'Включить
+    логгирование звёздных изображений' в меню 'Инструменты'. Файлы
+    изображений будут созданы в тех же каталогах, что и обычные
+    лог-файлы. Формат их задаётся во вкладке 'Общие' окна настроек. Если
+    вы хотите разобраться в имеющихся проблемах, используйте формат
+    'Сырой Fits'.<br>
+    <br>
     <br>
     <h3><a name="Drift_Align"></a>Установка полюса</h3>
     Метод дрейфа - хорошо известный способ установки полюса, "золотой
@@ -285,6 +368,65 @@
     Отметить начальное положение кометы можно с помощью закладки, а
     вернуть комету к нему можно с помощью навигационных кнопок в окне
     подтверждения выбранного положения. <br>
+    <h3><a name="Guiding_Assistant"></a>Помощник гидирования<br>
+    </h3>
+    Помощник гидирования позволяет оценить текущее состояние атмосферы и
+    общее поведение системы гидирования.&nbsp; При запуске он временно
+    отключает гидирование и измеряет перемещения опорной звезды. Это
+    позволяет увидеть дрожание изображения, вызванное атмосферной
+    турбулентностью.&nbsp; Обычно такое дрожание не может быть
+    исправлено средствами гидирования, поскольку происходит значительно
+    быстрее, чем может быть измерено. Попытки его откорректировать,
+    часто называемые "погоней за турбулентностью нежелательны.&nbsp;
+    Избежать этого можно установкой минимальной разрешённой подвижки,
+    что позволит PHD2 игнорировать большинство высокочастотных
+    колебаний.&nbsp; Помощник гидирования может также показать такие
+    характеристики системы, как скорости дрефа по прямому восхождению и
+    склонению, а также разброс и максимальную скорость дрейфа по прямому
+    восхождению.&nbsp; Они могут быть полезны при улучшении
+    производительности монтировки - например, более точном наведении на
+    полюс если дрейф по склонению слишком велик.<br>
+    <br>
+    После запуска Помощника гидирования его окно выглядит следующим
+    образом: <br>
+    <br>
+    <img style="width: 1061px; height: 483px;" alt=""
+      src="Guiding_Assistant_Start.png"><br>
+    <br>
+    Сообщение в верхней части окна displays usage instructions, much
+    like a wizard interface. &nbsp;In order for the Guiding Assistant to
+    start measurement, you first need to start guiding in the usual way.
+    &nbsp;This identifies the target star in the frame and enables (but
+    does not start) the underlying data collection mechanism.
+    &nbsp;You&nbsp;then click 'Start' in the Guiding Assistant to begin
+    the measurement process. &nbsp;Once you do this, guiding commands
+    will be disabled, so the star will appear to wander around on the
+    display - this is entirely normal. &nbsp;As guider images are
+    acquired, statistics are computed and displayed in real-time in the
+    user interface. Of particular interest are the table entries in the
+    "High-frequency Star Motion" section which show ongoing results of
+    the averaging process. &nbsp;After about one minute of data
+    collection, these numbers will usually stabilize and you'll have a
+    reasonable measurement of the high-frequency star movement caused by
+    seeing conditions. &nbsp;When you click the 'Stop' button, guiding
+    commands will be re-enabled and the data collection process will
+    end. &nbsp;Other computed results will then be displayed in the
+    lower area of the table showing overall drift rates and various
+    other measurements. &nbsp;All of these values are displayed in units
+    of both arc-seconds and pixels. &nbsp;The dialog box will look
+    something like this:<br>
+    <br>
+    <img style="width: 1059px; height: 479px;" alt=""
+      src="Guiding_Assistant_Finish.png"><br>
+    <br>
+    The contents of the 'Recommendations' group at the bottom of the
+    window reflect the results of the high-frequency measurements.
+    &nbsp;Assuming your chosen guide algorithms support a minimum-move
+    property, you have the option of automatically setting those
+    parameters based on the results. &nbsp;You can also decide to re-run
+    the measurements or close the dialog box altogether if you want to
+    proceed with normal guiding operations. &nbsp;Over time, we may be
+    able to add recommendations regarding other guiding properties.<br>
     <h3><a name="Managing_Equipment_Profiles"></a>Управление профилями
       оборудования</h3>
     Профили оборудования были представлены в разделе <a
@@ -325,12 +467,16 @@
     <br>
     Можно задать такие параметры для симулятора монтировки, как люфт
     склонения, величину отклонения от полюса и периодическую
-    ошибку.&nbsp; МОжно также задать уровень турбулентности (параметр
+    ошибку.&nbsp; Можно также задать уровень турбулентности (параметр
     'Видимость'), дабы получить реалистичное для данных условий
     видимости изображение звезды.&nbsp; Задавая эти параметры по одному,
     можно наблюдать за изменениями отклонений звезды и как различные
     алгоритмы гидирования реагируют на них. Разумеется, в этих сценариях
     (кроме люфта) поведение монтировки почти идеально, поэтому имитация
-    не может быть полностью реалистичной.
+    не может быть полностью реалистичной. <br>
+    <h3><a name="Keyboard_Shortcuts"></a>Горячие клавиши<br>
+    </h3>
+    Горячие клавиши широко используются в PHD2.&nbsp; Их список
+    находится в разделе <a href="KeyboardShortcuts.htm">Горячие клавиши</a>.
   </body>
 </html>
