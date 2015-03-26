@@ -129,9 +129,11 @@
     <span style="font-weight: bold;">http://www.cloudynights.com/page/articles/cat/fishing-for-photons/what-to-do-when-phd-guiding-isnt-push-here-dummy-r2677</span>.<br>
     <h3><a name="Log_analysis"></a>Анализ логов</h3>
     Причины некоторых проблем обнаруживаются после просмотра логов
-    PHD2.&nbsp; Оба файла отформатированы таким образом, чтобы человек
-    мог без труда их прочитать, а также чтобы их можно легко
-    экспортировать в другие приложения, такие как PHDLab или
+    PHD2.&nbsp; Управление аудитом и отладкой осуществляется двумя
+    флажками меню 'Инструменты',&nbsp; которые должны быть установлены,
+    чтобы соответствующие файлы записывались. Они отформатированы таким
+    образом, чтобы человек мог без труда их прочитать, а также чтобы их
+    можно легко экспортировать в другие приложения, такие как PHDLab или
     Excel.&nbsp; Для Excel или похожих приложений нужно указать, что в
     качестве разделителя столбцов используется запятая.<br>
     <h4>Содержимое лога гидирования<br>
@@ -146,6 +148,7 @@
         style="">&nbsp; </span>Заголовок каждого из этих "разделов"
       содержит большую часть информации об алгоритмах и внутренних
       параметрах гидирования,&nbsp; используемых PHD2.<span style="">&nbsp;
+
       </span>При начале калибровки или гидирования последняя строка
       заголовка определяет заголовки столбцов, Значения этих столбцов
       объяснены ниже:</p>
@@ -158,6 +161,7 @@
         калибровки в системе координат камеры</li>
       <li>Dist - расстояние, на которое сместилась звезда в системе
         координат камеры (dist = sqrt(dx*dx + dy*dy).<span style="">&nbsp;
+
         </span>Это значение используется PHD2 для расчёта параметров
         калибровки<o:p></o:p></li>
     </ul>
@@ -173,6 +177,7 @@
 
 
 
+
         dy - то же самое, что и для калибровки - смещения гидируемой
         звезды от начального положения в системе координат камеры</li>
       <li><span style="font-family: Symbol;"><span style=""><span
@@ -180,6 +185,7 @@
               font-style: normal; font-variant: normal; font-weight:
               normal; font-size: 7pt; line-height: normal;
               font-size-adjust: none; font-stretch: normal;">&nbsp;</span></span></span>RARawDistance
+
         и DECRawDistance - преобразования dx и dy к координатам
         монтировки, а именно координат X/Y камеры к координатам RA/Dec
         монтировки</li>
@@ -188,10 +194,13 @@
               font-style: normal; font-variant: normal; font-weight:
               normal; font-size: 7pt; line-height: normal;
               font-size-adjust: none; font-stretch: normal;">&nbsp;</span></span></span>RAGuideDistance
+
         и DECGuideDistance - вывод различных алгоритмов гидирования.<span
           style="">&nbsp; Алгоритмы гидирования работают с </span>"сырыми"
+
         расстояниями и решают на какое расстояние должен быть перемещён
         телескоп по каждой из осей.<span style="">&nbsp; </span>Например,
+
         если задан параметр "минимальное движение", расстояние
         гидирования, в отличие от "сырого" расстояния, может быть
         нулевым.</li>
@@ -205,8 +214,10 @@
 
 
 
+
         RADirection, DECDuration, DECDirection - эти значения
         определяются двумя расстояниями, указанными выше.<span style="">&nbsp;
+
 
 
 
@@ -225,6 +236,7 @@
 
 
 
+
         YStep - шаги регулировки длительности для устройства адаптивной
         оптики, если таковое используется</li>
       <li><span style="font-family: Symbol;"><span style=""><span
@@ -232,6 +244,7 @@
               font-style: normal; font-variant: normal; font-weight:
               normal; font-size: 7pt; line-height: normal;
               font-size-adjust: none; font-stretch: normal;"></span></span></span>StarMass
+
 
 
 
@@ -248,12 +261,14 @@
 
 
 
+
         - внутренний коэффициент "сигнал-шум", используемый PHD2</li>
       <li><span style="font-family: Symbol;"><span style=""><span
               style="font-family: &quot;Times New Roman&quot;;
               font-style: normal; font-variant: normal; font-weight:
               normal; font-size: 7pt; line-height: normal;
               font-size-adjust: none; font-stretch: normal;"></span></span></span>ErrorCode
+
 
 
 
@@ -270,6 +285,7 @@
     Если вы обнаружили проблему, относящуюся именно к <span
       style="font-style: italic;">PHD2</span>, присылайте отчёт о ней в
     группу Google open-phd-guiding: <span style="font-weight: bold;">https://groups.google.com/forum/?fromgroups=#!forum/open-phd-guiding</span>.&nbsp;
+
 
     Разумеется, чем более полную информацию вы предоставите, тем выше
     вероятность решения проблемы.&nbsp; Следующие правила помогут в

@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-20 02:35-0400\n"
-"PO-Revision-Date: 2015-03-23 13:46+0300\n"
+"PO-Revision-Date: 2015-03-26 09:46+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -1693,6 +1693,8 @@ msgid ""
 "%s calibration will be cleared - calibration will be re-done when guiding is "
 "started."
 msgstr ""
+"%s - калибровка будет сброшена, а перед гидированием будет проведена "
+"повторно "
 
 #: eegg.cpp:120
 msgid "Clear Calibration"
@@ -2478,7 +2480,7 @@ msgstr "Звезда не найдена"
 #: guider_onestar.cpp:571
 #, c-format
 msgid "Mass: %.0f vs %.0f"
-msgstr ""
+msgstr "Зв. вел.: %.0f вместо %.0f"
 
 #: guider_onestar.cpp:673
 #, c-format
@@ -2851,7 +2853,7 @@ msgstr "Алгоритм гидирования по оси склонения"
 #: mount.cpp:554
 #, c-format
 msgid "CAL: %s(%.f,%.f)->%s(%.f,%.f)"
-msgstr ""
+msgstr "Калибр:: %s(%.f,%.f)->%s(%.f,%.f)"
 
 #: mount.cpp:613
 #, c-format
@@ -2948,7 +2950,7 @@ msgstr "Выбрать звезду автоматически"
 
 #: myframe.cpp:438
 msgid "&Review Calibration Data\tAlt-C"
-msgstr "Проверить данные калибровки"
+msgstr "Проверка данных калибровки\tAlt-C"
 
 #: myframe.cpp:438
 msgid "Review calibration data from last successful calibration"
@@ -2988,11 +2990,11 @@ msgstr "Сбросить используемые данные калибров�
 
 #: myframe.cpp:445
 msgid "Modify Calibration"
-msgstr "Изменить калибровку"
+msgstr "Изменение калибровки"
 
 #: myframe.cpp:447
 msgid "Adjust &Lock Position"
-msgstr "Подтвердить выбранное положение"
+msgstr "Подтверждение выбранного положения"
 
 #: myframe.cpp:447
 msgid "Adjust the lock position"
@@ -3369,7 +3371,7 @@ msgstr "Настройки"
 
 #: myframe.cpp:825 myframe.cpp:844
 msgid "Cal +"
-msgstr ""
+msgstr "Калибр +"
 
 #: myframe.cpp:825
 msgid "Cal"
@@ -3957,7 +3959,7 @@ msgstr "Дополнительные сведения"
 
 #: profile_wizard.cpp:122
 msgid "Gear"
-msgstr ""
+msgstr "Оборудование"
 
 #: profile_wizard.cpp:133
 msgid ""
@@ -4795,7 +4797,7 @@ msgstr "угол=%.1f скорость=%.2f"
 #: stepguider.cpp:612
 #, c-format
 msgid "up Calibration: %3d"
-msgstr ""
+msgstr "вверх: %3d"
 
 #: stepguider.cpp:651
 #, c-format
