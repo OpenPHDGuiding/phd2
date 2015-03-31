@@ -107,17 +107,11 @@ struct gp_guiding_circular_datapoints
 // parameters of the GP guiding algorithm
 struct GuideGaussianProcess::gp_guide_parameters
 {
-    //UDPGuidingInteraction udpInteraction;
-    //CircularDoubleBuffer timestamps_;
-    //CircularDoubleBuffer measurements_;
-    //CircularDoubleBuffer modified_measurements_;
-
     typedef gp_guiding_circular_datapoints data_points;
     circular_buffer<data_points> circular_buffer_parameters;
 
     wxStopWatch timer_;
     double control_signal_;
-    //int number_of_measurements_;
     double control_gain_;
     double elapsed_time_ms_;
 
@@ -127,13 +121,8 @@ struct GuideGaussianProcess::gp_guide_parameters
 
     gp_guide_parameters() :
       circular_buffer_parameters(100),
-      //udpInteraction(_T("localhost"), _T("1308"), _T("1309")),
-      //timestamps_(100),
-      //measurements_(100),
-      //modified_measurements_(100),
       timer_(),
       control_signal_(0.0),
-//      number_of_measurements_(0),
       elapsed_time_ms_(0.0),
       gp_(covariance_function_)
     {
@@ -359,28 +348,17 @@ double GuideGaussianProcess::result(double input)
           measurements(i) = parameters->circular_buffer_parameters[i].measurement;
         }
 
-        // inference of the hyperparameters
+        // inference of the GP with this new points
         parameters->gp_.infer(
           timestamps,
           measurements);
 
-
-#if 0
         // prediction of the next
-        Eigen::VectorXd prediction =
-            parameters->gp_.predict(
-            parameters->elapsed_time_ms_ + delta_controller_time_ms / 2) -
-            parameters->control_gain_ * input / delta_controller_time_ms;
-#endif
-
-
-#if 0
-        // Prediction of new control_signal_
-        Eigen::VectorXd prediction =
-            gp_->predict(elapsed_time_ms_ + delta_controller_time_ms / 2) -
-            parameters->control_gain_ * input / delta_controller_time_ms;
-        parameters->control_signal_ = prediction(0);
-#endif
+        Eigen::VectorXd next_location(1);
+        next_location << parameters->elapsed_time_ms_ + delta_controller_time_ms / 2;
+        Eigen::VectorXd prediction = parameters->gp_.predict(next_location).first;
+        
+        parameters->control_signal_ = prediction(0) - parameters->control_gain_ * input / delta_controller_time_ms;
 
     }
     else
@@ -388,6 +366,10 @@ double GuideGaussianProcess::result(double input)
         // Simpler prediction when there are not enough data points for the GP
         parameters->control_signal_ = -input / delta_controller_time_ms;
     }
+
+
+    // here from time to time launch the optimiser
+
 
     return parameters->control_signal_;
 }
