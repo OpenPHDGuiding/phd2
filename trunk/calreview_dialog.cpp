@@ -132,7 +132,7 @@ void CalReviewDialog::CreatePanel(wxPanel* thisPanel, bool AO)
     wxStaticText* labelRA = new wxStaticText(thisPanel, wxID_STATIC, _("Right Ascension"), wxDefaultPosition, wxDefaultSize, 0);
     labelRA->SetForegroundColour("RED");
     if (AO)
-        labelRA->SetLabelText("X");
+        labelRA->SetLabelText(_("X"));
     else
         labelRA->SetLabelText(_("Right Ascension"));
     graphLegendGroup->Add(labelRA, 0, wxALIGN_CENTER_VERTICAL | wxALL | wxADJUST_MINSIZE, 5);
@@ -140,7 +140,7 @@ void CalReviewDialog::CreatePanel(wxPanel* thisPanel, bool AO)
     wxStaticText* labelDec = new wxStaticText(thisPanel, wxID_STATIC, _("Declination"), wxDefaultPosition, wxDefaultSize, 0);
     labelDec->SetForegroundColour("BLUE");
     if (AO)
-        labelDec->SetLabelText("Y");
+        labelDec->SetLabelText(_("Y"));
     else
         labelDec->SetLabelText(_("Declination"));
     graphLegendGroup->Add(labelDec, 0, wxALIGN_CENTER_VERTICAL | wxALL | wxADJUST_MINSIZE, 5);
@@ -234,6 +234,10 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         guideDecSiderealX = calDetails.decGuideSpeed * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
     }
 
+    wxString ARCSECPERSEC(_("a-s/sec"));
+    wxString PXPERSEC(_("px/sec"));
+    wxString ARCSECPERPX(_("a-s/px"));
+
     if (!AO)
     {
         calGrid->SetCellValue(_("RA rate:"), row, col++);
@@ -251,9 +255,9 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     if (calBaseline.yRate != CALIBRATION_RATE_UNCALIBRATED)
     {
         if (validDetails)
-            calGrid->SetCellValue(wxString::Format("%0.3f a-s/sec\n%0.3f px/sec", calBaseline.yRate * 1000 * calDetails.imageScale, calBaseline.yRate * 1000), row, col++);
+            calGrid->SetCellValue(wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.yRate * 1000 * calDetails.imageScale, ARCSECPERSEC, calBaseline.yRate * 1000, PXPERSEC), row, col++);
         else
-            calGrid->SetCellValue(wxString::Format("%0.3f px/sec", calBaseline.yRate * 1000), row, col++);      // just px/sec with no image scale data
+            calGrid->SetCellValue(wxString::Format("%0.3f %s", calBaseline.yRate * 1000, PXPERSEC), row, col++);      // just px/sec with no image scale data
     }
     else
         calGrid->SetCellValue(NA_STR, row, col++);
@@ -266,13 +270,15 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     {
         calGrid->SetCellValue(_("Expected RA rate:"), row, col++);
         if (validAscomInfo && fabs(degrees(calBaseline.declination)) < 65.0)
-            calGrid->SetCellValue(wxString::Format("%0.1f a-s/sec", guideDecSiderealX * 15.0 * dSiderealSecondPerSec * cos(calBaseline.declination) *
-            guideRaSiderealX / guideDecSiderealX), row, col++);
+        {
+            calGrid->SetCellValue(wxString::Format("%0.1f %s", guideDecSiderealX * 15.0 * dSiderealSecondPerSec * cos(calBaseline.declination) *
+                guideRaSiderealX / guideDecSiderealX, ARCSECPERSEC), row, col++);
+        }
         else
             calGrid->SetCellValue(NA_STR, row, col++);
         calGrid->SetCellValue(_("Expected Dec rate:"), row, col++);
         if (validAscomInfo)
-            calGrid->SetCellValue(wxString::Format("%0.1f a-s/sec", guideDecSiderealX * 15.0 * dSiderealSecondPerSec, row, col), row, col);
+            calGrid->SetCellValue(wxString::Format("%0.1f %s", guideDecSiderealX * 15.0 * dSiderealSecondPerSec, ARCSECPERSEC), row, col);
         else
             calGrid->SetCellValue(NA_STR, row, col++);
     }
@@ -306,7 +312,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         col = 0;
         cfgGrid->SetCellValue(_("Image scale:"), row, col++);
         if (validDetails)
-            cfgGrid->SetCellValue(wxString::Format("%0.2f a-s/px", calDetails.imageScale), row, col++);
+            cfgGrid->SetCellValue(wxString::Format("%0.2f %s", calDetails.imageScale, ARCSECPERPX), row, col++);
         else
             cfgGrid->SetCellValue(NA_STR, row, col++);
         cfgGrid->SetCellValue(_("Side-of-pier:"), row, col++);
@@ -352,7 +358,6 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
             cfgGrid->SetCellValue(wxString::Format("%0.1f", dec), row, col++);
         else
             cfgGrid->SetCellValue(wxString::Format("%0.1f", dec) + _(" (est)"), row, col++);
-
 
         cfgGrid->SetCellValue(_("Rotator position:"), row, col++);
         bool valid_rotator = fabs(calBaseline.rotatorAngle) < 360.0;
