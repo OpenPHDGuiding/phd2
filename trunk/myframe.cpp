@@ -1500,6 +1500,16 @@ bool MyFrame::Dither(double amount, bool raOnly)
         info.dRa = dRa;
         info.dDec = dDec;
         pGraphLog->AppendData(info);
+
+        if (pMount->IsStepGuider())
+        {
+            StepGuider *ao = static_cast<StepGuider *>(pMount);
+            if (ao->GetBumpOnDither())
+            {
+                Debug.Write("Dither: starting AO bump\n");
+                ao->ForceStartBump();
+            }
+        }
     }
     catch (wxString Msg)
     {

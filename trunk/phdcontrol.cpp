@@ -204,6 +204,11 @@ static bool start_guiding(void)
     return !error;
 }
 
+static bool IsAoBumpInProgress()
+{
+    return pMount && pMount->IsStepGuider() && static_cast<StepGuider *>(pMount)->IsBumpInProgress();
+}
+
 void PhdController::UpdateControllerState(void)
 {
     bool done = false;
@@ -383,10 +388,11 @@ void PhdController::UpdateControllerState(void)
             bool lockedOnStar = pFrame->pGuider->IsLocked();
             double currentError = pFrame->pGuider->CurrentError();
             bool inRange = lockedOnStar && currentError <= ctrl.settle.tolerancePx;
+            bool aoBumpInProgress = IsAoBumpInProgress();
             long timeInRange = 0;
 
-            Debug.AddLine("PhdController: settling, locked = %d, distance = %.2f (%.2f)", lockedOnStar, currentError,
-                ctrl.settle.tolerancePx);
+            Debug.AddLine("PhdController: settling, locked = %d, distance = %.2f (%.2f) aobump = %d", lockedOnStar, currentError,
+                ctrl.settle.tolerancePx, aoBumpInProgress);
 
             if (inRange)
             {
@@ -394,7 +400,7 @@ void PhdController::UpdateControllerState(void)
                 {
                     ctrl.settleInRange->Start();
                 }
-                else if (((timeInRange = ctrl.settleInRange->Time()) / 1000) >= ctrl.settle.settleTimeSec)
+                else if (((timeInRange = ctrl.settleInRange->Time()) / 1000) >= ctrl.settle.settleTimeSec && !aoBumpInProgress)
                 {
                     ctrl.succeeded = true;
                     SETSTATE(STATE_FINISH);
