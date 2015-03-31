@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-31 00:57-0400\n"
+"POT-Creation-Date: 2015-03-31 01:28-0400\n"
 "PO-Revision-Date: 2015-03-29 20:22+0100\n"
 "Last-Translator: Jakub Bartas <jakub.bartas@gmail.com>\n"
 "Language-Team: Jakub Bartas <jakub.bartas@gmail.com>\n"
@@ -103,10 +103,18 @@ msgstr "N/A"
 msgid "Right Ascension"
 msgstr "Rektascensja"
 
-#: calreview_dialog.cpp:140 calreview_dialog.cpp:145 calreview_dialog.cpp:350
+#: calreview_dialog.cpp:135 comet_tool.cpp:326 myframe_events.cpp:150
+msgid "X"
+msgstr "X"
+
+#: calreview_dialog.cpp:140 calreview_dialog.cpp:145 calreview_dialog.cpp:356
 #: statswindow.cpp:97
 msgid "Declination"
 msgstr "Deklinacja"
+
+#: calreview_dialog.cpp:143 comet_tool.cpp:327 myframe_events.cpp:157
+msgid "Y"
+msgstr "Y"
 
 #: calreview_dialog.cpp:193
 msgid "Last Mount Calibration"
@@ -128,93 +136,105 @@ msgstr "Kroki DEC:"
 msgid "Camera angle:"
 msgstr "Kąt kamery"
 
-#: calreview_dialog.cpp:222 calreview_dialog.cpp:657
+#: calreview_dialog.cpp:222 calreview_dialog.cpp:662
 msgid "Orthogonality error:"
 msgstr "Błąd ortogonalności:"
 
-#: calreview_dialog.cpp:239 calreview_dialog.cpp:686
+#: calreview_dialog.cpp:237
+msgid "a-s/sec"
+msgstr ""
+
+#: calreview_dialog.cpp:238 guiding_assistant.cpp:825
+msgid "px/sec"
+msgstr "px/sec"
+
+#: calreview_dialog.cpp:239
+msgid "a-s/px"
+msgstr ""
+
+#: calreview_dialog.cpp:243 calreview_dialog.cpp:691
 msgid "RA rate:"
 msgstr "Prędkość RA:"
 
-#: calreview_dialog.cpp:242
+#: calreview_dialog.cpp:246
 msgid "X rate:"
 msgstr "Prędkość X:"
 
-#: calreview_dialog.cpp:248
+#: calreview_dialog.cpp:252
 msgid "Dec rate:"
 msgstr "Prędkość DEC:"
 
-#: calreview_dialog.cpp:250
+#: calreview_dialog.cpp:254
 msgid "Y rate:"
 msgstr "Prędkość Y:"
 
-#: calreview_dialog.cpp:267
+#: calreview_dialog.cpp:271
 msgid "Expected RA rate:"
 msgstr "Przewidywana prędkość RA:"
 
-#: calreview_dialog.cpp:273
+#: calreview_dialog.cpp:279
 msgid "Expected Dec rate:"
 msgstr "Przewidywana prędkość DEC:"
 
-#: calreview_dialog.cpp:286
+#: calreview_dialog.cpp:292
 msgid "Mount Configuration"
 msgstr "Konfiguracja montażu"
 
-#: calreview_dialog.cpp:298
+#: calreview_dialog.cpp:304
 msgid "Timestamp:"
 msgstr "Znacznik czasu:"
 
-#: calreview_dialog.cpp:300
+#: calreview_dialog.cpp:306
 msgid "Focal length:"
 msgstr "Ogniskowa:"
 
-#: calreview_dialog.cpp:307
+#: calreview_dialog.cpp:313
 msgid "Image scale:"
 msgstr "Skala obrazu:"
 
-#: calreview_dialog.cpp:312
+#: calreview_dialog.cpp:318
 msgid "Side-of-pier:"
 msgstr "Strona montażu:"
 
-#: calreview_dialog.cpp:313 cam_simulator.cpp:1555 guidinglog.cpp:194
+#: calreview_dialog.cpp:319 cam_simulator.cpp:1555 guidinglog.cpp:194
 #: mount.cpp:54 mount.cpp:613 testguide.cpp:152
 msgid "East"
 msgstr "Wschód"
 
-#: calreview_dialog.cpp:314 cam_simulator.cpp:1555 guidinglog.cpp:195
+#: calreview_dialog.cpp:320 cam_simulator.cpp:1555 guidinglog.cpp:195
 #: mount.cpp:55 mount.cpp:613 testguide.cpp:152
 msgid "West"
 msgstr "Zachód"
 
-#: calreview_dialog.cpp:320
+#: calreview_dialog.cpp:326
 msgid "RA Guide speed:"
 msgstr "Prędkość guidingu RA:"
 
-#: calreview_dialog.cpp:327
+#: calreview_dialog.cpp:333
 msgid "Dec Guide speed:"
 msgstr "Prędkość guidinguDEC:"
 
-#: calreview_dialog.cpp:354
+#: calreview_dialog.cpp:360
 msgid " (est)"
 msgstr " (est)"
 
-#: calreview_dialog.cpp:357
+#: calreview_dialog.cpp:362
 msgid "Rotator position:"
 msgstr "Pozycja rotatora:"
 
-#: calreview_dialog.cpp:510 nudge_lock.cpp:181 nudge_lock.cpp:192
+#: calreview_dialog.cpp:515 nudge_lock.cpp:181 nudge_lock.cpp:192
 msgid "Restore"
 msgstr "Przywróć"
 
-#: calreview_dialog.cpp:525
+#: calreview_dialog.cpp:530
 msgid "Calibration restored"
 msgstr "Kalibracja przywrócona"
 
-#: calreview_dialog.cpp:543
+#: calreview_dialog.cpp:548
 msgid "Calibration Sanity Check"
 msgstr "Kontrola poprawności kalibracji"
 
-#: calreview_dialog.cpp:566
+#: calreview_dialog.cpp:571
 msgid ""
 "The calibration was done with a very small number of steps, which can "
 "produce inaccurate results. Consider reducing the size of the calibration "
@@ -226,7 +246,7 @@ msgstr ""
 "zostanie wykonanych co najmniej 8 kroków. Pomóc w tym może 'Kalkulator' w "
 "zakładce 'Montaż' w opcjach."
 
-#: calreview_dialog.cpp:571
+#: calreview_dialog.cpp:576
 #, c-format
 msgid ""
 "The RA and Declination angles computed in the calibration are questionable.  "
@@ -241,7 +261,7 @@ msgstr ""
 "kalibracja jest niedokładna, prawdopodobnie z powodu zbyt małego lub "
 "nieoczekiwanego ruchu gwiazdy."
 
-#: calreview_dialog.cpp:576
+#: calreview_dialog.cpp:581
 #, c-format
 msgid ""
 "The most recent calibration produced results that are %s%% different from "
@@ -255,7 +275,7 @@ msgstr ""
 "temu, podczas przełączania się pomiędzy konfiguracjami, zachowane zostają "
 "poprzednie ustawienia oraz wyniki kalibracji."
 
-#: calreview_dialog.cpp:581
+#: calreview_dialog.cpp:586
 #, c-format
 msgid ""
 "The RA and Declination guiding rates differ by an unexpected amount.  For "
@@ -270,55 +290,55 @@ msgstr ""
 "że kalibracja jest niedokładna, prawdopodobnie z powodu zbyt małego lub "
 "nieoczekiwanego ruchu gwiazdy."
 
-#: calreview_dialog.cpp:623
+#: calreview_dialog.cpp:628
 msgid "Explanation"
 msgstr "Wyjaśnienie"
 
-#: calreview_dialog.cpp:636
+#: calreview_dialog.cpp:641
 msgid "Details"
 msgstr "Więcej"
 
-#: calreview_dialog.cpp:645
+#: calreview_dialog.cpp:650
 msgid "Steps, RA:"
 msgstr "Kroki, RA:"
 
-#: calreview_dialog.cpp:647
+#: calreview_dialog.cpp:652
 msgid "Steps, Dec:"
 msgstr "Kroki, DEC:"
 
-#: calreview_dialog.cpp:659
+#: calreview_dialog.cpp:664
 msgid "Previous orthogonality error:"
 msgstr "Poprzedni błąd ortogonalności:"
 
-#: calreview_dialog.cpp:671
+#: calreview_dialog.cpp:676
 msgid "This declination rate:"
 msgstr "Prędkość deklinacji:"
 
-#: calreview_dialog.cpp:676
+#: calreview_dialog.cpp:681
 msgid "Previous declination rate:"
 msgstr "Poprzednia prędkość deklinacji:"
 
-#: calreview_dialog.cpp:688
+#: calreview_dialog.cpp:693
 msgid "Declination rate:"
 msgstr "Prędkość deklinacji:"
 
-#: calreview_dialog.cpp:706
+#: calreview_dialog.cpp:711
 msgid "Don't show calibration alerts of this type"
 msgstr "Nie pokazuj tego typu alertów dla kalibracji"
 
-#: calreview_dialog.cpp:717
+#: calreview_dialog.cpp:722
 msgid "Accept calibration"
 msgstr "Akceptuj kalibrację"
 
-#: calreview_dialog.cpp:718
+#: calreview_dialog.cpp:723
 msgid "Accept the calibration as being valid and continue guiding"
 msgstr "Uznaj kalibrację za poprawną i kontynuuj guiding"
 
-#: calreview_dialog.cpp:720
+#: calreview_dialog.cpp:725
 msgid "Discard calibration"
 msgstr "Odznacz kalibrację"
 
-#: calreview_dialog.cpp:721
+#: calreview_dialog.cpp:726
 msgid ""
 "Stop guiding and discard the most recent calibration.  Calibration will be "
 "re-done the next time you start guiding"
@@ -326,11 +346,11 @@ msgstr ""
 "Zatrzymaj guiding i wyczyść ostatnią kalibrację. Kalibracja zostanie "
 "powtórzona przed kolejnym rozpoczęciem guidingu"
 
-#: calreview_dialog.cpp:723
+#: calreview_dialog.cpp:728
 msgid "Restore old calibration"
 msgstr "Przywróć starą kalibrację"
 
-#: calreview_dialog.cpp:724
+#: calreview_dialog.cpp:729
 msgid ""
 "Stop guiding, discard the most recent calibration, then load the previous "
 "(good) calibration"
@@ -338,7 +358,7 @@ msgstr ""
 "Zatrzymaj guiding, wyczyść ostatnią kalibrację i wgraj poprzednią, "
 "prawidłową kalibrację"
 
-#: calreview_dialog.cpp:767
+#: calreview_dialog.cpp:772
 msgid "Previous calibration restored"
 msgstr "Poprzednia kalibracja przywrócona"
 
@@ -1345,14 +1365,6 @@ msgstr "RA"
 #: statswindow.cpp:70 target.cpp:340
 msgid "Dec"
 msgstr "DEC"
-
-#: comet_tool.cpp:326 myframe_events.cpp:150
-msgid "X"
-msgstr "X"
-
-#: comet_tool.cpp:327 myframe_events.cpp:157
-msgid "Y"
-msgstr "Y"
 
 #: confirm_dialog.cpp:40
 msgid "Don't ask again"
@@ -2768,10 +2780,6 @@ msgstr ""
 #: guiding_assistant.cpp:824
 msgid "px/min"
 msgstr "px/min"
-
-#: guiding_assistant.cpp:825
-msgid "px/sec"
-msgstr "px/sec"
 
 #: guiding_assistant.cpp:826
 msgid "arc-sec/min"

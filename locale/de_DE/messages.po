@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: open-phd-guiding 2.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-31 00:57-0400\n"
+"POT-Creation-Date: 2015-03-31 01:28-0400\n"
 "PO-Revision-Date: 2014-11-30 13:32+0100\n"
 "Last-Translator: Carsten Przygoda <carsten@funnytakes.de>\n"
 "Language-Team: Carsten Przygoda <carsten@funnytakes.de>\n"
@@ -102,10 +102,18 @@ msgstr ""
 msgid "Right Ascension"
 msgstr ""
 
-#: calreview_dialog.cpp:140 calreview_dialog.cpp:145 calreview_dialog.cpp:350
+#: calreview_dialog.cpp:135 comet_tool.cpp:326 myframe_events.cpp:150
+msgid "X"
+msgstr "X"
+
+#: calreview_dialog.cpp:140 calreview_dialog.cpp:145 calreview_dialog.cpp:356
 #: statswindow.cpp:97
 msgid "Declination"
 msgstr "Deklination"
+
+#: calreview_dialog.cpp:143 comet_tool.cpp:327 myframe_events.cpp:157
+msgid "Y"
+msgstr "Y"
 
 #: calreview_dialog.cpp:193
 #, fuzzy
@@ -130,105 +138,117 @@ msgstr "Dec Rate:"
 msgid "Camera angle:"
 msgstr "Kamerawinkel:"
 
-#: calreview_dialog.cpp:222 calreview_dialog.cpp:657
+#: calreview_dialog.cpp:222 calreview_dialog.cpp:662
 msgid "Orthogonality error:"
 msgstr "Orthogonaler Fehler:"
 
-#: calreview_dialog.cpp:239 calreview_dialog.cpp:686
+#: calreview_dialog.cpp:237
+msgid "a-s/sec"
+msgstr ""
+
+#: calreview_dialog.cpp:238 guiding_assistant.cpp:825
+msgid "px/sec"
+msgstr ""
+
+#: calreview_dialog.cpp:239
+msgid "a-s/px"
+msgstr ""
+
+#: calreview_dialog.cpp:243 calreview_dialog.cpp:691
 msgid "RA rate:"
 msgstr "RA Rate:"
 
-#: calreview_dialog.cpp:242
+#: calreview_dialog.cpp:246
 #, fuzzy
 msgid "X rate:"
 msgstr "RA Rate:"
 
-#: calreview_dialog.cpp:248
+#: calreview_dialog.cpp:252
 msgid "Dec rate:"
 msgstr "Dec Rate:"
 
-#: calreview_dialog.cpp:250
+#: calreview_dialog.cpp:254
 #, fuzzy
 msgid "Y rate:"
 msgstr "RA Rate:"
 
-#: calreview_dialog.cpp:267
+#: calreview_dialog.cpp:271
 #, fuzzy
 msgid "Expected RA rate:"
 msgstr "RA Rate:"
 
-#: calreview_dialog.cpp:273
+#: calreview_dialog.cpp:279
 #, fuzzy
 msgid "Expected Dec rate:"
 msgstr "Dec Rate:"
 
-#: calreview_dialog.cpp:286
+#: calreview_dialog.cpp:292
 #, fuzzy
 msgid "Mount Configuration"
 msgstr "Konfiguration zurücksetzen"
 
-#: calreview_dialog.cpp:298
+#: calreview_dialog.cpp:304
 msgid "Timestamp:"
 msgstr "Zeitstempel:"
 
-#: calreview_dialog.cpp:300
+#: calreview_dialog.cpp:306
 #, fuzzy
 msgid "Focal length:"
 msgstr "Brennweite, mm"
 
-#: calreview_dialog.cpp:307
+#: calreview_dialog.cpp:313
 #, fuzzy
 msgid "Image scale:"
 msgstr "Bildskalierung, Bogensekunde/px"
 
-#: calreview_dialog.cpp:312
+#: calreview_dialog.cpp:318
 #, fuzzy
 msgid "Side-of-pier:"
 msgstr "Beobachtungsstandort:"
 
-#: calreview_dialog.cpp:313 cam_simulator.cpp:1555 guidinglog.cpp:194
+#: calreview_dialog.cpp:319 cam_simulator.cpp:1555 guidinglog.cpp:194
 #: mount.cpp:54 mount.cpp:613 testguide.cpp:152
 msgid "East"
 msgstr "Ost"
 
-#: calreview_dialog.cpp:314 cam_simulator.cpp:1555 guidinglog.cpp:195
+#: calreview_dialog.cpp:320 cam_simulator.cpp:1555 guidinglog.cpp:195
 #: mount.cpp:55 mount.cpp:613 testguide.cpp:152
 msgid "West"
 msgstr "West"
 
-#: calreview_dialog.cpp:320
+#: calreview_dialog.cpp:326
 #, fuzzy
 msgid "RA Guide speed:"
 msgstr "Pixelgröße Nachführkamera:"
 
-#: calreview_dialog.cpp:327
+#: calreview_dialog.cpp:333
 #, fuzzy
 msgid "Dec Guide speed:"
 msgstr "Dec Nachführungs-Modus"
 
-#: calreview_dialog.cpp:354
+#: calreview_dialog.cpp:360
 msgid " (est)"
 msgstr ""
 
-#: calreview_dialog.cpp:357
+#: calreview_dialog.cpp:362
 #, fuzzy
 msgid "Rotator position:"
 msgstr "Fenster Positionen wiederherstellen"
 
-#: calreview_dialog.cpp:510 nudge_lock.cpp:181 nudge_lock.cpp:192
+#: calreview_dialog.cpp:515 nudge_lock.cpp:181 nudge_lock.cpp:192
 msgid "Restore"
 msgstr "Wiederherstellen"
 
-#: calreview_dialog.cpp:525
+#: calreview_dialog.cpp:530
 #, fuzzy
 msgid "Calibration restored"
 msgstr "Kalibrationsschritte"
 
-#: calreview_dialog.cpp:543
+#: calreview_dialog.cpp:548
 msgid "Calibration Sanity Check"
 msgstr "Kalibrationsschritte überprüfen"
 
-#: calreview_dialog.cpp:566
+#: calreview_dialog.cpp:571
 msgid ""
 "The calibration was done with a very small number of steps, which can "
 "produce inaccurate results. Consider reducing the size of the calibration "
@@ -241,7 +261,7 @@ msgstr ""
 "Schritte in jede Richtung verwendet werden. Die \"Rechner\" -Funktion in der "
 "Konfiguration der Registerkarte \"Montierung\" kann Ihnen dabei helfen."
 
-#: calreview_dialog.cpp:571
+#: calreview_dialog.cpp:576
 #, c-format
 msgid ""
 "The RA and Declination angles computed in the calibration are questionable.  "
@@ -257,7 +277,7 @@ msgstr ""
 "Kalibrierung ungenau ist, vielleicht wegen der kleinen oder unregelmäßig "
 "Sterne-Bewegung."
 
-#: calreview_dialog.cpp:576
+#: calreview_dialog.cpp:581
 #, c-format
 msgid ""
 "The most recent calibration produced results that are %s%% different from "
@@ -272,7 +292,7 @@ msgstr ""
 "ermöglicht es Ihnen, zwischen den Konfigurationen hin und her zu wechseln "
 "und behalten noch früher und die Kalibrierungsergebnisse."
 
-#: calreview_dialog.cpp:581
+#: calreview_dialog.cpp:586
 #, c-format
 msgid ""
 "The RA and Declination guiding rates differ by an unexpected amount.  For "
@@ -287,55 +307,55 @@ msgstr ""
 "dass die Kalibrierung ungenau ist, vielleicht wegen der kleinen oder "
 "unregelmäßig Sterne-Bewegung."
 
-#: calreview_dialog.cpp:623
+#: calreview_dialog.cpp:628
 msgid "Explanation"
 msgstr "Erklärung"
 
-#: calreview_dialog.cpp:636
+#: calreview_dialog.cpp:641
 msgid "Details"
 msgstr "Details"
 
-#: calreview_dialog.cpp:645
+#: calreview_dialog.cpp:650
 msgid "Steps, RA:"
 msgstr "Schritte, RA:"
 
-#: calreview_dialog.cpp:647
+#: calreview_dialog.cpp:652
 msgid "Steps, Dec:"
 msgstr "Schritte, Dec:"
 
-#: calreview_dialog.cpp:659
+#: calreview_dialog.cpp:664
 msgid "Previous orthogonality error:"
 msgstr "Vorherige Orthogonalitätsfehler:"
 
-#: calreview_dialog.cpp:671
+#: calreview_dialog.cpp:676
 msgid "This declination rate:"
 msgstr "Diese Dec-Rate:"
 
-#: calreview_dialog.cpp:676
+#: calreview_dialog.cpp:681
 msgid "Previous declination rate:"
 msgstr "Vorherige Dec-Rate:"
 
-#: calreview_dialog.cpp:688
+#: calreview_dialog.cpp:693
 msgid "Declination rate:"
 msgstr "Dec-Rate:"
 
-#: calreview_dialog.cpp:706
+#: calreview_dialog.cpp:711
 msgid "Don't show calibration alerts of this type"
 msgstr "Kalibrierungs-Warnungen nicht mehr anzeigen"
 
-#: calreview_dialog.cpp:717
+#: calreview_dialog.cpp:722
 msgid "Accept calibration"
 msgstr "Kalibration akzeptieren"
 
-#: calreview_dialog.cpp:718
+#: calreview_dialog.cpp:723
 msgid "Accept the calibration as being valid and continue guiding"
 msgstr "Übernehmen Sie die Kalibrierung und die Nachführung fotsetzen"
 
-#: calreview_dialog.cpp:720
+#: calreview_dialog.cpp:725
 msgid "Discard calibration"
 msgstr "Kalibration verwerfen"
 
-#: calreview_dialog.cpp:721
+#: calreview_dialog.cpp:726
 msgid ""
 "Stop guiding and discard the most recent calibration.  Calibration will be "
 "re-done the next time you start guiding"
@@ -343,11 +363,11 @@ msgstr ""
 "Nachführung stoppen und die letzten Kalibrierung verwerfen. Eine neue "
 "Kalibrierung muss erfolgen, bevor die Nachführung gestartet werden kann."
 
-#: calreview_dialog.cpp:723
+#: calreview_dialog.cpp:728
 msgid "Restore old calibration"
 msgstr "Alte Kalibration wiederherstellen"
 
-#: calreview_dialog.cpp:724
+#: calreview_dialog.cpp:729
 msgid ""
 "Stop guiding, discard the most recent calibration, then load the previous "
 "(good) calibration"
@@ -355,7 +375,7 @@ msgstr ""
 "Nachführung stoppen und die letzten Kalibrierung verwerfen. Laden der "
 "vorherigen (guten) Kalibration"
 
-#: calreview_dialog.cpp:767
+#: calreview_dialog.cpp:772
 #, fuzzy
 msgid "Previous calibration restored"
 msgstr "Vorherige Dec-Rate:"
@@ -1397,14 +1417,6 @@ msgstr "RA"
 #: statswindow.cpp:70 target.cpp:340
 msgid "Dec"
 msgstr "Dec"
-
-#: comet_tool.cpp:326 myframe_events.cpp:150
-msgid "X"
-msgstr "X"
-
-#: comet_tool.cpp:327 myframe_events.cpp:157
-msgid "Y"
-msgstr "Y"
 
 #: confirm_dialog.cpp:40
 msgid "Don't ask again"
@@ -2827,10 +2839,6 @@ msgstr ""
 
 #: guiding_assistant.cpp:824
 msgid "px/min"
-msgstr ""
-
-#: guiding_assistant.cpp:825
-msgid "px/sec"
 msgstr ""
 
 #: guiding_assistant.cpp:826
