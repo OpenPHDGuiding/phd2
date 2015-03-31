@@ -130,7 +130,7 @@ struct GuidingAsstWin : public wxDialog
     wxGrid *m_statusgrid;
     wxGrid *m_displacementgrid;
     wxGrid *m_othergrid;
-    wxGridSizer *m_recommendgrid;
+    wxSizer *m_recommendgrid;
     wxBoxSizer *m_vSizer;
     wxStaticBoxSizer *m_recommend_group;
 
@@ -157,6 +157,7 @@ struct GuidingAsstWin : public wxDialog
     wxGridCellCoords m_ra_drift_as_loc;
     wxGridCellCoords m_dec_drift_px_loc;
     wxGridCellCoords m_dec_drift_as_loc;
+    wxGridCellCoords m_pae_loc;
     wxGridCellCoords m_ra_peak_drift_px_loc;
     wxGridCellCoords m_ra_peak_drift_as_loc;
     wxButton *m_raMinMoveButton;
@@ -164,6 +165,7 @@ struct GuidingAsstWin : public wxDialog
     wxStaticText *m_ra_msg;
     wxStaticText *m_dec_msg;
     wxStaticText *m_snr_msg;
+    wxStaticText *m_pae_msg;
     double m_ra_val_rec;  // recommended value
     double m_dec_val_rec; // recommended value
 
@@ -181,6 +183,8 @@ struct GuidingAsstWin : public wxDialog
     double maxRA;
     double m_lastTime;
     double maxRateRA; // arc-sec per second
+    double alignmentError; // arc-minutes
+    double declination;
 
     bool m_savePrimaryMountEnabled;
     bool m_saveSecondaryMountEnabled;
@@ -309,7 +313,7 @@ GuidingAsstWin::GuidingAsstWin()
     // Start of "Other" (peak and drift) group
     wxStaticBoxSizer *other_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Other Star Motion"));
     m_othergrid = new wxGrid(this, wxID_ANY);
-    m_othergrid->CreateGrid(6, 3);
+    m_othergrid->CreateGrid(7, 3);
     m_othergrid->GetGridWindow()->Bind(wxEVT_MOTION, &GuidingAsstWin::OnMouseMove, this, wxID_ANY, wxID_ANY, new GridTooltipInfo(m_othergrid, 3));
     m_othergrid->SetRowLabelSize(1);
     m_othergrid->SetColLabelSize(1);
@@ -347,6 +351,10 @@ GuidingAsstWin::GuidingAsstWin()
     m_dec_drift_px_loc.Set(row, col++);
     m_dec_drift_as_loc.Set(row, col++);
 
+    StartRow(row, col);
+    m_othergrid->SetCellValue(_("Polar Alignment Error"), row, col++);
+    m_pae_loc.Set(row, col++);
+
     other_group->Add(m_othergrid);
     m_vSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of peak and drift group
@@ -369,14 +377,15 @@ GuidingAsstWin::GuidingAsstWin()
 
     // Start of Recommendations group - just a place-holder for layout, populated in MakeRecommendations
     m_recommend_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Recommendations"));
-    m_recommendgrid = new wxGridSizer(2, 0, 0);
+    m_recommendgrid = new wxFlexGridSizer(2, 0, 0);
     m_ra_msg = NULL;
     m_dec_msg = NULL;
     m_snr_msg = NULL;
+    m_pae_msg = 0;
 
-    m_recommend_group->Add(m_recommendgrid);
+    m_recommend_group->Add(m_recommendgrid, wxSizerFlags(1).Expand());
     // Put the recommendation block at the bottom so it can be hidden/shown
-    m_vSizer->Add(m_recommend_group, wxSizerFlags(0).Border(wxALL, 8));
+    m_vSizer->Add(m_recommend_group, wxSizerFlags(1).Border(wxALL, 8).Expand());
     m_recommend_group->Show(false);
     // End of recommendations
 
@@ -434,6 +443,7 @@ static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString
         case 303: *s = _("Estimated overall drift rate in right ascension."); break;
         case 304: *s = _("Maximum drift rate in right ascension during sampling period; may be useful for setting exposure time."); break;
         case 305: *s = _("Estimated overall drift rate in declination."); break;
+        case 306: *s = _("Estimate of polar alignment error. If the scope declination is unknown, the value displayed is a lower bound and the actual error may be larger."); break;
 
         default: return false;
     }
@@ -534,12 +544,12 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
         Debug.Write("GuideAssistant logic flaw, Dec algorithm has no MinMove property\n");
 }
 
-
 // Adds a recommendation string and a button bound to the passed event handler
 wxStaticText *GuidingAsstWin::AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton **ppButton)
 {
-    wxStaticText *rec_label = new wxStaticText(this, wxID_ANY, msg, wxPoint(-1, -1), wxSize(300, -1));
-    m_recommendgrid->Add(rec_label, 0, wxALIGN_LEFT | wxALL, 5);
+    wxStaticText *rec_label = new wxStaticText(this, wxID_ANY, msg);
+    rec_label->Wrap(400);
+    m_recommendgrid->Add(rec_label, 1, wxALIGN_LEFT | wxALL, 5);
     if (handler)
     {
         *ppButton = new wxButton(this, wxID_ANY, _("Apply"), wxDefaultPosition, wxDefaultSize, 0);
@@ -548,7 +558,7 @@ wxStaticText *GuidingAsstWin::AddRecommendationEntry(const wxString& msg, wxObje
     }
     else
     {
-        wxStaticText *rec_tmp = new wxStaticText(this, wxID_ANY, wxEmptyString, wxPoint(-1, -1), wxDefaultSize);
+        wxStaticText *rec_tmp = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize);
         m_recommendgrid->Add(rec_tmp, 0, wxALL, 5);
     }
     return rec_label;
@@ -580,7 +590,24 @@ void GuidingAsstWin::MakeRecommendations()
     m_ra_val_rec = rounded_rarms;
     m_dec_val_rec = rounded_decrms;
 
-    m_recommend_group->Show(true);
+    if (alignmentError > 5.0)
+    {
+        wxString msg = alignmentError < 10.0 ?
+            _("You may want to spend some time improving your polar alignment. You may see some field rotation, especially if you are imaging targets closer to the pole.") :
+            _("Your polar alignment is pretty far off. You are likely to see field rotation unless you keep your exposures very short.");
+        if (!m_pae_msg)
+            m_pae_msg = AddRecommendationEntry(msg);
+        else
+        {
+            m_pae_msg->SetLabel(msg);
+            m_pae_msg->Wrap(400);
+        }
+    }
+    else
+    {
+        if (m_pae_msg)
+            m_pae_msg->SetLabel(wxEmptyString);
+    }
 
     if (pMount->GetXGuideAlgorithm() && pMount->GetXGuideAlgorithm()->GetMinMove() >= 0.0)
     {
@@ -623,6 +650,8 @@ void GuidingAsstWin::MakeRecommendations()
         if (m_snr_msg)
             m_snr_msg->SetLabel(wxEmptyString);
     }
+
+    m_recommend_group->Show(true);
 
     Layout();
     GetSizer()->Fit(this);
@@ -783,10 +812,15 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
 
     double raDriftRate = driftRA / elapsed * 60.0;
     double decDriftRate = driftDec / elapsed * 60.0;
+    declination = pPointingSource->GetGuidingDeclination();
+    // polar alignment error from Barrett:
+    // http://celestialwonders.com/articles/polaralignment/PolarAlignmentAccuracy.pdf
+    alignmentError = 3.8197 * fabs(decDriftRate) * pxscale / cos(declination);
 
     wxString SEC(_("s"));
     wxString PX(_("px"));
     wxString ARCSEC(_("arc-sec"));
+    wxString ARCMIN(_("arc-min"));
     wxString PXPERMIN(_("px/min"));
     wxString PXPERSEC(_("px/sec"));
     wxString ARCSECPERMIN(_("arc-sec/min"));
@@ -821,6 +855,7 @@ void GuidingAsstWin::UpdateInfo(const GuideStepInfo& info)
         maxRateRA * pxscale, ARCSECPERSEC, _("Max Exp"), maxRateRA > 0.0 ? rarms / maxRateRA : 0.0, SEC));
     m_othergrid->SetCellValue(m_dec_drift_px_loc, wxString::Format("% .1f %s", decDriftRate, PXPERMIN));
     m_othergrid->SetCellValue(m_dec_drift_as_loc, wxString::Format("% .1f %s", decDriftRate * pxscale, ARCSECPERMIN));
+    m_othergrid->SetCellValue(m_pae_loc, wxString::Format("%s %.1f %s", declination == 0.0 ? "> " : "", alignmentError, ARCMIN));
 }
 
 wxWindow *GuidingAssistant::CreateDialogBox()
