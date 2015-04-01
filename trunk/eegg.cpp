@@ -51,7 +51,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             return;
         }
 
-        if (!pMount || !pMount->IsConnected())
+        if (!pMount)
         {
             wxMessageBox(_("Please connect a mount first."));
             return;

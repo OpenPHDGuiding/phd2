@@ -443,6 +443,7 @@ void MyFrame::SetupMenuBar(void)
     calib_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
     calib_menu->Append(EEGG_CLEARCAL, _("Clear Calibration Data..."), _("Clear calibration data currently in use"));
     m_calibrationMenuItem = tools_menu->AppendSubMenu(calib_menu, _("Modify Calibration"));
+    m_calibrationMenuItem->Enable(false);
 
     tools_menu->Append(EEGG_MANUALLOCK, _("Adjust &Lock Position"), _("Adjust the lock position"));
     tools_menu->Append(MENU_COMETTOOL, _("&Comet Tracking"), _("Run the Comet Tracking tool"));
@@ -937,9 +938,10 @@ void MyFrame::UpdateButtonsStatus(void)
     }
 
     bool guiding_active = pGuider && pGuider->IsCalibratingOrGuiding();         // Not the same as 'bGuideable below
-    if (!guiding_active ^ m_calibrationMenuItem->IsEnabled())
+    bool mod_calibration_ok = !guiding_active && pMount && pMount->IsConnected();
+    if (mod_calibration_ok ^ m_calibrationMenuItem->IsEnabled())
     {
-        m_calibrationMenuItem->Enable(!guiding_active);
+        m_calibrationMenuItem->Enable(mod_calibration_ok);
         need_update = true;
     }
     if (!guiding_active ^ m_refineDefMapMenuItem->IsEnabled())
