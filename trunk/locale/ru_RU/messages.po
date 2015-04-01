@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-31 01:28-0400\n"
-"PO-Revision-Date: 2015-03-26 09:46+0300\n"
+"PO-Revision-Date: 2015-04-01 10:01+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -142,7 +142,7 @@ msgstr "Ошибка ортогональности:"
 
 #: calreview_dialog.cpp:237
 msgid "a-s/sec"
-msgstr ""
+msgstr "угл. сек/сек"
 
 #: calreview_dialog.cpp:238 guiding_assistant.cpp:825
 msgid "px/sec"
@@ -150,7 +150,7 @@ msgstr "пикс/сек"
 
 #: calreview_dialog.cpp:239
 msgid "a-s/px"
-msgstr ""
+msgstr "угл. сек/пикс"
 
 #: calreview_dialog.cpp:243 calreview_dialog.cpp:691
 msgid "RA rate:"
@@ -2341,7 +2341,7 @@ msgstr "Алгоритм сглаживающего гидирования"
 
 #: guide_algorithm_lowpass.cpp:200
 msgid "Slope Weight"
-msgstr "Взвешивание"
+msgstr "Коэффициент наклона"
 
 #: guide_algorithm_lowpass.cpp:201
 msgid "Weighting of slope parameter in lowpass auto-dec"
@@ -2357,7 +2357,7 @@ msgstr ""
 
 #: guide_algorithm_lowpass.cpp:254
 msgid "Sl W"
-msgstr ""
+msgstr "Коэфф. откл."
 
 #: guide_algorithm_lowpass2.cpp:195
 msgid "Lowpass2 Guide Algorithm"
@@ -2614,7 +2614,7 @@ msgstr "Скорость дрейфа по склонению:"
 
 #: guiding_assistant.cpp:355
 msgid "Polar Alignment Error"
-msgstr ""
+msgstr "Ошибка определения полюса"
 
 #: guiding_assistant.cpp:366
 msgid "Start measuring (disables guiding)"
@@ -2641,6 +2641,8 @@ msgid ""
 "Measure of overall star brightness. Consider using 'Auto-select Star' (Alt-"
 "S) to choose the star."
 msgstr ""
+"Измерение общей яркости звезды. Учитывается при автоматическом выборе звезды "
+"(Alt-S)"
 
 #: guiding_assistant.cpp:436
 msgid ""
@@ -2692,6 +2694,9 @@ msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
 msgstr ""
+"Оценка ошибки определения полюса. Если склонение телескопа неизвестно, "
+"отображается нижнее из возможных значений и на самом деле ошибка может быть "
+"больше"
 
 #: guiding_assistant.cpp:477
 msgid "Choose a non-saturated star with a good SNR (>10) and begin guiding"
@@ -2735,12 +2740,16 @@ msgid ""
 "some field rotation, especially if you are imaging targets closer to the "
 "pole."
 msgstr ""
+"Возможно, вы захотите улучшить настройку полюса из-за вращения поля, "
+"особенно в околополярной области."
 
 #: guiding_assistant.cpp:597
 msgid ""
 "Your polar alignment is pretty far off. You are likely to see field rotation "
 "unless you keep your exposures very short."
 msgstr ""
+"Установка полюса очень неточная. Если не делать выдержки очень короткими, "
+"будет заметно вращение поля."
 
 #: guiding_assistant.cpp:616 guiding_assistant.cpp:621
 #, c-format
@@ -2775,7 +2784,7 @@ msgstr "угл. сек"
 
 #: guiding_assistant.cpp:823
 msgid "arc-min"
-msgstr ""
+msgstr "угл. мин"
 
 #: guiding_assistant.cpp:824
 msgid "px/min"
@@ -3954,6 +3963,8 @@ msgstr "Восстановить сохранённую выбранную по�
 #, c-format
 msgid "Set lock position to saved value (%.2f,%.2f)?"
 msgstr ""
+"Использовать в качестве выбранного положения сохранённое значение  (%.2f,"
+"%.2f)?"
 
 #: nudge_lock.cpp:346
 msgid "Restore saved Lock Pos"
@@ -4832,7 +4843,7 @@ msgstr "угол=%.1f скорость=%.2f"
 #: stepguider.cpp:627
 #, c-format
 msgid "up Calibration: %3d"
-msgstr "вверх: %3d"
+msgstr "калибровка вверх: %3d"
 
 #: stepguider.cpp:666
 #, c-format
@@ -4885,7 +4896,7 @@ msgstr "Процент силы удара"
 msgid ""
 "What percentage of the AO travel can be used before bumping the mount. "
 "Default = %d"
-msgstr ""
+msgstr "Процент смещения АО до удара монтировки. По умолчанию %d"
 
 #: stepguider.cpp:1191
 msgid "Bump Step"
