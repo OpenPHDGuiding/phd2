@@ -32,10 +32,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PHD2 2.4.0\n"
+"Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-31 01:28-0400\n"
-"PO-Revision-Date: 2015-03-18 11:28+0800\n"
+"PO-Revision-Date: 2015-03-31 15:37+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
@@ -141,7 +141,7 @@ msgstr "垂直誤差:"
 
 #: calreview_dialog.cpp:237
 msgid "a-s/sec"
-msgstr ""
+msgstr "a-s/sec"
 
 #: calreview_dialog.cpp:238 guiding_assistant.cpp:825
 msgid "px/sec"
@@ -149,7 +149,7 @@ msgstr "px/sec"
 
 #: calreview_dialog.cpp:239
 msgid "a-s/px"
-msgstr ""
+msgstr "a-s/px"
 
 #: calreview_dialog.cpp:243 calreview_dialog.cpp:691
 msgid "RA rate:"
@@ -1078,7 +1078,7 @@ msgstr "無法開啟 ZWO ASI 相機"
 #: camcal_import_dialog.cpp:57
 #, c-format
 msgid "Import Darks to Profile %s"
-msgstr ""
+msgstr "由配置檔 %s 匯入暗場圖庫"
 
 #: camcal_import_dialog.cpp:63 darks_dialog.cpp:113
 msgid "Dark Library"
@@ -1108,7 +1108,7 @@ msgstr "暗場配置檔"
 
 #: camcal_import_dialog.cpp:79 camcal_import_dialog.cpp:105
 msgid "Import from profile"
-msgstr ""
+msgstr "由配置檔匯入"
 
 #: camcal_import_dialog.cpp:81 camcal_import_dialog.cpp:107
 msgid "Camera in profile"
@@ -1909,10 +1909,12 @@ msgid ""
 "dark library or bad-pixel maps. You should consider creating a new profile "
 "for this set-up.  Do you want to proceed with changes to this profile?"
 msgstr ""
+"更改設備組態檔中的相機種類後, 你就不能使用目前的暗場或壞點影像庫。你需為此設"
+"備組合重新建立新的組態檔, 你確定要對本組態設定檔進行更改?"
 
 #: gear_dialog.cpp:869
 msgid "Camera Change Warning"
-msgstr ""
+msgstr "警告: 更改相機"
 
 #: gear_dialog.cpp:884
 msgid "Connecting to Camera ..."
@@ -2564,7 +2566,7 @@ msgstr "赤緯飄移率"
 
 #: guiding_assistant.cpp:355
 msgid "Polar Alignment Error"
-msgstr ""
+msgstr "極軸校準誤差"
 
 #: guiding_assistant.cpp:366
 msgid "Start measuring (disables guiding)"
@@ -2637,6 +2639,8 @@ msgid ""
 "Estimate of polar alignment error. If the scope declination is unknown, the "
 "value displayed is a lower bound and the actual error may be larger."
 msgstr ""
+"評估極軸校準誤差, 如果不知道赤道儀偏差值的話, 所顯示的數值只是下限值而已, 實"
+"際的誤差可能更大。"
 
 #: guiding_assistant.cpp:477
 msgid "Choose a non-saturated star with a good SNR (>10) and begin guiding"
@@ -2677,12 +2681,15 @@ msgid ""
 "some field rotation, especially if you are imaging targets closer to the "
 "pole."
 msgstr ""
+"您可能得花點時間來對準極軸：您可能發現到有某程度的像場旋轉效應存在, 這種狀況"
+"在拍攝靠近天球極區附近影像時會尤其顯著。"
 
 #: guiding_assistant.cpp:597
 msgid ""
 "Your polar alignment is pretty far off. You are likely to see field rotation "
 "unless you keep your exposures very short."
 msgstr ""
+"您的極軸沒有對好, 除非曝光時間非常短, 否則一定會有像場旋轉(假極)的現象。"
 
 #: guiding_assistant.cpp:616 guiding_assistant.cpp:621
 #, c-format
@@ -2716,7 +2723,7 @@ msgstr "角秒"
 
 #: guiding_assistant.cpp:823
 msgid "arc-min"
-msgstr ""
+msgstr "arc-min"
 
 #: guiding_assistant.cpp:824
 msgid "px/min"
@@ -3025,7 +3032,7 @@ msgstr "啟用伺服器"
 
 #: myframe.cpp:455
 msgid "Enable PHD2 server capability"
-msgstr ""
+msgstr "啟用 PHD2 伺服器功能"
 
 #: myframe.cpp:456 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
@@ -3133,7 +3140,7 @@ msgstr "狹縫位置"
 
 #: myframe.cpp:475
 msgid "Restore Window Positions"
-msgstr ""
+msgstr "恢復視窗位置"
 
 #: myframe.cpp:475
 msgid "Restore all windows to their default/docked positions"
@@ -3157,7 +3164,7 @@ msgstr "調整參數以建立或修改壞像素影像"
 
 #: myframe.cpp:480
 msgid "Import From Profile..."
-msgstr ""
+msgstr "由配置檔匯入..."
 
 #: myframe.cpp:480
 msgid "Import existing dark library/bad-pixel map from a different profile"
@@ -3320,7 +3327,7 @@ msgstr "開始導星 (PHD), 按下 Shit-Click 進行強制校準"
 
 #: myframe.cpp:801
 msgid "Stop looping and guiding"
-msgstr ""
+msgstr "停止曝光及導星"
 
 #: myframe.cpp:803
 msgid "Exposure duration"
@@ -3770,18 +3777,20 @@ msgid ""
 "new configuration.\n"
 "Would you like to use the Setup Wizard now?"
 msgstr ""
+"似乎這是第一次連接到你的相機和赤道儀, 設定精靈將會幫助你為你所使用設備\n"
+"設定導星所需的基本參數。是否要使用設定精靈呢?"
 
 #: myframe_events.cpp:912
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: myframe_events.cpp:912
 msgid "No"
-msgstr ""
+msgstr "否"
 
 #: myframe_events.cpp:912
 msgid "Setup Wizard Recommendation"
-msgstr ""
+msgstr "設定精靈建議值"
 
 #: nudge_lock.cpp:117
 msgid "Adjust Lock Position"
@@ -4780,11 +4789,11 @@ msgstr ""
 
 #: stepguider.cpp:1193
 msgid "Bump on Dither"
-msgstr ""
+msgstr "Bump on Dither"
 
 #: stepguider.cpp:1194
 msgid "Bump the mount to return the AO to center at each dither"
-msgstr ""
+msgstr "於每次 dither 時跳轉赤道儀讓 AO 回到中心位置"
 
 #: stepguider_sxao.cpp:103
 #, c-format
