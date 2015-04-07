@@ -36,14 +36,14 @@ msgstr ""
 "Project-Id-Version: open-phd-guiding 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-31 01:28-0400\n"
-"PO-Revision-Date: 2015-04-01 10:01+0300\n"
+"PO-Revision-Date: 2015-04-07 21:11+0300\n"
 "Last-Translator: Konstantin Menshikoff <konstantin.menshikoff@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.10\n"
+"X-Generator: Poedit 1.7.5\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
@@ -395,7 +395,7 @@ msgid ""
 "Guide speed, multiple of sidereal rate; if your mount's guide speed is "
 "50% sidereal rate, enter 0.5"
 msgstr ""
-"Скорость гидирования, кратная звёздной, например, для 50% звёздной введите "
+"Скорость гидирования, кратная звёздной, например, для 1/2 звёздной введите "
 "0.5"
 
 #: calstep_dialog.cpp:126
@@ -435,7 +435,7 @@ msgstr "Шаг калибровки, мс"
 #: camera.cpp:662 configdialog.cpp:65 darks_dialog.cpp:53
 #: profile_wizard.cpp:58 profile_wizard.cpp:65 Refine_DefMap.cpp:60
 msgid ": "
-msgstr ""
+msgstr ":"
 
 #: calstep_dialog.cpp:224
 msgid "Please enter a focal length of at least 50"
@@ -551,7 +551,7 @@ msgstr "Ошибка ASCOM: экспозиция с заданными пара�
 
 #: cam_ascomlate.cpp:811
 msgid "Exception thrown polling camera"
-msgstr ""
+msgstr "Ошибка при попытке проверить статус экспозиции"
 
 #: cam_ascomlate.cpp:832
 msgid "Error reading image"
@@ -687,15 +687,15 @@ msgstr "Последовательный порт не найден"
 
 #: cam_LESerialWebcam.cpp:316
 msgid "Port pins"
-msgstr ""
+msgstr "Контакты порта"
 
 #: cam_LESerialWebcam.cpp:352
 msgid "Inverted logic"
-msgstr ""
+msgstr "Инвертирование сигналов"
 
 #: cam_LESerialWebcam.cpp:355
 msgid "Use Amp"
-msgstr ""
+msgstr "Исп. Усил."
 
 #: cam_LESerialWebcam.cpp:365
 msgid "Defaults"
@@ -765,7 +765,7 @@ msgstr "Ошибка получения информации с главной C
 
 #: cam_SBIG.cpp:370
 msgid "Cannot poll exposure"
-msgstr ""
+msgstr "Невозможно проверить, завершена ли экспозиция"
 
 #: cam_SBIG.cpp:393
 msgid "Cannot stop exposure"
@@ -1513,7 +1513,7 @@ msgstr "Получение темнового кадра"
 #: darks_dialog.cpp:391
 #, c-format
 msgid "%.1f s dark FAILED"
-msgstr ""
+msgstr "Построение темнового кадра %1f завершилось неудачно"
 
 #: darks_dialog.cpp:419
 msgid "Dark frames complete"
@@ -2183,7 +2183,7 @@ msgstr "RA / Dec"
 
 #: graph.cpp:270
 msgid "dx / dy"
-msgstr ""
+msgstr "dx / dy"
 
 #: graph.cpp:278
 msgid "Y-axis units"
@@ -2223,11 +2223,11 @@ msgstr "цвет dy..."
 
 #: graph.cpp:324
 msgid "dx"
-msgstr ""
+msgstr "dx"
 
 #: graph.cpp:325
 msgid "dy"
-msgstr ""
+msgstr "dy"
 
 #: graph.cpp:390
 msgid "RA or dx Color"
@@ -2345,7 +2345,7 @@ msgstr "Коэффициент наклона"
 
 #: guide_algorithm_lowpass.cpp:201
 msgid "Weighting of slope parameter in lowpass auto-dec"
-msgstr ""
+msgstr "Коэффициент наклона алгоритма сглаживания по склонению"
 
 #: guide_algorithm_lowpass.cpp:209
 msgid ""
@@ -2414,6 +2414,8 @@ msgstr "Гидирование закончено"
 msgid ""
 "Shifted lock position outside allowable area. Lock Position Shift disabled."
 msgstr ""
+"Смещение выбранной позиции за пределы допустимой области. Смещение выбранной "
+"позиции запрещено."
 
 #: guider.cpp:1063
 msgid "star lost"
@@ -3407,7 +3409,7 @@ msgstr "Длительность экспозиции"
 
 #: myframe.cpp:804
 msgid "Gamma"
-msgstr ""
+msgstr "Яркость экрана"
 
 #: myframe.cpp:806
 msgid "Advanced parameters"
@@ -3930,6 +3932,8 @@ msgid ""
 "Sticky lock position will not follow the star when guiding is stopped and "
 "restarted, or after calibration completes"
 msgstr ""
+"Положение звезды не сохраняется при остановке и возобновлении гидирования, а "
+"также после завершения калибровки"
 
 #: nudge_lock.cpp:165
 msgid "Lock Pos:"
@@ -3984,7 +3988,7 @@ msgid ""
 "PHD2 instance %ld is already running. Use the -i INSTANCE_NUM command-line "
 "option to start a different instance."
 msgstr ""
-"PHD2 экземпляр% LD уже запущен. Используйте параметр командной строки -i "
+"PHD2 экземпляр %ld уже запущен. Используйте параметр командной строки -i "
 "INSTANCE_NUM для запуска другого экземпляра."
 
 #: phdconfig.cpp:44
@@ -4602,7 +4606,7 @@ msgstr "калибровка завершена"
 #: scope.cpp:1205
 #, c-format
 msgid "dx=%4.1f dy=%4.1f dist=%4.1f"
-msgstr ""
+msgstr "dx=%4.1f dy=%4.1f дальность=%4.1f"
 
 #: scope.cpp:1271
 msgid "Calculate..."
@@ -4856,6 +4860,9 @@ msgid ""
 "but the bump did not complete in a reasonable amount of time.\n"
 "You probably need to increase the AO Bump Step setting."
 msgstr ""
+"\"Толчок\" монтировки нужен для возвращения АО в центральное положение,\n"
+"однако, его нельзя завершить за разумное время.\n"
+"Возможно, стоит увеличить шаг толчка АО."
 
 #: stepguider.cpp:1161
 msgid "AO Settings"
@@ -4908,14 +4915,16 @@ msgid ""
 "How far should a mount bump move the mount between images (in AO steps). "
 "Default = %.2f, decrease if mount bumps cause spikes on the graph"
 msgstr ""
+"Насколько толчок должен переместить монтировку между кадрами (в шагах АО). "
+"По умолчанию %2f, уменьшите если толчок вызывает всплески на графике"
 
 #: stepguider.cpp:1193
 msgid "Bump on Dither"
-msgstr ""
+msgstr "Удар при подвижке"
 
 #: stepguider.cpp:1194
 msgid "Bump the mount to return the AO to center at each dither"
-msgstr ""
+msgstr "Толкнуть монтировку, чтобы вернуть АО к центру при каждой подвижке"
 
 #: stepguider_sxao.cpp:103
 #, c-format
@@ -4928,6 +4937,11 @@ msgid ""
 "downloads,\n"
 "contains the v101 firmware."
 msgstr ""
+"Эта версия прошивки АО (%03u) ограничивает диапазон перемещения АО, отчего\n"
+"калибровка может не удасться. Советуем установить прошивку версии 101 или "
+"более ранней.Утилита для SXV-AO версии104 или более поздней доступна at "
+"http://www.sxccd.com/drivers-downloads,\n"
+"и содержит версию 101 прошивки."
 
 #: stepguider_sxao.cpp:107
 msgid "Warning"
