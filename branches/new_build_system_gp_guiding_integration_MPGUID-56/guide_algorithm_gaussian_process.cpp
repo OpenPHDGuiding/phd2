@@ -54,7 +54,8 @@ class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialog
 {
     GuideGaussianProcess *m_pGuideAlgorithm;
     wxSpinCtrlDouble *m_pControlGain;
-    wxSpinCtrlDouble *m_pNbMeasurementMin;
+    wxSpinCtrl       *m_pNbMeasurementMin;
+    wxSpinCtrl       *m_pNbPointsOptimisation;
 
     wxSpinCtrlDouble *m_pHyperDiracNoise;
     wxSpinCtrlDouble *m_pPKLengthScale;
@@ -70,48 +71,52 @@ public:
 
         int width = StringWidth(_T("000.00"));
         m_pControlGain = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-                                              wxPoint(-1,-1),wxSize(width+30, -1),
+                                              wxDefaultPosition,wxSize(width+30, -1),
                                               wxSP_ARROW_KEYS, 0.0, 1.0, 0.0, 0.05,
                                               _T("Control Gain"));
         m_pControlGain->SetDigits(2);
 
-        m_pNbMeasurementMin = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-                                              wxPoint(-1,-1),wxSize(width+30, -1),
-                                              wxSP_ARROW_KEYS, 0.0, 100, 0.0, 1,
-                                              _T("Min nb meas."));
-        m_pNbMeasurementMin->SetDigits(0);
-
+        // nb elements before starting the inference
+        m_pNbMeasurementMin = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"),
+                                             wxDefaultPosition,wxSize(width+30, -1),
+                                             wxSP_ARROW_KEYS, 0, 100, 0, 
+                                             _T("Min nb meas."));
 
         // hyperparameters
         m_pHyperDiracNoise = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-                                              wxPoint(-1,-1),wxSize(width+30, -1),
-                                              wxSP_ARROW_KEYS, 0.0, 50, 0.0, 0.01);
+                                                  wxDefaultPosition,wxSize(width+30, -1),
+                                                  wxSP_ARROW_KEYS, 0.0, 50, 0.0, 0.01);
         m_pHyperDiracNoise->SetDigits(2);
 
 
         m_pPKLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-                                              wxPoint(-1,-1),wxSize(width+30, -1),
-                                              wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
+                                                wxDefaultPosition,wxSize(width+30, -1),
+                                                wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
         m_pPKLengthScale->SetDigits(2);
 
 
 
         m_pPKPeriodLength = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-                                              wxPoint(-1,-1),wxSize(width+30, -1),
-                                              wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
+                                                 wxDefaultPosition,wxSize(width+30, -1),
+                                                 wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
         m_pPKPeriodLength->SetDigits(2);
 
         
         m_pPKSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-                                              wxPoint(-1,-1),wxSize(width+30, -1),
-                                              wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
+                                                   wxDefaultPosition,wxSize(width+30, -1),
+                                                   wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
         m_pPKSignalVariance->SetDigits(2);
 
         m_pSEKLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
-                                              wxPoint(-1,-1),wxSize(width+30, -1),
-                                              wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
+                                                 wxDefaultPosition,wxSize(width+30, -1),
+                                                 wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
         m_pSEKLengthScale->SetDigits(2);
 
+        // nb points between consecutive calls to the optimisation
+        m_pNbPointsOptimisation = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"),
+                                                 wxDefaultPosition,wxSize(width+30, -1),
+                                                 wxSP_ARROW_KEYS, 0, 100, 0, 
+                                                 _T("Optim. every"));
 
 
         //
@@ -122,6 +127,9 @@ public:
 
         DoAdd(_("Nb data min"), m_pNbMeasurementMin,
               _("Minimal number of measurements to start the inference."));
+
+        DoAdd(_("Nb points optimisation"), m_pNbPointsOptimisation,
+              _("Number of points between two consecutive calls to the optimisation. \"0\" disables the optimisation completely"));
 
         // hyperparameters
         DoAdd(_("Dirac noise"), m_pHyperDiracNoise,
@@ -148,6 +156,7 @@ public:
     {
       m_pControlGain->SetValue(m_pGuideAlgorithm->GetControlGain());
       m_pNbMeasurementMin->SetValue(m_pGuideAlgorithm->GetNbMeasurementsMin());
+      m_pNbPointsOptimisation->SetValue(m_pGuideAlgorithm->GetNbPointsBetweenOptimisation());
 
       std::vector<double> hyperparameters = m_pGuideAlgorithm->GetGPHyperparameters();
       assert(hyperparameters.size() == 5);
@@ -164,6 +173,7 @@ public:
     {
       m_pGuideAlgorithm->SetControlGain(m_pControlGain->GetValue());
       m_pGuideAlgorithm->SetNbElementForInference(m_pNbMeasurementMin->GetValue());
+      m_pGuideAlgorithm->SetNbPointsBetweenOptimisation(m_pNbPointsOptimisation->GetValue());
 
       std::vector<double> hyperparameters(5);
 
@@ -199,6 +209,7 @@ struct GuideGaussianProcess::gp_guide_parameters
     double elapsed_time_ms_;
 
     int min_nb_element_for_inference;
+    int min_points_for_optimisation;
 
 
     covariance_functions::PeriodicSquareExponential covariance_function_;
@@ -209,6 +220,8 @@ struct GuideGaussianProcess::gp_guide_parameters
       timer_(),
       control_signal_(0.0),
       elapsed_time_ms_(0.0),
+      min_nb_element_for_inference(0),
+      min_points_for_optimisation(0),
       gp_(covariance_function_)
     {
 
@@ -254,7 +267,8 @@ static const double DefaultPeriodLengthPerKer          = 300;                   
 static const double DefaultSignalVariancePerKer        = 0.355;                 // signal-variance of the periodic kernel
 static const double DefaultLengthScaleSEKer            = 200;                   // length-scale of the SE-kernel
 
-
+static const int    DefaultNbPointsBetweenOptimisation = 10;                    // number of points collected between two consecutive calls to the optimisation
+                                                                                // 0 indicates no optimisation.
 
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
@@ -271,6 +285,8 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_nbminelementforinference", DefaultNbMinPointsForInference);
     SetNbElementForInference(nb_element_for_inference);
 
+    int nb_points_between_optimisation = pConfig->Profile.GetInt(configPath + "/gp_nbpointsbetweenoptimisations", DefaultNbPointsBetweenOptimisation);
+    SetNbPointsBetweenOptimisation(nb_points_between_optimisation);
 
     std::vector<double> v_hyperparameters(5);
     v_hyperparameters[0] = pConfig->Profile.GetDouble(configPath + "/gp_gaussian_noise",        DefaultGaussianNoiseHyperparameter);
@@ -331,7 +347,7 @@ bool GuideGaussianProcess::SetNbElementForInference(int nb_elements)
     {
         if (nb_elements < 0) 
         {
-            throw ERROR_INFO("invalid controlGain");
+            throw ERROR_INFO("invalid number of elements");
         }
 
         parameters->min_nb_element_for_inference = nb_elements;
@@ -344,6 +360,31 @@ bool GuideGaussianProcess::SetNbElementForInference(int nb_elements)
     }
 
     pConfig->Profile.SetInt(GetConfigPath() + "/gp_nbminelementforinference", parameters->min_nb_element_for_inference);
+
+    return error;
+}
+
+bool GuideGaussianProcess::SetNbPointsBetweenOptimisation(int nb_points)
+{
+    bool error = false;
+
+    try 
+    {
+        if (nb_points < 0) 
+        {
+            throw ERROR_INFO("invalid number of points");
+        }
+
+        parameters->min_points_for_optimisation = nb_points;
+    }
+    catch (wxString Msg) 
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        parameters->min_points_for_optimisation = DefaultNbPointsBetweenOptimisation;
+    }
+
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_nbpointsbetweenoptimisations", parameters->min_points_for_optimisation);
 
     return error;
 }
@@ -465,6 +506,12 @@ int GuideGaussianProcess::GetNbMeasurementsMin() const
     return parameters->min_nb_element_for_inference;
 }
 
+int GuideGaussianProcess::GetNbPointsBetweenOptimisation() const
+{
+    return parameters->min_points_for_optimisation;
+}
+
+
 std::vector<double> GuideGaussianProcess::GetGPHyperparameters() const
 {
     Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters();
@@ -484,6 +531,7 @@ wxString GuideGaussianProcess::GetSettingsSummary()
       "\tPeriod Length periodic kern = %.3f\n"
       "\tSignal-variance periodic kern = %.3f\n"
       "\tLength scale SE kern = %.3f\n"
+      "Optimisation called every = %.3d points\n"
     ;
 
     Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters();
@@ -493,7 +541,8 @@ wxString GuideGaussianProcess::GetSettingsSummary()
       GetControlGain(), 
       hyperparameters(0), hyperparameters(1), 
       hyperparameters(2), hyperparameters(3), 
-      hyperparameters(4));
+      hyperparameters(4),
+      parameters->min_points_for_optimisation);
 }
 
 
@@ -645,6 +694,13 @@ double GuideGaussianProcess::result(double input)
 
 
     // here from time to time launch the optimiser
+
+    if(parameters->min_points_for_optimisation)
+    {
+        // performing the optimisation every x steps
+    
+    
+    }
 
 
     return parameters->control_signal_;
