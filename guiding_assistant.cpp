@@ -207,6 +207,7 @@ struct GuidingAsstWin : public wxDialog
     void UpdateInfo(const GuideStepInfo& info);
     void FillInstructions(DialogState eState);
     void MakeRecommendations();
+    void LogResults();
 };
 
 static void MakeBold(wxControl *ctrl)
@@ -570,6 +571,24 @@ wxStaticText *GuidingAsstWin::AddRecommendationEntry(const wxString& msg)
     return AddRecommendationEntry(msg, NULL, NULL);
 }
 
+void GuidingAsstWin::LogResults()
+{
+    Debug.Write("Guiding Assistant results follow:\n");
+    Debug.Write(wxString::Format("SNR=%s, Samples=%s, Elapsed Time=%s, RA RMS=%s, Dec RMS=%s, Total RMS=%s\n",
+        m_statusgrid->GetCellValue(m_snr_loc), m_statusgrid->GetCellValue(m_samplecount_loc), m_statusgrid->GetCellValue(m_elapsedtime_loc),
+        m_displacementgrid->GetCellValue(m_ra_rms_as_loc),
+        m_displacementgrid->GetCellValue(m_dec_rms_as_loc), m_displacementgrid->GetCellValue(m_total_rms_as_loc)));
+    Debug.Write(wxString::Format("RA Peak=%s, RA Peak-Peak %s, RA Drift Rate=%s, Max RA Drift Rate=%s\n",
+        m_othergrid->GetCellValue(m_ra_peak_as_loc),
+        m_othergrid->GetCellValue(m_ra_peakpeak_as_loc), m_othergrid->GetCellValue(m_ra_drift_as_loc),
+        m_othergrid->GetCellValue(m_ra_peak_drift_as_loc)
+        )
+        );
+    Debug.Write(wxString::Format("Dec Drift Rate=%s, Dec Peak=%s, PA Error=%s\n",
+        m_othergrid->GetCellValue(m_dec_drift_as_loc), m_othergrid->GetCellValue(m_dec_peak_as_loc),
+        m_othergrid->GetCellValue(m_pae_loc)));
+}
+
 void GuidingAsstWin::MakeRecommendations()
 {
     double rarms;
@@ -590,6 +609,7 @@ void GuidingAsstWin::MakeRecommendations()
     m_ra_val_rec = rounded_rarms;
     m_dec_val_rec = rounded_decrms;
 
+    LogResults();               // Dump the raw statistics
     if (alignmentError > 5.0)
     {
         wxString msg = alignmentError < 10.0 ?
@@ -602,6 +622,7 @@ void GuidingAsstWin::MakeRecommendations()
             m_pae_msg->SetLabel(msg);
             m_pae_msg->Wrap(400);
         }
+        Debug.Write(wxString::Format("Recommendation: %s\n", msg));
     }
     else
     {
@@ -621,6 +642,7 @@ void GuidingAsstWin::MakeRecommendations()
             m_ra_msg->SetLabel(wxString::Format(_("Try setting RA min-move to %0.2f"), rounded_rarms));
             m_raMinMoveButton->Enable(true);
         }
+        Debug.Write(wxString::Format("Recommendation: %s\n", m_ra_msg->GetLabelText()));
     }
 
     if (pMount->GetYGuideAlgorithm() && pMount->GetYGuideAlgorithm()->GetMinMove() >= 0.0)
@@ -635,6 +657,7 @@ void GuidingAsstWin::MakeRecommendations()
             m_dec_msg->SetLabel(wxString::Format(_("Try setting Dec min-move to %0.2f"), rounded_decrms));
             m_decMinMoveButton->Enable(true);
         }
+        Debug.Write(wxString::Format("Recommendation: %s\n", m_dec_msg->GetLabelText()));
     }
 
     if ((sumSNR / (double)m_statsRA.n) < 10.0)
@@ -644,6 +667,7 @@ void GuidingAsstWin::MakeRecommendations()
             m_snr_msg = AddRecommendationEntry(msg);
         else
             m_snr_msg->SetLabel(msg);
+        Debug.Write(wxString::Format("Recommendation: %s\n", m_snr_msg->GetLabelText()));
     }
     else
     {
@@ -655,6 +679,7 @@ void GuidingAsstWin::MakeRecommendations()
 
     Layout();
     GetSizer()->Fit(this);
+    Debug.Write("End of Guiding Assistant output....\n");
 }
 
 void GuidingAsstWin::OnStart(wxCommandEvent& event)
