@@ -86,6 +86,7 @@ struct Stats
 
         x = hpf;
         ++n;
+        sum += x;
         double const k = (double) n;
         double const a0 = a;
         a += (x - a) / k;
