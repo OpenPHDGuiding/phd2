@@ -43,6 +43,9 @@
 #include <libindi/baseclient.h>
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
+#ifndef INDI_PRE_1_1_0
+   #include <libindi/indibasetypes.h>
+#endif 
 
 enum {
     TYPE_CAMERA,

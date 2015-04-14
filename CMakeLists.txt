@@ -174,10 +174,17 @@ endif (MSVC)
 target_link_libraries(phd2 ${CFITSIO_LIBRARIES} )
 target_link_libraries(phd2 ${wxWidgets_LIBRARIES} )
 target_link_libraries(phd2 ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES} )
+
 if (${PC_INDI_VERSION} VERSION_LESS "1.0.0")
    # pre 1.0.0 libindiclient as incompatibilities to check 
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOLDINDI" )
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DINDI_PRE_1_0_0" )
 endif (${PC_INDI_VERSION} VERSION_LESS "1.0.0")
+
+if (${PC_INDI_VERSION} VERSION_LESS "1.1.0")
+   # pre 1.1.0 use INDI_TYPE instead of INDI_PROPERTY_TYPE 
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DINDI_PRE_1_1_0" )
+endif (${PC_INDI_VERSION} VERSION_LESS "1.1.0")
+
 if (NOVA_FOUND)
     target_link_libraries(phd2 ${NOVA_LIBRARIES} )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIBNOVA" )
