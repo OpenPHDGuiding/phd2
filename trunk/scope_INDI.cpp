@@ -265,7 +265,12 @@ void ScopeINDI::newProperty(INDI::Property *property)
     // Updated values are not received here but in the newTYPE() functions above.
     // We keep the vector for each interesting property to send some data later.
     const char* PropName = property->getName();
-    INDI_TYPE Proptype = property->getType();
+    #ifdef INDI_PRE_1_1_0
+      INDI_TYPE Proptype = property->getType();
+    #else
+      INDI_PROPERTY_TYPE Proptype = property->getType();
+    #endif 
+    
     //printf("Mount Property: %s\n",PropName);
     
     if ((strcmp(PropName, "EQUATORIAL_EOD_COORD") == 0) && Proptype == INDI_NUMBER){

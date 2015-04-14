@@ -100,7 +100,7 @@ void IndiGui::newText(ITextVectorProperty *tvp)
 void IndiGui::newMessage(INDI::BaseDevice *dp, int messageID)
 {
    wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, INDIGUI_THREAD_NEWMESSAGE_EVENT);
-#ifdef OLDINDI   
+#ifdef INDI_PRE_1_0_0   
    const char *msg = dp->messageQueue(messageID);
 #else   
    const char *msg = dp->messageQueue(messageID).c_str(); // http://sourceforge.net/p/indi/code/1803/
@@ -208,7 +208,12 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
 void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiProp *indiProp)
 {
    wxString propname =  wxString::FromAscii(property->getName());
-   INDI_TYPE proptype =  property->getType();
+   #ifdef INDI_PRE_1_1_0
+     INDI_TYPE proptype = property->getType();
+   #else
+     INDI_PROPERTY_TYPE proptype = property->getType();
+   #endif 
+   
    
    indiProp->page = parent;
    indiProp->gbs  = new wxGridBagSizer(0, 20);
@@ -507,7 +512,7 @@ void IndiGui::OnNewMessageFromThread(wxThreadEvent& event)
       textbuffer->WriteText(wxString::FromAscii(message));
       textbuffer->WriteText(_T("\n"));
    }
-#ifdef OLDINDI
+#ifdef INDI_PRE_1_0_0
    delete message; //http://sourceforge.net/p/indi/code/1803/
 #endif   
 }
