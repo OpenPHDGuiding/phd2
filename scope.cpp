@@ -700,6 +700,7 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
     wxString detailInfo;
     Calibration newCal;
     CalibrationDetails newDetails;
+    double speedRatio;
 
     GetLastCalibrationParams(&newCal);
     GetCalibrationDetails(&newDetails);
@@ -729,7 +730,11 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
             if (newCal.declination != 0.0 && newCal.yRate != CALIBRATION_RATE_UNCALIBRATED && fabs(newCal.declination) <= Mount::DEC_COMP_LIMIT)
             {
                 double expectedRatio = cos(newCal.declination);
-                double actualRatio = newCal.xRate / newCal.yRate;
+                if (newDetails.raGuideSpeed > 0.)                   // for mounts that may have different guide speeds on RA and Dec axes
+                    speedRatio = newDetails.decGuideSpeed / newDetails.raGuideSpeed;
+                else
+                    speedRatio = 1.0;
+                double actualRatio = newCal.xRate * speedRatio / newCal.yRate;
                 if (fabs(expectedRatio - actualRatio) > CAL_ALERT_AXISRATES_TOLERANCE)
                 {
                     m_lastCalibrationIssue = CI_Rates;
