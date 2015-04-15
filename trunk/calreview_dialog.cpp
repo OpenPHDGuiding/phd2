@@ -271,6 +271,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         calGrid->SetCellValue(_("Expected RA rate:"), row, col++);
         if (validAscomInfo && fabs(degrees(calBaseline.declination)) < 65.0)
         {
+            // Dec speed setting corrected for pointing position and then for any difference in RA guide speed setting
             calGrid->SetCellValue(wxString::Format("%0.1f %s", guideDecSiderealX * 15.0 * dSiderealSecondPerSec * cos(calBaseline.declination) *
                 guideRaSiderealX / guideDecSiderealX, ARCSECPERSEC), row, col++);
         }
