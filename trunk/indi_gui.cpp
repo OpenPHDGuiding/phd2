@@ -47,7 +47,7 @@ wxDEFINE_EVENT(INDIGUI_THREAD_NEWMESSAGE_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(INDIGUI_THREAD_REMOVEPROPERTY_EVENT, wxThreadEvent);
 
 
-BEGIN_EVENT_TABLE(IndiGui, wxFrame)
+BEGIN_EVENT_TABLE(IndiGui, wxDialog)
   EVT_CLOSE(IndiGui::OnQuit)
   EVT_THREAD(INDIGUI_THREAD_NEWDEVICE_EVENT, IndiGui::OnNewDeviceFromThread)
   EVT_THREAD(INDIGUI_THREAD_NEWPROPERTY_EVENT, IndiGui::OnNewPropertyFromThread)
@@ -693,7 +693,7 @@ void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)
 }
 
 
-IndiGui::IndiGui() : wxFrame((wxFrame *)wxTheApp->GetTopWindow(), wxID_ANY,
+IndiGui::IndiGui() : wxDialog((wxDialog *)wxTheApp->GetTopWindow(), wxID_ANY,
                              _("INDI Options"),
                              wxDefaultPosition, wxSize(640, 400))
 {

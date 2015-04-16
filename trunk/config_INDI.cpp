@@ -53,6 +53,7 @@
 #include <wx/dialog.h>
 
 #define MCONNECT 101
+#define MINDIGUI 102
 
 #define POS(r, c)        wxGBPosition(r,c)
 #define SPAN(r, c)       wxGBSpan(r,c)
@@ -60,6 +61,8 @@
 INDIConfig::INDIConfig(wxWindow *parent, int devtype) : wxDialog(parent, wxID_ANY, (const wxString)_T("INDI Configuration"))
 {
     dev_type = devtype;
+    gui = NULL;
+    
     int pos;
     wxGridBagSizer *gbs = new wxGridBagSizer(0, 20);
     wxBoxSizer *sizer;
@@ -114,7 +117,11 @@ INDIConfig::INDIConfig(wxWindow *parent, int devtype) : wxDialog(parent, wxID_AN
 	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
     devport = new wxTextCtrl(this, wxID_ANY);
     gbs->Add(devport, POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
-    
+
+    pos ++;
+    gbs->Add(new wxStaticText(this, wxID_ANY, _T("Other options")),
+	     POS(pos, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL);
+    gbs->Add(new wxButton(this, MINDIGUI, _T("INDI")), POS(pos, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL | wxEXPAND);
 
     sizer = new wxBoxSizer(wxVERTICAL) ;
     sizer->Add(gbs);
@@ -124,15 +131,30 @@ INDIConfig::INDIConfig(wxWindow *parent, int devtype) : wxDialog(parent, wxID_AN
     sizer->Fit(this) ;
 }
 BEGIN_EVENT_TABLE(INDIConfig, wxDialog)
-EVT_BUTTON(MCONNECT, INDIConfig::OnButton)
+EVT_BUTTON(MCONNECT, INDIConfig::OnConnectButton)
+EVT_BUTTON(MINDIGUI, INDIConfig::OnIndiGui)
 END_EVENT_TABLE()
 
 INDIConfig::~INDIConfig()
 {
     disconnectServer();    
 }
-    
-void INDIConfig::OnButton(wxCommandEvent& WXUNUSED(event)) 
+
+void INDIConfig::OnIndiGui(wxCommandEvent& WXUNUSED(event)) 
+{
+    if (gui) {
+	gui->ShowModal();
+    }
+    else {
+	gui = new IndiGui();
+	gui->child_window = true;
+	gui->allow_connect_disconnect = true;
+	gui->ConnectServer(INDIhost, INDIport);
+	gui->ShowModal();
+    }    
+}
+
+void INDIConfig::OnConnectButton(wxCommandEvent& WXUNUSED(event)) 
 {
     Connect();
 }
@@ -153,6 +175,7 @@ void INDIConfig::Disconnect()
 {
    disconnectServer();
    connect_status->SetLabel(_T("Disconnected"));
+   gui = NULL;
 }
 
 void INDIConfig::newDevice(INDI::BaseDevice *dp)
