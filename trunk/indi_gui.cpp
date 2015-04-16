@@ -208,6 +208,7 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
 void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiProp *indiProp)
 {
    wxString propname =  wxString::FromAscii(property->getName());
+   wxString proplbl =  wxString::FromAscii(property->getLabel());
    #ifdef INDI_PRE_1_1_0
      INDI_TYPE proptype = property->getType();
    #else
@@ -219,7 +220,7 @@ void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiPro
    indiProp->gbs  = new wxGridBagSizer(0, 20);
    
    indiProp->state = new IndiStatus(parent, wxID_ANY, property->getState());
-   indiProp->name  = new wxStaticText(parent, wxID_ANY,propname);
+   indiProp->name  = new wxStaticText(parent, wxID_ANY,proplbl);
    indiProp->property = property;
    
    switch (proptype) {
@@ -333,6 +334,9 @@ void IndiGui::CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp)
       button->SetClientData(indiProp);
       Connect(button->GetId(), wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
 	      wxCommandEventHandler(IndiGui::SetToggleButtonEvent));
+      if (!allow_connect_disconnect && strcmp(svp->name,"CONNECTION")==0) {
+	  button->Enable(false);
+      }
       gbs->Add(button, POS(0, pos), SPAN(1, 1), wxALIGN_LEFT | wxALL);
    }
 }
@@ -455,7 +459,7 @@ void IndiGui::OnNewTextFromThread(wxThreadEvent& event)
     for (i = 0; i < tvp->ntp; i++) {
 	st = indiProp->ctrl[wxString::FromAscii(tvp->tp[i].name)];
 	wxStaticText *ctrl = (wxStaticText *)st;
-	ctrl->SetLabel(wxString::Format(wxT("%f"), tvp->tp[i].text));
+	ctrl->SetLabel(wxString::Format(wxT("%s"), tvp->tp[i].text));
     }
     indiProp->state->SetState(tvp->s);
 }
@@ -533,7 +537,6 @@ void IndiGui::SetButtonEvent(wxCommandEvent & event)
 	       if (tvp->p != IP_RO) {
 		   entry = (wxTextCtrl *)(indiProp->entry[wxString::FromAscii(tvp->tp[i].name)]);
 		   sprintf(tvp->tp[i].text, "%s", entry->GetLineText(0).mb_str().data());
-		   entry->Clear();
 	       }
 	   }    
 	   sendNewText(tvp);
@@ -545,7 +548,6 @@ void IndiGui::SetButtonEvent(wxCommandEvent & event)
 	       if (nvp->p != IP_RO) {
 		   entry = (wxTextCtrl *)(indiProp->entry[wxString::FromAscii(nvp->np[i].name)]);
 		   entry->GetLineText(0).ToDouble(&nvp->np[i].value);
-		   entry->Clear();
 	       }
 	   }    
 	   sendNewNumber(nvp);
