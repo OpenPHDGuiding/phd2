@@ -47,6 +47,8 @@
    #include <libindi/indibasetypes.h>
 #endif 
 
+#include "indi_gui.h"
+
 enum {
     TYPE_CAMERA,
     TYPE_MOUNT,
@@ -67,7 +69,9 @@ public:
     void SaveSettings();
     
 private:
-    void OnButton(wxCommandEvent& evt);
+    void OnConnectButton(wxCommandEvent& evt);
+    void OnIndiGui(wxCommandEvent& evt);
+    IndiGui  *gui ;
     wxTextCtrl *host;
     wxTextCtrl *port;
     wxStaticText *connect_status;

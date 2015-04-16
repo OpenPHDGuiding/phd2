@@ -35,7 +35,6 @@
 #include "wxled.h"
 
 #include <wx/wx.h>
-#include <wx/frame.h>
 #include <wx/gbsizer.h>
 #include <wx/sizer.h>
 #include <wx/notebook.h>
@@ -129,7 +128,7 @@ public:
 /*
  *  INDI gui windows
  */
-class IndiGui : public wxFrame , public INDI::BaseClient
+class IndiGui : public wxDialog , public INDI::BaseClient
 {
 
 private:
