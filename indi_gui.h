@@ -115,11 +115,13 @@ public:
 class IndiProp
 {
 public:
+   wxString             PropName;
    ptrHash		ctrl;
    ptrHash		entry;
    IndiStatus		*state;
    wxStaticText		*name;
    wxPanel		*page;
+   wxPanel		*panel;
    wxGridBagSizer	*gbs;
    INDI::Property	*property;
    IndiDev		*idev;

@@ -158,8 +158,9 @@ void IndiGui::OnNewDeviceFromThread(wxThreadEvent& event)
     parent_notebook->AddPage(panel, devname);
     indiDev->dp = dp;
     devlist[devname] = indiDev;
-    sizer->Layout();
     panel->Fit();
+    sizer->Layout();
+    Fit();
 }
 
 void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
@@ -193,7 +194,7 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
     
     gbs->Add(indiProp->state, POS(next_free_row, 0), SPAN(1, 1), wxALIGN_LEFT | wxALL);
     gbs->Add(indiProp->name, POS(next_free_row, 1), SPAN(1, 1), wxALIGN_LEFT | wxALL);
-    gbs->Add(indiProp->gbs,POS(next_free_row, 2), SPAN(1, 1), wxALIGN_LEFT | wxEXPAND | wxALL);
+    gbs->Add(indiProp->panel,POS(next_free_row, 2), SPAN(1, 1), wxALIGN_LEFT | wxEXPAND | wxALL);
     gbs->Layout();
     page->Fit();
     panel->Fit();
@@ -203,6 +204,7 @@ void IndiGui::OnNewPropertyFromThread(wxThreadEvent& event)
     indiDev->page->Layout();
     indiDev->page->Show();
     sizer->Layout();
+    Fit();
 }
 
 void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiProp *indiProp)
@@ -217,10 +219,13 @@ void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiPro
    
    
    indiProp->page = parent;
+   indiProp->panel = new wxPanel(parent);
    indiProp->gbs  = new wxGridBagSizer(0, 20);
+   indiProp->panel->SetSizer(indiProp->gbs);
    
    indiProp->state = new IndiStatus(parent, wxID_ANY, property->getState());
    indiProp->name  = new wxStaticText(parent, wxID_ANY,proplbl);
+   indiProp->PropName = propname;
    indiProp->property = property;
    
    switch (proptype) {
@@ -280,7 +285,7 @@ void IndiGui::CreateSwitchCombobox(ISwitchVectorProperty *svp, IndiProp *indiPro
    int i = 0;
    int idx = 0;
    
-   p = indiProp->page;
+   p = indiProp->panel;
    gbs = indiProp->gbs;
    for (i = 0; i < svp->nsp; i++){
       if(svp->sp[i].s == ISS_ON)
@@ -304,7 +309,7 @@ void IndiGui::CreateSwitchCheckbox(ISwitchVectorProperty *svp, IndiProp *indiPro
    wxGridBagSizer *gbs;
    int pos = 0;
    
-   p = indiProp->page;
+   p = indiProp->panel;
    gbs = indiProp->gbs;
    for (pos = 0; pos < svp->nsp; pos++){
       wxCheckBox *button = new wxCheckBox(p, wxID_ANY, wxString::FromAscii(svp->sp[pos].label));
@@ -324,7 +329,7 @@ void IndiGui::CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp)
    wxGridBagSizer *gbs;
    int pos = 0;
    
-   p = indiProp->page;
+   p = indiProp->panel;
    gbs = indiProp->gbs;
    for (pos = 0; pos < svp->nsp; pos++){
       wxToggleButton *button = new wxToggleButton(p, wxID_ANY, wxString::FromAscii(svp->sp[pos].label));
@@ -352,7 +357,7 @@ void IndiGui::CreateTextWidget(INDI::Property *property, IndiProp *indiProp)
    wxGridBagSizer *gbs;
     
    ITextVectorProperty *tvp = property->getText();
-   p = indiProp->page;
+   p = indiProp->panel;
    gbs = indiProp->gbs;
    for (pos = 0; pos < tvp->ntp; pos++) {
     	gbs->Add(new wxStaticText(p, wxID_ANY, wxString::FromAscii(tvp->tp[pos].label)),
@@ -386,7 +391,7 @@ void IndiGui::CreateNumberWidget(INDI::Property *property, IndiProp *indiProp)
    wxGridBagSizer *gbs;
    
    INumberVectorProperty *nvp = property->getNumber();
-   p = indiProp->page;
+   p = indiProp->panel;
    gbs = indiProp->gbs;
    
    for (pos = 0; pos < nvp->nnp; pos++) {
@@ -660,7 +665,7 @@ void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)
     if (! indiProp) return;
     IndiDev *indiDev = (IndiDev *) indiProp->idev;
     if (! indiDev) return;
-    wxString propname = indiProp->name->GetLabel();
+    wxString propname = indiProp->PropName;
     
     for (int y = 0; y < indiProp->gbs->GetRows(); y++) {
 	for (int x = 0; x < indiProp->gbs->GetCols(); x++) {
@@ -668,14 +673,16 @@ void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)
 	    if (item){
 	        indiProp->gbs->Remove(item->GetId());
 		item->GetWindow()->Destroy();
-		indiProp->gbs->Layout();
 	    }
 	}
-    }
+    } 
+    indiProp->gbs->Layout();
     if (indiProp->name)
 	indiProp->name->Destroy();
     if (indiProp->state)
 	indiProp->state->Destroy();
+    if (indiProp->panel)
+	indiProp->panel->Destroy();
     if (indiProp->page->GetChildren().GetCount() == 0) {
 	for (unsigned int i = 0; i < indiDev->page->GetPageCount(); i++) {
 	    if (indiProp->page == indiDev->page->GetPage(i)) {
@@ -690,12 +697,12 @@ void IndiGui::OnRemovePropertyFromThread(wxThreadEvent& event)
     indiDev->page->Layout();
     indiDev->page->Fit();
     sizer->Layout();
+    Fit();
 }
-
 
 IndiGui::IndiGui() : wxDialog((wxDialog *)wxTheApp->GetTopWindow(), wxID_ANY,
                              _("INDI Options"),
-                             wxDefaultPosition, wxSize(640, 400))
+			      wxDefaultPosition, wxSize(640, 400), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
    panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE | wxTAB_TRAVERSAL);
    sizer = new wxBoxSizer(wxVERTICAL);
@@ -703,7 +710,7 @@ IndiGui::IndiGui() : wxDialog((wxDialog *)wxTheApp->GetTopWindow(), wxID_ANY,
    parent_notebook = new wxNotebook(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP);
    sizer->Add(parent_notebook, 0, wxEXPAND | wxALL);
    textbuffer = new wxTextCtrl(panel, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-   sizer->Add(textbuffer, 1, wxEXPAND | wxALL);
+   sizer->Add(textbuffer, 1, wxFIXED_MINSIZE | wxEXPAND | wxALL);
 }
 
 void IndiGui::OnQuit(wxCloseEvent& WXUNUSED(event))
