@@ -37,6 +37,8 @@
 
 #define GUIDELOG_VERSION _T("2.5")
 
+const int RetentionPeriod = 60;
+
 GuidingLog::GuidingLog(void)
     : m_enabled(false),
     m_keepFile(false),
@@ -140,6 +142,11 @@ bool GuidingLog::ChangeDirLog(const wxString& newdir)
     }
 
     return bOk;
+}
+
+void GuidingLog::RemoveOldFiles()
+{
+    Logger::RemoveOldFiles("PHD2_GuideLog*.txt", RetentionPeriod);
 }
 
 bool GuidingLog::Flush(void)
