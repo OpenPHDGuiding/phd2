@@ -190,6 +190,9 @@ int PhdApp::OnExit(void)
 
     PhdController::OnAppExit();
 
+    Debug.RemoveOldFiles();
+    GuideLog.RemoveOldFiles();
+
     delete pConfig;
     pConfig = NULL;
 

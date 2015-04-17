@@ -36,6 +36,7 @@
 #include "phd.h"
 
 #define ALWAYS_FLUSH_DEBUGLOG
+const int RetentionPeriod = 30;
 
 void DebugLog::InitVars(void)
 {
@@ -112,6 +113,11 @@ bool DebugLog::ChangeDirLog(const wxString& newdir)
 
     Init("debug", bEnabled, true);                // lots of side effects, but all good...
     return bOk;
+}
+
+void DebugLog::RemoveOldFiles()
+{
+    Logger::RemoveOldFiles("PHD2_DebugLog*.txt", RetentionPeriod);
 }
 
 wxString DebugLog::AddLine(const char *format, ...)
