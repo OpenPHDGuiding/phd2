@@ -49,6 +49,10 @@ class Camera_INDIClass : public GuideCamera, public INDI::BaseClient {
 private:
     INumberVectorProperty *expose_prop;
     INumberVectorProperty *frame_prop;
+    INumber               *frame_x;
+    INumber               *frame_y;
+    INumber               *frame_width;
+    INumber               *frame_height;
     ISwitchVectorProperty *frame_type_prop;
     INumberVectorProperty *binning_prop;
     ISwitchVectorProperty *video_prop;
@@ -72,12 +76,13 @@ private:
     wxString INDICameraCCDCmd;
     wxString INDICameraBlobName;
     wxString INDICameraPort;
+    wxRect   m_roi;
     void     SetCCDdevice();
     void     ClearStatus(); 
     void     CheckState();
     void     CameraDialog();
     void     CameraSetup();
-    bool     ReadFITS(usImage& img);
+    bool     ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe);
     bool     ReadStream(usImage& img);
     
 protected:
