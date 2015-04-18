@@ -123,7 +123,7 @@ bool PhdApp::OnInit()
     SetVendorName(_T("StarkLabs"));
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
-    Debug.Init("debug", pConfig->Global.GetBoolean("/EnableDebugLog", true));
+    Debug.Init("debug", true);
 
     Debug.AddLine(wxString::Format("PHD2 version %s begins execution with:", FULLVER));
     Debug.AddLine(wxString::Format("   %s", wxVERSION_STRING));

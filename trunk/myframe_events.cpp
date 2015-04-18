@@ -691,28 +691,12 @@ void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
 
 void MyFrame::OnLog(wxCommandEvent& evt)
 {
-    if (evt.GetId() == MENU_LOG)
-    {
-        if (evt.IsChecked())  // enable it
-        {
-            GuideLog.EnableLogging();
-        }
-        else
-        {
-            GuideLog.DisableLogging();
-        }
-        UpdateTitle();
-    }
-    else if (evt.GetId() == MENU_LOGIMAGES)
+
+    if (evt.GetId() == MENU_LOGIMAGES)
     {
         pFrame->EnableImageLogging(evt.IsChecked());
     }
-    else if (evt.GetId() == MENU_DEBUG)
-    {
-        bool enable = evt.IsChecked();
-        pConfig->Global.SetBoolean("/EnableDebugLog", enable);
-        Debug.Enable(enable);
-    }
+
 }
 
 bool MyFrame::FlipRACal()

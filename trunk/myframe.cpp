@@ -108,9 +108,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_V4LRESTORESETTINGS, MyFrame::OnRestoreSettings)
 #endif
 
-    EVT_MENU(MENU_LOG,MyFrame::OnLog)
     EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
-    EVT_MENU(MENU_DEBUG,MyFrame::OnLog)
     EVT_MENU(MENU_TOOLBAR,MyFrame::OnToolBar)
     EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
     EVT_MENU(MENU_STATS, MyFrame::OnStats)
@@ -178,8 +176,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     bool serverMode = pConfig->Global.GetBoolean("/ServerMode", DefaultServerMode);
     SetServerMode(serverMode);
 
-    bool loggingMode = pConfig->Global.GetBoolean("/LoggingMode", DefaultLoggingMode);
-    GuideLog.EnableLogging(loggingMode);
+    GuideLog.EnableLogging(true);
 
     m_image_logging_enabled = false;
     m_logged_image_format = (LOGGED_IMAGE_FORMAT) pConfig->Global.GetInt("/LoggedImageFormat", LIF_LOW_Q_JPEG);
@@ -309,7 +306,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     m_rawImageMode = false;
     m_rawImageModeWarningDone = false;
 
-    tools_menu->Check(MENU_LOG,false);
 
     UpdateTitle();
 
@@ -324,7 +320,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
             SetStatusText(_("Server started"));
     }
 
-    tools_menu->Check(MENU_DEBUG, Debug.IsEnabled());
+
 
     #include "xhair.xpm"
     wxImage Cursor = wxImage(mac_xhair);
@@ -419,7 +415,6 @@ void MyFrame::UpdateTitle(void)
     if (GuideLog.IsEnabled())
     {
         title += _(" (log active)");
-        tools_menu->Check(MENU_LOG,true);
     }
 
     SetTitle(title);
@@ -450,8 +445,6 @@ void MyFrame::SetupMenuBar(void)
     tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
     tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
-    tools_menu->AppendCheckItem(MENU_LOG,_("Enable Guide &Log\tAlt-L"),_("Enable guide log file"));
-    tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug Log"),_("Enable debug log file"));
     tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image Logging"),_("Enable logging of star images"));
     tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable PHD2 server capability"));
     tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky Lock Position"),_("Keep the same lock position when guiding starts"));
