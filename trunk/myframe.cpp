@@ -412,11 +412,6 @@ void MyFrame::UpdateTitle(void)
 
     title += " - " + pConfig->GetCurrentProfile();
 
-    if (GuideLog.IsEnabled())
-    {
-        title += _(" (log active)");
-    }
-
     SetTitle(title);
 }
 
