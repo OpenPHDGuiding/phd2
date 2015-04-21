@@ -211,6 +211,7 @@ void IndiGui::BuildPropWidget(INDI::Property *property, wxPanel *parent, IndiPro
 {
    wxString propname =  wxString::FromAscii(property->getName());
    wxString proplbl =  wxString::FromAscii(property->getLabel());
+   if (! proplbl) proplbl = propname;
    #ifdef INDI_PRE_1_1_0
      INDI_TYPE proptype = property->getType();
    #else
@@ -291,7 +292,9 @@ void IndiGui::CreateSwitchCombobox(ISwitchVectorProperty *svp, IndiProp *indiPro
       if(svp->sp[i].s == ISS_ON)
 	 idx = i;
       indiProp->ctrl[wxString::FromAscii(svp->sp[i].name)] = (void *) (intptr_t) i;
-      choices[i] = wxString::FromAscii(svp->sp[i].label);
+      wxString swlbl = wxString::FromAscii(svp->sp[i].label);
+      if (! swlbl) swlbl = wxString::FromAscii(svp->sp[i].name);
+      choices[i] = swlbl;
    }
    combo = new wxChoice(p, wxID_ANY, wxDefaultPosition, wxDefaultSize, svp->nsp, choices);
    combo->SetSelection(idx);
@@ -312,7 +315,9 @@ void IndiGui::CreateSwitchCheckbox(ISwitchVectorProperty *svp, IndiProp *indiPro
    p = indiProp->panel;
    gbs = indiProp->gbs;
    for (pos = 0; pos < svp->nsp; pos++){
-      wxCheckBox *button = new wxCheckBox(p, wxID_ANY, wxString::FromAscii(svp->sp[pos].label));
+      wxString swlbl = wxString::FromAscii(svp->sp[pos].label);
+      if (! swlbl) swlbl = wxString::FromAscii(svp->sp[pos].name);
+      wxCheckBox *button = new wxCheckBox(p, wxID_ANY, swlbl);
       indiProp->ctrl[wxString::FromAscii(svp->sp[pos].name)] = button;
       if (svp->sp[pos].s == ISS_ON)
 	 button->SetValue(true);
@@ -332,15 +337,17 @@ void IndiGui::CreateSwitchButton(ISwitchVectorProperty *svp, IndiProp *indiProp)
    p = indiProp->panel;
    gbs = indiProp->gbs;
    for (pos = 0; pos < svp->nsp; pos++){
-      wxToggleButton *button = new wxToggleButton(p, wxID_ANY, wxString::FromAscii(svp->sp[pos].label));
+      wxString swlbl = wxString::FromAscii(svp->sp[pos].label);
+      if (! swlbl) swlbl = wxString::FromAscii(svp->sp[pos].name);
+      wxToggleButton *button = new wxToggleButton(p, wxID_ANY, swlbl);
       indiProp->ctrl[wxString::FromAscii(svp->sp[pos].name)] = button;
       if (svp->sp[pos].s == ISS_ON)
-	 button->SetValue(true);
+         button->SetValue(true);
       button->SetClientData(indiProp);
       Connect(button->GetId(), wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
-	      wxCommandEventHandler(IndiGui::SetToggleButtonEvent));
+      wxCommandEventHandler(IndiGui::SetToggleButtonEvent));
       if (!allow_connect_disconnect && strcmp(svp->name,"CONNECTION")==0) {
-	  button->Enable(false);
+        button->Enable(false);
       }
       gbs->Add(button, POS(0, pos), SPAN(1, 1), wxALIGN_LEFT | wxALL);
    }
