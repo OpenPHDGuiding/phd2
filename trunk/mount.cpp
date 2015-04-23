@@ -852,7 +852,7 @@ void Mount::AdjustCalibrationForScopePointing(void)
             m_xRate = (m_cal.xRate / cos(m_cal.declination)) * cos(newDeclination);
             m_currentDeclination = newDeclination;
             Debug.AddLine("Dec comp: XRate %.3f -> %.3f for dec %.1f -> dec %.1f",
-                          m_cal.xRate * 1000.0, m_xRate * 1000.0, degrees(m_cal.declination), degrees(newDeclination));
+                m_cal.xRate * 1000.0, m_xRate * 1000.0, degrees(m_cal.declination), degrees(newDeclination));
             if (pFrame)
                 pFrame->UpdateCalibrationStatus();
         }
@@ -877,16 +877,19 @@ void Mount::AdjustCalibrationForScopePointing(void)
         {
             double da = newRotatorAngle - m_cal.rotatorAngle;
 
-            Debug.AddLine("New rotator position %.1f deg, prev = %.1f deg, delta = %.1f deg", newRotatorAngle, m_cal.rotatorAngle, da);
+            if (fabs(da) > 0.05)
+            {
+                Debug.AddLine("New rotator position %.1f deg, prev = %.1f deg, delta = %.1f deg", newRotatorAngle, m_cal.rotatorAngle, da);
 
-            da = radians(da);
+                da = radians(da);
 
-            Calibration cal(m_cal);
-            cal.xAngle = norm_angle(cal.xAngle + da);
-            cal.yAngle = norm_angle(cal.yAngle + da);
-            cal.rotatorAngle = newRotatorAngle;
+                Calibration cal(m_cal);
+                cal.xAngle = norm_angle(cal.xAngle - da);
+                cal.yAngle = norm_angle(cal.yAngle - da);
+                cal.rotatorAngle = newRotatorAngle;
 
-            SetCalibration(cal);
+                SetCalibration(cal);
+            }
         }
     }
 }
