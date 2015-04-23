@@ -121,6 +121,7 @@ public:
     virtual wxString GetSettingsSummary(void);
     virtual wxString CalibrationSettingsSummary(void);
     virtual wxString GetMountClassName(void) const;
+    virtual void AdjustCalibrationForScopePointing(void);
     virtual bool IsStepGuider(void) const;
     virtual wxPoint GetAoPos(void) const;
     virtual wxPoint GetAoMaxPos(void) const;

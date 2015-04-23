@@ -572,7 +572,7 @@ bool SquarePixels(usImage& img, float xsize, float ysize)
 
 bool Subtract(usImage& light, const usImage& dark)
 {
-    if ((!light.ImageData) || (!dark.ImageData))
+    if (!light.ImageData || !dark.ImageData)
         return true;
     if (light.Size != dark.Size)
         return true;
