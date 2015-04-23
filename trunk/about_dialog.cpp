@@ -111,7 +111,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "</tr>"
         "<tr>"
         "<td>Tsung-Chi Wu</td>"
-        "<td></td>"
+        "<td>Sabin Fota</td>"
         "</tr>"
         "</table><br>"
         "<br>"
