@@ -102,11 +102,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #endif
 
 //#define TEST_TRANSFORMS
-//#define BRET_AO_DEBUG
-
-#ifdef BRET_AO_DEBUG
-#define USE_LOOPBACK_SERIAL
-#endif
 
 #define ROUND(x) (int) floor(x + 0.5)
 

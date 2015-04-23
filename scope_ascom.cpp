@@ -571,8 +571,8 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         EXCEPINFO excep;
         Variant vRes;
 
-        if (FAILED(hr = scope.IDisp()->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
-            &dispParms,&vRes,&excep,NULL)))
+        if (FAILED(hr = scope.IDisp()->Invoke(dispid_pulseguide, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
+            &dispParms, &vRes, &excep, NULL)))
         {
             Debug.AddLine(wxString::Format("pulseguide: [%x] %s", hr, _com_error(hr).ErrorMessage()));
 
