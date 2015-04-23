@@ -1331,8 +1331,8 @@ void Guider::UpdateLockPosShiftCameraCoords(void)
         rate = m_lockPosShift.shiftRate;
     }
 
-    Debug.AddLine("UpdateLockPosShiftCameraCoords: shift rate camera coords = %.2f,%.2f %s/hr",
-                  rate.X, rate.Y, m_lockPosShift.shiftUnits == UNIT_ARCSEC ? "arcsec" : "pixels");
+    Debug.AddLine(wxString::Format("UpdateLockPosShiftCameraCoords: shift rate camera coords = %.2f,%.2f %s/hr",
+                  rate.X, rate.Y, m_lockPosShift.shiftUnits == UNIT_ARCSEC ? "arcsec" : "pixels"));
 
     // convert arc-seconds to pixels
     if (m_lockPosShift.shiftUnits == UNIT_ARCSEC)
