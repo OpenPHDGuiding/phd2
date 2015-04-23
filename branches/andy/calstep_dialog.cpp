@@ -46,7 +46,7 @@
 #define MIN_DECLINATION -60.0
 #define MAX_DECLINATION 60.0
 
-const double CalstepDialog::DEFAULT_GUIDESPEED = 0.5;  // 50% sidereal rate
+const double CalstepDialog::DEFAULT_GUIDESPEED = 1.0;       // 100% sidereal rate, help insure we don't end up with too few steps
 
 static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, double minval, double maxval, double inc)
 {
@@ -63,25 +63,28 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     double dGuideRateRA = 0.0; // initialize to suppress compiler warning
     const double dSiderealSecondPerSec = 0.9973;
 
-    // Get squared away with initial parameter values
+    // Get squared away with initial parameter values - start with values from the profile
     m_iNumSteps = pConfig->Profile.GetInt("/CalStepCalc/NumSteps", DEFAULT_STEPS);
     m_dDeclination = pConfig->Profile.GetDouble ("/CalStepCalc/CalDeclination", 0.0);
     m_iFocalLength = focalLength;
     m_fPixelSize = pixelSize;
-
-    // Get the guide rate from the mount or from the config file
     m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", DEFAULT_GUIDESPEED);
-
-    if (pPointingSource && pPointingSource->IsConnected() &&
-        !pPointingSource->GetGuideRates(&dGuideRateRA, &dGuideRateDec))
+    // Now improve on Dec and guide speed if mount/pointing info is available
+    if (pPointingSource && pPointingSource->IsConnected())
     {
-        if (dGuideRateRA >= dGuideRateDec)
-            m_fGuideSpeed = dGuideRateRA * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
-        else
-            m_fGuideSpeed = dGuideRateDec / (15.0 * dSiderealSecondPerSec);
+        if (!pPointingSource->GetGuideRates(&dGuideRateRA, &dGuideRateDec))
+        {
+            if (dGuideRateRA >= dGuideRateDec)
+                m_fGuideSpeed = dGuideRateRA * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
+            else
+                m_fGuideSpeed = dGuideRateDec * 3600.0 / (15.0 * dSiderealSecondPerSec);
 
-        if (m_fGuideSpeed < MIN_GUIDESPEED)
-            m_fGuideSpeed = MIN_GUIDESPEED;
+            if (m_fGuideSpeed < MIN_GUIDESPEED)
+                m_fGuideSpeed = MIN_GUIDESPEED;
+        }
+        double ra_val, dec_val, st;
+        if (!pPointingSource->GetCoordinates(&ra_val, &dec_val, &st))
+            m_dDeclination = dec_val;
     }
 
     m_bValidResult = false;
@@ -95,10 +98,10 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Input Parameters"));
 
     // Note that "min" values in fp validators don't work right - so leave them out
-    // Focal length - int <= 4000
+    // Focal length - any positive int, same as global tab
     int width = StringWidth(this, "00000") + 10;
     wxIntegerValidator <int> valFocalLength (&m_iFocalLength, 0);
-    valFocalLength.SetRange (0, 3500);
+    valFocalLength.SetRange(0, wxINT32_MAX);
     m_pFocalLength = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1), 0, valFocalLength);
     m_pFocalLength->Enable(!pFrame->CaptureActive);
     m_pFocalLength->Bind(wxEVT_TEXT, &CalstepDialog::OnText, this);
@@ -113,14 +116,15 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     // Guide speed
     m_pGuideSpeed = NewSpinner (this, 1.5*width, m_fGuideSpeed, MIN_GUIDESPEED, MAX_GUIDESPEED, 0.25);
     m_pGuideSpeed->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
-    AddTableEntry (m_pInputTableSizer, _("Guide speed, n.nn x sidereal"), m_pGuideSpeed, _("Guide speed, multiple of sidereal rate; to guide at ") +
-        _("50% sidereal rate, enter 0.5"));
+    AddTableEntry (m_pInputTableSizer, _("Guide speed, n.nn x sidereal"), m_pGuideSpeed,
+                   _("Guide speed, multiple of sidereal rate; if your mount's guide speed is 50% sidereal rate, enter 0.5"));
 
     // Number of steps
     m_pNumSteps = NewSpinner (this, 1.5*width, m_iNumSteps, MIN_STEPS, MAX_STEPS, 1);
     m_pNumSteps->SetDigits (0);
     m_pNumSteps->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
-    AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps, _("Targeted # steps in each direction"));
+    AddTableEntry (m_pInputTableSizer, _("Calibration steps"), m_pNumSteps,
+                   wxString::Format(_("Targeted number of steps in each direction. The default value (%d) works fine for most setups."), (int) DEFAULT_STEPS));
 
     // Calibration declination
     m_pDeclination = NewSpinner(this, 1.5*width, m_dDeclination, MIN_DECLINATION, MAX_DECLINATION, 5.0);
@@ -215,9 +219,9 @@ void CalstepDialog::DoRecalc(void)
         m_iNumSteps = m_pNumSteps->GetValue();
         m_dDeclination = abs(m_pDeclination->GetValue());
 
-        if (m_iFocalLength < 50 || m_iFocalLength > 4000)
+        if (m_iFocalLength < 50)
         {
-            m_status->SetLabel(_("Please enter a focal length between 50 and 4000."));
+            m_status->SetLabel(_("Please enter a focal length of at least 50"));
         }
         else if (m_fPixelSize <= 0.0)
         {

@@ -74,7 +74,7 @@ bool Camera_KWIQGuiderClass::Disconnect() {
     return false;
 }
 
-    bool Camera_KWIQGuiderClass::ST4PulseGuideScope(int direction, int duration) {
+bool Camera_KWIQGuiderClass::ST4PulseGuideScope(int direction, int duration) {
     switch (direction) {
         case WEST:
             KWIQguider->Guide(guide_west, duration);
@@ -96,13 +96,13 @@ bool Camera_KWIQGuiderClass::Disconnect() {
     return false;
 }
 
-bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
 
     if (img.Init(xsize,ysize)) {
-        wxMessageBox(_T("Memory allocation error during capture"),_("Error"),wxOK | wxICON_ERROR);
-        Disconnect();
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
@@ -117,7 +117,7 @@ bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, wxRect subframe
 
     KWIQguider->FreeRawImage(raw);
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
 }

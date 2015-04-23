@@ -35,17 +35,26 @@
 #ifndef GEAR_DIALOG_H_INCLUDED
 #define GEAR_DIALOG_H_INCLUDED
 
+class wxGridBagSizer;
+
 class GearDialog : public wxDialog
 {
     GuideCamera *m_pCamera;
     Scope       *m_pScope;
-    StepGuider  *m_pStepGuider;
     Scope       *m_pAuxScope;
+    StepGuider  *m_pStepGuider;
+    Rotator     *m_pRotator;
 
     bool m_cameraUpdated;
     bool m_mountUpdated;
     bool m_stepGuiderUpdated;
+    bool m_rotatorUpdated;
     bool m_showDarksDialog;
+    bool m_ascomScopeSelected;
+    wxString m_lastCamera;
+    bool m_camWarningIssued;
+
+    wxGridBagSizer *m_gearSizer;
 
     wxChoice *m_profiles;
     OptionsButton *m_btnProfileManage;
@@ -63,9 +72,16 @@ class GearDialog : public wxDialog
     wxButton *m_pSetupAuxScopeButton;
     wxToggleButton *m_pConnectAuxScopeButton;
 
+    wxButton *m_moreButton;
+    bool m_showMoreGear;
+
     wxChoice *m_pStepGuiders;
     wxButton *m_pSetupStepGuiderButton;
     wxToggleButton *m_pConnectStepGuiderButton;
+
+    wxChoice *m_pRotators;
+    wxButton *m_pSetupRotatorButton;
+    wxToggleButton *m_pConnectRotatorButton;
 
     wxButton *m_pConnectAllButton;
     wxButton *m_pDisconnectAllButton;
@@ -79,9 +95,12 @@ public:
     void EndModal(int retCode);
 
     void ShowProfileWizard(void);
+    void ShowProfileWizard(wxCommandEvent& evt);
     bool SetProfile(int profileId, wxString *error);
     bool ConnectAll(wxString *error);
     bool DisconnectAll(wxString *error);
+    void Shutdown(bool forced);
+    bool IsEmptyProfile();
 
 private:
     void LoadGearChoices(void);
@@ -91,6 +110,7 @@ private:
     void UpdateScopeButtonState(void);
     void UpdateAuxScopeButtonState(void);
     void UpdateStepGuiderButtonState(void);
+    void UpdateRotatorButtonState(void);
     void UpdateConnectAllButtonState(void);
     void UpdateDisconnectAllButtonState(void);
     void UpdateButtonState(void);
@@ -111,6 +131,7 @@ private:
 
     void OnChoiceCamera(wxCommandEvent& event);
     void OnButtonSetupCamera(wxCommandEvent& event);
+    bool DoConnectCamera(void);
     void OnButtonConnectCamera(wxCommandEvent& event);
     void OnButtonDisconnectCamera(wxCommandEvent& event);
 
@@ -124,10 +145,18 @@ private:
     void OnButtonConnectAuxScope(wxCommandEvent& event);
     void OnButtonDisconnectAuxScope(wxCommandEvent& event);
 
+    void OnButtonMore(wxCommandEvent& event);
+    void ShowMoreGear();
+
     void OnChoiceStepGuider(wxCommandEvent& event);
     void OnButtonSetupStepGuider(wxCommandEvent& event);
     void OnButtonConnectStepGuider(wxCommandEvent& event);
     void OnButtonDisconnectStepGuider(wxCommandEvent& event);
+
+    void OnChoiceRotator(wxCommandEvent& event);
+    void OnButtonSetupRotator(wxCommandEvent& event);
+    void OnButtonConnectRotator(wxCommandEvent& event);
+    void OnButtonDisconnectRotator(wxCommandEvent& event);
 
     void OnButtonWizard(wxCommandEvent& event);
 

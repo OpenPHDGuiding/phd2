@@ -123,10 +123,9 @@ bool Camera_StarShootDSCIClass::Connect() {
     return false;
 }
 
-
-bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)  {
+bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     bool ampoff=true;
-//  unsigned int i,x,y, exp_dur;
     int i;
     unsigned char retval = 0;
     unsigned short *rawptr, *rawptr2;
@@ -163,12 +162,9 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, wxRect subfr
         SleepEx(20,true);
         still_going = OCP_Exposing();
     }
-    if (img.NPixels != (RawX*RawY)) {
-        if (img.Init(RawX,RawY)) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+    if (img.Init(RawX,RawY)) {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
     }
     rawptr = OCP_ProcessedBuffer();  // Copy raw data in
     rawptr2 = img.ImageData;

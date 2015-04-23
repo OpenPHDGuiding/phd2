@@ -45,7 +45,7 @@ private:
     virtual bool LEControl(int actions);
     ParallelPort *m_pParallelPort;
 public:
-    Camera_LEParallelWebcamClass(int devNumber=0);
+    Camera_LEParallelWebcamClass(void);
     virtual ~Camera_LEParallelWebcamClass(void);
 
     virtual bool    Connect();

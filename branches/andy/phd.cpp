@@ -33,7 +33,10 @@
  */
 
 #include "phd.h"
+
 #include <wx/cmdline.h>
+#include <wx/snglinst.h>
+
 #ifdef  __LINUX__
     #include <X11/Xlib.h>
 #endif // __LINUX__
@@ -101,6 +104,16 @@ bool PhdApp::OnInit()
         return false;
     }
 
+    m_instanceChecker = new wxSingleInstanceChecker(wxString::Format("%s.%ld", GetAppName(), m_instanceNumber));
+    if (m_instanceChecker->IsAnotherRunning())
+    {
+        wxLogError(wxString::Format(_("PHD2 instance %ld is already running. Use the "
+            "-i INSTANCE_NUM command-line option to start a different instance."), m_instanceNumber));
+        delete m_instanceChecker; // OnExit() won't be called if we return false
+        m_instanceChecker = 0;
+        return false;
+    }
+
 #ifndef DEBUG
     #if (wxMAJOR_VERSION > 2 || wxMINOR_VERSION > 8)
     wxDisableAsserts();
@@ -110,7 +123,7 @@ bool PhdApp::OnInit()
     SetVendorName(_T("StarkLabs"));
     pConfig = new PhdConfig(_T("PHDGuidingV2"), m_instanceNumber);
 
-    Debug.Init("debug", pConfig->Global.GetBoolean("/EnableDebugLog", true));
+    Debug.Init("debug", true);
 
     Debug.AddLine(wxString::Format("PHD2 version %s begins execution with:", FULLVER));
     Debug.AddLine(wxString::Format("   %s", wxVERSION_STRING));
@@ -132,9 +145,19 @@ bool PhdApp::OnInit()
         pConfig->DeleteAll();
     }
 
-    wxLocale::AddCatalogLookupPathPrefix(_T("locale"));
+    wxString ldir = wxStandardPaths::Get().GetResourcesDir() + PATHSEPSTR "locale";
+    if (!wxDirExists(ldir))
+    {
+        // for development environments
+        ldir = _T("locale");
+    }
+    bool ex = wxDirExists(ldir);
+    Debug.AddLine(wxString::Format("Using Locale Dir %s exists=%d", ldir, ex));
+    wxLocale::AddCatalogLookupPathPrefix(ldir);
+    m_localeDir = ldir;
+
     m_locale.Init(pConfig->Global.GetInt("/wxLanguage", wxLANGUAGE_DEFAULT));
-    if (!m_locale.AddCatalog("messages"))
+    if (!m_locale.AddCatalog(PHD_MESSAGES_CATALOG))
     {
         Debug.AddLine("locale.AddCatalog failed");
     }
@@ -151,9 +174,9 @@ bool PhdApp::OnInit()
 
     pFrame->Show(true);
 
-    if (pConfig->IsNewInstance())
+    if (pConfig->IsNewInstance() || (pConfig->NumProfiles() == 1 && pFrame->pGearDialog->IsEmptyProfile()))
     {
-        pFrame->pGearDialog->ShowProfileWizard();
+        pFrame->pGearDialog->ShowProfileWizard();               // First-light version of profile wizard
     }
 
     return true;
@@ -167,8 +190,14 @@ int PhdApp::OnExit(void)
 
     PhdController::OnAppExit();
 
+    Debug.RemoveOldFiles();
+    GuideLog.RemoveOldFiles();
+
     delete pConfig;
     pConfig = NULL;
+
+    delete m_instanceChecker; // OnExit() won't be called if we return false
+    m_instanceChecker = 0;
 
     return wxApp::OnExit();
 }

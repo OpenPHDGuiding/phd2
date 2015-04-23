@@ -68,14 +68,14 @@ bool ScopeOnboardST4::ConnectOnboardST4(OnboardST4 *pOnboardHost)
             Disconnect();
         }
 
+        if (!m_pOnboardHost->ST4HasGuideOutput())
+        {
+            throw ERROR_INFO("Attempt to Connect Onboard ST4 mount when host does not have guide output");
+        }
+
         if (!m_pOnboardHost->ST4HostConnected())
         {
             throw ERROR_INFO("Attempt to Connect Onboard ST4 mount when host is not connected");
-        }
-
-        if (!m_pOnboardHost->ST4HasGuideOutput())
-        {
-            throw ERROR_INFO("Attempt to Connect On Camera mount when camera does not have guide output");
         }
 
         Scope::Connect();

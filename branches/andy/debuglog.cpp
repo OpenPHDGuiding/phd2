@@ -1,5 +1,5 @@
 /*
- *  phdlog.cpp
+ *  debuglog.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -34,6 +34,9 @@
  */
 
 #include "phd.h"
+
+#define ALWAYS_FLUSH_DEBUGLOG
+const int RetentionPeriod = 30;
 
 void DebugLog::InitVars(void)
 {
@@ -112,6 +115,11 @@ bool DebugLog::ChangeDirLog(const wxString& newdir)
     return bOk;
 }
 
+void DebugLog::RemoveOldFiles()
+{
+    Logger::RemoveOldFiles("PHD2_DebugLog*.txt", RetentionPeriod);
+}
+
 wxString DebugLog::AddLine(const char *format, ...)
 {
     va_list args;
@@ -160,11 +168,10 @@ wxString DebugLog::Write(const wxString& str)
         wxDateTime now = wxDateTime::UNow();
         wxTimeSpan deltaTime = now - m_lastWriteTime;
         m_lastWriteTime = now;
-        wxString outputLine = wxString::Format("%s %s %d %s", now.Format("%H:%M:%S.%l"),
+        wxString outputLine = wxString::Format("%s %s %lu %s", now.Format("%H:%M:%S.%l"),
                                                               deltaTime.Format("%S.%l"),
-                                                              wxThread::GetCurrentId(),
+                                                              (unsigned long) wxThread::GetCurrentId(),
                                                               str);
-
 
         wxFFile::Write(outputLine);
 #if defined(ALWAYS_FLUSH_DEBUGLOG)

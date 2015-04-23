@@ -14,8 +14,7 @@
  *    Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *    Neither the name of Bret McKee, Dad Dog Development,
- *     Craig Stark, Stark Labs nor the names of its
+ *    Neither the name of Craig Stark, Stark Labs nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
@@ -63,7 +62,7 @@ public:
     void NotifyLooping(unsigned int exposure);
     void NotifyLoopingStopped();
     void NotifyStarSelected(const PHD_Point& pos);
-    void NotifyStarLost();
+    void NotifyStarLost(const FrameDroppedInfo& info);
     void NotifyStartGuiding();
     void NotifyGuidingStopped();
     void NotifyPaused();
@@ -75,6 +74,7 @@ public:
     void NotifyAppState();
     void NotifySettling(double distance, double time, double settleTime);
     void NotifySettleDone(const wxString& errorMsg);
+    void NotifyAlert(const wxString& msg, int type);
 
 private:
     void OnEventServerEvent(wxSocketEvent& evt);

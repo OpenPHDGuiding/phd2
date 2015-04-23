@@ -86,6 +86,8 @@ struct json_value
     json_type type;
 };
 
+#define json_for_each(_item, _container) for (const json_value *_item = _container->first_child; _item; _item = _item->next_sibling)
+
 struct JsonParserImpl;
 
 class JsonParser

@@ -34,7 +34,9 @@
  */
 
 #include "phd.h"
+
 #ifdef STEPGUIDER_SXAO
+
 StepGuiderSxAO::StepGuiderSxAO(void)
 {
     m_Name = "SXV-AO";
@@ -46,6 +48,7 @@ StepGuiderSxAO::StepGuiderSxAO(void)
 #endif
 
     m_serialPortName = pConfig->Profile.GetString("/stepguider/sxao/serialport", wxEmptyString);
+    m_maxSteps = pConfig->Profile.GetInt("/stepguider/sxao/MaxSteps", DefaultMaxSteps);
 }
 
 StepGuiderSxAO::~StepGuiderSxAO(void)
@@ -76,6 +79,8 @@ bool StepGuiderSxAO::Connect(void)
             throw ERROR_INFO("StepGuiderSxAO::Connect: serial port connect failed");
         }
 
+        wxYield();
+
         pConfig->Profile.SetString("/stepguider/sxao/serialport", m_serialPortName);
 
         if (m_pSerialPort->SetReceiveTimeout(DefaultTimeout))
@@ -83,20 +88,38 @@ bool StepGuiderSxAO::Connect(void)
             throw ERROR_INFO("StepGuiderSxAO::Connect: SetReceiveTimeout failed");
         }
 
-        unsigned version;
+        wxYield();
 
-        if (FirmwareVersion(version))
+        unsigned int version;
+
+        if (FirmwareVersion(&version))
         {
             throw ERROR_INFO("StepGuiderSxAO::Connect: unable to get firmware version");
         }
 
+        if (version >= 102)
+        {
+            wxMessageBox(wxString::Format(
+                _("This version of AO firmware (%03u) limits the travel range of the AO, and may cause\n"
+                  "calibration to fail. It is recommended to load firmware version 101 or earlier.\n"
+                  "The SXV-AO Utility v104 or newer, available at http://www.sxccd.com/drivers-downloads,\n"
+                  "contains the v101 firmware."), version),
+                  _("Warning"));
+        }
+
+        wxYield();
+
         if (Center())
         {
+            wxYield();
+
             if (Unjam())
             {
                 throw ERROR_INFO("StepGuiderSxAO::Connect: unable to center or Unjam");
             }
         }
+
+        wxYield();
 
         StepGuider::Connect();
     }
@@ -165,7 +188,7 @@ bool StepGuiderSxAO::Disconnect(void)
     return bError;
 }
 
-bool StepGuiderSxAO::SendThenReceive(unsigned char sendChar, unsigned char& receivedChar)
+bool StepGuiderSxAO::SendThenReceive(unsigned char sendChar, unsigned char *receivedChar)
 {
     bool bError = false;
 
@@ -176,7 +199,7 @@ bool StepGuiderSxAO::SendThenReceive(unsigned char sendChar, unsigned char& rece
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial send failed");
         }
 
-        if (m_pSerialPort->Receive(&receivedChar, 1))
+        if (m_pSerialPort->Receive(receivedChar, 1))
         {
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial receive failed");
         }
@@ -190,7 +213,7 @@ bool StepGuiderSxAO::SendThenReceive(unsigned char sendChar, unsigned char& rece
     return bError;
 }
 
-bool StepGuiderSxAO::SendThenReceive(unsigned char *pBuffer, unsigned bufferSize, unsigned char& recievedChar)
+bool StepGuiderSxAO::SendThenReceive(const unsigned char *pBuffer, unsigned int bufferSize, unsigned char *receivedChar)
 {
     bool bError = false;
 
@@ -201,14 +224,14 @@ bool StepGuiderSxAO::SendThenReceive(unsigned char *pBuffer, unsigned bufferSize
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial send failed");
         }
 
-        if (m_pSerialPort->Receive(&recievedChar, 1))
+        if (m_pSerialPort->Receive(receivedChar, 1))
         {
             throw ERROR_INFO("StepGuiderSxAO::SendThenReceive serial receive failed");
         }
 
-        if (recievedChar == 'W')
+        if (*receivedChar == 'W')
         {
-            if (m_pSerialPort->Receive(&recievedChar, 1))
+            if (m_pSerialPort->Receive(receivedChar, 1))
             {
                 throw ERROR_INFO("StepGuiderSxAO::step: Error reading another character after 'W'");
             }
@@ -223,7 +246,7 @@ bool StepGuiderSxAO::SendThenReceive(unsigned char *pBuffer, unsigned bufferSize
     return bError;
 }
 
-bool StepGuiderSxAO::SendShortCommand(unsigned char command, unsigned char& response)
+bool StepGuiderSxAO::SendShortCommand(unsigned char command, unsigned char *response)
 {
     bool bError = false;
 
@@ -245,8 +268,7 @@ bool StepGuiderSxAO::SendShortCommand(unsigned char command, unsigned char& resp
  * is the command, the second is the direction and the remaining
  * 5 characters are a count.
  */
-
-bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char& response)
+bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parameter, unsigned int count, unsigned char *response)
 {
     bool bError = false;
 
@@ -259,7 +281,7 @@ bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parame
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand invalid count");
         }
 
-        int ret = _snprintf((char *)&cmdBuf, sizeof(cmdBuf), "%c%c%5.5d", command, parameter, count);
+        int ret = _snprintf((char *)&cmdBuf[0], sizeof(cmdBuf), "%c%c%5.5d", command, parameter, count);
 
         if (ret < 0)
         {
@@ -271,7 +293,7 @@ bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parame
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand snprintf buffer to small");
         }
 
-        if (SendThenReceive((unsigned char *)&cmdBuf, 7, response))
+        if (SendThenReceive(&cmdBuf[0], 7, response))
         {
             throw ERROR_INFO("StepGuiderSxAO::SendLongCommand SendThenReceive failed");
         }
@@ -286,21 +308,20 @@ bool StepGuiderSxAO::SendLongCommand(unsigned char command, unsigned char parame
 }
 
 /*
- * the firmwareVersion command is unique command.  It sends 1 byte, and receives 3 digits
+ * the firmwareVersion command is unique.  It sends 1 byte, and receives 3 digits
  * in response.
  */
-
-bool StepGuiderSxAO::FirmwareVersion(unsigned& version)
+bool StepGuiderSxAO::FirmwareVersion(unsigned int *version)
 {
     bool bError = false;
 
     try
     {
-        version = 0;
+        *version = 0;
         unsigned char cmd = 'V';
         unsigned char response;
 
-        if (SendThenReceive(cmd, response))
+        if (SendThenReceive(cmd, &response))
         {
             throw ERROR_INFO("StepGuiderSxAO::firmwareVersion: SendThenReceive failed");
         }
@@ -312,12 +333,12 @@ bool StepGuiderSxAO::FirmwareVersion(unsigned& version)
 
         unsigned char buf[3];
 
-        if (m_pSerialPort->Receive((unsigned char*)&buf, sizeof(buf)))
+        if (m_pSerialPort->Receive(&buf[0], sizeof(buf)))
         {
             throw ERROR_INFO("StepGuiderSxAO::firmwareVersion: Receive failed");
         }
 
-        for(int i=0;i<3;i++)
+        for (int i=0; i<3; i++)
         {
             unsigned char ch = buf[i];
 
@@ -325,7 +346,8 @@ bool StepGuiderSxAO::FirmwareVersion(unsigned& version)
             {
                 throw ERROR_INFO("StepGuiderSxAO::firmwareVersion: invalid character");
             }
-            version = (version * 10 ) + (ch - '0');
+            *version *= 10;
+            *version += ch - '0';
         }
     }
     catch (wxString Msg)
@@ -350,7 +372,7 @@ bool StepGuiderSxAO::Center(unsigned char cmd)
             throw ERROR_INFO("StepGuiderSxAO::Center: SetReceiveTimeout failed");
         }
 
-        if (SendShortCommand(cmd, response))
+        if (SendShortCommand(cmd, &response))
         {
             throw ERROR_INFO("StepGuiderSxAO::center SendShortCommand failed");
         }
@@ -448,7 +470,7 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
                 break;
         }
 
-        if (SendLongCommand(cmd, parameter, steps, response))
+        if (SendLongCommand(cmd, parameter, steps, &response))
         {
             throw ERROR_INFO("StepGuiderSxAO::step: SendLongCommand failed");
         }
@@ -475,10 +497,10 @@ bool StepGuiderSxAO::Step(GUIDE_DIRECTION direction, int steps)
 
 int StepGuiderSxAO::MaxPosition(GUIDE_DIRECTION direction) const
 {
-    return MaxSteps;
+    return m_maxSteps;
 }
 
-bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit)
+bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit)
 {
     bool bError = false;
 
@@ -487,7 +509,7 @@ bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit)
         unsigned char cmd = 'L';
         unsigned char response;
 
-        if (SendThenReceive(cmd, response))
+        if (SendThenReceive(cmd, &response))
         {
             throw ERROR_INFO("StepGuiderSxAO::IsAtLimit: SendThenReceive failed");
         }
@@ -500,16 +522,16 @@ bool StepGuiderSxAO::IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit)
         switch (direction)
         {
             case NORTH:
-                isAtLimit = (response & 0x1) == 0x1;
+                *isAtLimit = (response & 0x1) == 0x1;
                 break;
             case SOUTH:
-                isAtLimit = (response & 0x2) == 0x2;
+                *isAtLimit = (response & 0x2) == 0x2;
                 break;
             case EAST:
-                isAtLimit = (response & 0x4) == 0x4;
+                *isAtLimit = (response & 0x4) == 0x4;
                 break;
             case WEST:
-                isAtLimit = (response & 0x8) == 0x8;
+                *isAtLimit = (response & 0x8) == 0x8;
                 break;
             default:
                 throw ERROR_INFO("StepGuiderSxAO::step: invalid direction");
@@ -569,7 +591,7 @@ bool StepGuiderSxAO::ST4PulseGuideScope(int direction, int duration)
                 break;
         }
 
-        if (SendLongCommand(cmd, parameter, duration, response))
+        if (SendLongCommand(cmd, parameter, duration, &response))
         {
             throw ERROR_INFO("StepGuiderSxAO::ST4PulseGuideScope(): SendLongCommand failed");
         }
@@ -581,7 +603,7 @@ bool StepGuiderSxAO::ST4PulseGuideScope(int direction, int duration)
 
         // The Step function is asynchronous, and there is no way to wait for it, so we just
         // wait
-        wxMilliSleep(duration);
+        WorkerThread::MilliSleep(duration);
     }
     catch (wxString Msg)
     {
@@ -593,4 +615,3 @@ bool StepGuiderSxAO::ST4PulseGuideScope(int direction, int duration)
 }
 
 #endif // STEPGUIDER_SXAO
-

@@ -1,10 +1,10 @@
 # CMake build system
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 project(OPENPHD)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
-set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
+#set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/indi/")
 set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 #TODO propose to remove this everywhere set(CMAKE_CXX_FLAGS "-DOPENPHD")
 
@@ -37,6 +37,18 @@ include (CheckCXXCompilerFlag)
 # wxWidgets
 FIND_PACKAGE(wxWidgets COMPONENTS core base net html aui adv REQUIRED)
 INCLUDE(UsewxWidgets)
+
+# INDI
+find_package(INDI REQUIRED)
+include_directories(${INDI_INCLUDE_DIR})
+
+# Nova
+find_package(Nova)
+if (NOVA_FOUND)
+    include_directories(${NOVA_INCLUDE_DIR})
+else ()
+    message(WARNING "libnova not found! Considere to install libnova-dev ")
+endif (NOVA_FOUND)   
 
 # cfitsio
 find_package(CFITSIO REQUIRED)
@@ -126,18 +138,7 @@ if (MSVC)
         GUIDE_ASCOM
        )
 else (MSVC)
-	set(phd_SRCS ${phd_SRCS} 
-		${CMAKE_SOURCE_DIR}/libindiclient/indi.c
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indigui.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_io.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_list.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indi_config.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/indisave.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/wxled.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/wx/wxchecktreectrl.cpp
-   		${CMAKE_SOURCE_DIR}/libindiclient/base64.c
-   		${CMAKE_SOURCE_DIR}/libindiclient/lilxml.c
-	)
+
 ENDIF (MSVC)
 
 #if (V4L_OK)
@@ -172,6 +173,22 @@ endif (MSVC)
 
 target_link_libraries(phd2 ${CFITSIO_LIBRARIES} )
 target_link_libraries(phd2 ${wxWidgets_LIBRARIES} )
+target_link_libraries(phd2 ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES} )
+
+if (${PC_INDI_VERSION} VERSION_LESS "1.0.0")
+   # pre 1.0.0 libindiclient as incompatibilities to check 
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DINDI_PRE_1_0_0" )
+endif (${PC_INDI_VERSION} VERSION_LESS "1.0.0")
+
+if (${PC_INDI_VERSION} VERSION_LESS "1.1.0")
+   # pre 1.1.0 use INDI_TYPE instead of INDI_PROPERTY_TYPE 
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DINDI_PRE_1_1_0" )
+endif (${PC_INDI_VERSION} VERSION_LESS "1.1.0")
+
+if (NOVA_FOUND)
+    target_link_libraries(phd2 ${NOVA_LIBRARIES} )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIBNOVA" )
+endif (NOVA_FOUND)   
 
 #if (V4L_OK)
 #    target_link_libraries(phd2 ${LIBUDEV_LIBRARIES})
@@ -188,7 +205,29 @@ else (MSVC)
 endif (MSVC)
 
 install (TARGETS phd2 RUNTIME DESTINATION bin)
+install (FILES "${PROJECT_SOURCE_DIR}/icons/phd2.png" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pixmaps/" )
+install (FILES "${PROJECT_SOURCE_DIR}/phd2.desktop" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications/" )
 install (FILES "${PROJECT_SOURCE_DIR}/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/" )
+# install language help files
+install (FILES "${PROJECT_SOURCE_DIR}/locale/de_DE/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/de_DE/" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/es_ES/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/es_ES/" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/fr_FR/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/fr_FR/" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/ja_JP/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/ja_JP/" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/pl_PL/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/pl_PL/" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/ru_RU/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/ru_RU/" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/uk_UA/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/uk_UA/" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/zh_CN/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/zh_CN/" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/zh_TW/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/locale/zh_TW/" OPTIONAL)
+# install translation in standard system location
+install (FILES "${PROJECT_SOURCE_DIR}/locale/de_DE/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/de/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/es_ES/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/es/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/fr_FR/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/fr/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/ja_JP/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/ja/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/pl_PL/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/pl/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/ru_RU/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/ru/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/uk_UA/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/uk/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/zh_CN/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/zh_CN/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
+install (FILES "${PROJECT_SOURCE_DIR}/locale/zh_TW/messages.mo" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/locale/zh_TW/LC_MESSAGES/" RENAME "phd2.mo" OPTIONAL)
 
 if (MSVC)
     STRING(REGEX REPLACE "[.]lib" ".dll" CFITSIO_DLL ${CFITSIO_LIBRARIES} )

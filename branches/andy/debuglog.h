@@ -1,5 +1,5 @@
 /*
- *  phdlog.h
+ *  debuglog.h
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -33,6 +33,9 @@
  *
  */
 
+#ifndef DEBUGLOG_INCLUDED
+#define DEBUGLOG_INCLUDED
+
 #include "logger.h"
 
 class DebugLog : public wxFFile, public Logger
@@ -59,6 +62,7 @@ public:
     bool Flush(void);
 
     bool ChangeDirLog(const wxString& newdir);
+    void RemoveOldFiles();
 };
 
 extern DebugLog& operator<< (DebugLog& out, const wxString &str);
@@ -70,3 +74,7 @@ inline bool DebugLog::IsEnabled(void)
 {
     return m_bEnabled;
 }
+
+extern DebugLog Debug;
+
+#endif

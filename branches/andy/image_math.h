@@ -4,6 +4,7 @@
  *
  *  Created by Craig Stark.
  *  Copyright (c) 2006-2010 Craig Stark.
+ *  Copyright (c) 2015 Andy Galasso
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -41,12 +42,15 @@ class DefectMap : public std::vector<wxPoint>
     DefectMap(int profileId);
 public:
     static void DeleteDefectMap(int profileId);
-    static bool DefectMapExists(int profileId);
+    static bool DefectMapExists(int profileId, bool showAlert = true);
     static DefectMap *LoadDefectMap(int profileId);
     static wxString DefectMapFileName(int profileId);
+    static bool ImportFromProfile(int sourceId, int destId);
     DefectMap();
     void Save(const wxArrayString& mapInfo) const;
+    bool FindDefect(const wxPoint& pt) const;
     void AddDefect(const wxPoint& pt);
+
 };
 
 extern bool QuickLRecon(usImage& img);
@@ -55,7 +59,7 @@ extern bool Median3(usImage& img);
 extern bool SquarePixels(usImage& img, float xsize, float ysize);
 extern int dbl_sort_func(double *first, double *second);
 extern bool Subtract(usImage& light, const usImage& dark);
-extern float CalcSlope(const ArrayOfDbl& y);
+extern double CalcSlope(const ArrayOfDbl& y);
 extern bool RemoveDefects(usImage& light, const DefectMap& defectMap);
 
 struct DefectMapBuilderImpl;
@@ -95,5 +99,27 @@ public:
     void BuildDefectMap(DefectMap& defectMap, bool verbose) const;
     const wxArrayString& GetMapInfo() const;
 };
+
+inline static double norm(double val, double start, double end)
+{
+    double const range = end - start;
+    double const ofs = val - start;
+    return val - floor(ofs / range) * range;
+}
+
+inline static double norm_angle(double val)
+{
+    return norm(val, -M_PI, M_PI);
+}
+
+inline static double degrees(double radians)
+{
+    return radians * 180. / M_PI;
+}
+
+inline static double radians(double degrees)
+{
+    return degrees * M_PI / 180.;
+}
 
 #endif

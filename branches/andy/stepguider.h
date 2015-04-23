@@ -41,6 +41,7 @@ class StepGuider : public Mount, public OnboardST4
     int m_samplesToAverage;
     int m_bumpPercentage;
     double m_bumpMaxStepsPerCycle;
+    bool m_bumpOnDither;
 
     int m_xBumpPos1;
     int m_xBumpPos2;
@@ -53,6 +54,7 @@ class StepGuider : public Mount, public OnboardST4
 
     PHD_Point m_avgOffset;
 
+    bool m_forceStartBump;
     bool m_bumpInProgress;
     bool m_bumpTimeoutAlertSent;
     long m_bumpStartTime;
@@ -65,11 +67,8 @@ class StepGuider : public Mount, public OnboardST4
     int   m_calibrationAverageSamples;
     PHD_Point m_calibrationAveragedLocation;
 
-    double m_calibrationXAngle;
-    double m_calibrationXRate;
-
-    double m_calibrationYAngle;
-    double m_calibrationYRate;
+    Calibration m_calibration;
+    CalibrationDetails m_calibrationDetails;
 
     enum CALIBRATION_STATE
     {
@@ -93,8 +92,9 @@ protected:
         wxSpinCtrl *m_pSamplesToAverage;
         wxSpinCtrl *m_pBumpPercentage;
         wxSpinCtrlDouble *m_pBumpMaxStepsPerCycle;
+        wxCheckBox *m_bumpOnDither;
 
-        public:
+    public:
         StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
         ~StepGuiderConfigDialogPane(void);
 
@@ -119,6 +119,7 @@ protected:
 public:
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual wxString GetSettingsSummary(void);
+    virtual wxString CalibrationSettingsSummary(void);
     virtual wxString GetMountClassName(void) const;
     virtual bool IsStepGuider(void) const;
     virtual wxPoint GetAoPos(void) const;
@@ -133,7 +134,8 @@ public:
     static wxArrayString List(void);
     static StepGuider *Factory(const wxString& choice);
 
-    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide);
+    virtual void SetCalibration(const Calibration& cal);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle);
     virtual bool BeginCalibration(const PHD_Point& currentLocation);
     bool UpdateCalibrationState(const PHD_Point& currentLocation);
     virtual void ClearCalibration(void);
@@ -142,16 +144,23 @@ public:
     virtual bool Disconnect(void);
 
     virtual bool GuidingCeases(void);
+    virtual void ClearHistory(void);
 
     virtual void ShowPropertyDialog(void);
+
+    bool GetBumpOnDither(void) const;
+    void SetBumpOnDither(bool val);
+    void ForceStartBump(void);
+    bool IsBumpInProgress(void) const;
 
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:
     virtual MOVE_RESULT Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved);
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, MoveResultInfo *moveResultInfo);
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps);
     int CalibrationMoveSize(void);
+    int CalibrationTotDistance(void);
     void InitBumpPositions(void);
 
     double CalibrationTime(int nCalibrationSteps);
@@ -167,10 +176,20 @@ private:
     // consider whether they need to call the base class functions as part of
     // their operation
 public:
-    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit);
+    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool *atLimit);
     virtual bool WouldHitLimit(GUIDE_DIRECTION direction, int steps);
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
     virtual bool MoveToCenter(void);
 };
+
+inline bool StepGuider::IsBumpInProgress(void) const
+{
+    return m_bumpInProgress;
+}
+
+inline bool StepGuider::GetBumpOnDither(void) const
+{
+    return m_bumpOnDither;
+}
 
 #endif /* STEPGUIDER_H_INCLUDED */

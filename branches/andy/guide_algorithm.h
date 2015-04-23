@@ -82,6 +82,8 @@ public:
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) { return NULL; };
     virtual wxString GetSettingsSummary() { return ""; }
     virtual wxString GetGuideAlgorithmClassName(void) const = 0;
+    virtual double GetMinMove(void) { return -1.0; };
+    virtual bool SetMinMove(double minMove) { return true; };       // true indicates error
     wxString GetConfigPath();
     wxString GetAxis();
 };

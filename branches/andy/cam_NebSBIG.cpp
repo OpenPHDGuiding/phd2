@@ -61,14 +61,15 @@ bool Camera_NebSBIGClass::Disconnect() {
     return false;
 }
 
-bool Camera_NebSBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-    if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+bool Camera_NebSBIGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
+    if (img.Init(FullSize))
+    {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
     bool retval = ServerReqFrame(duration, img);
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return retval;
 

@@ -37,19 +37,18 @@
 
 class Camera_QHY5Class : public GuideCamera
 {
+    unsigned char *RawBuffer;
+    bool m_QHY5;
+
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    Camera_QHY5Class();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect();
     bool    Disconnect();
     void    InitCapture();
 
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
-
-    Camera_QHY5Class();
-private:
-    unsigned char *RawBuffer;
-    bool m_QHY5;
 };
 
 #endif // QHY5IIIBASE_H_INCLUDED

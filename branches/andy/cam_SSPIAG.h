@@ -34,9 +34,15 @@
 
 #ifndef SSPIAGDEF
 #define SSPIAGDEF
-class Camera_SSPIAGClass : public GuideCamera {
+
+class Camera_SSPIAGClass : public GuideCamera
+{
+    HINSTANCE CameraDLL;
+    HINSTANCE GenericDLL;
+    unsigned char *RawBuffer;
+
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect();
     bool    Disconnect();
     void    InitCapture();
@@ -44,12 +50,10 @@ public:
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
 
+    bool HasNonGuiCapture(void) { return true; }
+    bool ST4HasNonGuiMove(void) { return true; }
+
     Camera_SSPIAGClass();
-private:
-    HINSTANCE CameraDLL;
-    HINSTANCE GenericDLL;
-    unsigned char *RawBuffer;
 };
+
 #endif
-
-

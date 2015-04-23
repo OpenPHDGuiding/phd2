@@ -47,8 +47,10 @@ wxEND_EVENT_TABLE()
 
 static const int DialogWidth = 425;
 static const int TextWrapPoint = 400;
-static const int TallHelpHeight = 125;
+// Help text heights - "tall" is for greetings page, "normal" is for gear selection panels
+static const int TallHelpHeight = 150;
 static const int NormalHelpHeight = 85;
+static wxString TitlePrefix;
 
 // Utility function to add the <label, input> pairs to a flexgrid
 static void AddTableEntryPair(wxWindow *parent, wxSizer *pTable, const wxString& label, wxWindow *pControl)
@@ -69,6 +71,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     wxDialog(parent, wxID_ANY, _("New Profile Wizard"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX),
     m_launchDarks(true)
 {
+    TitlePrefix = _("New Profile Wizard - ");
+
     // Create overall vertical sizer
     m_pvSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -77,17 +81,19 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     m_bitmaps[STATE_WRAPUP] = new wxBitmap(prog_icon);
 #   include "icons/cam2.xpm"
     m_bitmaps[STATE_CAMERA] = new wxBitmap(cam_icon);
-    m_bitmaps[STATE_CAMERA]->SetWidth(55);
-    m_bitmaps[STATE_CAMERA]->SetHeight(55);
 #   include "icons/scope1.xpm"
     m_bitmaps[STATE_MOUNT] = new wxBitmap(scope_icon);
-    m_bitmaps[STATE_MOUNT]->SetWidth(55);
-    m_bitmaps[STATE_MOUNT]->SetHeight(55);
     m_bitmaps[STATE_AUXMOUNT] = new wxBitmap(scope_icon);
-    m_bitmaps[STATE_AUXMOUNT]->SetWidth(55);
-    m_bitmaps[STATE_AUXMOUNT]->SetHeight(55);
 #   include "icons/ao.xpm"
     m_bitmaps[STATE_AO] = new wxBitmap(ao_xpm);
+#ifndef  __WXGTK__  // this resizing make a later crash in UpdateState with wxGtk
+    m_bitmaps[STATE_CAMERA]->SetWidth(55);
+    m_bitmaps[STATE_CAMERA]->SetHeight(55);
+    m_bitmaps[STATE_MOUNT]->SetWidth(55);
+    m_bitmaps[STATE_MOUNT]->SetHeight(55);
+    m_bitmaps[STATE_AUXMOUNT]->SetWidth(55);
+    m_bitmaps[STATE_AUXMOUNT]->SetHeight(55);
+#endif // __WXGTK__
 
     // Build the superset of UI controls, minus state-specific labels and data
     // User instructions at top
@@ -104,7 +110,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
 
     // Verbose help block
     m_pHelpGroup = new wxStaticBoxSizer(wxVERTICAL, this, _("More Info"));
-    m_pHelpText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, TallHelpHeight));
+    m_pHelpText = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(DialogWidth, -1));
+    // Vertical sizing of help text will be handled in state machine
     m_pHelpGroup->Add(m_pHelpText, wxSizerFlags().Border(wxLEFT, 10).Border(wxBOTTOM, 10));
     m_pvSizer->Add(m_pHelpGroup, wxSizerFlags().Border(wxALL, 5));
 
@@ -136,8 +143,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
         wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300, 50);
     m_pFocalLength->SetValue(300);
     m_pFocalLength->SetDigits(0);
-    m_pFocalLength->SetToolTip("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
-        "an adaptive optics device.  You can use the up/down control or type in a value directly.");
+    m_pFocalLength->SetToolTip(_("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
+        "an adaptive optics device.  You can use the up/down control or type in a value directly."));
     m_FocalLength = (int) m_pFocalLength->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));
@@ -208,7 +215,7 @@ void ProfileWizard::ShowHelp(DialogState state)
             "This profile will then be available any time you run PHD2.  At a minimum, you will need to choose both the guide camera and the mount interface that PHD2 will use for guiding.  "
             "You will also enter some information about the optical characteristics of your setup. "
             "PHD2 will use this to create a good 'starter set' of guiding and calibration "
-            "parameters. If you are a new user, please review the ‘Impatient Instructions’ under the ‘Help’ menu after the wizard dialog has finished.");
+            "parameters. If you are a new user, please review the 'Impatient Instructions' under the 'Help' menu after the wizard dialog has finished.");
         break;
     case STATE_CAMERA:
         hText = _("Select your guide camera from the list.  All cameras supported by PHD2 and all installed ASCOM cameras are shown. If your camera is not shown, "
@@ -316,17 +323,18 @@ void ProfileWizard::UpdateState(const int change)
         switch (m_State)
         {
         case STATE_GREETINGS:
-            this->SetTitle(m_TitlePrefix + _("Introduction"));
+            SetTitle(TitlePrefix + _("Introduction"));
             m_pPrevBtn->Enable(false);
             m_pGearLabel->Show(false);
             m_pGearChoice->Show(false);
             m_pUserProperties->Show(false);
             m_pWrapUp->Show(false);
             m_pInstructions->SetLabel(_("Welcome to the PHD2 'first light' wizard"));
+            m_pHelpText->SetSizeHints(wxSize(-1, TallHelpHeight));
             SetSizerAndFit(m_pvSizer);
             break;
         case STATE_CAMERA:
-            this->SetTitle(m_TitlePrefix + _("Choose a Guide Camera"));
+            SetTitle(TitlePrefix + _("Choose a Guide Camera"));
             m_pPrevBtn->Enable(true);
             m_pGearLabel->SetLabel(_("Guide Camera:"));
             m_pGearChoice->Clear();
@@ -337,12 +345,13 @@ void ProfileWizard::UpdateState(const int change)
             m_pGearChoice->Show(true);
             m_pUserProperties->Show(true);
             m_pWrapUp->Show(false);
+            m_pHelpText->SetSizeHints(wxSize(-1, NormalHelpHeight));
             SetSizerAndFit(m_pvSizer);
             m_pInstructions->SetLabel(_("Select your guide camera and specify the optical properties of your guiding set-up"));
             m_pInstructions->Wrap(TextWrapPoint);
             break;
         case STATE_MOUNT:
-            this->SetTitle(m_TitlePrefix + _("Choose a Mount Connection"));
+            SetTitle(TitlePrefix + _("Choose a Mount Connection"));
             m_pPrevBtn->Enable(true);
             m_pGearLabel->SetLabel(_("Mount:"));
             m_pGearChoice->Clear();
@@ -359,7 +368,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             else
             {
-                this->SetTitle(m_TitlePrefix + _("Choose an Auxillary Mount Connection (optional)"));
+                SetTitle(TitlePrefix + _("Choose an Auxillary Mount Connection (optional)"));
                 m_pGearLabel->SetLabel(_("Aux Mount:"));
                 m_pGearChoice->Clear();
                 m_pGearChoice->Append(Scope::AuxMountList());
@@ -368,7 +377,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             break;
         case STATE_AO:
-            this->SetTitle(m_TitlePrefix + _("Choose an Adaptive Optics Device (optional)"));
+            SetTitle(TitlePrefix + _("Choose an Adaptive Optics Device (optional)"));
             m_pGearLabel->SetLabel(_("AO:"));
             m_pGearChoice->Clear();
             m_pGearChoice->Append(StepGuider::List());
@@ -384,7 +393,7 @@ void ProfileWizard::UpdateState(const int change)
             }
             break;
         case STATE_WRAPUP:
-            this->SetTitle(m_TitlePrefix + _("Finish Creating Your New Profile"));
+            SetTitle(TitlePrefix + _("Finish Creating Your New Profile"));
             m_pGearGrid->Show(false);
             m_pWrapUp->Show(true);
             m_pNextBtn->SetLabel(_("Finish"));
@@ -397,10 +406,8 @@ void ProfileWizard::UpdateState(const int change)
             break;
         }
     }
-    if (m_ShowingHelp)
-    {
-        ShowHelp(m_State);
-    }
+
+    ShowHelp(m_State);
 }
 
 static int GetCalibrationStepSize(int focalLength, double pixelSize)
@@ -449,6 +456,7 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetInt("/frame/focalLength", m_FocalLength);
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
+    GuideLog.EnableLogging();               // Especially for newbies
     // Construct a good baseline set of guiding parameters based on image scale
     SetGuideAlgoParams(m_PixelSize, m_FocalLength);
 
@@ -486,6 +494,7 @@ void ProfileWizard::OnGearChoice(wxCommandEvent& evt)
     case STATE_AO:
         m_SelectedAO = m_pGearChoice->GetStringSelection();
         break;
+    case STATE_GREETINGS:
     case STATE_WRAPUP:
     case STATE_DONE:
         break;

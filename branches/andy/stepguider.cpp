@@ -53,6 +53,7 @@ StepGuider::StepGuider(void)
     m_xOffset = 0;
     m_yOffset = 0;
 
+    m_forceStartBump = false;
     m_bumpInProgress = false;
     m_bumpTimeoutAlertSent = false;
     m_bumpStepWeight = 1.0;
@@ -76,6 +77,8 @@ StepGuider::StepGuider(void)
 
     int yGuideAlgorithm = pConfig->Profile.GetInt(prefix + "/YGuideAlgorithm", DefaultGuideAlgorithm);
     SetYGuideAlgorithm(yGuideAlgorithm);
+
+    m_bumpOnDither = pConfig->Profile.GetBoolean("/stepguider/BumpOnDither", true);
 }
 
 StepGuider::~StepGuider(void)
@@ -181,9 +184,15 @@ bool StepGuider::Disconnect(void)
     return bError;
 }
 
+void StepGuider::ForceStartBump(void)
+{
+    Debug.Write("StepGuider: force bump");
+    m_forceStartBump = true;
+}
+
 static int IntegerPercent(int percentage, int number)
 {
-    long numerator = (long) percentage* (long) number;
+    long numerator = (long) percentage * (long) number;
     long value = numerator / 100L;
     return (int) value;
 }
@@ -299,6 +308,12 @@ bool StepGuider::SetBumpMaxStepsPerCycle(double bumpStepsPerCycle)
     return bError;
 }
 
+void StepGuider::SetBumpOnDither(bool val)
+{
+    m_bumpOnDither = val;
+    pConfig->Profile.SetBoolean("/stepguider/BumpOnDither", m_bumpOnDither);
+}
+
 int StepGuider::GetCalibrationStepsPerIteration(void)
 {
     return m_calibrationStepsPerIteration;
@@ -345,9 +360,9 @@ bool StepGuider::MoveToCenter()
 
         if (positionUpDown > 0)
         {
-            int amountMoved = 0;
-            Move(DOWN, positionUpDown, true, &amountMoved);
-            if (amountMoved != positionUpDown)
+            MoveResultInfo result;
+            Move(DOWN, positionUpDown, true, &result);
+            if (result.amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step DOWN");
             }
@@ -356,9 +371,9 @@ bool StepGuider::MoveToCenter()
         {
             positionUpDown = -positionUpDown;
 
-            int amountMoved = 0;
-            Move(UP, positionUpDown, true, &amountMoved);
-            if (amountMoved != positionUpDown)
+            MoveResultInfo result;
+            Move(UP, positionUpDown, true, &result);
+            if (result.amountMoved != positionUpDown)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step UP");
             }
@@ -368,9 +383,9 @@ bool StepGuider::MoveToCenter()
 
         if (positionLeftRight > 0)
         {
-            int amountMoved = 0;
-            Move(RIGHT, positionLeftRight, true, &amountMoved);
-            if (amountMoved != positionLeftRight)
+            MoveResultInfo result;
+            Move(RIGHT, positionLeftRight, true, &result);
+            if (result.amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step RIGHT");
             }
@@ -379,9 +394,9 @@ bool StepGuider::MoveToCenter()
         {
             positionLeftRight = -positionLeftRight;
 
-            int amountMoved = 0;
-            Move(LEFT, positionLeftRight, true, &amountMoved);
-            if (amountMoved != positionLeftRight)
+            MoveResultInfo result;
+            Move(LEFT, positionLeftRight, true, &result);
+            if (result.amountMoved != positionLeftRight)
             {
                 throw ERROR_INFO("MoveToCenter() failed to step LEFT");
             }
@@ -449,7 +464,9 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
 
         ClearCalibration();
         m_calibrationState = CALIBRATION_STATE_GOTO_LOWER_RIGHT_CORNER;
-        m_calibrationStartingLocation = currentLocation;
+        m_calibrationStartingLocation.Invalidate();
+        m_calibrationDetails.raSteps.clear();
+        m_calibrationDetails.decSteps.clear();
     }
     catch (wxString Msg)
     {
@@ -460,13 +477,24 @@ bool StepGuider::BeginCalibration(const PHD_Point& currentLocation)
     return bError;
 }
 
-void StepGuider::SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide pierSide)
+void StepGuider::SetCalibration(const Calibration& cal)
 {
-    m_calibrationXAngle = xAngle;
-    m_calibrationXRate = xRate;
-    m_calibrationYAngle = yAngle;
-    m_calibrationYRate = yRate;
-    Mount::SetCalibration(xAngle, yAngle, xRate, yRate, declination, pierSide);
+    m_calibration = cal;
+    Mount::SetCalibration(cal);
+}
+
+void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle)
+{
+    m_calibrationDetails = calDetails;
+
+    m_calibrationDetails.raGuideSpeed = -1.0;
+    m_calibrationDetails.decGuideSpeed = -1.0;
+    m_calibrationDetails.focalLength = pFrame->GetFocalLength();
+    m_calibrationDetails.imageScale = pFrame->GetCameraPixelScale();
+    m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
+    m_calibrationDetails.raStepCount = m_calibrationDetails.raSteps.size();
+    m_calibrationDetails.decStepCount = m_calibrationDetails.decSteps.size();
+    Mount::SetCalibrationDetails(m_calibrationDetails, xAngle, yAngle);
 }
 
 /*
@@ -481,12 +509,18 @@ void StepGuider::SetCalibration(double xAngle, double yAngle, double xRate, doub
  *  - the guider returns to the center of its travel and calibration is complete
  */
 
-bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
+bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
 {
     bool bError = false;
 
     try
     {
+        if (!m_calibrationStartingLocation.IsValid())
+        {
+            m_calibrationStartingLocation = currentLocation;
+            Debug.AddLine(wxString::Format("Stepguider::UpdateCalibrationstate: starting location = %.2f,%.2f", currentLocation.X, currentLocation.Y));
+        }
+
         wxString status0, status1;
         int stepsRemainingUp = MaxPosition(UP) - CurrentPosition(UP);
         int stepsRemainingDown = MaxPosition(DOWN) - CurrentPosition(DOWN);
@@ -495,8 +529,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
 
         stepsRemainingUp /= m_calibrationStepsPerIteration;
         stepsRemainingDown /= m_calibrationStepsPerIteration;
-        stepsRemainingRight  /= m_calibrationStepsPerIteration;
-        stepsRemainingLeft  /= m_calibrationStepsPerIteration;
+        stepsRemainingRight /= m_calibrationStepsPerIteration;
+        stepsRemainingLeft /= m_calibrationStepsPerIteration;
 
         int stepsRemainingDownAndRight = wxMax(stepsRemainingDown, stepsRemainingRight);
 
@@ -511,6 +545,8 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
         bool moveDown = false;
         bool moveRight  = false;
         bool moveLeft  = false;
+        double x_dist;
+        double y_dist;
 
         switch (m_calibrationState)
         {
@@ -531,7 +567,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
             case CALIBRATION_STATE_AVERAGE_STARTING_LOCATION:
                 m_calibrationAverageSamples++;
                 m_calibrationAveragedLocation += currentLocation;
-                status0.Printf(_("Averaging: %3d"), m_samplesToAverage -m_calibrationAverageSamples+1);
+                status0.Printf(_("Averaging: %3d"), m_samplesToAverage - m_calibrationAverageSamples + 1);
                 if (m_calibrationAverageSamples < m_samplesToAverage )
                 {
                     break;
@@ -549,9 +585,12 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     status0.Printf(_("Left Calibration: %3d"), stepsRemainingLeft);
                     m_calibrationIterations++;
                     moveLeft  = true;
+                    x_dist = m_calibrationStartingLocation.dX(currentLocation);
+                    y_dist = m_calibrationStartingLocation.dY(currentLocation);
                     GuideLog.CalibrationStep(this, "Left", stepsRemainingLeft,
-                        m_calibrationStartingLocation.dX(currentLocation),  m_calibrationStartingLocation.dY(currentLocation),
+                        x_dist,  y_dist,
                         currentLocation, m_calibrationStartingLocation.Distance(currentLocation));
+                    m_calibrationDetails.raSteps.push_back(wxRealPoint(x_dist, y_dist));            // Just put "left" in "ra" steps
                     break;
                 }
                 Debug.AddLine(wxString::Format("Falling through to state AVERAGE_CENTER_LOCATION, position=(%.2f, %.2f)",
@@ -569,12 +608,12 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
-                m_calibrationXAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
-                m_calibrationXRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
+                m_calibration.xAngle = m_calibrationStartingLocation.Angle(m_calibrationAveragedLocation);
+                m_calibration.xRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                                                      (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationXAngle, m_calibrationXRate);
-                GuideLog.CalibrationDirectComplete(this, "Left", m_calibrationXAngle, m_calibrationXRate);
-                Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.2f rate=%.2f", m_calibrationXAngle, m_calibrationXRate));
+                status1.Printf(_("angle=%.1f rate=%.2f"), m_calibration.xAngle * 180. / M_PI, m_calibration.xRate);
+                GuideLog.CalibrationDirectComplete(this, "Left", m_calibration.xAngle, m_calibration.xRate);
+                Debug.AddLine(wxString::Format("LEFT calibration completes with angle=%.1f rate=%.2f", m_calibration.xAngle * 180. / M_PI, m_calibration.xRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationIterations = 0;
@@ -588,9 +627,12 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     status0.Printf(_("up Calibration: %3d"), stepsRemainingUp);
                     m_calibrationIterations++;
                     moveUp = true;
+                    x_dist = m_calibrationStartingLocation.dX(currentLocation);
+                    y_dist = m_calibrationStartingLocation.dY(currentLocation);
                     GuideLog.CalibrationStep(this, "Up", stepsRemainingLeft,
-                        m_calibrationStartingLocation.dX(currentLocation),  m_calibrationStartingLocation.dY(currentLocation),
+                        x_dist,  y_dist,
                         currentLocation, m_calibrationStartingLocation.Distance(currentLocation));
+                    m_calibrationDetails.decSteps.push_back(wxRealPoint(x_dist, y_dist));                   // Just put "up" in "dec" steps
                     break;
                 }
                 Debug.AddLine(wxString::Format("Falling through to state AVERAGE_ENDING_LOCATION, position=(%.2f, %.2f)",
@@ -608,12 +650,12 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                     break;
                 }
                 m_calibrationAveragedLocation /= m_calibrationAverageSamples;
-                m_calibrationYAngle = m_calibrationAveragedLocation.Angle(m_calibrationStartingLocation);
-                m_calibrationYRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
+                m_calibration.yAngle = m_calibrationAveragedLocation.Angle(m_calibrationStartingLocation);
+                m_calibration.yRate  = m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation) /
                                                      (m_calibrationIterations * m_calibrationStepsPerIteration);
-                status1.Printf(_("angle=%.2f rate=%.2f"), m_calibrationYAngle, m_calibrationYRate);
-                GuideLog.CalibrationDirectComplete(this, "Left", m_calibrationYAngle, m_calibrationYRate);
-                Debug.AddLine(wxString::Format("UP calibration completes with angle=%.2f rate=%.2f", m_calibrationYAngle, m_calibrationYRate));
+                status1.Printf(_("angle=%.1f rate=%.2f"), m_calibration.yAngle * 180. / M_PI, m_calibration.yRate);
+                GuideLog.CalibrationDirectComplete(this, "Up", m_calibration.yAngle, m_calibration.yRate);
+                Debug.AddLine(wxString::Format("UP calibration completes with angle=%.1f rate=%.2f", m_calibration.yAngle * 180. / M_PI, m_calibration.yRate));
                 Debug.AddLine(wxString::Format("distance=%.2f iterations=%d",  m_calibrationStartingLocation.Distance(m_calibrationAveragedLocation), m_calibrationIterations));
                 m_calibrationStartingLocation = m_calibrationAveragedLocation;
                 m_calibrationState = CALIBRATION_STATE_RECENTER;
@@ -634,9 +676,11 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point &currentLocation)
                                                 currentLocation.X, currentLocation.Y));
                 // fall through
             case CALIBRATION_STATE_COMPLETE:
-                SetCalibration(m_calibrationXAngle, m_calibrationYAngle,
-                               m_calibrationXRate,  m_calibrationYRate,
-                               0.0, PIER_SIDE_UNKNOWN);
+                m_calibration.declination = 0.;
+                m_calibration.pierSide = PIER_SIDE_UNKNOWN;
+                m_calibration.rotatorAngle = Rotator::RotatorPosition();
+                SetCalibration(m_calibration);
+                SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle);
                 status1 = _T("calibration complete");
                 GuideLog.CalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");
@@ -709,6 +753,7 @@ bool StepGuider::GuidingCeases(void)
     // We have stopped guiding.  Reset bump state and recenter the stepguider
 
     m_avgOffset.Invalidate();
+    m_forceStartBump = false;
     m_bumpInProgress = false;
     m_bumpStepWeight = 1.0;
     m_bumpTimeoutAlertSent = false;
@@ -731,6 +776,12 @@ bool StepGuider::GuidingCeases(void)
     return bError;
 }
 
+void StepGuider::ClearHistory(void)
+{
+    Mount::ClearHistory();
+    m_avgOffset.Invalidate();
+}
+
 void StepGuider::ShowPropertyDialog(void)
 {
 }
@@ -743,10 +794,10 @@ Mount::MOVE_RESULT StepGuider::CalibrationMove(GUIDE_DIRECTION direction, int st
 
     try
     {
-        int stepsTaken = 0;
-        result = Move(direction, steps, false, &stepsTaken);
+        MoveResultInfo move;
+        result = Move(direction, steps, false, &move);
 
-        if (stepsTaken != steps)
+        if (move.amountMoved != steps)
         {
             throw THROW_INFO("stepsTaken != m_calibrationStepsPerIteration");
         }
@@ -766,80 +817,96 @@ int StepGuider::CalibrationMoveSize(void)
     return m_calibrationStepsPerIteration;
 }
 
-Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool normalMove, int *amountMoved)
+int StepGuider::CalibrationTotDistance(void)
+{
+    // we really have no way of knowing how many pixels calibration will
+    // require, since calibration is step-based and not pixel-based.
+    // For now, let's just assume 25 pixels is sufficient
+    enum { AO_CALIBRATION_PIXELS_NEEDED = 25 };
+    return AO_CALIBRATION_PIXELS_NEEDED;
+}
+
+Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool normalMove, MoveResultInfo *moveResult)
 {
     MOVE_RESULT result = MOVE_OK;
+    bool limitReached = false;
 
     try
     {
         Debug.AddLine(wxString::Format("Move(%d, %d, %d)", direction, steps, normalMove));
 
         // Compute the required guide steps
-        if (m_guidingEnabled)
+        if (!m_guidingEnabled)
         {
-            // Acutally do the guide
-            assert(steps >= 0);
+            throw THROW_INFO("Guiding disabled");
+        }
+
+        // Acutally do the guide
+        assert(steps >= 0);
+
+        if (steps > 0)
+        {
+            int yDirection = 0;
+            int xDirection = 0;
+
+            switch (direction)
+            {
+                case UP:
+                    yDirection = 1;
+                    break;
+                case DOWN:
+                    yDirection = -1;
+                    break;
+                case RIGHT:
+                    xDirection = 1;
+                    break;
+                case LEFT:
+                    xDirection = -1;
+                    break;
+                default:
+                    throw ERROR_INFO("StepGuider::Move(): invalid direction");
+                    break;
+            }
+
+            assert(yDirection == 0 || xDirection == 0);
+            assert(yDirection != 0 || xDirection != 0);
+
+            Debug.AddLine(wxString::Format("stepping direction=%d steps=%d xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
+
+            if (WouldHitLimit(direction, steps))
+            {
+                int new_steps = MaxPosition(direction) - 1 - CurrentPosition(direction);
+                Debug.AddLine(wxString::Format("StepGuider step would hit limit: truncate move direction=%d steps=%d => %d", direction, steps, new_steps));
+                steps = new_steps;
+                limitReached = true;
+            }
 
             if (steps > 0)
             {
-                int yDirection = 0;
-                int xDirection = 0;
-
-                switch (direction)
+                if (Step(direction, steps))
                 {
-                    case UP:
-                        yDirection = 1;
-                        break;
-                    case DOWN:
-                        yDirection = -1;
-                        break;
-                    case RIGHT:
-                        xDirection = 1;
-                        break;
-                    case LEFT:
-                        xDirection = -1;
-                        break;
-                    default:
-                        throw ERROR_INFO("StepGuider::Move(): invalid direction");
-                        break;
+                    throw ERROR_INFO("step failed");
                 }
 
-                assert(yDirection == 0 || xDirection == 0);
-                assert(yDirection != 0 || xDirection != 0);
+                m_xOffset += xDirection * steps;
+                m_yOffset += yDirection * steps;
 
-                Debug.AddLine(wxString::Format("stepping direction=%d steps=%d xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
-
-                if (WouldHitLimit(direction, steps))
-                {
-                    int new_steps = MaxPosition(direction) - 1 - CurrentPosition(direction);
-                    Debug.AddLine(wxString::Format("StepGuider step would hit limit: truncate move direction=%d steps=%d => %d", direction, steps, new_steps));
-                    steps = new_steps;
-                }
-
-                if (steps > 0)
-                {
-                    if (Step(direction, steps))
-                    {
-                        throw ERROR_INFO("step failed");
-                    }
-
-                    m_xOffset += xDirection * steps;
-                    m_yOffset += yDirection * steps;
-
-                    Debug.AddLine(wxString::Format("stepped: xOffset=%d yOffset=%d", m_xOffset, m_yOffset));
-                }
+                Debug.AddLine(wxString::Format("stepped: xOffset=%d yOffset=%d", m_xOffset, m_yOffset));
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         steps = 0;
         result = MOVE_ERROR;
     }
 
-    if (amountMoved)
-        *amountMoved = steps;
+    if (moveResult)
+    {
+        moveResult->amountMoved = steps;
+        moveResult->limited = limitReached;
+    }
 
     return result;
 }
@@ -854,10 +921,15 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
         if (mountResult != MOVE_OK)
             Debug.AddLine("StepGuider::Move: Mount::Move failed!");
 
+        if (!m_guidingEnabled)
+        {
+            throw THROW_INFO("Guiding disabled");
+        }
+
         // keep a moving average of the AO position
         if (m_avgOffset.IsValid())
         {
-            static double const alpha = .25; // moderately high weighting for latest sample
+            static double const alpha = .33; // moderately high weighting for latest sample
             m_avgOffset.X += alpha * (m_xOffset - m_avgOffset.X);
             m_avgOffset.Y += alpha * (m_yOffset - m_avgOffset.Y);
         }
@@ -869,11 +941,18 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
         pFrame->pStepGuiderGraph->AppendData(m_xOffset, m_yOffset, m_avgOffset);
 
         // consider bumping the secondary mount if this is a normal move
-        if (normalMove && pSecondaryMount)
+        if (normalMove && pSecondaryMount && pSecondaryMount->IsConnected())
         {
             int absX = abs(CurrentPosition(RIGHT));
             int absY = abs(CurrentPosition(UP));
             bool isOutside = absX > m_xBumpPos1 || absY > m_yBumpPos1;
+            bool forceStartBump = false;
+            if (m_forceStartBump)
+            {
+                Debug.Write("stepguider::Move: will start forced bump\n");
+                forceStartBump = true;
+                m_forceStartBump = false;
+            }
 
             // if the current bump has not brought us in, increase the bump size
             if (isOutside && m_bumpInProgress)
@@ -912,7 +991,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
                 }
             }
 
-            if (isOutside && !m_bumpInProgress)
+            if ((isOutside || forceStartBump) && !m_bumpInProgress)
             {
                 // start a new bump
                 m_bumpInProgress = true;
@@ -923,7 +1002,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
             }
 
             // stop the bump if we are "close enough" to the center position
-            if (!isOutside && m_bumpInProgress)
+            if ((!isOutside || forceStartBump) && m_bumpInProgress)
             {
                 int minDist = m_bumpCenterTolerance;
                 if (m_avgOffset.X * m_avgOffset.X + m_avgOffset.Y * m_avgOffset.Y <= minDist * minDist)
@@ -958,8 +1037,8 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
 
             Debug.AddLine("incremental bump (%.3f, %.3f) isValid = %d", bumpVec.X, bumpVec.Y, bumpVec.IsValid());
 
-            double maxBumpPixelsX = m_calibrationXRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
-            double maxBumpPixelsY = m_calibrationYRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
+            double maxBumpPixelsX = m_calibration.xRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
+            double maxBumpPixelsY = m_calibration.yRate * m_bumpMaxStepsPerCycle * m_bumpStepWeight;
             double len = bumpVec.Distance();
             double xBumpSize = bumpVec.X * maxBumpPixelsX / len;
             double yBumpSize = bumpVec.Y * maxBumpPixelsY / len;
@@ -989,9 +1068,9 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
     return result;
 }
 
-bool StepGuider::IsAtLimit(GUIDE_DIRECTION direction, bool& atLimit)
+bool StepGuider::IsAtLimit(GUIDE_DIRECTION direction, bool *atLimit)
 {
-    atLimit = CurrentPosition(direction) == MaxPosition(direction) - 1;
+    *atLimit = CurrentPosition(direction) == MaxPosition(direction) - 1;
     return false;
 }
 
@@ -1011,15 +1090,20 @@ bool StepGuider::WouldHitLimit(GUIDE_DIRECTION direction, int steps)
     return bReturn;
 }
 
-wxString StepGuider::GetSettingsSummary() {
+wxString StepGuider::GetSettingsSummary()
+{
     // return a loggable summary of current mount settings
     return Mount::GetSettingsSummary() +
-        wxString::Format("Calibration steps = %d, Samples to average = %d, Bump percentage = %d, Bump step = %.2f\n",
-            GetCalibrationStepsPerIteration(),
-            GetSamplesToAverage(),
+        wxString::Format("Bump percentage = %d, Bump step = %.2f\n",
             GetBumpPercentage(),
             GetBumpMaxStepsPerCycle()
         );
+}
+
+wxString StepGuider::CalibrationSettingsSummary()
+{
+    return wxString::Format("Calibration steps = %d, Samples to average = %d",
+        GetCalibrationStepsPerIteration(), GetSamplesToAverage());
 }
 
 wxString StepGuider::GetMountClassName() const
@@ -1074,7 +1158,7 @@ ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
 }
 
 StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider)
-    : MountConfigDialogPane(pParent, _("AO"), pStepGuider)
+    : MountConfigDialogPane(pParent, _("AO Settings"), pStepGuider)
 {
     int width;
 
@@ -1104,9 +1188,16 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
     width = StringWidth(_T("00.00"));
     m_pBumpMaxStepsPerCycle = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.01, 99.99, 0.0, 0.25, _T("Bump_steps"));
+    wxSizer *sz = MakeLabeledControl(_("Bump Step"), m_pBumpMaxStepsPerCycle, wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). Default = %.2f, decrease if mount bumps cause spikes on the graph"), DefaultBumpMaxStepsPerCycle));
 
-    DoAdd(_("Bump Step"), m_pBumpMaxStepsPerCycle,
-        wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). Default = %.2f, decrease if mount bumps cause spikes on the graph"), DefaultBumpMaxStepsPerCycle));
+    m_bumpOnDither = new wxCheckBox(pParent, wxID_ANY, _("Bump on Dither"));
+    m_bumpOnDither->SetToolTip(_("Bump the mount to return the AO to center at each dither"));
+
+    wxSizer *hsz = new wxBoxSizer(wxHORIZONTAL);
+    hsz->Add(sz, wxSizerFlags(1));
+    hsz->Add(m_bumpOnDither, wxSizerFlags(1).Right().Border(wxLEFT, 15).Align(wxALIGN_CENTER_VERTICAL));
+
+    DoAdd(hsz);
 }
 
 StepGuider::StepGuiderConfigDialogPane::~StepGuiderConfigDialogPane(void)
@@ -1120,6 +1211,7 @@ void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
     m_pSamplesToAverage->SetValue(m_pStepGuider->GetSamplesToAverage());
     m_pBumpPercentage->SetValue(m_pStepGuider->GetBumpPercentage());
     m_pBumpMaxStepsPerCycle->SetValue(m_pStepGuider->GetBumpMaxStepsPerCycle());
+    m_bumpOnDither->SetValue(m_pStepGuider->m_bumpOnDither);
 }
 
 void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
@@ -1128,6 +1220,7 @@ void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
     m_pStepGuider->SetSamplesToAverage(m_pSamplesToAverage->GetValue());
     m_pStepGuider->SetBumpPercentage(m_pBumpPercentage->GetValue(), true);
     m_pStepGuider->SetBumpMaxStepsPerCycle(m_pBumpMaxStepsPerCycle->GetValue());
+    m_pStepGuider->m_bumpOnDither = m_bumpOnDither->GetValue();
 
     MountConfigDialogPane::UnloadValues();
 }

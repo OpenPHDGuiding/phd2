@@ -72,7 +72,7 @@ Mount::MOVE_RESULT ScopeGpInt::Guide(GUIDE_DIRECTION direction, int duration)
         case WEST: reg = reg ^ 0x20; break;     // RA+
     }
     Out32(port,reg);
-    wxMilliSleep(duration);
+    WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
     reg = reg & 0x0F;  // Deassert all directions
     Out32(port,reg);
 

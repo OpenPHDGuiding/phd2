@@ -37,6 +37,7 @@
 #include "image_math.h"
 #include "darks_dialog.h"
 #include "Refine_DefMap.h"
+#include "camcal_import_dialog.h"
 
 #include <wx/spinctrl.h>
 #include <wx/textfile.h>
@@ -73,6 +74,8 @@ void MyFrame::OnExposureDurationSelected(wxCommandEvent& WXUNUSED(evt))
             Debug.AddLine("AutoExp: enabled");
         m_autoExp.enabled = true;
     }
+
+    GuideLog.SetGuidingParam("Exposure", ExposureDurationSummary());
 
     pConfig->Profile.SetString("/ExposureDuration", sel);
 }
@@ -123,6 +126,116 @@ void MyFrame::OnOverlay(wxCommandEvent& evt)
     pGuider->SetOverlayMode(evt.GetId() - MENU_XHAIR0);
 }
 
+struct SlitPropertiesDlg : public wxDialog
+{
+    wxSpinCtrl *m_x;
+    wxSpinCtrl *m_y;
+    wxSpinCtrl *m_width;
+    wxSpinCtrl *m_height;
+    wxSpinCtrl *m_angle;
+
+    SlitPropertiesDlg(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("Spectrograph Slit Overlay"),
+        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(390, 181), long style = wxDEFAULT_DIALOG_STYLE);
+};
+
+SlitPropertiesDlg::SlitPropertiesDlg(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+    : wxDialog(parent, id, title, pos, size, style)
+{
+    SetSizeHints(wxDefaultSize, wxDefaultSize);
+
+    wxBoxSizer *bSizer1 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *bSizer2 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticBoxSizer *sbSizer1 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Position (Center)")), wxVERTICAL);
+    wxBoxSizer *bSizer4 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText *staticText2 = new wxStaticText(this, wxID_ANY, _("X"), wxDefaultPosition, wxDefaultSize, 0);
+    staticText2->Wrap(-1);
+    bSizer4->Add(staticText2, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    m_x = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 8000, 0);
+    bSizer4->Add(m_x, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    sbSizer1->Add(bSizer4, 0, wxEXPAND, 5);
+    wxBoxSizer *bSizer41 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* staticText21 = new wxStaticText(this, wxID_ANY, _("Y"), wxDefaultPosition, wxDefaultSize, 0);
+    staticText21->Wrap(-1);
+    bSizer41->Add(staticText21, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    m_y = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 8000, 0);
+    bSizer41->Add(m_y, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    sbSizer1->Add(bSizer41, 1, wxEXPAND, 5);
+    bSizer2->Add(sbSizer1, 1, 0, 5);
+    wxStaticBoxSizer *sbSizer2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Size")), wxVERTICAL);
+    wxBoxSizer* bSizer42 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* staticText22 = new wxStaticText(this, wxID_ANY, _("Width"), wxDefaultPosition, wxSize(40, -1), 0);
+    staticText22->Wrap(-1);
+    bSizer42->Add(staticText22, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    m_width = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 2, 1000, 2);
+    bSizer42->Add(m_width, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    sbSizer2->Add(bSizer42, 1, wxEXPAND, 5);
+    wxBoxSizer* bSizer43 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* staticText23 = new wxStaticText(this, wxID_ANY, _("Height"), wxDefaultPosition, wxSize(40, -1), 0);
+    staticText23->Wrap(-1);
+    bSizer43->Add(staticText23, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    m_height = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 2, 1000, 2);
+    bSizer43->Add(m_height, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    sbSizer2->Add(bSizer43, 1, wxEXPAND, 5);
+    bSizer2->Add(sbSizer2, 1, 0, 5);
+    bSizer1->Add(bSizer2, 0, wxEXPAND, 5);
+    wxBoxSizer* bSizer3 = new wxBoxSizer(wxHORIZONTAL);
+    wxStaticText* staticText1 = new wxStaticText(this, wxID_ANY, _("Angle (degrees)"), wxDefaultPosition, wxDefaultSize, 0);
+    staticText1->Wrap(-1);
+    bSizer3->Add(staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    m_angle = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, -90, 90, 0);
+    bSizer3->Add(m_angle, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    bSizer1->Add(bSizer3, 0, wxEXPAND, 5);
+    wxStdDialogButtonSizer *sdbSizer1 = new wxStdDialogButtonSizer();
+    wxButton *sdbSizer1OK = new wxButton(this, wxID_OK);
+    sdbSizer1->AddButton(sdbSizer1OK);
+    wxButton *sdbSizer1Cancel = new wxButton(this, wxID_CANCEL);
+    sdbSizer1->AddButton(sdbSizer1Cancel);
+    sdbSizer1->Realize();
+    bSizer1->Add(sdbSizer1, 0, wxEXPAND, 5);
+    SetSizer(bSizer1);
+    Layout();
+}
+
+struct SlitPosCtx : public wxObject
+{
+    SlitPropertiesDlg *dlg;
+    Guider *guider;
+    SlitPosCtx(SlitPropertiesDlg *d, Guider *g) : dlg(d), guider(g) { }
+};
+
+static void UpdateSlitPos(wxSpinEvent& event)
+{
+    SlitPosCtx *ctx = static_cast<SlitPosCtx *>(event.GetEventUserData());
+    wxPoint center(ctx->dlg->m_x->GetValue(), ctx->dlg->m_y->GetValue());
+    wxSize size(ctx->dlg->m_width->GetValue(), ctx->dlg->m_height->GetValue());
+    int angle = ctx->dlg->m_angle->GetValue();
+    ctx->guider->SetOverlaySlitCoords(center, size, angle);
+}
+
+void MyFrame::OnOverlaySlitCoords(wxCommandEvent& evt)
+{
+    wxPoint center;
+    wxSize size;
+    int angle;
+    pGuider->GetOverlaySlitCoords(&center, &size, &angle);
+
+    SlitPropertiesDlg dlg(this);
+
+    dlg.m_x->SetValue(center.x);
+    dlg.m_y->SetValue(center.y);
+    dlg.m_width->SetValue(size.GetWidth());
+    dlg.m_height->SetValue(size.GetHeight());
+    dlg.m_angle->SetValue(angle);
+
+    dlg.Bind(wxEVT_SPINCTRL, &UpdateSlitPos, wxID_ANY, wxID_ANY, new SlitPosCtx(&dlg, pGuider));
+
+    if (dlg.ShowModal() != wxID_OK)
+    {
+        // revert to original values
+        pGuider->SetOverlaySlitCoords(center, size, angle);
+    }
+}
+
 void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
 {
     if (!pGuider->CurrentImage()->ImageData)
@@ -138,7 +251,11 @@ void MyFrame::OnSave(wxCommandEvent& WXUNUSED(event))
 
     if (pGuider->SaveCurrentImage(fname))
     {
-        Alert(_("The image could not be saved to ") + fname);
+        Alert(wxString::Format(_("The image could not be saved to %s"), fname));
+    }
+    else
+    {
+        pFrame->SetStatusText(wxString::Format(_("%s saved"), wxFileName(fname).GetFullName()));
     }
 }
 
@@ -173,6 +290,40 @@ void MyFrame::OnLoopExposure(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+void MyFrame::FinishStop(void)
+{
+    // when looping resumes, start with at least one full frame. This enables applications
+    // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
+    assert(!CaptureActive);
+    pGuider->ForceFullFrame();
+    ResetAutoExposure();
+    UpdateButtonsStatus();
+    SetStatusText(_("Stopped."));
+    PhdController::AbortController("Stopped capturing");
+}
+
+static wxString RawModeWarningKey(void)
+{
+    return wxString::Format("/Confirm/%d/RawModeWarningEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressRawModeWarning(long)
+{
+    pConfig->Global.SetBoolean(RawModeWarningKey(), false);
+}
+
+static void WarnRawImageMode(void)
+{
+    if (pCamera->FullSize != pCamera->DarkFrameSize())
+    {
+        if (pConfig->Global.GetBoolean(RawModeWarningKey(), true))
+        {
+            pFrame->Alert(_("For refining the Bad-pixel Map PHD2 is now displaying raw camera data frames, which are a different size from ordinary guide frames for this camera."),
+                _("Don't show\nthis again"), SuppressRawModeWarning, 0);
+        }
+    }
+}
+
 /*
  * OnExposeComplete is the dispatch routine that is called when an image has been taken
  * by the background thread.
@@ -191,24 +342,48 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
     {
         Debug.AddLine("Processing an image");
 
+        m_exposurePending = false;
+
         usImage *pNewFrame = event.GetPayload<usImage *>();
+
+        if (pGuider->GetPauseType() == PAUSE_FULL)
+        {
+            delete pNewFrame;
+            Debug.AddLine("guider is paused, ignoring frame, not scheduling exposure");
+            return;
+        }
 
         if (event.GetInt())
         {
             delete pNewFrame;
 
             StopCapturing();
+            if (pGuider->IsCalibratingOrGuiding())
+            {
+                pGuider->StopGuiding();
+                pGuider->UpdateImageDisplay();
+            }
             pGuider->Reset(false);
             CaptureActive = m_continueCapturing;
             UpdateButtonsStatus();
             PhdController::AbortController("Error reported capturing image");
-            SetStatusText(_("Stopped."), 1);
+            SetStatusText(_("Stopped."));
 
             Debug.Write("OnExposeComplete(): Capture Error reported\n");
+
+            // some camera drivers disconnect the camera on error
+            if (!pCamera->Connected)
+                SetStatusText(wxEmptyString, 2);
 
             throw ERROR_INFO("Error reported capturing image");
         }
         ++m_frameCounter;
+
+        if (m_rawImageMode && !m_rawImageModeWarningDone)
+        {
+            WarnRawImageMode();
+            m_rawImageModeWarningDone = true;
+        }
 
         pGuider->UpdateGuideState(pNewFrame, !m_continueCapturing);
         pNewFrame = NULL; // the guider owns it now
@@ -222,17 +397,11 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 
         if (CaptureActive)
         {
-            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
+            ScheduleExposure();
         }
         else
         {
-            // when looping resumes, start with at least one full frame. This enables applications
-            // controlling PHD to auto-select a new star if the star is lost while looping was stopped.
-            pGuider->ForceFullFrame();
-            ResetAutoExposure();
-            UpdateButtonsStatus();
-            SetStatusText(_("Stopped."), 1);
-            PhdController::AbortController("Stopped capturing");
+            FinishStop();
         }
     }
     catch (wxString Msg)
@@ -301,27 +470,26 @@ void MyFrame::LoadDarkHandler(bool checkIt)
     if (!pCamera || !pCamera->Connected)
     {
         Alert(_("You must connect a camera before loading a dark library"));
-        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+        m_useDarksMenuItem->Check(false);
         return;
     }
     pConfig->Profile.SetBoolean("/camera/AutoLoadDarks", checkIt);
     if (checkIt)  // enable it
     {
-        darks_menu->FindItem(MENU_LOADDARK)->Check(true);
+        m_useDarksMenuItem->Check(true);
         if (pCamera->CurrentDefectMap)
             LoadDefectMapHandler(false);
         LoadDarkLibrary();
-        SetStatusText(_("Dark library loaded"));
     }
     else
     {
         if (!pCamera->CurrentDarkFrame)
         {
-            darks_menu->FindItem(MENU_LOADDARK)->Check(false);      // shouldn't have gotten here
+            m_useDarksMenuItem->Check(false);      // shouldn't have gotten here
             return;
         }
         pCamera->ClearDarks();
-        darks_menu->FindItem(MENU_LOADDARK)->Check(false);
+        m_useDarksMenuItem->Check(false);
         SetStatusText(_("Dark library unloaded"));
     }
 }
@@ -343,24 +511,30 @@ void MyFrame::LoadDefectMapHandler(bool checkIt)
     pConfig->Profile.SetBoolean("/camera/AutoLoadDefectMap", checkIt);
     if (checkIt)
     {
-        if (pCamera->CurrentDarkFrame)
-            LoadDarkHandler(false);
-        LoadDefectMap();            // Status msg generated internally
-        if (pCamera->CurrentDefectMap)
+        DefectMap *defectMap = DefectMap::LoadDefectMap(pConfig->GetCurrentProfileId());
+        if (defectMap)
         {
-            darks_menu->FindItem(MENU_LOADDARK)->Check(false);
-            darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(true);
+            if (pCamera->CurrentDarkFrame)
+                LoadDarkHandler(false);
+            pCamera->SetDefectMap(defectMap);
+            m_useDarksMenuItem->Check(false);
+            m_useDefectMapMenuItem->Check(true);
+            SetStatusText(_("Defect map loaded"));
+        }
+        else
+        {
+            SetStatusText(_("Defect map not loaded"));
         }
     }
     else
     {
         if (!pCamera->CurrentDefectMap)
         {
-            darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);  // Shouldn't have gotten here
+            m_useDefectMapMenuItem->Check(false);  // Shouldn't have gotten here
             return;
         }
         pCamera->ClearDefectMap();
-        darks_menu->FindItem(MENU_LOADDEFECTMAP)->Check(false);
+        m_useDefectMapMenuItem->Check(false);
         SetStatusText(_("Bad-pixel map unloaded"));
     }
 }
@@ -381,13 +555,24 @@ void MyFrame::OnRefineDefMap(wxCommandEvent& evt)
     if (!pRefineDefMap)
         pRefineDefMap = new RefineDefMap(this);
 
-    pRefineDefMap->InitUI();
-    pRefineDefMap->Show();
+    if (pRefineDefMap->InitUI())                    // UI ready go, user wants to proceed
+    {
+        pRefineDefMap->Show();
 
-    // Don't let the user build a new defect map while we're trying to refine one; and it almost certainly makes sense
-    // to have a defect map loaded if the user wants to refine it
-    m_takeDarksMenuItem->Enable(false);  // Dialog restores it when its window is closed
-    LoadDefectMapHandler(true);
+        // Don't let the user build a new defect map while we're trying to refine one; and it almost certainly makes sense
+        // to have a defect map loaded if the user wants to refine it
+        m_takeDarksMenuItem->Enable(false);             // Dialog restores it when its window is closed
+        LoadDefectMapHandler(true);
+    }
+    else
+        pRefineDefMap->Destroy();                       // user cancelled out before starting the process
+}
+
+void MyFrame::OnImportCamCal(wxCommandEvent& evt)
+{
+    CamCalImportDialog dlg(this);
+
+    dlg.ShowModal();
 }
 
 void MyFrame::OnToolBar(wxCommandEvent& evt)
@@ -401,7 +586,6 @@ void MyFrame::OnToolBar(wxCommandEvent& evt)
     {
         m_mgr.GetPane(_T("MainToolBar")).Hide();
     }
-    this->pGraphLog->SetState(evt.IsChecked());
     m_mgr.Update();
 }
 
@@ -415,13 +599,27 @@ void MyFrame::OnGraph(wxCommandEvent& evt)
     {
         m_mgr.GetPane(_T("GraphLog")).Hide();
     }
-    this->pGraphLog->SetState(evt.IsChecked());
+    pGraphLog->SetState(evt.IsChecked());
+    m_mgr.Update();
+}
+
+void MyFrame::OnStats(wxCommandEvent& evt)
+{
+    if (evt.IsChecked())
+    {
+        m_mgr.GetPane(_T("Stats")).Show().Bottom().Position(0).MinSize(-1, 240);
+    }
+    else
+    {
+        m_mgr.GetPane(_T("Stats")).Hide();
+    }
+    pStatsWin->SetState(evt.IsChecked());
     m_mgr.Update();
 }
 
 void MyFrame::OnAoGraph(wxCommandEvent& evt)
 {
-    if (this->pStepGuiderGraph->SetState(evt.IsChecked()))
+    if (pStepGuiderGraph->SetState(evt.IsChecked()))
     {
         m_mgr.GetPane(_T("AOPosition")).Show().Right().Position(1).MinSize(293,208);
     }
@@ -447,7 +645,7 @@ void MyFrame::OnStarProfile(wxCommandEvent& evt)
     {
         m_mgr.GetPane(_T("Profile")).Hide();
     }
-    this->pProfile->SetState(evt.IsChecked());
+    pProfile->SetState(evt.IsChecked());
     m_mgr.Update();
 }
 
@@ -461,34 +659,44 @@ void MyFrame::OnTarget(wxCommandEvent& evt)
     {
         m_mgr.GetPane(_T("Target")).Hide();
     }
-    this->pTarget->SetState(evt.IsChecked());
+    pTarget->SetState(evt.IsChecked());
     m_mgr.Update();
+}
+
+// Redock windows and restore main window to size/position where everything should be readily accessible
+void MyFrame::OnRestoreWindows(wxCommandEvent& evt)
+{
+    wxAuiPaneInfoArray& panes = m_mgr.GetAllPanes();
+
+    // Start by restoring the main window although it doesn't seem like this could be much of a problem
+    pFrame->SetSize(wxSize(800, 600));
+    pFrame->SetPosition(wxPoint(20, 20));           // Should work on any screen size
+    // Now re-dock all the windows that are being managed by wxAuiManager
+    int lim = panes.GetCount();
+    for (int i = 0; i < lim; i++)
+    {
+        panes.Item(i).Dock();                       // Already docked, shown or not, doesn't matter
+    }
+    m_mgr.Update();
+
+    if (pCometTool)
+        pCometTool->Center();
+    if (pDriftTool)
+        pDriftTool->Center();
+    if (pGuidingAssistant)
+        pGuidingAssistant->Center();
+    if (pNudgeLock)
+        pNudgeLock->Center();
 }
 
 void MyFrame::OnLog(wxCommandEvent& evt)
 {
-    if (evt.GetId() == MENU_LOG)
-    {
-        if (evt.IsChecked())  // enable it
-        {
-            GuideLog.EnableLogging();
-        }
-        else
-        {
-            GuideLog.DisableLogging();
-        }
-        UpdateTitle();
-    }
-    else if (evt.GetId() == MENU_LOGIMAGES)
+
+    if (evt.GetId() == MENU_LOGIMAGES)
     {
         pFrame->EnableImageLogging(evt.IsChecked());
     }
-    else if (evt.GetId() == MENU_DEBUG)
-    {
-        bool enable = evt.IsChecked();
-        pConfig->Global.SetBoolean("/EnableDebugLog", enable);
-        Debug.Enable(enable);
-    }
+
 }
 
 bool MyFrame::FlipRACal()
@@ -543,6 +751,31 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+static wxString DarksWarningEnabledKey()
+{
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting to be per-profile
+    return wxString::Format("/Confirm/%d/DarksWarningEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressDarksAlert(long)
+{
+    pConfig->Global.SetBoolean(DarksWarningEnabledKey(), false);
+}
+
+static void ValidateDarksLoaded(void)
+{
+    if (!pCamera->CurrentDarkFrame && !pCamera->CurrentDefectMap)
+    {
+        if (pConfig->Global.GetBoolean(DarksWarningEnabledKey(), true))
+        {
+            pFrame->Alert(_("For best results, use a Dark Library or a Bad-pixel Map "
+                "while guiding. This will help prevent PHD from locking on to a hot pixel. "
+                "Use the Darks menu to build a Dark Library or Bad-pixel Map."),
+                _("Don't show\nthis again"), SuppressDarksAlert, 0);
+        }
+    }
+}
+
 void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
 {
     try
@@ -568,6 +801,8 @@ void MyFrame::OnGuide(wxCommandEvent& WXUNUSED(event))
             wxMessageBox(_T("Please select a guide star before attempting to guide"));
             throw ERROR_INFO("Unable to guide with state < STATE_SELECTED");
         }
+
+        ValidateDarksLoaded();
 
         if (wxGetKeyState(WXK_SHIFT))
         {
@@ -615,27 +850,31 @@ void MyFrame::OnPanelClose(wxAuiManagerEvent& evt)
     if (p->name == _T("MainToolBar"))
     {
         Menubar->Check(MENU_TOOLBAR, false);
-        this->pGraphLog->SetState(false);
     }
     if (p->name == _T("GraphLog"))
     {
         Menubar->Check(MENU_GRAPH, false);
-        this->pGraphLog->SetState(false);
+        pGraphLog->SetState(false);
+    }
+    if (p->name == _T("Stats"))
+    {
+        Menubar->Check(MENU_STATS, false);
+        pStatsWin->SetState(false);
     }
     if (p->name == _T("Profile"))
     {
         Menubar->Check(MENU_STARPROFILE, false);
-        this->pProfile->SetState(false);
+        pProfile->SetState(false);
     }
     if (p->name == _T("AOPosition"))
     {
         Menubar->Check(MENU_AO_GRAPH, false);
-        this->pStepGuiderGraph->SetState(false);
+        pStepGuiderGraph->SetState(false);
     }
     if (p->name == _T("Target"))
     {
         Menubar->Check(MENU_TARGET, false);
-        this->pTarget->SetState(false);
+        pTarget->SetState(false);
     }
 }
 
@@ -647,7 +886,21 @@ void MyFrame::OnSelectGear(wxCommandEvent& evt)
         {
             throw ERROR_INFO("OnSelectGear called while CaptureActive");
         }
-        pFrame->pGearDialog->ShowGearDialog(wxGetKeyState(WXK_SHIFT));
+
+        if (pConfig->NumProfiles() == 1 && pGearDialog->IsEmptyProfile())
+        {
+            if (ConfirmDialog::Confirm(
+                _("It looks like this is a first-time connection to your camera and mount. The Setup Wizard can help\n"
+                  "you with that and will also establish baseline guiding parameters for your new configuration.\n"
+                  "Would you like to use the Setup Wizard now?"),
+                  "/use_new_profile_wizard", _("Yes"), _("No"), _("Setup Wizard Recommendation")))
+            {
+                pGearDialog->ShowProfileWizard(evt);
+                return;
+            }
+        }
+
+        pGearDialog->ShowGearDialog(wxGetKeyState(WXK_SHIFT));
     }
     catch (wxString Msg)
     {

@@ -88,7 +88,6 @@ private:
     int m_FocalLength;
     double m_PixelSize;
     wxString m_ProfileName;
-    bool m_ShowingHelp;
     wxBitmap *m_bitmaps[NUM_PAGES];
 
     void OnNext(wxCommandEvent& evt);
@@ -104,7 +103,6 @@ private:
     void WrapUp();
 
     DialogState m_State;
-    const wxString m_TitlePrefix = _("New Profile Wizard - ");
 
 public:
 

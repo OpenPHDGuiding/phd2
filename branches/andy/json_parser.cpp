@@ -322,15 +322,16 @@ static void json_append(json_value *lhs, json_value *rhs)
     }
 }
 
-#define JSON_ERROR(it, desc)\
-    *error_pos = it;\
-    *error_desc = desc;\
-    *error_line = 1 - escaped_newlines;\
-    for (char *c = it; c != source; --c)\
-        if (*c == '\n') ++*error_line;\
-    return 0
+#define JSON_ERROR(it, desc) do { \
+    *error_pos = it; \
+    *error_desc = desc; \
+    *error_line = 1 - escaped_newlines; \
+    for (const char *c = it; c != source; --c) \
+        if (*c == '\n') ++*error_line; \
+    return 0; \
+} while (false)
 
-#define CHECK_TOP() if (!top) {JSON_ERROR(it, "Unexpected character");}
+#define CHECK_TOP() if (!top) JSON_ERROR(it, "Unexpected character")
 
 static json_value *json_parse(char *source, const char **error_pos,
                               const char **error_desc, int *error_line,
@@ -398,7 +399,7 @@ static json_value *json_parse(char *source, const char **error_pos,
             break;
 
         case ':':
-            if (!top || top->type != JSON_OBJECT)
+            if (!top || top->type != JSON_OBJECT || !name)
             {
                 JSON_ERROR(it, "Unexpected character");
             }
@@ -529,6 +530,11 @@ static json_value *json_parse(char *source, const char **error_pos,
                 // new null/bool value
                 json_value *object = json_alloc(allocator);
 
+                if (top->type == JSON_OBJECT && !name)
+                {
+                    JSON_ERROR(it, "Missing name");
+                }
+
                 object->name = name;
                 name = 0;
 
@@ -577,6 +583,11 @@ static json_value *json_parse(char *source, const char **error_pos,
 
                 // new number value
                 json_value *object = json_alloc(allocator);
+
+                if (top->type == JSON_OBJECT && !name)
+                {
+                    JSON_ERROR(it, "Missing name");
+                }
 
                 object->name = name;
                 name = 0;

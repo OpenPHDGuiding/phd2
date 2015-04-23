@@ -200,9 +200,8 @@ bool Camera_SACGuiderClass::GenericCapture(int duration, usImage& img, int xsize
     buffer = new unsigned char[1600200+2000];
     //buffer = new unsigned char[9000000];
     GetFrame(DevName,raw_imgsize,(unsigned long) duration,buffer);
-    if (img.Init(xsize,ysize)) {
-        pFrame->Alert(_("Memory allocation error during capture"));
-        Disconnect();
+    if (img.Init(FullSize)) {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
         delete[] buffer;
         return true;
     }
@@ -218,11 +217,10 @@ bool Camera_SACGuiderClass::GenericCapture(int duration, usImage& img, int xsize
         }
     }
 
-
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
     // Do quick L recon to remove bayer array
-//  if (ColorArray) QuickLRecon(img);
-    if (recon) SubtractDark(img);
-    QuickLRecon(img);
+    if (options & CAPTURE_RECON) QuickLRecon(img);
+
     delete[] buffer;
 
     return false;

@@ -35,15 +35,21 @@
 #define CAM_ZWO_H_INCLUDED
 
 #include "camera.h"
+
 class Camera_ZWO : public GuideCamera
 {
+    wxRect m_frame;
+    unsigned char *m_buffer;
     bool m_capturing;
+    int m_cameraId;
+    int m_minGain;
+    int m_maxGain;
 
 public:
     Camera_ZWO();
     ~Camera_ZWO();
 
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0, 0, 0, 0), bool recon = false);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect();
     bool    Disconnect();
 
@@ -53,6 +59,8 @@ public:
     virtual bool HasNonGuiCapture(void) { return true; }
     virtual bool ST4HasNonGuiMove(void) { return true; }
 
+private:
+    bool StopCapture(void);
 };
 
 #endif

@@ -77,6 +77,22 @@ static void GetExposureDurations(std::vector<int> *vec)
     vec->erase(vec->begin()); // remove "Auto"
 }
 
+static wxString MinExposureDefault()
+{
+    if (pMount && pMount->IsStepGuider())
+        return _T("0.1 s");
+    else
+        return _T("1.0 s");
+}
+
+static wxString MaxExposureDefault()
+{
+    if (pMount && pMount->IsStepGuider())
+        return _T("2.5 s");
+    else
+        return _T("6.0 s");
+}
+
 // Dialog operates in one of two modes: 1) To create a user-requested dark library or 2) To create a master dark frame
 // and associated data files needed to construct a new defect map
 DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
@@ -101,14 +117,14 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
             expCount, &m_expStrings[0], wxCB_READONLY);
 
         AddTableEntryPair(this, pDarkParams, _("Min Exposure Time"), m_pDarkMinExpTime);
-        m_pDarkMinExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_min_exptime", m_expStrings[0]));
+        m_pDarkMinExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_min_exptime", MinExposureDefault()));
         m_pDarkMinExpTime->SetToolTip(_("Minimum exposure time for darks. Choose a value corresponding to the shortest camera exposure you will use for guiding."));
 
         m_pDarkMaxExpTime = new wxComboBox(this, BUTTON_DURATION, wxEmptyString, wxDefaultPosition, wxDefaultSize,
             expCount, &m_expStrings[0], wxCB_READONLY);
 
         AddTableEntryPair(this, pDarkParams, _("Max Exposure Time"), m_pDarkMaxExpTime);
-        m_pDarkMaxExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_max_exptime", m_expStrings[expCount - 1]));
+        m_pDarkMaxExpTime->SetValue(pConfig->Profile.GetString("/camera/darks_max_exptime", MaxExposureDefault()));
         m_pDarkMaxExpTime->SetToolTip(_("Maximum exposure time for darks. Choose a value corresponding to the longest camera exposure you will use for guiding."));
 
         m_pDarkCount = NewSpinnerInt(this, width, pConfig->Profile.GetInt("/camera/darks_num_frames", DefDarkCount), 1, 20, 1, _("Number of dark frames for each exposure time"));
@@ -195,10 +211,9 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
     m_started = true;
     wxYield();
 
-    if (pCamera->HasShutter)
-        pCamera->ShutterState = true; // dark
-    else
+    if (!pCamera->HasShutter)
         wxMessageBox(_("Cover guide scope"));
+    pCamera->ShutterClosed = true;
 
     m_pProgress->SetValue(0);
 
@@ -213,7 +228,11 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         std::vector<int> exposureDurations;
         GetExposureDurations(&exposureDurations);
 
-        m_pProgress->SetRange((maxExpInx - minExpInx + 1) * darkFrameCount);
+        int tot_dur = 0;
+        for (int i = minExpInx; i <= maxExpInx; i++)
+            tot_dur += exposureDurations[i] * darkFrameCount;
+
+        m_pProgress->SetRange(tot_dur);
 
         for (int inx = minExpInx; inx <= maxExpInx; inx++)
         {
@@ -255,7 +274,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         int defectFrameCount = m_pNumDefExposures->GetValue();
         int defectExpTime = m_pDefectExpTime->GetValue() * 1000;
 
-        m_pProgress->SetRange(defectFrameCount);
+        m_pProgress->SetRange(defectFrameCount * defectExpTime);
         m_pProgress->SetValue(0);
 
         DefectMapDarks darks;
@@ -296,12 +315,10 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
     else
     {
         // Put up a message showing results and maybe notice to uncover the scope; then close the dialog
-        if (pCamera->HasShutter)
-            pCamera->ShutterState = false; // Lights
-        else
-            wrapupMsg = _("Uncover guide scope\n\n") + wrapupMsg;   // Results will appear in smaller font
+        pCamera->ShutterClosed = false; // Lights
+        if (!pCamera->HasShutter)
+            wrapupMsg = _("Uncover guide scope") + wxT("\n\n") + wrapupMsg;   // Results will appear in smaller font
         wxMessageBox(wxString::Format(_("Operation complete: %s"), wrapupMsg));
-        // wxDialog::Close();
         EndDialog(wxOK);
     }
 }
@@ -322,9 +339,8 @@ void DarksDialog::OnReset(wxCommandEvent& evt)
 {
     if (buildDarkLib)
     {
-        m_pDarkMinExpTime->SetValue(m_expStrings[0]);
-        int expCount = m_expStrings.Count();
-        m_pDarkMaxExpTime->SetValue(m_expStrings[expCount - 1]);
+        m_pDarkMinExpTime->SetValue(MinExposureDefault());
+        m_pDarkMaxExpTime->SetValue(MaxExposureDefault());
         m_pDarkCount->SetValue(DefDarkCount);
     }
     else
@@ -370,42 +386,41 @@ void DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
     darkFrame.ImgExpDur = expTime;
     darkFrame.ImgStackCnt = frameCount;
     ShowStatus(_("Taking dark frame") + " #1", true);
-    if (pCamera->Capture(expTime, darkFrame, false))
+    if (pCamera->Capture(expTime, darkFrame, CAPTURE_DARK))
     {
         ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double) expTime / 1000.0), true);
-        pCamera->ShutterState = false;
+        pCamera->ShutterClosed = false;
     }
     else
     {
-        m_pProgress->SetValue(m_pProgress->GetValue() + 1);
-        int *avgimg = new int[darkFrame.NPixels];
-        int i, j;
-        int *iptr = avgimg;
+        m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
+        unsigned int *avgimg = new unsigned int[darkFrame.NPixels];
+        unsigned int *iptr = avgimg;
         unsigned short *usptr = darkFrame.ImageData;
-        for (i = 0; i < darkFrame.NPixels; i++, iptr++, usptr++)
-            *iptr = (int)*usptr;
+        for (int i = 0; i < darkFrame.NPixels; i++)
+            *iptr++ = *usptr++;
         wxYield();
-        for (j = 1; j < frameCount; j++)
+        for (int j = 1; j < frameCount; j++)
         {
             wxYield();
             if (m_cancelling)
                 break;
             ShowStatus(_("Taking dark frame") + wxString::Format(" #%d", j + 1), true);
             wxYield();
-            pCamera->Capture(expTime, darkFrame, false);
-            m_pProgress->SetValue(m_pProgress->GetValue() + 1);
+            pCamera->Capture(expTime, darkFrame, CAPTURE_DARK);
+            m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
             iptr = avgimg;
             usptr = darkFrame.ImageData;
-            for (i = 0; i < darkFrame.NPixels; i++, iptr++, usptr++)
-                *iptr = *iptr + (int)*usptr;
+            for (int i = 0; i < darkFrame.NPixels; i++)
+                *iptr++ += *usptr++;
         }
         if (!m_cancelling)
         {
             ShowStatus(_("Dark frames complete"), true);
             iptr = avgimg;
             usptr = darkFrame.ImageData;
-            for (i = 0; i < darkFrame.NPixels; i++, iptr++, usptr++)
-                *usptr = (unsigned short)(*iptr / frameCount);
+            for (int i = 0; i < darkFrame.NPixels; i++)
+                *usptr++ = (unsigned short)(*iptr++ / frameCount);
         }
 
         delete[] avgimg;

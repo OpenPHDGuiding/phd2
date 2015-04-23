@@ -40,12 +40,13 @@
 
 class StepGuiderSxAO : public StepGuider
 {
-    static const int MaxSteps       =      45;
+    static const int DefaultMaxSteps = 45;
     static const int DefaultTimeout =  1*1000;
     static const int CenterTimeout  = 45*1000;
 
     wxString m_serialPortName;
     SerialPort *m_pSerialPort;
+    int m_maxSteps;
 
 public:
     StepGuiderSxAO(void);
@@ -59,15 +60,15 @@ public:
 private:
     virtual bool Step(GUIDE_DIRECTION direction, int steps);
     virtual int MaxPosition(GUIDE_DIRECTION direction) const;
-    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool& isAtLimit);
+    virtual bool IsAtLimit(GUIDE_DIRECTION direction, bool *isAtLimit);
 
-    bool SendThenReceive(unsigned char sendChar, unsigned char& receivedChar);
-    bool SendThenReceive(unsigned char *pBuffer, unsigned bufferSize, unsigned char& recievedChar);
+    bool SendThenReceive(unsigned char sendChar, unsigned char *receivedChar);
+    bool SendThenReceive(const unsigned char *pBuffer, unsigned int bufferSize, unsigned char *receivedChar);
 
-    bool SendShortCommand(unsigned char command, unsigned char& response);
-    bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char& response);
+    bool SendShortCommand(unsigned char command, unsigned char *response);
+    bool SendLongCommand(unsigned char command, unsigned char parameter, unsigned count, unsigned char *response);
 
-    bool FirmwareVersion(unsigned& version);
+    bool FirmwareVersion(unsigned int *version);
     bool Unjam(void);
     bool Center();
     bool Center(unsigned char cmd);

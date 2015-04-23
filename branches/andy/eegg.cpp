@@ -35,12 +35,14 @@
 #include "phd.h"
 #include "drift_tool.h"
 #include "manualcal_dialog.h"
-#include "calrestore_dialog.h"
+#include "calreview_dialog.h"
 #include "nudge_lock.h"
+#include "comet_tool.h"
+#include "guiding_assistant.h"
 
-void MyFrame::OnEEGG(wxCommandEvent &evt)
+void MyFrame::OnEEGG(wxCommandEvent& evt)
 {
-    if (evt.GetId() == EEGG_RESTORECAL)
+    if (evt.GetId() == EEGG_RESTORECAL || evt.GetId() == EEGG_REVIEWCAL)
     {
         wxString savedCal = pConfig->Profile.GetString("/scope/calibration/timestamp", wxEmptyString);
         if (savedCal.IsEmpty())
@@ -49,58 +51,81 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             return;
         }
 
-        if (pMount)
+        if (!pMount)
         {
-            CalrestoreDialog dlg;
-            dlg.Show();
-            if (dlg.ShowModal() == wxID_OK)
-            {
-                Debug.AddLine("User-requested restore calibration");
-                pFrame->LoadCalibration();
-            }
+            wxMessageBox(_("Please connect a mount first."));
+            return;
+        }
+
+        if (evt.GetId() == EEGG_RESTORECAL)
+        {
+            CalRestoreDialog(this).ShowModal();
         }
         else
         {
-            wxMessageBox(_("Please connect a mount first."));
+            if (pCalReviewDlg)                                          // Review dialog is non-modal
+                pCalReviewDlg->Destroy();
+            pCalReviewDlg = new CalReviewDialog(this);
+            pCalReviewDlg->Show();
         }
     }
     else if (evt.GetId() == EEGG_MANUALCAL)
     {
         if (pMount)
         {
-            double xRate  = pMount->xRate();
-            double yRate  = pMount->yRate();
-            double xAngle = pMount->xAngle();
-            double yAngle = pMount->yAngle();
-            double declination = pPointingSource->GetGuidingDeclination();
+            Calibration cal;
+            cal.xRate  = pMount->xRate();
+            cal.yRate  = pMount->yRate();
+            cal.xAngle = pMount->xAngle();
+            cal.yAngle = pMount->yAngle();
+            cal.declination = pPointingSource->GetGuidingDeclination();
+            cal.pierSide = pPointingSource->SideOfPier();
+            cal.rotatorAngle = Rotator::RotatorPosition();
 
             if (!pMount->IsCalibrated())
             {
-                xRate       = 1.0;
-                yRate       = 1.0;
-                xAngle      = 0.0;
-                yAngle      = M_PI/2;
-                declination = 0.0;
+                cal.xRate       = 1.0;
+                cal.yRate       = 1.0;
+                cal.xAngle      = 0.0;
+                cal.yAngle      = M_PI / 2.;
+                cal.declination = 0.0;
             }
 
-            ManualCalDialog manualcal(xRate, yRate, xAngle, yAngle, declination);
+            ManualCalDialog manualcal(cal);
             if (manualcal.ShowModal () == wxID_OK)
             {
-                manualcal.GetValues(&xRate, &yRate, &xAngle, &yAngle, &declination);
-                pMount->SetCalibration(xAngle, yAngle, xRate, yRate, declination, pPointingSource->SideOfPier());
+                manualcal.GetValues(&cal);
+                pMount->SetCalibration(cal);
             }
         }
     }
     else if (evt.GetId() == EEGG_CLEARCAL)
     {
-        if (pMount)
-        {
-            pMount->ClearCalibration();
-        }
-        if (pSecondaryMount)
-        {
-            pSecondaryMount->ClearCalibration();
-        }
+        wxString devicestr = "";
+        if (!(pGuider && pGuider->IsCalibratingOrGuiding()))
+            if (pMount)
+            {
+                if (pMount->IsStepGuider())
+                    devicestr = _("AO");
+                else
+                    devicestr = _("Mount");
+            }
+            if (pSecondaryMount)
+            {
+                devicestr += _(", Mount");
+            }
+            if (devicestr.Length() > 0)
+            {
+                if (wxMessageBox(wxString::Format(_("%s calibration will be cleared - calibration will be re-done when guiding is started."), devicestr),
+                    _("Clear Calibration"), wxOK | wxCANCEL) == wxOK)
+                {
+                    if (pMount)
+                        pMount->ClearCalibration();
+                    if (pSecondaryMount)
+                        pSecondaryMount->ClearCalibration();
+                    Debug.AddLine("User cleared calibration on " + devicestr);
+                }
+            }
     }
     else if (evt.GetId() == EEGG_FLIPRACAL)
     {
@@ -108,8 +133,8 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
 
         if (mount)
         {
-            double xorig = mount->xAngle() * 180. / M_PI;
-            double yorig = mount->yAngle() * 180. / M_PI;
+            double xorig = degrees(mount->xAngle());
+            double yorig = degrees(mount->yAngle());
 
             Debug.AddLine("User-requested FlipRACal");
 
@@ -119,8 +144,8 @@ void MyFrame::OnEEGG(wxCommandEvent &evt)
             }
             else
             {
-                double xnew = mount->xAngle() * 180. / M_PI;
-                double ynew = mount->yAngle() * 180. / M_PI;
+                double xnew = degrees(mount->xAngle());
+                double ynew = degrees(mount->yAngle());
                 wxMessageBox(wxString::Format(_("RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"),
                     xorig, yorig, xnew, ynew));
             }
@@ -156,5 +181,49 @@ void MyFrame::OnDriftTool(wxCommandEvent& WXUNUSED(evt))
     if (pDriftTool)
     {
         pDriftTool->Show();
+    }
+}
+
+void MyFrame::OnCometTool(wxCommandEvent& WXUNUSED(evt))
+{
+    if (!pCometTool)
+    {
+        pCometTool = CometTool::CreateCometToolWindow();
+    }
+
+    if (pCometTool)
+    {
+        pCometTool->Show();
+    }
+}
+
+void MyFrame::OnGuidingAssistant(wxCommandEvent& WXUNUSED(evt))
+{
+    if (pGuidingAssistant)
+    {
+        pGuidingAssistant->Show();
+    }
+    if (!pGuidingAssistant)
+    {
+        bool ok = true;
+
+        if (pFrame->pGuider->IsGuiding())
+        {
+            ok = ConfirmDialog::Confirm(_(
+                "The Guiding Assitant will disable guide output and\n"
+                "allow the guide star to drift.\n"
+                "\n"
+                "Ok to disable guide output?"
+                ),
+                "/guiding_assistant_while_guiding", _("Confirm Disable Guiding"));
+        }
+
+        if (ok)
+            pGuidingAssistant = GuidingAssistant::CreateDialogBox();
+    }
+
+    if (pGuidingAssistant)
+    {
+        pGuidingAssistant->Show();
     }
 }

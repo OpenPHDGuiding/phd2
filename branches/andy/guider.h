@@ -76,7 +76,7 @@ enum DEC_GUDING_ALGORITHM
 {
     DEC_LOWPASS = 0,
     DEC_RESISTSWITCH,
-    DEC_LOWPASS2
+    DEC_LOWPASS2,
 };
 
 enum OVERLAY_MODE
@@ -85,7 +85,16 @@ enum OVERLAY_MODE
     OVERLAY_BULLSEYE,
     OVERLAY_GRID_FINE,
     OVERLAY_GRID_COARSE,
-    OVERLAY_RADEC
+    OVERLAY_RADEC,
+    OVERLAY_SLIT,
+};
+
+struct OverlaySlitCoords
+{
+    wxPoint center;
+    wxSize size;
+    int angle;
+    wxPoint corners[5];
 };
 
 enum MOVE_LOCK_RESULT
@@ -93,6 +102,13 @@ enum MOVE_LOCK_RESULT
     MOVE_LOCK_OK,
     MOVE_LOCK_REJECTED,
     MOVE_LOCK_ERROR,
+};
+
+enum PauseType
+{
+    PAUSE_NONE,     // not paused
+    PAUSE_GUIDING,  // pause guide corrections but continue looping exposures
+    PAUSE_FULL,     // pause guide corrections and pause looping exposures
 };
 
 struct LockPosShiftParams
@@ -120,11 +136,12 @@ class Guider : public wxWindow
 
     wxImage *m_displayedImage;
     OVERLAY_MODE m_overlayMode;
+    OverlaySlitCoords m_overlaySlitCoords;
     const DefectMap *m_defectMapPreview;
     double m_polarAlignCircleRadius;
     double m_polarAlignCircleCorrection;
     PHD_Point m_polarAlignCircleCenter;
-    bool m_paused;
+    PauseType m_paused;
     ShiftPoint m_lockPosition;
     PHD_Point m_ditherRecenterStep;
     wxPoint m_ditherRecenterDir;
@@ -177,15 +194,16 @@ protected:
     void ToggleBookmark(const wxRealPoint& pt);
 
 public:
-    bool IsPaused(void);
-    bool SetPaused(bool paused);
+    bool IsPaused(void) const;
+    PauseType GetPauseType(void) const;
+    PauseType SetPaused(PauseType pause);
     GUIDER_STATE GetState(void);
     static EXPOSED_STATE GetExposedState(void);
     bool IsCalibratingOrGuiding(void);
+    bool IsGuiding(void) const;
     void OnClose(wxCloseEvent& evt);
     void OnErase(wxEraseEvent& evt);
     void UpdateImageDisplay(usImage *pImage=NULL);
-    bool DoGuide(void);
 
     MOVE_LOCK_RESULT MoveLockPosition(const PHD_Point& mountDelta);
     bool SetLockPosition(const PHD_Point& position);
@@ -201,6 +219,8 @@ public:
     void ForceFullFrame(void);
 
     bool SetOverlayMode(int newMode);
+    void GetOverlaySlitCoords(wxPoint *center, wxSize *size, int *angle);
+    void SetOverlaySlitCoords(const wxPoint& center, const wxSize& size, int angle);
     void SetDefectMapPreview(const DefectMap *preview);
     void SetPolarAlignCircle(const PHD_Point& center, double radius);
     void SetPolarAlignCircleCorrection(double val);
@@ -233,13 +253,13 @@ private:
 public:
     virtual void LoadProfileSettings(void);
 
-    // pure virutal functions -- these MUST be overridden by a subclass
+    // pure virtual functions -- these MUST be overridden by a subclass
 public:
     virtual bool IsValidLockPosition(const PHD_Point& pt) = 0;
 private:
     virtual void InvalidateCurrentPosition(bool fullReset = false) = 0;
-    virtual bool UpdateCurrentPosition(usImage *pImage, wxString& statusMessage) = 0;
-    virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position)=0;
+    virtual bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo) = 0;
+    virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position) = 0;
 
 public:
     virtual void OnPaint(wxPaintEvent& evt) = 0;
@@ -267,5 +287,20 @@ private:
     void UpdateLockPosShiftCameraCoords(void);
     DECLARE_EVENT_TABLE()
 };
+
+inline bool Guider::IsPaused(void) const
+{
+    return m_paused != PAUSE_NONE;
+}
+
+inline PauseType Guider::GetPauseType(void) const
+{
+    return m_paused;
+}
+
+inline bool Guider::IsGuiding(void) const
+{
+    return m_state == STATE_GUIDING;
+}
 
 #endif /* GUIDER_H_INCLUDED */

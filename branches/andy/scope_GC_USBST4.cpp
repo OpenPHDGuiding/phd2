@@ -122,7 +122,7 @@ Mount::MOVE_RESULT ScopeGCUSBST4::Guide(GUIDE_DIRECTION direction, int duration)
 //      return false;
     }
 //  wxMessageBox(wxString::Format("send %d vs %d",strlen(buf),num_bytes));
-    wxMilliSleep(duration + 50);
+    WorkerThread::MilliSleep(duration + 50);
     return MOVE_OK;
 }
 

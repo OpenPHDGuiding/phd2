@@ -36,6 +36,10 @@
 #ifndef MOUNT_H_INCLUDED
 #define MOUNT_H_INCLUDED
 
+#include "guide_algorithms.h"
+#include "messagebox_proxy.h"
+#include "image_math.h"
+
 enum GUIDE_DIRECTION {
     NONE  = -1,
     UP = 0,
@@ -48,29 +52,57 @@ enum GUIDE_DIRECTION {
     WEST = LEFT     // RA+
 };
 
-enum PierSide {
+enum PierSide
+{
     PIER_SIDE_UNKNOWN = -1,
     PIER_SIDE_EAST = 0,
     PIER_SIDE_WEST = 1,
 };
 
+#define INVALID_DECLINATION  999.0
+
+struct Calibration
+{
+    double xRate;
+    double yRate;
+    double xAngle;
+    double yAngle;
+    double declination;
+    PierSide pierSide;
+    double rotatorAngle;
+    wxString timestamp;
+};
+
+struct CalibrationDetails
+{
+    int focalLength;
+    double imageScale;
+    double raGuideSpeed;
+    double decGuideSpeed;
+    double orthoError;
+    std::vector <wxRealPoint> raSteps;
+    std::vector <wxRealPoint> decSteps;
+    int raStepCount;
+    int decStepCount;
+};
+
+struct MoveResultInfo
+{
+    int amountMoved;
+    bool limited;
+
+    MoveResultInfo() : amountMoved(0), limited(false) { }
+};
+
 class Mount : public wxMessageBoxProxy
 {
-private:
     bool m_connected;
     int m_requestCount;
 
     bool m_calibrated;
-
-    double m_xRate;
-    double m_yRate;
-
-    double m_xAngle;
+    Calibration m_cal;
+    double m_xRate;         // rate adjusted for declination
     double m_yAngleError;
-
-    double m_calXRate;
-    double m_calDeclination;
-    PierSide m_calPierSide;
 
     double m_currentDeclination;
 
@@ -87,7 +119,7 @@ protected:
     class MountConfigDialogPane : public wxEvtHandler, public ConfigDialogPane
     {
         Mount *m_pMount;
-        wxCheckBox *m_pRecalibrate;
+        wxCheckBox *m_pClearCalibration;
         wxCheckBox *m_pEnableGuide;
         wxChoice   *m_pXGuideAlgorithmChoice;
         wxChoice   *m_pYGuideAlgorithmChoice;
@@ -108,18 +140,13 @@ protected:
         void OnYAlgorithmSelected(wxCommandEvent& evt);
     };
 
-    virtual GUIDE_ALGORITHM GetXGuideAlgorithm(void);
-    virtual void SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
+    GUIDE_ALGORITHM GetXGuideAlgorithmSelection(void);
+    GUIDE_ALGORITHM GetYGuideAlgorithmSelection(void);
 
-    virtual GUIDE_ALGORITHM GetYGuideAlgorithm(void);
-    virtual void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm=GUIDE_ALGORITHM_NONE);
+    void SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
+    void SetYGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgorithm = GUIDE_ALGORITHM_NONE);
 
-    bool GetGuidingEnabled(void);
-    void SetGuidingEnabled(bool guidingEnabled);
-
-    friend class GraphLogWindow;
-
-    GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
+    static GUIDE_ALGORITHM GetGuideAlgorithm(GuideAlgorithm *pAlgorithm);
     static bool CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm **ppAlgorithm);
 
 #ifdef TEST_TRANSFORMS
@@ -148,6 +175,8 @@ public:
     bool DecCompensationActive(void) const;
 
     bool FlipCalibration(void);
+    bool GetGuidingEnabled(void);
+    void SetGuidingEnabled(bool guidingEnabled);
 
     virtual MOVE_RESULT Move(const PHD_Point& cameraVectorEndpoint, bool normalMove=true);
     bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
@@ -162,12 +191,15 @@ public:
 
     void AdjustCalibrationForScopePointing(void);
 
-    // pure virutal functions -- these MUST be overridden by a subclass
+    static wxString PierSideStr(PierSide side);
+
+    // pure virtual functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
-    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, int *amountMoved) = 0;
+    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, MoveResultInfo *moveResultInfo) = 0;
     virtual MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
     virtual int CalibrationMoveSize(void) = 0;
+    virtual int CalibrationTotDistance(void) = 0;
 
     // Calibration related routines
     virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;
@@ -177,6 +209,9 @@ public:
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
     virtual wxString GetMountClassName() const = 0;
+
+    GuideAlgorithm *GetXGuideAlgorithm(void) const;
+    GuideAlgorithm *GetYGuideAlgorithm(void) const;
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
@@ -200,7 +235,10 @@ public:
 
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
-    virtual void SetCalibration(double xAngle, double yAngle, double xRate, double yRate, double declination, PierSide side);
+    virtual void SetCalibration(const Calibration& cal);
+    bool GetLastCalibrationParams(Calibration *params);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle);
+    void GetCalibrationDetails(CalibrationDetails *calDetails);
 
     virtual bool IsConnected(void);
     virtual bool Connect(void);
@@ -219,8 +257,10 @@ public:
     virtual bool Slewing(void);
     virtual PierSide SideOfPier(void);
     virtual bool CanReportPosition();                   // Can report RA, Dec, side-of-pier, etc.
+    virtual bool CanPulseGuide();                       // For ASCOM mounts
 
     virtual wxString GetSettingsSummary();
+    virtual wxString CalibrationSettingsSummary() { return wxEmptyString; }
 
     virtual bool CalibrationFlipRequiresDecFlip(void);
 
@@ -231,7 +271,17 @@ public:
 
 inline bool Mount::DecCompensationActive(void) const
 {
-    return m_currentDeclination != m_calDeclination;
+    return m_currentDeclination != m_cal.declination;
+}
+
+inline GuideAlgorithm *Mount::GetXGuideAlgorithm(void) const
+{
+    return m_pXGuideAlgorithm;
+}
+
+inline GuideAlgorithm *Mount::GetYGuideAlgorithm(void) const
+{
+    return m_pYGuideAlgorithm;
 }
 
 #endif /* MOUNT_H_INCLUDED */

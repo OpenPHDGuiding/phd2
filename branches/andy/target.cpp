@@ -43,6 +43,8 @@ BEGIN_EVENT_TABLE(TargetWindow, wxWindow)
     EVT_BUTTON(BUTTON_GRAPH_CLEAR,TargetWindow::OnButtonClear)
     EVT_BUTTON(BUTTON_GRAPH_ZOOMIN,TargetWindow::OnButtonZoomIn)
     EVT_BUTTON(BUTTON_GRAPH_ZOOMOUT,TargetWindow::OnButtonZoomOut)
+    EVT_CHECKBOX(TARGET_ENABLE_REF_CIRCLE, TargetWindow::OnCheckBoxRefCircle)
+    EVT_SPINCTRLDOUBLE(TARGET_REF_CIRCLE_RADIUS, TargetWindow::OnRefCircleRadius)
 END_EVENT_TABLE()
 
 TargetWindow::TargetWindow(wxWindow *parent) :
@@ -60,36 +62,72 @@ TargetWindow::TargetWindow(wxWindow *parent) :
     pMainSizer->Add(pLeftSizer);
 
     wxString label = wxString::Format("%3d", m_pClient->m_length);
-    LengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH,label,wxDefaultPosition,wxSize(80,-1),wxALIGN_CENTER_HORIZONTAL);
-    LengthButton->SetToolTip(_("Select the number of frames of history to display"));
+    m_lengthButton = new OptionsButton(this,BUTTON_GRAPH_LENGTH,label,wxDefaultPosition,wxSize(40/*80*/,-1),wxALIGN_CENTER_HORIZONTAL);
+    m_lengthButton->SetToolTip(_("Select the number of frames of history to display"));
 
     wxBoxSizer *pZoomSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    ZoomInButton = new wxButton(this,BUTTON_GRAPH_ZOOMIN,_T("+"),wxDefaultPosition,wxSize(40,-1));
-    ZoomInButton->SetToolTip(_("Zoom in"));
+    wxButton *zoomInButton = new wxButton(this, BUTTON_GRAPH_ZOOMIN, _T("+"), wxDefaultPosition, wxSize(40, -1));
+    zoomInButton->SetToolTip(_("Zoom in"));
 
-    ZoomOutButton = new wxButton(this,BUTTON_GRAPH_ZOOMOUT,_T("-"),wxDefaultPosition,wxSize(40,-1));
-    ZoomOutButton->SetToolTip(_("Zoom out"));
+    wxButton *zoomOutButton = new wxButton(this, BUTTON_GRAPH_ZOOMOUT, _T("-"), wxDefaultPosition, wxSize(40, -1));
+    zoomOutButton->SetToolTip(_("Zoom out"));
 
-    pZoomSizer->Add(ZoomInButton);
-    pZoomSizer->Add(ZoomOutButton);
+    pZoomSizer->Add(zoomInButton, wxSizerFlags(1).Expand());
+    pZoomSizer->Add(zoomOutButton, wxSizerFlags(1).Expand());
 
-    ClearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxDefaultPosition,wxSize(80,-1));
-    ClearButton->SetToolTip(_("Clear graph data"));
+    wxButton *clearButton = new wxButton(this,BUTTON_GRAPH_CLEAR,_("Clear"),wxDefaultPosition,wxSize(80,-1));
+    clearButton->SetToolTip(_("Clear graph data"));
 
-    pLeftSizer->Add(LengthButton, wxSizerFlags().Center().Border(wxTOP | wxRIGHT | wxLEFT,5).Expand());
-    pLeftSizer->Add(pZoomSizer, wxSizerFlags().Center().Border(wxRIGHT | wxLEFT,5));
-    pLeftSizer->Add(ClearButton, wxSizerFlags().Center().Border(wxRIGHT | wxLEFT,5));
+    m_enableRefCircle = new wxCheckBox(this, TARGET_ENABLE_REF_CIRCLE, _("Reference Circle"));
+    m_enableRefCircle->SetToolTip(_("Check to display a reference circle"));
+#if defined(__WXOSX__)
+    // workaround inability to set checkbox foreground color
+    m_enableRefCircle->SetBackgroundColour(wxColor(200, 200, 200));
+#else
+    m_enableRefCircle->SetForegroundColour(*wxLIGHT_GREY);
+#endif
+
+    wxStaticText *lbl = new wxStaticText(this, wxID_ANY, _("Radius:"));
+    lbl->SetForegroundColour(*wxLIGHT_GREY);
+    lbl->SetBackgroundColour(*wxBLACK);
+
+    int w, h;
+    GetTextExtent(_T("88.8"), &w, &h);
+    m_refCircleRadius = new wxSpinCtrlDouble(this, TARGET_REF_CIRCLE_RADIUS, wxEmptyString, wxDefaultPosition, wxSize(w + 30, -1));
+    m_refCircleRadius->SetToolTip(_("Reference circle radius"));
+    m_refCircleRadius->SetRange(0.1, 10.0);
+    m_refCircleRadius->SetIncrement(0.1);
+    m_refCircleRadius->SetDigits(1);
+    wxBoxSizer *sizer1 = new wxBoxSizer(wxHORIZONTAL);
+    sizer1->Add(lbl, wxSizerFlags().Align(wxALIGN_CENTER_VERTICAL).Border(wxRIGHT, 5));
+    sizer1->Add(m_refCircleRadius, wxSizerFlags(1).Align(wxALIGN_CENTER_VERTICAL).Expand());
+
+    pLeftSizer->Add(m_lengthButton, wxSizerFlags().Center().Border(wxTOP | wxRIGHT | wxLEFT, 5).Expand());
+    pLeftSizer->Add(pZoomSizer, wxSizerFlags().Border(wxRIGHT | wxLEFT, 5).Expand());
+    pLeftSizer->Add(clearButton, wxSizerFlags().Border(wxRIGHT | wxLEFT,5).Expand());
+    pLeftSizer->Add(m_enableRefCircle, wxSizerFlags().Center().Border(wxALL, 3).Expand());
+    pLeftSizer->Add(sizer1, wxSizerFlags().Center().Border(wxRIGHT | wxLEFT, 5).Expand());
 
     pMainSizer->Add(m_pClient, wxSizerFlags().Border(wxALL,3).Expand().Proportion(1));
 
     SetSizer(pMainSizer);
     pMainSizer->SetSizeHints(this);
+
+    UpdateControls();
 }
 
 TargetWindow::~TargetWindow()
 {
     delete m_pClient;
+}
+
+void TargetWindow::UpdateControls(void)
+{
+    m_enableRefCircle->SetValue(pConfig->Profile.GetBoolean("/target/refCircleEnabled", false));
+    m_refCircleRadius->SetValue(pConfig->Profile.GetDouble("/target/refCircleRadius", 2.0));
+    m_pClient->m_refCircleRadius = m_enableRefCircle->GetValue() ? m_refCircleRadius->GetValue() : 0.0;
+    m_pClient->Refresh();
 }
 
 void TargetWindow::SetState(bool is_active)
@@ -124,8 +162,8 @@ void TargetWindow::OnButtonLength(wxCommandEvent& WXUNUSED(evt))
             break;
     }
 
-    PopupMenu(menu, LengthButton->GetPosition().x,
-        LengthButton->GetPosition().y + LengthButton->GetSize().GetHeight());
+    PopupMenu(menu, m_lengthButton->GetPosition().x,
+        m_lengthButton->GetPosition().y + m_lengthButton->GetSize().GetHeight());
 
     delete menu;
 }
@@ -140,7 +178,7 @@ void TargetWindow::OnMenuLength(wxCommandEvent& evt)
 
     pConfig->Global.SetInt("/target/length", val);
 
-    LengthButton->SetLabel(wxString::Format(_T("%3d"), val));
+    m_lengthButton->SetLabel(wxString::Format(_T("%3d"), val));
     Refresh();
 }
 
@@ -170,6 +208,23 @@ void TargetWindow::OnButtonZoomOut(wxCommandEvent& evt)
     Refresh();
 }
 
+void TargetWindow::OnCheckBoxRefCircle(wxCommandEvent& event)
+{
+    m_pClient->m_refCircleRadius = event.IsChecked() ? m_refCircleRadius->GetValue() : 0.0;
+    pConfig->Profile.SetBoolean("/target/refCircleEnabled", event.IsChecked());
+    m_pClient->Refresh();
+}
+
+void TargetWindow::OnRefCircleRadius(wxSpinDoubleEvent& event)
+{
+    pConfig->Profile.SetDouble("/target/refCircleRadius", event.GetValue());
+    if (m_enableRefCircle->GetValue())
+    {
+        m_pClient->m_refCircleRadius = event.GetValue();
+        m_pClient->Refresh();
+    }
+}
+
 BEGIN_EVENT_TABLE(TargetClient, wxWindow)
     EVT_PAINT(TargetClient::OnPaint)
 END_EVENT_TABLE()
@@ -177,9 +232,12 @@ END_EVENT_TABLE()
 TargetClient::TargetClient(wxWindow *parent) :
     wxWindow(parent, wxID_ANY, wxDefaultPosition, wxSize(201,201), wxFULL_REPAINT_ON_RESIZE )
 {
+    SetBackgroundStyle(wxBG_STYLE_PAINT);
+
     m_minLength = 50;
     m_maxLength = 400;
 
+    m_refCircleRadius = 0.0;
     m_nItems = 0;
     m_length = pConfig->Global.GetInt("/target/length", 100);
     m_zoom = pConfig->Global.GetDouble("/target/zoom", 1.0);
@@ -206,13 +264,11 @@ void TargetClient::AppendData(const GuideStepInfo& step)
 
 void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
 {
-    wxPaintDC dc(this);
+    wxAutoBufferedPaintDC dc(this);
 
     dc.SetBackground(*wxBLACK_BRUSH);
     //dc.SetBackground(wxColour(10,0,0));
     dc.Clear();
-
-    const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
 
     wxColour Grey(128,128,128);
     wxPen GreySolidPen = wxPen(Grey,1, wxSOLID);
@@ -221,27 +277,39 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.SetTextForeground(wxColour(200,200,200));
     dc.SetFont(wxFont(8,wxFONTFAMILY_DEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL));
     dc.SetPen(GreySolidPen);
-    dc.SetBrush(* wxTRANSPARENT_BRUSH);
+    dc.SetBrush(*wxTRANSPARENT_BRUSH);
 
     wxSize size = GetClientSize();
     wxPoint center(size.x/2, size.y/2);
-    double radius_max = ((size.x < size.y ? size.x : size.y) - 6) / 2;
+    int radius_max = ((size.x < size.y ? size.x : size.y) - 6) / 2;
 
-    int leftEdge     = center.x - radius_max;
-    int topEdge      = center.y - radius_max;
+    int leftEdge = center.x - radius_max;
+    int topEdge = center.y - radius_max;
+    radius_max -= 18;
+
+    if (radius_max < 10)
+        radius_max = 10;
+
+    const double sampling = pFrame ? pFrame->GetCameraPixelScale() : 1.0;
+    double scale = radius_max / 2 * sampling;
+
+    // Draw reference circle
+    if (m_refCircleRadius > 0.0)
+    {
+        wxDCBrushChanger b(dc, wxBrush(wxColor(55,55,55)));
+        wxDCPenChanger p(dc, *wxTRANSPARENT_PEN);
+        dc.DrawCircle(center, m_refCircleRadius * scale * m_zoom / sampling);
+    }
 
     // Draw circles
-    wxString l;
-    wxSize sl;
-    radius_max -= 18;
 
     for (int i = 1 ; i <= 4 ; i++)
     {
-        double rr = radius_max / 4;
-        dc.DrawCircle(center, rr*i);
-        l = wxString::Format(_T("%g%s"), i/2.0 / m_zoom, sampling != 1 ? "''" : "");
-        sl = dc.GetTextExtent(l);
-        dc.DrawText(l, center.x - sl.x - 1, center.y - rr*i - sl.y);
+        int rr = radius_max * i / 4;
+        dc.DrawCircle(center, rr);
+        wxString l = wxString::Format(_T("%g%s"), i/2.0 / m_zoom, sampling != 1.0 ? "''" : "");
+        wxSize sl = dc.GetTextExtent(l);
+        dc.DrawText(l, center.x - sl.x - 1, center.y - rr - sl.y);
     }
 
     // Draw axes
@@ -272,19 +340,11 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.DrawText(_("Dec"), center.x + 5, topEdge - 3);
 
     // Draw impacts
-    double scale = radius_max / 2 * sampling;
     unsigned int startPoint = m_maxHistorySize - m_length;
 
     if (m_nItems < m_length)
     {
         startPoint = m_maxHistorySize - m_nItems;
-    }
-
-    int dotSize = 1;
-
-    if (startPoint == m_maxHistorySize)
-    {
-        dc.DrawCircle(center, dotSize);
     }
 
     dc.SetPen(wxPen(wxColour(127,127,255),1, wxSOLID));
@@ -294,12 +354,12 @@ void TargetClient::OnPaint(wxPaintEvent& WXUNUSED(evt))
         int yimpact = center.y + m_history[i].dec * scale * m_zoom;
         if (i == m_maxHistorySize - 1)
         {
-            int lcrux = 4;
+            const int lcrux = 4;
             dc.SetPen(*wxRED_PEN);
             dc.DrawLine(ximpact + lcrux, yimpact + lcrux, ximpact - lcrux - 1, yimpact - lcrux - 1);
             dc.DrawLine(ximpact + lcrux, yimpact - lcrux, ximpact - lcrux - 1, yimpact + lcrux + 1);
         }
         else
-            dc.DrawCircle(ximpact, yimpact, dotSize);
+            dc.DrawCircle(ximpact, yimpact, 1);
     }
 }

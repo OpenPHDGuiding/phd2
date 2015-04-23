@@ -56,17 +56,15 @@ bool Camera_OpticstarPL130Class::Disconnect() {
     return false;
 }
 
-bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
-//  bool retval;
+bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     bool still_going = true;
 
     int mode = 3 * (int) Color;
-    if (img.NPixels != (FullSize.GetWidth()*FullSize.GetHeight())) {
-        if (img.Init(FullSize.GetWidth(),FullSize.GetHeight())) {
-            pFrame->Alert(_("Memory allocation error during capture"));
-            Disconnect();
-            return true;
-        }
+    if (img.Init(FullSize))
+    {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
     }
     if (OSPL130_Capture(mode,duration)) {
         pFrame->Alert(_("Cannot start exposure"));
@@ -86,21 +84,16 @@ bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, wxRect subf
         wxGetApp().Yield();
     }
     // Download
-//  rawptr = RawData;
     OSPL130_GetRawImage(0,0,FullSize.GetWidth(),FullSize.GetHeight(), (void *) img.ImageData);
     unsigned short *dataptr;
     dataptr = img.ImageData;
     // byte swap
 
-    if (recon) SubtractDark(img);
-    if (Color)
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (Color && (options & CAPTURE_RECON))
         QuickLRecon(img);
-
-    if (recon) {
-        ;
-    }
-
 
     return false;
 }
+
 #endif
