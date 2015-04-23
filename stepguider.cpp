@@ -1116,6 +1116,13 @@ bool StepGuider::IsStepGuider(void) const
     return true;
 }
 
+void StepGuider::AdjustCalibrationForScopePointing(void)
+{
+    // stepguider calibration does not change regardless of declination, side of pier,
+    // or rotator angle (assumes AO rotates with camera).
+    Debug.AddLine("stepguider: scope pointing change, no change to calibration");
+}
+
 wxPoint StepGuider::GetAoPos(void) const
 {
     return wxPoint(m_xOffset, m_yOffset);

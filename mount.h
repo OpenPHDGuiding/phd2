@@ -189,7 +189,7 @@ public:
     GraphControlPane *GetYGuideAlgorithmControlPane(wxWindow *pParent);
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
 
-    void AdjustCalibrationForScopePointing(void);
+    virtual void AdjustCalibrationForScopePointing(void);
 
     static wxString PierSideStr(PierSide side);
 
