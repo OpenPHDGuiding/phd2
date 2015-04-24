@@ -236,7 +236,12 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
     //printf("Mount Receving Switch: %s = %i\n", svp->name, svp->sp->s);
     if (strcmp(svp->name, "CONNECTION") == 0) {
 	ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
-	if (connectswitch->s == ISS_ON) Scope::Connect();
+	if (connectswitch->s == ISS_ON) {
+            Scope::Connect();
+        }
+        else {
+            if (ready) ScopeINDI::Disconnect();
+        }
     }
     
 }

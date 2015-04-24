@@ -119,7 +119,12 @@ void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
     //printf("Camera Receving Switch: %s = %i\n", svp->name, svp->sp->s);
     if (strcmp(svp->name, "CONNECTION") == 0) {
 	ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
-	Connected = (connectswitch->s == ISS_ON);
+        if (connectswitch->s == ISS_ON) {
+            Connected = true;
+        }
+        else {
+            if (ready) Disconnect(); 
+        }
     }
 }
 
