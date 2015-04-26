@@ -36,7 +36,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-04-12 16:34-0400\n"
-"PO-Revision-Date: 2015-04-23 20:48+0200\n"
+"PO-Revision-Date: 2015-04-26 10:51+0200\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1235,8 +1235,8 @@ msgid ""
 "Disconnect nonresponsive\n"
 "camera after (seconds)"
 msgstr ""
-"Deconectează nonresponsive\n"
-"camera după (secunde)"
+"Camera nu răspunde!\n"
+"Deconecteaz-o după (secunde)"
 
 #: camera.cpp:1031
 msgid "Memory allocation error during capture"
@@ -1280,7 +1280,7 @@ msgstr "Comutați urmărirea cometei pornit/oprit."
 
 #: comet_tool.cpp:99 comet_tool.cpp:101
 msgid "Comet tracking rate"
-msgstr "rata de urmărire a cometei"
+msgstr "Ritmul de urmărire a cometei"
 
 #: comet_tool.cpp:103
 msgid "Pixels/hr"
@@ -1296,15 +1296,15 @@ msgstr "Unități"
 
 #: comet_tool.cpp:107
 msgid "Tracking rate units"
-msgstr "Unitățile ratei de urmărire"
+msgstr "Unitățile ritmului de urmărire"
 
 #: comet_tool.cpp:109
 msgid "Camera (X/Y)"
-msgstr "Camera (X/Y)"
+msgstr "Cameră (X/Y)"
 
 #: comet_tool.cpp:109
 msgid "Mount (RA/Dec)"
-msgstr "Montura (RA/Dec)"
+msgstr "Montură (RA/Dec)"
 
 #: comet_tool.cpp:111
 msgid "Axes"
@@ -1312,7 +1312,7 @@ msgstr "Axe"
 
 #: comet_tool.cpp:113
 msgid "Tracking rate axes"
-msgstr "Rata axelor de urmărire (Tracking rate axes)"
+msgstr "Axele ritmului de urmărire (Tracking rate axes)"
 
 #: comet_tool.cpp:115 darks_dialog.cpp:171 guiding_assistant.cpp:367
 msgid "Start"
@@ -1320,7 +1320,7 @@ msgstr "Pornește"
 
 #: comet_tool.cpp:116
 msgid "Start training the tracking rate."
-msgstr "Începe pregătirea ratei de urmărire."
+msgstr "Începe pregătirea ritmului de urmărire."
 
 #: comet_tool.cpp:117 darks_dialog.cpp:209 guiding_assistant.cpp:372
 #: myframe.cpp:802
@@ -1333,11 +1333,11 @@ msgstr "Oprește pregătirea"
 
 #: comet_tool.cpp:138
 msgid "Rates"
-msgstr "Rate"
+msgstr "Ritm"
 
 #: comet_tool.cpp:150
 msgid "Rate Training"
-msgstr "Pregătirea ratelor"
+msgstr "Pregătirea ritmului"
 
 #: comet_tool.cpp:195
 msgid "Disable"
@@ -1526,15 +1526,15 @@ msgstr "Frame-urile Dark terminate"
 
 #: drift_tool.cpp:133
 msgid "Drift Align"
-msgstr "Deriva alinierii (Drift align)"
+msgstr "Deriva (drift) alinierii"
 
 #: drift_tool.cpp:166
 msgid "Scope Pointing"
-msgstr "Pointingul telescopului"
+msgstr "Orientarea (pointing) telescopului"
 
 #: drift_tool.cpp:175
 msgid "Meridian Offset (deg)"
-msgstr "Compensarea Meridian (grd)"
+msgstr "Compensarea Meridianului (grd)"
 
 #: drift_tool.cpp:179
 msgid "Declination (deg)"
@@ -1554,7 +1554,7 @@ msgstr "Slew"
 
 #: drift_tool.cpp:204
 msgid "Click to slew to given coordinates."
-msgstr "Apăsați pentru a roti spre coordonatele date."
+msgstr "Slew către coordonatele date."
 
 #: drift_tool.cpp:207 nudge_lock.cpp:180 nudge_lock.cpp:189
 msgid "Save"
@@ -1565,8 +1565,7 @@ msgid ""
 "Click to save these coordinates as the default location for this axis "
 "adjustment."
 msgstr ""
-"Apăsați pentru a salva aceste coordonate ca locație implicită pentru ajustarea "
-"acestei axe."
+"Salvați aceste coordonate ca locație implicită pentru ajustarea acestei axe."
 
 #: drift_tool.cpp:224 drift_tool.cpp:393
 msgid "Altitude adjustment notes"
@@ -1574,7 +1573,7 @@ msgstr "Note de ajustare a altitudinii"
 
 #: drift_tool.cpp:239
 msgid "Drift"
-msgstr "Derivă"
+msgstr "Derivă (drift)"
 
 #: drift_tool.cpp:245
 msgid "Adjust"
@@ -1582,7 +1581,7 @@ msgstr "Ajustare"
 
 #: drift_tool.cpp:371
 msgid "Drift Align - Azimuth Adjustment"
-msgstr "Deriva (drift) alinierii - Ajustarea azimutului"
+msgstr "Deriva alinierii - Ajustarea azimutului"
 
 #: drift_tool.cpp:374
 msgid ""
@@ -1593,10 +1592,10 @@ msgid ""
 "Then, click Altitude to begin Altitude adjustment."
 msgstr ""
 "Slew spre o locație aproape de Meridian și Ecuator.\n"
-"Apasă Derivă pentru a măsura deriva (driftul).\n"
-"Apasă Ajustare  și reglează azimutul monturii.\n"
-"Repetă Derivă/Ajustare până alinierea este completă.\n"
-"Apoi, apasă Altitudine pentru a începe reglajele pe altitudine."
+"Apăsați Derivă pentru măsurarea derivei (driftul).\n"
+"Apăsați Ajustare  și reglați azimutul monturii.\n"
+"Repetați Derivă/Ajustare până alinierea este completă.\n"
+"Apoi, apăsați Altitudine pentru a începe reglajele pe altitudine."
 
 #: drift_tool.cpp:379
 msgid "Azimuth adjustment notes"
@@ -1619,10 +1618,10 @@ msgid ""
 "Click Azimuth to repeat Azimuth adjustment."
 msgstr ""
 "Slew spre o locație aproape de Ecuator și de orizontul Estic/Vestic.\n"
-"Apasă Derivă pentru a măsura deriva (driftul).\n"
-"Apasă Ajustare  și reglează altitudinea monturii.\n"
-"Repetă Derivă/Ajustare  până alinierea este completă.\n"
-"Apasă Azimut pentru repetarea reglajelor în Azimut."
+"Apăsați Derivă pentru măsurarea derivei (driftul).\n"
+"Apăsați Ajustare  și reglați altitudinea monturii.\n"
+"Repetați Derivă/Ajustare  până alinierea este completă.\n"
+"Apăsați Azimut pentru repetarea reglajelor în azimut."
 
 #: drift_tool.cpp:395
 msgid "< Azimuth"
@@ -2308,7 +2307,7 @@ msgid ""
 "What percent of the measured error should be applied? Default = %.f%%, adjust "
 "if responding too much or too slowly"
 msgstr ""
-"Ce procent din eroarea măsurată ar trebui aplicată? Valoarea implicită = %f%%, "
+"Ce procent din eroarea măsurată ar trebui aplicată? Valoarea implicită = %.f%%, "
 "ajustați dacă răspunsul este prea rapid sau prea lent."
 
 #: guide_algorithm_hysteresis.cpp:232 guide_algorithm_lowpass.cpp:208
@@ -2323,7 +2322,7 @@ msgid ""
 "How many (fractional) pixels must the star move to trigger a guide pulse? "
 "Default = %.2f"
 msgstr ""
-"Câți pixeli (fracțional) trebuie sâ mute steaua pentru a declanșa un puls de "
+"Câți pixeli (fracțional) trebuie să mute steaua pentru a declanșa un puls de "
 "ghidaj? Valoarea implicită = %.2f"
 
 #: guide_algorithm_hysteresis.cpp:281
@@ -2399,7 +2398,7 @@ msgstr "Factor de agresiune, procent. Valoare implicită = %.f%%"
 
 #: guide_algorithm_resistswitch.cpp:278
 msgid "Fast switch for large deflections"
-msgstr "Comutator rapid pentru abateri mari"
+msgstr "Comutator Rapid pentru abateri mari"
 
 #: guide_algorithm_resistswitch.cpp:279
 msgid ""
@@ -2409,9 +2408,10 @@ msgid ""
 "substantial amount of backlash and PHD2 sometimes overcorrects."
 msgstr ""
 "În mod normal algoritmul de ghidaj ResistSwich așteaptă câteva frame-uri "
-"înainte de a schimba direcția. Cu Fast Switch activat, PHD2 va schimba direcția "
-"imediat dacă va sesiza o abatere mare. Activați această opțiune dacă montura "
-"dumneavoastră are un backlash substanțial și PHD2 câteodată face supracorecții."
+"înainte de a schimba direcția. Cu Comutatorul Rapid (Fast Switch) activat, PHD2 "
+"va schimba direcția imediat dacă va sesiza o abatere mare. Activați această "
+"opțiune dacă montura dumneavoastră are un backlash substanțial și PHD2 "
+"câteodată face supracorecții."
 
 #: guider.cpp:975
 msgid "Calibration manually stopped"
@@ -2454,11 +2454,11 @@ msgstr "Setările guider-ului"
 
 #: guider.cpp:1365
 msgid "Always Scale Images"
-msgstr "Guider Settings"
+msgstr "Scalează totdeauna imaginile"
 
 #: guider.cpp:1366
 msgid "Always scale images to fill window"
-msgstr "Totdeauna scalează imaginile ca să umple fereastra"
+msgstr "Totdeauna scalează imaginile pentru a umple fereastra"
 
 #: guider.cpp:1368
 msgid "Fast recenter after calibration or dither"
@@ -2562,11 +2562,11 @@ msgstr "Asistentul de ghidaj"
 
 #: guiding_assistant.cpp:247 guiding_assistant.cpp:347
 msgid "Right ascension Max Drift Rate"
-msgstr "Ascensia dreaptă Rata Maximă a Derivei (Max Drift Rate)"
+msgstr "Rata Maximă a Derivei în RA (Max Drift Rate)"
 
 #: guiding_assistant.cpp:249
 msgid "Measurement Status"
-msgstr "Statusul măsurătorii"
+msgstr "Statusul măsurătorii:"
 
 #: guiding_assistant.cpp:260
 msgid "Start time"
@@ -2590,15 +2590,15 @@ msgstr "Contorizarea probelor"
 
 #: guiding_assistant.cpp:286
 msgid "High-frequency Star Motion"
-msgstr "Mișcări ale stelei de frecvență înaltă"
+msgstr "Mișcările stelei de frecvență înaltă:"
 
 #: guiding_assistant.cpp:297
 msgid "Right ascension, RMS"
-msgstr "Ascensie dreaptă, RMS"
+msgstr "RA, RMS"
 
 #: guiding_assistant.cpp:302
 msgid "Declination, RMS"
-msgstr "Declinație, RMS"
+msgstr "Dec, RMS"
 
 #: guiding_assistant.cpp:307
 msgid "Total, RMS"
@@ -2606,27 +2606,27 @@ msgstr "Total, RMS"
 
 #: guiding_assistant.cpp:316
 msgid "Other Star Motion"
-msgstr "Alte mișcări ale stelei"
+msgstr "Alte mișcări ale stelei:"
 
 #: guiding_assistant.cpp:327
 msgid "Right ascension, Peak"
-msgstr "Ascensie dreaptă, Vârf"
+msgstr "RA, Vârf"
 
 #: guiding_assistant.cpp:332
 msgid "Declination, Peak"
-msgstr "Declinație, Vârf"
+msgstr "Dec, Vârf"
 
 #: guiding_assistant.cpp:337
 msgid "Right ascension, Peak-Peak"
-msgstr "Ascensie dreapta, Vârf-Vârf"
+msgstr "RA, Vârf-Vârf"
 
 #: guiding_assistant.cpp:342
 msgid "Right ascension Drift Rate"
-msgstr "Rata Derivei în Ascensie dreaptă"
+msgstr "Rata Derivei în RA"
 
 #: guiding_assistant.cpp:352
 msgid "Declination Drift Rate"
-msgstr "Rata Derivei în Declinație"
+msgstr "Rata Derivei în Dec"
 
 #: guiding_assistant.cpp:357
 msgid "Polar Alignment Error"
@@ -2945,7 +2945,7 @@ msgstr "Poziția rotatorului s-a schimbat, recalibrarea este necesară."
 
 #: myframe.cpp:273 myframe.cpp:350
 msgid "History"
-msgstr "Istoric"
+msgstr "Grafic"
 
 #: myframe.cpp:278 myframe.cpp:351
 msgid "Guide Stats"
@@ -3073,7 +3073,7 @@ msgstr "Rulează asistentul de ghidaj"
 
 #: myframe.cpp:451
 msgid "&Drift Align"
-msgstr "&Deriva de aliniere"
+msgstr "&Deriva alinierii"
 
 #: myframe.cpp:451
 msgid "Run the Drift Alignment tool"
@@ -3113,7 +3113,7 @@ msgstr "Activează capabilitatea serverului PHD2"
 
 #: myframe.cpp:457 nudge_lock.cpp:159
 msgid "Sticky Lock Position"
-msgstr "Poziția de blocare hotărâtă"
+msgstr "Poziția de blocare stabilită"
 
 #: myframe.cpp:457
 msgid "Keep the same lock position when guiding starts"
@@ -3564,7 +3564,7 @@ msgstr "Formatul fișierelor imaginilor jurnal"
 
 #: myframe.cpp:2177
 msgid "Dither RA only"
-msgstr "Oscilează doar RA"
+msgstr "Oscilează (dither) doar RA"
 
 #: myframe.cpp:2178
 msgid "Constrain dither to RA only?"
@@ -3647,7 +3647,7 @@ msgstr "Locația fișierului jurnal:"
 msgid ""
 "Folder for guide and debug logs; empty string to restore the default location"
 msgstr ""
-"Dosarul pentru jurnalele de ghidaj și de depanare; nu puneți nici-o valoare "
+"Dosarul pentru fișierele jurnal de ghidaj/depanare; nu puneți nici-o valoare "
 "pentru a restaura locația implicită"
 
 #: myframe.cpp:2256
@@ -3944,8 +3944,8 @@ msgid ""
 "Sticky lock position will not follow the star when guiding is stopped and "
 "restarted, or after calibration completes"
 msgstr ""
-"Poziția de blocare va urmări steaua când ghidajul este oprit și repornit, sau "
-"după ce calibrarea s-a încheiat"
+"Poziția de blocare stabilită va urmări steaua când ghidajul este oprit și "
+"repornit, sau după ce calibrarea s-a încheiat"
 
 #: nudge_lock.cpp:165
 msgid "Lock Pos:"
@@ -4016,7 +4016,7 @@ msgstr "Vrăjitor pentru un profil nou -"
 
 #: profile_wizard.cpp:112
 msgid "More Info"
-msgstr "Mai multe informații"
+msgstr "Mai multe informații:"
 
 #: profile_wizard.cpp:122
 msgid "Gear"
@@ -4136,12 +4136,12 @@ msgid ""
 "are available for cases where ASCOM is not available or isn't well supported by "
 "mount firmware."
 msgstr ""
-"Selectați interfața monturii din listă. Acasta va determina cum v-a mișca PHD2-"
-"ul telescopul și cum va achiziționa informațiile despre pointing. Pentru "
-"majoritatea monturilor moderne, interfața ASCOM este o alegere bună dacă rulați "
-"sistemul de operare MS Windows. Celelate interfețe sunt disponibile pentru "
-"cazurile în care ASCOM nu este disponibil sau nu este bine suportat de către "
-"firmware-ul monturii. "
+"Selectați interfața monturii din listă. Aceasta va determina cum v-a mișca PHD2-"
+"ul telescopul și cum va achiziționa informațiile despre orientare (pointing). "
+"Pentru majoritatea monturilor moderne, interfața ASCOM este o alegere bună dacă "
+"rulați sistemul de operare MS Windows. Celelate interfețe sunt disponibile "
+"pentru cazurile în care ASCOM nu este disponibil sau nu este bine suportat de "
+"către firmware-ul monturii. "
 
 #: profile_wizard.cpp:231
 msgid ""
@@ -4151,11 +4151,12 @@ msgid ""
 "Mount' connection that does provide pointing information.  The Aux Mount "
 "interface will be used only for that purpose and not for sending guide commands."
 msgstr ""
-"Interfața monturii selectată în pasul anterior nu furnizează informașii despre "
-"pointing, așa că PHD2 nu va putea să ajusteze automat ghidajul pentru partea de "
-"pilon și declinație. Puteți activa aceste caracteristici alegând o conexiune "
-"'Montură Aux' care furnizează informații despre pointing. Interfața Montură Aux "
-"va fi folosită doar în acest scop și nu pentru a trimite comenzi de ghidare."
+"Interfața monturii selectată în pasul anterior nu furnizează informații despre "
+"orientare (pointing), așa că PHD2 nu va putea să ajusteze automat ghidajul "
+"pentru partea de pilon și declinație. Puteți activa aceste caracteristici "
+"alegând o conexiune 'Montură Aux' care furnizează informații despre orientare. "
+"Interfața Montură Aux va fi folosită doar în acest scop și nu pentru a trimite "
+"comenzi de ghidare."
 
 #: profile_wizard.cpp:236
 msgid ""
@@ -4210,7 +4211,7 @@ msgstr "Bun venit la vrăjitorul PHD2 'prima lumină'"
 
 #: profile_wizard.cpp:337
 msgid "Choose a Guide Camera"
-msgstr "Alegeți o cameră de ghidaj"
+msgstr " Alegeți o cameră de ghidaj"
 
 #: profile_wizard.cpp:339
 msgid "Guide Camera:"
@@ -4226,7 +4227,7 @@ msgstr ""
 
 #: profile_wizard.cpp:354
 msgid "Choose a Mount Connection"
-msgstr "Alegeți conexiunea cu montura"
+msgstr " Alegeți conexiunea cu montura"
 
 #: profile_wizard.cpp:356
 msgid "Mount:"
@@ -4242,7 +4243,7 @@ msgstr ""
 
 #: profile_wizard.cpp:371
 msgid "Choose an Auxillary Mount Connection (optional)"
-msgstr "Alegeți o conexiune auxiliară pentru montură (opțional)"
+msgstr " Alegeți o conexiune auxiliară pentru montură (opțional)"
 
 #: profile_wizard.cpp:372
 msgid "Aux Mount:"
@@ -4253,12 +4254,12 @@ msgid ""
 "Since your primary mount connection does not report pointing position, you may "
 "want to choose an 'Aux Mount' connection"
 msgstr ""
-"Deoarece conexiunea primară a montură nu raoprtează poziția de pointing, poate "
-"doriți să alegeți conexiunea 'Montura AUX'"
+"Deoarece conexiunea primară a montură nu raoprtează poziția de orientare "
+"(pointing), poate doriți să alegeți conexiunea 'Montura AUX'"
 
 #: profile_wizard.cpp:380
 msgid "Choose an Adaptive Optics Device (optional)"
-msgstr "Alegeți un dispozitiv cu (AO) optică adaptativă (opțional)"
+msgstr " Alegeți un dispozitiv cu (AO) optică adaptativă (opțional)"
 
 #: profile_wizard.cpp:381
 msgid "AO:"
@@ -4270,7 +4271,7 @@ msgstr "Specificați dacă doriți dispozitivul cu optică adaptativă"
 
 #: profile_wizard.cpp:396
 msgid "Finish Creating Your New Profile"
-msgstr "Încheiați crearea noului profil"
+msgstr " Încheiați crearea noului profil"
 
 #: profile_wizard.cpp:399
 msgid "Finish"
@@ -4317,8 +4318,8 @@ msgid ""
 "Click to re-acquire the master dark frames needed to compute an initial bad-"
 "pixel map"
 msgstr ""
-"Apăsați pentru a reachiziționa Frame-urile Master Dark utilizate la calcularea "
-"Hărții Pixelilor Defecți inițiale"
+"Reachiziționați Frame-urile Master Dark utilizate la calcularea Hărții "
+"Pixelilor Defecți inițiale"
 
 #: Refine_DefMap.cpp:80
 msgid "Show Master Dark Details"
@@ -4329,8 +4330,8 @@ msgid ""
 "Click to display detailed statistics of master dark frame used to compute bad-"
 "pixel map"
 msgstr ""
-"Apasă pentru a afișa statistici detaliate ale Frame-urilor Master Dark folosite "
-"pentru calcularea Hărții Pixelilor Defecți"
+"Afișați statistici detaliate ale Frame-urilor Master Dark folosite pentru "
+"calcularea Hărții Pixelilor Defecți"
 
 #: Refine_DefMap.cpp:85
 msgid "Show defect pixels"
@@ -4568,7 +4569,7 @@ msgstr ""
 
 #: scope.cpp:777
 msgid "The RA and Dec rates vary by an unexpected amount"
-msgstr "Ratele RA și dec variază cu o valoare neașteptată"
+msgstr "Ratele RA și Dec variază cu o valoare neașteptată"
 
 #: scope.cpp:784
 msgid "Details..."
@@ -4789,7 +4790,7 @@ msgstr "Profil"
 
 #: star_profile.cpp:129
 msgid "Mid row"
-msgstr "Rând mijlociu"
+msgstr ""
 
 #: star_profile.cpp:133
 msgid "Avg row"
@@ -5058,8 +5059,9 @@ msgid ""
 "Select the dither amount type. Imaging applications have the option of sending "
 "each of these dither amounts to PHD."
 msgstr ""
-"Selectează mărimea oscilației. Aplicațiile de captură au opțiunea de a trimite "
-"fiecare din aceste mărimi ale oscilației către PHD2. "
+"Selectează mărimea tipului de oscilație (dither). Aplicațiile de captură au "
+"opțiunea de a trimite fiecare din aceste mărimi ale oscilației (dither amounts) "
+"către PHD2. "
 
 #: testguide.cpp:119
 msgid "Scale"
@@ -5071,10 +5073,10 @@ msgid ""
 "to get the actual dither amount. Changing the value here affects both manual "
 "dithering and dithering from imaging applications connected to PHD."
 msgstr ""
-"Scala factorului pentru dithering. Mărimea oscilației este multiplicată cu "
-"această valoare pentru a obține mărimea actuală a oscilației. Schimbând "
-"valorile aici influențează atât ditheringul manual cât și ditheringul "
-"aplicațiilor de captură conectate la PHD2."
+"Scara factorului pentru oscilație (dithering). Mărimea oscilației este "
+"multiplicată cu această valoare pentru a obține mărimea actuală a oscilației. "
+"Schimbând valorile aici influențează atât oscilația (dithering) manuală cât și "
+"oscilația (dithering) trimisă de aplicațiile de captură conectate la PHD2."
 
 #: testguide.cpp:127
 msgid "RA Only"
@@ -5086,15 +5088,16 @@ msgid ""
 "and dithering from imaging applications connected to PHD."
 msgstr ""
 "Oscilează (dither) doar pe axa RA. Schimbând valorile aici influențează atât "
-"ditheringul manual cât și ditheringul aplicațiilor de captură conectate la PHD2."
+"oscilația (dithering) manuală cât și oscilația (dithering) trimisă de "
+"aplicațiile de captură conectate la PHD2."
 
 #: testguide.cpp:133
 msgid ""
 "Move the guider lock position a random amount on each axis, up to the maximum "
 "value determined by the dither type and the dither scale factor."
 msgstr ""
-"Mișcă poziția de blocare a guiderului cu valori aleatorii pe fiecare axă, "
-"aproape de valoarea maximă determinată de tipul de oscilație și de scala "
+"Mișcă poziția de blocare a guider-ului cu valori aleatorii pe fiecare axă, "
+"aproape de valoarea maximă determinată de tipul de oscilație și de scara "
 "factorului de oscilație (the dither scale factor)."
 
 #: usImage.cpp:354
