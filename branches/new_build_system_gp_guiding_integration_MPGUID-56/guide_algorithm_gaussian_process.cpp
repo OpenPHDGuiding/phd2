@@ -263,7 +263,7 @@ static const int    DefaultNbMinPointsForInference = 5; // minimal number of poi
 
 static const double DefaultGaussianNoiseHyperparameter = std::sqrt(2)*0.55*0.2; // default Gaussian process noise
 static const double DefaultLengthScalePerKer           = 5.234;                 // length-scale of the periodic kernel
-static const double DefaultPeriodLengthPerKer          = 300;                   // P_p, period-length of the periodic kernel
+static const double DefaultPeriodLengthPerKer          = 396;                   // P_p, period-length of the periodic kernel
 static const double DefaultSignalVariancePerKer        = 0.355;                 // signal-variance of the periodic kernel
 static const double DefaultLengthScaleSEKer            = 200;                   // length-scale of the SE-kernel
 
