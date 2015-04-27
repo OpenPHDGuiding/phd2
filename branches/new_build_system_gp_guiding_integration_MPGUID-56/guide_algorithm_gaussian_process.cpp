@@ -573,7 +573,7 @@ void GuideGaussianProcess::HandleMeasurements(double input)
 void GuideGaussianProcess::HandleModifiedMeasurements(double input)
 {
     // If there is no previous measurement, a random one is generated.
-    if(parameters->get_number_of_measurements() == 0)
+    if(parameters->get_number_of_measurements() <= 1)
     {
         //The daytime indoor measurement noise SD is 0.25-0.35
         const double indoor_noise_standard_deviation = 0.25;
@@ -598,8 +598,8 @@ void GuideGaussianProcess::HandleModifiedMeasurements(double input)
 
 double GuideGaussianProcess::result(double input)
 {
-    HandleTimestamps();
     HandleMeasurements(input);
+    HandleTimestamps();
     HandleModifiedMeasurements(input);
 
     /*
