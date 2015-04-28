@@ -390,10 +390,6 @@ Eigen::VectorXd GP::optimizeHyperParameters(int number_of_linesearches) const {
   GP this_copy(*this);
   GPObjective gpo(&this_copy);
 
-
-
-
-
   // optimisation
   bfgs_optimizer::BFGS bfgs(&gpo, number_of_linesearches);
 

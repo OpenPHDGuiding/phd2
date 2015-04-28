@@ -30,7 +30,7 @@
  */
 
 /*!@file
- * @author  Klenske <edgar.klenske@tuebingen.mpg.de>
+ * @author  Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
  * @author  Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de>
  *
  */
@@ -39,7 +39,6 @@
 #include <vector>
 #include <cstdint>
 #include <iostream>
-
 
 #include "parameter_priors.h"
 #include "math_tools.h"
@@ -77,6 +76,39 @@ Eigen::VectorXd GammaPrior::getParameters() const {
   result << (k_-1)*theta_,      // convert back to the mode
             (k_*theta_*theta_); // convert back to the variance
   return result;
+}
+
+LogisticPrior::LogisticPrior() : center_(0), steepness_(0) { }
+
+LogisticPrior::LogisticPrior(const Eigen::VectorXd& parameters) : center_(0), steepness_(0) {
+    // need to do this with the set function since some conversion is done.
+    setParameters(parameters);
+}
+
+double LogisticPrior::neg_log_prob(double hyp) const {
+    // note that hyp is encoded as log(hyp)
+
+    double prob = 1 / (1 + std::exp(-steepness_*(std::exp(hyp) - center_)));
+    prob += std::numeric_limits<double>::min(); // prevent it from becoming zero.
+    return -std::log(prob);
+}
+
+double LogisticPrior::neg_log_prob_derivative(double hyp) const {
+    // note that hyp is encoded as log(hyp).
+    double sig = 1 / (1 + std::exp(-steepness_*(std::exp(hyp) - center_)));
+    double ddx_sig = sig*(1 - sig)*(steepness_*std::exp(hyp));
+    return - ddx_sig / sig;
+}
+
+void LogisticPrior::setParameters(const Eigen::VectorXd& params) {
+    center_ = params[0];
+    steepness_ = params[1];
+}
+
+Eigen::VectorXd LogisticPrior::getParameters() const {
+    Eigen::VectorXd result(2);
+    result << center_, steepness_;
+    return result;
 }
 
 }  // namespace parameter_priors

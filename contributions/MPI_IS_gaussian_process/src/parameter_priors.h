@@ -135,5 +135,50 @@ public:
     return new GammaPrior(*this);
   }
 };
-}  // namespace covariance_functions
+
+/*! Logistic Prior, think of it as a soft constraint
+*
+* This prior allows for anything, but the probability on one 
+* side of the center drops to zero logarithmically.
+* @f[
+* \text{prior}(x,c,s) = \frac{1}{1+\text{exp}(-s(x-c)}
+* @f]
+*
+* Since this prior also needs support for negative numbers in s,
+* the parameters are given as regular numbers. Only the hyperparameter
+* is in log domain.
+*/
+class LogisticPrior : public ParameterPrior {
+private:
+    double center_;
+    double steepness_;
+    LogisticPrior();
+
+public:
+
+    virtual ~LogisticPrior() {}
+    explicit LogisticPrior(const Eigen::VectorXd& parameters);
+
+    virtual double neg_log_prob(double hyperParameter) const;
+    virtual double neg_log_prob_derivative(double hyperParameter) const;
+
+    /**
+    * Method to set the prior parameters. The first element is the center
+    * of the logistic function, the second element is the steepness.
+    */
+    virtual void setParameters(const Eigen::VectorXd& params);
+
+    //! The parameters are the center and the steepness.
+    virtual Eigen::VectorXd getParameters() const;
+
+    // Returns the number of parameters.
+    virtual int getParameterCount() const {
+        return 2;
+    }
+
+    virtual ParameterPrior* clone() const {
+        return new LogisticPrior(*this);
+    }
+};
+}  // namespace parameter_priors
 #endif  // ifndef PARAMETER_PRIORS

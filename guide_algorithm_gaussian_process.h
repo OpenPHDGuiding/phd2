@@ -1,9 +1,9 @@
 //
 //  guide_gaussian_process.h
-//  PHD
+//  PHD2 Guiding
 //
-//  Created by Stephan Wenninger
-//  Copyright 2014, Max Planck Society.
+//  Created by Stephan Wenninger and Edgar Klenske.
+//  Copyright 2014-2015, Max Planck Society.
 
 /*
  *  This source code is distributed under the following "BSD" license
@@ -49,6 +49,7 @@ private:
 
     void HandleTimestamps();
     void HandleMeasurements(double input);
+    void HandleControls(double control_input);
     void HandleModifiedMeasurements(double input);
 
 protected:

@@ -672,7 +672,8 @@ void GuideGaussianProcess::HandleModifiedMeasurements(double input)
          */
         parameters->get_last_point().modified_measurement = input // the current displacement should have been corrected for
             + parameters->get_second_last_point().control // we already did control in the last step, we have to add this
-            - parameters->get_second_last_point().measurement; // if we previously weren't at zero, we have to subtract the offset
+            - parameters->get_second_last_point().measurement // if we previously weren't at zero, we have to subtract the offset
+            + parameters->get_second_last_point().modified_measurement; // this is the integration step
     }
 }
 
