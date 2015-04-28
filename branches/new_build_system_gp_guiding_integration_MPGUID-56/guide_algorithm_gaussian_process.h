@@ -36,6 +36,7 @@
 #define GUIDE_GAUSSIAN_PROCESS
 
 #include "guide_algorithm.h"
+#include "UDPGuidingInteraction.h"
 
 class wxStopWatch;
 
@@ -50,6 +51,8 @@ private:
     void HandleTimestamps();
     void HandleMeasurements(double input);
     void HandleModifiedMeasurements(double input);
+
+    UDPGuidingInteraction udpInteraction_;
 
 protected:
 

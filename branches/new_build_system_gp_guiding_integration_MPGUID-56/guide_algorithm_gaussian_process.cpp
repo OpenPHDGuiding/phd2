@@ -34,7 +34,7 @@
 
 #include "phd.h"
 
-//#include "UDPGuidingInteraction.h"
+#include "UDPGuidingInteraction.h"
 
 #include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
@@ -273,6 +273,7 @@ static const int    DefaultNbPointsBetweenOptimisation = 10;                    
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
+      udpInteraction_("localhost", "1308", "1309"),
       parameters(0)
 {
     parameters = new gp_guide_parameters();
@@ -296,7 +297,6 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     v_hyperparameters[4] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_se_kern",  DefaultLengthScaleSEKer);
 
     SetGPHyperparameters(v_hyperparameters);
-
 
     reset();
 }
@@ -615,9 +615,19 @@ double GuideGaussianProcess::result(double input)
 
     // This is the Code sending the circular buffers to Matlab:
 
-#if 0
-    double* timestamp_data = parameters->timestamps_.getEigenVector()->data();
-    double* modified_measurement_data = parameters->modified_measurements_.getEigenVector()->data();
+#if 1
+
+    Eigen::VectorXd timestamps(parameters->get_number_of_measurements());
+    Eigen::VectorXd measurements(parameters->get_number_of_measurements());
+
+    for (size_t i = 0; i < parameters->get_number_of_measurements(); i++)
+    {
+        timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
+        measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+    }
+
+    double* timestamp_data = timestamps.data();
+    double* modified_measurement_data = measurements.data();
     double result;
     double wait_time = 100;
 
@@ -627,26 +637,26 @@ double GuideGaussianProcess::result(double input)
 
     // Send the input
     double input_buf[] = { input };
-    sent = parameters->udpInteraction.SendToUDPPort(input_buf, 8);
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
+    sent = udpInteraction_.SendToUDPPort(input_buf, 8);
+    received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
     wxMilliSleep(wait_time);
 
     // Send the size of the buffer
-    double size = parameters->timestamps_.getEigenVector()->size();
+    double size = timestamps.size();
     double size_buf[] = { size };
-    sent = parameters->udpInteraction.SendToUDPPort(size_buf, 8);
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
+    sent = udpInteraction_.SendToUDPPort(size_buf, 8);
+    received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
     wxMilliSleep(wait_time);
 
     // Send modified measurements
-    sent = parameters->udpInteraction.SendToUDPPort(modified_measurement_data, size * 8);
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
+    sent = udpInteraction_.SendToUDPPort(modified_measurement_data, size * 8);
+    received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
     wxMilliSleep(wait_time);
 
     // Send timestamps
-    sent = parameters->udpInteraction.SendToUDPPort(timestamp_data, size * 8);
+    sent = udpInteraction_.SendToUDPPort(timestamp_data, size * 8);
     // Receive the final control signal
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
+    received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
 
     return result;
 #endif
