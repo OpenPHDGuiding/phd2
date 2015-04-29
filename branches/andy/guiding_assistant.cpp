@@ -113,6 +113,280 @@ inline static void StartRow(int& row, int& column)
     column = 0;
 }
 
+
+// Encapsulated struct for handling Dec backlash measurement
+struct BacklashTool
+{
+    enum BLT_STATE
+    {
+        BLT_STATE_INITIALIZE,
+        BLT_STATE_CLEAR_NORTH,
+        BLT_STATE_STEP_NORTH,
+        BLT_STATE_STEP_SOUTH,
+        BLT_STATE_ABORTED,
+        BLT_STATE_TEST_CORRECTION,
+        BLT_STATE_COMPLETED
+    } m_bltState;
+
+    enum MeasurementConstants               // To control the behavior of the measurement process
+    {
+        BACKLASH_MIN_COUNT = 3,
+        BACKLASH_EXPECTED_DISTANCE = 4,
+        MAX_CLEARING_STEPS = 10,
+        NORTH_PULSE_COUNT = 4,
+        NORTH_PULSE_SIZE = 500,
+        TRIAL_TOLERANCE = 2
+    };
+
+    int m_pulseWidth;
+    int m_stepCount;
+    int m_acceptedMoves;
+    double m_lastClearRslt;
+    double m_lastDecGuideRate;
+    double m_backlashResultPx;                // units of pixels
+    int m_backlashResultSec;
+    double m_northRate;
+    PHD_Point m_lastMountLocation;
+    PHD_Point m_markerPoint;
+    PHD_Point m_endSouth;
+    wxString m_lastStatus;
+    Mount *m_theScope;
+
+    BacklashTool();
+    void StartMeasurement();
+    void StopMeasurement();
+    void DecMeasurementStep(PHD_Point currentLoc);
+    void CleanUp();
+
+};
+
+// -------------------  BacklashTool Implementation
+BacklashTool::BacklashTool()
+{
+    Calibration lastCalibration;
+
+    if (pMount->GetLastCalibrationParams(&lastCalibration))
+    {
+        m_lastDecGuideRate = lastCalibration.yRate;
+        m_bltState = BLT_STATE_INITIALIZE;
+    }
+    else
+    {
+        m_bltState = BLT_STATE_ABORTED;
+        m_lastStatus = _("Backlash measurement cannot be run - please re-run your mount calibration");
+        Debug.AddLine("BLT: Could not get calibration data");
+    }
+    m_backlashResultPx = 0;
+    m_backlashResultSec = 0;
+
+}
+
+void BacklashTool::StartMeasurement()
+{
+    if (pSecondaryMount)
+        m_theScope = pSecondaryMount;
+    else
+        m_theScope = pMount;
+    m_bltState = BLT_STATE_INITIALIZE;
+    DecMeasurementStep(pFrame->pGuider->CurrentPosition());
+}
+
+void BacklashTool::StopMeasurement()
+{
+    m_bltState = BLT_STATE_ABORTED;
+    DecMeasurementStep(pFrame->pGuider->CurrentPosition());
+}
+
+void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
+{
+    double decDelta = 0.;
+    // double fakeDeltas []= {0, -5, -2, 2, 4, 5, 5, 5, 5 };
+    PHD_Point currMountLocation;
+    try
+    {
+        if (m_theScope->TransformCameraCoordinatesToMountCoordinates(currentCamLoc, currMountLocation))
+            throw ERROR_INFO("BLT: CamToMount xForm failed");
+        if (m_bltState != BLT_STATE_INITIALIZE)
+        {
+            decDelta = currMountLocation.Y - m_markerPoint.Y;
+            //if (m_bltState == BLT_STATE_CLEAR_NORTH)                            // GET THIS OUT OF HERE
+            //    decDelta = fakeDeltas[wxMin(m_stepCount, 7)];
+        }
+        switch (m_bltState)
+        {
+        case BLT_STATE_INITIALIZE:
+            m_stepCount = 0;
+            m_markerPoint = currMountLocation;
+            // Compute pulse size for clearing backlash - just use the last known guide rate
+            m_pulseWidth = BACKLASH_EXPECTED_DISTANCE * 1.25 / m_lastDecGuideRate;      // px/px_per_mSec, bump it to sidestep near misses
+            m_acceptedMoves = 0;
+            m_lastClearRslt = 0;
+            // Get this state machine in synch with the guider state machine - let it drive us, starting with backlash clearing step
+            m_bltState = BLT_STATE_CLEAR_NORTH;
+            m_theScope->SetGuidingEnabled(true);
+            pFrame->pGuider->EnableMeasurementMode(true);                   // Measurement results now come to us
+            break;
+
+        case BLT_STATE_CLEAR_NORTH:
+            // Want to see the mount moving north for 3 consecutive moves of >= expected distance pixels
+            if (m_stepCount == 0)
+            {
+                // Get things moving with the first clearing pulse
+                Debug.AddLine(wxString::Format("BLT starting north backlash clearing using pulse width of %d", m_pulseWidth));
+                pFrame->ScheduleCalibrationMove(m_theScope, NORTH, m_pulseWidth);
+                m_stepCount = 1;
+                m_lastStatus = wxString::Format("Clearing north backlash, step %d", m_stepCount);
+                break;
+            }
+            if (fabs(decDelta) >= BACKLASH_EXPECTED_DISTANCE)
+            {
+                if (m_acceptedMoves == 0 || (m_lastClearRslt * decDelta) > 0)    // Just starting or still moving in same direction
+                {
+                    m_acceptedMoves++;
+                    Debug.AddLine(wxString::Format("BLT accepted clearing move of %0.2f", decDelta));
+                }
+                else
+                {
+                    m_acceptedMoves = 0;            // Reset on a direction reversal
+                    Debug.AddLine(wxString::Format("BLT rejected clearing move of %0.2f, direction reversal", decDelta));
+                }
+
+            }
+            else
+                Debug.AddLine(wxString::Format("BLT backlash clearing move of %0.2f px was not large enough", decDelta));
+            if (m_acceptedMoves < BACKLASH_MIN_COUNT)                    // More work to do
+            {
+                if (m_stepCount < MAX_CLEARING_STEPS)
+                {
+                    pFrame->ScheduleCalibrationMove(m_theScope, NORTH, m_pulseWidth);
+                    m_stepCount++;
+                    m_markerPoint = currMountLocation;
+                    m_lastClearRslt = decDelta;
+                    m_lastStatus = wxString::Format("Clearing north backlash, step %d", m_stepCount);
+                    Debug.AddLine(wxString::Format("BLT: %s, LastDecDelta = %0.2f px", m_lastStatus, decDelta));
+                    break;
+                }
+                else
+                {
+                    m_lastStatus = _("Could not clear north backlash - test failed");
+                    throw ERROR_INFO("BLT: Could not clear N backlash");
+                }
+            }
+            else                                        // Got our 3 consecutive moves - press ahead
+            {
+                m_markerPoint = currMountLocation;            // Marker point at start of big Dec move north
+                m_bltState = BLT_STATE_STEP_NORTH;
+                // Want to give the mount 4 pulses north at 500 mSec, regardless of image scale. Reduce pulse width only if it would blow us out of the tracking region
+                m_pulseWidth = wxMin((int)NORTH_PULSE_SIZE, (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
+                m_stepCount = 0;
+                Debug.AddLine(wxString::Format("BLT: Starting north moves at Dec=%0.2f", currMountLocation.Y));
+                // falling through to start moving north            
+            }
+
+        case BLT_STATE_STEP_NORTH:
+            if (m_stepCount < NORTH_PULSE_COUNT)
+            {
+                m_lastStatus = wxString::Format("Moving North for %d mSec, step %d", m_pulseWidth, m_stepCount + 1);
+                Debug.AddLine(wxString::Format("BLT: %s, DecLoc = %0.2f", m_lastStatus, currMountLocation.Y));
+                pFrame->ScheduleCalibrationMove(m_theScope, NORTH, m_pulseWidth);
+                m_stepCount++;
+                break;
+            }
+            else
+            {
+                Debug.AddLine(wxString::Format("BLT: North pulses ended at Dec location %0.2f, DecDelta=%0.2f px", currMountLocation.Y, decDelta));
+                m_northRate = fabs(decDelta / (4.0 * m_pulseWidth));
+                m_stepCount = 0;
+                m_bltState = BLT_STATE_STEP_SOUTH;
+                // falling through to moving back south
+            }
+
+        case BLT_STATE_STEP_SOUTH:
+            if (m_stepCount < NORTH_PULSE_COUNT)
+            {
+                m_lastStatus = wxString::Format("Moving South for %d mSec, step %d", m_pulseWidth, m_stepCount + 1);
+                Debug.AddLine(wxString::Format("BLT: %s, DecLoc = %0.2f", m_lastStatus, currMountLocation.Y));
+                pFrame->ScheduleCalibrationMove(m_theScope, SOUTH, m_pulseWidth);
+                m_stepCount++;
+                break;
+            }
+            // Now see where we ended up - fall through to testing this correction
+            Debug.AddLine(wxString::Format("BLT: South pulses ended at Dec location %0.2f", currMountLocation.Y));
+            m_endSouth = currMountLocation;
+            m_bltState = BLT_STATE_TEST_CORRECTION;
+            m_stepCount = 0;
+            // fall through
+
+        case BLT_STATE_TEST_CORRECTION:
+            if (m_stepCount == 0)
+            {
+                // decDelta contains the nominal backlash amount
+                m_backlashResultPx = fabs(decDelta);
+                m_backlashResultSec = (int)(m_backlashResultPx / m_northRate);          // our north rate is probably better than the calibration rate
+                Debug.AddLine(wxString::Format("BLT: Backlash amount is %0.2f px", m_backlashResultPx));
+                m_lastStatus = wxString::Format(_("Issuing test backlash correction of %d mSec"), m_backlashResultSec);
+                Debug.AddLine(m_lastStatus);
+
+                // This should put us back roughly to where we issued the big north pulse
+                pFrame->ScheduleCalibrationMove(m_theScope, SOUTH, m_backlashResultSec);   
+                m_stepCount++;
+                break;
+            }
+            // See how close we came, maybe fine-tune a bit
+            Debug.AddLine(wxString::Format(_("BLT: Trial backlash pulse resulted in net DecDelta = %0.2f px, Dec Location %0.2f"), decDelta, currMountLocation.Y));
+            if (fabs(decDelta) > TRIAL_TOLERANCE)
+            {
+                int pulse_delta = fabs(currMountLocation.Y - m_endSouth.Y);
+                if ((m_endSouth.Y - m_markerPoint.Y) * decDelta < 0)                // Sign change, went too far
+                {
+                    m_backlashResultSec *= m_backlashResultPx / pulse_delta;
+                    Debug.AddLine(wxString::Format("BLT: Trial backlash resulted in overshoot - adjusting pulse size by %0.2f", m_backlashResultPx / pulse_delta));
+                }
+                else
+                {
+                    double corr_factor = (m_backlashResultPx / pulse_delta - 1.0) * 0.5 + 1.0;          // apply 50% of the correction to avoid over-shoot
+                    m_backlashResultSec *= corr_factor;
+                    Debug.AddLine(wxString::Format("BLT: Trial backlash resulted in under-correction - adjusting pulse size by %0.2f", corr_factor));
+                }
+            }
+            else
+                Debug.AddLine("BLT: Initial backlash pulse resulted in final delta of < 2 px");
+            m_bltState = BLT_STATE_COMPLETED;
+            // fall through
+
+        case BLT_STATE_COMPLETED:
+
+            m_lastStatus = _("Measurement complete");
+            Debug.AddLine(wxString::Format("BLT: Starting Dec position at %0.2f, Ending Dec position at %0.2f", m_markerPoint.Y, currMountLocation.Y));
+            CleanUp();
+            break;
+
+        case BLT_STATE_ABORTED:
+            m_lastStatus = _("Measurement halted");
+            Debug.AddLine("BLT: measurement process halted by user");
+            CleanUp();
+            break;
+
+        }                       // end of switch on state
+
+
+    }
+    catch (wxString msg)
+    {
+        m_bltState = BLT_STATE_ABORTED;
+        m_lastStatus = _("Measurement encountered an error: " + msg);
+        Debug.AddLine("BLT: " + m_lastStatus);
+        CleanUp();
+    }
+}
+
+void BacklashTool::CleanUp()
+{
+    pFrame->pGuider->EnableMeasurementMode(false);
+}
+
+//------------------------------  End of BacklashTool implementation
+
 // Encapsulated struct for implementing the dialog box
 struct GuidingAsstWin : public wxDialog
 {
@@ -134,6 +408,7 @@ struct GuidingAsstWin : public wxDialog
     wxSizer *m_recommendgrid;
     wxBoxSizer *m_vSizer;
     wxStaticBoxSizer *m_recommend_group;
+    wxCheckBox *m_backlashCB;
 
     wxGridCellCoords m_timestamp_loc;
     wxGridCellCoords m_starmass_loc;
@@ -161,12 +436,16 @@ struct GuidingAsstWin : public wxDialog
     wxGridCellCoords m_pae_loc;
     wxGridCellCoords m_ra_peak_drift_px_loc;
     wxGridCellCoords m_ra_peak_drift_as_loc;
+    wxGridCellCoords m_backlash_px_loc;
+    wxGridCellCoords m_backlash_sec_loc;
     wxButton *m_raMinMoveButton;
     wxButton *m_decMinMoveButton;
+    wxButton *m_decBacklashButton;
     wxStaticText *m_ra_msg;
     wxStaticText *m_dec_msg;
     wxStaticText *m_snr_msg;
     wxStaticText *m_pae_msg;
+    wxStaticText *m_backlash_msg;
     double m_ra_val_rec;  // recommended value
     double m_dec_val_rec; // recommended value
 
@@ -191,6 +470,8 @@ struct GuidingAsstWin : public wxDialog
     bool m_saveSecondaryMountEnabled;
     bool m_measurementsTaken;
 
+    bool m_measuringBacklash;
+
     GuidingAsstWin();
     ~GuidingAsstWin();
 
@@ -202,6 +483,7 @@ struct GuidingAsstWin : public wxDialog
     void OnStop(wxCommandEvent& event);
     void OnRAMinMove(wxCommandEvent& event);
     void OnDecMinMove(wxCommandEvent& event);
+    void OnDecBacklash(wxCommandEvent& event);
 
     wxStaticText *AddRecommendationEntry(const wxString& msg, wxObjectEventFunction handler, wxButton **ppButton);
     wxStaticText *AddRecommendationEntry(const wxString& msg);
@@ -209,6 +491,11 @@ struct GuidingAsstWin : public wxDialog
     void FillInstructions(DialogState eState);
     void MakeRecommendations();
     void LogResults();
+    void BacklashStep(PHD_Point camLoc);
+    void EndBacklashTest(bool normal);
+    void BacklashError();
+
+    BacklashTool* pBacklashTool;
 };
 
 static void MakeBold(wxControl *ctrl)
@@ -315,7 +602,7 @@ GuidingAsstWin::GuidingAsstWin()
     // Start of "Other" (peak and drift) group
     wxStaticBoxSizer *other_group = new wxStaticBoxSizer(wxVERTICAL, this, _("Other Star Motion"));
     m_othergrid = new wxGrid(this, wxID_ANY);
-    m_othergrid->CreateGrid(7, 3);
+    m_othergrid->CreateGrid(8, 3);
     m_othergrid->GetGridWindow()->Bind(wxEVT_MOTION, &GuidingAsstWin::OnMouseMove, this, wxID_ANY, wxID_ANY, new GridTooltipInfo(m_othergrid, 3));
     m_othergrid->SetRowLabelSize(1);
     m_othergrid->SetColLabelSize(1);
@@ -354,12 +641,21 @@ GuidingAsstWin::GuidingAsstWin()
     m_dec_drift_as_loc.Set(row, col++);
 
     StartRow(row, col);
+    m_othergrid->SetCellValue(_("Declination Backlash"), row, col++);
+    m_backlash_px_loc.Set(row, col++);
+    m_backlash_sec_loc.Set(row, col++);
+
+    StartRow(row, col);
     m_othergrid->SetCellValue(_("Polar Alignment Error"), row, col++);
     m_pae_loc.Set(row, col++);
 
     other_group->Add(m_othergrid);
     m_vSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of peak and drift group
+
+    m_backlashCB = new wxCheckBox(this, wxID_ANY, _("Measure Backlash"));
+    m_backlashCB->SetValue(true);
+    m_vSizer->Add(m_backlashCB, wxSizerFlags(0).Border(wxALL, 8).Center());
 
     wxBoxSizer *btnSizer = new wxBoxSizer(wxHORIZONTAL);
     btnSizer->Add(0, 0, 1, wxEXPAND, 5);
@@ -383,6 +679,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_ra_msg = NULL;
     m_dec_msg = NULL;
     m_snr_msg = NULL;
+    m_backlash_msg = NULL;
     m_pae_msg = 0;
 
     m_recommend_group->Add(m_recommendgrid, wxSizerFlags(1).Expand());
@@ -399,6 +696,9 @@ GuidingAsstWin::GuidingAsstWin()
     m_start->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStart), NULL, this);
     m_stop->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStop), NULL, this);
 
+    pBacklashTool = new BacklashTool();
+    m_measuringBacklash = false;
+
     int xpos = pConfig->Global.GetInt("/GuidingAssistant/pos.x", -1);
     int ypos = pConfig->Global.GetInt("/GuidingAssistant/pos.y", -1);
     MyFrame::PlaceWindowOnScreen(this, xpos, ypos);
@@ -410,6 +710,14 @@ GuidingAsstWin::GuidingAsstWin()
     {
         OnStart(dummy);             // Auto-start if we're already guiding
     }
+}
+
+GuidingAsstWin::~GuidingAsstWin(void)
+{
+    pFrame->pGuidingAssistant = 0;
+    if (pBacklashTool)
+        delete pBacklashTool;
+
 }
 
 static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString *s)
@@ -494,9 +802,30 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
     m_instructions->SetLabel(instr);
 }
 
-GuidingAsstWin::~GuidingAsstWin(void)
+void GuidingAsstWin::BacklashStep(PHD_Point camLoc)
 {
-    pFrame->pGuidingAssistant = 0;
+    if (pBacklashTool)
+    {
+        pBacklashTool->DecMeasurementStep(camLoc);
+        m_instructions->SetLabel(_("Backlash Measurement: ") + pBacklashTool->m_lastStatus);
+        if (pBacklashTool->m_bltState == BacklashTool::BLT_STATE_COMPLETED)
+        {
+            m_othergrid->SetCellValue(m_backlash_px_loc, wxString::Format("% .1f %s", pBacklashTool->m_backlashResultPx, _(" px")));
+            m_othergrid->SetCellValue(m_backlash_sec_loc, wxString::Format("%d %s", pBacklashTool->m_backlashResultSec, _(" mSec")));
+            EndBacklashTest(true);
+            DoStop();
+        }
+
+    }
+}
+
+void GuidingAsstWin::BacklashError()
+{
+    if (pBacklashTool)
+    {
+        EndBacklashTest(false);
+        DoStop();
+    }
 }
 
 // Event handlers for applying recommendations
@@ -544,6 +873,11 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
     }
     else
         Debug.Write("GuideAssistant logic flaw, Dec algorithm has no MinMove property\n");
+}
+
+void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
+{
+    ;
 }
 
 // Adds a recommendation string and a button bound to the passed event handler
@@ -614,7 +948,7 @@ void GuidingAsstWin::MakeRecommendations()
     if (alignmentError > 5.0)
     {
         wxString msg = alignmentError < 10.0 ?
-            _("You may want to spend some time improving your polar alignment. You may see some field rotation, especially if you are imaging targets closer to the pole.") :
+            _("You may want to improve your polar alignment to reduce field rotation near the pole.") :
             _("Your polar alignment is pretty far off. You are likely to see field rotation unless you keep your exposures very short.");
         if (!m_pae_msg)
             m_pae_msg = AddRecommendationEntry(msg);
@@ -676,6 +1010,18 @@ void GuidingAsstWin::MakeRecommendations()
             m_snr_msg->SetLabel(wxEmptyString);
     }
 
+    if (pBacklashTool->m_backlashResultPx > 0)
+    {
+        wxString msg(wxString::Format(_("Try setting a Dec backlash value of %d mSec"), pBacklashTool->m_backlashResultSec));
+        if (!m_backlash_msg)
+            m_backlash_msg = AddRecommendationEntry(msg, wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
+        else
+        {
+            m_backlash_msg->SetLabel(wxString::Format(_("Try setting a Dec backlash value of %d mSec"), pBacklashTool->m_backlashResultSec));
+            m_decBacklashButton->Enable(true);
+        }
+        Debug.Write(wxString::Format("Recommendation: %s\n", m_backlash_msg->GetLabelText()));
+    }
     m_recommend_group->Show(true);
 
     Layout();
@@ -727,7 +1073,6 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
 void GuidingAsstWin::DoStop(const wxString& status)
 {
     m_measuring = false;
-
     m_recommendgrid->Show(true);
     m_dlgState = STATE_STOPPED;
     m_measurementsTaken = true;
@@ -744,15 +1089,54 @@ void GuidingAsstWin::DoStop(const wxString& status)
     m_stop->Enable(false);
 }
 
+void GuidingAsstWin::EndBacklashTest(bool normal)
+{
+    if (!normal)
+    {
+        pBacklashTool->StopMeasurement();
+        m_othergrid->SetCellValue(m_backlash_px_loc, _("Backlash test aborted..."));
+        
+    }
+    m_measuringBacklash = false;
+    m_start->Enable(pFrame->pGuider->IsGuiding());
+    m_stop->Enable(false);
+    if (normal)
+        MakeRecommendations();
+    else
+    {
+        wxCommandEvent dummy;
+        OnAppStateNotify(dummy);                    // Need to get the UI back in synch
+    }
+}
+
 void GuidingAsstWin::OnStop(wxCommandEvent& event)
 {
-    MakeRecommendations();
-    DoStop();
+    if (m_backlashCB->IsChecked() && pBacklashTool)
+    {
+        if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
+        {
+            m_measuringBacklash = true;
+            m_measuring = false;
+            pBacklashTool->StartMeasurement();
+            m_instructions->SetLabel(_("Backlash Measurement: ") + pBacklashTool->m_lastStatus);
+        }
+        else
+        {
+            MakeRecommendations();
+            EndBacklashTest(false);
+            DoStop();
+        }
+    }
+    else
+    {
+        MakeRecommendations();
+        DoStop();
+    }
 }
 
 void GuidingAsstWin::OnAppStateNotify(wxCommandEvent& WXUNUSED(event))
 {
-    if (m_measuring)
+    if (m_measuring || m_measuringBacklash)
     {
         if (!pFrame->pGuider->IsGuiding())
         {
@@ -904,6 +1288,26 @@ void GuidingAssistant::NotifyFrameDropped(const FrameDroppedInfo& info)
     if (pFrame && pFrame->pGuidingAssistant)
     {
         // anything needed?
+    }
+}
+
+void GuidingAssistant::NotifyBacklashStep(PHD_Point camLoc)
+{
+    if (pFrame && pFrame->pGuidingAssistant)
+    {
+        GuidingAsstWin *win = static_cast<GuidingAsstWin *>(pFrame->pGuidingAssistant);
+        if (win->m_measuringBacklash)
+            win->BacklashStep(camLoc);
+    }
+}
+
+void GuidingAssistant::NotifyBacklashError()
+{
+    if (pFrame && pFrame->pGuidingAssistant)
+    {
+        GuidingAsstWin *win = static_cast<GuidingAsstWin *>(pFrame->pGuidingAssistant);
+        if (win->m_measuringBacklash)
+            win->BacklashError();
     }
 }
 
