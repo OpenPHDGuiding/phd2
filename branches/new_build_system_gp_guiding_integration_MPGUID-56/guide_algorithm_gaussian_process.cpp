@@ -492,7 +492,7 @@ bool GuideGaussianProcess::SetGPHyperparameters(std::vector<double> const &hyper
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_se_kern", hyperparameters_eig(4));
   
-    parameters->gp_.setHyperParameters(hyperparameters_eig);
+    parameters->gp_.setHyperParameters(hyperparameters_eig.array().log());
     return error;
 }
 
@@ -517,7 +517,7 @@ int GuideGaussianProcess::GetNbPointsBetweenOptimisation() const
 
 std::vector<double> GuideGaussianProcess::GetGPHyperparameters() const
 {
-    Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters();
+    Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters().array().exp();
     return std::vector<double>(hyperparameters.data(),
                                hyperparameters.data() + 5);
 }
@@ -564,7 +564,7 @@ void GuideGaussianProcess::HandleTimestamps()
     double time_now = parameters->timer_.Time();
     double delta_measurement_time_ms = time_now - parameters->last_timestamp_;
     parameters->last_timestamp_ = time_now;
-    parameters->get_last_point().timestamp = parameters->last_timestamp_ - delta_measurement_time_ms / 2;
+    parameters->get_last_point().timestamp = (parameters->last_timestamp_ - delta_measurement_time_ms / 2) / 1000;
 }
 
 // adds a new measurement to the circular buffer that holds the data.
@@ -686,12 +686,11 @@ double GuideGaussianProcess::result(double input)
     parameters->control_signal_ = 0.5*input;
     double prediction_ = 0.0;
 
+    Eigen::VectorXd timestamps(parameters->get_number_of_measurements());
+    Eigen::VectorXd measurements(parameters->get_number_of_measurements());
 
     if (parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
-        Eigen::VectorXd timestamps(parameters->get_number_of_measurements());
-        Eigen::VectorXd measurements(parameters->get_number_of_measurements());
-
         for(size_t i = 0; i < parameters->get_number_of_measurements(); i++)
         {
           timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
@@ -705,24 +704,26 @@ double GuideGaussianProcess::result(double input)
 
         // prediction of the next
         Eigen::VectorXd next_location(1);
-        next_location << parameters->last_timestamp_ + delta_controller_time_ms / 2;
+        next_location << (parameters->last_timestamp_ + delta_controller_time_ms / 2) / 1000;
         Eigen::VectorXd prediction = parameters->gp_.predict(next_location).first;
         
         parameters->control_signal_ += prediction(0);
         prediction_ = prediction(0);
-
     }
 
+    //parameters->control_signal_ *= 0.5;
+
+    Eigen::VectorXd hypers = parameters->gp_.getHyperParameters();
+
     wxString msg;
-    msg = wxString::Format(_("displacement: %5.2f px, prediction: %.2f px"),
-        input, prediction_);
+    msg = wxString::Format(_("displacement: %5.2f px, prediction: %.2f px, %.2f, %.2f, %.2f, %.2f, %.2f"),
+        input, prediction_,
+        hypers(0), hypers(1), hypers(2), hypers(3), hypers(4));
 
 
     pFrame->SetStatusText(msg, 1);
 
-
     HandleControls(parameters->control_signal_);
-
 
     // here from time to time launch the optimiser
 
@@ -733,6 +734,62 @@ double GuideGaussianProcess::result(double input)
     
     }
 
+    // send the GP output to matlab for plotting 
+
+#if 0
+    int N = 300; // number of prediction points
+    Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(N,
+        0,
+        parameters->get_last_point().timestamp + 500);
+
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = parameters->gp_.predict(locations);
+
+    Eigen::VectorXd means = predictions.first;
+    Eigen::VectorXd stds = predictions.second.diagonal();
+
+    double* timestamp_data = timestamps.data();
+    double* measurement_data = measurements.data();
+    double* location_data = locations.data();
+    double* mean_data = means.data();
+    double* std_data = stds.data();
+
+    double wait_time = 50;
+
+    bool sent = false;
+    bool received = false;
+
+    // Send the size of the buffer
+    double size = timestamps.size();
+    double size_buf[] = { size };
+    sent = udpInteraction_.SendToUDPPort(size_buf, 8);
+    wxMilliSleep(wait_time);
+
+    // Send modified measurements
+    sent = udpInteraction_.SendToUDPPort(measurement_data, size * 8);
+    wxMilliSleep(wait_time);
+
+    // Send timestamps
+    sent = udpInteraction_.SendToUDPPort(timestamp_data, size * 8);
+    wxMilliSleep(wait_time);
+
+    // size of predictions
+    double loc_size = N;
+    double loc_size_buf[] = { loc_size };
+    sent = udpInteraction_.SendToUDPPort(loc_size_buf, 8);
+    wxMilliSleep(wait_time);
+
+    // Send mean
+    sent = udpInteraction_.SendToUDPPort(location_data, loc_size * 8);
+    wxMilliSleep(wait_time);
+
+    // Send mean
+    sent = udpInteraction_.SendToUDPPort(mean_data, loc_size * 8);
+    wxMilliSleep(wait_time);
+
+    // Send std
+    sent = udpInteraction_.SendToUDPPort(std_data, loc_size * 8);
+    wxMilliSleep(wait_time);
+#endif
 
     return parameters->control_signal_;
 }
