@@ -973,6 +973,9 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     EvtServer.NotifyStarLost(info);
                     pFrame->pGraphLog->AppendData(info);
 
+                    // even on a lost star do zero-guiding (for GP guiding)
+                    pFrame->SchedulePrimaryMove(pMount, PHD_Point(0,0));
+
                     wxColor prevColor = GetBackgroundColour();
                     SetBackgroundColour(wxColour(64,0,0));
                     ClearBackground();
