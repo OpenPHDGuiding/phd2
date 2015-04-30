@@ -193,7 +193,8 @@ struct gp_guiding_circular_datapoints
 {
   double timestamp;
   double measurement;
-  double modified_measurements;
+  double modified_measurement;
+  double control;
 };
 
 
@@ -206,7 +207,8 @@ struct GuideGaussianProcess::gp_guide_parameters
     wxStopWatch timer_;
     double control_signal_;
     double control_gain_;
-    double elapsed_time_ms_;
+    double last_timestamp_;
+    double filtered_signal_;
 
     int min_nb_element_for_inference;
     int min_points_for_optimisation;
@@ -216,10 +218,11 @@ struct GuideGaussianProcess::gp_guide_parameters
     GP gp_;
 
     gp_guide_parameters() :
-      circular_buffer_parameters(100),
+      circular_buffer_parameters(200),
       timer_(),
       control_signal_(0.0),
-      elapsed_time_ms_(0.0),
+      last_timestamp_(0.0),
+      filtered_signal_(0.0),
       min_nb_element_for_inference(0),
       min_points_for_optimisation(0),
       gp_(covariance_function_)
@@ -559,40 +562,36 @@ void GuideGaussianProcess::HandleTimestamps()
         parameters->timer_.Start();
     }
     double time_now = parameters->timer_.Time();
-    double delta_measurement_time_ms = time_now - parameters->elapsed_time_ms_;
-    parameters->elapsed_time_ms_ = time_now;
-    parameters->get_last_point().timestamp = parameters->elapsed_time_ms_ - delta_measurement_time_ms / 2;
+    double delta_measurement_time_ms = time_now - parameters->last_timestamp_;
+    parameters->last_timestamp_ = time_now;
+    parameters->get_last_point().timestamp = parameters->last_timestamp_ - delta_measurement_time_ms / 2;
 }
 
+// adds a new measurement to the circular buffer that holds the data.
 void GuideGaussianProcess::HandleMeasurements(double input)
 {
     parameters->add_one_point();
     parameters->get_last_point().measurement = input;
 }
 
+void GuideGaussianProcess::HandleControls(double control_input)
+{
+    parameters->get_last_point().control = control_input;
+}
+
 void GuideGaussianProcess::HandleModifiedMeasurements(double input)
 {
-    // If there is no previous measurement, a random one is generated.
+    double alpha = 0.5;
+    // If there is no previous measurement, don't filter.
     if(parameters->get_number_of_measurements() <= 1)
     {
-        //The daytime indoor measurement noise SD is 0.25-0.35
-        const double indoor_noise_standard_deviation = 0.25;
-        double first_random_measurement = indoor_noise_standard_deviation *
-            math_tools::generate_normal_random_double();
-        double new_modified_measurement =
-            parameters->control_signal_ +
-            first_random_measurement * (1 - parameters->control_gain_) -
-            input;
-        parameters->get_last_point().modified_measurements = new_modified_measurement;
+        parameters->get_last_point().modified_measurement = input;
     }
     else
     {
-        gp_guide_parameters::data_points &last_point = parameters->get_last_point();
-        double new_modified_measurement =
-            parameters->control_signal_ +
-            parameters->get_second_last_point().measurement * (1 - parameters->control_gain_) -
-            last_point.measurement;
-        last_point.modified_measurements = new_modified_measurement;
+        // this is an IIR filter for the state
+        parameters->get_last_point().modified_measurement = alpha*(input + parameters->get_last_point().control)
+            + (1-alpha)*(parameters->get_second_last_point().modified_measurement);
     }
 }
 
@@ -601,6 +600,7 @@ double GuideGaussianProcess::result(double input)
     HandleMeasurements(input);
     HandleTimestamps();
     HandleModifiedMeasurements(input);
+    HandleControls(input);
 
     /*
      * Need to read this value here because it is not loaded at the construction
@@ -615,7 +615,7 @@ double GuideGaussianProcess::result(double input)
 
     // This is the Code sending the circular buffers to Matlab:
 
-#if 1
+#if 0
 
     Eigen::VectorXd timestamps(parameters->get_number_of_measurements());
     Eigen::VectorXd measurements(parameters->get_number_of_measurements());
@@ -627,30 +627,30 @@ double GuideGaussianProcess::result(double input)
     }
 
     double* timestamp_data = timestamps.data();
-    double* modified_measurement_data = measurements.data();
+    double* measurement_data = measurements.data();
     double result;
-    double wait_time = 100;
+    double wait_time = 50;
 
     bool sent = false;
     bool received = false;
 
 
-    // Send the input
-    double input_buf[] = { input };
-    sent = udpInteraction_.SendToUDPPort(input_buf, 8);
-    received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
+    // Send the measurement
+    double measurement_buf[] = { input };
+    sent = udpInteraction_.SendToUDPPort(measurement_buf, 8);
+    //received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
     wxMilliSleep(wait_time);
 
     // Send the size of the buffer
     double size = timestamps.size();
     double size_buf[] = { size };
     sent = udpInteraction_.SendToUDPPort(size_buf, 8);
-    received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
+    //received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
     wxMilliSleep(wait_time);
 
     // Send modified measurements
-    sent = udpInteraction_.SendToUDPPort(modified_measurement_data, size * 8);
-    received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
+    sent = udpInteraction_.SendToUDPPort(measurement_data, size * 8);
+    //received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
     wxMilliSleep(wait_time);
 
     // Send timestamps
@@ -658,9 +658,21 @@ double GuideGaussianProcess::result(double input)
     // Receive the final control signal
     received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
 
-    return result;
+    HandleControls(input);
+    return input;
 #endif
 
+#if 0 // this is just a test
+    double control_signal = 0.3*input + 0.3*parameters->get_last_point().modified_measurement;
+
+    if (parameters->get_number_of_measurements() > 1)
+    {
+        control_signal += 0.3*parameters->get_second_last_point().control;
+    }
+       
+    HandleControls(control_signal);
+    return control_signal;
+#endif
 
     /*
      * This is the code running the actual GP
@@ -671,6 +683,9 @@ double GuideGaussianProcess::result(double input)
      *
      */
 
+    parameters->control_signal_ = 0.5*input;
+    double prediction_ = 0.0;
+
 
     if (parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
@@ -680,7 +695,7 @@ double GuideGaussianProcess::result(double input)
         for(size_t i = 0; i < parameters->get_number_of_measurements(); i++)
         {
           timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
-          measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+          measurements(i) = parameters->circular_buffer_parameters[i].modified_measurement;
         }
 
         // inference of the GP with this new points
@@ -690,17 +705,23 @@ double GuideGaussianProcess::result(double input)
 
         // prediction of the next
         Eigen::VectorXd next_location(1);
-        next_location << parameters->elapsed_time_ms_ + delta_controller_time_ms / 2;
+        next_location << parameters->last_timestamp_ + delta_controller_time_ms / 2;
         Eigen::VectorXd prediction = parameters->gp_.predict(next_location).first;
         
-        parameters->control_signal_ = prediction(0) - parameters->control_gain_ * input / delta_controller_time_ms;
+        parameters->control_signal_ += prediction(0);
+        prediction_ = prediction(0);
 
     }
-    else
-    {
-        // Simpler prediction when there are not enough data points for the GP
-        parameters->control_signal_ = -input / delta_controller_time_ms;
-    }
+
+    wxString msg;
+    msg = wxString::Format(_("displacement: %5.2f px, prediction: %.2f px"),
+        input, prediction_);
+
+
+    pFrame->SetStatusText(msg, 1);
+
+
+    HandleControls(parameters->control_signal_);
 
 
     // here from time to time launch the optimiser
