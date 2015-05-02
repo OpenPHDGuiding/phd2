@@ -93,6 +93,8 @@ Scope::Scope(void)
 
     val = pConfig->Profile.GetBoolean(prefix + "/AssumeOrthogonal", false);
     SetAssumeOrthogonal(val);
+
+    m_backlashComp = new BacklashComp(this);
 }
 
 Scope::~Scope(void)
@@ -1269,6 +1271,17 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pScope = pScope;
 
     width = StringWidth(_T("00000"));
+
+    wxBoxSizer* compSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_pUseBacklashComp = new wxCheckBox(pParent, wxID_ANY, _("Backlash Comp"));
+    compSizer->Add(m_pUseBacklashComp, wxSizerFlags().Expand().Border(wxALL, 3));
+    m_pBacklashPulse = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxPoint(-1, -1),
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 2000, 450, 50);  
+    wxSizer *sizer_temp = MakeLabeledControl(_("Amount"), m_pBacklashPulse,
+        _("Length of backlash correction pulse (mSec)"));
+    compSizer->Add(sizer_temp, wxSizerFlags().Expand().Border(wxALL, 3));
+    DoAdd(compSizer);
+
     m_pCalibrationDuration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
 
@@ -1368,6 +1381,8 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
     m_assumeOrthogonal->SetValue(m_pScope->IsAssumeOrthogonal());
+    m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
+    m_pBacklashPulse->SetValue(m_pScope->m_backlashComp->GetBacklashPulse());
 }
 
 void Scope::ScopeConfigDialogPane::UnloadValues(void)
@@ -1380,6 +1395,8 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
+    m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
+    m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
 
     MountConfigDialogPane::UnloadValues();
 }

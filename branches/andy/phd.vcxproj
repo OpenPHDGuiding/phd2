@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClCompile Include="about_dialog.cpp" />
     <ClCompile Include="advanced_dialog.cpp" />
+    <ClCompile Include="Backlash_Comp.cpp" />
     <ClCompile Include="calreview_dialog.cpp" />
     <ClCompile Include="calstep_dialog.cpp" />
     <ClCompile Include="camcal_import_dialog.cpp" />
@@ -294,6 +295,7 @@
   <ItemGroup>
     <ClInclude Include="about_dialog.h" />
     <ClInclude Include="advanced_dialog.h" />
+    <ClInclude Include="Backlash_Comp.h" />
     <ClInclude Include="calreview_dialog.h" />
     <ClInclude Include="calstep_dialog.h" />
     <ClInclude Include="camcal_import_dialog.h" />

@@ -39,6 +39,7 @@
 #include "guide_algorithms.h"
 #include "messagebox_proxy.h"
 #include "image_math.h"
+#include "Backlash_Comp.h"
 
 enum GUIDE_DIRECTION {
     NONE  = -1,
@@ -106,6 +107,7 @@ class Mount : public wxMessageBoxProxy
 
     double m_currentDeclination;
 
+
 protected:
     bool m_guidingEnabled;
 
@@ -113,6 +115,7 @@ protected:
     GuideAlgorithm *m_pYGuideAlgorithm;
 
     wxString m_Name;
+    BacklashComp* m_backlashComp;
 
     // Things related to the Advanced Config Dialog
 protected:
@@ -213,6 +216,10 @@ public:
     GuideAlgorithm *GetXGuideAlgorithm(void) const;
     GuideAlgorithm *GetYGuideAlgorithm(void) const;
 
+    bool GetLastCalibrationParams(Calibration *params);
+    BacklashComp *GetBacklashCompPtr() { return m_backlashComp; }
+    void FlagBacklashOverShoot(double pixelAmount, GuideAxis axis);
+
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of
     // their operation
@@ -236,7 +243,6 @@ public:
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
     virtual void SetCalibration(const Calibration& cal);
-    bool GetLastCalibrationParams(Calibration *params);
     virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle);
     void GetCalibrationDetails(CalibrationDetails *calDetails);
 

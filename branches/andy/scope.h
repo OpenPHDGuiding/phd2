@@ -107,6 +107,8 @@ protected:
         wxCheckBox *m_pNeedFlipDec;
         wxCheckBox *m_pStopGuidingWhenSlewing;
         wxCheckBox *m_assumeOrthogonal;
+        wxCheckBox *m_pUseBacklashComp;
+        wxSpinCtrlDouble *m_pBacklashPulse;
 
         void OnCalcCalibrationStep(wxCommandEvent& evt);
 
