@@ -42,6 +42,7 @@
 static const int DefaultCalibrationDuration = 750;
 static const int DefaultMaxDecDuration = 2500;
 static const int DefaultMaxRaDuration = 2500;
+enum { MAX_DURATION_MIN = 50, MAX_DURATION_MAX = 5000, };
 
 static const DEC_GUIDE_MODE DefaultDecGuideMode = DEC_AUTO;
 static const GUIDE_ALGORITHM DefaultRaGuideAlgorithm = GUIDE_ALGORITHM_HYSTERESIS;
@@ -1287,14 +1288,14 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
 
     width = StringWidth(_T("00000"));
     m_pMaxRaDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 2000, 150, _T("MaxDec_Dur"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
     wxSizer *sizer1 = MakeLabeledControl(_("RA"),  m_pMaxRaDuration,
           _("Longest length of pulse to send in RA\nDefault = 1000 ms."));
     sizer->Add(sizer1, wxSizerFlags().Expand().Border(wxALL,3));
 
     width = StringWidth(_T("00000"));
     m_pMaxDecDuration = new wxSpinCtrl(pParent,wxID_ANY,_T("foo"),wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS,0,2000,150,_T("MaxDec_Dur"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
     wxSizer *sizer2 = MakeLabeledControl(_("Dec"),  m_pMaxDecDuration,
           _("Longest length of pulse to send in declination\nDefault = 1000 ms.  Increase if drift is fast."));
     sizer->Add(sizer2, wxSizerFlags().Expand().Border(wxALL,3));
@@ -1398,13 +1399,13 @@ Scope::ScopeGraphControlPane::ScopeGraphControlPane(wxWindow *pParent, Scope *pS
 
     width = StringWidth(_T("0000"));
     m_pMaxRaDuration = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width+30, -1),
-        wxSP_ARROW_KEYS, 0, 2000, 0);
+        wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 0);
     m_pMaxRaDuration->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &Scope::ScopeGraphControlPane::OnMaxRaDurationSpinCtrl, this);
     DoAdd(m_pMaxRaDuration, _("Mx RA"));
 
     width = StringWidth(_T("0000"));
     m_pMaxDecDuration = new wxSpinCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width+30, -1),
-        wxSP_ARROW_KEYS, 0, 2000, 0);
+        wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 0);
     m_pMaxDecDuration->Bind(wxEVT_COMMAND_SPINCTRL_UPDATED, &Scope::ScopeGraphControlPane::OnMaxDecDurationSpinCtrl, this);
     DoAdd(m_pMaxDecDuration, _("Mx DEC"));
 
