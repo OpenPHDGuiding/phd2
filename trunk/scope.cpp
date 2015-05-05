@@ -515,7 +515,7 @@ static void SuppressLimitReachedWarning(long axis)
     pConfig->Global.SetBoolean(LimitReachedWarningKey(axis), false);
 }
 
-static void AlertLimitReached(GuideAxis axis)
+void Scope::AlertLimitReached(int duration, GuideAxis axis)
 {
     if (pConfig->Global.GetBoolean(LimitReachedWarningKey(axis), true))
     {
@@ -524,10 +524,20 @@ static void AlertLimitReached(GuideAxis axis)
         if (s_lastLogged == 0 || now - s_lastLogged > 30)
         {
             s_lastLogged = now;
-            wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
-            pFrame->Alert(wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
-                "Increasing the %s will allow PHD to make the needed corrections."), s, s),
-                _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
+            if (duration < MAX_DURATION_MAX)
+            {
+                wxString s = axis == GUIDE_RA ? _("Max RA Duration setting") : _("Max Dec Duration setting");
+                pFrame->Alert(wxString::Format(_("Your %s is preventing PHD from making adequate corrections to keep the guide star locked. "
+                    "Increasing the %s will allow PHD2 to make the needed corrections."), s, s),
+                    _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
+            }
+            else
+            {
+                wxString which_axis = axis == GUIDE_RA ? _("RA") : _("Dec");
+                pFrame->Alert(wxString::Format(_("Even using the maximum moves, PHD2 can't properly correct for the large guide star movements in %s. "
+                    "Guiding will be impaired until you can eliminate the source of these problems."), which_axis)
+                    , _("Don't show\nthis again"), SuppressLimitReachedWarning, axis);
+            }
         }
     }
 }
@@ -574,7 +584,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
                     if (limitReached && direction == m_decLimitReachedDirection)
                     {
                         if (++m_decLimitReachedCount >= LIMIT_REACHED_WARN_COUNT)
-                            AlertLimitReached(GUIDE_DEC);
+                            AlertLimitReached(duration, GUIDE_DEC);
                     }
                     else
                         m_decLimitReachedCount = 0;
@@ -601,7 +611,7 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
                     if (limitReached && direction == m_raLimitReachedDirection)
                     {
                         if (++m_raLimitReachedCount >= LIMIT_REACHED_WARN_COUNT)
-                            AlertLimitReached(GUIDE_RA);
+                            AlertLimitReached(duration, GUIDE_RA);
                     }
                     else
                         m_raLimitReachedCount = 0;
