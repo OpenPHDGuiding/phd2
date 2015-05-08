@@ -590,6 +590,11 @@ elseif(WIN32)
   # Delayed load for all DLLs below in the original project. Now using delay load only for the necessary stuff
   #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
 
+  add_custom_command(
+    TARGET PHD2
+    PRE_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${PHD_PROJECT_ROOT_DIR}/PHD2GuideHelp.zip ${PHD2_BINARY_DIR})
+
   copy_dependency_with_config(PHD2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
 
 elseif(UNIX)
