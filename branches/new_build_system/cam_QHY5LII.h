@@ -36,10 +36,16 @@
 
 #include "cam_QHY5IIbase.h"
 
-class Camera_QHY5LIIClass : public Camera_QHY5IIBase {
+class Camera_QHY5LIIM : public Camera_QHY5IIBase {
 public:
-    Camera_QHY5LIIClass();
+    Camera_QHY5LIIM();
 };
+
+class Camera_QHY5LIIC : public Camera_QHY5IIBase {
+public:
+    Camera_QHY5LIIC();
+};
+
 #endif  //QHY5LIIDEF
 
 

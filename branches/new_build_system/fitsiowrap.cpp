@@ -114,3 +114,9 @@ int PHD_fits_create_file(fitsfile **fptr, const wxString& filename, bool clobber
 {
     return fits_create_file(fptr, FitsFname(filename, true, clobber), status);
 }
+
+void PHD_fits_close_file(fitsfile *fptr)
+{
+    int status = 0;
+    fits_close_file(fptr, &status);
+}

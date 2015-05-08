@@ -96,7 +96,7 @@ bool Camera_KWIQGuiderClass::ST4PulseGuideScope(int direction, int duration) {
     return false;
 }
 
-bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
@@ -117,7 +117,7 @@ bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, wxRect subframe
 
     KWIQguider->FreeRawImage(raw);
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
 }

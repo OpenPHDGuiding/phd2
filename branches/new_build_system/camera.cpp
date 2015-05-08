@@ -39,12 +39,14 @@
 #include <wx/stdpaths.h>
 
 static const int DefaultGuideCameraGain = 95;
-static const int DefaultGuideCameraTimeoutMs = 5000;
+static const int DefaultGuideCameraTimeoutMs = 15000;
 static const bool DefaultUseSubframes = false;
 static const double DefaultPixelSize = 0.0;
 static const int DefaultReadDelay = 150;
 static const bool DefaultLoadDarks = true;
 static const bool DefaultLoadDMap = false;
+
+wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 
 #if defined (ATIK16)
  #include "cam_ATIK16.h"
@@ -183,8 +185,9 @@ GuideCamera::GuideCamera(void)
     HasDelayParam = false;
     HasGainControl = false;
     HasShutter = false;
-    ShutterState = false;
+    ShutterClosed = false;
     HasSubframes = false;
+    FullSize = UNDEFINED_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
 
@@ -199,6 +202,7 @@ GuideCamera::GuideCamera(void)
 GuideCamera::~GuideCamera(void)
 {
     ClearDarks();
+    ClearDefectMap();
 }
 
 static int CompareNoCase(const wxString& first, const wxString& second)
@@ -265,7 +269,8 @@ wxArrayString GuideCamera::List(void)
     CameraList.Add(_T("QHY 5-II"));
 #endif
 #if defined (QHY5LII)
-    CameraList.Add(_T("QHY 5L-II"));
+    CameraList.Add(_T("QHY 5L-II Mono"));
+    CameraList.Add(_T("QHY 5L-II Color"));
 #endif
 #if defined (ZWO_ASI)
     CameraList.Add(_T("ZWO ASI Camera"));
@@ -395,9 +400,10 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
         }
 #endif
 #if defined (QHY5LII)
-        else if (choice.Find(_T("QHY 5L-II")) + 1) {
-            pReturn = new Camera_QHY5LIIClass();
-        }
+        else if (choice.Find(_T("QHY 5L-II Mono")) != wxNOT_FOUND)
+            pReturn = new Camera_QHY5LIIM();
+        else if (choice.Find(_T("QHY 5L-II Color")) != wxNOT_FOUND)
+            pReturn = new Camera_QHY5LIIC();
 #endif
 #if defined(ZWO_ASI)
         else if (choice.Find(_T("ZWO ASI Camera")) + 1)
@@ -736,7 +742,7 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     // Watchdog timeout
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, _("The camera will be disconnected if it fails to respond for this long. The default value, 5 seconds, should be appropriate for most cameras."));
+        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, _("The camera will be disconnected if it fails to respond for this long. The default value, 15 seconds, should be appropriate for most cameras."));
         AddTableEntryPair(pParent, pCamControls, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal);
     }
 
@@ -907,6 +913,7 @@ void CameraConfigDialogPane::SetPixelSize(double val)
 wxString GuideCamera::GetSettingsSummary()
 {
     int darkDur;
+
     { // lock scope
         wxCriticalSectionLocker lck(DarkFrameLock);
         darkDur = CurrentDarkFrame ? CurrentDarkFrame->ImgExpDur : 0;
@@ -918,6 +925,7 @@ wxString GuideCamera::GetSettingsSummary()
         pixelSizeStr = "unspecified";
     else
         pixelSizeStr = wxString::Format("%0.1f um", PixelSize);
+
     return wxString::Format("Camera = %s, gain = %d%s%s, full size = %d x %d, %s, %s, pixel size = %s\n",
                             Name, GuideCameraGain,
                             HasDelayParam ? wxString::Format(", delay = %d", ReadDelay) : "",
@@ -1018,13 +1026,25 @@ void GuideCamera::SubtractDark(usImage& img)
 void GuideCamera::DisconnectWithAlert(CaptureFailType type)
 {
     wxString msg;
-    switch (type) {
+    switch (type) 
+    {
     case CAPT_FAIL_MEMORY:
-        msg = _("Memory allocation error during capture"); break;
+        msg = _("Memory allocation error during capture");
+        DisconnectWithAlert(msg);
+        break;
     case CAPT_FAIL_TIMEOUT:
-        msg = _("Camera timeout during capture"); break;
+    {
+        double exptime = pFrame->RequestedExposureDuration()/1000.;
+        double timeout = m_timeoutMs / 1000. + exptime;
+        msg = wxString::Format(_("After %0.1f sec, the camera has not completed a %0.1f sec exposure, so it has been disconnected to prevent other problems.\n "
+            "If you think the hardware is working correctly, you can increase the timeout period on the 'Camera' tab\n"
+            "of the Advanced Settings Dialog; then re-connect the camera."), timeout, exptime);
+        Disconnect();
+        pFrame->Alert(msg);
+        break;
     }
-    DisconnectWithAlert(msg);
+        
+    }
 }
 
 void GuideCamera::DisconnectWithAlert(const wxString& msg)

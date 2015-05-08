@@ -155,7 +155,7 @@ protected:
 
     /*************      Expose      **************************/
 public:
-    void EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, const wxRect& subframe);
+    void EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposureDuration, int exposureOptions, const wxRect& subframe);
 protected:
     bool HandleExpose(MyFrame::EXPOSE_REQUEST *pArgs);
     void SendWorkerThreadExposeComplete(usImage *pImage, bool bError);

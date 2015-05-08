@@ -347,6 +347,8 @@ set(phd2_SRC
   
   ${phd_src_dir}/calstep_dialog.cpp
   ${phd_src_dir}/calstep_dialog.h
+  ${phd_src_dir}/camcal_import_dialog.cpp
+  ${phd_src_dir}/camcal_import_dialog.h
   ${phd_src_dir}/circbuf.h
   
   ${phd_src_dir}/comet_tool.cpp
@@ -376,6 +378,8 @@ set(phd2_SRC
   ${phd_src_dir}/graph.cpp
   ${phd_src_dir}/graph.h
   ${phd_src_dir}/guide_algorithm.cpp
+  ${phd_src_dir}/guiding_assistant.cpp
+  ${phd_src_dir}/guiding_assistant.h
   ${phd_src_dir}/image_math.cpp
   ${phd_src_dir}/image_math.h
   ${phd_src_dir}/json_parser.cpp

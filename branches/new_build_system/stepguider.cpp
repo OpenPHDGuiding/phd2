@@ -53,6 +53,7 @@ StepGuider::StepGuider(void)
     m_xOffset = 0;
     m_yOffset = 0;
 
+    m_forceStartBump = false;
     m_bumpInProgress = false;
     m_bumpTimeoutAlertSent = false;
     m_bumpStepWeight = 1.0;
@@ -76,6 +77,8 @@ StepGuider::StepGuider(void)
 
     int yGuideAlgorithm = pConfig->Profile.GetInt(prefix + "/YGuideAlgorithm", DefaultGuideAlgorithm);
     SetYGuideAlgorithm(yGuideAlgorithm);
+
+    m_bumpOnDither = pConfig->Profile.GetBoolean("/stepguider/BumpOnDither", true);
 }
 
 StepGuider::~StepGuider(void)
@@ -181,9 +184,15 @@ bool StepGuider::Disconnect(void)
     return bError;
 }
 
+void StepGuider::ForceStartBump(void)
+{
+    Debug.Write("StepGuider: force bump");
+    m_forceStartBump = true;
+}
+
 static int IntegerPercent(int percentage, int number)
 {
-    long numerator = (long) percentage* (long) number;
+    long numerator = (long) percentage * (long) number;
     long value = numerator / 100L;
     return (int) value;
 }
@@ -297,6 +306,12 @@ bool StepGuider::SetBumpMaxStepsPerCycle(double bumpStepsPerCycle)
     pConfig->Profile.SetDouble("/stepguider/BumpMaxStepsPerCycle", m_bumpMaxStepsPerCycle);
 
     return bError;
+}
+
+void StepGuider::SetBumpOnDither(bool val)
+{
+    m_bumpOnDither = val;
+    pConfig->Profile.SetBoolean("/stepguider/BumpOnDither", m_bumpOnDither);
 }
 
 int StepGuider::GetCalibrationStepsPerIteration(void)
@@ -738,6 +753,7 @@ bool StepGuider::GuidingCeases(void)
     // We have stopped guiding.  Reset bump state and recenter the stepguider
 
     m_avgOffset.Invalidate();
+    m_forceStartBump = false;
     m_bumpInProgress = false;
     m_bumpStepWeight = 1.0;
     m_bumpTimeoutAlertSent = false;
@@ -758,6 +774,12 @@ bool StepGuider::GuidingCeases(void)
     }
 
     return bError;
+}
+
+void StepGuider::ClearHistory(void)
+{
+    Mount::ClearHistory();
+    m_avgOffset.Invalidate();
 }
 
 void StepGuider::ShowPropertyDialog(void)
@@ -814,64 +836,66 @@ Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool n
         Debug.AddLine(wxString::Format("Move(%d, %d, %d)", direction, steps, normalMove));
 
         // Compute the required guide steps
-        if (m_guidingEnabled)
+        if (!m_guidingEnabled)
         {
-            // Acutally do the guide
-            assert(steps >= 0);
+            throw THROW_INFO("Guiding disabled");
+        }
+
+        // Acutally do the guide
+        assert(steps >= 0);
+
+        if (steps > 0)
+        {
+            int yDirection = 0;
+            int xDirection = 0;
+
+            switch (direction)
+            {
+                case UP:
+                    yDirection = 1;
+                    break;
+                case DOWN:
+                    yDirection = -1;
+                    break;
+                case RIGHT:
+                    xDirection = 1;
+                    break;
+                case LEFT:
+                    xDirection = -1;
+                    break;
+                default:
+                    throw ERROR_INFO("StepGuider::Move(): invalid direction");
+                    break;
+            }
+
+            assert(yDirection == 0 || xDirection == 0);
+            assert(yDirection != 0 || xDirection != 0);
+
+            Debug.AddLine(wxString::Format("stepping direction=%d steps=%d xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
+
+            if (WouldHitLimit(direction, steps))
+            {
+                int new_steps = MaxPosition(direction) - 1 - CurrentPosition(direction);
+                Debug.AddLine(wxString::Format("StepGuider step would hit limit: truncate move direction=%d steps=%d => %d", direction, steps, new_steps));
+                steps = new_steps;
+                limitReached = true;
+            }
 
             if (steps > 0)
             {
-                int yDirection = 0;
-                int xDirection = 0;
-
-                switch (direction)
+                if (Step(direction, steps))
                 {
-                    case UP:
-                        yDirection = 1;
-                        break;
-                    case DOWN:
-                        yDirection = -1;
-                        break;
-                    case RIGHT:
-                        xDirection = 1;
-                        break;
-                    case LEFT:
-                        xDirection = -1;
-                        break;
-                    default:
-                        throw ERROR_INFO("StepGuider::Move(): invalid direction");
-                        break;
+                    throw ERROR_INFO("step failed");
                 }
 
-                assert(yDirection == 0 || xDirection == 0);
-                assert(yDirection != 0 || xDirection != 0);
+                m_xOffset += xDirection * steps;
+                m_yOffset += yDirection * steps;
 
-                Debug.AddLine(wxString::Format("stepping direction=%d steps=%d xDirection=%d yDirection=%d", direction, steps, xDirection, yDirection));
-
-                if (WouldHitLimit(direction, steps))
-                {
-                    int new_steps = MaxPosition(direction) - 1 - CurrentPosition(direction);
-                    Debug.AddLine(wxString::Format("StepGuider step would hit limit: truncate move direction=%d steps=%d => %d", direction, steps, new_steps));
-                    steps = new_steps;
-                    limitReached = true;
-                }
-
-                if (steps > 0)
-                {
-                    if (Step(direction, steps))
-                    {
-                        throw ERROR_INFO("step failed");
-                    }
-
-                    m_xOffset += xDirection * steps;
-                    m_yOffset += yDirection * steps;
-
-                    Debug.AddLine(wxString::Format("stepped: xOffset=%d yOffset=%d", m_xOffset, m_yOffset));
-                }
+                Debug.AddLine(wxString::Format("stepped: xOffset=%d yOffset=%d", m_xOffset, m_yOffset));
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         steps = 0;
@@ -897,10 +921,15 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
         if (mountResult != MOVE_OK)
             Debug.AddLine("StepGuider::Move: Mount::Move failed!");
 
+        if (!m_guidingEnabled)
+        {
+            throw THROW_INFO("Guiding disabled");
+        }
+
         // keep a moving average of the AO position
         if (m_avgOffset.IsValid())
         {
-            static double const alpha = .25; // moderately high weighting for latest sample
+            static double const alpha = .33; // moderately high weighting for latest sample
             m_avgOffset.X += alpha * (m_xOffset - m_avgOffset.X);
             m_avgOffset.Y += alpha * (m_yOffset - m_avgOffset.Y);
         }
@@ -917,6 +946,13 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
             int absX = abs(CurrentPosition(RIGHT));
             int absY = abs(CurrentPosition(UP));
             bool isOutside = absX > m_xBumpPos1 || absY > m_yBumpPos1;
+            bool forceStartBump = false;
+            if (m_forceStartBump)
+            {
+                Debug.Write("stepguider::Move: will start forced bump\n");
+                forceStartBump = true;
+                m_forceStartBump = false;
+            }
 
             // if the current bump has not brought us in, increase the bump size
             if (isOutside && m_bumpInProgress)
@@ -955,7 +991,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
                 }
             }
 
-            if (isOutside && !m_bumpInProgress)
+            if ((isOutside || forceStartBump) && !m_bumpInProgress)
             {
                 // start a new bump
                 m_bumpInProgress = true;
@@ -966,7 +1002,7 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
             }
 
             // stop the bump if we are "close enough" to the center position
-            if (!isOutside && m_bumpInProgress)
+            if ((!isOutside || forceStartBump) && m_bumpInProgress)
             {
                 int minDist = m_bumpCenterTolerance;
                 if (m_avgOffset.X * m_avgOffset.X + m_avgOffset.Y * m_avgOffset.Y <= minDist * minDist)
@@ -1080,6 +1116,13 @@ bool StepGuider::IsStepGuider(void) const
     return true;
 }
 
+void StepGuider::AdjustCalibrationForScopePointing(void)
+{
+    // stepguider calibration does not change regardless of declination, side of pier,
+    // or rotator angle (assumes AO rotates with camera).
+    Debug.AddLine("stepguider: scope pointing change, no change to calibration");
+}
+
 wxPoint StepGuider::GetAoPos(void) const
 {
     return wxPoint(m_xOffset, m_yOffset);
@@ -1152,9 +1195,16 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
     width = StringWidth(_T("00.00"));
     m_pBumpMaxStepsPerCycle = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.01, 99.99, 0.0, 0.25, _T("Bump_steps"));
+    wxSizer *sz = MakeLabeledControl(_("Bump Step"), m_pBumpMaxStepsPerCycle, wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). Default = %.2f, decrease if mount bumps cause spikes on the graph"), DefaultBumpMaxStepsPerCycle));
 
-    DoAdd(_("Bump Step"), m_pBumpMaxStepsPerCycle,
-        wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). Default = %.2f, decrease if mount bumps cause spikes on the graph"), DefaultBumpMaxStepsPerCycle));
+    m_bumpOnDither = new wxCheckBox(pParent, wxID_ANY, _("Bump on Dither"));
+    m_bumpOnDither->SetToolTip(_("Bump the mount to return the AO to center at each dither"));
+
+    wxSizer *hsz = new wxBoxSizer(wxHORIZONTAL);
+    hsz->Add(sz, wxSizerFlags(1));
+    hsz->Add(m_bumpOnDither, wxSizerFlags(1).Right().Border(wxLEFT, 15).Align(wxALIGN_CENTER_VERTICAL));
+
+    DoAdd(hsz);
 }
 
 StepGuider::StepGuiderConfigDialogPane::~StepGuiderConfigDialogPane(void)
@@ -1168,6 +1218,7 @@ void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
     m_pSamplesToAverage->SetValue(m_pStepGuider->GetSamplesToAverage());
     m_pBumpPercentage->SetValue(m_pStepGuider->GetBumpPercentage());
     m_pBumpMaxStepsPerCycle->SetValue(m_pStepGuider->GetBumpMaxStepsPerCycle());
+    m_bumpOnDither->SetValue(m_pStepGuider->m_bumpOnDither);
 }
 
 void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
@@ -1176,6 +1227,7 @@ void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
     m_pStepGuider->SetSamplesToAverage(m_pSamplesToAverage->GetValue());
     m_pStepGuider->SetBumpPercentage(m_pBumpPercentage->GetValue(), true);
     m_pStepGuider->SetBumpMaxStepsPerCycle(m_pBumpMaxStepsPerCycle->GetValue());
+    m_pStepGuider->m_bumpOnDither = m_bumpOnDither->GetValue();
 
     MountConfigDialogPane::UnloadValues();
 }

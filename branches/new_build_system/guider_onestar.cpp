@@ -391,16 +391,6 @@ bool GuiderOneStar::AutoSelect(void)
 
         UpdateImageDisplay();
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
-
-#ifdef BRET_AO_DEBUG
-        if (pMount && !pMount->IsCalibrated())
-        {
-            //pMount->SetCalibration(-2.61, -1.04, 0.30, 0.26);
-            //pMount->SetCalibration(-2.61, -1.04, 1.0, 1.0);
-            //pMount->SetCalibration(0.0, M_PI/2, 0.005, 0.005);
-            pMount->SetCalibration(M_PI/4 + 0.0, M_PI/4 + M_PI/2, 1.0, 1.0);
-        }
-#endif
     }
     catch (wxString Msg)
     {
@@ -880,7 +870,7 @@ void GuiderOneStar::SaveStarFITS()
         if (!status) fits_write_pix(fptr,TUSHORT,fpixel,tmpimg.NPixels,tmpimg.ImageData,&status);
 
     }
-    fits_close_file(fptr,&status);
+    PHD_fits_close_file(fptr);
 }
 
 wxString GuiderOneStar::GetSettingsSummary()

@@ -8,7 +8,6 @@ Index file=PHD2GuideHelp.hhk
 Language=0x409 English (United States)
 Title=PHD2 Guiding
 
-
 [FILES]
 MainScreen.htm
 Basic_use.htm
@@ -19,6 +18,7 @@ Tools.htm
 Introduction.htm
 Trouble_shooting.htm
 Darks_BadPixel_Maps.htm
+KeyboardShortcuts.htm
 
 [INFOTYPES]
 

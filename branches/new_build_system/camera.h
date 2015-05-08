@@ -46,6 +46,8 @@ enum PropDlgType
     PROPDLG_ANY = (PROPDLG_WHEN_CONNECTED | PROPDLG_WHEN_DISCONNECTED),
 };
 
+extern wxSize UNDEFINED_FRAME_SIZE;
+
 class GuideCamera;
 
 class CameraConfigDialogPane : public ConfigDialogPane
@@ -69,6 +71,16 @@ public:
     void SetPixelSize(double val);
 };
 
+enum CaptureOptionBits
+{
+    CAPTURE_SUBTRACT_DARK = 1 << 0,
+    CAPTURE_RECON         = 1 << 1,    // debayer and/or deinterlace as required
+
+    CAPTURE_LIGHT = CAPTURE_SUBTRACT_DARK | CAPTURE_RECON,
+    CAPTURE_DARK = 0,
+    CAPTURE_BPM_REVIEW = CAPTURE_SUBTRACT_DARK,
+};
+
 class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 {
     friend class CameraConfigDialogPane;
@@ -90,14 +102,14 @@ public:
     bool            HasSubframes;
     short           Port;
     int             ReadDelay;
-    bool            ShutterState;  // false=light, true=dark
+    bool            ShutterClosed;  // false=light, true=dark
     bool            UseSubframes;
     double          PixelSize;
 
     wxCriticalSection DarkFrameLock; // dark frames can be accessed in the main thread or the camera worker thread
-    usImage         *CurrentDarkFrame;
+    usImage        *CurrentDarkFrame;
     ExposureImgMap  Darks; // map exposure => dark frame
-    DefectMap       *CurrentDefectMap;
+    DefectMap      *CurrentDefectMap;
 
     static wxArrayString List(void);
     static GuideCamera *Factory(const wxString& choice);
@@ -107,8 +119,8 @@ public:
 
     virtual bool HasNonGuiCapture(void);
 
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false) = 0;
-    virtual bool    Capture(int duration, usImage& img, bool recon) { return Capture(duration, img, wxRect(0, 0, 0, 0), recon); }
+    virtual bool    Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
+    bool Capture(int duration, usImage& img, int captureOptions) { return Capture(duration, img, captureOptions, wxRect(0, 0, 0, 0)); }
 
     virtual bool    Connect() = 0;                  // Opens up and connects to camera
     virtual bool    Disconnect() = 0;               // Disconnects, unloading any DLLs loaded by Connect
@@ -131,6 +143,8 @@ public:
     void            ClearDarks(void);
 
     void            SubtractDark(usImage& img);
+
+    virtual const wxSize& DarkFrameSize() { return FullSize; }
 
 protected:
 

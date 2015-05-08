@@ -163,7 +163,11 @@ public:
     wxAcceleratorEntry *m_showBookmarksAccel;
     wxAcceleratorEntry *m_bookmarkLockPosAccel;
     wxMenuItem *m_takeDarksMenuItem;
+    wxMenuItem *m_useDarksMenuItem;
+    wxMenuItem *m_refineDefMapMenuItem;
+    wxMenuItem *m_useDefectMapMenuItem;
     wxMenuItem *m_calibrationMenuItem;
+    wxMenuItem *m_importCamCalMenuItem;
     wxAuiToolBar *MainToolbar;
     wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
@@ -182,6 +186,7 @@ public:
     wxWindow *pManualGuide;
     wxWindow *pNudgeLock;
     wxWindow *pCometTool;
+    wxWindow *pGuidingAssistant;
     RefineDefMap *pRefineDefMap;
     wxDialog *pCalSanityCheckDlg;
     wxDialog *pCalReviewDlg;
@@ -193,6 +198,8 @@ public:
     unsigned int m_loggedImageFrame;
     wxDateTime m_guidingStarted;
     Star::FindMode m_starFindMode;
+    bool m_rawImageMode;
+    bool m_rawImageModeWarningDone;
 
     void RegisterTextCtrl(wxTextCtrl *ctrl);
     void OnQuit(wxCommandEvent& evt);
@@ -200,6 +207,7 @@ public:
     void OnAbout(wxCommandEvent& evt);
     void OnHelp(wxCommandEvent& evt);
     void OnOverlay(wxCommandEvent& evt);
+    void OnOverlaySlitCoords(wxCommandEvent& evt);
     void OnInstructions(wxCommandEvent& evt);
     void OnSave(wxCommandEvent& evt);
     void OnSettings(wxCommandEvent& evt);
@@ -217,6 +225,7 @@ public:
     void OnEEGG(wxCommandEvent& evt);
     void OnDriftTool(wxCommandEvent& evt);
     void OnCometTool(wxCommandEvent& evt);
+    void OnGuidingAssistant(wxCommandEvent& evt);
     void OnSetupCamera(wxCommandEvent& evt);
     void OnExposureDurationSelected(wxCommandEvent& evt);
     void OnGammaSlider(wxScrollEvent& evt);
@@ -249,6 +258,7 @@ public:
     void OnBookmarksSetAtCurPos(wxCommandEvent& evt);
     void OnBookmarksClearAll(wxCommandEvent& evt);
     void OnRefineDefMap(wxCommandEvent& evt);
+    void OnImportCamCal(wxCommandEvent& evt);
 
     void OnExposeComplete(wxThreadEvent& evt);
     void OnMoveComplete(wxThreadEvent& evt);
@@ -274,11 +284,12 @@ public:
     LOGGED_IMAGE_FORMAT GetLoggedImageFormat(void);
     Star::FindMode GetStarFindMode(void) const;
     Star::FindMode SetStarFindMode(Star::FindMode mode);
+    bool GetRawImageMode(void) const;
+    bool SetRawImageMode(bool force);
 
     bool StartServer(bool state);
     bool FlipRACal();
     int RequestedExposureDuration();
-    void LoadDefectMap();
     int GetFocalLength(void);
     int GetLanguage(void);
     bool GetAutoLoadCalibration(void);
@@ -286,24 +297,29 @@ public:
     int GetInstanceNumber() const { return m_instanceNumber; }
     static wxString GetDefaultFileDir();
     static wxString GetDarksDir();
+    bool DarkLibExists(int profileId, bool showAlert);
     void LoadDarkLibrary();
     void SaveDarkLibrary(const wxString& note);
     void DeleteDarkLibraryFiles(int profileID);
+    static wxString DarkLibFileName(int profileId);
     void SetDarkMenuState();
     void LoadDarkHandler(bool checkIt);         // Use to also set menu item states
     void LoadDefectMapHandler(bool checkIt);
+    void CheckDarkFrameGeometry();
+    static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
     struct EXPOSE_REQUEST
     {
-        usImage          *pImage;
+        usImage         *pImage;
         int              exposureDuration;
+        int              options;
         wxRect           subframe;
-        bool             bError;
-        wxSemaphore      *pSemaphore;
+        bool             error;
+        wxSemaphore     *pSemaphore;
     };
-    void OnRequestExposure(wxCommandEvent &evt);
+    void OnRequestExposure(wxCommandEvent& evt);
 
     struct PHD_MOVE_REQUEST
     {
@@ -316,9 +332,9 @@ public:
         PHD_Point       vectorEndpoint;
         wxSemaphore     *pSemaphore;
     };
-    void OnRequestMountMove(wxCommandEvent &evt);
+    void OnRequestMountMove(wxCommandEvent& evt);
 
-    void ScheduleExposure(int exposureDuration, const wxRect& subframe);
+    void ScheduleExposure(void);
 
     void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
     void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
@@ -473,10 +489,9 @@ enum {
     MENU_XHAIR3,
     MENU_XHAIR4,
     MENU_XHAIR5,
+    MENU_SLIT_OVERLAY_COORDS,
     MENU_TAKEDARKS,
-    MENU_LOG,
     MENU_LOGIMAGES,
-    MENU_DEBUG,
     MENU_SERVER,
     MENU_TOOLBAR,
     MENU_GRAPH,
@@ -488,11 +503,13 @@ enum {
     MENU_AUTOSTAR,
     MENU_DRIFTTOOL,
     MENU_COMETTOOL,
+    MENU_GUIDING_ASSISTANT,
     MENU_SAVESETTINGS,
     MENU_LOADSETTINGS,
     MENU_LOADDARK,
     MENU_LOADDEFECTMAP,
     MENU_REFINEDEFECTMAP,
+    MENU_IMPORTCAMCAL,
     MENU_INDICONFIG,
     MENU_INDIDIALOG,
     MENU_V4LSAVESETTINGS,
@@ -569,6 +586,11 @@ inline double MyFrame::TimeSinceGuidingStarted(void) const
 inline Star::FindMode MyFrame::GetStarFindMode(void) const
 {
     return m_starFindMode;
+}
+
+inline bool MyFrame::GetRawImageMode(void) const
+{
+    return m_rawImageMode;
 }
 
 #endif /* MYFRAME_H_INCLUDED */

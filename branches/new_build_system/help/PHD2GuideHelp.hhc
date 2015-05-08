@@ -98,6 +98,10 @@
 			<param name="Name" value="AO Parameters">
 			<param name="Local" value="Advanced_settings.htm#AO_Tab">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Rotator Parameters">
+			<param name="Local" value="Advanced_settings.htm#Rotator_Tab">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Guide Algorithms">
@@ -125,6 +129,10 @@
 			<param name="Local" value="Tools.htm#PHD2_Server">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Logging">
+			<param name="Local" value="Tools.htm#Logging_and_Debug_Output">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Drift Alignment">
 			<param name="Local" value="Tools.htm#Drift_Align">
 			</OBJECT>
@@ -137,6 +145,10 @@
 			<param name="Local" value="Tools.htm#Comet_Tracking">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Guiding Assistant">
+			<param name="Local" value="Tools.htm#Guiding_Assistant">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Equipment Profiles">
 			<param name="Local" value="Tools.htm#Managing_Equipment_Profiles">
 			</OBJECT>
@@ -144,7 +156,15 @@
 			<param name="Name" value="Simulator Controls">
 			<param name="Local" value="Tools.htm#Advanced_Settings_for_the_Simulators">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Keyboard Shortcuts">
+			<param name="Local" value="Tools.htm#Keyboard_Shortcuts">
+			</OBJECT>
 	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Keyboard Shortcuts">
+		<param name="Local" value="KeyboardShortcuts.htm">
+		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Trouble-shooting and Analysis">
 		<param name="Local" value="Trouble_shooting.htm">

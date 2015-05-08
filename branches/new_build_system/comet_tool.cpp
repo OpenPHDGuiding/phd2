@@ -174,10 +174,7 @@ CometToolWin::CometToolWin()
 
     int xpos = pConfig->Global.GetInt("/CometTool/pos.x", -1);
     int ypos = pConfig->Global.GetInt("/CometTool/pos.y", -1);
-    if (xpos == -1 || ypos == -1)
-        Centre(wxBOTH);
-    else
-        Move(xpos, ypos);
+    MyFrame::PlaceWindowOnScreen(this, xpos, ypos);
 
     UpdateStatus();
 
@@ -362,7 +359,7 @@ void CometToolWin::OnClose(wxCloseEvent& evt)
     pConfig->Global.SetInt("/CometTool/pos.x", x);
     pConfig->Global.SetInt("/CometTool/pos.y", y);
 
-    evt.Skip();
+    Destroy();
 }
 
 wxWindow *CometTool::CreateCometToolWindow()

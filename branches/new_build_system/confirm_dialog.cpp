@@ -34,7 +34,7 @@
 
 #include "phd.h"
 
-ConfirmDialog::ConfirmDialog(const wxString& prompt, const wxString& title)
+ConfirmDialog::ConfirmDialog(const wxString& prompt, const wxString& title, const wxString& affirmLabel, const wxString& negativeLabel)
     : wxDialog(pFrame, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     dont_ask_again = new wxCheckBox(this, wxID_ANY, _("Don't ask again"));
@@ -46,7 +46,16 @@ ConfirmDialog::ConfirmDialog(const wxString& prompt, const wxString& title)
 
     wxBoxSizer *topLevelSizer = new wxBoxSizer(wxVERTICAL);
     topLevelSizer->Add(sizer, wxSizerFlags(0).Expand());
+
+    // Let CreateButtonSizer create platform-neutral OK/Cancel buttons
+    // with correct yes/no and EndModal event behavior - then relabel
+    // the buttons if client wants something other than OK and Cancel
+
     topLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 10));
+    if (!affirmLabel.IsEmpty())
+        FindWindow(wxID_OK)->SetLabel(affirmLabel);
+    if (!negativeLabel.IsEmpty())
+        FindWindow(wxID_CANCEL)->SetLabel(negativeLabel);
 
     SetSizerAndFit(topLevelSizer);
 }
@@ -60,7 +69,7 @@ static wxString ConfigKey(const wxString& name)
     return "/Confirm" + name;
 }
 
-bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, const wxString& title_arg)
+bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, const wxString& affirmLabel, const wxString& negativeLabel, const wxString& title_arg)
 {
     wxString key(ConfigKey(config_key));
 
@@ -72,7 +81,7 @@ bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, 
     if (title.IsEmpty())
         title = _("Confirm");
 
-    ConfirmDialog dlg(prompt, title);
+    ConfirmDialog dlg(prompt, title, affirmLabel, negativeLabel);
     if (dlg.ShowModal() == wxID_OK)
     {
         if (dlg.dont_ask_again->IsChecked())
@@ -81,6 +90,11 @@ bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, 
     }
 
     return false;
+}
+
+bool ConfirmDialog::Confirm(const wxString& prompt, const wxString& config_key, const wxString& title_arg)
+{
+    return Confirm(prompt, config_key, wxEmptyString, wxEmptyString, title_arg);
 }
 
 void ConfirmDialog::ResetAllDontAskAgain(void)

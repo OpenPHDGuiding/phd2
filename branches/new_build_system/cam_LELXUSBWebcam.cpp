@@ -44,10 +44,11 @@
 
 using namespace cv;
 
-Camera_LELxUsbWebcamClass::Camera_LELxUsbWebcamClass(int devNumber)
-    : Camera_LEWebcamClass(devNumber)
+Camera_LELxUsbWebcamClass::Camera_LELxUsbWebcamClass(void)
+    : Camera_LEWebcamClass()
 {
-    Name=_T("Usb USB Webcam");
+    m_isOpen = false;
+    Name = _T("Usb USB Webcam");
 }
 
 Camera_LELxUsbWebcamClass::~Camera_LELxUsbWebcamClass(void)
@@ -66,6 +67,7 @@ bool Camera_LELxUsbWebcamClass::Connect()
             wxMessageBox(_("Unable to open LXUSB device"),_("Error"), wxOK | wxICON_ERROR);
             throw ERROR_INFO("LXUSB_Open failed");
         }
+        m_isOpen = true;
 
         LXUSB_Reset();
 
@@ -93,7 +95,11 @@ bool Camera_LELxUsbWebcamClass::Disconnect()
     {
         LXUSB_Reset();
 
-        LXUSB_Close();
+        if (m_isOpen)
+        {
+            LXUSB_Close();
+            m_isOpen = false;
+        }
 
         if (Camera_LEWebcamClass::Disconnect())
         {

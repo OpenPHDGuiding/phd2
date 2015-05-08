@@ -38,6 +38,7 @@
 
 #include "Refine_DefMap.h"
 #include "comet_tool.h"
+#include "guiding_assistant.h"
 
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
@@ -78,6 +79,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(EEGG_FLIPRACAL, MyFrame::OnEEGG)
     EVT_MENU(MENU_DRIFTTOOL, MyFrame::OnDriftTool)
     EVT_MENU(MENU_COMETTOOL, MyFrame::OnCometTool)
+    EVT_MENU(MENU_GUIDING_ASSISTANT, MyFrame::OnGuidingAssistant)
     EVT_MENU(wxID_HELP_PROCEDURES, MyFrame::OnInstructions)
     EVT_MENU(wxID_HELP_CONTENTS,MyFrame::OnHelp)
     EVT_MENU(wxID_SAVE, MyFrame::OnSave)
@@ -91,11 +93,13 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_XHAIR3,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR4,MyFrame::OnOverlay)
     EVT_MENU(MENU_XHAIR5,MyFrame::OnOverlay)
+    EVT_MENU(MENU_SLIT_OVERLAY_COORDS, MyFrame::OnOverlaySlitCoords)
     EVT_MENU(MENU_BOOKMARKS_SHOW, MyFrame::OnBookmarksShow)
     EVT_MENU(MENU_BOOKMARKS_SET_AT_LOCK, MyFrame::OnBookmarksSetAtLockPos)
     EVT_MENU(MENU_BOOKMARKS_SET_AT_STAR, MyFrame::OnBookmarksSetAtCurPos)
     EVT_MENU(MENU_BOOKMARKS_CLEAR_ALL, MyFrame::OnBookmarksClearAll)
     EVT_MENU(MENU_REFINEDEFECTMAP,MyFrame::OnRefineDefMap)
+    EVT_MENU(MENU_IMPORTCAMCAL,MyFrame::OnImportCamCal)
 
     EVT_CHAR_HOOK(MyFrame::OnCharHook)
 
@@ -104,9 +108,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(MENU_V4LRESTORESETTINGS, MyFrame::OnRestoreSettings)
 #endif
 
-    EVT_MENU(MENU_LOG,MyFrame::OnLog)
     EVT_MENU(MENU_LOGIMAGES,MyFrame::OnLog)
-    EVT_MENU(MENU_DEBUG,MyFrame::OnLog)
     EVT_MENU(MENU_TOOLBAR,MyFrame::OnToolBar)
     EVT_MENU(MENU_GRAPH, MyFrame::OnGraph)
     EVT_MENU(MENU_STATS, MyFrame::OnStats)
@@ -126,6 +128,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(BUTTON_ADVANCED, MyFrame::OnAdvanced) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_TOOL(BUTTON_GUIDE,MyFrame::OnGuide)
     EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
+    EVT_MENU(BUTTON_ALERT_CLOSE,MyFrame::OnAlertButton) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_BUTTON(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
     EVT_COMMAND_SCROLL(CTRL_GAMMA, MyFrame::OnGammaSlider)
     EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
@@ -150,6 +153,8 @@ END_EVENT_TABLE()
 // frame constructor
 MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     : wxFrame(NULL, wxID_ANY, wxEmptyString),
+    m_showBookmarksAccel(0),
+    m_bookmarkLockPosAccel(0),
     pStatsWin(0)
 {
     m_instanceNumber = instanceNumber;
@@ -171,8 +176,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     bool serverMode = pConfig->Global.GetBoolean("/ServerMode", DefaultServerMode);
     SetServerMode(serverMode);
 
-    bool loggingMode = pConfig->Global.GetBoolean("/LoggingMode", DefaultLoggingMode);
-    GuideLog.EnableLogging(loggingMode);
+    GuideLog.EnableLogging(true);
 
     m_image_logging_enabled = false;
     m_logged_image_format = (LOGGED_IMAGE_FORMAT) pConfig->Global.GetInt("/LoggedImageFormat", LIF_LOW_Q_JPEG);
@@ -294,12 +298,14 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
     pManualGuide = NULL;
     pNudgeLock = NULL;
     pCometTool = NULL;
+    pGuidingAssistant = NULL;
     pRefineDefMap = NULL;
     pCalSanityCheckDlg = NULL;
     pCalReviewDlg = NULL;
     m_starFindMode = Star::FIND_CENTROID;
+    m_rawImageMode = false;
+    m_rawImageModeWarningDone = false;
 
-    tools_menu->Check(MENU_LOG,false);
 
     UpdateTitle();
 
@@ -314,7 +320,7 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
             SetStatusText(_("Server started"));
     }
 
-    tools_menu->Check(MENU_DEBUG, Debug.IsEnabled());
+
 
     #include "xhair.xpm"
     wxImage Cursor = wxImage(mac_xhair);
@@ -390,6 +396,9 @@ MyFrame::~MyFrame()
         pCalReviewDlg->Destroy();
 
     m_mgr.UnInit();
+
+    delete m_showBookmarksAccel;
+    delete m_bookmarkLockPosAccel;
 }
 
 void MyFrame::UpdateTitle(void)
@@ -403,12 +412,6 @@ void MyFrame::UpdateTitle(void)
 
     title += " - " + pConfig->GetCurrentProfile();
 
-    if (GuideLog.IsEnabled())
-    {
-        title += _(" (log active)");
-        tools_menu->Check(MENU_LOG,true);
-    }
-
     SetTitle(title);
 }
 
@@ -416,60 +419,57 @@ void MyFrame::SetupMenuBar(void)
 {
     wxMenu *file_menu = new wxMenu;
     file_menu->AppendSeparator();
-    file_menu->Append(wxID_SAVE, _("Save Image..."), _("Save current image"));
+    file_menu->Append(wxID_SAVE, _("&Save Image..."), _("Save current image"));
     file_menu->Append(wxID_EXIT, _("E&xit\tAlt-X"), _("Quit this program"));
 
     tools_menu = new wxMenu;
     tools_menu->Append(MENU_MANGUIDE, _("&Manual Guide"), _("Manual / test guide dialog"));
-    tools_menu->Append(MENU_AUTOSTAR, _("Auto-select &Star\tAlt-S"), _("Automatically select star"));
-    tools_menu->Append(EEGG_REVIEWCAL, _("Review &Calibration Data\tAlt-C"), _("Review calibration data from last successful calibration"));
+    tools_menu->Append(MENU_AUTOSTAR, _("&Auto-select Star\tAlt-S"), _("Automatically select star"));
+    tools_menu->Append(EEGG_REVIEWCAL, _("&Review Calibration Data\tAlt-C"), _("Review calibration data from last successful calibration"));
+
     wxMenu *calib_menu = new wxMenu;
     calib_menu->Append(EEGG_RESTORECAL, _("Restore Calibration Data..."), _("Restore calibration data from last successful calibration"));
     calib_menu->Append(EEGG_MANUALCAL, _("Enter Calibration Data..."), _("Manually calibrate"));
     calib_menu->Append(EEGG_FLIPRACAL, _("Flip Calibration Data"), _("Flip RA calibration vector"));
     calib_menu->Append(EEGG_CLEARCAL, _("Clear Calibration Data..."), _("Clear calibration data currently in use"));
     m_calibrationMenuItem = tools_menu->AppendSubMenu(calib_menu, _("Modify Calibration"));
-    tools_menu->Append(EEGG_MANUALLOCK, _("Adjust Lock Position"), _("Adjust the lock position"));
-    tools_menu->Append(MENU_COMETTOOL, _("Comet Tracking"), _("Run the Comet Tracking tool"));
-    tools_menu->Append(MENU_DRIFTTOOL, _("Drift Align"), _("Run the Drift Alignment tool"));
+    m_calibrationMenuItem->Enable(false);
+
+    tools_menu->Append(EEGG_MANUALLOCK, _("Adjust &Lock Position"), _("Adjust the lock position"));
+    tools_menu->Append(MENU_COMETTOOL, _("&Comet Tracking"), _("Run the Comet Tracking tool"));
+    tools_menu->Append(MENU_GUIDING_ASSISTANT, _("&Guiding Assistant"), _("Run the Guiding Assistant"));
+    tools_menu->Append(MENU_DRIFTTOOL, _("&Drift Align"), _("Run the Drift Alignment tool"));
     tools_menu->AppendSeparator();
-    tools_menu->AppendCheckItem(MENU_LOG,_("Enable Guide &Log\tAlt-L"),_("Enable guide log file"));
-    tools_menu->AppendCheckItem(MENU_DEBUG,_("Enable Debug Log"),_("Enable debug log file"));
     tools_menu->AppendCheckItem(MENU_LOGIMAGES,_("Enable Star Image Logging"),_("Enable logging of star images"));
-    tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable / disable link to Nebulosity"));
+    tools_menu->AppendCheckItem(MENU_SERVER,_("Enable Server"),_("Enable PHD2 server capability"));
     tools_menu->AppendCheckItem(EEGG_STICKY_LOCK,_("Sticky Lock Position"),_("Keep the same lock position when guiding starts"));
 
     view_menu = new wxMenu();
     view_menu->AppendCheckItem(MENU_TOOLBAR,_("Display Toolbar"),_("Enable / disable tool bar"));
-    view_menu->AppendCheckItem(MENU_GRAPH,_("Display Graph"),_("Enable / disable graph"));
-    view_menu->AppendCheckItem(MENU_STATS, _("Display Stats"), _("Enable / disable guide stats"));
-    view_menu->AppendCheckItem(MENU_AO_GRAPH, _("Display AO Graph"), _("Enable / disable AO graph"));
-    view_menu->AppendCheckItem(MENU_TARGET,_("Display Target"),_("Enable / disable target"));
-    view_menu->AppendCheckItem(MENU_STARPROFILE,_("Display Star Profile"),_("Enable / disable star profile view"));
+    view_menu->AppendCheckItem(MENU_GRAPH,_("Display &Graph"),_("Enable / disable graph"));
+    view_menu->AppendCheckItem(MENU_STATS, _("Display &Stats"), _("Enable / disable guide stats"));
+    view_menu->AppendCheckItem(MENU_AO_GRAPH, _("Display &AO Graph"), _("Enable / disable AO graph"));
+    view_menu->AppendCheckItem(MENU_TARGET,_("Display &Target"),_("Enable / disable target"));
+    view_menu->AppendCheckItem(MENU_STARPROFILE,_("Display Star &Profile"),_("Enable / disable star profile view"));
     view_menu->AppendSeparator();
-    view_menu->AppendRadioItem(MENU_XHAIR0, _("No Overlay"),_("No additional crosshairs"));
-    view_menu->AppendRadioItem(MENU_XHAIR1, _("Bullseye"),_("Centered bullseye overlay"));
-    view_menu->AppendRadioItem(MENU_XHAIR2, _("Fine Grid"),_("Grid overlay"));
-    view_menu->AppendRadioItem(MENU_XHAIR3, _("Coarse Grid"),_("Grid overlay"));
-    view_menu->AppendRadioItem(MENU_XHAIR4, _("RA/Dec"),_("RA and Dec overlay"));
+    view_menu->AppendRadioItem(MENU_XHAIR0, _("&No Overlay"),_("No additional crosshairs"));
+    view_menu->AppendRadioItem(MENU_XHAIR1, _("&Bullseye"),_("Centered bullseye overlay"));
+    view_menu->AppendRadioItem(MENU_XHAIR2, _("&Fine Grid"),_("Grid overlay"));
+    view_menu->AppendRadioItem(MENU_XHAIR3, _("&Coarse Grid"),_("Grid overlay"));
+    view_menu->AppendRadioItem(MENU_XHAIR4, _("&RA/Dec"),_("RA and Dec overlay"));
+    view_menu->AppendRadioItem(MENU_XHAIR5, _("Spectrograph S&lit"), _("Spectrograph slit overlay"));
     view_menu->AppendSeparator();
-    view_menu->Append(MENU_RESTORE_WINDOWS, _("Restore window positions"), _("Restore all windows to their default/docked positions"));
-
-    bookmarks_menu = new wxMenu();
-    m_showBookmarksMenuItem = bookmarks_menu->AppendCheckItem(MENU_BOOKMARKS_SHOW, _("Show Bookmarks\tb"), _("Hide or show bookmarks"));
-    m_showBookmarksAccel = m_showBookmarksMenuItem->GetAccel();
-    bookmarks_menu->Check(MENU_BOOKMARKS_SHOW, true);
-    m_bookmarkLockPosMenuItem = bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_LOCK, _("Bookmark Lock Pos\tShift-B"), _("Set a bookmark at the current lock position"));
-    m_bookmarkLockPosAccel = m_bookmarkLockPosMenuItem->GetAccel();
-    bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_STAR, _("Bookmark Star Pos"), _("Set a bookmark at the position of the currently selected star"));
-    bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("Delete all\tCtrl-B"), _("Remove all bookmarks"));
+    view_menu->Append(MENU_SLIT_OVERLAY_COORDS, _("Slit Position..."));
+    view_menu->AppendSeparator();
+    view_menu->Append(MENU_RESTORE_WINDOWS, _("Restore Window Positions"), _("Restore all windows to their default/docked positions"));
 
     darks_menu = new wxMenu();
-    m_takeDarksMenuItem = darks_menu->Append(MENU_TAKEDARKS, _("&Dark Library..."), _("Build a dark library for this profile"));
-    darks_menu->Append(MENU_REFINEDEFECTMAP, _("Bad-pixel Map..."), _("Adjust parameters to create or modify the bad-pixel map"));
+    m_takeDarksMenuItem = darks_menu->Append(MENU_TAKEDARKS, _("Dark &Library..."), _("Build a dark library for this profile"));
+    m_refineDefMapMenuItem = darks_menu->Append(MENU_REFINEDEFECTMAP, _("Bad-pixel &Map..."), _("Adjust parameters to create or modify the bad-pixel map"));
+    m_importCamCalMenuItem = darks_menu->Append(MENU_IMPORTCAMCAL, _("Import From Profile..."), _("Import existing dark library/bad-pixel map from a different profile"));
     darks_menu->AppendSeparator();
-    darks_menu->AppendCheckItem(MENU_LOADDARK, _("&Use Dark Library"), _("Use the the dark library for this profile"));
-    darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use Bad-pixel &Map"), _("Use the bad-pixel map for this profile"));
+    m_useDarksMenuItem =  darks_menu->AppendCheckItem(MENU_LOADDARK, _("Use &Dark Library"), _("Use the the dark library for this profile"));
+    m_useDefectMapMenuItem = darks_menu->AppendCheckItem(MENU_LOADDEFECTMAP, _("Use &Bad-pixel Map"), _("Use the bad-pixel map for this profile"));
 
 #if defined (V4L_CAMERA)
     wxMenu *v4l_menu = new wxMenu();
@@ -478,9 +478,18 @@ void MyFrame::SetupMenuBar(void)
     v4l_menu->Append(MENU_V4LRESTORESETTINGS, _("&Restore settings"), _("Restore camera settings"));
 #endif
 
+    bookmarks_menu = new wxMenu();
+    m_showBookmarksMenuItem = bookmarks_menu->AppendCheckItem(MENU_BOOKMARKS_SHOW, _("Show &Bookmarks\tb"), _("Hide or show bookmarks"));
+    m_showBookmarksAccel = m_showBookmarksMenuItem->GetAccel();
+    bookmarks_menu->Check(MENU_BOOKMARKS_SHOW, true);
+    m_bookmarkLockPosMenuItem = bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_LOCK, _("Bookmark &Lock Pos\tShift-B"), _("Set a bookmark at the current lock position"));
+    m_bookmarkLockPosAccel = m_bookmarkLockPosMenuItem->GetAccel();
+    bookmarks_menu->Append(MENU_BOOKMARKS_SET_AT_STAR, _("Bookmark &Star Pos"), _("Set a bookmark at the position of the currently selected star"));
+    bookmarks_menu->Append(MENU_BOOKMARKS_CLEAR_ALL, _("&Delete all\tCtrl-B"), _("Remove all bookmarks"));
+
     wxMenu *help_menu = new wxMenu;
     help_menu->Append(wxID_ABOUT, _("&About...\tF1"), wxString::Format(_("About %s"), APPNAME));
-    help_menu->Append(wxID_HELP_CONTENTS,_("Contents"),_("Full help"));
+    help_menu->Append(wxID_HELP_CONTENTS,_("&Contents"),_("Full help"));
     help_menu->Append(wxID_HELP_PROCEDURES,_("&Impatient Instructions"),_("Quick instructions for the impatient"));
 
     Menubar = new wxMenuBar();
@@ -676,6 +685,16 @@ Star::FindMode MyFrame::SetStarFindMode(Star::FindMode mode)
     return prev;
 }
 
+bool MyFrame::SetRawImageMode(bool mode)
+{
+    bool prev = m_rawImageMode;
+    Debug.AddLine("Setting RawImageMode = %d", mode);
+    m_rawImageMode = mode;
+    if (mode)
+        m_rawImageModeWarningDone = false;
+    return prev;
+}
+
 enum {
     GAMMA_MIN = 10,
     GAMMA_MAX = 300,
@@ -768,7 +787,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->AddTool(BUTTON_GEAR, _("Equipment"), camera_bmp, _("Connect to equipment. Shift-click to reconnect the same equipment last connected."));
     MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus"));
     MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD). Shift-click to force calibration."));
-    MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Abort the current action"));
+    MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Stop looping and guiding"));
     MainToolbar->AddSeparator();
     MainToolbar->AddControl(Dur_Choice, _("Exposure duration"));
     MainToolbar->AddControl(Gamma_Slider, _("Gamma"));
@@ -778,6 +797,7 @@ void MyFrame::SetupToolBar()
     MainToolbar->Realize();
     MainToolbar->EnableTool(BUTTON_LOOP, false);
     MainToolbar->EnableTool(BUTTON_GUIDE, false);
+    MainToolbar->EnableTool(BUTTON_STOP, false);
 }
 
 void MyFrame::UpdateCalibrationStatus(void)
@@ -843,6 +863,7 @@ void MyFrame::SetupKeyboardShortcuts(void)
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'L', BUTTON_LOOP),
         wxAcceleratorEntry(wxACCEL_CTRL|wxACCEL_SHIFT,  (int) 'M', EEGG_MANUALCAL),
         wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'S', BUTTON_STOP),
+        wxAcceleratorEntry(wxACCEL_CTRL,  (int) 'D', BUTTON_ALERT_CLOSE),
     };
     wxAcceleratorTable accel(WXSIZEOF(entries), entries);
     SetAcceleratorTable(accel);
@@ -854,8 +875,7 @@ void MyFrame::SetupHelpFile(void)
     bool retval;
     wxString filename;
     // first try to find locale-specific help file
-    filename = wxStandardPaths::Get().GetResourcesDir() + wxFILE_SEP_PATH
-        + _T("locale") + wxFILE_SEP_PATH
+    filename = wxGetApp().GetLocaleDir() + wxFILE_SEP_PATH
         + wxLocale::GetLanguageCanonicalName(m_pLocale->GetLanguage()) + wxFILE_SEP_PATH
         + _T("PHD2GuideHelp.zip");
     if (!wxFileExists(filename))
@@ -895,6 +915,9 @@ void MyFrame::UpdateButtonsStatus(void)
     if (cond_update_tool(MainToolbar, BUTTON_GEAR, !CaptureActive))
         need_update = true;
 
+    if (cond_update_tool(MainToolbar, BUTTON_STOP, CaptureActive))
+        need_update = true;
+
     bool dark_enabled = loop_enabled && !CaptureActive;
     if (dark_enabled ^ m_takeDarksMenuItem->IsEnabled())
     {
@@ -903,9 +926,15 @@ void MyFrame::UpdateButtonsStatus(void)
     }
 
     bool guiding_active = pGuider && pGuider->IsCalibratingOrGuiding();         // Not the same as 'bGuideable below
-    if (!guiding_active ^ m_calibrationMenuItem->IsEnabled())
+    bool mod_calibration_ok = !guiding_active && pMount && pMount->IsConnected();
+    if (mod_calibration_ok ^ m_calibrationMenuItem->IsEnabled())
     {
-        m_calibrationMenuItem->Enable(!guiding_active);
+        m_calibrationMenuItem->Enable(mod_calibration_ok);
+        need_update = true;
+    }
+    if (!guiding_active ^ m_refineDefMapMenuItem->IsEnabled())
+    {
+        m_refineDefMapMenuItem->Enable(!guiding_active);
         need_update = true;
     }
 
@@ -925,6 +954,9 @@ void MyFrame::UpdateButtonsStatus(void)
 
     if (pCometTool)
         CometTool::UpdateCometToolControls();
+
+    if (pGuidingAssistant)
+        GuidingAssistant::UpdateUIControls();
 
     if (need_update)
     {
@@ -1156,10 +1188,10 @@ bool MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
 
 void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 {
-    EXPOSE_REQUEST *pRequest = (EXPOSE_REQUEST *)evt.GetClientData();
-    bool bError = pCamera->Capture(pRequest->exposureDuration, *pRequest->pImage, pRequest->subframe, true);
-    pRequest->bError = bError;
-    pRequest->pSemaphore->Post();
+    EXPOSE_REQUEST *req = (EXPOSE_REQUEST *) evt.GetClientData();
+    bool error = pCamera->Capture(req->exposureDuration, *req->pImage, req->options, req->subframe);
+    req->error = error;
+    req->pSemaphore->Post();
 }
 
 void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
@@ -1186,19 +1218,25 @@ void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
     wxFrame::SetStatusText(wxEmptyString, 1);
 }
 
-void MyFrame::ScheduleExposure(int exposureDuration, const wxRect& subframe)
+void MyFrame::ScheduleExposure(void)
 {
-    Debug.AddLine("ScheduleExposure(%d) exposurePending=%d", exposureDuration, m_exposurePending);
+    int exposureDuration = RequestedExposureDuration();
+    int exposureOptions = GetRawImageMode() ? CAPTURE_BPM_REVIEW : CAPTURE_LIGHT;
+    const wxRect& subframe = pGuider->GetBoundingBox();
+
+    Debug.AddLine("ScheduleExposure(%d,%x,%d) exposurePending=%d",
+        exposureDuration, exposureOptions, !subframe.IsEmpty(), m_exposurePending);
 
     assert(wxThread::IsMain()); // m_exposurePending only updated in main thread
     assert(!m_exposurePending);
 
     m_exposurePending = true;
 
-    wxCriticalSectionLocker lock(m_CSpWorkerThread);
+    usImage *img = new usImage();
 
+    wxCriticalSectionLocker lock(m_CSpWorkerThread);
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(new usImage(), exposureDuration, subframe);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, exposureDuration, exposureOptions, subframe);
 }
 
 void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
@@ -1259,6 +1297,7 @@ void MyFrame::StartCapturing()
         m_frameCounter = 0;
         m_loggedImageFrame = 0;
 
+        CheckDarkFrameGeometry();
         UpdateButtonsStatus();
         SetStatusText(wxEmptyString);
 
@@ -1268,8 +1307,7 @@ void MyFrame::StartCapturing()
         if (!m_exposurePending)
         {
             pCamera->InitCapture();
-
-            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
+            ScheduleExposure();
         }
     }
 }
@@ -1322,7 +1360,7 @@ void MyFrame::SetPaused(PauseType pause)
             pMount->ClearHistory();
         }
         if (m_continueCapturing && !m_exposurePending)
-            ScheduleExposure(RequestedExposureDuration(), pGuider->GetBoundingBox());
+            ScheduleExposure();
         SetStatusText(_("Resumed"));
         GuideLog.ServerCommand(pGuider, "RESUME");
         EvtServer.NotifyResumed();
@@ -1368,6 +1406,12 @@ bool MyFrame::StartGuiding(void)
 {
     bool error = true;
 
+    if (pRefineDefMap && pRefineDefMap->IsShown())
+    {
+        Alert(_("Cannot guide while refining a Bad-pixel Map. Please close the Refine Bad-pixel Map window."));
+        return error;
+    }
+
     if (pMount && pMount->IsConnected() &&
         pCamera && pCamera->Connected &&
         pGuider->GetState() >= STATE_SELECTED)
@@ -1392,6 +1436,22 @@ bool MyFrame::Dither(double amount, bool raOnly)
             throw ERROR_INFO("cannot dither if not guiding");
         }
 
+        if (m_ditherRaOnly)
+        {
+            raOnly = true;
+        }
+
+        if (!raOnly && !pMount->IsStepGuider())
+        {
+            Scope *scope = dynamic_cast<Scope *>(pMount);
+            DEC_GUIDE_MODE dgm = scope->GetDecGuideMode();
+            if (dgm != DEC_AUTO)
+            {
+                Debug.AddLine("forcing dither RA-only since Dec guide mode is %d", dgm);
+                raOnly = true;
+            }
+        }
+
         amount *= m_ditherScaleFactor;
 
         double dRa, dDec;
@@ -1399,12 +1459,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
         while (true)
         {
             dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
-            dDec =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
-
-            if (raOnly || m_ditherRaOnly)
-            {
-                dDec = 0.;
-            }
+            dDec =  raOnly ? 0.0 : amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
 
             Debug.AddLine("dither: size=%.2f, dRA=%.2f dDec=%.2f", amount, dRa, dDec);
 
@@ -1435,6 +1490,16 @@ bool MyFrame::Dither(double amount, bool raOnly)
         info.dRa = dRa;
         info.dDec = dDec;
         pGraphLog->AppendData(info);
+
+        if (pMount->IsStepGuider())
+        {
+            StepGuider *ao = static_cast<StepGuider *>(pMount);
+            if (ao->GetBumpOnDither())
+            {
+                Debug.Write("Dither: starting AO bump\n");
+                ao->ForceStartBump();
+            }
+        }
     }
     catch (wxString Msg)
     {
@@ -1651,7 +1716,7 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             Debug.AddLine("saving dark frame exposure = %d", img->ImgExpDur);
         }
 
-        fits_close_file(fptr, &status);
+        PHD_fits_close_file(fptr);
         bError = status ? true : false;
     }
     catch (wxString Msg)
@@ -1754,7 +1819,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
 
     if (fptr)
     {
-        fits_close_file(fptr, &status);
+        PHD_fits_close_file(fptr);
     }
 
     return bError;
@@ -1769,19 +1834,90 @@ wxString MyFrame::GetDarksDir()
     return dirpath;
 }
 
-static wxString DarkLibFileName(int profileId)
+wxString MyFrame::DarkLibFileName(int profileId)
 {
-    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_dark_lib_%d.fit", profileId);
+    int inst = pFrame->GetInstanceNumber();
+    return MyFrame::GetDarksDir() + PATHSEPSTR +
+        wxString::Format("PHD2_dark_lib%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
+}
+
+bool MyFrame::DarkLibExists(int profileId, bool showAlert)
+{
+    bool bOk = false;
+    wxString fileName = MyFrame::DarkLibFileName(profileId);
+
+    if (wxFileExists(fileName))
+    {
+        const wxSize& sensorSize = pCamera->DarkFrameSize();
+        if (sensorSize == UNDEFINED_FRAME_SIZE)
+        {
+            bOk = true;
+        }
+        else
+        {
+            fitsfile *fptr;
+            int status = 0;  // CFITSIO status value MUST be initialized to zero!
+
+            if (PHD_fits_open_diskfile(&fptr, fileName, READONLY, &status) == 0)
+            {
+                long fsize[2];
+                fits_get_img_size(fptr, 2, fsize, &status);
+                if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
+                    bOk = true;
+                else if (showAlert)
+                    Alert(_("Dark library does not match the camera in this profile - it needs to be replaced."));
+
+                PHD_fits_close_file(fptr);
+            }
+        }
+    }
+
+    return bOk;
+}
+
+// Confirm that in-use darks or bpms have the same sensor size as the current camera.  Added to protect against
+// surprise changes in binning
+void MyFrame::CheckDarkFrameGeometry()
+{
+    wxMenuItem *darksMenu = m_useDarksMenuItem;
+    wxMenuItem *bpmMenu = m_useDefectMapMenuItem;
+    bool badBPM = false;
+
+    if (bpmMenu->IsEnabled())
+    {
+        if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId(), true))
+        {
+            if (bpmMenu->IsChecked())
+                LoadDefectMapHandler(false);
+            bpmMenu->Enable(false);
+            Debug.Write("CheckDarkFrameGeometry: BPM incompatibility found");
+            badBPM = true;
+        }
+    }
+
+    if (darksMenu->IsEnabled())
+    {
+        if (!DarkLibExists(pConfig->GetCurrentProfileId(), true))
+        {
+            if (darksMenu->IsChecked())
+                LoadDarkHandler(false);
+            darksMenu->Enable(false);
+            Debug.Write("CheckDarkFrameGeometry: Dark lib incompatibility found");
+            if (badBPM)
+                pFrame->Alert(_("Dark library and bad-pixel maps are incompatible with the current camera - both need to be replaced"));
+
+        }
+    }
 }
 
 void MyFrame::SetDarkMenuState()
 {
-    wxMenuItem *item = darks_menu->FindItem(MENU_LOADDARK);
-    bool haveDarkLib = wxFileExists(DarkLibFileName(pConfig->GetCurrentProfileId()));
+    wxMenuItem *item = m_useDarksMenuItem;
+    bool haveDarkLib = DarkLibExists(pConfig->GetCurrentProfileId(), true);
     item->Enable(haveDarkLib);
     if (!haveDarkLib)
         item->Check(false);
-    item = darks_menu->FindItem(MENU_LOADDEFECTMAP);
+    item = m_useDefectMapMenuItem;
     bool defectmap_avail = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId());
     item->Enable(defectmap_avail);
     if (!defectmap_avail)
@@ -1790,7 +1926,7 @@ void MyFrame::SetDarkMenuState()
 
 void MyFrame::LoadDarkLibrary()
 {
-    wxString filename = DarkLibFileName(pConfig->GetCurrentProfileId());
+    wxString filename = MyFrame::DarkLibFileName(pConfig->GetCurrentProfileId());
 
     if (!pCamera || !pCamera->Connected)
     {
@@ -1813,7 +1949,7 @@ void MyFrame::LoadDarkLibrary()
 
 void MyFrame::SaveDarkLibrary(const wxString& note)
 {
-    wxString filename = DarkLibFileName(pConfig->GetCurrentProfileId());
+    wxString filename = MyFrame::DarkLibFileName(pConfig->GetCurrentProfileId());
 
     Debug.AddLine("saving dark library");
 
@@ -1823,24 +1959,10 @@ void MyFrame::SaveDarkLibrary(const wxString& note)
     }
 }
 
-void MyFrame::LoadDefectMap()
-{
-    DefectMap *defectMap = DefectMap::LoadDefectMap(pConfig->GetCurrentProfileId());
-    if (defectMap)
-    {
-        SetStatusText(_("Defect map loaded"));
-        pCamera->SetDefectMap(defectMap);
-    }
-    else
-    {
-        SetStatusText(_("Defect map not loaded"));
-    }
-}
-
 // Delete both the dark library file and any defect map file for this profile
 void MyFrame::DeleteDarkLibraryFiles(int profileId)
 {
-    wxString filename = DarkLibFileName(profileId);
+    wxString filename = MyFrame::DarkLibFileName(profileId);
 
     if (wxFileExists(filename))
     {
@@ -2083,8 +2205,10 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
     {
         bool bLanguageNameOk = false;
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
-#ifdef __WINDOWS__
-        wxString catalogFile = "locale\\" + pLanguageInfo->CanonicalName + "\\messages.mo";
+#ifndef __LINUX__  // See issue 83
+        wxString catalogFile = wxGetApp().GetLocaleDir() +
+            PATHSEPSTR + pLanguageInfo->CanonicalName +
+            PATHSEPSTR "messages.mo";
         wxMsgCatalog *pCat = wxMsgCatalog::CreateFromFile(catalogFile, "messages");
         if (pCat != NULL)
         {
@@ -2273,4 +2397,15 @@ int MyFrameConfigDialogPane::GetFocalLength(void)
 void MyFrameConfigDialogPane::SetFocalLength(int val)
 {
     m_pFocalLength->SetValue(wxString::Format(_T("%d"), val));
+}
+
+void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)
+{
+    if (x < 0 || x > wxSystemSettings::GetMetric(wxSYS_SCREEN_X) - 20 ||
+        y < 0 || y > wxSystemSettings::GetMetric(wxSYS_SCREEN_Y) - 20)
+    {
+        win->Centre(wxBOTH);
+    }
+    else
+        win->Move(x, y);
 }

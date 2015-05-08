@@ -96,14 +96,14 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
         if (!profile.Create(L"ASCOM.Utilities.Profile"))
             throw ERROR_INFO("ASCOM Scope: could not instantiate ASCOM profile class ASCOM.Utilities.Profile. Is ASCOM installed?");
 
-        VARIANT res;
+        Variant res;
         if (!profile.InvokeMethod(&res, L"RegisteredDevices", L"Telescope"))
             throw ERROR_INFO("ASCOM Scope: could not query registered telescope devices: " + ExcepMsg(profile.Excep()));
 
         DispatchClass ilist_class;
         DispatchObj ilist(res.pdispVal, &ilist_class);
 
-        VARIANT vcnt;
+        Variant vcnt;
         if (!ilist.GetProp(&vcnt, L"Count"))
             throw ERROR_INFO("ASCOM Scope: could not query registered telescopes: " + ExcepMsg(ilist.Excep()));
 
@@ -115,11 +115,11 @@ wxArrayString ScopeASCOM::EnumAscomScopes()
 
         for (unsigned int i = 0; i < count; i++)
         {
-            VARIANT kvpres;
+            Variant kvpres;
             if (ilist.GetProp(&kvpres, L"Item", i))
             {
                 DispatchObj kvpair(kvpres.pdispVal, &kvpair_class);
-                VARIANT vkey, vval;
+                Variant vkey, vval;
                 if (kvpair.GetProp(&vkey, L"Key") && kvpair.GetProp(&vval, L"Value"))
                 {
                     wxString ascomName = vval.bstrVal;
@@ -160,7 +160,7 @@ static bool ChooseASCOMScope(BSTR *res)
     wxString wx_ProgID = pConfig->Global.GetString("/scope/ascom/ScopeID", _T(""));
     BSTR bstr_ProgID = wxBasicString(wx_ProgID).Get();
 
-    VARIANT vchoice;
+    Variant vchoice;
     if (!chooser.InvokeMethod(&vchoice, L"Choose", bstr_ProgID))
     {
         wxMessageBox(_("Failed to run the Telescope Chooser. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
@@ -244,7 +244,7 @@ void ScopeASCOM::SetupDialog(void)
     DispatchObj scope;
     if (Create(scope))
     {
-        VARIANT res;
+        Variant res;
         if (!scope.InvokeMethod(&res, L"SetupDialog"))
         {
             wxMessageBox(wxString(scope.Excep().bstrSource) + ":\n" +
@@ -395,7 +395,7 @@ bool ScopeASCOM::Connect(void)
         }
 
         // get the scope name
-        VARIANT vRes;
+        Variant vRes;
         if (!pScopeDriver.GetProp(&vRes, L"Name"))
         {
             wxMessageBox(_T("ASCOM driver problem getting Name property"), _("Error"), wxOK | wxICON_ERROR);
@@ -569,10 +569,10 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 
         HRESULT hr;
         EXCEPINFO excep;
-        VARIANT vRes;
+        Variant vRes;
 
-        if (FAILED(hr = scope.IDisp()->Invoke(dispid_pulseguide,IID_NULL,LOCALE_USER_DEFAULT,DISPATCH_METHOD,
-            &dispParms,&vRes,&excep,NULL)))
+        if (FAILED(hr = scope.IDisp()->Invoke(dispid_pulseguide, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
+            &dispParms, &vRes, &excep, NULL)))
         {
             Debug.AddLine(wxString::Format("pulseguide: [%x] %s", hr, _com_error(hr).ErrorMessage()));
 
@@ -653,7 +653,10 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         POSSIBLY_UNUSED(msg);
 
         if (result == MOVE_OK)
+        {
             result = MOVE_ERROR;
+            pFrame->Alert(_("PulseGuide command to mount has failed - guiding is likely to be ineffective."));
+        }
     }
 
     if (result == MOVE_STOP_GUIDING)
@@ -678,7 +681,7 @@ bool ScopeASCOM::IsGuiding(DispatchObj *scope)
         }
 
         // First, check to see if already moving
-        VARIANT vRes;
+        Variant vRes;
         if (!scope->GetProp(&vRes, dispid_ispulseguiding))
         {
             pFrame->Alert(_("ASCOM driver failed checking IsPulseGuiding"));
@@ -700,7 +703,7 @@ bool ScopeASCOM::IsGuiding(DispatchObj *scope)
 
 bool ScopeASCOM::IsSlewing(DispatchObj *scope)
 {
-    VARIANT vRes;
+    Variant vRes;
     if (!scope->GetProp(&vRes, dispid_isslewing))
     {
         Debug.AddLine("ScopeASCOM::IsSlewing failed: " + ExcepMsg(scope->Excep()));
@@ -718,7 +721,7 @@ bool ScopeASCOM::IsSlewing(DispatchObj *scope)
 void ScopeASCOM::AbortSlew(DispatchObj *scope)
 {
     Debug.AddLine("ScopeASCOM: AbortSlew");
-    VARIANT vRes;
+    Variant vRes;
     if (!scope->InvokeMethod(&vRes, dispid_abortslew))
     {
         pFrame->Alert(_("ASCOM driver failed calling AbortSlew"));
@@ -778,7 +781,7 @@ double ScopeASCOM::GetGuidingDeclination(void)
 
         GITObjRef scope(m_gitEntry);
 
-        VARIANT vRes;
+        Variant vRes;
         if (!scope.GetProp(&vRes, dispid_declination))
         {
             throw ERROR_INFO("GetDeclination() fails: " + ExcepMsg(scope.Excep()));
@@ -817,7 +820,7 @@ bool ScopeASCOM::GetGuideRates(double *pRAGuideRate, double *pDecGuideRate)
 
         GITObjRef scope(m_gitEntry);
 
-        VARIANT vRes;
+        Variant vRes;
 
         if (!scope.GetProp(&vRes, dispid_decguiderate))
         {
@@ -863,21 +866,21 @@ bool ScopeASCOM::GetCoordinates(double *ra, double *dec, double *siderealTime)
 
         GITObjRef scope(m_gitEntry);
 
-        VARIANT vRA;
+        Variant vRA;
 
         if (!scope.GetProp(&vRA, dispid_rightascension))
         {
             throw ERROR_INFO("ASCOM Scope: get right ascension failed: " + ExcepMsg(scope.Excep()));
         }
 
-        VARIANT vDec;
+        Variant vDec;
 
         if (!scope.GetProp(&vDec, dispid_declination))
         {
             throw ERROR_INFO("ASCOM Scope: get declination failed: " + ExcepMsg(scope.Excep()));
         }
 
-        VARIANT vST;
+        Variant vST;
 
         if (!scope.GetProp(&vST, dispid_siderealtime))
         {
@@ -913,14 +916,14 @@ bool ScopeASCOM::GetSiteLatLong(double *latitude, double *longitude)
 
         GITObjRef scope(m_gitEntry);
 
-        VARIANT vLat;
+        Variant vLat;
 
         if (!scope.GetProp(&vLat, dispid_sitelatitude))
         {
             throw ERROR_INFO("ASCOM Scope: get site latitude failed: " + ExcepMsg(scope.Excep()));
         }
 
-        VARIANT vLong;
+        Variant vLong;
 
         if (!scope.GetProp(&vLong, dispid_sitelongitude))
         {
@@ -985,7 +988,7 @@ bool ScopeASCOM::SlewToCoordinates(double ra, double dec)
 
         GITObjRef scope(m_gitEntry);
 
-        VARIANT vRes;
+        Variant vRes;
 
         if (!scope.InvokeMethod(&vRes, dispid_slewtocoordinates, ra, dec))
         {
@@ -1019,7 +1022,7 @@ PierSide ScopeASCOM::SideOfPier(void)
 
         GITObjRef scope(m_gitEntry);
 
-        VARIANT vRes;
+        Variant vRes;
 
         if (!scope.GetProp(&vRes, dispid_sideofpier))
         {

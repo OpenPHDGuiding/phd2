@@ -192,31 +192,62 @@ static bool StopCapture(ArtemisHandle h)
     return ret == ARTEMIS_OK;
 }
 
-bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    bool TakeSubframe = UseSubframes;
+    if (img.Init(FullSize))
+    {
+        DisconnectWithAlert(CAPT_FAIL_MEMORY);
+        return true;
+    }
+
+    bool useSubframe = UseSubframes;
 
     if (subframe.width <= 0 || subframe.height <= 0)
-    {
-        TakeSubframe = false;
-    }
+        useSubframe = false;
 
     if (HasShutter)
-        ArtemisSetDarkMode(Cam_Handle,ShutterState);
-    if (TakeSubframe) {
-        ArtemisSubframe(Cam_Handle, subframe.x,subframe.y,subframe.width,subframe.height);
-        img.Subframe = subframe;
+        ArtemisSetDarkMode(Cam_Handle, ShutterClosed);
+
+    wxRect frame;
+    wxPoint subframePos;  // position of subframe within frame
+
+    if (useSubframe)
+    {
+        // Round height up to next multiple of 2 to workaround bug where the camera returns incorrect data when the subframe height is odd.
+        int w = subframe.width;
+        int x = subframe.x;
+        if (w & 1)
+        {
+            ++w;
+            if (x + w >= FullSize.GetWidth())
+                --x;
+        }
+        int h = subframe.height;
+        int y = subframe.y;
+        if (h & 1)
+        {
+            ++h;
+            if (y + h >= FullSize.GetHeight())
+                --y;
+        }
+        frame = wxRect(x, y, w, h);
+        subframePos = subframe.GetLeftTop() - frame.GetLeftTop();
+Debug.Write(wxString::Format("@@@ATIK phd2 subframe %d,%d,%d,%d atik subframe %d,%d,%d,%d\n", subframe.x, subframe.y, subframe.width, subframe.height, x, y, w, h));
+        ArtemisSubframe(Cam_Handle, x, y, w, h);
     }
-    else {
-        ArtemisSubframe(Cam_Handle, 0,0,FullSize.GetWidth(),FullSize.GetHeight());
-        img.Subframe = wxRect(0, 0, 0, 0);
+    else
+    {
+Debug.Write(wxString::Format("@@@ATIK phd2 no subframe frame %d,%d,%d,%d\n", 0, 0, FullSize.GetWidth(), FullSize.GetHeight()));
+        ArtemisSubframe(Cam_Handle, 0, 0, FullSize.GetWidth(), FullSize.GetHeight());
     }
+
     if (duration > 2500)
         ArtemisSetAmplifierSwitched(Cam_Handle,true); // Set the amp-off parameter
     else
         ArtemisSetAmplifierSwitched(Cam_Handle,false);
 
-    if (ArtemisStartExposure(Cam_Handle,(float) duration / 1000.0))  {
+    if (ArtemisStartExposure(Cam_Handle, (float) duration / 1000.0))
+    {
         pFrame->Alert(_("Couldn't start exposure - aborting"));
         return true;
     }
@@ -241,40 +272,33 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, wxRect subframe, bo
         }
     }
 
-    int data_x,data_y,data_w,data_h,data_binx,data_biny;
+    int data_x, data_y, data_w, data_h, data_binx, data_biny;
     ArtemisGetImageData(Cam_Handle, &data_x, &data_y, &data_w, &data_h, &data_binx, &data_biny);
 
-    if (img.Init(FullSize))
+    if (useSubframe)
     {
-        DisconnectWithAlert(CAPT_FAIL_MEMORY);
-        return true;
-    }
-
-    if (TakeSubframe) {
-        unsigned short *dptr = img.ImageData;
         img.Subframe = subframe;
-        for (int i=0; i<img.NPixels; i++, dptr++)
-            *dptr = 0;
-        unsigned short *rawptr = (unsigned short *) ArtemisImageBuffer(Cam_Handle);
-        for (int y=0; y<subframe.height; y++) {
-            dptr = img.ImageData + (y+subframe.y)*FullSize.GetWidth() + subframe.x;
-            for (int x=0; x<subframe.width; x++, dptr++, rawptr++)
-                *dptr = *rawptr;
+        img.Clear();
+        const unsigned short *buf = (unsigned short *) ArtemisImageBuffer(Cam_Handle);
+
+        for (int y = 0; y < subframe.height; y++)
+        {
+            const unsigned short *src = buf + (y + subframePos.y) * frame.width + subframePos.x;
+            unsigned short *dst = img.ImageData + (y + subframe.y) * FullSize.GetWidth() + subframe.x;
+            memcpy(dst, src, subframe.width * sizeof(unsigned short));
         }
     }
-    else {
-        unsigned short *dptr = img.ImageData;
-        unsigned short *rawptr = (unsigned short *) ArtemisImageBuffer(Cam_Handle);
-        for (int i=0; i<img.NPixels; i++,dptr++, rawptr++) {
-            *dptr = *rawptr;
-        }
+    else
+    {
+        unsigned short *dst = img.ImageData;
+        const unsigned short *src = (unsigned short *) ArtemisImageBuffer(Cam_Handle);
+        memcpy(dst, src, img.NPixels * sizeof(unsigned short));
     }
 
     // Do quick L recon to remove bayer array
-    if (recon) SubtractDark(img);
-    if (Color && recon) QuickLRecon(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (Color && (options & CAPTURE_RECON)) QuickLRecon(img);
 
-//  RemoveLines(img);
     return false;
 }
 

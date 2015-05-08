@@ -36,6 +36,8 @@
 
 #include "phd.h"
 #include "logger.h"
+#include "wx/dir.h"
+#include "wx/filefn.h"
 
 Logger::Logger(void)
 {
@@ -127,4 +129,39 @@ bool Logger::SetLogDir(const wxString& dir)
     }
 
     return bOk;
+}
+// Clean up old log files in the directory.  Client gives us the target string - like PHD2_DebugLog*.txt - and the retention
+// period.  Files older than that are removed.
+void Logger::RemoveOldFiles(const wxString& FileTarget, int DaysOld)
+{
+    wxString dirName = GetLogDir();
+    wxArrayString results;
+    int numFiles;
+    int hitCount = 0;
+    wxDateTime oldestDate = wxDateTime::UNow() + wxDateSpan::Days(-DaysOld);
+    wxString lastFile = "<None>";
+
+    try
+    {
+        numFiles = wxDir::GetAllFiles(dirName, &results, FileTarget, wxDIR_FILES);      // No sub-directories, just files
+
+        for (int inx = 0; inx < numFiles; inx++)
+        {
+            wxDateTime stamp = wxFileModificationTime(results[inx]);
+            if (stamp < oldestDate)
+            {
+                hitCount++;
+                lastFile = results[inx];            // For error logging
+                wxRemoveFile(lastFile);
+            }
+    }
+    }
+    catch (wxString Msg)            // Eat the errors and press ahead, no place for UI here
+    {
+        Debug.Write(wxString::Format("Error cleaning up old log file %s: %s\n", lastFile, Msg));
+    }
+
+    if (hitCount > 0)
+        Debug.Write(wxString::Format("Removing %d files of target: %s\n", hitCount, FileTarget));
+
 }

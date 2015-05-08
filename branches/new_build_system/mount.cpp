@@ -34,6 +34,8 @@
  */
 
 #include "phd.h"
+#include "guiding_assistant.h"
+
 #include <wx/tokenzr.h>
 
 // enable dec compensation when calibration declination is less than this
@@ -87,7 +89,7 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     wxBoxSizer *chkSizer = new wxBoxSizer(wxHORIZONTAL);
 
     m_pClearCalibration = new wxCheckBox(pParent, wxID_ANY, _("Clear calibration"));
-    m_pClearCalibration->SetToolTip(("Clear the current calibration data - calibration will be re-done when guiding is started"));
+    m_pClearCalibration->SetToolTip(_("Clear the current calibration data - calibration will be re-done when guiding is started"));
     m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY, _("Enable Guide Output"), wxDefaultPosition, wxSize(150, -1), 0);
     m_pEnableGuide->SetToolTip(_("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
 
@@ -177,10 +179,10 @@ void Mount::MountConfigDialogPane::LoadValues(void)
 {
     m_pClearCalibration->Enable(m_pMount->IsCalibrated());
     m_pClearCalibration->SetValue(false);
-    m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithm();
+    m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithmSelection();
     m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
     m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
-    m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithm();
+    m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithmSelection();
     m_pYGuideAlgorithmChoice->SetSelection(m_initYGuideAlgorithmSelection);
     m_pYGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
     m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
@@ -239,7 +241,7 @@ void Mount::MountConfigDialogPane::Undo(void)
     m_pMount->SetYGuideAlgorithm(m_initYGuideAlgorithmSelection);
 }
 
-GUIDE_ALGORITHM Mount::GetXGuideAlgorithm(void)
+GUIDE_ALGORITHM Mount::GetXGuideAlgorithmSelection(void)
 {
     return GetGuideAlgorithm(m_pXGuideAlgorithm);
 }
@@ -260,7 +262,7 @@ void Mount::SetXGuideAlgorithm(int guideAlgorithm, GUIDE_ALGORITHM defaultAlgori
     }
 }
 
-GUIDE_ALGORITHM Mount::GetYGuideAlgorithm(void)
+GUIDE_ALGORITHM Mount::GetYGuideAlgorithmSelection(void)
 {
     return GetGuideAlgorithm(m_pYGuideAlgorithm);
 }
@@ -288,18 +290,17 @@ bool Mount::GetGuidingEnabled(void)
 
 void Mount::SetGuidingEnabled(bool guidingEnabled)
 {
-    m_guidingEnabled = guidingEnabled;
+    if (guidingEnabled != m_guidingEnabled)
+    {
+        const char *s = IsStepGuider() ? "AOGuidingEnabled" : "MountGuidingEnabled";
+        GuideLog.SetGuidingParam(s, guidingEnabled ? "true" : "false");
+        m_guidingEnabled = guidingEnabled;
+    }
 }
 
 GUIDE_ALGORITHM Mount::GetGuideAlgorithm(GuideAlgorithm *pAlgorithm)
 {
-    GUIDE_ALGORITHM ret = GUIDE_ALGORITHM_NONE;
-
-    if (pAlgorithm)
-    {
-        ret = pAlgorithm->Algorithm();
-    }
-    return ret;
+    return pAlgorithm ? pAlgorithm->Algorithm() : GUIDE_ALGORITHM_NONE;
 }
 
 bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axis, GuideAlgorithm** ppAlgorithm)
@@ -674,6 +675,7 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         {
             pFrame->pGraphLog->AppendData(info);
             pFrame->pTarget->AppendData(info);
+            GuidingAssistant::NotifyGuideStep(info);
         }
     }
     catch (wxString errMsg)
@@ -863,7 +865,7 @@ void Mount::AdjustCalibrationForScopePointing(void)
             m_xRate = (m_cal.xRate / cos(m_cal.declination)) * cos(newDeclination);
             m_currentDeclination = newDeclination;
             Debug.AddLine("Dec comp: XRate %.3f -> %.3f for dec %.1f -> dec %.1f",
-                          m_cal.xRate * 1000.0, m_xRate * 1000.0, degrees(m_cal.declination), degrees(newDeclination));
+                m_cal.xRate * 1000.0, m_xRate * 1000.0, degrees(m_cal.declination), degrees(newDeclination));
             if (pFrame)
                 pFrame->UpdateCalibrationStatus();
         }
@@ -888,16 +890,19 @@ void Mount::AdjustCalibrationForScopePointing(void)
         {
             double da = newRotatorAngle - m_cal.rotatorAngle;
 
-            Debug.AddLine("New rotator position %.1f deg, prev = %.1f deg, delta = %.1f deg", newRotatorAngle, m_cal.rotatorAngle, da);
+            if (fabs(da) > 0.05)
+            {
+                Debug.AddLine("New rotator position %.1f deg, prev = %.1f deg, delta = %.1f deg", newRotatorAngle, m_cal.rotatorAngle, da);
 
-            da = radians(da);
+                da = radians(da);
 
-            Calibration cal(m_cal);
-            cal.xAngle = norm_angle(cal.xAngle + da);
-            cal.yAngle = norm_angle(cal.yAngle + da);
-            cal.rotatorAngle = newRotatorAngle;
+                Calibration cal(m_cal);
+                cal.xAngle = norm_angle(cal.xAngle - da);
+                cal.yAngle = norm_angle(cal.yAngle - da);
+                cal.rotatorAngle = newRotatorAngle;
 
-            SetCalibration(cal);
+                SetCalibration(cal);
+            }
         }
     }
 }
@@ -1280,10 +1285,10 @@ wxString Mount::GetSettingsSummary()
         IsCalibrated() ? wxString::Format("xAngle = %.1f, xRate = %.3f, yAngle = %.1f, yRate = %.3f",
                 degrees(xAngle()), xRate() * 1000.0, degrees(yAngle()), yRate() * 1000.0) : "not calibrated"
     ) + wxString::Format("X guide algorithm = %s, %s",
-        algorithms[GetXGuideAlgorithm()],
+        algorithms[GetXGuideAlgorithmSelection()],
         m_pXGuideAlgorithm->GetSettingsSummary()
     ) + wxString::Format("Y guide algorithm = %s, %s",
-        algorithms[GetYGuideAlgorithm()],
+        algorithms[GetYGuideAlgorithmSelection()],
         m_pYGuideAlgorithm->GetSettingsSummary()
     );
 }

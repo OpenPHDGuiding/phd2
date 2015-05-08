@@ -39,13 +39,20 @@
 
 #include "phd.h"
 
-static const double DefaultMinMove      = 0.2;
+static const double DefaultMinMove = 0.2;
+static const double DefaultAggression = 1.0;
 
 GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitch(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis)
 {
     double minMove  = pConfig->Profile.GetDouble(GetConfigPath() + "/minMove", DefaultMinMove);
     SetMinMove(minMove);
+
+    double aggr = pConfig->Profile.GetDouble(GetConfigPath() + "/aggression", DefaultAggression);
+    SetAggression(aggr);
+
+    bool enable = pConfig->Profile.GetBoolean(GetConfigPath() + "/fastSwitch", true);
+    SetFastSwitchEnabled(enable);
 
     reset();
 }
@@ -94,14 +101,30 @@ double GuideAlgorithmResistSwitch::result(double input)
     m_history.Add(input);
     m_history.RemoveAt(0);
 
-    int decHistory = 0;
-
     try
     {
         if (fabs(input) < m_minMove)
         {
             throw THROW_INFO("input < m_minMove");
         }
+
+        if (m_fastSwitchEnabled)
+        {
+            double thresh = 3.0 * m_minMove;
+            if (sign(input) != m_currentSide && fabs(input) > thresh)
+            {
+                Debug.Write(wxString::Format("resist switch: large excursion: input %.2f thresh %.2f direction from %d to %d\n", input, thresh, m_currentSide, sign(input)));
+                // force switch
+                m_currentSide = 0;
+                unsigned int i;
+                for (i = 0; i < HISTORY_SIZE - 3; i++)
+                    m_history[i] = 0.0;
+                for (; i < HISTORY_SIZE; i++)
+                    m_history[i] = input;
+            }
+        }
+
+        int decHistory = 0;
 
         for (unsigned int i = 0; i < m_history.GetCount(); i++)
         {
@@ -111,17 +134,17 @@ double GuideAlgorithmResistSwitch::result(double input)
             }
         }
 
-        if (m_currentSide == 0 || sign(m_currentSide) == -1*sign(decHistory))
+        if (m_currentSide == 0 || sign(m_currentSide) == -sign(decHistory))
         {
-            double oldest=0;
-            double newest=0;
-
             if (abs(decHistory) < 3)
             {
                 throw THROW_INFO("not compelling enough");
             }
 
-            for(int i=0;i<3;i++)
+            double oldest = 0.0;
+            double newest = 0.0;
+
+            for (int i = 0; i < 3; i++)
             {
                 oldest += m_history[i];
                 newest += m_history[m_history.GetCount() - (i + 1)];
@@ -142,20 +165,15 @@ double GuideAlgorithmResistSwitch::result(double input)
             throw THROW_INFO("must have overshot -- vetoing move");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         dReturn = 0.0;
     }
 
-    Debug.AddLine(wxString::Format("GuideAlgorithmResistSwitch::Result() returns %.2f from input %.2f", dReturn, input));
+    Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::Result() returns %.2f from input %.2f\n", dReturn, input));
 
-    return dReturn;
-}
-
-double GuideAlgorithmResistSwitch::GetMinMove(void)
-{
-    return m_minMove;
+    return dReturn * m_aggression;
 }
 
 bool GuideAlgorithmResistSwitch::SetMinMove(double minMove)
@@ -164,14 +182,13 @@ bool GuideAlgorithmResistSwitch::SetMinMove(double minMove)
 
     try
     {
-        if (minMove <= 0)
+        if (minMove <= 0.0)
         {
             throw ERROR_INFO("invalid minMove");
         }
 
         m_minMove = minMove;
         m_currentSide = 0;
-
     }
     catch (wxString Msg)
     {
@@ -182,16 +199,50 @@ bool GuideAlgorithmResistSwitch::SetMinMove(double minMove)
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/minMove", m_minMove);
 
-    Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::SetParms() returns %d, m_minMove=%.2f\n", bError, m_minMove));
+    Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::SetMinMove() returns %d, m_minMove=%.2f\n", bError, m_minMove));
 
     return bError;
 }
 
-wxString GuideAlgorithmResistSwitch::GetSettingsSummary() {
+bool GuideAlgorithmResistSwitch::SetAggression(double aggr)
+{
+    bool bError = false;
+
+    try
+    {
+        if (aggr <= 0.0 || aggr > 1.0)
+        {
+            throw ERROR_INFO("invalid aggression");
+        }
+
+        m_aggression = aggr;
+    }
+    catch (const wxString& Msg)
+    {
+        POSSIBLY_UNUSED(Msg);
+        bError = true;
+        m_aggression = DefaultAggression;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/aggression", m_aggression);
+
+    Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::SetAggression() returns %d, m_aggression=%.2f\n", bError, m_aggression));
+
+    return bError;
+}
+
+void GuideAlgorithmResistSwitch::SetFastSwitchEnabled(bool enable)
+{
+    m_fastSwitchEnabled = enable;
+    pConfig->Profile.SetBoolean(GetConfigPath() + "/fastSwitch", m_fastSwitchEnabled);
+    Debug.Write(wxString::Format("GuideAlgorithmResistSwitch::SetFastSwitchEnabled(%d)\n", m_fastSwitchEnabled));
+}
+
+wxString GuideAlgorithmResistSwitch::GetSettingsSummary()
+{
     // return a loggable summary of current mount settings
-    return wxString::Format("Minimum move = %.3f\n",
-            GetMinMove()
-        );
+    return wxString::Format("Minimum move = %.3f Aggression = %.f%% FastSwitch = %s\n",
+        GetMinMove(), GetAggression() * 100.0, GetFastSwitchEnabled() ? "enabled" : "disabled");
 }
 
 ConfigDialogPane *GuideAlgorithmResistSwitch::GetConfigDialogPane(wxWindow *pParent)
@@ -208,14 +259,24 @@ GuideAlgorithmResistSwitch::
 
     m_pGuideAlgorithm = pGuideAlgorithm;
 
-    width = StringWidth(_T("000.00"));
-    m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    width = StringWidth(_T("000"));
+    m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxPoint(-1, -1),
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggression"));
+    m_pAggression->SetDigits(0);
+
+    DoAdd(_("Aggression"), m_pAggression,
+        wxString::Format(_("Aggression factor, percent. Default = %.f%%"), DefaultAggression * 100.0));
+
+    width = StringWidth(_T("00.00"));
+    m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T(""), wxPoint(-1,-1),
         wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
 
     DoAdd(_("Minimum Move (pixels)"), m_pMinMove,
-        _("How many (fractional) pixels must the star move to trigger a guide pulse? Default = 0.15"));
+        wxString::Format(_("How many (fractional) pixels must the star move to trigger a guide pulse? Default = %.2f"), DefaultMinMove));
 
+    m_pFastSwitch = new wxCheckBox(pParent, wxID_ANY, _("Fast switch for large deflections"));
+    DoAdd(m_pFastSwitch, _("Ordinarily the Resist Switch algortithm waits several frames before switching direction. With Fast Switch enabled PHD2 will switch direction immediately if it sees a very large deflection. Enable this option if your mount has a substantial amount of backlash and PHD2 sometimes overcorrects."));
 }
 
 GuideAlgorithmResistSwitch::
@@ -229,6 +290,8 @@ void GuideAlgorithmResistSwitch::
     LoadValues(void)
 {
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
+    m_pAggression->SetValue(m_pGuideAlgorithm->GetAggression() * 100.0);
+    m_pFastSwitch->SetValue(m_pGuideAlgorithm->GetFastSwitchEnabled());
 }
 
 void GuideAlgorithmResistSwitch::
@@ -236,6 +299,8 @@ void GuideAlgorithmResistSwitch::
     UnloadValues(void)
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
+    m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue() / 100.0);
+    m_pGuideAlgorithm->SetFastSwitchEnabled(m_pFastSwitch->GetValue());
 }
 
 GraphControlPane *GuideAlgorithmResistSwitch::GetGraphControlPane(wxWindow *pParent, const wxString& label)
@@ -246,21 +311,29 @@ GraphControlPane *GuideAlgorithmResistSwitch::GetGraphControlPane(wxWindow *pPar
 
 GuideAlgorithmResistSwitch::
     GuideAlgorithmResistSwitchGraphControlPane::
-    GuideAlgorithmResistSwitchGraphControlPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm, wxString label)
-    :GraphControlPane(pParent, label)
+    GuideAlgorithmResistSwitchGraphControlPane(wxWindow *pParent, GuideAlgorithmResistSwitch *pGuideAlgorithm, const wxString& label)
+    : GraphControlPane(pParent, label)
 {
     int width;
 
     m_pGuideAlgorithm = pGuideAlgorithm;
 
+    // Aggression
+    width = StringWidth(_T("000"));
+    m_pAggression = new wxSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1, -1),
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggression"));
+    m_pAggression->SetDigits(0);
+    m_pAggression->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnAggressionSpinCtrlDouble, this);
+    DoAdd(m_pAggression, _T("Agr"));
+    m_pAggression->SetValue(m_pGuideAlgorithm->GetAggression() * 100.0);
+
     // Min move
-    width = StringWidth(_T("000.00"));
-    m_pMinMove = new wxSpinCtrlDouble(this, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
+    width = StringWidth(_T("00.00"));
+    m_pMinMove = new wxSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1,-1),
+        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05, _T("MinMove"));
     m_pMinMove->SetDigits(2);
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnMinMoveSpinCtrlDouble, this);
-    DoAdd(m_pMinMove,_T("Min mo"));
-
+    DoAdd(m_pMinMove,_T("MnMo"));
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
 }
 
@@ -276,4 +349,12 @@ void GuideAlgorithmResistSwitch::
 {
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
     GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch minimum motion", m_pMinMove->GetValue());
+}
+
+void GuideAlgorithmResistSwitch::
+    GuideAlgorithmResistSwitchGraphControlPane::
+    OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
+{
+    m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue() / 100.0);
+    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Resist switch aggression", m_pAggression->GetValue());
 }

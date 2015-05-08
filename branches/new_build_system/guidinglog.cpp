@@ -37,6 +37,8 @@
 
 #define GUIDELOG_VERSION _T("2.5")
 
+const int RetentionPeriod = 60;
+
 GuidingLog::GuidingLog(void)
     : m_enabled(false),
     m_keepFile(false),
@@ -140,6 +142,11 @@ bool GuidingLog::ChangeDirLog(const wxString& newdir)
     }
 
     return bOk;
+}
+
+void GuidingLog::RemoveOldFiles()
+{
+    Logger::RemoveOldFiles("PHD2_GuideLog*.txt", RetentionPeriod);
 }
 
 bool GuidingLog::Flush(void)
@@ -492,7 +499,7 @@ void GuidingLog::SetGuidingParam(const wxString& name, double val)
     if (!m_enabled || !m_isGuiding)
         return;
 
-    m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %f\n", name, val));
+    m_file.Write(wxString::Format("INFO: Guiding parameter change, %s = %.2f\n", name, val));
     m_keepFile = true;
     Flush();
 }

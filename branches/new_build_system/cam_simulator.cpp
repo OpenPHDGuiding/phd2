@@ -497,7 +497,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU)
     {
         pFrame->Alert(_("FITS file is not of an image"));
-        fits_close_file(fptr, &status);
+        PHD_fits_close_file(fptr);
         return true;
     }
 
@@ -508,7 +508,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     fits_get_num_hdus(fptr, &nhdus, &status);
     if ((nhdus != 1) || (naxis != 2)) {
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
-        fits_close_file(fptr, &status);
+        PHD_fits_close_file(fptr);
         return true;
     }
 
@@ -520,7 +520,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
 
     if (img.Init(xsize, ysize)) {
         pFrame->Alert(_("Memory allocation error"));
-        fits_close_file(fptr, &status);
+        PHD_fits_close_file(fptr);
         return true;
     }
 
@@ -539,7 +539,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     if (fits_read_subset(fptr, TUSHORT, fpixel, lpixel, inc, NULL, buf, NULL, &status))
     {
         pFrame->Alert(_("Error reading data"));
-        fits_close_file(fptr, &status);
+        PHD_fits_close_file(fptr);
         return true;
     }
 
@@ -566,7 +566,7 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
 
     delete[] buf;
 
-    fits_close_file(fptr, &status);
+    PHD_fits_close_file(fptr);
 
     return false;
 }
@@ -917,7 +917,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 #endif // STEPGUIDER_SIMULATOR
 
     // render each star
-    if (!pCamera->ShutterState)
+    if (!pCamera->ShutterClosed)
     {
         for (unsigned int i = 0; i < nr_stars; i++)
         {
@@ -962,7 +962,7 @@ Camera_SimClass::Camera_SimClass()
 {
     Connected = false;
     Name = _T("Simulator");
-    FullSize = wxSize(640,480);
+    FullSize = wxSize(752,580);
     m_hasGuideOutput = true;
     HasShutter = true;
     HasGainControl = true;
@@ -1022,7 +1022,8 @@ Camera_SimClass::~Camera_SimClass()
 }
 
 #if SIMMODE==2
-bool Camera_SimClass::Capture(int WXUNUSED(duration), usImage& img) {
+bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     int xsize, ysize;
     wxImage disk_image;
     unsigned short *dataptr;
@@ -1066,8 +1067,9 @@ static void fill_noise(usImage& img, const wxRect& subframe, int exptime, int ga
 }
 #endif // SIMMODE == 3
 
-bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
+    wxRect subframe(subframeArg);
     CameraWatchdog watchdog(duration, GetTimeoutMs());
 
 #if SIMMODE == 1
@@ -1109,7 +1111,7 @@ bool Camera_SimClass::Capture(int duration, usImage& img, wxRect subframe, bool 
     if (usingSubframe)
         img.Subframe = subframe;
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
 #endif // SIMMODE == 1
 
@@ -1169,7 +1171,8 @@ void Camera_SimClass::FlipPierSide(void)
 }
 
 #if SIMMODE == 4
-bool Camera_SimClass::Capture(int WXUNUSED(duration), usImage& img, bool recon) {
+bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     int xsize, ysize;
     //  unsigned short *dataptr;
     //  int i;
@@ -1189,6 +1192,7 @@ bool Camera_SimClass::Capture(int WXUNUSED(duration), usImage& img, bool recon) 
     {
         if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
             pFrame->Alert(_("FITS file is not of an image"));
+            PHD_fits_close_file(fptr);
             return true;
         }
 
@@ -1200,17 +1204,20 @@ bool Camera_SimClass::Capture(int WXUNUSED(duration), usImage& img, bool recon) 
         fits_get_num_hdus(fptr,&nhdus,&status);
         if ((nhdus != 1) || (naxis != 2)) {
             pFrame->Alert(wxString::Format(_("Unsupported type or read error loading FITS file %d %d"),nhdus,naxis));
+            PHD_fits_close_file(fptr);
             return true;
         }
         if (img.Init(xsize,ysize)) {
             pFrame->Alert(_("Memory allocation error"));
+            PHD_fits_close_file(fptr);
             return true;
         }
         if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { // Read image
             pFrame->Alert(_("Error reading data"));
+            PHD_fits_close_file(fptr);
             return true;
         }
-        fits_close_file(fptr,&status);
+        PHD_fits_close_file(fptr);
         frame = frame + step;
         if (frame > 440) {
             step = -1;
@@ -1422,7 +1429,7 @@ SimCamDialog::SimCamDialog(wxWindow *parent)
     pPEDefaultRb->SetToolTip(_("Use a built-in PE curve that has some steep and smooth sections."));
     pPEDefaultRb->Bind(wxEVT_COMMAND_RADIOBUTTON_SELECTED, &SimCamDialog::OnRbDefaultPE, this);                // Event handler binding
     wxStaticText *pSliderLabel = new wxStaticText(this, wxID_ANY, _("Amplitude: "),wxPoint(-1,-1),wxSize(-1,-1));
-    pPEDefScale = NewSpinner(this, SimCamParams::pe_scale, 0, PE_SCALE_MAX, 0.5, "PE Amplitude, arc-secs");
+    pPEDefScale = NewSpinner(this, SimCamParams::pe_scale, 0, PE_SCALE_MAX, 0.5, _("PE Amplitude, arc-secs"));
 
     int hor_spacing = StringWidth(this, "9");
     pPEDefaults->Add(pPEDefaultRb);

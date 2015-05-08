@@ -35,7 +35,6 @@
 #include "wxled.h"
 
 #include <wx/wx.h>
-#include <wx/frame.h>
 #include <wx/gbsizer.h>
 #include <wx/sizer.h>
 #include <wx/notebook.h>
@@ -116,11 +115,13 @@ public:
 class IndiProp
 {
 public:
+   wxString             PropName;
    ptrHash		ctrl;
    ptrHash		entry;
    IndiStatus		*state;
    wxStaticText		*name;
    wxPanel		*page;
+   wxPanel		*panel;
    wxGridBagSizer	*gbs;
    INDI::Property	*property;
    IndiDev		*idev;
@@ -129,7 +130,7 @@ public:
 /*
  *  INDI gui windows
  */
-class IndiGui : public wxFrame , public INDI::BaseClient
+class IndiGui : public wxDialog , public INDI::BaseClient
 {
 
 private:
@@ -179,6 +180,7 @@ protected:
    // Functions running in the INDI client thread
    //////////////////////////////////////////////////////////////////////
    virtual void newDevice(INDI::BaseDevice *dp);
+   virtual void removeDevice(INDI::BaseDevice *dp) {}
    virtual void newProperty(INDI::Property *property);
    virtual void removeProperty(INDI::Property *property);
    virtual void newBLOB(IBLOB *bp){}

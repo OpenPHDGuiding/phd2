@@ -216,16 +216,14 @@ bool Camera_ZWO::Connect()
                 if (caps.IsWritable)
                 {
                     HasGainControl = true;
-                    m_gainControlId = caps.ControlID;
                     m_minGain = caps.MinValue;
-                    m_maxGain = caps.MaxVale;
+                    m_maxGain = caps.MaxValue;
                 }
                 break;
             case ASI_EXPOSURE:
-                m_exposureControlId = caps.ControlID;
                 break;
             case ASI_BANDWIDTHOVERLOAD:
-                ASISetControlValue(m_cameraId, caps.ControlID, caps.MinValue, ASI_FALSE);
+                ASISetControlValue(m_cameraId, ASI_BANDWIDTHOVERLOAD, caps.MinValue, ASI_FALSE);
                 break;
             default:
                 break;
@@ -295,7 +293,7 @@ static void flush_buffered_image(int cameraId, usImage& img)
     }
 }
 
-bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     if (img.Init(FullSize))
     {
@@ -331,20 +329,20 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
     long exposureUS = duration * 1000;
     ASI_BOOL tmp;
     long cur_exp;
-    if (ASIGetControlValue(m_cameraId, m_exposureControlId, &cur_exp, &tmp) == ASI_SUCCESS &&
+    if (ASIGetControlValue(m_cameraId, ASI_EXPOSURE, &cur_exp, &tmp) == ASI_SUCCESS &&
         cur_exp != exposureUS)
     {
         Debug.AddLine("ZWO: set CONTROL_EXPOSURE %d", exposureUS);
-        ASISetControlValue(m_cameraId, m_exposureControlId, exposureUS, ASI_FALSE);
+        ASISetControlValue(m_cameraId, ASI_EXPOSURE, exposureUS, ASI_FALSE);
     }
 
     long new_gain = cam_gain(m_minGain, m_maxGain, GuideCameraGain);
     long cur_gain;
-    if (ASIGetControlValue(m_cameraId, m_gainControlId, &cur_gain, &tmp) == ASI_SUCCESS &&
+    if (ASIGetControlValue(m_cameraId, ASI_GAIN, &cur_gain, &tmp) == ASI_SUCCESS &&
         new_gain != cur_gain)
     {
         Debug.AddLine("ZWO: set CONTROL_GAIN %d%% %d", GuideCameraGain, new_gain);
-        ASISetControlValue(m_cameraId, m_gainControlId, new_gain, ASI_FALSE);
+        ASISetControlValue(m_cameraId, ASI_GAIN, new_gain, ASI_FALSE);
     }
 
     bool size_change = frame.GetSize() != m_frame.GetSize();
@@ -437,7 +435,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, wxRect subframe, bool recon
             img.ImageData[i] = m_buffer[i];
     }
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
 }

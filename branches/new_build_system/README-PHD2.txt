@@ -1,4 +1,4 @@
-Welcome to PHD2 Release Version 2.4.1
+Welcome to PHD2 Release Version 2.5.0
 
 PHD2 is the next generation of Craig Stark's original PHD Guiding application, now
 restructured, enhanced, and supported by an open-source community of volunteers.
@@ -21,4 +21,4 @@ discussion on the Open PHD Guiding google group,
 
 Thanks,
 
-The PHD2 team
+The PHD2 developers

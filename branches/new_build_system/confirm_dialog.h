@@ -39,10 +39,11 @@ class ConfirmDialog :
     public wxDialog
 {
 public:
-    ConfirmDialog(const wxString& prompt, const wxString& title);
+    ConfirmDialog(const wxString& prompt, const wxString& title, const wxString& affirmativeLabel, const wxString& negativeLabel);
     ~ConfirmDialog(void);
 
     static bool Confirm(const wxString& prompt, const wxString& config_key, const wxString& title = "");
+    static bool Confirm(const wxString& prompt, const wxString& config_key, const wxString& affirmativeLabel, const wxString& negativeLabel, const wxString& title = "");
     static void ResetAllDontAskAgain(void);
 
 private:

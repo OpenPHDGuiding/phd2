@@ -307,29 +307,30 @@ bool usImage::Save(const wxString& fname, const wxString& hdrNote) const
         int status = 0;  // CFITSIO status value MUST be initialized to zero!
 
         PHD_fits_create_file(&fptr, fname, true, &status);
-        if (!status) fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
+        fits_create_img(fptr, USHORT_IMG, 2, fsize, &status);
 
         float exposure = (float) ImgExpDur / 1000.0;
         char *keyname = const_cast<char *>("EXPOSURE");
         char *comment = const_cast<char *>("Exposure time in seconds");
-        if (!status) fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
+        fits_write_key(fptr, TFLOAT, keyname, &exposure, comment, &status);
 
         if (ImgStackCnt > 1)
         {
             keyname = const_cast<char *>("STACKCNT");
             comment = const_cast<char *>("Stacked frame count");
             unsigned int stackcnt = ImgStackCnt;
-            if (!status) fits_write_key(fptr, TUINT, keyname, &stackcnt, comment, &status);
+            fits_write_key(fptr, TUINT, keyname, &stackcnt, comment, &status);
         }
 
         if (!hdrNote.IsEmpty())
         {
             char *USERNOTE = const_cast<char *>("USERNOTE");
-            if (!status) fits_write_key(fptr, TSTRING, USERNOTE, const_cast<char *>(static_cast<const char *>(hdrNote)), NULL, &status);
+            fits_write_key(fptr, TSTRING, USERNOTE, const_cast<char *>(static_cast<const char *>(hdrNote)), NULL, &status);
         }
 
-        if (!status) fits_write_pix(fptr, TUSHORT, fpixel, NPixels, ImageData, &status);
-        fits_close_file(fptr, &status);
+        fits_write_pix(fptr, TUSHORT, fpixel, NPixels, ImageData, &status);
+
+        PHD_fits_close_file(fptr);
 
         bError = status ? true : false;
     }
@@ -401,7 +402,7 @@ bool usImage::Load(const wxString& fname)
             if (status == 0)
                 ImgStackCnt = (int) stackcnt;
 
-            fits_close_file(fptr, &status);
+            PHD_fits_close_file(fptr);
         }
         else
         {

@@ -31,11 +31,11 @@ Time and Star Selection</a></li>
 In
 order to begin guiding, <span style="font-style: italic;">PHD2</span>
 must first connect to your hardware: the
-guide camera, the mount, and, optionally, an 'aux' mount or adaptive optics
-(AO) device. &nbsp;When you click on the camera
+guide camera, the mount, and, optionally, an 'aux' mount, an adaptive optics
+(AO) device, or a rotator. &nbsp;When you click on the camera
 icon, you'll see a dialog that looks like this: <br>
 <br>
-<img style="width: 459px; height: 289px;" alt="" src="Gear_Dialog.png"><br>
+<img style="width: 465px; height: 311px;" alt="" src="GearDialog_Basic.png"><br>
 <br>
 <h4><a name="Camera_Selection"></a>Camera Selection</h4>
 The
@@ -50,7 +50,9 @@ camera drivers are available from the ASCOM web site or from the camera
 manufacturer, and the drop-down list will show only those ASCOM cameras
 that are already installed on your system, if any.<br><br>The
 list of supported cameras at the time of writing is shown below - but
-users should&nbsp;consult web resources to see updates (e.g. <a href="http://www.stark-labs.com/phdguiding.html">Stark Labs</a>)<br><br>Supported cameras, December 2014:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><br>
+you can contact the <a href="https://groups.google.com/forum/#!forum/open-phd-guiding">open-phd-guiding forum</a> to inquire about your specific camera or mount.<br>
+<br>
+Supported cameras, December 2014:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><br>
 <h4><a name="Mount_Selection"></a>Mount Selection</h4>
 The Mount drop-down list displays&nbsp;options for connecting to
 your mount. &nbsp;There are generally two ways to do this:<br>
@@ -98,29 +100,33 @@ this style of interface,&nbsp; <span style="font-style: italic;">PHD2</span>
 guide commands like "Move west 500
 mSec" are translated by the intermediate device (camera, Shoestring
 box, AO) into&nbsp;electrical signals necessary to drive the mount
-motor for the correct length of time. &nbsp;<br><h4><a name="Aux_mount_selection"></a>"Aux" Mount Selection</h4>If
+motor for the correct length of time. &nbsp;<br><h4><a name="Aux_mount_selection"></a>Aux Mount Selection</h4>If
 you have selected an ST-4 style of guiding in the 'mount'
 section,&nbsp;that interface cannot be used to query the pointing
 position of the telescope. &nbsp;As a consequence, &nbsp;guider
 calibration won't be automatically adjusted for declination, nor will
-it be automatically "flipped" when the side-of-pier changes. &nbsp;You
+it be automatically&nbsp;flipped when the side-of-pier changes. &nbsp;You
 can restore these features by specifying an "aux" mount connection that
 will be used only to get the telescope pointing information. &nbsp;An
-example is shown below: <br><br><img style="width: 459px; height: 290px;" alt="" src="Gear_Aux_Dialog.png"><br><br>For
+example is shown below: <br><br><img style="width: 465px; height: 311px;" alt="" src="GearDialog_Basic.png"><br><br>For
 Windows users, the "aux" mount can use any of the ASCOM-compatible
 mount drivers, while Linux users can take advantage of INDI drivers.
 &nbsp;The "aux" mount choice will be used only if the primary mount
 interface cannot return pointing information - it will otherwise be
 ignored.
- <h4>Adaptive Optics Selection</h4>
+ <h4><a name="AO_Selection"></a>Adaptive Optics and <a name="Rotator_Selection"></a>Rotator Selections</h4>
 With
 <span style="font-style: italic;">PHD2</span>, you
-now have the option of controlling the Starlight Express
-adaptive optics unit. &nbsp;If you don't have such a device, just
-leave
-the AO selection at 'none.' &nbsp; Support for other AO devices may
-be
-added in the future.<br>
+now have the option of controlling the Starlight Xpress
+adaptive optics unit and/or any of several ASCOM-compatible camera
+rotators &nbsp;These can be specified by clicking on the 'More
+Equipment..." button in the above dialog: <br><br><img style="width: 465px; height: 392px;" alt="" src="GearDialog_Extended.png"><br><br>If
+you don't have these devices, just leave the selections at 'None.'
+&nbsp;If these devices are connected, you'll see additional tabs in
+the 'Advanced Settings' dialog that provide access to various
+device-related properties. &nbsp;PHD2 does not control a rotator, but
+it will read the current angle setting from the rotator and&nbsp;adjust
+the guiding calibration if needed.<br>
 <h4><a name="Simulators"></a>Simulators</h4>
 All
 of the <span style="font-style: italic;">PHD2</span>
@@ -174,7 +180,11 @@ away. &nbsp; When you run PHD2 for the first time on your system, this
 wizard will be automatically launched. &nbsp;Subsequently, you can use
 the new-profile wizard by clicking on the 'Manage Profiles' field in
 the 'Connect Equipment' dialog, then &nbsp;choosing 'New using
-wizard...'.<br>
+wizard...'. &nbsp;If you are changing cameras and want to keep the dark
+libraries and bad-pixel maps associated with the old camera, you should
+create a separate profile for the new camera. &nbsp;When a camera
+selection is changed in an existing profile, the previously built dark
+library and bad-pixel map data will no longer be usable.<br>
 <br>
 If
 you already have a suitable default equipment profile and you simply
@@ -193,7 +203,7 @@ is required in clicking on the star -&nbsp;<span style="font-style: italic;">PHD
 star
 nearest to the cursor. &nbsp;After you do this, a green box will
 appear to frame the star. &nbsp;If you pick a star that is too
-bright, a message box will tell you the star is "saturated", and you
+bright, a message box will tell you the star is&nbsp;saturated, and you
 should
 either use a different star or decrease the exposure duration.
 &nbsp;The choice of exposure time will
@@ -299,7 +309,20 @@ ideally somewhere in the range of -30 to +30 degrees declination, and
 re-run
 the calibration. &nbsp;But if this is not feasible, you can adjust
 the
-calibration step-size upward until calibration succeeds.<br>
+calibration step-size upward until calibration succeeds. &nbsp;You can
+always review the results of your last calibration by using the 'Tools'
+menu and clicking on 'Review Calibration Data' &nbsp;That will open a
+dialog that shows a graphical representation of the mount's movements
+along with the values that were computed for&nbsp;guiding your mount.
+&nbsp;This window is described elsewhere in the <a href="Tools.htm#Calibration_Details">"Calibration Details"</a>
+section of the help file. &nbsp;As a quick quality check, you can open
+this window and confirm that 1) the RA and Dec lines are roughly
+perpendicular and 2)&nbsp; the plotted points are roughly linear with
+no significant&nbsp;curves, bends, or reversals in direction. &nbsp; If
+you do see these kinds of odd patterns in the graph, you should
+probably re-do the calibration. &nbsp;Even with high-end mounts,
+calibrations can occasionally go awry because of environmental
+conditions, especially wind and bad seeing.<br>
 <br>
 Like
 all
@@ -316,14 +339,23 @@ under the
 completed or when you use the 'flip calibration data' command under the
 'Tools' menu (see below). &nbsp;If you're using a German equatorial
 mount and the ASCOM interface or you have an 'aux' mount connected, the saved calibration data will include
-the side of pier where you were last guiding; so <span style="font-style: italic;">PHD2</span> will adjust
+the side of pier where you were last guiding; so <span style="font-style: italic;">PHD2</span>
+will adjust
 automatically for your current pointing position. &nbsp;But if you
 are
-not using mount interfaces that can return pointing information, you'll need to remember which side of the
-pier was being used the last time you were guiding.<br>
+not using mount interfaces that can return pointing information, you'll
+need to remember which side of the
+pier was being used the last time you were guiding. &nbsp;Clicking on
+'Restore Calibration Data' will open a window that shows the results
+from your last calibration, essentially identical to what is shown
+using 'Review Calibration Data.' &nbsp;You can quickly check the
+information in this window to be sure the calibration you are restoring
+is sufficiently accurate and relevant to your current set-up. &nbsp;If
+it looks good, click on 'Restore' to re-use it.<br>
 <br>
 If
-you're using an ASCOM mount (or 'aux' mount) connection, <span style="font-style: italic;">PHD2</span> will also
+you're using an ASCOM mount (or 'aux' mount) connection, <span style="font-style: italic;">PHD2</span>
+will also
 include the
 calibration and target declinations as part of its calculations.
 &nbsp;In that case,&nbsp; guiding moves in right ascension will
@@ -331,10 +363,15 @@ be
 automatically adjusted to account for the declination of the current
 guide star, as opposed to the&nbsp;star you used for calibration.
 &nbsp;This is really just a refinement and isn't critical in most
-situations, so absence of pointing information is not a big problem. &nbsp;However, if you are concerned
+situations, so absence of pointing information is not a big problem.
+&nbsp;However, if you are concerned
 about
 it and are imaging near the celestial pole, you should consider
-calibrating using a star that's also at high declination.<br><br>After
+calibrating using a star that's also at high declination.
+&nbsp;Finally, if you have a rotator configured as part of your
+equipment profile, PHD2 will use its angle position property to adjust
+the calibration for changes in camera angle, thus eliminating another
+need to re-calibrate.<br><br>After
 a calibration is completed, PHD2 will&nbsp;<a href="Trouble_shooting.htm#Calibration_sanity_check">"sanity check"</a> the results to be
 sure the calculations at least look reasonable. &nbsp;If they don't,
 you will see an 'alert' message at the top of the main window that
@@ -364,8 +401,7 @@ will continue guiding until you click on the 'stop' icon. &nbsp;To
 resume guiding, simply start looping exposures again, select your star,
 and click on the 'Guide' button. &nbsp;You will not need to repeat
 the
-calibration in order to resume guiding. &nbsp;In some cases, <span style="font-style: italic;">PHD2</span> may
-"lose" the guide star and
+calibration in order to resume guiding. &nbsp;In some cases, <span style="font-style: italic;">PHD2</span> may&nbsp;lose the guide star and
 you'll be alerted by an audible beep and flashing orange crosshairs.
 &nbsp;There are several reasons this might occur: <br>
 <ol>
@@ -373,8 +409,7 @@ you'll be alerted by an audible beep and flashing orange crosshairs.
 observatory roof, a tree, etc.</li>
 <li>The
 star may have abruptly moved out of the tracking rectangle because
-something shifted in the mount/camera/cabling infrastructure - cable
-"snags" often cause this</li>
+something shifted in the mount/camera/cabling infrastructure - cable&nbsp;snags can cause this</li>
 <li>The star may have "faded" for some other reason, perhaps
 because it is overly faint</li>
 </ol>

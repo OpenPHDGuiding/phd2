@@ -99,7 +99,7 @@
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera2.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/phd.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Debug/$(ProjectName).pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
@@ -153,13 +153,14 @@
       <AdditionalLibraryDirectories>$(OPENCV_DIR)/build/x64/vc10/lib;$(VLD)\lib;WinLibs\;cameras;cameras\VidCapture;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>opencv_core245.dll;opencv_highgui245.dll;opencv_imgproc245.dll;sbigudrv.dll;ArtemisCCD.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;FCApi.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera2.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ProgramDatabaseFile>.\Release/phd.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Release/$(ProjectName).pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -171,6 +172,7 @@
     <ClCompile Include="advanced_dialog.cpp" />
     <ClCompile Include="calreview_dialog.cpp" />
     <ClCompile Include="calstep_dialog.cpp" />
+    <ClCompile Include="camcal_import_dialog.cpp" />
     <ClCompile Include="cameras\ArtemisHSCAPI.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -229,6 +231,7 @@
     <ClCompile Include="guide_algorithm_lowpass2.cpp" />
     <ClCompile Include="guide_algorithm_resistswitch.cpp" />
     <ClCompile Include="guidinglog.cpp" />
+    <ClCompile Include="guiding_assistant.cpp" />
     <ClCompile Include="image_math.cpp" />
     <ClCompile Include="json_parser.cpp" />
     <ClCompile Include="logger.cpp" />
@@ -293,6 +296,7 @@
     <ClInclude Include="advanced_dialog.h" />
     <ClInclude Include="calreview_dialog.h" />
     <ClInclude Include="calstep_dialog.h" />
+    <ClInclude Include="camcal_import_dialog.h" />
     <ClInclude Include="cam_ascomlate.h" />
     <ClInclude Include="cam_Atik16.h" />
     <ClInclude Include="cam_firewire.h" />
@@ -350,6 +354,7 @@
     <ClInclude Include="guide_algorithm_lowpass2.h" />
     <ClInclude Include="guide_algorithm_resistswitch.h" />
     <ClInclude Include="guidinglog.h" />
+    <ClInclude Include="guiding_assistant.h" />
     <ClInclude Include="image_math.h" />
     <ClInclude Include="json_parser.h" />
     <ClInclude Include="logger.h" />

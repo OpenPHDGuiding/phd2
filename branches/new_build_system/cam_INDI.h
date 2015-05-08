@@ -49,6 +49,10 @@ class Camera_INDIClass : public GuideCamera, public INDI::BaseClient {
 private:
     INumberVectorProperty *expose_prop;
     INumberVectorProperty *frame_prop;
+    INumber               *frame_x;
+    INumber               *frame_y;
+    INumber               *frame_width;
+    INumber               *frame_height;
     ISwitchVectorProperty *frame_type_prop;
     INumberVectorProperty *binning_prop;
     ISwitchVectorProperty *video_prop;
@@ -72,16 +76,18 @@ private:
     wxString INDICameraCCDCmd;
     wxString INDICameraBlobName;
     wxString INDICameraPort;
+    wxRect   m_roi;
     void     SetCCDdevice();
     void     ClearStatus(); 
     void     CheckState();
     void     CameraDialog();
     void     CameraSetup();
-    bool     ReadFITS(usImage& img);
+    bool     ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe);
     bool     ReadStream(usImage& img);
     
 protected:
     virtual void newDevice(INDI::BaseDevice *dp);
+    virtual void removeDevice(INDI::BaseDevice *dp) {}
     virtual void newProperty(INDI::Property *property);
     virtual void removeProperty(INDI::Property *property) {}
     virtual void newBLOB(IBLOB *bp);
@@ -92,7 +98,7 @@ protected:
     virtual void newLight(ILightVectorProperty *lvp) {}
     virtual void serverConnected();
     virtual void serverDisconnected(int exit_code);
-    
+
 public:
     Camera_INDIClass();
     ~Camera_INDIClass();
@@ -100,10 +106,9 @@ public:
     bool    Disconnect();
     bool    HasNonGuiCapture(void);
     void    ShowPropertyDialog();
-    
-    void    InitCapture() { return; }
-    bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+
     bool    ST4PulseGuideScope(int direction, int duration);
     bool    ST4HasNonGuiMove(void);
 };

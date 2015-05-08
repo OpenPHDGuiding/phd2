@@ -78,7 +78,7 @@ static bool ASCOM_SetBin(IDispatch *cam, int mode, EXCEPINFO *excep)
     dispParms.cNamedArgs = 1;                   // PropPut kludge
     dispParms.rgdispidNamedArgs = &dispidNamed;
 
-    VARIANT vRes;
+    Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_setxbin, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT,
@@ -111,7 +111,7 @@ static bool ASCOM_SetROI(IDispatch *cam, const wxRect& roi, EXCEPINFO *excep)
     dispParms.cNamedArgs = 1;                   // PropPut kludge
     dispParms.rgdispidNamedArgs = &dispidNamed;
 
-    VARIANT vRes;
+    Variant vRes;
     HRESULT hr;
 
     rgvarg[0].lVal = roi.GetLeft();
@@ -159,7 +159,7 @@ static bool ASCOM_AbortExposure(IDispatch *cam, EXCEPINFO *excep)
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
 
-    VARIANT vRes;
+    Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_abortexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
@@ -182,7 +182,7 @@ static bool ASCOM_StopExposure(IDispatch *cam, EXCEPINFO *excep)
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
 
-    VARIANT vRes;
+    Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_stopexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
@@ -203,7 +203,7 @@ static bool ASCOM_StartExposure(IDispatch *cam, double duration, bool dark, EXCE
     rgvarg[1].vt = VT_R8;
     rgvarg[1].dblVal =  duration;
     rgvarg[0].vt = VT_BOOL;
-    rgvarg[0].boolVal = (VARIANT_BOOL) !dark;
+    rgvarg[0].boolVal = dark ? VARIANT_FALSE : VARIANT_TRUE;
 
     DISPPARAMS dispParms;
     dispParms.cArgs = 2;
@@ -211,7 +211,7 @@ static bool ASCOM_StartExposure(IDispatch *cam, double duration, bool dark, EXCE
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
 
-    VARIANT vRes;
+    Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_startexposure, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,
@@ -234,7 +234,7 @@ static bool ASCOM_ImageReady(IDispatch *cam, bool *ready, EXCEPINFO *excep)
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
 
-    VARIANT vRes;
+    Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_imageready, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
@@ -258,7 +258,7 @@ static bool ASCOM_Image(IDispatch *cam, usImage& Image, bool takeSubframe, const
     dispParms.cNamedArgs = 0;
     dispParms.rgdispidNamedArgs = NULL;
 
-    VARIANT vRes;
+    Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam->Invoke(dispid_imagearray, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET,
@@ -328,7 +328,7 @@ static bool ASCOM_IsMoving(IDispatch *cam)
 
     HRESULT hr;
     EXCEPINFO excep;
-    VARIANT vRes;
+    Variant vRes;
 
     if (FAILED(hr = cam->Invoke(dispid_ispulseguiding, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispParms, &vRes, &excep, NULL)))
     {
@@ -384,14 +384,14 @@ wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
         if (!profile.Create(L"ASCOM.Utilities.Profile"))
             throw ERROR_INFO("ASCOM Camera: could not instantiate ASCOM profile class");
 
-        VARIANT res;
+        Variant res;
         if (!profile.InvokeMethod(&res, L"RegisteredDevices", L"Camera"))
             throw ERROR_INFO("ASCOM Camera: could not query registered camera devices");
 
         DispatchClass ilist_class;
         DispatchObj ilist(res.pdispVal, &ilist_class);
 
-        VARIANT vcnt;
+        Variant vcnt;
         if (!ilist.GetProp(&vcnt, L"Count"))
             throw ERROR_INFO("ASCOM Camera: could not query registered cameras");
 
@@ -403,11 +403,11 @@ wxArrayString Camera_ASCOMLateClass::EnumAscomCameras()
 
         for (unsigned int i = 0; i < count; i++)
         {
-            VARIANT kvpres;
+            Variant kvpres;
             if (ilist.GetProp(&kvpres, L"Item", i))
             {
                 DispatchObj kvpair(kvpres.pdispVal, &kvpair_class);
-                VARIANT vkey, vval;
+                Variant vkey, vval;
                 if (kvpair.GetProp(&vkey, L"Key") && kvpair.GetProp(&vval, L"Value"))
                 {
                     wxString ascomName = vval.bstrVal;
@@ -446,7 +446,7 @@ static bool ChooseASCOMCamera(BSTR *res)
     wxString wx_ProgID = pConfig->Profile.GetString("/camera/ASCOMlate/camera_id", _T(""));
     BSTR bstr_ProgID = wxBasicString(wx_ProgID).Get();
 
-    VARIANT vchoice;
+    Variant vchoice;
     if (!chooser.InvokeMethod(&vchoice, L"Choose", bstr_ProgID))
     {
         wxMessageBox(_("Failed to run the Camera Chooser. Something is wrong with ASCOM"), _("Error"), wxOK | wxICON_ERROR);
@@ -547,7 +547,7 @@ bool Camera_ASCOMLateClass::Connect()
         return true;
     }
 
-    VARIANT vname;
+    Variant vname;
     if (driver.GetProp(&vname, L"Name"))
     {
         Name = vname.bstrVal;
@@ -555,7 +555,7 @@ bool Camera_ASCOMLateClass::Connect()
     }
 
     // See if we have an onboard guider output
-    VARIANT vRes;
+    Variant vRes;
     if (!driver.GetProp(&vRes, L"CanPulseGuide"))
     {
         Debug.AddLine(ExcepMsg("CanPulseGuide", driver.Excep()));
@@ -716,7 +716,7 @@ void Camera_ASCOMLateClass::ShowPropertyDialog(void)
 
     if (Create(&camera, NULL))
     {
-        VARIANT res;
+        Variant res;
         if (!camera.InvokeMethod(&res, L"SetupDialog"))
         {
             pFrame->Alert(ExcepMsg(camera.Excep()));
@@ -746,10 +746,11 @@ bool Camera_ASCOMLateClass::AbortExposure(void)
     }
 }
 
-bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
     bool retval = false;
     bool takeSubframe = UseSubframes;
+    wxRect subframe(subframeArg);
 
     if (subframe.width <= 0 || subframe.height <= 0)
     {
@@ -777,7 +778,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         m_roi = subframe;
     }
 
-    bool takeDark = HasShutter && ShutterState;
+    bool takeDark = HasShutter && ShutterClosed;
 
     // Start the exposure
     if (ASCOM_StartExposure(cam.IDisp(), (double)duration / 1000.0, takeDark, &excep))
@@ -832,9 +833,9 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, wxRect subframe,
         return true;
     }
 
-    if (recon)
+    if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (Color)
+    if (Color && (options & CAPTURE_RECON))
         QuickLRecon(img);
 
     return false;
@@ -865,7 +866,7 @@ bool Camera_ASCOMLateClass::ST4PulseGuideScope(int direction, int duration)
     MountWatchdog watchdog(duration, 5000);
 
     EXCEPINFO excep;
-    VARIANT vRes;
+    Variant vRes;
     HRESULT hr;
 
     if (FAILED(hr = cam.IDisp()->Invoke(dispid_pulseguide, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD,

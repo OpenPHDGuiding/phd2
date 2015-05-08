@@ -62,6 +62,7 @@ Camera_INDIClass::Camera_INDIClass()
     SetCCDdevice();
     PropertyDialogType = PROPDLG_ANY;
     FullSize = wxSize(640,480);
+    HasSubframes = true;
 }
 
 Camera_INDIClass::~Camera_INDIClass() 
@@ -118,7 +119,12 @@ void Camera_INDIClass::newSwitch(ISwitchVectorProperty *svp)
     //printf("Camera Receving Switch: %s = %i\n", svp->name, svp->sp->s);
     if (strcmp(svp->name, "CONNECTION") == 0) {
 	ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
-	Connected = (connectswitch->s == ISS_ON);
+        if (connectswitch->s == ISS_ON) {
+            Connected = true;
+        }
+        else {
+            if (ready) Disconnect(); 
+        }
     }
 }
 
@@ -164,7 +170,12 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     // We keep the vector for each interesting property to send some data later.
     //const char* DeviName = property->getDeviceName();
     const char* PropName = property->getName();
-    INDI_TYPE Proptype = property->getType();
+    #ifdef INDI_PRE_1_1_0
+      INDI_TYPE Proptype = property->getType();
+    #else
+      INDI_PROPERTY_TYPE Proptype = property->getType();
+    #endif 
+      
     //printf("Camera Property: %s\n",PropName);
     
     if (Proptype == INDI_BLOB) {
@@ -178,6 +189,10 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     else if ((strcmp(PropName, INDICameraCCDCmd+"FRAME") == 0) && Proptype == INDI_NUMBER) {
 	//printf("Found CCD_FRAME for %s %s\n", DeviName, PropName);
 	frame_prop = property->getNumber();
+	frame_x = IUFindNumber(frame_prop,"X");
+	frame_y = IUFindNumber(frame_prop,"Y");
+	frame_width = IUFindNumber(frame_prop,"WIDTH");
+	frame_height = IUFindNumber(frame_prop,"HEIGHT");
     }
     else if ((strcmp(PropName, INDICameraCCDCmd+"FRAME_TYPE") == 0) && Proptype == INDI_SWITCH) {
 	//printf("Found CCD_FRAME_TYPE for %s %s\n", DeviName, PropName);
@@ -211,9 +226,9 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
 	pulseW_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_W");
 	pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
     }
-    else if (strcmp(PropName, "CCD_INFO") == 0 && Proptype == INDI_NUMBER) {
+    else if (strcmp(PropName, INDICameraCCDCmd+"INFO") == 0 && Proptype == INDI_NUMBER) {
         PixelSize = IUFindNumber(property->getNumber(),"CCD_PIXEL_SIZE")->value;
-	FullSize = wxSize(IUFindNumber(property->getNumber(),"CCD_MAX_Y")->value,IUFindNumber(property->getNumber(),"CCD_MAX_X")->value);
+	FullSize = wxSize(IUFindNumber(property->getNumber(),"CCD_MAX_X")->value,IUFindNumber(property->getNumber(),"CCD_MAX_Y")->value);
     }
     
     CheckState();
@@ -373,7 +388,7 @@ void  Camera_INDIClass::SetCCDdevice()
     } 
 }
 
-bool Camera_INDIClass::ReadFITS(usImage& img) 
+bool Camera_INDIClass::ReadFITS(usImage& img, bool takeSubframe, const wxRect& subframe) 
 {
     int xsize, ysize;
     fitsfile *fptr;  // FITS file pointer
@@ -383,7 +398,7 @@ bool Camera_INDIClass::ReadFITS(usImage& img)
     long fits_size[2];
     long fpixel[3] = {1,1,1};
     size_t bsize = static_cast<size_t>(cam_bp->bloblen);
-    
+
     // load blob to CFITSIO
     if (fits_open_memfile(&fptr,
             "",
@@ -399,6 +414,7 @@ bool Camera_INDIClass::ReadFITS(usImage& img)
     }
     if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
         pFrame->Alert(_("FITS file is not of an image"));
+        PHD_fits_close_file(fptr);
         return true;
     }
 
@@ -410,18 +426,47 @@ bool Camera_INDIClass::ReadFITS(usImage& img)
     fits_get_num_hdus(fptr,&nhdus,&status);
     if ((nhdus != 1) || (naxis != 2)) {
         pFrame->Alert(_("Unsupported type or read error loading FITS file"));
+        PHD_fits_close_file(fptr);
         return true;
     }
-    if (img.Init(xsize,ysize)) {
-        pFrame->Alert(_("Memory allocation error"));
-        return true;
+    if (takeSubframe) {
+	if (img.Init(FullSize)) {
+	    pFrame->Alert(_("Memory allocation error"));
+	    PHD_fits_close_file(fptr);
+	    return true;
+	}
+	img.Clear();
+	img.Subframe = subframe;
+	unsigned short *rawdata = new unsigned short[xsize*ysize];
+	if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, rawdata, NULL, &status) ) { 
+	    pFrame->Alert(_("Error reading data"));
+	    PHD_fits_close_file(fptr);
+	    return true;
+	}
+	int i = 0;
+	for (int y = 0; y < subframe.height; y++)
+	{
+	    unsigned short *dataptr = img.ImageData + (y + subframe.y) * img.Size.GetWidth() + subframe.x;
+	    for (int x = 0; x < subframe.width; x++, i++)
+		*dataptr++ = (unsigned short) rawdata[i];
+	}
+	delete[] rawdata;
     }
-    // Read image
-    if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { 
-        pFrame->Alert(_("Error reading data"));
-        return true;
+    else {
+	if (img.Init(xsize,ysize)) {
+	    pFrame->Alert(_("Memory allocation error"));
+	    PHD_fits_close_file(fptr);
+	    return true;
+	}
+	// Read image
+	if (fits_read_pix(fptr, TUSHORT, fpixel, xsize*ysize, NULL, img.ImageData, NULL, &status) ) { 
+	    pFrame->Alert(_("Error reading data"));
+	    PHD_fits_close_file(fptr);
+	    return true;
+	}
     }
-    fits_close_file(fptr,&status);
+	
+    PHD_fits_close_file(fptr);
     return false;
 }
 
@@ -436,21 +481,17 @@ bool Camera_INDIClass::ReadStream(usImage& img)
         return true;
     }
     
-    INumber *f_num = IUFindNumber(frame_prop,"WIDTH");
- 
-    if (! (f_num)) {
+    if (! (frame_width)) {
         pFrame->Alert(_("No WIDTH value, failed to determine image dimensions"));
         return true;
     }
-    xsize = f_num->value;
+    xsize = frame_width->value;
 
-    f_num = IUFindNumber(frame_prop,"HEIGHT");
-    
-    if (! (f_num)) {
+    if (! (frame_height)) {
         pFrame->Alert(_("No HEIGHT value, failed to determine image dimensions"));
         return true;
     }
-    ysize = f_num->value;
+    ysize = frame_height->value;
     
     // allocate image
     if (img.Init(xsize,ysize)) {
@@ -465,11 +506,35 @@ bool Camera_INDIClass::ReadStream(usImage& img)
     return false;
 }
 
-bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
 {
   if (Connected) {
+      
+      bool takeSubframe = UseSubframes;
+      wxRect subframe(subframeArg);
+      
       // we can set the exposure time directly in the camera
       if (expose_prop) {
+	  if (subframe.width <= 0 || subframe.height <= 0)
+	  {
+	      takeSubframe = false;
+	  }
+	  
+	  // Program the size
+	  if (!takeSubframe)
+	  {
+	      subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
+	  }
+	  
+	  if (subframe != m_roi)
+	  {
+	      frame_x->value = subframe.x;
+	      frame_y->value = subframe.y;
+	      frame_width->value = subframe.width;
+	      frame_height->value = subframe.height;
+	      sendNewNumber(frame_prop);
+	      m_roi = subframe;
+	  }
 	  //printf("Exposing for %d(ms)\n", duration);
 	  
 	  // set the exposure time, this immediately start the exposure
@@ -495,6 +560,7 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
       }
       // for video camera without exposure time setting
       else if (video_prop){
+	  takeSubframe = false;
 	  //printf("Enabling video capture\n");
 	  ISwitch *v_on = IUFindSwitch(video_prop,"ON");
 	  ISwitch *v_off = IUFindSwitch(video_prop,"OFF");
@@ -520,8 +586,8 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, wxRect subframe, bool
       if (strcmp(cam_bp->format, ".fits") == 0) {
 	 //printf("Processing fits file\n");
 	 // for CCD camera
-	 if ( ! ReadFITS(img) ) {
-	    if ( recon ) {
+	 if ( ! ReadFITS(img,takeSubframe,subframe) ) {
+	    if (options & CAPTURE_SUBTRACT_DARK) {
 	       //printf("Subtracting dark\n");
 	       SubtractDark(img);
 	    }

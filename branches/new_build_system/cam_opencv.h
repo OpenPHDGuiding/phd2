@@ -34,24 +34,26 @@
  *
  */
 
-#include <opencv/highgui.h>
-
 #ifndef CAM_OPENCV_H_INCLUDED
 #define CAM_OPENCV_H_INCLUDED
 
-#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
-class Camera_OpenCVClass : public GuideCamera {
+class Camera_OpenCVClass : public GuideCamera
+{
     int     DeviceNum;
+
 protected:
     cv::VideoCapture *pCapDev;
+
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool    Connect();      // Opens up and connects to cameras
-    virtual bool    Disconnect();
-    virtual void    InitCapture() { return; }
     Camera_OpenCVClass(int devNumber);
-    virtual ~Camera_OpenCVClass(void);
+    ~Camera_OpenCVClass(void);
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect();      // Opens up and connects to cameras
+    bool    Disconnect();
+    void    InitCapture() { return; }
 };
 
 #endif //CAM_OPENCV_H_INCLUDED

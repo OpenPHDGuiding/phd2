@@ -62,8 +62,8 @@ public:
     Camera_ASCOMLateClass(const wxString& choice);
     ~Camera_ASCOMLateClass();
 
-    virtual bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool HasNonGuiCapture(void);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    HasNonGuiCapture(void);
     bool    Connect(void);
     bool    Disconnect(void);
     void    ShowPropertyDialog(void);

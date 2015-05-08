@@ -174,22 +174,6 @@ GearDialog::~GearDialog(void)
     pPointingSource = NULL;
     pRotator = NULL;
 
-    delete m_pCameras;
-    delete m_pScopes;
-    delete m_pAuxScopes;
-    delete m_pStepGuiders;
-    delete m_pRotators;
-
-    delete m_moreButton;
-    delete m_pConnectAllButton;
-    delete m_pDisconnectAllButton;
-
-    delete m_pConnectCameraButton;
-    delete m_pConnectScopeButton;
-    delete m_pConnectAuxScopeButton;
-    delete m_pConnectStepGuiderButton;
-    delete m_pConnectRotatorButton;
-
     delete m_menuProfileManage;
 }
 
@@ -330,6 +314,9 @@ void GearDialog::Initialize(void)
     m_pDisconnectAllButton->SetToolTip(_("Disconnect all equipment"));
     pButtonSizer->Add(m_pDisconnectAllButton, sizerFlags);
 
+    wxButton* closeBtn = new wxButton(this, wxID_CANCEL, _("Close"));
+    pButtonSizer->Add(closeBtn, sizerFlags);
+
     pTopLevelSizer->Add(pButtonSizer, wxSizerFlags().Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2));
 
     // preselect the choices
@@ -347,8 +334,8 @@ void GearDialog::Initialize(void)
 void GearDialog::LoadGearChoices(void)
 {
     wxCommandEvent dummyEvent;
-    wxString lastCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
-    m_pCameras->SetStringSelection(lastCamera);
+    m_lastCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
+    m_pCameras->SetStringSelection(m_lastCamera);
     OnChoiceCamera(dummyEvent);
 
     wxString lastScope = pConfig->Profile.GetString("/scope/LastMenuChoice", _("None"));
@@ -366,6 +353,7 @@ void GearDialog::LoadGearChoices(void)
     wxString lastRotator = pConfig->Profile.GetString("/rotator/LastMenuChoice", _("None"));
     m_pRotators->SetStringSelection(lastRotator);
     OnChoiceRotator(dummyEvent);
+
 }
 
 int GearDialog::ShowGearDialog(bool autoConnect)
@@ -374,6 +362,8 @@ int GearDialog::ShowGearDialog(bool autoConnect)
     int callSuper = true;
 
     assert(pCamera == NULL || pCamera == m_pCamera);
+
+    m_camWarningIssued = false;
 
     if (m_pStepGuider)
     {
@@ -407,7 +397,11 @@ int GearDialog::ShowGearDialog(bool autoConnect)
 
         GetSizer()->Fit(this);
         CenterOnParent();
+
+        wxWindow *top = wxGetApp().GetTopWindow();
+        wxGetApp().SetTopWindow(this);
         ret = wxDialog::ShowModal();
+        wxGetApp().SetTopWindow(top);
     }
     else
     {
@@ -742,7 +736,9 @@ void GearDialog::UpdateButtonState(void)
 
 void GearDialog::OnButtonConnectAll(wxCommandEvent& event)
 {
-    OnButtonConnectCamera(event);
+    bool canceled = DoConnectCamera();
+    if (canceled)
+        return;
     OnButtonConnectStepGuider(event);
     OnButtonConnectScope(event);
     OnButtonConnectAuxScope(event);
@@ -773,6 +769,7 @@ void GearDialog::OnButtonDisconnectAll(wxCommandEvent& event)
     OnButtonDisconnectRotator(event);
 }
 
+// Handle 'Esc' char as close trigger
 void GearDialog::OnChar(wxKeyEvent& evt)
 {
     if (evt.GetKeyCode() == WXK_ESCAPE && !evt.HasModifiers())
@@ -784,6 +781,7 @@ void GearDialog::OnChar(wxKeyEvent& evt)
         evt.Skip();
     }
 }
+
 
 void GearDialog::OnChoiceCamera(wxCommandEvent& event)
 {
@@ -840,25 +838,54 @@ void GearDialog::OnButtonSetupCamera(wxCommandEvent& event)
     m_pCamera->ShowPropertyDialog();
 }
 
-void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
+bool GearDialog::DoConnectCamera(void)
 {
+    bool canceled = false;
+
     try
     {
         if (m_pCamera == NULL)
         {
-            throw ERROR_INFO("OnButtonConnectCamera called with m_pCamera == NULL");
+            throw ERROR_INFO("DoConnectCamera called with m_pCamera == NULL");
         }
 
         if (m_pCamera->Connected)
         {
-            throw THROW_INFO("OnButtonConnectCamera: called when connected");
+            throw THROW_INFO("DoConnectCamera: called when connected");
         }
 
+        wxString newCam = m_pCameras->GetStringSelection();
+        if (!m_camWarningIssued && m_lastCamera != _("None") && newCam != _("None") && m_lastCamera != newCam)
+        {
+            int currProfileId = pConfig->GetCurrentProfileId();
+            wxString darkName = MyFrame::DarkLibFileName(currProfileId);
+            wxString bpmName = DefectMap::DefectMapFileName(currProfileId);
+
+            // Can't use standard checks because we don't want to consider sensor-size
+            if (wxFileExists(darkName) || wxFileExists(bpmName))
+            {
+                wxString msg = _("By changing cameras in this profile, you won't be able to use the existing dark library or bad-pixel maps. You should consider"
+                    " creating a new profile for this set-up.  Do you want to proceed with changes to this profile?");
+                if (wxMessageBox(msg, _("Camera Change Warning"), wxYES_NO, this) == wxYES)
+                {
+                    m_camWarningIssued = true;
+                    m_lastCamera = newCam;          // make consistent with what's in the UI
+                }
+                else
+                {
+                    m_pCameras->SetStringSelection(m_lastCamera);
+                    wxCommandEvent dummy;
+                    OnChoiceCamera(dummy);
+                    canceled = true;
+                    throw THROW_INFO("DoConnectCamera: user cancelled after camera-change warning");
+                }
+            }
+        }
         pFrame->SetStatusText(_("Connecting to Camera ..."));
 
         if (m_pCamera->Connect())
         {
-            throw THROW_INFO("OnButtonConnectCamera: connect failed");
+            throw THROW_INFO("DoConnectCamera: connect failed");
         }
 
         Debug.AddLine("Connected Camera:" + m_pCamera->Name);
@@ -892,6 +919,13 @@ void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
     }
 
     UpdateButtonState();
+
+    return canceled;
+}
+
+void GearDialog::OnButtonConnectCamera(wxCommandEvent& event)
+{
+    DoConnectCamera();
 }
 
 void GearDialog::OnButtonDisconnectCamera(wxCommandEvent& event)
@@ -1406,9 +1440,17 @@ void GearDialog::OnButtonWizard(wxCommandEvent& event)
 {
     ProfileWizard wiz(this, event.GetId() == 0);            // Event id of 0 comes from "first light" launch; show first light UI panel only then
 
+    bool firstLight = IsEmptyProfile();
+    wxString current = m_profiles->GetStringSelection();
+
     if (wiz.ShowModal() == wxOK)
     {
         // a new profile was created and set as the current profile
+        // if this was a first-light run, we may have left an empty "My Equipment" profile behind - if so, delete it
+        if (firstLight)
+        {
+            pConfig->DeleteProfile(current);                // Can't be any dark/bpm files associated with it
+        }
 
         wxArrayString profiles = pConfig->ProfileNames();
         m_profiles->Set(profiles);
@@ -1439,6 +1481,22 @@ void GearDialog::ShowProfileWizard(void)
     {
         ShowGearDialog(true); // connect equipment and launch darks dialog
     }
+}
+
+void GearDialog::ShowProfileWizard(wxCommandEvent& evt)
+{
+    OnButtonWizard(evt);
+    if (!IsEmptyProfile())                      // User didn't just cancel out
+    {
+        ShowGearDialog(m_showDarksDialog);      // Maybe auto-connect, close, launch darks; or just display dialog
+    }
+}
+
+bool GearDialog::IsEmptyProfile(void)
+{
+    wxString lastCamera = pConfig->Profile.GetString("/camera/LastMenuchoice", _("None"));
+    wxString lastScope = pConfig->Profile.GetString("/scope/LastMenuChoice", _("None"));
+    return lastCamera == _("None") && lastScope == _("None");
 }
 
 void GearDialog::OnProfileChoice(wxCommandEvent& event)

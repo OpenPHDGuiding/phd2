@@ -236,7 +236,12 @@ void ScopeINDI::newSwitch(ISwitchVectorProperty *svp)
     //printf("Mount Receving Switch: %s = %i\n", svp->name, svp->sp->s);
     if (strcmp(svp->name, "CONNECTION") == 0) {
 	ISwitch *connectswitch = IUFindSwitch(svp,"CONNECT");
-	if (connectswitch->s == ISS_ON) Scope::Connect();
+	if (connectswitch->s == ISS_ON) {
+            Scope::Connect();
+        }
+        else {
+            if (ready) ScopeINDI::Disconnect();
+        }
     }
     
 }
@@ -265,7 +270,12 @@ void ScopeINDI::newProperty(INDI::Property *property)
     // Updated values are not received here but in the newTYPE() functions above.
     // We keep the vector for each interesting property to send some data later.
     const char* PropName = property->getName();
-    INDI_TYPE Proptype = property->getType();
+    #ifdef INDI_PRE_1_1_0
+      INDI_TYPE Proptype = property->getType();
+    #else
+      INDI_PROPERTY_TYPE Proptype = property->getType();
+    #endif 
+    
     //printf("Mount Property: %s\n",PropName);
     
     if ((strcmp(PropName, "EQUATORIAL_EOD_COORD") == 0) && Proptype == INDI_NUMBER){
@@ -422,6 +432,8 @@ double ScopeINDI::GetGuidingDeclination(void)
 	INumber *decprop = IUFindNumber(coord_prop,"DEC");
 	if (decprop) {
 	    dec = decprop->value;     // Degrees
+	    if (dec>89) dec = 89;     // avoid crash when dividing by cos(dec) 
+	    if (dec<-89) dec = -89; 
 	    dec = dec * M_PI / 180;  // Radians
 	}
     }

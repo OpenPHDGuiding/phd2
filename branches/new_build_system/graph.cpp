@@ -1207,11 +1207,9 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     }
 
     dc.SetBackground(*wxBLACK_BRUSH);
-    //dc.SetBackground(wxColour(10,0,0));
     dc.Clear();
 
-    wxPen GreyDashPen;
-    GreyDashPen = wxPen(wxColour(200,200,200),1, wxDOT);
+    wxPen GreyDashPen(wxColour(200,200,200),1, wxDOT);
 
     // Draw axes
     dc.SetPen(*wxGREY_PEN);
@@ -1219,7 +1217,6 @@ void GraphLogClientWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     dc.DrawLine(leftEdge,center.y,rightEdge,center.y);
 
     // draw a box around the client area
-    dc.SetPen(*wxGREY_PEN);
     dc.DrawLine(leftEdge, topEdge, rightEdge, topEdge);
     dc.DrawLine(rightEdge, topEdge, rightEdge, bottomEdge);
     dc.DrawLine(rightEdge, bottomEdge, leftEdge, bottomEdge);
@@ -1507,7 +1504,7 @@ GraphControlPane::GraphControlPane(wxWindow *pParent, const wxString& label)
     pLabel->SetForegroundColour(*wxWHITE);
     pLabel->SetBackgroundColour(*wxBLACK);
 
-    m_pControlSizer->Add(pLabel, wxSizerFlags().Right());
+    m_pControlSizer->Add(pLabel, wxSizerFlags().Right().Align(wxALIGN_CENTER_VERTICAL));
     SetSizer(m_pControlSizer);
 }
 
@@ -1530,8 +1527,8 @@ void GraphControlPane::DoAdd(wxControl *pCtrl, const wxString& lbl)
     pLabel->SetForegroundColour(*wxWHITE);
     pLabel->SetBackgroundColour(*wxBLACK);
 
-    m_pControlSizer->Add(pLabel, wxSizerFlags().Right());
+    m_pControlSizer->Add(pLabel, wxSizerFlags().Right().Align(wxALIGN_CENTER_VERTICAL));
     m_pControlSizer->AddSpacer(5);
-    m_pControlSizer->Add(pCtrl, wxSizerFlags().Left());
+    m_pControlSizer->Add(pCtrl, wxSizerFlags().Left().Align(wxALIGN_CENTER_VERTICAL));
     m_pControlSizer->AddSpacer(10);
 }

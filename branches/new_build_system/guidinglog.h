@@ -121,6 +121,7 @@ public:
     void SetGuidingParam(const wxString& name, const wxString& val);
 
     bool ChangeDirLog(const wxString& newdir);
+    void RemoveOldFiles();
 };
 
 inline bool GuidingLog::IsEnabled(void) const

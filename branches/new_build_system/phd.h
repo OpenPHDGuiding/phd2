@@ -68,8 +68,8 @@
 #include <stdarg.h>
 
 #define APPNAME _T("PHD2 Guiding")
-#define PHDVERSION _T("2.4.1")
-#define PHDSUBVER _T("c")
+#define PHDVERSION _T("2.5.0")
+#define PHDSUBVER _T("")
 #define FULLVER PHDVERSION PHDSUBVER
 
 #if defined (__WINDOWS__)
@@ -102,11 +102,6 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 #endif
 
 //#define TEST_TRANSFORMS
-//#define BRET_AO_DEBUG
-
-#ifdef BRET_AO_DEBUG
-#define USE_LOOPBACK_SERIAL
-#endif
 
 #define ROUND(x) (int) floor(x + 0.5)
 
@@ -198,6 +193,11 @@ class PhdApp : public wxApp
     wxSingleInstanceChecker *m_instanceChecker;
     long m_instanceNumber;
     bool m_resetConfig;
+    wxString m_localeDir;
+
+protected:
+
+    wxLocale m_locale;
 
 public:
 
@@ -207,10 +207,7 @@ public:
     void OnInitCmdLine(wxCmdLineParser& parser);
     bool OnCmdLineParsed(wxCmdLineParser & parser);
     virtual bool Yield(bool onlyIfNeeded=false);
-
-protected:
-
-    wxLocale m_locale;
+    wxString GetLocaleDir() const { return m_localeDir; }
 };
 
 wxDECLARE_APP(PhdApp);

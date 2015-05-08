@@ -33,20 +33,24 @@
  */
 #ifndef SAC42DEF
 #define SAC42DEF
+
 #include "FcApiUser.h"
-class Camera_SAC42Class : public GuideCamera {
-public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture();
-    Camera_SAC42Class();
+
+class Camera_SAC42Class : public GuideCamera
+{
 protected:
     HANDLE hDriver;
     struct CapInfoStruct CapInfo;
     int Index;
     bool    ColorArray;
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
     int MaxExposure;
+
+public:
+    Camera_SAC42Class();
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect();
+    bool    Disconnect();
+    void    InitCapture();
 };
+
 #endif

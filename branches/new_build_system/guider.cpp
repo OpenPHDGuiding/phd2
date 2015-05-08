@@ -34,6 +34,7 @@
 #include "phd.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
+#include "guiding_assistant.h"
 
 // un-comment to log star deflections to a file
 //#define CAPTURE_DEFLECTIONS
@@ -121,6 +122,16 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);
+
+    wxPoint center;
+    center.x = pConfig->Profile.GetInt("/overlay/slit/center.x", 752 / 2);
+    center.y = pConfig->Profile.GetInt("/overlay/slit/center.y", 580 / 2);
+    wxSize size;
+    size.x = pConfig->Profile.GetInt("/overlay/slit/width", 8);
+    size.y = pConfig->Profile.GetInt("/overlay/slit/height", 100);
+    int angle = pConfig->Profile.GetInt("/overlay/slit/angle", 0);
+    SetOverlaySlitCoords(center, size, angle);
+
     m_defectMapPreview = 0;
 
     m_polarAlignCircleRadius = 0.0;
@@ -184,19 +195,20 @@ bool Guider::SetOverlayMode(int overlayMode)
 
     try
     {
-        switch(overlayMode)
+        switch (overlayMode)
         {
             case OVERLAY_NONE:
             case OVERLAY_BULLSEYE:
             case OVERLAY_GRID_FINE:
             case OVERLAY_GRID_COARSE:
             case OVERLAY_RADEC:
+            case OVERLAY_SLIT:
                 break;
             default:
                 throw ERROR_INFO("invalid overlayMode");
         }
 
-        m_overlayMode = (OVERLAY_MODE)overlayMode;
+        m_overlayMode = (OVERLAY_MODE) overlayMode;
     }
     catch (wxString Msg)
     {
@@ -209,6 +221,71 @@ bool Guider::SetOverlayMode(int overlayMode)
     Update();
 
     return bError;
+}
+
+void Guider::GetOverlaySlitCoords(wxPoint *center, wxSize *size, int *angle)
+{
+    *center = m_overlaySlitCoords.center;
+    *size = m_overlaySlitCoords.size;
+    *angle = m_overlaySlitCoords.angle;
+}
+
+void Guider::SetOverlaySlitCoords(const wxPoint& center, const wxSize& size, int angle)
+{
+    m_overlaySlitCoords.center = center;
+    m_overlaySlitCoords.size = size;
+    m_overlaySlitCoords.angle = angle;
+
+    pConfig->Profile.SetInt("/overlay/slit/center.x", center.x);
+    pConfig->Profile.SetInt("/overlay/slit/center.y", center.y);
+    pConfig->Profile.SetInt("/overlay/slit/width", size.x);
+    pConfig->Profile.SetInt("/overlay/slit/height", size.y);
+    pConfig->Profile.SetInt("/overlay/slit/angle", angle);
+
+    if (size.GetWidth() > 0 && size.GetHeight() > 0)
+    {
+        if (angle != 0)
+        {
+            double a = -radians((double)angle);
+            double s = sin(a);
+            double c = cos(a);
+            double cx = (double)center.x;
+            double cy = (double)center.y;
+            double x, y;
+
+            x = +(double)size.GetWidth() / 2.0;
+            y = +(double)size.GetHeight() / 2.0;
+            m_overlaySlitCoords.corners[0].x = cx + (int)floor(x * c - y * s);
+            m_overlaySlitCoords.corners[0].y = cy + (int)floor(x * s + y * c);
+
+            x = -(double)size.GetWidth() / 2.0;
+            y = +(double)size.GetHeight() / 2.0;
+            m_overlaySlitCoords.corners[1].x = cx + (int)floor(x * c - y * s);
+            m_overlaySlitCoords.corners[1].y = cy + (int)floor(x * s + y * c);
+
+            x = -(double)size.GetWidth() / 2.0;
+            y = -(double)size.GetHeight() / 2.0;
+            m_overlaySlitCoords.corners[2].x = cx + (int)floor(x * c - y * s);
+            m_overlaySlitCoords.corners[2].y = cy + (int)floor(x * s + y * c);
+
+            x = +(double)size.GetWidth() / 2.0;
+            y = -(double)size.GetHeight() / 2.0;
+            m_overlaySlitCoords.corners[3].x = cx + (int)floor(x * c - y * s);
+            m_overlaySlitCoords.corners[3].y = cy + (int)floor(x * s + y * c);
+        }
+        else
+        {
+            m_overlaySlitCoords.corners[0] = wxPoint(center.x + size.GetWidth() / 2, center.y + size.GetHeight() / 2);
+            m_overlaySlitCoords.corners[1] = wxPoint(center.x - size.GetWidth() / 2, center.y + size.GetHeight() / 2);
+            m_overlaySlitCoords.corners[2] = wxPoint(center.x - size.GetWidth() / 2, center.y - size.GetHeight() / 2);
+            m_overlaySlitCoords.corners[3] = wxPoint(center.x + size.GetWidth() / 2, center.y - size.GetHeight() / 2);
+        }
+
+        m_overlaySlitCoords.corners[4] = m_overlaySlitCoords.corners[0];
+    }
+
+    Refresh();
+    Update();
 }
 
 bool Guider::IsFastRecenterEnabled(void)
@@ -330,7 +407,7 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
             // - The user has requsted rescaling
 
             if (xScaleFactor > 1.0 || yScaleFactor > 1.0 ||
-                xScaleFactor < 0.5 || yScaleFactor < 0.5 || m_scaleImage)
+                xScaleFactor < 0.45 || yScaleFactor < 0.45 || m_scaleImage)
             {
 
                 newWidth /= newScaleFactor;
@@ -419,8 +496,6 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
 
                         wxGraphicsContext *gc = wxGraphicsContext::Create(dc);
                         gc->SetPen(wxPen(pFrame->pGraphLog->GetRaOrDxColor(),1,wxPENSTYLE_DOT ));
-                        wxGraphicsPath path = gc->CreatePath();
-                        int i;
                         double step = (double) YImgSize / 10.0;
 
                         double MidX = (double) XImgSize / 2.0;
@@ -430,7 +505,7 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                         gc->Rotate(-xAngle);
                         gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
                         gc->Rotate(xAngle);
-                        for (i=-2; i<12; i++) {
+                        for (int i = -2; i < 12; i++) {
                             gc->StrokeLine(0.0,step * (double) i,
                                 (double) XImgSize, step * (double) i);
                         }
@@ -443,8 +518,8 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                         gc->Rotate(-yAngle);
                         gc->Translate((double) XImgSize / 2.0 - MidX, (double) YImgSize / 2.0 - MidY);
                         gc->Rotate(yAngle);
-                        gc->SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),1,wxPENSTYLE_DOT ));
-                        for (i=-2; i<12; i++) {
+                        gc->SetPen(wxPen(pFrame->pGraphLog->GetDecOrDyColor(),1,wxPENSTYLE_DOT));
+                        for (int i = -2; i < 12; i++) {
                             gc->StrokeLine(0.0,step * (double) i,
                                 (double) XImgSize, step * (double) i);
                         }
@@ -453,8 +528,28 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                     break;
                 }
 
-            case OVERLAY_NONE:
-                break;
+                case OVERLAY_SLIT:
+                    if (m_overlaySlitCoords.size.GetWidth() > 0 && m_overlaySlitCoords.size.GetHeight() > 0)
+                    {
+                        if (m_scaleFactor == 1.0)
+                        {
+                            dc.DrawLines(5, m_overlaySlitCoords.corners);
+                        }
+                        else
+                        {
+                            wxPoint pt[5];
+                            for (int i = 0; i < 5; i++)
+                            {
+                                pt[i].x = (int) floor(m_overlaySlitCoords.corners[i].x * m_scaleFactor);
+                                pt[i].y = (int) floor(m_overlaySlitCoords.corners[i].y * m_scaleFactor);
+                            }
+                            dc.DrawLines(5, pt);
+                        }
+                    }
+                    break;
+
+                case OVERLAY_NONE:
+                    break;
             }
         }
 
@@ -971,6 +1066,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 {
                     GuideLog.FrameDropped(info);
                     EvtServer.NotifyStarLost(info);
+                    GuidingAssistant::NotifyFrameDropped(info);
                     pFrame->pGraphLog->AppendData(info);
 
                     wxColor prevColor = GetBackgroundColour();
@@ -1235,8 +1331,8 @@ void Guider::UpdateLockPosShiftCameraCoords(void)
         rate = m_lockPosShift.shiftRate;
     }
 
-    Debug.AddLine("UpdateLockPosShiftCameraCoords: shift rate camera coords = %.2f,%.2f %s/hr",
-                  rate.X, rate.Y, m_lockPosShift.shiftUnits == UNIT_ARCSEC ? "arcsec" : "pixels");
+    Debug.AddLine(wxString::Format("UpdateLockPosShiftCameraCoords: shift rate camera coords = %.2f,%.2f %s/hr",
+                  rate.X, rate.Y, m_lockPosShift.shiftUnits == UNIT_ARCSEC ? "arcsec" : "pixels"));
 
     // convert arc-seconds to pixels
     if (m_lockPosShift.shiftUnits == UNIT_ARCSEC)
@@ -1357,8 +1453,8 @@ void Guider::SetBookmarksShown(bool show)
     m_showBookmarks = show;
     if (prev != show && m_bookmarks.size())
     {
-        Update();
         Refresh();
+        Update();
     }
 }
 
@@ -1372,14 +1468,14 @@ void Guider::DeleteAllBookmarks()
     if (m_bookmarks.size())
     {
         bool confirmed = ConfirmDialog::Confirm(_("Are you sure you want to delete all Bookmarks?"),
-            "/delete_all_bookmarks_ok", _("Confirm"));
+            "/delete_all_bookmarks_ok");
         if (confirmed)
         {
             m_bookmarks.clear();
             if (m_showBookmarks)
             {
-                Update();
                 Refresh();
+                Update();
             }
         }
     }
@@ -1428,8 +1524,8 @@ void Guider::BookmarkLockPosition()
 {
     if (BookmarkPos(LockPosition(), m_bookmarks) && m_showBookmarks)
     {
-        Update();
         Refresh();
+        Update();
     }
 }
 
@@ -1437,7 +1533,7 @@ void Guider::BookmarkCurPosition()
 {
     if (BookmarkPos(CurrentPosition(), m_bookmarks) && m_showBookmarks)
     {
-        Update();
         Refresh();
+        Update();
     }
 }
