@@ -69,6 +69,13 @@ class Scope : public Mount
     PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
     PHD_Point m_lastLocation;
     double m_totalSouthAmt;
+    // backlash-related variables
+    PHD_Point m_blMarkerPoint;
+    double m_blExpectedBacklashStep;
+    double m_blLastCumDistance;
+    int m_blAcceptedMoves;
+    double m_blDistanceMoved;
+    enum blConstants { BL_BACKLASH_MIN_COUNT = 3, BL_MAX_CLEARING_STEPS = 15 };
 
     Calibration m_calibration;
     CalibrationDetails m_calibrationDetails;
