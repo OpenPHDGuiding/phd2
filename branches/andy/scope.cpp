@@ -1024,8 +1024,18 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 m_calibrationState = CALIBRATION_STATE_CLEAR_BACKLASH;
                 m_blMarkerPoint = currentLocation;
                 m_blExpectedBacklashStep = m_calibration.xRate * m_calibrationDuration * 0.6;
+                if (pPointingSource)
+                {
+                    double RASpeed;
+                    double DecSpeed;
+                    if (!pPointingSource->GetGuideRates(&RASpeed, &DecSpeed))
+                        if (RASpeed != 0 && RASpeed != DecSpeed)
+                            m_blExpectedBacklashStep *= DecSpeed / RASpeed;
+                }
+                m_blMaxClearingPulses = wxMax(8, BL_MAX_CLEARING_TIME / m_calibrationDuration);
                 m_blLastCumDistance = 0;
                 m_blAcceptedMoves = 0;
+                Debug.AddLine(wxString::Format("Backlash: Looking for 3 moves of %0.1f px, max attempts = %d", m_blExpectedBacklashStep, m_blMaxClearingPulses));
                 // fall through
                 Debug.AddLine("Falling Through to state CLEAR_BACKLASH");
 
@@ -1069,8 +1079,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 }
                 if (m_blAcceptedMoves < BL_BACKLASH_MIN_COUNT)                    // More work to do
                 {
-                    if (m_calibrationSteps < BL_MAX_CLEARING_STEPS)
-                    {
+                    if (m_calibrationSteps < m_blMaxClearingPulses)
+                    {   // Still have attempts left
                         pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                         m_calibrationSteps++;
                         m_blMarkerPoint = currentLocation;
@@ -1081,16 +1091,29 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                         break;
                     }
                     else
-                    {
-                        wxString msg(wxTRANSLATE("Backlash Clearing Failed: star did not move enough"));
-                        const wxString& translated(wxGetTranslation(msg));
-                        pFrame->Alert(translated);
-                        GuideLog.CalibrationFailed(this, msg);
-                        EvtServer.NotifyCalibrationFailed(this, msg);
-                        throw ERROR_INFO("Clear backlash failed");
+                    {       // Used up all our attempts - might be ok or not
+                        if (blCumDelta >= BL_MIN_CLEARING_DISTANCE)
+                        {
+                            // Exhausted all the clearing pulses without reaching the goal - but we did move the mount > 3 px (same as PHD1)
+                            m_calibrationSteps = 0;
+                            m_calibrationStartingLocation = currentLocation;
+                            dX = 0;
+                            dY = 0;
+                            dist = 0;
+                            Debug.AddLine("Backlash: Reached clearing limit but total displacement > 3px - proceeding with calibration");
+                        }
+                        else
+                        {
+                            wxString msg(wxTRANSLATE("Backlash Clearing Failed: star did not move enough"));
+                            const wxString& translated(wxGetTranslation(msg));
+                            pFrame->Alert(translated);
+                            GuideLog.CalibrationFailed(this, msg);
+                            EvtServer.NotifyCalibrationFailed(this, msg);
+                            throw ERROR_INFO("Clear backlash failed");
+                        }
                     }
                 }
-                else        // Got our 3 sizable moves in the same direction - press ahead
+                else        //Got our 3 moves, move ahead
                 {
                     // We know the last backlash clearing move was big enough - include that as a north calibration move
                     m_calibrationSteps = 1;
@@ -1098,15 +1121,16 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     dX = m_blMarkerPoint.dX(currentLocation);
                     dY = m_blMarkerPoint.dY(currentLocation);
                     dist = m_blMarkerPoint.Distance(currentLocation);
-                    m_blDistanceMoved = m_blMarkerPoint.Distance(m_calibrationInitialLocation);
-                    Debug.AddLine(wxString::Format("Backlash: North calibration moves starting at {%0.1f,%0.1f}, Offset = %0.1f px", 
-                        m_blMarkerPoint.X, m_blMarkerPoint.Y, m_blDistanceMoved));
-                    Debug.AddLine(wxString::Format("Backlash: Total distance moved = %0.1f", currentLocation.Distance(m_calibrationInitialLocation)));
-
-                    m_calibrationState = CALIBRATION_STATE_GO_NORTH;
-                    // falling through to start moving north
-                    Debug.AddLine("Backlash: Falling Through to state GO_NORTH");
+                    Debug.AddLine("Backlash: Got 3 acceptable moves, using last move as step 1 of N calibration");
                 }
+                m_blDistanceMoved = m_blMarkerPoint.Distance(m_calibrationInitialLocation);     // Need this to set nudging limit
+                Debug.AddLine(wxString::Format("Backlash: North calibration moves starting at {%0.1f,%0.1f}, Offset = %0.1f px", 
+                    m_blMarkerPoint.X, m_blMarkerPoint.Y, m_blDistanceMoved));
+                Debug.AddLine(wxString::Format("Backlash: Total distance moved = %0.1f", currentLocation.Distance(m_calibrationInitialLocation)));
+
+                m_calibrationState = CALIBRATION_STATE_GO_NORTH;
+                // falling through to start moving north
+                Debug.AddLine("Backlash: Falling Through to state GO_NORTH");
 
             case CALIBRATION_STATE_GO_NORTH:
 

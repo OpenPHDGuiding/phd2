@@ -75,7 +75,8 @@ class Scope : public Mount
     double m_blLastCumDistance;
     int m_blAcceptedMoves;
     double m_blDistanceMoved;
-    enum blConstants { BL_BACKLASH_MIN_COUNT = 3, BL_MAX_CLEARING_STEPS = 15 };
+    int m_blMaxClearingPulses;
+    enum blConstants { BL_BACKLASH_MIN_COUNT = 3, BL_MAX_CLEARING_TIME = 2000, BL_MIN_CLEARING_DISTANCE = 3 };
 
     Calibration m_calibration;
     CalibrationDetails m_calibrationDetails;
