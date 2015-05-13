@@ -109,7 +109,7 @@ public:
 
         m_pSEKLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
                                                  wxDefaultPosition,wxSize(width+30, -1),
-                                                 wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
+                                                 wxSP_ARROW_KEYS, 0.0, 6000, 0.0, 0.01);
         m_pSEKLengthScale->SetDigits(2);
 
         // nb points between consecutive calls to the optimisation
@@ -285,7 +285,6 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     double control_gain = pConfig->Profile.GetDouble(configPath + "/gp_controlGain", DefaultControlGain);
     SetControlGain(control_gain);
 
-
     int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_nbminelementforinference", DefaultNbMinPointsForInference);
     SetNbElementForInference(nb_element_for_inference);
 
@@ -300,6 +299,27 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     v_hyperparameters[4] = pConfig->Profile.GetDouble(configPath + "/gp_length_scale_se_kern",  DefaultLengthScaleSEKer);
 
     SetGPHyperparameters(v_hyperparameters);
+
+    // set masking, so that we only optimize the period length. The rest is fixed or estimated otherwise.
+    Eigen::VectorXi mask(5);
+    mask << 0, 0, 1, 0, 0;
+    parameters->gp_.setOptimizationMask(mask);
+
+    // set a prior to prevent the period length from being too small.
+    Eigen::VectorXd prior_parameters(2);
+    prior_parameters << 200, 0.1;
+    parameter_priors::LogisticPrior periodicity_prior(prior_parameters);
+    parameters->gp_.setHyperPrior(periodicity_prior, 2);
+
+    Eigen::VectorXd prior_parameters2(2);
+    prior_parameters2 << 300, 100;
+    parameter_priors::GammaPrior periodicity_prior2(prior_parameters2);
+    parameters->gp_.setHyperPrior(periodicity_prior2, 2);
+
+    //Eigen::VectorXd noise_prior_parameters(2);
+    //noise_prior_parameters << 0.5, 0.5;
+    //parameter_priors::GammaPrior noise_prior(noise_prior_parameters);
+    //parameters->gp_.setHyperPrior(noise_prior, 0);
 
     reset();
 }
@@ -571,50 +591,55 @@ void GuideGaussianProcess::HandleTimestamps()
 void GuideGaussianProcess::HandleMeasurements(double input)
 {
     parameters->add_one_point();
-    parameters->get_last_point().measurement = input;
+
+    if (parameters->get_number_of_measurements() <= 1)
+    {
+        parameters->get_last_point().measurement = input;
+    }
+    else
+    {
+        parameters->get_last_point().measurement = input;
+    }
 }
 
 void GuideGaussianProcess::HandleControls(double control_input)
 {
-    parameters->get_last_point().control = control_input;
+    if (parameters->get_number_of_measurements() <= 1)
+    {
+        parameters->get_last_point().control = control_input;
+    }
+    else
+    {
+        parameters->get_last_point().control = control_input;
+    }
 }
 
 void GuideGaussianProcess::HandleModifiedMeasurements(double input)
 {
-    double alpha = 0.5;
-    // If there is no previous measurement, don't filter.
     if(parameters->get_number_of_measurements() <= 1)
     {
         parameters->get_last_point().modified_measurement = input;
     }
     else
     {
-        // this is an IIR filter for the state
-        parameters->get_last_point().modified_measurement = alpha*(input + parameters->get_last_point().control)
-            + (1-alpha)*(parameters->get_second_last_point().modified_measurement);
+        parameters->get_last_point().modified_measurement = input + parameters->get_second_last_point().control
+            - parameters->get_second_last_point().measurement
+            + parameters->get_second_last_point().modified_measurement;
     }
 }
 
 double GuideGaussianProcess::result(double input)
 {
-    HandleMeasurements(input);
-    HandleTimestamps();
-    HandleModifiedMeasurements(input);
-    HandleControls(input);
+    if (input != 0.0) // don't update the GP if the star was lost
+    {
+        HandleMeasurements(input);
+        HandleTimestamps();
+        HandleModifiedMeasurements(input);
+    }
 
-    /*
-     * Need to read this value here because it is not loaded at the construction
-     * time of this object.
-     * 
-     *
-     * Not used when testing the Code with Matlab, will be used in the actual GP
-     */
-    double delta_controller_time_ms = pFrame->RequestedExposureDuration();
+    int delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
-
-
-    // This is the Code sending the circular buffers to Matlab:
-
+// This is the Code sending the circular buffers to Matlab, can be removed for production
 #if 0
 
     Eigen::VectorXd timestamps(parameters->get_number_of_measurements());
@@ -662,80 +687,98 @@ double GuideGaussianProcess::result(double input)
     return input;
 #endif
 
-#if 0 // this is just a test
-    double control_signal = 0.3*input + 0.3*parameters->get_last_point().modified_measurement;
+    double mixing_parameter = 0.8; // TODO: make this GUI configurable
+    parameters->control_signal_ = mixing_parameter*input; // add the measured part of the controller
+    double prediction_ = 0.0; // this will hold the prediction part later
 
-    if (parameters->get_number_of_measurements() > 1)
-    {
-        control_signal += 0.3*parameters->get_second_last_point().control;
-    }
-       
-    HandleControls(control_signal);
-    return control_signal;
-#endif
+    // initialize the different vectors needed for the GP
+    Eigen::VectorXd timestamps(parameters->get_number_of_measurements()-1);
+    Eigen::VectorXd measurements(parameters->get_number_of_measurements()-1);
+    Eigen::VectorXd mod_measurements(parameters->get_number_of_measurements() - 1);
+    Eigen::VectorXd polyfit(parameters->get_number_of_measurements()-1);
 
-    /*
-     * This is the code running the actual GP
-     *
-     * TODO: 
-     * - Let GP class be a member of this Guiding Class
-     * - Call the GP´s BFGS Optimizer every once in a while (how often?)
-     *
-     */
-
-    parameters->control_signal_ = 0.5*input;
-    double prediction_ = 0.0;
-
-    Eigen::VectorXd timestamps(parameters->get_number_of_measurements());
-    Eigen::VectorXd measurements(parameters->get_number_of_measurements());
-
+    // check if we are allowed to use the GP
     if (parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
     {
-        for(size_t i = 0; i < parameters->get_number_of_measurements(); i++)
+        // transfer the data from the circular buffer to the Eigen::Vectors
+        for(size_t i = 0; i < parameters->get_number_of_measurements() - 1; i++)
         {
           timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
-          measurements(i) = parameters->circular_buffer_parameters[i].modified_measurement;
+          measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+          mod_measurements(i) = parameters->circular_buffer_parameters[i].modified_measurement;
         }
 
-        // inference of the GP with this new points
-        parameters->gp_.infer(
-          timestamps,
-          measurements);
+        // linear least squares regression for offset and drift
+        Eigen::MatrixXd feature_matrix(2, parameters->get_number_of_measurements()-1); 
+        feature_matrix.row(0) = timestamps.array().pow(0);
+        feature_matrix.row(1) = timestamps.array().pow(1);
 
-        // prediction of the next
-        Eigen::VectorXd next_location(1);
-        next_location << (parameters->last_timestamp_ + delta_controller_time_ms / 2) / 1000;
+        // this is the inference for linear regression
+        Eigen::VectorXd weights = (feature_matrix*feature_matrix.transpose()
+            + 1e-3*Eigen::Matrix<double, 2, 2>::Identity()).ldlt().solve(feature_matrix*mod_measurements);
+
+        // calculate the polynomial regression for all datapoints
+        polyfit = weights.transpose()*feature_matrix;
+
+        // correct the datapoints by the polynomial fit
+        mod_measurements -= polyfit;
+
+        // inference of the GP with this new points
+        parameters->gp_.infer(timestamps, mod_measurements);
+
+        // prediction for the next location
+        Eigen::VectorXd next_location(2);
+        long current_time = parameters->timer_.Time();
+        next_location << current_time / 1000.0,
+            (current_time + delta_controller_time_ms) / 1000.0;
         Eigen::VectorXd prediction = parameters->gp_.predict(next_location).first;
         
-        parameters->control_signal_ += prediction(0);
-        prediction_ = prediction(0);
+        // the prediction is consisting of GP prediction and the linear drift
+        prediction_ = (prediction(1) - prediction(0)) + (delta_controller_time_ms / 1000)*weights(1);
+        if (input == 0.0) {
+            parameters->control_signal_ = prediction_; // full predictive control if star was lost
+        } else {
+            parameters->control_signal_ += (1-mixing_parameter)*prediction_; // mixing control if star was found
+        }
     }
 
-    //parameters->control_signal_ *= 0.5;
-
+// display GP and hyperparameter information, can be removed for production
+#if 1
     Eigen::VectorXd hypers = parameters->gp_.getHyperParameters();
 
     wxString msg;
     msg = wxString::Format(_("displacement: %5.2f px, prediction: %.2f px, %.2f, %.2f, %.2f, %.2f, %.2f"),
         input, prediction_,
-        hypers(0), hypers(1), hypers(2), hypers(3), hypers(4));
-
+        std::exp(hypers(0)), std::exp(hypers(1)), std::exp(hypers(2)), std::exp(hypers(3)), std::exp(hypers(4)));
 
     pFrame->SetStatusText(msg, 1);
+#endif
 
-    HandleControls(parameters->control_signal_);
-
-    // here from time to time launch the optimiser
-
-    if(parameters->min_points_for_optimisation)
+    if (input != 0.0) // don't update the GP if the star was lost
     {
-        // performing the optimisation every x steps
-    
-    
+        HandleControls(parameters->control_signal_);
     }
 
-    // send the GP output to matlab for plotting 
+    // optimize the hyperparameters if we have enough points already
+    if (parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
+    {
+        // performing the optimisation
+        Eigen::VectorXd optim = parameters->gp_.optimizeHyperParameters(1); // only one linesearch
+        parameters->gp_.setHyperParameters(optim);
+    }
 
+    // estimate the standard deviation in a simple way (no optimization)
+    if (parameters->get_number_of_measurements() > parameters->min_points_for_optimisation) 
+    {    // TODO: implement condition with some checkbox
+        Eigen::VectorXd gp_parameters = parameters->gp_.getHyperParameters();
+
+        double mean = measurements.mean();
+        // Eigen doesn't have var() yet, we have to compute it ourselves
+        gp_parameters(0) = std::log((measurements.array() - mean).pow(2).mean());
+        parameters->gp_.setHyperParameters(gp_parameters);
+    }
+
+// send the GP output to matlab for plotting 
 #if 0
     int N = 300; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(N,
@@ -748,7 +791,7 @@ double GuideGaussianProcess::result(double input)
     Eigen::VectorXd stds = predictions.second.diagonal();
 
     double* timestamp_data = timestamps.data();
-    double* measurement_data = measurements.data();
+    double* measurement_data = mod_measurements.data();
     double* location_data = locations.data();
     double* mean_data = means.data();
     double* std_data = stds.data();

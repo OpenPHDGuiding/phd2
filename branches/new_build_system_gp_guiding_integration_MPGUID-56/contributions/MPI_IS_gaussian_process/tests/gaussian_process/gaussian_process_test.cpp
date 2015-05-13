@@ -491,7 +491,18 @@ TEST_F(GPTest, gamma_prior_test_set_get_parameters) {
 
 }
 
+TEST_F(GPTest, logistic_prior_test) {
+    Eigen::VectorXd logisticParameters(2);
+    logisticParameters << 2, 3;
+    parameter_priors::LogisticPrior logistic_prior(logisticParameters);
 
+    double expected_neg_log_prob = 0.109680163193138;
+    double expected_neg_log_prob_derivative = -0.847119625537272;
+
+    EXPECT_NEAR(expected_neg_log_prob, logistic_prior.neg_log_prob(1), 1E-5);
+    EXPECT_NEAR(expected_neg_log_prob_derivative,
+        logistic_prior.neg_log_prob_derivative(1), 1E-5);
+}
 
 // initial guess
 Eigen::VectorXd initial_guess(GP const & gp)
@@ -556,7 +567,7 @@ TEST_F(GPTest, parameter_identification_test) {
   GP gp_infered;
   gp_infered.setCovarianceFunction(covariance_functions::PeriodicSquareExponential());
   Eigen::VectorXd initialGuess(5);
-  initialGuess = (initialGuess << 0.1, 15, 700, 25,
+  initialGuess = (initialGuess << 0.1, 7, 200, 15,
       5000).finished().array().log();
   gp_infered.setHyperParameters(initialGuess);
 
@@ -576,7 +587,7 @@ TEST_F(GPTest, parameter_identification_test) {
   prior_parameters << 100, 1;
   parameter_priors::GammaPrior periodicity_prior(prior_parameters);
   gp_infered.setHyperPrior(periodicity_prior,2);
-  prior_parameters << 5, 1;
+  prior_parameters << 10, 1;
   parameter_priors::GammaPrior signal_variance_prior(prior_parameters);
   gp_infered.setHyperPrior(signal_variance_prior,3);
   prior_parameters << 1000, 100;
@@ -609,7 +620,7 @@ TEST_F(GPTest, parameter_identification_test) {
   // This is where the system converges to in we start at the true parameters
   Eigen::VectorXd expectedHyperParams(5);
   expectedHyperParams = 
-    (expectedHyperParams << 0.00989354,    2.18489,    99.8336,    3.17103,    1059.32
+    (expectedHyperParams << 0.00989354,    5.0957,    99.8336,    5.38,    1059.32
     ).finished().array().log();
 
 
