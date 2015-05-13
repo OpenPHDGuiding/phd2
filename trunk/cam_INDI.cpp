@@ -76,6 +76,7 @@ void Camera_INDIClass::ClearStatus()
     expose_prop = NULL;
     frame_prop = NULL;
     frame_type_prop = NULL;
+    ccdinfo_prop = NULL;
     binning_prop = NULL;
     video_prop = NULL;
     camera_port = NULL;
@@ -89,6 +90,8 @@ void Camera_INDIClass::ClearStatus()
     Connected = false;
     ready = false;
     m_hasGuideOutput = false;
+    PixSizeX = PixelSize;
+    PixSizeY = PixelSize;
 }
 
 void Camera_INDIClass::CheckState() 
@@ -138,6 +141,12 @@ void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
 {
     // we go here every time a Number value change
     //printf("Camera Receving Number: %s = %g\n", nvp->name, nvp->np->value);
+    if (nvp == ccdinfo_prop) {
+        PixelSize = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE")->value;
+        PixSizeX = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_X")->value;
+        PixSizeY = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_Y")->value;
+        FullSize = wxSize(IUFindNumber(ccdinfo_prop,"CCD_MAX_X")->value,IUFindNumber(ccdinfo_prop,"CCD_MAX_Y")->value);
+    }
 }
 
 void Camera_INDIClass::newText(ITextVectorProperty *tvp)
@@ -227,8 +236,11 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
 	pulseE_prop = IUFindNumber(pulseGuideEW_prop,"TIMED_GUIDE_E");
     }
     else if (strcmp(PropName, INDICameraCCDCmd+"INFO") == 0 && Proptype == INDI_NUMBER) {
-        PixelSize = IUFindNumber(property->getNumber(),"CCD_PIXEL_SIZE")->value;
-	FullSize = wxSize(IUFindNumber(property->getNumber(),"CCD_MAX_X")->value,IUFindNumber(property->getNumber(),"CCD_MAX_Y")->value);
+        ccdinfo_prop = property->getNumber();
+        PixelSize = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE")->value;
+        PixSizeX = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_X")->value;
+        PixSizeY = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_Y")->value;
+        FullSize = wxSize(IUFindNumber(ccdinfo_prop,"CCD_MAX_X")->value,IUFindNumber(ccdinfo_prop,"CCD_MAX_Y")->value);
     }
     
     CheckState();
@@ -591,6 +603,9 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
 	       //printf("Subtracting dark\n");
 	       SubtractDark(img);
 	    }
+	    if (options & CAPTURE_RECON) {
+                if (PixSizeX != PixSizeY) SquarePixels(img, PixSizeX, PixSizeY);
+            }
 	    return false;
 	 } else {
 	    return true;
