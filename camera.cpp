@@ -742,7 +742,7 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     // Watchdog timeout
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, _("The camera will be disconnected if it fails to respond for this long. The default value, 15 seconds, should be appropriate for most cameras."));
+        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
         AddTableEntryPair(pParent, pCamControls, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal);
     }
 
