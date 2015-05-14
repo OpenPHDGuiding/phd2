@@ -911,6 +911,17 @@ Mount::MOVE_RESULT StepGuider::Move(GUIDE_DIRECTION direction, int steps, bool n
     return result;
 }
 
+static wxString SlowBumpWarningEnabledKey()
+{
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting to be per-profile
+    return wxString::Format("/Confirm/%d/SlowBumpWarningEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressSlowBumpWarning(long)
+{
+    pConfig->Global.SetBoolean(SlowBumpWarningEnabledKey(), false);
+}
+
 Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 {
     MOVE_RESULT result = MOVE_OK;
@@ -984,9 +995,13 @@ Mount::MOVE_RESULT StepGuider::Move(const PHD_Point& cameraVectorEndpoint, bool 
                 long now = ::wxGetUTCTime();
                 if (now - m_bumpStartTime > BumpWarnTime)
                 {
-                    pFrame->Alert(_("A mount \"bump\" was needed to bring the AO back to its center position,\n"
-                        "but the bump did not complete in a reasonable amount of time.\n"
-                        "You probably need to increase the AO Bump Step setting."), wxICON_INFORMATION);
+                    if (pConfig->Global.GetBoolean(SlowBumpWarningEnabledKey(), true))
+                    {
+                        pFrame->Alert(_("A mount \"bump\" was needed to bring the AO back to its center position,\n"
+                            "but the bump did not complete in a reasonable amount of time.\n"
+                            "You probably need to increase the AO Bump Step setting."),
+                            _("Don't show\nthis again"), SuppressSlowBumpWarning, 0, wxICON_INFORMATION);
+                    }
                     m_bumpTimeoutAlertSent = true;
                 }
             }
