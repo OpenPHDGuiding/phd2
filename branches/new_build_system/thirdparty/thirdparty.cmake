@@ -806,7 +806,10 @@ if(UNIX AND NOT APPLE)
   if(PC_INDI_VERSION VERSION_LESS "1.1")
     add_definitions("-DINDI_PRE_1_1_0")
   endif()
-
+  if(PC_INDI_VERSION VERSION_LESS "1.0")
+    add_definitions("-DINDI_PRE_1_0_0")
+  endif()
+  
   # INDI depends on libz
   find_package(ZLIB REQUIRED)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
