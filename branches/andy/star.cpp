@@ -253,6 +253,7 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
                     if (dx * dx + dy2 > A2)
                         continue;
 
+                    // exclude points below threshold
                     unsigned short val = row[x];
                     if (val < thresh)
                         continue;
@@ -268,12 +269,14 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
         }
 
         Mass = mass;
-        SNR = n > 0 ? mass / (sigma_bg * n) : 0.0;   // mean SNR
+        SNR = n > 0 ? mass / (sigma_bg * n) : 0.0;
 Debug.Write(wxString::Format("@@@@AG peak %u @ %d,%d bg %.f sigma %.1f n %d mass %.f SNR %.1f\n", peak_val / 6, peak_x, peak_y, mean_bg, sigma_bg, n, mass, SNR));
+
+        double const LOW_SNR = 3.0;
 
         if (mass < 10.0)
             Result = STAR_LOWMASS;
-        else if (SNR < 3.0)
+        else if (SNR < LOW_SNR)
             Result = STAR_LOWSNR;
         else
         {
