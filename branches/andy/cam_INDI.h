@@ -54,6 +54,7 @@ private:
     INumber               *frame_width;
     INumber               *frame_height;
     ISwitchVectorProperty *frame_type_prop;
+    INumberVectorProperty *ccdinfo_prop;
     INumberVectorProperty *binning_prop;
     ISwitchVectorProperty *video_prop;
     ITextVectorProperty   *camera_port;
@@ -69,6 +70,8 @@ private:
     bool     has_blob;
     bool     modal;
     bool     ready;
+    double   PixSizeX; 
+    double   PixSizeY; 
     long     INDIport;
     wxString INDIhost;
     wxString INDICameraName;
@@ -87,6 +90,7 @@ private:
     
 protected:
     virtual void newDevice(INDI::BaseDevice *dp);
+    virtual void removeDevice(INDI::BaseDevice *dp) {}
     virtual void newProperty(INDI::Property *property);
     virtual void removeProperty(INDI::Property *property) {}
     virtual void newBLOB(IBLOB *bp);

@@ -39,7 +39,7 @@
 #include <wx/stdpaths.h>
 
 static const int DefaultGuideCameraGain = 95;
-static const int DefaultGuideCameraTimeoutMs = 5000;
+static const int DefaultGuideCameraTimeoutMs = 15000;
 static const bool DefaultUseSubframes = false;
 static const double DefaultPixelSize = 0.0;
 static const int DefaultReadDelay = 150;
@@ -742,7 +742,7 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     // Watchdog timeout
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, _("The camera will be disconnected if it fails to respond for this long. The default value, 5 seconds, should be appropriate for most cameras."));
+        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
         AddTableEntryPair(pParent, pCamControls, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal);
     }
 
@@ -1026,13 +1026,25 @@ void GuideCamera::SubtractDark(usImage& img)
 void GuideCamera::DisconnectWithAlert(CaptureFailType type)
 {
     wxString msg;
-    switch (type) {
+    switch (type) 
+    {
     case CAPT_FAIL_MEMORY:
-        msg = _("Memory allocation error during capture"); break;
+        msg = _("Memory allocation error during capture");
+        DisconnectWithAlert(msg);
+        break;
     case CAPT_FAIL_TIMEOUT:
-        msg = _("Camera timeout during capture"); break;
+    {
+        double exptime = pFrame->RequestedExposureDuration()/1000.;
+        double timeout = m_timeoutMs / 1000. + exptime;
+        msg = wxString::Format(_("After %0.1f sec, the camera has not completed a %0.1f sec exposure, so it has been disconnected to prevent other problems.\n "
+            "If you think the hardware is working correctly, you can increase the timeout period on the 'Camera' tab\n"
+            "of the Advanced Settings Dialog; then re-connect the camera."), timeout, exptime);
+        Disconnect();
+        pFrame->Alert(msg);
+        break;
     }
-    DisconnectWithAlert(msg);
+        
+    }
 }
 
 void GuideCamera::DisconnectWithAlert(const wxString& msg)
