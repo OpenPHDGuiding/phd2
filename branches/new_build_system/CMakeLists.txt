@@ -589,7 +589,8 @@ elseif(WIN32)
     PHD2 
     PROPERTIES 
       OUTPUT_NAME phd2  # lower case on Win32
-      LINK_FLAGS "/DELAYLOAD:sbigudrv.dll"
+      LINK_FLAGS "/DELAYLOAD:sbigudrv.dll /NODEFAULTLIB:libcmt.lib" #  /NODEFAULTLIB:libcmtd.lib
+      LINK_FLAGS_DEBUG "/NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrt.lib"
     )
   # Delayed load for all DLLs below in the original project. Now using delay load only for the necessary stuff
   #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
