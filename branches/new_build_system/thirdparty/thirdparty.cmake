@@ -49,7 +49,7 @@ set(CMAKE_MODULE_PATH
 # to potentially copy some resources to the output directory of the main project. 
 # They are used by the CMakeLists.txt calling this file.
 
-set(PHD_LINK_EXTERNAL)          # target to which the PhD2 main library will link to
+set(PHD_LINK_EXTERNAL)          # target to which the phd2 main library will link to
 set(PHD_COPY_EXTERNAL_ALL)      # copy of a file for any configuration
 set(PHD_COPY_EXTERNAL_DBG)      # copy for debug only
 set(PHD_COPY_EXTERNAL_REL)      # copy for release only
@@ -269,7 +269,7 @@ elseif(WIN32)
   set(${LIBUSB}_additional_compile_definition "OS_WINDOWS=1")
   set(${LIBUSB}_additional_include_dir ${libusb_root}/msvc/)
 elseif(UNIX)
-  # libUSB is already an indirect requirement/dependency for PhD (through libindi). 
+  # libUSB is already an indirect requirement/dependency for phd2 (through libindi). 
   # I (Raffi) personally prefer having the same version
   # for all platforms, but it should in theory always be better to link against existing libraries
   # compiled ans shipped by skilled people.
@@ -491,7 +491,7 @@ if(WIN32)
   set(vidcap_dir ${PHD_PROJECT_ROOT_DIR}/cameras/VidCapture)
   include_directories(${vidcap_dir})
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${vidcap_dir}/VidCapLib.lib) # better compile this one
-  
+
 
   # Video for Windows, directshow and windows media
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL} vfw32.lib Strmiids.lib Quartz.lib winmm.lib)
@@ -580,7 +580,7 @@ if(APPLE)
   find_library(audioToolboxFramework AudioToolbox)
   find_library(openGLFramework    OpenGL)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${QuickTime} ${IOKit} ${Carbon} ${Cocoa} ${System} ${Webkit} ${AudioToolbox} ${OpenGL})
-  
+
   find_path(CARBON_INCLUDE_DIR Carbon.h)
   
   
@@ -714,7 +714,7 @@ if(APPLE)
   # the following line generated too many warnings. The macros are already defined in the config.h of this library
   # target_compile_definitions(dc PRIVATE HAVE_LIBUSB HAVE_MACOSX) 
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} dc)
-  
+
 
 
 
@@ -826,5 +826,4 @@ if(UNIX AND NOT APPLE)
   endif() 
 
 
-endif() 
-
+endif()

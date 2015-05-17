@@ -69,7 +69,7 @@ option(GUIDING_GAUSSIAN_PROCESS "Includes the Gaussian Process guiding algorithm
 #
 # main project
 # this should appear after setting the architecture
-project(PHD2)
+project(phd2)
 enable_testing()
 
 
@@ -218,8 +218,6 @@ set(cam_SRC
   ${phd_src_dir}/camera.h
   ${phd_src_dir}/cameras.h
 )
-source_group(Cameras FILES ${cam_SRC})
-
 
 # windows specific cameras
 if(WIN32)
@@ -240,14 +238,12 @@ if(WIN32)
 
     ${phd_src_dir}/cam_QHY5IIbase.cpp
     ${phd_src_dir}/cam_QHY5IIbase.h
-    
+
     # ascom, not there in the sln project -> commented for now 
     # see also the thirdparties cmake to activate/deactivate any call the the findascom.cmake extension
     #${phd_src_dir}/cam_ascom.cpp
     #${phd_src_dir}/ascom.cpp
     #${phd_src_dir}/extras/cam_ascomlate.cpp
-    
-
   )
 elseif(UNIX AND (NOT APPLE))
   set(cam_SRC
@@ -260,6 +256,7 @@ elseif(UNIX AND (NOT APPLE))
      )
 endif()
 
+source_group(Cameras FILES ${cam_SRC})
 
 set(scopes_SRC
   ${phd_src_dir}/mount.h
@@ -288,6 +285,11 @@ set(scopes_SRC
   ${phd_src_dir}/scope_INDI.h
   ${phd_src_dir}/scope_INDI.cpp
   ${phd_src_dir}/scopes.h
+  ${phd_src_dir}/stepguider_sxao.cpp
+  ${phd_src_dir}/stepguider_sxao.h
+  ${phd_src_dir}/stepguider.cpp
+  ${phd_src_dir}/stepguider.h
+  ${phd_src_dir}/stepguiders.h
 )
 source_group(Scopes FILES ${scopes_SRC})
 
@@ -309,14 +311,6 @@ set(guiding_SRC
   ${phd_src_dir}/guider.cpp
   ${phd_src_dir}/guider.h
   ${phd_src_dir}/guiders.h
-  ${phd_src_dir}/guidinglog.cpp
-  ${phd_src_dir}/guidinglog.h
-  ${phd_src_dir}/stepguider_sxao.cpp
-  ${phd_src_dir}/stepguider_sxao.h
-  ${phd_src_dir}/stepguider.cpp
-  ${phd_src_dir}/stepguider.h
-  ${phd_src_dir}/stepguiders.h
-
 )
 
 # gaussian process, also the main project should link to the GP project in the contrib dir
@@ -380,6 +374,8 @@ set(phd2_SRC
   ${phd_src_dir}/guide_algorithm.cpp
   ${phd_src_dir}/guiding_assistant.cpp
   ${phd_src_dir}/guiding_assistant.h
+  ${phd_src_dir}/guidinglog.cpp
+  ${phd_src_dir}/guidinglog.h
   ${phd_src_dir}/image_math.cpp
   ${phd_src_dir}/image_math.h
   ${phd_src_dir}/json_parser.cpp
@@ -462,9 +458,8 @@ set(phd2_SRC
   ${phd_src_dir}/usImage.h
   ${phd_src_dir}/worker_thread.cpp
   ${phd_src_dir}/worker_thread.h
-
-
 )
+
 if(UNIX AND NOT APPLE)
   set(phd2_SRC 
       ${phd2_SRC}
@@ -476,6 +471,25 @@ if(UNIX AND NOT APPLE)
       
       ${phd_src_dir}/wxled.cpp
       ${phd_src_dir}/wxled.h
+     )
+endif()
+
+if (WIN32)
+  set(phd2_SRC
+      ${phd2_SRC}
+      
+      # windows-only sources
+
+      ${phd_src_dir}/parallelports.h
+      ${phd_src_dir}/parallelport.h
+      ${phd_src_dir}/parallelport.cpp
+
+      ${phd_src_dir}/parallelport_win32.h
+      ${phd_src_dir}/parallelport_win32.cpp
+
+      ${phd_src_dir}/comdispatch.h
+      ${phd_src_dir}/comdispatch.cpp
+      ${phd_src_dir}/phd.rc   # resource file
      )
 endif()
 
@@ -508,7 +522,7 @@ if(APPLE)
   # bundle definitions
   # please edit the copyrights
   set( MACOSX_BUNDLE_BUNDLE_NAME          PHD2 )
-  set( MACOSX_BUNDLE_GUI_IDENTIFIER       "com.open-phd-guiding.PHD2" )
+  set( MACOSX_BUNDLE_GUI_IDENTIFIER       "org.openphdguiding.phd2" )
   set( MACOSX_BUNDLE_ICON_FILE            PHD_OSX_icon.icns )
   set( MACOSX_BUNDLE_INFO_STRING          "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}, Copyright 2015 Open-phd-guiding team" )
   set( MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}" )
@@ -517,7 +531,7 @@ if(APPLE)
   set( MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2015 Open-phd-guiding team" )
 
   add_executable(
-    PHD2
+    phd2
     MACOSX_BUNDLE
     ${scopes_SRC}
     ${cam_SRC}
@@ -534,16 +548,16 @@ if(APPLE)
     ${fcCamFramework}
   )
   set_target_properties(
-    PHD2 
+    phd2 
     PROPERTIES 
       OUTPUT_NAME PHD2  # upper case on OSX
     )
   
   target_include_directories(
-    PHD2
+    phd2
     PRIVATE ${CARBON_INCLUDE_DIR}/Carbon.h
   )
-      
+
   set_source_files_properties(
     ${phd_src_dir}/${MACOSX_BUNDLE_ICON_FILE} 
     ${phd_src_dir}/PHD2GuideHelp.zip
@@ -562,31 +576,19 @@ elseif(WIN32)
     #${cam_KWIQGuider_SRC} # not included in the win32 projects
     ${guiding_SRC}
     ${phd2_SRC}
-
-    # windows-only sources
-    
-    ${phd_src_dir}/parallelports.h
-    ${phd_src_dir}/parallelport.h
-    ${phd_src_dir}/parallelport.cpp
-
-    ${phd_src_dir}/parallelport_win32.h
-    ${phd_src_dir}/parallelport_win32.cpp
-
-    ${phd_src_dir}/comdispatch.h
-    ${phd_src_dir}/comdispatch.cpp
-    ${phd_src_dir}/phd.rc   # resource file
   )
 
   ADD_MSVC_PRECOMPILED_HEADER("phd.h" "precompiled_header.cpp" phd2_WIN_SRC)
+  source_group(src FILES precompiled_header.cpp)
 
   add_executable(
-    PHD2
+    phd2
     WIN32
     ${phd2_WIN_SRC}
     )
-    
+
   set_target_properties(
-    PHD2 
+    phd2 
     PROPERTIES 
       OUTPUT_NAME phd2  # lower case on Win32
       LINK_FLAGS "/DELAYLOAD:sbigudrv.dll /NODEFAULTLIB:libcmt.lib" #  /NODEFAULTLIB:libcmtd.lib
@@ -596,26 +598,26 @@ elseif(WIN32)
   #sbigudrv.dll;ICFilterContainer.dll;TIS_DShowLib09.dll;TIS_UDSHL09_vc9.dll;FCApi.dll;OSPL130RT.dll;DLCWB.dll;cfitsio.dll;CMOSDll.dll;DSCI.dll;inpout32.dll;ShoestringGPUSB_DLL.dll;ShoestringLXUSB_DLL.dll;SXUSB.dll;AsiCamera.dll;%(DelayLoadDLLs)
 
   add_custom_command(
-    TARGET PHD2
+    TARGET phd2
     PRE_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${PHD_PROJECT_ROOT_DIR}/PHD2GuideHelp.zip ${PHD2_BINARY_DIR})
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${PHD_PROJECT_ROOT_DIR}/PHD2GuideHelp.zip ${phd2_BINARY_DIR})
 
-  copy_dependency_with_config(PHD2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
+  copy_dependency_with_config(phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
 
 elseif(UNIX)
   
   # should be linux there
   add_executable(
-   PHD2
+   phd2
    ${scopes_SRC}
    ${cam_SRC}
    ${guiding_SRC}
    ${phd2_SRC}
    )
-  target_link_libraries(PHD2 X11)
-  
+  target_link_libraries(phd2 X11)
+
   set_target_properties(
-    PHD2 
+    phd2 
     PROPERTIES 
       OUTPUT_NAME phd2  # lower case on linux
     )  
@@ -628,15 +630,15 @@ endif()
 
 
 # properties of the project common to all platforms
-target_compile_definitions(PHD2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
-target_compile_options(PHD2 PRIVATE "${wxWidgets_CXX_FLAGS};")
-target_include_directories(PHD2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(PHD2 ${PHD_LINK_EXTERNAL})
+target_compile_definitions(phd2 PRIVATE "${wxWidgets_DEFINITIONS}" "HAVE_TYPE_TRAITS")
+target_compile_options(phd2 PRIVATE "${wxWidgets_CXX_FLAGS};")
+target_include_directories(phd2 PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_link_libraries(phd2 ${PHD_LINK_EXTERNAL})
 
 # option configurations parts
 if(${GUIDING_GAUSSIAN_PROCESS})
-  target_link_libraries(PHD2 MPIIS_GP)
-  target_compile_definitions(PHD2 PRIVATE "-DMPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__")
+  target_link_libraries(phd2 MPIIS_GP)
+  target_compile_definitions(phd2 PRIVATE "-DMPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__")
 endif()
 
 
@@ -660,7 +662,7 @@ add_custom_target(CmakeAdditionalFiles
 
 
 if(NOT APPLE)
-  install (TARGETS PHD2 RUNTIME DESTINATION bin)
+  install (TARGETS phd2 RUNTIME DESTINATION bin)
 endif()
 
 if(UNIX AND NOT APPLE)
@@ -682,10 +684,10 @@ if(UNIX AND NOT APPLE)
     install(FILES       ${phd_src_dir}/locale/${_var1}/PHD2GuideHelp.zip 
             DESTINATION   ${CMAKE_INSTALL_PREFIX}/share/phd2/locale/${_var1}/ 
             OPTIONAL)
-            
+
     install(FILES       ${phd_src_dir}/locale/${_var1}/messages.mo 
              DESTINATION  ${CMAKE_INSTALL_PREFIX}/share/locale/${_var2}/LC_MESSAGES/ 
-             RENAME "phd2.mo" 
+             RENAME "phd2.mo"
              OPTIONAL)          
             
   endforeach()
