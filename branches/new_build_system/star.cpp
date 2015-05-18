@@ -88,194 +88,207 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
     try
     {
         Debug.Write(wxString::Format("Star::Find(%d, %d, %d, %d, (%d,%d,%d,%d))\n", searchRegion, base_x, base_y, mode,
-                                     pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width, pImg->Subframe.height));
+            pImg->Subframe.x, pImg->Subframe.y, pImg->Subframe.width, pImg->Subframe.height));
 
         if (base_x < 0 || base_y < 0)
         {
             throw ERROR_INFO("coordinates are invalid");
         }
 
-        // corners of search region
-        int start_x = base_x - searchRegion;
-        int start_y = base_y - searchRegion;
-        int end_x = base_x + searchRegion;
-        int end_y = base_y + searchRegion;
+        int minx, miny, maxx, maxy;
 
-        // make sure we do not look outside the subframe
-        if (pImg->Subframe.GetWidth() > 0)
+        if (pImg->Subframe.IsEmpty())
         {
-            start_x = wxMax(start_x, pImg->Subframe.GetLeft());
-            start_y = wxMax(start_y, pImg->Subframe.GetTop());
-            end_x = wxMin(end_x, pImg->Subframe.GetRight());
-            end_y = wxMin(end_y, pImg->Subframe.GetBottom());
+            minx = miny = 0;
+            maxx = pImg->Size.GetWidth() - 1;
+            maxy = pImg->Size.GetHeight() - 1;
         }
         else
         {
-            start_x = wxMax(start_x, 0);
-            start_y = wxMax(start_y, 0);
-            end_x = wxMin(end_x, pImg->Size.GetWidth() - 1);
-            end_y = wxMin(end_y, pImg->Size.GetHeight() - 1);
+            minx = pImg->Subframe.GetLeft();
+            maxx = pImg->Subframe.GetRight();
+            miny = pImg->Subframe.GetTop();
+            maxy = pImg->Subframe.GetBottom();
         }
 
-        const unsigned short *dataptr = pImg->ImageData;
+        // search region bounds
+        int start_x = wxMax(base_x - searchRegion, minx);
+        int end_x   = wxMin(base_x + searchRegion, maxx);
+        int start_y = wxMax(base_y - searchRegion, miny);
+        int end_y   = wxMin(base_y + searchRegion, maxy);
+
+        const unsigned short *imgdata = pImg->ImageData;
         int rowsize = pImg->Size.GetWidth();
 
-        // compute localmin and localmean, which we need to find the star
-        unsigned short localmin = 65535;
-        double localmean = 0.0;
-        for (int y = start_y; y <= end_y; y++)
-        {
-            for (int x = start_x; x <= end_x; x++)
-            {
-                unsigned short val = *(dataptr + x + rowsize * y);
-                if (val < localmin)
-                    localmin = val;
-                localmean += (double) val;
-            }
-        }
-
-        double area = (double)((end_x - start_x + 1) * (end_y - start_y + 1));
-        localmean /= area;
-
-        // get rough guess on star's location by finding the peak value within the search region
-
-        unsigned long maxlval = 0;
-        unsigned short max = 0, nearmax1 = 0, nearmax2 = 0;
-        unsigned long sum = 0;
-
-        for (int y = start_y + 1; y <= end_y - 1; y++)
-        {
-            for (int x = start_x + 1; x <= end_x - 1; x++)
-            {
-                unsigned long lval;
-
-                lval = *(dataptr + (x + 0) + rowsize * (y + 0)) +  // combine adjacent pixels to smooth image
-                       *(dataptr + (x + 1) + rowsize * (y + 0)) +        // find max of this smoothed area and set
-                       *(dataptr + (x - 1) + rowsize * (y + 0)) +        // base_x and y to be this spot
-                       *(dataptr + (x + 0) + rowsize * (y + 1)) +
-                       *(dataptr + (x + 0) + rowsize * (y - 1)) +
-                       *(dataptr + (x + 0) + rowsize * (y + 0));  // weight current pixel by 2x
-
-                if (lval >= maxlval)
-                {
-                    base_x = x;
-                    base_y = y;
-                    maxlval = lval;
-                }
-
-                unsigned short sval = *(dataptr + x + rowsize * y) - localmin;
-                sum += sval;
-
-                if (sval > max)
-                    std::swap(sval, max);
-                if (sval > nearmax1)
-                    std::swap(sval, nearmax1);
-                if (sval > nearmax2)
-                    std::swap(sval, nearmax2);
-            }
-        }
-
-        // SNR = max / mean = max / (sum / area) = max * area / sum
-        if (sum > 0)
-            SNR = (double) max * area / (double) sum;
-        else
-            SNR = 0.0;
+        int peak_x = 0, peak_y = 0;
+        unsigned int peak_val = 0;
+        unsigned short max3[3] = { 0, 0, 0 };
 
         if (mode == FIND_PEAK)
         {
-            // only finding the peak, we are done. Fill in an arbitrary Mass value
-            newX = base_x;
-            newY = base_y;
-            Mass = max;
-        }
-        else
-        {
-            // should be close now, hone in by finding the weighted average position
-
-            const int hft_range = 7;
-
-            // we try these thresholds in this order trying to get a mass >= 10
-            double thresholds[] =
+            for (int y = start_y; y <= end_y; y++)
             {
-                localmean + ((double) max + localmin - localmean) / 10.0,  // Note: max already has localmin pulled from it
-                localmean,
-                (double) localmin
-            };
-
-            int startx1 = wxMax(start_x, base_x - hft_range);
-            int starty1 = wxMax(start_y, base_y - hft_range);
-            int endx1 = wxMin(end_x, base_x + hft_range);
-            int endy1 = wxMin(end_y, base_y + hft_range);
-
-            double mass = 0.0, mx = 0.0, my = 0.0;
-
-            for (unsigned int i = 0; i < WXSIZEOF(thresholds) && mass < 10.0; i++)
-            {
-                mass = mx = my = 0.000001;
-                double threshold = thresholds[i];
-                for (int y = starty1; y <= endy1; y++)
+                for (int x = start_x; x <= end_x; x++)
                 {
-                    for (int x = startx1; x <= endx1; x++)
+                    unsigned short val = imgdata[y * rowsize + x];
+
+                    if (val > peak_val)
                     {
-                        double val = (double) *(dataptr + x + rowsize * y) - threshold;
-                        if (val > 0.0)
-                        {
-                            mx += (double) x * val;
-                            my += (double) y * val;
-                            mass += val;
-                        }
+                        peak_val = val;
+                        peak_x = x;
+                        peak_y = y;
                     }
                 }
             }
-
-            Mass = mass;
-
-        /*
-         
-        Original Code: 
-            if (mass < 10.0)
-                Result = STAR_LOWMASS;
-            else if (SNR < 3.0)
-                Result = STAR_LOWSNR;
-            else
-            {
-                newX = mx / mass;
-                newY = my / mass;
-                // even at saturation, the max values may vary a bit due to noise
-                // Call it saturated if the the top three values are within 32 parts per 65535 of max
-                if ((unsigned int)(max - nearmax2) * 65535U < 32U * (unsigned int) max)
-                    Result = STAR_SATURATED;
-            }
-            */
-
-
-	        // These modifications make it possible to find the Laser Point as a Star
-	        if (mass < 5.0) {
-	            Result = STAR_LOWMASS;
-	        }
-	        else if (SNR < 1.0) {
-	            Result = STAR_LOWSNR;
-	        }
-	        else {
-	            newX = mx / mass;
-	            newY = my / mass;
-	            if (max == nearmax2) {
-	                Result = STAR_SATURATED;
-	            }
-	        }
-
         }
-         
-         
+        else
+        {
+            // find the peak value within the search region using a smoothing function
+            // also check for saturation
 
-        
-        
-        
-        
-        
-        
+            for (int y = start_y + 1; y <= end_y - 1; y++)
+            {
+                for (int x = start_x + 1; x <= end_x - 1; x++)
+                {
+                    unsigned short p = imgdata[y * rowsize + x];
+                    unsigned int val =
+                        2 * (unsigned int) p +
+                        imgdata[(y - 1) * rowsize + (x + 0)] +
+                        imgdata[(y + 0) * rowsize + (x - 1)] +
+                        imgdata[(y + 0) * rowsize + (x + 1)] +
+                        imgdata[(y + 1) * rowsize + (x + 0)];
+
+                    if (val > peak_val)
+                    {
+                        peak_val = val;
+                        peak_x = x;
+                        peak_y = y;
+                    }
+
+                    if (p > max3[0])
+                        std::swap(p, max3[0]);
+                    if (p > max3[1])
+                        std::swap(p, max3[1]);
+                    if (p > max3[2])
+                        std::swap(p, max3[2]);
+                }
+            }
+        }
+
+        // meaure noise in the annulus with inner radius A and outer radius B
+        int const A = 7;   // inner radius
+        int const B = 12;  // outer radius
+        int const A2 = A * A;
+        int const B2 = B * B;
+
+        // find the mean and stdev of the background
+
+        double sum = 0.0;
+        double a = 0.0;
+        double q = 0.0;
+        int n = 0;
+
+        const unsigned short *row = imgdata + rowsize * start_y;
+        for (int y = start_y; y <= end_y; y++, row += rowsize)
+        {
+            int dy = y - peak_y;
+            int dy2 = dy * dy;
+            for (int x = start_x; x <= end_x; x++)
+            {
+                int dx = x - peak_x;
+                int r2 = dx * dx + dy2;
+
+                // exclude points not in annulus
+                if (r2 <= A2 || r2 > B2)
+                    continue;
+
+                double const val = (double) row[x];
+                sum += val;
+                ++n;
+                double const k = (double) n;
+                double const a0 = a;
+                a += (val - a) / k;
+                q += (val - a0) * (val - a);
+            }
+        }
+
+        double const mean_bg = sum / (double) n;
+        double const sigma_bg = sqrt(q / (double) (n - 1));
+
+        double cx = 0.0;
+        double cy = 0.0;
+        double mass = 0.0;
+
+        if (mode == FIND_PEAK)
+        {
+            mass = peak_val;
+            n = 1;
+        }
+        else
+        {
+            unsigned short const thresh = (unsigned short)(mean_bg + 2.0 * sigma_bg);
+
+            // find pixels over threshold within aperture; compute mass and centroid
+
+            start_x = wxMax(peak_x - A, minx);
+            end_x = wxMin(peak_x + A, maxx);
+            start_y = wxMax(peak_y - A, miny);
+            end_y = wxMin(peak_y + A, maxy);
+
+            n = 0;
+
+            row = imgdata + rowsize * start_y;
+            for (int y = start_y; y <= end_y; y++, row += rowsize)
+            {
+                int dy = y - peak_y;
+                int dy2 = dy * dy;
+                if (dy2 > A2)
+                    continue;
+
+                for (int x = start_x; x <= end_x; x++)
+                {
+                    int dx = x - peak_x;
+
+                    // exclude points outside aperture
+                    if (dx * dx + dy2 > A2)
+                        continue;
+
+                    // exclude points below threshold
+                    unsigned short val = row[x];
+                    if (val < thresh)
+                        continue;
+
+                    double const d = (double) val - mean_bg;
+
+                    cx += dx * d;
+                    cy += dy * d;
+                    mass += d;
+                    ++n;
+                }
+            }
+        }
+
+        Mass = mass;
+        SNR = n > 0 ? mass / (sigma_bg * n) : 0.0;
+
+        double const LOW_SNR = 3.0;
+
+        if (mass < 10.0)
+            Result = STAR_LOWMASS;
+        else if (SNR < LOW_SNR)
+            Result = STAR_LOWSNR;
+        else
+        {
+            newX = peak_x + cx / mass;
+            newY = peak_y + cy / mass;
+
+            // even at saturation, the max values may vary a bit due to noise
+            // Call it saturated if the the top three values are within 32 parts per 65535 of max
+            if ((unsigned int)(max3[0] - max3[2]) * 65535U < 32U * (unsigned int) max3[0])
+                Result = STAR_SATURATED;
+        }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
 

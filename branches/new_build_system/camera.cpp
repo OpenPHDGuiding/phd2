@@ -742,7 +742,7 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     // Watchdog timeout
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, _("The camera will be disconnected if it fails to respond for this long. The default value, 15 seconds, should be appropriate for most cameras."));
+        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
         AddTableEntryPair(pParent, pCamControls, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal);
     }
 
@@ -1025,25 +1025,22 @@ void GuideCamera::SubtractDark(usImage& img)
 
 void GuideCamera::DisconnectWithAlert(CaptureFailType type)
 {
-    wxString msg;
     switch (type) 
     {
     case CAPT_FAIL_MEMORY:
-        msg = _("Memory allocation error during capture");
-        DisconnectWithAlert(msg);
+        DisconnectWithAlert(_("Memory allocation error during capture"));
         break;
+
     case CAPT_FAIL_TIMEOUT:
-    {
-        double exptime = pFrame->RequestedExposureDuration()/1000.;
-        double timeout = m_timeoutMs / 1000. + exptime;
-        msg = wxString::Format(_("After %0.1f sec, the camera has not completed a %0.1f sec exposure, so it has been disconnected to prevent other problems.\n "
-            "If you think the hardware is working correctly, you can increase the timeout period on the 'Camera' tab\n"
-            "of the Advanced Settings Dialog; then re-connect the camera."), timeout, exptime);
+        pFrame->Alert(wxString::Format(_("After %.1f sec the camera has not completed a %.1f sec exposure, so "
+            "it has been disconnected to prevent other problems.\n"
+            "If you think the hardware is working correctly, you can increase the "
+            "timeout period on the Camera tab\n"
+            "of the Advanced Settings Dialog then re-connect the camera."),
+            (pFrame->RequestedExposureDuration() + m_timeoutMs) / 1000.,
+            pFrame->RequestedExposureDuration() / 1000.));
         Disconnect();
-        pFrame->Alert(msg);
         break;
-    }
-        
     }
 }
 

@@ -76,9 +76,10 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     // Create overall vertical sizer
     m_pvSizer = new wxBoxSizer(wxVERTICAL);
 
-#   include "icons/phd.xpm"
-    m_bitmaps[STATE_GREETINGS] = new wxBitmap(prog_icon);
-    m_bitmaps[STATE_WRAPUP] = new wxBitmap(prog_icon);
+#   include "icons/phd2_48.png.h"
+    wxBitmap phd2(wxBITMAP_PNG_FROM_DATA(phd2_48));
+    m_bitmaps[STATE_GREETINGS] = new wxBitmap(phd2);
+    m_bitmaps[STATE_WRAPUP] = new wxBitmap(phd2);
 #   include "icons/cam2.xpm"
     m_bitmaps[STATE_CAMERA] = new wxBitmap(cam_icon);
 #   include "icons/scope1.xpm"

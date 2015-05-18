@@ -44,13 +44,13 @@ END_EVENT_TABLE()
 AboutDialog::AboutDialog(void) :
 wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
-    #include "icons/phd.xpm"  // defines prog_icon[]
-
     SetBackgroundColour(*wxWHITE);
 
     wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxBitmap bmp(prog_icon);
-    wxStaticBitmap *pImage = new wxStaticBitmap(this, wxID_ANY, bmp);
+
+    #include "icons/phd2_64.png.h"
+    wxBitmap phd2(wxBITMAP_PNG_FROM_DATA(phd2_64));
+    wxStaticBitmap *pImage = new wxStaticBitmap(this, wxID_ANY, phd2);
 
     wxFileSystem::AddHandler(new wxMemoryFSHandler);
     wxMemoryFSHandler::AddFile("about.html", wxString::Format(
@@ -115,6 +115,10 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "</tr>"
         "<tr>"
         "<td>Sabin Fota</td>"
+        "<td></td>"
+        "</tr>"
+        "<tr>"
+        "<td>Dylan O'Donnell</td>"
         "<td></td>"
         "</tr>"
         "</table><br>"
