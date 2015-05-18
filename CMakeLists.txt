@@ -205,7 +205,7 @@ else (MSVC)
 endif (MSVC)
 
 install (TARGETS phd2 RUNTIME DESTINATION bin)
-install (FILES "${PROJECT_SOURCE_DIR}/icons/phd2.png" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pixmaps/" )
+install (FILES "${PROJECT_SOURCE_DIR}/icons/phd2_48.png" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pixmaps/" RENAME "phd2.png" )
 install (FILES "${PROJECT_SOURCE_DIR}/phd2.desktop" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications/" )
 install (FILES "${PROJECT_SOURCE_DIR}/PHD2GuideHelp.zip" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/phd2/" )
 # install language help files
