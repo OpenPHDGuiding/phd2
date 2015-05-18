@@ -69,7 +69,7 @@ public:
     {
         m_pGuideAlgorithm = pGuideAlgorithm;
 
-        int width = StringWidth(_T("000.00"));
+        int width = StringWidth(_T("00000.00"));
         m_pControlGain = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
                                               wxDefaultPosition,wxSize(width+30, -1),
                                               wxSP_ARROW_KEYS, 0.0, 1.0, 0.0, 0.05,

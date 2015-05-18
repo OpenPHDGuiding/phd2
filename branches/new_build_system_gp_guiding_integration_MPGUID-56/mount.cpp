@@ -74,7 +74,7 @@ static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *
     // we need to force the guide alogorithm config pane to be large enough for
     // any of the guide algorithms
     ConfigDialogPane *pane = algo->GetConfigDialogPane(parent);
-    pane->SetMinSize(-1, 110);
+    pane->SetMinSize(-1, 190);
     return pane;
 }
 
