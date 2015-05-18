@@ -625,7 +625,7 @@ if(APPLE)
 
   find_library( asiCamera2
                 NAMES ASICamera2
-                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/x86)
+                PATHS ${PHD_PROJECT_ROOT_DIR}/cameras/zwolibs/mac)
   if(NOT asiCamera2)
     message(FATAL_ERROR "Cannot find the asiCamera2 drivers")
   endif()

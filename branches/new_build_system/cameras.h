@@ -96,8 +96,7 @@
 # define OPENSSAG
 # define KWIQGUIDER
 
-//TODO DISABLING ZWO cameras on OSX: binaries are lacking
-//# define ZWO_ASI
+# define ZWO_ASI
 
 #elif defined (__LINUX__)
 # define SIMULATOR
