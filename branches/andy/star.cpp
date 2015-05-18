@@ -270,7 +270,6 @@ bool Star::Find(const usImage *pImg, int searchRegion, int base_x, int base_y, F
 
         Mass = mass;
         SNR = n > 0 ? mass / (sigma_bg * n) : 0.0;
-Debug.Write(wxString::Format("@@@@AG peak %u @ %d,%d bg %.f sigma %.1f n %d mass %.f SNR %.1f\n", peak_val / 6, peak_x, peak_y, mean_bg, sigma_bg, n, mass, SNR));
 
         double const LOW_SNR = 3.0;
 
@@ -288,8 +287,6 @@ Debug.Write(wxString::Format("@@@@AG peak %u @ %d,%d bg %.f sigma %.1f n %d mass
             if ((unsigned int)(max3[0] - max3[2]) * 65535U < 32U * (unsigned int) max3[0])
                 Result = STAR_SATURATED;
         }
-Debug.AddLine(wxString::Format("newFind returns %d (%d), X=%.2f, Y=%.2f, Mass=%.f, SNR=%.1f",
-    WasFound(Result), Result, newX, newY, Mass, SNR));
     }
     catch (const wxString& Msg)
     {
