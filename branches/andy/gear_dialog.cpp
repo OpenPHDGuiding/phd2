@@ -418,11 +418,11 @@ void GearDialog::EndModal(int retCode)
     if (pCamera &&
         (pCamera->PropertyDialogType & PROPDLG_WHEN_CONNECTED) != 0 && pCamera->Connected)
     {
-        pFrame->Setup_Button->Enable(true);
+        pFrame->MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, true);
     }
     else
     {
-        pFrame->Setup_Button->Enable(false);
+        pFrame->MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
     }
 
     if (m_pStepGuider)

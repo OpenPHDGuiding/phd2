@@ -129,7 +129,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_TOOL(BUTTON_GUIDE,MyFrame::OnGuide)
     EVT_MENU(BUTTON_GUIDE,MyFrame::OnGuide) // Bit of a hack -- not actually on the menu but need an event to accelerate
     EVT_MENU(BUTTON_ALERT_CLOSE,MyFrame::OnAlertButton) // Bit of a hack -- not actually on the menu but need an event to accelerate
-    EVT_BUTTON(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
+    EVT_TOOL(BUTTON_CAM_PROPERTIES,MyFrame::OnSetupCamera)
     EVT_COMMAND_SCROLL(CTRL_GAMMA, MyFrame::OnGammaSlider)
     EVT_COMBOBOX(BUTTON_DURATION, MyFrame::OnExposureDurationSelected)
     EVT_SOCKET(SOCK_SERVER_ID, MyFrame::OnSockServerEvent)
@@ -183,12 +183,12 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
 
     m_sampling = 1.0;
 
-#if defined (WINICONS)
-    SetIcon(wxIcon(_T("progicon")));
-#else
-    #include "icons/phd.xpm"
-    SetIcon(wxIcon(prog_icon));
-#endif
+    #include "icons/phd2_128.png.h"
+    wxBitmap phd2(wxBITMAP_PNG_FROM_DATA(phd2_128));
+    wxIcon icon;
+    icon.CopyFromBitmap(phd2);
+    SetIcon(icon);
+
     //SetIcon(wxIcon(_T("progicon")));
     SetBackgroundColour(*wxLIGHT_GREY);
 
@@ -319,8 +319,6 @@ MyFrame::MyFrame(int instanceNumber, wxLocale *locale)
         else
             SetStatusText(_("Server started"));
     }
-
-
 
     #include "xhair.xpm"
     wxImage Cursor = wxImage(mac_xhair);
@@ -744,22 +742,38 @@ void MyFrame::SetupToolBar()
 {
     MainToolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
 
-    wxBitmap camera_bmp, loop_bmp, guide_bmp, stop_bmp;
-#if defined (WINICONS)
-    camera_bmp.CopyFromIcon(wxIcon(_T("camera_icon")));
-    loop_bmp.CopyFromIcon(wxIcon(_T("loop_icon")));
-    guide_bmp.CopyFromIcon(wxIcon(_T("phd_icon")));
-    stop_bmp.CopyFromIcon(wxIcon(_T("stop_icon")));
-#else
-    #include "icons/sm_PHD.xpm"  // defines phd_icon[]
-    #include "icons/stop1.xpm" // defines stop_icon[]
-    #include "icons/loop3.xpm" // defines loop_icon
-    #include "icons/cam2.xpm"  // cam_icon
-    loop_bmp = wxBitmap(loop_icon);
-    guide_bmp = wxBitmap(phd_icon);
-    stop_bmp = wxBitmap(stop_icon);
-    camera_bmp = wxBitmap(cam_icon);
-#endif
+#   include "icons/loop.png.h"
+    wxBitmap loop_bmp(wxBITMAP_PNG_FROM_DATA(loop));
+
+#   include "icons/loop_disabled.png.h"
+    wxBitmap loop_bmp_disabled(wxBITMAP_PNG_FROM_DATA(loop_disabled));
+
+#   include "icons/guide.png.h"
+    wxBitmap guide_bmp(wxBITMAP_PNG_FROM_DATA(guide));
+
+#   include "icons/guide_disabled.png.h"
+    wxBitmap guide_bmp_disabled(wxBITMAP_PNG_FROM_DATA(guide_disabled));
+
+#   include "icons/stop.png.h"
+    wxBitmap stop_bmp(wxBITMAP_PNG_FROM_DATA(stop));
+
+#   include "icons/stop_disabled.png.h"
+    wxBitmap stop_bmp_disabled(wxBITMAP_PNG_FROM_DATA(stop_disabled));
+
+#   include "icons/connect.png.h"
+    wxBitmap connect_bmp(wxBITMAP_PNG_FROM_DATA(connect));
+
+#   include "icons/connect_disabled.png.h"
+    wxBitmap connect_bmp_disabled(wxBITMAP_PNG_FROM_DATA(connect_disabled));
+
+#   include "icons/brain.png.h"
+    wxBitmap brain_bmp(wxBITMAP_PNG_FROM_DATA(brain));
+
+#   include "icons/cam_setup.png.h"
+    wxBitmap cam_setup_bmp(wxBITMAP_PNG_FROM_DATA(cam_setup));
+
+#   include "icons/cam_setup_disabled.png.h"
+    wxBitmap cam_setup_bmp_disabled(wxBITMAP_PNG_FROM_DATA(cam_setup_disabled));
 
     // provide translated strings for dur_choices here since cannot use _() in static initializer
     dur_choices[0] = _("Auto");
@@ -772,28 +786,17 @@ void MyFrame::SetupToolBar()
     Gamma_Slider = new wxSlider(MainToolbar, CTRL_GAMMA, GAMMA_DEFAULT, GAMMA_MIN, GAMMA_MAX, wxPoint(-1,-1), wxSize(160,-1));
     Gamma_Slider->SetToolTip(_("Screen gamma (brightness)"));
 
-    wxBitmap brain_bmp;
-#if defined (WINICONS)
-    brain_bmp.CopyFromIcon(wxIcon(_T("brain_icon")));
-#else
-#   include "icons/brain1.xpm" // brain_icon[]
-    brain_bmp = wxBitmap(brain_icon);
-#endif
-
-    Setup_Button = new wxButton(MainToolbar, BUTTON_CAM_PROPERTIES, _("Cam Dialog"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
-    Setup_Button->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
-    Setup_Button->Enable(false);
-
-    MainToolbar->AddTool(BUTTON_GEAR, _("Equipment"), camera_bmp, _("Connect to equipment. Shift-click to reconnect the same equipment last connected."));
-    MainToolbar->AddTool(BUTTON_LOOP, _("Loop Exposure"), loop_bmp, _("Begin looping exposures for frame and focus"));
-    MainToolbar->AddTool(BUTTON_GUIDE, _("Guide"), guide_bmp, _("Begin guiding (PHD). Shift-click to force calibration."));
-    MainToolbar->AddTool(BUTTON_STOP, _("Stop"), stop_bmp, _("Stop looping and guiding"));
+    MainToolbar->AddTool(BUTTON_GEAR, connect_bmp, connect_bmp_disabled, false, 0, _("Connect to equipment. Shift-click to reconnect the same equipment last connected."));
+    MainToolbar->AddTool(BUTTON_LOOP, loop_bmp, loop_bmp_disabled, false, 0, _("Begin looping exposures for frame and focus"));
+    MainToolbar->AddTool(BUTTON_GUIDE, guide_bmp, guide_bmp_disabled, false, 0, _("Begin guiding (PHD). Shift-click to force calibration."));
+    MainToolbar->AddTool(BUTTON_STOP, stop_bmp, stop_bmp_disabled, false, 0, _("Stop looping and guiding"));
     MainToolbar->AddSeparator();
     MainToolbar->AddControl(Dur_Choice, _("Exposure duration"));
     MainToolbar->AddControl(Gamma_Slider, _("Gamma"));
     MainToolbar->AddSeparator();
     MainToolbar->AddTool(BUTTON_ADVANCED, _("Advanced parameters"), brain_bmp, _("Advanced parameters"));
-    MainToolbar->AddControl(Setup_Button, _("Cam Dialog"));
+    MainToolbar->AddTool(BUTTON_CAM_PROPERTIES, cam_setup_bmp, cam_setup_bmp_disabled, false, 0, _("Camera settings"));
+    MainToolbar->EnableTool(BUTTON_CAM_PROPERTIES, false);
     MainToolbar->Realize();
     MainToolbar->EnableTool(BUTTON_LOOP, false);
     MainToolbar->EnableTool(BUTTON_GUIDE, false);

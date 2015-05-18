@@ -40,7 +40,6 @@
 #ifdef  __LINUX__
     #include <X11/Xlib.h>
 #endif // __LINUX__
-//#define WINICONS
 
 //#define DEVBUILD
 

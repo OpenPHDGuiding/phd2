@@ -172,7 +172,6 @@ public:
     wxInfoBar *m_infoBar;
     wxComboBox    *Dur_Choice;
     wxCheckBox *HotPixel_Checkbox;
-    wxButton    *Setup_Button;
     wxHtmlHelpController *help;
     wxSlider *Gamma_Slider;
     AdvancedDialog *pAdvancedDialog;

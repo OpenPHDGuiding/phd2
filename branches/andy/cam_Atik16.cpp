@@ -232,12 +232,10 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const 
         }
         frame = wxRect(x, y, w, h);
         subframePos = subframe.GetLeftTop() - frame.GetLeftTop();
-Debug.Write(wxString::Format("@@@ATIK phd2 subframe %d,%d,%d,%d atik subframe %d,%d,%d,%d\n", subframe.x, subframe.y, subframe.width, subframe.height, x, y, w, h));
         ArtemisSubframe(Cam_Handle, x, y, w, h);
     }
     else
     {
-Debug.Write(wxString::Format("@@@ATIK phd2 no subframe frame %d,%d,%d,%d\n", 0, 0, FullSize.GetWidth(), FullSize.GetHeight()));
         ArtemisSubframe(Cam_Handle, 0, 0, FullSize.GetWidth(), FullSize.GetHeight());
     }
 
