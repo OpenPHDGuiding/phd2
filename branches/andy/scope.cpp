@@ -1084,7 +1084,10 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 else
                 {
                     if (blCumDelta < m_blLastCumDistance)
+                    {
+                        m_blAcceptedMoves = 0;
                         Debug.AddLine(wxString::Format("Backlash: Rejected small direction reversal of %0.1f px", blDelta));
+                    }
                     else
                         Debug.AddLine(wxString::Format("Backlash: Rejected small move of %0.1f px", blDelta));
                 }

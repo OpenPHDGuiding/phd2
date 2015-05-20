@@ -132,6 +132,10 @@ void BacklashTool::StopMeasurement()
     DecMeasurementStep(pFrame->pGuider->CurrentPosition());
 }
 
+static bool OutOfRoom(wxSize frameSize, double camX, double camY, int margin)
+{
+    return (camX < margin || camY < margin || camX >= frameSize.GetWidth() - margin || camY >= frameSize.GetHeight() - margin);
+}
 void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
 {
     double decDelta = 0.;
@@ -167,7 +171,8 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
             if (m_stepCount == 0)
             {
                 // Get things moving with the first clearing pulse
-                Debug.AddLine(wxString::Format("BLT starting north backlash clearing using pulse width of %d", m_pulseWidth));
+                Debug.AddLine(wxString::Format("BLT starting north backlash clearing using pulse width of %d,"
+                    " looking for moves >= %d px", m_pulseWidth, BACKLASH_EXPECTED_DISTANCE));
                 pFrame->ScheduleCalibrationMove(m_theScope, NORTH, m_pulseWidth);
                 m_stepCount = 1;
                 m_lastStatus = wxString::Format("Clearing north backlash, step %d", m_stepCount);
@@ -211,15 +216,19 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
             {
                 m_markerPoint = currMountLocation;            // Marker point at start of big Dec move north
                 m_bltState = BLT_STATE_STEP_NORTH;
-                // Want to give the mount 4 pulses north at 500 mSec, regardless of image scale. Reduce pulse width only if it would blow us out of the tracking region
+                double totalBacklashCleared = m_stepCount * m_pulseWidth;
+                // Want to move the mount north at 500 mSec, regardless of image scale. Reduce pulse width only if it would blow us out of the tracking region
                 m_pulseWidth = wxMin((int)NORTH_PULSE_SIZE, (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
                 m_stepCount = 0;
+                // Move 50% more than the backlash we cleared or >=4 secs, whichever is greater.  We want to leave plenty of room
+                // for giving south moves time to clear backlash and actually get moving
+                m_northPulseCount = wxMax((4000 + m_pulseWidth - 1)/m_pulseWidth,totalBacklashCleared * 1.5 / m_pulseWidth);  // Min of 3 secs
                 Debug.AddLine(wxString::Format("BLT: Starting north moves at Dec=%0.2f", currMountLocation.Y));
                 // falling through to start moving north            
             }
 
         case BLT_STATE_STEP_NORTH:
-            if (m_stepCount < NORTH_PULSE_COUNT)
+            if (m_stepCount < m_northPulseCount && !OutOfRoom(pCamera->FullSize, currentCamLoc.X, currentCamLoc.Y, m_pulseWidth * m_lastDecGuideRate))
             {
                 m_lastStatus = wxString::Format("Moving North for %d mSec, step %d", m_pulseWidth, m_stepCount + 1);
                 Debug.AddLine(wxString::Format("BLT: %s, DecLoc = %0.2f", m_lastStatus, currMountLocation.Y));
@@ -230,14 +239,21 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
             else
             {
                 Debug.AddLine(wxString::Format("BLT: North pulses ended at Dec location %0.2f, DecDelta=%0.2f px", currMountLocation.Y, decDelta));
-                m_northRate = fabs(decDelta / (4.0 * m_pulseWidth));
+                if (m_stepCount < m_northPulseCount)
+                {
+                    if (m_stepCount < 0.8 * m_northPulseCount)
+                        pFrame->Alert(_("Star too close to edge for accurate measurement of backlash"));
+                    Debug.AddLine("BLT: North pulses truncated, too close to frame edge");
+                }
+                m_northRate = fabs(decDelta / (m_stepCount * m_pulseWidth));
+                m_northPulseCount = m_stepCount;
                 m_stepCount = 0;
                 m_bltState = BLT_STATE_STEP_SOUTH;
                 // falling through to moving back south
             }
 
         case BLT_STATE_STEP_SOUTH:
-            if (m_stepCount < NORTH_PULSE_COUNT)
+            if (m_stepCount < m_northPulseCount)
             {
                 m_lastStatus = wxString::Format("Moving South for %d mSec, step %d", m_pulseWidth, m_stepCount + 1);
                 Debug.AddLine(wxString::Format("BLT: %s, DecLoc = %0.2f", m_lastStatus, currMountLocation.Y));
@@ -271,7 +287,7 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
             Debug.AddLine(wxString::Format(_("BLT: Trial backlash pulse resulted in net DecDelta = %0.2f px, Dec Location %0.2f"), decDelta, currMountLocation.Y));
             if (fabs(decDelta) > TRIAL_TOLERANCE)
             {
-                int pulse_delta = fabs(currMountLocation.Y - m_endSouth.Y);
+                double pulse_delta = fabs(currMountLocation.Y - m_endSouth.Y);
                 if ((m_endSouth.Y - m_markerPoint.Y) * decDelta < 0)                // Sign change, went too far
                 {
                     m_backlashResultSec *= m_backlashResultPx / pulse_delta;
@@ -280,8 +296,8 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
                 else
                 {
                     double corr_factor = (m_backlashResultPx / pulse_delta - 1.0) * 0.5 + 1.0;          // apply 50% of the correction to avoid over-shoot
-                    m_backlashResultSec *= corr_factor;
-                    Debug.AddLine(wxString::Format("BLT: Trial backlash resulted in under-correction - adjusting pulse size by %0.2f", corr_factor));
+                    //m_backlashResultSec *= corr_factor;
+                    Debug.AddLine(wxString::Format("BLT: Trial backlash resulted in under-correction - under-shot by %0.2f", corr_factor));
                 }
             }
             else

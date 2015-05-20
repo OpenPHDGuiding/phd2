@@ -59,8 +59,7 @@ public:
     {
         BACKLASH_MIN_COUNT = 3,
         BACKLASH_EXPECTED_DISTANCE = 4,
-        MAX_CLEARING_STEPS = 10,
-        NORTH_PULSE_COUNT = 4,
+        MAX_CLEARING_STEPS = 100,
         NORTH_PULSE_SIZE = 500,
         TRIAL_TOLERANCE = 2
     };
@@ -68,6 +67,7 @@ public:
 private:
     int m_pulseWidth;
     int m_stepCount;
+    int m_northPulseCount;
     int m_acceptedMoves;
     double m_lastClearRslt;
     double m_lastDecGuideRate;
