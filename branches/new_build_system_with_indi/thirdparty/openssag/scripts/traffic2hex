@@ -1,0 +1,28 @@
+#!/usr/bin/python
+
+# Converts traffic captured with usbmon to intel hex format
+
+import sys
+
+input = open(sys.argv[1], "r")
+lines = input.readlines()
+input.close()
+
+for line in lines:
+    fields = line.split()
+    address = fields[0]
+    byte_count = fields[2]
+    del fields[0:5]
+    data = ''.join(fields)
+    hexline = ":" + byte_count[2:4] + address + "00" + data
+    sum = 0
+    sum += int(byte_count, 16)
+    sum += int(address[0:2], 16) + int(address[2:4], 16)
+    for i in range(0, int(byte_count, 16)):
+        sum += int(data[(i*2)] + data[(i*2)+1], 16)
+    twos_comp = (~sum + 1) & 0xff;
+    twos_comp = "%02x" % twos_comp
+    hexline += twos_comp
+    print hexline
+
+print ":00000001FF"
