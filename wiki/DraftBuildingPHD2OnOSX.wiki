@@ -30,7 +30,7 @@ make
 make install
 }}}
 
- * Get the phd2 source tree
+ * Get the phd2 source code
 
    https://code.google.com/p/open-phd-guiding/source/checkout
 
