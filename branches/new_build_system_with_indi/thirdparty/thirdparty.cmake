@@ -799,16 +799,30 @@ if(UNIX AND NOT APPLE)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
 
   # INDI
+  set(indiclient_root ${thirdparties_deflate_directory}/indiclient-1.0.0)
+  if(NOT EXISTS ${indiclient_root})
+    # untar the dependency
+    message(STATUS "Untarring indiclient")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/indiclient-1.0.0.tar.gz
+                    WORKING_DIRECTORY ${thirdparties_deflate_directory})
+  endif()
+  add_subdirectory(${indiclient_root} tmp_cmakeindiclient)
+  set_property(TARGET indiclient PROPERTY FOLDER "Thirdparty/")
+  include_directories(${indiclient_root})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} indiclient)
+
+  #add_library(indiclient tmp_cmakeindiclient)
+
   # some features for indi >= 0.9 are used apparently
-  find_package(INDI 0.9 REQUIRED)
-  include_directories(${INDI_INCLUDE_DIR})
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
-  if(PC_INDI_VERSION VERSION_LESS "1.1")
+  #find_package(INDI 0.9 REQUIRED)
+  #include_directories(${INDI_INCLUDE_DIR})
+  #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
+  #if(PC_INDI_VERSION VERSION_LESS "1.1")
     add_definitions("-DINDI_PRE_1_1_0")
-  endif()
-  if(PC_INDI_VERSION VERSION_LESS "1.0")
-    add_definitions("-DINDI_PRE_1_0_0")
-  endif()
+  #endif()
+  #if(PC_INDI_VERSION VERSION_LESS "1.0")
+  #  add_definitions("-DINDI_PRE_1_0_0")
+  #endif()
   
   # INDI depends on libz
   find_package(ZLIB REQUIRED)

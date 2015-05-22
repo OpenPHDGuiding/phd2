@@ -605,7 +605,7 @@ elseif(WIN32)
   copy_dependency_with_config(phd2 PHD_COPY_EXTERNAL_ALL PHD_COPY_EXTERNAL_DBG PHD_COPY_EXTERNAL_REL)
 
 elseif(UNIX)
-  
+
   # should be linux there
   add_executable(
    phd2
@@ -614,7 +614,11 @@ elseif(UNIX)
    ${guiding_SRC}
    ${phd2_SRC}
    )
-  target_link_libraries(phd2 X11)
+
+  target_include_directories(phd2 PRIVATE ${indiclient_root})
+ 
+  target_link_libraries(phd2 X11 indiclient indi)
+
 
   set_target_properties(
     phd2 
@@ -648,11 +652,7 @@ add_custom_target(CmakeAdditionalFiles
   SOURCES
   ${phd_src_dir}/thirdparty/thirdparty.cmake
   ${phd_src_dir}/cmake_modules/FindASCOM_INTERFACE.cmake
-  ${phd_src_dir}/cmake_modules/FindINDI.cmake
   ${phd_src_dir}/cmake_modules/FindNova.cmake)
-
-
-
 
 
 ################################################################
