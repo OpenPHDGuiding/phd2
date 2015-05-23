@@ -54,15 +54,12 @@ Set a WXWIN environment variable to point to <wx install path>. For example:
 
   WXWIN = C:\wxWidgets-3.0.2
 
-Open a VS command prompt (menu Tools => Visual Studio Command Prompt) and cd into the build directory:
-
-  cd %WXWIN%\build\msw
-
-Do two command line builds, one for release, one for debug:
+Open a Visual Studio command prompt (menu Tools => Visual Studio Command Prompt) and run two command line builds, one for release, one for debug:
 
 {{{
-  nmake -f makefile.vc BUILD=release SHARED=0
-  nmake -f makefile.vc BUILD=debug SHARED=0
+cd %WXWIN%\build\msw
+msbuild wx_vc12.sln /p:configuration=Debug /p:platform=win32 /m:8
+msbuild wx_vc12.sln /p:configuration=Release /p:platform=win32 /m:8
 }}}
 
 
