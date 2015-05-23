@@ -259,6 +259,7 @@ endif()
 source_group(Cameras FILES ${cam_SRC})
 
 set(scopes_SRC
+  ${phd_src_dir}/mount.cpp
   ${phd_src_dir}/mount.h
   ${phd_src_dir}/scope.cpp
   ${phd_src_dir}/scope.h
@@ -386,7 +387,6 @@ set(phd2_SRC
   ${phd_src_dir}/manualcal_dialog.h
   ${phd_src_dir}/messagebox_proxy.cpp
   ${phd_src_dir}/messagebox_proxy.h
-  ${phd_src_dir}/mount.cpp
   ${phd_src_dir}/myframe.cpp
   ${phd_src_dir}/myframe.h
   ${phd_src_dir}/myframe_events.cpp
