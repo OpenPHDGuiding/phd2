@@ -38,7 +38,8 @@
 
 struct Stats
 {
-    double alpha;
+    double alpha_lp;
+    double alpha_hp;
     unsigned int n;
     double sum;
     double a;
@@ -48,9 +49,10 @@ struct Stats
     double xprev;
     double peakRawDx;
 
-    void InitStats(double hpfCutoffPeriod, double samplePeriod)
+    void InitStats(double hpfCutoffPeriod, double lpfCutoffPeriod, double samplePeriod)
     {
-        alpha = hpfCutoffPeriod / (hpfCutoffPeriod + samplePeriod);
+        alpha_hp = hpfCutoffPeriod / (hpfCutoffPeriod + wxMax(1.0, samplePeriod));
+        alpha_lp = 1.0 - (lpfCutoffPeriod / (lpfCutoffPeriod + wxMax(1.0, samplePeriod)));
         Reset();
     }
 
@@ -72,8 +74,8 @@ struct Stats
         }
         else
         {
-            hpf = alpha * (hpf + x - xprev);
-            lpf += (1.0 - alpha) * (x - xprev);
+            hpf = alpha_hp * (hpf + x - xprev);
+            lpf += alpha_lp *(x - lpf);
         }
 
         if (n >= 1)
@@ -126,6 +128,7 @@ struct GuidingAsstWin : public wxDialog
         STATE_MEASURING = 2,
         STATE_STOPPED = 3
     };
+    enum DlgConstants {MAX_BACKLASH_COMP = 3000};
 
     wxButton *m_start;
     wxButton *m_stop;
@@ -138,6 +141,7 @@ struct GuidingAsstWin : public wxDialog
     wxBoxSizer *m_vSizer;
     wxStaticBoxSizer *m_recommend_group;
     wxCheckBox *m_backlashCB;
+    wxStaticText *m_backlashInfo;
 
     wxGridCellCoords m_timestamp_loc;
     wxGridCellCoords m_starmass_loc;
@@ -382,9 +386,14 @@ GuidingAsstWin::GuidingAsstWin()
     m_vSizer->Add(other_group, wxSizerFlags(0).Border(wxALL, 8));
     // End of peak and drift group
 
-    m_backlashCB = new wxCheckBox(this, wxID_ANY, _("Measure Backlash"));
+    m_backlashCB = new wxCheckBox(this, wxID_ANY, _("Measure Declination Backlash"));
     m_backlashCB->SetValue(true);
     m_vSizer->Add(m_backlashCB, wxSizerFlags(0).Border(wxALL, 8).Center());
+
+    m_backlashInfo = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 40), wxALIGN_CENTER);
+    MakeBold(m_backlashInfo);
+    m_vSizer->Add(m_backlashInfo, wxSizerFlags(0).Border(wxALL, 8).Center());
+    m_backlashInfo->Show(false);
 
     wxBoxSizer *btnSizer = new wxBoxSizer(wxHORIZONTAL);
     btnSizer->Add(0, 0, 1, wxEXPAND, 5);
@@ -536,13 +545,13 @@ void GuidingAsstWin::BacklashStep(PHD_Point camLoc)
     if (pBacklashTool)
     {
         pBacklashTool->DecMeasurementStep(camLoc);
-        m_instructions->SetLabel(_("Backlash Measurement: ") + pBacklashTool->GetLastStatus());
+        wxString bl_msg = _("Measuring backlash: ") + pBacklashTool->GetLastStatus();
+        m_backlashInfo->SetLabel(bl_msg);
         if (pBacklashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
         {
             m_othergrid->SetCellValue(m_backlash_px_loc, wxString::Format("% .1f %s", pBacklashTool->GetBacklashResultPx(), _(" px")));
             m_othergrid->SetCellValue(m_backlash_sec_loc, wxString::Format("%d %s", pBacklashTool->GetBacklashResultSec(), _(" mSec")));
             EndBacklashTest(true);
-            DoStop();
         }
 
     }
@@ -553,7 +562,6 @@ void GuidingAsstWin::BacklashError()
     if (pBacklashTool)
     {
         EndBacklashTest(false);
-        DoStop();
     }
 }
 
@@ -665,6 +673,7 @@ void GuidingAsstWin::MakeRecommendations()
 
     double decrms;
     double decmean;
+    bool largeBL = false;
     m_statsDec.GetMeanAndStdev(&decmean, &decrms);
 
     double multiplier_ra  = 1.28;  // 80% prediction interval
@@ -745,13 +754,21 @@ void GuidingAsstWin::MakeRecommendations()
 
     if (pBacklashTool->GetBacklashResultPx() > 0)
     {
-        wxString msg(wxString::Format(_("Try setting a Dec backlash value of %d mSec"), pBacklashTool->GetBacklashResultSec()));
+        bool largeBL = pBacklashTool->GetBacklashResultSec() > MAX_BACKLASH_COMP;
+        wxString msg;
+        if (!largeBL)
+            msg = wxString::Format(_("Try setting a Dec backlash value of %d mSec"), pBacklashTool->GetBacklashResultSec());
+        else
+            msg = wxString::Format(_("Backlash is excessive; try guiding in just one Dec direction"));
         if (!m_backlash_msg)
+        {
             m_backlash_msg = AddRecommendationEntry(msg, wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
+            m_decBacklashButton->Enable(!largeBL);
+        }
         else
         {
-            m_backlash_msg->SetLabel(wxString::Format(_("Try setting a Dec backlash value of %d mSec"), pBacklashTool->GetBacklashResultSec()));
-            m_decBacklashButton->Enable(true);
+            m_backlash_msg->SetLabel(msg);
+            m_decBacklashButton->Enable(!largeBL);
         }
         Debug.Write(wxString::Format("Recommendation: %s\n", m_backlash_msg->GetLabelText()));
     }
@@ -768,10 +785,11 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
         return;
 
     double exposure = (double) pFrame->RequestedExposureDuration() / 1000.0;
-    double cutoff = wxMax(6.0, 3.0 * exposure);
-    m_freqThresh = 1.0 / cutoff;
-    m_statsRA.InitStats(cutoff, exposure);
-    m_statsDec.InitStats(cutoff, exposure);
+    double lp_cutoff = wxMax(6.0, 3.0 * exposure);
+    double hp_cutoff = 1.0;
+    m_freqThresh = 1.0 / hp_cutoff;
+    m_statsRA.InitStats(hp_cutoff, lp_cutoff, exposure);
+    m_statsDec.InitStats(hp_cutoff, lp_cutoff, exposure);
 
     sumSNR = sumMass = 0.0;
 
@@ -831,6 +849,11 @@ void GuidingAsstWin::EndBacklashTest(bool normal)
         
     }
     m_measuringBacklash = false;
+    m_backlashCB->Enable(true);
+    m_backlashInfo->Show(false);
+    Layout();
+    GetSizer()->Fit(this);
+
     m_start->Enable(pFrame->pGuider->IsGuiding());
     m_stop->Enable(false);
     if (normal)
@@ -840,6 +863,7 @@ void GuidingAsstWin::EndBacklashTest(bool normal)
         wxCommandEvent dummy;
         OnAppStateNotify(dummy);                    // Need to get the UI back in synch
     }
+    DoStop();
 }
 
 void GuidingAsstWin::OnStop(wxCommandEvent& event)
@@ -849,15 +873,19 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
         {
             m_measuringBacklash = true;
+            m_backlashInfo->SetLabelText(_("Measuring backlash... ") + pBacklashTool->GetLastStatus());
+            m_backlashInfo->Show(true);
+            Layout();
+            GetSizer()->Fit(this);
+            m_backlashCB->Enable(false);                        // Don't let user turn it off once we've started
             m_measuring = false;
             pBacklashTool->StartMeasurement();
-            m_instructions->SetLabel(_("Backlash Measurement: ") + pBacklashTool->GetLastStatus());
+            m_instructions->SetLabel(_("Measuring backlash... "));
         }
         else
         {
             MakeRecommendations();
             EndBacklashTest(false);
-            DoStop();
         }
     }
     else

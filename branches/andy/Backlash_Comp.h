@@ -52,6 +52,7 @@ public:
         BLT_STATE_STEP_SOUTH,
         BLT_STATE_ABORTED,
         BLT_STATE_TEST_CORRECTION,
+        BLT_STATE_WRAPUP,
         BLT_STATE_COMPLETED
     } m_bltState;
 

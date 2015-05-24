@@ -274,13 +274,26 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
                 // decDelta contains the nominal backlash amount
                 m_backlashResultPx = fabs(decDelta);
                 m_backlashResultSec = (int)(m_backlashResultPx / m_northRate);          // our north rate is probably better than the calibration rate
-                Debug.AddLine(wxString::Format("BLT: Backlash amount is %0.2f px", m_backlashResultPx));
-                m_lastStatus = wxString::Format(_("Issuing test backlash correction of %d mSec"), m_backlashResultSec);
-                Debug.AddLine(m_lastStatus);
+                // Don't try this refinement if the clearing pulse will cause us to lose the star
+                if (m_backlashResultPx < pFrame->pGuider->GetMaxMovePixels())
+                {
 
-                // This should put us back roughly to where we issued the big north pulse
-                pFrame->ScheduleCalibrationMove(m_theScope, SOUTH, m_backlashResultSec);
-                m_stepCount++;
+                    Debug.AddLine(wxString::Format("BLT: Backlash amount is %0.2f px", m_backlashResultPx));
+                    m_lastStatus = wxString::Format(_("Issuing test backlash correction of %d mSec"), m_backlashResultSec);
+                    Debug.AddLine(m_lastStatus);
+
+                    // This should put us back roughly to where we issued the big north pulse
+                    pFrame->ScheduleCalibrationMove(m_theScope, SOUTH, m_backlashResultSec);
+                    m_stepCount++;
+                }
+                else
+                {
+                    int maxFrameMove = (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_northRate);
+                    Debug.AddLine(wxString::Format("BLT: Clearing pulse is very large, issuing max S move of %d", maxFrameMove));
+                    (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate);
+                    pFrame->ScheduleCalibrationMove(m_theScope, SOUTH, m_pulseWidth);       // One more pulse to cycle the state machine
+                    m_bltState = BLT_STATE_WRAPUP;
+                }
                 break;
             }
             // See how close we came, maybe fine-tune a bit
@@ -302,14 +315,15 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
             }
             else
                 Debug.AddLine("BLT: Initial backlash pulse resulted in final delta of < 2 px");
-            m_bltState = BLT_STATE_COMPLETED;
+            m_bltState = BLT_STATE_WRAPUP;
             // fall through
 
-        case BLT_STATE_COMPLETED:
+        case BLT_STATE_WRAPUP:
 
             m_lastStatus = _("Measurement complete");
             Debug.AddLine(wxString::Format("BLT: Starting Dec position at %0.2f, Ending Dec position at %0.2f", m_markerPoint.Y, currMountLocation.Y));
             CleanUp();
+            m_bltState = BLT_STATE_COMPLETED;
             break;
 
         case BLT_STATE_ABORTED:

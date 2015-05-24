@@ -127,7 +127,7 @@ double SimCamParams::comet_rate_y;
 #define CLOUDS_INTEN_DEFAULT 10
 #define USE_PE_DEFAULT true
 #define PE_SCALE_DEFAULT 5.0                    // amplitude arc-sec
-#define PE_SCALE_MAX 20.0
+#define PE_SCALE_MAX 30.0
 #define USE_PE_DEFAULT_PARAMS true
 #define PE_CUSTOM_AMP_DEFAULT 2.0               // Give them a trivial 2 a-s 4 min smooth curve
 #define PE_CUSTOM_PERIOD_DEFAULT 240.0
