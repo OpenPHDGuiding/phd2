@@ -267,6 +267,7 @@ public:
     void GetExposureDurations(std::vector<int> *exposure_durations);
     void GetExposureDurationStrings(wxArrayString *target);
     int ExposureDurationFromSelection(const wxString& selection);
+    void GetExposureInfo(int *currExpMs, bool *autoExp);
     bool SetExposureDuration(int val);
     const AutoExposureCfg& GetAutoExposureCfg(void) const { return m_autoExp; }
     void SetAutoExposureCfg(int minExp, int maxExp, double targetSNR);
