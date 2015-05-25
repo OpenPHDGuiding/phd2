@@ -42,6 +42,8 @@
 static const double DefaultMinMove    = 0.2;
 static const double DefaultHysteresis = 0.1;
 static const double DefaultAggression = 0.7;
+static const double MaxAggression = 2.0;
+static const double MaxHysteresis = 1.0;
 
 GuideAlgorithmHysteresis::GuideAlgorithmHysteresis(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis)
@@ -76,7 +78,7 @@ void GuideAlgorithmHysteresis::reset(void)
 
 double GuideAlgorithmHysteresis::result(double input)
 {
-    double dReturn = (1.0-m_hysteresis)*input + m_hysteresis * m_lastMove;
+    double dReturn = (1.0 - m_hysteresis) * input + m_hysteresis * m_lastMove;
 
     dReturn *= m_aggression;
 
@@ -103,7 +105,7 @@ bool GuideAlgorithmHysteresis::SetMinMove(double minMove)
 
     try
     {
-        if (minMove < 0)
+        if (minMove < 0.0)
         {
             throw ERROR_INFO("invalid minMove");
         }
@@ -134,7 +136,7 @@ bool GuideAlgorithmHysteresis::SetHysteresis(double hysteresis)
 
     try
     {
-        if (hysteresis < 0 || hysteresis > 1.0)
+        if (hysteresis < 0.0 || hysteresis > MaxHysteresis)
         {
             throw ERROR_INFO("invalid hysteresis");
         }
@@ -146,7 +148,7 @@ bool GuideAlgorithmHysteresis::SetHysteresis(double hysteresis)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_hysteresis = DefaultHysteresis;
+        m_hysteresis = wxMin(wxMax(hysteresis, 0.0), MaxHysteresis);
     }
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/hysteresis", m_hysteresis);
@@ -165,7 +167,7 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
 
     try
     {
-        if (aggression <= 0.0 || aggression > 1.0)
+        if (aggression <= 0.0 || aggression > MaxAggression)
         {
             throw ERROR_INFO("invalid aggression");
         }
@@ -176,7 +178,7 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_aggression = DefaultAggression;
+        m_aggression = wxMin(wxMax(aggression, 0.1), MaxAggression);
     }
 
     m_lastMove = 0.0;
@@ -185,7 +187,8 @@ bool GuideAlgorithmHysteresis::SetAggression(double aggression)
     return bError;
 }
 
-wxString GuideAlgorithmHysteresis::GetSettingsSummary() {
+wxString GuideAlgorithmHysteresis::GetSettingsSummary()
+{
     // return a loggable summary of current mount settings
     return wxString::Format("Hysteresis = %.3f, Aggression = %.3f, Minimum move = %.3f\n",
             GetHysteresis(),
@@ -210,7 +213,7 @@ GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHyster
 
     width = StringWidth(_T("000"));
     m_pHysteresis = new wxSpinCtrlDouble(pParent, wxID_ANY,_T(""), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 100.0, 0.0, 5.0, _T("Hysteresis"));
+            wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.0, MaxHysteresis * 100.0, 0.0, 5.0, _T("Hysteresis"));
     m_pHysteresis->SetDigits(0);
 
     DoAdd(_("Hysteresis"), m_pHysteresis,
@@ -218,7 +221,7 @@ GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHyster
 
     width = StringWidth(_T("000"));
     m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY,_T(""), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 120.0, 0.0, 5.0, _T("Aggression"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, MaxAggression * 100.0, 0.0, 5.0, _T("Aggression"));
     m_pAggression->SetDigits(0);
 
     DoAdd(_("Aggression"), m_pAggression,
@@ -243,8 +246,8 @@ void GuideAlgorithmHysteresis::
 GuideAlgorithmHysteresisConfigDialogPane::
 LoadValues(void)
 {
-    m_pHysteresis->SetValue(100.0*m_pGuideAlgorithm->GetHysteresis());
-    m_pAggression->SetValue(100.0*m_pGuideAlgorithm->GetAggression());
+    m_pHysteresis->SetValue(100.0 * m_pGuideAlgorithm->GetHysteresis());
+    m_pAggression->SetValue(100.0 * m_pGuideAlgorithm->GetAggression());
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());
 }
 
@@ -252,8 +255,8 @@ void GuideAlgorithmHysteresis::
 GuideAlgorithmHysteresisConfigDialogPane::
 UnloadValues(void)
 {
-    m_pGuideAlgorithm->SetHysteresis(m_pHysteresis->GetValue()/100.0);
-    m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue()/100.0);
+    m_pGuideAlgorithm->SetHysteresis(m_pHysteresis->GetValue() / 100.0);
+    m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue() / 100.0);
     m_pGuideAlgorithm->SetMinMove(m_pMinMove->GetValue());
 }
 
@@ -275,7 +278,7 @@ GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHyster
     // Aggression
     width = StringWidth(_T("000"));
     m_pAggression = new wxSpinCtrlDouble(this, wxID_ANY,_T(""), wxDefaultPosition,
-            wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 120.0, 0.0, 5.0, _T("Aggression"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, MaxAggression * 100.0, 0.0, 5.0, _T("Aggression"));
     m_pAggression->SetDigits(0);
     m_pAggression->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnAggressionSpinCtrlDouble, this);
     DoAdd(m_pAggression, _("Agr"));
@@ -283,7 +286,7 @@ GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHyster
     // Hysteresis
     width = StringWidth(_T("000"));
     m_pHysteresis = new wxSpinCtrlDouble(this, wxID_ANY,_T(""), wxDefaultPosition,
-            wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, 100.0, 0.0, 5.0, _T("Hysteresis"));
+            wxSize(width + 30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, MaxHysteresis * 100.0, 0.0, 5.0, _T("Hysteresis"));
     m_pHysteresis->SetDigits(0);
     m_pHysteresis->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnHysteresisSpinCtrlDouble, this);
     DoAdd(m_pHysteresis,_("Hys"));
@@ -311,8 +314,8 @@ void GuideAlgorithmHysteresis::
     GuideAlgorithmHysteresisGraphControlPane::
     OnAggressionSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
-    m_pGuideAlgorithm->SetAggression(this->m_pAggression->GetValue() / 100.0);
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Hysteresis aggression", this->m_pAggression->GetValue());
+    m_pGuideAlgorithm->SetAggression(m_pAggression->GetValue() / 100.0);
+    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Hysteresis aggression", m_pAggression->GetValue());
 }
 
 void GuideAlgorithmHysteresis::
@@ -320,7 +323,7 @@ void GuideAlgorithmHysteresis::
     OnHysteresisSpinCtrlDouble(wxSpinDoubleEvent& WXUNUSED(evt))
 {
     m_pGuideAlgorithm->SetHysteresis(this->m_pHysteresis->GetValue() / 100.0);
-    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Hysteresis hysteresis", this->m_pHysteresis->GetValue());
+    GuideLog.SetGuidingParam(m_pGuideAlgorithm->GetAxis() + " Hysteresis hysteresis", m_pHysteresis->GetValue());
 }
 
 void GuideAlgorithmHysteresis::
