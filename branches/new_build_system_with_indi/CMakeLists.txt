@@ -259,6 +259,7 @@ endif()
 source_group(Cameras FILES ${cam_SRC})
 
 set(scopes_SRC
+  ${phd_src_dir}/mount.cpp
   ${phd_src_dir}/mount.h
   ${phd_src_dir}/scope.cpp
   ${phd_src_dir}/scope.h
@@ -386,7 +387,6 @@ set(phd2_SRC
   ${phd_src_dir}/manualcal_dialog.h
   ${phd_src_dir}/messagebox_proxy.cpp
   ${phd_src_dir}/messagebox_proxy.h
-  ${phd_src_dir}/mount.cpp
   ${phd_src_dir}/myframe.cpp
   ${phd_src_dir}/myframe.h
   ${phd_src_dir}/myframe_events.cpp
@@ -666,7 +666,7 @@ if(NOT APPLE)
 endif()
 
 if(UNIX AND NOT APPLE)
-  install (FILES ${phd_src_dir}/icons/phd2.png    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ )
+  install (FILES ${phd_src_dir}/icons/phd2_48.png    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ RENAME "phd2.png")
   install (FILES ${phd_src_dir}/phd2.desktop      DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
   install (FILES ${phd_src_dir}/PHD2GuideHelp.zip DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/ )
 
