@@ -666,7 +666,7 @@ if(NOT APPLE)
 endif()
 
 if(UNIX AND NOT APPLE)
-  install (FILES ${phd_src_dir}/icons/phd2.png    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ )
+  install (FILES ${phd_src_dir}/icons/phd2_48.png    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps/ RENAME "phd2.png")
   install (FILES ${phd_src_dir}/phd2.desktop      DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/ )
   install (FILES ${phd_src_dir}/PHD2GuideHelp.zip DESTINATION ${CMAKE_INSTALL_PREFIX}/share/phd2/ )
 
