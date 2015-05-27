@@ -1,7 +1,5 @@
 #summary Building PHD2 on Linux
 
-= *NOTE: these will be the instructions after we switch to the new build system. For now the instructions are here: [BuildingPHD2OnLinux]* =
-
 = Instructions for building PHD2 on Linux =
 
 == Build Dependencies ==

@@ -1,7 +1,5 @@
 #summary Building PHD2 on OSX
 
-= *NOTE: these will be the instructions after we switch to the new build system. For now the instructions are here: [BuildingPHD2OnOSX]* =
-
 = Building PHD2 on OSX =
 
  * Install CMake, the cross-platform build system

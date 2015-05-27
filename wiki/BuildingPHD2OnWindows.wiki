@@ -2,8 +2,6 @@
 
 This page describes how to set up a build environment from scratch on MS-Windows to compile and run PHD2.
 
-= *NOTE: these will be the instructions after we cut-over to the new build system, the current build instructions are here: [BuildingPHD2OnWindows].* =
-
 = Summary =
 
   # Install CMake
@@ -11,7 +9,7 @@ This page describes how to set up a build environment from scratch on MS-Windows
   # Install Visual Leak Detector
   # Install wxWidgets
   # Install opencv
-  # Get the PHD2 sources
+  # Get the PHD2 source code
   # Generate the Visual Studio project files
   # Compile and run PHD2
 
