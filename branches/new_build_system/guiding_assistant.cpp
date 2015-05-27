@@ -37,7 +37,8 @@
 
 struct Stats
 {
-    double alpha;
+    double alpha_lp;
+    double alpha_hp;
     unsigned int n;
     double sum;
     double a;
@@ -47,9 +48,10 @@ struct Stats
     double xprev;
     double peakRawDx;
 
-    void InitStats(double hpfCutoffPeriod, double samplePeriod)
+    void InitStats(double hpfCutoffPeriod, double lpfCutoffPeriod, double samplePeriod)
     {
-        alpha = hpfCutoffPeriod / (hpfCutoffPeriod + samplePeriod);
+        alpha_hp = hpfCutoffPeriod / (hpfCutoffPeriod + wxMax(1.0, samplePeriod));
+        alpha_lp = 1.0 - (lpfCutoffPeriod / (lpfCutoffPeriod + wxMax(1.0, samplePeriod)));
         Reset();
     }
 
@@ -71,8 +73,8 @@ struct Stats
         }
         else
         {
-            hpf = alpha * (hpf + x - xprev);
-            lpf += (1.0 - alpha) * (x - xprev);
+            hpf = alpha_hp * (hpf + x - xprev);
+            lpf += alpha_lp * (x - lpf);
         }
 
         if (n >= 1)
@@ -609,6 +611,9 @@ void GuidingAsstWin::MakeRecommendations()
 
     m_ra_val_rec = rounded_rarms;
     m_dec_val_rec = rounded_decrms;
+    // Need to apply some constraints on the relative ratios because the ra_rms stat can be affected by large PE or drift
+    m_ra_val_rec = wxMin(wxMax(m_ra_val_rec, 0.8 * m_dec_val_rec), 1.2 * m_dec_val_rec);        // within 20% of dec recommendation
+
 
     LogResults();               // Dump the raw statistics
     if (alignmentError > 5.0)
@@ -635,12 +640,12 @@ void GuidingAsstWin::MakeRecommendations()
     {
         if (!m_ra_msg)
         {
-            m_ra_msg = AddRecommendationEntry(wxString::Format(_("Try setting RA min-move to %0.2f"), rounded_rarms),
+            m_ra_msg = AddRecommendationEntry(wxString::Format(_("Try setting RA min-move to %0.2f"), m_ra_val_rec),
                 wxCommandEventHandler(GuidingAsstWin::OnRAMinMove), &m_raMinMoveButton);
         }
         else
         {
-            m_ra_msg->SetLabel(wxString::Format(_("Try setting RA min-move to %0.2f"), rounded_rarms));
+            m_ra_msg->SetLabel(wxString::Format(_("Try setting RA min-move to %0.2f"), m_ra_val_rec));
             m_raMinMoveButton->Enable(true);
         }
         Debug.Write(wxString::Format("Recommendation: %s\n", m_ra_msg->GetLabelText()));
@@ -650,12 +655,12 @@ void GuidingAsstWin::MakeRecommendations()
     {
         if (!m_dec_msg)
         {
-            m_dec_msg = AddRecommendationEntry(wxString::Format(_("Try setting Dec min-move to %0.2f"), rounded_decrms),
+            m_dec_msg = AddRecommendationEntry(wxString::Format(_("Try setting Dec min-move to %0.2f"), m_dec_val_rec),
                 wxCommandEventHandler(GuidingAsstWin::OnDecMinMove), &m_decMinMoveButton);
         }
         else
         {
-            m_dec_msg->SetLabel(wxString::Format(_("Try setting Dec min-move to %0.2f"), rounded_decrms));
+            m_dec_msg->SetLabel(wxString::Format(_("Try setting Dec min-move to %0.2f"), m_dec_val_rec));
             m_decMinMoveButton->Enable(true);
         }
         Debug.Write(wxString::Format("Recommendation: %s\n", m_dec_msg->GetLabelText()));
@@ -689,10 +694,11 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
         return;
 
     double exposure = (double) pFrame->RequestedExposureDuration() / 1000.0;
-    double cutoff = wxMax(6.0, 3.0 * exposure);
-    m_freqThresh = 1.0 / cutoff;
-    m_statsRA.InitStats(cutoff, exposure);
-    m_statsDec.InitStats(cutoff, exposure);
+    double lp_cutoff = wxMax(6.0, 3.0 * exposure);
+    double hp_cutoff = 1.0;
+    m_freqThresh = 1.0 / hp_cutoff;
+    m_statsRA.InitStats(hp_cutoff, lp_cutoff, exposure);
+    m_statsDec.InitStats(hp_cutoff, lp_cutoff, exposure);
 
     sumSNR = sumMass = 0.0;
 

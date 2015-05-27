@@ -84,7 +84,7 @@ msgstr "Réglages Monture"
 
 #: advanced_dialog.cpp:193
 msgid "No Mount Selected"
-msgstr "Aucune Monture selectionnée"
+msgstr "Aucune Monture sélectionnée"
 
 #: advanced_dialog.cpp:210 calreview_dialog.cpp:99 eegg.cpp:109
 #: gear_dialog.cpp:282 gear_dialog.cpp:284 myframe.cpp:844 testguide.cpp:161
@@ -186,7 +186,7 @@ msgstr "Taux Dec :"
 #: calreview_dialog.cpp:292
 #, fuzzy
 msgid "Mount Configuration"
-msgstr "Remise a zéro de la configuration"
+msgstr "Remise à zéro de la configuration"
 
 #: calreview_dialog.cpp:304
 msgid "Timestamp:"
@@ -247,7 +247,7 @@ msgstr "Pas de calibration"
 
 #: calreview_dialog.cpp:548
 msgid "Calibration Sanity Check"
-msgstr "Contrôle de qualité de la calibration"
+msgstr "Contrôle de la qualité de calibration"
 
 #: calreview_dialog.cpp:571
 msgid ""
@@ -256,7 +256,7 @@ msgid ""
 "step parameter until you see at least 8 steps in each direction.  The "
 "'calculator' feature in the 'Mount' configuration tab can help you with this."
 msgstr ""
-"La calibration a été réalisé avec un très petit nombre d'étapes, ce qui peut "
+"La calibration a été réalisée avec un très petit nombre d'étapes, ce qui peut "
 "produire des résultats inexacts. Envisagez de réduire le pas de calibration "
 "jusqu'à ce que vous voyez au moins 8 étapes dans chaque direction. La "
 "fonction 'Calculer' de l'onglet 'Monture' peut vous aider."
@@ -286,7 +286,7 @@ msgid ""
 "settings and calibration results."
 msgstr ""
 "Les résultats de la dernière calibration sont%s %% différent du précédent. "
-"Si cela est due à un changement de configuration de votre équipement, vous "
+"Si cela est dû à un changement de configuration de votre équipement, vous "
 "pouvez plutôt utiliser des profils différents. Cela permettra de passer "
 "d'une configuration à l'autre en conservant les paramètres et les résultats "
 "de calibration."
@@ -303,7 +303,7 @@ msgstr ""
 "Les vitesses de guidage en AD et Dec diffèrent d'une valeur inattendue. Pour "
 "la déclinaison de %0.0f degrés, la vitesse en AD devrait être d'environ "
 "%0.0f %% de la vitesse Dec. Mais votre vitesse en AD est de %0.0f %% de "
-"celui en Dec. Cela peut indiquer que la calibration est inexacte, peut-être "
+"celle en Dec. Cela peut indiquer que la calibration est inexacte, peut-être "
 "en raison de mouvement erratique de l'étoile lors de la calibration."
 
 #: calreview_dialog.cpp:628
@@ -360,11 +360,11 @@ msgid ""
 "re-done the next time you start guiding"
 msgstr ""
 "Arrêter le guidage et effacer la calibration la plus récente. La calibration "
-"serarefaite la prochaine fois que vous démarrez le guidage"
+"sera refaite la prochaine fois que vous démarrerez le guidage"
 
 #: calreview_dialog.cpp:728
 msgid "Restore old calibration"
-msgstr "Restaurer l'anciennes calibration"
+msgstr "Restaurer l'ancienne calibration"
 
 #: calreview_dialog.cpp:729
 msgid ""
@@ -414,7 +414,7 @@ msgid ""
 "50% sidereal rate, enter 0.5"
 msgstr ""
 "Vitesse de guidage, multiple de la vitesse sidérale ; si la vitesse de "
-"guidage de votre monture est 50% de la vitesse sidérale, entrer 0.5"
+"guidage de votre monture est 50% de la vitesse sidérale, entrez 0.5"
 
 #: calstep_dialog.cpp:126
 msgid "Calibration steps"
@@ -522,7 +522,7 @@ msgstr ""
 
 #: cam_ascomlate.cpp:508
 msgid "ASCOM Camera Driver missing required property "
-msgstr "Un propriété requise du Driver de Camera ASCOM est maquante"
+msgstr "Une propriété requise du Driver de Camera ASCOM est manquante"
 
 #: cam_ascomlate.cpp:522
 msgid "Could not create ASCOM camera object"
@@ -534,33 +534,33 @@ msgstr "Problème de driver ASCOM : Connect"
 
 #: cam_ascomlate.cpp:562
 msgid "ASCOM driver missing the CanPulseGuide property"
-msgstr "La propriété CanPulseGuide du driver ASCOM est maquante"
+msgstr "La propriété CanPulseGuide du driver ASCOM est manquante"
 
 #: cam_ascomlate.cpp:570
 #, fuzzy
 msgid "ASCOM driver missing the CanAbortExposure property"
-msgstr "La propriété CanPulseGuide du driver ASCOM est maquante"
+msgstr "La propriété CanPulseGuide du driver ASCOM est manquante"
 
 #: cam_ascomlate.cpp:578
 #, fuzzy
 msgid "ASCOM driver missing the CanStopExposure property"
-msgstr "La propriété CanPulseGuide du driver ASCOM est maquante"
+msgstr "La propriété CanPulseGuide du driver ASCOM est manquante"
 
 #: cam_ascomlate.cpp:594
 msgid "ASCOM driver missing the CameraXSize property"
-msgstr "La propriété CameraXSize du driver ASCOM est maquante"
+msgstr "La propriété CameraXSize du driver ASCOM est manquante"
 
 #: cam_ascomlate.cpp:602
 msgid "ASCOM driver missing the CameraYSize property"
-msgstr "La propriété CameraYSize du driver ASCOM est maquante"
+msgstr "La propriété CameraYSize du driver ASCOM est manquante"
 
 #: cam_ascomlate.cpp:627
 msgid "ASCOM driver missing the PixelSizeX property"
-msgstr "La propriété PixelSizeX du driver ASCOM est maquante"
+msgstr "La propriété PixelSizeX du driver ASCOM est manquante"
 
 #: cam_ascomlate.cpp:635
 msgid "ASCOM driver missing the PixelSizeY property"
-msgstr "La propriété PixelSizeY du driver ASCOM est maquante"
+msgstr "La propriété PixelSizeY du driver ASCOM est manquante"
 
 #: cam_ascomlate.cpp:705
 msgid "ASCOM driver problem -- cannot disconnect"
@@ -574,7 +574,7 @@ msgstr ""
 #: cam_ascomlate.cpp:787
 msgid "ASCOM error -- Cannot start exposure with given parameters"
 msgstr ""
-"Erreur ASCOM -- Impossible de démarrer la poses avec les paramètres donnés"
+"Erreur ASCOM -- Impossible de démarrer les poses avec les paramètres donnés"
 
 #: cam_ascomlate.cpp:811
 msgid "Exception thrown polling camera"
@@ -582,7 +582,7 @@ msgstr "Exception levée pendant le polling de la caméra"
 
 #: cam_ascomlate.cpp:832
 msgid "Error reading image"
-msgstr "Erreur a la lecture de l'image"
+msgstr "Erreur à la lecture de l'image"
 
 #: cam_Atik16.cpp:62
 msgid "Already connected"
@@ -718,7 +718,7 @@ msgstr "Aucun port série trouvé"
 
 #: cam_LESerialWebcam.cpp:316
 msgid "Port pins"
-msgstr "Borchage port"
+msgstr "Brochage port"
 
 #: cam_LESerialWebcam.cpp:352
 msgid "Inverted logic"
@@ -738,7 +738,7 @@ msgstr "Réglages Webcam"
 
 #: cam_MeadeDSI.cpp:84
 msgid "Which DSI camera?"
-msgstr "Quelle caméra DSI"
+msgstr "Quelle caméra DSI?"
 
 #: cam_OSPL130.cpp:70 cam_SBIG.cpp:349
 msgid "Cannot start exposure"
@@ -804,7 +804,7 @@ msgstr "Impossible d'arréter la pose"
 
 #: cam_SBIG.cpp:420 cam_SBIG.cpp:434
 msgid "Error downloading data"
-msgstr "Erreur au téléchargement des donnés"
+msgstr "Erreur au téléchargement des données"
 
 #: cam_SBIG.cpp:472
 msgid "Cannot check SBIG relay status"
@@ -849,17 +849,17 @@ msgid ""
 "The Rotator Simulator only works with the Camera Simulator. You must either "
 "disconnect the Rotator Simulator or connect the Camera Simulator."
 msgstr ""
-"La Simulateur AO fonctionne uniquement avec le simulateur de caméra. Vous "
+"Le Simulateur AO fonctionne uniquement avec le simulateur de caméra. Vous "
 "devez soit déconnecter le Simulateur AO soit connecter le simulateur de "
 "caméra."
 
 #: cam_simulator.cpp:432
 msgid "Choose a star displacements file"
-msgstr "Choisissez un fichier de déplacements étoiles"
+msgstr "Choisissez un fichier de déplacements d'étoiles"
 
 #: cam_simulator.cpp:440
 msgid "Can't use this file for star displacements"
-msgstr "Impossible d'utiliser ce fichier pour les déplacements étoiles"
+msgstr "Impossible d'utiliser ce fichier pour les déplacements d'étoiles"
 
 #: cam_simulator.cpp:444
 msgid "Can't simulate any star movement without a displacement file"
@@ -875,7 +875,7 @@ msgstr "Impossible de charger l'image simulée"
 #, c-format
 msgid "Unsupported type or read error loading FITS file %d %d"
 msgstr ""
-"Type non supporté ou erreur de lecture au chargment du fichier FITS %d %d"
+"Type non supporté ou erreur de lecture au chargement du fichier FITS %d %d"
 
 #: cam_simulator.cpp:1376
 msgid "PE amplitude and period must be > 0"
@@ -957,7 +957,7 @@ msgstr "Courbe par défaut"
 #: cam_simulator.cpp:1429
 msgid "Use a built-in PE curve that has some steep and smooth sections."
 msgstr ""
-"Utiliser une courbe PE intégré qui a quelques sections raides et lisses."
+"Utiliser une courbe PE intégrée qui a quelques sections raides et lisses."
 
 #: cam_simulator.cpp:1431
 msgid "Amplitude: "
@@ -1070,7 +1070,7 @@ msgstr "Côté du méridien : %s"
 
 #: cam_StarShootDSCI.cpp:144
 msgid "Problem sending register to StarShoot"
-msgstr "Problème d'envoi de registre a la StarShoot (OCP_sendRegister)"
+msgstr "Problème d'envoi de registre à la StarShoot (OCP_sendRegister)"
 
 #: cam_StarShootDSCI.cpp:153
 msgid "Error starting exposure"
@@ -1234,7 +1234,7 @@ msgid ""
 "Guide camera pixel size in microns. Used with the guide telescope focal "
 "length to display guiding error in arc-seconds."
 msgstr ""
-"Taille des pixel de la caméra de guidage en microns. Utiliser avec la "
+"Taille des pixels de la caméra de guidage en microns. Utiliser avec la "
 "longueur focale du telescope de guidage pour afficher les erreurs de guidage "
 "en arc-sec."
 
@@ -1257,7 +1257,7 @@ msgstr "Gain caméra"
 
 #: camera.cpp:722
 msgid "LE Read Delay (ms) , Adjust if you get dropped frames"
-msgstr "LE Delai de lecture (ms) , Ajustez si vous ratez des images"
+msgstr "Le Délai de lecture (ms) , Ajustez si vous ratez des images"
 
 #: camera.cpp:723
 msgid "Delay"
@@ -1272,7 +1272,7 @@ msgid ""
 "The camera will be disconnected if it fails to respond for this long. The "
 "default value, 5 seconds, should be appropriate for most cameras."
 msgstr ""
-"La caméra sera déconnecté si elle ne parvient pas à répondre dans ce délai. "
+"La caméra sera déconnectée si elle ne parvient pas à répondre dans ce délai. "
 "La valeur par défaut, 5 secondes, doit être adaptée à la plupart des caméras."
 
 #: camera.cpp:746
@@ -1296,7 +1296,7 @@ msgid ""
 "The camera has been disconnected. Please resolve the problem and re-connect "
 "the camera."
 msgstr ""
-"La caméra a été déconnecté. Veuillez résoudre le problème et re-connectez la "
+"La caméra a été déconnectée. Veuillez résoudre le problème et re-connectez la "
 "caméra."
 
 #: comdispatch.cpp:48
@@ -1305,16 +1305,16 @@ msgstr ""
 
 #: comet_tool.cpp:79
 msgid "Comet Tracking"
-msgstr "Suivit d'une comète"
+msgstr "Suivi d'une comète"
 
 #: comet_tool.cpp:80
 msgid "Comet Tracking - Training Active"
-msgstr "Suivit d'une comète - apprentissage actif"
+msgstr "Suivi d'une comète - apprentissage actif"
 
 #: comet_tool.cpp:81
 #, fuzzy
 msgid "Comet Tracking - Active"
-msgstr "Suivit d'une comète - apprentissage actif"
+msgstr "Suivi d'une comète - apprentissage actif"
 
 #: comet_tool.cpp:90 comet_tool.cpp:200
 msgid "Enable"
@@ -1326,7 +1326,7 @@ msgstr "Activer ou désactiver le suivi de la comète."
 
 #: comet_tool.cpp:99 comet_tool.cpp:101
 msgid "Comet tracking rate"
-msgstr "Vitesse de suivit de la comète"
+msgstr "Vitesse de suivi de la comète"
 
 #: comet_tool.cpp:103
 msgid "Pixels/hr"
@@ -1408,7 +1408,7 @@ msgid ""
 "Select a guide star and start Guiding.\n"
 "Then, click Start to begin training."
 msgstr ""
-"Centrez de la comète dans la caméra. \n"
+"Centrez la comète dans la caméra. \n"
 "Sélectionnez une étoile guide et commencez le guidage. \n"
 "Ensuite, cliquez sur Démarrer pour commencer l'apprentissage."
 
@@ -1436,7 +1436,7 @@ msgstr "Construire Bibliothèque de Dark"
 
 #: darks_dialog.cpp:104
 msgid "Acquire Master Dark Frames for Bad Pixel Map Calculation"
-msgstr "Acquisition de Dark Maitre pour Calcul de Carte des Pixel Défectueux"
+msgstr "Acquisition de Dark Maitre pour Calcul de Carte des Pixels Défectueux"
 
 #: darks_dialog.cpp:119
 msgid "Min Exposure Time"
@@ -1447,7 +1447,7 @@ msgid ""
 "Minimum exposure time for darks. Choose a value corresponding to the "
 "shortest camera exposure you will use for guiding."
 msgstr ""
-"Temps de pose minimale pour les dark. Choisissez une valeur correspondant au "
+"Temps de pose minimal pour les dark. Choisissez une valeur correspondant au "
 "temps de pose le plus court que vous allez utiliser pour guider."
 
 #: darks_dialog.cpp:126
@@ -1459,7 +1459,7 @@ msgid ""
 "Maximum exposure time for darks. Choose a value corresponding to the longest "
 "camera exposure you will use for guiding."
 msgstr ""
-"Temps de pose maximale pour les dark. Choisissez une valeur correspondant au "
+"Temps de pose maximal pour les dark. Choisissez une valeur correspondant au "
 "temps de pose le plus long que vous allez utiliser pour guider."
 
 #: darks_dialog.cpp:130
@@ -1471,7 +1471,7 @@ msgid ""
 "Frames to take for each \n"
 " exposure time"
 msgstr ""
-"Images a prendre pour chaque \n"
+"Images à prendre pour chaque \n"
 " temps de poses"
 
 #: darks_dialog.cpp:138
@@ -1480,7 +1480,7 @@ msgstr "Réglages Image Dark"
 
 #: darks_dialog.cpp:140
 msgid "Exposure time for building defect map"
-msgstr "Temps de pose pour contruire la carte de défaux"
+msgstr "Temps de pose pour contruire la carte de défauts"
 
 #: darks_dialog.cpp:141
 msgid "Exposure Time"
@@ -1533,11 +1533,11 @@ msgstr "Opération annulée"
 
 #: darks_dialog.cpp:264
 msgid "dark library built"
-msgstr "bibliothèque de dark construite"
+msgstr "Bibliothèque de dark construite"
 
 #: darks_dialog.cpp:272
 msgid "Taking darks to compute defect map: "
-msgstr "Acquisition de dark pour calculer la carte de défaux : "
+msgstr "Acquisition de dark pour calculer la carte de défauts : "
 
 #: darks_dialog.cpp:288
 msgid "Analyzing master dark..."
@@ -1545,7 +1545,7 @@ msgstr "Analyse du dark maître..."
 
 #: darks_dialog.cpp:298 darks_dialog.cpp:300
 msgid "Master dark data files built"
-msgstr "Fichier de donnés de dark maître construit"
+msgstr "Fichier de données de dark maître construit"
 
 #: darks_dialog.cpp:320
 #, fuzzy
@@ -1565,7 +1565,7 @@ msgstr "Annulation..."
 
 #: darks_dialog.cpp:388 darks_dialog.cpp:408
 msgid "Taking dark frame"
-msgstr "Acquisition images de dark"
+msgstr "Acquisition d'images de dark"
 
 #: darks_dialog.cpp:391
 #, c-format
@@ -1672,8 +1672,8 @@ msgid ""
 msgstr ""
 "Pointez près de l'Equateur et de l'horizon Est ou Ouest\n"
 "Appuyez sur Dériver pour mesurer la dérive\n"
-"Appuyez sur Ajuster et ajusteé l'altitude de votre monture\n"
-"Répétez Dériver/Ajuster jusqu'à le complet alignement\n"
+"Appuyez sur Ajuster et ajuster l'altitude de votre monture\n"
+"Répétez Dériver/Ajuster jusqu'au complet alignement\n"
 "Cliquez sur Azimuth pour recommencer l'ajustement de l'Azimuth."
 
 #: drift_tool.cpp:395
@@ -1706,15 +1706,15 @@ msgstr "Commence à guider..."
 
 #: drift_tool.cpp:465
 msgid "Drifting... click Adjust when done drifting"
-msgstr "Dérive en cours... cliquer sur Ajuster quand la dérive est terminé"
+msgstr "Dérive en cours... cliquez sur Ajuster quand la dérive est terminée"
 
 #: drift_tool.cpp:481
 msgid "Adjust azimuth, click Drift when done"
-msgstr "Ajustez l'azimuth, cliquez sur Dériver quand vous avez terminer"
+msgstr "Ajustez l'azimuth, cliquez sur Dériver quand vous avez terminé"
 
 #: drift_tool.cpp:482
 msgid "Adjust altitude, click Drift when done"
-msgstr "Ajustez l'altitude, cliquez sur Dériver quand vous avez terminer"
+msgstr "Ajustez l'altitude, cliquez sur Dériver quand vous avez terminé"
 
 #: drift_tool.cpp:538
 msgid "Slewing ..."
@@ -1734,7 +1734,7 @@ msgid ""
 "\n"
 "Would you like to run the drift tool anyway?"
 msgstr ""
-"L'outil Drift Align est plus efficace lorsque PHD2 connait votre focale\n"
+"L'outil Drift Align est plus efficace lorsque PHD2 connaît votre focale\n"
 "de guidage et la taille de pixel de la caméra.\n"
 "\n"
 "Entrez votre focale de guidage dans l'onglet Global du Cerveau.\n"
@@ -1749,7 +1749,7 @@ msgstr "Il n'y a pas de données de calibration disponibles."
 
 #: eegg.cpp:56 myframe_events.cpp:853
 msgid "Please connect a mount first."
-msgstr "S'il vous plait, connectez une monture d'abord"
+msgstr "S'il vous plaît, connectez une monture d'abord"
 
 #: eegg.cpp:115
 msgid ", Mount"
@@ -1762,7 +1762,7 @@ msgid ""
 "started."
 msgstr ""
 "la calibration %s sera effacée - la calibration sera refaite la prochaine "
-"fois que vous démarrez le guidage."
+"fois que vous démarrerez le guidage."
 
 #: eegg.cpp:120
 msgid "Clear Calibration"
@@ -1804,8 +1804,8 @@ msgid ""
 "multiple profiles and switch back and forth between them."
 msgstr ""
 "Sélectionnez le Profil de l'Equipement que vous souhaitez utiliser. PHD "
-"stocke tous vos réglages et les sélections d'équipement dans un Profil "
-"d'Equipement. Vous pouvez créer des profils mutiple et basculer entre eux."
+"stocke tous vos réglages et les sélectionne dans un Profil "
+"d'Equipement. Vous pouvez créer des profils mutiples et basculer entre eux."
 
 #: gear_dialog.cpp:198
 msgid "New"
@@ -1814,7 +1814,7 @@ msgstr "Nouveau"
 #: gear_dialog.cpp:198
 msgid "Create a new profile, optionally copying from another profile"
 msgstr ""
-"Créer un nouveau profil, éventuellement copié a partir d'un autre profil"
+"Créer un nouveau profil, éventuellement copié à partir d'un autre profil"
 
 #: gear_dialog.cpp:199
 msgid "New using Wizard..."
@@ -1846,7 +1846,7 @@ msgstr "Importer..."
 
 #: gear_dialog.cpp:202
 msgid "Load a profile from a file"
-msgstr "Charger un profil a partir d'un fichier"
+msgstr "Charger un profil à partir d'un fichier"
 
 #: gear_dialog.cpp:203
 msgid "Export..."
@@ -1916,11 +1916,11 @@ msgid ""
 "the 'aux' mount parameter will not be used.'"
 msgstr ""
 "Si vous utilisez une interface de guidage (sur la caméra ou GPXXX) pour "
-"guider, vous pouvez également utiliser une connexion 'aux' sur votre monture "
+"guider, vous pouvez également utiliser une connexion 'Aux' sur votre monture "
 "compatible %s. Il sera utilisé pour effectuer des réglages automatiques "
-"d'étalonnage sur la base de la déclinaison et de côté-de-pilier (side-of-"
-"pier). Si vous avez déjà sélectionné un pilote %s pour votre monture, le "
-"paramètre de monture 'aux' sera pas utilisé."
+"d'étalonnage sur la base de la déclinaison et du côté-de-pilier (side-of-"
+"pil). Si vous avez déjà sélectionné un pilote %s pour votre monture, le "
+"paramètre de monture 'Aux' sera pas utilisé."
 
 #: gear_dialog.cpp:271
 msgid "Aux Mount Setup"
@@ -1942,7 +1942,7 @@ msgstr "Connecter Tout"
 #: gear_dialog.cpp:310
 msgid "Connect all equipment and close the equipment selection window"
 msgstr ""
-"Connecte tous l'équipement et ferme la fenêtre de selection d'équipement"
+"Connecte tout l'équipement et ferme la fenêtre de selection d'équipement"
 
 #: gear_dialog.cpp:313
 msgid "Disconnect All"
@@ -2038,7 +2038,7 @@ msgstr "Connexion de la monture ..."
 
 #: gear_dialog.cpp:1078
 msgid "Mount does not support the required PulseGuide interface"
-msgstr "La monture ne supporte pas l'interface PulseGuide qui est requis"
+msgstr "La monture ne supporte pas l'interface PulseGuide qui est requise"
 
 #: gear_dialog.cpp:1082
 msgid "Mount Connected"
@@ -2378,7 +2378,7 @@ msgid ""
 "How many (fractional) pixels must the star move to trigger a guide pulse? "
 "Default = %.2f"
 msgstr ""
-"De combien de pixels (fractionnaire) l'étoile doit bouger pour déclenché une "
+"De combien de pixels (fractionnaire) l'étoile doit bouger pour déclencher une "
 "impulsion de guidage ? Par défaut = 0.15"
 
 #: guide_algorithm_hysteresis.cpp:281
@@ -2419,7 +2419,7 @@ msgid ""
 "How many (fractional) pixels must the star move to trigger a guide pulse? "
 "Default = 0.15"
 msgstr ""
-"De combien de pixels (fractionnaire) l'étoile doit bouger pour déclenché une "
+"De combien de pixels (fractionnaire) l'étoile doit bouger pour déclencher une "
 "impulsion de guidage ? Par défaut = 0.15"
 
 #: guide_algorithm_lowpass.cpp:254
@@ -2573,7 +2573,7 @@ msgid ""
 "How many pixels (up/down/left/right) do we examine to find the star? Default "
 "= 15"
 msgstr ""
-"Combien de pixels (haut/bas/gauche/droite) doit-on examiner pour trouver un "
+"Combien de pixels (haut/bas/gauche/droite) doit-on examiner pour trouver une "
 "étoile ? Par défaut = 15"
 
 #: guider_onestar.cpp:917
@@ -3814,19 +3814,19 @@ msgstr ""
 "Le fonctionnement est assez simple (d'où le 'Push Here Dummy' qu'on\n"
 "pourrait traduire par 'Appuie là, andouille !')\n"
 "\n"
-"    1) Appuyez sur le bouton Caméra et sélectionnez votre camera et votre "
+"    1) Appuyez sur le bouton Caméra et sélectionnez votre camera et votre "
 "monture,\n"
 "        cliquez sur 'Connecter Tout'\n"
-"    2) Choisissez un temps de pose dans le liste déroulante\n"
-"    3) Appuyez sur le bouton 'Boucle', ajuster votre mise au point si "
+"    2) Choisissez un temps de pose dans le liste déroulante\n"
+"    3) Appuyez sur le bouton 'Boucle', ajuster votre mise au point si "
 "nécessaire\n"
-"    5) Cliquez sur une étoile loin du bord ou utlisiez Alt-S pour auto-"
+"    5) Cliquez sur une étoile loin du bord ou utlisiez Alt-S pour auto-"
 "sélectionner une étoile\n"
-"    6) Appuyez sur l'icône PHD (cible de tir à l'arc)\n"
+"    6) Appuyez sur l'icône PHD (cible de tir à l'arc)\n"
 "\n"
-"  PHD va alors se calibrer et commencer à guider. C'est tout !\n"
+"  PHD va alors se calibrer et commencer à guider. C'est tout !\n"
 "\n"
-"  Pour arrèter le guidage, appuyez simplement sur le bouton 'Boucle' ou le "
+"  Pour arrèter le guidage, appuyez simplement sur le bouton 'Boucle' ou le "
 "bouton 'Stop'.\n"
 "  Si vous avez besoin de modifier les options, cliquez sur le bouton Cerveau "
 "pour\n"

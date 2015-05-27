@@ -113,7 +113,7 @@ double SimCamParams::comet_rate_y;
 #define NOISE_DEFAULT 2.0
 #define NOISE_MAX 5.0
 #define DEC_BACKLASH_DEFAULT 5.0                  // arc-sec
-#define DEC_BACKLASH_MAX 40.0
+#define DEC_BACKLASH_MAX 100.0
 #define DEC_DRIFT_DEFAULT 5.0                     // arc-sec per minute
 #define DEC_DRIFT_MAX 30.0
 #define SEEING_DEFAULT 2.0                        // arc-sec FWHM
@@ -127,7 +127,7 @@ double SimCamParams::comet_rate_y;
 #define CLOUDS_INTEN_DEFAULT 10
 #define USE_PE_DEFAULT true
 #define PE_SCALE_DEFAULT 5.0                    // amplitude arc-sec
-#define PE_SCALE_MAX 20.0
+#define PE_SCALE_MAX 30.0
 #define USE_PE_DEFAULT_PARAMS true
 #define PE_CUSTOM_AMP_DEFAULT 2.0               // Give them a trivial 2 a-s 4 min smooth curve
 #define PE_CUSTOM_PERIOD_DEFAULT 240.0
