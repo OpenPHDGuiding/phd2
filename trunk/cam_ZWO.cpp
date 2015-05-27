@@ -39,6 +39,12 @@
 #include "cameras/ASICamera2.h"
 
 #ifdef __WINDOWS__
+
+#ifdef OS_WINDOWS
+// troubleshooting with the libusb definitions
+#  undef OS_WINDOWS
+#endif
+
 # include <Shlwapi.h>
 # include <DelayImp.h>
 #endif

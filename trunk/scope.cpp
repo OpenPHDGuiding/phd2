@@ -281,6 +281,7 @@ wxArrayString Scope::List(void)
     return ScopeList;
 }
 
+
 wxArrayString Scope::AuxMountList()
 {
     wxArrayString scopeList;

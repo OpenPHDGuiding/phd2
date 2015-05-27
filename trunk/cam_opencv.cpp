@@ -35,9 +35,12 @@
  */
 
 #include "phd.h"
+
 #ifdef OPENCV_CAMERA
-#include "camera.h"
+
 #include "cam_opencv.h"
+
+#include <opencv/cv.h>
 
 using namespace cv;
 

@@ -663,7 +663,9 @@
 				58B8CE6216E05EDB00F6E68E /* worker_thread.cpp */,
 				58B8CE6316E05EDB00F6E68E /* worker_thread.h */,
 			);
+			indentWidth = 4;
 			sourceTree = "<group>";
+			tabWidth = 4;
 		};
 		58339E380B1FC2BF00109891 /* Products */ = {
 			isa = PBXGroup;
@@ -959,7 +961,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-3.0",
 					"$(WXDIR)/include",
@@ -988,7 +990,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/cameras\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_5 = "\"$(SRCROOT)\"";
 				LIBUSB = "../libusb-1.0.9";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CFLAGS = (
 					"-D__WXMAC__",
 					"-D_FILE_OFFSET_BITS=64",
@@ -1020,7 +1022,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = PHD2;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 				USER_HEADER_SEARCH_PATHS = "$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-3.0 $(WXDIR)/include $(CFITSIO) $(LIBDC) ../HID\\ Utilities\\ Source/ $(LIBUSB)/include";
 				WRAPPER_EXTENSION = app;
 				WXDIR = ../wxWidgets;
@@ -1043,7 +1045,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-3.0",
 					"$(WXDIR)/include",
@@ -1072,7 +1074,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/cameras\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_5 = "\"$(SRCROOT)\"";
 				LIBUSB = "../libusb-1.0.9";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CFLAGS = (
 					"-D__WXMAC__",
 					"-D_FILE_OFFSET_BITS=64",
@@ -1104,7 +1106,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = PHD2;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 				USER_HEADER_SEARCH_PATHS = "$(WXDIR)/Cocoa_32/lib/wx/include/osx_cocoa-unicode-static-3.0 $(WXDIR)/include $(CFITSIO) $(LIBDC) ../HID\\ Utilities\\ Source/ $(LIBUSB)/include";
 				WRAPPER_EXTENSION = app;
 				WXDIR = ../wxWidgets;
