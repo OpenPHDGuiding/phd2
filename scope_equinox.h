@@ -35,6 +35,8 @@
 
 #ifdef GUIDE_EQUINOX
 
+#include <Carbon/Carbon.h>
+
 class ScopeEquinox : public Scope
 {
 public:

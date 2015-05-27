@@ -34,10 +34,10 @@
  *
  */
 
-#include <opencv/highgui.h>
-
 #ifndef CAM_OPENCV_H_INCLUDED
 #define CAM_OPENCV_H_INCLUDED
+
+#include <opencv/highgui.h>
 
 class Camera_OpenCVClass : public GuideCamera
 {

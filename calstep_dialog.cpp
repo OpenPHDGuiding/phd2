@@ -36,6 +36,7 @@
 #include "phd.h"
 #include "calstep_dialog.h"
 #include "wx/valnum.h"
+#include <cmath>
 
 #define MIN_PIXELSIZE 0.1
 #define MAX_PIXELSIZE 25.0
@@ -217,7 +218,7 @@ void CalstepDialog::DoRecalc(void)
         m_fGuideSpeed = m_pGuideSpeed->GetValue();
         m_pGuideSpeed->SetValue(m_fGuideSpeed);
         m_iNumSteps = m_pNumSteps->GetValue();
-        m_dDeclination = abs(m_pDeclination->GetValue());
+        m_dDeclination = std::abs(m_pDeclination->GetValue());
 
         if (m_iFocalLength < 50)
         {

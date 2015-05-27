@@ -584,7 +584,7 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
         if (auto_exp)
         {
             if (exp >= 1)
-                errorInfo->status.Printf(_T("m=%.0f SNR=%.1f Exp=%0.1f s"), m_star.Mass, m_star.SNR, double(exp) / 1000);
+                errorInfo->status.Printf(_T("m=%.0f SNR=%.1f Exp=%0.1f s"), m_star.Mass, m_star.SNR, (double) exp / 1000.);
             else
                 errorInfo->status.Printf(_T("m=%.0f SNR=%.1f Exp=%d ms"), m_star.Mass, m_star.SNR, exp);
         }
