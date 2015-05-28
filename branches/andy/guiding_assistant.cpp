@@ -75,7 +75,7 @@ struct Stats
         else
         {
             hpf = alpha_hp * (hpf + x - xprev);
-            lpf += alpha_lp *(x - lpf);
+            lpf += alpha_lp * (x - lpf);
         }
 
         if (n >= 1)
