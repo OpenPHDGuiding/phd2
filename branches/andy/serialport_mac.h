@@ -36,6 +36,11 @@
 #if !defined(SERIALPORT_MAC_H_INCLUDED) && defined (__APPLE__)
 #define SERIALPORT_MAC_H_INCLUDED
 
+
+#include <IOKit/serial/IOSerialKeys.h>
+#include <IOKit/IOKitLib.h>
+
+
 class SerialPortMac : public SerialPort
 {
     int m_PortFID;

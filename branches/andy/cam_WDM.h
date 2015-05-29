@@ -39,6 +39,8 @@
 #ifndef WDM_H_INCLUDED
 #define WDM_H_INCLUDED
 
+#include <opencv/cv.h>
+
 #define CVRES_VIDCAP_OFFSET wxID_HIGHEST+1
 #include "VidCapture.h"  // For DirectShow
 

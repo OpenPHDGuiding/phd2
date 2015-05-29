@@ -581,6 +581,20 @@ static int dur_index(int duration)
     return -1;
 }
 
+void MyFrame::GetExposureInfo(int *currExpMs, bool *autoExp)
+{
+    if (!pCamera || !pCamera->Connected)
+    {
+        *currExpMs = 0;
+        *autoExp = false;
+    }
+    else
+    {
+        *currExpMs = m_exposureDuration;
+        *autoExp = m_autoExp.enabled;
+    }
+}
+
 bool MyFrame::SetExposureDuration(int val)
 {
     int idx;
