@@ -202,6 +202,9 @@ if(WIN32)
     cfitsio
     PRIVATE FF_NO_UNISTD_H
     PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+  set(PHD_COPY_EXTERNAL_DBG ${PHD_COPY_EXTERNAL_DBG} ${CMAKE_BINARY_DIR}/tmp_cmakecfitsio/Debug/cfitsio.dll)
+  set(PHD_COPY_EXTERNAL_REL ${PHD_COPY_EXTERNAL_REL} ${CMAKE_BINARY_DIR}/tmp_cmakecfitsio/Release/cfitsio.dll)
 endif()
 
 
