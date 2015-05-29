@@ -76,9 +76,10 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
     // Create overall vertical sizer
     m_pvSizer = new wxBoxSizer(wxVERTICAL);
 
-#   include "icons/phd.xpm"
-    m_bitmaps[STATE_GREETINGS] = new wxBitmap(prog_icon);
-    m_bitmaps[STATE_WRAPUP] = new wxBitmap(prog_icon);
+#   include "icons/phd2_48.png.h"
+    wxBitmap phd2(wxBITMAP_PNG_FROM_DATA(phd2_48));
+    m_bitmaps[STATE_GREETINGS] = new wxBitmap(phd2);
+    m_bitmaps[STATE_WRAPUP] = new wxBitmap(phd2);
 #   include "icons/cam2.xpm"
     m_bitmaps[STATE_CAMERA] = new wxBitmap(cam_icon);
 #   include "icons/scope1.xpm"
@@ -143,8 +144,8 @@ ProfileWizard::ProfileWizard(wxWindow *parent, bool firstLight) :
         wxDefaultSize, wxSP_ARROW_KEYS, 50, 3000, 300, 50);
     m_pFocalLength->SetValue(300);
     m_pFocalLength->SetDigits(0);
-    m_pFocalLength->SetToolTip("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
-        "an adaptive optics device.  You can use the up/down control or type in a value directly.");
+    m_pFocalLength->SetToolTip(_("This is the focal length of the guide scope - or the imaging scope if you are using an off-axis-guider or "
+        "an adaptive optics device.  You can use the up/down control or type in a value directly."));
     m_FocalLength = (int) m_pFocalLength->GetValue();
     AddTableEntryPair(this, m_pUserProperties, _("Guide scope focal length (mm)"), m_pFocalLength);
     m_pvSizer->Add(m_pUserProperties, wxSizerFlags().Center().Border(wxALL, 5));

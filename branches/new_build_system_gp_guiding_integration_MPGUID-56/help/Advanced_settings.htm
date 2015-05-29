@@ -18,58 +18,12 @@ this
 will provide all the information you need. &nbsp; Because there are
 many more settings available, the Advanced Dialog in <span style="font-style: italic;">PHD2</span> is organized
 into tabs, and the documentation will follow that model as well.
-<br><br><span style="text-decoration: underline;"><a href="#Global_Tab">Global Tab</a></span><br><span style="text-decoration: underline;"><a href="#Guiding_Tab">Guiding Tab</a><br><a href="#Camera_Tab">Camera Tab</a><br><a href="#Mount_Tab">Mount Tab</a><br><a href="#AO_Tab">AO Tab</a><br><br></span>
+<br><br><span style="text-decoration: underline;"><a href="#Global_Tab">Global Tab</a></span><br><span style="text-decoration: underline;"><a href="#Guiding_Tab">Guiding Tab</a><br><a href="#Camera_Tab">Camera Tab</a><br><a href="#Mount_Tab">Mount Tab</a><br><a href="#AO_Tab">AO Tab</a><br><a href="#Rotator_Tab">Rotator Tab</a><br><br></span>
 <h3><a name="Global_Tab"></a>Global Tab</h3>
 <img style="width: 303px; height: 579px;" alt="" src="Advanced_global.png"><br>
 <br>
 Most of the fields on the global tab deal with overall program
-functions and behavior. &nbsp;Several of them deal with&nbsp;
-logging and debugging functions, which
-will be discussed first.&nbsp;<br>
-<h4><a name="Logging_and_Debug_Output"></a>Logging and Debug Output</h4>
-<span style="font-style: italic;">PHD2</span>
-can optionally produce two types of log files: a debug log and a
-guiding log. &nbsp;Both are highly useful for different reasons.
-&nbsp;The guiding log is similar to the one produced by PHD, but
-with
-extended information. &nbsp;<span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;;">The guide log is intentionally formatted to
-allow easy interpretation by either a human reader or an external
-application.<span style="">&nbsp; </span>For example, the PHDLab application (not
-part of the PHD2 project) can produce a variety of graphs and summary
-statistics based on data in the PHD2 guide log.<span style="">&nbsp;&nbsp; </span>But the log can also be easily imported into
-Excel or other applications for analysis and graphing.<span style="">&nbsp;
-</span>When importing into Excel, just specify that a comma should be used as a
-column separator</span> &nbsp;The
-debug log
-has a&nbsp; complete record of everything that was done in the <span style="font-style: italic;">PHD2</span>
-session, &nbsp;so it is very helpful in isolating any problems
-you&nbsp; have. &nbsp;It also employs a human-friendly (albeit verbose)
-text format, so it's
-not
-difficult to examine the debug log to see what happened. &nbsp;If
-you
-need to report a problem with the software, you will almost certainly
-be asked to provide the debug log file. &nbsp;If you have neither log
-file available, you are unlikely to get any&nbsp;help.<br>
-<br>
-These two log files
-will be generated if &nbsp;'Enable Logging' is checked on the
-Global
-tab. &nbsp;The location for the files is controlled by the 'Log
-File
-Location' field further down in the dialog. &nbsp;By default, log
-files
-are stored in the OS-specific default directory for application data files.
-&nbsp;In Windows7, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
-sub-folder in the "AppData\Local" location. &nbsp;This may not be a
-convenient location, so you can specify a different folder using this
-edit field.<br>
-<br>
-In some unusual cases, you may need to capture guide
-camera images, usually to support debugging and problem resolution.
-&nbsp;This can be enabled by checking the 'Enable Star-image
-Logging'
-checkbox.<br><br><br><h4><a name="General_Parameters"></a>General Parameters</h4>
+functions and behavior.<br><br><h4><a name="General_Parameters"></a>General Parameters</h4>
 The remaining controls on the
 'Global' tab are well-described by their respective tool-tips, but they
 are summarized here for completeness:<br>
@@ -163,7 +117,7 @@ is checked, <span style="font-style: italic;">PHD2</span> will trigger a 'lost s
 brightness and size vary by more than this percentage. &nbsp;This
 might be useful if you have two stars inside the tracking rectangle and
 you want to be sure that <span style="font-style: italic;">PHD2</span>
-doesn't mistakenly "switch stars."
+doesn't mistakenly&nbsp;switch stars.
 &nbsp;It can also
 prevent errors caused by thin clouds, high camera noise, or alpha
 particle "hits";
@@ -214,7 +168,7 @@ within that period, PHD2 will attempt to halt the operation, disconnect
 the camera, and display an alert message in the main window.
 &nbsp;Since a hardware problem is likely the underlying issue, this
 recovery attempt won't always succeed. &nbsp;It is advisable to be
-&nbsp;"generous" with these timeout values to avoid spurious recovery
+&nbsp;generous with these timeout values to avoid spurious recovery
 actions. &nbsp;Also, if you are using a guide camera that shares
 electronics with the main imaging camera, you should set this timeout
 to a large
@@ -237,7 +191,7 @@ settings
 are closely tied to the various guiding algorithms, and&nbsp;the
 contents of the dialog will change significantly if you
 change the algorithm selections. &nbsp;For that reason, all the
-parameters related to guide algorithms will be treated together, in a
+parameters related to <a href="Guide_algorithms.htm">guide algorithms</a> will be treated together, in a
 separate section.<br>
 <br>
 The remaining controls, the ones that are independent of the guiding
@@ -272,13 +226,12 @@ will use during calibration. &nbsp;Its use is described in the
 'Auto
 Calibration' section of the 'Basic Use' help page. &nbsp;You can
 adjust
-the value depending on whether the guide star is moving "too quickly"
-or
-"too slowly" during calibration. &nbsp;As a general guideline, it
+the value depending on whether the guide star is moving&nbsp;too quickly
+or&nbsp;too slowly during calibration. &nbsp;As a general guideline, it
 is
 good to calibrate within about 30 degrees of the celestial equator
 (declination = 0), and to use a calibration step size that will result
-in 8-14 "steps" in each direction. &nbsp; The 'calculate...' button
+in 8-14&nbsp;steps in each direction. &nbsp; The 'calculate...' button
 to
 the right of this control will launch a dialog that can help you
 compute an appropriate value:&nbsp;</li>
@@ -318,12 +271,11 @@ guide pulse duration for right ascension. &nbsp;You might reduce
 this
 below the default value if you want to avoid "chasing" a large
 deflection that could be caused by a spurious event (e.g. a sudden 'hot
-pixel') .</li>
+pixel') .'</li>
 
-<li>"<a name="Max_Duration_Declination"></a>Max Duration Declination' - specifies the
+<li>'<a name="Max_Duration_Declination"></a>Max Duration Declination' - specifies the
 maximum allowed guide pulse duration for declination (same as above but
-for declination). &nbsp;This can be useful to avoid
-"over-correction" and subsequent direction reversal in declination
+for declination). &nbsp;This can be useful to avoid&nbsp;over-correction and subsequent direction reversal in declination
 guiding.</li>
 <li>'<a name="Reverse_Dec_output_after_meridian_flip"></a>Reverse Dec
 output after meridian flip' -&nbsp;tells <span style="font-style: italic;">PHD2</span> how to adjust the
@@ -373,7 +325,7 @@ calibration process and the manner in which 'bump' operations are done.
 &nbsp;The 'calibration step' field tells <span style="font-style: italic;">PHD2</span> the amount to move the
 tip/tilt element&nbsp;in each of the up/down/left/right directions, in
 units of AO steps, during calibration. &nbsp;The guide star position is measured at the
-beginning and end of each "leg" of the calibration, and the 'samples to
+beginning and end of each&nbsp;leg of the calibration, and the 'samples to
 average' parameter tells <span style="font-style: italic;">PHD2</span>
 how many samples to take at each of these
 points. &nbsp;Averaging images is important because the seeing will
@@ -388,10 +340,17 @@ these increments. &nbsp;If the bump operation has begun and the guide
 star remains outside the "bump percentage" area, <span style="font-style: italic;">PHD2</span>
 will increase the
 bump size until the guide star is back within that range.
-&nbsp;Additional movement from that point to the "center" position will
+&nbsp;Additional movement from that point to the&nbsp;center position will
 continue at the specified "bump step size". &nbsp;This complexity is
 required in order to maintain good guiding, with no elongated stars,
 even as the mount is being bumped. &nbsp;During the bump operation, the
 AO is continuing to make corrections, so the long "mount bump" is
-continuously&nbsp;offset by adjustments in the AO.
+continuously&nbsp;offset by adjustments in the AO.<br><h3><a name="Rotator_Tab"></a>Rotator Tab</h3>Currently,
+the rotator tab has only one control, and this window is likely to
+change in the future. &nbsp;The "Reversed" checkbox can be used for
+optical systems that reverse the image because they have an odd number
+of mirrors. &nbsp;The direction and amount of rotation&nbsp;is used to
+adjust the calibration data, so PHD2 follows the ASCOM standard:
+&nbsp;"the rotator position is expressed as an angle from 0 up to but
+not including 360 degrees, counter-clockwise against the sky."
 </body></html>

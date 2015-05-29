@@ -35,6 +35,7 @@
 #include "phd.h"
 #include "Refine_DefMap.h"
 #include "darks_dialog.h"
+#include "wx/busyinfo.h"
 
 enum {
     ID_PREVIEW = 10001,
@@ -209,6 +210,7 @@ bool RefineDefMap::InitUI()
 {
     // change the star finding mode to select peaks, not centroids
     m_saveStarFindMode = pFrame->SetStarFindMode(Star::FIND_PEAK);
+    pFrame->SetRawImageMode(true); // no "recon" (debayer/deinterlace)
 
     if (pConfig->GetCurrentProfileId() == m_profileId)
     {
@@ -219,12 +221,12 @@ bool RefineDefMap::InitUI()
     bool firstTime = false;
     m_profileId = pConfig->GetCurrentProfileId();
     manualPixelCount = 0;
-    if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId()))
+    if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId(), false))
     {
         if (RebuildMasterDarks())
             firstTime = true;       // Need to get the UI built before finishing up
     }
-    if (DefectMap::DefectMapExists(m_profileId) || firstTime)
+    if (DefectMap::DefectMapExists(m_profileId, false) || firstTime)
     {
         LoadFromProfile();
         if (firstTime)
@@ -242,7 +244,8 @@ bool RefineDefMap::InitUI()
 // Do the initial layout of the UI controls
 void RefineDefMap::LoadFromProfile()
 {
-    wxBusyCursor busy;
+    // Let the user know this might take some time...
+    wxBusyInfo busyMsg(_("Please wait while image statistics are being computed..."), this);
 
     m_darks.LoadDarks();
     m_builder.Init(m_darks);
@@ -412,7 +415,6 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
     {
         wxPoint badspot((int)(pixelLoc.X + 0.5), (int)(pixelLoc.Y + 0.5));
         Debug.AddLine(wxString::Format("Current position returned as %.1f,%.1f", pixelLoc.X, pixelLoc.Y));
-        ShowStatus(wxString::Format(_("Bad pixel marked at %d,%d"), badspot.x, badspot.y), false);
         Debug.AddLine(wxString::Format("User adding bad pixel at %d,%d", badspot.x, badspot.y));
 
         bool needLoadPreview = false;
@@ -436,6 +438,7 @@ void RefineDefMap::OnAddDefect(wxCommandEvent& evt)
 
         if (needLoadPreview)
         {
+            ShowStatus(wxString::Format(_("Bad pixel marked at %d,%d"), badspot.x, badspot.y), false);
             LoadPreview();
             RefreshPreview();
         }
@@ -497,6 +500,7 @@ void RefineDefMap::OnDetails(wxCommandEvent& ev)
 // Hook the close event to tweak setting of 'build defect map' menu - mutual exclusion for now
 void RefineDefMap::OnClose(wxCloseEvent& evt)
 {
+    pFrame->SetRawImageMode(false); // raw images not needed any more
     pFrame->SetStarFindMode(m_saveStarFindMode);
     pFrame->pGuider->SetDefectMapPreview(0);
     pFrame->darks_menu->FindItem(MENU_TAKEDARKS)->Enable(!pFrame->CaptureActive);

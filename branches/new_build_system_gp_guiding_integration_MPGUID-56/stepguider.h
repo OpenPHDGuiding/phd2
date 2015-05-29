@@ -41,6 +41,7 @@ class StepGuider : public Mount, public OnboardST4
     int m_samplesToAverage;
     int m_bumpPercentage;
     double m_bumpMaxStepsPerCycle;
+    bool m_bumpOnDither;
 
     int m_xBumpPos1;
     int m_xBumpPos2;
@@ -53,6 +54,7 @@ class StepGuider : public Mount, public OnboardST4
 
     PHD_Point m_avgOffset;
 
+    bool m_forceStartBump;
     bool m_bumpInProgress;
     bool m_bumpTimeoutAlertSent;
     long m_bumpStartTime;
@@ -90,8 +92,9 @@ protected:
         wxSpinCtrl *m_pSamplesToAverage;
         wxSpinCtrl *m_pBumpPercentage;
         wxSpinCtrlDouble *m_pBumpMaxStepsPerCycle;
+        wxCheckBox *m_bumpOnDither;
 
-        public:
+    public:
         StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
         ~StepGuiderConfigDialogPane(void);
 
@@ -118,6 +121,7 @@ public:
     virtual wxString GetSettingsSummary(void);
     virtual wxString CalibrationSettingsSummary(void);
     virtual wxString GetMountClassName(void) const;
+    virtual void AdjustCalibrationForScopePointing(void);
     virtual bool IsStepGuider(void) const;
     virtual wxPoint GetAoPos(void) const;
     virtual wxPoint GetAoMaxPos(void) const;
@@ -141,8 +145,14 @@ public:
     virtual bool Disconnect(void);
 
     virtual bool GuidingCeases(void);
+    virtual void ClearHistory(void);
 
     virtual void ShowPropertyDialog(void);
+
+    bool GetBumpOnDither(void) const;
+    void SetBumpOnDither(bool val);
+    void ForceStartBump(void);
+    bool IsBumpInProgress(void) const;
 
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
@@ -172,5 +182,15 @@ public:
     virtual int CurrentPosition(GUIDE_DIRECTION direction);
     virtual bool MoveToCenter(void);
 };
+
+inline bool StepGuider::IsBumpInProgress(void) const
+{
+    return m_bumpInProgress;
+}
+
+inline bool StepGuider::GetBumpOnDither(void) const
+{
+    return m_bumpOnDither;
+}
 
 #endif /* STEPGUIDER_H_INCLUDED */

@@ -33,32 +33,32 @@
  */
 #ifndef STARFISHDEF
 #define STARFISHDEF
+
 #if defined (__WINDOWS__)
 #include "cameras/FcLib.h"
 #else
 #include <fcCamFw/fcCamFw.h>
 #endif
-class Camera_StarfishClass : public GuideCamera {
-public:
-    bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool    Connect();
-    bool    Disconnect();
-    void    InitCapture();
 
-//  bool    SetGlobalGain(unsigned char gain);
-    bool    ST4PulseGuideScope(int direction, int duration);
-//  void    ClearGuidePort();
-
-    bool    HasNonGuiCapture(void) { return true; }
-    bool    ST4HasNonGuiMove(void) { return true; }
-
-    Camera_StarfishClass();
-private:
-//  bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);
+class Camera_StarfishClass : public GuideCamera
+{
     int CamNum;
     int NCams;
     bool DriverLoaded;
     usImage subImage;
     wxRect lastSubFrame;
+
+public:
+    Camera_StarfishClass();
+
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect();
+    bool    Disconnect();
+    void    InitCapture();
+
+    bool    ST4PulseGuideScope(int direction, int duration);
+
+    bool    HasNonGuiCapture(void) { return true; }
+    bool    ST4HasNonGuiMove(void) { return true; }
 };
 #endif  //STARFISHDEF

@@ -115,7 +115,7 @@ bool Camera_VFWClass::Disconnect() {
     return false;
 }
 
-bool Camera_VFWClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_VFWClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize,ysize, i;
     int NFrames = 0;
@@ -149,7 +149,7 @@ bool Camera_VFWClass::Capture(int duration, usImage& img, wxRect subframe, bool 
         if ((swatch.Time() >= duration) && (NFrames > 2)) still_going=false;
     }
     pFrame->SetStatusText(wxString::Format("%d frames",NFrames),1);
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
     return false;
 }
 

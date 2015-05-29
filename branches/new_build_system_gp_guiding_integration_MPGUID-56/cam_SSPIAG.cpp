@@ -331,7 +331,8 @@ bool Camera_SSPIAGClass::Disconnect() {
 
 }
 
-bool Camera_SSPIAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+bool Camera_SSPIAGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
 // Only does full frames still
     static int last_dur = 0;
     static int last_gain = 60;
@@ -369,10 +370,11 @@ bool Camera_SSPIAGClass::Capture(int duration, usImage& img, wxRect subframe, bo
         }
     }
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     // Do quick L recon to remove bayer array
-    QuickLRecon(img);
+    if (options & CAPTURE_RECON) QuickLRecon(img);
+
     return false;
 }
 

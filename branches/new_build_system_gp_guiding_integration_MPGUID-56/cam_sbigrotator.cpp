@@ -103,9 +103,9 @@ bool Camera_SBIGRotatorClass::Disconnect() {
     return false;
 }
 
-bool Camera_SBIGRotatorClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_SBIGRotatorClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    bool bError = m_pSubcamera->Capture(duration, img, subframe, recon);
+    bool bError = m_pSubcamera->Capture(duration, img, options, subframe);
 
     img.Rotate(m_raAngle, m_mirror);
 
@@ -116,4 +116,5 @@ bool Camera_SBIGRotatorClass::ST4PulseGuideScope (int direction, int duration)
 {
     return m_pSubcamera->ST4PulseGuideScope(direction, duration);
 }
+
 #endif // SBIGROTATOR_CAMERA_H_INCLUDED

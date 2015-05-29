@@ -57,16 +57,15 @@ protected:
     };
 
 public:
-    virtual bool    Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool    Connect();      // Opens up and connects to cameras
-    virtual bool    Disconnect();
-    virtual void    InitCapture() { return; }
-    Camera_LEWebcamClass(int devNumber=-1);
+    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool    Connect();      // Opens up and connects to cameras
+    bool    Disconnect();
+    Camera_LEWebcamClass(void);
     ~Camera_LEWebcamClass(void);
     virtual bool HasNonGuiCapture(void) { return true; }
 
 private:
-    virtual bool LEControl(int actions)=0;
+    virtual bool LEControl(int actions) = 0;
 };
 
 #endif //CAM_LESERIALWEBCAM_H_INCLUDED

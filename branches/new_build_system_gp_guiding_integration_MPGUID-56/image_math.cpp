@@ -50,32 +50,30 @@ int dbl_sort_func (double *first, double *second)
     return 0;
 }
 
-float CalcSlope(const ArrayOfDbl& y)
+double CalcSlope(const ArrayOfDbl& y)
 {
     // Does a linear regression to calculate the slope
 
-    int x, size;
-    double s_xy, s_x, s_y, s_xx, nvalid;
-    double retval;
-    size = (int) y.GetCount();
-    nvalid = 0.0;
-    s_xy = 0.0;
-    s_xx = 0.0;
-    s_x = 0.0;
-    s_y = 0.0;
+    int nn = (int) y.GetCount();
 
-    for (x=1; x<=size; x++) {
-        if (1) {
-            nvalid = nvalid + 1;
-            s_xy = s_xy + (double) x * y[x-1];
-            s_x = s_x + (double) x;
-            s_y = s_y + y[x-1];
-            s_xx = s_xx + (double) x * (double) x;
-        }
+    if (nn < 2)
+        return 0.;
+
+    double s_xy = 0.0;
+    double s_y = 0.0;
+
+    for (int x = 0; x < nn; x++)
+    {
+        s_xy += (double)(x + 1) * y[x];
+        s_y += y[x];
     }
 
-    retval = (nvalid * s_xy - (s_x * s_y)) / (nvalid * s_xx - (s_x * s_x));
-    return (float) retval;
+    int sx = (nn * (nn + 1)) / 2;
+    int sxx = sx * (2 * nn + 1) / 3;
+    double s_x = (double) sx;
+    double s_xx = (double) sxx;
+    double n = (double) nn;
+    return (n * s_xy - (s_x * s_y)) / (n * s_xx - (s_x * s_x));
 }
 
 bool QuickLRecon(usImage& img)
@@ -534,56 +532,49 @@ static unsigned short MedianBorderingPixels(const usImage& img, int x, int y)
 bool SquarePixels(usImage& img, float xsize, float ysize)
 {
     // Stretches one dimension to square up pixels
-    int x,y;
-    int newsize;
-    usImage tempimg;
-    unsigned short *ptr;
-    unsigned short *optr;
-    double ratio, oldposition;
-
     if (!img.ImageData)
         return true;
-    if (xsize == ysize) return false;  // nothing to do
 
-    // Copy the existing data
-    if (tempimg.Init(img.Size)) {
+    if (xsize <= ysize)
+        return false;
+
+    // Move the existing data to a temp image
+    usImage tempimg;
+    if (tempimg.Init(img.Size))
+    {
         pFrame->Alert(_("Memory allocation error"));
         return true;
     }
-    ptr = tempimg.ImageData;
-    optr = img.ImageData;
-    for (x=0; x<img.NPixels; x++, ptr++, optr++) {
-        *ptr=*optr;
-    }
+    tempimg.SwapImageData(img);
 
-    float weight;
-    int ind1, ind2, linesize;
     // if X > Y, when viewing stock, Y is unnaturally stretched, so stretch X to match
-    if (xsize > ysize) {
-        ratio = ysize / xsize;
-        newsize = ROUND((float) tempimg.Size.GetWidth() * (1.0/ratio));  // make new image correct size
-        img.Init(newsize,tempimg.Size.GetHeight());
-        optr=img.ImageData;
-        linesize = tempimg.Size.GetWidth();  // size of an original line
-        for (y=0; y<img.Size.GetHeight(); y++) {
-            for (x=0; x<newsize; x++, optr++) {
-                oldposition = x * ratio;
-                ind1 = (unsigned int) floor(oldposition);
-                ind2 = (unsigned int) ceil(oldposition);
-                if (ind2 > (tempimg.Size.GetWidth() - 1)) ind2 = tempimg.Size.GetWidth() - 1;
-                weight = ceil(oldposition) - oldposition;
-                *optr = (unsigned short) (((float) *(tempimg.ImageData + y*linesize + ind1) * weight) + ((float) *(tempimg.ImageData + y*linesize + ind1) * (1.0 - weight)));
-            }
+    double ratio = ysize / xsize;
+    int newsize = ROUND((float) tempimg.Size.GetWidth() * (1.0/ratio));  // make new image correct size
+    img.Init(newsize,tempimg.Size.GetHeight());
+    unsigned short *optr = img.ImageData;
+    int linesize = tempimg.Size.GetWidth();  // size of an original line
+    for (int y = 0; y < img.Size.GetHeight(); y++)
+    {
+        for (int x = 0; x < newsize; x++, optr++)
+        {
+            double oldposition = x * ratio;
+            int ind1 = (unsigned int) floor(oldposition);
+            int ind2 = (unsigned int) ceil(oldposition);
+            if (ind2 > (tempimg.Size.GetWidth() - 1))
+                ind2 = tempimg.Size.GetWidth() - 1;
+            double weight = ceil(oldposition) - oldposition;
+            *optr = (unsigned short) (((float) *(tempimg.ImageData + y*linesize + ind1) * weight) + ((float) *(tempimg.ImageData + y*linesize + ind1) * (1.0 - weight)));
         }
     }
+
     return false;
 }
 
 bool Subtract(usImage& light, const usImage& dark)
 {
-    if ((!light.ImageData) || (!dark.ImageData))
+    if (!light.ImageData || !dark.ImageData)
         return true;
-    if (light.NPixels != dark.NPixels)
+    if (light.Size != dark.Size)
         return true;
 
     unsigned int left, top, width, height;
@@ -799,14 +790,26 @@ void DefectMapDarks::BuildFilteredDark()
     MedianFilter(filteredDark, masterDark, WINDOW);
 }
 
+static wxString DefectMapMasterPath(int profileId)
+{
+    int inst = pFrame->GetInstanceNumber();
+    return MyFrame::GetDarksDir() + PATHSEPSTR +
+        wxString::Format("PHD2_defect_map_master%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
+}
 static wxString DefectMapMasterPath()
 {
-    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_master_%d.fit", pConfig->GetCurrentProfileId());
+    return DefectMapMasterPath(pConfig->GetCurrentProfileId());
 }
 
+static wxString DefectMapFilterPath(int profileId)
+{
+    int inst = pFrame->GetInstanceNumber();
+    return MyFrame::GetDarksDir() + PATHSEPSTR +
+        wxString::Format("PHD2_defect_map_master_filt%s_%d.fit", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
+}
 static wxString DefectMapFilterPath()
 {
-    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_master_filt_%d.fit", pConfig->GetCurrentProfileId());
+    return DefectMapFilterPath(pConfig->GetCurrentProfileId());
 }
 
 void DefectMapDarks::SaveDarks(const wxString& notes)
@@ -1070,12 +1073,76 @@ bool RemoveDefects(usImage& light, const DefectMap& defectMap)
 
 wxString DefectMap::DefectMapFileName(int profileId)
 {
-    return MyFrame::GetDarksDir() + PATHSEPSTR + wxString::Format("PHD2_defect_map_%d.txt", profileId);
+    int inst = pFrame->GetInstanceNumber();
+    return MyFrame::GetDarksDir() + PATHSEPSTR +
+        wxString::Format("PHD2_defect_map%s_%d.txt", inst > 1 ? wxString::Format("_%d", inst) : "", profileId);
 }
 
-bool DefectMap::DefectMapExists(int profileId)
+bool DefectMap::ImportFromProfile(int srcId, int destId)
 {
-    return wxFileExists(DefectMapFileName(profileId));
+    wxString sourceName;
+    wxString destName;
+    int rslt;
+
+    sourceName = DefectMapFileName(srcId);
+    destName = DefectMapFileName(destId);
+    rslt = wxCopyFile(sourceName, destName, true);
+    if (rslt != 1)
+    {
+        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map copy of %s to %s\n", sourceName, destName));
+        return false;
+    }
+    sourceName = DefectMapMasterPath(srcId);
+    destName = DefectMapMasterPath(destId);
+    rslt = wxCopyFile(sourceName, destName, true);
+    if (rslt != 1)
+    {
+        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map master dark copy of %s to %s\n", sourceName, destName));
+        return false;
+    }
+    sourceName = DefectMapFilterPath(srcId);
+    destName = DefectMapFilterPath(destId);
+    rslt = wxCopyFile(sourceName, destName, true);
+    if (rslt != 1)
+    {
+        Debug.Write(wxString::Format("DefectMap::ImportFromProfile failed on defect map master filtered dark copy of %s to %s\n", sourceName, destName));
+        return false;
+    }
+    return (true);
+}
+
+bool DefectMap::DefectMapExists(int profileId, bool showAlert)
+{
+    bool bOk = false;
+
+    if (wxFileExists(DefectMapFileName(profileId)))
+    {
+        wxString fName = DefectMapMasterPath(profileId);
+        const wxSize& sensorSize = pCamera->DarkFrameSize();
+        if (sensorSize == UNDEFINED_FRAME_SIZE)
+        {
+            bOk = true;
+        }
+        else
+        {
+            fitsfile *fptr;
+            int status = 0;  // CFITSIO status value MUST be initialized to zero!
+
+            if (PHD_fits_open_diskfile(&fptr, fName, READONLY, &status) == 0)
+            {
+                long fsize[2];
+                fits_get_img_size(fptr, 2, fsize, &status);
+                if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
+                    bOk = true;
+                else if (showAlert)
+                    pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be replaced."));
+
+                PHD_fits_close_file(fptr);
+            }
+        }
+    }
+
+    return bOk;
 }
 
 void DefectMap::Save(const wxArrayString& info) const
@@ -1205,3 +1272,5 @@ void DefectMap::DeleteDefectMap(int profileId)
         wxRemoveFile(filename);
     }
 }
+
+

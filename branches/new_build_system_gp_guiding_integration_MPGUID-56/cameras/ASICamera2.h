@@ -44,11 +44,12 @@ typedef enum ASI_BAYER_PATTERN{
 }ASI_BAYER_PATTERN;
 
 typedef enum ASI_IMG_TYPE{ //Supported Video Format 
-	ASI_IMG_RAW8=0,
+	ASI_IMG_RAW8 = 0,
 	ASI_IMG_RGB24,
 	ASI_IMG_RAW16,
 	ASI_IMG_Y8,
-	ASI_IMG_END
+	ASI_IMG_END = -1
+
 }ASI_IMG_TYPE;
 
 typedef enum ASI_GUIDE_DIRECTION{ //Guider Direction
@@ -72,7 +73,7 @@ typedef enum ASI_ERROR_CODE{ //ASI ERROR CODE
 	ASI_SUCCESS=0,
 	ASI_ERROR_INVALID_INDEX, //no camera connected or index value out of boundary
 	ASI_ERROR_INVALID_ID, //invalid ID
-	ASI_ERROR_INVALID_CONTROL_ID, //invalid Control ID
+	ASI_ERROR_INVALID_CONTROL_TYPE, //invalid control type
 	ASI_ERROR_CAMERA_CLOSED, //camera didn't open
 	ASI_ERROR_CAMERA_REMOVED, //failed to find the camera, maybe the camera has been removed
 	ASI_ERROR_INVALID_PATH, //cannot find the path of the file
@@ -85,6 +86,7 @@ typedef enum ASI_ERROR_CODE{ //ASI ERROR CODE
 	ASI_ERROR_BUFFER_TOO_SMALL, //buffer size is not big enough
 	ASI_ERROR_VIDEO_MODE_ACTIVE,
 	ASI_ERROR_EXPOSURE_IN_PROGRESS,
+	ASI_ERROR_GENERAL_ERROR,//general error, eg: value is out of valid range
 	ASI_ERROR_END
 }ASI_ERROR_CODE;
 
@@ -109,10 +111,13 @@ typedef struct _ASI_CAMERA_INFO
 	double PixelSize; //the pixel size of the camera, unit is um. such like 5.6um
 	ASI_BOOL MechanicalShutter;
 	ASI_BOOL ST4Port;
+	ASI_BOOL IsCoolerCam;
+	ASI_BOOL IsUSB3Host;
+	char Unused[32];
 } ASI_CAMERA_INFO;
 
-enum ASI_Control_TYPE{ //Control ID//
-	ASI_GAIN,
+typedef enum ASI_CONTROL_TYPE{ //Control type//
+	ASI_GAIN = 0,
 	ASI_EXPOSURE,
 	ASI_GAMMA,
 	ASI_WB_R,
@@ -120,30 +125,44 @@ enum ASI_Control_TYPE{ //Control ID//
 	ASI_BRIGHTNESS,
 	ASI_BANDWIDTHOVERLOAD,	
 	ASI_OVERCLOCK,
-	ASI_TEMPERATURE,
+	ASI_TEMPERATURE,// return 10*temperature
 	ASI_FLIP,
-	ASI_AutoExpMaxGain,
-	ASI_AutoExpMaxExp,
-	ASI_AutoExpMaxBrightness,
-	
+	ASI_AUTO_MAX_GAIN,
+	ASI_AUTO_MAX_EXP,
+	ASI_AUTO_MAX_BRIGHTNESS,
+	ASI_HARDWARE_BIN,
+	ASI_HIGH_SPEED_MODE,
+	ASI_COOLER_POWER_PERC,
+	ASI_TARGET_TEMP//if set to Auto, temperature is adjusted automatically; if not Auto, cooler is shutted off
+}ASI_CONTROL_TYPE;
 
-};
 typedef struct _ASI_CONTROL_CAPS
 {
 	char Name[64]; //the name of the Control like Exposure, Gain etc..
 	char Description[128]; //description of this control
-	int ControlID; //this is used to get value and set value of the control
-	long MaxVale;
+	long MaxValue;
 	long MinValue;
 	long DefaultValue;
 	ASI_BOOL IsAutoSupported; //support auto set 1, don't support 0
 	ASI_BOOL IsWritable; //some control like temperature can only be read by some cameras 
-	ASI_Control_TYPE ControlType;
+	ASI_CONTROL_TYPE ControlType;//this is used to get value and set value of the control
+	char Unused[32];
 } ASI_CONTROL_CAPS;
 
+typedef enum ASI_EXPOSURE_STATUS {
+	ASI_EXP_IDLE = 0,//: idle states, you can start exposure now
+	ASI_EXP_WORKING,//: exposing
+	ASI_EXP_SUCCESS,// exposure finished and waiting for download
+	ASI_EXP_FAILED,//:exposure failed, you need to start exposure again
+
+}ASI_EXPOSURE_STATUS;
+
+typedef struct _ASI_ID{
+	unsigned char id[8];
+}ASI_ID;
 
 #ifndef __cplusplus
-#define ASI_Control_TYPE int
+#define ASI_CONTROL_TYPE int
 #define ASI_BOOL int
 #define ASI_ERROR_CODE int
 #define ASI_FLIP_STATUS int
@@ -158,7 +177,7 @@ extern "C" {
 
 /***************************************************************************
 Descriptions£º 
-this should be the first api to be called
+this should be the first API to be called
 get number of connected ASI cameras,
 
 Paras£º 
@@ -195,7 +214,7 @@ Descriptions£º
 	All APIs below need to open the camera at first.
 
 Paras£º		
-	int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+	int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 
 return£º
 ASI_SUCCESS
@@ -211,7 +230,7 @@ you need to close the camera to free all the resource
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 
 return£º
 ASI_SUCCESS :it will return success even the camera already closed
@@ -230,7 +249,7 @@ Get number of controls available for this camera. the camera need be opened at f
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 int * piNumberOfControls: pointer to an int to save the number of controls
 
 return:
@@ -249,7 +268,7 @@ user need to malloc and maintain the buffer.
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 int iControlIndex:
 ASI_CONTROL_CAPS * pControlCaps: Pointer to structure containing the property of the control
 user need to malloc the buffer
@@ -268,8 +287,8 @@ note:the value of the temperature is the float value * 10 to convert it to long 
 because long is the only type for control
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
-int ControlID: this is get from control property use the api ASIGetControlCaps
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
+int ControlType: this is get from control property use the API ASIGetControlCaps
 long *plValue: pointer to the value you want to save the value get from control
 ASI_BOOL *pbAuto: pointer to the ASI_BOOL type
 
@@ -277,9 +296,9 @@ return:
 ASI_SUCCESS :
 ASI_ERROR_CAMERA_CLOSED : camera didn't open
 ASI_ERROR_INVALID_ID  :no camera connected or index value out of boundary
-ASI_ERROR_INVALID_CONTROL_ID, //invalid Control ID
+ASI_ERROR_INVALID_CONTROL_TYPE, //invalid Control type
 ***************************************************************************/
-ASICAMERA_API ASI_ERROR_CODE ASIGetControlValue(int  iCameraID, int  iControlID, long *plValue, ASI_BOOL *pbAuto);
+ASICAMERA_API ASI_ERROR_CODE ASIGetControlValue(int  iCameraID, ASI_CONTROL_TYPE  ControlType, long *plValue, ASI_BOOL *pbAuto);
 
 /***************************************************************************
 Descriptions£º
@@ -289,7 +308,7 @@ it will return success and set the max value or min value if the value is beyond
 
 Paras£º		
 int CameraID: this is get from the camera property use the API ASIGetCameraProperty
-int ControlID: this is get from control property use the API ASIGetControlCaps
+int ControlType: this is get from control property use the API ASIGetControlCaps
 long lValue: the value set to the control
 ASI_BOOL bAuto: set the control auto
 
@@ -297,9 +316,10 @@ return:
 ASI_SUCCESS :
 ASI_ERROR_CAMERA_CLOSED : camera didn't open
 ASI_ERROR_INVALID_ID  :no camera connected or index value out of boundary
-ASI_ERROR_INVALID_CONTROL_ID, //invalid Control ID
+ASI_ERROR_INVALID_CONTROL_TYPE, //invalid Control type
+ASI_ERROR_GENERAL_ERROR,//general error, eg: value is out of valid range
 ***************************************************************************/
-ASICAMERA_API ASI_ERROR_CODE ASISetControlValue(int  iCameraID, int  iControlID, long lValue, ASI_BOOL bAuto);
+ASICAMERA_API ASI_ERROR_CODE ASISetControlValue(int  iCameraID, ASI_CONTROL_TYPE  ControlType, long lValue, ASI_BOOL bAuto);
 
  
 
@@ -311,7 +331,7 @@ the width and height is the value after binning.
 ie. you need to set width to 640 and height to 480 if you want to run at 640X480@BIN2
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 int iWidth,  the width of the ROI area    please make sure that width*height%1024=0
 int iHeight,  the height of the ROI area. please make sure that width*height%1024=0
 int iBin,   binning method. bin1=1, bin2=2
@@ -332,7 +352,7 @@ Descriptions£º
 Get the current ROI area setting .
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 int *piWidth,  pointer to the width of the ROI area   
 int *piHeight, pointer to the height of the ROI area.
 int *piBin,   pointer to binning method. bin1=1, bin2=2
@@ -350,12 +370,12 @@ ASICAMERA_API  ASI_ERROR_CODE ASIGetROIFormat(int iCameraID, int *piWidth, int *
 /***************************************************************************
 Descriptions£º
 Set the start position of the ROI area.
-you can call this api to move the ROI area when video is streaming
+you can call this API to move the ROI area when video is streaming
 the camera will set the ROI area to the center of the full image as default
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 int iStartX, pointer to the start X
 int iStartY  pointer to the start Y
 
@@ -373,7 +393,7 @@ Descriptions£º
 Get the start position of current ROI area .
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 int *piStartX, pointer to the start X
 int *piStartY  pointer to the start Y
 
@@ -392,7 +412,7 @@ drop frames happen when USB is traffic or harddisk write speed is slow
 it will reset to 0 after stop capture
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 int *piDropFrames pointer to drop frames
 
 return:
@@ -417,7 +437,7 @@ it will be remembered in registry. so "Dark subtract" is on next time if you clo
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 char *pcBMPPath: the path to the bmp dark file. 
 bIsSubDarkWorking:  check if subtracting dark is working, wrong dark file path may cause it not work
 return£º
@@ -428,7 +448,7 @@ ASI_ERROR_INVALID_PATH, //cannot find the path of the file
 ASI_ERROR_INVALID_FILEFORMAT, //the dark file's size should be the same of camera's max width and height  
 
 ***************************************************************************/
-ASICAMERA_API ASI_ERROR_CODE ASIEnableDarkSubtract(int iCameraID, char *pcBMPPath, bool *bIsSubDarkWorking);
+ASICAMERA_API ASI_ERROR_CODE ASIEnableDarkSubtract(int iCameraID, char *pcBMPPath, ASI_BOOL *bIsSubDarkWorking);
 
 /***************************************************************************
 Descriptions£º
@@ -438,7 +458,7 @@ because dark subtract function is remembered on windows platform
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 
 return:
 ASI_SUCCESS :
@@ -450,11 +470,11 @@ ASICAMERA_API ASI_ERROR_CODE ASIDisableDarkSubtract(int iCameraID);
 /***************************************************************************
 Descriptions£º
 Start video capture
-then you can get the data from the api ASIGetVideoData
+then you can get the data from the API ASIGetVideoData
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 
 return:
 ASI_SUCCESS : it will return success if already started
@@ -470,7 +490,7 @@ Stop video capture
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 
 return:
 ASI_SUCCESS : it will return success if already started
@@ -483,14 +503,14 @@ ASICAMERA_API  ASI_ERROR_CODE ASIStopVideoCapture(int iCameraID);
 /***************************************************************************
 Descriptions£º
 get data from the video buffer.the buffer is very small 
-you need to call this api as fast as possible, otherwise frame will be discarded
-so the best way is maintain one buffer loop and call this api in a loop
+you need to call this API as fast as possible, otherwise frame will be discarded
+so the best way is maintain one buffer loop and call this API in a loop
 please make sure the buffer size is biger enough to hold one image
-otherwise the this api will crash
+otherwise the this API will crash
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 unsigned char* pBuffer, caller need to malloc the buffer, make sure the size is big enough
 		the size in byte:
 		8bit mono:width*height
@@ -515,7 +535,7 @@ PulseGuide of the ST4 port on. this function only work on the module which have 
 
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 ASI_GUIDE_DIRECTION direction the direction of guider
 
 return:
@@ -532,7 +552,7 @@ PulseGuide of the ST4 port off. this function only work on the module which have
 make sure where is ASIPulseGuideOn and there is ASIPulseGuideOff
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
 ASI_GUIDE_DIRECTION direction the direction of guider
 
 return:
@@ -543,24 +563,116 @@ ASI_ERROR_INVALID_ID  :no camera connected or index value out of boundary
 ***************************************************************************/
 ASICAMERA_API ASI_ERROR_CODE ASIPulseGuideOff(int iCameraID, ASI_GUIDE_DIRECTION direction);
 
+
 /***************************************************************************
 Descriptions£º
-check if the camera works at usb3 status
+Start camera exposure. the following 4 API is usually used when long exposure required
+start exposure  and check the exposure status then get the data
+
 
 Paras£º		
-int CameraID: this is get from the camera property use the api ASIGetCameraProperty
-ASI_GUIDE_DIRECTION direction the direction of guider
-ASI_BOOL *bSet: ASI_TRUE USB3, ASI_FALSE USB2
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
+long lTimems: the exposure time you want to set, 
+ASI_BOOL bIsDark: means dark frame if there is mechanical shutter on the camera. otherwise useless
+
+return:
+ASI_SUCCESS : 
+ASI_ERROR_CAMERA_CLOSED : camera didn't open
+ASI_ERROR_INVALID_ID  :no camera connected or index value out of boundary
+
+***************************************************************************/
+ASICAMERA_API ASI_ERROR_CODE  ASIStartExposure(int iCameraID, long lTimems, ASI_BOOL bIsDark);
+
+/***************************************************************************
+Descriptions£º
+to cancel the long exposure which is on.
+
+
+Paras£º		
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
+
+
 return:
 ASI_SUCCESS : it will return success if already started
 ASI_ERROR_CAMERA_CLOSED : camera didn't open
 ASI_ERROR_INVALID_ID  :no camera connected or index value out of boundary
 
 ***************************************************************************/
-ASICAMERA_API ASI_ERROR_CODE ASIIsUSB3Host(int iCameraID, ASI_BOOL *bSet);
+ASICAMERA_API ASI_ERROR_CODE  ASIStopExposure(int iCameraID);
+
+/***************************************************************************
+Descriptions£º
+to get the exposure status, work with ASIStartExposure.
+you can read the data if get ASI_EXP_SUCCESS. or have to restart exposure again
+if get ASI_EXP_FAILED
+
+Paras£º		
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
+ASI_EXPOSURE_STATUS *pExpStatus: the exposure status
 
 
+return:
+ASI_SUCCESS : it will return success if already started
+ASI_ERROR_CAMERA_CLOSED : camera didn't open
+ASI_ERROR_INVALID_ID  :no camera connected or index value out of boundary
 
+***************************************************************************/
+
+ASICAMERA_API ASI_ERROR_CODE  ASIGetExpStatus(int iCameraID, ASI_EXPOSURE_STATUS *pExpStatus);
+
+/***************************************************************************
+Descriptions£º
+get data after exposure.
+please make sure the buffer size is biger enough to hold one image
+otherwise the this API will crash
+
+
+Paras£º		
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
+unsigned char* pBuffer, caller need to malloc the buffer, make sure the size is big enough
+the size in byte:
+8bit mono:width*height
+16bit mono:width*height*2
+RGB24:width*height*3
+
+
+return:
+ASI_SUCCESS : it will return success if already started
+ASI_ERROR_CAMERA_CLOSED : camera didn't open
+ASI_ERROR_INVALID_ID  :no camera connected or index value out of boundary
+ASI_ERROR_TIMEOUT: no image get and timeout
+***************************************************************************/
+ASICAMERA_API  ASI_ERROR_CODE ASIGetDataAfterExp(int iCameraID, unsigned char* pBuffer, long lBuffSize);
+
+/***************************************************************************
+Descriptions£º
+get camera id stored in flash, 8 bytes length, only available for USB3.0 camera
+
+Paras£º		
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
+ASI_ID* pID: pointer to ID
+
+return:
+ASI_SUCCESS : it will return success if already started
+ASI_ERROR_CAMERA_CLOSED : camera didn't open
+ASI_ERROR_INVALID_ID  :no camera connected or index value out of boundary
+***************************************************************************/
+ASICAMERA_API  ASI_ERROR_CODE ASIGetID(int iCameraID, ASI_ID* pID);
+
+/***************************************************************************
+Descriptions£º
+write camera id to flash, 8 bytes length, only available for USB3.0 camera
+
+Paras£º		
+int CameraID: this is get from the camera property use the API ASIGetCameraProperty
+ASI_ID ID: ID
+
+return:
+ASI_SUCCESS : it will return success if already started
+ASI_ERROR_CAMERA_CLOSED : camera didn't open
+ASI_ERROR_INVALID_ID  :no camera connected or index value out of boundary
+***************************************************************************/
+ASICAMERA_API  ASI_ERROR_CODE ASISetID(int iCameraID, ASI_ID ID);
 
 #ifdef __cplusplus
 }

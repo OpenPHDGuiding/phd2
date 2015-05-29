@@ -3,13 +3,13 @@
 <body>
   <h2>Tools and Utilities</h2><a href="#Manual_Guide">Manual Guide</a><br>
   <a href="#Auto-Select_Star">Auto-Select Star</a><br>
-  <a href="#Manual_Control_of_Calibration_Data">Calibration Data</a><br>
-  <a href="#PHD2_Server">PHD2 Server</a><br>
+  <a href="#Calibration_Details">Calibration Details</a><br>
+  <a href="#PHD2_Server">PHD2 Server</a><br><a href="#Logging_and_Debug_Output">Logging and Debug Output</a><br>
   <a href="#Drift_Align">Drift Alignment</a><br>
   <a href="#Lock_Positions">Lock Positions</a><br>
-  <a href="#Comet_Tracking">Comet Tracking</a><br>
+  <a href="#Comet_Tracking">Comet Tracking</a><br><a href="#Guiding_Assistant">Guiding Assistant</a><br>
   <a href="#Managing_Equipment_Profiles">Equipment Profiles</a><br>
-  <a href="#Advanced_Settings_for_the_Simulators">Simulator Parameters</a><br>
+  <a href="#Advanced_Settings_for_the_Simulators">Simulator Parameters</a><br><a href="#Keyboard_Shortcuts">Keyboard Shortcuts</a><br>
 
 <h3><a name="Manual_Guide"></a>Manual Guide</h3><br>
 <img style="width: 437px; height: 251px;" alt="" src="ManualGuide.png"><br>
@@ -70,7 +70,7 @@ infallible, so you may need to select a star yourself if you don't like
 the automated result. &nbsp;If you want to use Auto-Select, you should
 definitely use either a bad-pixel map or dark library to reduce the
 likelihood of PHD2 mistakenly choosing a hot pixel.
-<h3><a name="Manual_Control_of_Calibration_Data"></a>Manual Control of Calibration Data</h3>
+<h3><a name="Calibration_Details"></a>Calibration&nbsp;Details</h3>
 Calibration data is saved automatically each time a calibration sequence completes
 successfully. &nbsp;The use of the calibration data has been described
 elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
@@ -88,8 +88,38 @@ doing; but it is available as a matter of completeness. &nbsp;If you
 click on the 'Enter calibration data' item, you'll see a dialog box
 that allows input of relatively low-level calibration data. &nbsp;This
 data might come from a much earlier session, perhaps extracted from the
-<span style="font-style: italic;">PHD2</span> guiding log file.<br>
-<br>
+<span style="font-style: italic;">PHD2</span> guiding log file.<br><br>Most of the calibration-related windows, including calibration sanity-checks, will open a window that looks something like this:<br><br><img style="width: 728px; height: 377px;" alt="" src="Calib_Review.png"><br><br>The
+first thing to look at is the graph to the left, which shows what star
+movements resulted from the guide pulses that PHD2 sent during
+calibration. &nbsp;The lines represent the RA and Dec guide rates that
+were computed as a result of the calibration, and these lines should be
+roughly perpendicular. &nbsp;The data points will never be perfectly
+aligned, but they should not have major&nbsp;curves, sharp inflections,
+or reversals in direction. Particularly with longer focal length scopes, the
+points will often show considerable scatter around the lines, but this
+is normal. &nbsp;The solid points (west and north pulses) are used to
+compute the RA and declination rates, while the hollow points show the
+"return" paths of the east and south moves. &nbsp;These can help you
+see how much fluctuation occurred due to seeing and also whether there
+is a significant amount of backlash. &nbsp;If you are using the
+"fast-recenter" option in the Advanced Settings, there may be many
+fewer points shown in the east and north paths. &nbsp;The tabular
+information to the right
+shows what was known about the pointing position of the scope and the
+various ASCOM settings that relate to guiding. &nbsp;If you are not
+using an ASCOM mount and don't have an "Aux mount" specified, some of
+this information will be missing. The table will also show
+the&nbsp;expected guiding rates&nbsp;for a "perfect" calibration using
+the same sky position and guide speed settings you used. &nbsp;You will
+almost never achieve these ideal values, and you shouldn't worry about
+them unless your values are very different. &nbsp;If you didn't see an
+alert message when the calibration completed, your results are probably
+good enough. &nbsp; If you want to re-use a calibration for an extended
+time, &nbsp;it is probably worth a few extra minutes&nbsp;to check this
+information and confirm that the calibration went
+reasonably well and produced sensible results. &nbsp;Bad calibrations
+can occur even for very experienced imagers using high-end mounts, so
+it is good to check.<br><br>
 <h3><a name="PHD2_Server"></a><span style="font-style: italic;">PHD2</span> Server</h3>
 <span style="font-style: italic;">PHD2</span> supports third-party imaging and automation applications that need to control the guiding process. &nbsp;Stark Labs' <span style="font-style: italic;">Nebulosity </span>program
 was the first to do this, but other applications have subsequently been
@@ -104,11 +134,57 @@ for an application to control most aspects of <span style="font-style: italic;">
 server API is available on
 the <a href="https://code.google.com/p/open-phd-guiding/w/list">PHD2
 Wiki</a>.<br>
+<br><h3><a name="Logging_and_Debug_Output"></a>Logging and Debug Output</h3>
+<span style="font-style: italic;">PHD2</span>
+can optionally produce two types of log files: a debug log and a
+guiding log. &nbsp;Both are highly useful for different reasons.
+&nbsp;The guiding log is similar to the one produced by PHD, but
+with
+extended information. The guide log is intentionally formatted to
+allow easy interpretation by either a human reader or an external
+application.<span style="">&nbsp; </span>For example, the very capable PHDLogView application (not
+part of the PHD2 release) can produce a variety of graphs and summary
+statistics based on data in the PHD2 guide log.<span style="">&nbsp;&nbsp; </span>But the log can also be easily imported into
+Excel or other applications for analysis and graphing.<span style="">&nbsp;
+</span>When importing into Excel, just specify that a comma should be used as a
+column separator. &nbsp;The
+debug log
+has a&nbsp; complete record of everything that was done in the <span style="font-style: italic;">PHD2</span>
+session, &nbsp;so it is very helpful in isolating any problems
+you&nbsp; have. &nbsp;It also employs a human-friendly (albeit verbose)
+text format, so it's
+not
+difficult to examine the debug log to see what happened. &nbsp;If
+you
+need to report a problem with the software, you will almost certainly
+be asked to provide the debug log file. &nbsp;If you have neither log
+file available, you are unlikely to get any&nbsp;help. &nbsp;Creation
+of these log files is controlled by the two menu items under the
+'Tools' menu, and these should be left "checked" as a normal practice.<br>
 <br>
+The location for the files is controlled by the 'Log
+File
+Location' field in the 'Global' tab of the 'Advanced Settings' dialog. &nbsp;By default, log
+files
+are stored in the OS-specific default directory for application data files.
+&nbsp;In Windows7, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
+sub-folder in the "AppData\Local" location. &nbsp;This may not be a
+convenient location, so you can specify a different folder using this
+edit field.<br>
+<br>
+In some unusual cases, you may need to capture guide
+camera images, usually to support debugging and problem resolution.
+&nbsp;This can be done by clicking the 'Enable Star Imaging Logging'
+menu item under the 'Tools' menu. &nbsp;The resultant image files will
+be stored in the same location as the other log files. &nbsp;The format
+of these image files is controlled from the 'Global' tab of the
+'Advanced Settings' dialog. &nbsp;If you are trying to document a
+problem you're having, you should choose the 'Raw Fits' format for
+maximum flexibility.<br>
 <h3><a name="Drift_Align"></a>Drift Align</h3>
 Drift alignment is a well-known technique for achieving polar alignment and
 is considered by many to be the "gold standard". &nbsp;The Drift
-Alignment tool is a "wizard-like" sequence of dialogs that can help
+Alignment tool is a&nbsp;wizard-like sequence of dialogs that can help
 you work through the drift alignment process and get quantifiable
 results. &nbsp;Once you've calibrated your guider, click on 'Drift
 Align' under the 'Tools' menu. &nbsp;The first Drift Align dialog will
@@ -183,7 +259,7 @@ you subsequently want to use
 ST-4 style guiding, you should use the ASCOM connection for drift
 alignment. &nbsp;If you can't do that for some reason, the following
 features will be impaired:<br><ul><li>Scope position data and slewing functions will not be available - you'll have to slew the scope yourself</li><li>The
-magenta circle that identifies the "target" for moving the star will be
+magenta circle that identifies the&nbsp;target for moving the star will be
 inaccurate and will be displayed as a dashed line. &nbsp;This dashed
 circle will identify only an upper bound to the adjustment, so you will
 probably
@@ -260,14 +336,64 @@ PHD2 will quickly learn the comet tracking rate as you re-center the
 comet. Once you are satisfied that PHD2 is tracking the comet, you can
 click Stop to end the training. PHD2 will continue shifting the lock
 position to track the comet until you disable comet tracking by
-toggling the Enable button.<br>
+toggling the Enable/Disable button.<br>
 <br>
 You can practice the comet training technique using the built-in
 camera simulator. Check the "Comet" option in the Cam Dialog, and the
 simulator will display a comet. Use a bookmark to mark the comet's
 starting location, and use the Adjust Lock Position controls to move
 the comet back to the bookmark location.
-<br>
+<br><h3><a name="Guiding_Assistant"></a>Guiding Assistant</h3>The
+Guiding Assistant is an instructional tool to help you measure
+current seeing conditions and the general behavior of your guiding
+subsystem. &nbsp;When it is run, it temporarily disables guiding output
+and measures the ensuing motion of the guide star. This&nbsp;can help
+you
+see the high-frequency motions&nbsp;caused by seeing (atmospheric)
+conditions. &nbsp;These cannot usually be corrected by conventional
+guiding because they occur at a much higher frequency than you can
+typically even measure. Trying to correct for them with conventional
+guiding&nbsp;is often called "chasing the seeing" and is not
+recommended. &nbsp;Avoiding it is best accomplished by
+setting a minimum-move level that will cause PHD2 to ignore most of
+this high-frequency behavior. &nbsp;The Guiding Assistant can also show
+you other behavior of your system such as overall drift
+rates in right ascension and declination as well as peak-to-peak and
+maximum-rate-of-change measurements in
+right ascension,. &nbsp;While these things can usually be "guided out",
+measuring them can be helpful if you want to improve the underlying
+performance of the mount - for example, by improving your polar
+alignment if the declination drift rate is high.<br><br>When the Guiding Assistant is first started, you'll see a dialog box like this: <br><br><img style="width: 539px; height: 472px;" alt="" src="Guiding_Assistant_Start.png"><br><br>The
+upper message area in the Guiding Assistant dialog-box displays usage
+instructions, much like a wizard interface. &nbsp;In order for the
+Guiding Assistant to start measurement, you first need to start guiding
+in the usual way. &nbsp;This identifies the target star in the frame
+and enables (but does not start) the underlying data collection
+mechanism. &nbsp;You&nbsp;then click
+'Start' in the Guiding Assistant to begin the measurement process.
+&nbsp;Once you do this, guiding commands will be disabled, so the star
+will appear to wander around on the display - this is entirely normal.
+&nbsp;As guider images are acquired, statistics are computed and
+displayed in real-time in the user interface. Of particular interest
+are the table entries in the "High-frequency Star Motion" section which
+show ongoing results of the averaging process. &nbsp;After about one
+minute of data collection, these numbers will usually stabilize and
+you'll have a reasonable measurement of the high-frequency star
+movement caused by seeing conditions. &nbsp;When you click the 'Stop'
+button, guiding commands will be re-enabled and the data collection
+process will end. &nbsp;Other computed results will then be displayed
+in the lower area of the table showing overall drift rates and various
+other measurements. &nbsp;All of these values are displayed in
+units of both arc-seconds and pixels. &nbsp;The dialog box will look
+something like this:<br><br><img style="width: 643px; height: 581px;" alt="" src="Guiding_Assistant_Finish.png"><br><br>The
+contents of the 'Recommendations' group at the bottom of the window
+reflect the results of the high-frequency measurements. &nbsp;Assuming
+your chosen guide algorithms support a minimum-move property, you have
+the option of automatically setting those parameters based on the
+results. &nbsp;You can also decide to re-run the measurements or close
+the dialog box altogether if you want to proceed with normal guiding
+operations. &nbsp;Over time, we may be able to add recommendations
+regarding other guiding properties.<br>
 <h3><a name="Managing_Equipment_Profiles"></a>Managing Equipment Profiles</h3>
 Equipment profiles were introduced in the section on <a href="Basic_use.htm">Basic Use</a>
 where they are used as part of the 'Connect Equipment' dialog. &nbsp;If
@@ -309,5 +435,7 @@ star deflections that look like seeing effects. &nbsp;If you adjust
 these parameters one-by-one, you'll see how they affect star
 deflections and how the different guide algorithms react to those
 movements. &nbsp;Of course, you're dealing with a "nearly perfect" mount in
-these scenarios (except for backlash), so the simulation can't be entirely realistic.
+these scenarios (except for backlash), so the simulation can't be entirely realistic.<br><h3><a name="Keyboard_Shortcuts"></a>Keyboard Shortcuts</h3>Keyboard
+shortcuts are available for many of the more commonly used tools and
+functions in PHD2. &nbsp;These are enumerated in the <a href="KeyboardShortcuts.htm">Keyboard Shortcuts</a> section.
 </body></html>

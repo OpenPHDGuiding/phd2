@@ -43,6 +43,11 @@
 #include <libindi/baseclient.h>
 #include <libindi/basedevice.h>
 #include <libindi/indiproperty.h>
+#ifndef INDI_PRE_1_1_0
+   #include <libindi/indibasetypes.h>
+#endif 
+
+#include "indi_gui.h"
 
 enum {
     TYPE_CAMERA,
@@ -64,7 +69,9 @@ public:
     void SaveSettings();
     
 private:
-    void OnButton(wxCommandEvent& evt);
+    void OnConnectButton(wxCommandEvent& evt);
+    void OnIndiGui(wxCommandEvent& evt);
+    IndiGui  *gui ;
     wxTextCtrl *host;
     wxTextCtrl *port;
     wxStaticText *connect_status;
@@ -77,6 +84,7 @@ private:
     
 protected:
     virtual void newDevice(INDI::BaseDevice *dp);
+    virtual void removeDevice(INDI::BaseDevice *dp) {}
     virtual void newProperty(INDI::Property *property){}
     virtual void removeProperty(INDI::Property *property) {}
     virtual void newBLOB(IBLOB *bp) {}

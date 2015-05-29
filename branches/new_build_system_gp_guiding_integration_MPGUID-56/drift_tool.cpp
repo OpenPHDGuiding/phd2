@@ -263,10 +263,7 @@ DriftToolWin::DriftToolWin()
 
     int xpos = pConfig->Global.GetInt("/DriftTool/pos.x", -1);
     int ypos = pConfig->Global.GetInt("/DriftTool/pos.y", -1);
-    if (xpos == -1 || ypos == -1)
-        Centre(wxBOTH);
-    else
-        Move(xpos, ypos);
+    MyFrame::PlaceWindowOnScreen(this, xpos, ypos);
 
     // can mount slew?
     m_can_slew = pPointingSource && pPointingSource->CanSlew();
@@ -643,7 +640,7 @@ void DriftToolWin::OnClose(wxCloseEvent& evt)
     // restore polar align circle correction factor
     pFrame->pGuider->SetPolarAlignCircleCorrection(1.0);
 
-    evt.Skip();
+    Destroy();
 }
 
 void DriftToolWin::UpdateScopeCoordinates(void)
@@ -747,7 +744,7 @@ wxWindow *DriftTool::CreateDriftToolWindow()
             "Enter your camera pixel size on the Camera tab in the Brain.\n"
             "\n"
             "Would you like to run the drift tool anyway?"),
-                "/drift_tool_without_pixscale", _("Confirm"));
+                "/drift_tool_without_pixscale");
 
         if (!confirmed)
         {

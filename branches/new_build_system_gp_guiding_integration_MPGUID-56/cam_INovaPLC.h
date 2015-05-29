@@ -36,23 +36,21 @@
 #ifndef CAM_INOVAPLC_H_INCLUDED
 #define CAM_INOVAPLC_H_INCLUDED
 
-
-class Camera_INovaPLCClass : public GuideCamera {
+class Camera_INovaPLCClass : public GuideCamera
+{
 public:
-    virtual bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    virtual bool HasNonGuiCapture(void);
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool HasNonGuiCapture(void);
     bool Connect();
     bool Disconnect();
     bool ST4PulseGuideScope(int direction, int duration);
     void InitCapture();
     Camera_INovaPLCClass();
 private:
-//    OpenSSAG::SSAG *ssag;
     unsigned int RowTime;
     unsigned short *RawData;
 
     bool ST4HasNonGuiMove(void);
 };
 
-
-#endif // CAM_OPENSSAG_H_INCLUDED
+#endif // CAM_INOVA

@@ -109,7 +109,7 @@ bool Camera_OpenSSAGClass::Disconnect()
     return false;
 }
 
-bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
@@ -128,7 +128,7 @@ bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, wxRect subframe, 
 
     ssag->FreeRawImage(raw);
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
 }

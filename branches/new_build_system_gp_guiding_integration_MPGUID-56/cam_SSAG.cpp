@@ -365,7 +365,7 @@ static bool StopExposure()
     return true;
 }
 
-bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_SSAGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     // Only does full frames
 
@@ -419,13 +419,9 @@ bool Camera_SSAGClass::Capture(int duration, usImage& img, wxRect subframe, bool
     dptr = img.ImageData;
     _SSAG_GETBUFFER(dptr, img.NPixels * 2);
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     //qglogfile->AddLine("Image loaded"); //qglogfile->Write();
-
-    // Do quick L recon to remove bayer array
-//      QuickLRecon(img);
-//      RemoveLines(img);
 
     return false;
 }

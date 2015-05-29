@@ -46,19 +46,10 @@
 
 class Camera_WDMClass : public GuideCamera
 {
-public:
-    Camera_WDMClass(int devNumber = -1);
-
-    bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0, 0, 0, 0), bool recon = false);
-    bool CaptureOneFrame(usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
-    bool Connect();
-    bool Disconnect();
-    void ShowPropertyDialog();
-    void InitCapture() { return; }
-    bool HasNonGuiCapture(void) { return true; }
+    int m_deviceNumber;
+    int m_deviceMode;
 
 protected:
-    static bool CaptureCallback( CVRES status, CVImage* imagePtr, void* userParam);
     volatile int m_nFrames;
     volatile int m_nAttempts;
     unsigned short *m_stackptr;
@@ -71,8 +62,20 @@ protected:
         CAPTURE_STACK_FRAMES
     } m_captureMode;
     CVVidCapture* m_pVidCap;
-private:
-    int m_deviceNumber;
+
+public:
+    Camera_WDMClass();
+
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool CaptureOneFrame(usImage& img, int options, const wxRect& subframe);
+    bool Connect();
+    bool Disconnect();
+    void ShowPropertyDialog();
+    bool HasNonGuiCapture(void) { return true; }
+
+protected:
+    bool SelectDeviceAndMode();
+    static bool CaptureCallback(CVRES status, CVImage *imagePtr, void *userParam);
     bool BeginCapture(usImage& img, E_CAPTURE_MODE captureMode);
     void EndCapture(void);
 };

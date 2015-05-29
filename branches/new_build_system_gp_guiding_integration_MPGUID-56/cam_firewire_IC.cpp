@@ -264,7 +264,9 @@ void Camera_FirewireClass::InitCapture() {
         m_pGain->setValue(lval);
     }
 }
-bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, bool recon) {
+
+bool Camera_FirewireClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
+{
     int xsize, ysize, i;
     unsigned short *dataptr;
     unsigned char *imgptr;
@@ -329,10 +331,10 @@ bool Camera_FirewireClass::Capture(int duration, usImage& img, wxRect subframe, 
     */
 
     m_pGrabber->suspendLive();
-    if (recon) SubtractDark(img);
+
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
-
 }
 
 bool Camera_FirewireClass::HasNonGuiCapture(void)

@@ -391,16 +391,6 @@ bool GuiderOneStar::AutoSelect(void)
 
         UpdateImageDisplay();
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
-
-#ifdef BRET_AO_DEBUG
-        if (pMount && !pMount->IsCalibrated())
-        {
-            //pMount->SetCalibration(-2.61, -1.04, 0.30, 0.26);
-            //pMount->SetCalibration(-2.61, -1.04, 1.0, 1.0);
-            //pMount->SetCalibration(0.0, M_PI/2, 0.005, 0.005);
-            pMount->SetCalibration(M_PI/4 + 0.0, M_PI/4 + M_PI/2, 1.0, 1.0);
-        }
-#endif
     }
     catch (wxString Msg)
     {
@@ -588,8 +578,18 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
 
         pFrame->AdjustAutoExposure(m_star.SNR);
-
-        errorInfo->status.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
+        int exp;
+        bool auto_exp;
+        pFrame->GetExposureInfo(&exp, &auto_exp);
+        if (auto_exp)
+        {
+            if (exp >= 1)
+                errorInfo->status.Printf(_T("m=%.0f SNR=%.1f Exp=%0.1f s"), m_star.Mass, m_star.SNR, (double) exp / 1000.);
+            else
+                errorInfo->status.Printf(_T("m=%.0f SNR=%.1f Exp=%d ms"), m_star.Mass, m_star.SNR, exp);
+        }
+        else
+            errorInfo->status.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
     }
     catch (wxString Msg)
     {
@@ -880,7 +880,7 @@ void GuiderOneStar::SaveStarFITS()
         if (!status) fits_write_pix(fptr,TUSHORT,fpixel,tmpimg.NPixels,tmpimg.ImageData,&status);
 
     }
-    fits_close_file(fptr,&status);
+    PHD_fits_close_file(fptr);
 }
 
 wxString GuiderOneStar::GetSettingsSummary()

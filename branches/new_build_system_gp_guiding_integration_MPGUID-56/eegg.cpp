@@ -38,38 +38,35 @@
 #include "calreview_dialog.h"
 #include "nudge_lock.h"
 #include "comet_tool.h"
+#include "guiding_assistant.h"
 
 void MyFrame::OnEEGG(wxCommandEvent& evt)
 {
     if (evt.GetId() == EEGG_RESTORECAL || evt.GetId() == EEGG_REVIEWCAL)
     {
         wxString savedCal = pConfig->Profile.GetString("/scope/calibration/timestamp", wxEmptyString);
-        bool restoring = evt.GetId() == EEGG_RESTORECAL;
         if (savedCal.IsEmpty())
         {
             wxMessageBox(_("There is no calibration data available."));
             return;
         }
 
-        if (pMount && pMount->IsConnected())
+        if (!pMount)
         {
-            if (restoring)                                                  // Restore dialog is modal
-            {
-                CalRestoreDialog dlg(this);
-                dlg.ShowModal();
-            }
-            else
-            {
-                if (pCalReviewDlg)                                          // Review dialog is non-modal
-                    pCalReviewDlg->Destroy();
-                pCalReviewDlg = new CalReviewDialog(this);
-                pCalReviewDlg->Show();
+            wxMessageBox(_("Please connect a mount first."));
+            return;
+        }
 
-            }
+        if (evt.GetId() == EEGG_RESTORECAL)
+        {
+            CalRestoreDialog(this).ShowModal();
         }
         else
         {
-            wxMessageBox(_("Please connect a mount first."));
+            if (pCalReviewDlg)                                          // Review dialog is non-modal
+                pCalReviewDlg->Destroy();
+            pCalReviewDlg = new CalReviewDialog(this);
+            pCalReviewDlg->Show();
         }
     }
     else if (evt.GetId() == EEGG_MANUALCAL)
@@ -197,5 +194,36 @@ void MyFrame::OnCometTool(wxCommandEvent& WXUNUSED(evt))
     if (pCometTool)
     {
         pCometTool->Show();
+    }
+}
+
+void MyFrame::OnGuidingAssistant(wxCommandEvent& WXUNUSED(evt))
+{
+    if (pGuidingAssistant)
+    {
+        pGuidingAssistant->Show();
+    }
+    if (!pGuidingAssistant)
+    {
+        bool ok = true;
+
+        if (pFrame->pGuider->IsGuiding())
+        {
+            ok = ConfirmDialog::Confirm(_(
+                "The Guiding Assitant will disable guide output and\n"
+                "allow the guide star to drift.\n"
+                "\n"
+                "Ok to disable guide output?"
+                ),
+                "/guiding_assistant_while_guiding", _("Confirm Disable Guiding"));
+        }
+
+        if (ok)
+            pGuidingAssistant = GuidingAssistant::CreateDialogBox();
+    }
+
+    if (pGuidingAssistant)
+    {
+        pGuidingAssistant->Show();
     }
 }

@@ -198,6 +198,8 @@ private:
     wxString GetCalibrationStatus(double dX, double dY, double dist, double dist_crit);
     void SanityCheckCalibration(const Calibration& oldCal, const CalibrationDetails& oldDetails);
 
+    void AlertLimitReached(int duration, GuideAxis axis);
+
 // these MUST be supplied by a subclass
 private:
     virtual MOVE_RESULT Guide(GUIDE_DIRECTION direction, int durationMs) = 0;

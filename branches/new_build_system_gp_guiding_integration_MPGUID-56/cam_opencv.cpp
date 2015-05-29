@@ -35,9 +35,12 @@
  */
 
 #include "phd.h"
+
 #ifdef OPENCV_CAMERA
-#include "camera.h"
+
 #include "cam_opencv.h"
+
+#include <opencv/cv.h>
 
 using namespace cv;
 
@@ -106,7 +109,7 @@ bool Camera_OpenCVClass::Disconnect()
 }
 
 
-bool Camera_OpenCVClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_OpenCVClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool bError = false;
 

@@ -39,15 +39,15 @@
 
 #include <KWIQGuider.h>
 
-class Camera_KWIQGuiderClass : public GuideCamera {
+class Camera_KWIQGuiderClass : public GuideCamera
+{
+    KWIQ::KWIQGuider *KWIQguider;
 public:
-    virtual bool Capture(int duration, usImage& img, wxRect subframe = wxRect(0,0,0,0), bool recon=false);
+    Camera_KWIQGuiderClass();
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool Connect();
     bool Disconnect();
     bool ST4PulseGuideScope(int direction, int duration);
-    Camera_KWIQGuiderClass();
-private:
-    KWIQ::KWIQGuider *KWIQguider;
 };
 
 

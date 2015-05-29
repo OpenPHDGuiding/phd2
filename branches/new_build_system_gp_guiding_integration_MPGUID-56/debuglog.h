@@ -62,6 +62,7 @@ public:
     bool Flush(void);
 
     bool ChangeDirLog(const wxString& newdir);
+    void RemoveOldFiles();
 };
 
 extern DebugLog& operator<< (DebugLog& out, const wxString &str);

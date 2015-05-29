@@ -88,11 +88,11 @@ double GuideAlgorithmLowpass::result(double input)
 
     if (fabs(dReturn) > fabs(input))
     {
-        Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() input %.2f is > calculated value %.2f, using input\n", input, dReturn));
+        Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() input %.2f is < calculated value %.2f, using input\n", input, dReturn));
         dReturn = input;
     }
 
-    //TODO: Undertand this. I think this is wrong, since it divides the orignial input '
+    //TODO: Undertand this. I think this is wrong, since it divides the orignial input
     //      by 11 if it was less than the computed value.  And since the computed
     //      value is median + slope, I'm not sure that it should be divided by 11
     //      either.  But the goal of this exercise is to be bug for bug compatible
@@ -169,7 +169,8 @@ bool GuideAlgorithmLowpass::SetSlopeWeight(double slopeWeight)
     return bError;
 }
 
-wxString GuideAlgorithmLowpass::GetSettingsSummary() {
+wxString GuideAlgorithmLowpass::GetSettingsSummary()
+{
     // return a loggable summary of current mount settings
     return wxString::Format("Slope weight = %.3f, Minimum move = %.3f\n",
             GetSlopeWeight(),
@@ -238,8 +239,8 @@ GraphControlPane *GuideAlgorithmLowpass::GetGraphControlPane(wxWindow *pParent, 
 
 GuideAlgorithmLowpass::
     GuideAlgorithmLowpassGraphControlPane::
-    GuideAlgorithmLowpassGraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm, wxString label)
-    :GraphControlPane(pParent, label)
+    GuideAlgorithmLowpassGraphControlPane(wxWindow *pParent, GuideAlgorithmLowpass *pGuideAlgorithm, const wxString& label)
+    : GraphControlPane(pParent, label)
 {
     int width;
 
@@ -257,7 +258,7 @@ GuideAlgorithmLowpass::
         wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, 20.0, 0.0, 0.05,_T("MinMove"));
     m_pMinMove->SetDigits(2);
     m_pMinMove->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmLowpass::GuideAlgorithmLowpassGraphControlPane::OnMinMoveSpinCtrlDouble, this);
-    DoAdd(m_pMinMove, _("Min mo"));
+    DoAdd(m_pMinMove, _("MnMo"));
 
     m_pSlopeWeight->SetValue(m_pGuideAlgorithm->GetSlopeWeight());
     m_pMinMove->SetValue(m_pGuideAlgorithm->GetMinMove());

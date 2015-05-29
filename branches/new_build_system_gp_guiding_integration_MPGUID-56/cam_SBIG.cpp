@@ -284,7 +284,7 @@ static bool StopExposure(EndExposureParams *eep)
     return err == CE_NO_ERROR;
 }
 
-bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     bool TakeSubframe = UseSubframes;
 
@@ -315,12 +315,9 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         rlp.ccd = CCD_IMAGING;
         dlp.ccd = CCD_IMAGING;
     }
-    // set duration
+
     sep.exposureTime = (unsigned long) duration / 10;
-    if (ShutterState == false)
-        sep.openShutter  = SC_OPEN_SHUTTER;
-    else
-        sep.openShutter = SC_CLOSE_SHUTTER;
+    sep.openShutter = ShutterClosed ? SC_CLOSE_SHUTTER : SC_OPEN_SHUTTER;
 
     // Setup readout mode (now needed by StartExposure 2)
     sep.readoutMode = RM_1X1;
@@ -440,7 +437,7 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, wxRect subframe, bool
         }
     }
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
 }

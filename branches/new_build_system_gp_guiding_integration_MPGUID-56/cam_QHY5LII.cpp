@@ -32,16 +32,26 @@
  *
  */
 
-
 #include "phd.h"
-#if defined (QHY5LII)
+
+#if defined(QHY5LII)
+
 #include "cam_QHY5LII.h"
 
-Camera_QHY5LIIClass::Camera_QHY5LIIClass()
+Camera_QHY5LIIM::Camera_QHY5LIIM()
 {
-    Name = _T("QHY 5L-II");
+    Name = _T("QHY 5L-II Mono");
     m_cameraDLLName = _T("qhy5LIIdll");
     FullSize = wxSize(1280, 960);
+    Color = false;
 }
 
-#endif
+Camera_QHY5LIIC::Camera_QHY5LIIC()
+{
+    Name = _T("QHY 5L-II Color");
+    m_cameraDLLName = _T("qhy5LIIdll");
+    FullSize = wxSize(1280, 960);
+    Color = true;
+}
+
+#endif // QHY5LII

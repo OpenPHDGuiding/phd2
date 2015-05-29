@@ -38,5 +38,6 @@
 
 extern int PHD_fits_open_diskfile(fitsfile **fptr, const wxString& filename, int iomode, int *status);
 extern int PHD_fits_create_file(fitsfile **fptr, const wxString& filename, bool clobber, int *status);
+extern void PHD_fits_close_file(fitsfile *fptr);
 
 #endif

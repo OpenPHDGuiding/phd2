@@ -211,10 +211,9 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
     m_started = true;
     wxYield();
 
-    if (pCamera->HasShutter)
-        pCamera->ShutterState = true; // dark
-    else
+    if (!pCamera->HasShutter)
         wxMessageBox(_("Cover guide scope"));
+    pCamera->ShutterClosed = true;
 
     m_pProgress->SetValue(0);
 
@@ -229,7 +228,11 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         std::vector<int> exposureDurations;
         GetExposureDurations(&exposureDurations);
 
-        m_pProgress->SetRange((maxExpInx - minExpInx + 1) * darkFrameCount);
+        int tot_dur = 0;
+        for (int i = minExpInx; i <= maxExpInx; i++)
+            tot_dur += exposureDurations[i] * darkFrameCount;
+
+        m_pProgress->SetRange(tot_dur);
 
         for (int inx = minExpInx; inx <= maxExpInx; inx++)
         {
@@ -271,7 +274,7 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         int defectFrameCount = m_pNumDefExposures->GetValue();
         int defectExpTime = m_pDefectExpTime->GetValue() * 1000;
 
-        m_pProgress->SetRange(defectFrameCount);
+        m_pProgress->SetRange(defectFrameCount * defectExpTime);
         m_pProgress->SetValue(0);
 
         DefectMapDarks darks;
@@ -312,12 +315,10 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
     else
     {
         // Put up a message showing results and maybe notice to uncover the scope; then close the dialog
-        if (pCamera->HasShutter)
-            pCamera->ShutterState = false; // Lights
-        else
-            wrapupMsg = _("Uncover guide scope\n\n") + wrapupMsg;   // Results will appear in smaller font
+        pCamera->ShutterClosed = false; // Lights
+        if (!pCamera->HasShutter)
+            wrapupMsg = _("Uncover guide scope") + wxT("\n\n") + wrapupMsg;   // Results will appear in smaller font
         wxMessageBox(wxString::Format(_("Operation complete: %s"), wrapupMsg));
-        // wxDialog::Close();
         EndDialog(wxOK);
     }
 }
@@ -385,42 +386,41 @@ void DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
     darkFrame.ImgExpDur = expTime;
     darkFrame.ImgStackCnt = frameCount;
     ShowStatus(_("Taking dark frame") + " #1", true);
-    if (pCamera->Capture(expTime, darkFrame, false))
+    if (pCamera->Capture(expTime, darkFrame, CAPTURE_DARK))
     {
         ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double) expTime / 1000.0), true);
-        pCamera->ShutterState = false;
+        pCamera->ShutterClosed = false;
     }
     else
     {
-        m_pProgress->SetValue(m_pProgress->GetValue() + 1);
-        int *avgimg = new int[darkFrame.NPixels];
-        int i, j;
-        int *iptr = avgimg;
+        m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
+        unsigned int *avgimg = new unsigned int[darkFrame.NPixels];
+        unsigned int *iptr = avgimg;
         unsigned short *usptr = darkFrame.ImageData;
-        for (i = 0; i < darkFrame.NPixels; i++, iptr++, usptr++)
-            *iptr = (int)*usptr;
+        for (int i = 0; i < darkFrame.NPixels; i++)
+            *iptr++ = *usptr++;
         wxYield();
-        for (j = 1; j < frameCount; j++)
+        for (int j = 1; j < frameCount; j++)
         {
             wxYield();
             if (m_cancelling)
                 break;
             ShowStatus(_("Taking dark frame") + wxString::Format(" #%d", j + 1), true);
             wxYield();
-            pCamera->Capture(expTime, darkFrame, false);
-            m_pProgress->SetValue(m_pProgress->GetValue() + 1);
+            pCamera->Capture(expTime, darkFrame, CAPTURE_DARK);
+            m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
             iptr = avgimg;
             usptr = darkFrame.ImageData;
-            for (i = 0; i < darkFrame.NPixels; i++, iptr++, usptr++)
-                *iptr = *iptr + (int)*usptr;
+            for (int i = 0; i < darkFrame.NPixels; i++)
+                *iptr++ += *usptr++;
         }
         if (!m_cancelling)
         {
             ShowStatus(_("Dark frames complete"), true);
             iptr = avgimg;
             usptr = darkFrame.ImageData;
-            for (i = 0; i < darkFrame.NPixels; i++, iptr++, usptr++)
-                *usptr = (unsigned short)(*iptr / frameCount);
+            for (int i = 0; i < darkFrame.NPixels; i++)
+                *usptr++ = (unsigned short)(*iptr++ / frameCount);
         }
 
         delete[] avgimg;

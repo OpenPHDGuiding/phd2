@@ -113,7 +113,7 @@ bool Camera_INovaPLCClass::Disconnect() {
     return false;
 }
 
-bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, bool recon)
+bool Camera_INovaPLCClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
     int xsize = FullSize.GetWidth();
     int ysize = FullSize.GetHeight();
@@ -145,7 +145,7 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, wxRect subframe, 
         img.ImageData[i] = (RawData[i]>> 8) | (RawData[i] << 8);
     }
 
-    if (recon) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
 
     return false;
 }
