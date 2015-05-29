@@ -1,0 +1,11 @@
+// Icons
+progicon                ICON   	"icons/phd2.ico"
+//
+// Cursors
+pixel_cursor CURSOR "icons/at_curs1.cur"
+area_cursor CURSOR "icons/at_curs3.cur"
+bullseye_cursor CURSOR "icons/bullseye.cur"
+
+#define wxUSE_NO_MANIFEST 1
+
+#include <wx/msw/wx.rc>

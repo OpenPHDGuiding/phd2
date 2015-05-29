@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>Diagnostic des pannes</title></head>
+<body>
+<h2>Diagnostic des pannes</h2><h3>Calibration et problèmes à la première utilisation</h3>Si vous débutez avec
+ <span style="font-style: italic;">PHD2</span> ou si vous connectez un matériel pour la première fois,
+vous rencontrerez peut-être des problèmes pour calibrer l'autoguidage.&nbsp;
+Deux causes sont possibles, chacune demande une correction différente:
+<br><ol><li>L'étoile bouge lors de la calibration mais "trop peu" ou "trop loin".
+&nbsp;La solution est simple - ajujstez simplement le paramètre 'étape de calibration' dans l'onglet 'Monture' des 
+<a href="Advanced_settings.htm">Paramètres avancés</a>. 
+Cette page d'aide décrit l'usage de ce paramètre, ce qui vous aidera à remédier au problème.</li></ol>
+<ol><li>L'étoile ne bouge pas ou alors presque pas et de façon aléatoire.
+&nbsp;Ces petits mouvements sont en réalité causés par la turbulence et la monture ne bouge pas vraiment.
+ &nbsp;La résolution de ce problème est expliquée ci-dessous.</li></ol>
+Dans la majorité des cas, l'absence de mouvement est causée par un problème d'équipement, par exemple dans le câblage ou les connections.
+&nbsp;Le meilleur outil pour diagnostiquer cette panne est l'option 'Guidage manuel' du menu 'Outils'. Voyez la page <a href="Tools.htm">Outils</a>
+pour son utilisation détaillée. &nbsp;
+
+Appuyez sur les contrôles directionnels de la fenêtre 'Guidage manuel' pour envoyer des ordres directement à la monture.
+&nbsp;Si celle-ci ne répond pas, c'est le signe d'un problème de matériel ou de connectivité qui n'est pas lié à <span style="font-style: italic;">PHD2</span>.
+&nbsp;Si vous employez un appareil Shoestring pour commander la monture, vérifiez les LED de contrôle pour voir si les ordres arrivent bien jusque là.
+&nbsp;De même, votre caméra compatible ST4 possède peut-être un indicateur pouvant vous renseigner sur les commandes en cours.
+&nbsp;
+Si vous utilisez une connection ASCOM vers la monture, vérifiez les paramètres du port COM.
+Vous pouvez aussi faire appel aux outils de diagnotic des pilotes ASCOM, par exemple POTH.
+
+&nbsp;<br><h3>Plantage du programme ou problèmes de chargement des images</h3>
+Dans certains cas l'image de la caméra n'est pas affichée ou chargée correctement.
+&nbsp;Ceci peut même causer un plantage de&nbsp;
+<span style="font-style: italic;">PHD2</span> ou d'autres applications liées à la caméra.
+&nbsp;L'origine doit être cherchée dans les pilotes du matériel ou les connections. Vérifiez particulièrement les câbles ou appareils USB.
+&nbsp;Il est peu probable qu'un programme comme <span style="font-style: italic;">PHD2</span> 
+cause ce genre de plantage, il faut donc investiguer dans les couches les plus basses du système.
+Commencez par confirmer que la caméra fonctionne correctement.
+Utilisez un câble court et direct entre la caméra et le PC et connectez-vous avec le programme fourni par le fabriquant.
+&nbsp;Si la caméra fonctionne, remontez vers la source du problème en vérifiant les répartiteurs ('Hub') USB et les câbles.
+Changez-les un à un pour isoler la cause du problème.
+Pensez que le matériel est utilisé dans un environnement extrême pour lequel il n'est pas conçu: en extérieur, dans le froid et l'humidité.
+Quelque-chose qui fonctionnait la semaine passée n'est peut-être plus fiable. 
+
+<h3>Autoguidage médiocre</h3>
+Quand tout fonctionne, l'autoguidage donne normalement de bons résultats dès le départ. 
+Vous devez décider si les performances sont suffisantes pour vous; chacun a ses propres critères en la matière...
+Si vous trouvez que les résultats sont inacceptables, parce que les étoiles sont allongées ou déformées sur les images, le mieux à faire
+est d'aborder le problème de façon systématique.
+Cette tâche est complexe et ne peut pas être expliquée de détail ici. Vous pouvez vous faire aider en consultant de nombreuses sources 'en ligne'.
+Ce document de Craig Stark est un bon point de départ: &nbsp;<br><a href="http://www.cloudynights.com/item.php?item_id=2755">What to do When PHD Guiding isn't Push Here Dummy</a>
+<h3>Signaler un problème</h3>
+Si vous rencontrez un problème spécifique à <span style="font-style: italic;">PHD2</span>, vous
+pouvez le signaler sur cette page: <a href="https://code.google.com/p/open-phd-guiding/issues/list">PHD2 Issue Tracking</a>.
+Plus vous donnerez d'informations détaillées, plus grandes sont les chances que votre problème puisse être résolu.
+&nbsp;Basez-vous sur les directives suivantes:
+<br><ol><li>Comment reproduire le problème - si vous donnez clairement les étapes qui mènent au problème, nous avons plus de chances de trouver la solution.
+&nbsp;Si vous ne pouvez pas reproduire le problème, essayez de réduire les étapes non relevantes pour mieux isoler la cause.
+&nbsp;N'oubliez pas que nous n'avons pas le même environnement en termes de PC et de matériel pour reproduire la panne.
+</li>
+<li>Détaillez votre configuration - système d'exploitation, matériel, version de <span style="font-style: italic;">PHD2</span>, etc.</li>
+<li>Attachez le journal de débogage de <span style="font-style: italic;">PHD2</span>
+récupéré lors d'une session pendant laquelle la panne s'est produite. 
+&nbsp;Vous trouverez ce journal dans votre dossier de documents.
+&nbsp;Si vous ne pouvez reproduire le problème, essayez d'estimer quand il s'est produit la première fois - cela peut nous aider à identifier les parties relevantes du journal
+sans devoir parcourir des milliers de lignes.</li></ol>
+<br>
+&nbsp;&nbsp;
+</body></html>

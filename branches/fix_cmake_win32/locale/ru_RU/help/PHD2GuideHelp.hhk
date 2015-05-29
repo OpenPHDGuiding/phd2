@@ -1,0 +1,462 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML><HEAD>
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<UL>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Adaptive Optics AO Graph">
+		<param name="Name" value="Adaptive_Optics_AO_Graph">
+		<param name="Local" value="Visualization.htm#Adaptive_Optics_AO_Graph">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Adaptive Optics Devices">
+		<param name="Name" value="Adaptive_Optics_Devices">
+		<param name="Local" value="Basic_use.htm#Adaptive_Optics_Devices">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Advanced Settings for the Simulators">
+		<param name="Name" value="Advanced_Settings_for_the_Simulators">
+		<param name="Local" value="Tools.htm#Advanced_Settings_for_the_Simulators">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Aggressiveness">
+		<param name="Name" value="aggressiveness">
+		<param name="Local" value="Guide_algorithms.htm#aggressiveness">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Always Scale Images">
+		<param name="Name" value="Always_Scale_Images">
+		<param name="Local" value="Advanced_settings.htm#Always_Scale_Images">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="AO Tab">
+		<param name="Name" value="AO_Tab">
+		<param name="Local" value="Advanced_settings.htm#AO_Tab">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="ASCOM">
+		<param name="Name" value="ASCOM">
+		<param name="Local" value="Basic_use.htm#ASCOM">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Assert Dec Orthogonal">
+		<param name="Name" value="Assert_Dec_Orthogonal">
+		<param name="Local" value="Advanced_settings.htm#Assert_Dec_Orthogonal">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Auto exposure settings">
+		<param name="Name" value="Auto_exposure_settings">
+		<param name="Local" value="Advanced_settings.htm#Auto_exposure_settings">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Auto restore calibration">
+		<param name="Name" value="Auto_restore_calibration">
+		<param name="Local" value="Advanced_settings.htm#Auto_restore_calibration">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Auto-Select Star">
+		<param name="Name" value="Auto-Select_Star">
+		<param name="Local" value="Tools.htm#Auto-Select_Star">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Automatic Calibration">
+		<param name="Name" value="Automatic_Calibration">
+		<param name="Local" value="Basic_use.htm#Automatic_Calibration">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Aux mount selection">
+		<param name="Name" value="Aux_mount_selection">
+		<param name="Local" value="Basic_use.htm#Aux_mount_selection">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Bad-pixel Maps">
+		<param name="Name" value="Bad-pixel_Maps">
+		<param name="Local" value="Darks_BadPixel_Maps.htm#Bad-pixel_Maps">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Basic control">
+		<param name="Name" value="Basic_control">
+		<param name="Local" value="MainScreen.htm#Basic_control">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Bookmarks">
+		<param name="Name" value="Bookmarks">
+		<param name="Local" value="Tools.htm#Bookmarks">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Calculator auto-step-size">
+		<param name="Name" value="Calculator_auto-step-size">
+		<param name="Local" value="Advanced_settings.htm#Calculator_auto-step-size">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Calibration sanity check">
+		<param name="Name" value="Calibration_sanity_check">
+		<param name="Local" value="Trouble_shooting.htm#Calibration_sanity_check">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Calibration step-size">
+		<param name="Name" value="Calibration_step-size">
+		<param name="Local" value="Advanced_settings.htm#Calibration_step-size">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Camera gain">
+		<param name="Name" value="Camera_gain">
+		<param name="Local" value="Advanced_settings.htm#Camera_gain">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Camera Selection">
+		<param name="Name" value="Camera_Selection">
+		<param name="Local" value="Basic_use.htm#Camera_Selection">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Camera Tab">
+		<param name="Name" value="Camera_Tab">
+		<param name="Local" value="Advanced_settings.htm#Camera_Tab">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Clear calibration">
+		<param name="Name" value="Clear_calibration">
+		<param name="Local" value="Advanced_settings.htm#Clear_calibration">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Comet Tracking">
+		<param name="Name" value="Comet_Tracking">
+		<param name="Local" value="Tools.htm#Comet_Tracking">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Corrections">
+		<param name="Name" value="Corrections">
+		<param name="Local" value="Visualization.htm#Corrections">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Dark Frames">
+		<param name="Name" value="Dark_Frames">
+		<param name="Local" value="Darks_BadPixel_Maps.htm#Dark_Frames">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Defect Maps">
+		<param name="Name" value="Defect_Maps">
+		<param name="Local" value="Darks_BadPixel_Maps.htm#Defect_Maps">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Disconnect nonresponsive camera">
+		<param name="Name" value="Disconnect_nonresponsive_camera">
+		<param name="Local" value="Advanced_settings.htm#Disconnect_nonresponsive_camera">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Dither RA only">
+		<param name="Name" value="Dither_RA_only">
+		<param name="Local" value="Advanced_settings.htm#Dither_RA_only">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Dither scale">
+		<param name="Name" value="Dither_scale">
+		<param name="Local" value="Advanced_settings.htm#Dither_scale">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Dithering">
+		<param name="Name" value="Dithering">
+		<param name="Local" value="Tools.htm#Dithering">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="DockableMoveable Graphical Windows">
+		<param name="Name" value="DockableMoveable_Graphical_Windows">
+		<param name="Local" value="Visualization.htm#DockableMoveable_Graphical_Windows">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Drift Align">
+		<param name="Name" value="Drift_Align">
+		<param name="Local" value="Tools.htm#Drift_Align">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Enable guide output">
+		<param name="Name" value="Enable_guide_output">
+		<param name="Local" value="Advanced_settings.htm#Enable_guide_output">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Enable Server">
+		<param name="Name" value="Enable_Server">
+		<param name="Local" value="Tools.htm#Enable_Server">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Equipment Connection">
+		<param name="Name" value="Equipment_Connection">
+		<param name="Local" value="Basic_use.htm#Equipment_Connection">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Equipment Profile">
+		<param name="Name" value="Equipment_Profile">
+		<param name="Local" value="Basic_use.htm#Equipment_Profile">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Exposure Time and Star Selection">
+		<param name="Name" value="Exposure_Time_and_Star_Selection">
+		<param name="Local" value="Basic_use.htm#Exposure_Time_and_Star_Selection">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Fast Re-center">
+		<param name="Name" value="Fast_Re-center">
+		<param name="Local" value="Advanced_settings.htm#Fast_Re-center">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Flip calibration data">
+		<param name="Name" value="flip_calibration_data">
+		<param name="Local" value="Basic_use.htm#flip_calibration_data">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Focal length">
+		<param name="Name" value="Focal_length">
+		<param name="Local" value="Advanced_settings.htm#Focal_length">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="FWHM">
+		<param name="Name" value="FWHM">
+		<param name="Local" value="Visualization.htm#FWHM">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="General Parameters">
+		<param name="Name" value="General_Parameters">
+		<param name="Local" value="Advanced_settings.htm#General_Parameters">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="German equatorial mount">
+		<param name="Name" value="German_equatorial_mount">
+		<param name="Local" value="Basic_use.htm#German_equatorial_mount">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Global Tab">
+		<param name="Name" value="Global_Tab">
+		<param name="Local" value="Advanced_settings.htm#Global_Tab">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Graphical Display">
+		<param name="Name" value="Graphical_Display">
+		<param name="Local" value="Visualization.htm#Graphical_Display">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Guide Algorithm Parameters">
+		<param name="Name" value="Guide_Algorithm_Parameters">
+		<param name="Local" value="Guide_algorithms.htm#Guide_Algorithm_Parameters">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Guiding">
+		<param name="Name" value="Guiding">
+		<param name="Local" value="Basic_use.htm#Guiding">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Guiding Tab">
+		<param name="Name" value="Guiding_Tab">
+		<param name="Local" value="Advanced_settings.htm#Guiding_Tab">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Guiding Theory">
+		<param name="Name" value="Guiding_Theory">
+		<param name="Local" value="Guide_algorithms.htm#Guiding_Theory">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Hysteresis">
+		<param name="Name" value="hysteresis">
+		<param name="Local" value="Guide_algorithms.htm#hysteresis">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Image format">
+		<param name="Name" value="Image_format">
+		<param name="Local" value="Advanced_settings.htm#Image_format">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Language">
+		<param name="Name" value="Language">
+		<param name="Local" value="Advanced_settings.htm#Language">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Lock Positions">
+		<param name="Name" value="Lock_Positions">
+		<param name="Local" value="Tools.htm#Lock_Positions">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Log analysis">
+		<param name="Name" value="Log_analysis">
+		<param name="Local" value="Trouble_shooting.htm#Log_analysis">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Logging and Debug Output">
+		<param name="Name" value="Logging_and_Debug_Output">
+		<param name="Local" value="Advanced_settings.htm#Logging_and_Debug_Output">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="LowPass">
+		<param name="Name" value="LowPass">
+		<param name="Local" value="Guide_algorithms.htm#LowPass">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Manage Profiles">
+		<param name="Name" value="Manage_Profiles">
+		<param name="Local" value="Tools.htm#Manage_Profiles">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Managing Equipment Profiles">
+		<param name="Name" value="Managing_Equipment_Profiles">
+		<param name="Local" value="Tools.htm#Managing_Equipment_Profiles">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Manual Control of Calibration Data">
+		<param name="Name" value="Manual_Control_of_Calibration_Data">
+		<param name="Local" value="Tools.htm#Manual_Control_of_Calibration_Data">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Manual Guide">
+		<param name="Name" value="Manual_Guide">
+		<param name="Local" value="Tools.htm#Manual_Guide">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Max Duration Declination">
+		<param name="Name" value="Max_Duration_Declination">
+		<param name="Local" value="Advanced_settings.htm#Max_Duration_Declination">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Max Duration RA">
+		<param name="Name" value="Max_Duration_RA">
+		<param name="Local" value="Advanced_settings.htm#Max_Duration_RA">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Menus">
+		<param name="Name" value="Menus">
+		<param name="Local" value="MainScreen.htm#Menus">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Meridian flip">
+		<param name="Name" value="meridian_flip">
+		<param name="Local" value="Basic_use.htm#meridian_flip">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Minimum move">
+		<param name="Name" value="minimum_move">
+		<param name="Local" value="Guide_algorithms.htm#minimum_move">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Mount Selection">
+		<param name="Name" value="Mount_Selection">
+		<param name="Local" value="Basic_use.htm#Mount_Selection">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Mount Tab">
+		<param name="Name" value="Mount_Tab">
+		<param name="Local" value="Advanced_settings.htm#Mount_Tab">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="New profile wizard">
+		<param name="Name" value="New_profile_wizard">
+		<param name="Local" value="Basic_use.htm#New_profile_wizard">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Noise reduction">
+		<param name="Name" value="Noise_reduction">
+		<param name="Local" value="Advanced_settings.htm#Noise_reduction">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Overlays">
+		<param name="Name" value="Overlays">
+		<param name="Local" value="Visualization.htm#Overlays">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="PHD2 Server">
+		<param name="Name" value="PHD2_Server">
+		<param name="Local" value="Tools.htm#PHD2_Server">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Pixel size">
+		<param name="Name" value="Pixel_size">
+		<param name="Local" value="Advanced_settings.htm#Pixel_size">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="RA Osc">
+		<param name="Name" value="RA_Osc">
+		<param name="Local" value="Visualization.htm#RA_Osc">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Reset Configuration">
+		<param name="Name" value="Reset_Configuration">
+		<param name="Local" value="Advanced_settings.htm#Reset_Configuration">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="ResistSwitch">
+		<param name="Name" value="ResistSwitch">
+		<param name="Local" value="Guide_algorithms.htm#ResistSwitch">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Restore Calibration Data">
+		<param name="Name" value="Restore_Calibration_Data">
+		<param name="Local" value="Basic_use.htm#Restore_Calibration_Data">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Restore window positions">
+		<param name="Name" value="Restore_window_positions">
+		<param name="Local" value="Visualization.htm#Restore_window_positions">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Reverse Dec output after meridian flip">
+		<param name="Name" value="Reverse_Dec_output_after_meridian_flip">
+		<param name="Local" value="Advanced_settings.htm#Reverse_Dec_output_after_meridian_flip">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Search region">
+		<param name="Name" value="Search_region">
+		<param name="Local" value="Advanced_settings.htm#Search_region">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Simulators">
+		<param name="Name" value="Simulators">
+		<param name="Local" value="Basic_use.htm#Simulators">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Slope weight ">
+		<param name="Name" value="slope_weight_">
+		<param name="Local" value="Guide_algorithms.htm#slope_weight_">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Star mass change detection">
+		<param name="Name" value="Star_mass_change_detection">
+		<param name="Local" value="Advanced_settings.htm#Star_mass_change_detection">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Star mass tolerance">
+		<param name="Name" value="Star_mass_tolerance">
+		<param name="Local" value="Advanced_settings.htm#Star_mass_tolerance">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Star Profile and Target Displays">
+		<param name="Name" value="Star_Profile_and_Target_Displays">
+		<param name="Local" value="Visualization.htm#Star_Profile_and_Target_Displays">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Statistics">
+		<param name="Name" value="statistics">
+		<param name="Local" value="Visualization.htm#statistics">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Stats Display">
+		<param name="Name" value="Stats_Display">
+		<param name="Local" value="Visualization.htm#Stats_Display">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Status Bar">
+		<param name="Name" value="Status_Bar">
+		<param name="Local" value="MainScreen.htm#Status_Bar">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Time lapse">
+		<param name="Name" value="Time_lapse">
+		<param name="Local" value="Advanced_settings.htm#Time_lapse">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Trendlines">
+		<param name="Name" value="Trendlines">
+		<param name="Local" value="Visualization.htm#Trendlines">
+		</OBJECT>
+	<LI><OBJECT type="text/sitemap">
+		<param name="Name" value="Use subframes">
+		<param name="Name" value="Use_subframes">
+		<param name="Local" value="Advanced_settings.htm#Use_subframes">
+		</OBJECT>
+</UL>
+</BODY></HTML>
