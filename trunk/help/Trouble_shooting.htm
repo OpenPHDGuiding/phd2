@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><title>Trouble-shooting</title></head>
 <body>
-<h2>Trouble-shooting and Analysis</h2><h3>Calibration and "First Use" Problems</h3>If
+<h2>Trouble-shooting and Analysis</h2><h3><a name="Problems-_First-Time_Use"></a>Calibration and&nbsp;First-Time-Use Problems</h3>If
 you are just starting to use <span style="font-style: italic;">PHD2</span> or are connecting to new equipment
 for the first time, you may have trouble getting the guider calibration
 done. &nbsp;This problem usually takes one of two forms, each requiring
@@ -52,8 +52,10 @@ which rate is incorrect - it is simply alerting you that something
 looks wrong with the rates. &nbsp;You can sanity check these rates
 yourself quite simply. &nbsp;If you are guiding at 1X sidereal rate,
 your declination guide rate should be approximately 15 arc-sec/sec;
-with a guide rate of 0.5X sidereal, the declination rate would be 7.5 arc-sec/sec,
-etc.</li><li>Inconsistent results - if the calibration results are
+with a guide rate of 0.5X sidereal, the declination rate would be 7.5
+arc-sec/sec,
+etc. &nbsp;A declination rate that is significantly smaller than the RA
+rate is often an indication of substantial declination backlash. &nbsp;</li><li>Inconsistent results - if the calibration results are
 significantly different from your last-used calibration, an alert
 message will be generated. &nbsp;This may happen because you've made a
 change in your configuration. &nbsp;That doesn't imply a real problem,
@@ -70,24 +72,62 @@ restore your last good calibration ('Restore old calibration').
 start guiding with your last good calibration data. &nbsp;If you see
 repeated alerts on the same topic and are convinced there really
 isn't&nbsp;a problem, you can use the 'don't show' checkbox to block
-future alerts of that type. <h3>Program "Hangs" and Camera Download Problems</h3>In
+future alerts of that type.<br><br>One
+of the more common sources of calibration problems, assuming the guide
+commands are working at all, is excessive backlash in declination.
+&nbsp;This is discussed in the <a href="Tools.htm#Calibration_Details">Tools and Utilities</a> section, along with options for either fixing or side-stepping the problem.<br><h3><a name="Problems-_No_Stars_Shown"></a>No Stars Visible in Display Window</h3>New users often&nbsp;<span style="font-size: 10pt;"></span>complain
+that the image displayed in the main window is extremely noisy or is
+almost alll-white or all-black. &nbsp;Assuming the camera is
+functioning and actually downloading images, the display issues are
+often caused by the absence of any usable stars in the frame. &nbsp;For
+example, trying to test the camera indoors will almost always create
+these conditions. &nbsp;The appearance of the image display window in
+these situations provides no useful information and should be
+discounted. &nbsp;PHD2 uses an automatic screen-stretching function
+that is intended to help you see real stars under a nightime sky.
+&nbsp;When no stars are present, the display will be stretched to show
+the range of minimum-to-maximum brightness values of whatever is in the
+frame - which is often nothing at all. &nbsp;This is usually what
+causes the noisy/all-white/all-black display results. &nbsp;You may
+also encounterd display problems if the guider is not well-focused.
+&nbsp;Focusing the guider can be a tedious and frustrating experience
+but it's critical to getting good guiding results. &nbsp;A good
+technique is to start with a bright <span style="font-style: italic;">but unsaturated</span> star and try to reach focus with that. &nbsp;Then move to successively fainter stars to fine-tune the focus position. &nbsp; <h3><a name="Problems-_Camera_Timeouts"></a>Camera Timeout and Download Problems</h3>In
 some cases, you may experience problems where guider images aren't
 downloaded or displayed. &nbsp;In extreme cases, this may even cause
 <span style="font-style: italic;">PHD2</span> or other camera-related applications to be non-responsive (i.e. to
 "hang"). &nbsp;Again, this is almost always due to hardware, camera
 driver, or&nbsp;connectivity issues, with one of the most common
 culprits being a faulty USB cable or device. &nbsp;It is highly
-unlikely to be caused by an application like <span style="font-style: italic;">PHD2</span>, so you should begin
+unlikely to be caused by an application like <span style="font-style: italic;">PHD2</span>,
+so you should begin
 your investigation at the lower levels of the system. You can start by
 confirming that the guide camera is working - try using a short, direct
-cable from the camera to the computer and taking exposures with the
-"native" or test application that came with the camera. &nbsp;If the
-camera is functional, you can start moving "upstream" by looking at USB
+cable from the camera to the computer and taking exposures with
+the&nbsp;native&nbsp;or test application that came with the camera.
+&nbsp;If the
+camera is functional, you can start looking at&nbsp;USB
 hubs and cables, swapping them one at a time to see if you can isolate
-the problem. &nbsp;It's worth remembering that we work in a&nbsp;hostile
+the problem. &nbsp;It's worth remembering that we work in
+a&nbsp;hostile
 environment while doing our imaging, and many of the components we use
 are not designed for cold, outdoor conditions. So something that worked
-just last week or last month may no longer be reliable.<h3>Poor Guiding Performance</h3>Once
+just last week or last month may no longer be reliable.<br><br>Starting
+with the 2.3 release, PHD2 uses a camera timeout property to protect
+against&nbsp;hang conditions. &nbsp;This property is set in the Camera tab
+of&nbsp;<a href="Advanced_settings.htm">Advanced Settings</a>. and uses a default value of &nbsp;15 seconds. &nbsp;This means that PHD2 will wait up to 15 seconds <span style="font-style: italic;">after the completion of the exposure</span>
+to receive the image from the camera. &nbsp;This is a very generous
+amount of time and should work well for the majority of cameras.
+&nbsp;However, some cameras are known to create problems in this area
+by making&nbsp;large bandwith or power demands on the USB subsystem.
+&nbsp;If you are getting timeouts of this sort and are convinced the
+camera is working properly, you can change this timeout value to a very
+high number - even 1000 seconds or more. &nbsp;Doing so leaves you
+vulnerable to apparent hangs in the user interface and erratic guiding
+behavior, but it is a choice you can make for yourself. &nbsp;A large
+value for the timeout will not create extra delays during normal camera
+operations - once the image is downloaded from the camera, any timeout
+condition is cancelled and guiding will proceed immediately.<h3><a name="Problems-_Poor_Guiding"></a>Poor Guiding Performance</h3>Once
 you've gotten everything running, you will probably get reasonably good
 guiding results almost immediately. &nbsp;You will have to decide what
 "good enough" means, and everyone's standard is likely to be different.
@@ -173,15 +213,17 @@ above.<span style="">&nbsp; </span>The "durations" are the
 lengths of the guide pulses, in milliseconds, needed to move the mount by the
 distances specified by RAGuideDistance and DECGuideDistance</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>XStep, YStep - step-adjustment durations for the
 adaptive optics device if one is being used</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>StarMass - a brightness measure of the guide
-star image</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>SNR - an internal "signal-to-noise"
-ratio used by PHD2</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>ErrorCode - an indication that some error
+star image</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>SNR
+- an internal "star-detection ratio"&nbsp;used by PHD2 - essentially a
+measure of how well the star can be distinguished from the sky
+background</li><li><span style="font-family: Symbol;"><span style=""><span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;"></span></span></span>ErrorCode - an indication that some error
 occurred, typically a "guide star faded" error</li></ul>
 
 
 
 <p class="MsoNormal">All&nbsp;distance values are in units of pixels.<span style="">&nbsp; </span>The header for the guiding section will show
 the image scale as it is known by PHD2, and that can be used to scale the pixel
-distance values into units of arc-seconds if desired.</p><h3>Problem Reporting</h3>If
+distance values into units of arc-seconds if desired.</p><h3><a name="Problem_Reporting"></a>Problem Reporting</h3>If
 you encounter application problems that&nbsp;are specific to <span style="font-style: italic;">PHD2</span>, you
 are encouraged to report them to the open-phd-guiding Google group: <span style="font-weight: bold;">https://groups.google.com/forum/?fromgroups=#!forum/open-phd-guiding</span>.
 &nbsp;Obviously, the more information you can provide, the more likely
