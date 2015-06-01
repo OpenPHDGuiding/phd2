@@ -33,14 +33,15 @@
  */
 
 
+
+
 #include "phd.h"
-#include <wx/log.h>
 
 #include "socket_server.h"
 #include "cam_simulator.h"
+
 #include <algorithm>
 #include <functional>
-#include <algorithm>
 
 static std::set<wxSocketBase *> s_clients;
 
