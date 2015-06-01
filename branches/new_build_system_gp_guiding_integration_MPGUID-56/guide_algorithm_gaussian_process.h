@@ -71,6 +71,10 @@ protected:
     bool SetGPHyperparameters(std::vector<double> const& hyperparameters);
     std::vector<double> GetGPHyperparameters() const;
 
+    // Mixing parameter
+    double GetMixingParameter() const;
+    bool SetMixingParameter(double);
+
 
 public:
     GuideGaussianProcess(Mount *pMount, GuideAxis axis);

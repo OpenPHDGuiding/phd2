@@ -62,6 +62,7 @@ class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialog
     wxSpinCtrlDouble *m_pPKPeriodLength;
     wxSpinCtrlDouble *m_pPKSignalVariance;
     wxSpinCtrlDouble *m_pSEKLengthScale;
+    wxSpinCtrlDouble *m_pMixingParameter;
 
 public:
     GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm)
@@ -118,6 +119,9 @@ public:
                                                  wxSP_ARROW_KEYS, 0, 100, 0, 
                                                  _T("Optim. every"));
 
+        m_pMixingParameter = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
+                                                  wxDefaultPosition,wxSize(width+30, -1),
+                                                  wxSP_ARROW_KEYS, 0.0, 6000, 0.0, 0.01);
 
         //
         // TODO Add description of the control gain!
@@ -142,6 +146,8 @@ public:
               _("Signal variance of the periodic kernel (theta)."));
         DoAdd(_("Length scale [SE]"), m_pSEKLengthScale,
               _("Length scale of the square exponetional kernel (l_SE)."));
+        DoAdd(_("Mixing"), m_pMixingParameter,
+              _("Mixing parameter"));
     }
 
     virtual ~GuideGaussianProcessDialogPane(void) 
@@ -166,6 +172,8 @@ public:
       m_pPKPeriodLength->SetValue(hyperparameters[2]);
       m_pPKSignalVariance->SetValue(hyperparameters[3]);
       m_pSEKLengthScale->SetValue(hyperparameters[4]);
+
+      m_pMixingParameter->SetValue(m_pGuideAlgorithm->GetMixingParameter());
     }
 
     // Set the parameters chosen in the GUI in the actual guiding algorithm
@@ -184,6 +192,7 @@ public:
       hyperparameters[4] = m_pSEKLengthScale->GetValue();
 
       m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
+      m_pGuideAlgorithm->SetMixingParameter(m_pMixingParameter->GetValue());
     }
 
 };
@@ -209,6 +218,7 @@ struct GuideGaussianProcess::gp_guide_parameters
     double control_gain_;
     double last_timestamp_;
     double filtered_signal_;
+    double mixing_parameter_;
 
     int min_nb_element_for_inference;
     int min_points_for_optimisation;
@@ -272,7 +282,7 @@ static const double DefaultLengthScaleSEKer            = 200;                   
 
 static const int    DefaultNbPointsBetweenOptimisation = 10;                    // number of points collected between two consecutive calls to the optimisation
                                                                                 // 0 indicates no optimisation.
-
+static const double DefaultMixing                      = 0.8;
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
@@ -290,6 +300,9 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
 
     int nb_points_between_optimisation = pConfig->Profile.GetInt(configPath + "/gp_nbpointsbetweenoptimisations", DefaultNbPointsBetweenOptimisation);
     SetNbPointsBetweenOptimisation(nb_points_between_optimisation);
+
+    double mixing_parameter = pConfig->Profile.GetDouble(configPath + "/gp_mixing_parameter", DefaultMixing);
+    SetMixingParameter(mixing_parameter);
 
     std::vector<double> v_hyperparameters(5);
     v_hyperparameters[0] = pConfig->Profile.GetDouble(configPath + "/gp_gaussian_noise",        DefaultGaussianNoiseHyperparameter);
@@ -516,8 +529,30 @@ bool GuideGaussianProcess::SetGPHyperparameters(std::vector<double> const &hyper
     return error;
 }
 
+bool GuideGaussianProcess::SetMixingParameter(double mixing)
+{
+    bool error = false;
 
+    try 
+    {
+        if (mixing < 0) 
+        {
+            throw ERROR_INFO("invalid mixing parameter");
+        }
 
+        parameters->mixing_parameter_ = mixing;
+    }
+    catch (wxString Msg) 
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        parameters->mixing_parameter_ = DefaultMixing;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_mixing_parameter", parameters->mixing_parameter_);
+
+    return error;
+}
 
 double GuideGaussianProcess::GetControlGain() const
 {
@@ -542,6 +577,10 @@ std::vector<double> GuideGaussianProcess::GetGPHyperparameters() const
                                hyperparameters.data() + 5);
 }
 
+double GuideGaussianProcess::GetMixingParameter() const
+{
+    return parameters->mixing_parameter_;
+}
 
 
 wxString GuideGaussianProcess::GetSettingsSummary()
@@ -555,6 +594,7 @@ wxString GuideGaussianProcess::GetSettingsSummary()
       "\tSignal-variance periodic kern = %.3f\n"
       "\tLength scale SE kern = %.3f\n"
       "Optimisation called every = %.3d points\n"
+      "Mixing parameter = %.3d\n"
     ;
 
     Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters();
@@ -565,7 +605,8 @@ wxString GuideGaussianProcess::GetSettingsSummary()
       hyperparameters(0), hyperparameters(1), 
       hyperparameters(2), hyperparameters(3), 
       hyperparameters(4),
-      parameters->min_points_for_optimisation);
+      parameters->min_points_for_optimisation,
+      parameters->mixing_parameter_);
 }
 
 
@@ -687,8 +728,7 @@ double GuideGaussianProcess::result(double input)
     return input;
 #endif
 
-    double mixing_parameter = 0.8; // TODO: make this GUI configurable
-    parameters->control_signal_ = mixing_parameter*input; // add the measured part of the controller
+    parameters->control_signal_ = parameters->mixing_parameter_*input; // add the measured part of the controller
     double prediction_ = 0.0; // this will hold the prediction part later
 
     // initialize the different vectors needed for the GP
@@ -738,7 +778,7 @@ double GuideGaussianProcess::result(double input)
         if (input == 0.0) {
             parameters->control_signal_ = prediction_; // full predictive control if star was lost
         } else {
-            parameters->control_signal_ += (1-mixing_parameter)*prediction_; // mixing control if star was found
+            parameters->control_signal_ += (1-parameters->mixing_parameter_)*prediction_; // mixing control if star was found
         }
     }
 
