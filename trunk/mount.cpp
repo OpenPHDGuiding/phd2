@@ -98,7 +98,10 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     DoAdd(chkSizer);
 
     wxString xAlgorithms[] = {
-        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch"),_("Gaussian Process")
+        _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
+#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
+        _("Gaussian Process"),
+#endif
     };
 
     width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
@@ -121,7 +124,10 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     }
 
     wxString yAlgorithms[] = {
-        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch"),_("Gaussian Proces")
+        _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
+#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
+        _("Gaussian Process"),
+#endif
     };
 
     width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
