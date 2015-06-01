@@ -64,8 +64,19 @@ protected:
     int GetNbPointsBetweenOptimisation() const;
     bool SetNbPointsBetweenOptimisation(int );
 
+    bool GetBoolOptimizeHyperparameters() const;
+    bool SetBoolOptimizeHyperparameters(bool );
+
+    bool GetBoolOptimizeSigma() const;
+    bool SetBoolOptimizeSigma(bool );
+
+
     bool SetGPHyperparameters(std::vector<double> const& hyperparameters);
     std::vector<double> GetGPHyperparameters() const;
+
+    // Mixing parameter
+    double GetMixingParameter() const;
+    bool SetMixingParameter(double);
 
 
 public:

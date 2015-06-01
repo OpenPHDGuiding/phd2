@@ -1,9 +1,9 @@
 //
 //  guide_gaussian_process.cpp
-//  PHD
+//  PHD2 Guiding
 //
-//  Created by Stephan Wenninger
-//  Copyright 2014, Max Planck Society.
+//  Created by Stephan Wenninger and Edgar Klenske.
+//  Copyright 2014-2015, Max Planck Society.
 
 /*
 *  This source code is distributed under the following "BSD" license
@@ -32,18 +32,19 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#define GP_DEBUG_MATLAB_ 0
+#define GP_DEBUG_STATUS_ 0
+
 #include "phd.h"
 
-//#include "UDPGuidingInteraction.h"
+#if GP_DEBUG_MATLAB_
+#include "UDPGuidingInteraction.h"
+#endif
 
 #include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
 
-
 #include "math_tools.h" 
-
-// Should be removed
-//#include "circular_buffer.h"
 
 #include "math_tools.h"
 #include "gaussian_process.h"
@@ -62,6 +63,7 @@ class GuideGaussianProcess::GuideGaussianProcessDialogPane : public ConfigDialog
     wxSpinCtrlDouble *m_pPKPeriodLength;
     wxSpinCtrlDouble *m_pPKSignalVariance;
     wxSpinCtrlDouble *m_pSEKLengthScale;
+    wxSpinCtrlDouble *m_pMixingParameter;
 
 public:
     GuideGaussianProcessDialogPane(wxWindow *pParent, GuideGaussianProcess *pGuideAlgorithm)
@@ -77,71 +79,82 @@ public:
         m_pControlGain->SetDigits(2);
 
         // nb elements before starting the inference
-        m_pNbMeasurementMin = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"),
+        m_pNbMeasurementMin = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                              wxDefaultPosition,wxSize(width+30, -1),
-                                             wxSP_ARROW_KEYS, 0, 100, 0, 
-                                             _T("Min nb meas."));
+                                             wxSP_ARROW_KEYS, 0, 100, 25);
 
         // hyperparameters
-        m_pHyperDiracNoise = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
+        m_pHyperDiracNoise = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                   wxDefaultPosition,wxSize(width+30, -1),
-                                                  wxSP_ARROW_KEYS, 0.0, 50, 0.0, 0.01);
+                                                  wxSP_ARROW_KEYS, 0.0, 10.0, 1.0, 0.1);
         m_pHyperDiracNoise->SetDigits(2);
 
 
-        m_pPKLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
+        m_pPKLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                 wxDefaultPosition,wxSize(width+30, -1),
-                                                wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
+                                                wxSP_ARROW_KEYS, 0.0, 100, 5.0, 0.1);
         m_pPKLengthScale->SetDigits(2);
 
 
 
-        m_pPKPeriodLength = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
+        m_pPKPeriodLength = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
-                                                 wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
+                                                 wxSP_ARROW_KEYS, 0.0, 2000, 200, 1);
         m_pPKPeriodLength->SetDigits(2);
 
         
-        m_pPKSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
+        m_pPKSignalVariance = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                    wxDefaultPosition,wxSize(width+30, -1),
-                                                   wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
+                                                   wxSP_ARROW_KEYS, 0.0, 30, 10, 0.1);
         m_pPKSignalVariance->SetDigits(2);
 
-        m_pSEKLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"),
+        m_pSEKLengthScale = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
-                                                 wxSP_ARROW_KEYS, 0.0, 600, 0.0, 0.01);
+                                                 wxSP_ARROW_KEYS, 0.0, 6000, 500, 0.1);
         m_pSEKLengthScale->SetDigits(2);
 
         // nb points between consecutive calls to the optimisation
-        m_pNbPointsOptimisation = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"),
+        m_pNbPointsOptimisation = new wxSpinCtrl(pParent, wxID_ANY, wxEmptyString,
                                                  wxDefaultPosition,wxSize(width+30, -1),
-                                                 wxSP_ARROW_KEYS, 0, 100, 0, 
-                                                 _T("Optim. every"));
+                                                 wxSP_ARROW_KEYS, 0, 200, 50);
 
+        m_pMixingParameter = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString,
+                                                  wxDefaultPosition,wxSize(width+30, -1),
+                                                  wxSP_ARROW_KEYS, 0.0, 1.0, 0.8, 0.01);
 
-        //
-        // TODO Add description of the control gain!
-        //
         DoAdd(_("Control Gain"), m_pControlGain,
-              _("Control gain. Default = 1.0"));
+              _("The control gain defines how aggressive the controller is. It is the amount of pointing error that is "
+                "fed back to the system. Default = 0.8"));
 
-        DoAdd(_("Nb data min"), m_pNbMeasurementMin,
-              _("Minimal number of measurements to start the inference."));
+        DoAdd(_("Min data points (inference)"), m_pNbMeasurementMin,
+              _("Minimal number of measurements to start using the Gaussian process. If there are too little data points, "
+                "the result might be poor. Default = 25"));
 
-        DoAdd(_("Nb points optimisation"), m_pNbPointsOptimisation,
-              _("Number of points between two consecutive calls to the optimisation. \"0\" disables the optimisation completely"));
+        DoAdd(_("Min data points (optimization)"), m_pNbPointsOptimisation,
+              _("Minimal number of measurements to start optimizing the periodicity. If there are too little data points, "
+                "the optimization might not work. Default = 50"));
 
         // hyperparameters
-        DoAdd(_("Dirac noise"), m_pHyperDiracNoise,
-              _("Noise associated to the diract kernel."));
+        DoAdd(_("Measurement noise"), m_pHyperDiracNoise,
+              _("The measurement noise is the expected uncertainty due to seeing and camera noise. "
+                "If the measurement noise is too low, the Gaussian process might be too rigid. Try to upper bound your "
+                "measurement uncertainty. Default = 1.0"));
         DoAdd(_("Length scale [PER]"), m_pPKLengthScale,
-              _("Length scale of the periodic kernel (l_P)."));
-        DoAdd(_("Period [PER]"), m_pPKPeriodLength,
-              _("Period length of the periodic kernel (lambda)."));
-        DoAdd(_("Signal variance [PER]"), m_pPKSignalVariance,
-              _("Signal variance of the periodic kernel (theta)."));
+              _("The length scale defines the \"wigglyness\" of the function. The smaller the length scale, the more "
+                "structure can be learned. If chosen too small, some non-periodic structure might be picked up as well. "
+                "Default = 5.0"));
+        DoAdd(_("Period length [PER]"), m_pPKPeriodLength,
+              _("The period length of the periodic error component that should be corrected. It turned out that the shorter "
+                "period is more important for the performance than the long one, if a telescope mount shows both. Default = 200"));
+        DoAdd(_("Signal variance"), m_pPKSignalVariance,
+              _("The width of the periodic error. Should be around the amplitude of the PE curve, but is not a critical parameter. "
+                "Default = 30"));
         DoAdd(_("Length scale [SE]"), m_pSEKLengthScale,
-              _("Length scale of the square exponetional kernel (l_SE)."));
+              _("The length scale of the large periodic or non-periodic structure in the error. This is essentially a low-pass "
+                "filter and the length scale defines the corner frequency. Default = 500"));
+        DoAdd(_("Mixing"), m_pMixingParameter,
+              _("The mixing defines how much control signal is generated from the prediction (low-pass component) and how much "
+                "from the current measurement (high-pass component). Default = 0.8"));
     }
 
     virtual ~GuideGaussianProcessDialogPane(void) 
@@ -166,6 +179,8 @@ public:
       m_pPKPeriodLength->SetValue(hyperparameters[2]);
       m_pPKSignalVariance->SetValue(hyperparameters[3]);
       m_pSEKLengthScale->SetValue(hyperparameters[4]);
+
+      m_pMixingParameter->SetValue(m_pGuideAlgorithm->GetMixingParameter());
     }
 
     // Set the parameters chosen in the GUI in the actual guiding algorithm
@@ -184,6 +199,7 @@ public:
       hyperparameters[4] = m_pSEKLengthScale->GetValue();
 
       m_pGuideAlgorithm->SetGPHyperparameters(hyperparameters);
+      m_pGuideAlgorithm->SetMixingParameter(m_pMixingParameter->GetValue());
     }
 
 };
@@ -193,7 +209,8 @@ struct gp_guiding_circular_datapoints
 {
   double timestamp;
   double measurement;
-  double modified_measurements;
+  double modified_measurement;
+  double control;
 };
 
 
@@ -206,20 +223,29 @@ struct GuideGaussianProcess::gp_guide_parameters
     wxStopWatch timer_;
     double control_signal_;
     double control_gain_;
-    double elapsed_time_ms_;
+    double last_timestamp_;
+    double filtered_signal_;
+    double mixing_parameter_;
 
     int min_nb_element_for_inference;
     int min_points_for_optimisation;
 
+#if GP_DEBUG_MATLAB_
+    UDPGuidingInteraction udpInteraction_;
+#endif
 
     covariance_functions::PeriodicSquareExponential covariance_function_;
     GP gp_;
 
     gp_guide_parameters() :
-      circular_buffer_parameters(100),
+#if GP_DEBUG_MATLAB_
+      udpInteraction_("localhost", "1308", "1309"),
+#endif
+      circular_buffer_parameters(200),
       timer_(),
       control_signal_(0.0),
-      elapsed_time_ms_(0.0),
+      last_timestamp_(0.0),
+      filtered_signal_(0.0),
       min_nb_element_for_inference(0),
       min_points_for_optimisation(0),
       gp_(covariance_function_)
@@ -269,7 +295,7 @@ static const double DefaultLengthScaleSEKer            = 200;                   
 
 static const int    DefaultNbPointsBetweenOptimisation = 10;                    // number of points collected between two consecutive calls to the optimisation
                                                                                 // 0 indicates no optimisation.
-
+static const double DefaultMixing                      = 0.8;
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
@@ -281,12 +307,14 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     double control_gain = pConfig->Profile.GetDouble(configPath + "/gp_controlGain", DefaultControlGain);
     SetControlGain(control_gain);
 
-
     int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_nbminelementforinference", DefaultNbMinPointsForInference);
     SetNbElementForInference(nb_element_for_inference);
 
     int nb_points_between_optimisation = pConfig->Profile.GetInt(configPath + "/gp_nbpointsbetweenoptimisations", DefaultNbPointsBetweenOptimisation);
     SetNbPointsBetweenOptimisation(nb_points_between_optimisation);
+
+    double mixing_parameter = pConfig->Profile.GetDouble(configPath + "/gp_mixing_parameter", DefaultMixing);
+    SetMixingParameter(mixing_parameter);
 
     std::vector<double> v_hyperparameters(5);
     v_hyperparameters[0] = pConfig->Profile.GetDouble(configPath + "/gp_gaussian_noise",        DefaultGaussianNoiseHyperparameter);
@@ -297,6 +325,22 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
 
     SetGPHyperparameters(v_hyperparameters);
 
+    // set masking, so that we only optimize the period length. The rest is fixed or estimated otherwise.
+    Eigen::VectorXi mask(5);
+    mask << 0, 0, 1, 0, 0;
+    parameters->gp_.setOptimizationMask(mask);
+
+    // set a strong logistic prior (soft box) to prevent the period length from being too small.
+    Eigen::VectorXd prior_parameters(2);
+    prior_parameters << 50, 0.1;
+    parameter_priors::LogisticPrior periodicity_prior(prior_parameters);
+    parameters->gp_.setHyperPrior(periodicity_prior, 2);
+
+    // set a weak gamma prior as well, to make the optimization more well-behaved.
+    Eigen::VectorXd prior_parameters2(2);
+    prior_parameters2 << 300, 100;
+    parameter_priors::GammaPrior periodicity_prior2(prior_parameters2);
+    parameters->gp_.setHyperPrior(periodicity_prior2, 2);
 
     reset();
 }
@@ -489,12 +533,35 @@ bool GuideGaussianProcess::SetGPHyperparameters(std::vector<double> const &hyper
 
     pConfig->Profile.SetDouble(GetConfigPath() + "/gp_length_scale_se_kern", hyperparameters_eig(4));
   
-    parameters->gp_.setHyperParameters(hyperparameters_eig);
+    // note that the GP class works in log space! Thus, we have to convert the parameters to log.
+    parameters->gp_.setHyperParameters(hyperparameters_eig.array().log());
     return error;
 }
 
+bool GuideGaussianProcess::SetMixingParameter(double mixing)
+{
+    bool error = false;
 
+    try 
+    {
+        if (mixing < 0) 
+        {
+            throw ERROR_INFO("invalid mixing parameter");
+        }
 
+        parameters->mixing_parameter_ = mixing;
+    }
+    catch (wxString Msg) 
+    {
+        POSSIBLY_UNUSED(Msg);
+        error = true;
+        parameters->mixing_parameter_ = DefaultMixing;
+    }
+
+    pConfig->Profile.SetDouble(GetConfigPath() + "/gp_mixing_parameter", parameters->mixing_parameter_);
+
+    return error;
+}
 
 double GuideGaussianProcess::GetControlGain() const
 {
@@ -514,11 +581,18 @@ int GuideGaussianProcess::GetNbPointsBetweenOptimisation() const
 
 std::vector<double> GuideGaussianProcess::GetGPHyperparameters() const
 {
-    Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters();
-    return std::vector<double>(hyperparameters.data(),
-                               hyperparameters.data() + 5);
+    // since the GP class works in log space, we have to exp() the parameters first.
+    Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters().array().exp();
+
+    // we need to map the Eigen::vector into a std::vector.
+    return std::vector<double>(hyperparameters.data(), // the first element is at the array address
+                               hyperparameters.data() + 5); // 6 parameters, therefore the last is at position 5
 }
 
+double GuideGaussianProcess::GetMixingParameter() const
+{
+    return parameters->mixing_parameter_;
+}
 
 
 wxString GuideGaussianProcess::GetSettingsSummary()
@@ -532,6 +606,7 @@ wxString GuideGaussianProcess::GetSettingsSummary()
       "\tSignal-variance periodic kern = %.3f\n"
       "\tLength scale SE kern = %.3f\n"
       "Optimisation called every = %.3d points\n"
+      "Mixing parameter = %.3d\n"
     ;
 
     Eigen::VectorXd hyperparameters = parameters->gp_.getHyperParameters();
@@ -542,7 +617,8 @@ wxString GuideGaussianProcess::GetSettingsSummary()
       hyperparameters(0), hyperparameters(1), 
       hyperparameters(2), hyperparameters(3), 
       hyperparameters(4),
-      parameters->min_points_for_optimisation);
+      parameters->min_points_for_optimisation,
+      parameters->mixing_parameter_);
 }
 
 
@@ -559,149 +635,199 @@ void GuideGaussianProcess::HandleTimestamps()
         parameters->timer_.Start();
     }
     double time_now = parameters->timer_.Time();
-    double delta_measurement_time_ms = time_now - parameters->elapsed_time_ms_;
-    parameters->elapsed_time_ms_ = time_now;
-    parameters->get_last_point().timestamp = parameters->elapsed_time_ms_ - delta_measurement_time_ms / 2;
+    double delta_measurement_time_ms = time_now - parameters->last_timestamp_;
+    parameters->last_timestamp_ = time_now;
+    parameters->get_last_point().timestamp = (parameters->last_timestamp_ - delta_measurement_time_ms / 2) / 1000;
 }
-<
+
+// adds a new measurement to the circular buffer that holds the data.
 void GuideGaussianProcess::HandleMeasurements(double input)
 {
     parameters->add_one_point();
     parameters->get_last_point().measurement = input;
 }
 
+void GuideGaussianProcess::HandleControls(double control_input)
+{
+    parameters->get_last_point().control = control_input;
+}
+
 void GuideGaussianProcess::HandleModifiedMeasurements(double input)
 {
-    // If there is no previous measurement, a random one is generated.
+    /* What we would like to have is the ideal control signal, namely the control signal that would have
+     * produced zero error output. We try to calculate what the control signal should have been in the previous
+     * time step and predict this ideal signal to the future.
+     */
     if(parameters->get_number_of_measurements() <= 1)
     {
-        //The daytime indoor measurement noise SD is 0.25-0.35
-        const double indoor_noise_standard_deviation = 0.25;
-        double first_random_measurement = indoor_noise_standard_deviation *
-            math_tools::generate_normal_random_double();
-        double new_modified_measurement =
-            parameters->control_signal_ +
-            first_random_measurement * (1 - parameters->control_gain_) -
-            input;
-        parameters->get_last_point().modified_measurements = new_modified_measurement;
+        // At step one, ideal would have been to know this error in advance and correct it.
+        parameters->get_last_point().modified_measurement = input;
     }
     else
     {
-        gp_guide_parameters::data_points &last_point = parameters->get_last_point();
-        double new_modified_measurement =
-            parameters->control_signal_ +
-            parameters->get_second_last_point().measurement * (1 - parameters->control_gain_) -
-            last_point.measurement;
-        last_point.modified_measurements = new_modified_measurement;
+        /* Later, we already did some control action. Therefore, we have to correct for the past control signal
+         * when calculating the ideal control signal of the previous step.
+         *
+         * The ideal control signal is what would have been needed to keep a zero error at zero.
+         */
+        parameters->get_last_point().modified_measurement = input // the current displacement should have been corrected for
+            + parameters->get_second_last_point().control // we already did control in the last step, we have to add this
+            - parameters->get_second_last_point().measurement; // if we previously weren't at zero, we have to subtract the offset
     }
 }
 
 double GuideGaussianProcess::result(double input)
 {
+    // as soon as supported, don't update the GP anymore if the star was lost!
     HandleMeasurements(input);
     HandleTimestamps();
     HandleModifiedMeasurements(input);
 
-    /*
-     * Need to read this value here because it is not loaded at the construction
-     * time of this object.
-     * 
-     *
-     * Not used when testing the Code with Matlab, will be used in the actual GP
-     */
-    double delta_controller_time_ms = pFrame->RequestedExposureDuration();
+    int delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
+    parameters->control_signal_ = parameters->mixing_parameter_*input; // add the measured part of the controller
+    double prediction_ = 0.0; // this will hold the prediction part later
 
+    // initialize the different vectors needed for the GP
+    Eigen::VectorXd timestamps(parameters->get_number_of_measurements()-1);
+    Eigen::VectorXd measurements(parameters->get_number_of_measurements()-1);
+    Eigen::VectorXd mod_measurements(parameters->get_number_of_measurements() - 1);
+    Eigen::VectorXd linear_fit(parameters->get_number_of_measurements()-1);
 
-    // This is the Code sending the circular buffers to Matlab:
+    // check if we are allowed to use the GP
+    if (parameters->min_nb_element_for_inference > 0 &&
+        parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
+    {
+        // transfer the data from the circular buffer to the Eigen::Vectors
+        for(size_t i = 0; i < parameters->get_number_of_measurements() - 1; i++)
+        {
+          timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
+          measurements(i) = parameters->circular_buffer_parameters[i].measurement;
+          mod_measurements(i) = parameters->circular_buffer_parameters[i].modified_measurement;
+        }
 
-#if 0
-    double* timestamp_data = parameters->timestamps_.getEigenVector()->data();
-    double* modified_measurement_data = parameters->modified_measurements_.getEigenVector()->data();
-    double result;
-    double wait_time = 100;
+        // linear least squares regression for offset and drift
+        Eigen::MatrixXd feature_matrix(2, parameters->get_number_of_measurements()-1);
+        feature_matrix.row(0) = timestamps.array().pow(0);
+        feature_matrix.row(1) = timestamps.array(); // .pow(1) would be kinda useless
+
+        // this is the inference for linear regression
+        Eigen::VectorXd weights = (feature_matrix*feature_matrix.transpose()
+            + 1e-3*Eigen::Matrix<double, 2, 2>::Identity()).ldlt().solve(feature_matrix*mod_measurements);
+
+        // calculate the linear regression for all datapoints
+        linear_fit = weights.transpose()*feature_matrix;
+
+        // correct the datapoints by the polynomial fit
+        mod_measurements -= linear_fit;
+
+        // inference of the GP with this new points
+        parameters->gp_.infer(timestamps, mod_measurements);
+
+        // prediction for the next location
+        Eigen::VectorXd next_location(2);
+        long current_time = parameters->timer_.Time();
+        next_location << current_time / 1000.0,
+            (current_time + delta_controller_time_ms) / 1000.0;
+        Eigen::VectorXd prediction = parameters->gp_.predict(next_location).first;
+
+        // the prediction is consisting of GP prediction and the linear drift
+        prediction_ = (prediction(1) - prediction(0)) + (delta_controller_time_ms / 1000)*weights(1);
+        parameters->control_signal_ += (1-parameters->mixing_parameter_)*prediction_; // mix in the prediction
+        parameters->control_signal_ *= parameters->control_gain_; // apply control gain
+    }
+
+// display GP and hyperparameter information, can be removed for production
+#if GP_DEBUG_STATUS_
+    Eigen::VectorXd hypers = parameters->gp_.getHyperParameters();
+
+    wxString msg;
+    msg = wxString::Format(_("displacement: %5.2f px, prediction: %.2f px, %.2f, %.2f, %.2f, %.2f, %.2f"),
+        input, prediction_,
+        std::exp(hypers(0)), std::exp(hypers(1)), std::exp(hypers(2)), std::exp(hypers(3)), std::exp(hypers(4)));
+
+    pFrame->SetStatusText(msg, 1);
+#endif
+
+    if (input != 0.0) // don't update the GP if the star was lost
+    {
+        HandleControls(parameters->control_signal_);
+    }
+
+    // optimize the hyperparameters if we have enough points already
+    if (parameters->get_number_of_measurements() > parameters->min_points_for_optimisation)
+    {
+        // performing the optimisation
+        Eigen::VectorXd optim = parameters->gp_.optimizeHyperParameters(1); // only one linesearch
+        parameters->gp_.setHyperParameters(optim);
+    }
+
+    // estimate the standard deviation in a simple way (no optimization)
+    if (parameters->get_number_of_measurements() > parameters->min_points_for_optimisation) 
+    {    // TODO: implement condition with some checkbox
+        Eigen::VectorXd gp_parameters = parameters->gp_.getHyperParameters();
+
+        double mean = measurements.mean();
+        // Eigen doesn't have var() yet, we have to compute it ourselves
+        gp_parameters(0) = std::log((measurements.array() - mean).pow(2).mean());
+        parameters->gp_.setHyperParameters(gp_parameters);
+    }
+
+// send the GP output to matlab for plotting
+#if GP_DEBUG_MATLAB_
+    int N = 300; // number of prediction points
+    Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(N,
+        0,
+        parameters->get_last_point().timestamp + 500);
+
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd> predictions = parameters->gp_.predict(locations);
+
+    Eigen::VectorXd means = predictions.first;
+    Eigen::VectorXd stds = predictions.second.diagonal();
+
+    double* timestamp_data = timestamps.data();
+    double* measurement_data = mod_measurements.data();
+    double* location_data = locations.data();
+    double* mean_data = means.data();
+    double* std_data = stds.data();
+
+    double wait_time = 50;
 
     bool sent = false;
     bool received = false;
 
-
-    // Send the input
-    double input_buf[] = { input };
-    sent = parameters->udpInteraction.SendToUDPPort(input_buf, 8);
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
-    wxMilliSleep(wait_time);
-
     // Send the size of the buffer
-    double size = parameters->timestamps_.getEigenVector()->size();
+    double size = timestamps.size();
     double size_buf[] = { size };
-    sent = parameters->udpInteraction.SendToUDPPort(size_buf, 8);
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(size_buf, 8);
     wxMilliSleep(wait_time);
 
     // Send modified measurements
-    sent = parameters->udpInteraction.SendToUDPPort(modified_measurement_data, size * 8);
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(measurement_data, size * 8);
     wxMilliSleep(wait_time);
 
     // Send timestamps
-    sent = parameters->udpInteraction.SendToUDPPort(timestamp_data, size * 8);
-    // Receive the final control signal
-    received = parameters->udpInteraction.ReceiveFromUDPPort(&result, 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(timestamp_data, size * 8);
+    wxMilliSleep(wait_time);
 
-    return result;
+    // size of predictions
+    double loc_size = N;
+    double loc_size_buf[] = { loc_size };
+    sent = parameters->udpInteraction_.SendToUDPPort(loc_size_buf, 8);
+    wxMilliSleep(wait_time);
+
+    // Send mean
+    sent = parameters->udpInteraction_.SendToUDPPort(location_data, loc_size * 8);
+    wxMilliSleep(wait_time);
+
+    // Send mean
+    sent = parameters->udpInteraction_.SendToUDPPort(mean_data, loc_size * 8);
+    wxMilliSleep(wait_time);
+
+    // Send std
+    sent = parameters->udpInteraction_.SendToUDPPort(std_data, loc_size * 8);
+    wxMilliSleep(wait_time);
 #endif
-
-
-    /*
-     * This is the code running the actual GP
-     *
-     * TODO: 
-     * - Let GP class be a member of this Guiding Class
-     * - Call the GP´s BFGS Optimizer every once in a while (how often?)
-     *
-     */
-
-
-    if (parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
-    {
-        Eigen::VectorXd timestamps(parameters->get_number_of_measurements());
-        Eigen::VectorXd measurements(parameters->get_number_of_measurements());
-
-        for(size_t i = 0; i < parameters->get_number_of_measurements(); i++)
-        {
-          timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
-          measurements(i) = parameters->circular_buffer_parameters[i].measurement;
-        }
-
-        // inference of the GP with this new points
-        parameters->gp_.infer(
-          timestamps,
-          measurements);
-
-        // prediction of the next
-        Eigen::VectorXd next_location(1);
-        next_location << parameters->elapsed_time_ms_ + delta_controller_time_ms / 2;
-        Eigen::VectorXd prediction = parameters->gp_.predict(next_location).first;
-        
-        parameters->control_signal_ = prediction(0) - parameters->control_gain_ * input / delta_controller_time_ms;
-
-    }
-    else
-    {
-        // Simpler prediction when there are not enough data points for the GP
-        parameters->control_signal_ = -input / delta_controller_time_ms;
-    }
-
-
-    // here from time to time launch the optimiser
-
-    if(parameters->min_points_for_optimisation)
-    {
-        // performing the optimisation every x steps
-    
-    
-    }
-
 
     return parameters->control_signal_;
 }
