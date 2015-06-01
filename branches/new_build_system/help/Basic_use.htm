@@ -5,7 +5,7 @@
 Guiding</h2>
 There are five basic steps to start guiding.
 <ol type="1">
-<li>Press the camera button and connect to your guide camera
+<li>Press the USB-icon button and connect to your guide camera
 and mount.</li>
 <li>Pick an exposure duration from the drop-down list.</li>
 <li>Hit
@@ -50,7 +50,7 @@ camera drivers are available from the ASCOM web site or from the camera
 manufacturer, and the drop-down list will show only those ASCOM cameras
 that are already installed on your system, if any.<br><br>The
 list of supported cameras at the time of writing is shown below - but
-you can contact the <a href="https://groups.google.com/forum/#!forum/open-phd-guiding">open-phd-guiding forum</a> to inquire about your specific camera or mount.<br>
+you can contact the <a href="https://groups.google.com/forum/#%21forum/open-phd-guiding">open-phd-guiding forum</a> to inquire about your specific camera or mount.<br>
 <br>
 Supported cameras, December 2014:<br><br>Windows:<br><ul class="circle"><li>ASCOM v5/6 compliant cameras</li><li>Atik 16 series, color or monochrome</li><li>Atik Gen 3 color or monochrome</li><li>CCD-Labs Q-Guider</li><li>Fishcamp Starfish</li><li>iNova PLC-M</li><li>MagZero MZ-5</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion StarShoot DSCI&nbsp;</li><li>Orion Starshoot Autoguider</li><li>Orion Starshoot Planetary Imager and Autoguider</li><li>QHY 5-II</li><li>QHY 5L-II</li><li>SAC4-2</li><li>SBIG</li><li>SBIG rotator</li><li>Starlight Xpress SXF / SXVF / Lodestar</li><li>Webcams (LXUSB, parallel, serial, OpenCV, WDM)</li><li>ZWO ASI</li></ul>Mac:<br><ul><li>Fishcamp Starfish</li><li>KWIQGuider</li><li>Meade DSI series: I-III, color and monochrome</li><li>Orion Starshoot Autoguider</li><li>SBIG</li><li>Starlight XPress SXV</li><li>The Imaging Source (DCAM Firewire)</li><li>ZWO ASI</li></ul><br>
 <h4><a name="Mount_Selection"></a>Mount Selection</h4>
@@ -188,7 +188,7 @@ library and bad-pixel map data will no longer be usable.<br>
 <br>
 If
 you already have a suitable default equipment profile and you simply
-want to connect to the equipment "just like before", you can do a
+want to connect to the equipment&nbsp;just as before, you can do a
 &lt;shift&gt;-click on the main screen 'Camera' button and <span style="font-style: italic;">PHD2</span> will
 automatically re-connect to your hardware.
 <h3><a name="Exposure_Time_and_Star_Selection"></a>Exposure
@@ -230,8 +230,13 @@ of one to five seconds. &nbsp;Rather than choosing the star yourself with a mous
 There is also an Auto exposure time selection available. When exposure
 is set to Auto, PHD2 will attempt to adjust the exposure to keep the
 selected guide star at a constant signal-to-noise ratio (SNR) value.
-The Auto setting can be especially beneficial for AO users who want to
-minimize exposure time without losing the guide star. The settings to control
+This is a specialized measurement used by PHD2 to determine how well
+the star can be distinguished from the background - it is similar but
+not identical to the signal-to-noise ratio used in photometry.
+&nbsp;The Auto setting can be especially beneficial for AO users who
+want to
+minimize exposure time without losing the guide star. The settings to
+control
 Auto-exposure are on the <a href="Advanced_settings.htm#Global_Tab">Global Tab</a> of the Advanced Dialog.
 <h3><a name="Automatic_Calibration"></a>Automatic
 Calibration</h3>
@@ -246,7 +251,7 @@ by a specific amount</li>
 </ol>
 <span style="font-style: italic;">PHD2</span>
 handles these measurements automatically by sending guide pulses to the
-mount and "watching" how far and in which direction the star moves
+mount and&nbsp;watching how far and in which direction the star moves
 between guide camera images. &nbsp;This process begins after you
 have
 selected a star and then clicked on the Guide icon button.
@@ -265,7 +270,19 @@ wants to move the star up to 25 pixels in
 each direction in order to get an accurate calibration. &nbsp;Once
 this
 is complete, the crosshairs will turn green and guiding will start
-automatically.. &nbsp;<br>
+automatically.<br><br>Although
+PHD2 moves the guide star in all four directions, only the west and
+north movements are actually used to compute the guide rates and camera
+angle. The east and south moves are used only to restore the star
+roughly to its starting position. &nbsp;Before the north moves are
+begun, you will see a brief sequence of pulses that are intended to
+clear backlash. &nbsp;These pulses may not clear all the declination
+backlash in your mount, particularly if you are guiding at a long focal
+length. &nbsp; In that case, the computed declination rate may be too
+low, a situation that is discussed further in the <a href="Tools.htm#Calibration_Details">Tools and Utilities</a>
+section. &nbsp;You may also see that the south pulses leave the guide
+star well-short of its starting position - this is another visual clue
+that you have significant declination backlash in your mount.<br>
 <br>
 In
 most cases, calibration will complete automatically without any user
@@ -314,11 +331,11 @@ always review the results of your last calibration by using the 'Tools'
 menu and clicking on 'Review Calibration Data' &nbsp;That will open a
 dialog that shows a graphical representation of the mount's movements
 along with the values that were computed for&nbsp;guiding your mount.
-&nbsp;This window is described elsewhere in the <a href="Tools.htm#Calibration_Details">"Calibration Details"</a>
+&nbsp;This window is described elsewhere in the&nbsp;<a href="Tools.htm#Calibration_Details">Calibration Details</a>
 section of the help file. &nbsp;As a quick quality check, you can open
 this window and confirm that 1) the RA and Dec lines are roughly
 perpendicular and 2)&nbsp; the plotted points are roughly linear with
-no significant&nbsp;curves, bends, or reversals in direction. &nbsp; If
+no significant&nbsp;curves, bends, clumping of points, or reversals in direction. &nbsp; If
 you do see these kinds of odd patterns in the graph, you should
 probably re-do the calibration. &nbsp;Even with high-end mounts,
 calibrations can occasionally go awry because of environmental
@@ -334,10 +351,10 @@ an extended time period - you can restore the previous calibration data
 and start guiding immediately. &nbsp;This function
 is&nbsp;located
 under the
-'Tools' menu and is labelled '<a name="Restore_Calibration_Data"></a>Restore Calibration Data.'
+'Tools/Modify Calibration' menu and is labelled '<a name="Restore_Calibration_Data"></a>Restore Calibration Data.'
 &nbsp;Remember, the data are saved whenever a full calibration is
 completed or when you use the 'flip calibration data' command under the
-'Tools' menu (see below). &nbsp;If you're using a German equatorial
+'Tools/Modify Calibration' menu (see below). &nbsp;If you're using a German equatorial
 mount and the ASCOM interface or you have an 'aux' mount connected, the saved calibration data will include
 the side of pier where you were last guiding; so <span style="font-style: italic;">PHD2</span>
 will adjust
@@ -368,7 +385,12 @@ situations, so absence of pointing information is not a big problem.
 about
 it and are imaging near the celestial pole, you should consider
 calibrating using a star that's also at high declination.
-&nbsp;Finally, if you have a rotator configured as part of your
+&nbsp;If you do a calibration at a declination &gt; 60 degrees, PHD2 will <span style="font-weight: bold;">not</span>&nbsp;adjust
+the guide rates if you move to a different location. &nbsp;So
+calibration at high declination values is really for the purpose of
+imaging in the same region and should not be used as a baseline
+calibration for general use.&nbsp; Finally, if you have a rotator
+configured as part of your
 equipment profile, PHD2 will use its angle position property to adjust
 the calibration for changes in camera angle, thus eliminating another
 need to re-calibrate.<br><br>After
@@ -397,7 +419,7 @@ corrections that can be achieved with the AO alone.
 Once guiding has begun,
 diagnostic messages will be displayed in the status bar to show what
 guide commanda are being sent to the mount. <span style="font-style: italic;">PHD2</span>
-will continue guiding until you click on the 'stop' icon. &nbsp;To
+will continue guiding until you click on the 'Stop' icon. &nbsp;To
 resume guiding, simply start looping exposures again, select your star,
 and click on the 'Guide' button. &nbsp;You will not need to repeat
 the
@@ -440,10 +462,10 @@ guiding (assuming you haven't also rotated the camera or focuser).
 take
 action to adjust the guider calibration. &nbsp;You can, of course,
 simply do another
-calibration on the "new" side of the pier, a process that will
+calibration on the current side of the pier, a process that will
 typically take only a couple of minutes. &nbsp;Or, you
 can&nbsp;use
-the pull-down menu item under 'Tools' to "<a name="flip_calibration_data"></a>flip calibration data" and
+the pull-down menu item under 'Tools/Modify Calibration' to "<a name="flip_calibration_data"></a>flip calibration data" and
 then resume guiding immediately. &nbsp;<br>
 <br>
 In some cases, you may

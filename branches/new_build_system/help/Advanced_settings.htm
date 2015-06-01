@@ -76,12 +76,19 @@ desirable with an AO.</li>
 <li>Max Exposure - the maximum exposure time. Before a guide star is selected, PHD2
 will set the exposure time to the maximum value. Once a guide star is selected, PHD2
 will then incrementally decrease the exposure time until the desired SNR is reached.</li>
-<li>Target SNR - this is the average SNR value that PHD2 will attempt to achieve
-by adjusting the exposure time. SNR can fluctuate from frame to frame even with a
-fixed exposure duration, so be sure to account for that when choosing a target SNR
-value. PHD2 will reject frames when SNR drops below 3.0. The default value of 6.0
-should provide enough of a cushion to prevent fluctuations from causing the SNR to
-go below 3.0.</li>
+<li>Target SNR - this is the average SNR value that PHD2 will attempt
+to achieve
+by adjusting the exposure time. SNR can fluctuate from frame to frame
+even with a
+fixed exposure duration, so be sure to account for that when choosing a
+target SNR
+value. PHD2 will reject frames when SNR drops below 3.0. The default
+value of 6.0
+should provide enough of a cushion to prevent fluctuations from causing
+the SNR to
+go below 3.0. &nbsp;As mentioned in the 'Basic Use' section, SNR is
+similar but not identical to the signal-to-noise ratio used in
+photometry.</li>
 </ul>
 </ul>
 <h3><a name="Guiding_Tab"></a>Guiding Tab</h3>
