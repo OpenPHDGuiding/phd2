@@ -98,7 +98,10 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     DoAdd(chkSizer);
 
     wxString xAlgorithms[] = {
-        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch"),_("Gaussian Process")
+        _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
+#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
+        _("Gaussian Process"),
+#endif
     };
 
     width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
@@ -121,7 +124,10 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     }
 
     wxString yAlgorithms[] = {
-        _("None"),_("Hysteresis"),_("Lowpass"),_("Lowpass2"), _("Resist Switch"),_("Gaussian Proces")
+        _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
+#if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
+        _("Gaussian Process"),
+#endif
     };
 
     width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
@@ -336,24 +342,24 @@ bool Mount::CreateGuideAlgorithm(int guideAlgorithm, Mount *mount, GuideAxis axi
     switch (guideAlgorithm)
     {
         case GUIDE_ALGORITHM_IDENTITY:
-            *ppAlgorithm = (GuideAlgorithm *) new GuideAlgorithmIdentity(mount, axis);
+            *ppAlgorithm = new GuideAlgorithmIdentity(mount, axis);
             break;
         case GUIDE_ALGORITHM_HYSTERESIS:
-            *ppAlgorithm = (GuideAlgorithm *) new GuideAlgorithmHysteresis(mount, axis);
+            *ppAlgorithm = new GuideAlgorithmHysteresis(mount, axis);
             break;
         case GUIDE_ALGORITHM_LOWPASS:
-            *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmLowpass(mount, axis);
+            *ppAlgorithm = new GuideAlgorithmLowpass(mount, axis);
             break;
         case GUIDE_ALGORITHM_LOWPASS2:
-            *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmLowpass2(mount, axis);
+            *ppAlgorithm = new GuideAlgorithmLowpass2(mount, axis);
             break;
         case GUIDE_ALGORITHM_RESIST_SWITCH:
-            *ppAlgorithm = (GuideAlgorithm *)new GuideAlgorithmResistSwitch(mount, axis);
+            *ppAlgorithm = new GuideAlgorithmResistSwitch(mount, axis);
             break;
             
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)            
         case GUIDE_ALGORITHM_GAUSSIAN_PROCESS:
-            *ppAlgorithm = (GuideAlgorithm *)new GuideGaussianProcess(mount,axis);
+            *ppAlgorithm = new GuideGaussianProcess(mount, axis);
             break;
 #endif
 

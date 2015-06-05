@@ -87,29 +87,28 @@ static const char *getRegistryString(io_object_t sObj, const char *propName)
     return resultStr;
 }
 
-SerialPortMac::SerialPortMac(void) {
+SerialPortMac::SerialPortMac(void)
+{
     m_PortFID = 0;
 }
 
-SerialPortMac::~SerialPortMac(void) {
+SerialPortMac::~SerialPortMac(void)
+{
     if (m_PortFID > 0) {
         close(m_PortFID);
         m_PortFID = 0;
     }
 }
 
-wxArrayString SerialPortMac::GetSerialPortList(void) {
+wxArrayString SerialPortMac::GetSerialPortList(void)
+{
     wxArrayString ret;
-
     return ret;
 }
-
-
 
 bool SerialPortMac::Connect(const wxString& portName, int baud, int dataBits, int stopBits, PARITY Parity, bool useRTS, bool useDTR)
 {
     bool bError = false;
-
  /*   try
     {
         m_handle = CreateFile(portName,
