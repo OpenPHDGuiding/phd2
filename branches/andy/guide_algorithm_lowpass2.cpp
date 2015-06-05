@@ -116,6 +116,7 @@ double GuideAlgorithmLowpass2::result(double input)
             m_pMount->FlagBacklashOverShoot(fabs(input) - m_minMove, m_guideAxis);
     }
 
+    
     Debug.Write(wxString::Format("GuideAlgorithmLowpass2::Result() returns %.2f from input %.2f\n", dReturn, input));
     return dReturn;
 }

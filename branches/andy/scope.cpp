@@ -1370,7 +1370,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pUseBacklashComp = new wxCheckBox(pParent, wxID_ANY, _("Backlash Comp"));
     compSizer->Add(m_pUseBacklashComp, wxSizerFlags().Expand().Border(wxALL, 3));
     m_pBacklashPulse = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 2000, 450, 50);  
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);  
     wxSizer *sizer_temp = MakeLabeledControl(_("Amount"), m_pBacklashPulse,
         _("Length of backlash correction pulse (mSec)"));
     compSizer->Add(sizer_temp, wxSizerFlags().Expand().Border(wxALL, 3));
@@ -1489,8 +1489,8 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
-    m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
     m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
+    m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
 
     MountConfigDialogPane::UnloadValues();
 }

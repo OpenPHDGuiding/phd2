@@ -53,15 +53,14 @@ void BacklashComp::SetBacklashPulse(int mSec)
 {
     m_pulseWidth = wxMax(0, mSec);
     pConfig->Profile.SetInt("/" + m_pMount->GetMountClassName() + "/DecBacklashPulse", mSec);
+    Debug.AddLine(wxString::Format("BLC: Comp pulse set to %d mSec", mSec));
 }
 
 void BacklashComp::EnableBacklashComp(bool enable)
 {
-    if (enable && m_pulseWidth > 0)
-        m_compActive = true;
-    else
-        m_compActive = false;
+    m_compActive = enable;
     pConfig->Profile.SetBoolean("/" + m_pMount->GetMountClassName() + "/BacklashCompEnabled", m_compActive);
+    Debug.AddLine(wxString::Format("BLC: Backlash comp %s, Comp pulse = %d mSec", m_compActive ? "enabled" : "disabled", m_pulseWidth));
 }
 
 void BacklashComp::HandleOverShoot(int pulseSize)
@@ -69,7 +68,7 @@ void BacklashComp::HandleOverShoot(int pulseSize)
     if (m_justCompensated && pulseSize > 0)
     {                       // We just did a backlash comp so this is probably our problem
         double reduction = wxMin(0.5 * m_pulseWidth, pulseSize);
-        Debug.AddLine(wxString::Format("Backlash over-shoot, pulse size reduced from %0.f to %0.f", m_pulseWidth, m_pulseWidth - reduction));
+        Debug.AddLine(wxString::Format("BLC: Backlash over-shoot, pulse size reduced from %0.f to %0.f", m_pulseWidth, m_pulseWidth - reduction));
         m_pulseWidth -= reduction;
     }
 }
@@ -77,14 +76,14 @@ void BacklashComp::HandleOverShoot(int pulseSize)
 int BacklashComp::GetBacklashComp(int dir, double yDist)
 {
     int rslt = 0;
-    if (m_compActive)
+    if (m_compActive && m_pulseWidth > 0)
     {
         if (fabs(yDist) > 0)
         {
             if (m_lastDirection != NONE && dir != m_lastDirection)
             {
                 rslt = (int) m_pulseWidth;
-                Debug.AddLine(wxString::Format("Dec direction reversal from %s to %s, backlash comp pulse of %d applied", 
+                Debug.AddLine(wxString::Format("BLC: Dec direction reversal from %s to %s, backlash comp pulse of %d applied", 
                     m_lastDirection == NORTH ? "North" : "South", dir == NORTH ? "North" : "South", rslt));
             }
                 
@@ -96,11 +95,13 @@ int BacklashComp::GetBacklashComp(int dir, double yDist)
 }
 
 // -------------------  BacklashTool Implementation
-BacklashTool::BacklashTool()
+BacklashTool::BacklashTool(Mount *mainMount)
 {
     Calibration lastCalibration;
 
-    if (pMount->GetLastCalibrationParams(&lastCalibration))
+    m_theScope = mainMount;
+
+    if (m_theScope->GetLastCalibrationParams(&lastCalibration))
     {
         m_lastDecGuideRate = lastCalibration.yRate;
         m_bltState = BLT_STATE_INITIALIZE;
@@ -118,10 +119,6 @@ BacklashTool::BacklashTool()
 
 void BacklashTool::StartMeasurement()
 {
-    if (pSecondaryMount)
-        m_theScope = pSecondaryMount;
-    else
-        m_theScope = pMount;
     m_bltState = BLT_STATE_INITIALIZE;
     DecMeasurementStep(pFrame->pGuider->CurrentPosition());
 }
@@ -217,8 +214,9 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
                 m_markerPoint = currMountLocation;            // Marker point at start of big Dec move north
                 m_bltState = BLT_STATE_STEP_NORTH;
                 double totalBacklashCleared = m_stepCount * m_pulseWidth;
-                // Want to move the mount north at 500 mSec, regardless of image scale. Reduce pulse width only if it would blow us out of the tracking region
-                m_pulseWidth = wxMin((int)NORTH_PULSE_SIZE, (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
+                // Want to move the mount north at >=500 mSec, regardless of image scale. Reduce pulse width only if it would blow us out of the tracking region
+                m_pulseWidth = wxMax((int)NORTH_PULSE_SIZE, ((Scope*)m_theScope)->GetCalibrationDuration());
+                m_pulseWidth = wxMin(m_pulseWidth, (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
                 m_stepCount = 0;
                 // Move 50% more than the backlash we cleared or >=4 secs, whichever is greater.  We want to leave plenty of room
                 // for giving south moves time to clear backlash and actually get moving
@@ -274,15 +272,13 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
                 // decDelta contains the nominal backlash amount
                 m_backlashResultPx = fabs(decDelta);
                 m_backlashResultSec = (int)(m_backlashResultPx / m_northRate);          // our north rate is probably better than the calibration rate
+                Debug.AddLine(wxString::Format("BLT: Backlash amount is %0.2f px, %d mSec", m_backlashResultPx, m_backlashResultSec));
                 // Don't try this refinement if the clearing pulse will cause us to lose the star
                 if (m_backlashResultPx < pFrame->pGuider->GetMaxMovePixels())
                 {
-
-                    Debug.AddLine(wxString::Format("BLT: Backlash amount is %0.2f px", m_backlashResultPx));
-                    m_lastStatus = wxString::Format(_("Issuing test backlash correction of %d mSec"), m_backlashResultSec);
+                    m_lastStatus = wxString::Format(_("BLT: Issuing test backlash correction of %d mSec"), m_backlashResultSec);
                     Debug.AddLine(m_lastStatus);
-
-                    // This should put us back roughly to where we issued the big north pulse
+                    // This should put us back roughly to where we issued the big north pulse unless the backlash is very large
                     pFrame->ScheduleCalibrationMove(m_theScope, SOUTH, m_backlashResultSec);
                     m_stepCount++;
                 }

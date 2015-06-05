@@ -434,7 +434,11 @@ GuidingAsstWin::GuidingAsstWin()
     m_start->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStart), NULL, this);
     m_stop->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStop), NULL, this);
 
-    pBacklashTool = new BacklashTool();
+    // Always get an instance of the BacklashTool even if we don't need it
+    if (pSecondaryMount)
+        pBacklashTool = new BacklashTool(pSecondaryMount);
+    else
+        pBacklashTool = new BacklashTool(pMount);
     m_measuringBacklash = false;
 
     int xpos = pConfig->Global.GetInt("/GuidingAssistant/pos.x", -1);
@@ -663,6 +667,10 @@ void GuidingAsstWin::LogResults()
     Debug.Write(wxString::Format("Dec Drift Rate=%s, Dec Peak=%s, PA Error=%s\n",
         m_othergrid->GetCellValue(m_dec_drift_as_loc), m_othergrid->GetCellValue(m_dec_peak_as_loc),
         m_othergrid->GetCellValue(m_pae_loc)));
+    if (pBacklashTool && pBacklashTool->GetBacklashResultPx() > 0)
+    {
+        Debug.Write(wxString::Format("Backlash measures: %0.2f px, %d mSec\n", pBacklashTool->GetBacklashResultPx(), pBacklashTool->GetBacklashResultSec()));
+    }
 }
 
 void GuidingAsstWin::MakeRecommendations()
@@ -693,8 +701,8 @@ void GuidingAsstWin::MakeRecommendations()
     if (alignmentError > 5.0)
     {
         wxString msg = alignmentError < 10.0 ?
-            _("You may want to improve your polar alignment to reduce field rotation near the pole.") :
-            _("Your polar alignment is pretty far off. You are likely to see field rotation unless you keep your exposures very short.");
+            _("Polar alginment error > 5 arc-min; that could probably be improved.") :
+            _("Polar alignment error > 10 arc-min; try using the Drift Align tool to improve alignment.");
         if (!m_pae_msg)
             m_pae_msg = AddRecommendationEntry(msg);
         else
@@ -755,14 +763,14 @@ void GuidingAsstWin::MakeRecommendations()
             m_snr_msg->SetLabel(wxEmptyString);
     }
 
-    if (pBacklashTool->GetBacklashResultPx() > 0)
+    if (pBacklashTool->GetBacklashResultSec() > 200)
     {
         bool largeBL = pBacklashTool->GetBacklashResultSec() > MAX_BACKLASH_COMP;
         wxString msg;
         if (!largeBL)
             msg = wxString::Format(_("Try setting a Dec backlash value of %d mSec"), pBacklashTool->GetBacklashResultSec());
         else
-            msg = wxString::Format(_("Backlash is excessive; try guiding in just one Dec direction"));
+            msg = wxString::Format(_("Backlash is %0.1f px; you may need to guide in only one Dec direction"), pBacklashTool->GetBacklashResultPx());
         if (!m_backlash_msg)
         {
             m_backlash_msg = AddRecommendationEntry(msg, wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);

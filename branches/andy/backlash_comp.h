@@ -82,7 +82,7 @@ private:
     Mount *m_theScope;
 
 public:
-    BacklashTool();
+    BacklashTool(Mount *mainMount);
     void StartMeasurement();
     void StopMeasurement();
     void DecMeasurementStep(PHD_Point currentLoc);
