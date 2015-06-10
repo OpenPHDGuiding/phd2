@@ -36,9 +36,9 @@
  */
 #ifdef  GUIDE_INDI
 
-#include <libindi/baseclient.h>
-#include <libindi/basedevice.h>
-#include <libindi/indiproperty.h>
+#include <baseclient.h>
+#include <basedevice.h>
+#include <indiproperty.h>
 
 class ScopeINDI : public Scope, public INDI::BaseClient {
 private:

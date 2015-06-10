@@ -778,8 +778,7 @@ if(UNIX AND NOT APPLE)
   else() 
     set(arch "x86") 
   endif()
-  
-  
+    
   find_path(ZWO_INCLUDE_DIR ASICamera2.h
     PATHS
     ${PHD_PROJECT_ROOT_DIR}/cameras
@@ -798,46 +797,60 @@ if(UNIX AND NOT APPLE)
   find_library(mathlib NAMES m)  
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${mathlib})
 
+
+  # Zlib
+  set(libzlib_root ${thirdparties_deflate_directory}/zlib-1.2.8)
+  if(NOT EXISTS ${libzlib_root})
+    # untar the dependency
+    message(STATUS "Untarring zlib")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/zlib-1.2.8.tar.gz
+		      WORKING_DIRECTORY ${thirdparties_deflate_directory})
+  endif()
+  set(SKIP_INSTALL_ALL TRUE) 
+  add_subdirectory(${libzlib_root} tmp_cmakezlib)
+  set_property(TARGET zlib PROPERTY FOLDER "Thirdparty/")
+  include_directories(${libzlib_root})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} zlib)
+
+  # Nova
+  set(libnova_root ${thirdparties_deflate_directory}/libnova-0.16.0)
+  if(NOT EXISTS ${libnova_root})
+    # untar the dependency
+    message(STATUS "Untarring libnova")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/libnova-0.16.0.tar.gz
+		      WORKING_DIRECTORY ${thirdparties_deflate_directory})
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${thirdparty_dir}/libnova-CMakeLists.txt ${libnova_root}/CMakeLists.txt) 
+  endif()
+  set(BUILD_SHARED_LIBRARY FALSE)
+  add_subdirectory(${libnova_root} tmp_cmakelibnova EXCLUDE_FROM_ALL)
+  set_property(TARGET libnova PROPERTY FOLDER "Thirdparty/")
+  include_directories(${libnova_root})
+  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} libnova)
+  add_definitions("-DLIBNOVA" )
+
   # INDI
-  set(indiclient_root ${thirdparties_deflate_directory}/indiclient-1.0.0)
+  set(indiclient_root ${thirdparties_deflate_directory}/libindi-1.0.0)
   if(NOT EXISTS ${indiclient_root})
     # untar the dependency
     message(STATUS "Untarring indiclient")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/indiclient-1.0.0.tar.gz
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${thirdparty_dir}/libindi_1.0.0.tar.gz
                     WORKING_DIRECTORY ${thirdparties_deflate_directory})
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${thirdparty_dir}/libindiclient_CMakeLists.txt ${indiclient_root}/CMakeLists.txt) 
   endif()
-  add_subdirectory(${indiclient_root} tmp_cmakeindiclient)
+  set(thirdparty_save_source_dir ${CMAKE_SOURCE_DIR})
+  set(CMAKE_SOURCE_DIR ${indiclient_root})
+  add_subdirectory(${indiclient_root} tmp_cmakeindiclient EXCLUDE_FROM_ALL)
+  set(CMAKE_SOURCE_DIR ${thirdparty_save_source_dir})
   set_property(TARGET indiclient PROPERTY FOLDER "Thirdparty/")
-  include_directories(${indiclient_root})
+  include_directories(${indiclient_root}/libs)
+  include_directories(${indiclient_root}/libs/indibase)
   set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} indiclient)
 
-  #add_library(indiclient tmp_cmakeindiclient)
-
-  # some features for indi >= 0.9 are used apparently
-  #find_package(INDI 0.9 REQUIRED)
-  #include_directories(${INDI_INCLUDE_DIR})
-  #set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${INDI_CLIENT_LIBRARIES} ${INDI_LIBRARIES})
-  #if(PC_INDI_VERSION VERSION_LESS "1.1")
-    add_definitions("-DINDI_PRE_1_1_0")
-  #endif()
-  #if(PC_INDI_VERSION VERSION_LESS "1.0")
-  #  add_definitions("-DINDI_PRE_1_0_0")
-  #endif()
+  # We use indi 1.0.0
+  add_definitions("-DINDI_PRE_1_1_0")
+  # No specific define for indi 1.1.0 and up
+  # If you want to use indi 0.9.x:
+    #add_definitions("-DINDI_PRE_1_0_0")
   
-  # INDI depends on libz
-  find_package(ZLIB REQUIRED)
-  set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${ZLIB_LIBRARIES})
-
   
-  # Nova
-  find_package(Nova)
-  if(NOVA_FOUND)
-      include_directories(${NOVA_INCLUDE_DIR})
-      set(PHD_LINK_EXTERNAL ${PHD_LINK_EXTERNAL} ${NOVA_LIBRARIES})
-      add_definitions("-DLIBNOVA" )
-  else()
-      message(WARNING "libnova not found! Considere to install libnova-dev ")
-  endif() 
-
-
 endif()
