@@ -281,11 +281,9 @@ wxArrayString Scope::List(void)
     return ScopeList;
 }
 
-
 wxArrayString Scope::AuxMountList()
 {
     wxArrayString scopeList;
-
     scopeList.Add(_("None"));      // Keep this at the top of the list
 
 #ifdef GUIDE_ASCOM

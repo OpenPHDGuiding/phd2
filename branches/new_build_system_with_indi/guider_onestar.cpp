@@ -144,7 +144,7 @@ public:
 static const double DefaultMassChangeThreshold = 0.5;
 
 enum {
-    MIN_SEARCH_REGION = 5,
+    MIN_SEARCH_REGION = 7,
     DEFAULT_SEARCH_REGION = 15,
     MAX_SEARCH_REGION = 50,
 };
@@ -235,9 +235,15 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
 
     try
     {
-        if (searchRegion <= 0)
+        if (searchRegion < MIN_SEARCH_REGION)
         {
-            throw ERROR_INFO("searchRegion <= 0");
+            m_searchRegion = MIN_SEARCH_REGION;
+            throw ERROR_INFO("searchRegion < MIN_SEARCH_REGION");
+        }
+        else if (searchRegion > MAX_SEARCH_REGION)
+        {
+            m_searchRegion = MAX_SEARCH_REGION;
+            throw ERROR_INFO("searchRegion > MAX_SEARCH_REGION");
         }
         m_searchRegion = searchRegion;
     }
@@ -245,7 +251,6 @@ bool GuiderOneStar::SetSearchRegion(int searchRegion)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
-        m_searchRegion = DEFAULT_SEARCH_REGION;
     }
 
     pConfig->Profile.SetInt("/guider/onestar/SearchRegion", m_searchRegion);

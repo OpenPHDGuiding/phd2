@@ -70,25 +70,7 @@ infallible, so you may need to select a star yourself if you don't like
 the automated result. &nbsp;If you want to use Auto-Select, you should
 definitely use either a bad-pixel map or dark library to reduce the
 likelihood of PHD2 mistakenly choosing a hot pixel.
-<h3><a name="Calibration_Details"></a>Calibration&nbsp;Details</h3>
-Calibration data is saved automatically each time a calibration sequence completes
-successfully. &nbsp;The use of the calibration data has been described
-elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
-including &nbsp;options for restoring calibration data from an earlier
-time or "flipping" it after a meridian flip. &nbsp;You access these
-functions using the 'Calibration' sub-menu under the 'Tools' menu. &nbsp;Two other
-calibration-related items are&nbsp; shown there, namely the options to
-clear the current data or to enter calibration data manually. &nbsp;The
-"clear" option accomplishes the same thing as the 'Clear calibration'
-checkbox in the Advanced Dialog - it will force a recalibration
-whenever guiding is resumed. &nbsp;The 'Enter calibration data'
-option&nbsp;should be used&nbsp;only under
-very unusual circumstances and only if you're sure you know what you're
-doing; but it is available as a matter of completeness. &nbsp;If you
-click on the 'Enter calibration data' item, you'll see a dialog box
-that allows input of relatively low-level calibration data. &nbsp;This
-data might come from a much earlier session, perhaps extracted from the
-<span style="font-style: italic;">PHD2</span> guiding log file.<br><br>Most of the calibration-related windows, including calibration sanity-checks, will open a window that looks something like this:<br><br><img style="width: 728px; height: 377px;" alt="" src="Calib_Review.png"><br><br>The
+<h3><a name="Calibration_Details"></a>Calibration&nbsp;Details</h3>Most of the calibration-related windows, including calibration sanity-checks, will open a window that looks something like this:<br><br><img style="width: 728px; height: 377px;" alt="" src="Calib_Review.png"><br><br>The
 first thing to look at is the graph to the left, which shows what star
 movements resulted from the guide pulses that PHD2 sent during
 calibration. &nbsp;The lines represent the RA and Dec guide rates that
@@ -119,7 +101,62 @@ time, &nbsp;it is probably worth a few extra minutes&nbsp;to check this
 information and confirm that the calibration went
 reasonably well and produced sensible results. &nbsp;Bad calibrations
 can occur even for very experienced imagers using high-end mounts, so
-it is good to check.<br><br>
+it is good to check.<br><br>&nbsp;A common source of calibration problems is declination
+backlash, which is present to some degree in most geared mounts.
+&nbsp;With some mounts, however, the problem can be&nbsp;severe and
+can lead to poor calibration results. &nbsp;Consider the following
+calibration review dialog: <br><br><img style="width: 727px; height: 382px;" alt="" src="Calib_Review_Backlash.png"><br><br>The
+first clue to the problem is provided by comparing the declination and
+right ascension guide rates. &nbsp;In this case, the declination rate
+is barely 1/2 of the RA rate, something that should never occur.
+&nbsp;In fact, this would have triggered a calibration alert dialog.
+&nbsp;Now look at the graph of the declination points, in blue, and
+notice the clumping of points near the zero-point of the graph.
+&nbsp;Although a total of 16 steps were taken in declination, only the
+last 9 were actually moving the mount in a consistent way - the first 7
+basically accomplished nothing because of backlash. &nbsp; There are
+actually two problems to be addressed here. &nbsp;First, the
+calibration result is poor and should be repeated in order to get a
+more accurate measure of the declination guide rate. &nbsp;Second, the
+mount is likely to behave badly during direction reversals in
+declination even if the dec guide rate is correct. &nbsp;The
+calibration can be improved by first manually moving the mount&nbsp;
+north at
+guide speed for&nbsp;10 seconds or thereabouts until consistent star
+movement is seen&nbsp;in the main window. &nbsp;You can do this with
+the 'Manual Guide'
+tool or by using the hand-controller on your mount. &nbsp;Once this is
+done, most of the declination backlash in your mount should have been
+overcome. &nbsp;You can then repeat the calibration procedure and will
+probably get a declination guiding rate that is more reasonable.
+&nbsp;The second problem generally requires some mechanical adjustment
+to the mount - use of fixed backlash compensation parameters are not
+likely to work well. &nbsp;If you can't correct the backlash or reduce
+it to manageable levels, you should consider using the technique of
+guiding in only one direction for declination. &nbsp;While this may
+seem like an unattractive option, it can actually produce reasonable
+guiding and imaging results.<br><br>
+Calibration data are saved automatically each time a calibration sequence completes
+successfully. &nbsp;The use of the calibration data has been described
+elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
+including &nbsp;options for restoring calibration data from an earlier
+time or "flipping" it after a meridian flip. &nbsp;You access these
+functions using the 'Modify Calibration' sub-menu under the 'Tools' menu. &nbsp;Two other
+calibration-related items are&nbsp; shown there, namely the options to
+clear the current data or to enter calibration data manually. &nbsp;The
+"clear" option accomplishes the same thing as the 'Clear calibration'
+checkbox in the Advanced Dialog - it will force a recalibration
+whenever guiding is resumed. &nbsp;The 'Enter calibration data'
+option&nbsp;should be used&nbsp;only under
+very unusual circumstances and only if you're sure you know what you're
+doing; but it is available as a matter of completeness. &nbsp;If you
+click on the 'Enter calibration data' item, you'll see a dialog box
+that allows input of relatively low-level calibration data. &nbsp;This
+data might come from a much earlier session, perhaps extracted from the
+<span style="font-style: italic;">PHD2</span> guiding log file.
+&nbsp;Keep in mind, if you are using an ASCOM driver for either the
+'mount' or 'aux mount' connections, you should have little need for
+these calibration data controls.<br>
 <h3><a name="PHD2_Server"></a><span style="font-style: italic;">PHD2</span> Server</h3>
 <span style="font-style: italic;">PHD2</span> supports third-party imaging and automation applications that need to control the guiding process. &nbsp;Stark Labs' <span style="font-style: italic;">Nebulosity </span>program
 was the first to do this, but other applications have subsequently been
@@ -135,9 +172,8 @@ server API is available on
 the <a href="https://code.google.com/p/open-phd-guiding/w/list">PHD2
 Wiki</a>.<br>
 <br><h3><a name="Logging_and_Debug_Output"></a>Logging and Debug Output</h3>
-<span style="font-style: italic;">PHD2</span>
-can optionally produce two types of log files: a debug log and a
-guiding log. &nbsp;Both are highly useful for different reasons.
+<span style="font-style: italic;">PHD2</span> automatically creates two types of log files: a debug log and a
+guiding log. &nbsp;Both are very useful for different reasons.
 &nbsp;The guiding log is similar to the one produced by PHD, but
 with
 extended information. The guide log is intentionally formatted to
@@ -158,9 +194,7 @@ difficult to examine the debug log to see what happened. &nbsp;If
 you
 need to report a problem with the software, you will almost certainly
 be asked to provide the debug log file. &nbsp;If you have neither log
-file available, you are unlikely to get any&nbsp;help. &nbsp;Creation
-of these log files is controlled by the two menu items under the
-'Tools' menu, and these should be left "checked" as a normal practice.<br>
+file available, you are unlikely to get any&nbsp;help.<br>
 <br>
 The location for the files is controlled by the 'Log
 File
@@ -170,7 +204,11 @@ are stored in the OS-specific default directory for application data files.
 &nbsp;In Windows7, for example, the files will be stored in a '<span style="font-style: italic;">PHD2</span>'
 sub-folder in the "AppData\Local" location. &nbsp;This may not be a
 convenient location, so you can specify a different folder using this
-edit field.<br>
+edit field. &nbsp;In order to prevent excessive accumulation of log
+files, PHD2 automatically removes debug logs that are more than 30 days
+old and guide logs that are more than 60 days old. &nbsp;If you want to
+retain the files for longer periods, you should move or copy them to a
+different folder location, one not used by PHD2.<br>
 <br>
 In some unusual cases, you may need to capture guide
 camera images, usually to support debugging and problem resolution.

@@ -1085,6 +1085,110 @@ static void save_image(JObj& response, const json_value *params)
     response << jrpc_result(rslt);
 }
 
+struct B64Encode
+{
+    static const char *const E;
+    std::ostringstream os;
+    unsigned int t;
+    size_t nread;
+
+    B64Encode()
+        : t(0), nread(0)
+    {
+    }
+    void append1(unsigned char ch)
+    {
+        t <<= 8;
+        t |= ch;
+        if (++nread % 3 == 0)
+        {
+            os << E[t >> 18]
+               << E[(t >> 12) & 0x3F]
+               << E[(t >> 6) & 0x3F]
+               << E[t & 0x3F];
+            t = 0;
+        }
+    }
+    void append(const void *src_, size_t len)
+    {
+        const unsigned char *src = (const unsigned char *) src_;
+        const unsigned char *const end = src + len;
+        while (src < end)
+            append1(*src++);
+    }
+    std::string finish()
+    {
+        switch (nread % 3) {
+        case 1:
+            os << E[t >> 2]
+               << E[(t & 0x3) << 4]
+               << "==";
+            break;
+        case 2:
+            os << E[t >> 10]
+                << E[(t >> 4) & 0x3F]
+                << E[(t & 0xf) << 2]
+                << '=';
+            break;
+        }
+        os << std::ends;
+        return os.str();
+    }
+};
+const char *const B64Encode::E = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+static void get_star_image(JObj& response, const json_value *params)
+{
+    if (!pFrame || !pFrame->pGuider)
+    {
+        response << jrpc_error(1, "internal error");
+        return;
+    }
+
+    Guider *guider = pFrame->pGuider;
+    const usImage *img = guider->CurrentImage();
+    const PHD_Point& star = guider->CurrentPosition();
+
+    if (guider->GetState() < GUIDER_STATE::STATE_SELECTED || !img->ImageData || !star.IsValid())
+    {
+        response << jrpc_error(2, "no star selected");
+        return;
+    }
+
+    int const HALFW = 7;
+    int const FULLW = 2 * HALFW + 1;
+    int const sx = (int) rint(star.X);
+    int const sy = (int) rint(star.Y);
+    wxRect rect(sx - HALFW, sy - HALFW, FULLW, FULLW);
+    if (img->Subframe.IsEmpty())
+        rect.Intersect(wxRect(img->Size));
+    else
+        rect.Intersect(img->Subframe);
+
+    int width = rect.GetWidth();
+    size_t size = width * rect.GetHeight() * sizeof(unsigned short);
+
+    B64Encode enc;
+    for (int y = rect.GetTop(); y <= rect.GetBottom(); y++)
+    {
+        const unsigned short *p = img->ImageData + y * img->Size.GetWidth() + rect.GetLeft();
+        enc.append(p, rect.GetWidth() * sizeof(unsigned short));
+    }
+
+    PHD_Point pos(star);
+    pos.X -= rect.GetLeft();
+    pos.Y -= rect.GetTop();
+
+    JObj rslt;
+    rslt << NV("frame", (int) pFrame->m_frameCounter)
+        << NV("width", rect.GetWidth())
+        << NV("height", rect.GetHeight())
+        << NV("star_pos", pos)
+        << NV("pixels", enc.finish());
+
+    response << jrpc_result(rslt);
+}
+
 static bool parse_settle(SettleParams *settle, const json_value *j, wxString *error)
 {
     bool found_pixels = false, found_time = false, found_timeout = false;
@@ -1273,6 +1377,7 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_lock_shift_params", &get_lock_shift_params, },
         { "set_lock_shift_params", &set_lock_shift_params, },
         { "save_image", &save_image, },
+        { "get_star_image", &get_star_image, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

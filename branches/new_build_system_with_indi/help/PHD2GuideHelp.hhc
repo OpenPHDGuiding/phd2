@@ -121,8 +121,8 @@
 			<param name="Local" value="Tools.htm#Auto-Select_Star">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Calibration Data">
-			<param name="Local" value="Tools.htm#Manual_Control_of_Calibration_Data">
+			<param name="Name" value="Calibration Details">
+			<param name="Local" value="Tools.htm#Calibration_Details">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Server">
@@ -169,5 +169,31 @@
 		<param name="Name" value="Trouble-shooting and Analysis">
 		<param name="Local" value="Trouble_shooting.htm">
 		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="First-Time Use Problems">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_First-Time_Use">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Display Problems or No Stars Shown">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_No_Stars">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Camera Timeouts and Download Problems">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Camera_Timeouts">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Poor Guiding Performance">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Poor_Guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Using the Log Files">
+			<param name="Local" value="Trouble_shooting.htm#Log_analysis">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Problem Reporting">
+			<param name="Local" value="Trouble_shooting.htm#Problem_Reporting">
+			</OBJECT>
+	</UL>
 </UL>
 </BODY></HTML>
