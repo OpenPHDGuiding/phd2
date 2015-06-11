@@ -52,6 +52,7 @@ public:
         BLT_STATE_STEP_SOUTH,
         BLT_STATE_ABORTED,
         BLT_STATE_TEST_CORRECTION,
+        BLT_STATE_RESTORE,
         BLT_STATE_WRAPUP,
         BLT_STATE_COMPLETED
     } m_bltState;
@@ -62,13 +63,21 @@ public:
         BACKLASH_EXPECTED_DISTANCE = 4,
         MAX_CLEARING_STEPS = 100,
         NORTH_PULSE_SIZE = 500,
+        MAX_NORTH_PULSES = 8000,    
         TRIAL_TOLERANCE = 2
     };
+    enum MeasurementResults
+    {
+        MEASUREMENT_INVALID,
+        MEASUREMENT_IMPAIRED,
+        MEASUREMENT_VALID
+    } m_Rslt;
 
 private:
     int m_pulseWidth;
     int m_stepCount;
     int m_northPulseCount;
+    int m_restoreCount;
     int m_acceptedMoves;
     double m_lastClearRslt;
     double m_lastDecGuideRate;
@@ -76,10 +85,13 @@ private:
     int m_backlashResultSec;
     double m_northRate;
     PHD_Point m_lastMountLocation;
+    PHD_Point m_startingPoint;
     PHD_Point m_markerPoint;
     PHD_Point m_endSouth;
     wxString m_lastStatus;
     Mount *m_theScope;
+    std::vector <double> m_northBLSteps;
+    std::vector <double> m_southBLSteps;
 
 public:
     BacklashTool(Mount *mainMount);
@@ -88,29 +100,43 @@ public:
     void DecMeasurementStep(PHD_Point currentLoc);
     void CleanUp();
     BLT_STATE GetBltState() { return m_bltState; }
+    MeasurementResults GetMeasurementQuality() { return m_Rslt; }
     double GetBacklashResultPx() { return m_backlashResultPx; }
     int GetBacklashResultSec() { return m_backlashResultSec; }
     wxString GetLastStatus() { return m_lastStatus; }
     void SetBacklashPulse(int amt) { m_pulseWidth = amt; }
+    void ShowGraph(wxDialog *pGA);
+    std::vector <double> GetNorthSteps() { return m_northBLSteps; }
+    std::vector <double> GetSouthSteps() { return m_southBLSteps; }
 };
 
+//Class for implementing the backlash graph dialog
+class BacklashGraph : public wxDialog
+{
+    BacklashTool* m_BLT;
+    // Constructor
+public:
+    BacklashGraph(wxDialog* parent, BacklashTool* pBL);
+    wxBitmap CreateGraph(int graphicWidth, int graphicHeight);
+};
 
 class BacklashComp
 {
 bool m_compActive;
 int m_lastDirection;
 bool m_justCompensated;
-double m_pulseWidth;
+int m_pulseWidth;
 Mount* m_pMount;
 
 public:
 BacklashComp(Mount* theMount);
 int GetBacklashPulse() {return m_pulseWidth;}
+bool IsEnabled() { return m_compActive; }
 void SetBacklashPulse(int mSec);
 void EnableBacklashComp(bool enable);
-bool IsEnabled() { return m_compActive; }
 int GetBacklashComp(int dir, double yDist);
 void HandleOverShoot(int pulseSize);
+void Reset();
 };
 
 #endif // BacklashComp
