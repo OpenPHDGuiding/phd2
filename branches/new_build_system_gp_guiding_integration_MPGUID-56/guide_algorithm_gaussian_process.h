@@ -1,9 +1,9 @@
 //
 //  guide_gaussian_process.h
-//  PHD
+//  PHD2 Guiding
 //
-//  Created by Stephan Wenninger
-//  Copyright 2014, Max Planck Society.
+//  Created by Stephan Wenninger and Edgar Klenske.
+//  Copyright 2014-2015, Max Planck Society.
 
 /*
  *  This source code is distributed under the following "BSD" license
@@ -36,7 +36,6 @@
 #define GUIDE_GAUSSIAN_PROCESS
 
 #include "guide_algorithm.h"
-#include "UDPGuidingInteraction.h"
 
 class wxStopWatch;
 
@@ -52,8 +51,6 @@ private:
     void HandleMeasurements(double input);
     void HandleControls(double control_input);
     void HandleModifiedMeasurements(double input);
-
-    UDPGuidingInteraction udpInteraction_;
 
 protected:
 

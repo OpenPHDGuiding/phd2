@@ -1,9 +1,9 @@
 //
 //  guide_gaussian_process.cpp
-//  PHD
+//  PHD2 Guiding
 //
-//  Created by Stephan Wenninger
-//  Copyright 2014, Max Planck Society.
+//  Created by Stephan Wenninger and Edgar Klenske.
+//  Copyright 2014-2015, Max Planck Society.
 
 /*
 *  This source code is distributed under the following "BSD" license
@@ -32,18 +32,19 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#define GP_DEBUG_MATLAB_ 0
+#define GP_DEBUG_STATUS_ 0
+
 #include "phd.h"
 
+#if GP_DEBUG_MATLAB_
 #include "UDPGuidingInteraction.h"
+#endif
 
 #include "guide_algorithm_gaussian_process.h"
 #include <wx/stopwatch.h>
 
-
 #include "math_tools.h" 
-
-// Should be removed
-//#include "circular_buffer.h"
 
 #include "math_tools.h"
 #include "gaussian_process.h"
@@ -223,11 +224,17 @@ struct GuideGaussianProcess::gp_guide_parameters
     int min_nb_element_for_inference;
     int min_points_for_optimisation;
 
+#if GP_DEBUG_MATLAB_
+    UDPGuidingInteraction udpInteraction_;
+#endif
 
     covariance_functions::PeriodicSquareExponential covariance_function_;
     GP gp_;
 
     gp_guide_parameters() :
+#if GP_DEBUG_MATLAB_
+      udpInteraction_("localhost", "1308", "1309"),
+#endif
       circular_buffer_parameters(200),
       timer_(),
       control_signal_(0.0),
@@ -286,7 +293,6 @@ static const double DefaultMixing                      = 0.8;
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     : GuideAlgorithm(pMount, axis),
-      udpInteraction_("localhost", "1308", "1309"),
       parameters(0)
 {
     parameters = new gp_guide_parameters();
@@ -680,54 +686,6 @@ double GuideGaussianProcess::result(double input)
 
     int delta_controller_time_ms = pFrame->RequestedExposureDuration();
 
-// This is the Code sending the circular buffers to Matlab, can be removed for production
-#if 0
-
-    Eigen::VectorXd timestamps(parameters->get_number_of_measurements());
-    Eigen::VectorXd measurements(parameters->get_number_of_measurements());
-
-    for (size_t i = 0; i < parameters->get_number_of_measurements(); i++)
-    {
-        timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
-        measurements(i) = parameters->circular_buffer_parameters[i].measurement;
-    }
-
-    double* timestamp_data = timestamps.data();
-    double* measurement_data = measurements.data();
-    double result;
-    double wait_time = 50;
-
-    bool sent = false;
-    bool received = false;
-
-
-    // Send the measurement
-    double measurement_buf[] = { input };
-    sent = udpInteraction_.SendToUDPPort(measurement_buf, 8);
-    //received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
-    wxMilliSleep(wait_time);
-
-    // Send the size of the buffer
-    double size = timestamps.size();
-    double size_buf[] = { size };
-    sent = udpInteraction_.SendToUDPPort(size_buf, 8);
-    //received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
-    wxMilliSleep(wait_time);
-
-    // Send modified measurements
-    sent = udpInteraction_.SendToUDPPort(measurement_data, size * 8);
-    //received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
-    wxMilliSleep(wait_time);
-
-    // Send timestamps
-    sent = udpInteraction_.SendToUDPPort(timestamp_data, size * 8);
-    // Receive the final control signal
-    received = udpInteraction_.ReceiveFromUDPPort(&result, 8);
-
-    HandleControls(input);
-    return input;
-#endif
-
     parameters->control_signal_ = parameters->mixing_parameter_*input; // add the measured part of the controller
     double prediction_ = 0.0; // this will hold the prediction part later
 
@@ -783,7 +741,7 @@ double GuideGaussianProcess::result(double input)
     }
 
 // display GP and hyperparameter information, can be removed for production
-#if 1
+#if GP_DEBUG_STATUS_
     Eigen::VectorXd hypers = parameters->gp_.getHyperParameters();
 
     wxString msg;
@@ -819,7 +777,7 @@ double GuideGaussianProcess::result(double input)
     }
 
 // send the GP output to matlab for plotting 
-#if 0
+#if GP_DEBUG_MATLAB_
     int N = 300; // number of prediction points
     Eigen::VectorXd locations = Eigen::VectorXd::LinSpaced(N,
         0,
@@ -844,33 +802,33 @@ double GuideGaussianProcess::result(double input)
     // Send the size of the buffer
     double size = timestamps.size();
     double size_buf[] = { size };
-    sent = udpInteraction_.SendToUDPPort(size_buf, 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(size_buf, 8);
     wxMilliSleep(wait_time);
 
     // Send modified measurements
-    sent = udpInteraction_.SendToUDPPort(measurement_data, size * 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(measurement_data, size * 8);
     wxMilliSleep(wait_time);
 
     // Send timestamps
-    sent = udpInteraction_.SendToUDPPort(timestamp_data, size * 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(timestamp_data, size * 8);
     wxMilliSleep(wait_time);
 
     // size of predictions
     double loc_size = N;
     double loc_size_buf[] = { loc_size };
-    sent = udpInteraction_.SendToUDPPort(loc_size_buf, 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(loc_size_buf, 8);
     wxMilliSleep(wait_time);
 
     // Send mean
-    sent = udpInteraction_.SendToUDPPort(location_data, loc_size * 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(location_data, loc_size * 8);
     wxMilliSleep(wait_time);
 
     // Send mean
-    sent = udpInteraction_.SendToUDPPort(mean_data, loc_size * 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(mean_data, loc_size * 8);
     wxMilliSleep(wait_time);
 
     // Send std
-    sent = udpInteraction_.SendToUDPPort(std_data, loc_size * 8);
+    sent = parameters->udpInteraction_.SendToUDPPort(std_data, loc_size * 8);
     wxMilliSleep(wait_time);
 #endif
 
