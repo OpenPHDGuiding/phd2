@@ -284,16 +284,15 @@ struct GuideGaussianProcess::gp_guide_parameters
 
 
 static const double DefaultControlGain = 1.0;           // control gain
-static const int    DefaultNbMinPointsForInference = 5; // minimal number of points for doing the inference
+static const int    DefaultNbMinPointsForInference = 25; // minimal number of points for doing the inference
 
-static const double DefaultGaussianNoiseHyperparameter = std::sqrt(2)*0.55*0.2; // default Gaussian process noise
-static const double DefaultLengthScalePerKer           = 5.234;                 // length-scale of the periodic kernel
-static const double DefaultPeriodLengthPerKer          = 396;                   // P_p, period-length of the periodic kernel
-static const double DefaultSignalVariancePerKer        = 0.355;                 // signal-variance of the periodic kernel
-static const double DefaultLengthScaleSEKer            = 200;                   // length-scale of the SE-kernel
+static const double DefaultGaussianNoiseHyperparameter = 1.0; // default Gaussian process noise
+static const double DefaultLengthScalePerKer           = 5.0;                 // length-scale of the periodic kernel
+static const double DefaultPeriodLengthPerKer          = 200;                   // P_p, period-length of the periodic kernel
+static const double DefaultSignalVariancePerKer        = 10;                 // signal-variance of the periodic kernel
+static const double DefaultLengthScaleSEKer            = 500;                   // length-scale of the SE-kernel
 
-static const int    DefaultNbPointsBetweenOptimisation = 10;                    // number of points collected between two consecutive calls to the optimisation
-                                                                                // 0 indicates no optimisation.
+static const int    DefaultNbMinPointsForOptimisation = 50;                    // minimal number of points for doing the optimization
 static const double DefaultMixing                      = 0.8;
 
 GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
@@ -309,7 +308,7 @@ GuideGaussianProcess::GuideGaussianProcess(Mount *pMount, GuideAxis axis)
     int nb_element_for_inference = pConfig->Profile.GetInt(configPath + "/gp_nbminelementforinference", DefaultNbMinPointsForInference);
     SetNbElementForInference(nb_element_for_inference);
 
-    int nb_points_between_optimisation = pConfig->Profile.GetInt(configPath + "/gp_nbpointsbetweenoptimisations", DefaultNbPointsBetweenOptimisation);
+    int nb_points_between_optimisation = pConfig->Profile.GetInt(configPath + "/gp_nbminelementforoptimization", DefaultNbMinPointsForOptimisation);
     SetNbPointsBetweenOptimisation(nb_points_between_optimisation);
 
     double mixing_parameter = pConfig->Profile.GetDouble(configPath + "/gp_mixing_parameter", DefaultMixing);
@@ -424,10 +423,10 @@ bool GuideGaussianProcess::SetNbPointsBetweenOptimisation(int nb_points)
     {
         POSSIBLY_UNUSED(Msg);
         error = true;
-        parameters->min_points_for_optimisation = DefaultNbPointsBetweenOptimisation;
+        parameters->min_points_for_optimisation = DefaultNbMinPointsForOptimisation;
     }
 
-    pConfig->Profile.SetInt(GetConfigPath() + "/gp_nbpointsbetweenoptimisations", parameters->min_points_for_optimisation);
+    pConfig->Profile.SetInt(GetConfigPath() + "/gp_nbminelementforoptimization", parameters->min_points_for_optimisation);
 
     return error;
 }
