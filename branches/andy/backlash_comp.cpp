@@ -71,8 +71,8 @@ void BacklashComp::HandleOverShoot(int pulseSize)
 {
     if (m_justCompensated && pulseSize > 0)
     {                       // We just did a backlash comp so this is probably our problem
-        double reduction = wxMin(0.5 * m_pulseWidth, pulseSize);
-        Debug.AddLine(wxString::Format("BLC: Backlash over-shoot, pulse size reduced from %0.f to %0.f", m_pulseWidth, m_pulseWidth - reduction));
+        int reduction = floor(wxMin(0.5 * m_pulseWidth, pulseSize));
+        Debug.AddLine(wxString::Format("BLC: Backlash over-shoot, pulse size reduced from %d to %d", m_pulseWidth, m_pulseWidth - reduction));
         m_pulseWidth -= reduction;
     }
 }
@@ -355,11 +355,12 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
                 m_markerPoint = currMountLocation;            // Marker point at start of big Dec move north
                 m_bltState = BLT_STATE_STEP_NORTH;
                 double totalBacklashCleared = m_stepCount * m_pulseWidth;
-                // Want to move the mount north at >=500 mSec, regardless of image scale. Reduce pulse width only if it would blow us out of the tracking region
+                // Want to move the mount north at >=500 mSec, regardless of image scale. But reduce pulse width if it would exceed 80% of the tracking rectangle - 
+                // need to leave some room for seeing deflections and dec drift
                 m_pulseWidth = wxMax((int)NORTH_PULSE_SIZE, ((Scope*)m_theScope)->GetCalibrationDuration());
-                m_pulseWidth = wxMin(m_pulseWidth, (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
+                m_pulseWidth = wxMin(m_pulseWidth, (int)floor(0.8 * (double)pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
                 m_stepCount = 0;
-                // Move 50% more than the backlash we cleared or >=4 secs, whichever is greater.  We want to leave plenty of room
+                // Move 50% more than the backlash we cleared or >=8 secs, whichever is greater.  We want to leave plenty of room
                 // for giving south moves time to clear backlash and actually get moving
                 m_northPulseCount = wxMax((MAX_NORTH_PULSES + m_pulseWidth - 1)/m_pulseWidth,totalBacklashCleared * 1.5 / m_pulseWidth);  // Up to 8 secs
                 Debug.AddLine(wxString::Format("BLT: Starting north moves at Dec=%0.2f", currMountLocation.Y));

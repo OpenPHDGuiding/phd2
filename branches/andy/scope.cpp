@@ -1367,12 +1367,13 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     width = StringWidth(_T("00000"));
 
     wxBoxSizer* compSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pUseBacklashComp = new wxCheckBox(pParent, wxID_ANY, _("Backlash Comp"));
+    m_pUseBacklashComp = new wxCheckBox(pParent, wxID_ANY, _("Declination Backlash Comp"));
+    m_pUseBacklashComp->SetToolTip(_("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
     compSizer->Add(m_pUseBacklashComp, wxSizerFlags().Expand().Border(wxALL, 3));
     m_pBacklashPulse = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxPoint(-1, -1),
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);  
     wxSizer *sizer_temp = MakeLabeledControl(_("Amount"), m_pBacklashPulse,
-        _("Length of backlash correction pulse (mSec)"));
+        _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."));
     compSizer->Add(sizer_temp, wxSizerFlags().Expand().Border(wxALL, 3));
     DoAdd(compSizer);
 
