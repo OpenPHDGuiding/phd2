@@ -7,14 +7,14 @@
 
  * install dependencies (commands for a Fedora-like system; your system may vary)
 {{{
-sudo yum install subversion cmake libwxgtk3.0-devel wx-common wx3.0-i18n libindi-devel libnova-devel zlib-devel
+sudo yum install subversion cmake pkgconfig libwxgtk3.0-devel wx-common wx3.0-i18n libindi-devel libnova-devel zlib-devel
 }}}
 
 === Ubuntu ===
 
  * install dependencies (tested on 14.04 and 14.10)
 {{{
-sudo apt-get install build-essential subversion cmake libwxgtk3.0-dev wx-common wx3.0-i18n libindi-dev libnova-dev zlib1g-dev
+sudo apt-get install build-essential subversion cmake pkg-config libwxgtk3.0-dev wx-common wx3.0-i18n libindi-dev libnova-dev zlib1g-dev
 }}}
 
 == phd2 ===
