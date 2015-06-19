@@ -1869,6 +1869,7 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
         if (sensorSize == UNDEFINED_FRAME_SIZE)
         {
             bOk = true;
+            Debug.AddLine("DarkLib check: undefined frame size for current camera");
         }
         else
         {
@@ -1881,11 +1882,18 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
                 fits_get_img_size(fptr, 2, fsize, &status);
                 if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
                     bOk = true;
-                else if (showAlert)
-                    Alert(_("Dark library does not match the camera in this profile - it needs to be replaced."));
+                else
+                {
+                    Debug.AddLine(wxString::Format("DarkLib check: failed geometry check - fits status = %d, cam dimensions = {%d,%d}, "
+                        " dark dimensions = {%d,%d}", status, sensorSize.x, sensorSize.y, fsize[0], fsize[1]));
+                    if (showAlert)
+                        Alert(_("Dark library does not match the camera in this profile - it needs to be replaced."));
+                }
 
                 PHD_fits_close_file(fptr);
             }
+            else
+                Debug.AddLine(wxString::Format("DarkLib check: fitsio error on open_diskfile = %d", status));
         }
     }
 
