@@ -1122,6 +1122,7 @@ bool DefectMap::DefectMapExists(int profileId, bool showAlert)
         if (sensorSize == UNDEFINED_FRAME_SIZE)
         {
             bOk = true;
+            Debug.AddLine("BPM check: undefined frame size for current camera");
         }
         else
         {
@@ -1134,11 +1135,18 @@ bool DefectMap::DefectMapExists(int profileId, bool showAlert)
                 fits_get_img_size(fptr, 2, fsize, &status);
                 if (status == 0 && fsize[0] == sensorSize.x && fsize[1] == sensorSize.y)
                     bOk = true;
-                else if (showAlert)
-                    pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be replaced."));
+                else
+                {
+                    Debug.AddLine(wxString::Format("BPM check: failed geometry check - fits status = %d, cam dimensions = {%d,%d}, "
+                        " BPM dimensions = {%d,%d}", status, sensorSize.x, sensorSize.y, fsize[0], fsize[1]));
+                    if (showAlert)
+                        pFrame->Alert(_("Bad-pixel map does not match the camera in this profile - it needs to be replaced."));
+                }
 
                 PHD_fits_close_file(fptr);
             }
+            else
+                Debug.AddLine(wxString::Format("BPM check: fitsio error on open_diskfile = %d", status));
         }
     }
 
