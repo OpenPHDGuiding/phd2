@@ -153,7 +153,7 @@ protected:
     void Mount::TestTransforms(void);
 #endif
 
-    // functions with an implemenation in Guider that cannot be over-ridden
+    // functions with an implemenation in Mount that cannot be over-ridden
     // by a subclass
 public:
 
@@ -205,9 +205,9 @@ public:
     virtual bool BeginCalibration(const PHD_Point &currentLocation) = 0;
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation) = 0;
 
-    virtual bool GuidingCeases(void)=0;
+    virtual bool GuidingCeases(void) = 0;
 
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
     virtual wxString GetMountClassName() const = 0;
 
     GuideAlgorithm *GetXGuideAlgorithm(void) const;
