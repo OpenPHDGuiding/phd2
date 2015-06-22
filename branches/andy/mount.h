@@ -39,7 +39,8 @@
 #include "guide_algorithms.h"
 #include "messagebox_proxy.h"
 #include "image_math.h"
-#include "Backlash_Comp.h"
+
+class BacklashComp;
 
 enum GUIDE_DIRECTION {
     NONE  = -1,
@@ -115,7 +116,8 @@ protected:
     GuideAlgorithm *m_pYGuideAlgorithm;
 
     wxString m_Name;
-    BacklashComp* m_backlashComp;
+
+    BacklashComp *m_backlashComp;
 
     // Things related to the Advanced Config Dialog
 protected:

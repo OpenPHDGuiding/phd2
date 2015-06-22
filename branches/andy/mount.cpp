@@ -35,6 +35,7 @@
 
 #include "phd.h"
 #include "guiding_assistant.h"
+#include "backlash_comp.h"
 
 #include <wx/tokenzr.h>
 
@@ -476,6 +477,8 @@ Mount::Mount(void)
     m_pYGuideAlgorithm = NULL;
     m_pXGuideAlgorithm = NULL;
     m_guidingEnabled = true;
+
+    m_backlashComp = 0;
 
     ClearCalibration();
 

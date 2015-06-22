@@ -183,6 +183,16 @@ extern Mount *pSecondaryMount;
 extern Mount *pPointingSource;      // For using an 'aux' mount connection to get pointing info if the user has specified one
 extern GuideCamera *pCamera;
 
+inline static Scope *TheScope(void)
+{
+    return static_cast<Scope *>(pMount && pMount->IsStepGuider() ? pSecondaryMount : pMount);
+}
+
+inline static StepGuider *TheAO(void)
+{
+    return static_cast<StepGuider *>(pMount && pMount->IsStepGuider() ? pMount : 0);
+}
+
 // these seem to be the windowing/display related globals
 extern int XWinSize;
 extern int YWinSize;

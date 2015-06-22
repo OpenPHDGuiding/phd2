@@ -702,15 +702,15 @@ void MyFrame::OnLog(wxCommandEvent& evt)
 bool MyFrame::FlipRACal()
 {
     bool bError = false;
-    Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
+    Mount *scope = TheScope();
 
-    if (mount)
+    if (scope)
     {
-        bError = mount->FlipCalibration();
+        bError = scope->FlipCalibration();
 
         if (!bError)
         {
-            EvtServer.NotifyCalibrationDataFlipped(mount);
+            EvtServer.NotifyCalibrationDataFlipped(scope);
         }
     }
 

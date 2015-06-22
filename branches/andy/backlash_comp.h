@@ -1,13 +1,9 @@
 /*
- *  guide_algorithm.h
+ *  backlash_comp.h
  *  PHD Guiding
  *
  *  Created by Bruce Waddington
  *  Copyright (c) 2015 Bruce Waddington and Andy Galasso
- *  All rights reserved.
- *
- *  Based upon work by Craig Stark.
- *  Copyright (c) 2006-2010 Craig Stark.
  *  All rights reserved.
  *
  *  This source code is distributed under the following "BSD" license
@@ -43,6 +39,25 @@
 // Encapsulated struct for handling Dec backlash measurement
 class BacklashTool
 {
+    int m_pulseWidth;
+    int m_stepCount;
+    int m_northPulseCount;
+    int m_restoreCount;
+    int m_acceptedMoves;
+    double m_lastClearRslt;
+    double m_lastDecGuideRate;
+    double m_backlashResultPx;                // units of pixels
+    int m_backlashResultMs;
+    double m_northRate;
+    PHD_Point m_lastMountLocation;
+    PHD_Point m_startingPoint;
+    PHD_Point m_markerPoint;
+    PHD_Point m_endSouth;
+    wxString m_lastStatus;
+    Scope *m_scope;
+    std::vector<double> m_northBLSteps;
+    std::vector<double> m_southBLSteps;
+
 public:
     enum BLT_STATE
     {
@@ -73,70 +88,43 @@ public:
         MEASUREMENT_VALID
     } m_Rslt;
 
-private:
-    int m_pulseWidth;
-    int m_stepCount;
-    int m_northPulseCount;
-    int m_restoreCount;
-    int m_acceptedMoves;
-    double m_lastClearRslt;
-    double m_lastDecGuideRate;
-    double m_backlashResultPx;                // units of pixels
-    int m_backlashResultSec;
-    double m_northRate;
-    PHD_Point m_lastMountLocation;
-    PHD_Point m_startingPoint;
-    PHD_Point m_markerPoint;
-    PHD_Point m_endSouth;
-    wxString m_lastStatus;
-    Mount *m_theScope;
-    std::vector <double> m_northBLSteps;
-    std::vector <double> m_southBLSteps;
 
 public:
-    BacklashTool(Mount *mainMount);
+
+    BacklashTool();
     void StartMeasurement();
     void StopMeasurement();
-    void DecMeasurementStep(PHD_Point currentLoc);
+    void DecMeasurementStep(const PHD_Point& currentLoc);
     void CleanUp();
-    BLT_STATE GetBltState() { return m_bltState; }
-    MeasurementResults GetMeasurementQuality() { return m_Rslt; }
-    double GetBacklashResultPx() { return m_backlashResultPx; }
-    int GetBacklashResultSec() { return m_backlashResultSec; }
-    wxString GetLastStatus() { return m_lastStatus; }
+    BLT_STATE GetBltState() const { return m_bltState; }
+    MeasurementResults GetMeasurementQuality() const { return m_Rslt; }
+    double GetBacklashResultPx() const { return m_backlashResultPx; }
+    int GetBacklashResultMs() const { return m_backlashResultMs; }
+    wxString GetLastStatus() const { return m_lastStatus; }
     void SetBacklashPulse(int amt) { m_pulseWidth = amt; }
     void ShowGraph(wxDialog *pGA);
-    const std::vector <double>& GetNorthSteps() { return m_northBLSteps; }
-    const std::vector <double>& GetSouthSteps() { return m_southBLSteps; }
-};
-
-//Class for implementing the backlash graph dialog
-class BacklashGraph : public wxDialog
-{
-    BacklashTool* m_BLT;
-    // Constructor
-public:
-    BacklashGraph(wxDialog* parent, BacklashTool* pBL);
-    wxBitmap CreateGraph(int graphicWidth, int graphicHeight);
+    const std::vector<double>& GetNorthSteps() const { return m_northBLSteps; }
+    const std::vector<double>& GetSouthSteps() const { return m_southBLSteps; }
 };
 
 class BacklashComp
 {
-bool m_compActive;
-int m_lastDirection;
-bool m_justCompensated;
-int m_pulseWidth;
-Mount* m_pMount;
+    bool m_compActive;
+    int m_lastDirection;
+    bool m_justCompensated;
+    int m_pulseWidth;
+    Mount *m_pMount;
 
 public:
-BacklashComp(Mount* theMount);
-int GetBacklashPulse() {return m_pulseWidth;}
-bool IsEnabled() { return m_compActive; }
-void SetBacklashPulse(int mSec);
-void EnableBacklashComp(bool enable);
-int GetBacklashComp(int dir, double yDist);
-void HandleOverShoot(int pulseSize);
-void Reset();
+
+    BacklashComp(Mount *theMount);
+    int GetBacklashPulse() const { return m_pulseWidth; }
+    void SetBacklashPulse(int ms);
+    void EnableBacklashComp(bool enable);
+    bool IsEnabled() const { return m_compActive; }
+    int GetBacklashComp(int dir, double yDist);
+    void HandleOverShoot(int pulseSize);
+    void Reset();
 };
 
-#endif // BacklashComp
+#endif

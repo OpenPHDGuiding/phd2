@@ -1348,9 +1348,9 @@ void Guider::UpdateLockPosShiftCameraCoords(void)
         Debug.AddLine("UpdateLockPosShiftCameraCoords: shift rate mount coords = %.2f,%.2f",
                       m_lockPosShift.shiftRate.X, m_lockPosShift.shiftRate.Y);
 
-        Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
-        if (mount && !mount->IsStepGuider())
-            mount->TransformMountCoordinatesToCameraCoordinates(m_lockPosShift.shiftRate, rate);
+        Mount *scope = TheScope();
+        if (scope)
+            scope->TransformMountCoordinatesToCameraCoordinates(m_lockPosShift.shiftRate, rate);
     }
     else
     {

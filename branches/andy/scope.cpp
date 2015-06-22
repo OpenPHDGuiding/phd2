@@ -33,11 +33,13 @@
  */
 #include "phd.h"
 
-#include "image_math.h"
-#include "wx/textfile.h"
-#include "socket_server.h"
-#include "calstep_dialog.h"
+#include "backlash_comp.h"
 #include "calreview_dialog.h"
+#include "calstep_dialog.h"
+#include "image_math.h"
+#include "socket_server.h"
+
+#include <wx/textfile.h>
 
 static const int DefaultCalibrationDuration = 750;
 static const int DefaultMaxDecDuration = 2500;
@@ -691,10 +693,10 @@ void Scope::SetCalibrationWarning(Calibration_Issues etype, bool val)
 // Generic hook for "details" button in calibration sanity check alert
 static void ShowCalibrationIssues(long scopeptr)
 {
-    Scope *pscope = (Scope*)scopeptr;
+    Scope *pscope = reinterpret_cast<Scope *>(scopeptr);
     pscope->HandleSanityCheckDialog();
-
 }
+
 // Handle the "details" dialog for the calibration sanity check
 void Scope::HandleSanityCheckDialog()
 {
@@ -1366,11 +1368,11 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
 
     width = StringWidth(_T("00000"));
 
-    wxBoxSizer* compSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *compSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pUseBacklashComp = new wxCheckBox(pParent, wxID_ANY, _("Declination Backlash Comp"));
     m_pUseBacklashComp->SetToolTip(_("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
     compSizer->Add(m_pUseBacklashComp, wxSizerFlags().Expand().Border(wxALL, 3));
-    m_pBacklashPulse = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxPoint(-1, -1),
+    m_pBacklashPulse = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);  
     wxSizer *sizer_temp = MakeLabeledControl(_("Amount"), m_pBacklashPulse,
         _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."));

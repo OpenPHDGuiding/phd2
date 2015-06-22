@@ -34,7 +34,7 @@
 
 #include "phd.h"
 #include "guiding_assistant.h"
-#include "Backlash_Comp.h"
+#include "backlash_comp.h"
 
 struct Stats
 {
@@ -207,6 +207,8 @@ struct GuidingAsstWin : public wxDialog
 
     bool m_measuringBacklash;
 
+    BacklashTool *m_backlashTool;
+
     GuidingAsstWin();
     ~GuidingAsstWin();
 
@@ -227,11 +229,9 @@ struct GuidingAsstWin : public wxDialog
     void FillInstructions(DialogState eState);
     void MakeRecommendations();
     void LogResults();
-    void BacklashStep(PHD_Point camLoc);
+    void BacklashStep(const PHD_Point& camLoc);
     void EndBacklashTest(bool normal);
     void BacklashError();
-
-    BacklashTool* pBacklashTool;
 };
 
 static void MakeBold(wxControl *ctrl)
@@ -257,8 +257,10 @@ struct GridTooltipInfo : public wxObject
 
 // Constructor
 GuidingAsstWin::GuidingAsstWin()
-: wxDialog(pFrame, wxID_ANY, wxGetTranslation(_("Guiding Assistant")), wxPoint(-1, -1), wxDefaultSize),
-    m_measuring(false), m_measurementsTaken(false), m_origSubFrames(-1)
+    : wxDialog(pFrame, wxID_ANY, wxGetTranslation(_("Guiding Assistant"))),
+      m_measuring(false),
+      m_measurementsTaken(false),
+      m_origSubFrames(-1)
 {
     m_vSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -447,11 +449,7 @@ GuidingAsstWin::GuidingAsstWin()
     m_start->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStart), NULL, this);
     m_stop->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GuidingAsstWin::OnStop), NULL, this);
 
-    // Always get an instance of the BacklashTool even if we don't need it
-    if (pSecondaryMount)
-        pBacklashTool = new BacklashTool(pSecondaryMount);
-    else
-        pBacklashTool = new BacklashTool(pMount);
+    m_backlashTool = new BacklashTool();
     m_measuringBacklash = false;
 
     int xpos = pConfig->Global.GetInt("/GuidingAssistant/pos.x", -1);
@@ -470,9 +468,7 @@ GuidingAsstWin::GuidingAsstWin()
 GuidingAsstWin::~GuidingAsstWin(void)
 {
     pFrame->pGuidingAssistant = 0;
-    if (pBacklashTool)
-        delete pBacklashTool;
-
+    delete m_backlashTool;
 }
 
 static bool GetGridToolTip(int gridNum, const wxGridCellCoords& coords, wxString *s)
@@ -558,22 +554,25 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
     m_instructions->SetLabel(instr);
 }
 
-void GuidingAsstWin::BacklashStep(PHD_Point camLoc)
+void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
 {
-    if (pBacklashTool)
+    m_backlashTool->DecMeasurementStep(camLoc);
+    wxString bl_msg = _("Measuring backlash: ") + m_backlashTool->GetLastStatus();
+    m_backlashInfo->SetLabel(bl_msg);
+    if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
     {
-        pBacklashTool->DecMeasurementStep(camLoc);
-        wxString bl_msg = _("Measuring backlash: ") + pBacklashTool->GetLastStatus();
+        m_backlashTool->DecMeasurementStep(camLoc);
+        wxString bl_msg = _("Measuring backlash: ") + m_backlashTool->GetLastStatus();
         m_backlashInfo->SetLabel(bl_msg);
-        if (pBacklashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
+        if (m_backlashTool->GetBltState() == BacklashTool::BLT_STATE_COMPLETED)
         {
-            BacklashTool::MeasurementResults qual = pBacklashTool->GetMeasurementQuality();
+            BacklashTool::MeasurementResults qual = m_backlashTool->GetMeasurementQuality();
             if (qual != BacklashTool::MEASUREMENT_INVALID)
             {
-                m_othergrid->SetCellValue(m_backlash_px_loc, wxString::Format("%s%.1f %s", 
-                    qual == BacklashTool::MEASUREMENT_IMPAIRED ? ">=" : "", pBacklashTool->GetBacklashResultPx(), _(" px")));
+                m_othergrid->SetCellValue(m_backlash_px_loc, wxString::Format("%s% .1f %s", 
+                    qual == BacklashTool::MEASUREMENT_IMPAIRED ? ">=" : "", m_backlashTool->GetBacklashResultPx(), _("px")));
                 m_othergrid->SetCellValue(m_backlash_sec_loc, wxString::Format("%s%d %s", 
-                    qual == BacklashTool::MEASUREMENT_IMPAIRED ? ">=" : "",  pBacklashTool->GetBacklashResultSec(), _(" mSec")));
+                    qual == BacklashTool::MEASUREMENT_IMPAIRED ? ">=" : "", m_backlashTool->GetBacklashResultMs(), _("ms")));
                 m_graphBtn->Enable(true);
             }
             else
@@ -583,16 +582,12 @@ void GuidingAsstWin::BacklashStep(PHD_Point camLoc)
             }
             EndBacklashTest(true);
         }
-
     }
 }
 
 void GuidingAsstWin::BacklashError()
 {
-    if (pBacklashTool)
-    {
-        EndBacklashTest(false);
-    }
+    EndBacklashTest(false);
 }
 
 // Event handlers for applying recommendations
@@ -646,14 +641,14 @@ void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
 {
     BacklashComp* pComp = pMount->GetBacklashCompPtr();
 
-    pComp->SetBacklashPulse(pBacklashTool->GetBacklashResultSec());
+    pComp->SetBacklashPulse(m_backlashTool->GetBacklashResultMs());
     pComp->EnableBacklashComp(true);
     m_decBacklashButton->Enable(false);
 }
 
 void GuidingAsstWin::OnGraph(wxCommandEvent& event)
 {
-    pBacklashTool->ShowGraph(this);
+    m_backlashTool->ShowGraph(this);
 }
 
 // Adds a recommendation string and a button bound to the passed event handler
@@ -701,9 +696,10 @@ void GuidingAsstWin::LogResults()
     Debug.Write(wxString::Format("Dec Drift Rate=%s, Dec Peak=%s, PA Error=%s\n",
         m_othergrid->GetCellValue(m_dec_drift_as_loc), m_othergrid->GetCellValue(m_dec_peak_as_loc),
         m_othergrid->GetCellValue(m_pae_loc)));
-    if (pBacklashTool && pBacklashTool->GetBacklashResultPx() > 0)
+
+    if (m_backlashTool->GetBacklashResultPx() > 0)
     {
-        Debug.Write(wxString::Format("Backlash measures: %0.2f px, %d mSec\n", pBacklashTool->GetBacklashResultPx(), pBacklashTool->GetBacklashResultSec()));
+        Debug.Write(wxString::Format("Backlash measures: %0.2f px, %d ms\n", m_backlashTool->GetBacklashResultPx(), m_backlashTool->GetBacklashResultMs()));
     }
 }
 
@@ -797,14 +793,14 @@ void GuidingAsstWin::MakeRecommendations()
             m_snr_msg->SetLabel(wxEmptyString);
     }
 
-    if (pBacklashTool->GetBacklashResultSec() > 200)
+    if (m_backlashTool->GetBacklashResultMs() > 200)
     {
-        bool largeBL = pBacklashTool->GetBacklashResultSec() > MAX_BACKLASH_COMP;
+        bool largeBL = m_backlashTool->GetBacklashResultMs() > MAX_BACKLASH_COMP;
         wxString msg;
         if (!largeBL)
-            msg = wxString::Format(_("Try setting a Dec backlash value of %d mSec"), pBacklashTool->GetBacklashResultSec());
+            msg = wxString::Format(_("Try setting a Dec backlash value of %d ms"), m_backlashTool->GetBacklashResultMs());
         else
-            msg = wxString::Format(_("Backlash is %0.1f px; you may need to guide in only one Dec direction"), pBacklashTool->GetBacklashResultPx());
+            msg = wxString::Format(_("Backlash is %0.1f px; you may need to guide in only one Dec direction"), m_backlashTool->GetBacklashResultPx());
         if (!m_backlash_msg)
         {
             m_backlash_msg = AddRecommendationEntry(msg, wxCommandEventHandler(GuidingAsstWin::OnDecBacklash), &m_decBacklashButton);
@@ -885,7 +881,7 @@ void GuidingAsstWin::DoStop(const wxString& status)
     m_stop->Enable(false);
     if (m_origSubFrames != -1)
     {
-        pCamera->UseSubframes = (bool)m_origSubFrames;
+        pCamera->UseSubframes = m_origSubFrames ? true : false;
         m_origSubFrames = -1;
     }
 }
@@ -894,10 +890,11 @@ void GuidingAsstWin::EndBacklashTest(bool normal)
 {
     if (!normal)
     {
-        pBacklashTool->StopMeasurement();
+        m_backlashTool->StopMeasurement();
         m_othergrid->SetCellValue(m_backlash_px_loc, _("Backlash test aborted..."));
         m_graphBtn->Enable(false);
     }
+
     m_measuringBacklash = false;
     m_backlashCB->Enable(true);
     m_backlashInfo->Show(false);
@@ -918,22 +915,23 @@ void GuidingAsstWin::EndBacklashTest(bool normal)
 
 void GuidingAsstWin::OnStop(wxCommandEvent& event)
 {
-    if (m_backlashCB->IsChecked() && pBacklashTool)
+    if (m_backlashCB->IsChecked())
     {
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
         {
             m_measuringBacklash = true;
+
             if (m_origSubFrames == -1)
-                m_origSubFrames = pCamera->UseSubframes;
+                m_origSubFrames = pCamera->UseSubframes ? 1 : 0;
             pCamera->UseSubframes = false;
 
-            m_backlashInfo->SetLabelText(_("Measuring backlash... ") + pBacklashTool->GetLastStatus());
+            m_backlashInfo->SetLabelText(_("Measuring backlash... ") + m_backlashTool->GetLastStatus());
             m_backlashInfo->Show(true);
             Layout();
             GetSizer()->Fit(this);
             m_backlashCB->Enable(false);                        // Don't let user turn it off once we've started
             m_measuring = false;
-            pBacklashTool->StartMeasurement();
+            m_backlashTool->StartMeasurement();
             m_instructions->SetLabel(_("Measuring backlash... "));
         }
         else
