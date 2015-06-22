@@ -1750,7 +1750,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
     bool bError = false;
     fitsfile *fptr = 0;
     int status = 0;  // CFITSIO status value MUST be initialized to zero!
-    long last_frame_size [] = { -1.0, -1.0 };
+    long last_frame_size [] = { -1L, -1L };
 
     try
     {
@@ -1784,7 +1784,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
 
                 long fsize[2];
                 fits_get_img_size(fptr, 2, fsize, &status);
-                if (last_frame_size[0] != -1)
+                if (last_frame_size[0] != -1L)
                 {
                     if (last_frame_size[0] != fsize[0] || last_frame_size[1] != fsize[1])
                     {
