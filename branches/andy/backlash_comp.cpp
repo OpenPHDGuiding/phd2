@@ -362,7 +362,7 @@ void BacklashTool::DecMeasurementStep(PHD_Point currentCamLoc)
                 // Want to move the mount north at >=500 mSec, regardless of image scale. But reduce pulse width if it would exceed 80% of the tracking rectangle - 
                 // need to leave some room for seeing deflections and dec drift
                 m_pulseWidth = wxMax((int)NORTH_PULSE_SIZE, ((Scope*)m_theScope)->GetCalibrationDuration());
-                m_pulseWidth = wxMin(m_pulseWidth, (int)floor(0.8 * (double)pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
+                m_pulseWidth = wxMin(m_pulseWidth, (int)floor(0.7 * (double)pFrame->pGuider->GetMaxMovePixels() / m_lastDecGuideRate));
                 m_stepCount = 0;
                 // Move 50% more than the backlash we cleared or >=8 secs, whichever is greater.  We want to leave plenty of room
                 // for giving south moves time to clear backlash and actually get moving

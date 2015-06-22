@@ -203,6 +203,7 @@ struct GuidingAsstWin : public wxDialog
     bool m_savePrimaryMountEnabled;
     bool m_saveSecondaryMountEnabled;
     bool m_measurementsTaken;
+    int  m_origSubFrames;
 
     bool m_measuringBacklash;
 
@@ -257,7 +258,7 @@ struct GridTooltipInfo : public wxObject
 // Constructor
 GuidingAsstWin::GuidingAsstWin()
 : wxDialog(pFrame, wxID_ANY, wxGetTranslation(_("Guiding Assistant")), wxPoint(-1, -1), wxDefaultSize),
-    m_measuring(false), m_measurementsTaken(false)
+    m_measuring(false), m_measurementsTaken(false), m_origSubFrames(-1)
 {
     m_vSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -882,6 +883,11 @@ void GuidingAsstWin::DoStop(const wxString& status)
 
     m_start->Enable(pFrame->pGuider->IsGuiding());
     m_stop->Enable(false);
+    if (m_origSubFrames != -1)
+    {
+        pCamera->UseSubframes = (bool)m_origSubFrames;
+        m_origSubFrames = -1;
+    }
 }
 
 void GuidingAsstWin::EndBacklashTest(bool normal)
@@ -917,6 +923,9 @@ void GuidingAsstWin::OnStop(wxCommandEvent& event)
         if (!m_measuringBacklash)                               // Run the backlash test after the sampling was completed
         {
             m_measuringBacklash = true;
+            if (m_origSubFrames == -1)
+                m_origSubFrames = pCamera->UseSubframes;
+            pCamera->UseSubframes = false;
 
             m_backlashInfo->SetLabelText(_("Measuring backlash... ") + pBacklashTool->GetLastStatus());
             m_backlashInfo->Show(true);
