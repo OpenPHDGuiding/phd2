@@ -391,6 +391,8 @@ GuidingAsstWin::GuidingAsstWin()
     wxStaticBoxSizer *bl_group = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Dec Backlash"));
     m_backlashCB = new wxCheckBox(this, wxID_ANY, _("Measure Declination Backlash"));
     m_backlashCB->SetValue(true);
+    m_backlashCB->SetToolTip(_("PHD2 will move the guide star a considerable distance north, then south to measure backlash. Be sure the selected star has "
+        "plenty of room to move in the north direction.  If the guide star is lost, increase the size of the search region to at least 20 px"));
     m_graphBtn = new wxButton(this, wxID_ANY, _("Show Graph"));
     m_graphBtn->SetToolTip(_("Show graph of backlash measurement points"));
     bl_group->Add(m_backlashCB, wxSizerFlags(0).Border(wxALL, 8));

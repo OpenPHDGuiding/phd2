@@ -106,7 +106,7 @@ void BacklashComp::Reset()
 // BacklashGraph implementation
 // Constructor
 BacklashGraph::BacklashGraph(wxDialog* parent, BacklashTool* pBL)
-: wxDialog(parent, wxID_ANY, wxGetTranslation(_("Bashlash Results")), wxPoint(-1, -1), wxSize(500, 400))
+: wxDialog(parent, wxID_ANY, wxGetTranslation(_("Backlash Results")), wxPoint(-1, -1), wxSize(500, 400))
 {
     m_BLT = pBL;
 
@@ -136,15 +136,19 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     wxPen bluePen("BLUE", 3, wxSOLID);
     wxBrush redBrush("RED", wxSOLID);
     wxBrush blueBrush("BLUE", wxSOLID);
-    //double fakeNorthPoints[] = { 277.5, 280.9, 285.1, 289.4, 292.9, 296.8, 300.1, 304.5, 308.0, 312.2, 316.0, 319.9, 324.0, 328.4, 331.9, 335.7, 339.4, 343.7, 346.9 };
-    //double fakeSouthPoints[] = { 350.1, 351.4, 351.6, 351.1, 350.7, 350.5, 350.9, 350.8, 351.4, 350.6, 348.0, 344.8, 341.0, 336.5, 333.0, 328.4, 324.5, 320.9, 317.2 };
-    //std::vector <double> northSteps(fakeNorthPoints, fakeNorthPoints + 19);
-    //std::vector <double> southSteps(fakeSouthPoints, fakeSouthPoints + 19);
+    //double fakeNorthPoints[] = 
+    //{152.04, 164.77, 176.34, 188.5, 200.25, 212.36, 224.21, 236.89, 248.62, 260.25, 271.34, 283.54, 294.79, 307.56, 319.22, 330.87, 343.37, 355.75, 367.52, 379.7, 391.22, 403.89, 415.34, 427.09, 439.41, 450.36, 462.6};
+    //double fakeSouthPoints[] = 
+    //{474.84, 474.9, 464.01, 451.83, 438.08, 426, 414.68, 401.15, 390.39, 377.22, 366.17, 353.45, 340.75, 328.31, 316.93, 304.55, 292.42, 280.45, 269.03, 255.02, 243.76, 231.53, 219.43, 207.35, 195.22, 183.06, 169.47};
+    //std::vector <double> northSteps(fakeNorthPoints, fakeNorthPoints + 27);
+    //std::vector <double> southSteps(fakeSouthPoints, fakeSouthPoints + 27);
     std::vector <double> northSteps = m_BLT->GetNorthSteps();
     std::vector <double> southSteps = m_BLT->GetSouthSteps();
 
     double xScaleFactor;
     double yScaleFactor;
+    int xOrigin;
+    int yOrigin;
     int ptRadius;
     int graphWindowWidth;
     int graphWindowHeight;
@@ -192,10 +196,10 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     dc.DrawText(_("South"), 0.8 * graphWindowWidth, 10);
     // Draw the axes
     dc.SetPen(axisPen);
-    dc.SetDeviceOrigin(wxCoord(graphWindowWidth / 2), graphWindowHeight + 40);
-    dc.SetAxisOrientation(true, true);
-    dc.DrawLine(-graphWindowWidth / 2, 0, graphWindowWidth / 2, 0);               // x
-    dc.DrawLine(0, 0, 0, graphWindowHeight + 20);               // y
+    xOrigin = graphWindowWidth / 2;
+    yOrigin = graphWindowHeight + 40;
+    dc.DrawLine(0, yOrigin, graphWindowWidth, yOrigin);               // x
+    dc.DrawLine(xOrigin, yOrigin, xOrigin, graphWindowHeight);        // y
 
     // Draw the north steps
     dc.SetPen(redPen);
@@ -204,13 +208,13 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
 
     for (int i = 0; i < numNorth; i++)
     {
-        dc.DrawCircle(wxPoint((i - numNorth) * xScaleFactor, round((northSteps.at(i) - minDec) * yScaleFactor)), ptRadius);
+        dc.DrawCircle(wxPoint(i * xScaleFactor, round(yOrigin - (northSteps.at(i) - minDec) * yScaleFactor)), ptRadius);
     }
 
     // Draw the south steps
     for (int i = 0; i < numSouth; i++)
     {
-        dc.DrawCircle(wxPoint(i * xScaleFactor, round((southSteps.at(i) - minDec) * yScaleFactor)), ptRadius);
+        dc.DrawCircle(wxPoint((i + numNorth) * xScaleFactor, round(yOrigin - (southSteps.at(i) - minDec) * yScaleFactor)), ptRadius);
     }
 
     // Now show an ideal south recovery line
@@ -220,7 +224,7 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     double peakSouth = southSteps.at(0);
     for (int i = 1; i <= numNorth; i++)
     {
-        wxPoint where = wxPoint(i * xScaleFactor, round((peakSouth - i * northInc - minDec) * yScaleFactor));
+        wxPoint where = wxPoint((i + numNorth)* xScaleFactor, round(yOrigin - (peakSouth - i * northInc - minDec) * yScaleFactor));
         dc.DrawCircle(where, ptRadius);
     }
 

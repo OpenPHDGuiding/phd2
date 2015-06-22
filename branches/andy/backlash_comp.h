@@ -106,8 +106,8 @@ public:
     wxString GetLastStatus() { return m_lastStatus; }
     void SetBacklashPulse(int amt) { m_pulseWidth = amt; }
     void ShowGraph(wxDialog *pGA);
-    std::vector <double> GetNorthSteps() { return m_northBLSteps; }
-    std::vector <double> GetSouthSteps() { return m_southBLSteps; }
+    const std::vector <double>& GetNorthSteps() { return m_northBLSteps; }
+    const std::vector <double>& GetSouthSteps() { return m_southBLSteps; }
 };
 
 //Class for implementing the backlash graph dialog
