@@ -130,7 +130,48 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
         m_pDarkCount = NewSpinnerInt(this, width, pConfig->Profile.GetInt("/camera/darks_num_frames", DefDarkCount), 1, 20, 1, _("Number of dark frames for each exposure time"));
         AddTableEntryPair(this, pDarkParams, _("Frames to take for each \n exposure time"), m_pDarkCount);
         pDarkGroup->Add(pDarkParams, wxSizerFlags().Border(wxALL, 10));
-        pvSizer->Add(pDarkGroup, wxSizerFlags().Border(wxALL, 10));
+        pvSizer->Add(pDarkGroup, wxSizerFlags().Border(wxALL, 10).Expand());
+
+        wxStaticBoxSizer *pBuildOptions = new wxStaticBoxSizer(wxVERTICAL, this, _("Options"));
+        wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
+        wxStaticText *pInfo = new wxStaticText(this, wxID_ANY, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1));
+        m_rbModifyDarkLib = new wxRadioButton(this, wxID_ANY, _("Modify/extend existing dark library"));
+        m_rbModifyDarkLib->SetToolTip(_("Darks created now will replace older darks having matching exposure times. If different exposure times are used, "
+            "those darks will be added to the library."));
+        m_rbNewDarkLib = new wxRadioButton(this, wxID_ANY, _("Create entirely new dark library"));
+        m_rbNewDarkLib->SetToolTip(_("Darks created now will be used to build a completely new dark library - old dark frames will be discarded. You "
+            " MUST use this option if you've seen alert messages about incompatible frame sizes or mismatches with the current camera."));
+        if (pFrame->DarkLibExists(pConfig->GetCurrentProfileId(), false))
+        {
+            if (pFrame->LoadDarkHandler(true))
+            {
+                double min_v, max_v;
+                int num;
+                pCamera->GetDarklibProperties(&num, &min_v, &max_v);
+                pInfo->SetLabel(wxString::Format("Existing dark library covers %d exposure times in the range of %g s to %g s",
+                    num, min_v / 1000., max_v / 1000.));
+                m_rbModifyDarkLib->SetValue(true);
+            }
+            else
+            {
+                pInfo->SetLabel("Existing dark library contains incompatible frames - it must be rebuilt from scratch");
+                m_rbModifyDarkLib->Enable(false);
+                m_rbNewDarkLib->SetValue(true);
+            }
+        }
+        else
+        {
+            pInfo->SetLabel("No compatible dark library is available");
+            m_rbModifyDarkLib->Enable(false);
+            m_rbNewDarkLib->SetValue(true);
+        }
+        
+        hSizer->Add(m_rbModifyDarkLib, wxSizerFlags().Border(wxALL, 10));
+        hSizer->Add(m_rbNewDarkLib, wxSizerFlags().Border(wxALL, 10));
+        pBuildOptions->Add(pInfo, wxSizerFlags().Border(wxALL, 10).Border(wxLEFT, 25));
+        pBuildOptions->Add(hSizer, wxSizerFlags().Border(wxALL, 10));
+        pvSizer->Add(pBuildOptions, wxSizerFlags().Expand());
+
     }
     else
     {
@@ -233,6 +274,8 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
             tot_dur += exposureDurations[i] * darkFrameCount;
 
         m_pProgress->SetRange(tot_dur);
+        if (m_rbNewDarkLib->GetValue())           // User rebuilding from scratch
+            pCamera->ClearDarks();
 
         for (int inx = minExpInx; inx <= maxExpInx; inx++)
         {
@@ -256,12 +299,25 @@ void DarksDialog::OnStart(wxCommandEvent& evt)
         }
 
         if (m_cancelling)
-            ShowStatus(_("Operation cancelled"), false);
+        {
+            ShowStatus(_("Operation cancelled - no changes have been made"), false);
+            if (pFrame->DarkLibExists(pConfig->GetCurrentProfileId(), false))
+            {
+                if (pFrame->LoadDarkHandler(true))
+                    Debug.AddLine("Dark library - user cancelled operation, dark library restored.");
+                else
+                    Debug.AddLine("Dark library = user cancelled operation, dark library still invalid.");
+            }
+        }
         else
         {
             pFrame->SaveDarkLibrary(m_pNotes->GetValue());
             pFrame->LoadDarkHandler(true);          // Put it to use, including selection of matching dark frame
             wrapupMsg = _("dark library built");
+            if (m_rbNewDarkLib)
+                Debug.AddLine("Dark library - new dark lib created from scratch.");
+            else
+                Debug.AddLine("Dark library - dark lib modified/extended.");
             ShowStatus(wrapupMsg, false);
         }
     }

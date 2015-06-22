@@ -974,6 +974,30 @@ void GuideCamera::SelectDark(int exposureDuration)
     }
 }
 
+void GuideCamera::GetDarklibProperties(int *pNumDarks, double *pMinExp, double *pMaxExp)
+{
+    double minExp = 9999.0;
+    double maxExp = -9999.0;
+    int ct = 0;
+
+    { // lock scope
+        wxCriticalSectionLocker lck(DarkFrameLock);
+
+        for (auto it = Darks.begin(); it != Darks.end(); ++it)
+        {
+            if (it->first < minExp)
+                minExp = it->first;
+            if (it->first > maxExp)
+                maxExp = it->first;
+            ++ct;
+        }
+    } // lock scope
+
+    *pNumDarks = ct;
+    *pMinExp = minExp;
+    *pMaxExp = maxExp;
+}
+
 void GuideCamera::ClearDefectMap()
 {
     wxCriticalSectionLocker lck(DarkFrameLock);

@@ -841,13 +841,17 @@ endif()  # APPLE
 #
 #############################################
 if(UNIX AND NOT APPLE)
+
+ if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm(.*)")
+    set(arch "armv6")
+ else()
   if(CMAKE_SIZEOF_VOID_P EQUAL 8) 
     set(arch "x64") 
   else() 
     set(arch "x86") 
   endif()
-  
-  
+ endif()
+
   find_path(ZWO_INCLUDE_DIR ASICamera2.h
     PATHS
     ${PHD_PROJECT_ROOT_DIR}/cameras
