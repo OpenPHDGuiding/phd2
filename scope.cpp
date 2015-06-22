@@ -33,11 +33,13 @@
  */
 #include "phd.h"
 
-#include "image_math.h"
-#include "wx/textfile.h"
-#include "socket_server.h"
-#include "calstep_dialog.h"
+#include "backlash_comp.h"
 #include "calreview_dialog.h"
+#include "calstep_dialog.h"
+#include "image_math.h"
+#include "socket_server.h"
+
+#include <wx/textfile.h>
 
 static const int DefaultCalibrationDuration = 750;
 static const int DefaultMaxDecDuration = 2500;
@@ -94,6 +96,8 @@ Scope::Scope(void)
 
     val = pConfig->Profile.GetBoolean(prefix + "/AssumeOrthogonal", false);
     SetAssumeOrthogonal(val);
+
+    m_backlashComp = new BacklashComp(this);
 }
 
 Scope::~Scope(void)
@@ -689,10 +693,10 @@ void Scope::SetCalibrationWarning(Calibration_Issues etype, bool val)
 // Generic hook for "details" button in calibration sanity check alert
 static void ShowCalibrationIssues(long scopeptr)
 {
-    Scope *pscope = (Scope*)scopeptr;
+    Scope *pscope = reinterpret_cast<Scope *>(scopeptr);
     pscope->HandleSanityCheckDialog();
-
 }
+
 // Handle the "details" dialog for the calibration sanity check
 void Scope::HandleSanityCheckDialog()
 {
@@ -931,6 +935,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
         double dY = m_calibrationStartingLocation.dY(currentLocation);
         double dist = m_calibrationStartingLocation.Distance(currentLocation);
         double dist_crit = CalibrationDistance();
+        double blDelta;
+        double blCumDelta;
         double nudge_amt;
 
         switch (m_calibrationState)
@@ -977,7 +983,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 if (pFrame->pGuider->IsFastRecenterEnabled())
                 {
-                    m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibration.xRate);
+                    m_recenterDuration = (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_calibration.xRate);
                     if (m_recenterDuration > m_maxRaDuration)
                         m_recenterDuration = m_maxRaDuration;
                     if (m_recenterDuration < m_calibrationDuration)
@@ -1028,37 +1034,118 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 }
 
                 m_calibrationState = CALIBRATION_STATE_CLEAR_BACKLASH;
-
+                m_blMarkerPoint = currentLocation;
+                m_blExpectedBacklashStep = m_calibration.xRate * m_calibrationDuration * 0.6;
+                if (pPointingSource)
+                {
+                    double RASpeed;
+                    double DecSpeed;
+                    if (!pPointingSource->GetGuideRates(&RASpeed, &DecSpeed))
+                        if (RASpeed != 0 && RASpeed != DecSpeed)
+                            m_blExpectedBacklashStep *= DecSpeed / RASpeed;
+                }
+                m_blMaxClearingPulses = wxMax(8, BL_MAX_CLEARING_TIME / m_calibrationDuration);
+                m_blLastCumDistance = 0;
+                m_blAcceptedMoves = 0;
+                Debug.AddLine(wxString::Format("Backlash: Looking for 3 moves of %0.1f px, max attempts = %d", m_blExpectedBacklashStep, m_blMaxClearingPulses));
                 // fall through
                 Debug.AddLine("Falling Through to state CLEAR_BACKLASH");
 
             case CALIBRATION_STATE_CLEAR_BACKLASH:
 
                 GuideLog.CalibrationStep(this, "Backlash", m_calibrationSteps, dX, dY, currentLocation, dist);
+                blDelta = m_blMarkerPoint.Distance(currentLocation);
+                blCumDelta = dist;
 
-                if (dist < DEC_BACKLASH_DISTANCE)
+                // Want to see the mount moving north for 3 moves of >= expected distance pixels without any direction reversals
+                if (m_calibrationSteps == 0)
                 {
-                    if (m_calibrationSteps++ > MAX_CALIBRATION_STEPS)
-                    {
-                        wxString msg(wxTRANSLATE("Backlash Clearing Failed: star did not move enough"));
-                        const wxString& translated(wxGetTranslation(msg));
-                        pFrame->Alert(translated);
-                        GuideLog.CalibrationFailed(this, msg);
-                        EvtServer.NotifyCalibrationFailed(this, msg);
-                        throw ERROR_INFO("Clear backlash failed");
-                    }
-                    status0.Printf(_("Clear backlash step %3d"), m_calibrationSteps);
+                    // Get things moving with the first clearing pulse
+                    Debug.AddLine(wxString::Format("Backlash: Starting north clearing using pulse width of %d",
+                        m_calibrationDuration));
                     pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
+                    m_calibrationSteps = 1;
+                    status0.Printf(_("Clearing backlash step 1"));
                     break;
                 }
+                if (blDelta >= m_blExpectedBacklashStep)
+                {
+                    if (m_blAcceptedMoves == 0 || (blCumDelta > m_blLastCumDistance))    // Just starting or still moving in same direction
+                    {
+                        m_blAcceptedMoves++;
+                        Debug.AddLine(wxString::Format("Backlash: Accepted clearing move of %0.1f", blDelta));
+                    }
+                    else
+                    {
+                        m_blAcceptedMoves = 0;            // Reset on a direction reversal
+                        Debug.AddLine(wxString::Format("Backlash: Rejected clearing move of %0.1f, direction reversal", blDelta));
+                    }
 
-                m_calibrationSteps = 0;
-                dist = dX = dY = 0.0;
-                m_calibrationStartingLocation = currentLocation;
+                }
+                else
+                {
+                    if (blCumDelta < m_blLastCumDistance)
+                    {
+                        m_blAcceptedMoves = 0;
+                        Debug.AddLine(wxString::Format("Backlash: Rejected small direction reversal of %0.1f px", blDelta));
+                    }
+                    else
+                        Debug.AddLine(wxString::Format("Backlash: Rejected small move of %0.1f px", blDelta));
+                }
+                if (m_blAcceptedMoves < BL_BACKLASH_MIN_COUNT)                    // More work to do
+                {
+                    if (m_calibrationSteps < m_blMaxClearingPulses)
+                    {   // Still have attempts left
+                        pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
+                        m_calibrationSteps++;
+                        m_blMarkerPoint = currentLocation;
+                        m_blLastCumDistance = blCumDelta;
+                        wxString msg = wxString::Format(_("Clearing backlash step %3d"), m_calibrationSteps);
+                        status0.Printf(msg);
+                        Debug.AddLine(wxString::Format("Backlash: %s, Last Delta = %0.2f px, CumDistance = %0.2f px", msg, blDelta, blCumDelta));
+                        break;
+                    }
+                    else
+                    {       // Used up all our attempts - might be ok or not
+                        if (blCumDelta >= BL_MIN_CLEARING_DISTANCE)
+                        {
+                            // Exhausted all the clearing pulses without reaching the goal - but we did move the mount > 3 px (same as PHD1)
+                            m_calibrationSteps = 0;
+                            m_calibrationStartingLocation = currentLocation;
+                            dX = 0;
+                            dY = 0;
+                            dist = 0;
+                            Debug.AddLine("Backlash: Reached clearing limit but total displacement > 3px - proceeding with calibration");
+                        }
+                        else
+                        {
+                            wxString msg(wxTRANSLATE("Backlash Clearing Failed: star did not move enough"));
+                            const wxString& translated(wxGetTranslation(msg));
+                            pFrame->Alert(translated);
+                            GuideLog.CalibrationFailed(this, msg);
+                            EvtServer.NotifyCalibrationFailed(this, msg);
+                            throw ERROR_INFO("Clear backlash failed");
+                        }
+                    }
+                }
+                else        //Got our 3 moves, move ahead
+                {
+                    // We know the last backlash clearing move was big enough - include that as a north calibration move
+                    m_calibrationSteps = 1;
+                    m_calibrationStartingLocation = m_blMarkerPoint;
+                    dX = m_blMarkerPoint.dX(currentLocation);
+                    dY = m_blMarkerPoint.dY(currentLocation);
+                    dist = m_blMarkerPoint.Distance(currentLocation);
+                    Debug.AddLine("Backlash: Got 3 acceptable moves, using last move as step 1 of N calibration");
+                }
+                m_blDistanceMoved = m_blMarkerPoint.Distance(m_calibrationInitialLocation);     // Need this to set nudging limit
+                Debug.AddLine(wxString::Format("Backlash: North calibration moves starting at {%0.1f,%0.1f}, Offset = %0.1f px", 
+                    m_blMarkerPoint.X, m_blMarkerPoint.Y, m_blDistanceMoved));
+                Debug.AddLine(wxString::Format("Backlash: Total distance moved = %0.1f", currentLocation.Distance(m_calibrationInitialLocation)));
+
                 m_calibrationState = CALIBRATION_STATE_GO_NORTH;
-
-                // fall through
-                Debug.AddLine("Falling Through to state GO_NORTH");
+                // falling through to start moving north
+                Debug.AddLine("Backlash: Falling Through to state GO_NORTH");
 
             case CALIBRATION_STATE_GO_NORTH:
 
@@ -1115,7 +1202,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 if (pFrame->pGuider->IsFastRecenterEnabled())
                 {
-                    m_recenterDuration = (int) floor((double) pFrame->pGuider->GetMaxMovePixels() / m_calibration.yRate);
+                    m_recenterDuration = (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_calibration.yRate);
                     if (m_recenterDuration > m_maxDecDuration)
                         m_recenterDuration = m_maxDecDuration;
                     if (m_recenterDuration < m_calibrationDuration)
@@ -1161,7 +1248,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 // Nudge further South on Dec, get within 2 px North/South of starting point, don't try more than 3 times and don't do nudging at all if
                 // we're starting too far away from the target
                 nudge_amt = currentLocation.Distance(m_calibrationInitialLocation);
-                if (m_calibrationSteps <= MAX_NUDGES && nudge_amt > NUDGE_TOLERANCE && nudge_amt < MAX_CALIBRATION_DISTANCE)
+                if (m_calibrationSteps <= MAX_NUDGES && nudge_amt > NUDGE_TOLERANCE &&
+                    nudge_amt < MAX_CALIBRATION_DISTANCE + m_blDistanceMoved)
                 {
                     // Compute how much more south we need to go
                     double decAmt = MountCoords(currentLocation - m_calibrationInitialLocation, m_calibration.xAngle, m_calibration.yAngle).Y;
@@ -1170,8 +1258,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     if (decAmt * m_totalSouthAmt > 0.0)           // still need to move south to reach target based on matching sign
                     {
                         decAmt = fabs(decAmt);           // Sign doesn't matter now, we're always moving south
-                        decAmt = wxMin(decAmt, (double) pFrame->pGuider->GetMaxMovePixels());
-                        int pulseAmt = (int) floor(decAmt / m_calibration.yRate);
+                        decAmt = wxMin(decAmt, (double)pFrame->pGuider->GetMaxMovePixels());
+                        int pulseAmt = (int)floor(decAmt / m_calibration.yRate);
                         if (pulseAmt > m_calibrationDuration)
                             pulseAmt = m_calibrationDuration;               // Be conservative, use durations that pushed us north in the first place
                         Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d ms", pulseAmt));
@@ -1279,6 +1367,18 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pScope = pScope;
 
     width = StringWidth(_T("00000"));
+
+    wxBoxSizer *compSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_pUseBacklashComp = new wxCheckBox(pParent, wxID_ANY, _("Declination Backlash Comp"));
+    m_pUseBacklashComp->SetToolTip(_("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
+    compSizer->Add(m_pUseBacklashComp, wxSizerFlags().Expand().Border(wxALL, 3));
+    m_pBacklashPulse = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);  
+    wxSizer *sizer_temp = MakeLabeledControl(_("Amount"), m_pBacklashPulse,
+        _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."));
+    compSizer->Add(sizer_temp, wxSizerFlags().Expand().Border(wxALL, 3));
+    DoAdd(compSizer);
+
     m_pCalibrationDuration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
 
@@ -1378,6 +1478,8 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
     m_assumeOrthogonal->SetValue(m_pScope->IsAssumeOrthogonal());
+    m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
+    m_pBacklashPulse->SetValue(m_pScope->m_backlashComp->GetBacklashPulse());
 }
 
 void Scope::ScopeConfigDialogPane::UnloadValues(void)
@@ -1390,6 +1492,8 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
+    m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
+    m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
 
     MountConfigDialogPane::UnloadValues();
 }

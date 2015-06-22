@@ -119,6 +119,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_lockPosShift.shiftIsMountCoords = true;
     m_lockPosIsSticky = false;
     m_forceFullFrame = false;
+    m_measurementMode = false;
     m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);
@@ -228,6 +229,17 @@ void Guider::GetOverlaySlitCoords(wxPoint *center, wxSize *size, int *angle)
     *center = m_overlaySlitCoords.center;
     *size = m_overlaySlitCoords.size;
     *angle = m_overlaySlitCoords.angle;
+}
+
+void Guider::EnableMeasurementMode(bool enable)
+{
+    if (enable)
+    {
+        if (m_state == STATE_GUIDING)
+            m_measurementMode = true;
+    }
+    else
+        m_measurementMode = false;
 }
 
 void Guider::SetOverlaySlitCoords(const wxPoint& center, const wxSize& size, int angle)
@@ -1228,8 +1240,16 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 else
                 {
                     // ordinary guide step
-                    s_deflectionLogger.Log(CurrentPosition());
-                    pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
+                    if (!m_measurementMode)
+                    {
+                        s_deflectionLogger.Log(CurrentPosition());
+                        pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
+                    }
+                    else
+                    {
+                        GuidingAssistant::NotifyBacklashStep(CurrentPosition());
+                    }
+
                 }
                 break;
 
@@ -1247,6 +1267,12 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
     if (m_state != STATE_CALIBRATING_PRIMARY && m_state != STATE_CALIBRATING_SECONDARY)
     {
         pFrame->SetStatusText(statusMessage);
+    }
+
+    if (m_measurementMode && m_state != STATE_GUIDING)
+    {
+        GuidingAssistant::NotifyBacklashError();
+        m_measurementMode = false;
     }
 
     pFrame->UpdateButtonsStatus();
@@ -1322,9 +1348,9 @@ void Guider::UpdateLockPosShiftCameraCoords(void)
         Debug.AddLine("UpdateLockPosShiftCameraCoords: shift rate mount coords = %.2f,%.2f",
                       m_lockPosShift.shiftRate.X, m_lockPosShift.shiftRate.Y);
 
-        Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
-        if (mount && !mount->IsStepGuider())
-            mount->TransformMountCoordinatesToCameraCoordinates(m_lockPosShift.shiftRate, rate);
+        Mount *scope = TheScope();
+        if (scope)
+            scope->TransformMountCoordinatesToCameraCoordinates(m_lockPosShift.shiftRate, rate);
     }
     else
     {

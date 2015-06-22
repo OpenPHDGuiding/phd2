@@ -143,13 +143,13 @@ DarksDialog::DarksDialog(wxWindow *parent, bool darkLib) :
             " MUST use this option if you've seen alert messages about incompatible frame sizes or mismatches with the current camera."));
         if (pFrame->DarkLibExists(pConfig->GetCurrentProfileId(), false))
         {
-            double min_v, max_v;
-            int num;
             if (pFrame->LoadDarkHandler(true))
             {
+                double min_v, max_v;
+                int num;
                 pCamera->GetDarklibProperties(&num, &min_v, &max_v);
                 pInfo->SetLabel(wxString::Format("Existing dark library covers %d exposure times in the range of %g s to %g s",
-                    num, min_v/1000.0, max_v/1000.));
+                    num, min_v / 1000., max_v / 1000.));
                 m_rbModifyDarkLib->SetValue(true);
             }
             else

@@ -123,6 +123,9 @@ double GuideAlgorithmResistSwitch::result(double input)
                     m_history[i] = input;
             }
         }
+        // Flag a direction reversal, might be a result of a backlash comp pulse
+        if (sign(input) != m_currentSide)
+            m_pMount->FlagBacklashOverShoot(fabs(input) - m_minMove, m_guideAxis);
 
         int decHistory = 0;
 

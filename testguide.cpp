@@ -93,7 +93,7 @@ wxSizer *TestGuideDialog::InitMountControls()
         wxSize(StringWidth(GetParent(),"00000")+30,-1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 100.0, 5000.0, 100.0, 100.0);
     pulseDurationSpinCtrl->SetDigits(0);
     pulseDurationSpinCtrl->SetToolTip(_("Manual guide pulse duration (milliseconds)"));
-    Mount *mnt = pSecondaryMount ? pSecondaryMount : pMount;
+    Mount *mnt = TheScope();
     int val = pConfig->Profile.GetInt("/ManualGuide/duration", mnt->CalibrationMoveSize());
     pulseDurationSpinCtrl->SetValue((double) val);
     sz1->Add(pulseDurationSpinCtrl, wxSizerFlags().Left().Border(wxRIGHT, 10).Align(wxALIGN_CENTER_VERTICAL));
@@ -233,8 +233,8 @@ void TestGuideDialog::OnClose(wxCloseEvent& evt)
 
 void TestGuideDialog::OnReset(wxCommandEvent& evt)
 {
-    Mount *mnt = pSecondaryMount ? pSecondaryMount : pMount;
-    pulseDurationSpinCtrl->SetValue((double) mnt->CalibrationMoveSize());
+    Mount *scope = TheScope();
+    pulseDurationSpinCtrl->SetValue((double) scope->CalibrationMoveSize());
 }
 
 void TestGuideDialog::OnAppStateNotify(wxCommandEvent& evt)

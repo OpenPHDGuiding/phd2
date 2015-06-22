@@ -35,6 +35,7 @@
 
 #include "phd.h"
 #include "guiding_assistant.h"
+#include "backlash_comp.h"
 
 #include <wx/tokenzr.h>
 
@@ -477,6 +478,8 @@ Mount::Mount(void)
     m_pXGuideAlgorithm = NULL;
     m_guidingEnabled = true;
 
+    m_backlashComp = 0;
+
     ClearCalibration();
 
 #ifdef TEST_TRANSFORMS
@@ -488,6 +491,7 @@ Mount::~Mount()
 {
     delete m_pXGuideAlgorithm;
     delete m_pYGuideAlgorithm;
+    delete m_backlashComp;
 }
 
 double Mount::xRate()
@@ -580,9 +584,16 @@ bool Mount::FlipCalibration(void)
     return bError;
 }
 
+void Mount::FlagBacklashOverShoot(double pixelAmount, GuideAxis axis)
+{
+    if (m_backlashComp->IsEnabled() && axis == GUIDE_DEC && !IsStepGuider() && GetGuidingEnabled())
+        m_backlashComp->HandleOverShoot((int) (pixelAmount / m_cal.yRate));
+}
+
 Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool normalMove)
 {
     MOVE_RESULT result = MOVE_OK;
+    int backlash_pulse;
 
     try
     {
@@ -634,6 +645,11 @@ Mount::MOVE_RESULT Mount::Move(const PHD_Point& cameraVectorEndpoint, bool norma
         if (result == MOVE_OK || result == MOVE_ERROR)
         {
             int requestedYAmount = (int) floor(fabs(yDistance / m_cal.yRate) + 0.5);
+            if (!IsStepGuider() && normalMove && GetGuidingEnabled())
+            {
+                backlash_pulse = m_backlashComp->GetBacklashComp(yDirection, yDistance);
+                requestedYAmount += backlash_pulse;
+            }
             result = Move(yDirection, requestedYAmount, normalMove, &yMoveResult);
 
             if (yMoveResult.amountMoved > 0)

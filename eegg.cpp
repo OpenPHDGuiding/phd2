@@ -129,12 +129,12 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
     }
     else if (evt.GetId() == EEGG_FLIPRACAL)
     {
-        Mount *mount = pSecondaryMount ? pSecondaryMount : pMount;
+        Mount *scope = TheScope();
 
-        if (mount)
+        if (scope)
         {
-            double xorig = degrees(mount->xAngle());
-            double yorig = degrees(mount->yAngle());
+            double xorig = degrees(scope->xAngle());
+            double yorig = degrees(scope->yAngle());
 
             Debug.AddLine("User-requested FlipRACal");
 
@@ -144,8 +144,8 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             }
             else
             {
-                double xnew = degrees(mount->xAngle());
-                double ynew = degrees(mount->yAngle());
+                double xnew = degrees(scope->xAngle());
+                double ynew = degrees(scope->yAngle());
                 wxMessageBox(wxString::Format(_("RA calibration angle flipped: (%.2f, %.2f) to (%.2f, %.2f)"),
                     xorig, yorig, xnew, ynew));
             }

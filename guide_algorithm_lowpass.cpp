@@ -81,6 +81,7 @@ double GuideAlgorithmLowpass::result(double input)
     sortedHistory.Sort(dbl_sort_func);
 
     m_history.RemoveAt(0);
+    unsigned int numpts = m_history.GetCount();
 
     double median = sortedHistory[sortedHistory.GetCount()/2];
     double slope = CalcSlope(m_history);
@@ -101,6 +102,12 @@ double GuideAlgorithmLowpass::result(double input)
     if (fabs(input) < m_minMove)
     {
         dReturn = 0.0;
+    }
+    else
+    {
+        // Look for a direction reversal - possibly due to backlash comp
+        if (numpts > 2 && (m_history[numpts - 2] * m_history[numpts - 1] < 0))
+            m_pMount->FlagBacklashOverShoot(fabs(input) - m_minMove, m_guideAxis);
     }
 
     Debug.Write(wxString::Format("GuideAlgorithmLowpass::Result() returns %.2f from input %.2f\n", dReturn, input));

@@ -295,6 +295,8 @@ set(scopes_SRC
 source_group(Scopes FILES ${scopes_SRC})
 
 set(guiding_SRC
+  ${phd_src_dir}/backlash_comp.cpp
+  ${phd_src_dir}/backlash_comp.h
   ${phd_src_dir}/guide_algorithm_hysteresis.cpp
   ${phd_src_dir}/guide_algorithm_hysteresis.h
   ${phd_src_dir}/guide_algorithm_identity.cpp
