@@ -1750,6 +1750,7 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
     bool bError = false;
     fitsfile *fptr = 0;
     int status = 0;  // CFITSIO status value MUST be initialized to zero!
+    long last_frame_size [] = { -1.0, -1.0 };
 
     try
     {
@@ -1783,6 +1784,16 @@ static bool load_multi_darks(GuideCamera *camera, const wxString& fname)
 
                 long fsize[2];
                 fits_get_img_size(fptr, 2, fsize, &status);
+                if (last_frame_size[0] != -1)
+                {
+                    if (last_frame_size[0] != fsize[0] || last_frame_size[1] != fsize[1])
+                    {
+                        pFrame->Alert(_("Existing dark library has frames with incompatible formats - please rebuild the dark library from scratch."));
+                        throw ERROR_INFO("Incompatible frame sizes in dark library");
+                    }
+                }
+                last_frame_size[0] = fsize[0];
+                last_frame_size[1] = fsize[1];
 
                 std::auto_ptr<usImage> img(new usImage());
 
@@ -1949,26 +1960,28 @@ void MyFrame::SetDarkMenuState()
         item->Check(false);
 }
 
-void MyFrame::LoadDarkLibrary()
+bool MyFrame::LoadDarkLibrary()
 {
     wxString filename = MyFrame::DarkLibFileName(pConfig->GetCurrentProfileId());
 
     if (!pCamera || !pCamera->Connected)
     {
         Alert(_("You must connect a camera before loading dark frames"));
-        return;
+        return false;
     }
 
     if (load_multi_darks(pCamera, filename))
     {
         Debug.AddLine(wxString::Format("failed to load dark frames from %s", filename));
         SetStatusText(_("Darks not loaded"));
+        return false;
     }
     else
     {
         Debug.AddLine(wxString::Format("loaded dark library from %s", filename));
         pCamera->SelectDark(m_exposureDuration);
         SetStatusText(_("Darks loaded"));
+        return true;
     }
 }
 
