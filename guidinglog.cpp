@@ -146,7 +146,7 @@ bool GuidingLog::ChangeDirLog(const wxString& newdir)
 
 void GuidingLog::RemoveOldFiles()
 {
-    Logger::RemoveOldFiles("PHD2_GuideLog*.txt", RetentionPeriod);
+    Logger::RemoveMatchingFiles("PHD2_GuideLog*.txt", RetentionPeriod);
 }
 
 bool GuidingLog::Flush(void)
