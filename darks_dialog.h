@@ -47,6 +47,8 @@ private:
     wxSpinCtrl *m_pDarkCount;
     wxSpinCtrl *m_pDefectExpTime;
     wxSpinCtrl *m_pNumDefExposures;
+    wxRadioButton *m_rbModifyDarkLib;
+    wxRadioButton *m_rbNewDarkLib;
     wxTextCtrl *m_pNotes;
     wxGauge *m_pProgress;
     wxButton *m_pStartBtn;
@@ -60,6 +62,7 @@ private:
     void SaveProfileInfo();
     void ShowStatus(const wxString msg, bool appending);
     void CreateMasterDarkFrame(usImage& dark, int expTime, int frameCount);
+
 
 public:
     DarksDialog(wxWindow *parent, bool darkLibrary);
