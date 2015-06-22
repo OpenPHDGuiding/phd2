@@ -117,7 +117,7 @@ bool DebugLog::ChangeDirLog(const wxString& newdir)
 
 void DebugLog::RemoveOldFiles()
 {
-    Logger::RemoveOldFiles("PHD2_DebugLog*.txt", RetentionPeriod);
+    Logger::RemoveMatchingFiles("PHD2_DebugLog*.txt", RetentionPeriod);
 }
 
 wxString DebugLog::AddLine(const char *format, ...)
