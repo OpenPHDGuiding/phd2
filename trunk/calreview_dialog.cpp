@@ -534,10 +534,10 @@ void CalRestoreDialog::OnRestore(wxCommandEvent& event)
 }
 
 // CalSanity dialog may get launched as part of an 'alert' if the last calibration looked wonky - this one is non-modal
-CalSanityDialog::CalSanityDialog(wxFrame* parent, const Calibration& oldParams, const CalibrationDetails& oldDetails,
+CalSanityDialog::CalSanityDialog(wxFrame *parent, const Calibration& oldParams, const CalibrationDetails& oldDetails,
     Calibration_Issues issue)
 {
-    m_pScope = (Scope*) pMount;
+    m_pScope = TheScope();
     m_pScope->GetLastCalibrationParams(&m_newParams);
     pMount->GetCalibrationDetails(&m_calDetails);
     m_oldParams = oldParams;

@@ -63,7 +63,6 @@ private:
     void ShowStatus(const wxString msg, bool appending);
     void CreateMasterDarkFrame(usImage& dark, int expTime, int frameCount);
 
-
 public:
     DarksDialog(wxWindow *parent, bool darkLibrary);
     ~DarksDialog(void);

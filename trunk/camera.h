@@ -143,7 +143,7 @@ public:
     void            ClearDarks(void);
 
     void            SubtractDark(usImage& img);
-    void            GetDarklibProperties(int* pNumDarks, double *pMinExp, double *pMaxExp);
+    void            GetDarklibProperties(int *pNumDarks, double *pMinExp, double *pMaxExp);
 
     virtual const wxSize& DarkFrameSize() { return FullSize; }
 

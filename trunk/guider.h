@@ -155,6 +155,7 @@ class Guider : public wxWindow
     bool m_lockPosIsSticky;
     bool m_fastRecenterEnabled;
     LockPosShiftParams m_lockPosShift;
+    bool m_measurementMode;
 
 protected:
     bool m_forceFullFrame;
@@ -244,6 +245,7 @@ public:
     void BookmarkCurPosition();
 
     void Reset(bool fullReset);
+    void EnableMeasurementMode(bool enabled);
 
     // virtual functions -- these CAN be overridden by a subclass, which should
     // consider whether they need to call the base class functions as part of

@@ -69,6 +69,14 @@ class Scope : public Mount
     PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
     PHD_Point m_lastLocation;
     double m_totalSouthAmt;
+    // backlash-related variables
+    PHD_Point m_blMarkerPoint;
+    double m_blExpectedBacklashStep;
+    double m_blLastCumDistance;
+    int m_blAcceptedMoves;
+    double m_blDistanceMoved;
+    int m_blMaxClearingPulses;
+    enum blConstants { BL_BACKLASH_MIN_COUNT = 3, BL_MAX_CLEARING_TIME = 10000, BL_MIN_CLEARING_DISTANCE = 3 };
 
     Calibration m_calibration;
     CalibrationDetails m_calibrationDetails;
@@ -107,6 +115,8 @@ protected:
         wxCheckBox *m_pNeedFlipDec;
         wxCheckBox *m_pStopGuidingWhenSlewing;
         wxCheckBox *m_assumeOrthogonal;
+        wxCheckBox *m_pUseBacklashComp;
+        wxSpinCtrlDouble *m_pBacklashPulse;
 
         void OnCalcCalibrationStep(wxCommandEvent& evt);
 
