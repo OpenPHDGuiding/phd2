@@ -342,12 +342,14 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
         }
     }
 
+#if 0 // for testing subframes on the bench
 img.ImageData[200 * FullSize.GetWidth() + 400 + 0] = 22000;
 img.ImageData[200 * FullSize.GetWidth() + 400 + 1] = 32000;
 img.ImageData[200 * FullSize.GetWidth() + 400 + 2] = 35000;
 img.ImageData[200 * FullSize.GetWidth() + 400 + 3] = 35000;
 img.ImageData[200 * FullSize.GetWidth() + 400 + 4] = 32000;
 img.ImageData[200 * FullSize.GetWidth() + 400 + 5] = 22000;
+#endif
 
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
     if (Color && (options & CAPTURE_RECON)) QuickLRecon(img);
