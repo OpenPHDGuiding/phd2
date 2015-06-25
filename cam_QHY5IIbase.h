@@ -35,25 +35,32 @@
 #ifndef QHY5IIBASE_H_INCLUDED
 #define QHY5IIBASE_H_INCLUDED
 
+#include "qhyccd.h"
+
 class Camera_QHY5IIBase : public GuideCamera
 {
-    HINSTANCE CameraDLL;
+    qhyccd_handle *m_camhandle;
+    double m_gainMin;
+    double m_gainMax;
+    double m_gainStep;
     unsigned char *RawBuffer;
+    int m_curGain;
+    int m_curExposure;
+    wxRect m_roi;
 
 protected:
     TCHAR *m_cameraDLLName;
     bool Color;
 
     Camera_QHY5IIBase();
+    ~Camera_QHY5IIBase();
 
 public:
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect();
     bool    Disconnect();
-    void    InitCapture();
 
     bool    ST4PulseGuideScope(int direction, int duration);
-    void    ClearGuidePort();
 
     bool HasNonGuiCapture(void) { return true; }
     bool ST4HasNonGuiMove(void) { return true; }

@@ -571,10 +571,13 @@ if(WIN32)
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ShoestringLXUSB_DLL.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ShoestringLXUSB_DLL.dll)
   
-  # asi cameras
-  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/AsiCamera2.lib)
+  # ASI cameras
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/ASICamera2.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/ASICamera2.dll)
-  
+
+  # QHY cameras
+  set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/qhyccd.lib)
+  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhyccd.dll)
   
   # DsiDevice
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/DsiDevice.lib)
@@ -607,19 +610,14 @@ if(WIN32)
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/CMOSDLL.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/CMOSDLL.dll)
   
-  
   # inpout32 ?
   set(PHD_LINK_EXTERNAL     ${PHD_LINK_EXTERNAL}      ${PHD_PROJECT_ROOT_DIR}/cameras/inpout32.lib)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/inpout32.dll)
-  
- 
+
   # some other that are explicitly loaded at runtime
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhy5IIdll.dll)
-  set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/qhy5LIIdll.dll)
-  
+
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/astroDLLsspiag.dll)
   set(PHD_COPY_EXTERNAL_ALL ${PHD_COPY_EXTERNAL_ALL}  ${PHD_PROJECT_ROOT_DIR}/WinLibs/SSPIAGCAM.dll)
-  
 
   # ASCOM, 
   # disabled since not used in the SLN

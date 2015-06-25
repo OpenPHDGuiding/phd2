@@ -40,6 +40,7 @@ class Camera_QHY5IIClass : public Camera_QHY5IIBase {
 public:
     Camera_QHY5IIClass();
 };
+
 #endif  //QHY5IIDEF
 
 

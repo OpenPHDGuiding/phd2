@@ -38,237 +38,316 @@
 
 #include "cam_QHY5II.h"
 
-typedef DWORD (CALLBACK* Q5II_DW_V)(void);
-//EXPORT DWORD _stdcall openUSB;  Open USB for the selected camera. Returnd 1 is a camera was found, 0 otherwise
-Q5II_DW_V Q5II_OpenUSB;
-//EXPORT DWORD _stdcall isExposing();  Indicates if the camera is currently performing an exposure
-Q5II_DW_V Q5II_IsExposing;
+static bool s_qhySdkInitDone = false;
 
-typedef void (CALLBACK* Q5II_V_V)(void);
-//EXPORT void _stdcall CancelExposure();  Cancels the current exposure
-Q5II_V_V Q5II_CancelExposure;
-//EXPORT void _stdcall closeUSB;  Closes the USB connection.
-Q5II_V_V Q5II_CloseUSB;
-//EXPORT void _stdcall StopCapturing();  Stops any started capturing Thread
-Q5II_V_V Q5II_StopCapturing;
-//EXPORT void _stdcall SingleExposure();  Clears the buffer and starts a new exposure, stops capturing after one image
-Q5II_V_V Q5II_SingleExposure;
-//EXPORT void _stdcall SetAutoBlackLevel();  Set automatic black level, QHY5-II Only
-// Seems not in there...
-//Q5II_V_V Q5II_SetAutoBlackLevel;
+static bool QHYSDKInit()
+{
+    if (s_qhySdkInitDone)
+        return false;
 
-typedef void (CALLBACK* Q5II_V_DW)(DWORD);
-//EXPORT void _stdcall SetBlackLevel( DWORD n );  QHY5-II Only Sted the blacklevel of the camera (direct register write)
-// Seems to actually be the auto black level
-Q5II_V_DW Q5II_SetBlackLevel;
-//EXPORT void _stdcall SetGain(DWORD x );  Set gainlevel (0-100)
-Q5II_V_DW Q5II_SetGain;
-//EXPORT void _stdcall SetExposureTime( DWORD milisec ) ;  Set exposuretime in miliseconds
-Q5II_V_DW Q5II_SetExposureTime;
-//EXPORT void _stdcall SetSpeed( DWORD n );  Set camera speed (0=slow, 1=medium, 2=fast). QHY5L may not support all speeds in higher resolutions.
-Q5II_V_DW Q5II_SetSpeed;
-//EXPORT void _stdcall SetHBlank( DWORD hBlank) ; Sets the USB delay factor to a value between 0 and 2047
-Q5II_V_DW Q5II_SetHBlank;
-//EXPORT void _stdcall SetLineremoval ( DWORD lineremoval ) ; Enable line noise removal algorithm. QHY5-II Only
-Q5II_V_DW Q5II_SetLineRemoval;
+    int ret;
 
+#if defined (__APPLE__)
+    wxFileName exeFile(wxStandardPaths::Get().GetExecutablePath());
+    wxString exePath(exeFile.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR));
 
-//EXPORT DWORD _stdcall CancelGuide( DWORD Axis );  Cancel guides on a specific axis
+    const wxWX2MBbuf tmp_buf = wxConvCurrent->cWX2MB(exePath);
+    const char *temp = (const char *)tmp_buf;
+    size_t const len = strlen(temp) + 1;
+    char *destImgPath = new char[len];
+    memcpy(destImgPath, temp, len);
 
-typedef DWORD (CALLBACK* Q5II_GFD)(PUCHAR, DWORD);
-//EXPORT DWORD _stdcall getFrameData(PUCHAR _buffer , DWORD size ) ;  Gets the data after a SingleExposure(), 8 bit data
-Q5II_GFD Q5II_GetFrameData;
+    if ((ret = OSXInitQHYCCDFirmware(destImgPath)) != 0)
+    {
+        Debug.Write(wxString::Format("OSXInitQHYCCDFirmware(%s) failed: %d\n", destImgPath, ret));
+        delete[] destImgPath;
+        return true;
+    }
+    delete[] destImgPath;
+#endif
 
-typedef DWORD (CALLBACK* Q5II_GC)(DWORD, DWORD, DWORD);
-//EXPORT DWORD _stdcall GuideCommand(DWORD GC, DWORD PulseTimeX, DWORD PulseTimeY) ;
-Q5II_GC Q5II_GuideCommand;
+    if ((ret = InitQHYCCDResource()) != 0)
+    {
+        Debug.Write(wxString::Format("InitQHYCCDResource failed: %d\n", ret));
+        return true;
+    }
 
+    s_qhySdkInitDone = true;
+    return false;
+}
+
+static void QHYSDKUninit()
+{
+    if (s_qhySdkInitDone)
+    {
+        ReleaseQHYCCDResource();
+        s_qhySdkInitDone = false;
+    }
+}
 
 Camera_QHY5IIBase::Camera_QHY5IIBase()
 {
     Connected = false;
     m_hasGuideOutput = true;
     HasGainControl = true;
-    RawBuffer = NULL;
+    RawBuffer = 0;
     Color = false;
+#if 0 // Subframes do not work yet; lzr from QHY is investigating - ag 6/24/2015
+    HasSubframes = true;
+#endif
+    m_camhandle = 0;
 }
 
-static FARPROC WINAPI GetProc(HINSTANCE dll, LPCSTR name)
+Camera_QHY5IIBase::~Camera_QHY5IIBase()
 {
-    FARPROC p = GetProcAddress(dll, name);
-    if (!p)
-    {
-        FreeLibrary(dll);
-        wxMessageBox(wxString::Format(_("Camera DLL missing entry %s"), name), _("Error"), wxOK | wxICON_ERROR);
-    }
-    return p;
+    delete[] RawBuffer;
+    QHYSDKUninit();
 }
 
 bool Camera_QHY5IIBase::Connect()
 {
-    // returns true on error
-
-    CameraDLL = LoadLibrary(m_cameraDLLName);
-
-    if (CameraDLL == NULL)
+    if (QHYSDKInit())
     {
-        wxMessageBox(wxString::Format(_("Cannot load camera dll %s.dll"), m_cameraDLLName), _("Error"),wxOK | wxICON_ERROR);
+        wxMessageBox(_("Failed to initialize QHY SDK"));
         return true;
     }
 
-#define GET_PROC(p, type, name) do { \
-    if ((p = (type) GetProc(CameraDLL, name)) == 0) \
-        return true; \
-} while (false)
-
-    GET_PROC(Q5II_OpenUSB,           Q5II_DW_V, "openUSB");
-    GET_PROC(Q5II_IsExposing,        Q5II_DW_V, "isExposing");
-    GET_PROC(Q5II_CancelExposure,    Q5II_V_V,  "CancelExposure");
-    GET_PROC(Q5II_CloseUSB,          Q5II_V_V,  "closeUSB");
-    GET_PROC(Q5II_StopCapturing,     Q5II_V_V,  "StopCapturing");
-    GET_PROC(Q5II_SingleExposure,    Q5II_V_V,  "SingleExposure");
-//  GET_PROC(Q5II_SetAutoBlackLevel, Q5II_V_V,  "SetAutoBlackLevel");
-    GET_PROC(Q5II_SetBlackLevel,     Q5II_V_DW, "SetBlackLevel");
-    GET_PROC(Q5II_SetGain,           Q5II_V_DW, "SetGain");
-    GET_PROC(Q5II_SetExposureTime,   Q5II_V_DW, "SetExposureTime");
-    GET_PROC(Q5II_SetSpeed,          Q5II_V_DW, "SetSpeed");
-    GET_PROC(Q5II_SetHBlank,         Q5II_V_DW, "SetHBlank");
-    GET_PROC(Q5II_GetFrameData,      Q5II_GFD,  "getFrameData");
-    GET_PROC(Q5II_GuideCommand,      Q5II_GC,   "GuideCommand");
-
-#undef GET_PROC
-
-    if (!Q5II_OpenUSB())
+    int num_cams = ScanQHYCCD();
+    if (num_cams <= 0)
     {
-        wxMessageBox(_("No camera"));
+        wxMessageBox(_("No QHY cameras found"));
         return true;
     }
 
-    if (RawBuffer)
-        delete [] RawBuffer;
+    for (int i = 0; i < num_cams; i++)
+    {
+        char camid[32];
+        GetQHYCCDId(i, camid);
+        if (camid[0] == 'Q' && camid[3] == '5' && camid[5] == 'I')
+        {
+            m_camhandle = OpenQHYCCD(camid);
+            break;
+        }
+    }
 
-    size_t size = FullSize.GetWidth() * FullSize.GetHeight();
+    if (!m_camhandle)
+    {
+        wxMessageBox(_("Failed to connect to camera"));
+        return true;
+    }
+
+    int ret = GetQHYCCDParamMinMaxStep(m_camhandle, CONTROL_GAIN, &m_gainMin, &m_gainMax, &m_gainStep);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        CloseQHYCCD(m_camhandle);
+        m_camhandle = 0;
+        wxMessageBox(_("Failed to get gain range"));
+        return true;
+    }
+
+    double chipw, chiph, pixelw, pixelh;
+    int imagew, imageh, bpp;
+    ret = GetQHYCCDChipInfo(m_camhandle, &chipw, &chiph, &imagew, &imageh, &pixelw, &pixelh, &bpp);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        CloseQHYCCD(m_camhandle);
+        m_camhandle = 0;
+        wxMessageBox(_("Failed to connect to camera"));
+        return true;
+    }
+
+    ret = SetQHYCCDBinMode(m_camhandle, 1, 1);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        CloseQHYCCD(m_camhandle);
+        m_camhandle = 0;
+        wxMessageBox(_("Failed to set camera binning"));
+        return true;
+    }
+
+    FullSize = wxSize(imagew, imageh);
+
+    delete[] RawBuffer;
+    size_t size = imagew * imageh;
     RawBuffer = new unsigned char[size];
 
-    //Q5II_SetAutoBlackLevel();
-    Q5II_SetBlackLevel(1);
-    Q5II_SetSpeed(0);
-    Connected = true;
+    PixelSize = sqrt(pixelw * pixelh);
 
+    ret = InitQHYCCD(m_camhandle);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        CloseQHYCCD(m_camhandle);
+        m_camhandle = 0;
+        wxMessageBox(_("Init camera failed"));
+        return true;
+    }
+
+    ret = SetQHYCCDResolution(m_camhandle, 0, 0, imagew, imageh);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        CloseQHYCCD(m_camhandle);
+        m_camhandle = 0;
+        wxMessageBox(_("Init camera failed"));
+        return true;
+    }
+
+    m_curGain = -1;
+    m_curExposure = -1;
+    m_roi = wxRect(0, 0, imagew, imageh);
+
+    Connected = true;
+    return false;
+}
+
+bool Camera_QHY5IIBase::Disconnect()
+{
+    StopQHYCCDLive(m_camhandle);
+    CloseQHYCCD(m_camhandle);
+    m_camhandle = 0;
+    Connected = false;
+    delete[] RawBuffer;
+    RawBuffer = 0;
     return false;
 }
 
 bool Camera_QHY5IIBase::ST4PulseGuideScope(int direction, int duration)
 {
-    DWORD reg = 0;
-    DWORD dur = (DWORD) duration / 10;
-    DWORD ptx, pty;
+    int qdir;
 
-    //if (dur >= 255) dur = 254; // Max guide pulse is 2.54s -- 255 keeps it on always
-    switch (direction) {
-        case WEST: reg = 0x80; ptx = dur; pty = 0xFFFFFFFF; break;
-        case NORTH: reg = 0x20; pty = dur; ptx = 0xFFFFFFFF; break;
-        case SOUTH: reg = 0x40; pty = dur; ptx = 0xFFFFFFFF; break;
-        case EAST: reg = 0x10;  ptx = dur; pty = 0xFFFFFFFF; break;
-        default: return true; // bad direction passed in
+    switch (direction)
+    {
+    case NORTH: qdir = 1; break;
+    case SOUTH: qdir = 2; break;
+    case EAST:  qdir = 0;  break;
+    case WEST:  qdir = 3; break;
+    default: return true; // bad direction passed in
     }
-    Q5II_GuideCommand(reg,ptx,pty);
+    ControlQHYCCDGuide(m_camhandle, qdir, duration);
     WorkerThread::MilliSleep(duration + 10);
-    return false;
-}
-
-void Camera_QHY5IIBase::ClearGuidePort()
-{
-    //Q5II_CancelGuide(3); // 3 clears on both axes
-}
-
-void Camera_QHY5IIBase::InitCapture()
-{
-    Q5II_SetGain(GuideCameraGain);
-}
-
-bool Camera_QHY5IIBase::Disconnect()
-{
-    Q5II_CloseUSB();
-    Connected = false;
-    if (RawBuffer)
-        delete [] RawBuffer;
-    RawBuffer = NULL;
-    FreeLibrary(CameraDLL);
-
     return false;
 }
 
 static bool StopExposure()
 {
-    Debug.AddLine("Q5II: cancel exposure");
-    Q5II_CancelExposure();
+    Debug.AddLine("QHY5: cancel exposure");
+    // todo
     return true;
 }
 
 bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-// Only does full frames still
-    static int last_dur = 0;
-    static int last_gain = 60;
-    unsigned char *bptr;
-    unsigned short *dptr;
-    int  x,y;
-    int xsize = FullSize.GetWidth();
-    int ysize = FullSize.GetHeight();
-//  bool firstimg = true;
-
     if (img.Init(FullSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
 
-    if (duration != last_dur) {
-        Q5II_SetExposureTime(duration);
-        last_dur = duration;
-    }
+    bool useSubframe = !subframe.IsEmpty();
+    wxRect frame = useSubframe ? subframe : wxRect(FullSize);
+    if (useSubframe)
+        img.Clear();
 
-    if (GuideCameraGain != last_gain) {
-        Q5II_SetGain(GuideCameraGain);
-        last_gain = GuideCameraGain;
-    }
+    int ret;
 
-    Q5II_SingleExposure();
-
-    CameraWatchdog watchdog(duration, GetTimeoutMs());
-
-    if (WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY) &&
-        (WorkerThread::TerminateRequested() || StopExposure()))
+    // lzr from QHY says this needs to be set for every exposure
+    ret = SetQHYCCDBinMode(m_camhandle, 1, 1);
+    if (ret != QHYCCD_SUCCESS)
     {
+        Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", ret));
+    }
+
+    if (m_roi != frame)
+    {
+        ret = SetQHYCCDResolution(m_camhandle, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight());
+        if (ret == QHYCCD_SUCCESS)
+        {
+            m_roi = frame;
+        }
+        else
+        {
+            Debug.Write(wxString::Format("SetQHYCCDResolution failed! ret = %d\n", ret));
+        }
+    }
+
+    if (GuideCameraGain != m_curGain)
+    {
+        double gain = m_gainMin + GuideCameraGain * (m_gainMax - m_gainMin) / 100.0;
+        gain = floor(gain / m_gainStep) * m_gainStep;
+        Debug.Write(wxString::Format("QHY set gain %g (%g..%g incr %g)\n", gain, m_gainMin, m_gainMax, m_gainStep));
+        ret = SetQHYCCDParam(m_camhandle, CONTROL_GAIN, gain);
+        if (ret == QHYCCD_SUCCESS)
+        {
+            m_curGain = GuideCameraGain;
+        }
+        else
+        {
+            Debug.Write(wxString::Format("QHY set gain ret %d\n", ret));
+            pFrame->Alert(_("Failed to set camera gain"));
+        }
+    }
+
+    if (duration != m_curExposure)
+    {
+        ret = SetQHYCCDParam(m_camhandle, CONTROL_EXPOSURE, duration * 1000.0); // QHY duration is usec
+        if (ret == QHYCCD_SUCCESS)
+        {
+            m_curExposure = duration;
+        }
+        else
+        {
+            Debug.Write(wxString::Format("QHY set exposure ret %d\n", ret));
+            pFrame->Alert(_("Failed to set camera exposure"));
+        }
+    }
+
+    ret = ExpQHYCCDSingleFrame(m_camhandle);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        Debug.Write(wxString::Format("QHY exp single frame ret %d\n", ret));
+        DisconnectWithAlert(_("QHY exposure failed"));
         return true;
     }
 
-    while (Q5II_IsExposing())
+    int w, h, bpp, channels;
+    ret = GetQHYCCDSingleFrame(m_camhandle, &w, &h, &bpp, &channels, RawBuffer);
+    if (ret != QHYCCD_SUCCESS)
     {
-        wxMilliSleep(100);
-        if (WorkerThread::InterruptRequested() &&
-            (WorkerThread::TerminateRequested() || StopExposure()))
+        Debug.Write(wxString::Format("QHY get single frame ret %d\n", ret));
+        DisconnectWithAlert(_("QHY get frame failed"));
+        return true;
+    }
+
+    if (useSubframe)
+    {
+        const unsigned char *src = RawBuffer;
+        unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
+        for (int y = 0; y < frame.GetHeight(); y++)
         {
-            return true;
+            unsigned short *d = dst;
+            for (int x = 0; x < frame.GetWidth(); x++)
+                *d++ = (unsigned short) *src++;
+            dst += FullSize.GetWidth();
         }
-        if (watchdog.Expired())
+    }
+    else
+    {
+        const unsigned char *src = RawBuffer;
+        unsigned short *dst = img.ImageData;
+        for (int y = 0; y < h; y++)
         {
-            DisconnectWithAlert(CAPT_FAIL_TIMEOUT);
-            return true;
+            for (int x = 0;  x < w; x++)
+            {
+                *dst++ = (unsigned short) *src++;
+            }
         }
     }
 
-    Q5II_GetFrameData(RawBuffer,xsize*ysize);
-
-    bptr = RawBuffer;
-    // Load and crop from the 800 x 525 image that came in
-    dptr = img.ImageData;
-    for (y=0; y<ysize; y++) {
-        for (x=0; x<xsize; x++, bptr++, dptr++) { // CAN SPEED THIS UP
-            *dptr=(unsigned short) *bptr;
-        }
-    }
+img.ImageData[200 * FullSize.GetWidth() + 400 + 0] = 22000;
+img.ImageData[200 * FullSize.GetWidth() + 400 + 1] = 32000;
+img.ImageData[200 * FullSize.GetWidth() + 400 + 2] = 35000;
+img.ImageData[200 * FullSize.GetWidth() + 400 + 3] = 35000;
+img.ImageData[200 * FullSize.GetWidth() + 400 + 4] = 32000;
+img.ImageData[200 * FullSize.GetWidth() + 400 + 5] = 22000;
 
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
     if (Color && (options & CAPTURE_RECON)) QuickLRecon(img);
