@@ -372,7 +372,7 @@ void DriftToolWin::UpdatePhaseState()
         m_bmp->SetBitmap(*m_azArrowBmp);
         m_instructions->SetLabel(
             _("Slew to near the Meridian and the Equator.\n"
-              "Press Drift to measure drift.\n"
+              "Press Drift to measure drift, watch the Dec trend line.\n"
               "Press Adjust and adjust your mount's azimuth.\n"
               "Repeat Drift/Adjust until alignment is complete.\n"
               "Then, click Altitude to begin Altitude adjustment."));
@@ -386,7 +386,7 @@ void DriftToolWin::UpdatePhaseState()
         m_bmp->SetBitmap(*m_altArrowBmp);
         m_instructions->SetLabel(
             _("Slew to a location near the Equator and the Eastern or Western horizon.\n"
-              "Press Drift to measure drift.\n"
+              "Press Drift to measure drift, watch the Dec trend line.\n"
               "Press Adjust and adjust your mount's altitude.\n"
               "Repeat Drift/Adjust until alignment is complete.\n"
               "Click Azimuth to repeat Azimuth adjustment."));
