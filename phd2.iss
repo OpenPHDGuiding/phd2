@@ -34,8 +34,7 @@ Source: WinLibs\inpout32.dll; DestDir: {app}; Flags: replacesameversion
 #emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc12\bin\opencv_core245.dll"; DestDir: "{app}"; Flags: replacesameversion'
 #emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc12\bin\opencv_highgui245.dll"; DestDir: "{app}"; Flags: replacesameversion'
 #emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc12\bin\opencv_imgproc245.dll"; DestDir: "{app}"; Flags: replacesameversion'
-Source: WinLibs\qhy5IIdll.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\qhy5LIIdll.dll; DestDir: {app}; Flags: replacesameversion
+Source: WinLibs\qhyccd.dll; DestDir: {app}; Flags: replacesameversion
 Source: WinLibs\ShoestringGPUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: WinLibs\ShoestringLXUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
 Source: WinLibs\SSAGIFv2.dll; DestDir: {app}; Flags: replacesameversion
