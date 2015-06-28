@@ -42,7 +42,7 @@ public:
     static wxWindow *CreateDialogBox();
     static void NotifyGuideStep(const GuideStepInfo& info);
     static void NotifyFrameDropped(const FrameDroppedInfo& info);
-    static void NotifyBacklashStep(PHD_Point camLoc);
+    static void NotifyBacklashStep(const PHD_Point& camLoc);
     static void NotifyBacklashError();
     static void UpdateUIControls();
 };

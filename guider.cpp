@@ -1237,19 +1237,15 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     pMount->TransformMountCoordinatesToCameraCoordinates(mountCoords, cameraCoords);
                     pFrame->SchedulePrimaryMove(pMount, cameraCoords, false);
                 }
+                else if (m_measurementMode)
+                {
+                    GuidingAssistant::NotifyBacklashStep(CurrentPosition());
+                }
                 else
                 {
                     // ordinary guide step
-                    if (!m_measurementMode)
-                    {
-                        s_deflectionLogger.Log(CurrentPosition());
-                        pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
-                    }
-                    else
-                    {
-                        GuidingAssistant::NotifyBacklashStep(CurrentPosition());
-                    }
-
+                    s_deflectionLogger.Log(CurrentPosition());
+                    pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
                 }
                 break;
 
