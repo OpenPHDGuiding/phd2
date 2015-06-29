@@ -307,6 +307,7 @@ set(guiding_SRC
   ${phd_src_dir}/guide_algorithm_lowpass2.h
   ${phd_src_dir}/guide_algorithm_resistswitch.cpp
   ${phd_src_dir}/guide_algorithm_resistswitch.h
+  ${phd_src_dir}/guide_algorithm.cpp
   ${phd_src_dir}/guide_algorithm.h
   ${phd_src_dir}/guide_algorithms.h
   ${phd_src_dir}/guider_onestar.cpp
@@ -374,7 +375,6 @@ set(phd2_SRC
   ${phd_src_dir}/graph-stepguider.h
   ${phd_src_dir}/graph.cpp
   ${phd_src_dir}/graph.h
-  ${phd_src_dir}/guide_algorithm.cpp
   ${phd_src_dir}/guiding_assistant.cpp
   ${phd_src_dir}/guiding_assistant.h
   ${phd_src_dir}/guidinglog.cpp

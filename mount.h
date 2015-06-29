@@ -88,6 +88,13 @@ struct CalibrationDetails
     int decStepCount;
 };
 
+enum MountMoveType
+{
+    MOVETYPE_DIRECT,    // direct move, do not use guide algorithm
+    MOVETYPE_ALGO,      // normal guide move, use guide algorithm
+    MOVETYPE_DEDUCED,   // deduced move (dead-reckoning)
+};
+
 struct MoveResultInfo
 {
     int amountMoved;
@@ -183,7 +190,7 @@ public:
     bool GetGuidingEnabled(void);
     void SetGuidingEnabled(bool guidingEnabled);
 
-    virtual MOVE_RESULT Move(const PHD_Point& cameraVectorEndpoint, bool normalMove=true);
+    virtual MOVE_RESULT Move(const PHD_Point& cameraVectorEndpoint, MountMoveType moveType);
     bool TransformCameraCoordinatesToMountCoordinates(const PHD_Point& cameraVectorEndpoint,
                                                       PHD_Point& mountVectorEndpoint);
 
@@ -201,7 +208,7 @@ public:
     // pure virtual functions -- these MUST be overridden by a subclass
 public:
     // move the requested direction, return the actual amount of the move
-    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, MoveResultInfo *moveResultInfo) = 0;
+    virtual MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, MountMoveType moveType, MoveResultInfo *moveResultInfo) = 0;
     virtual MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int duration) = 0;
     virtual int CalibrationMoveSize(void) = 0;
     virtual int CalibrationTotDistance(void) = 0;

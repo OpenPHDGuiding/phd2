@@ -163,7 +163,7 @@ protected:
 
     /*************      Guide       **************************/
 public:
-    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove);
+    void EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType);
     void EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
 protected:
     Mount::MOVE_RESULT HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs);

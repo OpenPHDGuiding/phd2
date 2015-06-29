@@ -51,6 +51,11 @@
  *
  * that returns the result of whatever processing it does on input.
  *
+ * Optionally, the guide algorithm can implement
+ *
+ * double deduceResult()
+ *
+ * to produce a mount move when the guide star has been lost (dead reckoning)
  */
 
 class Mount;
@@ -77,10 +82,11 @@ public:
 
     virtual void reset(void) = 0;
     virtual double result(double input) = 0;
+    virtual double deduceResult(void) { return 0.0; }
 
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)=0;
-    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) { return NULL; };
-    virtual wxString GetSettingsSummary() { return ""; }
+    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
+    virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label) { return 0; };
+    virtual wxString GetSettingsSummary() { return wxEmptyString; }
     virtual wxString GetGuideAlgorithmClassName(void) const = 0;
     virtual double GetMinMove(void) { return -1.0; };
     virtual bool SetMinMove(double minMove) { return true; };       // true indicates error
