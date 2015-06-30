@@ -101,12 +101,12 @@ time, &nbsp;it is probably worth a few extra minutes&nbsp;to check this
 information and confirm that the calibration went
 reasonably well and produced sensible results. &nbsp;Bad calibrations
 can occur even for very experienced imagers using high-end mounts, so
-it is good to check.<br><br>&nbsp;A common source of calibration problems is declination
+it is good to check.<br><br><span style="font-weight: bold;"><a name="Declination_Backlash"></a>Declination Backlash</span><br>&nbsp;A common source of calibration problems is declination
 backlash, which is present to some degree in most geared mounts.
 &nbsp;With some mounts, however, the problem can be&nbsp;severe and
-can lead to poor calibration results. &nbsp;Consider the following
+can lead to poor calibration and guiding results. &nbsp;Consider the following
 calibration review dialog: <br><br><img style="width: 727px; height: 382px;" alt="" src="Calib_Review_Backlash.png"><br><br>The
-first clue to the problem is provided by comparing the declination and
+first clue to the problem is found by comparing the declination and
 right ascension guide rates. &nbsp;In this case, the declination rate
 is barely 1/2 of the RA rate, something that should never occur.
 &nbsp;In fact, this would have triggered a calibration alert dialog.
@@ -122,20 +122,28 @@ mount is likely to behave badly during direction reversals in
 declination even if the dec guide rate is correct. &nbsp;The
 calibration can be improved by first manually moving the mount&nbsp;
 north at
-guide speed for&nbsp;10 seconds or thereabouts until consistent star
+guide speed for&nbsp;10-20 seconds&nbsp;until consistent star
 movement is seen&nbsp;in the main window. &nbsp;You can do this with
 the 'Manual Guide'
 tool or by using the hand-controller on your mount. &nbsp;Once this is
 done, most of the declination backlash in your mount should have been
-overcome. &nbsp;You can then repeat the calibration procedure and will
-probably get a declination guiding rate that is more reasonable.
+overcome. &nbsp;You can then repeat the calibration procedure
+and&nbsp;probably get a declination guiding rate that is more
+reasonable.
 &nbsp;The second problem generally requires some mechanical adjustment
-to the mount - use of fixed backlash compensation parameters are not
-likely to work well. &nbsp;If you can't correct the backlash or reduce
-it to manageable levels, you should consider using the technique of
-guiding in only one direction for declination. &nbsp;While this may
-seem like an unattractive option, it can actually produce reasonable
-guiding and imaging results.<br><br>
+to the mount. &nbsp;You can try using a backlash compensation setting,
+but this is not likely to work well&nbsp;if the backlash is large -
+more&nbsp; than 2-3 seconds, for example. &nbsp;If you can't correct
+the
+backlash or reduce
+it to manageable levels, you should consider choosing uni-directional
+guiding&nbsp;for declination. To do this, you&nbsp;determine
+which way the mount drifts due to polar alignment error, and tell PHD2
+to guide only in the opposite direction. &nbsp;For example, if the
+mount tends to drift north overall, restrict guide commands to
+south-only. &nbsp;This is not an ideal solution, obviously, but you can
+still use reasonably long exposures and achieve decent guiding results
+- and there are plenty of imagers out there who use this technique.<font style="color: rgb(0, 0, 3);" color="navy"><span style="font-size: 10pt;"></span></font><br><br><span style="font-weight: bold;">Other Calibration-Related Menu Options</span><br>
 Calibration data are saved automatically each time a calibration sequence completes
 successfully. &nbsp;The use of the calibration data has been described
 elsewhere (<a href="Basic_use.htm">Using PHD Guiding</a>),
@@ -383,16 +391,17 @@ starting location, and use the Adjust Lock Position controls to move
 the comet back to the bookmark location.
 <br><h3><a name="Guiding_Assistant"></a>Guiding Assistant</h3>The
 Guiding Assistant is an instructional tool to help you measure
-current seeing conditions and the general behavior of your guiding
-subsystem. &nbsp;When it is run, it temporarily disables guiding output
+current seeing conditions and the general behavior of your mount and
+guiding
+subsystem. &nbsp;When it's run, it temporarily disables guiding output
 and measures the ensuing motion of the guide star. This&nbsp;can help
 you
 see the high-frequency motions&nbsp;caused by seeing (atmospheric)
-conditions. &nbsp;These cannot usually be corrected by conventional
+conditions. &nbsp;These cannot&nbsp;be corrected by conventional
 guiding because they occur at a much higher frequency than you can
 typically even measure. Trying to correct for them with conventional
-guiding&nbsp;is often called "chasing the seeing" and is not
-recommended. &nbsp;Avoiding it is best accomplished by
+guiding&nbsp;is often called "chasing the seeing" and usually leads to
+poor results. &nbsp;Avoiding it is best accomplished by
 setting a minimum-move level that will cause PHD2 to ignore most of
 this high-frequency behavior. &nbsp;The Guiding Assistant can also show
 you other behavior of your system such as overall drift
@@ -401,8 +410,10 @@ maximum-rate-of-change measurements in
 right ascension,. &nbsp;While these things can usually be "guided out",
 measuring them can be helpful if you want to improve the underlying
 performance of the mount - for example, by improving your polar
-alignment if the declination drift rate is high.<br><br>When the Guiding Assistant is first started, you'll see a dialog box like this: <br><br><img style="width: 539px; height: 472px;" alt="" src="Guiding_Assistant_Start.png"><br><br>The
-upper message area in the Guiding Assistant dialog-box displays usage
+alignment if the declination drift rate is high. &nbsp;The Guiding
+Assistant can also measure the declination backlash in your system if
+you select that option in the user interface.<br><br>When the Guiding Assistant is first started, you'll see a dialog box like this: <br><br><img style="width: 540px; height: 580px;" alt="" src="Guiding_Assistant_Start.png"><br><br>The
+upper message area in the Guiding Assistant dialog box displays usage
 instructions, much like a wizard interface. &nbsp;In order for the
 Guiding Assistant to start measurement, you first need to start guiding
 in the usual way. &nbsp;This identifies the target star in the frame
@@ -417,22 +428,128 @@ are the table entries in the "High-frequency Star Motion" section which
 show ongoing results of the averaging process. &nbsp;After about one
 minute of data collection, these numbers will usually stabilize and
 you'll have a reasonable measurement of the high-frequency star
-movement caused by seeing conditions. &nbsp;When you click the 'Stop'
-button, guiding commands will be re-enabled and the data collection
-process will end. &nbsp;Other computed results will then be displayed
+movement caused by seeing conditions. &nbsp;You'll also have a
+reasonable measure of your polar alignment error although the accuracy
+will generally improve if you let the sampling run for longer periods
+of time. &nbsp;When you click the 'Stop'
+button, this phase of the measurement process will stop. &nbsp;If
+you've checked the box to 'Measure Declination Backlash" that process
+will commence (see below). &nbsp;If not, guiding commands will be
+re-enabled and the data collection
+process will end. &nbsp;Other computed results will&nbsp;be displayed
 in the lower area of the table showing overall drift rates and various
 other measurements. &nbsp;All of these values are displayed in
 units of both arc-seconds and pixels. &nbsp;The dialog box will look
-something like this:<br><br><img style="width: 643px; height: 581px;" alt="" src="Guiding_Assistant_Finish.png"><br><br>The
+something like this:<br><br><img style="width: 541px; height: 686px;" alt="" src="Guiding_Assistant_Finish_NoBL.png"><br><br>The
 contents of the 'Recommendations' group at the bottom of the window
 reflect the results of the high-frequency measurements. &nbsp;Assuming
 your chosen guide algorithms support a minimum-move property, you have
 the option of automatically setting those parameters based on the
 results. &nbsp;You can also decide to re-run the measurements or close
 the dialog box altogether if you want to proceed with normal guiding
-operations. &nbsp;Over time, we may be able to add recommendations
-regarding other guiding properties.<br>
-<h3><a name="Managing_Equipment_Profiles"></a>Managing Equipment Profiles</h3>
+operations. <br><br><span style="font-weight: bold;">Measuring Declination Backlash</span><br>If
+you've checked the box to 'Measure Declination Backlash',
+that&nbsp;process will begin as soon as the high-frequency measurements
+are completed. &nbsp;In other words, clicking once on the 'Stop' button
+halts the high-frequency measurements and begins the measurement of
+declination backlash. &nbsp;A new group of status messages will be
+shown immediately above the 'Start' and 'Stop' buttons so you can see
+what's being done:<br><br><img style="width: 536px; height: 635px;" alt="" src="Guiding_Assistant_MeasuringBL.png"><br><br>To
+do backlash measurement, PHD2 will move the star by large amounts,
+first in the north direction, then back to the south. &nbsp;There is
+some risk the star will be lost during this process or the star might
+already be&nbsp; too close to the north edge of the sensor. &nbsp;You
+should choose a guide star that has plenty of room to move&nbsp;north
+to get the best accuracy. &nbsp;If the star is lost because it's been
+moved outside the search region, you can temporarily increase the size of that region from
+the '<a href="Advanced_settings.htm#Guiding_Tab">Guiding</a>'
+tab of the Advanced Settings dialog.
+&nbsp;A search region size of 20 pixels should work for most
+configurations - just be sure you don't have multiple stars&nbsp;inside the
+search region. &nbsp;The first phase of backlash measurement involves
+an initial attempt to clear whatever backlash is present in the north
+direction. &nbsp;The Guiding Assistant (GA) will continue with these
+clearing commands until it sees a significant and consistent movement
+of the
+guide star in one direction. &nbsp;Once this is done, the GA will issue
+another sequence of commands to continue moving the star north by a
+large amount.
+&nbsp;This will take at least 16 seconds and may take longer depending
+on the configuration - you can watch the status update to see what's
+being done. &nbsp;When the north steps are finished, the GA will issue
+an identical number of steps in the south direction. &nbsp;If there's
+significant backlash in the mount, it may take a long time for the star
+to start moving south, but that will usually be handled. &nbsp;Once the
+south steps are done, regardless of how far the star has actually
+moved, &nbsp;the backlash amount will be computed. &nbsp;<span style="font-size: 12pt; font-family: &quot;Times New Roman&quot;;">However, if the star hasn&#8217;t moved at all in the south
+direction, the computed backlash amount will be too small. <span style="">&nbsp;</span>At that point, you can know your declination
+backlash exceeds 8 seconds, which is a very large amount.</span>
+The Guiding Assistant will then try to move the star back to its
+starting position and will re-enable guiding. &nbsp;Again, there is
+some risk the star may be lost, but this won't affect the calculations
+- you can simply stop and resume guiding as you normally would.
+&nbsp;Unlike the first process for measuring high-frequency star
+movement, you don't need to click on the 'Stop' button once backlash
+measurement has begun. &nbsp;The measurement process will terminate
+when all the steps have been completed, and normal guiding will be
+resumed. &nbsp;However, you can click on the 'Stop' button if something
+has gone wrong - such as a lost-star condition - and then restart when
+you're ready.&nbsp; When the backlash tests are finished, you'll see
+the results
+displayed as before, with the addition of entries for the amount of
+declination backlash in units of both pixels and time (ms):<br><br><img style="width: 538px; height: 721px;" alt="" src="Guiding_Assistant_Finish.png"><br><br>Depending
+on the amount of backlash, you may see a recommendation for setting a
+backlash compensation factor - 529 ms in the example shown above.
+&nbsp;If the measured amount is less than 100 ms, no recommendation
+will be made because such a small amount probably doesn't warrant any
+compensation. &nbsp;If the backlash is very large, over 3 seconds,
+you'll see a different recommendation to use uni-directional guiding in
+declination. &nbsp;That's because trying to compensate for such large
+values probably won't work very well, and the mount will probably not
+be able to reverse directions quickly enough to support bi-directional
+guiding. Obviously, you can reach your own conclusions based on your
+experience with how the mount behaves. &nbsp;Before doing these
+measurements, be sure to disable any backlash compensation that's previously been
+enabled in the mount software. &nbsp;If this isn't done, the measurements and
+any subsequent attempts at compensation by PHD2 will be invalid.<br><br>You
+can look at a graphical display of the backlash measurement results to
+get a better understanding of how the mount performed. &nbsp;Just click
+on the 'Show Graph' button to see a graph that might look something like
+this: <br><br><img style="width: 460px; height: 382px;" alt="" src="Guiding_Assistant_BL_Small.png"><br><br>The
+red points show the measured declination positions, shown left to
+right, beginning with the north moves and ending with the south
+(return) moves. &nbsp;The blue points show the south-return behavior
+for a perfect mount with zero backlash. &nbsp;In this example, there is only a
+modest amount of backlash as evidenced by the flattened top of the red
+points. However, the flattened top will be much more pronounced when
+there is significantly more declination backlash in the mount, as in the following example:<br><br><img style="width: 460px; height: 378px;" alt="" src="Guiding_Assistant_BL_Large.png"><br><br><span style="font-weight: bold;">Declination Backlash Compensation</span><br>Starting
+with the 2.5 release, PHD2 supports a backlash compensation mechanism
+that may help to improve&nbsp; mount performance when there is a
+moderate amount of declination backlash. &nbsp;It is different from the
+backlash compensation that's supported in some mount firmware
+because&nbsp;the PHD2 implementation is <span style="font-style: italic;">adaptive.</span>
+&nbsp;The greatest risk with backlash compensation is that it will be
+too large and will drive the mount into unstable oscillations in
+declination. &nbsp;PHD2 will watch for this behavior and rapidly and
+automatically adjust the compensation downward until the oscillation
+disappears. &nbsp;Obviously, backlash compensation is applied&nbsp;only
+when the direction of declination guiding is reversed. &nbsp;When you
+first set a backlash compensation parameter with the Guiding Assistant
+(recommendations section), you should give PHD2 some time to adjust it.
+&nbsp;Let normal guiding proceed and watch for over-shoots in
+declination. &nbsp;You can see these pretty easily by watching the
+guiding graph with the option checked to show guiding corrections.
+&nbsp;If you see some initial oscillation and instability in
+declination, let guiding run for awhile to see if PHD2 can stabilize
+the behavior. &nbsp;<br><br>The setting for backlash compensation is shown in the&nbsp;'<a href="Advanced_settings.htm#Mount_Tab">Mount</a>' tab of&nbsp;<span style="text-decoration: underline;"></span>the Advanced Settings dialog. The value shown there may be smaller than what was computed by
+the Guiding Assistant if PHD2 had to adjust it downward. &nbsp;You can
+modify this parameter directly if you want to experiment with it or you
+can disable backlash compensation altogether using the adjacent
+checkbox. &nbsp;Once you've measured the backlash a few times with the
+GA and see a fairly consistent pattern of results, there's&nbsp;
+probably no need to measure it every time you run the GA. &nbsp;Just
+uncheck the 'Measure Declination Backlash' option until you want to
+measure it again.<br><br><h3><a name="Managing_Equipment_Profiles"></a>Managing Equipment Profiles</h3>
 Equipment profiles were introduced in the section on <a href="Basic_use.htm">Basic Use</a>
 where they are used as part of the 'Connect Equipment' dialog. &nbsp;If
 you want to manage multiple profiles, you will probably want to use the

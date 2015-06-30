@@ -208,7 +208,7 @@ should
 either use a different star or decrease the exposure duration.
 &nbsp;The choice of exposure time will
 depend entirely on your equipment, sky conditions, and the available
-stars. &nbsp;The exposure time you choose has two major
+stars. &nbsp;The exposure time you choose has several
 implications: <br>
 <ol>
 <li>It
@@ -222,7 +222,14 @@ mount -&nbsp;guide commands cannot be sent any more frequently
 than once for each exposure cycle. &nbsp;Some mounts benefit from
 frequent small guiding adjustments while others do not - you may need
 to experiment to understand what works best for your situation.
-&nbsp;</li>
+&nbsp;</li><li>It
+has a strong effect on the sensitivity of the guide algorithms to
+seeing conditions. &nbsp;As the exposure time is increased up
+through&nbsp;4-6 seconds, the effects of seeing are smoothed out.
+&nbsp;The camera is essentially averaging out the larger,
+high-frequency seeing movements, so the guide algorithms have less
+difficulty distinguishing "seeing jitter" from actual guide star
+displacements that need to be corrected.</li>
 </ol>
 As a starting point,&nbsp;try using exposure durations in the range
 of one to five seconds. &nbsp;Rather than choosing the star yourself with a mouse-click, you can let PHD2 <a href="Tools.htm#Auto-Select_Star">Auto-select</a>&nbsp;the guide star&nbsp;by using the Alt-S keyboard shortcut after stars are visible in the main display. &nbsp;<br>
@@ -275,8 +282,11 @@ PHD2 moves the guide star in all four directions, only the west and
 north movements are actually used to compute the guide rates and camera
 angle. The east and south moves are used only to restore the star
 roughly to its starting position. &nbsp;Before the north moves are
-begun, you will see a brief sequence of pulses that are intended to
-clear backlash. &nbsp;These pulses may not clear all the declination
+begun, you will see a&nbsp;sequence of pulses that are intended to
+clear backlash. &nbsp;Starting with the 2.5 release, PHD2 takes a more
+aggressive approach to clearing this backlash, watching for a clear
+pattern of movement in a single direction with no reversals. &nbsp;Even
+so, these pulses may still not clear all the declination
 backlash in your mount, particularly if you are guiding at a long focal
 length. &nbsp; In that case, the computed declination rate may be too
 low, a situation that is discussed further in the <a href="Tools.htm#Calibration_Details">Tools and Utilities</a>

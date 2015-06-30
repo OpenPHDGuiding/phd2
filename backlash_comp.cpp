@@ -204,9 +204,9 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
     // Draw the axes
     dc.SetPen(axisPen);
     xOrigin = graphWindowWidth / 2;
-    yOrigin = graphWindowHeight + 40;
-    dc.DrawLine(0, yOrigin, graphWindowWidth, yOrigin);               // x
-    dc.DrawLine(xOrigin, yOrigin, xOrigin, graphWindowHeight);        // y
+    yOrigin = graphWindowHeight + 40;           // Leave room at the top for labels and such
+    dc.DrawLine(0, yOrigin, graphWindowWidth, yOrigin);    // x
+    dc.DrawLine(xOrigin, yOrigin, xOrigin, 0);             // y
 
     // Draw the north steps
     dc.SetPen(redPen);
@@ -215,6 +215,7 @@ wxBitmap BacklashGraph::CreateGraph(int bmpWidth, int bmpHeight)
 
     for (int i = 0; i < numNorth; i++)
     {
+        wxPoint where = wxPoint(i * xScaleFactor, round(yOrigin - (northSteps.at(i) - minDec) * yScaleFactor));
         dc.DrawCircle(wxPoint(i * xScaleFactor, round(yOrigin - (northSteps.at(i) - minDec) * yScaleFactor)), ptRadius);
     }
 

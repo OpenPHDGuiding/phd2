@@ -752,7 +752,7 @@ void Scope::SanityCheckCalibration(const Calibration& oldCal, const CalibrationD
                 if (fabs(expectedRatio - actualRatio) > CAL_ALERT_AXISRATES_TOLERANCE)
                 {
                     m_lastCalibrationIssue = CI_Rates;
-                    detailInfo = wxString::Format("Expected ratio at dec=&0.1f is %0.3f, actual is %0.3f", degrees(newCal.declination), actualRatio);
+                    detailInfo = wxString::Format("Expected ratio at dec=%0.1f is %0.3f, actual is %0.3f", degrees(newCal.declination), expectedRatio, actualRatio);
                 }
             }
         }
