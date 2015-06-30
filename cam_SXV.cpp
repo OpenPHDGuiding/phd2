@@ -128,7 +128,7 @@ public:
     wxCheckBox* m_squarePixels;
 
     SXCameraDlg(wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("SX Camera Settings"),
-        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(268, 133), long style = wxDEFAULT_DIALOG_STYLE ); 
+        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(268, 133), long style = wxDEFAULT_DIALOG_STYLE);
     ~SXCameraDlg() { }
 };
 
@@ -140,9 +140,9 @@ SXCameraDlg::SXCameraDlg(wxWindow *parent, wxWindowID id, const wxString& title,
     wxBoxSizer *bSizer12 = new wxBoxSizer(wxVERTICAL);
     wxStaticBoxSizer *sbSizer3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Settings")), wxVERTICAL);
 
-    m_squarePixels = new wxCheckBox( this, wxID_ANY, wxT("Square Pixels"), wxDefaultPosition, wxDefaultSize, 0 );
-    sbSizer3->Add( m_squarePixels, 0, wxALL, 5 );
-    bSizer12->Add( sbSizer3, 1, wxEXPAND, 5 );
+    m_squarePixels = new wxCheckBox(this, wxID_ANY, wxT("Square Pixels"), wxDefaultPosition, wxDefaultSize, 0);
+    sbSizer3->Add(m_squarePixels, 0, wxALL, 5);
+    bSizer12->Add(sbSizer3, 1, wxEXPAND, 5);
 
     wxStdDialogButtonSizer* sdbSizer2 = new wxStdDialogButtonSizer();
     wxButton *sdbSizer2OK = new wxButton(this, wxID_OK);
@@ -376,7 +376,11 @@ bool Camera_SXVClass::Connect()
         HasShutter = true;
 
     if (CameraModel == 39) // cmos guider
+    {
         HasSubframes = false;
+        FullSize.x -= 16;
+        m_darkFrameSize.x -= 16;
+    }
 
     RawData = new unsigned short[CCDParams.width * CCDParams.height];
 
@@ -428,8 +432,6 @@ static bool InitImgCMOSGuider(usImage& img, const wxSize& FullSize, const unsign
     int output_xsize = FullSize.GetWidth();
     int output_ysize = FullSize.GetHeight();
 
-    output_xsize -= 16;  // crop off 16 from one side
-
     if (img.Init(output_xsize, output_ysize))
         return true;
 
@@ -448,12 +450,12 @@ static bool InitImgCMOSGuider(usImage& img, const wxSize& FullSize, const unsign
         evenbias = evenbias / 8 - 1000;
         for (int x = 0; x < output_xsize; x += 2) { // Load value into new image array pulling out right bias
             int val = (int)*rawptr++ - oddbias;
-            if (val < 0.0) val = 0.0;  //Bounds check
-            else if (val > 65535.0) val = 65535.0;
+            if (val < 0) val = 0;  //Bounds check
+            else if (val > 65535) val = 65535;
             *dataptr++ = (unsigned short)val;
             val = (int)*rawptr++ - evenbias;
-            if (val < 0.0) val = 0.0;  //Bounds check
-            else if (val > 65535.0) val = 65535.0;
+            if (val < 0) val = 0;  //Bounds check
+            else if (val > 65535) val = 65535;
             *dataptr++ = (unsigned short)val;
         }
     }
