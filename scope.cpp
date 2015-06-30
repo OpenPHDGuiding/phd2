@@ -126,7 +126,7 @@ bool Scope::SetCalibrationDuration(int calibrationDuration)
 
         m_calibrationDuration = calibrationDuration;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -156,7 +156,7 @@ bool Scope::SetMaxDecDuration(int maxDecDuration)
 
         m_maxDecDuration = maxDecDuration;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -186,7 +186,7 @@ bool Scope::SetMaxRaDuration(double maxRaDuration)
 
         m_maxRaDuration =  maxRaDuration;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -223,7 +223,7 @@ bool Scope::SetDecGuideMode(int decGuideMode)
 
         m_decGuideMode = (DEC_GUIDE_MODE)decGuideMode;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -392,7 +392,7 @@ Scope *Scope::Factory(const wxString& choice)
                 pReturn->CanCheckSlewing()));
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         if (pReturn)
@@ -487,14 +487,14 @@ Mount::MOVE_RESULT Scope::CalibrationMove(GUIDE_DIRECTION direction, int duratio
     try
     {
         MoveResultInfo move;
-        result = Move(direction, duration, false, &move);
+        result = Move(direction, duration, MOVETYPE_DIRECT, &move);
 
         if (result != MOVE_OK)
         {
             throw THROW_INFO("Move failed");
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -545,14 +545,14 @@ void Scope::AlertLimitReached(int duration, GuideAxis axis)
     }
 }
 
-Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool normalMove, MoveResultInfo *moveResult)
+Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, MountMoveType moveType, MoveResultInfo *moveResult)
 {
     MOVE_RESULT result = MOVE_OK;
     bool limitReached = false;
 
     try
     {
-        Debug.AddLine("Move(%d, %d, %d)", direction, duration, normalMove);
+        Debug.Write(wxString::Format("Move(%d, %d, %d)\n", direction, duration, moveType));
 
         if (!m_guidingEnabled)
         {
@@ -566,8 +566,8 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
             case NORTH:
             case SOUTH:
 
-                // Enforce dec guiding mode and max dec duration for normal moves
-                if (normalMove)
+                // Do not enforce dec guiding mode and max dec duration for direct moves
+                if (moveType != MOVETYPE_DIRECT)
                 {
                     if ((m_decGuideMode == DEC_NONE) ||
                         (direction == SOUTH && m_decGuideMode == DEC_NORTH) ||
@@ -601,9 +601,9 @@ Mount::MOVE_RESULT Scope::Move(GUIDE_DIRECTION direction, int duration, bool nor
             case EAST:
             case WEST:
 
-                if (normalMove)
+                // Do not enforce max dec duration for direct moves
+                if (moveType != MOVETYPE_DIRECT)
                 {
-                    // enforce max RA duration for normal moves
                     if (duration > m_maxRaDuration)
                     {
                         duration = m_maxRaDuration;

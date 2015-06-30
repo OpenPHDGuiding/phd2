@@ -1223,7 +1223,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
     }
     else
     {
-        pRequest->moveResult = pRequest->pMount->Move(pRequest->vectorEndpoint, pRequest->normalMove);
+        pRequest->moveResult = pRequest->pMount->Move(pRequest->vectorEndpoint, pRequest->moveType);
     }
 
     pRequest->pSemaphore->Post();
@@ -1256,38 +1256,38 @@ void MyFrame::ScheduleExposure(void)
     m_pPrimaryWorkerThread->EnqueueWorkerThreadExposeRequest(img, exposureDuration, exposureOptions, subframe);
 }
 
-void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
+void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
-    wxCriticalSectionLocker lock(m_CSpWorkerThread);
+    Debug.AddLine("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType);
 
-    Debug.AddLine("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
+    wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     assert(pMount);
     pMount->IncrementRequestCount();
 
     assert(m_pPrimaryWorkerThread);
-    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
+    m_pPrimaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, moveType);
 }
 
-void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
+void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
-    wxCriticalSectionLocker lock(m_CSpWorkerThread);
+    Debug.AddLine("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType);
 
-    Debug.AddLine("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, normal=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, normalMove);
+    wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
     assert(pMount);
 
     if (pMount->SynchronousOnly())
     {
         // some mounts must run on the Primary thread even if the secondary is requested.
-        SchedulePrimaryMove(pMount, vectorEndpoint, normalMove);
+        SchedulePrimaryMove(pMount, vectorEndpoint, moveType);
     }
     else
     {
         pMount->IncrementRequestCount();
 
         assert(m_pSecondaryWorkerThread);
-        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, normalMove);
+        m_pSecondaryWorkerThread->EnqueueWorkerThreadMoveRequest(pMount, vectorEndpoint, moveType);
     }
 }
 

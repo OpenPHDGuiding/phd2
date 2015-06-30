@@ -209,7 +209,7 @@ void WorkerThread::SendWorkerThreadExposeComplete(usImage *pImage, bool bError)
 
 /*************      Move       **************************/
 
-void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove)
+void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
     m_interruptRequested &= ~INT_STOP;
 
@@ -222,7 +222,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point
     message.args.move.pMount          = pMount;
     message.args.move.calibrationMove = false;
     message.args.move.vectorEndpoint  = vectorEndpoint;
-    message.args.move.normalMove      = normalMove;
+    message.args.move.moveType        = moveType;
     message.args.move.pSemaphore      = NULL;
 
     EnqueueMessage(message);
@@ -242,7 +242,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIR
     message.args.move.calibrationMove = true;
     message.args.move.direction       = direction;
     message.args.move.duration        = duration;
-    message.args.move.normalMove      = true;
+    message.args.move.moveType        = MOVETYPE_DIRECT;
     message.args.move.pSemaphore      = NULL;
 
     EnqueueMessage(message);
@@ -275,7 +275,7 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
                 Debug.AddLine(wxString::Format("endpoint = (%.2f, %.2f)",
                     pArgs->vectorEndpoint.X, pArgs->vectorEndpoint.Y));
 
-                result = pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->normalMove);
+                result = pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->moveType);
                 if (result != Mount::MOVE_OK)
                 {
                     throw ERROR_INFO("Move failed");

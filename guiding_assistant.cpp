@@ -1106,7 +1106,7 @@ void GuidingAssistant::NotifyFrameDropped(const FrameDroppedInfo& info)
     }
 }
 
-void GuidingAssistant::NotifyBacklashStep(PHD_Point camLoc)
+void GuidingAssistant::NotifyBacklashStep(const PHD_Point& camLoc)
 {
     if (pFrame && pFrame->pGuidingAssistant)
     {
