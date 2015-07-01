@@ -19,36 +19,35 @@ DirExistsWarning=no
 
 [Files]
 Source: Release\phd2.exe; DestDir: {app}; Flags: replacesameversion
-Source: locale\*; Excludes: *-old.*,help; DestDir: {app}\locale; Flags: recursesubdirs replacesameversion
-Source: PHD2GuideHelp.zip; DestDir: {app}; Flags: replacesameversion
-Source: README-PHD2.txt; DestDir: {app}; Flags: isreadme replacesameversion
-Source: WinLibs\astroDLLGeneric.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\astroDLLQHY5V.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\astroDLLsspiag.dll; DestDir: {app}; Flags: replacesameversion
-#emit 'Source: "' + GetEnv("CFITSIO") + '\cfitsio.dll";             DestDir: "{app}"; Flags: replacesameversion'
-Source: WinLibs\CMOSDLL.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\DICAMSDK.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\DSCI.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\FcApi.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\inpout32.dll; DestDir: {app}; Flags: replacesameversion
-#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc12\bin\opencv_core245.dll"; DestDir: "{app}"; Flags: replacesameversion'
-#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc12\bin\opencv_highgui245.dll"; DestDir: "{app}"; Flags: replacesameversion'
-#emit 'Source: "' + GetEnv("OPENCV_DIR") + '\x86\vc12\bin\opencv_imgproc245.dll"; DestDir: "{app}"; Flags: replacesameversion'
-Source: WinLibs\qhy5IIdll.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\qhy5LIIdll.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\ShoestringGPUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\ShoestringLXUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\SSAGIFv2.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\SSAGIFv4.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\SSPIAGCAM.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\SSPIAGUSB_WIN.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\SXUSB.dll; DestDir: {app}; Flags: replacesameversion
-Source: WinLibs\ASICamera2.dll; DestDir: {app}; Flags: replacesameversion
-Source: Build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
+Source: ..\locale\*; Excludes: *-old.*,help; DestDir: {app}\locale; Flags: recursesubdirs replacesameversion
+Source: ..\PHD2GuideHelp.zip; DestDir: {app}; Flags: replacesameversion
+Source: ..\README-PHD2.txt; DestDir: {app}; Flags: isreadme replacesameversion
+Source: Release\astroDLLGeneric.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\astroDLLQHY5V.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\astroDLLsspiag.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\CMOSDLL.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\DICAMSDK.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\DSCI.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\FcApi.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\inpout32.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_core2410.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_highgui2410.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\opencv_imgproc2410.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\qhy5IIdll.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\qhy5LIIdll.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\ShoestringGPUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\ShoestringLXUSB_DLL.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\SSAGIFv2.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\SSAGIFv4.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\SSPIAGCAM.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\SSPIAGUSB_WIN.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\SXUSB.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\ASICamera2.dll; DestDir: {app}; Flags: replacesameversion
+Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll
 ; Missing: TIS_UDSHL09_vc10.dll
 ; Missing: TIS_UDSHL09_vc9.dll
-Source: WinLibs\vcredist_x86.exe; DestDir: {tmp}; Flags: deleteafterinstall
+Source: ..\WinLibs\vcredist_x86.exe; DestDir: {tmp}; Flags: deleteafterinstall
 
 [Icons]
 Name: {group}\PHD Guiding 2; FileName: {app}\phd2.exe
