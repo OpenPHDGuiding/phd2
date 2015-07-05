@@ -1094,8 +1094,8 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 }
                 if (m_blAcceptedMoves < BL_BACKLASH_MIN_COUNT)                    // More work to do
                 {
-                    if (m_calibrationSteps < m_blMaxClearingPulses)
-                    {   // Still have attempts left
+                    if (m_calibrationSteps < m_blMaxClearingPulses && blCumDelta < dist_crit)
+                    {   // Still have attempts left, haven't moved the star by 25 px yet
                         pFrame->ScheduleCalibrationMove(this, NORTH, m_calibrationDuration);
                         m_calibrationSteps++;
                         m_blMarkerPoint = currentLocation;
