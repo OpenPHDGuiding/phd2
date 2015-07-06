@@ -35,14 +35,14 @@ msgstr ""
 "Project-Id-Version: PHD2 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-06-30 18:27-0400\n"
-"PO-Revision-Date: 2015-03-31 15:37+0800\n"
+"PO-Revision-Date: 2015-07-03 19:16+0800\n"
 "Last-Translator: Tsung-Chi Wu <tc.wooo@gmail.com>\n"
 "Language-Team: 天體暨宇宙事件攝影觀測聯萌 <tc.wooo@gmail.com>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Poedit 1.8.1\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -96,15 +96,15 @@ msgstr "相場旋轉器"
 
 #: backlash_comp.cpp:116
 msgid "Backlash Results"
-msgstr ""
+msgstr "回差結果"
 
 #: backlash_comp.cpp:199
 msgid "Ideal"
-msgstr ""
+msgstr "理想值"
 
 #: backlash_comp.cpp:201
 msgid "Measured"
-msgstr ""
+msgstr "實際測量值"
 
 #: backlash_comp.cpp:202 mount.cpp:672 scope.cpp:1430 scope.cpp:1525
 #: scope.cpp:1559 testguide.cpp:152
@@ -119,20 +119,20 @@ msgstr "南向"
 #: backlash_comp.cpp:259
 msgid ""
 "Backlash measurement cannot be run - please re-run your mount calibration"
-msgstr ""
+msgstr "無法執行回差測量, 請重新校准赤道儀"
 
 #: backlash_comp.cpp:363
 msgid "Could not clear North backlash - test failed"
-msgstr ""
+msgstr "無法清除北向回差, 測試失敗"
 
 #: backlash_comp.cpp:406
 msgid "Star too close to edge for accurate measurement of backlash"
-msgstr ""
+msgstr "星點太靠近影像邊緣, 無法精準地測量回差"
 
 #: backlash_comp.cpp:451
 #, c-format
 msgid "Issuing test backlash correction of %d ms"
-msgstr ""
+msgstr "開始測試 %d ms 的回差修正"
 
 #: backlash_comp.cpp:467
 #, c-format
@@ -140,22 +140,23 @@ msgid ""
 "BLT: Trial backlash pulse resulted in net DecDelta = %0.2f px, Dec Location "
 "%0.2f"
 msgstr ""
+"BLT: 評估回差訊號所得結果在 net DecDelta = %0.2f px, Dec Location %0.2f"
 
 #: backlash_comp.cpp:510
 msgid "Restoring star position"
-msgstr ""
+msgstr "回復星點位置"
 
 #: backlash_comp.cpp:518
 msgid "Measurement complete"
-msgstr ""
+msgstr "測量完成"
 
 #: backlash_comp.cpp:525
 msgid "Measurement halted"
-msgstr ""
+msgstr "測量中斷"
 
 #: backlash_comp.cpp:538
 msgid "Measurement encountered an error: "
-msgstr ""
+msgstr "測量時發生錯誤:"
 
 #: calreview_dialog.cpp:47 statswindow.cpp:211
 msgid "N/A"
@@ -447,8 +448,8 @@ msgid ""
 "Guide speed, multiple of sidereal rate; if your mount's guide speed is "
 "50% sidereal rate, enter 0.5"
 msgstr ""
-"Guide speed, multiple of sidereal rate; if your mount's guide speed is "
-"50% sidereal rate, enter 0.5"
+"導星速率乘以恆星速率; if your mount's guide speed is 50% sidereal rate, "
+"enter 0.5"
 
 #: calstep_dialog.cpp:127
 msgid "Calibration steps"
@@ -1264,6 +1265,8 @@ msgid ""
 "The camera will be disconnected if it fails to respond for this long. The "
 "default value, %d seconds, should be appropriate for most cameras."
 msgstr ""
+"如果在此時間內沒有回應, 相機連線將會被中斷, 預設值為 %d 秒, 此數值對大多數相"
+"機而言都在可接受範圍內。"
 
 #: camera.cpp:746
 msgid ""
@@ -1286,6 +1289,10 @@ msgid ""
 "period on the Camera tab\n"
 "of the Advanced Settings Dialog then re-connect the camera."
 msgstr ""
+"在 %.1f 秒後相機沒有完成 %1f 秒的曝光, 因此會中斷相機連結以避免產生其他問"
+"題。\n"
+"假如你認為硬體沒有問題, 可以在進階設定交談框中,「相機」選項中增加逾時時間。\n"
+"然後再連接相機。"
 
 #: camera.cpp:1074
 msgid ""
@@ -1463,11 +1470,11 @@ msgstr ""
 
 #: darks_dialog.cpp:135
 msgid "Options"
-msgstr ""
+msgstr "選項"
 
 #: darks_dialog.cpp:138
 msgid "Modify/extend existing dark library"
-msgstr ""
+msgstr "修改/擴充現有暗場影像庫"
 
 #: darks_dialog.cpp:139
 msgid ""
@@ -1475,10 +1482,12 @@ msgid ""
 "If different exposure times are used, those darks will be added to the "
 "library."
 msgstr ""
+"目前所建立的暗場影像庫將會取代原來符合曝光時間的舊影像庫, 如果使用不同的曝光"
+"時間, 這些暗場影像將會被加入到影像庫中。"
 
 #: darks_dialog.cpp:141
 msgid "Create entirely new dark library"
-msgstr ""
+msgstr "建立全新的暗場影像庫"
 
 #: darks_dialog.cpp:142
 msgid ""
@@ -1487,6 +1496,9 @@ msgid ""
 "alert messages about incompatible frame sizes or mismatches with the current "
 "camera."
 msgstr ""
+"建立的暗場影像將會被用來新建一個暗場影像庫, 舊有的影像會被捨棄: 如果你看到關"
+"於不相容影像大小或與目前相機不符的影像等告警訊息, 你必須使用此選項來修正此類"
+"問題。"
 
 #: darks_dialog.cpp:179
 msgid "Dark Frame Settings"
@@ -1542,7 +1554,7 @@ msgstr "建立主要暗場影像 %.1d  毫秒"
 
 #: darks_dialog.cpp:303
 msgid "Operation cancelled - no changes have been made"
-msgstr ""
+msgstr "作業被中止, 沒有任何改變。"
 
 #: darks_dialog.cpp:316
 msgid "dark library built"
@@ -1656,6 +1668,11 @@ msgid ""
 "Repeat Drift/Adjust until alignment is complete.\n"
 "Then, click Altitude to begin Altitude adjustment."
 msgstr ""
+"轉動赤道儀指向中天接近天求赤道附近。\n"
+"點擊『飄移』以測量飄移, 檢視赤緯趨勢線的變化。\n"
+"點擊『調整』並調整赤道儀方位角。\n"
+"重複飄移/調整步驟直到校準完成為止。\n"
+"然後, 點擊『仰角』開始進行仰角的調整。"
 
 #: drift_tool.cpp:379
 msgid "Azimuth adjustment notes"
@@ -1677,6 +1694,11 @@ msgid ""
 "Repeat Drift/Adjust until alignment is complete.\n"
 "Click Azimuth to repeat Azimuth adjustment."
 msgstr ""
+"轉動赤道儀指向東或西方地平線且接近天求赤道附近。\n"
+"點擊『飄移』以測量飄移, 檢視赤緯趨勢線的變化。\n"
+"點擊『調整』並調整赤道儀仰角。\n"
+"重複飄移/調整步驟直到校準完成為止。\n"
+"點擊『方位角』重複做方位角的飄移校準。"
 
 #: drift_tool.cpp:395
 msgid "< Azimuth"
@@ -2322,15 +2344,15 @@ msgstr "赤緯"
 
 #: guide_algorithm_gaussian_process.cpp:53
 msgid "Gaussian Process Guide Algorithm"
-msgstr ""
+msgstr "高斯處理導星演算法"
 
 #: guide_algorithm_gaussian_process.cpp:68
 msgid "Control Gain"
-msgstr ""
+msgstr "控制增益"
 
 #: guide_algorithm_gaussian_process.cpp:69
 msgid "Description of the control gain. Default = 1.0"
-msgstr ""
+msgstr "控制增益數值, 預設值=1.0"
 
 #: guide_algorithm_hysteresis.cpp:208
 msgid "Hysteresis Guide Algorithm"
@@ -2670,7 +2692,7 @@ msgstr "赤緯飄移率"
 
 #: guiding_assistant.cpp:382
 msgid "Declination Backlash"
-msgstr ""
+msgstr "赤緯軸齒輪回差"
 
 #: guiding_assistant.cpp:387
 msgid "Polar Alignment Error"
@@ -2678,11 +2700,11 @@ msgstr "極軸校準誤差"
 
 #: guiding_assistant.cpp:394
 msgid "Dec Backlash"
-msgstr ""
+msgstr "赤緯軸齒輪回差"
 
 #: guiding_assistant.cpp:395
 msgid "Measure Declination Backlash"
-msgstr ""
+msgstr "測量赤緯軸齒輪回差"
 
 #: guiding_assistant.cpp:397
 msgid ""
@@ -2691,14 +2713,17 @@ msgid ""
 "the north direction.  If the guide star is lost, increase the size of the "
 "search region to at least 20 px"
 msgstr ""
+"PHD2 將把導星星體向北移動一段距離後再往南移動以測量齒隙回差, 請確認所選用的星"
+"體在北向有足夠的移動空間(不要移出影像範圍), 如果有發生星點遺失狀況, 請增加星"
+"點搜尋範圍到  20 個像素以上。"
 
 #: guiding_assistant.cpp:399
 msgid "Show Graph"
-msgstr ""
+msgstr "顯示圖形"
 
 #: guiding_assistant.cpp:400
 msgid "Show graph of backlash measurement points"
-msgstr ""
+msgstr "顯示回差測量點的圖形"
 
 #: guiding_assistant.cpp:416
 msgid "Start measuring (disables guiding)"
@@ -2770,7 +2795,7 @@ msgstr "評估在赤緯方向的總飄移量"
 msgid ""
 "Estimate of declination backlash if backlash testing was completed "
 "successfully"
-msgstr ""
+msgstr "回差測試完成後所估得的赤緯軸回差"
 
 #: guiding_assistant.cpp:508
 msgid ""
@@ -2782,7 +2807,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:539
 msgid "Choose a non-saturated star with a good SNR (>= 8) and begin guiding"
-msgstr ""
+msgstr "選擇亮度不要太高, 具備較佳訊噪比 (SNR >=8 ) 的星體並開始進行導星"
 
 #: guiding_assistant.cpp:543
 msgid ""
@@ -2809,7 +2834,7 @@ msgstr ""
 
 #: guiding_assistant.cpp:560 guiding_assistant.cpp:565
 msgid "Measuring backlash: "
-msgstr ""
+msgstr "測量回差當中:"
 
 #: guiding_assistant.cpp:573 guiding_assistant.cpp:1046
 msgid "px"
@@ -2817,7 +2842,7 @@ msgstr "px"
 
 #: guiding_assistant.cpp:575
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: guiding_assistant.cpp:666 guiding_assistant.cpp:667
 msgid "Apply"
@@ -2825,13 +2850,13 @@ msgstr "套用"
 
 #: guiding_assistant.cpp:736
 msgid "Polar alginment error > 5 arc-min; that could probably be improved."
-msgstr ""
+msgstr "極軸誤差 > 5 弧分; 應進行校準以增加精確度。"
 
 #: guiding_assistant.cpp:737
 msgid ""
 "Polar alignment error > 10 arc-min; try using the Drift Align tool to "
 "improve alignment."
-msgstr ""
+msgstr "極軸誤差 > 10 弧分; 請利用極軸飄移校準工具進行校準。"
 
 #: guiding_assistant.cpp:757 guiding_assistant.cpp:762
 #, c-format
@@ -2850,20 +2875,20 @@ msgstr "請選用較明亮的導星星體或者增加曝光時間"
 #: guiding_assistant.cpp:803
 #, c-format
 msgid "Try setting a Dec backlash value of %d ms"
-msgstr ""
+msgstr "請嘗試設定一個 %d ms 的赤緯軸回差值。"
 
 #: guiding_assistant.cpp:805
 #, c-format
 msgid "Backlash is %0.1f px; you may need to guide in only one Dec direction"
-msgstr ""
+msgstr "回差為 %0.1f 像素; 你可能僅需要單一赤緯方向的導星。"
 
 #: guiding_assistant.cpp:896
 msgid "Backlash test aborted..."
-msgstr ""
+msgstr "回差測試終止..."
 
 #: guiding_assistant.cpp:930 guiding_assistant.cpp:937
 msgid "Measuring backlash... "
-msgstr ""
+msgstr "回差測量當中..."
 
 #: guiding_assistant.cpp:959
 msgid "Guiding stopped"
@@ -2971,7 +2996,7 @@ msgstr "阻抗切換"
 
 #: mount.cpp:104 mount.cpp:130
 msgid "Gaussian Process"
-msgstr ""
+msgstr "高斯影像處理"
 
 #: mount.cpp:111
 msgid "RA Algorithm"
@@ -3457,7 +3482,7 @@ msgstr "進階參數"
 
 #: myframe.cpp:812
 msgid "Camera settings"
-msgstr ""
+msgstr "相機設定"
 
 #: myframe.cpp:831 myframe.cpp:850
 msgid "Cal +"
@@ -3514,7 +3539,7 @@ msgstr "載入 FITS 黨時發生錯誤或不支援該檔案格式"
 msgid ""
 "Existing dark library has frames with incompatible formats - please rebuild "
 "the dark library from scratch."
-msgstr ""
+msgstr "目前的暗場影像庫係以不相容格式建立, 請重建暗場影像庫。"
 
 #: myframe.cpp:1802
 msgid "Memory allocation error reading FITS file "
@@ -4523,6 +4548,8 @@ msgid ""
 "star locked. Increasing the %s will allow PHD2 to make the needed "
 "corrections."
 msgstr ""
+"因為 %s 問題讓 PHD2 無法進行修正以鎖定導星星體, 請增加 %s 讓 PHD2 進行所需要"
+"的修正工作。"
 
 #: scope.cpp:540
 #, c-format
@@ -4531,6 +4558,8 @@ msgid ""
 "guide star movements in %s. Guiding will be impaired until you can eliminate "
 "the source of these problems."
 msgstr ""
+"即使使用最大位移量, PHD2 仍然無法在 %s 時間內讓導星星體得到適合進行修正所需要"
+"的位移量, 除非你找到問題發生真正原因, 否則導星將無法進行。"
 
 #: scope.cpp:787
 msgid "Calibration is based on very few steps, so accuracy is questionable"
@@ -4575,12 +4604,12 @@ msgstr "東 %3d"
 
 #: scope.cpp:1068
 msgid "Clearing backlash step 1"
-msgstr ""
+msgstr "清除回差步數1"
 
 #: scope.cpp:1103
 #, c-format
 msgid "Clearing backlash step %3d"
-msgstr ""
+msgstr "清除回差步數 %3d"
 
 #: scope.cpp:1122
 msgid "Backlash Clearing Failed: star did not move enough"
@@ -4616,23 +4645,25 @@ msgstr "dx=%4.1f dy=%4.1f dist=%4.1f"
 
 #: scope.cpp:1372
 msgid "Declination Backlash Comp"
-msgstr ""
+msgstr "赤緯回差修正"
 
 #: scope.cpp:1373
 msgid ""
 "Check this if you want to apply a backlash compensation guide pulse when "
 "declination direction is reversed."
-msgstr ""
+msgstr "如果你想在赤緯軸方向翻轉時發送出回差補償導星訊號時, 請核選此選項。"
 
 #: scope.cpp:1377
 msgid "Amount"
-msgstr ""
+msgstr "數量"
 
 #: scope.cpp:1378
 msgid ""
 "Length of backlash correction pulse (mSec). This will be automatically "
 "decreased if over-shoot corrections are observed."
 msgstr ""
+"回差修正訊號長度(mSec), 如果訊號長度太長, 程式會自動降低該訊號發送長度-觀察到"
+"拍攝修正。"
 
 #: scope.cpp:1386
 msgid "Calculate..."
@@ -4751,7 +4782,7 @@ msgstr "ASCOM 驅動程式不支援 GuidePulse"
 #: scope_ascom.cpp:658
 msgid ""
 "PulseGuide command to mount has failed - guiding is likely to be ineffective."
-msgstr ""
+msgstr "傳送到給赤道儀的導星訊號發生錯誤-導星發生問題。"
 
 #: scope_ascom.cpp:664
 msgid "Guiding stopped: the scope started slewing."
