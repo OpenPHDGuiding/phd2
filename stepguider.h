@@ -157,8 +157,8 @@ public:
     // functions with an implemenation in StepGuider that cannot be over-ridden
     // by a subclass
 private:
-    virtual MOVE_RESULT Move(const PHD_Point& vectorEndpoint, bool normalMove=true);
-    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, bool normalMove, MoveResultInfo *moveResultInfo);
+    virtual MOVE_RESULT Move(const PHD_Point& vectorEndpoint, MountMoveType moveType);
+    MOVE_RESULT Move(GUIDE_DIRECTION direction, int amount, MountMoveType moveType, MoveResultInfo *moveResultInfo);
     MOVE_RESULT CalibrationMove(GUIDE_DIRECTION direction, int steps);
     int CalibrationMoveSize(void);
     int CalibrationTotDistance(void);

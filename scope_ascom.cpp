@@ -341,7 +341,8 @@ bool ScopeASCOM::Connect(void)
             Debug.AddLine("cannot get dispid_slewtocoordinates");
         }
 
-        // ... get the dispatch IDs for the two guide rate properties - if we can't get them, no sweat, using only in step calculator
+        // ... get the dispatch IDs for the two guide rate properties - if we can't get them, no sweat, doesn't matter for actual guiding
+        // Used for things like calibration sanity checking, backlash clearing, etc.
         m_bCanGetGuideRates = true;         // Likely case, required for any ASCOM driver at V2 or later
         if (!pScopeDriver.GetDispatchId(&dispid_decguiderate, L"GuideRateDeclination"))
         {

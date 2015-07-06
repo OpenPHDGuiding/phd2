@@ -323,21 +323,21 @@ public:
 
     struct PHD_MOVE_REQUEST
     {
-        Mount           *pMount;
-        int             duration;
-        GUIDE_DIRECTION direction;
-        bool            calibrationMove;
-        bool            normalMove;
+        Mount             *pMount;
+        int                duration;
+        GUIDE_DIRECTION    direction;
+        bool               calibrationMove;
+        MountMoveType      moveType;
         Mount::MOVE_RESULT moveResult;
-        PHD_Point       vectorEndpoint;
-        wxSemaphore     *pSemaphore;
+        PHD_Point          vectorEndpoint;
+        wxSemaphore       *pSemaphore;
     };
     void OnRequestMountMove(wxCommandEvent& evt);
 
     void ScheduleExposure(void);
 
-    void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
-    void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, bool normalMove=true);
+    void SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType);
+    void ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType);
     void ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direction, int duration);
 
     void StartCapturing(void);

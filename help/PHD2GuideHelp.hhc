@@ -171,12 +171,12 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="First-Time Use Problems">
-			<param name="Local" value="Trouble_shooting.htm#Problems-_First-Time_Use">
+			<param name="Name" value="Calibration Problems">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Mount_Control">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Display Problems or No Stars Shown">
-			<param name="Local" value="Trouble_shooting.htm#Problems-_No_Stars">
+			<param name="Name" value="Display Window Problems">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Display_Window">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Camera Timeouts and Download Problems">
@@ -185,6 +185,10 @@
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Poor Guiding Performance">
 			<param name="Local" value="Trouble_shooting.htm#Problems-_Poor_Guiding">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Alert Messages">
+			<param name="Local" value="Trouble_shooting.htm#Problems-_Alerts">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Using the Log Files">

@@ -536,7 +536,7 @@ void GuidingAsstWin::FillInstructions(DialogState eState)
     switch (eState)
     {
     case STATE_NO_STAR:
-        instr = _("Choose a non-saturated star with a good SNR (>10) and begin guiding");
+        instr = _("Choose a non-saturated star with a good SNR (>= 8) and begin guiding");
         break;
     case STATE_START_READY:
         if (!m_measurementsTaken)
@@ -573,6 +573,8 @@ void GuidingAsstWin::BacklashStep(const PHD_Point& camLoc)
                     qual == BacklashTool::MEASUREMENT_IMPAIRED ? ">=" : "", m_backlashTool->GetBacklashResultPx(), _("px")));
                 m_othergrid->SetCellValue(m_backlash_sec_loc, wxString::Format("%s%d %s", 
                     qual == BacklashTool::MEASUREMENT_IMPAIRED ? ">=" : "", m_backlashTool->GetBacklashResultMs(), _("ms")));
+                HighlightCell(m_othergrid, m_backlash_px_loc);
+                HighlightCell(m_othergrid, m_backlash_sec_loc);
                 m_graphBtn->Enable(true);
             }
             else
@@ -778,7 +780,7 @@ void GuidingAsstWin::MakeRecommendations()
         Debug.Write(wxString::Format("Recommendation: %s\n", m_dec_msg->GetLabelText()));
     }
 
-    if ((sumSNR / (double)m_statsRA.n) < 10.0)
+    if ((sumSNR / (double)m_statsRA.n) < 8.0)
     {
         wxString msg(_("Consider using a brighter star or increasing the exposure time"));
         if (!m_snr_msg)
@@ -793,7 +795,7 @@ void GuidingAsstWin::MakeRecommendations()
             m_snr_msg->SetLabel(wxEmptyString);
     }
 
-    if (m_backlashTool->GetBacklashResultMs() > 200)
+    if (m_backlashTool->GetBacklashResultMs() >= 100)
     {
         bool largeBL = m_backlashTool->GetBacklashResultMs() > MAX_BACKLASH_COMP;
         wxString msg;
@@ -1104,7 +1106,7 @@ void GuidingAssistant::NotifyFrameDropped(const FrameDroppedInfo& info)
     }
 }
 
-void GuidingAssistant::NotifyBacklashStep(PHD_Point camLoc)
+void GuidingAssistant::NotifyBacklashStep(const PHD_Point& camLoc)
 {
     if (pFrame && pFrame->pGuidingAssistant)
     {

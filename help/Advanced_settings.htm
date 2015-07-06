@@ -189,7 +189,7 @@ guiding is continued.<br></li>
 
 </ul>
 <h3><a name="Mount_Tab"></a>Mount Tab</h3>
-<img style="width: 302px; height: 578px;" alt="" src="Advanced_mount.png"><br>
+<img style="width: 326px; height: 613px;" alt="" src="Advanced_mount.png"><br>
 <br>
 The
 mount tab is the most complex area of Advanced Settings largely because
@@ -225,7 +225,20 @@ observe the uncorrected behavior of the mount. &nbsp;For example,
 you
 can disable guider output in order to see the general shape and
 amplitude of your mount's periodic error or to check the amount of
-drift from polar mis-alignment. &nbsp;</li>
+drift from polar mis-alignment. &nbsp;</li><li>'<a name="Declination_backlash_comp"></a>Declination Backlash Comp' - this
+controls whether PHD2 will apply a compensation factor when the
+direction of declination guiding needs to be reversed.
+&nbsp;Measurement of backlash and calculation of a good starting value
+for the compensation factor is done in the Guiding Assistant. &nbsp;The
+size of the additional guide correction (compensation value) is shown
+in the 'Amount' field adjacent to the checkbox. &nbsp;This amount may
+be adjusted downward by PHD2 if necessary to avoid over-shooting and
+oscillation. &nbsp;Since
+PHD2 has the ability to detect and adapt to over-corrections, the
+backlash compensation available here should work better than the
+fixed&nbsp;backlash compensation available in many mount controllers.
+&nbsp;If you use the PHD2 backlash compensation, you should disable
+any&nbsp; backlash compensation in the mount. &nbsp;See the help section on the <a href="Tools.htm#Guiding_Assistant">Guiding Assistant</a> for more details.</li>
 <li>'<a name="Calibration_step-size"></a>Calibration
 step-size' -&nbsp;specifes the duration of the guide pulse that
 <span style="font-style: italic;">PHD2</span>

@@ -211,7 +211,7 @@ bool Guider::SetOverlayMode(int overlayMode)
 
         m_overlayMode = (OVERLAY_MODE) overlayMode;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         m_overlayMode = OVERLAY_NONE;
@@ -335,7 +335,7 @@ bool Guider::SetScaleImage(bool newScaleValue)
     {
         m_scaleImage = newScaleValue;
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -613,7 +613,7 @@ bool Guider::PaintHelper(wxClientDC& dc, wxMemoryDC& memDC)
                 m_polarAlignCircleCenter.Y * m_scaleFactor, radius);
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -690,7 +690,7 @@ bool Guider::SetLockPosition(const PHD_Point& position)
 
         m_lockPosition.SetXY(x, y);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -758,7 +758,7 @@ MOVE_LOCK_RESULT Guider::MoveLockPosition(const PHD_Point& mountDelta)
             m_ditherRecenterStep.SetXY(f * m_ditherRecenterRemaining.X, f * m_ditherRecenterRemaining.Y);
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         result = MOVE_LOCK_ERROR;
@@ -899,7 +899,7 @@ void Guider::SetState(GUIDER_STATE newState)
             SetState(newState);
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
@@ -1081,6 +1081,9 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     GuidingAssistant::NotifyFrameDropped(info);
                     pFrame->pGraphLog->AppendData(info);
 
+                    // allow guide algorithms to attempt dead reckoning
+                    pFrame->SchedulePrimaryMove(pMount, PHD_Point(), MOVETYPE_DEDUCED);
+
                     wxColor prevColor = GetBackgroundColour();
                     SetBackgroundColour(wxColour(64,0,0));
                     ClearBackground();
@@ -1213,7 +1216,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 if (m_ditherRecenterRemaining.IsValid())
                 {
                     // fast recenter after dither taking large steps and bypassing
-                    // guide algorithms (normalMove=false)
+                    // guide algorithms (moveType = MOVETYPE_DIRECT)
 
                     PHD_Point step(wxMin(m_ditherRecenterRemaining.X, m_ditherRecenterStep.X),
                                    wxMin(m_ditherRecenterRemaining.Y, m_ditherRecenterStep.Y));
@@ -1235,21 +1238,17 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     PHD_Point mountCoords(step.X * m_ditherRecenterDir.x, step.Y * m_ditherRecenterDir.y);
                     PHD_Point cameraCoords;
                     pMount->TransformMountCoordinatesToCameraCoordinates(mountCoords, cameraCoords);
-                    pFrame->SchedulePrimaryMove(pMount, cameraCoords, false);
+                    pFrame->SchedulePrimaryMove(pMount, cameraCoords, MOVETYPE_DIRECT);
+                }
+                else if (m_measurementMode)
+                {
+                    GuidingAssistant::NotifyBacklashStep(CurrentPosition());
                 }
                 else
                 {
                     // ordinary guide step
-                    if (!m_measurementMode)
-                    {
-                        s_deflectionLogger.Log(CurrentPosition());
-                        pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition());
-                    }
-                    else
-                    {
-                        GuidingAssistant::NotifyBacklashStep(CurrentPosition());
-                    }
-
+                    s_deflectionLogger.Log(CurrentPosition());
+                    pFrame->SchedulePrimaryMove(pMount, CurrentPosition() - LockPosition(), MOVETYPE_ALGO);
                 }
                 break;
 
@@ -1258,7 +1257,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                 break;
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
     }
