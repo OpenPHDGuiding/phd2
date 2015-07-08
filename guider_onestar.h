@@ -51,7 +51,6 @@ private:
     // parameters
     bool m_massChangeThresholdEnabled;
     double m_massChangeThreshold;
-    int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
 
 protected:
     class GuiderOneStarConfigDialogPane : public GuiderConfigDialogPane
@@ -71,12 +70,11 @@ protected:
         void OnStarMassEnableChecked(wxCommandEvent& event);
     };
 
-    virtual bool GetMassChangeThresholdEnabled(void);
-    virtual void SetMassChangeThresholdEnabled(bool enable);
-    virtual double GetMassChangeThreshold(void);
-    virtual bool SetMassChangeThreshold(double starMassChangeThreshold);
-    virtual int GetSearchRegion(void);
-    virtual bool SetSearchRegion(int searchRegion);
+    bool GetMassChangeThresholdEnabled(void);
+    void SetMassChangeThresholdEnabled(bool enable);
+    double GetMassChangeThreshold(void);
+    bool SetMassChangeThreshold(double starMassChangeThreshold);
+    bool SetSearchRegion(int searchRegion);
 
     friend class GuiderOneStarConfigDialogPane;
 
@@ -84,27 +82,27 @@ public:
     GuiderOneStar(wxWindow *parent);
     virtual ~GuiderOneStar(void);
 
-    virtual void OnPaint(wxPaintEvent& evt);
+    void OnPaint(wxPaintEvent& evt);
 
-    virtual bool IsLocked(void);
-    virtual bool AutoSelect(void);
-    virtual const PHD_Point& CurrentPosition(void);
-    virtual wxRect GetBoundingBox(void);
-    virtual int GetMaxMovePixels(void);
-    virtual double StarMass(void);
-    virtual double SNR(void);
-    virtual int StarError(void);
-    virtual wxString GetSettingsSummary();
+    bool IsLocked(void);
+    bool AutoSelect(void);
+    const PHD_Point& CurrentPosition(void);
+    wxRect GetBoundingBox(void);
+    int GetMaxMovePixels(void);
+    double StarMass(void);
+    double SNR(void);
+    int StarError(void);
+    wxString GetSettingsSummary();
 
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
-    virtual void LoadProfileSettings(void);
+    void LoadProfileSettings(void);
 
 private:
-    virtual bool IsValidLockPosition(const PHD_Point& pt);
-    virtual void InvalidateCurrentPosition(bool fullReset = false);
-    virtual bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo);
-    virtual bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);
+    bool IsValidLockPosition(const PHD_Point& pt);
+    void InvalidateCurrentPosition(bool fullReset = false);
+    bool UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo);
+    bool SetCurrentPosition(usImage *pImage, const PHD_Point& position);
 
     void OnLClick(wxMouseEvent& evt);
 

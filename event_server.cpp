@@ -528,8 +528,18 @@ static const json_value *at(const json_value *ary, unsigned int idx)
     return 0;
 }
 
+// paranoia
+#define VERIFY_GUIDER(response) do { \
+    if (!pFrame || !pFrame->pGuider) \
+    { \
+        response << jrpc_error(1, "internal error"); \
+        return; \
+    } \
+} while (0)
+
 static void deselect_star(JObj& response, const json_value *params)
 {
+    VERIFY_GUIDER(response);
     pFrame->pGuider->Reset(true);
     response << jrpc_result(0);
 }
@@ -611,11 +621,7 @@ static void set_profile(JObj& response, const json_value *params)
         return;
     }
 
-    if (!pFrame || !pFrame->pGearDialog) // paranoia
-    {
-        response << jrpc_error(1, "internal error");
-        return;
-    }
+    VERIFY_GUIDER(response);
 
     wxString errMsg;
     bool error = pFrame->pGearDialog->SetProfile(id->int_value, &errMsg);
@@ -644,11 +650,7 @@ static void set_connected(JObj& response, const json_value *params)
         return;
     }
 
-    if (!pFrame || !pFrame->pGearDialog) // paranoia
-    {
-        response << jrpc_error(1, "internal error");
-        return;
-    }
+    VERIFY_GUIDER(response);
 
     wxString errMsg;
     bool error = val->int_value ? pFrame->pGearDialog->ConnectAll(&errMsg) :
@@ -696,6 +698,7 @@ static bool float_param(const char *name, const json_value *v, double *p)
 
 static void get_paused(JObj& response, const json_value *params)
 {
+    VERIFY_GUIDER(response);
     response << jrpc_result(pFrame->pGuider->IsPaused());
 }
 
@@ -756,6 +759,8 @@ static void stop_capture(JObj& response, const json_value *params)
 
 static void find_star(JObj& response, const json_value *params)
 {
+    VERIFY_GUIDER(response);
+
     bool error = pFrame->pGuider->AutoSelect();
 
     if (!error)
@@ -788,6 +793,8 @@ static void get_app_state(JObj& response, const json_value *params)
 
 static void get_lock_position(JObj& response, const json_value *params)
 {
+    VERIFY_GUIDER(response);
+
     const PHD_Point& lockPos = pFrame->pGuider->LockPosition();
     if (lockPos.IsValid())
         response << jrpc_result(lockPos);
@@ -819,6 +826,8 @@ static void set_lock_position(JObj& response, const json_value *params)
         }
         exact = p2->int_value ? true : false;
     }
+
+    VERIFY_GUIDER(response);
 
     bool error;
 
@@ -899,6 +908,7 @@ static void flip_calibration(JObj& response, const json_value *params)
 
 static void get_lock_shift_enabled(JObj& response, const json_value *params)
 {
+    VERIFY_GUIDER(response);
     bool enabled = pFrame->pGuider->GetLockPosShiftParams().shiftEnabled;
     response << jrpc_result(enabled);
 }
@@ -912,11 +922,7 @@ static void set_lock_shift_enabled(JObj& response, const json_value *params)
         return;
     }
 
-    if (!pFrame || !pFrame->pGuider) // paranoia
-    {
-        response << jrpc_error(1, "internal error");
-        return;
-    }
+    VERIFY_GUIDER(response);
 
     pFrame->pGuider->EnableLockPosShift(val->int_value ? true : false);
 
@@ -925,6 +931,7 @@ static void set_lock_shift_enabled(JObj& response, const json_value *params)
 
 static void get_lock_shift_params(JObj& response, const json_value *params)
 {
+    VERIFY_GUIDER(response);
     const LockPosShiftParams& lockShift = pFrame->pGuider->GetLockPosShiftParams();
     JObj rslt;
     rslt << NV("enabled", lockShift.shiftEnabled);
@@ -1046,11 +1053,7 @@ static void set_lock_shift_params(JObj& response, const json_value *params)
         return;
     }
 
-    if (!pFrame || !pFrame->pGuider)
-    {
-        response << jrpc_error(1, "internal error");
-        return;
-    }
+    VERIFY_GUIDER(response);
 
     pFrame->pGuider->SetLockPosShiftRate(shift.shiftRate, shift.shiftUnits, shift.shiftIsMountCoords);
 
@@ -1059,11 +1062,7 @@ static void set_lock_shift_params(JObj& response, const json_value *params)
 
 static void save_image(JObj& response, const json_value *params)
 {
-    if (!pFrame || ! pFrame->pGuider)
-    {
-        response << jrpc_error(1, "internal error");
-        return;
-    }
+    VERIFY_GUIDER(response);
 
     if (!pFrame->pGuider->CurrentImage()->ImageData)
     {
@@ -1083,6 +1082,17 @@ static void save_image(JObj& response, const json_value *params)
     JObj rslt;
     rslt << NV("filename", fname);
     response << jrpc_result(rslt);
+}
+
+static void get_use_subframes(JObj& response, const json_value *params)
+{
+    response << jrpc_result(pCamera && pCamera->UseSubframes);
+}
+
+static void get_search_region(JObj& response, const json_value *params)
+{
+    VERIFY_GUIDER(response);
+    response << jrpc_result(pFrame->pGuider->GetSearchRegion());
 }
 
 struct B64Encode
@@ -1139,11 +1149,18 @@ const char *const B64Encode::E = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrst
 
 static void get_star_image(JObj& response, const json_value *params)
 {
-    if (!pFrame || !pFrame->pGuider)
+    int reqsize = 15;
+    const json_value *val;
+    if (params && (val = at(params, 0)) != 0)
     {
-        response << jrpc_error(1, "internal error");
-        return;
+        if (val->type != JSON_INT || (reqsize = val->int_value) < 15)
+        {
+            response << jrpc_error(JSONRPC_INVALID_PARAMS, "invalid image size param");
+            return;
+        }
     }
+
+    VERIFY_GUIDER(response);
 
     Guider *guider = pFrame->pGuider;
     const usImage *img = guider->CurrentImage();
@@ -1155,11 +1172,11 @@ static void get_star_image(JObj& response, const json_value *params)
         return;
     }
 
-    int const HALFW = 7;
-    int const FULLW = 2 * HALFW + 1;
+    int const halfw = wxMin((reqsize - 1) / 2, 31);
+    int const fullw = 2 * halfw + 1;
     int const sx = (int) rint(star.X);
     int const sy = (int) rint(star.Y);
-    wxRect rect(sx - HALFW, sy - HALFW, FULLW, FULLW);
+    wxRect rect(sx - halfw, sy - halfw, fullw, fullw);
     if (img->Subframe.IsEmpty())
         rect.Intersect(wxRect(img->Size));
     else
@@ -1378,6 +1395,8 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "set_lock_shift_params", &set_lock_shift_params, },
         { "save_image", &save_image, },
         { "get_star_image", &get_star_image, },
+        { "get_use_subframes", &get_use_subframes, },
+        { "get_search_region", &get_search_region, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

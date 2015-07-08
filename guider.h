@@ -158,6 +158,7 @@ class Guider : public wxWindow
     bool m_measurementMode;
 
 protected:
+    int m_searchRegion; // how far u/d/l/r do we do the initial search for a star
     bool m_forceFullFrame;
     double m_scaleFactor;
     bool m_showBookmarks;
@@ -235,6 +236,7 @@ public:
     bool SetScaleImage(bool newScaleValue);
     bool GetScaleImage(void);
 
+    int GetSearchRegion(void) const;
     double CurrentError(void);
 
     bool GetBookmarksShown(void);
@@ -303,6 +305,11 @@ inline PauseType Guider::GetPauseType(void) const
 inline bool Guider::IsGuiding(void) const
 {
     return m_state == STATE_GUIDING;
+}
+
+inline int Guider::GetSearchRegion(void) const
+{
+    return m_searchRegion;
 }
 
 #endif /* GUIDER_H_INCLUDED */
