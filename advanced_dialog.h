@@ -39,6 +39,38 @@ class MyFrame;
 class MyFrameConfigDialogPane;
 class CameraConfigDialogPane;
 
+enum TAB_PAGES {
+    GLOBAL_PAGE,
+    GUIDER_PAGE,
+    CAMERA_PAGE,
+    MOUNT_PAGE,
+    AO_PAGE,
+    ROTATOR_PAGE,
+};
+
+struct BrainCtrlInfo
+{
+    wxControl panelCtrl;
+    TAB_PAGES ctrlHost;
+    bool isPositioned;           // debug only
+};
+
+enum BRAIN_CTRL_IDS
+{
+    cbResetConfig,
+    cbDontAsk,
+    szImageLoggingFormat,
+    cbDitherRAOnly,
+    szDitherScale,
+    szNoiseReduction,
+    szTimeLapse,
+    szFocalLength,
+    szLanguage,
+    szLogFileInfo,
+    cbAutoRestoreCal,
+    szAutoExposure
+};
+
 class AdvancedDialog : public wxDialog
 {
     wxBookCtrlBase *m_pNotebook;
@@ -50,6 +82,7 @@ class AdvancedDialog : public wxDialog
     ConfigDialogPane *m_pMountPane;
     ConfigDialogPane *m_pAoPane;
     ConfigDialogPane *m_rotatorPane;
+    std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> m_brainCtrls;
 
 public:
     AdvancedDialog(MyFrame *pFrame);

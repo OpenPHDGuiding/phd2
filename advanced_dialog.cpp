@@ -41,15 +41,6 @@
 // a place to save id of selected panel so we can select the same panel next time the dialog is opened
 static int s_selectedPage = -1;
 
-enum {
-    GLOBAL_PAGE,
-    GUIDER_PAGE,
-    CAMERA_PAGE,
-    MOUNT_PAGE,
-    AO_PAGE,
-    ROTATOR_PAGE,
-};
-
 AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
