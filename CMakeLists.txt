@@ -36,7 +36,7 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 set(VERSION_MAJOR 2)
-set(VERSION_MINOR 3)
+set(VERSION_MINOR 5)
 set(VERSION_PATCH 0)
 
 #################################################################################
@@ -53,6 +53,10 @@ endif()
 # this must appear very early in the file
 if(WIN32)
   set(CMAKE_GENERATOR_TOOLSET "v120_xp" CACHE STRING "Platform Toolset" FORCE)
+endif()
+
+if(UNIX AND NOT APPLE)
+  set(CMAKE_INSTALL_PREFIX /usr)
 endif()
 
 set(USE_FOLDERS TRUE)
@@ -662,7 +666,6 @@ add_custom_target(CmakeAdditionalFiles
 # Installation and packaging
 #
 
-
 if(NOT APPLE)
   install (TARGETS phd2 RUNTIME DESTINATION bin)
 endif()
@@ -693,9 +696,18 @@ if(UNIX AND NOT APPLE)
              OPTIONAL)          
             
   endforeach()
+
+  set(CPACK_GENERATOR "DEB")
+  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PHD2 team")
 endif()
 
+if(APPLE)
+  install(TARGETS phd2 RUNTIME DESTINATION phd2 BUNDLE DESTINATION phd2)
+endif()
 
-
-
+SET(CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
+SET(CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
+SET(CPACK_PACKAGE_VERSION_PATCH "${VERSION_PATCH}")
+SET(CPACK_PACKAGE_VENDOR "PHD2 team")
+include(CPack)
 
