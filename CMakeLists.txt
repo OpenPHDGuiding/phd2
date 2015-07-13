@@ -536,6 +536,20 @@ if(APPLE)
   set( MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
   set( MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2015 Open-phd-guiding team" )
 
+  # get the locales
+  file( GLOB_RECURSE local_files 
+        LIST_DIRECTORIES false 
+        RELATIVE ${PHD_PROJECT_ROOT_DIR}
+        ${PHD_PROJECT_ROOT_DIR}/locale/*.[mp]o)
+
+  file( GLOB_RECURSE local_help_files 
+        LIST_DIRECTORIES false 
+        RELATIVE ${PHD_PROJECT_ROOT_DIR}
+        ${PHD_PROJECT_ROOT_DIR}/locale/*PHD2GuideHelp.zip)
+  
+  set(local_files ${local_files} ${local_help_files})
+
+
   add_executable(
     phd2
     MACOSX_BUNDLE
@@ -552,6 +566,9 @@ if(APPLE)
     # extra frameworks
     ${sbigudFramework}
     ${fcCamFramework}
+    
+    # locales
+    ${local_files}
   )
   set_target_properties(
     phd2 
@@ -570,6 +587,17 @@ if(APPLE)
       PROPERTIES 
         MACOSX_PACKAGE_LOCATION Resources
   )
+  
+  foreach(_l IN LISTS local_files)
+    get_filename_component(_dest ${_l} DIRECTORY)
+    set_source_files_properties(
+      ${_l}
+      PROPERTIES 
+        MACOSX_PACKAGE_LOCATION Resources/${_dest}
+  )
+
+  endforeach()
+  
   set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
   set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
 
