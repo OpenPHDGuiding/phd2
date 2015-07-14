@@ -536,6 +536,20 @@ if(APPLE)
   set( MACOSX_BUNDLE_BUNDLE_VERSION       "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
   set( MACOSX_BUNDLE_COPYRIGHT            "(C) 2010-2015 Open-phd-guiding team" )
 
+  # get the locales
+  file( GLOB_RECURSE local_files 
+        LIST_DIRECTORIES false 
+        RELATIVE ${PHD_PROJECT_ROOT_DIR}
+        ${PHD_PROJECT_ROOT_DIR}/locale/*.[mp]o)
+
+  file( GLOB_RECURSE local_help_files 
+        LIST_DIRECTORIES false 
+        RELATIVE ${PHD_PROJECT_ROOT_DIR}
+        ${PHD_PROJECT_ROOT_DIR}/locale/*PHD2GuideHelp.zip)
+  
+  set(local_files ${local_files} ${local_help_files})
+
+
   add_executable(
     phd2
     MACOSX_BUNDLE
@@ -552,6 +566,9 @@ if(APPLE)
     # extra frameworks
     ${sbigudFramework}
     ${fcCamFramework}
+    
+    # locales
+    ${local_files}
   )
   set_target_properties(
     phd2 
@@ -570,8 +587,35 @@ if(APPLE)
       PROPERTIES 
         MACOSX_PACKAGE_LOCATION Resources
   )
-  set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
-  set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+  
+  foreach(_l IN LISTS local_files)
+    get_filename_component(_dest ${_l} DIRECTORY)
+    set_source_files_properties(
+      ${_l}
+      PROPERTIES 
+        MACOSX_PACKAGE_LOCATION Resources/${_dest}
+  )
+
+  endforeach()
+  
+  # this is a workaround to what looks like a bug on cmake for Makefile generators
+  if(NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
+    get_filename_component(framework1 ${fcCamFramework} NAME)
+    get_filename_component(framework2 ${sbigudFramework} NAME)
+    add_custom_command(
+      TARGET phd2
+      POST_BUILD
+      # the copy_directory kills the symlinks
+      #COMMAND ${CMAKE_COMMAND} -E copy_directory ${fcCamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework1}/
+      #COMMAND ${CMAKE_COMMAND} -E copy_directory ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework2}/
+      COMMAND mkdir -p $<TARGET_FILE_DIR:phd2>/../Frameworks/
+      COMMAND cp -R ${fcCamFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework1}
+      COMMAND cp -R ${sbigudFramework} $<TARGET_FILE_DIR:phd2>/../Frameworks/${framework2}
+    )
+  else()
+    set_source_files_properties(${fcCamFramework}  PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
+    set_source_files_properties(${sbigudFramework} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)  
+  endif()
 
 elseif(WIN32)
 
@@ -702,8 +746,8 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(APPLE)
-  install(TARGETS phd2 RUNTIME DESTINATION phd2 BUNDLE DESTINATION phd2)
-  set(CPACK_GENERATOR="ZIP")
+  install(TARGETS phd2 RUNTIME DESTINATION . BUNDLE DESTINATION .)
+  set(CPACK_GENERATOR "ZIP" "DragNDrop")
 endif()
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
