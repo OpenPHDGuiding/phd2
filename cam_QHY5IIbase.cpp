@@ -113,22 +113,44 @@ bool Camera_QHY5IIBase::Connect()
     }
 
     int num_cams = ScanQHYCCD();
-    if (num_cams <= 0)
-    {
-        wxMessageBox(_("No QHY cameras found"));
-        return true;
-    }
+    std::vector<std::string> q5camids;
 
     for (int i = 0; i < num_cams; i++)
     {
-        char camid[32];
+        char camid[32] = "";
         GetQHYCCDId(i, camid);
-        if (camid[0] == 'Q' && camid[3] == '5' && camid[5] == 'I')
-        {
-            m_camhandle = OpenQHYCCD(camid);
-            break;
-        }
+        Debug.Write(wxString::Format("QHY cam [%d] %s\n", i, camid));
+        if (strncmp(camid, "QHY5", 4) == 0 && camid[5] == 'I')
+            q5camids.push_back(camid);
     }
+
+    if (q5camids.size() == 0)
+    {
+        wxMessageBox(_("No compatible QHY cameras found"));
+        return true;
+    }
+
+    std::string camid;
+
+    if (q5camids.size() > 1)
+    {
+        wxArrayString names;
+        int n = 1;
+        for (auto it = q5camids.begin(); it != q5camids.end(); ++it, ++n)
+            names.Add(wxString::Format("%d: %s", n, *it));
+
+        int i = wxGetSingleChoiceIndex(_("Select QHY camera"), _("Camera choice"), names);
+        if (i == -1)
+            return true;
+        camid = q5camids[i];
+    }
+    else
+        camid = q5camids[0];
+
+    char *s = new char[camid.length() + 1];
+    memcpy(s, camid.c_str(), camid.length() + 1);
+    m_camhandle = OpenQHYCCD(s);
+    delete[] s;
 
     if (!m_camhandle)
     {
