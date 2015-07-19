@@ -687,14 +687,268 @@ static wxSpinCtrlDouble *NewSpinnerDouble(wxWindow *parent, int width, double va
 CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera)
     : ConfigDialogPane(_("Camera Settings"), pParent)
 {
+    //assert(pCamera);
+
+    //m_pCamera = pCamera;
+
+    //if (m_pCamera->HasSubframes)
+    //{
+    //    m_pUseSubframes = new wxCheckBox(pParent, wxID_ANY,_("Use Subframes"), wxPoint(-1,-1), wxSize(75,-1));
+    //    DoAdd(m_pUseSubframes, _("Check to only download subframes (ROIs) if your camera supports it"));
+    //}
+
+    //int numRows = (int)m_pCamera->HasGainControl + (int)m_pCamera->HasDelayParam + (int)m_pCamera->HasPortNum + 1;
+
+    //wxFlexGridSizer *pCamControls = new wxFlexGridSizer(numRows, 2, 5, 15);
+
+    //int width = StringWidth(_T("0000")) + 30;
+    //// Pixel size always
+    //m_pPixelSize = NewSpinnerDouble(pParent, width, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
+    //    _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
+    //AddTableEntryPair(pParent, pCamControls, _("Pixel size"), m_pPixelSize);
+
+    //// Gain control
+    //if (m_pCamera->HasGainControl)
+    //{
+    //    int width = StringWidth(_T("0000")) + 30;
+    //    m_pCameraGain = NewSpinnerInt(pParent, width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
+    //    AddTableEntryPair(pParent, pCamControls, _("Camera gain"), m_pCameraGain);
+    //}
+
+    //// Delay parameter
+    //if (m_pCamera->HasDelayParam)
+    //{
+    //    int width = StringWidth(_T("0000")) + 30;
+    //    m_pDelay = NewSpinnerInt(pParent, width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
+    //    AddTableEntryPair(pParent, pCamControls, _("Delay"), m_pDelay);
+    //}
+
+    //// Port number
+    //if (m_pCamera->HasPortNum)
+    //{
+    //    wxString port_choices[] = {
+    //        _T("Port 378"), _T("Port 3BC"), _T("Port 278"), _T("COM1"), _T("COM2"), _T("COM3"), _T("COM4"),
+    //        _T("COM5"), _T("COM6"), _T("COM7"), _T("COM8"), _T("COM9"), _T("COM10"), _T("COM11"), _T("COM12"),
+    //        _T("COM13"), _T("COM14"), _T("COM15"), _T("COM16"),
+    //    };
+
+    //    int width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
+    //    m_pPortNum = new wxChoice(pParent, wxID_ANY, wxPoint(-1, -1),
+    //                              wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
+    //    m_pPortNum->SetToolTip(_("Port number for long-exposure control"));
+    //    AddTableEntryPair(pParent, pCamControls, _("LE Port"), m_pPortNum);
+    //}
+
+    //// Watchdog timeout
+    //{
+    //    int width = StringWidth(_T("0000")) + 30;
+    //    m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
+    //    AddTableEntryPair(pParent, pCamControls, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal);
+    //}
+
+    //Add(pCamControls);
+}
+
+#define Ctrl(n) (wxWindow*)CtrlMap[n].panelCtrl
+#define Szr(n) (wxSizer*)CtrlMap[n].panelCtrl
+void CameraConfigDialogPane::LayoutConrols(GuideCamera* pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    if (pCamera->HasSubframes)
+    {
+        this->Add(Ctrl(cbUseSubFrames));
+
+    }
+    //this->Add(Szr(szNoiseReduction));
+    //this->Add(Szr(szAutoExposure));
+    //this->Add(Szr(szCameraTimeout));
+    //this->Add(Szr(szTimeLapse));
+    //this->Add(Szr(szPixelSize));
+    //if (pCamera->HasGainControl)
+    //    this->Add(Szr(szGain));
+    //if (pCamera->HasDelayParam)
+    //    this->Add(Szr(szDelay));
+    //if (pCamera->HasPortNum)
+    //    this->Add(Szr(szPort));
+}
+CameraConfigDialogPane::~CameraConfigDialogPane(void)
+{
+}
+
+void CameraConfigDialogPane::LoadValues(void)
+{
+    //assert(m_pCamera);
+
+    //if (m_pCamera->HasSubframes)
+    //{
+    //    m_pUseSubframes->SetValue(m_pCamera->UseSubframes);
+    //}
+
+    //if (m_pCamera->HasGainControl)
+    //{
+    //    m_pCameraGain->SetValue(m_pCamera->GetCameraGain());
+    //}
+
+    //m_timeoutVal->SetValue(m_pCamera->GetTimeoutMs() / 1000);
+
+    //if (m_pCamera->HasDelayParam)
+    //{
+    //    m_pDelay->SetValue(m_pCamera->ReadDelay);
+    //}
+
+    //if (m_pCamera->HasPortNum)
+    //{
+    //    switch (m_pCamera->Port)
+    //    {
+    //        case 0x3BC:
+    //            m_pPortNum->SetSelection(1);
+    //            break;
+    //        case 0x278:
+    //            m_pPortNum->SetSelection(2);
+    //            break;
+    //        case 1:  // COM1
+    //            m_pPortNum->SetSelection(3);
+    //            break;
+    //        case 2:  // COM2
+    //            m_pPortNum->SetSelection(4);
+    //            break;
+    //        case 3:  // COM3
+    //            m_pPortNum->SetSelection(5);
+    //            break;
+    //        case 4:  // COM4
+    //            m_pPortNum->SetSelection(6);
+    //            break;
+    //        case 5:  // COM5
+    //            m_pPortNum->SetSelection(7);
+    //            break;
+    //        case 6:  // COM6
+    //            m_pPortNum->SetSelection(8);
+    //            break;
+    //        case 7:  // COM7
+    //            m_pPortNum->SetSelection(9);
+    //            break;
+    //        case 8:  // COM8
+    //            m_pPortNum->SetSelection(10);
+    //            break;
+    //        case 9:  // COM9
+    //            m_pPortNum->SetSelection(11);
+    //            break;
+    //        case 10:  // COM10
+    //            m_pPortNum->SetSelection(12);
+    //            break;
+    //        case 11:  // COM11
+    //            m_pPortNum->SetSelection(13);
+    //            break;
+    //        case 12:  // COM12
+    //            m_pPortNum->SetSelection(14);
+    //            break;
+    //        case 13:  // COM13
+    //            m_pPortNum->SetSelection(15);
+    //            break;
+    //        case 14:  // COM14
+    //            m_pPortNum->SetSelection(16);
+    //            break;
+    //        case 15:  // COM15
+    //            m_pPortNum->SetSelection(17);
+    //            break;
+    //        case 16:  // COM16
+    //            m_pPortNum->SetSelection(18);
+    //            break;
+    //        default:
+    //            m_pPortNum->SetSelection(0);
+    //            break;
+    //    }
+
+    //    m_pPortNum->Enable(!pFrame->CaptureActive);
+    //}
+
+    //m_pPixelSize->SetValue(m_pCamera->GetCameraPixelSize());
+    //m_pPixelSize->Enable(!pFrame->CaptureActive);
+}
+
+void CameraConfigDialogPane::UnloadValues(void)
+{
+    //assert(m_pCamera);
+
+    //if (m_pCamera->HasSubframes)
+    //{
+    //    m_pCamera->UseSubframes = m_pUseSubframes->GetValue();
+    //    pConfig->Profile.SetBoolean("/camera/UseSubframes", m_pCamera->UseSubframes);
+    //}
+
+    //if (m_pCamera->HasGainControl)
+    //{
+    //    m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
+    //}
+
+    //m_pCamera->SetTimeoutMs(m_timeoutVal->GetValue() * 1000);
+
+    //if (m_pCamera->HasDelayParam)
+    //{
+    //    m_pCamera->ReadDelay = m_pDelay->GetValue();
+    //    pConfig->Profile.SetInt("/camera/ReadDelay", m_pCamera->ReadDelay);
+    //}
+
+    //if (m_pCamera->HasPortNum)
+    //{
+    //    switch (m_pPortNum->GetSelection())
+    //    {
+    //        case 0:
+    //            m_pCamera->Port = 0x378;
+    //            break;
+    //        case 1:
+    //            m_pCamera->Port = 0x3BC;
+    //            break;
+    //        case 2:
+    //            m_pCamera->Port = 0x278;
+    //            break;
+    //        case 3:
+    //            m_pCamera->Port = 1;
+    //            break;
+    //        case 4:
+    //            m_pCamera->Port = 2;
+    //            break;
+    //        case 5:
+    //            m_pCamera->Port = 3;
+    //            break;
+    //        case 6:
+    //            m_pCamera->Port = 4;
+    //            break;
+    //    }
+    //}
+
+    //double pixel_size;
+    //pixel_size = m_pPixelSize->GetValue();
+    //m_pCamera->SetCameraPixelSize(pixel_size);
+}
+
+double CameraConfigDialogPane::GetPixelSize(void)
+{
+    //return m_pPixelSize->GetValue();
+    return 0;
+}
+
+void CameraConfigDialogPane::SetPixelSize(double val)
+{
+    //m_pPixelSize->SetValue(val);
+}
+
+CameraConfigDialogCtrlSet* GuideCamera::GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    return new CameraConfigDialogCtrlSet(pParent, pCamera, pAdvancedDialog, CtrlMap);
+}
+
+CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) : 
+ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
+{
+    wxWindow *parent;
     assert(pCamera);
 
     m_pCamera = pCamera;
 
     if (m_pCamera->HasSubframes)
     {
-        m_pUseSubframes = new wxCheckBox(pParent, wxID_ANY,_("Use Subframes"), wxPoint(-1,-1), wxSize(75,-1));
-        DoAdd(m_pUseSubframes, _("Check to only download subframes (ROIs) if your camera supports it"));
+        m_pUseSubframes = new wxCheckBox(GetParentWindow(cbUseSubFrames), wxID_ANY, _("Use Subframes"));
+        AddCtrl(CtrlMap, cbUseSubFrames, m_pUseSubframes, _("Check to only download subframes (ROIs) if your camera supports it"));
     }
 
     int numRows = (int)m_pCamera->HasGainControl + (int)m_pCamera->HasDelayParam + (int)m_pCamera->HasPortNum + 1;
@@ -703,24 +957,25 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
 
     int width = StringWidth(_T("0000")) + 30;
     // Pixel size always
-    m_pPixelSize = NewSpinnerDouble(pParent, width, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
+    m_pPixelSize = NewSpinnerDouble(GetParentWindow(szPixelSize), width, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
         _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
-    AddTableEntryPair(pParent, pCamControls, _("Pixel size"), m_pPixelSize);
+    AddLabeledCtrl(CtrlMap, szPixelSize, _("Pixel size"), m_pPixelSize, _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
 
     // Gain control
     if (m_pCamera->HasGainControl)
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_pCameraGain = NewSpinnerInt(pParent, width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
-        AddTableEntryPair(pParent, pCamControls, _("Camera gain"), m_pCameraGain);
+        m_pCameraGain = NewSpinnerInt(GetParentWindow(szGain), width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
+        AddLabeledCtrl(CtrlMap, szGain, _("Camera gain"), m_pCameraGain, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
     }
 
     // Delay parameter
     if (m_pCamera->HasDelayParam)
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_pDelay = NewSpinnerInt(pParent, width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
-        AddTableEntryPair(pParent, pCamControls, _("Delay"), m_pDelay);
+        parent = GetParentWindow(szDelay);
+        m_pDelay = NewSpinnerInt(GetParentWindow(szDelay), width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
+        AddLabeledCtrl(CtrlMap, szDelay, _("Delay"), m_pDelay, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
     }
 
     // Port number
@@ -733,27 +988,26 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
         };
 
         int width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
-        m_pPortNum = new wxChoice(pParent, wxID_ANY, wxPoint(-1, -1),
-                                  wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
+        m_pPortNum = new wxChoice(GetParentWindow(szPort), wxID_ANY, wxPoint(-1, -1),
+            wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
         m_pPortNum->SetToolTip(_("Port number for long-exposure control"));
-        AddTableEntryPair(pParent, pCamControls, _("LE Port"), m_pPortNum);
+        AddLabeledCtrl(CtrlMap, szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
     }
 
     // Watchdog timeout
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_timeoutVal = NewSpinnerInt(pParent, width, 5, 5, 9999, 1, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
-        AddTableEntryPair(pParent, pCamControls, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal);
+        m_timeoutVal = NewSpinnerInt(GetParentWindow(szCameraTimeout), width, 5, 5, 9999, 1, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
+        AddLabeledCtrl(CtrlMap, szCameraTimeout, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
     }
 
-    Add(pCamControls);
 }
 
-CameraConfigDialogPane::~CameraConfigDialogPane(void)
+CameraConfigDialogCtrlSet::~CameraConfigDialogCtrlSet()
 {
 }
 
-void CameraConfigDialogPane::LoadValues(void)
+void CameraConfigDialogCtrlSet::LoadValues()
 {
     assert(m_pCamera);
 
@@ -778,63 +1032,63 @@ void CameraConfigDialogPane::LoadValues(void)
     {
         switch (m_pCamera->Port)
         {
-            case 0x3BC:
-                m_pPortNum->SetSelection(1);
-                break;
-            case 0x278:
-                m_pPortNum->SetSelection(2);
-                break;
-            case 1:  // COM1
-                m_pPortNum->SetSelection(3);
-                break;
-            case 2:  // COM2
-                m_pPortNum->SetSelection(4);
-                break;
-            case 3:  // COM3
-                m_pPortNum->SetSelection(5);
-                break;
-            case 4:  // COM4
-                m_pPortNum->SetSelection(6);
-                break;
-            case 5:  // COM5
-                m_pPortNum->SetSelection(7);
-                break;
-            case 6:  // COM6
-                m_pPortNum->SetSelection(8);
-                break;
-            case 7:  // COM7
-                m_pPortNum->SetSelection(9);
-                break;
-            case 8:  // COM8
-                m_pPortNum->SetSelection(10);
-                break;
-            case 9:  // COM9
-                m_pPortNum->SetSelection(11);
-                break;
-            case 10:  // COM10
-                m_pPortNum->SetSelection(12);
-                break;
-            case 11:  // COM11
-                m_pPortNum->SetSelection(13);
-                break;
-            case 12:  // COM12
-                m_pPortNum->SetSelection(14);
-                break;
-            case 13:  // COM13
-                m_pPortNum->SetSelection(15);
-                break;
-            case 14:  // COM14
-                m_pPortNum->SetSelection(16);
-                break;
-            case 15:  // COM15
-                m_pPortNum->SetSelection(17);
-                break;
-            case 16:  // COM16
-                m_pPortNum->SetSelection(18);
-                break;
-            default:
-                m_pPortNum->SetSelection(0);
-                break;
+        case 0x3BC:
+            m_pPortNum->SetSelection(1);
+            break;
+        case 0x278:
+            m_pPortNum->SetSelection(2);
+            break;
+        case 1:  // COM1
+            m_pPortNum->SetSelection(3);
+            break;
+        case 2:  // COM2
+            m_pPortNum->SetSelection(4);
+            break;
+        case 3:  // COM3
+            m_pPortNum->SetSelection(5);
+            break;
+        case 4:  // COM4
+            m_pPortNum->SetSelection(6);
+            break;
+        case 5:  // COM5
+            m_pPortNum->SetSelection(7);
+            break;
+        case 6:  // COM6
+            m_pPortNum->SetSelection(8);
+            break;
+        case 7:  // COM7
+            m_pPortNum->SetSelection(9);
+            break;
+        case 8:  // COM8
+            m_pPortNum->SetSelection(10);
+            break;
+        case 9:  // COM9
+            m_pPortNum->SetSelection(11);
+            break;
+        case 10:  // COM10
+            m_pPortNum->SetSelection(12);
+            break;
+        case 11:  // COM11
+            m_pPortNum->SetSelection(13);
+            break;
+        case 12:  // COM12
+            m_pPortNum->SetSelection(14);
+            break;
+        case 13:  // COM13
+            m_pPortNum->SetSelection(15);
+            break;
+        case 14:  // COM14
+            m_pPortNum->SetSelection(16);
+            break;
+        case 15:  // COM15
+            m_pPortNum->SetSelection(17);
+            break;
+        case 16:  // COM16
+            m_pPortNum->SetSelection(18);
+            break;
+        default:
+            m_pPortNum->SetSelection(0);
+            break;
         }
 
         m_pPortNum->Enable(!pFrame->CaptureActive);
@@ -844,7 +1098,7 @@ void CameraConfigDialogPane::LoadValues(void)
     m_pPixelSize->Enable(!pFrame->CaptureActive);
 }
 
-void CameraConfigDialogPane::UnloadValues(void)
+void CameraConfigDialogCtrlSet::UnloadValues()
 {
     assert(m_pCamera);
 
@@ -871,27 +1125,27 @@ void CameraConfigDialogPane::UnloadValues(void)
     {
         switch (m_pPortNum->GetSelection())
         {
-            case 0:
-                m_pCamera->Port = 0x378;
-                break;
-            case 1:
-                m_pCamera->Port = 0x3BC;
-                break;
-            case 2:
-                m_pCamera->Port = 0x278;
-                break;
-            case 3:
-                m_pCamera->Port = 1;
-                break;
-            case 4:
-                m_pCamera->Port = 2;
-                break;
-            case 5:
-                m_pCamera->Port = 3;
-                break;
-            case 6:
-                m_pCamera->Port = 4;
-                break;
+        case 0:
+            m_pCamera->Port = 0x378;
+            break;
+        case 1:
+            m_pCamera->Port = 0x3BC;
+            break;
+        case 2:
+            m_pCamera->Port = 0x278;
+            break;
+        case 3:
+            m_pCamera->Port = 1;
+            break;
+        case 4:
+            m_pCamera->Port = 2;
+            break;
+        case 5:
+            m_pCamera->Port = 3;
+            break;
+        case 6:
+            m_pCamera->Port = 4;
+            break;
         }
     }
 
@@ -900,12 +1154,11 @@ void CameraConfigDialogPane::UnloadValues(void)
     m_pCamera->SetCameraPixelSize(pixel_size);
 }
 
-double CameraConfigDialogPane::GetPixelSize(void)
+double CameraConfigDialogCtrlSet::GetPixelSize()
 {
     return m_pPixelSize->GetValue();
 }
-
-void CameraConfigDialogPane::SetPixelSize(double val)
+void CameraConfigDialogCtrlSet::SetPixelSize(double val)
 {
     m_pPixelSize->SetValue(val);
 }

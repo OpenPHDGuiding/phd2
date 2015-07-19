@@ -64,6 +64,27 @@ public:
     CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
     virtual ~CameraConfigDialogPane(void);
 
+    void LayoutConrols(GuideCamera* pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+
+    double GetPixelSize(void);
+    void SetPixelSize(double val);
+};
+
+class CameraConfigDialogCtrlSet : ConfigDialogCtrlSet
+{
+    GuideCamera *m_pCamera;
+    wxCheckBox *m_pUseSubframes;
+    wxSpinCtrl *m_pCameraGain;
+    wxSpinCtrl *m_timeoutVal;
+    wxChoice   *m_pPortNum;
+    wxSpinCtrl *m_pDelay;
+    wxSpinCtrlDouble *m_pPixelSize;
+
+public:
+    CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~CameraConfigDialogCtrlSet();
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
 
@@ -84,6 +105,7 @@ enum CaptureOptionBits
 class GuideCamera :  public wxMessageBoxProxy, public OnboardST4
 {
     friend class CameraConfigDialogPane;
+    friend class CameraConfigDialogCtrlSet;
 
 protected:
     bool            m_hasGuideOutput;
@@ -132,6 +154,7 @@ public:
     virtual bool    ST4PulseGuideScope(int direction, int duration);
 
     CameraConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    CameraConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
 
     virtual void    ShowPropertyDialog() { return; }
 

@@ -37,6 +37,7 @@
 
 class MyFrame;
 class MyFrameConfigDialogPane;
+class MyFrameConfigDialogCtrlSet;
 class CameraConfigDialogPane;
 
 enum TAB_PAGES {
@@ -46,29 +47,56 @@ enum TAB_PAGES {
     MOUNT_PAGE,
     AO_PAGE,
     ROTATOR_PAGE,
+    UNASSIGNED_PAGE
+};
+// Segmented by the tab page location seen in the UI
+enum BRAIN_CTRL_IDS
+{
+    UNASSIGNED,
+    cbResetConfig,
+    cbDontAsk,
+    szImageLoggingFormat,
+    szLanguage,
+    szLogFileInfo,
+    szDitherParams,
+    GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
+    cbUseSubFrames,
+    szNoiseReduction,
+    szAutoExposure,
+    szCameraTimeout,
+    szTimeLapse,
+    szPixelSize,
+    szGain,
+    szDelay,
+    szPort,
+    CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
+    szFocalLength,
+    cbAutoRestoreCal
+
 };
 
 struct BrainCtrlInfo
 {
-    wxControl panelCtrl;
+    BRAIN_CTRL_IDS ctrlId;
+    wxObject* panelCtrl;
     TAB_PAGES ctrlHost;
     bool isPositioned;           // debug only
-};
 
-enum BRAIN_CTRL_IDS
-{
-    cbResetConfig,
-    cbDontAsk,
-    szImageLoggingFormat,
-    cbDitherRAOnly,
-    szDitherScale,
-    szNoiseReduction,
-    szTimeLapse,
-    szFocalLength,
-    szLanguage,
-    szLogFileInfo,
-    cbAutoRestoreCal,
-    szAutoExposure
+    BrainCtrlInfo::BrainCtrlInfo()
+    {
+        panelCtrl = NULL;
+        ctrlId = UNASSIGNED;
+        ctrlHost = UNASSIGNED_PAGE;
+        isPositioned = false;
+    }
+    BrainCtrlInfo::BrainCtrlInfo(BRAIN_CTRL_IDS id, wxObject* ctrl)
+    {
+        panelCtrl = ctrl;
+        ctrlId = id;
+        ctrlHost = UNASSIGNED_PAGE;
+        isPositioned = false;
+    }
+
 };
 
 class AdvancedDialog : public wxDialog
@@ -82,7 +110,12 @@ class AdvancedDialog : public wxDialog
     ConfigDialogPane *m_pMountPane;
     ConfigDialogPane *m_pAoPane;
     ConfigDialogPane *m_rotatorPane;
+
     std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> m_brainCtrls;
+    MyFrameConfigDialogCtrlSet *m_pGlobalCtrlSet;
+    CameraConfigDialogCtrlSet *m_pCameraCtrlSet;
+    wxPanel *m_pGlobalSettingsPanel;
+    wxPanel *m_pCameraSettingsPanel;
 
 public:
     AdvancedDialog(MyFrame *pFrame);
@@ -103,6 +136,9 @@ public:
     void SetFocalLength(int val);
     double GetPixelSize(void);
     void SetPixelSize(double val);
+
+    wxWindow* GetTabLocation(BRAIN_CTRL_IDS id);
+
 
 private:
     void AddCameraPage(void);

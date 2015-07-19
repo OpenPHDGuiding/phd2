@@ -85,14 +85,18 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     // build tabs -- each needs the tab, and a sizer.  Once built
     // it needs to be populated
 
-    // Build the global tab pane
-    wxPanel *pGlobalSettingsPanel = new wxPanel(m_pNotebook);
+    // Build all the panels first
+    m_pGlobalSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pGlobalTabSizer = new wxBoxSizer(wxVERTICAL);
-    pGlobalSettingsPanel->SetSizer(pGlobalTabSizer);
-    m_pNotebook->AddPage(pGlobalSettingsPanel, _("Global"), true);
+    m_pGlobalSettingsPanel->SetSizer(pGlobalTabSizer);
+    m_pNotebook->AddPage(m_pGlobalSettingsPanel, _("Global"), true);
+
 
     // and populate it
-    m_pGlobalPane = pFrame->GetConfigDialogPane(pGlobalSettingsPanel);
+    m_pGlobalPane = pFrame->GetConfigDialogPane(m_pGlobalSettingsPanel);
+    m_pCameraSettingsPanel = new wxPanel(m_pNotebook);
+    m_pGlobalCtrlSet = pFrame->GetConfigDlgCtrlSet(pFrame, this, m_brainCtrls);
+    m_pGlobalPane->LayoutControls(m_brainCtrls);
     pGlobalTabSizer->Add(m_pGlobalPane, sizer_flags);
 
     // Build the guider tab
@@ -127,11 +131,22 @@ AdvancedDialog::~AdvancedDialog()
 {
 }
 
+wxWindow* AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
+{
+    if (id < GLOBAL_TAB_BOUNDARY)
+        return (wxWindow*)m_pGlobalSettingsPanel;
+    else
+    if (id < CAMERA_TAB_BOUNDARY)
+        return (wxWindow*)m_pGlobalSettingsPanel;           // FIX this
+    else
+        return NULL;              // FIX THIS
+}
+
 void AdvancedDialog::AddCameraPage(void)
 {
     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
-    wxPanel *pCameraSettingsPanel = new wxPanel(m_pNotebook);
+    wxPanel *pCameraSettingsPanel = m_pCameraSettingsPanel;      //new wxPanel(m_pNotebook);
     wxBoxSizer *pCameraTabSizer = new wxBoxSizer(wxVERTICAL);
     pCameraSettingsPanel->SetSizer(pCameraTabSizer);
     m_pNotebook->InsertPage(CAMERA_PAGE, pCameraSettingsPanel, _("Camera"));
@@ -140,6 +155,9 @@ void AdvancedDialog::AddCameraPage(void)
     if (pCamera)
     {
         m_pCameraPane = pCamera->GetConfigDialogPane(pCameraSettingsPanel);
+        m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(pCameraSettingsPanel, pCamera, this, m_brainCtrls);
+        m_pCameraPane->LayoutConrols(pCamera, m_brainCtrls);
+        
         if (m_pCameraPane)
         {
             pCameraTabSizer->Add(m_pCameraPane, sizer_flags);
@@ -147,11 +165,17 @@ void AdvancedDialog::AddCameraPage(void)
     }
     else
     {
-        m_pCameraPane = NULL;
+        //m_pCameraPane = NULL;
+        //wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pCameraSettingsPanel, wxID_ANY, _("Camera Settings")), wxVERTICAL);
+        //wxStaticText *pText = new wxStaticText(pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"),wxPoint(-1,-1),wxSize(-1,-1));
+        //pBox->Add(pText);
+        //pCameraTabSizer->Add(pBox, sizer_flags);
+        m_pCameraPane = pCamera->GetConfigDialogPane(pCameraSettingsPanel);
         wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pCameraSettingsPanel, wxID_ANY, _("Camera Settings")), wxVERTICAL);
         wxStaticText *pText = new wxStaticText(pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"),wxPoint(-1,-1),wxSize(-1,-1));
         pBox->Add(pText);
-        pCameraTabSizer->Add(pBox, sizer_flags);
+        m_pCameraPane->Add(pBox);
+        pCameraTabSizer->Add(m_pCameraPane, sizer_flags);
     }
 }
 
@@ -248,6 +272,7 @@ void AdvancedDialog::UpdateCameraPage(void)
 {
     AddCameraPage();
     m_pNotebook->DeletePage(CAMERA_PAGE + 1);
+    wxWindow* crud = m_pNotebook->GetPage(CAMERA_PAGE);
     m_pNotebook->GetPage(CAMERA_PAGE)->Layout();
     GetSizer()->Fit(this);
 }
@@ -298,6 +323,12 @@ void AdvancedDialog::LoadValues(void)
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {
         ConfigDialogPane *const pane = panes[i];
+        if (i == 0)
+            m_pGlobalCtrlSet->LoadValues();
+        else
+        if (i == 2)
+            m_pCameraCtrlSet->LoadValues();
+        else
         if (pane)
             pane->LoadValues();
     }
@@ -314,6 +345,12 @@ void AdvancedDialog::UnloadValues(void)
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {
         ConfigDialogPane *const pane = panes[i];
+        if (i == 0)
+            m_pGlobalCtrlSet->UnloadValues();
+        else
+        if (i == 2)
+            m_pCameraCtrlSet->UnloadValues();
+        else
         if (pane)
             pane->UnloadValues();
     }
