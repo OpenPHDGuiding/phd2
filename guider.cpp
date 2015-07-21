@@ -120,6 +120,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
     m_lockPosIsSticky = false;
     m_forceFullFrame = false;
     m_measurementMode = false;
+    m_searchRegion = 0;
     m_pCurrentImage = new usImage(); // so we always have one
 
     SetOverlayMode(DefaultOverlayMode);

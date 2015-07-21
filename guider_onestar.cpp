@@ -224,11 +224,6 @@ bool GuiderOneStar::SetMassChangeThreshold(double massChangeThreshold)
     return bError;
 }
 
-int GuiderOneStar::GetSearchRegion(void)
-{
-    return m_searchRegion;
-}
-
 bool GuiderOneStar::SetSearchRegion(int searchRegion)
 {
     bool bError = false;
