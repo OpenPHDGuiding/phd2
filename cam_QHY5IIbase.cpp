@@ -47,6 +47,12 @@ static bool QHYSDKInit()
 
     int ret;
 
+    if ((ret = InitQHYCCDResource()) != 0)
+    {
+        Debug.Write(wxString::Format("InitQHYCCDResource failed: %d\n", ret));
+        return true;
+    }
+
 #if defined (__APPLE__)
     wxFileName exeFile(wxStandardPaths::Get().GetExecutablePath());
     wxString exePath(exeFile.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR));
@@ -64,13 +70,10 @@ static bool QHYSDKInit()
         return true;
     }
     delete[] destImgPath;
-#endif
 
-    if ((ret = InitQHYCCDResource()) != 0)
-    {
-        Debug.Write(wxString::Format("InitQHYCCDResource failed: %d\n", ret));
-        return true;
-    }
+    // lzr from QHY says that it is important to wait 5s for firmware download to complete
+    WorkerThread::MilliSleep(5000);
+#endif
 
     s_qhySdkInitDone = true;
     return false;
@@ -174,9 +177,12 @@ bool Camera_QHY5IIBase::Connect()
     {
         CloseQHYCCD(m_camhandle);
         m_camhandle = 0;
-        wxMessageBox(_("Failed to connect to camera"));
+        wxMessageBox(_("Failed to get camera chip info"));
         return true;
     }
+
+    double color = GetQHYCCDParam(m_camhandle, CAM_COLOR);
+    Debug.Write(wxString::Format("QHY: cam reports color = %.1f\n", color));
 
     ret = SetQHYCCDBinMode(m_camhandle, 1, 1);
     if (ret != QHYCCD_SUCCESS)
