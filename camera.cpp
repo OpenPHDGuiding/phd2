@@ -751,24 +751,25 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
 
 #define Ctrl(n) (wxWindow*)CtrlMap[n].panelCtrl
 #define Szr(n) (wxSizer*)CtrlMap[n].panelCtrl
-void CameraConfigDialogPane::LayoutConrols(GuideCamera* pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void CameraConfigDialogPane::LayoutControls(GuideCamera* pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    if (pCamera->HasSubframes)
-    {
-        this->Add(Ctrl(cbUseSubFrames));
 
+    this->Add(Szr(szNoiseReduction));
+    this->Add(Szr(szAutoExposure));
+    this->Add(Szr(szCameraTimeout));
+    this->Add(Szr(szTimeLapse));
+    this->Add(Szr(szPixelSize));
+    if (pCamera)
+    {
+        if (pCamera->HasSubframes)
+            this->Add(Ctrl(cbUseSubFrames));
+        if (pCamera->HasGainControl)
+            this->Add(Szr(szGain));
+        if (pCamera->HasDelayParam)
+            this->Add(Szr(szDelay));
+        if (pCamera->HasPortNum)
+            this->Add(Szr(szPort));
     }
-    //this->Add(Szr(szNoiseReduction));
-    //this->Add(Szr(szAutoExposure));
-    //this->Add(Szr(szCameraTimeout));
-    //this->Add(Szr(szTimeLapse));
-    //this->Add(Szr(szPixelSize));
-    //if (pCamera->HasGainControl)
-    //    this->Add(Szr(szGain));
-    //if (pCamera->HasDelayParam)
-    //    this->Add(Szr(szDelay));
-    //if (pCamera->HasPortNum)
-    //    this->Add(Szr(szPort));
 }
 CameraConfigDialogPane::~CameraConfigDialogPane(void)
 {

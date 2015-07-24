@@ -91,13 +91,26 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     m_pGlobalSettingsPanel->SetSizer(pGlobalTabSizer);
     m_pNotebook->AddPage(m_pGlobalSettingsPanel, _("Global"), true);
 
-
-    // and populate it
-    m_pGlobalPane = pFrame->GetConfigDialogPane(m_pGlobalSettingsPanel);
     m_pCameraSettingsPanel = new wxPanel(m_pNotebook);
+    wxBoxSizer *pCameraTabSizer = new wxBoxSizer(wxVERTICAL);
+    m_pCameraSettingsPanel->SetSizer(pCameraTabSizer);
+    m_pNotebook->AddPage(m_pCameraSettingsPanel, _("Camera"), false);
+
+    // Build the ConfigControlSets
     m_pGlobalCtrlSet = pFrame->GetConfigDlgCtrlSet(pFrame, this, m_brainCtrls);
+    if (pCamera)
+        m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
+    else
+        m_pCameraCtrlSet = NULL;
+
+    // Populate global frame
+    m_pGlobalPane = pFrame->GetConfigDialogPane(m_pGlobalSettingsPanel);
     m_pGlobalPane->LayoutControls(m_brainCtrls);
     pGlobalTabSizer->Add(m_pGlobalPane, sizer_flags);
+
+    // Populate the camera frame
+    AddCameraPage();
+    pCameraTabSizer->Add(m_pCameraPane, sizer_flags);
 
     // Build the guider tab
     wxPanel *pGuiderSettingsPanel = new wxPanel(m_pNotebook);
@@ -110,7 +123,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     pGuidingTabSizer->Add(m_pGuiderPane, sizer_flags);
 
     // Build the camera tab
-    AddCameraPage();
+
 
     // Build Mount tab
     AddMountPage();
@@ -137,7 +150,7 @@ wxWindow* AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
         return (wxWindow*)m_pGlobalSettingsPanel;
     else
     if (id < CAMERA_TAB_BOUNDARY)
-        return (wxWindow*)m_pGlobalSettingsPanel;           // FIX this
+        return (wxWindow*)m_pCameraSettingsPanel;
     else
         return NULL;              // FIX THIS
 }
@@ -146,22 +159,10 @@ void AdvancedDialog::AddCameraPage(void)
 {
     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
-    wxPanel *pCameraSettingsPanel = m_pCameraSettingsPanel;      //new wxPanel(m_pNotebook);
-    wxBoxSizer *pCameraTabSizer = new wxBoxSizer(wxVERTICAL);
-    pCameraSettingsPanel->SetSizer(pCameraTabSizer);
-    m_pNotebook->InsertPage(CAMERA_PAGE, pCameraSettingsPanel, _("Camera"));
-
-    // and populate it
+    m_pCameraPane = pCamera->GetConfigDialogPane(m_pCameraSettingsPanel);
     if (pCamera)
     {
-        m_pCameraPane = pCamera->GetConfigDialogPane(pCameraSettingsPanel);
-        m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(pCameraSettingsPanel, pCamera, this, m_brainCtrls);
-        m_pCameraPane->LayoutConrols(pCamera, m_brainCtrls);
-        
-        if (m_pCameraPane)
-        {
-            pCameraTabSizer->Add(m_pCameraPane, sizer_flags);
-        }
+        m_pCameraPane->LayoutControls(pCamera, m_brainCtrls);
     }
     else
     {
@@ -170,12 +171,8 @@ void AdvancedDialog::AddCameraPage(void)
         //wxStaticText *pText = new wxStaticText(pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"),wxPoint(-1,-1),wxSize(-1,-1));
         //pBox->Add(pText);
         //pCameraTabSizer->Add(pBox, sizer_flags);
-        m_pCameraPane = pCamera->GetConfigDialogPane(pCameraSettingsPanel);
-        wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pCameraSettingsPanel, wxID_ANY, _("Camera Settings")), wxVERTICAL);
-        wxStaticText *pText = new wxStaticText(pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"),wxPoint(-1,-1),wxSize(-1,-1));
-        pBox->Add(pText);
-        m_pCameraPane->Add(pBox);
-        pCameraTabSizer->Add(m_pCameraPane, sizer_flags);
+        wxStaticText *pText = new wxStaticText(m_pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"),wxPoint(-1,-1),wxSize(-1,-1));
+        m_pCameraPane->Add(pText);
     }
 }
 
@@ -270,11 +267,25 @@ void AdvancedDialog::AddRotatorPage(void)
 
 void AdvancedDialog::UpdateCameraPage(void)
 {
-    AddCameraPage();
-    m_pNotebook->DeletePage(CAMERA_PAGE + 1);
-    wxWindow* crud = m_pNotebook->GetPage(CAMERA_PAGE);
-    m_pNotebook->GetPage(CAMERA_PAGE)->Layout();
-    GetSizer()->Fit(this);
+    //AddCameraPage();
+    //m_pNotebook->DeletePage(CAMERA_PAGE + 1);
+    //wxWindow* crud = m_pNotebook->GetPage(CAMERA_PAGE);
+    //m_pNotebook->GetPage(CAMERA_PAGE)->Layout();
+    //GetSizer()->Fit(this);
+    m_pCameraPane->DeleteWindows();
+    delete m_pCameraCtrlSet;
+    if (pCamera)
+    {
+        m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
+        m_pCameraPane->LayoutControls(pCamera, m_brainCtrls);
+        GetSizer()->Fit(this);
+    }
+    else
+    {
+        m_pCameraCtrlSet = NULL;
+        wxStaticText *pText = new wxStaticText(m_pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"), wxPoint(-1, -1), wxSize(-1, -1));
+        m_pCameraPane->Add(pText);
+    }
 }
 
 void AdvancedDialog::UpdateMountPage(void)
@@ -326,7 +337,7 @@ void AdvancedDialog::LoadValues(void)
         if (i == 0)
             m_pGlobalCtrlSet->LoadValues();
         else
-        if (i == 2)
+        if (i == 2 && m_pCameraCtrlSet)
             m_pCameraCtrlSet->LoadValues();
         else
         if (pane)
@@ -348,7 +359,7 @@ void AdvancedDialog::UnloadValues(void)
         if (i == 0)
             m_pGlobalCtrlSet->UnloadValues();
         else
-        if (i == 2)
+        if (i == 2 && m_pCameraCtrlSet)
             m_pCameraCtrlSet->UnloadValues();
         else
         if (pane)
