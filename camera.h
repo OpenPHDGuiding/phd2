@@ -52,13 +52,6 @@ class GuideCamera;
 
 class CameraConfigDialogPane : public ConfigDialogPane
 {
-    GuideCamera *m_pCamera;
-    wxCheckBox *m_pUseSubframes;
-    wxSpinCtrl *m_pCameraGain;
-    wxSpinCtrl *m_timeoutVal;
-    wxChoice   *m_pPortNum;
-    wxSpinCtrl *m_pDelay;
-    wxSpinCtrlDouble *m_pPixelSize;
 
 public:
     CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
@@ -68,8 +61,6 @@ public:
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
 
-    double GetPixelSize(void);
-    void SetPixelSize(double val);
 };
 
 class CameraConfigDialogCtrlSet : ConfigDialogCtrlSet

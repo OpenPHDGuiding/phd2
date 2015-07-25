@@ -101,6 +101,7 @@ struct BrainCtrlInfo
 
 class AdvancedDialog : public wxDialog
 {
+    MyFrame *m_pFrame;
     wxBookCtrlBase *m_pNotebook;
     wxWindow *m_aoPage;
     wxWindow *m_rotatorPage;
@@ -145,6 +146,7 @@ private:
     void AddMountPage(void);
     void AddAoPage(void);
     void AddRotatorPage(void);
+    void RebuildPanels(void);
 };
 
 #endif // ADVANCED_DIALOG_H_INCLUDED

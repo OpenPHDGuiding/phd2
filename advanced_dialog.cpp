@@ -76,7 +76,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
 #else
     m_pNotebook = new wxNotebook(this, wxID_ANY);
 #endif
-
+    m_pFrame = pFrame;      // We get called before global var is initialized
     m_aoPage = 0;
     m_rotatorPage = 0;
 
@@ -122,9 +122,6 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(pGuiderSettingsPanel);
     pGuidingTabSizer->Add(m_pGuiderPane, sizer_flags);
 
-    // Build the camera tab
-
-
     // Build Mount tab
     AddMountPage();
 
@@ -144,6 +141,29 @@ AdvancedDialog::~AdvancedDialog()
 {
 }
 
+void AdvancedDialog::RebuildPanels(void)
+{
+    if (m_pGlobalCtrlSet)
+        delete m_pGlobalCtrlSet;
+    if (m_pCameraCtrlSet)
+        delete m_pCameraCtrlSet;
+    m_pGlobalPane->Clear(true);
+    m_pCameraPane->Clear(true);
+    m_brainCtrls.empty();
+
+    m_pGlobalCtrlSet = m_pFrame->GetConfigDlgCtrlSet(m_pFrame, this, m_brainCtrls);
+    if (pCamera)
+        m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
+    else
+        m_pCameraCtrlSet = NULL;
+
+    m_pGlobalPane->LayoutControls(m_brainCtrls);
+    m_pGlobalPane->Layout();
+    m_pCameraPane->LayoutControls(pCamera, m_brainCtrls);
+    m_pCameraPane->Layout();
+    GetSizer()->Fit(this);
+}
+
 wxWindow* AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
 {
     if (id < GLOBAL_TAB_BOUNDARY)
@@ -160,20 +180,8 @@ void AdvancedDialog::AddCameraPage(void)
     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
     m_pCameraPane = pCamera->GetConfigDialogPane(m_pCameraSettingsPanel);
-    if (pCamera)
-    {
-        m_pCameraPane->LayoutControls(pCamera, m_brainCtrls);
-    }
-    else
-    {
-        //m_pCameraPane = NULL;
-        //wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(pCameraSettingsPanel, wxID_ANY, _("Camera Settings")), wxVERTICAL);
-        //wxStaticText *pText = new wxStaticText(pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"),wxPoint(-1,-1),wxSize(-1,-1));
-        //pBox->Add(pText);
-        //pCameraTabSizer->Add(pBox, sizer_flags);
-        wxStaticText *pText = new wxStaticText(m_pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"),wxPoint(-1,-1),wxSize(-1,-1));
-        m_pCameraPane->Add(pText);
-    }
+    // Even if pCamera is null, the pane hosts other controls
+    m_pCameraPane->LayoutControls(pCamera, m_brainCtrls);
 }
 
 void AdvancedDialog::AddMountPage(void)
@@ -267,25 +275,21 @@ void AdvancedDialog::AddRotatorPage(void)
 
 void AdvancedDialog::UpdateCameraPage(void)
 {
-    //AddCameraPage();
-    //m_pNotebook->DeletePage(CAMERA_PAGE + 1);
-    //wxWindow* crud = m_pNotebook->GetPage(CAMERA_PAGE);
-    //m_pNotebook->GetPage(CAMERA_PAGE)->Layout();
-    //GetSizer()->Fit(this);
-    m_pCameraPane->DeleteWindows();
-    delete m_pCameraCtrlSet;
-    if (pCamera)
-    {
-        m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
-        m_pCameraPane->LayoutControls(pCamera, m_brainCtrls);
-        GetSizer()->Fit(this);
-    }
-    else
-    {
-        m_pCameraCtrlSet = NULL;
-        wxStaticText *pText = new wxStaticText(m_pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"), wxPoint(-1, -1), wxSize(-1, -1));
-        m_pCameraPane->Add(pText);
-    }
+    RebuildPanels();
+    //m_pCameraPane->DeleteWindows();
+    //delete m_pCameraCtrlSet;
+    //if (pCamera)
+    //{
+    //    m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
+    //    m_pCameraPane->LayoutControls(pCamera, m_brainCtrls);
+    //    GetSizer()->Fit(this);
+    //}
+    //else
+    //{
+    //    m_pCameraCtrlSet = NULL;
+    //    wxStaticText *pText = new wxStaticText(m_pCameraSettingsPanel, wxID_ANY, _("No Camera Selected"), wxPoint(-1, -1), wxSize(-1, -1));
+    //    m_pCameraPane->Add(pText);
+    //}
 }
 
 void AdvancedDialog::UpdateMountPage(void)
@@ -398,11 +402,11 @@ void AdvancedDialog::SetFocalLength(int val)
 
 double AdvancedDialog::GetPixelSize(void)
 {
-    return m_pCameraPane ? m_pCameraPane->GetPixelSize() : 0.0;
+    return m_pCameraCtrlSet ? m_pCameraCtrlSet->GetPixelSize() : 0.0;
 }
 
 void AdvancedDialog::SetPixelSize(double val)
 {
-    if (m_pCameraPane)
-        m_pCameraPane->SetPixelSize(val);
+    if (m_pCameraCtrlSet)
+        m_pCameraCtrlSet->SetPixelSize(val);
 }
