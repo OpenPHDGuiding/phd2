@@ -2316,14 +2316,18 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 void MyFrameConfigDialogPane::LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
     BrainCtrlInfo thisCtrlInfo;
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
+    wxFlexGridSizer *pTopGrid = new wxFlexGridSizer(3, 2, 15, 15);
 
-    wxWindow* thisCtrl = (wxWindow*) (CtrlMap[cbResetConfig].panelCtrl);
-    this->Add(Ctrl(cbResetConfig));
-    this->Add(Ctrl(cbDontAsk));
-    this->Add(Szr(szImageLoggingFormat));
-    this->Add(Szr(szLanguage));
-    this->Add(Szr(szLogFileInfo));
-    this->Add(Szr(szDitherParams));
+    pTopGrid->Add(Ctrl(cbResetConfig));
+    pTopGrid->Add(Ctrl(cbDontAsk));
+    pTopGrid->Add(Szr(szImageLoggingFormat));
+    pTopGrid->Add(Szr(szLanguage));
+    pTopGrid->Add(Ctrl(cbDitherRAOnly));
+    pTopGrid->Add(Szr(szDitherScale));
+    this->Add(pTopGrid, sizer_flags);
+    this->Add(Szr(szLogFileInfo), sizer_flags);
+    Layout();
 }
 void MyFrameConfigDialogPane::OnDirSelect(wxCommandEvent& evt)
 {
@@ -2339,103 +2343,12 @@ MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
 
 void MyFrameConfigDialogPane::LoadValues(void)
 {
-    //m_pResetConfiguration->SetValue(false);
-    //m_pResetConfiguration->Enable(!pFrame->CaptureActive);
-    //m_pResetDontAskAgain->SetValue(false);
-    //m_pLoggedImageFormat->SetSelection(m_pFrame->GetLoggedImageFormat());
-    //m_pNoiseReduction->SetSelection(m_pFrame->GetNoiseReductionMethod());
-    //m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
-    //m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
-    //m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
-    //SetFocalLength(m_pFrame->GetFocalLength());
-    //m_pFocalLength->Enable(!pFrame->CaptureActive);
 
-    //int language = m_pFrame->GetLanguage();
-    //m_oldLanguageChoice = m_LanguageIDs.Index(language);
-    //m_pLanguage->SetSelection(m_oldLanguageChoice);
-    //m_pLanguage->Enable(!pFrame->CaptureActive);
-
-    //m_pLogDir->SetValue(GuideLog.GetLogDir());
-    //m_pLogDir->Enable(!pFrame->CaptureActive);
-    //m_pSelectDir->Enable(!pFrame->CaptureActive);
-    //m_pAutoLoadCalibration->SetValue(m_pFrame->GetAutoLoadCalibration());
-
-    //const AutoExposureCfg& cfg = m_pFrame->GetAutoExposureCfg();
-    //int idx = dur_index(cfg.minExposure);
-    //if (idx == -1)
-    //    idx = dur_index(DefaultAutoExpMin);
-    //m_autoExpDurationMin->SetValue(dur_choices[idx]);
-    //idx = dur_index(cfg.maxExposure);
-    //if (idx == -1)
-    //    idx = dur_index(DefaultAutoExpMax);
-    //m_autoExpDurationMax->SetValue(dur_choices[idx]);
-
-    //m_autoExpSNR->SetValue(cfg.targetSNR);
 }
 
 void MyFrameConfigDialogPane::UnloadValues(void)
 {
-    //try
-    //{
-    //    if (m_pResetConfiguration->GetValue())
-    //    {
-    //        int choice = wxMessageBox(_("This will reset all PHD2 configuration values and exit the program.  Are you sure?"),_("Confirmation"), wxYES_NO);
 
-    //        if (choice == wxYES)
-    //        {
-    //            pConfig->DeleteAll();
-
-    //            wxCommandEvent *pEvent = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, wxID_EXIT);
-    //            pFrame->QueueEvent(pEvent);
-    //        }
-    //    }
-
-    //    if (this->m_pResetDontAskAgain->GetValue())
-    //    {
-    //        ConfirmDialog::ResetAllDontAskAgain();
-    //    }
-
-    //    m_pFrame->SetLoggedImageFormat((LOGGED_IMAGE_FORMAT) m_pLoggedImageFormat->GetSelection());
-    //    m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
-    //    m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
-    //    m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
-    //    m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
-
-    //    m_pFrame->SetFocalLength(GetFocalLength());
-
-    //    int language = m_pLanguage->GetSelection();
-    //    pFrame->SetLanguage(m_LanguageIDs[language]);
-    //    if (m_oldLanguageChoice != language)
-    //    {
-    //        wxMessageBox(_("You must restart PHD for the language change to take effect."),_("Info"));
-    //    }
-
-    //    wxString newdir = m_pLogDir->GetValue();
-    //    if (!newdir.IsSameAs(GuideLog.GetLogDir()))
-    //    {
-    //        GuideLog.ChangeDirLog(newdir);
-    //        Debug.ChangeDirLog(newdir);
-    //    }
-
-    //    m_pFrame->SetAutoLoadCalibration(m_pAutoLoadCalibration->GetValue());
-
-    //    wxString sel = m_autoExpDurationMin->GetValue();
-    //    int durationMin = m_pFrame->ExposureDurationFromSelection(sel);
-    //    if (durationMin <= 0)
-    //        durationMin = DefaultAutoExpMin;
-    //    sel = m_autoExpDurationMax->GetValue();
-    //    int durationMax = m_pFrame->ExposureDurationFromSelection(sel);
-    //    if (durationMax <= 0)
-    //        durationMax = DefaultAutoExpMax;
-    //    if (durationMax < durationMin)
-    //        durationMax = durationMin;
-
-    //    m_pFrame->SetAutoExposureCfg(durationMin, durationMax, m_autoExpSNR->GetValue());
-    //}
-    //catch (wxString Msg)
-    //{
-    //    POSSIBLY_UNUSED(Msg);
-    //}
 
 }
 
@@ -2462,7 +2375,7 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
 {
     int width;
     wxWindow *parent;
-
+    
     m_pFrame = pFrame;
     m_pResetConfiguration = new wxCheckBox(GetParentWindow(cbResetConfig), wxID_ANY, _("Reset Configuration")); 
     AddCtrl(CtrlMap, cbResetConfig, m_pResetConfiguration, _("Reset all configuration to fresh install status -- Note: this closes PHD2"));
@@ -2480,19 +2393,16 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     AddLabeledCtrl(CtrlMap, szImageLoggingFormat, _("Image logging format"), m_pLoggedImageFormat,
         _("File format of logged images"));
 
-    parent = GetParentWindow(szDitherParams);
-    wxStaticBoxSizer *pDitherBox = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Dithering Control"));
-    m_pDitherRaOnly = new wxCheckBox(parent, wxID_ANY, _("Dither RA only"), wxPoint(-1, -1), wxSize(75, -1));
-    m_pDitherRaOnly->SetToolTip(_("Constrain dither to RA only"));
+    parent = GetParentWindow(cbDitherRAOnly);
+    m_pDitherRaOnly = new wxCheckBox(parent, wxID_ANY, _("Dither RA only"), wxPoint(-1, -1));
+    AddCtrl(CtrlMap, cbDitherRAOnly, m_pDitherRaOnly, _("Constrain dither to RA only"));
 
     width = StringWidth(_T("000.00"));
-    m_pDitherScaleFactor = new wxSpinCtrlDouble(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+    m_pDitherScaleFactor = new wxSpinCtrlDouble(GetParentWindow(szDitherScale), wxID_ANY, _T("foo2"), wxPoint(-1, -1),
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0, _T("DitherScaleFactor"));
     m_pDitherScaleFactor->SetDigits(1);
-    // m_pDitherScaleFactor->SetToolTip(_("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
-    pDitherBox->Add(m_pDitherRaOnly);
-    pDitherBox->Add(MakeLabeledControl(szDitherParams, _("Dither Scale:"), m_pDitherScaleFactor, _("Scaling for dither commands. Default = 1.0 (0.01-100.0)")));
-    AddGroup(CtrlMap, szDitherParams, pDitherBox);
+    AddLabeledCtrl(CtrlMap, szDitherScale, _("Dither Scale"), m_pDitherScaleFactor,
+        _("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
 
     wxString nralgo_choices[] =
     {
@@ -2579,6 +2489,7 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     //m_pAutoLoadCalibration = new wxCheckBox(parent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
     //AddCtrl(CtrlMap, cbAutoRestoreCal, m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
 
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     parent = GetParentWindow(szAutoExposure);
     m_autoExpDurationMin = new wxComboBox(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
@@ -2590,13 +2501,13 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 3.5, 99.9, 0.0, 1.0);
 
     wxBoxSizer *sz1 = new wxBoxSizer(wxHORIZONTAL);
-    sz1->Add(MakeLabeledControl(szAutoExposure, _("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")));
+    sz1->Add(MakeLabeledControl(szAutoExposure, _("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")), sizer_flags);
     sz1->Add(MakeLabeledControl(szAutoExposure, _("Max"), m_autoExpDurationMax, _("Auto exposure maximum duration")),
-        wxSizerFlags().Border(wxLEFT, 10));
-    wxStaticBoxSizer *autoExp = new wxStaticBoxSizer(wxVERTICAL, parent, _("Auto Exposure"));
+        sizer_flags);
+    wxStaticBoxSizer *autoExp = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Auto Exposure"));
     autoExp->Add(sz1);
     autoExp->Add(MakeLabeledControl(szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")),
-        wxSizerFlags().Border(wxTOP, 10));
+        sizer_flags);
 
     AddGroup(CtrlMap, szAutoExposure, autoExp);
 }

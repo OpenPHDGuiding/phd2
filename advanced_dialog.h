@@ -58,7 +58,8 @@ enum BRAIN_CTRL_IDS
     szImageLoggingFormat,
     szLanguage,
     szLogFileInfo,
-    szDitherParams,
+    cbDitherRAOnly,
+    szDitherScale,
     GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
     cbUseSubFrames,
     szNoiseReduction,

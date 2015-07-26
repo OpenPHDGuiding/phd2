@@ -694,23 +694,36 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
 #define Szr(n) (wxSizer*)CtrlMap[n].panelCtrl
 void CameraConfigDialogPane::LayoutControls(GuideCamera* pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
+    wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
+    wxBoxSizer *pTopline = new wxBoxSizer(wxHORIZONTAL);
     // Generic controls
-    this->Add(Szr(szNoiseReduction));
-    this->Add(Szr(szAutoExposure));
-    this->Add(Szr(szTimeLapse));
+    wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
+    pTopline->Add(Szr(szNoiseReduction));
+    pTopline->Add(Szr(szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 30).Expand());
+    pGenGroup->Add(pTopline, def_flags);
+    pGenGroup->Add(Szr(szAutoExposure), def_flags);
+    this->Add(pGenGroup, def_flags);
+
     // Specific controls
     if (pCamera)
     {
-        this->Add(Szr(szPixelSize));
-        this->Add(Szr(szCameraTimeout));
+        wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-specific Properties"));
+        int numItems = (int)pCamera->HasGainControl + (int)pCamera->HasDelayParam + (int)pCamera->HasPortNum + 1 + 1;
+        wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 2, 15, 15);
+
+        def_flags = wxSizerFlags(0).Border(wxTOP, 5).Border(wxLEFT, 20).Expand();
+        pDetailsSizer->Add(Szr(szPixelSize), def_flags);
+        pDetailsSizer->Add(Szr(szCameraTimeout), def_flags);
         if (pCamera->HasSubframes)
-            this->Add(Ctrl(cbUseSubFrames));
+            pDetailsSizer->Add(Ctrl(cbUseSubFrames), def_flags);
         if (pCamera->HasGainControl)
-            this->Add(Szr(szGain));
+            pDetailsSizer->Add(Szr(szGain), def_flags);
         if (pCamera->HasDelayParam)
-            this->Add(Szr(szDelay));
+            pDetailsSizer->Add(Szr(szDelay), def_flags);
         if (pCamera->HasPortNum)
-            this->Add(Szr(szPort));
+            pDetailsSizer->Add(Szr(szPort), def_flags);
+        pSpecGroup->Add(pDetailsSizer, def_flags);
+        this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
     }
 }
 CameraConfigDialogPane::~CameraConfigDialogPane(void)
