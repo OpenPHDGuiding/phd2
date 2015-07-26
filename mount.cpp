@@ -300,6 +300,7 @@ void Mount::SetGuidingEnabled(bool guidingEnabled)
     if (guidingEnabled != m_guidingEnabled)
     {
         const char *s = IsStepGuider() ? "AOGuidingEnabled" : "MountGuidingEnabled";
+        Debug.Write(wxString::Format("%s: %d\n", s, guidingEnabled));
         GuideLog.SetGuidingParam(s, guidingEnabled ? "true" : "false");
         m_guidingEnabled = guidingEnabled;
     }
