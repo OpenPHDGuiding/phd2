@@ -84,6 +84,11 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
  #include "cam_ZWO.h"
 #endif
 
+#if defined (ALTAIR)
+#include "cam_Altair.h"
+#endif
+
+
 #if defined (QHY5LII)
  #include "cam_QHY5LII.h"
 #endif
@@ -272,6 +277,9 @@ wxArrayString GuideCamera::List(void)
     CameraList.Add(_T("QHY 5L-II Mono"));
     CameraList.Add(_T("QHY 5L-II Color"));
 #endif
+#if defined (ALTAIR)
+	CameraList.Add(_T("Altair Camera"));
+#endif
 #if defined (ZWO_ASI)
     CameraList.Add(_T("ZWO ASI Camera"));
 #endif
@@ -404,6 +412,12 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
             pReturn = new Camera_QHY5LIIM();
         else if (choice.Find(_T("QHY 5L-II Color")) != wxNOT_FOUND)
             pReturn = new Camera_QHY5LIIC();
+#endif
+#if defined(ALTAIR)
+		else if (choice.Find(_T("Altair Camera")) + 1)
+		{
+			pReturn = new Camera_Altair();
+		}
 #endif
 #if defined(ZWO_ASI)
         else if (choice.Find(_T("ZWO ASI Camera")) + 1)
