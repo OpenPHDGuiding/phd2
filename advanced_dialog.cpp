@@ -107,7 +107,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
         m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
     else
         m_pCameraCtrlSet = NULL;
-    m_pGuiderCtrlSet = new GuiderOneStarConfigDialogCtrlSet(m_pGuiderSettingsPanel, (GuiderOneStar*)pFrame->pGuider, this, m_brainCtrls);
+    m_pGuiderCtrlSet = pFrame->pGuider->GetConfigDialogCtrlSet(m_pGuiderSettingsPanel, pFrame->pGuider, this, m_brainCtrls);
 
     // Populate global pane
     m_pGlobalPane = pFrame->GetConfigDialogPane(m_pGlobalSettingsPanel);
@@ -118,9 +118,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     AddCameraPage();
     pCameraTabSizer->Add(m_pCameraPane, sizer_flags);
 
-
-
-    // and populate it
+    // Populate the guiding pane
     m_pGuiderPane = (GuiderOneStar::GuiderOneStarConfigDialogPane *)pFrame->pGuider->GetConfigDialogPane(m_pGuiderSettingsPanel);
     m_pGuiderPane->LayoutControls((GuiderOneStar *)pFrame->pGuider, m_brainCtrls);
     pGuidingTabSizer->Add(m_pGuiderPane, sizer_flags);
@@ -162,7 +160,8 @@ void AdvancedDialog::RebuildPanels(void)
         m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
     else
         m_pCameraCtrlSet = NULL;
-    m_pGuiderCtrlSet = new GuiderOneStarConfigDialogCtrlSet(m_pGuiderSettingsPanel, (GuiderOneStar*)m_pFrame->pGuider, this, m_brainCtrls);
+    m_pGuiderCtrlSet = m_pFrame->pGuider->GetConfigDialogCtrlSet(m_pGuiderSettingsPanel, m_pFrame->pGuider, this, m_brainCtrls);
+
 
     m_pGlobalPane->LayoutControls(m_brainCtrls);
     m_pGlobalPane->Layout();

@@ -121,7 +121,7 @@ class AdvancedDialog : public wxDialog
     bool m_rebuildPanels;
     MyFrameConfigDialogCtrlSet *m_pGlobalCtrlSet;
     CameraConfigDialogCtrlSet *m_pCameraCtrlSet;
-    GuiderOneStarConfigDialogCtrlSet *m_pGuiderCtrlSet;
+    GuiderConfigDialogCtrlSet *m_pGuiderCtrlSet;
     wxPanel *m_pGlobalSettingsPanel;
     wxPanel *m_pCameraSettingsPanel;
     wxPanel *m_pGuiderSettingsPanel;

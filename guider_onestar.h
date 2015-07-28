@@ -44,11 +44,11 @@ class MassChecker;
 class GuiderOneStar;
 class GuiderConfigDialogCtrlSet;
 
-class GuiderOneStarConfigDialogCtrlSet : GuiderConfigDialogCtrlSet
+class GuiderOneStarConfigDialogCtrlSet : public GuiderConfigDialogCtrlSet
 {
 
 public:
-    GuiderOneStarConfigDialogCtrlSet(wxWindow *pParent, GuiderOneStar *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    GuiderOneStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     virtual ~GuiderOneStarConfigDialogCtrlSet();
 
     GuiderOneStar *m_pGuiderOneStar;
@@ -117,6 +117,7 @@ public:
     wxString GetSettingsSummary();
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
 
     void LoadProfileSettings(void);
 

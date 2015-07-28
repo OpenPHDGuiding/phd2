@@ -1423,6 +1423,11 @@ void Guider::GuiderConfigDialogPane::UnloadValues(void)
     m_pGuider->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
 }
 
+GuiderConfigDialogCtrlSet *Guider::GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    return new GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap);
+}
+
 GuiderConfigDialogCtrlSet::GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {

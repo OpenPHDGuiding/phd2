@@ -198,7 +198,8 @@ public:
     OVERLAY_MODE GetOverlayMode(void);
 
 public:
-    virtual GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)= 0;  
+    virtual GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)= 0;
+    virtual GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
 
 protected:
     Guider(wxWindow *parent, int xSize, int ySize);

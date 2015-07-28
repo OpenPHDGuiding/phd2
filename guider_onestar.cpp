@@ -965,15 +965,18 @@ void GuiderOneStar::GuiderOneStarConfigDialogPane::OnStarMassEnableChecked(wxCom
     //m_pMassChangeThreshold->Enable(event.IsChecked());
 }
 
-GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pParent, GuiderOneStar *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
+GuiderConfigDialogCtrlSet* GuiderOneStar::GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    return new GuiderOneStarConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap);
+}
+
+GuiderOneStarConfigDialogCtrlSet::GuiderOneStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
 GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
 {
     assert(pGuider);
 
-    m_pGuiderOneStar = pGuider;
+    m_pGuiderOneStar = (GuiderOneStar *)pGuider;
     int width;
-
-    m_pGuiderOneStar = pGuider;
 
     width = StringWidth(_T("0000"));
     m_pSearchRegion = new wxSpinCtrl(GetParentWindow(szStarTracking), wxID_ANY, _T("foo2"), wxPoint(-1, -1),
