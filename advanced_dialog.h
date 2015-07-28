@@ -39,6 +39,7 @@ class MyFrame;
 class MyFrameConfigDialogPane;
 class MyFrameConfigDialogCtrlSet;
 class CameraConfigDialogPane;
+class GuiderConfigDialogPane;
 
 enum TAB_PAGES {
     GLOBAL_PAGE,
@@ -72,7 +73,10 @@ enum BRAIN_CTRL_IDS
     szPort,
     CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
     szFocalLength,
-    cbAutoRestoreCal
+    cbAutoRestoreCal,
+    cbFastRecenter,
+    szStarTracking,
+    GUIDER_TAB_BOUNDARY
 
 };
 
@@ -107,17 +111,20 @@ class AdvancedDialog : public wxDialog
     wxWindow *m_aoPage;
     wxWindow *m_rotatorPage;
     MyFrameConfigDialogPane *m_pGlobalPane;
-    ConfigDialogPane *m_pGuiderPane;
+    GuiderOneStar::GuiderOneStarConfigDialogPane *m_pGuiderPane;
     CameraConfigDialogPane *m_pCameraPane;
     ConfigDialogPane *m_pMountPane;
     ConfigDialogPane *m_pAoPane;
     ConfigDialogPane *m_rotatorPane;
 
     std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> m_brainCtrls;
+    bool m_rebuildPanels;
     MyFrameConfigDialogCtrlSet *m_pGlobalCtrlSet;
     CameraConfigDialogCtrlSet *m_pCameraCtrlSet;
+    GuiderOneStarConfigDialogCtrlSet *m_pGuiderCtrlSet;
     wxPanel *m_pGlobalSettingsPanel;
     wxPanel *m_pCameraSettingsPanel;
+    wxPanel *m_pGuiderSettingsPanel;
 
 public:
     AdvancedDialog(MyFrame *pFrame);

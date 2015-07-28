@@ -77,7 +77,7 @@ public:
     virtual void LoadValues(void) = 0;
     virtual void UnloadValues(void) = 0;
 
-protected:
+public:
     wxSizer *MakeLabeledControl(BRAIN_CTRL_IDS id, const wxString& label, wxWindow *pControl, const wxString& toolTip);
     void AddMapElement(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS, wxObject *pElem);
     void AddGroup(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxSizer *pSizer);      // Sizer

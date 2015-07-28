@@ -90,11 +90,16 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxBoxSizer *pGlobalTabSizer = new wxBoxSizer(wxVERTICAL);
     m_pGlobalSettingsPanel->SetSizer(pGlobalTabSizer);
     m_pNotebook->AddPage(m_pGlobalSettingsPanel, _("Global"), true);
-
+    // Camera pane
     m_pCameraSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pCameraTabSizer = new wxBoxSizer(wxVERTICAL);
     m_pCameraSettingsPanel->SetSizer(pCameraTabSizer);
     m_pNotebook->AddPage(m_pCameraSettingsPanel, _("Camera"), false);
+    // Build the guider pane
+    m_pGuiderSettingsPanel = new wxPanel(m_pNotebook);
+    wxBoxSizer *pGuidingTabSizer = new wxBoxSizer(wxVERTICAL);
+    m_pGuiderSettingsPanel->SetSizer(pGuidingTabSizer);
+    m_pNotebook->AddPage(m_pGuiderSettingsPanel, _("Guiding"));
 
     // Build the ConfigControlSets
     m_pGlobalCtrlSet = pFrame->GetConfigDlgCtrlSet(pFrame, this, m_brainCtrls);
@@ -102,24 +107,22 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
         m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
     else
         m_pCameraCtrlSet = NULL;
+    m_pGuiderCtrlSet = new GuiderOneStarConfigDialogCtrlSet(m_pGuiderSettingsPanel, (GuiderOneStar*)pFrame->pGuider, this, m_brainCtrls);
 
-    // Populate global frame
+    // Populate global pane
     m_pGlobalPane = pFrame->GetConfigDialogPane(m_pGlobalSettingsPanel);
     m_pGlobalPane->LayoutControls(m_brainCtrls);
     pGlobalTabSizer->Add(m_pGlobalPane, sizer_flags);
 
-    // Populate the camera frame
+    // Populate the camera pane
     AddCameraPage();
     pCameraTabSizer->Add(m_pCameraPane, sizer_flags);
 
-    // Build the guider tab
-    wxPanel *pGuiderSettingsPanel = new wxPanel(m_pNotebook);
-    wxBoxSizer *pGuidingTabSizer = new wxBoxSizer(wxVERTICAL);
-    pGuiderSettingsPanel->SetSizer(pGuidingTabSizer);
-    m_pNotebook->AddPage(pGuiderSettingsPanel, _("Guiding"));
+
 
     // and populate it
-    m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(pGuiderSettingsPanel);
+    m_pGuiderPane = (GuiderOneStar::GuiderOneStarConfigDialogPane *)pFrame->pGuider->GetConfigDialogPane(m_pGuiderSettingsPanel);
+    m_pGuiderPane->LayoutControls((GuiderOneStar *)pFrame->pGuider, m_brainCtrls);
     pGuidingTabSizer->Add(m_pGuiderPane, sizer_flags);
 
     // Build Mount tab
@@ -147,8 +150,11 @@ void AdvancedDialog::RebuildPanels(void)
         delete m_pGlobalCtrlSet;
     if (m_pCameraCtrlSet)
         delete m_pCameraCtrlSet;
+    if (m_pGuiderCtrlSet)
+        delete m_pGuiderCtrlSet;
     m_pGlobalPane->Clear(true);
     m_pCameraPane->Clear(true);
+    m_pGuiderPane->Clear(true);
     m_brainCtrls.empty();
 
     m_pGlobalCtrlSet = m_pFrame->GetConfigDlgCtrlSet(m_pFrame, this, m_brainCtrls);
@@ -156,11 +162,15 @@ void AdvancedDialog::RebuildPanels(void)
         m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
     else
         m_pCameraCtrlSet = NULL;
+    m_pGuiderCtrlSet = new GuiderOneStarConfigDialogCtrlSet(m_pGuiderSettingsPanel, (GuiderOneStar*)m_pFrame->pGuider, this, m_brainCtrls);
 
     m_pGlobalPane->LayoutControls(m_brainCtrls);
     m_pGlobalPane->Layout();
     m_pCameraPane->LayoutControls(pCamera, m_brainCtrls);
     m_pCameraPane->Layout();
+    m_pGuiderPane->LayoutControls((GuiderOneStar *)m_pFrame->pGuider, m_brainCtrls);
+    m_pGuiderPane->Layout();
+    GetSizer()->Layout();
     GetSizer()->Fit(this);
 }
 
@@ -171,6 +181,9 @@ wxWindow* AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
     else
     if (id < CAMERA_TAB_BOUNDARY)
         return (wxWindow*)m_pCameraSettingsPanel;
+    else
+    if (id < GUIDER_TAB_BOUNDARY)
+        return (wxWindow*)m_pGuiderSettingsPanel;
     else
         return NULL;              // FIX THIS
 }
@@ -344,6 +357,9 @@ void AdvancedDialog::LoadValues(void)
         if (i == 2 && m_pCameraCtrlSet)
             m_pCameraCtrlSet->LoadValues();
         else
+        if (i == 1 && m_pGuiderCtrlSet)
+            m_pGuiderCtrlSet->LoadValues();
+        else
         if (pane)
             pane->LoadValues();
     }
@@ -365,6 +381,9 @@ void AdvancedDialog::UnloadValues(void)
         else
         if (i == 2 && m_pCameraCtrlSet)
             m_pCameraCtrlSet->UnloadValues();
+        else
+        if (i == 1 && m_pGuiderCtrlSet)
+            m_pGuiderCtrlSet->UnloadValues();
         else
         if (pane)
             pane->UnloadValues();

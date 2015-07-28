@@ -2423,10 +2423,10 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     AddLabeledCtrl(CtrlMap, szTimeLapse, _("Time Lapse (ms)"), m_pTimeLapse,
         _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
-    //parent = GetParentWindow(szFocalLength);
-    //m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width + 30, -1));
-    //AddLabeledCtrl(CtrlMap, szFocalLength, _("Focal length (mm)"), m_pFocalLength,
-    //    _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
+    parent = GetParentWindow(szFocalLength);
+    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width + 30, -1));
+    AddLabeledCtrl(CtrlMap, szFocalLength, _("Focal length (mm)"), m_pFocalLength,
+        _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 
     int currentLanguage = m_pFrame->m_pLocale->GetLanguage();
     wxTranslations *pTrans = wxTranslations::Get();
@@ -2526,8 +2526,8 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
     m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
-    //SetFocalLength(m_pFrame->GetFocalLength());
-    //m_pFocalLength->Enable(!pFrame->CaptureActive);
+    SetFocalLength(m_pFrame->GetFocalLength());
+    m_pFocalLength->Enable(!pFrame->CaptureActive);
 
     int language = m_pFrame->GetLanguage();
     m_oldLanguageChoice = m_LanguageIDs.Index(language);
@@ -2580,7 +2580,7 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
         m_pFrame->SetTimeLapse(m_pTimeLapse->GetValue());
 
-        //m_pFrame->SetFocalLength(GetFocalLength());
+        m_pFrame->SetFocalLength(GetFocalLength());
 
         int language = m_pLanguage->GetSelection();
         pFrame->SetLanguage(m_LanguageIDs[language]);

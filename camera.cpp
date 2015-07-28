@@ -705,10 +705,10 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera* pCamera, std::map <BRAI
     this->Add(pGenGroup, def_flags);
 
     // Specific controls
+    wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-specific Properties"));
     if (pCamera)
     {
-        wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-specific Properties"));
-        int numItems = (int)pCamera->HasGainControl + (int)pCamera->HasDelayParam + (int)pCamera->HasPortNum + 1 + 1;
+        int numItems = (int)pCamera->HasGainControl + (int)pCamera->HasDelayParam + (int)pCamera->HasPortNum + 2;
         wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 2, 15, 15);
 
         def_flags = wxSizerFlags(0).Border(wxTOP, 5).Border(wxLEFT, 20).Expand();
@@ -723,8 +723,15 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera* pCamera, std::map <BRAI
         if (pCamera->HasPortNum)
             pDetailsSizer->Add(Szr(szPort), def_flags);
         pSpecGroup->Add(pDetailsSizer, def_flags);
-        this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
+        pSpecGroup->Layout();
+        }
+    else
+    {
+        wxStaticText *pNoCam = new wxStaticText(m_pParent, wxID_ANY, _("No camera specified"));
+        pSpecGroup->Add(pNoCam, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
+        pSpecGroup->Layout();
     }
+    this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
 }
 CameraConfigDialogPane::~CameraConfigDialogPane(void)
 {
@@ -771,8 +778,6 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
     }
 
     int numRows = (int)m_pCamera->HasGainControl + (int)m_pCamera->HasDelayParam + (int)m_pCamera->HasPortNum + 1;
-
-    wxFlexGridSizer *pCamControls = new wxFlexGridSizer(numRows, 2, 5, 15);
 
     int width = StringWidth(_T("0000")) + 30;
     // Pixel size always

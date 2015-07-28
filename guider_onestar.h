@@ -41,6 +41,25 @@
 #define GUIDER_ONESTAR_H_INCLUDED
 
 class MassChecker;
+class GuiderOneStar;
+class GuiderConfigDialogCtrlSet;
+
+class GuiderOneStarConfigDialogCtrlSet : GuiderConfigDialogCtrlSet
+{
+
+public:
+    GuiderOneStarConfigDialogCtrlSet(wxWindow *pParent, GuiderOneStar *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~GuiderOneStarConfigDialogCtrlSet();
+
+    GuiderOneStar *m_pGuiderOneStar;
+    wxSpinCtrl *m_pSearchRegion;
+    wxCheckBox *m_pEnableStarMassChangeThresh;
+    wxSpinCtrlDouble *m_pMassChangeThreshold;
+
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+    void OnStarMassEnableChecked(wxCommandEvent& event);
+};
 
 class GuiderOneStar : public Guider
 {
@@ -52,9 +71,10 @@ private:
     bool m_massChangeThresholdEnabled;
     double m_massChangeThreshold;
 
-protected:
+public:
     class GuiderOneStarConfigDialogPane : public GuiderConfigDialogPane
     {
+    protected:
         GuiderOneStar *m_pGuiderOneStar;
         wxSpinCtrl *m_pSearchRegion;
         wxCheckBox *m_pEnableStarMassChangeThresh;
@@ -66,6 +86,7 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+        void LayoutControls(GuiderOneStar *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
 
         void OnStarMassEnableChecked(wxCommandEvent& event);
     };
@@ -77,6 +98,7 @@ protected:
     bool SetSearchRegion(int searchRegion);
 
     friend class GuiderOneStarConfigDialogPane;
+    friend class GuiderOneStarConfigDialogCtrlSet;
 
 public:
     GuiderOneStar(wxWindow *parent);
@@ -94,7 +116,7 @@ public:
     int StarError(void);
     wxString GetSettingsSummary();
 
-    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
 
     void LoadProfileSettings(void);
 

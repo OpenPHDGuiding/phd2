@@ -109,6 +109,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 {
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
+    m_scaleImage = true;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = PAUSE_NONE;
     m_starFoundTimestamp = 0;
@@ -1379,7 +1380,7 @@ wxString Guider::GetSettingsSummary()
     return wxEmptyString;
 }
 
-ConfigDialogPane *Guider::GetConfigDialogPane(wxWindow *pParent)
+Guider::GuiderConfigDialogPane *Guider::GetConfigDialogPane(wxWindow *pParent)
 {
     return new GuiderConfigDialogPane(pParent, this);
 }
@@ -1387,28 +1388,66 @@ ConfigDialogPane *Guider::GetConfigDialogPane(wxWindow *pParent)
 Guider::GuiderConfigDialogPane::GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider)
     : ConfigDialogPane(_("Guider Settings"), pParent)
 {
-    m_pGuider = pGuider;
-    m_pScaleImage = new wxCheckBox(pParent, wxID_ANY,_("Always Scale Images"));
-    DoAdd(m_pScaleImage, _("Always scale images to fill window"));
+    //m_pGuider = pGuider;
+    //m_pScaleImage = new wxCheckBox(pParent, wxID_ANY,_("Always Scale Images"));
+    //DoAdd(m_pScaleImage, _("Always scale images to fill window"));
 
-    m_pEnableFastRecenter = new wxCheckBox(pParent, wxID_ANY, _("Fast recenter after calibration or dither"));
-    DoAdd(m_pEnableFastRecenter, _("Speed up calibration and dithering by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration or dither."));
+    //m_pEnableFastRecenter = new wxCheckBox(pParent, wxID_ANY, _("Fast recenter after calibration or dither"));
+    //DoAdd(m_pEnableFastRecenter, _("Speed up calibration and dithering by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration or dither."));
+}
+
+#define Ctrl(n) (wxWindow*)CtrlMap[n].panelCtrl
+#define Szr(n) (wxSizer*)CtrlMap[n].panelCtrl
+void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    this->Add(Ctrl(cbFastRecenter));
+    this->Add(Szr(szFocalLength));
+    this->Add(Szr(szStarTracking));
 }
 
 Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
 {
 }
 
+
+
 void Guider::GuiderConfigDialogPane::LoadValues(void)
 {
-    m_pScaleImage->SetValue(m_pGuider->GetScaleImage());
+    //m_pScaleImage->SetValue(m_pGuider->GetScaleImage());
     m_pEnableFastRecenter->SetValue(m_pGuider->IsFastRecenterEnabled());
 }
 
 void Guider::GuiderConfigDialogPane::UnloadValues(void)
 {
-    m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
+    //m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
     m_pGuider->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
+}
+
+GuiderConfigDialogCtrlSet::GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
+ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
+{
+    assert(pGuider);
+
+    m_pGuider = pGuider;
+
+    m_pEnableFastRecenter = new wxCheckBox(GetParentWindow(cbFastRecenter), wxID_ANY, _("Fast recenter after calibration or dither"));
+    AddCtrl(CtrlMap, cbFastRecenter, m_pEnableFastRecenter, _("Speed up calibration and dithering by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration or dither."));
+}
+
+GuiderConfigDialogCtrlSet::~GuiderConfigDialogCtrlSet()
+{
+
+}
+
+void GuiderConfigDialogCtrlSet::LoadValues()
+{
+    m_pEnableFastRecenter->SetValue(m_pGuider->IsFastRecenterEnabled());
+}
+
+void GuiderConfigDialogCtrlSet::UnloadValues()
+{
+    m_pGuider->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
+
 }
 
 EXPOSED_STATE Guider::GetExposedState(void)
