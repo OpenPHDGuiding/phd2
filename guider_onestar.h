@@ -86,7 +86,7 @@ public:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
-        void LayoutControls(GuiderOneStar *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+        void LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
 
         void OnStarMassEnableChecked(wxCommandEvent& event);
     };

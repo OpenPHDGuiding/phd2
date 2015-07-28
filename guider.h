@@ -191,7 +191,7 @@ public:
 
         void LoadValues(void);
         void UnloadValues(void);
-        void LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+        virtual void LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     };
 
 

@@ -119,8 +119,8 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     pCameraTabSizer->Add(m_pCameraPane, sizer_flags);
 
     // Populate the guiding pane
-    m_pGuiderPane = (GuiderOneStar::GuiderOneStarConfigDialogPane *)pFrame->pGuider->GetConfigDialogPane(m_pGuiderSettingsPanel);
-    m_pGuiderPane->LayoutControls((GuiderOneStar *)pFrame->pGuider, m_brainCtrls);
+    m_pGuiderPane = pFrame->pGuider->GetConfigDialogPane(m_pGuiderSettingsPanel);
+    m_pGuiderPane->LayoutControls(pFrame->pGuider, m_brainCtrls);
     pGuidingTabSizer->Add(m_pGuiderPane, sizer_flags);
 
     // Build Mount tab
@@ -167,7 +167,7 @@ void AdvancedDialog::RebuildPanels(void)
     m_pGlobalPane->Layout();
     m_pCameraPane->LayoutControls(pCamera, m_brainCtrls);
     m_pCameraPane->Layout();
-    m_pGuiderPane->LayoutControls((GuiderOneStar *)m_pFrame->pGuider, m_brainCtrls);
+    m_pGuiderPane->LayoutControls(m_pFrame->pGuider, m_brainCtrls);
     m_pGuiderPane->Layout();
     GetSizer()->Layout();
     GetSizer()->Fit(this);

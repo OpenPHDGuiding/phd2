@@ -111,7 +111,7 @@ class AdvancedDialog : public wxDialog
     wxWindow *m_aoPage;
     wxWindow *m_rotatorPage;
     MyFrameConfigDialogPane *m_pGlobalPane;
-    GuiderOneStar::GuiderOneStarConfigDialogPane *m_pGuiderPane;
+    Guider::GuiderConfigDialogPane* m_pGuiderPane;
     CameraConfigDialogPane *m_pCameraPane;
     ConfigDialogPane *m_pMountPane;
     ConfigDialogPane *m_pAoPane;

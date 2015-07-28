@@ -930,9 +930,8 @@ GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWi
     //      "If star mass change detection is not enabled then this setting is ignored."));
 }
 
-void GuiderOneStar::GuiderOneStarConfigDialogPane::LayoutControls(GuiderOneStar *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void GuiderOneStar::GuiderOneStarConfigDialogPane::LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    int i = 1;
     GuiderConfigDialogPane::LayoutControls(pGuider, CtrlMap);
 }
 
