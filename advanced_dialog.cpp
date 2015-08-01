@@ -113,10 +113,12 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     else
         m_pCameraCtrlSet = NULL;
     m_pGuiderCtrlSet = pFrame->pGuider->GetConfigDialogCtrlSet(m_pGuiderSettingsPanel, pFrame->pGuider, this, m_brainCtrls);
-    if (pMount)
-        m_pScopeCtrlSet = ((Scope*)pMount)->GetConfigDialogCtrlSet(m_pScopeSettingsPanel, (Scope*)pMount, this, m_brainCtrls);
-    else
-        m_pScopeCtrlSet = NULL;
+    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, (Scope*)pMount, this, m_brainCtrls);
+
+    //if (pMount)
+    //    m_pScopeCtrlSet = ((Scope*)pMount)->GetConfigDialogCtrlSet(m_pScopeSettingsPanel, (Scope*)pMount, this, m_brainCtrls);
+    //else
+    //    m_pScopeCtrlSet = NULL;
 
     // Populate global pane
     m_pGlobalPane = pFrame->GetConfigDialogPane(m_pGlobalSettingsPanel);
@@ -174,8 +176,6 @@ void AdvancedDialog::RebuildPanels(void)
         m_pScopeSettingsPanel->GetSizer()->Clear(true);
     }
 
-    //m_pMountPane = NULL;
-
     m_brainCtrls.empty();
 
     m_pGlobalCtrlSet = m_pFrame->GetConfigDlgCtrlSet(m_pFrame, this, m_brainCtrls);
@@ -184,10 +184,7 @@ void AdvancedDialog::RebuildPanels(void)
     else
         m_pCameraCtrlSet = NULL;
     m_pGuiderCtrlSet = m_pFrame->pGuider->GetConfigDialogCtrlSet(m_pGuiderSettingsPanel, m_pFrame->pGuider, this, m_brainCtrls);
-    if (pMount)
-        m_pScopeCtrlSet = ((Scope*)pMount)->GetConfigDialogCtrlSet(m_pScopeSettingsPanel, (Scope*)pMount, this, m_brainCtrls);
-    else
-        m_pScopeCtrlSet = NULL;
+    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, (Scope*)pMount, this, m_brainCtrls);
 
     m_pGlobalPane->LayoutControls(m_brainCtrls);
     m_pGlobalPane->Layout();
@@ -252,38 +249,16 @@ void AdvancedDialog::AddMountPage(void)
         m_pMountPane = mount->GetConfigDialogPane(m_pScopeSettingsPanel);
         m_pMountPane->LayoutControls(m_pScopeSettingsPanel, m_brainCtrls);
         m_pMountPane->Layout();
-        m_pScopeSettingsPanel->GetSizer()->Add(m_pMountPane);
-        m_pScopeSettingsPanel->Layout();
     }
     else
     {
-        //m_pMountPane = NULL;
         m_pMountPane = new Mount::MountConfigDialogPane(m_pScopeSettingsPanel, _("Mount"), mount);
-        //wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pScopeSettingsPanel, _("Mount-specific Properties"));
         wxStaticText *pNoMount = new wxStaticText(m_pScopeSettingsPanel, ID_NOMOUNT, _("No mount specified"));
-        //pSpecGroup->Add(pNoMount, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
         m_pMountPane->Add(pNoMount);
-        //m_pScopeSettingsPanel->GetSizer()->Add(pNoMount);
-        m_pScopeSettingsPanel->GetSizer()->Add(m_pMountPane);
-        m_pScopeSettingsPanel->Layout();
     }
 
-    //m_pMountPane = NULL;
-
-    //if (mount)
-    //{
-    //    m_pMountPane = mount->GetConfigDialogPane(m_pScopeSettingsPanel);
-    //    /*pScopeTabSizer->Add(m_pMountPane, sizer_flags);*/
-    //}
-    //else
-    //{
-    //    // Add a text box to the Mount tab informing the user there is no Mount
-    //    wxStaticBoxSizer *pBox = new wxStaticBoxSizer(new wxStaticBox(m_pScopeSettingsPanel, wxID_ANY, _("Mount Settings")), wxVERTICAL);
-    //    wxStaticText *pText = new wxStaticText(m_pScopeSettingsPanel, wxID_ANY, _("No Mount Selected"),wxPoint(-1,-1),wxSize(-1,-1));
-    //    pBox->Add(pText);
-    //    wxStaticText *pText = new wxStaticText(m_pCameraSettingsPanel, wxID_ANY, _("No Mount Selected"), wxPoint(-1, -1), wxSize(-1, -1));
-    //    m_pMountPane->Add(pText);
-    //}
+    m_pScopeSettingsPanel->GetSizer()->Add(m_pMountPane);
+    m_pScopeSettingsPanel->Layout();
 }
 
 void AdvancedDialog::AddAoPage(void)
@@ -420,10 +395,13 @@ void AdvancedDialog::LoadValues(void)
         else
         if (i == 3)
         {
-            if (m_pScopeCtrlSet)
-                m_pScopeCtrlSet->LoadValues();
+            //if (m_pScopeCtrlSet)
+            //    m_pScopeCtrlSet->LoadValues();
             if (pMount)
+            {
+                m_pScopeCtrlSet->LoadValues();
                 pane->LoadValues();
+            }
 
         }
         else
@@ -454,10 +432,13 @@ void AdvancedDialog::UnloadValues(void)
         else
         if (i == 3)
         {
-            if (m_pScopeCtrlSet)
-                m_pScopeCtrlSet->UnloadValues();
+            //if (m_pScopeCtrlSet)
+            //    m_pScopeCtrlSet->UnloadValues();
             if (pMount)
+            {
+                m_pScopeCtrlSet->UnloadValues();
                 pane->UnloadValues();
+            }
         }
         else
         if (pane)

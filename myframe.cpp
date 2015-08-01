@@ -2485,9 +2485,9 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Center().Border(wxTop, 20));
     AddGroup(CtrlMap, szLogFileInfo, pInputGroupBox);
 
-    //parent = GetParentWindow(cbAutoRestoreCal);
-    //m_pAutoLoadCalibration = new wxCheckBox(parent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
-    //AddCtrl(CtrlMap, cbAutoRestoreCal, m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
+    parent = GetParentWindow(cbAutoRestoreCal);
+    m_pAutoLoadCalibration = new wxCheckBox(parent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
+    AddCtrl(CtrlMap, cbAutoRestoreCal, m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
 
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     parent = GetParentWindow(szAutoExposure);

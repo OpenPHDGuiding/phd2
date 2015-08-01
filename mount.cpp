@@ -325,11 +325,14 @@ MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount
 MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
+    bool enableCtrls = pMount != NULL;
     m_pMount = pMount;
     m_pClearCalibration = new wxCheckBox(GetParentWindow(cbClearCalibration), wxID_ANY, _("Clear calibration"));
+    m_pClearCalibration->Enable(pMount);
     AddCtrl(CtrlMap, cbClearCalibration, m_pClearCalibration,
         _("Clear the current calibration data - calibration will be re-done when guiding is started"));
     m_pEnableGuide = new wxCheckBox(GetParentWindow(cbEnableGuiding), wxID_ANY, _("Enable Guide Output"));
+    m_pEnableGuide->Enable(enableCtrls);
     AddCtrl(CtrlMap, cbEnableGuiding, m_pEnableGuide,
         _("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
 }

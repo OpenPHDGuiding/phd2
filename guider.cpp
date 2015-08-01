@@ -1400,26 +1400,40 @@ Guider::GuiderConfigDialogPane::GuiderConfigDialogPane(wxWindow *pParent, Guider
 #define Szr(n) (wxSizer*)CtrlMap[n].panelCtrl
 void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    this->Add(Ctrl(cbFastRecenter));
-    this->Add(Szr(szFocalLength));
-    if (pMount)
+    wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
+
+    wxStaticBoxSizer *pStarTrack = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Guide star tracking"));
+    wxStaticBoxSizer *pCalib = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Calibration"));
+    wxStaticBoxSizer *pShared = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Shared Parameters"));
+    wxFlexGridSizer *pCalibSizer = new wxFlexGridSizer(3, 2, 15, 15);
+    wxFlexGridSizer *pSharedSizer = new wxFlexGridSizer(2, 2, 15, 15);
+
+    pStarTrack->Add(Szr(szStarTracking), def_flags);
+    this->Add(pStarTrack, def_flags);
+
+    pCalibSizer->Add(Szr(szFocalLength));
+    pCalibSizer->Add(Szr(szCalibrationDuration));
+    pCalibSizer->Add(Ctrl(cbAutoRestoreCal));
+    pCalibSizer->Add(Ctrl(cbClearCalibration));
+    pCalibSizer->Add(Ctrl(cbAssumeOrthogonal));
+    pCalib->Add(pCalibSizer, def_flags);
+    this->Add(pCalib, def_flags);
+
+    pSharedSizer->Add(Ctrl(cbEnableGuiding));
+    pSharedSizer->Add(Ctrl(cbFastRecenter));
+    pSharedSizer->Add(Ctrl(cbReverseDecOnFlip));
+    // Might not have slew-checking option
+    try
     {
-        this->Add(Ctrl(cbAutoRestoreCal));
-        this->Add(Ctrl(cbClearCalibration));
-        this->Add(Ctrl(cbAssumeOrthogonal));
-        this->Add(Szr(szCalibrationDuration));
-        this->Add(Ctrl(cbEnableGuiding));
-        this->Add(Ctrl(cbReverseDecOnFlip));
-        this->Add(Szr(szStarTracking));
-        try
-        {
-            this->Add(Ctrl(cbSlewDetection));
-        }
-        catch (const wxString& msg)
-        {
-            POSSIBLY_UNUSED(msg);
-        }
+        pSharedSizer->Add(Ctrl(cbSlewDetection));
     }
+    catch (const wxString& msg)
+    {
+        POSSIBLY_UNUSED(msg);
+    }
+    pShared->Add(pSharedSizer, def_flags);
+    this->Add(pShared, def_flags);
+
 }
 
 Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)

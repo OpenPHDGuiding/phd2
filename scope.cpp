@@ -1586,6 +1586,7 @@ ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pSc
 MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
 {
     int width;
+    bool enableCtrls = pScope != NULL;
 
     m_pScope = pScope;
     width = StringWidth(_T("00000"));
@@ -1595,11 +1596,13 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
     pCalibSizer->Add(MakeLabeledControl(szCalibrationDuration, _("Calibration step (ms)"), m_pCalibrationDuration, 
         _("How long a guide pulse should be used during calibration? Click \"Calculate\" to compute a suitable value.")));
+    m_pCalibrationDuration->Enable(enableCtrls);
 
     // create the 'auto' button and bind it to the associated event-handler
     wxButton *pAutoDuration = new wxButton(GetParentWindow(szCalibrationDuration), wxID_OK, _("Calculate...") );
     pAutoDuration->SetToolTip(_("Click to open the Calibration Step Calculator to help find a good calibration step size"));
     pAutoDuration->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &ScopeConfigDialogCtrlSet::OnCalcCalibrationStep, this);
+    pAutoDuration->Enable(enableCtrls);
 
     pCalibSizer->Add(pAutoDuration);
     AddGroup(CtrlMap, szCalibrationDuration, pCalibSizer);
@@ -1607,6 +1610,7 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
     m_pNeedFlipDec = new wxCheckBox(GetParentWindow(cbReverseDecOnFlip), wxID_ANY, _("Reverse Dec output after meridian flip"));
     AddCtrl(CtrlMap, cbReverseDecOnFlip, m_pNeedFlipDec,
         _("Check if your mount needs Dec output reversed after doing Flip Calibration Data"));
+    m_pNeedFlipDec->Enable(enableCtrls);
 
     if (pScope && pScope->CanCheckSlewing())
     {
@@ -1619,6 +1623,7 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
 
     m_assumeOrthogonal = new wxCheckBox(GetParentWindow(cbAssumeOrthogonal), wxID_ANY,
         _("Assume Dec orthogonal to RA"));
+    m_assumeOrthogonal->Enable(enableCtrls);
     AddCtrl(CtrlMap, cbAssumeOrthogonal, m_assumeOrthogonal,
         _("Assume Dec axis is perpendicular to RA axis, regardless of calibration. Prevents RA periodic error from affecting Dec calibration. Option takes effect when calibrating DEC."));
 }
