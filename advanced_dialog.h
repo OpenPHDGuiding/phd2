@@ -38,6 +38,7 @@
 class MyFrame;
 class MyFrameConfigDialogPane;
 class MyFrameConfigDialogCtrlSet;
+class MountConfigDialogCtrlSet;
 class CameraConfigDialogPane;
 class GuiderConfigDialogPane;
 
@@ -76,6 +77,12 @@ enum BRAIN_CTRL_IDS
     cbAutoRestoreCal,
     cbFastRecenter,
     szStarTracking,
+    cbClearCalibration,
+    cbEnableGuiding,
+    szCalibrationDuration,
+    cbReverseDecOnFlip,
+    cbAssumeOrthogonal,
+    cbSlewDetection,
     GUIDER_TAB_BOUNDARY
 
 };
@@ -113,7 +120,7 @@ class AdvancedDialog : public wxDialog
     MyFrameConfigDialogPane *m_pGlobalPane;
     Guider::GuiderConfigDialogPane* m_pGuiderPane;
     CameraConfigDialogPane *m_pCameraPane;
-    ConfigDialogPane *m_pMountPane;
+    Mount::MountConfigDialogPane *m_pMountPane;
     ConfigDialogPane *m_pAoPane;
     ConfigDialogPane *m_rotatorPane;
 
@@ -122,9 +129,11 @@ class AdvancedDialog : public wxDialog
     MyFrameConfigDialogCtrlSet *m_pGlobalCtrlSet;
     CameraConfigDialogCtrlSet *m_pCameraCtrlSet;
     GuiderConfigDialogCtrlSet *m_pGuiderCtrlSet;
+    MountConfigDialogCtrlSet *m_pScopeCtrlSet;
     wxPanel *m_pGlobalSettingsPanel;
     wxPanel *m_pCameraSettingsPanel;
     wxPanel *m_pGuiderSettingsPanel;
+    wxPanel *m_pScopeSettingsPanel;
 
 public:
     AdvancedDialog(MyFrame *pFrame);

@@ -1174,7 +1174,7 @@ const char *StepGuider::DirectionChar(GUIDE_DIRECTION d)
     }
 }
 
-ConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
+Mount::MountConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
 {
     return new StepGuiderConfigDialogPane(pParent, this);
 }

@@ -35,6 +35,8 @@
 #ifndef CONFIG_DIALOG_H_INCLUDED
 #define CONFIG_DIALOG_H_INCLUDED
 
+enum BRAIN_CTRL_IDS;
+struct BrainCtrlInfo;
 
 class ConfigDialogPane : public wxStaticBoxSizer
 {

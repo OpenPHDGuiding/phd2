@@ -47,6 +47,25 @@ enum Calibration_Issues
 
 #define CALIBRATION_RATE_UNCALIBRATED 123e4
 
+class Scope;
+
+class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
+{
+    Scope* m_pScope;
+    wxSpinCtrl *m_pCalibrationDuration;
+    wxCheckBox *m_pNeedFlipDec;
+    wxCheckBox *m_pStopGuidingWhenSlewing;
+    wxCheckBox *m_assumeOrthogonal;
+
+    void OnCalcCalibrationStep(wxCommandEvent& evt);
+
+public:
+    ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~ScopeConfigDialogCtrlSet();
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+};
+
 class Scope : public Mount
 {
     int m_calibrationDuration;
@@ -126,6 +145,7 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+        virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     };
 
     class ScopeGraphControlPane : public GraphControlPane
@@ -161,7 +181,9 @@ public:
     virtual DEC_GUIDE_MODE GetDecGuideMode(void);
     virtual bool SetDecGuideMode(int decGuideMode);
 
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();
     virtual wxString CalibrationSettingsSummary();

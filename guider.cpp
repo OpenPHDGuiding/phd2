@@ -1402,14 +1402,29 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
 {
     this->Add(Ctrl(cbFastRecenter));
     this->Add(Szr(szFocalLength));
-    this->Add(Szr(szStarTracking));
+    if (pMount)
+    {
+        this->Add(Ctrl(cbAutoRestoreCal));
+        this->Add(Ctrl(cbClearCalibration));
+        this->Add(Ctrl(cbAssumeOrthogonal));
+        this->Add(Szr(szCalibrationDuration));
+        this->Add(Ctrl(cbEnableGuiding));
+        this->Add(Ctrl(cbReverseDecOnFlip));
+        this->Add(Szr(szStarTracking));
+        try
+        {
+            this->Add(Ctrl(cbSlewDetection));
+        }
+        catch (const wxString& msg)
+        {
+            POSSIBLY_UNUSED(msg);
+        }
+    }
 }
 
 Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
 {
 }
-
-
 
 void Guider::GuiderConfigDialogPane::LoadValues(void)
 {

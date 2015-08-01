@@ -692,7 +692,7 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
 
 #define Ctrl(n) (wxWindow*)CtrlMap[n].panelCtrl
 #define Szr(n) (wxSizer*)CtrlMap[n].panelCtrl
-void CameraConfigDialogPane::LayoutControls(GuideCamera* pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
     wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
     wxBoxSizer *pTopline = new wxBoxSizer(wxHORIZONTAL);

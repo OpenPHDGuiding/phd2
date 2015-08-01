@@ -103,6 +103,19 @@ struct MoveResultInfo
     MoveResultInfo() : amountMoved(0), limited(false) { }
 };
 
+class MountConfigDialogCtrlSet : public ConfigDialogCtrlSet
+{
+    Mount* m_pMount;
+    wxCheckBox *m_pClearCalibration;
+    wxCheckBox *m_pEnableGuide;
+
+public:
+    MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~MountConfigDialogCtrlSet();
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+};
+
 class Mount : public wxMessageBoxProxy
 {
     bool m_connected;
@@ -127,9 +140,10 @@ protected:
     BacklashComp *m_backlashComp;
 
     // Things related to the Advanced Config Dialog
-protected:
+public:
     class MountConfigDialogPane : public wxEvtHandler, public ConfigDialogPane
     {
+    protected:
         Mount *m_pMount;
         wxCheckBox *m_pClearCalibration;
         wxCheckBox *m_pEnableGuide;
@@ -146,6 +160,8 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+        virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+
         virtual void Undo(void);
 
         void OnXAlgorithmSelected(wxCommandEvent& evt);
@@ -219,7 +235,9 @@ public:
 
     virtual bool GuidingCeases(void) = 0;
 
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
+    virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+
     virtual wxString GetMountClassName() const = 0;
 
     GuideAlgorithm *GetXGuideAlgorithm(void) const;

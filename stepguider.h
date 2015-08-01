@@ -117,7 +117,7 @@ protected:
     friend class GraphLogWindow;
 
 public:
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual wxString GetSettingsSummary(void);
     virtual wxString CalibrationSettingsSummary(void);
     virtual wxString GetMountClassName(void) const;
