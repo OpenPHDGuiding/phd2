@@ -499,6 +499,9 @@ if (WIN32)
       ${phd_src_dir}/comdispatch.cpp
       ${phd_src_dir}/phd.rc   # resource file
      )
+  include_directories("C:/Program Files (x86)/Visual Leak Detector/include")
+  link_directories("C:/Program Files (x86)/Visual Leak Detector/lib/win32")
+
 endif()
 
 source_group(src FILES ${phd2_SRC})
