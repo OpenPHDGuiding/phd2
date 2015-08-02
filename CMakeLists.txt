@@ -208,6 +208,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_SSPIAG.h
   ${phd_src_dir}/cam_Starfish.cpp
   ${phd_src_dir}/cam_Starfish.h
+  ${phd_src_dir}/cam_Altair.cpp
+  ${phd_src_dir}/cam_Altair.h
   ${phd_src_dir}/cam_StarShootDSCI.cpp
   ${phd_src_dir}/cam_StarShootDSCI.h
   ${phd_src_dir}/cam_SXV.cpp
