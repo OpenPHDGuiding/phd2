@@ -85,7 +85,7 @@ extern "C" {
 #define ALTAIR_FLAG_MONO               0x00000010  /* monochromatic */
 #define ALTAIR_FLAG_BINSKIP_SUPPORTED  0x00000020  /* support bin/skip mode, see Altair_put_Mode and Altair_get_Mode */
 #define ALTAIR_FLAG_USB30              0x00000040  /* USB 3.0 */
-#define ALTAIR_FLAG_COOLED             0x00000080  /* Cooled */
+#define ALTAIR_FLAG_TEC             0x00000080  /* Cooled */
 #define ALTAIR_FLAG_USB30_OVER_USB20   0x00000100  /* usb3.0 camera connected to usb2.0 port */
 #define ALTAIR_FLAG_ST4                0x00000200  /* ST4 */
 #define ALTAIR_FLAG_GETTEMPERATURE     0x00000400  /* support to get the temperature of sensor */
@@ -95,7 +95,7 @@ extern "C" {
 #define ALTAIR_FLAG_BITDEPTH14         0x00004000  /* Maximum Bit Depth = 14 */
 #define ALTAIR_FLAG_BITDEPTH16         0x00008000  /* Maximum Bit Depth = 16 */
 #define ALTAIR_FLAG_FAN                0x00010000  /* cooling fan */
-#define ALTAIR_FLAG_COOLERONOFF        0x00020000  /* cooler can be turn on or off */
+#define ALTAIR_FLAG_TECONOFF        0x00020000  /* cooler can be turn on or off */
 #define ALTAIR_FLAG_ISP                0x00040000  /* image signal processing supported */
 #define ALTAIR_FLAG_TRIGGER            0x00080000  /* support the trigger mode */
 
@@ -440,11 +440,13 @@ extern "C" {
 #define ALTAIR_OPTION_HISTOGRAM            0x05    /* 0 = only one, 1 = continue mode */
 #define ALTAIR_OPTION_BITDEPTH             0x06    /* 0 = 8bits mode, 1 = 16bits mode */
 #define ALTAIR_OPTION_FAN                  0x07    /* 0 = turn off the cooling fan, 1 = turn on the cooling fan */
-#define ALTAIR_OPTION_COOLER               0x08    /* 0 = turn off cooler, 1 = turn on cooler */
+#define ALTAIR_OPTION_TEC				   0x08    /* 0 = turn off cooler, 1 = turn on cooler */
 #define ALTAIR_OPTION_LINEAR               0x09    /* 0 = turn off tone linear, 1 = turn on tone linear */
 #define ALTAIR_OPTION_CURVE                0x0a    /* 0 = turn off tone curve, 1 = turn on tone curve */
 #define ALTAIR_OPTION_TRIGGER              0x0b    /* 0 = continuous mode, 1 = trigger mode, default value =  0 */
 #define ALTAIR_OPTION_RGB48                0x0c    /* enable RGB48 format when bitdepth > 8 */
+#define ALTAIR_OPTION_TECTARGET            0x0f    /* get or set the target temperature of the thermoelectric cooler, in degree Celsius */
+
 
 	altair_ports(HRESULT)  Altair_put_Option(HAltair h, unsigned iOption, unsigned iValue);
 	altair_ports(HRESULT)  Altair_get_Option(HAltair h, unsigned iOption, unsigned* piValue);
