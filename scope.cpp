@@ -1360,7 +1360,7 @@ Mount::MountConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)
 }
 
 Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope)
-    : MountConfigDialogPane(pParent, _("Mount Settings"), pScope)
+    : MountConfigDialogPane(pParent, _("Guide Algorithm Settings"), pScope)
 {
     //int width;
 
@@ -1442,20 +1442,20 @@ void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BR
 
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
 
-    if (m_pScope)
-    {
-        width = StringWidth(_T("00000"));
+    //if (m_pScope)
+    //{
+    //    width = StringWidth(_T("00000"));
 
-        wxBoxSizer *compSizer = new wxBoxSizer(wxHORIZONTAL);
-        m_pUseBacklashComp = new wxCheckBox(pParent, wxID_ANY, _("Declination Backlash Comp"));
-        m_pUseBacklashComp->SetToolTip(_("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
-        compSizer->Add(m_pUseBacklashComp, wxSizerFlags().Expand().Border(wxALL, 3));
-        m_pBacklashPulse = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);
-        wxSizer *sizer_temp = MakeLabeledControl(_("Amount"), m_pBacklashPulse,
-            _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."));
-        compSizer->Add(sizer_temp, wxSizerFlags().Expand().Border(wxALL, 3));
-        DoAdd(compSizer);
+        //wxBoxSizer *compSizer = new wxBoxSizer(wxHORIZONTAL);
+        //m_pUseBacklashComp = new wxCheckBox(pParent, wxID_ANY, _("Declination Backlash Comp"));
+        //m_pUseBacklashComp->SetToolTip(_("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
+        //compSizer->Add(m_pUseBacklashComp, wxSizerFlags().Expand().Border(wxALL, 3));
+        //m_pBacklashPulse = new wxSpinCtrlDouble(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        //    wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);
+        //wxSizer *sizer_temp = MakeLabeledControl(_("Amount"), m_pBacklashPulse,
+        //    _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."));
+        //compSizer->Add(sizer_temp, wxSizerFlags().Expand().Border(wxALL, 3));
+        //DoAdd(compSizer);
 
         //m_pCalibrationDuration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
         //        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
@@ -1468,26 +1468,26 @@ void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BR
         //DoAdd(_("Calibration step (ms)"), m_pCalibrationDuration,
         //    _("How long a guide pulse should be used during calibration? Click \"Calculate\" to compute a suitable value."), pAutoDuration);
 
-        wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+        //wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
 
-        wxStaticText *lbl = new wxStaticText(pParent, wxID_ANY, _("Max Duration"));
-        sizer->Add(lbl, wxSizerFlags().Expand().Border(wxALL, 3).Align(wxALIGN_CENTER_VERTICAL));
+        //wxStaticText *lbl = new wxStaticText(pParent, wxID_ANY, _("Max Duration"));
+        //sizer->Add(lbl, wxSizerFlags().Expand().Border(wxALL, 3).Align(wxALIGN_CENTER_VERTICAL));
 
-        width = StringWidth(_T("00000"));
-        m_pMaxRaDuration = new wxSpinCtrl(pParent, wxID_ANY, _T("foo"), wxPoint(-1, -1),
-            wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
-        wxSizer *sizer1 = MakeLabeledControl(_("RA"), m_pMaxRaDuration,
-            _("Longest length of pulse to send in RA\nDefault = 1000 ms."));
-        sizer->Add(sizer1, wxSizerFlags().Expand().Border(wxALL, 3));
+        //width = StringWidth(_T("00000"));
+        //m_pMaxRaDuration = new wxSpinCtrl(pParent, wxID_ANY, _T("foo"), wxPoint(-1, -1),
+        //    wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
+        //wxSizer *sizer1 = MakeLabeledControl(_("RA"), m_pMaxRaDuration,
+        //    _("Longest length of pulse to send in RA\nDefault = 1000 ms."));
+        //sizer->Add(sizer1, wxSizerFlags().Expand().Border(wxALL, 3));
 
-        width = StringWidth(_T("00000"));
-        m_pMaxDecDuration = new wxSpinCtrl(pParent, wxID_ANY, _T("foo"), wxPoint(-1, -1),
-            wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
-        wxSizer *sizer2 = MakeLabeledControl(_("Dec"), m_pMaxDecDuration,
-            _("Longest length of pulse to send in declination\nDefault = 1000 ms.  Increase if drift is fast."));
-        sizer->Add(sizer2, wxSizerFlags().Expand().Border(wxALL, 3));
+        //width = StringWidth(_T("00000"));
+        //m_pMaxDecDuration = new wxSpinCtrl(pParent, wxID_ANY, _T("foo"), wxPoint(-1, -1),
+        //    wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
+        //wxSizer *sizer2 = MakeLabeledControl(_("Dec"), m_pMaxDecDuration,
+        //    _("Longest length of pulse to send in declination\nDefault = 1000 ms.  Increase if drift is fast."));
+        //sizer->Add(sizer2, wxSizerFlags().Expand().Border(wxALL, 3));
 
-        DoAdd(sizer);
+        //DoAdd(sizer);
 
         //m_pNeedFlipDec = new wxCheckBox(pParent, wxID_ANY, _("Reverse Dec output after meridian flip"));
         //DoAdd(m_pNeedFlipDec, _("Check if your mount needs Dec output reversed after doing Flip Calibration Data"));
@@ -1504,15 +1504,15 @@ void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BR
         //    _("Assume Dec orthogonal to RA"));
         //DoAdd(m_assumeOrthogonal, _("Assume Dec axis is perpendicular to RA axis, regardless of calibration. Prevents RA periodic error from affecting Dec calibration. Option takes effect when calibrating DEC."));
 
-        wxString dec_choices[] = {
-            _("Off"), _("Auto"), _("North"), _("South")
-        };
-        width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
-        m_pDecMode = new wxChoice(pParent, wxID_ANY, wxPoint(-1, -1),
-            wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
-        DoAdd(_("Dec guide mode"), m_pDecMode,
-            _("Guide in declination as well?"));
-    }
+        //wxString dec_choices[] = {
+        //    _("Off"), _("Auto"), _("North"), _("South")
+        //};
+        //width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
+        //m_pDecMode = new wxChoice(pParent, wxID_ANY, wxPoint(-1, -1),
+        //    wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
+        //DoAdd(_("Dec guide mode"), m_pDecMode,
+        //    _("Guide in declination as well?"));
+    //}
 }
 
 void Scope::ScopeConfigDialogPane::OnCalcCalibrationStep(wxCommandEvent& evt)
@@ -1550,29 +1550,29 @@ void Scope::ScopeConfigDialogPane::LoadValues(void)
 {
     MountConfigDialogPane::LoadValues();
     //m_pCalibrationDuration->SetValue(m_pScope->GetCalibrationDuration());
-    m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
-    m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
-    m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
+    //m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
+    //m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
+    //m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
     //m_pNeedFlipDec->SetValue(m_pScope->CalibrationFlipRequiresDecFlip());
     //if (m_pStopGuidingWhenSlewing)
     //    m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
     //m_assumeOrthogonal->SetValue(m_pScope->IsAssumeOrthogonal());
-    m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
-    m_pBacklashPulse->SetValue(m_pScope->m_backlashComp->GetBacklashPulse());
+    //m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
+    //m_pBacklashPulse->SetValue(m_pScope->m_backlashComp->GetBacklashPulse());
 }
 
 void Scope::ScopeConfigDialogPane::UnloadValues(void)
 {
     //m_pScope->SetCalibrationDuration(m_pCalibrationDuration->GetValue());
-    m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
-    m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
-    m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
+    //m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
+    //m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
+    //m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
     //m_pScope->SetCalibrationFlipRequiresDecFlip(m_pNeedFlipDec->GetValue());
     //if (m_pStopGuidingWhenSlewing)
     //    m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     //m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
-    m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
-    m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
+    //m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
+    //m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
 
     MountConfigDialogPane::UnloadValues();
 }
@@ -1626,6 +1626,32 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
     m_assumeOrthogonal->Enable(enableCtrls);
     AddCtrl(CtrlMap, cbAssumeOrthogonal, m_assumeOrthogonal,
         _("Assume Dec axis is perpendicular to RA axis, regardless of calibration. Prevents RA periodic error from affecting Dec calibration. Option takes effect when calibrating DEC."));
+
+    if (pScope)
+    {
+        m_pUseBacklashComp = new wxCheckBox(GetParentWindow(cbDecComp), wxID_ANY, _("Use Backlash Comp"));
+        AddCtrl(CtrlMap, cbDecComp, m_pUseBacklashComp, _("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
+        m_pBacklashPulse = new wxSpinCtrlDouble(GetParentWindow(szDecCompAmt), wxID_ANY, wxEmptyString, wxDefaultPosition,
+            wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);
+        AddGroup(CtrlMap, szDecCompAmt, (MakeLabeledControl(szDecCompAmt, _("Amount"), m_pBacklashPulse, _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."))));
+
+        width = StringWidth(_T("00000"));
+        m_pMaxRaDuration = new wxSpinCtrl(GetParentWindow(szMaxRAAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
+            wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxRA_Dur"));
+        AddLabeledCtrl(CtrlMap, szMaxRAAmt, _("Max RA Duration"), m_pMaxRaDuration, _("Longest length of pulse to send in RA\nDefault = 1000 ms."));
+
+        m_pMaxDecDuration = new wxSpinCtrl(GetParentWindow(szMaxDecAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
+            wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
+        AddLabeledCtrl(CtrlMap, szMaxDecAmt, _("Max Dec Duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 1000 ms.  Increase if drift is fast."));
+
+        wxString dec_choices[] = {
+            _("Off"), _("Auto"), _("North"), _("South")
+        };
+        width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
+        m_pDecMode = new wxChoice(GetParentWindow(szDecGuideMode), wxID_ANY, wxPoint(-1, -1),
+            wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
+        AddLabeledCtrl(CtrlMap, szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
+    }
 }
 
 ScopeConfigDialogCtrlSet::~ScopeConfigDialogCtrlSet()
@@ -1641,6 +1667,11 @@ void ScopeConfigDialogCtrlSet::LoadValues()
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
     m_assumeOrthogonal->SetValue(m_pScope->IsAssumeOrthogonal());
+    m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
+    m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
+    m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
+    m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
+    m_pBacklashPulse->SetValue(m_pScope->m_backlashComp->GetBacklashPulse());
 }
 
 void ScopeConfigDialogCtrlSet::UnloadValues()
@@ -1650,6 +1681,11 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
+    m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
+    m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
+    m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
+    m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
+    m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
     MountConfigDialogCtrlSet::UnloadValues();
 }
 

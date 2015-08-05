@@ -999,10 +999,11 @@ GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
         "If star mass change detection is not enabled then this setting is ignored."));
 
 
-    wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(1, 2, 5, 15);
+    wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(1, 3, 5, 15);
     pTrackingParams->Add(pSearchRegion);
-    pTrackingParams->Add(m_pEnableStarMassChangeThresh);
     pTrackingParams->Add(pMass);
+    pTrackingParams->Add(m_pEnableStarMassChangeThresh);
+
     AddGroup(CtrlMap, szStarTracking, pTrackingParams);
 
 }

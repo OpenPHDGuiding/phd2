@@ -702,36 +702,38 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAI
     pTopline->Add(Szr(szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 30).Expand());
     pGenGroup->Add(pTopline, def_flags);
     pGenGroup->Add(Szr(szAutoExposure), def_flags);
-    this->Add(pGenGroup, def_flags);
 
     // Specific controls
     wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-specific Properties"));
     if (pCamera)
     {
         int numItems = (int)pCamera->HasGainControl + (int)pCamera->HasDelayParam + (int)pCamera->HasPortNum + 2;
-        wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 2, 15, 15);
+        wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 3, 15, 15);
 
-        def_flags = wxSizerFlags(0).Border(wxTOP, 5).Border(wxLEFT, 20).Expand();
-        pDetailsSizer->Add(Szr(szPixelSize), def_flags);
-        pDetailsSizer->Add(Szr(szCameraTimeout), def_flags);
-        if (pCamera->HasSubframes)
-            pDetailsSizer->Add(Ctrl(cbUseSubFrames), def_flags);
+        wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
+        pDetailsSizer->Add(Szr(szPixelSize));
         if (pCamera->HasGainControl)
-            pDetailsSizer->Add(Szr(szGain), def_flags);
+            pDetailsSizer->Add(Szr(szGain));
+        pDetailsSizer->Add(Szr(szCameraTimeout));
+        if (pCamera->HasSubframes)
+            pDetailsSizer->Add(Ctrl(cbUseSubFrames));
         if (pCamera->HasDelayParam)
-            pDetailsSizer->Add(Szr(szDelay), def_flags);
+            pDetailsSizer->Add(Szr(szDelay));
         if (pCamera->HasPortNum)
-            pDetailsSizer->Add(Szr(szPort), def_flags);
-        pSpecGroup->Add(pDetailsSizer, def_flags);
-        pSpecGroup->Layout();
+            pDetailsSizer->Add(Szr(szPort));
+        pSpecGroup->Add(pDetailsSizer, spec_flags);
         }
     else
     {
         wxStaticText *pNoCam = new wxStaticText(m_pParent, wxID_ANY, _("No camera specified"));
         pSpecGroup->Add(pNoCam, wxSizerFlags().Align(wxALIGN_CENTER_HORIZONTAL));
         pSpecGroup->Layout();
+
     }
+    this->Add(pGenGroup, def_flags);
     this->Add(pSpecGroup, wxSizerFlags(0).Border(wxALL, 10).Expand());
+    this->Layout();
+    Fit(m_pParent);
 }
 CameraConfigDialogPane::~CameraConfigDialogPane(void)
 {

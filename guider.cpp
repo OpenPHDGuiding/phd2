@@ -1405,34 +1405,39 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
     wxStaticBoxSizer *pStarTrack = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Guide star tracking"));
     wxStaticBoxSizer *pCalib = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Calibration"));
     wxStaticBoxSizer *pShared = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Shared Parameters"));
-    wxFlexGridSizer *pCalibSizer = new wxFlexGridSizer(3, 2, 15, 15);
-    wxFlexGridSizer *pSharedSizer = new wxFlexGridSizer(2, 2, 15, 15);
+    wxFlexGridSizer *pCalibSizer = new wxFlexGridSizer(3, 2, 10, 10);
+    wxFlexGridSizer *pSharedSizer = new wxFlexGridSizer(2, 2, 10, 10);
 
     pStarTrack->Add(Szr(szStarTracking), def_flags);
-    this->Add(pStarTrack, def_flags);
+    pStarTrack->Layout();
 
     pCalibSizer->Add(Szr(szFocalLength));
-    pCalibSizer->Add(Szr(szCalibrationDuration));
+    pCalibSizer->Add(Szr(szCalibrationDuration), wxSizerFlags(0).Border(wxLEFT, 90));
     pCalibSizer->Add(Ctrl(cbAutoRestoreCal));
-    pCalibSizer->Add(Ctrl(cbClearCalibration));
-    pCalibSizer->Add(Ctrl(cbAssumeOrthogonal));
+    pCalibSizer->Add(Ctrl(cbAssumeOrthogonal), wxSizerFlags(0).Border(wxLEFT, 90));
+    pCalibSizer->Add(Ctrl(cbClearCalibration), wxSizerFlags(0).Border(wxTOP, 5));
     pCalib->Add(pCalibSizer, def_flags);
-    this->Add(pCalib, def_flags);
+    pCalib->Layout();
 
     pSharedSizer->Add(Ctrl(cbEnableGuiding));
-    pSharedSizer->Add(Ctrl(cbFastRecenter));
-    pSharedSizer->Add(Ctrl(cbReverseDecOnFlip));
+    pSharedSizer->Add(Ctrl(cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 40));
+    pSharedSizer->Add(Ctrl(cbReverseDecOnFlip), wxSizerFlags(0).Border(wxTOP, 5));
     // Might not have slew-checking option
     try
     {
-        pSharedSizer->Add(Ctrl(cbSlewDetection));
+        pSharedSizer->Add(Ctrl(cbSlewDetection), def_flags);
     }
     catch (const wxString& msg)
     {
         POSSIBLY_UNUSED(msg);
     }
     pShared->Add(pSharedSizer, def_flags);
+    pShared->Layout();
+
+    this->Add(pStarTrack, def_flags);
+    this->Add(pCalib, def_flags);
     this->Add(pShared, def_flags);
+    Fit(m_pParent);
 
 }
 

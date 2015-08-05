@@ -145,6 +145,7 @@ public:
     {
     protected:
         Mount *m_pMount;
+        wxWindow* m_pParent;
         wxCheckBox *m_pClearCalibration;
         wxCheckBox *m_pEnableGuide;
         wxChoice   *m_pXGuideAlgorithmChoice;
@@ -153,6 +154,9 @@ public:
         int        m_initYGuideAlgorithmSelection;
         ConfigDialogPane *m_pXGuideAlgorithmConfigDialogPane;
         ConfigDialogPane *m_pYGuideAlgorithmConfigDialogPane;
+        wxStaticBoxSizer* m_pAlgoBox;
+        wxStaticBoxSizer* m_pRABox;
+        wxStaticBoxSizer* m_pDecBox;
 
     public:
         MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount);
@@ -181,7 +185,7 @@ public:
     void Mount::TestTransforms(void);
 #endif
 
-    // functions with an implemenation in Mount that cannot be over-ridden
+    // functions with an implementation in Mount that cannot be over-ridden
     // by a subclass
 public:
 

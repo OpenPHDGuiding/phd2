@@ -83,7 +83,13 @@ enum BRAIN_CTRL_IDS
     cbReverseDecOnFlip,
     cbAssumeOrthogonal,
     cbSlewDetection,
-    GUIDER_TAB_BOUNDARY
+    GUIDER_TAB_BOUNDARY,
+    cbDecComp,
+    szDecCompAmt,
+    szMaxRAAmt,
+    szMaxDecAmt,
+    szDecGuideMode,
+    MOUNT_TAB_BOUNDARY          // ----------- end of mount tab controls
 
 };
 

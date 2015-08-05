@@ -104,7 +104,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     m_pScopeSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pScopeTabSizer = new wxBoxSizer(wxVERTICAL);
     m_pScopeSettingsPanel->SetSizer(pScopeTabSizer);
-    m_pNotebook->AddPage(m_pScopeSettingsPanel, _("Mount"));
+    m_pNotebook->AddPage(m_pScopeSettingsPanel, _("Algorithms"));
 
     // Build the ConfigControlSets
     m_pGlobalCtrlSet = pFrame->GetConfigDlgCtrlSet(pFrame, this, m_brainCtrls);
@@ -209,6 +209,9 @@ wxWindow* AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
     else
     if (id < GUIDER_TAB_BOUNDARY)
         return (wxWindow*)m_pGuiderSettingsPanel;
+    else
+    if (id < MOUNT_TAB_BOUNDARY)
+        return (wxWindow*)m_pScopeSettingsPanel;
     else
         return NULL;              // FIX THIS
 }

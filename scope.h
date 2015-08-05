@@ -56,6 +56,11 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxCheckBox *m_pNeedFlipDec;
     wxCheckBox *m_pStopGuidingWhenSlewing;
     wxCheckBox *m_assumeOrthogonal;
+    wxSpinCtrl *m_pMaxRaDuration;
+    wxSpinCtrl *m_pMaxDecDuration;
+    wxChoice   *m_pDecMode;
+    wxCheckBox *m_pUseBacklashComp;
+    wxSpinCtrlDouble *m_pBacklashPulse;
 
     void OnCalcCalibrationStep(wxCommandEvent& evt);
 
@@ -169,6 +174,7 @@ protected:
     ScopeGraphControlPane *m_graphControlPane;
 
     friend class GraphLogWindow;
+    friend class ScopeConfigDialogCtrlSet;
 
 public:
 
