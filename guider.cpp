@@ -1386,18 +1386,11 @@ Guider::GuiderConfigDialogPane *Guider::GetConfigDialogPane(wxWindow *pParent)
 }
 
 Guider::GuiderConfigDialogPane::GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider)
-    : ConfigDialogPane(_("Guider Settings"), pParent)
+: ConfigDialogPane(_("Guider Settings"), pParent)
 {
-    //m_pGuider = pGuider;
-    //m_pScaleImage = new wxCheckBox(pParent, wxID_ANY,_("Always Scale Images"));
-    //DoAdd(m_pScaleImage, _("Always scale images to fill window"));
-
-    //m_pEnableFastRecenter = new wxCheckBox(pParent, wxID_ANY, _("Fast recenter after calibration or dither"));
-    //DoAdd(m_pEnableFastRecenter, _("Speed up calibration and dithering by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration or dither."));
+    m_pGuider = pGuider;
 }
 
-#define Ctrl(n) (wxWindow*)CtrlMap[n].panelCtrl
-#define Szr(n) (wxSizer*)CtrlMap[n].panelCtrl
 void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
@@ -1408,30 +1401,25 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
     wxFlexGridSizer *pCalibSizer = new wxFlexGridSizer(3, 2, 10, 10);
     wxFlexGridSizer *pSharedSizer = new wxFlexGridSizer(2, 2, 10, 10);
 
-    pStarTrack->Add(Szr(szStarTracking), def_flags);
+    pStarTrack->Add(GetSizerCtrl(CtrlMap, szStarTracking), def_flags);
     pStarTrack->Layout();
 
-    pCalibSizer->Add(Szr(szFocalLength));
-    pCalibSizer->Add(Szr(szCalibrationDuration), wxSizerFlags(0).Border(wxLEFT, 90));
-    pCalibSizer->Add(Ctrl(cbAutoRestoreCal));
-    pCalibSizer->Add(Ctrl(cbAssumeOrthogonal), wxSizerFlags(0).Border(wxLEFT, 90));
-    pCalibSizer->Add(Ctrl(cbClearCalibration), wxSizerFlags(0).Border(wxTOP, 5));
+    pCalibSizer->Add(GetSizerCtrl(CtrlMap, szFocalLength));
+    pCalibSizer->Add(GetSizerCtrl(CtrlMap, szCalibrationDuration), wxSizerFlags(0).Border(wxLEFT, 90));
+    pCalibSizer->Add(GetSingleCtrl(CtrlMap, cbAutoRestoreCal));
+    pCalibSizer->Add(GetSingleCtrl(CtrlMap, cbAssumeOrthogonal), wxSizerFlags(0).Border(wxLEFT, 90));
+    pCalibSizer->Add(GetSingleCtrl(CtrlMap, cbClearCalibration), wxSizerFlags(0).Border(wxTOP, 5));
     pCalib->Add(pCalibSizer, def_flags);
     pCalib->Layout();
 
-    pSharedSizer->Add(Ctrl(cbEnableGuiding));
-    pSharedSizer->Add(Ctrl(cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 40));
-    pSharedSizer->Add(Ctrl(cbReverseDecOnFlip), wxSizerFlags(0).Border(wxTOP, 5));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, cbEnableGuiding));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 40));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, cbReverseDecOnFlip));
     // Might not have slew-checking option
-    try
-    {
-        wxWindow* ctl = Ctrl(cbSlewDetection);
-        pSharedSizer->Add(Ctrl(cbSlewDetection), wxSizerFlags(0).Border(wxLEFT, 40));
-    }
-    catch (const wxString& msg)
-    {
-        POSSIBLY_UNUSED(msg);
-    }
+    wxWindow* ctrl = GetSingleCtrl(CtrlMap, cbSlewDetection);
+    if (ctrl != NULL)
+        pSharedSizer->Add(ctrl, wxSizerFlags(0).Border(wxLEFT, 40));
+
     pShared->Add(pSharedSizer, def_flags);
     pShared->Layout();
 

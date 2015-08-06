@@ -690,18 +690,16 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     m_pParent = pParent;
 }
 
-#define Ctrl(n) (wxWindow*)CtrlMap[n].panelCtrl
-#define Szr(n) (wxSizer*)CtrlMap[n].panelCtrl
 void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
     wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
     wxBoxSizer *pTopline = new wxBoxSizer(wxHORIZONTAL);
     // Generic controls
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
-    pTopline->Add(Szr(szNoiseReduction));
-    pTopline->Add(Szr(szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 30).Expand());
+    pTopline->Add(GetSizerCtrl(CtrlMap, szNoiseReduction));
+    pTopline->Add(GetSizerCtrl(CtrlMap, szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 30).Expand());
     pGenGroup->Add(pTopline, def_flags);
-    pGenGroup->Add(Szr(szAutoExposure), def_flags);
+    pGenGroup->Add(GetSizerCtrl(CtrlMap, szAutoExposure), def_flags);
 
     // Specific controls
     wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-specific Properties"));
@@ -711,16 +709,16 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAI
         wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 3, 15, 15);
 
         wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
-        pDetailsSizer->Add(Szr(szPixelSize));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szPixelSize));
         if (pCamera->HasGainControl)
-            pDetailsSizer->Add(Szr(szGain));
-        pDetailsSizer->Add(Szr(szCameraTimeout));
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szGain));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szCameraTimeout));
         if (pCamera->HasSubframes)
-            pDetailsSizer->Add(Ctrl(cbUseSubFrames));
+            pDetailsSizer->Add(GetSingleCtrl(CtrlMap, cbUseSubFrames));
         if (pCamera->HasDelayParam)
-            pDetailsSizer->Add(Szr(szDelay));
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szDelay));
         if (pCamera->HasPortNum)
-            pDetailsSizer->Add(Szr(szPort));
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szPort));
         pSpecGroup->Add(pDetailsSizer, spec_flags);
         }
     else

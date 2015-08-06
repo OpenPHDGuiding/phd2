@@ -49,6 +49,8 @@ public:
     virtual void LoadValues(void) = 0;
     virtual void UnloadValues(void) = 0;
     virtual void Undo();
+    wxWindow* GetSingleCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id);
+    wxSizer*  GetSizerCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id);
 
 protected:
     wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = NULL);
@@ -63,8 +65,6 @@ protected:
 
 class MyFrame;
 class AdvancedDialog;
-enum BRAIN_CTRL_IDS;
-struct BrainCtrlInfo;
 
 class ConfigDialogCtrlSet
 {

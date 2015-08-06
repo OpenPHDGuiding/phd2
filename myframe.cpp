@@ -2310,23 +2310,20 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 //    Add(autoExp);
 }
 
-#define Ctrl(n) (wxWindow*)CtrlMap[n].panelCtrl
-#define Szr(n) (wxSizer*)CtrlMap[n].panelCtrl
-
 void MyFrameConfigDialogPane::LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
     BrainCtrlInfo thisCtrlInfo;
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
     wxFlexGridSizer *pTopGrid = new wxFlexGridSizer(3, 2, 15, 15);
 
-    pTopGrid->Add(Ctrl(cbResetConfig));
-    pTopGrid->Add(Ctrl(cbDontAsk));
-    pTopGrid->Add(Szr(szImageLoggingFormat));
-    pTopGrid->Add(Szr(szLanguage));
-    pTopGrid->Add(Ctrl(cbDitherRAOnly));
-    pTopGrid->Add(Szr(szDitherScale));
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, cbResetConfig));
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, cbDontAsk));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, szImageLoggingFormat));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, szLanguage));
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, cbDitherRAOnly));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, szDitherScale));
     this->Add(pTopGrid, sizer_flags);
-    this->Add(Szr(szLogFileInfo), sizer_flags);
+    this->Add(GetSizerCtrl(CtrlMap, szLogFileInfo), sizer_flags);
     Layout();
 }
 void MyFrameConfigDialogPane::OnDirSelect(wxCommandEvent& evt)

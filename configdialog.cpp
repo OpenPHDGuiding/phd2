@@ -111,6 +111,30 @@ void ConfigDialogPane::Undo(void)
 {
 }
 
+wxWindow* ConfigDialogPane::GetSingleCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id)
+{
+    wxWindow* ctrl = NULL;
+    try
+    {
+        ctrl = (wxWindow*)(CtrlMap.at(id)).panelCtrl;
+        if (ctrl != NULL)
+            CtrlMap[id].isPositioned = true;
+    }
+    catch (...)
+    {
+
+    }
+    return (ctrl);           // May return null, won't add entry in CtrlMap
+}
+
+wxSizer* ConfigDialogPane::GetSizerCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id)
+{
+    wxSizer* ctrl = (wxSizer*)(CtrlMap.at(id)).panelCtrl;
+    if (ctrl != NULL)
+        CtrlMap[id].isPositioned = true;
+    return (ctrl);           // May return null, won't add entry in CtrlMap
+}
+
 ConfigDialogCtrlSet::ConfigDialogCtrlSet(wxWindow *pParent, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo>& CtrlMap)
 {
     m_pParent = pParent;
