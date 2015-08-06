@@ -687,7 +687,7 @@ static wxSpinCtrlDouble *NewSpinnerDouble(wxWindow *parent, int width, double va
 CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera)
     : ConfigDialogPane(_("Camera Settings"), pParent)
 {
-
+    m_pParent = pParent;
 }
 
 #define Ctrl(n) (wxWindow*)CtrlMap[n].panelCtrl

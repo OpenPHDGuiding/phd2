@@ -1592,7 +1592,7 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
     width = StringWidth(_T("00000"));
 
     wxBoxSizer* pCalibSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pCalibrationDuration = new wxSpinCtrl(GetParentWindow(szCalibrationDuration), wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+    m_pCalibrationDuration = new wxSpinCtrl(GetParentWindow(szCalibrationDuration), wxID_ANY, wxEmptyString, wxPoint(-1, -1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
     pCalibSizer->Add(MakeLabeledControl(szCalibrationDuration, _("Calibration step (ms)"), m_pCalibrationDuration, 
         _("How long a guide pulse should be used during calibration? Click \"Calculate\" to compute a suitable value.")));

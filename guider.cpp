@@ -1425,7 +1425,8 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
     // Might not have slew-checking option
     try
     {
-        pSharedSizer->Add(Ctrl(cbSlewDetection), def_flags);
+        wxWindow* ctl = Ctrl(cbSlewDetection);
+        pSharedSizer->Add(Ctrl(cbSlewDetection), wxSizerFlags(0).Border(wxLEFT, 40));
     }
     catch (const wxString& msg)
     {

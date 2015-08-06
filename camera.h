@@ -57,6 +57,7 @@ public:
     CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
     virtual ~CameraConfigDialogPane(void);
 
+    wxWindow* m_pParent;
     void LayoutControls(GuideCamera* pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
