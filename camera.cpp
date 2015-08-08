@@ -746,17 +746,6 @@ void CameraConfigDialogPane::UnloadValues(void)
 {
 
 }
-//
-//double CameraConfigDialogPane::GetPixelSize(void)
-//{
-//    //return m_pPixelSize->GetValue();
-//    return 0;
-//}
-//
-//void CameraConfigDialogPane::SetPixelSize(double val)
-//{
-//    //m_pPixelSize->SetValue(val);
-//}
 
 CameraConfigDialogCtrlSet* GuideCamera::GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {

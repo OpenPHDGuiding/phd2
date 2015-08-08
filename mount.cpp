@@ -92,6 +92,7 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
     m_pDecBox = NULL;
 }
 
+// Lots of dynamic controls on this pane - keep the creation/management in ConfigDialogPane
 void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
     int width;
@@ -213,15 +214,12 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 
 void Mount::MountConfigDialogPane::LoadValues(void)
 {
-    //m_pClearCalibration->Enable(m_pMount->IsCalibrated());
-    //m_pClearCalibration->SetValue(false);
     m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithmSelection();
     m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
     m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
     m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithmSelection();
     m_pYGuideAlgorithmChoice->SetSelection(m_initYGuideAlgorithmSelection);
     m_pYGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
-    //m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
 
     if (m_pXGuideAlgorithmConfigDialogPane)
     {
@@ -236,13 +234,6 @@ void Mount::MountConfigDialogPane::LoadValues(void)
 
 void Mount::MountConfigDialogPane::UnloadValues(void)
 {
-    //if (m_pClearCalibration->IsChecked())
-    //{
-    //    m_pMount->ClearCalibration();
-    //    Debug.Write(wxString::Format("User cleared %s calibration\n", m_pMount->IsStepGuider() ? "AO" : "Mount"));
-    //}
-
-    //m_pMount->SetGuidingEnabled(m_pEnableGuide->GetValue());
 
     // note these two have to be before the SetXxxAlgorithm calls, because if we
     // changed the algorithm, the current one will get freed, and if we make
@@ -290,6 +281,8 @@ MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount
     return new MountConfigDialogCtrlSet(pParent, pMount, pAdvancedDialog, CtrlMap);
 }
 
+// These are only controls that are exported to other panes - all the other dynamically updated controls are handled in 
+// ConfigDialogPane
 MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {

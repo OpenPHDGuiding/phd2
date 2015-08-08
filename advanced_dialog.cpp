@@ -366,70 +366,36 @@ void AdvancedDialog::LoadValues(void)
     // Late-binding rebuild of all the panels
     if (m_rebuildPanels)
         RebuildPanels();
-
-    ConfigDialogPane *const panes[] =
-        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane, m_rotatorPane };
-
-
-    for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
+    // Load all the current params
+    m_pGlobalCtrlSet->LoadValues();
+    if (m_pCameraCtrlSet)
+        m_pCameraCtrlSet->LoadValues();
+    if (m_pGuiderCtrlSet)
+        m_pGuiderCtrlSet->LoadValues();
+    if (pMount)
     {
-        ConfigDialogPane *const pane = panes[i];
-        if (i == 0)
-            m_pGlobalCtrlSet->LoadValues();
-        else
-        if (i == 2 && m_pCameraCtrlSet)
-            m_pCameraCtrlSet->LoadValues();
-        else
-        if (i == 1 && m_pGuiderCtrlSet)
-            m_pGuiderCtrlSet->LoadValues();
-        else
-        if (i == 3)
-        {
-            if (pMount)
-            {
-                m_pScopeCtrlSet->LoadValues();
-                pane->LoadValues();
-            }
-
-        }
-        else
-        if (pane)
-            pane->LoadValues();
+        m_pScopeCtrlSet->LoadValues();
+        m_pMountPane->LoadValues();        
     }
-
     if (s_selectedPage != -1)
         m_pNotebook->ChangeSelection(s_selectedPage);
+
 }
 
 void AdvancedDialog::UnloadValues(void)
 {
-    ConfigDialogPane *const panes[] =
-        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane, m_rotatorPane };
-
-    for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
+    // Unload all the current params
+    m_pGlobalCtrlSet->UnloadValues();
+    if (m_pCameraCtrlSet)
+        m_pCameraCtrlSet->UnloadValues();
+    if (m_pGuiderCtrlSet)
+        m_pGuiderCtrlSet->UnloadValues();
+    if (pMount)
     {
-        ConfigDialogPane *const pane = panes[i];
-        if (i == 0)
-            m_pGlobalCtrlSet->UnloadValues();
-        else
-        if (i == 2 && m_pCameraCtrlSet)
-            m_pCameraCtrlSet->UnloadValues();
-        else
-        if (i == 1 && m_pGuiderCtrlSet)
-            m_pGuiderCtrlSet->UnloadValues();
-        else
-        if (i == 3)
-        {
-            if (pMount)
-            {
-                m_pScopeCtrlSet->UnloadValues();
-                pane->UnloadValues();
-            }
-        }
-        else
-        if (pane)
-            pane->UnloadValues();
+        m_pScopeCtrlSet->UnloadValues();
+        m_pMountPane->UnloadValues();
     }
+
 }
 
 void AdvancedDialog::Undo(void)
