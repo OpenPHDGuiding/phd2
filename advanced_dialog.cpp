@@ -419,13 +419,12 @@ void AdvancedDialog::EndModal(int retCode)
 
 int AdvancedDialog::GetFocalLength(void)
 {
-    return m_pGlobalCtrlSet->GetFocalLength();
-    
+    return m_pGlobalPane->GetFocalLength();
 }
 
 void AdvancedDialog::SetFocalLength(int val)
 {
-    m_pGlobalCtrlSet->SetFocalLength(val);
+    m_pGlobalPane->SetFocalLength(val);
 }
 
 double AdvancedDialog::GetPixelSize(void)
