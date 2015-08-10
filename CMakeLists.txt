@@ -290,6 +290,7 @@ set(scopes_SRC
   ${phd_src_dir}/scope_INDI.h
   ${phd_src_dir}/scope_INDI.cpp
   ${phd_src_dir}/scopes.h
+  ${phd_src_dir}/stepguider_simulator.h
   ${phd_src_dir}/stepguider_sxao.cpp
   ${phd_src_dir}/stepguider_sxao.h
   ${phd_src_dir}/stepguider.cpp
@@ -455,7 +456,6 @@ set(phd2_SRC
   ${phd_src_dir}/star.h
   ${phd_src_dir}/star_profile.cpp
   ${phd_src_dir}/star_profile.h
-  ${phd_src_dir}/stepguider_simulator.h
   ${phd_src_dir}/target.cpp
   ${phd_src_dir}/target.h
   ${phd_src_dir}/testguide.cpp
