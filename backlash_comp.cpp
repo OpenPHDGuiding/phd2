@@ -550,7 +550,7 @@ void BacklashTool::ShowGraph(wxDialog *pGA)
 
 void BacklashTool::CleanUp()
 {
-    m_scope->GetBacklashCompPtr()->Reset();        // Normal guiding will start, don't want old BC state applied
+    m_scope->GetBacklashComp()->Reset();        // Normal guiding will start, don't want old BC state applied
     pFrame->pGuider->EnableMeasurementMode(false);
 }
 

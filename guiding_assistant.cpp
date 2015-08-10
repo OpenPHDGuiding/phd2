@@ -643,7 +643,7 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
 
 void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
 {
-    BacklashComp* pComp = pMount->GetBacklashCompPtr();
+    BacklashComp *pComp = pMount->GetBacklashComp();
 
     pComp->SetBacklashPulse(m_backlashTool->GetBacklashResultMs());
     pComp->EnableBacklashComp(true);

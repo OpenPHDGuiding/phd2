@@ -263,6 +263,11 @@ int StepGuiderSimulator::MaxPosition(GUIDE_DIRECTION direction) const
     return SimAoParams::max_position;
 }
 
+bool StepGuiderSimulator::HasNonGuiMove(void)
+{
+    return true;
+}
+
 #endif // STEPGUIDER_SIMULATOR
 
 #ifdef ROTATOR_SIMULATOR

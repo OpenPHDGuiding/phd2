@@ -37,8 +37,8 @@
 #define MOUNT_H_INCLUDED
 
 #include "guide_algorithms.h"
-#include "messagebox_proxy.h"
 #include "image_math.h"
+#include "messagebox_proxy.h"
 
 class BacklashComp;
 
@@ -226,7 +226,7 @@ public:
     GuideAlgorithm *GetYGuideAlgorithm(void) const;
 
     bool GetLastCalibrationParams(Calibration *params);
-    BacklashComp *GetBacklashCompPtr() { return m_backlashComp; }
+    BacklashComp *GetBacklashComp() { return m_backlashComp; }
     void FlagBacklashOverShoot(double pixelAmount, GuideAxis axis);
 
     // virtual functions -- these CAN be overridden by a subclass, which should

@@ -34,8 +34,8 @@
  */
 
 #include "phd.h"
-#include "guiding_assistant.h"
 #include "backlash_comp.h"
+#include "guiding_assistant.h"
 
 #include <wx/tokenzr.h>
 
@@ -587,7 +587,7 @@ bool Mount::FlipCalibration(void)
 
 void Mount::FlagBacklashOverShoot(double pixelAmount, GuideAxis axis)
 {
-    if (m_backlashComp->IsEnabled() && axis == GUIDE_DEC && !IsStepGuider() && GetGuidingEnabled())
+    if (m_backlashComp && m_backlashComp->IsEnabled() && axis == GUIDE_DEC && !IsStepGuider() && GetGuidingEnabled())
         m_backlashComp->HandleOverShoot((int) (pixelAmount / m_cal.yRate));
 }
 
