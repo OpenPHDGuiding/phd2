@@ -43,6 +43,8 @@ Source: Release\SSPIAGCAM.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SSPIAGUSB_WIN.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\SXUSB.dll; DestDir: {app}; Flags: replacesameversion
 Source: Release\ASICamera2.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\AltairCamera.dll; DestDir: {app}; Flags: replacesameversion
+Source: Release\AltairCam.dll; DestDir: {app}; Flags: replacesameversion
 Source: ..\build\dark_mover.vbs; DestDir: {tmp}; Flags: replacesameversion
 ; Missing: TIS_DShowLib09.dll
 ; Missing: TIS_UDSHL09_vc10.dll

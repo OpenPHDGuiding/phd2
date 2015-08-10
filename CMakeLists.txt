@@ -208,6 +208,8 @@ set(cam_SRC
   ${phd_src_dir}/cam_SSPIAG.h
   ${phd_src_dir}/cam_Starfish.cpp
   ${phd_src_dir}/cam_Starfish.h
+  ${phd_src_dir}/cam_Altair.cpp
+  ${phd_src_dir}/cam_Altair.h
   ${phd_src_dir}/cam_StarShootDSCI.cpp
   ${phd_src_dir}/cam_StarShootDSCI.h
   ${phd_src_dir}/cam_SXV.cpp
@@ -497,6 +499,9 @@ if (WIN32)
       ${phd_src_dir}/comdispatch.cpp
       ${phd_src_dir}/phd.rc   # resource file
      )
+  include_directories("C:/Program Files (x86)/Visual Leak Detector/include")
+  link_directories("C:/Program Files (x86)/Visual Leak Detector/lib/win32")
+
 endif()
 
 source_group(src FILES ${phd2_SRC})
