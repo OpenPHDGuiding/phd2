@@ -132,18 +132,6 @@ protected:
     {
         Scope *m_pScope;
 
-        wxSpinCtrl *m_pCalibrationDuration;
-        wxSpinCtrl *m_pMaxRaDuration;
-        wxSpinCtrl *m_pMaxDecDuration;
-        wxChoice   *m_pDecMode;
-        wxCheckBox *m_pNeedFlipDec;
-        wxCheckBox *m_pStopGuidingWhenSlewing;
-        wxCheckBox *m_assumeOrthogonal;
-        wxCheckBox *m_pUseBacklashComp;
-        wxSpinCtrlDouble *m_pBacklashPulse;
-
-        void OnCalcCalibrationStep(wxCommandEvent& evt);
-
     public:
         ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
         ~ScopeConfigDialogPane(void);
@@ -188,7 +176,7 @@ public:
     virtual bool SetDecGuideMode(int decGuideMode);
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
 
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();

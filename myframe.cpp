@@ -2534,7 +2534,7 @@ void MyFrameConfigDialogCtrlSet::LoadValues()
     m_pLogDir->SetValue(GuideLog.GetLogDir());
     m_pLogDir->Enable(!pFrame->CaptureActive);
     m_pSelectDir->Enable(!pFrame->CaptureActive);
-    //m_pAutoLoadCalibration->SetValue(m_pFrame->GetAutoLoadCalibration());
+    m_pAutoLoadCalibration->SetValue(m_pFrame->GetAutoLoadCalibration());
 
     const AutoExposureCfg& cfg = m_pFrame->GetAutoExposureCfg();
     int idx = dur_index(cfg.minExposure);
@@ -2593,7 +2593,7 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
             Debug.ChangeDirLog(newdir);
         }
 
-        //m_pFrame->SetAutoLoadCalibration(m_pAutoLoadCalibration->GetValue());
+        m_pFrame->SetAutoLoadCalibration(m_pAutoLoadCalibration->GetValue());
 
         wxString sel = m_autoExpDurationMin->GetValue();
         int durationMin = m_pFrame->ExposureDurationFromSelection(sel);

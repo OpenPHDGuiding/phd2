@@ -41,6 +41,16 @@
 // a place to save id of selected panel so we can select the same panel next time the dialog is opened
 static int s_selectedPage = -1;
 
+Mount* AdvancedDialog::RealMount()
+{
+    Mount *mount = NULL;
+    if (pSecondaryMount)
+        mount = pSecondaryMount;
+    else if (pMount && !pMount->IsStepGuider())
+        mount = pMount;
+    return mount;
+
+}
 AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
@@ -105,15 +115,25 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxBoxSizer *pScopeTabSizer = new wxBoxSizer(wxVERTICAL);
     m_pScopeSettingsPanel->SetSizer(pScopeTabSizer);
     m_pNotebook->AddPage(m_pScopeSettingsPanel, _("Algorithms"));
+    // Devices pane - home for AO and rotator
+    m_pDevicesSettingsPanel = new wxPanel(m_pNotebook);
+    wxBoxSizer *pDevicesTabSizer = new wxBoxSizer(wxVERTICAL);
+    m_pDevicesSettingsPanel->SetSizer(pDevicesTabSizer);
+    m_pNotebook->AddPage(m_pDevicesSettingsPanel, _("Devices"));
 
-    // Build the ConfigControlSets
+    // Build the initial ConfigControlSets
     m_pGlobalCtrlSet = pFrame->GetConfigDlgCtrlSet(pFrame, this, m_brainCtrls);
     if (pCamera)
         m_pCameraCtrlSet = pCamera->GetConfigDlgCtrlSet(m_pCameraSettingsPanel, pCamera, this, m_brainCtrls);
     else
         m_pCameraCtrlSet = NULL;
     m_pGuiderCtrlSet = pFrame->pGuider->GetConfigDialogCtrlSet(m_pGuiderSettingsPanel, pFrame->pGuider, this, m_brainCtrls);
-    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, (Scope*)pMount, this, m_brainCtrls);
+
+    if (pMount && pMount->IsStepGuider())
+        m_pAOCtrlSet = new StepGuiderConfigDialogCtrlSet(m_pDevicesSettingsPanel, (StepGuider*)pMount, this, m_brainCtrls);
+    Mount* bigMount = RealMount();
+    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, (Scope*)bigMount, this, m_brainCtrls);
+    //m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, (Scope*)pMount, this, m_brainCtrls);
 
     // Populate global pane
     m_pGlobalPane = pFrame->GetConfigDialogPane(m_pGlobalSettingsPanel);
@@ -171,7 +191,11 @@ void AdvancedDialog::RebuildPanels(void)
         m_pMountPane->Clear(true);
         m_pScopeSettingsPanel->GetSizer()->Clear(true);
     }
-
+    if (m_pAOPane)
+    {
+        m_pAOPane->Clear(true);
+        m_pDevicesSettingsPanel->GetSizer()->Clear(true);
+    }
     m_brainCtrls.clear();
 
     m_pGlobalCtrlSet = m_pFrame->GetConfigDlgCtrlSet(m_pFrame, this, m_brainCtrls);
@@ -180,7 +204,13 @@ void AdvancedDialog::RebuildPanels(void)
     else
         m_pCameraCtrlSet = NULL;
     m_pGuiderCtrlSet = m_pFrame->pGuider->GetConfigDialogCtrlSet(m_pGuiderSettingsPanel, m_pFrame->pGuider, this, m_brainCtrls);
-    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, (Scope*)pMount, this, m_brainCtrls);
+
+    Mount *bigMount = RealMount();
+
+    if (pMount && pMount->IsStepGuider())
+        m_pAOCtrlSet = new StepGuiderConfigDialogCtrlSet(m_pDevicesSettingsPanel, pMount, this, m_brainCtrls);
+    // Need a scope ctrl set even if pMount is null - it exports generic controls needed by other panes
+    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, (Scope*)bigMount, this, m_brainCtrls);
 
     m_pGlobalPane->LayoutControls(m_brainCtrls);
     m_pGlobalPane->Layout();
@@ -191,6 +221,21 @@ void AdvancedDialog::RebuildPanels(void)
     m_pGuiderPane->Layout();
  
     AddMountPage();
+
+    AddAoPage();            // Will handle no AO case
+
+    if (m_pAOPane == NULL && m_rotatorPane == NULL)
+    {
+            int idx = m_pNotebook->FindPage(m_pDevicesSettingsPanel);
+            if (idx != wxNOT_FOUND)
+                m_pNotebook->RemovePage(idx);
+    }
+    else
+    {
+        int idx = m_pNotebook->FindPage(m_pDevicesSettingsPanel);
+        if (idx == wxNOT_FOUND)
+            m_pNotebook->AddPage(m_pDevicesSettingsPanel, _("Devices"));
+    }
 
     GetSizer()->Layout();
     GetSizer()->Fit(this);
@@ -211,13 +256,14 @@ wxWindow* AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
     if (id < MOUNT_TAB_BOUNDARY)
         return (wxWindow*)m_pScopeSettingsPanel;
     else
+    if (id < DEVICES_TAB_BOUNDARY)
+        return (wxWindow*)m_pDevicesSettingsPanel;
+    else
         return NULL;              // FIX THIS
 }
 
 void AdvancedDialog::AddCameraPage(void)
 {
-    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
-
     // Even if pCamera is null, the pane hosts other controls
     if (pCamera)
         m_pCameraPane = pCamera->GetConfigDialogPane(m_pCameraSettingsPanel);
@@ -232,14 +278,14 @@ void AdvancedDialog::AddCameraPage(void)
 
 void AdvancedDialog::AddMountPage(void)
 {
-    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
     const long ID_NOMOUNT = 99999;
 
-    Mount *mount = NULL;
-    if (pSecondaryMount)
-        mount = pSecondaryMount;
-    else if (pMount && !pMount->IsStepGuider())
-        mount = pMount;
+    //Mount *mount = NULL;
+    //if (pSecondaryMount)
+    //    mount = pSecondaryMount;
+    //else if (pMount && !pMount->IsStepGuider())
+    //    mount = pMount;
+    Mount* mount = RealMount();
 
     if (mount)
     {
@@ -263,28 +309,34 @@ void AdvancedDialog::AddMountPage(void)
 
 void AdvancedDialog::AddAoPage(void)
 {
-    wxASSERT(!m_aoPage);
+    //wxASSERT(!m_aoPage);
 
     if (pMount && pMount->IsStepGuider())
     {
         // We have an AO selected
 
-        wxPanel *pAoSettingsPanel = new wxPanel(m_pNotebook);
-        wxBoxSizer *pAoTabSizer = new wxBoxSizer(wxVERTICAL);
-        pAoSettingsPanel->SetSizer(pAoTabSizer);
-        m_pNotebook->InsertPage(AO_PAGE, pAoSettingsPanel, _("AO"));
+        //wxPanel *pAoSettingsPanel = new wxPanel(m_pNotebook);
+        //wxBoxSizer *pAoTabSizer = new wxBoxSizer(wxVERTICAL);
+        //pAoSettingsPanel->SetSizer(pAoTabSizer);
+        //m_pNotebook->InsertPage(AO_PAGE, pAoSettingsPanel, _("AO"));
 
-        m_pAoPane = pMount->GetConfigDialogPane(pAoSettingsPanel);
+        //m_pAoPane = pMount->GetConfigDialogPane(pAoSettingsPanel);
+        m_pAOPane = pMount->GetConfigDialogPane(m_pDevicesSettingsPanel);
+        m_pAOPane->LayoutControls(m_pDevicesSettingsPanel, m_brainCtrls);
+        m_pAOPane->Layout();
+
+        m_pDevicesSettingsPanel->GetSizer()->Add(m_pAOPane);
+        m_pDevicesSettingsPanel->Layout();
 
         // and the primary mount config goes on the Adaptive Optics tab
-        wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 2).Expand();
-        pAoTabSizer->Add(m_pAoPane, sizer_flags);
+        //wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL).Border(wxALL, 2).Expand();
+        //pAoTabSizer->Add(m_pAoPane, sizer_flags);
 
-        m_aoPage = pAoSettingsPanel;
+        //m_aoPage = pAoSettingsPanel;
     }
     else
     {
-        m_pAoPane = NULL;
+        m_pAOPane = NULL;
     }
 }
 
@@ -333,17 +385,18 @@ void AdvancedDialog::UpdateMountPage(void)
 
 void AdvancedDialog::UpdateAoPage(void)
 {
-    if (m_aoPage)
-    {
-        int idx = m_pNotebook->FindPage(m_aoPage);
-        wxASSERT(idx != wxNOT_FOUND);
-        m_pNotebook->DeletePage(idx);
-        m_aoPage = 0;
-    }
-    AddAoPage();
-    if (m_aoPage)
-        m_aoPage->Layout();
-    GetSizer()->Fit(this);
+    m_rebuildPanels = true;
+    //if (m_aoPage)
+    //{
+    //    int idx = m_pNotebook->FindPage(m_aoPage);
+    //    wxASSERT(idx != wxNOT_FOUND);
+    //    m_pNotebook->DeletePage(idx);
+    //    m_aoPage = 0;
+    //}
+    //AddAoPage();
+    //if (m_aoPage)
+    //    m_aoPage->Layout();
+    //GetSizer()->Fit(this);
 }
 
 void AdvancedDialog::UpdateRotatorPage(void)
@@ -363,6 +416,7 @@ void AdvancedDialog::UpdateRotatorPage(void)
 
 void AdvancedDialog::LoadValues(void)
 {
+    Mount* bigMount = RealMount();
     // Late-binding rebuild of all the panels
     if (m_rebuildPanels)
         RebuildPanels();
@@ -374,8 +428,16 @@ void AdvancedDialog::LoadValues(void)
         m_pGuiderCtrlSet->LoadValues();
     if (pMount)
     {
-        m_pScopeCtrlSet->LoadValues();
-        m_pMountPane->LoadValues();        
+        if (pMount->IsStepGuider())
+        {
+            m_pAOCtrlSet->LoadValues();
+            m_pAOPane->LoadValues();
+        }
+        if (bigMount)
+        {
+            m_pScopeCtrlSet->LoadValues();
+            m_pMountPane->LoadValues();
+        }
     }
     if (s_selectedPage != -1)
         m_pNotebook->ChangeSelection(s_selectedPage);
@@ -384,6 +446,7 @@ void AdvancedDialog::LoadValues(void)
 
 void AdvancedDialog::UnloadValues(void)
 {
+    Mount* bigMount = RealMount();
     // Unload all the current params
     m_pGlobalCtrlSet->UnloadValues();
     if (m_pCameraCtrlSet)
@@ -392,8 +455,16 @@ void AdvancedDialog::UnloadValues(void)
         m_pGuiderCtrlSet->UnloadValues();
     if (pMount)
     {
-        m_pScopeCtrlSet->UnloadValues();
-        m_pMountPane->UnloadValues();
+        if (pMount->IsStepGuider())
+        {
+            m_pAOCtrlSet->LoadValues();
+            m_pAOPane->UnloadValues();
+        }
+        if (bigMount)
+        {
+            m_pScopeCtrlSet->UnloadValues();
+            m_pMountPane->UnloadValues();
+        }
     }
 
 }
@@ -401,7 +472,7 @@ void AdvancedDialog::UnloadValues(void)
 void AdvancedDialog::Undo(void)
 {
     ConfigDialogPane *const panes[] =
-        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAoPane, m_rotatorPane };
+        { m_pGlobalPane, m_pGuiderPane, m_pCameraPane, m_pMountPane, m_pAOPane, m_rotatorPane };
 
     for (unsigned int i = 0; i < WXSIZEOF(panes); i++)
     {
@@ -419,12 +490,12 @@ void AdvancedDialog::EndModal(int retCode)
 
 int AdvancedDialog::GetFocalLength(void)
 {
-    return m_pGlobalPane->GetFocalLength();
+    return m_pGlobalCtrlSet->GetFocalLength();
 }
 
 void AdvancedDialog::SetFocalLength(int val)
 {
-    m_pGlobalPane->SetFocalLength(val);
+    m_pGlobalCtrlSet->SetFocalLength(val);
 }
 
 double AdvancedDialog::GetPixelSize(void)

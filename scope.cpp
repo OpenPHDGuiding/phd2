@@ -1367,35 +1367,8 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
 
 void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    // All of the scope UI controls are hosted elsewhere
+    // All of the scope UI controls are hosted in the parent
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
-}
-
-void Scope::ScopeConfigDialogPane::OnCalcCalibrationStep(wxCommandEvent& evt)
-{
-    int focalLength = 0;
-    double pixelSize = 0;
-    wxString configPrefix;
-    AdvancedDialog *pAdvancedDlg = pFrame->pAdvancedDialog;
-
-    if (pAdvancedDlg)
-    {
-        pixelSize = pAdvancedDlg->GetPixelSize();
-        focalLength = pAdvancedDlg->GetFocalLength();
-    }
-
-    CalstepDialog calc(m_pParent, focalLength, pixelSize);
-    if (calc.ShowModal() == wxID_OK)
-    {
-        int calibrationStep;
-        if (calc.GetResults(&focalLength, &pixelSize, &calibrationStep))
-        {
-            // Following sets values in the UI controls of the various dialog tabs - not underlying data values
-            pAdvancedDlg->SetFocalLength(focalLength);
-            pAdvancedDlg->SetPixelSize(pixelSize);
-            m_pCalibrationDuration->SetValue(calibrationStep);
-        }
-    }
 }
 
 Scope::ScopeConfigDialogPane::~ScopeConfigDialogPane(void)
@@ -1412,9 +1385,9 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     MountConfigDialogPane::UnloadValues();
 }
 
-MountConfigDialogCtrlSet *Scope::GetConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+MountConfigDialogCtrlSet *Scope::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    return new ScopeConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap);
+    return new ScopeConfigDialogCtrlSet(pParent, (Scope*) pScope, pAdvancedDialog, CtrlMap);
 }
 
 ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :

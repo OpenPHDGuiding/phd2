@@ -36,6 +36,25 @@
 #ifndef STEPGUIDER_H_INCLUDED
 #define STEPGUIDER_H_INCLUDED
 
+class StepGuider;
+
+class StepGuiderConfigDialogCtrlSet : public MountConfigDialogCtrlSet
+{
+    StepGuider *m_pStepGuider;
+    wxSpinCtrl *m_pCalibrationStepsPerIteration;
+    wxSpinCtrl *m_pSamplesToAverage;
+    wxSpinCtrl *m_pBumpPercentage;
+    wxSpinCtrlDouble *m_pBumpMaxStepsPerCycle;
+    wxCheckBox *m_bumpOnDither;
+
+public:
+    StepGuiderConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    ~StepGuiderConfigDialogCtrlSet(void);
+
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+};
+
 class StepGuider : public Mount, public OnboardST4
 {
     int m_samplesToAverage;
@@ -88,11 +107,6 @@ protected:
     class StepGuiderConfigDialogPane : public MountConfigDialogPane
     {
         StepGuider *m_pStepGuider;
-        wxSpinCtrl *m_pCalibrationStepsPerIteration;
-        wxSpinCtrl *m_pSamplesToAverage;
-        wxSpinCtrl *m_pBumpPercentage;
-        wxSpinCtrlDouble *m_pBumpMaxStepsPerCycle;
-        wxCheckBox *m_bumpOnDither;
 
     public:
         StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
@@ -100,6 +114,7 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+        virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     };
 
     virtual int GetSamplesToAverage(void);
@@ -115,9 +130,11 @@ protected:
     virtual bool SetCalibrationStepsPerIteration(int calibrationStepsPerIteration);
 
     friend class GraphLogWindow;
+    friend class StepGuiderConfigDialogCtrlSet;
 
 public:
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     virtual wxString GetSettingsSummary(void);
     virtual wxString CalibrationSettingsSummary(void);
     virtual wxString GetMountClassName(void) const;

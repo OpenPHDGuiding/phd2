@@ -83,13 +83,21 @@ enum BRAIN_CTRL_IDS
     cbReverseDecOnFlip,
     cbAssumeOrthogonal,
     cbSlewDetection,
-    GUIDER_TAB_BOUNDARY,
+    GUIDER_TAB_BOUNDARY,        // --------------- end of guiding tab controls
     cbDecComp,
     szDecCompAmt,
     szMaxRAAmt,
     szMaxDecAmt,
     szDecGuideMode,
-    MOUNT_TAB_BOUNDARY          // ----------- end of mount tab controls
+    MOUNT_TAB_BOUNDARY,          // ----------- end of mount tab controls
+    szCalStepsPerIteration,
+    szSamplesToAverage,
+    szBumpPercentage,
+    szBumpSteps,
+    cbBumpOnDither,
+    cbClearAOCalibration,
+    cbEnableAOGuiding,
+    DEVICES_TAB_BOUNDARY         // ----------- end of devices tab controls
 
 };
 
@@ -127,7 +135,7 @@ class AdvancedDialog : public wxDialog
     Guider::GuiderConfigDialogPane* m_pGuiderPane;
     CameraConfigDialogPane *m_pCameraPane;
     Mount::MountConfigDialogPane *m_pMountPane;
-    ConfigDialogPane *m_pAoPane;
+    Mount::MountConfigDialogPane *m_pAOPane;
     ConfigDialogPane *m_rotatorPane;
 
     std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> m_brainCtrls;
@@ -136,10 +144,12 @@ class AdvancedDialog : public wxDialog
     CameraConfigDialogCtrlSet *m_pCameraCtrlSet;
     GuiderConfigDialogCtrlSet *m_pGuiderCtrlSet;
     MountConfigDialogCtrlSet *m_pScopeCtrlSet;
+    StepGuiderConfigDialogCtrlSet *m_pAOCtrlSet;
     wxPanel *m_pGlobalSettingsPanel;
     wxPanel *m_pCameraSettingsPanel;
     wxPanel *m_pGuiderSettingsPanel;
     wxPanel *m_pScopeSettingsPanel;
+    wxPanel *m_pDevicesSettingsPanel;
 
 public:
     AdvancedDialog(MyFrame *pFrame);
@@ -170,6 +180,7 @@ private:
     void AddAoPage(void);
     void AddRotatorPage(void);
     void RebuildPanels(void);
+    Mount* RealMount();
 };
 
 #endif // ADVANCED_DIALOG_H_INCLUDED

@@ -240,7 +240,7 @@ public:
     virtual bool GuidingCeases(void) = 0;
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
-    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) = 0;
 
     virtual wxString GetMountClassName() const = 0;
 

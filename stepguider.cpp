@@ -1182,44 +1182,15 @@ Mount::MountConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
 StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider)
     : MountConfigDialogPane(pParent, _("AO Settings"), pStepGuider)
 {
-    int width;
+    //int width;
 
     m_pStepGuider = pStepGuider;
+}
 
-    width = StringWidth(_T("000"));
-    m_pCalibrationStepsPerIteration = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10, 3,_T("Cal_Steps"));
-
-    DoAdd(_("Calibration Steps"), m_pCalibrationStepsPerIteration,
-        wxString::Format(_("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes"), DefaultCalibrationStepsPerIteration));
-
-    width = StringWidth(_T("000"));
-    m_pSamplesToAverage = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 9, 0, _T("Samples_To_Average"));
-
-    DoAdd(_("Samples to Average"), m_pSamplesToAverage,
-        wxString::Format(_("When calibrating, how many samples should be averaged. Default = %d, increase for worse seeing and small imaging scales"), DefaultSamplesToAverage));
-
-    width = StringWidth(_T("000"));
-    m_pBumpPercentage = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 99, 0, _T("Bump_Percentage"));
-
-    DoAdd(_("Bump Percentage"), m_pBumpPercentage,
-        wxString::Format(_("What percentage of the AO travel can be used before bumping the mount. Default = %d"), DefaultBumpPercentage));
-
-    width = StringWidth(_T("00.00"));
-    m_pBumpMaxStepsPerCycle = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.01, 99.99, 0.0, 0.25, _T("Bump_steps"));
-    wxSizer *sz = MakeLabeledControl(_("Bump Step"), m_pBumpMaxStepsPerCycle, wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). Default = %.2f, decrease if mount bumps cause spikes on the graph"), DefaultBumpMaxStepsPerCycle));
-
-    m_bumpOnDither = new wxCheckBox(pParent, wxID_ANY, _("Bump on Dither"));
-    m_bumpOnDither->SetToolTip(_("Bump the mount to return the AO to center at each dither"));
-
-    wxSizer *hsz = new wxBoxSizer(wxHORIZONTAL);
-    hsz->Add(sz, wxSizerFlags(1));
-    hsz->Add(m_bumpOnDither, wxSizerFlags(1).Right().Border(wxLEFT, 15).Align(wxALIGN_CENTER_VERTICAL));
-
-    DoAdd(hsz);
+void StepGuider::StepGuiderConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    // All of the scope UI controls are hosted in the parent
+    MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
 }
 
 StepGuider::StepGuiderConfigDialogPane::~StepGuiderConfigDialogPane(void)
@@ -1229,6 +1200,58 @@ StepGuider::StepGuiderConfigDialogPane::~StepGuiderConfigDialogPane(void)
 void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
 {
     MountConfigDialogPane::LoadValues();
+}
+
+void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
+{
+    MountConfigDialogPane::UnloadValues();
+}
+
+MountConfigDialogCtrlSet *StepGuider::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    return new StepGuiderConfigDialogCtrlSet(pParent, pStepGuider, pAdvancedDialog, CtrlMap);
+}
+
+StepGuiderConfigDialogCtrlSet::StepGuiderConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap):
+MountConfigDialogCtrlSet(pParent, pStepGuider, pAdvancedDialog, CtrlMap)
+{
+    int width;
+
+    m_pStepGuider = (StepGuider*) pStepGuider;
+
+    width = StringWidth(_T("000"));
+    m_pCalibrationStepsPerIteration = new wxSpinCtrl(GetParentWindow(szCalStepsPerIteration), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10, 3,_T("Cal_Steps"));
+    AddGroup(CtrlMap, szCalStepsPerIteration, MakeLabeledControl(szCalStepsPerIteration, _("Cal Steps"), m_pCalibrationStepsPerIteration, _("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes")));
+
+     width = StringWidth(_T("000"));
+    m_pSamplesToAverage = new wxSpinCtrl(GetParentWindow(szSamplesToAverage), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 9, 0, _T("Samples_To_Average"));
+    AddGroup(CtrlMap, szSamplesToAverage, MakeLabeledControl(szSamplesToAverage, _("Samples To Average"), m_pSamplesToAverage, _("When calibrating, how many samples should be averaged. Default = %d, increase for worse seeing and small imaging scales")));
+    
+    width = StringWidth(_T("000"));
+    m_pBumpPercentage = new wxSpinCtrl(GetParentWindow(szBumpPercentage), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 99, 0, _T("Bump_Percentage"));
+    AddGroup(CtrlMap, szBumpPercentage, MakeLabeledControl(szBumpPercentage, _("Bump Percentage"), m_pBumpPercentage, _("What percentage of the AO travel can be used before bumping the mount. Default = %d")));
+
+    width = StringWidth(_T("00.00"));
+    m_pBumpMaxStepsPerCycle = new wxSpinCtrlDouble(GetParentWindow(szBumpSteps), wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.01, 99.99, 0.0, 0.25, _T("Bump_steps"));
+    AddGroup(CtrlMap, szBumpSteps, MakeLabeledControl(szBumpSteps, _("Bump Steps"), m_pBumpMaxStepsPerCycle,
+        wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). Default = %.2f, decrease if mount bumps cause spikes on the graph"))));
+
+    m_bumpOnDither = new wxCheckBox(GetParentWindow(cbBumpOnDither), wxID_ANY, _("Bump on Dither"));
+    AddCtrl(CtrlMap, cbBumpOnDither, m_bumpOnDither, _("Bump the mount to return the AO to center at each dither"));
+}
+
+StepGuiderConfigDialogCtrlSet::~StepGuiderConfigDialogCtrlSet()
+{
+
+}
+
+void StepGuiderConfigDialogCtrlSet::LoadValues()
+{
+    MountConfigDialogCtrlSet::LoadValues();
     m_pCalibrationStepsPerIteration->SetValue(m_pStepGuider->GetCalibrationStepsPerIteration());
     m_pSamplesToAverage->SetValue(m_pStepGuider->GetSamplesToAverage());
     m_pBumpPercentage->SetValue(m_pStepGuider->GetBumpPercentage());
@@ -1236,7 +1259,7 @@ void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
     m_bumpOnDither->SetValue(m_pStepGuider->m_bumpOnDither);
 }
 
-void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
+void StepGuiderConfigDialogCtrlSet::UnloadValues()
 {
     m_pStepGuider->SetCalibrationStepsPerIteration(m_pCalibrationStepsPerIteration->GetValue());
     m_pStepGuider->SetSamplesToAverage(m_pSamplesToAverage->GetValue());
@@ -1244,5 +1267,5 @@ void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
     m_pStepGuider->SetBumpMaxStepsPerCycle(m_pBumpMaxStepsPerCycle->GetValue());
     m_pStepGuider->m_bumpOnDither = m_bumpOnDither->GetValue();
 
-    MountConfigDialogPane::UnloadValues();
+    MountConfigDialogCtrlSet::UnloadValues();
 }
