@@ -146,8 +146,6 @@ public:
     protected:
         Mount *m_pMount;
         wxWindow* m_pParent;
-        wxCheckBox *m_pClearCalibration;
-        wxCheckBox *m_pEnableGuide;
         wxChoice   *m_pXGuideAlgorithmChoice;
         wxChoice   *m_pYGuideAlgorithmChoice;
         int        m_initXGuideAlgorithmSelection;

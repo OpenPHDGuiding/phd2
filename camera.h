@@ -64,7 +64,7 @@ public:
 
 };
 
-class CameraConfigDialogCtrlSet : ConfigDialogCtrlSet
+class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
 {
     GuideCamera *m_pCamera;
     wxCheckBox *m_pUseSubframes;

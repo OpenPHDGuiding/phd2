@@ -1517,8 +1517,8 @@ void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
         if (calc.GetResults(&focalLength, &pixelSize, &calibrationStep))
         {
             // Following sets values in the UI controls of the various dialog tabs - not underlying data values
-            //pAdvancedDlg->SetFocalLength(focalLength);        // FIX THIS!!!!!
-            //pAdvancedDlg->SetPixelSize(pixelSize);
+            pAdvancedDlg->SetFocalLength(focalLength);
+            pAdvancedDlg->SetPixelSize(pixelSize);
             m_pCalibrationDuration->SetValue(calibrationStep);
         }
     }

@@ -311,7 +311,7 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
     {
         if (!pMount->IsStepGuider())
         {
-            m_pClearCalibration = new wxCheckBox(GetParentWindow(cbClearCalibration), wxID_ANY, _("Clear Mount Calibration"));
+            m_pClearCalibration = new wxCheckBox(GetParentWindow(cbClearCalibration), wxID_ANY, _("Clear Calibration"));
             m_pClearCalibration->Enable(enableCtrls);
             AddCtrl(CtrlMap, cbClearCalibration, m_pClearCalibration,
                 _("Clear the current calibration data - calibration will be re-done when guiding is started"));

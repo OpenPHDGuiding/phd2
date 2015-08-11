@@ -175,26 +175,20 @@ AdvancedDialog::~AdvancedDialog()
 
 void AdvancedDialog::RebuildPanels(void)
 {
-     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
-     if (m_pGlobalCtrlSet)
-         delete m_pGlobalCtrlSet;
-     if (m_pCameraCtrlSet)
-         delete m_pCameraCtrlSet;
-     if (m_pGuiderCtrlSet)
-         delete m_pGuiderCtrlSet;
-     if (m_pScopeCtrlSet)
-         delete m_pScopeCtrlSet;
-     if (m_pAOCtrlSet)
-         delete m_pAOCtrlSet;
-     if (m_pRotatorCtrlSet)
-         delete m_pRotatorCtrlSet;
-     m_pGlobalCtrlSet = NULL;
-     m_pCameraCtrlSet = NULL;
-     m_pGuiderCtrlSet = NULL;
-     m_pScopeCtrlSet = NULL;
-     m_pAOCtrlSet = NULL;
-     m_pRotatorCtrlSet = NULL;
+    delete m_pGlobalCtrlSet;
+    m_pGlobalCtrlSet = NULL;
+    delete m_pCameraCtrlSet;
+    m_pCameraCtrlSet = NULL;
+    delete m_pGuiderCtrlSet;
+    m_pGuiderCtrlSet = NULL;
+    delete m_pScopeCtrlSet;
+    m_pScopeCtrlSet = NULL;
+    delete m_pAOCtrlSet;
+    m_pAOCtrlSet = NULL;
+    delete m_pRotatorCtrlSet;
+    m_pRotatorCtrlSet = NULL;
 
     m_pGlobalPane->Clear(true);
     m_pCameraPane->Clear(true);

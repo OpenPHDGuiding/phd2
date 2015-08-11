@@ -92,7 +92,7 @@ public:
     virtual void UnloadValues(void);
 };
 
-class MyFrameConfigDialogCtrlSet : ConfigDialogCtrlSet
+class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
 {
     MyFrame *m_pFrame;
     wxCheckBox *m_pResetConfiguration;
