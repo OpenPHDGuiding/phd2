@@ -2326,13 +2326,6 @@ void MyFrameConfigDialogPane::LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrl
     this->Add(GetSizerCtrl(CtrlMap, szLogFileInfo), sizer_flags);
     Layout();
 }
-void MyFrameConfigDialogPane::OnDirSelect(wxCommandEvent& evt)
-{
-    //wxString sRtn = wxDirSelector("Choose a location", m_pLogDir->GetValue());
-
-    //if (sRtn.Len() > 0)
-    //    m_pLogDir->SetValue (sRtn);
-}
 
 MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
 {
@@ -2347,19 +2340,6 @@ void MyFrameConfigDialogPane::UnloadValues(void)
 {
 
 
-}
-
-int MyFrameConfigDialogPane::GetFocalLength(void)
-{
-    //long val = 0;
-    //m_pFocalLength->GetValue().ToLong(&val);
-    //return (int) val;
-    return 0;
-}
-
-void MyFrameConfigDialogPane::SetFocalLength(int val)
-{
-    //m_pFocalLength->SetValue(wxString::Format(_T("%d"), val));
 }
 
 MyFrameConfigDialogCtrlSet* MyFrame::GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
@@ -2497,14 +2477,14 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     m_autoExpSNR = new wxSpinCtrlDouble(parent, wxID_ANY, _T(""), wxDefaultPosition,
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 3.5, 99.9, 0.0, 1.0);
 
-    wxBoxSizer *sz1 = new wxBoxSizer(wxHORIZONTAL);
-    sz1->Add(MakeLabeledControl(szAutoExposure, _("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")), sizer_flags);
-    sz1->Add(MakeLabeledControl(szAutoExposure, _("Max"), m_autoExpDurationMax, _("Auto exposure maximum duration")),
-        sizer_flags);
+    wxFlexGridSizer *sz1 = new wxFlexGridSizer(1, 3, 10, 10);
+    sz1->Add(MakeLabeledControl(szAutoExposure, _("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")));
+    sz1->Add(MakeLabeledControl(szAutoExposure, _("Max"), m_autoExpDurationMax, _("Auto exposure maximum duration")), wxSizerFlags(0).Border(wxLEFT, 70));
+    sz1->Add(MakeLabeledControl(szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")), wxSizerFlags(0).Border(wxLEFT, 80));
     wxStaticBoxSizer *autoExp = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Auto Exposure"));
-    autoExp->Add(sz1);
-    autoExp->Add(MakeLabeledControl(szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")),
-        sizer_flags);
+    autoExp->Add(sz1, wxSizerFlags(0).Expand());
+    //autoExp->Add(MakeLabeledControl(szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")),
+    //    sizer_flags);
 
     AddGroup(CtrlMap, szAutoExposure, autoExp);
 }

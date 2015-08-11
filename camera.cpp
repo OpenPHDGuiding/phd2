@@ -693,13 +693,14 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
 void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
     wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
-    wxBoxSizer *pTopline = new wxBoxSizer(wxHORIZONTAL);
+    wxFlexGridSizer *pTopline = new wxFlexGridSizer(1, 3, 10, 10);
     // Generic controls
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
     pTopline->Add(GetSizerCtrl(CtrlMap, szNoiseReduction));
-    pTopline->Add(GetSizerCtrl(CtrlMap, szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 30).Expand());
+    pTopline->Add(GetSizerCtrl(CtrlMap, szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 110).Expand());
     pGenGroup->Add(pTopline, def_flags);
     pGenGroup->Add(GetSizerCtrl(CtrlMap, szAutoExposure), def_flags);
+    pGenGroup->Layout();
 
     // Specific controls
     wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-specific Properties"));

@@ -1436,14 +1436,12 @@ Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
 
 void Guider::GuiderConfigDialogPane::LoadValues(void)
 {
-    //m_pScaleImage->SetValue(m_pGuider->GetScaleImage());
-    m_pEnableFastRecenter->SetValue(m_pGuider->IsFastRecenterEnabled());
+
 }
 
 void Guider::GuiderConfigDialogPane::UnloadValues(void)
 {
-    //m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
-    m_pGuider->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
+
 }
 
 GuiderConfigDialogCtrlSet *Guider::GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)

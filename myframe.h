@@ -82,26 +82,6 @@ typedef void alert_fn(long);
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
 {
-    //MyFrame *m_pFrame;
-    //wxCheckBox *m_pResetConfiguration;
-    //wxCheckBox *m_pResetDontAskAgain;
-    //wxChoice* m_pLoggedImageFormat;
-    //wxCheckBox *m_pDitherRaOnly;
-    //wxSpinCtrlDouble *m_pDitherScaleFactor;
-    //wxChoice *m_pNoiseReduction;
-    //wxSpinCtrl *m_pTimeLapse;
-    //wxTextCtrl *m_pFocalLength;
-    //wxChoice* m_pLanguage;
-    //wxArrayInt m_LanguageIDs;
-    //int m_oldLanguageChoice;
-    //wxTextCtrl *m_pLogDir;
-    //wxButton *m_pSelectDir;
-    //wxCheckBox *m_pAutoLoadCalibration;
-    //wxComboBox *m_autoExpDurationMin;
-    //wxComboBox *m_autoExpDurationMax;
-    //wxSpinCtrlDouble *m_autoExpSNR;
-
-    void OnDirSelect(wxCommandEvent& evt);
 
 public:
     MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
@@ -110,9 +90,6 @@ public:
     void LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
-
-    int GetFocalLength(void);
-    void SetFocalLength(int val);
 };
 
 class MyFrameConfigDialogCtrlSet : ConfigDialogCtrlSet

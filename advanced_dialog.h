@@ -97,6 +97,7 @@ enum BRAIN_CTRL_IDS
     cbBumpOnDither,
     cbClearAOCalibration,
     cbEnableAOGuiding,
+    cbRotatorReverse,
     DEVICES_TAB_BOUNDARY         // ----------- end of devices tab controls
 
 };
@@ -136,7 +137,7 @@ class AdvancedDialog : public wxDialog
     CameraConfigDialogPane *m_pCameraPane;
     Mount::MountConfigDialogPane *m_pMountPane;
     Mount::MountConfigDialogPane *m_pAOPane;
-    ConfigDialogPane *m_rotatorPane;
+    RotatorConfigDialogPane *m_pRotatorPane;
 
     std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> m_brainCtrls;
     bool m_rebuildPanels;
@@ -145,6 +146,7 @@ class AdvancedDialog : public wxDialog
     GuiderConfigDialogCtrlSet *m_pGuiderCtrlSet;
     MountConfigDialogCtrlSet *m_pScopeCtrlSet;
     StepGuiderConfigDialogCtrlSet *m_pAOCtrlSet;
+    RotatorConfigDialogCtrlSet *m_pRotatorCtrlSet;
     wxPanel *m_pGlobalSettingsPanel;
     wxPanel *m_pCameraSettingsPanel;
     wxPanel *m_pGuiderSettingsPanel;
