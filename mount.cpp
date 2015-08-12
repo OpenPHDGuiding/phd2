@@ -135,7 +135,7 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BR
         m_pRABox->Add(m_pXGuideAlgorithmChoice, def_flags);
         m_pRABox->Add(m_pXGuideAlgorithmConfigDialogPane, def_flags);
         if (!stepGuider)
-            m_pRABox->Add(GetSizerCtrl(CtrlMap, szMaxRAAmt), wxSizerFlags(0).Border(wxTOP, 35).Center());
+            m_pRABox->Add(GetSizerCtrl(CtrlMap, AD_szMaxRAAmt), wxSizerFlags(0).Border(wxTOP, 35).Center());
 
         wxString yAlgorithms[] = 
         {
@@ -166,11 +166,11 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BR
         wxSizerFlags smaller_flags = wxSizerFlags(0).Border(wxLEFT | wxRIGHT, 10).Border(wxTOP, 5).Expand();
         if (!stepGuider)
         {
-            pSizer->Add(GetSingleCtrl(CtrlMap, cbDecComp), wxSizerFlags(0).Border(wxTOP | wxLEFT, 5).Border(wxRIGHT, 20).Expand());
-            pSizer->Add(GetSizerCtrl(CtrlMap, szDecCompAmt), wxSizerFlags(0).Border(wxTOP | wxRIGHT, 5).Expand());
+            pSizer->Add(GetSingleCtrl(CtrlMap, AD_cbDecComp), wxSizerFlags(0).Border(wxTOP | wxLEFT, 5).Border(wxRIGHT, 20).Expand());
+            pSizer->Add(GetSizerCtrl(CtrlMap, AD_szDecCompAmt), wxSizerFlags(0).Border(wxTOP | wxRIGHT, 5).Expand());
             m_pDecBox->Add(pSizer);
-            m_pDecBox->Add(GetSizerCtrl(CtrlMap, szMaxDecAmt), wxSizerFlags(0).Border(wxTOP, 10).Center());
-            m_pDecBox->Add(GetSizerCtrl(CtrlMap, szDecGuideMode), wxSizerFlags(0).Border(wxTOP, 10).Center());
+            m_pDecBox->Add(GetSizerCtrl(CtrlMap, AD_szMaxDecAmt), wxSizerFlags(0).Border(wxTOP, 10).Center());
+            m_pDecBox->Add(GetSizerCtrl(CtrlMap, AD_szDecGuideMode), wxSizerFlags(0).Border(wxTOP, 10).Center());
         }
         m_pAlgoBox->Add(m_pRABox, def_flags);
         m_pAlgoBox->Add(m_pDecBox, def_flags);
@@ -179,13 +179,13 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BR
         if (stepGuider)
         {
             wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
-            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, szCalStepsPerIteration));
-            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, szSamplesToAverage));
-            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, szBumpPercentage));
-            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, szBumpSteps));
-            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, cbBumpOnDither));
-            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, cbEnableAOGuiding));
-            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, cbClearAOCalibration));
+            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalStepsPerIteration));
+            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szSamplesToAverage));
+            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
+            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpSteps));
+            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBumpOnDither));
+            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableAOGuiding));
+            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearAOCalibration));
             this->Add(pAoDetailSizer, def_flags);
         }
 
@@ -309,22 +309,22 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
     {
         if (!pMount->IsStepGuider())
         {
-            m_pClearCalibration = new wxCheckBox(GetParentWindow(cbClearCalibration), wxID_ANY, _("Clear Calibration"));
+            m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearCalibration), wxID_ANY, _("Clear Calibration"));
             m_pClearCalibration->Enable(enableCtrls);
-            AddCtrl(CtrlMap, cbClearCalibration, m_pClearCalibration,
+            AddCtrl(CtrlMap, AD_cbClearCalibration, m_pClearCalibration,
                 _("Clear the current calibration data - calibration will be re-done when guiding is started"));
-            m_pEnableGuide = new wxCheckBox(GetParentWindow(cbEnableGuiding), wxID_ANY, _("Enable Guide Output"));
-            AddCtrl(CtrlMap, cbEnableGuiding, m_pEnableGuide,
+            m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableGuiding), wxID_ANY, _("Enable Guide Output"));
+            AddCtrl(CtrlMap, AD_cbEnableGuiding, m_pEnableGuide,
                 _("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
         }
         else
         {
-            m_pClearCalibration = new wxCheckBox(GetParentWindow(cbClearAOCalibration), wxID_ANY, _("Clear AO Calibration"));
+            m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearAOCalibration), wxID_ANY, _("Clear AO Calibration"));
             m_pClearCalibration->Enable(enableCtrls);
-            AddCtrl(CtrlMap, cbClearAOCalibration, m_pClearCalibration,
+            AddCtrl(CtrlMap, AD_cbClearAOCalibration, m_pClearCalibration,
                 _("Clear the current AO calibration data - calibration will be re-done when guiding is started"));
-            m_pEnableGuide = new wxCheckBox(GetParentWindow(cbEnableAOGuiding), wxID_ANY, _("Enable AO Corrections"));
-            AddCtrl(CtrlMap, cbEnableAOGuiding, m_pEnableGuide,
+            m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO Corrections"));
+            AddCtrl(CtrlMap, AD_cbEnableAOGuiding, m_pEnableGuide,
                 _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
         }
     }

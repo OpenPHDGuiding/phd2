@@ -978,23 +978,23 @@ GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
     int width;
 
     width = StringWidth(_T("0000"));
-    m_pSearchRegion = new wxSpinCtrl(GetParentWindow(szStarTracking), wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+    m_pSearchRegion = new wxSpinCtrl(GetParentWindow(AD_szStarTracking), wxID_ANY, _T("foo2"), wxPoint(-1, -1),
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, MIN_SEARCH_REGION, MAX_SEARCH_REGION, DEFAULT_SEARCH_REGION, _T("Search"));
-    wxSizer *pSearchRegion = MakeLabeledControl(szStarTracking, _("Search region (pixels)"), m_pSearchRegion,
+    wxSizer *pSearchRegion = MakeLabeledControl(AD_szStarTracking, _("Search region (pixels)"), m_pSearchRegion,
         _("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
 
-    wxStaticBoxSizer *pStarMass = new wxStaticBoxSizer(wxHORIZONTAL, GetParentWindow(szStarTracking), _("Star Mass Detection"));
-    m_pEnableStarMassChangeThresh = new wxCheckBox(GetParentWindow(szStarTracking), STAR_MASS_ENABLE, _("Enable"));
+    wxStaticBoxSizer *pStarMass = new wxStaticBoxSizer(wxHORIZONTAL, GetParentWindow(AD_szStarTracking), _("Star Mass Detection"));
+    m_pEnableStarMassChangeThresh = new wxCheckBox(GetParentWindow(AD_szStarTracking), STAR_MASS_ENABLE, _("Enable"));
     m_pEnableStarMassChangeThresh->SetToolTip(_("Check to enable star mass change detection. When enabled, "
         "PHD skips frames when the guide star mass changes by an amount greater than the Star mass tolerance setting."));
 
-    GetParentWindow(szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderOneStarConfigDialogCtrlSet::OnStarMassEnableChecked, this, STAR_MASS_ENABLE);
+    GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderOneStarConfigDialogCtrlSet::OnStarMassEnableChecked, this, STAR_MASS_ENABLE);
 
     width = StringWidth(_T("100.0"));
     m_pMassChangeThreshold = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0, _T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
-    wxSizer *pTolerance = MakeLabeledControl(szStarTracking, _("Tolerance"), m_pMassChangeThreshold,
+    wxSizer *pTolerance = MakeLabeledControl(AD_szStarTracking, _("Tolerance"), m_pMassChangeThreshold,
         _("When star mass change detection is enabled, this is the tolerance for star mass changes between frames, in percent. "
         "Larger values are more tolerant (less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
         "If star mass change detection is not enabled then this setting is ignored."));
@@ -1005,7 +1005,7 @@ GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
     pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 10));
     pTrackingParams->Add(pStarMass,wxSizerFlags(0).Border(wxLEFT, 75));
 
-    AddGroup(CtrlMap, szStarTracking, pTrackingParams);
+    AddGroup(CtrlMap, AD_szStarTracking, pTrackingParams);
 
 }
 

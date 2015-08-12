@@ -256,19 +256,19 @@ void AdvancedDialog::RebuildPanels(void)
 
 wxWindow* AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
 {
-    if (id < GLOBAL_TAB_BOUNDARY)
+    if (id < AD_GLOBAL_TAB_BOUNDARY)
         return (wxWindow*)m_pGlobalSettingsPanel;
     else
-    if (id < CAMERA_TAB_BOUNDARY)
+    if (id < AD_CAMERA_TAB_BOUNDARY)
         return (wxWindow*)m_pCameraSettingsPanel;
     else
-    if (id < GUIDER_TAB_BOUNDARY)
+    if (id < AD_GUIDER_TAB_BOUNDARY)
         return (wxWindow*)m_pGuiderSettingsPanel;
     else
-    if (id < MOUNT_TAB_BOUNDARY)
+    if (id < AD_MOUNT_TAB_BOUNDARY)
         return (wxWindow*)m_pScopeSettingsPanel;
     else
-    if (id < DEVICES_TAB_BOUNDARY)
+    if (id < AD_DEVICES_TAB_BOUNDARY)
         return (wxWindow*)m_pDevicesSettingsPanel;
     else
     {

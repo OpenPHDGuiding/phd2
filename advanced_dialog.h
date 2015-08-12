@@ -54,51 +54,51 @@ enum TAB_PAGES {
 // Segmented by the tab page location seen in the UI
 enum BRAIN_CTRL_IDS
 {
-    UNASSIGNED,
-    cbResetConfig,
-    cbDontAsk,
-    szImageLoggingFormat,
-    szLanguage,
-    szLogFileInfo,
-    cbDitherRAOnly,
-    szDitherScale,
-    GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
-    cbUseSubFrames,
-    szNoiseReduction,
-    szAutoExposure,
-    szCameraTimeout,
-    szTimeLapse,
-    szPixelSize,
-    szGain,
-    szDelay,
-    szPort,
-    CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
-    szFocalLength,
-    cbAutoRestoreCal,
-    cbFastRecenter,
-    szStarTracking,
-    cbClearCalibration,
-    cbEnableGuiding,
-    szCalibrationDuration,
-    cbReverseDecOnFlip,
-    cbAssumeOrthogonal,
-    cbSlewDetection,
-    GUIDER_TAB_BOUNDARY,        // --------------- end of guiding tab controls
-    cbDecComp,
-    szDecCompAmt,
-    szMaxRAAmt,
-    szMaxDecAmt,
-    szDecGuideMode,
-    MOUNT_TAB_BOUNDARY,          // ----------- end of mount tab controls
-    szCalStepsPerIteration,
-    szSamplesToAverage,
-    szBumpPercentage,
-    szBumpSteps,
-    cbBumpOnDither,
-    cbClearAOCalibration,
-    cbEnableAOGuiding,
-    cbRotatorReverse,
-    DEVICES_TAB_BOUNDARY         // ----------- end of devices tab controls
+    AD_UNASSIGNED,
+    AD_cbResetConfig,
+    AD_cbDontAsk,
+    AD_szImageLoggingFormat,
+    AD_szLanguage,
+    AD_szLogFileInfo,
+    AD_szDitherRAOnly,
+    AD_szDitherScale,
+    AD_GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
+    AD_cbUseSubFrames,
+    AD_szNoiseReduction,
+    AD_szAutoExposure,
+    AD_szCameraTimeout,
+    AD_szTimeLapse,
+    AD_szPixelSize,
+    AD_szGain,
+    AD_szDelay,
+    AD_szPort,
+    AD_CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
+    AD_szFocalLength,
+    AD_cbAutoRestoreCal,
+    AD_cbFastRecenter,
+    AD_szStarTracking,
+    AD_cbClearCalibration,
+    AD_cbEnableGuiding,
+    AD_szCalibrationDuration,
+    AD_cbReverseDecOnFlip,
+    AD_cbAssumeOrthogonal,
+    AD_cbSlewDetection,
+    AD_GUIDER_TAB_BOUNDARY,        // --------------- end of guiding tab controls
+    AD_cbDecComp,
+    AD_szDecCompAmt,
+    AD_szMaxRAAmt,
+    AD_szMaxDecAmt,
+    AD_szDecGuideMode,
+    AD_MOUNT_TAB_BOUNDARY,          // ----------- end of mount tab controls
+    AD_szCalStepsPerIteration,
+    AD_szSamplesToAverage,
+    AD_szBumpPercentage,
+    AD_szBumpSteps,
+    AD_cbBumpOnDither,
+    AD_cbClearAOCalibration,
+    AD_cbEnableAOGuiding,
+    AD_cbRotatorReverse,
+    AD_DEVICES_TAB_BOUNDARY         // ----------- end of devices tab controls
 
 };
 
@@ -112,7 +112,7 @@ struct BrainCtrlInfo
     BrainCtrlInfo::BrainCtrlInfo()
     {
         panelCtrl = NULL;
-        ctrlId = UNASSIGNED;
+        ctrlId = AD_UNASSIGNED;
         ctrlHost = UNASSIGNED_PAGE;
         isPositioned = false;
     }

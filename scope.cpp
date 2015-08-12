@@ -1396,65 +1396,65 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
     width = StringWidth(_T("00000"));
 
     wxBoxSizer* pCalibSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pCalibrationDuration = new wxSpinCtrl(GetParentWindow(szCalibrationDuration), wxID_ANY, wxEmptyString, wxPoint(-1, -1),
+    m_pCalibrationDuration = new wxSpinCtrl(GetParentWindow(AD_szCalibrationDuration), wxID_ANY, wxEmptyString, wxPoint(-1, -1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 1000,_T("Cal_Dur"));
-    pCalibSizer->Add(MakeLabeledControl(szCalibrationDuration, _("Calibration step (ms)"), m_pCalibrationDuration, 
+    pCalibSizer->Add(MakeLabeledControl(AD_szCalibrationDuration, _("Calibration step (ms)"), m_pCalibrationDuration, 
         _("How long a guide pulse should be used during calibration? Click \"Calculate\" to compute a suitable value.")));
     m_pCalibrationDuration->Enable(enableCtrls);
 
     // create the 'auto' button and bind it to the associated event-handler
-    wxButton *pAutoDuration = new wxButton(GetParentWindow(szCalibrationDuration), wxID_OK, _("Calculate...") );
+    wxButton *pAutoDuration = new wxButton(GetParentWindow(AD_szCalibrationDuration), wxID_OK, _("Calculate...") );
     pAutoDuration->SetToolTip(_("Click to open the Calibration Step Calculator to help find a good calibration step size"));
     pAutoDuration->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &ScopeConfigDialogCtrlSet::OnCalcCalibrationStep, this);
     pAutoDuration->Enable(enableCtrls);
 
     pCalibSizer->Add(pAutoDuration);
-    AddGroup(CtrlMap, szCalibrationDuration, pCalibSizer);
+    AddGroup(CtrlMap, AD_szCalibrationDuration, pCalibSizer);
 
-    m_pNeedFlipDec = new wxCheckBox(GetParentWindow(cbReverseDecOnFlip), wxID_ANY, _("Reverse Dec output after meridian flip"));
-    AddCtrl(CtrlMap, cbReverseDecOnFlip, m_pNeedFlipDec,
+    m_pNeedFlipDec = new wxCheckBox(GetParentWindow(AD_cbReverseDecOnFlip), wxID_ANY, _("Reverse Dec output after meridian flip"));
+    AddCtrl(CtrlMap, AD_cbReverseDecOnFlip, m_pNeedFlipDec,
         _("Check if your mount needs Dec output reversed after doing Flip Calibration Data"));
     m_pNeedFlipDec->Enable(enableCtrls);
 
     if (pScope && pScope->CanCheckSlewing())
     {
-        m_pStopGuidingWhenSlewing = new wxCheckBox(GetParentWindow(cbSlewDetection), wxID_ANY, _("Stop guiding when mount slews"));
-        AddCtrl(CtrlMap, cbSlewDetection, m_pStopGuidingWhenSlewing,
+        m_pStopGuidingWhenSlewing = new wxCheckBox(GetParentWindow(AD_cbSlewDetection), wxID_ANY, _("Stop guiding when mount slews"));
+        AddCtrl(CtrlMap, AD_cbSlewDetection, m_pStopGuidingWhenSlewing,
             _("When checked, PHD will stop guiding if the mount starts slewing"));
     }
     else
         m_pStopGuidingWhenSlewing = 0;
 
-    m_assumeOrthogonal = new wxCheckBox(GetParentWindow(cbAssumeOrthogonal), wxID_ANY,
+    m_assumeOrthogonal = new wxCheckBox(GetParentWindow(AD_cbAssumeOrthogonal), wxID_ANY,
         _("Assume Dec orthogonal to RA"));
     m_assumeOrthogonal->Enable(enableCtrls);
-    AddCtrl(CtrlMap, cbAssumeOrthogonal, m_assumeOrthogonal,
+    AddCtrl(CtrlMap, AD_cbAssumeOrthogonal, m_assumeOrthogonal,
         _("Assume Dec axis is perpendicular to RA axis, regardless of calibration. Prevents RA periodic error from affecting Dec calibration. Option takes effect when calibrating DEC."));
 
     if (pScope)
     {
-        m_pUseBacklashComp = new wxCheckBox(GetParentWindow(cbDecComp), wxID_ANY, _("Use Backlash Comp"));
-        AddCtrl(CtrlMap, cbDecComp, m_pUseBacklashComp, _("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
-        m_pBacklashPulse = new wxSpinCtrlDouble(GetParentWindow(szDecCompAmt), wxID_ANY, wxEmptyString, wxDefaultPosition,
+        m_pUseBacklashComp = new wxCheckBox(GetParentWindow(AD_cbDecComp), wxID_ANY, _("Use Backlash Comp"));
+        AddCtrl(CtrlMap, AD_cbDecComp, m_pUseBacklashComp, _("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
+        m_pBacklashPulse = new wxSpinCtrlDouble(GetParentWindow(AD_szDecCompAmt), wxID_ANY, wxEmptyString, wxDefaultPosition,
             wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);
-        AddGroup(CtrlMap, szDecCompAmt, (MakeLabeledControl(szDecCompAmt, _("Amount"), m_pBacklashPulse, _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."))));
+        AddGroup(CtrlMap, AD_szDecCompAmt, (MakeLabeledControl(AD_szDecCompAmt, _("Amount"), m_pBacklashPulse, _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."))));
 
         width = StringWidth(_T("00000"));
-        m_pMaxRaDuration = new wxSpinCtrl(GetParentWindow(szMaxRAAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
+        m_pMaxRaDuration = new wxSpinCtrl(GetParentWindow(AD_szMaxRAAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
             wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxRA_Dur"));
-        AddLabeledCtrl(CtrlMap, szMaxRAAmt, _("Max RA Duration"), m_pMaxRaDuration, _("Longest length of pulse to send in RA\nDefault = 1000 ms."));
+        AddLabeledCtrl(CtrlMap, AD_szMaxRAAmt, _("Max RA Duration"), m_pMaxRaDuration, _("Longest length of pulse to send in RA\nDefault = 1000 ms."));
 
-        m_pMaxDecDuration = new wxSpinCtrl(GetParentWindow(szMaxDecAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
+        m_pMaxDecDuration = new wxSpinCtrl(GetParentWindow(AD_szMaxDecAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
             wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
-        AddLabeledCtrl(CtrlMap, szMaxDecAmt, _("Max Dec Duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 1000 ms.  Increase if drift is fast."));
+        AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec Duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 1000 ms.  Increase if drift is fast."));
 
         wxString dec_choices[] = {
             _("Off"), _("Auto"), _("North"), _("South")
         };
         width = StringArrayWidth(dec_choices, WXSIZEOF(dec_choices));
-        m_pDecMode = new wxChoice(GetParentWindow(szDecGuideMode), wxID_ANY, wxPoint(-1, -1),
+        m_pDecMode = new wxChoice(GetParentWindow(AD_szDecGuideMode), wxID_ANY, wxPoint(-1, -1),
             wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
-        AddLabeledCtrl(CtrlMap, szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
+        AddLabeledCtrl(CtrlMap, AD_szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
     }
 }
 

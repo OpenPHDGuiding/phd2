@@ -696,10 +696,10 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAI
     wxFlexGridSizer *pTopline = new wxFlexGridSizer(1, 3, 10, 10);
     // Generic controls
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
-    pTopline->Add(GetSizerCtrl(CtrlMap, szNoiseReduction));
-    pTopline->Add(GetSizerCtrl(CtrlMap, szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 110).Expand());
+    pTopline->Add(GetSizerCtrl(CtrlMap, AD_szNoiseReduction));
+    pTopline->Add(GetSizerCtrl(CtrlMap, AD_szTimeLapse), wxSizerFlags(0).Border(wxLEFT, 110).Expand());
     pGenGroup->Add(pTopline, def_flags);
-    pGenGroup->Add(GetSizerCtrl(CtrlMap, szAutoExposure), def_flags);
+    pGenGroup->Add(GetSizerCtrl(CtrlMap, AD_szAutoExposure), def_flags);
     pGenGroup->Layout();
 
     // Specific controls
@@ -710,16 +710,16 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAI
         wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 3, 15, 15);
 
         wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
-        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szPixelSize));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPixelSize));
         if (pCamera->HasGainControl)
-            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szGain));
-        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szCameraTimeout));
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain));
+        pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout));
         if (pCamera->HasSubframes)
-            pDetailsSizer->Add(GetSingleCtrl(CtrlMap, cbUseSubFrames));
+            pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames));
         if (pCamera->HasDelayParam)
-            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szDelay));
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szDelay));
         if (pCamera->HasPortNum)
-            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, szPort));
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPort));
         pSpecGroup->Add(pDetailsSizer, spec_flags);
         }
     else
@@ -750,33 +750,33 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 
     if (m_pCamera->HasSubframes)
     {
-        m_pUseSubframes = new wxCheckBox(GetParentWindow(cbUseSubFrames), wxID_ANY, _("Use Subframes"));
-        AddCtrl(CtrlMap, cbUseSubFrames, m_pUseSubframes, _("Check to only download subframes (ROIs) if your camera supports it"));
+        m_pUseSubframes = new wxCheckBox(GetParentWindow(AD_cbUseSubFrames), wxID_ANY, _("Use Subframes"));
+        AddCtrl(CtrlMap, AD_cbUseSubFrames, m_pUseSubframes, _("Check to only download subframes (ROIs) if your camera supports it"));
     }
 
     int numRows = (int)m_pCamera->HasGainControl + (int)m_pCamera->HasDelayParam + (int)m_pCamera->HasPortNum + 1;
 
     int width = StringWidth(_T("0000")) + 30;
     // Pixel size always
-    m_pPixelSize = NewSpinnerDouble(GetParentWindow(szPixelSize), width, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
+    m_pPixelSize = NewSpinnerDouble(GetParentWindow(AD_szPixelSize), width, m_pCamera->GetCameraPixelSize(), 0.0, 99.9, 0.1,
         _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
-    AddLabeledCtrl(CtrlMap, szPixelSize, _("Pixel size"), m_pPixelSize, _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
+    AddLabeledCtrl(CtrlMap, AD_szPixelSize, _("Pixel size"), m_pPixelSize, _("Guide camera pixel size in microns. Used with the guide telescope focal length to display guiding error in arc-seconds."));
 
     // Gain control
     if (m_pCamera->HasGainControl)
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_pCameraGain = NewSpinnerInt(GetParentWindow(szGain), width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
-        AddLabeledCtrl(CtrlMap, szGain, _("Camera gain"), m_pCameraGain, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
+        m_pCameraGain = NewSpinnerInt(GetParentWindow(AD_szGain), width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
+        AddLabeledCtrl(CtrlMap, AD_szGain, _("Camera gain"), m_pCameraGain, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
     }
 
     // Delay parameter
     if (m_pCamera->HasDelayParam)
     {
         int width = StringWidth(_T("0000")) + 30;
-        parent = GetParentWindow(szDelay);
-        m_pDelay = NewSpinnerInt(GetParentWindow(szDelay), width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
-        AddLabeledCtrl(CtrlMap, szDelay, _("Delay"), m_pDelay, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
+        parent = GetParentWindow(AD_szDelay);
+        m_pDelay = NewSpinnerInt(GetParentWindow(AD_szDelay), width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
+        AddLabeledCtrl(CtrlMap, AD_szDelay, _("Delay"), m_pDelay, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
     }
 
     // Port number
@@ -789,17 +789,17 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
         };
 
         int width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
-        m_pPortNum = new wxChoice(GetParentWindow(szPort), wxID_ANY, wxPoint(-1, -1),
+        m_pPortNum = new wxChoice(GetParentWindow(AD_szPort), wxID_ANY, wxPoint(-1, -1),
             wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
         m_pPortNum->SetToolTip(_("Port number for long-exposure control"));
-        AddLabeledCtrl(CtrlMap, szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
+        AddLabeledCtrl(CtrlMap, AD_szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
     }
 
     // Watchdog timeout
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_timeoutVal = NewSpinnerInt(GetParentWindow(szCameraTimeout), width, 5, 5, 9999, 1, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
-        AddLabeledCtrl(CtrlMap, szCameraTimeout, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
+        m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), width, 5, 5, 9999, 1, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
+        AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
     }
 
 }

@@ -2315,14 +2315,14 @@ void MyFrameConfigDialogPane::LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrl
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
     wxFlexGridSizer *pTopGrid = new wxFlexGridSizer(3, 2, 15, 15);
 
-    pTopGrid->Add(GetSizerCtrl(CtrlMap, szLanguage));
-    pTopGrid->Add(GetSingleCtrl(CtrlMap, cbResetConfig));
-    pTopGrid->Add(GetSingleCtrl(CtrlMap, cbDontAsk));
-    pTopGrid->Add(GetSizerCtrl(CtrlMap, szImageLoggingFormat));
-    pTopGrid->Add(GetSingleCtrl(CtrlMap, cbDitherRAOnly));
-    pTopGrid->Add(GetSizerCtrl(CtrlMap, szDitherScale));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szLanguage));
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbResetConfig));
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbDontAsk));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szImageLoggingFormat));
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_szDitherRAOnly));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szDitherScale));
     this->Add(pTopGrid, sizer_flags);
-    this->Add(GetSizerCtrl(CtrlMap, szLogFileInfo), sizer_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szLogFileInfo), sizer_flags);
     Layout();
 }
 
@@ -2353,10 +2353,10 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     wxWindow *parent;
     
     m_pFrame = pFrame;
-    m_pResetConfiguration = new wxCheckBox(GetParentWindow(cbResetConfig), wxID_ANY, _("Reset Configuration")); 
-    AddCtrl(CtrlMap, cbResetConfig, m_pResetConfiguration, _("Reset all configuration to fresh install status -- Note: this closes PHD2"));
-    m_pResetDontAskAgain = new wxCheckBox(GetParentWindow(cbDontAsk), wxID_ANY, _("Reset \"Don't Ask Again\" messages")); 
-    AddCtrl(CtrlMap, cbDontAsk, m_pResetDontAskAgain, _("Restore any messages that were hidden when you checked \"Don't Ask Again\"."));
+    m_pResetConfiguration = new wxCheckBox(GetParentWindow(AD_cbResetConfig), wxID_ANY, _("Reset Configuration"));
+    AddCtrl(CtrlMap, AD_cbResetConfig, m_pResetConfiguration, _("Reset all configuration to fresh install status -- Note: this closes PHD2"));
+    m_pResetDontAskAgain = new wxCheckBox(GetParentWindow(AD_cbDontAsk), wxID_ANY, _("Reset \"Don't Ask Again\" messages")); 
+    AddCtrl(CtrlMap, AD_cbDontAsk, m_pResetDontAskAgain, _("Restore any messages that were hidden when you checked \"Don't Ask Again\"."));
 
     wxString img_formats[] =
     {
@@ -2364,20 +2364,20 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     };
 
     width = StringArrayWidth(img_formats, WXSIZEOF(img_formats));
-    m_pLoggedImageFormat = new wxChoice(GetParentWindow(szImageLoggingFormat), wxID_ANY, wxPoint(-1, -1),
+    m_pLoggedImageFormat = new wxChoice(GetParentWindow(AD_szImageLoggingFormat), wxID_ANY, wxPoint(-1, -1),
         wxSize(width + 35, -1), WXSIZEOF(img_formats), img_formats);
-    AddLabeledCtrl(CtrlMap, szImageLoggingFormat, _("Image logging format"), m_pLoggedImageFormat,
+    AddLabeledCtrl(CtrlMap, AD_szImageLoggingFormat, _("Image logging format"), m_pLoggedImageFormat,
         _("File format of logged images"));
 
-    parent = GetParentWindow(cbDitherRAOnly);
+    parent = GetParentWindow(AD_szDitherRAOnly);
     m_pDitherRaOnly = new wxCheckBox(parent, wxID_ANY, _("Dither RA only"), wxPoint(-1, -1));
-    AddCtrl(CtrlMap, cbDitherRAOnly, m_pDitherRaOnly, _("Constrain dither to RA only"));
+    AddCtrl(CtrlMap, AD_szDitherRAOnly, m_pDitherRaOnly, _("Constrain dither to RA only"));
 
     width = StringWidth(_T("000.00"));
-    m_pDitherScaleFactor = new wxSpinCtrlDouble(GetParentWindow(szDitherScale), wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+    m_pDitherScaleFactor = new wxSpinCtrlDouble(GetParentWindow(AD_szDitherScale), wxID_ANY, _T("foo2"), wxPoint(-1, -1),
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0, _T("DitherScaleFactor"));
     m_pDitherScaleFactor->SetDigits(1);
-    AddLabeledCtrl(CtrlMap, szDitherScale, _("Dither Scale"), m_pDitherScaleFactor,
+    AddLabeledCtrl(CtrlMap, AD_szDitherScale, _("Dither Scale"), m_pDitherScaleFactor,
         _("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
 
     wxString nralgo_choices[] =
@@ -2386,22 +2386,22 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     };
 
     width = StringArrayWidth(nralgo_choices, WXSIZEOF(nralgo_choices));
-    parent = GetParentWindow(szNoiseReduction);
+    parent = GetParentWindow(AD_szNoiseReduction);
     m_pNoiseReduction = new wxChoice(parent, wxID_ANY, wxPoint(-1, -1),
         wxSize(width + 35, -1), WXSIZEOF(nralgo_choices), nralgo_choices);
-    AddLabeledCtrl(CtrlMap, szNoiseReduction, _("Noise Reduction"), m_pNoiseReduction,
+    AddLabeledCtrl(CtrlMap, AD_szNoiseReduction, _("Noise Reduction"), m_pNoiseReduction,
         _("Technique to reduce noise in images"));
 
     width = StringWidth(_T("00000"));
-    parent = GetParentWindow(szTimeLapse);
+    parent = GetParentWindow(AD_szTimeLapse);
     m_pTimeLapse = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 10000, 0, _T("TimeLapse"));
-    AddLabeledCtrl(CtrlMap, szTimeLapse, _("Time Lapse (ms)"), m_pTimeLapse,
+    AddLabeledCtrl(CtrlMap, AD_szTimeLapse, _("Time Lapse (ms)"), m_pTimeLapse,
         _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
-    parent = GetParentWindow(szFocalLength);
+    parent = GetParentWindow(AD_szFocalLength);
     m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width + 30, -1));
-    AddLabeledCtrl(CtrlMap, szFocalLength, _("Focal length (mm)"), m_pFocalLength,
+    AddLabeledCtrl(CtrlMap, AD_szFocalLength, _("Focal length (mm)"), m_pFocalLength,
         _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 
     int currentLanguage = m_pFrame->m_pLocale->GetLanguage();
@@ -2441,14 +2441,14 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     pTrans->SetLanguage((wxLanguage)currentLanguage);
 
     width = StringWidth(_("System default"));
-    parent = GetParentWindow(szLanguage);
+    parent = GetParentWindow(AD_szLanguage);
     m_pLanguage = new wxChoice(parent, wxID_ANY, wxPoint(-1, -1),
         wxSize(width + 35, -1), languages);
-    AddLabeledCtrl(CtrlMap, szLanguage, _("Language"), m_pLanguage,
+    AddLabeledCtrl(CtrlMap, AD_szLanguage, _("Language"), m_pLanguage,
         wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 
     // Log directory location - use a group box with a wide text edit control on top and a centered 'browse' button below it
-    parent = GetParentWindow(szLogFileInfo);
+    parent = GetParentWindow(AD_szLogFileInfo);
     wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Log File Location"));
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
     m_pLogDir = new wxTextCtrl(parent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(450, -1));
@@ -2459,14 +2459,14 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
 
     pInputGroupBox->Add(m_pLogDir, wxSizerFlags(0).Expand());
     pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Align(wxRIGHT).Border(wxTop, 20));
-    AddGroup(CtrlMap, szLogFileInfo, pInputGroupBox);
+    AddGroup(CtrlMap, AD_szLogFileInfo, pInputGroupBox);
 
-    parent = GetParentWindow(cbAutoRestoreCal);
+    parent = GetParentWindow(AD_cbAutoRestoreCal);
     m_pAutoLoadCalibration = new wxCheckBox(parent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
-    AddCtrl(CtrlMap, cbAutoRestoreCal, m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
+    AddCtrl(CtrlMap, AD_cbAutoRestoreCal, m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
 
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
-    parent = GetParentWindow(szAutoExposure);
+    parent = GetParentWindow(AD_szAutoExposure);
     m_autoExpDurationMin = new wxComboBox(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
     m_autoExpDurationMax = new wxComboBox(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
@@ -2477,15 +2477,15 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 3.5, 99.9, 0.0, 1.0);
 
     wxFlexGridSizer *sz1 = new wxFlexGridSizer(1, 3, 10, 10);
-    sz1->Add(MakeLabeledControl(szAutoExposure, _("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")));
-    sz1->Add(MakeLabeledControl(szAutoExposure, _("Max"), m_autoExpDurationMax, _("Auto exposure maximum duration")), wxSizerFlags(0).Border(wxLEFT, 70));
-    sz1->Add(MakeLabeledControl(szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")), wxSizerFlags(0).Border(wxLEFT, 80));
+    sz1->Add(MakeLabeledControl(AD_szAutoExposure, _("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")));
+    sz1->Add(MakeLabeledControl(AD_szAutoExposure, _("Max"), m_autoExpDurationMax, _("Auto exposure maximum duration")), wxSizerFlags(0).Border(wxLEFT, 70));
+    sz1->Add(MakeLabeledControl(AD_szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")), wxSizerFlags(0).Border(wxLEFT, 80));
     wxStaticBoxSizer *autoExp = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Auto Exposure"));
     autoExp->Add(sz1, wxSizerFlags(0).Expand());
-    //autoExp->Add(MakeLabeledControl(szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")),
+    //autoExp->Add(MakeLabeledControl(AD_szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")),
     //    sizer_flags);
 
-    AddGroup(CtrlMap, szAutoExposure, autoExp);
+    AddGroup(CtrlMap, AD_szAutoExposure, autoExp);
 }
 
 MyFrameConfigDialogCtrlSet::~MyFrameConfigDialogCtrlSet()

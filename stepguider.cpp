@@ -1216,28 +1216,28 @@ MountConfigDialogCtrlSet(pParent, pStepGuider, pAdvancedDialog, CtrlMap)
     m_pStepGuider = (StepGuider*) pStepGuider;
 
     width = StringWidth(_T("000"));
-    m_pCalibrationStepsPerIteration = new wxSpinCtrl(GetParentWindow(szCalStepsPerIteration), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
+    m_pCalibrationStepsPerIteration = new wxSpinCtrl(GetParentWindow(AD_szCalStepsPerIteration), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10, 3,_T("Cal_Steps"));
-    AddGroup(CtrlMap, szCalStepsPerIteration, MakeLabeledControl(szCalStepsPerIteration, _("Cal Steps"), m_pCalibrationStepsPerIteration, _("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes")));
+    AddGroup(CtrlMap, AD_szCalStepsPerIteration, MakeLabeledControl(AD_szCalStepsPerIteration, _("Cal Steps"), m_pCalibrationStepsPerIteration, _("How many steps should be issued per calibration cycle. Default = %d, increase for short f/l scopes and decrease for longer f/l scopes")));
 
      width = StringWidth(_T("000"));
-    m_pSamplesToAverage = new wxSpinCtrl(GetParentWindow(szSamplesToAverage), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
+    m_pSamplesToAverage = new wxSpinCtrl(GetParentWindow(AD_szSamplesToAverage), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 9, 0, _T("Samples_To_Average"));
-    AddGroup(CtrlMap, szSamplesToAverage, MakeLabeledControl(szSamplesToAverage, _("Samples To Average"), m_pSamplesToAverage, _("When calibrating, how many samples should be averaged. Default = %d, increase for worse seeing and small imaging scales")));
+    AddGroup(CtrlMap, AD_szSamplesToAverage, MakeLabeledControl(AD_szSamplesToAverage, _("Samples To Average"), m_pSamplesToAverage, _("When calibrating, how many samples should be averaged. Default = %d, increase for worse seeing and small imaging scales")));
     
     width = StringWidth(_T("000"));
-    m_pBumpPercentage = new wxSpinCtrl(GetParentWindow(szBumpPercentage), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
+    m_pBumpPercentage = new wxSpinCtrl(GetParentWindow(AD_szBumpPercentage), wxID_ANY, wxEmptyString, wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 99, 0, _T("Bump_Percentage"));
-    AddGroup(CtrlMap, szBumpPercentage, MakeLabeledControl(szBumpPercentage, _("Bump Percentage"), m_pBumpPercentage, _("What percentage of the AO travel can be used before bumping the mount. Default = %d")));
+    AddGroup(CtrlMap, AD_szBumpPercentage, MakeLabeledControl(AD_szBumpPercentage, _("Bump Percentage"), m_pBumpPercentage, _("What percentage of the AO travel can be used before bumping the mount. Default = %d")));
 
     width = StringWidth(_T("00.00"));
-    m_pBumpMaxStepsPerCycle = new wxSpinCtrlDouble(GetParentWindow(szBumpSteps), wxID_ANY,_T("foo2"), wxPoint(-1,-1),
+    m_pBumpMaxStepsPerCycle = new wxSpinCtrlDouble(GetParentWindow(AD_szBumpSteps), wxID_ANY,_T("foo2"), wxPoint(-1,-1),
             wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.01, 99.99, 0.0, 0.25, _T("Bump_steps"));
-    AddGroup(CtrlMap, szBumpSteps, MakeLabeledControl(szBumpSteps, _("Bump Steps"), m_pBumpMaxStepsPerCycle,
+    AddGroup(CtrlMap, AD_szBumpSteps, MakeLabeledControl(AD_szBumpSteps, _("Bump Steps"), m_pBumpMaxStepsPerCycle,
         wxString::Format(_("How far should a mount bump move the mount between images (in AO steps). Default = %.2f, decrease if mount bumps cause spikes on the graph"))));
 
-    m_bumpOnDither = new wxCheckBox(GetParentWindow(cbBumpOnDither), wxID_ANY, _("Bump on Dither"));
-    AddCtrl(CtrlMap, cbBumpOnDither, m_bumpOnDither, _("Bump the mount to return the AO to center at each dither"));
+    m_bumpOnDither = new wxCheckBox(GetParentWindow(AD_cbBumpOnDither), wxID_ANY, _("Bump on Dither"));
+    AddCtrl(CtrlMap, AD_cbBumpOnDither, m_bumpOnDither, _("Bump the mount to return the AO to center at each dither"));
 }
 
 void StepGuiderConfigDialogCtrlSet::LoadValues()
