@@ -79,27 +79,33 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     /*
-     * the advanced dialog is made up of a number of "on the fly" generated slices that configure different things.
+     * The advanced dialog is made up of a number of "on the fly" generated slices that configure different things.
      *
-     * pTopLevelSizer is a top level Box Sizer in wxVERTICAL mode that contains a pair of sizers,
-     * pConfigSizer to hold all the configuration panes and an unamed Button sizer and the OK and CANCEL buttons.
+     * pTopLevelSizer is a top level Box Sizer in wxVERTICAL mode that contains a wxNotebook object
+     * and an unamed button sizer with OK and CANCEL buttons.
      *
-     * pConfigSizer is a Horizontal Box Sizer which contains two Vertical Box sizers, one
-     * for each column of panes
-     *
+     * Each tab of the notebook contains one or more ConfigDialogPane(s) which are basically vertical
+     * sizers to hold a bunch of UI controls.  The UI controls are constructed and managed by ConfigDialogCtrlSet
+     * objects.  These reflect the internal organization of the app and generally bind one-to-one with the major internal 
+     * classes: MyFrame, Guider, Camera, Mount, Scope, AO, Rotator, etc.  The controls created by the ConfigDialogCtrlSet
+     * objects are layed out on the various panes by the ConfigDialogPane instances.  So there is a level of indirection here
+     * such that the controls can generally be placed anywhere, and the ConfigDialogCtrlSet objects don't care.  This means the
+     * overall UI can be optimized for end-users while allowing the underlying controls to reside where they should from an 
+     * internal architecture perspective.
      * +------------------------------------+------------------------------------+
-     * |    General (Frame) Settings        |   Guider Base Class Settings       |
-     * +------------------------------------|                                    |
-     * |    Mount  Base Class Settings      |   Ra Guide Algorithm Settings      |
-     * |                                    |                                    |
-     * |    Mount  Sub Class Settings       |   Dec Guide Alogrithm Settings     |
-     * +------------------------------------|                                    |
-     * |    Camera Base Class Settings      |   Guider Sub Class Settings        |
-     * |                                    |------------------------------------+
-     * |    Camera Sub  Calss Settings      |                                    |
-     * +------------------------------------|                                    |
-     * |    Camera Base Class Settings      |                                    |
-     * +-------------------------------------------------------------------------|
+     * | + -------------------------------------------------------------------+  |
+     * | |                                                                    |  |
+     * | |                                                                    |  |
+     * | |           One or more config dialog panes on each tab of the       |  |
+     * | |            notbook, possibly nested                                |  |
+     * | |                                                                    |  |
+     * | |                                                                    |  |
+     * | |                                                                    |  |
+     * | |                                                                    |  |
+     * | |                                                                    |  |
+     * + |                                                                    |  |
+     * | |                                                                    |  |
+     * + +--------------------------------------------------------------------+  |
      * |                              OK and Cancel Buttons                      |
      * +-------------------------------------------------------------------------+
      *
@@ -178,6 +184,26 @@ void AdvancedDialog::Preload()
     if (m_rebuildPanels)
         RebuildPanels();
 }
+// Internal debugging function to be sure all controls are hosted on a panel somewhere
+void AdvancedDialog::ConfirmLayouts()
+{
+
+    std::map <BRAIN_CTRL_IDS, BrainCtrlInfo>::const_iterator it;
+    int ct = 0;
+    for (it = m_brainCtrls.begin(); it != m_brainCtrls.end(); ++it)
+    {
+        BrainCtrlInfo info;
+        BRAIN_CTRL_IDS id;
+        id = it->first;
+        info = it->second;
+        if (info.panelCtrl == NULL || !info.isPositioned)
+        {
+            Debug.AddLine(wxString::Format("AdvancedDialog internal error: Controlid %d is not positioned", id));
+            ct++;
+        }
+        assert(ct == 0);
+    }
+}
 
 // Perform a from-scratch initialization and layout of all the tabs
 void AdvancedDialog::RebuildPanels(void)
@@ -252,6 +278,8 @@ void AdvancedDialog::RebuildPanels(void)
     GetSizer()->Layout();
     GetSizer()->Fit(this);
     m_rebuildPanels = false;
+
+    ConfirmLayouts();             // maybe should be under compiletime option
 }
 
 wxWindow* AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)

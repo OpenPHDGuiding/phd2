@@ -85,11 +85,11 @@ class MyFrameConfigDialogPane : public ConfigDialogPane
 
 public:
     MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
-    virtual ~MyFrameConfigDialogPane(void);
+    virtual ~MyFrameConfigDialogPane(void) {};
 
     void LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
-    virtual void LoadValues(void);
-    virtual void UnloadValues(void);
+    virtual void LoadValues(void) {};
+    virtual void UnloadValues(void) {};
 };
 
 class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet

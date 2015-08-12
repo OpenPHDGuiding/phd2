@@ -170,7 +170,7 @@ RotatorConfigDialogPane::RotatorConfigDialogPane(wxWindow *parent, Rotator *rota
 
 void RotatorConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    this->Add(GetSingleCtrl(CtrlMap, AD_cbRotatorReverse));
+    this->Add(GetSingleCtrl(CtrlMap, AD_cbRotatorReverse), wxSizerFlags(0).Border(wxALL, 10));
     this->Layout();
     Fit(m_pParent);
 }

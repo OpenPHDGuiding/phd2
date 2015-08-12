@@ -185,6 +185,7 @@ private:
     void RebuildPanels(void);
     Mount* RealMount();
     void BuildCtrlSets();
+    void ConfirmLayouts();
 };
 
 #endif // ADVANCED_DIALOG_H_INCLUDED
