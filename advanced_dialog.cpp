@@ -82,7 +82,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
      * The advanced dialog is made up of a number of "on the fly" generated slices that configure different things.
      *
      * pTopLevelSizer is a top level Box Sizer in wxVERTICAL mode that contains a wxNotebook object
-     * and an unamed button sizer with OK and CANCEL buttons.
+     * and an unnamed button sizer with OK and CANCEL buttons.
      *
      * Each tab of the notebook contains one or more ConfigDialogPane(s) which are basically vertical
      * sizers to hold a bunch of UI controls.  The UI controls are constructed and managed by ConfigDialogCtrlSet
@@ -97,7 +97,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
      * | |                                                                    |  |
      * | |                                                                    |  |
      * | |           One or more config dialog panes on each tab of the       |  |
-     * | |            notbook, possibly nested                                |  |
+     * | |           notebook, possibly nested                                |  |
      * | |                                                                    |  |
      * | |                                                                    |  |
      * | |                                                                    |  |
