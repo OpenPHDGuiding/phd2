@@ -2312,14 +2312,13 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 
 void MyFrameConfigDialogPane::LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    BrainCtrlInfo thisCtrlInfo;
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
     wxFlexGridSizer *pTopGrid = new wxFlexGridSizer(3, 2, 15, 15);
 
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, szLanguage));
     pTopGrid->Add(GetSingleCtrl(CtrlMap, cbResetConfig));
     pTopGrid->Add(GetSingleCtrl(CtrlMap, cbDontAsk));
     pTopGrid->Add(GetSizerCtrl(CtrlMap, szImageLoggingFormat));
-    pTopGrid->Add(GetSizerCtrl(CtrlMap, szLanguage));
     pTopGrid->Add(GetSingleCtrl(CtrlMap, cbDitherRAOnly));
     pTopGrid->Add(GetSizerCtrl(CtrlMap, szDitherScale));
     this->Add(pTopGrid, sizer_flags);
@@ -2450,16 +2449,16 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
 
     // Log directory location - use a group box with a wide text edit control on top and a centered 'browse' button below it
     parent = GetParentWindow(szLogFileInfo);
-    wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, parent, _("Log File Location"));
+    wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Log File Location"));
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_pLogDir = new wxTextCtrl(parent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(250, -1));
+    m_pLogDir = new wxTextCtrl(parent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(450, -1));
     m_pLogDir->SetToolTip(_("Folder for guide and debug logs; empty string to restore the default location"));
     m_pSelectDir = new wxButton(parent, wxID_OK, _("Browse..."));
-    pButtonSizer->Add(m_pSelectDir, wxSizerFlags(0).Center());
+    pButtonSizer->Add(m_pSelectDir, wxSizerFlags(0).Align(wxRIGHT));
     m_pSelectDir->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &MyFrameConfigDialogCtrlSet::OnDirSelect, this);
 
     pInputGroupBox->Add(m_pLogDir, wxSizerFlags(0).Expand());
-    pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Center().Border(wxTop, 20));
+    pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Align(wxRIGHT).Border(wxTop, 20));
     AddGroup(CtrlMap, szLogFileInfo, pInputGroupBox);
 
     parent = GetParentWindow(cbAutoRestoreCal);

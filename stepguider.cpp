@@ -1193,10 +1193,6 @@ void StepGuider::StepGuiderConfigDialogPane::LayoutControls(wxPanel* pParent, st
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
 }
 
-StepGuider::StepGuiderConfigDialogPane::~StepGuiderConfigDialogPane(void)
-{
-}
-
 void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
 {
     MountConfigDialogPane::LoadValues();
@@ -1242,11 +1238,6 @@ MountConfigDialogCtrlSet(pParent, pStepGuider, pAdvancedDialog, CtrlMap)
 
     m_bumpOnDither = new wxCheckBox(GetParentWindow(cbBumpOnDither), wxID_ANY, _("Bump on Dither"));
     AddCtrl(CtrlMap, cbBumpOnDither, m_bumpOnDither, _("Bump the mount to return the AO to center at each dither"));
-}
-
-StepGuiderConfigDialogCtrlSet::~StepGuiderConfigDialogCtrlSet()
-{
-
 }
 
 void StepGuiderConfigDialogCtrlSet::LoadValues()

@@ -66,6 +66,8 @@ protected:
 class MyFrame;
 class AdvancedDialog;
 
+// ConfigDialogCtrlSet objects create and manage the UI controls and associated semantics - but they don't control tab locations or layout - those functions
+// are done by the ConfigDialogPane objects
 class ConfigDialogCtrlSet
 {
 protected:
@@ -87,7 +89,6 @@ public:
     void AddLabeledCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip);
     void AddCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip);     // Control with tooltip
 
-    // void DoAdd(const wxString& Label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = NULL);
     wxWindow* GetParentWindow(BRAIN_CTRL_IDS id);
 
     int StringWidth(const wxString& string);

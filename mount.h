@@ -111,7 +111,7 @@ class MountConfigDialogCtrlSet : public ConfigDialogCtrlSet
 
 public:
     MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
-    virtual ~MountConfigDialogCtrlSet();
+    virtual ~MountConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
 };

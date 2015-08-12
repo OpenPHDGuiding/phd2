@@ -1430,20 +1430,6 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
 
 }
 
-Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
-{
-}
-
-void Guider::GuiderConfigDialogPane::LoadValues(void)
-{
-
-}
-
-void Guider::GuiderConfigDialogPane::UnloadValues(void)
-{
-
-}
-
 GuiderConfigDialogCtrlSet *Guider::GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
     return new GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap);
@@ -1458,11 +1444,6 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 
     m_pEnableFastRecenter = new wxCheckBox(GetParentWindow(cbFastRecenter), wxID_ANY, _("Fast recenter after calibration or dither"));
     AddCtrl(CtrlMap, cbFastRecenter, m_pEnableFastRecenter, _("Speed up calibration and dithering by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration or dither."));
-}
-
-GuiderConfigDialogCtrlSet::~GuiderConfigDialogCtrlSet()
-{
-
 }
 
 void GuiderConfigDialogCtrlSet::LoadValues()

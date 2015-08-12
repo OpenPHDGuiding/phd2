@@ -56,10 +56,10 @@ class RotatorConfigDialogPane : public ConfigDialogPane
 
 public:
     RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator);
-    ~RotatorConfigDialogPane(void);
+    ~RotatorConfigDialogPane(void) {};
 
-    void LoadValues(void); 
-    void UnloadValues(void);
+    void LoadValues(void) {};
+    void UnloadValues(void) {};
     virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
 };
 
@@ -86,6 +86,7 @@ public:
     virtual bool IsConnected(void) const;
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    RotatorConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, Rotator* pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     virtual void ShowPropertyDialog(void);
 
     // get the display name of the rotator device

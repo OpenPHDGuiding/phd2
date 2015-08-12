@@ -1371,10 +1371,6 @@ void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BR
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
 }
 
-Scope::ScopeConfigDialogPane::~ScopeConfigDialogPane(void)
-{
-}
-
 void Scope::ScopeConfigDialogPane::LoadValues(void)
 {
     MountConfigDialogPane::LoadValues();
@@ -1460,11 +1456,6 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
             wxSize(width + 35, -1), WXSIZEOF(dec_choices), dec_choices);
         AddLabeledCtrl(CtrlMap, szDecGuideMode, _("Dec guide mode"), m_pDecMode, _("Directions in which Dec guide commands will be issued"));
     }
-}
-
-ScopeConfigDialogCtrlSet::~ScopeConfigDialogCtrlSet()
-{
-
 }
 
 void ScopeConfigDialogCtrlSet::LoadValues()

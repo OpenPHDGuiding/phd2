@@ -191,8 +191,6 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BR
 
         Fit(m_pParent);
     }
-
-
 }
 
 Mount::MountConfigDialogPane::~MountConfigDialogPane(void)
@@ -330,10 +328,6 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
                 _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
         }
     }
-}
-
-MountConfigDialogCtrlSet::~MountConfigDialogCtrlSet()
-{
 }
 
 void MountConfigDialogCtrlSet::LoadValues()

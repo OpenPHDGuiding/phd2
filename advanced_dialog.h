@@ -155,7 +155,7 @@ class AdvancedDialog : public wxDialog
 
 public:
     AdvancedDialog(MyFrame *pFrame);
-    ~AdvancedDialog();
+    ~AdvancedDialog() {};
 
     void EndModal(int retCode);
 
@@ -167,6 +167,7 @@ public:
     void LoadValues(void);
     void UnloadValues(void);
     void Undo(void);
+    void Preload();
 
     int GetFocalLength(void);
     void SetFocalLength(int val);
@@ -183,6 +184,7 @@ private:
     void AddRotatorPage(void);
     void RebuildPanels(void);
     Mount* RealMount();
+    void BuildCtrlSets();
 };
 
 #endif // ADVANCED_DIALOG_H_INCLUDED

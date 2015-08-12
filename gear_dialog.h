@@ -114,7 +114,7 @@ private:
     void UpdateConnectAllButtonState(void);
     void UpdateDisconnectAllButtonState(void);
     void UpdateButtonState(void);
-    void UpdateAdvancedDialog(void);
+    void UpdateAdvancedDialog(bool preLoad);
 
     void OnProfileChoice(wxCommandEvent& event);
     void OnButtonProfileManage(wxCommandEvent& event);

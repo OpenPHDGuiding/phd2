@@ -983,7 +983,8 @@ GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
     wxSizer *pSearchRegion = MakeLabeledControl(szStarTracking, _("Search region (pixels)"), m_pSearchRegion,
         _("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
 
-    m_pEnableStarMassChangeThresh = new wxCheckBox(GetParentWindow(szStarTracking), STAR_MASS_ENABLE, _("Star mass change detection"));
+    wxStaticBoxSizer *pStarMass = new wxStaticBoxSizer(wxHORIZONTAL, GetParentWindow(szStarTracking), _("Star Mass Detection"));
+    m_pEnableStarMassChangeThresh = new wxCheckBox(GetParentWindow(szStarTracking), STAR_MASS_ENABLE, _("Enable"));
     m_pEnableStarMassChangeThresh->SetToolTip(_("Check to enable star mass change detection. When enabled, "
         "PHD skips frames when the guide star mass changes by an amount greater than the Star mass tolerance setting."));
 
@@ -993,16 +994,16 @@ GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
     m_pMassChangeThreshold = new wxSpinCtrlDouble(pParent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0, _T("MassChangeThreshold"));
     m_pMassChangeThreshold->SetDigits(1);
-    wxSizer *pMass = MakeLabeledControl(szStarTracking, _("Star mass tolerance"), m_pMassChangeThreshold,
+    wxSizer *pTolerance = MakeLabeledControl(szStarTracking, _("Tolerance"), m_pMassChangeThreshold,
         _("When star mass change detection is enabled, this is the tolerance for star mass changes between frames, in percent. "
         "Larger values are more tolerant (less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
         "If star mass change detection is not enabled then this setting is ignored."));
+    pStarMass->Add(m_pEnableStarMassChangeThresh, wxSizerFlags(0).Border(wxTOP, 3));
+    pStarMass->Add(pTolerance, wxSizerFlags(0).Border(wxLEFT, 40));
 
-
-    wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(1, 3, 5, 15);
-    pTrackingParams->Add(pSearchRegion);
-    pTrackingParams->Add(pMass);
-    pTrackingParams->Add(m_pEnableStarMassChangeThresh);
+    wxFlexGridSizer *pTrackingParams = new wxFlexGridSizer(1, 2, 5, 15);
+    pTrackingParams->Add(pSearchRegion, wxSizerFlags(0).Border(wxTOP, 10));
+    pTrackingParams->Add(pStarMass,wxSizerFlags(0).Border(wxLEFT, 75));
 
     AddGroup(CtrlMap, szStarTracking, pTrackingParams);
 

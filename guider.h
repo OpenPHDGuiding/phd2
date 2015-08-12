@@ -137,7 +137,7 @@ class GuiderConfigDialogCtrlSet : public ConfigDialogCtrlSet
 
 public:
     GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
-    virtual ~GuiderConfigDialogCtrlSet();
+    virtual ~GuiderConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
 
@@ -187,10 +187,10 @@ public:
 
     public:
         GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider);
-        ~GuiderConfigDialogPane(void);
+        ~GuiderConfigDialogPane(void) {};
 
-        void LoadValues(void);
-        void UnloadValues(void);
+        void LoadValues(void) {};
+        void UnloadValues(void) {};
         virtual void LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     };
 

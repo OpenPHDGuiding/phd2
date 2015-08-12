@@ -175,28 +175,20 @@ void RotatorConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_C
     Fit(m_pParent);
 }
 
-RotatorConfigDialogPane::~RotatorConfigDialogPane()
-{
-
-}
-
 ConfigDialogPane *Rotator::GetConfigDialogPane(wxWindow *parent)
 {
     return new RotatorConfigDialogPane(parent, this);
 }
 
-void RotatorConfigDialogPane::LoadValues()
+RotatorConfigDialogCtrlSet *Rotator::GetConfigDlgCtrlSet(wxWindow *pParent, Rotator* pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-
-}
-
-void RotatorConfigDialogPane::UnloadValues()
-{
+    return new RotatorConfigDialogCtrlSet(pParent, pRotator, pAdvancedDialog, CtrlMap);
 }
 
 RotatorConfigDialogCtrlSet::RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap):
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
+    m_rotator = pRotator;
     m_cbReverse = new wxCheckBox(GetParentWindow(cbRotatorReverse), wxID_ANY, _("Reverse Sign of Angle"));
     AddCtrl(CtrlMap, cbRotatorReverse, m_cbReverse);
 }

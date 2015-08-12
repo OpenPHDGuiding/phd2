@@ -66,7 +66,7 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
 
 public:
     ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
-    virtual ~ScopeConfigDialogCtrlSet();
+    virtual ~ScopeConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
 };
@@ -134,7 +134,7 @@ protected:
 
     public:
         ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
-        ~ScopeConfigDialogPane(void);
+        ~ScopeConfigDialogPane(void) {};
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);

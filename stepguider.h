@@ -49,7 +49,7 @@ class StepGuiderConfigDialogCtrlSet : public MountConfigDialogCtrlSet
 
 public:
     StepGuiderConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
-    ~StepGuiderConfigDialogCtrlSet(void);
+    ~StepGuiderConfigDialogCtrlSet(void) {};
 
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
@@ -110,7 +110,7 @@ protected:
 
     public:
         StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider);
-        ~StepGuiderConfigDialogPane(void);
+        ~StepGuiderConfigDialogPane(void) {};
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);

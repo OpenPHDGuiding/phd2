@@ -734,19 +734,6 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAI
     this->Layout();
     Fit(m_pParent);
 }
-CameraConfigDialogPane::~CameraConfigDialogPane(void)
-{
-}
-
-void CameraConfigDialogPane::LoadValues(void)
-{
-
-}
-
-void CameraConfigDialogPane::UnloadValues(void)
-{
-
-}
 
 CameraConfigDialogCtrlSet* GuideCamera::GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
@@ -815,10 +802,6 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
         AddLabeledCtrl(CtrlMap, szCameraTimeout, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
     }
 
-}
-
-CameraConfigDialogCtrlSet::~CameraConfigDialogCtrlSet()
-{
 }
 
 void CameraConfigDialogCtrlSet::LoadValues()
