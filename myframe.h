@@ -116,7 +116,7 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
 
 public:
     MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
-    virtual ~MyFrameConfigDialogCtrlSet(void);
+    virtual ~MyFrameConfigDialogCtrlSet(void) {};
 
     virtual void LoadValues(void);
     virtual void UnloadValues(void);

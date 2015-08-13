@@ -43,13 +43,13 @@ class CameraConfigDialogPane;
 class GuiderConfigDialogPane;
 
 enum TAB_PAGES {
-    GLOBAL_PAGE,
-    GUIDER_PAGE,
-    CAMERA_PAGE,
-    MOUNT_PAGE,
-    AO_PAGE,
-    ROTATOR_PAGE,
-    UNASSIGNED_PAGE
+    AD_GLOBAL_PAGE,
+    AD_GUIDER_PAGE,
+    AD_CAMERA_PAGE,
+    AD_MOUNT_PAGE,
+    AD_AO_PAGE,
+    AD_ROTATOR_PAGE,
+    AD_UNASSIGNED_PAGE
 };
 // Segmented by the tab page location seen in the UI
 enum BRAIN_CTRL_IDS
@@ -106,21 +106,18 @@ struct BrainCtrlInfo
 {
     BRAIN_CTRL_IDS ctrlId;
     wxObject* panelCtrl;
-    TAB_PAGES ctrlHost;
     bool isPositioned;           // debug only
 
     BrainCtrlInfo::BrainCtrlInfo()
     {
         panelCtrl = NULL;
         ctrlId = AD_UNASSIGNED;
-        ctrlHost = UNASSIGNED_PAGE;
         isPositioned = false;
     }
     BrainCtrlInfo::BrainCtrlInfo(BRAIN_CTRL_IDS id, wxObject* ctrl)
     {
         panelCtrl = ctrl;
         ctrlId = id;
-        ctrlHost = UNASSIGNED_PAGE;
         isPositioned = false;
     }
 

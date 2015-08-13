@@ -44,7 +44,7 @@ protected:
     wxWindow *m_pParent;
 public:
     ConfigDialogPane(const wxString& heading, wxWindow *pParent);
-    virtual ~ConfigDialogPane(void);
+    virtual ~ConfigDialogPane(void) {};
 
     virtual void LoadValues(void) = 0;
     virtual void UnloadValues(void) = 0;
@@ -76,7 +76,7 @@ protected:
 
 public:
     ConfigDialogCtrlSet(wxWindow* pParent, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
-    virtual ~ConfigDialogCtrlSet(void);
+    virtual ~ConfigDialogCtrlSet(void) {};
 
     virtual void LoadValues(void) = 0;
     virtual void UnloadValues(void) = 0;

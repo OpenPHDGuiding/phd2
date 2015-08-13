@@ -96,7 +96,7 @@ inline void DeflectionLogger::Log(const PHD_Point&) { }
 #endif // CAPTURE_DEFLECTIONS
 
 static const int DefaultOverlayMode  = OVERLAY_NONE;
-static const bool DefaultScaleImage  = false;
+static const bool DefaultScaleImage  = true;
 
 BEGIN_EVENT_TABLE(Guider, wxWindow)
     EVT_PAINT(Guider::OnPaint)
@@ -158,9 +158,6 @@ void Guider::LoadProfileSettings(void)
 {
     bool enableFastRecenter = pConfig->Profile.GetBoolean("/guider/FastRecenter", true);
     EnableFastRecenter(enableFastRecenter);
-
-    bool scaleImage = pConfig->Profile.GetBoolean("/guider/ScaleImage", DefaultScaleImage);
-    SetScaleImage(scaleImage);
 }
 
 PauseType Guider::SetPaused(PauseType pause)
@@ -342,8 +339,6 @@ bool Guider::SetScaleImage(bool newScaleValue)
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
-
-    pConfig->Profile.SetBoolean("/guider/ScaleImage", m_scaleImage);
 
     return bError;
 }

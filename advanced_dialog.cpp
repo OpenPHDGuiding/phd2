@@ -187,16 +187,15 @@ void AdvancedDialog::Preload()
 // Internal debugging function to be sure all controls are hosted on a panel somewhere
 void AdvancedDialog::ConfirmLayouts()
 {
-
     std::map <BRAIN_CTRL_IDS, BrainCtrlInfo>::const_iterator it;
+    BrainCtrlInfo info;
+    BRAIN_CTRL_IDS id;
     int ct = 0;
     for (it = m_brainCtrls.begin(); it != m_brainCtrls.end(); ++it)
     {
-        BrainCtrlInfo info;
-        BRAIN_CTRL_IDS id;
         id = it->first;
         info = it->second;
-        if (info.panelCtrl == NULL || !info.isPositioned)
+        if (!info.isPositioned)
         {
             Debug.AddLine(wxString::Format("AdvancedDialog internal error: Controlid %d is not positioned", id));
             ct++;

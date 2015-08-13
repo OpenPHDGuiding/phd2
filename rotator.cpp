@@ -140,28 +140,6 @@ void Rotator::SetReversed(bool val)
     pConfig->Profile.SetBoolean("/rotator/isReversed", val);
 }
 
-//class RotatorConfigDialogPane : public ConfigDialogPane
-//{
-//    Rotator *m_rotator;
-//    wxCheckBox *m_cbReverse;
-//
-//public:
-//    RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator)
-//        : ConfigDialogPane(_("Rotator Settings"), parent), m_rotator(rotator)
-//    {
-//        //m_cbReverse = new wxCheckBox(parent, wxID_ANY, _("Reversed"));
-//        //DoAdd(m_cbReverse, _("Check to use the reverse of the angle reported by the rotator"));
-//    }
-//    ~RotatorConfigDialogPane(void) { }
-//
-//    void LoadValues(void) {
-//        //m_cbReverse->SetValue(m_rotator->IsReversed());
-//    }
-//    void UnloadValues(void) {
-//        //m_rotator->SetReversed(m_cbReverse->GetValue());
-//    }
-//};
-
 RotatorConfigDialogPane::RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator)
 : ConfigDialogPane(_("Rotator Settings"), parent), m_rotator(rotator)
 {

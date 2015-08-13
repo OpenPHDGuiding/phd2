@@ -935,35 +935,6 @@ void GuiderOneStar::GuiderOneStarConfigDialogPane::LayoutControls(Guider *pGuide
     GuiderConfigDialogPane::LayoutControls(pGuider, CtrlMap);
 }
 
-GuiderOneStar::GuiderOneStarConfigDialogPane::~GuiderOneStarConfigDialogPane(void)
-{
-}
-
-void GuiderOneStar::GuiderOneStarConfigDialogPane::LoadValues(void)
-{
-    //GuiderConfigDialogPane::LoadValues();
-
-    //bool starMassEnabled = m_pGuiderOneStar->GetMassChangeThresholdEnabled();
-    //m_pEnableStarMassChangeThresh->SetValue(starMassEnabled);
-    //m_pMassChangeThreshold->Enable(starMassEnabled);
-    //m_pMassChangeThreshold->SetValue(100.0 * m_pGuiderOneStar->GetMassChangeThreshold());
-    //m_pSearchRegion->SetValue(m_pGuiderOneStar->GetSearchRegion());
-}
-
-void GuiderOneStar::GuiderOneStarConfigDialogPane::UnloadValues(void)
-{
-    //m_pGuiderOneStar->SetMassChangeThresholdEnabled(m_pEnableStarMassChangeThresh->GetValue());
-    //m_pGuiderOneStar->SetMassChangeThreshold(m_pMassChangeThreshold->GetValue() / 100.0);
-    //m_pGuiderOneStar->SetSearchRegion(m_pSearchRegion->GetValue());
-
-    //GuiderConfigDialogPane::UnloadValues();
-}
-
-void GuiderOneStar::GuiderOneStarConfigDialogPane::OnStarMassEnableChecked(wxCommandEvent& event)
-{
-    //m_pMassChangeThreshold->Enable(event.IsChecked());
-}
-
 GuiderConfigDialogCtrlSet* GuiderOneStar::GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
     return new GuiderOneStarConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap);

@@ -40,10 +40,6 @@ ConfigDialogPane::ConfigDialogPane(const wxString& heading, wxWindow *pParent)
     m_pParent = pParent;
 }
 
-ConfigDialogPane::~ConfigDialogPane(void)
-{
-}
-
 void ConfigDialogPane::DoAdd(wxSizer *pSizer)
 {
     this->Add(pSizer, wxSizerFlags().Expand().Border(wxALL,3));
@@ -116,7 +112,7 @@ wxWindow* ConfigDialogPane::GetSingleCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInf
     wxWindow* ctrl = NULL;
     try
     {
-        ctrl = (wxWindow*)(CtrlMap.at(id)).panelCtrl;
+        ctrl = (wxWindow*)(CtrlMap.at(id).panelCtrl);
         if (ctrl != NULL)
             CtrlMap[id].isPositioned = true;
     }
@@ -129,7 +125,7 @@ wxWindow* ConfigDialogPane::GetSingleCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInf
 
 wxSizer* ConfigDialogPane::GetSizerCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id)
 {
-    wxSizer* ctrl = (wxSizer*)(CtrlMap.at(id)).panelCtrl;
+    wxSizer* ctrl = (wxSizer*)(CtrlMap.at(id).panelCtrl);
     if (ctrl != NULL)
         CtrlMap[id].isPositioned = true;
     return (ctrl);           // May return null, won't add entry in CtrlMap
@@ -139,11 +135,6 @@ ConfigDialogCtrlSet::ConfigDialogCtrlSet(wxWindow *pParent, AdvancedDialog* pAdv
 {
     m_pParent = pParent;
     m_pAdvDlg = pAdvancedDialog;
-}
-
-ConfigDialogCtrlSet::~ConfigDialogCtrlSet(void)
-{
-
 }
 
 int ConfigDialogCtrlSet::StringWidth(const wxString& string)

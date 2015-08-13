@@ -75,20 +75,14 @@ public:
     class GuiderOneStarConfigDialogPane : public GuiderConfigDialogPane
     {
     protected:
-        GuiderOneStar *m_pGuiderOneStar;
-        wxSpinCtrl *m_pSearchRegion;
-        wxCheckBox *m_pEnableStarMassChangeThresh;
-        wxSpinCtrlDouble *m_pMassChangeThreshold;
 
         public:
         GuiderOneStarConfigDialogPane(wxWindow *pParent, GuiderOneStar *pGuider);
-        ~GuiderOneStarConfigDialogPane(void);
+        ~GuiderOneStarConfigDialogPane(void) {};
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
+        virtual void LoadValues(void) {};
+        virtual void UnloadValues(void) {};
         void LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
-
-        void OnStarMassEnableChecked(wxCommandEvent& event);
     };
 
     bool GetMassChangeThresholdEnabled(void);

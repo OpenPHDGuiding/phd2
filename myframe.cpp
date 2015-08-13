@@ -2305,7 +2305,7 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     AddLabeledCtrl(CtrlMap, AD_szLanguage, _("Language"), m_pLanguage,
         wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 
-    // Log directory location - use a group box with a wide text edit control on top and a centered 'browse' button below it
+    // Log directory location - use a group box with a wide text edit control and a 'browse' button at the far right
     parent = GetParentWindow(AD_szLogFileInfo);
     wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Log File Location"));
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -2340,14 +2340,8 @@ ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
     sz1->Add(MakeLabeledControl(AD_szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")), wxSizerFlags(0).Border(wxLEFT, 80));
     wxStaticBoxSizer *autoExp = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Auto Exposure"));
     autoExp->Add(sz1, wxSizerFlags(0).Expand());
-    //autoExp->Add(MakeLabeledControl(AD_szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")),
-    //    sizer_flags);
 
     AddGroup(CtrlMap, AD_szAutoExposure, autoExp);
-}
-
-MyFrameConfigDialogCtrlSet::~MyFrameConfigDialogCtrlSet()
-{
 }
 
 void MyFrameConfigDialogCtrlSet::LoadValues()
@@ -2420,7 +2414,7 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
         pFrame->SetLanguage(m_LanguageIDs[language]);
         if (m_oldLanguageChoice != language)
         {
-            wxMessageBox(_("You must restart PHD for the language change to take effect."), _("Info"));
+            wxMessageBox(_("You must restart PHD2 for the language change to take effect."), _("Info"));
         }
 
         wxString newdir = m_pLogDir->GetValue();

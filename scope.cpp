@@ -1442,11 +1442,11 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
         width = StringWidth(_T("00000"));
         m_pMaxRaDuration = new wxSpinCtrl(GetParentWindow(AD_szMaxRAAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
             wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxRA_Dur"));
-        AddLabeledCtrl(CtrlMap, AD_szMaxRAAmt, _("Max RA Duration"), m_pMaxRaDuration, _("Longest length of pulse to send in RA\nDefault = 1000 ms."));
+        AddLabeledCtrl(CtrlMap, AD_szMaxRAAmt, _("Max RA Duration"), m_pMaxRaDuration, _("Longest length of pulse to send in RA\nDefault = 2500 ms."));
 
         m_pMaxDecDuration = new wxSpinCtrl(GetParentWindow(AD_szMaxDecAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
             wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxDec_Dur"));
-        AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec Duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 1000 ms.  Increase if drift is fast."));
+        AddLabeledCtrl(CtrlMap, AD_szMaxDecAmt, _("Max Dec Duration"), m_pMaxDecDuration, _("Longest length of pulse to send in declination\nDefault = 2500 ms.  Increase if drift is fast."));
 
         wxString dec_choices[] = {
             _("Off"), _("Auto"), _("North"), _("South")
