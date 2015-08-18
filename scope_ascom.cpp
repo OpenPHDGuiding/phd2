@@ -469,18 +469,26 @@ bool ScopeASCOM::Disconnect(void)
             throw ERROR_INFO("ASCOM Scope: attempt to disconnect when not connected");
         }
 
-        GITObjRef scope(m_gitEntry);
-
-        // ... set the Connected property to false....
-        if (!scope.PutProp(dispid_connected, false))
+        // Setting the Connected property to false will cause the scope to be disconnected for all
+        // ASCOM clients that are connected to the scope, and we do not want this!
+        bool const disconnectAscomDriver = false;
+        if (disconnectAscomDriver)
         {
-            pFrame->Alert(_("ASCOM driver problem during disconnect"));
-            throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false: " + ExcepMsg(scope.Excep()));
+            GITObjRef scope(m_gitEntry);
+
+            // Set the Connected property to false
+            if (!scope.PutProp(dispid_connected, false))
+            {
+                pFrame->Alert(_("ASCOM driver problem during disconnect"));
+                throw ERROR_INFO("ASCOM Scope: Could not set Connected property to false: " + ExcepMsg(scope.Excep()));
+            }
         }
+
+        m_gitEntry.Unregister();
 
         Debug.AddLine("Disconnected Successfully");
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
