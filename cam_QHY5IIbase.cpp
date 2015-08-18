@@ -104,7 +104,7 @@ static FARPROC WINAPI GetProc(HINSTANCE dll, LPCSTR name)
     return p;
 }
 
-bool Camera_QHY5IIBase::Connect()
+bool Camera_QHY5IIBase::Connect(const wxString& camId)
 {
     // returns true on error
 

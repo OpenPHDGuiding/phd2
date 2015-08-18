@@ -53,7 +53,7 @@ Camera_SBIGRotatorClass::~Camera_SBIGRotatorClass()
     delete m_pSubcamera;
 }
 
-bool Camera_SBIGRotatorClass::Connect()
+bool Camera_SBIGRotatorClass::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -81,7 +81,7 @@ bool Camera_SBIGRotatorClass::Connect()
 
         m_pSubcamera = new Camera_SBIGClass();
 
-        bError = m_pSubcamera->Connect();
+        bError = m_pSubcamera->Connect(camId);
         Connected = m_pSubcamera->Connected;
 
         FullSize = m_pSubcamera->FullSize;

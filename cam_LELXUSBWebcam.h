@@ -46,7 +46,7 @@ public:
     Camera_LELxUsbWebcamClass(void);
     virtual ~Camera_LELxUsbWebcamClass(void);
 
-    virtual bool    Connect();
+    virtual bool    Connect(const wxString& camId);
     virtual bool    Disconnect();
 private:
     virtual bool LEControl(int actions);

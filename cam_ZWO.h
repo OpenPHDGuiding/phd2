@@ -49,9 +49,10 @@ public:
     Camera_ZWO();
     ~Camera_ZWO();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect();
-    bool    Disconnect();
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids);
+    bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool Connect(const wxString& camId);
+    bool Disconnect();
 
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();

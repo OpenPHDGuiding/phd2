@@ -88,7 +88,6 @@ wxSize UNDEFINED_FRAME_SIZE = wxSize(0, 0);
 #include "cam_Altair.h"
 #endif
 
-
 #if defined (QHY5LII)
  #include "cam_QHY5LII.h"
 #endif
@@ -179,6 +178,8 @@ extern "C" {
 #include <libudev.h>
 }
 #endif
+
+const wxString GuideCamera::DEFAULT_CAMERA_ID = wxEmptyString;
 
 GuideCamera::GuideCamera(void)
 {
@@ -596,6 +597,21 @@ GuideCamera *GuideCamera::Factory(const wxString& choice)
     }
 
     return pReturn;
+}
+
+bool GuideCamera::HandleSelectCameraButtonClick(wxCommandEvent&)
+{
+    return false; // not handled
+}
+
+bool GuideCamera::EnumCameras(wxArrayString& names, wxArrayString& ids)
+{
+    names.clear();
+    names.push_back(wxString::Format(_("Camera %d"), 1));
+    ids.clear();
+    ids.push_back(DEFAULT_CAMERA_ID);
+
+    return false;
 }
 
 int GuideCamera::GetCameraGain(void)

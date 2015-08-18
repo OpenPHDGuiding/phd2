@@ -74,37 +74,35 @@ inline static int gain_pct(int minval, int maxval, int val)
     return (val - minval) * 100 / (maxval - minval);
 }
 
-
-bool Camera_Altair::Connect()
+bool Camera_Altair::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
-	AltairInst arr[ALTAIR_MAX];
-	unsigned numCameras = Altair_Enum(arr);
+    AltairInst ai[ALTAIR_MAX];
+
+    unsigned int numCameras = Altair_Enum(ai);
+
+    for (int i = 0; i < numCameras; i++)
+    {
+        names.Add(ai[i].displayname);
+        ids.Add(ai[i].id);
+    }
+
+    return false;
+}
+
+bool Camera_Altair::Connect(const wxString& camIdArg)
+{
+    AltairInst ai[ALTAIR_MAX];
+    unsigned int numCameras = Altair_Enum(ai);
     if (numCameras == 0)
     {
         wxMessageBox(_T("No Altair cameras detected."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
+    wxString camId(camIdArg);
+    if (camId == DEFAULT_CAMERA_ID)
+        camId = ai[0].id;
 
-    wxArrayString USBNames;
-    for (int i = 0; i < numCameras; i++)
-    {
-		USBNames.Add(arr[i].displayname);
-    }
-
-    int selected = 0;
-
-    if (USBNames.Count() > 1)
-    {
-        selected = wxGetSingleChoiceIndex(_("Select camera"), _("Camera name"), USBNames);
-        if (selected == -1)
-            return true;
-    }
-
-    wxYield();
-
-
-	m_handle = Altair_Open(arr[selected].id);
-
+    m_handle = Altair_Open(camId);
     if ( m_handle == NULL)
     {
         wxMessageBox(_("Failed to open Altair Camera."), _("Error"), wxOK | wxICON_ERROR);
@@ -112,7 +110,15 @@ bool Camera_Altair::Connect()
     }
 
     Connected = true;
-    Name = USBNames[selected];
+
+    for (int i = 0; i < numCameras; i++)
+    {
+        if (ai[i].id == camId)
+        {
+            Name = ai[i].displayname;
+            break;
+        }
+    }
 
 	int width, height;
 	if (FAILED(Altair_get_Resolution(m_handle, 0, &width, &height)))

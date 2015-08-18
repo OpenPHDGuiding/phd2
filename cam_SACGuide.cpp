@@ -63,9 +63,8 @@ Camera_SACGuiderClass::Camera_SACGuiderClass()
     HasGainControl = true;
 }
 
-
-
-bool Camera_SACGuiderClass::Connect() {
+bool Camera_SACGuiderClass::Connect(const wxString& camId)
+{
 // returns true on error
     CameraDLL = LoadLibrary("cmosDLL");
     bool retval;

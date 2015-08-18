@@ -68,7 +68,7 @@ Camera_LESerialWebcamClass::~Camera_LESerialWebcamClass(void)
     delete m_pSerialPort;
 }
 
-bool Camera_LESerialWebcamClass::Connect()
+bool Camera_LESerialWebcamClass::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -95,7 +95,7 @@ bool Camera_LESerialWebcamClass::Connect()
 
         //pConfig->Profile.SetString("/camera/serialLEWebcam/serialport", serialPorts[resp]);
 
-        if (Camera_LEWebcamClass::Connect())
+        if (Camera_LEWebcamClass::Connect(camId))
         {
             throw ERROR_INFO("Unable to open base class camera");
         }

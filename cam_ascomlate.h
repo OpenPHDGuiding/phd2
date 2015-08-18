@@ -64,7 +64,7 @@ public:
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    HasNonGuiCapture(void);
-    bool    Connect(void);
+    bool    Connect(const wxString& camId);
     bool    Disconnect(void);
     void    ShowPropertyDialog(void);
     bool    ST4PulseGuideScope(int direction, int duration);

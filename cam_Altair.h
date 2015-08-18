@@ -51,8 +51,9 @@ public:
     Camera_Altair();
     ~Camera_Altair();
 
+    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect();
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
 
     bool    ST4PulseGuideScope(int direction, int duration);

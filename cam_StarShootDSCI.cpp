@@ -53,12 +53,15 @@ Camera_StarShootDSCIClass::Camera_StarShootDSCIClass()
     lastdur = 0;
 }
 
-bool Camera_StarShootDSCIClass::Disconnect() {
+bool Camera_StarShootDSCIClass::Disconnect()
+{
     FreeLibrary(CameraDLL);
     Connected = false;
     return false;
 }
-bool Camera_StarShootDSCIClass::Connect() {
+
+bool Camera_StarShootDSCIClass::Connect(const wxString& camId)
+{
 // returns true on error
     bool retval;
     // Local function pointers -- those used elsewhere are in class decl.

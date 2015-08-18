@@ -511,7 +511,7 @@ static bool GetDispid(DISPID *pid, DispatchObj& obj, OLECHAR *name)
     return true;
 }
 
-bool Camera_ASCOMLateClass::Connect()
+bool Camera_ASCOMLateClass::Connect(const wxString& camId)
 {
     DispatchClass driver_class;
     DispatchObj driver(&driver_class);
@@ -697,14 +697,18 @@ bool Camera_ASCOMLateClass::Disconnect()
         return false;
     }
 
-    GITObjRef cam(m_gitEntry);
+    { // scope
+        GITObjRef cam(m_gitEntry);
 
-    if (!cam.PutProp(L"Connected", false))
-    {
-        Debug.AddLine(ExcepMsg("ASCOM disconnect", cam.Excep()));
-        pFrame->Alert(ExcepMsg(_("ASCOM driver problem -- cannot disconnect"), cam.Excep()));
-        return true;
-    }
+        if (!cam.PutProp(L"Connected", false))
+        {
+            Debug.AddLine(ExcepMsg("ASCOM disconnect", cam.Excep()));
+            pFrame->Alert(ExcepMsg(_("ASCOM driver problem -- cannot disconnect"), cam.Excep()));
+            return true;
+        }
+    } // scope
+
+    m_gitEntry.Unregister();
 
     Connected = false;
     return false;

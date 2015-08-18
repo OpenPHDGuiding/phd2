@@ -54,12 +54,13 @@ Camera_OpenCVClass::Camera_OpenCVClass(int devNumber)
     DeviceNum = devNumber;
 }
 
-Camera_OpenCVClass::~Camera_OpenCVClass(void) {
+Camera_OpenCVClass::~Camera_OpenCVClass(void)
+{
     delete pCapDev;
     pCapDev = NULL;
 }
 
-bool Camera_OpenCVClass::Connect()
+bool Camera_OpenCVClass::Connect(const wxString& camId)
 {
     bool bError = false;
 

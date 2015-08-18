@@ -975,7 +975,7 @@ Camera_SimClass::Camera_SimClass()
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
 }
 
-bool Camera_SimClass::Connect()
+bool Camera_SimClass::Connect(const wxString& camId)
 {
     load_sim_params();
     sim->Initialize();

@@ -65,8 +65,9 @@ public:
 
     Camera_SXVClass();
 
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect();
+    bool Connect(const wxString& camId);
     bool Disconnect();
     void ShowPropertyDialog();
     const wxSize& DarkFrameSize() { return m_darkFrameSize; }

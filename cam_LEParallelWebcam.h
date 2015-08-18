@@ -48,7 +48,7 @@ public:
     Camera_LEParallelWebcamClass(void);
     virtual ~Camera_LEParallelWebcamClass(void);
 
-    virtual bool    Connect();
+    virtual bool    Connect(const wxString& camId);
     virtual bool    Disconnect();
 };
 

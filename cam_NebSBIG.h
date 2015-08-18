@@ -41,7 +41,7 @@ class Camera_NebSBIGClass : public GuideCamera
 public:
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    HasNonGuiCapture(void);
-    bool    Connect();      // Opens up and connects to cameras
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
     bool    ST4PulseGuideScope(int direction, int duration);
     Camera_NebSBIGClass();

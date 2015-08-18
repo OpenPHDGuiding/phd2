@@ -45,7 +45,7 @@ class Camera_VFWClass : public GuideCamera
 public:
     Camera_VFWClass();
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect();
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
     void    ShowPropertyDialog();
     void    InitCapture() { return; }

@@ -42,6 +42,7 @@
 //#define ARTEMISDLLNAME "ArtemisCCD.dll"
 
 Camera_Atik16Class::Camera_Atik16Class()
+    : m_dllLoaded(false)
 {
     Connected = false;
     Name = _T("Atik 16");
@@ -54,7 +55,58 @@ Camera_Atik16Class::Camera_Atik16Class()
     HasSubframes = true;
 }
 
-bool Camera_Atik16Class::Connect()
+Camera_Atik16Class::~Camera_Atik16Class()
+{
+    if (m_dllLoaded)
+        ArtemisUnLoadDLL();
+}
+
+bool Camera_Atik16Class::LoadDLL()
+{
+    if (!m_dllLoaded)
+    {
+        wxString DLLName = _T("ArtemisCCD.dll");
+        if (HSModel) DLLName = _T("ArtemisHSC.dll");
+        if (!ArtemisLoadDLL(DLLName.char_str()))
+        {
+            wxMessageBox(_T("Cannot load Artemis DLL"), _("DLL error"), wxICON_ERROR | wxOK);
+            return false;
+        }
+        m_dllLoaded = true;
+    }
+    return true;
+}
+
+static int FirstDevNum()
+{
+    for (int i = 0; i < 10; i++)
+    {
+        if (ArtemisDeviceIsCamera(i))
+            return i;
+    }
+    return -1;
+}
+
+bool Camera_Atik16Class::EnumCameras(wxArrayString& names, wxArrayString& ids)
+{
+    if (!LoadDLL())
+        return true;
+
+    for (int i = 0; i < 10; i++)
+    {
+        if (ArtemisDeviceIsCamera(i))
+        {
+            ids.Add(wxString::Format("%d", i));
+            char devname[64];
+            ArtemisDeviceName(i, devname);
+            names.Add(devname);
+        }
+    }
+
+    return false;
+}
+
+bool Camera_Atik16Class::Connect(const wxString& camId)
 {
     // returns true on error
 
@@ -62,38 +114,23 @@ bool Camera_Atik16Class::Connect()
         wxMessageBox(_("Already connected"));
         return false;  // Already connected
     }
-    wxString DLLName = _T("ArtemisCCD.dll");
-    if (HSModel) DLLName = _T("ArtemisHSC.dll");
-    if (!ArtemisLoadDLL(DLLName.char_str())) {
-        wxMessageBox(_T("Cannot load Artemis DLL"), _("DLL error"), wxICON_ERROR | wxOK);
+    if (!LoadDLL())
         return true;
-    }
-    // Find available cameras
-    wxArrayString USBNames;
-    int ncams = 0;
-    int devnum[10] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-    int i;
-    char devname[64];
-    for (i=0; i<10; i++)
-        if (ArtemisDeviceIsCamera(i)) {
-            devnum[ncams]=i;
-            ArtemisDeviceName(i,devname);
-            USBNames.Add(devname);
-            ncams++;
-        }
-    if (ncams == 1)
-        i = 0;
-    else if (ncams == 0)
+
+    int firstDevNum = FirstDevNum();
+    if (firstDevNum == -1)
+    {
+        wxMessageBox(_T("No Atik cameras detected."), _("Error"), wxOK | wxICON_ERROR);
         return true;
-    else {
-        i = wxGetSingleChoiceIndex(_("Select camera"),_("Camera name"), USBNames);
-        if (i == -1) {
-            Disconnect();
-            return true;
-        }
     }
 
-    Cam_Handle = ArtemisConnect(devnum[i]); // Connect to first avail camera
+    long devnum = -1;
+    if (camId == DEFAULT_CAMERA_ID)
+        devnum = firstDevNum;
+    else
+        camId.ToLong(&devnum);
+
+    Cam_Handle = ArtemisConnect(devnum); // Connect to first avail camera
     ARTEMISPROPERTIES pProp;
     if (!Cam_Handle) {  // Connection failed
         wxMessageBox(wxString::Format("Connection routine failed - Driver version %d",ArtemisAPIVersion()));
@@ -108,7 +145,9 @@ bool Camera_Atik16Class::Connect()
         ArtemisSubframe(Cam_Handle, 0,0,pProp.nPixelsX,pProp.nPixelsY);
         HasShutter = (pProp.cameraflags & 0x10)?true:false;
     }
-    Name = USBNames[i];
+    char devname[64];
+    ArtemisDeviceName(devnum, devname);
+    Name = devname;
     if (HSModel) { // Set TEC if avail
         int TECFlags;
         int NumTempSensors;
@@ -179,7 +218,11 @@ bool Camera_Atik16Class::Disconnect()
         ArtemisDisconnect(Cam_Handle);
     wxMilliSleep(100);
     Cam_Handle = NULL;
-    ArtemisUnLoadDLL();
+    if (m_dllLoaded)
+    {
+        ArtemisUnLoadDLL();
+        m_dllLoaded = false;
+    }
     wxMilliSleep(100);
     Connected = false;
     return false;

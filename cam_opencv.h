@@ -51,9 +51,8 @@ public:
     ~Camera_OpenCVClass(void);
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect();      // Opens up and connects to cameras
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
-    void    InitCapture() { return; }
 };
 
 #endif //CAM_OPENCV_H_INCLUDED

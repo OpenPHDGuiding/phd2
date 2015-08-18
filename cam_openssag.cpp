@@ -56,7 +56,7 @@ Camera_OpenSSAGClass::Camera_OpenSSAGClass()
     ssag = new SSAG();
 }
 
-bool Camera_OpenSSAGClass::Connect()
+bool Camera_OpenSSAGClass::Connect(const wxString& camId)
 {
     struct ConnectInBg : public ConnectCameraInBg
     {
@@ -80,7 +80,8 @@ bool Camera_OpenSSAGClass::Connect()
     return false;
 }
 
-bool Camera_OpenSSAGClass::ST4PulseGuideScope(int direction, int duration) {
+bool Camera_OpenSSAGClass::ST4PulseGuideScope(int direction, int duration)
+{
     switch (direction) {
         case WEST:
             ssag->Guide(guide_west, duration);

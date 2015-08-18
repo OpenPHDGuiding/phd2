@@ -246,7 +246,7 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     CheckState();
 }
 
-bool Camera_INDIClass::Connect() 
+bool Camera_INDIClass::Connect(const wxString& camId) 
 {
     // If not configured open the setup dialog
     if (strcmp(INDICameraName,"INDI Camera")==0) CameraSetup();

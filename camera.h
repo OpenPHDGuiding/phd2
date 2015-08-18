@@ -122,7 +122,13 @@ public:
     virtual bool    Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
     bool Capture(int duration, usImage& img, int captureOptions) { return Capture(duration, img, captureOptions, wxRect(0, 0, 0, 0)); }
 
-    virtual bool    Connect() = 0;                  // Opens up and connects to camera
+    virtual bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
+    static const wxString DEFAULT_CAMERA_ID;
+    virtual bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
+
+    // Opens up and connects to camera. cameraId identifies which camera to connect to if
+    // there is more than one camera present
+    virtual bool    Connect(const wxString& cameraId) = 0;
     virtual bool    Disconnect() = 0;               // Disconnects, unloading any DLLs loaded by Connect
     virtual void    InitCapture();                  // Gets run at the start of any loop (e.g., reset stream, set gain, etc).
 

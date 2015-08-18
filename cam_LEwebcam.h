@@ -58,7 +58,7 @@ protected:
 
 public:
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect();      // Opens up and connects to cameras
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
     Camera_LEWebcamClass(void);
     ~Camera_LEWebcamClass(void);

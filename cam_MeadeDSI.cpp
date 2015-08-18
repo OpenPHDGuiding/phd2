@@ -47,45 +47,64 @@
 #include "DsiDevice.h"
 
 Camera_DSIClass::Camera_DSIClass()
+    : MeadeCam(0)
 {
     Name = _T("Meade DSI");
     FullSize = wxSize(768,505); // CURRENTLY ULTRA-RAW
     HasGainControl = true;
 }
 
-bool Camera_DSIClass::Connect()
+Camera_DSIClass::~Camera_DSIClass()
+{
+    delete MeadeCam;
+}
+
+bool Camera_DSIClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
+{
+    if (!MeadeCam)
+        MeadeCam = new DsiDevice();
+
+    unsigned int NDevices = MeadeCam->EnumDsiDevices();
+    for (unsigned int i = 1; i <= NDevices; i++)
+    {
+        DsiDevice *TmpCam = new DsiDevice();
+        if (TmpCam->Open(i))
+        {
+            names.Add(wxString::Format("%u: %s", i, TmpCam->ModelName));
+            ids.Add(wxString::Format("%u", i));
+        }
+        TmpCam->Close();
+        delete TmpCam;
+    }
+
+    return false;
+}
+
+bool Camera_DSIClass::Connect(const wxString& camId)
 {
     bool retval = false;
-//  MeadeCam = gcnew DSI_Class;
-//  retval = MeadeCam->DSI_Connect();
-    //if (!retval)
 
-    MeadeCam = new DsiDevice();
+    if (!MeadeCam)
+        MeadeCam = new DsiDevice();
+
     unsigned int NDevices = MeadeCam->EnumDsiDevices();
-    unsigned int DevNum = 1;
     if (!NDevices) {
         wxMessageBox(_T("No DSIs found"), _("Error"));
         return true;
     }
-    else if (NDevices > 1) {
-        // Put up a dialog to choose which one
-        wxArrayString CamNames;
-        unsigned int i;
-        DsiDevice *TmpCam;
-        for (i=1; i<= NDevices; i++) {
-            TmpCam = new DsiDevice;
-            if (TmpCam->Open(i))
-                CamNames.Add(wxString::Format("%u: %s",i,TmpCam->ModelName));
-            else
-                CamNames.Add(_T("Unavailable"));
-            TmpCam->Close();
-            delete TmpCam;
-        }
-        int choice = wxGetSingleChoiceIndex(wxString::Format("If using Envisage, disable live\npreview for this camera"),_("Which DSI camera?"),CamNames);
-        if (choice == -1) return true;
-        else DevNum = (unsigned int) choice + 1;
 
+    unsigned long DevNum = 0;
+    if (camId == DEFAULT_CAMERA_ID)
+        DevNum = 1;
+    else
+        camId.ToULong(&DevNum);
+
+    if (DevNum < 1 || DevNum > NDevices)
+    {
+        Debug.AddLine(wxString::Format("DSI: invalid camera id: '%s', ncams = %u", camId, NDevices));
+        return true;
     }
+
     retval = !(MeadeCam->Open(DevNum));
 //  wxMessageBox(wxString::Format("Color: %d\n%u x %u",
 //      MeadeCam->IsColor,MeadeCam->GetWidth(),MeadeCam->GetHeight()));
@@ -117,11 +136,14 @@ bool Camera_DSIClass::Connect()
 
     return retval;
 }
+
 bool Camera_DSIClass::Disconnect()
 {
     MeadeCam->Close();
-    Connected = false;
     delete MeadeCam;
+    MeadeCam = 0;
+
+    Connected = false;
 
     return false;
 }

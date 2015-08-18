@@ -52,7 +52,7 @@ Camera_WDMClass::Camera_WDMClass()
     FullSize = wxSize(640, 480);     // should get overwritten on connect
     m_deviceNumber = -1;  // Which WDM device connected
     m_deviceMode = -1;
-    PropertyDialogType = PROPDLG_ANY;
+    PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     HasDelayParam = false;
     HasPortNum = false;
     m_captureMode = NOT_CAPTURING;
@@ -220,7 +220,13 @@ bool Camera_WDMClass::SelectDeviceAndMode()
     return error;
 }
 
-bool Camera_WDMClass::Connect()
+bool Camera_WDMClass::HandleSelectCameraButtonClick(wxCommandEvent& evt)
+{
+    SelectDeviceAndMode();
+    return true; // handled
+}
+
+bool Camera_WDMClass::Connect(const wxString& camId)
 {
     bool bError = false;
 

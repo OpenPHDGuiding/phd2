@@ -53,7 +53,7 @@ public:
     Camera_LESerialWebcamClass(void);
     virtual ~Camera_LESerialWebcamClass(void);
 
-    virtual bool    Connect();
+    virtual bool    Connect(const wxString& camId);
     virtual bool    Disconnect();
 
     void    ShowPropertyDialog();

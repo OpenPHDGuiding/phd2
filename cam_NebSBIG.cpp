@@ -34,6 +34,7 @@
 
 
 #include "phd.h"
+
 #ifdef NEB_SBIG
 #include "camera.h"
 #include "time.h"
@@ -41,12 +42,14 @@
 #include "cam_NebSBIG.h"
 #include "socket_server.h"
 
-Camera_NebSBIGClass::Camera_NebSBIGClass() {
+Camera_NebSBIGClass::Camera_NebSBIGClass()
+{
     Connected = FALSE;
     Name=_T("Nebulosity SBIG Guide chip");
 }
 
-bool Camera_NebSBIGClass::Connect() {
+bool Camera_NebSBIGClass::Connect(const wxString& camId)
+{
     int xsize, ysize;
     bool retval = ServerSendCamConnect(xsize,ysize);
     if (retval) return true;
@@ -55,7 +58,8 @@ bool Camera_NebSBIGClass::Connect() {
     return false;
 }
 
-bool Camera_NebSBIGClass::Disconnect() {
+bool Camera_NebSBIGClass::Disconnect()
+{
     Connected = false;
     ServerSendCamDisconnect();
     return false;
@@ -75,7 +79,8 @@ bool Camera_NebSBIGClass::Capture(int duration, usImage& img, int options, const
 
 }
 
-bool Camera_NebSBIGClass::ST4PulseGuideScope(int direction, int duration) {
+bool Camera_NebSBIGClass::ST4PulseGuideScope(int direction, int duration)
+{
     bool retval = ServerSendGuideCommand(direction, duration);
     return retval;
 }
