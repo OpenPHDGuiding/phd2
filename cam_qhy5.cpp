@@ -78,7 +78,7 @@ Camera_QHY5Class::Camera_QHY5Class()
     Name = _T("QHY 5");
 }
 
-bool Camera_QHY5Class::Connect()
+bool Camera_QHY5Class::Connect(const wxString& camId)
 {
 // returns true on error
     int ret = libusb_init( NULL );
