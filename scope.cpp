@@ -97,6 +97,9 @@ Scope::Scope(void)
     val = pConfig->Profile.GetBoolean(prefix + "/AssumeOrthogonal", false);
     SetAssumeOrthogonal(val);
 
+    val = pConfig->Profile.GetBoolean(prefix + "/UseDecComp", true);
+    EnableDecCompensation(val);
+
     m_backlashComp = new BacklashComp(this);
 }
 
@@ -896,6 +899,13 @@ bool Scope::IsCalibrated(void)
     }
 }
 
+void Scope::EnableDecCompensation(bool enable)
+{
+    m_useDecCompensation = enable;
+    wxString prefix = "/" + GetMountClassName();
+    pConfig->Profile.SetBoolean(prefix + "/UseDecComp", enable);
+}
+
 static double CalibrationDistance(void)
 {
     return wxMin(pCamera->FullSize.GetHeight() * 0.05, MAX_CALIBRATION_DISTANCE);
@@ -1439,6 +1449,10 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
             wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 9000, 450, 50);
         AddGroup(CtrlMap, AD_szDecCompAmt, (MakeLabeledControl(AD_szDecCompAmt, _("Amount"), m_pBacklashPulse, _("Length of backlash correction pulse (mSec). This will be automatically decreased if over-shoot corrections are observed."))));
 
+        m_pUseDecComp = new wxCheckBox(GetParentWindow(AD_cbUseDecComp), wxID_ANY, _("Use Declination Compensation"));
+        m_pUseDecComp->Enable(enableCtrls && pPointingSource != NULL);
+        AddCtrl(CtrlMap, AD_cbUseDecComp, m_pUseDecComp, _("Automatically adjust RA guide rate based on scope declination"));
+
         width = StringWidth(_T("00000"));
         m_pMaxRaDuration = new wxSpinCtrl(GetParentWindow(AD_szMaxRAAmt), wxID_ANY, _T("foo"), wxPoint(-1, -1),
             wxSize(width + 30, -1), wxSP_ARROW_KEYS, MAX_DURATION_MIN, MAX_DURATION_MAX, 150, _T("MaxRA_Dur"));
@@ -1471,6 +1485,7 @@ void ScopeConfigDialogCtrlSet::LoadValues()
     m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
     m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
     m_pBacklashPulse->SetValue(m_pScope->m_backlashComp->GetBacklashPulse());
+    m_pUseDecComp->SetValue(m_pScope->DecCompensationEnabled());
 }
 
 void ScopeConfigDialogCtrlSet::UnloadValues()
@@ -1485,6 +1500,9 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
     m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
     m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
+    m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
+    if (pFrame)
+        pFrame->UpdateCalibrationStatus();
     MountConfigDialogCtrlSet::UnloadValues();
 }
 

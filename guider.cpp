@@ -1388,7 +1388,7 @@ Guider::GuiderConfigDialogPane::GuiderConfigDialogPane(wxWindow *pParent, Guider
 
 void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
+    wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
 
     wxStaticBoxSizer *pStarTrack = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Guide star tracking"));
     wxStaticBoxSizer *pCalib = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Calibration"));
@@ -1403,7 +1403,8 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
     pCalibSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalibrationDuration), wxSizerFlags(0).Border(wxLEFT, 90));
     pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbAutoRestoreCal));
     pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbAssumeOrthogonal), wxSizerFlags(0).Border(wxLEFT, 90));
-    pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearCalibration), wxSizerFlags(0).Border(wxTOP, 5));
+    pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearCalibration));
+    pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseDecComp), wxSizerFlags(0).Border(wxLEFT, 90));
     pCalib->Add(pCalibSizer, def_flags);
     pCalib->Layout();
 

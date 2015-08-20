@@ -61,6 +61,7 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     wxChoice   *m_pDecMode;
     wxCheckBox *m_pUseBacklashComp;
     wxSpinCtrlDouble *m_pBacklashPulse;
+    wxCheckBox *m_pUseDecComp;
 
     void OnCalcCalibrationStep(wxCommandEvent& evt);
 
@@ -196,6 +197,7 @@ public:
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
     virtual bool GuidingCeases(void);
+    void EnableDecCompensation(bool enable);
 
     virtual bool RequiresCamera(void);
     virtual bool RequiresStepGuider(void);

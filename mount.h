@@ -128,9 +128,9 @@ class Mount : public wxMessageBoxProxy
 
     double m_currentDeclination;
 
-
 protected:
     bool m_guidingEnabled;
+    bool m_useDecCompensation;
 
     GuideAlgorithm *m_pXGuideAlgorithm;
     GuideAlgorithm *m_pYGuideAlgorithm;
@@ -203,6 +203,7 @@ public:
     double xAngle(void);
     double xRate(void);
     bool DecCompensationActive(void) const;
+    bool DecCompensationEnabled();
 
     bool FlipCalibration(void);
     bool GetGuidingEnabled(void);
@@ -306,7 +307,7 @@ public:
 
 inline bool Mount::DecCompensationActive(void) const
 {
-    return m_currentDeclination != m_cal.declination;
+    return (m_currentDeclination != m_cal.declination && m_useDecCompensation);
 }
 
 inline GuideAlgorithm *Mount::GetXGuideAlgorithm(void) const

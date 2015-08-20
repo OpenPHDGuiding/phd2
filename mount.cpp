@@ -326,6 +326,7 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
             m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO Corrections"));
             AddCtrl(CtrlMap, AD_cbEnableAOGuiding, m_pEnableGuide,
                 _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
+
         }
     }
 }
@@ -346,6 +347,11 @@ void MountConfigDialogCtrlSet::UnloadValues()
     }
 
     m_pMount->SetGuidingEnabled(m_pEnableGuide->GetValue());
+}
+
+bool Mount::DecCompensationEnabled()
+{
+    return m_useDecCompensation;
 }
 
 GUIDE_ALGORITHM Mount::GetXGuideAlgorithmSelection(void)
