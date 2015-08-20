@@ -160,7 +160,7 @@ bool PhdApp::OnInit()
     {
         Debug.AddLine("locale.AddCatalog failed");
     }
-    wxSetlocale(LC_NUMERIC, "English");
+    wxSetlocale(LC_NUMERIC, "C");
 
     pConfig->InitializeProfile();
 
