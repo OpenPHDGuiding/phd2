@@ -101,7 +101,7 @@ static JAry& operator<<(JAry& a, const wxString& str)
         a.m_first = false;
     else
         a.m_s << ',';
-    a.m_s << json_escape(str);
+    a.m_s << str;
     return a;
 }
 
