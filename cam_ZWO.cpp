@@ -500,4 +500,10 @@ void  Camera_ZWO::ClearGuidePort()
     ASIPulseGuideOff(m_cameraId, ASI_GUIDE_WEST);
 }
 
+#if defined(__APPLE__)
+// workaround link error for missing symbol ___exp10 from libASICamera2.a
+#include <math.h>
+extern "C" double __exp10(double x) { return pow(10.0, x); }
+#endif
+
 #endif // ZWO_ASI
