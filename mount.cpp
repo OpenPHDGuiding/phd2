@@ -996,8 +996,11 @@ void Mount::AdjustCalibrationForScopePointing(void)
         // somewhere near the celestial equator, we don't do this
         if (fabs(m_cal.declination) > DEC_COMP_LIMIT)
         {
-            Debug.AddLine("skipping declination adjustment: initial calibration too far from equator");
+            Debug.AddLine("skipping Dec comp: initial calibration too far from equator");
         }
+        else
+        if (!m_useDecCompensation)
+            Debug.AddLine("skipping Dec comp: user has disabled Dec Comp");
         else
         {
             m_xRate = (m_cal.xRate / cos(m_cal.declination)) * cos(newDeclination);
