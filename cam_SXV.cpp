@@ -661,8 +661,8 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxR
     // Do exposure
     if (IsCMOSGuider(CameraModel))
     {
-        sxClearPixels(hCam, SXCCD_EXP_FLAGS_NOWIPE_FRAME, 0);
-        sxExposePixels(hCam, SXCCD_EXP_FLAGS_FIELD_ODD, 0, xofs, yofs, xsize, ysize, 1, 1, duration);
+        sxClearPixels(hCam, CCD_EXP_FLAGS_NOWIPE_FRAME, 0);
+        sxExposePixels(hCam, CCD_EXP_FLAGS_FIELD_ODD, 0, xofs, yofs, xsize, ysize, 1, 1, duration);
     }
     else
     {
@@ -672,12 +672,12 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxR
 
         if (duration < 1000)
         {
-            sxExposePixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, 0, xofs, yofs, xsize, ysize, 1, 1, duration);
+            sxExposePixels(hCam, CCD_EXP_FLAGS_FIELD_BOTH, 0, xofs, yofs, xsize, ysize, 1, 1, duration);
         }
         else
         {
             WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
-            sxLatchPixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, 0, xofs, yofs, xsize, ysize, 1, 1);
+            sxLatchPixels(hCam, CCD_EXP_FLAGS_FIELD_BOTH, 0, xofs, yofs, xsize, ysize, 1, 1);
         }
     }
 
