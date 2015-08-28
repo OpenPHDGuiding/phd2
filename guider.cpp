@@ -1408,13 +1408,14 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
     pCalib->Add(pCalibSizer, def_flags);
     pCalib->Layout();
 
+    // Minor ordering to have "no-mount" condition look ok
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbReverseDecOnFlip), wxSizerFlags(0).Border(wxLEFT, 35));
     pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableGuiding));
-    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 40));
-    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbReverseDecOnFlip));
     // Might not have slew-checking option
     wxWindow* ctrl = GetSingleCtrl(CtrlMap, AD_cbSlewDetection);
     if (ctrl != NULL)
-        pSharedSizer->Add(ctrl, wxSizerFlags(0).Border(wxLEFT, 40));
+        pSharedSizer->Add(ctrl, wxSizerFlags(0).Border(wxLEFT, 35));
 
     pShared->Add(pSharedSizer, def_flags);
     pShared->Layout();
