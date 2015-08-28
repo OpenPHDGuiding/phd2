@@ -1182,14 +1182,12 @@ Mount::MountConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
 StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider)
     : MountConfigDialogPane(pParent, _("AO Settings"), pStepGuider)
 {
-    //int width;
-
     m_pStepGuider = pStepGuider;
 }
 
 void StepGuider::StepGuiderConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    // All of the scope UI controls are hosted in the parent
+    // UI controls are a mix of guide algos and stepguider properties - all laid out in Mount
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
 }
 
@@ -1208,6 +1206,7 @@ MountConfigDialogCtrlSet *StepGuider::GetConfigDialogCtrlSet(wxWindow *pParent, 
     return new StepGuiderConfigDialogCtrlSet(pParent, pStepGuider, pAdvancedDialog, CtrlMap);
 }
 
+// UI controls for properties unique to step-guider.  Mount controls for guide algos are handled by MountConfigDialogPane
 StepGuiderConfigDialogCtrlSet::StepGuiderConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap):
 MountConfigDialogCtrlSet(pParent, pStepGuider, pAdvancedDialog, CtrlMap)
 {

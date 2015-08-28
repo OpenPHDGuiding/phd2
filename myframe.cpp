@@ -2446,7 +2446,7 @@ void MyFrameConfigDialogCtrlSet::UnloadValues()
 
 }
 
-// Following are needed by step-size calculator to update the UI to match whatever the user did in the calculator
+// Following are needed by step-size calculator to keep the UIs in-synch
 int MyFrameConfigDialogCtrlSet::GetFocalLength(void)
 {
     long val = 0;

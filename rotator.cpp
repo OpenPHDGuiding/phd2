@@ -170,10 +170,7 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
     m_cbReverse = new wxCheckBox(GetParentWindow(AD_cbRotatorReverse), wxID_ANY, _("Reverse Sign of Angle"));
     AddCtrl(CtrlMap, AD_cbRotatorReverse, m_cbReverse);
 }
-RotatorConfigDialogCtrlSet::~RotatorConfigDialogCtrlSet()
-{
 
-}
 void RotatorConfigDialogCtrlSet::LoadValues()
 {
     m_cbReverse->SetValue(m_rotator->IsReversed());

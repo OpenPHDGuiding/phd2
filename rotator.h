@@ -44,7 +44,7 @@ class RotatorConfigDialogCtrlSet : ConfigDialogCtrlSet
 
 public:
     RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
-    virtual ~RotatorConfigDialogCtrlSet();
+    virtual ~RotatorConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
 };

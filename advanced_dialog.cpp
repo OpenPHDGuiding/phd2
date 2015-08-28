@@ -41,6 +41,7 @@
 // a place to save id of selected panel so we can select the same panel next time the dialog is opened
 static int s_selectedPage = -1;
 
+// Quick utility function to find the non-AO mount
 Mount* AdvancedDialog::RealMount()
 {
     Mount *mount = NULL;
@@ -79,7 +80,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxDialog(pFrame, wxID_ANY, _("Advanced setup"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
     /*
-     * The advanced dialog is made up of a number of "on the fly" generated slices that configure different things.
+     * The advanced dialog is made up of a number of "on the fly" generated panels that configure different things.
      *
      * pTopLevelSizer is a top level Box Sizer in wxVERTICAL mode that contains a wxNotebook object
      * and an unnamed button sizer with OK and CANCEL buttons.
@@ -88,11 +89,12 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
      * sizers to hold a bunch of UI controls.  The UI controls are constructed and managed by ConfigDialogCtrlSet
      * objects.  These reflect the internal organization of the app and generally bind one-to-one with the major internal 
      * classes: MyFrame, Guider, Camera, Mount, Scope, AO, Rotator, etc.  The controls created by the ConfigDialogCtrlSet
-     * objects are layed out on the various panes by the ConfigDialogPane instances.  So there is a level of indirection here
+     * objects are laid out on the various panes by the ConfigDialogPane instances.  So there is a level of indirection here
      * such that the controls can generally be placed anywhere, and the ConfigDialogCtrlSet objects don't care.  This means the
      * overall UI can be optimized for end-users while allowing the underlying controls to reside where they should from an 
      * internal architecture perspective.
      * +------------------------------------+------------------------------------+
+     * | |   Notebook tabs                                                    |  |
      * | + -------------------------------------------------------------------+  |
      * | |                                                                    |  |
      * | |                                                                    |  |
@@ -121,6 +123,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
     // Build all the panels first - these are needed to create the various ConfigCtrlSets
+    // Each panel gets a vertical sizer attached to it
     m_pGlobalSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pGlobalTabSizer = new wxBoxSizer(wxVERTICAL);
     m_pGlobalSettingsPanel->SetSizer(pGlobalTabSizer);
@@ -130,24 +133,25 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     wxBoxSizer *pCameraTabSizer = new wxBoxSizer(wxVERTICAL);
     m_pCameraSettingsPanel->SetSizer(pCameraTabSizer);
     m_pNotebook->AddPage(m_pCameraSettingsPanel, _("Camera"), false);
-    // Build the guider pane
+    // Guiding pane
     m_pGuiderSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pGuidingTabSizer = new wxBoxSizer(wxVERTICAL);
     m_pGuiderSettingsPanel->SetSizer(pGuidingTabSizer);
     m_pNotebook->AddPage(m_pGuiderSettingsPanel, _("Guiding"));
-    // Mount pane
+    // Guiding Algorithms pane
     m_pScopeSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pScopeTabSizer = new wxBoxSizer(wxVERTICAL);
     m_pScopeSettingsPanel->SetSizer(pScopeTabSizer);
     m_pNotebook->AddPage(m_pScopeSettingsPanel, _("Algorithms"));
-    // Devices pane - home for AO and rotator
+    // Devices pane - home for AO and rotator - won't be shown if neither device is used
     m_pDevicesSettingsPanel = new wxPanel(m_pNotebook);
     wxBoxSizer *pDevicesTabSizer = new wxBoxSizer(wxVERTICAL);
     m_pDevicesSettingsPanel->SetSizer(pDevicesTabSizer);
     m_pNotebook->AddPage(m_pDevicesSettingsPanel, _("Other Devices"));
 
-    BuildCtrlSets();
+    BuildCtrlSets();        // Populates the m_brainCtrls map with all UI controls
 
+    // Pane contruction now pulls controls from the map and places them where they make sense to a user
     // Populate global pane
     m_pGlobalPane = pFrame->GetConfigDialogPane(m_pGlobalSettingsPanel);
     m_pGlobalPane->LayoutControls(m_brainCtrls);
@@ -170,6 +174,7 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     // Add page for rotator
     AddRotatorPage();
 
+    // Ok and cancel buttons for the entire dialog box
     wxBoxSizer *pTopLevelSizer = new wxBoxSizer(wxVERTICAL);
     pTopLevelSizer->Add(m_pNotebook, wxSizerFlags(0).Expand().Border(wxALL, 5));
     pTopLevelSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), wxSizerFlags(0).Expand().Border(wxALL, 5));
@@ -261,7 +266,7 @@ void AdvancedDialog::RebuildPanels(void)
     AddAoPage();            // Will handle no AO case
     AddRotatorPage();       // Will handle no Rotator case
 
-    if (m_pAOPane == NULL && m_pRotatorPane == NULL)
+    if (m_pAOPane == NULL && m_pRotatorPane == NULL)        // Dump the Other Devices tab if not needed
     {
             int idx = m_pNotebook->FindPage(m_pDevicesSettingsPanel);
             if (idx != wxNOT_FOUND)
@@ -271,7 +276,7 @@ void AdvancedDialog::RebuildPanels(void)
     {
         int idx = m_pNotebook->FindPage(m_pDevicesSettingsPanel);
         if (idx == wxNOT_FOUND)
-            m_pNotebook->AddPage(m_pDevicesSettingsPanel, _("Devices"));
+            m_pNotebook->AddPage(m_pDevicesSettingsPanel, _("Other Devices"));
     }
 
     GetSizer()->Layout();
@@ -281,6 +286,7 @@ void AdvancedDialog::RebuildPanels(void)
     ConfirmLayouts();             // maybe should be under compiletime option
 }
 
+// Needed by ConfigDialogCtrlSets to know what parent to use when creating a control
 wxWindow* AdvancedDialog::GetTabLocation(BRAIN_CTRL_IDS id)
 {
     if (id < AD_GLOBAL_TAB_BOUNDARY)
@@ -476,6 +482,7 @@ void AdvancedDialog::EndModal(int retCode)
     wxDialog::EndModal(retCode);
 }
 
+// Properties and methods needed by step-size calculator dialog
 int AdvancedDialog::GetFocalLength(void)
 {
     return m_pGlobalCtrlSet->GetFocalLength();
