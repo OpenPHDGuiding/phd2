@@ -41,6 +41,25 @@
 #define GUIDER_ONESTAR_H_INCLUDED
 
 class MassChecker;
+class GuiderOneStar;
+class GuiderConfigDialogCtrlSet;
+
+class GuiderOneStarConfigDialogCtrlSet : public GuiderConfigDialogCtrlSet
+{
+
+public:
+    GuiderOneStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~GuiderOneStarConfigDialogCtrlSet();
+
+    GuiderOneStar *m_pGuiderOneStar;
+    wxSpinCtrl *m_pSearchRegion;
+    wxCheckBox *m_pEnableStarMassChangeThresh;
+    wxSpinCtrlDouble *m_pMassChangeThreshold;
+
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+    void OnStarMassEnableChecked(wxCommandEvent& event);
+};
 
 class GuiderOneStar : public Guider
 {
@@ -52,22 +71,18 @@ private:
     bool m_massChangeThresholdEnabled;
     double m_massChangeThreshold;
 
-protected:
+public:
     class GuiderOneStarConfigDialogPane : public GuiderConfigDialogPane
     {
-        GuiderOneStar *m_pGuiderOneStar;
-        wxSpinCtrl *m_pSearchRegion;
-        wxCheckBox *m_pEnableStarMassChangeThresh;
-        wxSpinCtrlDouble *m_pMassChangeThreshold;
+    protected:
 
         public:
         GuiderOneStarConfigDialogPane(wxWindow *pParent, GuiderOneStar *pGuider);
-        ~GuiderOneStarConfigDialogPane(void);
+        ~GuiderOneStarConfigDialogPane(void) {};
 
-        virtual void LoadValues(void);
-        virtual void UnloadValues(void);
-
-        void OnStarMassEnableChecked(wxCommandEvent& event);
+        virtual void LoadValues(void) {};
+        virtual void UnloadValues(void) {};
+        void LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     };
 
     bool GetMassChangeThresholdEnabled(void);
@@ -77,6 +92,7 @@ protected:
     bool SetSearchRegion(int searchRegion);
 
     friend class GuiderOneStarConfigDialogPane;
+    friend class GuiderOneStarConfigDialogCtrlSet;
 
 public:
     GuiderOneStar(wxWindow *parent);
@@ -94,7 +110,8 @@ public:
     int StarError(void);
     wxString GetSettingsSummary();
 
-    ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
 
     void LoadProfileSettings(void);
 

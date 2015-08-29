@@ -47,6 +47,31 @@ enum Calibration_Issues
 
 #define CALIBRATION_RATE_UNCALIBRATED 123e4
 
+class Scope;
+
+class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
+{
+    Scope* m_pScope;
+    wxSpinCtrl *m_pCalibrationDuration;
+    wxCheckBox *m_pNeedFlipDec;
+    wxCheckBox *m_pStopGuidingWhenSlewing;
+    wxCheckBox *m_assumeOrthogonal;
+    wxSpinCtrl *m_pMaxRaDuration;
+    wxSpinCtrl *m_pMaxDecDuration;
+    wxChoice   *m_pDecMode;
+    wxCheckBox *m_pUseBacklashComp;
+    wxSpinCtrlDouble *m_pBacklashPulse;
+    wxCheckBox *m_pUseDecComp;
+
+    void OnCalcCalibrationStep(wxCommandEvent& evt);
+
+public:
+    ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~ScopeConfigDialogCtrlSet() {};
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+};
+
 class Scope : public Mount
 {
     int m_calibrationDuration;
@@ -108,24 +133,13 @@ protected:
     {
         Scope *m_pScope;
 
-        wxSpinCtrl *m_pCalibrationDuration;
-        wxSpinCtrl *m_pMaxRaDuration;
-        wxSpinCtrl *m_pMaxDecDuration;
-        wxChoice   *m_pDecMode;
-        wxCheckBox *m_pNeedFlipDec;
-        wxCheckBox *m_pStopGuidingWhenSlewing;
-        wxCheckBox *m_assumeOrthogonal;
-        wxCheckBox *m_pUseBacklashComp;
-        wxSpinCtrlDouble *m_pBacklashPulse;
-
-        void OnCalcCalibrationStep(wxCommandEvent& evt);
-
     public:
         ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope);
-        ~ScopeConfigDialogPane(void);
+        ~ScopeConfigDialogPane(void) {};
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+        virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     };
 
     class ScopeGraphControlPane : public GraphControlPane
@@ -149,6 +163,7 @@ protected:
     ScopeGraphControlPane *m_graphControlPane;
 
     friend class GraphLogWindow;
+    friend class ScopeConfigDialogCtrlSet;
 
 public:
 
@@ -161,7 +176,9 @@ public:
     virtual DEC_GUIDE_MODE GetDecGuideMode(void);
     virtual bool SetDecGuideMode(int decGuideMode);
 
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();
     virtual wxString CalibrationSettingsSummary();
@@ -180,6 +197,7 @@ public:
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);
     virtual bool GuidingCeases(void);
+    void EnableDecCompensation(bool enable);
 
     virtual bool RequiresCamera(void);
     virtual bool RequiresStepGuider(void);

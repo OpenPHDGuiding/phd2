@@ -84,69 +84,112 @@ static ConfigDialogPane *GetGuideAlgoDialogPane(GuideAlgorithm *algo, wxWindow *
 Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount)
     : ConfigDialogPane(title, pParent)
 {
-    int width;
+    // int width;
     m_pMount = pMount;
+    m_pParent = pParent;
+    m_pAlgoBox = NULL;
+    m_pRABox = NULL;
+    m_pDecBox = NULL;
+}
 
-    wxBoxSizer *chkSizer = new wxBoxSizer(wxHORIZONTAL);
+// Lots of dynamic controls on this pane - keep the creation/management in ConfigDialogPane
+void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    int width;
+    bool stepGuider = false;
 
-    m_pClearCalibration = new wxCheckBox(pParent, wxID_ANY, _("Clear calibration"));
-    m_pClearCalibration->SetToolTip(_("Clear the current calibration data - calibration will be re-done when guiding is started"));
-    m_pEnableGuide = new wxCheckBox(pParent, wxID_ANY, _("Enable Guide Output"), wxDefaultPosition, wxSize(150, -1), 0);
-    m_pEnableGuide->SetToolTip(_("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
+    if (m_pMount)
+    {
+        stepGuider = m_pMount->IsStepGuider();
+        m_pAlgoBox = new wxStaticBoxSizer(wxHORIZONTAL, m_pParent, wxEmptyString);
+        m_pRABox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Right Ascension"));
+        if (m_pDecBox)
+            m_pDecBox->Clear(true);
+        m_pDecBox = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Declination"));
+        wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
 
-    chkSizer->Add(m_pEnableGuide);
-    chkSizer->Add(m_pClearCalibration);
-    DoAdd(chkSizer);
-
-    wxString xAlgorithms[] = {
-        _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
+        wxString xAlgorithms[] = 
+        {
+            _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-        _("Gaussian Process"),
+            _("Gaussian Process"),
 #endif
-    };
+        };
 
-    width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
-    m_pXGuideAlgorithmChoice = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
-                                    wxSize(width+35, -1), WXSIZEOF(xAlgorithms), xAlgorithms);
-    DoAdd(_("RA Algorithm"), m_pXGuideAlgorithmChoice,
-          _("Which Guide Algorithm to use for Right Ascension"));
+        width = StringArrayWidth(xAlgorithms, WXSIZEOF(xAlgorithms));
+        m_pXGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
+            wxSize(width + 35, -1), WXSIZEOF(xAlgorithms), xAlgorithms);
+        m_pXGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Right Ascension"));
 
-    m_pParent->Connect(m_pXGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED,
-        wxCommandEventHandler(Mount::MountConfigDialogPane::OnXAlgorithmSelected), 0, this);
+        m_pParent->Connect(m_pXGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED,
+            wxCommandEventHandler(Mount::MountConfigDialogPane::OnXAlgorithmSelected), 0, this);
 
-    if (!m_pMount->m_pXGuideAlgorithm)
-    {
-        m_pXGuideAlgorithmConfigDialogPane  = NULL;
-    }
-    else
-    {
-        m_pXGuideAlgorithmConfigDialogPane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, pParent);
-        DoAdd(m_pXGuideAlgorithmConfigDialogPane);
-    }
+        if (!m_pMount->m_pXGuideAlgorithm)
+        {
+            m_pXGuideAlgorithmConfigDialogPane = NULL;
+        }
+        else
+        {
+            m_pXGuideAlgorithmConfigDialogPane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, m_pParent);
+        }
+        m_pRABox->Add(m_pXGuideAlgorithmChoice, def_flags);
+        m_pRABox->Add(m_pXGuideAlgorithmConfigDialogPane, def_flags);
+        if (!stepGuider)
+            m_pRABox->Add(GetSizerCtrl(CtrlMap, AD_szMaxRAAmt), wxSizerFlags(0).Border(wxTOP, 35).Center());
 
-    wxString yAlgorithms[] = {
-        _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
+        wxString yAlgorithms[] = 
+        {
+            _("None"), _("Hysteresis"), _("Lowpass"), _("Lowpass2"), _("Resist Switch"),
 #if defined(MPIIS_GAUSSIAN_PROCESS_GUIDING_ENABLED__)
-        _("Gaussian Process"),
+            _("Gaussian Process"),
 #endif
-    };
+        };
+        width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
+        m_pYGuideAlgorithmChoice = new wxChoice(m_pParent, wxID_ANY, wxPoint(-1, -1),
+            wxSize(width + 35, -1), WXSIZEOF(yAlgorithms), yAlgorithms);
+        m_pYGuideAlgorithmChoice->SetToolTip(_("Which Guide Algorithm to use for Declination"));
 
-    width = StringArrayWidth(yAlgorithms, WXSIZEOF(yAlgorithms));
-    m_pYGuideAlgorithmChoice = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
-                                    wxSize(width+35, -1), WXSIZEOF(yAlgorithms), yAlgorithms);
-    DoAdd(_("Declination Algorithm"), m_pYGuideAlgorithmChoice,
-          _("Which Guide Algorithm to use for Declination"));
+        m_pParent->Connect(m_pYGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(Mount::MountConfigDialogPane::OnYAlgorithmSelected), 0, this);
 
-    m_pParent->Connect(m_pYGuideAlgorithmChoice->GetId(), wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(Mount::MountConfigDialogPane::OnYAlgorithmSelected), 0, this);
+        if (!m_pMount->m_pYGuideAlgorithm)
+        {
+            m_pYGuideAlgorithmConfigDialogPane = NULL;
+        }
+        else
+        {
+            m_pYGuideAlgorithmConfigDialogPane = GetGuideAlgoDialogPane(m_pMount->m_pYGuideAlgorithm, m_pParent);
+        }
+        m_pDecBox->Add(m_pYGuideAlgorithmChoice, def_flags);
+        m_pDecBox->Add(m_pYGuideAlgorithmConfigDialogPane, def_flags);
 
-    if (!pMount->m_pYGuideAlgorithm)
-    {
-        m_pYGuideAlgorithmConfigDialogPane  = NULL;
-    }
-    else
-    {
-        m_pYGuideAlgorithmConfigDialogPane  = GetGuideAlgoDialogPane(pMount->m_pYGuideAlgorithm, pParent);
-        DoAdd(m_pYGuideAlgorithmConfigDialogPane);
+        wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
+        wxSizerFlags smaller_flags = wxSizerFlags(0).Border(wxLEFT | wxRIGHT, 10).Border(wxTOP, 5).Expand();
+        if (!stepGuider)
+        {
+            pSizer->Add(GetSingleCtrl(CtrlMap, AD_cbDecComp), wxSizerFlags(0).Border(wxTOP | wxLEFT, 5).Border(wxRIGHT, 20).Expand());
+            pSizer->Add(GetSizerCtrl(CtrlMap, AD_szDecCompAmt), wxSizerFlags(0).Border(wxTOP | wxRIGHT, 5).Expand());
+            m_pDecBox->Add(pSizer);
+            m_pDecBox->Add(GetSizerCtrl(CtrlMap, AD_szMaxDecAmt), wxSizerFlags(0).Border(wxTOP, 10).Center());
+            m_pDecBox->Add(GetSizerCtrl(CtrlMap, AD_szDecGuideMode), wxSizerFlags(0).Border(wxTOP, 10).Center());
+        }
+        m_pAlgoBox->Add(m_pRABox, def_flags);
+        m_pAlgoBox->Add(m_pDecBox, def_flags);
+        m_pAlgoBox->Layout();
+        this->Add(m_pAlgoBox, def_flags);
+        if (stepGuider)
+        {
+            wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
+            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalStepsPerIteration));
+            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szSamplesToAverage));
+            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
+            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpSteps));
+            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBumpOnDither));
+            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableAOGuiding));
+            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearAOCalibration));
+            this->Add(pAoDetailSizer, def_flags);
+        }
+
+        Fit(m_pParent);
     }
 }
 
@@ -160,9 +203,11 @@ void Mount::MountConfigDialogPane::OnXAlgorithmSelected(wxCommandEvent& evt)
     oldpane->Clear(true);
     m_pMount->SetXGuideAlgorithm(m_pXGuideAlgorithmChoice->GetSelection());
     ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pXGuideAlgorithm, m_pParent);
-    Replace(oldpane, newpane);
+    m_pRABox->Replace(oldpane, newpane);
     m_pXGuideAlgorithmConfigDialogPane = newpane;
     m_pXGuideAlgorithmConfigDialogPane->LoadValues();
+    m_pRABox->Layout();
+    m_pAlgoBox->Layout();
     m_pParent->Layout();
     m_pParent->Update();
     m_pParent->Refresh();
@@ -174,9 +219,11 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
     oldpane->Clear(true);
     m_pMount->SetYGuideAlgorithm(m_pYGuideAlgorithmChoice->GetSelection());
     ConfigDialogPane *newpane = GetGuideAlgoDialogPane(m_pMount->m_pYGuideAlgorithm, m_pParent);
-    Replace(oldpane, newpane);
+    m_pDecBox->Replace(oldpane, newpane);
     m_pYGuideAlgorithmConfigDialogPane = newpane;
     m_pYGuideAlgorithmConfigDialogPane->LoadValues();
+    m_pDecBox->Layout();
+    m_pAlgoBox->Layout();
     m_pParent->Layout();
     m_pParent->Update();
     m_pParent->Refresh();
@@ -184,15 +231,12 @@ void Mount::MountConfigDialogPane::OnYAlgorithmSelected(wxCommandEvent& evt)
 
 void Mount::MountConfigDialogPane::LoadValues(void)
 {
-    m_pClearCalibration->Enable(m_pMount->IsCalibrated());
-    m_pClearCalibration->SetValue(false);
     m_initXGuideAlgorithmSelection = m_pMount->GetXGuideAlgorithmSelection();
     m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
     m_pXGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
     m_initYGuideAlgorithmSelection = m_pMount->GetYGuideAlgorithmSelection();
     m_pYGuideAlgorithmChoice->SetSelection(m_initYGuideAlgorithmSelection);
     m_pYGuideAlgorithmChoice->Enable(!pFrame->CaptureActive);
-    m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
 
     if (m_pXGuideAlgorithmConfigDialogPane)
     {
@@ -207,13 +251,6 @@ void Mount::MountConfigDialogPane::LoadValues(void)
 
 void Mount::MountConfigDialogPane::UnloadValues(void)
 {
-    if (m_pClearCalibration->IsChecked())
-    {
-        m_pMount->ClearCalibration();
-        Debug.Write(wxString::Format("User cleared %s calibration\n", m_pMount->IsStepGuider() ? "AO" : "Mount"));
-    }
-
-    m_pMount->SetGuidingEnabled(m_pEnableGuide->GetValue());
 
     // note these two have to be before the SetXxxAlgorithm calls, because if we
     // changed the algorithm, the current one will get freed, and if we make
@@ -235,17 +272,86 @@ void Mount::MountConfigDialogPane::UnloadValues(void)
 // Restore the guide algorithms - all the UI controls will follow correctly if the actual algorithm choices are correct
 void Mount::MountConfigDialogPane::Undo(void)
 {
-    if (m_pXGuideAlgorithmConfigDialogPane)
+    if (pMount)
     {
-        m_pXGuideAlgorithmConfigDialogPane->Undo();
+        if (m_pXGuideAlgorithmConfigDialogPane)
+        {
+            m_pXGuideAlgorithmConfigDialogPane->Undo();
+        }
+
+        if (m_pYGuideAlgorithmConfigDialogPane)
+        {
+            m_pYGuideAlgorithmConfigDialogPane->Undo();
+        }
+        m_pMount->SetXGuideAlgorithm(m_initXGuideAlgorithmSelection);
+        m_pXGuideAlgorithmChoice->SetSelection(m_initXGuideAlgorithmSelection);
+        wxCommandEvent dummy;
+        OnXAlgorithmSelected(dummy);
+        m_pMount->SetYGuideAlgorithm(m_initYGuideAlgorithmSelection);
+        m_pYGuideAlgorithmChoice->SetSelection(m_initYGuideAlgorithmSelection);
+        OnYAlgorithmSelected(dummy);
+    }
+}
+
+MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    return new MountConfigDialogCtrlSet(pParent, pMount, pAdvancedDialog, CtrlMap);
+}
+
+// These are only controls that are exported to other panes - all the other dynamically updated controls are handled in 
+// ConfigDialogPane
+MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
+ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
+{
+    bool enableCtrls = pMount != NULL;
+    m_pMount = pMount;
+    if (m_pMount)
+    {
+        if (!pMount->IsStepGuider())
+        {
+            m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearCalibration), wxID_ANY, _("Clear mount calibration"));
+            m_pClearCalibration->Enable(enableCtrls);
+            AddCtrl(CtrlMap, AD_cbClearCalibration, m_pClearCalibration,
+                _("Clear the current mount calibration data - calibration will be re-done when guiding is started"));
+            m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableGuiding), wxID_ANY, _("Enable mount guide output"));
+            AddCtrl(CtrlMap, AD_cbEnableGuiding, m_pEnableGuide,
+                _("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
+        }
+        else
+        {
+            m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearAOCalibration), wxID_ANY, _("Clear AO calibration"));
+            m_pClearCalibration->Enable(enableCtrls);
+            AddCtrl(CtrlMap, AD_cbClearAOCalibration, m_pClearCalibration,
+                _("Clear the current AO calibration data - calibration will be re-done when guiding is started"));
+            m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO corrections"));
+            AddCtrl(CtrlMap, AD_cbEnableAOGuiding, m_pEnableGuide,
+                _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
+
+        }
+    }
+}
+
+void MountConfigDialogCtrlSet::LoadValues()
+{
+    m_pClearCalibration->Enable(m_pMount->IsCalibrated());
+    m_pClearCalibration->SetValue(false);
+    m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
+}
+
+void MountConfigDialogCtrlSet::UnloadValues()
+{
+    if (m_pClearCalibration->IsChecked())
+    {
+        m_pMount->ClearCalibration();
+        Debug.Write(wxString::Format("User cleared %s calibration\n", m_pMount->IsStepGuider() ? "AO" : "Mount"));
     }
 
-    if (m_pYGuideAlgorithmConfigDialogPane)
-    {
-        m_pYGuideAlgorithmConfigDialogPane->Undo();
-    }
-    m_pMount->SetXGuideAlgorithm(m_initXGuideAlgorithmSelection);
-    m_pMount->SetYGuideAlgorithm(m_initYGuideAlgorithmSelection);
+    m_pMount->SetGuidingEnabled(m_pEnableGuide->GetValue());
+}
+
+bool Mount::DecCompensationEnabled()
+{
+    return m_useDecCompensation;
 }
 
 GUIDE_ALGORITHM Mount::GetXGuideAlgorithmSelection(void)
@@ -891,8 +997,11 @@ void Mount::AdjustCalibrationForScopePointing(void)
         // somewhere near the celestial equator, we don't do this
         if (fabs(m_cal.declination) > DEC_COMP_LIMIT)
         {
-            Debug.AddLine("skipping declination adjustment: initial calibration too far from equator");
+            Debug.AddLine("skipping Dec comp: initial calibration too far from equator");
         }
+        else
+        if (!m_useDecCompensation)
+            Debug.AddLine("skipping Dec comp: user has disabled Dec Comp");
         else
         {
             m_xRate = (m_cal.xRate / cos(m_cal.declination)) * cos(newDeclination);

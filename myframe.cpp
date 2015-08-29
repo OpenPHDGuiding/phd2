@@ -2180,56 +2180,87 @@ MyFrameConfigDialogPane *MyFrame::GetConfigDialogPane(wxWindow *pParent)
 MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame)
     : ConfigDialogPane(_("Global Settings"), pParent)
 {
+
+}
+
+void MyFrameConfigDialogPane::LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
+    wxFlexGridSizer *pTopGrid = new wxFlexGridSizer(3, 2, 15, 15);
+
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szLanguage));
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbResetConfig));
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_cbDontAsk));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szImageLoggingFormat));
+    pTopGrid->Add(GetSingleCtrl(CtrlMap, AD_szDitherRAOnly));
+    pTopGrid->Add(GetSizerCtrl(CtrlMap, AD_szDitherScale));
+    this->Add(pTopGrid, sizer_flags);
+    this->Add(GetSizerCtrl(CtrlMap, AD_szLogFileInfo), sizer_flags);
+    Layout();
+}
+
+MyFrameConfigDialogCtrlSet* MyFrame::GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    return new MyFrameConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap);
+}
+
+MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
+ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
+{
     int width;
+    wxWindow *parent;
+    
     m_pFrame = pFrame;
-
-    m_pResetConfiguration = new wxCheckBox(pParent, wxID_ANY,_("Reset Configuration"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pResetConfiguration, _("Reset all configuration to fresh install status -- Note: this closes PHD2"));
-
-    m_pResetDontAskAgain = new wxCheckBox(pParent, wxID_ANY,_("Reset \"Don't Ask Again\" messages"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pResetDontAskAgain, _("Restore any messages that were hidden when you checked \"Don't Ask Again\"."));
+    m_pResetConfiguration = new wxCheckBox(GetParentWindow(AD_cbResetConfig), wxID_ANY, _("Reset Configuration"));
+    AddCtrl(CtrlMap, AD_cbResetConfig, m_pResetConfiguration, _("Reset all configuration and program settings to fresh install status -- Note: this closes PHD2"));
+    m_pResetDontAskAgain = new wxCheckBox(GetParentWindow(AD_cbDontAsk), wxID_ANY, _("Reset \"Don't Ask Again\" messages")); 
+    AddCtrl(CtrlMap, AD_cbDontAsk, m_pResetDontAskAgain, _("Restore any messages that were hidden when you checked \"Don't Ask Again\"."));
 
     wxString img_formats[] =
     {
-        _("Low Q JPEG"),_("High Q JPEG"),_("Raw FITS")
+        _("Low Q JPEG"), _("High Q JPEG"), _("Raw FITS")
     };
 
     width = StringArrayWidth(img_formats, WXSIZEOF(img_formats));
-    m_pLoggedImageFormat = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
-            wxSize(width+35, -1), WXSIZEOF(img_formats), img_formats );
-    DoAdd(_("Image logging format"), m_pLoggedImageFormat,
-          _("File format of logged images"));
+    m_pLoggedImageFormat = new wxChoice(GetParentWindow(AD_szImageLoggingFormat), wxID_ANY, wxPoint(-1, -1),
+        wxSize(width + 35, -1), WXSIZEOF(img_formats), img_formats);
+    AddLabeledCtrl(CtrlMap, AD_szImageLoggingFormat, _("Image logging format"), m_pLoggedImageFormat,
+        _("File format of logged images"));
 
-    m_pDitherRaOnly = new wxCheckBox(pParent, wxID_ANY,_("Dither RA only"), wxPoint(-1,-1), wxSize(75,-1));
-    DoAdd(m_pDitherRaOnly, _("Constrain dither to RA only?"));
+    parent = GetParentWindow(AD_szDitherRAOnly);
+    m_pDitherRaOnly = new wxCheckBox(parent, wxID_ANY, _("Dither RA only"), wxPoint(-1, -1));
+    AddCtrl(CtrlMap, AD_szDitherRAOnly, m_pDitherRaOnly, _("Constrain dither to RA only"));
 
     width = StringWidth(_T("000.00"));
-    m_pDitherScaleFactor = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("DitherScaleFactor"));
+    m_pDitherScaleFactor = new wxSpinCtrlDouble(GetParentWindow(AD_szDitherScale), wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0, _T("DitherScaleFactor"));
     m_pDitherScaleFactor->SetDigits(1);
-    DoAdd(_("Dither scale"), m_pDitherScaleFactor,
-          _("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
+    AddLabeledCtrl(CtrlMap, AD_szDitherScale, _("Dither Scale"), m_pDitherScaleFactor,
+        _("Scaling for dither commands. Default = 1.0 (0.01-100.0)"));
 
     wxString nralgo_choices[] =
     {
-        _("None"),_("2x2 mean"),_("3x3 median")
+        _("None"), _("2x2 mean"), _("3x3 median")
     };
 
     width = StringArrayWidth(nralgo_choices, WXSIZEOF(nralgo_choices));
-    m_pNoiseReduction = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
-            wxSize(width+35, -1), WXSIZEOF(nralgo_choices), nralgo_choices );
-    DoAdd(_("Noise Reduction"), m_pNoiseReduction,
-          _("Technique to reduce noise in images"));
+    parent = GetParentWindow(AD_szNoiseReduction);
+    m_pNoiseReduction = new wxChoice(parent, wxID_ANY, wxPoint(-1, -1),
+        wxSize(width + 35, -1), WXSIZEOF(nralgo_choices), nralgo_choices);
+    AddLabeledCtrl(CtrlMap, AD_szNoiseReduction, _("Noise Reduction"), m_pNoiseReduction,
+        _("Technique to reduce noise in images"));
 
     width = StringWidth(_T("00000"));
-    m_pTimeLapse = new wxSpinCtrl(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0, 10000, 0, _T("TimeLapse"));
-    DoAdd(_("Time Lapse (ms)"), m_pTimeLapse,
-          _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
+    parent = GetParentWindow(AD_szTimeLapse);
+    m_pTimeLapse = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 0, 10000, 0, _T("TimeLapse"));
+    AddLabeledCtrl(CtrlMap, AD_szTimeLapse, _("Time Lapse (ms)"), m_pTimeLapse,
+        _("How long should PHD wait between guide frames? Default = 0ms, useful when using very short exposures (e.g., using a video camera) but wanting to send guide commands less frequently"));
 
-    m_pFocalLength = new wxTextCtrl(pParent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width+30, -1));
-    DoAdd( _("Focal length (mm)"), m_pFocalLength,
-           _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
+    parent = GetParentWindow(AD_szFocalLength);
+    m_pFocalLength = new wxTextCtrl(parent, wxID_ANY, _T("    "), wxDefaultPosition, wxSize(width + 30, -1));
+    AddLabeledCtrl(CtrlMap, AD_szFocalLength, _("Focal length (mm)"), m_pFocalLength,
+        _("Guider telescope focal length, used with the camera pixel size to display guiding error in arc-sec."));
 
     int currentLanguage = m_pFrame->m_pLocale->GetLanguage();
     wxTranslations *pTrans = wxTranslations::Get();
@@ -2239,7 +2270,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
     languages.Add("English");
     m_LanguageIDs.Add(wxLANGUAGE_DEFAULT);
     m_LanguageIDs.Add(wxLANGUAGE_ENGLISH_US);
-    for (wxArrayString::iterator s = availableTranslations.begin() ; s != availableTranslations.end() ; ++s)
+    for (wxArrayString::iterator s = availableTranslations.begin(); s != availableTranslations.end(); ++s)
     {
         bool bLanguageNameOk = false;
         const wxLanguageInfo *pLanguageInfo = wxLocale::FindLanguageInfo(*s);
@@ -2268,68 +2299,58 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
     pTrans->SetLanguage((wxLanguage)currentLanguage);
 
     width = StringWidth(_("System default"));
-    m_pLanguage = new wxChoice(pParent, wxID_ANY, wxPoint(-1,-1),
-            wxSize(width+35, -1), languages);
-    DoAdd(_("Language"), m_pLanguage,
-          wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
+    parent = GetParentWindow(AD_szLanguage);
+    m_pLanguage = new wxChoice(parent, wxID_ANY, wxPoint(-1, -1),
+        wxSize(width + 35, -1), languages);
+    AddLabeledCtrl(CtrlMap, AD_szLanguage, _("Language"), m_pLanguage,
+        wxString::Format(_("%s Language. You'll have to restart PHD to take effect."), APPNAME));
 
-    // Log directory location - use a group box with a wide text edit control on top and a centered 'browse' button below it
-    wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, pParent, _("Log File Location"));
+    // Log directory location - use a group box with a wide text edit control and a 'browse' button at the far right
+    parent = GetParentWindow(AD_szLogFileInfo);
+    wxStaticBoxSizer *pInputGroupBox = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Log File Location"));
     wxBoxSizer *pButtonSizer = new wxBoxSizer(wxHORIZONTAL);
-
-    m_pLogDir = new wxTextCtrl(pParent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(250, -1));
+    m_pLogDir = new wxTextCtrl(parent, wxID_ANY, _T(""), wxDefaultPosition, wxSize(450, -1));
     m_pLogDir->SetToolTip(_("Folder for guide and debug logs; empty string to restore the default location"));
-    m_pSelectDir = new wxButton(pParent, wxID_OK, _("Browse...") );
-    pButtonSizer->Add(m_pSelectDir, wxSizerFlags(0).Center());
-    m_pSelectDir->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &MyFrameConfigDialogPane::OnDirSelect, this);
+    m_pSelectDir = new wxButton(parent, wxID_OK, _("Browse..."));
+    pButtonSizer->Add(m_pSelectDir, wxSizerFlags(0).Align(wxRIGHT));
+    m_pSelectDir->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &MyFrameConfigDialogCtrlSet::OnDirSelect, this);
 
     pInputGroupBox->Add(m_pLogDir, wxSizerFlags(0).Expand());
-    pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Center().Border(wxTop, 20));
-    MyFrameConfigDialogPane::Add(pInputGroupBox);
+    pInputGroupBox->Add(pButtonSizer, wxSizerFlags(0).Align(wxRIGHT).Border(wxTop, 20));
+    AddGroup(CtrlMap, AD_szLogFileInfo, pInputGroupBox);
 
-    m_pAutoLoadCalibration = new wxCheckBox(pParent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
-    DoAdd(m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
+    parent = GetParentWindow(AD_cbAutoRestoreCal);
+    m_pAutoLoadCalibration = new wxCheckBox(parent, wxID_ANY, _("Auto restore calibration"), wxDefaultPosition, wxDefaultSize);
+    AddCtrl(CtrlMap, AD_cbAutoRestoreCal, m_pAutoLoadCalibration, _("Automatically restore calibration data from last successful calibration when connecting equipment."));
 
-    m_autoExpDurationMin = new wxComboBox(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+    wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
+    parent = GetParentWindow(AD_szAutoExposure);
+    m_autoExpDurationMin = new wxComboBox(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
-    m_autoExpDurationMax = new wxComboBox(pParent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+    m_autoExpDurationMax = new wxComboBox(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         WXSIZEOF(dur_choices) - 1, &dur_choices[1], wxCB_READONLY);
 
     width = StringWidth(_T("00.0"));
-    m_autoExpSNR = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxDefaultPosition,
+    m_autoExpSNR = new wxSpinCtrlDouble(parent, wxID_ANY, _T(""), wxDefaultPosition,
         wxSize(width + 30, -1), wxSP_ARROW_KEYS, 3.5, 99.9, 0.0, 1.0);
 
-    wxBoxSizer *sz1 = new wxBoxSizer(wxHORIZONTAL);
-    sz1->Add(MakeLabeledControl(_("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")));
-    sz1->Add(MakeLabeledControl(_("Max"), m_autoExpDurationMax, _("Auto exposure maximum duration")),
-        wxSizerFlags().Border(wxLEFT, 10));
-    wxStaticBoxSizer *autoExp = new wxStaticBoxSizer(wxVERTICAL, pParent, _("Auto Exposure"));
-    autoExp->Add(sz1);
-    autoExp->Add(MakeLabeledControl(_("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")),
-        wxSizerFlags().Border(wxTOP, 10));
+    wxFlexGridSizer *sz1 = new wxFlexGridSizer(1, 3, 10, 10);
+    sz1->Add(MakeLabeledControl(AD_szAutoExposure, _("Min"), m_autoExpDurationMin, _("Auto exposure minimum duration")));
+    sz1->Add(MakeLabeledControl(AD_szAutoExposure, _("Max"), m_autoExpDurationMax, _("Auto exposure maximum duration")), wxSizerFlags(0).Border(wxLEFT, 70));
+    sz1->Add(MakeLabeledControl(AD_szAutoExposure, _("Target SNR"), m_autoExpSNR, _("Auto exposure target SNR value")), wxSizerFlags(0).Border(wxLEFT, 80));
+    wxStaticBoxSizer *autoExp = new wxStaticBoxSizer(wxHORIZONTAL, parent, _("Auto Exposure"));
+    autoExp->Add(sz1, wxSizerFlags(0).Expand());
 
-    Add(autoExp);
+    AddGroup(CtrlMap, AD_szAutoExposure, autoExp);
 }
 
-void MyFrameConfigDialogPane::OnDirSelect(wxCommandEvent& evt)
-{
-    wxString sRtn = wxDirSelector("Choose a location", m_pLogDir->GetValue());
-
-    if (sRtn.Len() > 0)
-        m_pLogDir->SetValue (sRtn);
-}
-
-MyFrameConfigDialogPane::~MyFrameConfigDialogPane(void)
-{
-}
-
-void MyFrameConfigDialogPane::LoadValues(void)
+void MyFrameConfigDialogCtrlSet::LoadValues()
 {
     m_pResetConfiguration->SetValue(false);
     m_pResetConfiguration->Enable(!pFrame->CaptureActive);
     m_pResetDontAskAgain->SetValue(false);
-    m_pLoggedImageFormat->SetSelection(m_pFrame->GetLoggedImageFormat());
-    m_pNoiseReduction->SetSelection(m_pFrame->GetNoiseReductionMethod());
+    m_pLoggedImageFormat->SetSelection(pFrame->GetLoggedImageFormat());
+    m_pNoiseReduction->SetSelection(pFrame->GetNoiseReductionMethod());
     m_pDitherRaOnly->SetValue(m_pFrame->GetDitherRaOnly());
     m_pDitherScaleFactor->SetValue(m_pFrame->GetDitherScaleFactor());
     m_pTimeLapse->SetValue(m_pFrame->GetTimeLapse());
@@ -2359,13 +2380,13 @@ void MyFrameConfigDialogPane::LoadValues(void)
     m_autoExpSNR->SetValue(cfg.targetSNR);
 }
 
-void MyFrameConfigDialogPane::UnloadValues(void)
+void MyFrameConfigDialogCtrlSet::UnloadValues()
 {
     try
     {
         if (m_pResetConfiguration->GetValue())
         {
-            int choice = wxMessageBox(_("This will reset all PHD2 configuration values and exit the program.  Are you sure?"),_("Confirmation"), wxYES_NO);
+            int choice = wxMessageBox(_("This will reset all PHD2 configuration values and exit the program.  Are you sure?"), _("Confirmation"), wxYES_NO);
 
             if (choice == wxYES)
             {
@@ -2381,7 +2402,7 @@ void MyFrameConfigDialogPane::UnloadValues(void)
             ConfirmDialog::ResetAllDontAskAgain();
         }
 
-        m_pFrame->SetLoggedImageFormat((LOGGED_IMAGE_FORMAT) m_pLoggedImageFormat->GetSelection());
+        m_pFrame->SetLoggedImageFormat((LOGGED_IMAGE_FORMAT)m_pLoggedImageFormat->GetSelection());
         m_pFrame->SetNoiseReductionMethod(m_pNoiseReduction->GetSelection());
         m_pFrame->SetDitherRaOnly(m_pDitherRaOnly->GetValue());
         m_pFrame->SetDitherScaleFactor(m_pDitherScaleFactor->GetValue());
@@ -2393,7 +2414,7 @@ void MyFrameConfigDialogPane::UnloadValues(void)
         pFrame->SetLanguage(m_LanguageIDs[language]);
         if (m_oldLanguageChoice != language)
         {
-            wxMessageBox(_("You must restart PHD for the language change to take effect."),_("Info"));
+            wxMessageBox(_("You must restart PHD2 for the language change to take effect."), _("Info"));
         }
 
         wxString newdir = m_pLogDir->GetValue();
@@ -2425,16 +2446,25 @@ void MyFrameConfigDialogPane::UnloadValues(void)
 
 }
 
-int MyFrameConfigDialogPane::GetFocalLength(void)
+// Following are needed by step-size calculator to keep the UIs in-synch
+int MyFrameConfigDialogCtrlSet::GetFocalLength(void)
 {
     long val = 0;
     m_pFocalLength->GetValue().ToLong(&val);
-    return (int) val;
+    return (int)val;
 }
 
-void MyFrameConfigDialogPane::SetFocalLength(int val)
+void MyFrameConfigDialogCtrlSet::SetFocalLength(int val)
 {
     m_pFocalLength->SetValue(wxString::Format(_T("%d"), val));
+}
+
+void MyFrameConfigDialogCtrlSet::OnDirSelect(wxCommandEvent& evt)
+{
+    wxString sRtn = wxDirSelector("Choose a location", m_pLogDir->GetValue());
+
+    if (sRtn.Len() > 0)
+        m_pLogDir->SetValue(sRtn);
 }
 
 void MyFrame::PlaceWindowOnScreen(wxWindow *win, int x, int y)
