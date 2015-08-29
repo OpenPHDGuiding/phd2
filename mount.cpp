@@ -309,21 +309,21 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
     {
         if (!pMount->IsStepGuider())
         {
-            m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearCalibration), wxID_ANY, _("Clear Calibration"));
+            m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearCalibration), wxID_ANY, _("Clear mount calibration"));
             m_pClearCalibration->Enable(enableCtrls);
             AddCtrl(CtrlMap, AD_cbClearCalibration, m_pClearCalibration,
-                _("Clear the current calibration data - calibration will be re-done when guiding is started"));
-            m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableGuiding), wxID_ANY, _("Enable Guide Output"));
+                _("Clear the current mount calibration data - calibration will be re-done when guiding is started"));
+            m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableGuiding), wxID_ANY, _("Enable mount guide output"));
             AddCtrl(CtrlMap, AD_cbEnableGuiding, m_pEnableGuide,
                 _("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
         }
         else
         {
-            m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearAOCalibration), wxID_ANY, _("Clear AO Calibration"));
+            m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearAOCalibration), wxID_ANY, _("Clear AO calibration"));
             m_pClearCalibration->Enable(enableCtrls);
             AddCtrl(CtrlMap, AD_cbClearAOCalibration, m_pClearCalibration,
                 _("Clear the current AO calibration data - calibration will be re-done when guiding is started"));
-            m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO Corrections"));
+            m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO corrections"));
             AddCtrl(CtrlMap, AD_cbEnableAOGuiding, m_pEnableGuide,
                 _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
 

@@ -221,10 +221,10 @@ GuideAlgorithmHysteresisConfigDialogPane(wxWindow *pParent, GuideAlgorithmHyster
 
     width = StringWidth(_T("000"));
     m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY,_T(""), wxPoint(-1,-1),
-            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, MaxAggression * 100.0, 0.0, 5.0, _T("Aggression"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.0, MaxAggression * 100.0, 0.0, 5.0, _T("Aggressiveness"));
     m_pAggression->SetDigits(0);
 
-    DoAdd(_("Aggression"), m_pAggression,
+    DoAdd(_("Aggressiveness"), m_pAggression,
           wxString::Format(_("What percent of the measured error should be applied? Default = %.f%%, adjust if responding too much or too slowly"), DefaultAggression * 100.0));
 
     width = StringWidth(_T("00.00"));
@@ -278,7 +278,7 @@ GuideAlgorithmHysteresisGraphControlPane(wxWindow *pParent, GuideAlgorithmHyster
     // Aggression
     width = StringWidth(_T("000"));
     m_pAggression = new wxSpinCtrlDouble(this, wxID_ANY,_T(""), wxDefaultPosition,
-            wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, MaxAggression * 100.0, 0.0, 5.0, _T("Aggression"));
+            wxSize(width+30, -1), wxSP_ARROW_KEYS | wxALIGN_RIGHT, 0.0, MaxAggression * 100.0, 0.0, 5.0, _T("Aggressiveness"));
     m_pAggression->SetDigits(0);
     m_pAggression->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmHysteresis::GuideAlgorithmHysteresisGraphControlPane::OnAggressionSpinCtrlDouble, this);
     DoAdd(m_pAggression, _("Agr"));

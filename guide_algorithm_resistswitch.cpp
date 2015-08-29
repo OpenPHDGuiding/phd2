@@ -264,11 +264,11 @@ GuideAlgorithmResistSwitch::
 
     width = StringWidth(_T("000"));
     m_pAggression = new wxSpinCtrlDouble(pParent, wxID_ANY, _T(""), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggression"));
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
     m_pAggression->SetDigits(0);
 
-    DoAdd(_("Aggression"), m_pAggression,
-        wxString::Format(_("Aggression factor, percent. Default = %.f%%"), DefaultAggression * 100.0));
+    DoAdd(_("Aggressiveness"), m_pAggression,
+        wxString::Format(_("Aggressiveness factor, percent. Default = %.f%%"), DefaultAggression * 100.0));
 
     width = StringWidth(_T("00.00"));
     m_pMinMove = new wxSpinCtrlDouble(pParent, wxID_ANY,_T(""), wxPoint(-1,-1),
@@ -324,7 +324,7 @@ GuideAlgorithmResistSwitch::
     // Aggression
     width = StringWidth(_T("000"));
     m_pAggression = new wxSpinCtrlDouble(this, wxID_ANY, _T(""), wxPoint(-1, -1),
-        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggression"));
+        wxSize(width + 30, -1), wxSP_ARROW_KEYS, 1.0, 100.0, 100.0, 5.0, _T("Aggressiveness"));
     m_pAggression->SetDigits(0);
     m_pAggression->Bind(wxEVT_COMMAND_SPINCTRLDOUBLE_UPDATED, &GuideAlgorithmResistSwitch::GuideAlgorithmResistSwitchGraphControlPane::OnAggressionSpinCtrlDouble, this);
     DoAdd(m_pAggression, _T("Agr"));

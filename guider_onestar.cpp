@@ -904,30 +904,7 @@ Guider::GuiderConfigDialogPane *GuiderOneStar::GetConfigDialogPane(wxWindow *pPa
 GuiderOneStar::GuiderOneStarConfigDialogPane::GuiderOneStarConfigDialogPane(wxWindow *pParent, GuiderOneStar *pGuider)
     : GuiderConfigDialogPane(pParent, pGuider)
 {
-    //int width;
 
-    //m_pGuiderOneStar = pGuider;
-
-    //width = StringWidth(_T("0000"));
-    //m_pSearchRegion = new wxSpinCtrl(pParent, wxID_ANY, _T("foo2"), wxPoint(-1,-1),
-    //                                 wxSize(width+30, -1), wxSP_ARROW_KEYS, MIN_SEARCH_REGION, MAX_SEARCH_REGION, DEFAULT_SEARCH_REGION, _T("Search"));
-    //DoAdd(_("Search region (pixels)"), m_pSearchRegion,
-    //      _("How many pixels (up/down/left/right) do we examine to find the star? Default = 15"));
-
-    //m_pEnableStarMassChangeThresh = new wxCheckBox(pParent, STAR_MASS_ENABLE, _("Star mass change detection"));
-    //DoAdd(m_pEnableStarMassChangeThresh, _("Check to enable star mass change detection. When enabled, "
-    //    "PHD skips frames when the guide star mass changes by an amount greater than the Star mass tolerance setting."));
-
-    //pParent->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderOneStar::GuiderOneStarConfigDialogPane::OnStarMassEnableChecked, this, STAR_MASS_ENABLE);
-
-    //width = StringWidth(_T("100.0"));
-    //m_pMassChangeThreshold = new wxSpinCtrlDouble(pParent, wxID_ANY,_T("foo2"), wxPoint(-1,-1),
-    //        wxSize(width+30, -1), wxSP_ARROW_KEYS, 0.1, 100.0, 0.0, 1.0,_T("MassChangeThreshold"));
-    //m_pMassChangeThreshold->SetDigits(1);
-    //DoAdd(_("Star mass tolerance"), m_pMassChangeThreshold,
-    //      _("When star mass change detection is enabled, this is the tolerance for star mass changes between frames, in percent. "
-    //      "Larger values are more tolerant (less sensitive) to star mass changes. Valid range is 10-100, default is 50. "
-    //      "If star mass change detection is not enabled then this setting is ignored."));
 }
 
 void GuiderOneStar::GuiderOneStarConfigDialogPane::LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
@@ -957,7 +934,7 @@ GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap)
     wxStaticBoxSizer *pStarMass = new wxStaticBoxSizer(wxHORIZONTAL, GetParentWindow(AD_szStarTracking), _("Star Mass Detection"));
     m_pEnableStarMassChangeThresh = new wxCheckBox(GetParentWindow(AD_szStarTracking), STAR_MASS_ENABLE, _("Enable"));
     m_pEnableStarMassChangeThresh->SetToolTip(_("Check to enable star mass change detection. When enabled, "
-        "PHD skips frames when the guide star mass changes by an amount greater than the Star mass tolerance setting."));
+        "PHD skips frames when the guide star mass changes by an amount greater than the setting for 'tolerance'."));
 
     GetParentWindow(AD_szStarTracking)->Bind(wxEVT_COMMAND_CHECKBOX_CLICKED, &GuiderOneStarConfigDialogCtrlSet::OnStarMassEnableChecked, this, STAR_MASS_ENABLE);
 

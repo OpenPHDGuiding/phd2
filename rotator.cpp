@@ -167,7 +167,7 @@ RotatorConfigDialogCtrlSet::RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotato
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
     m_rotator = pRotator;
-    m_cbReverse = new wxCheckBox(GetParentWindow(AD_cbRotatorReverse), wxID_ANY, _("Reverse Sign of Angle"));
+    m_cbReverse = new wxCheckBox(GetParentWindow(AD_cbRotatorReverse), wxID_ANY, _("Reverse sign of angle"));
     AddCtrl(CtrlMap, AD_cbRotatorReverse, m_cbReverse);
 }
 
