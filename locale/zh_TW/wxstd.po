@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: wxWidgets 3.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-21 14:54+0100\n"
-"PO-Revision-Date: 2013-02-27 14:58+0800\n"
+"PO-Revision-Date: 2015-07-06 22:02+0800\n"
 "Last-Translator: Wei-Lun Chao <bluebat@member.fsf.org>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
 "Language: zh_TW\n"
@@ -18,6 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 1.8.1\n"
 
 #: ../src/common/debugrpt.cpp:591
 msgid ""
@@ -37,9 +38,9 @@ msgid "              Thank you and we're sorry for the inconvenience!\n"
 msgstr "              謝謝，我們對您遇到的不便表示抱歉！\n"
 
 #: ../src/common/prntbase.cpp:546
-#, fuzzy, c-format
+#, c-format
 msgid " (copy %d of %d)"
-msgstr "%d / %d 頁"
+msgstr "(複製 %d / %d 頁)"
 
 #: ../src/common/log.cpp:425
 #, c-format
@@ -102,7 +103,7 @@ msgstr "#9 信封, 3 7/8 x 8 7/8 英吋"
 #: ../src/richtext/richtextsizepage.cpp:626
 #: ../src/richtext/richtextsizepage.cpp:661
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: ../src/html/helpwnd.cpp:1044
 #, c-format
@@ -141,9 +142,9 @@ msgid "%s Information"
 msgstr "%s 資訊"
 
 #: ../src/generic/preferencesg.cpp:110
-#, fuzzy, c-format
+#, c-format
 msgid "%s Preferences"
-msgstr "偏好設定"
+msgstr "%s 偏好設定"
 
 #: ../src/generic/logg.cpp:234
 #, c-format
@@ -547,9 +548,8 @@ msgid "&Position (tenths of a mm):"
 msgstr "位置(&P) (十分之一公釐)"
 
 #: ../src/richtext/richtextsizepage.cpp:514
-#, fuzzy
 msgid "&Position mode:"
-msgstr "浮動模式(&F):"
+msgstr "設置模式:"
 
 #: ../src/common/stockitem.cpp:181
 msgid "&Preferences"
@@ -684,7 +684,7 @@ msgstr "樣式(&S)："
 #: ../src/richtext/richtextborderspage.cpp:379
 #: ../src/richtext/richtextborderspage.cpp:548
 msgid "&Synchronize values"
-msgstr ""
+msgstr "同步數值"
 
 #: ../include/wx/richtext/richtextbuffer.h:5733
 msgid "&Table"
@@ -1158,13 +1158,12 @@ msgid "About %s"
 msgstr "關於 %s"
 
 #: ../src/osx/menu_osx.cpp:605
-#, fuzzy
 msgid "About..."
-msgstr "關於"
+msgstr "關於..."
 
 #: ../src/richtext/richtextsizepage.cpp:520
 msgid "Absolute"
-msgstr ""
+msgstr "絕對"
 
 #: ../src/common/stockitem.cpp:207
 msgid "Actual Size"
@@ -1176,11 +1175,11 @@ msgstr "加入"
 
 #: ../src/richtext/richtextbuffer.cpp:11056
 msgid "Add Column"
-msgstr ""
+msgstr "新增行"
 
 #: ../src/richtext/richtextbuffer.cpp:10993
 msgid "Add Row"
-msgstr ""
+msgstr "新增列"
 
 #: ../src/html/helpwnd.cpp:439
 msgid "Add current page to bookmarks"
@@ -1213,7 +1212,7 @@ msgstr "加入風格 utxt 失敗"
 
 #: ../src/common/preferencescmn.cpp:41
 msgid "Advanced"
-msgstr ""
+msgstr "進階"
 
 #: ../src/richtext/richtextliststylepage.cpp:435
 msgid "After a paragraph:"
@@ -1809,9 +1808,9 @@ msgid "Cannot resume thread %lu"
 msgstr "無法恢復執行緒 %lu"
 
 #: ../src/msw/thread.cpp:918
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot resume thread %lx"
-msgstr "無法恢復執行緒 %x"
+msgstr "無法恢復執行緒 %lx"
 
 #: ../src/unix/threadpsx.cpp:1016
 msgid "Cannot retrieve thread scheduling policy."
@@ -1832,9 +1831,9 @@ msgid "Cannot suspend thread %lu"
 msgstr "無法暫停執行緒 %lu"
 
 #: ../src/msw/thread.cpp:902
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot suspend thread %lx"
-msgstr "無法暫停執行緒 %x"
+msgstr "無法暫停執行緒 %lx"
 
 #: ../src/msw/thread.cpp:825
 msgid "Cannot wait for thread termination"
@@ -1935,7 +1934,7 @@ msgstr "勾選以加上右括號。"
 #: ../src/richtext/richtextborderspage.cpp:550
 #: ../src/richtext/richtextborderspage.cpp:552
 msgid "Check to edit all borders simultaneously."
-msgstr ""
+msgstr "勾選以同時編輯所有的邊界"
 
 #: ../src/richtext/richtextliststylepage.cpp:231
 #: ../src/richtext/richtextliststylepage.cpp:233
@@ -1973,9 +1972,8 @@ msgstr "勾選以將字變成大寫。"
 
 #: ../src/richtext/richtextfontpage.cpp:300
 #: ../src/richtext/richtextfontpage.cpp:302
-#, fuzzy
 msgid "Check to show the text in small capitals."
-msgstr "勾選以將字變成大寫。"
+msgstr "勾選以小寫顯示文字。"
 
 #: ../src/richtext/richtextfontpage.cpp:314
 #: ../src/richtext/richtextfontpage.cpp:316
@@ -2304,7 +2302,7 @@ msgstr "無法取得項目。"
 
 #: ../src/osx/carbon/dataview.cpp:2657 ../src/osx/carbon/dataview.cpp:2722
 msgid "Could not get property flags."
-msgstr "'"
+msgstr "‘無法取得適當的旗標"
 
 #: ../src/osx/carbon/dataview.cpp:724
 msgid "Could not get selected items."
@@ -2321,7 +2319,7 @@ msgstr "無法移除欄位。"
 
 #: ../src/osx/carbon/dataview.cpp:640
 msgid "Could not retrieve number of items"
-msgstr "'"
+msgstr "無法存取該項目的數值"
 
 #: ../src/osx/carbon/dataview.cpp:2570
 msgid "Could not set alignment."
@@ -2421,9 +2419,8 @@ msgid "Couldn't load sound data from '%s'."
 msgstr "無法從 '%s' 中載入聲音資料。"
 
 #: ../src/msw/dirdlg.cpp:441
-#, fuzzy
 msgid "Couldn't obtain folder name"
-msgstr "無法建立計時器。"
+msgstr "無法取得資料夾名稱。"
 
 #: ../src/unix/sound_sdl.cpp:229
 #, c-format
@@ -2602,14 +2599,12 @@ msgid "Delete A&ll"
 msgstr "刪除全部(&L)"
 
 #: ../src/richtext/richtextbuffer.cpp:10942
-#, fuzzy
 msgid "Delete Column"
-msgstr "刪除選取項目"
+msgstr "刪除列"
 
 #: ../src/richtext/richtextbuffer.cpp:10892
-#, fuzzy
 msgid "Delete Row"
-msgstr "刪除"
+msgstr "刪除行"
 
 #: ../src/richtext/richtextstyledlg.cpp:782
 msgid "Delete Style"
@@ -2670,9 +2665,9 @@ msgid "Did you know..."
 msgstr "您知道嗎…"
 
 #: ../src/dfb/wrapdfb.cpp:63
-#, fuzzy, c-format
+#, c-format
 msgid "DirectFB error %d occurred."
-msgstr "發生 DirectFB 錯誤，錯誤碼 %d 。"
+msgstr "發生 DirectFB 錯誤，錯誤碼為 %d 。"
 
 #: ../src/motif/filedlg.cpp:219
 msgid "Directories"
@@ -2735,9 +2730,8 @@ msgid "Do you want to save changes to %s?"
 msgstr "您想儲存對於 %s 的修改？"
 
 #: ../src/common/prntbase.cpp:525
-#, fuzzy
 msgid "Document:"
-msgstr "文件撰寫由 "
+msgstr "文件: "
 
 #: ../src/generic/aboutdlgg.cpp:73
 msgid "Documentation by "
@@ -2822,7 +2816,7 @@ msgstr "編輯項目"
 
 #: ../include/wx/generic/progdlgg.h:84
 msgid "Elapsed time:"
-msgstr ""
+msgstr "延遲時間:"
 
 #: ../src/richtext/richtextsizepage.cpp:353
 #: ../src/richtext/richtextsizepage.cpp:355
@@ -2952,7 +2946,7 @@ msgstr "世界語 (ISO-8859-3)"
 
 #: ../include/wx/generic/progdlgg.h:85
 msgid "Estimated time:"
-msgstr ""
+msgstr "預估時間:"
 
 #: ../src/generic/dbgrptg.cpp:234
 msgid "Executable files (*.exe)|*.exe|"
@@ -3253,14 +3247,14 @@ msgid "Failed to kill process %d"
 msgstr "無法刪除程序 %d"
 
 #: ../src/common/image.cpp:2365
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load bitmap \"%s\" from resources."
-msgstr "無法從串流載入圖像 %d。"
+msgstr "無法從來源載入圖像 %s。"
 
 #: ../src/common/image.cpp:2374
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load icon \"%s\" from resources."
-msgstr "無法從串流載入圖像 %d。"
+msgstr "無法從來源載入圖像 %s。"
 
 #: ../src/common/iconbndl.cpp:182
 #, c-format
@@ -3365,9 +3359,9 @@ msgid "Failed to parse Plural-Forms: '%s'"
 msgstr "無法解析 Plural-Forms：'%s'"
 
 #: ../src/unix/mediactrl.cpp:1268
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to prepare playing \"%s\"."
-msgstr "開啟顯示「%s」時失敗。"
+msgstr "預備播放「%s」時失敗。"
 
 #: ../src/msw/clipbrd.cpp:647
 msgid "Failed to put data on the clipboard"
@@ -3490,9 +3484,8 @@ msgid "Failed to set permissions on lock file '%s'"
 msgstr "在上鎖檔案 '%s'上設定許可權限時失敗"
 
 #: ../src/unix/utilsunx.cpp:674
-#, fuzzy
 msgid "Failed to set process priority"
-msgstr "無法設定執行緒的優先等級為 %d。"
+msgstr "無法設定執行緒的優先等級。"
 
 #: ../src/common/file.cpp:576
 msgid "Failed to set temporary file permissions"
@@ -3503,9 +3496,9 @@ msgid "Failed to set text in the text control."
 msgstr "無法在文字控制項中設定文字。"
 
 #: ../src/unix/threadpsx.cpp:1298
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set thread concurrency level to %lu"
-msgstr "無法設定執行緒的優先等級為 %d。"
+msgstr "無法設定執行緒的 concurrency level 為 %lu。"
 
 #: ../src/unix/threadpsx.cpp:1382 ../src/unix/threadpsx.cpp:1392
 #, c-format
@@ -3665,9 +3658,8 @@ msgid "First page"
 msgstr "第一頁"
 
 #: ../src/richtext/richtextsizepage.cpp:521
-#, fuzzy
 msgid "Fixed"
-msgstr "定寬字型︰"
+msgstr "定寬字型"
 
 #: ../src/html/helpwnd.cpp:1219
 msgid "Fixed font:"
@@ -3769,7 +3761,7 @@ msgstr "GTK+ 布景主題"
 
 #: ../src/common/preferencescmn.cpp:39
 msgid "General"
-msgstr ""
+msgstr "一般"
 
 #: ../src/common/prntbase.cpp:243
 msgid "Generic PostScript"
@@ -4111,9 +4103,8 @@ msgid "Insert"
 msgstr "插入"
 
 #: ../src/richtext/richtextbuffer.cpp:7791
-#, fuzzy
 msgid "Insert Field"
-msgstr "插入文字"
+msgstr "插入欄位"
 
 #: ../src/richtext/richtextbuffer.cpp:7702
 #: ../src/richtext/richtextbuffer.cpp:8655
@@ -4166,7 +4157,7 @@ msgstr "無效的幾何規格 '%s'"
 #: ../src/unix/fswatcher_inotify.cpp:311
 #, c-format
 msgid "Invalid inotify event for \"%s\""
-msgstr ""
+msgstr "“%s” 有無效的 inoify 事件 "
 
 #: ../src/unix/snglinst.cpp:312
 #, c-format
@@ -4751,7 +4742,7 @@ msgstr "最大寬度："
 #: ../src/unix/mediactrl.cpp:1006
 #, c-format
 msgid "Media playback error: %s"
-msgstr ""
+msgstr "播放媒體錯誤: %s"
 
 #: ../src/common/fs_mem.cpp:175
 #, c-format
@@ -5354,9 +5345,8 @@ msgid "Passing a already registered object to SetObject"
 msgstr "傳入已註冊的物件給 SetObject"
 
 #: ../src/common/xtistrm.cpp:480
-#, fuzzy
 msgid "Passing an unknown object to GetObject"
-msgstr "傳入一個不明物件給 GetObject"
+msgstr "傳入一個不明物件給 GetObject 函數"
 
 #: ../src/richtext/richtextctrl.cpp:3206 ../src/common/stockitem.cpp:180
 #: ../src/stc/stc_i18n.cpp:19
@@ -5416,9 +5406,8 @@ msgid "Please select the columns to show and define their order:"
 msgstr "請選取欄位以顯示並定義它們的排序："
 
 #: ../src/common/prntbase.cpp:521
-#, fuzzy
 msgid "Please wait while printing..."
-msgstr "列印中，請稍待\n"
+msgstr "列印中，請稍待"
 
 #: ../src/propgrid/advprops.cpp:631
 msgid "Point Size"
@@ -5463,7 +5452,7 @@ msgstr "偏好設定..."
 
 #: ../src/common/prntbase.cpp:529
 msgid "Preparing"
-msgstr ""
+msgstr "準備中"
 
 #: ../src/generic/fontdlgg.cpp:455 ../src/osx/carbon/fontdlg.cpp:560
 #: ../src/html/helpwnd.cpp:1235
@@ -5502,18 +5491,16 @@ msgid "Print in colour"
 msgstr "彩色列印"
 
 #: ../src/common/stockitem.cpp:182
-#, fuzzy
 msgid "Print previe&w..."
-msgstr "預覽列印"
+msgstr "預覽列印..."
 
 #: ../src/common/docview.cpp:1244
 msgid "Print preview creation failed."
 msgstr "建立預覽列印失敗。"
 
 #: ../src/common/stockitem.cpp:182
-#, fuzzy
 msgid "Print preview..."
-msgstr "預覽列印"
+msgstr "預覽列印..."
 
 #: ../src/generic/prntdlgg.cpp:630
 msgid "Print spooling"
@@ -5569,18 +5556,18 @@ msgid "Printing Error"
 msgstr "列印時發生錯誤"
 
 #: ../src/common/prntbase.cpp:544
-#, fuzzy, c-format
+#, c-format
 msgid "Printing page %d of %d"
-msgstr "正在列印第 %d 頁…"
+msgstr "正在列印第 %d /%d 頁..."
 
 #: ../src/generic/printps.cpp:201
 #, c-format
 msgid "Printing page %d..."
-msgstr "正在列印第 %d 頁…"
+msgstr "正在列印第 %d…"
 
 #: ../src/generic/printps.cpp:161
 msgid "Printing..."
-msgstr "列印中…"
+msgstr "列印中..."
 
 #: ../include/wx/richtext/richtextprint.h:109 ../include/wx/prntbase.h:263
 #: ../src/common/docview.cpp:2114
@@ -5599,7 +5586,7 @@ msgstr "程序渲染器無法渲染該值，型態為: "
 
 #: ../src/common/prntbase.cpp:528
 msgid "Progress:"
-msgstr ""
+msgstr "進行中:"
 
 #: ../src/common/stockitem.cpp:184
 msgid "Properties"
@@ -5699,9 +5686,8 @@ msgid "Regular"
 msgstr "一般"
 
 #: ../src/richtext/richtextsizepage.cpp:519
-#, fuzzy
 msgid "Relative"
-msgstr "修飾"
+msgstr "存取"
 
 #: ../src/generic/helpext.cpp:462
 msgid "Relevant entries:"
@@ -5709,16 +5695,15 @@ msgstr "相關項目："
 
 #: ../include/wx/generic/progdlgg.h:86
 msgid "Remaining time:"
-msgstr ""
+msgstr "剩餘時間:"
 
 #: ../src/common/stockitem.cpp:187
 msgid "Remove"
 msgstr "移除"
 
 #: ../src/richtext/richtextctrl.cpp:1516
-#, fuzzy
 msgid "Remove Bullet"
-msgstr "移除"
+msgstr "移除檢視項"
 
 #: ../src/html/helpwnd.cpp:440
 msgid "Remove current page from bookmarks"
@@ -5954,7 +5939,7 @@ msgstr "在選項 '%s' 之後應有分隔字元。"
 
 #: ../src/osx/menu_osx.cpp:618
 msgid "Services"
-msgstr ""
+msgstr "服務"
 
 #: ../src/richtext/richtextbuffer.cpp:10818
 msgid "Set Cell Style"
@@ -6070,9 +6055,8 @@ msgid "Slant"
 msgstr "傾斜"
 
 #: ../src/richtext/richtextfontpage.cpp:298
-#, fuzzy
 msgid "Small C&apitals"
-msgstr "大寫(&P)"
+msgstr "小寫(&P)"
 
 #: ../src/richtext/richtextborderspage.cpp:565
 msgid "Solid"
@@ -6126,9 +6110,8 @@ msgstr "結算單, 5 1/2 x 8 1/2 英吋"
 
 #: ../src/richtext/richtextsizepage.cpp:518
 #: ../src/richtext/richtextsizepage.cpp:523
-#, fuzzy
 msgid "Static"
-msgstr "狀態:"
+msgstr "靜態的"
 
 #: ../src/generic/prntdlgg.cpp:204
 msgid "Status:"
@@ -6190,9 +6173,8 @@ msgid "Symbol &font:"
 msgstr "符號字型(&F)："
 
 #: ../include/wx/richtext/richtextsymboldlg.h:47
-#, fuzzy
 msgid "Symbols"
-msgstr "符號"
+msgstr "符號:"
 
 #: ../src/common/accelcmn.cpp:63
 msgid "TAB"
@@ -6296,9 +6278,8 @@ msgstr "背景顏色。"
 #: ../src/richtext/richtextborderspage.cpp:504
 #: ../src/richtext/richtextborderspage.cpp:536
 #: ../src/richtext/richtextborderspage.cpp:538
-#, fuzzy
 msgid "The border line style."
-msgstr "字型樣式。"
+msgstr "線條式樣邊界。"
 
 #: ../src/richtext/richtextmarginspage.cpp:268
 #: ../src/richtext/richtextmarginspage.cpp:270
@@ -6314,9 +6295,8 @@ msgstr "下內邊距。"
 #: ../src/richtext/richtextsizepage.cpp:641
 #: ../src/richtext/richtextsizepage.cpp:653
 #: ../src/richtext/richtextsizepage.cpp:655
-#, fuzzy
 msgid "The bottom position."
-msgstr "跳格位置。"
+msgstr "選項位置。"
 
 #: ../src/richtext/richtextliststylepage.cpp:254
 #: ../src/richtext/richtextliststylepage.cpp:256
@@ -6419,9 +6399,8 @@ msgstr "字型大小以點計。"
 
 #: ../src/richtext/richtextfontpage.cpp:190
 #: ../src/richtext/richtextfontpage.cpp:192
-#, fuzzy
 msgid "The font size units, points or pixels."
-msgstr "字型大小以點計。"
+msgstr "字型大小以點或像素計。"
 
 #: ../src/generic/fontdlgg.cpp:386 ../src/generic/fontdlgg.cpp:388
 msgid "The font style."
@@ -6457,9 +6436,8 @@ msgstr "左內邊距。"
 #: ../src/richtext/richtextsizepage.cpp:536
 #: ../src/richtext/richtextsizepage.cpp:548
 #: ../src/richtext/richtextsizepage.cpp:550
-#, fuzzy
 msgid "The left position."
-msgstr "跳格位置。"
+msgstr "左側位置。"
 
 #: ../src/richtext/richtextindentspage.cpp:288
 #: ../src/richtext/richtextindentspage.cpp:290
@@ -6494,9 +6472,8 @@ msgstr "物件最大寬度。"
 
 #: ../src/richtext/richtextsizepage.cpp:420
 #: ../src/richtext/richtextsizepage.cpp:422
-#, fuzzy
 msgid "The object minimum height."
-msgstr "物件最小高度。"
+msgstr "物件的最小高度。"
 
 #: ../src/richtext/richtextsizepage.cpp:393
 #: ../src/richtext/richtextsizepage.cpp:395
@@ -6567,9 +6544,8 @@ msgstr "右內邊距。"
 #: ../src/richtext/richtextsizepage.cpp:606
 #: ../src/richtext/richtextsizepage.cpp:618
 #: ../src/richtext/richtextsizepage.cpp:620
-#, fuzzy
 msgid "The right position."
-msgstr "跳格位置。"
+msgstr "右側位置。"
 
 #: ../src/richtext/richtextindentspage.cpp:267
 #: ../src/richtext/richtextliststylepage.cpp:439
@@ -6630,9 +6606,8 @@ msgstr "上內邊距。"
 #: ../src/richtext/richtextsizepage.cpp:571
 #: ../src/richtext/richtextsizepage.cpp:583
 #: ../src/richtext/richtextsizepage.cpp:585
-#, fuzzy
 msgid "The top position."
-msgstr "跳格位置。"
+msgstr "頂端位置。"
 
 #: ../src/common/cmdline.cpp:1061
 #, c-format
@@ -6955,7 +6930,7 @@ msgstr "選項 '%s' 後有預期外的字元。"
 #: ../src/unix/fswatcher_inotify.cpp:262
 #, c-format
 msgid "Unexpected event for \"%s\": no matching watch descriptor."
-msgstr ""
+msgstr "在 “%s” 發生非預期事件: 沒有符合的監控描述"
 
 #: ../src/common/cmdline.cpp:1024
 #, c-format
@@ -7034,9 +7009,8 @@ msgstr "下內邊距單位。"
 
 #: ../src/richtext/richtextsizepage.cpp:664
 #: ../src/richtext/richtextsizepage.cpp:666
-#, fuzzy
 msgid "Units for the bottom position."
-msgstr "下內邊距單位。"
+msgstr "下方邊距單位。"
 
 #: ../src/richtext/richtextborderspage.cpp:256
 #: ../src/richtext/richtextborderspage.cpp:258
@@ -7060,9 +7034,8 @@ msgstr "左內邊距單位。"
 
 #: ../src/richtext/richtextsizepage.cpp:559
 #: ../src/richtext/richtextsizepage.cpp:561
-#, fuzzy
 msgid "Units for the left position."
-msgstr "左內邊距單位。"
+msgstr "左邊距單位。"
 
 #: ../src/richtext/richtextsizepage.cpp:485
 #: ../src/richtext/richtextsizepage.cpp:487
@@ -7116,9 +7089,8 @@ msgstr "右內邊距單位。"
 
 #: ../src/richtext/richtextsizepage.cpp:629
 #: ../src/richtext/richtextsizepage.cpp:631
-#, fuzzy
 msgid "Units for the right position."
-msgstr "右內邊距單位。"
+msgstr "右邊距單位。"
 
 #: ../src/richtext/richtextborderspage.cpp:324
 #: ../src/richtext/richtextborderspage.cpp:326
@@ -7142,9 +7114,8 @@ msgstr "上內邊距單位。"
 
 #: ../src/richtext/richtextsizepage.cpp:594
 #: ../src/richtext/richtextsizepage.cpp:596
-#, fuzzy
 msgid "Units for the top position."
-msgstr "上內邊距單位。"
+msgstr "頂邊距單位。"
 
 #: ../src/generic/progdlgg.cpp:382 ../src/generic/progdlgg.cpp:655
 msgid "Unknown"
@@ -7373,14 +7344,12 @@ msgid "Windows 7"
 msgstr "Windows 7"
 
 #: ../src/msw/utils.cpp:1308
-#, fuzzy
 msgid "Windows 8"
-msgstr "Windows 98"
+msgstr "Windows 8"
 
 #: ../src/msw/utils.cpp:1314
-#, fuzzy
 msgid "Windows 8.1"
-msgstr "Windows 98"
+msgstr "Windows 8.1"
 
 #: ../src/msw/utils.cpp:1234
 msgid "Windows 95"
@@ -7445,9 +7414,8 @@ msgid "Windows Japanese (CP 932) or Shift-JIS"
 msgstr "Windows 日語 (CP 932) 或 Shift-JIS"
 
 #: ../src/common/fmapbase.cpp:180
-#, fuzzy
 msgid "Windows Johab (CP 1361)"
-msgstr "Windows 阿拉伯語 (CP 1256)"
+msgstr "Windows 阿拉伯文 (CP 1256)"
 
 #: ../src/common/fmapbase.cpp:169
 msgid "Windows Korean (CP 949)"
@@ -7475,14 +7443,12 @@ msgid "Windows Server 2008 R2"
 msgstr "Windows Server 2008 R2"
 
 #: ../src/msw/utils.cpp:1307
-#, fuzzy
 msgid "Windows Server 2012"
-msgstr "Windows Server 2003"
+msgstr "Windows Server 2012"
 
 #: ../src/msw/utils.cpp:1313
-#, fuzzy
 msgid "Windows Server 2012 R2"
-msgstr "Windows Server 2008 R2"
+msgstr "Windows Server 2012 R2"
 
 #: ../src/common/fmapbase.cpp:166
 msgid "Windows Thai (CP 874)"
@@ -7493,9 +7459,8 @@ msgid "Windows Turkish (CP 1254)"
 msgstr "Windows 土耳其語 (CP 1254)"
 
 #: ../src/common/fmapbase.cpp:179
-#, fuzzy
 msgid "Windows Vietnamese (CP 1258)"
-msgstr "Windows 希臘語 (CP 1253)"
+msgstr "Windows 希臘文 (CP 1253)"
 
 #: ../src/msw/utils.cpp:1296
 msgid "Windows Vista"
@@ -8139,7 +8104,7 @@ msgstr "程序上下文描述"
 #: ../src/richtext/richtextborderspage.cpp:490
 #: ../src/richtext/richtextborderspage.cpp:524
 msgid "pt"
-msgstr ""
+msgstr "pt"
 
 #: ../src/richtext/richtextfontpage.cpp:187
 #: ../src/richtext/richtextborderspage.cpp:251
