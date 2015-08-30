@@ -163,8 +163,10 @@ Mount::MOVE_RESULT ScopeEQMac::Guide(GUIDE_DIRECTION direction, int duration)
         case WEST:
             EWTime = (double) duration / -1000.0;
             break;
+        case NONE:
+            break;
     }
-    OSErr err = E6AESendRoutine(EWTime, NSTime,SCOPE_EQMAC);
+    OSErr err = E6AESendRoutine(EWTime, NSTime, SCOPE_EQMAC);
     wxString prefix = "EQMAC";
     if (E6ReturnCode == -1) {
         pFrame->Alert(prefix + _(" responded it's not connected to a mount"));

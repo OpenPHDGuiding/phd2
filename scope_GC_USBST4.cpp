@@ -56,7 +56,7 @@ static kern_return_t createSerialIterator(io_iterator_t *serialIterator)
     kern_return_t   kernResult;
     mach_port_t     masterPort;
     CFMutableDictionaryRef  classesToMatch;
-    if ((kernResult=IOMasterPort(NULL, &masterPort)) != KERN_SUCCESS)
+    if ((kernResult = IOMasterPort(0, &masterPort)) != KERN_SUCCESS)
     {
         printf("IOMasterPort returned %d\n", kernResult);
         return kernResult;
@@ -113,6 +113,8 @@ Mount::MOVE_RESULT ScopeGCUSBST4::Guide(GUIDE_DIRECTION direction, int duration)
         case WEST:
             sprintf(buf,":Mg3%4d#",duration);
             break;
+        case NONE:
+            return MOVE_OK;
     }
 //  wxMessageBox(wxString::Format("Sending -%s-",buf));
     int num_bytes = write(portFID,buf,strlen(buf));
@@ -141,10 +143,12 @@ bool ScopeGCUSBST4::Connect()
         return false;
     }
     bool found_device = false;
-    while (theObject = IOIteratorNext(theSerialIterator)) {  // Find the device   should be usbmodem1*
-
-        strcpy(tempstr,  getRegistryString(theObject, kIOTTYDeviceKey));
-        if (strstr(tempstr,(char *) "usbmodem")) {
+    while ((theObject = IOIteratorNext(theSerialIterator)) != 0)
+    {
+        // Find the device   should be usbmodem1*
+        strcpy(tempstr, getRegistryString(theObject, kIOTTYDeviceKey));
+        if (strstr(tempstr, "usbmodem"))
+        {
             strcpy(tempstr, getRegistryString(theObject, kIODialinDeviceKey));
             found_device = true;
             break;
