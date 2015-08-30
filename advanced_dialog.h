@@ -52,7 +52,7 @@ enum TAB_PAGES {
     AD_UNASSIGNED_PAGE
 };
 // Segmented by the tab page location seen in the UI
-enum BRAIN_CTRL_IDS
+enum BRAIN_CTRL_IDS : unsigned int
 {
     AD_UNASSIGNED,
     AD_cbResetConfig,
@@ -109,13 +109,13 @@ struct BrainCtrlInfo
     wxObject* panelCtrl;
     bool isPositioned;           // debug only
 
-    BrainCtrlInfo::BrainCtrlInfo()
+    BrainCtrlInfo()
     {
         panelCtrl = NULL;
         ctrlId = AD_UNASSIGNED;
         isPositioned = false;
     }
-    BrainCtrlInfo::BrainCtrlInfo(BRAIN_CTRL_IDS id, wxObject* ctrl)
+    BrainCtrlInfo(BRAIN_CTRL_IDS id, wxObject* ctrl)
     {
         panelCtrl = ctrl;
         ctrlId = id;
