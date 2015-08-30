@@ -96,7 +96,7 @@ inline void DeflectionLogger::Log(const PHD_Point&) { }
 #endif // CAPTURE_DEFLECTIONS
 
 static const int DefaultOverlayMode  = OVERLAY_NONE;
-static const bool DefaultScaleImage  = false;
+static const bool DefaultScaleImage  = true;
 
 BEGIN_EVENT_TABLE(Guider, wxWindow)
     EVT_PAINT(Guider::OnPaint)
@@ -109,6 +109,7 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 {
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
+    m_scaleImage = true;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = PAUSE_NONE;
     m_starFoundTimestamp = 0;
@@ -157,9 +158,6 @@ void Guider::LoadProfileSettings(void)
 {
     bool enableFastRecenter = pConfig->Profile.GetBoolean("/guider/FastRecenter", true);
     EnableFastRecenter(enableFastRecenter);
-
-    bool scaleImage = pConfig->Profile.GetBoolean("/guider/ScaleImage", DefaultScaleImage);
-    SetScaleImage(scaleImage);
 }
 
 PauseType Guider::SetPaused(PauseType pause)
@@ -341,8 +339,6 @@ bool Guider::SetScaleImage(bool newScaleValue)
         POSSIBLY_UNUSED(Msg);
         bError = true;
     }
-
-    pConfig->Profile.SetBoolean("/guider/ScaleImage", m_scaleImage);
 
     return bError;
 }
@@ -1379,36 +1375,83 @@ wxString Guider::GetSettingsSummary()
     return wxEmptyString;
 }
 
-ConfigDialogPane *Guider::GetConfigDialogPane(wxWindow *pParent)
+Guider::GuiderConfigDialogPane *Guider::GetConfigDialogPane(wxWindow *pParent)
 {
     return new GuiderConfigDialogPane(pParent, this);
 }
 
 Guider::GuiderConfigDialogPane::GuiderConfigDialogPane(wxWindow *pParent, Guider *pGuider)
-    : ConfigDialogPane(_("Guider Settings"), pParent)
+: ConfigDialogPane(_("Guider Settings"), pParent)
 {
     m_pGuider = pGuider;
-    m_pScaleImage = new wxCheckBox(pParent, wxID_ANY,_("Always Scale Images"));
-    DoAdd(m_pScaleImage, _("Always scale images to fill window"));
-
-    m_pEnableFastRecenter = new wxCheckBox(pParent, wxID_ANY, _("Fast recenter after calibration or dither"));
-    DoAdd(m_pEnableFastRecenter, _("Speed up calibration and dithering by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration or dither."));
 }
 
-Guider::GuiderConfigDialogPane::~GuiderConfigDialogPane(void)
+void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
+    wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
+
+    wxStaticBoxSizer *pStarTrack = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Guide star tracking"));
+    wxStaticBoxSizer *pCalib = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Calibration"));
+    wxStaticBoxSizer *pShared = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Shared Parameters"));
+    wxFlexGridSizer *pCalibSizer = new wxFlexGridSizer(3, 2, 10, 10);
+    wxFlexGridSizer *pSharedSizer = new wxFlexGridSizer(2, 2, 10, 10);
+
+    pStarTrack->Add(GetSizerCtrl(CtrlMap, AD_szStarTracking), def_flags);
+    pStarTrack->Layout();
+
+    pCalibSizer->Add(GetSizerCtrl(CtrlMap, AD_szFocalLength));
+    pCalibSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalibrationDuration), wxSizerFlags(0).Border(wxLEFT, 90));
+    pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbAutoRestoreCal));
+    pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbAssumeOrthogonal), wxSizerFlags(0).Border(wxLEFT, 90));
+    pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearCalibration));
+    pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseDecComp), wxSizerFlags(0).Border(wxLEFT, 90));
+    pCalib->Add(pCalibSizer, def_flags);
+    pCalib->Layout();
+
+    // Minor ordering to have "no-mount" condition look ok
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbReverseDecOnFlip), wxSizerFlags(0).Border(wxLEFT, 35));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableGuiding));
+    // Might not have slew-checking option
+    wxWindow* ctrl = GetSingleCtrl(CtrlMap, AD_cbSlewDetection);
+    if (ctrl != NULL)
+        pSharedSizer->Add(ctrl, wxSizerFlags(0).Border(wxLEFT, 35));
+
+    pShared->Add(pSharedSizer, def_flags);
+    pShared->Layout();
+
+    this->Add(pStarTrack, def_flags);
+    this->Add(pCalib, def_flags);
+    this->Add(pShared, def_flags);
+    Fit(m_pParent);
+
 }
 
-void Guider::GuiderConfigDialogPane::LoadValues(void)
+GuiderConfigDialogCtrlSet *Guider::GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    m_pScaleImage->SetValue(m_pGuider->GetScaleImage());
+    return new GuiderConfigDialogCtrlSet(pParent, pGuider, pAdvancedDialog, CtrlMap);
+}
+
+GuiderConfigDialogCtrlSet::GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
+ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
+{
+    assert(pGuider);
+
+    m_pGuider = pGuider;
+
+    m_pEnableFastRecenter = new wxCheckBox(GetParentWindow(AD_cbFastRecenter), wxID_ANY, _("Fast recenter after calibration or dither"));
+    AddCtrl(CtrlMap, AD_cbFastRecenter, m_pEnableFastRecenter, _("Speed up calibration and dithering by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration or dither."));
+}
+
+void GuiderConfigDialogCtrlSet::LoadValues()
+{
     m_pEnableFastRecenter->SetValue(m_pGuider->IsFastRecenterEnabled());
 }
 
-void Guider::GuiderConfigDialogPane::UnloadValues(void)
+void GuiderConfigDialogCtrlSet::UnloadValues()
 {
-    m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
     m_pGuider->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
+
 }
 
 EXPOSED_STATE Guider::GetExposedState(void)

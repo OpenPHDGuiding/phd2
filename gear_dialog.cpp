@@ -338,7 +338,7 @@ void GearDialog::Initialize(void)
     // fit everything with the sizers
     SetSizerAndFit(pTopLevelSizer);
 
-    UpdateAdvancedDialog();
+    UpdateAdvancedDialog(false);
 }
 
 void GearDialog::LoadGearChoices(void)
@@ -462,7 +462,7 @@ void GearDialog::EndModal(int retCode)
 
     wxDialog::EndModal(retCode);
 
-    UpdateAdvancedDialog();
+    UpdateAdvancedDialog(true);
 
     if (m_showDarksDialog)
     {
@@ -1949,7 +1949,7 @@ void GearDialog::OnProfileSave(wxCommandEvent& event)
     }
 }
 
-void GearDialog::UpdateAdvancedDialog(void)
+void GearDialog::UpdateAdvancedDialog(bool preLoad)
 {
     MyFrame *frame = static_cast<MyFrame *>(GetParent()); // global pFrame may not have initialized yet
 
@@ -1976,10 +1976,12 @@ void GearDialog::UpdateAdvancedDialog(void)
         frame->pAdvancedDialog->UpdateRotatorPage();
         m_rotatorUpdated = false;
     }
+    if (preLoad)
+        frame->pAdvancedDialog->Preload();
 }
 
 void GearDialog::OnAdvanced(wxCommandEvent& event)
 {
-    UpdateAdvancedDialog();
+    UpdateAdvancedDialog(false);
     pFrame->OnAdvanced(event);
 }
