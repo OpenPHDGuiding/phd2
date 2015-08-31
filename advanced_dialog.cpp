@@ -193,12 +193,6 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
 
 AdvancedDialog::~AdvancedDialog()
 {
-    delete m_pGlobalCtrlSet;
-    delete m_pCameraCtrlSet;
-    delete m_pGuiderCtrlSet;
-    delete m_pScopeCtrlSet;
-    delete m_pAOCtrlSet;
-    delete m_pRotatorCtrlSet;
     CleanupCtrlSets();
 }
 
