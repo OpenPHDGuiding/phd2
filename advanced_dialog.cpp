@@ -50,7 +50,7 @@ void AdvancedDialog::BuildCtrlSets()
         m_pCameraCtrlSet = NULL;
     m_pGuiderCtrlSet = m_pFrame->pGuider->GetConfigDialogCtrlSet(m_pGuiderSettingsPanel, m_pFrame->pGuider, this, m_brainCtrls);
 
-    if (pMount && pMount->IsStepGuider())
+    if (TheAO())
         m_pAOCtrlSet = (StepGuiderConfigDialogCtrlSet*)pMount->GetConfigDialogCtrlSet(m_pDevicesSettingsPanel, pMount, this, m_brainCtrls);
     else
         m_pAOCtrlSet = NULL;
@@ -61,6 +61,27 @@ void AdvancedDialog::BuildCtrlSets()
 
     // Need a scope ctrl set even if pMount is null - it exports generic controls needed by other panes
     m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, TheScope(), this, m_brainCtrls);
+}
+
+void AdvancedDialog::CleanupCtrlSets(void)
+{
+    delete m_pGlobalCtrlSet;
+    m_pGlobalCtrlSet = NULL;
+
+    delete m_pCameraCtrlSet;
+    m_pCameraCtrlSet = NULL;
+
+    delete m_pGuiderCtrlSet;
+    m_pGuiderCtrlSet = NULL;
+
+    delete m_pScopeCtrlSet;
+    m_pScopeCtrlSet = NULL;
+
+    delete m_pAOCtrlSet;
+    m_pAOCtrlSet = NULL;
+
+    delete m_pRotatorCtrlSet;
+    m_pRotatorCtrlSet = NULL;
 }
 
 AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
@@ -170,12 +191,18 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     m_rebuildPanels = false;
 }
 
+AdvancedDialog::~AdvancedDialog()
+{
+    CleanupCtrlSets();
+}
+
 // Let a client(GearDialog) ask to preload the UI elements - prevents any visible delay when the AdvancedDialog is shown for the first time
 void AdvancedDialog::Preload()
 {
     if (m_rebuildPanels)
         RebuildPanels();
 }
+
 // Internal debugging function to be sure all controls are hosted on a panel somewhere
 void AdvancedDialog::ConfirmLayouts()
 {
@@ -201,18 +228,7 @@ void AdvancedDialog::RebuildPanels(void)
 {
     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
-    delete m_pGlobalCtrlSet;
-    m_pGlobalCtrlSet = NULL;
-    delete m_pCameraCtrlSet;
-    m_pCameraCtrlSet = NULL;
-    delete m_pGuiderCtrlSet;
-    m_pGuiderCtrlSet = NULL;
-    delete m_pScopeCtrlSet;
-    m_pScopeCtrlSet = NULL;
-    delete m_pAOCtrlSet;
-    m_pAOCtrlSet = NULL;
-    delete m_pRotatorCtrlSet;
-    m_pRotatorCtrlSet = NULL;
+    CleanupCtrlSets();
 
     m_pGlobalPane->Clear(true);
     m_pCameraPane->Clear(true);
@@ -338,7 +354,7 @@ void AdvancedDialog::AddMountPage(void)
 
 void AdvancedDialog::AddAoPage(void)
 {
-    if (pMount && pMount->IsStepGuider())
+    if (TheAO())
     {
         m_pAOPane = pMount->GetConfigDialogPane(m_pDevicesSettingsPanel);
         m_pAOPane->LayoutControls(m_pDevicesSettingsPanel, m_brainCtrls);

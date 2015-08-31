@@ -153,7 +153,7 @@ class AdvancedDialog : public wxDialog
 
 public:
     AdvancedDialog(MyFrame *pFrame);
-    ~AdvancedDialog() {};
+    ~AdvancedDialog();
 
     void EndModal(int retCode);
 
@@ -182,6 +182,7 @@ private:
     void AddRotatorPage(void);
     void RebuildPanels(void);
     void BuildCtrlSets();
+    void CleanupCtrlSets();
     void ConfirmLayouts();
 };
 

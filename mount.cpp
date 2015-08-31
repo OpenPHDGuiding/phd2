@@ -162,10 +162,10 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BR
         m_pDecBox->Add(m_pYGuideAlgorithmChoice, def_flags);
         m_pDecBox->Add(m_pYGuideAlgorithmConfigDialogPane, def_flags);
 
-        wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
         wxSizerFlags smaller_flags = wxSizerFlags(0).Border(wxLEFT | wxRIGHT, 10).Border(wxTOP, 5).Expand();
         if (!stepGuider)
         {
+            wxBoxSizer *pSizer = new wxBoxSizer(wxHORIZONTAL);
             pSizer->Add(GetSingleCtrl(CtrlMap, AD_cbDecComp), wxSizerFlags(0).Border(wxTOP | wxLEFT, 5).Border(wxRIGHT, 20).Expand());
             pSizer->Add(GetSizerCtrl(CtrlMap, AD_szDecCompAmt), wxSizerFlags(0).Border(wxTOP | wxRIGHT, 5).Expand());
             m_pDecBox->Add(pSizer);
