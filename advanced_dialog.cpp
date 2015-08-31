@@ -41,18 +41,6 @@
 // a place to save id of selected panel so we can select the same panel next time the dialog is opened
 static int s_selectedPage = -1;
 
-// Quick utility function to find the non-AO mount
-Mount* AdvancedDialog::RealMount()
-{
-    Mount *mount = NULL;
-    if (pSecondaryMount)
-        mount = pSecondaryMount;
-    else if (pMount && !pMount->IsStepGuider())
-        mount = pMount;
-    return mount;
-
-}
-
 void AdvancedDialog::BuildCtrlSets()
 {
     m_pGlobalCtrlSet = m_pFrame->GetConfigDlgCtrlSet(m_pFrame, this, m_brainCtrls);
@@ -71,9 +59,8 @@ void AdvancedDialog::BuildCtrlSets()
     else
         m_pRotatorCtrlSet = NULL;
 
-    Mount* bigMount = RealMount();
     // Need a scope ctrl set even if pMount is null - it exports generic controls needed by other panes
-    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, (Scope*)bigMount, this, m_brainCtrls);
+    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, TheScope(), this, m_brainCtrls);
 }
 
 AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
@@ -327,11 +314,11 @@ void AdvancedDialog::AddCameraPage(void)
 void AdvancedDialog::AddMountPage(void)
 {
     const long ID_NOMOUNT = 99999;
-    Mount* mount = RealMount();
+    Mount *mount = TheScope();
 
     if (mount)
     {
-        wxWindow* noMsgWindow = m_pScopeSettingsPanel->FindWindow(ID_NOMOUNT);
+        wxWindow *noMsgWindow = m_pScopeSettingsPanel->FindWindow(ID_NOMOUNT);
         if (noMsgWindow)
             noMsgWindow->Destroy();
         m_pMountPane = mount->GetConfigDialogPane(m_pScopeSettingsPanel);
@@ -408,16 +395,17 @@ void AdvancedDialog::UpdateRotatorPage(void)
 
 void AdvancedDialog::LoadValues(void)
 {
-    Mount* bigMount = RealMount();
     // Late-binding rebuild of all the panels
     if (m_rebuildPanels)
         RebuildPanels();
+
     // Load all the current params
     m_pGlobalCtrlSet->LoadValues();
     if (m_pCameraCtrlSet)
         m_pCameraCtrlSet->LoadValues();
     if (m_pGuiderCtrlSet)
         m_pGuiderCtrlSet->LoadValues();
+
     // Mount sub-classes use a hybrid approach involving both CtrlSets and Panes
     if (pMount)
     {
@@ -426,26 +414,26 @@ void AdvancedDialog::LoadValues(void)
             m_pAOCtrlSet->LoadValues();
             m_pAOPane->LoadValues();
         }
-        if (bigMount)
+        if (TheScope())
         {
             m_pScopeCtrlSet->LoadValues();
             m_pMountPane->LoadValues();
         }
     }
+
     if (s_selectedPage != -1)
         m_pNotebook->ChangeSelection(s_selectedPage);
-
 }
 
 void AdvancedDialog::UnloadValues(void)
 {
-    Mount* bigMount = RealMount();
     // Unload all the current params
     m_pGlobalCtrlSet->UnloadValues();
     if (m_pCameraCtrlSet)
         m_pCameraCtrlSet->UnloadValues();
     if (m_pGuiderCtrlSet)
         m_pGuiderCtrlSet->UnloadValues();
+
     // Mount sub-classes use a hybrid approach involving both CtrlSets and Panes
     if (pMount)
     {
@@ -454,7 +442,7 @@ void AdvancedDialog::UnloadValues(void)
             m_pAOCtrlSet->UnloadValues();
             m_pAOPane->UnloadValues();
         }
-        if (bigMount)
+        if (TheScope())
         {
             m_pScopeCtrlSet->UnloadValues();
             m_pMountPane->UnloadValues();
