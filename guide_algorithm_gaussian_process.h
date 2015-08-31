@@ -50,7 +50,7 @@ private:
     void HandleTimestamps();
     void HandleMeasurements(double input);
     void HandleControls(double control_input);
-    void HandleModifiedMeasurements(double input);
+    double PredictGearError();
 
 protected:
 
@@ -84,13 +84,14 @@ public:
     GuideGaussianProcess(Mount *pMount, GuideAxis axis);
     virtual ~GuideGaussianProcess(void);
     virtual GUIDE_ALGORITHM Algorithm(void);
-    
+
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     virtual double result(double input);
+    virtual double deduceResult(void);
     virtual void reset();
     virtual wxString GetSettingsSummary();
     virtual wxString GetGuideAlgorithmClassName(void) const { return "Gaussian Process"; }
-    
+
 };
 
 #endif  // GUIDE_GAUSSIAN_PROCESS
