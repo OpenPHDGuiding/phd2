@@ -2,29 +2,29 @@
  * Copyright 2014-2015, Max Planck Society.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification, 
+ * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, 
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- *    this list of conditions and the following disclaimer in the documentation 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its contributors 
- *    may be used to endorse or promote products derived from this software without 
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -50,14 +50,15 @@
 namespace covariance_functions {
 
 typedef std::pair<Eigen::MatrixXd, Eigen::MatrixXd> MatrixPair;
-typedef std::pair< 
-            Eigen::MatrixXd, 
+typedef std::pair<
+            Eigen::MatrixXd,
             std::vector< Eigen::MatrixXd> > MatrixStdVecPair;
 
 enum paramIndices { LengthScalePIndex,
                     PeriodLengthPIndex,
                     SignalVariancePIndex,
                     LengthScaleSEIndex,
+                    SignalVarianceSEIndex,
                     TauIndex
                   };
 
@@ -126,9 +127,35 @@ public:
 };
 
 
+/* SquareExponential + Periodic*/
+class SquareExponentialPeriodic : public CovFunc {
+private:
+    Eigen::VectorXd hyperParameters;
 
+public:
+    SquareExponentialPeriodic();
+    explicit SquareExponentialPeriodic(const Eigen::VectorXd& hyperParameters);
 
+    covariance_functions::MatrixStdVecPair evaluate(
+        const Eigen::VectorXd& x1,
+        const Eigen::VectorXd& x2);
 
+    //! Method to set the hyper-parameters.
+    void setParameters(const Eigen::VectorXd& params);
+
+    //! Returns the hyper-parameters.
+    const Eigen::VectorXd& getParameters() const;
+
+    //! Returns the number of hyper-parameters.
+    int getParameterCount() const;
+
+    /**
+     * Produces a clone to be able to copy the object.
+     */
+    virtual CovFunc* clone() const {
+        return new SquareExponentialPeriodic(*this);
+    }
+};
 
 /*!
  * The function computes the combined Kernel k_p * k_se and their derivatives.
@@ -195,9 +222,40 @@ public:
   /**
    * Produces a clone to be able to copy the object.
    */
-  virtual CovFunc* clone() const { 
-    return new PeriodicSquareExponential(*this); 
+  virtual CovFunc* clone() const {
+    return new PeriodicSquareExponential(*this);
   }
+};
+
+
+/* This is a combined SE + Per + SE kernel function */
+class PeriodicSquareExponential2 : public CovFunc {
+private:
+    Eigen::VectorXd hyperParameters;
+
+public:
+    PeriodicSquareExponential2();
+    explicit PeriodicSquareExponential2(const Eigen::VectorXd& hyperParameters);
+
+    covariance_functions::MatrixStdVecPair evaluate(
+        const Eigen::VectorXd& x1,
+        const Eigen::VectorXd& x2);
+
+    //! Method to set the hyper-parameters.
+    void setParameters(const Eigen::VectorXd& params);
+
+    //! Returns the hyper-parameters.
+    const Eigen::VectorXd& getParameters() const;
+
+    //! Returns the number of hyper-parameters.
+    int getParameterCount() const;
+
+    /**
+     * Produces a clone to be able to copy the object.
+     */
+    virtual CovFunc* clone() const {
+        return new PeriodicSquareExponential2(*this);
+    }
 };
 
 /*
@@ -243,8 +301,8 @@ public:
   /**
    * Produces a clone to be able to copy the object.
    */
-  virtual CovFunc* clone() const { 
-    return new DiracDelta(*this); 
+  virtual CovFunc* clone() const {
+    return new DiracDelta(*this);
   }
 };
 }  // namespace covariance_functions

@@ -278,7 +278,7 @@ void GuideLinearRegression::HandleTimestamps()
     double time_now = parameters->timer_.Time();
     double delta_measurement_time_ms = time_now - parameters->last_timestamp_;
     parameters->last_timestamp_ = time_now;
-    parameters->get_last_point().timestamp = (parameters->last_timestamp_ - delta_measurement_time_ms / 2) / 1000;
+    parameters->get_last_point().timestamp = (time_now - delta_measurement_time_ms / 2) / 1000;
 }
 
 // adds a new measurement to the circular buffer that holds the data.
@@ -299,14 +299,14 @@ double GuideLinearRegression::PredictDriftError()
     int N = parameters->get_number_of_measurements();
 
     // initialize the different vectors needed for the GP
-    Eigen::VectorXd timestamps(N);
-    Eigen::VectorXd measurements(N);
-    Eigen::VectorXd sum_controls(N);
-    Eigen::VectorXd gear_error(N);
-    Eigen::VectorXd linear_fit(N);
+    Eigen::VectorXd timestamps(N-1);
+    Eigen::VectorXd measurements(N-1);
+    Eigen::VectorXd sum_controls(N-1);
+    Eigen::VectorXd gear_error(N-1);
+    Eigen::VectorXd linear_fit(N-1);
 
     // transfer the data from the circular buffer to the Eigen::Vectors
-    for(size_t i = 0; i < N; i++)
+    for(size_t i = 0; i < N-1; i++)
     {
         timestamps(i) = parameters->circular_buffer_parameters[i].timestamp;
         measurements(i) = parameters->circular_buffer_parameters[i].measurement;
@@ -337,7 +337,12 @@ double GuideLinearRegression::result(double input)
     HandleTimestamps();
 
     parameters->control_signal_ = parameters->control_gain_*input; // add the measured part of the controller
-    parameters->control_signal_ += PredictDriftError(); // add in the prediction
+    
+	if (parameters->min_nb_element_for_inference > 0 &&
+        parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
+    {
+		parameters->control_signal_ += PredictDriftError(); // add in the prediction
+	}
 
     parameters->add_one_point();
     HandleControls(parameters->control_signal_);
@@ -345,12 +350,16 @@ double GuideLinearRegression::result(double input)
     return parameters->control_signal_;
 }
 
-double GuideLinearRegression::deduceResult(void)
+double GuideLinearRegression::deduceResult()
 {
     parameters->control_signal_ = 0;
-    parameters->control_signal_ += PredictDriftError(); // add in the prediction
+	if (parameters->min_nb_element_for_inference > 0 &&
+        parameters->get_number_of_measurements() > parameters->min_nb_element_for_inference)
+    {
+    	parameters->control_signal_ += PredictDriftError(); // add in the prediction
+	}
 
-    parameters->add_one_point();
+    parameters->add_one_point(); // add new point here, since the applied control is important as well
     HandleControls(parameters->control_signal_);
 
     return parameters->control_signal_;

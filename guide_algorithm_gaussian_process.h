@@ -37,6 +37,15 @@
 
 #include "guide_algorithm.h"
 
+#define GP_DEBUG_MATLAB_ 1
+#define GP_DEBUG_STATUS_ 0
+
+#if GP_DEBUG_MATLAB_
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#endif
+
 class wxStopWatch;
 
 class GuideGaussianProcess : public GuideAlgorithm

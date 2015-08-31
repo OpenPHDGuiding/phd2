@@ -2,37 +2,37 @@
  * Copyright 2014-2015, Max Planck Society.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification, 
+ * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, 
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- *    this list of conditions and the following disclaimer in the documentation 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its contributors 
- *    may be used to endorse or promote products derived from this software without 
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
-/* Created by Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de> and 
+
+/* Created by Stephan Wenninger <stephan.wenninger@tuebingen.mpg.de> and
  * Edgar Klenske <edgar.klenske@tuebingen.mpg.de>
  */
- 
+
 #include <Eigen/Dense>
 #include <vector>
 #include <cstdint>
@@ -44,7 +44,7 @@
 
 namespace covariance_functions {
 MatrixStdVecPair covariance(const Eigen::VectorXd& params,
-                            const Eigen::MatrixXd& x1, 
+                            const Eigen::MatrixXd& x1,
                             const Eigen::MatrixXd& x2) {
   covariance_functions::PeriodicSquareExponential covFuncPSE(params.head(4));
   covariance_functions::DiracDelta covFuncD(params.tail(1));
@@ -59,15 +59,77 @@ MatrixStdVecPair covariance(const Eigen::VectorXd& params,
   return std::make_pair(covariance, derivative);
 }
 
+/* SquareExponentialPeriodic */
+SquareExponentialPeriodic::SquareExponentialPeriodic() :
+hyperParameters(Eigen::VectorXd::Zero(5)) { }
 
-PeriodicSquareExponential::PeriodicSquareExponential() : 
+SquareExponentialPeriodic::SquareExponentialPeriodic(const Eigen::VectorXd &hyperParameters_) :
+hyperParameters(hyperParameters_) { }
+
+MatrixStdVecPair SquareExponentialPeriodic::evaluate(
+    const Eigen::VectorXd& x,
+    const Eigen::VectorXd& y) {
+    double lsP  = exp(hyperParameters(LengthScalePIndex));
+    double plP  = exp(hyperParameters(PeriodLengthPIndex));
+    // signal variance is squared
+    double svP  = exp(2 * hyperParameters(SignalVariancePIndex));
+    double lsSE = exp(hyperParameters(LengthScaleSEIndex));
+    double svSE = exp(2 * hyperParameters(SignalVarianceSEIndex));
+
+    // Work with arrays internally, convert to matrix for return value.
+    // This is because all the operations act elementwise.
+
+    // Compute Distances
+    Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance(
+        x.transpose(),y.transpose());
+    Eigen::ArrayXXd distanceXY = squareDistanceXY.sqrt();
+
+    // Periodic Kernel
+    Eigen::ArrayXXd P1 = (M_PI * distanceXY / plP);
+    Eigen::ArrayXXd S1 = P1.sin() / lsP;
+    Eigen::ArrayXXd Q1 = S1.square();
+    Eigen::ArrayXXd K1 = (-2 * Q1).exp() * svP;
+
+    // Square Exponential Kernel
+    Eigen::ArrayXXd E2 = squareDistanceXY / pow(lsSE, 2);
+    Eigen::ArrayXXd K2 = (-0.5 * E2).exp() * svSE;
+
+    // Combined Kernel
+    Eigen::MatrixXd K = K1 + K2;
+
+    // Derivatives
+    std::vector<Eigen::MatrixXd> derivatives(5);
+
+    derivatives[0] = 4 * K1 * Q1;
+    derivatives[1] = 4 / lsP * K1 * S1 * P1.cos() * P1;
+    derivatives[2] = 2 * K1;
+    derivatives[3] = K2 * E2;
+    derivatives[4] = 2 * K2;
+
+    return std::make_pair(K, derivatives);
+}
+
+void SquareExponentialPeriodic::setParameters(const Eigen::VectorXd& params) {
+    this->hyperParameters = params;
+}
+
+const Eigen::VectorXd& SquareExponentialPeriodic::getParameters() const {
+    return this->hyperParameters;
+}
+
+int SquareExponentialPeriodic::getParameterCount() const {
+    return this->hyperParameters.rows();
+}
+
+/* PeriodicSquareExponential */
+PeriodicSquareExponential::PeriodicSquareExponential() :
     hyperParameters(Eigen::VectorXd::Zero(4)) { }
 
-PeriodicSquareExponential::PeriodicSquareExponential(const Eigen::VectorXd &hyperParameters_) : 
+PeriodicSquareExponential::PeriodicSquareExponential(const Eigen::VectorXd &hyperParameters_) :
     hyperParameters(hyperParameters_) { }
 
 MatrixStdVecPair PeriodicSquareExponential::evaluate(
-  const Eigen::VectorXd& x, 
+  const Eigen::VectorXd& x,
   const Eigen::VectorXd& y) {
   double lsP  = exp(hyperParameters(LengthScalePIndex));
   double plP  = exp(hyperParameters(PeriodLengthPIndex));
@@ -119,6 +181,77 @@ const Eigen::VectorXd& PeriodicSquareExponential::getParameters() const {
 int PeriodicSquareExponential::getParameterCount() const {
   return this->hyperParameters.rows();
 }
+
+/* PeriodicSquareExponential2 */
+PeriodicSquareExponential2::PeriodicSquareExponential2() :
+hyperParameters(Eigen::VectorXd::Zero(7)) { }
+
+PeriodicSquareExponential2::PeriodicSquareExponential2(const Eigen::VectorXd &hyperParameters_) :
+hyperParameters(hyperParameters_) { }
+
+MatrixStdVecPair PeriodicSquareExponential2::evaluate(
+    const Eigen::VectorXd& x,
+    const Eigen::VectorXd& y) {
+
+    double lsSE0 = exp(hyperParameters(0));
+    double svSE0 = exp(2 * hyperParameters(1));
+    double lsP  = exp(hyperParameters(2));
+    double plP  = exp(hyperParameters(3));
+    double svP  = exp(2 * hyperParameters(4));
+    double lsSE1 = exp(hyperParameters(5));
+    double svSE1 = exp(2 * hyperParameters(6));
+
+    // Work with arrays internally, convert to matrix for return value.
+    // This is because all the operations act elementwise.
+
+    // Compute Distances
+    Eigen::ArrayXXd squareDistanceXY = math_tools::squareDistance(
+        x.transpose(),y.transpose());
+    Eigen::ArrayXXd distanceXY = squareDistanceXY.sqrt();
+
+    // Square Exponential Kernel
+    Eigen::ArrayXXd E0 = squareDistanceXY / pow(lsSE0, 2);
+    Eigen::ArrayXXd K0 = svSE0 * (-0.5 * E0).exp();
+
+    // Periodic Kernel
+    Eigen::ArrayXXd P1 = (M_PI * distanceXY / plP);
+    Eigen::ArrayXXd S1 = P1.sin() / lsP;
+    Eigen::ArrayXXd Q1 = S1.square();
+    Eigen::ArrayXXd K1 = svP * (-2 * Q1).exp();
+
+    // Square Exponential Kernel
+    Eigen::ArrayXXd E2 = squareDistanceXY / pow(lsSE1, 2);
+    Eigen::ArrayXXd K2 = svSE1 * (-0.5 * E2).exp();
+
+    // Combined Kernel
+    Eigen::MatrixXd K = K0 + K1 + K2;
+
+    // Derivatives
+    std::vector<Eigen::MatrixXd> derivatives(7);
+
+    derivatives[0] = K0 * E0;
+    derivatives[1] = 2 * K0;
+    derivatives[2] = 4 * K1 * Q1;
+    derivatives[3] = 4 / lsP * K1 * S1 * P1.cos() * P1;
+    derivatives[4] = 2 * K1;
+    derivatives[5] = K2 * E2;
+    derivatives[6] = 2 * K2;
+
+    return std::make_pair(K, derivatives);
+}
+
+void PeriodicSquareExponential2::setParameters(const Eigen::VectorXd& params) {
+    this->hyperParameters = params;
+}
+
+const Eigen::VectorXd& PeriodicSquareExponential2::getParameters() const {
+    return this->hyperParameters;
+}
+
+int PeriodicSquareExponential2::getParameterCount() const {
+    return this->hyperParameters.rows();
+}
+
 
 DiracDelta::DiracDelta(const Eigen::VectorXd& hyperParameters) {
   this->hyperParameters = hyperParameters;
