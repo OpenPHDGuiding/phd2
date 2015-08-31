@@ -182,8 +182,8 @@ private:
     void AddAoPage(void);
     void AddRotatorPage(void);
     void RebuildPanels(void);
-    Mount* RealMount();
     void BuildCtrlSets();
+    void CleanupCtrlSets();
     void ConfirmLayouts();
 };
 

@@ -41,18 +41,6 @@
 // a place to save id of selected panel so we can select the same panel next time the dialog is opened
 static int s_selectedPage = -1;
 
-// Quick utility function to find the non-AO mount
-Mount* AdvancedDialog::RealMount()
-{
-    Mount *mount = NULL;
-    if (pSecondaryMount)
-        mount = pSecondaryMount;
-    else if (pMount && !pMount->IsStepGuider())
-        mount = pMount;
-    return mount;
-
-}
-
 void AdvancedDialog::BuildCtrlSets()
 {
     m_pGlobalCtrlSet = m_pFrame->GetConfigDlgCtrlSet(m_pFrame, this, m_brainCtrls);
@@ -62,7 +50,7 @@ void AdvancedDialog::BuildCtrlSets()
         m_pCameraCtrlSet = NULL;
     m_pGuiderCtrlSet = m_pFrame->pGuider->GetConfigDialogCtrlSet(m_pGuiderSettingsPanel, m_pFrame->pGuider, this, m_brainCtrls);
 
-    if (pMount && pMount->IsStepGuider())
+    if (TheAO())
         m_pAOCtrlSet = (StepGuiderConfigDialogCtrlSet*)pMount->GetConfigDialogCtrlSet(m_pDevicesSettingsPanel, pMount, this, m_brainCtrls);
     else
         m_pAOCtrlSet = NULL;
@@ -71,9 +59,29 @@ void AdvancedDialog::BuildCtrlSets()
     else
         m_pRotatorCtrlSet = NULL;
 
-    Mount* bigMount = RealMount();
     // Need a scope ctrl set even if pMount is null - it exports generic controls needed by other panes
-    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, (Scope*)bigMount, this, m_brainCtrls);
+    m_pScopeCtrlSet = new ScopeConfigDialogCtrlSet(m_pGuiderSettingsPanel, TheScope(), this, m_brainCtrls);
+}
+
+void AdvancedDialog::CleanupCtrlSets(void)
+{
+    delete m_pGlobalCtrlSet;
+    m_pGlobalCtrlSet = NULL;
+
+    delete m_pCameraCtrlSet;
+    m_pCameraCtrlSet = NULL;
+
+    delete m_pGuiderCtrlSet;
+    m_pGuiderCtrlSet = NULL;
+
+    delete m_pScopeCtrlSet;
+    m_pScopeCtrlSet = NULL;
+
+    delete m_pAOCtrlSet;
+    m_pAOCtrlSet = NULL;
+
+    delete m_pRotatorCtrlSet;
+    m_pRotatorCtrlSet = NULL;
 }
 
 AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
@@ -191,6 +199,7 @@ AdvancedDialog::~AdvancedDialog()
     delete m_pScopeCtrlSet;
     delete m_pAOCtrlSet;
     delete m_pRotatorCtrlSet;
+    CleanupCtrlSets();
 }
 
 // Let a client(GearDialog) ask to preload the UI elements - prevents any visible delay when the AdvancedDialog is shown for the first time
@@ -199,6 +208,7 @@ void AdvancedDialog::Preload()
     if (m_rebuildPanels)
         RebuildPanels();
 }
+
 // Internal debugging function to be sure all controls are hosted on a panel somewhere
 void AdvancedDialog::ConfirmLayouts()
 {
@@ -224,18 +234,7 @@ void AdvancedDialog::RebuildPanels(void)
 {
     wxSizerFlags sizer_flags = wxSizerFlags(0).Align(wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL).Border(wxALL,2).Expand();
 
-    delete m_pGlobalCtrlSet;
-    m_pGlobalCtrlSet = NULL;
-    delete m_pCameraCtrlSet;
-    m_pCameraCtrlSet = NULL;
-    delete m_pGuiderCtrlSet;
-    m_pGuiderCtrlSet = NULL;
-    delete m_pScopeCtrlSet;
-    m_pScopeCtrlSet = NULL;
-    delete m_pAOCtrlSet;
-    m_pAOCtrlSet = NULL;
-    delete m_pRotatorCtrlSet;
-    m_pRotatorCtrlSet = NULL;
+    CleanupCtrlSets();
 
     m_pGlobalPane->Clear(true);
     m_pCameraPane->Clear(true);
@@ -337,11 +336,11 @@ void AdvancedDialog::AddCameraPage(void)
 void AdvancedDialog::AddMountPage(void)
 {
     const long ID_NOMOUNT = 99999;
-    Mount* mount = RealMount();
+    Mount *mount = TheScope();
 
     if (mount)
     {
-        wxWindow* noMsgWindow = m_pScopeSettingsPanel->FindWindow(ID_NOMOUNT);
+        wxWindow *noMsgWindow = m_pScopeSettingsPanel->FindWindow(ID_NOMOUNT);
         if (noMsgWindow)
             noMsgWindow->Destroy();
         m_pMountPane = mount->GetConfigDialogPane(m_pScopeSettingsPanel);
@@ -361,7 +360,7 @@ void AdvancedDialog::AddMountPage(void)
 
 void AdvancedDialog::AddAoPage(void)
 {
-    if (pMount && pMount->IsStepGuider())
+    if (TheAO())
     {
         m_pAOPane = pMount->GetConfigDialogPane(m_pDevicesSettingsPanel);
         m_pAOPane->LayoutControls(m_pDevicesSettingsPanel, m_brainCtrls);
@@ -418,60 +417,55 @@ void AdvancedDialog::UpdateRotatorPage(void)
 
 void AdvancedDialog::LoadValues(void)
 {
-    Mount* bigMount = RealMount();
     // Late-binding rebuild of all the panels
     if (m_rebuildPanels)
         RebuildPanels();
+
     // Load all the current params
     m_pGlobalCtrlSet->LoadValues();
     if (m_pCameraCtrlSet)
         m_pCameraCtrlSet->LoadValues();
     if (m_pGuiderCtrlSet)
         m_pGuiderCtrlSet->LoadValues();
+
     // Mount sub-classes use a hybrid approach involving both CtrlSets and Panes
-    if (pMount)
+    if (TheAO())
     {
-        if (pMount->IsStepGuider())
-        {
-            m_pAOCtrlSet->LoadValues();
-            m_pAOPane->LoadValues();
-        }
-        if (bigMount)
-        {
-            m_pScopeCtrlSet->LoadValues();
-            m_pMountPane->LoadValues();
-        }
+        m_pAOCtrlSet->LoadValues();
+        m_pAOPane->LoadValues();
     }
+    if (TheScope())
+    {
+        m_pScopeCtrlSet->LoadValues();
+        m_pMountPane->LoadValues();
+    }
+
     if (s_selectedPage != -1)
         m_pNotebook->ChangeSelection(s_selectedPage);
-
 }
 
 void AdvancedDialog::UnloadValues(void)
 {
-    Mount* bigMount = RealMount();
     // Unload all the current params
     m_pGlobalCtrlSet->UnloadValues();
     if (m_pCameraCtrlSet)
         m_pCameraCtrlSet->UnloadValues();
     if (m_pGuiderCtrlSet)
         m_pGuiderCtrlSet->UnloadValues();
-    // Mount sub-classes use a hybrid approach involving both CtrlSets and Panes
-    if (pMount)
-    {
-        if (pMount->IsStepGuider())
-        {
-            m_pAOCtrlSet->UnloadValues();
-            m_pAOPane->UnloadValues();
-        }
-        if (bigMount)
-        {
-            m_pScopeCtrlSet->UnloadValues();
-            m_pMountPane->UnloadValues();
-        }
-    }
 
+    // Mount sub-classes use a hybrid approach involving both CtrlSets and Panes
+    if (TheAO())
+    {
+        m_pAOCtrlSet->UnloadValues();
+        m_pAOPane->UnloadValues();
+    }
+    if (TheScope())
+    {
+        m_pScopeCtrlSet->UnloadValues();
+        m_pMountPane->UnloadValues();
+    }
 }
+
 // Any un-do ops need to be handled at the ConfigDialogPane level
 void AdvancedDialog::Undo(void)
 {
