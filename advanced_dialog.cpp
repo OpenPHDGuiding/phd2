@@ -407,18 +407,15 @@ void AdvancedDialog::LoadValues(void)
         m_pGuiderCtrlSet->LoadValues();
 
     // Mount sub-classes use a hybrid approach involving both CtrlSets and Panes
-    if (pMount)
+    if (TheAO())
     {
-        if (pMount->IsStepGuider())
-        {
-            m_pAOCtrlSet->LoadValues();
-            m_pAOPane->LoadValues();
-        }
-        if (TheScope())
-        {
-            m_pScopeCtrlSet->LoadValues();
-            m_pMountPane->LoadValues();
-        }
+        m_pAOCtrlSet->LoadValues();
+        m_pAOPane->LoadValues();
+    }
+    if (TheScope())
+    {
+        m_pScopeCtrlSet->LoadValues();
+        m_pMountPane->LoadValues();
     }
 
     if (s_selectedPage != -1)
@@ -435,21 +432,18 @@ void AdvancedDialog::UnloadValues(void)
         m_pGuiderCtrlSet->UnloadValues();
 
     // Mount sub-classes use a hybrid approach involving both CtrlSets and Panes
-    if (pMount)
+    if (TheAO())
     {
-        if (pMount->IsStepGuider())
-        {
-            m_pAOCtrlSet->UnloadValues();
-            m_pAOPane->UnloadValues();
-        }
-        if (TheScope())
-        {
-            m_pScopeCtrlSet->UnloadValues();
-            m_pMountPane->UnloadValues();
-        }
+        m_pAOCtrlSet->UnloadValues();
+        m_pAOPane->UnloadValues();
     }
-
+    if (TheScope())
+    {
+        m_pScopeCtrlSet->UnloadValues();
+        m_pMountPane->UnloadValues();
+    }
 }
+
 // Any un-do ops need to be handled at the ConfigDialogPane level
 void AdvancedDialog::Undo(void)
 {
