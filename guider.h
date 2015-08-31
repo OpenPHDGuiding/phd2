@@ -134,6 +134,7 @@ class GuiderConfigDialogCtrlSet : public ConfigDialogCtrlSet
 {
     Guider *m_pGuider;
     wxCheckBox *m_pEnableFastRecenter;
+    wxCheckBox *m_pScaleImage;
 
 public:
     GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);

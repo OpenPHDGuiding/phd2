@@ -109,7 +109,6 @@ Guider::Guider(wxWindow *parent, int xSize, int ySize) :
 {
     m_state = STATE_UNINITIALIZED;
     m_scaleFactor = 1.0;
-    m_scaleImage = true;
     m_displayedImage = new wxImage(XWinSize,YWinSize,true);
     m_paused = PAUSE_NONE;
     m_starFoundTimestamp = 0;
@@ -158,6 +157,9 @@ void Guider::LoadProfileSettings(void)
 {
     bool enableFastRecenter = pConfig->Profile.GetBoolean("/guider/FastRecenter", true);
     EnableFastRecenter(enableFastRecenter);
+
+    bool scaleImage = pConfig->Profile.GetBoolean("/guider/ScaleImage", DefaultScaleImage);
+    SetScaleImage(scaleImage);
 }
 
 PauseType Guider::SetPaused(PauseType pause)
@@ -340,6 +342,7 @@ bool Guider::SetScaleImage(bool newScaleValue)
         bError = true;
     }
 
+    pConfig->Profile.SetBoolean("/guider/ScaleImage", m_scaleImage);
     return bError;
 }
 
@@ -1409,9 +1412,10 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
     pCalib->Layout();
 
     // Minor ordering to have "no-mount" condition look ok
-    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter));
-    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbReverseDecOnFlip), wxSizerFlags(0).Border(wxLEFT, 35));
-    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableGuiding));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbScaleImages));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 35));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbReverseDecOnFlip));
+    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableGuiding), wxSizerFlags(0).Border(wxLEFT, 35));
     // Might not have slew-checking option
     wxWindow* ctrl = GetSingleCtrl(CtrlMap, AD_cbSlewDetection);
     if (ctrl != NULL)
@@ -1439,6 +1443,9 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 
     m_pGuider = pGuider;
 
+    m_pScaleImage = new wxCheckBox(GetParentWindow(AD_cbScaleImages), wxID_ANY, _("Always Scale Images"));
+    AddCtrl(CtrlMap, AD_cbScaleImages, m_pScaleImage, _("Always scale images to fill window"));
+
     m_pEnableFastRecenter = new wxCheckBox(GetParentWindow(AD_cbFastRecenter), wxID_ANY, _("Fast recenter after calibration or dither"));
     AddCtrl(CtrlMap, AD_cbFastRecenter, m_pEnableFastRecenter, _("Speed up calibration and dithering by using larger guide pulses to return the star to the center position. Un-check to use the old, slower method of recentering after calibration or dither."));
 }
@@ -1446,12 +1453,13 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 void GuiderConfigDialogCtrlSet::LoadValues()
 {
     m_pEnableFastRecenter->SetValue(m_pGuider->IsFastRecenterEnabled());
+    m_pScaleImage->SetValue(m_pGuider->GetScaleImage());
 }
 
 void GuiderConfigDialogCtrlSet::UnloadValues()
 {
     m_pGuider->EnableFastRecenter(m_pEnableFastRecenter->GetValue());
-
+    m_pGuider->SetScaleImage(m_pScaleImage->GetValue());
 }
 
 EXPOSED_STATE Guider::GetExposedState(void)

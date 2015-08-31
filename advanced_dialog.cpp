@@ -183,6 +183,16 @@ AdvancedDialog::AdvancedDialog(MyFrame *pFrame) :
     m_rebuildPanels = false;
 }
 
+AdvancedDialog::~AdvancedDialog()
+{
+    delete m_pGlobalCtrlSet;
+    delete m_pCameraCtrlSet;
+    delete m_pGuiderCtrlSet;
+    delete m_pScopeCtrlSet;
+    delete m_pAOCtrlSet;
+    delete m_pRotatorCtrlSet;
+}
+
 // Let a client(GearDialog) ask to preload the UI elements - prevents any visible delay when the AdvancedDialog is shown for the first time
 void AdvancedDialog::Preload()
 {

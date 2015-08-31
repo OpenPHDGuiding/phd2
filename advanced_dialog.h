@@ -73,6 +73,7 @@ enum BRAIN_CTRL_IDS : unsigned int
     AD_szDelay,
     AD_szPort,
     AD_CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
+    AD_cbScaleImages,
     AD_szFocalLength,
     AD_cbAutoRestoreCal,
     AD_cbFastRecenter,
@@ -153,7 +154,7 @@ class AdvancedDialog : public wxDialog
 
 public:
     AdvancedDialog(MyFrame *pFrame);
-    ~AdvancedDialog() {};
+    ~AdvancedDialog();
 
     void EndModal(int retCode);
 
