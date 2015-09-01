@@ -577,9 +577,9 @@ inline static void swap(unsigned short *&a, unsigned short *&b)
     b = tmp;
 }
 
-static bool ClearPixels(HANDLE sxHandle, USHORT flags)
+static bool ClearPixels(sxccd_handle_t sxHandle, unsigned short flags)
 {
-    LONG ret = sxClearPixels(sxHandle, flags, 0);
+    int ret = sxClearPixels(sxHandle, flags, 0);
     if (ret == 0)
     {
         Debug.Write("sxClearPixels failed!\n");
@@ -588,9 +588,9 @@ static bool ClearPixels(HANDLE sxHandle, USHORT flags)
     return true;
 }
 
-static bool LatchPixels(HANDLE sxHandle, USHORT flags, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height)
+static bool LatchPixels(sxccd_handle_t sxHandle, unsigned short flags, unsigned short xoffset, unsigned short yoffset, unsigned short width, unsigned short height)
 {
-    LONG ret = sxLatchPixels(sxHandle, flags, 0, xoffset, yoffset, width, height, 1, 1);
+    int ret = sxLatchPixels(sxHandle, flags, 0, xoffset, yoffset, width, height, 1, 1);
     if (ret == 0)
     {
         Debug.Write("sxLatchPixels failed!\n");
@@ -599,9 +599,9 @@ static bool LatchPixels(HANDLE sxHandle, USHORT flags, USHORT xoffset, USHORT yo
     return true;
 }
 
-static bool ExposePixels(HANDLE sxHandle, USHORT flags, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height, ULONG msec)
+static bool ExposePixels(sxccd_handle_t sxHandle, unsigned short flags, unsigned short xoffset, unsigned short yoffset, unsigned short width, unsigned short height, unsigned int msec)
 {
-    LONG ret = sxExposePixels(sxHandle, flags, 0, xoffset, yoffset, width, height, 1, 1, msec);
+    int ret = sxExposePixels(sxHandle, flags, 0, xoffset, yoffset, width, height, 1, 1, msec);
     if (ret == 0)
     {
         Debug.Write("sxExposePixels failed!\n");
@@ -610,14 +610,14 @@ static bool ExposePixels(HANDLE sxHandle, USHORT flags, USHORT xoffset, USHORT y
     return true;
 }
 
-static bool ReadPixels(HANDLE sxHandle, USHORT *pixels, ULONG count)
+static bool ReadPixels(sxccd_handle_t sxHandle, unsigned short *pixels, unsigned int count)
 {
-    LONG ret;
+    int ret;
 
 #if defined(__WINDOWS__)
     ret = sxReadPixels(sxHandle, pixels, count);
 #else
-    ret = sxReadPixels(sxHandle, (UInt8 *) pixels, count, sizeof(unsigned short))
+    ret = sxReadPixels(sxHandle, (UInt8 *) pixels, count, sizeof(unsigned short));
 #endif
 
     if (ret != 1)
