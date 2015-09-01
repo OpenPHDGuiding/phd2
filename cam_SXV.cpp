@@ -37,11 +37,11 @@
 
 #if defined (SXV)
 
-#include "time.h"
+#include "cam_SXV.h"
 #include "image_math.h"
+
 #include <wx/choicdlg.h>
 
-#include "cam_SXV.h"
 extern Camera_SXVClass Camera_SXV;
 
 enum {
@@ -570,17 +570,62 @@ static bool InitImgProgressive(usImage& img, unsigned int xofs, unsigned int yof
     return false;
 }
 
-#if defined (__WINDOWS__)
-# define ReadPixels(hCam, RawData, NPixelsToRead) sxReadPixels((hCam), (RawData), (NPixelsToRead))
-#else
-# define ReadPixels(hCam, RawData, NPixelsToRead) sxReadPixels((hCam), (UInt8 *)(RawData), (NPixelsToRead), sizeof(unsigned short))
-#endif
-
 inline static void swap(unsigned short *&a, unsigned short *&b)
 {
     unsigned short *tmp = a;
     a = b;
     b = tmp;
+}
+
+static bool ClearPixels(HANDLE sxHandle, USHORT flags)
+{
+    LONG ret = sxClearPixels(sxHandle, flags, 0);
+    if (ret == 0)
+    {
+        Debug.Write("sxClearPixels failed!\n");
+        return false;
+    }
+    return true;
+}
+
+static bool LatchPixels(HANDLE sxHandle, USHORT flags, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height)
+{
+    LONG ret = sxLatchPixels(sxHandle, flags, 0, xoffset, yoffset, width, height, 1, 1);
+    if (ret == 0)
+    {
+        Debug.Write("sxLatchPixels failed!\n");
+        return false;
+    }
+    return true;
+}
+
+static bool ExposePixels(HANDLE sxHandle, USHORT flags, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height, ULONG msec)
+{
+    LONG ret = sxExposePixels(sxHandle, flags, 0, xoffset, yoffset, width, height, 1, 1, msec);
+    if (ret == 0)
+    {
+        Debug.Write("sxExposePixels failed!\n");
+        return false;
+    }
+    return true;
+}
+
+static bool ReadPixels(HANDLE sxHandle, USHORT *pixels, ULONG count)
+{
+    LONG ret;
+
+#if defined(__WINDOWS__)
+    ret = sxReadPixels(sxHandle, pixels, count);
+#else
+    ret = sxReadPixels(sxHandle, (UInt8 *) pixels, count, sizeof(unsigned short))
+#endif
+
+    if (ret != 1)
+    {
+        Debug.Write(wxString::Format("sxReadPixels failed! ret = %ld\n", ret));
+        return false;
+    }
+    return true;
 }
 
 bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
@@ -662,23 +707,23 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxR
     // Do exposure
     if (IsCMOSGuider(CameraModel))
     {
-        sxClearPixels(hCam, SXCCD_EXP_FLAGS_NOWIPE_FRAME, 0);
-        sxExposePixels(hCam, SXCCD_EXP_FLAGS_FIELD_ODD, 0, xofs, yofs, xsize, ysize, 1, 1, duration);
+        ClearPixels(hCam, SXCCD_EXP_FLAGS_NOWIPE_FRAME);
+        ExposePixels(hCam, SXCCD_EXP_FLAGS_FIELD_ODD, xofs, yofs, xsize, ysize, duration);
     }
     else
     {
         // use camera internal timer for durations less than 1 second
 
-        sxClearPixels(hCam, 0, 0);
+        ClearPixels(hCam, 0);
 
         if (duration < 1000)
         {
-            sxExposePixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, 0, xofs, yofs, xsize, ysize, 1, 1, duration);
+            ExposePixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, xofs, yofs, xsize, ysize, duration);
         }
         else
         {
             WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
-            sxLatchPixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, 0, xofs, yofs, xsize, ysize, 1, 1);
+            LatchPixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, xofs, yofs, xsize, ysize);
         }
     }
 
