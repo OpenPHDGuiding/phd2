@@ -51,7 +51,7 @@ void AdvancedDialog::BuildCtrlSets()
     m_pGuiderCtrlSet = m_pFrame->pGuider->GetConfigDialogCtrlSet(m_pGuiderSettingsPanel, m_pFrame->pGuider, this, m_brainCtrls);
 
     if (TheAO())
-        m_pAOCtrlSet = (StepGuiderConfigDialogCtrlSet*)pMount->GetConfigDialogCtrlSet(m_pDevicesSettingsPanel, pMount, this, m_brainCtrls);
+        m_pAOCtrlSet = new AOConfigDialogCtrlSet(m_pDevicesSettingsPanel, pMount, this, m_brainCtrls);
     else
         m_pAOCtrlSet = NULL;
     if (pRotator)
@@ -209,7 +209,7 @@ void AdvancedDialog::ConfirmLayouts()
     std::map <BRAIN_CTRL_IDS, BrainCtrlInfo>::const_iterator it;
     BrainCtrlInfo info;
     BRAIN_CTRL_IDS id;
-    int ct = 0;
+    int orpan_controls = 0;
     for (it = m_brainCtrls.begin(); it != m_brainCtrls.end(); ++it)
     {
         id = it->first;
@@ -217,10 +217,10 @@ void AdvancedDialog::ConfirmLayouts()
         if (!info.isPositioned)
         {
             Debug.AddLine(wxString::Format("AdvancedDialog internal error: Controlid %d is not positioned", id));
-            ct++;
+            orpan_controls++;
         }
-        assert(ct == 0);
     }
+    assert(orpan_controls == 0);
 }
 
 // Perform a from-scratch initialization and layout of all the tabs
@@ -330,7 +330,7 @@ void AdvancedDialog::AddCameraPage(void)
 void AdvancedDialog::AddMountPage(void)
 {
     const long ID_NOMOUNT = 99999;
-    Mount *mount = TheScope();
+    Mount *mount = pMount;
 
     if (mount)
     {
@@ -348,7 +348,7 @@ void AdvancedDialog::AddMountPage(void)
         m_pMountPane->Add(pNoMount);
     }
 
-    m_pScopeSettingsPanel->GetSizer()->Add(m_pMountPane);
+    m_pScopeSettingsPanel->GetSizer()->Add(m_pMountPane, wxSizerFlags(0).Border(wxTOP, 10).Expand());
     m_pScopeSettingsPanel->Layout();
 }
 
@@ -356,7 +356,7 @@ void AdvancedDialog::AddAoPage(void)
 {
     if (TheAO())
     {
-        m_pAOPane = pMount->GetConfigDialogPane(m_pDevicesSettingsPanel);
+        m_pAOPane = new AOConfigDialogPane(m_pDevicesSettingsPanel, TheAO());
         m_pAOPane->LayoutControls(m_pDevicesSettingsPanel, m_brainCtrls);
         m_pAOPane->Layout();
 
@@ -426,7 +426,7 @@ void AdvancedDialog::LoadValues(void)
     if (TheAO())
     {
         m_pAOCtrlSet->LoadValues();
-        m_pAOPane->LoadValues();
+        //m_pAOPane->LoadValues();
     }
     if (TheScope())
     {
@@ -451,7 +451,7 @@ void AdvancedDialog::UnloadValues(void)
     if (TheAO())
     {
         m_pAOCtrlSet->UnloadValues();
-        m_pAOPane->UnloadValues();
+        //m_pAOPane->UnloadValues();
     }
     if (TheScope())
     {

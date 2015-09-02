@@ -176,18 +176,18 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BR
         m_pAlgoBox->Add(m_pDecBox, def_flags);
         m_pAlgoBox->Layout();
         this->Add(m_pAlgoBox, def_flags);
-        if (stepGuider)
-        {
-            wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
-            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalStepsPerIteration));
-            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szSamplesToAverage));
-            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
-            pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpSteps));
-            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBumpOnDither));
-            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableAOGuiding));
-            pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearAOCalibration));
-            this->Add(pAoDetailSizer, def_flags);
-        }
+        //if (stepGuider)
+        //{
+        //    wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
+        //    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalStepsPerIteration));
+        //    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szSamplesToAverage));
+        //    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
+        //    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpSteps));
+        //    pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBumpOnDither));
+        //    pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableAOGuiding));
+        //    pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearAOCalibration));
+        //    this->Add(pAoDetailSizer, def_flags);
+        //}
 
         Fit(m_pParent);
     }
@@ -319,13 +319,13 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
         }
         else
         {
-            m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearAOCalibration), wxID_ANY, _("Clear AO calibration"));
-            m_pClearCalibration->Enable(enableCtrls);
-            AddCtrl(CtrlMap, AD_cbClearAOCalibration, m_pClearCalibration,
-                _("Clear the current AO calibration data - calibration will be re-done when guiding is started"));
-            m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO corrections"));
-            AddCtrl(CtrlMap, AD_cbEnableAOGuiding, m_pEnableGuide,
-                _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
+            //m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearAOCalibration), wxID_ANY, _("Clear AO calibration"));
+            //m_pClearCalibration->Enable(enableCtrls);
+            //AddCtrl(CtrlMap, AD_cbClearAOCalibration, m_pClearCalibration,
+            //    _("Clear the current AO calibration data - calibration will be re-done when guiding is started"));
+            //m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO corrections"));
+            //AddCtrl(CtrlMap, AD_cbEnableAOGuiding, m_pEnableGuide,
+            //    _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
 
         }
     }
@@ -333,20 +333,26 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 
 void MountConfigDialogCtrlSet::LoadValues()
 {
-    m_pClearCalibration->Enable(m_pMount->IsCalibrated());
-    m_pClearCalibration->SetValue(false);
-    m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
+    if (m_pMount && !m_pMount->IsStepGuider())
+        {
+        m_pClearCalibration->Enable(m_pMount->IsCalibrated());
+        m_pClearCalibration->SetValue(false);
+        m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
+        }
 }
 
 void MountConfigDialogCtrlSet::UnloadValues()
 {
-    if (m_pClearCalibration->IsChecked())
+    if (m_pMount && !m_pMount->IsStepGuider())
     {
-        m_pMount->ClearCalibration();
-        Debug.Write(wxString::Format("User cleared %s calibration\n", m_pMount->IsStepGuider() ? "AO" : "Mount"));
-    }
+        if (m_pClearCalibration->IsChecked())
+        {
+            m_pMount->ClearCalibration();
+            Debug.Write(wxString::Format("User cleared %s calibration\n", m_pMount->IsStepGuider() ? "AO" : "Mount"));
+        }
 
-    m_pMount->SetGuidingEnabled(m_pEnableGuide->GetValue());
+        m_pMount->SetGuidingEnabled(m_pEnableGuide->GetValue());
+    }
 }
 
 bool Mount::DecCompensationEnabled()

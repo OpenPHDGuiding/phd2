@@ -135,7 +135,7 @@ class AdvancedDialog : public wxDialog
     Guider::GuiderConfigDialogPane* m_pGuiderPane;
     CameraConfigDialogPane *m_pCameraPane;
     Mount::MountConfigDialogPane *m_pMountPane;
-    Mount::MountConfigDialogPane *m_pAOPane;
+    AOConfigDialogPane *m_pAOPane;
     RotatorConfigDialogPane *m_pRotatorPane;
 
     std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> m_brainCtrls;
@@ -144,7 +144,7 @@ class AdvancedDialog : public wxDialog
     CameraConfigDialogCtrlSet *m_pCameraCtrlSet;
     GuiderConfigDialogCtrlSet *m_pGuiderCtrlSet;
     MountConfigDialogCtrlSet *m_pScopeCtrlSet;
-    StepGuiderConfigDialogCtrlSet *m_pAOCtrlSet;
+    AOConfigDialogCtrlSet *m_pAOCtrlSet;
     RotatorConfigDialogCtrlSet *m_pRotatorCtrlSet;
     wxPanel *m_pGlobalSettingsPanel;
     wxPanel *m_pCameraSettingsPanel;

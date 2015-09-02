@@ -1414,7 +1414,10 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
     // Minor ordering to have "no-mount" condition look ok
     pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbScaleImages));
     pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 35));
-    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbReverseDecOnFlip));
+    wxWindow* cbCtrl = (wxControl*)GetSingleCtrl(CtrlMap, AD_cbReverseDecOnFlip);
+    if (TheAO())
+        cbCtrl->Enable(false);
+    pSharedSizer->Add(cbCtrl);
     pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableGuiding), wxSizerFlags(0).Border(wxLEFT, 35));
     // Might not have slew-checking option
     wxWindow* ctrl = GetSingleCtrl(CtrlMap, AD_cbSlewDetection);
@@ -1443,7 +1446,7 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 
     m_pGuider = pGuider;
 
-    m_pScaleImage = new wxCheckBox(GetParentWindow(AD_cbScaleImages), wxID_ANY, _("Always Scale Images"));
+    m_pScaleImage = new wxCheckBox(GetParentWindow(AD_cbScaleImages), wxID_ANY, _("Always scale images"));
     AddCtrl(CtrlMap, AD_cbScaleImages, m_pScaleImage, _("Always scale images to fill window"));
 
     m_pEnableFastRecenter = new wxCheckBox(GetParentWindow(AD_cbFastRecenter), wxID_ANY, _("Fast recenter after calibration or dither"));

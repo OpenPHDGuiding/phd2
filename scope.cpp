@@ -1370,7 +1370,7 @@ Mount::MountConfigDialogPane *Scope::GetConfigDialogPane(wxWindow *pParent)
 }
 
 Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pScope)
-    : MountConfigDialogPane(pParent, _("Guide Algorithm Settings"), pScope)
+    : MountConfigDialogPane(pParent, _("Mount Guide Algorithms"), pScope)
 {
     m_pScope = pScope;
 }
@@ -1441,7 +1441,8 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
     AddCtrl(CtrlMap, AD_cbAssumeOrthogonal, m_assumeOrthogonal,
         _("Assume Dec axis is perpendicular to RA axis, regardless of calibration. Prevents RA periodic error from affecting Dec calibration. Option takes effect when calibrating DEC."));
 
-    if (pScope)
+    bool usingAO = TheAO() != NULL;
+    if (pScope && !usingAO)
     {
         m_pUseBacklashComp = new wxCheckBox(GetParentWindow(AD_cbDecComp), wxID_ANY, _("Use backlash comp"));
         AddCtrl(CtrlMap, AD_cbDecComp, m_pUseBacklashComp, _("Check this if you want to apply a backlash compensation guide pulse when declination direction is reversed."));
@@ -1480,12 +1481,16 @@ void ScopeConfigDialogCtrlSet::LoadValues()
     if (m_pStopGuidingWhenSlewing)
         m_pStopGuidingWhenSlewing->SetValue(m_pScope->IsStopGuidingWhenSlewingEnabled());
     m_assumeOrthogonal->SetValue(m_pScope->IsAssumeOrthogonal());
-    m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
-    m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
-    m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
-    m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
-    m_pBacklashPulse->SetValue(m_pScope->m_backlashComp->GetBacklashPulse());
-    m_pUseDecComp->SetValue(m_pScope->DecCompensationEnabled());
+    bool usingAO = TheAO() != NULL;
+    if (!usingAO)
+    {
+        m_pMaxRaDuration->SetValue(m_pScope->GetMaxRaDuration());
+        m_pMaxDecDuration->SetValue(m_pScope->GetMaxDecDuration());
+        m_pDecMode->SetSelection(m_pScope->GetDecGuideMode());
+        m_pUseBacklashComp->SetValue(m_pScope->m_backlashComp->IsEnabled());
+        m_pBacklashPulse->SetValue(m_pScope->m_backlashComp->GetBacklashPulse());
+        m_pUseDecComp->SetValue(m_pScope->DecCompensationEnabled());
+    }
 }
 
 void ScopeConfigDialogCtrlSet::UnloadValues()
@@ -1495,14 +1500,18 @@ void ScopeConfigDialogCtrlSet::UnloadValues()
     if (m_pStopGuidingWhenSlewing)
         m_pScope->EnableStopGuidingWhenSlewing(m_pStopGuidingWhenSlewing->GetValue());
     m_pScope->SetAssumeOrthogonal(m_assumeOrthogonal->GetValue());
-    m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
-    m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
-    m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
-    m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
-    m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
-    m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
-    if (pFrame)
-        pFrame->UpdateCalibrationStatus();
+    bool usingAO = TheAO() != NULL;
+    if (!usingAO)
+    {
+        m_pScope->SetMaxRaDuration(m_pMaxRaDuration->GetValue());
+        m_pScope->SetMaxDecDuration(m_pMaxDecDuration->GetValue());
+        m_pScope->SetDecGuideMode(m_pDecMode->GetSelection());
+        m_pScope->m_backlashComp->SetBacklashPulse(m_pBacklashPulse->GetValue());
+        m_pScope->m_backlashComp->EnableBacklashComp(m_pUseBacklashComp->GetValue());
+        m_pScope->EnableDecCompensation(m_pUseDecComp->GetValue());
+        if (pFrame)
+            pFrame->UpdateCalibrationStatus();
+    }
     MountConfigDialogCtrlSet::UnloadValues();
 }
 

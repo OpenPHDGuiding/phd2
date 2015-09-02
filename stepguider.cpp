@@ -1176,19 +1176,20 @@ const char *StepGuider::DirectionChar(GUIDE_DIRECTION d)
 
 Mount::MountConfigDialogPane *StepGuider::GetConfigDialogPane(wxWindow *pParent)
 {
-    return new StepGuiderConfigDialogPane(pParent, this);
+     return new StepGuiderConfigDialogPane(pParent, this);
 }
 
 StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider)
-    : MountConfigDialogPane(pParent, _("AO Settings"), pStepGuider)
+: MountConfigDialogPane(pParent, _("AO Guide Algorithms"), pStepGuider)
 {
     m_pStepGuider = pStepGuider;
 }
 
 void StepGuider::StepGuiderConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
 {
-    // UI controls are a mix of guide algos and stepguider properties - all laid out in Mount
+    // UI controls for step-guider are just algos - laid out in Mount
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
+
 }
 
 void StepGuider::StepGuiderConfigDialogPane::LoadValues(void)
@@ -1201,14 +1202,31 @@ void StepGuider::StepGuiderConfigDialogPane::UnloadValues(void)
     MountConfigDialogPane::UnloadValues();
 }
 
-MountConfigDialogCtrlSet *StepGuider::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+AOConfigDialogPane::AOConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuider)
+:ConfigDialogPane(_("AO Settings"), pParent)
 {
-    return new StepGuiderConfigDialogCtrlSet(pParent, pStepGuider, pAdvancedDialog, CtrlMap);
+    m_pStepGuider = pStepGuider;
 }
 
+void AOConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
+    wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
+    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalStepsPerIteration));
+    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szSamplesToAverage));
+    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
+    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpSteps));
+    pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBumpOnDither));
+    pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableAOGuiding));
+    pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearAOCalibration));
+    this->Add(pAoDetailSizer, def_flags);
+
+}
+
+
 // UI controls for properties unique to step-guider.  Mount controls for guide algos are handled by MountConfigDialogPane
-StepGuiderConfigDialogCtrlSet::StepGuiderConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap):
-MountConfigDialogCtrlSet(pParent, pStepGuider, pAdvancedDialog, CtrlMap)
+AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap):
+ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
     int width;
 
@@ -1237,25 +1255,42 @@ MountConfigDialogCtrlSet(pParent, pStepGuider, pAdvancedDialog, CtrlMap)
 
     m_bumpOnDither = new wxCheckBox(GetParentWindow(AD_cbBumpOnDither), wxID_ANY, _("Bump on dither"));
     AddCtrl(CtrlMap, AD_cbBumpOnDither, m_bumpOnDither, _("Bump the mount to return the AO to center at each dither"));
+
+    m_pClearAOCalibration = new wxCheckBox(GetParentWindow(AD_cbClearAOCalibration), wxID_ANY, _("Clear AO calibration"));
+    m_pClearAOCalibration->Enable(m_pStepGuider != NULL && m_pStepGuider->IsConnected());
+    AddCtrl(CtrlMap, AD_cbClearAOCalibration, m_pClearAOCalibration,
+        _("Clear the current AO calibration data - calibration will be re-done when guiding is started"));
+    m_pEnableAOGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO corrections"));
+    AddCtrl(CtrlMap, AD_cbEnableAOGuiding, m_pEnableAOGuide,
+        _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
 }
 
-void StepGuiderConfigDialogCtrlSet::LoadValues()
+void AOConfigDialogCtrlSet::LoadValues()
 {
-    MountConfigDialogCtrlSet::LoadValues();
+    //MountConfigDialogCtrlSet::LoadValues();
     m_pCalibrationStepsPerIteration->SetValue(m_pStepGuider->GetCalibrationStepsPerIteration());
     m_pSamplesToAverage->SetValue(m_pStepGuider->GetSamplesToAverage());
     m_pBumpPercentage->SetValue(m_pStepGuider->GetBumpPercentage());
     m_pBumpMaxStepsPerCycle->SetValue(m_pStepGuider->GetBumpMaxStepsPerCycle());
     m_bumpOnDither->SetValue(m_pStepGuider->m_bumpOnDither);
+    m_pClearAOCalibration->Enable(m_pStepGuider->IsCalibrated());
+    m_pClearAOCalibration->SetValue(false);
+    m_pEnableAOGuide->SetValue(m_pStepGuider->GetGuidingEnabled());
 }
 
-void StepGuiderConfigDialogCtrlSet::UnloadValues()
+void AOConfigDialogCtrlSet::UnloadValues()
 {
     m_pStepGuider->SetCalibrationStepsPerIteration(m_pCalibrationStepsPerIteration->GetValue());
     m_pStepGuider->SetSamplesToAverage(m_pSamplesToAverage->GetValue());
     m_pStepGuider->SetBumpPercentage(m_pBumpPercentage->GetValue(), true);
     m_pStepGuider->SetBumpMaxStepsPerCycle(m_pBumpMaxStepsPerCycle->GetValue());
     m_pStepGuider->m_bumpOnDither = m_bumpOnDither->GetValue();
+    if (m_pClearAOCalibration->IsChecked())
+    {
+        m_pStepGuider->ClearCalibration();
+        Debug.Write(wxString::Format("User cleared AO calibration\n"));
+    }
 
-    MountConfigDialogCtrlSet::UnloadValues();
+    m_pStepGuider->SetGuidingEnabled(m_pEnableAOGuide->GetValue());
+    //MountConfigDialogCtrlSet::UnloadValues();
 }
