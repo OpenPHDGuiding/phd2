@@ -176,18 +176,6 @@ void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BR
         m_pAlgoBox->Add(m_pDecBox, def_flags);
         m_pAlgoBox->Layout();
         this->Add(m_pAlgoBox, def_flags);
-        //if (stepGuider)
-        //{
-        //    wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
-        //    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalStepsPerIteration));
-        //    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szSamplesToAverage));
-        //    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpPercentage));
-        //    pAoDetailSizer->Add(GetSizerCtrl(CtrlMap, AD_szBumpSteps));
-        //    pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbBumpOnDither));
-        //    pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableAOGuiding));
-        //    pAoDetailSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearAOCalibration));
-        //    this->Add(pAoDetailSizer, def_flags);
-        //}
 
         Fit(m_pParent);
     }
@@ -316,17 +304,6 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
             m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableGuiding), wxID_ANY, _("Enable mount guide output"));
             AddCtrl(CtrlMap, AD_cbEnableGuiding, m_pEnableGuide,
                 _("Keep this checked for guiding. Un-check to disable all mount guide commands and allow the mount to run un-guided"));
-        }
-        else
-        {
-            //m_pClearCalibration = new wxCheckBox(GetParentWindow(AD_cbClearAOCalibration), wxID_ANY, _("Clear AO calibration"));
-            //m_pClearCalibration->Enable(enableCtrls);
-            //AddCtrl(CtrlMap, AD_cbClearAOCalibration, m_pClearCalibration,
-            //    _("Clear the current AO calibration data - calibration will be re-done when guiding is started"));
-            //m_pEnableGuide = new wxCheckBox(GetParentWindow(AD_cbEnableAOGuiding), wxID_ANY, _("Enable AO corrections"));
-            //AddCtrl(CtrlMap, AD_cbEnableAOGuiding, m_pEnableGuide,
-            //    _("Keep this checked for AO guiding. Un-check to disable AO corrections and use only mount guiding"));
-
         }
     }
 }

@@ -120,7 +120,17 @@ wxWindow* ConfigDialogPane::GetSingleCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInf
     {
 
     }
-    return (ctrl);           // May return null, won't add entry in CtrlMap
+
+    return (ctrl);           // May return null but client can use CondAddCtrl
+}
+
+// Handle the case where a control is not created because of state.  wxWidgets handles a null window correctly in 'Add' but the behavior
+// is technically undocumented.
+void ConfigDialogPane::CondAddCtrl(wxSizer* szr, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags)
+{
+    wxWindow* ctrl = GetSingleCtrl(CtrlMap, id);
+    if (ctrl)
+        szr->Add(ctrl, flags);
 }
 
 wxSizer* ConfigDialogPane::GetSizerCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id)

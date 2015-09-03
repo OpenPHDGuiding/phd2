@@ -1406,24 +1406,17 @@ void Guider::GuiderConfigDialogPane::LayoutControls(Guider *pGuider, std::map <B
     pCalibSizer->Add(GetSizerCtrl(CtrlMap, AD_szCalibrationDuration), wxSizerFlags(0).Border(wxLEFT, 90));
     pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbAutoRestoreCal));
     pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbAssumeOrthogonal), wxSizerFlags(0).Border(wxLEFT, 90));
-    pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbClearCalibration));
-    pCalibSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseDecComp), wxSizerFlags(0).Border(wxLEFT, 90));
+    CondAddCtrl(pCalibSizer, CtrlMap, AD_cbClearCalibration);
+    CondAddCtrl(pCalibSizer, CtrlMap, AD_cbUseDecComp, wxSizerFlags(0).Border(wxLEFT, 90));
     pCalib->Add(pCalibSizer, def_flags);
     pCalib->Layout();
 
     // Minor ordering to have "no-mount" condition look ok
     pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbScaleImages));
     pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbFastRecenter), wxSizerFlags(0).Border(wxLEFT, 35));
-    wxWindow* cbCtrl = (wxControl*)GetSingleCtrl(CtrlMap, AD_cbReverseDecOnFlip);
-    if (TheAO())
-        cbCtrl->Enable(false);
-    pSharedSizer->Add(cbCtrl);
-    pSharedSizer->Add(GetSingleCtrl(CtrlMap, AD_cbEnableGuiding), wxSizerFlags(0).Border(wxLEFT, 35));
-    // Might not have slew-checking option
-    wxWindow* ctrl = GetSingleCtrl(CtrlMap, AD_cbSlewDetection);
-    if (ctrl != NULL)
-        pSharedSizer->Add(ctrl, wxSizerFlags(0).Border(wxLEFT, 35));
-
+    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbReverseDecOnFlip);
+    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbEnableGuiding, wxSizerFlags(0).Border(wxLEFT, 35));
+    CondAddCtrl(pSharedSizer, CtrlMap, AD_cbSlewDetection);
     pShared->Add(pSharedSizer, def_flags);
     pShared->Layout();
 

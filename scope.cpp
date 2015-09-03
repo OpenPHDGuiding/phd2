@@ -1426,6 +1426,8 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
         _("Check if your mount needs Dec output reversed after a meridian flip"));
     m_pNeedFlipDec->Enable(enableCtrls);
 
+
+    bool usingAO = TheAO() != NULL;
     if (pScope && pScope->CanCheckSlewing())
     {
         m_pStopGuidingWhenSlewing = new wxCheckBox(GetParentWindow(AD_cbSlewDetection), wxID_ANY, _("Stop guiding when mount slews"));
@@ -1441,7 +1443,6 @@ MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
     AddCtrl(CtrlMap, AD_cbAssumeOrthogonal, m_assumeOrthogonal,
         _("Assume Dec axis is perpendicular to RA axis, regardless of calibration. Prevents RA periodic error from affecting Dec calibration. Option takes effect when calibrating DEC."));
 
-    bool usingAO = TheAO() != NULL;
     if (pScope && !usingAO)
     {
         m_pUseBacklashComp = new wxCheckBox(GetParentWindow(AD_cbDecComp), wxID_ANY, _("Use backlash comp"));
