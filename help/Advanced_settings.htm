@@ -308,27 +308,11 @@ will leave the star positoned off-target for an extended period of
 time. So you'll probably want to use conservative parameters for
 aggressiveness if you are disallowing direction reversals.
 &nbsp;Finally, a choice of 'none' here disables declination guiding
-altogether.</li></ul><br><h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 602px; height: 564px;" alt="" src="Advanced_other.png"><br><br>If
+altogether.</li></ul><br><h3><a name="Other_Devices_Tab"></a>Other Devices Tab</h3><span style="font-size: 10pt; font-family: Arial;"></span><img style="width: 591px; height: 451px;" alt="" src="Advanced_other.png"><br><br>If
 you are using either an adaptive optics or rotator device, the "Other
 Devices" tab will be shown. &nbsp;The upper section deals with the AO
-device if one is being used. &nbsp;The guiding algorithm choices shown
-there apply to the control of the tip/tilt optical element in the AO
-device
-itself, not to the "bump" commands sent to the mount. &nbsp;So the
-guide algorithm choices on the 'Other Devices' tab operate
-independently from the choices on the 'Algorithms' tab. &nbsp;Since the
-AO device is not trying to move a heavy piece of equipment, you can
-afford to be more aggressive in your guide algorithm parameters.
-&nbsp;The default algorithms for an AO are&nbsp;'None', which means
-there will be
-no damping or history-based calculations applied at all. &nbsp;In that
-case, each correction will be based only on the most recent guide frame
-and will make a 100% correction of the most recent deflection. &nbsp;If
-you use a different algorithm,&nbsp;you should
-probably start with a high level of aggressiveness there as well,
-perhaps 100%.
-&nbsp;<br><br>You
-can use the four parameters at the bottom of the AO tab to control the
+device if one is being used. &nbsp;You
+can use the first four parameters&nbsp;to control the
 calibration process and the manner in which 'bump' operations are done.
 &nbsp;The 'calibration step' field tells <span style="font-style: italic;">PHD2</span> the amount to move the
 tip/tilt element&nbsp;in each of the up/down/left/right directions, in
@@ -354,10 +338,33 @@ required in order to maintain good guiding, with no elongated stars,
 even as the mount is being bumped. &nbsp;During the bump operation, the
 AO is continuing to make corrections, so the long "mount bump" is
 continuously&nbsp;offset by adjustments in the AO.<br><br>The
+'Bump on dither' option tells PHD2 to bump the mount when a dither
+command is received and thus move the guide star back closer to the
+center position of the AO. &nbsp;The
 option to enable or disable AO guide commands operates independently
-from the 'Enable mount guiding' checkbox in the Guiding tab. &nbsp;So you can
-independently enable/disable either the guide commands to the tip/tilt device or the
-'bump' guide commands to the mount.<br><br>The rotator device has only
+from the 'Enable mount guiding' checkbox in the Guiding tab. &nbsp;So
+you can
+independently enable/disable either the guide commands to the tip/tilt
+device or the
+'bump' guide commands to the mount. &nbsp;The same principle holds for
+the 'Clear AO calibration' option - that will force a recalibration of
+the AO without affecting calibration of the mount.<br><br>When an AO is in use, the 'Algorithms' tab will only show choices for controlling the tip/tilt optical element in the AO
+device
+itself.<br><br><img style="width: 590px; height: 450px;" alt="" src="Advanced_other_Algo.png"><br><br>Since
+the
+AO is not trying to move a heavy piece of equipment, you can
+afford to be more aggressive in your guide algorithm choices.
+&nbsp;The default algorithms for an AO are&nbsp;'None', which means
+there will be
+no damping or history-based calculations applied at all. &nbsp;In that
+case, each correction will be based only on the most recent guide frame
+and will make a 100% correction of the most recent deflection. &nbsp;If
+you use a different algorithm,&nbsp;you should
+probably start with a high level of aggressiveness there as well,
+perhaps 100%.
+&nbsp; The other, shared guiding parameters normally displayed on the
+'Algorithms' tab will not be shown for the AO because they aren't used
+to control the device.<br><br>The rotator device has only
 one parameter, which lets you match the behavior of the device to the
 ASCOM notion of positive and negative angles. &nbsp;The "Reversed"
 checkbox can be used for
