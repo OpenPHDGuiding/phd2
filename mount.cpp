@@ -311,11 +311,11 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 void MountConfigDialogCtrlSet::LoadValues()
 {
     if (m_pMount && !m_pMount->IsStepGuider())
-        {
+    {
         m_pClearCalibration->Enable(m_pMount->IsCalibrated());
         m_pClearCalibration->SetValue(false);
         m_pEnableGuide->SetValue(m_pMount->GetGuidingEnabled());
-        }
+    }
 }
 
 void MountConfigDialogCtrlSet::UnloadValues()
