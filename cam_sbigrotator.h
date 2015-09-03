@@ -50,7 +50,7 @@ public:
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    ST4PulseGuideScope (int direction, int duration);
-    bool    Connect();      // Opens up and connects to cameras
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
 };
 

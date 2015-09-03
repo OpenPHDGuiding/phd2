@@ -45,17 +45,23 @@
 class Camera_SBIGClass : public GuideCamera
 {
     bool UseTrackingCCD;
+    bool m_driverLoaded;
 
 public:
+    Camera_SBIGClass();
+    ~Camera_SBIGClass();
+
+    bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect();
+    bool Connect(const wxString& camId);
     bool Disconnect();
     void InitCapture();
     bool ST4PulseGuideScope(int direction, int duration);
     bool ST4HasNonGuiMove(void) { return true; }
     bool HasNonGuiCapture(void) { return true; }
 
-    Camera_SBIGClass();
+private:
+    bool LoadDriver();
 };
 
 #endif

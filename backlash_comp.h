@@ -36,6 +36,8 @@
 #ifndef BACKLASH_COMP_H_INCLUDED
 #define BACKLASH_COMP_H_INCLUDED
 
+class Scope;
+
 // Encapsulated struct for handling Dec backlash measurement
 class BacklashTool
 {
@@ -81,6 +83,7 @@ public:
         MAX_NORTH_PULSES = 8000,    
         TRIAL_TOLERANCE = 2
     };
+
     enum MeasurementResults
     {
         MEASUREMENT_INVALID,

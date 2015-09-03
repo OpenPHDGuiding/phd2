@@ -75,9 +75,8 @@ Camera_StarfishClass::Camera_StarfishClass()
     DriverLoaded = false;
 }
 
-
-
-bool Camera_StarfishClass::Connect() {
+bool Camera_StarfishClass::Connect(const wxString& camId)
+{
 // returns true on error
 
     IOReturn rval;

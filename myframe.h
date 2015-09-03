@@ -82,6 +82,18 @@ typedef void alert_fn(long);
 
 class MyFrameConfigDialogPane : public ConfigDialogPane
 {
+
+public:
+    MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
+    virtual ~MyFrameConfigDialogPane(void) {};
+
+    void LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual void LoadValues(void) {};
+    virtual void UnloadValues(void) {};
+};
+
+class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
+{
     MyFrame *m_pFrame;
     wxCheckBox *m_pResetConfiguration;
     wxCheckBox *m_pResetDontAskAgain;
@@ -100,16 +112,14 @@ class MyFrameConfigDialogPane : public ConfigDialogPane
     wxComboBox *m_autoExpDurationMin;
     wxComboBox *m_autoExpDurationMax;
     wxSpinCtrlDouble *m_autoExpSNR;
-
     void OnDirSelect(wxCommandEvent& evt);
 
 public:
-    MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
-    virtual ~MyFrameConfigDialogPane(void);
+    MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~MyFrameConfigDialogCtrlSet(void) {};
 
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
-
     int GetFocalLength(void);
     void SetFocalLength(int val);
 };
@@ -133,6 +143,7 @@ protected:
     void SetAutoLoadCalibration(bool val);
 
     friend class MyFrameConfigDialogPane;
+    friend class MyFrameConfigDialogCtrlSet;
     friend class WorkerThread;
 
 private:
@@ -309,6 +320,7 @@ public:
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
 
     struct EXPOSE_REQUEST
     {
@@ -443,6 +455,9 @@ enum {
         GEAR_PROFILE_WIZARD,
 
         GEAR_CHOICE_CAMERA,
+        GEAR_BUTTON_SELECT_CAMERA,
+        MENU_SELECT_CAMERA_BEGIN, // a range of ids camera selection popup menu
+        MENU_SELECT_CAMERA_END = MENU_SELECT_CAMERA_BEGIN + 10,
         GEAR_BUTTON_SETUP_CAMERA,
         GEAR_BUTTON_CONNECT_CAMERA,
         GEAR_BUTTON_DISCONNECT_CAMERA,

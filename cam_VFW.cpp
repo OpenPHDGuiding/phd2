@@ -51,7 +51,8 @@ Camera_VFWClass::Camera_VFWClass()
     HasPortNum = false;
 }
 
-bool Camera_VFWClass::Connect() {
+bool Camera_VFWClass::Connect(const wxString& camId)
+{
 // returns true on error
 //  bool retval;
     int ndevices, i, devicenum;

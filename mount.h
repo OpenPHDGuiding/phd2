@@ -37,8 +37,8 @@
 #define MOUNT_H_INCLUDED
 
 #include "guide_algorithms.h"
-#include "messagebox_proxy.h"
 #include "image_math.h"
+#include "messagebox_proxy.h"
 
 class BacklashComp;
 
@@ -103,6 +103,19 @@ struct MoveResultInfo
     MoveResultInfo() : amountMoved(0), limited(false) { }
 };
 
+class MountConfigDialogCtrlSet : public ConfigDialogCtrlSet
+{
+    Mount* m_pMount;
+    wxCheckBox *m_pClearCalibration;
+    wxCheckBox *m_pEnableGuide;
+
+public:
+    MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~MountConfigDialogCtrlSet() {};
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+};
+
 class Mount : public wxMessageBoxProxy
 {
     bool m_connected;
@@ -115,9 +128,9 @@ class Mount : public wxMessageBoxProxy
 
     double m_currentDeclination;
 
-
 protected:
     bool m_guidingEnabled;
+    bool m_useDecCompensation;
 
     GuideAlgorithm *m_pXGuideAlgorithm;
     GuideAlgorithm *m_pYGuideAlgorithm;
@@ -127,18 +140,21 @@ protected:
     BacklashComp *m_backlashComp;
 
     // Things related to the Advanced Config Dialog
-protected:
+public:
     class MountConfigDialogPane : public wxEvtHandler, public ConfigDialogPane
     {
+    protected:
         Mount *m_pMount;
-        wxCheckBox *m_pClearCalibration;
-        wxCheckBox *m_pEnableGuide;
+        wxWindow* m_pParent;
         wxChoice   *m_pXGuideAlgorithmChoice;
         wxChoice   *m_pYGuideAlgorithmChoice;
         int        m_initXGuideAlgorithmSelection;
         int        m_initYGuideAlgorithmSelection;
         ConfigDialogPane *m_pXGuideAlgorithmConfigDialogPane;
         ConfigDialogPane *m_pYGuideAlgorithmConfigDialogPane;
+        wxStaticBoxSizer* m_pAlgoBox;
+        wxStaticBoxSizer* m_pRABox;
+        wxStaticBoxSizer* m_pDecBox;
 
     public:
         MountConfigDialogPane(wxWindow *pParent, const wxString& title, Mount *pMount);
@@ -146,6 +162,8 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
+        virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+
         virtual void Undo(void);
 
         void OnXAlgorithmSelected(wxCommandEvent& evt);
@@ -165,7 +183,7 @@ protected:
     void Mount::TestTransforms(void);
 #endif
 
-    // functions with an implemenation in Mount that cannot be over-ridden
+    // functions with an implementation in Mount that cannot be over-ridden
     // by a subclass
 public:
 
@@ -185,6 +203,7 @@ public:
     double xAngle(void);
     double xRate(void);
     bool DecCompensationActive(void) const;
+    bool DecCompensationEnabled();
 
     bool FlipCalibration(void);
     bool GetGuidingEnabled(void);
@@ -219,14 +238,16 @@ public:
 
     virtual bool GuidingCeases(void) = 0;
 
-    virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
+    virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) = 0;
+
     virtual wxString GetMountClassName() const = 0;
 
     GuideAlgorithm *GetXGuideAlgorithm(void) const;
     GuideAlgorithm *GetYGuideAlgorithm(void) const;
 
     bool GetLastCalibrationParams(Calibration *params);
-    BacklashComp *GetBacklashCompPtr() { return m_backlashComp; }
+    BacklashComp *GetBacklashComp() { return m_backlashComp; }
     void FlagBacklashOverShoot(double pixelAmount, GuideAxis axis);
 
     // virtual functions -- these CAN be overridden by a subclass, which should
@@ -286,7 +307,7 @@ public:
 
 inline bool Mount::DecCompensationActive(void) const
 {
-    return m_currentDeclination != m_cal.declination;
+    return (m_currentDeclination != m_cal.declination && m_useDecCompensation);
 }
 
 inline GuideAlgorithm *Mount::GetXGuideAlgorithm(void) const

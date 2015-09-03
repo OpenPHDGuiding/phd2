@@ -516,9 +516,11 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
 
         case BLT_STATE_WRAPUP:
             m_lastStatus = _("Measurement complete");
-            
             CleanUp();
             m_bltState = BLT_STATE_COMPLETED;
+            break;
+
+        case BLT_STATE_COMPLETED:
             break;
 
         case BLT_STATE_ABORTED:
@@ -526,12 +528,9 @@ void BacklashTool::DecMeasurementStep(const PHD_Point& currentCamLoc)
             Debug.AddLine("BLT: measurement process halted by user");
             CleanUp();
             break;
-
         }                       // end of switch on state
-
-
     }
-    catch (wxString msg)
+    catch (const wxString& msg)
     {
         Debug.AddLine(wxString::Format("BLT: Exception thrown in logical state %d", (int)m_bltState));
         m_bltState = BLT_STATE_ABORTED;
@@ -550,7 +549,7 @@ void BacklashTool::ShowGraph(wxDialog *pGA)
 
 void BacklashTool::CleanUp()
 {
-    m_scope->GetBacklashCompPtr()->Reset();        // Normal guiding will start, don't want old BC state applied
+    m_scope->GetBacklashComp()->Reset();        // Normal guiding will start, don't want old BC state applied
     pFrame->pGuider->EnableMeasurementMode(false);
 }
 

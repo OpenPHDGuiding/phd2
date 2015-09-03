@@ -34,14 +34,24 @@
 
 
 #include "phd.h"
+
 #if defined (SXV)
-#include "camera.h"
-#include "time.h"
-#include "image_math.h"
-#include <wx/choicdlg.h>
 
 #include "cam_SXV.h"
+#include "image_math.h"
+
+#include <wx/choicdlg.h>
+
 extern Camera_SXVClass Camera_SXV;
+
+enum {
+    SX_CMOS_GUIDER = 39,
+};
+
+inline static bool IsCMOSGuider(int model)
+{
+    return model == SX_CMOS_GUIDER;
+}
 
 static wxString NameFromModel(int model)
 {
@@ -100,7 +110,7 @@ static wxString NameFromModel(int model)
 
     if (model == 70)
         m = _T("SXV-Lodestar");
-    else if (model == 39)
+    else if (model == SX_CMOS_GUIDER)
         m = _T("SX CMOS Guider");
     else if (model == 0x39)
         m = _T("SX Superstar guider");
@@ -187,11 +197,55 @@ void SXCamRemoved (void *cam)
 
 #endif
 
-bool Camera_SXVClass::Connect()
+bool Camera_SXVClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
+{
+#if defined(__WINDOWS__)
+
+    HANDLE hCams[SXCCD_MAX_CAMS];
+
+    int ncams = sxOpen(hCams);
+
+    for (int i = 0; i < ncams; i++)
+    {
+        unsigned short model = sxGetCameraModel(hCams[i]);
+        names.Add(wxString::Format("%d: %s", i + 1, NameFromModel(model)));
+        ids.Add(wxString::Format("%d", i));
+    }
+
+    // close handles
+    for (int j = 0; j < ncams; j++)
+        sxClose(hCams[j]);
+
+#else  // OSX
+
+    int ncams = sx2EnumDevices();
+
+    for (int i = 0; i < ncams; i++)
+    {
+        int model = (int)sx2GetID(i);
+        if (model)
+        {
+            char devname[32];
+            sx2GetName(i, devname);
+            names.Add(wxString::Format("%d: %s", i + 1, devname));
+            ids.Add(wxString::Format("%d", i));
+        }
+    }
+
+#endif // OSX
+
+    return false;
+}
+
+bool Camera_SXVClass::Connect(const wxString& camId)
 {
     // returns true on error
 
-    bool retval = true;
+    long idx = -1;
+    if (camId == DEFAULT_CAMERA_ID)
+        idx = 0;
+    else
+        camId.ToLong(&idx);
 
 #if defined(__WINDOWS__)
 
@@ -199,124 +253,41 @@ bool Camera_SXVClass::Connect()
 
     int ncams = sxOpen(hCams);
     if (ncams == 0)
-        return true;  // No cameras
-
-    // Dialog to choose which Cam if # > 1  (note 0-indexed)
-    if (ncams > 1)
     {
-        wxArrayString Names;
-        for (int i = 0; i < ncams; i++)
-        {
-            unsigned short model = sxGetCameraModel(hCams[i]);
-            Names.Add(NameFromModel(model));
-        }
-        int i = wxGetSingleChoiceIndex(_("Select SX camera"), _("Camera choice"), Names);
-        if (i == -1)
-            return true;
-        hCam = hCams[i];
+        wxMessageBox(_("No SX cameras found"), _("Error"));
+        return true;
     }
-    else
-        hCam = hCams[0];
+
+    if (idx < 0 || idx >= ncams)
+    {
+        Debug.AddLine(wxString::Format("SXV: invalid camera id: '%s', ncams = %d", camId, ncams));
+        return true;
+    }
+
+    // close the ones not selected
+    for (int i = 0; i < ncams; i++)
+        if (i != idx)
+            sxClose(hCams[i]);
+
+    hCam = hCams[idx];
 
 #else  // OSX
 
-    hCam = NULL;
-
-    /*
-    // Orig version
-    static bool ProbeLoaded = false;
-    if (!ProbeLoaded)
-        sxProbe(SXCamAttached, SXCamRemoved);
-    ProbeLoaded = true;
-    int i, model;
-    wxString tmp_name;
-    wxArrayString Names;
-    int ncams = 0;
-    int portstatus;
-    portstatus = sxCamPortStatus(0);
-    portstatus = sxCamPortStatus(1);
-
-    for (i=0; i<4; i++) {
-        model = sxCamAvailable(i);
-        if (model) {
-            ncams++;
-            tmp_name=wxString::Format("%d: SXV-%c%d%c",i,model & 0x40 ? 'M' : 'H', model & 0x1F, model & 0x80 ? 'C' : '\0');
-            if (model == 70)
-                tmp_name = wxString::Format("%d: SXV-Lodestar",i);
-            Names.Add(tmp_name);
-        }
-    }
-    if (ncams > 1) {
-        wxString ChoiceString;
-        ChoiceString=wxGetSingleChoice(_("Select SX camera"),_("Camera choice"),Names);
-        if (ChoiceString.IsEmpty()) return true;
-        ChoiceString=ChoiceString.Left(1);
-        long lval;
-        ChoiceString.ToLong(&lval);
-        hCam = sxOpen((int) lval);
-        sxReleaseOthers((int) lval);
-    }
-    else
-        hCam = sxOpen(-1);
-    portstatus = sxCamPortStatus(0);
-    portstatus = sxCamPortStatus(1);
-    */
-
-     // New version
     int ncams = sx2EnumDevices();
-    if (!ncams)
+    if (idx < 0 || idx >= ncams)
     {
-        wxMessageBox(_T("No SX cameras found"), _("Error"));
+        Debug.AddLine(wxString::Format("SXV: invalid camera id: '%s', ncams = %d", camId, ncams));
         return true;
     }
-    if (ncams > 1)
-    {
-        int i, model;
-        wxString tmp_name;
-        wxArrayString Names;
-        void      *htmpCam;
-        char devname[32];
-        for (i=0; i<ncams; i++)
-        {
-    /*      htmpCam = sx2Open(i);
-            if (htmpCam) {
-                model = sxGetCameraModel(htmpCam);
-                tmp_name = wxString::Format("%d: %d",i+1,model);
-                Names.Add(tmp_name);
-                wxMilliSleep(500);
-                sx2Close(htmpCam);
-                wxMilliSleep(500);
-                htmpCam = NULL;
-            }*/
-            model = (int) sx2GetID(i);
-            if (model)
-            {
-                sx2GetName(i,devname);
-                tmp_name = wxString::Format("%d: %s",i+1,devname);
-                Names.Add(tmp_name);
-            }
-        }
 
-        wxString ChoiceString = wxGetSingleChoice(_("Select SX camera"), _("Camera choice"), Names);
-        if (ChoiceString.IsEmpty())
-            return true;
-        ChoiceString = ChoiceString.Left(1);
-        long lval;
-        ChoiceString.ToLong(&lval);
-        lval -= 1;
-        hCam = sx2Open((int) lval);
-    }
-    else
-        hCam = sx2Open(0);
+    hCam = sx2Open((int) idx);
 
     if (hCam == NULL)
         return true;
+
 #endif
 
-    retval = false;  // assume all good
-
-    // Close all unused cameras if nCams > 1 after picking which one
-    //  WRITE
+    bool retval = false;  // assume all good
 
     // Load parameters
     sxGetCameraParams(hCam, 0, &CCDParams);
@@ -375,7 +346,7 @@ bool Camera_SXVClass::Connect()
     if (CCDParams.extra_caps & 0x20)
         HasShutter = true;
 
-    if (CameraModel == 39) // cmos guider
+    if (IsCMOSGuider(CameraModel))
     {
         HasSubframes = false;
         FullSize.x -= 16;
@@ -599,17 +570,62 @@ static bool InitImgProgressive(usImage& img, unsigned int xofs, unsigned int yof
     return false;
 }
 
-#if defined (__WINDOWS__)
-# define ReadPixels(hCam, RawData, NPixelsToRead) sxReadPixels((hCam), (RawData), (NPixelsToRead))
-#else
-# define ReadPixels(hCam, RawData, NPixelsToRead) sxReadPixels((hCam), (UInt8 *)(RawData), (NPixelsToRead), sizeof(unsigned short))
-#endif
-
 inline static void swap(unsigned short *&a, unsigned short *&b)
 {
     unsigned short *tmp = a;
     a = b;
     b = tmp;
+}
+
+static bool ClearPixels(sxccd_handle_t sxHandle, unsigned short flags)
+{
+    int ret = sxClearPixels(sxHandle, flags, 0);
+    if (ret == 0)
+    {
+        Debug.Write("sxClearPixels failed!\n");
+        return false;
+    }
+    return true;
+}
+
+static bool LatchPixels(sxccd_handle_t sxHandle, unsigned short flags, unsigned short xoffset, unsigned short yoffset, unsigned short width, unsigned short height)
+{
+    int ret = sxLatchPixels(sxHandle, flags, 0, xoffset, yoffset, width, height, 1, 1);
+    if (ret == 0)
+    {
+        Debug.Write("sxLatchPixels failed!\n");
+        return false;
+    }
+    return true;
+}
+
+static bool ExposePixels(sxccd_handle_t sxHandle, unsigned short flags, unsigned short xoffset, unsigned short yoffset, unsigned short width, unsigned short height, unsigned int msec)
+{
+    int ret = sxExposePixels(sxHandle, flags, 0, xoffset, yoffset, width, height, 1, 1, msec);
+    if (ret == 0)
+    {
+        Debug.Write("sxExposePixels failed!\n");
+        return false;
+    }
+    return true;
+}
+
+static bool ReadPixels(sxccd_handle_t sxHandle, unsigned short *pixels, unsigned int count)
+{
+    int ret;
+
+#if defined(__WINDOWS__)
+    ret = sxReadPixels(sxHandle, pixels, count);
+#else
+    ret = sxReadPixels(sxHandle, (UInt8 *) pixels, count, sizeof(unsigned short));
+#endif
+
+    if (ret != 1)
+    {
+        Debug.Write(wxString::Format("sxReadPixels failed! ret = %ld\n", ret));
+        return false;
+    }
+    return true;
 }
 
 bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxRect& subframeArg)
@@ -688,21 +704,27 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxR
         ysize = CCDParams.height;
     }
 
-    bool UseInternalTimer = false;
-    if (CameraModel == 39)
-        UseInternalTimer = true;
-
     // Do exposure
-    if (UseInternalTimer)
+    if (IsCMOSGuider(CameraModel))
     {
-        sxClearPixels(hCam, SXCCD_EXP_FLAGS_NOWIPE_FRAME, 0);
-        sxExposePixels(hCam, SXCCD_EXP_FLAGS_FIELD_ODD, 0, xofs, yofs, xsize, ysize, 1, 1, duration);
+        ClearPixels(hCam, SXCCD_EXP_FLAGS_NOWIPE_FRAME);
+        ExposePixels(hCam, SXCCD_EXP_FLAGS_FIELD_ODD, xofs, yofs, xsize, ysize, duration);
     }
     else
     {
-        sxClearPixels(hCam, 0, 0);
-        WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
-        sxLatchPixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, 0, xofs, yofs, xsize, ysize, 1, 1);
+        // use camera internal timer for durations less than 1 second
+
+        ClearPixels(hCam, 0);
+
+        if (duration < 1000)
+        {
+            ExposePixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, xofs, yofs, xsize, ysize, duration);
+        }
+        else
+        {
+            WorkerThread::MilliSleep(duration, WorkerThread::INT_ANY);
+            LatchPixels(hCam, SXCCD_EXP_FLAGS_FIELD_BOTH, xofs, yofs, xsize, ysize);
+        }
     }
 
     // do not return without reading pixels or camera will hang
@@ -725,7 +747,7 @@ bool Camera_SXVClass::Capture(int duration, usImage& img, int options, const wxR
     {
         bool error;
 
-        if (CameraModel == 39)
+        if (IsCMOSGuider(CameraModel))
             error = InitImgCMOSGuider(img, FullSize, RawData);
         else
             error = InitImgProgressive(img, xofs, yofs, xsize, ysize, takeSubframe, FullSize, RawData);

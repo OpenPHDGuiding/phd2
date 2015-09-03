@@ -56,7 +56,7 @@ Camera_LELxUsbWebcamClass::~Camera_LELxUsbWebcamClass(void)
     Disconnect();
 }
 
-bool Camera_LELxUsbWebcamClass::Connect()
+bool Camera_LELxUsbWebcamClass::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -71,7 +71,7 @@ bool Camera_LELxUsbWebcamClass::Connect()
 
         LXUSB_Reset();
 
-        if (Camera_LEWebcamClass::Connect())
+        if (Camera_LEWebcamClass::Connect(camId))
         {
             throw ERROR_INFO("base class Connect() failed");
         }

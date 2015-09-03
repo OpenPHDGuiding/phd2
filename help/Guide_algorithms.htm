@@ -130,25 +130,6 @@ direction is seen, at which point the history is cleared. &nbsp;The
 algorithm has two adjustable properties: minimum-move and
 aggressiveness. &nbsp;Minimum-move has the same effect as it does in the
 other guide algorithms, and aggressiveness (percentage) is a way of further
-dampening the size of the guide corrections. &nbsp;LowPass2 is a very
+dampening the size of the guide corrections. LowPass2 is a very
 conservative, high-impedance algorithm that may be a good choice for
-users with good seeing conditions and well-behaved mounts.<br><br>The
-declination guide mode gives you additional control for declination
-guiding. &nbsp;Declination guiding is not like RA guiding because the
-errors are not caused
-by imperfections in your mount's gears. &nbsp;Instead, deflections in
-declination are primarily the result of imperfect polar alignment.
-&nbsp;The result is an error that should be smooth and should be
-in only one direction, assuming there is no&nbsp;over-shoot from an
-earlier correction. &nbsp;The default value of 'auto' tells <span style="font-style: italic;">PHD2</span> that
-some reversals in direction are acceptable, subject to the behavior of
-the various guiding algorithms. &nbsp;However, if your mount has severe
-declination backlash, you may want to prevent&nbsp;direction reversal
-altogether. &nbsp;If so, you can select either 'north' or 'south' to
-restrict corrections to one direction only. &nbsp;Keep in mind,
-however, that an&nbsp;over-shoot in correction with one of these modes
-will leave the star positoned off-target for an extended period of
-time. So you'll probably want to use conservative parameters for
-aggressiveness if you are disallowing direction reversals.
-&nbsp;Finally, a choice of 'none' here disables declination guiding
-altogether.<br>&nbsp;&nbsp;</body></html>
+users with good seeing conditions and well-behaved mounts with little or no declination backlash.<br><br>&nbsp;&nbsp;</body></html>

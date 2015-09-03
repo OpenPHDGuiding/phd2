@@ -39,7 +39,8 @@
 #include "cam_INovaPLC.h"
 #include "DSCAMAPI.h"
 
-Camera_INovaPLCClass::Camera_INovaPLCClass() {
+Camera_INovaPLCClass::Camera_INovaPLCClass()
+{
     Connected = FALSE;
     Name=_T("i-Nova PLC-M");
     FullSize = wxSize(1280,1024);  // Current size of a full frame
@@ -47,7 +48,8 @@ Camera_INovaPLCClass::Camera_INovaPLCClass() {
     HasGainControl = true;  // Can we adjust gain?
 }
 
-bool Camera_INovaPLCClass::Connect() {
+bool Camera_INovaPLCClass::Connect(const wxString& camId)
+{
     DS_CAMERA_STATUS rval;
     rval = DSCameraInit(R_FULL);
     if (rval != STATUS_OK) {
@@ -64,7 +66,8 @@ bool Camera_INovaPLCClass::Connect() {
     return false;
 }
 
-void Camera_INovaPLCClass::InitCapture() {
+void Camera_INovaPLCClass::InitCapture()
+{
     // Run after any exp change / at the start of a loop
     DS_CAMERA_STATUS rval;
     int ExpDur = pFrame->RequestedExposureDuration();
@@ -79,7 +82,8 @@ void Camera_INovaPLCClass::InitCapture() {
         pFrame->Alert(_("Error setting gain"));
 }
 
-bool Camera_INovaPLCClass::ST4PulseGuideScope(int direction, int duration) {
+bool Camera_INovaPLCClass::ST4PulseGuideScope(int direction, int duration)
+{
     unsigned char dircode = 0;
     /*Param:  Value bit0 - RA+
              bit1 - DEC+
@@ -106,7 +110,8 @@ bool Camera_INovaPLCClass::ST4PulseGuideScope(int direction, int duration) {
     return false;
 }
 
-bool Camera_INovaPLCClass::Disconnect() {
+bool Camera_INovaPLCClass::Disconnect()
+{
     Connected = false;
     DSCameraUnInit();
     delete [] RawData;
@@ -149,7 +154,6 @@ bool Camera_INovaPLCClass::Capture(int duration, usImage& img, int options, cons
 
     return false;
 }
-
 
 bool Camera_INovaPLCClass::HasNonGuiCapture(void)
 {

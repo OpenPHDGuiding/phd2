@@ -63,7 +63,7 @@ public:
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    HasNonGuiCapture(void);
-    bool    Connect();
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
     void    InitCapture();
 };

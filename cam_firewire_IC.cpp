@@ -64,7 +64,8 @@ Camera_FirewireClass::Camera_FirewireClass()
 //Camera_FirewireClass::~Camera_FirewireClass () {
 //  ;
 //}
-bool Camera_FirewireClass::Connect() {
+bool Camera_FirewireClass::Connect(const wxString& camId)
+{
     int CamNum, ModeNum;
     bool retval;
     wxArrayString Names;
@@ -244,7 +245,8 @@ bool Camera_FirewireClass::Connect() {
     return false;
 }
 
-bool Camera_FirewireClass::Disconnect() {
+bool Camera_FirewireClass::Disconnect()
+{
     m_pGrabber->stopLive();
     m_pGrabber->closeDev();
     Connected = false;
@@ -252,7 +254,8 @@ bool Camera_FirewireClass::Disconnect() {
     return false;
 }
 
-void Camera_FirewireClass::InitCapture() {
+void Camera_FirewireClass::InitCapture()
+{
     // Set gain
     if (m_pGain != 0) {
         long lval = (long) GuideCameraGain * GainMax / 100;

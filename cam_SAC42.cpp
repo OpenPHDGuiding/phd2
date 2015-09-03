@@ -55,9 +55,8 @@ Camera_SAC42Class::Camera_SAC42Class()
     MaxExposure = 2000;
 }
 
-
-
-bool Camera_SAC42Class::Connect() {
+bool Camera_SAC42Class::Connect(const wxString& camId)
+{
 // returns true on error
     int retval;
 #ifdef SAC42
@@ -74,7 +73,8 @@ bool Camera_SAC42Class::Connect() {
     return false;
 }
 
-bool Camera_SAC42Class::Disconnect() {
+bool Camera_SAC42Class::Disconnect()
+{
 #ifdef SAC42
     FclUninitialize(&hDriver);
     Connected = false;

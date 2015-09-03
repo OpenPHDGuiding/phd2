@@ -38,23 +38,28 @@
 
 class Camera_Atik16Class : public GuideCamera
 {
+    bool m_dllLoaded;
     ArtemisHandle Cam_Handle;
 
 public:
+    Camera_Atik16Class();
+    ~Camera_Atik16Class();
+
+    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    HasNonGuiCapture(void);
-    bool    Connect();
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
 
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
-    Camera_Atik16Class();
 
     bool    Color;
     bool    HSModel;
 
 private:
     bool ST4HasNonGuiMove(void);
+    bool LoadDLL(void);
 };
 
 #endif  //ATIK16DEF

@@ -136,7 +136,7 @@ static bool TryLoadDll(wxString *err)
 
 #endif // __WINDOWS__
 
-bool Camera_ZWO::Connect()
+bool Camera_ZWO::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     wxString err;
     if (!TryLoadDll(&err))
@@ -147,30 +147,52 @@ bool Camera_ZWO::Connect()
 
     // Find available cameras
     int numCameras = ASIGetNumOfConnectedCameras();
-    if (numCameras == 0)
-    {
-        wxMessageBox(_T("No ZWO cameras detected."), _("Error"), wxOK | wxICON_ERROR);
-        return true;
-    }
 
     wxArrayString USBNames;
     for (int i = 0; i < numCameras; i++)
     {
         ASI_CAMERA_INFO info;
         if (ASIGetCameraProperty(&info, i) == ASI_SUCCESS)
-            USBNames.Add(info.Name);
+        {
+            names.Add(info.Name);
+            ids.Add(wxString::Format("%d"), i);
+        }
     }
 
-    int selected = 0;
+    return false;
+}
 
-    if (USBNames.Count() > 1)
+bool Camera_ZWO::Connect(const wxString& camId)
+{
+    wxString err;
+    if (!TryLoadDll(&err))
     {
-        selected = wxGetSingleChoiceIndex(_("Select camera"), _("Camera name"), USBNames);
-        if (selected == -1)
-            return true;
+        wxMessageBox(err, _("Error"), wxOK | wxICON_ERROR);
+        return true;
     }
 
-    wxYield();
+    long idx = -1;
+    if (camId == DEFAULT_CAMERA_ID)
+        idx = 0;
+    else
+        camId.ToLong(&idx);
+
+    // Find available cameras
+    int numCameras = ASIGetNumOfConnectedCameras();
+
+    if (numCameras == 0)
+    {
+        wxMessageBox(_T("No ZWO cameras detected."), _("Error"), wxOK | wxICON_ERROR);
+        return true;
+    }
+
+    if (idx < 0 || idx >= numCameras)
+    {
+        Debug.AddLine(wxString::Format("SXV: invalid camera id: '%s', ncams = %d", camId, numCameras));
+        return true;
+    }
+
+    int selected = (int) idx;
 
     ASI_CAMERA_INFO info;
     if (ASIGetCameraProperty(&info, selected) != ASI_SUCCESS)
@@ -178,8 +200,6 @@ bool Camera_ZWO::Connect()
         wxMessageBox(_("Failed to get camera properties for ZWO ASI Camera."), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
-
-    wxYield();
 
     if (ASIOpenCamera(selected) != ASI_SUCCESS)
     {
@@ -479,5 +499,11 @@ void  Camera_ZWO::ClearGuidePort()
     ASIPulseGuideOff(m_cameraId, ASI_GUIDE_EAST);
     ASIPulseGuideOff(m_cameraId, ASI_GUIDE_WEST);
 }
+
+#if defined(__APPLE__)
+// workaround link error for missing symbol ___exp10 from libASICamera2.a
+#include <math.h>
+extern "C" double __exp10(double x) { return pow(10.0, x); }
+#endif
 
 #endif // ZWO_ASI

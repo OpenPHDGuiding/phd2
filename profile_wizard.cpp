@@ -511,7 +511,7 @@ void ProfileWizard::OnDetectPixelSize(wxCommandEvent& evt)
         if (!camera)
             throw _("Could not initialize camera");
         ShowStatus(_("Connecting to camera..."));
-        bool err = camera->Connect();
+        bool err = camera->Connect(GuideCamera::DEFAULT_CAMERA_ID);
         ShowStatus(wxEmptyString);
         if (err)
             throw _("Could not connect to camera");

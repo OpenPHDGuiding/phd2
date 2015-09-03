@@ -200,6 +200,7 @@ struct GuidingAsstWin : public wxDialog
     double alignmentError; // arc-minutes
     double declination;
 
+    bool m_guideOutputDisabled;
     bool m_savePrimaryMountEnabled;
     bool m_saveSecondaryMountEnabled;
     bool m_measurementsTaken;
@@ -260,6 +261,7 @@ GuidingAsstWin::GuidingAsstWin()
     : wxDialog(pFrame, wxID_ANY, wxGetTranslation(_("Guiding Assistant"))),
       m_measuring(false),
       m_measurementsTaken(false),
+      m_guideOutputDisabled(false),
       m_origSubFrames(-1)
 {
     m_vSizer = new wxBoxSizer(wxVERTICAL);
@@ -641,7 +643,7 @@ void GuidingAsstWin::OnDecMinMove(wxCommandEvent& event)
 
 void GuidingAsstWin::OnDecBacklash(wxCommandEvent& event)
 {
-    BacklashComp* pComp = pMount->GetBacklashCompPtr();
+    BacklashComp *pComp = pMount->GetBacklashComp();
 
     pComp->SetBacklashPulse(m_backlashTool->GetBacklashResultMs());
     pComp->EnableBacklashComp(true);
@@ -858,6 +860,8 @@ void GuidingAsstWin::OnStart(wxCommandEvent& event)
         pSecondaryMount->SetGuidingEnabled(false);
     }
 
+    m_guideOutputDisabled = true;
+
     startStr = wxDateTime::Now().FormatISOCombined(' ');
     m_measuring = true;
     m_startTime = ::wxGetUTCTimeMillis().GetValue();
@@ -870,17 +874,24 @@ void GuidingAsstWin::DoStop(const wxString& status)
     m_recommendgrid->Show(true);
     m_dlgState = STATE_STOPPED;
     m_measurementsTaken = true;
+
     FillInstructions(m_dlgState);
 
-    Debug.AddLine("GuidingAssistant: Re-enabling guide output");
+    if (m_guideOutputDisabled)
+    {
+        Debug.Write(wxString::Format("GuidingAssistant: Re-enabling guide output (%d, %d)\n", m_savePrimaryMountEnabled, m_saveSecondaryMountEnabled));
 
-    if (pMount)
-        pMount->SetGuidingEnabled(m_savePrimaryMountEnabled);
-    if (pSecondaryMount)
-        pSecondaryMount->SetGuidingEnabled(m_saveSecondaryMountEnabled);
+        if (pMount)
+            pMount->SetGuidingEnabled(m_savePrimaryMountEnabled);
+        if (pSecondaryMount)
+            pSecondaryMount->SetGuidingEnabled(m_saveSecondaryMountEnabled);
+
+        m_guideOutputDisabled = false;
+    }
 
     m_start->Enable(pFrame->pGuider->IsGuiding());
     m_stop->Enable(false);
+
     if (m_origSubFrames != -1)
     {
         pCamera->UseSubframes = m_origSubFrames ? true : false;

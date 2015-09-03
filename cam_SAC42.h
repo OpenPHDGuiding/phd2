@@ -48,7 +48,7 @@ protected:
 public:
     Camera_SAC42Class();
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    Connect();
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
     void    InitCapture();
 };

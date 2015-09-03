@@ -1,5 +1,5 @@
 /*
- *  geardialog.cpp
+ *  gear_dialog.cpp
  *  PHD Guiding
  *
  *  Created by Bret McKee
@@ -36,6 +36,7 @@
 #include "profile_wizard.h"
 
 #include <wx/gbsizer.h>
+#include <functional>
 
 BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_CHOICE(GEAR_PROFILES, GearDialog::OnProfileChoice)
@@ -52,6 +53,8 @@ BEGIN_EVENT_TABLE(GearDialog, wxDialog)
     EVT_BUTTON(GEAR_BUTTON_DISCONNECT_ALL, GearDialog::OnButtonDisconnectAll)
 
     EVT_CHOICE(GEAR_CHOICE_CAMERA, GearDialog::OnChoiceCamera)
+    EVT_BUTTON(GEAR_BUTTON_SELECT_CAMERA, GearDialog::OnButtonSelectCamera)
+    EVT_MENU_RANGE(MENU_SELECT_CAMERA_BEGIN, MENU_SELECT_CAMERA_END, GearDialog::OnMenuSelectCamera)
     EVT_BUTTON(GEAR_BUTTON_SETUP_CAMERA, GearDialog::OnButtonSetupCamera)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_CONNECT_CAMERA, GearDialog::OnButtonConnectCamera)
     EVT_TOGGLEBUTTON(GEAR_BUTTON_DISCONNECT_CAMERA, GearDialog::OnButtonDisconnectCamera)
@@ -80,12 +83,6 @@ BEGIN_EVENT_TABLE(GearDialog, wxDialog)
 
     EVT_CHAR_HOOK(GearDialog::OnChar)
 END_EVENT_TABLE()
-
-namespace xpm {
-#include "icons/connected.xpm"
-#include "icons/disconnected.xpm"
-#include "icons/setup.xpm"
-}
 
 /*
  * The Gear Dialog allows the user to select and connect to their hardware.
@@ -229,26 +226,39 @@ void GearDialog::Initialize(void)
     m_pCameras = new wxChoice(this, GEAR_CHOICE_CAMERA, wxDefaultPosition, wxDefaultSize,
                               GuideCamera::List(), 0, wxDefaultValidator, _("Camera"));
     m_gearSizer->Add(m_pCameras, wxGBPosition(0, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
-    m_pSetupCameraButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_CAMERA, wxBitmap(xpm::setup));
+
+#   include "icons/select.png.h"
+    wxBitmap select_bmp(wxBITMAP_PNG_FROM_DATA(select));
+#   include "icons/connected.png.h"
+    wxBitmap connected_bmp(wxBITMAP_PNG_FROM_DATA(connected));
+#   include "icons/disconnected.png.h"
+    wxBitmap disconnected_bmp(wxBITMAP_PNG_FROM_DATA(disconnected));
+#   include "icons/setup.png.h"
+    wxBitmap setup_bmp(wxBITMAP_PNG_FROM_DATA(setup));
+
+    m_selectCameraButton = new wxBitmapButton(this, GEAR_BUTTON_SELECT_CAMERA, select_bmp);
+    m_selectCameraButton->SetToolTip(_("Select which camera to connect to when there are multiple cameras of the same type."));
+    m_gearSizer->Add(m_selectCameraButton, wxGBPosition(0, 2), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_pSetupCameraButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_CAMERA, setup_bmp);
     m_pSetupCameraButton->SetToolTip(_("Camera Setup"));
-    m_gearSizer->Add(m_pSetupCameraButton, wxGBPosition(0, 2), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pSetupCameraButton, wxGBPosition(0, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pConnectCameraButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_CAMERA, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_pConnectCameraButton->SetBitmap(wxBitmap(xpm::disconnected));
-    m_pConnectCameraButton->SetBitmapPressed(wxBitmap(xpm::connected));
-    m_gearSizer->Add(m_pConnectCameraButton, wxGBPosition(0, 3), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_pConnectCameraButton->SetBitmap(disconnected_bmp);
+    m_pConnectCameraButton->SetBitmapPressed(connected_bmp);
+    m_gearSizer->Add(m_pConnectCameraButton, wxGBPosition(0, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     // mount
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(1, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
     m_pScopes = new wxChoice(this, GEAR_CHOICE_SCOPE, wxDefaultPosition, wxDefaultSize,
                              Scope::List(), 0, wxDefaultValidator, _("Mount"));
     m_gearSizer->Add(m_pScopes, wxGBPosition(1, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
-    m_pSetupScopeButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_SCOPE, wxBitmap(xpm::setup));
+    m_pSetupScopeButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_SCOPE, setup_bmp);
     m_pSetupScopeButton->SetToolTip(_("Mount Setup"));
-    m_gearSizer->Add(m_pSetupScopeButton, wxGBPosition(1, 2), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pSetupScopeButton, wxGBPosition(1, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pConnectScopeButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_SCOPE, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_pConnectScopeButton->SetBitmap(wxBitmap(xpm::disconnected));
-    m_pConnectScopeButton->SetBitmapPressed(wxBitmap(xpm::connected));
-    m_gearSizer->Add(m_pConnectScopeButton, wxGBPosition(1, 3), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_pConnectScopeButton->SetBitmap(disconnected_bmp);
+    m_pConnectScopeButton->SetBitmapPressed(connected_bmp);
+    m_gearSizer->Add(m_pConnectScopeButton, wxGBPosition(1, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     // aux mount - used for position/state information when not guiding through ASCOM interface
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Aux Mount"), wxDefaultPosition, wxDefaultSize), wxGBPosition(2, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
@@ -267,13 +277,13 @@ void GearDialog::Initialize(void)
 #endif // ASCOM or INDI
 
     m_gearSizer->Add(m_pAuxScopes, wxGBPosition(2, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
-    m_pSetupAuxScopeButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_AUXSCOPE, wxBitmap(xpm::setup));
+    m_pSetupAuxScopeButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_AUXSCOPE, setup_bmp);
     m_pSetupAuxScopeButton->SetToolTip(_("Aux Mount Setup"));
-    m_gearSizer->Add(m_pSetupAuxScopeButton, wxGBPosition(2, 2), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pSetupAuxScopeButton, wxGBPosition(2, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pConnectAuxScopeButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_AUXSCOPE, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_pConnectAuxScopeButton->SetBitmap(wxBitmap(xpm::disconnected));
-    m_pConnectAuxScopeButton->SetBitmapPressed(wxBitmap(xpm::connected));
-    m_gearSizer->Add(m_pConnectAuxScopeButton, wxGBPosition(2, 3), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_pConnectAuxScopeButton->SetBitmap(disconnected_bmp);
+    m_pConnectAuxScopeButton->SetBitmapPressed(connected_bmp);
+    m_gearSizer->Add(m_pConnectAuxScopeButton, wxGBPosition(2, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     m_moreButton = new wxButton(this, GEAR_BUTTON_MORE, wxEmptyString);
     m_gearSizer->Add(m_moreButton, wxGBPosition(3, 0), wxGBSpan(1, 4), wxALL | /*wxALIGN_CENTER*/ wxALIGN_LEFT, 5);
@@ -283,25 +293,25 @@ void GearDialog::Initialize(void)
     m_pStepGuiders = new wxChoice(this, GEAR_CHOICE_STEPGUIDER, wxDefaultPosition, wxDefaultSize,
                                   StepGuider::List(), 0, wxDefaultValidator, _("AO"));
     m_gearSizer->Add(m_pStepGuiders, wxGBPosition(4, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
-    m_pSetupStepGuiderButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_STEPGUIDER, wxBitmap(xpm::setup));
+    m_pSetupStepGuiderButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_STEPGUIDER, setup_bmp);
     m_pSetupStepGuiderButton->SetToolTip(_("AO Setup"));
-    m_gearSizer->Add(m_pSetupStepGuiderButton, wxGBPosition(4, 2), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pSetupStepGuiderButton, wxGBPosition(4, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pConnectStepGuiderButton = new wxToggleButton( this, GEAR_BUTTON_CONNECT_STEPGUIDER, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_pConnectStepGuiderButton->SetBitmap(wxBitmap(xpm::disconnected));
-    m_pConnectStepGuiderButton->SetBitmapPressed(wxBitmap(xpm::connected));
-    m_gearSizer->Add(m_pConnectStepGuiderButton, wxGBPosition(4, 3), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_pConnectStepGuiderButton->SetBitmap(disconnected_bmp);
+    m_pConnectStepGuiderButton->SetBitmapPressed(connected_bmp);
+    m_gearSizer->Add(m_pConnectStepGuiderButton, wxGBPosition(4, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     // rotator
     m_gearSizer->Add(new wxStaticText(this, wxID_ANY, _("Rotator"), wxDefaultPosition, wxDefaultSize), wxGBPosition(5, 0), wxGBSpan(1, 1), wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
     m_pRotators = new wxChoice(this, GEAR_CHOICE_ROTATOR, wxDefaultPosition, wxDefaultSize, Rotator::List(), 0, wxDefaultValidator, _("Rotator"));
     m_gearSizer->Add(m_pRotators, wxGBPosition(5, 1), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
-    m_pSetupRotatorButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_ROTATOR, wxBitmap(xpm::setup));
+    m_pSetupRotatorButton = new wxBitmapButton(this, GEAR_BUTTON_SETUP_ROTATOR, setup_bmp);
     m_pSetupRotatorButton->SetToolTip(_("Rotator Setup"));
-    m_gearSizer->Add(m_pSetupRotatorButton, wxGBPosition(5, 2), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_gearSizer->Add(m_pSetupRotatorButton, wxGBPosition(5, 3), wxGBSpan(1, 1), wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
     m_pConnectRotatorButton = new wxToggleButton(this, GEAR_BUTTON_CONNECT_ROTATOR, _("Disconnect"), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_pConnectRotatorButton->SetBitmap(wxBitmap(xpm::disconnected));
-    m_pConnectRotatorButton->SetBitmapPressed(wxBitmap(xpm::connected));
-    m_gearSizer->Add(m_pConnectRotatorButton, wxGBPosition(5, 3), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
+    m_pConnectRotatorButton->SetBitmap(disconnected_bmp);
+    m_pConnectRotatorButton->SetBitmapPressed(connected_bmp);
+    m_gearSizer->Add(m_pConnectRotatorButton, wxGBPosition(5, 4), wxGBSpan(1, 1), wxBOTTOM | wxTOP | wxRIGHT | wxEXPAND | wxALIGN_CENTER_VERTICAL, 5);
 
     // Setup the bottom row of buttons
 
@@ -328,7 +338,7 @@ void GearDialog::Initialize(void)
     // fit everything with the sizers
     SetSizerAndFit(pTopLevelSizer);
 
-    UpdateAdvancedDialog();
+    UpdateAdvancedDialog(false);
 }
 
 void GearDialog::LoadGearChoices(void)
@@ -452,7 +462,7 @@ void GearDialog::EndModal(int retCode)
 
     wxDialog::EndModal(retCode);
 
-    UpdateAdvancedDialog();
+    UpdateAdvancedDialog(true);
 
     if (m_showDarksDialog)
     {
@@ -470,6 +480,7 @@ void GearDialog::UpdateCameraButtonState(void)
     // Now set up the buttons to match our current state
     if (!m_pCamera)
     {
+        m_selectCameraButton->Enable(false);
         m_pSetupCameraButton->Enable(false);
         m_pConnectCameraButton->Enable(false);
         m_pConnectCameraButton->SetLabel(_("Connect"));
@@ -488,6 +499,7 @@ void GearDialog::UpdateCameraButtonState(void)
 
         if (m_pCamera->Connected)
         {
+            m_selectCameraButton->Enable(false);
             m_pConnectCameraButton->SetLabel(_("Disconnect"));
             m_pConnectCameraButton->SetValue(true);
             m_pConnectCameraButton->SetToolTip(_("Disconnect from camera"));
@@ -496,6 +508,7 @@ void GearDialog::UpdateCameraButtonState(void)
         }
         else
         {
+            m_selectCameraButton->Enable(true);
             m_pConnectCameraButton->SetLabel(_("Connect"));
             m_pConnectCameraButton->SetValue(false);
             m_pConnectCameraButton->SetToolTip(_("Connect to camera"));
@@ -833,6 +846,72 @@ static void AutoLoadDarks()
     }
 }
 
+static wxString CameraSelectionKey(const GuideCamera *camera)
+{
+    std::hash<std::string> hash_fn;
+    std::string name(camera->Name.c_str());
+    return wxString::Format("/cam_hash/%lx/whichCamera", (unsigned long) hash_fn(name));
+}
+
+static wxString SelectedCameraId(const GuideCamera *camera)
+{
+    wxString key = CameraSelectionKey(camera);
+    return pConfig->Profile.GetString(key, GuideCamera::DEFAULT_CAMERA_ID);
+}
+
+void GearDialog::OnButtonSelectCamera(wxCommandEvent& event)
+{
+    if (!m_pCamera)
+        return;
+
+    if (m_pCamera->HandleSelectCameraButtonClick(event))
+        return;
+
+    wxArrayString names;
+    bool error = m_pCamera->EnumCameras(names, m_cameraIds);
+    if (error || names.size() == 0)
+    {
+        names.clear();
+        names.Add(_("No cameras found"));
+        m_cameraIds.clear();
+    }
+
+    wxString selectedId = SelectedCameraId(m_pCamera);
+
+    wxMenu *menu = new wxMenu();
+    int id = MENU_SELECT_CAMERA_BEGIN;
+    for (int idx = 0; idx < names.size(); idx++)
+    {
+        wxMenuItem *item = menu->AppendRadioItem(id, names.Item(idx));
+        if (idx < m_cameraIds.size())
+        {
+            const wxString& camId = m_cameraIds[idx];
+            if (camId == selectedId || (idx == 0 && selectedId == GuideCamera::DEFAULT_CAMERA_ID))
+                item->Check(true);
+        }
+        if (++id > MENU_SELECT_CAMERA_END)
+        {
+            Debug.AddLine("Truncating camera list!");
+            break;
+        }
+    }
+
+    PopupMenu(menu, m_selectCameraButton->GetPosition().x,
+        m_selectCameraButton->GetPosition().y + m_selectCameraButton->GetSize().GetHeight());
+
+    delete menu;
+}
+
+void GearDialog::OnMenuSelectCamera(wxCommandEvent& event)
+{
+    int idx = event.GetId() - MENU_SELECT_CAMERA_BEGIN;
+    if (idx >= 0 && idx < m_cameraIds.size())
+    {
+        wxString key = CameraSelectionKey(m_pCamera);
+        pConfig->Profile.SetString(key, m_cameraIds[idx]);
+    }
+}
+
 void GearDialog::OnButtonSetupCamera(wxCommandEvent& event)
 {
     m_pCamera->ShowPropertyDialog();
@@ -883,7 +962,8 @@ bool GearDialog::DoConnectCamera(void)
         }
         pFrame->SetStatusText(_("Connecting to Camera ..."));
 
-        if (m_pCamera->Connect())
+        wxString cameraId = SelectedCameraId(m_pCamera);
+        if (m_pCamera->Connect(cameraId))
         {
             throw THROW_INFO("DoConnectCamera: connect failed");
         }
@@ -1192,13 +1272,13 @@ void GearDialog::ShowMoreGear()
 {
     if (m_showMoreGear)
     {
-        for (int i = 13; i <= 13 + 8; i++)
+        for (int i = 14; i <= 14 + 8; i++)
             m_gearSizer->Show(i, true);
         m_moreButton->SetLabel(_("Hide"));
     }
     else
     {
-        for (int i = 13; i <= 13 + 8; i++)
+        for (int i = 14; i <= 14 + 8; i++)
             m_gearSizer->Hide(i);
         m_moreButton->SetLabel(_("More Equipment ..."));
     }
@@ -1869,7 +1949,7 @@ void GearDialog::OnProfileSave(wxCommandEvent& event)
     }
 }
 
-void GearDialog::UpdateAdvancedDialog(void)
+void GearDialog::UpdateAdvancedDialog(bool preLoad)
 {
     MyFrame *frame = static_cast<MyFrame *>(GetParent()); // global pFrame may not have initialized yet
 
@@ -1896,10 +1976,12 @@ void GearDialog::UpdateAdvancedDialog(void)
         frame->pAdvancedDialog->UpdateRotatorPage();
         m_rotatorUpdated = false;
     }
+    if (preLoad)
+        frame->pAdvancedDialog->Preload();
 }
 
 void GearDialog::OnAdvanced(wxCommandEvent& event)
 {
-    UpdateAdvancedDialog();
+    UpdateAdvancedDialog(false);
     pFrame->OnAdvanced(event);
 }

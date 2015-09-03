@@ -35,6 +35,34 @@
 #ifndef ROTATOR_INCLUDED
 #define ROTATOR_INCLUDED
 
+class Rotator;
+
+class RotatorConfigDialogCtrlSet : ConfigDialogCtrlSet
+{
+    Rotator *m_rotator;
+    wxCheckBox *m_cbReverse;
+
+public:
+    RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~RotatorConfigDialogCtrlSet() {};
+    virtual void LoadValues(void);
+    virtual void UnloadValues(void);
+};
+
+class RotatorConfigDialogPane : public ConfigDialogPane
+{
+    Rotator *m_rotator;
+    wxCheckBox *m_cbReverse;
+
+public:
+    RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator);
+    ~RotatorConfigDialogPane(void) {};
+
+    void LoadValues(void) {};
+    void UnloadValues(void) {};
+    virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+};
+
 class Rotator
 {
     bool m_connected;
@@ -58,6 +86,7 @@ public:
     virtual bool IsConnected(void) const;
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
+    RotatorConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, Rotator* pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
     virtual void ShowPropertyDialog(void);
 
     // get the display name of the rotator device

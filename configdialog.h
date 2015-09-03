@@ -35,17 +35,23 @@
 #ifndef CONFIG_DIALOG_H_INCLUDED
 #define CONFIG_DIALOG_H_INCLUDED
 
+enum BRAIN_CTRL_IDS : unsigned int;
+struct BrainCtrlInfo;
+
 class ConfigDialogPane : public wxStaticBoxSizer
 {
 protected:
     wxWindow *m_pParent;
 public:
     ConfigDialogPane(const wxString& heading, wxWindow *pParent);
-    virtual ~ConfigDialogPane(void);
+    virtual ~ConfigDialogPane(void) {};
 
     virtual void LoadValues(void) = 0;
     virtual void UnloadValues(void) = 0;
     virtual void Undo();
+    wxWindow* GetSingleCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id);
+    wxSizer*  GetSizerCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id);
+    void CondAddCtrl(wxSizer* szr, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags=0);
 
 protected:
     wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = NULL);
@@ -58,4 +64,35 @@ protected:
     int StringArrayWidth(wxString string[], int nElements);
 };
 
+class MyFrame;
+class AdvancedDialog;
+
+// ConfigDialogCtrlSet objects create and manage the UI controls and associated semantics - but they don't control tab locations or layout - those functions
+// are done by the ConfigDialogPane objects
+class ConfigDialogCtrlSet
+{
+protected:
+    wxWindow* m_pParent;
+    AdvancedDialog* m_pAdvDlg;
+
+public:
+    ConfigDialogCtrlSet(wxWindow* pParent, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual ~ConfigDialogCtrlSet(void) {};
+
+    virtual void LoadValues(void) = 0;
+    virtual void UnloadValues(void) = 0;
+
+public:
+    wxSizer *MakeLabeledControl(BRAIN_CTRL_IDS id, const wxString& label, wxWindow *pControl, const wxString& toolTip);
+    void AddMapElement(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS, wxObject *pElem);
+    void AddGroup(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxSizer *pSizer);      // Sizer
+    void AddCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl);      // Bare control
+    void AddLabeledCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip);
+    void AddCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip);     // Control with tooltip
+
+    wxWindow* GetParentWindow(BRAIN_CTRL_IDS id);
+
+    int StringWidth(const wxString& string);
+    int StringArrayWidth(wxString string[], int nElements);
+};
 #endif // CONFIG_DIALOG_H_INCLUDED

@@ -60,7 +60,7 @@ Camera_LEParallelWebcamClass::~Camera_LEParallelWebcamClass(void)
     delete m_pParallelPort;
 }
 
-bool Camera_LEParallelWebcamClass::Connect()
+bool Camera_LEParallelWebcamClass::Connect(const wxString& camId)
 {
     bool bError = false;
 
@@ -91,7 +91,7 @@ bool Camera_LEParallelWebcamClass::Connect()
 
         pConfig->Profile.SetString("/camera/parallelLEWebcam/parallelport", choice);
 
-        if (Camera_LEWebcamClass::Connect())
+        if (Camera_LEWebcamClass::Connect(camId))
         {
             throw ERROR_INFO("base class Connect() failed");
         }

@@ -55,13 +55,13 @@ Camera_LEWebcamClass::~Camera_LEWebcamClass(void)
 {
 }
 
-bool Camera_LEWebcamClass::Connect()
+bool Camera_LEWebcamClass::Connect(const wxString& camId)
 {
     bool bError = false;
 
     try
     {
-        if (Camera_WDMClass::Connect())
+        if (Camera_WDMClass::Connect(camId))
         {
             throw ERROR_INFO("Unable to open base class camera");
         }

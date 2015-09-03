@@ -263,6 +263,11 @@ int StepGuiderSimulator::MaxPosition(GUIDE_DIRECTION direction) const
     return SimAoParams::max_position;
 }
 
+bool StepGuiderSimulator::HasNonGuiMove(void)
+{
+    return true;
+}
+
 #endif // STEPGUIDER_SIMULATOR
 
 #ifdef ROTATOR_SIMULATOR
@@ -970,7 +975,7 @@ Camera_SimClass::Camera_SimClass()
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
 }
 
-bool Camera_SimClass::Connect()
+bool Camera_SimClass::Connect(const wxString& camId)
 {
     load_sim_params();
     sim->Initialize();

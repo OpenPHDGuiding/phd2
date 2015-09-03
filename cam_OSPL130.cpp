@@ -27,9 +27,8 @@ Camera_OpticstarPL130Class::Camera_OpticstarPL130Class()
     Color = false;
 }
 
-
-
-bool Camera_OpticstarPL130Class::Connect() {
+bool Camera_OpticstarPL130Class::Connect(const wxString& camId)
+{
 // returns true on error
     int retval;
     if (!DLLExists("OSPL130RT.dll")) {
@@ -47,8 +46,8 @@ bool Camera_OpticstarPL130Class::Connect() {
     return false;
 }
 
-
-bool Camera_OpticstarPL130Class::Disconnect() {
+bool Camera_OpticstarPL130Class::Disconnect()
+{
     OSPL130_Finalize();
     Connected = false;
     if (RawData) delete [] RawData;

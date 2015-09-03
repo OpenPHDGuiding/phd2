@@ -66,7 +66,8 @@ Camera_FirewireClass::~Camera_FirewireClass()
   }
 }
 
-bool Camera_FirewireClass::Connect() {
+bool Camera_FirewireClass::Connect(const wxString& camId)
+{
     int err, CamNum;
     uint32_t i;
     dc1394video_mode_t vidmode;
@@ -229,7 +230,8 @@ bool Camera_FirewireClass::Connect() {
     return false;
 }
 
-void Camera_FirewireClass::InitCapture() {
+void Camera_FirewireClass::InitCapture()
+{
     // Set gain
     uint32_t Min;
     uint32_t Max;
@@ -240,7 +242,8 @@ void Camera_FirewireClass::InitCapture() {
     dc1394_feature_set_value(camera,DC1394_FEATURE_GAIN, NewVal);
 }
 
-bool Camera_FirewireClass::Disconnect() {
+bool Camera_FirewireClass::Disconnect()
+{
     if (camera) {
         dc1394_video_set_transmission(camera,DC1394_OFF);
         dc1394_camera_free(camera);

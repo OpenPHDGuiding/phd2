@@ -45,7 +45,7 @@ class Camera_KWIQGuiderClass : public GuideCamera
 public:
     Camera_KWIQGuiderClass();
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect();
+    bool Connect(const wxString& camId);
     bool Disconnect();
     bool ST4PulseGuideScope(int direction, int duration);
 };

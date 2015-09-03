@@ -105,7 +105,7 @@ protected:
 public:
     Camera_INDIClass();
     ~Camera_INDIClass();
-    bool    Connect();      // Opens up and connects to cameras
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
     bool    HasNonGuiCapture(void);
     void    ShowPropertyDialog();

@@ -107,7 +107,7 @@ Camera_QHY5IIBase::~Camera_QHY5IIBase()
     QHYSDKUninit();
 }
 
-bool Camera_QHY5IIBase::Connect()
+bool Camera_QHY5IIBase::Connect(const wxString& camId)
 {
     if (QHYSDKInit())
     {

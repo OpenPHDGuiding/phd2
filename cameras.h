@@ -76,6 +76,7 @@
 # define LE_PARALLEL_CAMERA
 # define LE_LXUSB_CAMERA
 # define ZWO_ASI
+# define ALTAIR
 
 #ifdef CLOSED_SOURCE
 # define OS_PL130  // Opticstar's library is closed

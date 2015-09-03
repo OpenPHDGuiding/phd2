@@ -118,7 +118,7 @@ Camera_SSPIAGClass::Camera_SSPIAGClass()
     RawBuffer = NULL;
 }
 
-bool Camera_SSPIAGClass::Connect()
+bool Camera_SSPIAGClass::Connect(const wxString& camId)
 {
     // returns true on error
     CameraDLL = LoadLibrary(TEXT("astroDLLsspiag"));

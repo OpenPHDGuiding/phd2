@@ -45,7 +45,8 @@
 
 // Code originally from Darryl @ Equinox
 
-OSErr ScopeEquinox::E6AESendRoutine(double ewCorrection, double nsCorrection, int mountcode) {
+OSErr ScopeEquinox::E6AESendRoutine(double ewCorrection, double nsCorrection, int mountcode)
+{
 // correction values (+- seconds) to send to E6
 
     OSErr err;
@@ -127,7 +128,8 @@ OSErr ScopeEquinox::E6AESendRoutine(double ewCorrection, double nsCorrection, in
     return 0;
 }
 
-bool ScopeEquinox::Connect() {
+bool ScopeEquinox::Connect()
+{
     // Check the E6 connection by sending 0,0 to it and checking E6Return
     OSErr err = E6AESendRoutine(0.0,0.0,SCOPE_EQUINOX);
     wxString prefix = "E6";
@@ -164,7 +166,10 @@ Mount::MOVE_RESULT ScopeEquinox::Guide(GUIDE_DIRECTION direction, int duration)
         case WEST:
             EWTime = (double) duration / -1000.0;
             break;
+        case NONE:
+            break;
     }
+
     OSErr err = E6AESendRoutine(EWTime, NSTime,SCOPE_EQUINOX);
     wxString prefix = "E6";
     //if (mountcode == SCOPE_EQMAC) prefix = "EQMAC";

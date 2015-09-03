@@ -281,7 +281,7 @@ Camera_SSAGClass::Camera_SSAGClass()
     PixelSize = 5.2;
 }
 
-bool Camera_SSAGClass::Connect()
+bool Camera_SSAGClass::Connect(const wxString& camId)
 {
     // returns true on error
 

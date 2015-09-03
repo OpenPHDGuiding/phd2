@@ -36,21 +36,23 @@
 #ifndef SXVDEF
 #define SXVDEF
 
+#include "camera.h"
+
 #if defined (__WINDOWS__)
 # include "cameras/SXUSB.h"
 typedef struct t_sxccd_params sxccd_params_t;
+typedef HANDLE sxccd_handle_t;
+# define SXCCD_EXP_FLAGS_NOWIPE_FRAME CCD_EXP_FLAGS_NOWIPE_FRAME
+# define SXCCD_EXP_FLAGS_FIELD_ODD    CCD_EXP_FLAGS_FIELD_ODD
+# define SXCCD_EXP_FLAGS_FIELD_BOTH   CCD_EXP_FLAGS_FIELD_BOTH
 #else
 # include "cameras/SXMacLib.h"
+typedef void *sxccd_handle_t;
 #endif
 
 class Camera_SXVClass : public GuideCamera
 {
-#if defined (__WINDOWS__)
-    HANDLE hCam;
-#else
-    void *hCam;
-#endif
-
+    sxccd_handle_t hCam;
     sxccd_params_t CCDParams;
     unsigned short *RawData;
     usImage tmpImg;
@@ -65,8 +67,9 @@ public:
 
     Camera_SXVClass();
 
+    bool EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool Connect();
+    bool Connect(const wxString& camId);
     bool Disconnect();
     void ShowPropertyDialog();
     const wxSize& DarkFrameSize() { return m_darkFrameSize; }

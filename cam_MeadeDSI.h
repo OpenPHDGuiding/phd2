@@ -42,14 +42,17 @@ class DsiDevice;
 
 class Camera_DSIClass : public GuideCamera
 {
-private:
     DsiDevice *MeadeCam;
+
 public:
+    Camera_DSIClass();
+    ~Camera_DSIClass();
+
+    bool    EnumCameras(wxArrayString& names, wxArrayString& ids);
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    HasNonGuiCapture(void);
-    bool    Connect();
+    bool    Connect(const wxString& camId);
     bool    Disconnect();
-    Camera_DSIClass();
 };
 
 #endif

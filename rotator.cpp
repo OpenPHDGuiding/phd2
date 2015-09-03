@@ -140,29 +140,42 @@ void Rotator::SetReversed(bool val)
     pConfig->Profile.SetBoolean("/rotator/isReversed", val);
 }
 
-class RotatorConfigDialogPane : public ConfigDialogPane
+RotatorConfigDialogPane::RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator)
+: ConfigDialogPane(_("Rotator Settings"), parent), m_rotator(rotator)
 {
-    Rotator *m_rotator;
-    wxCheckBox *m_cbReverse;
 
-public:
-    RotatorConfigDialogPane(wxWindow *parent, Rotator *rotator)
-        : ConfigDialogPane(_("Rotator Settings"), parent), m_rotator(rotator)
-    {
-        m_cbReverse = new wxCheckBox(parent, wxID_ANY, _("Reversed"));
-        DoAdd(m_cbReverse, _("Check to use the reverse of the angle reported by the rotator"));
-    }
-    ~RotatorConfigDialogPane(void) { }
+}
 
-    void LoadValues(void) {
-        m_cbReverse->SetValue(m_rotator->IsReversed());
-    }
-    void UnloadValues(void) {
-        m_rotator->SetReversed(m_cbReverse->GetValue());
-    }
-};
+void RotatorConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    this->Add(GetSingleCtrl(CtrlMap, AD_cbRotatorReverse), wxSizerFlags(0).Border(wxALL, 10));
+    this->Layout();
+    Fit(m_pParent);
+}
 
 ConfigDialogPane *Rotator::GetConfigDialogPane(wxWindow *parent)
 {
     return new RotatorConfigDialogPane(parent, this);
+}
+
+RotatorConfigDialogCtrlSet *Rotator::GetConfigDlgCtrlSet(wxWindow *pParent, Rotator* pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+{
+    return new RotatorConfigDialogCtrlSet(pParent, pRotator, pAdvancedDialog, CtrlMap);
+}
+
+RotatorConfigDialogCtrlSet::RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap):
+ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
+{
+    m_rotator = pRotator;
+    m_cbReverse = new wxCheckBox(GetParentWindow(AD_cbRotatorReverse), wxID_ANY, _("Reverse sign of angle"));
+    AddCtrl(CtrlMap, AD_cbRotatorReverse, m_cbReverse);
+}
+
+void RotatorConfigDialogCtrlSet::LoadValues()
+{
+    m_cbReverse->SetValue(m_rotator->IsReversed());
+}
+void RotatorConfigDialogCtrlSet::UnloadValues()
+{
+    m_rotator->SetReversed(m_cbReverse->GetValue());
 }
