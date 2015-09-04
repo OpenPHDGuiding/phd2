@@ -1375,7 +1375,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pScope = pScope;
 }
 
-void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
     // All of the scope UI controls are hosted in the parent
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
@@ -1391,13 +1391,13 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     MountConfigDialogPane::UnloadValues();
 }
 
-MountConfigDialogCtrlSet *Scope::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+MountConfigDialogCtrlSet *Scope::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
-    return new ScopeConfigDialogCtrlSet(pParent, (Scope*) pScope, pAdvancedDialog, CtrlMap);
+    return new ScopeConfigDialogCtrlSet(pParent, (Scope *) pScope, pAdvancedDialog, CtrlMap);
 }
 
-ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
-MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
+ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+    : MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
 {
     int width;
     bool enableCtrls = pScope != NULL;

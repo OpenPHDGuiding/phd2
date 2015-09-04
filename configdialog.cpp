@@ -107,41 +107,42 @@ void ConfigDialogPane::Undo(void)
 {
 }
 
-wxWindow* ConfigDialogPane::GetSingleCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id)
+wxWindow *ConfigDialogPane::GetSingleCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id)
 {
-    wxWindow* ctrl = NULL;
-    try
+    wxWindow *ctrl = 0;
+    BrainCtrlIdMap::iterator it = CtrlMap.find(id);
+    if (it != CtrlMap.end())
     {
-        ctrl = (wxWindow*)(CtrlMap.at(id).panelCtrl);
-        if (ctrl != NULL)
-            CtrlMap[id].isPositioned = true;
+        ctrl = static_cast<wxWindow *>(it->second.panelCtrl);
+        if (ctrl)
+            it->second.isPositioned = true;
     }
-    catch (...)
-    {
-
-    }
-
-    return (ctrl);           // May return null but client can use CondAddCtrl
+    return ctrl;           // May return null but client can use CondAddCtrl
 }
 
 // Handle the case where a control is not created because of state.  wxWidgets handles a null window correctly in 'Add' but the behavior
 // is technically undocumented.
-void ConfigDialogPane::CondAddCtrl(wxSizer* szr, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags)
+void ConfigDialogPane::CondAddCtrl(wxSizer *szr, BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags)
 {
-    wxWindow* ctrl = GetSingleCtrl(CtrlMap, id);
+    wxWindow *ctrl = GetSingleCtrl(CtrlMap, id);
     if (ctrl)
         szr->Add(ctrl, flags);
 }
 
-wxSizer* ConfigDialogPane::GetSizerCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id)
+wxSizer *ConfigDialogPane::GetSizerCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id)
 {
-    wxSizer* ctrl = (wxSizer*)(CtrlMap.at(id).panelCtrl);
-    if (ctrl != NULL)
-        CtrlMap[id].isPositioned = true;
-    return (ctrl);           // May return null, won't add entry in CtrlMap
+    wxSizer *ctrl = 0;
+    BrainCtrlIdMap::iterator it = CtrlMap.find(id);
+    if (it != CtrlMap.end())
+    {
+        ctrl = static_cast<wxSizer *>(it->second.panelCtrl);
+        if (ctrl)
+            it->second.isPositioned = true;
+    }
+    return ctrl;           // May return null, won't add entry in CtrlMap
 }
 
-ConfigDialogCtrlSet::ConfigDialogCtrlSet(wxWindow *pParent, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo>& CtrlMap)
+ConfigDialogCtrlSet::ConfigDialogCtrlSet(wxWindow *pParent, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     m_pParent = pParent;
     m_pAdvDlg = pAdvancedDialog;
@@ -179,24 +180,24 @@ wxWindow* ConfigDialogCtrlSet::GetParentWindow(BRAIN_CTRL_IDS id)
 }
 
 // Base method for adding map elements
-void ConfigDialogCtrlSet::AddMapElement(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxObject *pElem)
+void ConfigDialogCtrlSet::AddMapElement(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxObject *pElem)
 {
     CtrlMap[id] = BrainCtrlInfo(id, pElem);
 }
 
 // Simple control
-void ConfigDialogCtrlSet::AddCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl)
+void ConfigDialogCtrlSet::AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl)
 {
     AddMapElement(CtrlMap, id, pCtrl);
 }
 // Control with tooltip
-void ConfigDialogCtrlSet::AddCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip)
+void ConfigDialogCtrlSet::AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip)
 {
     pCtrl->SetToolTip(toolTip);
     AddMapElement(CtrlMap, id, pCtrl);
 }
 // Control group via sizer
-void ConfigDialogCtrlSet::AddGroup(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxSizer *pSizer)
+void ConfigDialogCtrlSet::AddGroup(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxSizer *pSizer)
 {
     AddMapElement(CtrlMap, id, pSizer);
 }
@@ -212,7 +213,7 @@ wxSizer *ConfigDialogCtrlSet::MakeLabeledControl(BRAIN_CTRL_IDS id, const wxStri
 
     return pSizer;
 }
-void ConfigDialogCtrlSet::AddLabeledCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip)
+void ConfigDialogCtrlSet::AddLabeledCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip)
 {
     AddGroup(CtrlMap, id, MakeLabeledControl(id, Label, pCtrl, toolTip));
 }

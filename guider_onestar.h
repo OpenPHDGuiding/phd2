@@ -48,7 +48,7 @@ class GuiderOneStarConfigDialogCtrlSet : public GuiderConfigDialogCtrlSet
 {
 
 public:
-    GuiderOneStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    GuiderOneStarConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~GuiderOneStarConfigDialogCtrlSet();
 
     GuiderOneStar *m_pGuiderOneStar;
@@ -82,7 +82,7 @@ public:
 
         virtual void LoadValues(void) {};
         virtual void UnloadValues(void) {};
-        void LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+        void LayoutControls(Guider *pGuider, BrainCtrlIdMap& CtrlMap);
     };
 
     bool GetMassChangeThresholdEnabled(void);
@@ -111,7 +111,7 @@ public:
     wxString GetSettingsSummary();
 
     Guider::GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
 
     void LoadProfileSettings(void);
 

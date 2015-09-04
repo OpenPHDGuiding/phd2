@@ -43,7 +43,7 @@ class RotatorConfigDialogCtrlSet : ConfigDialogCtrlSet
     wxCheckBox *m_cbReverse;
 
 public:
-    RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    RotatorConfigDialogCtrlSet(wxWindow *pParent, Rotator *pRotator, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~RotatorConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
@@ -60,7 +60,7 @@ public:
 
     void LoadValues(void) {};
     void UnloadValues(void) {};
-    virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual void LayoutControls(wxPanel* pParent, BrainCtrlIdMap& CtrlMap);
 };
 
 class Rotator
@@ -86,7 +86,7 @@ public:
     virtual bool IsConnected(void) const;
 
     virtual ConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    RotatorConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, Rotator* pRotator, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    RotatorConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, Rotator* pRotator, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual void ShowPropertyDialog(void);
 
     // get the display name of the rotator device

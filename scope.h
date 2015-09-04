@@ -66,7 +66,7 @@ class ScopeConfigDialogCtrlSet : public MountConfigDialogCtrlSet
     void OnCalcCalibrationStep(wxCommandEvent& evt);
 
 public:
-    ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~ScopeConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
@@ -139,7 +139,7 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
-        virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+        virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
     };
 
     class ScopeGraphControlPane : public GraphControlPane
@@ -177,7 +177,7 @@ public:
     virtual bool SetDecGuideMode(int decGuideMode);
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
 
     virtual GraphControlPane *GetGraphControlPane(wxWindow *pParent, const wxString& label);
     virtual wxString GetSettingsSummary();

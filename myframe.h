@@ -87,7 +87,7 @@ public:
     MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
     virtual ~MyFrameConfigDialogPane(void) {};
 
-    void LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    void LayoutControls(BrainCtrlIdMap& CtrlMap);
     virtual void LoadValues(void) {};
     virtual void UnloadValues(void) {};
 };
@@ -115,7 +115,7 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     void OnDirSelect(wxCommandEvent& evt);
 
 public:
-    MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~MyFrameConfigDialogCtrlSet(void) {};
 
     virtual void LoadValues(void);
@@ -320,7 +320,7 @@ public:
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
 
     struct EXPOSE_REQUEST
     {

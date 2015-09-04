@@ -35,8 +35,83 @@
 #ifndef CONFIG_DIALOG_H_INCLUDED
 #define CONFIG_DIALOG_H_INCLUDED
 
-enum BRAIN_CTRL_IDS : unsigned int;
-struct BrainCtrlInfo;
+// Segmented by the tab page location seen in the UI
+enum BRAIN_CTRL_IDS
+{
+    AD_UNASSIGNED,
+    AD_cbResetConfig,
+    AD_cbDontAsk,
+    AD_szImageLoggingFormat,
+    AD_szLanguage,
+    AD_szLogFileInfo,
+    AD_szDitherRAOnly,
+    AD_szDitherScale,
+    AD_GLOBAL_TAB_BOUNDARY,        //-----end of global tab controls
+    AD_cbUseSubFrames,
+    AD_szNoiseReduction,
+    AD_szAutoExposure,
+    AD_szCameraTimeout,
+    AD_szTimeLapse,
+    AD_szPixelSize,
+    AD_szGain,
+    AD_szDelay,
+    AD_szPort,
+    AD_CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
+    AD_cbScaleImages,
+    AD_szFocalLength,
+    AD_cbAutoRestoreCal,
+    AD_cbFastRecenter,
+    AD_szStarTracking,
+    AD_cbClearCalibration,
+    AD_cbEnableGuiding,
+    AD_szCalibrationDuration,
+    AD_cbReverseDecOnFlip,
+    AD_cbAssumeOrthogonal,
+    AD_cbSlewDetection,
+    AD_cbUseDecComp,
+    AD_GUIDER_TAB_BOUNDARY,        // --------------- end of guiding tab controls
+    AD_cbDecComp,
+    AD_szDecCompAmt,
+    AD_szMaxRAAmt,
+    AD_szMaxDecAmt,
+    AD_szDecGuideMode,
+    AD_MOUNT_TAB_BOUNDARY,          // ----------- end of mount tab controls
+    AD_szCalStepsPerIteration,
+    AD_szSamplesToAverage,
+    AD_szBumpPercentage,
+    AD_szBumpSteps,
+    AD_cbBumpOnDither,
+    AD_cbClearAOCalibration,
+    AD_cbEnableAOGuiding,
+    AD_cbRotatorReverse,
+    AD_DEVICES_TAB_BOUNDARY         // ----------- end of devices tab controls
+
+};
+
+struct BrainCtrlInfo
+{
+    BRAIN_CTRL_IDS ctrlId;
+    wxObject *panelCtrl;
+    bool isPositioned;           // debug only
+
+    BrainCtrlInfo()
+        :
+        ctrlId(AD_UNASSIGNED),
+        panelCtrl(0),
+        isPositioned(false)
+    {
+    }
+
+    BrainCtrlInfo(BRAIN_CTRL_IDS id, wxObject *ctrl)
+        :
+        ctrlId(id),
+        panelCtrl(ctrl),
+        isPositioned(false)
+    {
+    }
+};
+
+typedef std::map<BRAIN_CTRL_IDS, BrainCtrlInfo> BrainCtrlIdMap;
 
 class ConfigDialogPane : public wxStaticBoxSizer
 {
@@ -49,9 +124,10 @@ public:
     virtual void LoadValues(void) = 0;
     virtual void UnloadValues(void) = 0;
     virtual void Undo();
-    wxWindow* GetSingleCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id);
-    wxSizer*  GetSizerCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id);
-    void CondAddCtrl(wxSizer* szr, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags=0);
+
+    wxWindow *GetSingleCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id);
+    wxSizer *GetSizerCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id);
+    void CondAddCtrl(wxSizer *szr, BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxSizerFlags& flags = 0);
 
 protected:
     wxSizer *MakeLabeledControl(const wxString& label, wxWindow *pControl, const wxString& toolTip, wxWindow *pControl2 = NULL);
@@ -72,11 +148,11 @@ class AdvancedDialog;
 class ConfigDialogCtrlSet
 {
 protected:
-    wxWindow* m_pParent;
-    AdvancedDialog* m_pAdvDlg;
+    wxWindow *m_pParent;
+    AdvancedDialog *m_pAdvDlg;
 
 public:
-    ConfigDialogCtrlSet(wxWindow* pParent, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    ConfigDialogCtrlSet(wxWindow *pParent, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~ConfigDialogCtrlSet(void) {};
 
     virtual void LoadValues(void) = 0;
@@ -84,13 +160,13 @@ public:
 
 public:
     wxSizer *MakeLabeledControl(BRAIN_CTRL_IDS id, const wxString& label, wxWindow *pControl, const wxString& toolTip);
-    void AddMapElement(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS, wxObject *pElem);
-    void AddGroup(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxSizer *pSizer);      // Sizer
-    void AddCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl);      // Bare control
-    void AddLabeledCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip);
-    void AddCtrl(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip);     // Control with tooltip
+    void AddMapElement(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS, wxObject *pElem);
+    void AddGroup(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxSizer *pSizer);      // Sizer
+    void AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl);      // Bare control
+    void AddLabeledCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip);
+    void AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip);     // Control with tooltip
 
-    wxWindow* GetParentWindow(BRAIN_CTRL_IDS id);
+    wxWindow *GetParentWindow(BRAIN_CTRL_IDS id);
 
     int StringWidth(const wxString& string);
     int StringArrayWidth(wxString string[], int nElements);
