@@ -1916,49 +1916,56 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
 // surprise changes in binning
 void MyFrame::CheckDarkFrameGeometry()
 {
-    wxMenuItem *darksMenu = m_useDarksMenuItem;
-    wxMenuItem *bpmMenu = m_useDefectMapMenuItem;
-    bool badBPM = false;
+    bool haveDefectMap = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId(), m_useDefectMapMenuItem->IsEnabled());
+    bool haveDarkLib = DarkLibExists(pConfig->GetCurrentProfileId(), m_useDarksMenuItem->IsEnabled());
+    bool defectMapOk = true;
 
-    if (bpmMenu->IsEnabled())
+    if (m_useDefectMapMenuItem->IsEnabled())
     {
-        if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId(), true))
+        if (!haveDefectMap)
         {
-            if (bpmMenu->IsChecked())
+            if (m_useDefectMapMenuItem->IsChecked())
                 LoadDefectMapHandler(false);
-            bpmMenu->Enable(false);
+            m_useDefectMapMenuItem->Enable(false);
             Debug.Write("CheckDarkFrameGeometry: BPM incompatibility found");
-            badBPM = true;
+            defectMapOk = false;
         }
     }
-
-    if (darksMenu->IsEnabled())
+    else if (haveDefectMap)
     {
-        if (!DarkLibExists(pConfig->GetCurrentProfileId(), true))
-        {
-            if (darksMenu->IsChecked())
-                LoadDarkHandler(false);
-            darksMenu->Enable(false);
-            Debug.Write("CheckDarkFrameGeometry: Dark lib incompatibility found");
-            if (badBPM)
-                pFrame->Alert(_("Dark library and bad-pixel maps are incompatible with the current camera - both need to be replaced"));
+        m_useDefectMapMenuItem->Enable(true);
+    }
 
+    if (m_useDarksMenuItem->IsEnabled())
+    {
+        if (!haveDarkLib)
+        {
+            if (m_useDarksMenuItem->IsChecked())
+                LoadDarkHandler(false);
+            m_useDarksMenuItem->Enable(false);
+            Debug.Write("CheckDarkFrameGeometry: Dark lib incompatibility found");
+            if (!defectMapOk)
+                pFrame->Alert(_("Dark library and bad-pixel maps are incompatible with the current camera - both need to be replaced"));
         }
     }
+    else if (haveDarkLib)
+    {
+        m_useDarksMenuItem->Enable(true);
+    }
+
+    m_prevDarkFrameSize = pCamera->DarkFrameSize();
 }
 
 void MyFrame::SetDarkMenuState()
 {
-    wxMenuItem *item = m_useDarksMenuItem;
     bool haveDarkLib = DarkLibExists(pConfig->GetCurrentProfileId(), true);
-    item->Enable(haveDarkLib);
+    m_useDarksMenuItem->Enable(haveDarkLib);
     if (!haveDarkLib)
-        item->Check(false);
-    item = m_useDefectMapMenuItem;
-    bool defectmap_avail = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId());
-    item->Enable(defectmap_avail);
-    if (!defectmap_avail)
-        item->Check(false);
+        m_useDarksMenuItem->Check(false);
+    bool haveDefectMap = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId());
+    m_useDefectMapMenuItem->Enable(haveDefectMap);
+    if (!haveDefectMap)
+        m_useDefectMapMenuItem->Check(false);
 }
 
 bool MyFrame::LoadDarkLibrary()

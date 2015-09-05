@@ -210,6 +210,7 @@ public:
     Star::FindMode m_starFindMode;
     bool m_rawImageMode;
     bool m_rawImageModeWarningDone;
+    wxSize m_prevDarkFrameSize;
 
     void RegisterTextCtrl(wxTextCtrl *ctrl);
     void OnQuit(wxCommandEvent& evt);
