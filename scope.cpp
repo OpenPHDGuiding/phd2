@@ -1294,6 +1294,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 cal.declination = pPointingSource->GetGuidingDeclination();
                 cal.pierSide = pPointingSource->SideOfPier();
                 cal.rotatorAngle = Rotator::RotatorPosition();
+                cal.binning = pCamera->Binning;
                 SetCalibration(cal);
                 m_calibrationDetails.raStepCount = m_raSteps;
                 m_calibrationDetails.decStepCount = m_decSteps;
@@ -1520,28 +1521,31 @@ void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
 {
     int focalLength = 0;
     double pixelSize = 0;
-    wxString configPrefix;
+    int binning = 1;
     AdvancedDialog *pAdvancedDlg = pFrame->pAdvancedDialog;
 
     if (pAdvancedDlg)
     {
         pixelSize = pAdvancedDlg->GetPixelSize();
+        binning = pAdvancedDlg->GetBinning();
         focalLength = pAdvancedDlg->GetFocalLength();
     }
 
-    CalstepDialog calc(m_pParent, focalLength, pixelSize);
+    CalstepDialog calc(m_pParent, focalLength, pixelSize, binning);
     if (calc.ShowModal() == wxID_OK)
     {
         int calibrationStep;
-        if (calc.GetResults(&focalLength, &pixelSize, &calibrationStep))
+        if (calc.GetResults(&focalLength, &pixelSize, &binning, &calibrationStep))
         {
             // Following sets values in the UI controls of the various dialog tabs - not underlying data values
             pAdvancedDlg->SetFocalLength(focalLength);
             pAdvancedDlg->SetPixelSize(pixelSize);
+            pAdvancedDlg->SetBinning(binning);
             m_pCalibrationDuration->SetValue(calibrationStep);
         }
     }
 }
+
 GraphControlPane *Scope::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new ScopeGraphControlPane(pParent, this, label);

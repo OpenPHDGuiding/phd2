@@ -99,6 +99,8 @@ public:
     void SetFocalLength(int val);
     double GetPixelSize(void);
     void SetPixelSize(double val);
+    int GetBinning(void);
+    void SetBinning(int binning);
 
     wxWindow *GetTabLocation(BRAIN_CTRL_IDS id);
 

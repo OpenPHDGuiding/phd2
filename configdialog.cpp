@@ -161,9 +161,26 @@ int ConfigDialogCtrlSet::StringArrayWidth(wxString string[], int nElements)
 {
     int width = 0;
 
-    for (int i = 0; i<nElements; i++)
+    for (int i = 0; i < nElements; i++)
     {
         int thisWidth = StringWidth(string[i]);
+
+        if (thisWidth > width)
+        {
+            width = thisWidth;
+        }
+    }
+
+    return width;
+}
+
+int ConfigDialogCtrlSet::StringArrayWidth(const wxArrayString& ary)
+{
+    int width = 0;
+
+    for (int i = 0; i < ary.size(); i++)
+    {
+        int thisWidth = StringWidth(ary[i]);
 
         if (thisWidth > width)
         {
@@ -190,12 +207,14 @@ void ConfigDialogCtrlSet::AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wx
 {
     AddMapElement(CtrlMap, id, pCtrl);
 }
+
 // Control with tooltip
 void ConfigDialogCtrlSet::AddCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxControl *pCtrl, const wxString& toolTip)
 {
     pCtrl->SetToolTip(toolTip);
     AddMapElement(CtrlMap, id, pCtrl);
 }
+
 // Control group via sizer
 void ConfigDialogCtrlSet::AddGroup(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, wxSizer *pSizer)
 {
@@ -213,6 +232,7 @@ wxSizer *ConfigDialogCtrlSet::MakeLabeledControl(BRAIN_CTRL_IDS id, const wxStri
 
     return pSizer;
 }
+
 void ConfigDialogCtrlSet::AddLabeledCtrl(BrainCtrlIdMap& CtrlMap, BRAIN_CTRL_IDS id, const wxString& Label, wxControl *pCtrl, const wxString& toolTip)
 {
     AddGroup(CtrlMap, id, MakeLabeledControl(id, Label, pCtrl, toolTip));

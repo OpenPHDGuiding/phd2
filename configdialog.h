@@ -56,6 +56,7 @@ enum BRAIN_CTRL_IDS
     AD_szGain,
     AD_szDelay,
     AD_szPort,
+    AD_binning,
     AD_CAMERA_TAB_BOUNDARY,        // ------ end of camera tab controls
     AD_cbScaleImages,
     AD_szFocalLength,
@@ -90,13 +91,11 @@ enum BRAIN_CTRL_IDS
 
 struct BrainCtrlInfo
 {
-    BRAIN_CTRL_IDS ctrlId;
     wxObject *panelCtrl;
     bool isPositioned;           // debug only
 
     BrainCtrlInfo()
         :
-        ctrlId(AD_UNASSIGNED),
         panelCtrl(0),
         isPositioned(false)
     {
@@ -104,7 +103,6 @@ struct BrainCtrlInfo
 
     BrainCtrlInfo(BRAIN_CTRL_IDS id, wxObject *ctrl)
         :
-        ctrlId(id),
         panelCtrl(ctrl),
         isPositioned(false)
     {
@@ -170,5 +168,6 @@ public:
 
     int StringWidth(const wxString& string);
     int StringArrayWidth(wxString string[], int nElements);
+    int StringArrayWidth(const wxArrayString& ary);
 };
 #endif // CONFIG_DIALOG_H_INCLUDED

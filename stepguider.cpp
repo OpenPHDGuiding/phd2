@@ -679,6 +679,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                 m_calibration.declination = 0.;
                 m_calibration.pierSide = PIER_SIDE_UNKNOWN;
                 m_calibration.rotatorAngle = Rotator::RotatorPosition();
+                m_calibration.binning = pCamera->Binning;
                 SetCalibration(m_calibration);
                 SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle);
                 status1 = _T("calibration complete");

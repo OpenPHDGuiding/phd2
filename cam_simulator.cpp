@@ -617,7 +617,7 @@ inline static void incr_pixel(usImage& img, int x, int y, unsigned int val)
     }
 }
 
-static void render_comet(usImage& img, const wxRect& subframe, const wxRealPoint& p, double inten)
+static void render_comet(usImage& img, int binning, const wxRect& subframe, const wxRealPoint& p, double inten)
 {
     enum { WIDTH = 5 };
     double STAR[][WIDTH] = { { 0.0, 0.8, 2.2, 0.8, 0.0, },
@@ -628,8 +628,8 @@ static void render_comet(usImage& img, const wxRect& subframe, const wxRealPoint
                             };
 
     wxRealPoint intpart;
-    double fx = modf(p.x, &intpart.x);
-    double fy = modf(p.y, &intpart.y);
+    double fx = modf(p.x / (double) binning, &intpart.x);
+    double fy = modf(p.y / (double) binning, &intpart.y);
     double f00 = (1.0 - fx) * (1.0 - fy);
     double f01 = (1.0 - fx) * fy;
     double f10 = fx * (1.0 - fy);
@@ -667,7 +667,7 @@ static void render_comet(usImage& img, const wxRect& subframe, const wxRealPoint
 
 }
 
-static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint& p, double inten)
+static void render_star(usImage& img, int binning, const wxRect& subframe, const wxRealPoint& p, double inten)
 {
     enum { WIDTH = 5 };
     double STAR[][WIDTH] = {{ 0.0,  0.8,   2.2,  0.8, 0.0, },
@@ -678,8 +678,8 @@ static void render_star(usImage& img, const wxRect& subframe, const wxRealPoint&
                            };
 
     wxRealPoint intpart;
-    double fx = modf(p.x, &intpart.x);
-    double fy = modf(p.y, &intpart.y);
+    double fx = modf(p.x / (double) binning, &intpart.x);
+    double fy = modf(p.y / (double) binning, &intpart.y);
     double f00 = (1.0 - fx) * (1.0 - fy);
     double f01 = (1.0 - fx) * fy;
     double f10 = fx * (1.0 - fy);
@@ -807,6 +807,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
     double total_shift_y = 0;
 
 #ifdef SIM_FILE_DISPLACEMENTS
+
     double inc_x;
     double inc_y;
     if (pText)
@@ -822,7 +823,9 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             dec_ofs.incr(inc_y);
         }
     }
+
 #else // SIM_FILE_DISPLACEMENTS
+
     long const cur_time = timer.Time();
     long const delta_time_ms = last_exposure_time - cur_time;
     last_exposure_time = cur_time;
@@ -931,7 +934,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             double noise = (double)(rand() % (gain * 100));
             double inten = star + dark + noise;
 
-            render_star(img, subframe, cc[i], inten);
+            render_star(img, pCamera->Binning, subframe, cc[i], inten);
         }
 
 #ifndef SIM_FILE_DISPLACEMENTS
@@ -948,7 +951,7 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
             double noise = (double)(rand() % (gain * 100));
             inten = star + dark + noise;
 
-            render_comet(img, subframe, wxRealPoint(cx, cy), inten);
+            render_comet(img, pCamera->Binning, subframe, wxRealPoint(cx, cy), inten);
         }
 #endif
     }
@@ -958,8 +961,13 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 
     // render hot pixels
     for (unsigned int i = 0; i < hotpx.size(); i++)
-        if (subframe.Contains(hotpx[i]))
-            set_pixel(img, hotpx[i].x, hotpx[i].y, (unsigned short) -1);
+    {
+        wxPoint p(hotpx[i]);
+        p.x /= pCamera->Binning;
+        p.y /= pCamera->Binning;
+        if (subframe.Contains(p))
+            set_pixel(img, p.x, p.y, (unsigned short)-1);
+    }
 }
 
 Camera_SimClass::Camera_SimClass()
@@ -973,6 +981,7 @@ Camera_SimClass::Camera_SimClass()
     HasGainControl = true;
     HasSubframes = true;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
+    MaxBinning = 3;
 }
 
 bool Camera_SimClass::Connect(const wxString& camId)
@@ -1089,7 +1098,9 @@ bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxR
 
 #else
 
-    FullSize = wxSize(sim->width, sim->height);
+    int width = sim->width / Binning;
+    int height = sim->height / Binning;
+    FullSize = wxSize(width, height);
 
     bool usingSubframe = UseSubframes;
     if (subframe.width <= 0 || subframe.height <= 0)
@@ -1101,7 +1112,8 @@ bool Camera_SimClass::Capture(int duration, usImage& img, int options, const wxR
     int const gain = 30;
     int const offset = 100;
 
-    if (img.Init(sim->width, sim->height)) {
+    if (img.Init(FullSize))
+    {
         pFrame->Alert(_("Memory allocation error"));
         return true;
     }

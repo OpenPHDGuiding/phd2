@@ -364,7 +364,7 @@ public:
     void UpdateButtonsStatus(void);
     void UpdateCalibrationStatus(void);
 
-    static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm);
+    static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm, int binning);
     double GetCameraPixelScale(void) const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
@@ -588,9 +588,9 @@ inline static wxSize StringSize(const wxWindow *window, const wxString& s, int e
     return wxSize(StringWidth(window, s) + extra, -1);
 }
 
-inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm)
+inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm, int binning)
 {
-    return 206.265 * pixelSizeMicrons / (double) focalLengthMm;
+    return 206.265 * pixelSizeMicrons * (double) binning / (double) focalLengthMm;
 }
 
 inline double MyFrame::TimeSinceGuidingStarted(void) const

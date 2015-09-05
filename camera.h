@@ -70,6 +70,7 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxChoice   *m_pPortNum;
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
+    wxChoice *m_binning;
 
 public:
     CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
@@ -79,6 +80,8 @@ public:
 
     double GetPixelSize(void);
     void SetPixelSize(double val);
+    int GetBinning(void);
+    void SetBinning(int val);
 };
 
 enum CaptureOptionBits
@@ -111,8 +114,10 @@ public:
     bool            HasGainControl;
     bool            HasShutter;
     bool            HasSubframes;
+    unsigned short  MaxBinning;
     short           Port;
     int             ReadDelay;
+    unsigned short  Binning;
     bool            ShutterClosed;  // false=light, true=dark
     bool            UseSubframes;
     double          PixelSize;
@@ -151,6 +156,9 @@ public:
     CameraConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
     CameraConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
 
+    static void GetBinningOpts(int maxBin, wxArrayString *opts);
+    void GetBinningOpts(wxArrayString *opts);
+
     virtual void    ShowPropertyDialog() { return; }
 
     virtual wxString GetSettingsSummary();
@@ -167,8 +175,9 @@ public:
 
 protected:
 
-    virtual int GetCameraGain(void);
-    virtual bool SetCameraGain(int cameraGain);
+    int GetCameraGain(void);
+    bool SetCameraGain(int cameraGain);
+    bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
     virtual double GetCameraPixelSize(void);
@@ -185,6 +194,11 @@ protected:
 inline int GuideCamera::GetTimeoutMs(void) const
 {
     return m_timeoutMs;
+}
+
+inline void GuideCamera::GetBinningOpts(wxArrayString *opts)
+{
+    GetBinningOpts(MaxBinning, opts);
 }
 
 #endif /* CAMERA_H_INCLUDED */

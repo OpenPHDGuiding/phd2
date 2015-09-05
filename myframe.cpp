@@ -1671,6 +1671,7 @@ static void load_calibration(Mount *mnt)
     Calibration cal;
     cal.xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
     cal.yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+    cal.binning = (unsigned short) pConfig->Profile.GetInt(prefix + "binning", 1);
     cal.xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
     cal.yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", M_PI / 2.0);
     cal.declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
@@ -2104,7 +2105,7 @@ double MyFrame::GetCameraPixelScale(void) const
     if (!pCamera || pCamera->PixelSize == 0.0 || m_focalLength == 0)
         return 1.0;
 
-    return GetPixelScale(pCamera->PixelSize, m_focalLength);
+    return GetPixelScale(pCamera->PixelSize, m_focalLength, pCamera->Binning);
 }
 
 wxString MyFrame::PixelScaleSummary(void) const
@@ -2121,8 +2122,8 @@ wxString MyFrame::PixelScaleSummary(void) const
     else
         focalLengthStr = wxString::Format("%d", m_focalLength) + " mm";
 
-    return wxString::Format("Pixel scale = %s, Focal length = %s",
-        scaleStr, focalLengthStr);
+    return wxString::Format("Pixel scale = %s, Binning = %hu, Focal length = %s",
+        scaleStr, pCamera->Binning, focalLengthStr);
 }
 
 wxString MyFrame::GetSettingsSummary()

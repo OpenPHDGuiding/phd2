@@ -72,6 +72,7 @@ struct Calibration
     double declination;
     PierSide pierSide;
     double rotatorAngle;
+    unsigned short binning;
     wxString timestamp;
 };
 
