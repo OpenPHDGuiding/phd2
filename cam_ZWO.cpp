@@ -211,11 +211,29 @@ bool Camera_ZWO::Connect(const wxString& camId)
     Connected = true;
     Name = info.Name;
 
-    FullSize.x = info.MaxWidth;
-    FullSize.y = info.MaxHeight;
+    int maxBin = 1;
+    for (int i = 0; i <= WXSIZEOF(info.SupportedBins); i++)
+    {
+        if (!info.SupportedBins[i])
+            break;
+        Debug.AddLine("ZWO: supported bin %d = %d", i, info.SupportedBins[i]);
+        if (info.SupportedBins[i] > maxBin)
+            maxBin = info.SupportedBins[i];
+    }
+    MaxBinning = maxBin;
+
+    if (Binning > MaxBinning)
+        Binning = MaxBinning;
+
+    m_maxSize.x = info.MaxWidth;
+    m_maxSize.y = info.MaxHeight;
+
+    FullSize.x = m_maxSize.x / Binning;
+    FullSize.y = m_maxSize.y / Binning;
+    m_prevBinning = Binning;
 
     delete[] m_buffer;
-    m_buffer = new unsigned char[FullSize.x * FullSize.y];
+    m_buffer = new unsigned char[info.MaxWidth * info.MaxHeight];
 
     PixelSize = info.PixelSize;
 
@@ -251,6 +269,9 @@ bool Camera_ZWO::Connect(const wxString& camId)
             case ASI_BANDWIDTHOVERLOAD:
                 ASISetControlValue(m_cameraId, ASI_BANDWIDTHOVERLOAD, caps.MinValue, ASI_FALSE);
                 break;
+            case ASI_HARDWARE_BIN:
+                // this control is not present
+                break;
             default:
                 break;
             }
@@ -264,7 +285,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     Debug.AddLine("ZWO: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
 
     ASISetStartPos(m_cameraId, m_frame.GetLeft(), m_frame.GetTop());
-    ASISetROIFormat(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight(), 1, ASI_IMG_Y8);
+    ASISetROIFormat(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight(), Binning, ASI_IMG_Y8);
 
     return false;
 }
@@ -321,6 +342,15 @@ static void flush_buffered_image(int cameraId, usImage& img)
 
 bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
+    bool binning_change = false;
+    if (Binning != m_prevBinning)
+    {
+        FullSize.x = m_maxSize.x / Binning;
+        FullSize.y = m_maxSize.y / Binning;
+        m_prevBinning = Binning;
+        binning_change = true;
+    }
+
     if (img.Init(FullSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
@@ -380,13 +410,13 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
         Debug.AddLine("ZWO: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
     }
 
-    if (size_change)
+    if (size_change || binning_change)
     {
         StopCapture();
 
-        ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), 1, ASI_IMG_Y8);
+        ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), Binning, ASI_IMG_Y8);
         if (status != ASI_SUCCESS)
-            Debug.AddLine("ZWO: setImageFormat(%d,%d) => %d", frame.GetWidth(), frame.GetHeight(), status);
+            Debug.AddLine("ZWO: setImageFormat(%d,%d,%hu) => %d", frame.GetWidth(), frame.GetHeight(), Binning, status);
     }
 
     if (pos_change)
