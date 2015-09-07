@@ -43,7 +43,15 @@ ManualCalDialog::ManualCalDialog(const Calibration& cal)
     wxBoxSizer *pVSizer = new wxBoxSizer(wxVERTICAL);
     wxFlexGridSizer *pGridSizer = new wxFlexGridSizer(2, 10, 10);
 
-    wxStaticText *pLabel = new wxStaticText(this,wxID_ANY, _("RA rate, px/sec (e.g. 5.0):"));
+    wxStaticText *pLabel = new wxStaticText(this, wxID_ANY, _("Camera binning:"));
+    wxArrayString opts;
+    pCamera->GetBinningOpts(&opts);
+    m_binning = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, opts);
+    m_binning->Select(cal.binning - 1);
+    pGridSizer->Add(pLabel);
+    pGridSizer->Add(m_binning);
+
+    pLabel = new wxStaticText(this,wxID_ANY, _("RA rate, px/sec (e.g. 5.0):"));
     m_pXRate = new wxTextCtrl(this,wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(width, -1));
     m_pXRate->SetValue(wxString::Format("%.3f", cal.xRate * 1000.0));
     pGridSizer->Add(pLabel);
@@ -102,6 +110,7 @@ void ManualCalDialog::GetValues(Calibration *cal)
     m_pYAngle->GetValue().ToDouble(&t);
     cal->yAngle = radians(t);
     m_pDeclination->GetValue().ToDouble(&cal->declination);
+    cal->binning = m_binning->GetSelection() + 1;
 }
 
 ManualCalDialog::~ManualCalDialog(void)

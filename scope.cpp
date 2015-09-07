@@ -1294,6 +1294,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 cal.declination = pPointingSource->GetGuidingDeclination();
                 cal.pierSide = pPointingSource->SideOfPier();
                 cal.rotatorAngle = Rotator::RotatorPosition();
+                cal.binning = pCamera->Binning;
                 SetCalibration(cal);
                 m_calibrationDetails.raStepCount = m_raSteps;
                 m_calibrationDetails.decStepCount = m_decSteps;
@@ -1375,7 +1376,7 @@ Scope::ScopeConfigDialogPane::ScopeConfigDialogPane(wxWindow *pParent, Scope *pS
     m_pScope = pScope;
 }
 
-void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void Scope::ScopeConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
     // All of the scope UI controls are hosted in the parent
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
@@ -1391,13 +1392,13 @@ void Scope::ScopeConfigDialogPane::UnloadValues(void)
     MountConfigDialogPane::UnloadValues();
 }
 
-MountConfigDialogCtrlSet *Scope::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+MountConfigDialogCtrlSet *Scope::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
-    return new ScopeConfigDialogCtrlSet(pParent, (Scope*) pScope, pAdvancedDialog, CtrlMap);
+    return new ScopeConfigDialogCtrlSet(pParent, (Scope *) pScope, pAdvancedDialog, CtrlMap);
 }
 
-ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
-MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
+ScopeConfigDialogCtrlSet::ScopeConfigDialogCtrlSet(wxWindow *pParent, Scope *pScope, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+    : MountConfigDialogCtrlSet(pParent, pScope, pAdvancedDialog, CtrlMap)
 {
     int width;
     bool enableCtrls = pScope != NULL;
@@ -1520,28 +1521,31 @@ void ScopeConfigDialogCtrlSet::OnCalcCalibrationStep(wxCommandEvent& evt)
 {
     int focalLength = 0;
     double pixelSize = 0;
-    wxString configPrefix;
+    int binning = 1;
     AdvancedDialog *pAdvancedDlg = pFrame->pAdvancedDialog;
 
     if (pAdvancedDlg)
     {
         pixelSize = pAdvancedDlg->GetPixelSize();
+        binning = pAdvancedDlg->GetBinning();
         focalLength = pAdvancedDlg->GetFocalLength();
     }
 
-    CalstepDialog calc(m_pParent, focalLength, pixelSize);
+    CalstepDialog calc(m_pParent, focalLength, pixelSize, binning);
     if (calc.ShowModal() == wxID_OK)
     {
         int calibrationStep;
-        if (calc.GetResults(&focalLength, &pixelSize, &calibrationStep))
+        if (calc.GetResults(&focalLength, &pixelSize, &binning, &calibrationStep))
         {
             // Following sets values in the UI controls of the various dialog tabs - not underlying data values
             pAdvancedDlg->SetFocalLength(focalLength);
             pAdvancedDlg->SetPixelSize(pixelSize);
+            pAdvancedDlg->SetBinning(binning);
             m_pCalibrationDuration->SetValue(calibrationStep);
         }
     }
 }
+
 GraphControlPane *Scope::GetGraphControlPane(wxWindow *pParent, const wxString& label)
 {
     return new ScopeGraphControlPane(pParent, this, label);

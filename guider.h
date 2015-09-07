@@ -137,7 +137,7 @@ class GuiderConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxCheckBox *m_pScaleImage;
 
 public:
-    GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    GuiderConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~GuiderConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
@@ -192,7 +192,7 @@ public:
 
         void LoadValues(void) {};
         void UnloadValues(void) {};
-        virtual void LayoutControls(Guider *pGuider, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+        virtual void LayoutControls(Guider *pGuider, BrainCtrlIdMap& CtrlMap);
     };
 
 
@@ -200,7 +200,7 @@ public:
 
 public:
     virtual GuiderConfigDialogPane *GetConfigDialogPane(wxWindow *pParent)= 0;
-    virtual GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual GuiderConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Guider *pGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
 
 protected:
     Guider(wxWindow *parent, int xSize, int ySize);

@@ -184,7 +184,6 @@ const wxString GuideCamera::DEFAULT_CAMERA_ID = wxEmptyString;
 GuideCamera::GuideCamera(void)
 {
     Connected = false;
-    Name=_T("");
     m_hasGuideOutput = false;
     PropertyDialogType = PROPDLG_NONE;
     HasPortNum = false;
@@ -196,13 +195,13 @@ GuideCamera::GuideCamera(void)
     FullSize = UNDEFINED_FRAME_SIZE;
     UseSubframes = pConfig->Profile.GetBoolean("/camera/UseSubframes", DefaultUseSubframes);
     ReadDelay = pConfig->Profile.GetInt("/camera/ReadDelay", DefaultReadDelay);
-
-    CurrentDarkFrame = NULL;
-    CurrentDefectMap = NULL;
-
     GuideCameraGain = pConfig->Profile.GetInt("/camera/gain", DefaultGuideCameraGain);
     m_timeoutMs = pConfig->Profile.GetInt("/camera/TimeoutMs", DefaultGuideCameraTimeoutMs);
     PixelSize = pConfig->Profile.GetDouble("/camera/pixelsize", DefaultPixelSize);
+    MaxBinning = 1;
+    Binning = pConfig->Profile.GetInt("/camera/binning", 1);
+    CurrentDarkFrame = NULL;
+    CurrentDefectMap = NULL;
 }
 
 GuideCamera::~GuideCamera(void)
@@ -643,6 +642,19 @@ bool GuideCamera::SetCameraGain(int cameraGain)
     return bError;
 }
 
+bool GuideCamera::SetBinning(int binning)
+{
+    if (binning < 1)
+        binning = 1;
+    if (binning > MaxBinning)
+        binning = MaxBinning;
+
+    Binning = binning;
+    pConfig->Profile.SetInt("/camera/binning", binning);
+
+    return false;
+}
+
 void GuideCamera::SetTimeoutMs(int ms)
 {
     static const int MIN_TIMEOUT_MS = 5000;
@@ -694,13 +706,11 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
     pTable->Add(pControl, 1, wxALL, 5);
 }
 
-static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, int width, int val, int minval, int maxval, int inc,
-                                 const wxString& tooltip)
+static wxSpinCtrl *NewSpinnerInt(wxWindow *parent, int width, int val, int minval, int maxval, int inc)
 {
     wxSpinCtrl *pNewCtrl = new wxSpinCtrl(parent, wxID_ANY, _T("foo2"), wxPoint(-1, -1),
         wxSize(width, -1), wxSP_ARROW_KEYS, minval, maxval, val, _("Exposure time"));
     pNewCtrl->SetValue(val);
-    pNewCtrl->SetToolTip(tooltip);
     return pNewCtrl;
 }
 
@@ -720,7 +730,7 @@ CameraConfigDialogPane::CameraConfigDialogPane(wxWindow *pParent, GuideCamera *p
     m_pParent = pParent;
 }
 
-void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap& CtrlMap)
 {
     wxStaticBoxSizer *pGenGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("General Properties"));
     wxFlexGridSizer *pTopline = new wxFlexGridSizer(1, 3, 10, 10);
@@ -736,7 +746,11 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAI
     wxStaticBoxSizer *pSpecGroup = new wxStaticBoxSizer(wxVERTICAL, m_pParent, _("Camera-specific Properties"));
     if (pCamera)
     {
-        int numItems = (int)pCamera->HasGainControl + (int)pCamera->HasDelayParam + (int)pCamera->HasPortNum + 2;
+        int numItems = 2;
+        if (pCamera->HasGainControl) ++numItems;
+        if (pCamera->HasDelayParam)  ++numItems;
+        if (pCamera->HasPortNum)     ++numItems;
+        if (pCamera->MaxBinning > 1) ++numItems;
         wxFlexGridSizer *pDetailsSizer = new wxFlexGridSizer((numItems + 1) / 2, 3, 15, 15);
 
         wxSizerFlags spec_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
@@ -744,14 +758,16 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAI
         if (pCamera->HasGainControl)
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szGain));
         pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szCameraTimeout));
-        if (pCamera->HasSubframes)
-            pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames));
         if (pCamera->HasDelayParam)
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szDelay));
         if (pCamera->HasPortNum)
             pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_szPort));
+        if (pCamera->MaxBinning > 1)
+            pDetailsSizer->Add(GetSizerCtrl(CtrlMap, AD_binning));
+        if (pCamera->HasSubframes)
+            pDetailsSizer->Add(GetSingleCtrl(CtrlMap, AD_cbUseSubFrames));
         pSpecGroup->Add(pDetailsSizer, spec_flags);
-        }
+    }
     else
     {
         wxStaticText *pNoCam = new wxStaticText(m_pParent, wxID_ANY, _("No camera specified"));
@@ -765,15 +781,14 @@ void CameraConfigDialogPane::LayoutControls(GuideCamera *pCamera, std::map <BRAI
     Fit(m_pParent);
 }
 
-CameraConfigDialogCtrlSet* GuideCamera::GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+CameraConfigDialogCtrlSet* GuideCamera::GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     return new CameraConfigDialogCtrlSet(pParent, pCamera, pAdvancedDialog, CtrlMap);
 }
 
-CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) : 
-ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
+CameraConfigDialogCtrlSet::CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+    : ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
-    wxWindow *parent;
     assert(pCamera);
 
     m_pCamera = pCamera;
@@ -796,16 +811,27 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
     if (m_pCamera->HasGainControl)
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_pCameraGain = NewSpinnerInt(GetParentWindow(AD_szGain), width, 100, 0, 100, 1, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
+        m_pCameraGain = NewSpinnerInt(GetParentWindow(AD_szGain), width, 100, 0, 100, 1);
         AddLabeledCtrl(CtrlMap, AD_szGain, _("Camera gain"), m_pCameraGain, _("Camera gain boost ? Default = 95 % , lower if you experience noise or wish to guide on a very bright star. Not available on all cameras."));
+    }
+
+    // Binning
+    m_binning = 0;
+    if (m_pCamera->MaxBinning > 1)
+    {
+        wxArrayString opts;
+        m_pCamera->GetBinningOpts(&opts);
+        int width = StringArrayWidth(opts);
+        m_binning = new wxChoice(GetParentWindow(AD_binning), wxID_ANY, wxPoint(-1, -1),
+            wxSize(width + 35, -1), opts);
+        AddLabeledCtrl(CtrlMap, AD_binning, _("Binning"), m_binning, _("Camera pixel binning"));
     }
 
     // Delay parameter
     if (m_pCamera->HasDelayParam)
     {
         int width = StringWidth(_T("0000")) + 30;
-        parent = GetParentWindow(AD_szDelay);
-        m_pDelay = NewSpinnerInt(GetParentWindow(AD_szDelay), width, 5, 0, 250, 150, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
+        m_pDelay = NewSpinnerInt(GetParentWindow(AD_szDelay), width, 5, 0, 250, 150);
         AddLabeledCtrl(CtrlMap, AD_szDelay, _("Delay"), m_pDelay, _("LE Read Delay (ms) , Adjust if you get dropped frames"));
     }
 
@@ -821,17 +847,17 @@ ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
         int width = StringArrayWidth(port_choices, WXSIZEOF(port_choices));
         m_pPortNum = new wxChoice(GetParentWindow(AD_szPort), wxID_ANY, wxPoint(-1, -1),
             wxSize(width + 35, -1), WXSIZEOF(port_choices), port_choices);
-        m_pPortNum->SetToolTip(_("Port number for long-exposure control"));
         AddLabeledCtrl(CtrlMap, AD_szPort, _("LE Port"), m_pPortNum, _("Port number for long-exposure control"));
     }
 
     // Watchdog timeout
     {
         int width = StringWidth(_T("0000")) + 30;
-        m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), width, 5, 5, 9999, 1, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
-        AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal, wxString::Format(_("The camera will be disconnected if it fails to respond for this long. The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
+        m_timeoutVal = NewSpinnerInt(GetParentWindow(AD_szCameraTimeout), width, 5, 5, 9999, 1);
+        AddLabeledCtrl(CtrlMap, AD_szCameraTimeout, _("Disconnect nonresponsive\ncamera after (seconds)"), m_timeoutVal,
+            wxString::Format(_("The camera will be disconnected if it fails to respond for this long. "
+            "The default value, %d seconds, should be appropriate for most cameras."), DefaultGuideCameraTimeoutMs / 1000));
     }
-
 }
 
 void CameraConfigDialogCtrlSet::LoadValues()
@@ -846,6 +872,14 @@ void CameraConfigDialogCtrlSet::LoadValues()
     if (m_pCamera->HasGainControl)
     {
         m_pCameraGain->SetValue(m_pCamera->GetCameraGain());
+    }
+
+    if (m_pCamera->MaxBinning > 1)
+    {
+        int idx = m_pCamera->Binning - 1;
+        m_binning->Select(idx);
+        // don't allow binning change when calibrating or guiding
+        m_binning->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
     }
 
     m_timeoutVal->SetValue(m_pCamera->GetTimeoutMs() / 1000);
@@ -940,6 +974,12 @@ void CameraConfigDialogCtrlSet::UnloadValues()
         m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
     }
 
+    if (m_pCamera->MaxBinning > 1)
+    {
+        int idx = m_binning->GetSelection();
+        m_pCamera->SetBinning(idx + 1);
+    }
+
     m_pCamera->SetTimeoutMs(m_timeoutVal->GetValue() * 1000);
 
     if (m_pCamera->HasDelayParam)
@@ -985,9 +1025,27 @@ double CameraConfigDialogCtrlSet::GetPixelSize()
 {
     return m_pPixelSize->GetValue();
 }
+
 void CameraConfigDialogCtrlSet::SetPixelSize(double val)
 {
     m_pPixelSize->SetValue(val);
+}
+
+int CameraConfigDialogCtrlSet::GetBinning()
+{
+    return m_binning ? m_binning->GetSelection() + 1 : 1;
+}
+
+void CameraConfigDialogCtrlSet::SetBinning(int binning)
+{
+    if (m_binning)
+        m_binning->Select(binning - 1);
+}
+
+void GuideCamera::GetBinningOpts(int maxBin, wxArrayString *opts)
+{
+    for (int i = 1; i <= maxBin; i++)
+        opts->Add(wxString::Format("%d", i));
 }
 
 wxString GuideCamera::GetSettingsSummary()

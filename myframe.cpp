@@ -1671,6 +1671,7 @@ static void load_calibration(Mount *mnt)
     Calibration cal;
     cal.xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
     cal.yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+    cal.binning = (unsigned short) pConfig->Profile.GetInt(prefix + "binning", 1);
     cal.xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
     cal.yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", M_PI / 2.0);
     cal.declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);
@@ -1915,49 +1916,56 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
 // surprise changes in binning
 void MyFrame::CheckDarkFrameGeometry()
 {
-    wxMenuItem *darksMenu = m_useDarksMenuItem;
-    wxMenuItem *bpmMenu = m_useDefectMapMenuItem;
-    bool badBPM = false;
+    bool haveDefectMap = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId(), m_useDefectMapMenuItem->IsEnabled());
+    bool haveDarkLib = DarkLibExists(pConfig->GetCurrentProfileId(), m_useDarksMenuItem->IsEnabled());
+    bool defectMapOk = true;
 
-    if (bpmMenu->IsEnabled())
+    if (m_useDefectMapMenuItem->IsEnabled())
     {
-        if (!DefectMap::DefectMapExists(pConfig->GetCurrentProfileId(), true))
+        if (!haveDefectMap)
         {
-            if (bpmMenu->IsChecked())
+            if (m_useDefectMapMenuItem->IsChecked())
                 LoadDefectMapHandler(false);
-            bpmMenu->Enable(false);
+            m_useDefectMapMenuItem->Enable(false);
             Debug.Write("CheckDarkFrameGeometry: BPM incompatibility found");
-            badBPM = true;
+            defectMapOk = false;
         }
     }
-
-    if (darksMenu->IsEnabled())
+    else if (haveDefectMap)
     {
-        if (!DarkLibExists(pConfig->GetCurrentProfileId(), true))
-        {
-            if (darksMenu->IsChecked())
-                LoadDarkHandler(false);
-            darksMenu->Enable(false);
-            Debug.Write("CheckDarkFrameGeometry: Dark lib incompatibility found");
-            if (badBPM)
-                pFrame->Alert(_("Dark library and bad-pixel maps are incompatible with the current camera - both need to be replaced"));
+        m_useDefectMapMenuItem->Enable(true);
+    }
 
+    if (m_useDarksMenuItem->IsEnabled())
+    {
+        if (!haveDarkLib)
+        {
+            if (m_useDarksMenuItem->IsChecked())
+                LoadDarkHandler(false);
+            m_useDarksMenuItem->Enable(false);
+            Debug.Write("CheckDarkFrameGeometry: Dark lib incompatibility found");
+            if (!defectMapOk)
+                pFrame->Alert(_("Dark library and bad-pixel maps are incompatible with the current camera - both need to be replaced"));
         }
     }
+    else if (haveDarkLib)
+    {
+        m_useDarksMenuItem->Enable(true);
+    }
+
+    m_prevDarkFrameSize = pCamera->DarkFrameSize();
 }
 
 void MyFrame::SetDarkMenuState()
 {
-    wxMenuItem *item = m_useDarksMenuItem;
     bool haveDarkLib = DarkLibExists(pConfig->GetCurrentProfileId(), true);
-    item->Enable(haveDarkLib);
+    m_useDarksMenuItem->Enable(haveDarkLib);
     if (!haveDarkLib)
-        item->Check(false);
-    item = m_useDefectMapMenuItem;
-    bool defectmap_avail = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId());
-    item->Enable(defectmap_avail);
-    if (!defectmap_avail)
-        item->Check(false);
+        m_useDarksMenuItem->Check(false);
+    bool haveDefectMap = DefectMap::DefectMapExists(pConfig->GetCurrentProfileId());
+    m_useDefectMapMenuItem->Enable(haveDefectMap);
+    if (!haveDefectMap)
+        m_useDefectMapMenuItem->Check(false);
 }
 
 bool MyFrame::LoadDarkLibrary()
@@ -2104,7 +2112,7 @@ double MyFrame::GetCameraPixelScale(void) const
     if (!pCamera || pCamera->PixelSize == 0.0 || m_focalLength == 0)
         return 1.0;
 
-    return GetPixelScale(pCamera->PixelSize, m_focalLength);
+    return GetPixelScale(pCamera->PixelSize, m_focalLength, pCamera->Binning);
 }
 
 wxString MyFrame::PixelScaleSummary(void) const
@@ -2121,8 +2129,8 @@ wxString MyFrame::PixelScaleSummary(void) const
     else
         focalLengthStr = wxString::Format("%d", m_focalLength) + " mm";
 
-    return wxString::Format("Pixel scale = %s, Focal length = %s",
-        scaleStr, focalLengthStr);
+    return wxString::Format("Pixel scale = %s, Binning = %hu, Focal length = %s",
+        scaleStr, pCamera->Binning, focalLengthStr);
 }
 
 wxString MyFrame::GetSettingsSummary()
@@ -2183,7 +2191,7 @@ MyFrameConfigDialogPane::MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFr
 
 }
 
-void MyFrameConfigDialogPane::LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void MyFrameConfigDialogPane::LayoutControls(BrainCtrlIdMap& CtrlMap)
 {
     wxSizerFlags sizer_flags = wxSizerFlags(0).Border(wxALL, 5).Expand();
     wxFlexGridSizer *pTopGrid = new wxFlexGridSizer(3, 2, 15, 15);
@@ -2199,13 +2207,13 @@ void MyFrameConfigDialogPane::LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrl
     Layout();
 }
 
-MyFrameConfigDialogCtrlSet* MyFrame::GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+MyFrameConfigDialogCtrlSet* MyFrame::GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     return new MyFrameConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap);
 }
 
-MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
-ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
+MyFrameConfigDialogCtrlSet::MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+    : ConfigDialogCtrlSet(pFrame, pAdvancedDialog, CtrlMap)
 {
     int width;
     wxWindow *parent;

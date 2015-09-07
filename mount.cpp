@@ -93,7 +93,7 @@ Mount::MountConfigDialogPane::MountConfigDialogPane(wxWindow *pParent, const wxS
 }
 
 // Lots of dynamic controls on this pane - keep the creation/management in ConfigDialogPane
-void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void Mount::MountConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
     int width;
     bool stepGuider = false;
@@ -281,14 +281,14 @@ void Mount::MountConfigDialogPane::Undo(void)
     }
 }
 
-MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+MountConfigDialogCtrlSet *Mount::GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
 {
     return new MountConfigDialogCtrlSet(pParent, pMount, pAdvancedDialog, CtrlMap);
 }
 
 // These are only controls that are exported to other panes - all the other dynamically updated controls are handled in 
 // ConfigDialogPane
-MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) :
+MountConfigDialogCtrlSet::MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) :
 ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
     bool enableCtrls = pMount != NULL;
@@ -969,10 +969,26 @@ void Mount::AdjustCalibrationForScopePointing(void)
     double newDeclination = pPointingSource->GetGuidingDeclination();
     PierSide newPierSide = pPointingSource->SideOfPier();
     double newRotatorAngle = Rotator::RotatorPosition();
+    unsigned short binning = pCamera->Binning;
 
-    Debug.AddLine(wxString::Format("AdjustCalibrationForScopePointing (%s): current dec=%.1f pierSide=%d, cal dec=%.1f pierSide=%d rotAngle=%s",
+    Debug.AddLine(wxString::Format("AdjustCalibrationForScopePointing (%s): current dec=%.1f pierSide=%d, cal dec=%.1f pierSide=%d rotAngle=%s bin=%hu",
         GetMountClassName(), degrees(newDeclination), newPierSide, degrees(m_cal.declination), m_cal.pierSide,
-        RotAngleStr(newRotatorAngle)));
+        RotAngleStr(newRotatorAngle), binning));
+
+    // compensate for binning change
+    if (binning != m_cal.binning)
+    {
+        Calibration cal(m_cal);
+
+        double adj = (double) m_cal.binning / (double) binning;
+        cal.xRate *= adj;
+        cal.yRate *= adj;
+
+        Debug.Write(wxString::Format("Binning %hu -> %hu, rates (%.3f, %.3f) -> (%.3f, %.3f)",
+            m_cal.binning, binning, m_cal.xRate * 1000., m_cal.yRate * 1000., cal.xRate * 1000., cal.yRate * 1000.));
+
+        SetCalibration(cal);
+    }
 
     if (newDeclination != m_cal.declination)             // Compensation required
     {
@@ -1139,12 +1155,13 @@ void Mount::ClearCalibration(void)
 
 void Mount::SetCalibration(const Calibration& cal)
 {
-    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.3f yRate=%.3f dec=%.1f pierSide=%d rotAng=%s",
-        GetMountClassName(), degrees(cal.xAngle), degrees(cal.yAngle), cal.xRate * 1000.0, cal.yRate * 1000.0, cal.declination, cal.pierSide, RotAngleStr(cal.rotatorAngle)));
+    Debug.AddLine(wxString::Format("Mount::SetCalibration (%s) -- xAngle=%.1f yAngle=%.1f xRate=%.3f yRate=%.3f bin=%hu dec=%.1f pierSide=%d rotAng=%s",
+        GetMountClassName(), degrees(cal.xAngle), degrees(cal.yAngle), cal.xRate * 1000.0, cal.yRate * 1000.0, cal.binning, cal.declination, cal.pierSide, RotAngleStr(cal.rotatorAngle)));
 
     // we do the rates first, since they just get stored
-    m_cal.yRate  = cal.yRate;
     m_cal.xRate = cal.xRate;
+    m_cal.yRate = cal.yRate;
+    m_cal.binning = cal.binning;
     m_cal.declination = cal.declination;
     m_cal.pierSide = cal.pierSide;
     m_cal.rotatorAngle = cal.rotatorAngle;
@@ -1171,6 +1188,7 @@ void Mount::SetCalibration(const Calibration& cal)
     pConfig->Profile.SetDouble(prefix + "yAngle", m_cal.yAngle);
     pConfig->Profile.SetDouble(prefix + "xRate", m_cal.xRate);
     pConfig->Profile.SetDouble(prefix + "yRate", m_cal.yRate);
+    pConfig->Profile.SetInt(prefix + "binning", m_cal.binning);
     pConfig->Profile.SetDouble(prefix + "declination", m_cal.declination);
     pConfig->Profile.SetInt(prefix + "pierSide", m_cal.pierSide);
     pConfig->Profile.SetDouble(prefix + "rotatorAngle", m_cal.rotatorAngle);
@@ -1221,6 +1239,7 @@ bool Mount::GetLastCalibrationParams(Calibration *params)
     {
         params->xRate = pConfig->Profile.GetDouble(prefix + "xRate", 1.0);
         params->yRate = pConfig->Profile.GetDouble(prefix + "yRate", 1.0);
+        params->binning = (unsigned short) pConfig->Profile.GetInt(prefix + "binning", 1);
         params->xAngle = pConfig->Profile.GetDouble(prefix + "xAngle", 0.0);
         params->yAngle = pConfig->Profile.GetDouble(prefix + "yAngle", 0.0);
         params->declination = pConfig->Profile.GetDouble(prefix + "declination", 0.0);

@@ -52,7 +52,7 @@ class AOConfigDialogCtrlSet : ConfigDialogCtrlSet
     wxCheckBox *m_pEnableAOGuide;
 
 public:
-    AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     ~AOConfigDialogCtrlSet(void) {};
 
     virtual void LoadValues(void);
@@ -69,7 +69,7 @@ public:
 
     virtual void LoadValues(void) {};
     virtual void UnloadValues(void) {};
-    virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
 };
 
 class StepGuider : public Mount, public OnboardST4
@@ -131,7 +131,7 @@ protected:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
-        virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+        virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
     };
 
     virtual int GetSamplesToAverage(void);
@@ -152,7 +152,7 @@ protected:
 
 public:
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) { return NULL; };
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) { return NULL; };
     virtual wxString GetSettingsSummary(void);
     virtual wxString CalibrationSettingsSummary(void);
     virtual wxString GetMountClassName(void) const;

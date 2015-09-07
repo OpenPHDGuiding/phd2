@@ -57,7 +57,7 @@ static wxSpinCtrlDouble *NewSpinner(wxWindow *parent, int width, double val, dou
     return pNewCtrl;
 }
 
-CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize) :
+CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, int binning) :
     wxDialog(parent, wxID_ANY, _("Calibration Step Calculator"), wxDefaultPosition, wxSize(400, 500), wxCAPTION | wxCLOSE_BOX)
 {
     double dGuideRateDec = 0.0; // initialize to suppress compiler warning
@@ -69,6 +69,7 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_dDeclination = pConfig->Profile.GetDouble ("/CalStepCalc/CalDeclination", 0.0);
     m_iFocalLength = focalLength;
     m_fPixelSize = pixelSize;
+    m_binning = binning;
     m_fGuideSpeed = (float) pConfig->Profile.GetDouble ("/CalStepCalc/GuideSpeed", DEFAULT_GUIDESPEED);
     // Now improve on Dec and guide speed if mount/pointing info is available
     if (pPointingSource && pPointingSource->IsConnected())
@@ -92,8 +93,8 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
 
     // Create the sizers we're going to need
     m_pVSizer = new wxBoxSizer(wxVERTICAL);
-    m_pInputTableSizer = new wxFlexGridSizer (2, 2, 15, 15);
-    m_pOutputTableSizer = new wxFlexGridSizer (2, 2, 15, 15);
+    m_pInputTableSizer = new wxFlexGridSizer(3, 2, 15, 15);
+    m_pOutputTableSizer = new wxFlexGridSizer(2, 2, 15, 15);
 
     // Build the group of input fields
     m_pInputGroupBox = new wxStaticBoxSizer(wxVERTICAL, this, _("Input Parameters"));
@@ -113,6 +114,16 @@ CalstepDialog::CalstepDialog(wxWindow *parent, int focalLength, double pixelSize
     m_pPixelSize->Enable(!pFrame->CaptureActive);
     m_pPixelSize->Bind(wxEVT_SPINCTRLDOUBLE, &CalstepDialog::OnSpinCtrlDouble, this);
     AddTableEntry (m_pInputTableSizer, _("Pixel size, microns"), m_pPixelSize, _("Guide camera pixel size"));
+
+    // binning
+    wxArrayString opts;
+    GuideCamera::GetBinningOpts(pCamera ? pCamera->MaxBinning : 1, &opts);
+    m_binningChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, opts);
+    m_binningChoice->Enable(!pFrame->pGuider || !pFrame->pGuider->IsCalibratingOrGuiding());
+    m_binningChoice->Bind(wxEVT_CHOICE, &CalstepDialog::OnText, this);
+    int idx = binning - 1;
+    m_binningChoice->Select(idx);
+    AddTableEntry(m_pInputTableSizer, _("Camera binning"), m_binningChoice, _("Guide camera pixel binning"));
 
     // Guide speed
     m_pGuideSpeed = NewSpinner (this, 1.5*width, m_fGuideSpeed, MIN_GUIDESPEED, MAX_GUIDESPEED, 0.25);
@@ -173,18 +184,19 @@ void CalstepDialog::AddTableEntry (wxFlexGridSizer *pTable, const wxString& labe
 //  MIN_STEPs
 //
 //  FocalLength = focal length in millimeters
-//  PixelSize = pixel size in microns
+//  PixelSize = pixel size in microns (un-binned)
+//  Binning = hardware pixel binning factor
 //  GuideSpeed = guide rate as fraction of sidereal rate
 //  DesiredSteps = desired number of calibration steps
 //  Declination = declination in degrees
 //  pImageScale = address of computed image scale (arc-sec/pixel)
 //  pStepSize = address of computed calibration step size, milliseconds
 //
-void CalstepDialog::GetCalibrationStepSize(int FocalLength, double PixelSize, double GuideSpeed, int DesiredSteps,
+void CalstepDialog::GetCalibrationStepSize(int FocalLength, double PixelSize, int binning, double GuideSpeed, int DesiredSteps,
     double Declination, double *pImageScale, int *pStepSize)
 {
     enum { CALIBRATION_PIXELS = 25 };
-    double ImageScale = MyFrame::GetPixelScale(PixelSize, FocalLength); // arc-sec per pixel
+    double ImageScale = MyFrame::GetPixelScale(PixelSize, FocalLength, binning); // arc-sec per pixel
     double totalDistance = (double) CALIBRATION_PIXELS * ImageScale; // arc-seconds
     double totalDuration = totalDistance / (15.0 * GuideSpeed);      // 15 arc-sec/sec approx sidereal rate
     double Pulse = totalDuration / DesiredSteps * 1000.0;            // milliseconds at DEC=0
@@ -215,6 +227,7 @@ void CalstepDialog::DoRecalc(void)
     {
         m_fPixelSize = m_pPixelSize->GetValue();
         m_pPixelSize->SetValue(m_fPixelSize);           // For European locales, '.' -> ',' on output
+        m_binning = m_binningChoice->GetSelection() + 1;
         m_fGuideSpeed = m_pGuideSpeed->GetValue();
         m_pGuideSpeed->SetValue(m_fGuideSpeed);
         m_iNumSteps = m_pNumSteps->GetValue();
@@ -233,7 +246,9 @@ void CalstepDialog::DoRecalc(void)
             m_status->SetLabel(wxEmptyString);
 
             // Spin controls enforce numeric ranges
-            GetCalibrationStepSize(m_iFocalLength, m_fPixelSize, m_fGuideSpeed, m_iNumSteps, m_dDeclination, &m_fImageScale, &m_iStepSize);
+            GetCalibrationStepSize(m_iFocalLength, m_fPixelSize, m_binning, m_fGuideSpeed, m_iNumSteps,
+                m_dDeclination, &m_fImageScale, &m_iStepSize);
+
             m_bValidResult = true;
         }
 
@@ -249,8 +264,9 @@ void CalstepDialog::DoRecalc(void)
         }
     }
 }
+
 // Public function for client to get the computed step-size along with possibly modified values for focal length and pixel size
-bool CalstepDialog::GetResults(int *focalLength, double *pixelSize, int *stepSize)
+bool CalstepDialog::GetResults(int *focalLength, double *pixelSize, int *binning, int *stepSize)
 {
     if (m_bValidResult)
     {
@@ -261,6 +277,7 @@ bool CalstepDialog::GetResults(int *focalLength, double *pixelSize, int *stepSiz
 
         *focalLength = m_iFocalLength;
         *pixelSize = m_fPixelSize;
+        *binning = m_binning;
         *stepSize = m_iStepSize;
         long lval;
         if (m_pRslt->GetValue().ToLong(&lval) && lval > 0)

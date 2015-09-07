@@ -206,21 +206,18 @@ void AdvancedDialog::Preload()
 // Internal debugging function to be sure all controls are hosted on a panel somewhere
 void AdvancedDialog::ConfirmLayouts()
 {
-    std::map <BRAIN_CTRL_IDS, BrainCtrlInfo>::const_iterator it;
-    BrainCtrlInfo info;
-    BRAIN_CTRL_IDS id;
-    int orpan_controls = 0;
-    for (it = m_brainCtrls.begin(); it != m_brainCtrls.end(); ++it)
+    int orphan_controls = 0;
+    for (BrainCtrlIdMap::const_iterator it = m_brainCtrls.begin(); it != m_brainCtrls.end(); ++it)
     {
-        id = it->first;
-        info = it->second;
+        BRAIN_CTRL_IDS id = it->first;
+        const BrainCtrlInfo& info = it->second;
         if (!info.isPositioned)
         {
             Debug.AddLine(wxString::Format("AdvancedDialog internal error: Controlid %d is not positioned", id));
-            orpan_controls++;
+            ++orphan_controls;
         }
     }
-    assert(orpan_controls == 0);
+    assert(orphan_controls == 0);
 }
 
 // Perform a from-scratch initialization and layout of all the tabs
@@ -500,4 +497,15 @@ void AdvancedDialog::SetPixelSize(double val)
 {
     if (m_pCameraCtrlSet)
         m_pCameraCtrlSet->SetPixelSize(val);
+}
+
+int AdvancedDialog::GetBinning(void)
+{
+    return m_pCameraCtrlSet ? m_pCameraCtrlSet->GetBinning() : 1;
+}
+
+void AdvancedDialog::SetBinning(int binning)
+{
+    if (m_pCameraCtrlSet)
+        m_pCameraCtrlSet->SetBinning(binning);
 }

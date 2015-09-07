@@ -49,6 +49,7 @@ private:
     wxStaticBoxSizer *m_pOutputGroupBox;
     wxTextCtrl *m_pFocalLength;
     wxSpinCtrlDouble *m_pPixelSize;
+    wxChoice *m_binningChoice;
     wxSpinCtrlDouble *m_pGuideSpeed;
     wxSpinCtrlDouble *m_pNumSteps;
     wxSpinCtrlDouble *m_pDeclination;
@@ -61,6 +62,7 @@ private:
     int m_iFocalLength;
     double m_fGuideSpeed;
     int m_iNumSteps;
+    int m_binning;
     double m_fImageScale;
     int m_iStepSize;
     bool m_bValidResult;
@@ -71,12 +73,12 @@ public:
     enum { DEFAULT_STEPS = 12 };
     static const double DEFAULT_GUIDESPEED;
 
-    CalstepDialog(wxWindow *parent, int focalLength, double pixelSize);
+    CalstepDialog(wxWindow *parent, int focalLength, double pixelSize, int binning);
     ~CalstepDialog(void);
-    bool GetResults(int *focalLength, double *pixelSize, int *stepSize);
+    bool GetResults(int *focalLength, double *pixelSize, int *binning, int *stepSize);
 
-    static void GetCalibrationStepSize(int focalLength, double pixelSize, double guideSpeed, int desiredSteps,
-                       double declination, double *imageScale, int *stepSize);
+    static void GetCalibrationStepSize(int focalLength, double pixelSize, int binning, double guideSpeed,
+        int desiredSteps, double declination, double *imageScale, int *stepSize);
 
 private:
     void OnText(wxCommandEvent& evt);

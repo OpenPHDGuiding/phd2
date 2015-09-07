@@ -40,6 +40,7 @@ class ManualCalDialog :
     public wxDialog
 {
 private:
+    wxChoice *m_binning;
     wxTextCtrl *m_pXRate;
     wxTextCtrl *m_pYRate;
     wxTextCtrl *m_pXAngle;

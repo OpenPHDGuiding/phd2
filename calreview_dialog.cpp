@@ -245,9 +245,9 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     else
         calGrid->SetCellValue(_("X rate:"), row, col++);
     if (validDetails)
-        calGrid->SetCellValue(wxString::Format("%0.3f a-s/sec\n%0.3f px/sec", calBaseline.xRate * 1000 * calDetails.imageScale, calBaseline.xRate * 1000), row, col++);
+        calGrid->SetCellValue(wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.xRate * 1000 * calDetails.imageScale, ARCSECPERSEC, calBaseline.xRate * 1000, PXPERSEC), row, col++);
     else
-        calGrid->SetCellValue(wxString::Format("%0.3f px/sec", calBaseline.xRate * 1000), row, col++);      // just px/sec with no image scale data
+        calGrid->SetCellValue(wxString::Format("%0.3f %s", calBaseline.xRate * 1000, PXPERSEC), row, col++);      // just px/sec with no image scale data
     if (!AO)
         calGrid->SetCellValue(_("Dec rate:"), row, col++);
     else
@@ -313,7 +313,10 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         col = 0;
         cfgGrid->SetCellValue(_("Image scale:"), row, col++);
         if (validDetails)
-            cfgGrid->SetCellValue(wxString::Format("%0.2f %s", calDetails.imageScale, ARCSECPERPX), row, col++);
+        {
+            wxString binning = wxString::Format(_("Binning %hu"), calBaseline.binning);
+            cfgGrid->SetCellValue(wxString::Format("%0.2f %s\n%s", calDetails.imageScale, ARCSECPERPX, binning), row, col++);
+        }
         else
             cfgGrid->SetCellValue(NA_STR, row, col++);
         cfgGrid->SetCellValue(_("Side-of-pier:"), row, col++);

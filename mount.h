@@ -72,6 +72,7 @@ struct Calibration
     double declination;
     PierSide pierSide;
     double rotatorAngle;
+    unsigned short binning;
     wxString timestamp;
 };
 
@@ -110,7 +111,7 @@ class MountConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxCheckBox *m_pEnableGuide;
 
 public:
-    MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    MountConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~MountConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
@@ -162,7 +163,7 @@ public:
 
         virtual void LoadValues(void);
         virtual void UnloadValues(void);
-        virtual void LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+        virtual void LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap);
 
         virtual void Undo(void);
 
@@ -239,7 +240,7 @@ public:
     virtual bool GuidingCeases(void) = 0;
 
     virtual MountConfigDialogPane *GetConfigDialogPane(wxWindow *pParent) = 0;
-    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap) = 0;
+    virtual MountConfigDialogCtrlSet *GetConfigDialogCtrlSet(wxWindow *pParent, Mount *pMount, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap) = 0;
 
     virtual wxString GetMountClassName() const = 0;
 

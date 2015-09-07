@@ -81,6 +81,7 @@ void MyFrame::OnEEGG(wxCommandEvent& evt)
             cal.declination = pPointingSource->GetGuidingDeclination();
             cal.pierSide = pPointingSource->SideOfPier();
             cal.rotatorAngle = Rotator::RotatorPosition();
+            cal.binning = pCamera->Binning;
 
             if (!pMount->IsCalibrated())
             {

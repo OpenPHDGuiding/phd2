@@ -679,6 +679,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                 m_calibration.declination = 0.;
                 m_calibration.pierSide = PIER_SIDE_UNKNOWN;
                 m_calibration.rotatorAngle = Rotator::RotatorPosition();
+                m_calibration.binning = pCamera->Binning;
                 SetCalibration(m_calibration);
                 SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle);
                 status1 = _T("calibration complete");
@@ -1185,7 +1186,7 @@ StepGuider::StepGuiderConfigDialogPane::StepGuiderConfigDialogPane(wxWindow *pPa
     m_pStepGuider = pStepGuider;
 }
 
-void StepGuider::StepGuiderConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void StepGuider::StepGuiderConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
     // UI controls for step-guider are just algos - laid out in Mount
     MountConfigDialogPane::LayoutControls(pParent, CtrlMap);
@@ -1208,7 +1209,7 @@ AOConfigDialogPane::AOConfigDialogPane(wxWindow *pParent, StepGuider *pStepGuide
     m_pStepGuider = pStepGuider;
 }
 
-void AOConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap)
+void AOConfigDialogPane::LayoutControls(wxPanel *pParent, BrainCtrlIdMap& CtrlMap)
 {
     wxFlexGridSizer *pAoDetailSizer = new wxFlexGridSizer(3, 3, 15, 15);
     wxSizerFlags def_flags = wxSizerFlags(0).Border(wxALL, 10).Expand();
@@ -1225,8 +1226,8 @@ void AOConfigDialogPane::LayoutControls(wxPanel* pParent, std::map <BRAIN_CTRL_I
 
 
 // UI controls for properties unique to step-guider.  Mount controls for guide algos are handled by MountConfigDialogPane
-AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap):
-ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
+AOConfigDialogCtrlSet::AOConfigDialogCtrlSet(wxWindow *pParent, Mount *pStepGuider, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap)
+    : ConfigDialogCtrlSet(pParent, pAdvancedDialog, CtrlMap)
 {
     int width;
 

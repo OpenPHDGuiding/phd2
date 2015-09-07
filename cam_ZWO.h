@@ -38,7 +38,9 @@
 
 class Camera_ZWO : public GuideCamera
 {
+    wxRect m_maxSize;
     wxRect m_frame;
+    unsigned short m_prevBinning;
     unsigned char *m_buffer;
     bool m_capturing;
     int m_cameraId;

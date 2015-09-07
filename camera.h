@@ -52,16 +52,13 @@ class GuideCamera;
 
 class CameraConfigDialogPane : public ConfigDialogPane
 {
-
 public:
     CameraConfigDialogPane(wxWindow *pParent, GuideCamera *pCamera);
     virtual ~CameraConfigDialogPane(void) {};
 
-    wxWindow* m_pParent;
-    void LayoutControls(GuideCamera* pCamera, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    void LayoutControls(GuideCamera *pCamera, BrainCtrlIdMap& CtrlMap);
     virtual void LoadValues(void) {};
     virtual void UnloadValues(void) {};
-
 };
 
 class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
@@ -73,15 +70,18 @@ class CameraConfigDialogCtrlSet : public ConfigDialogCtrlSet
     wxChoice   *m_pPortNum;
     wxSpinCtrl *m_pDelay;
     wxSpinCtrlDouble *m_pPixelSize;
+    wxChoice *m_binning;
 
 public:
-    CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    CameraConfigDialogCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~CameraConfigDialogCtrlSet() {};
     virtual void LoadValues(void);
     virtual void UnloadValues(void);
 
     double GetPixelSize(void);
     void SetPixelSize(double val);
+    int GetBinning(void);
+    void SetBinning(int val);
 };
 
 enum CaptureOptionBits
@@ -114,8 +114,10 @@ public:
     bool            HasGainControl;
     bool            HasShutter;
     bool            HasSubframes;
+    unsigned short  MaxBinning;
     short           Port;
     int             ReadDelay;
+    unsigned short  Binning;
     bool            ShutterClosed;  // false=light, true=dark
     bool            UseSubframes;
     double          PixelSize;
@@ -152,7 +154,10 @@ public:
     virtual bool    ST4PulseGuideScope(int direction, int duration);
 
     CameraConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    CameraConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    CameraConfigDialogCtrlSet *GetConfigDlgCtrlSet(wxWindow *pParent, GuideCamera *pCamera, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
+
+    static void GetBinningOpts(int maxBin, wxArrayString *opts);
+    void GetBinningOpts(wxArrayString *opts);
 
     virtual void    ShowPropertyDialog() { return; }
 
@@ -170,8 +175,9 @@ public:
 
 protected:
 
-    virtual int GetCameraGain(void);
-    virtual bool SetCameraGain(int cameraGain);
+    int GetCameraGain(void);
+    bool SetCameraGain(int cameraGain);
+    bool SetBinning(int binning);
     int GetTimeoutMs(void) const;
     void SetTimeoutMs(int timeoutMs);
     virtual double GetCameraPixelSize(void);
@@ -188,6 +194,11 @@ protected:
 inline int GuideCamera::GetTimeoutMs(void) const
 {
     return m_timeoutMs;
+}
+
+inline void GuideCamera::GetBinningOpts(wxArrayString *opts)
+{
+    GetBinningOpts(MaxBinning, opts);
 }
 
 #endif /* CAMERA_H_INCLUDED */

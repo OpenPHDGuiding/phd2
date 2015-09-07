@@ -385,6 +385,12 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
             m_rawImageModeWarningDone = true;
         }
 
+        // check for dark frame compatibility in case the frame size changed (binning changed)
+        if (pCamera->DarkFrameSize() != m_prevDarkFrameSize)
+        {
+            CheckDarkFrameGeometry();
+        }
+
         pGuider->UpdateGuideState(pNewFrame, !m_continueCapturing);
         pNewFrame = NULL; // the guider owns it now
 

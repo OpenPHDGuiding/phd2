@@ -87,7 +87,7 @@ public:
     MyFrameConfigDialogPane(wxWindow *pParent, MyFrame *pFrame);
     virtual ~MyFrameConfigDialogPane(void) {};
 
-    void LayoutControls(std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    void LayoutControls(BrainCtrlIdMap& CtrlMap);
     virtual void LoadValues(void) {};
     virtual void UnloadValues(void) {};
 };
@@ -115,7 +115,7 @@ class MyFrameConfigDialogCtrlSet : public ConfigDialogCtrlSet
     void OnDirSelect(wxCommandEvent& evt);
 
 public:
-    MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    MyFrameConfigDialogCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
     virtual ~MyFrameConfigDialogCtrlSet(void) {};
 
     virtual void LoadValues(void);
@@ -210,6 +210,7 @@ public:
     Star::FindMode m_starFindMode;
     bool m_rawImageMode;
     bool m_rawImageModeWarningDone;
+    wxSize m_prevDarkFrameSize;
 
     void RegisterTextCtrl(wxTextCtrl *ctrl);
     void OnQuit(wxCommandEvent& evt);
@@ -320,7 +321,7 @@ public:
     static void PlaceWindowOnScreen(wxWindow *window, int x, int y);
 
     MyFrameConfigDialogPane *GetConfigDialogPane(wxWindow *pParent);
-    MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog* pAdvancedDialog, std::map <BRAIN_CTRL_IDS, BrainCtrlInfo> & CtrlMap);
+    MyFrameConfigDialogCtrlSet *GetConfigDlgCtrlSet(MyFrame *pFrame, AdvancedDialog *pAdvancedDialog, BrainCtrlIdMap& CtrlMap);
 
     struct EXPOSE_REQUEST
     {
@@ -364,7 +365,7 @@ public:
     void UpdateButtonsStatus(void);
     void UpdateCalibrationStatus(void);
 
-    static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm);
+    static double GetPixelScale(double pixelSizeMicrons, int focalLengthMm, int binning);
     double GetCameraPixelScale(void) const;
 
     void Alert(const wxString& msg, int flags = wxICON_EXCLAMATION);
@@ -588,9 +589,9 @@ inline static wxSize StringSize(const wxWindow *window, const wxString& s, int e
     return wxSize(StringWidth(window, s) + extra, -1);
 }
 
-inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm)
+inline double MyFrame::GetPixelScale(double pixelSizeMicrons, int focalLengthMm, int binning)
 {
-    return 206.265 * pixelSizeMicrons / (double) focalLengthMm;
+    return 206.265 * pixelSizeMicrons * (double) binning / (double) focalLengthMm;
 }
 
 inline double MyFrame::TimeSinceGuidingStarted(void) const

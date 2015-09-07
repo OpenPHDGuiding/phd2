@@ -411,19 +411,19 @@ void ProfileWizard::UpdateState(const int change)
     ShowHelp(m_State);
 }
 
-static int GetCalibrationStepSize(int focalLength, double pixelSize)
+static int GetCalibrationStepSize(int focalLength, double pixelSize, int binning)
 {
     int calibrationStep;
     double const declination = 0.0;
-    CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, CalstepDialog::DEFAULT_GUIDESPEED,
+    CalstepDialog::GetCalibrationStepSize(focalLength, pixelSize, binning, CalstepDialog::DEFAULT_GUIDESPEED,
         CalstepDialog::DEFAULT_STEPS, declination, 0, &calibrationStep);
     return calibrationStep;
 }
 
 // Set up some reasonable starting guiding parameters
-static void SetGuideAlgoParams(double pixelSize, int focalLength)
+static void SetGuideAlgoParams(double pixelSize, int focalLength, int binning)
 {
-    double imageScale = MyFrame::GetPixelScale(pixelSize, focalLength);
+    double imageScale = MyFrame::GetPixelScale(pixelSize, focalLength, binning);
 
     // Following based on empirical data using a range of image scales
     double minMove = wxMax(0.1515 + 0.1548 / imageScale, 0.15);        // Don't use a ridiculously small value
@@ -437,7 +437,10 @@ static void SetGuideAlgoParams(double pixelSize, int focalLength)
 void ProfileWizard::WrapUp()
 {
     m_launchDarks = m_pLaunchDarks->GetValue();
-    int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize);
+
+    int binning = 1; // assume starting with 1x1 binning
+
+    int calibrationStepSize = GetCalibrationStepSize(m_FocalLength, m_PixelSize, binning);
 
     Debug.AddLine(wxString::Format("Profile Wiz: Name=%s, Camera=%s, Mount=%s, AuxMount=%s, AO=%s, PixelSize=%0.1f, FocalLength=%d, CalStep=%d, LaunchDarks=%d",
                                    m_ProfileName, m_SelectedCamera, m_SelectedMount, m_SelectedAuxMount, m_SelectedAO, m_PixelSize, m_FocalLength, calibrationStepSize, m_launchDarks));
@@ -457,9 +460,11 @@ void ProfileWizard::WrapUp()
     pConfig->Profile.SetInt("/frame/focalLength", m_FocalLength);
     pConfig->Profile.SetDouble("/camera/pixelsize", m_PixelSize);
     pConfig->Profile.SetInt("/scope/CalibrationDuration", calibrationStepSize);
+
     GuideLog.EnableLogging();               // Especially for newbies
+
     // Construct a good baseline set of guiding parameters based on image scale
-    SetGuideAlgoParams(m_PixelSize, m_FocalLength);
+    SetGuideAlgoParams(m_PixelSize, m_FocalLength, binning);
 
     EndModal(wxOK);
 }
