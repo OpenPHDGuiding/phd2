@@ -184,7 +184,36 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
     double color = GetQHYCCDParam(m_camhandle, CAM_COLOR);
     Debug.Write(wxString::Format("QHY: cam reports color = %.1f\n", color));
 
-    ret = SetQHYCCDBinMode(m_camhandle, 1, 1);
+    // check bin modes
+    CONTROL_ID modes[] = { CAM_BIN2X2MODE, CAM_BIN3X3MODE, CAM_BIN4X4MODE, };
+    int bin[] =          {              2,              3,              4, };
+    int maxBin = 1;
+    for (int i = 0; i < WXSIZEOF(modes); i++)
+    {
+        ret = IsQHYCCDControlAvailable(m_camhandle, modes[i]);
+#if 0
+        // FIXME- IsQHYCCDControlAvailable is supposed to return QHYCCD_ERROR_NOTSUPPORT for a
+        // bin mode that is not supported, but in fact it returns QHYCCD_ERROR, so we cannot
+        // distinguish "not supported" from "error".
+        if (ret != QHYCCD_SUCCESS && ret != QHYCCD_ERROR_NOTSUPPORT)
+        {
+            CloseQHYCCD(m_camhandle);
+            m_camhandle = 0;
+            wxMessageBox(_("Failed to get camera bin info"));
+            return true;
+        }
+#endif
+        if (ret == QHYCCD_SUCCESS)
+            maxBin = bin[i];
+        else
+            break;
+    }
+    Debug.Write(wxString::Format("QHY: max binning = %d\n", maxBin));
+    MaxBinning = maxBin;
+    if (Binning > MaxBinning)
+        Binning = MaxBinning;
+
+    ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
     if (ret != QHYCCD_SUCCESS)
     {
         CloseQHYCCD(m_camhandle);
@@ -192,8 +221,10 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
         wxMessageBox(_("Failed to set camera binning"));
         return true;
     }
+    m_curBin = Binning;
 
-    FullSize = wxSize(imagew, imageh);
+    m_maxSize = wxSize(imagew, imageh);
+    FullSize = wxSize(imagew / Binning, imageh / Binning);
 
     delete[] RawBuffer;
     size_t size = imagew * imageh;
@@ -210,7 +241,7 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
         return true;
     }
 
-    ret = SetQHYCCDResolution(m_camhandle, 0, 0, imagew, imageh);
+    ret = SetQHYCCDResolution(m_camhandle, 0, 0, FullSize.GetX(), FullSize.GetY());
     if (ret != QHYCCD_SUCCESS)
     {
         CloseQHYCCD(m_camhandle);
@@ -264,6 +295,12 @@ static bool StopExposure()
 
 bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
+    if (Binning != m_curBin)
+    {
+        FullSize = wxSize(m_maxSize.GetX() / Binning, m_maxSize.GetY() / Binning);
+        m_curBin = Binning;
+    }
+
     if (img.Init(FullSize))
     {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
@@ -278,7 +315,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
     int ret;
 
     // lzr from QHY says this needs to be set for every exposure
-    ret = SetQHYCCDBinMode(m_camhandle, 1, 1);
+    ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
     if (ret != QHYCCD_SUCCESS)
     {
         Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", ret));

@@ -44,8 +44,10 @@ class Camera_QHY5IIBase : public GuideCamera
     double m_gainMax;
     double m_gainStep;
     unsigned char *RawBuffer;
+    wxSize m_maxSize;
     int m_curGain;
     int m_curExposure;
+    unsigned short m_curBin;
     wxRect m_roi;
 
 protected:
