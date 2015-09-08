@@ -48,8 +48,10 @@ class Camera_ASCOMLateClass : public GuideCamera
     int DriverVersion;
     wxString m_choice; // name of chosen camera
     wxRect m_roi;
+    wxSize m_maxSize;
     bool m_canAbortExposure;
     bool m_canStopExposure;
+    unsigned short m_curBin;
 
 #endif // __WINDOWS__
 
