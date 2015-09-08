@@ -1134,9 +1134,31 @@ bool StepGuider::IsStepGuider(void) const
 
 void StepGuider::AdjustCalibrationForScopePointing(void)
 {
-    // stepguider calibration does not change regardless of declination, side of pier,
-    // or rotator angle (assumes AO rotates with camera).
-    Debug.AddLine("stepguider: scope pointing change, no change to calibration");
+    // compensate for binning change
+
+    unsigned short binning = pCamera->Binning;
+
+    if (binning == m_calibration.binning)
+    {
+        // stepguider calibration does not change regardless of declination, side of pier,
+        // or rotator angle (assumes AO rotates with camera).
+        Debug.AddLine("stepguider: scope pointing change, no change to calibration");
+    }
+    else
+    {
+        Calibration cal(m_calibration);
+
+        double adj = (double) m_calibration.binning / (double) binning;
+        cal.xRate *= adj;
+        cal.yRate *= adj;
+        cal.binning = binning;
+
+        Debug.Write(wxString::Format("Stepguider Cal: Binning %hu -> %hu, rates (%.3f, %.3f) -> (%.3f, %.3f)\n",
+            m_calibration.binning, binning, m_calibration.xRate, m_calibration.yRate, cal.xRate, cal.yRate));
+
+        SetCalibration(cal);
+    }
+
 }
 
 wxPoint StepGuider::GetAoPos(void) const
