@@ -63,13 +63,15 @@ inline static void LogExcep(HRESULT hr, const wxString& prefix, const EXCEPINFO&
         Debug.AddLine(ExcepMsg(prefix, excep));
 }
 
-static bool ASCOM_SetBin(IDispatch *cam, int mode, EXCEPINFO *excep)
+static bool ASCOM_SetBin(IDispatch *cam, int binning, EXCEPINFO *excep)
 {
     // returns true on error, false if OK
 
+    Debug.Write(wxString::Format("ASCOM Camera: set binning = %hu\n", binning));
+
     VARIANTARG rgvarg[1];
     rgvarg[0].vt = VT_I2;
-    rgvarg[0].iVal = (short) mode;
+    rgvarg[0].iVal = (short) binning;
 
     DISPID dispidNamed = DISPID_PROPERTYPUT;
     DISPPARAMS dispParms;
@@ -594,7 +596,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
         pFrame->Alert(_("ASCOM driver missing the CameraXSize property"));
         return true;
     }
-    FullSize.SetWidth((int) vRes.lVal);
+    m_maxSize.SetWidth((int) vRes.lVal);
 
     if (!driver.GetProp(&vRes, L"CameraYSize"))
     {
@@ -602,7 +604,7 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
         pFrame->Alert(_("ASCOM driver missing the CameraYSize property"));
         return true;
     }
-    FullSize.SetHeight((int) vRes.lVal);
+    m_maxSize.SetHeight((int) vRes.lVal);
 
     // Get the interface version of the driver
 
@@ -637,6 +639,17 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     }
     if ((double) vRes.dblVal > PixelSize)
         PixelSize = (double) vRes.dblVal;
+
+    short maxBinX = 1, maxBinY = 1;
+    if (driver.GetProp(&vRes, L"MaxBinX"))
+        maxBinX = vRes.iVal;
+    if (driver.GetProp(&vRes, L"MaxBinY"))
+        maxBinY = vRes.iVal;
+    MaxBinning = wxMin(maxBinX, maxBinY);
+    Debug.AddLine("ASCOM camera: MaxBinning is %hu", MaxBinning);
+    if (Binning > MaxBinning)
+        Binning = MaxBinning;
+    m_curBin = Binning;
 
     // Get the dispids we'll need for more routine things
     if (!GetDispid(&dispid_setxbin, driver, L"BinX"))
@@ -678,9 +691,18 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
     if (!GetDispid(&dispid_ispulseguiding, driver, L"IsPulseGuiding"))
         return true;
 
-    // Program some defaults -- full size and 1x1 bin
+    // Program some defaults -- full size and binning
     EXCEPINFO excep;
-    ASCOM_SetBin(driver.IDisp(), 1, &excep);
+    if (ASCOM_SetBin(driver.IDisp(), Binning, &excep))
+    {
+        // only make this error fatal if the camera supports binning > 1
+        if (MaxBinning > 1)
+        {
+            pFrame->Alert(_("The ASCOM camera failed to set binning."));
+            return true;
+        }
+    }
+    FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
     m_roi = FullSize;
     ASCOM_SetROI(driver.IDisp(), FullSize, &excep);
 
@@ -761,6 +783,13 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, int options, con
         takeSubframe = false;
     }
 
+    bool binning_changed = false;
+    if (Binning != m_curBin)
+    {
+        FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+        binning_changed = true;
+    }
+
     // Program the size
     if (!takeSubframe)
     {
@@ -776,6 +805,17 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, int options, con
     GITObjRef cam(m_gitEntry);
 
     EXCEPINFO excep;
+
+    if (binning_changed)
+    {
+        if (ASCOM_SetBin(cam.IDisp(), Binning, &excep))
+        {
+            pFrame->Alert(_("The ASCOM camera failed to set binning."));
+            return true;
+        }
+        m_curBin = Binning;
+    }
+
     if (subframe != m_roi)
     {
         ASCOM_SetROI(cam.IDisp(), subframe, &excep);

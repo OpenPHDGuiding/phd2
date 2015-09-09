@@ -649,6 +649,8 @@ bool GuideCamera::SetBinning(int binning)
     if (binning > MaxBinning)
         binning = MaxBinning;
 
+    Debug.Write(wxString::Format("camera: set binning = %hu\n", binning));
+
     Binning = binning;
     pConfig->Profile.SetInt("/camera/binning", binning);
 

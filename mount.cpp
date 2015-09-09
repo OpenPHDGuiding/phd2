@@ -983,8 +983,9 @@ void Mount::AdjustCalibrationForScopePointing(void)
         double adj = (double) m_cal.binning / (double) binning;
         cal.xRate *= adj;
         cal.yRate *= adj;
+        cal.binning = binning;
 
-        Debug.Write(wxString::Format("Binning %hu -> %hu, rates (%.3f, %.3f) -> (%.3f, %.3f)",
+        Debug.Write(wxString::Format("Binning %hu -> %hu, rates (%.3f, %.3f) -> (%.3f, %.3f)\n",
             m_cal.binning, binning, m_cal.xRate * 1000., m_cal.yRate * 1000., cal.xRate * 1000., cal.yRate * 1000.));
 
         SetCalibration(cal);
