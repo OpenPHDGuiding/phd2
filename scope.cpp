@@ -859,7 +859,7 @@ void Scope::SetCalibration(const Calibration& cal)
     Mount::SetCalibration(cal);
 }
 
-void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle)
+void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning)
 {
     m_calibrationDetails = calDetails;
     double ra_rate;
@@ -874,7 +874,8 @@ void Scope::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
     m_calibrationDetails.focalLength = pFrame->GetFocalLength();
     m_calibrationDetails.imageScale = pFrame->GetCameraPixelScale();
     m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
-    Mount::SetCalibrationDetails(m_calibrationDetails, xAngle, yAngle);
+    m_calibrationDetails.origBinning = binning;
+    Mount::SetCalibrationDetails(m_calibrationDetails);
 }
 
 bool Scope::IsCalibrated(void)
@@ -1298,7 +1299,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 SetCalibration(cal);
                 m_calibrationDetails.raStepCount = m_raSteps;
                 m_calibrationDetails.decStepCount = m_decSteps;
-                SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle);
+                SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, pCamera->Binning);
                 if (SANITY_CHECKING_ACTIVE)
                     SanityCheckCalibration(m_prevCalibrationParams, m_prevCalibrationDetails);  // method gets "new" info itself
                 pFrame->SetStatusText(_("calibration complete"), 1);

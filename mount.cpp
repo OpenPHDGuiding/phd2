@@ -1194,7 +1194,7 @@ void Mount::SetCalibration(const Calibration& cal)
     pConfig->Profile.SetDouble(prefix + "rotatorAngle", m_cal.rotatorAngle);
 }
 
-void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle)
+void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails)
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
     wxString stepStr = "";
@@ -1204,6 +1204,7 @@ void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
     pConfig->Profile.SetDouble(prefix + "ra_guide_rate", calDetails.raGuideSpeed);
     pConfig->Profile.SetDouble(prefix + "dec_guide_rate", calDetails.decGuideSpeed);
     pConfig->Profile.SetDouble(prefix + "ortho_error", calDetails.orthoError);
+    pConfig->Profile.SetDouble(prefix + "orig_binning", calDetails.origBinning);
 
     for (std::vector<wxRealPoint>::const_iterator it = calDetails.raSteps.begin(); it != calDetails.raSteps.end(); ++it)
     {
@@ -1268,6 +1269,7 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details)
     details->orthoError = pConfig->Profile.GetDouble(prefix + "ortho_error", 0.0);
     details->raStepCount = pConfig->Profile.GetInt(prefix + "ra_step_count", 0);
     details->decStepCount = pConfig->Profile.GetInt(prefix + "dec_step_count", 0);
+    details->origBinning = pConfig->Profile.GetDouble(prefix + "orig_binning", 1.0);
     // Populate raSteps
     stepStr = pConfig->Profile.GetString(prefix + "ra_steps", "");
     tok.SetString(stepStr, "},", wxTOKEN_STRTOK);

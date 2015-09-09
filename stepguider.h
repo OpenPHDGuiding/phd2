@@ -171,7 +171,7 @@ public:
     static StepGuider *Factory(const wxString& choice);
 
     virtual void SetCalibration(const Calibration& cal);
-    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
     virtual bool BeginCalibration(const PHD_Point& currentLocation);
     bool UpdateCalibrationState(const PHD_Point& currentLocation);
     virtual void ClearCalibration(void);

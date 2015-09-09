@@ -483,7 +483,7 @@ void StepGuider::SetCalibration(const Calibration& cal)
     Mount::SetCalibration(cal);
 }
 
-void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle)
+void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning)
 {
     m_calibrationDetails = calDetails;
 
@@ -494,7 +494,8 @@ void StepGuider::SetCalibrationDetails(const CalibrationDetails& calDetails, dou
     m_calibrationDetails.orthoError = degrees(fabs(fabs(norm_angle(xAngle - yAngle)) - M_PI / 2.));         // Delta from the nearest multiple of 90 degrees
     m_calibrationDetails.raStepCount = m_calibrationDetails.raSteps.size();
     m_calibrationDetails.decStepCount = m_calibrationDetails.decSteps.size();
-    Mount::SetCalibrationDetails(m_calibrationDetails, xAngle, yAngle);
+    m_calibrationDetails.origBinning = binning;
+    Mount::SetCalibrationDetails(m_calibrationDetails);
 }
 
 /*
@@ -681,7 +682,7 @@ bool StepGuider::UpdateCalibrationState(const PHD_Point& currentLocation)
                 m_calibration.rotatorAngle = Rotator::RotatorPosition();
                 m_calibration.binning = pCamera->Binning;
                 SetCalibration(m_calibration);
-                SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle);
+                SetCalibrationDetails(m_calibrationDetails, m_calibration.xAngle, m_calibration.yAngle, pCamera->Binning);
                 status1 = _T("calibration complete");
                 GuideLog.CalibrationComplete(this);
                 Debug.AddLine("Calibration Complete");
