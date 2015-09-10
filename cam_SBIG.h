@@ -46,6 +46,7 @@ class Camera_SBIGClass : public GuideCamera
 {
     bool UseTrackingCCD;
     bool m_driverLoaded;
+    wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
 
 public:
     Camera_SBIGClass();
