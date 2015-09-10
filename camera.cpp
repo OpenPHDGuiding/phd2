@@ -876,7 +876,7 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_pCameraGain->SetValue(m_pCamera->GetCameraGain());
     }
 
-    if (m_pCamera->MaxBinning > 1)
+    if (m_binning)
     {
         int idx = m_pCamera->Binning - 1;
         m_binning->Select(idx);
@@ -976,7 +976,7 @@ void CameraConfigDialogCtrlSet::UnloadValues()
         m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
     }
 
-    if (m_pCamera->MaxBinning > 1)
+    if (m_binning)
     {
         int idx = m_binning->GetSelection();
         m_pCamera->SetBinning(idx + 1);
