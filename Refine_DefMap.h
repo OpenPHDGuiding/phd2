@@ -83,6 +83,7 @@ class RefineDefMap : public wxDialog
     long initColdFactor;
     int manualPixelCount;
     Star::FindMode m_saveStarFindMode;
+    bool m_saveUseSubframes;
 
 public:
     RefineDefMap(wxWindow *pParent);
