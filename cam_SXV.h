@@ -55,9 +55,10 @@ class Camera_SXVClass : public GuideCamera
     sxccd_handle_t hCam;
     sxccd_params_t CCDParams;
     unsigned short *RawData;
+    unsigned int RawDataSize;
     usImage tmpImg;
     unsigned short CameraModel;
-    unsigned short SubType;
+    unsigned short m_prevBin;
     bool Interlaced;
     bool ColorSensor;
     bool SquarePixels;
@@ -77,6 +78,9 @@ public:
     bool HasNonGuiCapture(void) { return true; }
     bool ST4HasNonGuiMove(void) { return true; }
     bool ST4PulseGuideScope(int direction, int duration);
+
+private:
+    void InitFrameSizes(void);
 };
 
 #endif  //SXVDEF
