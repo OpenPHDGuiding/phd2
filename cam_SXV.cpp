@@ -347,6 +347,13 @@ bool Camera_SXVClass::Connect(const wxString& camId)
     if (SubType == 25)
         Interlaced = false;
 
+    // do not allow SquarePixels if they are already square
+    if (SquarePixels && fabs(CCDParams.pix_width - CCDParams.pix_height) / CCDParams.pix_width < 0.01)
+    {
+        Debug.Write("SXV: Disabling SquarePixels as pixels are already square\n");
+        SquarePixels = false;
+    }
+
     if (Interlaced)
     {
         if (SquarePixels)
@@ -645,9 +652,9 @@ static bool ReadPixels(sxccd_handle_t sxHandle, unsigned short *pixels, unsigned
     ret = sxReadPixels(sxHandle, (UInt8 *) pixels, count, sizeof(unsigned short));
 #endif
 
-    if (ret != 1)
+    if (ret != count * sizeof(unsigned short))
     {
-        Debug.Write(wxString::Format("sxReadPixels failed! ret = %ld\n", ret));
+        Debug.Write(wxString::Format("sxReadPixels failed! ret = %d\n", ret));
         return false;
     }
     return true;
