@@ -109,6 +109,8 @@ private:
     void ShowStatus(const wxString& msg, bool appending);
     wxString DefectMapTimeString();
     bool RebuildMasterDarks();
+    void InitCameraMode();
+    void RestoreCameraMode();
 
     DECLARE_EVENT_TABLE()
 };
