@@ -949,6 +949,10 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
         double blDelta;
         double blCumDelta;
         double nudge_amt;
+        double nudgeDirCosX;
+        double nudgeDirCosY;
+        double cos_theta;
+        double theta;
 
         switch (m_calibrationState)
         {
@@ -1213,7 +1217,7 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
 
                 if (pFrame->pGuider->IsFastRecenterEnabled())
                 {
-                    m_recenterDuration = (int)floor((double)pFrame->pGuider->GetMaxMovePixels() / m_calibration.yRate);
+                    m_recenterDuration = (int)floor(0.8 * (double)pFrame->pGuider->GetMaxMovePixels() / m_calibration.yRate);
                     if (m_recenterDuration > m_maxDecDuration)
                         m_recenterDuration = m_maxDecDuration;
                     if (m_recenterDuration < m_calibrationDuration)
@@ -1248,6 +1252,13 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                     break;
                 }
                 m_lastLocation = currentLocation;
+                // Compute the vector for the north moves we made - use it to make sure any nudging is going in the correct direction
+                // These are the direction cosines of the vector
+                m_northDirCosX = m_calibrationInitialLocation.dX(m_southStartingLocation) / m_calibrationInitialLocation.Distance(m_southStartingLocation);
+                m_northDirCosY = m_calibrationInitialLocation.dY(m_southStartingLocation) / m_calibrationInitialLocation.Distance(m_southStartingLocation);
+                //Debug.AddLine(wxString::Format("Nudge: InitStart:{%0.1f,%0.1f}, southStart:{%.1f,%0.1f}, north_l:%0.2f, north_m:%0.2f",
+                //    m_calibrationInitialLocation.X, m_calibrationInitialLocation.Y,
+                //    m_southStartingLocation.X, m_southStartingLocation.Y, m_northDirCosX, m_northDirCosY));
                 // Get magnitude and sign convention for the south moves we already made
                 m_totalSouthAmt = MountCoords(m_southStartingLocation - m_lastLocation, m_calibration.xAngle, m_calibration.yAngle).Y;
                 m_calibrationState = CALIBRATION_STATE_NUDGE_SOUTH;
@@ -1259,27 +1270,41 @@ bool Scope::UpdateCalibrationState(const PHD_Point& currentLocation)
                 // Nudge further South on Dec, get within 2 px North/South of starting point, don't try more than 3 times and don't do nudging at all if
                 // we're starting too far away from the target
                 nudge_amt = currentLocation.Distance(m_calibrationInitialLocation);
-                if (m_calibrationSteps <= MAX_NUDGES && nudge_amt > NUDGE_TOLERANCE &&
-                    nudge_amt < MAX_CALIBRATION_DISTANCE + m_blDistanceMoved)
+                // Compute the direction cosines for the expected nudge op
+                nudgeDirCosX = currentLocation.dX(m_calibrationInitialLocation) / nudge_amt;
+                nudgeDirCosY = currentLocation.dY(m_calibrationInitialLocation) / nudge_amt;
+                // Compute the angle between the nudge and north move vector - they should be reversed, i.e. something close to 180 deg
+                cos_theta = nudgeDirCosX * m_northDirCosX + nudgeDirCosY * m_northDirCosY;
+                theta = acos(cos_theta);
+                //Debug.AddLine(wxString::Format("Nudge: currLoc:{%0.1f,%0.1f}, m_nudgeDirCosX: %0.2f, nudgeDirCosY: %0.2f, cos_theta: %0.2f",
+                //    currentLocation.X, currentLocation.Y, nudgeDirCosX, nudgeDirCosY, cos_theta));
+                Debug.AddLine(wxString::Format("Nudge: theta = %0.2f", theta));
+                if (fabs(fabs(theta) * 180.0/M_PI - 180.0) < 40.0)      // We're going at least roughly in the right direction
                 {
-                    // Compute how much more south we need to go
-                    double decAmt = MountCoords(currentLocation - m_calibrationInitialLocation, m_calibration.xAngle, m_calibration.yAngle).Y;
-                    Debug.AddLine(wxString::Format("South nudging, decAmt = %.3f, Normal south moves = %.3f", decAmt, m_totalSouthAmt));
-
-                    if (decAmt * m_totalSouthAmt > 0.0)           // still need to move south to reach target based on matching sign
+                    if (m_calibrationSteps <= MAX_NUDGES && nudge_amt > NUDGE_TOLERANCE &&
+                        nudge_amt < MAX_CALIBRATION_DISTANCE + m_blDistanceMoved)
                     {
-                        decAmt = fabs(decAmt);           // Sign doesn't matter now, we're always moving south
-                        decAmt = wxMin(decAmt, (double)pFrame->pGuider->GetMaxMovePixels());
-                        int pulseAmt = (int)floor(decAmt / m_calibration.yRate);
-                        if (pulseAmt > m_calibrationDuration)
-                            pulseAmt = m_calibrationDuration;               // Be conservative, use durations that pushed us north in the first place
-                        Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d ms", pulseAmt));
-                        ++m_calibrationSteps;
-                        status0.Printf(_("Nudge South %3d"), m_calibrationSteps);
-                        pFrame->ScheduleCalibrationMove(this, SOUTH, pulseAmt);
-                        break;
+                        // Compute how much more south we need to go
+                        double decAmt = MountCoords(currentLocation - m_calibrationInitialLocation, m_calibration.xAngle, m_calibration.yAngle).Y;
+                        Debug.AddLine(wxString::Format("South nudging, decAmt = %.3f, Normal south moves = %.3f", decAmt, m_totalSouthAmt));
+
+                        if (decAmt * m_totalSouthAmt > 0.0)           // still need to move south to reach target based on matching sign
+                        {
+                            decAmt = fabs(decAmt);           // Sign doesn't matter now, we're always moving south
+                            decAmt = wxMin(decAmt, (double)pFrame->pGuider->GetMaxMovePixels());
+                            int pulseAmt = (int)floor(decAmt / m_calibration.yRate);
+                            if (pulseAmt > m_calibrationDuration)
+                                pulseAmt = m_calibrationDuration;               // Be conservative, use durations that pushed us north in the first place
+                            Debug.AddLine(wxString::Format("Sending NudgeSouth pulse of duration %d ms", pulseAmt));
+                            ++m_calibrationSteps;
+                            status0.Printf(_("Nudge South %3d"), m_calibrationSteps);
+                            pFrame->ScheduleCalibrationMove(this, SOUTH, pulseAmt);
+                            break;
+                        }
                     }
                 }
+                else
+                    Debug.AddLine(wxString::Format("Nudging discontinued, wrong direction: %0.2f", theta));
 
                 Debug.AddLine(wxString::Format("Final south nudging status: Current loc = {%.3f,%.3f}, targeting {%.3f,%.3f}", currentLocation.X, currentLocation.Y,
                     m_calibrationInitialLocation.X, m_calibrationInitialLocation.Y));

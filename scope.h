@@ -94,6 +94,8 @@ class Scope : public Mount
     PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
     PHD_Point m_lastLocation;
     double m_totalSouthAmt;
+    double m_northDirCosX;
+    double m_northDirCosY;
     // backlash-related variables
     PHD_Point m_blMarkerPoint;
     double m_blExpectedBacklashStep;
