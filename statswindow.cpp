@@ -77,7 +77,7 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid1->ClearSelection();
 
     m_grid2 = new wxGrid(this, wxID_ANY);
-    m_grid2->CreateGrid(7, 2);
+    m_grid2->CreateGrid(8, 2);
     m_grid2->SetRowLabelSize(1);
     m_grid2->SetColLabelSize(1);
     m_grid2->EnableEditing(false);
@@ -100,6 +100,8 @@ StatsWindow::StatsWindow(wxWindow *parent)
     m_grid2->SetCellValue(3, 1, _T("MMMMMM"));
     ++row, col = 0;
     m_grid2->SetCellValue(row, col++, _("Rotator Pos"));
+    ++row, col = 0;
+    m_grid2->SetCellValue(row, col++, _("Camera binning"));
 
     m_grid2->AutoSize();
     m_grid2->SetCellValue(3, 1, _T(""));
@@ -228,6 +230,7 @@ void StatsWindow::UpdateScopePointing()
         m_grid2->SetCellValue(wxString::Format("% .1f deg", degrees(declination)), row++, col);
         m_grid2->SetCellValue(Mount::PierSideStr(pierSide), row++, col);
         m_grid2->SetCellValue(RotatorPosStr(), row++, col);
+        m_grid2->SetCellValue(wxString::Format("%hu", pCamera->Binning), row++, col);
         m_grid2->EndBatch();
     }
 }

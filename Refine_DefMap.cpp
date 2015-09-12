@@ -63,7 +63,7 @@ static void AddTableEntryPair(wxWindow *parent, wxFlexGridSizer *pTable, const w
 }
 
 RefineDefMap::RefineDefMap(wxWindow *parent) :
-wxDialog(parent, wxID_ANY, _("Refine Bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX), m_profileId(-1)
+    wxDialog(parent, wxID_ANY, _("Refine Bad-pixel Map"), wxDefaultPosition, wxSize(900, 400), wxCAPTION | wxCLOSE_BOX), m_profileId(-1)
 {
     SetSize(wxSize(900, 400));
 
@@ -206,11 +206,26 @@ wxDialog(parent, wxID_ANY, _("Refine Bad-pixel Map"), wxDefaultPosition, wxSize(
     ShowStatus(_("Adjust sliders to increase/decrease pixels marked as bad"), false);
 }
 
-bool RefineDefMap::InitUI()
+void RefineDefMap::InitCameraMode()
 {
     // change the star finding mode to select peaks, not centroids
     m_saveStarFindMode = pFrame->SetStarFindMode(Star::FIND_PEAK);
     pFrame->SetRawImageMode(true); // no "recon" (debayer/deinterlace)
+    // disable subframes
+    m_saveUseSubframes = pCamera->UseSubframes;
+    pCamera->UseSubframes = false;
+}
+
+void RefineDefMap::RestoreCameraMode()
+{
+    pFrame->SetRawImageMode(false); // raw images not needed any more
+    pFrame->SetStarFindMode(m_saveStarFindMode);
+    pCamera->UseSubframes = m_saveUseSubframes;
+}
+
+bool RefineDefMap::InitUI()
+{
+    InitCameraMode();
 
     if (pConfig->GetCurrentProfileId() == m_profileId)
     {
@@ -236,9 +251,9 @@ bool RefineDefMap::InitUI()
     }
     else
     {
+        RestoreCameraMode();
         return false;      // No master dark files to work with, user didn't build them
     }
-
 }
 
 // Do the initial layout of the UI controls
@@ -500,8 +515,7 @@ void RefineDefMap::OnDetails(wxCommandEvent& ev)
 // Hook the close event to tweak setting of 'build defect map' menu - mutual exclusion for now
 void RefineDefMap::OnClose(wxCloseEvent& evt)
 {
-    pFrame->SetRawImageMode(false); // raw images not needed any more
-    pFrame->SetStarFindMode(m_saveStarFindMode);
+    RestoreCameraMode();
     pFrame->pGuider->SetDefectMapPreview(0);
     pFrame->darks_menu->FindItem(MENU_TAKEDARKS)->Enable(!pFrame->CaptureActive);
     pConfig->Profile.SetBoolean("/camera/dmap_show_details", pShowDetails->GetValue());
