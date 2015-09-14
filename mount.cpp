@@ -650,14 +650,10 @@ bool Mount::FlipCalibration(void)
         Debug.Write(wxString::Format("FlipCalibration after: x=%.1f, y=%.1f sideOfPier=%s\n",
             degrees(newX), degrees(newY), ::PierSideStr(newPierSide)));
 
-        Calibration cal;
+        Calibration cal(m_cal);
         cal.xAngle = newX;
         cal.yAngle = newY;
-        cal.xRate = m_cal.xRate;
-        cal.yRate = m_cal.yRate;
-        cal.declination = m_cal.declination;
         cal.pierSide = newPierSide;
-        cal.rotatorAngle = m_cal.rotatorAngle;
 
         SetCalibration(cal);
 
