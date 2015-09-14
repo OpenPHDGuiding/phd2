@@ -56,6 +56,8 @@ private:
     ISwitchVectorProperty *frame_type_prop;
     INumberVectorProperty *ccdinfo_prop;
     INumberVectorProperty *binning_prop;
+    INumber               *binning_x;
+    INumber               *binning_y;
     ISwitchVectorProperty *video_prop;
     ITextVectorProperty   *camera_port;
     INDI::BaseDevice      *camera_device;
@@ -72,6 +74,8 @@ private:
     bool     ready;
     double   PixSizeX; 
     double   PixSizeY; 
+    wxRect   m_maxSize;
+    unsigned short m_curBinning;
     long     INDIport;
     wxString INDIhost;
     wxString INDICameraName;
