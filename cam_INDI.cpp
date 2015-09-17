@@ -145,7 +145,17 @@ void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
         PixelSize = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE")->value;
         PixSizeX = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_X")->value;
         PixSizeY = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_Y")->value;
-        FullSize = wxSize(IUFindNumber(ccdinfo_prop,"CCD_MAX_X")->value,IUFindNumber(ccdinfo_prop,"CCD_MAX_Y")->value);
+        m_maxSize.x = IUFindNumber(ccdinfo_prop,"CCD_MAX_X")->value;
+        m_maxSize.y = IUFindNumber(ccdinfo_prop,"CCD_MAX_Y")->value;
+        FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+    }
+    if (nvp == binning_prop) {
+        MaxBinning = wxMin(binning_x->max, binning_y->max);
+        Binning = wxMin(binning_x->value, binning_y->value);
+        if (Binning > MaxBinning)
+            Binning = MaxBinning;
+        m_curBinning = Binning;
+        FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
     }
 }
 
@@ -210,6 +220,9 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     else if ((strcmp(PropName, INDICameraCCDCmd+"BINNING") == 0) && Proptype == INDI_NUMBER) {
 	//printf("Found CCD_BINNING for %s %s\n",DeviName, PropName);
 	binning_prop = property->getNumber();
+        binning_x = IUFindNumber(binning_prop,"HOR_BIN");
+        binning_y = IUFindNumber(binning_prop,"VER_BIN");
+        newNumber(binning_prop);
     }
     else if ((strcmp(PropName, "VIDEO_STREAM") == 0) && Proptype == INDI_SWITCH) {
 	//printf("Found Video %s %s\n",DeviName, PropName);
@@ -237,10 +250,7 @@ void Camera_INDIClass::newProperty(INDI::Property *property)
     }
     else if (strcmp(PropName, INDICameraCCDCmd+"INFO") == 0 && Proptype == INDI_NUMBER) {
         ccdinfo_prop = property->getNumber();
-        PixelSize = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE")->value;
-        PixSizeX = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_X")->value;
-        PixSizeY = IUFindNumber(ccdinfo_prop,"CCD_PIXEL_SIZE_Y")->value;
-        FullSize = wxSize(IUFindNumber(ccdinfo_prop,"CCD_MAX_X")->value,IUFindNumber(ccdinfo_prop,"CCD_MAX_Y")->value);
+        newNumber(ccdinfo_prop);
     }
     
     CheckState();
@@ -527,6 +537,15 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
       
       // we can set the exposure time directly in the camera
       if (expose_prop) {
+          if (Binning != m_curBinning)
+          {
+              FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+              binning_x->value = Binning;
+              binning_y->value = Binning;
+              sendNewNumber(binning_prop);
+              m_curBinning = Binning;
+          }
+
 	  if (subframe.width <= 0 || subframe.height <= 0)
 	  {
 	      takeSubframe = false;
@@ -535,17 +554,17 @@ bool Camera_INDIClass::Capture(int duration, usImage& img, int options, const wx
 	  // Program the size
 	  if (!takeSubframe)
 	  {
-	      subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
+              subframe = wxRect(0, 0, FullSize.GetWidth(), FullSize.GetHeight());
 	  }
 	  
 	  if (subframe != m_roi)
 	  {
-	      frame_x->value = subframe.x;
-	      frame_y->value = subframe.y;
-	      frame_width->value = subframe.width;
-	      frame_height->value = subframe.height;
-	      sendNewNumber(frame_prop);
-	      m_roi = subframe;
+             frame_x->value = subframe.x*Binning;
+             frame_y->value = subframe.y*Binning;
+             frame_width->value = subframe.width*Binning;
+             frame_height->value = subframe.height*Binning;
+             sendNewNumber(frame_prop);
+             m_roi = subframe;
 	  }
 	  //printf("Exposing for %d(ms)\n", duration);
 	  
