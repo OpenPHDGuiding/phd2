@@ -664,7 +664,11 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         if (result == MOVE_OK)
         {
             result = MOVE_ERROR;
-            pFrame->Alert(_("PulseGuide command to mount has failed - guiding is likely to be ineffective."));
+
+            if (!WorkerThread::InterruptRequested())
+            {
+                pFrame->Alert(_("PulseGuide command to mount has failed - guiding is likely to be ineffective."));
+            }
         }
     }
 
