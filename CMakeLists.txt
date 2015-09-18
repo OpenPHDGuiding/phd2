@@ -746,8 +746,34 @@ if(UNIX AND NOT APPLE)
             
   endforeach()
 
+  # Make Debian package
   set(CPACK_GENERATOR "DEB")
-  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PHD2 team")
+  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PHD2 team https://github.com/OpenPHDGuiding/phd2")
+  # get package information
+  site_name(HOST_NAME)
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm(.*)")
+    set(debarch "armhf")
+  else()
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      set(debarch "amd64")
+    else()
+      set(debarch "i386")
+    endif()
+  endif()
+  # package name is lowercase short name
+  set(CPACK_DEBIAN_PACKAGE_NAME "phd2")
+  # architecture use debian terminology
+  set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${debarch}")
+  # version control compatible version name < ppa name to allow further upgrade
+  set(CPACK_DEBIAN_PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.0${HOST_NAME}")
+  # set version and arch compatible file name
+  set(CPACK_PACKAGE_FILE_NAME "phd2_${CPACK_DEBIAN_PACKAGE_VERSION}_${debarch}")
+  # Ubuntu 14.04 compatible minimal dependency
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.17), libgcc1 (>= 1:4.1.1), indi-bin (>= 0.9.7), libnova-0.14-0, libstdc++6 (>= 4.2.1), libusb-1.0-0 (>= 2:1.0.8), libwxbase3.0-0 (>= 3.0.0), libwxgtk3.0-0 (>=3.0.0), libx11-6, zlib1g (>= 1:1.1.4)")
+  set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "PHD2 auto-guiding software")
+  # same section as many astronomy packages
+  set(CPACK_DEBIAN_PACKAGE_SECTION "education")
+  set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 endif()
 
 if(APPLE)
