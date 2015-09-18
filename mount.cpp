@@ -1420,7 +1420,7 @@ wxString Mount::GetSettingsSummary()
         _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
 
-    return wxString::Format("%s = %s,%s connected, guiding %s, %s\n",
+    wxString s = wxString::Format("%s = %s,%s connected, guiding %s, %s\n",
         IsStepGuider() ? "AO" : "Mount",
         m_Name,
         IsConnected() ? " " : " not",
@@ -1434,6 +1434,15 @@ wxString Mount::GetSettingsSummary()
         algorithms[GetYGuideAlgorithmSelection()],
         m_pYGuideAlgorithm->GetSettingsSummary()
     );
+
+    if (m_backlashComp)
+    {
+        s += wxString::Format("Backlash comp = %s, pulse = %d ms\n",
+            m_backlashComp->IsEnabled() ? "enabled" : "disabled",
+            m_backlashComp->GetBacklashPulse());
+    }
+
+    return s;
 }
 
 bool Mount::CalibrationFlipRequiresDecFlip(void)
