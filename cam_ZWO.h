@@ -46,6 +46,7 @@ class Camera_ZWO : public GuideCamera
     int m_cameraId;
     int m_minGain;
     int m_maxGain;
+    bool m_isColor;
 
 public:
     Camera_ZWO();
