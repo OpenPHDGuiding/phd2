@@ -494,7 +494,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (m_isColor && (options & CAPTURE_RECON))
+    if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
         QuickLRecon(img);
 
     return false;

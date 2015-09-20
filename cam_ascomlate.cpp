@@ -879,7 +879,7 @@ bool Camera_ASCOMLateClass::Capture(int duration, usImage& img, int options, con
 
     if (options & CAPTURE_SUBTRACT_DARK)
         SubtractDark(img);
-    if (Color && (options & CAPTURE_RECON))
+    if (Color && Binning == 1 && (options & CAPTURE_RECON))
         QuickLRecon(img);
 
     return false;
