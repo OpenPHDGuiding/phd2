@@ -17,6 +17,7 @@ for /F "usebackq" %%f in (`dir phd2-*-win32.exe /O-D /B` ) do (
    echo quit
    ) | psftp phd2buildbot
    set exitcode=%errorlevel%
+   del %%f
   ) 
   goto :end
 )

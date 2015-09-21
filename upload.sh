@@ -17,3 +17,5 @@ put $LATEST
 quit
 ") | sftp phd2buildbot@openphdguiding.org
 
+rm $LATEST
+
