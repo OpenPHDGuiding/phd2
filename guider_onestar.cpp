@@ -416,8 +416,8 @@ const PHD_Point& GuiderOneStar::CurrentPosition(void)
 
 inline static wxRect SubframeRect(const PHD_Point& pos, int halfwidth)
 {
-    return wxRect(ROUND(pos.X - halfwidth),
-                  ROUND(pos.Y - halfwidth),
+    return wxRect(ROUND(pos.X) - halfwidth,
+                  ROUND(pos.Y) - halfwidth,
                   2 * halfwidth + 1,
                   2 * halfwidth + 1);
 }

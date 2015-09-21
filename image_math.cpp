@@ -549,7 +549,7 @@ bool SquarePixels(usImage& img, float xsize, float ysize)
 
     // if X > Y, when viewing stock, Y is unnaturally stretched, so stretch X to match
     double ratio = ysize / xsize;
-    int newsize = ROUND((float) tempimg.Size.GetWidth() * (1.0/ratio));  // make new image correct size
+    int newsize = ROUND((double) tempimg.Size.GetWidth() / ratio);  // make new image correct size
     img.Init(newsize,tempimg.Size.GetHeight());
     unsigned short *optr = img.ImageData;
     int linesize = tempimg.Size.GetWidth();  // size of an original line

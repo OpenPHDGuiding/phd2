@@ -40,6 +40,12 @@ BEGIN_EVENT_TABLE(ProfileWindow, wxWindow)
     EVT_LEFT_DOWN(ProfileWindow::OnLClick)
 END_EVENT_TABLE()
 
+enum
+{
+    HALFW = 10,
+    FULLW = 2 * HALFW + 1,
+};
+
 ProfileWindow::ProfileWindow(wxWindow *parent) :
     wxWindow(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize, wxFULL_REPAINT_ON_RESIZE,_("Profile"))
 {
@@ -48,64 +54,64 @@ ProfileWindow::ProfileWindow(wxWindow *parent) :
     this->visible = false;
     this->mode = 0; // 2D profile
     this->SetBackgroundStyle(wxBG_STYLE_CUSTOM);
-    this->data = new unsigned short[441];  // 21x21 subframe
+    this->data = new unsigned short[FULLW * FULLW];  // 21x21 subframe
 }
 
-ProfileWindow::~ProfileWindow() {
-    if (this->data) {
-        delete [] this->data;
-        this->data = NULL;
-    }
+ProfileWindow::~ProfileWindow()
+{
+    delete[] data;
 }
 
-void ProfileWindow::OnLClick(wxMouseEvent& WXUNUSED(mevent)) {
+void ProfileWindow::OnLClick(wxMouseEvent& WXUNUSED(mevent))
+{
     this->mode = this->mode + 1;
     if (this->mode > 2) this->mode = 0;
     Refresh();
 }
 
-void ProfileWindow::SetState(bool is_active) {
+void ProfileWindow::SetState(bool is_active)
+{
     this->visible = is_active;
     if (is_active)
         Refresh();
 }
 
-void ProfileWindow::UpdateData(usImage *pImg, float xpos, float ypos) {
+void ProfileWindow::UpdateData(usImage *pImg, float xpos, float ypos)
+{
     if (this->data == NULL) return;
-    int xstart = ROUND(xpos) - 10;
-    int ystart = ROUND(ypos) - 10;
+    int xstart = ROUNDF(xpos) - HALFW;
+    int ystart = ROUNDF(ypos) - HALFW;
     if (xstart < 0) xstart = 0;
-    else if (xstart > (pImg->Size.GetWidth() - 22))
-        xstart = pImg->Size.GetWidth() - 22;
+    else if (xstart > (pImg->Size.GetWidth() - (FULLW + 1)))
+        xstart = pImg->Size.GetWidth() - (FULLW + 1);
     if (ystart < 0) ystart = 0;
-    else if (ystart > (pImg->Size.GetHeight() - 22))
-        ystart = pImg->Size.GetHeight() - 22;
+    else if (ystart > (pImg->Size.GetHeight() - (FULLW + 1)))
+        ystart = pImg->Size.GetHeight() - (FULLW + 1);
 
     int x,y;
     unsigned short *uptr = this->data;
     const int xrowsize = pImg->Size.GetWidth();
-    for (x=0; x<21; x++)
+    for (x = 0; x < FULLW; x++)
         horiz_profile[x] = vert_profile[x] = midrow_profile[x] = 0;
-    for (y=0; y<21; y++) {
-        for (x=0; x<21; x++, uptr++) {
+    for (y = 0; y < FULLW; y++) {
+        for (x = 0; x < FULLW; x++, uptr++) {
             *uptr = *(pImg->ImageData + xstart + x + (ystart + y) * xrowsize);
             horiz_profile[x] += (int) *uptr;
             vert_profile[y] += (int) *uptr;
         }
     }
-    uptr = this->data + 210;
-    for (x=0; x<21; x++, uptr++)
+    uptr = this->data + (FULLW * HALFW);
+    for (x = 0; x < FULLW; x++, uptr++)
         midrow_profile[x] = (int) *uptr;
     if (this->visible)
         Refresh();
-
 }
 
 void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 {
     wxAutoBufferedPaintDC dc(this);
 
-    wxPoint Prof[21];
+    wxPoint Prof[FULLW];
 
     dc.SetBackground(wxColour(10,30,30));
     dc.Clear();
@@ -144,7 +150,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
     int Prof_Min, Prof_Max, Prof_Mid;
     Prof_Min = Prof_Max = *profptr;
 
-    for (i=1; i<21; i++) {
+    for (i = 1; i < FULLW; i++) {
         if (*(profptr + i) < Prof_Min)
             Prof_Min = *(profptr + i);
         else if (*(profptr + i) > Prof_Max)
@@ -158,7 +164,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         if (!Prof_Range) Prof_Range = 1;
         int wprof = (xsize - 15) / 2 - 5;
         wprof /= 20;
-        for (i=0; i<21; i++)
+        for (i = 0; i < FULLW; i++)
             Prof[i]=wxPoint(5+i*wprof,ysize-25-( (float)(*(profptr + i) - Prof_Min) / Prof_Range ));
 
         // fwhm
@@ -166,7 +172,7 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
         int x2 = 0;
         int profval;
         int profvalprec;
-        for (i=1; i<21; i++)
+        for (i = 1; i < FULLW; i++)
         {
             profval = *(profptr + i);
             profvalprec = *(profptr + i - 1);
@@ -185,8 +191,9 @@ void ProfileWindow::OnPaint(wxPaintEvent& WXUNUSED(evt))
 
         // Draw it
         dc.SetPen(RedPen);
-        dc.DrawLines(21,Prof);
+        dc.DrawLines(FULLW, Prof);
     }
+
     //dc.SetTextForeground(wxColour(100,100,255));
     dc.SetTextForeground(wxColour(255,0,0));
 #if defined (__APPLE__)

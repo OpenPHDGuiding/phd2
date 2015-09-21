@@ -103,7 +103,8 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfDbl);
 
 //#define TEST_TRANSFORMS
 
-#define ROUND(x) (int) floor(x + 0.5)
+#define ROUND(x) (int) floor((x) + 0.5)
+#define ROUNDF(x) (int) floorf((x) + 0.5)
 
 /* eliminate warnings for unused variables */
 #define POSSIBLY_UNUSED(x) (void)(x)
