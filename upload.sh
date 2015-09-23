@@ -4,7 +4,7 @@
 set -e
 set -x
 
-LATEST=`ls -1t *.deb *.zip|tail -1`
+LATEST=`ls -1tr *.deb *.zip|tail -1`
 
 if [ -z "$LATEST" ]; then
   echo "No package found with ls -1t *.deb *.zip"
@@ -16,4 +16,6 @@ cd upload
 put $LATEST
 quit
 ") | sftp phd2buildbot@openphdguiding.org
+
+rm $LATEST
 
