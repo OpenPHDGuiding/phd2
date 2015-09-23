@@ -895,19 +895,20 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 #endif
 #endif
 
-    // convert to camera coordinates
-    wxVector<wxRealPoint> cc(nr_stars);
-    double angle = radians(SimCamParams::cam_angle);
-    // Handle pier-flip
+    // check for pier-flip
     if (pPointingSource && pPointingSource->IsConnected())
     {
         if (pPointingSource->SideOfPier() != SimCamParams::pier_side)
         {
             PierSide new_side = pPointingSource->SideOfPier();
-            SimCamParams::pier_side = new_side;
             Debug.AddLine("Cam simulator: pointing source flipped pier side from %d to %d\n", SimCamParams::pier_side, new_side);
+            SimCamParams::pier_side = new_side;
         }
     }
+
+    // convert to camera coordinates
+    wxVector<wxRealPoint> cc(nr_stars);
+    double angle = radians(SimCamParams::cam_angle);
 
     if (SimCamParams::pier_side == PIER_SIDE_WEST)
         angle += M_PI;
