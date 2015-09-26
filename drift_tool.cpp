@@ -442,8 +442,11 @@ repeat:
             case STATE_UNINITIALIZED:
             case STATE_CALIBRATED:
             case STATE_SELECTING:
-                SetStatusText(_("Auto-selecting a star"));
-                pFrame->OnAutoStar(dummy);
+                if (!pFrame->pGuider->IsLocked())
+                {
+                    SetStatusText(_("Auto-selecting a star"));
+                    pFrame->OnAutoStar(dummy);
+                }
                 return;
             case STATE_CALIBRATING_PRIMARY:
             case STATE_CALIBRATING_SECONDARY:
