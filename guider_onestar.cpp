@@ -515,6 +515,26 @@ static wxString StarStatusStr(const Star& star)
     }
 }
 
+static wxString StarStatus(const Star& star)
+{
+    int exp;
+    bool auto_exp;
+    pFrame->GetExposureInfo(&exp, &auto_exp);
+
+    wxString status;
+    if (auto_exp)
+    {
+        if (exp >= 1)
+            status.Printf(_("m=%.0f SNR=%.1f Exp=%0.1f s"), star.Mass, star.SNR, (double) exp / 1000.);
+        else
+            status.Printf(_("m=%.0f SNR=%.1f Exp=%d ms"), star.Mass, star.SNR, exp);
+    }
+    else
+        status.Printf(_("m=%.0f SNR=%.1f"), star.Mass, star.SNR);
+
+    return status;
+}
+
 bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *errorInfo)
 {
     if (!m_star.IsValid() && m_star.X == 0.0 && m_star.Y == 0.0)
@@ -576,20 +596,10 @@ bool GuiderOneStar::UpdateCurrentPosition(usImage *pImage, FrameDroppedInfo *err
         pFrame->pProfile->UpdateData(pImage, m_star.X, m_star.Y);
 
         pFrame->AdjustAutoExposure(m_star.SNR);
-        int exp;
-        bool auto_exp;
-        pFrame->GetExposureInfo(&exp, &auto_exp);
-        if (auto_exp)
-        {
-            if (exp >= 1)
-                errorInfo->status.Printf(_T("m=%.0f SNR=%.1f Exp=%0.1f s"), m_star.Mass, m_star.SNR, (double) exp / 1000.);
-            else
-                errorInfo->status.Printf(_T("m=%.0f SNR=%.1f Exp=%d ms"), m_star.Mass, m_star.SNR, exp);
-        }
-        else
-            errorInfo->status.Printf(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR);
+
+        errorInfo->status = StarStatus(m_star);
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -669,7 +679,7 @@ void GuiderOneStar::OnLClick(wxMouseEvent &mevent)
             {
                 SetLockPosition(m_star);
                 pFrame->SetStatusText(wxString::Format(_("Selected star at (%.1f, %.1f)"), m_star.X, m_star.Y), 1);
-                pFrame->SetStatusText(wxString::Format(_T("m=%.0f SNR=%.1f"), m_star.Mass, m_star.SNR));
+                pFrame->SetStatusText(StarStatus(m_star));
                 EvtServer.NotifyStarSelected(CurrentPosition());
                 SetState(STATE_SELECTED);
                 pFrame->UpdateButtonsStatus();

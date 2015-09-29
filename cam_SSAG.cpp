@@ -281,6 +281,11 @@ Camera_SSAGClass::Camera_SSAGClass()
     PixelSize = 5.2;
 }
 
+wxByte Camera_SSAGClass::BitsPerPixel()
+{
+    return 16;
+}
+
 bool Camera_SSAGClass::Connect(const wxString& camId)
 {
     // returns true on error

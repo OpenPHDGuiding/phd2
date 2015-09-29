@@ -133,6 +133,11 @@ Camera_SXVClass::Camera_SXVClass()
     SquarePixels = pConfig->Profile.GetBoolean("/camera/SXV/SquarePixels", false);
 }
 
+wxByte Camera_SXVClass::BitsPerPixel()
+{
+    return 16;
+}
+
 class SXCameraDlg : public wxDialog
 {
 public:

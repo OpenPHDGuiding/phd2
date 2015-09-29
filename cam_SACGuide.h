@@ -64,6 +64,7 @@ public:
     bool    SetGlobalGain(unsigned char gain);
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
+    wxByte  BitsPerPixel();
 
 private:
     bool GenericCapture(int duration, usImage& img, int xsize, int ysize, int xpos, int ypos);

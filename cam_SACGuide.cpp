@@ -31,6 +31,7 @@
  *
  */
 #include "phd.h"
+
 #if defined (SAC_FCLAB_GUIDE)
 #include "camera.h"
 #include "time.h"
@@ -49,8 +50,8 @@ Camera_SACGuiderClass::Camera_SACGuiderClass()
     CapInfo.Gain[1]=(unsigned char) 60;  // 30 for even
     CapInfo.Gain[2]=(unsigned char) 60;  // 60 for even
     MaxExposure = 2000;
-
 }
+
 #elif defined (SAC_CMOS_GUIDE)
 // QHY CMOS guide camera version
 
@@ -61,6 +62,11 @@ Camera_SACGuiderClass::Camera_SACGuiderClass()
     FullSize = wxSize(1280,1024);
     m_hasGuideOutput = true;
     HasGainControl = true;
+}
+
+wxByte Camera_SACGuiderClass::BitsPerPixel()
+{
+    return 8;
 }
 
 bool Camera_SACGuiderClass::Connect(const wxString& camId)
@@ -120,6 +126,7 @@ bool Camera_SACGuiderClass::Connect(const wxString& camId)
     Connected = true;
     return false;
 }
+
 bool Camera_SACGuiderClass::SetGlobalGain(unsigned char gain) {
     // Set global gain
     // User's call of 0-95% gets mapped onto the 1-15x
@@ -166,16 +173,18 @@ bool Camera_SACGuiderClass::ST4PulseGuideScope(int direction, int duration) {
     SendGuideCommand(DevName,reg,dur);
     return false;
 }
+
 void Camera_SACGuiderClass::ClearGuidePort() {
     SendGuideCommand(DevName,0,0);
 }
-void Camera_SACGuiderClass::InitCapture() {
 
+void Camera_SACGuiderClass::InitCapture()
+{
     // Reset chip, just to be safe
     CmosReset(DevName);
     SetGlobalGain((unsigned char) GuideCameraGain);
-
 }
+
 bool Camera_SACGuiderClass::Disconnect() {
     //if (CloseUSB) CloseUSB();
     FreeLibrary(CameraDLL);
@@ -225,15 +234,15 @@ bool Camera_SACGuiderClass::GenericCapture(int duration, usImage& img, int xsize
     return false;
 }
 
-bool Camera_SACGuiderClass::CaptureCrop(int duration, usImage& img) {
+bool Camera_SACGuiderClass::CaptureCrop(int duration, usImage& img)
+{
     GenericCapture(duration, img, width,height,startX,startY);
-
-return false;
+    return false;
 }
 
-bool Camera_SACGuiderClass::CaptureFull(int duration, usImage& img) {
+bool Camera_SACGuiderClass::CaptureFull(int duration, usImage& img)
+{
     GenericCapture(duration, img, FullSize.GetWidth(),FullSize.GetHeight(),0,0);
-
     return false;
 }
 

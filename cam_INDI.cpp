@@ -63,11 +63,12 @@ Camera_INDIClass::Camera_INDIClass()
     PropertyDialogType = PROPDLG_ANY;
     FullSize = wxSize(640,480);
     HasSubframes = true;
+    m_bitsPerPixel = 0;
 }
 
 Camera_INDIClass::~Camera_INDIClass() 
 {
-  disconnectServer();    
+    disconnectServer();    
 }
 
 void Camera_INDIClass::ClearStatus()
@@ -148,6 +149,7 @@ void Camera_INDIClass::newNumber(INumberVectorProperty *nvp)
         m_maxSize.x = IUFindNumber(ccdinfo_prop,"CCD_MAX_X")->value;
         m_maxSize.y = IUFindNumber(ccdinfo_prop,"CCD_MAX_Y")->value;
         FullSize = wxSize(m_maxSize.x / Binning, m_maxSize.y / Binning);
+        m_bitsPerPixel = IUFindNumber(ccdinfo_prop, "CCD_BITSPERPIXEL")->value;
     }
     if (nvp == binning_prop) {
         MaxBinning = wxMin(binning_x->max, binning_y->max);
@@ -280,6 +282,11 @@ bool Camera_INDIClass::Connect(const wxString& camId)
 	  return true;
       }
     }
+}
+
+wxByte Camera_INDIClass::BitsPerPixel()
+{
+    return m_bitsPerPixel;
 }
 
 bool Camera_INDIClass::Disconnect() 
@@ -469,8 +476,8 @@ bool Camera_INDIClass::ReadFITS(usImage& img, bool takeSubframe, const wxRect& s
 	for (int y = 0; y < subframe.height; y++)
 	{
 	    unsigned short *dataptr = img.ImageData + (y + subframe.y) * img.Size.GetWidth() + subframe.x;
-	    for (int x = 0; x < subframe.width; x++, i++)
-		*dataptr++ = (unsigned short) rawdata[i];
+            memcpy(dataptr, &rawdata[i], subframe.width * sizeof(unsigned short));
+            i += subframe.width;
 	}
 	delete[] rawdata;
     }

@@ -48,10 +48,11 @@ public:
     Camera_SBIGRotatorClass();
     ~Camera_SBIGRotatorClass();
 
-    bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool    ST4PulseGuideScope (int direction, int duration);
-    bool    Connect(const wxString& camId);
-    bool    Disconnect();
+    bool   Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool   ST4PulseGuideScope (int direction, int duration);
+    bool   Connect(const wxString& camId);
+    bool   Disconnect();
+    wxByte BitsPerPixel();
 };
 
 #endif //defined(SBIGROTATOR_CAMERA_H_INCLUDED) and defined(SBIG)

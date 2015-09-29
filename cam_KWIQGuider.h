@@ -48,6 +48,7 @@ public:
     bool Connect(const wxString& camId);
     bool Disconnect();
     bool ST4PulseGuideScope(int direction, int duration);
+    wxByte BitsPerPixel();
 };
 
 

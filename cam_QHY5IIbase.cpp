@@ -93,6 +93,11 @@ Camera_QHY5IIBase::Camera_QHY5IIBase()
     Color = false;
 }
 
+wxByte Camera_QHY5IIBase::BitsPerPixel()
+{
+    return 8;
+}
+
 static FARPROC WINAPI GetProc(HINSTANCE dll, LPCSTR name)
 {
     FARPROC p = GetProcAddress(dll, name);

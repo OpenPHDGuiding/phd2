@@ -56,6 +56,11 @@ Camera_OpenSSAGClass::Camera_OpenSSAGClass()
     ssag = new SSAG();
 }
 
+wxByte Camera_OpenSSAGClass::BitsPerPixel()
+{
+    return 8;
+}
+
 bool Camera_OpenSSAGClass::Connect(const wxString& camId)
 {
     struct ConnectInBg : public ConnectCameraInBg
@@ -124,7 +129,7 @@ bool Camera_OpenSSAGClass::Capture(int duration, usImage& img, int options, cons
     struct raw_image *raw = ssag->Expose(duration);
 
     for (unsigned int i = 0; i < raw->width * raw->height; i++) {
-        img.ImageData[i] = (int)raw->data[i];
+        img.ImageData[i] = (unsigned short) raw->data[i];
     }
 
     ssag->FreeRawImage(raw);

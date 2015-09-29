@@ -62,6 +62,7 @@ public:
 
     double Mass;
     double SNR;
+    unsigned short PeakVal;
 
     Star(void);
     ~Star();
@@ -80,6 +81,7 @@ public:
     void Invalidate(void);
     void SetError(FindResult error);
     FindResult GetError(void) const;
+
 private:
     FindResult m_lastFindResult;
 };

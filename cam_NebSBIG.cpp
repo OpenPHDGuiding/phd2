@@ -44,8 +44,13 @@
 
 Camera_NebSBIGClass::Camera_NebSBIGClass()
 {
-    Connected = FALSE;
+    Connected = false;
     Name=_T("Nebulosity SBIG Guide chip");
+}
+
+wxByte Camera_NebSBIGClass::BitsPerPixel()
+{
+    return 16;
 }
 
 bool Camera_NebSBIGClass::Connect(const wxString& camId)

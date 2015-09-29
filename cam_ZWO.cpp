@@ -65,6 +65,11 @@ Camera_ZWO::~Camera_ZWO()
     delete[] m_buffer;
 }
 
+wxByte Camera_ZWO::BitsPerPixel()
+{
+    return 8;
+}
+
 inline static int cam_gain(int minval, int maxval, int pct)
 {
     return minval + pct * (maxval - minval) / 100;

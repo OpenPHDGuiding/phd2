@@ -78,6 +78,11 @@ Camera_SBIGClass::~Camera_SBIGClass()
         SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
 }
 
+wxByte Camera_SBIGClass::BitsPerPixel()
+{
+    return 16;
+}
+
 static bool _LoadDriver()
 {
     short err;

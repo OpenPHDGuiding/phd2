@@ -55,6 +55,11 @@ Camera_SAC42Class::Camera_SAC42Class()
     MaxExposure = 2000;
 }
 
+wxByte Camera_SAC42Class::BitsPerPixel()
+{
+    return 8;
+}
+
 bool Camera_SAC42Class::Connect(const wxString& camId)
 {
 // returns true on error

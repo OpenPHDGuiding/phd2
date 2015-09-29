@@ -53,6 +53,7 @@ public:
 
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
+    wxByte  BitsPerPixel();
 
     bool    Color;
     bool    HSModel;

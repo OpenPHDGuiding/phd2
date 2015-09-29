@@ -61,6 +61,11 @@ Camera_Atik16Class::~Camera_Atik16Class()
         ArtemisUnLoadDLL();
 }
 
+wxByte Camera_Atik16Class::BitsPerPixel()
+{
+    return 16;
+}
+
 bool Camera_Atik16Class::LoadDLL()
 {
     if (!m_dllLoaded)
@@ -208,9 +213,6 @@ void Camera_Atik16Class::ClearGuidePort()
 {
     ArtemisStopGuiding(Cam_Handle);
 }
-
-/*void Camera_Atik16Class::InitCapture() {
-}*/
 
 bool Camera_Atik16Class::Disconnect()
 {

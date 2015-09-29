@@ -49,6 +49,7 @@ public:
 
     bool    ST4PulseGuideScope(int direction, int duration);
     void    ClearGuidePort();
+    wxByte  BitsPerPixel();
 };
 
 #endif // QHY5IIIBASE_H_INCLUDED

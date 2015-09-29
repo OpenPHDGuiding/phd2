@@ -75,6 +75,11 @@ Camera_StarfishClass::Camera_StarfishClass()
     DriverLoaded = false;
 }
 
+wxByte Camera_StarfishClass::BitsPerPixel()
+{
+    return 16;
+}
+
 bool Camera_StarfishClass::Connect(const wxString& camId)
 {
 // returns true on error
@@ -104,13 +109,16 @@ bool Camera_StarfishClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_StarfishClass::Disconnect() {
+bool Camera_StarfishClass::Disconnect()
+{
     if (fcUsb_haveCamera())
         fcUsb_CloseCameraDriver();
     Connected = false;
     return false;
 }
-void Camera_StarfishClass::InitCapture() {
+
+void Camera_StarfishClass::InitCapture()
+{
     // Set gain
     unsigned short Gain = (unsigned short) GuideCameraGain;
     if (Gain < 25 ) {  // Low noise 1x-4x in .125x mode maps on 0-24
@@ -146,7 +154,6 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, int options, cons
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
-
 
     if (usingSubFrames)
     {
@@ -217,15 +224,13 @@ bool Camera_StarfishClass::Capture(int duration, usImage& img, int options, cons
         {
             const unsigned short *pSrc = subImage.ImageData + y * xsize;
             unsigned short *pDest = img.ImageData + (ypos + y) * FullSize.GetWidth() + xpos;
-            for (int x = 0; x < xsize; x++)
-                *pDest++ = *pSrc++;
+            memcpy(pDest, pSrc, xsize * sizeof(unsigned short));
         }
         img.Subframe = subframe;
     }
     else
     {
         rval = fcUsb_cmd_getRawFrame(CamNum, (unsigned short)ysize, (unsigned short)xsize, img.ImageData);
-
     }
 
     /*  if (rval != kIOReturnSuccess) {

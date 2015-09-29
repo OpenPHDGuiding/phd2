@@ -48,6 +48,11 @@ Camera_INovaPLCClass::Camera_INovaPLCClass()
     HasGainControl = true;  // Can we adjust gain?
 }
 
+wxByte Camera_INovaPLCClass::BitsPerPixel()
+{
+    return 16;
+}
+
 bool Camera_INovaPLCClass::Connect(const wxString& camId)
 {
     DS_CAMERA_STATUS rval;

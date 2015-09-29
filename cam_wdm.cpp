@@ -59,6 +59,12 @@ Camera_WDMClass::Camera_WDMClass()
     m_pVidCap = NULL;
 }
 
+wxByte Camera_WDMClass::BitsPerPixel()
+{
+    // individual frames are 8-bit, but stacking can use up to 16-bits
+    return 16;
+}
+
 bool Camera_WDMClass::CaptureCallback(CVRES status, CVImage* imagePtr, void* userParam)
 {
     Camera_WDMClass* cam = (Camera_WDMClass*)userParam;
@@ -79,10 +85,13 @@ bool Camera_WDMClass::CaptureCallback(CVRES status, CVImage* imagePtr, void* use
         int npixels = cam->FullSize.GetWidth() * cam->FullSize.GetHeight();
         unsigned short *dptr = cam->m_stackptr;
 
-        for (i=0; i<npixels; i++, dptr++)
+        for (i = 0; i < npixels; i++, dptr++)
         {
             unsigned short pixelValue = *imgdata++;
-            *dptr = *dptr + pixelValue;
+            unsigned int newval = (unsigned int) *dptr + pixelValue;
+            if (newval > 65535)
+                newval = 65535;
+            *dptr = (unsigned short) newval;
             sum += pixelValue;
         }
 

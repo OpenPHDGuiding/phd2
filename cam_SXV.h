@@ -75,9 +75,10 @@ public:
     void ShowPropertyDialog();
     const wxSize& DarkFrameSize() { return m_darkFrameSize; }
 
-    bool HasNonGuiCapture(void) { return true; }
-    bool ST4HasNonGuiMove(void) { return true; }
+    bool HasNonGuiCapture() { return true; }
+    bool ST4HasNonGuiMove() { return true; }
     bool ST4PulseGuideScope(int direction, int duration);
+    wxByte BitsPerPixel();
 
 private:
     void InitFrameSizes(void);

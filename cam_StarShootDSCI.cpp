@@ -53,6 +53,11 @@ Camera_StarShootDSCIClass::Camera_StarShootDSCIClass()
     lastdur = 0;
 }
 
+wxByte Camera_StarShootDSCIClass::BitsPerPixel()
+{
+    return 16;
+}
+
 bool Camera_StarShootDSCIClass::Disconnect()
 {
     FreeLibrary(CameraDLL);

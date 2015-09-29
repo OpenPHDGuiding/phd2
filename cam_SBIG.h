@@ -58,8 +58,9 @@ public:
     bool Disconnect();
     void InitCapture();
     bool ST4PulseGuideScope(int direction, int duration);
-    bool ST4HasNonGuiMove(void) { return true; }
-    bool HasNonGuiCapture(void) { return true; }
+    bool ST4HasNonGuiMove() { return true; }
+    bool HasNonGuiCapture() { return true; }
+    wxByte BitsPerPixel();
 
 private:
     bool LoadDriver();

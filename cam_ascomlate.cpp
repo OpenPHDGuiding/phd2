@@ -360,10 +360,16 @@ Camera_ASCOMLateClass::Camera_ASCOMLateClass(const wxString& choice)
     PropertyDialogType = IsChooser(choice) ? PROPDLG_NONE : PROPDLG_WHEN_DISCONNECTED;
     Color = false;
     DriverVersion = 1;
+    m_bitsPerPixel = 0;
 }
 
 Camera_ASCOMLateClass::~Camera_ASCOMLateClass()
 {
+}
+
+wxByte Camera_ASCOMLateClass::BitsPerPixel()
+{
+    return m_bitsPerPixel;
 }
 
 static wxString displayName(const wxString& ascomName)
@@ -605,6 +611,16 @@ bool Camera_ASCOMLateClass::Connect(const wxString& camId)
         return true;
     }
     m_maxSize.SetHeight((int) vRes.lVal);
+
+    if (!driver.GetProp(&vRes, L"MaxADU"))
+    {
+        Debug.AddLine(ExcepMsg("MaxADU", driver.Excep()));
+        m_bitsPerPixel = 16;  // assume 16 BPP
+    }
+    else
+    {
+        m_bitsPerPixel = vRes.intVal <= 255 ? 8 : 16;
+    }
 
     // Get the interface version of the driver
 

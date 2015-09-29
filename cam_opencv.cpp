@@ -46,7 +46,7 @@ using namespace cv;
 
 Camera_OpenCVClass::Camera_OpenCVClass(int devNumber)
 {
-    Connected = FALSE;
+    Connected = false;
     Name=_T("OpenCV");
     FullSize = wxSize(640,480);
     m_hasGuideOutput = false;
@@ -58,6 +58,12 @@ Camera_OpenCVClass::~Camera_OpenCVClass(void)
 {
     delete pCapDev;
     pCapDev = NULL;
+}
+
+wxByte Camera_OpenCVClass::BitsPerPixel()
+{
+    // even though the raw data is 8-bit, integrated frames can go up to 16-bits
+    return 16;
 }
 
 bool Camera_OpenCVClass::Connect(const wxString& camId)
@@ -142,10 +148,7 @@ bool Camera_OpenCVClass::Capture(int duration, usImage& img, int options, const 
             throw ERROR_INFO("img.Init failed");
         }
 
-        for (i=0; i<img.NPixels; i++)
-        {
-            img.ImageData[i] = 0;
-        }
+        img.Clear();
 
         nframes = 0;
         unsigned char *dptr;
@@ -156,9 +159,12 @@ bool Camera_OpenCVClass::Capture(int duration, usImage& img, int options, const 
             pCapDev->read(captured_frame);
             cvtColor(captured_frame,captured_frame,CV_RGB2GRAY);
             dptr = captured_frame.data;
-            for (i=0; i<img.NPixels; i++)
+            for (i = 0; i < img.NPixels; i++)
             {
-                img.ImageData[i] += (unsigned int) dptr[i];
+                unsigned int t = (unsigned int) img.ImageData[i] + (unsigned int) dptr[i];
+                if (t > 65535)
+                    t = 65535;
+                img.ImageData[i] = (unsigned short) t;
             }
         }
     }

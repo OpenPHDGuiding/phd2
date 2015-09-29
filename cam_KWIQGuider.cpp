@@ -58,6 +58,11 @@ Camera_KWIQGuiderClass::Camera_KWIQGuiderClass()
     KWIQguider = new KWIQGuider();
 }
 
+wxByte Camera_KWIQGuiderClass::BitsPerPixel()
+{
+    return 8;
+}
+
 bool Camera_KWIQGuiderClass::Connect(const wxString& camId)
 {
     if (!KWIQguider->Connect()) {
@@ -116,7 +121,7 @@ bool Camera_KWIQGuiderClass::Capture(int duration, usImage& img, int options, co
     struct raw_image *raw = KWIQguider->Expose(duration);
 
     for (unsigned int i = 0; i < raw->width * raw->height; i++) {
-        img.ImageData[i] = (int)raw->data[i];
+        img.ImageData[i] = (unsigned short) raw->data[i];
     }
 
     KWIQguider->FreeRawImage(raw);

@@ -61,6 +61,11 @@ Camera_FirewireClass::Camera_FirewireClass()
     m_hasGuideOutput = false;
 }
 
+wxByte Camera_FirewireClass::BitsPerPixel()
+{
+    return 8;
+}
+
 //Camera_FirewireClass::~Camera_FirewireClass () {
 //  ;
 //}

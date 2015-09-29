@@ -45,7 +45,8 @@
 
 #include "indi_gui.h"
 
-class Camera_INDIClass : public GuideCamera, public INDI::BaseClient {
+class Camera_INDIClass : public GuideCamera, public INDI::BaseClient
+{
 private:
     INumberVectorProperty *expose_prop;
     INumberVectorProperty *frame_prop;
@@ -72,10 +73,11 @@ private:
     bool     has_blob;
     bool     modal;
     bool     ready;
+    wxByte   m_bitsPerPixel;
     double   PixSizeX; 
     double   PixSizeY; 
     wxRect   m_maxSize;
-    unsigned short m_curBinning;
+    wxByte   m_curBinning;
     long     INDIport;
     wxString INDIhost;
     wxString INDICameraName;
@@ -111,7 +113,8 @@ public:
     ~Camera_INDIClass();
     bool    Connect(const wxString& camId);
     bool    Disconnect();
-    bool    HasNonGuiCapture(void);
+    bool    HasNonGuiCapture();
+    wxByte  BitsPerPixel();
     void    ShowPropertyDialog();
 
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
@@ -121,5 +124,3 @@ public:
 };
 
 #endif
-
-

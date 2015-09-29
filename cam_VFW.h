@@ -48,7 +48,7 @@ public:
     bool    Connect(const wxString& camId);
     bool    Disconnect();
     void    ShowPropertyDialog();
-    void    InitCapture() { return; }
+    wxByte  BitsPerPixel();
 };
 
 #endif

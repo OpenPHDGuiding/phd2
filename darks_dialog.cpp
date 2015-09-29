@@ -442,7 +442,7 @@ void DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
     darkFrame.ImgExpDur = expTime;
     darkFrame.ImgStackCnt = frameCount;
     ShowStatus(_("Taking dark frame") + " #1", true);
-    if (pCamera->Capture(expTime, darkFrame, CAPTURE_DARK))
+    if (GuideCamera::Capture(pCamera, expTime, darkFrame, CAPTURE_DARK))
     {
         ShowStatus(wxString::Format(_("%.1f s dark FAILED"), (double) expTime / 1000.0), true);
         pCamera->ShutterClosed = false;
@@ -463,7 +463,7 @@ void DarksDialog::CreateMasterDarkFrame(usImage& darkFrame, int expTime, int fra
                 break;
             ShowStatus(_("Taking dark frame") + wxString::Format(" #%d", j + 1), true);
             wxYield();
-            pCamera->Capture(expTime, darkFrame, CAPTURE_DARK);
+            GuideCamera::Capture(pCamera, expTime, darkFrame, CAPTURE_DARK);
             m_pProgress->SetValue(m_pProgress->GetValue() + expTime);
             iptr = avgimg;
             usptr = darkFrame.ImageData;

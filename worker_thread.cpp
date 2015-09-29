@@ -145,9 +145,7 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *req)
             Debug.Write(wxString::Format("Handling exposure in thread, d=%d o=%x r=(%d,%d,%d,%d)\n", req->exposureDuration,
                                          req->options, req->subframe.x, req->subframe.y, req->subframe.width, req->subframe.height));
 
-            req->pImage->InitImgStartTime();
-
-            if (pCamera->Capture(req->exposureDuration, *req->pImage, req->options, req->subframe))
+            if (GuideCamera::Capture(pCamera, req->exposureDuration, *req->pImage, req->options, req->subframe))
             {
                 throw ERROR_INFO("Capture failed");
             }

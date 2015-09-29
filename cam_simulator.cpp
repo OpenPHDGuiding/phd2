@@ -530,7 +530,6 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     }
 
     unsigned short *buf = new unsigned short[img.NPixels];
-
     bool useSubframe = !subframe.IsEmpty();
     wxRect frame;
     if (useSubframe)
@@ -994,6 +993,11 @@ Camera_SimClass::Camera_SimClass()
     HasSubframes = true;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     MaxBinning = 3;
+}
+
+wxByte Camera_SimClass::BitsPerPixel()
+{
+    return 16;
 }
 
 bool Camera_SimClass::Connect(const wxString& camId)
