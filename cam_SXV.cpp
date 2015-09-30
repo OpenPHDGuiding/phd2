@@ -193,24 +193,6 @@ void Camera_SXVClass::ShowPropertyDialog()
     }
 }
 
-#if defined (__APPLE__)
-
-int SXCamAttached (void *cam)
-{
-    // This should return 1 if the cam passed in here is considered opened, 0 otherwise
-    //wxMessageBox(wxString::Format("Found SX cam model %d", (int) sxGetCameraModel(cam)));
-    //SXVCamera.hCam = cam;
-    return 0;
-}
-
-void SXCamRemoved (void *cam)
-{
-    //  CameraPresent = false;
-    //SXVCamera.hCam = NULL;
-}
-
-#endif
-
 bool Camera_SXVClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     SXHandle hCams[SXCCD_MAX_CAMS];
