@@ -42,6 +42,12 @@
 
 #include <wx/choicdlg.h>
 
+#if defined(__WINDOWS__)
+typedef HANDLE SXHandle;
+#else
+typedef void* SXHandle;
+#endif
+
 extern Camera_SXVClass Camera_SXV;
 
 enum {
@@ -205,10 +211,8 @@ void SXCamRemoved (void *cam)
 
 bool Camera_SXVClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
-#if defined(__WINDOWS__)
-
-    HANDLE hCams[SXCCD_MAX_CAMS];
-
+    SXHandle hCams[SXCCD_MAX_CAMS];
+    
     int ncams = sxOpen(hCams);
 
     for (int i = 0; i < ncams; i++)
@@ -221,24 +225,6 @@ bool Camera_SXVClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
     // close handles
     for (int j = 0; j < ncams; j++)
         sxClose(hCams[j]);
-
-#else  // OSX
-
-    int ncams = sx2EnumDevices();
-
-    for (int i = 0; i < ncams; i++)
-    {
-        int model = (int)sx2GetID(i);
-        if (model)
-        {
-            char devname[32];
-            sx2GetName(i, devname);
-            names.Add(wxString::Format("%d: %s", i + 1, devname));
-            ids.Add(wxString::Format("%d", i));
-        }
-    }
-
-#endif // OSX
 
     return false;
 }
@@ -280,9 +266,7 @@ bool Camera_SXVClass::Connect(const wxString& camId)
     else
         camId.ToLong(&idx);
 
-#if defined(__WINDOWS__)
-
-    HANDLE hCams[SXCCD_MAX_CAMS];
+    SXHandle hCams[SXCCD_MAX_CAMS];
 
     int ncams = sxOpen(hCams);
     if (ncams == 0)
@@ -303,22 +287,6 @@ bool Camera_SXVClass::Connect(const wxString& camId)
             sxClose(hCams[i]);
 
     hCam = hCams[idx];
-
-#else  // OSX
-
-    int ncams = sx2EnumDevices();
-    if (idx < 0 || idx >= ncams)
-    {
-        Debug.AddLine(wxString::Format("SXV: invalid camera id: '%s', ncams = %d", camId, ncams));
-        return true;
-    }
-
-    hCam = sx2Open((int) idx);
-
-    if (hCam == NULL)
-        return true;
-
-#endif
 
     bool err = false;
 
@@ -416,12 +384,7 @@ bool Camera_SXVClass::Disconnect()
     RawDataSize = 0;
     Connected = false;
     sxReset(hCam);
-
-#ifdef __APPLE__
-    sx2Close(hCam);
-#else
     sxClose(hCam);
-#endif
 
     hCam = NULL;
 
@@ -651,11 +614,7 @@ static bool ReadPixels(sxccd_handle_t sxHandle, unsigned short *pixels, unsigned
 {
     int ret;
 
-#if defined(__WINDOWS__)
     ret = sxReadPixels(sxHandle, pixels, count);
-#else
-    ret = sxReadPixels(sxHandle, (UInt8 *) pixels, count, sizeof(unsigned short));
-#endif
 
     if (ret != count * sizeof(unsigned short))
     {
