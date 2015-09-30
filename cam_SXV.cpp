@@ -67,7 +67,7 @@ static wxString NameFromModel(int model)
     {
         case 0x05: m = "SX-H5"; break;
         case 0x85: m = "SX-H5C"; break;
-        case 0x09: m = "SX-H9"; break;
+        case 0x09: m = "SX-H9"; break; // this is almost certainly a Superstar
         case 0x89: m = "SX-H9C"; break;
         case 0x39: m = "SX-LS9"; break;
         case 0x19: m = "SX-SX9"; break;
@@ -114,12 +114,14 @@ static wxString NameFromModel(int model)
         default: m = wxString::Format("SX Camera Model %d", model); break;
     }
 
-    if (model == 70)
-        m = _T("SXV-Lodestar");
+    if (model == 0x46)
+        m = _T("SX Lodestar");
     else if (model == SX_CMOS_GUIDER)
-        m = _T("SX CMOS Guider");
-    else if (model == 0x39)
-        m = _T("SX Superstar guider");
+        m = _T("SX CoStar");
+    else if (model == 0x3A || model == 0x19)
+        m = _T("SX Superstar");
+    else if (model == 0x3C || model == 0xBC)
+        m = _T("SX Ultrastar");
 
     return m;
 }
