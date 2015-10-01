@@ -421,8 +421,10 @@ img.ImageData[200 * FullSize.GetWidth() + 400 + 4] = 32000;
 img.ImageData[200 * FullSize.GetWidth() + 400 + 5] = 22000;
 #endif
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
-    if (Color && (options & CAPTURE_RECON)) QuickLRecon(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
+    if (Color && Binning == 1 && (options & CAPTURE_RECON))
+        QuickLRecon(img);
 
     return false;
 }
