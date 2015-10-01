@@ -78,6 +78,11 @@ Camera_QHY5Class::Camera_QHY5Class()
     Name = _T("QHY 5");
 }
 
+wxByte Camera_QHY5Class::BitsPerPixel()
+{
+    return 8;
+}
+
 bool Camera_QHY5Class::Connect(const wxString& camId)
 {
 // returns true on error

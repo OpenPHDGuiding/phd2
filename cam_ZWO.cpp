@@ -65,6 +65,11 @@ Camera_ZWO::~Camera_ZWO()
     delete[] m_buffer;
 }
 
+wxByte Camera_ZWO::BitsPerPixel()
+{
+    return 8;
+}
+
 inline static int cam_gain(int minval, int maxval, int pct)
 {
     return minval + pct * (maxval - minval) / 100;
@@ -210,6 +215,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     m_cameraId = selected;
     Connected = true;
     Name = info.Name;
+    m_isColor = info.IsColorCam != ASI_FALSE;
 
     int maxBin = 1;
     for (int i = 0; i <= WXSIZEOF(info.SupportedBins); i++)
@@ -285,7 +291,7 @@ bool Camera_ZWO::Connect(const wxString& camId)
     Debug.AddLine("ZWO: frame (%d,%d)+(%d,%d)", m_frame.x, m_frame.y, m_frame.width, m_frame.height);
 
     ASISetStartPos(m_cameraId, m_frame.GetLeft(), m_frame.GetTop());
-    ASISetROIFormat(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight(), Binning, ASI_IMG_Y8);
+    ASISetROIFormat(m_cameraId, m_frame.GetWidth(), m_frame.GetHeight(), Binning, ASI_IMG_RAW8);
 
     return false;
 }
@@ -414,7 +420,7 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
     {
         StopCapture();
 
-        ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), Binning, ASI_IMG_Y8);
+        ASI_ERROR_CODE status = ASISetROIFormat(m_cameraId, frame.GetWidth(), frame.GetHeight(), Binning, ASI_IMG_RAW8);
         if (status != ASI_SUCCESS)
             Debug.AddLine("ZWO: setImageFormat(%d,%d,%hu) => %d", frame.GetWidth(), frame.GetHeight(), Binning, status);
     }
@@ -491,7 +497,10 @@ bool Camera_ZWO::Capture(int duration, usImage& img, int options, const wxRect& 
             img.ImageData[i] = m_buffer[i];
     }
 
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
+    if (m_isColor && Binning == 1 && (options & CAPTURE_RECON))
+        QuickLRecon(img);
 
     return false;
 }

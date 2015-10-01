@@ -650,14 +650,10 @@ bool Mount::FlipCalibration(void)
         Debug.Write(wxString::Format("FlipCalibration after: x=%.1f, y=%.1f sideOfPier=%s\n",
             degrees(newX), degrees(newY), ::PierSideStr(newPierSide)));
 
-        Calibration cal;
+        Calibration cal(m_cal);
         cal.xAngle = newX;
         cal.yAngle = newY;
-        cal.xRate = m_cal.xRate;
-        cal.yRate = m_cal.yRate;
-        cal.declination = m_cal.declination;
         cal.pierSide = newPierSide;
-        cal.rotatorAngle = m_cal.rotatorAngle;
 
         SetCalibration(cal);
 
@@ -983,8 +979,9 @@ void Mount::AdjustCalibrationForScopePointing(void)
         double adj = (double) m_cal.binning / (double) binning;
         cal.xRate *= adj;
         cal.yRate *= adj;
+        cal.binning = binning;
 
-        Debug.Write(wxString::Format("Binning %hu -> %hu, rates (%.3f, %.3f) -> (%.3f, %.3f)",
+        Debug.Write(wxString::Format("Binning %hu -> %hu, rates (%.3f, %.3f) -> (%.3f, %.3f)\n",
             m_cal.binning, binning, m_cal.xRate * 1000., m_cal.yRate * 1000., cal.xRate * 1000., cal.yRate * 1000.));
 
         SetCalibration(cal);
@@ -1194,7 +1191,7 @@ void Mount::SetCalibration(const Calibration& cal)
     pConfig->Profile.SetDouble(prefix + "rotatorAngle", m_cal.rotatorAngle);
 }
 
-void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle)
+void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails)
 {
     wxString prefix = "/" + GetMountClassName() + "/calibration/";
     wxString stepStr = "";
@@ -1204,6 +1201,7 @@ void Mount::SetCalibrationDetails(const CalibrationDetails& calDetails, double x
     pConfig->Profile.SetDouble(prefix + "ra_guide_rate", calDetails.raGuideSpeed);
     pConfig->Profile.SetDouble(prefix + "dec_guide_rate", calDetails.decGuideSpeed);
     pConfig->Profile.SetDouble(prefix + "ortho_error", calDetails.orthoError);
+    pConfig->Profile.SetDouble(prefix + "orig_binning", calDetails.origBinning);
 
     for (std::vector<wxRealPoint>::const_iterator it = calDetails.raSteps.begin(); it != calDetails.raSteps.end(); ++it)
     {
@@ -1268,6 +1266,7 @@ void Mount::GetCalibrationDetails(CalibrationDetails *details)
     details->orthoError = pConfig->Profile.GetDouble(prefix + "ortho_error", 0.0);
     details->raStepCount = pConfig->Profile.GetInt(prefix + "ra_step_count", 0);
     details->decStepCount = pConfig->Profile.GetInt(prefix + "dec_step_count", 0);
+    details->origBinning = pConfig->Profile.GetDouble(prefix + "orig_binning", 1.0);
     // Populate raSteps
     stepStr = pConfig->Profile.GetString(prefix + "ra_steps", "");
     tok.SetString(stepStr, "},", wxTOKEN_STRTOK);
@@ -1421,7 +1420,7 @@ wxString Mount::GetSettingsSummary()
         _T("None"),_T("Hysteresis"),_T("Lowpass"),_T("Lowpass2"), _T("Resist Switch")
     };
 
-    return wxString::Format("%s = %s,%s connected, guiding %s, %s\n",
+    wxString s = wxString::Format("%s = %s,%s connected, guiding %s, %s\n",
         IsStepGuider() ? "AO" : "Mount",
         m_Name,
         IsConnected() ? " " : " not",
@@ -1435,6 +1434,15 @@ wxString Mount::GetSettingsSummary()
         algorithms[GetYGuideAlgorithmSelection()],
         m_pYGuideAlgorithm->GetSettingsSummary()
     );
+
+    if (m_backlashComp)
+    {
+        s += wxString::Format("Backlash comp = %s, pulse = %d ms\n",
+            m_backlashComp->IsEnabled() ? "enabled" : "disabled",
+            m_backlashComp->GetBacklashPulse());
+    }
+
+    return s;
 }
 
 bool Mount::CalibrationFlipRequiresDecFlip(void)

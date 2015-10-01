@@ -107,6 +107,11 @@ Camera_QHY5IIBase::~Camera_QHY5IIBase()
     QHYSDKUninit();
 }
 
+wxByte Camera_QHY5IIBase::BitsPerPixel()
+{
+    return 8;
+}
+
 bool Camera_QHY5IIBase::Connect(const wxString& camId)
 {
     if (QHYSDKInit())

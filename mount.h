@@ -83,6 +83,7 @@ struct CalibrationDetails
     double raGuideSpeed;
     double decGuideSpeed;
     double orthoError;
+    double origBinning;
     std::vector <wxRealPoint> raSteps;
     std::vector <wxRealPoint> decSteps;
     int raStepCount;
@@ -274,7 +275,7 @@ public:
     virtual bool IsCalibrated(void);
     virtual void ClearCalibration(void);
     virtual void SetCalibration(const Calibration& cal);
-    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails);
     void GetCalibrationDetails(CalibrationDetails *calDetails);
 
     virtual bool IsConnected(void);

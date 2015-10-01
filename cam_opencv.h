@@ -53,6 +53,7 @@ public:
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);
     bool    Disconnect();
+    wxByte  BitsPerPixel();
 };
 
 #endif //CAM_OPENCV_H_INCLUDED

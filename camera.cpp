@@ -649,6 +649,8 @@ bool GuideCamera::SetBinning(int binning)
     if (binning > MaxBinning)
         binning = MaxBinning;
 
+    Debug.Write(wxString::Format("camera: set binning = %u\n", (unsigned int) binning));
+
     Binning = binning;
     pConfig->Profile.SetInt("/camera/binning", binning);
 
@@ -874,7 +876,7 @@ void CameraConfigDialogCtrlSet::LoadValues()
         m_pCameraGain->SetValue(m_pCamera->GetCameraGain());
     }
 
-    if (m_pCamera->MaxBinning > 1)
+    if (m_binning)
     {
         int idx = m_pCamera->Binning - 1;
         m_binning->Select(idx);
@@ -974,7 +976,7 @@ void CameraConfigDialogCtrlSet::UnloadValues()
         m_pCamera->SetCameraGain(m_pCameraGain->GetValue());
     }
 
-    if (m_pCamera->MaxBinning > 1)
+    if (m_binning)
     {
         int idx = m_binning->GetSelection();
         m_pCamera->SetBinning(idx + 1);
@@ -1235,6 +1237,14 @@ bool GuideCamera::HasNonGuiCapture(void)
 
 void GuideCamera::InitCapture()
 {
+}
+
+bool GuideCamera::Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions, const wxRect& subframe)
+{
+    img.InitImgStartTime();
+    img.BitsPerPixel = camera->BitsPerPixel();
+    bool err = camera->Capture(duration, img, captureOptions, subframe);
+    return err;
 }
 
 bool GuideCamera::ST4HasGuideOutput(void)

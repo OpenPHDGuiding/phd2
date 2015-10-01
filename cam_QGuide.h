@@ -52,10 +52,10 @@ public:
     void    ClearGuidePort();
     bool    HasNonGuiCapture(void) { return true; }
     bool    ST4HasNonGuiMove(void) { return true; }
+    wxByte  BitsPerPixel();
 
 private:
     void RemoveLines(usImage& img);
 };
+
 #endif  //QGUIDEDEF
-
-

@@ -49,7 +49,7 @@ public:
     Camera_OpenSSAGClass();
     bool HasNonGuiCapture(void) { return true; }
     bool ST4HasNonGuiMove(void) { return true; }
+    wxByte BitsPerPixel();
 };
-
 
 #endif // CAM_OPENSSAG_H_INCLUDED

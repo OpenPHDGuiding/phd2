@@ -1339,7 +1339,7 @@ void Guider::UpdateLockPosShiftCameraCoords(void)
         return;
     }
 
-    PHD_Point rate;
+    PHD_Point rate(0., 0.);
 
     // convert shift rate to camera coordinates
     if (m_lockPosShift.shiftIsMountCoords)

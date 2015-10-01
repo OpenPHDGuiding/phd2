@@ -46,6 +46,7 @@ class Camera_SBIGClass : public GuideCamera
 {
     bool UseTrackingCCD;
     bool m_driverLoaded;
+    wxSize m_imageSize[2]; // 0=>bin1, 1=>bin2
 
 public:
     Camera_SBIGClass();
@@ -57,8 +58,9 @@ public:
     bool Disconnect();
     void InitCapture();
     bool ST4PulseGuideScope(int direction, int duration);
-    bool ST4HasNonGuiMove(void) { return true; }
-    bool HasNonGuiCapture(void) { return true; }
+    bool ST4HasNonGuiMove() { return true; }
+    bool HasNonGuiCapture() { return true; }
+    wxByte BitsPerPixel();
 
 private:
     bool LoadDriver();

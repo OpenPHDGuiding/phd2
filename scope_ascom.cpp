@@ -508,6 +508,17 @@ bool ScopeASCOM::Disconnect(void)
         } \
     } while (0)
 
+static wxString SlewWarningEnabledKey()
+{
+    // we want the key to be under "/Confirm" so ConfirmDialog::ResetAllDontAskAgain() resets it, but we also want the setting to be per-profile
+    return wxString::Format("/Confirm/%d/SlewWarningEnabled", pConfig->GetCurrentProfileId());
+}
+
+static void SuppressSlewAlert(long)
+{
+    pConfig->Global.SetBoolean(SlewWarningEnabledKey(), false);
+}
+
 Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
 {
     MOVE_RESULT result = MOVE_OK;
@@ -664,13 +675,21 @@ Mount::MOVE_RESULT ScopeASCOM::Guide(GUIDE_DIRECTION direction, int duration)
         if (result == MOVE_OK)
         {
             result = MOVE_ERROR;
-            pFrame->Alert(_("PulseGuide command to mount has failed - guiding is likely to be ineffective."));
+
+            if (!WorkerThread::InterruptRequested())
+            {
+                pFrame->Alert(_("PulseGuide command to mount has failed - guiding is likely to be ineffective."));
+            }
         }
     }
 
     if (result == MOVE_STOP_GUIDING)
     {
-        pFrame->Alert(_("Guiding stopped: the scope started slewing."));
+        if (pConfig->Global.GetBoolean(SlewWarningEnabledKey(), true))
+        {
+            pFrame->Alert(_("Guiding stopped: the scope started slewing."), 
+                _("Don't show\nthis again"), SuppressSlewAlert, 0);
+        }
     }
 
     return result;

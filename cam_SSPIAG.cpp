@@ -118,6 +118,11 @@ Camera_SSPIAGClass::Camera_SSPIAGClass()
     RawBuffer = NULL;
 }
 
+wxByte Camera_SSPIAGClass::BitsPerPixel()
+{
+    return 8;
+}
+
 bool Camera_SSPIAGClass::Connect(const wxString& camId)
 {
     // returns true on error
@@ -292,7 +297,8 @@ bool Camera_SSPIAGClass::Connect(const wxString& camId)
     return false;
 }
 
-bool Camera_SSPIAGClass::ST4PulseGuideScope(int direction, int duration) {
+bool Camera_SSPIAGClass::ST4PulseGuideScope(int direction, int duration)
+{
 // Vend req 0xb5  (vendTXD)
 // Buffer[0] = GuideCommand, Buffer[1]=PulseTime.
     int reg = 0;
@@ -311,15 +317,19 @@ bool Camera_SSPIAGClass::ST4PulseGuideScope(int direction, int duration) {
     WorkerThread::MilliSleep(duration + 10);
     return false;
 }
-void Camera_SSPIAGClass::ClearGuidePort() {
+
+void Camera_SSPIAGClass::ClearGuidePort()
+{
     Q5V_SendGuideCommand("QHY5V-0",0,0);
 }
-void Camera_SSPIAGClass::InitCapture() {
 
+void Camera_SSPIAGClass::InitCapture()
+{
     //Q5V_SetQHY5VGlobalGain(GuideCameraGain * 63 / 100);
-
 }
-bool Camera_SSPIAGClass::Disconnect() {
+
+bool Camera_SSPIAGClass::Disconnect()
+{
     //closeUSB();
     if (RawBuffer)
         delete [] RawBuffer;

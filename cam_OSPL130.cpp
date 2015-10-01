@@ -27,6 +27,11 @@ Camera_OpticstarPL130Class::Camera_OpticstarPL130Class()
     Color = false;
 }
 
+wxByte Camera_OpticstarPL130Class::BitsPerPixel()
+{
+    return 16;
+}
+
 bool Camera_OpticstarPL130Class::Connect(const wxString& camId)
 {
 // returns true on error
@@ -40,7 +45,6 @@ bool Camera_OpticstarPL130Class::Connect(const wxString& camId)
         wxMessageBox("Cannot init camera",_("Error"),wxOK | wxICON_ERROR);
         return true;
     }
-    RawData = new unsigned char [2621440];  //
 //OSPL130_SetGain(6);
     Connected = true;
     return false;
@@ -50,8 +54,6 @@ bool Camera_OpticstarPL130Class::Disconnect()
 {
     OSPL130_Finalize();
     Connected = false;
-    if (RawData) delete [] RawData;
-    RawData = NULL;
     return false;
 }
 
@@ -84,8 +86,6 @@ bool Camera_OpticstarPL130Class::Capture(int duration, usImage& img, int options
     }
     // Download
     OSPL130_GetRawImage(0,0,FullSize.GetWidth(),FullSize.GetHeight(), (void *) img.ImageData);
-    unsigned short *dataptr;
-    dataptr = img.ImageData;
     // byte swap
 
     if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);

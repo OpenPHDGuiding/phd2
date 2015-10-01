@@ -114,10 +114,10 @@ public:
     bool            HasGainControl;
     bool            HasShutter;
     bool            HasSubframes;
-    unsigned short  MaxBinning;
+    wxByte          MaxBinning;
+    wxByte          Binning;
     short           Port;
     int             ReadDelay;
-    unsigned short  Binning;
     bool            ShutterClosed;  // false=light, true=dark
     bool            UseSubframes;
     double          PixelSize;
@@ -134,9 +134,10 @@ public:
     virtual ~GuideCamera(void);
 
     virtual bool HasNonGuiCapture(void);
+    virtual wxByte BitsPerPixel(void) = 0;
 
-    virtual bool    Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
-    bool Capture(int duration, usImage& img, int captureOptions) { return Capture(duration, img, captureOptions, wxRect(0, 0, 0, 0)); }
+    static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions, const wxRect& subframe);
+    static bool Capture(GuideCamera *camera, int duration, usImage& img, int captureOptions) { return Capture(camera, duration, img, captureOptions, wxRect(0, 0, 0, 0)); }
 
     virtual bool HandleSelectCameraButtonClick(wxCommandEvent& evt);
     static const wxString DEFAULT_CAMERA_ID;
@@ -175,6 +176,7 @@ public:
 
 protected:
 
+    virtual bool Capture(int duration, usImage& img, int captureOptions, const wxRect& subframe) = 0;
     int GetCameraGain(void);
     bool SetCameraGain(int cameraGain);
     bool SetBinning(int binning);

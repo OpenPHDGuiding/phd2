@@ -97,7 +97,7 @@ bool StepGuiderSxAO::Connect(void)
             throw ERROR_INFO("StepGuiderSxAO::Connect: unable to get firmware version");
         }
 
-        if (version >= 102)
+        if (version >= 102 && version != 111)
         {
             wxMessageBox(wxString::Format(
                 _("This version of AO firmware (%03u) limits the travel range of the AO, and may cause\n"

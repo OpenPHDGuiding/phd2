@@ -161,6 +161,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     bool validAscomInfo = false;
     double guideRaSiderealX = 0.0;
     double guideDecSiderealX = 0.0;
+    double binningAdjustment = 1.0;
 
     if (!pSecondaryMount)
     {
@@ -198,10 +199,8 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     wxGrid* calGrid = new wxGrid(parentPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxHSCROLL | wxVSCROLL);
     calGrid->SetColLabelSize(0);
     calGrid->SetRowLabelSize(0);
-    if (AO)
-        calGrid->CreateGrid(3, 4);
-    else
-        calGrid->CreateGrid(4, 4);
+    calGrid->CreateGrid(5, 4);
+
     calGrid->EnableEditing(false);
 
     calGrid->SetCellValue(_("RA steps:"), row, col++);
@@ -232,6 +231,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     {
         guideRaSiderealX = calDetails.raGuideSpeed * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
         guideDecSiderealX = calDetails.decGuideSpeed * 3600.0 / (15.0 * dSiderealSecondPerSec);  // Degrees/sec to Degrees/hour, 15 degrees/hour is roughly sidereal rate
+        binningAdjustment = calBaseline.binning / calDetails.origBinning;
     }
 
     wxString ARCSECPERSEC(_("a-s/sec"));
@@ -245,7 +245,8 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     else
         calGrid->SetCellValue(_("X rate:"), row, col++);
     if (validDetails)
-        calGrid->SetCellValue(wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.xRate * 1000 * calDetails.imageScale, ARCSECPERSEC, calBaseline.xRate * 1000, PXPERSEC), row, col++);
+        calGrid->SetCellValue(wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.xRate * 1000 * calDetails.imageScale * calBaseline.binning, ARCSECPERSEC, 
+            calBaseline.xRate * 1000, PXPERSEC), row, col++);
     else
         calGrid->SetCellValue(wxString::Format("%0.3f %s", calBaseline.xRate * 1000, PXPERSEC), row, col++);      // just px/sec with no image scale data
     if (!AO)
@@ -255,7 +256,8 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
     if (calBaseline.yRate != CALIBRATION_RATE_UNCALIBRATED)
     {
         if (validDetails)
-            calGrid->SetCellValue(wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.yRate * 1000 * calDetails.imageScale, ARCSECPERSEC, calBaseline.yRate * 1000, PXPERSEC), row, col++);
+            calGrid->SetCellValue(wxString::Format("%0.3f %s\n%0.3f %s", calBaseline.yRate * 1000 * calDetails.imageScale * calBaseline.binning, ARCSECPERSEC, 
+                calBaseline.yRate * 1000, PXPERSEC), row, col++);
         else
             calGrid->SetCellValue(wxString::Format("%0.3f %s", calBaseline.yRate * 1000, PXPERSEC), row, col++);      // just px/sec with no image scale data
     }
@@ -283,6 +285,11 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         else
             calGrid->SetCellValue(NA_STR, row, col++);
     }
+
+    row++;
+    col = 0;
+    calGrid->SetCellValue(_("Binning:"), row, col++);
+    calGrid->SetCellValue(wxString::Format("%d", (int)calBaseline.binning), row, col);
 
     calGrid->AutoSize();
     calibFrame->Add(calGrid, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
@@ -314,7 +321,7 @@ void CalReviewDialog::CreateDataGrids(wxPanel* parentPanel, wxSizer* parentHSize
         cfgGrid->SetCellValue(_("Image scale:"), row, col++);
         if (validDetails)
         {
-            wxString binning = wxString::Format(_("Binning %hu"), calBaseline.binning);
+            wxString binning = wxString::Format(_("Binning: %d"), (int)calDetails.origBinning);      // Always binning used in actual calibration
             cfgGrid->SetCellValue(wxString::Format("%0.2f %s\n%s", calDetails.imageScale, ARCSECPERPX, binning), row, col++);
         }
         else
@@ -770,7 +777,7 @@ void CalSanityDialog::OnRestore(wxCommandEvent& evt)
         pFrame->StopCapturing();
 
     m_pScope->SetCalibration(m_oldParams);
-    m_pScope->SetCalibrationDetails(m_oldDetails, m_oldParams.xAngle, m_oldParams.yAngle);
+    m_pScope->SetCalibrationDetails(m_oldDetails, m_oldParams.xAngle, m_oldParams.yAngle, m_oldDetails.origBinning);
 
     pFrame->LoadCalibration();
     pFrame->SetStatusText(_("Previous calibration restored"));

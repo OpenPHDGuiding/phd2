@@ -970,6 +970,7 @@ bool GearDialog::DoConnectCamera(void)
 
         Debug.AddLine("Connected Camera:" + m_pCamera->Name);
         Debug.AddLine("FullSize=(%d,%d)", m_pCamera->FullSize.x, m_pCamera->FullSize.y);
+        Debug.AddLine("BitsPerPixel=%u", m_pCamera->BitsPerPixel());
         Debug.AddLine("HasGainControl=%d", m_pCamera->HasGainControl);
 
         if (m_pCamera->HasGainControl)

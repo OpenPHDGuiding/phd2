@@ -48,8 +48,11 @@ class Camera_ASCOMLateClass : public GuideCamera
     int DriverVersion;
     wxString m_choice; // name of chosen camera
     wxRect m_roi;
+    wxSize m_maxSize;
     bool m_canAbortExposure;
     bool m_canStopExposure;
+    wxByte m_bitsPerPixel;
+    wxByte m_curBin;
 
 #endif // __WINDOWS__
 
@@ -68,6 +71,7 @@ public:
     bool    Disconnect(void);
     void    ShowPropertyDialog(void);
     bool    ST4PulseGuideScope(int direction, int duration);
+    wxByte  BitsPerPixel();
 
 private:
 

@@ -94,6 +94,8 @@ class Scope : public Mount
     PHD_Point m_southStartingLocation;        // Needed to be sure nudging is in south-only direction
     PHD_Point m_lastLocation;
     double m_totalSouthAmt;
+    double m_northDirCosX;
+    double m_northDirCosY;
     // backlash-related variables
     PHD_Point m_blMarkerPoint;
     double m_blExpectedBacklashStep;
@@ -101,7 +103,7 @@ class Scope : public Mount
     int m_blAcceptedMoves;
     double m_blDistanceMoved;
     int m_blMaxClearingPulses;
-    enum blConstants { BL_BACKLASH_MIN_COUNT = 3, BL_MAX_CLEARING_TIME = 10000, BL_MIN_CLEARING_DISTANCE = 3 };
+    enum blConstants { BL_BACKLASH_MIN_COUNT = 3, BL_MAX_CLEARING_TIME = 60000, BL_MIN_CLEARING_DISTANCE = 3 };
 
     Calibration m_calibration;
     CalibrationDetails m_calibrationDetails;
@@ -192,7 +194,7 @@ public:
     virtual ~Scope(void);
 
     virtual void SetCalibration(const Calibration& cal);
-    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle);
+    virtual void SetCalibrationDetails(const CalibrationDetails& calDetails, double xAngle, double yAngle, double binning);
     virtual bool IsCalibrated(void);
     virtual bool BeginCalibration(const PHD_Point &currentLocation);
     virtual bool UpdateCalibrationState(const PHD_Point &currentLocation);

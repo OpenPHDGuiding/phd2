@@ -97,7 +97,13 @@ bool Camera_SBIGRotatorClass::Connect(const wxString& camId)
     return bError;
 }
 
-bool Camera_SBIGRotatorClass::Disconnect() {
+wxByte Camera_SBIGRotatorClass::BitsPerPixel()
+{
+    return m_pSubcamera ? m_pSubcamera->BitsPerPixel() : 0;
+}
+
+bool Camera_SBIGRotatorClass::Disconnect()
+{
     m_pSubcamera->Disconnect();
     Connected = m_pSubcamera->Connected;
     return false;

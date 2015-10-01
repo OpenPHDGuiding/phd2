@@ -59,6 +59,11 @@ Camera_DSIClass::~Camera_DSIClass()
     delete MeadeCam;
 }
 
+wxByte Camera_DSIClass::BitsPerPixel()
+{
+    return 16;
+}
+
 bool Camera_DSIClass::EnumCameras(wxArrayString& names, wxArrayString& ids)
 {
     if (!MeadeCam)

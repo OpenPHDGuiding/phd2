@@ -64,6 +64,11 @@ Camera_QGuiderClass::Camera_QGuiderClass()
     HasGainControl = true;
 }
 
+wxByte Camera_QGuiderClass::BitsPerPixel()
+{
+    return 16;
+}
+
 bool Camera_QGuiderClass::Connect(const wxString& camId)
 {
 // returns true on error

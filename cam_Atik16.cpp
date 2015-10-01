@@ -61,6 +61,11 @@ Camera_Atik16Class::~Camera_Atik16Class()
         ArtemisUnLoadDLL();
 }
 
+wxByte Camera_Atik16Class::BitsPerPixel()
+{
+    return 16;
+}
+
 bool Camera_Atik16Class::LoadDLL()
 {
     if (!m_dllLoaded)
@@ -209,9 +214,6 @@ void Camera_Atik16Class::ClearGuidePort()
     ArtemisStopGuiding(Cam_Handle);
 }
 
-/*void Camera_Atik16Class::InitCapture() {
-}*/
-
 bool Camera_Atik16Class::Disconnect()
 {
     if (ArtemisIsConnected(Cam_Handle))
@@ -337,8 +339,10 @@ bool Camera_Atik16Class::Capture(int duration, usImage& img, int options, const 
     }
 
     // Do quick L recon to remove bayer array
-    if (options & CAPTURE_SUBTRACT_DARK) SubtractDark(img);
-    if (Color && (options & CAPTURE_RECON)) QuickLRecon(img);
+    if (options & CAPTURE_SUBTRACT_DARK)
+        SubtractDark(img);
+    if (Color && Binning == 1 && (options & CAPTURE_RECON))
+        QuickLRecon(img);
 
     return false;
 }

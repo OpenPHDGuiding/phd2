@@ -44,16 +44,16 @@ class Camera_SimClass : public GuideCamera
 public:
     Camera_SimClass();
     ~Camera_SimClass();
-    bool         Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool         Connect(const wxString& camId);
-    bool         Disconnect();
-    void         InitCapture() { return; }
-    void         ShowPropertyDialog();
-    bool         HasNonGuiCapture(void) { return true; }
-    bool         ST4HasNonGuiMove(void) { return true; }
-    bool         ST4PulseGuideScope (int direction, int duration);
-    PierSide     SideOfPier(void) const;
-    void         FlipPierSide(void);
+    bool     Capture(int duration, usImage& img, int options, const wxRect& subframe);
+    bool     Connect(const wxString& camId);
+    bool     Disconnect();
+    void     ShowPropertyDialog();
+    bool     HasNonGuiCapture() { return true; }
+    bool     ST4HasNonGuiMove() { return true; }
+    wxByte   BitsPerPixel();
+    bool     ST4PulseGuideScope (int direction, int duration);
+    PierSide SideOfPier() const;
+    void     FlipPierSide();
 };
 
 #endif

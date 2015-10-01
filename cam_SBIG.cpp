@@ -34,13 +34,15 @@
 
 
 #include "phd.h"
-#if defined (SBIG)
-#include "camera.h"
-#include "time.h"
-#include "image_math.h"
-#include <wx/textdlg.h>
 
-#include "Cam_SBIG.h"
+#if defined(SBIG)
+
+#include "cam_SBIG.h"
+#include "camera.h"
+#include "image_math.h"
+
+#include <time.h>
+#include <wx/textdlg.h>
 
 static unsigned long bcd2long(unsigned long bcd)
 {
@@ -74,6 +76,11 @@ Camera_SBIGClass::~Camera_SBIGClass()
 {
     if (m_driverLoaded)
         SBIGUnivDrvCommand(CC_CLOSE_DRIVER, NULL, NULL);
+}
+
+wxByte Camera_SBIGClass::BitsPerPixel()
+{
+    return 16;
 }
 
 static bool _LoadDriver()
@@ -273,7 +280,8 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
 
     // Attempt connection
     err = SBIGUnivDrvCommand(CC_OPEN_DEVICE, &odp, NULL);
-    if ( err != CE_NO_ERROR ) {
+    if (err != CE_NO_ERROR)
+    {
         wxMessageBox (wxString::Format("Cannot open SBIG camera: Code %d",err), _("Error"));
         Disconnect();
         return true;
@@ -282,7 +290,8 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
     // Establish link
     EstablishLinkResults elr;
     err = SBIGUnivDrvCommand(CC_ESTABLISH_LINK, NULL, &elr);
-    if ( err != CE_NO_ERROR ) {
+    if (err != CE_NO_ERROR)
+    {
         wxMessageBox (wxString::Format("Link to SBIG camera failed: Code %d",err), _("Error"));
         Disconnect();
         return true;
@@ -294,33 +303,50 @@ bool Camera_SBIGClass::Connect(const wxString& camId)
     GetCCDInfoResults0 gcir0;
     gcip.request = CCD_INFO_TRACKING;
     err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
-    if ( err == CE_NO_ERROR ) {
-        int resp = wxMessageBox(wxString::Format("Tracking CCD found, use it?\n\nNo = use main image CCD"),_("CCD Choice"),wxYES_NO | wxICON_QUESTION);
-        if (resp == wxYES) {
+    if (err == CE_NO_ERROR)
+    {
+        int resp = wxMessageBox(wxString::Format("Tracking CCD found, use it?\n\nNo = use main image CCD"), _("CCD Choice"), wxYES_NO | wxICON_QUESTION);
+        if (resp == wxYES)
             UseTrackingCCD = true;
-            FullSize = wxSize((int) gcir0.readoutInfo->width,(int) gcir0.readoutInfo->height);
-            unsigned long bcd = gcir0.readoutInfo->pixelWidth > gcir0.readoutInfo->pixelHeight ? gcir0.readoutInfo->pixelWidth : gcir0.readoutInfo->pixelHeight;
-            PixelSize = (double)bcd2long(bcd) / 100.0;
-        }
     }
-    if (!UseTrackingCCD) {
-//      wxMessageBox(_("No tracking CCD - using main/only imager"));
-//      UseTrackingCCD = false;
+    if (!UseTrackingCCD)
+    {
         gcip.request = CCD_INFO_IMAGING;
         err = SBIGUnivDrvCommand(CC_GET_CCD_INFO, &gcip, &gcir0);
-        if (err != CE_NO_ERROR) {
+        if (err != CE_NO_ERROR)
+        {
             wxMessageBox(_("Error getting info on main CCD"), _("Error"));
             Disconnect();
             return true;
         }
-        FullSize = wxSize((int) gcir0.readoutInfo->width,(int) gcir0.readoutInfo->height);
-        unsigned long bcd = gcir0.readoutInfo->pixelWidth > gcir0.readoutInfo->pixelHeight ? gcir0.readoutInfo->pixelWidth : gcir0.readoutInfo->pixelHeight;
-        PixelSize = (double)bcd2long(bcd) / 100.0;
     }
 
-//  wxMessageBox(wxString::Format("%s (%u): %dx%d (%d)",gcir0.name,gcir0.cameraType, FullSize.GetWidth(),
-//      FullSize.GetHeight(),(int) UseTrackingCCD));
-    Name = wxString(gcir0.name);
+    MaxBinning = 1;
+    for (int i = 0; i < gcir0.readoutModes; i++)
+    {
+        int mode = gcir0.readoutInfo[i].mode;
+        if (mode == RM_1X1 || mode == RM_2X2)
+        {
+            int idx = mode == RM_1X1 ? 0 : 1;
+            m_imageSize[idx] = wxSize(gcir0.readoutInfo[i].width, gcir0.readoutInfo[i].height);
+            if (mode == RM_1X1)
+            {
+                unsigned long bcd = wxMax(gcir0.readoutInfo[i].pixelWidth, gcir0.readoutInfo[i].pixelHeight);
+                PixelSize = (double) bcd2long(bcd) / 100.0;
+            }
+            else // RM_2x2
+                MaxBinning = 2;
+        }
+    }
+
+    if (Binning > MaxBinning)
+        Binning = MaxBinning;
+
+    FullSize = m_imageSize[Binning - 1];
+
+    Debug.Write(wxString::Format("SBIG: %s type=%u, UseTrackingCCD=%d, MaxBin = %hu, 1x1 size %d x %d, 2x2 size %d x %d\n", gcir0.name, gcir0.cameraType, UseTrackingCCD, MaxBinning, m_imageSize[0].x, m_imageSize[0].y, m_imageSize[1].x, m_imageSize[1].y));
+
+    Name = gcir0.name;
     Connected = true;
     return false;
 }
@@ -354,7 +380,8 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
         TakeSubframe = false;
     }
 
-//  StartExposureParams sep;
+    FullSize = m_imageSize[Binning - 1];
+
     StartExposureParams2 sep;
     EndExposureParams eep;
     QueryCommandStatusParams qcsp;
@@ -362,16 +389,18 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
     ReadoutLineParams rlp;
     DumpLinesParams dlp;
 
-    if (UseTrackingCCD) {
-        sep.ccd          = CCD_TRACKING;
-        sep.abgState     = ABG_CLK_LOW7;
+    if (UseTrackingCCD)
+    {
+        sep.ccd      = CCD_TRACKING;
+        sep.abgState = ABG_CLK_LOW7;
         eep.ccd = CCD_TRACKING;
         rlp.ccd = CCD_TRACKING;
         dlp.ccd = CCD_TRACKING;
     }
-    else {
-        sep.ccd          = CCD_IMAGING;
-        sep.abgState     = ABG_LOW7;
+    else
+    {
+        sep.ccd      = CCD_IMAGING;
+        sep.abgState = ABG_LOW7;
         eep.ccd = CCD_IMAGING;
         rlp.ccd = CCD_IMAGING;
         dlp.ccd = CCD_IMAGING;
@@ -381,18 +410,20 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
     sep.openShutter = ShutterClosed ? SC_CLOSE_SHUTTER : SC_OPEN_SHUTTER;
 
     // Setup readout mode (now needed by StartExposure 2)
-    sep.readoutMode = RM_1X1;
-    if (TakeSubframe) {
+    sep.readoutMode = Binning == 1 ? RM_1X1 : RM_2X2;
+    if (TakeSubframe)
+    {
         sep.top = subframe.x;
         sep.width = subframe.width;
         sep.left = subframe.y;
         sep.height = subframe.height;
     }
-    else {
-        sep.top=0;
-        sep.left=0;
-        sep.width=(unsigned short) FullSize.GetWidth();
-        sep.height=(unsigned short) FullSize.GetHeight();
+    else
+    {
+        sep.top = 0;
+        sep.left = 0;
+        sep.width = (unsigned short) FullSize.GetWidth();
+        sep.height = (unsigned short) FullSize.GetHeight();
     }
 
     // init memory
@@ -424,10 +455,13 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
     }
 
     qcsp.command = CC_START_EXPOSURE;
-    while (true) {  // wait for image to finish and d/l
+    while (true)
+    {
+        // wait for image to finish and d/l
         wxMilliSleep(20);
         err = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
-        if (err != CE_NO_ERROR) {
+        if (err != CE_NO_ERROR)
+        {
             DisconnectWithAlert(_("Cannot poll exposure"));
             return true;
         }
@@ -474,10 +508,12 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
 
         img.Clear();
 
-        for (int y=0; y<subframe.height; y++) {
-            unsigned short *dataptr = img.ImageData + subframe.x + (y+subframe.y)*FullSize.GetWidth();
+        for (int y = 0; y < subframe.height; y++)
+        {
+            unsigned short *dataptr = img.ImageData + subframe.x + (y + subframe.y) * FullSize.GetWidth();
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
-            if (err != CE_NO_ERROR) {
+            if (err != CE_NO_ERROR)
+            {
                 DisconnectWithAlert(_("Error downloading data"));
                 return true;
             }
@@ -488,10 +524,12 @@ bool Camera_SBIGClass::Capture(int duration, usImage& img, int options, const wx
         rlp.pixelStart  = 0;
         rlp.pixelLength = (unsigned short) FullSize.GetWidth();
         unsigned short *dataptr = img.ImageData;
-        for (int y = 0; y<FullSize.GetHeight(); y++) {
+        for (int y = 0; y < FullSize.GetHeight(); y++)
+        {
             err = SBIGUnivDrvCommand(CC_READOUT_LINE, &rlp, dataptr);
             dataptr += FullSize.GetWidth();
-            if (err != CE_NO_ERROR) {
+            if (err != CE_NO_ERROR)
+            {
                 DisconnectWithAlert(_("Error downloading data"));
                 return true;
             }

@@ -64,6 +64,11 @@ Camera_Altair::~Camera_Altair()
     delete[] m_buffer;
 }
 
+wxByte Camera_Altair::BitsPerPixel()
+{
+    return 8;
+}
+
 inline static int cam_gain(int minval, int maxval, int pct)
 {
     return minval + pct * (maxval - minval) / 100;

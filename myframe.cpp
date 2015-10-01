@@ -1206,7 +1206,7 @@ bool MyFrame::StopWorkerThread(WorkerThread*& pWorkerThread)
 void MyFrame::OnRequestExposure(wxCommandEvent& evt)
 {
     EXPOSE_REQUEST *req = (EXPOSE_REQUEST *) evt.GetClientData();
-    bool error = pCamera->Capture(req->exposureDuration, *req->pImage, req->options, req->subframe);
+    bool error = GuideCamera::Capture(pCamera, req->exposureDuration, *req->pImage, req->options, req->subframe);
     req->error = error;
     req->pSemaphore->Post();
 }

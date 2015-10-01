@@ -38,18 +38,21 @@
 
 class Camera_INovaPLCClass : public GuideCamera
 {
+    unsigned int RowTime;
+    unsigned short *RawData;
+
 public:
+    Camera_INovaPLCClass();
+
     bool Capture(int duration, usImage& img, int options, const wxRect& subframe);
-    bool HasNonGuiCapture(void);
+    bool HasNonGuiCapture();
+    wxByte BitsPerPixel();
     bool Connect(const wxString& camId);
     bool Disconnect();
     bool ST4PulseGuideScope(int direction, int duration);
     void InitCapture();
-    Camera_INovaPLCClass();
-private:
-    unsigned int RowTime;
-    unsigned short *RawData;
 
+private:
     bool ST4HasNonGuiMove(void);
 };
 

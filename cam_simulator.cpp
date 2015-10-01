@@ -530,7 +530,6 @@ bool SimCamState::ReadNextImage(usImage& img, const wxRect& subframe)
     }
 
     unsigned short *buf = new unsigned short[img.NPixels];
-
     bool useSubframe = !subframe.IsEmpty();
     wxRect frame;
     if (useSubframe)
@@ -895,9 +894,21 @@ void SimCamState::FillImage(usImage& img, const wxRect& subframe, int exptime, i
 #endif
 #endif
 
+    // check for pier-flip
+    if (pPointingSource && pPointingSource->IsConnected())
+    {
+        if (pPointingSource->SideOfPier() != SimCamParams::pier_side)
+        {
+            PierSide new_side = pPointingSource->SideOfPier();
+            Debug.AddLine("Cam simulator: pointing source flipped pier side from %d to %d\n", SimCamParams::pier_side, new_side);
+            SimCamParams::pier_side = new_side;
+        }
+    }
+
     // convert to camera coordinates
     wxVector<wxRealPoint> cc(nr_stars);
     double angle = radians(SimCamParams::cam_angle);
+
     if (SimCamParams::pier_side == PIER_SIDE_WEST)
         angle += M_PI;
     double const cos_t = cos(angle);
@@ -982,6 +993,11 @@ Camera_SimClass::Camera_SimClass()
     HasSubframes = true;
     PropertyDialogType = PROPDLG_WHEN_CONNECTED;
     MaxBinning = 3;
+}
+
+wxByte Camera_SimClass::BitsPerPixel()
+{
+    return 16;
 }
 
 bool Camera_SimClass::Connect(const wxString& camId)

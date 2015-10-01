@@ -47,7 +47,8 @@ bool DCAM_start_stop_mode = true;
 
 #include "cam_firewire.h"
 
-Camera_FirewireClass::Camera_FirewireClass() : m_dcContext(0), camera(0) {
+Camera_FirewireClass::Camera_FirewireClass() : m_dcContext(0), camera(0)
+{
     Connected = false;
 //  HaveBPMap = false;
 //  NBadPixels=-1;
@@ -64,6 +65,11 @@ Camera_FirewireClass::~Camera_FirewireClass()
       dc1394_free(m_dcContext);
       m_dcContext = 0;
   }
+}
+
+wxByte Camera_FirewireClass::BitsPerPixel()
+{
+    return 8;
 }
 
 bool Camera_FirewireClass::Connect(const wxString& camId)
