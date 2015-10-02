@@ -223,6 +223,9 @@ set(cam_SRC
   ${phd_src_dir}/camera.cpp
   ${phd_src_dir}/camera.h
   ${phd_src_dir}/cameras.h
+
+  ${phd_src_dir}/cameras/SXMacLib.h
+  ${phd_src_dir}/cameras/SXMacLib.c
 )
 
 # windows specific cameras
