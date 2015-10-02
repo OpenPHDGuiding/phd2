@@ -39,6 +39,8 @@
  
  \***************************************************************************/
 
+#if defined (__APPLE__)
+
 #include "SXMacLib.h"
 
 #include <libusb.h>
@@ -666,6 +668,7 @@ UInt32 sxOpen(void** sxHandles)
     
     if (!ctx) {
         ret = libusb_init(&ctx);
+        printf("Initialising SXMacLib\n");
     }
     if (ret) {
         goto out;
@@ -918,3 +921,6 @@ void* sxOpenByModel(UInt16 nModelNumber)
     
     return NULL;
 }
+
+#endif // __APPLE__
+
