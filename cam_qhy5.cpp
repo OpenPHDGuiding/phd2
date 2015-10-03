@@ -249,7 +249,7 @@ bool Camera_QHY5Class::Capture(int duration, usImage& img, int options, const wx
     ret = libusb_bulk_transfer( m_handle, 0x82, RawBuffer, QHY5_BUFFER_SIZE, &result, 20000);
     if (ret < 0)
     {
-        pFrame->Alert(_T("Failed to read image: libusb_bulk_transfer() failed.");
+        pFrame->Alert(_T("Failed to read image: libusb_bulk_transfer() failed."));
         return true;
     }
 
