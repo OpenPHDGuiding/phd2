@@ -66,6 +66,7 @@ wxDEFINE_EVENT(STATUSBAR_ENQUEUE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(STATUSBAR_TIMER_EVENT, wxTimerEvent);
 wxDEFINE_EVENT(SET_STATUS_TEXT_EVENT, wxThreadEvent);
 wxDEFINE_EVENT(ALERT_FROM_THREAD_EVENT, wxThreadEvent);
+wxDEFINE_EVENT(RECONNECT_CAMERA_EVENT, wxThreadEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_EXIT,  MyFrame::OnQuit)
@@ -143,6 +144,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 
     EVT_THREAD(SET_STATUS_TEXT_EVENT, MyFrame::OnSetStatusText)
     EVT_THREAD(ALERT_FROM_THREAD_EVENT, MyFrame::OnAlertFromThread)
+    EVT_THREAD(RECONNECT_CAMERA_EVENT, MyFrame::OnReconnectCameraFromThread)
     EVT_COMMAND(wxID_ANY, REQUEST_MOUNT_MOVE_EVENT, MyFrame::OnRequestMountMove)
     EVT_TIMER(STATUSBAR_TIMER_EVENT, MyFrame::OnStatusbarTimerEvent)
 
@@ -1072,6 +1074,55 @@ void MyFrame::OnAlertFromThread(wxThreadEvent& event)
     delete params;
 }
 
+void MyFrame::OnReconnectCameraFromThread(wxThreadEvent& event)
+{
+    DoTryReconnect();
+}
+
+void MyFrame::TryReconnect()
+{
+    if (wxThread::IsMain())
+        DoTryReconnect();
+    else
+    {
+        Debug.Write("worker thread queueing reconnect event to GUI thread\n");
+        wxThreadEvent *event = new wxThreadEvent(wxEVT_THREAD, RECONNECT_CAMERA_EVENT);
+        wxQueueEvent(this, event);
+    }
+}
+
+void MyFrame::DoTryReconnect()
+{
+    // do not reconnect more than 3 times in 1 minute
+    enum { TIME_WINDOW = 60, MAX_ATTEMPTS = 3 };
+    time_t now = wxDateTime::GetTimeNow();
+    Debug.Write(wxString::Format("Try camera reconnect, now = %lu\n", (unsigned long) now));
+    while (m_cameraReconnectAttempts.size() > 0 && now - m_cameraReconnectAttempts[0] > TIME_WINDOW)
+        m_cameraReconnectAttempts.erase(m_cameraReconnectAttempts.begin());
+    if (m_cameraReconnectAttempts.size() + 1 > MAX_ATTEMPTS)
+    {
+        Debug.Write(wxString::Format("More than %d camera reconnect attempts in less than %d seconds, "
+            "return without reconnect.\n", MAX_ATTEMPTS, TIME_WINDOW));
+        OnExposeComplete(0, true);
+        return;
+    }
+    m_cameraReconnectAttempts.push_back(now);
+
+    bool err = pGearDialog->ReconnectCamera();
+    if (err)
+    {
+        Debug.Write("Camera Re-connect failed\n");
+        // complete the pending exposure notification
+        OnExposeComplete(0, true);
+    }
+    else
+    {
+        Debug.Write("Camera Re-connect succeeded, resume exposures\n");
+        m_exposurePending = false; // exposure no longer pending
+        ScheduleExposure();
+    }
+}
+
 /*
  * The base class wxFrame::SetStatusText() is not
  * safe to call from worker threads.
@@ -1084,7 +1135,7 @@ void MyFrame::OnAlertFromThread(wxThreadEvent& event)
 
 void MyFrame::SetStatusText(const wxString& text, int number)
 {
-    Debug.AddLine(wxString::Format("Status Line %d: %s", number, text));
+    Debug.Write(wxString::Format("Status Line %d: %s\n", number, text));
 
     if (wxThread::IsMain() && number != 1)
     {
@@ -1215,7 +1266,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
 {
     PHD_MOVE_REQUEST *pRequest = (PHD_MOVE_REQUEST *)evt.GetClientData();
 
-    Debug.AddLine("OnRequestMountMove() begins");
+    Debug.Write("OnRequestMountMove() begins\n");
 
     if (pRequest->calibrationMove)
     {
@@ -1227,7 +1278,7 @@ void MyFrame::OnRequestMountMove(wxCommandEvent& evt)
     }
 
     pRequest->pSemaphore->Post();
-    Debug.AddLine("OnRequestMountMove() ends");
+    Debug.Write("OnRequestMountMove() ends\n");
 }
 
 void MyFrame::OnStatusbarTimerEvent(wxTimerEvent& evt)
@@ -1241,8 +1292,8 @@ void MyFrame::ScheduleExposure(void)
     int exposureOptions = GetRawImageMode() ? CAPTURE_BPM_REVIEW : CAPTURE_LIGHT;
     const wxRect& subframe = pGuider->GetBoundingBox();
 
-    Debug.AddLine("ScheduleExposure(%d,%x,%d) exposurePending=%d",
-        exposureDuration, exposureOptions, !subframe.IsEmpty(), m_exposurePending);
+    Debug.Write(wxString::Format("ScheduleExposure(%d,%x,%d) exposurePending=%d\n",
+        exposureDuration, exposureOptions, !subframe.IsEmpty(), m_exposurePending));
 
     assert(wxThread::IsMain()); // m_exposurePending only updated in main thread
     assert(!m_exposurePending);
@@ -1258,7 +1309,7 @@ void MyFrame::ScheduleExposure(void)
 
 void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
-    Debug.AddLine("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType);
+    Debug.Write(wxString::Format("SchedulePrimaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -1271,7 +1322,7 @@ void MyFrame::SchedulePrimaryMove(Mount *pMount, const PHD_Point& vectorEndpoint
 
 void MyFrame::ScheduleSecondaryMove(Mount *pMount, const PHD_Point& vectorEndpoint, MountMoveType moveType)
 {
-    Debug.AddLine("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType);
+    Debug.Write(wxString::Format("ScheduleSecondaryMove(%p, x=%.2f, y=%.2f, type=%d)\n", pMount, vectorEndpoint.X, vectorEndpoint.Y, moveType));
 
     wxCriticalSectionLocker lock(m_CSpWorkerThread);
 
@@ -1305,7 +1356,7 @@ void MyFrame::ScheduleCalibrationMove(Mount *pMount, const GUIDE_DIRECTION direc
 
 void MyFrame::StartCapturing()
 {
-    Debug.AddLine("StartCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d", CaptureActive, m_continueCapturing, m_exposurePending);
+    Debug.Write(wxString::Format("StartCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d\n", CaptureActive, m_continueCapturing, m_exposurePending));
 
     if (!CaptureActive)
     {
@@ -1331,7 +1382,7 @@ void MyFrame::StartCapturing()
 
 void MyFrame::StopCapturing(void)
 {
-    Debug.AddLine("StopCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d", CaptureActive, m_continueCapturing, m_exposurePending);
+    Debug.Write(wxString::Format("StopCapturing CaptureActive=%d continueCapturing=%d exposurePending=%d\n", CaptureActive, m_continueCapturing, m_exposurePending));
 
     if (m_continueCapturing)
     {
@@ -1359,7 +1410,7 @@ void MyFrame::SetPaused(PauseType pause)
 {
     bool const isPaused = pGuider->IsPaused();
 
-    Debug.AddLine("SetPaused type=%d isPaused=%d exposurePending=%d", pause, isPaused, m_exposurePending);
+    Debug.Write(wxString::Format("SetPaused type=%d isPaused=%d exposurePending=%d\n", pause, isPaused, m_exposurePending));
 
     if (pause != PAUSE_NONE && !isPaused)
     {
@@ -1373,7 +1424,7 @@ void MyFrame::SetPaused(PauseType pause)
         pGuider->SetPaused(PAUSE_NONE);
         if (pMount)
         {
-            Debug.AddLine("un-pause: clearing mount guide algorithm history");
+            Debug.Write("un-pause: clearing mount guide algorithm history\n");
             pMount->ClearHistory();
         }
         if (m_continueCapturing && !m_exposurePending)
@@ -1464,7 +1515,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
             DEC_GUIDE_MODE dgm = scope->GetDecGuideMode();
             if (dgm != DEC_AUTO)
             {
-                Debug.AddLine("forcing dither RA-only since Dec guide mode is %d", dgm);
+                Debug.Write(wxString::Format("forcing dither RA-only since Dec guide mode is %d\n", dgm));
                 raOnly = true;
             }
         }
@@ -1478,7 +1529,7 @@ bool MyFrame::Dither(double amount, bool raOnly)
             dRa  =  amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
             dDec =  raOnly ? 0.0 : amount * ((rand() / (double)RAND_MAX) * 2.0 - 1.0);
 
-            Debug.AddLine("dither: size=%.2f, dRA=%.2f dDec=%.2f", amount, dRa, dDec);
+            Debug.Write(wxString::Format("dither: size=%.2f, dRA=%.2f dDec=%.2f\n", amount, dRa, dDec));
 
             MOVE_LOCK_RESULT result = pGuider->MoveLockPosition(PHD_Point(dRa, dDec));
             if (result == MOVE_LOCK_OK)
@@ -1491,12 +1542,12 @@ bool MyFrame::Dither(double amount, bool raOnly)
             }
 
             // lock pos was rejected (too close to the edge), try again
-            Debug.AddLine("dither lock pos rejected, try again");
+            Debug.Write("dither lock pos rejected, try again\n");
         }
 
         // Reset guide algorithm history.
         // For algorithms like Resist Switch, the dither invalidates the state, so start again from scratch.
-        Debug.AddLine("dither: clearing mount guide algorithm history");
+        Debug.Write("dither: clearing mount guide algorithm history\n");
         pMount->ClearHistory();
 
         SetStatusText(wxString::Format(_("Dither by %.2f,%.2f"), dRa, dDec));
@@ -1731,7 +1782,7 @@ static bool save_multi_darks(const ExposureImgMap& darks, const wxString& fname,
             }
 
             if (!status) fits_write_pix(fptr, TUSHORT, fpixel, img->NPixels, img->ImageData, &status);
-            Debug.AddLine("saving dark frame exposure = %d", img->ImgExpDur);
+            Debug.Write(wxString::Format("saving dark frame exposure = %d\n", img->ImgExpDur));
         }
 
         PHD_fits_close_file(fptr);
@@ -1881,7 +1932,7 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
         if (sensorSize == UNDEFINED_FRAME_SIZE)
         {
             bOk = true;
-            Debug.AddLine("DarkLib check: undefined frame size for current camera");
+            Debug.Write("DarkLib check: undefined frame size for current camera\n");
         }
         else
         {
@@ -1905,7 +1956,7 @@ bool MyFrame::DarkLibExists(int profileId, bool showAlert)
                 PHD_fits_close_file(fptr);
             }
             else
-                Debug.AddLine(wxString::Format("DarkLib check: fitsio error on open_diskfile = %d", status));
+                Debug.Write(wxString::Format("DarkLib check: fitsio error on open_diskfile = %d\n", status));
         }
     }
 
@@ -1980,13 +2031,13 @@ bool MyFrame::LoadDarkLibrary()
 
     if (load_multi_darks(pCamera, filename))
     {
-        Debug.AddLine(wxString::Format("failed to load dark frames from %s", filename));
+        Debug.Write(wxString::Format("failed to load dark frames from %s\n", filename));
         SetStatusText(_("Darks not loaded"));
         return false;
     }
     else
     {
-        Debug.AddLine(wxString::Format("loaded dark library from %s", filename));
+        Debug.Write(wxString::Format("loaded dark library from %s\n", filename));
         pCamera->SelectDark(m_exposureDuration);
         SetStatusText(_("Darks loaded"));
         return true;
@@ -1997,7 +2048,7 @@ void MyFrame::SaveDarkLibrary(const wxString& note)
 {
     wxString filename = MyFrame::DarkLibFileName(pConfig->GetCurrentProfileId());
 
-    Debug.AddLine("saving dark library");
+    Debug.Write("saving dark library\n");
 
     if (save_multi_darks(pCamera->Darks, filename, note))
     {

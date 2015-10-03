@@ -17,6 +17,20 @@
 #include "cam_OSPL130.h"
 #include "cameras/OSPL130API.h"
 
+static bool DLLExists(const wxString& DLLName)
+{
+    wxStandardPathsBase& StdPaths = wxStandardPaths::Get();
+    if (wxFileExists(StdPaths.GetExecutablePath().BeforeLast(PATHSEPCH) + PATHSEPSTR + DLLName))
+        return true;
+    if (wxFileExists(StdPaths.GetExecutablePath().BeforeLast(PATHSEPCH) + PATHSEPSTR + ".." + PATHSEPSTR + DLLName))
+        return true;
+    if (wxFileExists(wxGetOSDirectory() + PATHSEPSTR + DLLName))
+        return true;
+    if (wxFileExists(wxGetOSDirectory() + PATHSEPSTR + "system32" + PATHSEPSTR + DLLName))
+        return true;
+    return false;
+}
+
 Camera_OpticstarPL130Class::Camera_OpticstarPL130Class()
 {
     Connected = false;

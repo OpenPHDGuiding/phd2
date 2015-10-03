@@ -38,15 +38,16 @@
 WorkerThread::WorkerThread(MyFrame *pFrame)
     : wxThread(wxTHREAD_JOINABLE),
       m_interruptRequested(0),
-      m_killable(true)
+      m_killable(true),
+      m_skipSendExposeComplete(false)
 {
     m_pFrame = pFrame;
-    Debug.AddLine("WorkerThread constructor called");
+    Debug.Write("WorkerThread constructor called\n");
 }
 
 WorkerThread::~WorkerThread(void)
 {
-    Debug.AddLine("WorkerThread destructor called");
+    Debug.Write("WorkerThread destructor called\n");
 }
 
 void WorkerThread::EnqueueMessage(const WORKER_THREAD_REQUEST& message)
@@ -91,7 +92,7 @@ void WorkerThread::EnqueueWorkerThreadExposeRequest(usImage *pImage, int exposur
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
-    Debug.AddLine("Enqueuing Expose request");
+    Debug.Write("Enqueuing Expose request\n");
 
     message.request                      = REQUEST_EXPOSE;
     message.args.expose.pImage           = pImage;
@@ -127,6 +128,12 @@ unsigned int WorkerThread::MilliSleep(int ms, unsigned int checkInterrupts)
     } while (elapsed < ms);
 
     return 0;
+}
+
+void WorkerThread::SetSkipExposeComplete()
+{
+    Debug.Write("worker thread setting skip send exposure complete\n");
+    m_skipSendExposeComplete = true;
 }
 
 bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *req)
@@ -169,7 +176,7 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *req)
             req->pSemaphore = NULL;
         }
 
-        Debug.AddLine("Exposure complete");
+        Debug.Write("Exposure complete\n");
 
         if (!bError)
         {
@@ -188,7 +195,7 @@ bool WorkerThread::HandleExpose(MyFrame::EXPOSE_REQUEST *req)
             req->pImage->CalcStats();
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         bError = true;
@@ -214,7 +221,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const PHD_Point
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
-    Debug.AddLine(wxString::Format("Enqueuing Move request for %s (%.2f, %.2f)", pMount->GetMountClassName(), vectorEndpoint.X, vectorEndpoint.Y));
+    Debug.Write(wxString::Format("Enqueuing Move request for %s (%.2f, %.2f)\n", pMount->GetMountClassName(), vectorEndpoint.X, vectorEndpoint.Y));
 
     message.request                   = REQUEST_MOVE;
     message.args.move.pMount          = pMount;
@@ -233,7 +240,7 @@ void WorkerThread::EnqueueWorkerThreadMoveRequest(Mount *pMount, const GUIDE_DIR
     WORKER_THREAD_REQUEST message;
     memset(&message, 0, sizeof(message));
 
-    Debug.AddLine("Enqueuing Calibration Move request for direction %d", direction);
+    Debug.Write(wxString::Format("Enqueuing Calibration Move request for direction %d\n", direction));
 
     message.request                   = REQUEST_MOVE;
     message.args.move.pMount          = pMount;
@@ -254,13 +261,13 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
     {
         if (pArgs->pMount->HasNonGuiMove())
         {
-            Debug.AddLine(wxString::Format("Handling move in thread for %s dir=%d",
+            Debug.Write(wxString::Format("Handling move in thread for %s dir=%d\n",
                     pArgs->pMount->GetMountClassName(),
                     pArgs->direction));
 
             if (pArgs->calibrationMove)
             {
-                Debug.AddLine("calibration move");
+                Debug.Write("calibration move\n");
 
                 result = pArgs->pMount->CalibrationMove(pArgs->direction, pArgs->duration);
                 if (result != Mount::MOVE_OK)
@@ -270,7 +277,7 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             }
             else
             {
-                Debug.AddLine(wxString::Format("endpoint = (%.2f, %.2f)",
+                Debug.Write(wxString::Format("endpoint = (%.2f, %.2f)\n",
                     pArgs->vectorEndpoint.X, pArgs->vectorEndpoint.Y));
 
                 result = pArgs->pMount->Move(pArgs->vectorEndpoint, pArgs->moveType);
@@ -285,7 +292,7 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             // we don't have a non-gui guide function, so we send this to the
             // main frame routine that handles guides requests
 
-            Debug.AddLine("Sending move to myFrame");
+            Debug.Write("Sending move to myFrame\n");
 
             wxSemaphore semaphore;
             pArgs->pSemaphore = &semaphore;
@@ -306,14 +313,14 @@ Mount::MOVE_RESULT WorkerThread::HandleMove(MyFrame::PHD_MOVE_REQUEST *pArgs)
             }
         }
     }
-    catch (wxString Msg)
+    catch (const wxString& Msg)
     {
         POSSIBLY_UNUSED(Msg);
         if (result == Mount::MOVE_OK)
             result = Mount::MOVE_ERROR;
     }
 
-    Debug.AddLine(wxString::Format("move complete, result=%d", result));
+    Debug.Write(wxString::Format("move complete, result=%d\n", result));
 
     return result;
 }
@@ -333,11 +340,11 @@ wxThread::ExitCode WorkerThread::Entry()
 {
     bool bDone = TestDestroy();
 
-    Debug.AddLine("WorkerThread::Entry() begins");
+    Debug.Write("WorkerThread::Entry() begins\n");
 
 #if defined(__WINDOWS__)
     HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-    Debug.AddLine("worker thread CoInitializeEx returns %x", hr);
+    Debug.Write(wxString::Format("worker thread CoInitializeEx returns %x\n", hr));
 #endif
 
     while (!bDone)
@@ -346,7 +353,7 @@ wxThread::ExitCode WorkerThread::Entry()
         bool dummy;
         wxMessageQueueError queueError = m_wakeupQueue.Receive(dummy);
 
-        Debug.AddLine("Worker thread wakes up");
+        Debug.Write("Worker thread wakes up\n");
 
         assert(queueError == wxMSGQUEUE_NO_ERROR);
 
@@ -365,20 +372,28 @@ wxThread::ExitCode WorkerThread::Entry()
             bool bError;
 
             case REQUEST_NONE:
-                Debug.AddLine("worker thread servicing REQUEST_NONE");
+                Debug.Write("worker thread servicing REQUEST_NONE\n");
                 break;
             case REQUEST_TERMINATE:
-                Debug.AddLine("worker thread servicing REQUEST_TERMINATE");
+                Debug.Write("worker thread servicing REQUEST_TERMINATE\n");
                 bDone = true;
                 break;
             case REQUEST_EXPOSE:
-                Debug.AddLine("worker thread servicing REQUEST_EXPOSE %d",
-                    message.args.expose.exposureDuration);
+                Debug.Write(wxString::Format("worker thread servicing REQUEST_EXPOSE %d\n",
+                    message.args.expose.exposureDuration));
                 bError = HandleExpose(&message.args.expose);
-                SendWorkerThreadExposeComplete(message.args.expose.pImage, bError);
+                if (m_skipSendExposeComplete)
+                {
+                    Debug.Write("worker thread skipping SendWorkerThreadExposeComplete\n");
+                    delete message.args.expose.pImage; // should be null though
+                    message.args.expose.pImage = 0;
+                    m_skipSendExposeComplete = false;
+                }
+                else
+                    SendWorkerThreadExposeComplete(message.args.expose.pImage, bError);
                 break;
             case REQUEST_MOVE: {
-                Debug.AddLine(wxString::Format("worker thread servicing REQUEST_MOVE %s dir %d (%.2f, %.2f)",
+                Debug.Write(wxString::Format("worker thread servicing REQUEST_MOVE %s dir %d (%.2f, %.2f)\n",
                     message.args.move.pMount->GetMountClassName(), message.args.move.direction,
                     message.args.move.vectorEndpoint.X, message.args.move.vectorEndpoint.Y));
                 Mount::MOVE_RESULT moveResult = HandleMove(&message.args.move);
@@ -386,15 +401,15 @@ wxThread::ExitCode WorkerThread::Entry()
                 break;
             }
             default:
-                Debug.AddLine("worker thread servicing unknown request %d", message.request);
+                Debug.Write(wxString::Format("worker thread servicing unknown request %d\n", message.request));
                 break;
         }
 
-        Debug.AddLine("worker thread done servicing request");
+        Debug.Write("worker thread done servicing request\n");
         bDone |= TestDestroy();
     }
 
-    Debug.AddLine("WorkerThread::Entry() ends");
+    Debug.Write("WorkerThread::Entry() ends\n");
     Debug.Flush();
 
     return (wxThread::ExitCode)0;

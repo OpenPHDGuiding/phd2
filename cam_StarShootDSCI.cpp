@@ -133,17 +133,17 @@ bool Camera_StarShootDSCIClass::Connect(const wxString& camId)
 
 bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, int options, const wxRect& subframe)
 {
-    bool ampoff=true;
-    int i;
-    unsigned char retval = 0;
-    unsigned short *rawptr, *rawptr2;
+    bool ampoff = true;
+    if (duration < 1000)
+        ampoff = false;
 
-    if (duration < 1000) ampoff=false;
     // Send registers to setup exposure
     // duration, double-read, gain, offset, high-speed
     // bin, 5x always-falses, amp-off, false, over-sammple
 
-    if (duration != lastdur) {
+    unsigned char retval = 0;
+    if (duration != lastdur)
+    {
         retval = OCP_sendRegister(duration,0,(unsigned char) (GuideCameraGain * 63 / 100),120,true,0,false,false,false,false,false,ampoff,false,false);
         lastdur = duration;
     }
@@ -157,33 +157,37 @@ bool Camera_StarShootDSCIClass::Capture(int duration, usImage& img, int options,
         retval = OCP_Exposure(1);  // Start USB2 exposure
     else
         retval = OCP_Exposure(0);  // Start USB1.1 exposure
-    if (!retval) {
+
+    if (!retval)
+    {
         pFrame->Alert(_("Error starting exposure"));
         return true;
     }
-    if (duration > 100) {
-        SleepEx(duration - 100, true); // wait until near end of exposure, nicely
-        wxGetApp().Yield();
+
+    if (duration > 100)
+    {
+        if (WorkerThread::MilliSleep(duration - 100, WorkerThread::INT_ANY))
+            return true;
     }
-    bool still_going = true;
-    while (still_going) {
-        SleepEx(20,true);
-        still_going = OCP_Exposing();
-    }
-    if (img.Init(RawX,RawY)) {
+    do
+    {
+        if (WorkerThread::MilliSleep(20, WorkerThread::INT_ANY))
+            return true;
+    } while (OCP_Exposing());
+
+    if (img.Init(RawX, RawY))
+    {
         DisconnectWithAlert(CAPT_FAIL_MEMORY);
         return true;
     }
-    rawptr = OCP_ProcessedBuffer();  // Copy raw data in
-    rawptr2 = img.ImageData;
-    for (i=0; i<img.NPixels; i++, rawptr++, rawptr2++) {
-        *rawptr2 = *rawptr;
-    }
+
+    const unsigned short *rawptr = OCP_ProcessedBuffer();  // Copy raw data in
+    memcpy(img.ImageData, rawptr, img.NPixels * sizeof(unsigned short));
+
     SubtractDark(img);
     QuickLRecon(img);
     SquarePixels(img,XPixelSize,YPixelSize);
     return false;
-
 }
 
 #endif

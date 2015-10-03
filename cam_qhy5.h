@@ -48,6 +48,8 @@ public:
     void    InitCapture();
 
     bool    ST4PulseGuideScope(int direction, int duration);
+    bool    ST4HasNonGuiMove() { return true; }
+    bool    HasNonGuiCapture() { return true; }
     void    ClearGuidePort();
     wxByte  BitsPerPixel();
 };

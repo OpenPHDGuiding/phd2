@@ -97,6 +97,16 @@ bool Camera_SBIGRotatorClass::Connect(const wxString& camId)
     return bError;
 }
 
+bool Camera_SBIGRotatorClass::HasNonGuiCapture()
+{
+    return m_pSubcamera && m_pSubcamera->HasNonGuiCapture();
+}
+
+bool Camera_SBIGRotatorClass::ST4HasNonGuiMove()
+{
+    return m_pSubcamera && m_pSubcamera->ST4HasNonGuiMove();
+}
+
 wxByte Camera_SBIGRotatorClass::BitsPerPixel()
 {
     return m_pSubcamera ? m_pSubcamera->BitsPerPixel() : 0;

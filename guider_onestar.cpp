@@ -849,10 +849,8 @@ void GuiderOneStar::SaveStarFITS()
     {
         fits_create_img(fptr,output_format, 2, fsize, &status);
 
-        time_t now;
-        struct tm *timestruct;
-        time(&now);
-        timestruct=gmtime(&now);
+        time_t now = wxDateTime::GetTimeNow();
+        struct tm *timestruct = gmtime(&now);
         sprintf(keyname,"DATE");
         sprintf(keycomment,"UTC date that FITS file was created");
         sprintf(keystring,"%.4d-%.2d-%.2d %.2d:%.2d:%.2d",timestruct->tm_year+1900,timestruct->tm_mon+1,timestruct->tm_mday,timestruct->tm_hour,timestruct->tm_min,timestruct->tm_sec);

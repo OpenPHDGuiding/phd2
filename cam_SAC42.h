@@ -51,6 +51,7 @@ public:
     bool   Connect(const wxString& camId);
     bool   Disconnect();
     void   InitCapture();
+    bool HasNonGuiCapture() { return true; }
     wxByte BitsPerPixel();
 };
 

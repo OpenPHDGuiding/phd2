@@ -173,7 +173,6 @@ bool Camera_QHY5Class::Disconnect()
     RawBuffer = NULL;
 
     return false;
-
 }
 
 bool Camera_QHY5Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
@@ -248,15 +247,15 @@ bool Camera_QHY5Class::Capture(int duration, usImage& img, int options, const wx
     wxMilliSleep(duration);
 
     ret = libusb_bulk_transfer( m_handle, 0x82, RawBuffer, QHY5_BUFFER_SIZE, &result, 20000);
-    if ( ret < 0 )
+    if (ret < 0)
     {
-        wxMessageBox(_T("Failed to read image: libusb_bulk_transfer() failed."), _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_T("Failed to read image: libusb_bulk_transfer() failed.");
         return true;
     }
 
     if (result != QHY5_BUFFER_SIZE)
     {
-        wxMessageBox(_T("Failed to read image."), _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_T("Failed to read image."));
         return true;
     }
 
@@ -268,7 +267,7 @@ bool Camera_QHY5Class::Capture(int duration, usImage& img, int options, const wx
         bptr = RawBuffer + QHY5_MATRIX_WIDTH * y + 20;
         for (x = 0; x < xsize; x++, bptr++, dptr++) // CAN SPEED THIS UP
         {
-            *dptr = (unsigned short) * bptr;
+            *dptr = (unsigned short) *bptr;
         }
     }
 
