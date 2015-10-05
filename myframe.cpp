@@ -1580,14 +1580,13 @@ bool MyFrame::Dither(double amount, bool raOnly)
 
 void MyFrame::OnClose(wxCloseEvent& event)
 {
-    if (CaptureActive)
+    if (CaptureActive && event.CanVeto())
     {
         bool confirmed = ConfirmDialog::Confirm(_("Are you sure you want to exit while capturing is active?"),
             "/quit_when_looping_ok", _("Confirm Exit"));
         if (!confirmed)
         {
-            if (event.CanVeto())
-                event.Veto();
+            event.Veto();
             return;
         }
     }
