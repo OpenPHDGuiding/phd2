@@ -237,9 +237,15 @@ extern "C" {
 	for push mode: the snapped image will be return by PALTAIR_DATA_CALLBACK, with the parameter 'bSnap' set to 'TRUE' */
 	altair_ports(HRESULT)  Altair_Snap(HAltair h, unsigned nResolutionIndex);  /* still image snap */
 
-	altair_ports(HRESULT)  Altair_Trigger(HAltair h); /* soft trigger */
 	/*
-	put_Size, put_eSize, can be used to set the video output resolution BEFORE Altair_Start.
+	soft trigger:
+	nNumber:    0xffff:     trigger continuously
+	0:          cancel trigger
+	others:     number of images to be triggered
+	*/
+	altair_ports(HRESULT)  Altair_Trigger(HAltair h, unsigned nNumber);	
+	
+	/* put_Size, put_eSize, can be used to set the video output resolution BEFORE Altair_Start.
 	put_Size use width and height parameters, put_eSize use the index parameter.
 	for example, UCMOS03100KPA support the following resolutions:
 	index 0:    2048,   1536
@@ -255,6 +261,7 @@ extern "C" {
 	altair_ports(HRESULT)  Altair_get_ResolutionNumber(HAltair h);
 	altair_ports(HRESULT)  Altair_get_Resolution(HAltair h, unsigned nResolutionIndex, int* pWidth, int* pHeight);
 	altair_ports(HRESULT)  Altair_get_ResolutionRatio(HAltair h, unsigned nResolutionIndex, int* pNumerator, int* pDenominator);
+	altair_ports(HRESULT)  Altair_get_Field(HAltair h);
 
 	/*
 	FourCC:

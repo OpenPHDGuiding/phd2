@@ -315,10 +315,11 @@ bool Camera_Altair::Capture(int duration, usImage& img, int options, const wxRec
 
     //flush_buffered_image(m_handle, img);
 
-    if (!m_capturing)
+
+	m_frameReady = false;
+	if (!m_capturing)
     {
         Debug.AddLine("Altair: startcapture");
-		m_frameReady = false;
 		Altair_StartPullModeWithCallback(m_handle, CameraCallback, this);
         m_capturing = true;
     }
