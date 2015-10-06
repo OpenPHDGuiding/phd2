@@ -1082,7 +1082,7 @@ void Guider::UpdateGuideState(usImage *pImage, bool bStopping)
                     pFrame->pGraphLog->AppendData(info);
 
                     // allow guide algorithms to attempt dead reckoning
-                    pFrame->SchedulePrimaryMove(pMount, PHD_Point(), MOVETYPE_DEDUCED);
+                    pFrame->SchedulePrimaryMove(pMount, PHD_Point(0., 0.), MOVETYPE_DEDUCED);
 
                     wxColor prevColor = GetBackgroundColour();
                     SetBackgroundColour(wxColour(64,0,0));
