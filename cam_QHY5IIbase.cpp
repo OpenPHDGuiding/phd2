@@ -95,9 +95,7 @@ Camera_QHY5IIBase::Camera_QHY5IIBase()
     HasGainControl = true;
     RawBuffer = 0;
     Color = false;
-#if 0 // Subframes do not work yet; lzr from QHY is investigating - ag 6/24/2015
     HasSubframes = true;
-#endif
     m_camhandle = 0;
 }
 
@@ -246,7 +244,11 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
         return true;
     }
 
-    ret = SetQHYCCDResolution(m_camhandle, 0, 0, FullSize.GetX(), FullSize.GetY());
+    m_curGain = -1;
+    m_curExposure = -1;
+    m_roi = wxRect(0, 0, FullSize.GetWidth() * Binning, FullSize.GetHeight() * Binning);  // un-binned coordinates
+
+    ret = SetQHYCCDResolution(m_camhandle, 0, 0, m_roi.GetWidth(), m_roi.GetHeight());
     if (ret != QHYCCD_SUCCESS)
     {
         CloseQHYCCD(m_camhandle);
@@ -254,10 +256,6 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
         wxMessageBox(_("Init camera failed"));
         return true;
     }
-
-    m_curGain = -1;
-    m_curExposure = -1;
-    m_roi = wxRect(0, 0, imagew, imageh);
 
     Connected = true;
     return false;
@@ -312,26 +310,20 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
         return true;
     }
 
-    bool useSubframe = !subframe.IsEmpty();
+    bool useSubframe = UseSubframes && !subframe.IsEmpty();
     wxRect frame = useSubframe ? subframe : wxRect(FullSize);
     if (useSubframe)
         img.Clear();
 
-    int ret;
+    // convert frame to un-binned coordinates
+    wxRect unbinnedFrame = Binning > 1 ? wxRect(frame.x * Binning, frame.y * Binning, frame.width * Binning, frame.height * Binning) : frame;
 
-    // lzr from QHY says this needs to be set for every exposure
-    ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
-    if (ret != QHYCCD_SUCCESS)
+    if (m_roi != unbinnedFrame)
     {
-        Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", ret));
-    }
-
-    if (m_roi != frame)
-    {
-        ret = SetQHYCCDResolution(m_camhandle, frame.GetLeft(), frame.GetTop(), frame.GetWidth(), frame.GetHeight());
+        int ret = SetQHYCCDResolution(m_camhandle, unbinnedFrame.GetLeft(), unbinnedFrame.GetTop(), unbinnedFrame.GetWidth(), unbinnedFrame.GetHeight());
         if (ret == QHYCCD_SUCCESS)
         {
-            m_roi = frame;
+            m_roi = unbinnedFrame;
         }
         else
         {
@@ -344,7 +336,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
         double gain = m_gainMin + GuideCameraGain * (m_gainMax - m_gainMin) / 100.0;
         gain = floor(gain / m_gainStep) * m_gainStep;
         Debug.Write(wxString::Format("QHY set gain %g (%g..%g incr %g)\n", gain, m_gainMin, m_gainMax, m_gainStep));
-        ret = SetQHYCCDParam(m_camhandle, CONTROL_GAIN, gain);
+        int ret = SetQHYCCDParam(m_camhandle, CONTROL_GAIN, gain);
         if (ret == QHYCCD_SUCCESS)
         {
             m_curGain = GuideCameraGain;
@@ -358,7 +350,7 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
 
     if (duration != m_curExposure)
     {
-        ret = SetQHYCCDParam(m_camhandle, CONTROL_EXPOSURE, duration * 1000.0); // QHY duration is usec
+        int ret = SetQHYCCDParam(m_camhandle, CONTROL_EXPOSURE, duration * 1000.0); // QHY duration is usec
         if (ret == QHYCCD_SUCCESS)
         {
             m_curExposure = duration;
@@ -368,6 +360,13 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
             Debug.Write(wxString::Format("QHY set exposure ret %d\n", ret));
             pFrame->Alert(_("Failed to set camera exposure"));
         }
+    }
+
+    // lzr from QHY says this needs to be set for every exposure
+    int ret = SetQHYCCDBinMode(m_camhandle, Binning, Binning);
+    if (ret != QHYCCD_SUCCESS)
+    {
+        Debug.Write(wxString::Format("SetQHYCCDBinMode failed! ret = %d\n", ret));
     }
 
     ret = ExpQHYCCDSingleFrame(m_camhandle);
@@ -391,10 +390,10 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
     {
         const unsigned char *src = RawBuffer;
         unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
-        for (int y = 0; y < frame.GetHeight(); y++)
+        for (int y = 0; y < h; y++)
         {
             unsigned short *d = dst;
-            for (int x = 0; x < frame.GetWidth(); x++)
+            for (int x = 0; x < w; x++)
                 *d++ = (unsigned short) *src++;
             dst += FullSize.GetWidth();
         }
@@ -413,12 +412,13 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
     }
 
 #if 0 // for testing subframes on the bench
-img.ImageData[200 * FullSize.GetWidth() + 400 + 0] = 22000;
-img.ImageData[200 * FullSize.GetWidth() + 400 + 1] = 32000;
-img.ImageData[200 * FullSize.GetWidth() + 400 + 2] = 35000;
-img.ImageData[200 * FullSize.GetWidth() + 400 + 3] = 35000;
-img.ImageData[200 * FullSize.GetWidth() + 400 + 4] = 32000;
-img.ImageData[200 * FullSize.GetWidth() + 400 + 5] = 22000;
+    int ypos = 200;  int xpos = 400;
+img.ImageData[ypos * FullSize.GetWidth() + xpos + 0] = 22000;
+img.ImageData[ypos * FullSize.GetWidth() + xpos + 1] = 32000;
+img.ImageData[ypos * FullSize.GetWidth() + xpos + 2] = 35000;
+img.ImageData[ypos * FullSize.GetWidth() + xpos + 3] = 35000;
+img.ImageData[ypos * FullSize.GetWidth() + xpos + 4] = 32000;
+img.ImageData[ypos * FullSize.GetWidth() + xpos + 5] = 22000;
 #endif
 
     if (options & CAPTURE_SUBTRACT_DARK)
