@@ -68,6 +68,28 @@ static int gain_lut[74] = {0x000, 0x004, 0x005, 0x006, 0x007, 0x008, 0x009, 0x00
 
 static libusb_device_handle *m_handle = NULL;
 
+static bool s_libusb_init_done;
+
+static bool init_libusb()
+{
+    if (s_libusb_init_done)
+        return false;
+    int ret = libusb_init(0);
+    if (ret != 0)
+        return true;
+    s_libusb_init_done = true;
+    return false;
+}
+
+static void uninit_libusb()
+{
+    if (s_libusb_init_done)
+    {
+        libusb_exit(0);
+        s_libusb_init_done = false;
+    }
+}
+
 Camera_QHY5Class::Camera_QHY5Class()
 {
     Connected = FALSE;
@@ -78,6 +100,11 @@ Camera_QHY5Class::Camera_QHY5Class()
     Name = _T("QHY 5");
 }
 
+Camera_QHY5Class::~Camera_QHY5Class()
+{
+    uninit_libusb();
+}
+
 wxByte Camera_QHY5Class::BitsPerPixel()
 {
     return 8;
@@ -85,12 +112,9 @@ wxByte Camera_QHY5Class::BitsPerPixel()
 
 bool Camera_QHY5Class::Connect(const wxString& camId)
 {
-// returns true on error
-    int ret = libusb_init( NULL );
-
-    if ( ret != 0 )
+    if (init_libusb())
     {
-        wxMessageBox(_T("Initialize libusb failed."), _("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("Could not initialize USB library"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
