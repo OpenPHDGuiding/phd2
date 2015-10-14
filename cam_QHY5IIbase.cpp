@@ -184,8 +184,17 @@ bool Camera_QHY5IIBase::Connect(const wxString& camId)
         return true;
     }
 
-    double color = GetQHYCCDParam(m_camhandle, CAM_COLOR);
-    Debug.Write(wxString::Format("QHY: cam reports color = %.1f\n", color));
+    int bayer = IsQHYCCDControlAvailable(m_camhandle, CAM_COLOR);
+    Debug.Write(wxString::Format("QHY: cam reports bayer type %d\n", bayer));
+
+    Color = false;
+    switch ((BAYER_ID) bayer) {
+    case BAYER_GB:
+    case BAYER_GR:
+    case BAYER_BG:
+    case BAYER_RG:
+        Color = true;
+    }
 
     // check bin modes
     CONTROL_ID modes[] = { CAM_BIN2X2MODE, CAM_BIN3X3MODE, CAM_BIN4X4MODE, };
@@ -318,6 +327,17 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
     // convert frame to un-binned coordinates
     wxRect unbinnedFrame = Binning > 1 ? wxRect(frame.x * Binning, frame.y * Binning, frame.width * Binning, frame.height * Binning) : frame;
 
+    // lzr from QHY says un-binned width must be a multiple of 4
+    int uw = ((unbinnedFrame.width + 3) / 4) * 4;
+    unbinnedFrame.width = uw;
+    int xofs = 0;
+    if (unbinnedFrame.GetRight() >= m_maxSize.GetWidth())
+    {
+        int d = unbinnedFrame.GetRight() + 1 - m_maxSize.GetWidth();
+        unbinnedFrame.x -= d;
+        xofs = d;
+    }
+
     if (m_roi != unbinnedFrame)
     {
         int ret = SetQHYCCDResolution(m_camhandle, unbinnedFrame.GetLeft(), unbinnedFrame.GetTop(), unbinnedFrame.GetWidth(), unbinnedFrame.GetHeight());
@@ -388,12 +408,16 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
 
     if (useSubframe)
     {
+        img.Subframe = frame;
+
+        int dx = xofs / Binning; // binned-coordinate x-offset
         const unsigned char *src = RawBuffer;
         unsigned short *dst = img.ImageData + frame.GetTop() * FullSize.GetWidth() + frame.GetLeft();
-        for (int y = 0; y < h; y++)
+        for (int y = 0; y < frame.height; y++)
         {
             unsigned short *d = dst;
-            for (int x = 0; x < w; x++)
+            src += dx;
+            for (int x = 0; x < frame.width; x++)
                 *d++ = (unsigned short) *src++;
             dst += FullSize.GetWidth();
         }
@@ -412,13 +436,18 @@ bool Camera_QHY5IIBase::Capture(int duration, usImage& img, int options, const w
     }
 
 #if 0 // for testing subframes on the bench
-    int ypos = 200;  int xpos = 400;
-img.ImageData[ypos * FullSize.GetWidth() + xpos + 0] = 22000;
-img.ImageData[ypos * FullSize.GetWidth() + xpos + 1] = 32000;
-img.ImageData[ypos * FullSize.GetWidth() + xpos + 2] = 35000;
-img.ImageData[ypos * FullSize.GetWidth() + xpos + 3] = 35000;
-img.ImageData[ypos * FullSize.GetWidth() + xpos + 4] = 32000;
-img.ImageData[ypos * FullSize.GetWidth() + xpos + 5] = 22000;
+    static int dx = 0;
+    int ypos = 200;
+    int xpos = FullSize.GetWidth() - 15 + dx;
+if (xpos + 0 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 0] = 22000;
+if (xpos + 1 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 1] = 32000;
+if (xpos + 2 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 2] = 35000;
+if (xpos + 3 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 3] = 35000;
+if (xpos + 4 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 4] = 32000;
+if (xpos + 5 < FullSize.GetWidth()) img.ImageData[ypos * FullSize.GetWidth() + xpos + 5] = 22000;
+
+    if (++dx > 15)
+        dx = 0;
 #endif
 
     if (options & CAPTURE_SUBTRACT_DARK)
