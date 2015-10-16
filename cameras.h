@@ -110,8 +110,6 @@
 // Currently unused
 // #define NEB_SBIG   // This is for an on-hold project that would get the guide chip data from an SBIG connected in Neb
 
-extern bool DLLExists(const wxString& DLLName);
-
 #endif /* OPENPHD */
 
 #endif // CAMERAS_INCLUDED

@@ -1336,6 +1336,15 @@ static void dither(JObj& response, const json_value *params)
         response << jrpc_error(1, error);
 }
 
+static void shutdown(JObj& response, const json_value *params)
+{
+    wxCloseEvent *evt = new wxCloseEvent(wxEVT_CLOSE_WINDOW);
+    evt->SetCanVeto(false);
+    wxQueueEvent(pFrame, evt);
+
+    response << jrpc_result(0);
+}
+
 static void dump_request(const wxSocketClient *cli, const json_value *req)
 {
     Debug.AddLine(wxString::Format("evsrv: cli %p request: %s", cli, json_format(req)));
@@ -1397,6 +1406,7 @@ static bool handle_request(const wxSocketClient *cli, JObj& response, const json
         { "get_star_image", &get_star_image, },
         { "get_use_subframes", &get_use_subframes, },
         { "get_search_region", &get_search_region, },
+        { "shutdown", &shutdown, },
     };
 
     for (unsigned int i = 0; i < WXSIZEOF(methods); i++)

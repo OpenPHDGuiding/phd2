@@ -42,12 +42,15 @@ class Camera_QHY5Class : public GuideCamera
 
 public:
     Camera_QHY5Class();
+    ~Camera_QHY5Class();
     bool    Capture(int duration, usImage& img, int options, const wxRect& subframe);
     bool    Connect(const wxString& camId);
     bool    Disconnect();
     void    InitCapture();
 
     bool    ST4PulseGuideScope(int direction, int duration);
+    bool    ST4HasNonGuiMove() { return true; }
+    bool    HasNonGuiCapture() { return true; }
     void    ClearGuidePort();
     wxByte  BitsPerPixel();
 };

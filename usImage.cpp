@@ -277,7 +277,7 @@ bool usImage::BinnedCopyToImage(wxImage **rawimg, int blevel, int wlevel, double
 
 void usImage::InitImgStartTime()
 {
-    ImgStartTime = time(0);
+    ImgStartTime = wxDateTime::GetTimeNow();
 }
 
 wxString usImage::GetImgStartTime() const

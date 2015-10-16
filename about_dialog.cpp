@@ -57,7 +57,7 @@ wxDialog(pFrame, wxID_ANY, _T("About ") APPNAME, wxDefaultPosition, wxDefaultSiz
         "<html><body>"
         "<h3>%s %s</h3>"
         "<a href=\"http://openphdguiding.org\">PHD2 home page - openphdguiding.org</a><br>"
-        "<a href=\"https://code.google.com/p/open-phd-guiding/\">PHD2 open source project page</a><br><br>"
+        "<a href=\"https://github.com/OpenPHDGuiding\">PHD2 open source project page</a><br><br>"
         "<font size=\"2\">"
         "Credits:<br>"
         "<table>"

@@ -103,6 +103,7 @@ public:
     bool DisconnectAll(wxString *error);
     void Shutdown(bool forced);
     bool IsEmptyProfile();
+    bool ReconnectCamera();
 
 private:
     void LoadGearChoices(void);

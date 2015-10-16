@@ -526,7 +526,7 @@ void Scope::AlertLimitReached(int duration, GuideAxis axis)
     if (pConfig->Global.GetBoolean(LimitReachedWarningKey(axis), true))
     {
         static time_t s_lastLogged;
-        time_t now = time(0);
+        time_t now = wxDateTime::GetTimeNow();
         if (s_lastLogged == 0 || now - s_lastLogged > 30)
         {
             s_lastLogged = now;

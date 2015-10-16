@@ -336,24 +336,22 @@ static void WarnRawImageMode(void)
  * - schedules another exposure if CaptureActive is stil true
  *
  */
-void MyFrame::OnExposeComplete(wxThreadEvent& event)
+void MyFrame::OnExposeComplete(usImage *pNewFrame, bool err)
 {
     try
     {
-        Debug.AddLine("Processing an image");
+        Debug.Write("Processing an image\n");
 
         m_exposurePending = false;
-
-        usImage *pNewFrame = event.GetPayload<usImage *>();
 
         if (pGuider->GetPauseType() == PAUSE_FULL)
         {
             delete pNewFrame;
-            Debug.AddLine("guider is paused, ignoring frame, not scheduling exposure");
+            Debug.Write("guider is paused, ignoring frame, not scheduling exposure\n");
             return;
         }
 
-        if (event.GetInt())
+        if (err)
         {
             delete pNewFrame;
 
@@ -396,7 +394,7 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
 
         PhdController::UpdateControllerState();
 
-        Debug.AddLine(wxString::Format("OnExposeCompete: CaptureActive=%d m_continueCapturing=%d",
+        Debug.Write(wxString::Format("OnExposeCompete: CaptureActive=%d m_continueCapturing=%d\n",
             CaptureActive, m_continueCapturing));
 
         CaptureActive = m_continueCapturing;
@@ -417,6 +415,13 @@ void MyFrame::OnExposeComplete(wxThreadEvent& event)
     }
 }
 
+void MyFrame::OnExposeComplete(wxThreadEvent& event)
+{
+    usImage *image = event.GetPayload<usImage *>();
+    bool err = event.GetInt() != 0;
+    OnExposeComplete(image, err);
+}
+
 void MyFrame::OnMoveComplete(wxThreadEvent& event)
 {
     try
@@ -430,7 +435,7 @@ void MyFrame::OnMoveComplete(wxThreadEvent& event)
         {
             if (moveResult == Mount::MOVE_STOP_GUIDING)
             {
-                Debug.AddLine("mount move error indicates guiding should stop");
+                Debug.Write("mount move error indicates guiding should stop\n");
                 pGuider->StopGuiding();
             }
 
@@ -751,7 +756,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
 
     if (pAdvancedDialog->ShowModal() == wxID_OK)
     {
-        Debug.AddLine("User exited setup dialog with 'ok'");
+        Debug.Write("User exited setup dialog with 'ok'\n");
         pAdvancedDialog->UnloadValues();
         pGraphLog->UpdateControls();
         TestGuide::ManualGuideUpdateControls();
@@ -759,7 +764,7 @@ void MyFrame::OnAdvanced(wxCommandEvent& WXUNUSED(event))
     else
     {
         // Cancel event may require non-trivial undos
-        Debug.AddLine("User exited setup dialog with 'cancel'");
+        Debug.Write("User exited setup dialog with 'cancel'\n");
         pAdvancedDialog->Undo();
     }
 }

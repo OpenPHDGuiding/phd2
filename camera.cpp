@@ -1187,52 +1187,53 @@ void GuideCamera::SubtractDark(usImage& img)
     }
 }
 
+static void InitiateReconnect()
+{
+    WorkerThread *thr = WorkerThread::This();
+    if (thr)
+    {
+        // Defer sending the completion of exposure message until after
+        // the camera re-connecttion attempt
+        thr->SetSkipExposeComplete();
+    }
+    pFrame->TryReconnect();
+}
+
 void GuideCamera::DisconnectWithAlert(CaptureFailType type)
 {
     switch (type) 
     {
     case CAPT_FAIL_MEMORY:
-        DisconnectWithAlert(_("Memory allocation error during capture"));
+        DisconnectWithAlert(_("Memory allocation error during capture"), NO_RECONNECT);
         break;
 
     case CAPT_FAIL_TIMEOUT:
-        pFrame->Alert(wxString::Format(_("After %.1f sec the camera has not completed a %.1f sec exposure, so "
-            "it has been disconnected to prevent other problems.\n"
-            "If you think the hardware is working correctly, you can increase the "
-            "timeout period on the Camera tab\n"
-            "of the Advanced Settings Dialog then re-connect the camera."),
-            (pFrame->RequestedExposureDuration() + m_timeoutMs) / 1000.,
-            pFrame->RequestedExposureDuration() / 1000.));
-        Disconnect();
+        {
+            wxString msg(wxString::Format(_("After %.1f sec the camera has not completed a %.1f sec exposure, so "
+                "it has been disconnected to prevent other problems. "
+                "If you think the hardware is working correctly, you can increase the "
+                "timeout period on the Camera tab of the Advanced Settings Dialog."),
+                (pFrame->RequestedExposureDuration() + m_timeoutMs) / 1000.,
+                pFrame->RequestedExposureDuration() / 1000.));
+
+            DisconnectWithAlert(msg, RECONNECT);
+        }
         break;
     }
 }
 
-void GuideCamera::DisconnectWithAlert(const wxString& msg)
+void GuideCamera::DisconnectWithAlert(const wxString& msg, ReconnectType reconnect)
 {
     Disconnect();
-    pFrame->Alert(msg + "\n" + _("The camera has been disconnected. Please resolve the problem and re-connect the camera."));
-}
-
-#ifndef OPENPHD
-
-bool DLLExists(const wxString& DLLName)
-{
-    wxStandardPathsBase& StdPaths = wxStandardPaths::Get();
-    if (wxFileExists(StdPaths.GetExecutablePath().BeforeLast(PATHSEPCH) + PATHSEPSTR + DLLName))
-        return true;
-    if (wxFileExists(StdPaths.GetExecutablePath().BeforeLast(PATHSEPCH) + PATHSEPSTR + ".." + PATHSEPSTR + DLLName))
-        return true;
-    if (wxFileExists(wxGetOSDirectory() + PATHSEPSTR + DLLName))
-        return true;
-    if (wxFileExists(wxGetOSDirectory() + PATHSEPSTR + "system32" + PATHSEPSTR + DLLName))
-        return true;
-    return false;
-}
-
-bool GuideCamera::HasNonGuiCapture(void)
-{
-    return false;
+    if (reconnect == RECONNECT)
+    {
+        pFrame->Alert(msg + "\n" + _("PHD will make several attempts to re-connect the camera."));
+        InitiateReconnect();
+    }
+    else
+    {
+        pFrame->Alert(msg + "\n" + _("The camera has been disconnected. Please resolve the problem and re-connect the camera."));
+    }
 }
 
 void GuideCamera::InitCapture()
@@ -1272,5 +1273,3 @@ bool GuideCamera::ST4PulseGuideScope(int direction, int duration)
     assert(false);
     return true;
 }
-
-#endif

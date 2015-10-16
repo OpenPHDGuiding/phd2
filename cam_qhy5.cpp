@@ -68,6 +68,28 @@ static int gain_lut[74] = {0x000, 0x004, 0x005, 0x006, 0x007, 0x008, 0x009, 0x00
 
 static libusb_device_handle *m_handle = NULL;
 
+static bool s_libusb_init_done;
+
+static bool init_libusb()
+{
+    if (s_libusb_init_done)
+        return false;
+    int ret = libusb_init(0);
+    if (ret != 0)
+        return true;
+    s_libusb_init_done = true;
+    return false;
+}
+
+static void uninit_libusb()
+{
+    if (s_libusb_init_done)
+    {
+        libusb_exit(0);
+        s_libusb_init_done = false;
+    }
+}
+
 Camera_QHY5Class::Camera_QHY5Class()
 {
     Connected = FALSE;
@@ -78,6 +100,11 @@ Camera_QHY5Class::Camera_QHY5Class()
     Name = _T("QHY 5");
 }
 
+Camera_QHY5Class::~Camera_QHY5Class()
+{
+    uninit_libusb();
+}
+
 wxByte Camera_QHY5Class::BitsPerPixel()
 {
     return 8;
@@ -85,12 +112,9 @@ wxByte Camera_QHY5Class::BitsPerPixel()
 
 bool Camera_QHY5Class::Connect(const wxString& camId)
 {
-// returns true on error
-    int ret = libusb_init( NULL );
-
-    if ( ret != 0 )
+    if (init_libusb())
     {
-        wxMessageBox(_T("Initialize libusb failed."), _("Error"), wxOK | wxICON_ERROR);
+        wxMessageBox(_("Could not initialize USB library"), _("Error"), wxOK | wxICON_ERROR);
         return true;
     }
 
@@ -173,7 +197,6 @@ bool Camera_QHY5Class::Disconnect()
     RawBuffer = NULL;
 
     return false;
-
 }
 
 bool Camera_QHY5Class::Capture(int duration, usImage& img, int options, const wxRect& subframe)
@@ -248,15 +271,15 @@ bool Camera_QHY5Class::Capture(int duration, usImage& img, int options, const wx
     wxMilliSleep(duration);
 
     ret = libusb_bulk_transfer( m_handle, 0x82, RawBuffer, QHY5_BUFFER_SIZE, &result, 20000);
-    if ( ret < 0 )
+    if (ret < 0)
     {
-        wxMessageBox(_T("Failed to read image: libusb_bulk_transfer() failed."), _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_T("Failed to read image: libusb_bulk_transfer() failed."));
         return true;
     }
 
     if (result != QHY5_BUFFER_SIZE)
     {
-        wxMessageBox(_T("Failed to read image."), _("Error"), wxOK | wxICON_ERROR);
+        pFrame->Alert(_T("Failed to read image."));
         return true;
     }
 
@@ -268,7 +291,7 @@ bool Camera_QHY5Class::Capture(int duration, usImage& img, int options, const wx
         bptr = RawBuffer + QHY5_MATRIX_WIDTH * y + 20;
         for (x = 0; x < xsize; x++, bptr++, dptr++) // CAN SPEED THIS UP
         {
-            *dptr = (unsigned short) * bptr;
+            *dptr = (unsigned short) *bptr;
         }
     }
 
